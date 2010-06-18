@@ -217,10 +217,10 @@ public class Parser {
 			else if (Character.isDigit(buffer.charAt(end)))
 				while (end < length && Character.isDigit(buffer.charAt(end)))
 					end++;
-			else if (ch == '\'' || ch == '"') {
-				int pos = buffer.indexOf(ch, end); // TODO check for '' or ""
-				end = (pos != -1) ? pos + 1 : length;
-			} else if (++end < length) { // Suck one or two character(s)
+			else if (ch == '\'' || ch == '"')
+				while (buffer.charAt(end) == ch)
+					end = buffer.indexOf(ch, end + 1) + 1; // Check for '' or ""
+			else if (++end < length) { // Suck one or two character(s)
 				int ch1 = buffer.indexOf(end);
 				if (ch == '>' && ch1 == '=' //
 						|| ch == '<' && ch1 == '=' //
