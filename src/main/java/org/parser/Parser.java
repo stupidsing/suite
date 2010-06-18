@@ -5,9 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.util.Util.IoProcess;
-import org.util.Util.Pair;
 
 public class Parser {
+
+	public class InputBuffer {
+		String buffer;
+		int position;
+	}
 
 	public interface Node {
 	}
@@ -44,7 +48,7 @@ public class Parser {
 		}
 	}
 
-	public Construct parseIf(Pair<String, Integer> input) {
+	public Construct parseIf(InputBuffer input) {
 		Construct construct = new Construct(Type.IF);
 		expect(input, "if", construct);
 		construct.nodes.add(parseExpression(input));
@@ -79,11 +83,11 @@ public class Parser {
 			new Operator(Type.Div, "/", true), //
 	};
 
-	public Node parseExpression(Pair<String, Integer> input) {
+	public Node parseExpression(InputBuffer input) {
 		return parseExpression(input, 0);
 	}
 
-	public Node parseExpression(Pair<String, Integer> input, int n) {
+	public Node parseExpression(InputBuffer input, int n) {
 		Node node;
 		Construct construct;
 
@@ -128,24 +132,22 @@ public class Parser {
 		return node;
 	}
 
-	private void expect(Pair<String, Integer> input, String toMatch,
-			Construct construct) {
+	private void expect(InputBuffer input, String toMatch, Construct construct) {
 		Token token = match(input, toMatch, construct);
 		if (token == null)
 			throw new RuntimeException("EXPECT " + toMatch);
 	}
 
-	private Construct match(Pair<String, Integer> input, Type type,
-			String toMatch) {
+	private Construct match(InputBuffer input, Type type, String toMatch) {
 		Construct construct = new Construct(type);
 		return match(input, toMatch, construct) != null ? construct : null;
 	}
 
-	private Token match(Pair<String, Integer> input, String toMatch) {
+	private Token match(InputBuffer input, String toMatch) {
 		return match(input, toMatch, new Construct());
 	}
 
-	private Token match(Pair<String, Integer> input, final String toMatch,
+	private Token match(InputBuffer input, final String toMatch,
 			Construct construct) {
 		return match(input, new IoProcess<String, Boolean, RuntimeException>() {
 			public Boolean perform(String s) throws RuntimeException {
@@ -154,7 +156,7 @@ public class Parser {
 		}, construct);
 	}
 
-	private Token matchIfWord(Pair<String, Integer> input, Construct construct) {
+	private Token matchIfWord(InputBuffer input, Construct construct) {
 		return match(input, new IoProcess<String, Boolean, RuntimeException>() {
 			public Boolean perform(String s) throws RuntimeException {
 				return isWord(s);
@@ -162,23 +164,23 @@ public class Parser {
 		}, construct);
 	}
 
-	private Token match(Pair<String, Integer> input,
+	private Token match(InputBuffer input,
 			IoProcess<String, Boolean, RuntimeException> check,
 			Construct construct) {
-		int preIndex = input.t2;
+		int preIndex = input.position;
 		Token token = getToken(input);
 		if (check.perform(token.token)) {
 			construct.nodes.add(token);
 			return token;
 		} else {
-			input.t2 = preIndex; // Pretend as if nothing happened
+			input.position = preIndex; // Pretend as if nothing happened
 			return null;
 		}
 	}
 
-	private Token getToken(Pair<String, Integer> input) {
-		String buffer = input.t1;
-		int begin = input.t2, start = begin;
+	private Token getToken(InputBuffer input) {
+		String buffer = input.buffer;
+		int begin = input.position, start = begin;
 		int length = buffer.length();
 
 		while (start < length) {
@@ -231,7 +233,7 @@ public class Parser {
 			}
 		}
 
-		input.t2 = end;
+		input.position = end;
 		return new Token(buffer.substring(begin, start), buffer.substring(
 				start, end));
 	}
