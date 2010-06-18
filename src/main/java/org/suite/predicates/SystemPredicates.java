@@ -46,6 +46,7 @@ public class SystemPredicates {
 		addPredicate("is.string", new EvalPredicates.IsString());
 		addPredicate("is.tree", new EvalPredicates.IsTree());
 
+		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("exec", new IoPredicates.Exec());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
