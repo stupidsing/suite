@@ -180,7 +180,6 @@ public class Parser {
 		String buffer = input.t1;
 		int begin = input.t2, start = begin;
 		int length = buffer.length();
-		char ch;
 
 		while (start < length) {
 			if (Character.isWhitespace(buffer.charAt(start))) {
@@ -189,14 +188,11 @@ public class Parser {
 			}
 
 			if (start + 1 < length) {
-				ch = buffer.charAt(start);
-				char ch1 = buffer.charAt(start + 1);
+				char ch = buffer.charAt(start), ch1 = buffer.charAt(start + 1);
 
-				String endTag = null;
-				if (ch == '-' && ch1 == '-')
-					endTag = "\n";
-				else if (ch == '/' && ch1 == '*')
-					endTag = "*/";
+				String endTag = (ch == '-' && ch1 == '-') ? "\n"
+						: (ch == '/' && ch1 == '*') ? "*/" //
+								: null;
 
 				if (endTag != null) {
 					int pos = buffer.indexOf(endTag, start + 2);
@@ -210,7 +206,7 @@ public class Parser {
 
 		int end = start;
 		if (end < length) {
-			ch = buffer.charAt(end);
+			char ch = buffer.charAt(end);
 
 			if (Character.isJavaIdentifierStart(ch))
 				while (end < length
