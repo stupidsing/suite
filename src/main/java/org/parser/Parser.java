@@ -54,7 +54,7 @@ public class Parser {
 		construct.nodes.add(parseExpression(input));
 		expect(input, "then", construct);
 		construct.nodes.add(parseExpression(input));
-		if (match(input, "else", construct) != null)
+		if (addIfMatch(input, "else", construct) != null)
 			construct.nodes.add(parseExpression(input));
 		return construct;
 	}
@@ -94,19 +94,19 @@ public class Parser {
 		if (n < operators.length) {
 			Operator operator = operators[n];
 			node = parseExpression(input, n + 1);
-			Token token;
 
 			if (!operator.isRightPrecedence) {
-				if ((token = match(input, operator.name)) != null)
-					node = new Construct(operator.type, Arrays.asList(node,
-							token, parseExpression(input, n)));
+				if ((construct = createIfMatch(input, operator.type, //
+						Arrays.asList(node), operator.name)) != null) {
+					construct.nodes.add(parseExpression(input, n));
+					node = construct;
+				}
 			} else {
-				Construct rightest = null;
+				Construct rightest = null, subTree;
 				Node lastNode = node;
 
-				while ((token = match(input, operator.name)) != null) {
-					Construct subTree = new Construct(operator.type, Arrays
-							.asList(lastNode, token, null));
+				while ((subTree = createIfMatch(input, operator.type, //
+						Arrays.asList(lastNode), operator.name)) != null) {
 					if (rightest != null)
 						rightest.nodes.set(2, subTree);
 					else
@@ -121,84 +121,98 @@ public class Parser {
 			}
 
 			return node;
-		} else if ((node = matchIfWord(input, new Construct(Type.Identifier))) != null)
+		} else if ((node = addIfWord(input, new Construct(Type.Identifier))) != null)
 			;
-		else if ((node = construct = match(input, Type.Paren, "(")) != null) {
+		else if ((node = construct = createIfMatch(input, Type.Paren, "(")) != null) {
 			construct.nodes.add(parseExpression(input));
 			expect(input, ")", construct);
 		} else
-			node = getToken(input);
+			node = grabToken(input);
 
 		return node;
 	}
 
 	private void expect(InputBuffer input, String toMatch, Construct construct) {
-		Token token = match(input, toMatch, construct);
+		Token token = addIfMatch(input, toMatch, construct);
 		if (token == null)
 			throw new RuntimeException("EXPECT " + toMatch);
 	}
 
-	private Construct match(InputBuffer input, Type type, String toMatch) {
-		Construct construct = new Construct(type);
-		return match(input, toMatch, construct) != null ? construct : null;
+	private Construct createIfMatch(InputBuffer input, Type type, String toMatch) {
+		return createIfMatch(input, type, null, toMatch);
 	}
 
-	private Token match(InputBuffer input, String toMatch) {
-		return match(input, toMatch, new Construct());
+	private Construct createIfMatch(InputBuffer input, Type type,
+			List<Node> before, String toMatch) {
+		Construct construct;
+		if (before != null)
+			construct = new Construct(type, new ArrayList<Node>(before));
+		else
+			construct = new Construct(type);
+		return addIfMatch(input, toMatch, construct) != null ? construct : null;
 	}
 
-	private Token match(InputBuffer input, final String toMatch,
+	private Token addIfMatch(InputBuffer input, final String toMatch,
 			Construct construct) {
-		return match(input, new IoProcess<String, Boolean, RuntimeException>() {
-			public Boolean perform(String s) throws RuntimeException {
-				return s.equalsIgnoreCase(toMatch);
-			}
-		}, construct);
+		return addByCriteria(input,
+				new IoProcess<String, Boolean, RuntimeException>() {
+					public Boolean perform(String s) throws RuntimeException {
+						return s.equalsIgnoreCase(toMatch);
+					}
+				}, construct);
 	}
 
-	private Token matchIfWord(InputBuffer input, Construct construct) {
-		return match(input, new IoProcess<String, Boolean, RuntimeException>() {
-			public Boolean perform(String s) throws RuntimeException {
-				return isWord(s);
-			}
-		}, construct);
+	private Token addIfWord(InputBuffer input, Construct construct) {
+		return addByCriteria(input,
+				new IoProcess<String, Boolean, RuntimeException>() {
+					public Boolean perform(String s) throws RuntimeException {
+						return isWord(s);
+					}
+				}, construct);
+	}
+
+	private Token addByCriteria(InputBuffer input,
+			IoProcess<String, Boolean, RuntimeException> iop,
+			Construct construct) {
+		Token token = match(input, iop);
+		if (token != null)
+			construct.nodes.add(token);
+		return token;
 	}
 
 	private Token match(InputBuffer input,
-			IoProcess<String, Boolean, RuntimeException> check,
-			Construct construct) {
+			IoProcess<String, Boolean, RuntimeException> check) {
 		int preIndex = input.position;
-		Token token = getToken(input);
-		if (check.perform(token.token)) {
-			construct.nodes.add(token);
+		Token token = grabToken(input);
+		if (check.perform(token.token))
 			return token;
-		} else {
+		else {
 			input.position = preIndex; // Pretend as if nothing happened
 			return null;
 		}
 	}
 
-	private Token getToken(InputBuffer input) {
+	private Token grabToken(InputBuffer input) {
 		String buffer = input.buffer;
-		int begin = input.position, start = begin;
+		int start = input.position, begin = start;
 		int length = buffer.length();
 
-		while (start < length) {
-			if (Character.isWhitespace(buffer.charAt(start))) {
-				start++;
+		while (begin < length) {
+			if (Character.isWhitespace(buffer.charAt(begin))) {
+				begin++;
 				continue;
 			}
 
-			if (start + 1 < length) {
-				char ch = buffer.charAt(start), ch1 = buffer.charAt(start + 1);
+			if (begin + 1 < length) {
+				char ch = buffer.charAt(begin), ch1 = buffer.charAt(begin + 1);
 
 				String endTag = (ch == '-' && ch1 == '-') ? "\n"
 						: (ch == '/' && ch1 == '*') ? "*/" //
 								: null;
 
 				if (endTag != null) {
-					int pos = buffer.indexOf(endTag, start + 2);
-					start = (pos != -1) ? pos + endTag.length() : length;
+					int pos = buffer.indexOf(endTag, begin + 2);
+					begin = (pos != -1) ? pos + endTag.length() : length;
 					continue;
 				}
 			}
@@ -206,7 +220,7 @@ public class Parser {
 			break;
 		}
 
-		int end = start;
+		int end = begin;
 		if (end < length) {
 			char ch = buffer.charAt(end);
 
@@ -234,8 +248,8 @@ public class Parser {
 		}
 
 		input.position = end;
-		return new Token(buffer.substring(begin, start), buffer.substring(
-				start, end));
+		return new Token(buffer.substring(start, begin), buffer.substring(
+				begin, end));
 	}
 
 	private boolean isWord(String s) {
