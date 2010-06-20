@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.suite.doer.Prover;
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;

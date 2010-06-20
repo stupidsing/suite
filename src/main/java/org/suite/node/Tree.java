@@ -2,7 +2,7 @@ package org.suite.node;
 
 import java.util.Collection;
 
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.util.Util;
 
 public class Tree extends Node {

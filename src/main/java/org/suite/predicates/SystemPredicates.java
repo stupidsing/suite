@@ -7,7 +7,7 @@ import java.util.Stack;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.doer.Prover.Backtracks;
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.suite.kb.Prototype;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;

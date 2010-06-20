@@ -9,7 +9,7 @@ import org.suite.node.Reference;
 
 public class ComparerTest {
 
-	private Comparer comparer = new Comparer();
+	private Comparer comparer = Comparer.comparer;
 
 	@Test
 	public void testCompareInt() {

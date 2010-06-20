@@ -11,7 +11,7 @@ import org.suite.node.Tree;
 
 public class Generalizer {
 
-	public static final String VARIABLEPREFIX = ".";
+	public static final String variablePrefix = ".";
 
 	private static final Node WILDCARD = Atom.create("_");
 	private static final Node CUT = Atom.create("!");
@@ -75,7 +75,7 @@ public class Generalizer {
 
 	private static boolean isVariable(Node node) {
 		return node instanceof Atom
-				&& ((Atom) node).getName().startsWith(VARIABLEPREFIX);
+				&& ((Atom) node).getName().startsWith(variablePrefix);
 	}
 
 	private static boolean isCut(Node node) {

@@ -13,6 +13,8 @@ import org.suite.node.Tree;
 
 public class Comparer implements Comparator<Node> {
 
+	public final static Comparer comparer = new Comparer();
+
 	private static Map<Class<? extends Node>, Integer> order = new HashMap<Class<? extends Node>, Integer>();
 	static {
 		order.put(Reference.class, 0);

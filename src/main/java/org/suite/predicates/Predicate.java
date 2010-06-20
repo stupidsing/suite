@@ -3,7 +3,7 @@ package org.suite.predicates;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 

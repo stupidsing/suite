@@ -8,13 +8,13 @@ import org.junit.runners.Suite;
 import org.suite.ComparerTest;
 import org.suite.FormatterTest;
 import org.suite.ImportTest;
-import org.suite.TermParserTest;
+import org.suite.ParserTest;
 import org.suite.ProverTest;
 import org.util.LogUtil;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses( { B_TreeTest.class, ComparerTest.class,
-		FormatterTest.class, ImportTest.class, TermParserTest.class,
+		FormatterTest.class, ImportTest.class, ParserTest.class,
 		ProverTest.class })
 public class TestSuite {
 

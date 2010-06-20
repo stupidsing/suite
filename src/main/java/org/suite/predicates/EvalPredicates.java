@@ -20,7 +20,7 @@ import org.util.Util;
 
 public class EvalPredicates {
 
-	private static Comparer comparer = new Comparer();
+	private static Comparer comparer = Comparer.comparer;
 
 	public static class Bound implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {

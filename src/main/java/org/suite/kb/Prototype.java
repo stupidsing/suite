@@ -1,7 +1,7 @@
 package org.suite.kb;
 
 import org.suite.doer.Generalizer;
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Node;
 import org.suite.node.Reference;

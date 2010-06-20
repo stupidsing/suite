@@ -36,6 +36,13 @@ public class Atom extends Node {
 		return atom;
 	}
 
+	public int compareTo(Object object) {
+		if (object instanceof Atom)
+			return name.compareTo(((Atom) object).name);
+		else
+			return 1;
+	}
+
 	public String getName() {
 		return name;
 	}

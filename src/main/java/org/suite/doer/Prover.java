@@ -6,7 +6,7 @@ import java.util.Stack;
 
 import org.suite.Binder;
 import org.suite.Journal;
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;

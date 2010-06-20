@@ -1,7 +1,7 @@
 package org.suite.doer;
 
-import org.suite.doer.TermParser.Assoc;
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Assoc;
+import org.suite.doer.Parser.Operator;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -81,7 +81,7 @@ public class Formatter {
 			if (needParentheses)
 				sb.append(')');
 		} else if (node instanceof Reference)
-			sb.append(Generalizer.VARIABLEPREFIX + ((Reference) node).getId());
+			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
 		else
 			sb.append(node.getClass().getSimpleName() + '@'
 					+ Integer.toHexString(node.hashCode()));

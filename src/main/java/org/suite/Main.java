@@ -8,9 +8,9 @@ import java.io.InputStreamReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Generalizer;
-import org.suite.doer.TermParser;
+import org.suite.doer.Parser;
 import org.suite.doer.Prover;
-import org.suite.doer.TermParser.Operator;
+import org.suite.doer.Parser.Operator;
 import org.suite.doer.Prover.Backtracks;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
@@ -80,7 +80,7 @@ public class Main {
 
 			final Generalizer generalizer = new Generalizer();
 			final int count[] = { 0 };
-			Node node = new TermParser().parse(input.trim());
+			Node node = new Parser().parse(input.trim());
 			node = generalizer.generalize(node);
 
 			switch (type) {
@@ -112,7 +112,7 @@ public class Main {
 	private void importAuto(RuleSet rs) throws IOException {
 		ClassLoader cl = getClass().getClassLoader();
 		InputStream is = cl.getResourceAsStream("auto.sl");
-		rs.importFrom(new TermParser().parse(is));
+		rs.importFrom(new Parser().parse(is));
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
