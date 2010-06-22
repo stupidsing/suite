@@ -1,7 +1,6 @@
 package org.fp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,28 +8,30 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.suite.doer.Comparer;
+import org.suite.doer.Formatter;
 import org.suite.doer.Parser.Operator;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.node.Reference;
+import org.suite.node.Str;
 import org.suite.node.Tree;
 
 public class Interpreter {
 
 	private Map<Atom, Node> functions = new TreeMap<Atom, Node>();
 
-	private static final Node WILDCARD = Atom.create("_");
-
 	private static final Atom ELSE = Atom.create("else");
 	private static final Atom FALSE = Atom.create("false");
-	private static final Atom LET = Atom.create("let");
+	private static final Atom LEFT = Atom.create("left");
+	private static final Atom OPER = Atom.create("oper");
+	private static final Atom PLAIN = Atom.create("p");
 	private static final Atom IF = Atom.create("if");
-	private static final Atom IN = Atom.create("in");
+	private static final Atom RIGHT = Atom.create("right");
 	private static final Atom THEN = Atom.create("then");
+	private static final Atom TREE = Atom.create("tree");
 	private static final Atom TRUE = Atom.create("true");
 
 	/**
-	 * Interpretes a function call, by expanding the node and simplifying it
+	 * Interprets a function call, by expanding the node and simplifying it
 	 * repeatedly.
 	 */
 	public Node evaluate(Node node) {
@@ -47,6 +48,10 @@ public class Interpreter {
 		return node;
 	}
 
+	/**
+	 * Expands a node using the function mappings as much as possible, until we
+	 * recur into the same construct.
+	 */
 	private Node expand(Node node) {
 		return expand(node, new TreeSet<Atom>());
 	}
@@ -60,7 +65,7 @@ public class Interpreter {
 				expanded.add(atom);
 				Node definition = functions.get(atom);
 				if (definition != null)
-					return expand(generalize(definition), expanded);
+					return expand(definition, expanded);
 			}
 		} else if (node instanceof Tree) {
 			Tree t = (Tree) node;
@@ -74,37 +79,60 @@ public class Interpreter {
 	}
 
 	private Node simplify(Node node) {
+
+		// Late and lazy evaluation; evaluates a reference once and for all
+		if (node instanceof EvaluatableReference) {
+			EvaluatableReference reference = (EvaluatableReference) node;
+			if (!reference.evaluated)
+				reference.bound(evaluate(reference.finalNode()));
+		}
+
 		Tree tree = Tree.decompose(node);
+		if (tree != null)
+			node = simplifyTree(tree);
+		return node;
+	}
 
-		if (tree.getOperator() == Operator.EQUAL_)
-			return eq(tree.getLeft(), tree.getRight());
-		else if (tree.getOperator() == Operator.SEP___) {
-			List<Node> list = flatten(node);
+	private Node simplifyTree(Tree tree) {
+		Operator operator = tree.getOperator();
+		Node l = tree.getLeft(), r = tree.getRight();
+
+		switch (operator) {
+		case EQUAL_:
+			return eq(simplify(l), simplify(r));
+		case SEP___:
+			List<Node> list = flatten(tree);
 			Node name = list.get(0);
-
 			if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
 				return ifThenElse(list.get(1), list.get(3), list.get(5));
-			else if (name == LET && list.get(2) == IN)
-				return letIn(list.get(1), list.get(3));
-		} else if (tree.getOperator() == Operator.DIVIDE) { // Substitution
-			Node definition = tree.getLeft();
-			Node parameter = tree.getRight();
-			Tree lambda = Tree.decompose(definition, Operator.INDUCE);
+			else if (name == PLAIN)
+				return list.get(1);
+			break;
+		case DIVIDE: // Substitution
+			if (l == TREE || l == LEFT || l == RIGHT || l == OPER)
+				return doTreeFunction(l, r);
+			else {
+				Tree lambda = Tree.decompose(l, Operator.INDUCE);
+				Node lazy = new EvaluatableReference(r);
 
-			if (lambda != null && bind(lambda.getLeft(), parameter))
-				return lambda.getRight();
+				if (lambda != null)
+					return replace(lambda.getRight(), lambda.getLeft(), lazy);
+			}
+			break;
 		}
 
-		if (tree != null) {
+		throw new RuntimeException("Cannot simplify " + Formatter.dump(tree));
+	}
 
-			// Simplifies left and right individually
-			Node l = tree.getLeft(), r = tree.getRight();
-			Node gl = simplify(l), gr = simplify(r);
-			if (gl != l || gr != r)
-				return new Tree(tree.getOperator(), gl, gr);
-		}
+	private Node doTreeFunction(Node name, Node parameter) {
+		Tree t = Tree.decompose(parameter);
 
-		return node;
+		if (name == TREE)
+			return t != null ? TRUE : FALSE;
+		else if (name == OPER)
+			return new Str(t.getOperator().name);
+		else
+			return name == LEFT ? t.getLeft() : t.getRight();
 	}
 
 	private Atom eq(Node left, Node right) {
@@ -115,68 +143,20 @@ public class Interpreter {
 		return evaluate(if_) == TRUE ? then_ : else_;
 	}
 
-	private Node letIn(Node let_, Node in_) {
-		for (Node assignment : flatten(let_, Operator.AND___)) {
-			Tree t = Tree.decompose(assignment, Operator.EQUAL_);
-			assert bind(t.getLeft(), t.getRight());
-		}
-		return in_;
-	}
-
-	private static Node generalize(Node node) {
-		Map<Node, Reference> variables = new HashMap<Node, Reference>();
-
+	private static Node replace(Node node, Node from, Node to) {
 		node = node.finalNode();
 
-		if (node == WILDCARD)
-			return new Reference();
-		else if (node instanceof Atom) {
-			Reference reference;
-			if (!variables.containsKey(node)) {
-				reference = new Reference();
-				variables.put(node, reference);
-			} else
-				reference = variables.get(node);
-			return reference;
-		} else if (node instanceof Tree) {
+		if (node == from)
+			return to;
+		else if (node instanceof Tree) {
 			Tree t = (Tree) node;
 			Node l = t.getLeft(), r = t.getRight();
-			Node gl = generalize(l), gr = generalize(r);
+			Node gl = replace(l, from, to), gr = replace(r, from, to);
 			if (gl != l || gr != r)
 				return new Tree(t.getOperator(), gl, gr);
 		}
 
 		return node;
-	}
-
-	private static boolean bind(Node n1, Node n2) {
-		n1 = n1.finalNode();
-		n2 = n2.finalNode();
-
-		if (n1 instanceof Reference) {
-			((Reference) n1).bound(n2);
-			return true;
-		} else if (n2 instanceof Reference) {
-			((Reference) n2).bound(n1);
-			return true;
-		}
-
-		if (n1 == n2)
-			return true;
-
-		Class<? extends Node> clazz1 = n1.getClass();
-		Class<? extends Node> clazz2 = n2.getClass();
-
-		if (clazz1 != clazz2)
-			return false;
-		else if (clazz1 == Tree.class) {
-			Tree t1 = (Tree) n1;
-			Tree t2 = (Tree) n2;
-			return t1.getOperator() == t2.getOperator()
-					&& bind(t1.getLeft(), t2.getLeft())
-					&& bind(t1.getRight(), t2.getRight());
-		} else
-			return Comparer.comparer.compare(n1, n2) == 0;
 	}
 
 	private static List<Node> flatten(Node node) {
