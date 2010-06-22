@@ -4,9 +4,9 @@ public class Int extends Node {
 
 	private int number;
 
-	private static final int POOLMIN = -256;
-	private static final int POOLMAX = 256;
-	private static final Int pool[] = new Int[POOLMAX - POOLMIN];
+	private static final int poolLo = -256;
+	private static final int poolHi = 256;
+	private static final Int pool[] = new Int[poolHi - poolLo];
 
 	private Int(int number) {
 		this.number = number;
@@ -28,8 +28,8 @@ public class Int extends Node {
 
 	public static Int create(int i) {
 		Int ret;
-		if (POOLMIN <= i && POOLMAX < i) {
-			int index = i - POOLMIN;
+		if (poolLo <= i && poolHi < i) {
+			int index = i - poolLo;
 			ret = pool[index];
 			if (ret == null)
 				ret = pool[index] = new Int(i);
