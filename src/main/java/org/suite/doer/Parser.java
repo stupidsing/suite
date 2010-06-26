@@ -186,13 +186,14 @@ public class Parser {
 
 	private static int search(String s, Operator operator) {
 		String name = operator.name;
+		boolean isRightAssoc = operator.assoc == Assoc.RIGHT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
 		int quote = 0, depth = 0;
 
 		for (int i = 0; i <= end; i++) {
-			int pos = (operator.assoc == Assoc.RIGHT) ? (end - i) : i;
-			char c = s.charAt(pos);
+			int pos = isRightAssoc ? end - i : i;
+			char c = s.charAt(pos + (isRightAssoc ? nameLength - 1 : 0));
 			quote = checkQuote(quote, c);
 
 			if (quote == 0) {

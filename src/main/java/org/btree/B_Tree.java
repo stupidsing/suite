@@ -68,6 +68,7 @@ public class B_Tree<Key, Value> {
 		this.root = root;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Value get(Key key) {
 		Stack<Pair<Page, Integer>> traverse = traverse(key);
 		Pair<Page, Integer> last = traverse.peek();
@@ -176,8 +177,8 @@ public class B_Tree<Key, Value> {
 				if (lsize <= half) // Merge
 					merge(page, lp, childPage, index - 1);
 				else { // Shift
-					childPage.keyPointers.add(0, lp.keyPointers
-							.remove(lp.keyPointers.size() - 1));
+					childPage.keyPointers.add(0,
+							lp.keyPointers.remove(lp.keyPointers.size() - 1));
 					save(childPage);
 					save(lp);
 					page.keyPointers.get(index - 1).t1 = largest(lp);
@@ -205,6 +206,7 @@ public class B_Tree<Key, Value> {
 		save(page);
 	}
 
+	@SuppressWarnings("unchecked")
 	private Page loadPageIfExists(Page parent, int index) {
 		if (index >= 0 && index < parent.keyPointers.size()) {
 			Pointer pointer = parent.keyPointers.get(index).t2;
@@ -227,6 +229,7 @@ public class B_Tree<Key, Value> {
 		parent.keyPointers.remove(index);
 	}
 
+	@SuppressWarnings("unchecked")
 	private Stack<Pair<Page, Integer>> traverse(Key key) {
 		Stack<Pair<Page, Integer>> walked = Util.createStack();
 		Page page = null;
@@ -272,6 +275,7 @@ public class B_Tree<Key, Value> {
 		dump(w, "", root);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void dump(PrintStream w, String pfx, int pageNo) {
 		Page page = persister.load(pageNo);
 		for (KeyPointer keyPointer : page.keyPointers) {

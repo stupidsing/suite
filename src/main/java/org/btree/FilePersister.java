@@ -132,9 +132,11 @@ public class FilePersister<Value> implements
 				buffer.putInt(keyPtr.t1);
 
 				if (keyPtr.t2 instanceof B_Tree<?, ?>.Branch) {
+					@SuppressWarnings("unchecked")
 					int branch = ((B_Tree<Integer, Integer>.Branch) keyPtr.t2).branch;
 					buffer.putInt(branch);
 				} else if (keyPtr.t2 instanceof B_Tree<?, ?>.Leaf) {
+					@SuppressWarnings("unchecked")
 					Value value = ((B_Tree<Integer, Value>.Leaf) keyPtr.t2).value;
 					accessor.write(buffer, value);
 				}

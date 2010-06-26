@@ -8,9 +8,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.suite.doer.Comparer;
-import org.suite.doer.Formatter;
 import org.suite.doer.Parser.Operator;
 import org.suite.node.Atom;
+import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
@@ -35,17 +35,21 @@ public class Interpreter {
 	 * repeatedly.
 	 */
 	public Node evaluate(Node node) {
-		Node lastExpanded = null;
+		Node lastExpanded = Atom.nil;
 
 		while (Comparer.comparer.compare(lastExpanded, node) != 0) {
 			node = expand(lastExpanded = node);
 
-			Node lastSimplified = null;
+			Node lastSimplified = Atom.nil;
 			while (Comparer.comparer.compare(lastSimplified, node) != 0)
 				node = simplify(lastSimplified = node);
 		}
 
 		return node;
+	}
+
+	public void addFunction(Atom head, Node body) {
+		functions.put(head, body);
 	}
 
 	/**
@@ -96,10 +100,23 @@ public class Interpreter {
 	private Node simplifyTree(Tree tree) {
 		Operator operator = tree.getOperator();
 		Node l = tree.getLeft(), r = tree.getRight();
+		Int i1, i2;
 
 		switch (operator) {
+		case AND___:
+			return (evaluate(l) == TRUE && evaluate(r) == TRUE) ? TRUE : FALSE;
+		case OR____:
+			return (evaluate(l) == TRUE || evaluate(r) == TRUE) ? TRUE : FALSE;
+		case PLUS__:
+			i1 = (Int) evaluate(l);
+			i2 = (Int) evaluate(r);
+			return Int.create(i1.getNumber() + i2.getNumber());
+		case MINUS_:
+			i1 = (Int) evaluate(l);
+			i2 = (Int) evaluate(r);
+			return Int.create(i1.getNumber() - i2.getNumber());
 		case EQUAL_:
-			return eq(simplify(l), simplify(r));
+			return eq(evaluate(l), evaluate(r));
 		case SEP___:
 			List<Node> list = flatten(tree);
 			Node name = list.get(0);
@@ -121,7 +138,9 @@ public class Interpreter {
 			break;
 		}
 
-		throw new RuntimeException("Cannot simplify " + Formatter.dump(tree));
+		// throw new RuntimeException("Cannot simplify " +
+		// Formatter.dump(tree));
+		return tree;
 	}
 
 	private Node doTreeFunction(Node name, Node parameter) {
