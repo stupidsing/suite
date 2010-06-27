@@ -25,7 +25,9 @@ public class Interpreter {
 	private static final Atom OPER = Atom.create("oper");
 	private static final Atom PLAIN = Atom.create("p");
 	private static final Atom IF = Atom.create("if");
+	private static final Atom NOT = Atom.create("not");
 	private static final Atom RIGHT = Atom.create("right");
+	private static final Atom SWITCH = Atom.create("switch");
 	private static final Atom THEN = Atom.create("then");
 	private static final Atom TREE = Atom.create("tree");
 	private static final Atom TRUE = Atom.create("true");
@@ -100,32 +102,19 @@ public class Interpreter {
 	private Node simplifyTree(Tree tree) {
 		Operator operator = tree.getOperator();
 		Node l = tree.getLeft(), r = tree.getRight();
-		Int i1, i2;
 
-		switch (operator) {
-		case AND___:
-			return (evaluate(l) == TRUE && evaluate(r) == TRUE) ? TRUE : FALSE;
-		case OR____:
-			return (evaluate(l) == TRUE || evaluate(r) == TRUE) ? TRUE : FALSE;
-		case PLUS__:
-			i1 = (Int) evaluate(l);
-			i2 = (Int) evaluate(r);
-			return Int.create(i1.getNumber() + i2.getNumber());
-		case MINUS_:
-			i1 = (Int) evaluate(l);
-			i2 = (Int) evaluate(r);
-			return Int.create(i1.getNumber() - i2.getNumber());
-		case EQUAL_:
-			return eq(evaluate(l), evaluate(r));
-		case SEP___:
+		if (operator == Operator.SEP___) {
 			List<Node> list = flatten(tree);
 			Node name = list.get(0);
 			if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
 				return ifThenElse(list.get(1), list.get(3), list.get(5));
+			else if (name == SWITCH)
+				return doSwitch(list);
+			else if (name == NOT)
+				return evaluate(list.get(1)) == TRUE ? FALSE : TRUE;
 			else if (name == PLAIN)
 				return list.get(1);
-			break;
-		case DIVIDE: // Substitution
+		} else if (operator == Operator.DIVIDE) { // Substitution
 			if (l == TREE || l == LEFT || l == RIGHT || l == OPER)
 				return doTreeFunction(l, r);
 			else {
@@ -135,11 +124,35 @@ public class Interpreter {
 				if (lambda != null)
 					return replace(lambda.getRight(), lambda.getLeft(), lazy);
 			}
-			break;
+		} else {
+			l = evaluate(l);
+			r = evaluate(r);
+
+			switch (operator) {
+			case AND___:
+				return l == TRUE && r == TRUE ? TRUE : FALSE;
+			case OR____:
+				return l == TRUE || r == TRUE ? TRUE : FALSE;
+			case LT____:
+				return getNumber(l) < getNumber(r) ? TRUE : FALSE;
+			case LE____:
+				return getNumber(l) <= getNumber(r) ? TRUE : FALSE;
+			case GT____:
+				return getNumber(l) > getNumber(r) ? TRUE : FALSE;
+			case GE____:
+				return getNumber(l) >= getNumber(r) ? TRUE : FALSE;
+			case PLUS__:
+				return Int.create(getNumber(l) + getNumber(r));
+			case MINUS_:
+				return Int.create(getNumber(l) - getNumber(r));
+			case EQUAL_:
+				return eq(l, r);
+			}
 		}
 
 		// throw new RuntimeException("Cannot simplify " +
 		// Formatter.dump(tree));
+
 		return tree;
 	}
 
@@ -160,6 +173,19 @@ public class Interpreter {
 
 	private Node ifThenElse(Node if_, Node then_, Node else_) {
 		return evaluate(if_) == TRUE ? then_ : else_;
+	}
+
+	private Node doSwitch(List<Node> list) {
+		int last = list.size() - 1;
+		for (int i = 1; i < last; i++) {
+			Tree t = Tree.decompose(list.get(i), Operator.INDUCE);
+			if (t != null) {
+				if (evaluate(t.getLeft()) == TRUE)
+					return evaluate(t.getRight());
+			} else
+				throw new RuntimeException("Bad switch definition");
+		}
+		return evaluate(list.get(last));
 	}
 
 	private static Node replace(Node node, Node from, Node to) {
@@ -193,6 +219,10 @@ public class Interpreter {
 
 		nodes.add(node);
 		return nodes;
+	}
+
+	private int getNumber(Node node) {
+		return ((Int) node).getNumber();
 	}
 
 }
