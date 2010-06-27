@@ -48,6 +48,7 @@ public class Generalizer {
 	public String dumpVariables() {
 		boolean first = true;
 		StringBuilder sb = new StringBuilder();
+
 		for (Entry<Node, Reference> entry : variables.entrySet()) {
 			if (first)
 				first = false;

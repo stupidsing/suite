@@ -41,8 +41,8 @@ public class Comparer implements Comparator<Node> {
 			else if (clazz1 == Tree.class) {
 				Tree t1 = (Tree) n1;
 				Tree t2 = (Tree) n2;
-				int c = t1.getOperator().precedence
-						- t2.getOperator().precedence;
+				int c = t1.getOperator().getPrecedence()
+						- t2.getOperator().getPrecedence();
 				if (c == 0) {
 					c = compare(t1.getLeft(), t2.getLeft());
 					if (c == 0)

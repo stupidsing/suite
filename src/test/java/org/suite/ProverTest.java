@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.suite.doer.Parser;
+import org.suite.doer.TermParser;
 import org.suite.kb.RuleSet;
 
 public class ProverTest {
@@ -79,7 +79,7 @@ public class ProverTest {
 	}
 
 	private void addRule(RuleSet rs, String s) {
-		rs.addRule(new Parser().parse(s));
+		rs.addRule(new TermParser().parse(s));
 	}
 
 	private boolean proveThis(String s) {

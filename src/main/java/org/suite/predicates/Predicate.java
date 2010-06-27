@@ -3,7 +3,7 @@ package org.suite.predicates;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.suite.doer.Parser.Operator;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 
@@ -15,7 +15,7 @@ public class Predicate {
 		Tree tree;
 
 		for (int i = 1; i < n; i++)
-			if ((tree = Tree.decompose(node, Operator.AND___)) != null) {
+			if ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
 				results.add(tree.getLeft());
 				node = tree.getRight();
 			} else

@@ -6,8 +6,8 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Formatter;
-import org.suite.doer.Parser;
 import org.suite.doer.Prover;
+import org.suite.doer.TermParser;
 import org.suite.node.Node;
 import org.suite.predicates.SystemPredicates.SystemPredicate;
 
@@ -19,7 +19,7 @@ public class ImportPredicates {
 				Node params[] = Predicate.getParameters(ps, 1);
 				String filename = Formatter.display(params[1]);
 				InputStream is = new FileInputStream(filename);
-				prover.getRuleSet().importFrom(new Parser().parse(is));
+				prover.getRuleSet().importFrom(new TermParser().parse(is));
 				return true;
 			} catch (Exception ex) {
 				log.info(this, ex);

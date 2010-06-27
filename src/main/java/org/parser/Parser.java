@@ -1,4 +1,4 @@
-package org.suite.doer;
+package org.parser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.parser.Operator.Assoc;
 import org.suite.Context;
 import org.suite.Singleton;
 import org.suite.node.Atom;
@@ -20,54 +21,20 @@ public class Parser {
 
 	private Context localContext;
 
-	public enum Assoc { // Associativity
-		LEFT, RIGHT
-	};
-
-	public static enum Operator {
-		NEXT__("#", Assoc.LEFT), //
-		IS____(" :- ", Assoc.LEFT), //
-		INDUCE(" => ", Assoc.RIGHT), //
-		OR____(";", Assoc.LEFT), //
-		AND___(",", Assoc.LEFT), //
-		LE____(" <= ", Assoc.LEFT), //
-		LT____(" < ", Assoc.LEFT), //
-		GE____(" >= ", Assoc.LEFT), //
-		GT____(" > ", Assoc.LEFT), //
-		EQUAL_(" = ", Assoc.LEFT), //
-		PLUS__(" + ", Assoc.LEFT), //
-		MINUS_(" - ", Assoc.RIGHT), //
-		MULT__(" * ", Assoc.LEFT), //
-		DIVIDE(" / ", Assoc.RIGHT), //
-		SEP___(" ", Assoc.LEFT);
-
-		public final String name;
-		public final Assoc assoc;
-		public int precedence;
-
-		private Operator(String name, Assoc associativity) {
-			this.name = name;
-			this.assoc = associativity;
-		}
-
-		static {
-			int precedence = 0;
-			for (Operator operator : Operator.values())
-				operator.precedence = ++precedence;
-		}
-	}
+	private Operator operators[];
 
 	private static final String CLOSEGROUPCOMMENT = "=-";
 	private static final String OPENGROUPCOMMENT = "-=";
 	private static final String CLOSELINECOMMENT = "\n";
 	private static final String OPENLINECOMMENT = "--";
 
-	public Parser() {
-		this(Singleton.get().getGrandContext());
+	public Parser(Operator operators[]) {
+		this(Singleton.get().getGrandContext(), operators);
 	}
 
-	public Parser(Context context) {
+	public Parser(Context context, Operator operators[]) {
 		this.localContext = context;
+		this.operators = operators;
 	}
 
 	public Node parse(InputStream is) throws IOException {
@@ -94,12 +61,12 @@ public class Parser {
 		if (s.isEmpty())
 			return Atom.nil;
 
-		for (Operator operator : Operator.values()) {
+		for (Operator operator : operators) {
 			int pos = search(s, operator);
 
 			if (pos != -1) {
 				String l = s.substring(0, pos);
-				String r = s.substring(pos + operator.name.length());
+				String r = s.substring(pos + operator.getName().length());
 				return new Tree(operator, parseWithoutComments(l),
 						parseWithoutComments(r));
 			}
@@ -185,8 +152,8 @@ public class Parser {
 	}
 
 	private static int search(String s, Operator operator) {
-		String name = operator.name;
-		boolean isRightAssoc = operator.assoc == Assoc.RIGHT;
+		String name = operator.getName();
+		boolean isRightAssoc = operator.getAssoc() == Assoc.RIGHT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
 		int quote = 0, depth = 0;

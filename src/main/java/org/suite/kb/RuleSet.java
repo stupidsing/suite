@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.suite.doer.Prover;
-import org.suite.doer.Parser.Operator;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -42,7 +42,7 @@ public class RuleSet {
 		boolean result = true;
 		Tree tree;
 
-		while ((tree = Tree.decompose(node, Operator.NEXT__)) != null) {
+		while ((tree = Tree.decompose(node, TermOp.NEXT__)) != null) {
 			Rule rule = formRule(tree.getLeft());
 
 			if (rule.getHead() != Atom.nil)
@@ -66,7 +66,7 @@ public class RuleSet {
 	}
 
 	public static Rule formRule(Node node) {
-		Tree tree = Tree.decompose(node, Operator.IS____);
+		Tree tree = Tree.decompose(node, TermOp.IS____);
 		if (tree != null)
 			return new Rule(tree.getLeft(), tree.getRight());
 		else
@@ -76,7 +76,7 @@ public class RuleSet {
 	public static Node formClause(Rule rule) {
 		Node head = rule.getHead(), tail = rule.getTail();
 		if (tail != Atom.nil)
-			return new Tree(Operator.IS____, head, tail);
+			return new Tree(TermOp.IS____, head, tail);
 		else
 			return head;
 	}

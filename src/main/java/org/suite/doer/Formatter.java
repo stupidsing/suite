@@ -1,7 +1,8 @@
 package org.suite.doer;
 
-import org.suite.doer.Parser.Assoc;
-import org.suite.doer.Parser.Operator;
+import org.parser.Operator;
+import org.parser.Operator.Assoc;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -11,21 +12,21 @@ import org.suite.node.Tree;
 
 public class Formatter {
 
-	/**
-	 * Format the string to human audience.
-	 */
+	private Operator operators[];
+
+	public Formatter(Operator operators[]) {
+		this.operators = operators;
+	}
+
 	public static String display(Node node) {
-		return format(node, false);
+		return new Formatter(TermOp.values()).format(node, false);
 	}
 
-	/**
-	 * Format the string to machine audience.
-	 */
 	public static String dump(Node node) {
-		return format(node, true);
+		return new Formatter(TermOp.values()).format(node, true);
 	}
 
-	private static String format(Node node, boolean dump) {
+	private String format(Node node, boolean dump) {
 		StringBuilder sb = new StringBuilder();
 		format(node, 0, dump, sb);
 		return sb.toString();
@@ -43,7 +44,7 @@ public class Formatter {
 	 * @param sb
 	 *            Buffer to hold output.
 	 */
-	private static void format(Node node, int parentPrec, boolean dump,
+	private void format(Node node, int parentPrec, boolean dump,
 			StringBuilder sb) {
 		node = node.finalNode();
 
@@ -60,22 +61,25 @@ public class Formatter {
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Operator operator = tree.getOperator();
-			int ourPrec = operator.precedence;
+			int ourPrec = operator.getPrecedence();
 			boolean needParentheses = (ourPrec <= parentPrec);
 
 			int leftPrec = ourPrec, rightPrec = ourPrec;
-			if (operator.assoc == Assoc.LEFT)
+			if (operator.getAssoc() == Assoc.LEFT)
 				rightPrec--;
-			else if (operator.assoc == Assoc.RIGHT)
+			else if (operator.getAssoc() == Assoc.RIGHT)
 				leftPrec--;
 
 			if (needParentheses)
 				sb.append('(');
 
 			format(tree.getLeft(), leftPrec, dump, sb);
-			sb.append(operator.name);
-			if (!operator.name.endsWith(" "))
+
+			String name = operator.getName();
+			sb.append(name);
+			if (!name.endsWith(" "))
 				sb.append(' ');
+
 			format(tree.getRight(), rightPrec, dump, sb);
 
 			if (needParentheses)
@@ -87,14 +91,14 @@ public class Formatter {
 					+ Integer.toHexString(node.hashCode()));
 	}
 
-	public static String quoteAtomIfRequired(String s) {
+	public String quoteAtomIfRequired(String s) {
 		if (!s.isEmpty()) {
 			boolean quote = false;
 			if (s.indexOf('\'') != -1)
 				quote = true;
 
-			for (Operator operator : Operator.values())
-				if (s.contains(operator.name()))
+			for (Operator operator : operators)
+				if (s.contains(operator.getName()))
 					quote = true;
 
 			if (quote)
@@ -104,7 +108,7 @@ public class Formatter {
 		return s;
 	}
 
-	public static String quote(String s, String quote) {
+	public String quote(String s, String quote) {
 		s = s.replace(quote, quote + quote);
 		s = s.replace("%", "%%");
 		return quote + s + quote;

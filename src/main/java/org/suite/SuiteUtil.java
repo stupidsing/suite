@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.suite.doer.Generalizer;
-import org.suite.doer.Parser;
 import org.suite.doer.Prover;
+import org.suite.doer.TermParser;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
 
 public class SuiteUtil {
 
-	private static Parser parser = new Parser();
+	private static TermParser parser = new TermParser();
 
 	public static boolean proveThis(RuleSet rs, String s) {
 		Node node = parse(s);

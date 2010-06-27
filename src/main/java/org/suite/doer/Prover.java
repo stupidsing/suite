@@ -6,7 +6,7 @@ import java.util.Stack;
 
 import org.suite.Binder;
 import org.suite.Journal;
-import org.suite.doer.Parser.Operator;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
@@ -66,15 +66,15 @@ public class Prover {
 			if (tree != null) {
 				Node left = tree.getLeft(), right = tree.getRight();
 
-				switch (tree.getOperator()) {
+				switch ((TermOp) tree.getOperator()) {
 				case OR____:
-					Tree option = new Tree(Operator.AND___, right, remaining);
+					Tree option = new Tree(TermOp.AND___, right, remaining);
 					backtracks.push(new Env(option, journal.getPointInTime()));
 					query = left;
 					continue;
 				case AND___:
 					if (right != OK)
-						remaining = new Tree(Operator.AND___, right, remaining);
+						remaining = new Tree(TermOp.AND___, right, remaining);
 					query = left;
 					continue;
 				case EQUAL_:
@@ -157,13 +157,13 @@ public class Prover {
 			Node tail = generalizer.generalize(rule.getTail());
 
 			ret = //
-			new Tree(Operator.OR____, //
-					new Tree(Operator.AND___, //
-							new Tree(Operator.EQUAL_, //
+			new Tree(TermOp.OR____, //
+					new Tree(TermOp.AND___, //
+							new Tree(TermOp.EQUAL_, //
 									query, //
 									head //
 							), //
-							new Tree(Operator.AND___, //
+							new Tree(TermOp.AND___, //
 									tail, //
 									remaining)), //
 					ret);

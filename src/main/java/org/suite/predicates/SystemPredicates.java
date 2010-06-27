@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import org.parser.Operator;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.doer.Prover.Backtracks;
-import org.suite.doer.Parser.Operator;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
@@ -36,10 +37,10 @@ public class SystemPredicates {
 
 		addPredicate("bound", new EvalPredicates.Bound());
 		addPredicate("eval.js", new EvalPredicates.EvalJs());
-		addPredicate(Operator.LE____, new EvalPredicates.Compare());
-		addPredicate(Operator.LT____, new EvalPredicates.Compare());
-		addPredicate(Operator.GE____, new EvalPredicates.Compare());
-		addPredicate(Operator.GT____, new EvalPredicates.Compare());
+		addPredicate(TermOp.LE____, new EvalPredicates.Compare());
+		addPredicate(TermOp.LT____, new EvalPredicates.Compare());
+		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
+		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("is.atom", new EvalPredicates.IsAtom());
 		addPredicate("is.int", new EvalPredicates.IsInt());
@@ -61,7 +62,7 @@ public class SystemPredicates {
 		else {
 			Tree tree = Tree.decompose(query);
 			if (tree != null)
-				if (tree.getOperator() != Operator.SEP___)
+				if (tree.getOperator() != TermOp.SEP___)
 					predicate = predicates.get(new Tree(tree.getOperator()));
 				else {
 					predicate = predicates.get(tree.getLeft());
@@ -85,7 +86,7 @@ public class SystemPredicates {
 			final Stack<Node> stack = new Stack<Node>();
 			final Node params[] = Predicate.getParameters(ps, 3);
 
-			Tree subGoal = new Tree(Operator.AND___, params[1], new Station() {
+			Tree subGoal = new Tree(TermOp.AND___, params[1], new Station() {
 				public boolean run(Backtracks backtracks) {
 					stack.push(params[0].finalNode());
 					return false;
@@ -97,7 +98,7 @@ public class SystemPredicates {
 
 			Node result = Atom.nil;
 			while (!stack.isEmpty())
-				result = new Tree(Operator.AND___, stack.pop(), result);
+				result = new Tree(TermOp.AND___, stack.pop(), result);
 
 			return prover.bind(params[2], result);
 		}

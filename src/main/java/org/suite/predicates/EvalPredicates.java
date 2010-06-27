@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -31,7 +32,7 @@ public class EvalPredicates {
 	public static class Compare implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Tree tree = (Tree) ps;
-			switch (tree.getOperator()) {
+			switch ((TermOp) tree.getOperator()) {
 			case LE____:
 				return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
 			case LT____:
@@ -100,7 +101,7 @@ public class EvalPredicates {
 			if (tree != null) {
 				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
 
-				switch (tree.getOperator()) {
+				switch ((TermOp) tree.getOperator()) {
 				case PLUS__:
 					result = a + b;
 					break;

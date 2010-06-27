@@ -3,14 +3,14 @@ package org.fp;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.suite.doer.Parser;
+import org.suite.doer.TermParser;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
 
 public class InterpreterTest {
 
-	private Parser parser = new Parser();
+	private TermParser parser = new TermParser();
 	private Interpreter interpreter = new Interpreter();
 
 	@Test

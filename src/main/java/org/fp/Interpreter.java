@@ -7,8 +7,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.parser.Operator;
 import org.suite.doer.Comparer;
-import org.suite.doer.Parser.Operator;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -100,11 +101,11 @@ public class Interpreter {
 	}
 
 	private Node simplifyTree(Tree tree) {
-		Operator operator = tree.getOperator();
+		TermOp operator = (TermOp) tree.getOperator();
 		Node l = tree.getLeft(), r = tree.getRight();
 
-		if (operator == Operator.SEP___) {
-			List<Node> list = flatten(tree, Operator.SEP___);
+		if (operator == TermOp.SEP___) {
+			List<Node> list = flatten(tree, TermOp.SEP___);
 			Node name = list.get(0);
 			if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
 				return ifThenElse(list.get(1), list.get(3), list.get(5));
@@ -114,11 +115,11 @@ public class Interpreter {
 				return evaluate(list.get(1)) == TRUE ? FALSE : TRUE;
 			else if (name == PLAIN)
 				return list.get(1);
-		} else if (operator == Operator.DIVIDE) { // Substitution
+		} else if (operator == TermOp.DIVIDE) { // Substitution
 			if (l == TREE || l == LEFT || l == RIGHT || l == OPER)
 				return doTreeFunction(l, r);
 			else {
-				Tree lambda = Tree.decompose(l, Operator.INDUCE);
+				Tree lambda = Tree.decompose(l, TermOp.INDUCE);
 				Node lazy = new EvaluatableReference(r);
 
 				if (lambda != null)
@@ -162,7 +163,7 @@ public class Interpreter {
 		if (name == TREE)
 			return t != null ? TRUE : FALSE;
 		else if (name == OPER)
-			return new Str(t.getOperator().name);
+			return new Str(t.getOperator().getName());
 		else
 			return name == LEFT ? t.getLeft() : t.getRight();
 	}
@@ -178,7 +179,7 @@ public class Interpreter {
 	private Node doSwitch(List<Node> list) {
 		int last = list.size() - 1;
 		for (int i = 1; i < last; i++) {
-			Tree t = Tree.decompose(list.get(i), Operator.INDUCE);
+			Tree t = Tree.decompose(list.get(i), TermOp.INDUCE);
 			if (t != null) {
 				if (evaluate(t.getLeft()) == TRUE)
 					return evaluate(t.getRight());
