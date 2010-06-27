@@ -40,10 +40,17 @@ public class InterpreterTest {
 				"member",
 				"list => item => switch ("
 						+ " (tree / list, \",\" = oper / list) =>"
-						+ " if (item = left / list) true else (member / (right list) / item)"
+						+ " if (item = left / list) true else (member / (right / list) / item)"
 						+ " ) false)");
 
 		addFunction("join", "f1 => f2 => in => (f1 / (f2 / in))");
+
+		addFunction("fold", "func => list => (l => r => if (r = $) then l"
+				+ " else (func / l / (fold / func / r))"
+				+ " ) / (left / list) / (right / list)");
+
+		addFunction("map", "func => list => if (list = $) then $"
+				+ " else ((func / (left / list)), (fold / (right / list)))");
 	}
 
 	private void addFunction(String head, String body) {
