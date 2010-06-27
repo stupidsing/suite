@@ -21,11 +21,11 @@ public class Interpreter {
 
 	private static final Atom ELSE = Atom.create("else");
 	private static final Atom FALSE = Atom.create("false");
+	private static final Atom IF = Atom.create("if");
 	private static final Atom LEFT = Atom.create("left");
+	private static final Atom NOT = Atom.create("not");
 	private static final Atom OPER = Atom.create("oper");
 	private static final Atom PLAIN = Atom.create("p");
-	private static final Atom IF = Atom.create("if");
-	private static final Atom NOT = Atom.create("not");
 	private static final Atom RIGHT = Atom.create("right");
 	private static final Atom SWITCH = Atom.create("switch");
 	private static final Atom THEN = Atom.create("then");
@@ -104,7 +104,7 @@ public class Interpreter {
 		Node l = tree.getLeft(), r = tree.getRight();
 
 		if (operator == Operator.SEP___) {
-			List<Node> list = flatten(tree);
+			List<Node> list = flatten(tree, Operator.SEP___);
 			Node name = list.get(0);
 			if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
 				return ifThenElse(list.get(1), list.get(3), list.get(5));
@@ -202,10 +202,6 @@ public class Interpreter {
 		}
 
 		return node;
-	}
-
-	private static List<Node> flatten(Node node) {
-		return flatten(node, Operator.SEP___);
 	}
 
 	private static List<Node> flatten(Node node, Operator operator) {
