@@ -37,6 +37,10 @@ public class Parser {
 		this.operators = operators;
 	}
 
+	public Node parseClassPathFile(String fn) throws IOException {
+		return parse(getClass().getClassLoader().getResourceAsStream(fn));
+	}
+
 	public Node parse(InputStream is) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -129,7 +133,8 @@ public class Parser {
 					s = s.substring(0, pos) + s.substring(pos + 1);
 				pos++;
 			}
-		} catch (NumberFormatException ex) {
+		} catch (Exception ex) {
+			// StringIndexOutOfBoundsException, NumberFormatException
 			log.error(Util.currentClass(), ex);
 		}
 		return s;
