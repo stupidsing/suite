@@ -2,6 +2,8 @@ package org.fp;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.suite.doer.TermParser;
 import org.suite.node.Atom;
@@ -35,22 +37,8 @@ public class InterpreterTest {
 	}
 
 	@Test
-	public void testAddFunctions() {
-		addFunction(
-				"member",
-				"list => item => switch ("
-						+ " (tree / list, \",\" = oper / list) =>"
-						+ " if (item = left / list) true else (member / (right / list) / item)"
-						+ " ) false)");
-
-		addFunction("join", "f1 => f2 => in => (f1 / (f2 / in))");
-
-		addFunction("fold", "func => list => (l => r => if (r = $) then l"
-				+ " else (func / l / (fold / func / r))"
-				+ " ) / (left / list) / (right / list)");
-
-		addFunction("map", "func => list => if (list = $) then $"
-				+ " else ((func / (left / list)), (fold / (right / list)))");
+	public void testAddFunctions() throws IOException {
+		interpreter.addFunctions(parser.parseClassPathFile("auto.fp"));
 	}
 
 	private void addFunction(String head, String body) {

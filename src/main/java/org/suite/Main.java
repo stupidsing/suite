@@ -2,7 +2,6 @@ package org.suite;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
@@ -110,9 +109,7 @@ public class Main {
 	}
 
 	private void importAuto(RuleSet rs) throws IOException {
-		ClassLoader cl = getClass().getClassLoader();
-		InputStream is = cl.getResourceAsStream("auto.sl");
-		rs.importFrom(new TermParser().parse(is));
+		rs.importFrom(new TermParser().parseClassPathFile("auto.sl"));
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

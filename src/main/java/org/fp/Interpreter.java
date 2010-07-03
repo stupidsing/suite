@@ -51,6 +51,14 @@ public class Interpreter {
 		return node;
 	}
 
+	public void addFunctions(Node node) {
+		for (Node f : flatten(node, TermOp.NEXT__)) {
+			Tree tree = Tree.decompose(f, TermOp.EQUAL_);
+			if (tree != null)
+				addFunction((Atom) tree.getLeft(), tree.getRight());
+		}
+	}
+
 	public void addFunction(Atom head, Node body) {
 		functions.put(head, body);
 	}
@@ -125,29 +133,32 @@ public class Interpreter {
 				if (lambda != null)
 					return replace(lambda.getRight(), lambda.getLeft(), lazy);
 			}
-		} else {
-			l = evaluate(l);
-			r = evaluate(r);
+		} else if (operator == TermOp.AND___)
+			return evaluate(l) == TRUE && evaluate(r) == TRUE ? TRUE : FALSE;
+		else if (operator == TermOp.OR____)
+			return evaluate(l) == TRUE || evaluate(r) == TRUE ? TRUE : FALSE;
+		else if (operator == TermOp.EQUAL_)
+			return eq(evaluate(l), evaluate(r));
+		else {
+			int n1 = getNumber(evaluate(l)), n2 = getNumber(evaluate(r));
 
 			switch (operator) {
-			case AND___:
-				return l == TRUE && r == TRUE ? TRUE : FALSE;
-			case OR____:
-				return l == TRUE || r == TRUE ? TRUE : FALSE;
 			case LT____:
-				return getNumber(l) < getNumber(r) ? TRUE : FALSE;
+				return n1 < n2 ? TRUE : FALSE;
 			case LE____:
-				return getNumber(l) <= getNumber(r) ? TRUE : FALSE;
+				return n1 <= n2 ? TRUE : FALSE;
 			case GT____:
-				return getNumber(l) > getNumber(r) ? TRUE : FALSE;
+				return n1 > n2 ? TRUE : FALSE;
 			case GE____:
-				return getNumber(l) >= getNumber(r) ? TRUE : FALSE;
+				return n1 >= n2 ? TRUE : FALSE;
 			case PLUS__:
-				return Int.create(getNumber(l) + getNumber(r));
+				return Int.create(n1 + n2);
 			case MINUS_:
-				return Int.create(getNumber(l) - getNumber(r));
-			case EQUAL_:
-				return eq(l, r);
+				return Int.create(n1 - n2);
+			case MULT__:
+				return Int.create(n1 * n2);
+			case DIVIDE:
+				return Int.create(n1 / n2);
 			}
 		}
 

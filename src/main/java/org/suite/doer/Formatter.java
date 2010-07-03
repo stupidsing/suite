@@ -94,7 +94,7 @@ public class Formatter {
 	public String quoteAtomIfRequired(String s) {
 		if (!s.isEmpty()) {
 			boolean quote = false;
-			if (s.indexOf('\'') != -1)
+			if (s.indexOf('\'') != -1 || s.indexOf('"') != -1)
 				quote = true;
 
 			for (Operator operator : operators)
@@ -102,7 +102,7 @@ public class Formatter {
 					quote = true;
 
 			if (quote)
-				s = quote(s.replace("%", "%%"), "'");
+				s = quote(s, "'");
 		} else
 			s = "()";
 		return s;
