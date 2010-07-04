@@ -1,35 +1,39 @@
-concat =
+concat :-
 	list1 => list2 => switch
-		(tree / list1 => form-tree / (left / list1) / list2)
+		(tree list1 => form-tree / (left list1) / list2)
 		list2 
 #
 
-concat-lists = fold / concat #
+concat-lists :- fold / concat #
 
-member-of =
+member-of :-
 	item => list =>
 		join
-			/ (fold / (b1 => b2 => b1, b2))
+			/ (fold / and)
 			/ (map / (e => e = item))
 #
 
-fold =
+and :- b1 => b2 => if b1 then b2 else false #
+
+or :- b1 => b2 => if b1 then true else b2 #	
+
+fold :-
 	func => list => (
 		l => r => switch
-			(tree / r => func / l / (fold / func / r))
+			(tree r => func / l / (fold / func / r))
 			l
-	) / (left / list) / (right / list)
+	) / left list / right list
 #
 
-map = func => list =>
-	if (tree / list) then (
+map :- func => list =>
+	if (tree list) then (
 		form-tree
-			/ (func / (left / list))
-			/ (fold / (right / list))
+			/ (func / left list)
+			/ (map / func / right list)
 	) else
 		()
 #
 
-join = f1 => f2 => in => (f1 / (f2 / in)) #
+join :- f1 => f2 => in => (f1 / (f2 / in)) #
 
-form-tree = left => right => p (left, right) #
+form-tree :- l => r => p (l, r) #

@@ -97,8 +97,24 @@ public class Parser {
 		return Atom.create(localContext, s);
 	}
 
+	private static final String whitespaces[] = { "\t", "\r", "\n" };
+
 	private String convertWhitespaces(String s) {
-		return s.replace("\r", " ").replace(CLOSELINECOMMENT, " ");
+		for (String whitespace : whitespaces)
+			s = replace(s, whitespace, " ");
+		return s;
+	}
+
+	private String replace(String s, String from, String to) {
+		while (true) {
+			int pos = search(s, 0, from);
+
+			if (pos != -1)
+				s = s.substring(0, pos) + to
+						+ s.substring(pos + from.length(), s.length());
+			else
+				return s;
+		}
 	}
 
 	private String removeComments(String s) {
@@ -137,6 +153,7 @@ public class Parser {
 			// StringIndexOutOfBoundsException, NumberFormatException
 			log.error(Util.currentClass(), ex);
 		}
+
 		return s;
 	}
 
@@ -158,14 +175,14 @@ public class Parser {
 
 	private static int search(String s, Operator operator) {
 		String name = operator.getName();
-		boolean isRightAssoc = operator.getAssoc() == Assoc.RIGHT;
+		boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
 		int quote = 0, depth = 0;
 
 		for (int i = 0; i <= end; i++) {
-			int pos = isRightAssoc ? end - i : i;
-			char c = s.charAt(pos + (isRightAssoc ? nameLength - 1 : 0));
+			int pos = isLeftAssoc ? end - i : i;
+			char c = s.charAt(pos + (isLeftAssoc ? nameLength - 1 : 0));
 			quote = checkQuote(quote, c);
 
 			if (quote == 0) {

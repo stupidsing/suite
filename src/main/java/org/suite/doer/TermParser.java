@@ -7,21 +7,21 @@ import org.suite.Context;
 public class TermParser extends Parser {
 
 	public static enum TermOp implements Operator {
-		NEXT__("#", Assoc.LEFT), //
-		IS____(" :- ", Assoc.LEFT), //
+		NEXT__("#", Assoc.RIGHT), //
+		IS____(" :- ", Assoc.RIGHT), //
 		INDUCE(" => ", Assoc.RIGHT), //
-		OR____(";", Assoc.LEFT), //
-		AND___(",", Assoc.LEFT), //
-		LE____(" <= ", Assoc.LEFT), //
-		LT____(" < ", Assoc.LEFT), //
-		GE____(" >= ", Assoc.LEFT), //
-		GT____(" > ", Assoc.LEFT), //
-		EQUAL_(" = ", Assoc.LEFT), //
-		PLUS__(" + ", Assoc.LEFT), //
-		MINUS_(" - ", Assoc.RIGHT), //
-		MULT__(" * ", Assoc.LEFT), //
-		DIVIDE(" / ", Assoc.RIGHT), //
-		SEP___(" ", Assoc.LEFT);
+		OR____(";", Assoc.RIGHT), //
+		AND___(",", Assoc.RIGHT), //
+		LE____(" <= ", Assoc.RIGHT), //
+		LT____(" < ", Assoc.RIGHT), //
+		GE____(" >= ", Assoc.RIGHT), //
+		GT____(" > ", Assoc.RIGHT), //
+		EQUAL_(" = ", Assoc.RIGHT), //
+		PLUS__(" + ", Assoc.RIGHT), //
+		MINUS_(" - ", Assoc.LEFT), //
+		MULT__(" * ", Assoc.RIGHT), //
+		DIVIDE(" / ", Assoc.LEFT), //
+		SEP___(" ", Assoc.RIGHT);
 
 		public final String name;
 		public final Assoc assoc;

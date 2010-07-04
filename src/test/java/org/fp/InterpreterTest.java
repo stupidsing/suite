@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.suite.doer.Formatter;
 import org.suite.doer.TermParser;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -14,6 +16,17 @@ public class InterpreterTest {
 
 	private TermParser parser = new TermParser();
 	private Interpreter interpreter = new Interpreter();
+
+	@Before
+	public void before() throws IOException {
+		interpreter.addFunctions(parser.parseClassPathFile("auto.fp"));
+	}
+
+	@Test
+	public void adhoc() {
+		System.out.println(Formatter.dump(interpreter.evaluateRepeatedly(parser
+				.parse("map / (a => a + 1) / (1, 2, 3,)"))));
+	}
 
 	@Test
 	public void testUnitize() {
@@ -30,15 +43,16 @@ public class InterpreterTest {
 	}
 
 	@Test
-	public void testFibonacci() {
-		addFunction("fib",
-				"n => if (n = 0; n = 1) then 1 else (fib / (n - 1) + fib / (n - 2))");
-		assertEquals(Int.create(89), evaluate("fib / 10"));
+	public void testAdd() {
+		addFunction("add", "x => y => x + y");
+		assertEquals(Int.create(5), evaluate("add / 2 / 3"));
 	}
 
 	@Test
-	public void testAddFunctions() throws IOException {
-		interpreter.addFunctions(parser.parseClassPathFile("auto.fp"));
+	public void testFibonacci() {
+		addFunction("fib",
+				"n => if (or / (n = 0) / (n = 1)) then 1 else (fib / (n - 1) + fib / (n - 2))");
+		assertEquals(Int.create(89), evaluate("fib / 10"));
 	}
 
 	private void addFunction(String head, String body) {

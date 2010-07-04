@@ -65,9 +65,9 @@ public class Formatter {
 			boolean needParentheses = (ourPrec <= parentPrec);
 
 			int leftPrec = ourPrec, rightPrec = ourPrec;
-			if (operator.getAssoc() == Assoc.LEFT)
+			if (operator.getAssoc() == Assoc.RIGHT)
 				rightPrec--;
-			else if (operator.getAssoc() == Assoc.RIGHT)
+			else if (operator.getAssoc() == Assoc.LEFT)
 				leftPrec--;
 
 			if (needParentheses)
@@ -94,12 +94,16 @@ public class Formatter {
 	public String quoteAtomIfRequired(String s) {
 		if (!s.isEmpty()) {
 			boolean quote = false;
-			if (s.indexOf('\'') != -1 || s.indexOf('"') != -1)
-				quote = true;
 
-			for (Operator operator : operators)
-				if (s.contains(operator.getName()))
+			for (char c : s.toCharArray())
+				if (c <= 32 || c == '\'' || c == '"')
 					quote = true;
+
+			for (Operator operator : operators) {
+				String operatorName = operator.getName();
+				if (!operatorName.trim().isEmpty() && s.contains(operatorName))
+					quote = true;
+			}
 
 			if (quote)
 				s = quote(s, "'");

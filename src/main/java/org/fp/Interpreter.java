@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import org.parser.Operator;
 import org.suite.doer.Comparer;
+import org.suite.doer.Formatter;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -33,27 +34,9 @@ public class Interpreter {
 	private static final Atom TREE = Atom.create("tree");
 	private static final Atom TRUE = Atom.create("true");
 
-	/**
-	 * Interprets a function call, by expanding the node and simplifying it
-	 * repeatedly.
-	 */
-	public Node evaluate(Node node) {
-		Node lastExpanded = Atom.nil;
-
-		while (Comparer.comparer.compare(lastExpanded, node) != 0) {
-			node = expand(lastExpanded = node);
-
-			Node lastSimplified = Atom.nil;
-			while (Comparer.comparer.compare(lastSimplified, node) != 0)
-				node = simplify(lastSimplified = node);
-		}
-
-		return node;
-	}
-
 	public void addFunctions(Node node) {
 		for (Node f : flatten(node, TermOp.NEXT__)) {
-			Tree tree = Tree.decompose(f, TermOp.EQUAL_);
+			Tree tree = Tree.decompose(f, TermOp.IS____);
 			if (tree != null)
 				addFunction((Atom) tree.getLeft(), tree.getRight());
 		}
@@ -61,6 +44,21 @@ public class Interpreter {
 
 	public void addFunction(Atom head, Node body) {
 		functions.put(head, body);
+	}
+
+	/**
+	 * Interprets a function call, by expanding the node and simplifying it
+	 * repeatedly.
+	 */
+	public Node evaluate(Node node) {
+		return evaluateRepeatedly(expand(node));
+	}
+
+	public Node evaluateRepeatedly(Node node) {
+		Node lastSimplified = Atom.nil;
+		while (Comparer.comparer.compare(lastSimplified, node) != 0)
+			node = simplify(lastSimplified = node);
+		return node;
 	}
 
 	/**
@@ -76,7 +74,7 @@ public class Interpreter {
 
 		if (node instanceof Atom) {
 			Atom atom = (Atom) node;
-			if (!expanded.contains(atom)) {
+			if (!expanded.contains(atom)) { // Do not expand recursively
 				expanded.add(atom);
 				Node definition = functions.get(atom);
 				if (definition != null)
@@ -98,8 +96,11 @@ public class Interpreter {
 		// Late and lazy evaluation; evaluates a reference once and for all
 		if (node instanceof EvaluatableReference) {
 			EvaluatableReference reference = (EvaluatableReference) node;
-			if (!reference.evaluated)
-				reference.bound(evaluate(reference.finalNode()));
+			if (!reference.evaluated) {
+				Node evaluated = evaluate(reference.finalNode());
+				reference.bound(evaluated);
+				return evaluated;
+			}
 		}
 
 		Tree tree = Tree.decompose(node);
@@ -120,26 +121,35 @@ public class Interpreter {
 			else if (name == SWITCH)
 				return doSwitch(list);
 			else if (name == NOT)
-				return evaluate(list.get(1)) == TRUE ? FALSE : TRUE;
+				return simplify(list.get(1)) == TRUE ? FALSE : TRUE;
 			else if (name == PLAIN)
 				return list.get(1);
-		} else if (operator == TermOp.DIVIDE) { // Substitution
-			if (l == TREE || l == LEFT || l == RIGHT || l == OPER)
-				return doTreeFunction(l, r);
-			else {
-				Tree lambda = Tree.decompose(l, TermOp.INDUCE);
-				Node lazy = new EvaluatableReference(r);
-
-				if (lambda != null)
-					return replace(lambda.getRight(), lambda.getLeft(), lazy);
+			else if (name == TREE)
+				return list.get(1).finalNode() instanceof Tree ? TRUE : FALSE;
+			else if (name == LEFT || name == RIGHT || name == OPER) {
+				Tree t = Tree.decompose(list.get(1));
+				return name == OPER ? new Str(t.getOperator().getName())
+						: name == LEFT ? t.getLeft() : t.getRight();
 			}
-		} else if (operator == TermOp.AND___)
-			return evaluate(l) == TRUE && evaluate(r) == TRUE ? TRUE : FALSE;
-		else if (operator == TermOp.OR____)
-			return evaluate(l) == TRUE || evaluate(r) == TRUE ? TRUE : FALSE;
+		} else if (operator == TermOp.DIVIDE) { // Substitution
+			Tree lambda = Tree.decompose(l, TermOp.INDUCE);
+
+			if (lambda == null) // Performs expansion if required
+				lambda = Tree.decompose(expand(l), TermOp.INDUCE);
+
+			if (lambda != null) {
+				EvaluatableReference lazy = new EvaluatableReference(r);
+				return replace(lambda.getRight(), lambda.getLeft(), lazy);
+			}
+		}
+		// else if (operator == TermOp.AND___)
+		// return simplify(l) == TRUE && simplify(r) == TRUE ? TRUE : FALSE;
 		else if (operator == TermOp.EQUAL_)
-			return eq(evaluate(l), evaluate(r));
-		else {
+			return eq(simplify(l), simplify(r));
+		else if (operator == TermOp.LT____ || operator == TermOp.LE____
+				|| operator == TermOp.GT____ || operator == TermOp.LE____
+				|| operator == TermOp.PLUS__ || operator == TermOp.MINUS_
+				|| operator == TermOp.MULT__ || operator == TermOp.DIVIDE) {
 			int n1 = getNumber(evaluate(l)), n2 = getNumber(evaluate(r));
 
 			switch (operator) {
@@ -162,21 +172,14 @@ public class Interpreter {
 			}
 		}
 
+		Node gl = simplify(l), gr = simplify(r);
+		if (gl != l || gr != r)
+			return new Tree(operator, gl, gr);
+
 		// throw new RuntimeException("Cannot simplify " +
 		// Formatter.dump(tree));
 
 		return tree;
-	}
-
-	private Node doTreeFunction(Node name, Node parameter) {
-		Tree t = Tree.decompose(parameter);
-
-		if (name == TREE)
-			return t != null ? TRUE : FALSE;
-		else if (name == OPER)
-			return new Str(t.getOperator().getName());
-		else
-			return name == LEFT ? t.getLeft() : t.getRight();
 	}
 
 	private Atom eq(Node left, Node right) {
@@ -193,7 +196,7 @@ public class Interpreter {
 			Tree t = Tree.decompose(list.get(i), TermOp.INDUCE);
 			if (t != null) {
 				if (evaluate(t.getLeft()) == TRUE)
-					return evaluate(t.getRight());
+					return t.getRight();
 			} else
 				throw new RuntimeException("Bad switch definition");
 		}
@@ -230,7 +233,11 @@ public class Interpreter {
 	}
 
 	private int getNumber(Node node) {
-		return ((Int) node).getNumber();
+		if (node instanceof Int)
+			return ((Int) node).getNumber();
+		else
+			throw new RuntimeException(Formatter.dump(node)
+					+ " is not a number");
 	}
 
 }

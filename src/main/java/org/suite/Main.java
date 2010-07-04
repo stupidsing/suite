@@ -59,7 +59,7 @@ public class Main {
 				if (line == null)
 					break quit;
 
-				sb.append(line);
+				sb.append(line + "\n");
 			} while (!line.isEmpty() && !line.endsWith("#"));
 
 			String input = sb.toString();
