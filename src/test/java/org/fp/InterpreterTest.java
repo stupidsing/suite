@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.suite.doer.Formatter;
 import org.suite.doer.TermParser;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -23,9 +22,9 @@ public class InterpreterTest {
 	}
 
 	@Test
-	public void adhoc() {
-		System.out.println(Formatter.dump(interpreter.evaluateRepeatedly(parser
-				.parse("map / (a => a + 1) / (1, 2, 3,)"))));
+	public void testMap() {
+		assertEquals(parse("(2, 3, 4,)"), //
+				evaluate("map / (a => a + 1) / (1, 2, 3,)"));
 	}
 
 	@Test
@@ -56,11 +55,15 @@ public class InterpreterTest {
 	}
 
 	private void addFunction(String head, String body) {
-		interpreter.addFunction(Atom.create(head), parser.parse(body));
+		interpreter.addFunction(Atom.create(head), parse(body));
 	}
 
 	private Node evaluate(String expression) {
-		return interpreter.evaluate(parser.parse(expression));
+		return interpreter.evaluate(parse(expression));
+	}
+
+	private Node parse(String expression) {
+		return parser.parse(expression);
 	}
 
 }

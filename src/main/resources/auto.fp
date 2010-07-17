@@ -36,4 +36,4 @@ map :- func => list =>
 
 join :- f1 => f2 => in => (f1 / (f2 / in)) #
 
-form-tree :- l => r => p (l, r) #
+form-tree :- l => r => l, r #

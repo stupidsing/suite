@@ -3,9 +3,7 @@ package org.fp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.parser.Operator;
 import org.suite.doer.Comparer;
@@ -46,46 +44,91 @@ public class Interpreter {
 		functions.put(head, body);
 	}
 
-	/**
-	 * Interprets a function call, by expanding the node and simplifying it
-	 * repeatedly.
-	 */
+	// Evaluation method:
+	// - Substitute as much as possible;
+	// - Handle "if"s and switches by evaluating their determinants;
+	// - Expand and repeat above, until the node is not changed anymore.
+	// - Simplify the final mess we have got.
 	public Node evaluate(Node node) {
-		return evaluateRepeatedly(expand(node));
+		Node previous = null;
+
+		do {
+			previous = node;
+			node = performSubst(node);
+			node = performDetermination(node);
+			node = performExpand(node);
+		} while (Comparer.comparer.compare(previous, node) != 0);
+
+		return simplify(node);
 	}
 
-	public Node evaluateRepeatedly(Node node) {
-		Node lastSimplified = Atom.nil;
-		while (Comparer.comparer.compare(lastSimplified, node) != 0)
-			node = simplify(lastSimplified = node);
+	private Node performSubst(Node node) {
+		node = node.finalNode();
+
+		if (node instanceof Tree) {
+			Tree t = (Tree) node;
+			Node l = t.getLeft(), r = t.getRight();
+			Node gl = performSubst(l), gr = performSubst(r);
+
+			if (t.getOperator() == TermOp.DIVIDE) {
+				Tree lambda = Tree.decompose(gl, TermOp.INDUCE);
+
+				if (lambda != null) {
+					Node body = lambda.getRight();
+					Node variable = lambda.getLeft();
+					EvaluatableReference value = new EvaluatableReference(gr);
+					node = replace(body, variable, value);
+					return node;
+				}
+			}
+
+			if (gl != l || gr != r)
+				node = new Tree(t.getOperator(), gl, gr);
+		}
+
 		return node;
 	}
 
-	/**
-	 * Expands a node using the function mappings as much as possible, until we
-	 * recur into the same construct.
-	 */
-	private Node expand(Node node) {
-		return expand(node, new TreeSet<Atom>());
+	private Node performDetermination(Node node) {
+		node = node.finalNode();
+
+		if (node instanceof Tree) {
+			Tree tree = (Tree) node;
+			Operator operator = tree.getOperator();
+			Node l = tree.getLeft(), r = tree.getRight();
+
+			if (operator == TermOp.SEP___) {
+				List<Node> list = flatten(tree, TermOp.SEP___);
+				Node name = list.get(0);
+
+				if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
+					node = ifThenElse(list.get(1), list.get(3), list.get(5));
+				else if (name == SWITCH)
+					node = doSwitch(list);
+			} else {
+				Node gl = performDetermination(l), gr = performDetermination(r);
+				if (gl != l || gr != r)
+					node = new Tree(operator, gl, gr);
+			}
+		}
+
+		return node;
 	}
 
-	private Node expand(Node node, Set<Atom> expanded) {
+	private Node performExpand(Node node) {
 		node = node.finalNode();
 
 		if (node instanceof Atom) {
 			Atom atom = (Atom) node;
-			if (!expanded.contains(atom)) { // Do not expand recursively
-				expanded.add(atom);
-				Node definition = functions.get(atom);
-				if (definition != null)
-					return expand(definition, expanded);
-			}
+			Node definition = functions.get(atom);
+			if (definition != null)
+				node = definition;
 		} else if (node instanceof Tree) {
 			Tree t = (Tree) node;
 			Node l = t.getLeft(), r = t.getRight();
-			Node gl = expand(l, expanded), gr = expand(r, expanded);
+			Node gl = performExpand(l), gr = performExpand(r);
 			if (gl != l || gr != r)
-				return new Tree(t.getOperator(), gl, gr);
+				node = new Tree(t.getOperator(), gl, gr);
 		}
 
 		return node;
@@ -105,52 +148,36 @@ public class Interpreter {
 
 		Tree tree = Tree.decompose(node);
 		if (tree != null)
-			node = simplifyTree(tree);
+			node = performSimplify(tree);
 		return node;
 	}
 
-	private Node simplifyTree(Tree tree) {
+	private Node performSimplify(Tree tree) {
 		TermOp operator = (TermOp) tree.getOperator();
 		Node l = tree.getLeft(), r = tree.getRight();
 
 		if (operator == TermOp.SEP___) {
-			List<Node> list = flatten(tree, TermOp.SEP___);
-			Node name = list.get(0);
-			if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
-				return ifThenElse(list.get(1), list.get(3), list.get(5));
-			else if (name == SWITCH)
-				return doSwitch(list);
-			else if (name == NOT)
-				return simplify(list.get(1)) == TRUE ? FALSE : TRUE;
-			else if (name == PLAIN)
-				return list.get(1);
-			else if (name == TREE)
-				return list.get(1).finalNode() instanceof Tree ? TRUE : FALSE;
-			else if (name == LEFT || name == RIGHT || name == OPER) {
-				Tree t = Tree.decompose(list.get(1));
-				return name == OPER ? new Str(t.getOperator().getName())
-						: name == LEFT ? t.getLeft() : t.getRight();
-			}
-		} else if (operator == TermOp.DIVIDE) { // Substitution
-			Tree lambda = Tree.decompose(l, TermOp.INDUCE);
+			if (l == PLAIN)
+				return r;
 
-			if (lambda == null) // Performs expansion if required
-				lambda = Tree.decompose(expand(l), TermOp.INDUCE);
+			Node param = simplify(r);
 
-			if (lambda != null) {
-				EvaluatableReference lazy = new EvaluatableReference(r);
-				return replace(lambda.getRight(), lambda.getLeft(), lazy);
+			if (l == NOT)
+				return param == TRUE ? FALSE : TRUE;
+			else if (l == TREE)
+				return param.finalNode() instanceof Tree ? TRUE : FALSE;
+			else if (l == LEFT || l == RIGHT || l == OPER) {
+				Tree t = Tree.decompose(param);
+				return l == OPER ? new Str(t.getOperator().getName())
+						: l == LEFT ? t.getLeft() : t.getRight();
 			}
-		}
-		// else if (operator == TermOp.AND___)
-		// return simplify(l) == TRUE && simplify(r) == TRUE ? TRUE : FALSE;
-		else if (operator == TermOp.EQUAL_)
+		} else if (operator == TermOp.EQUAL_)
 			return eq(simplify(l), simplify(r));
 		else if (operator == TermOp.LT____ || operator == TermOp.LE____
 				|| operator == TermOp.GT____ || operator == TermOp.LE____
 				|| operator == TermOp.PLUS__ || operator == TermOp.MINUS_
 				|| operator == TermOp.MULT__ || operator == TermOp.DIVIDE) {
-			int n1 = getNumber(evaluate(l)), n2 = getNumber(evaluate(r));
+			int n1 = getNumber(simplify(l)), n2 = getNumber(simplify(r));
 
 			switch (operator) {
 			case LT____:
@@ -180,10 +207,6 @@ public class Interpreter {
 		// Formatter.dump(tree));
 
 		return tree;
-	}
-
-	private Atom eq(Node left, Node right) {
-		return Comparer.comparer.compare(left, right) == 0 ? TRUE : FALSE;
 	}
 
 	private Node ifThenElse(Node if_, Node then_, Node else_) {
@@ -230,6 +253,10 @@ public class Interpreter {
 
 		nodes.add(node);
 		return nodes;
+	}
+
+	private Atom eq(Node left, Node right) {
+		return Comparer.comparer.compare(left, right) == 0 ? TRUE : FALSE;
 	}
 
 	private int getNumber(Node node) {
