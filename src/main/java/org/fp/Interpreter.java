@@ -14,21 +14,17 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.LogUtil;
 
 public class Interpreter {
 
 	private Map<Atom, Node> functions = new TreeMap<Atom, Node>();
 
-	private static final Atom ELSE = Atom.create("else");
 	private static final Atom FALSE = Atom.create("false");
-	private static final Atom IF = Atom.create("if");
 	private static final Atom LEFT = Atom.create("left");
 	private static final Atom NOT = Atom.create("not");
 	private static final Atom OPER = Atom.create("oper");
-	private static final Atom PLAIN = Atom.create("p");
 	private static final Atom RIGHT = Atom.create("right");
-	private static final Atom SWITCH = Atom.create("switch");
-	private static final Atom THEN = Atom.create("then");
 	private static final Atom TREE = Atom.create("tree");
 	private static final Atom TRUE = Atom.create("true");
 
@@ -54,11 +50,15 @@ public class Interpreter {
 
 		do {
 			previous = node;
+			LogUtil.info("SUBSTT", Formatter.dump(node));
 			node = performSubst(node);
+			LogUtil.info("DETERM", Formatter.dump(node));
 			node = performDetermination(node);
+			LogUtil.info("EXPAND", Formatter.dump(node));
 			node = performExpand(node);
 		} while (Comparer.comparer.compare(previous, node) != 0);
 
+		LogUtil.info("SIMPLY", Formatter.dump(node));
 		return simplify(node);
 	}
 
@@ -67,23 +67,24 @@ public class Interpreter {
 
 		if (node instanceof Tree) {
 			Tree t = (Tree) node;
+			Operator operator = t.getOperator();
 			Node l = t.getLeft(), r = t.getRight();
 			Node gl = performSubst(l), gr = performSubst(r);
 
-			if (t.getOperator() == TermOp.DIVIDE) {
+			if (operator == TermOp.DIVIDE) {
 				Tree lambda = Tree.decompose(gl, TermOp.INDUCE);
 
 				if (lambda != null) {
 					Node body = lambda.getRight();
 					Node variable = lambda.getLeft();
 					EvaluatableReference value = new EvaluatableReference(gr);
-					node = replace(body, variable, value);
+					node = performSubst(replace(body, variable, value));
 					return node;
 				}
 			}
 
 			if (gl != l || gr != r)
-				node = new Tree(t.getOperator(), gl, gr);
+				node = new Tree(operator, gl, gr);
 		}
 
 		return node;
@@ -99,12 +100,7 @@ public class Interpreter {
 
 			if (operator == TermOp.SEP___) {
 				List<Node> list = flatten(tree, TermOp.SEP___);
-				Node name = list.get(0);
-
-				if (name == IF && list.get(2) == THEN && list.get(4) == ELSE)
-					node = ifThenElse(list.get(1), list.get(3), list.get(5));
-				else if (name == SWITCH)
-					node = doSwitch(list);
+				node = doSwitch(list);
 			} else {
 				Node gl = performDetermination(l), gr = performDetermination(r);
 				if (gl != l || gr != r)
@@ -156,10 +152,7 @@ public class Interpreter {
 		TermOp operator = (TermOp) tree.getOperator();
 		Node l = tree.getLeft(), r = tree.getRight();
 
-		if (operator == TermOp.SEP___) {
-			if (l == PLAIN)
-				return r;
-
+		if (operator == TermOp.DIVIDE) {
 			Node param = simplify(r);
 
 			if (l == NOT)
@@ -209,21 +202,18 @@ public class Interpreter {
 		return tree;
 	}
 
-	private Node ifThenElse(Node if_, Node then_, Node else_) {
-		return evaluate(if_) == TRUE ? then_ : else_;
-	}
-
 	private Node doSwitch(List<Node> list) {
-		int last = list.size() - 1;
-		for (int i = 1; i < last; i++) {
-			Tree t = Tree.decompose(list.get(i), TermOp.INDUCE);
-			if (t != null) {
-				if (evaluate(t.getLeft()) == TRUE)
-					return t.getRight();
+		for (Node node : list) {
+			Tree tree = Tree.decompose(node, TermOp.INDUCE);
+
+			if (tree != null) {
+				if (evaluate(tree.getLeft()) == TRUE)
+					return tree.getRight();
 			} else
-				throw new RuntimeException("Bad switch definition");
+				return node;
 		}
-		return evaluate(list.get(last));
+
+		throw new RuntimeException("Switch escaped from all cases");
 	}
 
 	private static Node replace(Node node, Node from, Node to) {

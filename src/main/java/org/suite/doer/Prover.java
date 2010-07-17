@@ -60,7 +60,7 @@ public class Prover {
 		Node remaining = OK;
 
 		while (query != OK || remaining != OK) {
-			// LogFactory.getLog(getClass()).info(Formatter.dump(query));
+			// LogUtil.info("PROVE", Formatter.dump(node));
 
 			Tree tree = Tree.decompose(query);
 			if (tree != null) {

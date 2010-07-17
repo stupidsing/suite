@@ -2,6 +2,7 @@ package org.util;
 
 import java.io.PrintWriter;
 
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Level;
@@ -12,8 +13,11 @@ import sun.reflect.Reflection;
 
 public class LogUtil {
 
+	private static boolean inited = false;
+
 	public static void initLog4j() {
-		initLog4j(Level.INFO);
+		if (!inited)
+			initLog4j(Level.INFO);
 	}
 
 	public static void initLog4j(Level level) {
@@ -36,6 +40,18 @@ public class LogUtil {
 		logger.removeAllAppenders();
 		logger.addAppender(console);
 		logger.addAppender(file);
+
+		inited = true;
+	}
+
+	public static void info(String cat, String message) {
+		initLog4j();
+		LogFactory.getLog(cat).info(message);
+	}
+
+	public static void error(String cat, Throwable th) {
+		initLog4j();
+		LogFactory.getLog(cat).error("", th);
 	}
 
 }
