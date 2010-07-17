@@ -50,11 +50,9 @@ public class Interpreter {
 
 		do {
 			previous = node;
-			LogUtil.info("SUBSTT", Formatter.dump(node));
+			// LogUtil.info("SUBSTT", Formatter.dump(node));
 			node = performSubst(node);
-			LogUtil.info("DETERM", Formatter.dump(node));
 			node = performDetermination(node);
-			LogUtil.info("EXPAND", Formatter.dump(node));
 			node = performExpand(node);
 		} while (Comparer.comparer.compare(previous, node) != 0);
 
@@ -195,9 +193,6 @@ public class Interpreter {
 		Node gl = simplify(l), gr = simplify(r);
 		if (gl != l || gr != r)
 			return new Tree(operator, gl, gr);
-
-		// throw new RuntimeException("Cannot simplify " +
-		// Formatter.dump(tree));
 
 		return tree;
 	}
