@@ -1,10 +1,10 @@
+concat-lists :- fold / concat #
+
 concat :-
 	list1 => list2 =>
 		(tree list1 => form-tree / (left / list1) / list2)
 		(list2) 
 #
-
-concat-lists :- fold / concat #
 
 member-of :-
 	item =>
@@ -13,8 +13,18 @@ member-of :-
 			/ (map / (e => e = item))
 #
 
+tail :-
+	list =>
+		(
+			tree / list =>
+				(r => concat / r / (tail / r)) / (right / list)
+		)
+		()
+#
+
 fold :-
-	func => list => (
+	func => list =>
+	(
 		l => r =>
 			(tree / r => func / l / (fold / func / r))
 			(l)
@@ -33,10 +43,10 @@ map :- func => list =>
 	()
 #
 
+join :- f1 => f2 => in => (f1 / (f2 / in)) #
+
 and :- b1 => b2 => (b1 => b2) (false) #
 
 or :- b1 => b2 => (b1 => true) (b2) #	
 
-join :- f1 => f2 => in => (f1 / (f2 / in)) #
-
-form-tree :- l => r => l, r #
+form-tree :- l => r => (l, r) #
