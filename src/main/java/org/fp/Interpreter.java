@@ -14,7 +14,6 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
-import org.util.LogUtil;
 
 public class Interpreter {
 
@@ -50,13 +49,13 @@ public class Interpreter {
 
 		do {
 			previous = node;
+			// Util.sleep(100);
 			// LogUtil.info("SUBSTT", Formatter.dump(node));
 			node = performSubst(node);
 			node = performDetermination(node);
 			node = performExpand(node);
 		} while (Comparer.comparer.compare(previous, node) != 0);
 
-		LogUtil.info("SIMPLY", Formatter.dump(node));
 		return simplify(node);
 	}
 
@@ -96,8 +95,8 @@ public class Interpreter {
 			Operator operator = tree.getOperator();
 			Node l = tree.getLeft(), r = tree.getRight();
 
-			if (operator == TermOp.SEP___) {
-				List<Node> list = flatten(tree, TermOp.SEP___);
+			if (operator == TermOp.CHOICE) {
+				List<Node> list = flatten(tree, TermOp.CHOICE);
 				node = doSwitch(list);
 			} else {
 				Node gl = performDetermination(l), gr = performDetermination(r);
