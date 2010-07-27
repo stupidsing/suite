@@ -69,15 +69,15 @@ public class Parser {
 		char first = s.charAt(0), last = s.charAt(s.length() - 1);
 
 		for (Operator operator : operators) {
+			if (operator == TermOp.BRACES && last != '}')
+				continue;
+
 			int pos = search(s, operator);
 
-			if (pos != -1) {
-				if (operator == TermOp.BRACES)
-					if (last != '}')
-						continue;
-					else
-						s = Util.substr(s, 0, -1);
+			if (operator == TermOp.BRACES)
+				s = Util.substr(s, 0, -1);
 
+			if (pos != -1) {
 				String l = s.substring(0, pos);
 				String r = s.substring(pos + operator.getName().length());
 
