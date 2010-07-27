@@ -80,13 +80,12 @@ public class Formatter {
 			if (!name.endsWith(" "))
 				sb.append(' ');
 
-			boolean isBraces = operator == TermOp.BRACES;
-			if (isBraces)
+			if (operator == TermOp.BRACES)
 				rightPrec = 0;
 
 			format(tree.getRight(), rightPrec, dump, sb);
 
-			if (isBraces)
+			if (operator == TermOp.BRACES)
 				sb.append(" }");
 
 			if (needParentheses)
