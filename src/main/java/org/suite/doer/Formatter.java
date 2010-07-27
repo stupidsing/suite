@@ -61,7 +61,6 @@ public class Formatter {
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Operator operator = tree.getOperator();
-			boolean isBraces = operator == TermOp.BRACES;
 			int ourPrec = operator.getPrecedence();
 			boolean needParentheses = (ourPrec <= parentPrec);
 
@@ -81,6 +80,7 @@ public class Formatter {
 			if (!name.endsWith(" "))
 				sb.append(' ');
 
+			boolean isBraces = operator == TermOp.BRACES;
 			if (isBraces)
 				rightPrec = 0;
 
