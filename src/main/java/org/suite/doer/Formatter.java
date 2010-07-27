@@ -65,10 +65,10 @@ public class Formatter {
 			boolean needParentheses = (ourPrec <= parentPrec);
 
 			int leftPrec = ourPrec, rightPrec = ourPrec;
-			if (operator.getAssoc() == Assoc.RIGHT)
-				rightPrec--;
-			else if (operator.getAssoc() == Assoc.LEFT)
+			if (operator.getAssoc() == Assoc.LEFT)
 				leftPrec--;
+			else if (operator.getAssoc() == Assoc.RIGHT)
+				rightPrec--;
 
 			if (needParentheses)
 				sb.append('(');
