@@ -2,15 +2,9 @@ package org.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -119,39 +113,6 @@ public class Util {
 		}
 	}
 
-	public static void moveFile(File from, File to)
-			throws FileNotFoundException, IOException {
-
-		// Serious problem that renameTo do not work across partitions in Linux!
-		// We fall back to copy the file if renameTo() failed.
-		if (!from.renameTo(to)) {
-			copyFile(from, to);
-			from.delete();
-		}
-	}
-
-	public static void copyFile(File from, File to)
-			throws FileNotFoundException, IOException {
-		InputStream in = new FileInputStream(from);
-		OutputStream out = new FileOutputStream(to);
-		// OutputStream out = new FileOutputStream(f2, true); // Append
-
-		copyStream(in, out);
-	}
-
-	public static void copyStream(InputStream in, OutputStream out)
-			throws IOException {
-		try {
-			int len;
-			byte[] buf = new byte[1024];
-			while ((len = in.read(buf)) > 0)
-				out.write(buf, 0, len);
-		} finally {
-			in.close();
-			out.close();
-		}
-	}
-
 	public static void sleep(long time) {
 		try {
 			Thread.sleep(time);
@@ -215,7 +176,7 @@ public class Util {
 	}
 
 	/**
-	 * Clones slowly using serialisation.
+	 * Clones slowly by serialising and de-serialising.
 	 */
 	public static <T> T copy(T clonee) throws IOException,
 			ClassNotFoundException {
@@ -230,6 +191,15 @@ public class Util {
 		@SuppressWarnings("unchecked")
 		T cloned = (T) in.readObject();
 		return cloned;
+	}
+
+	public static String substr(String s, int start, int end) {
+		int length = s.length();
+		while (start < 0)
+			start += length;
+		while (end <= 0)
+			end += length;
+		return s.substring(start, end);
 	}
 
 	/**

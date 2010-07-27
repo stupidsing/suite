@@ -68,7 +68,7 @@ public class Interpreter {
 			Node l = t.getLeft(), r = t.getRight();
 			Node gl = performSubst(l), gr = performSubst(r);
 
-			if (operator == TermOp.DIVIDE) {
+			if (operator == TermOp.DIVIDE || operator == TermOp.BRACES) {
 				Tree lambda = Tree.decompose(gl, TermOp.INDUCE);
 
 				if (lambda != null) {
@@ -149,7 +149,7 @@ public class Interpreter {
 		TermOp operator = (TermOp) tree.getOperator();
 		Node l = tree.getLeft(), r = tree.getRight();
 
-		if (operator == TermOp.DIVIDE) {
+		if (operator == TermOp.BRACES) {
 			Node param = simplify(r);
 
 			if (l == NOT)

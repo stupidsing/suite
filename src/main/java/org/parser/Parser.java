@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.parser.Operator.Assoc;
 import org.suite.Context;
 import org.suite.Singleton;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -65,23 +66,29 @@ public class Parser {
 		if (s.isEmpty())
 			return Atom.nil;
 
+		char first = s.charAt(0), last = s.charAt(s.length() - 1);
+
 		for (Operator operator : operators) {
 			int pos = search(s, operator);
 
 			if (pos != -1) {
+				if (operator == TermOp.BRACES)
+					if (last != '}')
+						continue;
+					else
+						s = Util.substr(s, 0, -1);
+
 				String l = s.substring(0, pos);
 				String r = s.substring(pos + operator.getName().length());
+
 				return new Tree(operator, parseWithoutComments(l),
 						parseWithoutComments(r));
 			}
 		}
 
-		char first = s.charAt(0), last = s.charAt(s.length() - 1);
-
 		if (first == '(' && last == ')' //
-				|| first == '[' && last == ']' //
-				|| first == '{' && last == '}')
-			return parseWithoutComments(s.substring(1, s.length() - 1));
+				|| first == '[' && last == ']')
+			return parseWithoutComments(Util.substr(s, 1, -1));
 
 		try {
 			return Int.create(Integer.parseInt(s));
@@ -89,10 +96,10 @@ public class Parser {
 		}
 
 		if (first == '"' && last == '"')
-			return new Str(unescape(s.substring(1, s.length() - 1), "\""));
+			return new Str(unescape(Util.substr(s, 1, -1), "\""));
 
 		if (first == '\'' && last == '\'')
-			s = unescape(s.substring(1, s.length() - 1), "'");
+			s = unescape(Util.substr(s, 1, -1), "'");
 
 		return Atom.create(localContext, s);
 	}
@@ -110,8 +117,7 @@ public class Parser {
 			int pos = search(s, 0, from);
 
 			if (pos != -1)
-				s = s.substring(0, pos) + to
-						+ s.substring(pos + from.length(), s.length());
+				s = s.substring(0, pos) + to + s.substring(pos + from.length());
 			else
 				return s;
 		}
@@ -174,8 +180,11 @@ public class Parser {
 	}
 
 	private static int search(String s, Operator operator) {
-		String name = operator.getName();
-		boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
+		return search(s, operator.getName(), operator.getAssoc());
+	}
+
+	private static int search(String s, String name, Assoc assoc) {
+		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
 		int quote = 0, depth = 0;

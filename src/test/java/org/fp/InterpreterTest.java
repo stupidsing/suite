@@ -24,57 +24,57 @@ public class InterpreterTest {
 	@Test
 	public void testMap() {
 		assertEquals(parse("(2, 3, 4,)"), //
-				evaluate("map / (a => a + 1) / (1, 2, 3,)"));
+				evaluate("map {a => a + 1} {1, 2, 3,}"));
 	}
 
 	@Test
 	public void testJoin() {
 		assertEquals(parse("4"),
-				evaluate("join / (a => a + 1) / (b => b + 1) / 2"));
+				evaluate("join {a => a + 1} {b => b + 1} {2}"));
 	}
 
 	@Test
 	public void testAndOr() {
-		assertEquals(parse("false"), evaluate("and / false / true"));
-		assertEquals(parse("true"), evaluate("or / false / true"));
+		assertEquals(parse("false"), evaluate("and {false} {true}"));
+		assertEquals(parse("true"), evaluate("or {false} {true}"));
 	}
 
 	@Test
 	public void testFold() {
-		assertEquals(parse("false"), evaluate("fold / and / (true, false,)"));
-		assertEquals(parse("true"), evaluate("fold / and / (true, true,)"));
+		assertEquals(parse("false"), evaluate("fold {and} {true, false,}"));
+		assertEquals(parse("true"), evaluate("fold {and} {true, true,}"));
 	}
 
 	@Test
 	public void testMemberOf() {
-		assertEquals(parse("true"), evaluate("member-of / 3 / (1, 3,)"));
+		assertEquals(parse("true"), evaluate("member-of {3} {1, 3,}"));
 	}
 
 	@Test
 	public void testUnitize() {
 		addFunction("unitize", "value => (value = 0 => 0 | 1)");
-		assertEquals(Int.create(0), evaluate("unitize / 0"));
+		assertEquals(Int.create(0), evaluate("unitize {0}"));
 	}
 
 	@Test
 	public void testSign() {
 		addFunction("sign", "x => (x < 0 => -1 | x > 0 => 1 | 0)");
-		assertEquals(Int.create(-1), evaluate("sign / -100"));
-		assertEquals(Int.create(0), evaluate("sign / 0"));
-		assertEquals(Int.create(1), evaluate("sign / 100"));
+		assertEquals(Int.create(-1), evaluate("sign {-100}"));
+		assertEquals(Int.create(0), evaluate("sign {0}"));
+		assertEquals(Int.create(1), evaluate("sign {100}"));
 	}
 
 	@Test
 	public void testAdd() {
 		addFunction("add", "x => y => x + y");
-		assertEquals(Int.create(5), evaluate("add / 2 / 3"));
+		assertEquals(Int.create(5), evaluate("add {2}{3}"));
 	}
 
 	@Test
 	public void testFibonacci() {
 		addFunction("fib",
-				"n => (or / (n = 0) / (n = 1) => 1 | fib / (n - 1) + fib / (n - 2))");
-		assertEquals(Int.create(89), evaluate("fib / 10"));
+				"n => (or {n = 0} {n = 1} => 1 | fib {n - 1} + fib {n - 2})");
+		assertEquals(Int.create(89), evaluate("fib {10}"));
 	}
 
 	private void addFunction(String head, String body) {
