@@ -29,14 +29,18 @@ public class InterpreterTest {
 
 	@Test
 	public void testJoin() {
-		assertEquals(parse("4"),
-				evaluate("join {a => a + 1} {b => b + 1} {2}"));
+		assertEquals(parse("4"), evaluate("join {a => a + 1} {b => b + 1} {2}"));
 	}
 
 	@Test
 	public void testAndOr() {
 		assertEquals(parse("false"), evaluate("and {false} {true}"));
 		assertEquals(parse("true"), evaluate("or {false} {true}"));
+	}
+
+	@Test
+	public void testFilter() {
+		assertEquals(parse("2, 2,"), evaluate("filter {e => e = 2} {1, 2, 3, 2,}"));
 	}
 
 	@Test

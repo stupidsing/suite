@@ -96,8 +96,12 @@ public class Interpreter {
 			Node l = tree.getLeft(), r = tree.getRight();
 
 			if (operator == TermOp.CHOICE) {
-				List<Node> list = flatten(tree, TermOp.CHOICE);
-				node = doSwitch(list);
+				tree = Tree.decompose(l, TermOp.INDUCE);
+
+				if (tree != null && evaluate(tree.getLeft()) == TRUE)
+					return tree.getRight();
+				else
+					return performDetermination(r);
 			} else {
 				Node gl = performDetermination(l), gr = performDetermination(r);
 				if (gl != l || gr != r)
@@ -194,20 +198,6 @@ public class Interpreter {
 			return new Tree(operator, gl, gr);
 
 		return tree;
-	}
-
-	private Node doSwitch(List<Node> list) {
-		for (Node node : list) {
-			Tree tree = Tree.decompose(node, TermOp.INDUCE);
-
-			if (tree != null) {
-				if (evaluate(tree.getLeft()) == TRUE)
-					return tree.getRight();
-			} else
-				return node;
-		}
-
-		throw new RuntimeException("Switch escaped from all cases");
 	}
 
 	private static Node replace(Node node, Node from, Node to) {

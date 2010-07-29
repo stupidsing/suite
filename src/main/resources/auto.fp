@@ -2,10 +2,10 @@ concat-lists :- fold {concat} #
 
 concat :-
 	list1 => list2 =>
-		(
-			tree {list1} => form-tree {left {list1}} {list2}
-		|	list2
-		) 
+	(
+		tree {list1} => form-tree {left {list1}} {list2}
+	|	list2
+	)
 #
 
 member-of :-
@@ -15,13 +15,29 @@ member-of :-
 
 tail :-
 	list =>
+	(
+		tree {list} =>
+			(
+				r => concat {r} {tail {r}}
+			) {right {list}}
+	|	()
+	)
+#
+
+filter :-
+	func => list =>
+	(
+		tree {list} =>
 		(
-			tree {list} =>
-				(
-					r => concat {r} {tail {r}}
-				) {right {list}}
-		|	()
+			(
+				l => others => (
+					func {l} => form-tree {l} {others}
+					|	others
+				)
+			) {left {list}} {filter {func} {right {list}}}
 		)
+	|	()
+	)
 #
 
 fold :-
