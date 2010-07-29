@@ -45,8 +45,8 @@ map :-
 
 join :- f1 => f2 => in => f1 {f2 {in}} #
 
-and :- b1 => b2 => (b1 ? b2 | false) #
+and :- b1 => b2 => b1 ? b2 | false #
 
-or :- b1 => b2 => (b1 ? true | b2) #	
+or :- b1 => b2 => b1 ? true | b2 #	
 
-form-tree :- l => r => (l, r) #
+form-tree :- l => r => l, r #

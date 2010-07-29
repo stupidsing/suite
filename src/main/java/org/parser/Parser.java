@@ -56,7 +56,7 @@ public class Parser {
 
 	public Node parse(String s) {
 		s = removeComments(s);
-		s = convertLineBreaks(s);
+		s = convertIndents(s);
 		s = convertWhitespaces(s);
 		return parseWithoutComments(s);
 	}
@@ -110,26 +110,32 @@ public class Parser {
 	/**
 	 * Turns indent patterns into parentheses, to provide Python-like parsing.
 	 */
-	private String convertLineBreaks(String s) {
-		String[] lines = ("\n" + s + "\n").split("\n");
+	private String convertIndents(String s) {
 		StringBuilder sb = new StringBuilder();
-
 		List<Integer> indented = new ArrayList<Integer>();
+
+		s = "\n" + s + "\n";
 		indented.add(0);
 
-		for (String line : lines) {
+		while (!s.isEmpty()) {
+			String line;
+			int pos = search(s, "\n", Assoc.RIGHT);
+			pos = pos >= 0 ? pos : s.length();
+			line = s.substring(0, pos);
+			s = s.substring(pos + 1);
+
 			int length = line.length();
 			int indent = 0;
 			while (indent < length && line.charAt(indent) == '\t')
 				indent++;
 
 			if (indented.get(0) < indent) {
-				sb.append("( ");
+				sb.append("(\n");
 				indented.add(0, indent);
 			}
 
 			while (!indented.isEmpty() && indented.get(0) > indent) {
-				sb.append(") ");
+				sb.append(")\n");
 				indented.remove(0);
 			}
 
