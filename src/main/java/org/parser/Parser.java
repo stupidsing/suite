@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +56,7 @@ public class Parser {
 
 	public Node parse(String s) {
 		s = removeComments(s);
+		s = convertLineBreaks(s);
 		s = convertWhitespaces(s);
 		return parseWithoutComments(s);
 	}
@@ -102,6 +105,38 @@ public class Parser {
 			s = unescape(Util.substr(s, 1, -1), "'");
 
 		return Atom.create(localContext, s);
+	}
+
+	/**
+	 * Turns indent patterns into parentheses, to provide Python-like parsing.
+	 */
+	private String convertLineBreaks(String s) {
+		String[] lines = ("\n" + s + "\n").split("\n");
+		StringBuilder sb = new StringBuilder();
+
+		List<Integer> indented = new ArrayList<Integer>();
+		indented.add(0);
+
+		for (String line : lines) {
+			int length = line.length();
+			int indent = 0;
+			while (indent < length && line.charAt(indent) == '\t')
+				indent++;
+
+			if (indented.get(0) < indent) {
+				sb.append("( ");
+				indented.add(0, indent);
+			}
+
+			while (!indented.isEmpty() && indented.get(0) > indent) {
+				sb.append(") ");
+				indented.remove(0);
+			}
+
+			sb.append(line.substring(indent) + "\n");
+		}
+
+		return sb.toString();
 	}
 
 	private static final String whitespaces[] = { "\t", "\r", "\n" };

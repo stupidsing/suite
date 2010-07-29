@@ -14,6 +14,8 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.LogUtil;
+import org.util.Util;
 
 public class Interpreter {
 
@@ -59,6 +61,27 @@ public class Interpreter {
 		return simplify(node);
 	}
 
+	public Node evaluateWithLogging(Node node) {
+		Node previous = null;
+
+		do {
+			previous = node;
+
+			Util.sleep(100);
+			LogUtil.info("SUBST", Formatter.dump(node));
+			node = performSubst(node);
+			LogUtil.info("DETRM", Formatter.dump(node));
+			node = performDetermination(node);
+			LogUtil.info("EXPND", Formatter.dump(node));
+			node = performExpand(node);
+		} while (Comparer.comparer.compare(previous, node) != 0);
+
+		LogUtil.info("SIMPL", Formatter.dump(node));
+		node = simplify(node);
+		LogUtil.info("ANSWR", Formatter.dump(node));
+		return node;
+	}
+
 	private Node performSubst(Node node) {
 		node = node.finalNode();
 
@@ -68,22 +91,28 @@ public class Interpreter {
 			Node l = t.getLeft(), r = t.getRight();
 			Node gl = performSubst(l), gr = performSubst(r);
 
-			if (operator == TermOp.DIVIDE || operator == TermOp.BRACES) {
-				Tree lambda = Tree.decompose(gl, TermOp.INDUCE);
-
-				if (lambda != null) {
-					Node body = lambda.getRight();
-					Node variable = lambda.getLeft();
-					EvaluatableReference value = new EvaluatableReference(gr);
-					node = performSubst(replace(body, variable, value));
-					return node;
-				}
+			// Two styles looking alike
+			if (operator == TermOp.LET___) {
+				Tree eq = Tree.decompose(gl, TermOp.EQUAL_);
+				if (eq != null)
+					return performLambda(gr, eq.getLeft(), eq.getRight());
+			} else if (operator == TermOp.BRACES) {
+				Tree lamb = Tree.decompose(gl, TermOp.INDUCE);
+				if (lamb != null)
+					return performLambda(lamb.getRight(), lamb.getLeft(), gr);
 			}
 
 			if (gl != l || gr != r)
 				node = new Tree(operator, gl, gr);
 		}
 
+		return node;
+	}
+
+	private Node performLambda(Node body, Node variable, Node value) {
+		Node node;
+		EvaluatableReference ref = new EvaluatableReference(value);
+		node = performSubst(replace(body, variable, ref));
 		return node;
 	}
 
@@ -96,7 +125,7 @@ public class Interpreter {
 			Node l = tree.getLeft(), r = tree.getRight();
 
 			if (operator == TermOp.CHOICE) {
-				tree = Tree.decompose(l, TermOp.INDUCE);
+				tree = Tree.decompose(l, TermOp.IF____);
 
 				if (tree != null && evaluate(tree.getLeft()) == TRUE)
 					return tree.getRight();
