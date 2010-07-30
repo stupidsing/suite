@@ -14,7 +14,8 @@ member-of :-
 tail :-
 	list =>
 		tree {list}
-		?	r = right {list} >>
+		?
+			r = right {list} >>
 			concat {r} {tail {r}}
 		|	()
 #
