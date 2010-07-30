@@ -75,18 +75,18 @@ public class Formatter {
 
 			format(tree.getLeft(), leftPrec, dump, sb);
 
-			String name = operator.getName();
-			sb.append(name);
-			if (!name.endsWith(" "))
-				sb.append(' ');
+			if (operator != TermOp.BRACES) {
+				String name = operator.getName();
+				sb.append(name);
+				if (!name.endsWith(" "))
+					sb.append(' ');
 
-			if (operator == TermOp.BRACES)
-				rightPrec = 0;
-
-			format(tree.getRight(), rightPrec, dump, sb);
-
-			if (operator == TermOp.BRACES)
-				sb.append(" }");
+				format(tree.getRight(), rightPrec, dump, sb);
+			} else {
+				sb.append(" {");
+				format(tree.getRight(), 0, dump, sb);
+				sb.append("}");
+			}
 
 			if (needParentheses)
 				sb.append(')');

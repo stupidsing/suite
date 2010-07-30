@@ -14,8 +14,7 @@ member-of :-
 tail :-
 	list =>
 		tree {list}
-		?
-			r = right {list} >>
+		?	r = right {list} >>
 			concat {r} {tail {r}}
 		|	()
 #
@@ -23,10 +22,11 @@ tail :-
 filter :-
 	func => list =>
 		tree {list}
-		?
-			l = left {list} >>
+		?	l = left {list} >>
 			others = filter {func} {right {list}} >>
-			func {l} ? form-tree {l} {others} | others
+				func {l}
+				?	form-tree {l} {others}
+				|	others
 		|	()
 #
 
@@ -34,7 +34,9 @@ fold :-
 	func => list =>
 		l = left {list} >>
 		r = right {list} >>
-		tree {r} ? func {l} {fold {func} {r}} | l
+			tree {r}
+			?	func {l} {fold {func} {r}}
+			|	l
 #
 
 map :-
@@ -49,5 +51,7 @@ join :- f1 => f2 => in => f1 {f2 {in}} #
 and :- b1 => b2 => b1 ? b2 | false #
 
 or :- b1 => b2 => b1 ? true | b2 #	
+
+not :- b => b ? false | true #
 
 form-tree :- l => r => l, r #

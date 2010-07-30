@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,10 +110,9 @@ public class Parser {
 	 */
 	private String convertIndents(String s) {
 		StringBuilder sb = new StringBuilder();
-		List<Integer> indented = new ArrayList<Integer>();
+		int lastIndent = 0;
 
 		s = "\n" + s + "\n";
-		indented.add(0);
 
 		while (!s.isEmpty()) {
 			String line;
@@ -129,17 +126,19 @@ public class Parser {
 			while (indent < length && line.charAt(indent) == '\t')
 				indent++;
 
-			if (indented.get(0) < indent) {
+			line = line.substring(indent);
+
+			while (lastIndent < indent) {
 				sb.append("(\n");
-				indented.add(0, indent);
+				lastIndent++;
 			}
 
-			while (!indented.isEmpty() && indented.get(0) > indent) {
+			while (lastIndent > indent) {
 				sb.append(")\n");
-				indented.remove(0);
+				lastIndent--;
 			}
 
-			sb.append(line.substring(indent) + "\n");
+			sb.append(line + "\n");
 		}
 
 		return sb.toString();
