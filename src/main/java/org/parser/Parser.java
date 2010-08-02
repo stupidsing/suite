@@ -126,7 +126,19 @@ public class Parser {
 			while (indent < length && line.charAt(indent) == '\t')
 				indent++;
 
-			line = line.substring(indent);
+			line = line.substring(indent).trim();
+			boolean isSeparate = !line.isEmpty();
+
+			for (Operator operator : operators) {
+				String name = operator.getName().trim();
+
+				if (!name.isEmpty())
+					if (line.startsWith(name) || line.endsWith(name))
+						isSeparate = false;
+			}
+
+			if (isSeparate)
+				line = "\n(\n" + line + "\n)\n";
 
 			while (lastIndent < indent) {
 				sb.append("(\n");

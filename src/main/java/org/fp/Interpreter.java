@@ -16,6 +16,7 @@ import org.suite.node.Str;
 import org.suite.node.Tree;
 import org.util.LogUtil;
 import org.util.Util;
+import org.util.Util.Pair;
 
 public class Interpreter {
 
@@ -227,6 +228,31 @@ public class Interpreter {
 			return new Tree(operator, gl, gr);
 
 		return tree;
+	}
+
+	private static boolean bind(Node n1, Node n2, List<Pair<Atom, Node>> binds) {
+		n1 = n1.finalNode();
+		n2 = n2.finalNode();
+
+		if (n1 == n2)
+			return true;
+
+		Class<? extends Node> clazz1 = n1.getClass();
+		Class<? extends Node> clazz2 = n2.getClass();
+
+		if (clazz1 == Atom.class) {
+			binds.add(Pair.create((Atom) n1, n2));
+			return true;
+		} else if (clazz1 != clazz2)
+			return false;
+		else if (clazz1 == Tree.class) {
+			Tree t1 = (Tree) n1;
+			Tree t2 = (Tree) n2;
+			return t1.getOperator() == t2.getOperator()
+					&& bind(t1.getLeft(), t2.getLeft(), binds)
+					&& bind(t1.getRight(), t2.getRight(), binds);
+		} else
+			return Comparer.comparer.compare(n1, n2) == 0;
 	}
 
 	private static Node replace(Node node, Node from, Node to) {

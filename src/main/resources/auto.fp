@@ -24,9 +24,7 @@ filter :-
 		tree {list}
 		?	l = left {list} >>
 			others = filter {func} {right {list}} >>
-				func {l}
-				?	form-tree {l} {others}
-				|	others
+			func {l} ? form-tree {l} {others} | others
 		|	()
 #
 
@@ -34,9 +32,7 @@ fold :-
 	func => list =>
 		l = left {list} >>
 		r = right {list} >>
-			tree {r}
-			?	func {l} {fold {func} {r}}
-			|	l
+		tree {r} ? func {l} {fold {func} {r}} | l
 #
 
 map :-
