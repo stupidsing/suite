@@ -119,7 +119,7 @@ public class Parser {
 			int pos = search(s, "\n", Assoc.RIGHT);
 			pos = pos >= 0 ? pos : s.length();
 			line = s.substring(0, pos);
-			s = s.substring(pos + 1);
+			s = pos < s.length() ? s.substring(pos + 1) : "";
 
 			int length = line.length();
 			int indent = 0;
@@ -127,18 +127,23 @@ public class Parser {
 				indent++;
 
 			line = line.substring(indent).trim();
+			int start = 0;
 			boolean isSeparate = !line.isEmpty();
 
 			for (Operator operator : operators) {
 				String name = operator.getName().trim();
 
-				if (!name.isEmpty())
-					if (line.startsWith(name) || line.endsWith(name))
+				if (!name.isEmpty()) {
+					if (line.startsWith(name))
+						start = name.length();
+					if (line.endsWith(name))
 						isSeparate = false;
+				}
 			}
 
 			if (isSeparate)
-				line = "\n(\n" + line + "\n)\n";
+				line = line.substring(0, start).trim() //
+						+ " (" + line.substring(start).trim() + ")";
 
 			while (lastIndent < indent) {
 				sb.append("(\n");
