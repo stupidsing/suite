@@ -116,7 +116,7 @@ public class Parser {
 
 		while (!s.isEmpty()) {
 			String line;
-			int pos = search(s, "\n", Assoc.RIGHT);
+			int pos = search(s, "\n", Assoc.RIGHT, false);
 			pos = pos >= 0 ? pos : s.length();
 			line = s.substring(0, pos);
 			s = pos < s.length() ? s.substring(pos + 1) : "";
@@ -241,6 +241,11 @@ public class Parser {
 	}
 
 	private static int search(String s, String name, Assoc assoc) {
+		return search(s, name, assoc, true);
+	}
+
+	private static int search(String s, String name, Assoc assoc,
+			boolean checkDepth) {
 		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
@@ -252,10 +257,13 @@ public class Parser {
 			quote = checkQuote(quote, c);
 
 			if (quote == 0) {
-				if (c == '(' || c == '[' || c == '{')
-					depth++;
-				if (c == ')' || c == ']' || c == '}')
-					depth--;
+				if (checkDepth) {
+					if (c == '(' || c == '[' || c == '{')
+						depth++;
+					if (c == ')' || c == ']' || c == '}')
+						depth--;
+				}
+
 				if (depth == 0 && s.startsWith(name, pos))
 					return pos;
 			}
