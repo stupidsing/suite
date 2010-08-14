@@ -128,7 +128,7 @@ public class Parser {
 
 			line = line.substring(indent).trim();
 			int start = 0;
-			boolean isSeparate = !line.isEmpty();
+			boolean isSeparate = !line.isEmpty() && checkDepth(line) == 0;
 
 			for (Operator operator : operators) {
 				String name = operator.getName().trim();
@@ -210,6 +210,7 @@ public class Parser {
 					s = s.substring(0, pos) + c + s.substring(pos + 3);
 				} else
 					s = s.substring(0, pos) + s.substring(pos + 1);
+
 				pos++;
 			}
 		} catch (Exception ex) {
@@ -257,12 +258,8 @@ public class Parser {
 			quote = checkQuote(quote, c);
 
 			if (quote == 0) {
-				if (checkDepth) {
-					if (c == '(' || c == '[' || c == '{')
-						depth++;
-					if (c == ')' || c == ']' || c == '}')
-						depth--;
-				}
+				if (checkDepth)
+					depth = checkDepth(depth, c);
 
 				if (depth == 0 && s.startsWith(name, pos))
 					return pos;
@@ -278,6 +275,21 @@ public class Parser {
 		else if (c == '\'' || c == '"')
 			quote = c;
 		return quote;
+	}
+
+	private static int checkDepth(String s) {
+		int depth = 0;
+		for (char c : s.toCharArray())
+			depth = checkDepth(depth, c);
+		return depth;
+	}
+
+	private static int checkDepth(int depth, char c) {
+		if (c == '(' || c == '[' || c == '{')
+			depth++;
+		if (c == ')' || c == ']' || c == '}')
+			depth--;
+		return depth;
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
