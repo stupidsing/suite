@@ -1,6 +1,5 @@
 package org.weiqi;
 
-import org.weiqi.Weiqi.Board;
 
 public class UserInterface {
 

@@ -3,7 +3,6 @@ package org.weiqi;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.weiqi.Weiqi.Board;
 import org.weiqi.Weiqi.Occupation;
 
 public class BoardTest {

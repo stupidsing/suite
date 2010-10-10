@@ -3,11 +3,24 @@ package org.weiqi;
 import java.util.Iterator;
 
 public class Coordinate {
+
 	public int x, y;
 
 	public Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+
+	public int hashCode() {
+		return x << 8 + y;
+	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Coordinate) {
+			Coordinate c = (Coordinate) object;
+			return x == c.x && y == c.y;
+		} else
+			return false;
 	}
 
 	public boolean isWithinBoard() {
