@@ -35,19 +35,19 @@ public class JsMain {
 		LogUtil.initLog4j(Level.INFO);
 
 		try {
-			List<String> jsFiles = new ArrayList<String>();
+			List<String> filenames = new ArrayList<String>();
 
 			for (String arg : args)
 				if (!arg.equals(""))
 					if (arg.charAt(0) == '-')
 						engine.eval(arg.substring(1));
 					else
-						jsFiles.add(arg);
+						filenames.add(arg);
 
-			if (jsFiles.size() == 0)
-				jsFiles = defaultJsFiles;
+			if (filenames.size() == 0)
+				filenames = defaultJsFiles;
 
-			for (String filename : jsFiles)
+			for (String filename : filenames)
 				engine.eval(new FileReader(filename));
 
 			wait();
