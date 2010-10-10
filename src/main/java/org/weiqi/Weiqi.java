@@ -19,10 +19,13 @@ public class Weiqi {
 		}
 	};
 
+	/**
+	 * A generic board type.
+	 */
 	public static class Array<T> {
 		@SuppressWarnings("unchecked")
 		// JDK bug
-		T position[][] = (T[][]) new Object[Weiqi.SIZE][Weiqi.SIZE];
+		private T position[][] = (T[][]) new Object[Weiqi.SIZE][Weiqi.SIZE];
 
 		public void set(Coordinate c, T t) {
 			position[c.x][c.y] = t;
