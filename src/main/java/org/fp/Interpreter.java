@@ -26,7 +26,7 @@ public class Interpreter {
 	private static final Atom NOT = Atom.create("not");
 	private static final Atom OPER = Atom.create("oper");
 	private static final Atom RIGHT = Atom.create("right");
-	private static final Atom TREE = Atom.create("tree");
+	private static final Atom TREE = Atom.create("is-tree");
 	private static final Atom TRUE = Atom.create("true");
 
 	public void addFunctions(Node node) {

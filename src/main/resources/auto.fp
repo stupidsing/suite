@@ -2,7 +2,7 @@ concat-lists :- fold {concat} #
 
 concat :-
 	list1 => list2 =>
-		tree {list1}
+		is-tree {list1}
 		?	l = left {list1} >> r = right {list1}
 			form-tree {l} {concat {r} {list2}}
 		|	list2
@@ -14,7 +14,7 @@ member-of :-
 
 tail :-
 	list =>
-		tree {list}
+		is-tree {list}
 		?	r = right {list} >>
 			concat {r} {tail {r}}
 		|	()
@@ -22,7 +22,7 @@ tail :-
 
 filter :-
 	func => list =>
-		tree {list}
+		is-tree {list}
 		?	l = left {list} >>
 			others = filter {func} {right {list}} >>
 			func {l} ? form-tree {l} {others} | others
@@ -33,12 +33,12 @@ fold :-
 	func => list =>
 		l = left {list} >>
 		r = right {list} >>
-		tree {r} ? func {l} {fold {func} {r}} | l
+		is-tree {r} ? func {l} {fold {func} {r}} | l
 #
 
 map :-
 	func => list =>
-		tree {list}
+		is-tree {list}
 		?	form-tree {func {left {list}}} {map {func} {right {list}}}
 		|	()
 #
