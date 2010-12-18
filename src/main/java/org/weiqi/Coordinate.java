@@ -48,7 +48,7 @@ public class Coordinate {
 						case 3:
 							return new Coordinate(x, y - 1);
 						default:
-							throw new RuntimeException("Runs out of neighbours");
+							throw new RuntimeException("Run out of neighbours");
 						}
 					}
 
