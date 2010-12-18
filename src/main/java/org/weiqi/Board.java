@@ -37,7 +37,7 @@ public class Board extends Array<Occupation> {
 	}
 
 	private void findGroup(Coordinate c, Occupation color, Set<Coordinate> group) {
-		if (get(c) == color && group.add(c))
+		if (c.isWithinBoard() && get(c) == color && group.add(c))
 			for (Coordinate neighbour : c.getNeighbours())
 				findGroup(neighbour, color, group);
 	}
