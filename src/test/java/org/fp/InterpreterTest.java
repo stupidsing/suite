@@ -22,6 +22,12 @@ public class InterpreterTest {
 	}
 
 	@Test
+	public void testStringManipulation() {
+		assertEquals(parse("\"a\""), evaluate("h {\"abc\"}"));
+		assertEquals(parse("\"bc\""), evaluate("t {\"abc\"}"));
+	}
+
+	@Test
 	public void testMap() {
 		assertEquals(parse("(2, 3, 4,)"), //
 				evaluate("map {a => a + 1} {1, 2, 3,}"));

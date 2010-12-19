@@ -18,8 +18,8 @@ public class Str extends Node {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof Str) {
-			Str atom = (Str) object;
-			return Util.equals(value, atom.value);
+			Str str = (Str) object;
+			return Util.equals(value, str.value);
 		} else
 			return false;
 	}
