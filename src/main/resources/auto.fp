@@ -3,7 +3,8 @@ concat-lists :- fold {concat} #
 concat :-
 	list1 => list2 =>
 		is-tree {list1}
-		?	l = left {list1} >> r = right {list1}
+		?	l = left {list1} >>
+			r = right {list1} >>
 			form-tree {l} {concat {r} {list2}}
 		|	list2
 #

@@ -93,6 +93,18 @@ public class InterpreterTest {
 		assertEquals(Int.create(89), evaluate("fib {10}"));
 	}
 
+	@Test
+	public void testConcat() {
+		assertEquals(parse("a, b, c, d, e,"),
+				evaluate("concat {a, b, c,} {d, e,}"));
+	}
+
+	@Test
+	public void testConcatLists() {
+		assertEquals(parse("a, b, c, d, e,"),
+				evaluate("concat-lists {(a, b, c,), (), (d, e,),}"));
+	}
+
 	private void addFunction(String head, String body) {
 		interpreter.addFunction(Atom.create(head), parse(body));
 	}
