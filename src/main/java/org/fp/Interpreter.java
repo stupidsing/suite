@@ -22,12 +22,12 @@ public class Interpreter {
 	private Map<Atom, Node> functions = new TreeMap<Atom, Node>();
 
 	private static final Atom FALSE = Atom.create("false");
-	private static final Atom HEAD = Atom.create("h");
+	private static final Atom H = Atom.create("h");
 	private static final Atom LEFT = Atom.create("left");
 	private static final Atom NOT = Atom.create("not");
 	private static final Atom OPER = Atom.create("oper");
 	private static final Atom RIGHT = Atom.create("right");
-	private static final Atom TAIL = Atom.create("t");
+	private static final Atom T = Atom.create("t");
 	private static final Atom TREE = Atom.create("is-tree");
 	private static final Atom TRUE = Atom.create("true");
 
@@ -195,9 +195,9 @@ public class Interpreter {
 				Tree t = Tree.decompose(param);
 				return l == OPER ? new Str(t.getOperator().getName())
 						: l == LEFT ? t.getLeft() : t.getRight();
-			} else if (l == HEAD)
+			} else if (l == H)
 				return new Str(((Str) param).getValue().substring(0, 1));
-			else if (l == TAIL)
+			else if (l == T)
 				return new Str(((Str) param).getValue().substring(1));
 		} else if (operator == TermOp.EQUAL_)
 			return eq(simplify(l), simplify(r));
