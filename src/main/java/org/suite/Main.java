@@ -92,7 +92,9 @@ public class Main {
 			case ELABORATE:
 				Node elab = new Station() {
 					public boolean run(Backtracks backtracks) {
-						System.out.println(generalizer.dumpVariables());
+						String dump = generalizer.dumpVariables();
+						if (!dump.isEmpty())
+							System.out.println(dump);
 						count[0]++;
 						return false;
 					}
