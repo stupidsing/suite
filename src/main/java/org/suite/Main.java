@@ -77,9 +77,10 @@ public class Main {
 			if (input.endsWith("#"))
 				input = input.substring(0, input.length() - 1);
 
-			final Generalizer generalizer = new Generalizer();
 			final int count[] = { 0 };
 			Node node = new TermParser().parse(input.trim());
+
+			final Generalizer generalizer = new Generalizer();
 			node = generalizer.generalize(node);
 
 			switch (type) {
@@ -95,6 +96,7 @@ public class Main {
 						String dump = generalizer.dumpVariables();
 						if (!dump.isEmpty())
 							System.out.println(dump);
+
 						count[0]++;
 						return false;
 					}
