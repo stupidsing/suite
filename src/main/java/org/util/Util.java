@@ -49,6 +49,14 @@ public class Util {
 		return Thread.currentThread().getStackTrace()[n];
 	}
 
+	public static boolean isBlank(String s) {
+		boolean isBlank = true;
+		if (s != null)
+			for (char c : s.toCharArray())
+				isBlank &= Character.isWhitespace(c);
+		return isBlank;
+	}
+
 	// Allows generic-object creation with type parameter inductions
 
 	public static <T> Stack<T> createStack() {

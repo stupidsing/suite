@@ -52,7 +52,6 @@ public class Main {
 			String line;
 
 			do {
-
 				System.out.print((sb.length() == 0) ? "=> " : "   ");
 
 				line = br.readLine();
@@ -64,6 +63,9 @@ public class Main {
 
 			String input = sb.toString();
 			InputType type;
+
+			if (Util.isBlank(input))
+				continue;
 
 			if (input.startsWith("?")) {
 				type = InputType.QUERY;
