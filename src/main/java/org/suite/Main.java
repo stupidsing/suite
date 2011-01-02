@@ -54,11 +54,10 @@ public class Main {
 			do {
 				System.out.print((sb.length() == 0) ? "=> " : "   ");
 
-				line = br.readLine();
-				if (line == null)
+				if ((line = br.readLine()) != null)
+					sb.append(line + "\n");
+				else
 					break quit;
-
-				sb.append(line + "\n");
 			} while (!line.isEmpty() && !line.endsWith("#"));
 
 			String input = sb.toString();
