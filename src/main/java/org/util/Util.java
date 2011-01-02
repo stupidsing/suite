@@ -79,10 +79,15 @@ public class Util {
 		return new HashMap<K, V>();
 	}
 
-	public static long timeOfDay(int year, int month, int day) {
+	public static long createDate(int year, int month, int day) {
+		return createDate(year, month, day, 0, 0, 0);
+	}
+
+	public static long createDate(int year, int month, int day, int hour,
+			int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
-		cal.set(year, month + (Calendar.JANUARY - 1), day);
+		cal.set(year, month + (Calendar.JANUARY - 1), day, hour, minute, second);
 		return cal.getTimeInMillis();
 	}
 
