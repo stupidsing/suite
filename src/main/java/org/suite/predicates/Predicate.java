@@ -15,14 +15,13 @@ public class Predicate {
 		Tree tree;
 
 		for (int i = 1; i < n; i++)
-			if ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
+			if ((tree = Tree.decompose(node, TermOp.SEP___)) != null) {
 				results.add(tree.getLeft());
 				node = tree.getRight();
 			} else
 				throw new RuntimeException("Not enough parameters");
 
 		results.add(node);
-
 		return results.toArray(new Node[results.size()]);
 	}
 

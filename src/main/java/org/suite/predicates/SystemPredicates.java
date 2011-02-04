@@ -3,6 +3,7 @@ package org.suite.predicates;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.parser.Operator;
 import org.suite.doer.Formatter;
@@ -34,6 +35,9 @@ public class SystemPredicates {
 		addPredicate("list", new ListPredicates());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
+		addPredicate("get", new StoreGet());
+		addPredicate("put", new StorePut());
+		addPredicate("temporary", new Temporary());
 
 		addPredicate("bound", new EvalPredicates.Bound());
 		addPredicate("eval.js", new EvalPredicates.EvalJs());
@@ -51,6 +55,10 @@ public class SystemPredicates {
 		addPredicate("exec", new IoPredicates.Exec());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
+
+		addPredicate("import", new ImportPredicates.Import());
+		addPredicate("assert", new ImportPredicates.Assert());
+		addPredicate("retract", new ImportPredicates.Retract());
 	}
 
 	public Boolean call(Node query) {
@@ -131,6 +139,34 @@ public class SystemPredicates {
 	private class Once implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return prover.prove(ps);
+		}
+	}
+
+	private static Map<Node, Node> store = new HashMap<Node, Node>();
+
+	private class StoreGet implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node value = store.get(params[0]);
+			return value != null ? prover.bind(value, params[1]) : false;
+		}
+	}
+
+	private class StorePut implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			store.put(params[0], params[1]);
+			return true;
+		}
+	}
+
+	private static AtomicInteger count = new AtomicInteger();
+
+	private class Temporary implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 1);
+			int n = count.getAndIncrement();
+			return prover.bind(params[0], Atom.create("TEMP" + n));
 		}
 	}
 

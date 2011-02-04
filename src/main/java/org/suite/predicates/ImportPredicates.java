@@ -17,7 +17,7 @@ public class ImportPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			try {
 				Node params[] = Predicate.getParameters(ps, 1);
-				String filename = Formatter.display(params[1]);
+				String filename = Formatter.display(params[0]);
 				InputStream is = new FileInputStream(filename);
 				prover.getRuleSet().importFrom(new TermParser().parse(is));
 				return true;
@@ -28,6 +28,22 @@ public class ImportPredicates {
 		}
 
 		private Log log = LogFactory.getLog(getClass());
+	}
+
+	public static class Assert implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Predicate.getParameters(ps, 1);
+			prover.getRuleSet().addRule(params[0]);
+			return true;
+		}
+	}
+
+	public static class Retract implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Predicate.getParameters(ps, 1);
+			prover.getRuleSet().removeRule(params[0]);
+			return true;
+		}
 	}
 
 }

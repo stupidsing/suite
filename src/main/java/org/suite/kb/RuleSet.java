@@ -1,8 +1,10 @@
 package org.suite.kb;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.suite.doer.Comparer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -63,6 +65,27 @@ public class RuleSet {
 	public void addRule(Rule rule) {
 		rules.add(rule);
 		index.get(Prototype.get(rule)).add(rule);
+	}
+
+	public void removeRule(Node node) {
+		removeRule(formRule(node));
+	}
+
+	public void removeRule(Rule rule) {
+		removeRule(rules, rule);
+		removeRule(index.get(Prototype.get(rule)), rule);
+	}
+
+	private static void removeRule(List<Rule> rules, Rule rule) {
+		Iterator<Rule> iter = rules.iterator();
+		Comparer comparer = Comparer.comparer;
+
+		while (iter.hasNext()) {
+			Rule rule1 = iter.next();
+			if (comparer.compare(rule.getHead(), rule1.getHead()) == 0
+					&& comparer.compare(rule.getTail(), rule1.getTail()) == 0)
+				iter.remove();
+		}
 	}
 
 	public static Rule formRule(Node node) {
