@@ -145,7 +145,7 @@ public class SystemPredicates {
 		}
 	}
 
-	private static Map<Node, Node> store = new HashMap<Node, Node>();
+	private static final Map<Node, Node> store = new HashMap<Node, Node>();
 
 	private class StoreGet implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
@@ -163,13 +163,13 @@ public class SystemPredicates {
 		}
 	}
 
-	private static AtomicInteger count = new AtomicInteger();
-
 	private class Temporary implements SystemPredicate {
+		private final AtomicInteger counter = new AtomicInteger();
+
 		public boolean prove(Prover prover, Node ps) {
 			Context hiddenContext = Singleton.get().getHiddenContext();
 			final Node params[] = Predicate.getParameters(ps, 1);
-			String name = "TEMP" + count.getAndIncrement();
+			String name = "TEMP" + counter.getAndIncrement();
 			return prover.bind(params[0], Atom.create(hiddenContext, name));
 		}
 	}

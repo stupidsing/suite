@@ -7,7 +7,7 @@ public class Reference extends Node {
 	private Node node = this;
 	private final int id = counter.getAndIncrement();
 
-	private final static AtomicInteger counter = new AtomicInteger();
+	private static final AtomicInteger counter = new AtomicInteger();
 
 	public void bound(Node node) {
 		this.node = node;

@@ -17,8 +17,8 @@ public class FilePersister<Value> implements
 
 	private B_Tree<Integer, Value> btree;
 
-	private final static int pageSize = 4096;
-	private final static int maxPages = 4096;
+	private static final int pageSize = 4096;
+	private static final int maxPages = 4096;
 
 	private static final char LEAF = 'L';
 	private static final char INTERNAL = 'I';

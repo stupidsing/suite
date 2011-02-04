@@ -5,8 +5,8 @@ import org.weiqi.Weiqi.Occupation;
 
 public class Evaluator {
 
-	private final static int PIECESCORE = 10;
-	private final static int TERRITORYSCORE = 100;
+	private static final int PIECESCORE = 10;
+	private static final int TERRITORYSCORE = 100;
 
 	public static int evaluate(Occupation side, Board board) {
 		int score = 0;
