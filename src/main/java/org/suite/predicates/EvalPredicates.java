@@ -1,14 +1,18 @@
 package org.suite.predicates;
 
+import java.io.IOException;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.fp.Interpreter;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
+import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -60,6 +64,23 @@ public class EvalPredicates {
 				return false;
 			}
 			return true;
+		}
+	}
+
+	public static class EvalFunctional implements SystemPredicate {
+		private static final Interpreter interpreter = new Interpreter();
+		static {
+			try {
+				TermParser parser = new TermParser();
+				interpreter.addFunctions(parser.parseClassPathFile("auto.fp"));
+			} catch (IOException ex) {
+				log.error(EvalFunctional.class, ex);
+			}
+		}
+
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			return prover.bind(interpreter.evaluate(params[0]), params[1]);
 		}
 	}
 
