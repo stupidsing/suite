@@ -1,7 +1,5 @@
 package org.suite.node;
 
-import java.util.Collection;
-
 import org.parser.Operator;
 import org.util.Util;
 
@@ -22,11 +20,6 @@ public class Tree extends Node {
 		this.operator = operator;
 		this.left = left;
 		this.right = right;
-	}
-
-	@Override
-	public void getSubNodes(Collection<Node> nodes) {
-		nodes.addAll(nodes);
 	}
 
 	@Override
