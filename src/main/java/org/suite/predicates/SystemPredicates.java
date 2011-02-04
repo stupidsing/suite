@@ -6,6 +6,8 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.parser.Operator;
+import org.suite.Context;
+import org.suite.Singleton;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.doer.Prover.Backtracks;
@@ -164,9 +166,10 @@ public class SystemPredicates {
 
 	private class Temporary implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
+			Context hiddenContext = Singleton.get().getHiddenContext();
 			final Node params[] = Predicate.getParameters(ps, 1);
-			int n = count.getAndIncrement();
-			return prover.bind(params[0], Atom.create("TEMP" + n));
+			String name = "TEMP" + count.getAndIncrement();
+			return prover.bind(params[0], Atom.create(hiddenContext, name));
 		}
 	}
 
