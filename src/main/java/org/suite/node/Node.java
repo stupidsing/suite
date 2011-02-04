@@ -8,6 +8,7 @@ public class Node implements Comparable<Node> {
 		return this;
 	}
 
+	@Override
 	public int compareTo(Node other) {
 		return Comparer.comparer.compare(this, other);
 	}
