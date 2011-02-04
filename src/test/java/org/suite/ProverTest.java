@@ -75,7 +75,7 @@ public class ProverTest {
 	@Test
 	public void testWrite() {
 		assertTrue(proveThis("write (1 + 2 * 3), nl"));
-		assertTrue(proveThis("write \"Don\"\"t forgot%0A4 Jun 1989\", nl"));
+		assertTrue(proveThis("write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
 	}
 
 	private void addRule(RuleSet rs, String s) {
