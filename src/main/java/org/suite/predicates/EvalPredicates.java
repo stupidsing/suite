@@ -108,6 +108,21 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class TreePredicate implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 4);
+			Node p = params[0].finalNode();
+			if (p instanceof Tree) {
+				Tree tree = (Tree) p;
+				Atom oper = Atom.create(tree.getOperator().getName());
+				return prover.bind(tree.getLeft(), params[1])
+						&& prover.bind(oper, params[2])
+						&& prover.bind(tree.getRight(), params[3]);
+			} else
+				return false;
+		}
+	}
+
 	public static class Let implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
