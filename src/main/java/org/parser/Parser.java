@@ -127,23 +127,18 @@ public class Parser {
 				indent++;
 
 			line = line.substring(indent).trim();
-			int start = 0;
 			boolean isSeparate = !line.isEmpty() && checkDepth(line) == 0;
 
 			for (Operator operator : operators) {
 				String name = operator.getName().trim();
 
-				if (!name.isEmpty()) {
-					if (line.startsWith(name))
-						start = name.length();
-					if (line.endsWith(name))
+				if (!name.isEmpty())
+					if (line.startsWith(name) || line.endsWith(name))
 						isSeparate = false;
-				}
 			}
 
 			if (isSeparate)
-				line = line.substring(0, start).trim() //
-						+ " (" + line.substring(start).trim() + ")";
+				line = " (" + line.trim() + ")";
 
 			while (lastIndent < indent) {
 				sb.append("(\n");
