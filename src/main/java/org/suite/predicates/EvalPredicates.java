@@ -1,6 +1,8 @@
 package org.suite.predicates;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -55,8 +57,8 @@ public class EvalPredicates {
 		private final ScriptEngine engine = new ScriptEngineManager()
 				.getEngineByExtension("js");
 
-		public boolean prove(Prover prover, Node parameter) {
-			String js = Formatter.display(parameter);
+		public boolean prove(Prover prover, Node ps) {
+			String js = Formatter.display(ps);
 			try {
 				engine.eval(js);
 			} catch (ScriptException ex) {
@@ -105,6 +107,18 @@ public class EvalPredicates {
 	public static class IsTree implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return ps.finalNode() instanceof Tree;
+		}
+	}
+
+	public static class MapGet implements SystemPredicate {
+		private static final Map<Node, Node> store = new TreeMap<Node, Node>();
+
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node value = store.get(params[0]);
+			if (value == null)
+				store.put(params[0], value = new Reference());
+			return prover.bind(value, params[1]);
 		}
 	}
 

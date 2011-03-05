@@ -8,13 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.parser.Operator;
 import org.suite.Context;
 import org.suite.Singleton;
-import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.doer.Prover.Backtracks;
 import org.suite.doer.TermParser.TermOp;
-import org.suite.kb.Prototype;
-import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Station;
@@ -34,11 +30,8 @@ public class SystemPredicates {
 		this.prover = prover;
 
 		addPredicate("find.all", new FindAll());
-		addPredicate("list", new ListPredicates());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
-		addPredicate("get", new StoreGet());
-		addPredicate("put", new StorePut());
 		addPredicate("temporary", new Temporary());
 
 		addPredicate("bound", new EvalPredicates.Bound());
@@ -53,6 +46,7 @@ public class SystemPredicates {
 		addPredicate("is.int", new EvalPredicates.IsInt());
 		addPredicate("is.string", new EvalPredicates.IsString());
 		addPredicate("is.tree", new EvalPredicates.IsTree());
+		addPredicate("map.get", new EvalPredicates.MapGet());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 
 		addPredicate("dump", new IoPredicates.Dump());
@@ -60,9 +54,11 @@ public class SystemPredicates {
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 
-		addPredicate("import", new ImportPredicates.Import());
-		addPredicate("assert", new ImportPredicates.Assert());
-		addPredicate("retract", new ImportPredicates.Retract());
+		addPredicate("rules", new RuleSetPredicates.GetAllRules());
+		addPredicate("list", new RuleSetPredicates.ListPredicates());
+		addPredicate("import", new RuleSetPredicates.Import());
+		addPredicate("assert", new RuleSetPredicates.Assert());
+		addPredicate("retract", new RuleSetPredicates.Retract());
 	}
 
 	public Boolean call(Node query) {
@@ -116,24 +112,6 @@ public class SystemPredicates {
 		}
 	}
 
-	private class ListPredicates implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Prototype proto = null;
-			if (ps != Atom.nil)
-				proto = Prototype.get(ps);
-
-			for (Rule rule : prover.getRuleSet().getRules()) {
-				Prototype p1 = Prototype.get(rule);
-				if (proto == null || proto.equals(p1)) {
-					String s = Formatter.dump(RuleSet.formClause(rule));
-					System.out.println(s + " #");
-				}
-			}
-
-			return true;
-		}
-	}
-
 	private class Not implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return !prover.prove(ps);
@@ -146,32 +124,13 @@ public class SystemPredicates {
 		}
 	}
 
-	private static final Map<Node, Node> store = new HashMap<Node, Node>();
-
-	private class StoreGet implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node value = store.get(params[0]);
-			return value != null ? prover.bind(value, params[1]) : false;
-		}
-	}
-
-	private class StorePut implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			store.put(params[0], params[1]);
-			return true;
-		}
-	}
-
 	private class Temporary implements SystemPredicate {
 		private final AtomicInteger counter = new AtomicInteger();
 
 		public boolean prove(Prover prover, Node ps) {
 			Context hiddenContext = Singleton.get().getHiddenContext();
-			final Node params[] = Predicate.getParameters(ps, 1);
 			String name = "TEMP" + counter.getAndIncrement();
-			return prover.bind(params[0], Atom.create(hiddenContext, name));
+			return prover.bind(ps, Atom.create(hiddenContext, name));
 		}
 	}
 
