@@ -9,6 +9,11 @@ public class Reference extends Node {
 
 	private static final AtomicInteger counter = new AtomicInteger();
 
+	@Override
+	public int hashCode() {
+		return (node != this) ? node.hashCode() : super.hashCode();
+	}
+
 	public void bound(Node node) {
 		this.node = node;
 	}
