@@ -46,7 +46,8 @@ public class SystemPredicates {
 		addPredicate("is.int", new EvalPredicates.IsInt());
 		addPredicate("is.string", new EvalPredicates.IsString());
 		addPredicate("is.tree", new EvalPredicates.IsTree());
-		addPredicate("map.get", new EvalPredicates.MapGet());
+		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
+		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 
 		addPredicate("dump", new IoPredicates.Dump());
