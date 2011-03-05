@@ -1,38 +1,48 @@
--- 2-3 tree indexer
-
 -- typing
 
 -- compiler
 
 compile () () (.c .c) #
 compile () .more (.c0 .cx)
-	:- compile .more () (.c0 .cx) #
+	:- compile .more () (.c0 .cx)
+#
 compile () (JMP .label) (.c0 .cx)
-	:- (JMP .label, .c0) = .cx #
+	:- (JMP .label, .c0) = .cx
+#
 compile (.a, .b) .more (.c0 .cx)
-	:- compile .a (.b, .more) (.c0 .cx) #
+	:- compile .a (.b, .more) (.c0 .cx)
+#
 compile (.a; .b) .more (.c0 .cx)
 	:- (.c0, PUSH-BACKTRACK-POINT) = .c1
 	, compile .a (JMP .label) .c1 .c2
 	, (LABEL .label, .c2) = .c3
-	, compile .a () .c3 .cx #
+	, compile .a () .c3 .cx
+#
 compile (.a = .b) .more (.c0 .cx)
 	:- createNode .a .reg0 (.c0 .c1)
 	, createNode .a .reg1 (.c1 .c2)
-	, (FAIL-IF-DIFF .reg0 .reg1, .c2) = .cx #
+	, (FAIL-IF-DIFF .reg0 .reg1, .c2) = .cx
+#
 
-createNode .atom .reg (.c0 .cx)
-	:- is.atom .atom
-	, (ASSIGN-ATOM .reg .atom, .c0) = .cx #
+createNode .a .reg (.c0 .cx)
+	:- is.atom .a, (ASSIGN-ATOM .reg .a, .c0) = .cx
+#
 createNode .i .reg (.c0 .cx)
-	:- is.int .i
-	, (ASSIGN-INT .reg .i, .c0) = .cx #
-createNode .str .reg (.c0 .cx)
-	:- is.string .str
-	, (ASSIGN-STRING .reg .str, .c0) = .cx #
+	:- is.int .i, (ASSIGN-INT .reg .i, .c0) = .cx
+#
+createNode .s .reg (.c0 .cx)
+	:- is.string .s, (ASSIGN-STRING .reg .s, .c0) = .cx
+#
 createNode .tree .reg (.c0 .cx)
 	:- tree .tree .left .operator .right
 	, createNode .left .regl (.c0 .c1)
 	, createNode .right .regr (.c1 .c2)
-	, (FORM-TREE .operator .regl .regr, .c2) = .cx #
-	
+	, (FORM-TREE .operator .regl .regr, .c2) = .cx
+#
+
+isUserPredicate .call :- was.success (isUserPredicate0 .call) #
+
+isUserPredicate0 .call :- rules .rules, hasRules .rules (.call :- _) #
+
+hasRules (.rule # _) .rule #
+hasRules (_ # .remains) .rule :- hasRules .remains .rule #
