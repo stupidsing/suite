@@ -127,32 +127,47 @@ public class Parser {
 				indent++;
 
 			line = line.substring(indent).trim();
-			boolean isSeparate = !line.isEmpty() && checkDepth(line) == 0;
+			length = line.length();
+			int startPos = 0, endPos = length;
 
 			for (Operator operator : operators) {
 				String name = operator.getName().trim();
 
-				if (!name.isEmpty())
-					if (line.startsWith(name) || line.endsWith(name))
-						isSeparate = false;
+				if (!name.isEmpty()) {
+					if (line.startsWith(name))
+						startPos = Math.max(startPos, name.length());
+					if (line.endsWith(name))
+						endPos = Math.min(endPos, length - name.length());
+				}
 			}
 
-			if (isSeparate)
-				line = " (" + line.trim() + ")";
+			if (startPos > endPos) // When a line has only one operator
+				startPos = 0;
 
-			while (lastIndent < indent) {
-				sb.append("(\n");
-				lastIndent++;
-			}
+			boolean isSeparateLine = startPos == 0 //
+					&& endPos == length //
+					&& startPos != endPos //
+					&& checkDepth(line) == 0;
 
+			String decoratedLine = "";
 			while (lastIndent > indent) {
-				sb.append(")\n");
+				decoratedLine += ") ";
 				lastIndent--;
 			}
+			decoratedLine += line.substring(0, startPos);
+			decoratedLine += isSeparateLine ? " (" : "";
+			while (lastIndent < indent) {
+				decoratedLine += " (";
+				lastIndent++;
+			}
+			decoratedLine += line.substring(startPos, endPos);
+			decoratedLine += isSeparateLine ? ") " : "";
+			decoratedLine += line.substring(endPos);
 
-			sb.append(line + "\n");
+			sb.append(decoratedLine + "\n");
 		}
 
+		System.out.println(sb);
 		return sb.toString();
 	}
 
