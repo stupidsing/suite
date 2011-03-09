@@ -167,7 +167,6 @@ public class Parser {
 			sb.append(decoratedLine + "\n");
 		}
 
-		System.out.println(sb);
 		return sb.toString();
 	}
 
