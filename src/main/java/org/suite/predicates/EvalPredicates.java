@@ -132,6 +132,7 @@ public class EvalPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 4);
 			Node p = params[0].finalNode();
+
 			if (p instanceof Tree) {
 				Tree tree = (Tree) p;
 				Atom oper = Atom.create(tree.getOperator().getName());

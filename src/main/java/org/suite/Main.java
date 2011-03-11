@@ -47,70 +47,73 @@ public class Main {
 		InputStreamReader is = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(is);
 
-		quit: while (true) {
-			StringBuilder sb = new StringBuilder();
-			String line;
+		quit: while (true)
+			try {
+				StringBuilder sb = new StringBuilder();
+				String line;
 
-			do {
-				System.out.print((sb.length() == 0) ? "=> " : "   ");
+				do {
+					System.out.print((sb.length() == 0) ? "=> " : "   ");
 
-				if ((line = br.readLine()) != null)
-					sb.append(line + "\n");
-				else
-					break quit;
-			} while (!line.isEmpty() && !line.endsWith("#"));
+					if ((line = br.readLine()) != null)
+						sb.append(line + "\n");
+					else
+						break quit;
+				} while (!line.isEmpty() && !line.endsWith("#"));
 
-			String input = sb.toString();
-			InputType type;
+				String input = sb.toString();
+				InputType type;
 
-			if (Util.isBlank(input))
-				continue;
+				if (Util.isBlank(input))
+					continue;
 
-			if (input.startsWith("?")) {
-				type = InputType.QUERY;
-				input = input.substring(1);
-			} else if (input.startsWith("/")) {
-				type = InputType.ELABORATE;
-				input = input.substring(1);
-			} else
-				type = InputType.FACT;
+				if (input.startsWith("?")) {
+					type = InputType.QUERY;
+					input = input.substring(1);
+				} else if (input.startsWith("/")) {
+					type = InputType.ELABORATE;
+					input = input.substring(1);
+				} else
+					type = InputType.FACT;
 
-			if (input.endsWith("#"))
-				input = input.substring(0, input.length() - 1);
+				if (input.endsWith("#"))
+					input = input.substring(0, input.length() - 1);
 
-			final int count[] = { 0 };
-			Node node = new TermParser().parse(input.trim());
+				final int count[] = { 0 };
+				Node node = new TermParser().parse(input.trim());
 
-			final Generalizer generalizer = new Generalizer();
-			node = generalizer.generalize(node);
+				final Generalizer generalizer = new Generalizer();
+				node = generalizer.generalize(node);
 
-			switch (type) {
-			case FACT:
-				rs.addRule(node);
-				break;
-			case QUERY:
-				System.out.println(prover.prove(node) ? "Yes\n" : "No\n");
-				break;
-			case ELABORATE:
-				Node elab = new Station() {
-					public boolean run(Backtracks backtracks) {
-						String dump = generalizer.dumpVariables();
-						if (!dump.isEmpty())
-							System.out.println(dump);
+				switch (type) {
+				case FACT:
+					rs.addRule(node);
+					break;
+				case QUERY:
+					System.out.println(prover.prove(node) ? "Yes\n" : "No\n");
+					break;
+				case ELABORATE:
+					Node elab = new Station() {
+						public boolean run(Backtracks backtracks) {
+							String dump = generalizer.dumpVariables();
+							if (!dump.isEmpty())
+								System.out.println(dump);
 
-						count[0]++;
-						return false;
-					}
-				};
+							count[0]++;
+							return false;
+						}
+					};
 
-				prover.prove(new Tree(TermOp.AND___, node, elab));
+					prover.prove(new Tree(TermOp.AND___, node, elab));
 
-				if (count[0] == 1)
-					System.out.println(count[0] + " solution\n");
-				else
-					System.out.println(count[0] + " solutions\n");
+					if (count[0] == 1)
+						System.out.println(count[0] + " solution\n");
+					else
+						System.out.println(count[0] + " solutions\n");
+				}
+			} catch (Throwable ex) {
+				log.error(Main.class, ex);
 			}
-		}
 	}
 
 	private void importAuto(RuleSet rs) throws IOException {
