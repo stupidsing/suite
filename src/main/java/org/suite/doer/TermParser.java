@@ -3,6 +3,7 @@ package org.suite.doer;
 import org.parser.Operator;
 import org.parser.Parser;
 import org.suite.Context;
+import org.util.Util;
 
 public class TermParser extends Parser {
 
@@ -39,7 +40,7 @@ public class TermParser extends Parser {
 
 		static {
 			int precedence = 0;
-			for (TermOp operator : TermOp.values())
+			for (TermOp operator : values())
 				operator.precedence = ++precedence;
 		}
 
@@ -53,6 +54,14 @@ public class TermParser extends Parser {
 
 		public int getPrecedence() {
 			return precedence;
+		}
+
+		public static TermOp find(String name) {
+			String trimmed = name.trim();
+			for (TermOp operator : values())
+				if (Util.equals(operator.name.trim(), trimmed))
+					return operator;
+			return null;
 		}
 	}
 

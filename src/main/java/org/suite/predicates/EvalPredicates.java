@@ -11,6 +11,7 @@ import javax.script.ScriptException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fp.Interpreter;
+import org.parser.Operator;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
@@ -132,13 +133,17 @@ public class EvalPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 4);
 			Node p = params[0].finalNode();
+			Node p2 = params[2].finalNode();
 
 			if (p instanceof Tree) {
 				Tree tree = (Tree) p;
 				Atom oper = Atom.create(tree.getOperator().getName());
 				return prover.bind(tree.getLeft(), params[1])
-						&& prover.bind(oper, params[2])
+						&& prover.bind(oper, p2)
 						&& prover.bind(tree.getRight(), params[3]);
+			} else if (p2 instanceof Atom) {
+				Operator operator = TermOp.find(((Atom) p2).getName());
+				return prover.bind(p, new Tree(operator, params[1], params[3]));
 			} else
 				return false;
 		}

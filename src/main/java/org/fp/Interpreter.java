@@ -21,6 +21,7 @@ public class Interpreter {
 
 	private Map<Atom, Node> functions = new TreeMap<Atom, Node>();
 
+	private static final Atom ATOM = Atom.create("is-atom");
 	private static final Atom FALSE = Atom.create("false");
 	private static final Atom H = Atom.create("h");
 	private static final Atom LEFT = Atom.create("left");
@@ -189,6 +190,8 @@ public class Interpreter {
 
 			if (l == NOT)
 				return param == TRUE ? FALSE : TRUE;
+			else if (l == ATOM)
+				return param.finalNode() instanceof Atom ? TRUE : FALSE;
 			else if (l == TREE)
 				return param.finalNode() instanceof Tree ? TRUE : FALSE;
 			else if (l == LEFT || l == RIGHT || l == OPER) {

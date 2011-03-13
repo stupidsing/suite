@@ -1,3 +1,14 @@
+-- sugars
+apply.sugar (if .if then .then else .else end-if) (.if ? .then | .else) :- ! #
+apply.sugar .t0 .t1
+	:- tree (.t0, .left0, .operator, .right0)
+	, tree (.t1, .left1, .operator, .right1)
+	, !
+	, apply.sugar .left0 .left1
+	, apply.sugar .right0 .right1
+#
+apply.sugar .node .node #
+
 -- type check
 
 -- parser
