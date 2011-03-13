@@ -46,6 +46,8 @@ map :-
 
 join :- f1 => f2 => in => f1 {f2 {in}} #
 
+if :- cond => then => else => cond ? then | else #
+
 and :- b1 => b2 => b1 ? b2 | false #
 
 or :- b1 => b2 => b1 ? true | b2 #	

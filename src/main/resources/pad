@@ -1,4 +1,6 @@
--- typing
+-- type check
+
+-- parser
 
 -- compiler
 
@@ -21,7 +23,7 @@ compile (.a; .b) .more (.c0 .cx)
 compile (.a = .b) .more (.c0 .cx)
 	:- createNode .a .reg0 (.c0 .c1)
 	, createNode .a .reg1 (.c1 .c2)
-	, .c2 = (FAIL-IF-DIFF .reg0 .reg1, .cx)
+	, .c2 = (JUMP-FAIL .reg0 .reg1, .cx)
 #
 
 createNode .a .reg (.c0 .cx)

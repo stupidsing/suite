@@ -87,6 +87,12 @@ public class InterpreterTest {
 	}
 
 	@Test
+	public void testIf() {
+		assertEquals(Atom.create("p"), evaluate("if {1 = 1} {p} {q}"));
+		assertEquals(Atom.create("q"), evaluate("if {0 = 1} {p} {q}"));
+	}
+
+	@Test
 	public void testFibonacci() {
 		addFunction("fib",
 				"n => (or {n = 0} {n = 1} ? 1 | fib {n - 1} + fib {n - 2})");
