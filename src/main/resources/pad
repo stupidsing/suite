@@ -1,15 +1,50 @@
--- sugars
-apply.sugar (if .if then .then else .else end-if) (.if ? .then | .else) :- ! #
-apply.sugar .t0 .t1
+apply-sugar (if .if then .then else .else end-if) (.if ? .then | .else) :- ! #
+apply-sugar .t0 .t1
 	:- tree (.t0, .left0, .operator, .right0)
 	, tree (.t1, .left1, .operator, .right1)
 	, !
-	, apply.sugar .left0 .left1
-	, apply.sugar .right0 .right1
+	, apply-sugar .left0 .left1
+	, apply-sugar .right0 .right1
 #
-apply.sugar .node .node #
+apply-sugar .node .node #
 
--- type check
+-- format check
+check-format MODULE (.rule # .remains) :- check-format RULE .rule, check-format PGM .remains #
+check-format MODULE () #
+
+check-format RULE (.head :- clause)
+	:- prototype .head .proto
+	, map.retrieve .proto .types
+	, check-type .types .head
+	, check-format CLAUSE .clause
+#
+check-format RULE .head :- not (head = ()), check-format HEAD .head #
+check-format RULE () #
+
+check-format CLAUSE (.c1, .c2) :- check-format CLAUSE .c1, check-format CLAUSE .c2 #
+check-format CLAUSE (.c1; .c2) :- check-format CLAUSE .c1, check-format CLAUSE .c2 #
+check-format CLAUSE (.c1 = .c2) :- check-type .type .c1, check-type .type .c2 #
+
+check-type %integer .i :- is.int .i #
+check-type %string .s :- is.string .s #
+check-type (.type | _) .e :- check-type .type .e #
+check-type (_ | .remains) .e :- check-type .remains .e #
+check-type (%list .type) (.head, .remains)
+	:- check-type .type .head
+	, check-type (%list .type) .remains
+#
+check-type %any _ #
+check-type .alias .e :- map.retrieve (TYPE-ALIAS .alias) .value, bound .value, check-type .value .e # 
+check-type .a .a :- is.atom .a, not (starts.with .a '%') #
+
+define-signature .sign :- prototype .sign .proto, map.retrieve (DEFINE-SIGNATURE .sign) .proto #
+
+prototype (.head .remains0) (.head .remains1) :- prototype .remains0 .remains1 :- ! #
+prototype _ () #
+
+-- deterministic analysis
+
+-- pattern recog
 
 -- parser
 
@@ -32,30 +67,54 @@ compile (.a; .b) .more (.c0 .cx)
 	, compile .a () .c3 .cx
 #
 compile (.a = .b) .more (.c0 .cx)
-	:- createNode .a .reg0 (.c0 .c1)
-	, createNode .a .reg1 (.c1 .c2)
+	:- create-node .a .reg0 (.c0 .c1)
+	, create-node .a .reg1 (.c1 .c2)
 	, .c2 = (JUMP-FAIL .reg0 .reg1, .cx)
 #
 
-createNode .a .reg (.c0 .cx)
+create-node .a .reg (.c0 .cx)
 	:- is.atom .a, .c0 = (ASSIGN-ATOM .reg .a, .cx)
 #
-createNode .i .reg (.c0 .cx)
+create-node .i .reg (.c0 .cx)
 	:- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx)
 #
-createNode .s .reg (.c0 .cx)
+create-node .s .reg (.c0 .cx)
 	:- is.string .s, .c0 = (ASSIGN-STRING .reg .s, .cx)
 #
-createNode .tree .reg (.c0 .cx)
+create-node .tree .reg (.c0 .cx)
 	:- tree (.tree, .left, .operator, .right)
-	, createNode .left .regl (.c0 .c1)
-	, createNode .right .regr (.c1 .c2)
+	, create-node .left .regl (.c0 .c1)
+	, create-node .right .regr (.c1 .c2)
 	, .c2 = (FORM-TREE .operator .regl .regr, .cx)
 #
 
-isUserPredicate .call :- was.success (isUserPredicate0 .call) #
+is-user-predicate .call :- was-success (is-user-predicate0 .call) #
 
-isUserPredicate0 .call :- rules .rules, hasRules .rules (.call :- _) #
+is-user-predicate0 .call :- rules .rules, has-rules .rules (.call :- _) #
 
-hasRules (.rule # _) .rule #
-hasRules (_ # .remains) .rule :- hasRules .remains .rule #
+has-rules (.rule # _) .rule #
+has-rules (_ # .remains) .rule :- has-rules .remains .rule #
+
+-- longest common subsequence
+
+lcs () . () :- ! #
+lcs . () () :- ! #
+lcs (.common, .remains1) (.common, .remains2) (.common, .lcs)
+	:- lcs-once .remains1 .remains2 .lcs, !
+#
+lcs (.head1, .remains1) (.head2, .remains2) .lcs
+	:- lcs-once (.head1, .remains1) .remains2 .lcs1
+	, lcs-once .remains1 (.head2, .remains2) .lcs2
+	, longest .lcs1 .lcs2 .lcs
+#
+
+-- Note memory leak
+lcs-once .a .b .lcs :- map.retrieve (LCS .a .b) .lcs, (bound lcs; lcs .a .b .lcs) #
+
+longest .l .r .result
+	:- longest0 .l .r L, !, .result = .l; .result = .r
+#
+
+longest0 .l () L #
+longest0 () .l R #
+longest0 (_, .l1) (_, .l2) .which :- longest0 .l1 .l2 .which #
