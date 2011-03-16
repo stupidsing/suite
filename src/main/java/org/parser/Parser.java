@@ -213,12 +213,14 @@ public class Parser {
 		try {
 			int pos = 0;
 			while ((pos = s.indexOf('%', pos)) != -1) {
-				if (s.charAt(pos + 1) != '%') {
-					String hex = s.substring(pos + 1, pos + 3);
+				int pos1 = pos + 1;
+
+				if (pos1 < s.length() && s.charAt(pos1) != '%') {
+					String hex = s.substring(pos1, pos + 3);
 					char c = (char) Integer.parseInt(hex, 16);
 					s = s.substring(0, pos) + c + s.substring(pos + 3);
 				} else
-					s = s.substring(0, pos) + s.substring(pos + 1);
+					s = s.substring(0, pos) + s.substring(pos1);
 
 				pos++;
 			}

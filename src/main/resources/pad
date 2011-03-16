@@ -1,29 +1,38 @@
+-------------------------------------------------------------------------------
+-- syntactic sugaring
+
 apply-sugar (if .if then .then else .else end-if) (.if ? .then | .else) :- ! #
 apply-sugar .t0 .t1
 	:- tree (.t0, .left0, .operator, .right0)
 	, tree (.t1, .left1, .operator, .right1)
-	, !
-	, apply-sugar .left0 .left1
-	, apply-sugar .right0 .right1
+	, !, apply-sugar .left0 .left1, apply-sugar .right0 .right1
 #
 apply-sugar .node .node #
 
+-------------------------------------------------------------------------------
 -- format check
+
+define-signature .sign :- signature-prototype .sign .sign #
+
 check-format MODULE (.rule # .remains) :- check-format RULE .rule, check-format PGM .remains #
 check-format MODULE () #
 
-check-format RULE (.head :- clause)
-	:- prototype .head .proto
-	, map.retrieve .proto .types
-	, check-type .types .head
-	, check-format CLAUSE .clause
-#
-check-format RULE .head :- not (head = ()), check-format HEAD .head #
+check-format RULE (.head :- .clause) :- check-rule-format .head .clause #
+check-format RULE .head :- not (head = ()), check-rule-format .head () #
 check-format RULE () #
 
 check-format CLAUSE (.c1, .c2) :- check-format CLAUSE .c1, check-format CLAUSE .c2 #
 check-format CLAUSE (.c1; .c2) :- check-format CLAUSE .c1, check-format CLAUSE .c2 #
 check-format CLAUSE (.c1 = .c2) :- check-type .type .c1, check-type .type .c2 #
+
+check-rule-format .head .clause
+	:- prototype .head .proto
+	, retrieve-signature .head .types
+	, check-type .types .head
+	, check-format CLAUSE .clause
+#
+
+signature-prototype .sign .proto :- prototype .sign .proto, map.retrieve (SIGNATURE .sign, .proto) #
 
 check-type %integer .i :- is.int .i #
 check-type %string .s :- is.string .s #
@@ -34,20 +43,27 @@ check-type (%list .type) (.head, .remains)
 	, check-type (%list .type) .remains
 #
 check-type %any _ #
-check-type .alias .e :- map.retrieve (TYPE-ALIAS .alias) .value, bound .value, check-type .value .e # 
+check-type .alias .e :- map.retrieve (TYPE-ALIAS .alias, .value), bound .value, check-type .value .e #
+check-type .treeType .tree
+	:- tree (.tree, .left, .operator, .right)
+	, tree (.treeType, .leftType, .operator, .rightType)
+	, check-type .leftType .left, check-type .rightType .right
+#
 check-type .a .a :- is.atom .a, not (starts.with .a '%') #
-
-define-signature .sign :- prototype .sign .proto, map.retrieve (DEFINE-SIGNATURE .sign) .proto #
 
 prototype (.head .remains0) (.head .remains1) :- prototype .remains0 .remains1 :- ! #
 prototype _ () #
 
+-------------------------------------------------------------------------------
 -- deterministic analysis
 
+-------------------------------------------------------------------------------
 -- pattern recog
 
+-------------------------------------------------------------------------------
 -- parser
 
+-------------------------------------------------------------------------------
 -- compiler
 
 compile () () (.c .c) #
@@ -95,10 +111,11 @@ is-user-predicate0 .call :- rules .rules, has-rules .rules (.call :- _) #
 has-rules (.rule # _) .rule #
 has-rules (_ # .remains) .rule :- has-rules .remains .rule #
 
+-------------------------------------------------------------------------------
 -- longest common subsequence
 
-lcs () . () :- ! #
-lcs . () () :- ! #
+lcs () _ () :- ! #
+lcs _ () () :- ! #
 lcs (.common, .remains1) (.common, .remains2) (.common, .lcs)
 	:- lcs-once .remains1 .remains2 .lcs, !
 #
@@ -109,7 +126,7 @@ lcs (.head1, .remains1) (.head2, .remains2) .lcs
 #
 
 -- Note memory leak
-lcs-once .a .b .lcs :- map.retrieve (LCS .a .b) .lcs, (bound lcs; lcs .a .b .lcs) #
+lcs-once .a .b .lcs :- map.retrieve (LCS .a .b, .lcs), (bound .lcs, !; lcs .a .b .lcs) #
 
 longest .l .r .result
 	:- longest0 .l .r L, !, .result = .l; .result = .r
