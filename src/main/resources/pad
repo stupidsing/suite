@@ -51,17 +51,37 @@ check-type .treeType .tree
 #
 check-type .a .a :- is.atom .a, not (starts.with .a '%') #
 
-prototype (.head .remains0) (.head .remains1) :- prototype .remains0 .remains1 :- ! #
-prototype _ () #
+prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
+
+params-prototype (_, .remains0) ((), .remains1) :- params-prototype .remains0 .remains1, ! #
+params-prototype () () #
 
 -------------------------------------------------------------------------------
 -- deterministic analysis
+
+group-predicates (.head :- .tail, .remains) (IN = .head, .tail; .groupedRemains)
+	:- group-predicates .remains .groupedRemains
+#
+group-predicates () fail #
+
+is-deterministic (!, _) #
+is-deterministic (!; .b) :- is-deterministic .b #
+is-deterministic (.a, .b) :- is-deterministic .a, is-deterministic .b #
+is-deterministic (.a; fail) :- is-deterministic .a #
+is-deterministic (.a; .or) :- split-cut .a .before, is-deterministic (.before; .or) #
+is-deterministic (.a = .b) #
+is-deterministic yes #
+is-deterministic fail #
+
+split-cut ! () #
+split-cut (!, .before) .before #
+split-cut (.before, .after) .before0 :- split-cut .before .before0 #
 
 -------------------------------------------------------------------------------
 -- pattern recog
 
 -------------------------------------------------------------------------------
--- parser
+-- lexer
 
 -------------------------------------------------------------------------------
 -- compiler

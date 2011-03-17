@@ -21,3 +21,5 @@ was-success .call
 
 is-success .call () :- .call, ! #
 is-success .call fail #
+
+() :- write 'READY', nl #
