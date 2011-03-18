@@ -68,7 +68,7 @@ is-deterministic (!, _) #
 is-deterministic (!; .b) :- is-deterministic .b #
 is-deterministic (.a, .b) :- is-deterministic .a, is-deterministic .b #
 is-deterministic (.a; fail) :- is-deterministic .a #
-is-deterministic (.a; .or) :- split-cut .a .before, is-deterministic (.before; .or) #
+is-deterministic (.a; .else) :- split-cut .a .then, is-deterministic .then, is-deterministic .else #
 is-deterministic (.a = .b) #
 is-deterministic yes #
 is-deterministic fail #
