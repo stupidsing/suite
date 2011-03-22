@@ -32,8 +32,6 @@ check-rule-format .head .clause
 	, check-format CLAUSE .clause
 #
 
-signature-prototype .sign .proto :- prototype .sign .proto, map.retrieve (SIGNATURE .sign, .proto) #
-
 check-type %integer .i :- is.int .i #
 check-type %string .s :- is.string .s #
 check-type (.type | _) .e :- check-type .type .e #
@@ -50,6 +48,8 @@ check-type .treeType .tree
 	, check-type .leftType .left, check-type .rightType .right
 #
 check-type .a .a :- is.atom .a, not (starts.with .a '%') #
+
+signature-prototype .sign .proto :- prototype .sign .proto, map.retrieve (SIGNATURE .sign, .proto) #
 
 prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
 
@@ -68,7 +68,7 @@ is-deterministic (!, _) #
 is-deterministic (!; .b) :- is-deterministic .b #
 is-deterministic (.a, .b) :- is-deterministic .a, is-deterministic .b #
 is-deterministic (.a; fail) :- is-deterministic .a #
-is-deterministic (.a; .else) :- split-cut .a .then, is-deterministic .then, is-deterministic .else #
+is-deterministic (.ifThen; .else) :- split-cut .ifThen .then, is-deterministic .then, is-deterministic .else #
 is-deterministic (.a = .b) #
 is-deterministic yes #
 is-deterministic fail #
