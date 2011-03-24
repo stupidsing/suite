@@ -10,6 +10,31 @@ apply-sugar .t0 .t1
 apply-sugar .node .node #
 
 -------------------------------------------------------------------------------
+-- deterministic analysis
+
+group-predicates (.head :- .tail, .remains) (IN = .head, .tail; .groupedRemains)
+	:- group-predicates .remains .groupedRemains
+#
+group-predicates () fail #
+
+is-deterministic (!, _) #
+is-deterministic (.a, .b) :- is-deterministic .a, is-deterministic .b #
+is-deterministic (fail; .c) :- is-deterministic .c #
+is-deterministic (.c; fail) :- is-deterministic .c #
+is-deterministic (.ifThen; .else)
+	:- split-cut .ifThen .then
+	, is-deterministic .then
+	, is-deterministic .else
+#
+is-deterministic (.a = .b) #
+is-deterministic yes #
+is-deterministic fail #
+
+split-cut ! () #
+split-cut (!, .c) .c #
+split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
+
+-------------------------------------------------------------------------------
 -- format check
 
 define-signature .sign :- signature-prototype .sign .sign #
@@ -55,27 +80,6 @@ prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .rem
 
 params-prototype (_, .remains0) ((), .remains1) :- params-prototype .remains0 .remains1, ! #
 params-prototype () () #
-
--------------------------------------------------------------------------------
--- deterministic analysis
-
-group-predicates (.head :- .tail, .remains) (IN = .head, .tail; .groupedRemains)
-	:- group-predicates .remains .groupedRemains
-#
-group-predicates () fail #
-
-is-deterministic (!, _) #
-is-deterministic (!; .b) :- is-deterministic .b #
-is-deterministic (.a, .b) :- is-deterministic .a, is-deterministic .b #
-is-deterministic (.a; fail) :- is-deterministic .a #
-is-deterministic (.ifThen; .else) :- split-cut .ifThen .then, is-deterministic .then, is-deterministic .else #
-is-deterministic (.a = .b) #
-is-deterministic yes #
-is-deterministic fail #
-
-split-cut ! () #
-split-cut (!, .before) .before #
-split-cut (.before, .after) .before0 :- split-cut .before .before0 #
 
 -------------------------------------------------------------------------------
 -- pattern recog
