@@ -46,7 +46,7 @@ public class ProverTest {
 		assertTrue(SuiteUtil.proveThis(rs, "mem ([a, ], a)"));
 		assertTrue(SuiteUtil.proveThis(rs, "mem ([a, b, c, ], .v)"));
 		assertTrue(SuiteUtil.proveThis(rs,
-				".l = [1, 2, 3,], find.all (.v, mem (.l, .v), .l)"));
+				".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l)"));
 		assertFalse(SuiteUtil.proveThis(rs, "mem ([a, b, c, ], d)"));
 	}
 
@@ -61,7 +61,7 @@ public class ProverTest {
 
 	@Test
 	public void testFindAll() {
-		assertTrue(proveThis("find.all (.v, (.v = a; .v = b; .v = c), .results), .results = (a, b, c, )"));
+		assertTrue(proveThis("find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c, )"));
 	}
 
 	@Test
