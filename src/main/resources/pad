@@ -1,10 +1,14 @@
 -------------------------------------------------------------------------------
 -- deterministic analysis
 
-group-predicates (.head :- .tail, .remains) (IN = .head, .tail; .groupedRemains)
+group-predicates (.head :- .tail # .remains) (IN = .head, .tail; .groupedRemains)
 	:- group-predicates .remains .groupedRemains
 #
 group-predicates () fail #
+
+replace-cut-points .predicates0 (DEFINE-CUT .cutPoint .predicates1)
+       :- replace .predicates0 .predicates1 ! .cutPoint
+#
 
 is-determ (!, _) #
 is-determ (.a, .b) :- is-determ .a, is-determ .b #
@@ -73,55 +77,61 @@ params-prototype () () #
 -------------------------------------------------------------------------------
 -- functional programming
 
-func-code (%REG .r) (.c0 .cx) .r :- ! #
-func-code .i (.c0 .cx) .reg :- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx) #
-func-code .s (.c0 .cx) .reg :- is.string .s, .c0 = (ASSIGN-STR .reg .s, .cx) #
-func-code .b (.c0 .cx) .reg :- is.boolean .b, .c0 = (ASSIGN-BOOL .reg .b, .cx) #
-func-code .f (.c0 .cx) .reg :- .c0 = (ASSIGN-FUNC .reg .f, .cx) #
-func-code (.if ? .then | .else) (.c0 .cx) .reg
-	:- func-code .if (.c0 .c1) .cr
+load-func .f (.c0 .cx) .reg :- is.atom .f, .c0 = (ASSIGN-FUNC .reg .f, .cx) #
+load-func .p (.c0 .cx) .reg
+	:- .c0 = (JUMP .skipLabel, LABEL .funcLabel, .c1)
+	, gen-func-code .p (.c1 .c2) .reg
+	, .c2 = (LABEL .skipLabel, ASSIGN-FUNC .reg .funcLabel, .cx)
+#
+
+gen-func-code (%REG .r) (.c0 .cx) .r :- ! #
+gen-func-code .i (.c0 .cx) .reg :- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx) #
+gen-func-code .s (.c0 .cx) .reg :- is.string .s, .c0 = (ASSIGN-STR .reg .s, .cx) #
+gen-func-code .b (.c0 .cx) .reg :- is.boolean .b, .c0 = (ASSIGN-BOOL .reg .b, .cx) #
+gen-func-code (.if ? .then | .else) (.c0 .cx) .reg
+	:- gen-func-code .if (.c0 .c1) .cr
 	, .c1 = (IF-FALSE .cr .label1, .c2)
-	, func-code .then (.c2 .c3) .reg
+	, gen-func-code .then (.c2 .c3) .reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
-	, func-code .then (.c4 .c5) .reg
+	, gen-func-code .then (.c4 .c5) .reg
 	, .c5 = (LABEL .label2, .cx)
 #
-func-code (.value >> .then | .else) (.c0 .cx) .reg
-	:- .c0 = (RETR .vr, .c1)
-	, match-code .vr (.value >> .then | .else) (.c1 .cx) .reg
+gen-func-code (case | .matches) (.c0 .cx) .reg
+	:- .c0 = (POP .vr, .c1)
+	, match-code .vr .matches (.c1 .cx) .reg
 #
-func-code (.var => .do) (.c0 .cx) .reg
-	:- .c0 = (RETR .vr, .c1)
+gen-func-code (.var => .do) (.c0 .cx) .reg
+	:- .c0 = (POP .vr, .c1)
 	, replace .d0 .do1 .var (%REG .vr)
-	, func-code .do (.c1 .cx) .reg
+	, gen-func-code .do (.c1 .cx) .reg
 #
-func-code (.var = .value >> .do) (.c0 .cx) .reg
-	:- func-code .value (.c0 .c1) .r1
+gen-func-code (.var = .value >> .do) (.c0 .cx) .reg
+	:- gen-func-code .value (.c0 .c1) .r1
 	, replace .do .do1 .var (%REG .r1)
-	, func-code .do1 .c1 .c2 .reg
+	, gen-func-code .do1 .c1 .c2 .reg
 #
-func-code (.caller {.p}) (.c0 .cx) .reg
+gen-func-code (.caller {.p}) (.c0 .cx) .reg
 	:- !
-	, func-code .caller (.c0 .c1) .r1
-	, func-code .p (.c1 .c2) .r2
-	, .c2 = (CALL .r1 .r2, .cx)
+	, load-func-code .caller (.c0 .c1) .r1
+	, gen-func-code .p (.c1 .c2) .r2
+	, .c2 = (PUSH .r2, CALL .r1, .cx)
 #
-func-code .t (.c0 .cx) .reg
+gen-func-code .t (.c0 .cx) .reg
 	:- tree .t .left .oper .right
-	, func-code .left (.c0 .c1) .r1
-	, func-code .right (.c1 .c2) .r2
+	, gen-func-code .left (.c0 .c1) .r1
+	, gen-func-code .right (.c1 .c2) .r2
 	, .c2 = (EVALUATE .cx .left .oper .right, .cx)
 #
 
 match-code .vr (.value >> .then | .else) (.c0 .cx) .reg
-	:- !, func-code .value (.c0 .c1) .cr
+	:- !, gen-func-code .value (.c0 .c1) .cr
 	, .c1 = (IF-NE .vr .cr .label1, .c2)
-	, func-code .then (.c2 .c3) .reg
+	, gen-func-code .then (.c2 .c3) .reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
 	, match-code .vr .else (.c4 .c5) .reg
 	, .c5 = (LABEL .label2, .cx)
 #
-match-code _ .otherwise (.c0 .cx) .reg :- func-code .otherwise (.c0 .cx) .reg #
+match-code _ .otherwise (.c0 .cx) .reg :- gen-func-code .otherwise (.c0 .cx) .reg #
 
 is.boolean true #
 is.boolean false #
