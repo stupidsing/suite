@@ -80,8 +80,8 @@ params-prototype () () #
 load-func .f (.c0 .cx) .reg :- is.atom .f, .c0 = (ASSIGN-FUNC .reg .f, .cx) #
 load-func .p (.c0 .cx) .reg
 	:- .c0 = (JUMP .skipLabel, LABEL .funcLabel, .c1)
-	, gen-func-code .p (.c1 .c2) .reg
-	, .c2 = (LABEL .skipLabel, ASSIGN-FUNC .reg .funcLabel, .cx)
+	, gen-func-code .p (.c1 .c2) .rr
+	, .c2 = (RETURN .rr, LABEL .skipLabel, ASSIGN-FUNC .reg .funcLabel, .cx)
 #
 
 gen-func-code (%REG .r) (.c0 .cx) .r :- ! #
