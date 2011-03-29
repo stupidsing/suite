@@ -140,15 +140,9 @@ is.boolean false #
 -- logical programming
 
 compile () () (.c .c) #
-compile () .more (.c0 .cx)
-	:- compile .more () (.c0 .cx)
-#
-compile () (JMP .label) (.c0 .cx)
-	:- .c0 = (JMP .label, .cx)
-#
-compile (.a, .b) .more (.c0 .cx)
-	:- compile .a (.b, .more) (.c0 .cx)
-#
+compile () .more (.c0 .cx) :- compile .more () (.c0 .cx) #
+compile () (JMP .label) (.c0 .cx) :- .c0 = (JMP .label, .cx) #
+compile (.a, .b) .more (.c0 .cx) :- compile .a (.b, .more) (.c0 .cx) #
 compile (.a; .b) .more (.c0 .cx)
 	:- .c0 = (PUSH-BACKTRACK-POINT, .c1)
 	, compile .a (JMP .label) .c1 .c2
