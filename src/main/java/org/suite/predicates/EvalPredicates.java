@@ -168,8 +168,9 @@ public class EvalPredicates {
 
 		public int evaluate(Node node) {
 			int result = 0;
-
+			node = node.finalNode();
 			Tree tree = Tree.decompose(node);
+
 			if (tree != null) {
 				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
 
@@ -188,6 +189,8 @@ public class EvalPredicates {
 				}
 			} else if (node instanceof Int)
 				result = ((Int) node).getNumber();
+			else
+				throw new RuntimeException("Unable to evaluate expression");
 
 			return result;
 		}
