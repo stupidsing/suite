@@ -12,6 +12,14 @@ public class Journal {
 	private List<Reference> bounded = new ArrayList<Reference>();
 
 	public void addBind(Reference reference, Node target) {
+		if (target instanceof Reference
+				&& reference.getId() < ((Reference) target).getId())
+			addDirectedBind((Reference) target, reference);
+		else
+			addDirectedBind(reference, target);
+	}
+
+	private void addDirectedBind(Reference reference, Node target) {
 		bounded.add(reference);
 		reference.bound(target);
 	}
