@@ -8,7 +8,9 @@ whatever .g :- .g; yes #
 member (.e, _) .e #
 member (_, .remains) .e :- member .remains .e #
 
-replace .from .to .from .to :- ! #
+replace .t0 .t1 .from .to
+	:- bound .t0, .t0 = .from, !, .t1 = .to
+#
 replace .t0 .t1 .from .to
 	:- tree .t0 .left0 .operator .right0
 	, tree .t1 .left1 .operator .right1
