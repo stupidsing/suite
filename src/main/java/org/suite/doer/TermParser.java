@@ -27,6 +27,7 @@ public class TermParser extends Parser {
 		DIVIDE(" / ", Assoc.LEFT), //
 		BRACES("{", Assoc.LEFT), //
 		SEP___(" ", Assoc.RIGHT), //
+		ITEM__("/", Assoc.RIGHT), //
 		;
 
 		public final String name;
@@ -57,9 +58,8 @@ public class TermParser extends Parser {
 		}
 
 		public static TermOp find(String name) {
-			String trimmed = name.trim();
 			for (TermOp operator : values())
-				if (Util.equals(operator.name.trim(), trimmed))
+				if (Util.equals(operator.name, name))
 					return operator;
 			return null;
 		}
