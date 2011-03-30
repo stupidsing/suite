@@ -86,7 +86,7 @@ gen-func-code (.var = .value >> .do) (.c0 .cx) .reg
 	:- !
 	, gen-func-code .value (.c0 .c1) .r1
 	, replace .do .do1 .var (%REG .r1)
-	, gen-func-code .do1 .c1 .c2 .reg
+	, gen-func-code .do1 (.c1 .cx) .reg
 #
 gen-func-code (.var => .do) (.c0 .cx) .reg
 	:- !

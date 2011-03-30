@@ -30,4 +30,7 @@ was-success .call
 is-success .call () :- .call, ! #
 is-success .call fail #
 
+pp .n :- bound .n, .n = (.a, .b), !, pp .a, write '%0A, ', pp .b #
+pp .n :- dump .n #
+
 () :- write 'READY', nl #
