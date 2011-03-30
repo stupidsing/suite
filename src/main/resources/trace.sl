@@ -1,1 +1,1 @@
-.call :- write 'TRACE:', dump .call, nl, fail #
+.call :- write 'TRACE: ', dump .call, nl, fail #
