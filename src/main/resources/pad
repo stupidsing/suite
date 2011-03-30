@@ -92,14 +92,19 @@ gen-func-code (.var => .do) (.c0 .cx) .reg
 	:- !
 	, .c0 = (JUMP .skipLabel, LABEL .funcLabel, POP .vr, .c1)
 	, replace .do .do1 .var (%REG .vr)
-	, gen-func-code .do1 (.c1 .c2) .rr
+	, (
+		.do1 = (case | .matches)
+		, !, match-code .vr .matches (.c1 .c2) .rr
+	;
+		gen-func-code .do1 (.c1 .c2) .rr
+	)
 	, .c2 = (RETURN .rr, LABEL .skipLabel, ASSIGN-FUNC .reg .funcLabel, .cx)
 #
 gen-func-code (.caller {.p}) (.c0 .cx) .reg
 	:- !
 	, gen-func-code .caller (.c0 .c1) .r1
 	, gen-func-code .p (.c1 .c2) .r2
-	, .c2 = (PUSH .r2, CALL .r1 .reg, .cx)
+	, .c2 = (PUSH .r2, CALL .reg .r1, .cx)
 #
 gen-func-code (.if ? .then | .else) (.c0 .cx) .reg
 	:- !
@@ -109,11 +114,6 @@ gen-func-code (.if ? .then | .else) (.c0 .cx) .reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
 	, gen-func-code .then (.c4 .c5) .reg
 	, .c5 = (LABEL .label2, .cx)
-#
-gen-func-code (case | .matches) (.c0 .cx) .reg
-	:- !
-	, .c0 = (POP .vr, .c1)
-	, match-code .vr .matches (.c1 .cx) .reg
 #
 gen-func-code .t (.c0 .cx) .reg
 	:- tree .t .left .oper .right
