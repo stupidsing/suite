@@ -78,8 +78,10 @@ public class Formatter {
 			if (operator != TermOp.BRACES) {
 				String name = operator.getName();
 				sb.append(name);
+
 				if (!name.endsWith(" "))
-					sb.append(' ');
+					if (operator == TermOp.AND___ || operator == TermOp.OR____)
+						sb.append(' ');
 
 				format(tree.getRight(), rightPrec, dump, sb);
 			} else {
