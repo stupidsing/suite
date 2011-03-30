@@ -56,7 +56,7 @@ public class Formatter {
 			sb.append(s);
 		} else if (node instanceof Str) {
 			String s = ((Str) node).getValue();
-			s = dump ? quote(s, "\"") : s;
+			s = dump ? quote(s, '"') : s;
 			sb.append(s);
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
@@ -112,16 +112,33 @@ public class Formatter {
 			}
 
 			if (quote)
-				s = quote(s, "'");
+				s = quote(s, '\'');
 		} else
 			s = "()";
 		return s;
 	}
 
-	public String quote(String s, String quote) {
-		s = s.replace(quote, quote + quote);
-		s = s.replace("%", "%%");
-		return quote + s + quote;
+	public String quote(String s, char quote) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(quote);
+
+		for (char ch : s.toCharArray()) {
+			if (Character.isWhitespace(ch) && ch != ' ') {
+				if (ch >= 256)
+					sb.append(encodeHex(ch >> 8));
+				sb.append(encodeHex(ch & 0xff));
+			} else if (ch == quote || ch == '%')
+				sb.append(ch + "" + ch);
+			else
+				sb.append(ch);
+		}
+
+		sb.append(quote);
+		return sb.toString();
+	}
+
+	private String encodeHex(int i) {
+		return "%" + String.format("%02x", i).toUpperCase();
 	}
 
 }
