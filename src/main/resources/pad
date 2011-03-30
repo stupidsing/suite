@@ -77,60 +77,66 @@ params-prototype () () #
 -------------------------------------------------------------------------------
 -- functional programming
 
-gen-func-code (%REG .r) (.c .c) .r :- ! #
-gen-func-code .i (.c0 .cx) .reg :- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx) #
-gen-func-code .s (.c0 .cx) .reg :- is.string .s, .c0 = (ASSIGN-STR .reg .s, .cx) #
-gen-func-code .b (.c0 .cx) .reg :- is.boolean .b, !, .c0 = (ASSIGN-BOOL .reg .b, .cx) #
-gen-func-code .f (.c0 .cx) .reg :- is.atom .f, .c0 = (ASSIGN-FUNC .reg .f, .cx) #
-gen-func-code (.var = .value >> .do) (.c0 .cx) .reg
-	:- !
-	, gen-func-code .value (.c0 .c1) .r1
-	, replace .do .do1 .var (%REG .r1)
-	, gen-func-code .do1 (.c1 .cx) .reg
+gen-func-code .predicate .c0/.r :- gen-func-code 0 .predicate .c0/()/.r #
+
+gen-func-code .frame (%REG .r/.frame) .c/.c/.r :- ! #
+gen-func-code .frame1 (%REG .r/.frame) .c/.c/(.r/.frameDist)
+	:- !, let .frameDist (.frame - .frame1)
 #
-gen-func-code (.var => .do) (.c0 .cx) .reg
+gen-func-code .frame .i .c0/.cx/.reg :- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx) #
+gen-func-code .frame .s .c0/.cx/.reg :- is.string .s, .c0 = (ASSIGN-STR .reg .s, .cx) #
+gen-func-code .frame .b .c0/.cx/.reg :- is.boolean .b, !, .c0 = (ASSIGN-BOOL .reg .b, .cx) #
+gen-func-code .frame .f .c0/.cx/.reg :- is.atom .f, .c0 = (ASSIGN-FUNC .reg .f, .cx) #
+gen-func-code .frame (.variable = .value >> .do) .c0/.cx/.reg
 	:- !
-	, .c0 = (JUMP .skipLabel, LABEL .funcLabel, POP .vr, .c1)
-	, replace .do .do1 .var (%REG .vr)
+	, gen-func-code .frame .value .c0/.c1/.r1
+	, replace .do .do1 .variable (%REG .r1/.frame)
+	, gen-func-code .frame .do1 .c1/.cx/.reg
+#
+gen-func-code .frame (.variable => .do) .c0/.cx/.reg
+	:- !
+	, let .frame1 (.frame + 1)
+	, .c0 = (JUMP .skipLabel, LABEL .funcLabel, POP .variableRegister, .c1)
+	, replace .do .do1 .variable (%REG .variableRegister/.frame1)
 	, (
 		.do1 = (case | .matches)
-		, !, match-code .vr .matches (.c1 .c2) .rr
+		, !, match-code .variableRegister .frame1 .matches .c1/.c2/.rr
 	;
-		gen-func-code .do1 (.c1 .c2) .rr
+		gen-func-code .frame1 .do1 .c1/.c2/.rr
 	)
-	, .c2 = (RETURN .rr, LABEL .skipLabel, ASSIGN-FUNC .reg .funcLabel, .cx)
+	, .c2 = (RETURN .rr, LABEL .skipLabel, ASSIGN-LABEL .reg .funcLabel, .cx)
 #
-gen-func-code (.caller {.p}) (.c0 .cx) .reg
+gen-func-code .frame (.caller {.parameter}) .c0/.cx/.reg
 	:- !
-	, gen-func-code .caller (.c0 .c1) .r1
-	, gen-func-code .p (.c1 .c2) .r2
+	, gen-func-code .frame .caller .c0/.c1/.r1
+	, gen-func-code .frame .parameter .c1/.c2/.r2
 	, .c2 = (PUSH .r2, CALL .reg .r1, .cx)
 #
-gen-func-code (.if ? .then | .else) (.c0 .cx) .reg
+gen-func-code .frame (.if ? .then | .else) .c0/.cx/.reg
 	:- !
-	, gen-func-code .if (.c0 .c1) .cr
+	, gen-func-code .frame .if .c0/.c1/.cr
 	, .c1 = (IF-FALSE .cr .label1, .c2)
-	, gen-func-code .then (.c2 .c3) .reg
+	, gen-func-code .frame .then .c2/.c3/.reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
-	, gen-func-code .then (.c4 .c5) .reg
+	, gen-func-code .frame .else .c4/.c5/.reg
 	, .c5 = (LABEL .label2, .cx)
 #
-gen-func-code .t (.c0 .cx) .reg
-	:- tree .t .left .oper .right
-	, gen-func-code .left (.c0 .c1) .r1
-	, gen-func-code .right (.c1 .c2) .r2
+gen-func-code .frame .tree .c0/.cx/.reg
+	:- tree .tree .left .oper .right
+	, gen-func-code .frame .left .c0/.c1/.r1
+	, gen-func-code .frame .right .c1/.c2/.r2
 	, .c2 = (EVALUATE .reg .r1 .oper .r2, .cx)
 #
 
-match-code .vr (.value >> .then | .else) (.c0 .cx) .reg
-	:- !, gen-func-code .value (.c0 .c1) .cr
+match-code .vr .frame (.value >> .then | .else) .c0/.cx/.reg
+	:- !, gen-func-code .frame .value .c0/.c1)/.cr
 	, .c1 = (IF-NE .vr .cr .label1, .c2)
-	, gen-func-code .then (.c2 .c3) .reg
+	, gen-func-code .frame .then .c2/.c3/.reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
-	, match-code .vr .else (.c4 .c5) .reg
+	, match-code .vr .frame .else .c4/.c5/.reg
 	, .c5 = (LABEL .label2, .cx)
 #
-match-code _ .otherwise (.c0 .cx) .reg :- gen-func-code .otherwise (.c0 .cx) .reg #
+match-code _ .frame .otherwise .snippet :- gen-func-code .frame .otherwise .snippet #
 
 is.boolean true #
 is.boolean false #
