@@ -79,9 +79,10 @@ params-prototype () () #
 
 gen-func-code .predicate .c0/.r :- gen-func-code 0 .predicate .c0/()/.r #
 
-gen-func-code .frame (%REG .r/.frame) .c/.c/.r :- ! #
-gen-func-code .frame1 (%REG .r/.frame) .c/.c/(.r/.frameDist)
-	:- !, let .frameDist (.frame - .frame1)
+gen-func-code .frame %REG/.reg/.frame .c/.c/.reg :- ! #
+gen-func-code .frame1 %REG/.reg/.frame .c0/.cx/.reg1
+	:- !, let .frameDifference (.frame - .frame1)
+	, .c0 = (ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
 gen-func-code .frame .i .c0/.cx/.reg :- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx) #
 gen-func-code .frame .s .c0/.cx/.reg :- is.string .s, .c0 = (ASSIGN-STR .reg .s, .cx) #
@@ -90,14 +91,14 @@ gen-func-code .frame .f .c0/.cx/.reg :- is.atom .f, .c0 = (ASSIGN-FUNC .reg .f, 
 gen-func-code .frame (.variable = .value >> .do) .c0/.cx/.reg
 	:- !
 	, gen-func-code .frame .value .c0/.c1/.r1
-	, replace .do .do1 .variable (%REG .r1/.frame)
+	, replace .do .do1 .variable %REG/.r1/.frame
 	, gen-func-code .frame .do1 .c1/.cx/.reg
 #
 gen-func-code .frame (.variable => .do) .c0/.cx/.reg
 	:- !
 	, let .frame1 (.frame + 1)
 	, .c0 = (JUMP .skipLabel, LABEL .funcLabel, POP .variableRegister, .c1)
-	, replace .do .do1 .variable (%REG .variableRegister/.frame1)
+	, replace .do .do1 .variable %REG/.variableRegister/.frame1
 	, (
 		.do1 = (case | .matches)
 		, !, match-code .variableRegister .frame1 .matches .c1/.c2/.rr
