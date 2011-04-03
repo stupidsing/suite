@@ -116,13 +116,13 @@ public class SystemPredicates {
 
 	private class Not implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return !prover.prove(ps);
+			return !new Prover(prover).prove(ps);
 		}
 	}
 
 	private class Once implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return prover.prove(ps);
+			return new Prover(prover).prove(ps);
 		}
 	}
 
