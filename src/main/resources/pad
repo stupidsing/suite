@@ -97,15 +97,9 @@ gen-func-code .frame (.variable = .value >> .do) .c0/.cx/.reg
 gen-func-code .frame (.variable => .do) .c0/.cx/.reg
 	:- !
 	, let .frame1 (.frame + 1)
-	, .c0 = (JUMP .skipLabel, LABEL .funcLabel, POP .variableRegister, .c1)
-	, replace .do .do1 .variable %REG/.variableRegister/.frame1
-	, (
-		.do1 = (case | .matches)
-		, !, match-code .variableRegister .frame1 .matches .c1/.c2/.rr
-	;
-		gen-func-code .frame1 .do1 .c1/.c2/.rr
-	)
-	, .c2 = (RETURN .rr, LABEL .skipLabel, ASSIGN-LABEL .reg .funcLabel, .cx)
+	, .c0 = (JUMP .skipLabel, LABEL .funcLabel, .c1)
+	, gen-call-code .frame1 (.variable => .do) .c1/.c2/.reg
+	, .c2 = (LABEL .skipLabel, ASSIGN-LABEL .reg .funcLabel, .cx)
 #
 gen-func-code .frame (.caller {.parameter}) .c0/.cx/.reg
 	:- !
@@ -129,15 +123,36 @@ gen-func-code .frame .tree .c0/.cx/.reg
 	, .c2 = (EVALUATE .reg .r1 .oper .r2, .cx)
 #
 
-match-code .vr .frame (.value >> .then | .else) .c0/.cx/.reg
-	:- !, gen-func-code .frame .value .c0/.c1)/.cr
-	, .c1 = (IF-NE .vr .cr .label1, .c2)
+gen-call-code .frame (.variable => case | .matches) .c0/.cx/.reg
+	:- !
+	, .c0 = (POP .variableReg, .c1)
+	, replace .matches .matches1 .variable %REG/.variableReg/.frame
+	, match-code .variableReg .frame .matches1 .c1/.c2/.returnReg
+	, .c2 = (RETURN .returnReg, .cx)
+#
+gen-call-code .frame .callee .c0/.cx/.reg
+	:- gen-pop-code .frame .callee .do .c0/.c1 
+	, gen-func-code .frame .do .c1/.c2/.returnReg
+	, .c2 = (RETURN .returnReg, .cx)
+#
+
+match-code .variableReg .frame (.value >> .then | .else) .c0/.cx/.reg
+	:- !, gen-func-code .frame .value .c0/.c1/.cr
+	, .c1 = (IF-NE .variableReg .cr .label1, .c2)
 	, gen-func-code .frame .then .c2/.c3/.reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
-	, match-code .vr .frame .else .c4/.c5/.reg
+	, match-code .variableReg .frame .else .c4/.c5/.reg
 	, .c5 = (LABEL .label2, .cx)
 #
 match-code _ .frame .otherwise .snippet :- gen-func-code .frame .otherwise .snippet #
+
+gen-pop-code .frame (.variable => .do) .do2 .c0/.cx
+	:- not (.do = (case | _))
+	, !, .c0 = (POP .variableReg, .c1)
+	, replace .do .do1 .variable %REG/.variableReg/.frame
+	, gen-pop-code .frame .do1 .do2 .c1/.cx
+#
+gen-pop-code _ .do .do .cx/.cx #
 
 is.boolean true #
 is.boolean false #
