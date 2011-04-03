@@ -16,6 +16,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.LogUtil;
 import org.util.Util;
 
 public class Parser {
@@ -101,6 +102,17 @@ public class Parser {
 
 		if (first == '\'' && last == '\'')
 			s = unescape(Util.substr(s, 1, -1), "'");
+
+		// Shows warning if the atom has mismatched quotes or brackets
+		int quote = 0, depth = 0;
+		for (char c : s.toCharArray()) {
+			quote = checkQuote(quote, c);
+			if (quote == 0)
+				depth = checkDepth(depth, c);
+		}
+
+		if (quote != 0 || depth != 0)
+			LogUtil.info("PARSER", "Suspicious input when parsing " + s);
 
 		return Atom.create(localContext, s);
 	}
