@@ -138,7 +138,7 @@ gen-call-code .frame .callee .c0/.cx/.reg
 
 match-code .variableReg .frame (.value >> .then | .else) .c0/.cx/.reg
 	:- !, gen-func-code .frame .value .c0/.c1/.cr
-	, .c1 = (IF-NE .variableReg .cr .label1, .c2)
+	, .c1 = (IF-NOT-EQ .variableReg .cr .label1, .c2)
 	, gen-func-code .frame .then .c2/.c3/.reg
 	, .c3 = (JUMP .label2, LABEL .label1, .c4)
 	, match-code .variableReg .frame .else .c4/.c5/.reg
