@@ -31,25 +31,24 @@ public class InstructionCodeExecutor {
 	private final static short POP___________ = 14;
 	private final static short RETURN________ = 15;
 
-	private final static BiMap<Short, String> instructionNames = HashBiMap
-			.create();
+	private final static BiMap<Short, String> insnNames = HashBiMap.create();
 	static {
-		instructionNames.put(ASSIGNBOOL____, "ASSIGN-BOOL");
-		instructionNames.put(ASSIGNFUNC____, "ASSIGN-FUNC");
-		instructionNames.put(ASSIGNFRAMEREG, "ASSIGN-FRAME-REG");
-		instructionNames.put(ASSIGNINT_____, "ASSIGN-INT");
-		instructionNames.put(ASSIGNSTR_____, "ASSIGN-STR");
-		instructionNames.put(ASSIGNLABEL___, "ASSIGN-LABEL");
-		instructionNames.put(CALL__________, "CALL");
-		instructionNames.put(EVALUATE______, "EVALUATE");
-		instructionNames.put(EVALADD_______, "EVAL-ADD");
-		instructionNames.put(IFFALSE_______, "IF-FALSE");
-		instructionNames.put(IFNOTEQUALS___, "IF-NOT-EQ");
-		instructionNames.put(JUMP__________, "JUMP");
-		instructionNames.put(LABEL_________, "LABEL");
-		instructionNames.put(PUSH__________, "PUSH");
-		instructionNames.put(POP___________, "POP");
-		instructionNames.put(RETURN________, "RETURN");
+		insnNames.put(ASSIGNBOOL____, "ASSIGN-BOOL");
+		insnNames.put(ASSIGNFUNC____, "ASSIGN-FUNC");
+		insnNames.put(ASSIGNFRAMEREG, "ASSIGN-FRAME-REG");
+		insnNames.put(ASSIGNINT_____, "ASSIGN-INT");
+		insnNames.put(ASSIGNSTR_____, "ASSIGN-STR");
+		insnNames.put(ASSIGNLABEL___, "ASSIGN-LABEL");
+		insnNames.put(CALL__________, "CALL");
+		insnNames.put(EVALUATE______, "EVALUATE");
+		insnNames.put(EVALADD_______, "EVAL-ADD");
+		insnNames.put(IFFALSE_______, "IF-FALSE");
+		insnNames.put(IFNOTEQUALS___, "IF-NOT-EQ");
+		insnNames.put(JUMP__________, "JUMP");
+		insnNames.put(LABEL_________, "LABEL");
+		insnNames.put(PUSH__________, "PUSH");
+		insnNames.put(POP___________, "POP");
+		insnNames.put(RETURN________, "RETURN");
 	}
 
 	private static class Instruction {
@@ -90,7 +89,7 @@ public class InstructionCodeExecutor {
 		rs.add(node);
 
 		Atom instNode = (Atom) rs.get(0);
-		Short instruction = instructionNames.inverse().get(instNode.getName());
+		Short instruction = insnNames.inverse().get(instNode.getName());
 
 		if (instruction == EVALUATE______) {
 			TermOp operator = TermOp.find(((Atom) rs.get(3)).getName());
@@ -113,6 +112,9 @@ public class InstructionCodeExecutor {
 		Instruction inst = instructions[ip];
 
 		switch (inst.instruction) {
+		case ASSIGNINT_____:
+			registers[inst.op1] = inst.op2;
+			break;
 		case EVALADD_______:
 			registers[inst.op1] = registers[inst.op2] + registers[inst.op3];
 			break;
