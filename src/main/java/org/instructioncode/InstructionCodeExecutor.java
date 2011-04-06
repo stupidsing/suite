@@ -118,6 +118,10 @@ public class InstructionCodeExecutor {
 		case EVALADD_______:
 			registers[inst.op1] = registers[inst.op2] + registers[inst.op3];
 			break;
+		case IFNOTEQUALS___:
+			if (registers[inst.op1] != registers[inst.op2])
+				ip = inst.op1;
+			break;
 		case JUMP__________:
 			ip = inst.op1;
 		}
