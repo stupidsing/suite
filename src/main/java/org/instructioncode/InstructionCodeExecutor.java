@@ -1,9 +1,7 @@
 package org.instructioncode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -19,13 +17,11 @@ public class InstructionCodeExecutor {
 
 	private enum Insn {
 		ASSIGNBOOL____, //
-		ASSIGNFUNC____, //
 		ASSIGNFRAMEREG, //
 		ASSIGNINT_____, //
 		ASSIGNSTR_____, //
 		ASSIGNLABEL___, //
 		CALL__________, //
-		DEFINEFUNC____, //
 		EVALUATE______, //
 		EVALADD_______, //
 		IFFALSE_______, //
@@ -40,13 +36,11 @@ public class InstructionCodeExecutor {
 	private final static BiMap<Insn, String> insnNames = HashBiMap.create();
 	static {
 		insnNames.put(Insn.ASSIGNBOOL____, "ASSIGN-BOOL");
-		insnNames.put(Insn.ASSIGNFUNC____, "ASSIGN-FUNC");
 		insnNames.put(Insn.ASSIGNFRAMEREG, "ASSIGN-FRAME-REG");
 		insnNames.put(Insn.ASSIGNINT_____, "ASSIGN-INT");
 		insnNames.put(Insn.ASSIGNSTR_____, "ASSIGN-STR");
 		insnNames.put(Insn.ASSIGNLABEL___, "ASSIGN-LABEL");
 		insnNames.put(Insn.CALL__________, "CALL");
-		insnNames.put(Insn.DEFINEFUNC____, "DEFINE-FUNC");
 		insnNames.put(Insn.EVALUATE______, "EVALUATE");
 		insnNames.put(Insn.EVALADD_______, "EVAL-ADD");
 		insnNames.put(Insn.IFFALSE_______, "IF-FALSE");
@@ -58,7 +52,6 @@ public class InstructionCodeExecutor {
 		insnNames.put(Insn.RETURN________, "RETURN");
 	}
 
-	private Map<Atom, Integer> funcAddresses = new HashMap<Atom, Integer>();
 	private List<String> stringLiterals = new ArrayList<String>();
 
 	private final static Atom trueAtom = Atom.create("true");
@@ -89,7 +82,6 @@ public class InstructionCodeExecutor {
 		}
 
 		instructions = list.toArray(new Instruction[list.size()]);
-		resolveFuncLabels(instructions);
 	}
 
 	private Instruction parseInstruction(Node node) {
@@ -103,7 +95,6 @@ public class InstructionCodeExecutor {
 
 		rs.add(node);
 
-		int address = ((Int) rs.get(0).finalNode()).getNumber();
 		Atom instNode = (Atom) rs.get(1);
 		Insn insn = insnNames.inverse().get(instNode.getName());
 
@@ -120,9 +111,6 @@ public class InstructionCodeExecutor {
 			rs.set(2, Int.create(stringLiterals.size()));
 			stringLiterals.add(((Str) rs.get(2).finalNode()).getValue());
 			break;
-		case DEFINEFUNC____:
-			funcAddresses.put((Atom) rs.get(2).finalNode(), address);
-			break;
 		case EVALUATE______:
 			Atom atom = (Atom) rs.remove(3);
 			TermOp operator = TermOp.find((atom).getName());
@@ -138,9 +126,6 @@ public class InstructionCodeExecutor {
 			return new Instruction(insn, op1, op2, op3);
 		} else
 			return null;
-	}
-
-	private void resolveFuncLabels(Instruction instructions[]) {
 	}
 
 	public void execute() {
