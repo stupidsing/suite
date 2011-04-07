@@ -82,17 +82,29 @@ compile-functional .definitions .c
 	, assign-lines 0 .c
 #
 
-compile-func-code _ () .c/.c # 
-compile-func-code .funcTable (.name = .predicate # .remains) .c/.cx
-	:- .c = (.label LABEL .label, .c1)
-	, once (member .funcTable .name/.label) 
-	, gen-func-code 0/.funcTable .predicate .c1/.c2/.reg
-	, compile-func-code .funcTable .remains .c2/.c3
-	, .c3 = (_ RETURN .reg, .cx)
-#
-
 assign-lines _ () #
 assign-lines .n (.n _, .remains) :- let .n1 (.n + 1), assign-lines .n1 .remains #
+
+compile-func-code _ () .c/.c # 
+compile-func-code .funcTable (.name :- .predicate # .remains) .c/.cx
+	:- .c = (.label LABEL .label, .c1)
+	, once (member .funcTable .name/.label) 
+	, gen-call-code 0/.funcTable .predicate .c1/.c2
+	, compile-func-code .funcTable .remains .c2/.cx
+#
+
+gen-call-code .frame/.funcTable (.variable => case | .matches) .c0/.cx
+	:- !
+	, .c0 = (_ POP .variableReg, .c1)
+	, replace .matches .matches1 .variable %REG/.variableReg/.frame
+	, match-code .variableReg .frame/.funcTable .matches1 .c1/.c2/.returnReg
+	, .c2 = (_ RETURN .returnReg, .cx)
+#
+gen-call-code .env .callee .c0/.cx
+	:- gen-pop-code .env .callee .do .c0/.c1 
+	, gen-func-code .env .do .c1/.c2/.returnReg
+	, .c2 = (_ RETURN .returnReg, .cx)
+#
 
 gen-func-code .frame/_ %REG/.reg/.frame .c/.c/.reg :- ! #
 gen-func-code .frame/_ %REG/.reg/.frame0 .c0/.cx/.reg1
@@ -140,19 +152,6 @@ gen-func-code .env .tree .c0/.cx/.reg
 	, gen-func-code .env .left .c0/.c1/.r1
 	, gen-func-code .env .right .c1/.c2/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
-#
-
-gen-call-code .frame/.funcTable (.variable => case | .matches) .c0/.cx
-	:- !
-	, .c0 = (_ POP .variableReg, .c1)
-	, replace .matches .matches1 .variable %REG/.variableReg/.frame
-	, match-code .variableReg .frame/.funcTable .matches1 .c1/.c2/.returnReg
-	, .c2 = (_ RETURN .returnReg, .cx)
-#
-gen-call-code .env .callee .c0/.cx
-	:- gen-pop-code .env .callee .do .c0/.c1 
-	, gen-func-code .env .do .c1/.c2/.returnReg
-	, .c2 = (_ RETURN .returnReg, .cx)
 #
 
 match-code .variableReg .env (.value >> .then | .else) .c0/.cx/.reg
