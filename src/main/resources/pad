@@ -106,13 +106,13 @@ gen-call-code .env .callee .c0/.cx
 	, .c2 = (_ RETURN .returnReg, .cx)
 #
 
-gen-pop-code .frame/.funcTable (.variable => .do) .do2 .c0/.cx
+gen-pop-code .frame/.funcTable (.variable => .do) .do1 .c0/.cx
 	:- not (.do = (case | _))
-	, !, .c0 = (_ POP .variableReg, .c1)
+	, !, .c0 = (_ POP .variableReg, .cx)
 	, replace .do .do1 .variable %REG/.variableReg/.frame
-	, gen-pop-code .frame/.funcTable .do1 .do2 .c1/.cx
+--	, gen-pop-code .frame/.funcTable .do1 .do2 .c1/.cx
 #
-gen-pop-code _ .do .do .cx/.cx #
+--gen-pop-code _ .do .do .cx/.cx #
 
 gen-func-code .frame/_ %REG/.reg/.frame .c/.c/.reg :- ! #
 gen-func-code .frame/_ %REG/.reg/.frame0 .c0/.cx/.reg1
@@ -184,7 +184,7 @@ compile () (JUMP .label) (.c0 .cx) :- .c0 = (JUMP .label, .cx) #
 compile (.a, .b) .more (.c0 .cx) :- compile .a (.b, .more) (.c0 .cx) #
 compile (.a; .b) .more (.c0 .cx)
 	:- .c0 = (PUSH-BACKTRACK-POINT, .c1)
-	, compile .a (JMP .label) .c1 .c2
+	, compile .a (JUMP .label) .c1 .c2
 	, .c2 = (LABEL .label, .c3)
 	, compile .a () .c3 .cx
 #
