@@ -7,6 +7,7 @@ import java.util.Stack;
 import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.RuleSearcher;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
@@ -18,6 +19,7 @@ import org.util.Util.Pair;
 
 public class Prover {
 
+	private RuleSearcher ruleSearcher;
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
@@ -46,7 +48,13 @@ public class Prover {
 	}
 
 	public Prover(RuleSet ruleSet) {
+		this.ruleSearcher = ruleSet;
 		this.ruleSet = ruleSet;
+	}
+
+	public Prover(RuleSearcher ruleSearcher, Prover prover) {
+		this(prover.ruleSet);
+		this.ruleSearcher = ruleSearcher;
 	}
 
 	/**
@@ -138,7 +146,7 @@ public class Prover {
 	private Node expand(Node query, Node remaining) {
 		Node ret = FAIL;
 
-		List<Rule> rules = ruleSet.getRules(query);
+		List<Rule> rules = ruleSearcher.getRules(query);
 		ListIterator<Rule> iter = rules.listIterator(rules.size());
 
 		while (iter.hasPrevious()) {
@@ -156,23 +164,31 @@ public class Prover {
 			Node head = generalizer.generalize(rule.getHead());
 			Node tail = generalizer.generalize(rule.getTail());
 
-			ret = //
-			new Tree(TermOp.OR____, //
-					new Tree(TermOp.AND___, //
-							new Tree(TermOp.EQUAL_, //
-									query, //
-									head //
-							), //
-							new Tree(TermOp.AND___, //
-									tail, //
-									remaining)), //
-					ret);
+			ret = new Tree(TermOp.OR____ //
+					, new Tree(TermOp.AND___ //
+							, new Tree(TermOp.EQUAL_ //
+									, query //
+									, head //
+							) //
+							, new Tree(TermOp.AND___ //
+									, tail //
+									, remaining)) //
+					, ret);
 		}
 
 		return ret;
 	}
 
 	/**
+	 * The set of rules which is read-only.
+	 */
+	public RuleSearcher getRuleSearcher() {
+		return ruleSearcher;
+	}
+
+	/**
+	 * The set of rules which is mutable (may assert/retract).
+	 * 
 	 * Allows access from predicates.
 	 */
 	public RuleSet getRuleSet() {

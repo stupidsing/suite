@@ -61,6 +61,7 @@ public class SystemPredicates {
 		addPredicate("import", new RuleSetPredicates.Import());
 		addPredicate("assert", new RuleSetPredicates.Assert());
 		addPredicate("retract", new RuleSetPredicates.Retract());
+		addPredicate("with", new RuleSetPredicates.With());
 	}
 
 	public Boolean call(Node query) {

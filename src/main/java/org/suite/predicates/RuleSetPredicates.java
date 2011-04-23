@@ -11,6 +11,7 @@ import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.CompositeRuleSearcher;
 import org.suite.kb.Prototype;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
@@ -47,7 +48,7 @@ public class RuleSetPredicates {
 
 	public static class GetAllRules implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			List<Rule> rules = prover.getRuleSet().getRules();
+			List<Rule> rules = prover.getRuleSearcher().getRules();
 			ListIterator<Rule> iter = rules.listIterator(rules.size());
 			Node allRules = Atom.nil;
 
@@ -84,6 +85,17 @@ public class RuleSetPredicates {
 			Node params[] = Predicate.getParameters(ps, 1);
 			prover.getRuleSet().removeRule(params[0]);
 			return true;
+		}
+	}
+
+	public static class With implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Predicate.getParameters(ps, 2);
+			RuleSet ruleSet = new RuleSet();
+			ruleSet.importFrom(params[0]);
+			CompositeRuleSearcher ruleSearcher = new CompositeRuleSearcher(
+					ruleSet, prover.getRuleSearcher());
+			return new Prover(ruleSearcher, prover).prove(params[1]);
 		}
 	}
 
