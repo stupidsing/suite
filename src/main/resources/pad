@@ -194,9 +194,9 @@ compile (.a = .b) .more (.c0 .cx)
 	, .c2 = (JUMP-FAIL .reg0 .reg1, .cx)
 #
 
-create-node .a .reg (.c0 .cx) :- is.atom .a, .c0 = (ASSIGN-ATOM .reg .a, .cx) #
-create-node .i .reg (.c0 .cx) :- is.int .i, .c0 = (ASSIGN-INT .reg .i, .cx) #
-create-node .s .reg (.c0 .cx) :- is.string .s, .c0 = (ASSIGN-STR .reg .s, .cx) #
+create-node .a .reg (.c0 .cx) :- is.atom .a, .c0 = (ASSIGN-NODE .reg .a, .cx) #
+create-node .i .reg (.c0 .cx) :- is.int .i, .c0 = (ASSIGN-NODE .reg .i, .cx) #
+create-node .s .reg (.c0 .cx) :- is.string .s, .c0 = (ASSIGN-NODE .reg .s, .cx) #
 create-node .tree .reg (.c0 .cx)
 	:- tree .tree .left .operator .right
 	, create-node .left .regl (.c0 .c1)
@@ -204,9 +204,7 @@ create-node .tree .reg (.c0 .cx)
 	, .c2 = (FORM-TREE .operator .regl .regr, .cx)
 #
 
-is-user-predicate .call :- was-success (is-user-predicate0 .call) #
-
-is-user-predicate0 .call :- rules .rules, has-rules .rules (.call :- _) #
+is-user-predicate .call :- rules .rules, has-rules .rules (.call :- _) #
 
 has-rules (.rule # _) .rule #
 has-rules (_ # .remains) .rule :- has-rules .remains .rule #
