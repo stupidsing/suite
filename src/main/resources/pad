@@ -77,21 +77,21 @@ params-prototype () () #
 -------------------------------------------------------------------------------
 -- functional programming
 
-compile-functional .definitions .c
-	:- compile-func-code _ .definitions .c/()
-	, assign-lines 0 .c
-#
+compile-functional .definitions .code :- with (
+	assign-lines _ () #
+	assign-lines .n (.n _, .remains) :- let .n1 (.n + 1), assign-lines .n1 .remains #
 
-assign-lines _ () #
-assign-lines .n (.n _, .remains) :- let .n1 (.n + 1), assign-lines .n1 .remains #
-
-compile-func-code _ () .c/.c # 
-compile-func-code .funcTable (.name :- .predicate # .remains) .c/.cx
-	:- .c = (.label LABEL .label, .c1)
-	, once (member .funcTable .name/.label) 
-	, gen-call-code 0/.funcTable .predicate .c1/.c2
-	, compile-func-code .funcTable .remains .c2/.cx
-#
+	compile-func-code _ () .c/.c # 
+	compile-func-code .funcTable (.name :- .predicate # .remains) .c/.cx
+		:- .c = (.label LABEL .label, .c1)
+		, once (member .funcTable .name/.label) 
+		, gen-call-code 0/.funcTable .predicate .c1/.c2
+		, compile-func-code .funcTable .remains .c2/.cx
+	#
+) (
+	compile-func-code _ .definitions .code/()
+	, assign-lines 0 .code
+) #
 
 gen-call-code .frame/.funcTable (.variable => case | .matches) .c0/.cx
 	:- !
