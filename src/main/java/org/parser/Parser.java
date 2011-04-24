@@ -17,6 +17,7 @@ import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
 import org.util.LogUtil;
+import org.util.ParserUtil;
 import org.util.Util;
 
 public class Parser {
@@ -106,9 +107,9 @@ public class Parser {
 		// Shows warning if the atom has mismatched quotes or brackets
 		int quote = 0, depth = 0;
 		for (char c : s.toCharArray()) {
-			quote = checkQuote(quote, c);
+			quote = ParserUtil.getQuoteChange(quote, c);
 			if (quote == 0)
-				depth = checkDepth(depth, c);
+				depth = ParserUtil.checkDepth(depth, c);
 		}
 
 		if (quote != 0 || depth != 0)
@@ -140,43 +141,47 @@ public class Parser {
 
 			line = line.substring(indent).trim();
 			length = line.length();
-			int startPos = 0, endPos = length;
 
-			for (Operator operator : operators) {
-				String name = operator.getName().trim();
+			if (length != 0) { // Ignore empty lines
+				int startPos = 0, endPos = length;
 
-				if (!name.isEmpty()) {
-					if (line.startsWith(name))
-						startPos = Math.max(startPos, name.length());
-					if (line.endsWith(name))
-						endPos = Math.min(endPos, length - name.length());
+				for (Operator operator : operators) {
+					String name = operator.getName().trim();
+
+					if (!name.isEmpty()) {
+						if (line.startsWith(name))
+							startPos = Math.max(startPos, name.length());
+						if (line.endsWith(name))
+							endPos = Math.min(endPos, length - name.length());
+					}
 				}
+
+				if (startPos > endPos) // When a line has only one operator
+					startPos = 0;
+
+				boolean isSeparateLine = startPos == 0 //
+						&& endPos == length //
+						&& startPos != endPos //
+						&& ParserUtil.getDepthChange(line) == 0 //
+						&& ParserUtil.isPositiveDepth(line);
+
+				String decoratedLine = "";
+				while (lastIndent > indent) {
+					decoratedLine += ") ";
+					lastIndent--;
+				}
+				decoratedLine += line.substring(0, startPos);
+				decoratedLine += isSeparateLine ? " (" : "";
+				while (lastIndent < indent) {
+					decoratedLine += " (";
+					lastIndent++;
+				}
+				decoratedLine += line.substring(startPos, endPos);
+				decoratedLine += isSeparateLine ? ") " : "";
+				decoratedLine += line.substring(endPos);
+
+				sb.append(decoratedLine + "\n");
 			}
-
-			if (startPos > endPos) // When a line has only one operator
-				startPos = 0;
-
-			boolean isSeparateLine = startPos == 0 //
-					&& endPos == length //
-					&& startPos != endPos //
-					&& checkDepth(line) == 0;
-
-			String decoratedLine = "";
-			while (lastIndent > indent) {
-				decoratedLine += ") ";
-				lastIndent--;
-			}
-			decoratedLine += line.substring(0, startPos);
-			decoratedLine += isSeparateLine ? " (" : "";
-			while (lastIndent < indent) {
-				decoratedLine += " (";
-				lastIndent++;
-			}
-			decoratedLine += line.substring(startPos, endPos);
-			decoratedLine += isSeparateLine ? ") " : "";
-			decoratedLine += line.substring(endPos);
-
-			sb.append(decoratedLine + "\n");
 		}
 
 		return sb.toString();
@@ -251,7 +256,7 @@ public class Parser {
 
 		for (int pos = start; pos <= end; pos++) {
 			char c = s.charAt(pos);
-			quote = checkQuote(quote, c);
+			quote = ParserUtil.getQuoteChange(quote, c);
 
 			if (quote == 0 && s.startsWith(toMatch, pos))
 				return pos;
@@ -269,7 +274,7 @@ public class Parser {
 	}
 
 	private static int search(String s, String name, Assoc assoc,
-			boolean checkDepth) {
+			boolean isCheckDepth) {
 		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
@@ -278,11 +283,11 @@ public class Parser {
 		for (int i = 0; i <= end; i++) {
 			int pos = isLeftAssoc ? end - i : i;
 			char c = s.charAt(pos + (isLeftAssoc ? nameLength - 1 : 0));
-			quote = checkQuote(quote, c);
+			quote = ParserUtil.getQuoteChange(quote, c);
 
 			if (quote == 0) {
-				if (checkDepth)
-					depth = checkDepth(depth, c);
+				if (isCheckDepth)
+					depth = ParserUtil.checkDepth(depth, c);
 
 				if (depth == 0 && s.startsWith(name, pos))
 					return pos;
@@ -290,29 +295,6 @@ public class Parser {
 		}
 
 		return -1;
-	}
-
-	private static int checkQuote(int quote, char c) {
-		if (c == quote)
-			quote = 0;
-		else if (c == '\'' || c == '"')
-			quote = c;
-		return quote;
-	}
-
-	private static int checkDepth(String s) {
-		int depth = 0;
-		for (char c : s.toCharArray())
-			depth = checkDepth(depth, c);
-		return depth;
-	}
-
-	private static int checkDepth(int depth, char c) {
-		if (c == '(' || c == '[' || c == '{')
-			depth++;
-		if (c == ')' || c == ']' || c == '}')
-			depth--;
-		return depth;
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
