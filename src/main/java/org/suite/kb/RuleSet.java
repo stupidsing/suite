@@ -14,7 +14,7 @@ import org.suite.node.Tree;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-public class RuleSet {
+public class RuleSet implements RuleSearcher {
 
 	public static class Rule {
 		private Node head, tail;
@@ -107,10 +107,8 @@ public class RuleSet {
 	/**
 	 * Get list of rules for a certain query. Use prototype objects as the
 	 * mapping key to do the matching behind.
-	 * 
-	 * @param head
-	 * @return
 	 */
+	@Override
 	public List<Rule> getRules(Node head) {
 		return getRules(Prototype.get(head));
 	}
@@ -125,6 +123,7 @@ public class RuleSet {
 			return getRules();
 	}
 
+	@Override
 	public List<Rule> getRules() {
 		return rules;
 	}
