@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,9 @@ public class Parser {
 	private static final String OPENGROUPCOMMENT = "-=";
 	private static final String CLOSELINECOMMENT = "\n";
 	private static final String OPENLINECOMMENT = "--";
+
+	private static final List<Character> whitespaces = Arrays.asList( //
+			'\t', '\r', '\n');
 
 	public Parser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
@@ -107,7 +112,7 @@ public class Parser {
 		// Shows warning if the atom has mismatched quotes or brackets
 		int quote = 0, depth = 0;
 		for (char c : s.toCharArray()) {
-			quote = ParserUtil.getQuoteChange(quote, c);
+			quote = getQuoteChange(quote, c);
 			if (quote == 0)
 				depth = ParserUtil.checkDepth(depth, c);
 		}
@@ -162,7 +167,7 @@ public class Parser {
 				boolean isSeparateLine = startPos == 0 //
 						&& endPos == length //
 						&& startPos != endPos //
-						&& ParserUtil.getDepthChange(line) == 0 //
+						&& ParserUtil.getDepthDelta(line) == 0 //
 						&& ParserUtil.isPositiveDepth(line);
 
 				String decoratedLine = "";
@@ -187,11 +192,16 @@ public class Parser {
 		return sb.toString();
 	}
 
-	private static final String whitespaces[] = { "\t", "\r", "\n" };
+	private boolean isWhitespaces(String s) {
+		boolean result = true;
+		for (char c : s.toCharArray())
+			result &= whitespaces.contains(c);
+		return result;
+	}
 
 	private String convertWhitespaces(String s) {
-		for (String whitespace : whitespaces)
-			s = replace(s, whitespace, " ");
+		for (char whitespace : whitespaces)
+			s = replace(s, "" + whitespace, " ");
 		return s;
 	}
 
@@ -213,6 +223,8 @@ public class Parser {
 	}
 
 	private String removeComments(String s, String open, String close) {
+		int closeLength = !isWhitespaces(close) ? close.length() : 0;
+
 		while (true) {
 			int pos1 = search(s, 0, open);
 			if (pos1 == -1)
@@ -220,7 +232,7 @@ public class Parser {
 			int pos2 = search(s, pos1 + open.length(), close);
 			if (pos2 == -1)
 				return s;
-			s = s.substring(0, pos1) + s.substring(pos2 + close.length());
+			s = s.substring(0, pos1) + s.substring(pos2 + closeLength);
 		}
 	}
 
@@ -256,7 +268,7 @@ public class Parser {
 
 		for (int pos = start; pos <= end; pos++) {
 			char c = s.charAt(pos);
-			quote = ParserUtil.getQuoteChange(quote, c);
+			quote = getQuoteChange(quote, c);
 
 			if (quote == 0 && s.startsWith(toMatch, pos))
 				return pos;
@@ -283,7 +295,7 @@ public class Parser {
 		for (int i = 0; i <= end; i++) {
 			int pos = isLeftAssoc ? end - i : i;
 			char c = s.charAt(pos + (isLeftAssoc ? nameLength - 1 : 0));
-			quote = ParserUtil.getQuoteChange(quote, c);
+			quote = getQuoteChange(quote, c);
 
 			if (quote == 0) {
 				if (isCheckDepth)
@@ -295,6 +307,14 @@ public class Parser {
 		}
 
 		return -1;
+	}
+
+	public static int getQuoteChange(int quote, char c) {
+		if (c == quote)
+			quote = 0;
+		else if (c == '\'' || c == '"')
+			quote = c;
+		return quote;
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

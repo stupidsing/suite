@@ -88,92 +88,92 @@ compile-functional .definitions .code :- with (
 		, gen-call-code 0/.funcTable .predicate .c1/.c2
 		, compile-func-code .funcTable .remains .c2/.cx
 	#
+
+	gen-call-code .frame/.funcTable (.variable => case | .matches) .c0/.cx
+		:- !
+		, .c0 = (_ POP .variableReg, .c1)
+		, replace .matches .matches1 .variable %REG/.variableReg/.frame
+		, match-code .variableReg .frame/.funcTable .matches1 .c1/.c2/.returnReg
+		, .c2 = (_ RETURN .returnReg, .cx)
+	#
+	gen-call-code .env .callee .c0/.cx
+		:- gen-pop-code .env .callee .do .c0/.c1 
+		, gen-func-code .env .do .c1/.c2/.returnReg
+		, .c2 = (_ RETURN .returnReg, .cx)
+	#
+
+	gen-pop-code .frame/.funcTable (.variable => .do) .do1 .c0/.cx
+		:- not (.do = (case | _))
+		, !, .c0 = (_ POP .variableReg, .cx)
+		, replace .do .do1 .variable %REG/.variableReg/.frame
+	--	, gen-pop-code .frame/.funcTable .do1 .do2 .c1/.cx
+	#
+	--gen-pop-code _ .do .do .cx/.cx #
+
+	gen-func-code .frame/_ %REG/.reg/.frame .c/.c/.reg :- ! #
+	gen-func-code .frame/_ %REG/.reg/.frame0 .c0/.cx/.reg1
+		:- !, let .frameDifference (.frame0 - .frame)
+		, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
+	#
+	gen-func-code _ .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
+	gen-func-code _ .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
+	gen-func-code _ .b .c0/.cx/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
+	gen-func-code _/.funcTable .f .c0/.cx/.reg
+		:- is.atom .f
+		, once (member .funcTable .f/.label)
+		, .c0 = (_ ASSIGN-LABEL .reg .label, .cx)
+	#
+	gen-func-code .env (.variable = .value >> .do) .c0/.cx/.reg
+		:- !
+		, gen-func-code .env .value .c0/.c1/.r1
+		, replace .do .do1 .variable %REG/.r1/.env
+		, gen-func-code .env .do1 .c1/.cx/.reg
+	#
+	gen-func-code .frame/.funcTable (.variable => .do) .c0/.cx/.reg
+		:- !
+		, let .frame1 (.frame + 1)
+		, .c0 = (_ JUMP .skipLabel, .funcLabel LABEL .funcLabel, .c1)
+		, gen-call-code .frame1/.funcTable (.variable => .do) .c1/.c2
+		, .c2 = (.skipLabel LABEL .skipLabel, _ ASSIGN-LABEL .reg .funcLabel, .cx)
+	#
+	gen-func-code .env (.caller {.parameter}) .c0/.cx/.reg
+		:- !
+		, gen-func-code .env .caller .c0/.c1/.r1
+		, gen-func-code .env .parameter .c1/.c2/.r2
+		, .c2 = (_ PUSH .r2, _ CALL .reg .r1, .cx)
+	#
+	gen-func-code .env (.if ? .then | .else) .c0/.cx/.reg
+		:- !
+		, gen-func-code .env .if .c0/.c1/.cr
+		, .c1 = (_ IF-FALSE .cr .label1, .c2)
+		, gen-func-code .env .then .c2/.c3/.reg
+		, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
+		, gen-func-code .env .else .c4/.c5/.reg
+		, .c5 = (.label2 LABEL .label2, .cx)
+	#
+	gen-func-code .env .tree .c0/.cx/.reg
+		:- tree .tree .left .oper .right
+		, gen-func-code .env .left .c0/.c1/.r1
+		, gen-func-code .env .right .c1/.c2/.r2
+		, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
+	#
+
+	match-code .variableReg .env (.value >> .then | .else) .c0/.cx/.reg
+		:- !, gen-func-code .env .value .c0/.c1/.matchReg
+		, .c1 = (_ IF-NOT-EQ .variableReg .matchReg .label1, .c2)
+		, gen-func-code .env .then .c2/.c3/.reg
+		, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
+		, match-code .variableReg .env .else .c4/.c5/.reg
+		, .c5 = (.label2 LABEL .label2, .cx)
+	#
+	match-code _ .env .otherwise .snippet :- gen-func-code .env .otherwise .snippet #
+
+	is.boolean true #
+	is.boolean false #
 ) (
 	compile-func-code _ .definitions .code/()
 	, assign-lines 0 .code
 ) #
-
-gen-call-code .frame/.funcTable (.variable => case | .matches) .c0/.cx
-	:- !
-	, .c0 = (_ POP .variableReg, .c1)
-	, replace .matches .matches1 .variable %REG/.variableReg/.frame
-	, match-code .variableReg .frame/.funcTable .matches1 .c1/.c2/.returnReg
-	, .c2 = (_ RETURN .returnReg, .cx)
-#
-gen-call-code .env .callee .c0/.cx
-	:- gen-pop-code .env .callee .do .c0/.c1 
-	, gen-func-code .env .do .c1/.c2/.returnReg
-	, .c2 = (_ RETURN .returnReg, .cx)
-#
-
-gen-pop-code .frame/.funcTable (.variable => .do) .do1 .c0/.cx
-	:- not (.do = (case | _))
-	, !, .c0 = (_ POP .variableReg, .cx)
-	, replace .do .do1 .variable %REG/.variableReg/.frame
---	, gen-pop-code .frame/.funcTable .do1 .do2 .c1/.cx
-#
---gen-pop-code _ .do .do .cx/.cx #
-
-gen-func-code .frame/_ %REG/.reg/.frame .c/.c/.reg :- ! #
-gen-func-code .frame/_ %REG/.reg/.frame0 .c0/.cx/.reg1
-	:- !, let .frameDifference (.frame0 - .frame)
-	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
-#
-gen-func-code _ .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-gen-func-code _ .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
-gen-func-code _ .b .c0/.cx/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
-gen-func-code _/.funcTable .f .c0/.cx/.reg
-	:- is.atom .f
-	, once (member .funcTable .f/.label)
-	, .c0 = (_ ASSIGN-LABEL .reg .label, .cx)
-#
-gen-func-code .env (.variable = .value >> .do) .c0/.cx/.reg
-	:- !
-	, gen-func-code .env .value .c0/.c1/.r1
-	, replace .do .do1 .variable %REG/.r1/.env
-	, gen-func-code .env .do1 .c1/.cx/.reg
-#
-gen-func-code .frame/.funcTable (.variable => .do) .c0/.cx/.reg
-	:- !
-	, let .frame1 (.frame + 1)
-	, .c0 = (_ JUMP .skipLabel, .funcLabel LABEL .funcLabel, .c1)
-	, gen-call-code .frame1/.funcTable (.variable => .do) .c1/.c2
-	, .c2 = (.skipLabel LABEL .skipLabel, _ ASSIGN-LABEL .reg .funcLabel, .cx)
-#
-gen-func-code .env (.caller {.parameter}) .c0/.cx/.reg
-	:- !
-	, gen-func-code .env .caller .c0/.c1/.r1
-	, gen-func-code .env .parameter .c1/.c2/.r2
-	, .c2 = (_ PUSH .r2, _ CALL .reg .r1, .cx)
-#
-gen-func-code .env (.if ? .then | .else) .c0/.cx/.reg
-	:- !
-	, gen-func-code .env .if .c0/.c1/.cr
-	, .c1 = (_ IF-FALSE .cr .label1, .c2)
-	, gen-func-code .env .then .c2/.c3/.reg
-	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, gen-func-code .env .else .c4/.c5/.reg
-	, .c5 = (.label2 LABEL .label2, .cx)
-#
-gen-func-code .env .tree .c0/.cx/.reg
-	:- tree .tree .left .oper .right
-	, gen-func-code .env .left .c0/.c1/.r1
-	, gen-func-code .env .right .c1/.c2/.r2
-	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
-#
-
-match-code .variableReg .env (.value >> .then | .else) .c0/.cx/.reg
-	:- !, gen-func-code .env .value .c0/.c1/.matchReg
-	, .c1 = (_ IF-NOT-EQ .variableReg .matchReg .label1, .c2)
-	, gen-func-code .env .then .c2/.c3/.reg
-	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, match-code .variableReg .env .else .c4/.c5/.reg
-	, .c5 = (.label2 LABEL .label2, .cx)
-#
-match-code _ .env .otherwise .snippet :- gen-func-code .env .otherwise .snippet #
-
-is.boolean true #
-is.boolean false #
 
 -------------------------------------------------------------------------------
 -- logical programming
