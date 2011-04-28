@@ -26,7 +26,7 @@ if .cond then .then else .else :- .cond, !, .then; .else #
 is-success .call () :- .call, ! #
 is-success .call fail #
 
-pp .n :- bound .n, .n = (.a, .b), !, pp .a, write '%0A, ', pp .b #
-pp .n :- dump .n #
+pp-list .n :- bound .n, .n = (.a, .b), !, pp-list .a, write '%0A, ', pp-list .b #
+pp-list .n :- dump .n #
 
 () :- write 'READY', nl #
