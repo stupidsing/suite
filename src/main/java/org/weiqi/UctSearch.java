@@ -76,6 +76,7 @@ public class UctSearch<Move> {
 				child = child.sibling;
 			}
 
+			node.bestChild = bestSelected;
 			visitor.playMove(bestSelected.move);
 			outcome = playSimulation(bestSelected);
 		} else
