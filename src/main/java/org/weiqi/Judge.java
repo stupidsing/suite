@@ -9,8 +9,6 @@ import org.util.Util;
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
 
-import com.google.common.collect.Multimap;
-
 public class Judge {
 
 	public static Occupation checkByOccupationExistence(Board board) {
@@ -27,7 +25,6 @@ public class Judge {
 	public static void checkGroupsLiveness(Board board, Array<Boolean> alives) {
 		GroupAnalysis ga = new GroupAnalysis(board);
 		Map<Integer, Occupation> groupColors = ga.getGroupColors();
-		Multimap<Integer, Integer> groupTouches = ga.getGroupTouches();
 
 		// Judge which groups are eyes, i.e. surrounded by only one colour
 		Map<Integer, Boolean> groupIsEye = Util.createHashMap();
@@ -37,7 +34,7 @@ public class Judge {
 				Integer groupId = entry.getKey();
 				Set<Occupation> colors = new HashSet<Occupation>();
 
-				for (Integer neighbourGroupId : groupTouches.get(groupId)) {
+				for (Integer neighbourGroupId : ga.getTouches(groupId)) {
 					Occupation color = groupColors.get(neighbourGroupId);
 					if (color != Occupation.EMPTY)
 						colors.add(color);

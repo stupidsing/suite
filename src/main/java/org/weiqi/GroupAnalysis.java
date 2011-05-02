@@ -1,5 +1,6 @@
 package org.weiqi;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.util.Util;
@@ -16,7 +17,7 @@ public class GroupAnalysis {
 	private Map<Integer, Occupation> groupColors = Util.createHashMap();
 	private Multimap<Integer, Coordinate> groupCoords = HashMultimap.create();
 	private Multimap<Integer, Integer> groupTouches = HashMultimap.create();
-	private Map<Integer, Integer> groupBreaths = Util.createHashMap();
+	private Map<Integer, Integer> groupBreathes = Util.createHashMap();
 
 	public GroupAnalysis(Board board) {
 		this.board = board;
@@ -64,7 +65,7 @@ public class GroupAnalysis {
 
 	private void assignGroupSurroundings() {
 		for (Integer groupId : groupColors.keySet())
-			groupBreaths.put(groupId, 0);
+			groupBreathes.put(groupId, 0);
 
 		for (Coordinate c : Coordinate.getAll()) {
 			Integer groupId = groupIdArray.get(c);
@@ -83,9 +84,9 @@ public class GroupAnalysis {
 	}
 
 	private void increaseGroupBreath(Integer groupId) {
-		Integer nBreathes = groupBreaths.get(groupId);
+		Integer nBreathes = groupBreathes.get(groupId);
 		nBreathes = nBreathes != null ? nBreathes : 0;
-		groupBreaths.put(groupId, nBreathes + 1);
+		groupBreathes.put(groupId, nBreathes + 1);
 	}
 
 	public Array<Integer> getGroupIdArray() {
@@ -96,16 +97,16 @@ public class GroupAnalysis {
 		return groupColors;
 	}
 
-	public Multimap<Integer, Coordinate> getGroupCoords() {
-		return groupCoords;
+	public Collection<Coordinate> getCoords(int groupId) {
+		return groupCoords.get(groupId);
 	}
 
-	public Multimap<Integer, Integer> getGroupTouches() {
-		return groupTouches;
+	public Collection<Integer> getTouches(int groupId) {
+		return groupTouches.get(groupId);
 	}
 
-	public Map<Integer, Integer> getGroupBreaths() {
-		return groupBreaths;
+	public int getBreathes(int groupId) {
+		return groupBreathes.get(groupId);
 	}
 
 }
