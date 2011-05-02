@@ -13,13 +13,14 @@ public class UctWeiqi {
 		protected Board board;
 		protected Occupation nextPlayer;
 
-		public Visitor(Board board) {
+		public Visitor(Board board, Occupation nextPlayer) {
 			this.board = board;
+			this.nextPlayer = nextPlayer;
 		}
 
 		@Override
 		public UctVisitor<Coordinate> cloneVisitor() {
-			return new Visitor(new Board(board));
+			return new Visitor(new Board(board), nextPlayer);
 		}
 
 		@Override
@@ -40,6 +41,9 @@ public class UctWeiqi {
 
 			while (winner == null) {
 				List<Coordinate> moves = board.findAllMoves(player);
+				if (moves.isEmpty())
+					break;
+
 				Coordinate c = moves.get(random.nextInt(moves.size()));
 				board.move(c, player);
 				player = player.opponent();

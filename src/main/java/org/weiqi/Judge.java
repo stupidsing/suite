@@ -24,7 +24,7 @@ public class Judge {
 
 	public static void checkGroupsLiveness(Board board, Array<Boolean> alives) {
 		GroupAnalysis ga = new GroupAnalysis(board);
-		Map<Integer, Occupation> groupColors = ga.getGroupColors();
+		Map<Integer, Occupation> groupColors = ga.getColors();
 
 		// Judge which groups are eyes, i.e. surrounded by only one colour
 		Map<Integer, Boolean> groupIsEye = Util.createHashMap();

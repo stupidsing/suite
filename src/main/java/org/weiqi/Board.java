@@ -20,14 +20,16 @@ public class Board extends Array<Occupation> {
 	}
 
 	public void move(Coordinate c, Occupation player) {
-		GroupAnalysis ga = new GroupAnalysis(this);
 		Occupation current = get(c);
 
 		if (current == Occupation.EMPTY) {
 			set(c, player);
-			killIfDead(ga, c);
+			GroupAnalysis ga = new GroupAnalysis(this);
+
 			for (Coordinate neighbour : c.getNeighbours())
-				killIfDead(ga, neighbour);
+				if (neighbour.isWithinBoard())
+					killIfDead(ga, neighbour);
+			killIfDead(ga, c);
 		} else
 			throw new RuntimeException("Cannot move on occupied position");
 	}
@@ -40,26 +42,34 @@ public class Board extends Array<Occupation> {
 
 		for (Coordinate c : Coordinate.getAll())
 			if (get(c) == Occupation.EMPTY) {
-				boolean hasBreath = false;
-				Integer groupId = ga.getGroupIdArray().get(c);
+				Integer groupId = ga.getGroupId(c);
+				boolean hasBreath;
 
-				for (Integer groupId1 : ga.getTouches(groupId)) {
-					Occupation color = ga.getGroupColors().get(groupId1);
+				if (ga.getCoords(groupId).size() == 1) {
+					hasBreath = false;
 
-					if (color == Occupation.EMPTY)
-						hasBreath = true;
-					else if (color == player)
-						hasBreath |= ga.getBreathes(groupId1) > 1;
-					else
-						hasBreath |= ga.getBreathes(groupId1) <= 1;
-				}
+					for (Integer groupId1 : ga.getTouches(groupId)) {
+						Occupation color = ga.getColors().get(groupId1);
+
+						if (color == Occupation.EMPTY)
+							hasBreath = true;
+						else if (color == player)
+							hasBreath |= ga.getBreathes(groupId1) > 1;
+						else
+							hasBreath |= ga.getBreathes(groupId1) <= 1;
+					}
+				} else
+					hasBreath = true;
+
+				if (hasBreath)
+					moves.add(c);
 			}
 
 		return moves;
 	}
 
 	private void killIfDead(GroupAnalysis ga, Coordinate c) {
-		Integer groupId = ga.getGroupIdArray().get(c);
+		Integer groupId = ga.getGroupId(c);
 
 		if (ga.getBreathes(groupId) == 0)
 			for (Coordinate c1 : ga.getCoords(groupId))

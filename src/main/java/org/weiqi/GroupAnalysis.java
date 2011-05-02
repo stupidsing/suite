@@ -43,11 +43,14 @@ public class GroupAnalysis {
 						while (parentGroupIds.containsKey(newGroupId))
 							newGroupId = parentGroupIds.get(newGroupId);
 
-						groupId = Math.min(groupId, newGroupId);
-						newGroupId = Math.max(groupId, newGroupId);
+						if (groupId != null) {
+							groupId = Math.min(groupId, newGroupId);
+							newGroupId = Math.max(groupId, newGroupId);
 
-						if (newGroupId.intValue() != groupId.intValue())
-							parentGroupIds.put(newGroupId, groupId);
+							if (newGroupId.intValue() != groupId.intValue())
+								parentGroupIds.put(newGroupId, groupId);
+						} else
+							groupId = newGroupId;
 					}
 				}
 
@@ -56,7 +59,10 @@ public class GroupAnalysis {
 
 		// Reduces group ID to parent and creates coordinate-to-group-ID mapping
 		for (Coordinate c : Coordinate.getAll()) {
-			Integer groupId = parentGroupIds.get(groupIdArray.get(c));
+			Integer groupId = groupIdArray.get(c);
+			while (parentGroupIds.containsKey(groupId))
+				groupId = parentGroupIds.get(groupId);
+
 			groupIdArray.set(c, groupId);
 			groupColors.put(groupId, board.get(c));
 			groupCoords.put(groupId, c);
@@ -89,11 +95,11 @@ public class GroupAnalysis {
 		groupBreathes.put(groupId, nBreathes + 1);
 	}
 
-	public Array<Integer> getGroupIdArray() {
-		return groupIdArray;
+	public Integer getGroupId(Coordinate c) {
+		return groupIdArray.get(c);
 	}
 
-	public Map<Integer, Occupation> getGroupColors() {
+	public Map<Integer, Occupation> getColors() {
 		return groupColors;
 	}
 
