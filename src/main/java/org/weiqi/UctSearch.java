@@ -31,18 +31,20 @@ public class UctSearch<Move> {
 		}
 	}
 
+	public UctSearch(UctVisitor<Move> visitor) {
+		this.visitor = visitor;
+	}
+
 	public Move search() {
 		UctNode<Move> root = new UctNode<Move>();
 
-		for (int i = 0; i < nSimulations; i++) {
-			// TODO clone
-			playSimulation(root);
-		}
+		for (int i = 0; i < nSimulations; i++)
+			playSimulation(visitor.cloneVisitor(), root);
 
 		return root.bestChild.move;
 	}
 
-	private boolean playSimulation(UctNode<Move> node) {
+	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node) {
 		boolean outcome;
 
 		if (node.nVisits != 0) {
@@ -78,7 +80,7 @@ public class UctSearch<Move> {
 
 			node.bestChild = bestSelected;
 			visitor.playMove(bestSelected.move);
-			outcome = playSimulation(bestSelected);
+			outcome = playSimulation(visitor, bestSelected);
 		} else
 			outcome = visitor.evaluateRandomOutcome();
 

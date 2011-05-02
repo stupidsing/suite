@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class Coordinate {
 
-	public int x, y;
+	private int x, y;
 
 	public Coordinate(int x, int y) {
 		this.x = x;
@@ -13,6 +13,10 @@ public class Coordinate {
 
 	public int hashCode() {
 		return x << 8 + y;
+	}
+
+	public int getArrayPosition() {
+		return x * Weiqi.SIZE + y;
 	}
 
 	public boolean equals(Object object) {
@@ -25,6 +29,21 @@ public class Coordinate {
 
 	public boolean isWithinBoard() {
 		return 0 <= x && x < Weiqi.SIZE && 0 <= y && y < Weiqi.SIZE;
+	}
+
+	public Coordinate[] leftOrUp() {
+		Coordinate left = x > 0 ? new Coordinate(x - 1, y) : null;
+		Coordinate up = y > 0 ? new Coordinate(x, y - 1) : null;
+
+		if (left == null || up == null)
+			if (left != null)
+				return new Coordinate[] { left };
+			else if (up != null)
+				return new Coordinate[] { up };
+			else
+				return new Coordinate[] {};
+		else
+			return new Coordinate[] { left, up };
 	}
 
 	public Iterable<Coordinate> getNeighbours() {

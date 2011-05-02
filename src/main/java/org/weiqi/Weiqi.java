@@ -19,20 +19,34 @@ public class Weiqi {
 		}
 	};
 
+	public static Occupation players[] = { Occupation.BLACK, Occupation.WHITE };
+
 	/**
 	 * A generic board type.
 	 */
 	public static class Array<T> {
 		@SuppressWarnings("unchecked")
 		// JDK bug
-		private T position[][] = (T[][]) new Object[Weiqi.SIZE][Weiqi.SIZE];
+		private T positions[] = (T[]) new Object[Weiqi.SIZE * Weiqi.SIZE];
+
+		public Array() {
+		}
+
+		public Array(Array<T> array) {
+			System.arraycopy( //
+					array.positions, 0, positions, 0, Weiqi.SIZE * Weiqi.SIZE);
+		}
+
+		public static <T1> Array<T1> create() {
+			return new Array<T1>();
+		}
 
 		public void set(Coordinate c, T t) {
-			position[c.x][c.y] = t;
+			positions[c.getArrayPosition()] = t;
 		}
 
 		public T get(Coordinate c) {
-			return position[c.x][c.y];
+			return positions[c.getArrayPosition()];
 		}
 	}
 

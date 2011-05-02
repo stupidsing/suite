@@ -1,10 +1,15 @@
 package org.weiqi;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
+
+import com.google.common.collect.Multimap;
 
 public class Board extends Array<Occupation> {
 
@@ -13,20 +18,50 @@ public class Board extends Array<Occupation> {
 			set(c, Occupation.EMPTY);
 	}
 
+	public Board(Board board) {
+		super(board);
+	}
+
 	public void move(Coordinate c, Occupation player) {
+		GroupAnalysis ga = new GroupAnalysis(this);
 		Occupation current = get(c);
+
 		if (current == Occupation.EMPTY) {
 			set(c, player);
-			killIfDead(c);
+			killIfDead(ga, c);
 			for (Coordinate neighbour : c.getNeighbours())
-				killIfDead(neighbour);
+				killIfDead(ga, neighbour);
 		} else
 			throw new RuntimeException("Cannot move on occupied position");
 	}
 
-	private void killIfDead(Coordinate c) {
-		if (c.isWithinBoard() && !hasBreath(c))
-			for (Coordinate c1 : findGroup(c))
+	public List<Coordinate> findAllMoves(Occupation player) {
+		List<Coordinate> moves = new ArrayList<Coordinate>( //
+				Weiqi.SIZE * Weiqi.SIZE);
+
+		for (Coordinate c : Coordinate.getAll())
+			if (get(c) == Occupation.EMPTY) {
+				set(c, player);
+
+				boolean hasBreath = false;
+
+				for (Coordinate neighbour : c.getNeighbours())
+					if (neighbour.isWithinBoard())
+						hasBreath |= !hasBreath(neighbour);
+
+				hasBreath |= hasBreath(c);
+			}
+
+		return moves;
+	}
+
+	private void killIfDead(GroupAnalysis ga, Coordinate c) {
+		Multimap<Integer, Coordinate> groupCoords = ga.getGroupCoords();
+		Map<Integer, Integer> groupBreaths = ga.getGroupBreaths();
+		Integer groupId = ga.getGroupIdArray().get(c);
+
+		if (groupBreaths.get(groupId) == 0)
+			for (Coordinate c1 : groupCoords.get(groupId))
 				set(c1, Occupation.EMPTY);
 	}
 
