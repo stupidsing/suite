@@ -99,8 +99,12 @@ public class GroupAnalysis {
 		return groupIdArray.get(c);
 	}
 
-	public Map<Integer, Occupation> getColors() {
+	public Map<Integer, Occupation> getGroupColors() {
 		return groupColors;
+	}
+
+	public Occupation getColor(int groupId) {
+		return groupColors.get(groupId);
 	}
 
 	public Collection<Coordinate> getCoords(int groupId) {

@@ -75,6 +75,10 @@ public class Util {
 		return new ArrayList<T>(c);
 	}
 
+	public static <T> Set<T> createHashSet() {
+		return new HashSet<T>();
+	}
+
 	public static <K, V> Map<K, V> createHashMap() {
 		return new HashMap<K, V>();
 	}
@@ -275,7 +279,7 @@ public class Util {
 					sb.append(" caught " + ex + "\n");
 				}
 
-		Set<String> displayedMethod = new HashSet<String>();
+		Set<String> displayedMethod = createHashSet();
 		for (Method method : clazz.getMethods()) {
 			String name = method.getName();
 			try {

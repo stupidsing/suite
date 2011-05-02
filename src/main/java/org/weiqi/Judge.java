@@ -1,6 +1,5 @@
 package org.weiqi;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -13,7 +12,7 @@ public class Judge {
 
 	public static Occupation checkByOccupationExistence(Board board) {
 		int nPiecesCount = 0;
-		Set<Occupation> players = new HashSet<Occupation>();
+		Set<Occupation> players = Util.createHashSet();
 
 		for (Coordinate c : Coordinate.getAll()) {
 			Occupation color = board.get(c);
@@ -32,7 +31,7 @@ public class Judge {
 
 	public static void checkGroupsLiveness(Board board, Array<Boolean> alives) {
 		GroupAnalysis ga = new GroupAnalysis(board);
-		Map<Integer, Occupation> groupColors = ga.getColors();
+		Map<Integer, Occupation> groupColors = ga.getGroupColors();
 
 		// Judge which groups are eyes, i.e. surrounded by only one colour
 		Map<Integer, Boolean> groupIsEye = Util.createHashMap();
@@ -40,7 +39,7 @@ public class Judge {
 		for (Entry<Integer, Occupation> entry : groupColors.entrySet())
 			if (entry.getValue() == Occupation.EMPTY) {
 				Integer groupId = entry.getKey();
-				Set<Occupation> colors = new HashSet<Occupation>();
+				Set<Occupation> colors = Util.createHashSet();
 
 				for (Integer neighbourGroupId : ga.getTouches(groupId)) {
 					Occupation color = groupColors.get(neighbourGroupId);

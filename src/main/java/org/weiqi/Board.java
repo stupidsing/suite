@@ -1,9 +1,7 @@
 package org.weiqi;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
@@ -21,14 +19,16 @@ public class Board extends Array<Occupation> {
 
 	public void move(Coordinate c, Occupation player) {
 		Occupation current = get(c);
+		Occupation opponent = player.opponent();
 
 		if (current == Occupation.EMPTY) {
 			set(c, player);
 			GroupAnalysis ga = new GroupAnalysis(this);
 
 			for (Coordinate neighbour : c.getNeighbours())
-				if (neighbour.isWithinBoard())
+				if (neighbour.isWithinBoard() && get(neighbour) == opponent)
 					killIfDead(ga, neighbour);
+
 			killIfDead(ga, c);
 		} else
 			throw new RuntimeException("Cannot move on occupied position");
@@ -49,7 +49,7 @@ public class Board extends Array<Occupation> {
 					hasBreath = false;
 
 					for (Integer groupId1 : ga.getTouches(groupId)) {
-						Occupation color = ga.getColors().get(groupId1);
+						Occupation color = ga.getColor(groupId1);
 
 						if (color == Occupation.EMPTY)
 							hasBreath = true;
@@ -74,18 +74,6 @@ public class Board extends Array<Occupation> {
 		if (ga.getBreathes(groupId) == 0)
 			for (Coordinate c1 : ga.getCoords(groupId))
 				set(c1, Occupation.EMPTY);
-	}
-
-	public Set<Coordinate> findGroup(Coordinate c) {
-		Set<Coordinate> group = new HashSet<Coordinate>();
-		findGroup(c, get(c), group);
-		return group;
-	}
-
-	private void findGroup(Coordinate c, Occupation color, Set<Coordinate> group) {
-		if (c.isWithinBoard() && get(c) == color && group.add(c))
-			for (Coordinate neighbour : c.getNeighbours())
-				findGroup(neighbour, color, group);
 	}
 
 }
