@@ -39,20 +39,19 @@ public class UctWeiqi {
 			Occupation winner = null;
 			Occupation player = nextPlayer;
 
+			// Move until someone cannot move anymore
 			while (winner == null) {
-				List<Coordinate> moves = board.findAllMoves(player);
-				if (moves.isEmpty())
-					break;
+				List<Coordinate> moves = board.findAllMoves(nextPlayer);
 
-				Coordinate c = moves.get(random.nextInt(moves.size()));
-				board.move(c, player);
-				player = player.opponent();
-				winner = Judge.checkByOccupationExistence(board);
+				if (!moves.isEmpty()) {
+					Coordinate c = moves.get(random.nextInt(moves.size()));
+					board.move(c, nextPlayer);
+					nextPlayer = nextPlayer.opponent();
+				} else
+					winner = nextPlayer.opponent();
 			}
 
-			return nextPlayer == winner;
-
-			// TODO implement a normal-rule end-game judge
+			return player == winner;
 		}
 	}
 
