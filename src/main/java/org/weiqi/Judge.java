@@ -12,15 +12,20 @@ import org.weiqi.Weiqi.Occupation;
 public class Judge {
 
 	public static Occupation checkByOccupationExistence(Board board) {
+		int nPiecesCount = 0;
 		Set<Occupation> players = new HashSet<Occupation>();
 
-		for (Coordinate c : Coordinate.getAll())
-			players.add(board.get(c));
+		for (Coordinate c : Coordinate.getAll()) {
+			Occupation color = board.get(c);
+			players.add(color);
+			nPiecesCount += color != Occupation.EMPTY ? 1 : 0;
+		}
 
-		for (Occupation player : Weiqi.players)
-			if (players.contains(player)
-					&& !players.contains(player.opponent()))
-				return player;
+		if (nPiecesCount > 1)
+			for (Occupation player : Weiqi.players)
+				if (players.contains(player)
+						&& !players.contains(player.opponent()))
+					return player;
 
 		return null;
 	}
