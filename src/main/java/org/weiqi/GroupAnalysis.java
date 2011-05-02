@@ -90,9 +90,7 @@ public class GroupAnalysis {
 	}
 
 	private void increaseGroupBreath(Integer groupId) {
-		Integer nBreathes = groupBreathes.get(groupId);
-		nBreathes = nBreathes != null ? nBreathes : 0;
-		groupBreathes.put(groupId, nBreathes + 1);
+		groupBreathes.put(groupId, groupBreathes.get(groupId) + 1);
 	}
 
 	public Integer getGroupId(Coordinate c) {
