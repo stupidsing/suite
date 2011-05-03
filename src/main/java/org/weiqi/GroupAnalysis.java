@@ -44,8 +44,11 @@ public class GroupAnalysis {
 							newGroupId = parentGroupIds.get(newGroupId);
 
 						if (groupId != null) {
-							groupId = Math.min(groupId, newGroupId);
-							newGroupId = Math.max(groupId, newGroupId);
+							if (groupId > newGroupId) {
+								Integer temp = groupId;
+								groupId = newGroupId;
+								newGroupId = temp;
+							}
 
 							if (newGroupId.intValue() != groupId.intValue())
 								parentGroupIds.put(newGroupId, groupId);
@@ -76,7 +79,7 @@ public class GroupAnalysis {
 			for (Coordinate c1 : c.leftOrUp()) {
 				Integer groupId1 = groupIdArray.get(c1);
 
-				if (groupId != groupId1) {
+				if (groupId.intValue() != groupId1.intValue()) {
 					groupTouches.put(groupId, groupId1);
 					groupTouches.put(groupId1, groupId);
 

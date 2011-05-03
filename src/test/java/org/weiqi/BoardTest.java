@@ -38,4 +38,27 @@ public class BoardTest {
 		assertEquals(board.get(new Coordinate(0, 0)), Occupation.EMPTY);
 	}
 
+	@Test
+	public void testGroupAnalysis() {
+		Board board = blackBoard();
+		board.set(new Coordinate(3, 3), Occupation.EMPTY);
+		board.set(new Coordinate(3, 4), Occupation.EMPTY);
+		board.set(new Coordinate(7, 3), Occupation.EMPTY);
+		board.set(new Coordinate(18, 0), Occupation.EMPTY);
+		board.set(new Coordinate(17, 1), Occupation.EMPTY);
+		board.set(new Coordinate(17, 0), Occupation.WHITE);
+		board.set(new Coordinate(18, 1), Occupation.WHITE);
+
+		GroupAnalysis ga = new GroupAnalysis(board);
+		Integer groupId = ga.getGroupId(new Coordinate(15, 15));
+		assertEquals(4, ga.getNumberOfBreathes(groupId));
+	}
+
+	private Board blackBoard() {
+		Board board = new Board();
+		for (Coordinate c : Coordinate.all())
+			board.set(c, Occupation.BLACK);
+		return board;
+	}
+
 }

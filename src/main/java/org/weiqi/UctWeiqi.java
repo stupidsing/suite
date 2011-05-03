@@ -70,12 +70,12 @@ public class UctWeiqi {
 						hasBreath = false;
 
 						for (Integer groupId1 : ga.getTouches(groupId)) {
-							Occupation color = ga.getColor(groupId1);
+							int nBreathes = ga.getNumberOfBreathes(groupId1);
 
-							if (color == nextPlayer)
-								hasBreath |= ga.getNumberOfBreathes(groupId1) > 1;
+							if (ga.getColor(groupId1) == nextPlayer)
+								hasBreath |= nBreathes > 1;
 							else
-								hasBreath |= ga.getNumberOfBreathes(groupId1) <= 1;
+								hasBreath |= nBreathes <= 1;
 						}
 					} else
 						hasBreath = true;

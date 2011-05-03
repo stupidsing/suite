@@ -1,5 +1,6 @@
 package org.weiqi;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.util.Util;
@@ -33,23 +34,14 @@ public class Board extends Array<Occupation> {
 				if (neighbour.isWithinBoard() && get(neighbour) == opponent)
 					killIfDead(neighbour);
 
-			Board b1 = new Board(this);
-
-			if (killIfDead(c)) {
-				UserInterface.display(b1);
-				System.out.println();
-				UserInterface.display(this);
-				System.out.println(player + " " + c);
-				set(c, player);
-				killIfDead(c);
+			if (killIfDead(c))
 				throw new RuntimeException("Cannot perform suicide move");
-			}
 		} else
 			throw new RuntimeException("Cannot move on occupied position");
 	}
 
 	private boolean killIfDead(Coordinate c) {
-		boolean isKilled = !hasBreath(c, get(c));
+		boolean isKilled = !hasBreath(c, get(c), new HashSet<Coordinate>());
 
 		if (isKilled)
 			for (Coordinate c1 : findGroup(c))
@@ -58,22 +50,17 @@ public class Board extends Array<Occupation> {
 		return isKilled;
 	}
 
-	private boolean hasBreath(Coordinate c, Occupation player) {
+	private boolean hasBreath(Coordinate c, Occupation player,
+			Set<Coordinate> group) {
 		if (c.isWithinBoard()) {
 			Occupation current = get(c);
 
 			if (current == player) {
-				set(c, null); // Do not re-count
-				boolean hasBreath = false;
-
 				for (Coordinate neighbour : c.neighbours())
-					if (hasBreath(neighbour, player)) {
-						hasBreath = true;
-						break;
-					}
-
-				set(c, current); // Set it back
-				return hasBreath;
+					if (group.add(neighbour)
+							&& hasBreath(neighbour, player, group))
+						return true;
+				return false;
 			} else
 				return current == Occupation.EMPTY;
 		} else
