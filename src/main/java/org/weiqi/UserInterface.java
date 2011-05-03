@@ -15,14 +15,15 @@ public class UserInterface {
 		}
 	}
 
-	public static String display(Occupation color) {
+	private static String display(Occupation color) {
 		switch (color) {
 		case BLACK:
 			return "X";
 		case WHITE:
 			return "O";
 		default:
-			return " ";
+			return ".";
 		}
 	}
+
 }

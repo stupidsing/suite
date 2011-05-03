@@ -16,7 +16,7 @@ public class Evaluator {
 		Occupation opponent = player.opponent();
 
 		// Count pieces
-		for (Coordinate c : Coordinate.getAll())
+		for (Coordinate c : Coordinate.all())
 			if (board.get(c) == player)
 				score += PIECESCORE;
 

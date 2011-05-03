@@ -2,7 +2,7 @@ package org.weiqi;
 
 import java.util.Iterator;
 
-public class Coordinate {
+public class Coordinate implements Comparable<Coordinate> {
 
 	private int x, y;
 
@@ -11,20 +11,8 @@ public class Coordinate {
 		this.y = y;
 	}
 
-	public int hashCode() {
-		return x << 8 + y;
-	}
-
 	public int getArrayPosition() {
-		return x * Weiqi.SIZE + y;
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Coordinate) {
-			Coordinate c = (Coordinate) object;
-			return x == c.x && y == c.y;
-		} else
-			return false;
+		return (x << Weiqi.SHIFT) + y;
 	}
 
 	public boolean isWithinBoard() {
@@ -46,7 +34,7 @@ public class Coordinate {
 			return new Coordinate[] { left, up };
 	}
 
-	public Iterable<Coordinate> getNeighbours() {
+	public Iterable<Coordinate> neighbours() {
 		return new Iterable<Coordinate>() {
 			public Iterator<Coordinate> iterator() {
 				return new Iterator<Coordinate>() {
@@ -79,7 +67,7 @@ public class Coordinate {
 		};
 	}
 
-	public static Iterable<Coordinate> getAll() {
+	public static Iterable<Coordinate> all() {
 		return new Iterable<Coordinate>() {
 			public Iterator<Coordinate> iterator() {
 				return new Iterator<Coordinate>() {
@@ -105,6 +93,31 @@ public class Coordinate {
 				};
 			}
 		};
+	}
+
+	@Override
+	public int hashCode() {
+		return getArrayPosition();
+	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Coordinate) {
+			Coordinate c = (Coordinate) object;
+			return x == c.x && y == c.y;
+		} else
+			return false;
+	}
+
+	@Override
+	public int compareTo(Coordinate coord) {
+		int dx = x - coord.x;
+		int dy = y - coord.y;
+		return (dx << Weiqi.SHIFT) + dy;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%d,%d", x, y);
 	}
 
 }

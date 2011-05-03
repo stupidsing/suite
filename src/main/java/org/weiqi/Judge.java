@@ -14,7 +14,7 @@ public class Judge {
 		int nPiecesCount = 0;
 		Set<Occupation> players = Util.createHashSet();
 
-		for (Coordinate c : Coordinate.getAll()) {
+		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);
 			players.add(color);
 			nPiecesCount += color != Occupation.EMPTY ? 1 : 0;

@@ -17,7 +17,7 @@ public class GroupAnalysis {
 	private Map<Integer, Occupation> groupColors = Util.createHashMap();
 	private Multimap<Integer, Coordinate> groupCoords = HashMultimap.create();
 	private Multimap<Integer, Integer> groupTouches = HashMultimap.create();
-	private Map<Integer, Integer> groupBreathes = Util.createHashMap();
+	private Multimap<Integer, Coordinate> groupBreathes = HashMultimap.create();
 
 	public GroupAnalysis(Board board) {
 		this.board = board;
@@ -31,7 +31,7 @@ public class GroupAnalysis {
 		int nGroups = 0;
 		Map<Integer, Integer> parentGroupIds = Util.createHashMap();
 
-		for (Coordinate c : Coordinate.getAll()) {
+		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);
 			Integer groupId = null;
 
@@ -58,7 +58,7 @@ public class GroupAnalysis {
 		}
 
 		// Reduces group ID to parent and creates coordinate-to-group-ID mapping
-		for (Coordinate c : Coordinate.getAll()) {
+		for (Coordinate c : Coordinate.all()) {
 			Integer groupId = groupIdArray.get(c);
 			while (parentGroupIds.containsKey(groupId))
 				groupId = parentGroupIds.get(groupId);
@@ -70,27 +70,23 @@ public class GroupAnalysis {
 	}
 
 	private void assignGroupSurroundings() {
-		for (Integer groupId : groupColors.keySet())
-			groupBreathes.put(groupId, 0);
-
-		for (Coordinate c : Coordinate.getAll()) {
+		for (Coordinate c : Coordinate.all()) {
 			Integer groupId = groupIdArray.get(c);
 
 			for (Coordinate c1 : c.leftOrUp()) {
 				Integer groupId1 = groupIdArray.get(c1);
-				groupTouches.put(groupId, groupId1);
-				groupTouches.put(groupId1, groupId);
 
-				if (board.get(c) == Occupation.EMPTY)
-					increaseGroupBreath(groupId1);
-				if (board.get(c1) == Occupation.EMPTY)
-					increaseGroupBreath(groupId);
+				if (groupId != groupId1) {
+					groupTouches.put(groupId, groupId1);
+					groupTouches.put(groupId1, groupId);
+
+					if (board.get(c) == Occupation.EMPTY)
+						groupBreathes.put(groupId1, c);
+					if (board.get(c1) == Occupation.EMPTY)
+						groupBreathes.put(groupId, c1);
+				}
 			}
 		}
-	}
-
-	private void increaseGroupBreath(Integer groupId) {
-		groupBreathes.put(groupId, groupBreathes.get(groupId) + 1);
 	}
 
 	public Integer getGroupId(Coordinate c) {
@@ -113,8 +109,8 @@ public class GroupAnalysis {
 		return groupTouches.get(groupId);
 	}
 
-	public int getBreathes(int groupId) {
-		return groupBreathes.get(groupId);
+	public int getNumberOfBreathes(int groupId) {
+		return groupBreathes.get(groupId).size();
 	}
 
 }

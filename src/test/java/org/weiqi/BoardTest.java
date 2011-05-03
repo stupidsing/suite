@@ -2,10 +2,32 @@ package org.weiqi;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
+import org.util.Util;
 import org.weiqi.Weiqi.Occupation;
 
 public class BoardTest {
+
+	@Test
+	public void testNeighbour() {
+		Coordinate c = new Coordinate(10, 10);
+		Set<Coordinate> neighbours = Util.createHashSet();
+
+		for (Coordinate c1 : c.neighbours())
+			neighbours.add(c1);
+
+		assertEquals(new HashSet<Coordinate>( //
+				Arrays.asList( //
+						new Coordinate(9, 10) //
+						, new Coordinate(11, 10) //
+						, new Coordinate(10, 9) //
+						, new Coordinate(10, 11) //
+				)), neighbours);
+	}
 
 	@Test
 	public void testEat() {

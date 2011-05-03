@@ -1,5 +1,6 @@
 package org.weiqi;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -10,8 +11,8 @@ public class UctWeiqi {
 	private final static Random random = new Random();
 
 	public static class Visitor implements UctVisitor<Coordinate> {
-		protected Board board;
-		protected Occupation nextPlayer;
+		private Board board;
+		private Occupation nextPlayer;
 
 		public Visitor(Board board, Occupation nextPlayer) {
 			this.board = board;
@@ -25,7 +26,7 @@ public class UctWeiqi {
 
 		@Override
 		public Iterable<Coordinate> elaborateMoves() {
-			return board.findAllMoves(nextPlayer);
+			return findAllMoves();
 		}
 
 		@Override
@@ -41,7 +42,7 @@ public class UctWeiqi {
 
 			// Move until someone cannot move anymore
 			while (winner == null) {
-				List<Coordinate> moves = board.findAllMoves(nextPlayer);
+				List<Coordinate> moves = findAllMoves();
 
 				if (!moves.isEmpty()) {
 					Coordinate c = moves.get(random.nextInt(moves.size()));
@@ -52,6 +53,38 @@ public class UctWeiqi {
 			}
 
 			return player == winner;
+		}
+
+		public List<Coordinate> findAllMoves() {
+			GroupAnalysis ga = new GroupAnalysis(board);
+
+			List<Coordinate> moves = new ArrayList<Coordinate>( //
+					Weiqi.SIZE * Weiqi.SIZE);
+
+			for (Coordinate c : Coordinate.all())
+				if (board.get(c) == Occupation.EMPTY) {
+					Integer groupId = ga.getGroupId(c);
+					boolean hasBreath;
+
+					if (ga.getCoords(groupId).size() == 1) { // A tight space
+						hasBreath = false;
+
+						for (Integer groupId1 : ga.getTouches(groupId)) {
+							Occupation color = ga.getColor(groupId1);
+
+							if (color == nextPlayer)
+								hasBreath |= ga.getNumberOfBreathes(groupId1) > 1;
+							else
+								hasBreath |= ga.getNumberOfBreathes(groupId1) <= 1;
+						}
+					} else
+						hasBreath = true;
+
+					if (hasBreath)
+						moves.add(c);
+				}
+
+			return moves;
 		}
 	}
 
