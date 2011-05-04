@@ -19,6 +19,8 @@ public class Evaluator {
 		for (Coordinate c : Coordinate.all())
 			if (board.get(c) == player)
 				score += PIECESCORE;
+			else if (board.get(c) == opponent)
+				score -= PIECESCORE;
 
 		// Count territories by counting groups
 		GroupAnalysis ga = new GroupAnalysis(board);

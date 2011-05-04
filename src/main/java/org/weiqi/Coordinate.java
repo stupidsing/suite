@@ -6,22 +6,29 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	private int x, y;
 
-	public Coordinate(int x, int y) {
+	private final static Coordinate coords[][] = new Coordinate[Weiqi.SIZE][Weiqi.SIZE];
+	static {
+		for (int x = 0; x < Weiqi.SIZE; x++)
+			for (int y = 0; y < Weiqi.SIZE; y++)
+				coords[x][y] = new Coordinate(x, y);
+	}
+
+	private Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+
+	public static Coordinate c(int x, int y) {
+		return coords[x][y];
 	}
 
 	public int getArrayPosition() {
 		return (x << Weiqi.SHIFT) + y;
 	}
 
-	public boolean isWithinBoard() {
-		return 0 <= x && x < Weiqi.SIZE && 0 <= y && y < Weiqi.SIZE;
-	}
-
 	public Coordinate[] leftOrUp() {
-		Coordinate left = x > 0 ? new Coordinate(x - 1, y) : null;
-		Coordinate up = y > 0 ? new Coordinate(x, y - 1) : null;
+		Coordinate left = x > 0 ? Coordinate.c(x - 1, y) : null;
+		Coordinate up = y > 0 ? Coordinate.c(x, y - 1) : null;
 
 		if (left == null || up == null)
 			if (left != null)
@@ -41,19 +48,23 @@ public class Coordinate implements Comparable<Coordinate> {
 					public int n = 0;
 
 					public boolean hasNext() {
-						return n < 4;
+						return n < (y == 0 ? 3 : 4);
 					}
 
 					public Coordinate next() {
 						switch (n++) {
 						case 0:
-							return new Coordinate(x + 1, y);
+							if (x < Weiqi.SIZE - 1)
+								return Coordinate.c(x + 1, y);
 						case 1:
-							return new Coordinate(x - 1, y);
+							if (x > 0)
+								return Coordinate.c(x - 1, y);
 						case 2:
-							return new Coordinate(x, y + 1);
+							if (y < Weiqi.SIZE - 1)
+								return Coordinate.c(x, y + 1);
 						case 3:
-							return new Coordinate(x, y - 1);
+							if (y > 0)
+								return Coordinate.c(x, y - 1);
 						default:
 							throw new RuntimeException("Run out of neighbours");
 						}
@@ -78,7 +89,7 @@ public class Coordinate implements Comparable<Coordinate> {
 					}
 
 					public Coordinate next() {
-						Coordinate ret = new Coordinate(c.x, c.y);
+						Coordinate ret = Coordinate.c(c.x, c.y);
 						c.y++;
 						if (c.y == Weiqi.SIZE) {
 							c.x++;

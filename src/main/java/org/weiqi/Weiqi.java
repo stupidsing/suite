@@ -1,8 +1,11 @@
 package org.weiqi;
 
+import java.util.Arrays;
+
 public class Weiqi {
 
 	public final static int SIZE = 19;
+	public final static int AREA = SIZE * SIZE;
 
 	public final static int SHIFT = 5; // 2^SHIFT >= SIZE
 
@@ -45,12 +48,26 @@ public class Weiqi {
 		public void dump() {
 			for (int x = 0; x < Weiqi.SIZE; x++) {
 				for (int y = 0; y < Weiqi.SIZE; y++) {
-					Coordinate c = new Coordinate(x, y);
+					Coordinate c = Coordinate.c(x, y);
 					System.out.print(get(c) + " ");
 				}
 
 				System.out.println();
 			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(positions);
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (object instanceof Array) {
+				Array<?> array = (Array<?>) object;
+				return Arrays.equals(positions, array.positions);
+			} else
+				return false;
 		}
 
 		public void set(Coordinate c, T t) {

@@ -37,22 +37,37 @@ public class UctWeiqi {
 
 		@Override
 		public boolean evaluateRandomOutcome() {
-			Occupation winner = null;
-			Occupation player = nextPlayer;
+			Occupation me = nextPlayer;
+			List<Coordinate> moves = findAllMoves();
+			Coordinate move = null;
 
-			// Move until someone cannot move anymore
-			while (winner == null) {
-				List<Coordinate> moves = findAllMoves();
+			// Move until someone cannot move anymore,
+			// or maximum iterations reached
+			for (int i = 0; i < 5 * Weiqi.AREA; i++) {
+				move = randomMove(moves);
 
-				if (!moves.isEmpty()) {
-					Coordinate c = moves.get(random.nextInt(moves.size()));
-					board.move(c, nextPlayer);
-					nextPlayer = nextPlayer.opponent();
-				} else
-					winner = nextPlayer.opponent();
+				if (move == null || !board.moveIfPossible(move, nextPlayer)) {
+					move = randomMove(moves = findAllMoves());
+					if (move != null)
+						board.move(move, nextPlayer);
+				}
+
+				if (move == null)
+					break;
+
+				moves.remove(move);
+				nextPlayer = nextPlayer.opponent();
 			}
 
-			return player == winner;
+			if (move == null)
+				return nextPlayer != me;
+			else
+				return Evaluator.evaluate(me, board) > 0;
+		}
+
+		private Coordinate randomMove(List<Coordinate> moves) {
+			int size = moves.size();
+			return size > 0 ? moves.get(random.nextInt(size)) : null;
 		}
 
 		public List<Coordinate> findAllMoves() {

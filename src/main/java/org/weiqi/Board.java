@@ -24,6 +24,12 @@ public class Board extends Array<Occupation> {
 	 * This method do not take use of GroupAnalysis for performance reasons.
 	 */
 	public void move(Coordinate c, Occupation player) {
+		if (!moveIfPossible(c, player))
+			throw new RuntimeException("Invalid move");
+	}
+
+	public boolean moveIfPossible(Coordinate c, Occupation player) {
+		boolean moved;
 		Occupation current = get(c);
 		Occupation opponent = player.opponent();
 
@@ -31,13 +37,14 @@ public class Board extends Array<Occupation> {
 			set(c, player);
 
 			for (Coordinate neighbour : c.neighbours())
-				if (neighbour.isWithinBoard() && get(neighbour) == opponent)
+				if (get(neighbour) == opponent)
 					killIfDead(neighbour);
 
-			if (killIfDead(c))
-				throw new RuntimeException("Cannot perform suicide move");
+			moved = !killIfDead(c);
 		} else
-			throw new RuntimeException("Cannot move on occupied position");
+			moved = false;
+
+		return moved;
 	}
 
 	private boolean killIfDead(Coordinate c) {
@@ -52,19 +59,15 @@ public class Board extends Array<Occupation> {
 
 	private boolean hasBreath(Coordinate c, Occupation player,
 			Set<Coordinate> group) {
-		if (c.isWithinBoard()) {
-			Occupation current = get(c);
+		Occupation current = get(c);
 
-			if (current == player) {
-				for (Coordinate neighbour : c.neighbours())
-					if (group.add(neighbour)
-							&& hasBreath(neighbour, player, group))
-						return true;
-				return false;
-			} else
-				return current == Occupation.EMPTY;
-		} else
+		if (current == player) {
+			for (Coordinate neighbour : c.neighbours())
+				if (group.add(neighbour) && hasBreath(neighbour, player, group))
+					return true;
 			return false;
+		} else
+			return current == Occupation.EMPTY;
 	}
 
 	private Set<Coordinate> findGroup(Coordinate c) {
@@ -74,7 +77,7 @@ public class Board extends Array<Occupation> {
 	}
 
 	private void findGroup(Coordinate c, Occupation color, Set<Coordinate> group) {
-		if (c.isWithinBoard() && get(c) == color && group.add(c))
+		if (get(c) == color && group.add(c))
 			for (Coordinate neighbour : c.neighbours())
 				findGroup(neighbour, color, group);
 	}
@@ -91,7 +94,7 @@ public class Board extends Array<Occupation> {
 			GroupAnalysis ga = new GroupAnalysis(this);
 
 			for (Coordinate neighbour : c.neighbours())
-				if (neighbour.isWithinBoard() && get(neighbour) == opponent)
+				if (get(neighbour) == opponent)
 					killIfDead1(ga, neighbour);
 
 			if (killIfDead1(ga, c))
@@ -109,6 +112,32 @@ public class Board extends Array<Occupation> {
 				set(c1, Occupation.EMPTY);
 
 		return isKilled;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (int x = 0; x < Weiqi.SIZE; x++) {
+			for (int y = 0; y < Weiqi.SIZE; y++) {
+				Coordinate c = Coordinate.c(x, y);
+				sb.append(display(get(c)) + " ");
+			}
+			sb.append("\n");
+		}
+
+		return sb.toString();
+	}
+
+	private static String display(Occupation color) {
+		switch (color) {
+		case BLACK:
+			return "X";
+		case WHITE:
+			return "O";
+		default:
+			return ".";
+		}
 	}
 
 }

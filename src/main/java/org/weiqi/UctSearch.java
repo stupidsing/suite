@@ -11,9 +11,9 @@ public class UctSearch<Move> {
 	 * Larger values give uniform search; smaller values give very selective
 	 * search.
 	 */
-	private final static int searchRatio = 1;
+	private final static float searchRatio = 0.5f;
 
-	private final static int nSimulations = 10000;
+	public int numberOfSimulations = 10000;
 
 	private UctVisitor<Move> visitor;
 	private Random random = new Random();
@@ -38,7 +38,7 @@ public class UctSearch<Move> {
 	public Move search() {
 		UctNode<Move> root = new UctNode<Move>();
 
-		for (int i = 0; i < nSimulations; i++)
+		for (int i = 0; i < numberOfSimulations; i++)
 			playSimulation(visitor.cloneVisitor(), root);
 
 		return root.bestChild.move;
@@ -52,7 +52,7 @@ public class UctSearch<Move> {
 
 			for (Move move : visitor.elaborateMoves()) {
 				UctNode<Move> newChildNode = new UctNode<Move>(move);
-				newChildNode.child = childNode;
+				newChildNode.sibling = childNode;
 				childNode = newChildNode;
 			}
 
@@ -94,6 +94,10 @@ public class UctSearch<Move> {
 		float nVisits = child.nVisits;
 		return nWins / nVisits + searchRatio //
 				* (float) Math.sqrt(Math.log(node.nVisits) / (5f * nVisits));
+	}
+
+	public void setNumberOfSimulations(int numberOfSimulations) {
+		this.numberOfSimulations = numberOfSimulations;
 	}
 
 }
