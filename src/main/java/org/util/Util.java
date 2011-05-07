@@ -188,6 +188,13 @@ public class Util {
 			return (t1 != null) ? t1.equals(t2) : true;
 	}
 
+	public static <T extends Comparable<T>> int compare(T t1, T t2) {
+		if (t1 == null ^ t2 == null)
+			return t1 != null ? 1 : -1;
+		else
+			return (t1 != null) ? t1.compareTo(t2) : 0;
+	}
+
 	public static <T> int hashCode(T t) {
 		return (t != null) ? t.hashCode() : 0;
 	}

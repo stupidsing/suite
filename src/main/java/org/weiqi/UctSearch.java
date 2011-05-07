@@ -1,5 +1,6 @@
 package org.weiqi;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 
 /**
@@ -16,12 +17,14 @@ public class UctSearch<Move> {
 	public int numberOfSimulations = 10000;
 
 	private UctVisitor<Move> visitor;
+	private UctNode<Move> root;
+
 	private Random random = new Random();
 
 	private static class UctNode<Move> {
 		private Move move;
 		private int nWins, nVisits;
-		private UctNode<Move> child, sibling, bestChild;
+		private UctNode<Move> child, sibling;
 
 		private UctNode() {
 		}
@@ -36,27 +39,40 @@ public class UctSearch<Move> {
 	}
 
 	public Move search() {
-		UctNode<Move> root = new UctNode<Move>();
+		root = new UctNode<Move>();
 
 		for (int i = 0; i < numberOfSimulations; i++)
 			playSimulation(visitor.cloneVisitor(), root);
 
-		return root.bestChild.move;
+		UctNode<Move> node = root.child, best = null;
+
+		while (node != null) {
+			if (best == null
+					|| node.nWins * best.nVisits > node.nVisits * best.nWins)
+				best = node;
+			node = node.sibling;
+		}
+
+		return best != null ? best.move : null;
 	}
 
 	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node) {
 		boolean outcome;
 
 		if (node.nVisits != 0) {
-			UctNode<Move> childNode = null;
 
-			for (Move move : visitor.elaborateMoves()) {
-				UctNode<Move> newChildNode = new UctNode<Move>(move);
-				newChildNode.sibling = childNode;
-				childNode = newChildNode;
+			// Generate moves, if not done before
+			if (node.child == null) {
+				UctNode<Move> child = null;
+
+				for (Move move : visitor.elaborateMoves()) {
+					UctNode<Move> newChild = new UctNode<Move>(move);
+					newChild.sibling = child;
+					child = newChild;
+				}
+
+				node.child = child;
 			}
-
-			node.child = childNode;
 
 			// UCT selection
 			UctNode<Move> child = node.child;
@@ -66,7 +82,7 @@ public class UctSearch<Move> {
 			while (child != null) {
 				float uct;
 				if (child.nVisits > 0)
-					uct = uct(node, child);
+					uct = uct(node, child) + random.nextFloat() * 0.1f;
 				else
 					uct = 10000f + 1000f * random.nextFloat();
 
@@ -78,22 +94,61 @@ public class UctSearch<Move> {
 				child = child.sibling;
 			}
 
-			node.bestChild = bestSelected;
-			visitor.playMove(bestSelected.move);
-			outcome = !playSimulation(visitor, bestSelected);
+			if (bestSelected != null) {
+				visitor.playMove(bestSelected.move);
+				outcome = !playSimulation(visitor, bestSelected);
+			} else
+				outcome = false;
 		} else
 			outcome = visitor.evaluateRandomOutcome();
 
 		node.nVisits++;
-		node.nWins += outcome ? 1 : 0;
+		node.nWins += outcome ? 0 : 1;
 		return outcome;
 	}
 
-	private float uct(UctNode<Move> node, UctNode<Move> child) {
+	private float uct(UctNode<Move> parent, UctNode<Move> child) {
 		float nWins = child.nWins;
 		float nVisits = child.nVisits;
 		return nWins / nVisits + searchRatio //
-				* (float) Math.sqrt(Math.log(node.nVisits) / (5f * nVisits));
+				* (float) Math.sqrt(Math.log(parent.nVisits) / (5f * nVisits));
+	}
+
+	public void dumpSearch() {
+		StringBuilder sb = new StringBuilder();
+		dumpSearch(sb, 0, null, root);
+		System.out.println(sb);
+	}
+
+	private final static DecimalFormat df = new DecimalFormat("0.000");
+
+	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent,
+			UctNode<Move> child) {
+		if (indent < 3) {
+			while (child != null) {
+				if (child.nVisits > 0) {
+					for (int i = 0; i < indent; i++)
+						sb.append('\t');
+
+					float winRate = ((float) child.nWins) / child.nVisits;
+
+					String uct;
+					if (parent != null)
+						uct = df.format(uct(parent, child));
+					else
+						uct = "-";
+
+					sb.append(child.move //
+							+ ", " + child.nWins + "/" + child.nVisits //
+							+ ", winRate = " + df.format(winRate) //
+							+ ", UCT = " + uct //
+							+ "\n");
+					dumpSearch(sb, indent + 1, child, child.child);
+				}
+
+				child = child.sibling;
+			}
+		}
 	}
 
 	public void setNumberOfSimulations(int numberOfSimulations) {

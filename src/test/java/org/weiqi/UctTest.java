@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.util.Util;
 import org.weiqi.UctWeiqi.Visitor;
 import org.weiqi.Weiqi.Occupation;
 
@@ -44,16 +45,28 @@ public class UctTest {
 
 	@Test
 	public void testEvaluateRandomGame() {
+		int mid = Weiqi.SIZE / 2;
+
+		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
+		String center = evaluateRandomOutcome(Coordinate.c(mid, mid));
+		System.out.println("CORNER: " + corner + ", CENTER: " + center);
+
+		// The corner move must be the worst
+		assertTrue(Util.compare(corner, center) < 0);
+	}
+
+	private String evaluateRandomOutcome(Coordinate move) {
 		Occupation player = Occupation.WHITE;
 		int nWins = 0, nTotal = 1000;
 
 		for (int i = 0; i < nTotal; i++) {
 			Visitor visitor = new Visitor(new Board(), player);
-			visitor.playMove(Coordinate.c(Weiqi.SIZE / 2, Weiqi.SIZE / 2));
+			visitor.playMove(move);
 			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
 		}
 
-		System.out.println(nWins + "/" + nTotal + " wins");
+		String outcome = nWins + "/" + nTotal;
+		return outcome;
 	}
 
 	@Test
@@ -61,8 +74,11 @@ public class UctTest {
 		Board board = new Board();
 		Visitor visitor = new Visitor(board, Occupation.BLACK);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
-		search.setNumberOfSimulations(50);
-		System.out.println(search.search());
+		search.setNumberOfSimulations(10000);
+		Coordinate bestMove = search.search();
+
+		search.dumpSearch();
+		System.out.println("BEST MOVE = " + bestMove);
 	}
 
 	@Test

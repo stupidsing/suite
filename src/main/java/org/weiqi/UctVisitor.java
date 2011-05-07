@@ -1,5 +1,6 @@
 package org.weiqi;
 
+
 public interface UctVisitor<Move> {
 
 	public UctVisitor<Move> cloneVisitor();
