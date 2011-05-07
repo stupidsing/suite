@@ -38,24 +38,25 @@ public class UctWeiqi {
 		@Override
 		public boolean evaluateRandomOutcome() {
 			Occupation me = nextPlayer;
-			List<Coordinate> moves = findAllMoves();
 			Coordinate move = null;
 
 			// Move until someone cannot move anymore,
 			// or maximum iterations reached
 			for (int i = 0; i < 5 * Weiqi.AREA; i++) {
-				move = randomMove(moves);
+
+				// Try a random empty position, if that position does not work,
+				// calls the heavier possible move method
+				move = randomMove(findAllEmptyPositions());
 
 				if (move == null || !board.moveIfPossible(move, nextPlayer)) {
-					move = randomMove(moves = findAllMoves());
+					move = randomMove(findAllMoves());
 					if (move != null)
 						board.move(move, nextPlayer);
 				}
 
-				if (move == null)
+				if (move == null) // No moves can be played, current player lost
 					break;
 
-				moves.remove(move);
 				nextPlayer = nextPlayer.opponent();
 			}
 
@@ -68,6 +69,15 @@ public class UctWeiqi {
 		private Coordinate randomMove(List<Coordinate> moves) {
 			int size = moves.size();
 			return size > 0 ? moves.get(random.nextInt(size)) : null;
+		}
+
+		public List<Coordinate> findAllEmptyPositions() {
+			List<Coordinate> moves = new ArrayList<Coordinate>( //
+					Weiqi.SIZE * Weiqi.SIZE);
+			for (Coordinate c : Coordinate.all())
+				if (board.get(c) == Occupation.EMPTY)
+					moves.add(c);
+			return moves;
 		}
 
 		public List<Coordinate> findAllMoves() {

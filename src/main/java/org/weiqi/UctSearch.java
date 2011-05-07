@@ -80,7 +80,7 @@ public class UctSearch<Move> {
 
 			node.bestChild = bestSelected;
 			visitor.playMove(bestSelected.move);
-			outcome = playSimulation(visitor, bestSelected);
+			outcome = !playSimulation(visitor, bestSelected);
 		} else
 			outcome = visitor.evaluateRandomOutcome();
 

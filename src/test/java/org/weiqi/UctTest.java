@@ -36,8 +36,24 @@ public class UctTest {
 	@Test
 	public void testRandom() {
 		Board board = new Board();
-		new Visitor(board, Occupation.BLACK).evaluateRandomOutcome();
+		Visitor visitor = new Visitor(board, Occupation.BLACK);
+		boolean isWon = visitor.evaluateRandomOutcome();
 		UserInterface.display(board);
+		System.out.println(isWon ? "WON" : "LOSS");
+	}
+
+	@Test
+	public void testEvaluateRandomGame() {
+		Occupation player = Occupation.WHITE;
+		int nWins = 0, nTotal = 1000;
+
+		for (int i = 0; i < nTotal; i++) {
+			Visitor visitor = new Visitor(new Board(), player);
+			visitor.playMove(Coordinate.c(Weiqi.SIZE / 2, Weiqi.SIZE / 2));
+			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
+		}
+
+		System.out.println(nWins + "/" + nTotal + " wins");
 	}
 
 	@Test
@@ -47,6 +63,21 @@ public class UctTest {
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 		search.setNumberOfSimulations(50);
 		System.out.println(search.search());
+	}
+
+	@Test
+	public void testUctFirstMove() {
+		Board board = new Board();
+		Occupation player = Occupation.BLACK;
+
+		Visitor visitor = new Visitor(board, player);
+		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
+		search.setNumberOfSimulations(10000);
+
+		Coordinate move = search.search();
+		board.move(move, player);
+
+		System.out.println(move);
 	}
 
 	@Test
