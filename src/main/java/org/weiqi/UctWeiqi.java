@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.weiqi.Weiqi.Occupation;
+import org.weiqi.uct.UctVisitor;
 
 public class UctWeiqi {
 

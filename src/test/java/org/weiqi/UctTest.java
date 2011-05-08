@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.util.Util;
 import org.weiqi.UctWeiqi.Visitor;
 import org.weiqi.Weiqi.Occupation;
+import org.weiqi.uct.UctSearch;
 
 public class UctTest {
 

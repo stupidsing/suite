@@ -1,5 +1,4 @@
-package org.weiqi;
-
+package org.weiqi.uct;
 
 public interface UctVisitor<Move> {
 

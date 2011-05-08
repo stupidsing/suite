@@ -1,7 +1,10 @@
-package org.weiqi;
+package org.weiqi.uct;
 
 import java.text.DecimalFormat;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.util.LogUtil;
 
 /**
  * Based on http://senseis.xmp.net/?UCT
@@ -14,6 +17,7 @@ public class UctSearch<Move> {
 	 */
 	private final static float searchRatio = 0.5f;
 
+	public int numberOfThreads = 2;
 	public int numberOfSimulations = 10000;
 
 	private UctVisitor<Move> visitor;
@@ -40,9 +44,26 @@ public class UctSearch<Move> {
 
 	public Move search() {
 		root = new UctNode<Move>();
+		Thread threads[] = new Thread[numberOfThreads];
+		final AtomicInteger count = new AtomicInteger();
 
-		for (int i = 0; i < numberOfSimulations; i++)
-			playSimulation(visitor.cloneVisitor(), root);
+		for (int i = 0; i < numberOfThreads; i++) {
+			threads[i] = new Thread() {
+				public void run() {
+					while (count.getAndIncrement() < numberOfSimulations)
+						playSimulation(visitor.cloneVisitor(), root);
+				}
+			};
+
+			threads[i].start();
+		}
+
+		for (int i = 0; i < numberOfThreads; i++)
+			try {
+				threads[i].join();
+			} catch (InterruptedException ex) {
+				LogUtil.error("", ex);
+			}
 
 		UctNode<Move> node = root.child, best = null;
 
@@ -62,16 +83,18 @@ public class UctSearch<Move> {
 		if (node.nVisits != 0) {
 
 			// Generate moves, if not done before
-			if (node.child == null) {
-				UctNode<Move> child = null;
+			synchronized (node) {
+				if (node.child == null) {
+					UctNode<Move> child = null;
 
-				for (Move move : visitor.elaborateMoves()) {
-					UctNode<Move> newChild = new UctNode<Move>(move);
-					newChild.sibling = child;
-					child = newChild;
+					for (Move move : visitor.elaborateMoves()) {
+						UctNode<Move> newChild = new UctNode<Move>(move);
+						newChild.sibling = child;
+						child = newChild;
+					}
+
+					node.child = child;
 				}
-
-				node.child = child;
 			}
 
 			// UCT selection
@@ -102,8 +125,11 @@ public class UctSearch<Move> {
 		} else
 			outcome = visitor.evaluateRandomOutcome();
 
-		node.nVisits++;
-		node.nWins += outcome ? 0 : 1;
+		synchronized (node) {
+			node.nVisits++;
+			node.nWins += outcome ? 0 : 1;
+		}
+
 		return outcome;
 	}
 
@@ -149,6 +175,10 @@ public class UctSearch<Move> {
 				child = child.sibling;
 			}
 		}
+	}
+
+	public void setNumberOfThreads(int numberOfThreads) {
+		this.numberOfThreads = numberOfThreads;
 	}
 
 	public void setNumberOfSimulations(int numberOfSimulations) {
