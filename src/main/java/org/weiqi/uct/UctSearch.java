@@ -21,11 +21,11 @@ public class UctSearch<Move> {
 	public int numberOfSimulations = 10000;
 
 	private UctVisitor<Move> visitor;
-	private UctNode<Move> root;
+	private UctNode<Move> root, best;
 
 	private Random random = new Random();
 
-	private static class UctNode<Move> {
+	public static class UctNode<Move> {
 		private Move move;
 		private int nWins, nVisits;
 		private UctNode<Move> child, sibling;
@@ -58,14 +58,15 @@ public class UctSearch<Move> {
 			threads[i].start();
 		}
 
-		for (int i = 0; i < numberOfThreads; i++)
-			try {
+		try {
+			for (int i = 0; i < numberOfThreads; i++)
 				threads[i].join();
-			} catch (InterruptedException ex) {
-				LogUtil.error("", ex);
-			}
+		} catch (InterruptedException ex) {
+			LogUtil.error("", ex);
+		}
 
-		UctNode<Move> node = root.child, best = null;
+		// Finds node with best winning rate
+		UctNode<Move> node = root.child;
 
 		while (node != null) {
 			if (best == null
@@ -105,7 +106,7 @@ public class UctSearch<Move> {
 			while (child != null) {
 				float uct;
 				if (child.nVisits > 0)
-					uct = uct(node, child) + random.nextFloat() * 0.1f;
+					uct = uct(node, child);
 				else
 					uct = 10000f + 1000f * random.nextFloat();
 
@@ -175,6 +176,10 @@ public class UctSearch<Move> {
 				child = child.sibling;
 			}
 		}
+	}
+
+	public float getWinningChance() {
+		return ((float) best.nWins) / best.nVisits;
 	}
 
 	public void setNumberOfThreads(int numberOfThreads) {
