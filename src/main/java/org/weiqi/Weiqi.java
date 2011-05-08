@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Weiqi {
 
-	public final static int SIZE = 19;
+	public final static int SIZE = 7;
 	public final static int AREA = SIZE * SIZE;
 
 	public final static int SHIFT = 5; // 2^SHIFT >= SIZE
@@ -22,6 +22,18 @@ public class Weiqi {
 				return this;
 			}
 		}
+
+		public String display() {
+			switch (this) {
+			case BLACK:
+				return "X";
+			case WHITE:
+				return "O";
+			default:
+				return ".";
+			}
+		}
+
 	};
 
 	public static Occupation players[] = { Occupation.BLACK, Occupation.WHITE };

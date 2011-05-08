@@ -35,51 +35,68 @@ public class GameSet extends Board {
 		previousStates = p;
 	}
 
+	public static class MoveCommand {
+		public Coordinate position;
+		public Occupation neighbourColors[] = new Occupation[4];
+
+		public MoveCommand(Coordinate position) {
+			this.position = position;
+		}
+	}
+
 	public void move(Coordinate c) {
-		if (!moveIfPossible(c))
-			throw new RuntimeException("Invalid move " + c + " for "
+		move(new MoveCommand(c));
+	}
+
+	public void move(MoveCommand move) {
+		if (!moveIfPossible(move))
+			throw new RuntimeException("Invalid move " + move + " for "
 					+ nextPlayer + "\n" + this);
 	}
 
-	public boolean isMovePossible(Coordinate c) {
-		return moveIfPossible(c, true);
+	public boolean isMovePossible(MoveCommand move) {
+		return moveIfPossible(move, true);
 	}
 
-	public boolean moveIfPossible(Coordinate c) {
-		return moveIfPossible(c, false);
+	public boolean moveIfPossible(MoveCommand move) {
+		return moveIfPossible(move, false);
 	}
 
-	public boolean moveIfPossible(Coordinate c, boolean rollBack) {
+	private boolean moveIfPossible(MoveCommand move, boolean rollBack) {
 		Occupation opponent = nextPlayer.opponent();
-		Occupation neighbourColors[] = new Occupation[4];
 		int i = 0;
 
-		for (Coordinate c1 : c.neighbours())
-			neighbourColors[i++] = get(c1);
+		for (Coordinate c1 : move.position.neighbours())
+			move.neighbourColors[i++] = get(c1);
 
-		boolean success = super.moveIfPossible(c, nextPlayer);
+		boolean success = super.moveIfPossible(move.position, nextPlayer);
 
 		if (success) {
 			int newHashCode = super.hashCode();
 			success &= !previousStates.contains(newHashCode);
 
-			if (!success || rollBack) {
-
-				// Roll back board status; rejuvenate the pieces being eaten
-				i = 0;
-				for (Coordinate c1 : c.neighbours())
-					if (neighbourColors[i++] != get(c1))
-						for (Coordinate c2 : findGroup(c1))
-							set(c2, opponent);
-
-				set(c, Occupation.EMPTY);
-			} else {
+			if (!success || rollBack)
+				rollBackMove(move, opponent);
+			else {
 				nextPlayer = opponent;
 				previousStates.add(newHashCode);
 			}
 		}
 
 		return success;
+	}
+
+	/**
+	 * Roll back board status; rejuvenate the pieces being eaten.
+	 */
+	private void rollBackMove(MoveCommand move, Occupation opponent) {
+		int i = 0;
+		for (Coordinate c1 : move.position.neighbours())
+			if (move.neighbourColors[i++] != get(c1))
+				for (Coordinate c2 : findGroup(c1))
+					set(c2, opponent);
+
+		set(move.position, Occupation.EMPTY);
 	}
 
 	@Override

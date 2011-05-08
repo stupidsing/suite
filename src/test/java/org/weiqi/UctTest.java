@@ -3,6 +3,8 @@ package org.weiqi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Random;
+
 import org.junit.Test;
 import org.util.Util;
 import org.weiqi.UctWeiqi.Visitor;
@@ -37,10 +39,10 @@ public class UctTest {
 
 	@Test
 	public void testRandom() {
-		Board board = new Board();
-		Visitor visitor = new Visitor(new GameSet(board, Occupation.BLACK));
+		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		Visitor visitor = new Visitor(gameSet);
 		boolean isWon = visitor.evaluateRandomOutcome();
-		UserInterface.display(board);
+		UserInterface.display(gameSet);
 		System.out.println(isWon ? "WON" : "LOSS");
 	}
 
@@ -49,11 +51,15 @@ public class UctTest {
 		int mid = Weiqi.SIZE / 2;
 
 		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
+		String faraway = evaluateRandomOutcome(Coordinate.c(1, 1));
 		String center = evaluateRandomOutcome(Coordinate.c(mid, mid));
-		System.out.println("CORNER: " + corner + ", CENTER: " + center);
+		System.out.println("CORNER: " + corner //
+				+ ", FAR-AWAY: " + faraway //
+				+ ", CENTER: " + center);
 
 		// The corner move must be the worst
-		assertTrue(Util.compare(corner, center) < 0);
+		assertTrue(Util.compare(corner, faraway) < 0);
+		assertTrue(Util.compare(faraway, center) < 0);
 	}
 
 	private String evaluateRandomOutcome(Coordinate move) {
@@ -100,12 +106,17 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
+		int seed = new Random().nextInt();
+		System.out.println("RANDOM SEED = " + seed);
+		RandomList.setSeed(seed);
+
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
 
-		for (int i = 0; i < 2 * Weiqi.SIZE * Weiqi.SIZE; i++) {
+		for (int i = 0; i < 2 * Weiqi.AREA; i++) {
 			Visitor visitor = new Visitor(new GameSet(gameSet));
 			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
+			// search.setNumberOfThreads(1);
 			search.setNumberOfSimulations(1000);
 
 			Coordinate move = search.search();

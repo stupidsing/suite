@@ -116,23 +116,12 @@ public class Board extends Array<Occupation> {
 		for (int x = 0; x < Weiqi.SIZE; x++) {
 			for (int y = 0; y < Weiqi.SIZE; y++) {
 				Coordinate c = Coordinate.c(x, y);
-				sb.append(display(get(c)) + " ");
+				sb.append(get(c).display() + " ");
 			}
 			sb.append("\n");
 		}
 
 		return sb.toString();
-	}
-
-	private static String display(Occupation color) {
-		switch (color) {
-		case BLACK:
-			return "X";
-		case WHITE:
-			return "O";
-		default:
-			return ".";
-		}
 	}
 
 }

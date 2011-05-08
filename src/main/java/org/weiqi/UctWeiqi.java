@@ -1,15 +1,10 @@
 package org.weiqi;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import org.weiqi.GameSet.MoveCommand;
 import org.weiqi.Weiqi.Occupation;
 import org.weiqi.uct.UctVisitor;
 
 public class UctWeiqi {
-
-	private final static Random random = new Random();
 
 	public static class Visitor implements UctVisitor<Coordinate> {
 		private GameSet gameSet;
@@ -24,11 +19,10 @@ public class UctWeiqi {
 		}
 
 		@Override
-		public List<Coordinate> elaborateMoves() {
+		public RandomList<Coordinate> elaborateMoves() {
 			GroupAnalysis ga = new GroupAnalysis(gameSet);
 
-			List<Coordinate> moves = new ArrayList<Coordinate>( //
-					Weiqi.SIZE * Weiqi.SIZE);
+			RandomList<Coordinate> moves = new RandomList<Coordinate>();
 
 			for (Coordinate c : Coordinate.all())
 				if (gameSet.get(c) == Occupation.EMPTY) {
@@ -50,7 +44,7 @@ public class UctWeiqi {
 					} else
 						hasBreath = true;
 
-					if (hasBreath && gameSet.isMovePossible(c))
+					if (hasBreath && gameSet.isMovePossible(new MoveCommand(c)))
 						moves.add(c);
 				}
 
@@ -59,30 +53,39 @@ public class UctWeiqi {
 
 		@Override
 		public void playMove(Coordinate c) {
-			gameSet.move(c);
+			gameSet.move(new MoveCommand(c));
 		}
 
 		@Override
 		public boolean evaluateRandomOutcome() {
 			Occupation me = gameSet.getNextPlayer();
-			Coordinate move = null;
+			RandomList<Coordinate> empties = findAllEmptyPositions();
+			Coordinate pos;
+			MoveCommand move = null;
 
 			// Move until someone cannot move anymore,
 			// or maximum iterations reached
 			for (int i = 0; i < 2 * Weiqi.AREA; i++) {
+				move = null;
 
 				// Try a random empty position, if that position does not work,
 				// calls the heavier possible move method
-				move = randomMove(findAllEmptyPositions());
+				if ((pos = empties.remove()) != null
+						&& !gameSet.moveIfPossible(move = new MoveCommand(pos)))
+					move = null;
 
-				if (move == null || !gameSet.moveIfPossible(move)) {
-					move = randomMove(elaborateMoves());
-					if (move != null)
-						gameSet.move(move);
-				}
+				if (move == null && (pos = elaborateMoves().remove()) != null)
+					gameSet.move(move = new MoveCommand(pos));
 
-				if (move == null) // No moves can be played, current player lost
-					break;
+				if (move != null) { // Add empty positions back to empty group
+					int j = 0;
+
+					for (Coordinate c1 : move.position.neighbours())
+						if (move.neighbourColors[j++] != gameSet.get(c1))
+							for (Coordinate c2 : gameSet.findGroup(c1))
+								empties.add(c2);
+				} else
+					break; // No moves can be played, current player lost
 			}
 
 			if (move == null)
@@ -91,17 +94,13 @@ public class UctWeiqi {
 				return Evaluator.evaluate(me, gameSet) > 0;
 		}
 
-		private Coordinate randomMove(List<Coordinate> moves) {
-			int size = moves.size();
-			return size > 0 ? moves.get(random.nextInt(size)) : null;
-		}
+		public RandomList<Coordinate> findAllEmptyPositions() {
+			RandomList<Coordinate> moves = new RandomList<Coordinate>();
 
-		public List<Coordinate> findAllEmptyPositions() {
-			List<Coordinate> moves = new ArrayList<Coordinate>( //
-					Weiqi.SIZE * Weiqi.SIZE);
 			for (Coordinate c : Coordinate.all())
 				if (gameSet.get(c) == Occupation.EMPTY)
 					moves.add(c);
+
 			return moves;
 		}
 	}
