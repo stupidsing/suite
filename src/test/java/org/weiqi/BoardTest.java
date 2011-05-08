@@ -32,9 +32,9 @@ public class BoardTest {
 	@Test
 	public void testEat() {
 		Board board = new Board();
-		board.move(Coordinate.c(0, 1), Occupation.BLACK);
-		board.move(Coordinate.c(0, 0), Occupation.WHITE);
-		board.move(Coordinate.c(1, 0), Occupation.BLACK);
+		board.moveIfPossible(Coordinate.c(0, 1), Occupation.BLACK);
+		board.moveIfPossible(Coordinate.c(0, 0), Occupation.WHITE);
+		board.moveIfPossible(Coordinate.c(1, 0), Occupation.BLACK);
 		assertEquals(board.get(Coordinate.c(0, 0)), Occupation.EMPTY);
 	}
 

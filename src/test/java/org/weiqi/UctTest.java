@@ -16,8 +16,8 @@ public class UctTest {
 		Board board = blackBoard();
 		board.set(Coordinate.c(2, 2), Occupation.EMPTY);
 
-		Visitor visitor = new Visitor(board, Occupation.BLACK);
-		assertTrue(visitor.findAllMoves().isEmpty());
+		Visitor visitor = new Visitor(new GameSet(board, Occupation.BLACK));
+		assertTrue(visitor.elaborateMoves().isEmpty());
 	}
 
 	@Test
@@ -31,14 +31,14 @@ public class UctTest {
 		board.set(Coordinate.c(8, 8), Occupation.EMPTY);
 		board.set(Coordinate.c(9, 8), Occupation.EMPTY);
 
-		Visitor visitor = new Visitor(board, Occupation.WHITE);
-		assertEquals(2, visitor.findAllMoves().size());
+		Visitor visitor = new Visitor(new GameSet(board, Occupation.WHITE));
+		assertEquals(2, visitor.elaborateMoves().size());
 	}
 
 	@Test
 	public void testRandom() {
 		Board board = new Board();
-		Visitor visitor = new Visitor(board, Occupation.BLACK);
+		Visitor visitor = new Visitor(new GameSet(board, Occupation.BLACK));
 		boolean isWon = visitor.evaluateRandomOutcome();
 		UserInterface.display(board);
 		System.out.println(isWon ? "WON" : "LOSS");
@@ -61,7 +61,7 @@ public class UctTest {
 		int nWins = 0, nTotal = 1000;
 
 		for (int i = 0; i < nTotal; i++) {
-			Visitor visitor = new Visitor(new Board(), player);
+			Visitor visitor = new Visitor(new GameSet(new Board(), player));
 			visitor.playMove(move);
 			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
 		}
@@ -73,7 +73,7 @@ public class UctTest {
 	@Test
 	public void testUctSearch() {
 		Board board = new Board();
-		Visitor visitor = new Visitor(board, Occupation.BLACK);
+		Visitor visitor = new Visitor(new GameSet(board, Occupation.BLACK));
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 		search.setNumberOfSimulations(10000);
 		Coordinate bestMove = search.search();
@@ -84,15 +84,14 @@ public class UctTest {
 
 	@Test
 	public void testUctFirstMove() {
-		Board board = new Board();
-		Occupation player = Occupation.BLACK;
+		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 
-		Visitor visitor = new Visitor(board, player);
+		Visitor visitor = new Visitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 		search.setNumberOfSimulations(10000);
 
 		Coordinate move = search.search();
-		board.move(move, player);
+		gameSet.move(move);
 
 		System.out.println(move);
 	}
@@ -100,19 +99,21 @@ public class UctTest {
 	@Test
 	public void testUctGame() {
 		Board board = new Board();
-		Occupation player = Occupation.BLACK;
+		GameSet gameSet = new GameSet(board, Occupation.BLACK);
 
-		for (int i = 0; i < Weiqi.SIZE * Weiqi.SIZE; i++) {
-			Visitor visitor = new Visitor(board, player);
+		for (int i = 0; i < 2 * Weiqi.SIZE * Weiqi.SIZE; i++) {
+			Visitor visitor = new Visitor(new GameSet(gameSet));
 			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 			search.setNumberOfSimulations(10000);
 
 			Coordinate move = search.search();
-			board.move(move, player);
-			player = player.opponent();
+			if (move == null)
+				break;
+
+			gameSet.move(move);
 
 			System.out.println(move);
-			UserInterface.display(board);
+			UserInterface.display(gameSet);
 		}
 	}
 

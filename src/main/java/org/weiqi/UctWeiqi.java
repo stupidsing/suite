@@ -12,33 +12,59 @@ public class UctWeiqi {
 	private final static Random random = new Random();
 
 	public static class Visitor implements UctVisitor<Coordinate> {
-		private Board board;
-		private Occupation nextPlayer;
+		private GameSet gameSet;
 
-		public Visitor(Board board, Occupation nextPlayer) {
-			this.board = board;
-			this.nextPlayer = nextPlayer;
+		public Visitor(GameSet gameSet) {
+			this.gameSet = gameSet;
 		}
 
 		@Override
 		public UctVisitor<Coordinate> cloneVisitor() {
-			return new Visitor(new Board(board), nextPlayer);
+			return new Visitor(new GameSet(gameSet));
 		}
 
 		@Override
-		public Iterable<Coordinate> elaborateMoves() {
-			return findAllMoves();
+		public List<Coordinate> elaborateMoves() {
+			GroupAnalysis ga = new GroupAnalysis(gameSet);
+
+			List<Coordinate> moves = new ArrayList<Coordinate>( //
+					Weiqi.SIZE * Weiqi.SIZE);
+
+			for (Coordinate c : Coordinate.all())
+				if (gameSet.get(c) == Occupation.EMPTY) {
+					Integer groupId = ga.getGroupId(c);
+					boolean hasBreath;
+
+					if (ga.getCoords(groupId).size() == 1) { // A tight space
+						hasBreath = false;
+
+						for (Integer groupId1 : ga.getTouches(groupId)) {
+							int nBreathes = ga.getNumberOfBreathes(groupId1);
+							Occupation nextPlayer = gameSet.getNextPlayer();
+
+							if (ga.getColor(groupId1) == nextPlayer)
+								hasBreath |= nBreathes > 1;
+							else
+								hasBreath |= nBreathes <= 1;
+						}
+					} else
+						hasBreath = true;
+
+					if (hasBreath && gameSet.isMovePossible(c))
+						moves.add(c);
+				}
+
+			return moves;
 		}
 
 		@Override
 		public void playMove(Coordinate c) {
-			board.move(c, nextPlayer);
-			nextPlayer = nextPlayer.opponent();
+			gameSet.move(c);
 		}
 
 		@Override
 		public boolean evaluateRandomOutcome() {
-			Occupation me = nextPlayer;
+			Occupation me = gameSet.getNextPlayer();
 			Coordinate move = null;
 
 			// Move until someone cannot move anymore,
@@ -49,22 +75,20 @@ public class UctWeiqi {
 				// calls the heavier possible move method
 				move = randomMove(findAllEmptyPositions());
 
-				if (move == null || !board.moveIfPossible(move, nextPlayer)) {
-					move = randomMove(findAllMoves());
+				if (move == null || !gameSet.moveIfPossible(move)) {
+					move = randomMove(elaborateMoves());
 					if (move != null)
-						board.move(move, nextPlayer);
+						gameSet.move(move);
 				}
 
 				if (move == null) // No moves can be played, current player lost
 					break;
-
-				nextPlayer = nextPlayer.opponent();
 			}
 
 			if (move == null)
-				return nextPlayer != me;
+				return gameSet.getNextPlayer() != me;
 			else
-				return Evaluator.evaluate(me, board) > 0;
+				return Evaluator.evaluate(me, gameSet) > 0;
 		}
 
 		private Coordinate randomMove(List<Coordinate> moves) {
@@ -76,40 +100,8 @@ public class UctWeiqi {
 			List<Coordinate> moves = new ArrayList<Coordinate>( //
 					Weiqi.SIZE * Weiqi.SIZE);
 			for (Coordinate c : Coordinate.all())
-				if (board.get(c) == Occupation.EMPTY)
+				if (gameSet.get(c) == Occupation.EMPTY)
 					moves.add(c);
-			return moves;
-		}
-
-		public List<Coordinate> findAllMoves() {
-			GroupAnalysis ga = new GroupAnalysis(board);
-
-			List<Coordinate> moves = new ArrayList<Coordinate>( //
-					Weiqi.SIZE * Weiqi.SIZE);
-
-			for (Coordinate c : Coordinate.all())
-				if (board.get(c) == Occupation.EMPTY) {
-					Integer groupId = ga.getGroupId(c);
-					boolean hasBreath;
-
-					if (ga.getCoords(groupId).size() == 1) { // A tight space
-						hasBreath = false;
-
-						for (Integer groupId1 : ga.getTouches(groupId)) {
-							int nBreathes = ga.getNumberOfBreathes(groupId1);
-
-							if (ga.getColor(groupId1) == nextPlayer)
-								hasBreath |= nBreathes > 1;
-							else
-								hasBreath |= nBreathes <= 1;
-						}
-					} else
-						hasBreath = true;
-
-					if (hasBreath)
-						moves.add(c);
-				}
-
 			return moves;
 		}
 	}

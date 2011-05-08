@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Weiqi {
 
-	public final static int SIZE = 7;
+	public final static int SIZE = 19;
 	public final static int AREA = SIZE * SIZE;
 
 	public final static int SHIFT = 5; // 2^SHIFT >= SIZE

@@ -23,11 +23,6 @@ public class Board extends Array<Occupation> {
 	 * 
 	 * This method do not take use of GroupAnalysis for performance reasons.
 	 */
-	public void move(Coordinate c, Occupation player) {
-		if (!moveIfPossible(c, player))
-			throw new RuntimeException("Invalid move");
-	}
-
 	public boolean moveIfPossible(Coordinate c, Occupation player) {
 		boolean moved;
 		Occupation current = get(c);
@@ -70,7 +65,7 @@ public class Board extends Array<Occupation> {
 			return current == Occupation.EMPTY;
 	}
 
-	private Set<Coordinate> findGroup(Coordinate c) {
+	protected Set<Coordinate> findGroup(Coordinate c) {
 		Set<Coordinate> group = Util.createHashSet();
 		findGroup(c, get(c), group);
 		return group;
