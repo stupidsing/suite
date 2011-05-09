@@ -101,7 +101,12 @@ public class UctTest {
 		Coordinate move = search.search();
 		gameSet.move(move);
 
+		search.dumpSearch();
 		System.out.println(move);
+		assertTrue(move.getX() >= 2);
+		assertTrue(move.getY() >= 2);
+		assertTrue(move.getX() < Weiqi.SIZE - 2);
+		assertTrue(move.getY() < Weiqi.SIZE - 2);
 	}
 
 	@Test
