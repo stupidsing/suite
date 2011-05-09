@@ -131,4 +131,12 @@ public class Coordinate implements Comparable<Coordinate> {
 		return String.format("%d,%d", x, y);
 	}
 
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
 }
