@@ -75,12 +75,11 @@ public class GameSet extends Board {
 			int newHashCode = super.hashCode();
 			success &= !previousStates.contains(newHashCode);
 
-			if (!success || rollBack)
-				rollBackMove(move, opponent);
-			else {
+			if (success && !rollBack) {
 				nextPlayer = opponent;
 				previousStates.add(newHashCode);
-			}
+			} else
+				rollBackMove(move, opponent);
 		}
 
 		return success;

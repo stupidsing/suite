@@ -78,6 +78,12 @@ public class UctSearch<Move> {
 		return best != null ? best.move : null;
 	}
 
+	/**
+	 * Plays a simulation UCT.
+	 * 
+	 * @return true if the next player will win after UCT selections and
+	 *         evaluation after random moves.
+	 */
 	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node) {
 		boolean outcome;
 
@@ -108,7 +114,7 @@ public class UctSearch<Move> {
 				if (child.nVisits > 0)
 					uct = uct(node, child);
 				else
-					uct = 10000f + 1000f * random.nextFloat();
+					uct = 10000f + random.nextFloat();
 
 				if (uct > bestUct) {
 					bestSelected = child;
@@ -120,18 +126,18 @@ public class UctSearch<Move> {
 
 			if (bestSelected != null) {
 				visitor.playMove(bestSelected.move);
-				outcome = !playSimulation(visitor, bestSelected);
+				outcome = playSimulation(visitor, bestSelected);
 			} else
-				outcome = false;
+				outcome = true; // No possible move for opponent
 		} else
-			outcome = visitor.evaluateRandomOutcome();
+			outcome = !visitor.evaluateRandomOutcome();
 
 		synchronized (node) {
 			node.nVisits++;
-			node.nWins += outcome ? 0 : 1;
+			node.nWins += outcome ? 1 : 0;
 		}
 
-		return outcome;
+		return !outcome;
 	}
 
 	private float uct(UctNode<Move> parent, UctNode<Move> child) {

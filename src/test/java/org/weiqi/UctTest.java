@@ -111,7 +111,10 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
+		int nThreads = 2;
+		int nSimulations = 2000;
 		int seed = new Random().nextInt();
+
 		System.out.println("RANDOM SEED = " + seed);
 		RandomList.setSeed(seed);
 
@@ -121,8 +124,8 @@ public class UctTest {
 		for (int i = 0; i < 2 * Weiqi.AREA; i++) {
 			Visitor visitor = new Visitor(new GameSet(gameSet));
 			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
-			// search.setNumberOfThreads(1);
-			search.setNumberOfSimulations(1000);
+			search.setNumberOfThreads(nThreads);
+			search.setNumberOfSimulations(nSimulations);
 
 			Coordinate move = search.search();
 			if (move == null)

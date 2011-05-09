@@ -70,9 +70,11 @@ public class UctWeiqi {
 
 				// Try a random empty position, if that position does not work,
 				// calls the heavier possible move method
-				if ((pos = empties.remove()) != null
-						&& !gameSet.moveIfPossible(move = new MoveCommand(pos)))
-					move = null;
+				if ((pos = empties.get()) != null)
+					if (gameSet.moveIfPossible(move = new MoveCommand(pos)))
+						empties.remove();
+					else
+						move = null;
 
 				if (move == null && (pos = elaborateMoves().remove()) != null)
 					gameSet.move(move = new MoveCommand(pos));
