@@ -47,7 +47,7 @@ public class UctTest {
 	}
 
 	@Test
-	public void testEvaluateRandomGame() {
+	public void testRandomEvaluation() {
 		int mid = Weiqi.SIZE / 2;
 
 		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
@@ -74,6 +74,28 @@ public class UctTest {
 
 		String outcome = nWins + "/" + nTotal;
 		return outcome;
+	}
+
+	@Test
+	public void testRandomEvals() {
+		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		int i = 0, s1 = 1000, s2 = 10000;
+
+		for (; i < s1; i++) {
+			Visitor visitor = new Visitor(new GameSet(gameSet));
+			visitor.evaluateRandomOutcome();
+		}
+
+		long start = System.currentTimeMillis();
+		for (; i < s2; i++) {
+			Visitor visitor = new Visitor(new GameSet(gameSet));
+			visitor.evaluateRandomOutcome();
+		}
+		long end = System.currentTimeMillis();
+
+		long duration = end - start;
+		float ms = ((float) duration) / (s2 - s1);
+		System.out.println("Random evaluation took " + ms + "ms");
 	}
 
 	@Test
