@@ -2,13 +2,14 @@ package org.weiqi;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 public class RandomList<T> implements Iterable<T> {
 
 	private final static Random random = new Random();
 
-	private ArrayList<T> list;
+	private List<T> list;
 
 	public RandomList() {
 		list = new ArrayList<T>();
