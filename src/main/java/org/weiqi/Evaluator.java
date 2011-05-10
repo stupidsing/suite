@@ -15,13 +15,6 @@ public class Evaluator {
 		int score = 0;
 		Occupation opponent = player.opponent();
 
-		// Count pieces
-		for (Coordinate c : Coordinate.all())
-			if (board.get(c) == player)
-				score += PIECESCORE;
-			else if (board.get(c) == opponent)
-				score -= PIECESCORE;
-
 		// Count territories by counting groups
 		GroupAnalysis ga = new GroupAnalysis(board);
 
@@ -31,6 +24,13 @@ public class Evaluator {
 			Set<Occupation> colors = Util.createHashSet();
 			boolean us = false, theirs = false;
 
+			// Count pieces
+			if (color == player)
+				score += PIECESCORE * ga.getCoords(groupId).size();
+			else if (color == opponent)
+				score -= PIECESCORE * ga.getCoords(groupId).size();
+
+			// Count territory
 			if (color == Occupation.EMPTY) {
 				for (Integer neighbourGroupId : ga.getTouches(groupId))
 					colors.add(ga.getColor(neighbourGroupId));
