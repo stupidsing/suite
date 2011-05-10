@@ -1,10 +1,10 @@
 package org.weiqi.uct;
 
 import java.text.DecimalFormat;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.util.LogUtil;
+import org.weiqi.Weiqi;
 
 /**
  * Based on http://senseis.xmp.net/?UCT
@@ -22,8 +22,6 @@ public class UctSearch<Move> {
 
 	private UctVisitor<Move> visitor;
 	private UctNode<Move> root, best;
-
-	private Random random = new Random();
 
 	public static class UctNode<Move> {
 		private Move move;
@@ -111,14 +109,19 @@ public class UctSearch<Move> {
 
 			while (child != null) {
 				float uct;
-				if (child.nVisits > 0)
-					uct = uct(node, child);
-				else
-					uct = 10000f + random.nextFloat();
 
-				if (uct > bestUct) {
+				// Only calculates UCT when required, that is, if all children
+				// have been evaluated at least once
+				if (node.nVisits >= Weiqi.AREA && child.nVisits > 0) {
+					uct = uct(node, child);
+
+					if (uct > bestUct) {
+						bestSelected = child;
+						bestUct = uct;
+					}
+				} else {
 					bestSelected = child;
-					bestUct = uct;
+					break;
 				}
 
 				child = child.sibling;
