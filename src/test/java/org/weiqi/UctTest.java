@@ -37,6 +37,13 @@ public class UctTest {
 		assertEquals(2, visitor.elaborateMoves().size());
 	}
 
+	private Board blackBoard() {
+		Board board = new Board();
+		for (Coordinate c : Coordinate.all())
+			board.set(c, Occupation.BLACK);
+		return board;
+	}
+
 	@Test
 	public void testRandom() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
@@ -72,30 +79,47 @@ public class UctTest {
 			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
 		}
 
-		String outcome = nWins + "/" + nTotal;
-		return outcome;
+		return nWins + "/" + nTotal;
 	}
 
 	@Test
-	public void testRandomEvals() {
+	public void testRandomEvaluationTime() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
-		int i = 0, s1 = 1000, s2 = 10000;
+		int i = 0, ss[] = { 1000, 10000 };
+		long start = 0, end = 0;
 
-		for (; i < s1; i++) {
-			Visitor visitor = new Visitor(new GameSet(gameSet));
-			visitor.evaluateRandomOutcome();
+		for (int time = 0; time < 2; time++) {
+			start = System.currentTimeMillis();
+			for (; i < ss[1]; i++) {
+				Visitor visitor = new Visitor(new GameSet(gameSet));
+				visitor.evaluateRandomOutcome();
+			}
+			end = System.currentTimeMillis();
 		}
 
-		long start = System.currentTimeMillis();
-		for (; i < s2; i++) {
-			Visitor visitor = new Visitor(new GameSet(gameSet));
-			visitor.evaluateRandomOutcome();
-		}
-		long end = System.currentTimeMillis();
+		float duration = end - start;
+		float ms = duration / (ss[1] - ss[0]);
+		System.out.println("Random move: " + ms + "ms per evaluation");
+	}
 
-		long duration = end - start;
-		float ms = ((float) duration) / (s2 - s1);
-		System.out.println("Random evaluation took " + ms + "ms");
+	@Test
+	public void testUctSearchTime() {
+		int nSimulations = 1000;
+		long start = 0, end = 0;
+
+		for (int time = 0; time < 2; time++) {
+			Board board = new Board();
+			Visitor visitor = new Visitor(new GameSet(board, Occupation.BLACK));
+			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
+			search.setNumberOfSimulations(nSimulations);
+			start = System.currentTimeMillis();
+			search.search();
+			end = System.currentTimeMillis();
+		}
+
+		float duration = end - start;
+		float ms = duration / nSimulations;
+		System.out.println("UCT: " + ms + "ms/simulation");
 	}
 
 	@Test
@@ -135,6 +159,7 @@ public class UctTest {
 	public void testUctGame() {
 		int nThreads = 2;
 		int nSimulations = 2000;
+		int boundedTime = 300000;
 		int seed = new Random().nextInt();
 
 		System.out.println("RANDOM SEED = " + seed);
@@ -148,10 +173,13 @@ public class UctTest {
 			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 			search.setNumberOfThreads(nThreads);
 			search.setNumberOfSimulations(nSimulations);
+			search.setBoundedTime(boundedTime);
 
 			Coordinate move = search.search();
 			if (move == null)
 				break;
+
+			search.dumpSearch();
 
 			Occupation player = gameSet.getNextPlayer();
 			float chance = search.getWinningChance();
@@ -160,13 +188,6 @@ public class UctTest {
 			gameSet.move(move);
 			UserInterface.display(gameSet);
 		}
-	}
-
-	private Board blackBoard() {
-		Board board = new Board();
-		for (Coordinate c : Coordinate.all())
-			board.set(c, Occupation.BLACK);
-		return board;
 	}
 
 }

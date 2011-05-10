@@ -18,6 +18,7 @@ public class UctSearch<Move> {
 
 	public int numberOfThreads = 2;
 	public int numberOfSimulations = 10000;
+	public int boundedTime = 10000;
 
 	private UctVisitor<Move> visitor;
 	private UctNode<Move> root, best;
@@ -43,17 +44,10 @@ public class UctSearch<Move> {
 		root = new UctNode<Move>();
 		Thread threads[] = new Thread[numberOfThreads];
 		final AtomicInteger count = new AtomicInteger();
+		final long end = System.currentTimeMillis() + boundedTime;
 
-		for (int i = 0; i < numberOfThreads; i++) {
-			threads[i] = new Thread() {
-				public void run() {
-					while (count.getAndIncrement() < numberOfSimulations)
-						playSimulation(visitor.cloneVisitor(), root);
-				}
-			};
-
-			threads[i].start();
-		}
+		for (int i = 0; i < numberOfThreads; i++)
+			(threads[i] = new SearchThread(count, end)).start();
 
 		try {
 			for (int i = 0; i < numberOfThreads; i++)
@@ -73,6 +67,30 @@ public class UctSearch<Move> {
 		}
 
 		return best != null ? best.move : null;
+	}
+
+	private final class SearchThread extends Thread {
+		private AtomicInteger count;
+		private long end;
+
+		private SearchThread(AtomicInteger count, long end) {
+			this.count = count;
+			this.end = end;
+		}
+
+		public void run() {
+			int i = 0;
+
+			while (count.getAndIncrement() < numberOfSimulations) {
+				playSimulation(visitor.cloneVisitor(), root);
+
+				if (++i > 10) {
+					i = 0;
+					if (System.currentTimeMillis() > end)
+						break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -194,6 +212,10 @@ public class UctSearch<Move> {
 
 	public void setNumberOfSimulations(int numberOfSimulations) {
 		this.numberOfSimulations = numberOfSimulations;
+	}
+
+	public void setBoundedTime(int boundedTime) {
+		this.boundedTime = boundedTime;
 	}
 
 }
