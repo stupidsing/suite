@@ -179,8 +179,6 @@ public class UctTest {
 			if (move == null)
 				break;
 
-			search.dumpSearch();
-
 			Occupation player = gameSet.getNextPlayer();
 			float chance = search.getWinningChance();
 			System.out.println(player + " " + move + " " + chance);
