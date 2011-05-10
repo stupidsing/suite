@@ -39,6 +39,9 @@ public class GameSet extends Board {
 		public Coordinate position;
 		public Occupation neighbourColors[] = new Occupation[4];
 
+		public MoveCommand() {
+		}
+
 		public MoveCommand(Coordinate position) {
 			this.position = position;
 		}
@@ -50,8 +53,8 @@ public class GameSet extends Board {
 
 	public void move(MoveCommand move) {
 		if (!moveIfPossible(move))
-			throw new RuntimeException("Invalid move " + move + " for "
-					+ nextPlayer + "\n" + this);
+			throw new RuntimeException("Invalid move " + move.position
+					+ " for " + nextPlayer + "\n" + this);
 	}
 
 	public boolean isMovePossible(MoveCommand move) {

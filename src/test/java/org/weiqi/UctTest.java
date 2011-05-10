@@ -96,7 +96,7 @@ public class UctTest {
 
 		Visitor visitor = new Visitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
-		search.setNumberOfSimulations(10000);
+		search.setNumberOfSimulations(1000);
 
 		Coordinate move = search.search();
 		gameSet.move(move);
@@ -121,7 +121,7 @@ public class UctTest {
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
 
-		for (int i = 0; i < 2 * Weiqi.AREA; i++) {
+		while (true) {
 			Visitor visitor = new Visitor(new GameSet(gameSet));
 			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 			search.setNumberOfThreads(nThreads);
@@ -132,10 +132,10 @@ public class UctTest {
 				break;
 
 			Occupation player = gameSet.getNextPlayer();
-			gameSet.move(move);
+			float chance = search.getWinningChance();
+			System.out.println(player + " " + move + " " + chance);
 
-			System.out.println(player + " " + move + " "
-					+ search.getWinningChance());
+			gameSet.move(move);
 			UserInterface.display(gameSet);
 		}
 	}

@@ -20,31 +20,13 @@ public class UctWeiqi {
 
 		@Override
 		public RandomList<Coordinate> elaborateMoves() {
-			GroupAnalysis ga = new GroupAnalysis(gameSet);
-
+			MoveCommand move = new MoveCommand();
 			RandomList<Coordinate> moves = new RandomList<Coordinate>();
 
 			for (Coordinate c : Coordinate.all())
 				if (gameSet.get(c) == Occupation.EMPTY) {
-					Integer groupId = ga.getGroupId(c);
-					boolean hasBreath;
-
-					if (ga.getCoords(groupId).size() == 1) { // A tight space
-						hasBreath = false;
-
-						for (Integer groupId1 : ga.getTouches(groupId)) {
-							int nBreathes = ga.getNumberOfBreathes(groupId1);
-							Occupation nextPlayer = gameSet.getNextPlayer();
-
-							if (ga.getColor(groupId1) == nextPlayer)
-								hasBreath |= nBreathes > 1;
-							else
-								hasBreath |= nBreathes <= 1;
-						}
-					} else
-						hasBreath = true;
-
-					if (hasBreath && gameSet.isMovePossible(new MoveCommand(c)))
+					move.position = c;
+					if (gameSet.isMovePossible(move))
 						moves.add(c);
 				}
 

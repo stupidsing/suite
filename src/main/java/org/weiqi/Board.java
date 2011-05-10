@@ -35,7 +35,9 @@ public class Board extends Array<Occupation> {
 				if (get(neighbour) == opponent)
 					killIfDead(neighbour);
 
-			moved = !killIfDead(c);
+			moved = hasBreath(c);
+			if (!moved)
+				set(c, Occupation.EMPTY);
 		} else
 			moved = false;
 
@@ -43,13 +45,17 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean killIfDead(Coordinate c) {
-		boolean isKilled = !hasBreath(c, get(c), new HashSet<Coordinate>());
+		boolean isKilled = !hasBreath(c);
 
 		if (isKilled)
 			for (Coordinate c1 : findGroup(c))
 				set(c1, Occupation.EMPTY);
 
 		return isKilled;
+	}
+
+	private boolean hasBreath(Coordinate c) {
+		return hasBreath(c, get(c), new HashSet<Coordinate>());
 	}
 
 	private boolean hasBreath(Coordinate c, Occupation player,
