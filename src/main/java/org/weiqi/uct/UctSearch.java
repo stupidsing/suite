@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.util.LogUtil;
-import org.weiqi.Weiqi;
 
 /**
  * Based on http://senseis.xmp.net/?UCT
@@ -105,6 +104,7 @@ public class UctSearch<Move> {
 			// UCT selection
 			UctNode<Move> child = node.child;
 			UctNode<Move> bestSelected = null;
+			double logParentVisits = Math.log(node.nVisits);
 			float bestUct = -Float.MAX_VALUE;
 
 			while (child != null) {
@@ -112,10 +112,8 @@ public class UctSearch<Move> {
 
 				// Only calculates UCT when required, that is, if all children
 				// have been evaluated at least once
-				if (node.nVisits >= Weiqi.AREA && child.nVisits > 0) {
-					uct = uct(node, child);
-
-					if (uct > bestUct) {
+				if (child.nVisits > 0) {
+					if ((uct = uct(child, logParentVisits)) > bestUct) {
 						bestSelected = child;
 						bestUct = uct;
 					}
@@ -143,11 +141,11 @@ public class UctSearch<Move> {
 		return !outcome;
 	}
 
-	private float uct(UctNode<Move> parent, UctNode<Move> child) {
+	private float uct(UctNode<Move> child, double logParentVisits) {
 		float nWins = child.nWins;
 		float nVisits = child.nVisits;
 		return nWins / nVisits + searchRatio //
-				* (float) Math.sqrt(Math.log(parent.nVisits) / (5f * nVisits));
+				* (float) Math.sqrt(logParentVisits / (5f * nVisits));
 	}
 
 	public void dumpSearch() {
@@ -167,10 +165,9 @@ public class UctSearch<Move> {
 						sb.append('\t');
 
 					float winRate = ((float) child.nWins) / child.nVisits;
-
 					String uct;
 					if (parent != null)
-						uct = df.format(uct(parent, child));
+						uct = df.format(uct(child, Math.log(parent.nVisits)));
 					else
 						uct = "-";
 
