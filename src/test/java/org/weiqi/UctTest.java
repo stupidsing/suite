@@ -138,16 +138,21 @@ public class UctTest {
 
 	@Test
 	public void testUctFirstMove() {
+		int seed = 760903274;
+		System.out.println("RANDOM SEED = " + seed);
+		RandomList.setSeed(seed);
+
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 
 		Visitor visitor = new Visitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
-		search.setNumberOfSimulations(1000);
+		search.setNumberOfThreads(1);
+		search.setNumberOfSimulations(80000);
 
 		Coordinate move = search.search();
 		gameSet.move(move);
 
-		search.dumpSearch();
+		// search.dumpSearch();
 		System.out.println(move);
 		assertTrue(move.getX() >= 2);
 		assertTrue(move.getY() >= 2);

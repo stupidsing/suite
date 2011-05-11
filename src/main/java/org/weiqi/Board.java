@@ -2,6 +2,7 @@ package org.weiqi;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 
 import org.util.Util;
 import org.weiqi.Weiqi.Array;
@@ -55,32 +56,40 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean hasBreath(Coordinate c) {
-		return hasBreath(c, get(c), new HashSet<Coordinate>());
-	}
+		Set<Coordinate> group = new HashSet<Coordinate>();
+		Occupation color = get(c);
+		group.add(c);
 
-	private boolean hasBreath(Coordinate c, Occupation player,
-			Set<Coordinate> group) {
-		Occupation current = get(c);
+		Stack<Coordinate> unexplored = new Stack<Coordinate>();
+		unexplored.push(c);
 
-		if (current == player) {
-			for (Coordinate neighbour : c.neighbours())
-				if (group.add(neighbour) && hasBreath(neighbour, player, group))
+		while (!unexplored.isEmpty())
+			for (Coordinate c1 : unexplored.pop().neighbours()) {
+				Occupation color1 = get(c1);
+
+				if (color1 == color) {
+					if (group.add(c1))
+						unexplored.push(c1);
+				} else if (color1 == Occupation.EMPTY)
 					return true;
-			return false;
-		} else
-			return current == Occupation.EMPTY;
+			}
+
+		return false;
 	}
 
 	protected Set<Coordinate> findGroup(Coordinate c) {
 		Set<Coordinate> group = Util.createHashSet();
-		findGroup(c, get(c), group);
-		return group;
-	}
+		Occupation color = get(c);
+		group.add(c);
 
-	private void findGroup(Coordinate c, Occupation color, Set<Coordinate> group) {
-		if (get(c) == color && group.add(c))
-			for (Coordinate neighbour : c.neighbours())
-				findGroup(neighbour, color, group);
+		Stack<Coordinate> unexplored = new Stack<Coordinate>();
+		unexplored.push(c);
+
+		while (!unexplored.isEmpty())
+			for (Coordinate c1 : unexplored.pop().neighbours())
+				if (get(c1) == color && group.add(c1))
+					unexplored.push(c1);
+		return group;
 	}
 
 	/**

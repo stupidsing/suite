@@ -26,6 +26,12 @@ public class Coordinate implements Comparable<Coordinate> {
 		return (x << Weiqi.SHIFT) + y;
 	}
 
+	public static Coordinate fromArrayPosition(int position) {
+		int x = position >> Weiqi.SHIFT;
+		int y = position & ((1 << Weiqi.SHIFT) - 1);
+		return coords[x][y];
+	}
+
 	public Coordinate[] leftOrUp() {
 		Coordinate left = x > 0 ? Coordinate.c(x - 1, y) : null;
 		Coordinate up = y > 0 ? Coordinate.c(x, y - 1) : null;
