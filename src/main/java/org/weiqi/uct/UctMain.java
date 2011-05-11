@@ -10,7 +10,7 @@ import org.weiqi.Weiqi.Occupation;
 /**
  * How I did profiling:
  * 
- * java -agentlib:hprof=cpu=samples,depth=16,interval=1,thread=y
+ * java -agentlib:hprof=cpu=times,depth=16,interval=1,thread=y
  */
 public class UctMain<Move> {
 
