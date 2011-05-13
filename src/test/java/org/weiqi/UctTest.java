@@ -3,6 +3,7 @@ package org.weiqi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import org.junit.Test;
@@ -162,8 +163,9 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
+		DecimalFormat df = new DecimalFormat("0.00");
 		int nThreads = 2;
-		int nSimulations = 2000;
+		int nSimulations = 20000;
 		int boundedTime = 300000;
 		int seed = new Random().nextInt();
 
@@ -172,6 +174,7 @@ public class UctTest {
 
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
+		long current = System.currentTimeMillis();
 
 		while (true) {
 			Visitor visitor = new Visitor(new GameSet(gameSet));
@@ -184,9 +187,14 @@ public class UctTest {
 			if (move == null)
 				break;
 
+			long current0 = current;
+			current = System.currentTimeMillis();
 			Occupation player = gameSet.getNextPlayer();
-			float chance = search.getWinningChance();
-			System.out.println(player + " " + move + " " + chance);
+			String chance = df.format(search.getWinningChance());
+
+			System.out.println(player + " " + move //
+					+ " " + chance //
+					+ " " + (current - current0) + "ms");
 
 			gameSet.move(move);
 			UserInterface.display(gameSet);
