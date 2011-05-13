@@ -1,5 +1,9 @@
 package org.weiqi;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.weiqi.Board.MoveType;
 import org.weiqi.GameSet.MoveCommand;
 import org.weiqi.Weiqi.Occupation;
 import org.weiqi.uct.UctVisitor;
@@ -19,18 +23,26 @@ public class UctWeiqi {
 		}
 
 		@Override
-		public RandomList<Coordinate> elaborateMoves() {
+		public List<Coordinate> elaborateMoves() {
 			MoveCommand move = new MoveCommand();
-			RandomList<Coordinate> moves = new RandomList<Coordinate>();
+			List<Coordinate> captureMoves = new RandomList<Coordinate>();
+			List<Coordinate> otherMoves = new RandomList<Coordinate>();
 
 			for (Coordinate c : Coordinate.all())
 				if (gameSet.get(c) == Occupation.EMPTY) {
 					move.position = c;
+
 					if (gameSet.isMovePossible(move))
-						moves.add(c);
+						if (move.type == MoveType.CAPTURE)
+							captureMoves.add(c);
+						else
+							otherMoves.add(c);
 				}
 
-			return moves;
+			// Make capture moves at the tail;
+			// UctSearch would put them in first few nodes
+			otherMoves.addAll(captureMoves);
+			return otherMoves;
 		}
 
 		@Override
@@ -52,14 +64,14 @@ public class UctWeiqi {
 
 				// Try a random empty position, if that position does not work,
 				// calls the heavier possible move method
-				if ((pos = empties.get()) != null)
+				if ((pos = empties.last()) != null)
 					if (gameSet.moveIfPossible(move = new MoveCommand(pos)))
 						empties.remove();
 					else
 						move = null;
 
-				if (move == null && (pos = elaborateMoves().remove()) != null)
-					gameSet.move(move = new MoveCommand(pos));
+				if (move == null)
+					move = removePossibleMove(empties.iterator());
 
 				if (move != null) { // Add empty positions back to empty group
 					int j = 0;
@@ -76,6 +88,19 @@ public class UctWeiqi {
 				return gameSet.getNextPlayer() != me;
 			else
 				return Evaluator.evaluate(me, gameSet) > 0;
+		}
+
+		private MoveCommand removePossibleMove(Iterator<Coordinate> iter) {
+			while (iter.hasNext()) {
+				MoveCommand move = new MoveCommand(iter.next());
+
+				if (gameSet.moveIfPossible(move)) {
+					iter.remove();
+					return move;
+				}
+			}
+
+			return null;
 		}
 
 		public RandomList<Coordinate> findAllEmptyPositions() {

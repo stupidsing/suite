@@ -2,74 +2,65 @@ package org.weiqi;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
-public class RandomList<T> implements Iterable<T> {
+public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
+
+	private static final long serialVersionUID = 1l;
 
 	private final static Random random = new Random();
 
-	private List<T> list;
-
 	public RandomList() {
-		list = new ArrayList<T>();
+		super();
 	}
 
 	public RandomList(int n) {
-		list = new ArrayList<T>(Weiqi.AREA);
+		super(n);
 	}
 
-	public void add(T t) {
-		int size = list.size();
+	public boolean add(T t) {
+		int size = size();
 
 		if (size > 0) {
 			int position = random.nextInt(size);
-			list.add(list.get(position));
-			list.set(position, t);
+			super.add(get(position));
+			set(position, t);
 		} else
-			list.add(t);
+			super.add(t);
+
+		return true;
 	}
 
-	public T get() {
-		int size = list.size();
-		return size > 0 ? list.get(size - 1) : null;
+	public T last() {
+		int size = size();
+		return size > 0 ? get(size - 1) : null;
 	}
 
 	public T remove() {
-		int size = list.size();
-		return size > 0 ? list.remove(size - 1) : null;
+		int size = size();
+		return size > 0 ? remove(size - 1) : null;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		final int size = list.size();
-
 		return new Iterator<T>() {
-			int i = 0;
+			private int i = size();
 
 			public boolean hasNext() {
-				return i < size;
+				return i > 0;
 			}
 
 			public T next() {
-				return list.get(i++);
+				return get(--i);
 			}
 
 			public void remove() {
-				if (i != size)
-					list.set(i - 1, RandomList.this.remove());
+				if (i > 0)
+					set(i, RandomList.this.remove());
 				else
-					list.remove(0);
+					RandomList.this.remove(0);
 			}
 		};
-	}
-
-	public boolean isEmpty() {
-		return list.isEmpty();
-	}
-
-	public int size() {
-		return list.size();
 	}
 
 	public static void setSeed(long seed) {

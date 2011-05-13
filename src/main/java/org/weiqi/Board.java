@@ -19,13 +19,17 @@ public class Board extends Array<Occupation> {
 		super(board);
 	}
 
+	public enum MoveType {
+		PLACEMENT, CAPTURE, INVALID
+	};
+
 	/**
 	 * Plays a move on the Weiqi board.
 	 * 
 	 * This method do not take use of GroupAnalysis for performance reasons.
 	 */
-	public boolean moveIfPossible(Coordinate c, Occupation player) {
-		boolean moved;
+	public MoveType moveIfPossible(Coordinate c, Occupation player) {
+		MoveType type = MoveType.PLACEMENT;
 		Occupation current = get(c);
 		Occupation opponent = player.opponent();
 
@@ -34,15 +38,17 @@ public class Board extends Array<Occupation> {
 
 			for (Coordinate neighbour : c.neighbours())
 				if (get(neighbour) == opponent)
-					killIfDead(neighbour);
+					if (killIfDead(neighbour))
+						type = MoveType.CAPTURE;
 
-			moved = hasBreath(c);
-			if (!moved)
+			if (!hasBreath(c)) {
 				set(c, Occupation.EMPTY);
+				type = MoveType.INVALID;
+			}
 		} else
-			moved = false;
+			type = MoveType.INVALID;
 
-		return moved;
+		return type;
 	}
 
 	private boolean killIfDead(Coordinate c) {

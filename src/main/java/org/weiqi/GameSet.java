@@ -37,6 +37,7 @@ public class GameSet extends Board {
 
 	public static class MoveCommand {
 		public Coordinate position;
+		public MoveType type;
 		public Occupation neighbourColors[] = new Occupation[4];
 
 		public MoveCommand() {
@@ -72,7 +73,8 @@ public class GameSet extends Board {
 		for (Coordinate c1 : move.position.neighbours())
 			move.neighbourColors[i++] = get(c1);
 
-		boolean success = super.moveIfPossible(move.position, nextPlayer);
+		move.type = super.moveIfPossible(move.position, nextPlayer);
+		boolean success = move.type != MoveType.INVALID;
 
 		if (success) {
 			int newHashCode = super.hashCode();
@@ -93,10 +95,11 @@ public class GameSet extends Board {
 	 */
 	private void rollBackMove(MoveCommand move, Occupation opponent) {
 		int i = 0;
-		for (Coordinate c1 : move.position.neighbours())
-			if (move.neighbourColors[i++] != get(c1))
-				for (Coordinate c2 : findGroup(c1))
-					set(c2, opponent);
+		if (move.type == MoveType.CAPTURE)
+			for (Coordinate c1 : move.position.neighbours())
+				if (move.neighbourColors[i++] != get(c1))
+					for (Coordinate c2 : findGroup(c1))
+						set(c2, opponent);
 
 		set(move.position, Occupation.EMPTY);
 	}

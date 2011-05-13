@@ -163,9 +163,9 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
-		DecimalFormat df = new DecimalFormat("0.00");
+		DecimalFormat df = new DecimalFormat("0.000");
 		int nThreads = 2;
-		int nSimulations = 20000;
+		int nSimulations = 10000;
 		int boundedTime = 300000;
 		int seed = new Random().nextInt();
 
@@ -190,10 +190,10 @@ public class UctTest {
 			long current0 = current;
 			current = System.currentTimeMillis();
 			Occupation player = gameSet.getNextPlayer();
-			String chance = df.format(search.getWinningChance());
 
-			System.out.println(player + " " + move //
-					+ " " + chance //
+			System.out.println(player //
+					+ " " + move //
+					+ " " + df.format(search.getWinningChance()) //
 					+ " " + (current - current0) + "ms");
 
 			gameSet.move(move);
