@@ -1,10 +1,16 @@
 package org.weiqi.uct;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+
 import org.weiqi.Board;
 import org.weiqi.Coordinate;
 import org.weiqi.GameSet;
 import org.weiqi.RandomList;
 import org.weiqi.UctWeiqi.Visitor;
+import org.weiqi.UserInterface;
 import org.weiqi.Weiqi.Occupation;
 
 /**
@@ -14,7 +20,54 @@ import org.weiqi.Weiqi.Occupation;
  */
 public class UctMain<Move> {
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		DecimalFormat df = new DecimalFormat("0.000");
+		int nThreads = 2;
+		int nSimulations = 20000;
+		int boundedTime = 300000;
+
+		Board board = new Board();
+		GameSet gameSet = new GameSet(board, Occupation.BLACK);
+		long current = System.currentTimeMillis();
+
+		while (true) {
+			Visitor visitor = new Visitor(new GameSet(gameSet));
+			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
+			search.setNumberOfThreads(nThreads);
+			search.setNumberOfSimulations(nSimulations);
+			search.setBoundedTime(boundedTime);
+
+			System.out.println("THINKING...");
+			Coordinate move = search.search();
+			if (move == null)
+				break;
+
+			long current0 = current;
+			current = System.currentTimeMillis();
+			Occupation player = gameSet.getNextPlayer();
+
+			System.out.println(player //
+					+ " " + move //
+					+ " " + df.format(search.getWinningChance()) //
+					+ " " + (current - current0) + "ms");
+
+			gameSet.move(move);
+			UserInterface.display(gameSet);
+
+			while (gameSet.getNextPlayer() == Occupation.WHITE)
+				try {
+					String pos[] = br.readLine().split(",");
+					Integer x = Integer.valueOf(pos[0]);
+					Integer y = Integer.valueOf(pos[1]);
+					gameSet.move(Coordinate.c(x, y));
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+		}
+	}
+
+	protected static void deepThink() {
 		int seed = 760903274;
 		System.out.println("RANDOM SEED = " + seed);
 		RandomList.setSeed(seed);
