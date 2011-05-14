@@ -39,10 +39,10 @@ public class UctWeiqi {
 							otherMoves.add(c);
 				}
 
-			// Make capture moves at the tail;
+			// Make capture moves at the head;
 			// UctSearch would put them in first few nodes
-			otherMoves.addAll(captureMoves);
-			return otherMoves;
+			captureMoves.addAll(otherMoves);
+			return captureMoves;
 		}
 
 		@Override

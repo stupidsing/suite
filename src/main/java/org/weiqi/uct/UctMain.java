@@ -29,7 +29,6 @@ public class UctMain<Move> {
 
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
-		long current = System.currentTimeMillis();
 
 		while (true) {
 			Visitor visitor = new Visitor(new GameSet(gameSet));
@@ -39,18 +38,18 @@ public class UctMain<Move> {
 			search.setBoundedTime(boundedTime);
 
 			System.out.println("THINKING...");
+			long start = System.currentTimeMillis();
 			Coordinate move = search.search();
+			long end = System.currentTimeMillis();
 			if (move == null)
 				break;
 
-			long current0 = current;
-			current = System.currentTimeMillis();
 			Occupation player = gameSet.getNextPlayer();
 
 			System.out.println(player //
 					+ " " + move //
 					+ " " + df.format(search.getWinningChance()) //
-					+ " " + (current - current0) + "ms");
+					+ " " + (start - end) + "ms");
 
 			gameSet.move(move);
 			UserInterface.display(gameSet);
