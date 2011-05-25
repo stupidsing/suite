@@ -1,9 +1,12 @@
 package org.weiqi.uct;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.util.LogUtil;
+import org.util.Util;
+import org.weiqi.Weiqi;
 
 /**
  * Based on http://senseis.xmp.net/?UCT
@@ -14,7 +17,9 @@ public class UctSearch<Move> {
 	 * Larger values give uniform search; smaller values give very selective
 	 * search.
 	 */
-	private final static float searchRatio = 0.5f;
+	private final static float explorationFactor = 0.5f;
+	private final static boolean rave = false;
+	private final static int maxRaveDepth = 4;
 
 	public int numberOfThreads = 2;
 	public int numberOfSimulations = 10000;
@@ -22,6 +27,8 @@ public class UctSearch<Move> {
 
 	private UctVisitor<Move> visitor;
 	private UctNode<Move> root, best;
+	private Map<Move, AtomicInteger> nRaveWins = Util.createHashMap();
+	private Map<Move, AtomicInteger> nRaveVisits = Util.createHashMap();
 
 	public static class UctNode<Move> {
 		private Move move;
@@ -41,6 +48,11 @@ public class UctSearch<Move> {
 	}
 
 	public Move search() {
+		for (Move move : visitor.getAllMovesOnBoard()) {
+			nRaveWins.put(move, new AtomicInteger());
+			nRaveVisits.put(move, new AtomicInteger());
+		}
+
 		root = new UctNode<Move>();
 		Thread threads[] = new Thread[numberOfThreads];
 		final AtomicInteger count = new AtomicInteger();
@@ -82,7 +94,7 @@ public class UctSearch<Move> {
 			int i = 0;
 
 			while (count.getAndIncrement() < numberOfSimulations) {
-				playSimulation(visitor.cloneVisitor(), root);
+				playSimulation(visitor.cloneVisitor(), root, 0);
 
 				if (++i > 10) {
 					i = 0;
@@ -99,7 +111,8 @@ public class UctSearch<Move> {
 	 * @return true if the next player will win after UCT selections and
 	 *         evaluation after random moves.
 	 */
-	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node) {
+	private boolean playSimulation(UctVisitor<Move> visitor,
+			UctNode<Move> node, int depth) {
 		boolean outcome;
 
 		if (node.nVisits != 0) {
@@ -122,7 +135,9 @@ public class UctSearch<Move> {
 			// UCT selection
 			UctNode<Move> child = node.child;
 			UctNode<Move> bestSelected = null;
-			double logParentVisits = Math.log(node.nVisits);
+			int pnRaveVisits = getMoveRave(nRaveVisits, node.move);
+			double lnPnVisits = Math.log(node.nVisits + 1);
+			double lnPnRaveVisits = Math.log(pnRaveVisits + 1);
 			float bestUct = -Float.MAX_VALUE;
 
 			while (child != null) {
@@ -131,7 +146,7 @@ public class UctSearch<Move> {
 				// Only calculates UCT when required, that is, if all children
 				// have been evaluated at least once
 				if (child.nVisits > 0) {
-					if ((uct = uct(child, logParentVisits)) > bestUct) {
+					if ((uct = uct(child, lnPnVisits, lnPnRaveVisits)) > bestUct) {
 						bestSelected = child;
 						bestUct = uct;
 					}
@@ -145,11 +160,19 @@ public class UctSearch<Move> {
 
 			if (bestSelected != null) {
 				visitor.playMove(bestSelected.move);
-				outcome = playSimulation(visitor, bestSelected);
+				outcome = playSimulation(visitor, bestSelected, depth + 1);
 			} else
 				outcome = true; // No possible move for opponent
-		} else
+		} else {
 			outcome = !visitor.evaluateRandomOutcome();
+
+			// Updates rave statistics
+			if (node.move != null && depth < maxRaveDepth) {
+				incrementMoveRave(nRaveVisits, node.move);
+				if (outcome)
+					incrementMoveRave(nRaveWins, node.move);
+			}
+		}
 
 		synchronized (node) {
 			node.nVisits++;
@@ -159,20 +182,40 @@ public class UctSearch<Move> {
 		return !outcome;
 	}
 
-	private float uct(UctNode<Move> child, double logParentVisits) {
-		float nWins = child.nWins;
-		float nVisits = child.nVisits;
-		return nWins / nVisits + searchRatio //
-				* (float) Math.sqrt(logParentVisits / (5f * nVisits));
+	private float uct(UctNode<Move> child, double lnParentVisits,
+			double lnParentRaveVisits) {
+		float beta = rave ? (float) (lnParentVisits / 20f) : 1f;
+		beta = Math.min(Math.max(beta, 0f), 1f);
+
+		float raveWins = getMoveRave(nRaveWins, child.move);
+		float raveVisits = getMoveRave(nRaveVisits, child.move);
+		float rave = raveWins / raveVisits + explorationFactor
+				* (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
+
+		float wins = child.nWins;
+		float visits = child.nVisits;
+		float uct = wins / visits + explorationFactor
+				* (float) Math.sqrt(lnParentVisits / (5f * visits));
+
+		return (1f - beta) * rave + beta * uct;
 	}
+
+	private int getMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
+		return move != null ? raveMap.get(move).get() : 0;
+	}
+
+	private void incrementMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
+		raveMap.get(move).incrementAndGet();
+	}
+
+	private final static DecimalFormat df1 = new DecimalFormat("0.0");
+	private final static DecimalFormat df3 = new DecimalFormat("0.000");
 
 	public void dumpSearch() {
 		StringBuilder sb = new StringBuilder();
 		dumpSearch(sb, 0, null, root);
 		System.out.println(sb);
 	}
-
-	private final static DecimalFormat df = new DecimalFormat("0.000");
 
 	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent,
 			UctNode<Move> child) {
@@ -185,13 +228,15 @@ public class UctSearch<Move> {
 					float winRate = ((float) child.nWins) / child.nVisits;
 					String uct;
 					if (parent != null)
-						uct = df.format(uct(child, Math.log(parent.nVisits)));
+						uct = df3.format(uct(child, Math.log(parent.nVisits),
+								Math.log(getMoveRave(nRaveVisits //
+										, parent.move))));
 					else
 						uct = "-";
 
 					sb.append(child.move //
 							+ ", " + child.nWins + "/" + child.nVisits //
-							+ ", winRate = " + df.format(winRate) //
+							+ ", winRate = " + df3.format(winRate) //
 							+ ", UCT = " + uct //
 							+ "\n");
 					dumpSearch(sb, indent + 1, child, child.child);
@@ -199,6 +244,19 @@ public class UctSearch<Move> {
 
 				child = child.sibling;
 			}
+		}
+	}
+
+	public void dumpRave() {
+		int n = 0;
+		for (Move move : visitor.getAllMovesOnBoard()) {
+			float nWins = getMoveRave(nRaveWins, move);
+			float nTotals = getMoveRave(nRaveVisits, move);
+			String s = nTotals > 0 ? df1.format(nWins / nTotals) : " - ";
+			System.out.print(s + " ");
+
+			if (++n % Weiqi.SIZE == 0)
+				System.out.println();
 		}
 	}
 

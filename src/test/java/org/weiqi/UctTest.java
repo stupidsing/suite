@@ -184,6 +184,7 @@ public class UctTest {
 			search.setBoundedTime(boundedTime);
 
 			Coordinate move = search.search();
+			search.dumpRave();
 			if (move == null)
 				break;
 

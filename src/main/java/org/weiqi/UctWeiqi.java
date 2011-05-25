@@ -23,6 +23,11 @@ public class UctWeiqi {
 		}
 
 		@Override
+		public Iterable<Coordinate> getAllMovesOnBoard() {
+			return Coordinate.all();
+		}
+
+		@Override
 		public List<Coordinate> elaborateMoves() {
 			MoveCommand move = new MoveCommand();
 			List<Coordinate> captureMoves = new RandomList<Coordinate>();
