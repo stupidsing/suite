@@ -18,6 +18,7 @@ public class UctSearch<Move> {
 	 * search.
 	 */
 	private final static float explorationFactor = 0.5f;
+	private final static float raveFactor = 3f;
 	private final static boolean rave = false;
 	private final static int maxRaveDepth = 4;
 
@@ -184,7 +185,7 @@ public class UctSearch<Move> {
 
 	private float uct(UctNode<Move> child, double lnParentVisits,
 			double lnParentRaveVisits) {
-		float beta = rave ? (float) (lnParentVisits / 20f) : 1f;
+		float beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
 		beta = Math.min(Math.max(beta, 0f), 1f);
 
 		float raveWins = getMoveRave(nRaveWins, child.move);
