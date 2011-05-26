@@ -164,15 +164,14 @@ public class UctSearch<Move> {
 				outcome = playSimulation(visitor, bestSelected, depth + 1);
 			} else
 				outcome = true; // No possible move for opponent
-		} else {
+		} else
 			outcome = !visitor.evaluateRandomOutcome();
 
-			// Updates rave statistics
-			if (node.move != null && depth < maxRaveDepth) {
-				incrementMoveRave(nRaveVisits, node.move);
-				if (outcome)
-					incrementMoveRave(nRaveWins, node.move);
-			}
+		// Updates rave statistics
+		if (node.move != null && depth < maxRaveDepth) {
+			incrementMoveRave(nRaveVisits, node.move);
+			if (outcome)
+				incrementMoveRave(nRaveWins, node.move);
 		}
 
 		synchronized (node) {
