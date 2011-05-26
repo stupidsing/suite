@@ -18,7 +18,7 @@ public class UctSearch<Move> {
 	 * search.
 	 */
 	private final static float explorationFactor = 0.5f;
-	private final static float raveFactor = 3f;
+	private final static float raveFactor = 8f;
 	private final static boolean rave = false;
 	private final static int maxRaveDepth = 4;
 
@@ -209,7 +209,6 @@ public class UctSearch<Move> {
 		raveMap.get(move).incrementAndGet();
 	}
 
-	private final static DecimalFormat df1 = new DecimalFormat("0.0");
 	private final static DecimalFormat df3 = new DecimalFormat("0.000");
 
 	public void dumpSearch() {
@@ -253,7 +252,7 @@ public class UctSearch<Move> {
 		for (Move move : visitor.getAllMovesOnBoard()) {
 			float nWins = getMoveRave(nRaveWins, move);
 			float nTotals = getMoveRave(nRaveVisits, move);
-			String s = nTotals > 0 ? df1.format(nWins / nTotals) : " - ";
+			String s = nTotals > 0 ? df3.format(nWins / nTotals) : "  -  ";
 			System.out.print(s + " ");
 
 			if (++n % Weiqi.SIZE == 0)
