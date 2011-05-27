@@ -71,7 +71,7 @@ public class UctWeiqi {
 				// calls the heavier possible move method
 				if ((pos = empties.last()) != null)
 					if (gameSet.moveIfPossible(move = new MoveCommand(pos)))
-						empties.remove();
+						empties.removeLast();
 					else
 						move = null;
 

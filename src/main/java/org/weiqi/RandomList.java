@@ -31,14 +31,31 @@ public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
 		return true;
 	}
 
+	public T first() {
+		return size() > 0 ? get(0) : null;
+	}
+
 	public T last() {
 		int size = size();
 		return size > 0 ? get(size - 1) : null;
 	}
 
-	public T remove() {
+	public T remove(int i) {
 		int size = size();
-		return size > 0 ? remove(size - 1) : null;
+		T first;
+
+		if (size > i) {
+			first = get(i);
+			if (size > i + 1)
+				set(i, super.remove(size - 1));
+		} else
+			first = null;
+
+		return first;
+	}
+
+	public T removeLast() {
+		return remove(size() - 1);
 	}
 
 	@Override
@@ -55,10 +72,7 @@ public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
 			}
 
 			public void remove() {
-				if (i > 0)
-					set(i, RandomList.this.remove());
-				else
-					RandomList.this.remove(0);
+				RandomList.this.remove(i);
 			}
 		};
 	}
