@@ -191,6 +191,8 @@ public class UctTest {
 			current = System.currentTimeMillis();
 			Occupation player = gameSet.getNextPlayer();
 
+			System.out.println("PRINCIPAL VARIATION: "
+					+ search.dumpPrincipalVariation());
 			System.out.println(player //
 					+ " " + move //
 					+ " " + df.format(search.getWinningChance()) //

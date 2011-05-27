@@ -246,6 +246,29 @@ public class UctSearch<Move> {
 		}
 	}
 
+	public String dumpPrincipalVariation() {
+		return dumpPv(root);
+	}
+
+	private String dumpPv(UctNode<Move> node) {
+		UctNode<Move> child = node.child, best = null;
+		float bestWinRate = 0;
+
+		while (child != null) {
+			int nVisits = child.nVisits;
+			float winRate = nVisits > 0 ? ((float) child.nWins) / nVisits : 0;
+
+			if (winRate > bestWinRate) {
+				best = child;
+				winRate = bestWinRate;
+			}
+
+			child = child.sibling;
+		}
+
+		return node.move + (best != null ? ":" + dumpPv(best) : "");
+	}
+
 	public void dumpRave() {
 		int n = 0;
 		for (Move move : visitor.getAllMovesOnBoard()) {
