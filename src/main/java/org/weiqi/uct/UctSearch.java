@@ -17,9 +17,9 @@ public class UctSearch<Move> {
 	 * Larger values give uniform search; smaller values give very selective
 	 * search.
 	 */
-	private final static float explorationFactor = 0.5f;
-	private final static float raveFactor = 8f;
-	private final static boolean rave = false;
+	private final static float explorationFactor = 0.4f;
+	private final static float raveFactor = 5f;
+	private final static boolean rave = true;
 	private final static int maxRaveDepth = 4;
 
 	public int numberOfThreads = 2;
@@ -34,7 +34,7 @@ public class UctSearch<Move> {
 	public static class UctNode<Move> {
 		private Move move;
 		private int nWins, nVisits;
-		private UctNode<Move> child, sibling;
+		private UctNode<Move> child, sibling, bestChild;
 
 		private UctNode() {
 		}
@@ -69,16 +69,8 @@ public class UctSearch<Move> {
 			LogUtil.error("", ex);
 		}
 
-		// Finds node with best winning rate
-		UctNode<Move> node = root.child;
-
-		while (node != null) {
-			if (best == null
-					|| node.nWins * best.nVisits > node.nVisits * best.nWins)
-				best = node;
-			node = node.sibling;
-		}
-
+		// Finds best node
+		best = root.bestChild;
 		return best != null ? best.move : null;
 	}
 
@@ -160,6 +152,7 @@ public class UctSearch<Move> {
 			}
 
 			if (bestSelected != null) {
+				node.bestChild = bestSelected;
 				visitor.playMove(bestSelected.move);
 				outcome = playSimulation(visitor, bestSelected, depth + 1);
 			} else
@@ -218,55 +211,45 @@ public class UctSearch<Move> {
 
 	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent,
 			UctNode<Move> child) {
-		if (indent < 3) {
-			while (child != null) {
-				if (child.nVisits > 0) {
-					for (int i = 0; i < indent; i++)
-						sb.append('\t');
-
-					float winRate = ((float) child.nWins) / child.nVisits;
-					String uct;
-					if (parent != null)
-						uct = df3.format(uct(child, Math.log(parent.nVisits),
-								Math.log(getMoveRave(nRaveVisits //
-										, parent.move))));
-					else
-						uct = "-";
-
-					sb.append(child.move //
-							+ ", " + child.nWins + "/" + child.nVisits //
-							+ ", winRate = " + df3.format(winRate) //
-							+ ", UCT = " + uct //
-							+ "\n");
-					dumpSearch(sb, indent + 1, child, child.child);
-				}
-
-				child = child.sibling;
-			}
-		}
-	}
-
-	public String dumpPrincipalVariation() {
-		return dumpPv(root);
-	}
-
-	private String dumpPv(UctNode<Move> node) {
-		UctNode<Move> child = node.child, best = null;
-		float bestWinRate = 0;
+		if (indent > 9)
+			return;
 
 		while (child != null) {
-			int nVisits = child.nVisits;
-			float winRate = nVisits > 0 ? ((float) child.nWins) / nVisits : 0;
+			if (child.nVisits > 0) {
+				for (int i = 0; i < indent; i++)
+					sb.append('\t');
 
-			if (winRate > bestWinRate) {
-				best = child;
-				winRate = bestWinRate;
+				float winRate = ((float) child.nWins) / child.nVisits;
+				String uct;
+				if (parent != null)
+					uct = df3.format(uct(child //
+							, Math.log(parent.nVisits) //
+							, Math.log(getMoveRave(nRaveVisits, parent.move))));
+				else
+					uct = "-";
+
+				sb.append(child.move //
+						+ ", " + child.nWins + "/" + child.nVisits //
+						+ ", winRate = " + df3.format(winRate) //
+						+ ", UCT = " + uct //
+						+ "\n");
+
+				if (parent == null || parent.bestChild == child)
+					dumpSearch(sb, indent + 1, child, child.child);
 			}
 
 			child = child.sibling;
 		}
+	}
 
-		return node.move + (best != null ? ":" + dumpPv(best) : "");
+	public void dumpPrincipalVariation() {
+		System.out.println("PRINCIPAL-VARIATION " + getPrincipalVar(root));
+	}
+
+	private String getPrincipalVar(UctNode<Move> node) {
+		UctNode<Move> bestChild = node.bestChild;
+		return (node.move != null ? node.move : "") //
+				+ (bestChild != null ? " => " + getPrincipalVar(bestChild) : "");
 	}
 
 	public void dumpRave() {

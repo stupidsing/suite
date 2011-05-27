@@ -55,8 +55,56 @@ public class UctWeiqi {
 			gameSet.move(new MoveCommand(c));
 		}
 
+		/**
+		 * The "play till both player passes" Monte Carlo.
+		 */
 		@Override
 		public boolean evaluateRandomOutcome() {
+			Occupation me = gameSet.getNextPlayer();
+			RandomList<Coordinate> empties = findAllEmptyPositions();
+			MoveCommand move = null;
+			int nPasses = 0;
+
+			// Move until someone cannot move anymore,
+			// or maximum iterations reached
+			while (nPasses < 2) {
+				move = null;
+
+				Iterator<Coordinate> iter = empties.iterator();
+				while (move == null && iter.hasNext()) {
+					Coordinate c = iter.next();
+					boolean isFillEye = true;
+
+					for (Coordinate c1 : c.neighbours())
+						isFillEye &= gameSet.get(c1) == gameSet.getNextPlayer();
+
+					if (!isFillEye)
+						if (gameSet.moveIfPossible(move = new MoveCommand(c)))
+							iter.remove();
+						else
+							move = null;
+				}
+
+				if (move != null) { // Add empty positions back to empty group
+					int j = 0;
+
+					for (Coordinate c1 : move.position.neighbours())
+						if (move.neighbourColors[j++] != gameSet.get(c1))
+							for (Coordinate c2 : gameSet.findGroup(c1))
+								empties.add(c2);
+
+					nPasses = 0;
+				} else
+					nPasses++;
+			}
+
+			return Evaluator.evaluate(me, gameSet) > 0;
+		}
+
+		/**
+		 * The "play till any player cannot move" version of Monte Carlo.
+		 */
+		public boolean evaluateRandomOutcome0() {
 			Occupation me = gameSet.getNextPlayer();
 			RandomList<Coordinate> empties = findAllEmptyPositions();
 			Coordinate pos;
