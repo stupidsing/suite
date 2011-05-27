@@ -42,12 +42,13 @@ public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
 
 	public T remove(int i) {
 		int size = size();
-		T first;
+		T first, last;
 
 		if (size > i) {
 			first = get(i);
+			last = super.remove(size - 1);
 			if (size > i + 1)
-				set(i, super.remove(size - 1));
+				set(i, last);
 		} else
 			first = null;
 
