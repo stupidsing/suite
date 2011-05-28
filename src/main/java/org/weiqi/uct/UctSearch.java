@@ -243,7 +243,7 @@ public class UctSearch<Move> {
 	}
 
 	public void dumpPrincipalVariation() {
-		System.out.println("PRINCIPAL-VARIATION " + getPrincipalVar(root));
+		System.out.println("PRINCIPAL-VARIATION" + getPrincipalVar(root));
 	}
 
 	private String getPrincipalVar(UctNode<Move> node) {
