@@ -13,9 +13,9 @@ public class UctScenarioTest {
 	public void testCapture() {
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
-				+ ". . . X X O . \n" //
-				+ ". . X . . O . \n" //
-				+ ". . X O O . . \n" //
+				+ ". . . X O . . \n" //
+				+ ". . X . O . . \n" //
+				+ ". . X O . . . \n" //
 				+ ". . O X O . . \n" //
 				+ ". . . X O . . \n" //
 				+ ". . . . . . . \n" //
