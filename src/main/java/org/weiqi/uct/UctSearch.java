@@ -129,8 +129,8 @@ public class UctSearch<Move> {
 			UctNode<Move> child = node.child;
 			UctNode<Move> bestSelected = null;
 			int pnRaveVisits = getMoveRave(nRaveVisits, node.move);
-			double lnPnVisits = Math.log(node.nVisits + 1);
-			double lnPnRaveVisits = Math.log(pnRaveVisits + 1);
+			double lnPnVisits = logp1(node.nVisits);
+			double lnPnRaveVisits = logp1(pnRaveVisits);
 			float bestUct = -Float.MAX_VALUE;
 
 			while (child != null) {
@@ -223,8 +223,8 @@ public class UctSearch<Move> {
 				String uct;
 				if (parent != null)
 					uct = df3.format(uct(child //
-							, Math.log(parent.nVisits) //
-							, Math.log(getMoveRave(nRaveVisits, parent.move))));
+							, logp1(parent.nVisits) //
+							, logp1(getMoveRave(nRaveVisits, parent.move))));
 				else
 					uct = "-";
 
@@ -263,6 +263,10 @@ public class UctSearch<Move> {
 			if (++n % Weiqi.SIZE == 0)
 				System.out.println();
 		}
+	}
+
+	private double logp1(int pnRaveVisits) {
+		return Math.log(1 + pnRaveVisits);
 	}
 
 	public float getWinningChance() {

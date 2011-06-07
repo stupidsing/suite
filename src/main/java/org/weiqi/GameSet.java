@@ -90,6 +90,10 @@ public class GameSet extends Board {
 		return success;
 	}
 
+	public void pass() {
+		nextPlayer = nextPlayer.opponent();
+	}
+
 	/**
 	 * Roll back board status; rejuvenate the pieces being eaten.
 	 */

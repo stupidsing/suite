@@ -94,8 +94,10 @@ public class UctWeiqi {
 								empties.add(c2);
 
 					nPasses = 0;
-				} else
+				} else {
+					gameSet.pass();
 					nPasses++;
+				}
 			}
 
 			return Evaluator.evaluate(me, gameSet) > 0;

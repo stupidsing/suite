@@ -153,7 +153,6 @@ public class UctTest {
 		Coordinate move = search.search();
 		gameSet.move(move);
 
-		// search.dumpSearch();
 		System.out.println(move);
 		assertTrue(move.getX() >= 2);
 		assertTrue(move.getY() >= 2);
