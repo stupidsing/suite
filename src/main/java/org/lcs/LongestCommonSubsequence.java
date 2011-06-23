@@ -21,9 +21,8 @@ public class LongestCommonSubsequence {
 				List<T> l = i2 > 0 ? dp[i1][i2 - 1] : empty;
 				List<T> lu = i1 > 0 && i2 > 0 ? dp[i1 - 1][i2 - 1] : empty;
 
-				if (Util.equals(l1.get(i1), l2.get(i2))) {
+				if (Util.equals(l1.get(i1), l2.get(i2)))
 					(lu = new ArrayList<T>(lu)).add(l1.get(i1));
-				}
 
 				List<T> longest = u;
 				if (l.size() > longest.size())
