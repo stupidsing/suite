@@ -83,6 +83,10 @@ public class Generalizer {
 		return node == CUT;
 	}
 
+	public Node getVariable(Node name) {
+		return variables.get(name);
+	}
+
 	public void setCut(Node cut) {
 		this.cut = cut;
 	}

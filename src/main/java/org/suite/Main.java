@@ -117,7 +117,7 @@ public class Main {
 	}
 
 	private void importAuto(RuleSet rs) throws IOException {
-		rs.importFrom(new TermParser().parseClassPathFile("auto.sl"));
+		SuiteUtil.importResource(rs, "auto.sl");
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

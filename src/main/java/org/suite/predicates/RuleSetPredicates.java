@@ -1,15 +1,13 @@
 package org.suite.predicates;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.suite.SuiteUtil;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
-import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.CompositeRuleSearcher;
 import org.suite.kb.Prototype;
@@ -26,8 +24,7 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			try {
 				String filename = Formatter.display(ps);
-				InputStream is = new FileInputStream(filename);
-				prover.getRuleSet().importFrom(new TermParser().parse(is));
+				SuiteUtil.importFile(prover.getRuleSet(), filename);
 				return true;
 			} catch (Exception ex) {
 				log.info(this, ex);
