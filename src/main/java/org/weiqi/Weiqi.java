@@ -4,10 +4,29 @@ import java.util.Arrays;
 
 public class Weiqi {
 
-	public final static int SIZE = 19;
-	public final static int AREA = SIZE * SIZE;
+	public static int SIZE;
+	public static int AREA;
 
-	public final static int SHIFT = 5; // 2^SHIFT >= SIZE
+	public static int SHIFT; // 2^SHIFT >= SIZE
+
+	static {
+		initialize();
+	}
+
+	public static void initialize() {
+		adjustSize(19);
+	}
+
+	public static void adjustSize(int size) {
+		SIZE = size;
+		AREA = size * size;
+
+		SHIFT = 0;
+		while (1 << ++SHIFT < SIZE)
+			;
+
+		Coordinate.initialize();
+	}
 
 	public enum Occupation {
 		EMPTY, BLACK, WHITE;

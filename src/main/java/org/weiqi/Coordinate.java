@@ -6,11 +6,21 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	private int x, y;
 
-	private final static Coordinate coords[][] = new Coordinate[Weiqi.SIZE][Weiqi.SIZE];
+	private static Coordinates coordinates;
 	static {
-		for (int x = 0; x < Weiqi.SIZE; x++)
-			for (int y = 0; y < Weiqi.SIZE; y++)
-				coords[x][y] = new Coordinate(x, y);
+		initialize();
+	}
+
+	private static class Coordinates {
+		private final Coordinate coords[][];
+
+		private Coordinates() {
+			coords = new Coordinate[Weiqi.SIZE][Weiqi.SIZE];
+
+			for (int x = 0; x < Weiqi.SIZE; x++)
+				for (int y = 0; y < Weiqi.SIZE; y++)
+					coords[x][y] = new Coordinate(x, y);
+		}
 	}
 
 	private Coordinate(int x, int y) {
@@ -18,8 +28,15 @@ public class Coordinate implements Comparable<Coordinate> {
 		this.y = y;
 	}
 
+	/**
+	 * Performed after a board resize.
+	 */
+	public static void initialize() {
+		coordinates = new Coordinates();
+	}
+
 	public static Coordinate c(int x, int y) {
-		return coords[x][y];
+		return coordinates.coords[x][y];
 	}
 
 	public int getArrayPosition() {
@@ -29,7 +46,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	public static Coordinate fromArrayPosition(int position) {
 		int x = position >> Weiqi.SHIFT;
 		int y = position & ((1 << Weiqi.SHIFT) - 1);
-		return coords[x][y];
+		return c(x, y);
 	}
 
 	public Coordinate[] leftOrUp() {

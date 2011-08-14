@@ -2,12 +2,18 @@ package org.weiqi;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.weiqi.UctWeiqi.Visitor;
 import org.weiqi.Weiqi.Occupation;
 import org.weiqi.uct.UctSearch;
 
 public class UctScenarioTest {
+
+	@Before
+	public void before() {
+		Weiqi.adjustSize(7);
+	}
 
 	@Test
 	public void testCapture() {

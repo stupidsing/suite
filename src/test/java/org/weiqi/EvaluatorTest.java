@@ -2,10 +2,16 @@ package org.weiqi;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.weiqi.Weiqi.Occupation;
 
 public class EvaluatorTest {
+
+	@Before
+	public void before() {
+		Weiqi.initialize();
+	}
 
 	@Test
 	public void testOneWhite() {
