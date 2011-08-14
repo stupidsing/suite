@@ -7,6 +7,7 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
+import org.suite.node.Reference;
 import org.suite.node.Str;
 import org.suite.node.Tree;
 
@@ -74,7 +75,7 @@ public class InstructionCodeExecutor {
 		Tree tree;
 		List<Instruction> list = new ArrayList<Instruction>();
 
-		while ((tree = Tree.decompose(node, TermOp.SEP___)) != null) {
+		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
 			Instruction instruction = parseInstruction(tree.getLeft());
 			if (instruction != null) // Do not add pseudo-instructions
 				list.add(instruction);
@@ -119,13 +120,26 @@ public class InstructionCodeExecutor {
 		}
 
 		if (insn != null) {
-			int size = rs.size();
-			int op1 = size > 2 ? ((Int) rs.get(2).finalNode()).getNumber() : 0;
-			int op2 = size > 3 ? ((Int) rs.get(3).finalNode()).getNumber() : 0;
-			int op3 = size > 4 ? ((Int) rs.get(4).finalNode()).getNumber() : 0;
-			return new Instruction(insn, op1, op2, op3);
+			return new Instruction(insn //
+					, getRegisterNumber(rs, 2) //
+					, getRegisterNumber(rs, 3) //
+					, getRegisterNumber(rs, 4));
 		} else
-			return null;
+			throw new RuntimeException("Unknown opcode" + instNode.getName());
+	}
+
+	private int getRegisterNumber(List<Node> rs, int index) {
+		if (rs.size() > index) {
+			Node node = rs.get(index).finalNode();
+
+			if (node instanceof Reference) {
+				// ((Reference) node).bound(null);
+				node = node.finalNode();
+			}
+
+			return ((Int) node).getNumber();
+		} else
+			return 0;
 	}
 
 	public void execute() {
