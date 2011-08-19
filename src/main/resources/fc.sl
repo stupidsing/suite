@@ -42,7 +42,7 @@ fc-compile (.if ? .then | .else) .frame .c0/.cx/.reg
 
 fc-compile .tree .frame .c0/.cx/.reg
 	:- tree .tree .left .oper .right
-	, (.tree = ' + '; .tree = ' - '; .tree = ' * '; .tree = ' / '), !
+	, (.oper = ' + '; .oper = ' - '; .oper = ' * '; .oper = ' / '), !
 	, fc-compile .left .frame .c0/.c1/.r1
 	, fc-compile .right .frame .c1/.c2/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
