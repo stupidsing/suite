@@ -10,8 +10,8 @@ fc-compile (.variable => .do) .frame .c0/.cx/.reg
 	, let .frame1 (.frame + 1)
 	, .c0 = (_ JUMP .skipLabel, .funcLabel LABEL .funcLabel, .c1)
 	, .c1 = (_ POP .variableReg, .c2)
-	, replace .do .do1 .variable %REG/.variableReg/.frame
-	, fc-compile .do1 .frame .c2/.c3/.returnReg
+	, replace .do .do1 .variable %REG/.variableReg/.frame1
+	, fc-compile .do1 .frame1 .c2/.c3/.returnReg
 	, .c3 = (_ RETURN .returnReg, .c4)
 	, .c4 = (.skipLabel LABEL .skipLabel, _ ASSIGN-LABEL .reg .funcLabel, .cx)
 #
