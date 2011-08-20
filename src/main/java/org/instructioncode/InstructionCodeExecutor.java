@@ -160,22 +160,35 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	public int execute() {
-		int magicSize = 256;
+	private final static int MAGICSIZE = 256;
 
-		int frames[][] = new int[magicSize][];
-		int registers[] = new int[magicSize];
-		int callStack[] = new int[magicSize];
-		int dataStack[] = new int[magicSize];
-		int ip = 0, csp = 0, dsp = 0, fsp = 0;
+	private static class Frame {
+		Frame previous;
+		int registers[];
+
+		private Frame(Frame previous, int frameSize) {
+			this.previous = previous;
+			registers = new int[frameSize];
+		}
+	}
+
+	public int execute() {
+		Frame currentFrame = null;
+		int registers[] = null;
+		int callStack[] = new int[MAGICSIZE];
+		int dataStack[] = new int[MAGICSIZE];
+		int ip = 0, csp = 0, dsp = 0;
 
 		for (;;) {
 			Instruction insn = instructions[ip++];
-			System.out.println(insn);
 
 			switch (insn.insn) {
 			case ASSIGNFRAMEREG:
-				registers[insn.op1] = frames[csp + insn.op2][insn.op3];
+				Frame frame = currentFrame;
+				int i = insn.op2;
+				while (i++ < 0)
+					frame = frame.previous;
+				registers[insn.op1] = frame.registers[insn.op3];
 				break;
 			case ASSIGNINT_____:
 				registers[insn.op1] = insn.op2;
@@ -188,8 +201,8 @@ public class InstructionCodeExecutor {
 				ip = registers[insn.op2];
 				break;
 			case ENTER_________:
-				frames[fsp++] = registers;
-				registers = new int[insn.op1];
+				currentFrame = new Frame(currentFrame, insn.op1);
+				registers = currentFrame.registers;
 				break;
 			case EXIT__________:
 				return registers[insn.op1];
@@ -215,8 +228,8 @@ public class InstructionCodeExecutor {
 				break;
 			case RETURN________:
 				int returnValue = registers[insn.op1]; // Saves return value
-				frames[fsp] = null; // Allows garbage collection
-				registers = frames[--fsp];
+				currentFrame = currentFrame.previous;
+				registers = currentFrame.registers;
 				ip = callStack[--csp];
 				registers[instructions[ip - 1].op1] = returnValue;
 			}
