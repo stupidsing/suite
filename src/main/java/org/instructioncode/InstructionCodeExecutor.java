@@ -21,8 +21,8 @@ public class InstructionCodeExecutor {
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		ASSIGNSTR_____("ASSIGN-STR"), //
-		ASSIGNLABEL___("ASSIGN-LABEL"), //
-		CALLREG_______("CALL-REG"), //
+		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
+		CALLCLOSURE___("CALL-CLOSURE"), //
 		ENTER_________("ENTER"), //
 		EXIT__________("EXIT"), //
 		EVALUATE______("EVALUATE"), //
@@ -107,9 +107,6 @@ public class InstructionCodeExecutor {
 				insn = Insn.ASSIGNINT_____;
 				rs.set(3, rs.get(3) == trueAtom ? Int.create(1) : Int.create(0));
 				break;
-			case ASSIGNLABEL___:
-				insn = Insn.ASSIGNINT_____;
-				break;
 			case ASSIGNSTR_____:
 				insn = Insn.ASSIGNINT_____;
 				Str str = (Str) rs.get(3).finalNode();
@@ -163,12 +160,22 @@ public class InstructionCodeExecutor {
 	private final static int STACKSIZE = 256;
 
 	private static class Frame {
-		Frame previous;
-		int registers[];
+		private Frame previous;
+		private int registers[];
 
 		private Frame(Frame previous, int frameSize) {
 			this.previous = previous;
 			registers = new int[frameSize];
+		}
+	}
+
+	private static class Closure {
+		private Frame frame;
+		private int ip;
+
+		private Closure(Frame frame, int ip) {
+			this.frame = frame;
+			this.ip = ip;
 		}
 	}
 
@@ -193,10 +200,10 @@ public class InstructionCodeExecutor {
 			case ASSIGNINT_____:
 				registers[insn.op1] = insn.op2;
 				break;
-			case ASSIGNLABEL___:
+			case ASSIGNCLOSURE_:
 				registers[insn.op1] = insn.op2;
 				break;
-			case CALLREG_______:
+			case CALLCLOSURE___:
 				callStack[csp++] = ip;
 				ip = registers[insn.op2];
 				break;
