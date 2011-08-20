@@ -1,7 +1,9 @@
 package org.instructioncode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -49,7 +51,7 @@ public class InstructionCodeExecutor {
 			insnNames.put(insn, insn.name);
 	}
 
-	private List<String> stringLiterals = new ArrayList<String>();
+	private Map<Integer, Object> objectPool = new HashMap<Integer, Object>();
 
 	private final static Atom trueAtom = Atom.create("true");
 
@@ -110,8 +112,8 @@ public class InstructionCodeExecutor {
 			case ASSIGNSTR_____:
 				insn = Insn.ASSIGNINT_____;
 				Str str = (Str) rs.get(3).finalNode();
-				rs.set(3, Int.create(stringLiterals.size()));
-				stringLiterals.add(str.getValue());
+				int pointer = allocate(str.getValue());
+				rs.set(3, Int.create(pointer));
 				break;
 			case EVALUATE______:
 				Atom atom = (Atom) rs.remove(4).finalNode();
@@ -180,18 +182,19 @@ public class InstructionCodeExecutor {
 	}
 
 	public int execute() {
-		Frame currentFrame = null;
-		int registers[] = null;
-		int callStack[] = new int[STACKSIZE];
+		Closure current = new Closure(null, 0);
+		Closure callStack[] = new Closure[STACKSIZE];
 		int dataStack[] = new int[STACKSIZE];
-		int ip = 0, csp = 0, dsp = 0;
+		int csp = 0, dsp = 0;
+		int counter = 0;
 
 		for (;;) {
-			Instruction insn = instructions[ip++];
+			Frame frame = current.frame;
+			int registers[] = frame != null ? frame.registers : null;
+			Instruction insn = instructions[current.ip++];
 
 			switch (insn.insn) {
 			case ASSIGNFRAMEREG:
-				Frame frame = currentFrame;
 				int i = insn.op2;
 				while (i++ < 0)
 					frame = frame.previous;
@@ -201,15 +204,14 @@ public class InstructionCodeExecutor {
 				registers[insn.op1] = insn.op2;
 				break;
 			case ASSIGNCLOSURE_:
-				registers[insn.op1] = insn.op2;
+				registers[insn.op1] = allocate(new Closure(frame, insn.op2));
 				break;
 			case CALLCLOSURE___:
-				callStack[csp++] = ip;
-				ip = registers[insn.op2];
+				callStack[csp++] = current;
+				current = (Closure) objectPool.get(registers[insn.op2]);
 				break;
 			case ENTER_________:
-				currentFrame = new Frame(currentFrame, insn.op1);
-				registers = currentFrame.registers;
+				current.frame = new Frame(frame, insn.op1);
 				break;
 			case EXIT__________:
 				return registers[insn.op1];
@@ -217,15 +219,15 @@ public class InstructionCodeExecutor {
 				registers[insn.op1] = registers[insn.op2] + registers[insn.op3];
 				break;
 			case IFFALSE_______:
-				if (registers[insn.op1] != 1)
-					ip = insn.op1;
+				if (registers[insn.op2] != 1)
+					current.ip = insn.op1;
 				break;
 			case IFNOTEQUALS___:
-				if (registers[insn.op1] != registers[insn.op2])
-					ip = insn.op1;
+				if (registers[insn.op2] != registers[insn.op3])
+					current.ip = insn.op1;
 				break;
 			case JUMP__________:
-				ip = insn.op1;
+				current.ip = insn.op1;
 				break;
 			case PUSH__________:
 				dataStack[dsp++] = registers[insn.op1];
@@ -235,12 +237,50 @@ public class InstructionCodeExecutor {
 				break;
 			case RETURN________:
 				int returnValue = registers[insn.op1]; // Saves return value
-				currentFrame = currentFrame.previous;
-				registers = currentFrame.registers;
-				ip = callStack[--csp];
-				registers[instructions[ip - 1].op1] = returnValue;
+				current = callStack[--csp];
+				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 			}
+
+			if (++counter % 65536 == 0)
+				collectGarbage(frame);
 		}
+	}
+
+	/**
+	 * Traverses frame hierarchy to find all referenced objects, and clean the
+	 * unreferenced ones to free memory.
+	 * 
+	 * This does not free the holes in the reference list.
+	 */
+	private void collectGarbage(Frame frame) {
+		int size = objectPool.size();
+		Map<Integer, Object> objectPool1 = new HashMap<Integer, Object>(
+				size * 2);
+
+		collectGarbage0(objectPool1, frame);
+
+		// Swaps object pool
+		objectPool = objectPool1;
+	}
+
+	private void collectGarbage0(Map<Integer, Object> objectPool1, Frame frame) {
+		if (frame != null) {
+			for (int content : frame.registers) {
+				Object object = objectPool.get(content);
+				Object original = objectPool1.put(content, object);
+
+				if (original == null && object instanceof Closure)
+					collectGarbage0(objectPool1, ((Closure) object).frame);
+			}
+
+			collectGarbage0(objectPool1, frame.previous);
+		}
+	}
+
+	private int allocate(Object object) {
+		int pointer = objectPool.size();
+		objectPool.put(pointer, object);
+		return pointer;
 	}
 
 }
