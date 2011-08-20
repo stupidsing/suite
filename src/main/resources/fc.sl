@@ -1,14 +1,17 @@
 -------------------------------------------------------------------------------
 -- functional program compiler
 
-compile .do .code/.reg
-	:- fc-compile .do 0 .code/()/.reg, assign-line-number 0 .code
+compile .do .c0/.reg
+	:- .c0 = (_ ENTER, .c1)
+	, fc-compile .do 0 .c1/.c2/.reg
+	, .c2 = (_ EXIT .reg, ())
+	, assign-line-number 0 .c0
 #
 
 fc-compile (.variable => .do) .frame .c0/.cx/.reg
 	:- !
 	, let .frame1 (.frame + 1)
-	, .c0 = (_ JUMP .skipLabel, .funcLabel LABEL .funcLabel, .c1)
+	, .c0 = (_ JUMP .skipLabel, .funcLabel ENTER, .c1)
 	, .c1 = (_ POP .variableReg, .c2)
 	, replace .do .do1 .variable %REG/.variableReg/.frame1
 	, fc-compile .do1 .frame1 .c2/.c3/.returnReg
@@ -27,7 +30,7 @@ fc-compile (.callee {.parameter}) .frame .c0/.cx/.reg
 	:- !
 	, fc-compile .callee .frame .c0/.c1/.r1
 	, fc-compile .parameter .frame .c1/.c2/.r2
-	, .c2 = (_ PUSH .r2, _ CALL .reg .r1, .cx)
+	, .c2 = (_ PUSH .r2, _ CALL-REG .reg .r1, .cx)
 #
 
 fc-compile (.if ? .then | .else) .frame .c0/.cx/.reg
@@ -59,6 +62,17 @@ fc-compile .s _ .c0/.cx/.reg :- is.string .s, !, .c0 = (_ ASSIGN-STR .reg .s, .c
 fc-compile .b _ .c0/.cx/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
 
 fc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
+
+find-closure-reference .do .references
+	:- find-closure-reference0 .do .references, member .references ()
+#
+
+find-closure-reference0 .do .references
+	:-  tree .tree .left .oper .right, !
+	, find-closure-reference0 .left .references
+	, find-closure-reference0 .right .references
+#
+find-closure-reference0 %REG/.reg/.frame .references :- member .references .frame #
 
 is.boolean true #
 is.boolean false #
