@@ -160,7 +160,7 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	private final static int MAGICSIZE = 256;
+	private final static int STACKSIZE = 256;
 
 	private static class Frame {
 		Frame previous;
@@ -175,8 +175,8 @@ public class InstructionCodeExecutor {
 	public int execute() {
 		Frame currentFrame = null;
 		int registers[] = null;
-		int callStack[] = new int[MAGICSIZE];
-		int dataStack[] = new int[MAGICSIZE];
+		int callStack[] = new int[STACKSIZE];
+		int dataStack[] = new int[STACKSIZE];
 		int ip = 0, csp = 0, dsp = 0;
 
 		for (;;) {
