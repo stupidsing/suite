@@ -29,6 +29,9 @@ public class InstructionCodeExecutor {
 		EXIT__________("EXIT"), //
 		EVALUATE______("EVALUATE"), //
 		EVALADD_______("EVAL-ADD"), //
+		EVALDIV_______("EVAL-DIV"), //
+		EVALMUL_______("EVAL-MUL"), //
+		EVALSUB_______("EVAL-SUB"), //
 		IFFALSE_______("IF-FALSE"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		JUMP__________("JUMP"), //
@@ -120,6 +123,12 @@ public class InstructionCodeExecutor {
 				TermOp operator = TermOp.find((atom).getName());
 				if (operator == TermOp.PLUS__)
 					insn = Insn.EVALADD_______;
+				else if (operator == TermOp.MINUS_)
+					insn = Insn.EVALSUB_______;
+				else if (operator == TermOp.MULT__)
+					insn = Insn.EVALMUL_______;
+				else if (operator == TermOp.DIVIDE)
+					insn = Insn.EVALDIV_______;
 			}
 
 			if (insn != null) {
@@ -257,18 +266,20 @@ public class InstructionCodeExecutor {
 		Map<Integer, Object> objectPool1 = new HashMap<Integer, Object>(
 				size * 2);
 
-		collectGarbage0(objectPool1, frame);
+		collectGarbage0(objectPool1, frame); // Marks used objects
 
-		// Swaps object pool
-		objectPool = objectPool1;
+		objectPool = objectPool1; // Swaps object pool
 	}
 
 	private void collectGarbage0(Map<Integer, Object> objectPool1, Frame frame) {
 		if (frame != null) {
 			for (int content : frame.registers) {
+
+				// Copies the used reference
 				Object object = objectPool.get(content);
 				Object original = objectPool1.put(content, object);
 
+				// Traverse recursively if reference not marked before
 				if (original == null && object instanceof Closure)
 					collectGarbage0(objectPool1, ((Closure) object).frame);
 			}

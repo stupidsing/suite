@@ -17,10 +17,10 @@ public class InstructionCodeExecutorTest {
 
 	@Test
 	public void test() throws IOException {
-		String program = "" //
-				+ "g = (p => q => p + q) >> \n" //
-				+ "g {3} {4}";
+		assertEquals(7, run("add = (p => q => p + q) >> add {3} {4}"));
+	}
 
+	private int run(String program) throws IOException {
 		RuleSet rs = new RuleSet();
 		SuiteUtil.importResource(rs, "auto.sl");
 		SuiteUtil.importResource(rs, "fc.sl");
@@ -31,12 +31,11 @@ public class InstructionCodeExecutorTest {
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
-		Prover prover = new Prover(rs);
-
-		assertTrue(prover.prove(node));
+		assertTrue(new Prover(rs).prove(node));
 
 		Node ics = generalizer.getVariable(Atom.create(".c"));
-		assertEquals(7, new InstructionCodeExecutor(ics).execute());
+		int result = new InstructionCodeExecutor(ics).execute();
+		return result;
 	}
 
 }
