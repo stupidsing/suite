@@ -26,7 +26,7 @@ public class InstructionCodeExecutorTest {
 		SuiteUtil.importResource(rs, "fc.sl");
 
 		Node node = SuiteUtil.parse("" //
-				+ "compile ( \n" + program + "\n) .c/.reg \n" //
+				+ "compile (\n" + program + "\n) .c/.reg \n" //
 				+ ", pp-list .c");
 
 		Generalizer generalizer = new Generalizer();
@@ -34,8 +34,7 @@ public class InstructionCodeExecutorTest {
 		assertTrue(new Prover(rs).prove(node));
 
 		Node ics = generalizer.getVariable(Atom.create(".c"));
-		int result = new InstructionCodeExecutor(ics).execute();
-		return result;
+		return new InstructionCodeExecutor(ics).execute();
 	}
 
 }
