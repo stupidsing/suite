@@ -22,6 +22,7 @@ public class InstructionCodeExecutorTest {
 
 	@Test
 	public void testIf() throws IOException {
+		assertEquals(0, run("3 > 4 ? 1 | 0"));
 		assertEquals(1, run("3 = 3 ? 1 | 0"));
 	}
 

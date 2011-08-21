@@ -38,6 +38,7 @@ public class InstructionCodeExecutor {
 		EVALLE________("EVAL-LE"), //
 		EVALLT________("EVAL-LT"), //
 		EVALMUL_______("EVAL-MUL"), //
+		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
 		IFFALSE_______("IF-FALSE"), //
 		IFGE__________("IF-GE"), //
@@ -76,6 +77,7 @@ public class InstructionCodeExecutor {
 		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
 		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
 		evalInsns.put(TermOp.MINUS_, Insn.EVALSUB_______);
+		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
 	}
 
 	private Map<Integer, Object> objectPool = new HashMap<Integer, Object>();
@@ -261,6 +263,9 @@ public class InstructionCodeExecutor {
 				break;
 			case EVALLT________:
 				regs[insn.op1] = regs[insn.op2] < regs[insn.op3] ? 1 : 0;
+				break;
+			case EVALNE________:
+				regs[insn.op1] = regs[insn.op2] != regs[insn.op3] ? 1 : 0;
 				break;
 			case EVALMUL_______:
 				regs[insn.op1] = regs[insn.op2] * regs[insn.op3];
