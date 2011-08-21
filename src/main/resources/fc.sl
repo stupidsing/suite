@@ -46,11 +46,11 @@ fc-compile (.if ? .then | .else) .frame .c0/.cx/.d0/.dx/.reg
 
 fc-compile .tree .frame .c0/.cx/.d0/.dx/.reg
 	:- tree .tree .left .oper .right
-	, (
-		.oper = ' + '; .oper = ' - '; .oper = ' * '; .oper = ' / '
-		; .oper = ' = '; .oper = ' != '
-		; .oper = ' > '; .oper = ' < '; .oper = ' >= '; .oper = ' <= '
-	), !
+	, member (' + ', ' - ', ' * ', ' / ',
+		' = ', ' != ',
+		' > ', ' < ', ' >= ', ' <= ',
+	) .oper
+	, !
 	, fc-compile .left .frame .c0/.c1/.d0/.d1/.r1
 	, fc-compile .right .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
