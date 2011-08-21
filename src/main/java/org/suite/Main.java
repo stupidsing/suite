@@ -41,8 +41,9 @@ public class Main {
 		LogUtil.initLog4j();
 
 		RuleSet rs = new RuleSet();
+		SuiteUtil.importResource(rs, "auto.sl");
+
 		Prover prover = new Prover(rs);
-		importAuto(rs);
 
 		InputStreamReader is = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(is);
@@ -114,10 +115,6 @@ public class Main {
 			} catch (Throwable ex) {
 				log.error(Main.class, ex);
 			}
-	}
-
-	private void importAuto(RuleSet rs) throws IOException {
-		SuiteUtil.importResource(rs, "auto.sl");
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

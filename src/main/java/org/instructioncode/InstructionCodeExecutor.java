@@ -1,5 +1,6 @@
 package org.instructioncode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +49,8 @@ public class InstructionCodeExecutor {
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
-		PUSH__________("PUSH"), //
 		POP___________("POP"), //
+		PUSH__________("PUSH"), //
 		RETURN________("RETURN"), //
 		;
 
@@ -83,6 +84,7 @@ public class InstructionCodeExecutor {
 	private Map<Integer, Object> objectPool = new HashMap<Integer, Object>();
 
 	private final static Atom trueAtom = Atom.create("true");
+	private final static Atom falseAtom = Atom.create("false");
 
 	private static class Instruction {
 		private Insn insn;
@@ -136,13 +138,9 @@ public class InstructionCodeExecutor {
 			switch (insn) {
 			case ASSIGNBOOL____:
 				insn = Insn.ASSIGNINT_____;
-				rs.set(3, rs.get(3) == trueAtom ? Int.create(1) : Int.create(0));
 				break;
 			case ASSIGNSTR_____:
 				insn = Insn.ASSIGNINT_____;
-				Str str = (Str) rs.get(3).finalNode();
-				int pointer = allocate(str.getValue());
-				rs.set(3, Int.create(pointer));
 				break;
 			case EVALUATE______:
 				Atom atom = (Atom) rs.remove(4).finalNode();
@@ -171,17 +169,24 @@ public class InstructionCodeExecutor {
 			if (rs.size() > index) {
 				Node node = rs.get(index).finalNode();
 
-				if (node instanceof Reference) {
+				if (node == trueAtom) // ASSIGN-BOOL
+					return 1;
+				else if (node == falseAtom) // ASSIGN-BOOL
+					return 0;
+				else if (node instanceof Reference) { // Transient register
 
-					// Assigns new register in current local frame
+					// Allocates new register in current local frame
 					Instruction enter = enters.get(enters.size() - 1);
 					int registerNumber = enter.op1++;
 
 					((Reference) node).bound(Int.create(registerNumber));
-					node = node.finalNode();
-				}
-
-				return ((Int) node).getNumber();
+					return registerNumber;
+				} else if (node instanceof Str) // ASSIGN-STR
+					return allocate(((Str) node).getValue());
+				else if (node instanceof Int)
+					return ((Int) node).getNumber();
+				else
+					return allocate(node); // PROVE
 			} else
 				return 0;
 		}
@@ -213,7 +218,7 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	public int execute() {
+	public int execute() throws IOException {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[STACKSIZE];
 		int dataStack[] = new int[STACKSIZE];
