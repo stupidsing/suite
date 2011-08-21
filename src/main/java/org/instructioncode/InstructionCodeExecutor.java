@@ -207,6 +207,10 @@ public class InstructionCodeExecutor {
 			this.frame = frame;
 			this.ip = ip;
 		}
+
+		public Closure clone() {
+			return new Closure(frame, ip);
+		}
 	}
 
 	public int execute() {
@@ -219,7 +223,10 @@ public class InstructionCodeExecutor {
 		for (;;) {
 			Frame frame = current.frame;
 			int regs[] = frame != null ? frame.registers : null;
-			Instruction insn = instructions[current.ip++];
+			int ip = current.ip++;
+			Instruction insn = instructions[ip];
+
+			// LogUtil.info("TRACE", ip + "> " + insn);
 
 			switch (insn.insn) {
 			case ASSIGNFRAMEREG:
@@ -236,13 +243,11 @@ public class InstructionCodeExecutor {
 				break;
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
-				current = (Closure) objectPool.get(regs[insn.op2]);
+				current = ((Closure) objectPool.get(regs[insn.op2])).clone();
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
 				break;
-			case EXIT__________:
-				return regs[insn.op1];
 			case EVALADD_______:
 				regs[insn.op1] = regs[insn.op2] + regs[insn.op3];
 				break;
@@ -273,6 +278,8 @@ public class InstructionCodeExecutor {
 			case EVALSUB_______:
 				regs[insn.op1] = regs[insn.op2] - regs[insn.op3];
 				break;
+			case EXIT__________:
+				return regs[insn.op1];
 			case IFFALSE_______:
 				if (regs[insn.op2] != 1)
 					current.ip = insn.op1;

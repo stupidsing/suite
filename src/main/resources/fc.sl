@@ -3,67 +3,68 @@
 
 compile .do .c0/.reg
 	:- .c0 = (_ ENTER, .c1)
-	, fc-compile .do 0 .c1/.c2/.reg
-	, .c2 = (_ EXIT .reg, ())
+	, fc-compile .do 0 .c1/.c2/.d0/()/.reg
+	, .c2 = (_ EXIT .reg, .d0)
 	, assign-line-number 0 .c0
 #
 
-fc-compile (.variable => .do) .frame .c0/.cx/.reg
+fc-compile (.variable => .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, let .frame1 (.frame + 1)
-	, .c0 = (_ JUMP .skipLabel, .funcLabel ENTER, .c1)
-	, .c1 = (_ POP .variableReg, .c2)
+	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
+	, .d0 = (.funcLabel ENTER, .d1)
+	, .d1 = (_ POP .variableReg, .d2)
 	, replace .do .do1 .variable %REG/.variableReg/.frame1
-	, fc-compile .do1 .frame1 .c2/.c3/.returnReg
-	, .c3 = (_ RETURN .returnReg, .c4)
-	, .c4 = (.skipLabel LABEL .skipLabel, _ ASSIGN-CLOSURE .reg .funcLabel, .cx)
+	, fc-compile .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg
+	, .d3 = (_ RETURN .returnReg, .d4)
 #
 
-fc-compile (.variable = .value >> .do) .frame .c0/.cx/.reg
+fc-compile (.variable = .value >> .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile .value .frame .c0/.c1/.r1
+	, replace .value .value1 .variable %REG/.r1/.frame -- Allows recursion
 	, replace .do .do1 .variable %REG/.r1/.frame
-	, fc-compile .do1 .frame .c1/.cx/.reg
+	, fc-compile .value1 .frame .c0/.c1/.d0/.d1/.r1
+	, fc-compile .do1 .frame .c1/.cx/.d1/.dx/.reg
 #
 
-fc-compile (.callee {.parameter}) .frame .c0/.cx/.reg
+fc-compile (.callee {.parameter}) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile .callee .frame .c0/.c1/.r1
-	, fc-compile .parameter .frame .c1/.c2/.r2
+	, fc-compile .callee .frame .c0/.c1/.d0/.d1/.r1
+	, fc-compile .parameter .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .reg .r1, .cx)
 #
 
-fc-compile (.if ? .then | .else) .frame .c0/.cx/.reg
+fc-compile (.if ? .then | .else) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile .if .frame .c0/.c1/.cr
+	, fc-compile .if .frame .c0/.c1/.d0/.d1/.cr
 	, .c1 = (_ IF-FALSE .label1 .cr, .c2)
-	, fc-compile .then .frame .c2/.c3/.reg
+	, fc-compile .then .frame .c2/.c3/.d1/.d2/.reg
 	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, fc-compile .else .frame .c4/.c5/.reg
+	, fc-compile .else .frame .c4/.c5/.d2/.dx/.reg
 	, .c5 = (.label2 LABEL .label2, .cx)
 #
 
-fc-compile .tree .frame .c0/.cx/.reg
+fc-compile .tree .frame .c0/.cx/.d0/.dx/.reg
 	:- tree .tree .left .oper .right
 	, (
 		.oper = ' + '; .oper = ' - '; .oper = ' * '; .oper = ' / '
 		; .oper = ' = '; .oper = ' != '
 		; .oper = ' > '; .oper = ' < '; .oper = ' >= '; .oper = ' <= '
 	), !
-	, fc-compile .left .frame .c0/.c1/.r1
-	, fc-compile .right .frame .c1/.c2/.r2
+	, fc-compile .left .frame .c0/.c1/.d0/.d1/.r1
+	, fc-compile .right .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
 
-fc-compile %REG/.reg/.frame .frame .c/.c/.reg :- ! #
-fc-compile %REG/.reg/.frame0 .frame .c0/.cx/.reg1
+fc-compile %REG/.reg/.frame .frame .c/.c/.d/.d/.reg :- ! #
+fc-compile %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	:- !, let .frameDifference (.frame0 - .frame)
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
 
-fc-compile .i _ .c0/.cx/.reg :- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-fc-compile .s _ .c0/.cx/.reg :- is.string .s, !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
-fc-compile .b _ .c0/.cx/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
+fc-compile .i _ .c0/.cx/.d/.d/.reg :- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
+fc-compile .s _ .c0/.cx/.d/.d/.reg :- is.string .s, !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
+fc-compile .b _ .c0/.cx/.d/.d/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
 
 fc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
 

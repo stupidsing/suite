@@ -18,6 +18,19 @@ public class InstructionCodeExecutorTest {
 	@Test
 	public void testClosure() throws IOException {
 		assertEquals(7, run("add = (p => q => p + q) >> add {3} {4}"));
+		assertEquals(20,
+				run("p = (n => n + 1) >> q = (n => p {n} * 2) >> q {9}"));
+	}
+
+	@Test
+	public void testFibonacci() throws IOException {
+		assertEquals(89, run("" //
+				+ "fib = (n => \n" //
+				+ "  n > 1 \n" //
+				+ "  ? fib {n - 1} + fib {n - 2} \n" //
+				+ "  | 1 \n" //
+				+ ") >> \n" //
+				+ "fib {10}"));
 	}
 
 	@Test
