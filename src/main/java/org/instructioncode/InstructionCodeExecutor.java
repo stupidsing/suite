@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.parser.Operator;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -12,6 +13,7 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.Util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -30,9 +32,18 @@ public class InstructionCodeExecutor {
 		EVALUATE______("EVALUATE"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
+		EVALEQ________("EVAL-EQ"), //
+		EVALGE________("EVAL-GE"), //
+		EVALGT________("EVAL-GT"), //
+		EVALLE________("EVAL-LE"), //
+		EVALLT________("EVAL-LT"), //
 		EVALMUL_______("EVAL-MUL"), //
 		EVALSUB_______("EVAL-SUB"), //
 		IFFALSE_______("IF-FALSE"), //
+		IFGE__________("IF-GE"), //
+		IFGT__________("IF-GT"), //
+		IFLE__________("IF-LE"), //
+		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
@@ -52,6 +63,19 @@ public class InstructionCodeExecutor {
 	static {
 		for (Insn insn : Insn.values())
 			insnNames.put(insn, insn.name);
+	}
+
+	private final static Map<Operator, Insn> evalInsns = Util.createHashMap();
+	static {
+		evalInsns.put(TermOp.PLUS__, Insn.EVALADD_______);
+		evalInsns.put(TermOp.DIVIDE, Insn.EVALDIV_______);
+		evalInsns.put(TermOp.EQUAL_, Insn.EVALEQ________);
+		evalInsns.put(TermOp.GE____, Insn.EVALGE________);
+		evalInsns.put(TermOp.GT____, Insn.EVALGT________);
+		evalInsns.put(TermOp.LE____, Insn.EVALLE________);
+		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
+		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
+		evalInsns.put(TermOp.MINUS_, Insn.EVALSUB_______);
 	}
 
 	private Map<Integer, Object> objectPool = new HashMap<Integer, Object>();
@@ -121,14 +145,7 @@ public class InstructionCodeExecutor {
 			case EVALUATE______:
 				Atom atom = (Atom) rs.remove(4).finalNode();
 				TermOp operator = TermOp.find((atom).getName());
-				if (operator == TermOp.PLUS__)
-					insn = Insn.EVALADD_______;
-				else if (operator == TermOp.MINUS_)
-					insn = Insn.EVALSUB_______;
-				else if (operator == TermOp.MULT__)
-					insn = Insn.EVALMUL_______;
-				else if (operator == TermOp.DIVIDE)
-					insn = Insn.EVALDIV_______;
+				insn = evalInsns.get(operator);
 			}
 
 			if (insn != null) {
@@ -199,7 +216,7 @@ public class InstructionCodeExecutor {
 
 		for (;;) {
 			Frame frame = current.frame;
-			int registers[] = frame != null ? frame.registers : null;
+			int regs[] = frame != null ? frame.registers : null;
 			Instruction insn = instructions[current.ip++];
 
 			switch (insn.insn) {
@@ -207,45 +224,69 @@ public class InstructionCodeExecutor {
 				int i = insn.op2;
 				while (i++ < 0)
 					frame = frame.previous;
-				registers[insn.op1] = frame.registers[insn.op3];
+				regs[insn.op1] = frame.registers[insn.op3];
 				break;
 			case ASSIGNINT_____:
-				registers[insn.op1] = insn.op2;
+				regs[insn.op1] = insn.op2;
 				break;
 			case ASSIGNCLOSURE_:
-				registers[insn.op1] = allocate(new Closure(frame, insn.op2));
+				regs[insn.op1] = allocate(new Closure(frame, insn.op2));
 				break;
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
-				current = (Closure) objectPool.get(registers[insn.op2]);
+				current = (Closure) objectPool.get(regs[insn.op2]);
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
 				break;
 			case EXIT__________:
-				return registers[insn.op1];
+				return regs[insn.op1];
 			case EVALADD_______:
-				registers[insn.op1] = registers[insn.op2] + registers[insn.op3];
+				regs[insn.op1] = regs[insn.op2] + regs[insn.op3];
+				break;
+			case EVALDIV_______:
+				regs[insn.op1] = regs[insn.op2] / regs[insn.op3];
+				break;
+			case EVALEQ________:
+				regs[insn.op1] = regs[insn.op2] == regs[insn.op3] ? 1 : 0;
+				break;
+			case EVALGE________:
+				regs[insn.op1] = regs[insn.op2] >= regs[insn.op3] ? 1 : 0;
+				break;
+			case EVALGT________:
+				regs[insn.op1] = regs[insn.op2] > regs[insn.op3] ? 1 : 0;
+				break;
+			case EVALLE________:
+				regs[insn.op1] = regs[insn.op2] <= regs[insn.op3] ? 1 : 0;
+				break;
+			case EVALLT________:
+				regs[insn.op1] = regs[insn.op2] < regs[insn.op3] ? 1 : 0;
+				break;
+			case EVALMUL_______:
+				regs[insn.op1] = regs[insn.op2] * regs[insn.op3];
+				break;
+			case EVALSUB_______:
+				regs[insn.op1] = regs[insn.op2] - regs[insn.op3];
 				break;
 			case IFFALSE_______:
-				if (registers[insn.op2] != 1)
+				if (regs[insn.op2] != 1)
 					current.ip = insn.op1;
 				break;
 			case IFNOTEQUALS___:
-				if (registers[insn.op2] != registers[insn.op3])
+				if (regs[insn.op2] != regs[insn.op3])
 					current.ip = insn.op1;
 				break;
 			case JUMP__________:
 				current.ip = insn.op1;
 				break;
 			case PUSH__________:
-				dataStack[dsp++] = registers[insn.op1];
+				dataStack[dsp++] = regs[insn.op1];
 				break;
 			case POP___________:
-				registers[insn.op1] = dataStack[--dsp];
+				regs[insn.op1] = dataStack[--dsp];
 				break;
 			case RETURN________:
-				int returnValue = registers[insn.op1]; // Saves return value
+				int returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 			}

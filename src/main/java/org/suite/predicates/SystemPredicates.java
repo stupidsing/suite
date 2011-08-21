@@ -39,6 +39,7 @@ public class SystemPredicates {
 		addPredicate("eval.fun", new EvalPredicates.EvalFunctional());
 		addPredicate(TermOp.LE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.LT____, new EvalPredicates.Compare());
+		addPredicate(TermOp.NOTEQ_, new EvalPredicates.NotEquals());
 		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
 		addPredicate("let", new EvalPredicates.Let());

@@ -20,6 +20,7 @@ public class TermParser extends Parser {
 		LT____(" < ", Assoc.RIGHT), //
 		GE____(" >= ", Assoc.RIGHT), //
 		GT____(" > ", Assoc.RIGHT), //
+		NOTEQ_(" != ", Assoc.RIGHT), //
 		EQUAL_(" = ", Assoc.RIGHT), //
 		PLUS__(" + ", Assoc.RIGHT), //
 		MINUS_(" - ", Assoc.LEFT), //

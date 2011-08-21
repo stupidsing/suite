@@ -36,7 +36,7 @@ fc-compile (.callee {.parameter}) .frame .c0/.cx/.reg
 fc-compile (.if ? .then | .else) .frame .c0/.cx/.reg
 	:- !
 	, fc-compile .if .frame .c0/.c1/.cr
-	, .c1 = (_ IF-FALSE .cr .label1, .c2)
+	, .c1 = (_ IF-FALSE .label1 .cr, .c2)
 	, fc-compile .then .frame .c2/.c3/.reg
 	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
 	, fc-compile .else .frame .c4/.c5/.reg
@@ -45,7 +45,11 @@ fc-compile (.if ? .then | .else) .frame .c0/.cx/.reg
 
 fc-compile .tree .frame .c0/.cx/.reg
 	:- tree .tree .left .oper .right
-	, (.oper = ' + '; .oper = ' - '; .oper = ' * '; .oper = ' / '), !
+	, (
+		.oper = ' + '; .oper = ' - '; .oper = ' * '; .oper = ' / '
+		; .oper = ' = '; .oper = ' != '
+		; .oper = ' > '; .oper = ' < '; .oper = ' >= '; .oper = ' <= '
+	), !
 	, fc-compile .left .frame .c0/.c1/.r1
 	, fc-compile .right .frame .c1/.c2/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)

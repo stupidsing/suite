@@ -16,8 +16,13 @@ import org.suite.node.Node;
 public class InstructionCodeExecutorTest {
 
 	@Test
-	public void test() throws IOException {
+	public void testClosure() throws IOException {
 		assertEquals(7, run("add = (p => q => p + q) >> add {3} {4}"));
+	}
+
+	@Test
+	public void testIf() throws IOException {
+		assertEquals(1, run("3 = 3 ? 1 | 0"));
 	}
 
 	private int run(String program) throws IOException {

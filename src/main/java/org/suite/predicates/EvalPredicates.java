@@ -129,6 +129,20 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class NotEquals implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Tree tree = (Tree) ps;
+			Prover prover1 = new Prover(prover);
+			boolean result = prover1.bind(tree.getLeft(), tree.getRight());
+
+			if (result) {
+				prover1.undoAllBinds();
+				return false;
+			} else
+				return true;
+		}
+	}
+
 	public static class StartsWith implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);

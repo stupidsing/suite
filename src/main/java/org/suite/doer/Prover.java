@@ -40,8 +40,8 @@ public class Prover {
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
 
-	Journal journal = new Journal();
-	Backtracks backtracks = new Backtracks();
+	private Journal journal = new Journal();
+	private Backtracks backtracks = new Backtracks();
 
 	public Prover(Prover prover) {
 		this(prover.ruleSet);
