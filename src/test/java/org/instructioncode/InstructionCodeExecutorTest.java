@@ -25,6 +25,16 @@ public class InstructionCodeExecutorTest {
 	}
 
 	@Test
+	public void testJoin() throws IOException {
+		assertEquals(19, run("" //
+				+ "join = (f => g => x => f {g {x}}) >> \n" //
+				+ "p = (n => n + 1) >> \n" //
+				+ "q = (n => n * 2) >> \n" //
+				+ "r = (join {p} {q}) >> \n" //
+				+ "r {9}"));
+	}
+
+	@Test
 	public void testFibonacci() throws IOException {
 		assertEquals(89, run("" //
 				+ "fib = (n => \n" //
