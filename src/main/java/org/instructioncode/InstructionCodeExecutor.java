@@ -53,6 +53,7 @@ public class InstructionCodeExecutor {
 		POP___________("POP"), //
 		PUSH__________("PUSH"), //
 		RETURN________("RETURN"), //
+		SYS___________("SYS"), //
 		;
 
 		private String name;
@@ -233,6 +234,7 @@ public class InstructionCodeExecutor {
 
 			// LogUtil.info("TRACE", ip + "> " + insn);
 
+			Object command = objectPool.get(insn.op2);
 			switch (insn.insn) {
 			case ASSIGNFRAMEREG:
 				int i = insn.op2;
@@ -244,7 +246,7 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = insn.op2;
 				break;
 			case ASSIGNOBJECT__:
-				regs[insn.op1] = objectPool.get(insn.op2);
+				regs[insn.op1] = command;
 				break;
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
@@ -309,6 +311,8 @@ public class InstructionCodeExecutor {
 				Object returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
+				break;
+			case SYS___________:
 			}
 		}
 	}
