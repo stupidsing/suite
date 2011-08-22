@@ -11,14 +11,16 @@ import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
+import org.suite.node.Int;
 import org.suite.node.Node;
 
 public class InstructionCodeExecutorTest {
 
 	@Test
 	public void testClosure() throws IOException {
-		assertEquals(7, run("add = (p => q => p + q) >> add {3} {4}"));
-		assertEquals(20, run("" //
+		assertEquals(Int.create(7), run("" //
+				+ "add = (p => q => p + q) >> add {3} {4}"));
+		assertEquals(Int.create(20), run("" //
 				+ "p = (n => n + 1) >> \n" //
 				+ "q = (n => p {n} * 2) >> \n" //
 				+ "q {9}"));
@@ -26,7 +28,7 @@ public class InstructionCodeExecutorTest {
 
 	@Test
 	public void testJoin() throws IOException {
-		assertEquals(19, run("" //
+		assertEquals(Int.create(19), run("" //
 				+ "join = (f => g => x => f {g {x}}) >> \n" //
 				+ "p = (n => n + 1) >> \n" //
 				+ "q = (n => n * 2) >> \n" //
@@ -36,7 +38,7 @@ public class InstructionCodeExecutorTest {
 
 	@Test
 	public void testFibonacci() throws IOException {
-		assertEquals(89, run("" //
+		assertEquals(Int.create(89), run("" //
 				+ "fib = (n => \n" //
 				+ "    n > 1 \n" //
 				+ "    ? fib {n - 1} + fib {n - 2} \n" //
@@ -47,8 +49,8 @@ public class InstructionCodeExecutorTest {
 
 	@Test
 	public void testIf() throws IOException {
-		assertEquals(0, run("3 > 4 ? 1 | 0"));
-		assertEquals(1, run("3 = 3 ? 1 | 0"));
+		assertEquals(Int.create(0), run("3 > 4 ? 1 | 0"));
+		assertEquals(Int.create(1), run("3 = 3 ? 1 | 0"));
 	}
 
 	private Object run(String program) throws IOException {

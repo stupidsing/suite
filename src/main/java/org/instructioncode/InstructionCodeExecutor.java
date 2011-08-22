@@ -171,10 +171,8 @@ public class InstructionCodeExecutor {
 			if (rs.size() > index) {
 				Node node = rs.get(index).finalNode();
 
-				if (node == trueAtom) // ASSIGN-BOOL
-					return allocateInPool(Boolean.TRUE);
-				else if (node == falseAtom) // ASSIGN-BOOL
-					return allocateInPool(Boolean.FALSE);
+				if (node instanceof Atom) // ASSIGN-BOOL
+					return allocateInPool(node);
 				else if (node instanceof Str) // ASSIGN-STR
 					return allocateInPool(((Str) node).getValue());
 				else if (node instanceof Int)
@@ -234,7 +232,6 @@ public class InstructionCodeExecutor {
 
 			// LogUtil.info("TRACE", ip + "> " + insn);
 
-			Object command = objectPool.get(insn.op2);
 			switch (insn.insn) {
 			case ASSIGNFRAMEREG:
 				int i = insn.op2;
@@ -243,10 +240,10 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = frame.registers[insn.op3];
 				break;
 			case ASSIGNINT_____:
-				regs[insn.op1] = insn.op2;
+				regs[insn.op1] = n(insn.op2);
 				break;
 			case ASSIGNOBJECT__:
-				regs[insn.op1] = command;
+				regs[insn.op1] = (Node) objectPool.get(insn.op2);
 				break;
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
@@ -259,39 +256,39 @@ public class InstructionCodeExecutor {
 				current.frame = new Frame(frame, insn.op1);
 				break;
 			case EVALADD_______:
-				regs[insn.op1] = g(regs[insn.op2]) + g(regs[insn.op3]);
+				regs[insn.op1] = n(g(regs[insn.op2]) + g(regs[insn.op3]));
 				break;
 			case EVALDIV_______:
-				regs[insn.op1] = g(regs[insn.op2]) / g(regs[insn.op3]);
+				regs[insn.op1] = n(g(regs[insn.op2]) / g(regs[insn.op3]));
 				break;
 			case EVALEQ________:
-				regs[insn.op1] = g(regs[insn.op2]) == g(regs[insn.op3]);
+				regs[insn.op1] = b(g(regs[insn.op2]) == g(regs[insn.op3]));
 				break;
 			case EVALGE________:
-				regs[insn.op1] = g(regs[insn.op2]) >= g(regs[insn.op3]);
+				regs[insn.op1] = b(g(regs[insn.op2]) >= g(regs[insn.op3]));
 				break;
 			case EVALGT________:
-				regs[insn.op1] = g(regs[insn.op2]) > g(regs[insn.op3]);
+				regs[insn.op1] = b(g(regs[insn.op2]) > g(regs[insn.op3]));
 				break;
 			case EVALLE________:
-				regs[insn.op1] = g(regs[insn.op2]) <= g(regs[insn.op3]);
+				regs[insn.op1] = b(g(regs[insn.op2]) <= g(regs[insn.op3]));
 				break;
 			case EVALLT________:
-				regs[insn.op1] = g(regs[insn.op2]) < g(regs[insn.op3]);
+				regs[insn.op1] = b(g(regs[insn.op2]) < g(regs[insn.op3]));
 				break;
 			case EVALNE________:
-				regs[insn.op1] = g(regs[insn.op2]) != g(regs[insn.op3]);
+				regs[insn.op1] = b(g(regs[insn.op2]) != g(regs[insn.op3]));
 				break;
 			case EVALMUL_______:
-				regs[insn.op1] = g(regs[insn.op2]) * g(regs[insn.op3]);
+				regs[insn.op1] = n(g(regs[insn.op2]) * g(regs[insn.op3]));
 				break;
 			case EVALSUB_______:
-				regs[insn.op1] = g(regs[insn.op2]) - g(regs[insn.op3]);
+				regs[insn.op1] = n(g(regs[insn.op2]) - g(regs[insn.op3]));
 				break;
 			case EXIT__________:
 				return regs[insn.op1];
 			case IFFALSE_______:
-				if (!(Boolean) regs[insn.op2])
+				if (regs[insn.op2] != trueAtom)
 					current.ip = insn.op1;
 				break;
 			case IFNOTEQUALS___:
@@ -323,8 +320,16 @@ public class InstructionCodeExecutor {
 		return pointer;
 	}
 
-	private static int g(Object object) {
-		return (Integer) object;
+	private static Int n(int n) {
+		return Int.create(n);
+	}
+
+	private static Atom b(boolean b) {
+		return b ? trueAtom : falseAtom;
+	}
+
+	private static int g(Object node) {
+		return ((Int) node).getNumber();
 	}
 
 }
