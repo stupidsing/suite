@@ -41,7 +41,7 @@ public class InstructionCodeExecutorTest {
 		assertEquals(1, run("3 = 3 ? 1 | 0"));
 	}
 
-	private int run(String program) throws IOException {
+	private Object run(String program) throws IOException {
 		RuleSet rs = new RuleSet();
 		SuiteUtil.importResource(rs, "auto.sl");
 		SuiteUtil.importResource(rs, "fc.sl");

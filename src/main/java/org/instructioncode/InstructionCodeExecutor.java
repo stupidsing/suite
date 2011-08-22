@@ -25,6 +25,7 @@ public class InstructionCodeExecutor {
 		ASSIGNBOOL____("ASSIGN-BOOL"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
+		ASSIGNOBJECT__("ASSIGN-OBJECT"), //
 		ASSIGNSTR_____("ASSIGN-STR"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
@@ -137,10 +138,10 @@ public class InstructionCodeExecutor {
 
 			switch (insn) {
 			case ASSIGNBOOL____:
-				insn = Insn.ASSIGNINT_____;
+				insn = Insn.ASSIGNOBJECT__;
 				break;
 			case ASSIGNSTR_____:
-				insn = Insn.ASSIGNINT_____;
+				insn = Insn.ASSIGNOBJECT__;
 				break;
 			case EVALUATE______:
 				Atom atom = (Atom) rs.remove(4).finalNode();
@@ -170,9 +171,13 @@ public class InstructionCodeExecutor {
 				Node node = rs.get(index).finalNode();
 
 				if (node == trueAtom) // ASSIGN-BOOL
-					return 1;
+					return allocateInPool(Boolean.TRUE);
 				else if (node == falseAtom) // ASSIGN-BOOL
-					return 0;
+					return allocateInPool(Boolean.FALSE);
+				else if (node instanceof Str) // ASSIGN-STR
+					return allocateInPool(((Str) node).getValue());
+				else if (node instanceof Int)
+					return ((Int) node).getNumber();
 				else if (node instanceof Reference) { // Transient register
 
 					// Allocates new register in current local frame
@@ -181,12 +186,8 @@ public class InstructionCodeExecutor {
 
 					((Reference) node).bound(Int.create(registerNumber));
 					return registerNumber;
-				} else if (node instanceof Str) // ASSIGN-STR
-					return allocate(((Str) node).getValue());
-				else if (node instanceof Int)
-					return ((Int) node).getNumber();
-				else
-					return allocate(node); // PROVE
+				} else
+					return allocateInPool(node); // PROVE
 			} else
 				return 0;
 		}
@@ -196,11 +197,11 @@ public class InstructionCodeExecutor {
 
 	private static class Frame {
 		private Frame previous;
-		private int registers[];
+		private Object registers[];
 
 		private Frame(Frame previous, int frameSize) {
 			this.previous = previous;
-			registers = new int[frameSize];
+			registers = new Object[frameSize];
 		}
 	}
 
@@ -218,16 +219,15 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	public int execute() throws IOException {
+	public Object execute() throws IOException {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[STACKSIZE];
-		int dataStack[] = new int[STACKSIZE];
+		Object dataStack[] = new Object[STACKSIZE];
 		int csp = 0, dsp = 0;
-		int counter = 0;
 
 		for (;;) {
 			Frame frame = current.frame;
-			int regs[] = frame != null ? frame.registers : null;
+			Object regs[] = frame != null ? frame.registers : null;
 			int ip = current.ip++;
 			Instruction insn = instructions[ip];
 
@@ -243,50 +243,53 @@ public class InstructionCodeExecutor {
 			case ASSIGNINT_____:
 				regs[insn.op1] = insn.op2;
 				break;
+			case ASSIGNOBJECT__:
+				regs[insn.op1] = objectPool.get(insn.op2);
+				break;
 			case ASSIGNCLOSURE_:
-				regs[insn.op1] = allocate(new Closure(frame, insn.op2));
+				regs[insn.op1] = new Closure(frame, insn.op2);
 				break;
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
-				current = ((Closure) objectPool.get(regs[insn.op2])).clone();
+				current = ((Closure) regs[insn.op2]).clone();
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
 				break;
 			case EVALADD_______:
-				regs[insn.op1] = regs[insn.op2] + regs[insn.op3];
+				regs[insn.op1] = g(regs[insn.op2]) + g(regs[insn.op3]);
 				break;
 			case EVALDIV_______:
-				regs[insn.op1] = regs[insn.op2] / regs[insn.op3];
+				regs[insn.op1] = g(regs[insn.op2]) / g(regs[insn.op3]);
 				break;
 			case EVALEQ________:
-				regs[insn.op1] = regs[insn.op2] == regs[insn.op3] ? 1 : 0;
+				regs[insn.op1] = g(regs[insn.op2]) == g(regs[insn.op3]);
 				break;
 			case EVALGE________:
-				regs[insn.op1] = regs[insn.op2] >= regs[insn.op3] ? 1 : 0;
+				regs[insn.op1] = g(regs[insn.op2]) >= g(regs[insn.op3]);
 				break;
 			case EVALGT________:
-				regs[insn.op1] = regs[insn.op2] > regs[insn.op3] ? 1 : 0;
+				regs[insn.op1] = g(regs[insn.op2]) > g(regs[insn.op3]);
 				break;
 			case EVALLE________:
-				regs[insn.op1] = regs[insn.op2] <= regs[insn.op3] ? 1 : 0;
+				regs[insn.op1] = g(regs[insn.op2]) <= g(regs[insn.op3]);
 				break;
 			case EVALLT________:
-				regs[insn.op1] = regs[insn.op2] < regs[insn.op3] ? 1 : 0;
+				regs[insn.op1] = g(regs[insn.op2]) < g(regs[insn.op3]);
 				break;
 			case EVALNE________:
-				regs[insn.op1] = regs[insn.op2] != regs[insn.op3] ? 1 : 0;
+				regs[insn.op1] = g(regs[insn.op2]) != g(regs[insn.op3]);
 				break;
 			case EVALMUL_______:
-				regs[insn.op1] = regs[insn.op2] * regs[insn.op3];
+				regs[insn.op1] = g(regs[insn.op2]) * g(regs[insn.op3]);
 				break;
 			case EVALSUB_______:
-				regs[insn.op1] = regs[insn.op2] - regs[insn.op3];
+				regs[insn.op1] = g(regs[insn.op2]) - g(regs[insn.op3]);
 				break;
 			case EXIT__________:
 				return regs[insn.op1];
 			case IFFALSE_______:
-				if (regs[insn.op2] != 1)
+				if (!(Boolean) regs[insn.op2])
 					current.ip = insn.op1;
 				break;
 			case IFNOTEQUALS___:
@@ -303,53 +306,21 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = dataStack[--dsp];
 				break;
 			case RETURN________:
-				int returnValue = regs[insn.op1]; // Saves return value
+				Object returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 			}
-
-			if (++counter % 65536 == 0)
-				collectGarbage(frame);
 		}
 	}
 
-	/**
-	 * Traverses frame hierarchy to find all referenced objects, and clean the
-	 * unreferenced ones to free memory.
-	 * 
-	 * This does not free the holes in the reference list.
-	 */
-	private void collectGarbage(Frame frame) {
-		int size = objectPool.size();
-		Map<Integer, Object> objectPool1 = new HashMap<Integer, Object>(
-				size * 2);
-
-		collectGarbage0(objectPool1, frame); // Marks used objects
-
-		objectPool = objectPool1; // Swaps object pool
-	}
-
-	private void collectGarbage0(Map<Integer, Object> objectPool1, Frame frame) {
-		if (frame != null) {
-			for (int content : frame.registers) {
-
-				// Copies the used reference
-				Object object = objectPool.get(content);
-				Object original = objectPool1.put(content, object);
-
-				// Traverse recursively if reference not marked before
-				if (original == null && object instanceof Closure)
-					collectGarbage0(objectPool1, ((Closure) object).frame);
-			}
-
-			collectGarbage0(objectPool1, frame.previous);
-		}
-	}
-
-	private int allocate(Object object) {
+	private int allocateInPool(Object object) {
 		int pointer = objectPool.size();
 		objectPool.put(pointer, object);
 		return pointer;
+	}
+
+	private static int g(Object object) {
+		return (Integer) object;
 	}
 
 }
