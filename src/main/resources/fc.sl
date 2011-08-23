@@ -5,7 +5,7 @@ compile .do .c0/.reg
 	:- .c0 = (_ ENTER, .c1)
 	, fc-compile .do 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
-	, assign-line-number 0 .c0
+	, fc-assign-line-number 0 .c0
 #
 
 fc-compile (.variable => .do) .frame .c0/.cx/.d0/.dx/.reg
@@ -91,5 +91,7 @@ fc-define-system-predicate 1 tail TAIL #
 is.boolean true #
 is.boolean false #
 
-assign-line-number _ () #
-assign-line-number .n (.n _, .remains) :- let .n1 (.n + 1), assign-line-number .n1 .remains #
+fc-assign-line-number _ () #
+fc-assign-line-number .n (.n _, .remains)
+	:- let .n1 (.n + 1), fc-assign-line-number .n1 .remains
+#
