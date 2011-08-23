@@ -321,7 +321,10 @@ public class InstructionCodeExecutor {
 			result = new Tree(TermOp.COLON_, left, right);
 		} else if (command == Atom.create("EMPTY"))
 			result = Atom.nil;
-		else if (command == Atom.create("HEAD"))
+		else if (command == Atom.create("IS-TREE")) {
+			boolean isTree = Tree.decompose((Node) dataStack[dsp]) != null;
+			result = isTree ? trueAtom : falseAtom;
+		} else if (command == Atom.create("HEAD"))
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
 		else if (command == Atom.create("TAIL"))
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();

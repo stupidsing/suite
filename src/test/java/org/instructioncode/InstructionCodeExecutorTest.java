@@ -56,6 +56,17 @@ public class InstructionCodeExecutorTest {
 	}
 
 	@Test
+	public void testMap() throws IOException {
+		assertEquals(SuiteUtil.parse("5:6:7:"), run("" //
+				+ "map = (f => l => \n" //
+				+ "    is-tree {l} \n" //
+				+ "    ? cons {f {head {l}}} {map {f} {tail {l}}} \n" //
+				+ "    | () \n" //
+				+ ") >> \n" //
+				+ "map {n => n + 2} {3:4:5:}"));
+	}
+
+	@Test
 	public void testSys() throws IOException {
 		assertNotNull(Tree.decompose(run("cons {1} {2:}")));
 		assertEquals(Int.create(1), run("head {1:2:3:}"));

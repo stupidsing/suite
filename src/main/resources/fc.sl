@@ -84,6 +84,7 @@ fc-system-predicate0 .pred _ .c0/.cx/.d/.d/.reg .n
 
 fc-define-system-predicate 2 cons CONS #
 fc-define-system-predicate 0 () EMPTY #
+fc-define-system-predicate 1 is-tree IS-TREE #
 fc-define-system-predicate 1 head HEAD #
 fc-define-system-predicate 1 tail TAIL #
 
