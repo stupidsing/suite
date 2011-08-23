@@ -12,7 +12,6 @@ import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Reference;
-import org.suite.node.Str;
 import org.suite.node.Tree;
 import org.util.Util;
 
@@ -83,10 +82,12 @@ public class InstructionCodeExecutor {
 		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
 	}
 
-	private Map<Integer, Object> objectPool = new HashMap<Integer, Object>();
+	private Map<Integer, Node> constantPool = new HashMap<Integer, Node>();
 
 	private final static Atom trueAtom = Atom.create("true");
 	private final static Atom falseAtom = Atom.create("false");
+
+	private final static int STACKSIZE = 256;
 
 	private static class Instruction {
 		private Insn insn;
@@ -171,11 +172,7 @@ public class InstructionCodeExecutor {
 			if (rs.size() > index) {
 				Node node = rs.get(index).finalNode();
 
-				if (node instanceof Atom) // ASSIGN-BOOL
-					return allocateInPool(node);
-				else if (node instanceof Str) // ASSIGN-STR
-					return allocateInPool(((Str) node).getValue());
-				else if (node instanceof Int)
+				if (node instanceof Int)
 					return ((Int) node).getNumber();
 				else if (node instanceof Reference) { // Transient register
 
@@ -186,13 +183,12 @@ public class InstructionCodeExecutor {
 					((Reference) node).bound(Int.create(registerNumber));
 					return registerNumber;
 				} else
-					return allocateInPool(node); // PROVE
+					// ASSIGN-BOOL, ASSIGN-STR, PROVE
+					return allocateInPool(node);
 			} else
 				return 0;
 		}
 	}
-
-	private final static int STACKSIZE = 256;
 
 	private static class Frame {
 		private Frame previous;
@@ -218,7 +214,7 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	public Object execute() throws IOException {
+	public Node execute() throws IOException {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[STACKSIZE];
 		Object dataStack[] = new Object[STACKSIZE];
@@ -243,7 +239,7 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = n(insn.op2);
 				break;
 			case ASSIGNOBJECT__:
-				regs[insn.op1] = (Node) objectPool.get(insn.op2);
+				regs[insn.op1] = (Node) constantPool.get(insn.op2);
 				break;
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
@@ -286,7 +282,7 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = n(g(regs[insn.op2]) - g(regs[insn.op3]));
 				break;
 			case EXIT__________:
-				return regs[insn.op1];
+				return (Node) regs[insn.op1];
 			case IFFALSE_______:
 				if (regs[insn.op2] != trueAtom)
 					current.ip = insn.op1;
@@ -310,13 +306,34 @@ public class InstructionCodeExecutor {
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 				break;
 			case SYS___________:
+				dsp -= insn.op3;
+				regs[insn.op2] = sys(constantPool.get(insn.op1), dataStack, dsp);
 			}
 		}
 	}
 
-	private int allocateInPool(Object object) {
-		int pointer = objectPool.size();
-		objectPool.put(pointer, object);
+	private Node sys(Node command, Object[] dataStack, int dsp) {
+		Node result;
+
+		if (command == Atom.create("CONS")) {
+			Node left = (Node) dataStack[dsp + 1];
+			Node right = (Node) dataStack[dsp];
+			result = new Tree(TermOp.COLON_, left, right);
+		} else if (command == Atom.create("EMPTY"))
+			result = Atom.nil;
+		else if (command == Atom.create("HEAD"))
+			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
+		else if (command == Atom.create("TAIL"))
+			result = Tree.decompose((Node) dataStack[dsp]).getRight();
+		else
+			throw new RuntimeException("Unknown system call " + command);
+
+		return result;
+	}
+
+	private int allocateInPool(Node node) {
+		int pointer = constantPool.size();
+		constantPool.put(pointer, node);
 		return pointer;
 	}
 

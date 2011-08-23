@@ -1,6 +1,7 @@
 package org.instructioncode;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
+import org.suite.node.Tree;
 
 public class InstructionCodeExecutorTest {
 
@@ -53,7 +55,14 @@ public class InstructionCodeExecutorTest {
 		assertEquals(Int.create(1), run("3 = 3 ? 1 | 0"));
 	}
 
-	private Object run(String program) throws IOException {
+	@Test
+	public void testSys() throws IOException {
+		assertNotNull(Tree.decompose(run("cons {1} {2:}")));
+		assertEquals(Int.create(1), run("head {1:2:3:}"));
+		assertNotNull(Tree.decompose(run("tail {1:2:3:}")));
+	}
+
+	private Node run(String program) throws IOException {
 		RuleSet rs = new RuleSet();
 		SuiteUtil.importResource(rs, "auto.sl");
 		SuiteUtil.importResource(rs, "fc.sl");

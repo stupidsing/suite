@@ -77,29 +77,29 @@ params-prototype () () #
 -------------------------------------------------------------------------------
 -- logical programming
 
-compile () () (.c .c) #
-compile () .more (.c0 .cx) :- compile .more () (.c0 .cx) #
-compile () (JUMP .label) (.c0 .cx) :- .c0 = (JUMP .label, .cx) #
-compile (.a, .b) .more (.c0 .cx) :- compile .a (.b, .more) (.c0 .cx) #
-compile (.a; .b) .more (.c0 .cx)
+compile () () .c/.c #
+compile () .more .c0/.cx :- compile .more () .c0/.cx #
+compile () (JUMP .label) .c0/.cx :- .c0 = (JUMP .label, .cx) #
+compile (.a, .b) .more .c0/.cx :- compile .a (.b, .more) .c0/.cx #
+compile (.a; .b) .more .c0/.cx
 	:- .c0 = (PUSH-BACKTRACK-POINT, .c1)
-	, compile .a (JUMP .label) .c1 .c2
+	, compile .a (JUMP .label) .c1/.c2
 	, .c2 = (LABEL .label, .c3)
-	, compile .a () .c3 .cx
+	, compile .a () .c3/.cx
 #
-compile (.a = .b) .more (.c0 .cx)
-	:- create-node .a .reg0 (.c0 .c1)
-	, create-node .a .reg1 (.c1 .c2)
+compile (.a = .b) .more .c0/.cx
+	:- create-node .a .reg0 .c0/.c1
+	, create-node .a .reg1 .c1/.c2
 	, .c2 = (JUMP-FAIL .reg0 .reg1, .cx)
 #
 
-create-node .a .reg (.c0 .cx) :- is.atom .a, .c0 = (ASSIGN-NODE .reg .a, .cx) #
-create-node .i .reg (.c0 .cx) :- is.int .i, .c0 = (ASSIGN-NODE .reg .i, .cx) #
-create-node .s .reg (.c0 .cx) :- is.string .s, .c0 = (ASSIGN-NODE .reg .s, .cx) #
-create-node .tree .reg (.c0 .cx)
+create-node .a .reg .c0/.cx :- is.atom .a, .c0 = (ASSIGN-NODE .reg .a, .cx) #
+create-node .i .reg .c0/.cx :- is.int .i, .c0 = (ASSIGN-NODE .reg .i, .cx) #
+create-node .s .reg .c0/.cx :- is.string .s, .c0 = (ASSIGN-NODE .reg .s, .cx) #
+create-node .tree .reg .c0/.cx
 	:- tree .tree .left .operator .right
-	, create-node .left .regl (.c0 .c1)
-	, create-node .right .regr (.c1 .c2)
+	, create-node .left .regl .c0/.c1
+	, create-node .right .regr .c1/.c2
 	, .c2 = (FORM-TREE .operator .regl .regr, .cx)
 #
 

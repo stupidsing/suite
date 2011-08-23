@@ -28,6 +28,7 @@ public class TermParser extends Parser {
 		DIVIDE(" / ", Assoc.LEFT), //
 		BRACES("{", Assoc.LEFT), //
 		SEP___(" ", Assoc.RIGHT), //
+		COLON_(":", Assoc.RIGHT), //
 		ITEM__("/", Assoc.RIGHT), //
 		;
 

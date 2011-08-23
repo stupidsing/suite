@@ -64,8 +64,8 @@ fc-compile .s _ .c0/.cx/.d/.d/.reg :- is.string .s, !, .c0 = (_ ASSIGN-STR .reg 
 fc-compile .b _ .c0/.cx/.d/.d/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
 fc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
 
-fc-system-predicate .head/.tail .frame .result
-	:- !, fc-system-predicate (cons {.head} {.tail}) .result
+fc-system-predicate .head:.tail .frame .result
+	:- !, fc-system-predicate (cons {.head} {.tail}) .frame .result
 #
 fc-system-predicate .call .frame .result
 	:- fc-system-predicate0 .call .frame .result 0
@@ -79,12 +79,13 @@ fc-system-predicate0 (.pred {.p}) .frame .c0/.cx/.d0/.dx/.reg .n
 #
 fc-system-predicate0 .pred _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-system-predicate .n .pred .call, !
-	, .c0 = (_ SYS .call .reg, .cx)
+	, .c0 = (_ SYS .call .reg .n, .cx)
 #
 
+fc-define-system-predicate 2 cons CONS #
+fc-define-system-predicate 0 () EMPTY #
 fc-define-system-predicate 1 head HEAD #
 fc-define-system-predicate 1 tail TAIL #
-fc-define-system-predicate 2 cons CONS #
 
 is.boolean true #
 is.boolean false #
