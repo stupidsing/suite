@@ -50,6 +50,17 @@ public class InstructionCodeExecutorTest {
 	}
 
 	@Test
+	public void testFold() throws IOException {
+		assertEquals(Int.create(324), run("" //
+				+ "fold = (f => l => \n" //
+				+ "    h = head {l} >> \n" //
+				+ "    t = tail {l} >> \n" //
+				+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
+				+ ") >> \n" //
+				+ "fold {a => b => a * b} {2:3:6:9:}"));
+	}
+
+	@Test
 	public void testIf() throws IOException {
 		assertEquals(Int.create(0), run("3 > 4 ? 1 | 0"));
 		assertEquals(Int.create(1), run("3 = 3 ? 1 | 0"));
