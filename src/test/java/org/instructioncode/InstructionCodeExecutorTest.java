@@ -78,6 +78,14 @@ public class InstructionCodeExecutorTest {
 	}
 
 	@Test
+	public void testOperator() throws IOException {
+		assertEquals(Atom.create("true"), run("" //
+				+ "and = (x => y => x ? y | false) >> \n" //
+				+ "or = (x => y => x ? true | y) >> \n" //
+				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
+	}
+
+	@Test
 	public void testSys() throws IOException {
 		assertNotNull(Tree.decompose(run("cons {1} {2:}")));
 		assertEquals(Int.create(1), run("head {1:2:3:}"));
