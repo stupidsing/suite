@@ -2,14 +2,14 @@
 -- logical compiler
 
 compile .call .c0
-	:- lc-compile .call $$PROVEN .c0/.c1/.d0/()
-	, .c1 = (_ EXIT-FAIL, .d0)
+	:- .c0 = (_ CUT-POINT .cutPoint .failLabel, .c1)
+	, replace .call .call1 ! ($$CUT .cutPoint .failLabel) 
+	, lc-compile .call1 $$PROVEN .c1/.c2/.d0/()
+	, .c2 = (.failLabel EXIT-FAIL, .d0)
 	, lc-assign-line-number 0 .c0
 #
 
-lc-compile $$PROVEN () .c0/.cx/.d0/.dx
-	:- .c0 = (_ PROVEN, .cx)
-#
+lc-compile $$PROVEN () .c0/.cx/.d/.d :- .c0 = (_ PROVEN, .cx) #
 lc-compile fail _ .c/.c/.d/.d #
 lc-compile () .more .c0/.cx/.d0/.dx :- lc-compile .more () .c0/.cx/.d0/.dx #
 lc-compile (.a, .b) .more .c0/.cx/.d0/.dx :- lc-compile .a (.b, .more) .c0/.cx/.d0/.dx #
@@ -19,6 +19,11 @@ lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
 	, .d0 = (.label LABEL .label, .d1)
 	, lc-compile .more () .d1/.d2/.d3/.dx
 	, .d2 = (_ RETURN, .d3)
+#
+lc-compile ($$CUT .cutPoint .failLabel) .more .c0/.cx/.d0/.dx
+	:- .c0 = (_ CUT .cutPoint, .c1)
+	, lc-compile .more () .c1/.c2/.d0/.dx
+	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
 #
 lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
 	:- create-node .a .reg0 .c0/.c1
