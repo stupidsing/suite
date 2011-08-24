@@ -10,15 +10,16 @@ compile .call .c0
 #
 
 lc-compile $$PROVEN () .c0/.cx/.d/.d :- .c0 = (_ PROVEN, .cx) #
+lc-compile ($$BYTECODE .bc) () .c0/.cx/.d/.d :- .c0 = (.bc, .cx) #
 lc-compile fail _ .c/.c/.d/.d #
 lc-compile () .more .c0/.cx/.d0/.dx :- lc-compile .more () .c0/.cx/.d0/.dx #
 lc-compile (.a, .b) .more .c0/.cx/.d0/.dx :- lc-compile .a (.b, .more) .c0/.cx/.d0/.dx #
 lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
-	:- lc-compile .a (CALL .label) .c0/.c1
-	, lc-compile .b (CALL .label) .c1/.cx
-	, .d0 = (.label LABEL .label, .d1)
-	, lc-compile .more () .d1/.d2/.d3/.dx
-	, .d2 = (_ RETURN, .d3)
+	:- lc-compile .a ($$BYTECODE (_ CALL .label)) .c0/.c1/.d0/.d1
+	, lc-compile .b ($$BYTECODE (_ CALL .label)) .c1/.cx/.d1/.d2
+	, .d2 = (.label LABEL .label, .d3)
+	, lc-compile .more () .d3/.d4/.d5/.dx
+	, .d4 = (_ RETURN, .d5)
 #
 lc-compile ($$CUT .cutPoint .failLabel) .more .c0/.cx/.d0/.dx
 	:- .c0 = (_ CUT .cutPoint, .c1)
