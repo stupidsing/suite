@@ -21,11 +21,9 @@ import com.google.common.collect.HashBiMap;
 public class InstructionCodeExecutor {
 
 	private enum Insn {
-		ASSIGNBOOL____("ASSIGN-BOOL"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		ASSIGNOBJECT__("ASSIGN-OBJECT"), //
-		ASSIGNSTR_____("ASSIGN-STR"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		ENTER_________("ENTER"), //
@@ -136,20 +134,19 @@ public class InstructionCodeExecutor {
 			rs.add(node);
 
 			Atom instNode = (Atom) rs.get(1);
-			Insn insn = insnNames.inverse().get(instNode.getName());
+			String instName = instNode.getName();
+			Insn insn;
 
-			switch (insn) {
-			case ASSIGNBOOL____:
+			if ("ASSIGN-BOOL".equals(instName))
 				insn = Insn.ASSIGNOBJECT__;
-				break;
-			case ASSIGNSTR_____:
+			else if ("ASSIGN-STR".equals(instName))
 				insn = Insn.ASSIGNOBJECT__;
-				break;
-			case EVALUATE______:
+			else if ("EVALUATE".equals(instName)) {
 				Atom atom = (Atom) rs.remove(4).finalNode();
 				TermOp operator = TermOp.find((atom).getName());
 				insn = evalInsns.get(operator);
-			}
+			} else
+				insn = insnNames.inverse().get(instName);
 
 			if (insn != null) {
 				Instruction instruction = new Instruction(insn //
@@ -164,8 +161,7 @@ public class InstructionCodeExecutor {
 
 				return instruction;
 			} else
-				throw new RuntimeException("Unknown opcode"
-						+ instNode.getName());
+				throw new RuntimeException("Unknown opcode" + instName);
 		}
 
 		private int getRegisterNumber(List<Node> rs, int index) {
