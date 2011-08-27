@@ -14,6 +14,7 @@ import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
+import org.suite.node.Str;
 import org.suite.node.Tree;
 
 public class InstructionCodeExecutorTest {
@@ -58,6 +59,18 @@ public class InstructionCodeExecutorTest {
 				+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
 				+ ") >> \n" //
 				+ "fold {a => b => a * b} {2:3:6:9:}"));
+	}
+
+	@Test
+	public void testSwitch() throws IOException {
+		assertEquals(new Str("C"), run("" //
+				+ "switch = (p => \n" //
+				+ "    p = 1 ? \"A\" | \n" //
+				+ "    p = 2 ? \"B\" | \n" //
+				+ "    p = 3 ? \"C\" | \n" //
+				+ "    \"D\" \n" //
+				+ ") >> \n" //
+				+ "switch {3}"));
 	}
 
 	@Test
