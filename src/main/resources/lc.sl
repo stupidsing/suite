@@ -2,16 +2,16 @@
 -- logical compiler
 
 compile .call .c0
-	:- .c0 = (_ CUT-BEGIN .cutPoint .failLabel, .c1)
+	:- .c0 = (_ ENTER, _ CUT-BEGIN .cutPoint, .c1)
 	, replace .call .call1 ! ($$CUT .cutPoint .failLabel) 
-	, lc-compile .call1 ($$BYTECODE EXIT-VALUE true) .c1/.c2/.d0/()
+	, lc-compile .call1 ($$BYTECODE (_ EXIT-VALUE true)) .c1/.c2/.d0/()
 	, .c2 = (.failLabel EXIT-VALUE false, .d0)
 	, lc-assign-line-number 0 .c0
 #
 
 lc-compile ($$BYTECODE .bc) () .c0/.cx/.d/.d :- .c0 = (.bc, .cx) #
 lc-compile fail _ .c/.c/.d/.d #
-lc-compile () (.a, .b) .c0/.cx/.d0/.dx :- lc-compile .a .b .c0/.cx/.d0/.dx #
+lc-compile () .more .c0/.cx/.d0/.dx :- lc-compile .more () .c0/.cx/.d0/.dx #
 lc-compile (.a, .b) .more .c0/.cx/.d0/.dx :- lc-compile .a (.b, .more) .c0/.cx/.d0/.dx #
 lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
 	:- lc-compile .a ($$BYTECODE (_ CALL .label)) .c0/.c1/.d0/.d1
@@ -28,10 +28,11 @@ lc-compile ($$CUT .cutPoint .failLabel) .more .c0/.cx/.d0/.dx
 lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
 	:- create-node .a .reg0 .c0/.c1
 	, create-node .b .reg1 .c1/.c2
-	, .c2 = (_ BIND .reg0 .reg1, _ JUMP-FAIL .failLabel, .c3)
+	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
 	, lc-compile .more () .c3/.c4/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
 #
+lc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
 
 create-OBJECT .a .reg .c0/.cx :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
 create-OBJECT .i .reg .c0/.cx :- is.int .i, .c0 = (_ ASSIGN-OBJECT .reg .i, .cx) #

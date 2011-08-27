@@ -6,6 +6,7 @@ import java.util.ListIterator;
 
 import org.suite.node.Node;
 import org.suite.node.Reference;
+import org.util.Util;
 
 public class Journal {
 
@@ -26,6 +27,10 @@ public class Journal {
 
 	public int getPointInTime() {
 		return bounded.size();
+	}
+
+	public void cutTo(int pointInTime) {
+		Util.truncate(bounded, pointInTime);
 	}
 
 	public void undoBinds(int pointInTime) {

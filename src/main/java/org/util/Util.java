@@ -143,6 +143,12 @@ public class Util {
 			return list.get(0);
 	}
 
+	public static <E> void truncate(List<E> list, int n) {
+		int size = list.size();
+		while (size > n)
+			list.remove(--size);
+	}
+
 	public interface Performer<E> {
 		public void perform(E e);
 	}

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.parser.Operator;
+import org.suite.Binder;
+import org.suite.Journal;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -25,8 +27,12 @@ public class InstructionCodeExecutor {
 		ASSIGNINT_____("ASSIGN-INT"), //
 		ASSIGNOBJECT__("ASSIGN-OBJECT"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
+		BIND__________("BIND"), //
 		CALL__________("CALL"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
+		CUTBEGIN______("CUT-BEGIN"), //
+		CUTEND________("CUT-END"), //
+		CUTFAIL_______("CUT-FAIL"), //
 		ENTER_________("ENTER"), //
 		EXIT__________("EXIT"), //
 		EXITVALUE_____("EXIT-VALUE"), //
@@ -169,7 +175,7 @@ public class InstructionCodeExecutor {
 
 				return instruction;
 			} else
-				throw new RuntimeException("Unknown opcode" + instName);
+				throw new RuntimeException("Unknown opcode " + instName);
 		}
 
 		private int getRegisterNumber(List<Node> rs, int index) {
@@ -218,11 +224,22 @@ public class InstructionCodeExecutor {
 		}
 	}
 
+	private static class CutPoint {
+		private int journalPointer;
+
+		public CutPoint(int journalPointer) {
+			this.journalPointer = journalPointer;
+		}
+	}
+
 	public Node execute() throws IOException {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[STACKSIZE];
 		Object dataStack[] = new Object[STACKSIZE];
 		int csp = 0, dsp = 0;
+
+		Journal journal = new Journal();
+		List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 
 		for (;;) {
 			Frame frame = current.frame;
@@ -248,6 +265,15 @@ public class InstructionCodeExecutor {
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
 				break;
+			case BIND__________:
+				int pointInTime = journal.getPointInTime();
+				if (!Binder.bind((Node) regs[insn.op1] //
+						, (Node) regs[insn.op2] //
+						, journal)) {
+					journal.undoBinds(pointInTime);
+					current.ip = insn.op3; // Fail
+				}
+				break;
 			case CALL__________:
 				callStack[csp++] = current;
 				current.ip = g(regs[insn.op2]);
@@ -255,6 +281,19 @@ public class InstructionCodeExecutor {
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
 				current = ((Closure) regs[insn.op2]).clone();
+				break;
+			case CUTBEGIN______:
+				regs[insn.op1] = cutPoints.size();
+				cutPoints.add(new CutPoint(journal.getPointInTime()));
+				break;
+			case CUTEND________:
+				journal.cutTo(cutPoints.get(insn.op1).journalPointer);
+				Util.truncate(cutPoints, insn.op1);
+				break;
+			case CUTFAIL_______:
+				journal.undoBinds(cutPoints.get(insn.op1).journalPointer);
+				Util.truncate(cutPoints, insn.op1);
+				current.ip = insn.op2;
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
@@ -292,7 +331,7 @@ public class InstructionCodeExecutor {
 			case EXIT__________:
 				return (Node) regs[insn.op1];
 			case EXITVALUE_____:
-				return insn.op1 != 0 ? trueAtom : falseAtom;
+				return constantPool.get(insn.op1);
 			case IFFALSE_______:
 				if (regs[insn.op2] != trueAtom)
 					current.ip = insn.op1;
@@ -325,7 +364,7 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	private Node sys(Node command, Object[] dataStack, int dsp) {
+	private Node sys(Node command, Object dataStack[], int dsp) {
 		Node result;
 
 		if (command == Atom.create("CONS")) {

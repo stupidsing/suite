@@ -17,7 +17,7 @@ public class LogicalCompilerTest {
 
 	@Test
 	public void test() throws IOException {
-		assertTrue(run("yes"));
+		assertTrue(run("()"));
 		assertFalse(run("fail"));
 	}
 
