@@ -19,6 +19,7 @@ public class LogicalCompilerTest {
 	public void test() throws IOException {
 		assertTrue(run("()"));
 		assertFalse(run("fail"));
+		assertFalse(run("1 = 2"));
 	}
 
 	private boolean run(String program) throws IOException {

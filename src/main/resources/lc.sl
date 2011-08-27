@@ -34,9 +34,9 @@ lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
 #
 lc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
 
-create-OBJECT .a .reg .c0/.cx :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
-create-OBJECT .i .reg .c0/.cx :- is.int .i, .c0 = (_ ASSIGN-OBJECT .reg .i, .cx) #
-create-OBJECT .s .reg .c0/.cx :- is.string .s, .c0 = (_ ASSIGN-OBJECT .reg .s, .cx) #
+create-node .a .reg .c0/.cx :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
+create-node .i .reg .c0/.cx :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
+create-node .s .reg .c0/.cx :- is.string .s, .c0 = (_ ASSIGN-OBJECT .reg .s, .cx) #
 create-node .tree .reg .c0/.cx
 	:- tree .tree .left .operator .right
 	, create-node .left .regl .c0/.c1

@@ -28,6 +28,7 @@ public class InstructionCodeExecutor {
 		ASSIGNOBJECT__("ASSIGN-OBJECT"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		BIND__________("BIND"), //
+		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
@@ -226,9 +227,11 @@ public class InstructionCodeExecutor {
 
 	private static class CutPoint {
 		private int journalPointer;
+		private int callStackPointer;
 
-		public CutPoint(int journalPointer) {
+		public CutPoint(int journalPointer, int callStackPointer) {
 			this.journalPointer = journalPointer;
+			this.callStackPointer = callStackPointer;
 		}
 	}
 
@@ -239,6 +242,8 @@ public class InstructionCodeExecutor {
 		int csp = 0, dsp = 0;
 
 		Journal journal = new Journal();
+		int bindPoints[] = new int[STACKSIZE];
+		int bsp = 0;
 		List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 
 		for (;;) {
@@ -260,19 +265,19 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = n(insn.op2);
 				break;
 			case ASSIGNOBJECT__:
-				regs[insn.op1] = (Node) constantPool.get(insn.op2);
+				regs[insn.op1] = constantPool.get(insn.op2);
 				break;
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
 				break;
 			case BIND__________:
-				int pointInTime = journal.getPointInTime();
-				if (!Binder.bind((Node) regs[insn.op1] //
-						, (Node) regs[insn.op2] //
-						, journal)) {
-					journal.undoBinds(pointInTime);
+				bindPoints[bsp++] = journal.getPointInTime();
+				if (!Binder.bind( //
+						(Node) regs[insn.op1], (Node) regs[insn.op2], journal))
 					current.ip = insn.op3; // Fail
-				}
+				break;
+			case BINDUNDO______:
+				journal.undoBinds(bindPoints[--bsp]);
 				break;
 			case CALL__________:
 				callStack[csp++] = current;
@@ -284,14 +289,16 @@ public class InstructionCodeExecutor {
 				break;
 			case CUTBEGIN______:
 				regs[insn.op1] = cutPoints.size();
-				cutPoints.add(new CutPoint(journal.getPointInTime()));
+				cutPoints.add(new CutPoint(journal.getPointInTime(), csp));
 				break;
 			case CUTEND________:
 				journal.cutTo(cutPoints.get(insn.op1).journalPointer);
 				Util.truncate(cutPoints, insn.op1);
 				break;
 			case CUTFAIL_______:
-				journal.undoBinds(cutPoints.get(insn.op1).journalPointer);
+				CutPoint cutPoint = cutPoints.get(insn.op1);
+				journal.undoBinds(cutPoint.journalPointer);
+				csp = cutPoint.callStackPointer;
 				Util.truncate(cutPoints, insn.op1);
 				current.ip = insn.op2;
 				break;
