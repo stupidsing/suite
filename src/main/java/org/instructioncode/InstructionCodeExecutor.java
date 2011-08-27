@@ -28,7 +28,6 @@ public class InstructionCodeExecutor {
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		ENTER_________("ENTER"), //
 		EXIT__________("EXIT"), //
-		EVALUATE______("EVALUATE"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
