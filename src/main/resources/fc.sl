@@ -16,7 +16,7 @@ fc-compile (.variable => .do) .frame .c0/.cx/.d0/.dx/.reg
 	, .d1 = (_ POP .variableReg, .d2)
 	, replace .do .do1 .variable %REG/.variableReg/.frame1
 	, fc-compile .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg
-	, .d3 = (_ RETURN .returnReg, .d4)
+	, .d3 = (_ RETURN-VALUE .returnReg, .d4)
 #
 fc-compile (.variable = .value >> .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !

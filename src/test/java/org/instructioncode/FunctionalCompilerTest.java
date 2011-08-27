@@ -17,7 +17,7 @@ import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
 
-public class InstructionCodeExecutorTest {
+public class FunctionalCompilerTest {
 
 	@Test
 	public void testClosure() throws IOException {

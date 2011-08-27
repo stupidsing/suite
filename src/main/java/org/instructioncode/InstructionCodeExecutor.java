@@ -25,9 +25,11 @@ public class InstructionCodeExecutor {
 		ASSIGNINT_____("ASSIGN-INT"), //
 		ASSIGNOBJECT__("ASSIGN-OBJECT"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
+		CALL__________("CALL"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		ENTER_________("ENTER"), //
 		EXIT__________("EXIT"), //
+		EXITVALUE_____("EXIT-VALUE"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
@@ -49,6 +51,7 @@ public class InstructionCodeExecutor {
 		POP___________("POP"), //
 		PUSH__________("PUSH"), //
 		RETURN________("RETURN"), //
+		RETURNVALUE___("RETURN-VALUE"), //
 		SYS___________("SYS"), //
 		;
 
@@ -144,6 +147,12 @@ public class InstructionCodeExecutor {
 				Atom atom = (Atom) rs.remove(4).finalNode();
 				TermOp operator = TermOp.find((atom).getName());
 				insn = evalInsns.get(operator);
+			} else if ("EXIT-FAIL".equals(instName)) {
+				rs.set(0, falseAtom);
+				insn = Insn.EXIT__________;
+			} else if ("EXIT-OK".equals(instName)) {
+				rs.set(0, trueAtom);
+				insn = Insn.EXIT__________;
 			} else
 				insn = insnNames.inverse().get(instName);
 
@@ -155,7 +164,7 @@ public class InstructionCodeExecutor {
 
 				if (insn == Insn.ENTER_________)
 					enters.add(instruction);
-				else if (insn == Insn.RETURN________)
+				else if (insn == Insn.RETURNVALUE___)
 					enters.remove(enters.size() - 1);
 
 				return instruction;
@@ -239,6 +248,10 @@ public class InstructionCodeExecutor {
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
 				break;
+			case CALL__________:
+				callStack[csp++] = current;
+				current.ip = g(regs[insn.op2]);
+				break;
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
 				current = ((Closure) regs[insn.op2]).clone();
@@ -278,6 +291,8 @@ public class InstructionCodeExecutor {
 				break;
 			case EXIT__________:
 				return (Node) regs[insn.op1];
+			case EXITVALUE_____:
+				return insn.op1 != 0 ? trueAtom : falseAtom;
 			case IFFALSE_______:
 				if (regs[insn.op2] != trueAtom)
 					current.ip = insn.op1;
@@ -296,6 +311,9 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = dataStack[--dsp];
 				break;
 			case RETURN________:
+				current = callStack[--csp];
+				break;
+			case RETURNVALUE___:
 				Object returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
@@ -316,10 +334,9 @@ public class InstructionCodeExecutor {
 			result = new Tree(TermOp.COLON_, left, right);
 		} else if (command == Atom.create("EMPTY"))
 			result = Atom.nil;
-		else if (command == Atom.create("IS-TREE")) {
-			boolean isTree = Tree.decompose((Node) dataStack[dsp]) != null;
-			result = isTree ? trueAtom : falseAtom;
-		} else if (command == Atom.create("HEAD"))
+		else if (command == Atom.create("IS-TREE"))
+			result = b(Tree.decompose((Node) dataStack[dsp]) != null);
+		else if (command == Atom.create("HEAD"))
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
 		else if (command == Atom.create("TAIL"))
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();

@@ -2,17 +2,16 @@
 -- logical compiler
 
 compile .call .c0
-	:- .c0 = (_ CUT-POINT .cutPoint .failLabel, .c1)
+	:- .c0 = (_ CUT-BEGIN .cutPoint .failLabel, .c1)
 	, replace .call .call1 ! ($$CUT .cutPoint .failLabel) 
-	, lc-compile .call1 $$PROVEN .c1/.c2/.d0/()
-	, .c2 = (.failLabel EXIT-FAIL, .d0)
+	, lc-compile .call1 ($$BYTECODE EXIT-VALUE true) .c1/.c2/.d0/()
+	, .c2 = (.failLabel EXIT-VALUE false, .d0)
 	, lc-assign-line-number 0 .c0
 #
 
-lc-compile $$PROVEN () .c0/.cx/.d/.d :- .c0 = (_ PROVEN, .cx) #
 lc-compile ($$BYTECODE .bc) () .c0/.cx/.d/.d :- .c0 = (.bc, .cx) #
 lc-compile fail _ .c/.c/.d/.d #
-lc-compile () .more .c0/.cx/.d0/.dx :- lc-compile .more () .c0/.cx/.d0/.dx #
+lc-compile () (.a, .b) .c0/.cx/.d0/.dx :- lc-compile .a .b .c0/.cx/.d0/.dx #
 lc-compile (.a, .b) .more .c0/.cx/.d0/.dx :- lc-compile .a (.b, .more) .c0/.cx/.d0/.dx #
 lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
 	:- lc-compile .a ($$BYTECODE (_ CALL .label)) .c0/.c1/.d0/.d1
@@ -22,7 +21,7 @@ lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
 	, .d4 = (_ RETURN, .d5)
 #
 lc-compile ($$CUT .cutPoint .failLabel) .more .c0/.cx/.d0/.dx
-	:- .c0 = (_ CUT .cutPoint, .c1)
+	:- .c0 = (_ CUT-END .cutPoint, .c1)
 	, lc-compile .more () .c1/.c2/.d0/.dx
 	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
 #
@@ -34,9 +33,9 @@ lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
 #
 
-create-node .a .reg .c0/.cx :- is.atom .a, .c0 = (_ ASSIGN-NODE .reg .a, .cx) #
-create-node .i .reg .c0/.cx :- is.int .i, .c0 = (_ ASSIGN-NODE .reg .i, .cx) #
-create-node .s .reg .c0/.cx :- is.string .s, .c0 = (_ ASSIGN-NODE .reg .s, .cx) #
+create-OBJECT .a .reg .c0/.cx :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
+create-OBJECT .i .reg .c0/.cx :- is.int .i, .c0 = (_ ASSIGN-OBJECT .reg .i, .cx) #
+create-OBJECT .s .reg .c0/.cx :- is.string .s, .c0 = (_ ASSIGN-OBJECT .reg .s, .cx) #
 create-node .tree .reg .c0/.cx
 	:- tree .tree .left .operator .right
 	, create-node .left .regl .c0/.c1
