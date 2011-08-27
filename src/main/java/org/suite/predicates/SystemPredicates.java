@@ -49,6 +49,7 @@ public class SystemPredicates {
 		addPredicate("is.tree", new EvalPredicates.IsTree());
 		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("map.erase", new EvalPredicates.MapErase());
+		addPredicate("nth", new EvalPredicates.Nth());
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 

@@ -143,6 +143,28 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Nth implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Predicate.getParameters(ps, 4);
+			String name = ((Atom) params[0].finalNode()).getName();
+			int length = name.length();
+			Node p1 = params[1].finalNode(), p2 = params[2].finalNode();
+
+			if (p1 instanceof Int && p2 instanceof Int) {
+				int m = ((Int) p1).getNumber(), n = ((Int) p2).getNumber();
+
+				while (m < 0)
+					m += length;
+				while (n <= 0)
+					m += length;
+
+				return prover.bind(params[3] //
+						, Atom.create(name.substring(m, n)));
+			} else
+				throw new RuntimeException("Invalid call pattern");
+		}
+	}
+
 	public static class StartsWith implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);

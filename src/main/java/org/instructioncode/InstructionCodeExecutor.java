@@ -47,6 +47,8 @@ public class InstructionCodeExecutor {
 		EVALMUL_______("EVAL-MUL"), //
 		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
+		FORMTREE0_____("FORM-TREE0"), //
+		FORMTREE1_____("FORM-TREE1"), //
 		IFFALSE_______("IF-FALSE"), //
 		IFGE__________("IF-GE"), //
 		IFGT__________("IF-GT"), //
@@ -243,8 +245,8 @@ public class InstructionCodeExecutor {
 
 		Journal journal = new Journal();
 		int bindPoints[] = new int[STACKSIZE];
-		int bsp = 0;
 		List<CutPoint> cutPoints = new ArrayList<CutPoint>();
+		int bsp = 0;
 
 		for (;;) {
 			Frame frame = current.frame;
@@ -339,6 +341,13 @@ public class InstructionCodeExecutor {
 				return (Node) regs[insn.op1];
 			case EXITVALUE_____:
 				return constantPool.get(insn.op1);
+			case FORMTREE0_____:
+				Node left = (Node) regs[insn.op1];
+				Node right = (Node) regs[insn.op2];
+				insn = instructions[ip++];
+				String operator = ((Atom) constantPool.get(insn.op1)).getName();
+				regs[insn.op2] = new Tree(TermOp.find(operator), left, right);
+				break;
 			case IFFALSE_______:
 				if (regs[insn.op2] != trueAtom)
 					current.ip = insn.op1;

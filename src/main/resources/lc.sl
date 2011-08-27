@@ -44,7 +44,7 @@ create-node .tree .reg .c0/.cx
 	:- tree .tree .left .operator .right
 	, create-node .left .regl .c0/.c1
 	, create-node .right .regr .c1/.c2
-	, .c2 = (_ FORM-TREE .operator .regl .regr, .cx)
+	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
 is-user-predicate .call :- rules .rules, has-rules .rules (.call :- _) #
