@@ -9,7 +9,6 @@ compile .call .c0
 	, lc-assign-line-number 0 .c0
 #
 
-lc-compile .a :- write .a, nl, fail #
 lc-compile ($$BYTECODE .bc) .more .c0/.cx/.d0/.dx
 	:- .c0 = (.bc, .c1)
 	, lc-compile .more () .c1/.cx/.d0/.dx
