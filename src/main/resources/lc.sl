@@ -4,18 +4,22 @@
 compile .call .c0
 	:- .c0 = (_ ENTER, _ CUT-BEGIN .cutPoint, .c1)
 	, replace .call .call1 ! ($$CUT .cutPoint .failLabel) 
-	, lc-compile .call1 ($$BYTECODE (_ EXIT-VALUE true)) .c1/.c2/.d0/()
+	, lc-compile .call1 ($$BYTECODE (_ EXIT-VALUE true), fail) .c1/.c2/.d0/()
 	, .c2 = (.failLabel EXIT-VALUE false, .d0)
 	, lc-assign-line-number 0 .c0
 #
 
-lc-compile ($$BYTECODE .bc) () .c0/.cx/.d/.d :- .c0 = (.bc, .cx) #
+lc-compile .a :- write .a, nl, fail #
+lc-compile ($$BYTECODE .bc) .more .c0/.cx/.d0/.dx
+	:- .c0 = (.bc, .c1)
+	, lc-compile .more () .c1/.cx/.d0/.dx
+#
 lc-compile fail _ .c/.c/.d/.d #
 lc-compile () .more .c0/.cx/.d0/.dx :- lc-compile .more () .c0/.cx/.d0/.dx #
 lc-compile (.a, .b) .more .c0/.cx/.d0/.dx :- lc-compile .a (.b, .more) .c0/.cx/.d0/.dx #
 lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
-	:- lc-compile .a ($$BYTECODE (_ CALL .label)) .c0/.c1/.d0/.d1
-	, lc-compile .b ($$BYTECODE (_ CALL .label)) .c1/.cx/.d1/.d2
+	:- lc-compile .a ($$BYTECODE (_ CALL .label), fail) .c0/.c1/.d0/.d1
+	, lc-compile .b ($$BYTECODE (_ CALL .label), fail) .c1/.cx/.d1/.d2
 	, .d2 = (.label LABEL .label, .d3)
 	, lc-compile .more () .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)

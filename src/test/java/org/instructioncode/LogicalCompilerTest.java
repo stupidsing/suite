@@ -18,8 +18,15 @@ public class LogicalCompilerTest {
 	@Test
 	public void test() throws IOException {
 		assertTrue(run("()"));
+		assertTrue(run("3 = 3"));
 		assertFalse(run("fail"));
 		assertFalse(run("1 = 2"));
+	}
+
+	@Test
+	public void testLogic() throws IOException {
+		assertTrue(run("1 = 2; 3 = 3"));
+		assertFalse(run("3 = 3, 1 = 2"));
 	}
 
 	private boolean run(String program) throws IOException {

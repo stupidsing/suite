@@ -281,7 +281,7 @@ public class InstructionCodeExecutor {
 				break;
 			case CALL__________:
 				callStack[csp++] = current;
-				current.ip = g(regs[insn.op2]);
+				current.ip = insn.op1;
 				break;
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
