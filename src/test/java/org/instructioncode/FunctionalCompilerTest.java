@@ -111,14 +111,14 @@ public class FunctionalCompilerTest {
 		SuiteUtil.importResource(rs, "fc.sl");
 
 		Node node = SuiteUtil.parse("" //
-				+ "compile (\n" + program + "\n) .c/.reg \n" //
-				+ ", pp-list .c");
+				+ "compile (\n" + program + "\n) .code/.reg \n" //
+				+ ", pp-list .code");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
 		assertTrue(new Prover(rs).prove(node));
 
-		Node ics = generalizer.getVariable(Atom.create(".c"));
+		Node ics = generalizer.getVariable(Atom.create(".code"));
 		return new InstructionCodeExecutor(ics).execute();
 	}
 

@@ -35,14 +35,15 @@ public class LogicalCompilerTest {
 		SuiteUtil.importResource(rs, "lc.sl");
 
 		Node node = SuiteUtil.parse("" //
-				+ "compile (\n" + program + "\n) .c \n" //
-				+ ", pp-list .c");
+				+ "parse \"" + program + "\" .program \n" //
+				+ ", compile .program .code \n" //
+				+ ", pp-list .code");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
 		assertTrue(new Prover(rs).prove(node));
 
-		Node ics = generalizer.getVariable(Atom.create(".c"));
+		Node ics = generalizer.getVariable(Atom.create(".code"));
 		Node result = new InstructionCodeExecutor(ics).execute();
 		return result == Atom.create("true");
 	}

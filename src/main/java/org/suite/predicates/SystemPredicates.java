@@ -51,6 +51,7 @@ public class SystemPredicates {
 		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("nth", new EvalPredicates.Nth());
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
+		addPredicate("parse", new EvalPredicates.Parse());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 
 		addPredicate("dump", new IoPredicates.Dump());

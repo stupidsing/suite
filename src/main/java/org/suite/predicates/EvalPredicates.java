@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fp.Interpreter;
 import org.parser.Operator;
+import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
@@ -172,6 +173,15 @@ public class EvalPredicates {
 
 			return p0 instanceof Atom && p1 instanceof Atom
 					&& ((Atom) p0).getName().startsWith(((Atom) p1).getName());
+		}
+	}
+
+	public static class Parse implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			String s = Formatter.display(params[0].finalNode());
+			Node p1 = params[1].finalNode();
+			return prover.bind(SuiteUtil.parse(s), p1);
 		}
 	}
 
