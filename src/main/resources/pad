@@ -7,7 +7,7 @@ group-predicates (.head :- .tail # .remains) (IN = .head, .tail; .groupedRemains
 group-predicates () fail #
 
 replace-cut-points .predicates0 (DEFINE-CUT .cutPoint .predicates1)
-       :- replace .predicates0 .predicates1 ! .cutPoint
+       :- replace .predicates0/.predicates1 !/.cutPoint
 #
 
 is-determ (!, _) #

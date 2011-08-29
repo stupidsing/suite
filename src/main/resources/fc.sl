@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- functional program compiler
 
-compile .do .c0/.reg
+compile .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, fc-compile .do 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
@@ -14,14 +14,14 @@ fc-compile (.variable => .do) .frame .c0/.cx/.d0/.dx/.reg
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .variableReg, .d2)
-	, replace .do .do1 .variable %REG/.variableReg/.frame1
+	, replace .do/.do1 .variable/(%REG/.variableReg/.frame1)
 	, fc-compile .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, .d4)
 #
 fc-compile (.variable = .value >> .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, replace .value .value1 .variable %REG/.r1/.frame -- Allows recursion
-	, replace .do .do1 .variable %REG/.r1/.frame
+	, replace .value/.value1 .variable/(%REG/.r1/.frame) -- Allows recursion
+	, replace .do/.do1 .variable/(%REG/.r1/.frame)
 	, fc-compile .value1 .frame .c0/.c1/.d0/.d1/.r1
 	, fc-compile .do1 .frame .c1/.cx/.d1/.dx/.reg
 #

@@ -50,9 +50,12 @@ public class SystemPredicates {
 		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("nth", new EvalPredicates.Nth());
+		addPredicate("parse", new EvalPredicates.Parse());
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
-		addPredicate("tree", new EvalPredicates.TreePredicate());
+		addPredicate("to.atom", new EvalPredicates.ToAtom());
+		addPredicate("to.string", new EvalPredicates.ToString());
 
+		addPredicate("tree", new EvalPredicates.TreePredicate());
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("exec", new IoPredicates.Exec());
 		addPredicate("nl", new IoPredicates.Nl());

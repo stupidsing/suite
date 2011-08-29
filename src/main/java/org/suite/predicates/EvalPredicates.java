@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.fp.Interpreter;
 import org.parser.Operator;
+import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
@@ -111,6 +112,43 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Let implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			int result = evaluate(params[1]);
+			return prover.bind(Int.create(result), params[0]);
+		}
+
+		public int evaluate(Node node) {
+			int result = 0;
+			node = node.finalNode();
+			Tree tree = Tree.decompose(node);
+
+			if (tree != null) {
+				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
+
+				switch ((TermOp) tree.getOperator()) {
+				case PLUS__:
+					result = a + b;
+					break;
+				case MINUS_:
+					result = a - b;
+					break;
+				case MULT__:
+					result = a * b;
+					break;
+				case DIVIDE:
+					result = a / b;
+				}
+			} else if (node instanceof Int)
+				result = ((Int) node).getNumber();
+			else
+				throw new RuntimeException("Unable to evaluate expression");
+
+			return result;
+		}
+	}
+
 	private static final Map<Node, Node> store = new TreeMap<Node, Node>();
 
 	public static class MapRetrieve implements SystemPredicate {
@@ -165,6 +203,14 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Parse implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(SuiteUtil.parse(Formatter.display(p0)), p1);
+		}
+	}
+
 	public static class StartsWith implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
@@ -172,6 +218,22 @@ public class EvalPredicates {
 
 			return p0 instanceof Atom && p1 instanceof Atom
 					&& ((Atom) p0).getName().startsWith(((Atom) p1).getName());
+		}
+	}
+
+	public static class ToAtom implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(p1, Atom.create(Formatter.display(p0)));
+		}
+	}
+
+	public static class ToString implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(p1, new Str(Formatter.display(p0)));
 		}
 	}
 
@@ -192,43 +254,6 @@ public class EvalPredicates {
 				return prover.bind(p, new Tree(operator, params[1], params[3]));
 			} else
 				return false;
-		}
-	}
-
-	public static class Let implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			int result = evaluate(params[1]);
-			return prover.bind(Int.create(result), params[0]);
-		}
-
-		public int evaluate(Node node) {
-			int result = 0;
-			node = node.finalNode();
-			Tree tree = Tree.decompose(node);
-
-			if (tree != null) {
-				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
-
-				switch ((TermOp) tree.getOperator()) {
-				case PLUS__:
-					result = a + b;
-					break;
-				case MINUS_:
-					result = a - b;
-					break;
-				case MULT__:
-					result = a * b;
-					break;
-				case DIVIDE:
-					result = a / b;
-				}
-			} else if (node instanceof Int)
-				result = ((Int) node).getNumber();
-			else
-				throw new RuntimeException("Unable to evaluate expression");
-
-			return result;
 		}
 	}
 

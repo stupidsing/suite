@@ -57,6 +57,7 @@ public class InstructionCodeExecutor {
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
+		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
 		PUSH__________("PUSH"), //
 		RETURN________("RETURN"), //
@@ -358,6 +359,9 @@ public class InstructionCodeExecutor {
 				break;
 			case JUMP__________:
 				current.ip = insn.op1;
+				break;
+			case NEWNODE_______:
+				regs[insn.op1] = new Reference();
 				break;
 			case PUSH__________:
 				dataStack[dsp++] = regs[insn.op1];
