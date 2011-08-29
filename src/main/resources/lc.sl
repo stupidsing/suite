@@ -3,14 +3,36 @@
 
 compile .call .c0
 	:- .c0 = (_ ENTER, _ CUT-BEGIN .cutPoint, .c1)
-	, replace .call .call1 ! ($$CUT .cutPoint .failLabel) 
-	, lc-compile .call1 ($$BYTECODE (_ EXIT-VALUE true), fail) .c1/.c2/.d0/()
+	, replace .call/.call1 !/($$CUT .cutPoint .failLabel)
+	, generalize-variables .call1/.call2 .variables
+	, initialize-variables .call2/.call3 .variables
+	, lc-compile .call3 ($$BYTECODE (_ EXIT-VALUE true), fail) .c1/.c2/.d0/()
 	, .c2 = (.failLabel EXIT-VALUE false, .d0)
 	, lc-assign-line-number 0 .c0
 #
 
-lc-compile ($$BYTECODE .bc) .more .c0/.cx/.d0/.dx
-	:- .c0 = (.bc, .c1)
+generalize-variables .variable/($$REG .n) .variables
+	:- is.atom .variable
+	, to.atom "." .dot, starts.with .variable .dot
+	, !, member .variables .variable/.n
+	, !
+#
+generalize-variables .call0/.call1 .variables
+	:- tree .call0 .left0 .operator .right0
+	, tree .call1 .left1 .operator .right1
+	, !
+	, generalize-variables .left0/.left1 .variables
+	, generalize-variables .right0/.right1 .variables
+#
+generalize-variables .call/.call _ #
+
+initialize-variables .call/.call () :- ! #
+initialize-variables .call0/($$BYTECODE (_ NEW-NODE .n), .call1) (.variable/.n, .remains)
+	:- initialize-variables .call0/.call1 .remains
+#
+
+lc-compile ($$BYTECODE .bytecode) .more .c0/.cx/.d0/.dx
+	:- .c0 = (.bytecode, .c1)
 	, lc-compile .more () .c1/.cx/.d0/.dx
 #
 lc-compile fail _ .c/.c/.d/.d #
@@ -29,21 +51,22 @@ lc-compile ($$CUT .cutPoint .failLabel) .more .c0/.cx/.d0/.dx
 	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
 #
 lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
-	:- create-node .a .reg0 .c0/.c1
-	, create-node .b .reg1 .c1/.c2
+	:- create-node .a .c0/.c1/.reg0
+	, create-node .b .c1/.c2/.reg1
 	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
 	, lc-compile .more () .c3/.c4/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
 #
 lc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
 
-create-node .a .reg .c0/.cx :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
-create-node .i .reg .c0/.cx :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-create-node .s .reg .c0/.cx :- is.string .s, .c0 = (_ ASSIGN-OBJECT .reg .s, .cx) #
-create-node .tree .reg .c0/.cx
+create-node ($$REG .r) .c/.c/.r #
+create-node .a .c0/.cx/.reg :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
+create-node .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
+create-node .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-OBJECT .reg .s, .cx) #
+create-node .tree .c0/.cx/.reg
 	:- tree .tree .left .operator .right
-	, create-node .left .regl .c0/.c1
-	, create-node .right .regr .c1/.c2
+	, create-node .left .c0/.c1/.regl
+	, create-node .right .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 

@@ -29,6 +29,12 @@ public class LogicalCompilerTest {
 		assertFalse(run("3 = 3, 1 = 2"));
 	}
 
+	@Test
+	public void testVariables() throws IOException {
+		assertTrue(run(".a = 1, 1 = .a"));
+		assertFalse(run(".a = 1, .a = 2"));
+	}
+
 	private boolean run(String program) throws IOException {
 		RuleSet rs = new RuleSet();
 		SuiteUtil.importResource(rs, "auto.sl");
