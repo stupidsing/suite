@@ -291,18 +291,19 @@ public class InstructionCodeExecutor {
 				current = ((Closure) regs[insn.op2]).clone();
 				break;
 			case CUTBEGIN______:
-				regs[insn.op1] = cutPoints.size();
+				regs[insn.op1] = n(cutPoints.size());
 				cutPoints.add(new CutPoint(journal.getPointInTime(), csp));
 				break;
 			case CUTEND________:
-				journal.cutTo(cutPoints.get(insn.op1).journalPointer);
-				Util.truncate(cutPoints, insn.op1);
+				int p = cutPoints.get(g(regs[insn.op1])).callStackPointer;
+				while (csp > p)
+					callStack[--csp] = null;
 				break;
 			case CUTFAIL_______:
-				CutPoint cutPoint = cutPoints.get(insn.op1);
+				int cutPointIndex = g(regs[insn.op1]);
+				CutPoint cutPoint = cutPoints.get(cutPointIndex);
 				journal.undoBinds(cutPoint.journalPointer);
-				csp = cutPoint.callStackPointer;
-				Util.truncate(cutPoints, insn.op1);
+				Util.truncate(cutPoints, cutPointIndex);
 				current.ip = insn.op2;
 				break;
 			case ENTER_________:

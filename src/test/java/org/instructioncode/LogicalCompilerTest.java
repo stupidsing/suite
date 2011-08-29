@@ -24,6 +24,11 @@ public class LogicalCompilerTest {
 	}
 
 	@Test
+	public void testCut() throws IOException {
+		assertFalse(run(".a = 1, !, .b = 2, fail; .b = 3"));
+	}
+
+	@Test
 	public void testLogic() throws IOException {
 		assertTrue(run("1 = 2; 3 = 3"));
 		assertFalse(run("3 = 3, 1 = 2"));

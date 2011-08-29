@@ -3,7 +3,8 @@
 
 compile .call .c0
 	:- .c0 = (_ ENTER, _ CUT-BEGIN .cutPoint, .c1)
-	, replace .call/.call1 !/($$CUT .cutPoint .failLabel)
+	, to.atom "!" .cutSymbol
+	, replace .call/.call1 .cutSymbol/($$CUT .cutPoint .failLabel)
 	, generalize-variables .call1/.call2 .variables
 	, initialize-variables .call2/.call3 .variables
 	, lc-compile .call3 ($$BYTECODE (_ EXIT-VALUE true), fail) .c1/.c2/.d0/()
@@ -46,8 +47,7 @@ lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
 	, .d4 = (_ RETURN, .d5)
 #
 lc-compile ($$CUT .cutPoint .failLabel) .more .c0/.cx/.d0/.dx
-	:- .c0 = (_ CUT-END .cutPoint, .c1)
-	, lc-compile .more () .c1/.c2/.d0/.dx
+	:- lc-compile .more () .c0/.c1/.d0/.dx
 	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
 #
 lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
@@ -69,11 +69,6 @@ create-node .tree .c0/.cx/.reg
 	, create-node .right .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
-
-is-user-predicate .call :- rules .rules, has-rules .rules (.call :- _) #
-
-has-rules (.rule # _) .rule #
-has-rules (_ # .remains) .rule :- has-rules .remains .rule #
 
 lc-assign-line-number _ () #
 lc-assign-line-number .n (.n _, .remains)
