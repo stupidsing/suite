@@ -9,21 +9,33 @@ compile-rule-group .rules .code
 flatten-rule-group () () #
 flatten-rule-group (.rule # .remains) (.head1; .tail1)
 	:- member (.rule, (.rule :- ()),) (.head :- .tail)
-	, !, .head1 = ($$BYTECODE (_ POP .reg), $$REG .reg = .head, .tail)
+	, !, .head1 = ($$BYTECODE _ POP .reg, $$REG .reg = .head, .tail)
 	, flatten-rule-group .remains .tail1
 #
 
 compile .call .c0
-	:- .c0 = (_ ENTER, _ CUT-BEGIN .cutPoint, .c1)
+	:- .c0 = (_ ENTER
+		, _ PUSH-CONSTANT .provenLabel
+		, _ CALL-CONSTANT .label
+		, _ EXIT-VALUE false
+		, .provenLabel EXIT-VALUE true
+		, .c1
+	)
+	, compile-call .call .c1/()/.label
+	, lc-assign-line-number 0 .c0
+#
+
+compile-call .call .c0/.cx/.label
+	:- .c0 = (.label ENTER, _ CUT-BEGIN .cutPoint, .c1)
 	, to.atom "!" .cutSymbol
 	, replace .call/.call1 .cutSymbol/($$CUT .cutPoint .failLabel)
 	, generalize-variables .call1/.call2 .variables
 	, initialize-variables .call2/.call3 .variables
 	, lc-compile .call3 (
-		$$BYTECODE (_ EXIT-VALUE true), $$BYTECODE (_ LEAVE), fail
-	) .c1/.c2/.d0/()
-	, .c2 = (.failLabel EXIT-VALUE false, .d0)
-	, lc-assign-line-number 0 .c0
+		$$BYTECODE _ POP .provenReg, $$BYTECODE _ CALL .provenReg, fail
+	) .c1/.c2/.c3/.c4
+	, .c2 = (.failLabel RETURN, .c3)
+	, .c4 = (_ LEAVE, .cx)
 #
 
 generalize-variables .variable/($$REG .n) .variables
@@ -42,7 +54,7 @@ generalize-variables .call0/.call1 .variables
 generalize-variables .call/.call _ #
 
 initialize-variables .call/.call () :- ! #
-initialize-variables .call0/($$BYTECODE (_ NEW-NODE .n), .call1) (.variable/.n, .remains)
+initialize-variables .call0/($$BYTECODE _ NEW-NODE .n, .call1) (.variable/.n, .remains)
 	:- initialize-variables .call0/.call1 .remains
 #
 
@@ -54,8 +66,8 @@ lc-compile fail _ .c/.c/.d/.d #
 lc-compile () .more .c0/.cx/.d0/.dx :- lc-compile .more () .c0/.cx/.d0/.dx #
 lc-compile (.a, .b) .more .c0/.cx/.d0/.dx :- lc-compile .a (.b, .more) .c0/.cx/.d0/.dx #
 lc-compile (.a; .b) .more .c0/.cx/.d0/.dx
-	:- lc-compile .a ($$BYTECODE (_ CALL .label), fail) .c0/.c1/.d0/.d1
-	, lc-compile .b ($$BYTECODE (_ CALL .label), fail) .c1/.cx/.d1/.d2
+	:- lc-compile .a ($$BYTECODE _ CALL-CONSTANT .label, fail) .c0/.c1/.d0/.d1
+	, lc-compile .b ($$BYTECODE _ CALL-CONSTANT .label, fail) .c1/.cx/.d1/.d2
 	, .d2 = (.label LABEL .label, .d3)
 	, lc-compile .more () .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
@@ -74,9 +86,9 @@ lc-compile (.a = .b) .more .c0/.cx/.d0/.dx
 lc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
 
 create-node ($$REG .r) .c/.c/.r #
-create-node .a .c0/.cx/.reg :- is.atom .a, .c0 = (_ ASSIGN-OBJECT .reg .a, .cx) #
+create-node .a .c0/.cx/.reg :- is.atom .a, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx) #
 create-node .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-create-node .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-OBJECT .reg .s, .cx) #
+create-node .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx) #
 create-node .tree .c0/.cx/.reg
 	:- tree .tree .left .operator .right
 	, create-node .left .c0/.c1/.regl

@@ -23,13 +23,14 @@ import com.google.common.collect.HashBiMap;
 public class InstructionCodeExecutor {
 
 	private enum Insn {
+		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
+		ASSIGNCONST___("ASSIGN-CONSTANT"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
-		ASSIGNOBJECT__("ASSIGN-OBJECT"), //
-		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		BIND__________("BIND"), //
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
+		CALLCONST_____("CALL-CONSTANT"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
 		CUTEND________("CUT-END"), //
@@ -61,6 +62,7 @@ public class InstructionCodeExecutor {
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
 		PUSH__________("PUSH"), //
+		PUSHCONST_____("PUSH-CONSTANT"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SYS___________("SYS"), //
@@ -151,9 +153,9 @@ public class InstructionCodeExecutor {
 			Insn insn;
 
 			if ("ASSIGN-BOOL".equals(instName))
-				insn = Insn.ASSIGNOBJECT__;
+				insn = Insn.ASSIGNCONST___;
 			else if ("ASSIGN-STR".equals(instName))
-				insn = Insn.ASSIGNOBJECT__;
+				insn = Insn.ASSIGNCONST___;
 			else if ("EVALUATE".equals(instName)) {
 				Atom atom = (Atom) rs.remove(4).finalNode();
 				TermOp operator = TermOp.find((atom).getName());
@@ -259,20 +261,20 @@ public class InstructionCodeExecutor {
 			// LogUtil.info("TRACE", ip + "> " + insn);
 
 			switch (insn.insn) {
+			case ASSIGNCLOSURE_:
+				regs[insn.op1] = new Closure(frame, insn.op2);
+				break;
 			case ASSIGNFRAMEREG:
 				int i = insn.op2;
 				while (i++ < 0)
 					frame = frame.previous;
 				regs[insn.op1] = frame.registers[insn.op3];
 				break;
-			case ASSIGNINT_____:
-				regs[insn.op1] = n(insn.op2);
-				break;
-			case ASSIGNOBJECT__:
+			case ASSIGNCONST___:
 				regs[insn.op1] = constantPool.get(insn.op2);
 				break;
-			case ASSIGNCLOSURE_:
-				regs[insn.op1] = new Closure(frame, insn.op2);
+			case ASSIGNINT_____:
+				regs[insn.op1] = n(insn.op2);
 				break;
 			case BIND__________:
 				bindPoints[bsp++] = journal.getPointInTime();
@@ -285,7 +287,11 @@ public class InstructionCodeExecutor {
 				break;
 			case CALL__________:
 				callStack[csp++] = current;
-				current.ip = insn.op1;
+				current = new Closure(frame, g(regs[insn.op1]));
+				break;
+			case CALLCONST_____:
+				callStack[csp++] = current;
+				current = new Closure(frame, insn.op1);
 				break;
 			case CALLCLOSURE___:
 				callStack[csp++] = current;
@@ -367,6 +373,9 @@ public class InstructionCodeExecutor {
 				break;
 			case PUSH__________:
 				dataStack[dsp++] = regs[insn.op1];
+				break;
+			case PUSHCONST_____:
+				dataStack[dsp++] = n(insn.op1);
 				break;
 			case POP___________:
 				regs[insn.op1] = dataStack[--dsp];
