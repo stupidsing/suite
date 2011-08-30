@@ -1,13 +1,27 @@
 -------------------------------------------------------------------------------
 -- logical compiler
 
+compile-rule-group .rules .code
+	:- flatten-rule-group .rules .call
+	, compile .call .code
+#
+
+flatten-rule-group () () #
+flatten-rule-group (.rule # .remains) (.head1; .tail1)
+	:- member (.rule, (.rule :- ()),) (.head :- .tail)
+	, !, .head1 = ($$BYTECODE (_ POP .reg), $$REG .reg = .head, .tail)
+	, flatten-rule-group .remains .tail1
+#
+
 compile .call .c0
 	:- .c0 = (_ ENTER, _ CUT-BEGIN .cutPoint, .c1)
 	, to.atom "!" .cutSymbol
 	, replace .call/.call1 .cutSymbol/($$CUT .cutPoint .failLabel)
 	, generalize-variables .call1/.call2 .variables
 	, initialize-variables .call2/.call3 .variables
-	, lc-compile .call3 ($$BYTECODE (_ EXIT-VALUE true), fail) .c1/.c2/.d0/()
+	, lc-compile .call3 (
+		$$BYTECODE (_ EXIT-VALUE true), $$BYTECODE (_ LEAVE), fail
+	) .c1/.c2/.d0/()
 	, .c2 = (.failLabel EXIT-VALUE false, .d0)
 	, lc-assign-line-number 0 .c0
 #

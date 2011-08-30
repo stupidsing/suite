@@ -57,6 +57,7 @@ public class InstructionCodeExecutor {
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
+		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
 		PUSH__________("PUSH"), //
@@ -174,7 +175,7 @@ public class InstructionCodeExecutor {
 
 				if (insn == Insn.ENTER_________)
 					enters.add(instruction);
-				else if (insn == Insn.RETURNVALUE___)
+				else if (insn == Insn.LEAVE_________)
 					enters.remove(enters.size() - 1);
 
 				return instruction;
