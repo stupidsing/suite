@@ -20,8 +20,8 @@ replace .t0/.t1 .from/.to
 #
 replace .node/.node _/_ #
 
-() :- write 'READY', nl #
-
 whatever .g :- .g; yes #
 
 yes #
+
+() :- write 'READY', nl #

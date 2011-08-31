@@ -15,6 +15,7 @@ import org.parser.Operator;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
+import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
@@ -109,6 +110,14 @@ public class EvalPredicates {
 	public static class IsTree implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return ps.finalNode() instanceof Tree;
+		}
+	}
+
+	public static class Generalize implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Generalizer generalizer = new Generalizer();
+			return prover.bind(generalizer.generalize(params[0]), params[1]);
 		}
 	}
 

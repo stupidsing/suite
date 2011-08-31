@@ -148,7 +148,7 @@ public class InstructionCodeExecutor {
 
 			rs.add(node);
 
-			Atom instNode = (Atom) rs.get(1);
+			Atom instNode = (Atom) rs.get(1).finalNode();
 			String instName = instNode.getName();
 			Insn insn;
 
@@ -353,7 +353,7 @@ public class InstructionCodeExecutor {
 			case FORMTREE0_____:
 				Node left = (Node) regs[insn.op1];
 				Node right = (Node) regs[insn.op2];
-				insn = instructions[ip++];
+				insn = instructions[current.ip++];
 				String operator = ((Atom) constantPool.get(insn.op1)).getName();
 				regs[insn.op2] = new Tree(TermOp.find(operator), left, right);
 				break;

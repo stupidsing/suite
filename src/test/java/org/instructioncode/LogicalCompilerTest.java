@@ -35,6 +35,11 @@ public class LogicalCompilerTest {
 	}
 
 	@Test
+	public void testWith() throws IOException {
+		assertTrue(run("(p 3 #) >> p .v, .v = 3"));
+	}
+
+	@Test
 	public void testVariables() throws IOException {
 		assertTrue(run(".a = 1, 1 = .a"));
 		assertFalse(run(".a = 1, .a = 2"));
