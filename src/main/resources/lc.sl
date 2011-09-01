@@ -27,7 +27,7 @@ compile-call .call .pls .c0/.cx/.label
 	, .c4 = (_ LEAVE, .cx)
 #
 
-generalize-variables .variable/($$REG .n) .variables
+generalize-variables .variable/$$REG:.n .variables
 	:- is.atom .variable
 	, to.atom "." .dot, starts.with .variable .dot
 	, !, member .variables .variable/.n
@@ -118,11 +118,11 @@ compile-rules (.proto/.rules, .remains) .pls/.plsx .c0/.cx
 flatten-rules () fail :- ! #
 flatten-rules (.rule, .remains) (.head1; .tail1)
 	:- member (.rule, (.rule :- ()),) (.head :- .tail)
-	, !, .head1 = ($$BYTECODE _ POP .reg, $$REG .reg = .head, .tail)
+	, !, .head1 = ($$BYTECODE _ POP .reg, $$REG:.reg = .head, .tail)
 	, flatten-rules .remains .tail1
 #
 
-create-node ($$REG .r) .c/.c/.r #
+create-node $$REG:.r .c/.c/.r #
 create-node .a .c0/.cx/.reg :- is.atom .a, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx) #
 create-node .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
 create-node .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx) #
@@ -133,7 +133,10 @@ create-node .tree .c0/.cx/.reg
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
-call-prototype .call () #
+call-prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
+
+params-prototype (_ .remains0) (() .remains1) :- params-prototype .remains0 .remains1, ! #
+params-prototype .s () :- not (bound .s, tree .s _ ' ' _) #
 
 lc-assign-line-number _ () #
 lc-assign-line-number .n (.n _, .remains)
