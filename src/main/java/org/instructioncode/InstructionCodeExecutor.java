@@ -66,6 +66,7 @@ public class InstructionCodeExecutor {
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SYS___________("SYS"), //
+		TOP___________("TOP"), //
 		;
 
 		private String name;
@@ -258,7 +259,7 @@ public class InstructionCodeExecutor {
 			int ip = current.ip++;
 			Instruction insn = instructions[ip];
 
-			// LogUtil.info("TRACE", ip + "> " + insn);
+			// org.util.LogUtil.info("TRACE", ip + "> " + insn);
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
@@ -391,6 +392,9 @@ public class InstructionCodeExecutor {
 			case SYS___________:
 				dsp -= insn.op3;
 				regs[insn.op2] = sys(constantPool.get(insn.op1), dataStack, dsp);
+				break;
+			case TOP___________:
+				regs[insn.op1] = dataStack[dsp + insn.op2];
 			}
 		}
 	}

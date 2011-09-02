@@ -36,7 +36,7 @@ public class LogicalCompilerTest {
 
 	@Test
 	public void testWith() throws IOException {
-		assertTrue(run("(p 3 #) >> p .v, .v = 3"));
+		assertTrue(run("(p 2 # p 3 #) >> p .v, .v = 3"));
 	}
 
 	@Test

@@ -5,7 +5,10 @@ compile .call .c0
 	:- .c0 = (_ ENTER
 		, _ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
+		, _ PUSH .provenReg
 		, _ CALL-CONSTANT .callLabel
+		, _ POP _
+		, _ POP _
 		, _ EXIT-VALUE false
 		, .provenLabel EXIT-VALUE true
 		, .c1
@@ -15,13 +18,17 @@ compile .call .c0
 #
 
 compile-call .call .pls .c0/.cx/.label
-	:- .c0 = (.label ENTER, _ CUT-BEGIN .cutPoint, .c1)
+	:- .c0 = (.label ENTER
+		, _ CUT-BEGIN .cutPoint
+		, _ TOP .provenReg -2
+		, .c1
+	)
 	, to.atom "!" .cutSymbol
 	, replace .call/.call1 .cutSymbol/($$CUT .cutPoint .failLabel)
 	, generalize-variables .call1/.call2 .variables
 	, initialize-variables .call2/.call3 .variables
 	, lc-compile .call3 (
-		$$BYTECODE _ POP .provenReg, $$BYTECODE _ CALL-CLOSURE .provenReg .provenReg, fail
+		$$BYTECODE _ CALL-CLOSURE .provenReg .provenReg, fail
 	) .pls .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel RETURN, .c3)
 	, .c4 = (_ LEAVE, .cx)
@@ -91,10 +98,14 @@ lc-compile .call .more .pls .c0/.cx/.d0/.dx
 	, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
 		, _ PUSH .reg
-		, _ CALL-CONSTANT .callLabel, .cx
+		, _ CALL-CONSTANT .callLabel
+		, _ POP _
+		, _ POP _
+		, .cx
 	)
 	, .d0 = (.provenLabel LABEL .provenLabel, .d1)
-	, lc-compile .more () .pls .d1/.d2/.d2/.dx
+	, lc-compile .more () .pls .d1/.d2/.d3/.dx
+	, .d2 = (_ RETURN, .d3)
 #
 lc-compile .d _ _ _ :- write "Unknown expression" .d, nl, fail #
 
@@ -118,7 +129,7 @@ compile-rules (.proto/.rules, .remains) .pls/.plsx .c0/.cx
 flatten-rules () fail :- ! #
 flatten-rules (.rule, .remains) (.head1; .tail1)
 	:- member (.rule, (.rule :- ()),) (.head :- .tail)
-	, !, .head1 = ($$BYTECODE _ POP .reg, $$REG:.reg = .head, .tail)
+	, !, .head1 = ($$BYTECODE _ TOP .reg -1, $$REG:.reg = .head, .tail)
 	, flatten-rules .remains .tail1
 #
 
