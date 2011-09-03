@@ -208,14 +208,10 @@ public class InstructionCodeExecutor {
 		}
 	}
 
-	private static class Frame {
-		private Frame previous;
-		private Object registers[];
-
-		private Frame(Frame previous, int frameSize) {
-			this.previous = previous;
-			registers = new Object[frameSize];
-		}
+	private int allocateInPool(Node node) {
+		int pointer = constantPool.size();
+		constantPool.put(pointer, node);
+		return pointer;
 	}
 
 	private static class Closure {
@@ -229,6 +225,16 @@ public class InstructionCodeExecutor {
 
 		public Closure clone() {
 			return new Closure(frame, ip);
+		}
+	}
+
+	private static class Frame {
+		private Frame previous;
+		private Object registers[];
+
+		private Frame(Frame previous, int frameSize) {
+			this.previous = previous;
+			registers = new Object[frameSize];
 		}
 	}
 
@@ -418,12 +424,6 @@ public class InstructionCodeExecutor {
 			throw new RuntimeException("Unknown system call " + command);
 
 		return result;
-	}
-
-	private int allocateInPool(Node node) {
-		int pointer = constantPool.size();
-		constantPool.put(pointer, node);
-		return pointer;
 	}
 
 	private static Int n(int n) {
