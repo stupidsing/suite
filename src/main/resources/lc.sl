@@ -54,6 +54,7 @@ initialize-variables .call0/($$BYTECODE _ NEW-NODE .n, .call1) (.variable/.n, .r
 	:- initialize-variables .call0/.call1 .remains
 #
 
+--lc-compile .p :- write lc-compile .p, nl, fail #
 lc-compile ($$BYTECODE .bytecode) .more .pls .c0/.cx/.d0/.dx
 	:- !, .c0 = (.bytecode, .c1)
 	, lc-compile .more () .pls .c1/.cx/.d0/.dx
@@ -89,6 +90,7 @@ lc-compile (.rules >> .call) .more .pls .c0/.cx/.d0/.dx
 	:- !
 	, categorize-rules .rules .groups
 	, compile-rules .groups .pls/.pls1 .d1/.dx
+	-- TODO .more should be compiled with .pls, not .pls1
 	, !, lc-compile .call .more .pls1 .c0/.cx/.d0/.d1
 #
 lc-compile .call .more .pls .c0/.cx/.d0/.dx
@@ -111,7 +113,8 @@ lc-compile .d _ _ _ :- write "Unknown expression" .d, nl, fail #
 
 categorize-rules () _ #
 categorize-rules (.rule # .remains) .groups
-	:- call-prototype .rule .proto
+	:- decompose-rule .rule .head _
+	, call-prototype .head .proto
 	, member .groups .proto/.rules
 	, member .rules .rule
 	, !
@@ -128,10 +131,13 @@ compile-rules (.proto/.rules, .remains) .pls/.plsx .c0/.cx
 
 flatten-rules () fail :- ! #
 flatten-rules (.rule, .remains) (.head1; .tail1)
-	:- member (.rule, (.rule :- ()),) (.head :- .tail)
+	:- decompose-rule .rule .head .tail
 	, !, .head1 = ($$BYTECODE _ TOP .reg -1, $$REG:.reg = .head, .tail)
 	, flatten-rules .remains .tail1
 #
+
+decompose-rule (.head :- .tail) .head .tail :- ! #
+decompose-rule .head .head () #
 
 create-node $$REG:.r .c/.c/.r #
 create-node .a .c0/.cx/.reg :- is.atom .a, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx) #
@@ -145,6 +151,7 @@ create-node .tree .c0/.cx/.reg
 #
 
 call-prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
+call-prototype .head .head #
 
 params-prototype (_ .remains0) (() .remains1) :- params-prototype .remains0 .remains1, ! #
 params-prototype .s () :- not (bound .s, tree .s _ ' ' _) #
