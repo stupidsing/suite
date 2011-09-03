@@ -59,6 +59,11 @@ lc-compile ($$BYTECODE .bytecode) .more .pls .c0/.cx/.d0/.dx
 	:- !, .c0 = (.bytecode, .c1)
 	, lc-compile .more () .pls .c1/.cx/.d0/.dx
 #
+lc-compile ($$SCOPE .call .pls1) .more .pls .c0/.cx/.d0/.dx
+	:- !
+	, (.more/.more1 = ()/(); .more1 = $$SCOPE .more .pls)
+	, lc-compile .call .more1 .pls1 .c0/.cx/.d0/.dx
+#
 lc-compile fail _ _ .c/.c/.d/.d :- ! #
 lc-compile () .more .pls .c0/.cx/.d0/.dx
 	:- !, lc-compile .more () .pls .c0/.cx/.d0/.dx
@@ -90,8 +95,7 @@ lc-compile (.rules >> .call) .more .pls .c0/.cx/.d0/.dx
 	:- !
 	, categorize-rules .rules .groups
 	, compile-rules .groups .pls/.pls1 .d1/.dx
-	-- TODO .more should be compiled with .pls, not .pls1
-	, !, lc-compile .call .more .pls1 .c0/.cx/.d0/.d1
+	, !, lc-compile ($$SCOPE .call .pls1) .more .pls .c0/.cx/.d0/.d1
 #
 lc-compile .call .more .pls .c0/.cx/.d0/.dx
 	:- call-prototype .call .proto
