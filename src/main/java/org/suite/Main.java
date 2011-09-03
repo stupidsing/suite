@@ -83,34 +83,34 @@ public class Main {
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
 
-				final Generalizer generalizer = new Generalizer();
-				node = generalizer.generalize(node);
-
-				switch (type) {
-				case FACT:
+				if (type == InputType.FACT) {
 					rs.addRule(node);
-					break;
-				case QUERY:
-					System.out.println(prover.prove(node) ? "Yes\n" : "No\n");
-					break;
-				case ELABORATE:
-					Node elab = new Station() {
-						public boolean run(Backtracks backtracks) {
-							String dump = generalizer.dumpVariables();
-							if (!dump.isEmpty())
-								System.out.println(dump);
+				} else {
+					final Generalizer generalizer = new Generalizer();
+					node = generalizer.generalize(node);
 
-							count[0]++;
-							return false;
-						}
-					};
+					if (type == InputType.QUERY) {
+						boolean result = prover.prove(node);
+						System.out.println(result ? "Yes\n" : "No\n");
+					} else if (type == InputType.ELABORATE) {
+						Node elab = new Station() {
+							public boolean run(Backtracks backtracks) {
+								String dump = generalizer.dumpVariables();
+								if (!dump.isEmpty())
+									System.out.println(dump);
 
-					prover.prove(new Tree(TermOp.AND___, node, elab));
+								count[0]++;
+								return false;
+							}
+						};
 
-					if (count[0] == 1)
-						System.out.println(count[0] + " solution\n");
-					else
-						System.out.println(count[0] + " solutions\n");
+						prover.prove(new Tree(TermOp.AND___, node, elab));
+
+						if (count[0] == 1)
+							System.out.println(count[0] + " solution\n");
+						else
+							System.out.println(count[0] + " solutions\n");
+					}
 				}
 			} catch (Throwable ex) {
 				log.error(Main.class, ex);
