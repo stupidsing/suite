@@ -25,83 +25,61 @@ compile-call .call .pls .c0/.cx/.label
 	)
 	, to.atom "!" .cutSymbol
 	, replace .call/.call1 .cutSymbol/($$CUT .cutPoint .failLabel)
-	, generalize-variables .call1/.call2 .variables
-	, initialize-variables .call2/.call3 .variables
-	, lc-compile .call3 (
+	, lc-compile .call1 (
 		$$BYTECODE _ CALL-CLOSURE .provenReg .provenReg, fail
-	) .pls .c1/.c2/.c3/.c4
+	) .pls/_ .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel RETURN, .c3)
 	, .c4 = (_ LEAVE, .cx)
 #
 
-generalize-variables .variable/$$REG:.n .variables
-	:- is.atom .variable
-	, to.atom "." .dot, starts.with .variable .dot
-	, !, member .variables .variable/.n
-	, !
-#
-generalize-variables .call0/.call1 .variables
-	:- tree .call0 .left0 .operator .right0
-	, tree .call1 .left1 .operator .right1
-	, !
-	, generalize-variables .left0/.left1 .variables
-	, generalize-variables .right0/.right1 .variables
-#
-generalize-variables .call/.call _ #
-
-initialize-variables .call/.call () :- ! #
-initialize-variables .call0/($$BYTECODE _ NEW-NODE .n, .call1) (.variable/.n, .remains)
-	:- initialize-variables .call0/.call1 .remains
-#
-
 --lc-compile .p :- write lc-compile .p, nl, fail #
-lc-compile ($$BYTECODE .bytecode) .more .pls .c0/.cx/.d0/.dx
+lc-compile ($$BYTECODE .bytecode) .more .env .c0/.cx/.d0/.dx
 	:- !, .c0 = (.bytecode, .c1)
-	, lc-compile .more () .pls .c1/.cx/.d0/.dx
+	, lc-compile .more () .env .c1/.cx/.d0/.dx
 #
-lc-compile ($$SCOPE .call .pls1) .more .pls .c0/.cx/.d0/.dx
+lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, (.more/.more1 = ()/(); .more1 = $$SCOPE .more .pls)
-	, lc-compile .call .more1 .pls1 .c0/.cx/.d0/.dx
+	, lc-compile .call .more1 .pls1/.vs .c0/.cx/.d0/.dx
 #
 lc-compile fail _ _ .c/.c/.d/.d :- ! #
-lc-compile () .more .pls .c0/.cx/.d0/.dx
-	:- !, lc-compile .more () .pls .c0/.cx/.d0/.dx
+lc-compile () .more .env .c0/.cx/.d0/.dx
+	:- !, lc-compile .more () .env .c0/.cx/.d0/.dx
 #
-lc-compile (.a, .b) .more .pls .c0/.cx/.d0/.dx
-	:- !, lc-compile .a (.b, .more) .pls .c0/.cx/.d0/.dx
+lc-compile (.a, .b) .more .env .c0/.cx/.d0/.dx
+	:- !, lc-compile .a (.b, .more) .env .c0/.cx/.d0/.dx
 #
-lc-compile (.a; .b) .more .pls .c0/.cx/.d0/.dx
+lc-compile (.a; .b) .more .env .c0/.cx/.d0/.dx
 	:- !
-	, lc-compile .a ($$BYTECODE _ CALL-CONSTANT .label, fail) .pls .c0/.c1/.d0/.d1
-	, lc-compile .b ($$BYTECODE _ CALL-CONSTANT .label, fail) .pls .c1/.cx/.d1/.d2
+	, lc-compile .a ($$BYTECODE _ CALL-CONSTANT .label, fail) .env .c0/.c1/.d0/.d1
+	, lc-compile .b ($$BYTECODE _ CALL-CONSTANT .label, fail) .env .c1/.cx/.d1/.d2
 	, .d2 = (.label LABEL .label, .d3)
-	, lc-compile .more () .pls .d3/.d4/.d5/.dx
+	, lc-compile .more () .env .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
 #
-lc-compile ($$CUT .cutPoint .failLabel) .more .pls .c0/.cx/.d0/.dx
-	:- !, lc-compile .more () .pls .c0/.c1/.d0/.dx
+lc-compile ($$CUT .cutPoint .failLabel) .more .env .c0/.cx/.d0/.dx
+	:- !, lc-compile .more () .env .c0/.c1/.d0/.dx
 	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
 #
-lc-compile (.a = .b) .more .pls .c0/.cx/.d0/.dx
+lc-compile (.a = .b) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
-	, create-node .a .c0/.c1/.reg0
-	, create-node .b .c1/.c2/.reg1
+	, create-node .a .vs .c0/.c1/.reg0
+	, create-node .b .vs .c1/.c2/.reg1
 	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
-	, lc-compile .more () .pls .c3/.c4/.d0/.dx
+	, lc-compile .more () .pls/.vs .c3/.c4/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
 #
-lc-compile (.rules >> .call) .more .pls .c0/.cx/.d0/.dx
+lc-compile (.rules >> .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, categorize-rules .rules .groups
 	, predicate-labels .groups .pls/.pls1
 	, compile-rules .groups .pls1 .d1/.dx
-	, !, lc-compile ($$SCOPE .call .pls1) .more .pls .c0/.cx/.d0/.d1
+	, !, lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.d1
 #
-lc-compile .call .more .pls .c0/.cx/.d0/.dx
+lc-compile .call .more .pls/.vs .c0/.cx/.d0/.dx
 	:- call-prototype .call .proto
 	, member .pls .proto/.callLabel
-	, !, create-node .call .c0/.c1/.reg
+	, !, create-node .call .vs .c0/.c1/.reg
 	, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
 		, _ PUSH .reg
@@ -111,7 +89,7 @@ lc-compile .call .more .pls .c0/.cx/.d0/.dx
 		, .cx
 	)
 	, .d0 = (.provenLabel LABEL .provenLabel, .d1)
-	, lc-compile .more () .pls .d1/.d2/.d3/.dx
+	, lc-compile .more () .pls/.vs .d1/.d2/.d3/.dx
 	, .d2 = (_ RETURN, .d3)
 #
 lc-compile .d _ _ _ :- write "Unknown expression" .d, nl, fail #
@@ -131,7 +109,7 @@ predicate-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
 	:- predicate-labels .tail .pls/.pls1
 #
 
-compile-rules () .pls .c/.c :- ! #
+compile-rules () _ .c/.c :- ! #
 compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	:- flatten-rules .rules .call
 	, member .pls .proto/.callLabel
@@ -149,14 +127,22 @@ flatten-rules (.rule, .remains) (.head1; .tail1)
 decompose-rule (.head :- .tail) .head .tail :- ! #
 decompose-rule .head .head () #
 
-create-node $$REG:.r .c/.c/.r #
-create-node .a .c0/.cx/.reg :- is.atom .a, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx) #
-create-node .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-create-node .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx) #
-create-node .tree .c0/.cx/.reg
+create-node $$REG:.reg _ .c/.c/.reg :- ! #
+create-node .var .vs .c0/.cx/.reg
+	:- is-variable .var
+	, !, member .vs .var/.reg/.created
+	, (bound .created, .c0 = .cx
+		; .created = CREATED, .c0 = (_ NEW-NODE .reg, .cx)
+	)
+	, !
+#
+create-node .a _ .c0/.cx/.reg :- is.atom .a, !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx) #
+create-node .i _ .c0/.cx/.reg :- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
+create-node .s _ .c0/.cx/.reg :- is.string .s, !, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx) #
+create-node .tree .vs .c0/.cx/.reg
 	:- tree .tree .left .operator .right
-	, create-node .left .c0/.c1/.regl
-	, create-node .right .c1/.c2/.regr
+	, create-node .left .vs .c0/.c1/.regl
+	, create-node .right .vs .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
@@ -171,6 +157,11 @@ params-length .ps .n
 	) else (
 		(not bound .ps; .ps != _ _), .n = 1
 	)
+#
+
+is-variable .variable
+	:- is.atom .variable
+	, to.atom "." .dot, starts.with .variable .dot
 #
 
 lc-assign-line-number _ () #
