@@ -22,6 +22,7 @@ public class Cloner {
 		if (node instanceof Reference) {
 			Reference oldRef = (Reference) node;
 			node = references.get(oldRef);
+
 			if (node == null) {
 				Reference newRef = new Reference();
 				node = newRef;

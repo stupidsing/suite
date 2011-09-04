@@ -94,7 +94,8 @@ lc-compile (.a = .b) .more .pls .c0/.cx/.d0/.dx
 lc-compile (.rules >> .call) .more .pls .c0/.cx/.d0/.dx
 	:- !
 	, categorize-rules .rules .groups
-	, compile-rules .groups .pls/.pls1 .d1/.dx
+	, predicate-labels .groups .pls/.pls1
+	, compile-rules .groups .pls1 .d1/.dx
 	, !, lc-compile ($$SCOPE .call .pls1) .more .pls .c0/.cx/.d0/.d1
 #
 lc-compile .call .more .pls .c0/.cx/.d0/.dx
@@ -125,12 +126,17 @@ categorize-rules (.rule # .remains) .groups
 	, categorize-rules .remains .groups
 #
 
-compile-rules () .pls/.pls .c/.c :- ! #
-compile-rules (.proto/.rules, .remains) .pls/.plsx .c0/.cx
+predicate-labels () .pls/.pls :- ! #
+predicate-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
+	:- predicate-labels .tail .pls/.pls1
+#
+
+compile-rules () .pls .c/.c :- ! #
+compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	:- flatten-rules .rules .call
-	, .pls1 = (.proto/.callLabel, .pls)
-	, compile-call .call .pls1 .c0/.c1/.callLabel
-	, compile-rules .remains .pls1/.plsx .c1/.cx
+	, member .pls .proto/.callLabel
+	, compile-call .call .pls .c0/.c1/.callLabel
+	, compile-rules .remains .pls .c1/.cx
 #
 
 flatten-rules () fail :- ! #

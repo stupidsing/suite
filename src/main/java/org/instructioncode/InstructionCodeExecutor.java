@@ -2,7 +2,6 @@ package org.instructioncode;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +95,7 @@ public class InstructionCodeExecutor {
 		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
 	}
 
-	private Map<Integer, Node> constantPool = new HashMap<Integer, Node>();
+	private BiMap<Integer, Node> constantPool = HashBiMap.create();
 
 	private final static Atom trueAtom = Atom.create("true");
 	private final static Atom falseAtom = Atom.create("false");
@@ -209,9 +208,14 @@ public class InstructionCodeExecutor {
 	}
 
 	private int allocateInPool(Node node) {
-		int pointer = constantPool.size();
-		constantPool.put(pointer, node);
-		return pointer;
+		Integer pointer = constantPool.inverse().get(node);
+
+		if (pointer == null) {
+			int pointer1 = constantPool.size();
+			constantPool.put(pointer1, node);
+			return pointer1;
+		} else
+			return pointer;
 	}
 
 	private static class Closure {
