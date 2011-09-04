@@ -62,6 +62,7 @@ public class InstructionCodeExecutor {
 		POP___________("POP"), //
 		PUSH__________("PUSH"), //
 		PUSHCONST_____("PUSH-CONSTANT"), //
+		REMARK________("REMARK"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SYS___________("SYS"), //

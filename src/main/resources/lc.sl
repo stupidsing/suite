@@ -104,6 +104,19 @@ categorize-rules (.rule # .remains) .groups
 	, categorize-rules .remains .groups
 #
 
+call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
+call-prototype .name .name #
+
+params-length .ps .n
+	:- if (bound .ps, .ps = _ .ps1) then (
+		params-length .ps1 .n1, sum .n 1 .n1
+	) else-if (.n > 1, .ps = _ .ps1) then (
+		sum .n 1 .n1, params-length .ps1 .n1
+	) else (
+		(not bound .ps; .ps != _ _), .n = 1
+	)
+#
+
 predicate-labels () .pls/.pls :- ! #
 predicate-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
 	:- predicate-labels .tail .pls/.pls1
@@ -113,8 +126,10 @@ compile-rules () _ .c/.c :- ! #
 compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	:- flatten-rules .rules .call
 	, member .pls .proto/.callLabel
-	, compile-call .call .pls .c0/.c1/.callLabel
-	, compile-rules .remains .pls .c1/.cx
+	, .l = '--------------------'
+	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
+	, compile-call .call .pls .c1/.c2/.callLabel
+	, compile-rules .remains .pls .c2/.cx
 #
 
 flatten-rules () fail :- ! #
@@ -144,19 +159,6 @@ create-node .tree .vs .c0/.cx/.reg
 	, create-node .left .vs .c0/.c1/.regl
 	, create-node .right .vs .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
-#
-
-call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
-call-prototype .name .name #
-
-params-length .ps .n
-	:- if (bound .ps, .ps = _ .ps1) then (
-		params-length .ps1 .n1, sum .n 1 .n1
-	) else-if (.n > 1, .ps = _ .ps1) then (
-		sum .n 1 .n1, params-length .ps1 .n1
-	) else (
-		(not bound .ps; .ps != _ _), .n = 1
-	)
 #
 
 is-variable .variable
