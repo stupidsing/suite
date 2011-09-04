@@ -52,6 +52,7 @@ public class SystemPredicates {
 		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("nth", new EvalPredicates.Nth());
 		addPredicate("parse", new EvalPredicates.Parse());
+		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
 		addPredicate("to.atom", new EvalPredicates.ToAtom());
 		addPredicate("to.string", new EvalPredicates.ToString());

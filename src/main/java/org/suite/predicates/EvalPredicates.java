@@ -2,6 +2,7 @@ package org.suite.predicates;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 import javax.script.ScriptEngine;
@@ -217,6 +218,17 @@ public class EvalPredicates {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(SuiteUtil.parse(Formatter.display(p0)), p1);
+		}
+	}
+
+	public static class RandomPredicate implements SystemPredicate {
+		private final static java.util.Random random = new Random();
+
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Int p0 = (Int) params[0].finalNode();
+			int randomNumber = random.nextInt(p0.getNumber());
+			return prover.bind(Int.create(randomNumber), params[1]);
 		}
 	}
 

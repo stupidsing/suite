@@ -126,7 +126,7 @@ compile-rules () _ .c/.c :- ! #
 compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	:- flatten-rules .rules .call
 	, member .pls .proto/.callLabel
-	, .l = '--------------------'
+	, .l = '----------------'
 	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
 	, compile-call .call .pls .c1/.c2/.callLabel
 	, compile-rules .remains .pls .c2/.cx
