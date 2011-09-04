@@ -1,9 +1,7 @@
 package org.parser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +16,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.ParserUtil;
 import org.util.Util;
@@ -50,13 +49,7 @@ public class Parser {
 	}
 
 	public Node parse(InputStream is) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		while (br.ready())
-			sb.append(br.readLine() + "\n");
-		br.close();
-
-		return parse(sb.toString());
+		return parse(IoUtil.readStream(is));
 	}
 
 	public Node parse(String s) {

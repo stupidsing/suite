@@ -10,6 +10,8 @@ import java.io.OutputStream;
 
 public class IoUtil {
 
+	private final static int BUFFERLENGTH = 4096;
+
 	public static void moveFile(File from, File to)
 			throws FileNotFoundException, IOException {
 
@@ -30,11 +32,23 @@ public class IoUtil {
 		copyStream(in, out);
 	}
 
+	public static String readStream(InputStream in) throws IOException {
+		byte buffer[] = new byte[BUFFERLENGTH];
+		StringBuilder sb = new StringBuilder();
+
+		while (in.available() > 0) {
+			int n = in.read(buffer);
+			sb.append(new String(buffer, 0, n));
+		}
+
+		return sb.toString();
+	}
+
 	public static void copyStream(InputStream in, OutputStream out)
 			throws IOException {
 		try {
 			int len;
-			byte[] buf = new byte[1024];
+			byte[] buf = new byte[BUFFERLENGTH];
 			while ((len = in.read(buf)) > 0)
 				out.write(buf, 0, len);
 		} finally {
