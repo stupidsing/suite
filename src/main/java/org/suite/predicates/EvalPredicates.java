@@ -40,7 +40,7 @@ public class EvalPredicates {
 
 	public static class Compare implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Tree tree = (Tree) ps;
+			Tree tree = (Tree) ps.finalNode();
 			switch ((TermOp) tree.getOperator()) {
 			case LE____:
 				return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;

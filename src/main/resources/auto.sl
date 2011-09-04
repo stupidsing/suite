@@ -1,6 +1,10 @@
 append () .list .list #
 append (.head, .remains) .list (.head, .remains1) :- append .remains .list .remains1 #
 
+if .if then .then _ :- .if, !, .then #
+if _ then _ else-if .elseIf :- !, if .elseIf #
+if _ then _ else .else :- .else #
+
 member (.e, _) .e #
 member (_, .remains) .e :- member .remains .e #
 
@@ -19,6 +23,10 @@ replace .t0/.t1 .from/.to
 	, !, replace .left0/.left1 .from/.to, replace .right0/.right1 .from/.to
 #
 replace .node/.node _/_ #
+
+sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
+sum .a .b .c :- bound .a, bound .c, let .a (.a - .c) #
+sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 
 whatever .g :- .g; yes #
 

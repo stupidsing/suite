@@ -154,11 +154,18 @@ create-node .tree .c0/.cx/.reg
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
-call-prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
-call-prototype .head .head #
+call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
+call-prototype .name .name #
 
-params-prototype (_ .remains0) (() .remains1) :- params-prototype .remains0 .remains1, ! #
-params-prototype .s () :- not (bound .s, tree .s _ ' ' _) #
+params-length .ps .n
+	:- if (bound .ps, .ps = _ .ps1) then (
+		params-length .ps1 .n1, sum .n 1 .n1
+	) else-if (.n > 1, .ps = _ .ps1) then (
+		sum .n 1 .n1, params-length .ps1 .n1
+	) else (
+		(not bound .ps; .ps != _ _), .n = 1
+	)
+#
 
 lc-assign-line-number _ () #
 lc-assign-line-number .n (.n _, .remains)
