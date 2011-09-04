@@ -15,6 +15,10 @@ public class SuiteUtil {
 
 	private static TermParser parser = new TermParser();
 
+	public static void addRule(RuleSet rs, String rule) {
+		rs.addRule(parser.parse(rule));
+	}
+
 	public static void importFile(RuleSet rs, String filename)
 			throws IOException {
 		FileInputStream is = null;
