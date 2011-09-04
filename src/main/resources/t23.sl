@@ -50,23 +50,37 @@ t23-insert .k/.v (T3 .n0 .p0 .n1 .p1 .n2) .tree1
 	, t23-merge-T3R (T3 .n0 .p0 .n1 .p1 .newn2) .tree1
 #
 
-t23-merge-T2L (T2 (T2 .n0 .p0 .n1) .p1 .n2) (T3 .n0 .p0 .n1 .p1 .n2) :- ! #
+t23-merge-T2L
+	(T2 (T2 .n0 .p0 .n1) .p1 .n2)
+	(T3 .n0 .p0 .n1 .p1 .n2)
+	:- !
+#
 t23-merge-T2L .t .t #
 
-t23-merge-T2R (T2 .n0 .p0 (T2 .n1 .p1 .n2)) (T3 .n0 .p0 .n1 .p1 .n2) :- ! #
+t23-merge-T2R
+	(T2 .n0 .p0 (T2 .n1 .p1 .n2))
+	(T3 .n0 .p0 .n1 .p1 .n2)
+	:- !
+#
 t23-merge-T2R .t .t #
 
-t23-merge-T3L (T3 (T2 .n0 .p0 .n1) .p1 .n2 .p2 .n3) (T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
+t23-merge-T3L
+	(T3 (T2 .n0 .p0 .n1) .p1 .n2 .p2 .n3)
+	(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
 	:- !
 #
 t23-merge-T3L .t .t #
 
-t23-merge-T3M (T3 .n0 .p0 (T2 .n1 .p1 .n2) .p2 .n3) (T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
+t23-merge-T3M
+	(T3 .n0 .p0 (T2 .n1 .p1 .n2) .p2 .n3)
+	(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
 	:- !
 #
 t23-merge-T3M .t .t #
 
-t23-merge-T3R (T3 .n0 .p0 .n1 .p1 (T2 .n2 .p2 .n3)) (T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
+t23-merge-T3R
+	(T3 .n0 .p0 .n1 .p1 (T2 .n2 .p2 .n3))
+	(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
 	:- !
 #
 t23-merge-T3R .t .t #
