@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
@@ -63,8 +64,19 @@ public class RuleSet implements RuleSearcher {
 	}
 
 	public void addRule(Rule rule) {
+		rule = new Cloner().clone(rule);
 		rules.add(rule);
 		index.get(Prototype.get(rule)).add(rule);
+	}
+
+	public void addRuleToFront(Node node) {
+		addRuleToFront(formRule(node));
+	}
+
+	public void addRuleToFront(Rule rule) {
+		rule = new Cloner().clone(rule);
+		rules.add(0, rule);
+		index.get(Prototype.get(rule)).add(0, rule);
 	}
 
 	public void removeRule(Node node) {

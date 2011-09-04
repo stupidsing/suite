@@ -1,6 +1,11 @@
 append () .list .list #
 append (.head, .remains) .list (.head, .remains1) :- append .remains .list .remains1 #
 
+enable-trace
+	:- to.atom ".call" .call
+	, asserta (.call :- write 'TRACE: ', dump .call, nl, fail)
+#
+
 if .if then .then _ :- .if, !, .then #
 if _ then _ else-if .elseIf :- !, if .elseIf #
 if _ then _ else .else :- .else #

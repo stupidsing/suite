@@ -65,7 +65,8 @@ public class SystemPredicates {
 		addPredicate("rules", new RuleSetPredicates.GetAllRules());
 		addPredicate("list", new RuleSetPredicates.ListPredicates());
 		addPredicate("import", new RuleSetPredicates.Import());
-		addPredicate("assert", new RuleSetPredicates.Assert());
+		addPredicate("asserta", new RuleSetPredicates.Asserta());
+		addPredicate("assert", new RuleSetPredicates.Assertz());
 		addPredicate("retract", new RuleSetPredicates.Retract());
 		addPredicate("with", new RuleSetPredicates.With());
 	}

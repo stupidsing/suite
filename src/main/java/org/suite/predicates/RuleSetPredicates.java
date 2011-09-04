@@ -35,7 +35,15 @@ public class RuleSetPredicates {
 		private Log log = LogFactory.getLog(getClass());
 	}
 
-	public static class Assert implements SystemPredicate {
+	public static class Asserta implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Predicate.getParameters(ps, 1);
+			prover.getRuleSet().addRuleToFront(params[0]);
+			return true;
+		}
+	}
+
+	public static class Assertz implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
 			prover.getRuleSet().addRule(params[0]);
