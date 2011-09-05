@@ -43,6 +43,7 @@ public class SystemPredicates {
 		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
 		addPredicate("generalize", new EvalPredicates.Generalize());
+		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("is.atom", new EvalPredicates.IsAtom());
 		addPredicate("is.int", new EvalPredicates.IsInt());

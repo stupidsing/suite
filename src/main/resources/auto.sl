@@ -1,5 +1,5 @@
 append () .list .list #
-append (.head, .remains) .list (.head, .remains1) :- append .remains .list .remains1 #
+append (.head, ..tail) .list (.head, ..tail1) :- append ..tail .list ..tail1 #
 
 enable-trace
 	:- to.atom ".call" .call
@@ -11,7 +11,7 @@ if _ then _ else-if .elseIf :- !, if .elseIf #
 if _ then _ else .else :- .else #
 
 member (.e, _) .e #
-member (_, .remains) .e :- member .remains .e #
+member (_, ..tail) .e :- member ..tail .e #
 
 pp-list .n :- bound .n, .n = (.a, .b), !, pp-list .a, write '%0A, ', pp-list .b #
 pp-list .n :- dump .n #

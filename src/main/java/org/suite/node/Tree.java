@@ -24,7 +24,11 @@ public class Tree extends Node {
 
 	@Override
 	public int hashCode() {
-		return operator.hashCode() ^ Util.hashCode(left) ^ Util.hashCode(right);
+		int result = 1;
+		result = 31 * result + Util.hashCode(left);
+		result = 31 * result + Util.hashCode(operator);
+		result = 31 * result + Util.hashCode(right);
+		return result;
 	}
 
 	@Override

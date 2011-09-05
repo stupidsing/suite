@@ -1,56 +1,55 @@
 -------------------------------------------------------------------------------
 -- deterministic analysis
 
-group-predicates (.head :- .tail # .remains) (IN = .head, .tail; .groupedRemains)
-	:- group-predicates .remains .groupedRemains
-#
-group-predicates () fail #
+is-rules-determ .group :- group-rules .group .goal, is-determ .goal #
 
-replace-cut-points .predicates0 (DEFINE-CUT .cutPoint .predicates1)
-       :- replace .predicates0/.predicates1 !/.cutPoint
+group-rules () fail #
+group-rules (.head :- .tail # .remains) (IN = .head, .tail; .remains1)
+	:- group-rules .remains .remains1
 #
 
-is-determ (!, _) #
 is-determ (.a, .b) :- is-determ .a, is-determ .b #
-is-determ (fail; .c) :- is-determ .c #
-is-determ (.c; fail) :- is-determ .c #
-is-determ (.ifThen; .else)
-	:- split-cut .ifThen .then
-	, is-determ .then
-	, is-determ .else
-#
+is-determ .goal :- is-cut-determ .goal #
+is-determ (.a; .b) :- is-cut-determ .a, is-determ .b #
 is-determ (.a = .b) #
 is-determ yes #
 is-determ fail #
 
-split-cut ! () #
-split-cut (!, .c) .c #
+is-cut-determ .goal :- split-cut .goal .afterCut, !, is-determ .afterCut #
+
+split-cut .cut () :- to.atom "!" .cut #
+split-cut (.cut, .c) .c :- to.atom "!" .cut #
 split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
 
 -------------------------------------------------------------------------------
 -- longest common subsequence
 
-lcs () _ () :- ! #
-lcs _ () () :- ! #
-lcs (.common, .remains1) (.common, .remains2) (.common, .lcs)
-	:- lcs-once .remains1 .remains2 .lcs, !
-#
-lcs (.head1, .remains1) (.head2, .remains2) .lcs
-	:- lcs-once (.head1, .remains1) .remains2 .lcs1
-	, lcs-once .remains1 (.head2, .remains2) .lcs2
-	, longest .lcs1 .lcs2 .lcs
+lcs .a .b .lcs :- lcs-memoized .a .b .lcs ()/_ #
+
+lcs-memoized .a .b .lcs .t0/.tx
+	:- hash .a/.b .hash
+	, t23-map .hash/.cached .t0/.t1
+	, once (bound .cached, .t1 = .tx; lcs0 .a .b .cached .t1/.tx)
+	, .lcs = .cached
 #
 
--- Note memory leak
-lcs-once .a .b .lcs :- map.retrieve (LCS .a .b) .lcs, (bound .lcs, !; lcs .a .b .lcs) #
-
-longest .l .r .result
-	:- longest0 .l .r L, !, .result = .l; .result = .r
+lcs0 () _ () _ :- ! #
+lcs0 _ () () _ :- ! #
+lcs0 (.head, .tail1) (.head, .tail2) (.head, .lcs) .t0/.tx
+	:- lcs-memoized .tail1 .tail2 .lcs .t0/.tx
+	, !
+#
+lcs0 (.head1, .tail1) (.head2, .tail2) .lcs .t0/.tx
+	:- lcs-memoized (.head1, .tail1) .tail2 .lcs1 .t0/.t1
+	, lcs-memoized .tail1 (.head2, .tail2) .lcs2 .t1/.tx
+	, longer .lcs1 .lcs2 .lcs
 #
 
-longest0 .l () L #
-longest0 () .l R #
-longest0 (_, .l1) (_, .l2) .which :- longest0 .l1 .l2 .which #
+longer .l .r .result :- longer0 .l .r L, !, .result = .l; .result = .r #
+
+longer0 _ () L #
+longer0 () _ R #
+longer0 (_, .l1) (_, .l2) .which :- longer0 .l1 .l2 .which #
 
 -------------------------------------------------------------------------------
 -- format check

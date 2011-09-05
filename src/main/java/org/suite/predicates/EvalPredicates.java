@@ -122,6 +122,13 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Hash implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			return prover.bind(Int.create(params[0].hashCode()), params[1]);
+		}
+	}
+
 	public static class Let implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
