@@ -21,6 +21,32 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionCodeExecutor {
 
+	private final static BiMap<Insn, String> insnNames = HashBiMap.create();
+	private final static Map<Operator, Insn> evalInsns = Util.createHashMap();
+
+	private BiMap<Integer, Node> constantPool = HashBiMap.create();
+
+	private final static Atom trueAtom = Atom.create("true");
+	private final static Atom falseAtom = Atom.create("false");
+
+	private final static int STACKSIZE = 256;
+
+	static {
+		for (Insn insn : Insn.values())
+			insnNames.put(insn, insn.name);
+
+		evalInsns.put(TermOp.PLUS__, Insn.EVALADD_______);
+		evalInsns.put(TermOp.DIVIDE, Insn.EVALDIV_______);
+		evalInsns.put(TermOp.EQUAL_, Insn.EVALEQ________);
+		evalInsns.put(TermOp.GE____, Insn.EVALGE________);
+		evalInsns.put(TermOp.GT____, Insn.EVALGT________);
+		evalInsns.put(TermOp.LE____, Insn.EVALLE________);
+		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
+		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
+		evalInsns.put(TermOp.MINUS_, Insn.EVALSUB_______);
+		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
+	}
+
 	private enum Insn {
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
@@ -75,33 +101,6 @@ public class InstructionCodeExecutor {
 			this.name = name;
 		}
 	};
-
-	private final static BiMap<Insn, String> insnNames = HashBiMap.create();
-	static {
-		for (Insn insn : Insn.values())
-			insnNames.put(insn, insn.name);
-	}
-
-	private final static Map<Operator, Insn> evalInsns = Util.createHashMap();
-	static {
-		evalInsns.put(TermOp.PLUS__, Insn.EVALADD_______);
-		evalInsns.put(TermOp.DIVIDE, Insn.EVALDIV_______);
-		evalInsns.put(TermOp.EQUAL_, Insn.EVALEQ________);
-		evalInsns.put(TermOp.GE____, Insn.EVALGE________);
-		evalInsns.put(TermOp.GT____, Insn.EVALGT________);
-		evalInsns.put(TermOp.LE____, Insn.EVALLE________);
-		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
-		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
-		evalInsns.put(TermOp.MINUS_, Insn.EVALSUB_______);
-		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
-	}
-
-	private BiMap<Integer, Node> constantPool = HashBiMap.create();
-
-	private final static Atom trueAtom = Atom.create("true");
-	private final static Atom falseAtom = Atom.create("false");
-
-	private final static int STACKSIZE = 256;
 
 	private static class Instruction {
 		private Insn insn;
