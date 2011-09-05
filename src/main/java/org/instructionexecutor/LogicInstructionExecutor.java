@@ -1,4 +1,4 @@
-package org.instructioncode;
+package org.instructionexecutor;
 
 import java.util.ArrayList;
 import java.util.List;

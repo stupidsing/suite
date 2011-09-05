@@ -1,4 +1,4 @@
-package org.instructioncode;
+package org.instructionexecutor;
 
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;

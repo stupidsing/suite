@@ -1,4 +1,4 @@
-package org.instructioncode;
+package org.instructionexecutor;
 
 import java.io.IOException;
 import java.util.ArrayList;
