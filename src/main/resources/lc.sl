@@ -78,19 +78,26 @@ compile-lc (.rules >> .call) .more .pls/.vs .c0/.cx/.d0/.dx
 #
 compile-lc .call .more .pls/.vs .c0/.cx/.d0/.dx
 	:- call-prototype .call .proto
-	, member .pls .proto/.callLabel
-	, !, create-node .call .vs .c0/.c1/.reg
-	, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
-		, _ PUSH .provenReg
-		, _ PUSH .reg
-		, _ CALL-CONSTANT .callLabel
-		, _ POP _
-		, _ POP _
-		, .cx
+	, create-node .call .vs .c0/.c1/.reg
+	, (
+		member .pls .proto/.callLabel, !
+		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
+			, _ PUSH .provenReg
+			, _ PUSH .reg
+			, _ CALL-CONSTANT .callLabel
+			, _ POP _
+			, _ POP _
+			, .cx
+		)
+		, .d0 = (.provenLabel LABEL .provenLabel, .d1)
+		, compile-lc .more () .pls/.vs .d1/.d2/.d3/.dx
+		, .d2 = (_ RETURN, .d3)
+	;
+		system-call-prototype .proto, !
+		, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
+		, compile-lc .more () .pls/.vs .c2/.c3/.d0/.dx
+		, .c3 = (.failLabel LABEL .failLabel, .cx)
 	)
-	, .d0 = (.provenLabel LABEL .provenLabel, .d1)
-	, compile-lc .more () .pls/.vs .d1/.d2/.d3/.dx
-	, .d2 = (_ RETURN, .d3)
 #
 compile-lc .d _ _ _ :- write "Unknown expression" .d, nl, fail #
 
@@ -160,6 +167,8 @@ create-node .tree .vs .c0/.cx/.reg
 	, create-node .right .vs .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
+
+system-call-prototype let/2 #
 
 is-variable .variable :- is.atom .variable, to.atom "." .dot, starts.with .variable .dot #
 

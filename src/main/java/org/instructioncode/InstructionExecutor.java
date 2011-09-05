@@ -13,7 +13,6 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.util.Util;
-import org.util.Util.Pair;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -28,7 +27,7 @@ public class InstructionExecutor {
 	private final static Atom trueAtom = Atom.create("true");
 	private final static Atom falseAtom = Atom.create("false");
 
-	private final static int STACKSIZE = 256;
+	private final static int STACKSIZE = 4096;
 
 	static {
 		for (Insn insn : Insn.values())
@@ -85,6 +84,7 @@ public class InstructionExecutor {
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
+		PROVESYS______("PROVE-SYS"), //
 		PUSH__________("PUSH"), //
 		PUSHCONST_____("PUSH-CONSTANT"), //
 		REMARK________("REMARK"), //
@@ -376,15 +376,15 @@ public class InstructionExecutor {
 				regs[insn.op1] = dataStack[dsp + insn.op2];
 				break;
 			default:
-				Pair<Integer, Integer> pair = execute( //
+				int pair[] = execute( //
 						current, insn, callStack, csp, dataStack, dsp);
-				csp = pair.t1;
-				dsp = pair.t2;
+				csp = pair[0];
+				dsp = pair[1];
 			}
 		}
 	}
 
-	protected Pair<Integer, Integer> execute(Closure current, Instruction insn,
+	protected int[] execute(Closure current, Instruction insn,
 			Closure callStack[], int csp, Object dataStack[], int dsp) {
 		throw new RuntimeException("Unknown instruction " + insn);
 	}

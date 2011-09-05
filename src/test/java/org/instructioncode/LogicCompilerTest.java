@@ -29,6 +29,22 @@ public class LogicCompilerTest {
 	}
 
 	@Test
+	public void testFibonacci() throws IOException {
+		assertTrue(run("" //
+				+ "( \n" //
+				+ "    fib 0 1 # \n" //
+				+ "    fib 1 1 # \n" //
+				+ "    fib .n .f \n" //
+				+ "        :- let .n1 (.n - 1) \n" //
+				+ "        , let .n2 (.n1 - 1) \n" //
+				+ "        , fib .n1 .f1 \n" //
+				+ "        , fib .n2 .f2 \n" //
+				+ "        , let .f (.f1 + .f2) \n" //
+				+ "    # \n" //
+				+ ") >> fib 10 89"));
+	}
+
+	@Test
 	public void testLogic() throws IOException {
 		assertTrue(run("1 = 2; 3 = 3"));
 		assertFalse(run("3 = 3, 1 = 2"));

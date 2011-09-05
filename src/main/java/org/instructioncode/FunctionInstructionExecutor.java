@@ -4,7 +4,6 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.util.Util.Pair;
 
 public class FunctionInstructionExecutor extends InstructionExecutor {
 
@@ -13,7 +12,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected Pair<Integer, Integer> execute(Closure current, Instruction insn,
+	protected int[] execute(Closure current, Instruction insn,
 			Closure callStack[], int csp, Object dataStack[], int dsp) {
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
@@ -27,7 +26,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			return super.execute(current, insn, callStack, csp, dataStack, dsp);
 		}
 
-		return Pair.create(csp, dsp);
+		return new int[] { csp, dsp };
 	}
 
 	private Node sys(Node command, Object dataStack[], int dsp) {

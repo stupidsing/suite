@@ -195,4 +195,11 @@ public class Prover {
 		return ruleSet;
 	}
 
+	/**
+	 * The roll-back log of variable binds.
+	 */
+	public Journal getJournal() {
+		return journal;
+	}
+
 }

@@ -5,15 +5,20 @@ import java.util.List;
 
 import org.suite.Binder;
 import org.suite.Journal;
+import org.suite.doer.Prover;
+import org.suite.kb.RuleSet;
 import org.suite.node.Node;
+import org.suite.predicates.SystemPredicates;
 import org.util.Util;
-import org.util.Util.Pair;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
-	private final static int STACKSIZE = 256;
+	private final static int STACKSIZE = 4096;
 
-	private Journal journal = new Journal();
+	private Prover prover = new Prover(new RuleSet());
+	private Journal journal = prover.getJournal();
+	private SystemPredicates systemPredicates = new SystemPredicates(prover);
+
 	private int bindPoints[] = new int[STACKSIZE];
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
@@ -23,7 +28,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected Pair<Integer, Integer> execute(Closure current, Instruction insn,
+	protected int[] execute(Closure current, Instruction insn,
 			Closure callStack[], int csp, Object dataStack[], int dsp) {
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
@@ -54,11 +59,15 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			Util.truncate(cutPoints, cutPointIndex);
 			current.ip = insn.op2;
 			break;
+		case PROVESYS______:
+			if (!systemPredicates.call((Node) regs[insn.op1]))
+				current.ip = insn.op2;
+			break;
 		default:
 			return super.execute(current, insn, callStack, csp, dataStack, dsp);
 		}
 
-		return Pair.create(csp, dsp);
+		return new int[] { csp, dsp };
 	}
 
 }
