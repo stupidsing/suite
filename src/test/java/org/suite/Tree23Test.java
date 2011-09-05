@@ -17,12 +17,12 @@ public class Tree23Test {
 
 		SuiteUtil.addRule(rs, "add-list () .t/.t");
 		SuiteUtil.addRule(rs, "add-list (.head, .tail) .t0/.tx " //
-				+ ":- t23-add .head/.head .t0/.t1" //
+				+ ":- t23-map .head/.head .t0/.t1" //
 				+ ", add-list .tail .t1/.tx");
 
 		assertTrue(SuiteUtil.proveThis(rs, "" //
 				+ "add-list (1, 2, 3, 4, 5, 6, 7, 8, 9, 10,) ()/.t0" //
-				+ ", t23-add 6/6 .t0/.t1" //
+				+ ", t23-map 6/6 .t0/.t1" //
 				+ ", dump .t1, nl" //
 				+ ", t23-search 4/4 .t1"));
 	}
