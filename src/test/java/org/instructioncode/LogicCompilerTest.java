@@ -13,7 +13,7 @@ import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 
-public class LogicalCompilerTest {
+public class LogicCompilerTest {
 
 	@Test
 	public void test() throws IOException {
@@ -62,7 +62,7 @@ public class LogicalCompilerTest {
 		assertTrue(new Prover(rs).prove(node));
 
 		Node ics = generalizer.getVariable(Atom.create(".code"));
-		Node result = new InstructionCodeExecutor(ics).execute();
+		Node result = new LogicInstructionExecutor(ics).execute();
 		return result == Atom.create("true");
 	}
 

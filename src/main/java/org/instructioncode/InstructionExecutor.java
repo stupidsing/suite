@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.parser.Operator;
-import org.suite.Binder;
-import org.suite.Journal;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -15,16 +13,17 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.util.Util;
+import org.util.Util.Pair;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class InstructionCodeExecutor {
+public class InstructionExecutor {
 
 	private final static BiMap<Insn, String> insnNames = HashBiMap.create();
 	private final static Map<Operator, Insn> evalInsns = Util.createHashMap();
 
-	private BiMap<Integer, Node> constantPool = HashBiMap.create();
+	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 
 	private final static Atom trueAtom = Atom.create("true");
 	private final static Atom falseAtom = Atom.create("false");
@@ -47,7 +46,7 @@ public class InstructionCodeExecutor {
 		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
 	}
 
-	private enum Insn {
+	protected enum Insn {
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
@@ -102,9 +101,9 @@ public class InstructionCodeExecutor {
 		}
 	};
 
-	private static class Instruction {
-		private Insn insn;
-		private int op1, op2, op3;
+	protected static class Instruction {
+		protected Insn insn;
+		protected int op1, op2, op3;
 
 		public Instruction(Insn insn, int op1, int op2, int op3) {
 			this.insn = insn;
@@ -120,7 +119,7 @@ public class InstructionCodeExecutor {
 
 	private Instruction instructions[];
 
-	public InstructionCodeExecutor(Node node) {
+	public InstructionExecutor(Node node) {
 		Tree tree;
 		List<Instruction> list = new ArrayList<Instruction>();
 		InstructionExtractor extractor = new InstructionExtractor();
@@ -218,35 +217,35 @@ public class InstructionCodeExecutor {
 			return pointer;
 	}
 
-	private static class Closure {
-		private Frame frame;
-		private int ip;
+	protected static class Closure {
+		protected Frame frame;
+		protected int ip;
 
-		private Closure(Frame frame, int ip) {
+		protected Closure(Frame frame, int ip) {
 			this.frame = frame;
 			this.ip = ip;
 		}
 
-		public Closure clone() {
+		protected Closure clone() {
 			return new Closure(frame, ip);
 		}
 	}
 
-	private static class Frame {
-		private Frame previous;
-		private Object registers[];
+	protected static class Frame {
+		protected Frame previous;
+		protected Object registers[];
 
-		private Frame(Frame previous, int frameSize) {
+		protected Frame(Frame previous, int frameSize) {
 			this.previous = previous;
 			registers = new Object[frameSize];
 		}
 	}
 
-	private static class CutPoint {
-		private int journalPointer;
-		private int callStackPointer;
+	protected static class CutPoint {
+		protected int journalPointer;
+		protected int callStackPointer;
 
-		public CutPoint(int journalPointer, int callStackPointer) {
+		protected CutPoint(int journalPointer, int callStackPointer) {
 			this.journalPointer = journalPointer;
 			this.callStackPointer = callStackPointer;
 		}
@@ -257,11 +256,6 @@ public class InstructionCodeExecutor {
 		Closure callStack[] = new Closure[STACKSIZE];
 		Object dataStack[] = new Object[STACKSIZE];
 		int csp = 0, dsp = 0;
-
-		Journal journal = new Journal();
-		int bindPoints[] = new int[STACKSIZE];
-		List<CutPoint> cutPoints = new ArrayList<CutPoint>();
-		int bsp = 0;
 
 		for (;;) {
 			Frame frame = current.frame;
@@ -285,16 +279,7 @@ public class InstructionCodeExecutor {
 				regs[insn.op1] = constantPool.get(insn.op2);
 				break;
 			case ASSIGNINT_____:
-				regs[insn.op1] = n(insn.op2);
-				break;
-			case BIND__________:
-				bindPoints[bsp++] = journal.getPointInTime();
-				if (!Binder.bind( //
-						(Node) regs[insn.op1], (Node) regs[insn.op2], journal))
-					current.ip = insn.op3; // Fail
-				break;
-			case BINDUNDO______:
-				journal.undoBinds(bindPoints[--bsp]);
+				regs[insn.op1] = i(insn.op2);
 				break;
 			case CALL__________:
 				callStack[csp++] = current;
@@ -308,54 +293,38 @@ public class InstructionCodeExecutor {
 				callStack[csp++] = current;
 				current = ((Closure) regs[insn.op2]).clone();
 				break;
-			case CUTBEGIN______:
-				regs[insn.op1] = n(cutPoints.size());
-				cutPoints.add(new CutPoint(journal.getPointInTime(), csp));
-				break;
-			case CUTEND________:
-				int p = cutPoints.get(g(regs[insn.op1])).callStackPointer;
-				while (csp > p)
-					callStack[--csp] = null;
-				break;
-			case CUTFAIL_______:
-				int cutPointIndex = g(regs[insn.op1]);
-				CutPoint cutPoint = cutPoints.get(cutPointIndex);
-				journal.undoBinds(cutPoint.journalPointer);
-				Util.truncate(cutPoints, cutPointIndex);
-				current.ip = insn.op2;
-				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
 				break;
 			case EVALADD_______:
-				regs[insn.op1] = n(g(regs[insn.op2]) + g(regs[insn.op3]));
+				regs[insn.op1] = i(g(regs[insn.op2]) + g(regs[insn.op3]));
 				break;
 			case EVALDIV_______:
-				regs[insn.op1] = n(g(regs[insn.op2]) / g(regs[insn.op3]));
+				regs[insn.op1] = i(g(regs[insn.op2]) / g(regs[insn.op3]));
 				break;
 			case EVALEQ________:
-				regs[insn.op1] = b(g(regs[insn.op2]) == g(regs[insn.op3]));
+				regs[insn.op1] = a(g(regs[insn.op2]) == g(regs[insn.op3]));
 				break;
 			case EVALGE________:
-				regs[insn.op1] = b(g(regs[insn.op2]) >= g(regs[insn.op3]));
+				regs[insn.op1] = a(g(regs[insn.op2]) >= g(regs[insn.op3]));
 				break;
 			case EVALGT________:
-				regs[insn.op1] = b(g(regs[insn.op2]) > g(regs[insn.op3]));
+				regs[insn.op1] = a(g(regs[insn.op2]) > g(regs[insn.op3]));
 				break;
 			case EVALLE________:
-				regs[insn.op1] = b(g(regs[insn.op2]) <= g(regs[insn.op3]));
+				regs[insn.op1] = a(g(regs[insn.op2]) <= g(regs[insn.op3]));
 				break;
 			case EVALLT________:
-				regs[insn.op1] = b(g(regs[insn.op2]) < g(regs[insn.op3]));
+				regs[insn.op1] = a(g(regs[insn.op2]) < g(regs[insn.op3]));
 				break;
 			case EVALNE________:
-				regs[insn.op1] = b(g(regs[insn.op2]) != g(regs[insn.op3]));
+				regs[insn.op1] = a(g(regs[insn.op2]) != g(regs[insn.op3]));
 				break;
 			case EVALMUL_______:
-				regs[insn.op1] = n(g(regs[insn.op2]) * g(regs[insn.op3]));
+				regs[insn.op1] = i(g(regs[insn.op2]) * g(regs[insn.op3]));
 				break;
 			case EVALSUB_______:
-				regs[insn.op1] = n(g(regs[insn.op2]) - g(regs[insn.op3]));
+				regs[insn.op1] = i(g(regs[insn.op2]) - g(regs[insn.op3]));
 				break;
 			case EXIT__________:
 				return (Node) regs[insn.op1];
@@ -379,6 +348,8 @@ public class InstructionCodeExecutor {
 			case JUMP__________:
 				current.ip = insn.op1;
 				break;
+			case LABEL_________:
+				break;
 			case NEWNODE_______:
 				regs[insn.op1] = new Reference();
 				break;
@@ -386,10 +357,12 @@ public class InstructionCodeExecutor {
 				dataStack[dsp++] = regs[insn.op1];
 				break;
 			case PUSHCONST_____:
-				dataStack[dsp++] = n(insn.op1);
+				dataStack[dsp++] = i(insn.op1);
 				break;
 			case POP___________:
 				regs[insn.op1] = dataStack[--dsp];
+				break;
+			case REMARK________:
 				break;
 			case RETURN________:
 				current = callStack[--csp];
@@ -399,46 +372,32 @@ public class InstructionCodeExecutor {
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 				break;
-			case SYS___________:
-				dsp -= insn.op3;
-				regs[insn.op2] = sys(constantPool.get(insn.op1), dataStack, dsp);
-				break;
 			case TOP___________:
 				regs[insn.op1] = dataStack[dsp + insn.op2];
+				break;
+			default:
+				Pair<Integer, Integer> pair = execute( //
+						current, insn, callStack, csp, dataStack, dsp);
+				csp = pair.t1;
+				dsp = pair.t2;
 			}
 		}
 	}
 
-	private Node sys(Node command, Object dataStack[], int dsp) {
-		Node result;
-
-		if (command == Atom.create("CONS")) {
-			Node left = (Node) dataStack[dsp + 1];
-			Node right = (Node) dataStack[dsp];
-			result = new Tree(TermOp.COLON_, left, right);
-		} else if (command == Atom.create("EMPTY"))
-			result = Atom.nil;
-		else if (command == Atom.create("IS-TREE"))
-			result = b(Tree.decompose((Node) dataStack[dsp]) != null);
-		else if (command == Atom.create("HEAD"))
-			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
-		else if (command == Atom.create("TAIL"))
-			result = Tree.decompose((Node) dataStack[dsp]).getRight();
-		else
-			throw new RuntimeException("Unknown system call " + command);
-
-		return result;
+	protected Pair<Integer, Integer> execute(Closure current, Instruction insn,
+			Closure callStack[], int csp, Object dataStack[], int dsp) {
+		throw new RuntimeException("Unknown instruction " + insn);
 	}
 
-	private static Int n(int n) {
+	protected static Int i(int n) {
 		return Int.create(n);
 	}
 
-	private static Atom b(boolean b) {
+	protected static Atom a(boolean b) {
 		return b ? trueAtom : falseAtom;
 	}
 
-	private static int g(Object node) {
+	protected static int g(Object node) {
 		return ((Int) node).getNumber();
 	}
 

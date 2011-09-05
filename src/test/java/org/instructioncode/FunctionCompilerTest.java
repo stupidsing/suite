@@ -17,7 +17,7 @@ import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
 
-public class FunctionalCompilerTest {
+public class FunctionCompilerTest {
 
 	@Test
 	public void testClosure() throws IOException {
@@ -120,7 +120,7 @@ public class FunctionalCompilerTest {
 		assertTrue(new Prover(rs).prove(node));
 
 		Node ics = generalizer.getVariable(Atom.create(".code"));
-		return new InstructionCodeExecutor(ics).execute();
+		return new FunctionInstructionExecutor(ics).execute();
 	}
 
 }
