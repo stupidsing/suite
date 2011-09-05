@@ -112,7 +112,7 @@ public class FunctionalCompilerTest {
 
 		Node node = SuiteUtil.parse("" //
 				+ "parse \"" + program + "\" .program \n" //
-				+ ", compile .program .code \n" //
+				+ ", compile-function .program .code \n" //
 				+ ", pp-list .code");
 
 		Generalizer generalizer = new Generalizer();

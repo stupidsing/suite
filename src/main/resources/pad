@@ -28,6 +28,31 @@ split-cut (!, .c) .c #
 split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
 
 -------------------------------------------------------------------------------
+-- longest common subsequence
+
+lcs () _ () :- ! #
+lcs _ () () :- ! #
+lcs (.common, .remains1) (.common, .remains2) (.common, .lcs)
+	:- lcs-once .remains1 .remains2 .lcs, !
+#
+lcs (.head1, .remains1) (.head2, .remains2) .lcs
+	:- lcs-once (.head1, .remains1) .remains2 .lcs1
+	, lcs-once .remains1 (.head2, .remains2) .lcs2
+	, longest .lcs1 .lcs2 .lcs
+#
+
+-- Note memory leak
+lcs-once .a .b .lcs :- map.retrieve (LCS .a .b) .lcs, (bound .lcs, !; lcs .a .b .lcs) #
+
+longest .l .r .result
+	:- longest0 .l .r L, !, .result = .l; .result = .r
+#
+
+longest0 .l () L #
+longest0 () .l R #
+longest0 (_, .l1) (_, .l2) .which :- longest0 .l1 .l2 .which #
+
+-------------------------------------------------------------------------------
 -- format check
 
 define-signature .sign :- signature-prototype .sign .sign #
@@ -73,34 +98,3 @@ prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .rem
 
 params-prototype (_, .remains0) ((), .remains1) :- params-prototype .remains0 .remains1, ! #
 params-prototype () () #
-
--------------------------------------------------------------------------------
--- pattern recog
-
--------------------------------------------------------------------------------
--- lexer
-
--------------------------------------------------------------------------------
--- longest common subsequence
-
-lcs () _ () :- ! #
-lcs _ () () :- ! #
-lcs (.common, .remains1) (.common, .remains2) (.common, .lcs)
-	:- lcs-once .remains1 .remains2 .lcs, !
-#
-lcs (.head1, .remains1) (.head2, .remains2) .lcs
-	:- lcs-once (.head1, .remains1) .remains2 .lcs1
-	, lcs-once .remains1 (.head2, .remains2) .lcs2
-	, longest .lcs1 .lcs2 .lcs
-#
-
--- Note memory leak
-lcs-once .a .b .lcs :- map.retrieve (LCS .a .b) .lcs, (bound .lcs, !; lcs .a .b .lcs) #
-
-longest .l .r .result
-	:- longest0 .l .r L, !, .result = .l; .result = .r
-#
-
-longest0 .l () L #
-longest0 () .l R #
-longest0 (_, .l1) (_, .l2) .which :- longest0 .l1 .l2 .which #

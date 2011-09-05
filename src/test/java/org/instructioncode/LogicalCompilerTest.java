@@ -54,7 +54,7 @@ public class LogicalCompilerTest {
 
 		Node node = SuiteUtil.parse("" //
 				+ "parse \"" + program + "\" .program \n" //
-				+ ", compile .program .code \n" //
+				+ ", compile-logic .program .code \n" //
 				+ ", pp-list .code");
 
 		Generalizer generalizer = new Generalizer();

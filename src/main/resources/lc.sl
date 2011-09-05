@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- logical compiler
 
-compile .call .c0
+compile-logic .call .c0
 	:- .c0 = (_ ENTER
 		, _ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
@@ -13,11 +13,11 @@ compile .call .c0
 		, .provenLabel EXIT-VALUE true
 		, .c1
 	)
-	, compile-call .call () .c1/()/.callLabel
-	, lc-assign-line-number 0 .c0
+	, compile-lc .call () .c1/()/.callLabel
+	, assign-line-number-lc 0 .c0
 #
 
-compile-call .call .pls .c0/.cx/.label
+compile-lc .call .pls .c0/.cx/.label
 	:- .c0 = (.label ENTER
 		, _ CUT-BEGIN .cutPoint
 		, _ TOP .provenReg -2
@@ -128,7 +128,7 @@ compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	, member .pls .proto/.callLabel
 	, .l = '----------------'
 	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
-	, compile-call .call .pls .c1/.c2/.callLabel
+	, compile-lc .call .pls .c1/.c2/.callLabel
 	, compile-rules .remains .pls .c2/.cx
 #
 
@@ -161,12 +161,9 @@ create-node .tree .vs .c0/.cx/.reg
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
-is-variable .variable
-	:- is.atom .variable
-	, to.atom "." .dot, starts.with .variable .dot
-#
+is-variable .variable :- is.atom .variable, to.atom "." .dot, starts.with .variable .dot #
 
-lc-assign-line-number _ () #
-lc-assign-line-number .n (.n _, .remains)
-	:- let .n1 (.n + 1), lc-assign-line-number .n1 .remains
+assign-line-number-lc _ () #
+assign-line-number-lc .n (.n _, .remains)
+	:- let .n1 (.n + 1), assign-line-number-lc .n1 .remains
 #
