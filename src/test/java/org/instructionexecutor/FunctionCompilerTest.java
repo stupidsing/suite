@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import org.instructionexecutor.FunctionInstructionExecutor;
 import org.junit.Test;
 import org.suite.SuiteUtil;
 import org.suite.doer.Generalizer;
