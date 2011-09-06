@@ -42,6 +42,7 @@ public class SystemPredicates {
 		addPredicate(TermOp.NOTEQ_, new EvalPredicates.NotEquals());
 		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
+		addPredicate("concat", new EvalPredicates.Concat());
 		addPredicate("generalize", new EvalPredicates.Generalize());
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("let", new EvalPredicates.Let());

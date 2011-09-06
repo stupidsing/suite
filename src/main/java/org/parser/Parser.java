@@ -305,7 +305,7 @@ public class Parser {
 	public static int getQuoteChange(int quote, char c) {
 		if (c == quote)
 			quote = 0;
-		else if (c == '\'' || c == '"')
+		else if ((c == '\'' || c == '"') && quote == 0)
 			quote = c;
 		return quote;
 	}

@@ -62,14 +62,17 @@ public class EvalPredicates {
 				.getEngineByExtension("js");
 
 		public boolean prove(Prover prover, Node ps) {
-			String js = Formatter.display(ps);
+			final Node params[] = Predicate.getParameters(ps, 2);
+			String js = Formatter.display(params[0]), result;
+
 			try {
-				engine.eval(js);
+				result = engine.eval(js).toString();
 			} catch (ScriptException ex) {
 				log.error(js, ex);
 				return false;
 			}
-			return true;
+
+			return prover.bind(new Str(result), params[1]);
 		}
 	}
 
@@ -111,6 +114,21 @@ public class EvalPredicates {
 	public static class IsTree implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return ps.finalNode() instanceof Tree;
+		}
+	}
+
+	public static class Concat implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node node = ps;
+			StringBuilder sb = new StringBuilder();
+			Tree tree;
+
+			while ((tree = Tree.decompose(node, TermOp.SEP___)) != null) {
+				sb.append(Formatter.display(tree.getLeft()));
+				node = tree.getRight();
+			}
+
+			return prover.bind(new Str(sb.toString()), node);
 		}
 	}
 
