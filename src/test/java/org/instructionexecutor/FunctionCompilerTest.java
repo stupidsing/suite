@@ -1,4 +1,4 @@
-package org.instructioncode;
+package org.instructionexecutor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
