@@ -6,6 +6,11 @@ enable-trace
 	, asserta (.call :- write 'TRACE: ', dump .call, nl, fail)
 #
 
+file-read .fn .contents
+	:- concat "s = org.util.IoUtil.readStream(new java.io.FileInputStream('" .fn "'))" .js
+	, eval.js .js .contents
+#
+
 if .if then .then _ :- .if, !, .then #
 if _ then _ else-if .elseIf :- !, if .elseIf #
 if _ then _ else .else :- .else #
@@ -32,6 +37,8 @@ replace .node/.node _/_ #
 sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
 sum .a .b .c :- bound .a, bound .c, let .a (.a - .c) #
 sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
+
+use .fn :- import .fn #
 
 whatever .g :- .g; yes #
 
