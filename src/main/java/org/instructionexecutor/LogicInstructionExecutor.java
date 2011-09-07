@@ -15,16 +15,19 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 
 	private final static int STACKSIZE = 4096;
 
-	private Prover prover = new Prover(new RuleSet());
-	private Journal journal = prover.getJournal();
-	private SystemPredicates systemPredicates = new SystemPredicates(prover);
+	private Prover prover;
+	private Journal journal;
+	private SystemPredicates systemPredicates;
 
 	private int bindPoints[] = new int[STACKSIZE];
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
 
-	public LogicInstructionExecutor(Node node) {
+	public LogicInstructionExecutor(RuleSet ruleSet, Node node) {
 		super(node);
+		prover = new Prover(ruleSet);
+		journal = prover.getJournal();
+		systemPredicates = new SystemPredicates(prover);
 	}
 
 	@Override

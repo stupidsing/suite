@@ -78,7 +78,7 @@ public class LogicCompilerTest {
 		assertTrue(new Prover(rs).prove(node));
 
 		Node ics = generalizer.getVariable(Atom.create(".code"));
-		Node result = new LogicInstructionExecutor(ics).execute();
+		Node result = new LogicInstructionExecutor(rs, ics).execute();
 		return result == Atom.create("true");
 	}
 
