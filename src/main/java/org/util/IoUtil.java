@@ -44,6 +44,11 @@ public class IoUtil {
 		return sb.toString();
 	}
 
+	public static void writeStream(OutputStream out, String content)
+			throws IOException {
+		out.write(content.getBytes());
+	}
+
 	public static void copyStream(InputStream in, OutputStream out)
 			throws IOException {
 		try {

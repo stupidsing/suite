@@ -11,6 +11,11 @@ file-read .fn .contents
 	, eval.js .js .contents
 #
 
+file-write .fn .contents
+	:- concat "org.util.IoUtil.writeStream(new java.io.FileOutputStream('" .fn "'), '" .contents "')" .js
+	, eval.js .js _
+#
+
 if .if then .then _ :- .if, !, .then #
 if _ then _ else-if .elseIf :- !, if .elseIf #
 if _ then _ else .else :- .else #

@@ -63,16 +63,18 @@ public class EvalPredicates {
 
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
-			String js = Formatter.display(params[0]), result;
+			String js = Formatter.display(params[0]);
+			Object result;
 
 			try {
-				result = engine.eval(js).toString();
+				result = engine.eval(js);
 			} catch (ScriptException ex) {
 				log.error(js, ex);
 				return false;
 			}
 
-			return prover.bind(new Str(result), params[1]);
+			String str = result != null ? result.toString() : "";
+			return prover.bind(new Str(str), params[1]);
 		}
 	}
 
