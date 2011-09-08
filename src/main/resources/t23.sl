@@ -8,6 +8,17 @@ t23-map .k/.v .tree/.tree1
 	:- t23-put .k/.v .tree .tree1, !
 #
 
+t23-traverse .k/.v L:.k:.v #
+t23-traverse .k/.v (T2 .n0 _ .n1)
+	:- t23-traverse .k/.v .n0
+	, t23-traverse .k/.v .n1
+#
+t23-traverse .k/.v (T3 .n0 _ .n1 _ .n2)
+	:- t23-traverse .k/.v .n0
+	, t23-traverse .k/.v .n1
+	, t23-traverse .k/.v .n2
+#
+
 t23-search .k/.v L:.k:.v #
 t23-search .k/.v (T2 .n0 .p .n1)
 	:- if (t23-compare .k .p) then (
