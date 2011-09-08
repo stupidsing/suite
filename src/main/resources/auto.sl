@@ -43,7 +43,7 @@ sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
 sum .a .b .c :- bound .a, bound .c, let .a (.a - .c) #
 sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 
-use .fn :- import .fn #
+use .fn :- IMPORTED .fn; assert IMPORTED .fn, import .fn #
 
 whatever .g :- .g; yes #
 
