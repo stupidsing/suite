@@ -113,6 +113,7 @@ public class SystemPredicates {
 					return false;
 				}
 			});
+
 			Prover subProver = new Prover(prover);
 			subProver.prove(subGoal);
 			subProver.undoAllBinds();
