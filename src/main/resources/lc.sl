@@ -72,7 +72,7 @@ compile-lc (.a = .b) .more .pls/.vs .c0/.cx/.d0/.dx
 compile-lc (.rules >> .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, categorize-rules .rules .groups
-	, predicate-labels .groups .pls/.pls1
+	, prototype-labels .groups .pls/.pls1
 	, compile-rules .groups .pls1 .d1/.dx
 	, !, compile-lc ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.d1
 #
@@ -111,6 +111,13 @@ categorize-rules (.rule # .remains) .groups
 	, categorize-rules .remains .groups
 #
 
+flatten-rules () fail :- ! #
+flatten-rules (.rule, .remains) (.head1; .tail1)
+	:- decompose-rule .rule .head .tail
+	, !, .head1 = ($$BYTECODE _ TOP .reg -1, $$REG:.reg = .head, .tail)
+	, flatten-rules .remains .tail1
+#
+
 call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
 call-prototype .name .name #
 
@@ -124,9 +131,9 @@ params-length .ps .n
 	)
 #
 
-predicate-labels () .pls/.pls :- ! #
-predicate-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
-	:- predicate-labels .tail .pls/.pls1
+prototype-labels () .pls/.pls :- ! #
+prototype-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
+	:- prototype-labels .tail .pls/.pls1
 #
 
 compile-rules () _ .c/.c :- ! #
@@ -137,13 +144,6 @@ compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
 	, compile-call .call .pls .c1/.c2/.callLabel
 	, compile-rules .remains .pls .c2/.cx
-#
-
-flatten-rules () fail :- ! #
-flatten-rules (.rule, .remains) (.head1; .tail1)
-	:- decompose-rule .rule .head .tail
-	, !, .head1 = ($$BYTECODE _ TOP .reg -1, $$REG:.reg = .head, .tail)
-	, flatten-rules .remains .tail1
 #
 
 decompose-rule (.head :- .tail) .head .tail :- ! #
