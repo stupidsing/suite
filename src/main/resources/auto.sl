@@ -21,7 +21,7 @@ if _ then _ else-if .elseIf :- !, if .elseIf #
 if _ then _ else .else :- .else #
 
 member (.e, _) .e #
-member (_, ..tail) .e :- member ..tail .e #
+member (_, .tail) .e :- member .tail .e #
 
 pp-list .n :- bound .n, .n = (.a, .b), !, pp-list .a, write '%0A, ', pp-list .b #
 pp-list .n :- dump .n #
