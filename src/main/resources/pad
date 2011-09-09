@@ -1,27 +1,4 @@
 -------------------------------------------------------------------------------
--- deterministic analysis
-
-is-rules-determ .group :- group-rules .group .goal, is-determ .goal #
-
-group-rules () fail #
-group-rules (.head :- .tail # .remains) (IN = .head, .tail; .remains1)
-	:- group-rules .remains .remains1
-#
-
-is-determ (.a, .b) :- is-determ .a, is-determ .b #
-is-determ .goal :- is-cut-determ .goal #
-is-determ (.a; .b) :- is-cut-determ .a, is-determ .b #
-is-determ (.a = .b) #
-is-determ yes #
-is-determ fail #
-
-is-cut-determ .goal :- split-cut .goal .afterCut, !, is-determ .afterCut #
-
-split-cut .cut () :- to.atom "!" .cut #
-split-cut (.cut, .c) .c :- to.atom "!" .cut #
-split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
-
--------------------------------------------------------------------------------
 -- longest common subsequence
 
 lcs .a .b .lcs :- lcs-memoized .a .b .lcs ()/_ #
@@ -52,48 +29,137 @@ longer0 () _ R #
 longer0 (_, .l1) (_, .l2) .which :- longer0 .l1 .l2 .which #
 
 -------------------------------------------------------------------------------
+-- meta-programming
+
+meta .kb (.a, .b) :- meta .kb .a, meta .kb .b #
+meta .kb (.a; .b) :- meta .kb .a; meta .kb .b #
+meta .kb .call
+	:- call-prototype .call .proto
+	, member .kb .proto/.rules
+	, member .rules .rule
+	, generalize .rule (.head :- .tail)
+	, .call = .head
+	, meta .kb .tail
+#
+
+-------------------------------------------------------------------------------
+-- deterministic analysis
+
+is-rules-determ .group :- group-rules .group .goal, is-determ .goal #
+
+group-rules () fail #
+group-rules (.head :- .tail # .remains) (IN = .head, .tail; .remains1)
+	:- group-rules .remains .remains1
+#
+
+is-determ (.a, .b) :- is-determ .a, is-determ .b #
+is-determ .goal :- is-cut-determ .goal #
+is-determ (.a; .b) :- is-cut-determ .a, is-determ .b #
+is-determ (.a = .b) #
+is-determ yes #
+is-determ fail #
+
+is-cut-determ .goal :- split-cut .goal .afterCut, !, is-determ .afterCut #
+
+split-cut .cut () :- to.atom "!" .cut #
+split-cut (.cut, .c) .c :- to.atom "!" .cut #
+split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
+
+-------------------------------------------------------------------------------
+-- symbolic mathematics
+
+equate .a .b :- equate .b .a #
+equate (.a + .b) (.b + .a) #
+equate (.a * .b) (.b * .a) #
+equate (.a + (.b + .c)) ((.a + .b) + .c) #
+equate (.a * (.b * .c)) ((.a * .b) * .c) #
+equate (.v + 0) .v #
+equate (.v - 0) .v #
+equate (.v * 1) .v #
+equate (.v / 1) .v #
+equate (0 - .v) (-1 * .v) #
+equate (.a * (.b + .c)) (.a * .b + .a * .c) #
+
+complexity .i 0 :- is.int .i #
+complexity .tree .n1
+	:- tree .tree .left _ .right
+	, complexity .left .ln
+	, complexity .right .rn
+	, if (.ln > .rn) then
+		let .n1 (.rn + 1)
+	else
+		let .n1 (.rn + 1)
+	, !
+#
+
+-------------------------------------------------------------------------------
 -- format check
 
 define-signature .sign :- signature-prototype .sign .sign #
 
-check-module-types (.rule # .remains) :- check-clause-types .rule, check-module-types .remains #
-check-module-types () #
-
-check-clause-types (.head :- .clause) :- check-rule-types .head .clause #
-check-clause-types .head :- not (head = ()), check-rule-types .head () #
-check-clause-types () #
-
-check-clause-types (.c1, .c2) :- check-clause-types .c1, check-clause-types .c2 #
-check-clause-types (.c1; .c2) :- check-clause-types .c1, check-clause-types .c2 #
-check-clause-types (.c1 = .c2) :- is-type .type .c1, is-type .type .c2 #
-
-check-rule-types .head .clause
-	:- prototype .head .proto
-	, retrieve-signature .head .types
-	, is-type .types .head
-	, check-clause-types .clause
+check-types () _ #
+check-types (.rule # .remains) .signs
+	:- check-rule-types .head .tail .signs
+	, check-types .remains .signs
 #
 
-is-type %any _ #
-is-type %integer .i :- is.int .i #
-is-type %string .s :- is.string .s #
-is-type (.type | _) .e :- is-type .type .e #
-is-type (_ | .remains) .e :- is-type .remains .e #
-is-type (%list .type) (.head, .remains)
+check-rule-types .rule .signs
+	:- decompose-rule .rule .head .tail
+	, call-prototype .head .proto
+	, member .signs .proto/.sign
+	, is-type .head .signs
+	, check-predicate-types .tail
+#
+
+check-predicate-types (.c1, .c2) .vt
+	:- check-predicate-types .c1 .vt
+	, check-predicate-types .c2 .vt
+#
+check-predicate-types (.c1; .c2) .vt
+	:- check-predicate-types .c1 .vt
+	, check-predicate-types .c2 .vt
+#
+check-predicate-types (.c1 = .c2)
+:- is-type .type .c1 .vt, is-type .type .c2 .vt
+#
+check-predicate-types .cut :- to.atom "!" .cut #
+
+is-type .v .type .vt :- is-variable .v, map .v/.type #
+is-type _ %any _ #
+is-type .i %integer _ :- is.int .i #
+is-type .s %string _ :- is.string .s #
+is-type .e (.type | _) _ :- is-type .type .e #
+is-type .e (_ | .tail) _ :- is-type .tail .e #
+is-type (.head, .tail) (%list .type) _
 	:- is-type .type .head
-	, is-type (%list .type) .remains
+	, is-type (%list .type) .tail
 #
-is-type .alias .e :- map.retrieve (TYPE-ALIAS .alias, .value), bound .value, is-type .value .e #
-is-type .treeType .tree
+is-type .tree %op/.operator/.leftType/.rightType _
 	:- tree .tree .left .operator .right
-	, tree .treeType .leftType .operator .rightType
-	, is-type .leftType .left, is-type .rightType .right
+	, is-type .left .leftType
+	, is-type .right .rightType
 #
-is-type .a .a :- is.atom .a, not (starts.with .a '%') #
+is-type .a .a _ :- is.atom .a, not (starts.with .a '%') #
 
-signature-prototype .sign .proto :- prototype .sign .proto, map.retrieve (SIGNATURE .sign, .proto) #
+decompose-rule (.head :- .tail) .head .tail :- ! #
+decompose-rule .head .head () #
 
-prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
+call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
+call-prototype .name .name #
 
-params-prototype (_, .remains0) ((), .remains1) :- params-prototype .remains0 .remains1, ! #
-params-prototype () () #
+params-length .ps .n
+	:- if (bound .ps, .ps = _ .ps1) then (
+		params-length .ps1 .n1, sum .n 1 .n1
+	) else-if (.n > 1, .ps = _ .ps1) then (
+		sum .n 1 .n1, params-length .ps1 .n1
+	) else (
+		(not bound .ps; .ps != _ _), .n = 1
+	)
+#
+
+is-variable .variable
+	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot
+#
+
+map (.k/.v1, _) .k/.v2 :- !, .v1 = .v2 #
+map (_, .tail) .e :- map .tail .e #
