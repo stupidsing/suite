@@ -176,6 +176,9 @@ public class EvalPredicates {
 					break;
 				case DIVIDE:
 					result = a / b;
+					break;
+				case POWER_:
+					result = (int) Math.pow(a, b);
 				}
 			} else if (node instanceof Int)
 				result = ((Int) node).getNumber();

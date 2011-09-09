@@ -68,17 +68,32 @@ split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
 -------------------------------------------------------------------------------
 -- symbolic mathematics
 
-equate .a .b :- equate .b .a #
-equate (.a + .b) (.b + .a) #
-equate (.a * .b) (.b * .a) #
-equate (.a + (.b + .c)) ((.a + .b) + .c) #
-equate (.a * (.b * .c)) ((.a * .b) * .c) #
-equate (.v + 0) .v #
-equate (.v - 0) .v #
-equate (.v * 1) .v #
-equate (.v / 1) .v #
-equate (0 - .v) (-1 * .v) #
-equate (.a * (.b + .c)) (.a * .b + .a * .c) #
+equate1 (.a = .b) :- equate (.a = .b); equate (.b = .a) #
+
+equate (.a = .a) #
+equate (.a + .b = .b + .a) #
+equate (.a * .b = .b * .a) #
+equate (.a - .b = .a + .b * -1) #
+equate (.a / .b = .a * .b ^ -1) #
+equate (.a + (.b + .c) = (.a + .b) + .c) #
+equate (.a * (.b * .c) = (.a * .b) * .c) #
+equate (.v + 0 = .v) #
+equate (_ * 0 = 0) #
+equate (.v * 1 = .v) #
+equate (0 ^ _ = 0) #
+equate (1 ^ _ = 1) #
+equate (_ ^ 0 = 1) #
+equate (.v ^ 1 = .v) #
+equate (.a * (.b + .c) = .a * .b + .a * .c) #
+equate (.a ^ (.b * .c) = .a ^ .b * .a ^ .c) #
+equate (.tree = .tree1) :- tree .tree .a .op .b, equate (.a = .a1), tree .tree1 .a1 .op .b #
+equate (.tree = .tree1) :- tree .tree .a .op .b, equate (.b = .b1), tree .tree1 .a .op .b1 #
+equate (.tree = .value)
+	:- tree .tree .a .op .b
+	, member (' + ',' - ',' * ',) .op -- Only perform exact calculations
+	, is.int .a, is.int .b
+	, let .value .tree
+#
 
 complexity .i 0 :- is.int .i #
 complexity .tree .n1

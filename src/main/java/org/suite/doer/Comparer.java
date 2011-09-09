@@ -28,9 +28,9 @@ public class Comparer implements Comparator<Node> {
 	public int compare(Node n1, Node n2) {
 		n1 = n1.finalNode();
 		n2 = n2.finalNode();
-
 		Class<? extends Node> clazz1 = n1.getClass();
 		Class<? extends Node> clazz2 = n2.getClass();
+
 		if (clazz1 == clazz2)
 			if (clazz1 == Atom.class)
 				return ((Atom) n1).getName().compareTo(((Atom) n2).getName());
@@ -43,12 +43,8 @@ public class Comparer implements Comparator<Node> {
 				Tree t2 = (Tree) n2;
 				int c = t1.getOperator().getPrecedence()
 						- t2.getOperator().getPrecedence();
-				if (c == 0) {
-					c = compare(t1.getLeft(), t2.getLeft());
-					if (c == 0)
-						c = compare(t1.getRight(), t2.getRight());
-				}
-
+				c = c != 0 ? c : compare(t1.getLeft(), t2.getLeft());
+				c = c != 0 ? c : compare(t1.getRight(), t2.getRight());
 				return c;
 			} else
 				return n1.hashCode() - n2.hashCode();
