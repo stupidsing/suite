@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.parser.Operator;
 import org.suite.Context;
 import org.suite.Singleton;
+import org.suite.doer.Cloner;
 import org.suite.doer.Prover;
 import org.suite.doer.Prover.Backtracks;
 import org.suite.doer.TermParser.TermOp;
@@ -44,6 +45,8 @@ public class SystemPredicates {
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
 		addPredicate("concat", new EvalPredicates.Concat());
 		addPredicate("generalize", new EvalPredicates.Generalize());
+		addPredicate("generalize.prefix",
+				new EvalPredicates.GeneralizeWithPrefix());
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("is.atom", new EvalPredicates.IsAtom());
@@ -65,12 +68,13 @@ public class SystemPredicates {
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 
-		addPredicate("rules", new RuleSetPredicates.GetAllRules());
-		addPredicate("list", new RuleSetPredicates.ListPredicates());
-		addPredicate("import", new RuleSetPredicates.Import());
-		addPredicate("asserta", new RuleSetPredicates.Asserta());
 		addPredicate("assert", new RuleSetPredicates.Assertz());
+		addPredicate("asserta", new RuleSetPredicates.Asserta());
+		addPredicate("clear", new RuleSetPredicates.Clear());
+		addPredicate("import", new RuleSetPredicates.Import());
+		addPredicate("list", new RuleSetPredicates.ListPredicates());
 		addPredicate("retract", new RuleSetPredicates.Retract());
+		addPredicate("rules", new RuleSetPredicates.GetAllRules());
 		addPredicate("with", new RuleSetPredicates.With());
 	}
 
@@ -109,7 +113,7 @@ public class SystemPredicates {
 
 			Tree subGoal = new Tree(TermOp.AND___, params[1], new Station() {
 				public boolean run(Backtracks backtracks) {
-					stack.push(params[0].finalNode());
+					stack.push(new Cloner().clone(params[0]));
 					return false;
 				}
 			});

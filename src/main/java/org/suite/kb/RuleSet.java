@@ -59,6 +59,11 @@ public class RuleSet implements RuleSearcher {
 		return result;
 	}
 
+	public void clear() {
+		rules.clear();
+		index.clear();
+	}
+
 	public void addRule(Node node) {
 		addRule(formRule(node));
 	}

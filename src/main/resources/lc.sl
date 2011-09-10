@@ -152,9 +152,9 @@ decompose-rule .head .head () #
 create-node $$REG:.reg _ .c/.c/.reg :- ! #
 create-node .var .vs .c0/.cx/.reg
 	:- is-variable .var
-	, !, member .vs .var/.reg/.created
-	, (bound .created, .c0 = .cx
-		; .created = CREATED, .c0 = (_ NEW-NODE .reg, .cx)
+	, !, member .vs .var/.reg/.first
+	, (bound .first, .c0 = .cx
+		; .first = N, .c0 = (_ NEW-NODE .reg, .cx)
 	)
 	, !
 #

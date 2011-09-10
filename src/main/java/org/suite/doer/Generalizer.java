@@ -11,11 +11,12 @@ import org.suite.node.Tree;
 
 public class Generalizer {
 
-	public static final String variablePrefix = ".";
+	public static final String VARIABLEPREFIX = ".";
 
 	private static final Node WILDCARD = Atom.create("_");
 	private static final Node CUT = Atom.create("!");
 
+	private String variablePrefix = VARIABLEPREFIX;
 	private Map<Node, Reference> variables = new HashMap<Node, Reference>();
 	private Node cut;
 
@@ -63,9 +64,9 @@ public class Generalizer {
 	}
 
 	/**
-	 * Would a certain end-node be generalised?
+	 * Would a certain end-node be generalized?
 	 */
-	public static boolean isVariant(Node node) {
+	public boolean isVariant(Node node) {
 		node = node.finalNode();
 		return isWildcard(node) || isVariable(node) || isCut(node);
 	}
@@ -74,7 +75,7 @@ public class Generalizer {
 		return node == WILDCARD;
 	}
 
-	private static boolean isVariable(Node node) {
+	private boolean isVariable(Node node) {
 		return node instanceof Atom
 				&& ((Atom) node).getName().startsWith(variablePrefix);
 	}
@@ -85,6 +86,10 @@ public class Generalizer {
 
 	public Node getVariable(Node name) {
 		return variables.get(name);
+	}
+
+	public void setVariablePrefix(String variablePrefix) {
+		this.variablePrefix = variablePrefix;
 	}
 
 	public void setCut(Node cut) {

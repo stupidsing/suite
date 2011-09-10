@@ -1,5 +1,5 @@
 append () .list .list #
-append (.head, ..tail) .list (.head, ..tail1) :- append ..tail .list ..tail1 #
+append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 
 enable-trace
 	:- to.atom ".call" .call
@@ -16,9 +16,18 @@ file-write .fn .contents
 	, eval.js .js _
 #
 
+fold () .r/.r _ #
+fold (.head, .tail) .r0/.rx .action
+	:- generalize.prefix .action "_" .action1
+	, .action1 = (.head/.r0/.r1 => .do)
+	, .do
+	, fold .tail .r1/.rx .action
+#
+
 if .if then .then _ :- .if, !, .then #
+if _ then _ end-if :- ! #
+if _ then _ else .else :- !, .else #
 if _ then _ else-if .elseIf :- !, if .elseIf #
-if _ then _ else .else :- .else #
 
 member (.e, _) .e #
 member (_, .tail) .e :- member .tail .e #

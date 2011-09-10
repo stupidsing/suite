@@ -13,10 +13,11 @@ import sun.reflect.Reflection;
 
 public class LogUtil {
 
-	private static boolean inited = false;
+	private static boolean INITED = false;
+	private static int MAXSTACKTRACELENGTH = 99;
 
 	public static void initLog4j() {
-		if (!inited)
+		if (!INITED)
 			initLog4j(Level.INFO);
 	}
 
@@ -41,7 +42,7 @@ public class LogUtil {
 		logger.addAppender(console);
 		logger.addAppender(file);
 
-		inited = true;
+		INITED = true;
 	}
 
 	public static void info(String cat, String message) {
@@ -49,9 +50,35 @@ public class LogUtil {
 		LogFactory.getLog(cat).info(message);
 	}
 
+	public static void error(Class<?> clazz, Throwable th) {
+		error(clazz.getName(), th);
+	}
+
 	public static void error(String cat, Throwable th) {
 		initLog4j();
-		LogFactory.getLog(cat).error("", th);
+		boolean isTrimmed = trimStackTrace(th);
+		LogFactory.getLog(cat).error(isTrimmed ? "(Trimmed)" : "", th);
+	}
+
+	private static boolean trimStackTrace(Throwable th) {
+		boolean isTrimmed = false;
+
+		// Trims stack trace to appropriate length
+		while (th != null) {
+			StackTraceElement st0[] = th.getStackTrace();
+
+			if (st0.length > MAXSTACKTRACELENGTH) {
+				StackTraceElement st1[] = new StackTraceElement[MAXSTACKTRACELENGTH];
+				System.arraycopy(st0, 0, st1, 0, MAXSTACKTRACELENGTH);
+				th.setStackTrace(st1);
+
+				isTrimmed = true;
+			}
+
+			th = th.getCause();
+		}
+
+		return isTrimmed;
 	}
 
 }

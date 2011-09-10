@@ -20,21 +20,6 @@ import org.suite.predicates.SystemPredicates.SystemPredicate;
 
 public class RuleSetPredicates {
 
-	public static class Import implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			try {
-				String filename = Formatter.display(ps);
-				SuiteUtil.importFile(prover.getRuleSet(), filename);
-				return true;
-			} catch (Exception ex) {
-				log.info(this, ex);
-				return false;
-			}
-		}
-
-		private Log log = LogFactory.getLog(getClass());
-	}
-
 	public static class Asserta implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
@@ -51,6 +36,13 @@ public class RuleSetPredicates {
 		}
 	}
 
+	public static class Clear implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			prover.getRuleSet().clear();
+			return true;
+		}
+	}
+
 	public static class GetAllRules implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			List<Rule> rules = prover.getRuleSearcher().getRules();
@@ -59,12 +51,27 @@ public class RuleSetPredicates {
 
 			while (iter.hasPrevious()) {
 				Rule r = iter.previous();
-				Tree node = new Tree(TermOp.INDUCE, r.getHead(), r.getTail());
+				Tree node = new Tree(TermOp.IS____, r.getHead(), r.getTail());
 				allRules = new Tree(TermOp.NEXT__, node, allRules);
 			}
 
 			return prover.bind(allRules, ps);
 		}
+	}
+
+	public static class Import implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			try {
+				String filename = Formatter.display(ps);
+				SuiteUtil.importFile(prover.getRuleSet(), filename);
+				return true;
+			} catch (Exception ex) {
+				log.info(this, ex);
+				return false;
+			}
+		}
+
+		private Log log = LogFactory.getLog(getClass());
 	}
 
 	public static class ListPredicates implements SystemPredicate {

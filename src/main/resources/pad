@@ -68,43 +68,71 @@ split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
 -------------------------------------------------------------------------------
 -- symbolic mathematics
 
-equate (.a = .b) :- equate0 (.a = .b); equate0 (.b = .a) #
+simplify .f .fx .maxDepth
+	:- simplify0 .f .dl .maxDepth
+	, once append .dl () .dl
+	, !
+	, fold .dl 256/.minc (
+		(_c/_t)/_c0/_cx => once (_c > _c0, _cx = _c0; _cx = _c)
+	)
+	, once member .dl .minc/.cl
+	, once append .cl () .cl
+	, member .cl .fx/_
+#
 
-equate0 (.a = .a) #
-equate0 (.a + .b = .b + .a) #
-equate0 (.a * .b = .b * .a) #
-equate0 (.a - .b = .a + .b * -1) #
-equate0 (.a / .b = .a * .b ^ -1) #
-equate0 (.a + (.b + .c) = (.a + .b) + .c) #
-equate0 (.a * (.b * .c) = (.a * .b) * .c) #
-equate0 (.v + 0 = .v) #
+simplify0 .f .dl .maxDepth
+	:- find.all .f1 (equate (.f = .f1)) .list
+	, fold .list .list1/() (
+		_f/_r0/_rx => once (
+			complexity _f _c, _c <= .maxDepth
+			, once member .dl _c/_cl, once member _cl _f/_first
+			, not bound _first, _first = N
+			, _r0 = (_f, _rx)
+		;
+			_r0 = _rx
+		)
+	)
+	--, write NEXT-ROUND:, pp-list .list1, nl	
+	, fold .list1 _ (_f/_ => simplify0 _f .dl .maxDepth)
+	, !
+#
+
+equate (.f = .g) :- equate0 (.f = .g); equate0 (.g = .f) #
+
+equate0 (.f = .f) #
+equate0 (.f + .g = .g + .f) #
+equate0 (.f * .g = .g * .f) #
+equate0 (.f - .g = .f + .g * -1) #
+equate0 (.f / .g = .f * .g ^ -1) #
+equate0 (.f + (.g + .h) = (.f + .g) + .h) #
+equate0 (.f * (.g * .h) = (.f * .g) * .h) #
+equate0 (.f + 0 = .f) #
 equate0 (_ * 0 = 0) #
-equate0 (.v * 1 = .v) #
+equate0 (.f * 1 = .f) #
 equate0 (0 ^ _ = 0) #
 equate0 (1 ^ _ = 1) #
 equate0 (_ ^ 0 = 1) #
-equate0 (.v ^ 1 = .v) #
-equate0 (.a * (.b + .c) = .a * .b + .a * .c) #
-equate0 (.a ^ (.b * .c) = .a ^ .b * .a ^ .c) #
-equate0 (.tree = .tree1) :- tree .tree .a .op .b, equate0 (.a = .a1), tree .tree1 .a1 .op .b #
-equate0 (.tree = .tree1) :- tree .tree .a .op .b, equate0 (.b = .b1), tree .tree1 .a .op .b1 #
+equate0 (.f ^ 1 = .f) #
+equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
+equate0 (.f ^ (.g * .h) = .f ^ .g * .f ^ .h) #
+equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate0 (.f = .f1), tree .tree1 .f1 .op .g #
+equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate0 (.g = .g1), tree .tree1 .f .op .g1 #
 equate0 (.tree = .value)
-	:- tree .tree .a .op .b
+	:- tree .tree .f .op .g
 	, member (' + ',' - ',' * ',) .op -- Only perform exact calculations
-	, is.int .a, is.int .b
+	, is.int .f, is.int .g
 	, let .value .tree
 #
 
-complexity .i 0 :- is.int .i #
+complexity .f 0 :- (is.int .f; is.atom .f), ! #
 complexity .tree .n1
 	:- tree .tree .left _ .right
 	, complexity .left .ln
 	, complexity .right .rn
 	, if (.ln > .rn) then
-		let .n1 (.rn + 1)
+		let .n1 (.ln + 1)
 	else
 		let .n1 (.rn + 1)
-	, !
 #
 
 -------------------------------------------------------------------------------

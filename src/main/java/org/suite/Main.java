@@ -113,7 +113,7 @@ public class Main {
 					}
 				}
 			} catch (Throwable ex) {
-				log.error(Main.class, ex);
+				LogUtil.error(Main.class, ex);
 			}
 	}
 

@@ -17,18 +17,22 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
-		node = node.finalNode();
-
 		if (node instanceof Reference) {
-			Reference oldRef = (Reference) node;
-			node = references.get(oldRef);
+			node = node.finalNode();
 
-			if (node == null) {
-				Reference newRef = new Reference();
-				node = newRef;
-				references.put(oldRef, newRef);
+			if (node instanceof Reference) {
+				Reference oldRef = (Reference) node;
+				node = references.get(oldRef);
+
+				if (node == null) {
+					Reference newRef = new Reference();
+					node = newRef;
+					references.put(oldRef, newRef);
+				}
 			}
-		} else if (node instanceof Tree) {
+		}
+
+		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Node left = clone(tree.getLeft());
 			Node right = clone(tree.getRight());
