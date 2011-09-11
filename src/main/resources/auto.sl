@@ -18,8 +18,7 @@ file-write .fn .contents
 
 fold () .r/.r _ #
 fold (.head, .tail) .r0/.rx .action
-	:- generalize.prefix .action "_" .action1
-	, .action1 = (.head/.r0/.r1 => .do)
+	:- generalize.prefix .action "_" (.head .r0/.r1 => .do)
 	, .do
 	, fold .tail .r1/.rx .action
 #

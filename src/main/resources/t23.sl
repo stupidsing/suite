@@ -4,19 +4,19 @@
 -- t23-map		insert or retrieve key/value pair
 -- t23-search	retrieve key/value pair (i.e. read only)
 
-t23-map .tree/.tree1 .k/.v
-	:- t23-put .k/.v .tree .tree1, !
+t23-map .tree/.tree1 .kv
+	:- t23-put .kv .tree .tree1, !
 #
 
 t23-traverse L:.k:.v .k/.v #
-t23-traverse (T2 .n0 _ .n1) .k/.v
-	:- t23-traverse .n0 .k/.v
-	, t23-traverse .n1 .k/.v
+t23-traverse (T2 .n0 _ .n1) .kv
+	:- t23-traverse .n0 .kv
+	; t23-traverse .n1 .kv
 #
-t23-traverse (T3 .n0 _ .n1 _ .n2) .k/.v
-	:- t23-traverse .n0 .k/.v
-	, t23-traverse .n1 .k/.v
-	, t23-traverse .n2 .k/.v
+t23-traverse (T3 .n0 _ .n1 _ .n2) .kv
+	:- t23-traverse .n0 .kv
+	; t23-traverse .n1 .kv
+	; t23-traverse .n2 .kv
 #
 
 t23-search L:.k:.v .k/.v #
@@ -34,6 +34,24 @@ t23-search (T3 .n0 .p0 .n1 .p1 .n2) .k/.v
 		t23-search .n1 .k/.v
 	) else (
 		t23-search .n2 .k/.v
+	)
+#
+
+t23-replace L:.k:.v0/L:.k:.v1 .k/.v0/.v1 #
+t23-replace (T2 .n0 .p .n1)/.tree1 .k/.vv
+	:- if (t23-compare .k .p) then (
+		t23-replace .n0/.newn0 .k/.vv, .tree1 = T2 .newn0 .p .n1
+	) else (
+		t23-replace .n1/.newn1 .k/.vv, .tree1 = T2 .n0 .p .newn1
+	)
+#
+t23-replace (T3 .n0 .p0 .n1 .p1 .n2)/.tree1 .k/.vv
+	:- if (t23-compare .k .p0) then (
+		t23-replace .n0/.newn0 .k/.vv, .tree1 = T3 .newn0 .p0 .n1 .p1 .n2
+	) else-if (t23-compare .k .p1) then (
+		t23-replace .n1/.newn1 .k/.vv, .tree1 = T3 .n0 .p0 .newn1 .p1 .n2
+	) else (
+		t23-replace .n2/.newn2 .k/.vv, .tree1 = T3 .n0 .p0 .n1 .p1 .newn2
 	)
 #
 
