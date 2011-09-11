@@ -4,36 +4,36 @@
 -- t23-map		insert or retrieve key/value pair
 -- t23-search	retrieve key/value pair (i.e. read only)
 
-t23-map .k/.v .tree/.tree1
+t23-map .tree/.tree1 .k/.v
 	:- t23-put .k/.v .tree .tree1, !
 #
 
-t23-traverse .k/.v L:.k:.v #
-t23-traverse .k/.v (T2 .n0 _ .n1)
-	:- t23-traverse .k/.v .n0
-	, t23-traverse .k/.v .n1
+t23-traverse L:.k:.v .k/.v #
+t23-traverse (T2 .n0 _ .n1) .k/.v
+	:- t23-traverse .n0 .k/.v
+	, t23-traverse .n1 .k/.v
 #
-t23-traverse .k/.v (T3 .n0 _ .n1 _ .n2)
-	:- t23-traverse .k/.v .n0
-	, t23-traverse .k/.v .n1
-	, t23-traverse .k/.v .n2
+t23-traverse (T3 .n0 _ .n1 _ .n2) .k/.v
+	:- t23-traverse .n0 .k/.v
+	, t23-traverse .n1 .k/.v
+	, t23-traverse .n2 .k/.v
 #
 
-t23-search .k/.v L:.k:.v #
-t23-search .k/.v (T2 .n0 .p .n1)
+t23-search L:.k:.v .k/.v #
+t23-search (T2 .n0 .p .n1) .k/.v
 	:- if (t23-compare .k .p) then (
-		t23-search .k/.v .n0
+		t23-search .n0 .k/.v
 	) else (
-		t23-search .k/.v .n1
+		t23-search .n1 .k/.v
 	)
 #
-t23-search .k/.v (T3 .n0 .p0 .n1 .p1 .n2)
+t23-search (T3 .n0 .p0 .n1 .p1 .n2) .k/.v
 	:- if (t23-compare .k .p0) then (
-		t23-search .k/.v .n0
+		t23-search .n0 .k/.v
 	) else-if (t23-compare .k .p1) then (
-		t23-search .k/.v .n1
+		t23-search .n1 .k/.v
 	) else (
-		t23-search .k/.v .n2
+		t23-search .n2 .k/.v
 	)
 #
 
@@ -68,36 +68,36 @@ t23-put .k/.v (T3 .n0 .p0 .n1 .p1 .n2) .tree1
 #
 
 t23-merge-T2L
-	(T2 (T2 .n0 .p0 .n1) .p1 .n2)
-	(T3 .n0 .p0 .n1 .p1 .n2)
+(T2 (T2 .n0 .p0 .n1) .p1 .n2)
+(T3 .n0 .p0 .n1 .p1 .n2)
 	:- !
 #
 t23-merge-T2L .t .t #
 
 t23-merge-T2R
-	(T2 .n0 .p0 (T2 .n1 .p1 .n2))
-	(T3 .n0 .p0 .n1 .p1 .n2)
+(T2 .n0 .p0 (T2 .n1 .p1 .n2))
+(T3 .n0 .p0 .n1 .p1 .n2)
 	:- !
 #
 t23-merge-T2R .t .t #
 
 t23-merge-T3L
-	(T3 (T2 .n0 .p0 .n1) .p1 .n2 .p2 .n3)
-	(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
+(T3 (T2 .n0 .p0 .n1) .p1 .n2 .p2 .n3)
+(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
 	:- !
 #
 t23-merge-T3L .t .t #
 
 t23-merge-T3M
-	(T3 .n0 .p0 (T2 .n1 .p1 .n2) .p2 .n3)
-	(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
+(T3 .n0 .p0 (T2 .n1 .p1 .n2) .p2 .n3)
+(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
 	:- !
 #
 t23-merge-T3M .t .t #
 
 t23-merge-T3R
-	(T3 .n0 .p0 .n1 .p1 (T2 .n2 .p2 .n3))
-	(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
+(T3 .n0 .p0 .n1 .p1 (T2 .n2 .p2 .n3))
+(T2 (T2 .n0 .p0 .n1) .p1 (T2 .n2 .p2 .n3))
 	:- !
 #
 t23-merge-T3R .t .t #

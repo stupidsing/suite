@@ -1,8 +1,6 @@
 -------------------------------------------------------------------------------
 -- symbolic mathematics
 
-:- use t23.sl #
-
 simplify .f .fx .maxDepth
 	:- simplify0 .f .dl .maxDepth
 	, once append .dl () .dl

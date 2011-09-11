@@ -53,8 +53,8 @@ sum .a .b .c :- bound .a, bound .c, let .a (.a - .c) #
 sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 
 use .fn
-	:- concat "src/main/resources/" .fn .fn1, IMPORTED .fn1
-	; assert IMPORTED .fn, import .fn
+	:- concat "src/main/resources/" .fn .fn1
+	, (IMPORTED .fn1; assert IMPORTED .fn1, import .fn1)
 #
 
 whatever .g :- .g; yes #
