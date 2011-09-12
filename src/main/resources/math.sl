@@ -28,7 +28,7 @@ simplify0 (.f, .tailf) .dl0/.dlx .maxComplexity
 		)
 	)
 	, append .tailf .list1 .list2
-	, write NEXT-ROUND:, pp-list .list2, nl
+	--, write NEXT-ROUND:, pp-list .list2, nl
 	, !, simplify0 .list2 .dl1/.dlx .maxComplexity
 #
 
@@ -36,8 +36,8 @@ equate (.f = .g) :- equate0 (.f = .g); equate0 (.g = .f) #
 
 equate0 (.f = .f) #
 equate0 (.f + .g = .g + .f) #
-equate0 (.f * .g = .g * .f) #
 equate0 (.f - .g = .f + .g * -1) #
+equate0 (.f * .g = .g * .f) #
 equate0 (.f / .g = .f * .g ^ -1) #
 equate0 (.f + (.g + .h) = (.f + .g) + .h) #
 equate0 (.f * (.g * .h) = (.f * .g) * .h) #
