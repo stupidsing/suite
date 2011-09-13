@@ -7,12 +7,14 @@ enable-trace
 #
 
 file-read .fn .contents
-	:- concat "s = org.util.IoUtil.readStream(new java.io.FileInputStream('" .fn "'))" .js
+	:- concat
+		"s = org.util.IoUtil.readStream(new java.io.FileInputStream('" .fn "'))" .js
 	, eval.js .js .contents
 #
 
 file-write .fn .contents
-	:- concat "org.util.IoUtil.writeStream(new java.io.FileOutputStream('" .fn "'), '" .contents "')" .js
+	:- concat
+		"org.util.IoUtil.writeStream(new java.io.FileOutputStream('" .fn "'), '" .contents "')" .js
 	, eval.js .js _
 #
 
