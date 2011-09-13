@@ -31,8 +31,25 @@ if _ then _ else-if .elseIf :- !, if .elseIf #
 member (.e, _) .e #
 member (_, .tail) .e :- member .tail .e #
 
+pp-indent 0 :- ! #
+pp-indent .i :- write '    ', let .i1 (.i - 1), pp-indent .i1 #
+
 pp-list .n :- bound .n, .n = (.a, .b), !, pp-list .a, write '%0A, ', pp-list .b #
 pp-list .n :- dump .n #
+
+pp-tree .t :- pp-tree0 .t 0 #
+
+pp-tree0 .t .depth
+	:- tree .t .l .op .r
+	, !
+	, let .depth1 (.depth + 1)
+	, pp-tree0 .l .depth1
+	, pp-indent .depth, write '<'
+	, once (.op = ' ', write 'sp'; trim .op .op1, write .op1)
+	, write '>', nl
+	, pp-tree0 .r .depth1
+#
+pp-tree0 .e .depth :- pp-indent .depth, dump .e, nl #
 
 repeat #
 repeat :- repeat #

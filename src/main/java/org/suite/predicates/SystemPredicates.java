@@ -62,6 +62,7 @@ public class SystemPredicates {
 		addPredicate("to.atom", new EvalPredicates.ToAtom());
 		addPredicate("to.string", new EvalPredicates.ToString());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
+		addPredicate("trim", new EvalPredicates.Trim());
 
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("exec", new IoPredicates.Exec());

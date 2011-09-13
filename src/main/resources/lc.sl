@@ -169,6 +169,8 @@ create-node .tree .vs .c0/.cx/.reg
 #
 
 system-call-prototype let/2 #
+system-call-prototype once/1 #
+system-call-prototype find.all/3 #
 
 is-variable .variable :- is.atom .variable, to.atom "." .dot, starts.with .variable .dot #
 

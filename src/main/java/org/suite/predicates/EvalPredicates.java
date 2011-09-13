@@ -267,7 +267,7 @@ public class EvalPredicates {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			Int p0 = (Int) params[0].finalNode();
 			int randomNumber = random.nextInt(p0.getNumber());
-			return prover.bind(Int.create(randomNumber), params[1]);
+			return prover.bind(params[1], Int.create(randomNumber));
 		}
 	}
 
@@ -314,6 +314,14 @@ public class EvalPredicates {
 				return prover.bind(p, new Tree(operator, params[1], params[3]));
 			} else
 				return false;
+		}
+	}
+
+	public static class Trim implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(p1, new Str(Formatter.display(p0).trim()));
 		}
 	}
 
