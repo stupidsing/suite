@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 public class IoUtil {
 
-	private final static int BUFFERLENGTH = 4096;
+	private final static int BUFFERSIZE = 4096;
 
 	public static void moveFile(File from, File to)
 			throws FileNotFoundException, IOException {
@@ -33,7 +33,7 @@ public class IoUtil {
 	}
 
 	public static String readStream(InputStream in) throws IOException {
-		byte buffer[] = new byte[BUFFERLENGTH];
+		byte buffer[] = new byte[BUFFERSIZE];
 		StringBuilder sb = new StringBuilder();
 
 		while (in.available() > 0) {
@@ -53,9 +53,9 @@ public class IoUtil {
 			throws IOException {
 		try {
 			int len;
-			byte[] buf = new byte[BUFFERLENGTH];
-			while ((len = in.read(buf)) > 0)
-				out.write(buf, 0, len);
+			byte buffer[] = new byte[BUFFERSIZE];
+			while ((len = in.read(buffer)) > 0)
+				out.write(buffer, 0, len);
 		} finally {
 			in.close();
 			out.close();
