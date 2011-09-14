@@ -227,9 +227,13 @@ public class Util {
 		return s.substring(start, end);
 	}
 
-	public static void closeQuietly(Closeable o) throws IOException {
+	public static void closeQuietly(Closeable o) {
 		if (o != null)
-			o.close();
+			try {
+				o.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
