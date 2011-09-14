@@ -20,22 +20,6 @@ import com.jcraft.jsch.UserInfo;
 
 public class Ssh {
 
-	public void putFile(String src, String dest) throws FileNotFoundException,
-			SftpException, JSchException {
-		Session session = null;
-		ChannelSftp channel = null;
-
-		try {
-			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
-
-			channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect();
-			channel.put(new FileInputStream(src), dest);
-		} finally {
-			close(session, channel);
-		}
-	}
-
 	public int execute(String command) throws SftpException, JSchException,
 			IOException {
 		Session session = null;
@@ -55,6 +39,22 @@ public class Ssh {
 			IoUtil.copyStream(channel.getInputStream(), bos);
 
 			return channel.getExitStatus();
+		} finally {
+			close(session, channel);
+		}
+	}
+
+	public void putFile(String src, String dest) throws FileNotFoundException,
+			SftpException, JSchException {
+		Session session = null;
+		ChannelSftp channel = null;
+
+		try {
+			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
+
+			channel = (ChannelSftp) session.openChannel("sftp");
+			channel.connect();
+			channel.put(new FileInputStream(src), dest);
 		} finally {
 			close(session, channel);
 		}
