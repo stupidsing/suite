@@ -14,7 +14,7 @@ simplify .f .fx .maxComplexity
 
 simplify0 () .dl/.dl _ #
 simplify0 (.f, .tailf) .dl0/.dlx .maxComplexity
-	:- find.all .f1 (equate (.f = .f1)) .list0
+	:- find.all .f1 (equate1 (.f = .f1)) .list0
 	, fold .list0 .dl0:.list1/.dl1:() (
 		_f _dl0:_r0/_dlx:_rx => once (
 			complexity _f _c, _c <= .maxComplexity
@@ -32,7 +32,7 @@ simplify0 (.f, .tailf) .dl0/.dlx .maxComplexity
 	, !, simplify0 .list2 .dl1/.dlx .maxComplexity
 #
 
-equate (.f = .g) :- equate0 (.f = .g); equate0 (.g = .f) #
+equate1 (.f = .g) :- equate0 (.f = .g); equate0 (.g = .f) #
 
 equate0 (.f = .f) #
 equate0 (.f + .g = .g + .f) #
@@ -50,8 +50,8 @@ equate0 (_ ^ 0 = 1) #
 equate0 (.f ^ 1 = .f) #
 equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
 equate0 (.f ^ (.g + .h) = .f ^ .g * .f ^ .h) #
-equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate (.f = .f1), tree .tree1 .f1 .op .g #
-equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate (.g = .g1), tree .tree1 .f .op .g1 #
+equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate1 (.f = .f1), tree .tree1 .f1 .op .g #
+equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate1 (.g = .g1), tree .tree1 .f .op .g1 #
 equate0 (.tree = .value)
 	:- tree .tree .f .op .g
 	, member (' + ',' - ',' * ',) .op -- Only perform exact calculations
