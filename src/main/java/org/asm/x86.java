@@ -2,10 +2,26 @@ package org.asm;
 
 public class x86 {
 
+	public static class Instruction {
+		public String name;
+		public Operand operands[];
+	}
+
 	public interface Operand {
 	}
 
 	public interface Register extends Operand {
+	}
+
+	public static class Mem implements Operand {
+		public static enum Scale {
+			x1, x2, x4, x8
+		}
+
+		public int abs;
+		public Reg32 base;
+		public Scale scale;
+		public Reg32 index;
 	}
 
 	public static enum Size {
@@ -34,22 +50,6 @@ public class x86 {
 
 	public static class Immediate implements Operand {
 		public int imm;
-	}
-
-	public static class Mem implements Operand {
-		public static enum Scale {
-			x1, x2, x4, x8
-		}
-
-		public int abs;
-		public Reg32 base;
-		public Scale scale;
-		public Reg32 index;
-	}
-
-	public static class Instruction {
-		public String name;
-		public Operand operands[];
 	}
 
 }
