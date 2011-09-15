@@ -6,6 +6,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -236,6 +237,14 @@ public class Util {
 			}
 	}
 
-	private static Log log = LogFactory.getLog(Util.currentClass());
+	public static void closeQuietly(Socket o) {
+		if (o != null)
+			try {
+				o.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+	}
 
+	private static Log log = LogFactory.getLog(Util.currentClass());
 }
