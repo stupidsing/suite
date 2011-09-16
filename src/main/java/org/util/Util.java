@@ -247,4 +247,5 @@ public class Util {
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
+
 }
