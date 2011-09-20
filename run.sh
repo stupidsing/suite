@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Builds by mvn -Dmaven.test.skip=true assembly:assembly
+
 DEBUGOPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 
 cd "`dirname ${0}`" &&
