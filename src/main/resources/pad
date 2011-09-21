@@ -1,4 +1,21 @@
 -------------------------------------------------------------------------------
+-- theorem proving
+--
+-- 1. removing implication operators (~P ^ Q)
+-- 2. moving negation inwards
+-- 3. skolemising
+-- 4. moving "for-all" outwards
+-- 5. distributing AND over OR
+-- 6.putting into clauses (ANDs of ORs form)
+-- 
+-- resolution:
+-- 
+-- A; B :- C, D
+-- E :- B, F
+-- becomes
+-- A; E :- C, D, F
+
+-------------------------------------------------------------------------------
 -- longest common subsequence
 
 lcs .a .b .lcs :- lcs-memoized .a .b .lcs ()/_ #
