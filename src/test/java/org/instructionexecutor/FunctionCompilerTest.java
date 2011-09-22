@@ -99,6 +99,17 @@ public class FunctionCompilerTest {
 	}
 
 	@Test
+	public void testRange() throws IOException {
+		assertEquals(SuiteUtil.parse("2:5:8:11:"), run("" //
+				+ "range = (i => j => inc => \n" //
+				+ "    i != j \n" //
+				+ "    ? cons {i} {range {i + inc} {j} {inc}} \n" //
+				+ "    | () \n" //
+				+ ") >> \n" //
+				+ "range {2} {14} {3}"));
+	}
+
+	@Test
 	public void testSys() throws IOException {
 		assertNotNull(Tree.decompose(run("cons {1} {2:}")));
 		assertEquals(Int.create(1), run("head {1:2:3:}"));
