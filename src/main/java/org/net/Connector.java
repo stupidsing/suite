@@ -120,11 +120,12 @@ public class Connector {
 					}
 				} else if (key.isWritable()) {
 					String str = "hello\n";
-					System.arraycopy(str.getBytes(), 0, buffer, 0, str.length());
+					int length = str.length();
+					System.arraycopy(str.getBytes(), 0, buffer, 0, length);
 
 					SocketChannel sc1 = (SocketChannel) channel;
 					if (!isWritten) {
-						sc1.write(ByteBuffer.wrap(buffer));
+						sc1.write(ByteBuffer.wrap(buffer, 0, length));
 						isWritten = true;
 					}
 				}
