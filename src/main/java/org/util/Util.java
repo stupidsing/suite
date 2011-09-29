@@ -131,6 +131,19 @@ public class Util {
 			Thread.sleep(time);
 		} catch (InterruptedException ex) {
 			log.error("", ex);
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	public static void wait(Object object) {
+		wait(object, 0);
+	}
+
+	public static void wait(Object object, int timeOut) {
+		try {
+			object.wait(timeOut);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -150,12 +163,17 @@ public class Util {
 			list.remove(--size);
 	}
 
-	public interface Performer<E> {
-		public void perform(E e);
+	public interface Event extends Transformer<Void, Void, RuntimeException> {
 	}
 
-	public interface IoProcess<I, O, Ex extends Exception> {
-		public O perform(I e) throws Ex;
+	public interface Getter<O> extends Transformer<Void, O, RuntimeException> {
+	}
+
+	public interface Setter<I> extends Transformer<I, Void, RuntimeException> {
+	}
+
+	public interface Transformer<I, O, Ex extends Exception> {
+		public O perform(I i) throws Ex;
 	}
 
 	/**
@@ -202,7 +220,7 @@ public class Util {
 	}
 
 	/**
-	 * Clones slowly by serialising and de-serialising.
+	 * Clones slowly by serializing and de-serializing.
 	 */
 	public static <T> T copy(T clonee) throws IOException,
 			ClassNotFoundException {
