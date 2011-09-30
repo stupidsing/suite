@@ -1,7 +1,6 @@
 package org.net;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -14,11 +13,10 @@ import java.util.Iterator;
 
 import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
-import org.util.Util;
 import org.util.Util.Event;
 import org.util.Util.Transformer;
 
-public class NioDispatcher<CL extends ChannelListener> {
+public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 
 	public interface ChannelListenerFactory<CL> {
 		public CL create();
@@ -48,42 +46,11 @@ public class NioDispatcher<CL extends ChannelListener> {
 	private final static int BUFFERSIZE = 4096;
 
 	private ChannelListenerFactory<CL> factory;
-	private boolean started;
 
 	private Selector selector = Selector.open();
-	private Thread eventLoopThread;
-	private volatile boolean running = false;
 
 	public NioDispatcher(ChannelListenerFactory<CL> factory) throws IOException {
 		this.factory = factory;
-	}
-
-	public synchronized void spawn() {
-		running = true;
-
-		eventLoopThread = new Thread() {
-			public void run() {
-				try {
-					serve();
-				} catch (IOException ex) {
-					LogUtil.error(getClass(), ex);
-				}
-			}
-		};
-
-		eventLoopThread.start();
-
-		while (started != true)
-			Util.wait(this);
-	}
-
-	public synchronized void unspawn() {
-		running = false;
-
-		eventLoopThread.interrupt();
-
-		while (started != false)
-			Util.wait(this);
 	}
 
 	/**
@@ -123,11 +90,9 @@ public class NioDispatcher<CL extends ChannelListener> {
 	 * @return event for switching off the server.
 	 */
 	public Event listen(int port) throws IOException {
-		InetAddress localHost = InetAddress.getByName("0.0.0.0");
-
 		final ServerSocketChannel ssc = ServerSocketChannel.open();
 		ssc.configureBlocking(false);
-		ssc.socket().bind(new InetSocketAddress(localHost, port));
+		ssc.socket().bind(new InetSocketAddress(port));
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
 
 		wakeUpSelector();
@@ -145,7 +110,8 @@ public class NioDispatcher<CL extends ChannelListener> {
 		};
 	}
 
-	private void serve() throws IOException {
+	@Override
+	protected void serve() throws IOException {
 		setStarted(true);
 
 		while (running) {
@@ -174,11 +140,6 @@ public class NioDispatcher<CL extends ChannelListener> {
 		selector.close();
 	}
 
-	private synchronized void setStarted(boolean isStarted) {
-		started = isStarted;
-		notify();
-	}
-
 	private void processSelectedKey(SelectionKey key) throws IOException {
 		// LogUtil.info("KEY", dumpKey(key));
 
@@ -188,8 +149,8 @@ public class NioDispatcher<CL extends ChannelListener> {
 
 		if (key.isAcceptable()) {
 			final ChannelListener listener = factory.create();
-			ServerSocketChannel ssc1 = (ServerSocketChannel) channel;
-			Socket socket = ssc1.accept().socket();
+			ServerSocketChannel ssc = (ServerSocketChannel) channel;
+			Socket socket = ssc.accept().socket();
 			final SocketChannel sc = socket.getChannel();
 
 			sc.configureBlocking(false);

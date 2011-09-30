@@ -8,17 +8,24 @@ import java.util.Date;
 
 public class FormatUtil {
 
+	private final static String ymd = "yyyy-mm-dd";
+	private final static String hms = "HH:mm:ss";
+
+	public final static SyncDateFormat dateFmt = new SyncDateFormat(ymd);
+	public final static SyncDateFormat timeFmt = new SyncDateFormat(hms);
+	public final static SyncDateFormat dtFmt = new SyncDateFormat(ymd + hms);
+
 	// Dang, the date formats and decimal formats are not thread-safe!! Wrap
 	// them and make the method calls synchronised.
 
-	public static class SynchronizedDateFormat {
+	public static class SyncDateFormat {
 		private DateFormat dateFormat;
 
-		public SynchronizedDateFormat(String fmt) {
+		public SyncDateFormat(String fmt) {
 			this.dateFormat = new SimpleDateFormat(fmt);
 		}
 
-		public SynchronizedDateFormat(DateFormat dateFormat) {
+		public SyncDateFormat(DateFormat dateFormat) {
 			this.dateFormat = dateFormat;
 		}
 
