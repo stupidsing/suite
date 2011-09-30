@@ -37,7 +37,7 @@ public class NioServer<CL extends ChannelListener> {
 		 * The event would be invoked when the channel wants to send anything,
 		 * i.e. getMessageToSend() would return data.
 		 */
-		public void setSendDelegate(
+		public void setTrySendDelegate(
 				Transformer<String, String, RuntimeException> sender);
 	}
 
@@ -175,7 +175,7 @@ public class NioServer<CL extends ChannelListener> {
 			sc.configureBlocking(false);
 			key = sc.register(selector, SelectionKey.OP_READ, listener);
 
-			listener.setSendDelegate(createEventForSend(sc));
+			listener.setTrySendDelegate(createTrySendDelegate(sc));
 			listener.onConnected();
 		} else
 			synchronized (attachment) {
@@ -186,7 +186,7 @@ public class NioServer<CL extends ChannelListener> {
 					sc.finishConnect();
 
 					key.interestOps(SelectionKey.OP_READ);
-					listener.setSendDelegate(createEventForSend(sc));
+					listener.setTrySendDelegate(createTrySendDelegate(sc));
 					listener.onConnected();
 				} else if (key.isReadable()) {
 					int n = sc.read(ByteBuffer.wrap(buffer));
@@ -202,10 +202,13 @@ public class NioServer<CL extends ChannelListener> {
 			}
 	}
 
-	private Transformer<String, String, RuntimeException> createEventForSend(
+	private Transformer<String, String, RuntimeException> createTrySendDelegate(
 			final SocketChannel channel) {
 		return new Transformer<String, String, RuntimeException>() {
 			public String perform(String in) {
+
+				// Try to send immediately. If cannot sent all, wait for the
+				// writable event (and send again at that moment).
 				int sent = 0;
 
 				try {
@@ -223,7 +226,7 @@ public class NioServer<CL extends ChannelListener> {
 					ops = SelectionKey.OP_READ;
 
 				SelectionKey key = channel.keyFor(selector);
-				if (key.interestOps() != ops)
+				if (key != null && key.interestOps() != ops)
 					key.interestOps(ops);
 
 				wakeUpSelector();

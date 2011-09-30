@@ -163,7 +163,7 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void setSendDelegate(
+		public void setTrySendDelegate(
 				Transformer<String, String, RuntimeException> sender) {
 			this.sender = sender;
 		}
