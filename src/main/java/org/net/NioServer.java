@@ -129,7 +129,7 @@ public class NioServer<CL extends ChannelListener> {
 		setStarted(true);
 
 		while (running) {
-			selector.selectNow(); // XXX
+			selector.select();
 			Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
 
 			while (iter.hasNext()) {
