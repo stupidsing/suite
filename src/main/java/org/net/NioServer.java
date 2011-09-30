@@ -51,7 +51,7 @@ public class NioServer<CL extends ChannelListener> {
 	private boolean started;
 
 	private Selector selector = Selector.open();
-	private Thread thread;
+	private Thread eventLoopThread;
 	private volatile boolean running = false;
 
 	public NioServer(ChannelListenerFactory<CL> factory) throws IOException {
@@ -61,7 +61,7 @@ public class NioServer<CL extends ChannelListener> {
 	public synchronized void spawn() {
 		running = true;
 
-		thread = new Thread() {
+		eventLoopThread = new Thread() {
 			public void run() {
 				try {
 					serve();
@@ -71,7 +71,7 @@ public class NioServer<CL extends ChannelListener> {
 			}
 		};
 
-		thread.start();
+		eventLoopThread.start();
 
 		while (started != true)
 			Util.wait(this);
@@ -80,7 +80,7 @@ public class NioServer<CL extends ChannelListener> {
 	public synchronized void unspawn() {
 		running = false;
 
-		thread.interrupt();
+		eventLoopThread.interrupt();
 
 		while (started != false)
 			Util.wait(this);
