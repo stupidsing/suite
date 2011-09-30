@@ -172,24 +172,24 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	private static String strValue(int i) {
-		return String.format("%04d", i);
-		// byte bytes[] = new byte[4];
-		// bytes[0] = (byte) (i & 0xFF);
-		// bytes[1] = (byte) ((i >>>= 8) & 0xFF);
-		// bytes[2] = (byte) ((i >>>= 8) & 0xFF);
-		// bytes[3] = (byte) ((i >>>= 8) & 0xFF);
-		// String str = new String(bytes);
-		// return str;
+		// return String.format("%04d", i);
+		byte bytes[] = new byte[4];
+		bytes[0] = (byte) (i & 0xFF);
+		bytes[1] = (byte) ((i >>>= 8) & 0xFF);
+		bytes[2] = (byte) ((i >>>= 8) & 0xFF);
+		bytes[3] = (byte) ((i >>>= 8) & 0xFF);
+		String str = new String(bytes);
+		return str;
 	}
 
 	private static int intValue(String s) {
-		return Integer.valueOf(s);
-		// byte[] bytes = s.getBytes();
-		// int length = bytes[3];
-		// length = (length << 8) + bytes[2];
-		// length = (length << 8) + bytes[1];
-		// length = (length << 8) + bytes[0];
-		// return length;
+		// return Integer.valueOf(s);
+		byte[] bytes = s.getBytes();
+		int length = bytes[3];
+		length = (length << 8) + bytes[2];
+		length = (length << 8) + bytes[1];
+		length = (length << 8) + bytes[0];
+		return length;
 	}
 
 }
