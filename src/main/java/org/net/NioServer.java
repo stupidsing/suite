@@ -96,6 +96,8 @@ public class NioServer<CL extends ChannelListener> {
 
 		CL listener = factory.create();
 		channel.register(selector, SelectionKey.OP_CONNECT, listener);
+
+		wakeUpSelector();
 		return listener;
 	}
 
@@ -111,6 +113,8 @@ public class NioServer<CL extends ChannelListener> {
 		ssc.configureBlocking(false);
 		ssc.socket().bind(new InetSocketAddress(localHost, port));
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
+
+		wakeUpSelector();
 
 		return new Event() {
 			public Void perform(Void i) {
@@ -129,7 +133,13 @@ public class NioServer<CL extends ChannelListener> {
 		setStarted(true);
 
 		while (running) {
-			selector.selectNow(); // XXX
+
+			// Unfortunately Selector.wakeup() does not work on my Linux
+			// machines. Thus we specify a time out to allow the selector freed
+			// out temporarily; otherwise the register() methods in other
+			// threads might block forever.
+			selector.select(500);
+
 			Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
 
 			while (iter.hasNext()) {
@@ -201,9 +211,14 @@ public class NioServer<CL extends ChannelListener> {
 		return new Event() {
 			public Void perform(Void v) {
 				key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+				wakeUpSelector();
 				return null;
 			}
 		};
+	}
+
+	private void wakeUpSelector() {
+		selector.wakeup(); // Not working in my Linux machines
 	}
 
 	@SuppressWarnings("unused")
