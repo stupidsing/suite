@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.net.ChannelListeners.BufferedChannel;
@@ -66,13 +68,14 @@ public class NioServerTest {
 	}
 
 	@Test
-	public void testRequestResponse() throws IOException {
+	public void testRequestResponse() throws IOException, InterruptedException {
 		final RequestResponseMatcher matcher = new RequestResponseMatcher();
+		final ThreadPoolExecutor executor = Util.createExecutor();
 
 		NioServer<RequestResponseChannel> server = new NioServer<RequestResponseChannel>(
 				new ChannelListenerFactory<RequestResponseChannel>() {
 					public RequestResponseChannel create() {
-						return new RequestResponseChannel(matcher) {
+						return new RequestResponseChannel(matcher, executor) {
 							public String respondForRequest(String request) {
 								return request;
 							}
@@ -92,6 +95,7 @@ public class NioServerTest {
 		}
 
 		closeServer.perform(null);
+		executor.awaitTermination(0, TimeUnit.SECONDS);
 		server.unspawn();
 	}
 

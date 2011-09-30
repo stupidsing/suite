@@ -16,6 +16,7 @@ import org.net.NioServer.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util;
 import org.util.Util.Event;
+import org.util.Util.Transformer;
 
 public class NioServer<CL extends ChannelListener> {
 
@@ -28,17 +29,16 @@ public class NioServer<CL extends ChannelListener> {
 
 		public void onReceive(String message);
 
-		public void onSent(int size);
-
 		public void onClose();
+
+		public void trySend();
 
 		/**
 		 * The event would be invoked when the channel wants to send anything,
 		 * i.e. getMessageToSend() would return data.
 		 */
-		public void setEventForSend(Event event);
-
-		public String getMessageToSend();
+		public void setSendDelegate(
+				Transformer<String, String, RuntimeException> sender);
 	}
 
 	public interface SendNotifier {
@@ -175,7 +175,7 @@ public class NioServer<CL extends ChannelListener> {
 			sc.configureBlocking(false);
 			key = sc.register(selector, SelectionKey.OP_READ, listener);
 
-			listener.setEventForSend(createEventForSend(key));
+			listener.setSendDelegate(createEventForSend(sc));
 			listener.onConnected();
 		} else
 			synchronized (attachment) {
@@ -186,7 +186,7 @@ public class NioServer<CL extends ChannelListener> {
 					sc.finishConnect();
 
 					key.interestOps(SelectionKey.OP_READ);
-					listener.setEventForSend(createEventForSend(key));
+					listener.setSendDelegate(createEventForSend(sc));
 					listener.onConnected();
 				} else if (key.isReadable()) {
 					int n = sc.read(ByteBuffer.wrap(buffer));
@@ -197,28 +197,43 @@ public class NioServer<CL extends ChannelListener> {
 						listener.onClose();
 						sc.close();
 					}
-				} else if (key.isWritable()) {
-					String m = listener.getMessageToSend();
-					int sent = sc.write(ByteBuffer.wrap(m.getBytes()));
-
-					key.interestOps(SelectionKey.OP_READ);
-					listener.onSent(sent);
-				}
+				} else if (key.isWritable())
+					listener.trySend();
 			}
 	}
 
-	private Event createEventForSend(final SelectionKey key) {
-		return new Event() {
-			public Void perform(Void v) {
-				key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+	private Transformer<String, String, RuntimeException> createEventForSend(
+			final SocketChannel channel) {
+		return new Transformer<String, String, RuntimeException>() {
+			public String perform(String in) {
+				int sent = 0;
+
+				try {
+					sent = channel.write(ByteBuffer.wrap(in.getBytes()));
+				} catch (IOException ex) {
+					LogUtil.error(getClass(), ex);
+				}
+
+				String out = in.substring(sent);
+
+				int ops;
+				if (!out.isEmpty())
+					ops = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+				else
+					ops = SelectionKey.OP_READ;
+
+				SelectionKey key = channel.keyFor(selector);
+				if (key.interestOps() != ops)
+					key.interestOps(ops);
+
 				wakeUpSelector();
-				return null;
+				return out;
 			}
 		};
 	}
 
 	private void wakeUpSelector() {
-		selector.wakeup(); // Not working in my Linux machines
+		// selector.wakeup(); // Not working in my Linux machines
 	}
 
 	@SuppressWarnings("unused")

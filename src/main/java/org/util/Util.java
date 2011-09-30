@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -145,6 +148,12 @@ public class Util {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
+	}
+
+	public static ThreadPoolExecutor createExecutor() {
+		return new ThreadPoolExecutor(8, 32 //
+				, 10, TimeUnit.SECONDS //
+				, new ArrayBlockingQueue<Runnable>(256));
 	}
 
 	public static <E> E unique(List<E> list) {

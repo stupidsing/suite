@@ -2,20 +2,27 @@ package org.net;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.net.NioServer.ChannelListener;
 import org.util.Util;
-import org.util.Util.Event;
+import org.util.Util.Transformer;
 
 public abstract class ChannelListeners implements ChannelListener {
 
 	public abstract static class RequestResponseChannel extends PacketChannel {
+		private final static char RESPONSE = 'P';
+		private final static char REQUEST = 'Q';
+
 		private RequestResponseMatcher matcher;
+		private ThreadPoolExecutor executor;
 		private boolean connected;
 
-		public RequestResponseChannel(RequestResponseMatcher matcher) {
+		public RequestResponseChannel(RequestResponseMatcher matcher,
+				ThreadPoolExecutor executor) {
 			this.matcher = matcher;
+			this.executor = executor;
 		}
 
 		public abstract String respondForRequest(String request);
@@ -31,17 +38,20 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void onReceivePacket(String packet) {
-			if (packet.length() >= 5) {
-				char type = packet.charAt(0);
-				int token = intValue(packet.substring(1, 5));
+		public void onReceivePacket(String packet0) {
+			if (packet0.length() >= 5) {
+				char type = packet0.charAt(0);
+				final int token = intValue(packet0.substring(1, 5));
+				final String contents = packet0.substring(5);
 
-				packet = packet.substring(5);
-
-				if (type == 'P') // Response
-					matcher.onRespond(token, packet);
-				else if (type == 'Q')
-					send('P', token, respondForRequest(packet));
+				if (type == RESPONSE)
+					matcher.onRespond(token, contents);
+				else if (type == REQUEST)
+					executor.execute(new Runnable() {
+						public void run() {
+							send(RESPONSE, token, respondForRequest(contents));
+						}
+					});
 			}
 		}
 
@@ -64,7 +74,7 @@ public abstract class ChannelListeners implements ChannelListener {
 	public static class RequestResponseMatcher {
 		private final static AtomicInteger tokenCounter = new AtomicInteger();
 
-		// TODO clean-up obsoletes
+		// TODO clean-up lost requests
 		private Map<Integer, String[]> requests = new HashMap<Integer, String[]>();
 
 		private void onRespond(int token, String respond) {
@@ -89,7 +99,7 @@ public abstract class ChannelListeners implements ChannelListener {
 
 			synchronized (holder) {
 				requests.put(token, holder);
-				listener.send('Q', token, request);
+				listener.send(RequestResponseChannel.REQUEST, token, request);
 
 				while (holder[0] == null)
 					Util.wait(holder, timeOut);
@@ -136,7 +146,7 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class BufferedChannel implements ChannelListener {
-		private Event eventForSend;
+		private Transformer<String, String, RuntimeException> sender;
 		private String toSend = "";
 
 		@Override
@@ -148,26 +158,19 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void onSent(int size) {
-			toSend = toSend.substring(size);
-
-			if (!toSend.isEmpty())
-				eventForSend.perform(null);
+		public void trySend() {
+			toSend = sender.perform(toSend);
 		}
 
 		@Override
-		public void setEventForSend(Event event) {
-			this.eventForSend = event;
-		}
-
-		@Override
-		public String getMessageToSend() {
-			return toSend;
+		public void setSendDelegate(
+				Transformer<String, String, RuntimeException> sender) {
+			this.sender = sender;
 		}
 
 		public void send(String message) {
 			toSend += message;
-			eventForSend.perform(null);
+			trySend();
 		}
 	}
 

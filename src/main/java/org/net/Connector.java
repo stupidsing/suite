@@ -9,9 +9,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.util.LogUtil;
 import org.util.Util;
@@ -37,9 +35,7 @@ public class Connector {
 
 	public void listen() throws IOException {
 		ServerSocket server = new ServerSocket(5151);
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(8, 32 //
-				, 10, TimeUnit.SECONDS //
-				, new ArrayBlockingQueue<Runnable>(256));
+		ThreadPoolExecutor executor = Util.createExecutor();
 
 		while (true) {
 			final Socket socket = server.accept();
