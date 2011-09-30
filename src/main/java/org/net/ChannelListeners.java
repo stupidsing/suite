@@ -1,15 +1,57 @@
 package org.net;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.net.NioServer.ChannelListener;
+import org.net.NioDispatcher.ChannelListener;
+import org.util.LogUtil;
 import org.util.Util;
 import org.util.Util.Transformer;
 
 public abstract class ChannelListeners implements ChannelListener {
+
+	public abstract static class PersistableChannel<T extends PersistableChannel<T>>
+			extends RequestResponseChannel {
+		private NioDispatcher<T> dispatcher;
+		private InetSocketAddress address;
+		boolean started;
+
+		public PersistableChannel(NioDispatcher<T> dispatcher,
+				RequestResponseMatcher matcher, ThreadPoolExecutor executor,
+				InetSocketAddress address) throws IOException {
+			super(matcher, executor);
+			this.dispatcher = dispatcher;
+			this.address = address;
+		}
+
+		public synchronized void start() {
+			started = true;
+			reconnect();
+		}
+
+		public synchronized void stop() {
+			started = false;
+		}
+
+		@Override
+		public void onClose() {
+			super.onClose();
+			reconnect();
+		}
+
+		private void reconnect() {
+			if (started)
+				try {
+					dispatcher.reconnect(this, address);
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+		}
+	}
 
 	public abstract static class RequestResponseChannel extends PacketChannel {
 		private final static char RESPONSE = 'P';
@@ -38,11 +80,11 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void onReceivePacket(String packet0) {
-			if (packet0.length() >= 5) {
-				char type = packet0.charAt(0);
-				final int token = intValue(packet0.substring(1, 5));
-				final String contents = packet0.substring(5);
+		public void onReceivePacket(String packet) {
+			if (packet.length() >= 5) {
+				char type = packet.charAt(0);
+				final int token = intValue(packet.substring(1, 5));
+				final String contents = packet.substring(5);
 
 				if (type == RESPONSE)
 					matcher.onRespond(token, contents);
@@ -146,7 +188,7 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class BufferedChannel implements ChannelListener {
-		private Transformer<String, String, RuntimeException> sender;
+		private Transformer<String, String, IOException> sender;
 		private String toSend = "";
 
 		@Override
@@ -158,19 +200,24 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void trySend() {
+		public void trySend() throws IOException {
 			toSend = sender.perform(toSend);
 		}
 
 		@Override
 		public void setTrySendDelegate(
-				Transformer<String, String, RuntimeException> sender) {
+				Transformer<String, String, IOException> sender) {
 			this.sender = sender;
 		}
 
 		public void send(String message) {
 			toSend += message;
-			trySend();
+
+			try {
+				trySend();
+			} catch (IOException ex) {
+				LogUtil.error(getClass(), ex);
+			}
 		}
 	}
 

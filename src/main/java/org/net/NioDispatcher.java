@@ -12,13 +12,13 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
-import org.net.NioServer.ChannelListener;
+import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util;
 import org.util.Util.Event;
 import org.util.Util.Transformer;
 
-public class NioServer<CL extends ChannelListener> {
+public class NioDispatcher<CL extends ChannelListener> {
 
 	public interface ChannelListenerFactory<CL> {
 		public CL create();
@@ -29,16 +29,16 @@ public class NioServer<CL extends ChannelListener> {
 
 		public void onReceive(String message);
 
-		public void onClose();
+		public void onClose() throws IOException;
 
-		public void trySend();
+		public void trySend() throws IOException;
 
 		/**
 		 * The event would be invoked when the channel wants to send anything,
 		 * i.e. getMessageToSend() would return data.
 		 */
 		public void setTrySendDelegate(
-				Transformer<String, String, RuntimeException> sender);
+				Transformer<String, String, IOException> sender);
 	}
 
 	public interface SendNotifier {
@@ -54,7 +54,7 @@ public class NioServer<CL extends ChannelListener> {
 	private Thread eventLoopThread;
 	private volatile boolean running = false;
 
-	public NioServer(ChannelListenerFactory<CL> factory) throws IOException {
+	public NioDispatcher(ChannelListenerFactory<CL> factory) throws IOException {
 		this.factory = factory;
 	}
 
@@ -89,16 +89,32 @@ public class NioServer<CL extends ChannelListener> {
 	/**
 	 * Establishes connection to other host actively.
 	 */
-	public CL connect(InetAddress host, int port) throws IOException {
+	public CL connect(InetSocketAddress address) throws IOException {
+		CL listener = factory.create();
+		reconnect(listener, address);
+		return listener;
+	}
+
+	/**
+	 * Re-establishes connection using specified listener, if closed or dropped.
+	 */
+	public void reconnect(ChannelListener listener, InetSocketAddress address)
+			throws IOException {
 		SocketChannel channel = SocketChannel.open();
 		channel.configureBlocking(false);
-		channel.connect(new InetSocketAddress(host, port));
-
-		CL listener = factory.create();
+		channel.connect(address);
 		channel.register(selector, SelectionKey.OP_CONNECT, listener);
 
 		wakeUpSelector();
-		return listener;
+	}
+
+	/**
+	 * Ends connection.
+	 */
+	public void disconnect(CL listener) throws IOException {
+		for (SelectionKey key : selector.keys())
+			if (key.attachment() == listener)
+				key.channel().close();
 	}
 
 	/**
@@ -146,7 +162,11 @@ public class NioServer<CL extends ChannelListener> {
 				SelectionKey key = iter.next();
 				iter.remove();
 
-				processSelectedKey(key);
+				try {
+					processSelectedKey(key);
+				} catch (Exception ex) {
+					LogUtil.error(getClass(), ex);
+				}
 			}
 		}
 
@@ -202,20 +222,14 @@ public class NioServer<CL extends ChannelListener> {
 			}
 	}
 
-	private Transformer<String, String, RuntimeException> createTrySendDelegate(
+	private Transformer<String, String, IOException> createTrySendDelegate(
 			final SocketChannel channel) {
-		return new Transformer<String, String, RuntimeException>() {
-			public String perform(String in) {
+		return new Transformer<String, String, IOException>() {
+			public String perform(String in) throws IOException {
 
 				// Try to send immediately. If cannot sent all, wait for the
 				// writable event (and send again at that moment).
-				int sent = 0;
-
-				try {
-					sent = channel.write(ByteBuffer.wrap(in.getBytes()));
-				} catch (IOException ex) {
-					LogUtil.error(getClass(), ex);
-				}
+				int sent = channel.write(ByteBuffer.wrap(in.getBytes()));
 
 				String out = in.substring(sent);
 

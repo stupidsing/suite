@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,17 +18,17 @@ import org.junit.Test;
 import org.net.ChannelListeners.BufferedChannel;
 import org.net.ChannelListeners.RequestResponseChannel;
 import org.net.ChannelListeners.RequestResponseMatcher;
-import org.net.NioServer.ChannelListenerFactory;
+import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
 import org.util.Util.Event;
 
-public class NioServerTest {
+public class NioDispatcherTest {
 
 	@Test
 	public void testTextExchange() throws IOException {
 		final String hello = "HELLO";
 
-		NioServer<BufferedChannel> server = new NioServer<BufferedChannel>(
+		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcher<BufferedChannel>(
 				new ChannelListenerFactory<BufferedChannel>() {
 					public BufferedChannel create() {
 						return new BufferedChannel() {
@@ -42,8 +43,8 @@ public class NioServerTest {
 					}
 				});
 
-		server.spawn();
-		Event closeServer = server.listen(5151);
+		dispatcher.spawn();
+		Event closeServer = dispatcher.listen(5151);
 
 		Socket socket = new Socket("localhost", 5151);
 		InputStream is = socket.getInputStream();
@@ -64,7 +65,7 @@ public class NioServerTest {
 		}
 
 		closeServer.perform(null);
-		server.unspawn();
+		dispatcher.unspawn();
 	}
 
 	@Test
@@ -72,7 +73,7 @@ public class NioServerTest {
 		final RequestResponseMatcher matcher = new RequestResponseMatcher();
 		final ThreadPoolExecutor executor = Util.createExecutor();
 
-		NioServer<RequestResponseChannel> server = new NioServer<RequestResponseChannel>(
+		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<RequestResponseChannel>(
 				new ChannelListenerFactory<RequestResponseChannel>() {
 					public RequestResponseChannel create() {
 						return new RequestResponseChannel(matcher, executor) {
@@ -83,11 +84,11 @@ public class NioServerTest {
 					}
 				});
 
-		server.spawn();
-		Event closeServer = server.listen(5151);
+		dispatcher.spawn();
+		Event closeServer = dispatcher.listen(5151);
 
-		RequestResponseChannel client = server.connect(
-				InetAddress.getLocalHost(), 5151);
+		RequestResponseChannel client = dispatcher
+				.connect(new InetSocketAddress(InetAddress.getLocalHost(), 5151));
 
 		for (String s : new String[] { "ABC", "WXYZ", "" }) {
 			assertEquals(s, matcher.requestForResponse(client, s));
@@ -96,7 +97,7 @@ public class NioServerTest {
 
 		closeServer.perform(null);
 		executor.awaitTermination(0, TimeUnit.SECONDS);
-		server.unspawn();
+		dispatcher.unspawn();
 	}
 
 }
