@@ -86,8 +86,10 @@ public class NioServerTest {
 		RequestResponseChannel client = server.connect(
 				InetAddress.getLocalHost(), 5151);
 
-		for (String s : new String[] { "ABC", "WXYZ", "" })
+		for (String s : new String[] { "ABC", "WXYZ", "" }) {
 			assertEquals(s, matcher.requestForResponse(client, s));
+			System.out.println("Request '" + s + "' is okay");
+		}
 
 		closeServer.perform(null);
 		server.unspawn();

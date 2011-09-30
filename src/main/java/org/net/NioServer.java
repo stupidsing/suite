@@ -128,10 +128,8 @@ public class NioServer<CL extends ChannelListener> {
 	private void serve() throws IOException {
 		setStarted(true);
 
-		Util.sleep(2000);
-
 		while (running) {
-			selector.select();
+			selector.selectNow(); // XXX
 			Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
 
 			while (iter.hasNext()) {
@@ -152,6 +150,8 @@ public class NioServer<CL extends ChannelListener> {
 	}
 
 	private void processSelectedKey(SelectionKey key) throws IOException {
+		// LogUtil.info("KEY", dumpKey(key));
+
 		byte buffer[] = new byte[BUFFERSIZE];
 		SelectableChannel channel = key.channel();
 		Object attachment = key.attachment();
@@ -204,6 +204,16 @@ public class NioServer<CL extends ChannelListener> {
 				return null;
 			}
 		};
+	}
+
+	@SuppressWarnings("unused")
+	private String dumpKey(SelectionKey key) {
+		return (key.isAcceptable() ? "ACCEPTABLE " : "") //
+				+ (key.isConnectable() ? "CONNECTABLE " : "") //
+				+ (key.isReadable() ? "READABLE " : "") //
+				+ (key.isWritable() ? "WRITABLE " : "") //
+				+ key.channel() + " " + key.selector().toString() //
+		;
 	}
 
 }
