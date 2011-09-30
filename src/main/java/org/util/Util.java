@@ -172,17 +172,29 @@ public class Util {
 			list.remove(--size);
 	}
 
-	public interface Event extends Transformer<Void, Void, RuntimeException> {
+	public interface Event extends Transformer<Void, Void> {
 	}
 
-	public interface Getter<O> extends Transformer<Void, O, RuntimeException> {
+	public interface Getter<O> extends Transformer<Void, O> {
 	}
 
-	public interface Setter<I> extends Transformer<I, Void, RuntimeException> {
+	public interface Setter<I> extends Transformer<I, Void> {
 	}
 
-	public interface Transformer<I, O, Ex extends Exception> {
+	public interface Transformer<I, O> extends
+			IoProcess<I, O, RuntimeException> {
+	}
+
+	public interface IoProcess<I, O, Ex extends Exception> {
 		public O perform(I i) throws Ex;
+	}
+
+	public static <I> Setter<I> nullSetter() {
+		return new Setter<I>() {
+			public Void perform(I i) {
+				return null;
+			}
+		};
 	}
 
 	/**

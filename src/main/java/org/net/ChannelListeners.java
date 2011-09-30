@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.Transformer;
+import org.util.Util.IoProcess;
 
 public abstract class ChannelListeners implements ChannelListener {
 
@@ -188,7 +188,7 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class BufferedChannel implements ChannelListener {
-		private Transformer<String, String, IOException> sender;
+		private IoProcess<String, String, IOException> sender;
 		private String toSend = "";
 
 		@Override
@@ -206,7 +206,7 @@ public abstract class ChannelListeners implements ChannelListener {
 
 		@Override
 		public void setTrySendDelegate(
-				Transformer<String, String, IOException> sender) {
+				IoProcess<String, String, IOException> sender) {
 			this.sender = sender;
 		}
 

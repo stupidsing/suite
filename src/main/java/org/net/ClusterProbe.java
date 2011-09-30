@@ -18,7 +18,7 @@ import java.util.Set;
 import org.util.FormatUtil;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.Transformer;
+import org.util.Util.Setter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -31,19 +31,20 @@ public class ClusterProbe extends ThreadedService {
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
+	private ByteBuffer buffer = ByteBuffer.allocate(BUFFERSIZE);
 
 	private String me;
 	private BiMap<String, Address> peers = HashBiMap.create();
 	private Map<String, Long> lastActiveTime = Util.createHashMap();
 
-	private Transformer<String, Void, RuntimeException> onJoined;
-	private Transformer<String, Void, RuntimeException> onLeft;
+	private Setter<String> onJoined = Util.nullSetter();
+	private Setter<String> onLeft = Util.nullSetter();
 
-	private ByteBuffer buffer = ByteBuffer.allocate(BUFFERSIZE);
-
-	private enum Dict {
+	private enum Command {
 		HELO, BYEE
 	}
+
+	private final static int COMMANDLENGTH = Command.HELO.name().length();
 
 	private static class Address {
 		private byte ip[];
@@ -78,6 +79,11 @@ public class ClusterProbe extends ThreadedService {
 			} else
 				return false;
 		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(ip) + ":" + port;
+		}
 	}
 
 	public ClusterProbe(String me, Map<String, InetSocketAddress> peers)
@@ -89,9 +95,17 @@ public class ClusterProbe extends ThreadedService {
 	}
 
 	@Override
+	public synchronized void spawn() {
+		lastActiveTime.put(me, System.currentTimeMillis()); // Puts myself in
+		super.spawn();
+
+	}
+
+	@Override
 	public synchronized void unspawn() {
-		broadcast(Dict.BYEE);
 		super.unspawn();
+		broadcast(Command.BYEE);
+		lastActiveTime.clear();
 	}
 
 	public String dumpActivePeers() {
@@ -121,7 +135,7 @@ public class ClusterProbe extends ThreadedService {
 			// Sends keep-alive
 			long current = System.currentTimeMillis();
 			if (current - broadcastSentTime > CHECKALIVEDURATION) {
-				broadcast(Dict.HELO);
+				broadcast(Command.HELO);
 				broadcastSentTime = current;
 			}
 
@@ -130,10 +144,12 @@ public class ClusterProbe extends ThreadedService {
 			Iterator<Entry<String, Long>> peerIter = entries.iterator();
 			while (peerIter.hasNext()) {
 				Entry<String, Long> e = peerIter.next();
+				String name = e.getKey();
 
-				if (current - e.getValue() > TIMEOUTDURATION) {
+				if (!Util.equals(name, me)
+						&& current - e.getValue() > TIMEOUTDURATION) {
 					peerIter.remove();
-					onLeft.perform(e.getKey());
+					onLeft.perform(name);
 				}
 			}
 
@@ -164,28 +180,29 @@ public class ClusterProbe extends ThreadedService {
 		DatagramChannel dc = (DatagramChannel) key.channel();
 
 		if (key.isReadable()) {
-			InetSocketAddress address = (InetSocketAddress) dc.receive(buffer);
+			dc.receive(buffer);
 			buffer.flip();
 
 			byte bytes[] = new byte[buffer.remaining()];
 			buffer.get(bytes);
-			Dict data = Dict.valueOf(new String(bytes));
 			buffer.rewind();
 
-			String remoteName = peers.inverse().get(address);
+			String message = new String(bytes);
+			Command data = Command.valueOf(message.substring(0, COMMANDLENGTH));
+			String remoteName = message.substring(COMMANDLENGTH);
 
-			if (remoteName != null)
-				if (data == Dict.HELO
+			if (peers.get(remoteName) != null)
+				if (data == Command.HELO
 						&& lastActiveTime.put(remoteName, current) == null)
 					onJoined.perform(remoteName);
-				else if (data == Dict.BYEE
+				else if (data == Command.BYEE
 						&& lastActiveTime.remove(remoteName) != null)
 					onLeft.perform(remoteName);
 		}
 	}
 
-	private void broadcast(Dict data) {
-		byte[] bytes = data.name().getBytes();
+	private void broadcast(Command data) {
+		byte[] bytes = (data.name() + me).getBytes();
 
 		for (Entry<String, Address> e : peers.entrySet())
 			if (!Util.equals(e.getKey(), me))
@@ -194,6 +211,18 @@ public class ClusterProbe extends ThreadedService {
 				} catch (IOException ex) {
 					LogUtil.error(getClass(), ex);
 				}
+	}
+
+	public Set<String> getActivePeers() {
+		return lastActiveTime.keySet();
+	}
+
+	public void setOnJoined(Setter<String> onJoined) {
+		this.onJoined = onJoined;
+	}
+
+	public void setOnLeft(Setter<String> onLeft) {
+		this.onLeft = onLeft;
 	}
 
 }

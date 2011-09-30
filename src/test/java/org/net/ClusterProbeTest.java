@@ -1,8 +1,11 @@
 package org.net;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,19 +16,12 @@ public class ClusterProbeTest {
 
 	@Test
 	public void test() throws IOException {
+		int nNodes = 10;
 		InetAddress localHost = InetAddress.getLocalHost();
 
 		Map<String, InetSocketAddress> peers = Util.createHashMap();
-		peers.put("NODE0", new InetSocketAddress(localHost, 3000));
-		peers.put("NODE1", new InetSocketAddress(localHost, 3001));
-		peers.put("NODE2", new InetSocketAddress(localHost, 3002));
-		peers.put("NODE3", new InetSocketAddress(localHost, 3003));
-		peers.put("NODE4", new InetSocketAddress(localHost, 3004));
-		peers.put("NODE5", new InetSocketAddress(localHost, 3005));
-		peers.put("NODE6", new InetSocketAddress(localHost, 3006));
-		peers.put("NODE7", new InetSocketAddress(localHost, 3007));
-		peers.put("NODE8", new InetSocketAddress(localHost, 3008));
-		peers.put("NODE9", new InetSocketAddress(localHost, 3009));
+		for (int i = 0; i < nNodes; i++)
+			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
 		Map<String, ClusterProbe> probes = Util.createHashMap();
 		for (String name : peers.keySet()) {
@@ -36,15 +32,31 @@ public class ClusterProbeTest {
 
 		Util.sleep(10 * 1000);
 
-		for (Entry<String, ClusterProbe> e : probes.entrySet())
-			System.out.println("HOST " + e.getKey() //
-					+ ":" + e.getValue().dumpActivePeers());
+		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
+		dumpActivePeers(probes);
+		assertActiveNodesSize(nNodes, probes);
 
 		for (ClusterProbe probe : probes.values())
 			probe.unspawn();
 
+		Util.sleep(5 * 1000);
+
+		System.out.println("=== CLUSTER STOPPED (" + new Date() + ") ===\n");
+		dumpActivePeers(probes);
+		assertActiveNodesSize(0, probes);
+	}
+
+	private void dumpActivePeers(Map<String, ClusterProbe> probes) {
+		for (Entry<String, ClusterProbe> e : probes.entrySet()) {
+			System.out.println("HOST " + e.getKey() + " -");
+			System.out.println(e.getValue().dumpActivePeers());
+		}
+	}
+
+	private void assertActiveNodesSize(int nNodes,
+			Map<String, ClusterProbe> probes) {
 		for (ClusterProbe probe : probes.values())
-			System.out.println(probe.dumpActivePeers());
+			assertEquals(nNodes, probe.getActivePeers().size());
 	}
 
 }

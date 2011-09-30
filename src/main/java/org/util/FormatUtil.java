@@ -13,7 +13,8 @@ public class FormatUtil {
 
 	public final static SyncDateFormat dateFmt = new SyncDateFormat(ymd);
 	public final static SyncDateFormat timeFmt = new SyncDateFormat(hms);
-	public final static SyncDateFormat dtFmt = new SyncDateFormat(ymd + hms);
+	public final static SyncDateFormat dtFmt = new SyncDateFormat( //
+			ymd + " " + hms);
 
 	// Dang, the date formats and decimal formats are not thread-safe!! Wrap
 	// them and make the method calls synchronised.
