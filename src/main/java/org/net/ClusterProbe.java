@@ -23,9 +23,13 @@ import org.util.Util.Setter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+/**
+ * Probes existence of other nodes in a cluster, using the un-reliable UDP
+ * protocol (due to its small messaging overhead).
+ */
 public class ClusterProbe extends ThreadedService {
 
-	private final static int BUFFERSIZE = 65536;
+	private final static int BUFFERSIZE = 65536; // UDP packet size
 	private final static int CHECKALIVEDURATION = 1500;
 	private final static int TIMEOUTDURATION = 5000;
 
@@ -99,9 +103,12 @@ public class ClusterProbe extends ThreadedService {
 
 	public ClusterProbe(String me, Map<String, InetSocketAddress> peers)
 			throws IOException {
-		this.me = me;
-		for (Entry<String, InetSocketAddress> e : peers.entrySet())
-			this.peers.put(e.getKey(), new Address(e.getValue()));
+		this();
+		setMe(me);
+		setPeers(peers);
+	}
+
+	public ClusterProbe() throws IOException {
 		channel.configureBlocking(false);
 	}
 
@@ -186,12 +193,12 @@ public class ClusterProbe extends ThreadedService {
 
 			// Refreshes member time accordingly
 			for (int i = 2; i < splitted.length; i += 2) {
-				String name = splitted[i];
-				Long oldTime = lastActiveTime.get(name);
+				String node = splitted[i];
+				Long oldTime = lastActiveTime.get(node);
 				Long newTime = Long.valueOf(splitted[i + 1]);
 
 				if (oldTime == null || oldTime < newTime)
-					lastActiveTime.put(name, newTime);
+					lastActiveTime.put(node, newTime);
 			}
 
 			if (peers.get(remote) != null)
@@ -235,18 +242,24 @@ public class ClusterProbe extends ThreadedService {
 	private void eliminateOutdatedPeers(long current) {
 		Set<Entry<String, Long>> entries = lastActiveTime.entrySet();
 		Iterator<Entry<String, Long>> peerIter = entries.iterator();
+
 		while (peerIter.hasNext()) {
 			Entry<String, Long> e = peerIter.next();
-			String name = e.getKey();
+			String node = e.getKey();
 
-			if (!Util.equals(name, me)
+			if (!Util.equals(node, me)
 					&& current - e.getValue() > TIMEOUTDURATION) {
 				peerIter.remove();
-				onLeft.perform(name);
+				onLeft.perform(node);
 			}
 		}
 	}
 
+	/**
+	 * Sends message to all nodes.
+	 * 
+	 * TODO this is costly and un-scalable.
+	 */
 	private void broadcast(Command data) {
 		byte bytes[] = formMessage(data);
 
@@ -277,8 +290,21 @@ public class ClusterProbe extends ThreadedService {
 		return bytes;
 	}
 
+	public boolean isActive(String node) {
+		return lastActiveTime.containsKey(node);
+	}
+
 	public Set<String> getActivePeers() {
 		return lastActiveTime.keySet();
+	}
+
+	public void setMe(String me) {
+		this.me = me;
+	}
+
+	private void setPeers(Map<String, InetSocketAddress> peers) {
+		for (Entry<String, InetSocketAddress> e : peers.entrySet())
+			this.peers.put(e.getKey(), new Address(e.getValue()));
 	}
 
 	public void setOnJoined(Setter<String> onJoined) {

@@ -37,6 +37,16 @@ public abstract class ThreadedService {
 
 		while (started != false)
 			Util.wait(this);
+
+		thread = null;
+	}
+
+	public boolean isSpawned() {
+		return started;
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 
 	protected synchronized void setStarted(boolean isStarted) {
