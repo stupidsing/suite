@@ -15,15 +15,16 @@ import org.util.Util.IoProcess;
 
 public abstract class ChannelListeners implements ChannelListener {
 
-	public abstract static class PersistableChannel<T extends PersistableChannel<T>>
-			extends RequestResponseChannel {
-		private NioDispatcher<T> dispatcher;
+	public abstract static class PersistableChannel extends
+			RequestResponseChannel {
+		private NioDispatcher<PersistableChannel> dispatcher;
 		private InetSocketAddress address;
 		boolean started;
 
-		public PersistableChannel(NioDispatcher<T> dispatcher,
-				RequestResponseMatcher matcher, ThreadPoolExecutor executor,
-				InetSocketAddress address) throws IOException {
+		public PersistableChannel(NioDispatcher<PersistableChannel> dispatcher //
+				, RequestResponseMatcher matcher //
+				, ThreadPoolExecutor executor //
+				, InetSocketAddress address) {
 			super(matcher, executor);
 			this.dispatcher = dispatcher;
 			this.address = address;
