@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.net.NioDispatcher.ChannelListener;
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
 import org.util.Util.IoProcess;
@@ -228,13 +229,13 @@ public abstract class ChannelListeners implements ChannelListener {
 		bytes[1] = (byte) ((i >>>= 8) & 0xFF);
 		bytes[2] = (byte) ((i >>>= 8) & 0xFF);
 		bytes[3] = (byte) ((i >>>= 8) & 0xFF);
-		String str = new String(bytes);
+		String str = new String(bytes, IoUtil.CHARSET);
 		return str;
 	}
 
 	private static int intValue(String s) {
 		// return Integer.valueOf(s);
-		byte[] bytes = s.getBytes();
+		byte[] bytes = s.getBytes(IoUtil.CHARSET);
 		int length = bytes[3];
 		length = (length << 8) + bytes[2];
 		length = (length << 8) + bytes[1];

@@ -7,10 +7,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 public class IoUtil {
 
 	private final static int BUFFERSIZE = 4096;
+
+	public static final Charset CHARSET = Charset.forName("UTF-8");
 
 	public static void moveFile(File from, File to)
 			throws FileNotFoundException, IOException {
@@ -38,7 +41,7 @@ public class IoUtil {
 
 		while (in.available() > 0) {
 			int n = in.read(buffer);
-			sb.append(new String(buffer, 0, n));
+			sb.append(new String(buffer, 0, n, IoUtil.CHARSET));
 		}
 
 		return sb.toString();
@@ -46,7 +49,7 @@ public class IoUtil {
 
 	public static void writeStream(OutputStream out, String content)
 			throws IOException {
-		out.write(content.getBytes());
+		out.write(content.getBytes(IoUtil.CHARSET));
 	}
 
 	public static void copyStream(InputStream in, OutputStream out)

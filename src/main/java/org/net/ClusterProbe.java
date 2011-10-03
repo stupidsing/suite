@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.util.FormatUtil;
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
 import org.util.Util.Setter;
@@ -187,7 +188,7 @@ public class ClusterProbe extends ThreadedService {
 			buffer.get(bytes);
 			buffer.rewind();
 
-			String splitted[] = new String(bytes).split(",");
+			String splitted[] = new String(bytes, IoUtil.CHARSET).split(",");
 			Command data = Command.valueOf(splitted[0]);
 			String remote = splitted[1];
 
@@ -286,8 +287,7 @@ public class ClusterProbe extends ThreadedService {
 		for (Entry<String, Long> e : lastActiveTime.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());
 
-		byte bytes[] = sb.toString().getBytes();
-		return bytes;
+		return sb.toString().getBytes(IoUtil.CHARSET);
 	}
 
 	public boolean isActive(String node) {

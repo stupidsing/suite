@@ -21,6 +21,7 @@ public class Cluster {
 				return null;
 			}
 		});
+
 		probe.setOnLeft(new Setter<String>() {
 			public Void perform(String node) {
 				return null;

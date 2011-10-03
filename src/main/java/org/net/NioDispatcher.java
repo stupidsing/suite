@@ -12,6 +12,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
 import org.net.NioDispatcher.ChannelListener;
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util.Event;
 import org.util.Util.IoProcess;
@@ -172,9 +173,10 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 				} else if (key.isReadable()) {
 					int n = sc.read(ByteBuffer.wrap(buffer));
 
-					if (n >= 0)
-						listener.onReceive(new String(buffer, 0, n));
-					else {
+					if (n >= 0) {
+						String m = new String(buffer, 0, n, IoUtil.CHARSET);
+						listener.onReceive(m);
+					} else {
 						listener.onClose();
 						sc.close();
 					}
@@ -190,7 +192,8 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 
 				// Try to send immediately. If cannot sent all, wait for the
 				// writable event (and send again at that moment).
-				int sent = channel.write(ByteBuffer.wrap(in.getBytes()));
+				byte bytes[] = in.getBytes(IoUtil.CHARSET);
+				int sent = channel.write(ByteBuffer.wrap(bytes));
 
 				String out = in.substring(sent);
 
