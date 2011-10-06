@@ -77,7 +77,7 @@ public class NioDispatcherTest {
 				new ChannelListenerFactory<RequestResponseChannel>() {
 					public RequestResponseChannel create() {
 						return new RequestResponseChannel(matcher, executor) {
-							public String respondForRequest(String request) {
+							public String respondToRequest(String request) {
 								return request;
 							}
 						};

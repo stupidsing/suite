@@ -69,7 +69,7 @@ public abstract class ChannelListeners implements ChannelListener {
 			this.executor = executor;
 		}
 
-		public abstract String respondForRequest(String request);
+		public abstract String respondToRequest(String request);
 
 		@Override
 		public void onConnected() {
@@ -93,7 +93,7 @@ public abstract class ChannelListeners implements ChannelListener {
 				else if (type == REQUEST)
 					executor.execute(new Runnable() {
 						public void run() {
-							send(RESPONSE, token, respondForRequest(contents));
+							send(RESPONSE, token, respondToRequest(contents));
 						}
 					});
 			}

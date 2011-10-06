@@ -40,10 +40,6 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 				IoProcess<String, String, IOException> sender);
 	}
 
-	public interface SendNotifier {
-		public void goingToSend();
-	}
-
 	private final static int BUFFERSIZE = 4096;
 
 	private ChannelListenerFactory<CL> factory;

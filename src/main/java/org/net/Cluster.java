@@ -9,8 +9,8 @@ import org.net.ChannelListeners.PersistableChannel;
 import org.net.ChannelListeners.RequestResponseMatcher;
 import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
-import org.util.Util.Pair;
 import org.util.Util.Setter;
+import org.util.Util.Transformer;
 
 public class Cluster {
 
@@ -28,13 +28,15 @@ public class Cluster {
 	 */
 	private Map<String, ClusterChannel> channels;
 
+	private Transformer<String, String> onReceive;
+
 	private final class ClusterChannel extends PersistableChannel {
 		private ClusterChannel() {
 			super(nio, matcher, executor, peers.get(me));
 		}
 
-		public String respondForRequest(String request) {
-			return Cluster.this.respondForRequest(request);
+		public String respondToRequest(String request) {
+			return Cluster.this.respondToRequest(request);
 		}
 	}
 
@@ -58,6 +60,11 @@ public class Cluster {
 
 		probe.setOnLeft(new Setter<String>() {
 			public Void perform(String node) {
+				ClusterChannel channel = channels.get(node);
+
+				if (channel != null)
+					channel.stop();
+
 				return null;
 			}
 		});
@@ -74,19 +81,25 @@ public class Cluster {
 			sendTo(peer, message);
 	}
 
-	public void sendTo(String peer, String message) {
-		ClusterChannel channel = channels.get(peer);
-		if (channel == null)
-			channels.put(peer, channel = new ClusterChannel());
+	public boolean sendTo(String peer, String message) {
+		if (probe.isActive(peer)) {
+			ClusterChannel channel = channels.get(peer);
 
-		channel.send(message);
+			if (channel == null)
+				channels.put(peer, channel = new ClusterChannel());
+
+			channel.send(message);
+			return true;
+		} else
+			return false;
 	}
 
-	private String respondForRequest(String request) {
-		return request;
+	private String respondToRequest(String request) {
+		return onReceive.perform(request);
 	}
 
-	public void setOnReceive(Setter<Pair<String, String>> delegate) {
+	public void setOnReceive(Transformer<String, String> onReceive) {
+		this.onReceive = onReceive;
 	}
 
 }
