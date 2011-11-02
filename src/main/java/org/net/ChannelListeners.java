@@ -8,7 +8,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.net.NioDispatcher.ChannelListener;
-import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
 import org.util.Util.IoProcess;
@@ -85,7 +84,7 @@ public abstract class ChannelListeners implements ChannelListener {
 		public void onReceivePacket(String packet) {
 			if (packet.length() >= 5) {
 				char type = packet.charAt(0);
-				final int token = intValue(packet.substring(1, 5));
+				final int token = NetUtil.intValue(packet.substring(1, 5));
 				final String contents = packet.substring(5);
 
 				if (type == RESPONSE)
@@ -106,7 +105,7 @@ public abstract class ChannelListeners implements ChannelListener {
 						Util.wait(this);
 				}
 
-			sendPacket(type + strValue(token) + data);
+			sendPacket(type + NetUtil.strValue(token) + data);
 		}
 
 		private synchronized void setConnected(boolean isConnected) {
@@ -170,14 +169,14 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		protected void sendPacket(String packet) {
-			send(strValue(packet.length()) + packet);
+			send(NetUtil.strValue(packet.length()) + packet);
 		}
 
 		protected String receivePacket() {
 			String packet = null;
 
 			if (received.length() >= 4) {
-				int end = 4 + intValue(received.substring(0, 4));
+				int end = 4 + NetUtil.intValue(received.substring(0, 4));
 
 				if (received.length() >= end) {
 					packet = received.substring(4, end);
@@ -221,27 +220,6 @@ public abstract class ChannelListeners implements ChannelListener {
 				LogUtil.error(getClass(), ex);
 			}
 		}
-	}
-
-	private static String strValue(int i) {
-		// return String.format("%04d", i);
-		byte bytes[] = new byte[4];
-		bytes[0] = (byte) (i & 0xFF);
-		bytes[1] = (byte) ((i >>>= 8) & 0xFF);
-		bytes[2] = (byte) ((i >>>= 8) & 0xFF);
-		bytes[3] = (byte) ((i >>>= 8) & 0xFF);
-		String str = new String(bytes, IoUtil.CHARSET);
-		return str;
-	}
-
-	private static int intValue(String s) {
-		// return Integer.valueOf(s);
-		byte[] bytes = s.getBytes(IoUtil.CHARSET);
-		int length = bytes[3];
-		length = (length << 8) + bytes[2];
-		length = (length << 8) + bytes[1];
-		length = (length << 8) + bytes[0];
-		return length;
 	}
 
 }

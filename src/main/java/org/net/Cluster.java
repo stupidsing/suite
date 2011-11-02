@@ -2,6 +2,7 @@ package org.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -9,6 +10,7 @@ import org.net.ChannelListeners.PersistableChannel;
 import org.net.ChannelListeners.RequestResponseMatcher;
 import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
+import org.util.Util.MultiSetter;
 import org.util.Util.Setter;
 import org.util.Util.Transformer;
 
@@ -28,7 +30,9 @@ public class Cluster {
 	 */
 	private Map<String, ClusterChannel> channels;
 
-	private Transformer<String, String> onReceive;
+	private MultiSetter<String> onJoined = Util.multiSetter();
+	private MultiSetter<String> onLeft = Util.multiSetter();
+	private Map<Class<?>, Transformer<?, ?>> onReceive = new HashMap<Class<?>, Transformer<?, ?>>();
 
 	private final class ClusterChannel extends PersistableChannel {
 		private ClusterChannel() {
@@ -54,7 +58,7 @@ public class Cluster {
 	public void start() {
 		probe.setOnJoined(new Setter<String>() {
 			public Void perform(String node) {
-				return null;
+				return Cluster.this.onJoined.perform(node);
 			}
 		});
 
@@ -65,7 +69,7 @@ public class Cluster {
 				if (channel != null)
 					channel.stop();
 
-				return null;
+				return Cluster.this.onLeft.perform(node);
 			}
 		});
 
@@ -76,30 +80,39 @@ public class Cluster {
 		probe.unspawn();
 	}
 
-	public void sendAll(String message) {
-		for (String peer : probe.getActivePeers())
-			sendTo(peer, message);
+	public String requestForResponse(String peer, Object request) {
+		if (probe.isActive(peer))
+			return matcher.requestForResponse(getChannel(peer),
+					NetUtil.serialize(request));
+		else
+			throw new RuntimeException("Peer " + peer + " is not active");
 	}
 
-	public boolean sendTo(String peer, String message) {
-		if (probe.isActive(peer)) {
-			ClusterChannel channel = channels.get(peer);
-
-			if (channel == null)
-				channels.put(peer, channel = new ClusterChannel());
-
-			channel.send(message);
-			return true;
-		} else
-			return false;
+	private ClusterChannel getChannel(String peer) {
+		ClusterChannel channel = channels.get(peer);
+		if (channel == null)
+			channels.put(peer, channel = new ClusterChannel());
+		return channel;
 	}
 
-	private String respondToRequest(String request) {
-		return onReceive.perform(request);
+	private String respondToRequest(String m) {
+		Object request = NetUtil.deserialize(m);
+		@SuppressWarnings("unchecked")
+		Transformer<Object, Object> handler = (Transformer<Object, Object>) onReceive
+				.get(request.getClass());
+		return NetUtil.serialize(handler.perform(request));
 	}
 
-	public void setOnReceive(Transformer<String, String> onReceive) {
-		this.onReceive = onReceive;
+	public void addOnJoined(Setter<String> onJoined) {
+		this.onJoined.add(onJoined);
+	}
+
+	public void addOnLeft(Setter<String> onLeft) {
+		this.onLeft.add(onLeft);
+	}
+
+	public <I, O> void setOnReceive(Class<I> clazz, Transformer<I, O> onReceive) {
+		this.onReceive.put(clazz, onReceive);
 	}
 
 }

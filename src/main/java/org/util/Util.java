@@ -189,12 +189,31 @@ public class Util {
 		public O perform(I i) throws Ex;
 	}
 
+	public static class MultiSetter<I> implements Setter<I> {
+		private Collection<Setter<I>> setters = new ArrayList<Setter<I>>();
+
+		public Void perform(I i) {
+			for (Setter<I> setter : setters)
+				setter.perform(i);
+			return null;
+		}
+
+		public void add(Setter<I> setter) {
+			setters.add(setter);
+		}
+	}
+
 	public static <I> Setter<I> nullSetter() {
-		return new Setter<I>() {
+		Setter<I> setter = new Setter<I>() {
 			public Void perform(I i) {
 				return null;
 			}
 		};
+		return setter;
+	}
+
+	public static <I> MultiSetter<I> multiSetter() {
+		return new MultiSetter<I>();
 	}
 
 	/**
