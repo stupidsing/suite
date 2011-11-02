@@ -16,27 +16,35 @@ import org.util.Util.Transformer;
 
 public class Cluster {
 
-	private String me;
 	private Map<String, InetSocketAddress> peers;
 
 	private ClusterProbe probe;
 
-	private NioDispatcher<PersistableChannel> nio;
+	private NioDispatcher<ClusterChannel> nio;
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor = Util.createExecutor();
 
 	/**
 	 * Established channels connecting to peers.
 	 */
-	private Map<String, ClusterChannel> channels;
+	private Map<String, ClusterChannel> channels = Util.createHashMap();
 
 	private MultiSetter<String> onJoined = Util.multiSetter();
 	private MultiSetter<String> onLeft = Util.multiSetter();
 	private Map<Class<?>, Transformer<?, ?>> onReceive = new HashMap<Class<?>, Transformer<?, ?>>();
 
-	private final class ClusterChannel extends PersistableChannel {
-		private ClusterChannel() {
-			super(nio, matcher, executor, peers.get(me));
+	public static class ClusterException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		private ClusterException(Throwable cause) {
+			super(cause);
+		}
+	}
+
+	private final class ClusterChannel extends
+			PersistableChannel<ClusterChannel> {
+		private ClusterChannel(String peer) {
+			super(nio, matcher, executor, peers.get(peer));
 		}
 
 		public String respondToRequest(String request) {
@@ -44,13 +52,15 @@ public class Cluster {
 		}
 	}
 
-	public Cluster(String me, Map<String, InetSocketAddress> peers)
+	public Cluster(final String me, Map<String, InetSocketAddress> peers)
 			throws IOException {
+		this.peers = peers;
 		probe = new ClusterProbe(me, peers);
-		nio = new NioDispatcher<PersistableChannel>(
-				new ChannelListenerFactory<PersistableChannel>() {
-					public PersistableChannel create() {
-						return new ClusterChannel();
+
+		nio = new NioDispatcher<ClusterChannel>(
+				new ChannelListenerFactory<ClusterChannel>() {
+					public ClusterChannel create() {
+						return new ClusterChannel(me);
 					}
 				});
 	}
@@ -73,10 +83,15 @@ public class Cluster {
 			}
 		});
 
+		nio.spawn();
 		probe.spawn();
 	}
 
 	public void stop() {
+		for (ClusterChannel channel : channels.values())
+			channel.stop();
+
+		nio.unspawn();
 		probe.unspawn();
 	}
 
@@ -90,8 +105,18 @@ public class Cluster {
 
 	private ClusterChannel getChannel(String peer) {
 		ClusterChannel channel = channels.get(peer);
-		if (channel == null)
-			channels.put(peer, channel = new ClusterChannel());
+
+		if (channel == null || !channel.isConnected())
+			try {
+				if (channel != null)
+					nio.disconnect(channel);
+
+				channel = nio.connect(peers.get(peer));
+				channels.put(peer, channel);
+			} catch (IOException ex) {
+				throw new ClusterException(ex);
+			}
+
 		return channel;
 	}
 

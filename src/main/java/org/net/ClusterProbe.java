@@ -195,17 +195,13 @@ public class ClusterProbe extends ThreadedService {
 			// Refreshes member time accordingly
 			for (int i = 2; i < splitted.length; i += 2) {
 				String node = splitted[i];
-				Long oldTime = lastActiveTime.get(node);
 				Long newTime = Long.valueOf(splitted[i + 1]);
-
-				if (oldTime == null || oldTime < newTime)
-					lastActiveTime.put(node, newTime);
+				nodeJoined(node, newTime);
 			}
 
 			if (peers.get(remote) != null)
 				if (data == Command.HELO || data == Command.FINE) {
-					if (lastActiveTime.put(remote, current) == null)
-						onJoined.perform(remote);
+					nodeJoined(remote, current);
 
 					// Reply HELO messages
 					if (data == Command.HELO) {
@@ -216,6 +212,14 @@ public class ClusterProbe extends ThreadedService {
 						&& lastActiveTime.remove(remote) != null)
 					onLeft.perform(remote);
 		}
+	}
+
+	private void nodeJoined(String node, Long time) {
+		Long oldTime = lastActiveTime.get(node);
+
+		if (oldTime == null || oldTime < time)
+			if (lastActiveTime.put(node, time) == null)
+				onJoined.perform(node);
 	}
 
 	private void keepAlive(long current) {

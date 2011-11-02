@@ -1,5 +1,6 @@
 package org.net;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +16,13 @@ public class ClusterMap<K, V> {
 	private List<String> peers = new ArrayList<String>();
 	private Map<K, V> localMap = new HashMap<K, V>();
 
-	private static class GetRequest {
+	private static class GetRequest implements Serializable {
+		private static final long serialVersionUID = 1l;
 		private Object key;
 	}
 
-	private static class SetRequest {
+	private static class SetRequest implements Serializable {
+		private static final long serialVersionUID = 1l;
 		private Object key, value;
 	}
 
@@ -28,14 +31,20 @@ public class ClusterMap<K, V> {
 
 		cluster.addOnJoined(new Setter<String>() {
 			public Void perform(String peer) {
-				peers.add(peer);
-				return null;
+				synchronized (ClusterMap.this) {
+					System.out.println(peer + " joined");
+					peers.add(peer);
+					return null;
+				}
 			}
 		});
+
 		cluster.addOnLeft(new Setter<String>() {
 			public Void perform(String peer) {
-				peers.remove(peer);
-				return null;
+				synchronized (ClusterMap.this) {
+					peers.remove(peer);
+					return null;
+				}
 			}
 		});
 
@@ -45,6 +54,7 @@ public class ClusterMap<K, V> {
 						return localMap.get(request.key);
 					}
 				});
+
 		cluster.setOnReceive(SetRequest.class,
 				new Transformer<SetRequest, V>() {
 					public V perform(SetRequest request) {
@@ -84,8 +94,7 @@ public class ClusterMap<K, V> {
 
 	private String getPeerByHash(K key) {
 		int hash = Util.hashCode(key);
-		String peer = peers.get(hash % peers.size());
-		return peer;
+		return peers.get(hash % peers.size());
 	}
 
 	private V deserializeValue(String m) {

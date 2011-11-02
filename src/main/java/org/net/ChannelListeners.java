@@ -14,13 +14,13 @@ import org.util.Util.IoProcess;
 
 public abstract class ChannelListeners implements ChannelListener {
 
-	public abstract static class PersistableChannel extends
-			RequestResponseChannel {
-		private NioDispatcher<PersistableChannel> dispatcher;
+	public abstract static class PersistableChannel<CL extends ChannelListener>
+			extends RequestResponseChannel {
+		private NioDispatcher<CL> dispatcher;
 		private InetSocketAddress address;
 		boolean started;
 
-		public PersistableChannel(NioDispatcher<PersistableChannel> dispatcher //
+		public PersistableChannel(NioDispatcher<CL> dispatcher //
 				, RequestResponseMatcher matcher //
 				, ThreadPoolExecutor executor //
 				, InetSocketAddress address) {
@@ -45,7 +45,7 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		private void reconnect() {
-			if (started)
+			if (started && !isConnected())
 				try {
 					dispatcher.reconnect(this, address);
 				} catch (IOException ex) {
@@ -191,13 +191,16 @@ public abstract class ChannelListeners implements ChannelListener {
 	public abstract static class BufferedChannel implements ChannelListener {
 		private IoProcess<String, String, IOException> sender;
 		private String toSend = "";
+		private boolean connected;
 
 		@Override
 		public void onConnected() {
+			connected = true;
 		}
 
 		@Override
 		public void onClose() {
+			connected = false;
 		}
 
 		@Override
@@ -219,6 +222,10 @@ public abstract class ChannelListeners implements ChannelListener {
 			} catch (IOException ex) {
 				LogUtil.error(getClass(), ex);
 			}
+		}
+
+		public boolean isConnected() {
+			return connected;
 		}
 	}
 
