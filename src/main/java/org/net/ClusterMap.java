@@ -78,29 +78,25 @@ public class ClusterMap<K, V> {
 	private V getFromPeer(String peer, K key) {
 		GetRequest request = new GetRequest();
 		request.key = key;
-
-		String response = cluster.requestForResponse(peer, request);
-		return deserializeValue(response);
+		return requestForResponse(peer, request);
 	}
 
 	private V setToPeer(String peer, K key, V value) {
 		SetRequest request = new SetRequest();
 		request.key = key;
 		request.value = value;
+		return requestForResponse(peer, request);
+	}
 
-		String response = cluster.requestForResponse(peer, request);
-		return deserializeValue(response);
+	private V requestForResponse(String peer, Serializable request) {
+		@SuppressWarnings("unchecked")
+		V value = (V) cluster.requestForResponse(peer, request);
+		return value;
 	}
 
 	private String getPeerByHash(K key) {
 		int hash = Util.hashCode(key);
 		return peers.get(hash % peers.size());
-	}
-
-	private V deserializeValue(String m) {
-		@SuppressWarnings("unchecked")
-		V value = (V) NetUtil.deserialize(m);
-		return value;
 	}
 
 }

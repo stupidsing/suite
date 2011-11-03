@@ -10,12 +10,14 @@ import org.net.ChannelListeners.PersistableChannel;
 import org.net.ChannelListeners.RequestResponseMatcher;
 import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
+import org.util.Util.Event;
 import org.util.Util.MultiSetter;
 import org.util.Util.Setter;
 import org.util.Util.Transformer;
 
 public class Cluster {
 
+	private String me;
 	private Map<String, InetSocketAddress> peers;
 
 	private ClusterProbe probe;
@@ -23,6 +25,8 @@ public class Cluster {
 	private NioDispatcher<ClusterChannel> nio;
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor = Util.createExecutor();
+
+	private Event unlisten;
 
 	/**
 	 * Established channels connecting to peers.
@@ -54,6 +58,7 @@ public class Cluster {
 
 	public Cluster(final String me, Map<String, InetSocketAddress> peers)
 			throws IOException {
+		this.me = me;
 		this.peers = peers;
 		probe = new ClusterProbe(me, peers);
 
@@ -65,7 +70,7 @@ public class Cluster {
 				});
 	}
 
-	public void start() {
+	public void start() throws IOException {
 		probe.setOnJoined(new Setter<String>() {
 			public Void perform(String node) {
 				return Cluster.this.onJoined.perform(node);
@@ -83,6 +88,7 @@ public class Cluster {
 			}
 		});
 
+		unlisten = nio.listen(peers.get(me).getPort());
 		nio.spawn();
 		probe.spawn();
 	}
@@ -93,13 +99,15 @@ public class Cluster {
 
 		nio.unspawn();
 		probe.unspawn();
+		unlisten.perform(null);
 	}
 
-	public String requestForResponse(String peer, Object request) {
-		if (probe.isActive(peer))
-			return matcher.requestForResponse(getChannel(peer),
-					NetUtil.serialize(request));
-		else
+	public Object requestForResponse(String peer, Object request) {
+		if (probe.isActive(peer)) {
+			String req = NetUtil.serialize(request);
+			String resp = matcher.requestForResponse(getChannel(peer), req);
+			return NetUtil.deserialize(resp);
+		} else
 			throw new RuntimeException("Peer " + peer + " is not active");
 	}
 
@@ -120,8 +128,8 @@ public class Cluster {
 		return channel;
 	}
 
-	private String respondToRequest(String m) {
-		Object request = NetUtil.deserialize(m);
+	private String respondToRequest(String req) {
+		Object request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
 		Transformer<Object, Object> handler = (Transformer<Object, Object>) onReceive
 				.get(request.getClass());
