@@ -44,8 +44,6 @@ public class ClusterTest {
 		cluster0.stop();
 		cluster1.stop();
 
-		Util.sleep(1 * 1000);
-
 		System.out.println("=== CLUSTER STOPPED (" + new Date() + ") ===\n");
 	}
 

@@ -113,6 +113,10 @@ public abstract class ChannelListeners implements ChannelListener {
 					.toBytes());
 		}
 
+		public boolean isConnected() {
+			return connected;
+		}
+
 		private synchronized void setConnected(boolean isConnected) {
 			connected = isConnected;
 			notify();
@@ -199,16 +203,13 @@ public abstract class ChannelListeners implements ChannelListener {
 	public abstract static class BufferedChannel implements ChannelListener {
 		private IoProcess<Bytes, Bytes, IOException> sender;
 		private Bytes toSend = Bytes.EMPTY_BYTES;
-		private boolean connected;
 
 		@Override
 		public void onConnected() {
-			connected = true;
 		}
 
 		@Override
 		public void onClose() {
-			connected = false;
 		}
 
 		@Override
@@ -230,10 +231,6 @@ public abstract class ChannelListeners implements ChannelListener {
 			} catch (IOException ex) {
 				LogUtil.error(getClass(), ex);
 			}
-		}
-
-		public boolean isConnected() {
-			return connected;
 		}
 	}
 

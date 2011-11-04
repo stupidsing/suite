@@ -56,8 +56,6 @@ public class ClusterMapTest {
 		for (Cluster cluster : clusters.values())
 			cluster.stop();
 
-		Util.sleep(1 * 1000);
-
 		System.out.println("=== CLUSTER STOPPED (" + new Date() + ") ===\n");
 	}
 

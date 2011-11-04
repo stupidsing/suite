@@ -25,9 +25,9 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 	public interface ChannelListener {
 		public void onConnected();
 
-		public void onReceive(Bytes message);
-
 		public void onClose() throws IOException;
+
+		public void onReceive(Bytes message);
 
 		public void trySend() throws IOException;
 
