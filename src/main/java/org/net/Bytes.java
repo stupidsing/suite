@@ -117,7 +117,7 @@ public class Bytes {
 	public byte[] getBytes() {
 		if (start != 0 || end != bytes.length) {
 			byte result[] = new byte[end - start];
-			System.arraycopy(bytes, 0, result, 0, end - start);
+			System.arraycopy(bytes, start, result, 0, end - start);
 			return result;
 		} else
 			return bytes;

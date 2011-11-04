@@ -1,5 +1,7 @@
 package org.net;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -37,7 +39,7 @@ public class ClusterTest {
 
 		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
 
-		cluster0.requestForResponse("NODE1", 12345);
+		assertEquals(12346, cluster0.requestForResponse("NODE1", 12345));
 
 		cluster0.stop();
 		cluster1.stop();
