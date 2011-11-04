@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.net.Bytes.BytesBuilder;
 import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util;
@@ -55,8 +56,8 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class RequestResponseChannel extends PacketChannel {
-		private final static char RESPONSE = 'P';
-		private final static char REQUEST = 'Q';
+		private static final char RESPONSE = 'P';
+		private static final char REQUEST = 'Q';
 
 		private RequestResponseMatcher matcher;
 		private ThreadPoolExecutor executor;
@@ -68,7 +69,7 @@ public abstract class ChannelListeners implements ChannelListener {
 			this.executor = executor;
 		}
 
-		public abstract String respondToRequest(String request);
+		public abstract Bytes respondToRequest(Bytes request);
 
 		@Override
 		public void onConnected() {
@@ -81,11 +82,11 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void onReceivePacket(String packet) {
-			if (packet.length() >= 5) {
-				char type = packet.charAt(0);
-				final int token = NetUtil.intValue(packet.substring(1, 5));
-				final String contents = packet.substring(5);
+		public void onReceivePacket(Bytes packet) {
+			if (packet.size() >= 5) {
+				char type = (char) packet.byteAt(0);
+				final int token = NetUtil.intValue(packet.subbytes(1, 5));
+				final Bytes contents = packet.subbytes(5);
 
 				if (type == RESPONSE)
 					matcher.onRespond(token, contents);
@@ -98,14 +99,18 @@ public abstract class ChannelListeners implements ChannelListener {
 			}
 		}
 
-		private void send(char type, int token, String data) {
+		private void send(char type, int token, Bytes data) {
 			if (!connected)
 				synchronized (this) {
 					while (!connected)
 						Util.wait(this);
 				}
 
-			sendPacket(type + NetUtil.strValue(token) + data);
+			sendPacket(new BytesBuilder() //
+					.append((byte) type) //
+					.append(NetUtil.bytesValue(token)) //
+					.append(data) //
+					.toBytes());
 		}
 
 		private synchronized void setConnected(boolean isConnected) {
@@ -115,13 +120,13 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public static class RequestResponseMatcher {
-		private final static AtomicInteger tokenCounter = new AtomicInteger();
+		private static final AtomicInteger tokenCounter = new AtomicInteger();
 
 		// TODO clean-up lost requests
-		private Map<Integer, String[]> requests = new HashMap<Integer, String[]>();
+		private Map<Integer, Bytes[]> requests = new HashMap<Integer, Bytes[]>();
 
-		private void onRespond(int token, String respond) {
-			String holder[] = requests.get(token);
+		private void onRespond(int token, Bytes respond) {
+			Bytes holder[] = requests.get(token);
 
 			if (holder != null)
 				synchronized (holder) {
@@ -130,19 +135,19 @@ public abstract class ChannelListeners implements ChannelListener {
 				}
 		}
 
-		public String requestForResponse(RequestResponseChannel listener,
-				String request) {
-			return requestForResponse(listener, request, 0);
+		public Bytes requestForResponse(RequestResponseChannel channel,
+				Bytes request) {
+			return requestForResponse(channel, request, 0);
 		}
 
-		public String requestForResponse(RequestResponseChannel listener,
-				String request, int timeOut) {
+		public Bytes requestForResponse(RequestResponseChannel channel,
+				Bytes request, int timeOut) {
 			Integer token = tokenCounter.getAndIncrement();
-			String holder[] = new String[1];
+			Bytes holder[] = new Bytes[1];
 
 			synchronized (holder) {
 				requests.put(token, holder);
-				listener.send(RequestResponseChannel.REQUEST, token, request);
+				channel.send(RequestResponseChannel.REQUEST, token, request);
 
 				while (holder[0] == null)
 					Util.wait(holder, timeOut);
@@ -155,32 +160,35 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class PacketChannel extends BufferedChannel {
-		private String received = "";
+		private Bytes received = Bytes.EMPTY_BYTES;
 
-		public abstract void onReceivePacket(String packet);
+		public abstract void onReceivePacket(Bytes packet);
 
 		@Override
-		public final void onReceive(String message) {
-			received += message;
+		public final void onReceive(Bytes message) {
+			received = received.append(message);
+			Bytes packet = receivePacket();
 
-			String packet = receivePacket();
 			if (packet != null)
 				onReceivePacket(packet);
 		}
 
-		protected void sendPacket(String packet) {
-			send(NetUtil.strValue(packet.length()) + packet);
+		protected void sendPacket(Bytes packet) {
+			send(new BytesBuilder() //
+					.append(NetUtil.bytesValue(packet.size())) //
+					.append(packet) //
+					.toBytes());
 		}
 
-		protected String receivePacket() {
-			String packet = null;
+		protected Bytes receivePacket() {
+			Bytes packet = null;
 
-			if (received.length() >= 4) {
-				int end = 4 + NetUtil.intValue(received.substring(0, 4));
+			if (received.size() >= 4) {
+				int end = 4 + NetUtil.intValue(received.subbytes(0, 4));
 
-				if (received.length() >= end) {
-					packet = received.substring(4, end);
-					received = received.substring(end);
+				if (received.size() >= end) {
+					packet = received.subbytes(4, end);
+					received = received.subbytes(end);
 				}
 			}
 
@@ -189,8 +197,8 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class BufferedChannel implements ChannelListener {
-		private IoProcess<String, String, IOException> sender;
-		private String toSend = "";
+		private IoProcess<Bytes, Bytes, IOException> sender;
+		private Bytes toSend = Bytes.EMPTY_BYTES;
 		private boolean connected;
 
 		@Override
@@ -210,12 +218,12 @@ public abstract class ChannelListeners implements ChannelListener {
 
 		@Override
 		public void setTrySendDelegate(
-				IoProcess<String, String, IOException> sender) {
+				IoProcess<Bytes, Bytes, IOException> sender) {
 			this.sender = sender;
 		}
 
-		public void send(String message) {
-			toSend += message;
+		public void send(Bytes message) {
+			toSend = toSend.append(message);
 
 			try {
 				trySend();

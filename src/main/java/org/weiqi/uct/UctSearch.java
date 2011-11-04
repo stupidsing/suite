@@ -17,10 +17,10 @@ public class UctSearch<Move> {
 	 * Larger values give uniform search; smaller values give very selective
 	 * search.
 	 */
-	private final static float explorationFactor = 0.4f;
-	private final static float raveFactor = 5f;
-	private final static boolean rave = true;
-	private final static int maxRaveDepth = 4;
+	private static final float explorationFactor = 0.4f;
+	private static final float raveFactor = 5f;
+	private static final boolean rave = true;
+	private static final int maxRaveDepth = 4;
 
 	public int numberOfThreads = 2;
 	public int numberOfSimulations = 10000;
@@ -201,7 +201,7 @@ public class UctSearch<Move> {
 		raveMap.get(move).incrementAndGet();
 	}
 
-	private final static DecimalFormat df3 = new DecimalFormat("0.000");
+	private static final DecimalFormat df3 = new DecimalFormat("0.000");
 
 	public void dumpSearch() {
 		StringBuilder sb = new StringBuilder();

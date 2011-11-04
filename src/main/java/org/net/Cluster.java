@@ -45,13 +45,12 @@ public class Cluster {
 		}
 	}
 
-	private final class ClusterChannel extends
-			PersistableChannel<ClusterChannel> {
+	private class ClusterChannel extends PersistableChannel<ClusterChannel> {
 		private ClusterChannel(String peer) {
 			super(nio, matcher, executor, peers.get(peer));
 		}
 
-		public String respondToRequest(String request) {
+		public Bytes respondToRequest(Bytes request) {
 			return Cluster.this.respondToRequest(request);
 		}
 	}
@@ -104,8 +103,8 @@ public class Cluster {
 
 	public Object requestForResponse(String peer, Object request) {
 		if (probe.isActive(peer)) {
-			String req = NetUtil.serialize(request);
-			String resp = matcher.requestForResponse(getChannel(peer), req);
+			Bytes req = NetUtil.serialize(request);
+			Bytes resp = matcher.requestForResponse(getChannel(peer), req);
 			return NetUtil.deserialize(resp);
 		} else
 			throw new RuntimeException("Peer " + peer + " is not active");
@@ -128,7 +127,7 @@ public class Cluster {
 		return channel;
 	}
 
-	private String respondToRequest(String req) {
+	private Bytes respondToRequest(Bytes req) {
 		Object request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
 		Transformer<Object, Object> handler = (Transformer<Object, Object>) onReceive

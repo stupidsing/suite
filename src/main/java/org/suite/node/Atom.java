@@ -10,7 +10,7 @@ public class Atom extends Node {
 
 	private String name;
 
-	public final static Atom nil = create("");
+	public static final Atom nil = create("");
 
 	private Atom(String name) {
 		this.name = name;

@@ -6,43 +6,41 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.util.IoUtil;
-
 public class NetUtil {
 
-	public static int intValue(String s) {
+	public static int intValue(Bytes bytes) {
 		int value = 0, i = 4;
 		do {
 			i--;
-			value = (value << 8) + s.charAt(i);
+			value = (value << 8) + bytes.byteAt(i);
 		} while (i > 0);
 		return value;
 	}
 
-	public static String strValue(int value) {
+	public static Bytes bytesValue(int value) {
 		byte bytes[] = new byte[4];
 		for (int i = 0; i < 4; i++) {
 			bytes[i] = (byte) (value & 0xFF);
 			value >>>= 8;
 		}
-		return new String(bytes);
+		return new Bytes(bytes);
 	}
 
-	public static String serialize(Object o) {
+	public static Bytes serialize(Object o) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			ObjectOutputStream out = new ObjectOutputStream(baos);
 			out.writeObject(o);
 			out.flush();
 			out.close();
-			return new String(baos.toByteArray(), IoUtil.CHARSET);
+			return new Bytes(baos.toByteArray());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public static <T> T deserialize(String s) {
-		byte[] bytes = s.getBytes(IoUtil.CHARSET);
+	public static <T> T deserialize(Bytes s) {
+		byte bytes[] = s.getBytes();
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
 		try {

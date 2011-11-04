@@ -13,7 +13,7 @@ import org.util.Util;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
-	private final static int STACKSIZE = 4096;
+	private static final int STACKSIZE = 4096;
 
 	private Prover prover;
 	private Journal journal;

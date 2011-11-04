@@ -261,7 +261,7 @@ public class EvalPredicates {
 	}
 
 	public static class RandomPredicate implements SystemPredicate {
-		private final static java.util.Random random = new Random();
+		private static final java.util.Random random = new Random();
 
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);

@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
 
 public class IoUtil {
 
-	private final static int BUFFERSIZE = 4096;
+	private static final int BUFFERSIZE = 4096;
 
 	public static final Charset CHARSET = Charset.forName("UTF-8");
 

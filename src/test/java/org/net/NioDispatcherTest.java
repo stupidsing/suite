@@ -19,6 +19,7 @@ import org.net.ChannelListeners.BufferedChannel;
 import org.net.ChannelListeners.RequestResponseChannel;
 import org.net.ChannelListeners.RequestResponseMatcher;
 import org.net.NioDispatcher.ChannelListenerFactory;
+import org.util.IoUtil;
 import org.util.Util;
 import org.util.Util.Event;
 
@@ -33,10 +34,11 @@ public class NioDispatcherTest {
 					public BufferedChannel create() {
 						return new BufferedChannel() {
 							public void onConnected() {
-								send(hello + "\n");
+								String s = hello + "\n";
+								send(new Bytes(s.getBytes(IoUtil.CHARSET)));
 							}
 
-							public void onReceive(String request) {
+							public void onReceive(Bytes request) {
 								send(request);
 							}
 						};
@@ -77,7 +79,7 @@ public class NioDispatcherTest {
 				new ChannelListenerFactory<RequestResponseChannel>() {
 					public RequestResponseChannel create() {
 						return new RequestResponseChannel(matcher, executor) {
-							public String respondToRequest(String request) {
+							public Bytes respondToRequest(Bytes request) {
 								return request;
 							}
 						};
@@ -91,7 +93,8 @@ public class NioDispatcherTest {
 				.connect(new InetSocketAddress(InetAddress.getLocalHost(), 5151));
 
 		for (String s : new String[] { "ABC", "WXYZ", "" }) {
-			assertEquals(s, matcher.requestForResponse(client, s));
+			Bytes bytes = new Bytes(s.getBytes(IoUtil.CHARSET));
+			assertEquals(s, matcher.requestForResponse(client, bytes));
 			System.out.println("Request '" + s + "' is okay");
 		}
 

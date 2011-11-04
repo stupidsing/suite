@@ -277,6 +277,18 @@ public class Util {
 		return cloned;
 	}
 
+	public static <T> void copyArray(T from[], int fromIndex //
+			, T to[], int toIndex, int size) {
+		if (size != 0)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
+	public static <T> void copyPrimitiveArray(Object from, int fromIndex //
+			, Object to, int toIndex, int size) {
+		if (size != 0)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
 	public static String substr(String s, int start, int end) {
 		int length = s.length();
 		while (start < 0)

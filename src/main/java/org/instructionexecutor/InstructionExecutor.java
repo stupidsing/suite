@@ -19,15 +19,15 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionExecutor {
 
-	private final static BiMap<Insn, String> insnNames = HashBiMap.create();
-	private final static Map<Operator, Insn> evalInsns = Util.createHashMap();
+	private static final BiMap<Insn, String> insnNames = HashBiMap.create();
+	private static final Map<Operator, Insn> evalInsns = Util.createHashMap();
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 
-	private final static Atom trueAtom = Atom.create("true");
-	private final static Atom falseAtom = Atom.create("false");
+	private static final Atom trueAtom = Atom.create("true");
+	private static final Atom falseAtom = Atom.create("false");
 
-	private final static int STACKSIZE = 4096;
+	private static final int STACKSIZE = 4096;
 
 	static {
 		for (Insn insn : Insn.values())

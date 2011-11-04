@@ -12,7 +12,6 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
 import org.net.NioDispatcher.ChannelListener;
-import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util.Event;
 import org.util.Util.IoProcess;
@@ -26,7 +25,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 	public interface ChannelListener {
 		public void onConnected();
 
-		public void onReceive(String message);
+		public void onReceive(Bytes message);
 
 		public void onClose() throws IOException;
 
@@ -37,10 +36,10 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 		 * i.e. getMessageToSend() would return data.
 		 */
 		public void setTrySendDelegate(
-				IoProcess<String, String, IOException> sender);
+				IoProcess<Bytes, Bytes, IOException> sender);
 	}
 
-	private final static int BUFFERSIZE = 4096;
+	private static final int BUFFERSIZE = 4096;
 
 	private ChannelListenerFactory<CL> factory;
 
@@ -169,10 +168,9 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 				} else if (key.isReadable()) {
 					int n = sc.read(ByteBuffer.wrap(buffer));
 
-					if (n >= 0) {
-						String m = new String(buffer, 0, n, IoUtil.CHARSET);
-						listener.onReceive(m);
-					} else {
+					if (n >= 0)
+						listener.onReceive(new Bytes(buffer, 0, n));
+					else {
 						listener.onClose();
 						sc.close();
 					}
@@ -181,17 +179,17 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 			}
 	}
 
-	private IoProcess<String, String, IOException> createTrySendDelegate(
+	private IoProcess<Bytes, Bytes, IOException> createTrySendDelegate(
 			final SocketChannel channel) {
-		return new IoProcess<String, String, IOException>() {
-			public String perform(String in) throws IOException {
+		return new IoProcess<Bytes, Bytes, IOException>() {
+			public Bytes perform(Bytes in) throws IOException {
 
 				// Try to send immediately. If cannot sent all, wait for the
 				// writable event (and send again at that moment).
-				byte bytes[] = in.getBytes(IoUtil.CHARSET);
+				byte bytes[] = in.getBytes();
 				int sent = channel.write(ByteBuffer.wrap(bytes));
 
-				String out = in.substring(sent);
+				Bytes out = in.subbytes(sent);
 
 				int ops;
 				if (!out.isEmpty())

@@ -30,9 +30,9 @@ import com.google.common.collect.HashBiMap;
  */
 public class ClusterProbe extends ThreadedService {
 
-	private final static int BUFFERSIZE = 65536; // UDP packet size
-	private final static int CHECKALIVEDURATION = 1500;
-	private final static int TIMEOUTDURATION = 5000;
+	private static final int BUFFERSIZE = 65536; // UDP packet size
+	private static final int CHECKALIVEDURATION = 1500;
+	private static final int TIMEOUTDURATION = 5000;
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();

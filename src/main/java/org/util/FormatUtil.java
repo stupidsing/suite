@@ -8,12 +8,12 @@ import java.util.Date;
 
 public class FormatUtil {
 
-	private final static String ymd = "yyyy-mm-dd";
-	private final static String hms = "HH:mm:ss";
+	private static final String ymd = "yyyy-mm-dd";
+	private static final String hms = "HH:mm:ss";
 
-	public final static SyncDateFormat dateFmt = new SyncDateFormat(ymd);
-	public final static SyncDateFormat timeFmt = new SyncDateFormat(hms);
-	public final static SyncDateFormat dtFmt = new SyncDateFormat( //
+	public static final SyncDateFormat dateFmt = new SyncDateFormat(ymd);
+	public static final SyncDateFormat timeFmt = new SyncDateFormat(hms);
+	public static final SyncDateFormat dtFmt = new SyncDateFormat( //
 			ymd + " " + hms);
 
 	// Dang, the date formats and decimal formats are not thread-safe!! Wrap

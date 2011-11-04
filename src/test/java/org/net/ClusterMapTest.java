@@ -16,7 +16,7 @@ import org.util.Util;
 
 public class ClusterMapTest {
 
-	private final static Random random = new Random();
+	private static final Random random = new Random();
 
 	@Test
 	public void testClusterMap() throws IOException {

@@ -34,7 +34,7 @@ public class SwingDemo {
 		editor.setFont(new Font("Monospac821 BT", Font.PLAIN, 10));
 
 		JTable table = new JTable(new AbstractTableModel() {
-			private final static long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 
 			@Override
 			public int getColumnCount() {

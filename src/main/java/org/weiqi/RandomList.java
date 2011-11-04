@@ -8,7 +8,7 @@ public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
 
 	private static final long serialVersionUID = 1l;
 
-	private final static Random random = new Random();
+	private static final Random random = new Random();
 
 	public RandomList() {
 		super();
