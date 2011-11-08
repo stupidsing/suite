@@ -119,7 +119,7 @@ public class Util {
 		}
 
 		public int hashCode() {
-			int h1 = (t1 != null) ? t1.hashCode() : 0;
+			int h1 = t1 != null ? t1.hashCode() : 0;
 			int h2 = (t2 != null) ? t2.hashCode() : 0;
 			return h1 ^ h2;
 		}
@@ -245,14 +245,14 @@ public class Util {
 		if (t1 == null ^ t2 == null)
 			return false;
 		else
-			return (t1 != null) ? t1.equals(t2) : true;
+			return t1 != null ? t1.equals(t2) : true;
 	}
 
 	public static <T extends Comparable<T>> int compare(T t1, T t2) {
 		if (t1 == null ^ t2 == null)
 			return t1 != null ? 1 : -1;
 		else
-			return (t1 != null) ? t1.compareTo(t2) : 0;
+			return t1 != null ? t1.compareTo(t2) : 0;
 	}
 
 	public static <T> int hashCode(T t) {

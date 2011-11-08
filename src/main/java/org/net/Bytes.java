@@ -7,9 +7,11 @@ public class Bytes {
 	private byte bytes[]; // Immutable
 	private int start, end;
 
-	private final static byte EMPTY_BYTE_ARRAY[] = new byte[0];
+	private final static byte EMPTYBYTEARRAY[] = new byte[0];
 
-	public final static Bytes EMPTY_BYTES = new Bytes(EMPTY_BYTE_ARRAY);
+	private final static int REALLOCSIZE = 65536;
+
+	public final static Bytes EMPTYBYTES = new Bytes(EMPTYBYTEARRAY);
 
 	public Bytes(byte bytes[]) {
 		this(bytes, 0);
@@ -50,7 +52,13 @@ public class Bytes {
 	private Bytes subbytes0(int start, int end) {
 		checkOpenBounds(start);
 		checkOpenBounds(end);
-		return new Bytes(bytes, start, end);
+		Bytes result = new Bytes(bytes, start, end);
+
+		// Avoids small range bytes object keeping a large buffer
+		if (bytes.length >= REALLOCSIZE && end - start < REALLOCSIZE / 4)
+			result = EMPTYBYTES.append(result); // Do not share reference
+
+		return result;
 	}
 
 	public Bytes append(Bytes a) {
@@ -124,7 +132,7 @@ public class Bytes {
 	}
 
 	public static class BytesBuilder {
-		private byte bytes[] = EMPTY_BYTE_ARRAY;
+		private byte bytes[] = EMPTYBYTEARRAY;
 		private int size;
 
 		public BytesBuilder() {

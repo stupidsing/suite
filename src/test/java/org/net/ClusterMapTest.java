@@ -43,12 +43,12 @@ public class ClusterMapTest {
 
 		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 100; i++) {
 			String peer = peerNames.get(random.nextInt(nNodes));
 			clMap.get(peer).set(i, Integer.toString(i));
 		}
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 100; i++) {
 			String peer = peerNames.get(random.nextInt(nNodes));
 			assertEquals(Integer.toString(i), clMap.get(peer).get(i));
 		}

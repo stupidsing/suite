@@ -118,7 +118,6 @@ public class ClusterProbe extends ThreadedService {
 		lastActiveTime.put(me, System.currentTimeMillis()); // Puts myself in
 		broadcast(Command.HELO);
 		super.spawn();
-
 	}
 
 	@Override
@@ -148,9 +147,11 @@ public class ClusterProbe extends ThreadedService {
 		dc.register(selector, SelectionKey.OP_READ);
 
 		setStarted(true);
+		onJoined.perform(me);
 
 		while (running) {
 			long current = System.currentTimeMillis();
+			nodeJoined(me, current);
 			keepAlive(current);
 			eliminateOutdatedPeers(current);
 
@@ -169,6 +170,9 @@ public class ClusterProbe extends ThreadedService {
 				}
 			}
 		}
+
+		for (String peer : lastActiveTime.keySet())
+			onLeft.perform(peer);
 
 		setStarted(false);
 
@@ -200,15 +204,9 @@ public class ClusterProbe extends ThreadedService {
 			}
 
 			if (peers.get(remote) != null)
-				if (data == Command.HELO || data == Command.FINE) {
-					nodeJoined(remote, current);
-
-					// Reply HELO messages
-					if (data == Command.HELO) {
-						byte replyBytes[] = formMessage(Command.FINE);
-						sendMessage(remote, peers.get(remote), replyBytes);
-					}
-				} else if (data == Command.BYEE
+				if (data == Command.HELO) // Reply HELO messages
+					sendMessage(remote, formMessage(Command.FINE));
+				else if (data == Command.BYEE
 						&& lastActiveTime.remove(remote) != null)
 					onLeft.perform(remote);
 		}
@@ -225,22 +223,16 @@ public class ClusterProbe extends ThreadedService {
 	private void keepAlive(long current) {
 		byte bytes[] = formMessage(Command.HELO);
 
-		for (Entry<String, Address> e : peers.entrySet()) {
-			String remote = e.getKey();
+		for (String remote : peers.keySet()) {
+			Long lastActive = lastActiveTime.get(remote);
+			Long lastSent = lastSentTime.get(remote);
 
-			if (!Util.equals(remote, me)) {
-				Long lastActive = lastActiveTime.get(remote);
-				Long lastSent = lastSentTime.get(remote);
-
-				// Sends to those who are nearly forgotten, i.e.:
-				// - The node is not active, or node's active time is expired
-				// - The last sent time was long ago (avoid message bombing)
-				if (lastActive == null
-						|| lastActive + CHECKALIVEDURATION < current)
-					if (lastSent == null
-							|| lastSent + CHECKALIVEDURATION < current)
-						sendMessage(remote, e.getValue(), bytes);
-			}
+			// Sends to those who are nearly forgotten, i.e.:
+			// - The node is not active, or node's active time is expired
+			// - The last sent time was long ago (avoid message bombing)
+			if (lastActive == null || lastActive + CHECKALIVEDURATION < current)
+				if (lastSent == null || lastSent + CHECKALIVEDURATION < current)
+					sendMessage(remote, bytes);
 		}
 	}
 
@@ -252,8 +244,7 @@ public class ClusterProbe extends ThreadedService {
 			Entry<String, Long> e = peerIter.next();
 			String node = e.getKey();
 
-			if (!Util.equals(node, me)
-					&& current - e.getValue() > TIMEOUTDURATION) {
+			if (current - e.getValue() > TIMEOUTDURATION) {
 				peerIter.remove();
 				onLeft.perform(node);
 			}
@@ -272,13 +263,13 @@ public class ClusterProbe extends ThreadedService {
 			String remote = e.getKey();
 
 			if (!Util.equals(remote, me))
-				sendMessage(remote, e.getValue(), bytes);
+				sendMessage(remote, bytes);
 		}
 	}
 
-	private void sendMessage(String remote, Address address, byte bytes[]) {
+	private void sendMessage(String remote, byte bytes[]) {
 		try {
-			channel.send(ByteBuffer.wrap(bytes), address.get());
+			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
 			lastSentTime.put(remote, System.currentTimeMillis());
 		} catch (IOException ex) {
 			LogUtil.error(getClass(), ex);

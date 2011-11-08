@@ -2,6 +2,7 @@ package org.net;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,8 @@ public class ClusterMap<K, V> {
 		cluster.addOnJoined(new Setter<String>() {
 			public Void perform(String peer) {
 				synchronized (ClusterMap.this) {
-					System.out.println(peer + " joined");
 					peers.add(peer);
+					Collections.sort(peers);
 					return null;
 				}
 			}
@@ -43,6 +44,7 @@ public class ClusterMap<K, V> {
 			public Void perform(String peer) {
 				synchronized (ClusterMap.this) {
 					peers.remove(peer);
+					Collections.sort(peers);
 					return null;
 				}
 			}
