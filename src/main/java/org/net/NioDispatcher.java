@@ -118,6 +118,10 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 			// threads might block forever.
 			selector.select(500);
 
+			// This seems to allow other threads to gain access. Not exactly the
+			// behavior as documented in NIO, but anyway.
+			selector.wakeup();
+
 			Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
 
 			while (iter.hasNext()) {
