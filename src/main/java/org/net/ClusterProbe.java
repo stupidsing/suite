@@ -259,12 +259,9 @@ public class ClusterProbe extends ThreadedService {
 	private void broadcast(Command data) {
 		byte bytes[] = formMessage(data);
 
-		for (Entry<String, Address> e : peers.entrySet()) {
-			String remote = e.getKey();
-
+		for (String remote : peers.keySet())
 			if (!Util.equals(remote, me))
 				sendMessage(remote, bytes);
-		}
 	}
 
 	private void sendMessage(String remote, byte bytes[]) {
