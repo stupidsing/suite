@@ -35,7 +35,7 @@ public class NioDispatcherTest {
 						return new BufferedChannel() {
 							public void onConnected() {
 								String s = hello + "\n";
-								send(new Bytes(s.getBytes(IoUtil.CHARSET)));
+								send(new Bytes(s.getBytes(IoUtil.charset)));
 							}
 
 							public void onReceive(Bytes request) {
@@ -93,7 +93,7 @@ public class NioDispatcherTest {
 				.connect(new InetSocketAddress(InetAddress.getLocalHost(), 5151));
 
 		for (String s : new String[] { "ABC", "WXYZ", "" }) {
-			Bytes bytes = new Bytes(s.getBytes(IoUtil.CHARSET));
+			Bytes bytes = new Bytes(s.getBytes(IoUtil.charset));
 			assertEquals(s, matcher.requestForResponse(client, bytes));
 			System.out.println("Request '" + s + "' is okay");
 		}

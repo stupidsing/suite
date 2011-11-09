@@ -187,7 +187,7 @@ public class ClusterProbe extends ThreadedService {
 			buffer.get(bytes);
 			buffer.rewind();
 
-			String splitted[] = new String(bytes, IoUtil.CHARSET).split(",");
+			String splitted[] = new String(bytes, IoUtil.charset).split(",");
 			Command data = Command.valueOf(splitted[0]);
 			String remote = splitted[1];
 
@@ -274,7 +274,7 @@ public class ClusterProbe extends ThreadedService {
 		for (Entry<String, Long> e : lastActiveTime.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());
 
-		return sb.toString().getBytes(IoUtil.CHARSET);
+		return sb.toString().getBytes(IoUtil.charset);
 	}
 
 	public boolean isActive(String node) {

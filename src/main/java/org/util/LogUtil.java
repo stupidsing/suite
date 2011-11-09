@@ -13,11 +13,11 @@ import sun.reflect.Reflection;
 
 public class LogUtil {
 
-	private static boolean INITED = false;
-	private static int MAXSTACKTRACELENGTH = 99;
+	private static boolean initialized = false;
+	private static int maxStackTraceLength = 99;
 
 	public static void initLog4j() {
-		if (!INITED)
+		if (!initialized)
 			initLog4j(Level.INFO);
 	}
 
@@ -42,7 +42,7 @@ public class LogUtil {
 		logger.addAppender(console);
 		logger.addAppender(file);
 
-		INITED = true;
+		initialized = true;
 	}
 
 	public static void info(String cat, String message) {
@@ -67,9 +67,9 @@ public class LogUtil {
 		while (th != null) {
 			StackTraceElement st0[] = th.getStackTrace();
 
-			if (st0.length > MAXSTACKTRACELENGTH) {
-				StackTraceElement st1[] = new StackTraceElement[MAXSTACKTRACELENGTH];
-				Util.copyArray(st0, 0, st1, 0, MAXSTACKTRACELENGTH);
+			if (st0.length > maxStackTraceLength) {
+				StackTraceElement st1[] = new StackTraceElement[maxStackTraceLength];
+				Util.copyArray(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);
 
 				isTrimmed = true;
