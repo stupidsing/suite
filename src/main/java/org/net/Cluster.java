@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.net.ChannelListeners.PersistableChannel;
@@ -145,6 +146,14 @@ public class Cluster {
 
 	public <I, O> void setOnReceive(Class<I> clazz, Transformer<I, O> onReceive) {
 		this.onReceive.put(clazz, onReceive);
+	}
+
+	public String getMe() {
+		return me;
+	}
+
+	public Set<String> getActivePeers() {
+		return probe.getActivePeers();
 	}
 
 }

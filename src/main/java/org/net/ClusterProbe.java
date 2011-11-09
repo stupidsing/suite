@@ -9,6 +9,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -137,28 +138,16 @@ public class ClusterProbe extends ThreadedService {
 		dc.register(selector, SelectionKey.OP_READ);
 
 		setStarted(true);
-		onJoined.perform(me);
 
 		while (running) {
+			selector.select(500); // Handle network events
 
-			// Handle network events
-			selector.select(500);
-
-			long current = System.currentTimeMillis();
-			nodeJoined(me, current);
-			keepAlive(current);
-			eliminateOutdatedPeers(current);
-
-			Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
-			while (keyIter.hasNext()) {
-				SelectionKey key = keyIter.next();
-				keyIter.remove();
-
-				try {
-					processSelectedKey(current, key);
-				} catch (Exception ex) {
-					LogUtil.error(getClass(), ex);
-				}
+			synchronized (this) {
+				long current = System.currentTimeMillis();
+				nodeJoined(me, current);
+				processSelectedKeys(current);
+				keepAlive(current);
+				eliminateOutdatedPeers(current);
 			}
 		}
 
@@ -169,6 +158,20 @@ public class ClusterProbe extends ThreadedService {
 
 		dc.close();
 		selector.close();
+	}
+
+	private void processSelectedKeys(long current) {
+		Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
+		while (keyIter.hasNext()) {
+			SelectionKey key = keyIter.next();
+			keyIter.remove();
+
+			try {
+				processSelectedKey(current, key);
+			} catch (Exception ex) {
+				LogUtil.error(getClass(), ex);
+			}
+		}
 	}
 
 	private void processSelectedKey(long current, SelectionKey key)
@@ -288,7 +291,7 @@ public class ClusterProbe extends ThreadedService {
 	}
 
 	public Set<String> getActivePeers() {
-		return lastActiveTime.keySet();
+		return Collections.unmodifiableSet(lastActiveTime.keySet());
 	}
 
 	public void setMe(String me) {
