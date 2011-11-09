@@ -15,10 +15,10 @@ public class Coordinate implements Comparable<Coordinate> {
 		private final Coordinate coords[][];
 
 		private Coordinates() {
-			coords = new Coordinate[Weiqi.SIZE][Weiqi.SIZE];
+			coords = new Coordinate[Weiqi.size][Weiqi.size];
 
-			for (int x = 0; x < Weiqi.SIZE; x++)
-				for (int y = 0; y < Weiqi.SIZE; y++)
+			for (int x = 0; x < Weiqi.size; x++)
+				for (int y = 0; y < Weiqi.size; y++)
 					coords[x][y] = new Coordinate(x, y);
 		}
 	}
@@ -40,12 +40,12 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	public int getArrayPosition() {
-		return (x << Weiqi.SHIFT) + y;
+		return (x << Weiqi.shift) + y;
 	}
 
 	public static Coordinate fromArrayPosition(int position) {
-		int x = position >> Weiqi.SHIFT;
-		int y = position & ((1 << Weiqi.SHIFT) - 1);
+		int x = position >> Weiqi.shift;
+		int y = position & ((1 << Weiqi.shift) - 1);
 		return c(x, y);
 	}
 
@@ -77,13 +77,13 @@ public class Coordinate implements Comparable<Coordinate> {
 					public Coordinate next() {
 						switch (n++) {
 						case 0:
-							if (x < Weiqi.SIZE - 1)
+							if (x < Weiqi.size - 1)
 								return Coordinate.c(x + 1, y);
 						case 1:
 							if (x > 0)
 								return Coordinate.c(x - 1, y);
 						case 2:
-							if (y < Weiqi.SIZE - 1)
+							if (y < Weiqi.size - 1)
 								return Coordinate.c(x, y + 1);
 						case 3:
 							if (y > 0)
@@ -108,13 +108,13 @@ public class Coordinate implements Comparable<Coordinate> {
 					public Coordinate c = new Coordinate(0, 0);
 
 					public boolean hasNext() {
-						return c.x < Weiqi.SIZE && c.y < Weiqi.SIZE;
+						return c.x < Weiqi.size && c.y < Weiqi.size;
 					}
 
 					public Coordinate next() {
 						Coordinate ret = Coordinate.c(c.x, c.y);
 						c.y++;
-						if (c.y == Weiqi.SIZE) {
+						if (c.y == Weiqi.size) {
 							c.x++;
 							c.y = 0;
 						}
@@ -146,7 +146,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	public int compareTo(Coordinate coord) {
 		int dx = x - coord.x;
 		int dy = y - coord.y;
-		return (dx << Weiqi.SHIFT) + dy;
+		return (dx << Weiqi.shift) + dy;
 	}
 
 	@Override

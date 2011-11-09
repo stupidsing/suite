@@ -114,7 +114,7 @@ public class UctWeiqi {
 
 			// Move until someone cannot move anymore,
 			// or maximum iterations reached
-			for (int i = 0; i < 4 * Weiqi.AREA; i++) {
+			for (int i = 0; i < 4 * Weiqi.area; i++) {
 				move = null;
 
 				// Try a random empty position, if that position does not work,

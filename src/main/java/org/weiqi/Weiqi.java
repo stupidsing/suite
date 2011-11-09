@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 public class Weiqi {
 
-	public static int SIZE;
-	public static int AREA;
+	public static int size;
+	public static int area;
 
-	public static int SHIFT; // 2^SHIFT >= SIZE
+	public static int shift; // 2^SHIFT >= SIZE
 
 	static {
 		initialize();
@@ -17,12 +17,12 @@ public class Weiqi {
 		adjustSize(19);
 	}
 
-	public static void adjustSize(int size) {
-		SIZE = size;
-		AREA = size * size;
+	public static void adjustSize(int s) {
+		size = s;
+		area = s * s;
 
-		SHIFT = 0;
-		while (1 << ++SHIFT < SIZE)
+		shift = 0;
+		while (1 << ++shift < size)
 			;
 
 		Coordinate.initialize();
@@ -63,13 +63,13 @@ public class Weiqi {
 	public static class Array<T> {
 		@SuppressWarnings("unchecked")
 		// JDK bug
-		private T positions[] = (T[]) new Object[SIZE << SHIFT];
+		private T positions[] = (T[]) new Object[size << shift];
 
 		public Array() {
 		}
 
 		public Array(Array<T> array) {
-			System.arraycopy(array.positions, 0, positions, 0, SIZE << SHIFT);
+			System.arraycopy(array.positions, 0, positions, 0, size << shift);
 		}
 
 		public static <T1> Array<T1> create() {
@@ -77,8 +77,8 @@ public class Weiqi {
 		}
 
 		public void dump() {
-			for (int x = 0; x < Weiqi.SIZE; x++) {
-				for (int y = 0; y < Weiqi.SIZE; y++) {
+			for (int x = 0; x < Weiqi.size; x++) {
+				for (int y = 0; y < Weiqi.size; y++) {
 					Coordinate c = Coordinate.c(x, y);
 					System.out.print(get(c) + " ");
 				}

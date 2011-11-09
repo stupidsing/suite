@@ -134,8 +134,8 @@ public class Board extends Array<Occupation> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (int x = 0; x < Weiqi.SIZE; x++) {
-			for (int y = 0; y < Weiqi.SIZE; y++) {
+		for (int x = 0; x < Weiqi.size; x++) {
+			for (int y = 0; y < Weiqi.size; y++) {
 				Coordinate c = Coordinate.c(x, y);
 				sb.append(get(c).display() + " ");
 			}

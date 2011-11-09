@@ -21,7 +21,7 @@ public class UctTest {
 
 	@Test
 	public void testRandomEvaluation() {
-		int mid = Weiqi.SIZE / 2;
+		int mid = Weiqi.size / 2;
 
 		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
 		String faraway = evaluateRandomOutcome(Coordinate.c(1, 1));
@@ -121,8 +121,8 @@ public class UctTest {
 		System.out.println(move);
 		assertTrue(move.getX() >= 2);
 		assertTrue(move.getY() >= 2);
-		assertTrue(move.getX() < Weiqi.SIZE - 2);
-		assertTrue(move.getY() < Weiqi.SIZE - 2);
+		assertTrue(move.getX() < Weiqi.size - 2);
+		assertTrue(move.getY() < Weiqi.size - 2);
 	}
 
 	@Test

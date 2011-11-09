@@ -13,10 +13,10 @@ public class UserInterface {
 		Board board = new Board();
 		String rows[] = s.split("\n");
 
-		for (int x = 0; x < Weiqi.SIZE; x++) {
+		for (int x = 0; x < Weiqi.size; x++) {
 			String cols[] = rows[x].split(" ");
 
-			for (int y = 0; y < Weiqi.SIZE; y++) {
+			for (int y = 0; y < Weiqi.size; y++) {
 				Occupation occupation = Occupation.EMPTY;
 
 				for (Occupation o : Occupation.values())

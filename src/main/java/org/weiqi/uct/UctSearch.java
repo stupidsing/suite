@@ -260,7 +260,7 @@ public class UctSearch<Move> {
 			String s = nTotals > 0 ? df3.format(nWins / nTotals) : "  -  ";
 			System.out.print(s + " ");
 
-			if (++n % Weiqi.SIZE == 0)
+			if (++n % Weiqi.size == 0)
 				System.out.println();
 		}
 	}
