@@ -13,13 +13,13 @@ import org.util.Util;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
-	private static final int STACKSIZE = 4096;
-
 	private Prover prover;
 	private Journal journal;
 	private SystemPredicates systemPredicates;
 
-	private int bindPoints[] = new int[STACKSIZE];
+	private static final int stackSize = 4096;
+
+	private int bindPoints[] = new int[stackSize];
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
 

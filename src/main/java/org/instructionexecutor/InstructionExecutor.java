@@ -27,7 +27,7 @@ public class InstructionExecutor {
 	private static final Atom trueAtom = Atom.create("true");
 	private static final Atom falseAtom = Atom.create("false");
 
-	private static final int STACKSIZE = 4096;
+	private static final int stackSize = 4096;
 
 	static {
 		for (Insn insn : Insn.values())
@@ -253,8 +253,8 @@ public class InstructionExecutor {
 
 	public Node execute() throws IOException {
 		Closure current = new Closure(null, 0);
-		Closure callStack[] = new Closure[STACKSIZE];
-		Object dataStack[] = new Object[STACKSIZE];
+		Closure callStack[] = new Closure[stackSize];
+		Object dataStack[] = new Object[stackSize];
 		int csp = 0, dsp = 0;
 
 		for (;;) {
