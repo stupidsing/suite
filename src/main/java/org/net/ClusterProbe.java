@@ -127,15 +127,6 @@ public class ClusterProbe extends ThreadedService {
 		lastActiveTime.clear();
 	}
 
-	public String dumpActivePeers() {
-		StringBuilder sb = new StringBuilder();
-		for (Entry<String, Long> e : lastActiveTime.entrySet()) {
-			String dateStr = FormatUtil.dtFmt.format(new Date(e.getValue()));
-			sb.append(e.getKey() + " (last-active = " + dateStr + ")\n");
-		}
-		return sb.toString();
-	}
-
 	protected void serve() throws IOException {
 		InetSocketAddress address = peers.get(me).get();
 
@@ -284,6 +275,15 @@ public class ClusterProbe extends ThreadedService {
 
 	public boolean isActive(String node) {
 		return lastActiveTime.containsKey(node);
+	}
+
+	public String dumpActivePeers() {
+		StringBuilder sb = new StringBuilder();
+		for (Entry<String, Long> e : lastActiveTime.entrySet()) {
+			String dateStr = FormatUtil.dtFmt.format(new Date(e.getValue()));
+			sb.append(e.getKey() + " (last-active = " + dateStr + ")\n");
+		}
+		return sb.toString();
 	}
 
 	public Set<String> getActivePeers() {
