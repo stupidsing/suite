@@ -36,7 +36,6 @@ public class ClusterProbe extends ThreadedService {
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
-	private ByteBuffer buffer = ByteBuffer.allocate(BUFFERSIZE);
 
 	private String me;
 
@@ -141,13 +140,14 @@ public class ClusterProbe extends ThreadedService {
 		onJoined.perform(me);
 
 		while (running) {
+
+			// Handle network events
+			selector.select(500);
+
 			long current = System.currentTimeMillis();
 			nodeJoined(me, current);
 			keepAlive(current);
 			eliminateOutdatedPeers(current);
-
-			// Handle network events
-			selector.select(500);
 
 			Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
 			while (keyIter.hasNext()) {
@@ -176,6 +176,7 @@ public class ClusterProbe extends ThreadedService {
 		DatagramChannel dc = (DatagramChannel) key.channel();
 
 		if (key.isReadable()) {
+			ByteBuffer buffer = ByteBuffer.allocate(BUFFERSIZE);
 			dc.receive(buffer);
 			buffer.flip();
 
