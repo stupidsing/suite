@@ -39,7 +39,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 				IoProcess<Bytes, Bytes, IOException> sender);
 	}
 
-	private static final int BUFFERSIZE = 4096;
+	private static final int bufferSize = 4096;
 
 	private ChannelListenerFactory<CL> factory;
 
@@ -143,7 +143,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 	private void processSelectedKey(SelectionKey key) throws IOException {
 		// LogUtil.info("KEY", dumpKey(key));
 
-		byte buffer[] = new byte[BUFFERSIZE];
+		byte buffer[] = new byte[bufferSize];
 		SelectableChannel channel = key.channel();
 		Object attachment = key.attachment();
 

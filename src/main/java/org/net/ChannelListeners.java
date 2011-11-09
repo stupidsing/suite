@@ -164,7 +164,7 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class PacketChannel extends BufferedChannel {
-		private Bytes received = Bytes.EMPTYBYTES;
+		private Bytes received = Bytes.emptyBytes;
 
 		public abstract void onReceivePacket(Bytes packet);
 
@@ -202,7 +202,7 @@ public abstract class ChannelListeners implements ChannelListener {
 
 	public abstract static class BufferedChannel implements ChannelListener {
 		private IoProcess<Bytes, Bytes, IOException> sender;
-		private Bytes toSend = Bytes.EMPTYBYTES;
+		private Bytes toSend = Bytes.emptyBytes;
 
 		@Override
 		public void onConnected() {

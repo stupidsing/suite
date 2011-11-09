@@ -7,11 +7,11 @@ public class Bytes {
 	private byte bytes[]; // Immutable
 	private int start, end;
 
-	private final static byte EMPTYBYTEARRAY[] = new byte[0];
+	private final static byte emptyByteArray[] = new byte[0];
 
-	private final static int REALLOCSIZE = 65536;
+	private final static int reallocSize = 65536;
 
-	public final static Bytes EMPTYBYTES = new Bytes(EMPTYBYTEARRAY);
+	public final static Bytes emptyBytes = new Bytes(emptyByteArray);
 
 	public Bytes(byte bytes[]) {
 		this(bytes, 0);
@@ -55,8 +55,8 @@ public class Bytes {
 		Bytes result = new Bytes(bytes, start, end);
 
 		// Avoids small range bytes object keeping a large buffer
-		if (bytes.length >= REALLOCSIZE && end - start < REALLOCSIZE / 4)
-			result = EMPTYBYTES.append(result); // Do not share reference
+		if (bytes.length >= reallocSize && end - start < reallocSize / 4)
+			result = emptyBytes.append(result); // Do not share reference
 
 		return result;
 	}
@@ -132,7 +132,7 @@ public class Bytes {
 	}
 
 	public static class BytesBuilder {
-		private byte bytes[] = EMPTYBYTEARRAY;
+		private byte bytes[] = emptyByteArray;
 		private int size;
 
 		public BytesBuilder() {

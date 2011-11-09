@@ -32,8 +32,8 @@ import com.google.common.collect.HashBiMap;
 public class ClusterProbe extends ThreadedService {
 
 	private static final int BUFFERSIZE = 65536; // UDP packet size
-	private static final int CHECKALIVEDURATION = 1500;
-	private static final int TIMEOUTDURATION = 5000;
+	private static final int checkAliveDuration = 1500;
+	private static final int timeoutDuration = 5000;
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
@@ -225,8 +225,8 @@ public class ClusterProbe extends ThreadedService {
 			// Sends to those who are nearly forgotten, i.e.:
 			// - The node is not active, or node's active time is expired
 			// - The last sent time was long ago (avoid message bombing)
-			if (lastActive == null || lastActive + CHECKALIVEDURATION < current)
-				if (lastSent == null || lastSent + CHECKALIVEDURATION < current)
+			if (lastActive == null || lastActive + checkAliveDuration < current)
+				if (lastSent == null || lastSent + checkAliveDuration < current)
 					sendMessage(remote, bytes);
 		}
 	}
@@ -239,7 +239,7 @@ public class ClusterProbe extends ThreadedService {
 			Entry<String, Long> e = peerIter.next();
 			String node = e.getKey();
 
-			if (current - e.getValue() > TIMEOUTDURATION) {
+			if (current - e.getValue() > timeoutDuration) {
 				peerIter.remove();
 				onLeft.perform(node);
 			}
