@@ -11,12 +11,12 @@ import org.suite.node.Tree;
 
 public class Generalizer {
 
-	public static final String VARIABLEPREFIX = ".";
+	public static final String DEFAULTPREFIX = ".";
 
 	private static final Node WILDCARD = Atom.create("_");
 	private static final Node CUT = Atom.create("!");
 
-	private String variablePrefix = VARIABLEPREFIX;
+	private String variablePrefix = DEFAULTPREFIX;
 	private Map<Node, Reference> variables = new HashMap<Node, Reference>();
 	private Node cut;
 
