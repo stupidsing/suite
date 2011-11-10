@@ -4,11 +4,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.instructionexecutor.FunctionInstructionExecutor;
+import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser;
 import org.suite.kb.RuleSet;
+import org.suite.node.Atom;
 import org.suite.node.Node;
+import org.suite.node.Reference;
 import org.util.Util;
 
 public class SuiteUtil {
@@ -49,6 +53,67 @@ public class SuiteUtil {
 		node = new Generalizer().generalize(node);
 		Prover prover = new Prover(rs);
 		return prover.prove(node);
+	}
+
+	public static boolean evaluateLogical(String program) {
+		return evaluateLogical(parse(program));
+	}
+
+	public static boolean evaluateLogical(Node program) {
+		RuleSet rs = new RuleSet();
+
+		try {
+			SuiteUtil.importResource(rs, "auto.sl");
+			SuiteUtil.importResource(rs, "lc.sl");
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+
+		Node node = SuiteUtil.parse("" //
+				+ "compile-logic .program .code \n" //
+				+ ", pp-list .code");
+
+		Generalizer generalizer = new Generalizer();
+		node = generalizer.generalize(node);
+		Node variable = generalizer.getVariable(Atom.create(".program"));
+		Node ics = generalizer.getVariable(Atom.create(".code"));
+
+		((Reference) variable).bound(program);
+		if (!new Prover(rs).prove(node))
+			throw new RuntimeException("Logic compilation error");
+
+		Node result = new LogicInstructionExecutor(rs, ics).execute();
+		return result == Atom.create("true");
+	}
+
+	public static Node evaluateFunctional(String program) {
+		return evaluateFunctional(parse(program));
+	}
+
+	public static Node evaluateFunctional(Node program) {
+		RuleSet rs = new RuleSet();
+
+		try {
+			SuiteUtil.importResource(rs, "auto.sl");
+			SuiteUtil.importResource(rs, "fc.sl");
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+
+		Node node = SuiteUtil.parse("" //
+				+ "compile-function .program .code \n" //
+				+ ", pp-list .code");
+
+		Generalizer generalizer = new Generalizer();
+		node = generalizer.generalize(node);
+		Node variable = generalizer.getVariable(Atom.create(".program"));
+		Node ics = generalizer.getVariable(Atom.create(".code"));
+
+		((Reference) variable).bound(program);
+		if (!new Prover(rs).prove(node))
+			throw new RuntimeException("Function compilation error");
+
+		return new FunctionInstructionExecutor(ics).execute();
 	}
 
 	public static Node parse(String s) {

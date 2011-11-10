@@ -1,6 +1,5 @@
 package org.instructionexecutor;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -251,7 +250,7 @@ public class InstructionExecutor {
 		}
 	}
 
-	public Node execute() throws IOException {
+	public Node execute() {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[stackSize];
 		Object dataStack[] = new Object[stackSize];

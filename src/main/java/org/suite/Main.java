@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.Prover.Backtracks;
@@ -34,7 +35,7 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE
+		FACT, QUERY, ELABORATE, EVALUATE
 	};
 
 	public void run() throws IOException {
@@ -74,6 +75,9 @@ public class Main {
 				} else if (input.startsWith("/")) {
 					type = InputType.ELABORATE;
 					input = input.substring(1);
+				} else if (input.startsWith("\\")) {
+					type = InputType.EVALUATE;
+					input = input.substring(1);
 				} else
 					type = InputType.FACT;
 
@@ -83,8 +87,11 @@ public class Main {
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
 
-				if (type == InputType.FACT) {
+				if (type == InputType.FACT)
 					rs.addRule(node);
+				else if (type == InputType.EVALUATE) {
+					Node result = SuiteUtil.evaluateFunctional(node);
+					System.out.println(Formatter.dump(result));
 				} else {
 					final Generalizer generalizer = new Generalizer();
 					node = generalizer.generalize(node);
