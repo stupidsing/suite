@@ -69,9 +69,8 @@ public class SuiteUtil {
 			throw new RuntimeException(ex);
 		}
 
-		Node node = SuiteUtil.parse("" //
-				+ "compile-logic .program .code \n" //
-				+ ", pp-list .code");
+		Node node = SuiteUtil.parse("compile-logic .program .code");
+		// + ", pp-list .code"
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -79,11 +78,11 @@ public class SuiteUtil {
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
 		((Reference) variable).bound(program);
-		if (!new Prover(rs).prove(node))
+		if (new Prover(rs).prove(node)) {
+			Node result = new LogicInstructionExecutor(rs, ics).execute();
+			return result == Atom.create("true");
+		} else
 			throw new RuntimeException("Logic compilation error");
-
-		Node result = new LogicInstructionExecutor(rs, ics).execute();
-		return result == Atom.create("true");
 	}
 
 	public static Node evaluateFunctional(String program) {
@@ -100,9 +99,8 @@ public class SuiteUtil {
 			throw new RuntimeException(ex);
 		}
 
-		Node node = SuiteUtil.parse("" //
-				+ "compile-function .program .code \n" //
-				+ ", pp-list .code");
+		Node node = SuiteUtil.parse("compile-function .program .code");
+		// + ", pp-list .code"
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -110,10 +108,10 @@ public class SuiteUtil {
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
 		((Reference) variable).bound(program);
-		if (!new Prover(rs).prove(node))
+		if (new Prover(rs).prove(node))
+			return new FunctionInstructionExecutor(ics).execute();
+		else
 			throw new RuntimeException("Function compilation error");
-
-		return new FunctionInstructionExecutor(ics).execute();
 	}
 
 	public static Node parse(String s) {
