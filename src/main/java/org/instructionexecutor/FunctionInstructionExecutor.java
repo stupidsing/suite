@@ -7,6 +7,12 @@ import org.suite.node.Tree;
 
 public class FunctionInstructionExecutor extends InstructionExecutor {
 
+	private static final Atom CONS = Atom.create("CONS");
+	private static final Atom EMPTY = Atom.create("EMPTY");
+	private static final Atom ISTREE = Atom.create("IS-TREE");
+	private static final Atom HEAD = Atom.create("HEAD");
+	private static final Atom TAIL = Atom.create("TAIL");
+
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
 	}
@@ -32,17 +38,17 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private Node sys(Node command, Object dataStack[], int dsp) {
 		Node result;
 
-		if (command == Atom.create("CONS")) {
+		if (command == CONS) {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
 			result = new Tree(TermOp.COLON_, left, right);
-		} else if (command == Atom.create("EMPTY"))
+		} else if (command == EMPTY)
 			result = Atom.nil;
-		else if (command == Atom.create("IS-TREE"))
+		else if (command == ISTREE)
 			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
-		else if (command == Atom.create("HEAD"))
+		else if (command == HEAD)
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
-		else if (command == Atom.create("TAIL"))
+		else if (command == TAIL)
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();
 		else
 			throw new RuntimeException("Unknown system call " + command);
