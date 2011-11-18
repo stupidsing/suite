@@ -29,6 +29,11 @@ public class FilePersister<Value> implements
 	private RandomAccessFile allocMapFile;
 	private byte allocMap[];
 
+	public FilePersister(String filename) {
+		this.filename = filename;
+		this.allocMapFilename = filename + ".alloc";
+	}
+
 	public void start() throws IOException {
 		file = new RandomAccessFile(filename, "rw");
 		channel = file.getChannel();
