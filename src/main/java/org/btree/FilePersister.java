@@ -6,16 +6,17 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-public class FilePersister<Value> implements
-		Persister<B_Tree<Integer, Value>.Page> {
+public class FilePersister<Key, Value> implements
+		Persister<B_Tree<Key, Value>.Page> {
 
 	private String filename = "B_Tree.bt";
 	private String allocMapFilename = "B_Tree.bt.alloc";
 
 	private int branchFactor = 256;
-	private ByteBufferAccessor<Value> accessor;
+	private ByteBufferAccessor<Key> keyAccessor;
+	private ByteBufferAccessor<Value> valueAccessor;
 
-	private B_Tree<Integer, Value> btree;
+	private B_Tree<Key, Value> btree;
 
 	private static final int pageSize = 4096;
 	private static final int maxPages = 4096;
@@ -81,7 +82,7 @@ public class FilePersister<Value> implements
 		}
 	}
 
-	public B_Tree<Integer, Value>.Page load(int pageNo) {
+	public B_Tree<Key, Value>.Page load(int pageNo) {
 		try {
 			// file.seek(pageNo * pageSize);
 
@@ -89,18 +90,18 @@ public class FilePersister<Value> implements
 			ByteBuffer buffers[] = { buffer };
 			channel.read(buffers, pageNo * pageSize, pageSize);
 
-			B_Tree<Integer, Value>.Page page = btree.new Page(pageNo);
-			List<B_Tree<Integer, Value>.KeyPointer> keyPointers = page.keyPointers;
+			B_Tree<Key, Value>.Page page = btree.new Page(pageNo);
+			List<B_Tree<Key, Value>.KeyPointer> keyPointers = page.keyPointers;
 
 			char nodeType = buffer.getChar();
 			for (int i = 0; i < branchFactor; i++) {
-				int key = buffer.getInt();
+				Key key = keyAccessor.read(buffer);
 
 				if (nodeType == INTERNAL) {
 					int branch = buffer.getInt();
 					addBranch(keyPointers, key, branch);
 				} else if (nodeType == LEAF) {
-					Value value = accessor.read(buffer);
+					Value value = valueAccessor.read(buffer);
 					addLeaf(keyPointers, key, value);
 				}
 			}
@@ -111,39 +112,39 @@ public class FilePersister<Value> implements
 		}
 	}
 
-	private void addLeaf(List<B_Tree<Integer, Value>.KeyPointer> keyPointers,
-			int key, Value value) {
+	private void addLeaf(List<B_Tree<Key, Value>.KeyPointer> keyPointers,
+			Key key, Value value) {
 		keyPointers.add(btree.new KeyPointer(key, btree.new Leaf(value)));
 	}
 
-	private void addBranch(List<B_Tree<Integer, Value>.KeyPointer> keyPointers,
-			int key, int branch) {
+	private void addBranch(List<B_Tree<Key, Value>.KeyPointer> keyPointers,
+			Key key, int branch) {
 		keyPointers.add(btree.new KeyPointer(key, btree.new Branch(branch)));
 	}
 
-	public void save(int pageNo, B_Tree<Integer, Value>.Page page) {
+	public void save(int pageNo, B_Tree<Key, Value>.Page page) {
 		try {
 			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
 			ByteBuffer buffers[] = { buffer };
 			channel.read(buffers, pageNo * pageSize, pageSize);
 
-			List<B_Tree<Integer, Value>.KeyPointer> ptrs = page.keyPointers;
+			List<B_Tree<Key, Value>.KeyPointer> ptrs = page.keyPointers;
 
 			char nodeType = (ptrs.get(0).t2 instanceof B_Tree<?, ?>.Branch) ? 'I'
 					: 'L';
 			buffer.putChar(nodeType);
 
-			for (B_Tree<Integer, Value>.KeyPointer keyPtr : ptrs) {
-				buffer.putInt(keyPtr.t1);
+			for (B_Tree<Key, Value>.KeyPointer keyPtr : ptrs) {
+				keyAccessor.write(buffer, keyPtr.t1);
 
 				if (keyPtr.t2 instanceof B_Tree<?, ?>.Branch) {
 					@SuppressWarnings("unchecked")
-					int branch = ((B_Tree<Integer, Integer>.Branch) keyPtr.t2).branch;
+					int branch = ((B_Tree<Key, Key>.Branch) keyPtr.t2).branch;
 					buffer.putInt(branch);
 				} else if (keyPtr.t2 instanceof B_Tree<?, ?>.Leaf) {
 					@SuppressWarnings("unchecked")
-					Value value = ((B_Tree<Integer, Value>.Leaf) keyPtr.t2).value;
-					accessor.write(buffer, value);
+					Value value = ((B_Tree<Key, Value>.Leaf) keyPtr.t2).value;
+					valueAccessor.write(buffer, value);
 				}
 			}
 		} catch (IOException ex) {
