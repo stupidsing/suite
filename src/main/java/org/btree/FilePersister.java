@@ -30,9 +30,12 @@ public class FilePersister<Key, Value> implements
 	private RandomAccessFile allocMapFile;
 	private byte allocMap[];
 
-	public FilePersister(String filename) {
+	public FilePersister(String filename, ByteBufferAccessor<Key> keyAccessor,
+			ByteBufferAccessor<Value> valueAccessor) {
 		this.filename = filename;
 		this.allocMapFilename = filename + ".alloc";
+		this.keyAccessor = keyAccessor;
+		this.valueAccessor = valueAccessor;
 	}
 
 	public void start() throws IOException {
@@ -137,11 +140,11 @@ public class FilePersister<Key, Value> implements
 			for (B_Tree<Key, Value>.KeyPointer keyPtr : ptrs) {
 				keyAccessor.write(buffer, keyPtr.t1);
 
-				if (keyPtr.t2 instanceof B_Tree<?, ?>.Branch) {
+				if (keyPtr.t2 instanceof B_Tree.Branch) {
 					@SuppressWarnings("unchecked")
 					int branch = ((B_Tree<Key, Key>.Branch) keyPtr.t2).branch;
 					buffer.putInt(branch);
-				} else if (keyPtr.t2 instanceof B_Tree<?, ?>.Leaf) {
+				} else if (keyPtr.t2 instanceof B_Tree.Leaf) {
 					@SuppressWarnings("unchecked")
 					Value value = ((B_Tree<Key, Value>.Leaf) keyPtr.t2).value;
 					valueAccessor.write(buffer, value);
