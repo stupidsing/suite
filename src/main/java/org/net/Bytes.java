@@ -1,5 +1,7 @@
 package org.net;
 
+import java.util.Arrays;
+
 import org.util.Util;
 
 public class Bytes {
@@ -123,11 +125,9 @@ public class Bytes {
 	}
 
 	public byte[] getBytes() {
-		if (start != 0 || end != bytes.length) {
-			byte result[] = new byte[end - start];
-			System.arraycopy(bytes, start, result, 0, end - start);
-			return result;
-		} else
+		if (start != 0 || end != bytes.length)
+			return Arrays.copyOfRange(bytes, start, end);
+		else
 			return bytes;
 	}
 
