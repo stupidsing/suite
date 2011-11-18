@@ -15,7 +15,7 @@ public class B_TreeTest {
 
 	private Persister<B_Tree<Integer, String>.Page> persister;
 
-	Comparator<Integer> compare = new Comparator<Integer>() {
+	private Comparator<Integer> compare = new Comparator<Integer>() {
 		public int compare(Integer i, Integer j) {
 			return i - j;
 		}
