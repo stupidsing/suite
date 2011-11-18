@@ -18,6 +18,8 @@ import org.util.Util;
 public class SuiteUtil {
 
 	private static TermParser parser = new TermParser();
+	private static Prover logicalCompiler;
+	private static Prover functionalCompiler;
 
 	public static void addRule(RuleSet rs, String rule) {
 		rs.addRule(parser.parse(rule));
@@ -59,16 +61,12 @@ public class SuiteUtil {
 		return evaluateLogical(parse(program));
 	}
 
+	public static Node evaluateFunctional(String program) {
+		return evaluateFunctional(parse(program));
+	}
+
 	public static boolean evaluateLogical(Node program) {
-		RuleSet rs = new RuleSet();
-
-		try {
-			SuiteUtil.importResource(rs, "auto.sl");
-			SuiteUtil.importResource(rs, "lc.sl");
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-
+		Prover lc = getLogicalCompiler();
 		Node node = SuiteUtil.parse("compile-logic .program .code");
 		// + ", pp-list .code"
 
@@ -78,27 +76,14 @@ public class SuiteUtil {
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
 		((Reference) variable).bound(program);
-		if (new Prover(rs).prove(node)) {
-			Node result = new LogicInstructionExecutor(rs, ics).execute();
+		if (lc.prove(node)) {
+			Node result = new LogicInstructionExecutor(lc, ics).execute();
 			return result == Atom.create("true");
 		} else
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	public static Node evaluateFunctional(String program) {
-		return evaluateFunctional(parse(program));
-	}
-
 	public static Node evaluateFunctional(Node program) {
-		RuleSet rs = new RuleSet();
-
-		try {
-			SuiteUtil.importResource(rs, "auto.sl");
-			SuiteUtil.importResource(rs, "fc.sl");
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-
 		Node node = SuiteUtil.parse("compile-function .program .code");
 		// + ", pp-list .code"
 
@@ -108,10 +93,43 @@ public class SuiteUtil {
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
 		((Reference) variable).bound(program);
-		if (new Prover(rs).prove(node))
+		if (getFunctionalCompiler().prove(node))
 			return new FunctionInstructionExecutor(ics).execute();
 		else
 			throw new RuntimeException("Function compilation error");
+	}
+
+	private static synchronized Prover getLogicalCompiler() {
+		if (logicalCompiler == null) {
+			RuleSet rs = new RuleSet();
+
+			try {
+				SuiteUtil.importResource(rs, "auto.sl");
+				SuiteUtil.importResource(rs, "lc.sl");
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+			logicalCompiler = new Prover(rs);
+		}
+
+		return logicalCompiler;
+	}
+
+	private static synchronized Prover getFunctionalCompiler() {
+		if (functionalCompiler == null) {
+			RuleSet rs = new RuleSet();
+
+			try {
+				SuiteUtil.importResource(rs, "auto.sl");
+				SuiteUtil.importResource(rs, "fc.sl");
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+
+			functionalCompiler = new Prover(rs);
+		}
+
+		return functionalCompiler;
 	}
 
 	public static Node parse(String s) {

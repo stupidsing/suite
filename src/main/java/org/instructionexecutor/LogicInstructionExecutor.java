@@ -6,14 +6,12 @@ import java.util.List;
 import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.doer.Prover;
-import org.suite.kb.RuleSet;
 import org.suite.node.Node;
 import org.suite.predicates.SystemPredicates;
 import org.util.Util;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
-	private Prover prover;
 	private Journal journal;
 	private SystemPredicates systemPredicates;
 
@@ -23,9 +21,8 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
 
-	public LogicInstructionExecutor(RuleSet ruleSet, Node node) {
+	public LogicInstructionExecutor(Prover prover, Node node) {
 		super(node);
-		prover = new Prover(ruleSet);
 		journal = prover.getJournal();
 		systemPredicates = new SystemPredicates(prover);
 	}
