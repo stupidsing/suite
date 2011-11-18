@@ -93,8 +93,10 @@ public class NioDispatcherTest {
 				.connect(new InetSocketAddress(InetAddress.getLocalHost(), 5151));
 
 		for (String s : new String[] { "ABC", "WXYZ", "" }) {
-			Bytes bytes = new Bytes(s.getBytes(IoUtil.charset));
-			assertEquals(s, matcher.requestForResponse(client, bytes));
+			byte bs[] = s.getBytes(IoUtil.charset);
+			Bytes request = new Bytes(bs);
+			Bytes response = matcher.requestForResponse(client, request);
+			assertEquals(request, response);
 			System.out.println("Request '" + s + "' is okay");
 		}
 
