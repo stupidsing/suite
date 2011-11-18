@@ -21,7 +21,7 @@ public class B_TreeTest {
 		}
 	};
 
-	B_Tree<Integer, String> b_tree;
+	private B_Tree<Integer, String> b_tree;
 
 	@Before
 	public void start() {
