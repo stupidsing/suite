@@ -11,9 +11,9 @@ import org.junit.Test;
 public class B_TreeTest {
 
 	private static final int nKeys = 256;
-	Integer keys[] = new Integer[nKeys];
+	private Integer keys[] = new Integer[nKeys];
 
-	Persister<B_Tree<Integer, String>.Page> persister;
+	private Persister<B_Tree<Integer, String>.Page> persister;
 
 	Comparator<Integer> compare = new Comparator<Integer>() {
 		public int compare(Integer i, Integer j) {
