@@ -6,6 +6,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
+/**
+ * Persists B-tree pages to file on disk.
+ * 
+ * The following must holds when using this class:
+ * 
+ * pageSize >= sizeof(char) + sizeof(int) + branchFactor * nodeSize
+ * 
+ * where nodeSize = max(sizeof(int), sizeof(Value))
+ */
 public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>> {
 
 	private String filename = "B_Tree.bt";
