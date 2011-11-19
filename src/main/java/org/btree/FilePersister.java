@@ -11,7 +11,6 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>> {
 	private String filename = "B_Tree.bt";
 	private String allocMapFilename = "B_Tree.bt.alloc";
 
-	private int branchFactor = 256;
 	private ByteBufferAccessor<Key> keyAccessor;
 	private ByteBufferAccessor<Value> valueAccessor;
 
