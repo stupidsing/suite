@@ -16,7 +16,6 @@ public class B_TreeTest {
 	private Integer keys[] = new Integer[nKeys];
 
 	private B_Tree<Integer, String> b_tree;
-	private Persister<B_Tree.Page<Integer>> persister;
 
 	private Comparator<Integer> compare = new Comparator<Integer>() {
 		public int compare(Integer i, Integer j) {
@@ -26,7 +25,11 @@ public class B_TreeTest {
 
 	@Test
 	public void memoryTest() {
-		persister = InMemoryPersister.create();
+		Persister<B_Tree.Page<Integer>> persister = InMemoryPersister.create();
+
+		b_tree = new B_Tree<Integer, String>(persister, compare);
+		b_tree.setBranchFactor(4);
+		b_tree.setLeafFactor(4);
 		shuffleAndTest();
 	}
 
@@ -35,17 +38,18 @@ public class B_TreeTest {
 		FilePersister<Integer, String> fp = new FilePersister<Integer, String>(
 				"/tmp/test.bt" //
 				, new ByteBufferIntAccessor() //
-				, new ByteBufferFixedStringAccessor(256));
-		persister = fp;
-
+				, new ByteBufferFixedStringAccessor(16));
 		fp.start();
+
+		b_tree = new B_Tree<Integer, String>(fp, compare);
+		b_tree.setBranchFactor(16);
+		b_tree.setLeafFactor(16);
 		shuffleAndTest();
+
 		fp.stop();
 	}
 
 	private void shuffleAndTest() {
-		b_tree = new B_Tree<Integer, String>(persister, compare);
-		b_tree.setBranchFactor(4);
 
 		// Shuffle the numbers
 		Random random = new Random();

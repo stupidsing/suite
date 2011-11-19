@@ -15,7 +15,7 @@ import org.util.Util.Pair;
  */
 public class B_Tree<Key, Value> {
 
-	public int branchFactor;
+	public int branchFactor, leafFactor;
 	public Integer root;
 	public Persister<Page<Key>> persister;
 	public Comparator<Key> comparator;
@@ -62,7 +62,8 @@ public class B_Tree<Key, Value> {
 
 	public B_Tree(Persister<Page<Key>> persister, Comparator<Key> comparator,
 			Integer root) {
-		setBranchFactor(256);
+		setBranchFactor(16);
+		setLeafFactor(16);
 		this.persister = persister;
 		this.comparator = comparator;
 		this.root = root;
@@ -111,7 +112,6 @@ public class B_Tree<Key, Value> {
 
 	private Page<Key> addAndSplit(Stack<Pair<Page<Key>, Integer>> trace,
 			Page<Key> page, KeyPointer<Key> toInsert) {
-		int half = branchFactor / 2;
 		Pair<Page<Key>, Integer> pair;
 		Integer index;
 
@@ -124,7 +124,8 @@ public class B_Tree<Key, Value> {
 
 			List<KeyPointer<Key>> keyPointers = page.keyPointers;
 			int size = keyPointers.size();
-			if (size <= branchFactor)
+			int maxNodes = getMaxNodes(page), half = maxNodes / 2;
+			if (size <= maxNodes)
 				break;
 
 			// Splits list into the two pages
@@ -150,7 +151,6 @@ public class B_Tree<Key, Value> {
 	}
 
 	public void remove(Key key) {
-		int half = branchFactor / 2;
 		Stack<Pair<Page<Key>, Integer>> trace = traverse(key);
 		Pair<Page<Key>, Integer> pair = trace.pop();
 		Page<Key> page = pair.t1, childPage = null;
@@ -162,7 +162,11 @@ public class B_Tree<Key, Value> {
 
 		page.keyPointers.remove(index);
 
-		while (page.pageNo != root && page.keyPointers.size() < half) {
+		while (page.pageNo != root) {
+			int half = getMaxNodes(page) / 2;
+			if (page.keyPointers.size() >= half)
+				break;
+
 			childPage = page;
 
 			pair = trace.pop();
@@ -171,8 +175,8 @@ public class B_Tree<Key, Value> {
 
 			Page<Key> lp = loadPageIfExists(page, index - 1);
 			Page<Key> rp = loadPageIfExists(page, index + 1);
-			int lsize = (lp != null) ? lp.keyPointers.size() : 0;
-			int rsize = (rp != null) ? rp.keyPointers.size() : 0;
+			int lsize = lp != null ? lp.keyPointers.size() : 0;
+			int rsize = rp != null ? rp.keyPointers.size() : 0;
 
 			if (lsize >= rsize && lsize != 0)
 				if (lsize <= half) // Merge
@@ -205,6 +209,13 @@ public class B_Tree<Key, Value> {
 		}
 
 		save(page);
+	}
+
+	private int getMaxNodes(Page<Key> page) {
+		List<B_Tree.KeyPointer<Key>> ptrs = page.keyPointers;
+		boolean isBranch = !ptrs.isEmpty()
+				&& ptrs.get(0).t2 instanceof B_Tree.Branch;
+		return isBranch ? branchFactor : leafFactor;
 	}
 
 	private Page<Key> loadPageIfExists(Page<Key> parent, int index) {
@@ -291,6 +302,10 @@ public class B_Tree<Key, Value> {
 
 	public void setBranchFactor(int branchFactor) {
 		this.branchFactor = branchFactor;
+	}
+
+	public void setLeafFactor(int leafFactor) {
+		this.leafFactor = leafFactor;
 	}
 
 	public void setRoot(Integer root) {

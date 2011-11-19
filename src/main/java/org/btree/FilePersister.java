@@ -11,9 +11,9 @@ import java.util.List;
  * 
  * The following must holds when using this class:
  * 
- * pageSize >= sizeof(char) + sizeof(int) + branchFactor * nodeSize
+ * pageSize >= sizeof(char) + sizeof(int) + branchFactor * sizeof(int)
  * 
- * where nodeSize = max(sizeof(int), sizeof(Value))
+ * pageSize >= sizeof(char) + sizeof(int) + leafFactor * sizeof(Value)
  */
 public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>> {
 
