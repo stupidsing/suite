@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.btree;
 
 import java.nio.ByteBuffer;
@@ -8,6 +5,10 @@ import java.util.Arrays;
 
 import org.util.IoUtil;
 
+/**
+ * Defines interface for reading/writing byte buffer. The operation within the
+ * same accessor should always put in same number of bytes.
+ */
 public interface ByteBufferAccessor<V> {
 
 	public V read(ByteBuffer buffer);
