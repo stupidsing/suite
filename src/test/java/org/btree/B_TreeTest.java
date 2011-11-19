@@ -2,10 +2,12 @@ package org.btree;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.junit.Before;
+import org.btree.ByteBufferAccessor.ByteBufferFixedStringAccessor;
+import org.btree.ByteBufferAccessor.ByteBufferIntAccessor;
 import org.junit.Test;
 
 public class B_TreeTest {
@@ -13,7 +15,8 @@ public class B_TreeTest {
 	private static final int nKeys = 256;
 	private Integer keys[] = new Integer[nKeys];
 
-	private Persister<B_Tree<Integer, String>.Page> persister;
+	private B_Tree<Integer, String> b_tree;
+	private Persister<B_Tree.Page<Integer>> persister;
 
 	private Comparator<Integer> compare = new Comparator<Integer>() {
 		public int compare(Integer i, Integer j) {
@@ -21,11 +24,26 @@ public class B_TreeTest {
 		}
 	};
 
-	private B_Tree<Integer, String> b_tree;
-
-	@Before
-	public void start() {
+	@Test
+	public void memoryTest() {
 		persister = InMemoryPersister.create();
+		shuffleAndTest();
+	}
+
+	@Test
+	public void fileTest() throws IOException {
+		FilePersister<Integer, String> fp = new FilePersister<Integer, String>(
+				"/tmp/test.bt" //
+				, new ByteBufferIntAccessor() //
+				, new ByteBufferFixedStringAccessor(256));
+		persister = fp;
+
+		fp.start();
+		shuffleAndTest();
+		fp.stop();
+	}
+
+	private void shuffleAndTest() {
 		b_tree = new B_Tree<Integer, String>(persister, compare);
 		b_tree.setBranchFactor(4);
 
@@ -39,9 +57,10 @@ public class B_TreeTest {
 			keys[i] = keys[j];
 			keys[j] = temp;
 		}
+
+		addAndRemove();
 	}
 
-	@Test
 	public void addAndRemove() {
 
 		// Inserting this at first makes the tree depth-balanced. Why?

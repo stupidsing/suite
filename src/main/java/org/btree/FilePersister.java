@@ -6,8 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-public class FilePersister<Key, Value> implements
-		Persister<B_Tree<Key, Value>.Page> {
+public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>> {
 
 	private String filename = "B_Tree.bt";
 	private String allocMapFilename = "B_Tree.bt.alloc";
@@ -15,8 +14,6 @@ public class FilePersister<Key, Value> implements
 	private int branchFactor = 256;
 	private ByteBufferAccessor<Key> keyAccessor;
 	private ByteBufferAccessor<Value> valueAccessor;
-
-	private B_Tree<Key, Value> btree;
 
 	private static final int pageSize = 4096;
 	private static final int maxPages = 4096;
@@ -34,6 +31,7 @@ public class FilePersister<Key, Value> implements
 			ByteBufferAccessor<Value> valueAccessor) {
 		this.filename = filename;
 		this.allocMapFilename = filename + ".alloc";
+		this.allocMap = new byte[maxPages];
 		this.keyAccessor = keyAccessor;
 		this.valueAccessor = valueAccessor;
 	}
@@ -85,19 +83,19 @@ public class FilePersister<Key, Value> implements
 		}
 	}
 
-	public B_Tree<Key, Value>.Page load(int pageNo) {
+	public B_Tree.Page<Key> load(int pageNo) {
 		try {
-			// file.seek(pageNo * pageSize);
-
 			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
-			ByteBuffer buffers[] = { buffer };
-			channel.read(buffers, pageNo * pageSize, pageSize);
+			channel.read(buffer, pageNo * pageSize);
+			buffer.rewind();
 
-			B_Tree<Key, Value>.Page page = btree.new Page(pageNo);
-			List<B_Tree<Key, Value>.KeyPointer> keyPointers = page.keyPointers;
+			B_Tree.Page<Key> page = new B_Tree.Page<Key>(pageNo);
+			List<B_Tree.KeyPointer<Key>> keyPointers = page.keyPointers;
 
 			char nodeType = buffer.getChar();
-			for (int i = 0; i < branchFactor; i++) {
+			int size = buffer.getInt();
+
+			for (int i = 0; i < size; i++) {
 				Key key = keyAccessor.read(buffer);
 
 				if (nodeType == INTERNAL) {
@@ -115,41 +113,39 @@ public class FilePersister<Key, Value> implements
 		}
 	}
 
-	private void addLeaf(List<B_Tree<Key, Value>.KeyPointer> keyPointers,
-			Key key, Value value) {
-		keyPointers.add(btree.new KeyPointer(key, btree.new Leaf(value)));
+	private void addLeaf(List<B_Tree.KeyPointer<Key>> kps, Key k, Value v) {
+		kps.add(new B_Tree.KeyPointer<Key>(k, new B_Tree.Leaf<Value>(v)));
 	}
 
-	private void addBranch(List<B_Tree<Key, Value>.KeyPointer> keyPointers,
-			Key key, int branch) {
-		keyPointers.add(btree.new KeyPointer(key, btree.new Branch(branch)));
+	private void addBranch(List<B_Tree.KeyPointer<Key>> kps, Key k, int branch) {
+		kps.add(new B_Tree.KeyPointer<Key>(k, new B_Tree.Branch(branch)));
 	}
 
-	public void save(int pageNo, B_Tree<Key, Value>.Page page) {
+	public void save(int pageNo, B_Tree.Page<Key> page) {
 		try {
 			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
-			ByteBuffer buffers[] = { buffer };
-			channel.read(buffers, pageNo * pageSize, pageSize);
+			List<B_Tree.KeyPointer<Key>> ptrs = page.keyPointers;
+			boolean isBranch = !ptrs.isEmpty()
+					&& ptrs.get(0).t2 instanceof B_Tree.Branch;
 
-			List<B_Tree<Key, Value>.KeyPointer> ptrs = page.keyPointers;
+			buffer.putChar(isBranch ? INTERNAL : LEAF);
+			buffer.putInt(ptrs.size());
 
-			char nodeType = (ptrs.get(0).t2 instanceof B_Tree<?, ?>.Branch) ? 'I'
-					: 'L';
-			buffer.putChar(nodeType);
-
-			for (B_Tree<Key, Value>.KeyPointer keyPtr : ptrs) {
+			for (B_Tree.KeyPointer<Key> keyPtr : ptrs) {
 				keyAccessor.write(buffer, keyPtr.t1);
 
 				if (keyPtr.t2 instanceof B_Tree.Branch) {
-					@SuppressWarnings("unchecked")
-					int branch = ((B_Tree<Key, Key>.Branch) keyPtr.t2).branch;
+					int branch = ((B_Tree.Branch) keyPtr.t2).branch;
 					buffer.putInt(branch);
 				} else if (keyPtr.t2 instanceof B_Tree.Leaf) {
 					@SuppressWarnings("unchecked")
-					Value value = ((B_Tree<Key, Value>.Leaf) keyPtr.t2).value;
+					Value value = ((B_Tree.Leaf<Value>) keyPtr.t2).value;
 					valueAccessor.write(buffer, value);
 				}
 			}
+
+			buffer.flip();
+			channel.write(buffer, pageNo * pageSize);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
