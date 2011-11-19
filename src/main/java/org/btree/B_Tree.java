@@ -285,7 +285,6 @@ public class B_Tree<Key, Value> {
 		dump(w, "", root);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void dump(PrintStream w, String pfx, int pageNo) {
 		Page<Key> page = persister.load(pageNo);
 		for (KeyPointer<Key> keyPointer : page.keyPointers) {
@@ -295,8 +294,7 @@ public class B_Tree<Key, Value> {
 				dump(w, pfx + "\t", ((Branch) ptr).branch);
 				w.println(pfx + keyPointer.t1);
 			} else
-				w.println(pfx + keyPointer.t1 + " = "
-						+ ((Leaf<Value>) ptr).value);
+				w.println(pfx + keyPointer.t1 + " = " + ((Leaf<?>) ptr).value);
 		}
 	}
 
