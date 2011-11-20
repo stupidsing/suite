@@ -100,36 +100,28 @@ public class SuiteUtil {
 	}
 
 	private static synchronized Prover getLogicalCompiler() {
-		if (logicalCompiler == null) {
-			RuleSet rs = new RuleSet();
-
-			try {
-				SuiteUtil.importResource(rs, "auto.sl");
-				SuiteUtil.importResource(rs, "lc.sl");
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-			logicalCompiler = new Prover(rs);
-		}
-
+		if (logicalCompiler == null)
+			logicalCompiler = getProver(new String[] { "auto.sl", "lc.sl" });
 		return logicalCompiler;
 	}
 
 	private static synchronized Prover getFunctionalCompiler() {
-		if (functionalCompiler == null) {
-			RuleSet rs = new RuleSet();
+		if (functionalCompiler == null)
+			functionalCompiler = getProver(new String[] { "auto.sl", "fc.sl" });
+		return functionalCompiler;
+	}
 
-			try {
-				SuiteUtil.importResource(rs, "auto.sl");
-				SuiteUtil.importResource(rs, "fc.sl");
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+	private static Prover getProver(String toImports[]) {
+		RuleSet rs = new RuleSet();
 
-			functionalCompiler = new Prover(rs);
+		try {
+			for (String toImport : toImports)
+				SuiteUtil.importResource(rs, toImport);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 
-		return functionalCompiler;
+		return new Prover(rs);
 	}
 
 	public static Node parse(String s) {
