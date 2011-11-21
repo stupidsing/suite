@@ -36,6 +36,7 @@ public class SystemPredicates {
 		addPredicate("temporary", new Temporary());
 
 		addPredicate("bound", new EvalPredicates.Bound());
+		addPredicate("clone", new EvalPredicates.Clone());
 		addPredicate("eval.js", new EvalPredicates.EvalJs());
 		addPredicate("eval.fun", new EvalPredicates.EvalFunctional());
 		addPredicate(TermOp.LE____, new EvalPredicates.Compare());

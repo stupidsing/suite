@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.fp.Interpreter;
 import org.parser.Operator;
 import org.suite.SuiteUtil;
+import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
@@ -36,6 +37,13 @@ public class EvalPredicates {
 	public static class Bound implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return !(ps.finalNode() instanceof Reference);
+		}
+	}
+
+	public static class Clone implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			return prover.bind(new Cloner().clone(params[0]), params[1]);
 		}
 	}
 
