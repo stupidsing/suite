@@ -1,5 +1,6 @@
 package org.suite;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,13 +22,37 @@ public class SuiteUtil {
 	private static Prover logicalCompiler;
 	private static Prover functionalCompiler;
 
+	// The directory of the file we are now importing
+	private static boolean isImportFromClasspath = true;
+	private static String importerRoot = "";
+
 	public static void addRule(RuleSet rs, String rule) {
 		rs.addRule(parser.parse(rule));
 	}
 
-	public static void importFile(RuleSet rs, String filename)
+	public static synchronized void importFrom(RuleSet rs, String name)
+			throws IOException {
+		String oldRoot = importerRoot;
+		int pos = name.lastIndexOf(File.separator);
+		importerRoot = pos >= 0 ? name.substring(0, pos + 1) : "";
+
+		if (!name.startsWith(File.separator))
+			name = oldRoot + name;
+
+		try {
+			if (isImportFromClasspath)
+				SuiteUtil.importResource(rs, name);
+			else
+				SuiteUtil.importFile(rs, name);
+		} finally {
+			importerRoot = oldRoot;
+		}
+	}
+
+	public static synchronized void importFile(RuleSet rs, String filename)
 			throws IOException {
 		FileInputStream is = null;
+		isImportFromClasspath = false;
 
 		try {
 			is = new FileInputStream(filename);
@@ -37,10 +62,11 @@ public class SuiteUtil {
 		}
 	}
 
-	public static void importResource(RuleSet rs, String classpath)
+	public static synchronized void importResource(RuleSet rs, String classpath)
 			throws IOException {
 		ClassLoader cl = SuiteUtil.class.getClassLoader();
 		InputStream is = null;
+		isImportFromClasspath = true;
 
 		try {
 			is = cl.getResourceAsStream(classpath);

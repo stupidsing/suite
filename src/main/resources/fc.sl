@@ -1,17 +1,24 @@
 -------------------------------------------------------------------------------
 -- functional program compiler
 
+() :- import 'fc-type.sl' #
+
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, parse-fc .do .parsed
+	, infer-type .parsed _ _
 	, compile-fc .parsed 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
 	, assign-line-number-fc 0 .c0
 #
 
-parse-fc (.variable => .do) (FUNC .variable .do1) :- !, parse-fc .do .do1 #
-parse-fc (.variable = .value >> .do) (SUBST .variable .value1 .do1)
-	:- !, parse-fc .value .value1, parse-fc .do .do1
+parse-fc (.varDef => .do) (FUNC .variable .do2)
+	:- !, define-variable .varDef .variable .do .do1
+	, parse-fc .do1 .do2
+#
+parse-fc (.varDef = .value >> .do) (SUBST .variable .value1 .do2)
+	:- !, define-variable .varDef .variable .do .do1
+	, parse-fc .value .value1, parse-fc .do1 .do2
 #
 parse-fc (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, parse-fc .callee .callee1
@@ -32,12 +39,18 @@ parse-fc .tree (TREE .oper .left1 .right1)
 	) .oper
 	, !, parse-fc .left .left1, parse-fc .right .right1
 #
-parse-fc .b (BOOL .b) :- is.boolean .b, ! #
+parse-fc .b (BOOLEAN .b) :- is.boolean .b, ! #
 parse-fc .i (NUMBER .i) :- is.int .i, ! #
 parse-fc .s (STRING .s) :- is.string .s, ! #
 parse-fc .v (VARIABLE .v) :- is.atom .v, ! #
 parse-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
 
+define-variable .variable/.type .variable .do (VAR-TYPE .variable .type .do) :- ! #
+define-variable .variable .variable .do .do #
+
+compile-fc (VAR-TYPE _ _ .do) .frame .cdr
+	:- !, compile-fc .do .frame .cdr
+#
 compile-fc (FUNC .variable .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, let .frame1 (.frame + 1)
@@ -84,7 +97,7 @@ compile-fc %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	:- !, let .frameDifference (.frame0 - .frame)
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
-compile-fc (BOOL .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
+compile-fc (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
 compile-fc (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
 compile-fc (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
 compile-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
