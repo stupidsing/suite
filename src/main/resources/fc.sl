@@ -3,38 +3,68 @@
 
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
-	, compile-fc .do 0 .c1/.c2/.d0/()/.reg
+	, parse-fc .do .parsed
+	, compile-fc .parsed 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
 	, assign-line-number-fc 0 .c0
 #
 
-compile-fc (.variable => .do) .frame .c0/.cx/.d0/.dx/.reg
+parse-fc (.variable => .do) (FUNC .variable .do1) :- !, parse-fc .do .do1 #
+parse-fc (.variable = .value >> .do) (SUBST .variable .value1 .do1)
+	:- !, parse-fc .value .value1, parse-fc .do .do1
+#
+parse-fc (.callee {.parameter}) (INVOKE .parameter1 .callee1)
+	:- !, parse-fc .callee .callee1
+	, parse-fc .parameter .parameter1
+#
+parse-fc (.if ? .then | .else) (IF .if1 .then1 .else1)
+	:- !
+	, parse-fc .if .if1
+	, parse-fc .then .then1
+	, parse-fc .else .else1
+#
+parse-fc .left:.right .parsed :- parse-fc (cons {.left} {.right}) .parsed #
+parse-fc .tree (TREE .oper .left1 .right1)
+	:- tree .tree .left .oper .right
+	, member (' + ', ' - ', ' * ', ' / ',
+		' = ', ' != ',
+		' > ', ' < ', ' >= ', ' <= ',
+	) .oper
+	, !, parse-fc .left .left1, parse-fc .right .right1
+#
+parse-fc .b (BOOL .b) :- is.boolean .b, ! #
+parse-fc .i (NUMBER .i) :- is.int .i, ! #
+parse-fc .s (STRING .s) :- is.string .s, ! #
+parse-fc .v (VARIABLE .v) :- is.atom .v, ! #
+parse-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
+
+compile-fc (FUNC .variable .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, let .frame1 (.frame + 1)
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .variableReg, .d2)
-	, replace .do/.do1 .variable/(%REG/.variableReg/.frame1)
+	, replace .do/.do1 (VARIABLE .variable)/(%REG/.variableReg/.frame1)
 	, compile-fc .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
-compile-fc (.variable = .value >> .do) .frame .c0/.cx/.d0/.dx/.reg
+compile-fc (SUBST .variable .value .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, replace .value/.value1 .variable/(%REG/.r1/.frame) -- Allows recursion
-	, replace .do/.do1 .variable/(%REG/.r1/.frame)
+	, replace .value/.value1 (VARIABLE .variable)/(%REG/.r1/.frame) -- Allows recursion
+	, replace .do/.do1 (VARIABLE .variable)/(%REG/.r1/.frame)
 	, compile-fc .value1 .frame .c0/.c1/.d0/.d1/.r1
 	, compile-fc .do1 .frame .c1/.cx/.d1/.dx/.reg
 #
-compile-fc .call .frame .c0/.cx/.d0/.dx/.reg :-
-	fc-system-predicate .call .frame .c0/.cx/.d0/.dx/.reg, !
+compile-fc .call .frame .cdr
+	:- fc-system-predicate .call .frame .cdr, !
 #
-compile-fc (.callee {.parameter}) .frame .c0/.cx/.d0/.dx/.reg
+compile-fc (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, compile-fc .callee .frame .c0/.c1/.d0/.d1/.r1
 	, compile-fc .parameter .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .reg .r1, .cx)
 #
-compile-fc (.if ? .then | .else) .frame .c0/.cx/.d0/.dx/.reg
+compile-fc (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, compile-fc .if .frame .c0/.c1/.d0/.d1/.cr
 	, .c1 = (_ IF-FALSE .label1 .cr, .c2)
@@ -43,13 +73,8 @@ compile-fc (.if ? .then | .else) .frame .c0/.cx/.d0/.dx/.reg
 	, compile-fc .else .frame .c4/.c5/.d2/.dx/.reg
 	, .c5 = (.label2 LABEL .label2, .cx)
 #
-compile-fc .tree .frame .c0/.cx/.d0/.dx/.reg
-	:- tree .tree .left .oper .right
-	, member (' + ', ' - ', ' * ', ' / ',
-		' = ', ' != ',
-		' > ', ' < ', ' >= ', ' <= ',
-	) .oper
-	, !
+compile-fc (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
+	:- !
 	, compile-fc .left .frame .c0/.c1/.d0/.d1/.r1
 	, compile-fc .right .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
@@ -59,25 +84,22 @@ compile-fc %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	:- !, let .frameDifference (.frame0 - .frame)
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
-compile-fc .i _ .c0/.cx/.d/.d/.reg :- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-compile-fc .s _ .c0/.cx/.d/.d/.reg :- is.string .s, !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
-compile-fc .b _ .c0/.cx/.d/.d/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
+compile-fc (BOOL .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
+compile-fc (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
+compile-fc (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
 compile-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
 
-fc-system-predicate .head:.tail .frame .result
-	:- !, fc-system-predicate (cons {.head} {.tail}) .frame .result
-#
 fc-system-predicate .call .frame .result
 	:- fc-system-predicate0 .call .frame .result 0
 #
 
-fc-system-predicate0 (.pred {.p}) .frame .c0/.cx/.d0/.dx/.reg .n
+fc-system-predicate0 (INVOKE .p .pred) .frame .c0/.cx/.d0/.dx/.reg .n
 	:- !, let .n1 (.n + 1)
 	, compile-fc .p .frame .c0/.c1/.d0/.d1/.r1
 	, .c1 = (_ PUSH .r1, .c2)
 	, fc-system-predicate0 .pred .frame .c2/.cx/.d1/.dx/.reg .n1
 #
-fc-system-predicate0 .pred _ .c0/.cx/.d/.d/.reg .n
+fc-system-predicate0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-system-predicate .n .pred .call, !
 	, .c0 = (_ SYS .call .reg .n, .cx)
 #
