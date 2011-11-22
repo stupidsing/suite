@@ -13,6 +13,34 @@ import org.suite.node.Tree;
 
 public class FunctionCompilerTest {
 
+	private static final String and = "" //
+			+ "and = (x => y => x ? y | false) >> \n";
+
+	private static final String contains = "" //
+			+ "contains = (e => \n" //
+			+ "    join {fold {or}} {map {e1 => e1 = e}} \n" //
+			+ ") >> \n";
+
+	private static final String fold = "" //
+			+ "fold = (f => l => \n" //
+			+ "    h = head {l} >> \n" //
+			+ "    t = tail {l} >> \n" //
+			+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
+			+ ") >> \n";
+
+	private static final String join = "" //
+			+ "join = (f => g => x => f {g {x}}) >> \n";
+
+	private static final String map = "" //
+			+ "map = (f => l => \n" //
+			+ "    is-tree {l} \n" //
+			+ "    ? cons {f {head {l}}} {map {f} {tail {l}}} \n" //
+			+ "    | () \n" //
+			+ ") >> \n";
+
+	private static final String or = "" //
+			+ "or = (x => y => x ? true | y) >> \n";
+
 	@Test
 	public void testClosure() {
 		assertEquals(Int.create(7), eval("" //
@@ -24,9 +52,19 @@ public class FunctionCompilerTest {
 	}
 
 	@Test
+	public void testContains() {
+		assertEquals(Atom.create("true"), eval("" //
+				+ join + fold + or + map + contains //
+				+ "contains {9} {7:8:9:10:11:}"));
+		assertEquals(Atom.create("false"), eval("" //
+				+ join + fold + or + map + contains //
+				+ "contains {12} {7:8:9:10:11:}"));
+	}
+
+	@Test
 	public void testJoin() {
 		assertEquals(Int.create(19), eval("" //
-				+ "join = (f => g => x => f {g {x}}) >> \n" //
+				+ join //
 				+ "p = (n => n + 1) >> \n" //
 				+ "q = (n => n * 2) >> \n" //
 				+ "r = (join {p} {q}) >> \n" //
@@ -47,11 +85,7 @@ public class FunctionCompilerTest {
 	@Test
 	public void testFold() {
 		assertEquals(Int.create(324), eval("" //
-				+ "fold = (f => l => \n" //
-				+ "    h = head {l} >> \n" //
-				+ "    t = tail {l} >> \n" //
-				+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
-				+ ") >> \n" //
+				+ fold //
 				+ "fold {a => b => a * b} {2:3:6:9:}"));
 	}
 
@@ -76,19 +110,14 @@ public class FunctionCompilerTest {
 	@Test
 	public void testMap() {
 		assertEquals(SuiteUtil.parse("5:6:7:"), eval("" //
-				+ "map = (f => l => \n" //
-				+ "    is-tree {l} \n" //
-				+ "    ? cons {f {head {l}}} {map {f} {tail {l}}} \n" //
-				+ "    | () \n" //
-				+ ") >> \n" //
+				+ map //
 				+ "map {n => n + 2} {3:4:5:}"));
 	}
 
 	@Test
 	public void testOperator() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ "and = (x => y => x ? y | false) >> \n" //
-				+ "or = (x => y => x ? true | y) >> \n" //
+				+ and + or //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
 	}
 
