@@ -82,8 +82,9 @@ public class Parser {
 				String l = s.substring(0, pos);
 				String r = s.substring(pos + operator.getName().length());
 
-				return new Tree(operator, parseWithoutComments(l),
-						parseWithoutComments(r));
+				return new Tree(operator //
+						, parseWithoutComments(l) //
+						, parseWithoutComments(r));
 			}
 		}
 
