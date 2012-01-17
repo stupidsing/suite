@@ -50,14 +50,40 @@ equate0 (_ ^ 0 = 1) #
 equate0 (.f ^ 1 = .f) #
 equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
 equate0 (.f ^ (.g + .h) = .f ^ .g * .f ^ .h) #
-equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate1 (.f = .f1), tree .tree1 .f1 .op .g #
-equate0 (.tree = .tree1) :- tree .tree .f .op .g, equate1 (.g = .g1), tree .tree1 .f .op .g1 #
+equate0 (.tree0 = .tree1)
+	:- tree .tree0 .f0 .op .g0
+	, equate1 (.f0 = .f1)
+	, equate1 (.g0 = .g1)
+	, tree .tree1 .f1 .op .g1
+#
 equate0 (.tree = .value)
 	:- tree .tree .f .op .g
 	, member (' + ',' - ',' * ',) .op -- Only perform exact calculations
 	, is.int .f, is.int .g
 	, let .value .tree
 #
+
+equate0 (LN (E ^ .f) = .f) #
+equate0 (LN (.f * .g) = (LN .f) + (LN .g)) #
+equate0 (LN (.f ^ .g) = .g * (LN .f)) #
+equate0 (LN (.f ^ .g) = .g * (LN .f)) #
+equate0 (SIN (.f + .g) = (SIN .f) * (COS .g) + (COS .f) * (SIN .g)) #
+equate0 (COS (.f + .g) = (SIN .f) * (SIN .g) + (COS .f) * (COS .g)) #
+
+equate0 (.func .f0 = .func .f1)
+	:- member ('LN', 'SIN', 'COS',) .func, equate1 (.f0 = .f1)
+#
+equate0 (DV .y .x = (DV .y .z) * (DV .z .x)) #
+equate0 (DV (.f + .g) .x = (DV .f .x) * (DV .g .x)) #
+equate0 (DV (.f * .g) .x = (DV .f .x) * .g + .f * (DV .g .x)) #
+equate0 (DV .y .x = 1 / (DV .x .y)) #
+equate0 (DV .f .x = 0) :- is.int .f #
+equate0 (DV .x .x = 1) #
+equate0 (DV (E ^ .x) = E ^ .x) #
+equate0 (DV (LN .x) = 1 / .x) #
+equate0 (DV (SIN .x) = COS .x) #
+equate0 (DV (COS .x) = -1 * SIN .x) #
+equate0 (DV .y0 .x0 = DV .y1 .x1) :- equate1 (.y0 = .y1), equate1 (.x0 = .x1) #
 
 complexity .f 0 :- (is.int .f; is.atom .f), ! #
 complexity .tree .n
