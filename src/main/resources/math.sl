@@ -68,10 +68,10 @@ equate0 (LN (.f * .g) = (LN .f) + (LN .g)) #
 equate0 (LN (.f ^ .g) = .g * (LN .f)) #
 equate0 (SIN (.f + .g) = (SIN .f) * (COS .g) + (COS .f) * (SIN .g)) #
 equate0 (COS (.f + .g) = (SIN .f) * (SIN .g) + (COS .f) * (COS .g)) #
-
 equate0 (.func .f0 = .func .f1)
 	:- member ('LN', 'SIN', 'COS',) .func, equate1 (.f0 = .f1)
 #
+
 equate0 (DV .y .x = (DV .y .z) * (DV .z .x)) #
 equate0 (DV (.f + .g) .x = (DV .f .x) * (DV .g .x)) #
 equate0 (DV (.f * .g) .x = (DV .f .x) * .g + .f * (DV .g .x)) #
