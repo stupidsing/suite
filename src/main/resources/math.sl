@@ -66,7 +66,6 @@ equate0 (.tree = .value)
 equate0 (LN (E ^ .f) = .f) #
 equate0 (LN (.f * .g) = (LN .f) + (LN .g)) #
 equate0 (LN (.f ^ .g) = .g * (LN .f)) #
-equate0 (LN (.f ^ .g) = .g * (LN .f)) #
 equate0 (SIN (.f + .g) = (SIN .f) * (COS .g) + (COS .f) * (SIN .g)) #
 equate0 (COS (.f + .g) = (SIN .f) * (SIN .g) + (COS .f) * (COS .g)) #
 
