@@ -71,12 +71,7 @@ equate0 (LN (.f ^ .g) = .g * (LN .f)) #
 equate0 (SIN (-1 * .f) = -1 * (SIN .f)) #
 equate0 (COS (-1 * .f) = COS .f) #
 equate0 (SIN (.f + .g) = (SIN .f) * (COS .g) + (COS .f) * (SIN .g)) #
-<<<<<<< HEAD
 equate0 (COS (.f + .g) = (COS .f) * (COS .g) - (SIN .f) * (SIN .g)) #
-
-=======
-equate0 (COS (.f + .g) = (SIN .f) * (SIN .g) + (COS .f) * (COS .g)) #
->>>>>>> 4e298a0b95ca190d47494a6bd2ea935d13540c31
 equate0 (.func .f0 = .func .f1)
 	:- member ('LN', 'SIN', 'COS',) .func
 	, equate1 (.f0 = .f1)
