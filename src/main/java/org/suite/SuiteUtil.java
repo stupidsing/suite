@@ -137,7 +137,7 @@ public class SuiteUtil {
 		return functionalCompiler;
 	}
 
-	private static Prover getProver(String toImports[]) {
+	public static Prover getProver(String toImports[]) {
 		RuleSet rs = new RuleSet();
 
 		try {

@@ -189,6 +189,13 @@ public class Util {
 		public O perform(I i) throws Ex;
 	}
 
+	public static <I, O> Collection<O> map(Collection<I> in, Transformer<I, O> t) {
+		ArrayList<O> out = new ArrayList<O>(in.size());
+		for (I i : in)
+			out.add(t.perform(i));
+		return out;
+	}
+
 	public static class MultiSetter<I> implements Setter<I> {
 		private Collection<Setter<I>> setters = new ArrayList<Setter<I>>();
 
