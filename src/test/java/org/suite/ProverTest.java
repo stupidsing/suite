@@ -9,6 +9,16 @@ import org.suite.kb.RuleSet;
 public class ProverTest {
 
 	@Test
+	public void testProve1() {
+		RuleSet rs = new RuleSet();
+		SuiteUtil.addRule(rs, "mem ([.e, _], .e)");
+		SuiteUtil.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
+
+		assertTrue(SuiteUtil.proveThis(rs,
+				".l = [1, 2,], find.all .v (mem (.l, .v)) .l"));
+	}
+
+	@Test
 	public void testProve() {
 		RuleSet rs = new RuleSet();
 		SuiteUtil.addRule(rs, "a");
@@ -46,7 +56,7 @@ public class ProverTest {
 		assertTrue(SuiteUtil.proveThis(rs, "mem ([a, ], a)"));
 		assertTrue(SuiteUtil.proveThis(rs, "mem ([a, b, c, ], .v)"));
 		assertTrue(SuiteUtil.proveThis(rs,
-				".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l)"));
+				".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l"));
 		assertFalse(SuiteUtil.proveThis(rs, "mem ([a, b, c, ], d)"));
 	}
 

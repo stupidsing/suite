@@ -10,7 +10,6 @@ import org.suite.Context;
 import org.suite.Singleton;
 import org.suite.doer.Cloner;
 import org.suite.doer.Prover;
-import org.suite.doer.Prover.Backtracks;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
@@ -114,7 +113,7 @@ public class SystemPredicates {
 			final Node params[] = Predicate.getParameters(ps, 3);
 
 			Tree subGoal = new Tree(TermOp.AND___, params[1], new Station() {
-				public boolean run(Backtracks backtracks) {
+				public boolean run() {
 					stack.push(new Cloner().clone(params[0]));
 					return false;
 				}

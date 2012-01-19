@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
-import org.suite.doer.Prover.Backtracks;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.RuleSet;
@@ -101,7 +100,7 @@ public class Main {
 						System.out.println(result ? "Yes\n" : "No\n");
 					} else if (type == InputType.ELABORATE) {
 						Node elab = new Station() {
-							public boolean run(Backtracks backtracks) {
+							public boolean run() {
 								String dump = generalizer.dumpVariables();
 								if (!dump.isEmpty())
 									System.out.println(dump);
