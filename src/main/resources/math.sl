@@ -1,37 +1,6 @@
 -------------------------------------------------------------------------------
 -- symbolic mathematics
 
-() :- use t23.sl #
-
-simplify .f .fx .maxComplexity
-	:- simplify0 (.f,) ()/.dl .maxComplexity
-	, !
-	, find.all .key (t23-traverse .dl .key/_) .keys
-	, fold .keys 256/.minKey (_k _k0/_kx => once (_k > _k0, _kx = _k0; _kx = _k))
-	, once t23-traverse .dl .minKey/.cl
-	, t23-traverse .cl .fx/_
-#
-
-simplify0 () .dl/.dl _ #
-simplify0 (.f, .tailf) .dl0/.dlx .maxComplexity
-	:- find.all .f1 (equate1 (.f = .f1)) .list0
-	, fold .list0 .dl0:.list1/.dl1:() (
-		_f _dl0:_r0/_dlx:_rx => once (
-			complexity _f _c, _c <= .maxComplexity
-			, t23-map _dl0/_dl1 _c/_cl0
-			, t23-map _cl0/_clx _f/_first
-			, not bound _first, _first = N
-			, once t23-replace _dl1/_dlx _c/_cl0/_clx
-			, _r0 = (_f, _rx)
-		;
-			_dl0:_r0 = _dlx:_rx
-		)
-	)
-	, append .tailf .list1 .list2
-	--, write NEXT-ROUND:, pp-list .list2, nl
-	, !, simplify0 .list2 .dl1/.dlx .maxComplexity
-#
-
 equate (.f = .g) :- equate1 (.f = .g) #
 
 equate1 (.f = .g) :- (bound .f; bound .g), (equate0 (.f = .g); equate0 (.g = .f)) #
@@ -87,11 +56,7 @@ equate0 (DV (E ^ .x) .x = E ^ .x) #
 equate0 (DV (LN .x) .x = 1 / .x) #
 equate0 (DV (SIN .x) .x = COS .x) #
 equate0 (DV (COS .x) .x = -1 * SIN .x) #
-equate0 (.dv .y0 .x0 = .dv .y1 .x1)
-	:- .dv = DV
-	, equate1 (.y0 = .y1)
-	, equate1 (.x0 = .x1)
-#
+equate0 (DV .y0 .x0 = DV .y1 .x1) :- equate1 (.y0 = .y1), equate1 (.x0 = .x1) #
 
 complexity .f 0 :- (is.int .f; is.atom .f), ! #
 complexity .tree .n
