@@ -16,6 +16,20 @@ public class FunctionCompilerTest {
 	private static final String and = "" //
 			+ "and = (x => y => x ? y | false) >> \n";
 
+	private static final String concat = "" //
+			+ "concat = (lol => \n" //
+			+ "    is-tree {lol} \n" //
+			+ "    ? ( \n" //
+			+ "        l = head {lol} >> \n" //
+			+ "        r = tail {lol} >> ( \n" //
+			+ "            is-tree {l} \n" //
+			+ "            ? cons {head {l}} {concat {cons {tail {l}} {r}}} \n" //
+			+ "            | concat {r} \n" //
+			+ "        ) \n" //
+			+ "    ) \n" //
+			+ "    | () \n" //
+			+ ") >> \n";
+
 	private static final String contains = "" //
 			+ "contains = (e => \n" //
 			+ "    join {fold {or}} {map {e1 => e1 = e}} \n" //
@@ -49,6 +63,13 @@ public class FunctionCompilerTest {
 				+ "p = (n => n + 1) >> \n" //
 				+ "q = (n => p {n} * 2) >> \n" //
 				+ "q {9}"));
+	}
+
+	@Test
+	public void testConcat() {
+		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:"), eval("" //
+				+ concat //
+				+ "concat {(1:2:):(3:4:):(5:6:):}"));
 	}
 
 	@Test
