@@ -24,8 +24,8 @@ parse-fc (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, parse-fc .callee .callee1
 	, parse-fc .parameter .parameter1
 #
-parse-fc (.if ? .then | .else) (IF .if1 .then1 .else1)
-	:- !
+parse-fc .ifThenElse (IF .if1 .then1 .else1)
+	:- member ((if .if then .then else .else), (.if ? .then | .else),) .ifThenElse, !
 	, parse-fc .if .if1
 	, parse-fc .then .then1
 	, parse-fc .else .else1

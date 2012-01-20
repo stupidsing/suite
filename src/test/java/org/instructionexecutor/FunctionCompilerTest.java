@@ -18,16 +18,16 @@ public class FunctionCompilerTest {
 
 	private static final String concat = "" //
 			+ "concat = (lol => \n" //
-			+ "    is-tree {lol} \n" //
-			+ "    ? ( \n" //
+			+ "    if (is-tree {lol}) then ( \n" //
 			+ "        l = head {lol} >> \n" //
 			+ "        r = tail {lol} >> ( \n" //
-			+ "            is-tree {l} \n" //
-			+ "            ? cons {head {l}} {concat {cons {tail {l}} {r}}} \n" //
-			+ "            | concat {r} \n" //
+			+ "            if (is-tree {l}) then ( \n" //
+			+ "                cons {head {l}} {concat {cons {tail {l}} {r}}} \n" //
+			+ "            ) \n" //
+			+ "            else (concat {r}) \n" //
 			+ "        ) \n" //
 			+ "    ) \n" //
-			+ "    | () \n" //
+			+ "    else () \n" //
 			+ ") >> \n";
 
 	private static final String contains = "" //
@@ -47,9 +47,10 @@ public class FunctionCompilerTest {
 
 	private static final String map = "" //
 			+ "map = (f => l => \n" //
-			+ "    is-tree {l} \n" //
-			+ "    ? cons {f {head {l}}} {map {f} {tail {l}}} \n" //
-			+ "    | () \n" //
+			+ "    if (is-tree {l}) then ( \n" //
+			+ "        cons {f {head {l}}} {map {f} {tail {l}}} \n" //
+			+ "    ) \n" //
+			+ "    else () \n" //
 			+ ") >> \n";
 
 	private static final String or = "" //
@@ -96,9 +97,10 @@ public class FunctionCompilerTest {
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "fib = (n => \n" //
-				+ "    n > 1 \n" //
-				+ "    ? fib {n - 1} + fib {n - 2} \n" //
-				+ "    | 1 \n" //
+				+ "    if (n > 1) then ( \n" //
+				+ "        fib {n - 1} + fib {n - 2} \n" //
+				+ "    ) \n" //
+				+ "    else 1 \n" //
 				+ ") >> \n" //
 				+ "fib {10}"));
 	}
@@ -146,9 +148,10 @@ public class FunctionCompilerTest {
 	public void testRange() {
 		assertEquals(SuiteUtil.parse("2:5:8:11:"), eval("" //
 				+ "range = (i => j => inc => \n" //
-				+ "    i != j \n" //
-				+ "    ? cons {i} {range {i + inc} {j} {inc}} \n" //
-				+ "    | () \n" //
+				+ "    if (i != j) then ( \n" //
+				+ "        cons {i} {range {i + inc} {j} {inc}} \n" //
+				+ "    ) \n" //
+				+ "    else () \n" //
 				+ ") >> \n" //
 				+ "range {2} {14} {3}"));
 	}
