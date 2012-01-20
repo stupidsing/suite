@@ -60,13 +60,8 @@ public class AlphabetaSearchTest {
 					i += j;
 				}
 
-				if (no == 0 || nx == 0)
-					if (no > 0)
-						return state.player == 'O' ? scores[no] : -scores[no];
-					else
-						return state.player == 'X' ? scores[nx] : -scores[nx];
-				else
-					return 0;
+				int o = (no == 0 || nx == 0) ? scores[no] - scores[nx] : 0;
+				return state.player == 'O' ? o : -o;
 			}
 		}, new TicTacToe(), 4, Integer.MIN_VALUE, Integer.MAX_VALUE) >= 10000);
 	}
