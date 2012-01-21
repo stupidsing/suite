@@ -19,12 +19,12 @@ public class FunctionCompilerTest {
 	private static final String concat = "" //
 			+ "concat = (lol => \n" //
 			+ "    if (is-tree {lol}) then ( \n" //
-			+ "        l = head {lol} >> \n" //
-			+ "        r = tail {lol} >> ( \n" //
-			+ "            if (is-tree {l}) then ( \n" //
-			+ "                cons {head {l}} {concat {cons {tail {l}} {r}}} \n" //
+			+ "        h = head {lol} >> \n" //
+			+ "        t = tail {lol} >> ( \n" //
+			+ "            if (is-tree {h}) then ( \n" //
+			+ "                cons {head {h}} {concat {cons {tail {h}} {t}}} \n" //
 			+ "            ) \n" //
-			+ "            else (concat {r}) \n" //
+			+ "            else (concat {t}) \n" //
 			+ "        ) \n" //
 			+ "    ) \n" //
 			+ "    else () \n" //
@@ -36,9 +36,9 @@ public class FunctionCompilerTest {
 			+ ") >> \n";
 
 	private static final String fold = "" //
-			+ "fold = (f => l => \n" //
-			+ "    h = head {l} >> \n" //
-			+ "    t = tail {l} >> \n" //
+			+ "fold = (f => list => \n" //
+			+ "    h = head {list} >> \n" //
+			+ "    t = tail {list} >> \n" //
 			+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
 			+ ") >> \n";
 
