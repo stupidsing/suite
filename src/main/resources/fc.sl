@@ -121,6 +121,7 @@ fc-define-system-predicate 2 cons CONS #
 fc-define-system-predicate 0 () EMPTY #
 fc-define-system-predicate 1 is-tree IS-TREE #
 fc-define-system-predicate 1 head HEAD #
+fc-define-system-predicate 2 log LOG #
 fc-define-system-predicate 1 tail TAIL #
 
 is.boolean true #

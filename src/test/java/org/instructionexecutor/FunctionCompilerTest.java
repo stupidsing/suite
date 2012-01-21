@@ -17,17 +17,12 @@ public class FunctionCompilerTest {
 			+ "and = (x => y => x ? y | false) >> \n";
 
 	private static final String concat = "" //
-			+ "concat = (lol => \n" //
-			+ "    if (is-tree {lol}) then ( \n" //
-			+ "        h = head {lol} >> \n" //
-			+ "        t = tail {lol} >> ( \n" //
-			+ "            if (is-tree {h}) then ( \n" //
-			+ "                cons {head {h}} {concat {cons {tail {h}} {t}}} \n" //
-			+ "            ) \n" //
-			+ "            else (concat {t}) \n" //
-			+ "        ) \n" //
-			+ "    ) \n" //
-			+ "    else () \n" //
+			+ "concat = ( \n" //
+			+ "    split {h => t => \n" //
+			+ "        if-tree {h} \n" //
+			+ "            {h1 => t1 => cons {h1} {concat {t1:t}}} \n" //
+			+ "            {concat {t}} \n" //
+			+ "    } \n" //
 			+ ") >> \n";
 
 	private static final String contains = "" //
@@ -42,19 +37,25 @@ public class FunctionCompilerTest {
 			+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
 			+ ") >> \n";
 
+	private static final String ifTree = "" //
+			+ "if-tree = (list => f1 => f2 => \n" //
+			+ "    if (is-tree {list}) then ( \n" //
+			+ "        f1 {head {list}} {tail {list}} \n" //
+			+ "    ) \n" //
+			+ "    else f2 \n" //
+			+ ") >> \n";
+
 	private static final String join = "" //
 			+ "join = (f => g => x => f {g {x}}) >> \n";
 
 	private static final String map = "" //
-			+ "map = (f => l => \n" //
-			+ "    if (is-tree {l}) then ( \n" //
-			+ "        cons {f {head {l}}} {map {f} {tail {l}}} \n" //
-			+ "    ) \n" //
-			+ "    else () \n" //
-			+ ") >> \n";
+			+ "map = (f => split {h => t => (f {h}):(map {f} {t})}) >> \n";
 
 	private static final String or = "" //
 			+ "or = (x => y => x ? true | y) >> \n";
+
+	private static final String split = "" //
+			+ "split = (f => list => if-tree {list} {f} {()}) >> \n";
 
 	@Test
 	public void testClosure() {
@@ -69,28 +70,18 @@ public class FunctionCompilerTest {
 	@Test
 	public void testConcat() {
 		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:"), eval("" //
-				+ concat //
+				+ ifTree + split + concat //
 				+ "concat {(1:2:):(3:4:):(5:6:):}"));
 	}
 
 	@Test
 	public void testContains() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ join + fold + or + map + contains //
+				+ join + fold + or + ifTree + split + map + contains //
 				+ "contains {9} {7:8:9:10:11:}"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ join + fold + or + map + contains //
+				+ join + fold + or + ifTree + split + map + contains //
 				+ "contains {12} {7:8:9:10:11:}"));
-	}
-
-	@Test
-	public void testJoin() {
-		assertEquals(Int.create(19), eval("" //
-				+ join //
-				+ "p = (n => n + 1) >> \n" //
-				+ "q = (n => n * 2) >> \n" //
-				+ "r = (join {p} {q}) >> \n" //
-				+ "r {9}"));
 	}
 
 	@Test
@@ -110,6 +101,22 @@ public class FunctionCompilerTest {
 		assertEquals(Int.create(324), eval("" //
 				+ fold //
 				+ "fold {a => b => a * b} {2:3:6:9:}"));
+	}
+
+	@Test
+	public void testJoin() {
+		assertEquals(Int.create(19), eval("" //
+				+ join //
+				+ "p = (n => n + 1) >> \n" //
+				+ "q = (n => n * 2) >> \n" //
+				+ "r = (join {p} {q}) >> \n" //
+				+ "r {9}"));
+	}
+
+	@Test
+	public void testLog() {
+		assertEquals(Int.create(1), eval("" //
+				+ "if (1 = 1) then 1 else (1 / 0)"));
 	}
 
 	@Test
@@ -133,7 +140,7 @@ public class FunctionCompilerTest {
 	@Test
 	public void testMap() {
 		assertEquals(SuiteUtil.parse("5:6:7:"), eval("" //
-				+ map //
+				+ ifTree + split + map //
 				+ "map {n => n + 2} {3:4:5:}"));
 	}
 
@@ -149,11 +156,18 @@ public class FunctionCompilerTest {
 		assertEquals(SuiteUtil.parse("2:5:8:11:"), eval("" //
 				+ "range = (i => j => inc => \n" //
 				+ "    if (i != j) then ( \n" //
-				+ "        cons {i} {range {i + inc} {j} {inc}} \n" //
+				+ "        i:(range {i + inc} {j} {inc}) \n" //
 				+ "    ) \n" //
 				+ "    else () \n" //
 				+ ") >> \n" //
 				+ "range {2} {14} {3}"));
+	}
+
+	@Test
+	public void testSplit() {
+		assertEquals(Int.create(1), eval("" //
+				+ ifTree + split //
+				+ "split {h => l => h} {1:2:}"));
 	}
 
 	@Test

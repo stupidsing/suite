@@ -9,8 +9,9 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom CONS = Atom.create("CONS");
 	private static final Atom EMPTY = Atom.create("EMPTY");
-	private static final Atom ISTREE = Atom.create("IS-TREE");
 	private static final Atom HEAD = Atom.create("HEAD");
+	private static final Atom ISTREE = Atom.create("IS-TREE");
+	private static final Atom LOG = Atom.create("LOG");
 	private static final Atom TAIL = Atom.create("TAIL");
 
 	public FunctionInstructionExecutor(Node node) {
@@ -44,11 +45,14 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = new Tree(TermOp.COLON_, left, right);
 		} else if (command == EMPTY)
 			result = Atom.nil;
-		else if (command == ISTREE)
-			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
 		else if (command == HEAD)
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
-		else if (command == TAIL)
+		else if (command == ISTREE)
+			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
+		else if (command == LOG) {
+			System.out.println((Node) dataStack[dsp + 1]);
+			result = (Node) dataStack[dsp];
+		} else if (command == TAIL)
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();
 		else
 			throw new RuntimeException("Unknown system call " + command);
