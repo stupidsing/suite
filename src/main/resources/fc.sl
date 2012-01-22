@@ -33,7 +33,7 @@ parse-fc .ifThenElse (IF .if1 .then1 .else1)
 parse-fc .left:.right .parsed :- parse-fc (cons {.left} {.right}) .parsed #
 parse-fc .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
-	, member (' + ', ' - ', ' * ', ' / ',
+	, member (' + ', ' - ', ' * ', ' / ', ' %% ',
 		' = ', ' != ',
 		' > ', ' < ', ' >= ', ' <= ',
 	) .oper

@@ -194,6 +194,9 @@ public class EvalPredicates {
 				case DIVIDE:
 					result = a / b;
 					break;
+				case MODULO:
+					result = a % b;
+					break;
 				case POWER_:
 					result = (int) Math.pow(a, b);
 				}

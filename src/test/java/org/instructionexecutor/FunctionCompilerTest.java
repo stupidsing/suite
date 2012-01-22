@@ -54,6 +54,14 @@ public class FunctionCompilerTest {
 	private static final String or = "" //
 			+ "or = (x => y => x ? true | y) >> \n";
 
+	private static final String reduce = "" //
+			+ "reduce = (f => \n" //
+			+ "    split {h => t => \n" //
+			+ "        others = reduce {f} {t} >> \n" //
+			+ "        f {h} ? h:others | others \n" //
+			+ "    } \n" //
+			+ ") >> \n";
+
 	private static final String split = "" //
 			+ "split = (f => list => if-tree {list} {f} {()}) >> \n";
 
@@ -161,6 +169,13 @@ public class FunctionCompilerTest {
 				+ "    else () \n" //
 				+ ") >> \n" //
 				+ "range {2} {14} {3}"));
+	}
+
+	@Test
+	public void testReduce() {
+		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
+				+ ifTree + split + reduce //
+				+ "reduce {n => n % 2 = 0} {3:4:5:6:}"));
 	}
 
 	@Test

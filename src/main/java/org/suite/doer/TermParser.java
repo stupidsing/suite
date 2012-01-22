@@ -26,6 +26,7 @@ public class TermParser extends Parser {
 		MINUS_(" - ", Assoc.LEFT), //
 		MULT__(" * ", Assoc.RIGHT), //
 		DIVIDE(" / ", Assoc.LEFT), //
+		MODULO(" % ", Assoc.LEFT), //
 		POWER_("^", Assoc.RIGHT), //
 		BRACES("{", Assoc.LEFT), //
 		SEP___(" ", Assoc.RIGHT), //

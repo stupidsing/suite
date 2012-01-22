@@ -41,6 +41,7 @@ public class InstructionExecutor {
 		evalInsns.put(TermOp.LT____, Insn.EVALLT________);
 		evalInsns.put(TermOp.MULT__, Insn.EVALMUL_______);
 		evalInsns.put(TermOp.MINUS_, Insn.EVALSUB_______);
+		evalInsns.put(TermOp.MODULO, Insn.EVALMOD_______);
 		evalInsns.put(TermOp.NOTEQ_, Insn.EVALNE________);
 	}
 
@@ -67,6 +68,7 @@ public class InstructionExecutor {
 		EVALGT________("EVAL-GT"), //
 		EVALLE________("EVAL-LE"), //
 		EVALLT________("EVAL-LT"), //
+		EVALMOD_______("EVAL-MOD"), //
 		EVALMUL_______("EVAL-MUL"), //
 		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
@@ -318,6 +320,9 @@ public class InstructionExecutor {
 				break;
 			case EVALNE________:
 				regs[insn.op1] = a(g(regs[insn.op2]) != g(regs[insn.op3]));
+				break;
+			case EVALMOD_______:
+				regs[insn.op1] = i(g(regs[insn.op2]) % g(regs[insn.op3]));
 				break;
 			case EVALMUL_______:
 				regs[insn.op1] = i(g(regs[insn.op2]) * g(regs[insn.op3]));

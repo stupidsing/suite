@@ -25,7 +25,7 @@ infer-type .a:.b .te .listType
 	, infer-type .b .te .listType
 #
 infer-type (TREE .oper .left .right) .te .type
-	:- member (' + ', ' - ', ' * ', ' / ',) .oper, !
+	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
 	, equal-types .left .right .te .type
 	, member (NUMBER, STRING, ) .type
 	; member (' = ', ' != ', ' > ', '  < ', ' >= ', ' <= ',) .oper, !
