@@ -27,7 +27,7 @@ public class FunctionCompilerTest {
 
 	private static final String contains = "" //
 			+ "contains = (e => \n" //
-			+ "    join {fold {or}} {map {e1 => e1 = e}} \n" //
+			+ "    join {map {e1 => e1 = e}} {fold {or}} \n" //
 			+ ") >> \n";
 
 	private static final String fold = "" //
@@ -46,7 +46,7 @@ public class FunctionCompilerTest {
 			+ ") >> \n";
 
 	private static final String join = "" //
-			+ "join = (f => g => x => f {g {x}}) >> \n";
+			+ "join = (f => g => x => g {f {x}}) >> \n";
 
 	private static final String map = "" //
 			+ "map = (f => split {h => t => (f {h}):(map {f} {t})}) >> \n";
@@ -115,8 +115,8 @@ public class FunctionCompilerTest {
 	public void testJoin() {
 		assertEquals(Int.create(19), eval("" //
 				+ join //
-				+ "p = (n => n + 1) >> \n" //
-				+ "q = (n => n * 2) >> \n" //
+				+ "p = (n => n * 2) >> \n" //
+				+ "q = (n => n + 1) >> \n" //
 				+ "r = (join {p} {q}) >> \n" //
 				+ "r {9}"));
 	}
