@@ -218,7 +218,9 @@ public class InstructionExecutor {
 			return pointer;
 	}
 
-	protected static class Closure {
+	// Indicates a function call with a specified set of framed environment.
+	// Closure must extend Node in order to be put in a list (being cons-ed).
+	protected static class Closure extends Node {
 		protected Frame frame;
 		protected int ip;
 

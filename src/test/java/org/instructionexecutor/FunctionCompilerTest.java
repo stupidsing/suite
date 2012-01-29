@@ -16,12 +16,23 @@ public class FunctionCompilerTest {
 	private static final String and = "" //
 			+ "and = (x => y => x ? y | false) >> \n";
 
+	private static final String apply = "" //
+			+ "apply = fold-left {x => f => f {x}} >> \n";
+
 	private static final String concat = "" //
-			+ "concat = split {h => t => \n" //
+			+ "concat = (l1 => l2 => \n" //
+			+ "    if-tree {l1} {h => t => h:(concat {t} {l2})} {l2} \n" //
+			+ ") >> \n";
+
+	private static final String concatList0 = "" //
+			+ "concat-list0 = split {h => t => \n" //
 			+ "    if-tree {h} \n" //
-			+ "        {h1 => t1 => cons {h1} {concat {t1:t}}} \n" //
-			+ "        {concat {t}} \n" //
+			+ "        {h1 => t1 => h1:(concat-list0 {t1:t})} \n" //
+			+ "        {concat-list0 {t}} \n" //
 			+ "} >> \n";
+
+	private static final String concatList = "" //
+			+ "concat-list = fold-left {concat} {()} >> \n";
 
 	private static final String contains = "" //
 			+ "contains = (e => \n" //
@@ -29,34 +40,36 @@ public class FunctionCompilerTest {
 			+ ") >> \n";
 
 	private static final String filter0 = "" //
-			+ "filter0 = (f => \n" //
+			+ "filter0 = (fun => \n" //
 			+ "    split {h => t => \n" //
-			+ "        others = filter0 {f} {t} >> \n" //
-			+ "        f {h} ? h:others | others \n" //
+			+ "        others = filter0 {fun} {t} >> \n" //
+			+ "        fun {h} ? h:others | others \n" //
 			+ "    } \n" //
 			+ ") >> \n";
 
 	private static final String filter = "" //
-			+ "filter = (f => fold-right {i => list => f {i} ? i:list | list} {()}) >> \n";
+			+ "filter = (fun => \n" //
+			+ "    fold-right {i => list => fun {i} ? i:list | list} {()} \n" //
+			+ ") >> \n";
 
 	private static final String fold = "" //
-			+ "fold = (f => list => \n" //
+			+ "fold = (fun => list => \n" //
 			+ "    h = head {list} >> \n" //
 			+ "    t = tail {list} >> \n" //
-			+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
+			+ "    is-tree {t} ? fun {h} {fold {fun} {t}} | h \n" //
 			+ ") >> \n";
 
 	private static final String foldLeft = "" //
-			+ "fold-left = (f => i => list => \n" //
+			+ "fold-left = (fun => i => list => \n" //
 			+ "    if-tree {list} \n" //
-			+ "        {h => t => fold-left {f} {f {i} {h}} {t}} \n" //
+			+ "        {h => t => fold-left {fun} {fun {i} {h}} {t}} \n" //
 			+ "        {i} \n" //
 			+ ") >> \n";
 
 	private static final String foldRight = "" //
-			+ "fold-right = (f => i => list => \n" //
+			+ "fold-right = (fun => i => list => \n" //
 			+ "    if-tree {list} \n" //
-			+ "        {h => t => f {h} {fold-right {f} {i} {t}}} \n" //
+			+ "        {h => t => fun {h} {fold-right {fun} {i} {t}}} \n" //
 			+ "        {i} \n" //
 			+ ") >> \n";
 
@@ -72,16 +85,26 @@ public class FunctionCompilerTest {
 			+ "join = (f => g => x => g {f {x}}) >> \n";
 
 	private static final String map0 = "" //
-			+ "map0 = (f => split {h => t => (f {h}):(map0 {f} {t})}) >> \n";
+			+ "map0 = (fun => split {h => t => (fun {h}):(map0 {fun} {t})}) >> \n";
 
 	private static final String map = "" //
-			+ "map = (f => fold-right {i => list => (f {i}):list} {()}) >> \n";
+			+ "map = (fun => fold-right {i => list => (fun {i}):list} {()}) >> \n";
 
 	private static final String or = "" //
 			+ "or = (x => y => x ? true | y) >> \n";
 
 	private static final String split = "" //
-			+ "split = (f => list => if-tree {list} {f} {()}) >> \n";
+			+ "split = (fun => list => if-tree {list} {fun} {()}) >> \n";
+
+	@Test
+	public void testApply() {
+		assertEquals(Int.create(2), eval("" //
+				+ ifTree + foldLeft + apply //
+				+ "apply {1} {(a => 2):}"));
+		assertEquals(Int.create(2), eval("" //
+				+ ifTree + foldLeft + apply //
+				+ "apply {4} {(a => a + 1):(b => b * 2):(c => c / 5):}"));
+	}
 
 	@Test
 	public void testClosure() {
@@ -95,9 +118,15 @@ public class FunctionCompilerTest {
 
 	@Test
 	public void testConcat() {
+		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:7:8:"), eval("" //
+				+ ifTree + concat //
+				+ "concat {1:2:3:4:} {5:6:7:8:}"));
 		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:"), eval("" //
-				+ ifTree + split + concat //
-				+ "concat {(1:2:):(3:4:):(5:6:):}"));
+				+ ifTree + split + concatList0 //
+				+ "concat-list0 {(1:2:):(3:4:):(5:6:):}"));
+		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:"), eval("" //
+				+ ifTree + concat + foldLeft + concatList //
+				+ "concat-list {(1:2:):(3:4:):(5:6:):}"));
 	}
 
 	@Test
