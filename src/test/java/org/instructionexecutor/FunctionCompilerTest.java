@@ -30,11 +30,24 @@ public class FunctionCompilerTest {
 			+ "    join {map {e1 => e1 = e}} {fold {or}} \n" //
 			+ ") >> \n";
 
+	private static final String filter = "" //
+			+ "reduce = (f => \n" //
+			+ "    split {h => t => \n" //
+			+ "        others = reduce {f} {t} >> \n" //
+			+ "        f {h} ? h:others | others \n" //
+			+ "    } \n" //
+			+ ") >> \n";
+
 	private static final String fold = "" //
 			+ "fold = (f => list => \n" //
 			+ "    h = head {list} >> \n" //
 			+ "    t = tail {list} >> \n" //
 			+ "    is-tree {t} ? f {h} {fold {f} {t}} | h \n" //
+			+ ") >> \n";
+
+	private static final String foldLeft = "" //
+			+ "fold-left = (f => i => list => \n" //
+			+ "    if-tree {list} {h => t => fold-left {f} {f {i} {h}} {t}} {i} \n" //
 			+ ") >> \n";
 
 	private static final String ifTree = "" //
@@ -53,14 +66,6 @@ public class FunctionCompilerTest {
 
 	private static final String or = "" //
 			+ "or = (x => y => x ? true | y) >> \n";
-
-	private static final String reduce = "" //
-			+ "reduce = (f => \n" //
-			+ "    split {h => t => \n" //
-			+ "        others = reduce {f} {t} >> \n" //
-			+ "        f {h} ? h:others | others \n" //
-			+ "    } \n" //
-			+ ") >> \n";
 
 	private static final String split = "" //
 			+ "split = (f => list => if-tree {list} {f} {()}) >> \n";
@@ -105,10 +110,20 @@ public class FunctionCompilerTest {
 	}
 
 	@Test
+	public void testFilter() {
+		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
+				+ ifTree + split + filter //
+				+ "reduce {n => n % 2 = 0} {3:4:5:6:}"));
+	}
+
+	@Test
 	public void testFold() {
 		assertEquals(Int.create(324), eval("" //
 				+ fold //
 				+ "fold {a => b => a * b} {2:3:6:9:}"));
+		assertEquals(Int.create(79), eval("" //
+				+ ifTree + foldLeft //
+				+ "fold-left {a => b => a - b} {100} {6:7:8:}"));
 	}
 
 	@Test
@@ -169,13 +184,6 @@ public class FunctionCompilerTest {
 				+ "    else () \n" //
 				+ ") >> \n" //
 				+ "range {2} {14} {3}"));
-	}
-
-	@Test
-	public void testReduce() {
-		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
-				+ ifTree + split + reduce //
-				+ "reduce {n => n % 2 = 0} {3:4:5:6:}"));
 	}
 
 	@Test
