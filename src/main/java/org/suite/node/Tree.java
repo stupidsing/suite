@@ -33,10 +33,15 @@ public class Tree extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Tree) {
-			Tree t = (Tree) object;
-			return operator == t.operator //
-					&& Util.equals(left, t.left) && Util.equals(right, t.right);
+		if (object instanceof Node) {
+			Node node = ((Node) object).finalNode();
+			if (node instanceof Tree) {
+				Tree t = (Tree) node;
+				return operator == t.operator //
+						&& Util.equals(left, t.left)
+						&& Util.equals(right, t.right);
+			} else
+				return false;
 		} else
 			return false;
 	}

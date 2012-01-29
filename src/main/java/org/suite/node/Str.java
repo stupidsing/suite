@@ -17,9 +17,13 @@ public class Str extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Str) {
-			Str str = (Str) object;
-			return Util.equals(value, str.value);
+		if (object instanceof Node) {
+			Node node = ((Node) object).finalNode();
+			if (node instanceof Str) {
+				Str str = (Str) node;
+				return Util.equals(value, str.value);
+			} else
+				return false;
 		} else
 			return false;
 	}

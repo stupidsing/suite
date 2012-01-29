@@ -11,7 +11,7 @@ public class Reference extends Node {
 
 	@Override
 	public int hashCode() {
-		return (node != this) ? node.hashCode() : super.hashCode();
+		return node != this ? node.hashCode() : super.hashCode();
 	}
 
 	public void bound(Node node) {
@@ -24,7 +24,7 @@ public class Reference extends Node {
 
 	@Override
 	public Node finalNode() {
-		return (node != this) ? node.finalNode() : node;
+		return node != this ? node.finalNode() : node;
 	}
 
 	public int getId() {
