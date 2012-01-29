@@ -24,27 +24,12 @@ public class FunctionCompilerTest {
 			+ "    if-tree {l1} {h => t => h:(concat {t} {l2})} {l2} \n" //
 			+ ") >> \n";
 
-	private static final String concatList0 = "" //
-			+ "concat-list0 = split {h => t => \n" //
-			+ "    if-tree {h} \n" //
-			+ "        {h1 => t1 => h1:(concat-list0 {t1:t})} \n" //
-			+ "        {concat-list0 {t}} \n" //
-			+ "} >> \n";
-
 	private static final String concatList = "" //
 			+ "concat-list = fold-left {concat} {()} >> \n";
 
 	private static final String contains = "" //
 			+ "contains = (e => \n" //
 			+ "    join {map {e1 => e1 = e}} {fold {or}} \n" //
-			+ ") >> \n";
-
-	private static final String filter0 = "" //
-			+ "filter0 = (fun => \n" //
-			+ "    split {h => t => \n" //
-			+ "        others = filter0 {fun} {t} >> \n" //
-			+ "        fun {h} ? h:others | others \n" //
-			+ "    } \n" //
 			+ ") >> \n";
 
 	private static final String filter = "" //
@@ -86,9 +71,6 @@ public class FunctionCompilerTest {
 	private static final String join = "" //
 			+ "join = (f => g => x => g {f {x}}) >> \n";
 
-	private static final String map0 = "" //
-			+ "map0 = (fun => split {h => t => (fun {h}):(map0 {fun} {t})}) >> \n";
-
 	private static final String map = "" //
 			+ "map = (fun => fold-right {i => list => (fun {i}):list} {()}) >> \n";
 
@@ -124,9 +106,6 @@ public class FunctionCompilerTest {
 				+ ifTree + concat //
 				+ "concat {1:2:3:4:} {5:6:7:8:}"));
 		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:"), eval("" //
-				+ ifTree + split + concatList0 //
-				+ "concat-list0 {(1:2:):(3:4:):(5:6:):}"));
-		assertEquals(SuiteUtil.parse("1:2:3:4:5:6:"), eval("" //
 				+ ifTree + concat + foldLeft + concatList //
 				+ "concat-list {(1:2:):(3:4:):(5:6:):}"));
 	}
@@ -155,9 +134,6 @@ public class FunctionCompilerTest {
 
 	@Test
 	public void testFilter() {
-		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
-				+ ifTree + split + filter0 //
-				+ "filter0 {n => n % 2 = 0} {3:4:5:6:}"));
 		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
 				+ ifTree + foldRight + filter //
 				+ "filter {n => n % 2 = 0} {3:4:5:6:}"));
@@ -212,9 +188,6 @@ public class FunctionCompilerTest {
 
 	@Test
 	public void testMap() {
-		assertEquals(SuiteUtil.parse("5:6:7:"), eval("" //
-				+ ifTree + split + map0 //
-				+ "map0 {n => n + 2} {3:4:5:}"));
 		assertEquals(SuiteUtil.parse("5:6:7:"), eval("" //
 				+ ifTree + foldRight + map //
 				+ "map {n => n + 2} {3:4:5:}"));
