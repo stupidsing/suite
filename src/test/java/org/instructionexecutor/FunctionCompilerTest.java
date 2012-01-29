@@ -17,26 +17,27 @@ public class FunctionCompilerTest {
 			+ "and = (x => y => x ? y | false) >> \n";
 
 	private static final String concat = "" //
-			+ "concat = ( \n" //
-			+ "    split {h => t => \n" //
-			+ "        if-tree {h} \n" //
-			+ "            {h1 => t1 => cons {h1} {concat {t1:t}}} \n" //
-			+ "            {concat {t}} \n" //
-			+ "    } \n" //
-			+ ") >> \n";
+			+ "concat = split {h => t => \n" //
+			+ "    if-tree {h} \n" //
+			+ "        {h1 => t1 => cons {h1} {concat {t1:t}}} \n" //
+			+ "        {concat {t}} \n" //
+			+ "} >> \n";
 
 	private static final String contains = "" //
 			+ "contains = (e => \n" //
 			+ "    join {map {e1 => e1 = e}} {fold {or}} \n" //
 			+ ") >> \n";
 
-	private static final String filter = "" //
-			+ "reduce = (f => \n" //
+	private static final String filter0 = "" //
+			+ "filter0 = (f => \n" //
 			+ "    split {h => t => \n" //
-			+ "        others = reduce {f} {t} >> \n" //
+			+ "        others = filter0 {f} {t} >> \n" //
 			+ "        f {h} ? h:others | others \n" //
 			+ "    } \n" //
 			+ ") >> \n";
+
+	private static final String filter = "" //
+			+ "filter = (f => fold-right {i => list => f {i} ? i:list | list} {()}) >> \n";
 
 	private static final String fold = "" //
 			+ "fold = (f => list => \n" //
@@ -47,12 +48,16 @@ public class FunctionCompilerTest {
 
 	private static final String foldLeft = "" //
 			+ "fold-left = (f => i => list => \n" //
-			+ "    if-tree {list} {h => t => fold-left {f} {f {i} {h}} {t}} {i} \n" //
+			+ "    if-tree {list} \n" //
+			+ "        {h => t => fold-left {f} {f {i} {h}} {t}} \n" //
+			+ "        {i} \n" //
 			+ ") >> \n";
 
 	private static final String foldRight = "" //
 			+ "fold-right = (f => i => list => \n" //
-			+ "    if-tree {list} {h => t => f {h} {fold-right {f} {i} {t}}} {i} \n" //
+			+ "    if-tree {list} \n" //
+			+ "        {h => t => f {h} {fold-right {f} {i} {t}}} \n" //
+			+ "        {i} \n" //
 			+ ") >> \n";
 
 	private static final String ifTree = "" //
@@ -66,8 +71,11 @@ public class FunctionCompilerTest {
 	private static final String join = "" //
 			+ "join = (f => g => x => g {f {x}}) >> \n";
 
+	private static final String map0 = "" //
+			+ "map0 = (f => split {h => t => (f {h}):(map0 {f} {t})}) >> \n";
+
 	private static final String map = "" //
-			+ "map = (f => split {h => t => (f {h}):(map {f} {t})}) >> \n";
+			+ "map = (f => fold-right {i => list => (f {i}):list} {()}) >> \n";
 
 	private static final String or = "" //
 			+ "or = (x => y => x ? true | y) >> \n";
@@ -95,10 +103,10 @@ public class FunctionCompilerTest {
 	@Test
 	public void testContains() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ join + fold + or + ifTree + split + map + contains //
+				+ join + fold + or + ifTree + foldRight + map + contains //
 				+ "contains {9} {7:8:9:10:11:}"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ join + fold + or + ifTree + split + map + contains //
+				+ join + fold + or + ifTree + foldRight + map + contains //
 				+ "contains {12} {7:8:9:10:11:}"));
 	}
 
@@ -117,8 +125,11 @@ public class FunctionCompilerTest {
 	@Test
 	public void testFilter() {
 		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
-				+ ifTree + split + filter //
-				+ "reduce {n => n % 2 = 0} {3:4:5:6:}"));
+				+ ifTree + split + filter0 //
+				+ "filter0 {n => n % 2 = 0} {3:4:5:6:}"));
+		assertEquals(SuiteUtil.parse("4:6:"), eval("" //
+				+ ifTree + foldRight + filter //
+				+ "filter {n => n % 2 = 0} {3:4:5:6:}"));
 	}
 
 	@Test
@@ -171,7 +182,10 @@ public class FunctionCompilerTest {
 	@Test
 	public void testMap() {
 		assertEquals(SuiteUtil.parse("5:6:7:"), eval("" //
-				+ ifTree + split + map //
+				+ ifTree + split + map0 //
+				+ "map0 {n => n + 2} {3:4:5:}"));
+		assertEquals(SuiteUtil.parse("5:6:7:"), eval("" //
+				+ ifTree + foldRight + map //
 				+ "map {n => n + 2} {3:4:5:}"));
 	}
 
