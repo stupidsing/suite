@@ -92,7 +92,7 @@ public class FunctionCompilerTest {
 	@Test
 	public void tt() {
 		assertEquals(Int.create(89), eval("" // Pretends co-recursion
-				+ "fib = (i1 => dummy => i1:(fib {i1})) >> 1"));
+				+ "fib = (i1 => :fib) >> 1"));
 	}
 
 	@Test
