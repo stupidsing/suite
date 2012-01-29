@@ -49,7 +49,9 @@ public class FunctionCompilerTest {
 
 	private static final String filter = "" //
 			+ "filter = (fun => \n" //
-			+ "    fold-right {i => list => fun {i} ? i:list | list} {()} \n" //
+			+ "    fold-right { \n" //
+			+ "        item => list => fun {item} ? item:list | list} {() \n" //
+			+ "    } \n" //
 			+ ") >> \n";
 
 	private static final String fold = "" //
@@ -60,17 +62,17 @@ public class FunctionCompilerTest {
 			+ ") >> \n";
 
 	private static final String foldLeft = "" //
-			+ "fold-left = (fun => i => list => \n" //
+			+ "fold-left = (fun => init => list => \n" //
 			+ "    if-tree {list} \n" //
-			+ "        {h => t => fold-left {fun} {fun {i} {h}} {t}} \n" //
-			+ "        {i} \n" //
+			+ "        {h => t => fold-left {fun} {fun {init} {h}} {t}} \n" //
+			+ "        {init} \n" //
 			+ ") >> \n";
 
 	private static final String foldRight = "" //
-			+ "fold-right = (fun => i => list => \n" //
+			+ "fold-right = (fun => init => list => \n" //
 			+ "    if-tree {list} \n" //
-			+ "        {h => t => fun {h} {fold-right {fun} {i} {t}}} \n" //
-			+ "        {i} \n" //
+			+ "        {h => t => fun {h} {fold-right {fun} {init} {t}}} \n" //
+			+ "        {init} \n" //
 			+ ") >> \n";
 
 	private static final String ifTree = "" //
