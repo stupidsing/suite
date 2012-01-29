@@ -6,7 +6,7 @@
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, parse-fc .do .parsed
-	, infer-type .parsed _ _
+	, infer-type .parsed () _
 	, compile-fc .parsed 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
 	, assign-line-number-fc 0 .c0
@@ -30,7 +30,7 @@ parse-fc .ifThenElse (IF .if1 .then1 .else1)
 	, parse-fc .then .then1
 	, parse-fc .else .else1
 #
-parse-fc .left:.right .parsed :- parse-fc (cons {.left} {.right}) .parsed #
+parse-fc .left:.right .parsed :- !, parse-fc (cons {.left} {.right}) .parsed #
 parse-fc .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
 	, member (' + ', ' - ', ' * ', ' / ', ' %% ',
@@ -42,6 +42,7 @@ parse-fc .tree (TREE .oper .left1 .right1)
 parse-fc .b (BOOLEAN .b) :- is.boolean .b, ! #
 parse-fc .i (NUMBER .i) :- is.int .i, ! #
 parse-fc .s (STRING .s) :- is.string .s, ! #
+parse-fc () EMPTY :- ! #
 parse-fc .v (VARIABLE .v) :- is.atom .v, ! #
 parse-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
 
@@ -100,6 +101,7 @@ compile-fc %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 compile-fc (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
 compile-fc (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
 compile-fc (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
+compile-fc EMPTY _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-CONSTANT .reg (), .cx) #
 compile-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
 
 fc-system-predicate .call .frame .result

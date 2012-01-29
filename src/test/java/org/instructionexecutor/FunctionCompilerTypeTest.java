@@ -13,9 +13,16 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void test() {
-		Node type0 = SuiteUtil.parse("CALLABLE NUMBER NUMBER");
-		Node type1 = getType("a => a + 1");
-		assertEquals(type0, type1);
+		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
+				, getType("1:"));
+		assertEquals(SuiteUtil.parse("LIST-OF STRING") //
+				, getType("\"a\":\"b\":\"c\":\"d\":"));
+		assertEquals(SuiteUtil.parse("BOOLEAN") //
+				, getType("4 = 8"));
+		assertEquals(SuiteUtil.parse("CALLABLE NUMBER NUMBER") //
+				, getType("a => a + 1"));
+		assertEquals(SuiteUtil.parse("NUMBER") //
+				, getType("f = (a => a + 1) >> f {3}"));
 	}
 
 	private static Node getType(String f) {
