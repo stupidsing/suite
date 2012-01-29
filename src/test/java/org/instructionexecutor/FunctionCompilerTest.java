@@ -50,6 +50,11 @@ public class FunctionCompilerTest {
 			+ "    if-tree {list} {h => t => fold-left {f} {f {i} {h}} {t}} {i} \n" //
 			+ ") >> \n";
 
+	private static final String foldRight = "" //
+			+ "fold-right = (f => i => list => \n" //
+			+ "    if-tree {list} {h => t => f {h} {fold-right {f} {i} {t}}} {i} \n" //
+			+ ") >> \n";
+
 	private static final String ifTree = "" //
 			+ "if-tree = (list => f1 => f2 => \n" //
 			+ "    if (is-tree {list}) then ( \n" //
@@ -124,6 +129,9 @@ public class FunctionCompilerTest {
 		assertEquals(Int.create(79), eval("" //
 				+ ifTree + foldLeft //
 				+ "fold-left {a => b => a - b} {100} {6:7:8:}"));
+		assertEquals(Int.create(-93), eval("" //
+				+ ifTree + foldRight //
+				+ "fold-right {a => b => a - b} {100} {6:7:8:}"));
 	}
 
 	@Test
