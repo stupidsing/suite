@@ -81,10 +81,10 @@ public class FunctionCompilerTest {
 			+ "split = (fun => list => if-tree {list} {fun} {}) >> \n";
 
 	private static final String zip = "" //
-			+ "zip = (l0 => l1 => \n" //
+			+ "zip = (fun => l0 => l1 => \n" //
 			+ "    if-tree {l0} {h0 => t0 => \n" //
 			+ "        if-tree {l1} {h1 => t1 => \n" //
-			+ "            (h0:h1):(zip {t0} {t1}) \n" //
+			+ "            (fun {h0} {h1}):(zip {fun} {t0} {t1}) \n" //
 			+ "        } {} \n" //
 			+ "    } {} \n" //
 			+ ") >> \n";
@@ -239,7 +239,8 @@ public class FunctionCompilerTest {
 	public void testZip() {
 		assertEquals(SuiteUtil.parse("(1:5):(2:6):(3:7):(4:8):"), eval("" //
 				+ ifTree + zip //
-				+ "zip {1:2:3:4:} {5:6:7:8:}"));
+				+ "zip-up = zip {a => b => a:b} >> \n" //
+				+ "zip-up {1:2:3:4:} {5:6:7:8:}"));
 	}
 
 	private static Node eval(String f) {
