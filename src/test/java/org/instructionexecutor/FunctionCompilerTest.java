@@ -25,7 +25,7 @@ public class FunctionCompilerTest {
 			+ ") >> \n";
 
 	private static final String concatList = "" //
-			+ "concat-list = fold-left {concat} {()} >> \n";
+			+ "concat-list = fold-left {concat} {} >> \n";
 
 	private static final String contains = "" //
 			+ "contains = (e => \n" //
@@ -35,8 +35,8 @@ public class FunctionCompilerTest {
 	private static final String filter = "" //
 			+ "filter = (fun => \n" //
 			+ "    fold-right { \n" //
-			+ "        item => list => fun {item} ? item:list | list} {() \n" //
-			+ "    } \n" //
+			+ "        item => list => fun {item} ? item:list | list \n" //
+			+ "    } {} \n" //
 			+ ") >> \n";
 
 	private static final String fold = "" //
@@ -72,13 +72,22 @@ public class FunctionCompilerTest {
 			+ "join = (f => g => x => g {f {x}}) >> \n";
 
 	private static final String map = "" //
-			+ "map = (fun => fold-right {i => list => (fun {i}):list} {()}) >> \n";
+			+ "map = (fun => fold-right {i => list => (fun {i}):list} {}) >> \n";
 
 	private static final String or = "" //
 			+ "or = (x => y => x ? true | y) >> \n";
 
 	private static final String split = "" //
-			+ "split = (fun => list => if-tree {list} {fun} {()}) >> \n";
+			+ "split = (fun => list => if-tree {list} {fun} {}) >> \n";
+
+	private static final String zip = "" //
+			+ "zip = (l0 => l1 => \n" //
+			+ "    if-tree {l0} {h0 => t0 => \n" //
+			+ "        if-tree {l1} {h1 => t1 => \n" //
+			+ "            (h0:h1):(zip {t0} {t1}) \n" //
+			+ "        } {} \n" //
+			+ "    } {} \n" //
+			+ ") >> \n";
 
 	@Test
 	public void testApply() {
@@ -224,6 +233,13 @@ public class FunctionCompilerTest {
 		assertNotNull(Tree.decompose(eval("cons {1} {2:}")));
 		assertEquals(Int.create(1), eval("head {1:2:3:}"));
 		assertNotNull(Tree.decompose(eval("tail {1:2:3:}")));
+	}
+
+	@Test
+	public void testZip() {
+		assertEquals(SuiteUtil.parse("(1:5):(2:6):(3:7):(4:8):"), eval("" //
+				+ ifTree + zip //
+				+ "zip {1:2:3:4:} {5:6:7:8:}"));
 	}
 
 	private static Node eval(String f) {

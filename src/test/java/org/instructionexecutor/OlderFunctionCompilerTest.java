@@ -35,7 +35,7 @@ public class OlderFunctionCompilerTest {
 			+ "map0 = (fun => split {h => t => (fun {h}):(map0 {fun} {t})}) >> \n";
 
 	private static final String split = "" //
-			+ "split = (fun => list => if-tree {list} {fun} {()}) >> \n";
+			+ "split = (fun => list => if-tree {list} {fun} {}) >> \n";
 
 	@Test
 	public void testConcat() {
