@@ -90,12 +90,6 @@ public class FunctionCompilerTest {
 			+ ") >> \n";
 
 	@Test
-	public void tt() {
-		assertEquals(Int.create(89), eval("" // Pretends co-recursion
-				+ "fib = (i1 => :fib) >> 1"));
-	}
-
-	@Test
 	public void testApply() {
 		assertEquals(Int.create(2), eval("" //
 				+ ifTree + foldLeft + apply //

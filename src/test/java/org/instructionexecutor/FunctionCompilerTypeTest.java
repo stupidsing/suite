@@ -13,6 +13,8 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void test() {
+		getType("fib = (i1 => i2 => dummy => i2:(fib {i2} {i1 + i2})) >> ()");
+
 		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
 				, getType("1:"));
 		assertEquals(SuiteUtil.parse("LIST-OF STRING") //

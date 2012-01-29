@@ -10,7 +10,7 @@ infer-type (SUBST .variable .value .do) .te .type
 	, infer-type .do .te1 .type
 #
 infer-type (INVOKE .parameter .callee) .te .type
-	:- infer-type .callee .te .callableType
+	:- !, infer-type .callee .te .callableType
 	, infer-type .parameter .te .paramType
 	, clone .callableType (CALLABLE .paramType .type)
 #
