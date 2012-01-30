@@ -13,8 +13,6 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void test() {
-		getType("fib = (i2 => dummy => :(fib {i2})) >> ()");
-
 		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
 				, getType("1:"));
 		assertEquals(SuiteUtil.parse("LIST-OF STRING") //
@@ -27,11 +25,21 @@ public class FunctionCompilerTypeTest {
 				, getType("f = (a => a + 1) >> f {3}"));
 	}
 
+	@Test
+	public void testFail() {
+		try {
+			getType("fib = (i2 => dummy => 1:(fib {i2})) >> ()");
+		} catch (RuntimeException ex) {
+			return;
+		}
+		throw new RuntimeException("Cannot catch type error");
+	}
+
 	private static Node getType(String f) {
 		Node program = SuiteUtil.parse(f);
 
 		Node node = SuiteUtil
-				.parse("parse-fc .program .p, infer-type .p _ .type");
+				.parse("enable-trace, parse-fc .program .p, infer-type .p _ .type");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

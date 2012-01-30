@@ -23,7 +23,7 @@ public class SuiteUtil {
 	private static Prover functionalCompiler;
 
 	// The directory of the file we are now importing
-	private static boolean isImportFromClasspath = true;
+	private static boolean isImportFromClasspath = false;
 	private static String importerRoot = "";
 
 	public static void addRule(RuleSet rs, String rule) {
@@ -32,33 +32,27 @@ public class SuiteUtil {
 
 	public static synchronized void importFrom(RuleSet rs, String name)
 			throws IOException {
-		String oldRoot = importerRoot;
-		int pos = name.lastIndexOf(File.separator);
-		importerRoot = pos >= 0 ? name.substring(0, pos + 1) : "";
-
-		if (!name.startsWith(File.separator))
-			name = oldRoot + name;
-
-		try {
-			if (isImportFromClasspath)
-				SuiteUtil.importResource(rs, name);
-			else
-				SuiteUtil.importFile(rs, name);
-		} finally {
-			importerRoot = oldRoot;
-		}
+		if (isImportFromClasspath)
+			SuiteUtil.importResource(rs, name);
+		else
+			SuiteUtil.importFile(rs, name);
 	}
 
 	public static synchronized void importFile(RuleSet rs, String filename)
 			throws IOException {
 		FileInputStream is = null;
-		isImportFromClasspath = false;
+
+		boolean wasFromClasspath = isImportFromClasspath;
+		String oldRoot = importerRoot;
+		filename = setImporterRoot(false, filename, oldRoot);
 
 		try {
 			is = new FileInputStream(filename);
 			rs.importFrom(SuiteUtil.parse(is));
 		} finally {
 			Util.closeQuietly(is);
+			isImportFromClasspath = wasFromClasspath;
+			importerRoot = oldRoot;
 		}
 	}
 
@@ -66,14 +60,31 @@ public class SuiteUtil {
 			throws IOException {
 		ClassLoader cl = SuiteUtil.class.getClassLoader();
 		InputStream is = null;
-		isImportFromClasspath = true;
+
+		boolean wasFromClasspath = isImportFromClasspath;
+		String oldRoot = importerRoot;
+		classpath = setImporterRoot(true, classpath, oldRoot);
 
 		try {
 			is = cl.getResourceAsStream(classpath);
 			rs.importFrom(SuiteUtil.parse(is));
 		} finally {
 			Util.closeQuietly(is);
+			isImportFromClasspath = wasFromClasspath;
+			importerRoot = oldRoot;
 		}
+	}
+
+	private static String setImporterRoot(boolean isFromClasspath, String name,
+			String oldRoot) {
+		isImportFromClasspath = isFromClasspath;
+
+		int pos = name.lastIndexOf(File.separator);
+		importerRoot = pos >= 0 ? name.substring(0, pos + 1) : "";
+
+		if (!name.startsWith(File.separator))
+			name = oldRoot + name;
+		return name;
 	}
 
 	public static boolean proveThis(RuleSet rs, String s) {
