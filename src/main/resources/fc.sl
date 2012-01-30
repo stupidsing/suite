@@ -5,7 +5,8 @@
 
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
-	, parse-fc .do .parsed
+	, add-standard-functions .do .do1
+	, parse-fc .do1 .parsed
 	, infer-type .parsed () _
 	, compile-fc .parsed 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
@@ -70,7 +71,7 @@ compile-fc (SUBST .variable .value .do) .frame .c0/.cx/.d0/.dx/.reg
 	, compile-fc .do1 .frame .c1/.cx/.d1/.dx/.reg
 #
 compile-fc .call .frame .cdr
-	:- fc-system-predicate .call .frame .cdr, !
+	:- fc-default-function .call .frame .cdr, !
 #
 compile-fc (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -104,27 +105,27 @@ compile-fc (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .
 compile-fc EMPTY _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-CONSTANT .reg (), .cx) #
 compile-fc .d _ _ :- write "Unknown expression" .d, nl, fail #
 
-fc-system-predicate .call .frame .result
-	:- fc-system-predicate0 .call .frame .result 0
+fc-default-function .call .frame .result
+	:- fc-default-function0 .call .frame .result 0
 #
 
-fc-system-predicate0 (INVOKE .p .pred) .frame .c0/.cx/.d0/.dx/.reg .n
+fc-default-function0 (INVOKE .p .pred) .frame .c0/.cx/.d0/.dx/.reg .n
 	:- !, let .n1 (.n + 1)
 	, compile-fc .p .frame .c0/.c1/.d0/.d1/.r1
 	, .c1 = (_ PUSH .r1, .c2)
-	, fc-system-predicate0 .pred .frame .c2/.cx/.d1/.dx/.reg .n1
+	, fc-default-function0 .pred .frame .c2/.cx/.d1/.dx/.reg .n1
 #
-fc-system-predicate0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
-	:- fc-define-system-predicate .n .pred .call, !
+fc-default-function0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
+	:- fc-define-default-function .n .pred .call, !
 	, .c0 = (_ SYS .call .reg .n, .cx)
 #
 
-fc-define-system-predicate 2 cons CONS #
-fc-define-system-predicate 0 () EMPTY #
-fc-define-system-predicate 1 is-tree IS-TREE #
-fc-define-system-predicate 1 head HEAD #
-fc-define-system-predicate 2 log LOG #
-fc-define-system-predicate 1 tail TAIL #
+fc-define-default-function 2 cons CONS #
+fc-define-default-function 0 () EMPTY #
+fc-define-default-function 1 is-tree IS-TREE #
+fc-define-default-function 1 head HEAD #
+fc-define-default-function 2 log LOG #
+fc-define-default-function 1 tail TAIL #
 
 is.boolean true #
 is.boolean false #
@@ -133,3 +134,63 @@ assign-line-number-fc _ () #
 assign-line-number-fc .n (.n _, .remains)
 	:- let .n1 (.n + 1), assign-line-number-fc .n1 .remains
 #
+
+add-standard-functions .p (
+	and = (x => y =>
+		x ? y | false
+	) >>
+	if-tree = (list => f1 => f2 =>
+	    if (is-tree {list}) then (
+	        f1 {head {list}} {tail {list}}
+	    )
+	    else f2
+	) >>
+	join = (f => g => x =>
+		g {f {x}}
+	) >>
+	or = (x => y =>
+		x ? true | y
+	) >>
+	concat = (l1 => l2 =>
+	    if-tree {l1} {h => t => h:(concat {t} {l2})} {l2}
+	) >>
+	fold = (fun => list =>
+	    h = head {list} >>
+	    t = tail {list} >>
+	    is-tree {t} ? fun {h} {fold {fun} {t}} | h
+	) >>
+	fold-left = (fun => init => list =>
+	    if-tree {list}
+	        {h => t => fold-left {fun} {fun {init} {h}} {t}}
+	        {init}
+	) >>
+	fold-right = (fun => init => list =>
+	    if-tree {list}
+	        {h => t => fun {h} {fold-right {fun} {init} {t}}}
+	        {init}
+	) >>
+	split = (fun => list =>
+		if-tree {list} {fun} {}
+	) >>
+	zip = (fun => l0 => l1 =>
+	    if-tree {l0} {h0 => t0 =>
+	        if-tree {l1} {h1 => t1 =>
+	            (fun {h0} {h1}):(zip {fun} {t0} {t1})
+	        } {}
+	    } {}
+	) >>
+	apply =
+		fold-left {x => f => f {x}}
+	>>
+	concat-list =
+		fold-left {concat} {}
+	>>
+	filter = (fun =>
+	    fold-right {
+	        item => list => fun {item} ? item:list | list
+	    } {}
+	) >>
+	map = (fun => fold-right {i => list => (fun {i}):list} {}) >>
+	contains = (e => join {map {e1 => e1 = e}} {fold {or}}) >>
+	.p
+) #

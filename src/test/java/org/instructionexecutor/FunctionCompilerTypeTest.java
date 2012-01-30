@@ -27,6 +27,11 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testFail() {
+
+		// There is a problem in deriving type of 1:(fib {i2})...
+		// Rule specified that right hand side of CONS should be a list,
+		// however fib {i2} is a closure.
+		// Seems we need a special CONS for such co-recursion list type.
 		try {
 			getType("fib = (i2 => dummy => 1:(fib {i2})) >> ()");
 		} catch (RuntimeException ex) {

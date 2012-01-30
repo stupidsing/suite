@@ -31,14 +31,14 @@ infer-type0 (TREE .oper .left .right) .te .type
 infer-type0 (BOOLEAN _) _ BOOLEAN  :- ! #
 infer-type0 (NUMBER _) _ NUMBER :- ! #
 infer-type0 (STRING _) _ STRING :- ! #
-infer-type0 (VARIABLE .pred) _ .type :- system-function-type .pred .type, ! #
+infer-type0 (VARIABLE .pred) _ .type :- default-function-type .pred .type, ! #
 infer-type0 (VARIABLE .variable) .te .type :- member .te .variable/.type, ! #
 infer-type0 EMPTY _ (LIST-OF _) #
 
-system-function-type cons (CALLABLE .type (CALLABLE (LIST-OF .type) (LIST-OF .type))) #
-system-function-type head (CALLABLE (LIST-OF .type) .type) #
-system-function-type is-tree (CALLABLE (LIST-OF .type) BOOLEAN) #
-system-function-type log (CALLABLE _ (CALLABLE .type .type)) #
-system-function-type tail (CALLABLE (LIST-OF .type) (LIST-OF .type)) #
+default-function-type cons (CALLABLE .type (CALLABLE (LIST-OF .type) (LIST-OF .type))) #
+default-function-type head (CALLABLE (LIST-OF .type) .type) #
+default-function-type is-tree (CALLABLE (LIST-OF .type) BOOLEAN) #
+default-function-type log (CALLABLE _ (CALLABLE .type .type)) #
+default-function-type tail (CALLABLE (LIST-OF .type) (LIST-OF .type)) #
 
 equal-types .a .b .te .type :- infer-type .a .te .type, infer-type .b .te .type #
