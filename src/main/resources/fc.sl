@@ -190,7 +190,11 @@ add-standard-functions .p (
 	        item => list => fun {item} ? item:list | list
 	    } {}
 	) >>
-	map = (fun => fold-right {i => list => (fun {i}):list} {}) >>
-	contains = (e => join {map {e1 => e1 = e}} {fold {or}}) >>
+	map = (
+		fun => fold-right {i => list => (fun {i}):list} {}
+	) >>
+	contains = (
+		e => join {map {e1 => e1 = e}} {fold {or}}
+	) >>
 	.p
 ) #
