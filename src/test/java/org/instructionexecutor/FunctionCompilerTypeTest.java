@@ -44,7 +44,7 @@ public class FunctionCompilerTypeTest {
 		Node program = SuiteUtil.parse(f);
 
 		Node node = SuiteUtil
-				.parse("enable-trace, parse-fc .program .p, infer-type .p _ .type");
+				.parse("parse-fc .program .p, infer-type .p _ .type");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
