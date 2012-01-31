@@ -58,14 +58,13 @@ public class FunctionCompilerTest {
 				+ ") >> \n" //
 				+ "fib {10}"));
 
-		if (Boolean.FALSE) // This one would not pass type checking
-			assertEquals(Int.create(89), eval("" // Pretends co-recursion
-					+ "fib = (i1 => i2 => dummy => \n" //
-					+ "    i2:(fib {i2} {i1 + i2}) \n" //
-					+ ") >> \n" //
-					+ "h = (f => head {f {}}) >> \n" //
-					+ "t = (f => tail {f {}}) >> \n" //
-					+ "apply {fib {0} {1}} {t:t:t:t:t:t:t:t:t:t:h:}"));
+		assertEquals(Int.create(89), eval("" // Pretends co-recursion
+				+ "fib = (i1 => i2 => dummy => \n" //
+				+ "    i2/(fib {i2} {i1 + i2}) \n" //
+				+ ") >> \n" //
+				+ "h = (f => head {f {}}) >> \n" //
+				+ "t = (f => tail {f {}}) >> \n" //
+				+ "apply {fib {0} {1}} {t:t:t:t:t:t:t:t:t:t:h:}"));
 	}
 
 	@Test

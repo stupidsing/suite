@@ -31,6 +31,9 @@ parse-fc .ifThenElse (IF .if1 .then1 .else1)
 	, parse-fc .then .then1
 	, parse-fc .else .else1
 #
+parse-fc .left/.right .parsed
+	:- !, parse-fc (corecursive-cons {.left} {.right}) .parsed
+#
 parse-fc .left:.right .parsed :- !, parse-fc (cons {.left} {.right}) .parsed #
 parse-fc .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
@@ -120,7 +123,9 @@ fc-default-function0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	, .c0 = (_ SYS .call .reg .n, .cx)
 #
 
+-- "cons" and "corecursive-cons" differ only by type
 fc-define-default-function 2 cons CONS #
+fc-define-default-function 2 corecursive-cons CONS #
 fc-define-default-function 0 () EMPTY #
 fc-define-default-function 1 is-tree IS-TREE #
 fc-define-default-function 1 head HEAD #
