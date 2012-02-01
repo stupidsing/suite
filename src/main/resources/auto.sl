@@ -6,6 +6,11 @@ enable-trace
 	, asserta (.call :- write 'TRACE: ', dump .call, nl, fail)
 #
 
+-- Converts tuple (a b c) to list (a, b, c,)
+enlist (.item .items) (.item, .items1) :- !, enlist .items .items1 #
+enlist () () :- ! #
+enlist .item (.item,) :- ! #
+
 file-read .fn .contents
 	:- concat
 		"s = org.util.IoUtil.readStream(new java.io.FileInputStream('" .fn "'))" .js

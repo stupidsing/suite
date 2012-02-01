@@ -17,17 +17,17 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void test() {
 		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
-				, getType("1:"));
+				, getType("1,"));
 		assertEquals(SuiteUtil.parse("LIST-OF STRING") //
-				, getType("\"a\":\"b\":\"c\":\"d\":"));
+				, getType("\"a\", \"b\", \"c\", \"d\","));
 		assertEquals(SuiteUtil.parse("BOOLEAN") //
 				, getType("4 = 8"));
-		assertEquals(SuiteUtil.parse("FUNC NUMBER NUMBER") //
+		assertEquals(SuiteUtil.parse("FUN NUMBER NUMBER") //
 				, getType("a => a + 1"));
 		assertEquals(SuiteUtil.parse("NUMBER") //
-				, getType("f = (a => a + 1) >> f {3}"));
-		assertTrue(Binder.bind(SuiteUtil.parse("FUNC _ (CO-LIST-OF NUMBER)") //
-				, getType("fib = (n => dummy => n/(fib {n + 1})) >> \n" //
+				, getType("define f = (a => a + 1) >> f {3}"));
+		assertTrue(Binder.bind(SuiteUtil.parse("FUN _ (CO-LIST-OF NUMBER)") //
+				, getType("define fib = (n => dummy => n/(fib {n + 1})) >> \n" //
 						+ "fib {1}") // Pretends co-recursion
 				, new Journal()));
 	}
@@ -35,7 +35,7 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testFail() {
 		String cases[] = { "1 + 'abc'" //
-				, "fib = (i2 => dummy => 1:(fib {i2})) >> ()" };
+				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" };
 
 		// There is a problem in deriving type of 1:(fib {i2})...
 		// Rule specified that right hand side of CONS should be a list,
@@ -55,7 +55,7 @@ public class FunctionCompilerTypeTest {
 		Node program = SuiteUtil.parse(f);
 
 		Node node = SuiteUtil
-				.parse("parse-fc .program .p, infer-type .p () .type");
+				.parse("fc-parse .program .p, infer-type .p ()/() .type");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

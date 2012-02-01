@@ -42,7 +42,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		if (command == CONS) {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
-			result = new Tree(TermOp.COLON_, left, right);
+			result = new Tree(TermOp.AND___, left, right);
 		} else if (command == EMPTY)
 			result = Atom.nil;
 		else if (command == HEAD)
