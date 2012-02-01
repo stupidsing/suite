@@ -39,12 +39,13 @@ infer-type0 (NUMBER _) _ NUMBER :- ! #
 infer-type0 (STRING _) _ STRING :- ! #
 infer-type0 (VARIABLE .pred) _ .type :- default-fun-type .pred .type #
 infer-type0 (VARIABLE .var) .ve/.te .type :- member .ve .var/.type, ! #
-infer-type0 EMPTY _ (LIST-OF _) #
+infer-type0 EMPTY _ (LIST-OF _) :- ! #
+infer-type0 (TUPLE .name .elems) .env (TUPLE-OF .name .types)
+	:- infer-types .elems .types
+#
 
 infer-types () () :- ! #
-infer-types (.elem, .elems) (.type, .types)
-	:- infer-type .elem .type, infer-types .elems .types
-#
+infer-types (.e, .es) (.t, .ts) :- infer-type .e .t, infer-types .es .ts #
 
 equal-infer-types .a .b .env .type
 	:- infer-type .a .env .type, infer-type .b .env .type
@@ -54,9 +55,9 @@ equal-types .t0 .t1 .te :- equal-types0 .t0 .t1 .te #
 equal-types .t0 .t1 .te :- equal-types0 .t1 .t0 .te #
 
 equal-types0 .t .t _ #
-equal-types0 .t0 .t1 .te
-	:- atom .t0, .t1 = _ _
-	, member .te .t0/.tr0
+equal-types0 (TYPE-VAR .tv) .t1 .te
+	:- .t1 = _ _
+	, member .te .tv/.tr0
 	, equal-types .tr0 .t1 .te
 #
 equal-types0 (FUN .pt0 .rt0) (FUN .pt1 .rt1)

@@ -15,13 +15,13 @@ import org.suite.node.Reference;
 public class FunctionCompilerTypeTest {
 
 	@Test
-	public void test() {
-		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
-				, getType("1,"));
-		assertEquals(SuiteUtil.parse("LIST-OF STRING") //
-				, getType("\"a\", \"b\", \"c\", \"d\","));
+	public void testBasic() {
 		assertEquals(SuiteUtil.parse("BOOLEAN") //
 				, getType("4 = 8"));
+	}
+
+	@Test
+	public void testFun() {
 		assertEquals(SuiteUtil.parse("FUN NUMBER NUMBER") //
 				, getType("a => a + 1"));
 		assertEquals(SuiteUtil.parse("NUMBER") //
@@ -33,6 +33,31 @@ public class FunctionCompilerTypeTest {
 	}
 
 	@Test
+	public void testList() {
+		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
+				, getType("1,"));
+		assertEquals(SuiteUtil.parse("LIST-OF STRING") //
+				, getType("\"a\", \"b\", \"c\", \"d\","));
+	}
+
+	@Test
+	public void testOneOf() {
+		getType("define type t = one of (NIL, BTREE t t,) >> \n" //
+				+ "define v as t = NIL >> \n" //
+				+ "v = NIL");
+		getType("define v as (one of (NIL, BTREE t t,)) = NIL >> \n" //
+				+ "and {v = NIL} {v = BTREE (BTREE 2 3) NIL}");
+	}
+
+	@Test
+	public void testTuple() {
+		getType("BTREE 2 3 = BTREE 4 6");
+		getTypeMustFail("T1 2 3 = T2 2 3");
+		getTypeMustFail("BTREE 2 3 = BTREE \"a\" 6");
+		getType("BTREE 2 3 = BTREE 4 6");
+	}
+
+	@Test
 	public void testFail() {
 		String cases[] = { "1 + 'abc'" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" };
@@ -41,14 +66,17 @@ public class FunctionCompilerTypeTest {
 		// Rule specified that right hand side of CONS should be a list,
 		// however fib {i2} is a closure.
 		// Should actually use corecursive list type (cons-ed by '^').
-		for (String c : cases) {
-			try {
-				getType(c);
-			} catch (RuntimeException ex) {
-				continue;
-			}
-			throw new RuntimeException("Cannot catch type error of: " + c);
+		for (String c : cases)
+			getTypeMustFail(c);
+	}
+
+	private static void getTypeMustFail(String c) {
+		try {
+			getType(c);
+		} catch (RuntimeException ex) {
+			return;
 		}
+		throw new RuntimeException("Cannot catch type error of: " + c);
 	}
 
 	private static Node getType(String f) {

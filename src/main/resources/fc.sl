@@ -13,20 +13,20 @@ compile-function .do .c0
 	, fc-assign-line-number 0 .c0
 #
 
-fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
-fc-parse (.var as .type => .do) (FUN .var .do2)
+fc-parse (.var as .type => .do) (FUN .var .do1)
 	:- !, fc-parse-type .type .type1, .do1 = (VAR-TYPE .var .type1 .do2)
 	, fc-parse .do1 .do2
 #
+fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1, fc-parse .do .do1
-#
-fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
-	:- !, fc-parse .value .value1, fc-parse .do .do1
 #
 fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !, fc-parse-type .type .type1, .do1 = (VAR-TYPE .var .type1 .do2)
 	, fc-parse .value .value1, fc-parse .do .do2
+#
+fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
+	:- !, fc-parse .value .value1, fc-parse .do .do1
 #
 fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
@@ -45,7 +45,7 @@ fc-parse (.left, .right) .parsed
 	:- !, fc-parse (cons {.left} {.right}) .parsed
 #
 fc-parse (.name .elems) (TUPLE .name .elems2)
-	:- !, en-list .elems .elems1, fc-parse .elems1 .elems2
+	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
 #
 fc-parse .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
@@ -60,8 +60,12 @@ fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .s (STRING .s) :- is.string .s, ! #
 fc-parse () EMPTY :- ! #
+fc-parse .t (TUPLE .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ _ :- write "Unknown expression" .d, nl, fail #
+
+fc-parse-list () () :- ! #
+fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-type (.paramType => .returnType) (FUN .paramType1 .returnType1)
 	:- !, fc-parse-type .paramType .paramType1
@@ -78,10 +82,12 @@ fc-parse-type (.name .types) (TUPLE-OF .name .types2)
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
 fc-parse-type string STRING :- ! #
+fc-parse-type .t (TUPLE-OF .t ()) :- fc-is-tuple-name .t, ! #
+fc-parse-type .t (TYPE .t) :- is.atom .t #
 
 fc-parse-types () () :- ! #
 fc-parse-types (.type, .types) (.type1, .types1)
-	:- fc-parse-type .type1 .type1, fc-parse-types .types .types1
+	:- fc-parse-type .type .type1, fc-parse-types .types .types1
 #
 
 fc-compile (VAR-TYPE _ _ .do) .frame .cdr
@@ -122,6 +128,9 @@ fc-compile (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile .else .frame .c4/.c5/.d2/.dx/.reg
 	, .c5 = (.label2 LABEL .label2, .cx)
 #
+fc-compile (TUPLE .name .elems) .frame .c0/.cx/.d/.d/.reg
+	:-	!, fc-compile-tuple (TUPLE .name .elems) .frame .c0/.cx/.reg
+#
 fc-compile (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, fc-compile .left .frame .c0/.c1/.d0/.d1/.r1
@@ -138,6 +147,17 @@ fc-compile (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .
 fc-compile (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
 fc-compile EMPTY _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-CONSTANT .reg (), .cx) #
 fc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
+
+fc-compile-tuple (TUPLE .name ()) .frame .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
+#
+fc-compile-tuple (TUPLE .name (.e, .es)) .frame .c0/.cx/.d0/.dx/.reg
+	:- !, fc-compile .e .frame .c0/.c1/.d0/.d1/.reg1
+	, fc-compile-tuple (TUPLE .name .es) .frame .c1/.c2/.d1/.dx/.reg2
+	, .c3 = (_ PUSH .reg1, .c4)
+	, .c4 = (_ PUSH .reg2, .c5)
+	, .c5 = (_ SYS CONS .reg 2, .cx)
+#
 
 fc-default-fun .call .frame .result
 	:- fc-default-fun0 .call .frame .result 0
@@ -162,6 +182,12 @@ fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 1 head HEAD #
 fc-define-default-fun 2 log LOG #
 fc-define-default-fun 1 tail TAIL #
+
+fc-is-tuple-name .t
+	:- is.atom .t
+	, nth .t 0 1 .c
+	, .c >= 'A', .c <= 'Z'
+#
 
 fc-is-boolean true #
 fc-is-boolean false #
