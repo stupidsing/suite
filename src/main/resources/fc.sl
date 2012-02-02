@@ -210,6 +210,9 @@ fc-add-standard-funs .p (
 	define join = (f => g => x =>
 		g {f {x}}
 	) >>
+	not = (x =>
+		x ? false | true
+	) >>
 	define or = (x => y =>
 		x ? true | y
 	) >>
