@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- functional program compiler
 
-() :- import 'fc-type.sl' #
+() :- import 'fc-type-inference.sl' #
 
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
@@ -128,8 +128,15 @@ fc-compile (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile .else .frame .c4/.c5/.d2/.dx/.reg
 	, .c5 = (.label2 LABEL .label2, .cx)
 #
-fc-compile (TUPLE .name .elems) .frame .c0/.cx/.d/.d/.reg
-	:-	!, fc-compile-tuple (TUPLE .name .elems) .frame .c0/.cx/.reg
+fc-compile (TUPLE .name ()) .frame .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
+#
+fc-compile (TUPLE .name (.e, .es)) .frame .c0/.cx/.d0/.dx/.reg
+	:- !, fc-compile .e .frame .c0/.c1/.d0/.d1/.headReg
+	, fc-compile (TUPLE .name .es) .frame .c1/.c2/.d1/.dx/.tailReg
+	, .c2 = (_ PUSH .headReg, .c3)
+	, .c3 = (_ PUSH .tailReg, .c4)
+	, .c4 = (_ SYS CONS .reg 2, .cx)
 #
 fc-compile (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -147,17 +154,6 @@ fc-compile (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .
 fc-compile (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
 fc-compile EMPTY _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-CONSTANT .reg (), .cx) #
 fc-compile .d _ _ :- write "Unknown expression" .d, nl, fail #
-
-fc-compile-tuple (TUPLE .name ()) .frame .c0/.cx/.d/.d/.reg
-	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
-#
-fc-compile-tuple (TUPLE .name (.e, .es)) .frame .c0/.cx/.d0/.dx/.reg
-	:- !, fc-compile .e .frame .c0/.c1/.d0/.d1/.reg1
-	, fc-compile-tuple (TUPLE .name .es) .frame .c1/.c2/.d1/.dx/.reg2
-	, .c3 = (_ PUSH .reg1, .c4)
-	, .c4 = (_ PUSH .reg2, .c5)
-	, .c5 = (_ SYS CONS .reg 2, .cx)
-#
 
 fc-default-fun .call .frame .result
 	:- fc-default-fun0 .call .frame .result 0
