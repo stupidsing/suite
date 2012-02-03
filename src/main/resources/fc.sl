@@ -14,7 +14,7 @@ compile-function .do .c0
 #
 
 fc-parse (.var as .type => .do) (FUN .var .do1)
-	:- !, fc-parse-type .type .type1, .do1 = (VAR-TYPE .var .type1 .do2)
+	:- !, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
 	, fc-parse .do1 .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
@@ -22,7 +22,7 @@ fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1, fc-parse .do .do1
 #
 fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value1 .do1)
-	:- !, fc-parse-type .type .type1, .do1 = (VAR-TYPE .var .type1 .do2)
+	:- !, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
 	, fc-parse .value .value1, fc-parse .do .do2
 #
 fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
@@ -90,7 +90,7 @@ fc-parse-types (.type, .types) (.type1, .types1)
 	:- fc-parse-type .type .type1, fc-parse-types .types .types1
 #
 
-fc-compile (VAR-TYPE _ _ .do) .frame .cdr
+fc-compile (AS _ _ .do) .frame .cdr
 	:- !, fc-compile .do .frame .cdr
 #
 fc-compile (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
@@ -210,7 +210,7 @@ fc-add-standard-funs .p (
 	define join = (f => g => x =>
 		g {f {x}}
 	) >>
-	not = (x =>
+	define not = (x =>
 		x ? false | true
 	) >>
 	define or = (x => y =>

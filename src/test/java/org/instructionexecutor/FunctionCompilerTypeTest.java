@@ -21,6 +21,13 @@ public class FunctionCompilerTypeTest {
 	}
 
 	@Test
+	public void testDefineType() {
+		getType("define type t = number >> \n" //
+				+ "define v as t = 1 >> \n" //
+				+ "v = 99");
+	}
+
+	@Test
 	public void testFun() {
 		assertEquals(SuiteUtil.parse("FUN NUMBER NUMBER") //
 				, getType("a => a + 1"));
@@ -42,11 +49,11 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testOneOf() {
-		getType("define type t = one of (NIL, BTREE t t,) >> \n" //
+		getType("" //
+				+ "define type t = one of (NIL, BTREE t t,) >> \n" //
+				+ "define u as t = NIL >> \n" //
 				+ "define v as t = NIL >> \n" //
-				+ "v = NIL");
-		getType("define v as (one of (NIL, BTREE t t,)) = NIL >> \n" //
-				+ "and {v = NIL} {v = BTREE (BTREE 2 3) NIL}");
+				+ "v = BTREE (BTREE NIL NIL) NIL");
 	}
 
 	@Test
@@ -54,13 +61,15 @@ public class FunctionCompilerTypeTest {
 		getType("BTREE 2 3 = BTREE 4 6");
 		getTypeMustFail("T1 2 3 = T2 2 3");
 		getTypeMustFail("BTREE 2 3 = BTREE \"a\" 6");
-		getType("BTREE 2 3 = BTREE 4 6");
 	}
 
 	@Test
 	public void testFail() {
 		String cases[] = { "1 + 'abc'" //
-				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" };
+				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
+				, "define type t = one of (BTREE t t,) >> \n" //
+						+ "define v as t = BTREE 2 3 >> \n" //
+						+ "1" };
 
 		// There is a problem in deriving type of 1:(fib {i2})...
 		// Rule specified that right hand side of CONS should be a list,
