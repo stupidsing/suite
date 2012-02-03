@@ -54,32 +54,6 @@ infer-type0 (TUPLE .name .elems) .env (TUPLE-OF .name .types)
 	:- infer-types .elems .types
 #
 
-expand-type (TYPE .typeName) .t1 .te
-	:- append .teh (.typeName/.t0, .tel) .te
-	, !, append .teh .tel .te1 -- Avoids infinite recursion
-	, expand-type .t0 .t1 .te1
-	; .t1 = TYPE .typeName
-#
-expand-type (FUN .pt0 .rt0) (FUN .pt1 .rt1) .te
-	:- !, expand-type .pt0 .pt1 .te, expand-type .rt0 .rt1 .te
-#
-expand-type (ONE-OF .ts0) (ONE-OF .ts1) .te
-	:- !, expand-types .ts0 .ts1 .te
-#
-expand-type (LIST-OF .t0) (LIST-OF .t1) .te
-	:- !, expand-type .t0 .t1 .te
-#
-expand-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .te
-	:- !, expand-types .ts0 .ts1 .te
-#
-expand-type .t .t _ #
-
-expand-types () () _ :- ! #
-expand-types (.t0, .ts0) (.t1, .ts1) .te
-	:- expand-types .t0 .t1 .te
-	, expand-types .ts0 .ts1 .te
-#
-
 equal-infer-types .a .b .ve/.te .type0
 	:- infer-type .a .ve/.te .type0
 	, infer-type .b .ve/.te .type1
