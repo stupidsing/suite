@@ -48,6 +48,7 @@ public class InstructionExecutor {
 	protected enum Insn {
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
+		ASSIGNFRAMECLO("ASSIGN-FRAME-CLOSURE"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		BIND__________("BIND"), //
@@ -258,7 +259,7 @@ public class InstructionExecutor {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[stackSize];
 		Object dataStack[] = new Object[stackSize];
-		int csp = 0, dsp = 0;
+		int i, csp = 0, dsp = 0;
 
 		for (;;) {
 			Frame frame = current.frame;
@@ -272,8 +273,14 @@ public class InstructionExecutor {
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
 				break;
+			case ASSIGNFRAMECLO:
+				i = insn.op2;
+				while (i++ < 0)
+					frame = frame.previous;
+				regs[insn.op1] = new Closure(frame, insn.op3);
+				break;
 			case ASSIGNFRAMEREG:
-				int i = insn.op2;
+				i = insn.op2;
 				while (i++ < 0)
 					frame = frame.previous;
 				regs[insn.op1] = frame.registers[insn.op3];
