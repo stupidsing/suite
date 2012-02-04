@@ -59,8 +59,8 @@ fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 fc-compile-wrapped (INVOKE .parameter .callee) .frame .cdr
 	:- fc-default-fun (INVOKE .parameter .callee) .frame .cdr, !
 #
-fc-compile-wrapped (TUPLE .name .es) .frame .c0/.cx/.d0/.dx/.closureReg
-	:- !, fc-compile-tuple .name .es .frame .c0/.cx/.d0/.dx/.closureReg
+fc-compile-wrapped (TUPLE .name .es) .frame .cdr
+	:- !, fc-compile-tuple .name .es .frame .cdr
 #
 fc-compile-wrapped (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
