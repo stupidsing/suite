@@ -32,7 +32,7 @@ fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 #
 fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
 	:- fc-define-default-fun 1 .var .call, !
-	, fc-compile .p .frame .c0/.c1/.d0/.d1/.paramReg
+	, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
 	, .c1 = (_ PUSH .paramReg, _ SYS .call .reg 1, .cx)
 #
 fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
