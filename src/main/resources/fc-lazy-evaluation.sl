@@ -36,11 +36,11 @@ fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
 	, .c1 = (_ PUSH .paramReg, _ SYS .call .reg 1, .cx)
 #
 fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
-	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel1, .cx)
+	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
 	, let .frame1 (.frame + 1)
-	, .d0 = (.funcLabel1 ENTER, .w0)
-	, fc-compile-wrapped .do .frame1 .w0/.wx/.x0/.dx/.reg
-	, .wx = (_ RETURN-VALUE .reg, _ LEAVE, .x0)
+	, .d0 = (.funcLabel ENTER, .d1)
+	, fc-compile-wrapped .do .frame1 .d1/.d2/.d3/.dx/.returnReg
+	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 	, !
 #
 fc-compile0 (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
