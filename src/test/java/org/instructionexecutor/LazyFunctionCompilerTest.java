@@ -50,7 +50,7 @@ public class LazyFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		Node node = SuiteUtil.parse("compile-function .program .code, pp-list .code");
+		Node node = SuiteUtil.parse("compile-function .program .code");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
