@@ -14,6 +14,12 @@ import org.suite.node.Reference;
 public class LazyFunctionCompilerTest {
 
 	@Test
+	public void testSubstitution() {
+		assertEquals(Int.create(8), eval("" //
+				+ "define v = 4 >> v + v"));
+	}
+
+	@Test
 	public void testFibonacci() {
 		assertEquals(Int.create(1), eval("" //
 				+ "define fib = (i1 => i2 => i2, fib {i2} {i1 + i2}) >> \n" //

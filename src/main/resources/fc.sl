@@ -3,7 +3,7 @@
 
 ()
 	:- import 'fc-type-inference.sl'
-	, import 'fc-eager-evaluation.sl'
+	, import 'fc-lazy-evaluation.sl'
 #
 
 compile-function .do .c0
