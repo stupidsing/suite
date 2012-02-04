@@ -48,7 +48,6 @@ public class InstructionExecutor {
 	protected enum Insn {
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
-		ASSIGNFRAMECLO("ASSIGN-FRAME-CLOSURE"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		BIND__________("BIND"), //
@@ -233,6 +232,10 @@ public class InstructionExecutor {
 		protected Closure clone() {
 			return new Closure(frame, ip);
 		}
+
+		public String toString() {
+			return "frameSize = " + frame.registers.length + ", IP = " + ip;
+		}
 	}
 
 	protected static class Frame {
@@ -272,12 +275,6 @@ public class InstructionExecutor {
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
 				regs[insn.op1] = new Closure(frame, insn.op2);
-				break;
-			case ASSIGNFRAMECLO:
-				i = insn.op2;
-				while (i++ < 0)
-					frame = frame.previous;
-				regs[insn.op1] = new Closure(frame, insn.op3);
 				break;
 			case ASSIGNFRAMEREG:
 				i = insn.op2;

@@ -18,12 +18,12 @@ fc-compile0 (DEF-VAR .var .value .do) .frame .c0/.cx/.d0/.dx/.reg
 #
 fc-compile0 (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile .if .frame .c0/.c1/.d0/.d1/.cr
-	, .c1 = (_ IF-FALSE .label1 .cr, .c2)
-	, fc-compile0 .then .frame .c2/.c3/.d1/.d2/.reg
-	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, fc-compile0 .else .frame .c4/.c5/.d2/.dx/.reg
-	, .c5 = (.label2 LABEL .label2, .cx)
+	, fc-compile .if .frame .c0/.c1/.d0/.d1/.ifReg
+	, .c1 = (_ IF-FALSE .label1 .ifReg, .c2)
+	, fc-compile0 .then .frame .c2/.c3/.d1/.d2/.thenReg
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, _ JUMP .label2, .label1 LABEL .label1, .c4)
+	, fc-compile0 .else .frame .c4/.c5/.d2/.dx/.elseReg
+	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .label2 LABEL .label2, .cx)
 #
 fc-compile0 %REG/.reg/.frame .frame .c/.c/.d/.d/.reg :- ! #
 fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
@@ -33,7 +33,7 @@ fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel1, .cx)
 	, let .frame1 (.frame + 1)
-	, .d0 = (.funcLabel1 ENTER, .w0)
+	, .d0 = (.funcLabel1 ENTER, _ REMARK .do, .w0)
 	, fc-compile-wrapped .do .frame1 .w0/.wx/.x0/.dx/.reg
 	, .wx = (_ RETURN-VALUE .reg, _ LEAVE, .x0)
 	, !
@@ -50,7 +50,7 @@ fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
 	, let .frame1 (.frame + 1)
-	, .d0 = (.funcLabel ENTER, .d1)
+	, .d0 = (.funcLabel ENTER, _ REMARK .do, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, replace .do/.do1 (VARIABLE .var)/(%REG/.varReg/.frame1)
 	, fc-compile0 .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg

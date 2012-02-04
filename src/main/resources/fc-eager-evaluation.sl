@@ -32,12 +32,12 @@ fc-compile (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
 #
 fc-compile (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile .if .frame .c0/.c1/.d0/.d1/.cr
-	, .c1 = (_ IF-FALSE .label1 .cr, .c2)
-	, fc-compile .then .frame .c2/.c3/.d1/.d2/.reg
-	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, fc-compile .else .frame .c4/.c5/.d2/.dx/.reg
-	, .c5 = (.label2 LABEL .label2, .cx)
+	, fc-compile .if .frame .c0/.c1/.d0/.d1/.ifReg
+	, .c1 = (_ IF-FALSE .label1 .ifReg, .c2)
+	, fc-compile0 .then .frame .c2/.c3/.d1/.d2/.thenReg
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, _ JUMP .label2, .label1 LABEL .label1, .c4)
+	, fc-compile0 .else .frame .c4/.c5/.d2/.dx/.elseReg
+	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .label2 LABEL .label2, .cx)
 #
 fc-compile (TUPLE .name ()) .frame .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
