@@ -240,11 +240,11 @@ public class InstructionExecutor {
 
 	protected static class Frame {
 		protected Frame previous;
-		protected Object registers[];
+		protected Node registers[];
 
 		protected Frame(Frame previous, int frameSize) {
 			this.previous = previous;
-			registers = new Object[frameSize];
+			registers = new Node[frameSize];
 		}
 	}
 
@@ -261,12 +261,12 @@ public class InstructionExecutor {
 	public Node execute() {
 		Closure current = new Closure(null, 0);
 		Closure callStack[] = new Closure[stackSize];
-		Object dataStack[] = new Object[stackSize];
+		Node dataStack[] = new Node[stackSize];
 		int i, csp = 0, dsp = 0;
 
 		for (;;) {
 			Frame frame = current.frame;
-			Object regs[] = frame != null ? frame.registers : null;
+			Node regs[] = frame != null ? frame.registers : null;
 			int ip = current.ip++;
 			Instruction insn = instructions[ip];
 
@@ -378,7 +378,7 @@ public class InstructionExecutor {
 				current = callStack[--csp];
 				break;
 			case RETURNVALUE___:
-				Object returnValue = regs[insn.op1]; // Saves return value
+				Node returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 				break;
