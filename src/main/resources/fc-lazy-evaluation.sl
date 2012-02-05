@@ -13,9 +13,7 @@ fc-compile0 (DEF-VAR .var .value .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, replace .value/.value1 (VARIABLE .var)/(%REG/.r1/.frame) -- Allows recursion
 	, replace .do/.do1 (VARIABLE .var)/(%REG/.r1/.frame)
-	, once (fc-compile0 .value1 .frame .c0/.c1/.d0/.d1/.r1
-		; fc-error "when compiling" .var
-	)
+	, fc-compile0 .value1 .frame .c0/.c1/.d0/.d1/.r1
 	, fc-compile0 .do1 .frame .c1/.cx/.d1/.dx/.reg
 #
 fc-compile0 (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
