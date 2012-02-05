@@ -92,7 +92,7 @@ public class FunctionCompilerTypeTest {
 		Node program = SuiteUtil.parse(f);
 
 		Node node = SuiteUtil
-				.parse("fc-parse .program .p, infer-type .p ()/() .type");
+				.parse("fc-parse .program .p, infer-type .p ()/()/() .type");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

@@ -1,4 +1,4 @@
-infer-type .do .ve/.te .type :- infer-type0 .do .ve/.te .type #
+infer-type .do .ve/.te/.oe .type :- infer-type0 .do .ve/.te/.oe .type #
 
 infer-types () _ () :- ! #
 infer-types (.e, .es) .env (.t, .ts)
@@ -6,20 +6,24 @@ infer-types (.e, .es) .env (.t, .ts)
 	, infer-types .es .env .ts
 #
 
-infer-type0 (AS .var .varType0 .do) .ve/.te .type
-	:- !, member .ve .var/.varType1
-	, equal-type .te .varType0 .varType1
-	, infer-type .do (.var/.varType, .ve)/.te .type
-#
-infer-type0 (FUN .var .do) .ve/.te (FUN .varType .type)
-	:- !, infer-type .do (.var/.varType, .ve)/.te .type
-#
-infer-type0 (DEF-TYPE .name .def .do) .ve/.te .type
-	:- !, infer-type .do .ve/(.name/.def, .te) .type
-#
-infer-type0 (DEF-VAR .name .value .do) .ve/.te .type
+infer-type0 (AS .var .varType0 .do) .ve/.te/.oe .type
 	:- !
-	, .env1 = (.name/.varType, .ve)/.te
+	, find-one-of-type .varType0 .oe1/.oe
+	, member .ve .var/.varType1
+	, equal-type .te/.oe .varType0 .varType1
+	, infer-type .do (.var/.varType, .ve)/.te/.oe1 .type
+#
+infer-type0 (FUN .var .do) .ve/.te/.oe (FUN .varType .type)
+	:- !, infer-type .do (.var/.varType, .ve)/.te/.oe .type
+#
+infer-type0 (DEF-TYPE .name .def .do) .ve/.te/.oe .type
+	:- !
+	, find-one-of-type .def .oe1/.oe
+	, infer-type .do .ve/(.name/.def, .te)/.oe1 .type
+#
+infer-type0 (DEF-VAR .name .value .do) .ve/.te/.oe .type
+	:- !
+	, .env1 = (.name/.varType, .ve)/.te/.oe
 	, once (infer-type .value .env1 .varType
 		; fc-error "Unable to infer type for" .name
 	)
@@ -49,41 +53,70 @@ infer-type0 (BOOLEAN _) _ BOOLEAN  :- ! #
 infer-type0 (NUMBER _) _ NUMBER :- ! #
 infer-type0 (STRING _) _ STRING :- ! #
 infer-type0 (VARIABLE .pred) _ .type :- default-fun-type .pred .type #
-infer-type0 (VARIABLE .var) .ve/.te .type :- member .ve .var/.type, ! #
+infer-type0 (VARIABLE .var) .ve/.te/.oe .type :- member .ve .var/.type, ! #
 infer-type0 (TUPLE .name .elems) .env (TUPLE-OF .name .types)
 	:- !, infer-types .elems .types
 #
 
-equal-infer-types .a .b .ve/.te .type0
-	:- infer-type .a .ve/.te .type0
-	, infer-type .b .ve/.te .type1
-	, equal-type .te .type0 .type1
+equal-infer-types .a .b .ve/.te/.oe .type0
+	:- infer-type .a .ve/.te/.oe .type0
+	, infer-type .b .ve/.te/.oe .type1
+	, equal-type .te/.oe .type0 .type1
+#
+
+-- Finds a reverse-mapping of "one of" relation for looking up
+find-one-of-types () .o/.o :- ! #
+find-one-of-types (.t, .ts) .o0/.ox
+	:- find-one-of-type .ts .o0/.o1
+	, find-one-of-types .t .o1/.ox
+#
+
+find-one-of-type (TYPE _) .o/.o :- ! #
+find-one-of-type (FUN .pt .rt) .o0/.ox
+	:- !, find-one-of-type .pt .o0/.o1 , find-one-of-type .rt .o1/.ox
+#
+find-one-of-type (ONE-OF .ts) .o
+	:- !, temp .t
+	, concat "$$TEMP-ONE-OF" .temp .token -- Assigns a temporary name
+	, add-one-of-types (TYPE .token) .ts .o
+#
+find-one-of-type (LIST-OF .t) .o :- !, find-one-of-type .t .o #
+find-one-of-type (TUPLE-OF _ .ts) .o :- !, find-one-of-types .ts .o #
+find-one-of-type _ .o/.o #
+
+add-one-of-types .oe () .o/.o # 
+add-one-of-types .oe (.t, .ts) .o0/.ox
+	:- .o0 = (.t/.oe, .o1)
+	, add-one-of-types .oe .ts .o1/.ox
+# 
+
+equal-types _ () () :- ! #
+equal-types .env (.t0, .ts0) (.t1, .ts1)
+	:- equal-type .env .t0 .t1
+	, equal-types .env .ts0 .ts1
 #
 
 equal-type _ .t .t #
-equal-type .te .t0 .t1 :- equal-type0 .te .t0 .t1 #
-equal-type .te .t0 .t1 :- equal-type0 .te .t1 .t0 #
+equal-type .env .t0 .t1 :- equal-type0 .env .t0 .t1 #
+equal-type .env .t0 .t1 :- equal-type0 .env .t1 .t0 #
 
-equal-types _ () () :- ! #
-equal-types .te (.t0, .ts0) (.t1, .ts1)
-	:- equal-type .te .t0 .t1
-	, equal-types .te .ts0 .ts1
+equal-type0 .te/.oe .t0 .t1
+	:- member .oe .t0/.o0, equal-type .te/.oe .o0 .t1
 #
-
-equal-type0 .te (TYPE .name) .t0
-	:- !, member .te .name/.t1, equal-type .te .t0 .t1
+equal-type0 .te/.oe (TYPE .name) .t0
+	:- !, member .te .name/.t1, equal-type .te/.oe .t0 .t1
 #
-equal-type0 .te (FUN .pt0 .rt0) (FUN .pt1 .rt1)
-	:- !, equal-type .te .pt0 .pt1, equal-type .te .rt0 .rt1
+equal-type0 .env (FUN .pt0 .rt0) (FUN .pt1 .rt1)
+	:- !, equal-type .env .pt0 .pt1, equal-type .env .rt0 .rt1
 #
-equal-type0 .te (ONE-OF .types) .t0
-	:- !, member .types .t1, equal-type .te .t0 .t1
+equal-type0 .env (ONE-OF .types) .t0
+	:- !, member .types .t1, equal-type .env .t0 .t1
 #
-equal-type0 .te (LIST-OF .t0) (LIST-OF .t1)
-	:- !, equal-type .te .t0 .t1 
+equal-type0 .env (LIST-OF .t0) (LIST-OF .t1)
+	:- !, equal-type .env .t0 .t1 
 #
-equal-type0 .te (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1)
-	:- equal-types .te .ts0 .ts1
+equal-type0 .env (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1)
+	:- equal-types .env .ts0 .ts1
 #
 
 default-fun-type () (LIST-OF _) #

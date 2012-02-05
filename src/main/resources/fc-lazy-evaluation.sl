@@ -31,7 +31,8 @@ fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
 -=		fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
-			:- fc-define-default-fun 1 .var .call, !
+			:- member (head, tail,) .var
+			, fc-define-default-fun 1 .var .call, !
 			, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
 			, .c1 = (_ PUSH .paramReg, _ SYS .call .reg 1, .cx)
 		#
@@ -61,8 +62,9 @@ fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile0 .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
--=		fc-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE cons))) .frame .c0/.cx/.d0/.dx/.reg
-			:- fc-define-default-fun 2 .var .call, !
+-=		fc-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE .var))) .frame .c0/.cx/.d0/.dx/.reg
+			:- member (cons,) .var
+			, fc-define-default-fun 2 .var .call, !
 			, fc-compile0 .p0 .frame .c0/.c1/.d0/.d1/.param0Reg
 			, fc-compile0 .p1 .frame .c1/.c2/.d1/.dx/.param1Reg
 			, .c2 = (_ PUSH .param0Reg, _ PUSH .param1Reg, _ SYS .call .reg 2, .cx)
@@ -87,7 +89,7 @@ fc-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .r
 fc-compile-tuple  .name () .frame .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
 #
-fc-compile .name (.e, .es) .frame .c0/.cx/.d0/.dx/.reg
+fc-compile-tuple .name (.e, .es) .frame .c0/.cx/.d0/.dx/.reg
 	:- !, fc-compile .e .frame .c0/.c1/.d0/.d1/.headReg
 	, fc-compile-tuple .name .es .frame .c1/.c2/.d1/.dx/.tailReg
 	, .c2 = (_ PUSH .headReg, .c3)
@@ -109,8 +111,3 @@ fc-default-fun0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-default-fun .n .pred .call, !
 	, .c0 = (_ SYS .call .reg .n, .cx)
 #
-
-fc-lazy-default-fun 1 head #
-fc-lazy-default-fun 1 tail #
-
-fc-eager-default-fun 2 cons #

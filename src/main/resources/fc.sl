@@ -10,7 +10,7 @@ compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, fc-add-standard-funs .do .do1
 	, !, fc-parse .do1 .parsed
-	, !, infer-type .parsed ()/() _
+	, !, infer-type .parsed ()/()/() _
 	, !, fc-compile .parsed 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
 	, !, fc-assign-line-number 0 .c0
@@ -182,6 +182,9 @@ fc-add-standard-funs .p (
 	) >>
 	define contains = (
 		e => join {map {e1 => e1 = e}} {fold {or}}
+	) >>
+	define cross = (fun => l1 => l2 =>
+		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
 	) >>
 	.p
 ) #

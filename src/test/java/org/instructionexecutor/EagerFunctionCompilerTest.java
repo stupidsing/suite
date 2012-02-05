@@ -48,6 +48,24 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testCross() {
+		assertEquals(SuiteUtil.parse("" //
+				+ "((7, 1,), (7, 2,),), " //
+				+ "((8, 1,), (8, 2,),), " //
+				+ "((9, 1,), (9, 2,),),") //
+				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
+
+		assertEquals(
+				SuiteUtil.parse("" //
+						+ "((A, 1,), (A, 2,),), " //
+						+ "((B, 1,), (B, 2,),), " //
+						+ "((C, 1,), (C, 2,),),") //
+				,
+				eval("define list1 as list of one of (A, B, C,) = (A, B, C,) >> \n" //
+						+ "cross {a => b => a, b,} {list1} {1, 2,}"));
+	}
+
+	@Test
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = (n => \n" //
@@ -84,6 +102,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testIf() {
+		assertEquals(Int.create(0), eval("3 > 4 ? 1 | 0"));
+		assertEquals(Int.create(1), eval("3 = 3 ? 1 | 0"));
+	}
+
+	@Test
 	public void testJoin() {
 		assertEquals(Int.create(19), eval("" //
 				+ "define p = (n => n * 2) >> \n" //
@@ -96,24 +120,6 @@ public class EagerFunctionCompilerTest {
 	public void testLog() {
 		assertEquals(Int.create(1), eval("" //
 				+ "if (1 = 1) then 1 else (1 / 0)"));
-	}
-
-	@Test
-	public void testSwitch() {
-		assertEquals(new Str("C"), eval("" //
-				+ "define switch = (p => \n" //
-				+ "    p = 1 ? \"A\" | \n" //
-				+ "    p = 2 ? \"B\" | \n" //
-				+ "    p = 3 ? \"C\" | \n" //
-				+ "    \"D\" \n" //
-				+ ") >> \n" //
-				+ "switch {3}"));
-	}
-
-	@Test
-	public void testIf() {
-		assertEquals(Int.create(0), eval("3 > 4 ? 1 | 0"));
-		assertEquals(Int.create(1), eval("3 = 3 ? 1 | 0"));
 	}
 
 	@Test
@@ -144,6 +150,18 @@ public class EagerFunctionCompilerTest {
 	public void testSplit() {
 		assertEquals(Int.create(1), eval("" //
 				+ "split {h => l => h} {1, 2,}"));
+	}
+
+	@Test
+	public void testSwitch() {
+		assertEquals(new Str("C"), eval("" //
+				+ "define switch = (p => \n" //
+				+ "    p = 1 ? \"A\" | \n" //
+				+ "    p = 2 ? \"B\" | \n" //
+				+ "    p = 3 ? \"C\" | \n" //
+				+ "    \"D\" \n" //
+				+ ") >> \n" //
+				+ "switch {3}"));
 	}
 
 	@Test

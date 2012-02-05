@@ -59,6 +59,7 @@ public class SystemPredicates {
 		addPredicate("parse", new EvalPredicates.Parse());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
+		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("to.atom", new EvalPredicates.ToAtom());
 		addPredicate("to.string", new EvalPredicates.ToString());
 		addPredicate("tree", new EvalPredicates.TreePredicate());

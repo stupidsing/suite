@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -291,6 +292,14 @@ public class EvalPredicates {
 
 			return p0 instanceof Atom && p1 instanceof Atom
 					&& ((Atom) p0).getName().startsWith(((Atom) p1).getName());
+		}
+	}
+
+	public static class Temp implements SystemPredicate {
+		private static AtomicInteger counter = new AtomicInteger();
+
+		public boolean prove(Prover prover, Node ps) {
+			return prover.bind(ps, Int.create(counter.getAndIncrement()));
 		}
 	}
 
