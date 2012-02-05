@@ -13,7 +13,9 @@ fc-compile0 (DEF-VAR .var .value .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, replace .value/.value1 (VARIABLE .var)/(%REG/.r1/.frame) -- Allows recursion
 	, replace .do/.do1 (VARIABLE .var)/(%REG/.r1/.frame)
-	, fc-compile0 .value1 .frame .c0/.c1/.d0/.d1/.r1
+	, once (fc-compile0 .value1 .frame .c0/.c1/.d0/.d1/.r1
+		; fc-error "when compiling" .var
+	)
 	, fc-compile0 .do1 .frame .c1/.cx/.d1/.dx/.reg
 #
 fc-compile0 (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
@@ -50,7 +52,6 @@ fc-compile0 (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile0 .parameter .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .reg .r1, .cx)
 #
-fc-compile0 .d _ _ :- write "Unknown expression" .d, nl, fail #
 
 fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -69,8 +70,8 @@ fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 			, .c2 = (_ PUSH .param0Reg, _ PUSH .param1Reg, _ SYS .call .reg 2, .cx)
 		#
 =-
-fc-compile-wrapped (INVOKE .parameter .callee) .frame .cdr
-	:- fc-default-fun (INVOKE .parameter .callee) .frame .cdr, !
+fc-compile-wrapped .do .frame .cdr
+	:- fc-default-fun .do .frame .cdr, !
 #
 fc-compile-wrapped (TUPLE .name .es) .frame .cdr
 	:- !, fc-compile-tuple .name .es .frame .cdr
@@ -84,7 +85,6 @@ fc-compile-wrapped (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 fc-compile-wrapped (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
 fc-compile-wrapped (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
 fc-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
-fc-compile-wrapped EMPTY _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-CONSTANT .reg (), .cx) #
 
 fc-compile-tuple  .name () .frame .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
@@ -111,3 +111,8 @@ fc-default-fun0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-default-fun .n .pred .call, !
 	, .c0 = (_ SYS .call .reg .n, .cx)
 #
+
+fc-lazy-default-fun 1 head #
+fc-lazy-default-fun 1 tail #
+
+fc-eager-default-fun 2 cons #

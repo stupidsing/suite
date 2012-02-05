@@ -1,6 +1,4 @@
-infer-type .do .ve/.te .type
-	:- infer-type0 .do .ve/.te .type
-#
+infer-type .do .ve/.te .type :- infer-type0 .do .ve/.te .type #
 
 infer-types () _ () :- ! #
 infer-types (.e, .es) .env (.t, .ts)
@@ -20,8 +18,11 @@ infer-type0 (DEF-TYPE .name .def .do) .ve/.te .type
 	:- !, infer-type .do .ve/(.name/.def, .te) .type
 #
 infer-type0 (DEF-VAR .name .value .do) .ve/.te .type
-	:- !, .env1 = (.name/.varType, .ve)/.te
-	, infer-type .value .env1 .varType
+	:- !
+	, .env1 = (.name/.varType, .ve)/.te
+	, once (infer-type .value .env1 .varType
+		; fc-error "Unable to infer type for" .name
+	)
 	, infer-type .do .env1 .type
 #
 infer-type0 (INVOKE .parameter .callee) .env .type
@@ -49,9 +50,8 @@ infer-type0 (NUMBER _) _ NUMBER :- ! #
 infer-type0 (STRING _) _ STRING :- ! #
 infer-type0 (VARIABLE .pred) _ .type :- default-fun-type .pred .type #
 infer-type0 (VARIABLE .var) .ve/.te .type :- member .ve .var/.type, ! #
-infer-type0 EMPTY _ (LIST-OF _) :- ! #
 infer-type0 (TUPLE .name .elems) .env (TUPLE-OF .name .types)
-	:- infer-types .elems .types
+	:- !, infer-types .elems .types
 #
 
 equal-infer-types .a .b .ve/.te .type0
@@ -86,6 +86,7 @@ equal-type0 .te (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1)
 	:- equal-types .te .ts0 .ts1
 #
 
+default-fun-type () (LIST-OF _) #
 default-fun-type cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
 default-fun-type head (FUN (LIST-OF .type) .type) #
 default-fun-type is-tree (FUN (LIST-OF .type) BOOLEAN) #

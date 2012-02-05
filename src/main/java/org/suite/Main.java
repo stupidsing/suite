@@ -80,6 +80,7 @@ public class Main {
 				} else
 					type = InputType.FACT;
 
+				input = input.trim();
 				if (input.endsWith("#"))
 					input = input.substring(0, input.length() - 1);
 
@@ -89,7 +90,7 @@ public class Main {
 				if (type == InputType.FACT)
 					rs.addRule(node);
 				else if (type == InputType.EVALUATE) {
-					Node result = SuiteUtil.evaluateFunctional(node);
+					Node result = SuiteUtil.evaluateFunctional(node, false);
 					System.out.println(Formatter.dump(result));
 				} else {
 					final Generalizer generalizer = new Generalizer();

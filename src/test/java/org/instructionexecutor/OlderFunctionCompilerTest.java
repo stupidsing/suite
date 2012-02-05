@@ -59,7 +59,7 @@ public class OlderFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateFunctional(f);
+		return SuiteUtil.evaluateFunctional(f, false);
 	}
 
 }

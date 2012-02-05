@@ -1,19 +1,19 @@
 -------------------------------------------------------------------------------
 -- functional program compiler
+--
+-- Also need to import one of the following backends:
+-- fc-eager-evaluation.sl, fc-lazy-evaluation.sl
 
-()
-	:- import 'fc-type-inference.sl'
-	, import 'fc-lazy-evaluation.sl'
-#
+() :- import 'fc-type-inference.sl' #
 
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, fc-add-standard-funs .do .do1
-	, fc-parse .do1 .parsed
-	, infer-type .parsed ()/() _
-	, fc-compile .parsed 0 .c1/.c2/.d0/()/.reg
+	, !, fc-parse .do1 .parsed
+	, !, infer-type .parsed ()/() _
+	, !, fc-compile .parsed 0 .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
-	, fc-assign-line-number 0 .c0
+	, !, fc-assign-line-number 0 .c0
 #
 
 fc-parse (.var as .type => .do) (FUN .var .do1)
@@ -25,11 +25,13 @@ fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1, fc-parse .do .do1
 #
 fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value1 .do1)
-	:- !, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
+	:- !
+	, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
 	, fc-parse .value .value1, fc-parse .do .do2
 #
 fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
-	:- !, fc-parse .value .value1, fc-parse .do .do1
+	:- !
+	, fc-parse .value .value1, fc-parse .do .do1
 #
 fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
@@ -62,10 +64,9 @@ fc-parse .tree (TREE .oper .left1 .right1)
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .s (STRING .s) :- is.string .s, ! #
-fc-parse () EMPTY :- ! #
 fc-parse .t (TUPLE .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
-fc-parse .d _ _ :- write "Unknown expression" .d, nl, fail #
+fc-parse .d _ _ :- fc-error "Unknown expression" .d #
 
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
@@ -94,11 +95,11 @@ fc-parse-types (.type, .types) (.type1, .types1)
 #
 
 -- "cons" and "corecursive-cons" differ only by type
+fc-define-default-fun 0 () EMPTY #
 fc-define-default-fun 2 cons CONS #
 fc-define-default-fun 2 corecursive-cons CONS #
-fc-define-default-fun 0 () EMPTY #
-fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 1 head HEAD #
+fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 2 log LOG #
 fc-define-default-fun 1 tail TAIL #
 
@@ -115,6 +116,8 @@ fc-assign-line-number _ () #
 fc-assign-line-number .n (.n _, .remains)
 	:- let .n1 (.n + 1), fc-assign-line-number .n1 .remains
 #
+
+fc-error .m :- !, write .m, nl, fail #
 
 fc-add-standard-funs .p (
 	define and = (x => y =>

@@ -20,7 +20,8 @@ public class SuiteUtil {
 
 	private static TermParser parser = new TermParser();
 	private static Prover logicalCompiler;
-	private static Prover functionalCompiler;
+	private static Prover eagerFunctionalCompiler;
+	private static Prover lazyFunctionalCompiler;
 
 	// The directory of the file we are now importing
 	private static boolean isImportFromClasspath = false;
@@ -98,8 +99,8 @@ public class SuiteUtil {
 		return evaluateLogical(parse(program));
 	}
 
-	public static Node evaluateFunctional(String program) {
-		return evaluateFunctional(parse(program));
+	public static Node evaluateFunctional(String program, boolean lazyEvaluation) {
+		return evaluateFunctional(parse(program), lazyEvaluation);
 	}
 
 	public static boolean evaluateLogical(Node program) {
@@ -120,7 +121,14 @@ public class SuiteUtil {
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	public static Node evaluateFunctional(Node program) {
+	public static Node evaluateFunctional(Node program, boolean lazyEvaluation) {
+		Prover compiler = lazyEvaluation ? getLazyFunCompiler()
+				: getEagerFunCompiler();
+
+		return evaluateFunctional(program, compiler);
+	}
+
+	public static Node evaluateFunctional(Node program, Prover compiler) {
 		Node node = SuiteUtil.parse("compile-function .program .code");
 		// + ", pp-list .code"
 
@@ -130,7 +138,7 @@ public class SuiteUtil {
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
 		((Reference) variable).bound(program);
-		if (getFunctionalCompiler().prove(node))
+		if (compiler.prove(node))
 			return new FunctionInstructionExecutor(ics).execute();
 		else
 			throw new RuntimeException("Function compilation error");
@@ -142,10 +150,20 @@ public class SuiteUtil {
 		return logicalCompiler;
 	}
 
-	private static synchronized Prover getFunctionalCompiler() {
-		if (functionalCompiler == null)
-			functionalCompiler = getProver(new String[] { "auto.sl", "fc.sl" });
-		return functionalCompiler;
+	private static synchronized Prover getEagerFunCompiler() {
+		if (eagerFunctionalCompiler == null) {
+			String imports[] = { "auto.sl", "fc.sl", "fc-eager-evaluation.sl" };
+			eagerFunctionalCompiler = getProver(imports);
+		}
+		return eagerFunctionalCompiler;
+	}
+
+	private static synchronized Prover getLazyFunCompiler() {
+		if (lazyFunctionalCompiler == null) {
+			String imports[] = { "auto.sl", "fc.sl", "fc-lazy-evaluation.sl" };
+			lazyFunctionalCompiler = getProver(imports);
+		}
+		return lazyFunctionalCompiler;
 	}
 
 	public static Prover getProver(String toImports[]) {

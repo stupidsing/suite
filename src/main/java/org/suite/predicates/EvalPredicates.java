@@ -254,7 +254,9 @@ public class EvalPredicates {
 				while (m < 0)
 					m += length;
 				while (n <= 0)
-					m += length;
+					n += length;
+
+				n = Math.min(n, length);
 
 				return prover.bind(params[3] //
 						, Atom.create(name.substring(m, n)));
