@@ -30,11 +30,12 @@ fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	:- !, let .frameDifference (.frame0 - .frame)
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
-fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
-	:- fc-define-default-fun 1 .var .call, !
-	, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
-	, .c1 = (_ PUSH .paramReg, _ SYS .call .reg 1, .cx)
-#
+-=		fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
+			:- fc-define-default-fun 1 .var .call, !
+			, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
+			, .c1 = (_ PUSH .paramReg, _ SYS .call .reg 1, .cx)
+		#
+=-
 fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
 	, let .frame1 (.frame + 1)
@@ -61,12 +62,13 @@ fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile0 .do1 .frame1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
-fc-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE cons))) .frame .c0/.cx/.d0/.dx/.reg
-	:- fc-define-default-fun 2 .var .call, !
-	, fc-compile0 .p0 .frame .c0/.c1/.d0/.d1/.param0Reg
-	, fc-compile0 .p1 .frame .c1/.c2/.d1/.dx/.param1Reg
-	, .c2 = (_ PUSH .param0Reg, _ PUSH .param1Reg, _ SYS .call .reg 2, .cx)
-#
+-=		fc-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE cons))) .frame .c0/.cx/.d0/.dx/.reg
+			:- fc-define-default-fun 2 .var .call, !
+			, fc-compile0 .p0 .frame .c0/.c1/.d0/.d1/.param0Reg
+			, fc-compile0 .p1 .frame .c1/.c2/.d1/.dx/.param1Reg
+			, .c2 = (_ PUSH .param0Reg, _ PUSH .param1Reg, _ SYS .call .reg 2, .cx)
+		#
+=-
 fc-compile-wrapped (INVOKE .parameter .callee) .frame .cdr
 	:- fc-default-fun (INVOKE .parameter .callee) .frame .cdr, !
 #
