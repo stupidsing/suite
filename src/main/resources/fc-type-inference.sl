@@ -73,17 +73,17 @@ find-one-of-type (ONE-OF .ts) .o0/.ox
 #
 find-one-of-type .t .o :- sub-type .t _ .ts/() _, find-one-of-types .ts .o #
 
-add-one-of-types .oe () .o/.o # 
-add-one-of-types .oe (.t, .ts) .o0/.ox
-	:- .o0 = (.t/.oe, .o1)
-	, add-one-of-types .oe .ts .o1/.ox
-# 
-
 find-one-of-types () .o/.o :- ! #
 find-one-of-types (.t, .ts) .o0/.ox
 	:- find-one-of-type .t .o0/.o1
 	, find-one-of-types .ts .o1/.ox
 #
+
+add-one-of-types .oe () .o/.o # 
+add-one-of-types .oe (.t, .ts) .o0/.ox
+	:- .o0 = (.t/.oe, .o1)
+	, add-one-of-types .oe .ts .o1/.ox
+# 
 
 equal-type _ .t .t #
 equal-type .env .t0 .t1 :- equal-type0 .env .t0 .t1 #
