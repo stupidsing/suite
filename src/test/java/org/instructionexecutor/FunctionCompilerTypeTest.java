@@ -53,7 +53,7 @@ public class FunctionCompilerTypeTest {
 				+ "define type t = one of (NIL, BTREE t t,) >> \n" //
 				+ "define u as t = NIL >> \n" //
 				+ "define v as t = NIL >> \n" //
-				+ "v = BTREE (BTREE NIL NIL) NIL");
+				+ "u = BTREE (BTREE NIL NIL) NIL");
 	}
 
 	@Test
