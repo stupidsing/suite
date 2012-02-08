@@ -6,9 +6,8 @@ fc-compile .do .frame .c0/.cx/.d0/.dx/.reg
 	, .c1 = ( _ CALL-CLOSURE .reg .closureReg, .cx)
 #
 
-fc-compile0 (AS _ _ .do) .frame .cdr
-	:- !, fc-compile0 .do .frame .cdr
-#
+fc-compile0 (CAST _ .do) .frame .cdr :- !, fc-compile0 .do .frame .cdr #
+fc-compile0 (AS _ _ .do) .frame .cdr :- !, fc-compile0 .do .frame .cdr #
 fc-compile0 (DEF-VAR .var .value .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, replace .value/.value1 (VARIABLE .var)/(%REG/.r1/.frame) -- Allows recursion

@@ -22,7 +22,7 @@ public class SystemPredicates {
 		public boolean prove(Prover prover, Node parameter);
 	}
 
-	private Map<Node, SystemPredicate> predicates = new HashMap<Node, SystemPredicate>();
+	private Map<String, SystemPredicate> predicates = new HashMap<String, SystemPredicate>();
 
 	private Prover prover;
 
@@ -81,31 +81,36 @@ public class SystemPredicates {
 	}
 
 	public Boolean call(Node query) {
-		SystemPredicate predicate;
+		SystemPredicate predicate = null;
+		Tree tree;
+		String name = null;
 		Node pass = query;
 
-		if ((predicate = predicates.get(query)) != null)
+		if (query instanceof Atom) {
+			name = ((Atom) query).getName();
 			pass = Atom.nil;
-		else {
-			Tree tree = Tree.decompose(query);
-			if (tree != null)
-				if (tree.getOperator() != TermOp.SEP___)
-					predicate = predicates.get(new Tree(tree.getOperator()));
-				else {
-					predicate = predicates.get(tree.getLeft());
+		} else if ((tree = Tree.decompose(query)) != null)
+			if (tree.getOperator() != TermOp.SEP___)
+				name = tree.getOperator().getName();
+			else {
+				Node left = tree.getLeft();
+
+				if (left instanceof Atom) {
+					name = ((Atom) left).getName();
 					pass = tree.getRight();
 				}
-		}
+			}
 
-		return (predicate != null) ? predicate.prove(prover, pass) : null;
+		predicate = name != null ? predicates.get(name) : null;
+		return predicate != null ? predicate.prove(prover, pass) : null;
 	}
 
 	private void addPredicate(Operator operator, SystemPredicate pred) {
-		predicates.put(new Tree(operator), pred);
+		predicates.put(operator.getName(), pred);
 	}
 
 	private void addPredicate(String name, SystemPredicate pred) {
-		predicates.put(Atom.create(name), pred);
+		predicates.put(name, pred);
 	}
 
 	private class FindAll implements SystemPredicate {

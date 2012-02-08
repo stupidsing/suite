@@ -1,9 +1,8 @@
 -------------------------------------------------------------------------------
 -- functional program compiler with eager evaluation
 
-fc-compile (AS _ _ .do) .frame .cdr
-	:- !, fc-compile .do .frame .cdr
-#
+fc-compile (CAST _ .do) .frame .cdr :- !, fc-compile .do .frame .cdr #
+fc-compile (AS _ _ .do) .frame .cdr :- !, fc-compile .do .frame .cdr #
 fc-compile (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)

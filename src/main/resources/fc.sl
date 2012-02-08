@@ -24,10 +24,12 @@ fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1, fc-parse .do .do1
 #
-fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value1 .do1)
+fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
 	:- !
-	, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
-	, fc-parse .value .value1, fc-parse .do .do2
+	, fc-parse-type .type .type1
+	, fc-parse .value .value1
+	, fc-parse .do .do1
+	, .value2 = CAST .type1 .value1
 #
 fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !
