@@ -58,6 +58,7 @@ public class SystemPredicates {
 		addPredicate("nth", new EvalPredicates.Nth());
 		addPredicate("parse", new EvalPredicates.Parse());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
+		addPredicate("same", new EvalPredicates.Same());
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
 		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("to.atom", new EvalPredicates.ToAtom());

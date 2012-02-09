@@ -4,85 +4,90 @@
 -- .ve - list of variables and their corresponding types
 -- .te - list of type names and their corresponding types
 -- .oe - list of tuples and their corresponding one-of types
+-- .tr - type deduction rule to be assembled
 --
-infer-type .do .ve/.te/.oe .type :- infer-type0 .do .ve/.te/.oe .type #
+infer-type .do .ve/.te/.oe .type
+	:- infer-type-rule .do .ve/.te/.oe .tr0/.trx .type
+	, resolve-types .tr0/.trx -- Resolve all types
+#
 
-infer-type0 (CAST .type .do) .ve/.te/.oe .type
+infer-type-rule (CAST .type .do) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, find-one-of-type .type .oe1/.oe
-	, infer-type .do .ve/.te/.oe1 .type0
-	, superset-of-type .ve/.te/.oe1 .type0 .type
+	, infer-type-rule .do .ve/.te/.oe1 .tr0/.tr1 .type0
+	, .tr1 = (SUPERTYPE-OF .te/.oe1 .type0 .type, .trx)
 #
-infer-type0 (AS .var .varType .do) .ve/.te/.oe .type
+infer-type-rule (AS .var .varType .do) .ve/.te/.oe .tr .type
 	:- !
 	, find-one-of-type .varType .oe1/.oe
 	, member .ve .var/.varType
-	, infer-type .do .ve/.te/.oe1 .type
+	, infer-type-rule .do .ve/.te/.oe1 .tr .type
 #
-infer-type0 (FUN .var .do) .ve/.te/.oe (FUN .varType .type)
-	:- !, infer-type .do (.var/.varType, .ve)/.te/.oe .type
+infer-type-rule (FUN .var .do) .ve/.te/.oe .tr (FUN .varType .type)
+	:- !, infer-type-rule .do (.var/.varType, .ve)/.te/.oe .tr .type
 #
-infer-type0 (DEF-TYPE .name .def .do) .ve/.te/.oe .type
+infer-type-rule (DEF-TYPE .name .def .do) .ve/.te/.oe .tr .type
 	:- !
 	, find-one-of-type .def .oe1/.oe
-	, infer-type .do .ve/(.name/.def, .te)/.oe1 .type
+	, infer-type-rule .do .ve/(.name/.def, .te)/.oe1 .tr .type
 #
-infer-type0 (DEF-VAR .name .value .do) .ve/.te/.oe .type
+infer-type-rule (DEF-VAR .name .value .do) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, .env1 = (.name/.varType, .ve)/.te/.oe
-	, (infer-type .value .env1 .varType
+	, (infer-type-rule .value .env1 .tr0/.tr1 .varType
 		; fc-error "Unable to infer type for" .name
 	)
-	, infer-type .do .env1 .type
+	, infer-type-rule .do .env1 .tr1/.trx .type
 #
-infer-type0 (INVOKE .parameter .callee) .env .type
-	:- !, infer-type .callee .env .funcType
-	, infer-type .parameter .env .actualParamType
-	, clone .funcType (FUN .signParamType .type)
-	, superset-of-type .env .actualParamType .signParamType
+infer-type-rule (INVOKE .param .callee) .ve/.te/.oe .tr0/.trx .type
+	:- !, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funcType
+	, infer-type-rule .param .ve/.te/.oe .tr1/.tr2 .actualParamType
+	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType
+		, INSTANCE-OF .funcType (FUN .signParamType .type)
+		, .trx
+	)
 #
-infer-type0 (IF .if .then .else) .env .type
-	:- !, infer-type .if .env BOOLEAN
-	, compatible-infer-types .then .else .env .type
+infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
+	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
+	, infer-compatible-types .then .else .env .tr1/.trx .type
 #
-infer-type0 (TUPLE .name .elems) .env (TUPLE-OF .name .types)
-	:- !, infer-types .elems .env .types
+infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
+	:- !, infer-type-rules .elems .env .tr .types
 #
-infer-type0 (TREE .oper .left .right) .env .type
+infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
-	, compatible-infer-types .left .right .env .type
-	, member (NUMBER, STRING,) .type
+	, infer-compatible-types .left .right .env .tr0/.tr1 .type
+	, .tr1 = (EITHER .type (NUMBER, STRING,), .trx)
 	; member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
-	, compatible-infer-types .left .right .env .type
+	, infer-compatible-types .left .right .env .tr0/.trx .type
 	, .type = NUMBER
 	; member (' = ', ' != ', ' > ', '  < ', ' >= ', ' <= ',) .oper, !
-	, compatible-infer-types .left .right .env _
+	, infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
-infer-type0 (BOOLEAN _) _ BOOLEAN  :- ! #
-infer-type0 (NUMBER _) _ NUMBER :- ! #
-infer-type0 (STRING _) _ STRING :- ! #
-infer-type0 (VARIABLE .var) .ve/.te/.oe .type
-	:- (default-fun-type .var .type
-		; member .ve .var/.type
-	), !
+infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
+infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
+infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
+infer-type-rule (VARIABLE .var) .ve/.te/.oe .tr/.tr .type
+	:- (default-fun-type .var .type; member .ve .var/.type), !
 #
-infer-type0 (VARIABLE .var) _ _ :- !, fc-error "Undefined variable" .var #
-infer-type0 (TUPLE .name .elems) .env (TUPLE-OF .name .types)
-	:- !, infer-types .elems .types
+infer-type-rule (VARIABLE .var) _ _ _ :- !, fc-error "Undefined variable" .var #
+infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
+	:- !, infer-type-rules .elems .env .tr .types
 #
 
-infer-types () _ () :- ! #
-infer-types (.e, .es) .env (.t, .ts)
-	:- infer-type .e .env .t
-	, infer-types .es .env .ts
+infer-type-rules () _ .tr/.tr () :- ! #
+infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
+	:- infer-type-rule .e .env .tr0/.tr1 .t
+	, infer-type-rules .es .env .tr1/.trx .ts
 #
 
-compatible-infer-types .a .b .env .type
-	:- infer-type .a .env .type0
-	, infer-type .b .env .type1
-	, (superset-of-type .env .type1 .type0, .type = .type0
-		; superset-of-type .env .type0 .type1, .type = .type1
+infer-compatible-types .a .b .ve/.te/.oe .tr0/.trx .type
+	:- infer-type-rule .a .ve/.te/.oe .tr0/.tr1 .type0
+	, infer-type-rule .b .ve/.te/.oe .tr1/.tr2 .type1
+	, .tr2 = (SUPERTYPE-OF .te/.oe .type0 .type
+		, SUPERTYPE-OF .te/.oe .type1 .type
+		, .trx
 	)
 #
 
@@ -108,43 +113,66 @@ add-one-of-types .oe (.t, .ts) .o0/.ox
 	, add-one-of-types .oe .ts .o1/.ox
 # 
 
-superset-of-type .env .t0 .t1
-	:- children-of-type .t0 .t1 .ts0/() .ts1/()
-	, superset-of-types .env .ts0 .ts1
+-- When resolving types:
+-- - Flatten all logical-AND conditions;
+-- - Do not resolve super-type relation when both types are not clear;
+-- - Type instantiations (type object clones) comes at the end.
+resolve-types .tr0/.trx :- same .tr0 .trx, ! #
+resolve-types (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
+	:- (bound .t0; bound .t1)
+	, super-of-type .env .t0 .t1
+	, resolve-types .tr1/.trx
 #
-superset-of-type .env .t0 .t2
-	:- bound .t0, superset-of-type0 .env .t0 .t1, superset-of-type .env .t1 .t2
+resolve-types (SUPERTYPE-OF .env .t0 .t1, .tr1)/.tr2
+	:- (bound .t0; bound .t1)
+	, children-of-type .t0 .t1 .ts0/() .ts1/()
+	, super-of-types .env .ts0 .ts1 .tr2/.trx
+	, resolve-types .tr1/.trx
 #
-superset-of-type .env .t0 .t2
-	:- bound .t2, superset-of-type0 .env .t1 .t2, superset-of-type .env .t0 .t1
+resolve-types (INSTANCE-OF .t0 .t1, .tr1)/.trx
+	:- (bound .t0; bound .t1)
+	, clone .t0 .t1
+	, resolve-types .tr1/.trx
+#
+resolve-types (EITHER .t .ts, .tr1)/.trx
+	:- !, member .ts .t, resolve-types .tr1/.trx
+#
+resolve-types (REMARK, .tr1)/.trx :- !, resolve-types .tr1/.trx #
+resolve-types (.a, .tr1)/.tr2 -- Shuffles the first one to the back
+	:- !, .tr2 = (.a, .trx), resolve-types .tr1/.trx
+#
+resolve-types _/_
+	:- !, fc-error "Not enough type information"
 #
 
-superset-of-type0 _/.te/_ .t0 (TYPE .name) :- member .te .name/.t0 #
-superset-of-type0 _/_/.oe .t0 .t1 :- member .oe .t0/.t1 #
+super-of-type .te/_ .t0 (TYPE .name) :- member .te .name/.t0 #
+super-of-type _/.oe .t0 .t1 :- member .oe .t0/.t1 #
 
-superset-of-types _ () () :- ! #
-superset-of-types .env (.t0, .ts0) (.t1, .ts1)
-	:- superset-of-type .env .t0 .t1
-	, superset-of-types .env .ts0 .ts1
+super-of-types _ () () .tr/.tr :- ! #
+super-of-types .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
+	:- .tr0 = (SUPERTYPE-OF .env .t0 .t1, .tr1)
+	, super-of-types .env .ts0 .ts1 .tr1/.trx
 #
+
+children-of-type (FUN .pt0 .rt0) (FUN .pt1 .rt1) .p0/.px .q0/.qx
+	:- !, .p0 = (.pt0, .rt0, .px), .q0 = (.pt1, .rt1, .qx)
+#
+children-of-type (ONE-OF .ts0) (ONE-OF .ts1) .p .q
+	:- !, children-of-types .ts0 .ts1 .p .q
+#
+children-of-type (LIST-OF .t0) (LIST-OF .t1) .p0/.px .q0/.qx
+	:- !, .p0 = (.t0, .px), .q0 = (.t1, .qx)
+#
+children-of-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .p .q
+	:- !, children-of-types .ts0 .ts1 .p .q
+#
+children-of-type .t .t .p/.p .q/.q #
 
 children-of-types () () .p/.p .q/.q :- ! #
 children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 	:- .p0 = (.t0, .p1), .q0 = (.t1, .q1)
 	, children-of-types .ts0 .ts1 .p1/.px .q1/.qx
 #
-
-children-of-type (FUN .pt0 .rt0) (FUN .pt1 .rt1) .p0/.px .q0/.qx
-	:- !, .p0 = (.pt0, .rt0, .px), .q0 = (.pt1, .rt1, .qx)
-#
-children-of-type (.tag .ts0) (.tag .ts1) .p .q
-	:- member (ONE-OF, LIST-OF,) .tag, !
-	, children-of-types .ts0 .ts1 .p .q
-#
-children-of-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .p .q
-	:- !, children-of-types .ts0 .ts1 .p .q
-#
-children-of-type .t .t .p/.p .q/.q #
 
 default-fun-type () (LIST-OF _) #
 default-fun-type cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #

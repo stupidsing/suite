@@ -285,6 +285,13 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Same implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			return params[0].finalNode() == params[1].finalNode();
+		}
+	}
+
 	public static class StartsWith implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
