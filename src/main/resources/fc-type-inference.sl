@@ -97,7 +97,7 @@ find-one-of-type (ONE-OF .ts) .o0/.ox
 	, find-one-of-types .ts .o1/.ox
 #
 find-one-of-type .t .o
-	:- children-of-type .t _ .ts/() _
+	:- children-of-type .t .t .ts/() .ts/()
 	, find-one-of-types .ts .o
 #
 
