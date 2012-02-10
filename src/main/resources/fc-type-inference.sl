@@ -134,13 +134,10 @@ resolve-types0 (SUPERTYPE-OF .env .t0 .tx, .tr1)/.trx
 	, resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
 #
 resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
-	:- (bound .t0; bound .t1), !, (
-		super-of-type .env .t0 .t1
-		, resolve-types0 .tr1/.trx
-		; children-of-type .t0 .t1 .ts0/() .ts1/()
-		, super-of-types .env .ts0 .ts1 .trx/.trxx
-		, resolve-types0 .tr1/.trxx
-	)
+	:- (bound .t0; bound .t1), !
+	, children-of-type .t0 .t1 .ts0/() .ts1/()
+	, super-of-types .env .ts0 .ts1 .trx/.trxx
+	, resolve-types0 .tr1/.trxx
 #
 resolve-types0 (INSTANCE-OF .t0 .t1, .tr1)/.trx
 	:- !, clone .t0 .t1, resolve-types0 .tr1/.trx
