@@ -4,7 +4,7 @@
 -- Also need to import one of the following backends:
 -- fc-eager-evaluation.sl, fc-lazy-evaluation.sl
 
-() :- import 'fc-type-inference.sl', enable-trace #
+() :- import 'fc-type-inference.sl' #
 
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)

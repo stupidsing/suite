@@ -125,6 +125,14 @@ resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
 resolve-types0 (SUPERTYPE-OF .env .t .t, .tr1)/.trx
 	:- resolve-types0 .tr1/.trx
 #
+resolve-types0 (SUPERTYPE-OF .env .t0 .tx, .tr1)/.trx
+	:- bound .t0
+	, super-of-type .env .t0 .t1
+	, resolve-types0 (SUPERTYPE-OF .env .t1 .tx, .tr1)/.trx
+	; bound .tx
+	, super-of-type .env .t1 .tx
+	, resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
+#
 resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
 	:- (bound .t0; bound .t1), !, (
 		super-of-type .env .t0 .t1
