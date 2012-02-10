@@ -121,9 +121,9 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Int.create(1), eval("" //
 				+ "if (1 = 1) then 1 else (1 / 0)"));
 		assertEquals(Int.create(1), eval("" //
-				+ "if (1 = 1) then 1 else log {\"shouldn't appear\"} {1 / 0}"));
+				+ "if true then 1 else (log {\"shouldn't appear\"} {1 / 0})"));
 		assertEquals(Int.create(1), eval("" //
-				+ "if (1 = 0) then 1 else log {\"should appear\"} {1 / 0}"));
+				+ "if false then 1 else (log {\"should appear\"} {1})"));
 	}
 
 	@Test

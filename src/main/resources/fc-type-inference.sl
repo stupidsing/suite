@@ -45,14 +45,14 @@ infer-type-rule (INVOKE .param .callee) .ve/.te/.oe .tr0/.trx .type
 	, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funType
 	, infer-type-rule .param .ve/.te/.oe .tr1/.tr2 .actualParamType
 	, clone .funType (FUN .signParamType .type)
-	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType, .trx)
+	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType
+		, INSTANCE-OF .funType (FUN .signParamType .type)
+		, .trx
+	)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
 	, infer-compatible-types .then .else .env .tr1/.trx .type
-#
-infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
-	:- !, infer-type-rules .elems .env .tr .types
 #
 infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
@@ -68,13 +68,14 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
 infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
 infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
+infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
+infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
+	:- !, infer-type-rules .elems .env .tr .types
+#
 infer-type-rule (VARIABLE .var) .ve/.te/.oe .tr/.tr .type
 	:- (member .ve .var/.type; default-fun-type .var .type), !
 #
 infer-type-rule (VARIABLE .var) _ _ _ :- !, fc-error "Undefined variable" .var #
-infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
-	:- !, infer-type-rules .elems .env .tr .types
-#
 
 infer-type-rules () _ .tr/.tr () :- ! #
 infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
@@ -132,6 +133,9 @@ resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
 		, super-of-types .env .ts0 .ts1 .trx/.trxx
 		, resolve-types0 .tr1/.trxx
 	)
+#
+resolve-types0 (INSTANCE-OF .t0 .t1, .tr1)/.trx
+	:- !, clone .t0 .t1, resolve-types0 .tr1/.trx
 #
 resolve-types0 (EITHER .t .ts, .tr1)/.trx
 	:- !, member .ts .t, resolve-types0 .tr1/.trx

@@ -81,9 +81,15 @@ fc-compile-wrapped (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile .right .frame .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
-fc-compile-wrapped (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
-fc-compile-wrapped (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-fc-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
+fc-compile-wrapped (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx)
+#
+fc-compile-wrapped (NUMBER .i) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
+#
+fc-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
+#
 
 fc-compile-tuple  .name () .frame .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)

@@ -57,9 +57,15 @@ fc-compile %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	:- !, let .frameDifference (.frame0 - .frame)
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
-fc-compile (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
-fc-compile (NUMBER .i) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-fc-compile (STRING .s) _ .c0/.cx/.d/.d/.reg :- !, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
+fc-compile (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx)
+#
+fc-compile (NUMBER .i) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
+#
+fc-compile (STRING .s) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
+#
 
 fc-default-fun .call .frame .result
 	:- fc-default-fun0 .call .frame .result 0

@@ -4,7 +4,7 @@
 -- Also need to import one of the following backends:
 -- fc-eager-evaluation.sl, fc-lazy-evaluation.sl
 
-() :- import 'fc-type-inference.sl' #
+() :- import 'fc-type-inference.sl', enable-trace #
 
 compile-function .do .c0
 	:- .c0 = (_ ENTER, .c1)
@@ -105,6 +105,7 @@ fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 2 log LOG #
 fc-define-default-fun 1 tail TAIL #
 
+fc-is-tuple-name () :- ! # -- Empty atom is list terminator
 fc-is-tuple-name .t
 	:- is.atom .t
 	, nth .t 0 1 .c
