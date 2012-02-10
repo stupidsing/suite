@@ -35,7 +35,7 @@ infer-type-rule (DEF-TYPE .name .def .do) .ve/.te/.oe .tr .type
 infer-type-rule (DEF-VAR .name .value .do) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, .env1 = (.name/.varType, .ve)/.te/.oe
-	, (infer-type-rule .value .env1 .tr0/.tr1 .varType
+	, once (infer-type-rule .value .env1 .tr0/.tr1 .varType
 		; fc-error "at variable" .name
 	)
 	, infer-type-rule .do .env1 .tr1/.trx .type
@@ -44,7 +44,7 @@ infer-type-rule (INVOKE .param .callee) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funType
 	, infer-type-rule .param .ve/.te/.oe .tr1/.tr2 .actualParamType
-	, clone .funcType (FUN .signParamType .type)
+	, clone .funType (FUN .signParamType .type)
 	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType, .trx)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
@@ -113,31 +113,34 @@ add-one-of-types .oe (.t, .ts) .o0/.ox
 	, add-one-of-types .oe .ts .o1/.ox
 # 
 
+resolve-types .tr :- resolve-types0 .tr, ! #
+resolve-types _ :- fc-error "Unable to resolve types" #
+
 -- When resolving types:
 -- - Flatten all logical-AND conditions;
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
-resolve-types .tr0/.trx :- same .tr0 .trx, ! #
-resolve-types (SUPERTYPE-OF .env .t .t, .tr1)/.trx
-	:- resolve-types .tr1/.trx
+resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
+resolve-types0 (SUPERTYPE-OF .env .t .t, .tr1)/.trx
+	:- resolve-types0 .tr1/.trx
 #
-resolve-types (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
+resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
 	:- (bound .t0; bound .t1), !, (
 		super-of-type .env .t0 .t1
-		, resolve-types .tr1/.trx
+		, resolve-types0 .tr1/.trx
 		; children-of-type .t0 .t1 .ts0/() .ts1/()
 		, super-of-types .env .ts0 .ts1 .trx/.trxx
-		, resolve-types .tr1/.trxx
+		, resolve-types0 .tr1/.trxx
 	)
 #
-resolve-types (EITHER .t .ts, .tr1)/.trx
-	:- !, member .ts .t, resolve-types .tr1/.trx
+resolve-types0 (EITHER .t .ts, .tr1)/.trx
+	:- !, member .ts .t, resolve-types0 .tr1/.trx
 #
-resolve-types (REMARK, .tr1)/.trx :- !, resolve-types .tr1/.trx #
-resolve-types (.a, .tr1)/.tr2 -- Shuffles the first one to the back
-	:- !, .tr2 = (.a, .trx), resolve-types .tr1/.trx
+resolve-types0 (REMARK, .tr1)/.trx :- !, resolve-types0 .tr1/.trx #
+resolve-types0 (.a, .tr1)/.tr2 -- Shuffles the first one to the back
+	:- !, .tr2 = (.a, .trx), resolve-types0 .tr1/.trx
 #
-resolve-types _/_
+resolve-types0 _/_
 	:- !, fc-error "Not enough type information"
 #
 
