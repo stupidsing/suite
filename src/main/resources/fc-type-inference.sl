@@ -23,8 +23,9 @@ infer-type-rule (AS .var .varType .do) .ve/.te/.oe .tr .type
 	, member .ve .var/.varType
 	, infer-type-rule .do .ve/.te/.oe1 .tr .type
 #
-infer-type-rule (FUN .var .do) .ve/.te/.oe .tr (FUN .varType .type)
-	:- !, infer-type-rule .do (.var/.varType, .ve)/.te/.oe .tr .type
+infer-type-rule (FUN .var .do) .ve/.te/.oe .tr/.tr (FUN .varType .type)
+	:- !, infer-type-rule .do (.var/.varType, .ve)/.te/.oe .tr1 .type
+	, resolve-types .tr1
 #
 infer-type-rule (DEF-TYPE .name .def .do) .ve/.te/.oe .tr .type
 	:- !
@@ -35,17 +36,16 @@ infer-type-rule (DEF-VAR .name .value .do) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, .env1 = (.name/.varType, .ve)/.te/.oe
 	, (infer-type-rule .value .env1 .tr0/.tr1 .varType
-		; fc-error "Unable to infer type for" .name
+		; fc-error "at variable" .name
 	)
 	, infer-type-rule .do .env1 .tr1/.trx .type
 #
 infer-type-rule (INVOKE .param .callee) .ve/.te/.oe .tr0/.trx .type
-	:- !, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funcType
+	:- !
+	, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funType
 	, infer-type-rule .param .ve/.te/.oe .tr1/.tr2 .actualParamType
-	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType
-		, INSTANCE-OF .funcType (FUN .signParamType .type)
-		, .trx
-	)
+	, clone .funcType (FUN .signParamType .type)
+	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType, .trx)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
@@ -69,7 +69,7 @@ infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
 infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
 infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
 infer-type-rule (VARIABLE .var) .ve/.te/.oe .tr/.tr .type
-	:- (default-fun-type .var .type; member .ve .var/.type), !
+	:- (member .ve .var/.type; default-fun-type .var .type), !
 #
 infer-type-rule (VARIABLE .var) _ _ _ :- !, fc-error "Undefined variable" .var #
 infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
@@ -118,21 +118,17 @@ add-one-of-types .oe (.t, .ts) .o0/.ox
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
 resolve-types .tr0/.trx :- same .tr0 .trx, ! #
+resolve-types (SUPERTYPE-OF .env .t .t, .tr1)/.trx
+	:- resolve-types .tr1/.trx
+#
 resolve-types (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
-	:- (bound .t0; bound .t1)
-	, super-of-type .env .t0 .t1
-	, resolve-types .tr1/.trx
-#
-resolve-types (SUPERTYPE-OF .env .t0 .t1, .tr1)/.tr2
-	:- (bound .t0; bound .t1)
-	, children-of-type .t0 .t1 .ts0/() .ts1/()
-	, super-of-types .env .ts0 .ts1 .tr2/.trx
-	, resolve-types .tr1/.trx
-#
-resolve-types (INSTANCE-OF .t0 .t1, .tr1)/.trx
-	:- (bound .t0; bound .t1)
-	, clone .t0 .t1
-	, resolve-types .tr1/.trx
+	:- (bound .t0; bound .t1), !, (
+		super-of-type .env .t0 .t1
+		, resolve-types .tr1/.trx
+		; children-of-type .t0 .t1 .ts0/() .ts1/()
+		, super-of-types .env .ts0 .ts1 .trx/.trxx
+		, resolve-types .tr1/.trxx
+	)
 #
 resolve-types (EITHER .t .ts, .tr1)/.trx
 	:- !, member .ts .t, resolve-types .tr1/.trx

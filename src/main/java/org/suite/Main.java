@@ -27,7 +27,7 @@ public class Main {
 
 	public static void main(String args[]) {
 		try {
-			new Main().run();
+			new Main().run(args);
 		} catch (Throwable ex) {
 			log.error(Main.class, ex);
 		}
@@ -37,11 +37,14 @@ public class Main {
 		FACT, QUERY, ELABORATE, EVALUATE
 	};
 
-	public void run() throws IOException {
+	public void run(String importFilenames[]) throws IOException {
 		LogUtil.initLog4j();
 
 		RuleSet rs = new RuleSet();
 		SuiteUtil.importResource(rs, "auto.sl");
+
+		for (String importFilename : importFilenames)
+			SuiteUtil.importFile(rs, importFilename);
 
 		Prover prover = new Prover(rs);
 
