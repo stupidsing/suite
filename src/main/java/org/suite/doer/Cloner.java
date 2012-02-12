@@ -17,18 +17,16 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
+		node = node.finalNode();
+
 		if (node instanceof Reference) {
-			node = node.finalNode();
+			Reference oldRef = (Reference) node;
+			node = references.get(oldRef);
 
-			if (node instanceof Reference) {
-				Reference oldRef = (Reference) node;
-				node = references.get(oldRef);
-
-				if (node == null) {
-					Reference newRef = new Reference();
-					node = newRef;
-					references.put(oldRef, newRef);
-				}
+			if (node == null) {
+				Reference newRef = new Reference();
+				node = newRef;
+				references.put(oldRef, newRef);
 			}
 		}
 
