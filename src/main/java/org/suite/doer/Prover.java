@@ -21,12 +21,15 @@ public class Prover {
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
+	private boolean isEnableTrace = false;
+
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
 
 	private Node remaining = OK, alternative = FAIL;
 
 	private Journal journal = new Journal();
+	private Node trace = Atom.nil;
 
 	public Prover(Prover prover) {
 		this(prover.ruleSet);
@@ -102,8 +105,10 @@ public class Prover {
 					remaining = OK;
 				} else
 					return false;
-			else
+			else if (!isEnableTrace)
 				query = expand(query);
+			else
+				query = expandWithTrace(query);
 		}
 	}
 
@@ -125,6 +130,32 @@ public class Prover {
 
 	private Node isSuccess(boolean b) {
 		return b ? OK : FAIL;
+	}
+
+	private final class SetTrace extends Station {
+		private Node trace;
+
+		public SetTrace(Node trace) {
+			super();
+			this.trace = trace;
+		}
+
+		public boolean run() {
+			Prover.this.trace = trace;
+			return true;
+		}
+	}
+
+	private Node expandWithTrace(Node query) {
+		Node query1 = new Cloner().clone(query);
+		Tree trace1 = new Tree(TermOp.AND___, query1, trace);
+		Station push = new SetTrace(trace1), pop = new SetTrace(trace);
+
+		alternative = new Tree(TermOp.AND___, pop, alternative);
+		remaining = new Tree(TermOp.AND___, pop, remaining);
+		query = expand(query);
+		query = new Tree(TermOp.AND___, push, query);
+		return query;
 	}
 
 	/**
@@ -189,10 +220,24 @@ public class Prover {
 	}
 
 	/**
+	 * Allows taking stack dump, with performance hit.
+	 */
+	public void setEnableTrace(boolean isEnableTrace) {
+		this.isEnableTrace = isEnableTrace;
+	}
+
+	/**
 	 * The roll-back log of variable binds.
 	 */
 	public Journal getJournal() {
 		return journal;
+	}
+
+	/**
+	 * Gets stack dump when trace is enabled.
+	 */
+	public Node getTrace() {
+		return trace;
 	}
 
 }

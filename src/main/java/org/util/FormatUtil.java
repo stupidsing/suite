@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class FormatUtil {
 
-	private static final String ymd = "yyyy-mm-dd";
+	private static final String ymd = "yyyy-MM-dd";
 	private static final String hms = "HH:mm:ss";
 
 	public static final SyncDateFormat dateFmt = new SyncDateFormat(ymd);

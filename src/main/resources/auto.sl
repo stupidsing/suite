@@ -6,7 +6,7 @@ enable-trace
 	, asserta (.call :- write 'TRACE: ', dump .call, nl, fail)
 #
 
--- Converts tuple (a b c) to list (a, b, c,)
+-- Converts tuple (a b c) to list (a, b, c,) with terminating nil
 enlist (.item .items) (.item, .items1) :- !, enlist .items .items1 #
 enlist () () :- ! #
 enlist .item (.item,) :- ! #

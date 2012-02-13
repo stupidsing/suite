@@ -122,6 +122,7 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
 resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
+--resolve-types0 .p/.q :- dd .p, nl, nl, fail #
 resolve-types0 (SUPERTYPE-OF .env .t .t, .tr1)/.trx
 	:- resolve-types0 .tr1/.trx
 #
@@ -135,6 +136,7 @@ resolve-types0 (SUPERTYPE-OF .env .t0 .tx, .tr1)/.trx
 #
 resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
 	:- (bound .t0; bound .t1), !
+	, .t0 = TUPLE-OF _, .t1 = TUPLE-OF _
 	, children-of-type .t0 .t1 .ts0/() .ts1/()
 	, super-of-types .env .ts0 .ts1 .trx/.trxx
 	, resolve-types0 .tr1/.trxx

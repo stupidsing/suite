@@ -1,12 +1,19 @@
 package org.suite.predicates;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.node.Node;
 import org.suite.node.Str;
+import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates.SystemPredicate;
+import org.util.FormatUtil;
+import org.util.LogUtil;
 import org.util.Util;
 
 public class IoPredicates {
@@ -14,6 +21,27 @@ public class IoPredicates {
 	public static class Dump implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			System.out.print(Formatter.dump(ps));
+			return true;
+		}
+	}
+
+	public static class DumpStack implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node trace = prover.getTrace();
+			Tree tree;
+			List<Node> traces = new ArrayList<Node>();
+
+			while ((tree = Tree.decompose(trace)) != null) {
+				traces.add(tree.getLeft());
+				trace = tree.getRight();
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = traces.size(); i > 0; i--)
+				sb.append(traces.get(i - 1) + "\n");
+
+			String date = FormatUtil.dtFmt.format(new Date());
+			LogUtil.info("STACK-TRACE", "-- Trace at " + date + " --\n" + sb);
 			return true;
 		}
 	}

@@ -29,6 +29,7 @@ public class SystemPredicates {
 	public SystemPredicates(Prover prover) {
 		this.prover = prover;
 
+		addPredicate("compare.and.set", new CompareAndSet());
 		addPredicate("find.all", new FindAll());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
@@ -67,6 +68,7 @@ public class SystemPredicates {
 		addPredicate("trim", new EvalPredicates.Trim());
 
 		addPredicate("dump", new IoPredicates.Dump());
+		addPredicate("dump.stack", new IoPredicates.DumpStack());
 		addPredicate("exec", new IoPredicates.Exec());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
@@ -112,6 +114,20 @@ public class SystemPredicates {
 
 	private void addPredicate(String name, SystemPredicate pred) {
 		predicates.put(name, pred);
+	}
+
+	private class CompareAndSet implements SystemPredicate {
+		private final Map<Node, Node> map = new HashMap<Node, Node>();
+
+		public synchronized boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 3);
+			Node key = params[0], value = map.get(key);
+
+			boolean result = value == null || prover.bind(value, params[1]);
+			if (result)
+				map.put(key, params[2]);
+			return result;
+		}
 	}
 
 	private class FindAll implements SystemPredicate {
