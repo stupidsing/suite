@@ -24,6 +24,10 @@ fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1, fc-parse .do .do1
 #
+fc-parse (.value as .type) (CAST .type1 .value1)
+	:- !, fc-parse-type .type .type1
+	, fc-parse .value .value1
+#
 fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
 	:- !
 	, fc-parse-type .type .type1
@@ -45,12 +49,10 @@ fc-parse .ifThenElse (IF .if1 .then1 .else1)
 	, fc-parse .then .then1
 	, fc-parse .else .else1
 #
-fc-parse .left/.right .parsed
-	:- !, fc-parse (corecursive-cons {.left} {.right}) .parsed
-#
-fc-parse (.left, .right) .parsed
-	:- !, fc-parse (cons {.left} {.right}) .parsed
-#
+fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
+fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
+fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
+fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
 fc-parse (.name .elems) (TUPLE .name .elems2)
 	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
 #
@@ -180,11 +182,11 @@ fc-add-standard-funs .p (
 	        item => list => fun {item} ? item, list | list
 	    } {}
 	) >>
-	define map = (
-		fun => fold-right {i => list => fun {i}, list} {}
+	define map = (fun =>
+		fold-right {i => list => fun {i}, list} {}
 	) >>
-	define contains = (
-		e => join {map {e1 => e1 = e}} {fold {or}}
+	define contains = (e =>
+		join {map {e1 => e1 = e}} {fold {or}}
 	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
