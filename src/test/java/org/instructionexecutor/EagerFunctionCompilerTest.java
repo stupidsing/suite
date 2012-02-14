@@ -34,9 +34,9 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testConcat() {
 		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
-				+ "concat {1, 2, 3, 4,} {5, 6, 7, 8,}"));
+				+ "concat2 {1, 2, 3, 4,} {5, 6, 7, 8,}"));
 		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6,"), eval("" //
-				+ "concat-list {(1, 2,), (3, 4,), (5, 6,),}"));
+				+ "concat {(1, 2,), (3, 4,), (5, 6,),}"));
 	}
 
 	@Test

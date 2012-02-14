@@ -143,7 +143,7 @@ fc-add-standard-funs .p (
 	define or = (x => y =>
 		x ? true | y
 	) >>
-	define concat = (l1 => l2 =>
+	define concat2 = (l1 => l2 =>
 	    if-tree {l1} {h => t => h, concat {t} {l2}} {l2}
 	) >>
 	define fold = (fun => list =>
@@ -174,8 +174,8 @@ fc-add-standard-funs .p (
 	define apply =
 		fold-left {x => f => f {x}}
 	>>
-	define concat-list =
-		fold-left {concat} {}
+	define concat =
+		fold-left {concat2} {}
 	>>
 	define filter = (fun =>
 	    fold-right {
