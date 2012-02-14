@@ -17,7 +17,7 @@ public class LazyFunctionCompilerTest {
 	}
 
 	@Test
-	public void testFibonacci() {
+	public void testCorecursion() {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "define seq = (n => n, seq {n}) >> \n" //
 				+ "head {seq {0}} = 0"));
