@@ -144,7 +144,7 @@ fc-add-standard-funs .p (
 		x ? true | y
 	) >>
 	define concat2 = (l1 => l2 =>
-	    if-tree {l1} {h => t => h, concat {t} {l2}} {l2}
+	    if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
 	) >>
 	define fold = (fun => list =>
 	    define h = head {list} >>
