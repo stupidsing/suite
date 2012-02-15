@@ -108,6 +108,15 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testInfiniteLoop() {
+		try {
+			SuiteUtil.evaluateFunctional("(e => e {e}) {e => e {e}}", false);
+			throw new RuntimeException();
+		} catch (ArrayIndexOutOfBoundsException ex) {
+		}
+	}
+
+	@Test
 	public void testJoin() {
 		assertEquals(Int.create(19), eval("" //
 				+ "define p = (n => n * 2) >> \n" //
