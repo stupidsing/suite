@@ -16,6 +16,21 @@ compile-function .do .c0
 	, !, fc-assign-line-number 0 .c0
 #
 
+-- Syntax sugars
+fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
+fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
+fc-parse .t .parsed
+	:- tree .t () .op .right, fc-operator .op, !
+	, temp .var, tree .t1 .var .op .right, fc-parse (.var => .t1) .parsed
+#
+fc-parse .t .parsed
+	:- tree .t .left .op (), fc-operator .op, !
+	, temp .var, tree .t1 .left .op .var, fc-parse (.var => .t1) .parsed
+#
+fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
+fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
+fc-parse (.l . .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
+-- Function constructs
 fc-parse (.var as .type => .do) (FUN .var .do1)
 	:- !, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
 	, fc-parse .do1 .do2
@@ -49,19 +64,12 @@ fc-parse .ifThenElse (IF .if1 .then1 .else1)
 	, fc-parse .then .then1
 	, fc-parse .else .else1
 #
-fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
-fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
-fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
-fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
 fc-parse (.name .elems) (TUPLE .name .elems2)
 	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
 #
 fc-parse .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
-	, member (' + ', ' - ', ' * ', ' / ', ' %% ',
-		' = ', ' != ',
-		' > ', ' < ', ' >= ', ' <= ',
-	) .oper
+	, fc-operator .oper
 	, !, fc-parse .left .left1
 	, fc-parse .right .right1
 #
@@ -112,6 +120,13 @@ fc-is-tuple-name .t
 	:- is.atom .t
 	, nth .t 0 1 .c
 	, .c >= 'A', .c <= 'Z'
+#
+
+fc-operator .oper
+	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
+		' = ', ' != ',
+		' > ', ' < ', ' >= ', ' <= ',
+	) .oper
 #
 
 fc-is-boolean true #

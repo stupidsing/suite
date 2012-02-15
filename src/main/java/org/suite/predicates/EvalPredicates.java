@@ -306,7 +306,8 @@ public class EvalPredicates {
 		private static AtomicInteger counter = new AtomicInteger();
 
 		public boolean prove(Prover prover, Node ps) {
-			return prover.bind(ps, Int.create(counter.getAndIncrement()));
+			int n = counter.getAndIncrement();
+			return prover.bind(ps, Atom.create("$$T" + n));
 		}
 	}
 

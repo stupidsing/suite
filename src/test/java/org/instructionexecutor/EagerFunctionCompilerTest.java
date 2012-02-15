@@ -123,6 +123,11 @@ public class EagerFunctionCompilerTest {
 				+ "define q = (n => n + 1) >> \n" //
 				+ "define r = (join {p} {q}) >> \n" //
 				+ "r {9}"));
+		assertEquals(Int.create(13), eval("" //
+				+ "define p = (n => n + 1) >> \n" //
+				+ "define q = (n => n * 2) >> \n" //
+				+ "define r = (n => n - 3) >> \n" //
+				+ "(p . q . r) {9}"));
 	}
 
 	@Test
