@@ -63,22 +63,22 @@ lc-compile ($$CUT .cutPoint .failLabel) .more .env .c0/.cx/.d0/.dx
 #
 lc-compile (.a = .b) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
-	, create-node .a .vs .c0/.c1/.reg0
-	, create-node .b .vs .c1/.c2/.reg1
+	, lc-create-node .a .vs .c0/.c1/.reg0
+	, lc-create-node .b .vs .c1/.c2/.reg1
 	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
 	, lc-compile .more () .pls/.vs .c3/.c4/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
 #
 lc-compile (.rules >> .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
-	, categorize-rules .rules .groups
-	, prototype-labels .groups .pls/.pls1
-	, compile-rules .groups .pls1 .d1/.dx
+	, lc-categorize-rules .rules .groups
+	, lc-prototype-labels .groups .pls/.pls1
+	, lc-compile-rules .groups .pls1 .d1/.dx
 	, !, lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.d1
 #
 lc-compile .call .more .pls/.vs .c0/.cx/.d0/.dx
-	:- call-prototype .call .proto
-	, create-node .call .vs .c0/.c1/.reg
+	:- lc-call-prototype .call .proto
+	, lc-create-node .call .vs .c0/.c1/.reg
 	, (
 		member .pls .proto/.callLabel, !
 		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
@@ -93,7 +93,7 @@ lc-compile .call .more .pls/.vs .c0/.cx/.d0/.dx
 		, lc-compile .more () .pls/.vs .d1/.d2/.d3/.dx
 		, .d2 = (_ RETURN, .d3)
 	;
-		system-call-prototype .proto, !
+		lc-system-call-prototype .proto, !
 		, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
 		, lc-compile .more () .pls/.vs .c2/.c3/.d0/.dx
 		, .c3 = (.failLabel LABEL .failLabel, .cx)
@@ -101,78 +101,86 @@ lc-compile .call .more .pls/.vs .c0/.cx/.d0/.dx
 #
 lc-compile .d _ _ _ :- write "Unknown expression" .d, nl, fail #
 
-categorize-rules () _ #
-categorize-rules (.rule # .remains) .groups
-	:- decompose-rule .rule .head _
-	, call-prototype .head .proto
+lc-categorize-rules () _ #
+lc-categorize-rules (.rule # .remains) .groups
+	:- lc-decompose-rule .rule .head _
+	, lc-call-prototype .head .proto
 	, member .groups .proto/.rules
 	, member .rules .rule
 	, !
-	, categorize-rules .remains .groups
+	, lc-categorize-rules .remains .groups
 #
 
-flatten-rules () fail :- ! #
-flatten-rules (.rule, .remains) (.head1; .tail1)
-	:- decompose-rule .rule .head .tail
+lc-flatten-rules () fail :- ! #
+lc-flatten-rules (.rule, .remains) (.head1; .tail1)
+	:- lc-decompose-rule .rule .head .tail
 	, !, .head1 = ($$BYTECODE _ TOP .reg -1, $$REG:.reg = .head, .tail)
-	, flatten-rules .remains .tail1
+	, lc-flatten-rules .remains .tail1
 #
 
-call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
-call-prototype .name .name #
+lc-call-prototype (.name .ps) .name/.n :- lc-params-length .ps .n, ! #
+lc-call-prototype .name .name #
 
-params-length .ps .n
+lc-params-length .ps .n
 	:- if (bound .ps, .ps = _ .ps1) then (
-		params-length .ps1 .n1, sum .n 1 .n1
+		lc-params-length .ps1 .n1, sum .n 1 .n1
 	) else-if (.n > 1, .ps = _ .ps1) then (
-		sum .n 1 .n1, params-length .ps1 .n1
+		sum .n 1 .n1, lc-params-length .ps1 .n1
 	) else (
 		(not bound .ps; .ps != _ _), .n = 1
 	)
 #
 
-prototype-labels () .pls/.pls :- ! #
-prototype-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
-	:- prototype-labels .tail .pls/.pls1
+lc-prototype-labels () .pls/.pls :- ! #
+lc-prototype-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
+	:- lc-prototype-labels .tail .pls/.pls1
 #
 
-compile-rules () _ .c/.c :- ! #
-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
-	:- flatten-rules .rules .call
+lc-compile-rules () _ .c/.c :- ! #
+lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
+	:- lc-flatten-rules .rules .call
 	, member .pls .proto/.callLabel
 	, .l = '-----'
 	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
 	, compile-call .call .pls .c1/.c2/.callLabel
-	, compile-rules .remains .pls .c2/.cx
+	, lc-compile-rules .remains .pls .c2/.cx
 #
 
-decompose-rule (.head :- .tail) .head .tail :- ! #
-decompose-rule .head .head () #
+lc-decompose-rule (.head :- .tail) .head .tail :- ! #
+lc-decompose-rule .head .head () #
 
-create-node $$REG:.reg _ .c/.c/.reg :- ! #
-create-node .var .vs .c0/.cx/.reg
-	:- is-variable .var
+lc-create-node $$REG:.reg _ .c/.c/.reg :- ! #
+lc-create-node .var .vs .c0/.cx/.reg
+	:- lc-is-variable .var
 	, !, member .vs .var/.reg/.first
 	, (bound .first, .c0 = .cx
 		; .first = N, .c0 = (_ NEW-NODE .reg, .cx)
 	)
 	, !
 #
-create-node .a _ .c0/.cx/.reg :- is.atom .a, !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx) #
-create-node .i _ .c0/.cx/.reg :- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-create-node .s _ .c0/.cx/.reg :- is.string .s, !, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx) #
-create-node .tree .vs .c0/.cx/.reg
+lc-create-node .a _ .c0/.cx/.reg
+	:- is.atom .a, !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx)
+#
+lc-create-node .i _ .c0/.cx/.reg
+	:- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
+#
+lc-create-node .s _ .c0/.cx/.reg
+	:- is.string .s, !, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx)
+#
+lc-create-node .tree .vs .c0/.cx/.reg
 	:- tree .tree .left .operator .right
-	, create-node .left .vs .c0/.c1/.regl
-	, create-node .right .vs .c1/.c2/.regr
+	, lc-create-node .left .vs .c0/.c1/.regl
+	, lc-create-node .right .vs .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
-system-call-prototype let/2 #
-system-call-prototype once/1 #
-system-call-prototype find.all/3 #
+lc-system-call-prototype let/2 #
+lc-system-call-prototype once/1 #
+lc-system-call-prototype find.all/3 #
 
-is-variable .variable :- is.atom .variable, to.atom "." .dot, starts.with .variable .dot #
+lc-is-variable .variable
+	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot
+#
 
 lc-assign-line-number _ () #
 lc-assign-line-number .n (.n _, .remains)
