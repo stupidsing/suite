@@ -35,6 +35,9 @@ if _ then _ end-if :- ! #
 if _ then _ else .else :- !, .else #
 if _ then _ else-if .elseIf :- !, if .elseIf #
 
+length () 0 #
+length (_, .r) .l1 :- length .r .l0, let .l1 (.l0 + 1) #
+
 member (.e, _) .e #
 member (_, .tail) .e :- member .tail .e #
 

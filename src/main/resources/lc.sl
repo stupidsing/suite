@@ -13,7 +13,8 @@ compile-logic .call .c0
 		, .provenLabel EXIT-VALUE true
 		, .c1
 	)
-	, compile-call .call () .c1/()/.callLabel
+	, lc-parse .call .call1
+	, compile-call .call1 () .c1/()/.callLabel
 	, lc-assign-line-number 0 .c0
 #
 
@@ -23,87 +24,137 @@ compile-call .call .pls .c0/.cx/.label
 		, _ TOP .provenReg -2
 		, .c1
 	)
-	, to.atom "!" .cutSymbol
-	, replace .call/.call1 .cutSymbol/($$CUT .cutPoint .failLabel)
+	, replace .call/.call1 CUT/($$CUT .cutPoint .failLabel)
 	, lc-compile .call1 (
-		$$BYTECODE _ CALL-CLOSURE .provenReg .provenReg, fail
+		AND ($$BYTECODE _ CALL-CLOSURE .provenReg .provenReg) FAIL
 	) .pls/_ .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel RETURN, .c3)
 	, .c4 = (_ LEAVE, .cx)
 #
 
+lc-parse (.rules >> .clause) (DEFINE-RULES .rules1 .clause1)
+	:- !, lc-parse-rules .rules .rules1, lc-parse-clause .clause .clause1
+#
+lc-parse .clause .clause1 :- lc-parse-clause .clause .clause1 #
+
+lc-parse-rules () () :- ! #
+lc-parse-rules (.rule # .rules) (.rule1, .rules1)
+	:- lc-parse-rule .rule .rule1, lc-parse-rules .rules .rules1
+#
+
+lc-parse-rule (.head :- .tail) (RULE .head1 .tail1)
+	:- !, lc-parse-call .head .head1, lc-parse-clause .tail .tail1
+#
+lc-parse-rule .head (RULE .head1 YES) :- lc-parse-call .head .head1 #
+
+lc-parse-clause () YES :- ! #
+lc-parse-clause fail FAIL :- ! #
+lc-parse-clause .cut CUT :- to.atom "!" .cut, ! #
+lc-parse-clause .tree (.oper1 .left1 .right1)
+	:- tree .tree .left .oper .right
+	, member (','/AND, ';'/OR,
+		' = '/EQ, ' != '/NE, ' > '/GT, ' < '/LT, ' >= '/GE, ' <= '/LE,
+	) .oper/.oper1, !
+	, lc-parse-clause .left .left1
+	, lc-parse-clause .right .right1
+#
+lc-parse-clause .call .callx
+	:- lc-parse-call .call .call1
+	, lc-call-prototype .call1 .proto
+	, (lc-system-call-prototype .proto, !
+		, lc-parse-pattern .call .call2
+		, .callx = SYSTEM-CALL .call2
+	; .callx = CALL .call1
+	)
+#
+lc-parse-clause .d _ :- write "Unknown expression" .d, nl, fail #
+
+lc-parse-call .head .head2
+	:- !, enlist .head .head1, lc-parse-pattern .head1 .head2
+#
+
+lc-parse-pattern .tree .tree1
+	:- tree .tree .left .oper .right
+	, tree .tree1 .left1 .oper .right1, !
+	, lc-parse-pattern .left .left1
+	, lc-parse-pattern .right .right1
+#
+lc-parse-pattern .var (VAR .var) :- lc-is-variable .var, ! #
+lc-parse-pattern .e .e #
+
 --lc-compile .p :- write lc-compile .p, nl, fail #
 lc-compile ($$BYTECODE .bytecode) .more .env .c0/.cx/.d0/.dx
 	:- !, .c0 = (.bytecode, .c1)
-	, lc-compile .more () .env .c1/.cx/.d0/.dx
+	, lc-compile .more YES .env .c1/.cx/.d0/.dx
 #
 lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
-	, (.more/.more1 = ()/(); .more1 = $$SCOPE .more .pls)
+	, (.more/.more1 = YES/YES; .more1 = $$SCOPE .more .pls)
 	, lc-compile .call .more1 .pls1/.vs .c0/.cx/.d0/.dx
 #
-lc-compile fail _ _ .c/.c/.d/.d :- ! #
-lc-compile () .more .env .c0/.cx/.d0/.dx
-	:- !, lc-compile .more () .env .c0/.cx/.d0/.dx
+lc-compile FAIL _ _ .c/.c/.d/.d :- ! #
+lc-compile YES .more .env .c0/.cx/.d0/.dx
+	:- !, lc-compile .more YES .env .c0/.cx/.d0/.dx
 #
-lc-compile (.a, .b) .more .env .c0/.cx/.d0/.dx
-	:- !, lc-compile .a (.b, .more) .env .c0/.cx/.d0/.dx
+lc-compile (AND .a .b) .more .env .c0/.cx/.d0/.dx
+	:- !, lc-compile .a (AND .b .more) .env .c0/.cx/.d0/.dx
 #
-lc-compile (.a; .b) .more .env .c0/.cx/.d0/.dx
+lc-compile (OR .a .b) .more .env .c0/.cx/.d0/.dx
 	:- !
-	, lc-compile .a ($$BYTECODE _ CALL-CONSTANT .label, fail) .env .c0/.c1/.d0/.d1
-	, lc-compile .b ($$BYTECODE _ CALL-CONSTANT .label, fail) .env .c1/.cx/.d1/.d2
+	, .bc = CALL-CONSTANT .label
+	, lc-compile .a (AND ($$BYTECODE _ .bc) FAIL) .env .c0/.c1/.d0/.d1
+	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .env .c1/.cx/.d1/.d2
 	, .d2 = (.label LABEL .label, .d3)
-	, lc-compile .more () .env .d3/.d4/.d5/.dx
+	, lc-compile .more YES .env .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
 #
 lc-compile ($$CUT .cutPoint .failLabel) .more .env .c0/.cx/.d0/.dx
-	:- !, lc-compile .more () .env .c0/.c1/.d0/.dx
+	:- !, lc-compile .more YES .env .c0/.c1/.d0/.dx
 	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
 #
-lc-compile (.a = .b) .more .pls/.vs .c0/.cx/.d0/.dx
+lc-compile (EQ .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, lc-create-node .a .vs .c0/.c1/.reg0
 	, lc-create-node .b .vs .c1/.c2/.reg1
 	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
-	, lc-compile .more () .pls/.vs .c3/.c4/.d0/.dx
+	, lc-compile .more YES .pls/.vs .c3/.c4/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
 #
-lc-compile (.rules >> .call) .more .pls/.vs .c0/.cx/.d0/.dx
+lc-compile (DEFINE-RULES .rules .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, lc-categorize-rules .rules .groups
 	, lc-prototype-labels .groups .pls/.pls1
 	, lc-compile-rules .groups .pls1 .d1/.dx
 	, !, lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.d1
 #
-lc-compile .call .more .pls/.vs .c0/.cx/.d0/.dx
-	:- lc-call-prototype .call .proto
+lc-compile (CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
+	:- !
+	, lc-call-prototype .call .proto
 	, lc-create-node .call .vs .c0/.c1/.reg
-	, (
-		member .pls .proto/.callLabel, !
-		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
-			, _ PUSH .provenReg
-			, _ PUSH .reg
-			, _ CALL-CONSTANT .callLabel
-			, _ POP _
-			, _ POP _
-			, .cx
-		)
-		, .d0 = (.provenLabel LABEL .provenLabel, .d1)
-		, lc-compile .more () .pls/.vs .d1/.d2/.d3/.dx
-		, .d2 = (_ RETURN, .d3)
-	;
-		lc-system-call-prototype .proto, !
-		, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
-		, lc-compile .more () .pls/.vs .c2/.c3/.d0/.dx
-		, .c3 = (.failLabel LABEL .failLabel, .cx)
+	, member .pls .proto/.callLabel
+	, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
+		, _ PUSH .provenReg
+		, _ PUSH .reg
+		, _ CALL-CONSTANT .callLabel
+		, _ POP _
+		, _ POP _
+		, .cx
 	)
+	, .d0 = (.provenLabel LABEL .provenLabel, .d1)
+	, lc-compile .more YES .pls/.vs .d1/.d2/.d3/.dx
+	, .d2 = (_ RETURN, .d3)
 #
-lc-compile .d _ _ _ :- write "Unknown expression" .d, nl, fail #
+lc-compile (SYSTEM-CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
+	:-	!
+	, lc-create-node .call .vs .c0/.c1/.reg
+	, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
+	, lc-compile .more YES .pls/.vs .c2/.c3/.d0/.dx
+	, .c3 = (.failLabel LABEL .failLabel, .cx)
+#
 
 lc-categorize-rules () _ #
-lc-categorize-rules (.rule # .remains) .groups
-	:- lc-decompose-rule .rule .head _
+lc-categorize-rules (.rule, .remains) .groups
+	:- .rule = RULE .head .tail
 	, lc-call-prototype .head .proto
 	, member .groups .proto/.rules
 	, member .rules .rule
@@ -111,15 +162,13 @@ lc-categorize-rules (.rule # .remains) .groups
 	, lc-categorize-rules .remains .groups
 #
 
-lc-flatten-rules () fail :- ! #
-lc-flatten-rules (.rule, .remains) (.head1; .tail1)
-	:- lc-decompose-rule .rule .head .tail
-	, !, .head1 = ($$BYTECODE _ TOP .reg -1, $$REG:.reg = .head, .tail)
+lc-flatten-rules () FAIL :- ! #
+lc-flatten-rules (RULE .head .tail, .remains) (OR .head1 .tail1)
+	:- .head1 = AND ($$BYTECODE _ TOP .reg -1) AND (EQ $$REG:.reg .head) .tail
 	, lc-flatten-rules .remains .tail1
 #
 
-lc-call-prototype (.name .ps) .name/.n :- lc-params-length .ps .n, ! #
-lc-call-prototype .name .name #
+lc-call-prototype (.name, .call) .name/.n :- length .call .n #
 
 lc-params-length .ps .n
 	:- if (bound .ps, .ps = _ .ps1) then (
@@ -146,13 +195,9 @@ lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	, lc-compile-rules .remains .pls .c2/.cx
 #
 
-lc-decompose-rule (.head :- .tail) .head .tail :- ! #
-lc-decompose-rule .head .head () #
-
 lc-create-node $$REG:.reg _ .c/.c/.reg :- ! #
-lc-create-node .var .vs .c0/.cx/.reg
-	:- lc-is-variable .var
-	, !, member .vs .var/.reg/.first
+lc-create-node (VAR .var) .vs .c0/.cx/.reg
+	:- !, member .vs .var/.reg/.first
 	, (bound .first, .c0 = .cx
 		; .first = N, .c0 = (_ NEW-NODE .reg, .cx)
 	)
