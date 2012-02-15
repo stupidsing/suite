@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 -- theorem proving
 --
--- 1. removing implication operators (~P ^ Q)
--- 2. moving negation inwards
+-- 1. convert implication operators: (P => Q) becomes (~P ^ Q)
+-- 2. move negation inwards
 -- 3. skolemising
 -- 4. moving "for-all" outwards
 -- 5. distributing AND over OR
