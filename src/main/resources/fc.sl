@@ -83,7 +83,7 @@ fc-parse .d _ _ :- fc-error "Unknown expression" .d #
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
-fc-parse-type (.paramType => .returnType) (FUN .paramType1 .returnType1)
+fc-parse-type (.returnType {.paramType}) (FUN .paramType1 .returnType1)
 	:- !, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #

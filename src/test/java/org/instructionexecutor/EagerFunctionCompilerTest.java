@@ -59,8 +59,7 @@ public class EagerFunctionCompilerTest {
 				SuiteUtil.parse("" //
 						+ "((A, 1,), (A, 2,),), " //
 						+ "((B, 1,), (B, 2,),), " //
-						+ "((C, 1,), (C, 2,),),") //
-				,
+						+ "((C, 1,), (C, 2,),),"),
 				eval("define list1 as list of one of (A, B, C,) = (A, B, C,) >> \n" //
 						+ "cross {a => b => a, b,} {list1} {1, 2,}"));
 	}
