@@ -11,6 +11,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
+import org.util.LogUtil;
 import org.util.Util;
 
 import com.google.common.collect.BiMap;
@@ -82,6 +83,7 @@ public class InstructionExecutor {
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
+		LOG___________("LOG"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
@@ -359,6 +361,9 @@ public class InstructionExecutor {
 				current.ip = insn.op1;
 				break;
 			case LABEL_________:
+				break;
+			case LOG___________:
+				LogUtil.info("EXEC", constantPool.get(insn.op2).toString());
 				break;
 			case NEWNODE_______:
 				regs[insn.op1] = new Reference();

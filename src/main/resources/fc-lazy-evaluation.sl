@@ -3,7 +3,7 @@
 
 fc-compile .do .frame .c0/.cx/.d0/.dx/.reg
 	:- fc-compile0 .do .frame .c0/.c1/.d0/.dx/.closureReg
-	, .c1 = ( _ CALL-CLOSURE .reg .closureReg, .cx)
+	, .c1 = (_ CALL-CLOSURE .reg .closureReg, .cx)
 #
 
 fc-compile0 (CAST _ .do) .frame .cdr :- !, fc-compile0 .do .frame .cdr #
