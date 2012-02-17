@@ -16,7 +16,9 @@ compile-function .do .c0
 	, !, fc-assign-line-number 0 .c0
 #
 
+--
 -- Syntax sugars
+--
 fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
 fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
 fc-parse .t .parsed
@@ -30,7 +32,11 @@ fc-parse .t .parsed
 fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
 fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
 fc-parse (.l . .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
+fc-parse (.i ? .t | .e) .parsed :- !, fc-parse (if .i then .t else .e) .parsed #
+fc-parse (.l << .r) .parsed :- !, fc-parse (l. {.r}) .parsed #
+--
 -- Function constructs
+--
 fc-parse (.var as .type => .do) (FUN .var .do1)
 	:- !, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
 	, fc-parse .do1 .do2
@@ -58,8 +64,8 @@ fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #
-fc-parse .ifThenElse (IF .if1 .then1 .else1)
-	:- member ((if .if then .then else .else), (.if ? .then | .else),) .ifThenElse, !
+fc-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
+	:- !
 	, fc-parse .if .if1
 	, fc-parse .then .then1
 	, fc-parse .else .else1
@@ -201,7 +207,7 @@ fc-add-standard-funs .p (
 		fold-right {i => list => fun {i}, list} {}
 	) >>
 	define contains = (e =>
-		join {map {e1 => e1 = e}} {fold {or}}
+		fold {or} . map {e1 => e1 = e}
 	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
