@@ -26,7 +26,7 @@ public class Prover {
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
 
-	private Node remaining = OK, alternative = FAIL;
+	private Node remaining, alternative;
 
 	private Journal journal = new Journal();
 	private Node trace = Atom.nil;
@@ -53,6 +53,9 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
+		remaining = OK;
+		alternative = FAIL;
+
 		while (true) {
 			// LogUtil.info("PROVE", Formatter.dump(query));
 
