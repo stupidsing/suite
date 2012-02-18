@@ -31,7 +31,7 @@ fc-parse .t .parsed
 #
 fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
 fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
-fc-parse (.l . .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
+fc-parse (.l $ .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
 fc-parse (.i ? .t | .e) .parsed :- !, fc-parse (if .i then .t else .e) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (l. {.r}) .parsed #
 --
@@ -207,7 +207,7 @@ fc-add-standard-funs .p (
 		fold-right {i => list => fun {i}, list} {}
 	) >>
 	define contains = (e =>
-		fold {or} . map {e1 => e1 = e}
+		fold {or} $ map {e1 => e1 = e}
 	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}

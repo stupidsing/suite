@@ -17,7 +17,7 @@ public class TermParser extends Parser {
 		LET___(" >> ", Assoc.RIGHT), //
 		OR____(";", Assoc.RIGHT), //
 		AND___(",", Assoc.RIGHT), //
-		JOIN__(" . ", Assoc.LEFT), //
+		JOIN__(" $ ", Assoc.LEFT), //
 		BLAND_(" && ", Assoc.RIGHT), //
 		BLOR__(" || ", Assoc.RIGHT), //
 		LE____(" <= ", Assoc.RIGHT), //
