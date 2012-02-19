@@ -95,7 +95,7 @@ fc-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
 #
 
-fc-compile-tuple  .name () .frame .c0/.cx/.d/.d/.reg
+fc-compile-tuple .name () .frame .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
 #
 fc-compile-tuple .name (.e, .es) .frame .c0/.cx/.d0/.dx/.reg
