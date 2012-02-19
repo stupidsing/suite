@@ -37,6 +37,12 @@ fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
 	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 	, !
 #
+fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
+	:- member (head, tail,) .var -- Special list processing function
+	, fc-define-default-fun 1 .var .call, !
+	, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
+	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
+#
 fc-compile0 (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
 	, fc-compile .callee .frame .c0/.c1/.d0/.d1/.r1
@@ -55,14 +61,10 @@ fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
 fc-compile-wrapped (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
-	:- member (head, tail,) .var -- Special list processing function
+	:- member (is-tree,) .var -- Special list processing function
 	, fc-define-default-fun 1 .var .call, !
 	, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
-	, .c1 = (_ PUSH .paramReg
-		, _ SYS .closureReg .call 1
-		, _ CALL-CLOSURE .reg .closureReg
-		, .cx
-	)
+	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
 #
 fc-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE .var))) .frame .c0/.cx/.d0/.dx/.reg
 	:- member (cons,) .var -- Special list processing function
