@@ -44,7 +44,7 @@ fc-compile (TUPLE .name (.e, .es)) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile (TUPLE .name .es) .frame .c1/.c2/.d1/.dx/.tailReg
 	, .c2 = (_ PUSH .headReg, .c3)
 	, .c3 = (_ PUSH .tailReg, .c4)
-	, .c4 = (_ SYS CONS .reg 2, .cx)
+	, .c4 = (_ SYS .reg CONS 2, .cx)
 #
 fc-compile (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -79,5 +79,5 @@ fc-default-fun0 (INVOKE .p .pred) .frame .c0/.cx/.d0/.dx/.reg .n
 #
 fc-default-fun0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-default-fun .n .pred .call, !
-	, .c0 = (_ SYS .call .reg .n, .cx)
+	, .c0 = (_ SYS .reg .call .n, .cx)
 #

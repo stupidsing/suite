@@ -24,8 +24,12 @@ public class InstructionExecutor {
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 
+	private int nGlobals;
+	private Node globals[];
+
 	private static final Atom trueAtom = Atom.create("true");
 	private static final Atom falseAtom = Atom.create("false");
+	private static final Atom globalAtom = Atom.create("G");
 
 	private static final int stackSize = 4096;
 
@@ -50,6 +54,7 @@ public class InstructionExecutor {
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
+		ASSIGNGLOBAL__("ASSIGN-GLOBAL"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		BIND__________("BIND"), //
 		BINDUNDO______("BIND-UNDO"), //
@@ -81,6 +86,7 @@ public class InstructionExecutor {
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
+		IFNOTNULL_____("IF-NOT-NULL"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
 		LOG___________("LOG"), //
@@ -93,6 +99,7 @@ public class InstructionExecutor {
 		REMARK________("REMARK"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
+		STOREGLOBAL___("STORE-GLOBAL"), //
 		SYS___________("SYS"), //
 		TOP___________("TOP"), //
 		;
@@ -134,10 +141,12 @@ public class InstructionExecutor {
 		}
 
 		instructions = list.toArray(new Instruction[list.size()]);
+		globals = new Node[nGlobals];
 	}
 
 	private class InstructionExtractor {
 		private List<Instruction> enters = new ArrayList<Instruction>();
+		private Map<Node, Integer> globalMapping = Util.createHashMap();
 
 		private Instruction extract(Node node) {
 			List<Node> rs = new ArrayList<Node>(5);
@@ -190,10 +199,19 @@ public class InstructionExecutor {
 		private int getRegisterNumber(List<Node> rs, int index) {
 			if (rs.size() > index) {
 				Node node = rs.get(index).finalNode();
+				Tree tree;
 
 				if (node instanceof Int)
 					return ((Int) node).getNumber();
-				else if (node instanceof Reference) { // Transient register
+				else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null
+						&& tree.getLeft() == globalAtom) {
+					Node right = tree.getRight().finalNode();
+					Integer loc = globalMapping.get(right);
+
+					if (loc == null)
+						globalMapping.put(right, loc = nGlobals++);
+					return loc;
+				} else if (node instanceof Reference) { // Transient register
 
 					// Allocates new register in current local frame
 					Instruction enter = enters.get(enters.size() - 1);
@@ -287,6 +305,9 @@ public class InstructionExecutor {
 			case ASSIGNCONST___:
 				regs[insn.op1] = constantPool.get(insn.op2);
 				break;
+			case ASSIGNGLOBAL__:
+				regs[insn.op1] = globals[insn.op2];
+				break;
 			case ASSIGNINT_____:
 				regs[insn.op1] = i(insn.op2);
 				break;
@@ -357,6 +378,10 @@ public class InstructionExecutor {
 				if (regs[insn.op2] != regs[insn.op3])
 					current.ip = insn.op1;
 				break;
+			case IFNOTNULL_____:
+				if (regs[insn.op2] != null)
+					current.ip = insn.op1;
+				break;
 			case JUMP__________:
 				current.ip = insn.op1;
 				break;
@@ -386,6 +411,9 @@ public class InstructionExecutor {
 				Node returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
+				break;
+			case STOREGLOBAL___:
+				globals[insn.op1] = regs[insn.op2];
 				break;
 			case TOP___________:
 				regs[insn.op1] = dataStack[dsp + insn.op2];

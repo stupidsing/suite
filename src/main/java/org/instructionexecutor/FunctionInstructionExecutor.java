@@ -27,7 +27,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		switch (insn.insn) {
 		case SYS___________:
 			dsp -= insn.op3;
-			regs[insn.op2] = sys(constantPool.get(insn.op1), dataStack, dsp);
+			regs[insn.op1] = sys(constantPool.get(insn.op2), dataStack, dsp);
 			break;
 		default:
 			return super.execute(current, insn, callStack, csp, dataStack, dsp);

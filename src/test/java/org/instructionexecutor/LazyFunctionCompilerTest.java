@@ -30,6 +30,15 @@ public class LazyFunctionCompilerTest {
 	}
 
 	@Test
+	public void testFibonacci() {
+		assertEquals(Int.create(89), eval("" //
+				+ "define fib = ( \n" //
+				+ "    1, 1, zip {a => b => a + b} {fib} {tail {fib}} \n" //
+				+ ") >> \n" //
+				+ "tail {fib}"));
+	}
+
+	@Test
 	public void testSubstitution() {
 		assertEquals(Int.create(8), eval("define v = 4 >> v + v"));
 	}
