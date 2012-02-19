@@ -73,7 +73,7 @@ public class Parser {
 			if (operator == TermOp.BRACES && last != '}')
 				continue;
 
-			int pos = search(s, operator);
+			int pos = ParserUtil.search(s, operator);
 
 			if (operator == TermOp.BRACES)
 				s = Util.substr(s, 0, -1);
@@ -106,7 +106,7 @@ public class Parser {
 		// Shows warning if the atom has mismatched quotes or brackets
 		int quote = 0, depth = 0;
 		for (char c : s.toCharArray()) {
-			quote = getQuoteChange(quote, c);
+			quote = ParserUtil.getQuoteChange(quote, c);
 			if (quote == 0)
 				depth = ParserUtil.checkDepth(depth, c);
 		}
@@ -128,7 +128,7 @@ public class Parser {
 
 		while (!s.isEmpty()) {
 			String line;
-			int pos = search(s, "\n", Assoc.RIGHT, false);
+			int pos = ParserUtil.search(s, "\n", Assoc.RIGHT, false);
 			pos = pos >= 0 ? pos : s.length();
 			line = s.substring(0, pos);
 			s = pos < s.length() ? s.substring(pos + 1) : "";
@@ -144,6 +144,7 @@ public class Parser {
 			if (length != 0) { // Ignore empty lines
 				int startPos = 0, endPos = length;
 
+				// Find operators at beginning and end of line
 				for (Operator operator : operators) {
 					String name = operator.getName().trim();
 
@@ -164,6 +165,7 @@ public class Parser {
 						&& ParserUtil.getDepthDelta(line) == 0 //
 						&& ParserUtil.isPositiveDepth(line);
 
+				// Insert parentheses by line indentation
 				String decoratedLine = "";
 				while (lastIndent > indent) {
 					decoratedLine += ") ";
@@ -201,7 +203,7 @@ public class Parser {
 
 	private String replace(String s, String from, String to) {
 		while (true) {
-			int pos = search(s, 0, from);
+			int pos = ParserUtil.search(s, 0, from);
 
 			if (pos != -1)
 				s = s.substring(0, pos) + to + s.substring(pos + from.length());
@@ -220,10 +222,10 @@ public class Parser {
 		int closeLength = !isWhitespaces(close) ? close.length() : 0;
 
 		while (true) {
-			int pos1 = search(s, 0, open);
+			int pos1 = ParserUtil.search(s, 0, open);
 			if (pos1 == -1)
 				return s;
-			int pos2 = search(s, pos1 + open.length(), close);
+			int pos2 = ParserUtil.search(s, pos1 + open.length(), close);
 			if (pos2 == -1)
 				return s;
 			s = s.substring(0, pos1) + s.substring(pos2 + closeLength);
@@ -253,62 +255,6 @@ public class Parser {
 		}
 
 		return s;
-	}
-
-	private static int search(String s, int start, String toMatch) {
-		int nameLength = toMatch.length();
-		int end = s.length() - nameLength;
-		int quote = 0;
-
-		for (int pos = start; pos <= end; pos++) {
-			char c = s.charAt(pos);
-			quote = getQuoteChange(quote, c);
-
-			if (quote == 0 && s.startsWith(toMatch, pos))
-				return pos;
-		}
-
-		return -1;
-	}
-
-	private static int search(String s, Operator operator) {
-		return search(s, operator.getName(), operator.getAssoc());
-	}
-
-	private static int search(String s, String name, Assoc assoc) {
-		return search(s, name, assoc, true);
-	}
-
-	private static int search(String s, String name, Assoc assoc,
-			boolean isCheckDepth) {
-		boolean isLeftAssoc = assoc == Assoc.LEFT;
-		int nameLength = name.length();
-		int end = s.length() - nameLength;
-		int quote = 0, depth = 0;
-
-		for (int i = 0; i <= end; i++) {
-			int pos = isLeftAssoc ? end - i : i;
-			char c = s.charAt(pos + (isLeftAssoc ? nameLength - 1 : 0));
-			quote = getQuoteChange(quote, c);
-
-			if (quote == 0) {
-				if (isCheckDepth)
-					depth = ParserUtil.checkDepth(depth, c);
-
-				if (depth == 0 && s.startsWith(name, pos))
-					return pos;
-			}
-		}
-
-		return -1;
-	}
-
-	public static int getQuoteChange(int quote, char c) {
-		if (c == quote)
-			quote = 0;
-		else if ((c == '\'' || c == '"') && quote == 0)
-			quote = c;
-		return quote;
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
