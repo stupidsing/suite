@@ -29,6 +29,12 @@ fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
 	:- !, let .frameDifference (.frame0 - .frame)
 	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 #
+fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
+	:- member (head, tail,) .var -- Special list processing function
+	, fc-define-default-fun 1 .var .call, !
+	, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
+	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
+#
 fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
 	, let .frame1 (.frame + 1)
@@ -36,12 +42,6 @@ fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
 	, fc-compile-wrapped .do .frame1 .d1/.d2/.d3/.dx/.returnReg
 	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 	, !
-#
-fc-compile0 (INVOKE .p (VARIABLE .var)) .frame .c0/.cx/.d0/.dx/.reg
-	:- member (head, tail,) .var -- Special list processing function
-	, fc-define-default-fun 1 .var .call, !
-	, fc-compile .p .frame .c0/.c1/.d0/.dx/.paramReg
-	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
 #
 fc-compile0 (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
 	:- !
