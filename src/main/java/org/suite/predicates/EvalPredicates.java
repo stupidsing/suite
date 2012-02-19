@@ -1,6 +1,5 @@
 package org.suite.predicates;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
@@ -12,7 +11,6 @@ import javax.script.ScriptException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.fp.Interpreter;
 import org.parser.Operator;
 import org.suite.SuiteUtil;
 import org.suite.doer.Cloner;
@@ -20,7 +18,6 @@ import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
-import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -84,23 +81,6 @@ public class EvalPredicates {
 
 			String str = result != null ? result.toString() : "";
 			return prover.bind(new Str(str), params[1]);
-		}
-	}
-
-	public static class EvalFunctional implements SystemPredicate {
-		private static final Interpreter interpreter = new Interpreter();
-		static {
-			try {
-				TermParser parser = new TermParser();
-				interpreter.addFunctions(parser.parseClassPathFile("auto.fp"));
-			} catch (IOException ex) {
-				log.error(EvalFunctional.class, ex);
-			}
-		}
-
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			return prover.bind(interpreter.evaluate(params[0]), params[1]);
 		}
 	}
 
