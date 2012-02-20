@@ -14,8 +14,8 @@ compile-logic .call .c0
 		, .c1
 	)
 	, lc-parse .call .call1
-	, compile-call .call1 () .c1/()/.callLabel
-	, lc-assign-line-number 0 .c0
+	, !, compile-call .call1 () .c1/()/.callLabel
+	, !, lc-assign-line-number 0 .c0
 #
 
 compile-call .call .pls .c0/.cx/.label
@@ -118,7 +118,7 @@ lc-compile (EQ .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
 	, lc-create-node .b .vs .c1/.c2/.reg1
 	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
 	, lc-compile .more YES .pls/.vs .c3/.c4/.d0/.dx
-	, .c4 = (.failLabel LABEL .failLabel, . BIND-UNDO, .cx)
+	, .c4 = (.failLabel LABEL .failLabel, _ BIND-UNDO, .cx)
 #
 lc-compile (DEFINE-RULES .rules .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
