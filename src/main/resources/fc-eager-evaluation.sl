@@ -32,9 +32,16 @@ fc-compile (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile .if .frame .c0/.c1/.d0/.d1/.ifReg
 	, .c1 = (_ IF-FALSE .label1 .ifReg, .c2)
 	, fc-compile .then .frame .c2/.c3/.d1/.d2/.thenReg
-	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, _ JUMP .label2, .label1 LABEL .label1, .c4)
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg
+		, _ JUMP .label2
+		, .label1 LABEL .label1
+		, .c4
+	)
 	, fc-compile .else .frame .c4/.c5/.d2/.dx/.elseReg
-	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .label2 LABEL .label2, .cx)
+	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg
+		, .label2 LABEL .label2
+		, .cx
+	)
 #
 fc-compile (TUPLE .name ()) .frame .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
@@ -42,9 +49,11 @@ fc-compile (TUPLE .name ()) .frame .c0/.cx/.d/.d/.reg
 fc-compile (TUPLE .name (.e, .es)) .frame .c0/.cx/.d0/.dx/.reg
 	:- !, fc-compile .e .frame .c0/.c1/.d0/.d1/.headReg
 	, fc-compile (TUPLE .name .es) .frame .c1/.c2/.d1/.dx/.tailReg
-	, .c2 = (_ PUSH .headReg, .c3)
-	, .c3 = (_ PUSH .tailReg, .c4)
-	, .c4 = (_ SYS .reg CONS 2, .cx)
+	, .c2 = (_ PUSH .headReg
+		, _ PUSH .tailReg
+		, _ SYS .reg CONS 2
+		, .cx
+	)
 #
 fc-compile (TREE .oper .left .right) .frame .c0/.cx/.d0/.dx/.reg
 	:- !

@@ -35,7 +35,9 @@ public class LazyFunctionCompilerTest {
 				+ "define fib = ( \n" //
 				+ "    1, 1, zip {a => b => a + b} {fib} {tail {fib}} \n" //
 				+ ") >> \n" //
-				+ "tail {fib}"));
+				+ "define h = (f => head {f}) >> \n" //
+				+ "define t = (f => tail {f}) >> \n" //
+				+ "apply {fib} {t, t, t, t, t, t, t, t, t, t, h,}"));
 	}
 
 	@Test

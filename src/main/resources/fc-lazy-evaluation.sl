@@ -20,9 +20,16 @@ fc-compile0 (IF .if .then .else) .frame .c0/.cx/.d0/.dx/.reg
 	, fc-compile .if .frame .c0/.c1/.d0/.d1/.ifReg
 	, .c1 = (_ IF-FALSE .label1 .ifReg, .c2)
 	, fc-compile0 .then .frame .c2/.c3/.d1/.d2/.thenReg
-	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, _ JUMP .label2, .label1 LABEL .label1, .c4)
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg
+		, _ JUMP .label2
+		, .label1 LABEL .label1
+		, .c4
+	)
 	, fc-compile0 .else .frame .c4/.c5/.d2/.dx/.elseReg
-	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .label2 LABEL .label2, .cx)
+	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg
+		, .label2 LABEL .label2
+		, .cx
+	)
 #
 fc-compile0 %REG/.reg/.frame .frame .c/.c/.d/.d/.reg :- ! #
 fc-compile0 %REG/.reg/.frame0 .frame .c0/.cx/.d/.d/.reg1
@@ -42,12 +49,6 @@ fc-compile0 .do .frame .c0/.cx/.d0/.dx/.closureReg
 	, fc-compile-wrapped .do .frame1 .d1/.d2/.d3/.dx/.returnReg
 	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 	, !
-#
-fc-compile0 (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
-	:- !
-	, fc-compile .callee .frame .c0/.c1/.d0/.d1/.r1
-	, fc-compile0 .parameter .frame .c1/.c2/.d1/.dx/.r2
-	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .reg .r1, .cx)
 #
 
 fc-compile-wrapped (FUN .var .do) .frame .c0/.cx/.d0/.dx/.reg
@@ -72,6 +73,16 @@ fc-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE .var))) .frame .c0/.cx/.d0/
 	, fc-compile0 .p0 .frame .c0/.c1/.d0/.d1/.param0Reg
 	, fc-compile0 .p1 .frame .c1/.c2/.d1/.dx/.param1Reg
 	, .c2 = (_ PUSH .param0Reg, _ PUSH .param1Reg, _ SYS .reg .call 2, .cx)
+#
+fc-compile-wrapped (INVOKE .parameter .callee) .frame .c0/.cx/.d0/.dx/.reg
+	:- !
+	, fc-compile .callee .frame .c0/.c1/.d0/.d1/.r1
+	, fc-compile0 .parameter .frame .c1/.c2/.d1/.dx/.r2
+	, .c2 = (_ PUSH .r2
+		, _ CALL-CLOSURE .closureReg .r1
+		, _ CALL-CLOSURE .reg .closureReg
+		, .cx
+	)
 #
 fc-compile-wrapped .do .frame .cdr
 	:- fc-default-fun .do .frame .cdr, !
@@ -101,9 +112,11 @@ fc-compile-tuple .name () .frame .c0/.cx/.d/.d/.reg
 fc-compile-tuple .name (.e, .es) .frame .c0/.cx/.d0/.dx/.reg
 	:- !, fc-compile .e .frame .c0/.c1/.d0/.d1/.headReg
 	, fc-compile-tuple .name .es .frame .c1/.c2/.d1/.dx/.tailReg
-	, .c2 = (_ PUSH .headReg, .c3)
-	, .c3 = (_ PUSH .tailReg, .c4)
-	, .c4 = (_ SYS .reg CONS 2, .cx)
+	, .c2 = (_ PUSH .headReg
+		, _ PUSH .tailReg
+		, _ SYS .reg CONS 2
+		, .cx
+	)
 #
 
 fc-default-fun .call .frame .result
