@@ -41,6 +41,9 @@ fc-parse (.var as .type => .do) (FUN .var .do1)
 	, fc-parse .do1 .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
+fc-parse (define type .type >> .do) (DEF-TYPE .type _ .do1) -- Type variable
+	:- !, fc-parse .do .do1
+#
 fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1, fc-parse .do .do1
 #
