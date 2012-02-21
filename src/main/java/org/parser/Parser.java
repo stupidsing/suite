@@ -149,7 +149,9 @@ public class Parser {
 					String name = operator.getName().trim();
 
 					if (!name.isEmpty()) {
-						if (line.startsWith(name))
+						if (line.startsWith(name + " "))
+							startPos = Math.max(startPos, 1 + name.length());
+						if (line.equals(name))
 							startPos = Math.max(startPos, name.length());
 						if (line.endsWith(name))
 							endPos = Math.min(endPos, length - name.length());
