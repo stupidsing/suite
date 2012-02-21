@@ -32,7 +32,6 @@ fc-parse .t .parsed
 fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
 fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
 fc-parse (.l $ .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
-fc-parse (.i ? .t | .e) .parsed :- !, fc-parse (if .i then .t else .e) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (l. {.r}) .parsed #
 --
 -- Function constructs
@@ -149,7 +148,7 @@ fc-error .m :- !, write .m, nl, fail #
 
 fc-add-standard-funs .p (
 	define and = (x => y =>
-		x ? y | false
+		if x then y else false
 	) >>
 	define if-tree = (list => f1 => f2 =>
 		if (is-tree {list}) then (
@@ -161,10 +160,10 @@ fc-add-standard-funs .p (
 		g {f {x}}
 	) >>
 	define not = (x =>
-		x ? false | true
+		if x then false else true
 	) >>
 	define or = (x => y =>
-		x ? true | y
+		if x then true else y
 	) >>
 	define concat2 = (l1 => l2 =>
 		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
@@ -172,7 +171,7 @@ fc-add-standard-funs .p (
 	define fold = (fun => list =>
 		define h = head {list} >>
 		define t = tail {list} >>
-		is-tree {t} ? fun {h} {fold {fun} {t}} | h
+		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
 	) >>
 	define fold-left = (fun => init => list =>
 		if-tree {list}
@@ -202,7 +201,7 @@ fc-add-standard-funs .p (
 	>>
 	define filter = (fun =>
 		fold-right {
-			item => list => fun {item} ? item, list | list
+			item => list => if (fun {item}) then (item, list) else list
 		} {}
 	) >>
 	define map = (fun =>

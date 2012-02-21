@@ -11,10 +11,8 @@ public class TermParser extends Parser {
 		NEXT__("#", Assoc.RIGHT), //
 		IS____(" :- ", Assoc.RIGHT), //
 		INDUCE(" => ", Assoc.RIGHT), //
-		APPLY_(" << ", Assoc.LEFT), //
 		LET___(" >> ", Assoc.RIGHT), //
-		CHOICE(" | ", Assoc.RIGHT), //
-		IF____(" ? ", Assoc.RIGHT), //
+		APPLY_(" | ", Assoc.LEFT), //
 		JOIN__(" $ ", Assoc.LEFT), //
 		OR____(";", Assoc.RIGHT), //
 		AND___(",", Assoc.RIGHT), //

@@ -159,12 +159,6 @@ public class Parser {
 				if (startPos > endPos) // When a line has only one operator
 					startPos = 0;
 
-				boolean isSeparateLine = startPos == 0 //
-						&& endPos == length //
-						&& startPos != endPos //
-						&& ParserUtil.getDepthDelta(line) == 0 //
-						&& ParserUtil.isPositiveDepth(line);
-
 				// Insert parentheses by line indentation
 				String decoratedLine = "";
 				while (lastIndent > indent) {
@@ -172,13 +166,11 @@ public class Parser {
 					lastIndent--;
 				}
 				decoratedLine += line.substring(0, startPos);
-				decoratedLine += isSeparateLine ? " (" : "";
 				while (lastIndent < indent) {
 					decoratedLine += " (";
 					lastIndent++;
 				}
 				decoratedLine += line.substring(startPos, endPos);
-				decoratedLine += isSeparateLine ? ") " : "";
 				decoratedLine += line.substring(endPos);
 
 				sb.append(decoratedLine + "\n");

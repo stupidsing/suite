@@ -19,7 +19,7 @@ public class OlderFunctionCompilerTest {
 			+ "define filter0 = (fun => \n" //
 			+ "    split {h => t => \n" //
 			+ "        define others = filter0 {fun} {t} >> \n" //
-			+ "        fun {h} ? h, others | others \n" //
+			+ "        if (fun {h}) then (h, others) else others \n" //
 			+ "    } \n" //
 			+ ") >> \n";
 
