@@ -145,7 +145,7 @@ lc-compile (CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	, .d2 = (_ RETURN, .d3)
 #
 lc-compile (SYSTEM-CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
-	:-	!
+	:- !
 	, lc-create-node .call .vs .c0/.c1/.reg
 	, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
 	, lc-compile .more YES .pls/.vs .c2/.c3/.d0/.dx
