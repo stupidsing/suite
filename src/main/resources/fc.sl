@@ -64,11 +64,13 @@ fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #
-fc-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
+fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 	:- !
 	, fc-parse .if .if1
 	, fc-parse .then .then1
-	, fc-parse .else .else1
+	, (.otherwise = else .else, !, fc-parse .else .else1
+		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
+	)
 #
 fc-parse (.name .elems) (TUPLE .name .elems2)
 	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
@@ -150,10 +152,10 @@ fc-add-standard-funs .p (
 		x ? y | false
 	) >>
 	define if-tree = (list => f1 => f2 =>
-	    if (is-tree {list}) then (
-	        f1 {head {list}} {tail {list}}
-	    )
-	    else f2
+		if (is-tree {list}) then (
+			f1 {head {list}} {tail {list}}
+		)
+		else f2
 	) >>
 	define join = (f => g => x =>
 		g {f {x}}
@@ -165,32 +167,32 @@ fc-add-standard-funs .p (
 		x ? true | y
 	) >>
 	define concat2 = (l1 => l2 =>
-	    if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
+		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
 	) >>
 	define fold = (fun => list =>
-	    define h = head {list} >>
-	    define t = tail {list} >>
-	    is-tree {t} ? fun {h} {fold {fun} {t}} | h
+		define h = head {list} >>
+		define t = tail {list} >>
+		is-tree {t} ? fun {h} {fold {fun} {t}} | h
 	) >>
 	define fold-left = (fun => init => list =>
-	    if-tree {list}
-	        {h => t => fold-left {fun} {fun {init} {h}} {t}}
-	        {init}
+		if-tree {list}
+		{h => t => fold-left {fun} {fun {init} {h}} {t}}
+		{init}
 	) >>
 	define fold-right = (fun => init => list =>
-	    if-tree {list}
-	        {h => t => fun {h} {fold-right {fun} {init} {t}}}
-	        {init}
+		if-tree {list}
+		{h => t => fun {h} {fold-right {fun} {init} {t}}}
+		{init}
 	) >>
 	define split = (fun => list =>
 		if-tree {list} {fun} {}
 	) >>
 	define zip = (fun => l0 => l1 =>
-	    if-tree {l0} {h0 => t0 =>
-	        if-tree {l1} {h1 => t1 =>
-	            fun {h0} {h1}, zip {fun} {t0} {t1}
-	        } {}
-	    } {}
+		if-tree {l0} {h0 => t0 =>
+			if-tree {l1} {h1 => t1 =>
+				fun {h0} {h1}, zip {fun} {t0} {t1}
+			} {}
+		} {}
 	) >>
 	define apply =
 		fold-left {x => f => f {x}}
@@ -199,9 +201,9 @@ fc-add-standard-funs .p (
 		fold-left {concat2} {}
 	>>
 	define filter = (fun =>
-	    fold-right {
-	        item => list => fun {item} ? item, list | list
-	    } {}
+		fold-right {
+			item => list => fun {item} ? item, list | list
+		} {}
 	) >>
 	define map = (fun =>
 		fold-right {i => list => fun {i}, list} {}

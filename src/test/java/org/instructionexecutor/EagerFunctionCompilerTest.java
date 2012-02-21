@@ -104,6 +104,8 @@ public class EagerFunctionCompilerTest {
 	public void testIf() {
 		assertEquals(Int.create(0), eval("3 > 4 ? 1 | 0"));
 		assertEquals(Int.create(1), eval("3 = 3 ? 1 | 0"));
+		assertEquals(Int.create(1),
+				eval("if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
 	}
 
 	@Test
