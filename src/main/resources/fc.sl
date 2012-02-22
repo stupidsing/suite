@@ -32,7 +32,7 @@ fc-parse .t .parsed
 fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
 fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
 fc-parse (.l . .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
-fc-parse (.l << .r) .parsed :- !, fc-parse (l. {.r}) .parsed #
+fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
 --
 -- Function constructs
 --
