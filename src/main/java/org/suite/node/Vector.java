@@ -43,44 +43,21 @@ public class Vector extends Node {
 		this.end = end;
 	}
 
-	public void insertBefore(Vector v) {
-		Data data1;
-		int vlen = v.end - v.start;
+	public static Vector concat(Vector u, Vector v) {
+		int ulen = u.end - u.start, vlen = v.end - v.start;
 
-		if (start != data.startUsed || start < vlen) {
-			int l0 = data.nodes.length, l1 = l0;
-			while (l1 < l0 + vlen)
-				l1 += 1 + l1 >> 1;
-
-			data1 = new Data(l1, l1 - (end - start));
-			data1.insertAfter(data.nodes, start, end);
-		} else
-			data1 = data;
-
-		data1.insertBefore(v.data.nodes, v.start, v.end);
-	}
-
-	public void insertAfter(Vector v) {
-		Data data1;
-		int vlen = v.end - v.start;
-
-		if (end != data.endUsed || data.nodes.length - end < vlen) {
-			int l1 = calculateNewSize(vlen);
-
-			data1 = new Data(l1, 0);
-			data1.insertAfter(data.nodes, start, end);
-		} else
-			data1 = data;
-
-		data1.insertAfter(v.data.nodes, v.start, v.end);
-	}
-
-	private int calculateNewSize(int nNodesToBeAdded) {
-		int l0 = data.nodes.length, l1 = l0;
-		int l = l0;
-		while (l < l1 + nNodesToBeAdded)
-			l += l >> 1;
-		return l1;
+		if (u.end == u.data.endUsed && u.data.nodes.length - u.end >= vlen) {
+			u.data.insertAfter(v.data.nodes, v.start, v.end);
+			return new Vector(u.data, u.start, u.end + vlen);
+		} else if (v.start == v.data.startUsed && v.start >= ulen) {
+			v.data.insertBefore(u.data.nodes, u.start, u.end);
+			return new Vector(v.data, v.start - ulen, v.end);
+		} else {
+			Data data = new Data(ulen + vlen + 16, 0);
+			data.insertAfter(u.data.nodes, u.start, u.end);
+			data.insertAfter(v.data.nodes, v.start, v.end);
+			return new Vector(data, data.startUsed, data.endUsed);
+		}
 	}
 
 	public Vector subVector(int s, int e) {
