@@ -10,10 +10,10 @@ import org.suite.Context;
 import org.suite.Singleton;
 import org.suite.doer.Cloner;
 import org.suite.doer.Prover;
+import org.suite.doer.Station;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.node.Station;
 import org.suite.node.Tree;
 
 public class SystemPredicates {

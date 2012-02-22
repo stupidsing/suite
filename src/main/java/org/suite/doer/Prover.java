@@ -11,7 +11,6 @@ import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.node.Station;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
 

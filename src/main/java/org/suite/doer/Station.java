@@ -1,4 +1,6 @@
-package org.suite.node;
+package org.suite.doer;
+
+import org.suite.node.Node;
 
 /**
  * A node that is actually a runnable (with some parameters). When the prover
