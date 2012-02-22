@@ -154,6 +154,11 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testRepeat() {
+		assertEquals(SuiteUtil.parse("3, 3, 3, 3,"), eval("repeat {4} {3}"));
+	}
+
+	@Test
 	public void testRange() {
 		assertEquals(SuiteUtil.parse("2, 5, 8, 11,"), eval("" //
 				+ "define range = (i => j => inc => \n" //
