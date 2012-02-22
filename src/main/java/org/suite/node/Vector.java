@@ -2,6 +2,9 @@ package org.suite.node;
 
 import org.util.Util;
 
+/**
+ * A list of nodes that can be easily expanded in left or right direction.
+ */
 public class Vector extends Node {
 
 	private static class Data { // Immutable
