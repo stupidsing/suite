@@ -169,7 +169,7 @@ fc-add-standard-funs .p (
 		if x then true else y
 	) >>
 	define repeat = (n => elem =>
-		if (n > 0) then (elem, repeat {n - 1}{elem}) else ()
+		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
 	define concat2 = (l1 => l2 =>
 		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
