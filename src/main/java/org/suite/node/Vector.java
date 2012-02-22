@@ -34,8 +34,25 @@ public class Vector extends Node {
 		}
 	}
 
+	public static Vector EMPTY = new Vector(new Node[0]);
+
 	private Data data;
 	private int start, end;
+
+	public Vector(Node node) {
+		this(new Node[] { node });
+	}
+
+	public Vector(Node nodes[]) {
+		this(new Data());
+		data.insertBefore(nodes, 0, nodes.length);
+	}
+
+	private Vector(Data data) {
+		this.data = data;
+		this.start = data.startUsed;
+		this.end = data.endUsed;
+	}
 
 	private Vector(Data data, int start, int end) {
 		this.data = data;
@@ -44,7 +61,7 @@ public class Vector extends Node {
 	}
 
 	public static Vector concat(Vector u, Vector v) {
-		int ulen = u.end - u.start, vlen = v.end - v.start;
+		int ulen = u.length(), vlen = v.length();
 
 		if (u.end == u.data.endUsed && u.data.nodes.length - u.end >= vlen) {
 			u.data.insertAfter(v.data.nodes, v.start, v.end);
@@ -61,7 +78,17 @@ public class Vector extends Node {
 	}
 
 	public Vector subVector(int s, int e) {
+		int length = length();
+		while (s < 0)
+			s += length;
+		while (e <= 0)
+			e += length;
+		e = Math.min(e, length);
 		return new Vector(data, start + s, start + e);
+	}
+
+	public int length() {
+		return end - start;
 	}
 
 	@Override
