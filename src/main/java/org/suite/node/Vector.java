@@ -106,8 +106,7 @@ public class Vector extends Node {
 			if (node instanceof Vector) {
 				Vector v = (Vector) node;
 				result = end - start == v.end - v.start;
-				int si = start + data.startUsed;
-				int di = v.start + v.data.startUsed;
+				int si = start, di = v.start;
 
 				while (result && si < end)
 					result &= Util.equals(data.nodes[si++], v.data.nodes[di++]);
