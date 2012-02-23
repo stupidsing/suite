@@ -91,6 +91,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testFlip() {
+		assertEquals(Int.create(2), eval("" //
+				+ "flip {a => b => a - b} {3} {5}"));
+	}
+
+	@Test
 	public void testFold() {
 		assertEquals(Int.create(324), eval("" //
 				+ "fold {a => b => a * b} {2, 3, 6, 9,}"));

@@ -153,6 +153,9 @@ fc-add-standard-funs .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
+	define flip = (f => x => y =>
+		f {y} {x}
+	) >>
 	define if-tree = (list => f1 => f2 =>
 		if (is-tree {list}) then (
 			f1 {head {list}} {tail {list}}

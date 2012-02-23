@@ -11,8 +11,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom CONS = Atom.create("CONS");
 	private static final Atom EMPTY = Atom.create("EMPTY");
 	private static final Atom HEAD = Atom.create("HEAD");
-	private static final Atom ISARRAY = Atom.create("IS-ARRAY");
 	private static final Atom ISTREE = Atom.create("IS-TREE");
+	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
 	private static final Atom LOG = Atom.create("LOG");
 	private static final Atom TAIL = Atom.create("TAIL");
 	private static final Atom VCONCAT = Atom.create("VCONCAT");
@@ -56,7 +56,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
 		else if (command == ISTREE)
 			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
-		else if (command == ISARRAY)
+		else if (command == ISVECTOR)
 			result = a(dataStack[dsp] instanceof Vector);
 		else if (command == LOG) {
 			System.out.println((Node) dataStack[dsp + 1]);
@@ -72,7 +72,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		else if (command == VEMPTY)
 			result = Vector.EMPTY;
 		else if (command == VHEAD)
-			result = ((Vector) dataStack[dsp]).subVector(0, 1);
+			result = ((Vector) dataStack[dsp]).get(0);
 		else if (command == VTAIL)
 			result = ((Vector) dataStack[dsp]).subVector(1, 0);
 		else

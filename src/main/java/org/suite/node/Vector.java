@@ -80,6 +80,10 @@ public class Vector extends Node {
 		}
 	}
 
+	public Node get(int i) {
+		return data.nodes[start + i];
+	}
+
 	public Vector subVector(int s, int e) {
 		int length = length();
 		while (s < 0)
