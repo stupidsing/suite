@@ -2,6 +2,7 @@ package org.instructionexecutor;
 
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
+import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
@@ -19,6 +20,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom VELEM = Atom.create("VELEM");
 	private static final Atom VEMPTY = Atom.create("VEMPTY");
 	private static final Atom VHEAD = Atom.create("VHEAD");
+	private static final Atom VRANGE = Atom.create("VRANGE");
 	private static final Atom VTAIL = Atom.create("VTAIL");
 
 	public FunctionInstructionExecutor(Node node) {
@@ -73,11 +75,17 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = Vector.EMPTY;
 		else if (command == VHEAD)
 			result = ((Vector) dataStack[dsp]).get(0);
-		else if (command == VTAIL)
+		else if (command == VRANGE) {
+			Vector vector = (Vector) dataStack[dsp + 2];
+			int s = ((Int) dataStack[dsp + 1]).getNumber();
+			int e = ((Int) dataStack[dsp]).getNumber();
+			return vector.subVector(s, e);
+		} else if (command == VTAIL)
 			result = ((Vector) dataStack[dsp]).subVector(1, 0);
 		else
 			throw new RuntimeException("Unknown system call " + command);
 
 		return result;
 	}
+
 }

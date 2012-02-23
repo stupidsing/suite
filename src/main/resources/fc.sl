@@ -216,6 +216,9 @@ fc-add-standard-funs .p (
 	define map = (fun =>
 		fold-right {i => list => fun {i}, list} {}
 	) >>
+	define reverse =
+		fold-left {a => b => b, a} {}
+	>>
 	define contains = (e =>
 		fold {or} . map {e1 => e1 = e}
 	) >>

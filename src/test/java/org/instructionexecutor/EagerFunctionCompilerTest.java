@@ -177,6 +177,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testReverse() {
+		assertEquals(SuiteUtil.parse("5, 4, 3, 2, 1,"),
+				eval("reverse {1, 2, 3, 4, 5,}"));
+	}
+
+	@Test
 	public void testSplit() {
 		assertEquals(Int.create(1), eval("" //
 				+ "split {h => l => h} {1, 2,}"));
