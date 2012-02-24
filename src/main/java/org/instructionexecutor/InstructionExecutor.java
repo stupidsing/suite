@@ -145,7 +145,7 @@ public class InstructionExecutor {
 			List<Node> rs = new ArrayList<Node>(5);
 			Tree tree;
 
-			while ((tree = Tree.decompose(node, TermOp.SEP___)) != null) {
+			while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 				rs.add(tree.getLeft());
 				node = tree.getRight();
 			}

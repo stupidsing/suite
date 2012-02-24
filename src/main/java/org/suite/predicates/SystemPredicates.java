@@ -92,7 +92,7 @@ public class SystemPredicates {
 			name = ((Atom) query).getName();
 			pass = Atom.nil;
 		} else if ((tree = Tree.decompose(query)) != null)
-			if (tree.getOperator() != TermOp.SEP___)
+			if (tree.getOperator() != TermOp.TUPLE_)
 				name = tree.getOperator().getName();
 			else {
 				Node left = tree.getLeft();

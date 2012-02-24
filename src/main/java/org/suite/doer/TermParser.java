@@ -10,10 +10,10 @@ public class TermParser extends Parser {
 	public static enum TermOp implements Operator {
 		NEXT__("#", Assoc.RIGHT), //
 		IS____(" :- ", Assoc.RIGHT), //
+		SEP___(" | ", Assoc.RIGHT), //
 		FUN___(" => ", Assoc.RIGHT), //
 		RFEED_(" >> ", Assoc.RIGHT), //
 		LFEED_(" << ", Assoc.LEFT), //
-		APPLY_(" | ", Assoc.RIGHT), //
 		JOIN__(" . ", Assoc.LEFT), //
 		OR____(";", Assoc.RIGHT), //
 		AND___(",", Assoc.RIGHT), //
@@ -32,7 +32,7 @@ public class TermParser extends Parser {
 		MODULO(" % ", Assoc.LEFT), //
 		POWER_("^", Assoc.RIGHT), //
 		BRACES("{", Assoc.LEFT), //
-		SEP___(" ", Assoc.RIGHT), //
+		TUPLE_(" ", Assoc.RIGHT), //
 		ITEM__("/", Assoc.RIGHT), //
 		COLON_(":", Assoc.RIGHT), //
 		;

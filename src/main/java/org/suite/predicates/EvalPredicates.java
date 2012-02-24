@@ -114,7 +114,7 @@ public class EvalPredicates {
 			StringBuilder sb = new StringBuilder();
 			Tree tree;
 
-			while ((tree = Tree.decompose(node, TermOp.SEP___)) != null) {
+			while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 				sb.append(Formatter.display(tree.getLeft()));
 				node = tree.getRight();
 			}

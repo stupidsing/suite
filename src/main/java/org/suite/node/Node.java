@@ -45,11 +45,11 @@ public class Node implements Comparable<Node> {
 	}
 
 	public static Node list(List<Node> nodes) {
-		return list(TermOp.SEP___, nodes);
+		return list(TermOp.TUPLE_, nodes);
 	}
 
 	public static Node list(Node... nodes) {
-		return list(TermOp.SEP___, nodes);
+		return list(TermOp.TUPLE_, nodes);
 	}
 
 	@Override
