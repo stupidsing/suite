@@ -1,4 +1,5 @@
--- Type inference predicate.
+-------------------------------------------------------------------------------
+-- Type inference predicates
 --
 -- Environment consists of:
 -- .ve - list of variables and their corresponding types
