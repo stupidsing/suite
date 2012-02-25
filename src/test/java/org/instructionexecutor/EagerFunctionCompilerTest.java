@@ -162,6 +162,13 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testQuickSort() {
+		assertEquals(SuiteUtil.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
+				+ "quick-sort {a => b => a < b}"
+				+ " {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
+	}
+
+	@Test
 	public void testRange() {
 		assertEquals(SuiteUtil.parse("2, 5, 8, 11,"), eval("" //
 				+ "define range = (i => j => inc => \n" //

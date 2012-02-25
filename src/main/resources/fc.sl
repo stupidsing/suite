@@ -227,5 +227,14 @@ fc-add-standard-funs .p (
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
 	) >>
+	define quick-sort = (cmp => list =>
+		if-tree {list} {pivot => t =>
+			define cmp0 = (not . cmp {pivot}) >>
+			define cmp1 = cmp {pivot} >>
+			define l0 = quick-sort {cmp} {filter {cmp0} {t}} >>
+			define l1 = quick-sort {cmp} {filter {cmp1} {t}} >>
+			concat {l0, (pivot,), l1,}
+		} {}
+	) >>
 	.p
 ) #
