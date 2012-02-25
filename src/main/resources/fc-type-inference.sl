@@ -189,7 +189,8 @@ default-fun-type () (LIST-OF _) #
 default-fun-type cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
 default-fun-type head (FUN (LIST-OF .type) .type) #
 default-fun-type is-tree (FUN (LIST-OF .type) BOOLEAN) #
-default-fun-type log (FUN _ (FUN .type .type)) #
+default-fun-type log (FUN .type .type) #
+default-fun-type log2 (FUN _ (FUN .type .type)) #
 default-fun-type tail (FUN (LIST-OF .type) (LIST-OF .type)) #
 
 -- Special type primitive for corecursive lists

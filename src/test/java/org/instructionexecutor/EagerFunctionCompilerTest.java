@@ -139,12 +139,14 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testLog() {
+		assertEquals(Int.create(8), eval("" //
+				+ "log {4 + 4}"));
 		assertEquals(Int.create(1), eval("" //
 				+ "if (1 = 1) then 1 else (1 / 0)"));
 		assertEquals(Int.create(1), eval("" //
-				+ "if true then 1 else (log {\"shouldn't appear\"} {1 / 0})"));
+				+ "if true then 1 else (log2 {\"shouldn't appear\"} {1 / 0})"));
 		assertEquals(Int.create(1), eval("" //
-				+ "if false then 1 else (log {\"should appear\"} {1})"));
+				+ "if false then 1 else (log2 {\"should appear\"} {1})"));
 	}
 
 	@Test

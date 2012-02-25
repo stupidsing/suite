@@ -123,7 +123,8 @@ fc-define-default-fun 2 cons CONS #
 fc-define-default-fun 2 corecursive-cons CONS #
 fc-define-default-fun 1 head HEAD #
 fc-define-default-fun 1 is-tree IS-TREE #
-fc-define-default-fun 2 log LOG #
+fc-define-default-fun 1 log LOG #
+fc-define-default-fun 2 log2 LOG2 #
 fc-define-default-fun 1 tail TAIL #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
