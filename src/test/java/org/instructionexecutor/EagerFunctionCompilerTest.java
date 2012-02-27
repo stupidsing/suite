@@ -199,12 +199,12 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testSwitch() {
 		assertEquals(new Str("C"), eval("" //
-				+ "define switch = (p => \n" //
-				+ "    if (p = 1) then \"A\" \n" //
-				+ "    else-if (p = 2) then \"B\" \n" //
-				+ "    else-if (p = 3) then \"C\" \n" //
-				+ "    else \"D\" \n" //
-				+ ") >> \n" //
+				+ "define switch = (p => (case \n" //
+				+ "    | p = 1 => \"A\" \n" //
+				+ "    | p = 2 => \"B\" \n" //
+				+ "    | p = 3 => \"C\" \n" //
+				+ "    | \"D\" \n" //
+				+ ")) >> \n" //
 				+ "switch {3}"));
 	}
 

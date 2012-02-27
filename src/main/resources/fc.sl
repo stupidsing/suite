@@ -21,6 +21,12 @@ compile-function .do .c0
 --
 fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
 fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
+fc-parse (case | .if => .then | .cases) (IF .if1 .then1 .else)
+	:- !, fc-parse .if .if1
+	, fc-parse .then .then1
+	, fc-parse (case | .cases) .else
+#
+fc-parse (case | .do) .parsed :- !, fc-parse .do .parsed #
 fc-parse .t .parsed
 	:- tree .t () .op .right, fc-operator .op, !
 	, temp .var, tree .t1 .var .op .right, fc-parse (.var => .t1) .parsed
@@ -46,7 +52,8 @@ fc-parse (define type .type >> .do) (DEF-TYPE .type _ .do1) -- Type variable
 	:- !, fc-parse .do .do1
 #
 fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
-	:- !, fc-parse-type .def .def1, fc-parse .do .do1
+	:- !, fc-parse-type .def .def1
+	, fc-parse .do .do1
 #
 fc-parse (.value as .type) (CAST .type1 .value1)
 	:- !, fc-parse-type .type .type1
@@ -60,8 +67,8 @@ fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
 	, .value2 = CAST .type1 .value1
 #
 fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
-	:- !
-	, fc-parse .value .value1, fc-parse .do .do1
+	:- !, fc-parse .value .value1
+	, fc-parse .do .do1
 #
 fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
