@@ -216,6 +216,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testTake() {
+		assertEquals(SuiteUtil.parse("1, 2, 3, 4,"), eval("" //
+				+ "take {4} {1, 2, 3, 4, 5, 6, 7,}"));
+	}
+
+	@Test
 	public void testZip() {
 		assertEquals(SuiteUtil.parse("(1, 5), (2, 6), (3, 7),"), eval("" //
 				+ "define zip-up = zip {a => b => a, b} >> \n" //

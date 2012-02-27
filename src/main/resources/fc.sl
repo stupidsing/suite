@@ -176,6 +176,9 @@ fc-add-standard-funs .p (
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
+	define take = (n => list =>
+		if (n > 0) then (head {list}, take {n - 1} {tail {list}}) else ()
+	) >>
 	define concat2 = (l1 => l2 =>
 		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
 	) >>
