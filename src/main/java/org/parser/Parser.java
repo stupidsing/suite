@@ -64,9 +64,10 @@ public class Parser {
 	 */
 	private Node parseWithoutComments(String s) {
 		s = s.trim();
-		if (s.isEmpty())
-			return Atom.nil;
+		return !s.isEmpty() ? parseRawString(s) : Atom.nil;
+	}
 
+	private Node parseRawString(String s) {
 		char first = s.charAt(0), last = s.charAt(s.length() - 1);
 
 		for (Operator operator : operators) {
@@ -91,6 +92,8 @@ public class Parser {
 		if (first == '(' && last == ')' //
 				|| first == '[' && last == ']')
 			return parseWithoutComments(Util.substr(s, 1, -1));
+		if (first == '`' && last == '`')
+			return parseRawString(" " + Util.substr(s, 1, -1) + " ");
 
 		try {
 			return Int.create(Integer.parseInt(s));

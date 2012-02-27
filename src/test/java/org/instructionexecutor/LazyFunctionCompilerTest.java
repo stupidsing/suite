@@ -33,7 +33,7 @@ public class LazyFunctionCompilerTest {
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = ( \n" //
-				+ "    1, 1, zip {a => b => a + b} {fib} {tail {fib}} \n" //
+				+ "    1, 1, zip {`+`} {fib} {tail {fib}} \n" //
 				+ ") >> \n" //
 				+ "define h = (f => head {f}) >> \n" //
 				+ "define t = (f => tail {f}) >> \n" //

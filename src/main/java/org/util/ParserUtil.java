@@ -81,7 +81,7 @@ public class ParserUtil {
 	public static int getQuoteChange(int quote, char c) {
 		if (c == quote)
 			quote = 0;
-		else if ((c == '\'' || c == '"') && quote == 0)
+		else if (quote == 0 && (c == '\'' || c == '"' || c == '`'))
 			quote = c;
 		return quote;
 	}

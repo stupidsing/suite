@@ -18,15 +18,15 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Int.create(2), eval("" //
 				+ "apply {1} {(a => 2),}"));
 		assertEquals(Int.create(2), eval("" //
-				+ "apply {4} {(a => a + 1), (b => b * 2), (c => c / 5),}"));
+				+ "apply {4} {`+ 1`, `* 2`, `/ 5`,}"));
 	}
 
 	@Test
 	public void testClosure() {
 		assertEquals(Int.create(7), eval("" //
-				+ "define add = (p => q => p + q) >> add {3} {4}"));
+				+ "define add = `+` >> add {3} {4}"));
 		assertEquals(Int.create(20), eval("" //
-				+ "define p = (n => n + 1) >> \n" //
+				+ "define p = `+ 1` >> \n" //
 				+ "define q = (n => p {n} * 2) >> \n" //
 				+ "q {9}"));
 	}
@@ -93,17 +93,17 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testFlip() {
 		assertEquals(Int.create(2), eval("" //
-				+ "flip {a => b => a - b} {3} {5}"));
+				+ "flip {`-`} {3} {5}"));
 	}
 
 	@Test
 	public void testFold() {
 		assertEquals(Int.create(324), eval("" //
-				+ "fold {a => b => a * b} {2, 3, 6, 9,}"));
+				+ "fold {`*`} {2, 3, 6, 9,}"));
 		assertEquals(Int.create(79), eval("" //
-				+ "fold-left {a => b => a - b} {100} {6, 7, 8,}"));
+				+ "fold-left {`-`} {100} {6, 7, 8,}"));
 		assertEquals(Int.create(-93), eval("" //
-				+ "fold-right {a => b => a - b} {100} {6, 7, 8,}"));
+				+ "fold-right {`-`} {100} {6, 7, 8,}"));
 	}
 
 	@Test
@@ -126,14 +126,14 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testJoin() {
 		assertEquals(Int.create(19), eval("" //
-				+ "define p = (n => n * 2) >> \n" //
-				+ "define q = (n => n + 1) >> \n" //
+				+ "define p = (`* 2`) >> \n" //
+				+ "define q = (`+ 1`) >> \n" //
 				+ "define r = (join {p} {q}) >> \n" //
 				+ "r {9}"));
 		assertEquals(Int.create(13), eval("" //
-				+ "define p = (n => n + 1) >> \n" //
-				+ "define q = (n => n * 2) >> \n" //
-				+ "define r = (n => n - 3) >> \n" //
+				+ "define p = (`+ 1`) >> \n" //
+				+ "define q = (`* 2`) >> \n" //
+				+ "define r = (`- 3`) >> \n" //
 				+ "(p . q . r) {9}"));
 	}
 
@@ -152,7 +152,7 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testMap() {
 		assertEquals(SuiteUtil.parse("5, 6, 7,"), eval("" //
-				+ "map {n => n + 2} {3, 4, 5,}"));
+				+ "map {`+ 2`} {3, 4, 5,}"));
 	}
 
 	@Test
@@ -164,8 +164,7 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testQuickSort() {
 		assertEquals(SuiteUtil.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
-				+ "quick-sort {a => b => a < b}"
-				+ " {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
+				+ "quick-sort {`<`} {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
 	}
 
 	@Test
