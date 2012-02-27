@@ -119,7 +119,11 @@ public class Formatter {
 			boolean quote = false;
 
 			for (char c : s.toCharArray())
-				if (c <= 32 || c == '\'' || c == '"')
+				if (c <= 32 //
+						|| c == '(' || c == ')' //
+						|| c == '[' || c == ']' //
+						|| c == '{' || c == '}' //
+						|| c == '\'' || c == '"' || c == '`')
 					quote = true;
 
 			for (Operator operator : operators) {
