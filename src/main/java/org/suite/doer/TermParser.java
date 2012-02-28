@@ -19,12 +19,12 @@ public class TermParser extends Parser {
 		AND___(",", Assoc.RIGHT), //
 		BLOR__(" || ", Assoc.RIGHT), //
 		BLAND_(" && ", Assoc.RIGHT), //
+		EQUAL_(" = ", Assoc.RIGHT), //
+		NOTEQ_(" != ", Assoc.RIGHT), //
 		LE____(" <= ", Assoc.RIGHT), //
 		LT____(" < ", Assoc.RIGHT), //
 		GE____(" >= ", Assoc.RIGHT), //
 		GT____(" > ", Assoc.RIGHT), //
-		NOTEQ_(" != ", Assoc.RIGHT), //
-		EQUAL_(" = ", Assoc.RIGHT), //
 		PLUS__(" + ", Assoc.RIGHT), //
 		MINUS_(" - ", Assoc.LEFT), //
 		MULT__(" * ", Assoc.RIGHT), //

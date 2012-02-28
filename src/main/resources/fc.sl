@@ -19,14 +19,14 @@ compile-function .do .c0
 --
 -- Syntax sugars
 --
-fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
-fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
-fc-parse (case | .if => .then | .cases) (IF .if1 .then1 .else)
+fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
 	:- !, fc-parse .if .if1
 	, fc-parse .then .then1
-	, fc-parse (case | .cases) .else
+	, fc-parse (case || .cases) .else
 #
-fc-parse (case | .do) .parsed :- !, fc-parse .do .parsed #
+fc-parse (case || .do) .parsed :- !, fc-parse .do .parsed #
+fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
+fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
 fc-parse .t .parsed
 	:- tree .t () .op .right, fc-operator .op, !
 	, temp .var, tree .t1 .var .op .right, fc-parse (.var => .t1) .parsed
