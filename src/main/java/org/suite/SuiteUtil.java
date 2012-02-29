@@ -80,11 +80,11 @@ public class SuiteUtil {
 			String oldRoot) {
 		isImportFromClasspath = isFromClasspath;
 
-		int pos = name.lastIndexOf(File.separator);
-		importerRoot = pos >= 0 ? name.substring(0, pos + 1) : "";
-
 		if (!name.startsWith(File.separator))
 			name = oldRoot + name;
+
+		int pos = name.lastIndexOf(File.separator);
+		importerRoot = pos >= 0 ? name.substring(0, pos + 1) : "";
 		return name;
 	}
 
