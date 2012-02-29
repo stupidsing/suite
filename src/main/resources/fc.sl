@@ -96,7 +96,7 @@ fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .s (STRING .s) :- is.string .s, ! #
 fc-parse .t (TUPLE .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
-fc-parse .d _ _ :- fc-error "Unknown expression" .d #
+fc-parse .d _ :- fc-error "Unknown expression" .d #
 
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
