@@ -184,7 +184,10 @@ fc-add-standard-funs .p (
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
 	define take = (n => list =>
-		if (n > 0) then (head {list}, take {n - 1} {tail {list}}) else ()
+		if (n > 0 && is-tree {list}) then (
+			head {list}, take {n - 1} {tail {list}}
+		)
+		else ()
 	) >>
 	define concat2 = (l1 => l2 =>
 		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
@@ -224,6 +227,9 @@ fc-add-standard-funs .p (
 		fold-right {
 			item => list => if (fun {item}) then (item, list) else list
 		} {}
+	) >>
+	define length = (
+		fold-left {v => e => v + 1} {0}
 	) >>
 	define map = (fun =>
 		fold-right {i => list => fun {i}, list} {}

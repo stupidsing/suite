@@ -138,6 +138,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testLength() {
+		assertEquals(Int.create(5), eval("" //
+				+ "length {3, 3, 3, 3, 3,}"));
+	}
+
+	@Test
 	public void testLog() {
 		assertEquals(Int.create(8), eval("" //
 				+ "log {4 + 4}"));
