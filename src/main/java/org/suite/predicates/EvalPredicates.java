@@ -299,6 +299,14 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class ToDumpString implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(p1, new Str(Formatter.dump(p0)));
+		}
+	}
+
 	public static class ToString implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);

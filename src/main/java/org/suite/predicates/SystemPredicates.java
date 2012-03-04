@@ -62,6 +62,7 @@ public class SystemPredicates {
 		addPredicate("starts.with", new EvalPredicates.StartsWith());
 		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("to.atom", new EvalPredicates.ToAtom());
+		addPredicate("to.dump.string", new EvalPredicates.ToDumpString());
 		addPredicate("to.string", new EvalPredicates.ToString());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 		addPredicate("trim", new EvalPredicates.Trim());
@@ -69,11 +70,14 @@ public class SystemPredicates {
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());
 		addPredicate("exec", new IoPredicates.Exec());
+		addPredicate("file-read", new IoPredicates.FileRead());
+		addPredicate("file-write", new IoPredicates.FileWrite());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 
-		addPredicate("assert", new RuleSetPredicates.Assertz());
 		addPredicate("asserta", new RuleSetPredicates.Asserta());
+		addPredicate("assert", new RuleSetPredicates.Assertz());
+		addPredicate("assertz", new RuleSetPredicates.Assertz());
 		addPredicate("clear", new RuleSetPredicates.Clear());
 		addPredicate("import", new RuleSetPredicates.Import());
 		addPredicate("list", new RuleSetPredicates.ListPredicates());

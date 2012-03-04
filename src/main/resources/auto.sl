@@ -11,18 +11,6 @@ enlist (.item .items) (.item, .items1) :- !, enlist .items .items1 #
 enlist () () :- ! #
 enlist .item (.item,) :- ! #
 
-file-read .fn .contents
-	:- concat
-		"s = org.util.IoUtil.readStream(new java.io.FileInputStream('" .fn "'))" .js
-	, eval.js .js .contents
-#
-
-file-write .fn .contents
-	:- concat
-		"org.util.IoUtil.writeStream(new java.io.FileOutputStream('" .fn "'), '" .contents "')" .js
-	, eval.js .js _
-#
-
 fold () .r/.r _ #
 fold (.head, .tail) .r0/.rx .action
 	:- generalize.prefix .action "_" (.head .r0/.r1 => .do)

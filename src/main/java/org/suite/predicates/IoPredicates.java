@@ -1,5 +1,9 @@
 package org.suite.predicates;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +17,7 @@ import org.suite.node.Str;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates.SystemPredicate;
 import org.util.FormatUtil;
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
 
@@ -59,6 +64,34 @@ public class IoPredicates {
 		}
 
 		private static Log log = LogFactory.getLog(Util.currentClass());
+	}
+
+	public static class FileRead implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			try {
+				final Node params[] = Predicate.getParameters(ps, 2);
+				String filename = Formatter.display(params[0]);
+				InputStream is = new FileInputStream(filename);
+				String content = IoUtil.readStream(is);
+				return prover.bind(new Str(content), params[1]);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+	}
+
+	public static class FileWrite implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			try {
+				final Node params[] = Predicate.getParameters(ps, 2);
+				String filename = Formatter.display(params[0]);
+				String content = Formatter.display(params[1]);
+				IoUtil.writeStream(new FileOutputStream(filename), content);
+				return true;
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 	}
 
 	public static class Nl implements SystemPredicate {
