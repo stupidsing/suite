@@ -11,7 +11,7 @@ compile-function .do .c0
 	, fc-add-standard-funs .do .do1
 	, !, fc-parse .do1 .parsed
 	, !, infer-type .parsed ()/()/() _
-	, !, fc-compile .parsed 0 .c1/.c2/.d0/()/.reg
+	, !, fc-compile .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
 	, !, fc-assign-line-number 0 .c0
 #
