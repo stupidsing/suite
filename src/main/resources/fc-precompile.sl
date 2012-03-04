@@ -3,18 +3,22 @@
 --
 
 fc-setup-precompile
-	:- .pc = .frame/.ve .ca/.cb/.da/.db/.resultReg
+	:- .pc = .ve/.te/.oe .tra/.trb .frame/.ve .ca/.cb/.da/.db/.resultReg
 	, fc-add-standard-funs ($$PRECOMPILE .pc) .do1
 	, !, fc-parse .do1 .parsed
-	, !, infer-type .parsed ()/()/() _
+	, !, infer-type-rule .parsed ()/()/() .tr0/.trx NUMBER
+	, not not ( -- Test type correctness
+		.tra = .trb, resolve-types .tr0/.trx
+	)
 	, .c0 = (_ ENTER, .c1)
 	, .c2 = (_ EXIT .reg, .d0)
 	, !, fc-compile .parsed 0/() .c1/.c2/.d0/()/.reg
 	, !
-	, .ca/.da = .cb/.db
 	, .prog = (
 		fc-compile-over .do .c0
-			:- fc-compile .do .frame/.ve .ca/.cb/.da/.db/.resultReg
+			:- infer-type-rule .do .ve/.te/.oe .tra/.trb _
+			, resolve-types .tr0/.trx
+			, !, fc-compile .do .frame/.ve .ca/.cb/.da/.db/.resultReg
 		#
 	)
 	, to.dump.string .prog .prog1
@@ -23,13 +27,15 @@ fc-setup-precompile
 
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
-infer-type-rule ($$PRECOMPILE _) _ .tr/.tr NUMBER :- ! #
+infer-type-rule ($$PRECOMPILE .vto .tr/.tr _) .vto .tr/.tr NUMBER
+	:- !
+#
 
 -- Eager evaluation
-fc-compile ($$PRECOMPILE .frame/.ve .cdr) .frame/.ve .cdr :- ! #
+fc-compile ($$PRECOMPILE _ _ .fve .cdr) .ve .cdr :- ! #
 
 -- Lazy evaluation
-fc-compile0 ($$PRECOMPILE .frame/.ve .cdr) .frame/.ve .cdr :- ! #
+fc-compile0 ($$PRECOMPILE _ _ .fve .cdr) .ve .cdr :- ! #
 
 () :- import 'fc.sl'
 	, import 'fc-lazy-evaluation.sl'
