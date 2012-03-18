@@ -123,7 +123,6 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
 resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
---resolve-types0 .p/.q :- dd .p, nl, nl, fail #
 resolve-types0 (SUPERTYPE-OF .env .t .t, .tr1)/.trx
 	:- resolve-types0 .tr1/.trx
 #
