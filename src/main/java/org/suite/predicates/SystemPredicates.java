@@ -62,6 +62,7 @@ public class SystemPredicates {
 		addPredicate("is.string", new FormatPredicates.IsString());
 		addPredicate("is.tree", new FormatPredicates.IsTree());
 		addPredicate("parse", new FormatPredicates.Parse());
+		addPredicate("rpn", new FormatPredicates.Rpn());
 		addPredicate("starts.with", new FormatPredicates.StartsWith());
 		addPredicate("to.atom", new FormatPredicates.ToAtom());
 		addPredicate("to.dump.string", new FormatPredicates.ToDumpString());
