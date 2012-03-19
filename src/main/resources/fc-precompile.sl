@@ -16,28 +16,28 @@ fc-setup-precompile .lib .do1/($$PRECOMPILE .pc)
 	)
 	, !, fc-compile .parsed 0/.ve .c0/.cx/.d0/.dx/.reg
 	, !, to.dump.string (
-		infer-type-rule-using-lib (.lib, .libs) .do .vtos .tr0/.trx .type
+		infer-type-rule-using-libs (.lib, .libs) .do .vtos .tr0/.trx .type
 			:- .trx = .trs0
-			, infer-type-rule-using-lib .libs .do .vto .tr0/.trsx .type
+			, infer-type-rule-using-libs .libs .do .vto .tr0/.trsx .type
 	) .prog0
 	, to.dump.string (
-		fc-compile-using-lib (.lib, .libs) .do .frame/.ve .c0/.cx/.d0/.dx/.reg
-			:- fc-compile-using-lib .libs .do .frame/.ves .cs0/.csx/.ds0/.dsx/.reg
+		fc-compile-using-libs (.lib, .libs) .do .frame/.ve .c0/.cx/.d0/.dx/.reg
+			:- fc-compile-using-libs .libs .do .frame/.ves .cs0/.csx/.ds0/.dsx/.reg
 	) .prog1
 	, concat .prog0 "%0A#%0A%0A" .prog1 "%0A#%0A%0A" .contents
 	, file-write 'src/main/resources/fc-precompiled.sl' .contents
 #
 
-fc-compile-using-lib .libs .do
-	:- infer-type-rule-using-lib .libs .do ()/()/() .tr0/.trx _
+fc-compile-using-libs .libs .do
+	:- infer-type-rule-using-libs .libs .do ()/()/() .tr0/.trx _
 	,  resolve-types .tr0/.trx
 #
 
-infer-type-rule-using-lib () .do .vto .tr0/.trx .type
+infer-type-rule-using-libs () .do .vto .tr0/.trx .type
 	:- infer-type-rule .do .vto .tr0/.trx .type
 #
 
-fc-compile-using-lib () .do .fve .cdr
+fc-compile-using-libs () .do .fve .cdr
 	:- !, fc-compile .do .fve .cdr
 #
 
