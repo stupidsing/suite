@@ -28,22 +28,9 @@ fc-setup-precompile .lib .do1/($$PRECOMPILE .pc)
 	, file-write 'src/main/resources/fc-precompiled.sl' .contents
 #
 
-fc-compile-using-libs .libs .do
-	:- infer-type-rule-using-libs .libs .do ()/()/() .tr0/.trx _
-	,  resolve-types .tr0/.trx
-#
-
-infer-type-rule-using-libs () .do .vto .tr0/.trx .type
-	:- infer-type-rule .do .vto .tr0/.trx .type
-#
-
-fc-compile-using-libs () .do .fve .cdr
-	:- !, fc-compile .do .fve .cdr
-#
-
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
-infer-type-rule ($$PRECOMPILE .vto .trs0/.trsx _) .vto .trs0/.trsx NUMBER :- ! #
+infer-type-rule ($$PRECOMPILE .vto .trs _) .vto .trs NUMBER :- ! #
 
 -- Eager evaluation
 fc-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #

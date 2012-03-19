@@ -92,8 +92,9 @@ public class FunctionCompilerTypeTest {
 	private static Node getType(String f) {
 		Node program = SuiteUtil.parse(f);
 
-		Node node = SuiteUtil
-				.parse("fc-parse .program .p, infer-type .p ()/()/() .type");
+		Node node = SuiteUtil.parse("fc-parse .program .p" //
+				+ ", infer-type-rule .p ()/()/() .tr .type" //
+				+ ", resolve-types .tr");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

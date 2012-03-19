@@ -7,13 +7,26 @@
 () :- import 'fc-type-inference.sl' #
 
 compile-function .do .c0
+	:- fc-add-standard-funs .do .do1
+	, compile-function-using-libs () .do1 .c0
+#
+
+compile-function-using-libs .libs .do .c0
 	:- .c0 = (_ ENTER, .c1)
-	, fc-add-standard-funs .do .do1
-	, !, fc-parse .do1 .parsed
-	, !, infer-type .parsed ()/()/() _
-	, !, fc-compile .parsed 0/() .c1/.c2/.d0/()/.reg
+	, !, fc-parse .do .parsed
+	, !, infer-type-rule-using-libs .libs .parsed ()/()/() .tr0/.trx _
+	, !, resolve-types .tr0/.trx
+	, !, fc-compile-using-libs .libs .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, .d0)
 	, !, fc-assign-line-number 0 .c0
+#
+
+infer-type-rule-using-libs () .do .vto .tr .type
+	:- infer-type-rule .do .vto .tr .type
+#
+
+fc-compile-using-libs () .do .fve .cdr
+	:- !, fc-compile .do .fve .cdr
 #
 
 --

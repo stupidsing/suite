@@ -7,11 +7,6 @@
 -- .oe - list of tuples and their corresponding one-of types
 -- .tr - type deduction rule to be assembled
 --
-infer-type .do .ve/.te/.oe .type
-	:- infer-type-rule .do .ve/.te/.oe .tr0/.trx .type
-	, resolve-types .tr0/.trx -- Resolve all types
-#
-
 infer-type-rule (CAST .type .do) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, find-one-of-type .type .oe1/.oe
