@@ -43,29 +43,30 @@ public class SystemPredicates {
 		addPredicate(TermOp.NOTEQ_, new EvalPredicates.NotEquals());
 		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
-		addPredicate("concat", new EvalPredicates.Concat());
 		addPredicate("generalize", new EvalPredicates.Generalize());
 		addPredicate("generalize.prefix",
 				new EvalPredicates.GeneralizeWithPrefix());
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("let", new EvalPredicates.Let());
-		addPredicate("is.atom", new EvalPredicates.IsAtom());
-		addPredicate("is.int", new EvalPredicates.IsInt());
-		addPredicate("is.string", new EvalPredicates.IsString());
-		addPredicate("is.tree", new EvalPredicates.IsTree());
 		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("nth", new EvalPredicates.Nth());
-		addPredicate("parse", new EvalPredicates.Parse());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("same", new EvalPredicates.Same());
-		addPredicate("starts.with", new EvalPredicates.StartsWith());
 		addPredicate("temp", new EvalPredicates.Temp());
-		addPredicate("to.atom", new EvalPredicates.ToAtom());
-		addPredicate("to.dump.string", new EvalPredicates.ToDumpString());
-		addPredicate("to.string", new EvalPredicates.ToString());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
-		addPredicate("trim", new EvalPredicates.Trim());
+
+		addPredicate("concat", new FormatPredicates.Concat());
+		addPredicate("is.atom", new FormatPredicates.IsAtom());
+		addPredicate("is.int", new FormatPredicates.IsInt());
+		addPredicate("is.string", new FormatPredicates.IsString());
+		addPredicate("is.tree", new FormatPredicates.IsTree());
+		addPredicate("parse", new FormatPredicates.Parse());
+		addPredicate("starts.with", new FormatPredicates.StartsWith());
+		addPredicate("to.atom", new FormatPredicates.ToAtom());
+		addPredicate("to.dump.string", new FormatPredicates.ToDumpString());
+		addPredicate("to.string", new FormatPredicates.ToString());
+		addPredicate("trim", new FormatPredicates.Trim());
 
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());

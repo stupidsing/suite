@@ -12,7 +12,6 @@ import javax.script.ScriptException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.parser.Operator;
-import org.suite.SuiteUtil;
 import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
@@ -81,45 +80,6 @@ public class EvalPredicates {
 
 			String str = result != null ? result.toString() : "";
 			return prover.bind(new Str(str), params[1]);
-		}
-	}
-
-	public static class IsAtom implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return ps.finalNode() instanceof Atom;
-		}
-	}
-
-	public static class IsInt implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return ps.finalNode() instanceof Int;
-		}
-	}
-
-	public static class IsString implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return ps.finalNode() instanceof Str;
-		}
-	}
-
-	public static class IsTree implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return ps.finalNode() instanceof Tree;
-		}
-	}
-
-	public static class Concat implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node node = ps;
-			StringBuilder sb = new StringBuilder();
-			Tree tree;
-
-			while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-				sb.append(Formatter.display(tree.getLeft()));
-				node = tree.getRight();
-			}
-
-			return prover.bind(new Str(sb.toString()), node);
 		}
 	}
 
@@ -246,14 +206,6 @@ public class EvalPredicates {
 		}
 	}
 
-	public static class Parse implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(SuiteUtil.parse(Formatter.display(p0)), p1);
-		}
-	}
-
 	public static class RandomPredicate implements SystemPredicate {
 		private static final java.util.Random random = new Random();
 
@@ -272,46 +224,12 @@ public class EvalPredicates {
 		}
 	}
 
-	public static class StartsWith implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-
-			return p0 instanceof Atom && p1 instanceof Atom
-					&& ((Atom) p0).getName().startsWith(((Atom) p1).getName());
-		}
-	}
-
 	public static class Temp implements SystemPredicate {
 		private static AtomicInteger counter = new AtomicInteger();
 
 		public boolean prove(Prover prover, Node ps) {
 			int n = counter.getAndIncrement();
 			return prover.bind(ps, Atom.create("$$T" + n));
-		}
-	}
-
-	public static class ToAtom implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, Atom.create(Formatter.display(p0)));
-		}
-	}
-
-	public static class ToDumpString implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, new Str(Formatter.dump(p0)));
-		}
-	}
-
-	public static class ToString implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, new Str(Formatter.display(p0)));
 		}
 	}
 
@@ -332,14 +250,6 @@ public class EvalPredicates {
 				return prover.bind(p, new Tree(operator, params[1], params[3]));
 			} else
 				return false;
-		}
-	}
-
-	public static class Trim implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, new Str(Formatter.display(p0).trim()));
 		}
 	}
 
