@@ -4,7 +4,11 @@
 -- Also need to import one of the following backends:
 -- fc-eager-evaluation.sl, fc-lazy-evaluation.sl
 
-() :- import 'fc-type-inference.sl' #
+() :- import 'fc-type-inference.sl'
+	, import 'fc-precompiled.sl'
+#
+
+compile-function0 .do .c0 :- compile-function-using-libs () .do .c0 #
 
 compile-function .do .c0
 	:- fc-add-standard-funs .do .do1
@@ -17,7 +21,7 @@ compile-function-using-libs .libs .do .c0
 	, !, infer-type-rule-using-libs .libs .parsed ()/()/() .tr0/.trx _
 	, !, resolve-types .tr0/.trx
 	, !, fc-compile-using-libs .libs .parsed 0/() .c1/.c2/.d0/()/.reg
-	, .c2 = (_ EXIT .reg, .d0)
+	, .c2 = (_ EXIT .reg, _ LEAVE, .d0)
 	, !, fc-assign-line-number 0 .c0
 #
 

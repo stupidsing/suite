@@ -1,6 +1,10 @@
 -------------------------------------------------------------------------------
 -- precompile code for basic functions for functional precompiler
 --
+-- to perform pre-compilation:
+-- ./run.sh src/main/resources/fc-precompile.sl
+-- ? fc-setup-standard-precompile #
+--
 
 fc-setup-standard-precompile
 	:- fc-add-standard-funs .do0 .do1
@@ -17,8 +21,7 @@ fc-setup-precompile .lib .do1/($$PRECOMPILE .pc)
 	, !, fc-compile .parsed 0/.ve .c0/.cx/.d0/.dx/.reg
 	, !, to.dump.string (
 		infer-type-rule-using-libs (.lib, .libs) .do .vtos .tr0/.trx .type
-			:- .trx = .trs0
-			, infer-type-rule-using-libs .libs .do .vto .tr0/.trsx .type
+			:- infer-type-rule-using-libs .libs .do .vto .trs0/.trsx .type
 	) .prog0
 	, to.dump.string (
 		fc-compile-using-libs (.lib, .libs) .do .frame/.ve .c0/.cx/.d0/.dx/.reg
@@ -39,5 +42,5 @@ fc-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 fc-compile0 ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 
 () :- import 'fc.sl'
-	, import 'fc-lazy-evaluation.sl'
+	, import 'fc-eager-evaluation.sl'
 #
