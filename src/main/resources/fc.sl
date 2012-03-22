@@ -8,7 +8,7 @@
 	, import 'fc-precompiled.sl'
 #
 
-compile-function0 .do .c0 :- compile-function-using-libs () .do .c0 #
+compile-function0 .do .c0 :- compile-function-using-libs (STANDARD,) .do .c0 #
 
 compile-function .do .c0
 	:- fc-add-standard-funs .do .do1
