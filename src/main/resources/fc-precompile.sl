@@ -12,20 +12,24 @@ fc-setup-standard-precompile
 #
 
 fc-setup-precompile .lib .do1/($$PRECOMPILE .pc)
-	:- .pc = .vto .trs0/.trsx .frame/.ves .cs0/.csx/.ds0/.dsx/.resultReg
+	:- .pc = .ves/.tes/.oes .trs0/.trsx .frame/.wes .cs0/.csx/.ds0/.dsx/.resultReg
 	, !, fc-parse .do1 .parsed
-	, !, infer-type-rule .parsed .vtos .tr0/.trx NUMBER
+	, !, infer-type-rule .parsed ()/()/() .tr0/.trx NUMBER
 	, !, not not ( -- Test type correctness
 		.trs0 = .trsx, resolve-types .tr0/.trx
 	)
-	, !, fc-compile .parsed 0/.ve .c0/.cx/.d0/.dx/.reg
+	, !, fc-compile .parsed 0/() .c0/.cx/.d0/.dx/.reg
+	, append .ves .ve .ve1
+	, append .tes .te .te1
+	, append .oes .oe .oe1
+	, append .wes .we .we1
 	, !, to.dump.string (
-		infer-type-rule-using-libs (.lib, .libs) .do .vtos .tr0/.trx .type
-			:- infer-type-rule-using-libs .libs .do .vto .trs0/.trsx .type
+		infer-type-rule-using-libs (.lib, .libs) .do .ve/.te/.oe .tr0/.trx .type
+			:- infer-type-rule-using-libs .libs .do .ve1/.te1/.oe1 .trs0/.trsx .type
 	) .prog0
 	, to.dump.string (
-		fc-compile-using-libs (.lib, .libs) .do .frame/.ve .c0/.cx/.d0/.dx/.reg
-			:- fc-compile-using-libs .libs .do .frame/.ves .cs0/.csx/.ds0/.dsx/.reg
+		fc-compile-using-libs (.lib, .libs) .do .frame/.we .c0/.cx/.d0/.dx/.reg
+			:- fc-compile-using-libs .libs .do .frame/.we1 .cs0/.csx/.ds0/.dsx/.reg
 	) .prog1
 	, concat .prog0 "%0A#%0A%0A" .prog1 "%0A#%0A%0A" .contents
 	, file-write 'src/main/resources/fc-precompiled.sl' .contents
