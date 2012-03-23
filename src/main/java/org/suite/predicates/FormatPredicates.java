@@ -85,7 +85,7 @@ public class FormatPredicates {
 				String s = elem.substring(1);
 				Node n;
 
-				if (type == 'a')
+				if (type == '\\')
 					n = Atom.create(s);
 				else if (type == 'i')
 					n = Int.create(Integer.valueOf(s));
@@ -111,7 +111,7 @@ public class FormatPredicates {
 			node = node.finalNode();
 
 			if (node instanceof Atom)
-				s = "a" + ((Atom) node).getName();
+				s = "\\" + ((Atom) node).getName();
 			else if (node instanceof Int)
 				s = "n" + ((Int) node).getNumber();
 			else if (node instanceof Tree) {

@@ -3,8 +3,6 @@ package org.suite.predicates;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.suite.SuiteUtil;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
@@ -66,12 +64,10 @@ public class RuleSetPredicates {
 				SuiteUtil.importFrom(prover.getRuleSet(), filename);
 				return true;
 			} catch (Exception ex) {
-				log.info(this, ex);
-				return false;
+				throw new RuntimeException( //
+						"Exception when importing " + filename, ex);
 			}
 		}
-
-		private Log log = LogFactory.getLog(getClass());
 	}
 
 	public static class ListPredicates implements SystemPredicate {

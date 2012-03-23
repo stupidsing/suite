@@ -68,7 +68,10 @@ public class SuiteUtil {
 
 		try {
 			is = cl.getResourceAsStream(classpath);
-			rs.importFrom(SuiteUtil.parse(is));
+			if (is != null)
+				rs.importFrom(SuiteUtil.parse(is));
+			else
+				throw new RuntimeException("Cannot find resource " + classpath);
 		} finally {
 			Util.closeQuietly(is);
 			isImportFromClasspath = wasFromClasspath;
@@ -125,19 +128,24 @@ public class SuiteUtil {
 		Prover compiler = lazyEvaluation ? getLazyFunCompiler()
 				: getEagerFunCompiler();
 
-		return evaluateFunctional(program, compiler);
+		return evaluateFunctional(program, compiler, lazyEvaluation);
 	}
 
-	public static Node evaluateFunctional(Node program, Prover compiler) {
-		Node node = SuiteUtil.parse("compile-function .program .code");
+	public static Node evaluateFunctional(Node program, Prover compiler,
+			boolean lazyEvaluation) {
+		Node node = SuiteUtil.parse("compile-function .mode .program .code");
 		// + ", pp-list .code"
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
-		Node variable = generalizer.getVariable(Atom.create(".program"));
+		Node modeRef = generalizer.getVariable(Atom.create(".mode"));
+		Node progRef = generalizer.getVariable(Atom.create(".program"));
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
-		((Reference) variable).bound(program);
+		Atom mode = Atom.create(lazyEvaluation ? "LAZY" : "EAGER");
+
+		((Reference) modeRef).bound(mode);
+		((Reference) progRef).bound(program);
 		if (compiler.prove(node))
 			return new FunctionInstructionExecutor(ics).execute();
 		else
@@ -183,8 +191,8 @@ public class SuiteUtil {
 		return parser.parse(s);
 	}
 
-	public static Node parse(InputStream s) throws IOException {
-		return parser.parse(s);
+	public static Node parse(InputStream is) throws IOException {
+		return parser.parse(is);
 	}
 
 }
