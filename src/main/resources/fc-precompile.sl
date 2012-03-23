@@ -40,10 +40,10 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 infer-type-rule ($$PRECOMPILE .vto .trs _) .vto .trs NUMBER :- ! #
 
 -- Eager evaluation
-fc-compile EAGER ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
+fc-eager-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 
 -- Lazy evaluation
-fc-lazy-compile0 ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
+fc-lazy-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 
 () :- import 'fc.sl'
 	, import 'fc-eager-evaluation.sl'
