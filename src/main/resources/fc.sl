@@ -10,11 +10,11 @@
 	, import 'fc-precompiled.sl'
 #
 
-compile-function .mode .do .c0
+compile-function0 .mode .do .c0
 	:- compile-function-using-libs .mode (STANDARD,) .do .c0
 #
 
-compile-function0 .mode .do .c0
+compile-function .mode .do .c0
 	:- fc-add-standard-funs .do .do1
 	, compile-function-using-libs .mode () .do1 .c0
 #
