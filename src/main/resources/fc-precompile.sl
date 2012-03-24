@@ -39,11 +39,12 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
 	, fc-compile .mode .parsed 0/() .c0/.cx/.d0/.dx/.reg
 	, member .fcs .mode/.fc
-	, .fc = _/.wes .cs0/.csx/.ds0/.dsx/.resultReg
+	, .fc = .frameDiff/.wes .cs0/.csx/.ds0/.dsx/.regs
 	, append .wes .we .we1
 	, to.dump.string (
-		fc-compile-using-libs .mode (.lib, .libs) .do .frame/.we .c0/.cx/.d0/.dx/.reg
-			:- fc-compile-using-libs .mode .libs .do .frame/.we1 .cs0/.csx/.ds0/.dsx/.reg
+		fc-compile-using-libs .mode (.lib, .libs) .do .frame0/.we .c0/.cx/.d0/.dx/.reg
+			:- let .frame1 (.frame0 + .frameDiff)
+			, fc-compile-using-libs .mode .libs .do .frame1/.we1 .cs0/.csx/.ds0/.dsx/.regs
 	) .prog
 #
 
