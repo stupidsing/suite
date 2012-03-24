@@ -39,7 +39,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
 	, fc-compile .mode .parsed 0/() .c0/.cx/.d0/.dx/.reg
 	, member .fcs .mode/.fc
-	, .fc = .frame/.wes .cs0/.csx/.ds0/.dsx/.resultReg
+	, .fc = _/.wes .cs0/.csx/.ds0/.dsx/.resultReg
 	, append .wes .we .we1
 	, to.dump.string (
 		fc-compile-using-libs .mode (.lib, .libs) .do .frame/.we .c0/.cx/.d0/.dx/.reg
@@ -53,7 +53,7 @@ infer-type-rule ($$PRECOMPILE .vto .trs _) .vto .trs NUMBER :- ! #
 fc-eager-compile ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
 
 -- Lazy evaluation
-fc-lazy-compile0 ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
+fc-lazy-compile-wrapped ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
 
 () :- import 'fc.sl'
 	, import 'fc-eager-evaluation.sl'
