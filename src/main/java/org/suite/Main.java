@@ -176,12 +176,13 @@ public class Main {
 
 	public boolean runFilter(List<String> inputs, boolean isLazy)
 			throws IOException {
-		if (inputs.size() == 1) {
-			Node result = SuiteUtil.evaluateFunctional(inputs.get(0), isLazy);
-			System.out.println(result);
-			return true;
-		} else
-			throw new RuntimeException("Only one evaluation is allowed");
+		StringBuilder sb = new StringBuilder();
+		for (String input : inputs)
+			sb.append(input + " ");
+
+		Node result = SuiteUtil.evaluateFunctional(sb.toString(), isLazy);
+		System.out.println(result);
+		return true;
 	}
 
 	public boolean runFunctional(List<String> files, boolean isLazy)
