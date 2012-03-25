@@ -30,17 +30,22 @@ import org.util.Util;
 public class Main {
 
 	public static void main(String args[]) {
+		LogUtil.initLog4j();
+
 		try {
 			int code = 0;
 
+			boolean isFilter = false;
 			boolean isFunctional = false;
 			boolean isLogical = false;
 			boolean isLazy = true;
-			List<String> files = Util.createList();
+			List<String> inputs = Util.createList();
 
 			for (String arg : args)
 				if (arg.startsWith("-eager"))
 					isLazy = false;
+				else if (arg.startsWith("-filter"))
+					isFilter = true;
 				else if (arg.startsWith("-functional"))
 					isFunctional = true;
 				else if (arg.startsWith("-lazy"))
@@ -48,14 +53,16 @@ public class Main {
 				else if (arg.startsWith("-logical"))
 					isLogical = true;
 				else
-					files.add(arg);
+					inputs.add(arg);
 
-			if (isFunctional)
-				code = new Main().runLogical(files) ? 0 : 1;
+			if (isFilter)
+				code = new Main().runFilter(inputs, isLazy) ? 0 : 1;
+			else if (isFunctional)
+				code = new Main().runFunctional(inputs, isLazy) ? 0 : 1;
 			else if (isLogical)
-				code = new Main().runFunctional(files, isLazy) ? 0 : 1;
+				code = new Main().runLogical(inputs) ? 0 : 1;
 			else
-				new Main().run(files);
+				new Main().run(inputs);
 
 			System.exit(code);
 		} catch (Throwable ex) {
@@ -68,8 +75,6 @@ public class Main {
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
-		LogUtil.initLog4j();
-
 		RuleSet rs = new RuleSet();
 		SuiteUtil.importResource(rs, "auto.sl");
 
@@ -167,6 +172,16 @@ public class Main {
 			result &= SuiteUtil.importFile(rs, file);
 
 		return result;
+	}
+
+	public boolean runFilter(List<String> inputs, boolean isLazy)
+			throws IOException {
+		if (inputs.size() == 1) {
+			Node result = SuiteUtil.evaluateFunctional(inputs.get(0), isLazy);
+			System.out.println(result);
+			return true;
+		} else
+			throw new RuntimeException("Only one evaluation is allowed");
 	}
 
 	public boolean runFunctional(List<String> files, boolean isLazy)
