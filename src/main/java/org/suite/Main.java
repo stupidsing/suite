@@ -1,8 +1,10 @@
 package org.suite;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,8 +15,10 @@ import org.suite.doer.Station;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.RuleSet;
+import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
 
@@ -27,7 +31,33 @@ public class Main {
 
 	public static void main(String args[]) {
 		try {
-			new Main().run(args);
+			int code = 0;
+
+			boolean isFunctional = false;
+			boolean isLogical = false;
+			boolean isLazy = true;
+			List<String> files = Util.createList();
+
+			for (String arg : args)
+				if (arg.startsWith("-eager"))
+					isLazy = false;
+				else if (arg.startsWith("-functional"))
+					isFunctional = true;
+				else if (arg.startsWith("-lazy"))
+					isLazy = true;
+				else if (arg.startsWith("-logical"))
+					isLogical = true;
+				else
+					files.add(arg);
+
+			if (isFunctional)
+				code = new Main().runLogical(files) ? 0 : 1;
+			else if (isLogical)
+				code = new Main().runFunctional(files, isLazy) ? 0 : 1;
+			else
+				new Main().run(files);
+
+			System.exit(code);
 		} catch (Throwable ex) {
 			log.error(Main.class, ex);
 		}
@@ -37,7 +67,7 @@ public class Main {
 		FACT, QUERY, ELABORATE, EVALUATE
 	};
 
-	public void run(String importFilenames[]) throws IOException {
+	public void run(List<String> importFilenames) throws IOException {
 		LogUtil.initLog4j();
 
 		RuleSet rs = new RuleSet();
@@ -125,6 +155,29 @@ public class Main {
 			} catch (Throwable ex) {
 				LogUtil.error(Main.class, ex);
 			}
+	}
+
+	public boolean runLogical(List<String> files) throws IOException {
+		boolean result = true;
+
+		RuleSet rs = new RuleSet();
+		result &= SuiteUtil.importResource(rs, "auto.sl");
+
+		for (String file : files)
+			result &= SuiteUtil.importFile(rs, file);
+
+		return result;
+	}
+
+	public boolean runFunctional(List<String> files, boolean isLazy)
+			throws IOException {
+		if (files.size() == 1) {
+			FileInputStream is = new FileInputStream(files.get(0));
+			String expression = IoUtil.readStream(is);
+			Node result = SuiteUtil.evaluateFunctional(expression, isLazy);
+			return result == Atom.create("true");
+		} else
+			throw new RuntimeException("Only one evaluation is allowed");
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

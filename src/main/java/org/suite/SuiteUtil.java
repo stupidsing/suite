@@ -31,15 +31,15 @@ public class SuiteUtil {
 		rs.addRule(parser.parse(rule));
 	}
 
-	public static synchronized void importFrom(RuleSet rs, String name)
+	public static synchronized boolean importFrom(RuleSet rs, String name)
 			throws IOException {
 		if (isImportFromClasspath)
-			SuiteUtil.importResource(rs, name);
+			return SuiteUtil.importResource(rs, name);
 		else
-			SuiteUtil.importFile(rs, name);
+			return SuiteUtil.importFile(rs, name);
 	}
 
-	public static synchronized void importFile(RuleSet rs, String filename)
+	public static synchronized boolean importFile(RuleSet rs, String filename)
 			throws IOException {
 		FileInputStream is = null;
 
@@ -49,7 +49,7 @@ public class SuiteUtil {
 
 		try {
 			is = new FileInputStream(filename);
-			rs.importFrom(SuiteUtil.parse(is));
+			return rs.importFrom(SuiteUtil.parse(is));
 		} finally {
 			Util.closeQuietly(is);
 			isImportFromClasspath = wasFromClasspath;
@@ -57,8 +57,8 @@ public class SuiteUtil {
 		}
 	}
 
-	public static synchronized void importResource(RuleSet rs, String classpath)
-			throws IOException {
+	public static synchronized boolean importResource(RuleSet rs,
+			String classpath) throws IOException {
 		ClassLoader cl = SuiteUtil.class.getClassLoader();
 		InputStream is = null;
 
@@ -69,7 +69,7 @@ public class SuiteUtil {
 		try {
 			is = cl.getResourceAsStream(classpath);
 			if (is != null)
-				rs.importFrom(SuiteUtil.parse(is));
+				return rs.importFrom(SuiteUtil.parse(is));
 			else
 				throw new RuntimeException("Cannot find resource " + classpath);
 		} finally {
