@@ -71,7 +71,7 @@ twin-list (_, .es0) (_, .es1) .e0 .e1 :- twin-list .es0 .es1 .e0 .e1 #
 
 use .fn
 	:- concat "src/main/resources/" .fn .fn1
-	, (IMPORTED .fn1; assert IMPORTED .fn1, import .fn1)
+	, (IMPORTED .fn1; assert IMPORTED .fn1, import.file .fn1)
 #
 
 whatever .g :- .g; yes #

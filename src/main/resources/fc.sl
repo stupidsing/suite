@@ -6,8 +6,10 @@
 --
 -- .mode can be EAGER or LAZY
 
-() :- import 'fc-type-inference.sl'
-	, import 'fc-precompiled.sl'
+() :- import.file 'fc-type-inference.sl' #
+() :- file-read 'precompiled.rpn' .rpn
+	, rpn .node .rpn
+	, import .node
 #
 
 compile-function .mode .do .c0

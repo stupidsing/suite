@@ -59,10 +59,15 @@ public class RuleSetPredicates {
 
 	public static class Import implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
+			return prover.getRuleSet().importFrom(ps);
+		}
+	}
+
+	public static class ImportFile implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
 			String filename = Formatter.display(ps);
 			try {
-				SuiteUtil.importFrom(prover.getRuleSet(), filename);
-				return true;
+				return SuiteUtil.importFrom(prover.getRuleSet(), filename);
 			} catch (Exception ex) {
 				throw new RuntimeException( //
 						"Exception when importing " + filename, ex);

@@ -1,10 +1,12 @@
 package org.suite;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.suite.doer.Prover;
 import org.suite.node.Node;
+import org.util.IoUtil;
 
 /**
  * Performs precompilation.
@@ -16,9 +18,9 @@ public class PrecompileMain {
 	public static void main(String args[]) throws IOException {
 
 		// Clears previous precompilation result
-		File precompiled = new File("src/main/resources/fc-precompiled.sl");
+		File precompiled = new File("precompiled.rpn");
 		precompiled.delete();
-		precompiled.createNewFile();
+		IoUtil.writeStream(new FileOutputStream(precompiled), "\\\n");
 
 		// Compiles again
 		String imports[] = { "auto.sl", "fc-precompile.sl" };

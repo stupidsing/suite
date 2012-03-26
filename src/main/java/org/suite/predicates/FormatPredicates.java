@@ -81,16 +81,19 @@ public class FormatPredicates {
 			List<Node> stack = new ArrayList<Node>();
 
 			for (String elem : elems) {
+				if (elem.isEmpty())
+					continue;
+
 				char type = elem.charAt(0);
 				String s = elem.substring(1);
 				Node n;
 
 				if (type == '\\')
 					n = Atom.create(s);
+				else if (type == '^')
+					n = SuiteUtil.parse(s);
 				else if (type == 'i')
 					n = Int.create(Integer.valueOf(s));
-				else if (type == '"')
-					n = SuiteUtil.parse(elem);
 				else if (type == 't') {
 					TermOp op = TermOp.valueOf(s);
 					int l = stack.size();
@@ -113,14 +116,14 @@ public class FormatPredicates {
 			if (node instanceof Atom)
 				s = "\\" + ((Atom) node).getName();
 			else if (node instanceof Int)
-				s = "n" + ((Int) node).getNumber();
+				s = "i" + ((Int) node).getNumber();
 			else if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				toRpn(tree.getLeft(), sb);
 				toRpn(tree.getRight(), sb);
 				s = "t" + tree.getOperator();
 			} else
-				throw new RuntimeException("RPN conversion error: " + node);
+				s = "^" + Formatter.dump(node);
 
 			sb.append(s);
 			sb.append('\n');

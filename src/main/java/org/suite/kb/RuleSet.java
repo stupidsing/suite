@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
+import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -50,8 +51,10 @@ public class RuleSet implements RuleSearcher {
 
 			if (rule.getHead() != Atom.nil)
 				addRule(rule);
-			else
-				result &= prover.prove(rule.getTail());
+			else {
+				Node goal = new Generalizer().generalize(rule.getTail());
+				result &= prover.prove(goal);
+			}
 
 			node = tree.getRight();
 		}
