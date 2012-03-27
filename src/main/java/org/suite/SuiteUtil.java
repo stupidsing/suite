@@ -102,8 +102,8 @@ public class SuiteUtil {
 		return evaluateLogical(parse(program));
 	}
 
-	public static Node evaluateFunctional(String program, boolean lazyEvaluation) {
-		return evaluateFunctional(parse(program), lazyEvaluation);
+	public static Node evaluateFunctional(String program, boolean isLazy) {
+		return evaluateFunctional(parse(program), isLazy);
 	}
 
 	public static boolean evaluateLogical(Node program) {
@@ -124,15 +124,14 @@ public class SuiteUtil {
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	public static Node evaluateFunctional(Node program, boolean lazyEvaluation) {
-		Prover compiler = lazyEvaluation ? getLazyFunCompiler()
-				: getEagerFunCompiler();
+	public static Node evaluateFunctional(Node program, boolean isLazy) {
+		Prover compiler = isLazy ? getLazyFunCompiler() : getEagerFunCompiler();
 
-		return evaluateFunctional(program, compiler, lazyEvaluation);
+		return evaluateFunctional(program, compiler, isLazy);
 	}
 
 	public static Node evaluateFunctional(Node program, Prover compiler,
-			boolean lazyEvaluation) {
+			boolean isLazy) {
 		Node node = SuiteUtil.parse("compile-function .mode .program .code");
 		// + ", pp-list .code"
 
@@ -142,7 +141,7 @@ public class SuiteUtil {
 		Node progRef = generalizer.getVariable(Atom.create(".program"));
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
-		Atom mode = Atom.create(lazyEvaluation ? "LAZY" : "EAGER");
+		Atom mode = Atom.create(isLazy ? "LAZY" : "EAGER");
 
 		((Reference) modeRef).bound(mode);
 		((Reference) progRef).bound(program);

@@ -66,18 +66,8 @@ fc-lazy-compile-wrapped (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	, fc-lazy-compile0 .do .env1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
-fc-lazy-compile-wrapped (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
-	:- member (getc, is-tree,) .var -- Special list processing function
-	, fc-define-default-fun 1 .var .call, !
-	, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
-	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
-#
-fc-lazy-compile-wrapped (INVOKE .p0 (INVOKE .p1 (VARIABLE .var))) .env .c0/.cx/.d0/.dx/.reg
-	:- member (cons,) .var -- Special list processing function
-	, fc-define-default-fun 2 .var .call, !
-	, fc-lazy-compile0 .p0 .env .c0/.c1/.d0/.d1/.param0Reg
-	, fc-lazy-compile0 .p1 .env .c1/.c2/.d1/.dx/.param1Reg
-	, .c2 = (_ PUSH .param0Reg, _ PUSH .param1Reg, _ SYS .reg .call 2, .cx)
+fc-lazy-compile-wrapped .do .env .cdr
+	:- fc-lazy-compile-default-fun 0 _ .do .env .cdr
 #
 fc-lazy-compile-wrapped (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -122,6 +112,27 @@ fc-lazy-compile-tuple .name (.e, .es) .env .c0/.cx/.d0/.dx/.reg
 		, _ SYS .reg CONS 2
 		, .cx
 	)
+#
+
+fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
+	:- member (
+		cons/2/PWRAPPED,
+		flush/1/PUNWRAPPED,
+		getc/1/PUNWRAPPED,
+		is-tree/1/PUNWRAPPED,
+		putc/3/PUNWRAPPED,
+	) .var/.n/.paramWrapped
+	, fc-define-default-fun .n .var .call
+	, !, .c0 = (_ SYS .reg .call .n, .cx)
+#
+fc-lazy-compile-default-fun .n .paramWrapped (INVOKE .p .chain) .env .c0/.cx/.d0/.dx/.reg
+	:- let .n1 (.n + 1)
+	, fc-lazy-compile-default-fun .n1 .paramWrapped .chain .env .c2/.cx/.d1/.dx/.reg
+	, (.paramWrapped = PWRAPPED
+		, fc-lazy-compile0 .p .env .c0/.c1/.d0/.d1/.paramReg
+	; fc-lazy-compile .p .env .c0/.c1/.d0/.d1/.paramReg
+	)
+	, .c1 = (_ PUSH .paramReg, .c2)
 #
 
 fc-lazy-default-fun .call .env .result

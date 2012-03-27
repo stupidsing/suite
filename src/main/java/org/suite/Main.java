@@ -181,13 +181,17 @@ public class Main {
 			sb.append(input + " ");
 
 		String f = "" //
-				+ "define in = (p => \n" //
-				+ "    define c = getc {p} >> \n" //
-				+ "    if (c >= 0) then (c, in {p + 1}) else () \n" //
+				+ "define in = (start => \n" //
+				+ "    define c = getc {start} >> \n" //
+				+ "    if (c >= 0) then (c, in {start + 1}) else () \n" //
 				+ ") >> \n" //
-				+ "(" + sb.toString() + ") {in {0}}";
-		Node result = SuiteUtil.evaluateFunctional(f, isLazy);
-		System.out.println(result);
+				+ "define out = (p => list =>\n" //
+				+ "    if-tree {list} {c => cs => \n" //
+				+ "        putc {p} {c} {out {p + 1} {cs}} \n" //
+				+ "    } {} \n" //
+				+ ") >> \n" //
+				+ "flush {out {0} {(" + sb.toString() + ") {in {0}}}}";
+		SuiteUtil.evaluateFunctional(f, isLazy);
 		return true;
 	}
 

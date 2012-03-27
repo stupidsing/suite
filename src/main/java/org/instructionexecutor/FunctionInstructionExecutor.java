@@ -1,6 +1,8 @@
 package org.instructionexecutor;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -13,12 +15,14 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom CONS = Atom.create("CONS");
 	private static final Atom EMPTY = Atom.create("EMPTY");
+	private static final Atom FLUSH = Atom.create("FLUSH");
 	private static final Atom GETC = Atom.create("GETC");
 	private static final Atom HEAD = Atom.create("HEAD");
 	private static final Atom ISTREE = Atom.create("IS-TREE");
 	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
 	private static final Atom LOG = Atom.create("LOG");
 	private static final Atom LOG2 = Atom.create("LOG2");
+	private static final Atom PUTC = Atom.create("PUTC");
 	private static final Atom TAIL = Atom.create("TAIL");
 	private static final Atom VCONCAT = Atom.create("VCONCAT");
 	private static final Atom VELEM = Atom.create("VELEM");
@@ -27,7 +31,10 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom VRANGE = Atom.create("VRANGE");
 	private static final Atom VTAIL = Atom.create("VTAIL");
 
+	private InputStream in = System.in;
+	private PrintStream out = System.out;
 	private StringBuilder inBuffer = new StringBuilder();
+	private StringBuilder outBuffer = new StringBuilder();
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
@@ -60,19 +67,22 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = new Tree(TermOp.AND___, left, right);
 		} else if (command == EMPTY)
 			result = Atom.nil;
-		else if (command == GETC)
+		else if (command == FLUSH) {
+			out.println(outBuffer.toString());
+			result = (Node) dataStack[dsp];
+		} else if (command == GETC)
 			try {
-				int n = ((Int) dataStack[dsp]).getNumber();
+				int p = ((Int) dataStack[dsp]).getNumber();
 
-				while (n >= inBuffer.length()) {
-					int c = System.in.read();
+				while (p >= inBuffer.length()) {
+					int c = in.read();
 					if (c >= 0)
 						inBuffer.append((char) c);
 					else
 						break;
 				}
 
-				int ch = n < inBuffer.length() ? inBuffer.charAt(n) : -1;
+				int ch = p < inBuffer.length() ? inBuffer.charAt(p) : -1;
 				result = Int.create(ch);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
@@ -88,6 +98,15 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		else if (command == LOG2) {
 			System.err.println((Node) dataStack[dsp + 1]);
 			result = (Node) dataStack[dsp];
+		} else if (command == PUTC) {
+			int p = ((Int) dataStack[dsp + 2]).getNumber();
+			int c = ((Int) dataStack[dsp + 1]).getNumber();
+			result = (Node) dataStack[dsp];
+
+			if (p >= outBuffer.length())
+				outBuffer.setLength(p + 1);
+
+			outBuffer.setCharAt(p, (char) c);
 		} else if (command == TAIL)
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();
 		else if (command == VCONCAT) {
@@ -112,4 +131,5 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 		return result;
 	}
+
 }
