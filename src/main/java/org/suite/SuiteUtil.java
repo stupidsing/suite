@@ -133,8 +133,8 @@ public class SuiteUtil {
 
 		public static FunCompilerConfig create(Node node, boolean isLazy) {
 			FunCompilerConfig c = new FunCompilerConfig();
-			c.node = node;
-			c.isLazy = isLazy;
+			c.setNode(node);
+			c.setLazy(isLazy);
 			return c;
 		}
 
