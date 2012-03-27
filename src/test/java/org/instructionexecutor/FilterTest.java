@@ -25,8 +25,8 @@ public class FilterTest {
 		ByteArrayInputStream is = new ByteArrayInputStream(inBytes);
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-		FunCompilerConfig config = FunCompilerConfig.create(
-				Main.applyFilter(program), true);
+		String program1 = Main.applyFilter(program);
+		FunCompilerConfig config = FunCompilerConfig.create(program1, true);
 		config.setIn(is);
 		config.setOut(new PrintStream(os));
 
