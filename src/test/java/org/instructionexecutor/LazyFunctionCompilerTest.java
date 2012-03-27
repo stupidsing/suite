@@ -55,7 +55,7 @@ public class LazyFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateFunctional(f, true);
+		return SuiteUtil.evaluateLazyFunctional(f);
 	}
 
 }

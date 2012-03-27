@@ -117,7 +117,7 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testInfiniteLoop() {
 		try {
-			SuiteUtil.evaluateFunctional("(e => e {e}) {e => e {e}}", false);
+			SuiteUtil.evaluateEagerFunctional("(e => e {e}) {e => e {e}}");
 			throw new RuntimeException();
 		} catch (ArrayIndexOutOfBoundsException ex) {
 		}
@@ -235,7 +235,7 @@ public class EagerFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateFunctional(f, false);
+		return SuiteUtil.evaluateEagerFunctional(f);
 	}
 
 }

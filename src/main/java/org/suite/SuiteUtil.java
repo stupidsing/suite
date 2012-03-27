@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
@@ -102,10 +103,6 @@ public class SuiteUtil {
 		return evaluateLogical(parse(program));
 	}
 
-	public static Node evaluateFunctional(String program, boolean isLazy) {
-		return evaluateFunctional(parse(program), isLazy);
-	}
-
 	public static boolean evaluateLogical(Node program) {
 		Prover lc = getLogicalCompiler();
 		Node node = SuiteUtil.parse("compile-logic .program .code");
@@ -124,14 +121,56 @@ public class SuiteUtil {
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	public static Node evaluateFunctional(Node program, boolean isLazy) {
-		Prover compiler = isLazy ? getLazyFunCompiler() : getEagerFunCompiler();
+	public static class FunCompilerConfig {
+		private Node node;
+		private boolean isLazy;
+		private InputStream in = System.in;
+		private PrintStream out = System.out;
 
-		return evaluateFunctional(program, compiler, isLazy);
+		public static FunCompilerConfig create(String program, boolean isLazy) {
+			return create(parse(program), isLazy);
+		}
+
+		public static FunCompilerConfig create(Node node, boolean isLazy) {
+			FunCompilerConfig c = new FunCompilerConfig();
+			c.node = node;
+			c.isLazy = isLazy;
+			return c;
+		}
+
+		public void setNode(Node node) {
+			this.node = node;
+		}
+
+		public void setLazy(boolean isLazy) {
+			this.isLazy = isLazy;
+		}
+
+		public void setIn(InputStream in) {
+			this.in = in;
+		}
+
+		public void setOut(PrintStream out) {
+			this.out = out;
+		}
 	}
 
-	public static Node evaluateFunctional(Node program, Prover compiler,
-			boolean isLazy) {
+	public static Node evaluateEagerFunctional(String program) {
+		return evaluateFunctional(program, false);
+	}
+
+	public static Node evaluateLazyFunctional(String program) {
+		return evaluateFunctional(program, true);
+	}
+
+	public static Node evaluateFunctional(String program, boolean isLazy) {
+		return evaluateFunctional(FunCompilerConfig.create(program, isLazy));
+	}
+
+	public static Node evaluateFunctional(FunCompilerConfig config) {
+		Prover compiler = config.isLazy ? getLazyFunCompiler()
+				: getEagerFunCompiler();
+
 		Node node = SuiteUtil.parse("compile-function .mode .program .code");
 		// + ", pp-list .code"
 
@@ -141,23 +180,26 @@ public class SuiteUtil {
 		Node progRef = generalizer.getVariable(Atom.create(".program"));
 		Node ics = generalizer.getVariable(Atom.create(".code"));
 
-		Atom mode = Atom.create(isLazy ? "LAZY" : "EAGER");
+		Atom mode = Atom.create(config.isLazy ? "LAZY" : "EAGER");
 
 		((Reference) modeRef).bound(mode);
-		((Reference) progRef).bound(program);
-		if (compiler.prove(node))
-			return new FunctionInstructionExecutor(ics).execute();
-		else
+		((Reference) progRef).bound(config.node);
+		if (compiler.prove(node)) {
+			FunctionInstructionExecutor e = new FunctionInstructionExecutor(ics);
+			e.setIn(config.in);
+			e.setOut(config.out);
+			return e.execute();
+		} else
 			throw new RuntimeException("Function compilation error");
 	}
 
-	private static synchronized Prover getLogicalCompiler() {
+	public static synchronized Prover getLogicalCompiler() {
 		if (logicalCompiler == null)
 			logicalCompiler = getProver(new String[] { "auto.sl", "lc.sl" });
 		return logicalCompiler;
 	}
 
-	private static synchronized Prover getEagerFunCompiler() {
+	public static synchronized Prover getEagerFunCompiler() {
 		if (eagerFunctionalCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-eager-evaluation.sl" };
 			eagerFunctionalCompiler = getProver(imports);
@@ -165,7 +207,7 @@ public class SuiteUtil {
 		return eagerFunctionalCompiler;
 	}
 
-	private static synchronized Prover getLazyFunCompiler() {
+	public static synchronized Prover getLazyFunCompiler() {
 		if (lazyFunctionalCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-lazy-evaluation.sl" };
 			lazyFunctionalCompiler = getProver(imports);

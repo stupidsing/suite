@@ -117,10 +117,10 @@ fc-lazy-compile-tuple .name (.e, .es) .env .c0/.cx/.d0/.dx/.reg
 fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
 		cons/2/PWRAPPED,
-		flush/1/PUNWRAPPED,
-		getc/1/PUNWRAPPED,
+		fflush/1/PUNWRAPPED,
+		fgetc/1/PUNWRAPPED,
+		fputc/3/PUNWRAPPED,
 		is-tree/1/PUNWRAPPED,
-		putc/3/PUNWRAPPED,
 	) .var/.n/.paramWrapped
 	, fc-define-default-fun .n .var .call
 	, !, .c0 = (_ SYS .reg .call .n, .cx)

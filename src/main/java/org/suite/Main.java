@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
@@ -128,7 +129,8 @@ public class Main {
 				if (type == InputType.FACT)
 					rs.addRule(node);
 				else if (type == InputType.EVALUATE) {
-					Node result = SuiteUtil.evaluateFunctional(node, false);
+					FunCompilerConfig c = FunCompilerConfig.create(node, true);
+					Node result = SuiteUtil.evaluateFunctional(c);
 					System.out.println(Formatter.dump(result));
 				} else {
 					final Generalizer generalizer = new Generalizer();
@@ -180,19 +182,23 @@ public class Main {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		String f = "" //
-				+ "define in = (start => \n" //
-				+ "    define c = getc {start} >> \n" //
-				+ "    if (c >= 0) then (c, in {start + 1}) else () \n" //
+		SuiteUtil.evaluateFunctional(applyFilter(sb.toString()), isLazy);
+		return true;
+	}
+
+	// Public to be called by test case FilterTest.java
+	public static String applyFilter(String func) {
+		return "" //
+				+ "define filter-in = (start => \n" //
+				+ "    define c = fgetc {start} >> \n" //
+				+ "    if (c >= 0) then (c, filter-in {start + 1}) else () \n" //
 				+ ") >> \n" //
-				+ "define out = (p => list =>\n" //
+				+ "define filter-out = (p => list => \n" //
 				+ "    if-tree {list} {c => cs => \n" //
-				+ "        putc {p} {c} {out {p + 1} {cs}} \n" //
+				+ "        fputc {p} {c} {filter-out {p + 1} {cs}} \n" //
 				+ "    } {} \n" //
 				+ ") >> \n" //
-				+ "flush {out {0} {(" + sb.toString() + ") {in {0}}}}";
-		SuiteUtil.evaluateFunctional(f, isLazy);
-		return true;
+				+ "fflush {filter-out {0} {(" + func + ") {filter-in {0}}}}";
 	}
 
 	public boolean runFunctional(List<String> files, boolean isLazy)

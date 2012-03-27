@@ -151,13 +151,13 @@ fc-parse-types (.type, .types) (.type1, .types1)
 fc-define-default-fun 0 () EMPTY #
 fc-define-default-fun 2 cons CONS #
 fc-define-default-fun 2 corecursive-cons CONS #
-fc-define-default-fun 1 flush FLUSH #
-fc-define-default-fun 1 getc GETC #
+fc-define-default-fun 1 fflush FFLUSH #
+fc-define-default-fun 1 fgetc FGETC #
+fc-define-default-fun 3 fputc FPUTC #
 fc-define-default-fun 1 head HEAD #
 fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 1 log LOG #
 fc-define-default-fun 2 log2 LOG2 #
-fc-define-default-fun 3 putc PUTC #
 fc-define-default-fun 1 tail TAIL #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
