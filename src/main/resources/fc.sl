@@ -151,6 +151,7 @@ fc-parse-types (.type, .types) (.type1, .types1)
 fc-define-default-fun 0 () EMPTY #
 fc-define-default-fun 2 cons CONS #
 fc-define-default-fun 2 corecursive-cons CONS #
+fc-define-default-fun 1 getc GETC #
 fc-define-default-fun 1 head HEAD #
 fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 1 log LOG #

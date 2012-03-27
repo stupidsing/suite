@@ -67,7 +67,7 @@ fc-lazy-compile-wrapped (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
 fc-lazy-compile-wrapped (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
-	:- member (is-tree,) .var -- Special list processing function
+	:- member (getc, is-tree,) .var -- Special list processing function
 	, fc-define-default-fun 1 .var .call, !
 	, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
 	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)

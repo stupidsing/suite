@@ -181,6 +181,7 @@ children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 
 default-fun-type () (LIST-OF _) #
 default-fun-type cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
+default-fun-type getc (FUN NUMBER NUMBER) #
 default-fun-type head (FUN (LIST-OF .type) .type) #
 default-fun-type is-tree (FUN (LIST-OF .type) BOOLEAN) #
 default-fun-type log (FUN .type .type) #

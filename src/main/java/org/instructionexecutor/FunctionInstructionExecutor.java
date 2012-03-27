@@ -1,5 +1,7 @@
 package org.instructionexecutor;
 
+import java.io.IOException;
+
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -11,6 +13,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom CONS = Atom.create("CONS");
 	private static final Atom EMPTY = Atom.create("EMPTY");
+	private static final Atom GETC = Atom.create("GETC");
 	private static final Atom HEAD = Atom.create("HEAD");
 	private static final Atom ISTREE = Atom.create("IS-TREE");
 	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
@@ -23,6 +26,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom VHEAD = Atom.create("VHEAD");
 	private static final Atom VRANGE = Atom.create("VRANGE");
 	private static final Atom VTAIL = Atom.create("VTAIL");
+
+	private StringBuilder inBuffer = new StringBuilder();
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
@@ -55,6 +60,18 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = new Tree(TermOp.AND___, left, right);
 		} else if (command == EMPTY)
 			result = Atom.nil;
+		else if (command == GETC)
+			try {
+				int n = ((Int) dataStack[dsp]).getNumber();
+
+				while (inBuffer.length() <= n && System.in.available() > 0)
+					inBuffer.append((char) System.in.read());
+
+				result = inBuffer.length() <= n ? Int
+						.create(inBuffer.charAt(n)) : Atom.nil;
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		else if (command == HEAD)
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
 		else if (command == ISTREE)
@@ -90,5 +107,4 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 		return result;
 	}
-
 }
