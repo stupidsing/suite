@@ -67,8 +67,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 				while (inBuffer.length() <= n && System.in.available() > 0)
 					inBuffer.append((char) System.in.read());
 
-				result = inBuffer.length() <= n ? Int
-						.create(inBuffer.charAt(n)) : Atom.nil;
+				int ch = inBuffer.length() <= n ? inBuffer.charAt(n) : -1;
+				result = Int.create(ch);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
