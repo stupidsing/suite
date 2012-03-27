@@ -64,10 +64,15 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			try {
 				int n = ((Int) dataStack[dsp]).getNumber();
 
-				while (inBuffer.length() <= n && System.in.available() > 0)
-					inBuffer.append((char) System.in.read());
+				while (n >= inBuffer.length()) {
+					int c = System.in.read();
+					if (c >= 0)
+						inBuffer.append((char) c);
+					else
+						break;
+				}
 
-				int ch = inBuffer.length() <= n ? inBuffer.charAt(n) : -1;
+				int ch = n < inBuffer.length() ? inBuffer.charAt(n) : -1;
 				result = Int.create(ch);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);

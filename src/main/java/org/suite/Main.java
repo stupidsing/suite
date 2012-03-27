@@ -180,7 +180,13 @@ public class Main {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		Node result = SuiteUtil.evaluateFunctional(sb.toString(), isLazy);
+		String f = "" //
+				+ "define in = (p => \n" //
+				+ "    define c = getc {p} >> \n" //
+				+ "    if (c >= 0) then (c, in {p + 1}) else () \n" //
+				+ ") >> \n" //
+				+ "(" + sb.toString() + ") {in {0}}";
+		Node result = SuiteUtil.evaluateFunctional(f, isLazy);
 		System.out.println(result);
 		return true;
 	}
