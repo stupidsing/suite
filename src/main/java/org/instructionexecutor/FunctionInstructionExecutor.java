@@ -69,6 +69,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = Atom.nil;
 		else if (command == FFLUSH) {
 			out.print(outBuffer.toString());
+			outBuffer.setLength(0);
 			result = (Node) dataStack[dsp];
 		} else if (command == FGETC)
 			try {
