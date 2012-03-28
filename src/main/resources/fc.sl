@@ -237,9 +237,7 @@ fc-add-standard-funs .p (
 		if-tree {list} {fun} {}
 	) >>
 	define tails = (list =>
-		if-tree {list} {h => t =>
-			list, tails {t}
-		} {}
+		if-tree {list} {h => t => list, tails {t}} {}
 	) >>
 	define zip = (fun => l0 => l1 =>
 		if-tree {l0} {h0 => t0 =>
