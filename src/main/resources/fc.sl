@@ -233,6 +233,19 @@ fc-add-standard-funs .p (
 		{h => t => fun {h} {fold-right {fun} {init} {t}}}
 		{init}
 	) >>
+	define scan-left = (fun => init => list =>
+		if-tree {list}
+		{h => t => init, scan-left {fun} {fun {init} {h}} {t}}
+		{init,}
+	) >>
+	define scan-right = (fun => init => list =>
+		if-tree {list}
+		{h => t =>
+			define r = scan-right {fun} {init} {t} >>
+			fun {h} {head {r}}, r
+		}
+		{init,}
+	) >>
 	define split = (fun => list =>
 		if-tree {list} {fun} {}
 	) >>

@@ -30,6 +30,8 @@ import org.util.Util;
  */
 public class Main {
 
+	private static boolean isLazy = true;
+
 	public static void main(String args[]) {
 		LogUtil.initLog4j();
 
@@ -39,7 +41,6 @@ public class Main {
 			boolean isFilter = false;
 			boolean isFunctional = false;
 			boolean isLogical = false;
-			boolean isLazy = true;
 			List<String> inputs = Util.createList();
 
 			for (String arg : args)
@@ -129,8 +130,8 @@ public class Main {
 				if (type == InputType.FACT)
 					rs.addRule(node);
 				else if (type == InputType.EVALUATE) {
-					FunCompilerConfig c = FunCompilerConfig.create(node, true);
-					Node result = SuiteUtil.evaluateFunctional(c);
+					Node result = SuiteUtil.evaluateFunctional( //
+							FunCompilerConfig.create(node, isLazy));
 					System.out.println(Formatter.dump(result));
 				} else {
 					final Generalizer generalizer = new Generalizer();
