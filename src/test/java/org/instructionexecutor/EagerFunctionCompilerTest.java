@@ -222,6 +222,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testTails() {
+		assertEquals(SuiteUtil.parse("(1, 2, 3,), (2, 3,), (3,),"),
+				eval("tails {1, 2, 3,}"));
+	}
+
+	@Test
 	public void testTake() {
 		assertEquals(SuiteUtil.parse("1, 2, 3, 4,"), eval("" //
 				+ "take {4} {1, 2, 3, 4, 5, 6, 7,}"));

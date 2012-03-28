@@ -215,6 +215,11 @@ fc-add-standard-funs .p (
 		)
 		else ()
 	) >>
+	define tails = (list =>
+		if-tree {list} {h => t =>
+			list, tails {t}
+		} {}
+	) >>
 	define concat2 = (l1 => l2 =>
 		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
 	) >>
