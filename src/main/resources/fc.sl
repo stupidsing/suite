@@ -10,6 +10,7 @@
 () :- file-read 'precompiled.rpn' .rpn
 	, rpn .node .rpn
 	, import .node
+--	, enable-trace
 #
 
 compile-function .mode .do .c0
@@ -105,6 +106,9 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
 	)
 #
+fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
+	:- fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
+#
 fc-parse (.name .elems) (TUPLE .name .elems2)
 	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
 #
@@ -146,6 +150,9 @@ fc-parse-types () () :- ! #
 fc-parse-types (.type, .types) (.type1, .types1)
 	:- fc-parse-type .type .type1, fc-parse-types .types .types1
 #
+
+fc-parse-anon-tuple () () :- ! #
+fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
 -- "cons" and "corecursive-cons" differ only by type
 fc-define-default-fun 0 () EMPTY #
@@ -284,6 +291,10 @@ fc-add-standard-funs .p (
 	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
+	) >>
+	define get = (n => list =>
+		define t = (l => tail {l}) >>
+		head {apply {list} {repeat {n} {t}}}
 	) >>
 	define quick-sort = (cmp => list =>
 		if-tree {list} {pivot => t =>
