@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.instructionexecutor.InstructionExecutorUtil.Closure;
+import org.instructionexecutor.InstructionExecutorUtil.Frame;
+import org.instructionexecutor.InstructionExecutorUtil.Instruction;
 import org.parser.Operator;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -56,6 +59,7 @@ public class InstructionExecutor {
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
 		CALLCONST_____("CALL-CONSTANT"), //
+		CALLCLOSUREIFR("CALL-CLOSURE-IF-REQUIRED"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
 		CUTEND________("CUT-END"), //
@@ -99,28 +103,12 @@ public class InstructionExecutor {
 		TOP___________("TOP"), //
 		;
 
-		private String name;
+		String name;
 
 		private Insn(String name) {
 			this.name = name;
 		}
 	};
-
-	protected static class Instruction {
-		protected Insn insn;
-		protected int op1, op2, op3;
-
-		public Instruction(Insn insn, int op1, int op2, int op3) {
-			this.insn = insn;
-			this.op1 = op1;
-			this.op2 = op2;
-			this.op3 = op3;
-		}
-
-		public String toString() {
-			return insn.name + " " + op1 + ", " + op2 + ", " + op3;
-		}
-	}
 
 	private Instruction instructions[];
 
@@ -220,46 +208,6 @@ public class InstructionExecutor {
 			return pointer1;
 		} else
 			return pointer;
-	}
-
-	// Indicates a function call with a specified set of framed environment.
-	// Closure must extend Node in order to be put in a list (being cons-ed).
-	protected static class Closure extends Node {
-		protected Frame frame;
-		protected int ip;
-
-		protected Closure(Frame frame, int ip) {
-			this.frame = frame;
-			this.ip = ip;
-		}
-
-		protected Closure clone() {
-			return new Closure(frame, ip);
-		}
-
-		public String toString() {
-			return "frameSize = " + frame.registers.length + ", IP = " + ip;
-		}
-	}
-
-	protected static class Frame {
-		protected Frame previous;
-		protected Node registers[];
-
-		protected Frame(Frame previous, int frameSize) {
-			this.previous = previous;
-			registers = new Node[frameSize];
-		}
-	}
-
-	protected static class CutPoint {
-		protected int journalPointer;
-		protected int callStackPointer;
-
-		protected CutPoint(int journalPointer, int callStackPointer) {
-			this.journalPointer = journalPointer;
-			this.callStackPointer = callStackPointer;
-		}
 	}
 
 	public Node execute() {

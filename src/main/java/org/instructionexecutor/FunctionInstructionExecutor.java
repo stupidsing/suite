@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import org.instructionexecutor.InstructionExecutorUtil.Closure;
+import org.instructionexecutor.InstructionExecutorUtil.Frame;
+import org.instructionexecutor.InstructionExecutorUtil.Instruction;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
