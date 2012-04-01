@@ -180,19 +180,19 @@ children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 #
 
 default-fun-type () (LIST-OF _) #
-default-fun-type cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
+default-fun-type _cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
+default-fun-type _head (FUN (LIST-OF .type) .type) #
+default-fun-type _tail (FUN (LIST-OF .type) (LIST-OF .type)) #
 default-fun-type fflush (FUN .type .type) #
 default-fun-type fgetc (FUN NUMBER NUMBER) #
 default-fun-type fputc (FUN NUMBER (FUN NUMBER (FUN .type .type))) #
-default-fun-type head (FUN (LIST-OF .type) .type) #
 default-fun-type is-tree (FUN (LIST-OF .type) BOOLEAN) #
 default-fun-type log (FUN .type .type) #
 default-fun-type log2 (FUN _ (FUN .type .type)) #
-default-fun-type tail (FUN (LIST-OF .type) (LIST-OF .type)) #
 
 -- Special type primitive for corecursive lists
 default-fun-type corecursive-cons (FUN .type (FUN (FUN _ .cl) .cl))
 	:- .cl = CO-LIST-OF .type
 #
-default-fun-type head (FUN (CO-LIST-OF .type) .type) #
-default-fun-type tail (FUN .cl (FUN _ .cl)) :- .cl = CO-LIST-OF .type #
+default-fun-type _head (FUN (CO-LIST-OF .type) .type) #
+default-fun-type _tail (FUN .cl (FUN _ .cl)) :- .cl = CO-LIST-OF .type #

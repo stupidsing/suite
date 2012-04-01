@@ -202,12 +202,6 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
-	public void testSplit() {
-		assertEquals(Int.create(1), eval("" //
-				+ "split {h => l => h} {1, 2,}"));
-	}
-
-	@Test
 	public void testSwitch() {
 		assertEquals(new Str("C"), eval("" //
 				+ "define switch = (p => case \n" //

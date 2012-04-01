@@ -42,7 +42,7 @@ fc-lazy-compile0 (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 	)
 #
 fc-lazy-compile0 (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
-	:- member (head, tail,) .var -- Special list processing function
+	:- member (_head, _tail,) .var -- Special list processing function
 	, fc-define-default-fun 1 .var .call, !
 	, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
 	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
@@ -116,7 +116,7 @@ fc-lazy-compile-tuple .name (.e, .es) .env .c0/.cx/.d0/.dx/.reg
 
 fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
-		cons/2/PWRAPPED,
+		_cons/2/PWRAPPED,
 		fflush/1/PUNWRAPPED,
 		fgetc/1/PUNWRAPPED,
 		fputc/3/PUNWRAPPED,

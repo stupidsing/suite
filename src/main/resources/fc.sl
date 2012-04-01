@@ -41,8 +41,19 @@ fc-compile-using-libs .mode () .do .fve .cdr
 #
 
 --
--- Syntax sugars
+-- Syntactic sugars
 --
+fc-parse (if-match (.h, .t) then .then else .else) .parsed
+	:- !, temp .list
+	, fc-parse (
+		.list => if (is-tree {.list}) then (
+			define .h = _head {.list} >>
+			define .t = _tail {.list} >>
+			.then
+		)
+		else .else
+	) .parsed
+#
 fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
 	:- !, fc-parse .if .if1
 	, fc-parse .then .then1
@@ -60,10 +71,11 @@ fc-parse .t .parsed
 	, temp .var, tree .t1 .left .op .var, fc-parse (.var => .t1) .parsed
 #
 fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
-fc-parse (.l, .r) .parsed :- !, fc-parse (cons {.l} {.r}) .parsed #
-fc-parse (.l . .r) .parsed :- !, fc-parse (join {.r} {.l}) .parsed #
+fc-parse (.l, .r) .parsed :- !, fc-parse (_cons {.l} {.r}) .parsed #
+fc-parse (.l . .r) .parsed :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .parsed #
 fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
+fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 --
 -- Function constructs
 --
@@ -156,16 +168,16 @@ fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
 -- "cons" and "corecursive-cons" differ only by type
 fc-define-default-fun 0 () EMPTY #
-fc-define-default-fun 2 cons CONS #
+fc-define-default-fun 2 _cons CONS #
+fc-define-default-fun 1 _head HEAD #
+fc-define-default-fun 1 _tail TAIL #
 fc-define-default-fun 2 corecursive-cons CONS #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
 fc-define-default-fun 3 fputc FPUTC #
-fc-define-default-fun 1 head HEAD #
 fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 1 log LOG #
 fc-define-default-fun 2 log2 LOG2 #
-fc-define-default-fun 1 tail TAIL #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
 fc-is-tuple-name .t
@@ -195,14 +207,25 @@ fc-add-standard-funs .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
+	define cons = (head => tail =>
+		_cons {head} {tail}
+	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>
-	define if-tree = (list => f1 => f2 =>
-		if (is-tree {list}) then (
-			f1 {head {list}} {tail {list}}
-		)
-		else f2
+	define fold-left = (fun => init => if-match (h, t)
+		then (fold-left {fun} {fun {init} {h}} {t})
+		else init
+	) >>
+	define fold-right = (fun => init => if-match (h, t)
+		then (fun {h} {fold-right {fun} {init} {t}})
+		else init
+	) >>
+	define head = (list =>
+		_head {list}
+	) >>
+	define id = (v =>
+		v
 	) >>
 	define join = (f => g => x =>
 		g {f {x}}
@@ -216,66 +239,49 @@ fc-add-standard-funs .p (
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
-	define take = (n => list =>
-		if (n > 0 && is-tree {list}) then (
-			head {list}, take {n - 1} {tail {list}}
-		)
-		else ()
+	define scan-left = (fun => init => if-match (h, t)
+		then (init, scan-left {fun} {fun {init} {h}} {t})
+		else (init,)
 	) >>
-	define concat2 = (l1 => l2 =>
-		if-tree {l1} {h => t => h, concat2 {t} {l2}} {l2}
+	define scan-right = (fun => init => if-match (h, t)
+		then (
+			define r = scan-right {fun} {init} {t} >>
+			fun {h} {head {r}}, r
+		)
+		else (init,)
+	) >>
+	define tail = (list =>
+		_tail {list}
+	) >>
+	define tails = if-match (h, t)
+		then ((h, t), tails {t})
+		else ()
+	>>
+	define zip = (fun =>
+		if-match (h0, t0)
+		then (
+			if-match (h1, t1)
+			then (fun {h0} {h1}, zip {fun} {t0} {t1})
+			else ()
+		)
+		else ($ => ())
+	) >>
+	define apply =
+		fold-left {x => f => f {x}}
+	>>
+	define concat2 = (if-match (h, t)
+		then (cons {h} . concat2 {t})
+		else id
+	) >>
+	define filter = (fun =>
+		fold-right {
+			item => list => if (fun {item}) then (item, list) else list
+		} {}
 	) >>
 	define fold = (fun => list =>
 		define h = head {list} >>
 		define t = tail {list} >>
 		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
-	) >>
-	define fold-left = (fun => init => list =>
-		if-tree {list}
-		{h => t => fold-left {fun} {fun {init} {h}} {t}}
-		{init}
-	) >>
-	define fold-right = (fun => init => list =>
-		if-tree {list}
-		{h => t => fun {h} {fold-right {fun} {init} {t}}}
-		{init}
-	) >>
-	define scan-left = (fun => init => list =>
-		if-tree {list}
-		{h => t => init, scan-left {fun} {fun {init} {h}} {t}}
-		{init,}
-	) >>
-	define scan-right = (fun => init => list =>
-		if-tree {list}
-		{h => t =>
-			define r = scan-right {fun} {init} {t} >>
-			fun {h} {head {r}}, r
-		}
-		{init,}
-	) >>
-	define split = (fun => list =>
-		if-tree {list} {fun} {}
-	) >>
-	define tails = (list =>
-		if-tree {list} {h => t => list, tails {t}} {}
-	) >>
-	define zip = (fun => l0 => l1 =>
-		if-tree {l0} {h0 => t0 =>
-			if-tree {l1} {h1 => t1 =>
-				fun {h0} {h1}, zip {fun} {t0} {t1}
-			} {}
-		} {}
-	) >>
-	define apply =
-		fold-left {x => f => f {x}}
-	>>
-	define concat =
-		fold-left {concat2} {}
-	>>
-	define filter = (fun =>
-		fold-right {
-			item => list => if (fun {item}) then (item, list) else list
-		} {}
 	) >>
 	define length = (
 		fold-left {v => e => v + 1} {0}
@@ -285,6 +291,15 @@ fc-add-standard-funs .p (
 	) >>
 	define reverse =
 		fold-left {a => b => b, a} {}
+	>>
+	define take = (n => list =>
+		if (n > 0 && is-tree {list}) then (
+			head {list}, take {n - 1} {tail {list}}
+		)
+		else ()
+	) >>
+	define concat =
+		fold-left {concat2} {}
 	>>
 	define contains = (e =>
 		fold {or} . map {e1 => e1 = e}
@@ -296,14 +311,15 @@ fc-add-standard-funs .p (
 		define t = (l => tail {l}) >>
 		head {apply {list} {repeat {n} {t}}}
 	) >>
-	define quick-sort = (cmp => list =>
-		if-tree {list} {pivot => t =>
+	define quick-sort = (cmp => if-match (pivot, t)
+		then (
 			define cmp0 = (not . cmp {pivot}) >>
 			define cmp1 = cmp {pivot} >>
 			define l0 = quick-sort {cmp} {filter {cmp0} {t}} >>
 			define l1 = quick-sort {cmp} {filter {cmp1} {t}} >>
 			concat {l0, (pivot,), l1,}
-		} {}
+		)
+		else ()
 	) >>
 	.p
 ) #
