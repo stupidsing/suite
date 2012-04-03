@@ -24,13 +24,13 @@ public class InstructionExecutor {
 
 	private static final BiMap<Insn, String> insnNames = HashBiMap.create();
 	private static final Map<Operator, Insn> evalInsns = Util.createHashMap();
+	private Instruction instructions[];
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
+	private static final int stackSize = 4096;
 
 	private static final Atom trueAtom = Atom.create("true");
 	private static final Atom falseAtom = Atom.create("false");
-
-	private static final int stackSize = 4096;
 
 	static {
 		for (Insn insn : Insn.values())
@@ -108,8 +108,6 @@ public class InstructionExecutor {
 			this.name = name;
 		}
 	};
-
-	private Instruction instructions[];
 
 	public InstructionExecutor(Node node) {
 		Tree tree;
