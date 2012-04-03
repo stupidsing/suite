@@ -59,7 +59,6 @@ public class InstructionExecutor {
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
 		CALLCONST_____("CALL-CONSTANT"), //
-		CALLCLOSUREIFR("CALL-CLOSURE-IF-REQUIRED"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
 		CUTEND________("CUT-END"), //
