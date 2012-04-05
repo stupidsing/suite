@@ -74,7 +74,7 @@ fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
 fc-parse (.l, .r) .parsed :- !, fc-parse (_cons {.l} {.r}) .parsed #
 fc-parse (.l . .r) .parsed :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .parsed #
 fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
-fc-parse (.l << .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
+fc-parse (.l << .r) .parsed :- !, fc-parse (.r {.l}) .parsed #
 fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 --
 -- Function constructs

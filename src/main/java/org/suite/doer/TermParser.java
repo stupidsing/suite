@@ -12,8 +12,8 @@ public class TermParser extends Parser {
 		IS____(" :- ", Assoc.RIGHT), //
 		SEP___(" | ", Assoc.RIGHT), //
 		FUN___(" => ", Assoc.RIGHT), //
-		RFEED_(" >> ", Assoc.RIGHT), //
-		LFEED_(" << ", Assoc.LEFT), //
+		CONTD_(" >> ", Assoc.RIGHT), //
+		PIPE__(" << ", Assoc.LEFT), //
 		JOIN__(" . ", Assoc.LEFT), //
 		OR____(";", Assoc.RIGHT), //
 		AND___(",", Assoc.RIGHT), //

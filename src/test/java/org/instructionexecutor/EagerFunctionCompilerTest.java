@@ -42,9 +42,9 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testContains() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ "contains << 9 << 7, 8, 9, 10, 11,"));
+				+ "contains {9} {7, 8, 9, 10, 11,}"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ "contains << 12 << 7, 8, 9, 10, 11,"));
+				+ "contains {12} {7, 8, 9, 10, 11,}"));
 	}
 
 	@Test
@@ -140,6 +140,11 @@ public class EagerFunctionCompilerTest {
 				+ "define q = (`* 2`) >> \n" //
 				+ "define r = (`- 3`) >> \n" //
 				+ "(p . q . r) {9}"));
+		assertEquals(Int.create(17), eval("" //
+				+ "define p = (`+ 1`) >> \n" //
+				+ "define q = (`* 2`) >> \n" //
+				+ "define r = (`- 3`) >> \n" //
+				+ "9 << p << q << r"));
 	}
 
 	@Test
