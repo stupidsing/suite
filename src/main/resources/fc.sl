@@ -257,6 +257,10 @@ fc-add-standard-funs .p (
 		then ((h, t), tails {t})
 		else ()
 	>>
+	define take-while = (fun => if-match (elem, elems)
+		then (if (fun {elem}) then (elem, take-while {fun} {elems}) else ())
+		else ()
+	) >>
 	define zip = (fun =>
 		if-match (h0, t0)
 		then (
@@ -320,6 +324,11 @@ fc-add-standard-funs .p (
 			concat {l0, (pivot,), l1,}
 		)
 		else ()
+	) >>
+	define split = (separator =>
+			map {take-while {`!= separator`} . tail}
+			. filter {`= separator` . head}
+			. tails
 	) >>
 	.p
 ) #
