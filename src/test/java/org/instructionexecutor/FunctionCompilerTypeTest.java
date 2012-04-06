@@ -66,7 +66,6 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testFail() {
 		String cases[] = { "1 + \"abc\"" //
-				, "1, \"abc\"" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
 				, "define type t = one of (BTREE t t,) >> \n" //
 						+ "define v as t = BTREE 2 3 >> \n" //

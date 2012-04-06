@@ -8,7 +8,6 @@ import org.suite.SuiteUtil;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
-import org.suite.node.Str;
 import org.suite.node.Tree;
 
 public class EagerFunctionCompilerTest {
@@ -208,7 +207,7 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testSwitch() {
-		assertEquals(new Str("C"), eval("" //
+		assertEquals(eval("\"C\""), eval("" //
 				+ "define switch = (p => case \n" //
 				+ "    || (p = 1) \"A\" \n" //
 				+ "    || (p = 2) \"B\" \n" //
