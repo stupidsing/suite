@@ -7,7 +7,10 @@ fc-compile LAZY .do .env .c0/.cx/.d0/.dx/.reg
 
 fc-lazy-compile .do .env .c0/.cx/.d0/.dx/.reg
 	:- fc-lazy-compile0 .do .env .c0/.c1/.d0/.dx/.closureReg
-	, .c1 = (_ CALL-CLOSURE .reg .closureReg, .cx)
+	, .c1 = (_ CALL-CLOSURE .reg .closureReg
+		, _ SET-CLOSURE-RESULT .closureReg .reg
+		, .cx
+	)
 #
 
 fc-lazy-compile0 (CAST _ .do) .env .cdr :- !, fc-lazy-compile0 .do .env .cdr #
@@ -76,6 +79,7 @@ fc-lazy-compile-wrapped (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	, .c2 = (_ PUSH .r2
 		, _ CALL-CLOSURE .closureReg .r1
 		, _ CALL-CLOSURE .reg .closureReg
+		, _ SET-CLOSURE-RESULT .closureReg .reg
 		, .cx
 	)
 #

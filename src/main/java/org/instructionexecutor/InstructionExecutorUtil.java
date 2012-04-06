@@ -26,6 +26,7 @@ public class InstructionExecutorUtil {
 	protected static class Closure extends Node {
 		protected Frame frame;
 		protected int ip;
+		protected Node result;
 
 		protected Closure(Frame frame, int ip) {
 			this.frame = frame;

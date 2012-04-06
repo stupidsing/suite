@@ -97,6 +97,7 @@ public class InstructionExecutor {
 		REMARK________("REMARK"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
+		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
 		SYS___________("SYS"), //
 		TOP___________("TOP"), //
@@ -246,8 +247,12 @@ public class InstructionExecutor {
 				current = new Closure(frame, insn.op1);
 				break;
 			case CALLCLOSURE___:
-				callStack[csp++] = current;
-				current = ((Closure) regs[insn.op2]).clone();
+				Closure closure = (Closure) regs[insn.op2];
+				if (closure.result == null) {
+					callStack[csp++] = current;
+					current = closure.clone();
+				} else
+					regs[insn.op1] = closure.result;
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
@@ -333,6 +338,9 @@ public class InstructionExecutor {
 				Node returnValue = regs[insn.op1]; // Saves return value
 				current = callStack[--csp];
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
+				break;
+			case SETCLOSURERES_:
+				((Closure) regs[insn.op1]).result = regs[insn.op2];
 				break;
 			case TOP___________:
 				regs[insn.op1] = dataStack[dsp + insn.op2];
