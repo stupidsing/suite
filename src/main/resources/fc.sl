@@ -132,7 +132,13 @@ fc-parse .tree (TREE .oper .left1 .right1)
 #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
-fc-parse .s (STRING .s) :- is.string .s, ! #
+--fc-parse .s (STRING .s) :- is.string .s, ! #
+fc-parse "" .n :- !, fc-parse () .n #
+fc-parse .s .n
+	:- is.string .s
+	, !, nth .s 0 1 .c, nth .s 1 0 .cs
+	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
+#
 fc-parse .t (TUPLE .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
@@ -181,9 +187,8 @@ fc-define-default-fun 2 log2 LOG2 #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
 fc-is-tuple-name .t
-	:- is.atom .t
-	, nth .t 0 1 .c
-	, .c >= 'A', .c <= 'Z'
+	:- is.atom .t, to.string .t .s, nth .s 0 1 .c
+	, .c >= "A", .c <= "Z"
 #
 
 fc-operator .oper

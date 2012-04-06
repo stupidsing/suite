@@ -185,7 +185,7 @@ public class EvalPredicates {
 	public static class Nth implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 4);
-			String name = ((Atom) params[0].finalNode()).getName();
+			String name = ((Str) params[0].finalNode()).getValue();
 			int length = name.length();
 			Node p1 = params[1].finalNode(), p2 = params[2].finalNode();
 
@@ -200,7 +200,7 @@ public class EvalPredicates {
 				n = Math.min(n, length);
 
 				return prover.bind(params[3] //
-						, Atom.create(name.substring(m, n)));
+						, new Str(name.substring(m, n)));
 			} else
 				throw new RuntimeException("Invalid call pattern");
 		}

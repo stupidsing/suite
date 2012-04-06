@@ -156,6 +156,14 @@ public class FormatPredicates {
 		}
 	}
 
+	public static class ToInt implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(p1, Int.create(Formatter.display(p0).charAt(0)));
+		}
+	}
+
 	public static class ToString implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);

@@ -66,6 +66,7 @@ public class SystemPredicates {
 		addPredicate("starts.with", new FormatPredicates.StartsWith());
 		addPredicate("to.atom", new FormatPredicates.ToAtom());
 		addPredicate("to.dump.string", new FormatPredicates.ToDumpString());
+		addPredicate("to.int", new FormatPredicates.ToInt());
 		addPredicate("to.string", new FormatPredicates.ToString());
 		addPredicate("trim", new FormatPredicates.Trim());
 

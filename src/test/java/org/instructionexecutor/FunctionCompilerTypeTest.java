@@ -43,7 +43,7 @@ public class FunctionCompilerTypeTest {
 	public void testList() {
 		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
 				, getType("1,"));
-		assertEquals(SuiteUtil.parse("LIST-OF STRING") //
+		assertEquals(SuiteUtil.parse("LIST-OF (LIST-OF NUMBER)") //
 				, getType("\"a\", \"b\", \"c\", \"d\","));
 	}
 
