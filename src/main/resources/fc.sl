@@ -329,6 +329,7 @@ fc-add-standard-funs .p (
 			map {take-while {`!= separator`} . tail}
 			. filter {`= separator` . head}
 			. tails
+			. cons {separator}
 	) >>
 	.p
 ) #
