@@ -19,7 +19,6 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom COMPARE = Atom.create("COMPARE");
 	private static final Atom CONS = Atom.create("CONS");
-	private static final Atom EMPTY = Atom.create("EMPTY");
 	private static final Atom FFLUSH = Atom.create("FFLUSH");
 	private static final Atom FGETC = Atom.create("FGETC");
 	private static final Atom FPUTC = Atom.create("FPUTC");
@@ -76,9 +75,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
 			result = new Tree(TermOp.AND___, left, right);
-		} else if (command == EMPTY)
-			result = Atom.nil;
-		else if (command == FFLUSH) {
+		} else if (command == FFLUSH) {
 			out.print(outBuffer.toString());
 			outBuffer.setLength(0);
 			result = (Node) dataStack[dsp];

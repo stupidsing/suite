@@ -182,7 +182,6 @@ fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
 -- "cons" and "corecursive-cons" differ only by type
-fc-define-default-fun 0 () EMPTY #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _head HEAD #
 fc-define-default-fun 1 _tail TAIL #
