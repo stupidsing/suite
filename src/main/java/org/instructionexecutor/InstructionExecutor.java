@@ -8,6 +8,7 @@ import org.instructionexecutor.InstructionExecutorUtil.Closure;
 import org.instructionexecutor.InstructionExecutorUtil.Frame;
 import org.instructionexecutor.InstructionExecutorUtil.Instruction;
 import org.parser.Operator;
+import org.suite.doer.Comparer;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -214,6 +215,8 @@ public class InstructionExecutor {
 		Node dataStack[] = new Node[stackSize];
 		int i, csp = 0, dsp = 0;
 
+		Comparer comparer = new Comparer();
+
 		for (;;) {
 			Frame frame = current.frame;
 			Node regs[] = frame != null ? frame.registers : null;
@@ -264,22 +267,28 @@ public class InstructionExecutor {
 				regs[insn.op1] = i(g(regs[insn.op2]) / g(regs[insn.op3]));
 				break;
 			case EVALEQ________:
-				regs[insn.op1] = a(g(regs[insn.op2]) == g(regs[insn.op3]));
+				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
+				regs[insn.op1] = a(i == 0);
 				break;
 			case EVALGE________:
-				regs[insn.op1] = a(g(regs[insn.op2]) >= g(regs[insn.op3]));
+				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
+				regs[insn.op1] = a(i >= 0);
 				break;
 			case EVALGT________:
-				regs[insn.op1] = a(g(regs[insn.op2]) > g(regs[insn.op3]));
+				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
+				regs[insn.op1] = a(i > 0);
 				break;
 			case EVALLE________:
-				regs[insn.op1] = a(g(regs[insn.op2]) <= g(regs[insn.op3]));
+				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
+				regs[insn.op1] = a(i <= 0);
 				break;
 			case EVALLT________:
-				regs[insn.op1] = a(g(regs[insn.op2]) < g(regs[insn.op3]));
+				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
+				regs[insn.op1] = a(i < 0);
 				break;
 			case EVALNE________:
-				regs[insn.op1] = a(g(regs[insn.op2]) != g(regs[insn.op3]));
+				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
+				regs[insn.op1] = a(i != 0);
 				break;
 			case EVALMOD_______:
 				regs[insn.op1] = i(g(regs[insn.op2]) % g(regs[insn.op3]));
