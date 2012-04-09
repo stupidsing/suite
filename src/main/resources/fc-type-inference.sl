@@ -7,18 +7,6 @@
 -- .oe - list of tuples and their corresponding one-of types
 -- .tr - type deduction rule to be assembled
 --
-infer-type-rule (CAST .type .do) .ve/.te/.oe .tr0/.trx .type
-	:- !
-	, find-one-of-type .type .oe1/.oe
-	, infer-type-rule .do .ve/.te/.oe1 .tr0/.tr1 .type0
-	, .tr1 = (SUPERTYPE-OF .te/.oe1 .type0 .type, .trx)
-#
-infer-type-rule (AS .var .varType .do) .ve/.te/.oe .tr .type
-	:- !
-	, find-one-of-type .varType .oe1/.oe
-	, member .ve .var/.varType
-	, infer-type-rule .do .ve/.te/.oe1 .tr .type
-#
 infer-type-rule (FUN .var .do) .ve/.te/.oe .tr/.tr (FUN .varType .type)
 	:- !, infer-type-rule .do (.var/.varType, .ve)/.te/.oe .tr1 .type
 	, resolve-types .tr1
@@ -68,7 +56,22 @@ infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
 infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
 	:- !, infer-type-rules .elems .env .tr .types
 #
-infer-type-rule (NO-TYPE-CHECK _) _ .tr/.tr _ :- ! #
+infer-type-rule (OPTION (CAST .type) .do) .ve/.te/.oe .tr0/.trx .type
+	:- !
+	, find-one-of-type .type .oe1/.oe
+	, infer-type-rule .do .ve/.te/.oe1 .tr0/.tr1 .type0
+	, .tr1 = (SUPERTYPE-OF .te/.oe1 .type0 .type, .trx)
+#
+infer-type-rule (OPTION (AS .var .varType) .do) .ve/.te/.oe .tr .type
+	:- !
+	, find-one-of-type .varType .oe1/.oe
+	, member .ve .var/.varType
+	, infer-type-rule .do .ve/.te/.oe1 .tr .type
+#
+infer-type-rule (OPTION NO-TYPE-CHECK _) _ .tr/.tr _ :- ! #
+infer-type-rule (OPTION _ .do) .env .tr .type
+	:- !, infer-type-rule .do .env .tr .type
+#
 infer-type-rule (VARIABLE .var) .ve/.te/.oe .tr/.tr .type
 	:- (member .ve .var/.type; default-fun-type .var .type), !
 #

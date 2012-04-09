@@ -80,7 +80,7 @@ fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 -- Function constructs
 --
 fc-parse (.var as .type => .do) (FUN .var .do1)
-	:- !, fc-parse-type .type .type1, .do1 = AS .var .type1 .do2
+	:- !, fc-parse-type .type .type1, .do1 = OPTION (AS .var .type1) .do2
 	, fc-parse .do1 .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
@@ -91,17 +91,19 @@ fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
 	:- !, fc-parse-type .def .def1
 	, fc-parse .do .do1
 #
-fc-parse (.value as .type) (CAST .type1 .value1)
+fc-parse (.value as .type) (OPTION (CAST .type1) .value1)
 	:- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 #
-fc-parse (no-type-check .do) (NO-TYPE-CHECK .do1) :- !, fc-parse .do .do1 #
+fc-parse (no-type-check .do) (OPTION NO-TYPE-CHECK .do1)
+	:- !, fc-parse .do .do1
+#
 fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
 	:- !
 	, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
-	, .value2 = CAST .type1 .value1
+	, .value2 = OPTION (CAST .type1) .value1
 #
 fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !, fc-parse .value .value1

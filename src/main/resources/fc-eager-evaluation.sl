@@ -3,9 +3,7 @@
 
 fc-compile EAGER .do .env .cdr :- !, fc-eager-compile .do .env .cdr #
 
-fc-eager-compile (CAST _ .do) .env .cdr :- !, fc-eager-compile .do .env .cdr #
-fc-eager-compile (AS _ _ .do) .env .cdr :- !, fc-eager-compile .do .env .cdr #
-fc-eager-compile (NO-TYPE-CHECK .do) .env .cdr :- !, fc-eager-compile .do .env .cdr #
+fc-eager-compile (OPTION _ .do) .env .cdr :- !, fc-eager-compile .do .env .cdr #
 fc-eager-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
