@@ -326,7 +326,7 @@ fc-add-standard-funs .p (
 		fold-left {concat2} {}
 	>>
 	define contains = (e =>
-		fold {or} . map {e1 => e1 = e}
+		fold {or} . map {`= e`}
 	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
