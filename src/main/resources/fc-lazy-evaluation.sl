@@ -15,6 +15,7 @@ fc-lazy-compile .do .env .c0/.cx/.d0/.dx/.reg
 
 fc-lazy-compile0 (CAST _ .do) .env .cdr :- !, fc-lazy-compile0 .do .env .cdr #
 fc-lazy-compile0 (AS _ _ .do) .env .cdr :- !, fc-lazy-compile0 .do .env .cdr #
+fc-lazy-compile0 (NO-TYPE-CHECK .do) .env .cdr :- !, fc-lazy-compile0 .do .env .cdr #
 fc-lazy-compile0 (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !
 	, .env1 = .frame/(.var/(%REG/.r1/.frame), .ve)
@@ -113,6 +114,7 @@ fc-lazy-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg
 fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
 		_cons/2/PWRAPPED,
+		compare/2/PUNWRAPPED,
 		fflush/1/PUNWRAPPED,
 		fgetc/1/PUNWRAPPED,
 		fputc/3/PUNWRAPPED,

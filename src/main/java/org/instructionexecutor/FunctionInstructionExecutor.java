@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import org.instructionexecutor.InstructionExecutorUtil.Closure;
 import org.instructionexecutor.InstructionExecutorUtil.Frame;
 import org.instructionexecutor.InstructionExecutorUtil.Instruction;
+import org.suite.doer.Comparer;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -16,6 +17,7 @@ import org.suite.node.Vector;
 
 public class FunctionInstructionExecutor extends InstructionExecutor {
 
+	private static final Atom COMPARE = Atom.create("COMPARE");
 	private static final Atom CONS = Atom.create("CONS");
 	private static final Atom EMPTY = Atom.create("EMPTY");
 	private static final Atom FFLUSH = Atom.create("FFLUSH");
@@ -38,6 +40,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private PrintStream out = System.out;
 	private StringBuilder inBuffer = new StringBuilder();
 	private StringBuilder outBuffer = new StringBuilder();
+
+	private Comparer comparer = new Comparer();
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
@@ -64,7 +68,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private Node sys(Node command, Object dataStack[], int dsp) {
 		Node result;
 
-		if (command == CONS) {
+		if (command == COMPARE) {
+			Node left = (Node) dataStack[dsp + 1];
+			Node right = (Node) dataStack[dsp];
+			result = Int.create(comparer.compare(left, right));
+		} else if (command == CONS) {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
 			result = new Tree(TermOp.AND___, left, right);

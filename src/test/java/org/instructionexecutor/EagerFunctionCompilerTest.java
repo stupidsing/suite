@@ -64,6 +64,14 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testEquals() {
+		assertEquals(Atom.create("true"), eval("" //
+				+ "equals {} {}"));
+		assertEquals(Atom.create("false"), eval("" //
+				+ "equals {1, 2,} {1, 3,}"));
+	}
+
+	@Test
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = (n => \n" //

@@ -95,6 +95,7 @@ fc-parse (.value as .type) (CAST .type1 .value1)
 	:- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 #
+fc-parse (no-type-check .do) (NO-TYPE-CHECK .do1) :- !, fc-parse .do .do1 #
 fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
 	:- !
 	, fc-parse-type .type .type1
@@ -146,6 +147,11 @@ fc-parse .d _ :- fc-error "Unknown expression" .d #
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
+fc-parse-type (.typeVar => .type) .type2
+	:- !, fc-parse-type .typeVar .typeVar1
+	, fc-parse-type .type .type1
+	, replace .type1/.type2 .typeVar1/_
+#
 fc-parse-type (.returnType {.paramType}) (FUN .paramType1 .returnType1)
 	:- !, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
@@ -161,6 +167,7 @@ fc-parse-type (.name .types) (TUPLE-OF .name .types2)
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
 fc-parse-type string STRING :- ! #
+fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type .t (TUPLE-OF .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse-type .t (TYPE .t) :- is.atom .t #
 
@@ -177,6 +184,7 @@ fc-define-default-fun 0 () EMPTY #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _head HEAD #
 fc-define-default-fun 1 _tail TAIL #
+fc-define-default-fun 2 compare COMPARE #
 fc-define-default-fun 2 corecursive-cons CONS #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
@@ -281,6 +289,12 @@ fc-add-standard-funs .p (
 	define concat2 = (if-match (h, t)
 		then (cons {h} . concat2 {t})
 		else id
+	) >>
+	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
+		if (is-tree {a} && is-tree {b}) then (
+			equals {head {a}} {head {b}} && equals {tail {a}} {tail {b}}
+		)
+		else (compare {a} {b} = 0)
 	) >>
 	define filter = (fun =>
 		fold-right {

@@ -68,6 +68,7 @@ infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
 infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
 	:- !, infer-type-rules .elems .env .tr .types
 #
+infer-type-rule (NO-TYPE-CHECK _) _ .tr/.tr _ :- ! #
 infer-type-rule (VARIABLE .var) .ve/.te/.oe .tr/.tr .type
 	:- (member .ve .var/.type; default-fun-type .var .type), !
 #
@@ -89,6 +90,7 @@ infer-compatible-types .a .b .ve/.te/.oe .tr0/.trx .type
 #
 
 -- Finds a reverse-mapping of "one of" relation for looking up
+find-one-of-type .t .o/.o :- not bound .t, ! #
 find-one-of-type (ONE-OF .ts) .o0/.ox
 	:- !, add-one-of-types (ONE-OF .ts) .ts .o0/.o1
 	, find-one-of-types .ts .o1/.ox
