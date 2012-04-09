@@ -38,17 +38,22 @@ fc-lazy-compile0 (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	)
 #
 fc-lazy-compile0 (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
-	:- member .ve .var/(%REG/.reg/.frame0), !
-	, (.frame = .frame0, !, .c0 = .cx, .reg = .reg1
+	:- member .ve .var/(%REG/.reg/.frame0)
+	, !, (.frame = .frame0, !, .c0 = .cx, .reg = .reg1
 		; let .frameDifference (.frame0 - .frame)
 		, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 	)
 #
 fc-lazy-compile0 (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
 	:- member (_head, _tail,) .var -- Special list processing function
-	, fc-define-default-fun 1 .var .call, !
-	, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
+	, fc-define-default-fun 1 .var .call
+	, !, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
 	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
+#
+fc-lazy-compile0 (TUPLE .name (.e, .es)) .env .cdr
+	:- !, fc-lazy-compile0 (
+		INVOKE (TUPLE .name .es) (INVOKE .e (VARIABLE _cons))
+	) .env .cdr
 #
 fc-lazy-compile0 .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
@@ -86,8 +91,8 @@ fc-lazy-compile-wrapped (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 fc-lazy-compile-wrapped .do .env .cdr
 	:- fc-lazy-default-fun .do .env .cdr, !
 #
-fc-lazy-compile-wrapped (TUPLE .name .es) .env .cdr
-	:- !, fc-lazy-compile-tuple .name .es .env .cdr
+fc-lazy-compile-wrapped (TUPLE .name ()) .env .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
 #
 fc-lazy-compile-wrapped (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -103,19 +108,6 @@ fc-lazy-compile-wrapped (NUMBER .i) _ .c0/.cx/.d/.d/.reg
 #
 fc-lazy-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
-#
-
-fc-lazy-compile-tuple .name () .env .c0/.cx/.d/.d/.reg
-	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
-#
-fc-lazy-compile-tuple .name (.e, .es) .env .c0/.cx/.d0/.dx/.reg
-	:- !, fc-lazy-compile .e .env .c0/.c1/.d0/.d1/.headReg
-	, fc-lazy-compile-tuple .name .es .env .c1/.c2/.d1/.dx/.tailReg
-	, .c2 = (_ PUSH .headReg
-		, _ PUSH .tailReg
-		, _ SYS .reg CONS 2
-		, .cx
-	)
 #
 
 fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg

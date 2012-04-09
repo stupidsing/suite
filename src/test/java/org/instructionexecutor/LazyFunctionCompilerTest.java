@@ -41,6 +41,11 @@ public class LazyFunctionCompilerTest {
 	}
 
 	@Test
+	public void testGet() {
+		assertEquals(Int.create(3), eval("get {2} {1:2:3:4:}"));
+	}
+
+	@Test
 	public void testSubstitution() {
 		assertEquals(Int.create(8), eval("define v = 4 >> v + v"));
 	}

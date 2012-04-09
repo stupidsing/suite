@@ -47,14 +47,10 @@ fc-eager-compile (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 fc-eager-compile (TUPLE .name ()) .env .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
 #
-fc-eager-compile (TUPLE .name (.e, .es)) .env .c0/.cx/.d0/.dx/.reg
-	:- !, fc-eager-compile .e .env .c0/.c1/.d0/.d1/.headReg
-	, fc-eager-compile (TUPLE .name .es) .env .c1/.c2/.d1/.dx/.tailReg
-	, .c2 = (_ PUSH .tailReg
-		, _ PUSH .headReg
-		, _ SYS .reg CONS 2
-		, .cx
-	)
+fc-eager-compile (TUPLE .name (.e, .es)) .env .cdr
+	:- !, fc-eager-compile (
+		INVOKE (TUPLE .name .es) (INVOKE .e (VARIABLE _cons))
+	) .env .cdr
 #
 fc-eager-compile (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	:- !
