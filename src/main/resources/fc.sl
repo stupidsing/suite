@@ -331,9 +331,8 @@ fc-add-standard-funs .p (
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
 	) >>
-	define get = (n => list =>
-		define t = (l => tail {l}) >>
-		head {apply {list} {repeat {n} {t}}}
+	define get = (n =>
+		head . flip {apply} {repeat {n} {tail}}
 	) >>
 	define quick-sort = (cmp => if-match (pivot, t)
 		then (
