@@ -307,6 +307,15 @@ fc-add-standard-funs .p (
 		define t = tail {list} >>
 		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
 	) >>
+	define get0 =
+		head
+	>>
+	define get1 =
+		head . tail
+	>>
+	define get2 =
+		head . tail . tail
+	>>
 	define length = (
 		fold-left {v => e => v + 1} {0}
 	) >>
@@ -349,6 +358,22 @@ fc-add-standard-funs .p (
 			. filter {`= separator` . head}
 			. tails
 			. cons {separator}
+	) >>
+	define unfold-right = (fun => init =>
+		define r = fun {init} >>
+		get0 {r}, unfold-right {fun} {get1 {r}}
+	) >>
+	define int-to-str = (i =>
+		define unsigned-int-to-str =
+			reverse
+			. map {`+ 48`}
+			. take-while {`!= -1`}
+			. unfold-right {i => if (i != 0) then (i % 10):(i / 10): else -1:0:}
+		>> (
+			if (i >= 0) then (unsigned-int-to-str)
+			else (concat2 {"-"} . unsigned-int-to-str . `0 -`)
+			| i
+		)
 	) >>
 	.p
 ) #
