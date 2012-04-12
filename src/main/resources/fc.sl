@@ -370,7 +370,7 @@ fc-add-standard-funs .p (
 			. take-while {`!= -1`}
 			. unfold-right {i => if (i != 0) then (i % 10):(i / 10): else -1:0:}
 		>> (
-			if (i >= 0) then (unsigned-int-to-str)
+			if (i >= 0) then unsigned-int-to-str
 			else (concat2 {"-"} . unsigned-int-to-str . `0 -`)
 			| i
 		)
