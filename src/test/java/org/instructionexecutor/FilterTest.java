@@ -20,6 +20,12 @@ public class FilterTest {
 		eval("abcdef", "abcdef", "c => c");
 	}
 
+	@Test
+	public void testSplit() {
+		eval("abc def ghi", "abc\ndef\nghi",
+				"tail . concat . map {cons {10}} . split {32}");
+	}
+
 	private static Node eval(String in, String out, String program) {
 		byte inBytes[] = in.getBytes(IoUtil.charset);
 		ByteArrayInputStream is = new ByteArrayInputStream(inBytes);
