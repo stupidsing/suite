@@ -73,7 +73,7 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE, EVALUATE
+		FACT, QUERY, ELABORATE, EVALUATE, EVALUATETYPE
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
@@ -114,6 +114,9 @@ public class Main {
 				} else if (input.startsWith("/")) {
 					type = InputType.ELABORATE;
 					input = input.substring(1);
+				} else if (input.startsWith("\\t")) {
+					type = InputType.EVALUATETYPE;
+					input = input.substring(2);
 				} else if (input.startsWith("\\")) {
 					type = InputType.EVALUATE;
 					input = input.substring(1);
@@ -132,6 +135,9 @@ public class Main {
 				else if (type == InputType.EVALUATE) {
 					Node result = SuiteUtil.evaluateFunctional( //
 							FunCompilerConfig.create(node, isLazy));
+					System.out.println(Formatter.dump(result));
+				} else if (type == InputType.EVALUATETYPE) {
+					Node result = SuiteUtil.evaluateFunctionalType(node);
 					System.out.println(Formatter.dump(result));
 				} else {
 					final Generalizer generalizer = new Generalizer();

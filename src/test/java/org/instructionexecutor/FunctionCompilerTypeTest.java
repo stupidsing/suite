@@ -7,10 +7,7 @@ import org.junit.Test;
 import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.SuiteUtil;
-import org.suite.doer.Generalizer;
-import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.node.Reference;
 
 public class FunctionCompilerTypeTest {
 
@@ -88,25 +85,8 @@ public class FunctionCompilerTypeTest {
 		throw new RuntimeException("Cannot catch type error of: " + c);
 	}
 
-	private static Node getType(String f) {
-		Node program = SuiteUtil.parse(f);
-
-		Node node = SuiteUtil.parse("fc-parse .program .p" //
-				+ ", infer-type-rule .p ()/()/() .tr .type" //
-				+ ", resolve-types .tr");
-
-		Generalizer generalizer = new Generalizer();
-		node = generalizer.generalize(node);
-		Node variable = generalizer.getVariable(Atom.create(".program"));
-		Node type = generalizer.getVariable(Atom.create(".type"));
-
-		((Reference) variable).bound(program);
-
-		String[] imports = { "auto.sl", "fc.sl" };
-		if (SuiteUtil.getProver(imports).prove(node))
-			return type.finalNode();
-		else
-			throw new RuntimeException("Type inference error");
+	private static Node getType(String a) {
+		return SuiteUtil.evaluateFunctionalType(a);
 	}
 
 }

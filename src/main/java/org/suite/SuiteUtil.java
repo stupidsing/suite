@@ -193,6 +193,29 @@ public class SuiteUtil {
 			throw new RuntimeException("Function compilation error");
 	}
 
+	public static Node evaluateFunctionalType(String program) {
+		return evaluateFunctionalType(SuiteUtil.parse(program));
+	}
+
+	public static Node evaluateFunctionalType(Node program) {
+		Node node = SuiteUtil.parse("fc-parse .program .p" //
+				+ ", infer-type-rule-using-libs (STANDARD,) .p ()/()/() .tr .t" //
+				+ ", resolve-types .tr");
+
+		Generalizer generalizer = new Generalizer();
+		node = generalizer.generalize(node);
+		Node variable = generalizer.getVariable(Atom.create(".program"));
+		Node type = generalizer.getVariable(Atom.create(".t"));
+
+		((Reference) variable).bound(program);
+
+		String[] imports = { "auto.sl", "fc.sl" };
+		if (SuiteUtil.getProver(imports).prove(node))
+			return type.finalNode();
+		else
+			throw new RuntimeException("Type inference error");
+	}
+
 	public static synchronized Prover getLogicalCompiler() {
 		if (logicalCompiler == null)
 			logicalCompiler = getProver(new String[] { "auto.sl", "lc.sl" });
