@@ -119,6 +119,7 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 
 -- When resolving types:
 -- - Flatten all logical-AND conditions;
+-- - Try bind equivalent types to super-type relations, if possible;
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
 resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
