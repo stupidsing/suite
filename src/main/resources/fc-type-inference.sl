@@ -28,7 +28,6 @@ infer-type-rule (INVOKE .param .callee) .ve/.te/.oe .tr0/.trx .type
 	:- !
 	, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funType
 	, infer-type-rule .param .ve/.te/.oe .tr1/.tr2 .actualParamType
-	, clone .funType (FUN .signParamType .type)
 	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType
 		, INSTANCE-OF .funType (FUN .signParamType .type)
 		, .trx
