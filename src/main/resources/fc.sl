@@ -122,7 +122,7 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 	)
 #
 fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
-	:- fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
+	:- !, fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
 #
 fc-parse (.name .elems) (TUPLE .name .elems2)
 	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
