@@ -325,10 +325,17 @@ fc-add-standard-funs .p (
 	define reverse =
 		fold-left {a => b => b, a} {}
 	>>
-	define take = (n => list =>
-		if (n > 0 && is-tree {list}) then (
-			head {list}, take {n - 1} {tail {list}}
+	define str-to-int = (s =>
+		define unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >> (
+			if (is-tree {s} && head {s} = 45)
+			then (`0 - ` . unsigned-str-to-int . tail)
+			else unsigned-str-to-int
+			| s
 		)
+	) >>
+	define take = (n => list =>
+		if (n > 0 && is-tree {list})
+		then (head {list}, take {n - 1} {tail {list}})
 		else ()
 	) >>
 	define concat =

@@ -46,6 +46,13 @@ public class LazyFunctionCompilerTest {
 	}
 
 	@Test
+	public void testString() {
+		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
+		assertEquals(eval("\"\""), eval("int-to-str {0}"));
+		assertEquals(eval("\"-34253924\""), eval("int-to-str {-34253924}"));
+	}
+
+	@Test
 	public void testSubstitution() {
 		assertEquals(Int.create(8), eval("define v = 4 >> v + v"));
 	}
