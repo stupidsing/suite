@@ -47,7 +47,7 @@ fc-lazy-compile0 (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
 	:- member (_head, _tail,) .var -- Special list processing function
 	, fc-define-default-fun 1 .var .call
 	, !, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
-	, .c1 = (_ PUSH .paramReg, _ SYS .reg .call 1, .cx)
+	, .c1 = (_ PUSH .paramReg, _ SERVICE .reg .call 1, .cx)
 #
 fc-lazy-compile0 (TUPLE .name (.e, .es)) .env .cdr
 	:- !, fc-lazy-compile0 (
@@ -119,7 +119,7 @@ fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/
 		is-tree/1/PUNWRAPPED,
 	) .var/.n/.paramWrapped
 	, fc-define-default-fun .n .var .call
-	, !, .c0 = (_ SYS .reg .call .n, .cx)
+	, !, .c0 = (_ SERVICE .reg .call .n, .cx)
 #
 fc-lazy-compile-default-fun .n .paramWrapped (INVOKE .p .chain) .env .c0/.cx/.d0/.dx/.reg
 	:- let .n1 (.n + 1)
@@ -143,5 +143,5 @@ fc-lazy-default-fun0 (INVOKE .p .pred) .env .c0/.cx/.d0/.dx/.reg .n
 #
 fc-lazy-default-fun0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-default-fun .n .pred .call, !
-	, .c0 = (_ SYS .reg .call .n, .cx)
+	, .c0 = (_ SERVICE .reg .call .n, .cx)
 #

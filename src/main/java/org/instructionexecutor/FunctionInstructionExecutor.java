@@ -53,7 +53,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		Object regs[] = frame != null ? frame.registers : null;
 
 		switch (insn.insn) {
-		case SYS___________:
+		case SERVICE_______:
 			dsp -= insn.op3;
 			regs[insn.op1] = sys(constantPool.get(insn.op2), dataStack, dsp);
 			break;

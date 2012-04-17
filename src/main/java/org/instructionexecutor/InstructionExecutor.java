@@ -100,7 +100,7 @@ public class InstructionExecutor {
 		RETURNVALUE___("RETURN-VALUE"), //
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
-		SYS___________("SYS"), //
+		SERVICE_______("SERVICE"), //
 		TOP___________("TOP"), //
 		;
 
