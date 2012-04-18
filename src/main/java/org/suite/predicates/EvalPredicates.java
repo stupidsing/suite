@@ -224,6 +224,30 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Specialize implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			return prover.bind(specialize(params[0]), params[1]);
+		}
+
+		private static Node specialize(Node node) {
+			node = node.finalNode();
+
+			if (node instanceof Reference) {
+				Reference ref = (Reference) node;
+				node = Atom.create(Generalizer.DEFAULTPREFIX + ref.getId());
+			} else if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+				Node left = tree.getLeft(), right = tree.getRight();
+				Node left1 = specialize(left), right1 = specialize(right);
+				if (left != left1 || right != right1)
+					node = new Tree(tree.getOperator(), left1, right1);
+			}
+
+			return node;
+		}
+	}
+
 	public static class Temp implements SystemPredicate {
 		private static AtomicInteger counter = new AtomicInteger();
 

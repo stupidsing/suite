@@ -32,9 +32,10 @@ public class Cloner {
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = clone(tree.getLeft());
-			Node right = clone(tree.getRight());
-			node = new Tree(tree.getOperator(), left, right);
+			Node left = tree.getLeft(), right = tree.getRight();
+			Node left1 = clone(left), right1 = clone(right);
+			if (left != left1 || right != right1)
+				node = new Tree(tree.getOperator(), left1, right1);
 		}
 
 		return node;

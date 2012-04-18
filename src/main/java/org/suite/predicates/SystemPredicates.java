@@ -53,6 +53,7 @@ public class SystemPredicates {
 		addPredicate("nth", new EvalPredicates.Nth());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("same", new EvalPredicates.Same());
+		addPredicate("specialize", new EvalPredicates.Specialize());
 		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 
