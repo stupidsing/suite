@@ -2,36 +2,39 @@
 -- Type inference predicates
 --
 -- Environment consists of:
--- .ve - list of variables and their corresponding types
+-- .ue - list of inside variables and their corresponding types
+-- .ve - list of outside variables and their corresponding types
 -- .te - list of type names and their corresponding types
 -- .oe - list of tuples and their corresponding one-of types
 -- .tr - type deduction rule to be assembled
 --
-infer-type-rule (FUN .var .do) .ve/.te/.oe .tr/.tr (FUN .varType .type)
-	:- !, infer-type-rule .do (.var/.varType, .ve)/.te/.oe .tr1 .type
+-- Inside variables include parent function definitions and parameter variables
+-- that do not need type specialization.
+-- Outside variables are local variables that require type specialization.
+--
+infer-type-rule (FUN .var .do) .ue/.ve/.te/.oe .tr/.tr (FUN .varType .type)
+	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
 	, resolve-types .tr1
 #
-infer-type-rule (DEF-TYPE .name .def .do) .ve/.te/.oe .tr .type
+infer-type-rule (DEF-TYPE .name .def .do) .ue/.ve/.te/.oe .tr .type
 	:- !
 	, find-one-of-type .def .oe1/.oe
-	, infer-type-rule .do .ve/(.name/.def, .te)/.oe1 .tr .type
+	, infer-type-rule .do .ue/.ve/(.name/.def, .te)/.oe1 .tr .type
 #
-infer-type-rule (DEF-VAR .name .value .do) .ve/.te/.oe .tr0/.trx .type
+infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
-	, .env1 = (.name/.varType, .ve)/.te/.oe
-	, once (infer-type-rule .value .env1 .tr0/.tr1 .varType
+	, .insideEnv = (.name/.varType, .ue)/.ve/.te/.oe
+	, .outsideEnv = .ue/(.name/.varType, .ve)/.te/.oe
+	, once (infer-type-rule .value .insideEnv .tr0/.tr1 .varType
 		; fc-error "at variable" .name
 	)
-	, infer-type-rule .do .env1 .tr1/.trx .type
+	, infer-type-rule .do .outsideEnv .tr1/.trx .type
 #
-infer-type-rule (INVOKE .param .callee) .ve/.te/.oe .tr0/.trx .type
+infer-type-rule (INVOKE .param .callee) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
-	, infer-type-rule .callee .ve/.te/.oe .tr0/.tr1 .funType
-	, infer-type-rule .param .ve/.te/.oe .tr1/.tr2 .actualParamType
-	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType
-		, INSTANCE-OF .funType (FUN .signParamType .type)
-		, .trx
-	)
+	, infer-type-rule .callee .ue/.ve/.te/.oe .tr0/.tr1 (FUN .signParamType .type)
+	, infer-type-rule .param .ue/.ve/.te/.oe .tr1/.tr2 .actualParamType
+	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType, .trx)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
@@ -55,24 +58,27 @@ infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
 infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
 	:- !, infer-type-rules .elems .env .tr .types
 #
-infer-type-rule (OPTION (CAST .type) .do) .ve/.te/.oe .tr0/.trx .type
+infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
 	, find-one-of-type .type .oe1/.oe
-	, infer-type-rule .do .ve/.te/.oe1 .tr0/.tr1 .type0
+	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr0/.tr1 .type0
 	, .tr1 = (SUPERTYPE-OF .te/.oe1 .type0 .type, .trx)
 #
-infer-type-rule (OPTION (AS .var .varType) .do) .ve/.te/.oe .tr .type
+infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te/.oe .tr .type
 	:- !
 	, find-one-of-type .varType .oe1/.oe
-	, member .ve .var/.varType
-	, infer-type-rule .do .ve/.te/.oe1 .tr .type
+	, member .ue .var/.varType
+	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr .type
 #
 infer-type-rule (OPTION NO-TYPE-CHECK _) _ .tr/.tr _ :- ! #
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !, infer-type-rule .do .env .tr .type
 #
-infer-type-rule (VARIABLE .var) .ve/.te/.oe .tr/.tr .type
-	:- (member .ve .var/.type; default-fun-type .var .type), !
+infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
+	:- (member .ue .var/.type, .tr0 = .trx
+		; member .ve .var/.varType, .tr0 = (INSTANCE-OF .varType .type, .trx)
+		; default-fun-type .var .type, .tr0 = .trx
+	), !
 #
 infer-type-rule (VARIABLE .var) _ _ _ :- !, fc-error "Undefined variable" .var #
 
@@ -82,9 +88,9 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 	, infer-type-rules .es .env .tr1/.trx .ts
 #
 
-infer-compatible-types .a .b .ve/.te/.oe .tr0/.trx .type
-	:- infer-type-rule .a .ve/.te/.oe .tr0/.tr1 .type0
-	, infer-type-rule .b .ve/.te/.oe .tr1/.tr2 .type1
+infer-compatible-types .a .b .ue/.ve/.te/.oe .tr0/.trx .type
+	:- infer-type-rule .a .ue/.ve/.te/.oe .tr0/.tr1 .type0
+	, infer-type-rule .b .ue/.ve/.te/.oe .tr1/.tr2 .type1
 	, .tr2 = (SUPERTYPE-OF .te/.oe .type0 .type
 		, SUPERTYPE-OF .te/.oe .type1 .type
 		, .trx

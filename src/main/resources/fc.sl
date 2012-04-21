@@ -25,15 +25,15 @@ compile-function0 .mode .do .c0
 compile-function-using-libs .mode .libs .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, !, fc-parse .do .parsed
-	, !, infer-type-rule-using-libs .libs .parsed ()/()/() .tr0/.trx _
+	, !, infer-type-rule-using-libs .libs .parsed ()/()/()/() .tr0/.trx _
 	, !, resolve-types .tr0/.trx
 	, !, fc-compile-using-libs .mode .libs .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, _ LEAVE, .d0)
 	, !, fc-assign-line-number 0 .c0
 #
 
-infer-type-rule-using-libs () .do .vto .tr .type
-	:- infer-type-rule .do .vto .tr .type
+infer-type-rule-using-libs () .do .uvto .tr .type
+	:- infer-type-rule .do .uvto .tr .type
 #
 
 fc-compile-using-libs .mode () .do .fve .cdr
@@ -80,8 +80,9 @@ fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 -- Function constructs
 --
 fc-parse (.var as .type => .do) (FUN .var .do1)
-	:- !, fc-parse-type .type .type1, .do1 = OPTION (AS .var .type1) .do2
-	, fc-parse .do1 .do2
+	:- !, fc-parse-type .type .type1
+	, .do1 = OPTION (AS .var .type1) .do2
+	, fc-parse .do .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type >> .do) (DEF-TYPE .type _ .do1) -- Type variable
