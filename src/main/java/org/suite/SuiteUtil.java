@@ -198,9 +198,9 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(Node program) {
-		Node node = SuiteUtil.parse("fc-add-standard-funs .program .program1" //
-				+ ", fc-parse .program1 .p" //
-				+ ", infer-type-rule .p ()/()/()/() .tr .t" //
+		Node node = SuiteUtil.parse(".libs = (STANDARD,)" //
+				+ ", fc-parse .program .p" //
+				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr");
 
 		Generalizer generalizer = new Generalizer();

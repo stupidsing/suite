@@ -34,6 +34,8 @@ public class FunctionCompilerTypeTest {
 				, getType("define fib = (n => dummy => n/(fib {n + 1})) >> \n" //
 						+ "fib {1}") // Pretends co-recursion
 				, new Journal()));
+		assertEquals(SuiteUtil.parse("FUN BOOLEAN FUN BOOLEAN BOOLEAN") //
+				, getType("and"));
 	}
 
 	@Test

@@ -129,7 +129,9 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testInfiniteLoop() {
 		try {
-			SuiteUtil.evaluateEagerFunctional("(e => e {e}) {e => e {e}}");
+			// This would fail stack over during type check, so skip that
+			SuiteUtil.evaluateEagerFunctional("no-type-check" //
+					+ " (e => e {e}) {e => e {e}}");
 			throw new RuntimeException();
 		} catch (ArrayIndexOutOfBoundsException ex) {
 		}

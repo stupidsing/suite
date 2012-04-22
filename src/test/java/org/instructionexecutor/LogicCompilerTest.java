@@ -46,16 +46,16 @@ public class LogicCompilerTest {
 	}
 
 	@Test
+	public void testVariables() throws IOException {
+		assertTrue(eval(".a = 1, 1 = .a"));
+		assertFalse(eval(".a = 1, .a = 2"));
+	}
+
+	@Test
 	public void testWith() throws IOException {
 		assertTrue(eval("(p 2 # p 3 #) >> p .v, .v = 3"));
 		assertFalse(eval("(p 2 :- ! # p 3 #) >> p .v, .v = 3"));
 		assertTrue(eval("(p .v :- q .v # q 3 #) >> p 3"));
-	}
-
-	@Test
-	public void testVariables() throws IOException {
-		assertTrue(eval(".a = 1, 1 = .a"));
-		assertFalse(eval(".a = 1, .a = 2"));
 	}
 
 	private boolean eval(String program) throws IOException {
