@@ -198,6 +198,8 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(Node program) {
+		Prover compiler = getEagerFunCompiler();
+
 		Node node = SuiteUtil.parse(".libs = (STANDARD,)" //
 				+ ", fc-parse .program .p" //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
@@ -210,8 +212,7 @@ public class SuiteUtil {
 
 		((Reference) variable).bound(program);
 
-		String[] imports = { "auto.sl", "fc.sl" };
-		if (SuiteUtil.getProver(imports).prove(node))
+		if (compiler.prove(node))
 			return type.finalNode();
 		else
 			throw new RuntimeException("Type inference error");
