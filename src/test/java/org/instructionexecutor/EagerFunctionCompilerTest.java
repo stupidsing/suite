@@ -54,13 +54,15 @@ public class EagerFunctionCompilerTest {
 				+ "((9, 1,), (9, 2,),),") //
 				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
 
-		assertEquals(
-				SuiteUtil.parse("" //
-						+ "((A, 1,), (A, 2,),), " //
-						+ "((B, 1,), (B, 2,),), " //
-						+ "((C, 1,), (C, 2,),),"),
-				eval("define list1 as list of one of (A, B, C,) = (A, B, C,) >> \n" //
-						+ "cross {a => b => a, b,} {list1} {1, 2,}"));
+		assertEquals(Atom.create("true"), eval("" //
+				+ "define list1 as list of one of (A, B, C,) \n" //
+				+ "    = (A, B, C,) >> \n" //
+				+ "define result = ( \n" //
+				+ "    (A:1:, A:2:,), \n" //
+				+ "    (B:1:, B:2:,), \n" //
+				+ "    (C:1:, C:2:,), \n" //
+				+ ") >> \n" //
+				+ "cross {a => b => a:b:} {list1} {1, 2,} = result"));
 	}
 
 	@Test
@@ -88,7 +90,7 @@ public class EagerFunctionCompilerTest {
 				+ ") >> \n" //
 				+ "define h = (f => head {f {}}) >> \n" //
 				+ "define t = (f => tail {f {}}) >> \n" //
-				+ "apply {fib {0} {1}} {t, t, t, t, t, t, t, t, t, t, h,}"));
+				+ "(h . apply {fib {0} {1}} . repeat {10} | t)"));
 	}
 
 	@Test
@@ -248,8 +250,8 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testZip() {
-		assertEquals(SuiteUtil.parse("(1, 5), (2, 6), (3, 7),"), eval("" //
-				+ "define zip-up = zip {a => b => a, b} >> \n" //
+		assertEquals(SuiteUtil.parse("(1, 5,), (2, 6,), (3, 7,),"), eval("" //
+				+ "define zip-up = zip {a => b => a, b,} >> \n" //
 				+ "zip-up {1, 2, 3,} {5, 6, 7,}"));
 	}
 
