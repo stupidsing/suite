@@ -16,12 +16,25 @@ infer-type-rule (FUN .var .do) .ue/.ve/.te/.oe .tr/.tr (FUN .varType .type)
 	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
 	, resolve-types .tr1
 #
+infer-type-rule (OPTION (DEF-ONE-OF-TYPE .def) .do) .ue/.ve/.te/.oe .tr .type
+	:- !, find-one-of-type .def .oe1/.oe
+	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr .type
+#
 infer-type-rule (DEF-TYPE .name .def .do) .ue/.ve/.te/.oe .tr .type
 	:- !
-	, find-one-of-type .def .oe1/.oe
-	, infer-type-rule .do .ue/.ve/(.name/.def, .te)/.oe1 .tr .type
+	, infer-type-rule .do .ue/.ve/(.name/.def, .te)/.oe .tr .type
 #
 infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te/.oe .tr0/.trx .type
+	:- !
+	, .env1 = (.name/.varType, .ue)/.ve/.te/.oe
+	, once (infer-type-rule .value .env1 .tr0/.tr1 .varType
+		; fc-error "at variable" .name
+	)
+	, infer-type-rule .do .env1 .tr1/.trx .type
+#
+infer-type-rule (
+	OPTION GENERIC-TYPE DEF-VAR .name .value .do
+) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
 	, .insideEnv = (.name/.varType, .ue)/.ve/.te/.oe
 	, .outsideEnv = .ue/(.name/.varType, .ve)/.te/.oe
@@ -59,16 +72,12 @@ infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
 	:- !, infer-type-rules .elems .env .tr .types
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
-	:- !
-	, find-one-of-type .type .oe1/.oe
-	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr0/.tr1 .type0
-	, .tr1 = (SUPERTYPE-OF .te/.oe1 .type0 .type, .trx)
+	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type0
+	, .tr1 = (SUPERTYPE-OF .te/.oe .type0 .type, .trx)
 #
 infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te/.oe .tr .type
-	:- !
-	, find-one-of-type .varType .oe1/.oe
-	, member .ue .var/.varType
-	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr .type
+	:- !, member .ue .var/.varType
+	, infer-type-rule .do .ue/.ve/.te/.oe .tr .type
 #
 infer-type-rule (OPTION NO-TYPE-CHECK _) _ .tr/.tr _ :- ! #
 infer-type-rule (OPTION _ .do) .env .tr .type
@@ -200,10 +209,3 @@ default-fun-type fputc (FUN NUMBER (FUN NUMBER (FUN .type .type))) #
 default-fun-type is-tree (FUN (LIST-OF .type) BOOLEAN) #
 default-fun-type log (FUN .type .type) #
 default-fun-type log2 (FUN _ (FUN .type .type)) #
-
--- Special type primitive for corecursive lists
-default-fun-type corecursive-cons (FUN .type (FUN (FUN _ .cl) .cl))
-	:- .cl = CO-LIST-OF .type
-#
-default-fun-type _head (FUN (CO-LIST-OF .type) .type) #
-default-fun-type _tail (FUN .cl (FUN _ .cl)) :- .cl = CO-LIST-OF .type #

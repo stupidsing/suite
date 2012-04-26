@@ -1,4 +1,3 @@
--------------------------------------------------------------------------------
 -- functional program compiler
 --
 -- Also need to import one of the following backends:
@@ -47,8 +46,8 @@ fc-parse (if-match (.h, .t) then .then else .else) .parsed
 	:- !, temp .list
 	, fc-parse (
 		.list => if (is-tree {.list}) then (
-			define .h = _head {.list} >>
-			define .t = _tail {.list} >>
+			let .h = _head {.list} >>
+			let .t = _tail {.list} >>
 			.then
 		)
 		else .else
@@ -70,7 +69,6 @@ fc-parse .t .parsed
 	:- tree .t .left .op (), fc-operator .op, !
 	, temp .var, tree .t1 .left .op .var, fc-parse (.var => .t1) .parsed
 #
-fc-parse .l/.r .parsed :- !, fc-parse (corecursive-cons {.l} {.r}) .parsed #
 fc-parse (.l, .r) .parsed :- !, fc-parse (_cons {.l} {.r}) .parsed #
 fc-parse (.l . .r) .parsed :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .parsed #
 fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
@@ -88,8 +86,9 @@ fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type >> .do) (DEF-TYPE .type _ .do1) -- Type variable
 	:- !, fc-parse .do .do1
 #
-fc-parse (define type .type = .def >> .do) (DEF-TYPE .type .def1 .do1)
-	:- !, fc-parse-type .def .def1
+fc-parse (define type .type = .def >> .do) (
+	OPTION (DEF-ONE-OF-TYPE .def1) DEF-TYPE .type .def1 .do1
+) :- !, fc-parse-type .def .def1
 	, fc-parse .do .do1
 #
 fc-parse (.value as .type) (OPTION (CAST .type1) .value1)
@@ -99,14 +98,24 @@ fc-parse (.value as .type) (OPTION (CAST .type1) .value1)
 fc-parse (no-type-check .do) (OPTION NO-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (define .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
-	:- !
+fc-parse (define .var as .type = .value >> .do) (
+	OPTION GENERIC-TYPE (
+		OPTION (DEF-ONE-OF-TYPE .type1) (
+			DEF-VAR .var .value2 .do1
+		)
+	)
+) :- !
 	, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
 	, .value2 = OPTION (CAST .type1) .value1
 #
-fc-parse (define .var = .value >> .do) (DEF-VAR .var .value1 .do1)
+fc-parse (define .var = .value >> .do) (
+	OPTION GENERIC-TYPE DEF-VAR .var .value1 .do1
+) :- !, fc-parse .value .value1
+	, fc-parse .do .do1
+#
+fc-parse (let .var = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !, fc-parse .value .value1
 	, fc-parse .do .do1
 #
@@ -159,10 +168,10 @@ fc-parse-type (.returnType {.paramType}) (FUN .paramType1 .returnType1)
 	:- !, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
-fc-parse-type (one of .types) (ONE-OF .types1)
+fc-parse-type (one-of .types) (ONE-OF .types1)
 	:- !, fc-parse-types .types .types1
 #
-fc-parse-type (list of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
+fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type (.name .types) (TUPLE-OF .name .types2)
 	:- !, enlist .types .types1
 	, fc-parse-types .types1 .types2
@@ -182,12 +191,10 @@ fc-parse-types (.type, .types) (.type1, .types1)
 fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
--- "cons" and "corecursive-cons" differ only by type
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _head HEAD #
 fc-define-default-fun 1 _tail TAIL #
 fc-define-default-fun 2 compare COMPARE #
-fc-define-default-fun 2 corecursive-cons CONS #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
 fc-define-default-fun 3 fputc FPUTC #
@@ -260,7 +267,7 @@ fc-add-standard-funs .p (
 	) >>
 	define scan-right = (fun => init => if-match (h, t)
 		then (
-			define r = scan-right {fun} {init} {t} >>
+			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
 		)
 		else (init,)
@@ -304,8 +311,8 @@ fc-add-standard-funs .p (
 		} {}
 	) >>
 	define fold = (fun => list =>
-		define h = head {list} >>
-		define t = tail {list} >>
+		let h = head {list} >>
+		let t = tail {list} >>
 		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
 	) >>
 	define get0 =
@@ -317,9 +324,9 @@ fc-add-standard-funs .p (
 	define get2 =
 		head . tail . tail
 	>>
-	define length = (
+	define length =
 		fold-left {v => e => v + 1} {0}
-	) >>
+	>>
 	define map = (fun =>
 		fold-right {i => list => fun {i}, list} {}
 	) >>
@@ -327,12 +334,11 @@ fc-add-standard-funs .p (
 		fold-left {a => b => b, a} {}
 	>>
 	define str-to-int = (s =>
-		define unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >> (
+		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
 			if (is-tree {s} && head {s} = 45)
 			then (`0 - ` . unsigned-str-to-int . tail)
 			else unsigned-str-to-int
-			| s
-		)
+		| s
 	) >>
 	define take = (n => list =>
 		if (n > 0 && is-tree {list})
@@ -349,14 +355,14 @@ fc-add-standard-funs .p (
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
 	) >>
 	define get = (n =>
-		head . flip {apply} {repeat {n} {tail}}
+		head . (flip {apply} . repeat {n} | tail)
 	) >>
 	define quick-sort = (cmp => if-match (pivot, t)
 		then (
-			define cmp0 = (not . cmp {pivot}) >>
-			define cmp1 = cmp {pivot} >>
-			define l0 = quick-sort {cmp} {filter {cmp0} {t}} >>
-			define l1 = quick-sort {cmp} {filter {cmp1} {t}} >>
+			let cmp0 = (not . cmp {pivot}) >>
+			let cmp1 = cmp {pivot} >>
+			let l0 = quick-sort {cmp} {filter {cmp0} {t}} >>
+			let l1 = quick-sort {cmp} {filter {cmp1} {t}} >>
 			concat {l0, (pivot,), l1,}
 		)
 		else ()
@@ -364,27 +370,25 @@ fc-add-standard-funs .p (
 	define split = (separator =>
 			map {take-while {`!= separator`} . tail}
 			. filter {`= separator` . head}
-			. tails
-			. cons {separator}
+			. tails . cons {separator}
 	) >>
 	define unfold-right = (fun => init =>
-		define r = fun {init} >>
+		let r = fun {init} >>
 		get0 {r}, unfold-right {fun} {get1 {r}}
 	) >>
 	define int-to-str = (i =>
-		define unsigned-int-to-str =
+		let unsigned-int-to-str =
 			reverse
 			. map {`+ 48`}
 			. take-while {`!= -1`}
-			. unfold-right {i => if (i != 0) then (i % 10):(i / 10): else -1:0:}
-		>> (
-			if (i >= 0) then unsigned-int-to-str
-			else (concat2 {"-"} . unsigned-int-to-str . `0 -`)
-			| i
-		)
+			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else (-1, 0,)}
+		>>
+		if (i >= 0) then unsigned-int-to-str
+		else (concat2 {"-"} . unsigned-int-to-str . `0 -`)
+		| i
 	) >>
-	define dump as (:t => (list of number) {:t}) = no-type-check (
-		define dump0 = (prec => n =>
+	define dump as (:t => (list-of number) {:t}) = no-type-check (
+		let dump0 = (prec => n =>
 			if (is-tree {n}) then (
 				if prec then (s => concat {"(", s, ")",}) else id
 				| concat {dump0 {true} {head {n}}, ", ", dump0 {false} {tail {n}},}
@@ -393,6 +397,16 @@ fc-add-standard-funs .p (
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
+	) >>
+	define transpose = (m =>
+		let height = length {m} >>
+		let width = if (height > 0) then (length . head | m) else 0 >>
+		if (width > 0) then (
+			let w1 = width - 1 >>
+			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
+			map {f => map {head . flip {apply} {f}} {m}} | gets
+		)
+		else ()
 	) >>
 	.p
 ) #

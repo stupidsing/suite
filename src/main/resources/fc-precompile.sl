@@ -12,21 +12,19 @@ fc-setup-standard-precompile
 #
 
 fc-setup-precompile .lib .do1/($$PRECOMPILE .pc) .filename
-	:- .pc = .ues/.ves/.tes/.oes .trs0/.trsx .fcs
+	:- .pc = .ues/.ves/.tes/.oes .trs/.trs .fcs
 	, !, write 'Parsing program', nl
 	, !, fc-parse .do1 .parsed
 	, !, write 'Inferencing types', nl
 	, !, infer-type-rule .parsed ()/()/()/() .tr0/.trx NUMBER
-	, !, not not ( -- Test type correctness
-		.trs0 = .trsx, resolve-types .tr0/.trx
-	)
+	, !, resolve-types .tr0/.trx
 	, append .ues .ue .ue1
 	, append .ves .ve .ve1
 	, append .tes .te .te1
 	, append .oes .oe .oe1
 	, !, .prog0 = (
-		infer-type-rule-using-libs (.lib, .libs) .do .ue/.ve/.te/.oe .tr0/.trx .type
-			:- infer-type-rule-using-libs .libs .do .ue1/.ve1/.te1/.oe1 .trs0/.trsx .type
+		infer-type-rule-using-libs (.lib, .libs) .do .ue/.ve/.te/.oe .tr .type
+			:- infer-type-rule-using-libs .libs .do .ue1/.ve1/.te1/.oe1 .tr .type
 	)
 	, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
 	, fc-dump-precompile LAZY .lib .fcs .parsed .prog2

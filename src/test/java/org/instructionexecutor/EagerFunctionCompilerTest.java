@@ -55,7 +55,7 @@ public class EagerFunctionCompilerTest {
 				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
 
 		assertEquals(Atom.create("true"), eval("" //
-				+ "define list1 as list of one of (A, B, C,) \n" //
+				+ "define list1 as list-of one-of (A, B, C,) \n" //
 				+ "    = (A, B, C,) >> \n" //
 				+ "define result = ( \n" //
 				+ "    (A:1:, A:2:,), \n" //
@@ -83,14 +83,6 @@ public class EagerFunctionCompilerTest {
 				+ "    else 1 \n" //
 				+ ") >> \n" //
 				+ "fib {10}"));
-
-		assertEquals(Int.create(89), eval("" // Pretends co-recursion
-				+ "define fib = (i1 => i2 => dummy => \n" //
-				+ "    i2/(fib {i2} {i1 + i2}) \n" //
-				+ ") >> \n" //
-				+ "define h = (f => head {f {}}) >> \n" //
-				+ "define t = (f => tail {f {}}) >> \n" //
-				+ "(h . apply {fib {0} {1}} . repeat {10} | t)"));
 	}
 
 	@Test
@@ -186,6 +178,8 @@ public class EagerFunctionCompilerTest {
 	public void testOperator() {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
+		assertEquals(Atom.create("false"), SuiteUtil.evaluateEagerFunctional("" //
+				+ "define list1 as list-of one-of (A, B,) = () >> A = B"));
 	}
 
 	@Test
@@ -246,6 +240,13 @@ public class EagerFunctionCompilerTest {
 	public void testTake() {
 		assertEquals(SuiteUtil.parse("1, 2, 3, 4,"), eval("" //
 				+ "take {4} {1, 2, 3, 4, 5, 6, 7,}"));
+	}
+
+	@Test
+	public void testTranspose() {
+		String r = "(1, 4, 7,), (2, 5, 8,), (3, 6, 9,),";
+		assertEquals(SuiteUtil.parse(r), eval("" //
+				+ "transpose {(1, 2, 3,), (4, 5, 6,), (7, 8, 9,),}"));
 	}
 
 	@Test

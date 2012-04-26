@@ -1,11 +1,8 @@
 package org.instructionexecutor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.suite.Binder;
-import org.suite.Journal;
 import org.suite.SuiteUtil;
 import org.suite.node.Node;
 
@@ -30,10 +27,6 @@ public class FunctionCompilerTypeTest {
 				, getType("a => a + 1"));
 		assertEquals(SuiteUtil.parse("NUMBER") //
 				, getType("define f = (a => a + 1) >> f {3}"));
-		assertTrue(Binder.bind(SuiteUtil.parse("FUN _ (CO-LIST-OF NUMBER)") //
-				, getType("define fib = (n => dummy => n/(fib {n + 1})) >> \n" //
-						+ "fib {1}") // Pretends co-recursion
-				, new Journal()));
 		assertEquals(SuiteUtil.parse("FUN BOOLEAN FUN BOOLEAN BOOLEAN") //
 				, getType("and"));
 	}
@@ -49,7 +42,7 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testOneOf() {
 		getType("" //
-				+ "define type t = one of (NIL, BTREE t t,) >> \n" //
+				+ "define type t = one-of (NIL, BTREE t t,) >> \n" //
 				+ "define u as t = NIL >> \n" //
 				+ "define v as t = NIL >> \n" //
 				+ "v = BTREE (BTREE NIL NIL) NIL");
@@ -67,14 +60,13 @@ public class FunctionCompilerTypeTest {
 		String cases[] = { "1 + \"abc\"" //
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
-				, "define type t = one of (BTREE t t,) >> \n" //
-						+ "define v as t = BTREE 2 3 >> \n" //
-						+ "1" };
+				, "define type t = one-of (BTREE t t,) >> \n" //
+						+ "define v as t = BTREE 2 3 >> 1" //
+		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
 		// Rule specified that right hand side of CONS should be a list,
 		// however fib {i2} is a closure.
-		// Should actually use corecursive list type (cons-ed by '^').
 		for (String c : cases)
 			getTypeMustFail(c);
 	}
