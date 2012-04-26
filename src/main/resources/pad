@@ -1,30 +1,85 @@
 -------------------------------------------------------------------------------
+-- theorem proving
+--
+-- 1. convert implication operators: (P => Q) becomes (~P ^ Q)
+-- 2. move negation inwards
+-- 3. skolemising
+-- 4. moving "for-all" outwards
+-- 5. distributing AND over OR
+-- 6.putting into clauses (ANDs of ORs form)
+-- 
+-- resolution:
+-- 
+-- A; B :- C, D
+-- E :- B, F
+-- becomes
+-- A; E :- C, D, F
+
+-------------------------------------------------------------------------------
+-- longest common subsequence
+
+lcs .a .b .lcs :- lcs-memoized .a .b .lcs ()/_ #
+
+lcs-memoized .a .b .lcs .t0/.tx
+	:- hash .a/.b .hash
+	, t23-map .hash/.cached .t0/.t1
+	, once (bound .cached, .t1 = .tx; lcs0 .a .b .cached .t1/.tx)
+	, .lcs = .cached
+#
+
+lcs0 () _ () _ :- ! #
+lcs0 _ () () _ :- ! #
+lcs0 (.head, .tail1) (.head, .tail2) (.head, .lcs) .t0/.tx
+	:- lcs-memoized .tail1 .tail2 .lcs .t0/.tx
+	, !
+#
+lcs0 (.head1, .tail1) (.head2, .tail2) .lcs .t0/.tx
+	:- lcs-memoized (.head1, .tail1) .tail2 .lcs1 .t0/.t1
+	, lcs-memoized .tail1 (.head2, .tail2) .lcs2 .t1/.tx
+	, longer .lcs1 .lcs2 .lcs
+#
+
+longer .l .r .result :- longer0 .l .r L, !, .result = .l; .result = .r #
+
+longer0 _ () L #
+longer0 () _ R #
+longer0 (_, .l1) (_, .l2) .which :- longer0 .l1 .l2 .which #
+
+-------------------------------------------------------------------------------
+-- meta-programming
+
+meta .kb (.a, .b) :- meta .kb .a, meta .kb .b #
+meta .kb (.a; .b) :- meta .kb .a; meta .kb .b #
+meta .kb .call
+	:- call-prototype .call .proto
+	, member .kb .proto/.rules
+	, member .rules .rule
+	, generalize .rule (.head :- .tail)
+	, .call = .head
+	, meta .kb .tail
+#
+
+-------------------------------------------------------------------------------
 -- deterministic analysis
 
-group-predicates (.head :- .tail # .remains) (IN = .head, .tail; .groupedRemains)
-	:- group-predicates .remains .groupedRemains
-#
-group-predicates () fail #
+is-rules-determ .group :- group-rules .group .goal, is-determ .goal #
 
-replace-cut-points .predicates0 (DEFINE-CUT .cutPoint .predicates1)
-       :- replace .predicates0 .predicates1 ! .cutPoint
+group-rules () fail #
+group-rules (.head :- .tail # .remains) (IN = .head, .tail; .remains1)
+	:- group-rules .remains .remains1
 #
 
-is-determ (!, _) #
 is-determ (.a, .b) :- is-determ .a, is-determ .b #
-is-determ (fail; .c) :- is-determ .c #
-is-determ (.c; fail) :- is-determ .c #
-is-determ (.ifThen; .else)
-	:- split-cut .ifThen .then
-	, is-determ .then
-	, is-determ .else
-#
+is-determ .goal :- is-cut-determ .goal #
+is-determ (.a; .b) :- is-cut-determ .a, is-determ .b #
 is-determ (.a = .b) #
 is-determ yes #
 is-determ fail #
 
-split-cut ! () #
-split-cut (!, .c) .c #
+is-cut-determ .goal :- split-cut .goal .afterCut, !, is-determ .afterCut #
+
+split-cut .cut () :- to.atom "!" .cut #
+split-cut (.cut, .c) .c :- to.atom "!" .cut #
 split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
 
 -------------------------------------------------------------------------------
@@ -32,210 +87,69 @@ split-cut (_, .c0) .c1 :- split-cut .c0 .c1 #
 
 define-signature .sign :- signature-prototype .sign .sign #
 
-check-module-types (.rule # .remains) :- check-clause-types .rule, check-module-types .remains #
-check-module-types () #
-
-check-clause-types (.head :- .clause) :- check-rule-types .head .clause #
-check-clause-types .head :- not (head = ()), check-rule-types .head () #
-check-clause-types () #
-
-check-clause-types (.c1, .c2) :- check-clause-types .c1, check-clause-types .c2 #
-check-clause-types (.c1; .c2) :- check-clause-types .c1, check-clause-types .c2 #
-check-clause-types (.c1 = .c2) :- is-type .type .c1, is-type .type .c2 #
-
-check-rule-types .head .clause
-	:- prototype .head .proto
-	, retrieve-signature .head .types
-	, is-type .types .head
-	, check-clause-types .clause
+check-types () _ #
+check-types (.rule # .remains) .signs
+	:- check-rule-types .head .tail .signs
+	, check-types .remains .signs
 #
 
-is-type %any _ #
-is-type %integer .i :- is.int .i #
-is-type %string .s :- is.string .s #
-is-type (.type | _) .e :- is-type .type .e #
-is-type (_ | .remains) .e :- is-type .remains .e #
-is-type (%list .type) (.head, .remains)
+check-rule-types .rule .signs
+	:- decompose-rule .rule .head .tail
+	, call-prototype .head .proto
+	, member .signs .proto/.sign
+	, is-type .head .signs
+	, check-predicate-types .tail
+#
+
+check-predicate-types (.c1, .c2) .vt
+	:- check-predicate-types .c1 .vt
+	, check-predicate-types .c2 .vt
+#
+check-predicate-types (.c1; .c2) .vt
+	:- check-predicate-types .c1 .vt
+	, check-predicate-types .c2 .vt
+#
+check-predicate-types (.c1 = .c2)
+:- is-type .type .c1 .vt, is-type .type .c2 .vt
+#
+check-predicate-types .cut :- to.atom "!" .cut #
+
+is-type .v .type .vt :- is-variable .v, map .v/.type #
+is-type _ %any _ #
+is-type .i %integer _ :- is.int .i #
+is-type .s %string _ :- is.string .s #
+is-type .e (.type | _) _ :- is-type .type .e #
+is-type .e (_ | .tail) _ :- is-type .tail .e #
+is-type (.head, .tail) (%list .type) _
 	:- is-type .type .head
-	, is-type (%list .type) .remains
+	, is-type (%list .type) .tail
 #
-is-type .alias .e :- map.retrieve (TYPE-ALIAS .alias, .value), bound .value, is-type .value .e #
-is-type .treeType .tree
+is-type .tree %op/.operator/.leftType/.rightType _
 	:- tree .tree .left .operator .right
-	, tree .treeType .leftType .operator .rightType
-	, is-type .leftType .left, is-type .rightType .right
+	, is-type .left .leftType
+	, is-type .right .rightType
 #
-is-type .a .a :- is.atom .a, not (starts.with .a '%') #
+is-type .a .a _ :- is.atom .a, not (starts.with .a '%') #
 
-signature-prototype .sign .proto :- prototype .sign .proto, map.retrieve (SIGNATURE .sign, .proto) #
+decompose-rule (.head :- .tail) .head .tail :- ! #
+decompose-rule .head .head () #
 
-prototype (.head .remains0) (.head .remains1) :- params-prototype .remains0 .remains1, ! #
+call-prototype (.name .ps) .name/.n :- params-length .ps .n, ! #
+call-prototype .name .name #
 
-params-prototype (_, .remains0) ((), .remains1) :- params-prototype .remains0 .remains1, ! #
-params-prototype () () #
-
--------------------------------------------------------------------------------
--- functional programming
-
-compile-functional .definitions .c
-	:- compile-func-code _ .definitions .c/()
-	, assign-lines 0 .c
-#
-
-assign-lines _ () #
-assign-lines .n (.n _, .remains) :- let .n1 (.n + 1), assign-lines .n1 .remains #
-
-compile-func-code _ () .c/.c # 
-compile-func-code .funcTable (.name :- .predicate # .remains) .c/.cx
-	:- .c = (.label LABEL .label, .c1)
-	, once (member .funcTable .name/.label) 
-	, gen-call-code 0/.funcTable .predicate .c1/.c2
-	, compile-func-code .funcTable .remains .c2/.cx
+params-length .ps .n
+	:- if (bound .ps, .ps = _ .ps1) then (
+		params-length .ps1 .n1, sum .n 1 .n1
+	) else-if (.n > 1, .ps = _ .ps1) then (
+		sum .n 1 .n1, params-length .ps1 .n1
+	) else (
+		(not bound .ps; .ps != _ _), .n = 1
+	)
 #
 
-gen-call-code .frame/.funcTable (.variable => case | .matches) .c0/.cx
-	:- !
-	, .c0 = (_ POP .variableReg, .c1)
-	, replace .matches .matches1 .variable %REG/.variableReg/.frame
-	, match-code .variableReg .frame/.funcTable .matches1 .c1/.c2/.returnReg
-	, .c2 = (_ RETURN .returnReg, .cx)
-#
-gen-call-code .env .callee .c0/.cx
-	:- gen-pop-code .env .callee .do .c0/.c1 
-	, gen-func-code .env .do .c1/.c2/.returnReg
-	, .c2 = (_ RETURN .returnReg, .cx)
+is-variable .variable
+	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot
 #
 
-gen-pop-code .frame/.funcTable (.variable => .do) .do1 .c0/.cx
-	:- not (.do = (case | _))
-	, !, .c0 = (_ POP .variableReg, .cx)
-	, replace .do .do1 .variable %REG/.variableReg/.frame
---	, gen-pop-code .frame/.funcTable .do1 .do2 .c1/.cx
-#
---gen-pop-code _ .do .do .cx/.cx #
-
-gen-func-code .frame/_ %REG/.reg/.frame .c/.c/.reg :- ! #
-gen-func-code .frame/_ %REG/.reg/.frame0 .c0/.cx/.reg1
-	:- !, let .frameDifference (.frame0 - .frame)
-	, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
-#
-gen-func-code _ .i .c0/.cx/.reg :- is.int .i, .c0 = (_ ASSIGN-INT .reg .i, .cx) #
-gen-func-code _ .s .c0/.cx/.reg :- is.string .s, .c0 = (_ ASSIGN-STR .reg .s, .cx) #
-gen-func-code _ .b .c0/.cx/.reg :- is.boolean .b, !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx) #
-gen-func-code _/.funcTable .f .c0/.cx/.reg
-	:- is.atom .f
-	, once (member .funcTable .f/.label)
-	, .c0 = (_ ASSIGN-LABEL .reg .label, .cx)
-#
-gen-func-code .env (.variable = .value >> .do) .c0/.cx/.reg
-	:- !
-	, gen-func-code .env .value .c0/.c1/.r1
-	, replace .do .do1 .variable %REG/.r1/.env
-	, gen-func-code .env .do1 .c1/.cx/.reg
-#
-gen-func-code .frame/.funcTable (.variable => .do) .c0/.cx/.reg
-	:- !
-	, let .frame1 (.frame + 1)
-	, .c0 = (_ JUMP .skipLabel, .funcLabel LABEL .funcLabel, .c1)
-	, gen-call-code .frame1/.funcTable (.variable => .do) .c1/.c2
-	, .c2 = (.skipLabel LABEL .skipLabel, _ ASSIGN-LABEL .reg .funcLabel, .cx)
-#
-gen-func-code .env (.caller {.parameter}) .c0/.cx/.reg
-	:- !
-	, gen-func-code .env .caller .c0/.c1/.r1
-	, gen-func-code .env .parameter .c1/.c2/.r2
-	, .c2 = (_ PUSH .r2, _ CALL .reg .r1, .cx)
-#
-gen-func-code .env (.if ? .then | .else) .c0/.cx/.reg
-	:- !
-	, gen-func-code .env .if .c0/.c1/.cr
-	, .c1 = (_ IF-FALSE .cr .label1, .c2)
-	, gen-func-code .env .then .c2/.c3/.reg
-	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, gen-func-code .env .else .c4/.c5/.reg
-	, .c5 = (.label2 LABEL .label2, .cx)
-#
-gen-func-code .env .tree .c0/.cx/.reg
-	:- tree .tree .left .oper .right
-	, gen-func-code .env .left .c0/.c1/.r1
-	, gen-func-code .env .right .c1/.c2/.r2
-	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
-#
-
-match-code .variableReg .env (.value >> .then | .else) .c0/.cx/.reg
-	:- !, gen-func-code .env .value .c0/.c1/.matchReg
-	, .c1 = (_ IF-NOT-EQ .variableReg .matchReg .label1, .c2)
-	, gen-func-code .env .then .c2/.c3/.reg
-	, .c3 = (_ JUMP .label2, .label1 LABEL .label1, .c4)
-	, match-code .variableReg .env .else .c4/.c5/.reg
-	, .c5 = (.label2 LABEL .label2, .cx)
-#
-match-code _ .env .otherwise .snippet :- gen-func-code .env .otherwise .snippet #
-
-is.boolean true #
-is.boolean false #
-
--------------------------------------------------------------------------------
--- logical programming
-
-compile () () (.c .c) #
-compile () .more (.c0 .cx) :- compile .more () (.c0 .cx) #
-compile () (JUMP .label) (.c0 .cx) :- .c0 = (JUMP .label, .cx) #
-compile (.a, .b) .more (.c0 .cx) :- compile .a (.b, .more) (.c0 .cx) #
-compile (.a; .b) .more (.c0 .cx)
-	:- .c0 = (PUSH-BACKTRACK-POINT, .c1)
-	, compile .a (JUMP .label) .c1 .c2
-	, .c2 = (LABEL .label, .c3)
-	, compile .a () .c3 .cx
-#
-compile (.a = .b) .more (.c0 .cx)
-	:- create-node .a .reg0 (.c0 .c1)
-	, create-node .a .reg1 (.c1 .c2)
-	, .c2 = (JUMP-FAIL .reg0 .reg1, .cx)
-#
-
-create-node .a .reg (.c0 .cx) :- is.atom .a, .c0 = (ASSIGN-NODE .reg .a, .cx) #
-create-node .i .reg (.c0 .cx) :- is.int .i, .c0 = (ASSIGN-NODE .reg .i, .cx) #
-create-node .s .reg (.c0 .cx) :- is.string .s, .c0 = (ASSIGN-NODE .reg .s, .cx) #
-create-node .tree .reg (.c0 .cx)
-	:- tree .tree .left .operator .right
-	, create-node .left .regl (.c0 .c1)
-	, create-node .right .regr (.c1 .c2)
-	, .c2 = (FORM-TREE .operator .regl .regr, .cx)
-#
-
-is-user-predicate .call :- rules .rules, has-rules .rules (.call :- _) #
-
-has-rules (.rule # _) .rule #
-has-rules (_ # .remains) .rule :- has-rules .remains .rule #
-
--------------------------------------------------------------------------------
--- pattern recog
-
--------------------------------------------------------------------------------
--- lexer
-
--------------------------------------------------------------------------------
--- longest common subsequence
-
-lcs () _ () :- ! #
-lcs _ () () :- ! #
-lcs (.common, .remains1) (.common, .remains2) (.common, .lcs)
-	:- lcs-once .remains1 .remains2 .lcs, !
-#
-lcs (.head1, .remains1) (.head2, .remains2) .lcs
-	:- lcs-once (.head1, .remains1) .remains2 .lcs1
-	, lcs-once .remains1 (.head2, .remains2) .lcs2
-	, longest .lcs1 .lcs2 .lcs
-#
-
--- Note memory leak
-lcs-once .a .b .lcs :- map.retrieve (LCS .a .b) .lcs, (bound .lcs, !; lcs .a .b .lcs) #
-
-longest .l .r .result
-	:- longest0 .l .r L, !, .result = .l; .result = .r
-#
-
-longest0 .l () L #
-longest0 () .l R #
-longest0 (_, .l1) (_, .l2) .which :- longest0 .l1 .l2 .which #
+map (.k/.v1, _) .k/.v2 :- !, .v1 = .v2 #
+map (_, .tail) .e :- map .tail .e #

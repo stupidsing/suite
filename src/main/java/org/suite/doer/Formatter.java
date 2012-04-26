@@ -1,5 +1,8 @@
 package org.suite.doer;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.parser.Operator;
 import org.parser.Operator.Assoc;
 import org.suite.doer.TermParser.TermOp;
@@ -13,22 +16,25 @@ import org.suite.node.Tree;
 public class Formatter {
 
 	private Operator operators[];
+	private boolean isDump;
+	private Set<Integer> set = new HashSet<Integer>();
+	private StringBuilder sb = new StringBuilder();
 
-	public Formatter(Operator operators[]) {
+	public Formatter(Operator operators[], boolean isDump) {
 		this.operators = operators;
+		this.isDump = isDump;
 	}
 
 	public static String display(Node node) {
-		return new Formatter(TermOp.values()).format(node, false);
+		return new Formatter(TermOp.values(), false).format(node);
 	}
 
 	public static String dump(Node node) {
-		return new Formatter(TermOp.values()).format(node, true);
+		return new Formatter(TermOp.values(), true).format(node);
 	}
 
-	private String format(Node node, boolean dump) {
-		StringBuilder sb = new StringBuilder();
-		format(node, 0, dump, sb);
+	private String format(Node node) {
+		format(node, 0);
 		return sb.toString();
 	}
 
@@ -39,24 +45,33 @@ public class Formatter {
 	 *            Node to be converted.
 	 * @param parentPrec
 	 *            Minimum operator precedence without adding parentheses.
-	 * @param dump
+	 * @param isDump
 	 *            If specified as true, the output would be machine-parsable.
 	 * @param sb
 	 *            Buffer to hold output.
 	 */
-	private void format(Node node, int parentPrec, boolean dump,
-			StringBuilder sb) {
+	private void format(Node node, int parentPrec) {
 		node = node.finalNode();
+		Integer objectId = System.identityHashCode(node);
 
+		// Avoids infinite recursion if object is recursive
+		if (set.add(objectId)) {
+			format0(node, parentPrec);
+			set.remove(objectId);
+		} else
+			sb.append("<<recurse>>");
+	}
+
+	private void format0(Node node, int parentPrec) {
 		if (node instanceof Int)
 			sb.append(((Int) node).getNumber());
 		else if (node instanceof Atom) {
 			String s = ((Atom) node).getName();
-			s = dump ? quoteAtomIfRequired(s) : s;
+			s = isDump ? quoteAtomIfRequired(s) : s;
 			sb.append(s);
 		} else if (node instanceof Str) {
 			String s = ((Str) node).getValue();
-			s = dump ? quote(s, '"') : s;
+			s = isDump ? quote(s, '"') : s;
 			sb.append(s);
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
@@ -73,27 +88,28 @@ public class Formatter {
 			if (needParentheses)
 				sb.append('(');
 
-			format(tree.getLeft(), leftPrec, dump, sb);
+			format(tree.getLeft(), leftPrec);
 
 			if (operator != TermOp.BRACES) {
 				String name = operator.getName();
 				sb.append(name);
 
-				if (!name.endsWith(" "))
+				if (operator != TermOp.AND___ || tree.getRight() != Atom.nil) {
 					if (operator == TermOp.AND___ || operator == TermOp.OR____)
 						sb.append(' ');
 
-				format(tree.getRight(), rightPrec, dump, sb);
+					format(tree.getRight(), rightPrec);
+				} // a, () suppressed as a,
 			} else {
 				sb.append(" {");
-				format(tree.getRight(), 0, dump, sb);
+				format(tree.getRight(), 0);
 				sb.append("}");
 			}
 
 			if (needParentheses)
 				sb.append(')');
 		} else if (node instanceof Reference)
-			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
+			sb.append(Generalizer.DEFAULTPREFIX + ((Reference) node).getId());
 		else
 			sb.append(node.getClass().getSimpleName() + '@'
 					+ Integer.toHexString(node.hashCode()));
@@ -104,7 +120,11 @@ public class Formatter {
 			boolean quote = false;
 
 			for (char c : s.toCharArray())
-				if (c <= 32 || c == '\'' || c == '"')
+				if (c <= 32 //
+						|| c == '(' || c == ')' //
+						|| c == '[' || c == ']' //
+						|| c == '{' || c == '}' //
+						|| c == '\'' || c == '"' || c == '`')
 					quote = true;
 
 			for (Operator operator : operators) {

@@ -5,12 +5,13 @@ import java.util.Map;
 
 import org.suite.Context;
 import org.suite.Singleton;
+import org.util.Util;
 
 public class Atom extends Node {
 
 	private String name;
 
-	public final static Atom nil = create("");
+	public static final Atom nil = create("");
 
 	private Atom(String name) {
 		this.name = name;
@@ -19,6 +20,22 @@ public class Atom extends Node {
 	@Override
 	public int hashCode() {
 		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this != object)
+			if (object instanceof Node) {
+				Node node = ((Node) object).finalNode();
+				if (node instanceof Atom) {
+					Atom a = (Atom) node;
+					return Util.equals(name, a.name);
+				} else
+					return false;
+			} else
+				return false;
+		else
+			return true;
 	}
 
 	public static Atom create(String name) {

@@ -15,7 +15,7 @@ public class Predicate {
 		Tree tree;
 
 		for (int i = 1; i < n; i++)
-			if ((tree = Tree.decompose(node, TermOp.SEP___)) != null) {
+			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 				results.add(tree.getLeft());
 				node = tree.getRight();
 			} else

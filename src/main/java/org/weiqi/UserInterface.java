@@ -1,12 +1,33 @@
 package org.weiqi;
 
+import org.util.Util;
+import org.weiqi.Weiqi.Occupation;
+
 public class UserInterface {
 
 	public static void display(Board board) {
-		for (int x = 0; x < Weiqi.SIZE; x++) {
-			for (int y = 0; y < Weiqi.SIZE; y++)
-				System.out.print(board.get(new Coordinate(x, y)) + " ");
-			System.out.println();
-		}
+		System.out.println(board.toString());
 	}
+
+	public static Board importBoard(String s) {
+		Board board = new Board();
+		String rows[] = s.split("\n");
+
+		for (int x = 0; x < Weiqi.size; x++) {
+			String cols[] = rows[x].split(" ");
+
+			for (int y = 0; y < Weiqi.size; y++) {
+				Occupation occupation = Occupation.EMPTY;
+
+				for (Occupation o : Occupation.values())
+					if (Util.equals(cols[y], o.display()))
+						occupation = o;
+
+				board.set(Coordinate.c(x, y), occupation);
+			}
+		}
+
+		return board;
+	}
+
 }

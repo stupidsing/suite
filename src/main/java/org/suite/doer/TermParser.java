@@ -10,24 +10,31 @@ public class TermParser extends Parser {
 	public static enum TermOp implements Operator {
 		NEXT__("#", Assoc.RIGHT), //
 		IS____(" :- ", Assoc.RIGHT), //
-		INDUCE(" => ", Assoc.RIGHT), //
-		CHOICE(" | ", Assoc.RIGHT), //
-		IF____(" ? ", Assoc.RIGHT), //
-		LET___(" >> ", Assoc.RIGHT), //
+		FUN___(" => ", Assoc.RIGHT), //
+		CONTD_(" >> ", Assoc.RIGHT), //
+		PIPE__(" << ", Assoc.LEFT), //
+		SEP___(" | ", Assoc.RIGHT), //
+		JOIN__(" . ", Assoc.LEFT), //
 		OR____(";", Assoc.RIGHT), //
 		AND___(",", Assoc.RIGHT), //
+		BLOR__(" || ", Assoc.RIGHT), //
+		BLAND_(" && ", Assoc.RIGHT), //
+		EQUAL_(" = ", Assoc.RIGHT), //
+		NOTEQ_(" != ", Assoc.RIGHT), //
 		LE____(" <= ", Assoc.RIGHT), //
 		LT____(" < ", Assoc.RIGHT), //
 		GE____(" >= ", Assoc.RIGHT), //
 		GT____(" > ", Assoc.RIGHT), //
-		EQUAL_(" = ", Assoc.RIGHT), //
 		PLUS__(" + ", Assoc.RIGHT), //
 		MINUS_(" - ", Assoc.LEFT), //
 		MULT__(" * ", Assoc.RIGHT), //
 		DIVIDE(" / ", Assoc.LEFT), //
+		MODULO(" % ", Assoc.LEFT), //
+		POWER_("^", Assoc.RIGHT), //
 		BRACES("{", Assoc.LEFT), //
-		SEP___(" ", Assoc.RIGHT), //
+		TUPLE_(" ", Assoc.RIGHT), //
 		ITEM__("/", Assoc.RIGHT), //
+		COLON_(":", Assoc.RIGHT), //
 		;
 
 		public final String name;

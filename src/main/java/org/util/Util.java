@@ -2,25 +2,24 @@ package org.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.sql.Timestamp;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,6 +74,10 @@ public class Util {
 		return new ArrayList<T>(c);
 	}
 
+	public static <T> Set<T> createHashSet() {
+		return new HashSet<T>();
+	}
+
 	public static <K, V> Map<K, V> createHashMap() {
 		return new HashMap<K, V>();
 	}
@@ -116,7 +119,7 @@ public class Util {
 		}
 
 		public int hashCode() {
-			int h1 = (t1 != null) ? t1.hashCode() : 0;
+			int h1 = t1 != null ? t1.hashCode() : 0;
 			int h2 = (t2 != null) ? t2.hashCode() : 0;
 			return h1 ^ h2;
 		}
@@ -131,7 +134,26 @@ public class Util {
 			Thread.sleep(time);
 		} catch (InterruptedException ex) {
 			log.error("", ex);
+			Thread.currentThread().interrupt();
 		}
+	}
+
+	public static void wait(Object object) {
+		wait(object, 0);
+	}
+
+	public static void wait(Object object, int timeOut) {
+		try {
+			object.wait(timeOut);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	public static ThreadPoolExecutor createExecutor() {
+		return new ThreadPoolExecutor(8, 32 //
+				, 10, TimeUnit.SECONDS //
+				, new ArrayBlockingQueue<Runnable>(256));
 	}
 
 	public static <E> E unique(List<E> list) {
@@ -144,12 +166,61 @@ public class Util {
 			return list.get(0);
 	}
 
-	public interface Performer<E> {
-		public void perform(E e);
+	public static <E> void truncate(List<E> list, int n) {
+		int size = list.size();
+		while (size > n)
+			list.remove(--size);
+	}
+
+	public interface Event extends Transformer<Void, Void> {
+	}
+
+	public interface Getter<O> extends Transformer<Void, O> {
+	}
+
+	public interface Setter<I> extends Transformer<I, Void> {
+	}
+
+	public interface Transformer<I, O> extends
+			IoProcess<I, O, RuntimeException> {
 	}
 
 	public interface IoProcess<I, O, Ex extends Exception> {
-		public O perform(I e) throws Ex;
+		public O perform(I i) throws Ex;
+	}
+
+	public static <I, O> Collection<O> map(Collection<I> in, Transformer<I, O> t) {
+		ArrayList<O> out = new ArrayList<O>(in.size());
+		for (I i : in)
+			out.add(t.perform(i));
+		return out;
+	}
+
+	public static class MultiSetter<I> implements Setter<I> {
+		private Collection<Setter<I>> setters = new ArrayList<Setter<I>>();
+
+		public Void perform(I i) {
+			for (Setter<I> setter : setters)
+				setter.perform(i);
+			return null;
+		}
+
+		public void add(Setter<I> setter) {
+			setters.add(setter);
+		}
+	}
+
+	public static <I> Setter<I> nullSetter() {
+		Setter<I> setter = new Setter<I>() {
+			public Void perform(I i) {
+				return null;
+			}
+		};
+		return setter;
+	}
+
+	public static <I> MultiSetter<I> multiSetter() {
+		return new MultiSetter<I>();
 	}
 
 	/**
@@ -169,7 +240,7 @@ public class Util {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Dumping ");
 		sb.append(name);
-		dump("", object, sb);
+		DumpUtil.dump("", object, sb);
 		log.info(sb.toString());
 	}
 
@@ -181,7 +252,14 @@ public class Util {
 		if (t1 == null ^ t2 == null)
 			return false;
 		else
-			return (t1 != null) ? t1.equals(t2) : true;
+			return t1 != null ? t1.equals(t2) : true;
+	}
+
+	public static <T extends Comparable<T>> int compare(T t1, T t2) {
+		if (t1 == null ^ t2 == null)
+			return t1 != null ? 1 : -1;
+		else
+			return t1 != null ? t1.compareTo(t2) : 0;
 	}
 
 	public static <T> int hashCode(T t) {
@@ -189,7 +267,7 @@ public class Util {
 	}
 
 	/**
-	 * Clones slowly by serialising and de-serialising.
+	 * Clones slowly by serializing and de-serializing.
 	 */
 	public static <T> T copy(T clonee) throws IOException,
 			ClassNotFoundException {
@@ -206,6 +284,18 @@ public class Util {
 		return cloned;
 	}
 
+	public static <T> void copyArray(T from[], int fromIndex //
+			, T to[], int toIndex, int size) {
+		if (size != 0)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
+	public static <T> void copyPrimitiveArray(Object from, int fromIndex //
+			, Object to, int toIndex, int size) {
+		if (size != 0)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
 	public static String substr(String s, int start, int end) {
 		int length = s.length();
 		while (start < 0)
@@ -215,115 +305,22 @@ public class Util {
 		return s.substring(start, end);
 	}
 
-	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * string buffer, line-by-line. Probably you want to use the easier 1 or
-	 * 2-parameter(s) version to output to log4j.
-	 * 
-	 * Beware that if you pass in a recursive structure, this would gone crazily
-	 * stack overflow. And this could slow your program down by the heavy use of
-	 * reflections.
-	 * 
-	 * No private fields dump yet, since it requires some setting in Java
-	 * security manager.
-	 * 
-	 * @param prefix
-	 *            To be appended before each line.
-	 * @param object
-	 *            The monster.
-	 * @param sb
-	 *            String buffer to hold the dumped content.
-	 */
-	public static void dump(String prefix, Object object, StringBuffer sb) {
-		if (object != null)
-			dump(prefix, object, object.getClass(), sb);
-		else
-			dump(prefix, object, void.class, sb);
-	}
-
-	public static void dump(String prefix, Object object, Class<?> clazz,
-			StringBuffer sb) {
-		sb.append(prefix);
-		sb.append(" =");
-		if (object == null) {
-			sb.append(" null\n");
-			return;
-		}
-
-		if (clazz == String.class)
-			sb.append(" \"" + object + "\"");
-		else if (!Collection.class.isAssignableFrom(clazz))
-			sb.append(" " + object);
-		sb.append(" [" + clazz.getSimpleName() + "]\n");
-
-		// Some easy classes do not require windy listings
-		if (isSimpleType(clazz))
-			return;
-
-		for (Field field : clazz.getFields())
-			if (!Modifier.isStatic(field.getModifiers()))
-				try {
-					String name = field.getName();
-					Object o = field.get(object);
-					Class<?> type = field.getType();
-					if (isSimpleType(type))
-						dump(prefix + "." + name, o, type, sb);
-					else
-						dump(prefix + "." + name, o, sb);
-				} catch (Throwable ex) {
-					sb.append(prefix + "." + field.getName());
-					sb.append(" caught " + ex + "\n");
-				}
-
-		Set<String> displayedMethod = new HashSet<String>();
-		for (Method method : clazz.getMethods()) {
-			String name = method.getName();
+	public static void closeQuietly(Closeable o) {
+		if (o != null)
 			try {
-				if (name.startsWith("get")
-						&& method.getParameterTypes().length == 0
-						&& !displayedMethod.contains(name)) {
-					Object o = method.invoke(object);
-					if (!(o instanceof Class<?>))
-						dump(prefix + "." + name + "()", o, sb);
-
-					// Do not display same method of different base classes
-					displayedMethod.add(name);
-				}
-			} catch (Throwable ex) {
-				sb.append(prefix + "." + name + "()");
-				sb.append(" caught " + ex + "\n");
+				o.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
 			}
-		}
-
-		int count = 0;
-
-		if (clazz.isArray())
-			if (clazz.getComponentType() == int.class)
-				for (int i : (int[]) object)
-					dump(prefix + "[" + count++ + "]", i, sb);
-			else if (Object.class.isAssignableFrom(clazz.getComponentType()))
-				for (Object o1 : (Object[]) object)
-					dump(prefix + "[" + count++ + "]", o1, sb);
-
-		if (Collection.class.isAssignableFrom(clazz))
-			for (Object o1 : (Collection<?>) object)
-				dump(prefix + "[" + count++ + "]", o1, sb);
-		else if (Map.class.isAssignableFrom(clazz)) {
-			for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
-				Object key = entry.getKey(), value = entry.getValue();
-				dump(prefix + "[" + count + "].getKey()", key, sb);
-				dump(prefix + "[" + count + "].getValue()", value, sb);
-				count++;
-			}
-		}
 	}
 
-	/**
-	 * Types that do not require per-member dump.
-	 */
-	private static boolean isSimpleType(Class<?> clazz) {
-		return clazz.isPrimitive() || clazz == String.class
-				|| clazz == Date.class || clazz == Timestamp.class;
+	public static void closeQuietly(Socket o) {
+		if (o != null)
+			try {
+				o.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

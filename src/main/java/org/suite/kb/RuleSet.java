@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
+import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -49,8 +51,10 @@ public class RuleSet implements RuleSearcher {
 
 			if (rule.getHead() != Atom.nil)
 				addRule(rule);
-			else
-				result &= prover.prove(rule.getTail());
+			else {
+				Node goal = new Generalizer().generalize(rule.getTail());
+				result &= prover.prove(goal);
+			}
 
 			node = tree.getRight();
 		}
@@ -58,13 +62,29 @@ public class RuleSet implements RuleSearcher {
 		return result;
 	}
 
+	public void clear() {
+		rules.clear();
+		index.clear();
+	}
+
 	public void addRule(Node node) {
 		addRule(formRule(node));
 	}
 
 	public void addRule(Rule rule) {
+		rule = new Cloner().clone(rule);
 		rules.add(rule);
 		index.get(Prototype.get(rule)).add(rule);
+	}
+
+	public void addRuleToFront(Node node) {
+		addRuleToFront(formRule(node));
+	}
+
+	public void addRuleToFront(Rule rule) {
+		rule = new Cloner().clone(rule);
+		rules.add(0, rule);
+		index.get(Prototype.get(rule)).add(0, rule);
 	}
 
 	public void removeRule(Node node) {

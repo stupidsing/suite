@@ -1,9 +1,9 @@
 package org.parser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +16,9 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.IoUtil;
 import org.util.LogUtil;
+import org.util.ParserUtil;
 import org.util.Util;
 
 public class Parser {
@@ -29,6 +31,9 @@ public class Parser {
 	private static final String OPENGROUPCOMMENT = "-=";
 	private static final String CLOSELINECOMMENT = "\n";
 	private static final String OPENLINECOMMENT = "--";
+
+	private static final List<Character> whitespaces = Arrays.asList( //
+			'\t', '\r', '\n');
 
 	public Parser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
@@ -44,13 +49,7 @@ public class Parser {
 	}
 
 	public Node parse(InputStream is) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		while (br.ready())
-			sb.append(br.readLine() + "\n");
-		br.close();
-
-		return parse(sb.toString());
+		return parse(IoUtil.readStream(is));
 	}
 
 	public Node parse(String s) {
@@ -65,16 +64,17 @@ public class Parser {
 	 */
 	private Node parseWithoutComments(String s) {
 		s = s.trim();
-		if (s.isEmpty())
-			return Atom.nil;
+		return !s.isEmpty() ? parseRawString(s) : Atom.nil;
+	}
 
+	private Node parseRawString(String s) {
 		char first = s.charAt(0), last = s.charAt(s.length() - 1);
 
 		for (Operator operator : operators) {
 			if (operator == TermOp.BRACES && last != '}')
 				continue;
 
-			int pos = search(s, operator);
+			int pos = ParserUtil.search(s, operator);
 
 			if (operator == TermOp.BRACES)
 				s = Util.substr(s, 0, -1);
@@ -83,14 +83,17 @@ public class Parser {
 				String l = s.substring(0, pos);
 				String r = s.substring(pos + operator.getName().length());
 
-				return new Tree(operator, parseWithoutComments(l),
-						parseWithoutComments(r));
+				return new Tree(operator //
+						, parseWithoutComments(l) //
+						, parseWithoutComments(r));
 			}
 		}
 
 		if (first == '(' && last == ')' //
 				|| first == '[' && last == ']')
 			return parseWithoutComments(Util.substr(s, 1, -1));
+		if (first == '`' && last == '`')
+			return parseRawString(" " + Util.substr(s, 1, -1) + " ");
 
 		try {
 			return Int.create(Integer.parseInt(s));
@@ -106,9 +109,9 @@ public class Parser {
 		// Shows warning if the atom has mismatched quotes or brackets
 		int quote = 0, depth = 0;
 		for (char c : s.toCharArray()) {
-			quote = checkQuote(quote, c);
+			quote = ParserUtil.getQuoteChange(quote, c);
 			if (quote == 0)
-				depth = checkDepth(depth, c);
+				depth = ParserUtil.checkDepth(depth, c);
 		}
 
 		if (quote != 0 || depth != 0)
@@ -128,7 +131,7 @@ public class Parser {
 
 		while (!s.isEmpty()) {
 			String line;
-			int pos = search(s, "\n", Assoc.RIGHT, false);
+			int pos = ParserUtil.search(s, "\n", Assoc.RIGHT, false);
 			pos = pos >= 0 ? pos : s.length();
 			line = s.substring(0, pos);
 			s = pos < s.length() ? s.substring(pos + 1) : "";
@@ -140,59 +143,64 @@ public class Parser {
 
 			line = line.substring(indent).trim();
 			length = line.length();
-			int startPos = 0, endPos = length;
 
-			for (Operator operator : operators) {
-				String name = operator.getName().trim();
+			if (length != 0) { // Ignore empty lines
+				int startPos = 0, endPos = length;
 
-				if (!name.isEmpty()) {
-					if (line.startsWith(name))
-						startPos = Math.max(startPos, name.length());
-					if (line.endsWith(name))
-						endPos = Math.min(endPos, length - name.length());
+				// Find operators at beginning and end of line
+				for (Operator operator : operators) {
+					String name = operator.getName().trim();
+
+					if (!name.isEmpty()) {
+						if (line.startsWith(name + " "))
+							startPos = Math.max(startPos, 1 + name.length());
+						if (line.equals(name))
+							startPos = Math.max(startPos, name.length());
+						if (line.endsWith(name))
+							endPos = Math.min(endPos, length - name.length());
+					}
 				}
+
+				if (startPos > endPos) // When a line has only one operator
+					startPos = 0;
+
+				// Insert parentheses by line indentation
+				String decoratedLine = "";
+				while (lastIndent > indent) {
+					decoratedLine += ") ";
+					lastIndent--;
+				}
+				decoratedLine += line.substring(0, startPos);
+				while (lastIndent < indent) {
+					decoratedLine += " (";
+					lastIndent++;
+				}
+				decoratedLine += line.substring(startPos, endPos);
+				decoratedLine += line.substring(endPos);
+
+				sb.append(decoratedLine + "\n");
 			}
-
-			if (startPos > endPos) // When a line has only one operator
-				startPos = 0;
-
-			boolean isSeparateLine = startPos == 0 //
-					&& endPos == length //
-					&& startPos != endPos //
-					&& checkDepth(line) == 0;
-
-			String decoratedLine = "";
-			while (lastIndent > indent) {
-				decoratedLine += ") ";
-				lastIndent--;
-			}
-			decoratedLine += line.substring(0, startPos);
-			decoratedLine += isSeparateLine ? " (" : "";
-			while (lastIndent < indent) {
-				decoratedLine += " (";
-				lastIndent++;
-			}
-			decoratedLine += line.substring(startPos, endPos);
-			decoratedLine += isSeparateLine ? ") " : "";
-			decoratedLine += line.substring(endPos);
-
-			sb.append(decoratedLine + "\n");
 		}
 
 		return sb.toString();
 	}
 
-	private static final String whitespaces[] = { "\t", "\r", "\n" };
+	private boolean isWhitespaces(String s) {
+		boolean result = true;
+		for (char c : s.toCharArray())
+			result &= whitespaces.contains(c);
+		return result;
+	}
 
 	private String convertWhitespaces(String s) {
-		for (String whitespace : whitespaces)
-			s = replace(s, whitespace, " ");
+		for (char whitespace : whitespaces)
+			s = replace(s, "" + whitespace, " ");
 		return s;
 	}
 
 	private String replace(String s, String from, String to) {
 		while (true) {
-			int pos = search(s, 0, from);
+			int pos = ParserUtil.search(s, 0, from);
 
 			if (pos != -1)
 				s = s.substring(0, pos) + to + s.substring(pos + from.length());
@@ -208,14 +216,16 @@ public class Parser {
 	}
 
 	private String removeComments(String s, String open, String close) {
+		int closeLength = !isWhitespaces(close) ? close.length() : 0;
+
 		while (true) {
-			int pos1 = search(s, 0, open);
+			int pos1 = ParserUtil.search(s, 0, open);
 			if (pos1 == -1)
 				return s;
-			int pos2 = search(s, pos1 + open.length(), close);
+			int pos2 = ParserUtil.search(s, pos1 + open.length(), close);
 			if (pos2 == -1)
 				return s;
-			s = s.substring(0, pos1) + s.substring(pos2 + close.length());
+			s = s.substring(0, pos1) + s.substring(pos2 + closeLength);
 		}
 	}
 
@@ -242,77 +252,6 @@ public class Parser {
 		}
 
 		return s;
-	}
-
-	private static int search(String s, int start, String toMatch) {
-		int nameLength = toMatch.length();
-		int end = s.length() - nameLength;
-		int quote = 0;
-
-		for (int pos = start; pos <= end; pos++) {
-			char c = s.charAt(pos);
-			quote = checkQuote(quote, c);
-
-			if (quote == 0 && s.startsWith(toMatch, pos))
-				return pos;
-		}
-
-		return -1;
-	}
-
-	private static int search(String s, Operator operator) {
-		return search(s, operator.getName(), operator.getAssoc());
-	}
-
-	private static int search(String s, String name, Assoc assoc) {
-		return search(s, name, assoc, true);
-	}
-
-	private static int search(String s, String name, Assoc assoc,
-			boolean checkDepth) {
-		boolean isLeftAssoc = assoc == Assoc.LEFT;
-		int nameLength = name.length();
-		int end = s.length() - nameLength;
-		int quote = 0, depth = 0;
-
-		for (int i = 0; i <= end; i++) {
-			int pos = isLeftAssoc ? end - i : i;
-			char c = s.charAt(pos + (isLeftAssoc ? nameLength - 1 : 0));
-			quote = checkQuote(quote, c);
-
-			if (quote == 0) {
-				if (checkDepth)
-					depth = checkDepth(depth, c);
-
-				if (depth == 0 && s.startsWith(name, pos))
-					return pos;
-			}
-		}
-
-		return -1;
-	}
-
-	private static int checkQuote(int quote, char c) {
-		if (c == quote)
-			quote = 0;
-		else if (c == '\'' || c == '"')
-			quote = c;
-		return quote;
-	}
-
-	private static int checkDepth(String s) {
-		int depth = 0;
-		for (char c : s.toCharArray())
-			depth = checkDepth(depth, c);
-		return depth;
-	}
-
-	private static int checkDepth(int depth, char c) {
-		if (c == '(' || c == '[' || c == '{')
-			depth++;
-		if (c == ')' || c == ']' || c == '}')
-			depth--;
-		return depth;
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

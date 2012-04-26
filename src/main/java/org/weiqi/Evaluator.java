@@ -1,6 +1,9 @@
 package org.weiqi;
 
-import org.weiqi.Weiqi.Array;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.util.Util;
 import org.weiqi.Weiqi.Occupation;
 
 public class Evaluator {
@@ -8,42 +11,41 @@ public class Evaluator {
 	private static final int PIECESCORE = 10;
 	private static final int TERRITORYSCORE = 100;
 
-	public static int evaluate(Occupation side, Board board) {
+	public static int evaluate(Occupation player, Board board) {
 		int score = 0;
-		Occupation opponent = side.opponent();
+		Occupation opponent = player.opponent();
 
-		// Count pieces
-		for (Coordinate c : Coordinate.getAll())
-			if (board.get(c) == side)
-				score += PIECESCORE;
+		// Count territories by counting groups
+		GroupAnalysis ga = new GroupAnalysis(board);
 
-		// Calculates absolute territory
-		Array<Occupation> territory = new Array<Occupation>();
-		for (Coordinate c : Coordinate.getAll()) {
-			Occupation color = board.get(c);
+		for (Entry<Integer, Occupation> entry : ga.getGroupColors().entrySet()) {
+			Integer groupId = entry.getKey();
+			Occupation color = ga.getColor(groupId);
+			Set<Occupation> colors = Util.createHashSet();
+			boolean us = false, theirs = false;
 
-			if (color != Occupation.EMPTY && territory.get(c) == null)
-				for (Coordinate c1 : board.findGroup(c)) {
-					for (Coordinate c2 : c1.getNeighbours())
-						if (board.get(c2) == Occupation.EMPTY) {
-							Occupation whose;
-							if (territory.get(c2) != color.opponent())
-								whose = color;
-							else
-								whose = Occupation.EMPTY; // Clashed
+			// Count pieces
+			if (color == player)
+				score += PIECESCORE * ga.getCoords(groupId).size();
+			else if (color == opponent)
+				score -= PIECESCORE * ga.getCoords(groupId).size();
 
-							for (Coordinate c3 : board.findGroup(c2))
-								territory.set(c3, whose);
-						}
+			// Count territory
+			if (color == Occupation.EMPTY) {
+				for (Integer neighbourGroupId : ga.getTouches(groupId))
+					colors.add(ga.getColor(neighbourGroupId));
 
-					territory.set(c1, color);
-				}
-		}
+				us = colors.contains(player);
+				theirs = colors.contains(opponent);
+			} else if (color == player)
+				us = true;
+			else
+				theirs = true;
 
-		for (Coordinate c : Coordinate.getAll()) {
-			Occupation color = territory.get(c);
-			score += color == side ? TERRITORYSCORE : 0;
-			score -= color == opponent ? TERRITORYSCORE : 0;
+			if (!us || !theirs) { // Do not count when it is nearby both colours
+				int scoreDelta = TERRITORYSCORE * ga.getCoords(groupId).size();
+				score += !theirs ? scoreDelta : -scoreDelta;
+			}
 		}
 
 		return score;

@@ -1,6 +1,6 @@
-package org.suite.node;
+package org.suite.doer;
 
-import org.suite.doer.Prover.Backtracks;
+import org.suite.node.Node;
 
 /**
  * A node that is actually a runnable (with some parameters). When the prover
@@ -8,6 +8,6 @@ import org.suite.doer.Prover.Backtracks;
  */
 public abstract class Station extends Node {
 
-	public abstract boolean run(Backtracks backtracks);
+	public abstract boolean run();
 
 }

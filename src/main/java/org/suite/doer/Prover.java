@@ -2,7 +2,6 @@ package org.suite.doer;
 
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Stack;
 
 import org.suite.Binder;
 import org.suite.Journal;
@@ -12,10 +11,8 @@ import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.node.Station;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
-import org.util.Util.Pair;
 
 public class Prover {
 
@@ -23,25 +20,15 @@ public class Prover {
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
-	public static class Env extends Pair<Node, Integer> {
-		public Env() {
-			super();
-		}
-
-		public Env(Node t1, Integer t2) {
-			super(t1, t2);
-		}
-	}
-
-	public class Backtracks extends Stack<Env> {
-		private static final long serialVersionUID = 1l;
-	}
+	private boolean isEnableTrace = false;
 
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
 
-	Journal journal = new Journal();
-	Backtracks backtracks = new Backtracks();
+	private Node remaining, alternative;
+
+	private Journal journal = new Journal();
+	private Node trace = Atom.nil;
 
 	public Prover(Prover prover) {
 		this(prover.ruleSet);
@@ -65,19 +52,30 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		Node remaining = OK;
+		remaining = OK;
+		alternative = FAIL;
 
-		while (query != OK || remaining != OK) {
-			// LogUtil.info("PROVE", Formatter.dump(node));
+		while (true) {
+			// LogUtil.info("PROVE", Formatter.dump(query));
 
 			Tree tree = Tree.decompose(query);
 			if (tree != null) {
-				Node left = tree.getLeft(), right = tree.getRight();
+				final Node left = tree.getLeft(), right = tree.getRight();
 
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
-					Tree option = new Tree(TermOp.AND___, right, remaining);
-					backtracks.push(new Env(option, journal.getPointInTime()));
+					final int pit = journal.getPointInTime();
+					Node bt = new Station() {
+						public boolean run() {
+							journal.undoBinds(pit);
+							return true;
+						}
+					};
+
+					Tree alt0 = new Tree(TermOp.AND___, right, remaining);
+					alternative = alternative != FAIL ? new Tree(TermOp.OR____,
+							alt0, alternative) : alt0;
+					alternative = new Tree(TermOp.AND___, bt, alternative);
 					query = left;
 					continue;
 				case AND___:
@@ -89,7 +87,7 @@ public class Prover {
 					query = isSuccess(bind(left, right));
 				}
 			} else if (query instanceof Station)
-				query = isSuccess(((Station) query).run(backtracks));
+				query = isSuccess(((Station) query).run());
 
 			Boolean result = systemPredicates.call(query);
 			if (result != null)
@@ -97,21 +95,23 @@ public class Prover {
 
 			// Not handled above
 			if (query == OK)
-				query = remaining;
+				if (remaining != OK) {
+					query = remaining;
+					remaining = OK;
+				} else
+					return true;
 			else if (query == FAIL)
-				if (!backtracks.empty()) {
-					Env env = backtracks.pop();
-					query = env.t1;
-					journal.undoBinds(env.t2);
+				if (alternative != FAIL) {
+					query = alternative;
+					alternative = FAIL;
+					remaining = OK;
 				} else
 					return false;
+			else if (!isEnableTrace)
+				query = expand(query);
 			else
-				query = expand(query, remaining);
-
-			remaining = OK;
+				query = expandWithTrace(query);
 		}
-
-		return true;
 	}
 
 	/**
@@ -134,6 +134,32 @@ public class Prover {
 		return b ? OK : FAIL;
 	}
 
+	private final class SetTrace extends Station {
+		private Node trace;
+
+		public SetTrace(Node trace) {
+			super();
+			this.trace = trace;
+		}
+
+		public boolean run() {
+			Prover.this.trace = trace;
+			return true;
+		}
+	}
+
+	private Node expandWithTrace(Node query) {
+		Node query1 = new Cloner().clone(query);
+		Tree trace1 = new Tree(TermOp.AND___, query1, trace);
+		Station push = new SetTrace(trace1), pop = new SetTrace(trace);
+
+		alternative = new Tree(TermOp.AND___, pop, alternative);
+		remaining = new Tree(TermOp.AND___, pop, remaining);
+		query = expand(query);
+		query = new Tree(TermOp.AND___, push, query);
+		return query;
+	}
+
 	/**
 	 * Expands an user predicate (with many clauses) to a chain of logic.
 	 * 
@@ -143,7 +169,8 @@ public class Prover {
 	 *            The final goal to be appended.
 	 * @return The chained node.
 	 */
-	private Node expand(Node query, Node remaining) {
+	private Node expand(Node query) {
+		final Node alt0 = alternative;
 		Node ret = FAIL;
 
 		List<Rule> rules = ruleSearcher.getRules(query);
@@ -153,10 +180,9 @@ public class Prover {
 			Rule rule = iter.previous();
 
 			Generalizer generalizer = new Generalizer();
-			final int pit = backtracks.size();
 			generalizer.setCut(new Station() {
-				public boolean run(Backtracks backtracks) {
-					backtracks.setSize(pit);
+				public boolean run() {
+					Prover.this.alternative = alt0;
 					return true;
 				}
 			});
@@ -170,10 +196,10 @@ public class Prover {
 									, query //
 									, head //
 							) //
-							, new Tree(TermOp.AND___ //
-									, tail //
-									, remaining)) //
-					, ret);
+							, tail //
+					) //
+					, ret //
+			);
 		}
 
 		return ret;
@@ -193,6 +219,27 @@ public class Prover {
 	 */
 	public RuleSet getRuleSet() {
 		return ruleSet;
+	}
+
+	/**
+	 * Allows taking stack dump, with performance hit.
+	 */
+	public void setEnableTrace(boolean isEnableTrace) {
+		this.isEnableTrace = isEnableTrace;
+	}
+
+	/**
+	 * The roll-back log of variable binds.
+	 */
+	public Journal getJournal() {
+		return journal;
+	}
+
+	/**
+	 * Gets stack dump when trace is enabled.
+	 */
+	public Node getTrace() {
+		return trace;
 	}
 
 }

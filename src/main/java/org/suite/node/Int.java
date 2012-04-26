@@ -19,9 +19,13 @@ public class Int extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Int) {
-			Int i = (Int) object;
-			return number == i.number;
+		if (object instanceof Node) {
+			Node node = ((Node) object).finalNode();
+			if (node instanceof Int) {
+				Int i = (Int) node;
+				return number == i.number;
+			} else
+				return false;
 		} else
 			return false;
 	}

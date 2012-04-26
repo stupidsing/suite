@@ -1,6 +1,10 @@
 package org.suite.doer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -11,11 +15,12 @@ import org.suite.node.Tree;
 
 public class Generalizer {
 
-	public static final String variablePrefix = ".";
+	public static final String DEFAULTPREFIX = ".";
 
 	private static final Node WILDCARD = Atom.create("_");
 	private static final Node CUT = Atom.create("!");
 
+	private String variablePrefix = DEFAULTPREFIX;
 	private Map<Node, Reference> variables = new HashMap<Node, Reference>();
 	private Node cut;
 
@@ -48,8 +53,18 @@ public class Generalizer {
 	public String dumpVariables() {
 		boolean first = true;
 		StringBuilder sb = new StringBuilder();
+		List<Entry<Node, Reference>> entries;
 
-		for (Entry<Node, Reference> entry : variables.entrySet()) {
+		entries = new ArrayList<Entry<Node, Reference>>(variables.entrySet());
+
+		Collections.sort(entries, new Comparator<Entry<Node, Reference>>() {
+			public int compare(Entry<Node, Reference> e0,
+					Entry<Node, Reference> e1) {
+				return e0.getKey().compareTo(e1.getKey());
+			}
+		});
+
+		for (Entry<Node, Reference> entry : entries) {
 			if (first)
 				first = false;
 			else
@@ -63,9 +78,9 @@ public class Generalizer {
 	}
 
 	/**
-	 * Would a certain end-node be generalised?
+	 * Would a certain end-node be generalized?
 	 */
-	public static boolean isVariant(Node node) {
+	public boolean isVariant(Node node) {
 		node = node.finalNode();
 		return isWildcard(node) || isVariable(node) || isCut(node);
 	}
@@ -74,13 +89,21 @@ public class Generalizer {
 		return node == WILDCARD;
 	}
 
-	private static boolean isVariable(Node node) {
+	private boolean isVariable(Node node) {
 		return node instanceof Atom
 				&& ((Atom) node).getName().startsWith(variablePrefix);
 	}
 
 	private static boolean isCut(Node node) {
 		return node == CUT;
+	}
+
+	public Node getVariable(Node name) {
+		return variables.get(name);
+	}
+
+	public void setVariablePrefix(String variablePrefix) {
+		this.variablePrefix = variablePrefix;
 	}
 
 	public void setCut(Node cut) {

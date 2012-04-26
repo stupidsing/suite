@@ -22,16 +22,20 @@ public class Cloner {
 		if (node instanceof Reference) {
 			Reference oldRef = (Reference) node;
 			node = references.get(oldRef);
+
 			if (node == null) {
 				Reference newRef = new Reference();
 				node = newRef;
 				references.put(oldRef, newRef);
 			}
-		} else if (node instanceof Tree) {
+		}
+
+		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = clone(tree.getLeft());
-			Node right = clone(tree.getRight());
-			node = new Tree(tree.getOperator(), left, right);
+			Node left = tree.getLeft(), right = tree.getRight();
+			Node left1 = clone(left), right1 = clone(right);
+			if (left != left1 || right != right1)
+				node = new Tree(tree.getOperator(), left1, right1);
 		}
 
 		return node;

@@ -13,6 +13,8 @@ public class Prototype {
 	private Operator operator;
 	private Node head;
 
+	private static Generalizer generalizer = new Generalizer();
+
 	public Prototype(Operator operator, Node head) {
 		this.operator = operator;
 		this.head = head;
@@ -31,7 +33,7 @@ public class Prototype {
 			head = t0.getLeft();
 		}
 
-		if (!Generalizer.isVariant(head) && !(head instanceof Reference))
+		if (!generalizer.isVariant(head) && !(head instanceof Reference))
 			return new Prototype(operator, head);
 		else
 			return null;

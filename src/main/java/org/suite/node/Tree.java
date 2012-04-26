@@ -24,15 +24,24 @@ public class Tree extends Node {
 
 	@Override
 	public int hashCode() {
-		return operator.hashCode() ^ Util.hashCode(left) ^ Util.hashCode(right);
+		int result = 1;
+		result = 31 * result + Util.hashCode(left);
+		result = 31 * result + Util.hashCode(operator);
+		result = 31 * result + Util.hashCode(right);
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Tree) {
-			Tree t = (Tree) object;
-			return operator == t.operator //
-					&& Util.equals(left, t.left) && Util.equals(right, t.right);
+		if (object instanceof Node) {
+			Node node = ((Node) object).finalNode();
+			if (node instanceof Tree) {
+				Tree t = (Tree) node;
+				return operator == t.operator //
+						&& Util.equals(left, t.left)
+						&& Util.equals(right, t.right);
+			} else
+				return false;
 		} else
 			return false;
 	}

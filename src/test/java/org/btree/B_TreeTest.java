@@ -2,32 +2,54 @@ package org.btree;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.junit.Before;
+import org.btree.ByteBufferAccessor.ByteBufferFixedStringAccessor;
+import org.btree.ByteBufferAccessor.ByteBufferIntAccessor;
 import org.junit.Test;
 
 public class B_TreeTest {
 
 	private static final int nKeys = 256;
-	Integer keys[] = new Integer[nKeys];
+	private Integer keys[] = new Integer[nKeys];
 
-	Persister<B_Tree<Integer, String>.Page> persister;
+	private B_Tree<Integer, String> b_tree;
 
-	Comparator<Integer> compare = new Comparator<Integer>() {
+	private Comparator<Integer> compare = new Comparator<Integer>() {
 		public int compare(Integer i, Integer j) {
 			return i - j;
 		}
 	};
 
-	B_Tree<Integer, String> b_tree;
+	@Test
+	public void memoryTest() {
+		Persister<B_Tree.Page<Integer>> persister = InMemoryPersister.create();
 
-	@Before
-	public void start() {
-		persister = InMemoryPersister.create();
 		b_tree = new B_Tree<Integer, String>(persister, compare);
 		b_tree.setBranchFactor(4);
+		b_tree.setLeafFactor(4);
+		shuffleAndTest();
+	}
+
+	@Test
+	public void fileTest() throws IOException {
+		FilePersister<Integer, String> fp = new FilePersister<Integer, String>(
+				"/tmp/test.bt" //
+				, new ByteBufferIntAccessor() //
+				, new ByteBufferFixedStringAccessor(16));
+		fp.start();
+
+		b_tree = new B_Tree<Integer, String>(fp, compare);
+		b_tree.setBranchFactor(16);
+		b_tree.setLeafFactor(16);
+		shuffleAndTest();
+
+		fp.stop();
+	}
+
+	private void shuffleAndTest() {
 
 		// Shuffle the numbers
 		Random random = new Random();
@@ -39,9 +61,10 @@ public class B_TreeTest {
 			keys[i] = keys[j];
 			keys[j] = temp;
 		}
+
+		addAndRemove();
 	}
 
-	@Test
 	public void addAndRemove() {
 
 		// Inserting this at first makes the tree depth-balanced. Why?
