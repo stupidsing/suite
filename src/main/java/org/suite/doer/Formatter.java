@@ -94,11 +94,12 @@ public class Formatter {
 				String name = operator.getName();
 				sb.append(name);
 
-				if (!name.endsWith(" "))
+				if (operator != TermOp.AND___ || tree.getRight() != Atom.nil) {
 					if (operator == TermOp.AND___ || operator == TermOp.OR____)
 						sb.append(' ');
 
-				format(tree.getRight(), rightPrec);
+					format(tree.getRight(), rightPrec);
+				} // a, () suppressed as a,
 			} else {
 				sb.append(" {");
 				format(tree.getRight(), 0);
