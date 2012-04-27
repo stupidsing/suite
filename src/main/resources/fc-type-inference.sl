@@ -68,8 +68,13 @@ infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
 infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
 infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
 infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
-infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
-	:- !, infer-type-rules .elems .env .tr .types
+infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
+	:- !, infer-type-rules .elems .ue/.ve/.te/.oe .tr .types
+	, .type = TUPLE-OF .name .types
+	, !, (.name = $$ANON
+		; member .oe (TUPLE-OF .name _)/_ -- Enforces tuple name checking
+		; fc-error "undefined tuple named " .name
+	), !
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type0

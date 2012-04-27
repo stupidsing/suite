@@ -53,9 +53,13 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testTuple() {
-		getType("BTREE 2 3 = BTREE 4 6");
-		getTypeMustFail("T1 2 3 = T2 2 3");
-		getTypeMustFail("BTREE 2 3 = BTREE \"a\" 6");
+		getType("define type bt = one-of (BTREE number number,) >> \n"
+				+ "BTREE 2 3 = BTREE 4 6");
+		getTypeMustFail("define type t1 = one-of (T1 number number,) >> \n"
+				+ "define type t2 = one-of (T2 number number,) >> \n"
+				+ "T1 2 3 = T2 2 3");
+		getTypeMustFail("define type bt = one-of (BTREE number number,) >> \n"
+				+ "BTREE 2 3 = BTREE \"a\" 6");
 	}
 
 	@Test
