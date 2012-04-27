@@ -67,8 +67,9 @@ public class ClusterMap<K, V> {
 			K key = (K) request.key;
 			@SuppressWarnings("unchecked")
 			V value = (V) request.value;
-			localMap.put(key, value);
-			return new PutQuery.Response();
+			PutQuery.Response response = new PutQuery.Response();
+			response.value = localMap.put(key, value);
+			return response;
 		}
 	};
 
@@ -83,20 +84,28 @@ public class ClusterMap<K, V> {
 	private V getFromPeer(String peer, K key) {
 		GetQuery.Request request = new GetQuery.Request();
 		request.key = key;
-		return requestForResponse(peer, request);
+		Serializable object = requestForResponse(peer, request);
+		GetQuery.Response response = (GetQuery.Response) object;
+
+		@SuppressWarnings("unchecked")
+		V value = (V) response.value;
+		return value;
 	}
 
 	private V putToPeer(String peer, K key, V value) {
 		PutQuery.Request request = new PutQuery.Request();
 		request.key = key;
 		request.value = value;
-		return requestForResponse(peer, request);
+		Object object = requestForResponse(peer, request);
+		PutQuery.Response response = (PutQuery.Response) object;
+
+		@SuppressWarnings("unchecked")
+		V value1 = (V) response.value;
+		return value1;
 	}
 
-	private V requestForResponse(String peer, Serializable request) {
-		@SuppressWarnings("unchecked")
-		V value = (V) cluster.requestForResponse(peer, request);
-		return value;
+	private Serializable requestForResponse(String peer, Serializable request) {
+		return (Serializable) cluster.requestForResponse(peer, request);
 	}
 
 	private String getPeerByHash(K key) {
