@@ -83,11 +83,11 @@ fc-parse (.var as .type => .do) (FUN .var .do1)
 	, fc-parse .do .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
-fc-parse (define type .type >> .do) (DEF-TYPE .type _ .do1) -- Type variable
+fc-parse (define type .type >> .do) (OPTION (DEF-TYPE .type _) .do1) -- Type variable
 	:- !, fc-parse .do .do1
 #
 fc-parse (define type .type = .def >> .do) (
-	OPTION (DEF-ONE-OF-TYPE .def1) DEF-TYPE .type .def1 .do1
+	OPTION (DEF-ONE-OF-TYPE .def1) OPTION (DEF-TYPE .type .def1) .do1
 ) :- !, fc-parse-type .def .def1
 	, fc-parse .do .do1
 #
@@ -196,7 +196,7 @@ fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _head HEAD #
 fc-define-default-fun 1 _tail TAIL #
-fc-define-default-fun 2 compare COMPARE #
+fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
 fc-define-default-fun 3 fputc FPUTC #
@@ -267,11 +267,9 @@ fc-add-standard-funs .p (
 		then: init, scan-left {fun} {fun {init} {h}} {t}
 		else: init,
 	) >>
-	define scan-right = (fun => init => if-match (h, t)
-		then (
+	define scan-right = (fun => init => if-match (h, t) then
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
-		)
 		else (init,)
 	) >>
 	define tail = (list =>
@@ -286,25 +284,26 @@ fc-add-standard-funs .p (
 		else: ()
 	) >>
 	define zip = (fun =>
-		if-match (h0, t0)
-		then (
+		if-match (h0, t0) then
 			if-match (h1, t1)
 			then: fun {h0} {h1}, zip {fun} {t0} {t1}
 			else: ()
-		)
 		else ($ => ())
 	) >>
 	define apply =
 		fold-left {x => f => f {x}}
 	>>
+	define compare as (:t => number {:t} {:t}) = no-type-check (a => b =>
+		if (is-tree {a} && is-tree {b}) then
+			let c0 = compare {head {a}} {head {b}} >>
+			if: c0 = 0
+			then: compare {tail {a}} {tail {b}}
+			else: c0
+		else: _compare {a} {b}
+	) >>
 	define concat2 = (if-match (h, t)
 		then: cons {h} . concat2 {t}
 		else: id
-	) >>
-	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
-		if: is-tree {a} && is-tree {b}
-		then: equals {head {a}} {head {b}} && equals {tail {a}} {tail {b}}
-		else: compare {a} {b} = 0
 	) >>
 	define filter = (fun =>
 		fold-right {
@@ -355,6 +354,9 @@ fc-add-standard-funs .p (
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
 	) >>
+	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
+		compare {a} {b} = 0
+	) >>
 	define get = (n =>
 		head . (flip {apply} . repeat {n} | tail)
 	) >>
@@ -391,10 +393,9 @@ fc-add-standard-funs .p (
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump0 = (prec => n =>
-			if (is-tree {n}) then (
+			if (is-tree {n}) then
 				if prec then (s => concat {"(", s, ")",}) else id
 				| concat {dump0 {true} {head {n}}, ", ", dump0 {false} {tail {n}},}
-			)
 			else-if (equals {n} {}) then "()"
 			else (int-to-str {n})
 		) >>
@@ -403,11 +404,10 @@ fc-add-standard-funs .p (
 	define transpose = (m =>
 		let height = length {m} >>
 		let width = if (height > 0) then (length . head | m) else 0 >>
-		if (width > 0) then (
+		if (width > 0) then
 			let w1 = width - 1 >>
 			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
 			map {f => map {head . flip {apply} {f}} {m}} | gets
-		)
 		else ()
 	) >>
 	.p

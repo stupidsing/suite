@@ -111,8 +111,8 @@ fc-lazy-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg
 
 fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
+		_compare/2/PUNWRAPPED,
 		_cons/2/PWRAPPED,
-		compare/2/PUNWRAPPED,
 		fflush/1/PUNWRAPPED,
 		fgetc/1/PUNWRAPPED,
 		fputc/3/PUNWRAPPED,

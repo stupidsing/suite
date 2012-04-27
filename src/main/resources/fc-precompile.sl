@@ -26,8 +26,8 @@ fc-setup-precompile .lib .do1/($$PRECOMPILE .pc) .filename
 		infer-type-rule-using-libs (.lib, .libs) .do .ue/.ve/.te/.oe .tr .type
 			:- infer-type-rule-using-libs .libs .do .ue1/.ve1/.te1/.oe1 .tr .type
 	)
-	, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
-	, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
+	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
+	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
 	, rpn (.prog0 # .prog1 # .prog2 #) .rpn
 	, file-write .filename .rpn
 #

@@ -20,7 +20,7 @@ infer-type-rule (OPTION (DEF-ONE-OF-TYPE .def) .do) .ue/.ve/.te/.oe .tr .type
 	:- !, find-one-of-type .def .oe1/.oe
 	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr .type
 #
-infer-type-rule (DEF-TYPE .name .def .do) .ue/.ve/.te/.oe .tr .type
+infer-type-rule (OPTION (DEF-TYPE .name .def) .do) .ue/.ve/.te/.oe .tr .type
 	:- !
 	, infer-type-rule .do .ue/.ve/(.name/.def, .te)/.oe .tr .type
 #
