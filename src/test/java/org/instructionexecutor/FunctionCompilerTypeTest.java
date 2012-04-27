@@ -19,6 +19,7 @@ public class FunctionCompilerTypeTest {
 		getType("define type t = number >> \n" //
 				+ "define v as t = 1 >> \n" //
 				+ "v = 99");
+		getType("repeat {23}");
 	}
 
 	@Test
