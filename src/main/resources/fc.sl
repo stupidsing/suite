@@ -160,7 +160,8 @@ fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-type (.typeVar => .type) .type2
-	:- !, fc-parse-type .typeVar .typeVar1
+	:- bound .typeVar
+	, !, fc-parse-type .typeVar .typeVar1
 	, fc-parse-type .type .type1
 	, replace .type1/.type2 .typeVar1/_
 #

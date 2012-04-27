@@ -10,7 +10,7 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testBasic() {
-		assertEquals(SuiteUtil.parse("BOOLEAN") //
+		assertEquals(SuiteUtil.parse("boolean") //
 				, getType("4 = 8"));
 	}
 
@@ -23,19 +23,19 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testFun() {
-		assertEquals(SuiteUtil.parse("FUN NUMBER NUMBER") //
+		assertEquals(SuiteUtil.parse("number {number}") //
 				, getType("a => a + 1"));
-		assertEquals(SuiteUtil.parse("NUMBER") //
+		assertEquals(SuiteUtil.parse("number") //
 				, getType("define f = (a => a + 1) >> f {3}"));
-		assertEquals(SuiteUtil.parse("FUN BOOLEAN FUN BOOLEAN BOOLEAN") //
+		assertEquals(SuiteUtil.parse("boolean {boolean} {boolean}") //
 				, getType("and"));
 	}
 
 	@Test
 	public void testList() {
-		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
+		assertEquals(SuiteUtil.parse("list-of number") //
 				, getType("1,"));
-		assertEquals(SuiteUtil.parse("LIST-OF (LIST-OF NUMBER)") //
+		assertEquals(SuiteUtil.parse("list-of (list-of number)") //
 				, getType("\"a\", \"b\", \"c\", \"d\","));
 	}
 
