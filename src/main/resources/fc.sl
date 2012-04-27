@@ -236,12 +236,12 @@ fc-add-standard-funs .p (
 		f {y} {x}
 	) >>
 	define fold-left = (fun => init => if-match (h, t)
-		then (fold-left {fun} {fun {init} {h}} {t})
-		else init
+		then: fold-left {fun} {fun {init} {h}} {t}
+		else: init
 	) >>
 	define fold-right = (fun => init => if-match (h, t)
-		then (fun {h} {fold-right {fun} {init} {t}})
-		else init
+		then: fun {h} {fold-right {fun} {init} {t}}
+		else: init
 	) >>
 	define head = (list =>
 		_head {list}
@@ -262,8 +262,8 @@ fc-add-standard-funs .p (
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
 	define scan-left = (fun => init => if-match (h, t)
-		then (init, scan-left {fun} {fun {init} {h}} {t})
-		else (init,)
+		then: init, scan-left {fun} {fun {init} {h}} {t}
+		else: init,
 	) >>
 	define scan-right = (fun => init => if-match (h, t)
 		then (
@@ -276,19 +276,19 @@ fc-add-standard-funs .p (
 		_tail {list}
 	) >>
 	define tails = if-match (h, t)
-		then ((h, t), tails {t})
-		else ()
+		then: (h, t), tails {t}
+		else: ()
 	>>
 	define take-while = (fun => if-match (elem, elems)
-		then (if (fun {elem}) then (elem, take-while {fun} {elems}) else ())
-		else ()
+		then: if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
+		else: ()
 	) >>
 	define zip = (fun =>
 		if-match (h0, t0)
 		then (
 			if-match (h1, t1)
-			then (fun {h0} {h1}, zip {fun} {t0} {t1})
-			else ()
+			then: fun {h0} {h1}, zip {fun} {t0} {t1}
+			else: ()
 		)
 		else ($ => ())
 	) >>
@@ -296,14 +296,13 @@ fc-add-standard-funs .p (
 		fold-left {x => f => f {x}}
 	>>
 	define concat2 = (if-match (h, t)
-		then (cons {h} . concat2 {t})
-		else id
+		then: cons {h} . concat2 {t}
+		else: id
 	) >>
 	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
-		if (is-tree {a} && is-tree {b}) then (
-			equals {head {a}} {head {b}} && equals {tail {a}} {tail {b}}
-		)
-		else (compare {a} {b} = 0)
+		if: is-tree {a} && is-tree {b}
+		then: equals {head {a}} {head {b}} && equals {tail {a}} {tail {b}}
+		else: compare {a} {b} = 0
 	) >>
 	define filter = (fun =>
 		fold-right {
@@ -335,15 +334,15 @@ fc-add-standard-funs .p (
 	>>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
-			if (is-tree {s} && head {s} = 45)
-			then (`0 - ` . unsigned-str-to-int . tail)
-			else unsigned-str-to-int
+			if: is-tree {s} && head {s} = 45
+			then: `0 - ` . unsigned-str-to-int . tail
+			else: unsigned-str-to-int
 		| s
 	) >>
 	define take = (n => list =>
-		if (n > 0 && is-tree {list})
-		then (head {list}, take {n - 1} {tail {list}})
-		else ()
+		if: n > 0 && is-tree {list}
+		then: head {list}, take {n - 1} {tail {list}}
+		else: ()
 	) >>
 	define concat =
 		fold-left {concat2} {}
@@ -383,8 +382,9 @@ fc-add-standard-funs .p (
 			. take-while {`!= -1`}
 			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else (-1, 0,)}
 		>>
-		if (i >= 0) then unsigned-int-to-str
-		else (concat2 {"-"} . unsigned-int-to-str . `0 -`)
+		if: i >= 0
+		then: unsigned-int-to-str
+		else: concat2 {"-"} . unsigned-int-to-str . `0 -`
 		| i
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
