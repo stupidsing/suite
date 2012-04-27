@@ -204,7 +204,7 @@ public class Main {
 				+ "    then (fputc {p} {c} {filter-out {p + 1} {cs}}) \n" //
 				+ "    else () \n" //
 				+ ") >> \n" //
-				+ "fflush {filter-out {0} {(" + func + ") {filter-in {0}}}}";
+				+ "fflush {filter-out {0} . (" + func + ") . filter-in | 0}";
 	}
 
 	public boolean runFunctional(List<String> files, boolean isLazy)
