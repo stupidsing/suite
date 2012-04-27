@@ -30,6 +30,8 @@ public class FunctionCompilerTypeTest {
 				, getType("define f = (a => a + 1) >> f {3}"));
 		assertEquals(SuiteUtil.parse("boolean {boolean} {boolean}") //
 				, getType("and"));
+		assertEquals(SuiteUtil.parse("list-of number {number}") //
+				, getType("v => v, reverse {1,}"));
 	}
 
 	@Test

@@ -179,7 +179,7 @@ fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type .t (TUPLE-OF .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse-type .t (TYPE .t) :- is.atom .t #
 fc-parse-type (.typeVar => .type) .type2
-	:- bound .type2
+	:- bound .type
 	, !, fc-parse-type .typeVar .typeVar1
 	, fc-parse-type .type .type1
 	, replace .type1/.type2 .typeVar1/_
