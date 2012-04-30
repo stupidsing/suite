@@ -375,6 +375,15 @@ fc-add-standard-funs .p (
 			. filter {`= separator` . head}
 			. tails . cons {separator}
 	) >>
+	define transpose = (m =>
+		let height = length {m} >>
+		let width = if (height > 0) then (length . head | m) else 0 >>
+		if (width > 0) then
+			let w1 = width - 1 >>
+			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
+			map {f => map {head . flip {apply} {f}} {m}} | gets
+		else ()
+	) >>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		get0 {r}, unfold-right {fun} {get1 {r}}
@@ -400,15 +409,6 @@ fc-add-standard-funs .p (
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
-	) >>
-	define transpose = (m =>
-		let height = length {m} >>
-		let width = if (height > 0) then (length . head | m) else 0 >>
-		if (width > 0) then
-			let w1 = width - 1 >>
-			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
-			map {f => map {head . flip {apply} {f}} {m}} | gets
-		else ()
 	) >>
 	.p
 ) #

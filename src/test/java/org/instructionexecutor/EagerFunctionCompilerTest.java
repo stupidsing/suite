@@ -77,10 +77,9 @@ public class EagerFunctionCompilerTest {
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = (n => \n" //
-				+ "    if (n > 1) then ( \n" //
-				+ "        fib {n - 1} + fib {n - 2} \n" //
-				+ "    ) \n" //
-				+ "    else 1 \n" //
+				+ "    if: n > 1 \n" //
+				+ "    then: fib {n - 1} + fib {n - 2} \n" //
+				+ "    else: 1 \n" //
 				+ ") >> \n" //
 				+ "fib {10}"));
 	}
