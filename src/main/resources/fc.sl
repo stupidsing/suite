@@ -193,10 +193,10 @@ fc-parse-types (.type, .types) (.type1, .types1)
 fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
+fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _head HEAD #
 fc-define-default-fun 1 _tail TAIL #
-fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
 fc-define-default-fun 3 fputc FPUTC #
