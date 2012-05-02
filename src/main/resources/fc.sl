@@ -75,7 +75,7 @@ fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (.r {.l}) .parsed #
 fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
-fc-parse (.s to .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
+fc-parse (.s until .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
 --
 -- Function constructs
 --
@@ -152,7 +152,7 @@ fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse "" .n :- !, fc-parse () .n #
 fc-parse .s .n
 	:- is.string .s
-	, !, nth .s 0 1 .c, nth .s 1 0 .cs
+	, !, substring .s 0 1 .c, substring .s 1 0 .cs
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
 #
 fc-parse .t (TUPLE .t ()) :- fc-is-tuple-name .t, ! #
@@ -215,7 +215,7 @@ fc-define-default-fun 2 log2 LOG2 #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
 fc-is-tuple-name .t
-	:- is.atom .t, to.string .t .s, nth .s 0 1 .c
+	:- is.atom .t, to.string .t .s, substring .s 0 1 .c
 	, .c >= "A", .c <= "Z"
 #
 
@@ -402,6 +402,17 @@ fc-add-standard-funs .p (
 		else ()
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
+		let dump-string = (s =>
+			let length =
+				prove . subst {s} | c (string.length _s _l . _l . _s)
+			>>
+			map {i =>
+				prove . subst {s} . subst {i} | c (
+					substring _s _i 0 _c, to.int _c _asc
+					. _asc . _s . _i
+				)
+			} | 0 until length
+		) >>
 		let dump0 = (prec => n =>
 			if (is-tree {n}) then
 				if prec then (s => concat {"(", s, ")",}) else id
@@ -409,7 +420,8 @@ fc-add-standard-funs .p (
 			else-if (equals {n} {}) then "()"
 			else-if (equals {n} {true}) then "true"
 			else-if (equals {n} {false}) then "false"
-			else-if (prove . subst {n} | c (is.atom _n . _n)) then "<t>"
+			else-if (prove . subst {n} | c (is.atom _n . _n)) then
+				dump-string . prove . subst {n} | c (to.string _n _s . _s . _n)
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
