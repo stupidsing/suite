@@ -1,0 +1,20 @@
+- How to build the project?
+
+mvn -Dmaven.test.skip=true assembly:single
+
+
+- The program reports precompiled.rpn file isn't there. What can I do?
+
+Runs org.suite.PrecompileMain to perform pre-compilation. I usually run from eclipse.
+
+
+- I get assertion error when running org.weiqi.UctScenarioTest.testCapture() test case. What can I do?
+
+The UCT algorithm involves randomity, therefore not every execution can be end up in the best result.
+Run the test case again, and it may end up success. Or just ignore that test case.
+
+
+- I get stack overflow error when running org.instructionexecutor test cases. What can I do?
+
+Eclipse -> Window -> Preferences -> Java -> Installed JREs -> (Your JRE)
+-> Edit -> Default VM Arguments -> Enter "-Xss1m"
