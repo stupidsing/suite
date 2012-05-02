@@ -396,14 +396,15 @@ fc-add-standard-funs .p (
 	) >>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
-		get0 {r}, unfold-right {fun} {get1 {r}}
+		if: is-tree {r}
+		then: get0 {r}, unfold-right {fun} {get1 {r}}
+		else: ()
 	) >>
 	define int-to-str = (i =>
 		let unsigned-int-to-str =
 			reverse
 			. map {`+ 48`}
-			. take-while {`!= -1`}
-			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else (-1, 0,)}
+			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else ()}
 		>>
 		if: i >= 0
 		then: unsigned-int-to-str

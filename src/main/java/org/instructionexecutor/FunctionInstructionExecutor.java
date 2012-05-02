@@ -47,7 +47,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private StringBuilder outBuffer = new StringBuilder();
 
 	private Comparer comparer = new Comparer();
-	Prover prover;
+	private Prover prover;
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
