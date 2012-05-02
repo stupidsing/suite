@@ -188,6 +188,7 @@ public class SuiteUtil {
 			FunctionInstructionExecutor e = new FunctionInstructionExecutor(ics);
 			e.setIn(config.in);
 			e.setOut(config.out);
+			e.setProver(compiler);
 			return e.execute();
 		} else
 			throw new RuntimeException("Function compilation error");

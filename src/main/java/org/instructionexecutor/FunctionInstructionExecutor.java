@@ -177,4 +177,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		this.out = out;
 	}
 
+	public void setProver(Prover prover) {
+		this.prover = prover;
+	}
+
 }
