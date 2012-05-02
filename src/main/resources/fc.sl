@@ -419,9 +419,7 @@ fc-add-standard-funs .p (
 			else-if (equals {n} {}) then "()"
 			else-if (equals {n} {true}) then "true"
 			else-if (equals {n} {false}) then "false"
-			else-if (prove . subst {n} | c (
-				is.atom _n, _result = true; _result = false
-			. _result . _n)) then "<t>"
+			else-if (prove . subst {n} | c (is.atom _n . _n)) then "<t>"
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
