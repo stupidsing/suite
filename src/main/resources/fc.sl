@@ -6,7 +6,7 @@
 -- .mode can be EAGER or LAZY
 
 () :- import.file 'fc-type-inference.sl' #
-() :- file-read 'precompiled.rpn' .rpn
+() :- file.read 'precompiled.rpn' .rpn
 	, rpn .node .rpn
 	, import .node
 --	, enable-trace

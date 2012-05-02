@@ -29,7 +29,7 @@ fc-setup-precompile .lib .do1/($$PRECOMPILE .pc) .filename
 	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
 	, rpn (.prog0 # .prog1 # .prog2 #) .rpn
-	, file-write .filename .rpn
+	, file.write .filename .rpn
 #
 
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #

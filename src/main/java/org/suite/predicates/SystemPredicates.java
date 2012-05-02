@@ -74,8 +74,8 @@ public class SystemPredicates {
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());
 		addPredicate("exec", new IoPredicates.Exec());
-		addPredicate("file-read", new IoPredicates.FileRead());
-		addPredicate("file-write", new IoPredicates.FileWrite());
+		addPredicate("file.read", new IoPredicates.FileRead());
+		addPredicate("file.write", new IoPredicates.FileWrite());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 
