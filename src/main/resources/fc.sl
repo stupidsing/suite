@@ -252,10 +252,10 @@ fc-add-standard-funs .p (
 	define tail = (list =>
 		_ltail {list}
 	) >>
-	define thead = (list =>
+	define tuple-head = (list =>
 		_thead {list}
 	) >>
-	define ttail = (list =>
+	define tuple-tail = (list =>
 		_ttail {list}
 	) >>
 	define and = (x => y =>
@@ -286,13 +286,13 @@ fc-add-standard-funs .p (
 		else: init
 	) >>
 	define tget0 =
-		thead
+		tuple-head
 	>>
 	define tget1 =
-		thead . ttail
+		tuple-head . tuple-tail
 	>>
 	define tget2 =
-		thead . ttail . ttail
+		tuple-head . tuple-tail . tuple-tail
 	>>
 	define id = (v =>
 		v
