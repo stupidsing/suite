@@ -131,6 +131,7 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
 	)
 #
+fc-parse (c .constant) (CONSTANT .constant) :- ! #
 fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
 	:- !, fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
 #
@@ -196,6 +197,8 @@ fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _head HEAD #
+fc-define-default-fun 1 _prove PROVE #
+fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 1 _tail TAIL #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
@@ -259,6 +262,12 @@ fc-add-standard-funs .p (
 	) >>
 	define or = (x => y =>
 		if x then true else y
+	) >>
+	define prove = (goal =>
+		_prove {goal}
+	) >>
+	define subst = (var => node =>
+		_subst {var} {node}
 	) >>
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()

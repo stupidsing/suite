@@ -64,6 +64,7 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
+infer-type-rule (CONSTANT _) _ .tr/.tr _ :- ! #
 infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
 infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
 infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
@@ -207,6 +208,8 @@ children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 default-fun-type () (LIST-OF _) #
 default-fun-type _cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
 default-fun-type _head (FUN (LIST-OF .type) .type) #
+default-fun-type _prove (FUN _ BOOLEAN) #
+default-fun-type _subst (FUN _ (FUN _ _)) #
 default-fun-type _tail (FUN (LIST-OF .type) (LIST-OF .type)) #
 default-fun-type fflush (FUN .type .type) #
 default-fun-type fgetc (FUN NUMBER NUMBER) #

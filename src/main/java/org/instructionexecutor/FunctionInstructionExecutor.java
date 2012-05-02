@@ -7,11 +7,15 @@ import java.io.PrintStream;
 import org.instructionexecutor.InstructionExecutorUtil.Closure;
 import org.instructionexecutor.InstructionExecutorUtil.Frame;
 import org.instructionexecutor.InstructionExecutorUtil.Instruction;
+import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
+import org.suite.doer.Generalizer;
+import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
+import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
 
@@ -27,6 +31,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
 	private static final Atom LOG = Atom.create("LOG");
 	private static final Atom LOG2 = Atom.create("LOG2");
+	private static final Atom PROVE = Atom.create("PROVE");
+	private static final Atom SUBST = Atom.create("SUBST");
 	private static final Atom TAIL = Atom.create("TAIL");
 	private static final Atom VCONCAT = Atom.create("VCONCAT");
 	private static final Atom VELEM = Atom.create("VELEM");
@@ -116,6 +122,17 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		else if (command == LOG2) {
 			System.err.println((Node) dataStack[dsp + 1]);
 			result = (Node) dataStack[dsp];
+		} else if (command == PROVE) {
+			String imports[] = { "auto.sl" };
+			Prover prover = SuiteUtil.getProver(imports);
+			Node goal = (Node) dataStack[dsp];
+			result = Atom.create(prover.prove(goal) ? "true" : "false");
+		} else if (command == SUBST) {
+			Generalizer g = new Generalizer();
+			Node var = (Node) dataStack[dsp + 1];
+			Tree tree = (Tree) g.generalize((Node) dataStack[dsp]);
+			((Reference) tree.getRight()).bound(var);
+			result = tree.getLeft();
 		} else if (command == TAIL)
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();
 		else if (command == VCONCAT) {

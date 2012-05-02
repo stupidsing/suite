@@ -99,6 +99,9 @@ fc-lazy-compile-wrapped (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	, fc-lazy-compile .right .env .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
+fc-lazy-compile-wrapped (CONSTANT .c) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .c, .cx)
+#
 fc-lazy-compile-wrapped (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx)
 #
@@ -113,6 +116,8 @@ fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/
 	:- member (
 		_compare/2/PUNWRAPPED,
 		_cons/2/PWRAPPED,
+		_prove/1/PUNWRAPPED,
+		_subst/2/PUNWRAPPED,
 		fflush/1/PUNWRAPPED,
 		fgetc/1/PUNWRAPPED,
 		fputc/3/PUNWRAPPED,
