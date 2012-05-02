@@ -127,11 +127,15 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			if (prover == null)
 				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
 
-			Tree tree = (Tree) dataStack[dsp];
-			if (prover.prove(tree.getLeft()))
-				result = tree.getRight().finalNode();
+			Node node = (Node) dataStack[dsp];
+			Tree tree = Tree.decompose(node);
+			if (tree != null && tree.getOperator() == TermOp.JOIN__)
+				if (prover.prove(tree.getLeft()))
+					result = tree.getRight().finalNode();
+				else
+					throw new RuntimeException("Goal failed");
 			else
-				throw new RuntimeException("Goal failed");
+				result = Atom.create(prover.prove(node) ? "true" : "false");
 		} else if (command == SUBST) {
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");
