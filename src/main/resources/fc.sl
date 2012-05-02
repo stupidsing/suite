@@ -232,14 +232,39 @@ fc-assign-line-number .n (.n _, .remains)
 fc-error .m :- !, write .m, nl, fail #
 
 fc-add-standard-funs .p (
-	define and = (x => y =>
-		if x then y else false
-	) >>
 	define cons = (head => tail =>
 		_cons {head} {tail}
 	) >>
+	define head = (list =>
+		_head {list}
+	) >>
+	define prove = (goal =>
+		_prove {goal}
+	) >>
+	define subst = (var => node =>
+		_subst {var} {node}
+	) >>
+	define tail = (list =>
+		_tail {list}
+	) >>
+	define and = (x => y =>
+		if x then y else false
+	) >>
+	define compare as (:t => number {:t} {:t}) = no-type-check (a => b =>
+		if (is-tree {a} && is-tree {b}) then
+			let c0 = compare {head {a}} {head {b}} >>
+			if: c0 = 0
+			then: compare {tail {a}} {tail {b}}
+			else: c0
+		else: _compare {a} {b}
+	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
+	) >>
+	define fold = (fun => list =>
+		let h = head {list} >>
+		let t = tail {list} >>
+		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
 	) >>
 	define fold-left = (fun => init => if-match (h, t)
 		then: fold-left {fun} {fun {init} {h}} {t}
@@ -249,9 +274,15 @@ fc-add-standard-funs .p (
 		then: fun {h} {fold-right {fun} {init} {t}}
 		else: init
 	) >>
-	define head = (list =>
-		_head {list}
-	) >>
+	define get0 =
+		head
+	>>
+	define get1 =
+		head . tail
+	>>
+	define get2 =
+		head . tail . tail
+	>>
 	define id = (v =>
 		v
 	) >>
@@ -263,12 +294,6 @@ fc-add-standard-funs .p (
 	) >>
 	define or = (x => y =>
 		if x then true else y
-	) >>
-	define prove = (goal =>
-		_prove {goal}
-	) >>
-	define subst = (var => node =>
-		_subst {var} {node}
 	) >>
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
@@ -282,13 +307,22 @@ fc-add-standard-funs .p (
 			fun {h} {head {r}}, r
 		else (init,)
 	) >>
-	define tail = (list =>
-		_tail {list}
+	define str-to-int = (s =>
+		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
+			if: is-tree {s} && head {s} = 45
+			then: `0 - ` . unsigned-str-to-int . tail
+			else: unsigned-str-to-int
+		| s
 	) >>
 	define tails = if-match (h, t)
 		then: (h, t), tails {t}
 		else: ()
 	>>
+	define take = (n => list =>
+		if: n > 0 && is-tree {list}
+		then: head {list}, take {n - 1} {tail {list}}
+		else: ()
+	) >>
 	define take-while = (fun => if-match (elem, elems)
 		then: if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
 		else: ()
@@ -303,13 +337,8 @@ fc-add-standard-funs .p (
 	define apply =
 		fold-left {x => f => f {x}}
 	>>
-	define compare as (:t => number {:t} {:t}) = no-type-check (a => b =>
-		if (is-tree {a} && is-tree {b}) then
-			let c0 = compare {head {a}} {head {b}} >>
-			if: c0 = 0
-			then: compare {tail {a}} {tail {b}}
-			else: c0
-		else: _compare {a} {b}
+	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
+		compare {a} {b} = 0
 	) >>
 	define concat2 = (if-match (h, t)
 		then: cons {h} . concat2 {t}
@@ -320,20 +349,9 @@ fc-add-standard-funs .p (
 			item => list => if (fun {item}) then (item, list) else list
 		} {}
 	) >>
-	define fold = (fun => list =>
-		let h = head {list} >>
-		let t = tail {list} >>
-		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
+	define get = (n =>
+		head . (flip {apply} . repeat {n} | tail)
 	) >>
-	define get0 =
-		head
-	>>
-	define get1 =
-		head . tail
-	>>
-	define get2 =
-		head . tail . tail
-	>>
 	define length =
 		fold-left {v => e => v + 1} {0}
 	>>
@@ -343,16 +361,10 @@ fc-add-standard-funs .p (
 	define reverse =
 		fold-left {a => b => b, a} {}
 	>>
-	define str-to-int = (s =>
-		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
-			if: is-tree {s} && head {s} = 45
-			then: `0 - ` . unsigned-str-to-int . tail
-			else: unsigned-str-to-int
-		| s
-	) >>
-	define take = (n => list =>
-		if: n > 0 && is-tree {list}
-		then: head {list}, take {n - 1} {tail {list}}
+	define unfold-right = (fun => init =>
+		let r = fun {init} >>
+		if: is-tree {r}
+		then: get0 {r}, unfold-right {fun} {get1 {r}}
 		else: ()
 	) >>
 	define concat =
@@ -363,22 +375,6 @@ fc-add-standard-funs .p (
 	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
-	) >>
-	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
-		compare {a} {b} = 0
-	) >>
-	define get = (n =>
-		head . (flip {apply} . repeat {n} | tail)
-	) >>
-	define quick-sort = (cmp => if-match (pivot, t)
-		then (
-			let cmp0 = (not . cmp {pivot}) >>
-			let cmp1 = cmp {pivot} >>
-			let l0 = quick-sort {cmp} {filter {cmp0} {t}} >>
-			let l1 = quick-sort {cmp} {filter {cmp1} {t}} >>
-			concat {l0, (pivot,), l1,}
-		)
-		else ()
 	) >>
 	define split = (separator =>
 			map {take-while {`!= separator`} . tail}
@@ -393,12 +389,6 @@ fc-add-standard-funs .p (
 			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
 			map {f => map {head . flip {apply} {f}} {m}} | gets
 		else ()
-	) >>
-	define unfold-right = (fun => init =>
-		let r = fun {init} >>
-		if: is-tree {r}
-		then: get0 {r}, unfold-right {fun} {get1 {r}}
-		else: ()
 	) >>
 	define int-to-str = (i =>
 		let unsigned-int-to-str =
@@ -423,6 +413,16 @@ fc-add-standard-funs .p (
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
+	) >>
+	define quick-sort = (cmp => if-match (pivot, t)
+		then (
+			let cmp0 = (not . cmp {pivot}) >>
+			let cmp1 = cmp {pivot} >>
+			let l0 = quick-sort {cmp} {filter {cmp0} {t}} >>
+			let l1 = quick-sort {cmp} {filter {cmp1} {t}} >>
+			concat {l0, (pivot,), l1,}
+		)
+		else ()
 	) >>
 	.p
 ) #
