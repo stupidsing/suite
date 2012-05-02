@@ -47,6 +47,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private StringBuilder outBuffer = new StringBuilder();
 
 	private Comparer comparer = new Comparer();
+	Prover prover;
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
@@ -123,12 +124,18 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			System.err.println((Node) dataStack[dsp + 1]);
 			result = (Node) dataStack[dsp];
 		} else if (command == PROVE) {
-			String imports[] = { "auto.sl" };
-			Prover prover = SuiteUtil.getProver(imports);
-			Node goal = (Node) dataStack[dsp];
-			result = Atom.create(prover.prove(goal) ? "true" : "false");
+			if (prover == null)
+				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
+
+			Tree tree = (Tree) dataStack[dsp];
+			if (prover.prove(tree.getLeft()))
+				result = tree.getRight().finalNode();
+			else
+				throw new RuntimeException("Goal failed");
 		} else if (command == SUBST) {
 			Generalizer g = new Generalizer();
+			g.setVariablePrefix("_");
+
 			Node var = (Node) dataStack[dsp + 1];
 			Tree tree = (Tree) g.generalize((Node) dataStack[dsp]);
 			((Reference) tree.getRight()).bound(var);

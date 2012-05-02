@@ -59,6 +59,7 @@ fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
 	, fc-parse (case || .cases) .else
 #
 fc-parse (case || .do) .parsed :- !, fc-parse .do .parsed #
+fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
 fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
 fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
 fc-parse .t .parsed
@@ -415,6 +416,11 @@ fc-add-standard-funs .p (
 				if prec then (s => concat {"(", s, ")",}) else id
 				| concat {dump0 {true} {head {n}}, ", ", dump0 {false} {tail {n}},}
 			else-if (equals {n} {}) then "()"
+			else-if (equals {n} {true}) then "true"
+			else-if (equals {n} {false}) then "false"
+			else-if (prove . subst {n} | c (
+				is.atom _n, _result = true; _result = false
+			. _result . _n)) then "<t>"
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
