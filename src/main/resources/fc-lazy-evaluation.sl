@@ -44,7 +44,7 @@ fc-lazy-compile0 (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 	)
 #
 fc-lazy-compile0 (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
-	:- member (_head, _tail,) .var -- Special list processing function
+	:- member (_lhead, _ltail, _thead, _ttail,) .var -- Special list functions
 	, fc-define-default-fun 1 .var .call
 	, !, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
 	, .c1 = (_ PUSH .paramReg, _ SERVICE .reg .call 1, .cx)

@@ -46,8 +46,8 @@ fc-parse (if-match (.h, .t) then .then else .else) .parsed
 	:- !, temp .list
 	, fc-parse (
 		.list => if (is-tree {.list}) then (
-			let .h = _head {.list} >>
-			let .t = _tail {.list} >>
+			let .h = _lhead {.list} >>
+			let .t = _ltail {.list} >>
 			.then
 		)
 		else .else
@@ -172,8 +172,10 @@ fc-parse-type (one-of .types) (ONE-OF .types1)
 #
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type (.name .types) (TUPLE-OF .name .types2)
-	:- !, enlist .types .types1
-	, fc-parse-types .types1 .types2
+	:- !, (
+		bound .types, enlist .types .types1, fc-parse-types .types1 .types2
+		; fc-parse-types .types1 .types2, enlist .types .types1
+	)
 #
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
@@ -198,10 +200,12 @@ fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
-fc-define-default-fun 1 _head HEAD #
+fc-define-default-fun 1 _lhead HEAD #
+fc-define-default-fun 1 _ltail TAIL #
 fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
-fc-define-default-fun 1 _tail TAIL #
+fc-define-default-fun 1 _thead HEAD #
+fc-define-default-fun 1 _ttail TAIL #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 1 fgetc FGETC #
 fc-define-default-fun 3 fputc FPUTC #
@@ -237,7 +241,7 @@ fc-add-standard-funs .p (
 		_cons {head} {tail}
 	) >>
 	define head = (list =>
-		_head {list}
+		_lhead {list}
 	) >>
 	define prove = (goal =>
 		_prove {goal}
@@ -246,7 +250,13 @@ fc-add-standard-funs .p (
 		_subst {var} {node}
 	) >>
 	define tail = (list =>
-		_tail {list}
+		_ltail {list}
+	) >>
+	define thead = (list =>
+		_thead {list}
+	) >>
+	define ttail = (list =>
+		_ttail {list}
 	) >>
 	define and = (x => y =>
 		if x then y else false
@@ -275,14 +285,14 @@ fc-add-standard-funs .p (
 		then: fun {h} {fold-right {fun} {init} {t}}
 		else: init
 	) >>
-	define get0 =
-		head
+	define tget0 =
+		thead
 	>>
-	define get1 =
-		head . tail
+	define tget1 =
+		thead . ttail
 	>>
-	define get2 =
-		head . tail . tail
+	define tget2 =
+		thead . ttail . ttail
 	>>
 	define id = (v =>
 		v
@@ -365,7 +375,7 @@ fc-add-standard-funs .p (
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		if: is-tree {r}
-		then: get0 {r}, unfold-right {fun} {get1 {r}}
+		then: head {r}, unfold-right {fun} {head . tail | r}
 		else: ()
 	) >>
 	define concat =
