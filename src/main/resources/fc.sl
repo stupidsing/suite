@@ -59,7 +59,6 @@ fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
 	, fc-parse (case || .cases) .else
 #
 fc-parse (case || .do) .parsed :- !, fc-parse .do .parsed #
-fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
 fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
 fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
 fc-parse .t .parsed
@@ -75,6 +74,8 @@ fc-parse (.l . .r) .parsed :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .parsed 
 fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (.r {.l}) .parsed #
 fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
+fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
+fc-parse (.s to .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
 --
 -- Function constructs
 --
@@ -376,6 +377,20 @@ fc-add-standard-funs .p (
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
 	) >>
+	define int-to-str = (i =>
+		let unsigned-int-to-str =
+			reverse
+			. map {`+ 48`}
+			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else ()}
+		>>
+		if: i >= 0
+		then: unsigned-int-to-str
+		else: concat2 {"-"} . unsigned-int-to-str . `0 -`
+		| i
+	) >>
+	define range = (start => end => inc =>
+		unfold-right {i => if (i < end) then (i, i + inc,) else ()} | start
+	) >>
 	define split = (separator =>
 			map {take-while {`!= separator`} . tail}
 			. filter {`= separator` . head}
@@ -389,17 +404,6 @@ fc-add-standard-funs .p (
 			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
 			map {f => map {head . flip {apply} {f}} {m}} | gets
 		else ()
-	) >>
-	define int-to-str = (i =>
-		let unsigned-int-to-str =
-			reverse
-			. map {`+ 48`}
-			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else ()}
-		>>
-		if: i >= 0
-		then: unsigned-int-to-str
-		else: concat2 {"-"} . unsigned-int-to-str . `0 -`
-		| i
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump0 = (prec => n =>

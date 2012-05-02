@@ -190,12 +190,6 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testRange() {
 		assertEquals(SuiteUtil.parse("2, 5, 8, 11,"), eval("" //
-				+ "define range = (i => j => inc => \n" //
-				+ "    if (i != j) then ( \n" //
-				+ "        i, range {i + inc} {j} {inc} \n" //
-				+ "    ) \n" //
-				+ "    else () \n" //
-				+ ") >> \n" //
 				+ "range {2} {14} {3}"));
 	}
 
