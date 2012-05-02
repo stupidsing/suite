@@ -237,27 +237,13 @@ fc-assign-line-number .n (.n _, .remains)
 fc-error .m :- !, write .m, nl, fail #
 
 fc-add-standard-funs .p (
-	define cons = (head => tail =>
-		_cons {head} {tail}
-	) >>
-	define head = (list =>
-		_lhead {list}
-	) >>
-	define prove = (goal =>
-		_prove {goal}
-	) >>
-	define subst = (var => node =>
-		_subst {var} {node}
-	) >>
-	define tail = (list =>
-		_ltail {list}
-	) >>
-	define tuple-head = (list =>
-		_thead {list}
-	) >>
-	define tuple-tail = (list =>
-		_ttail {list}
-	) >>
+	define cons = (head => tail => _cons {head} {tail}) >>
+	define head = (list => _lhead {list}) >>
+	define prove = (goal => _prove {goal}) >>
+	define subst = (var => node => _subst {var} {node}) >>
+	define tail = (list => _ltail {list}) >>
+	define tuple-head = (list => _thead {list}) >>
+	define tuple-tail = (list => _ttail {list}) >>
 	define and = (x => y =>
 		if x then y else false
 	) >>
