@@ -434,10 +434,10 @@ fc-add-standard-funs .p (
 	) >>
 	define quick-sort = (cmp => if-match (pivot, t)
 		then (
-			let cmp0 = (not . cmp {pivot}) >>
-			let cmp1 = cmp {pivot} >>
-			let l0 = (quick-sort {cmp} . filter {cmp0} | t) >>
-			let l1 = (quick-sort {cmp} . filter {cmp1} | t) >>
+			let filter0 = (not . cmp {pivot}) >>
+			let filter1 = cmp {pivot} >>
+			let l0 = (quick-sort {cmp} . filter {filter0} | t) >>
+			let l1 = (quick-sort {cmp} . filter {filter1} | t) >>
 			concat {l0, (pivot,), l1,}
 		)
 		else ()
