@@ -133,7 +133,13 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
 	)
 #
-fc-parse (c .constant) (CONSTANT .constant) :- ! #
+fc-parse (prove-c .vvs .constant) .parsed
+	:- !, fc-parse (prove | c .vvs .constant) .parsed
+#
+fc-parse (c (.var:.value/.vvs) .constant) .parsed
+	:- !, fc-parse (subst {.value} {c .vvs (.constant . .var)}) .parsed
+#
+fc-parse (c () .constant) (CONSTANT .constant) :- ! #
 fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
 	:- !, fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
 #
@@ -404,12 +410,12 @@ fc-add-standard-funs .p (
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump-string = (s =>
 			let length =
-				prove . subst {s} | c (string.length _s _l . _l . _s)
+				prove-c _s:s/ (string.length _s _l . _l)
 			>>
 			map {i =>
-				prove . subst {s} . subst {i} | c (
+				prove-c _s:s/_i:i/ (
 					substring _s _i 0 _c, to.int _c _asc
-					. _asc . _s . _i
+					. _asc
 				)
 			} | 0 until length
 		) >>
@@ -418,10 +424,8 @@ fc-add-standard-funs .p (
 				if prec then (s => concat {"(", s, ")",}) else id
 				| concat {dump0 {true} {head {n}}, ", ", dump0 {false} {tail {n}},}
 			else-if (equals {n} {}) then "()"
-			else-if (equals {n} {true}) then "true"
-			else-if (equals {n} {false}) then "false"
-			else-if (prove . subst {n} | c (is.atom _n . _n)) then
-				dump-string . prove . subst {n} | c (to.string _n _s . _s . _n)
+			else-if (prove-c _n:n/ (is.atom _n)) then
+				dump-string . prove-c _n:n/ (to.string _n _s . _s)
 			else (int-to-str {n})
 		) >>
 		dump0 {false}

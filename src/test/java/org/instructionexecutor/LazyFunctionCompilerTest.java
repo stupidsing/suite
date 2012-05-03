@@ -46,11 +46,11 @@ public class LazyFunctionCompilerTest {
 	@Test
 	public void testProve() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ "prove | c is.atom abc"));
+				+ "prove-c () is.atom abc"));
 		assertEquals(Atom.create("true"), eval("" //
-				+ "prove . subst {3} | c (_v = 3 . _v)"));
+				+ "prove-c _v:3/ (_v = 3)"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ "prove . subst {4} | c (_v = 3 . _v)"));
+				+ "prove-c _v:4/ (_v = 3)"));
 	}
 
 	@Test
