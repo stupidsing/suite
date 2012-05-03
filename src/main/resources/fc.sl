@@ -397,9 +397,9 @@ fc-add-standard-funs .p (
 		unfold-right {i => if (i < end) then (i, i + inc,) else ()} | start
 	) >>
 	define split = (separator =>
-			map {take-while {`!= separator`} . tail}
-			. filter {`= separator` . head}
-			. tails . cons {separator}
+		map {take-while {`!= separator`} . tail}
+		. filter {`= separator` . head}
+		. tails . cons {separator}
 	) >>
 	define transpose = (m =>
 		let height = length {m} >>
