@@ -128,8 +128,8 @@ public class Formatter {
 					quote = true;
 
 			for (Operator operator : operators) {
-				String operatorName = operator.getName();
-				if (!operatorName.trim().isEmpty() && s.contains(operatorName))
+				String operatorName = operator.getName().trim();
+				if (!operatorName.isEmpty() && s.contains(operatorName))
 					quote = true;
 			}
 
