@@ -388,9 +388,9 @@ fc-add-standard-funs .p (
 			. map {`+ 48`}
 			. unfold-right {i => if (i != 0) then (i % 10,i / 10,) else ()}
 		>>
-		if: i >= 0
-		then: unsigned-int-to-str
-		else: concat2 {"-"} . unsigned-int-to-str . `0 -`
+		if (i > 0) then: unsigned-int-to-str
+		else-if (i < 0) then: concat2 {"-"} . unsigned-int-to-str . `0 -`
+		else: $ => "0"
 		| i
 	) >>
 	define range = (start => end => inc =>
