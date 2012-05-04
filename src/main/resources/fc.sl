@@ -377,7 +377,7 @@ fc-add-standard-funs .p (
 		fold {or} . map {`= e`}
 	) >>
 	define cross = (fun => l1 => l2 =>
-		map {e1 => map {e2 => fun {e1} {e2}} {l2}} {l1}
+		map {e1 => map {fun {e1}} | l2} | l1
 	) >>
 	define int-to-str = (i =>
 		let unsigned-int-to-str =
