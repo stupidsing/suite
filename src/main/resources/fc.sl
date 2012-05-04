@@ -367,7 +367,7 @@ fc-add-standard-funs .p (
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		if: is-tree {r}
-		then: head {r}, unfold-right {fun} {head . tail | r}
+		then: cons {head {r}} . unfold-right {fun} . head . tail | r
 		else: ()
 	) >>
 	define concat =
