@@ -292,9 +292,6 @@ fc-add-standard-funs .p (
 	define id = (v =>
 		v
 	) >>
-	define join = (f => g => x =>
-		g {f {x}}
-	) >>
 	define not = (x =>
 		if x then false else true
 	) >>

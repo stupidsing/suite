@@ -135,7 +135,7 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Int.create(19), eval("" //
 				+ "define p = (`* 2`) >> \n" //
 				+ "define q = (`+ 1`) >> \n" //
-				+ "define r = (join {p} {q}) >> \n" //
+				+ "define r = (q . p) >> \n" //
 				+ "r {9}"));
 		assertEquals(Int.create(13), eval("" //
 				+ "define p = (`+ 1`) >> \n" //
