@@ -128,8 +128,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
 
 			Node node = (Node) dataStack[dsp];
-			Tree tree = Tree.decompose(node);
-			if (tree != null && tree.getOperator() == TermOp.JOIN__)
+			Tree tree = Tree.decompose(node, TermOp.JOIN__);
+			if (tree != null)
 				if (prover.prove(tree.getLeft()))
 					result = tree.getRight().finalNode();
 				else
