@@ -258,9 +258,9 @@ fc-add-standard-funs .p (
 	) >>
 	define compare as (:t => number {:t} {:t}) = no-type-check (a => b =>
 		if (is-tree {a} && is-tree {b}) then
-			let c0 = compare {head {a}} {head {b}} >>
+			let c0 = compare {head | a} {head | b} >>
 			if: c0 = 0
-			then: compare {tail {a}} {tail {b}}
+			then: compare {tail | a} {tail | b}
 			else: c0
 		else: _compare {a} {b}
 	) >>
@@ -270,7 +270,9 @@ fc-add-standard-funs .p (
 	define fold = (fun => list =>
 		let h = head {list} >>
 		let t = tail {list} >>
-		if (is-tree {t}) then (fun {h} {fold {fun} {t}}) else h
+		if: is-tree {t}
+		then: fun {h} . fold {fun} | t
+		else: h
 	) >>
 	define fold-left = (fun => init => if-match (h, t)
 		then: fold-left {fun} {fun {init} {h}} {t}
@@ -367,7 +369,7 @@ fc-add-standard-funs .p (
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		if: is-tree {r}
-		then: cons {head {r}} . unfold-right {fun} . head . tail | r
+		then: cons {head | r} . unfold-right {fun} . head . tail | r
 		else: ()
 	) >>
 	define concat =
@@ -377,7 +379,7 @@ fc-add-standard-funs .p (
 		fold {or} . map {`= e`}
 	) >>
 	define cross = (fun => l1 => l2 =>
-		map {e1 => map {fun {e1}} | l2} | l1
+		map {e1 => map {fun | e1} | l2} | l1
 	) >>
 	define int-to-str = (i =>
 		let unsigned-int-to-str =
@@ -421,7 +423,7 @@ fc-add-standard-funs .p (
 		let dump0 = (prec => n =>
 			if (is-tree {n}) then
 				if prec then (s => concat {"(", s, ")",}) else id
-				| concat {dump0 {true} {head {n}}, ", ", dump0 {false} {tail {n}},}
+				| concat {dump0 {true} {head | n}, ", ", dump0 {false} {tail | n},}
 			else-if (equals {n} {}) then "()"
 			else-if (prove-tf _n:n/ (is.atom _n)) then
 				dump-string | prove-r _n:n/ (to.string _n _s) _s
