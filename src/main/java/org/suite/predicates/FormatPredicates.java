@@ -10,6 +10,7 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
+import org.suite.node.Reference;
 import org.suite.node.Str;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates.SystemPredicate;
@@ -117,6 +118,8 @@ public class FormatPredicates {
 				s = "\\" + ((Atom) node).getName();
 			else if (node instanceof Int)
 				s = "i" + ((Int) node).getNumber();
+			else if (node instanceof Reference)
+				s = "\\." + ((Reference) node).getId();
 			else if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				toRpn(tree.getLeft(), sb);
