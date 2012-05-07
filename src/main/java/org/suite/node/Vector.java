@@ -24,6 +24,14 @@ public class Vector extends Node {
 			this.endUsed = this.startUsed = startUsed;
 		}
 
+		private void insertBefore(Node n) {
+			nodes[--startUsed] = n;
+		}
+
+		private void insertAfter(Node n) {
+			nodes[++endUsed] = n;
+		}
+
 		private void insertBefore(Node n[], int s, int e) {
 			int l1 = e - s;
 			startUsed -= l1;
@@ -61,6 +69,20 @@ public class Vector extends Node {
 		this.data = data;
 		this.start = start;
 		this.end = end;
+	}
+
+	public static Vector cons(Node n, Vector v) {
+		int vlen = v.length();
+
+		if (v.start == v.data.startUsed && v.start >= 1) {
+			v.data.insertBefore(n);
+			return new Vector(v.data, v.start - 1, v.end);
+		} else {
+			Data data = new Data(vlen + 16, 0);
+			data.insertAfter(n);
+			data.insertAfter(v.data.nodes, v.start, v.end);
+			return new Vector(data, data.startUsed, data.endUsed);
+		}
 	}
 
 	public static Vector concat(Vector u, Vector v) {

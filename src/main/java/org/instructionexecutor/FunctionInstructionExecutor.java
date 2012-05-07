@@ -35,6 +35,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom SUBST = Atom.create("SUBST");
 	private static final Atom TAIL = Atom.create("TAIL");
 	private static final Atom VCONCAT = Atom.create("VCONCAT");
+	private static final Atom VCONS = Atom.create("VCONS");
 	private static final Atom VELEM = Atom.create("VELEM");
 	private static final Atom VEMPTY = Atom.create("VEMPTY");
 	private static final Atom VHEAD = Atom.create("VHEAD");
@@ -150,6 +151,10 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Vector left = (Vector) dataStack[dsp + 1];
 			Vector right = (Vector) dataStack[dsp];
 			result = Vector.concat(left, right);
+		} else if (command == VCONS) {
+			Node head = (Node) dataStack[dsp + 1];
+			Vector tail = (Vector) dataStack[dsp];
+			result = Vector.cons(head, tail);
 		} else if (command == VELEM)
 			result = new Vector((Node) dataStack[dsp]);
 		else if (command == VEMPTY)
