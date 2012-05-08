@@ -75,6 +75,7 @@ fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (.r {.l}) .parsed #
 fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
+fc-parse (.a ++ .b) .parsed :- !, fc-parse (concat2 {.a} {.b}) .parsed #
 fc-parse (.s until .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
 --
 -- Function constructs
