@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.parser.Operator;
 import org.parser.Operator.Assoc;
+import org.parser.Parser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -128,10 +129,16 @@ public class Formatter {
 					quote = true;
 
 			for (Operator operator : operators) {
-				String operatorName = operator.getName().trim();
-				if (!operatorName.isEmpty() && s.contains(operatorName))
+				String name = operator.getName();
+				if (!name.trim().isEmpty() && s.contains(name))
 					quote = true;
 			}
+
+			if (s.contains(Parser.CLOSEGROUPCOMMENT)
+					|| s.contains(Parser.OPENGROUPCOMMENT)
+					|| s.contains(Parser.CLOSELINECOMMENT)
+					|| s.contains(Parser.OPENLINECOMMENT))
+				quote = true;
 
 			if (quote)
 				s = quote(s, '\'');
