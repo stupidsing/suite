@@ -43,8 +43,7 @@ fc-compile-using-libs .mode () .do .fve .cdr
 -- Syntactic sugars
 --
 fc-parse (if-match .v1 .thenElse) .parsed
-	:- !, temp .v0
-	, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
+	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
 #
 fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
 	:- !, fc-parse-bind .v0 .v1 .then .else .parsed
