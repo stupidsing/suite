@@ -196,33 +196,38 @@ fc-parse-type (.typeVar => .type) .type2
 #
 
 fc-parse-bind (.h0, .t0) (.h1, .t1) .then .else .parsed
+	:- !, fc-parse (if-bind (.h0:.t0 = .h1:.t1) then .then else .else) .parsed
+#
+fc-parse-bind .h0:.t0 .h1:.t1 .then .else .parsed
 	:- !, fc-parse (
 		if-bind: .h0 = .h1
 		then: if-bind (.t0 = .t1) then .then else .else
 		else: .else
 	) .parsed
 #
-fc-parse-bind .v0 /.v1 .then .else .parsed
-	:- !, fc-parse (let .v1 = .v0 >> .then) .parsed
+fc-parse-bind .v /.v1 .then .else .parsed
+	:- !, fc-parse (let .v1 = .v >> .then) .parsed
 #
 fc-parse-bind .v (.h1, .t1) .then .else .parsed
 	:- !, temp .h0, temp .t0
 	, fc-parse (
 		if (is-tree {.v}) then
-			let .h0 = _lhead {.v} >>
-			let .t0 = _ltail {.v} >>
-			if-bind: .h0 = .h1
-			then: if-bind (.t0 = .t1) then .then else .else
-			else: .else
+			if-bind: (_lhead {.v}):(_ltail {.v}) = .h1:.t1
+			then .then else .else
 		else .else
+	) .parsed
+#
+fc-parse-bind .v .h1:.t1 .then .else .parsed
+	:- !, temp .h0, temp .t0
+	, fc-parse (
+		if-bind: (_thead {.v}):(_ttail {.v}) = .h1:.t1
+		then .then else .else
 	) .parsed
 #
 fc-parse-bind .v0 .v1 .then .else .parsed
 	:- (.v0 = /_; .v0 = (_, _); .v0 = _:_; .v0 = _ _)
 	, !, fc-parse-bind .v1 .v0 .then .else .parsed
-#
-fc-parse-bind .v0 .v1 .then .else .parsed
-	:- !, fc-parse (if (.v0 = .v1) then .then else .else) .parsed
+	; fc-parse (if (.v0 = .v1) then .then else .else) .parsed
 #
 
 fc-parse-types () () :- ! #
