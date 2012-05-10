@@ -209,8 +209,7 @@ fc-parse-bind .v /.v1 .then .else .parsed
 	:- !, fc-parse (let .v1 = .v >> .then) .parsed
 #
 fc-parse-bind .v (.h1, .t1) .then .else .parsed
-	:- !
-	, fc-parse (
+	:- !, fc-parse (
 		if (is-tree {.v}) then
 			if-bind: (_lhead {.v}):(_ltail {.v}) = .h1:.t1
 			then .then else .else
@@ -218,8 +217,7 @@ fc-parse-bind .v (.h1, .t1) .then .else .parsed
 	) .parsed
 #
 fc-parse-bind .v .h1:.t1 .then .else .parsed
-	:- !
-	, fc-parse (
+	:- !, fc-parse (
 		if-bind: (_thead {.v}):(_ttail {.v}) = .h1:.t1
 		then .then else .else
 	) .parsed
