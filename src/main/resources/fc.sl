@@ -205,9 +205,6 @@ fc-parse-bind (.h0, .t0) (.h1, .t1) .then .else .parsed
 fc-parse-bind .v0 /.v1 .then .else .parsed
 	:- !, fc-parse (let .v1 = .v0 >> .then) .parsed
 #
-fc-parse-bind /.v0 .v1 .then .else .parsed
-	:- !, fc-parse (let .v0 = .v1 >> .then) .parsed
-#
 fc-parse-bind .v (.h1, .t1) .then .else .parsed
 	:- !, temp .h0, temp .t0
 	, fc-parse (
@@ -220,8 +217,9 @@ fc-parse-bind .v (.h1, .t1) .then .else .parsed
 		else .else
 	) .parsed
 #
-fc-parse-bind (.h0, .t0) .v1 .then .else .parsed
-	:- !, fc-parse-bind .v1 (.h0, .t0) .vs .then .else .parsed
+fc-parse-bind .v0 .v1 .then .else .parsed
+	:- (.v0 = /_; .v0 = (_, _); .v0 = _:_; .v0 = _ _)
+	, !, fc-parse-bind .v1 .v0 .then .else .parsed
 #
 fc-parse-bind .v0 .v1 .then .else .parsed
 	:- !, fc-parse (if (.v0 = .v1) then .then else .else) .parsed
