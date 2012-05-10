@@ -42,16 +42,12 @@ fc-compile-using-libs .mode () .do .fve .cdr
 --
 -- Syntactic sugars
 --
-fc-parse (if-match (.h, .t) then .then else .else) .parsed
-	:- !, temp .list
-	, fc-parse (
-		.list => if (is-tree {.list}) then (
-			let .h = _lhead {.list} >>
-			let .t = _ltail {.list} >>
-			.then
-		)
-		else .else
-	) .parsed
+fc-parse (if-match .v1 .thenElse) .parsed
+	:- !, temp .v0
+	, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
+#
+fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
+	:- !, fc-parse-bind .v0 .v1 .then .else .parsed
 #
 fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
 	:- !, fc-parse .if .if1
@@ -198,6 +194,23 @@ fc-parse-type (.typeVar => .type) .type2
 	, !, fc-parse-type .typeVar .typeVar1
 	, fc-parse-type .type .type1
 	, replace .type1/.type2 .typeVar1/_
+#
+
+fc-parse-bind .v (.h, .t) .then .else .parsed
+	:- !, fc-parse (
+		if (is-tree {.v}) then (
+			let .h = _lhead {.v} >>
+			let .t = _ltail {.v} >>
+			.then
+		)
+		else .else
+	) .parsed
+#
+fc-parse-bind .v0 .v1 .then .else .parsed
+	:- v0 = (_, _), !, fc-parse-bind .v1 .v0 .vs .then .else .parsed
+#
+fc-parse-bind .v0 .v1 .then .else .parsed
+	:- !, fc-parse (if (.v0 = .v1) then .then else .else) .parsed
 #
 
 fc-parse-types () () :- ! #

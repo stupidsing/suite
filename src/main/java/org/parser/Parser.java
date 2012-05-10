@@ -27,10 +27,10 @@ public class Parser {
 
 	private Operator operators[];
 
-	private static final String CLOSEGROUPCOMMENT = "=-";
-	private static final String OPENGROUPCOMMENT = "-=";
-	private static final String CLOSELINECOMMENT = "\n";
-	private static final String OPENLINECOMMENT = "--";
+	public static final String CLOSEGROUPCOMMENT = "=-";
+	public static final String OPENGROUPCOMMENT = "-=";
+	public static final String CLOSELINECOMMENT = "\n";
+	public static final String OPENLINECOMMENT = "--";
 
 	private static final List<Character> whitespaces = Arrays.asList( //
 			'\t', '\r', '\n');
