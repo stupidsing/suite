@@ -412,9 +412,7 @@ fc-add-standard-funs .p (
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump-string = (s =>
-			let length =
-				prove-r _s:s/ (string.length _s _l) _l
-			>>
+			let length = prove-r _s:s/ (string.length _s _l) _l >>
 			map {i =>
 				prove-r _s:s/_i:i/ (
 					substring _s _i 0 _c, to.int _c _asc
