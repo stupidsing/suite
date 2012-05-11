@@ -42,12 +42,6 @@ fc-compile-using-libs .mode () .do .fve .cdr
 --
 -- Syntactic sugars
 --
-fc-parse (if-match .v1 .thenElse) .parsed
-	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
-#
-fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
-	:- !, fc-parse-bind .v0 .v1 .then .else .parsed
-#
 fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
 	:- !, fc-parse .if .if1
 	, fc-parse .then .then1
@@ -72,6 +66,12 @@ fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
 fc-parse (.a ++ .b) .parsed :- !, fc-parse (concat2 {.a} {.b}) .parsed #
 fc-parse (.s until .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
+fc-parse (if-match .v1 .thenElse) .parsed
+	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
+#
+fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
+	:- !, fc-parse-bind .v0 .v1 .then .else .parsed
+#
 --
 -- Function constructs
 --
@@ -216,7 +216,7 @@ fc-parse-bind .v .h1:.t1 .then .else .parsed
 fc-parse-bind .v0 .v1 .then .else .parsed
 	:- (.v0 = /_; .v0 = (_, _); .v0 = _:_; .v0 = _ _)
 	, !, fc-parse-bind .v1 .v0 .then .else .parsed
-	; fc-parse (if (.v0 = .v1) then .then else .else) .parsed
+	; fc-parse (if (equals {.v0} {.v1}) then .then else .else) .parsed
 #
 
 fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
