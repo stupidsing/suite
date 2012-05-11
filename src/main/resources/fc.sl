@@ -212,7 +212,9 @@ fc-parse-bind .v (.h1, .t1) .then .else .parsed
 #
 fc-parse-bind .v .h1:.t1 .then .else .parsed
 	:- !, .h0 = _thead {.v}, .t0 = _ttail {.v}
-	, fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+	, once (.t1 = (), fc-parse-bind .h0 .h1 .then .else .parsed
+		; fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+	)
 #
 fc-parse-bind .v0 .v1 .then .else .parsed
 	:- (fc-parse-bind-variable .v0 _
