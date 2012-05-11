@@ -220,14 +220,15 @@ fc-parse-bind .v0 .v1 .then .else .parsed
 #
 
 fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
-	:- fc-bind-pair .h0 .t0 .h1 .t1 .then .else .c, fc-parse .c .parsed
+	:- fc-bind-pair .h0 .t0 .h1 .t1 .then .else .c
+	, fc-parse .c .parsed
 #
 
 fc-bind-pair .h0 .t0 .h1 .t1 .then .else .c
 	:- .c = (
-		if-bind: .h0 = .h1
-		then: if-bind (.t0 = .t1) then .then else .else
-		else: .else
+		if-bind (.h0 = .h1) then
+			if-bind (.t0 = .t1) then .then else .else
+		else .else
 	)
 #
 
