@@ -201,8 +201,9 @@ fc-parse-bind (.h0, .t0) (.h1, .t1) .then .else .parsed
 fc-parse-bind .h0:.t0 .h1:.t1 .then .else .parsed
 	:- !, fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
-fc-parse-bind .v /.v1 .then .else .parsed
-	:- !, fc-parse (let .v1 = .v >> .then) .parsed
+fc-parse-bind .v .v1 .then .else .parsed
+	:- fc-parse-bind-variable .v1 .vd
+	, !, fc-parse (let .vd = .v >> .then) .parsed
 #
 fc-parse-bind .v (.h1, .t1) .then .else .parsed
 	:- !, .h0 = _lhead {.v}, .t0 = _ltail {.v}
@@ -214,8 +215,10 @@ fc-parse-bind .v .h1:.t1 .then .else .parsed
 	, fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
 fc-parse-bind .v0 .v1 .then .else .parsed
-	:- (.v0 = /_; .v0 = (_, _); .v0 = _:_; .v0 = _ _)
-	, !, fc-parse-bind .v1 .v0 .then .else .parsed
+	:- (fc-parse-bind-variable .v0 _
+		; .v0 = (_, _); .v0 = _:_; .v0 = _ _
+	), !
+	, fc-parse-bind .v1 .v0 .then .else .parsed
 	; fc-parse (if (equals {.v0} {.v1}) then .then else .else) .parsed
 #
 
@@ -224,12 +227,15 @@ fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 	, fc-parse .c .parsed
 #
 
-fc-bind-pair .h0 .t0 .h1 .t1 .then .else .c
-	:- .c = (
-		if-bind (.h0 = .h1) then
-			if-bind (.t0 = .t1) then .then else .else
-		else .else
-	)
+fc-bind-pair .h0 .t0 .h1 .t1 .then .else (
+	if-bind (.h0 = .h1) then
+		if-bind (.t0 = .t1) then .then else .else
+	else .else
+) #
+
+fc-parse-bind-variable .v .vd
+	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "\"
+	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 
 fc-parse-types () () :- ! #
@@ -307,11 +313,11 @@ fc-add-standard-funs .p (
 		then: fun {h} . fold {fun} | t
 		else: h
 	) >>
-	define fold-left = (fun => init => if-match (/h, /t)
+	define fold-left = (fun => init => if-match (\h, \t)
 		then: fold-left {fun} {fun {init} {h}} {t}
 		else: init
 	) >>
-	define fold-right = (fun => init => if-match (/h, /t)
+	define fold-right = (fun => init => if-match (\h, \t)
 		then: fun {h} {fold-right {fun} {init} {t}}
 		else: init
 	) >>
@@ -336,11 +342,11 @@ fc-add-standard-funs .p (
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
-	define scan-left = (fun => init => if-match (/h, /t)
+	define scan-left = (fun => init => if-match (\h, \t)
 		then: init, scan-left {fun} {fun {init} {h}} {t}
 		else: init,
 	) >>
-	define scan-right = (fun => init => if-match (/h, /t) then
+	define scan-right = (fun => init => if-match (\h, \t) then
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
 		else (init,)
@@ -352,7 +358,7 @@ fc-add-standard-funs .p (
 			else: unsigned-str-to-int
 		| s
 	) >>
-	define tails = if-match (/h, /t)
+	define tails = if-match (\h, \t)
 		then: (h, t), tails {t}
 		else: ()
 	>>
@@ -361,13 +367,13 @@ fc-add-standard-funs .p (
 		then: head {list}, take {n - 1} {tail {list}}
 		else: ()
 	) >>
-	define take-while = (fun => if-match (/elem, /elems)
+	define take-while = (fun => if-match (\elem, \elems)
 		then: if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
 		else: ()
 	) >>
 	define zip = (fun =>
-		if-match (/h0, /t0) then
-			if-match (/h1, /t1)
+		if-match (\h0, \t0) then
+			if-match (\h1, \t1)
 			then: fun {h0} {h1}, zip {fun} {t0} {t1}
 			else: ()
 		else ($ => ())
@@ -378,7 +384,7 @@ fc-add-standard-funs .p (
 	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
 		compare {a} {b} = 0
 	) >>
-	define concat2 = (if-match (/h, /t)
+	define concat2 = (if-match (\h, \t)
 		then: cons {h} . concat2 {t}
 		else: id
 	) >>
@@ -462,7 +468,7 @@ fc-add-standard-funs .p (
 		) >>
 		dump0 {false}
 	) >>
-	define quick-sort = (cmp => if-match (/pivot, /t)
+	define quick-sort = (cmp => if-match (\pivot, \t)
 		then (
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
