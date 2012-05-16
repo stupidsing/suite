@@ -201,9 +201,10 @@ fc-parse-bind (.h0, .t0) (.h1, .t1) .then .else .parsed
 fc-parse-bind .h0:.t0 .h1:.t1 .then .else .parsed
 	:- !, fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
-fc-parse-bind .v .v1 .then .else .parsed
+fc-parse-bind .e .v1 .then .else (DEF-VAR .vd .e1 .then1)
 	:- fc-parse-bind-variable .v1 .vd
-	, !, fc-parse (let .vd = .v >> .then) .parsed
+	, !, fc-parse .then .then1
+	, fc-parse .e .e1
 #
 fc-parse-bind .v (.h1, .t1) .then .else .parsed
 	:- !, .h0 = _lhead {.v}, .t0 = _ltail {.v}
