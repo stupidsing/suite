@@ -213,39 +213,45 @@ fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
 fc-bind .v0 .v1 .then .else .parsed
+	:- once (.v0 = NEW-VARIABLE _; fc-bind-cons .v0 _ _; .v0 = TUPLE _ _)
+	, !, fc-bind0 .v1 .v0 .then .else .parsed
+#
+fc-bind .v0 .v1 .then .else .parsed :- fc-bind0 .v0 .v1 .then .else .parsed #
+
+fc-bind0 .v0 .v1 .then .else .parsed
 	:- (fc-bind-cons .v0 .h0 .t0, fc-bind-cons .v1 .h1 .t1
 		; .v0 = TUPLE .n (.h0, .hs0), .v1 = TUPLE .n (.h1, .hs1)
 		, .t0 = TUPLE .n .hs0, .t1 = TUPLE .n .hs1
 	), !
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
-fc-bind .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
+fc-bind0 (TUPLE .n0 .e0) (TUPLE .n1 .e1) .then .else .parsed
+	:- !
+	, once (.n0 = .n1
+		, once (.e0 = (), .e1 = (), .parsed = .then
+			; .e0 = (.h0, .hs0), .e1 = (.h1, .hs1)
+			, .t0 = TUPLE .n0 .hs0, .t1 = TUPLE .n1 .hs1
+			, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+		)
+	; .parsed = .else
+	)
+#
+fc-bind0 .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
 	:- !
 #
-fc-bind .v0 .v1 .then .else (IF (INVOKE .v0 VARIABLE is-tree) .then1 .else)
+fc-bind0 .v0 .v1 .then .else (IF (INVOKE .v0 VARIABLE is-tree) .then1 .else)
 	:- fc-bind-cons .v1 .h1 .t1, !
 	, .h0 = INVOKE .v0 VARIABLE _lhead
 	, .t0 = INVOKE .v0 VARIABLE _ltail
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
 #
-fc-bind .v0 (TUPLE .n ()) .then .else (
-	IF (INVOKE .v0 INVOKE (TUPLE .n ()) VARIABLE equals) .then .else
-) :- !
-#
-fc-bind .v0 (TUPLE .n (.h1, .t1)) .then .else .parsed
+fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else .parsed
 	:- !
 	, .h0 = INVOKE .v0 VARIABLE _thead
 	, .t0 = INVOKE .v0 VARIABLE _ttail
 	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .parsed
 #
-fc-bind .v0 .v1 .then .else .parsed
-	:- once (fc-parse-bind-variable .v0 _
-		; fc-bind-cons .v0 _ _
-		; .v0 = TUPLE _ _
-	), !
-	, fc-bind .v1 .v0 .then .else .parsed
-#
-fc-bind .v0 .v1 .then .else (
+fc-bind0 .v0 .v1 .then .else (
 	IF (INVOKE .v0 INVOKE .v1 VARIABLE equals) .then .else
 ) #
 
