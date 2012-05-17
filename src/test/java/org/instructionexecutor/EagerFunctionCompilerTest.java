@@ -113,10 +113,37 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testIf() {
-		assertEquals(Int.create(0), eval("if (3 > 4) then 1 else 0"));
-		assertEquals(Int.create(1), eval("if (3 = 3) then 1 else 0"));
-		assertEquals(Int.create(1),
-				eval("if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
+		assertEquals(Int.create(0), eval("" //
+				+ "if (3 > 4) then 1 else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "if (3 = 3) then 1 else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
+	}
+
+	@Test
+	public void testIfBind() {
+		assertEquals(Int.create(1), eval("" //
+				+ "if-bind (1 = 1) then 1 else 0"));
+
+		assertEquals(Int.create(1), eval("" //
+				+ "if-bind ((1, 2,) = (1, 2,)) then 1 else 0"));
+		assertEquals(Int.create(0), eval(""
+				+ "if-bind ((1, 2,) = (2, 2,)) then 1 else 0"));
+
+		assertEquals(Int.create(1), eval("" //
+				+ "let v = (1, 2,) >> if-bind (v = (1, 2,)) then 1 else 0"));
+		assertEquals(Int.create(0), eval(""
+				+ "let v = (1, 2,) >> if-bind (v = (1, 3,)) then 1 else 0"));
+
+		assertEquals(Int.create(0), eval("" //
+				+ "let v = (true:1:2:) >> \n"
+				+ "if-bind (v = true:\\i:3:) then i else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "let v = (true:1:2:) >> \n"
+				+ "if-bind (v = true:\\i:2:) then i else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "if-bind (1:2: = \\i:2:) then i else 0"));
 	}
 
 	@Test

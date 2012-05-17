@@ -70,7 +70,12 @@ fc-parse (if-match .v1 .thenElse) .parsed
 	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
 #
 fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
-	:- !, fc-parse-bind .v0 .v1 .then .else .parsed
+	:- !
+	, fc-parse .v0 .vp0
+	, fc-parse .v1 .vp1
+	, fc-parse .then .thenp
+	, fc-parse .else .elsep
+	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
 --
 -- Function constructs
@@ -97,10 +102,8 @@ fc-parse (no-type-check .do) (OPTION NO-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define .var as .type = .value >> .do) (
-	OPTION GENERIC-TYPE (
-		OPTION (DEF-ONE-OF-TYPE .type1) (
-			DEF-VAR .var .value2 .do1
-		)
+	OPTION (DEF-ONE-OF-TYPE .type1) (
+		OPTION GENERIC-TYPE DEF-VAR .var .value2 .do1
 	)
 ) :- !
 	, fc-parse-type .type .type1
@@ -161,6 +164,7 @@ fc-parse .s .n
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
 #
 fc-parse .t (TUPLE .t ()) :- fc-is-tuple-name .t, ! #
+fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
@@ -195,59 +199,62 @@ fc-parse-type (.typeVar => .type) .type2
 	, replace .type1/.type2 .typeVar1/_
 #
 
-fc-parse-bind (.h0, .t0) (.h1, .t1) .then .else .parsed
-	:- !, fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+fc-parse-types () () :- ! #
+fc-parse-types (.type, .types) (.type1, .types1)
+	:- fc-parse-type .type .type1, fc-parse-types .types .types1
 #
-fc-parse-bind .h0:.t0 .h1:.t1 .then .else .parsed
-	:- !, fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
-#
-fc-parse-bind .e .v1 .then .else (DEF-VAR .vd .e1 .then1)
-	:- fc-parse-bind-variable .v1 .vd
-	, !, fc-parse .then .then1
-	, fc-parse .e .e1
-#
-fc-parse-bind .v (.h1, .t1) .then .else .parsed
-	:- !, .h0 = _lhead {.v}, .t0 = _ltail {.v}
-	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed0
-	, fc-parse (if (is-tree {.v}) then .parsed0 else .else) .parsed
-#
-fc-parse-bind .v .h1:.t1 .then .else .parsed
-	:- !, .h0 = _thead {.v}, .t0 = _ttail {.v}
-	, once (.t1 = (), fc-parse-bind .h0 .h1 .then .else .parsed
-		; fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
-	)
-#
-fc-parse-bind .v0 .v1 .then .else .parsed
-	:- (fc-parse-bind-variable .v0 _
-		; .v0 = (_, _); .v0 = _:_; .v0 = _ _
-	), !
-	, fc-parse-bind .v1 .v0 .then .else .parsed
-	; fc-parse (if (equals {.v0} {.v1}) then .then else .else) .parsed
-#
-
-fc-parse-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
-	:- fc-bind-pair .h0 .t0 .h1 .t1 .then .else .c
-	, fc-parse .c .parsed
-#
-
-fc-bind-pair .h0 .t0 .h1 .t1 .then .else (
-	if-bind (.h0 = .h1) then
-		if-bind (.t0 = .t1) then .then else .else
-	else .else
-) #
 
 fc-parse-bind-variable .v .vd
 	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "\"
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 
-fc-parse-types () () :- ! #
-fc-parse-types (.type, .types) (.type1, .types1)
-	:- fc-parse-type .type .type1, fc-parse-types .types .types1
-#
-
 fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
+
+fc-bind .v0 .v1 .then .else .parsed
+	:- (fc-bind-cons .v0 .h0 .t0, fc-bind-cons .v1 .h1 .t1
+		; .v0 = TUPLE .n (.h0, .hs0), .v1 = TUPLE .n (.h1, .hs1)
+		, .t0 = TUPLE .n .hs0, .t1 = TUPLE .n .hs1
+	), !
+	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+#
+fc-bind .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
+	:- !
+#
+fc-bind .v0 .v1 .then .else (IF (INVOKE .v0 VARIABLE is-tree) .then1 .else)
+	:- fc-bind-cons .v1 .h1 .t1, !
+	, .h0 = INVOKE .v0 VARIABLE _lhead
+	, .t0 = INVOKE .v0 VARIABLE _ltail
+	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
+#
+fc-bind .v0 (TUPLE .n ()) .then .else (
+	IF (INVOKE .v0 INVOKE (TUPLE .n ()) VARIABLE equals) .then .else
+) :- !
+#
+fc-bind .v0 (TUPLE .n (.h1, .t1)) .then .else .parsed
+	:- !
+	, .h0 = INVOKE .v0 VARIABLE _thead
+	, .t0 = INVOKE .v0 VARIABLE _ttail
+	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .parsed
+#
+fc-bind .v0 .v1 .then .else .parsed
+	:- once (fc-parse-bind-variable .v0 _
+		; fc-bind-cons .v0 _ _
+		; .v0 = TUPLE _ _
+	), !
+	, fc-bind .v1 .v0 .then .else .parsed
+#
+fc-bind .v0 .v1 .then .else (
+	IF (INVOKE .v0 INVOKE .v1 VARIABLE equals) .then .else
+) #
+
+fc-bind-cons (INVOKE .t INVOKE .h VARIABLE _cons) .h .t #
+
+fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+	:- fc-bind .h0 .h1 .then1 .else .parsed
+	, fc-bind .t0 .t1 .then .else .then1
+#
 
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
