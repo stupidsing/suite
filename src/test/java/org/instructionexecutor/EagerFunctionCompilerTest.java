@@ -144,6 +144,16 @@ public class EagerFunctionCompilerTest {
 				+ "if-bind (v = true:\\i:2:) then i else 0"));
 		assertEquals(Int.create(1), eval("" //
 				+ "if-bind (1:2: = \\i:2:) then i else 0"));
+
+		assertEquals(Int.create(3), eval("" //
+				+ "define type t = one-of (A, B number, C boolean,) >> \n" //
+				+ "let e = B 3 >> \n" //
+				+ "if-bind (e = B \\i) then i else 0"));
+		assertEquals(Int.create(0), eval("" //
+				+ "define type t = one-of (A, B number, C boolean,) >> \n" //
+				+ "let e = B 3 >> \n" //
+				+ "let f = C false >> \n" //
+				+ "if-bind (e = f) then 1 else 0"));
 	}
 
 	@Test
