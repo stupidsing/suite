@@ -55,9 +55,9 @@ public class EagerFunctionCompilerTest {
 				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
 
 		assertEquals(Atom.create("true"), eval("" //
-				+ "define list1 as list-of one-of (A, B, C,) \n" //
+				+ "let list1 as list-of one-of (A, B, C,) \n" //
 				+ "    = (A, B, C,) >> \n" //
-				+ "define result = ( \n" //
+				+ "let result = ( \n" //
 				+ "    (A:1:, A:2:,), \n" //
 				+ "    (B:1:, B:2:,), \n" //
 				+ "    (C:1:, C:2:,), \n" //
@@ -215,7 +215,7 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
 		assertEquals(Atom.create("false"), SuiteUtil.evaluateEagerFunctional("" //
-				+ "define list1 as list-of one-of (A, B,) = () >> A = B"));
+				+ "let list1 as list-of one-of (A, B,) = () >> A = B"));
 	}
 
 	@Test

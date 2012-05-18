@@ -105,8 +105,7 @@ fc-parse (define .var as .type = .value >> .do) (
 	OPTION (DEF-ONE-OF-TYPE .type1) (
 		OPTION GENERIC-TYPE DEF-VAR .var .value2 .do1
 	)
-) :- !
-	, fc-parse-type .type .type1
+) :- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
 	, .value2 = OPTION (CAST .type1) .value1
@@ -115,6 +114,15 @@ fc-parse (define .var = .value >> .do) (
 	OPTION GENERIC-TYPE DEF-VAR .var .value1 .do1
 ) :- !, fc-parse .value .value1
 	, fc-parse .do .do1
+#
+fc-parse (let .var as .type = .value >> .do) (
+	OPTION (DEF-ONE-OF-TYPE .type1) (
+		DEF-VAR .var .value2 .do1
+	)
+) :- !, fc-parse-type .type .type1
+	, fc-parse .value .value1
+	, fc-parse .do .do1
+	, .value2 = OPTION (CAST .type1) .value1
 #
 fc-parse (let .var = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !, fc-parse .value .value1

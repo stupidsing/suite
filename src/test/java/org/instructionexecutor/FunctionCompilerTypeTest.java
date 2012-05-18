@@ -17,7 +17,7 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testDefineType() {
 		getType("define type t = number >> \n" //
-				+ "define v as t = 1 >> \n" //
+				+ "let v as t = 1 >> \n" //
 				+ "v = 99");
 		getType("repeat {23}");
 	}
@@ -46,8 +46,8 @@ public class FunctionCompilerTypeTest {
 	public void testOneOf() {
 		getType("" //
 				+ "define type t = one-of (NIL, BTREE t t,) >> \n" //
-				+ "define u as t = NIL >> \n" //
-				+ "define v as t = NIL >> \n" //
+				+ "let u as t = NIL >> \n" //
+				+ "let v as t = NIL >> \n" //
 				+ "v = BTREE (BTREE NIL NIL) NIL");
 	}
 
@@ -68,7 +68,7 @@ public class FunctionCompilerTypeTest {
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
 				, "define type t = one-of (BTREE t t,) >> \n" //
-						+ "define v as t = BTREE 2 3 >> 1" //
+						+ "let v as t = BTREE 2 3 >> 1" //
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
