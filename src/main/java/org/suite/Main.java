@@ -204,8 +204,8 @@ public class Main {
 				+ "    if (c >= 0) then (c, filter-in {start + 1}) else () \n" //
 				+ ") >> \n" //
 				+ "define filter-out = (p => if-match (\\c, \\cs) \n" //
-				+ "    then: fputc {p} {c} {filter-out {p + 1} {cs}} \n" //
-				+ "    else: () \n" //
+				+ "    then:: fputc {p} {c} {filter-out {p + 1} {cs}} \n" //
+				+ "    else:: () \n" //
 				+ ") >> \n" //
 				+ "fflush {filter-out {0} . (" + func + ") . filter-in | 0}";
 	}

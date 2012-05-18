@@ -143,8 +143,8 @@ public class Parser {
 
 			line = line.substring(indent).trim();
 
-			// Converts :: notation, "if: a" becomes "if (a)"
-			int colonPos = ParserUtil.search(line, ": ", Assoc.RIGHT);
+			// Converts :: notation, "if:: a" becomes "if (a)"
+			int colonPos = ParserUtil.search(line, "::", Assoc.RIGHT);
 			if (colonPos >= 0)
 				line = line.substring(0, colonPos) + " ("
 						+ line.substring(colonPos + 2) + ")";

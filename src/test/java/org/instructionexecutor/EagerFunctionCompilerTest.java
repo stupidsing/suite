@@ -77,9 +77,9 @@ public class EagerFunctionCompilerTest {
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = (n => \n" //
-				+ "    if: n > 1 \n" //
-				+ "    then: fib {n - 1} + fib {n - 2} \n" //
-				+ "    else: 1 \n" //
+				+ "    if:: n > 1 \n" //
+				+ "    then:: fib {n - 1} + fib {n - 2} \n" //
+				+ "    else:: 1 \n" //
 				+ ") >> \n" //
 				+ "fib {10}"));
 	}
@@ -137,10 +137,10 @@ public class EagerFunctionCompilerTest {
 				+ "let v = (1, 2,) >> if-bind (v = (1, 3,)) then 1 else 0"));
 
 		assertEquals(Int.create(0), eval("" //
-				+ "let v = (true:1:2:) >> \n"
+				+ "let v = true:1:2: >> \n"
 				+ "if-bind (v = true:\\i:3:) then i else 0"));
 		assertEquals(Int.create(1), eval("" //
-				+ "let v = (true:1:2:) >> \n"
+				+ "let v = true:1:2: >> \n"
 				+ "if-bind (v = true:\\i:2:) then i else 0"));
 		assertEquals(Int.create(1), eval("" //
 				+ "if-bind (1:2: = \\i:2:) then i else 0"));
