@@ -74,7 +74,7 @@ infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
 	, .type = TUPLE-OF .name .types
 	, !, (.name = $$ANON
 		; member .oe (TUPLE-OF .name _)/_ -- Enforces tuple name checking
-		; fc-error "undefined tuple named " .name
+		; fc-error "undefined tuple named" .name
 	), !
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
