@@ -140,10 +140,10 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
 	)
 #
-fc-parse (prove-r .vvs .constant .result) .parsed
+fc-parse (prove-with-result .vvs .constant .result) .parsed
 	:- !, fc-parse (prove | c .vvs (.constant . .result)) .parsed
 #
-fc-parse (prove-tf .vvs .constant) .parsed
+fc-parse (prove .vvs .constant) .parsed
 	:- !, fc-parse (prove | c .vvs .constant) .parsed
 #
 fc-parse (c (.var:.value/.vvs) .constant) .parsed
@@ -474,9 +474,9 @@ fc-add-standard-funs .p (
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump-string = (s =>
-			let length = prove-r _s:s/ (string.length _s _l) _l >>
+			let length = prove-with-result _s:s/ (string.length _s _l) _l >>
 			map {i =>
-				prove-r _s:s/_i:i/ (
+				prove-with-result _s:s/_i:i/ (
 					substring _s _i 0 _c, to.int _c _asc
 				) _asc
 			} | 0 until length
@@ -486,8 +486,8 @@ fc-add-standard-funs .p (
 				if prec then (s => concat {"(", s, ")",}) else id
 				| concat {dump0 {true} {head | n}, ", ", dump0 {false} {tail | n},}
 			else-if (equals {n} {}) then "()"
-			else-if (prove-tf _n:n/ (is.atom _n)) then
-				dump-string | prove-r _n:n/ (to.string _n _s) _s
+			else-if (prove _n:n/ (is.atom _n)) then
+				dump-string | prove-with-result _n:n/ (to.string _n _s) _s
 			else (int-to-str {n})
 		) >>
 		dump0 {false}
