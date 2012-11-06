@@ -62,7 +62,7 @@ fc-parse (.l, .r) .parsed :- !, fc-parse (_cons {.l} {.r}) .parsed #
 fc-parse (.l . .r) .parsed :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .parsed #
 fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
 fc-parse (.l << .r) .parsed :- !, fc-parse (.r {.l}) .parsed #
-fc-parse ($ => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
+fc-parse (anything => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
 fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
 fc-parse (.a ++ .b) .parsed :- !, fc-parse (concat2 {.a} {.b}) .parsed #
 fc-parse (.s until .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
@@ -400,7 +400,7 @@ fc-add-standard-funs .p (
 			if-match (\h1, \t1)
 			then:: fun {h0} {h1}, zip {fun} {t0} {t1}
 			else:: ()
-		else ($ => ())
+		else (anything => ())
 	) >>
 	define apply =
 		fold-left {x => f => f {x}}
@@ -452,7 +452,7 @@ fc-add-standard-funs .p (
 		>>
 		if (i > 0) then:: unsigned-int-to-str
 		else-if (i < 0) then:: concat2 {"-"} . unsigned-int-to-str . `0 -`
-		else:: $ => "0"
+		else:: anything => "0"
 		| i
 	) >>
 	define range = (start => end => inc =>
