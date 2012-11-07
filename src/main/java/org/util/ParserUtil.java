@@ -50,7 +50,7 @@ public class ParserUtil {
 		return search(s, operator.getName(), operator.getAssoc());
 	}
 
-	private static int search(String s, String name, Assoc assoc) {
+	public static int search(String s, String name, Assoc assoc) {
 		return search(s, name, assoc, true);
 	}
 

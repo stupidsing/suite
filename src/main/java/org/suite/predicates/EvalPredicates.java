@@ -182,30 +182,6 @@ public class EvalPredicates {
 		}
 	}
 
-	public static class Nth implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Predicate.getParameters(ps, 4);
-			String name = ((Str) params[0].finalNode()).getValue();
-			int length = name.length();
-			Node p1 = params[1].finalNode(), p2 = params[2].finalNode();
-
-			if (p1 instanceof Int && p2 instanceof Int) {
-				int m = ((Int) p1).getNumber(), n = ((Int) p2).getNumber();
-
-				while (m < 0)
-					m += length;
-				while (n <= 0)
-					n += length;
-
-				n = Math.min(n, length);
-
-				return prover.bind(params[3] //
-						, new Str(name.substring(m, n)));
-			} else
-				throw new RuntimeException("Invalid call pattern");
-		}
-	}
-
 	public static class RandomPredicate implements SystemPredicate {
 		private static final java.util.Random random = new Random();
 

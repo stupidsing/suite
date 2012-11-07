@@ -188,6 +188,7 @@ public class SuiteUtil {
 			FunctionInstructionExecutor e = new FunctionInstructionExecutor(ics);
 			e.setIn(config.in);
 			e.setOut(config.out);
+			e.setProver(compiler);
 			return e.execute();
 		} else
 			throw new RuntimeException("Function compilation error");
@@ -198,17 +199,19 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(Node program) {
-		Prover compiler = getEagerFunCompiler();
+		Prover compiler = lazyFunctionalCompiler;
+		compiler = compiler != null ? compiler : getEagerFunCompiler();
 
 		Node node = SuiteUtil.parse(".libs = (STANDARD,)" //
 				+ ", fc-parse .program .p" //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
-				+ ", resolve-types .tr");
+				+ ", resolve-types .tr" //
+				+ ", fc-parse-type .type .t");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
 		Node variable = generalizer.getVariable(Atom.create(".program"));
-		Node type = generalizer.getVariable(Atom.create(".t"));
+		Node type = generalizer.getVariable(Atom.create(".type"));
 
 		((Reference) variable).bound(program);
 

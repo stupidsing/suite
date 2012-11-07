@@ -64,6 +64,9 @@ fc-eager-compile (VARIABLE .var) .frame/.ve  .c0/.cx/.d/.d/.reg1
 		, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
 	)
 #
+fc-eager-compile (CONSTANT .c) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .c, .cx)
+#
 fc-eager-compile (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx)
 #

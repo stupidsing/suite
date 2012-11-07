@@ -44,10 +44,23 @@ public class LazyFunctionCompilerTest {
 	}
 
 	@Test
+	public void testProve() {
+		assertEquals(Atom.create("true"), eval("" //
+				+ "prove () is.atom abc"));
+		assertEquals(Atom.create("true"), eval("" //
+				+ "prove _v:3/ (_v = 3)"));
+		assertEquals(Atom.create("false"), eval("" //
+				+ "prove _v:4/ (_v = 3)"));
+		assertEquals(Int.create(4), eval("" //
+				+ "prove-with-result _v:2/ (let _r (2 * _v)) _r"));
+	}
+
+	@Test
 	public void testString() {
-		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
-		assertEquals(Atom.create("true"),
-				eval("equals {\"-34253924\"} {int-to-str {-34253924}}"));
+		assertEquals(Int.create(-34253924), eval("" //
+				+ "str-to-int {\"-34253924\"}"));
+		assertEquals(Atom.create("true"), eval("" //
+				+ "equals {\"-34253924\"} {int-to-str {-34253924}}"));
 	}
 
 	@Test

@@ -10,32 +10,35 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testBasic() {
-		assertEquals(SuiteUtil.parse("BOOLEAN") //
+		assertEquals(SuiteUtil.parse("boolean") //
 				, getType("4 = 8"));
 	}
 
 	@Test
 	public void testDefineType() {
 		getType("define type t = number >> \n" //
-				+ "define v as t = 1 >> \n" //
+				+ "let v as t = 1 >> \n" //
 				+ "v = 99");
+		getType("repeat {23}");
 	}
 
 	@Test
 	public void testFun() {
-		assertEquals(SuiteUtil.parse("FUN NUMBER NUMBER") //
+		assertEquals(SuiteUtil.parse("number {number}") //
 				, getType("a => a + 1"));
-		assertEquals(SuiteUtil.parse("NUMBER") //
+		assertEquals(SuiteUtil.parse("number") //
 				, getType("define f = (a => a + 1) >> f {3}"));
-		assertEquals(SuiteUtil.parse("FUN BOOLEAN FUN BOOLEAN BOOLEAN") //
+		assertEquals(SuiteUtil.parse("boolean {boolean} {boolean}") //
 				, getType("and"));
+		assertEquals(SuiteUtil.parse("list-of number {number}") //
+				, getType("v => v, reverse {1,}"));
 	}
 
 	@Test
 	public void testList() {
-		assertEquals(SuiteUtil.parse("LIST-OF NUMBER") //
+		assertEquals(SuiteUtil.parse("list-of number") //
 				, getType("1,"));
-		assertEquals(SuiteUtil.parse("LIST-OF (LIST-OF NUMBER)") //
+		assertEquals(SuiteUtil.parse("list-of (list-of number)") //
 				, getType("\"a\", \"b\", \"c\", \"d\","));
 	}
 
@@ -43,16 +46,20 @@ public class FunctionCompilerTypeTest {
 	public void testOneOf() {
 		getType("" //
 				+ "define type t = one-of (NIL, BTREE t t,) >> \n" //
-				+ "define u as t = NIL >> \n" //
-				+ "define v as t = NIL >> \n" //
+				+ "let u as t = NIL >> \n" //
+				+ "let v as t = NIL >> \n" //
 				+ "v = BTREE (BTREE NIL NIL) NIL");
 	}
 
 	@Test
 	public void testTuple() {
-		getType("BTREE 2 3 = BTREE 4 6");
-		getTypeMustFail("T1 2 3 = T2 2 3");
-		getTypeMustFail("BTREE 2 3 = BTREE \"a\" 6");
+		getType("define type bt = one-of (BTREE number number,) >> \n"
+				+ "BTREE 2 3 = BTREE 4 6");
+		getTypeMustFail("define type t1 = one-of (T1 number number,) >> \n"
+				+ "define type t2 = one-of (T2 number number,) >> \n"
+				+ "T1 2 3 = T2 2 3");
+		getTypeMustFail("define type bt = one-of (BTREE number number,) >> \n"
+				+ "BTREE 2 3 = BTREE \"a\" 6");
 	}
 
 	@Test
@@ -61,7 +68,7 @@ public class FunctionCompilerTypeTest {
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
 				, "define type t = one-of (BTREE t t,) >> \n" //
-						+ "define v as t = BTREE 2 3 >> 1" //
+						+ "let v as t = BTREE 2 3 >> 1" //
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...

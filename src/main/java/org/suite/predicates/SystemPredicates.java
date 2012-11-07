@@ -50,7 +50,6 @@ public class SystemPredicates {
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("map.erase", new EvalPredicates.MapErase());
-		addPredicate("nth", new EvalPredicates.Nth());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("same", new EvalPredicates.Same());
 		addPredicate("specialize", new EvalPredicates.Specialize());
@@ -65,6 +64,8 @@ public class SystemPredicates {
 		addPredicate("parse", new FormatPredicates.Parse());
 		addPredicate("rpn", new FormatPredicates.Rpn());
 		addPredicate("starts.with", new FormatPredicates.StartsWith());
+		addPredicate("string.length", new FormatPredicates.StringLength());
+		addPredicate("substring", new FormatPredicates.Substring());
 		addPredicate("to.atom", new FormatPredicates.ToAtom());
 		addPredicate("to.dump.string", new FormatPredicates.ToDumpString());
 		addPredicate("to.int", new FormatPredicates.ToInt());
@@ -74,8 +75,8 @@ public class SystemPredicates {
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());
 		addPredicate("exec", new IoPredicates.Exec());
-		addPredicate("file-read", new IoPredicates.FileRead());
-		addPredicate("file-write", new IoPredicates.FileWrite());
+		addPredicate("file.read", new IoPredicates.FileRead());
+		addPredicate("file.write", new IoPredicates.FileWrite());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 

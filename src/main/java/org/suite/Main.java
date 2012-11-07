@@ -1,6 +1,7 @@
 package org.suite;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -133,9 +134,11 @@ public class Main {
 				if (type == InputType.FACT)
 					rs.addRule(node);
 				else if (type == InputType.EVALUATE) {
-					Node result = SuiteUtil.evaluateFunctional( //
-							FunCompilerConfig.create(node, isLazy));
-					System.out.println(Formatter.dump(result));
+					String p = applyFilter("d => dump {" + input + "}");
+					FunCompilerConfig c = FunCompilerConfig.create(p, isLazy);
+					c.setIn(new ByteArrayInputStream(new byte[0]));
+					SuiteUtil.evaluateFunctional(c);
+					System.out.println();
 				} else if (type == InputType.EVALUATETYPE) {
 					Node result = SuiteUtil.evaluateFunctionalType(node);
 					System.out.println(Formatter.dump(result));
@@ -200,11 +203,11 @@ public class Main {
 				+ "    define c = fgetc {start} >> \n" //
 				+ "    if (c >= 0) then (c, filter-in {start + 1}) else () \n" //
 				+ ") >> \n" //
-				+ "define filter-out = (p => if-match (c, cs) \n" //
-				+ "    then (fputc {p} {c} {filter-out {p + 1} {cs}}) \n" //
-				+ "    else () \n" //
+				+ "define filter-out = (p => if-match (\\c, \\cs) \n" //
+				+ "    then:: fputc {p} {c} {filter-out {p + 1} {cs}} \n" //
+				+ "    else:: () \n" //
 				+ ") >> \n" //
-				+ "fflush {filter-out {0} {(" + func + ") {filter-in {0}}}}";
+				+ "fflush {filter-out {0} . (" + func + ") . filter-in | 0}";
 	}
 
 	public boolean runFunctional(List<String> files, boolean isLazy)

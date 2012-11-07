@@ -7,11 +7,15 @@ import java.io.PrintStream;
 import org.instructionexecutor.InstructionExecutorUtil.Closure;
 import org.instructionexecutor.InstructionExecutorUtil.Frame;
 import org.instructionexecutor.InstructionExecutorUtil.Instruction;
+import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
+import org.suite.doer.Generalizer;
+import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
+import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
 
@@ -27,8 +31,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
 	private static final Atom LOG = Atom.create("LOG");
 	private static final Atom LOG2 = Atom.create("LOG2");
+	private static final Atom PROVE = Atom.create("PROVE");
+	private static final Atom SUBST = Atom.create("SUBST");
 	private static final Atom TAIL = Atom.create("TAIL");
 	private static final Atom VCONCAT = Atom.create("VCONCAT");
+	private static final Atom VCONS = Atom.create("VCONS");
 	private static final Atom VELEM = Atom.create("VELEM");
 	private static final Atom VEMPTY = Atom.create("VEMPTY");
 	private static final Atom VHEAD = Atom.create("VHEAD");
@@ -41,6 +48,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private StringBuilder outBuffer = new StringBuilder();
 
 	private Comparer comparer = new Comparer();
+	private Prover prover;
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
@@ -116,12 +124,37 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		else if (command == LOG2) {
 			System.err.println((Node) dataStack[dsp + 1]);
 			result = (Node) dataStack[dsp];
+		} else if (command == PROVE) {
+			if (prover == null)
+				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
+
+			Node node = (Node) dataStack[dsp];
+			Tree tree = Tree.decompose(node, TermOp.JOIN__);
+			if (tree != null)
+				if (prover.prove(tree.getLeft()))
+					result = tree.getRight().finalNode();
+				else
+					throw new RuntimeException("Goal failed");
+			else
+				result = Atom.create(prover.prove(node) ? "true" : "false");
+		} else if (command == SUBST) {
+			Generalizer g = new Generalizer();
+			g.setVariablePrefix("_");
+
+			Node var = (Node) dataStack[dsp + 1];
+			Tree tree = (Tree) g.generalize((Node) dataStack[dsp]);
+			((Reference) tree.getRight()).bound(var);
+			result = tree.getLeft();
 		} else if (command == TAIL)
 			result = Tree.decompose((Node) dataStack[dsp]).getRight();
 		else if (command == VCONCAT) {
 			Vector left = (Vector) dataStack[dsp + 1];
 			Vector right = (Vector) dataStack[dsp];
 			result = Vector.concat(left, right);
+		} else if (command == VCONS) {
+			Node head = (Node) dataStack[dsp + 1];
+			Vector tail = (Vector) dataStack[dsp];
+			result = Vector.cons(head, tail);
 		} else if (command == VELEM)
 			result = new Vector((Node) dataStack[dsp]);
 		else if (command == VEMPTY)
@@ -147,6 +180,10 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	public void setOut(PrintStream out) {
 		this.out = out;
+	}
+
+	public void setProver(Prover prover) {
+		this.prover = prover;
 	}
 
 }

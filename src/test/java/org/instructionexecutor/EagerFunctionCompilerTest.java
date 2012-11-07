@@ -55,9 +55,9 @@ public class EagerFunctionCompilerTest {
 				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
 
 		assertEquals(Atom.create("true"), eval("" //
-				+ "define list1 as list-of one-of (A, B, C,) \n" //
+				+ "let list1 as list-of one-of (A, B, C,) \n" //
 				+ "    = (A, B, C,) >> \n" //
-				+ "define result = ( \n" //
+				+ "let result = ( \n" //
 				+ "    (A:1:, A:2:,), \n" //
 				+ "    (B:1:, B:2:,), \n" //
 				+ "    (C:1:, C:2:,), \n" //
@@ -77,10 +77,9 @@ public class EagerFunctionCompilerTest {
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = (n => \n" //
-				+ "    if (n > 1) then ( \n" //
-				+ "        fib {n - 1} + fib {n - 2} \n" //
-				+ "    ) \n" //
-				+ "    else 1 \n" //
+				+ "    if:: n > 1 \n" //
+				+ "    then:: fib {n - 1} + fib {n - 2} \n" //
+				+ "    else:: 1 \n" //
 				+ ") >> \n" //
 				+ "fib {10}"));
 	}
@@ -114,10 +113,47 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testIf() {
-		assertEquals(Int.create(0), eval("if (3 > 4) then 1 else 0"));
-		assertEquals(Int.create(1), eval("if (3 = 3) then 1 else 0"));
-		assertEquals(Int.create(1),
-				eval("if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
+		assertEquals(Int.create(0), eval("" //
+				+ "if (3 > 4) then 1 else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "if (3 = 3) then 1 else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
+	}
+
+	@Test
+	public void testIfBind() {
+		assertEquals(Int.create(1), eval("" //
+				+ "if-bind (1 = 1) then 1 else 0"));
+
+		assertEquals(Int.create(1), eval("" //
+				+ "if-bind ((1, 2,) = (1, 2,)) then 1 else 0"));
+		assertEquals(Int.create(0), eval(""
+				+ "if-bind ((1, 2,) = (2, 2,)) then 1 else 0"));
+
+		assertEquals(Int.create(1), eval("" //
+				+ "let v = (1, 2,) >> if-bind (v = (1, 2,)) then 1 else 0"));
+		assertEquals(Int.create(0), eval(""
+				+ "let v = (1, 2,) >> if-bind (v = (1, 3,)) then 1 else 0"));
+
+		assertEquals(Int.create(0), eval("" //
+				+ "let v = true:1:2: >> \n"
+				+ "if-bind (v = true:\\i:3:) then i else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "let v = true:1:2: >> \n"
+				+ "if-bind (v = true:\\i:2:) then i else 0"));
+		assertEquals(Int.create(1), eval("" //
+				+ "if-bind (1:2: = \\i:2:) then i else 0"));
+
+		assertEquals(Int.create(3), eval("" //
+				+ "define type t = one-of (A, B number, C boolean,) >> \n" //
+				+ "let e = B 3 >> \n" //
+				+ "if-bind (e = B \\i) then i else 0"));
+		assertEquals(Int.create(0), eval("" //
+				+ "define type t = one-of (A, B number, C boolean,) >> \n" //
+				+ "let e = B 3 >> \n" //
+				+ "let f = C false >> \n" //
+				+ "if-bind (e = f) then 1 else 0"));
 	}
 
 	@Test
@@ -136,7 +172,7 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Int.create(19), eval("" //
 				+ "define p = (`* 2`) >> \n" //
 				+ "define q = (`+ 1`) >> \n" //
-				+ "define r = (join {p} {q}) >> \n" //
+				+ "define r = (q . p) >> \n" //
 				+ "r {9}"));
 		assertEquals(Int.create(13), eval("" //
 				+ "define p = (`+ 1`) >> \n" //
@@ -179,7 +215,7 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
 		assertEquals(Atom.create("false"), SuiteUtil.evaluateEagerFunctional("" //
-				+ "define list1 as list-of one-of (A, B,) = () >> A = B"));
+				+ "let list1 as list-of one-of (A, B,) = () >> A = B"));
 	}
 
 	@Test
@@ -191,12 +227,6 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testRange() {
 		assertEquals(SuiteUtil.parse("2, 5, 8, 11,"), eval("" //
-				+ "define range = (i => j => inc => \n" //
-				+ "    if (i != j) then ( \n" //
-				+ "        i, range {i + inc} {j} {inc} \n" //
-				+ "    ) \n" //
-				+ "    else () \n" //
-				+ ") >> \n" //
 				+ "range {2} {14} {3}"));
 	}
 

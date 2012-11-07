@@ -20,7 +20,7 @@ infer-type-rule (OPTION (DEF-ONE-OF-TYPE .def) .do) .ue/.ve/.te/.oe .tr .type
 	:- !, find-one-of-type .def .oe1/.oe
 	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr .type
 #
-infer-type-rule (DEF-TYPE .name .def .do) .ue/.ve/.te/.oe .tr .type
+infer-type-rule (OPTION (DEF-TYPE .name .def) .do) .ue/.ve/.te/.oe .tr .type
 	:- !
 	, infer-type-rule .do .ue/.ve/(.name/.def, .te)/.oe .tr .type
 #
@@ -64,12 +64,18 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
+infer-type-rule (CONSTANT _) _ .tr/.tr _ :- ! #
 infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
 infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
 infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
 infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
-infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
-	:- !, infer-type-rules .elems .env .tr .types
+infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
+	:- !, infer-type-rules .elems .ue/.ve/.te/.oe .tr .types
+	, .type = TUPLE-OF .name .types
+	, !, (.name = $$ANON
+		; member .oe (TUPLE-OF .name _)/_ -- Enforces tuple name checking
+		; fc-error "undefined tuple named" .name
+	), !
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type0
@@ -201,8 +207,12 @@ children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 
 default-fun-type () (LIST-OF _) #
 default-fun-type _cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
-default-fun-type _head (FUN (LIST-OF .type) .type) #
-default-fun-type _tail (FUN (LIST-OF .type) (LIST-OF .type)) #
+default-fun-type _lhead (FUN (LIST-OF .type) .type) #
+default-fun-type _ltail (FUN (LIST-OF .type) (LIST-OF .type)) #
+default-fun-type _prove (FUN _ BOOLEAN) #
+default-fun-type _subst (FUN _ (FUN _ _)) #
+default-fun-type _thead (FUN (TUPLE-OF _ (.type, _)) .type) #
+default-fun-type _ttail (FUN (TUPLE-OF .n (_, .types)) (TUPLE-OF .n .types)) #
 default-fun-type fflush (FUN .type .type) #
 default-fun-type fgetc (FUN NUMBER NUMBER) #
 default-fun-type fputc (FUN NUMBER (FUN NUMBER (FUN .type .type))) #

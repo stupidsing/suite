@@ -24,6 +24,7 @@ public class ClusterMapUtil {
 
 		static class Response implements Serializable {
 			private static final long serialVersionUID = 1l;
+			protected Object value;
 		}
 	}
 
