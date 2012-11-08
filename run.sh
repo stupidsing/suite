@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Builds by mvn -Dmaven.test.skip=true assembly:single
+# Builds by mvn -Dmaven.test.skip=true install assembly:single
 
 DEBUGOPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 OPTS="-Xss1m ${DEBUGOPTS}"
