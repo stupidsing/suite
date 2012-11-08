@@ -345,15 +345,6 @@ fc-add-standard-funs .p (
 		then:: fun {h} {fold-right {fun} {init} {t}}
 		else:: init
 	) >>
-	define tget0 =
-		tuple-head
-	>>
-	define tget1 =
-		tuple-head . tuple-tail
-	>>
-	define tget2 =
-		tuple-head . tuple-tail . tuple-tail
-	>>
 	define id = (v =>
 		v
 	) >>
@@ -395,6 +386,15 @@ fc-add-standard-funs .p (
 		then:: if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
 		else:: ()
 	) >>
+	define tget0 =
+		tuple-head
+	>>
+	define tget1 =
+		tuple-head . tuple-tail
+	>>
+	define tget2 =
+		tuple-head . tuple-tail . tuple-tail
+	>>
 	define zip = (fun =>
 		if-match (\h0, \t0) then
 			if-match (\h1, \t1)
@@ -434,6 +434,11 @@ fc-add-standard-funs .p (
 		if:: is-tree {r}
 		then:: cons {head | r} . unfold-right {fun} . head . tail | r
 		else:: ()
+	) >>
+	define uniq = (
+		fold-right {item => list =>
+			if-bind (list = (item, \t)) then list else (item, list)
+		} {}
 	) >>
 	define concat =
 		fold-left {concat2} {}
@@ -501,11 +506,6 @@ fc-add-standard-funs .p (
 			concat {l0, (pivot,), l1,}
 		)
 		else ()
-	) >>
-	define uniq = (
-		fold-right {item => list =>
-			if-bind (list = (item, \t)) then list else (item, list)
-		} {}
 	) >>
 	.p
 ) #
