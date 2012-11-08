@@ -395,6 +395,12 @@ fc-add-standard-funs .p (
 	define tget2 =
 		tuple-head . tuple-tail . tuple-tail
 	>>
+	define unfold-right = (fun => init =>
+		let r = fun {init} >>
+		if:: is-tree {r}
+		then:: cons {head | r} . unfold-right {fun} . head . tail | r
+		else:: ()
+	) >>
 	define zip = (fun =>
 		if-match (\h0, \t0) then
 			if-match (\h1, \t1)
@@ -429,12 +435,6 @@ fc-add-standard-funs .p (
 	define reverse =
 		fold-left {a => b => b, a} {}
 	>>
-	define unfold-right = (fun => init =>
-		let r = fun {init} >>
-		if:: is-tree {r}
-		then:: cons {head | r} . unfold-right {fun} . head . tail | r
-		else:: ()
-	) >>
 	define uniq =
 		fold-right {item => list =>
 			if-bind (list = (item, \t)) then list else (item, list)
