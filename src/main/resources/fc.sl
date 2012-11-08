@@ -435,11 +435,11 @@ fc-add-standard-funs .p (
 		then:: cons {head | r} . unfold-right {fun} . head . tail | r
 		else:: ()
 	) >>
-	define uniq = (
+	define uniq =
 		fold-right {item => list =>
 			if-bind (list = (item, \t)) then list else (item, list)
 		} {}
-	) >>
+	>>
 	define concat =
 		fold-left {concat2} {}
 	>>
