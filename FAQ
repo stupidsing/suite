@@ -3,7 +3,7 @@
 mvn -Dmaven.test.skip=true assembly:single
 
 
-- The program reports precompiled.rpn file isn't there. What can I do?
+- The program reports STANDARD.rpn file isn't there. What can I do?
 
 Runs org.suite.PrecompileMain to perform pre-compilation. I usually run from eclipse.
 

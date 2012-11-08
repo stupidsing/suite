@@ -6,7 +6,7 @@
 -- .mode can be EAGER or LAZY
 
 () :- import.file 'fc-type-inference.sl' #
-() :- file.read 'precompiled.rpn' .rpn
+() :- file.read 'STANDARD.rpn' .rpn
 	, rpn .node .rpn
 	, import .node
 --	, enable-trace
@@ -17,7 +17,7 @@ compile-function .mode .do .c0
 #
 
 compile-function0 .mode .do .c0
-	:- fc-add-standard-funs .do .do1
+	:- fc-add-functions STANDARD .do .do1
 	, compile-function-using-libs .mode () .do1 .c0
 #
 
@@ -308,7 +308,7 @@ fc-assign-line-number .n (.n _, .remains)
 
 fc-error .m :- !, write .m, nl, fail #
 
-fc-add-standard-funs .p (
+fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
 	define prove = (goal => _prove {goal}) >>

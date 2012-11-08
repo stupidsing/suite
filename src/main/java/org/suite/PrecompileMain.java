@@ -18,14 +18,17 @@ public class PrecompileMain {
 	public static void main(String args[]) throws IOException {
 
 		// Clears previous precompilation result
-		File precompiled = new File("precompiled.rpn");
+		File precompiled = new File("STANDARD.rpn");
 		precompiled.delete();
-		IoUtil.writeStream(new FileOutputStream(precompiled), "\\\n");
+
+		FileOutputStream fos = new FileOutputStream(precompiled);
+		IoUtil.writeStream(fos, "\\\n");
+		fos.close();
 
 		// Compiles again
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 		Prover prover = SuiteUtil.getProver(imports);
-		Node node = SuiteUtil.parse("fc-setup-standard-precompile");
+		Node node = SuiteUtil.parse("fc-setup-precompile STANDARD");
 
 		if (prover.prove(node)) {
 			System.out.println("Pre-compilation success");

@@ -6,12 +6,13 @@
 -- ? fc-setup-standard-precompile #
 --
 
-fc-setup-standard-precompile
-	:- fc-add-standard-funs .do0 .do1
-	, fc-setup-precompile STANDARD .do1/.do0 'precompiled.rpn'
+fc-setup-precompile .lib
+	:- concat .lib ".rpn" .filename
+	, fc-add-functions .lib .do0 .do1
+	, fc-setup-precompile0 .lib .do1/.do0 .filename
 #
 
-fc-setup-precompile .lib .do1/($$PRECOMPILE .pc) .filename
+fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	:- .pc = .ues/.ves/.tes/.oes .trs/.trs .fcs
 	, !, write 'Parsing program', nl
 	, !, fc-parse .do1 .parsed
