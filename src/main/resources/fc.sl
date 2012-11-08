@@ -502,5 +502,10 @@ fc-add-standard-funs .p (
 		)
 		else ()
 	) >>
+	define uniq = (
+		fold-right {item => list =>
+			if-bind (list = (item, \t)) then list else (item, list)
+		} {}
+	) >>
 	.p
 ) #
