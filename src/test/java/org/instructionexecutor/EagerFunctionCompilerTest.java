@@ -280,6 +280,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testUniq() {
+		assertEquals(SuiteUtil.parse("1, 2, 3, 5, 2,"), eval("" //
+				+ "uniq {1, 2, 2, 2, 3, 5, 2,}"));
+	}
+
+	@Test
 	public void testZip() {
 		assertEquals(SuiteUtil.parse("(1, 5,), (2, 6,), (3, 7,),"), eval("" //
 				+ "define zip-up = zip {a => b => a, b,} >> \n" //
