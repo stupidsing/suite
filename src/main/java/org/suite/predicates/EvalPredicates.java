@@ -140,6 +140,9 @@ public class EvalPredicates {
 					break;
 				case POWER_:
 					result = (int) Math.pow(a, b);
+					break;
+				default:
+					throw new RuntimeException("Unable to evaluate expression");
 				}
 			} else if (node instanceof Int)
 				result = ((Int) node).getNumber();

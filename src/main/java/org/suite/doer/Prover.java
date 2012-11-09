@@ -85,6 +85,8 @@ public class Prover {
 					continue;
 				case EQUAL_:
 					query = isSuccess(bind(left, right));
+					break;
+				default:
 				}
 			} else if (query instanceof Station)
 				query = isSuccess(((Station) query).run());

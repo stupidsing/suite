@@ -48,22 +48,18 @@ public class NioDispatcherTest {
 		dispatcher.spawn();
 		Event closeServer = dispatcher.listen(5151);
 
-		Socket socket = new Socket("localhost", 5151);
-		InputStream is = socket.getInputStream();
-		OutputStream os = socket.getOutputStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		PrintWriter writer = new PrintWriter(os);
-
-		try {
+		try (Socket socket = new Socket("localhost", 5151);
+				InputStream is = socket.getInputStream();
+				OutputStream os = socket.getOutputStream();
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader reader = new BufferedReader(isr);
+				PrintWriter writer = new PrintWriter(os);) {
 			String m = "testing nio";
 			writer.println(m);
 			writer.flush();
 
 			assertEquals(hello, reader.readLine());
 			assertEquals(m, reader.readLine());
-		} finally {
-			Util.closeQuietly(reader);
-			Util.closeQuietly(writer);
 		}
 
 		closeServer.perform(null);
