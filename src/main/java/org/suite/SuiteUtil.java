@@ -138,6 +138,10 @@ public class SuiteUtil {
 			return create(parse(program), isLazy);
 		}
 
+		public static FunCompilerConfig create(Node node) {
+			return create(node, false);
+		}
+
 		public static FunCompilerConfig create(Node node, boolean isLazy) {
 			FunCompilerConfig c = new FunCompilerConfig();
 			c.setNode(node);
@@ -186,12 +190,9 @@ public class SuiteUtil {
 		Prover compiler = config.isLazy ? getLazyFunCompiler()
 				: getEagerFunCompiler();
 
-		StringBuilder sb = new StringBuilder();
-		for (String library : config.libraries)
-			sb.append(library + ", ");
-
+		String libraries = getLibraries(config);
 		Node node = SuiteUtil.parse( //
-				"compile-function .mode (" + sb + ") .program .code"
+				"compile-function .mode (" + libraries + ") .program .code"
 				// + ", pp-list .code"
 				);
 
@@ -216,14 +217,15 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(String program) {
-		return evaluateFunctionalType(SuiteUtil.parse(program));
+		return evaluateFunctionalType(FunCompilerConfig.create( //
+				SuiteUtil.parse(program)));
 	}
 
-	public static Node evaluateFunctionalType(Node program) {
+	public static Node evaluateFunctionalType(FunCompilerConfig config) {
 		Prover compiler = lazyFunctionalCompiler;
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 
-		Node node = SuiteUtil.parse(".libs = (STANDARD,)" //
+		Node node = SuiteUtil.parse(".libs = (" + getLibraries(config) + ")" //
 				+ ", load-libraries .libs" //
 				+ ", fc-parse .program .p" //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
@@ -235,12 +237,19 @@ public class SuiteUtil {
 		Node variable = generalizer.getVariable(Atom.create(".program"));
 		Node type = generalizer.getVariable(Atom.create(".type"));
 
-		((Reference) variable).bound(program);
+		((Reference) variable).bound(config.node);
 
 		if (compiler.prove(node))
 			return type.finalNode();
 		else
 			throw new RuntimeException("Type inference error");
+	}
+
+	private static String getLibraries(FunCompilerConfig config) {
+		StringBuilder sb = new StringBuilder();
+		for (String library : config.libraries)
+			sb.append(library + ", ");
+		return sb.toString();
 	}
 
 	public static synchronized Prover getLogicalCompiler() {

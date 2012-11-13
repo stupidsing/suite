@@ -140,7 +140,8 @@ public class Main {
 					SuiteUtil.evaluateFunctional(c);
 					System.out.println();
 				} else if (type == InputType.EVALUATETYPE) {
-					Node result = SuiteUtil.evaluateFunctionalType(node);
+					FunCompilerConfig c = FunCompilerConfig.create(node);
+					Node result = SuiteUtil.evaluateFunctionalType(c);
 					System.out.println(Formatter.dump(result));
 				} else {
 					final Generalizer generalizer = new Generalizer();
