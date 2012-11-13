@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
@@ -126,7 +125,7 @@ public class SuiteUtil {
 	public static class FunCompilerConfig {
 		private Node node;
 		private boolean isLazy;
-		private List<String> libraries = new ArrayList<String>();
+		private List<String> libraries = Util.createList();
 		private InputStream in = System.in;
 		private PrintStream out = System.out;
 
