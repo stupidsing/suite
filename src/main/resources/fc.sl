@@ -337,11 +337,13 @@ fc-add-functions STANDARD .p (
 		then:: fun {h} . fold {fun} | t
 		else:: h
 	) >>
-	define fold-left = (fun => init => if-match (\h, \t)
+	define fold-left = (fun => init =>
+		if-match:: \h, \t
 		then:: fold-left {fun} {fun {init} {h}} {t}
 		else:: init
 	) >>
-	define fold-right = (fun => init => if-match (\h, \t)
+	define fold-right = (fun => init =>
+		if-match:: \h, \t
 		then:: fun {h} {fold-right {fun} {init} {t}}
 		else:: init
 	) >>
@@ -357,14 +359,17 @@ fc-add-functions STANDARD .p (
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
-	define scan-left = (fun => init => if-match (\h, \t)
+	define scan-left = (fun => init =>
+		if-match:: \h, \t
 		then:: init, scan-left {fun} {fun {init} {h}} {t}
 		else:: init,
 	) >>
-	define scan-right = (fun => init => if-match (\h, \t) then
+	define scan-right = (fun => init =>
+		if-match (\h, \t) then
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
-		else (init,)
+		else
+			init,
 	) >>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
@@ -373,7 +378,8 @@ fc-add-functions STANDARD .p (
 			else:: unsigned-str-to-int
 		| s
 	) >>
-	define tails = if-match (\h, \t)
+	define tails =
+		if-match:: \h, \t
 		then:: (h, t), tails {t}
 		else:: ()
 	>>
@@ -382,7 +388,8 @@ fc-add-functions STANDARD .p (
 		then:: head {list}, take {n - 1} {tail {list}}
 		else:: ()
 	) >>
-	define take-while = (fun => if-match (\elem, \elems)
+	define take-while = (fun =>
+		if-match:: \elem, \elems
 		then:: if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
 		else:: ()
 	) >>
@@ -406,7 +413,8 @@ fc-add-functions STANDARD .p (
 			if-match (\h1, \t1)
 			then:: fun {h0} {h1}, zip {fun} {t0} {t1}
 			else:: ()
-		else (anything => ())
+		else
+			anything => ()
 	) >>
 	define apply =
 		fold-left {x => f => f {x}}
@@ -414,7 +422,8 @@ fc-add-functions STANDARD .p (
 	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
 		compare {a} {b} = 0
 	) >>
-	define concat2 = (if-match (\h, \t)
+	define concat2 = (
+		if-match:: \h, \t
 		then:: cons {h} . concat2 {t}
 		else:: id
 	) >>
@@ -455,9 +464,12 @@ fc-add-functions STANDARD .p (
 			. map {`+ 48`}
 			. unfold-right {i => if (i != 0) then (i % 10, i / 10,) else ()}
 		>>
-		if (i > 0) then:: unsigned-int-to-str
-		else-if (i < 0) then:: concat2 {"-"} . unsigned-int-to-str . `0 -`
-		else:: anything => "0"
+		if (i > 0) then
+			unsigned-int-to-str
+		else-if (i < 0) then
+			concat2 {"-"} . unsigned-int-to-str . `0 -`
+		else
+			anything => "0"
 		| i
 	) >>
 	define range = (start => end => inc =>
@@ -475,7 +487,8 @@ fc-add-functions STANDARD .p (
 			let w1 = width - 1 >>
 			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
 			map {f => map {head . flip {apply} {f}} {m}} | gets
-		else ()
+		else
+			()
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump-string = (s =>
@@ -490,22 +503,24 @@ fc-add-functions STANDARD .p (
 			if (is-tree {n}) then
 				if prec then (s => concat {"(", s, ")",}) else id
 				| concat {dump0 {true} {head | n}, ", ", dump0 {false} {tail | n},}
-			else-if (equals {n} {}) then "()"
+			else-if (equals {n} {}) then
+				"()"
 			else-if (prove _n:n/ (is.atom _n)) then
 				dump-string | prove-with-result _n:n/ (to.string _n _s) _s
-			else (int-to-str {n})
+			else
+				int-to-str {n}
 		) >>
 		dump0 {false}
 	) >>
-	define quick-sort = (cmp => if-match (\pivot, \t)
-		then (
+	define quick-sort = (cmp =>
+		if-match (\pivot, \t) then
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
 			let l0 = (quick-sort {cmp} . filter {filter0} | t) >>
 			let l1 = (quick-sort {cmp} . filter {filter1} | t) >>
 			concat {l0, (pivot,), l1,}
-		)
-		else ()
+		else
+			()
 	) >>
 	.p
 ) #
