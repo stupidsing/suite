@@ -5,20 +5,26 @@
 --
 -- .mode can be EAGER or LAZY
 
-() :- import.file 'fc-type-inference.sl' #
-() :- file.read 'STANDARD.rpn' .rpn
-	, rpn .node .rpn
-	, import .node
+() :- import.file 'fc-type-inference.sl'
 --	, enable-trace
 #
 
-compile-function .mode .do .c0
-	:- compile-function-using-libs .mode (STANDARD,) .do .c0
+compile-function .mode .libs .do .c0
+	:- compile-function-with-precompile .mode .libs .do .c0
+--	:- compile-function-without-precompile .mode .libs .do .c0
 #
 
-compile-function0 .mode .do .c0
-	:- fc-add-functions STANDARD .do .do1
-	, compile-function-using-libs .mode () .do1 .c0
+compile-function-with-precompile .mode .libs .do .c0
+	:- load-libraries .libs
+	, compile-function-using-libs .mode .libs .do .c0
+#
+
+compile-function-without-precompile .mode (.lib, .libs) .do .c
+	:- !, fc-add-functions .lib .do .do1
+	, compile-function-without-precompile .mode .libs .do1 .c
+#
+compile-function-without-precompile .mode () .do .c
+	:- compile-function-using-libs .mode () .do .c
 #
 
 compile-function-using-libs .mode .libs .do .c0
@@ -37,6 +43,18 @@ infer-type-rule-using-libs () .do .uvto .tr .type
 
 fc-compile-using-libs .mode () .do .fve .cdr
 	:- !, fc-compile .mode .do .fve .cdr
+#
+
+load-libraries (.lib, .libs) :- load-library .lib, load-libraries .libs #
+load-libraries () #
+
+load-library .lib
+	:- once (fc-precompile-imported .lib
+		; concat .lib ".rpn" .filename
+		, file.read .filename .rpn
+		, rpn .node .rpn
+		, import .node
+	)
 #
 
 --
@@ -521,6 +539,18 @@ fc-add-functions STANDARD .p (
 			concat {l0, (pivot,), l1,}
 		else
 			()
+	) >>
+	.p
+) #
+
+fc-add-functions MATH .p (
+	define gcd = (a => b =>
+		if (b != 0) then
+			if:: a >= b
+			then:: gcd {b} {a % b}
+			else:: gcd {b} {a}
+		else
+			a
 	) >>
 	.p
 ) #

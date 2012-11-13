@@ -29,7 +29,8 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	)
 	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
-	, rpn (.prog0 # .prog1 # .prog2 #) .rpn
+	, .prog3 = fc-precompile-imported .lib
+	, rpn (.prog0 # .prog1 # .prog2 # .prog3 #) .rpn
 	, file.write .filename .rpn
 #
 

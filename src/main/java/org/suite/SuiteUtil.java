@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
@@ -124,8 +126,13 @@ public class SuiteUtil {
 	public static class FunCompilerConfig {
 		private Node node;
 		private boolean isLazy;
+		private List<String> libraries = new ArrayList<String>();
 		private InputStream in = System.in;
 		private PrintStream out = System.out;
+
+		public FunCompilerConfig() {
+			addLibrary("STANDARD");
+		}
 
 		public static FunCompilerConfig create(String program, boolean isLazy) {
 			return create(parse(program), isLazy);
@@ -138,12 +145,20 @@ public class SuiteUtil {
 			return c;
 		}
 
+		public void addLibrary(String library) {
+			libraries.add(library);
+		}
+
 		public void setNode(Node node) {
 			this.node = node;
 		}
 
 		public void setLazy(boolean isLazy) {
 			this.isLazy = isLazy;
+		}
+
+		public void setLibraries(List<String> libraries) {
+			this.libraries = libraries;
 		}
 
 		public void setIn(InputStream in) {
@@ -171,8 +186,14 @@ public class SuiteUtil {
 		Prover compiler = config.isLazy ? getLazyFunCompiler()
 				: getEagerFunCompiler();
 
-		Node node = SuiteUtil.parse("compile-function .mode .program .code");
-		// + ", pp-list .code"
+		StringBuilder sb = new StringBuilder();
+		for (String library : config.libraries)
+			sb.append(library + ", ");
+
+		Node node = SuiteUtil.parse( //
+				"compile-function .mode (" + sb + ") .program .code"
+				// + ", pp-list .code"
+				);
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -203,6 +224,7 @@ public class SuiteUtil {
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 
 		Node node = SuiteUtil.parse(".libs = (STANDARD,)" //
+				+ ", load-libraries .libs" //
 				+ ", fc-parse .program .p" //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
