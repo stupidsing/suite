@@ -232,7 +232,7 @@ public class SuiteUtil {
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 
 		Node node = SuiteUtil.parse(".libs = (" + getLibraries(config) + ")" //
-				+ ", load-libraries .libs" //
+				+ ", load-precompiled-libraries .libs" //
 				+ ", fc-parse .program .p" //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
