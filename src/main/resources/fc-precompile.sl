@@ -7,7 +7,9 @@
 --
 
 fc-setup-precompile .lib
-	:- concat .lib ".rpn" .filename
+	:- load-library .lib
+	, home.dir .homeDir
+	, concat .homeDir "/" .lib ".rpn" .filename
 	, fc-add-functions .lib .do0 .do1
 	, fc-setup-precompile0 .lib .do1/.do0 .filename
 #
@@ -29,7 +31,7 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	)
 	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
-	, .prog3 = fc-precompile-imported .lib
+	, .prog3 = fc-imported-precompile-library .lib
 	, rpn (.prog0 # .prog1 # .prog2 # .prog3 #) .rpn
 	, file.write .filename .rpn
 #

@@ -1,5 +1,6 @@
 package org.suite.predicates;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -66,6 +67,12 @@ public class IoPredicates {
 		private static Log log = LogFactory.getLog(Util.currentClass());
 	}
 
+	public static class FileExists implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			return new File(Formatter.display(ps)).exists();
+		}
+	}
+
 	public static class FileRead implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			try {
@@ -91,6 +98,14 @@ public class IoPredicates {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+		}
+	}
+
+	public static class HomeDir implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			String homeDir = System.getProperty("home.dir");
+			homeDir = homeDir != null ? homeDir : ".";
+			return prover.bind(new Str(homeDir), ps);
 		}
 	}
 

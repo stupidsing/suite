@@ -70,6 +70,8 @@ public class Main {
 					isLogical = true;
 				else if (arg.startsWith("-no-default-library"))
 					isDefaultLibrary = false;
+				else if (arg.startsWith("-precompile") && iter.hasNext())
+					PrecompileMain.precompileLibrary(iter.next());
 				else
 					inputs.add(arg);
 			}

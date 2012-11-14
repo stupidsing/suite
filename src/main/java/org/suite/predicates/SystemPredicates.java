@@ -75,8 +75,10 @@ public class SystemPredicates {
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());
 		addPredicate("exec", new IoPredicates.Exec());
+		addPredicate("file.exists", new IoPredicates.FileExists());
 		addPredicate("file.read", new IoPredicates.FileRead());
 		addPredicate("file.write", new IoPredicates.FileWrite());
+		addPredicate("home.dir", new IoPredicates.HomeDir());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 
