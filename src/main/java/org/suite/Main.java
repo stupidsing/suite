@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +35,9 @@ import org.util.Util;
 public class Main {
 
 	private static boolean isLazy = true;
+	private static boolean isDefaultLibrary = true;
 	private static List<String> libraries = Util.createList();
+	private static boolean isDumpCode = false;
 
 	public static void main(String args[]) {
 		LogUtil.initLog4j();
@@ -51,7 +54,9 @@ public class Main {
 			while (iter.hasNext()) {
 				String arg = iter.next();
 
-				if (arg.startsWith("-eager"))
+				if (arg.startsWith("-dump-code"))
+					isDumpCode = true;
+				else if (arg.startsWith("-eager"))
 					isLazy = false;
 				else if (arg.startsWith("-filter"))
 					isFilter = true;
@@ -63,6 +68,8 @@ public class Main {
 					libraries.add(iter.next());
 				else if (arg.startsWith("-logical"))
 					isLogical = true;
+				else if (arg.startsWith("-no-default-library"))
+					isDefaultLibrary = false;
 				else
 					inputs.add(arg);
 			}
@@ -147,8 +154,7 @@ public class Main {
 					rs.addRule(node);
 				else if (type == InputType.EVALUATE) {
 					FunCompilerConfig c = SuiteUtil.fcc(node, isLazy);
-					c.addLibraries(libraries);
-					c.setIn(new ByteArrayInputStream(new byte[0]));
+					configureFunCompiler(c);
 
 					Node result = SuiteUtil.evaluateFunctional(c);
 					System.out.println(Formatter.dump(result));
@@ -156,14 +162,13 @@ public class Main {
 					String prog = applyFilter("d => dump {" + input + "}");
 
 					FunCompilerConfig c = SuiteUtil.fcc(prog, isLazy);
-					c.addLibraries(libraries);
-					c.setIn(new ByteArrayInputStream(new byte[0]));
+					configureFunCompiler(c);
 
 					SuiteUtil.evaluateFunctional(c);
 					System.out.println();
 				} else if (type == InputType.EVALUATETYPE) {
 					FunCompilerConfig c = SuiteUtil.fcc(node);
-					c.addLibraries(libraries);
+					configureFunCompiler(c);
 
 					Node result = SuiteUtil.evaluateFunctionalType(c);
 					System.out.println(Formatter.dump(result));
@@ -197,6 +202,15 @@ public class Main {
 			} catch (Throwable ex) {
 				LogUtil.error(Main.class, ex);
 			}
+	}
+
+	private void configureFunCompiler(FunCompilerConfig c) {
+		if (!isDefaultLibrary)
+			c.setLibraries(new ArrayList<String>());
+
+		c.addLibraries(libraries);
+		c.setDumpCode(isDumpCode);
+		c.setIn(new ByteArrayInputStream(new byte[0]));
 	}
 
 	public boolean runLogical(List<String> files) throws IOException {

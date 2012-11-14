@@ -126,6 +126,7 @@ public class SuiteUtil {
 		private Node node;
 		private boolean isLazy;
 		private List<String> libraries = Util.createList();
+		private boolean isDumpCode = false;
 		private InputStream in = System.in;
 		private PrintStream out = System.out;
 
@@ -151,6 +152,10 @@ public class SuiteUtil {
 
 		public void setLibraries(List<String> libraries) {
 			this.libraries = libraries;
+		}
+
+		public void setDumpCode(boolean isDumpCode) {
+			this.isDumpCode = isDumpCode;
 		}
 
 		public void setIn(InputStream in) {
@@ -194,10 +199,9 @@ public class SuiteUtil {
 				: getEagerFunCompiler();
 
 		String libraries = getLibraries(config);
-		Node node = SuiteUtil.parse( //
-				"compile-function .mode (" + libraries + ") .program .code"
-				// + ", pp-list .code"
-				);
+		String s = "compile-function .mode (" + libraries + ") .program .code";
+		s += config.isDumpCode ? ", pp-list .code" : "";
+		Node node = SuiteUtil.parse(s);
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

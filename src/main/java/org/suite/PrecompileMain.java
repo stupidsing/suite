@@ -1,6 +1,8 @@
 package org.suite;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.suite.doer.Prover;
 import org.suite.node.Node;
@@ -12,10 +14,13 @@ import org.suite.node.Node;
  */
 public class PrecompileMain {
 
-	private static final String libraryNames[] = //
-	new String[] { "STANDARD", "MATH" };
+	private static List<String> libraryNames = //
+	Arrays.asList("STANDARD", "MATH");
 
 	public static void main(String args[]) throws IOException {
+		if (args.length > 0)
+			libraryNames = Arrays.asList(args);
+
 		for (String libraryName : libraryNames) {
 			System.out.println("Pre-compiling " + libraryName + "... ");
 
@@ -33,4 +38,5 @@ public class PrecompileMain {
 
 		System.out.println("please refresh eclipse workspace");
 	}
+
 }
