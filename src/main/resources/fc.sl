@@ -457,7 +457,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define zip = (fun =>
 		if-match (\h0, \t0) then
-			if-match (\h1, \t1)
+			if-match:: \h1, \t1
 			then:: fun {h0} {h1}, zip {fun} {t0} {t1}
 			else:: ()
 		else
