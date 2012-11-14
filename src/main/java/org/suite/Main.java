@@ -5,6 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +34,7 @@ import org.util.Util;
 public class Main {
 
 	private static boolean isLazy = true;
+	private static List<String> libraries = Util.createList();
 
 	public static void main(String args[]) {
 		LogUtil.initLog4j();
@@ -43,8 +46,11 @@ public class Main {
 			boolean isFunctional = false;
 			boolean isLogical = false;
 			List<String> inputs = Util.createList();
+			Iterator<String> iter = Arrays.asList(args).iterator();
 
-			for (String arg : args)
+			while (iter.hasNext()) {
+				String arg = iter.next();
+
 				if (arg.startsWith("-eager"))
 					isLazy = false;
 				else if (arg.startsWith("-filter"))
@@ -53,10 +59,13 @@ public class Main {
 					isFunctional = true;
 				else if (arg.startsWith("-lazy"))
 					isLazy = true;
+				else if (arg.startsWith("-library") && iter.hasNext())
+					libraries.add(iter.next());
 				else if (arg.startsWith("-logical"))
 					isLogical = true;
 				else
 					inputs.add(arg);
+			}
 
 			if (isFilter)
 				code = new Main().runFilter(inputs, isLazy) ? 0 : 1;
@@ -74,7 +83,7 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE, EVALUATE, EVALUATETYPE
+		FACT, QUERY, ELABORATE, EVALUATE, EVALUATEDUMP, EVALUATETYPE
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
@@ -115,11 +124,14 @@ public class Main {
 				} else if (input.startsWith("/")) {
 					type = InputType.ELABORATE;
 					input = input.substring(1);
+				} else if (input.startsWith("\\e")) {
+					type = InputType.EVALUATE;
+					input = input.substring(2);
 				} else if (input.startsWith("\\t")) {
 					type = InputType.EVALUATETYPE;
 					input = input.substring(2);
 				} else if (input.startsWith("\\")) {
-					type = InputType.EVALUATE;
+					type = InputType.EVALUATEDUMP;
 					input = input.substring(1);
 				} else
 					type = InputType.FACT;
@@ -134,13 +146,25 @@ public class Main {
 				if (type == InputType.FACT)
 					rs.addRule(node);
 				else if (type == InputType.EVALUATE) {
-					String p = applyFilter("d => dump {" + input + "}");
-					FunCompilerConfig c = FunCompilerConfig.create(p, isLazy);
+					FunCompilerConfig c = SuiteUtil.fcc(node, isLazy);
+					c.addLibraries(libraries);
 					c.setIn(new ByteArrayInputStream(new byte[0]));
+
+					Node result = SuiteUtil.evaluateFunctional(c);
+					System.out.println(Formatter.dump(result));
+				} else if (type == InputType.EVALUATEDUMP) {
+					String prog = applyFilter("d => dump {" + input + "}");
+
+					FunCompilerConfig c = SuiteUtil.fcc(prog, isLazy);
+					c.addLibraries(libraries);
+					c.setIn(new ByteArrayInputStream(new byte[0]));
+
 					SuiteUtil.evaluateFunctional(c);
 					System.out.println();
 				} else if (type == InputType.EVALUATETYPE) {
-					FunCompilerConfig c = FunCompilerConfig.create(node);
+					FunCompilerConfig c = SuiteUtil.fcc(node);
+					c.addLibraries(libraries);
+
 					Node result = SuiteUtil.evaluateFunctionalType(c);
 					System.out.println(Formatter.dump(result));
 				} else {

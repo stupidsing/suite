@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.suite.SuiteUtil;
+import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -104,6 +105,14 @@ public class EagerFunctionCompilerTest {
 				+ "fold-left {`-`} {100} {6, 7, 8,}"));
 		assertEquals(Int.create(-93), eval("" //
 				+ "fold-right {`-`} {100} {6, 7, 8,}"));
+	}
+
+	@Test
+	public void testGcd() {
+		Node f = SuiteUtil.parse("gcd {6} {9}");
+		FunCompilerConfig c = SuiteUtil.fcc(f);
+		c.addLibrary("MATH");
+		assertEquals(Int.create(3), SuiteUtil.evaluateFunctional(c));
 	}
 
 	@Test

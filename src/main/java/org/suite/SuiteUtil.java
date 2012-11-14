@@ -133,23 +133,12 @@ public class SuiteUtil {
 			addLibrary("STANDARD");
 		}
 
-		public static FunCompilerConfig create(String program, boolean isLazy) {
-			return create(parse(program), isLazy);
-		}
-
-		public static FunCompilerConfig create(Node node) {
-			return create(node, false);
-		}
-
-		public static FunCompilerConfig create(Node node, boolean isLazy) {
-			FunCompilerConfig c = new FunCompilerConfig();
-			c.setNode(node);
-			c.setLazy(isLazy);
-			return c;
-		}
-
 		public void addLibrary(String library) {
 			libraries.add(library);
+		}
+
+		public void addLibraries(List<String> libs) {
+			libraries.addAll(libs);
 		}
 
 		public void setNode(Node node) {
@@ -173,6 +162,21 @@ public class SuiteUtil {
 		}
 	}
 
+	public static FunCompilerConfig fcc(Node node) {
+		return fcc(node, false);
+	}
+
+	public static FunCompilerConfig fcc(String program, boolean isLazy) {
+		return fcc(parse(program), isLazy);
+	}
+
+	public static FunCompilerConfig fcc(Node node, boolean isLazy) {
+		FunCompilerConfig c = new FunCompilerConfig();
+		c.setNode(node);
+		c.setLazy(isLazy);
+		return c;
+	}
+
 	public static Node evaluateEagerFunctional(String program) {
 		return evaluateFunctional(program, false);
 	}
@@ -182,7 +186,7 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctional(String program, boolean isLazy) {
-		return evaluateFunctional(FunCompilerConfig.create(program, isLazy));
+		return evaluateFunctional(fcc(program, isLazy));
 	}
 
 	public static Node evaluateFunctional(FunCompilerConfig config) {
@@ -216,8 +220,7 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(String program) {
-		return evaluateFunctionalType(FunCompilerConfig.create( //
-				SuiteUtil.parse(program)));
+		return evaluateFunctionalType(fcc(SuiteUtil.parse(program)));
 	}
 
 	public static Node evaluateFunctionalType(FunCompilerConfig config) {
