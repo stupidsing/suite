@@ -571,15 +571,3 @@ fc-add-functions STANDARD .p (
 	) >>
 	.p
 ) #
-
-fc-add-functions MATH .p (
-	define gcd = (a => b =>
-		if (b != 0) then
-			if:: a >= b
-			then:: gcd {b} {a % b}
-			else:: gcd {b} {a}
-		else
-			a
-	) >>
-	.p
-) #
