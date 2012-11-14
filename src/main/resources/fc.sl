@@ -307,6 +307,16 @@ fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 	, fc-bind .t0 .t1 .then .else .then1
 #
 
+fc-frame-difference .frame0 .frame1 0 :- same .frame0 .frame1, ! #
+fc-frame-difference .frame0 (.frame1 + 1) .frameDiff
+	:- not is.tree .frame0, !
+	, fc-frame-difference .frame0 .frame1 .frameDiff0
+	, let .frameDiff (.frameDiff0 - 1)
+#
+fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
+	:- !, fc-frame-difference .frame0 .frame1 .frameDiff
+#
+
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _lhead HEAD #

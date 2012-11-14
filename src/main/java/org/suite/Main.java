@@ -37,6 +37,7 @@ public class Main {
 	private static boolean isLazy = true;
 	private static boolean isDefaultLibrary = true;
 	private static List<String> libraries = Util.createList();
+	private static boolean isTrace = false;
 	private static boolean isDumpCode = false;
 
 	public static void main(String args[]) {
@@ -72,6 +73,8 @@ public class Main {
 					isDefaultLibrary = false;
 				else if (arg.startsWith("-precompile") && iter.hasNext())
 					PrecompileMain.precompileLibrary(iter.next());
+				else if (arg.startsWith("-trace"))
+					isTrace = true;
 				else
 					inputs.add(arg);
 			}
@@ -211,6 +214,7 @@ public class Main {
 			c.setLibraries(new ArrayList<String>());
 
 		c.addLibraries(libraries);
+		c.setTrace(isTrace);
 		c.setDumpCode(isDumpCode);
 		c.setIn(new ByteArrayInputStream(new byte[0]));
 	}

@@ -126,6 +126,7 @@ public class SuiteUtil {
 		private Node node;
 		private boolean isLazy;
 		private List<String> libraries = Util.createList();
+		private boolean isTrace = false;
 		private boolean isDumpCode = false;
 		private InputStream in = System.in;
 		private PrintStream out = System.out;
@@ -152,6 +153,10 @@ public class SuiteUtil {
 
 		public void setLibraries(List<String> libraries) {
 			this.libraries = libraries;
+		}
+
+		public void setTrace(boolean isTrace) {
+			this.isTrace = isTrace;
 		}
 
 		public void setDumpCode(boolean isDumpCode) {
@@ -199,8 +204,9 @@ public class SuiteUtil {
 				: getEagerFunCompiler();
 
 		String libraries = getLibraries(config);
-		String s = "compile-function .mode (" + libraries + ") .program .code";
-		s += config.isDumpCode ? ", pp-list .code" : "";
+		String s = (config.isTrace ? "enable-trace, " : "")
+				+ "compile-function .mode (" + libraries + ") .program .code"
+				+ (config.isDumpCode ? ", pp-list .code" : "");
 		Node node = SuiteUtil.parse(s);
 
 		Generalizer generalizer = new Generalizer();
@@ -234,6 +240,7 @@ public class SuiteUtil {
 		Node node = SuiteUtil.parse(".libs = (" + getLibraries(config) + ")" //
 				+ ", load-precompiled-libraries .libs" //
 				+ ", fc-parse .program .p" //
+				+ (config.isTrace ? "enable-trace, " : "") //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .type .t");

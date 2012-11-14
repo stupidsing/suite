@@ -38,9 +38,9 @@ fc-lazy-compile0 (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 #
 fc-lazy-compile0 (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 	:- member .ve .var/(%REG/.reg/.frame0)
-	, !, (.frame = .frame0, !, .c0 = .cx, .reg = .reg1
-		; let .frameDifference (.frame0 - .frame)
-		, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
+	, !, fc-frame-difference .frame0 .frame .frameDiff
+	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1
+		; .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDiff .reg, .cx)
 	)
 #
 fc-lazy-compile0 (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
@@ -56,9 +56,8 @@ fc-lazy-compile0 (TUPLE .name (.e, .es)) .env .cdr
 #
 fc-lazy-compile0 .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
-	, let .frame1 (.frame + 1)
 	, .d0 = (.funcLabel ENTER, .d1)
-	, fc-lazy-compile-wrapped .do .frame1/.ve .d1/.d2/.d3/.dx/.returnReg
+	, fc-lazy-compile-wrapped .do (.frame + 1)/.ve .d1/.d2/.d3/.dx/.returnReg
 	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 	, !
 #
@@ -66,9 +65,9 @@ fc-lazy-compile0 .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 fc-lazy-compile-wrapped (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
-	, let .frame1 (.frame + 1)
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
+	, .frame1 = .frame + 1
 	, .env1 = .frame1/(.var/(%REG/.varReg/.frame1), .ve)
 	, fc-lazy-compile0 .do .env1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)

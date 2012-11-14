@@ -7,9 +7,9 @@ fc-eager-compile (OPTION _ .do) .env .cdr :- !, fc-eager-compile .do .env .cdr #
 fc-eager-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
-	, let .frame1 (.frame + 1)
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
+	, .frame1 = .frame + 1
 	, .env1 = .frame1/(.var/(%REG/.varReg/.frame1), .ve)
 	, fc-eager-compile .do .env1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
@@ -58,10 +58,10 @@ fc-eager-compile (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
 fc-eager-compile (VARIABLE .var) .frame/.ve  .c0/.cx/.d/.d/.reg1
-	:- member .ve .var/(%REG/.reg/.frame0), !
-	, (.frame = .frame0, !, .c0 = .cx, .reg = .reg1
-		; let .frameDifference (.frame0 - .frame)
-		, .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDifference .reg, .cx)
+	:- member .ve .var/(%REG/.reg/.frame0)
+	, !, fc-frame-difference .frame0 .frame .frameDiff
+	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1
+		; .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDiff .reg, .cx)
 	)
 #
 fc-eager-compile (CONSTANT .c) _ .c0/.cx/.d/.d/.reg
