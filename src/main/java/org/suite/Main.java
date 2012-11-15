@@ -34,64 +34,69 @@ import org.util.Util;
  */
 public class Main {
 
-	private static boolean isLazy = true;
-	private static boolean isDefaultLibrary = true;
-	private static List<String> libraries = Util.createList();
-	private static boolean isTrace = false;
-	private static boolean isDumpCode = false;
+	private boolean isLazy = true;
+	private boolean isDefaultLibrary = true;
+	private List<String> libraries = Util.createList();
+	private boolean isTrace = false;
+	private boolean isDumpCode = false;
 
 	public static void main(String args[]) {
 		LogUtil.initLog4j();
 
 		try {
-			int code = 0;
-
-			boolean isFilter = false;
-			boolean isFunctional = false;
-			boolean isLogical = false;
-			List<String> inputs = Util.createList();
-			Iterator<String> iter = Arrays.asList(args).iterator();
-
-			while (iter.hasNext()) {
-				String arg = iter.next();
-
-				if (arg.startsWith("-dump-code"))
-					isDumpCode = true;
-				else if (arg.startsWith("-eager"))
-					isLazy = false;
-				else if (arg.startsWith("-filter"))
-					isFilter = true;
-				else if (arg.startsWith("-functional"))
-					isFunctional = true;
-				else if (arg.startsWith("-lazy"))
-					isLazy = true;
-				else if (arg.startsWith("-library") && iter.hasNext())
-					libraries.add(iter.next());
-				else if (arg.startsWith("-logical"))
-					isLogical = true;
-				else if (arg.startsWith("-no-default-library"))
-					isDefaultLibrary = false;
-				else if (arg.startsWith("-precompile") && iter.hasNext())
-					PrecompileMain.precompileLibrary(iter.next());
-				else if (arg.startsWith("-trace"))
-					isTrace = true;
-				else
-					inputs.add(arg);
-			}
-
-			if (isFilter)
-				code = new Main().runFilter(inputs, isLazy) ? 0 : 1;
-			else if (isFunctional)
-				code = new Main().runFunctional(inputs, isLazy) ? 0 : 1;
-			else if (isLogical)
-				code = new Main().runLogical(inputs) ? 0 : 1;
-			else
-				new Main().run(inputs);
-
-			System.exit(code);
+			new Main().run(args);
 		} catch (Throwable ex) {
 			log.error(Main.class, ex);
 		}
+	}
+
+	private void run(String args[]) throws IOException {
+		int code = 0;
+
+		boolean isFilter = false;
+		boolean isFunctional = false;
+		boolean isLogical = false;
+		List<String> inputs = Util.createList();
+		Iterator<String> iter = Arrays.asList(args).iterator();
+
+		while (iter.hasNext()) {
+			String arg = iter.next();
+
+			if (arg.startsWith("-dump-code"))
+				isDumpCode = true;
+			else if (arg.startsWith("-eager"))
+				isLazy = false;
+			else if (arg.startsWith("-filter"))
+				isFilter = true;
+			else if (arg.startsWith("-functional"))
+				isFunctional = true;
+			else if (arg.startsWith("-lazy"))
+				isLazy = true;
+			else if (arg.startsWith("-library") && iter.hasNext())
+				libraries.addAll(Arrays.asList(iter.next().split(",")));
+			else if (arg.startsWith("-logical"))
+				isLogical = true;
+			else if (arg.startsWith("-no-default-library"))
+				isDefaultLibrary = false;
+			else if (arg.startsWith("-precompile") && iter.hasNext())
+				for (String lib : iter.next().split(","))
+					runPrecompile(lib);
+			else if (arg.startsWith("-trace"))
+				isTrace = true;
+			else
+				inputs.add(arg);
+		}
+
+		if (isFilter)
+			code = new Main().runFilter(inputs, isLazy) ? 0 : 1;
+		else if (isFunctional)
+			code = new Main().runFunctional(inputs, isLazy) ? 0 : 1;
+		else if (isLogical)
+			code = new Main().runLogical(inputs) ? 0 : 1;
+		else
+			new Main().run(inputs);
+
+		System.exit(code);
 	}
 
 	public enum InputType {
@@ -209,16 +214,6 @@ public class Main {
 			}
 	}
 
-	private void configureFunCompiler(FunCompilerConfig c) {
-		if (!isDefaultLibrary)
-			c.setLibraries(new ArrayList<String>());
-
-		c.addLibraries(libraries);
-		c.setTrace(isTrace);
-		c.setDumpCode(isDumpCode);
-		c.setIn(new ByteArrayInputStream(new byte[0]));
-	}
-
 	public boolean runLogical(List<String> files) throws IOException {
 		boolean result = true;
 
@@ -241,6 +236,30 @@ public class Main {
 		return true;
 	}
 
+	public boolean runFunctional(List<String> files, boolean isLazy)
+			throws IOException {
+		if (files.size() == 1) {
+			FileInputStream is = new FileInputStream(files.get(0));
+			String expression = IoUtil.readStream(is);
+			Node result = SuiteUtil.evaluateFunctional(expression, isLazy);
+			return result == Atom.create("true");
+		} else
+			throw new RuntimeException("Only one evaluation is allowed");
+	}
+
+	public void runPrecompile(String libraryName) {
+		System.out.println("Pre-compiling " + libraryName + "... ");
+
+		String imports[] = { "auto.sl", "fc-precompile.sl" };
+		Prover prover = SuiteUtil.getProver(imports);
+		Node node = SuiteUtil.parse("fc-setup-precompile " + libraryName);
+
+		if (prover.prove(node))
+			System.out.println("Pre-compilation success\n");
+		else
+			System.out.println("Pre-compilation failed");
+	}
+
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
@@ -256,15 +275,14 @@ public class Main {
 				+ "fflush {filter-out {0} . (" + func + ") . filter-in | 0}";
 	}
 
-	public boolean runFunctional(List<String> files, boolean isLazy)
-			throws IOException {
-		if (files.size() == 1) {
-			FileInputStream is = new FileInputStream(files.get(0));
-			String expression = IoUtil.readStream(is);
-			Node result = SuiteUtil.evaluateFunctional(expression, isLazy);
-			return result == Atom.create("true");
-		} else
-			throw new RuntimeException("Only one evaluation is allowed");
+	private void configureFunCompiler(FunCompilerConfig c) {
+		if (!isDefaultLibrary)
+			c.setLibraries(new ArrayList<String>());
+
+		c.addLibraries(libraries);
+		c.setTrace(isTrace);
+		c.setDumpCode(isDumpCode);
+		c.setIn(new ByteArrayInputStream(new byte[0]));
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());
