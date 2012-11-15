@@ -123,13 +123,13 @@ fc-parse (.var as .type => .do) (FUN .var .do1)
 	, fc-parse .do .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
-fc-parse (define type .type >> .do) (OPTION (DEF-TYPE .type _) .do1) -- Type variable
-	:- !, fc-parse .do .do1
-#
 fc-parse (define type .type = .def >> .do) (
 	OPTION (DEF-ONE-OF-TYPE .def1) OPTION (DEF-TYPE .type .def1) .do1
 ) :- !, fc-parse-type .def .def1
 	, fc-parse .do .do1
+#
+fc-parse (define type .type >> .do) (OPTION (DEF-TYPE .type _) .do1) -- Type variable
+	:- !, fc-parse .do .do1
 #
 fc-parse (.value as .type) (OPTION (CAST .type1) .value1)
 	:- !, fc-parse-type .type .type1
