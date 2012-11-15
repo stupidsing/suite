@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Builds by mvn -Dmaven.test.skip=true install assembly:single
-# Pre-compiles by java -cp "${JAR}" org.suite.PrecompileMain
+# Pre-compiles by ./run.sh -precompile STANDARD < /dev/null
 
 HOMEDIR="`dirname ${0}`"
 JAR="${HOMEDIR}/target/suite-1.0-jar-with-dependencies.jar"
