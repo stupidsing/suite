@@ -16,6 +16,18 @@ infer-type-rule (FUN .var .do) .ue/.ve/.te/.oe .tr/.tr (FUN .varType .type)
 	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
 	, resolve-types .tr1
 #
+infer-type-rule (OPTION CHK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
+	:- infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type
+	, (.type = TUPLE-OF .name .types, !, (
+			member .oe (TUPLE-OF .name .types1)/_ -- Enforces tuple name checking
+			, .tr1 = (
+				SUPERTYPE-OF .te/.oe (TUPLE-OF .name .types) (TUPLE-OF .name .types1)
+			, .trx)
+			; fc-error "Undefined tuple named" .name
+		)
+	; .tr1 = .trx
+	)
+#
 infer-type-rule (OPTION (DEF-ONE-OF-TYPE .def) .do) .ue/.ve/.te/.oe .tr .type
 	:- !, find-one-of-type .def .oe1/.oe
 	, infer-type-rule .do .ue/.ve/.te/.oe1 .tr .type
@@ -72,10 +84,6 @@ infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
 infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
 	:- !, infer-type-rules .elems .ue/.ve/.te/.oe .tr .types
 	, .type = TUPLE-OF .name .types
-	, !, (.name = $$ANON
-		; member .oe (TUPLE-OF .name _)/_ -- Enforces tuple name checking
-		; fc-error "undefined tuple named" .name
-	), !
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type0

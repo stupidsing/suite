@@ -6,10 +6,17 @@ enable-trace
 	, asserta (.call :- write 'TRACE: ', dump .call, nl, fail)
 #
 
--- Converts tuple (a b c) to list (a, b, c,) with terminating nil
-enlist (.item .items) (.item, .items1) :- !, enlist .items .items1 #
-enlist () () :- ! #
-enlist .item (.item,) :- ! #
+-- Converts tuple (a b c) to/from list (a, b, c,) with terminating nil
+enlist .a .b :- bound .a, !, enlistf .a .b #
+enlist .a .b :- bound .b, !, enlistb .a .b #
+
+enlistb .item (.item,) :- ! #
+enlistb () () :- ! #
+enlistb (.item .items) (.item, .items1) :- !, enlist .items .items1 #
+
+enlistf (.item .items) (.item, .items1) :- !, enlist .items .items1 #
+enlistf () () :- ! #
+enlistf .item (.item,) :- ! #
 
 fold () .r/.r _ #
 fold (.head, .tail) .r0/.rx .action

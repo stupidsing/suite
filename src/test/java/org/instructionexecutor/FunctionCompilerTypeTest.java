@@ -53,6 +53,9 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testTuple() {
+		getType("define type t = one-of (A, B number, C boolean,) >> A");
+		getType("define type t = one-of (A, B number, C boolean,) >> B 4");
+		getType("define type t = one-of (A, B number, C boolean,) >> C true");
 		getType("define type bt = one-of (BTREE number number,) >> \n"
 				+ "BTREE 2 3 = BTREE 4 6");
 		getTypeMustFail("define type t1 = one-of (T1 number number,) >> \n"
@@ -69,6 +72,8 @@ public class FunctionCompilerTypeTest {
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
 				, "define type t = one-of (BTREE t t,) >> \n" //
 						+ "let v as t = BTREE 2 3 >> 1" //
+				, "define type t = one-of (A, B number, C boolean,) >> A 4" //
+				, "define type t = one-of (A, B number, C boolean,) >> B" //
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
