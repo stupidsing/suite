@@ -252,7 +252,10 @@ public class Main {
 
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 		Prover prover = SuiteUtil.getProver(imports);
-		Node node = SuiteUtil.parse("fc-setup-precompile " + libraryName);
+
+		String goal = (isTrace ? "enable-trace, " : "")
+				+ "fc-setup-precompile " + libraryName;
+		Node node = SuiteUtil.parse(goal);
 
 		if (prover.prove(node))
 			System.out.println("Pre-compilation success\n");
