@@ -207,7 +207,7 @@ fc-parse .s .n
 	:- is.string .s
 	, !, substring .s 0 1 .c, substring .s 1 0 .cs
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
-#	
+#
 fc-parse .t (OPTION CHK-TUPLE-TYPE (TUPLE .t ())) :- fc-is-tuple-name .t, ! #
 fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
@@ -301,7 +301,8 @@ fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else .parsed
 	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .parsed
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
-	:- fc-bind .v0 .v1 .then .else .parsed
+	:- !
+	, fc-bind .v0 .v1 .then .else .parsed
 #
 fc-bind0 .v0 .v1 .then .else (
 	IF (INVOKE .v0 INVOKE .v1 VARIABLE equals) .then .else

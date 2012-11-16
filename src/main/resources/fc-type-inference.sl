@@ -184,7 +184,7 @@ resolve-types0 _/_
 	:- !, fc-error "Not enough type information"
 #
 
-super-of-type .te/_ .t0 (TYPE .name) :- member .te .name/.t0 #
+super-of-type .te/_ .t (TYPE .name) :- member .te .name/.t #
 super-of-type _/.oe .t0 .t1 :- member .oe .t0/.t1 #
 
 super-of-types _ () () .tr/.tr :- ! #
