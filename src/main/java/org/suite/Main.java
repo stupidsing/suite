@@ -162,43 +162,46 @@ public class Main {
 
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
+				String prog;
+				FunCompilerConfig fcc;
 
-				if (type == InputType.FACT)
+				switch (type) {
+				case FACT:
 					rs.addRule(node);
-				else if (type == InputType.EVALUATE) {
-					FunCompilerConfig c = SuiteUtil.fcc(node, isLazy);
-					configureFunCompiler(c);
-
-					Node result = SuiteUtil.evaluateFunctional(c);
+					break;
+				case EVALUATE:
+					fcc = SuiteUtil.fcc(node, isLazy);
+					configureFunCompiler(fcc);
+					Node result = SuiteUtil.evaluateFunctional(fcc);
 					System.out.println(Formatter.dump(result));
-				} else if (type == InputType.EVALUATEDUMP) {
-					String func = "anything => dump {" + input + "}";
-					String prog = applyFilter(func);
-					FunCompilerConfig c = SuiteUtil.fcc(prog, isLazy);
-					configureFunCompiler(c);
-
-					SuiteUtil.evaluateFunctional(c);
+					break;
+				case EVALUATEDUMP:
+					prog = applyFilter("anything => dump {" + input + "}");
+					fcc = SuiteUtil.fcc(prog, isLazy);
+					configureFunCompiler(fcc);
+					SuiteUtil.evaluateFunctional(fcc);
 					System.out.println();
-				} else if (type == InputType.EVALUATESTR) {
-					String prog = applyFilter("anything => " + input);
-					FunCompilerConfig c = SuiteUtil.fcc(prog, isLazy);
-					configureFunCompiler(c);
-
-					SuiteUtil.evaluateFunctional(c);
+					break;
+				case EVALUATESTR:
+					prog = applyFilter("anything => " + input);
+					fcc = SuiteUtil.fcc(prog, isLazy);
+					configureFunCompiler(fcc);
+					SuiteUtil.evaluateFunctional(fcc);
 					System.out.println();
-				} else if (type == InputType.EVALUATETYPE) {
-					FunCompilerConfig c = SuiteUtil.fcc(node);
-					configureFunCompiler(c);
-
-					Node result = SuiteUtil.evaluateFunctionalType(c);
-					System.out.println(Formatter.dump(result));
-				} else {
+					break;
+				case EVALUATETYPE:
+					fcc = SuiteUtil.fcc(node);
+					configureFunCompiler(fcc);
+					node = SuiteUtil.evaluateFunctionalType(fcc);
+					System.out.println(Formatter.dump(node));
+					break;
+				default:
 					final Generalizer generalizer = new Generalizer();
 					node = generalizer.generalize(node);
 
 					if (type == InputType.QUERY) {
-						boolean result = prover.prove(node);
-						System.out.println(result ? "Yes\n" : "No\n");
+						boolean q = prover.prove(node);
+						System.out.println(q ? "Yes\n" : "No\n");
 					} else if (type == InputType.ELABORATE) {
 						Node elab = new Station() {
 							public boolean run() {
