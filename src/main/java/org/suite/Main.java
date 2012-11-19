@@ -100,7 +100,7 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE, EVALUATE, EVALUATEDUMP, EVALUATETYPE
+		FACT, QUERY, ELABORATE, EVALUATE, EVALUATEDUMP, EVALUATESTR, EVALUATETYPE
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
@@ -144,6 +144,9 @@ public class Main {
 				} else if (input.startsWith("\\e")) {
 					type = InputType.EVALUATE;
 					input = input.substring(2);
+				} else if (input.startsWith("\\s")) {
+					type = InputType.EVALUATESTR;
+					input = input.substring(2);
 				} else if (input.startsWith("\\t")) {
 					type = InputType.EVALUATETYPE;
 					input = input.substring(2);
@@ -169,8 +172,15 @@ public class Main {
 					Node result = SuiteUtil.evaluateFunctional(c);
 					System.out.println(Formatter.dump(result));
 				} else if (type == InputType.EVALUATEDUMP) {
-					String prog = applyFilter("d => dump {" + input + "}");
+					String func = "anything => dump {" + input + "}";
+					String prog = applyFilter(func);
+					FunCompilerConfig c = SuiteUtil.fcc(prog, isLazy);
+					configureFunCompiler(c);
 
+					SuiteUtil.evaluateFunctional(c);
+					System.out.println();
+				} else if (type == InputType.EVALUATESTR) {
+					String prog = applyFilter("anything => " + input);
 					FunCompilerConfig c = SuiteUtil.fcc(prog, isLazy);
 					configureFunCompiler(c);
 
