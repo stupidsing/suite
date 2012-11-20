@@ -16,7 +16,7 @@ infer-type-rule (FUN .var .do) .ue/.ve/.te/.oe .tr/.tr (FUN .varType .type)
 	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
 	, resolve-types .tr1
 #
-infer-type-rule (OPTION CHK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
+infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type
 	, (.type = TUPLE-OF .name .types, !, (
 			member .oe (TUPLE-OF .name .types1)/_ -- Enforces tuple name checking

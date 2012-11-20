@@ -190,7 +190,7 @@ fc-parse (c () .constant) (CONSTANT .constant) :- ! #
 fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
 	:- !, fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
 #
-fc-parse (.name .elems) (OPTION CHK-TUPLE-TYPE (TUPLE .name .elems2))
+fc-parse (.name .elems) (OPTION CHECK-TUPLE-TYPE (TUPLE .name .elems2))
 	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
 #
 fc-parse .tree (TREE .oper .left1 .right1)
@@ -208,7 +208,7 @@ fc-parse .s .n
 	, !, substring .s 0 1 .c, substring .s 1 0 .cs
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
 #
-fc-parse .t (OPTION CHK-TUPLE-TYPE (TUPLE .t ())) :- fc-is-tuple-name .t, ! #
+fc-parse .t (OPTION CHECK-TUPLE-TYPE (TUPLE .t ())) :- fc-is-tuple-name .t, ! #
 fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
