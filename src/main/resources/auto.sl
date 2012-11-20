@@ -7,16 +7,10 @@ enable-trace
 #
 
 -- Converts tuple (a b c) to/from list (a, b, c,) with terminating nil
-enlist .a .b :- bound .a, !, enlistf .a .b #
-enlist .a .b :- bound .b, !, enlistb .a .b #
-
-enlistb .item (.item,) :- ! #
-enlistb () () :- ! #
-enlistb (.item .items) (.item, .items1) :- !, enlist .items .items1 #
-
-enlistf (.item .items) (.item, .items1) :- !, enlist .items .items1 #
-enlistf () () :- ! #
-enlistf .item (.item,) :- ! #
+enlist .a .b :- bound .b, .b = (.a,), ! #
+enlist () () :- ! #
+enlist (.item .items) (.item, .items1) :- !, enlist .items .items1 #
+enlist .a .b :- bound .a, .b = (.a,), ! #
 
 fold () .r/.r _ #
 fold (.head, .tail) .r0/.rx .action
