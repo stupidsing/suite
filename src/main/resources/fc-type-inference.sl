@@ -99,7 +99,8 @@ infer-type-rule (OPTION _ .do) .env .tr .type
 #
 infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- (member .ue .var/.type, .tr0 = .trx
-		; member .ve .var/.varType, .tr0 = (INSTANCE-OF .varType .type, .trx)
+		; member .ve .var/.varType
+			, .tr0 = (SPECIALIZATION-OF .varType .type, .trx)
 		; default-fun-type .var .type, .tr0 = .trx
 	), !
 #
@@ -170,7 +171,7 @@ resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
 	, super-of-types .env .ts0 .ts1 .trx/.trxx
 	, resolve-types0 .tr1/.trxx
 #
-resolve-types0 (INSTANCE-OF .t0 .t1, .tr1)/.trx
+resolve-types0 (SPECIALIZATION-OF .t0 .t1, .tr1)/.trx
 	:- !, clone .t0 .t1, resolve-types0 .tr1/.trx
 #
 resolve-types0 (EITHER .t .ts, .tr1)/.trx
