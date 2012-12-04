@@ -42,9 +42,9 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testContains() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ "contains {9} {7, 8, 9, 10, 11,}"));
+				+ "contains {8, 9,} {7, 8, 9, 10, 11,}"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ "contains {12} {7, 8, 9, 10, 11,}"));
+				+ "contains {11, 12,} {7, 8, 9, 10, 11,}"));
 	}
 
 	@Test

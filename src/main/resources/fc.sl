@@ -507,9 +507,6 @@ fc-add-functions STANDARD .p (
 	define concat =
 		fold-left {concat2} {}
 	>>
-	define contains = (e =>
-		fold {or} . map {`= e`}
-	) >>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {fun | e1} | l2} | l1
 	) >>
@@ -552,6 +549,9 @@ fc-add-functions STANDARD .p (
 			map {f => map {head . flip {apply} {f}} {m}} | gets
 		else
 			()
+	) >>
+	define contains = (m =>
+		fold {or} . map {starts-with | m} . tails
 	) >>
 	define dump as (:t => (list-of number) {:t}) = no-type-check (
 		let dump-string = (s =>
