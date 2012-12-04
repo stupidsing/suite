@@ -67,6 +67,14 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testEndsWith() {
+		assertEquals(Atom.create("true"),
+				eval("ends-with {1, 2, 3,} {4, 5, 6, 1, 2, 3,}"));
+		assertEquals(Atom.create("false"),
+				eval("ends-with {1, 2, 3,} {4, 5, 3, 1, 2, 6,}"));
+	}
+
+	@Test
 	public void testEquals() {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "equals {} {}"));
@@ -248,6 +256,14 @@ public class EagerFunctionCompilerTest {
 	public void testReverse() {
 		assertEquals(SuiteUtil.parse("5, 4, 3, 2, 1,"),
 				eval("reverse {1, 2, 3, 4, 5,}"));
+	}
+
+	@Test
+	public void testStartsWith() {
+		assertEquals(Atom.create("true"),
+				eval("starts-with {1, 2, 3,} {1, 2, 3, 4, 5, 6,}"));
+		assertEquals(Atom.create("false"),
+				eval("starts-with {1, 2, 3,} {1, 2, 4, 3, 5, 6,}"));
 	}
 
 	@Test

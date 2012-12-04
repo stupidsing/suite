@@ -530,6 +530,14 @@ fc-add-functions STANDARD .p (
 	define range = (start => end => inc =>
 		unfold-right {i => if (i < end) then (i, i + inc,) else ()} | start
 	) >>
+	define starts-with = (
+		if-match (\sh, \st) then
+			if-match:: sh, \t
+			then:: starts-with {st} {t}
+			else:: false
+		else
+			anything => true
+	) >>
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
 		. filter {`= separator` . head}
@@ -566,6 +574,9 @@ fc-add-functions STANDARD .p (
 				int-to-str {n}
 		) >>
 		dump0 {false}
+	) >>
+	define ends-with = (end =>
+		starts-with {reverse | end} . reverse
 	) >>
 	define quick-sort = (cmp =>
 		if-match (\pivot, \t) then
