@@ -501,6 +501,19 @@ fc-add-functions STANDARD .p (
 	define map = (fun =>
 		fold-right {i => list => fun {i}, list} {}
 	) >>
+	define merge = (list0 => list1 =>
+		if-bind (list0 = (\h0, \t0)) then
+			if-bind (list1 = (\h1, \t1)) then
+				if:: h0 < h1
+				then:: h0, merge {t0} {list1}
+				else-if:: h0 > h1
+				then:: h1, merge {list0} {t1}
+				else:: h0, h1, merge {t0} {t1}
+			else
+				list0
+		else
+			list1
+	) >>
 	define reverse =
 		fold-left {a => b => b, a} {}
 	>>
@@ -528,6 +541,16 @@ fc-add-functions STANDARD .p (
 		else
 			anything => "0"
 		| i
+	) >>
+	define merge-sort = (merge => list =>
+		let len = length {list} >>
+		if (len > 1) then
+			let len2 = len / 2 >>
+			define list0 = (merge-sort {merge} . take {len2} | list) >>
+			define list1 = (merge-sort {merge} . drop {len2} | list) >>
+			merge {list0} {list1}
+		else
+			list
 	) >>
 	define range = (start => end => inc =>
 		unfold-right {i => if (i < end) then (i, i + inc,) else ()} | start
