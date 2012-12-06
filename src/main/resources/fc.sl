@@ -382,6 +382,11 @@ fc-add-functions STANDARD .p (
 			else:: c0
 		else:: _compare {a} {b}
 	) >>
+	define drop = (n => list =>
+		if:: n > 0 && is-tree {list}
+		then:: drop {n - 1} . tail | list
+		else:: list
+	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>
@@ -440,7 +445,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define take = (n => list =>
 		if:: n > 0 && is-tree {list}
-		then:: head {list}, take {n - 1} {tail {list}}
+		then:: cons {head | list} . take {n - 1} . tail | list
 		else:: ()
 	) >>
 	define take-while = (fun =>
