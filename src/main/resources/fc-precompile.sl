@@ -56,7 +56,7 @@ infer-type-rule ($$PRECOMPILE .uvto .trs _) .uvto .trs NUMBER :- ! #
 fc-eager-compile ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
 
 -- Lazy evaluation
-fc-lazy-compile-wrapped ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
+fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
 
 () :- import.file 'fc.sl'
 	, import.file 'fc-eager-evaluation.sl'
