@@ -384,7 +384,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define drop = (n => list =>
 		if:: n > 0 && is-tree {list}
-		then:: drop {n - 1} . tail | list
+		then:: drop {n - 1} | tail | list
 		else:: list
 	) >>
 	define flip = (f => x => y =>
@@ -394,7 +394,7 @@ fc-add-functions STANDARD .p (
 		let h = head {list} >>
 		let t = tail {list} >>
 		if:: is-tree {t}
-		then:: fun {h} . fold {fun} | t
+		then:: fun {h} | fold {fun} | t
 		else:: h
 	) >>
 	define fold-left = (fun => init =>
@@ -445,7 +445,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define take = (n => list =>
 		if:: n > 0 && is-tree {list}
-		then:: cons {head | list} . take {n - 1} . tail | list
+		then:: cons {head | list} | take {n - 1} | tail | list
 		else:: ()
 	) >>
 	define take-while = (fun =>
@@ -465,7 +465,7 @@ fc-add-functions STANDARD .p (
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		if:: is-tree {r}
-		then:: cons {head | r} . unfold-right {fun} . head . tail | r
+		then:: cons {head | r} | unfold-right {fun} | head | tail | r
 		else:: ()
 	) >>
 	define zip = (fun =>
@@ -493,7 +493,7 @@ fc-add-functions STANDARD .p (
 		} {}
 	) >>
 	define get = (n =>
-		head . (flip {apply} . repeat {n} | tail)
+		head . (flip {apply} | repeat {n} | tail)
 	) >>
 	define length =
 		fold-left {v => e => v + 1} {0}
@@ -546,8 +546,8 @@ fc-add-functions STANDARD .p (
 		let len = length {list} >>
 		if (len > 1) then
 			let len2 = len / 2 >>
-			define list0 = (merge-sort {merge} . take {len2} | list) >>
-			define list1 = (merge-sort {merge} . drop {len2} | list) >>
+			define list0 = (merge-sort {merge} | take {len2} | list) >>
+			define list1 = (merge-sort {merge} | drop {len2} | list) >>
 			merge {list0} {list1}
 		else
 			list
@@ -573,7 +573,7 @@ fc-add-functions STANDARD .p (
 		let width = if (height > 0) then (length . head | m) else 0 >>
 		if (width > 0) then
 			let w1 = width - 1 >>
-			let gets = (cons {id} . reverse . tails . repeat {w1} | tail) >>
+			let gets = (cons {id} | reverse | tails | repeat {w1} | tail) >>
 			map {f => map {head . flip {apply} {f}} {m}} | gets
 		else
 			()
@@ -610,8 +610,8 @@ fc-add-functions STANDARD .p (
 		if-match (\pivot, \t) then
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
-			let l0 = (quick-sort {cmp} . filter {filter0} | t) >>
-			let l1 = (quick-sort {cmp} . filter {filter1} | t) >>
+			let l0 = (quick-sort {cmp} | filter {filter0} | t) >>
+			let l1 = (quick-sort {cmp} | filter {filter1} | t) >>
 			concat {l0, (pivot,), l1,}
 		else
 			()
