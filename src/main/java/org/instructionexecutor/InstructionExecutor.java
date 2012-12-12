@@ -65,8 +65,6 @@ public class InstructionExecutor {
 		CUTEND________("CUT-END"), //
 		CUTFAIL_______("CUT-FAIL"), //
 		ENTER_________("ENTER"), //
-		EXIT__________("EXIT"), //
-		EXITVALUE_____("EXIT-VALUE"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
@@ -78,6 +76,8 @@ public class InstructionExecutor {
 		EVALMUL_______("EVAL-MUL"), //
 		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
+		EXIT__________("EXIT"), //
+		EXITVALUE_____("EXIT-VALUE"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
 		IFFALSE_______("IF-FALSE"), //

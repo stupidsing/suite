@@ -111,24 +111,24 @@ fc-lazy-compile-wrapped (STRING .s) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
 #
 
-fc-lazy-compile-default-fun .n .paramWrapped (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
+fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
-		_compare/2/PUNWRAPPED:PUNWRAPPED:,
-		_cons/2/PWRAPPED:PWRAPPED:,
-		_prove/1/PUNWRAPPED:,
-		_subst/2/PUNWRAPPED:PUNWRAPPED:,
-		fflush/1/PUNWRAPPED:,
-		fgetc/1/PUNWRAPPED:,
-		fputc/3/PUNWRAPPED:PUNWRAPPED:PUNWRAPPED:,
-		is-tree/1/PUNWRAPPED:,
-	) .var/.n/.paramWrapped
+		_compare/2/DIRECT:DIRECT:,
+		_cons/2/THUNK:THUNK:,
+		_prove/1/DIRECT:,
+		_subst/2/DIRECT:DIRECT:,
+		fflush/1/DIRECT:,
+		fgetc/1/DIRECT:,
+		fputc/3/DIRECT:DIRECT:DIRECT:,
+		is-tree/1/DIRECT:,
+	) .var/.n/.paramWraps
 	, fc-define-default-fun .n .var .call
 	, !, .c0 = (_ SERVICE .reg .call .n, .cx)
 #
 fc-lazy-compile-default-fun .n .paramWraps (INVOKE .p .chain) .env .c0/.cx/.d0/.dx/.reg
 	:- let .n1 (.n + 1)
 	, fc-lazy-compile-default-fun .n1 .paramWrap:.paramWraps .chain .env .c2/.cx/.d1/.dx/.reg
-	, (.paramWrap = PWRAPPED
+	, (.paramWrap = THUNK
 		, fc-lazy-compile0 .p .env .c0/.c1/.d0/.d1/.paramReg
 	; fc-lazy-compile .p .env .c0/.c1/.d0/.d1/.paramReg
 	)
