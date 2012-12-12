@@ -47,7 +47,7 @@ equate0 (.func .f0 = .func .f1)
 #
 
 equate0 (DV .y .x = (DV .y .z) * (DV .z .x)) #
-equate0 (DV (.f + .g) .x = (DV .f .x) * (DV .g .x)) #
+equate0 (DV (.f + .g) .x = (DV .f .x) + (DV .g .x)) #
 equate0 (DV (.f * .g) .x = (DV .f .x) * .g + .f * (DV .g .x)) #
 equate0 (DV .y .x = 1 / (DV .x .y)) #
 equate0 (DV .f .x = 0) :- is.int .f #
