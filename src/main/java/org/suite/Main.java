@@ -88,13 +88,13 @@ public class Main {
 		}
 
 		if (isFilter)
-			code = new Main().runFilter(inputs, isLazy) ? 0 : 1;
+			code = runFilter(inputs, isLazy) ? 0 : 1;
 		else if (isFunctional)
-			code = new Main().runFunctional(inputs, isLazy) ? 0 : 1;
+			code = runFunctional(inputs, isLazy) ? 0 : 1;
 		else if (isLogical)
-			code = new Main().runLogical(inputs) ? 0 : 1;
+			code = runLogical(inputs) ? 0 : 1;
 		else
-			new Main().run(inputs);
+			run(inputs);
 
 		System.exit(code);
 	}
