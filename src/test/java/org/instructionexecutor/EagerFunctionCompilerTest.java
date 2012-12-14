@@ -228,6 +228,12 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testMergeSort() {
+		assertEquals(SuiteUtil.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
+				+ "merge-sort {merge} {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
+	}
+
+	@Test
 	public void testOperator() {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));

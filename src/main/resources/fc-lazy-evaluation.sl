@@ -88,9 +88,6 @@ fc-lazy-compile-to-value (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 		, .cx
 	)
 #
-fc-lazy-compile-to-value .do .env .cdr
-	:- fc-lazy-default-fun .do .env .cdr, !
-#
 fc-lazy-compile-to-value (TUPLE .name ()) .env .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
 #
@@ -135,19 +132,4 @@ fc-lazy-compile-default-fun .n .paramWraps (INVOKE .p .chain) .env .c0/.cx/.d0/.
 	; fc-lazy-compile .p .env .c0/.c1/.d0/.d1/.paramReg
 	)
 	, .c1 = (_ PUSH .paramReg, .c2)
-#
-
-fc-lazy-default-fun .call .env .result
-	:- fc-lazy-default-fun0 .call .env .result 0
-#
-
-fc-lazy-default-fun0 (INVOKE .p .pred) .env .c0/.cx/.d0/.dx/.reg .n
-	:- !, let .n1 (.n + 1)
-	, fc-lazy-compile .p .env .c0/.c1/.d0/.d1/.r1
-	, .c1 = (_ PUSH .r1, .c2)
-	, fc-lazy-default-fun0 .pred .env .c2/.cx/.d1/.dx/.reg .n1
-#
-fc-lazy-default-fun0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
-	:- fc-define-default-fun .n .pred .call, !
-	, .c0 = (_ SERVICE .reg .call .n, .cx)
 #
