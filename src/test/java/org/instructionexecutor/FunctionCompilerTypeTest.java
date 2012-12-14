@@ -56,6 +56,8 @@ public class FunctionCompilerTypeTest {
 		getType("define type t = one-of (A, B number, C boolean,) >> A");
 		getType("define type t = one-of (A, B number, C boolean,) >> B 4");
 		getType("define type t = one-of (A, B number, C boolean,) >> C true");
+		getType("define type t = one-of (A, B number, C boolean,) >> "
+				+ "if true then A else-if true then (B 3) else (C false)");
 		getType("define type bt = one-of (BTREE number number,) >> \n"
 				+ "BTREE 2 3 = BTREE 4 6");
 		getTypeMustFail("define type t1 = one-of (T1 number number,) >> \n"
