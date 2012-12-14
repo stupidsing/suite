@@ -257,15 +257,16 @@ fc-parse-bind-variable .v .vd
 fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
 
-fc-bind .v0 .v1 .then .else .parsed
-	:- once (.v0 = NEW-VARIABLE _
-		; fc-bind-cons .v0 _ _
+fc-bind .v0 .v1 .tep :- .v0 = NEW-VARIABLE _, !, fc-bind0 .v1 .v0 .tep #
+fc-bind .v0 .v1 .tep :- .v1 = NEW-VARIABLE _, !, fc-bind0 .v0 .v1 .tep #
+fc-bind .v0 .v1 .tep
+	:- once (fc-bind-cons .v0 _ _
 		; .v0 = TUPLE _ _
 		; .v0 = OPTION _
 	)
-	, !, fc-bind0 .v1 .v0 .then .else .parsed
+	, !, fc-bind0 .v1 .v0 .tep
 #
-fc-bind .v0 .v1 .then .else .parsed :- fc-bind0 .v0 .v1 .then .else .parsed #
+fc-bind .v0 .v1 .tep :- fc-bind0 .v0 .v1 .tep #
 
 fc-bind0 .v0 .v1 .then .else .parsed
 	:- (fc-bind-cons .v0 .h0 .t0, fc-bind-cons .v1 .h1 .t1
