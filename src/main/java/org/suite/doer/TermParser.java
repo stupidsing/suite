@@ -33,7 +33,7 @@ public class TermParser extends Parser {
 		POWER_("^", Assoc.RIGHT), //
 		BRACES("{", Assoc.LEFT), //
 		TUPLE_(" ", Assoc.RIGHT), //
-		ITEM__("/", Assoc.RIGHT), //
+		ITEM__("/", Assoc.LEFT), //
 		COLON_(":", Assoc.RIGHT), //
 		;
 

@@ -183,7 +183,7 @@ fc-parse (prove-with-result .vvs .constant .result) .parsed
 fc-parse (prove .vvs .constant) .parsed
 	:- !, fc-parse (prove | c .vvs .constant) .parsed
 #
-fc-parse (c (.var:.value/.vvs) .constant) .parsed
+fc-parse (c (.vvs/.var:.value) .constant) .parsed
 	:- !, fc-parse (subst {.value} {c .vvs (.constant . .var)}) .parsed
 #
 fc-parse (c () .constant) (CONSTANT .constant) :- ! #
@@ -587,9 +587,9 @@ fc-add-functions STANDARD .p (
 	) >>
 	define dump as (:t :- :t => list-of number) = no-type-check (
 		let dump-string = (s =>
-			let length = prove-with-result _s:s/ (string.length _s _l) _l >>
+			let length = prove-with-result /_s:s (string.length _s _l) _l >>
 			map {i =>
-				prove-with-result _s:s/_i:i/ (
+				prove-with-result /_s:s/_i:i (
 					substring _s _i 0 _c, to.int _c _asc
 				) _asc
 			} | 0 until length
@@ -600,8 +600,8 @@ fc-add-functions STANDARD .p (
 				| concat {dump0 {true} {head | n}, ", ", dump0 {false} {tail | n},}
 			else-if (equals {n} {}) then
 				"()"
-			else-if (prove _n:n/ (is.atom _n)) then
-				dump-string | prove-with-result _n:n/ (to.string _n _s) _s
+			else-if (prove /_n:n (is.atom _n)) then
+				dump-string | prove-with-result /_n:n (to.string _n _s) _s
 			else
 				int-to-str {n}
 		) >>
