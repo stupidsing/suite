@@ -24,13 +24,13 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testFun() {
-		assertEquals(SuiteUtil.parse("number {number}") //
+		assertEquals(SuiteUtil.parse("number => number") //
 				, getType("a => a + 1"));
 		assertEquals(SuiteUtil.parse("number") //
 				, getType("define f = (a => a + 1) >> f {3}"));
-		assertEquals(SuiteUtil.parse("boolean {boolean} {boolean}") //
+		assertEquals(SuiteUtil.parse("boolean => boolean => boolean") //
 				, getType("and"));
-		assertEquals(SuiteUtil.parse("list-of number {number}") //
+		assertEquals(SuiteUtil.parse("number => list-of number") //
 				, getType("v => v, reverse {1,}"));
 	}
 

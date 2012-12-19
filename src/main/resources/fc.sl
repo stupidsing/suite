@@ -217,9 +217,12 @@ fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-type .t .t :- not bound .t, ! #
-fc-parse-type (.returnType {.paramType}) (FUN .paramType1 .returnType1)
+fc-parse-type (.paramType => .returnType) (FUN .paramType1 .returnType1)
 	:- !, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
+#
+fc-parse-type (.returnType {.paramType}) (FUN .paramType1 .returnType1)
+	:- fc-parse-type (.paramType => .returnType) .type1, !
 #
 fc-parse-type (one-of .types) (ONE-OF .types1)
 	:- !, fc-parse-types .types .types1
@@ -237,7 +240,7 @@ fc-parse-type string STRING :- ! #
 fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type .t (TUPLE-OF .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse-type .t (TYPE .t) :- is.atom .t #
-fc-parse-type (.typeVar => .type) .type2
+fc-parse-type (.typeVar | .type) .type2
 	:- bound .type
 	, !, fc-parse-type .typeVar .typeVar1
 	, fc-parse-type .type .type1
@@ -375,7 +378,7 @@ fc-add-functions STANDARD .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
-	define compare as (:t => number {:t} {:t}) = no-type-check (a => b =>
+	define compare as (:t | number {:t} {:t}) = no-type-check (a => b =>
 		if (is-tree {a} && is-tree {b}) then
 			let c0 = compare {head | a} {head | b} >>
 			if:: c0 = 0
@@ -480,7 +483,7 @@ fc-add-functions STANDARD .p (
 	define apply =
 		fold-left {x => f => f {x}}
 	>>
-	define equals as (:t => boolean {:t} {:t}) = no-type-check (a => b =>
+	define equals as (:t | boolean {:t} {:t}) = no-type-check (a => b =>
 		compare {a} {b} = 0
 	) >>
 	define concat2 = (
@@ -582,7 +585,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold {or} . map {starts-with | m} . tails
 	) >>
-	define dump as (:t => (list-of number) {:t}) = no-type-check (
+	define dump as (:t | (list-of number) {:t}) = no-type-check (
 		let dump-string = (s =>
 			let length = prove-with-result _s:s/ (string.length _s _l) _l >>
 			map {i =>
