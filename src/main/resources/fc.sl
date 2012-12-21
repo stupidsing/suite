@@ -394,13 +394,6 @@ fc-add-functions STANDARD .p (
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>
-	define fold = (fun => list =>
-		let h = head {list} >>
-		let t = tail {list} >>
-		if:: is-tree {t}
-		then:: fun {h} | fold {fun} | t
-		else:: h
-	) >>
 	define fold-left = (fun => init =>
 		if-match:: \h, \t
 		then:: fold-left {fun} {fun {init} {h}} {t}
@@ -485,6 +478,9 @@ fc-add-functions STANDARD .p (
 	>>
 	define equals as (:t :- :t => :t => boolean) = no-type-check (a => b =>
 		compare {a} {b} = 0
+	) >>
+	define fold = (fun => list =>
+		fold-left {fun} {head | list} {tail | list}
 	) >>
 	define concat2 = (
 		if-match:: \h, \t
