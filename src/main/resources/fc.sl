@@ -77,46 +77,9 @@ load-library .lib
 #
 
 --
--- Syntactic sugars
---
-fc-parse (case || .if .then || .cases) (IF .if1 .then1 .else)
-	:- !, fc-parse .if .if1
-	, fc-parse .then .then1
-	, fc-parse (case || .cases) .else
-#
-fc-parse (case || .do) .parsed :- !, fc-parse .do .parsed #
-fc-parse (.l && .r) .parsed :- !, fc-parse (and {.l} {.r}) .parsed #
-fc-parse (.l || .r) .parsed :- !, fc-parse (or {.l} {.r}) .parsed #
-fc-parse .t .parsed
-	:- tree .t () .op .right, fc-operator .op, !
-	, temp .var, tree .t1 .var .op .right, fc-parse (.var => .t1) .parsed
-#
-fc-parse .t .parsed
-	:- tree .t .left .op (), fc-operator .op, !
-	, temp .var, tree .t1 .left .op .var, fc-parse (.var => .t1) .parsed
-#
-fc-parse (.l, .r) .parsed :- !, fc-parse (_cons {.l} {.r}) .parsed #
-fc-parse (.l . .r) .parsed :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .parsed #
-fc-parse (.l | .r) .parsed :- !, fc-parse (.l {.r}) .parsed #
-fc-parse (.l << .r) .parsed :- !, fc-parse (.r {.l}) .parsed #
-fc-parse (anything => .do) .parsed :- !, temp .v, fc-parse (.v => .do) .parsed #
-fc-parse (not .b) .parsed :- !, fc-parse (not {.b}) .parsed #
-fc-parse (.a ++ .b) .parsed :- !, fc-parse (concat2 {.a} {.b}) .parsed #
-fc-parse (.s until .e) .parsed :- !, fc-parse (range {.s} {.e} {1}) .parsed #
-fc-parse (if-match .v1 .thenElse) .parsed
-	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .parsed
-#
-fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
-	:- !
-	, fc-parse .v0 .vp0
-	, fc-parse .v1 .vp1
-	, fc-parse .then .thenp
-	, fc-parse .else .elsep
-	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
-#
---
 -- Function constructs
 --
+fc-parse .t .parsed :- bound .t, fc-parse-sugar .t .parsed, ! #
 fc-parse (.var as .type => .do) (FUN .var .do1)
 	:- !, fc-parse-type .type .type1
 	, .do1 = OPTION (AS .var .type1) .do2
@@ -212,6 +175,45 @@ fc-parse .t (OPTION CHECK-TUPLE-TYPE (TUPLE .t ())) :- fc-is-tuple-name .t, ! #
 fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
+
+--
+-- Syntactic sugars
+--
+fc-parse-sugar (case || .if .then || .cases) (IF .if1 .then1 .else)
+	:- !, fc-parse .if .if1
+	, fc-parse .then .then1
+	, fc-parse (case || .cases) .else
+#
+fc-parse-sugar (case || .do) .p1 :- !, fc-parse .do .p1 #
+fc-parse-sugar (.l && .r) .p1 :- !, fc-parse (and {.l} {.r}) .p1 #
+fc-parse-sugar (.l || .r) .p1 :- !, fc-parse (or {.l} {.r}) .p1 #
+fc-parse-sugar .t .p1
+	:- tree .t () .op .right, fc-operator .op, !
+	, temp .var, tree .t1 .var .op .right, fc-parse (.var => .t1) .p1
+#
+fc-parse-sugar .t .p1
+	:- tree .t .left .op (), fc-operator .op, !
+	, temp .var, tree .t1 .left .op .var, fc-parse (.var => .t1) .p1
+#
+fc-parse-sugar (.l, .r) .p1 :- !, fc-parse (_cons {.l} {.r}) .p1 #
+fc-parse-sugar (.l . .r) .p1 :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .p1 #
+fc-parse-sugar (.l | .r) .p1 :- !, fc-parse (.l {.r}) .p1 #
+fc-parse-sugar (.l << .r) .p1 :- !, fc-parse (.r {.l}) .p1 #
+fc-parse-sugar (anything => .do) .p1 :- !, temp .v, fc-parse (.v => .do) .p1 #
+fc-parse-sugar (not .b) .p1 :- !, fc-parse (not {.b}) .p1 #
+fc-parse-sugar (.a ++ .b) .p1 :- !, fc-parse (concat2 {.a} {.b}) .p1 #
+fc-parse-sugar (.s until .e) .p1 :- !, fc-parse (range {.s} {.e} {1}) .p1 #
+fc-parse-sugar (if-match .v1 .thenElse) .p1
+	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .p1
+#
+fc-parse-sugar (if-bind (.v0 = .v1) then .then else .else) .parsed
+	:- !
+	, fc-parse .v0 .vp0
+	, fc-parse .v1 .vp1
+	, fc-parse .then .thenp
+	, fc-parse .else .elsep
+	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
+#
 
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
