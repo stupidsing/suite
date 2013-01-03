@@ -76,10 +76,9 @@ load-library .lib
 	)
 #
 
---
--- Function constructs
---
-fc-parse .t .parsed :- bound .t, fc-parse-sugar .t .parsed, ! #
+fc-parse .t .parsed
+	:- bound .t, fc-parse-sugar .t .parsed, !
+#
 fc-parse (.var as .type => .do) (FUN .var .do1)
 	:- !, fc-parse-type .type .type1
 	, .do1 = OPTION (AS .var .type1) .do2
