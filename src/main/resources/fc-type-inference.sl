@@ -12,9 +12,8 @@
 -- that do not need type specialization.
 -- Outside variables are local variables that require type specialization.
 --
-infer-type-rule (FUN .var .do) .ue/.ve/.te/.oe .tr/.tr (FUN .varType .type)
-	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
-	, resolve-types .tr1
+infer-type-rule .p .env .tr/.tr .type
+	:- find-simple-type .p .env .type, !
 #
 infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type
@@ -76,11 +75,6 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
-infer-type-rule (CONSTANT _) _ .tr/.tr _ :- ! #
-infer-type-rule (BOOLEAN _) _ .tr/.tr BOOLEAN  :- ! #
-infer-type-rule (NUMBER _) _ .tr/.tr NUMBER :- ! #
-infer-type-rule (STRING _) _ .tr/.tr STRING :- ! #
-infer-type-rule (TUPLE () ()) _ .tr/.tr (LIST-OF _) :- ! #
 infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
 	:- !, infer-type-rules .elems .ue/.ve/.te/.oe .tr .types
 	, .type = TUPLE-OF .name .types
@@ -93,7 +87,6 @@ infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te/.oe .tr .type
 	:- !, member .ue .var/.varType
 	, infer-type-rule .do .ue/.ve/.te/.oe .tr .type
 #
-infer-type-rule (OPTION NO-TYPE-CHECK _) _ .tr/.tr _ :- ! #
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !, infer-type-rule .do .env .tr .type
 #
@@ -111,6 +104,17 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 	:- infer-type-rule .e .env .tr0/.tr1 .t
 	, infer-type-rules .es .env .tr1/.trx .ts
 #
+
+find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN .varType .type)
+	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
+	, resolve-types .tr1
+#
+find-simple-type (CONSTANT _) _ _ :- ! #
+find-simple-type (BOOLEAN _) _ BOOLEAN  :- ! #
+find-simple-type (NUMBER _) _ NUMBER :- ! #
+find-simple-type (STRING _) _ STRING :- ! #
+find-simple-type (TUPLE () ()) _ (LIST-OF _) :- ! #
+find-simple-type (OPTION NO-TYPE-CHECK _) _ _ :- ! #
 
 infer-compatible-types .a .b .ue/.ve/.te/.oe .tr0/.trx .type
 	:- infer-type-rule .a .ue/.ve/.te/.oe .tr0/.tr1 .type0
