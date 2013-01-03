@@ -176,9 +176,9 @@ fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
---
--- Syntactic sugars
---
+fc-parse-list () () :- ! #
+fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
+
 fc-parse-sugar (case || .if .then || .cases) (IF .if1 .then1 .else)
 	:- !, fc-parse .if .if1
 	, fc-parse .then .then1
@@ -214,9 +214,6 @@ fc-parse-sugar (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
-
-fc-parse-list () () :- ! #
-fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type (.paramType => .returnType) (FUN .paramType1 .returnType1)
