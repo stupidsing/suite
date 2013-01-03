@@ -90,11 +90,8 @@ infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !, infer-type-rule .do .env .tr .type
 #
 infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
-	:- (member .ue .var/.type, .tr0 = .trx
-		; member .ve .var/.varType
-			, .tr0 = (GEN-SPEC-TYPES .varType .type, .trx)
-		; default-fun-type .var .type, .tr0 = .trx
-	), !
+	:- member .ve .var/.varType
+	, !, .tr0 = (GEN-SPEC-TYPES .varType .type, .trx)
 #
 infer-type-rule (VARIABLE .var) _ _ _ :- !, fc-error "Undefined variable" .var #
 
@@ -114,6 +111,10 @@ find-simple-type (NUMBER _) _ NUMBER #
 find-simple-type (STRING _) _ STRING #
 find-simple-type (TUPLE () ()) _ (LIST-OF _) #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
+find-simple-type (VARIABLE .var) .ue/.ve/.te/.oe .type
+	:- member .ue .var/.type
+	; default-fun-type .var .type
+#
 
 infer-compatible-types .a .b .ue/.ve/.te/.oe .tr0/.trx .type
 	:- infer-type-rule .a .ue/.ve/.te/.oe .tr0/.tr1 .type0
