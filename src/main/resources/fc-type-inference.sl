@@ -21,7 +21,7 @@ infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	, (.type = TUPLE-OF .name .types, !, (
 			member .oe (TUPLE-OF .name .types1)/_ -- Enforces tuple name checking
 			, .tr1 = (
-				SUPERTYPE-OF .te/.oe (TUPLE-OF .name .types) (TUPLE-OF .name .types1)
+				SUB-SUPER-TYPES .te/.oe (TUPLE-OF .name .types) (TUPLE-OF .name .types1)
 			, .trx)
 			; fc-error "Undefined tuple named" .name
 		)
@@ -59,7 +59,7 @@ infer-type-rule (INVOKE .param .callee) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
 	, infer-type-rule .callee .ue/.ve/.te/.oe .tr0/.tr1 (FUN .signParamType .type)
 	, infer-type-rule .param .ue/.ve/.te/.oe .tr1/.tr2 .actualParamType
-	, .tr2 = (SUPERTYPE-OF .te/.oe .actualParamType .signParamType, .trx)
+	, .tr2 = (SUB-SUPER-TYPES .te/.oe .actualParamType .signParamType, .trx)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
@@ -68,7 +68,7 @@ infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
 	, infer-compatible-types .left .right .env .tr0/.tr1 .type
-	, .tr1 = (EITHER .type (NUMBER, STRING,), .trx)
+	, .tr1 = (TYPE-IN-TYPES .type (NUMBER, STRING,), .trx)
 	; member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
 	, infer-compatible-types .left .right .env .tr0/.trx .type
 	, .type = NUMBER
@@ -87,7 +87,7 @@ infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type0
-	, .tr1 = (SUPERTYPE-OF .te/.oe .type0 .type, .trx)
+	, .tr1 = (SUB-SUPER-TYPES .te/.oe .type0 .type, .trx)
 #
 infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te/.oe .tr .type
 	:- !, member .ue .var/.varType
@@ -100,7 +100,7 @@ infer-type-rule (OPTION _ .do) .env .tr .type
 infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- (member .ue .var/.type, .tr0 = .trx
 		; member .ve .var/.varType
-			, .tr0 = (SPECIALIZATION-OF .varType .type, .trx)
+			, .tr0 = (GEN-SPEC-TYPES .varType .type, .trx)
 		; default-fun-type .var .type, .tr0 = .trx
 	), !
 #
@@ -115,8 +115,8 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 infer-compatible-types .a .b .ue/.ve/.te/.oe .tr0/.trx .type
 	:- infer-type-rule .a .ue/.ve/.te/.oe .tr0/.tr1 .type0
 	, infer-type-rule .b .ue/.ve/.te/.oe .tr1/.tr2 .type1
-	, .tr2 = (SUPERTYPE-OF .te/.oe .type0 .type
-		, SUPERTYPE-OF .te/.oe .type1 .type
+	, .tr2 = (SUB-SUPER-TYPES .te/.oe .type0 .type
+		, SUB-SUPER-TYPES .te/.oe .type1 .type
 		, .trx
 	)
 #
@@ -153,28 +153,28 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
 resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
-resolve-types0 (SUPERTYPE-OF .env .t .t, .tr1)/.trx
+resolve-types0 (SUB-SUPER-TYPES .env .t .t, .tr1)/.trx
 	:- resolve-types0 .tr1/.trx
 #
-resolve-types0 (SUPERTYPE-OF .env .t0 .tx, .tr1)/.trx
+resolve-types0 (SUB-SUPER-TYPES .env .t0 .tx, .tr1)/.trx
 	:- bound .t0
-	, super-of-type .env .t0 .t1
-	, resolve-types0 (SUPERTYPE-OF .env .t1 .tx, .tr1)/.trx
+	, sub-super-type-pair .env .t0 .t1
+	, resolve-types0 (SUB-SUPER-TYPES .env .t1 .tx, .tr1)/.trx
 	; bound .tx
-	, super-of-type .env .t1 .tx
-	, resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
+	, sub-super-type-pair .env .t1 .tx
+	, resolve-types0 (SUB-SUPER-TYPES .env .t0 .t1, .tr1)/.trx
 #
-resolve-types0 (SUPERTYPE-OF .env .t0 .t1, .tr1)/.trx
+resolve-types0 (SUB-SUPER-TYPES .env .t0 .t1, .tr1)/.trx
 	:- (bound .t0; bound .t1), !
 	, .t0 = TUPLE-OF _, .t1 = TUPLE-OF _
 	, children-of-type .t0 .t1 .ts0/() .ts1/()
-	, super-of-types .env .ts0 .ts1 .trx/.trxx
+	, sub-super-type-pairs .env .ts0 .ts1 .trx/.trxx
 	, resolve-types0 .tr1/.trxx
 #
-resolve-types0 (SPECIALIZATION-OF .t0 .t1, .tr1)/.trx
+resolve-types0 (GEN-SPEC-TYPES .t0 .t1, .tr1)/.trx
 	:- !, clone .t0 .t1, resolve-types0 .tr1/.trx
 #
-resolve-types0 (EITHER .t .ts, .tr1)/.trx
+resolve-types0 (TYPE-IN-TYPES .t .ts, .tr1)/.trx
 	:- !, member .ts .t, resolve-types0 .tr1/.trx
 #
 resolve-types0 (REMARK, .tr1)/.trx :- !, resolve-types0 .tr1/.trx #
@@ -185,13 +185,13 @@ resolve-types0 _/_
 	:- !, fc-error "Not enough type information"
 #
 
-super-of-type .te/_ .t (TYPE .name) :- member .te .name/.t #
-super-of-type _/.oe .t0 .t1 :- member .oe .t0/.t1 #
+sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
+sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
 
-super-of-types _ () () .tr/.tr :- ! #
-super-of-types .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
-	:- .tr0 = (SUPERTYPE-OF .env .t0 .t1, .tr1)
-	, super-of-types .env .ts0 .ts1 .tr1/.trx
+sub-super-type-pairs _ () () .tr/.tr :- ! #
+sub-super-type-pairs .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
+	:- .tr0 = (SUB-SUPER-TYPES .env .t0 .t1, .tr1)
+	, sub-super-type-pairs .env .ts0 .ts1 .tr1/.trx
 #
 
 children-of-type (FUN .pt0 .rt0) (FUN .pt1 .rt1) .p0/.px .q0/.qx
