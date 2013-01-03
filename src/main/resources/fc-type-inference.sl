@@ -90,10 +90,11 @@ infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !, infer-type-rule .do .env .tr .type
 #
 infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
-	:- member .ve .var/.varType
-	, !, .tr0 = (GEN-SPEC-TYPES .varType .type, .trx)
+	:- (member .ve .var/.varType
+		, !, .tr0 = (GEN-SPEC-TYPES .varType .type, .trx)
+	)
+	; !, fc-error "Undefined variable" .var
 #
-infer-type-rule (VARIABLE .var) _ _ _ :- !, fc-error "Undefined variable" .var #
 
 infer-type-rules () _ .tr/.tr () :- ! #
 infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
