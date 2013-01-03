@@ -68,7 +68,7 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
 	, infer-compatible-types .left .right .env .tr0/.tr1 .type
 	, .tr1 = (TYPE-IN-TYPES .type (NUMBER, STRING,), .trx)
-	; member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
+	; member (' - ', ' * ', ' / ', ' %% ',) .oper, !
 	, infer-compatible-types .left .right .env .tr0/.trx .type
 	, .type = NUMBER
 	; member (' = ', ' != ', ' > ', ' < ', ' >= ', ' <= ',) .oper, !
