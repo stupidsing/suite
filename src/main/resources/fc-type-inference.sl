@@ -102,8 +102,8 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 #
 
 find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN .varType .type)
-	:- infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
-	, resolve-types .tr1
+	:- infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr .type
+	, resolve-types .tr
 #
 find-simple-type (CONSTANT _) _ _ #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
