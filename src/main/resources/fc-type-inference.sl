@@ -55,9 +55,12 @@ infer-type-rule (
 #
 infer-type-rule (INVOKE .param .callee) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
-	, infer-type-rule .callee .ue/.ve/.te/.oe .tr0/.tr1 (FUN .signParamType .type)
+	, infer-type-rule .callee .ue/.ve/.te/.oe .tr0/.tr1 .funType
 	, infer-type-rule .param .ue/.ve/.te/.oe .tr1/.tr2 .actualParamType
-	, .tr2 = (SUB-SUPER-TYPES .te/.oe .actualParamType .signParamType, .trx)
+	, .tr2 = (SUB-SUPER-TYPES .te/.oe (FUN .signParamType .type) .funType
+		, SUB-SUPER-TYPES .te/.oe .actualParamType .signParamType
+		, .trx
+	)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
@@ -191,6 +194,7 @@ resolve-types0 _/_
 
 sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
 sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
+sub-super-type-pair _ .t0 .t1 :- bound .t1, .t1 = OPTION (GENERIC-TYPE _) .t0 #
 
 sub-super-type-pairs _ () () .tr/.tr :- ! #
 sub-super-type-pairs .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx

@@ -160,11 +160,11 @@ fc-parse-type string STRING :- ! #
 fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type .t (TUPLE-OF .t ()) :- fc-is-tuple-name .t, ! #
 fc-parse-type .t (TYPE .t) :- is.atom .t #
-fc-parse-type (.typeVar :- .type) .type2
+fc-parse-type (.typeVar :- .type) (OPTION (GENERIC-TYPE .g) .type2)
 	:- bound .type
 	, !, fc-parse-type .typeVar .typeVar1
 	, fc-parse-type .type .type1
-	, replace .type1/.type2 .typeVar1/_
+	, replace .type1/.type2 .typeVar1/.g
 #
 
 fc-parse-types () () :- ! #
