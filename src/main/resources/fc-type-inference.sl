@@ -106,15 +106,15 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 #
 
 find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN .varType .type)
-	:- !, infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
+	:- infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr1 .type
 	, resolve-types .tr1
 #
-find-simple-type (CONSTANT _) _ _ :- ! #
-find-simple-type (BOOLEAN _) _ BOOLEAN  :- ! #
-find-simple-type (NUMBER _) _ NUMBER :- ! #
-find-simple-type (STRING _) _ STRING :- ! #
-find-simple-type (TUPLE () ()) _ (LIST-OF _) :- ! #
-find-simple-type (OPTION NO-TYPE-CHECK _) _ _ :- ! #
+find-simple-type (CONSTANT _) _ _ #
+find-simple-type (BOOLEAN _) _ BOOLEAN #
+find-simple-type (NUMBER _) _ NUMBER #
+find-simple-type (STRING _) _ STRING #
+find-simple-type (TUPLE () ()) _ (LIST-OF _) #
+find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
 
 infer-compatible-types .a .b .ue/.ve/.te/.oe .tr0/.trx .type
 	:- infer-type-rule .a .ue/.ve/.te/.oe .tr0/.tr1 .type0
