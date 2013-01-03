@@ -45,7 +45,7 @@ infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	, infer-type-rule .do .env1 .tr1/.trx .type
 #
 infer-type-rule (
-	OPTION GENERIC-TYPE DEF-VAR .name .value .do
+	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .name .value .do
 ) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
 	, .insideEnv = (.name/.varType, .ue)/.ve/.te/.oe

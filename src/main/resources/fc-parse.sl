@@ -24,7 +24,7 @@ fc-parse (no-type-check .do) (OPTION NO-TYPE-CHECK .do1)
 #
 fc-parse (define .var as .type = .value >> .do) (
 	OPTION (DEF-ONE-OF-TYPE .type1) (
-		OPTION GENERIC-TYPE DEF-VAR .var .value2 .do1
+		OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .var .value2 .do1
 	)
 ) :- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
@@ -32,7 +32,7 @@ fc-parse (define .var as .type = .value >> .do) (
 	, .value2 = OPTION (CAST .type1) .value1
 #
 fc-parse (define .var = .value >> .do) (
-	OPTION GENERIC-TYPE DEF-VAR .var .value1 .do1
+	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .var .value1 .do1
 ) :- !, fc-parse .value .value1
 	, fc-parse .do .do1
 #
