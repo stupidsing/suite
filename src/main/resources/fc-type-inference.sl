@@ -74,9 +74,8 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
-infer-type-rule (TUPLE .name .elems) .ue/.ve/.te/.oe .tr .type
-	:- !, infer-type-rules .elems .ue/.ve/.te/.oe .tr .types
-	, .type = TUPLE-OF .name .types
+infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
+	:- !, infer-type-rules .elems .env .tr .types
 #
 infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type0
