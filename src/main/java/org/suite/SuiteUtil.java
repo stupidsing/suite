@@ -240,7 +240,7 @@ public class SuiteUtil {
 		Node node = SuiteUtil.parse(".libs = (" + getLibraries(config) + ")" //
 				+ ", load-precompiled-libraries .libs" //
 				+ ", fc-parse .program .p" //
-				+ (config.isTrace ? "enable-trace, " : "") //
+				+ (config.isTrace ? ", enable-trace" : "") //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .type .t");
