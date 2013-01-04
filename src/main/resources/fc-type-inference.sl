@@ -16,9 +16,9 @@ infer-type-rule .p .env .tr/.tr .type
 	:- find-simple-type .p .env .type, !
 #
 infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
-	:- infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type
+	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type
 	, .type = TUPLE-OF .name .types
-	, !, (
+	, once (
 		member .oe (TUPLE-OF .name .types1)/_ -- Enforces tuple name checking
 		, .tr1 = (
 			SUB-SUPER-TYPES .te/.oe (TUPLE-OF .name .types) (TUPLE-OF .name .types1)
