@@ -15,13 +15,14 @@
 infer-type-rule .p .env .tr/.tr .type
 	:- find-simple-type .p .env .type, !
 #
-infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .type
-	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .type
-	, .type = TUPLE-OF .name .types
-	, once (
-		member .oe (TUPLE-OF .name .types1)/_ -- Enforces tuple name checking
+infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .definedType
+	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .tupleType
+	, .tupleType = TUPLE-OF .name .types
+	, once ( -- Enforces tuple name checking
+		.definedType = TUPLE-OF .name .types1
+		, member .oe .definedType/.oneOfType
 		, .tr1 = (
-			SUB-SUPER-TYPES .te/.oe (TUPLE-OF .name .types) (TUPLE-OF .name .types1)
+			SUB-SUPER-TYPES .te/.oe .tupleType .definedType
 		, .trx)
 		; fc-error "Undefined tuple named" .name
 	)
