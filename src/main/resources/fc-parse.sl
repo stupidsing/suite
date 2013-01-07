@@ -142,8 +142,9 @@ fc-parse-type (.paramType => .returnType) (FUN .paramType1 .returnType1)
 	:- !, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
-fc-parse-type (.returnType {.paramType}) (FUN .paramType1 .returnType1)
-	:- fc-parse-type (.paramType => .returnType) .type1, !
+fc-parse-type (.type {.paramType}) (INSTANCE-OF .paramType1 .type1)
+	:- !, fc-parse-type .type .type1
+	, fc-parse-type .paramType .paramType1
 #
 fc-parse-type (one-of .types) (ONE-OF .types1)
 	:- !, fc-parse-types .types .types1
