@@ -92,6 +92,7 @@ fc-parse .s .n
 	, !, substring .s 0 1 .c, substring .s 1 0 .cs
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
 #
+fc-parse () (TUPLE () ()) :- ! #
 fc-parse .t (OPTION CHECK-TUPLE-TYPE (TUPLE .t ())) :- fc-is-tuple-name .t, ! #
 fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
