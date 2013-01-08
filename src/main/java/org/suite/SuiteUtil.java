@@ -202,10 +202,10 @@ public class SuiteUtil {
 	public static Node evaluateFunctional(FunCompilerConfig config) {
 		Prover compiler = config.isLazy ? getLazyFunCompiler()
 				: getEagerFunCompiler();
+		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
 		String libraries = getLibraries(config);
-		String s = (config.isTrace ? "enable-trace, " : "")
-				+ "compile-function .mode (" + libraries + ") .program .code"
+		String s = "compile-function .mode (" + libraries + ") .program .code"
 				+ (config.isDumpCode ? ", pp-list .code" : "");
 		Node node = SuiteUtil.parse(s);
 
@@ -236,11 +236,11 @@ public class SuiteUtil {
 	public static Node evaluateFunctionalType(FunCompilerConfig config) {
 		Prover compiler = lazyFunctionalCompiler;
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
+		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
 		Node node = SuiteUtil.parse(".libs = (" + getLibraries(config) + ")" //
 				+ ", load-precompiled-libraries .libs" //
 				+ ", fc-parse .program .p" //
-				+ (config.isTrace ? ", enable-trace" : "") //
 				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .type .t");
@@ -256,6 +256,12 @@ public class SuiteUtil {
 			return type.finalNode();
 		else
 			throw new RuntimeException("Type inference error");
+	}
+
+	private static Prover enableTrace(Prover compiler) {
+		compiler = new Prover(compiler);
+		compiler.setEnableTrace(true);
+		return compiler;
 	}
 
 	private static String getLibraries(FunCompilerConfig config) {
