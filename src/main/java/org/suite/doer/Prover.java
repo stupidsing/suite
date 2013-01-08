@@ -21,6 +21,7 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private boolean isEnableTrace = false;
+	private boolean isEnableDetailedTrace = false;
 
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
@@ -138,28 +139,13 @@ public class Prover {
 	}
 
 	private Node expandWithTrace(Node query) {
+		query = expand(query);
+
 		final Node query1 = new Cloner().clone(query);
 		final Node trace0 = trace;
 		final Node trace1 = Tree.create(TermOp.AND___, query1, trace0);
 		final int depth0 = depth;
 		final int depth1 = depth + 1;
-
-		final Station re = new Station() {
-			public boolean run() {
-				Prover.this.depth = depth1;
-				showLog("RE", query1);
-				return false;
-			}
-		};
-
-		final Station ok = new Station() {
-			public boolean run() {
-				showLog("OK", query1);
-				Prover.this.depth = depth0;
-				alt = Tree.create(TermOp.OR____, re, alt);
-				return true;
-			}
-		};
 
 		final Station leave = new Station() {
 			public boolean run() {
@@ -180,8 +166,27 @@ public class Prover {
 			}
 		};
 
-		query = expand(query);
-		rem = Tree.create(TermOp.AND___, ok, rem);
+		if (isEnableDetailedTrace) {
+			final Station re = new Station() {
+				public boolean run() {
+					Prover.this.depth = depth1;
+					showLog("RE", query1);
+					return false;
+				}
+			};
+
+			final Station ok = new Station() {
+				public boolean run() {
+					showLog("OK", query1);
+					Prover.this.depth = depth0;
+					alt = Tree.create(TermOp.OR____, re, alt);
+					return true;
+				}
+			};
+
+			rem = Tree.create(TermOp.AND___, ok, rem);
+		}
+
 		query = Tree.create(TermOp.AND___, enter, query);
 		return query;
 	}
