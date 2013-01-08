@@ -29,6 +29,7 @@ public class Prover {
 
 	private Journal journal = new Journal();
 	private Node trace = Atom.nil;
+	private int depth;
 
 	public Prover(Prover prover) {
 		this(prover.ruleSet);
@@ -136,30 +137,60 @@ public class Prover {
 		return b ? OK : FAIL;
 	}
 
-	private final class SetTrace extends Station {
-		private Node trace;
+	private Node expandWithTrace(Node query) {
+		final Node query1 = new Cloner().clone(query);
+		final Node trace0 = trace;
+		final Node trace1 = Tree.create(TermOp.AND___, query1, trace0);
+		final int depth0 = depth;
+		final int depth1 = depth + 1;
 
-		public SetTrace(Node trace) {
-			super();
-			this.trace = trace;
-		}
+		final Station re = new Station() {
+			public boolean run() {
+				Prover.this.depth = depth1;
+				showLog("RE", query1);
+				return false;
+			}
+		};
 
-		public boolean run() {
-			Prover.this.trace = trace;
-			return true;
-		}
+		final Station ok = new Station() {
+			public boolean run() {
+				showLog("OK", query1);
+				Prover.this.depth = depth0;
+				alt = Tree.create(TermOp.OR____, re, alt);
+				return true;
+			}
+		};
+
+		final Station leave = new Station() {
+			public boolean run() {
+				showLog("LEAVE", query1);
+				Prover.this.trace = trace0;
+				Prover.this.depth = depth0;
+				return false;
+			}
+		};
+
+		final Station enter = new Station() {
+			public boolean run() {
+				Prover.this.trace = trace1;
+				Prover.this.depth = depth1;
+				showLog("ENTER", query1);
+				alt = Tree.create(TermOp.OR____, leave, alt);
+				return true;
+			}
+		};
+
+		query = expand(query);
+		rem = Tree.create(TermOp.AND___, ok, rem);
+		query = Tree.create(TermOp.AND___, enter, query);
+		return query;
 	}
 
-	private Node expandWithTrace(Node query) {
-		Node query1 = new Cloner().clone(query);
-		Tree trace1 = Tree.create(TermOp.AND___, query1, trace);
-		Station push = new SetTrace(trace1), pop = new SetTrace(trace);
-
-		alt = Tree.create(TermOp.AND___, pop, alt);
-		rem = Tree.create(TermOp.AND___, pop, rem);
-		query = expand(query);
-		query = Tree.create(TermOp.AND___, push, query);
-		return query;
+	private void showLog(String message, Node query) {
+		if (message != null)
+			System.err.println("[" + message //
+					+ ":" + Prover.this.depth //
+					+ "] " + Formatter.dump(query));
 	}
 
 	/**
@@ -242,6 +273,13 @@ public class Prover {
 	 */
 	public Node getTrace() {
 		return trace;
+	}
+
+	/**
+	 * Depth of predicate call trace.
+	 */
+	public int getDepth() {
+		return depth;
 	}
 
 }

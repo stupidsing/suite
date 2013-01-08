@@ -111,6 +111,7 @@ public class Main {
 			SuiteUtil.importFile(rs, importFilename);
 
 		Prover prover = new Prover(rs);
+		prover.setEnableTrace(isTrace);
 
 		InputStreamReader is = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(is);
