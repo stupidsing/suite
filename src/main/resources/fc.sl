@@ -136,7 +136,8 @@ fc-add-functions STANDARD .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
-	define compare as (:t :- :t => :t => number) = no-type-check (a => b =>
+	define compare as (any :t in (:t => :t => number)) = no-type-check (
+		a => b =>
 		if (is-tree {a} && is-tree {b}) then
 			let c0 = compare {head | a} {head | b} >>
 			if:: c0 = 0
@@ -234,9 +235,9 @@ fc-add-functions STANDARD .p (
 	define apply =
 		fold-left {x => f => f {x}}
 	>>
-	define equals as (:t :- :t => :t => boolean) = no-type-check (a => b =>
-		compare {a} {b} = 0
-	) >>
+	define equals as (any :t in (:t => :t => boolean)) =
+		no-type-check (a => b => compare {a} {b} = 0)
+	>>
 	define fold = (fun => list =>
 		fold-left {fun} {head | list} {tail | list}
 	) >>
@@ -339,7 +340,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold {or} . map {starts-with | m} . tails
 	) >>
-	define dump as (:t :- :t => list-of number) = no-type-check (
+	define dump as (any :t in (:t => list-of number)) = no-type-check (
 		let dump-string = (s =>
 			let length = prove-with-result /_s:s (string.length _s _l) _l >>
 			map {i =>
