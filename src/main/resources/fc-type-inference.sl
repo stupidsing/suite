@@ -58,7 +58,7 @@ infer-type-rule (INVOKE .param .callee) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
 	, infer-type-rule .callee .ue/.ve/.te/.oe .tr0/.tr1 .funType
 	, infer-type-rule .param .ue/.ve/.te/.oe .tr1/.tr2 .actualParamType
-	, .tr2 = (SUB-SUPER-TYPES .te/.oe (FUN .signParamType .type) .funType
+	, .tr2 = (SUB-SUPER-TYPES .te/.oe (FUN-OF .signParamType .type) .funType
 		, SUB-SUPER-TYPES .te/.oe .actualParamType .signParamType
 		, .trx
 	)
@@ -105,7 +105,7 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 	, infer-type-rules .es .env .tr1/.trx .ts
 #
 
-find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN .varType .type)
+find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN-OF .varType .type)
 	:- infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr .type
 	, resolve-types .tr
 #
@@ -195,7 +195,11 @@ resolve-types0 _/_
 
 sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
 sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
-sub-super-type-pair _ .t0 .t1 :- bound .t1, .t1 = OPTION (GENERIC-TYPE _) .t0 #
+sub-super-type-pair _ .t0 .t1
+	:- bound .t1
+	, .t1 = GENERIC .typeVar .type
+	, replace .type/.t0 .typeVar/_
+#
 
 sub-super-type-pairs _ () () .tr/.tr :- ! #
 sub-super-type-pairs .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
@@ -203,7 +207,7 @@ sub-super-type-pairs .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
 	, sub-super-type-pairs .env .ts0 .ts1 .tr1/.trx
 #
 
-children-of-type (FUN .pt0 .rt0) (FUN .pt1 .rt1) .p0/.px .q0/.qx
+children-of-type (FUN-OF .pt0 .rt0) (FUN-OF .pt1 .rt1) .p0/.px .q0/.qx
 	:- !, .p0 = (.pt0, .rt0, .px), .q0 = (.pt1, .rt1, .qx)
 #
 children-of-type (ONE-OF .ts0) (ONE-OF .ts1) .p .q
@@ -224,16 +228,16 @@ children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 #
 
 default-fun-type () (LIST-OF _) #
-default-fun-type _cons (FUN .type (FUN (LIST-OF .type) (LIST-OF .type))) #
-default-fun-type _lhead (FUN (LIST-OF .type) .type) #
-default-fun-type _ltail (FUN (LIST-OF .type) (LIST-OF .type)) #
-default-fun-type _prove (FUN _ BOOLEAN) #
-default-fun-type _subst (FUN _ (FUN _ _)) #
-default-fun-type _thead (FUN (TUPLE-OF _ (.type, _)) .type) #
-default-fun-type _ttail (FUN (TUPLE-OF .n (_, .types)) (TUPLE-OF .n .types)) #
-default-fun-type fflush (FUN .type .type) #
-default-fun-type fgetc (FUN NUMBER NUMBER) #
-default-fun-type fputc (FUN NUMBER (FUN NUMBER (FUN .type .type))) #
-default-fun-type is-tree (FUN (LIST-OF .type) BOOLEAN) #
-default-fun-type log (FUN .type .type) #
-default-fun-type log2 (FUN _ (FUN .type .type)) #
+default-fun-type _cons (FUN-OF .type (FUN-OF (LIST-OF .type) (LIST-OF .type))) #
+default-fun-type _lhead (FUN-OF (LIST-OF .type) .type) #
+default-fun-type _ltail (FUN-OF (LIST-OF .type) (LIST-OF .type)) #
+default-fun-type _prove (FUN-OF _ BOOLEAN) #
+default-fun-type _subst (FUN-OF _ (FUN-OF _ _)) #
+default-fun-type _thead (FUN-OF (TUPLE-OF _ (.type, _)) .type) #
+default-fun-type _ttail (FUN-OF (TUPLE-OF .n (_, .types)) (TUPLE-OF .n .types)) #
+default-fun-type fflush (FUN-OF .type .type) #
+default-fun-type fgetc (FUN-OF NUMBER NUMBER) #
+default-fun-type fputc (FUN-OF NUMBER (FUN-OF NUMBER (FUN-OF .type .type))) #
+default-fun-type is-tree (FUN-OF (LIST-OF .type) BOOLEAN) #
+default-fun-type log (FUN-OF .type .type) #
+default-fun-type log2 (FUN-OF _ (FUN-OF .type .type)) #
