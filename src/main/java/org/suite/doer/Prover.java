@@ -189,7 +189,7 @@ public class Prover {
 	private void showLog(String message, Node query) {
 		if (message != null)
 			System.err.println("[" + message //
-					+ ":" + Prover.this.depth //
+					+ ":" + depth //
 					+ "] " + Formatter.dump(query));
 	}
 
