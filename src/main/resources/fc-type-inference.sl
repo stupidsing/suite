@@ -199,12 +199,12 @@ sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
 sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
 sub-super-type-pair _ .t0 .t1
 	:- bound .t1
-	, .t1 = INSTANCE-OF .typeParam (GENERIC .typeVar .type)
+	, .t1 = INSTANCE-OF .typeParam (GENERIC-OF .typeVar .type)
 	, replace .type/.t0 .typeVar/.typeParam
 #
 sub-super-type-pair _ .t0 .t1
 	:- bound .t1
-	, .t1 = GENERIC .typeVar .type
+	, .t1 = GENERIC-OF .typeVar .type
 	, replace .type/.t0 .typeVar/_
 #
 
@@ -225,6 +225,9 @@ children-of-type (LIST-OF .t0) (LIST-OF .t1) .p0/.px .q0/.qx
 #
 children-of-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .p .q
 	:- !, children-of-types .ts0 .ts1 .p .q
+#
+children-of-type (GENERIC-OF .tv .t0) (GENERIC-OF .tv .t1) .p0/.px .q0/.qx
+	:- !, .p0 = (.t0, .px), .q0 = (.t1, .qx)
 #
 children-of-type .t .t .p/.p .q/.q #
 

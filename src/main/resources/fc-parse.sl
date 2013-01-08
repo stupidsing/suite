@@ -150,7 +150,7 @@ fc-parse-type (one-of .types) (ONE-OF .types1)
 	:- !, fc-parse-types .types .types1
 #
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
-fc-parse-type (any .typeVar in .type) (GENERIC .typeVar1 .type1)
+fc-parse-type (any .typeVar in .type) (GENERIC-OF .typeVar1 .type1)
 	:- !, fc-parse-type .typeVar .typeVar1
 	, fc-parse-type .type .type1
 #
