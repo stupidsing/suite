@@ -25,7 +25,7 @@ public class Prover {
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
 
-	private Node remaining, alternative;
+	private Node rem, alt; // remaining, alternative
 
 	private Journal journal = new Journal();
 	private Node trace = Atom.nil;
@@ -52,8 +52,8 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		remaining = OK;
-		alternative = FAIL;
+		rem = OK;
+		alt = FAIL;
 
 		while (true) {
 			// LogUtil.info("PROVE", Formatter.dump(query));
@@ -72,15 +72,15 @@ public class Prover {
 						}
 					};
 
-					Tree alt0 = new Tree(TermOp.AND___, right, remaining);
-					alternative = alternative != FAIL ? new Tree(TermOp.OR____,
-							alt0, alternative) : alt0;
-					alternative = new Tree(TermOp.AND___, bt, alternative);
+					Tree alt0 = Tree.create(TermOp.AND___, right, rem);
+					alt = alt != FAIL ? Tree.create(TermOp.OR____, alt0, alt)
+							: alt0;
+					alt = Tree.create(TermOp.AND___, bt, alt);
 					query = left;
 					continue;
 				case AND___:
 					if (right != OK)
-						remaining = new Tree(TermOp.AND___, right, remaining);
+						rem = Tree.create(TermOp.AND___, right, rem);
 					query = left;
 					continue;
 				case EQUAL_:
@@ -97,16 +97,16 @@ public class Prover {
 
 			// Not handled above
 			if (query == OK)
-				if (remaining != OK) {
-					query = remaining;
-					remaining = OK;
+				if (rem != OK) {
+					query = rem;
+					rem = OK;
 				} else
 					return true;
 			else if (query == FAIL)
-				if (alternative != FAIL) {
-					query = alternative;
-					alternative = FAIL;
-					remaining = OK;
+				if (alt != FAIL) {
+					query = alt;
+					alt = FAIL;
+					rem = OK;
 				} else
 					return false;
 			else if (!isEnableTrace)
@@ -152,13 +152,13 @@ public class Prover {
 
 	private Node expandWithTrace(Node query) {
 		Node query1 = new Cloner().clone(query);
-		Tree trace1 = new Tree(TermOp.AND___, query1, trace);
+		Tree trace1 = Tree.create(TermOp.AND___, query1, trace);
 		Station push = new SetTrace(trace1), pop = new SetTrace(trace);
 
-		alternative = new Tree(TermOp.AND___, pop, alternative);
-		remaining = new Tree(TermOp.AND___, pop, remaining);
+		alt = Tree.create(TermOp.AND___, pop, alt);
+		rem = Tree.create(TermOp.AND___, pop, rem);
 		query = expand(query);
-		query = new Tree(TermOp.AND___, push, query);
+		query = Tree.create(TermOp.AND___, push, query);
 		return query;
 	}
 
@@ -172,7 +172,7 @@ public class Prover {
 	 * @return The chained node.
 	 */
 	private Node expand(Node query) {
-		final Node alt0 = alternative;
+		final Node alt0 = alt;
 		Node ret = FAIL;
 
 		List<Rule> rules = ruleSearcher.getRules(query);
@@ -184,7 +184,7 @@ public class Prover {
 			Generalizer generalizer = new Generalizer();
 			generalizer.setCut(new Station() {
 				public boolean run() {
-					Prover.this.alternative = alt0;
+					Prover.this.alt = alt0;
 					return true;
 				}
 			});
@@ -192,16 +192,16 @@ public class Prover {
 			Node head = generalizer.generalize(rule.getHead());
 			Node tail = generalizer.generalize(rule.getTail());
 
-			ret = new Tree(TermOp.OR____ //
-					, new Tree(TermOp.AND___ //
-							, new Tree(TermOp.EQUAL_ //
+			ret = Tree.create(TermOp.OR____ //
+					, Tree.create(TermOp.AND___ //
+							, Tree.create(TermOp.EQUAL_ //
 									, query //
 									, head //
 							) //
 							, tail //
 					) //
 					, ret //
-			);
+					);
 		}
 
 		return ret;

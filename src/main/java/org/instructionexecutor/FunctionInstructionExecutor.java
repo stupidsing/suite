@@ -82,7 +82,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		} else if (command == CONS) {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
-			result = new Tree(TermOp.AND___, left, right);
+			result = Tree.create(TermOp.AND___, left, right);
 		} else if (command == FFLUSH) {
 			out.print(outBuffer.toString());
 			outBuffer.setLength(0);

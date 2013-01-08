@@ -220,7 +220,7 @@ public class EvalPredicates {
 				Node left = tree.getLeft(), right = tree.getRight();
 				Node left1 = specialize(left), right1 = specialize(right);
 				if (left != left1 || right != right1)
-					node = new Tree(tree.getOperator(), left1, right1);
+					node = Tree.create(tree.getOperator(), left1, right1);
 			}
 
 			return node;
@@ -240,17 +240,19 @@ public class EvalPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 4);
 			Node p = params[0].finalNode();
+			Node p1 = params[1];
 			Node p2 = params[2].finalNode();
+			Node p3 = params[3];
 
 			if (p instanceof Tree) {
 				Tree tree = (Tree) p;
 				Atom oper = Atom.create(tree.getOperator().getName());
-				return prover.bind(tree.getLeft(), params[1])
-						&& prover.bind(oper, p2)
-						&& prover.bind(tree.getRight(), params[3]);
+				return prover.bind(tree.getLeft(), p1) //
+						&& prover.bind(oper, p2) //
+						&& prover.bind(tree.getRight(), p3);
 			} else if (p2 instanceof Atom) {
 				Operator operator = TermOp.find(((Atom) p2).getName());
-				return prover.bind(p, new Tree(operator, params[1], params[3]));
+				return prover.bind(p, Tree.create(operator, p1, p3));
 			} else
 				return false;
 		}

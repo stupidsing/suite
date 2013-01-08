@@ -119,7 +119,7 @@ public class RuleSet implements RuleSearcher {
 	public static Node formClause(Rule rule) {
 		Node head = rule.getHead(), tail = rule.getTail();
 		if (tail != Atom.nil)
-			return new Tree(TermOp.IS____, head, tail);
+			return Tree.create(TermOp.IS____, head, tail);
 		else
 			return head;
 	}

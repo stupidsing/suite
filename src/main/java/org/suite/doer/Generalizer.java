@@ -44,7 +44,7 @@ public class Generalizer {
 			Node l = t.getLeft(), r = t.getRight();
 			Node gl = generalize(l), gr = generalize(r);
 			if (gl != l || gr != r)
-				return new Tree(t.getOperator(), gl, gr);
+				return Tree.create(t.getOperator(), gl, gr);
 		}
 
 		return node;

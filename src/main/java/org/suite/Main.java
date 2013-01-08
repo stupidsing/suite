@@ -214,7 +214,7 @@ public class Main {
 							}
 						};
 
-						prover.prove(new Tree(TermOp.AND___, node, elab));
+						prover.prove(Tree.create(TermOp.AND___, node, elab));
 
 						if (count[0] == 1)
 							System.out.println(count[0] + " solution\n");

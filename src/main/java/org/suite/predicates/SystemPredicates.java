@@ -146,7 +146,7 @@ public class SystemPredicates {
 			final Stack<Node> stack = new Stack<Node>();
 			final Node params[] = Predicate.getParameters(ps, 3);
 
-			Tree subGoal = new Tree(TermOp.AND___, params[1], new Station() {
+			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Station() {
 				public boolean run() {
 					stack.push(new Cloner().clone(params[0]));
 					return false;
@@ -159,7 +159,7 @@ public class SystemPredicates {
 
 			Node result = Atom.nil;
 			while (!stack.isEmpty())
-				result = new Tree(TermOp.AND___, stack.pop(), result);
+				result = Tree.create(TermOp.AND___, stack.pop(), result);
 
 			return prover.bind(params[2], result);
 		}

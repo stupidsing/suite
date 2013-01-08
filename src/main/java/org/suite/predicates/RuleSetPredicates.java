@@ -49,8 +49,9 @@ public class RuleSetPredicates {
 
 			while (iter.hasPrevious()) {
 				Rule r = iter.previous();
-				Tree node = new Tree(TermOp.IS____, r.getHead(), r.getTail());
-				allRules = new Tree(TermOp.NEXT__, node, allRules);
+				Node head = r.getHead(), tail = r.getTail();
+				Tree node = Tree.create(TermOp.IS____, head, tail);
+				allRules = Tree.create(TermOp.NEXT__, node, allRules);
 			}
 
 			return prover.bind(allRules, ps);

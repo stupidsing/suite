@@ -307,8 +307,8 @@ public class InstructionExecutor {
 				Node left = (Node) regs[insn.op1];
 				Node right = (Node) regs[insn.op2];
 				insn = instructions[current.ip++];
-				String operator = ((Atom) constantPool.get(insn.op1)).getName();
-				regs[insn.op2] = new Tree(TermOp.find(operator), left, right);
+				String op = ((Atom) constantPool.get(insn.op1)).getName();
+				regs[insn.op2] = Tree.create(TermOp.find(op), left, right);
 				break;
 			case IFFALSE_______:
 				if (regs[insn.op2] != trueAtom)

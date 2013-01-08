@@ -100,7 +100,7 @@ public class FormatPredicates {
 					int l = stack.size();
 					Node right = stack.remove(l - 1);
 					Node left = stack.remove(l - 2);
-					n = new Tree(op, left, right);
+					n = Tree.create(op, left, right);
 				} else
 					throw new RuntimeException("RPN conversion error: " + elem);
 
