@@ -161,23 +161,8 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Type instantiations (type object clones) comes at the end.
 resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
-resolve-types0 (SUB-SUPER-TYPES .env .t .t, .tr1)/.trx
-	:- resolve-types0 .tr1/.trx
-#
-resolve-types0 (SUB-SUPER-TYPES .env .t0 .tx, .tr1)/.trx
-	:- bound .t0
-	, sub-super-type-pair .env .t0 .t1
-	, resolve-types0 (SUB-SUPER-TYPES .env .t1 .tx, .tr1)/.trx
-	; bound .tx
-	, sub-super-type-pair .env .t1 .tx
-	, resolve-types0 (SUB-SUPER-TYPES .env .t0 .t1, .tr1)/.trx
-#
 resolve-types0 (SUB-SUPER-TYPES .env .t0 .t1, .tr1)/.trx
-	:- (bound .t0; bound .t1), !
-	, .t0 = TUPLE-OF _, .t1 = TUPLE-OF _
-	, children-of-type .t0 .t1 .ts0/() .ts1/()
-	, sub-super-type-pairs .env .ts0 .ts1 .trx/.trxx
-	, resolve-types0 .tr1/.trxx
+	:- !, resolve-sub-super-types .env .t0 .t1 .tr1/.trx
 #
 resolve-types0 (GEN-SPEC-TYPES .t0 .t1, .tr1)/.trx
 	:- !, clone .t0 .t1, resolve-types0 .tr1/.trx
@@ -189,12 +174,34 @@ resolve-types0 (REMARK, .tr1)/.trx :- !, resolve-types0 .tr1/.trx #
 resolve-types0 (.a, .tr1)/.tr2 -- Shuffles the first one to the back
 	:- !, .tr2 = (.a, .trx), resolve-types0 .tr1/.trx
 #
-resolve-types0 _/_
-	:- !, fc-error "Not enough type information"
+resolve-types0 _ :- !, fc-error "Not enough type information" #
+
+resolve-sub-super-types _ .t .t .tr
+	:- resolve-types0 .tr
+#
+resolve-sub-super-types .env .t0 .tx .tr
+	:- bound .t0
+	, sub-super-type-pair .env .t0 .t1
+	, resolve-sub-super-types .env .t1 .tx .tr
+	; bound .tx
+	, sub-super-type-pair .env .t1 .tx
+	, resolve-sub-super-types .env .t0 .t1 .tr
+#
+resolve-sub-super-types .env .t0 .t1 .tr1/.trx
+	:- (bound .t0; bound .t1), !
+	, .t0 = TUPLE-OF _, .t1 = TUPLE-OF _
+	, children-of-type .t0 .t1 .ts0/() .ts1/()
+	, sub-super-type-pairs .env .ts0 .ts1 .trx/.trxx
+	, resolve-types0 .tr1/.trxx
 #
 
 sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
 sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
+sub-super-type-pair _ .t0 .t1
+	:- bound .t1
+	, .t1 = INSTANCE-OF .typeParam (GENERIC .typeVar .type)
+	, replace .type/.t0 .typeVar/.typeParam
+#
 sub-super-type-pair _ .t0 .t1
 	:- bound .t1
 	, .t1 = GENERIC .typeVar .type
