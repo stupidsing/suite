@@ -139,9 +139,9 @@ public class Prover {
 	}
 
 	private Node expandWithTrace(Node query) {
+		final Node query1 = new Cloner().clone(query);
 		query = expand(query);
 
-		final Node query1 = new Cloner().clone(query);
 		final Node trace0 = trace;
 		final Node trace1 = Tree.create(TermOp.AND___, query1, trace0);
 		final int depth0 = depth;
@@ -149,7 +149,7 @@ public class Prover {
 
 		final Station leave = new Station() {
 			public boolean run() {
-				showLog("LEAVE", query1);
+				// showLog("LEAVE", query1);
 				Prover.this.trace = trace0;
 				Prover.this.depth = depth0;
 				return false;
