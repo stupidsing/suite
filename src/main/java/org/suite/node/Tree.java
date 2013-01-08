@@ -8,14 +8,6 @@ public class Tree extends Node {
 	private Operator operator;
 	private Node left, right;
 
-	public Tree(Operator operator) {
-		this(operator, Atom.nil, Atom.nil);
-	}
-
-	public Tree(Operator operator, Node node) {
-		this(operator, node, Atom.nil);
-	}
-
 	public Tree(Operator operator, Node left, Node right) {
 		this.operator = operator;
 		this.left = left;
