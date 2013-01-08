@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.Prototype;
 import org.suite.kb.RuleSearcher;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
@@ -21,7 +22,6 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private boolean isEnableTrace = false;
-	private boolean isEnableDetailedTrace = false;
 
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
@@ -111,10 +111,19 @@ public class Prover {
 					rem = OK;
 				} else
 					return false;
-			else if (!isEnableTrace)
-				query = expand(query);
-			else
-				query = expandWithTrace(query);
+			else {
+				boolean isTrace = isEnableTrace;
+				Prototype prototype = isTrace ? Prototype.get(query) : null;
+				Node head = prototype != null ? prototype.getHead() : null;
+				Atom atom = head instanceof Atom ? (Atom) head : null;
+				String name = atom != null ? atom.getName() : null;
+				isTrace &= !"member".equals(name) && !"replace".equals(name);
+
+				if (!isTrace)
+					query = expand(query);
+				else
+					query = expandWithTrace(query);
+			}
 		}
 	}
 
@@ -140,58 +149,46 @@ public class Prover {
 
 	private Node expandWithTrace(Node query) {
 		final Node query1 = new Cloner().clone(query);
-		query = expand(query);
 
 		final Node trace0 = trace;
 		final Node trace1 = Tree.create(TermOp.AND___, query1, trace0);
 		final int depth0 = depth;
 		final int depth1 = depth + 1;
 
-		final Station leave = new Station() {
-			public boolean run() {
-				// showLog("LEAVE", query1);
-				Prover.this.trace = trace0;
-				Prover.this.depth = depth0;
-				return false;
-			}
-		};
-
 		final Station enter = new Station() {
 			public boolean run() {
 				Prover.this.trace = trace1;
 				Prover.this.depth = depth1;
-				showLog("ENTER", query1);
-				alt = Tree.create(TermOp.OR____, leave, alt);
+				showLog("ENTER", query1, depth1);
 				return true;
 			}
 		};
 
-		if (isEnableDetailedTrace) {
-			final Station re = new Station() {
-				public boolean run() {
-					Prover.this.depth = depth1;
-					showLog("RE", query1);
-					return false;
-				}
-			};
+		final Station leaveOk = new Station() {
+			public boolean run() {
+				Prover.this.trace = trace0;
+				Prover.this.depth = depth0;
+				return true;
+			}
+		};
 
-			final Station ok = new Station() {
-				public boolean run() {
-					showLog("OK", query1);
-					Prover.this.depth = depth0;
-					alt = Tree.create(TermOp.OR____, re, alt);
-					return true;
-				}
-			};
+		final Station leaveFail = new Station() {
+			public boolean run() {
+				Prover.this.trace = trace0;
+				Prover.this.depth = depth0;
+				showLog("LEAVE", query1, depth1);
+				return false;
+			}
+		};
 
-			rem = Tree.create(TermOp.AND___, ok, rem);
-		}
-
+		alt = Tree.create(TermOp.OR____, leaveFail, alt);
+		rem = Tree.create(TermOp.AND___, leaveOk, rem);
+		query = expand(query);
 		query = Tree.create(TermOp.AND___, enter, query);
 		return query;
 	}
 
-	private void showLog(String message, Node query) {
+	private void showLog(String message, Node query, int depth) {
 		if (message != null)
 			System.err.println("[" + message //
 					+ ":" + depth //
