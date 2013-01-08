@@ -227,7 +227,10 @@ children-of-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .p .q
 	:- !, children-of-types .ts0 .ts1 .p .q
 #
 children-of-type (GENERIC-OF .tv .t0) (GENERIC-OF .tv .t1) .p0/.px .q0/.qx
-	:- !, .p0 = (.t0, .px), .q0 = (.t1, .qx)
+	:- !
+	, replace .t0/.gt0 .tv/_
+	, replace .t1/.gt1 .tv/_
+	, .p0 = (.gt0, .px), .q0 = (.gt1, .qx)
 #
 children-of-type .t .t .p/.p .q/.q #
 
