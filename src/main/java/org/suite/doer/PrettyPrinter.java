@@ -16,7 +16,7 @@ public class PrettyPrinter {
 	private Map<Integer, Integer> lengthByIds = new HashMap<Integer, Integer>();
 	private StringBuilder sb = new StringBuilder();
 
-	private static final int LINELENGTH = 128; // Estimated
+	private static final int LINELENGTH = 80; // Estimated
 	private static final String INDENTSPACES = "    ";
 
 	public String prettyPrint(Node node) {
@@ -26,9 +26,10 @@ public class PrettyPrinter {
 	}
 
 	private void prettyPrint0(Node node) {
+		int x = getX();
 		int length = lengthByIds.get(getKey(node));
 
-		if (node instanceof Tree && length > LINELENGTH - getX()) {
+		if (node instanceof Tree && x + length > LINELENGTH) {
 			Tree tree = (Tree) node;
 			Operator op = tree.getOperator();
 
@@ -37,8 +38,7 @@ public class PrettyPrinter {
 			else {
 				prettyPrint0(tree.getLeft());
 				incrementIndent();
-				nl();
-				append(getOperatorDisplayName(tree.getOperator()));
+				appendOperator(tree.getOperator());
 				prettyPrint0(tree.getRight());
 				decrementIndent();
 			}
@@ -58,8 +58,7 @@ public class PrettyPrinter {
 				else
 					prettyPrint0(tree.getLeft());
 
-				nl();
-				append(getOperatorDisplayName(op));
+				appendOperator(op);
 
 				if (!isLeftAssoc)
 					prettyPrintList(op, tree.getRight());
@@ -71,11 +70,6 @@ public class PrettyPrinter {
 		}
 
 		prettyPrint0(node);
-	}
-
-	private String getOperatorDisplayName(Operator op) {
-		String name = op.getName().trim();
-		return name.length() > 0 ? name + " " : name;
 	}
 
 	private int estimateLeafStringLengths(Node node) {
@@ -114,6 +108,18 @@ public class PrettyPrinter {
 
 		return op != TermOp.TUPLE_
 				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.nil);
+	}
+
+	private void appendOperator(Operator op) {
+		nl();
+
+		String opName = op.getName().trim();
+		String name = !isLineBegin() ? " " + opName : opName;
+		name = !opName.isEmpty() && !name.endsWith(" ") ? name + " " : name;
+		append(name);
+
+		if (op != TermOp.NEXT__)
+			nl();
 	}
 
 	private void incrementIndent() {
