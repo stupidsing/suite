@@ -16,6 +16,7 @@ public class PrettyPrinter {
 	private int indent;
 	private Map<Integer, Integer> lengthByIds = new HashMap<Integer, Integer>();
 	private StringBuilder sb = new StringBuilder();
+	private int nLines = 0;
 
 	private static final int LINELENGTH = 80; // Estimated
 	private static final String INDENTSPACES = "    ";
@@ -57,7 +58,12 @@ public class PrettyPrinter {
 					prettyPrint0(left);
 					incrementIndent();
 					appendOperator(tree.getOperator());
+					append("(");
+					int lineNumber = nLines;
 					prettyPrint0(right);
+					if (lineNumber != nLines)
+						nl();
+					append(")");
 					decrementIndent();
 				}
 			}
@@ -178,6 +184,7 @@ public class PrettyPrinter {
 	private void nl() {
 		append("\n");
 		pre(indent);
+		nLines++;
 	}
 
 	private void pre(int indent) {
