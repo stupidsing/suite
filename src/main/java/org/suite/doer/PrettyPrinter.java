@@ -9,6 +9,7 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
+import org.util.FormatUtil;
 
 public class PrettyPrinter {
 
@@ -20,15 +21,16 @@ public class PrettyPrinter {
 	private static final String INDENTSPACES = "    ";
 
 	public String prettyPrint(Node node) {
-		estimateLeafStringLengths(node);
+		estimateStringLengths(node);
 		prettyPrint0(node);
 		return sb.toString();
 	}
 
 	private void prettyPrint0(Node node) {
 		int x = getX();
-		int length = lengthByIds.get(getKey(node));
+		int length = getEstimatedStringLength(node);
 
+		// Line too long?
 		if (node instanceof Tree && x + length > LINELENGTH) {
 			Tree tree = (Tree) node;
 			Operator op = tree.getOperator();
@@ -36,14 +38,31 @@ public class PrettyPrinter {
 			if (isLookingLikeList(op, node))
 				prettyPrintList(op, node);
 			else {
-				prettyPrint0(tree.getLeft());
-				incrementIndent();
-				appendOperator(tree.getOperator());
-				prettyPrint0(tree.getRight());
-				decrementIndent();
+				Node left = tree.getLeft();
+				Node right = tree.getRight();
+
+				Tree tree1 = Tree.decompose(right, op);
+				Node r0 = tree1 != null ? tree1.getLeft() : null;
+				Integer es0 = getEstimatedStringLength(left);
+				Integer es1 = r0 != null ? getEstimatedStringLength(r0) : null;
+				int opLength = op.getName().length();
+
+				// Breaks "a + b + xxx" in the second operator
+				if (op.getAssoc() == Assoc.RIGHT //
+						&& es1 != null //
+						&& x + es0 + es1 + opLength < LINELENGTH) {
+					append(Formatter.dump(left) + op.getName());
+					prettyPrint0(right);
+				} else { // Breaks after the operator
+					prettyPrint0(left);
+					incrementIndent();
+					appendOperator(tree.getOperator());
+					prettyPrint0(right);
+					decrementIndent();
+				}
 			}
 		} else
-			append(Formatter.dump(node));
+			append(Formatter.dump(node)); // Space sufficient
 	}
 
 	private void prettyPrintList(Operator op, Node node) {
@@ -72,7 +91,7 @@ public class PrettyPrinter {
 		prettyPrint0(node);
 	}
 
-	private int estimateLeafStringLengths(Node node) {
+	private int estimateStringLengths(Node node) {
 		int key = getKey(node);
 		Integer length = lengthByIds.get(key);
 
@@ -81,8 +100,8 @@ public class PrettyPrinter {
 
 			if (node instanceof Tree) {
 				Tree tree = (Tree) node;
-				int len0 = estimateLeafStringLengths(tree.getLeft());
-				int len1 = estimateLeafStringLengths(tree.getRight());
+				int len0 = estimateStringLengths(tree.getLeft());
+				int len1 = estimateStringLengths(tree.getRight());
 				int opLength = tree.getOperator().getName().length();
 				len = len0 + len1 + opLength; // Rough estimation
 			} else
@@ -93,6 +112,10 @@ public class PrettyPrinter {
 		}
 
 		return length;
+	}
+
+	private Integer getEstimatedStringLength(Node node) {
+		return lengthByIds.get(getKey(node));
 	}
 
 	private boolean isLookingLikeList(Operator op, Node node) {
@@ -111,14 +134,13 @@ public class PrettyPrinter {
 	}
 
 	private void appendOperator(Operator op) {
+		String opName = op.getName();
+		if (op == TermOp.AND___ || op == TermOp.OR____)
+			opName = opName + " ";
+
 		nl();
-
-		String opName = op.getName().trim();
-		String name = !isLineBegin() ? " " + opName : opName;
-		name = !opName.isEmpty() && !name.endsWith(" ") ? name + " " : name;
-		append(name);
-
-		if (op != TermOp.NEXT__)
+		append(FormatUtil.leftTrim(opName));
+		if (op == TermOp.NEXT__)
 			nl();
 	}
 
