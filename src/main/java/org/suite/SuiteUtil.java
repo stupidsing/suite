@@ -107,7 +107,7 @@ public class SuiteUtil {
 	public static boolean evaluateLogical(Node program) {
 		Prover lc = getLogicalCompiler();
 		Node node = SuiteUtil.parse("compile-logic .program .code");
-		// + ", pp-list .code"
+		// + ", pretty.print .code"
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -206,7 +206,7 @@ public class SuiteUtil {
 
 		String libraries = getLibraries(config);
 		String s = "compile-function .mode (" + libraries + ") .program .code"
-				+ (config.isDumpCode ? ", pp-list .code" : "");
+				+ (config.isDumpCode ? ", pretty.print .code" : "");
 		Node node = SuiteUtil.parse(s);
 
 		Generalizer generalizer = new Generalizer();
