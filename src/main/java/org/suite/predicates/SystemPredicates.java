@@ -30,6 +30,8 @@ public class SystemPredicates {
 		this.prover = prover;
 
 		addPredicate("compare.and.set", new CompareAndSet());
+		addPredicate("cut.begin", new CutBegin());
+		addPredicate("cut.end", new CutEnd());
 		addPredicate("find.all", new FindAll());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
@@ -138,6 +140,19 @@ public class SystemPredicates {
 			if (result)
 				map.put(key, params[2]);
 			return result;
+		}
+	}
+
+	private class CutBegin implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			return prover.bind(ps, prover.getAlternative());
+		}
+	}
+
+	private class CutEnd implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			prover.setAlternative(ps.finalNode());
+			return true;
 		}
 	}
 

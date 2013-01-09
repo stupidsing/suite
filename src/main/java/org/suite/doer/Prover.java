@@ -264,6 +264,17 @@ public class Prover {
 	}
 
 	/**
+	 * Alternative path to succeed.
+	 */
+	public Node getAlternative() {
+		return alt;
+	}
+
+	public void setAlternative(Node alt) {
+		this.alt = alt;
+	}
+
+	/**
 	 * The roll-back log of variable binds.
 	 */
 	public Journal getJournal() {
