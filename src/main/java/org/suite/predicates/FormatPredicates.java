@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.suite.SuiteUtil;
 import org.suite.doer.Formatter;
+import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -61,6 +62,14 @@ public class FormatPredicates {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(SuiteUtil.parse(Formatter.display(p0)), p1);
+		}
+	}
+
+	public static class PrettyPrint implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			PrettyPrinter printer = new PrettyPrinter();
+			System.out.println(printer.prettyPrint(ps));
+			return true;
 		}
 	}
 
