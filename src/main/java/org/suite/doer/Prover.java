@@ -90,8 +90,10 @@ public class Prover {
 					break;
 				default:
 				}
-			} else if (query instanceof Station)
+			} else if (query instanceof Station) {
 				query = isSuccess(((Station) query).run());
+				continue;
+			}
 
 			Boolean result = systemPredicates.call(query);
 			if (result != null)
