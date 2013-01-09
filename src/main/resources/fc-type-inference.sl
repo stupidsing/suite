@@ -187,6 +187,13 @@ resolve-sub-super-types .env .t0 .tx .tr
 	, sub-super-type-pair .env .t1 .tx
 	, resolve-sub-super-types .env .t0 .t1 .tr
 #
+resolve-sub-super-types .env .t0 .t1 .tr
+	:- bound .t1
+	, .t1 = INSTANCE-OF .typeParam .gt
+	, sub-super-type-pair .env (GENERIC-OF .typeVar .type) .gt
+	, replace .type/.t0 .typeVar/.typeParam
+	. resolve-types0 .tr
+#
 resolve-sub-super-types .env .t0 .t1 .tr1/.trx
 	:- (bound .t0; bound .t1), !
 	, .t0 = TUPLE-OF _, .t1 = TUPLE-OF _
@@ -197,9 +204,10 @@ resolve-sub-super-types .env .t0 .t1 .tr1/.trx
 
 sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
 sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
-sub-super-type-pair _ .t0 .t1
+sub-super-type-pair .env .t0 .t1
 	:- bound .t1
-	, .t1 = INSTANCE-OF .typeParam (GENERIC-OF .typeVar .type)
+	, .t1 = INSTANCE-OF .typeParam .gt
+	, sub-super-type-pair .env (GENERIC-OF .typeVar .type) .gt
 	, replace .type/.t0 .typeVar/.typeParam
 #
 sub-super-type-pair _ .t0 .t1

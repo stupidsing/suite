@@ -23,6 +23,24 @@ public class FunctionCompilerTypeTest {
 	}
 
 	@Test
+	public void testFail() {
+		String cases[] = { "1 + \"abc\"" //
+				, "(f => f {0}) | 1" //
+				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
+				, "define type t = one-of (BTREE t t,) >> \n" //
+						+ "let v as t = BTREE 2 3 >> 1" //
+				, "define type t = one-of (A, B number, C boolean,) >> A 4" //
+				, "define type t = one-of (A, B number, C boolean,) >> B" //
+		};
+
+		// There is a problem in deriving type of 1:(fib {i2})...
+		// Rule specified that right hand side of CONS should be a list,
+		// however fib {i2} is a closure.
+		for (String c : cases)
+			getTypeMustFail(c);
+	}
+
+	@Test
 	public void testFun() {
 		assertEquals(SuiteUtil.parse("number => number") //
 				, getType("a => a + 1"));
@@ -32,6 +50,24 @@ public class FunctionCompilerTypeTest {
 				, getType("and"));
 		assertEquals(SuiteUtil.parse("number => list-of number") //
 				, getType("v => v, reverse {1,}"));
+	}
+
+	@Test
+	public void testInstance() {
+		String define = " \n" //
+				+ "define type linked-list = \n" //
+				+ "    any :t in one-of (NODE :t (linked-list {:t}), NIL,) \n" //
+				+ ">> \n";
+
+		getType(define + "NIL");
+		getType(define + "NODE false NIL");
+
+		assertEquals(SuiteUtil.parse("boolean"), getType(define //
+				+ "let n = NODE true NIL >> \n" //
+				+ "NODE false n = NIL"));
+		getTypeMustFail(define //
+				+ "let n = NODE true NIL >> \n" //
+				+ "NODE 1 n");
 	}
 
 	@Test
@@ -65,24 +101,6 @@ public class FunctionCompilerTypeTest {
 				+ "T1 2 3 = T2 2 3");
 		getTypeMustFail("define type bt = one-of (BTREE number number,) >> \n"
 				+ "BTREE 2 3 = BTREE \"a\" 6");
-	}
-
-	@Test
-	public void testFail() {
-		String cases[] = { "1 + \"abc\"" //
-				, "(f => f {0}) | 1" //
-				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
-				, "define type t = one-of (BTREE t t,) >> \n" //
-						+ "let v as t = BTREE 2 3 >> 1" //
-				, "define type t = one-of (A, B number, C boolean,) >> A 4" //
-				, "define type t = one-of (A, B number, C boolean,) >> B" //
-		};
-
-		// There is a problem in deriving type of 1:(fib {i2})...
-		// Rule specified that right hand side of CONS should be a list,
-		// however fib {i2} is a closure.
-		for (String c : cases)
-			getTypeMustFail(c);
 	}
 
 	private static void getTypeMustFail(String c) {
