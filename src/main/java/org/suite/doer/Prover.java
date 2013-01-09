@@ -27,7 +27,7 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private boolean isEnableTrace = false;
-	private Tracer tracer = new Tracer();
+	private Tracer tracer;
 	private static final Set<String> NOTRACEPREDICATES = new HashSet<String>(
 			Arrays.asList("member", "replace"));
 
@@ -60,9 +60,14 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
+		if (isEnableTrace)
+			tracer = new Tracer();
+
 		boolean result = prove0(query);
+
 		if (isEnableTrace)
 			LogUtil.info("TRACE", tracer.getDump());
+
 		return result;
 	}
 
