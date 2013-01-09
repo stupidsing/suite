@@ -1,7 +1,10 @@
 package org.suite.doer;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import org.suite.Binder;
 import org.suite.Journal;
@@ -22,6 +25,8 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private boolean isEnableTrace = false;
+	private static final Set<String> NOTRACEPREDICATES = new HashSet<String>(
+			Arrays.asList("member", "replace"));
 
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
@@ -119,7 +124,7 @@ public class Prover {
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;
 				String name = atom != null ? atom.getName() : null;
-				isTrace &= !"member".equals(name) && !"replace".equals(name);
+				isTrace &= !NOTRACEPREDICATES.contains(name);
 
 				if (!isTrace)
 					query = expand(query);
