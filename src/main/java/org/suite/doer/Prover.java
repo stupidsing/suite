@@ -196,10 +196,14 @@ public class Prover {
 	}
 
 	private void showLog(String message, Node query, int depth) {
-		if (message != null)
-			System.err.println("[" + message //
-					+ ":" + depth //
-					+ "] " + Formatter.dump(query));
+		if (message != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(String.format("%-10s " //
+					, "[" + message + ":" + depth + "]"));
+			for (int i = 1; i < depth; i++)
+				sb.append("| ");
+			System.err.println(sb.toString() + Formatter.dump(query));
+		}
 	}
 
 	/**
