@@ -1,5 +1,6 @@
 package org.suite.doer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
+import org.util.LogUtil;
 
 public class Prover {
 
@@ -25,6 +27,7 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private boolean isEnableTrace = false;
+	private Tracer tracer = new Tracer();
 	private static final Set<String> NOTRACEPREDICATES = new HashSet<String>(
 			Arrays.asList("member", "replace"));
 
@@ -34,8 +37,6 @@ public class Prover {
 	private Node rem, alt; // remaining, alternative
 
 	private Journal journal = new Journal();
-	private Node trace = Atom.nil;
-	private int depth;
 
 	public Prover(Prover prover) {
 		this(prover.ruleSet);
@@ -59,6 +60,13 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
+		boolean result = prove0(query);
+		if (isEnableTrace)
+			LogUtil.info("TRACE", tracer.getDump());
+		return result;
+	}
+
+	public boolean prove0(Node query) {
 		rem = OK;
 		alt = FAIL;
 
@@ -129,7 +137,7 @@ public class Prover {
 				if (!isTrace)
 					query = expand(query);
 				else
-					query = expandWithTrace(query);
+					query = tracer.expandWithTrace(query);
 			}
 		}
 	}
@@ -152,58 +160,6 @@ public class Prover {
 
 	private Node isSuccess(boolean b) {
 		return b ? OK : FAIL;
-	}
-
-	private Node expandWithTrace(Node query) {
-		final Node query1 = new Cloner().clone(query);
-
-		final Node trace0 = trace;
-		final Node trace1 = Tree.create(TermOp.AND___, query1, trace0);
-		final int depth0 = depth;
-		final int depth1 = depth + 1;
-
-		final Station enter = new Station() {
-			public boolean run() {
-				Prover.this.trace = trace1;
-				Prover.this.depth = depth1;
-				showLog("ENTER", query1, depth1);
-				return true;
-			}
-		};
-
-		final Station leaveOk = new Station() {
-			public boolean run() {
-				Prover.this.trace = trace0;
-				Prover.this.depth = depth0;
-				return true;
-			}
-		};
-
-		final Station leaveFail = new Station() {
-			public boolean run() {
-				Prover.this.trace = trace0;
-				Prover.this.depth = depth0;
-				showLog("LEAVE", query1, depth1);
-				return false;
-			}
-		};
-
-		alt = Tree.create(TermOp.OR____, leaveFail, alt);
-		rem = Tree.create(TermOp.AND___, leaveOk, rem);
-		query = expand(query);
-		query = Tree.create(TermOp.AND___, enter, query);
-		return query;
-	}
-
-	private void showLog(String message, Node query, int depth) {
-		if (message != null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(String.format("%-10s " //
-					, "[" + message + ":" + depth + "]"));
-			for (int i = 1; i < depth; i++)
-				sb.append("| ");
-			System.err.println(sb.toString() + Formatter.dump(query));
-		}
 	}
 
 	/**
@@ -251,6 +207,108 @@ public class Prover {
 		return ret;
 	}
 
+	public class Tracer {
+		private List<Record> records = new ArrayList<Record>();
+		private Record currentRecord = null;
+		private int currentDepth;
+
+		private class Record {
+			private Record parent;
+			private Node query;
+			private int depth;
+			private boolean result;
+
+			private Record(Record parent, Node query, int depth) {
+				this.parent = parent;
+				this.query = query;
+				this.depth = depth;
+			}
+		}
+
+		private Node expandWithTrace(Node query) {
+			Node query1 = new Cloner().clone(query);
+
+			final Record record0 = currentRecord;
+			final int depth0 = currentDepth;
+			final Record record = new Record(record0, query1, currentDepth + 1);
+
+			final Station enter = new Station() {
+				public boolean run() {
+					Tracer.this.currentRecord = record;
+					Tracer.this.currentDepth = record.depth;
+					// appendLog("ENTER", record.query, record.depth);
+					records.add(record);
+					return true;
+				}
+			};
+
+			final Station leaveOk = new Station() {
+				public boolean run() {
+					Tracer.this.currentRecord = record0;
+					Tracer.this.currentDepth = depth0;
+					return record.result = true;
+				}
+			};
+
+			final Station leaveFail = new Station() {
+				public boolean run() {
+					Tracer.this.currentRecord = record0;
+					Tracer.this.currentDepth = depth0;
+					// appendLog("LEAVE", record.query, record.depth);
+					return record.result = false;
+				}
+			};
+
+			alt = Tree.create(TermOp.OR____, leaveFail, alt);
+			rem = Tree.create(TermOp.AND___, leaveOk, rem);
+			query = expand(query);
+			query = Tree.create(TermOp.AND___, enter, query);
+			return query;
+		}
+
+		public String getDump() {
+			StringBuilder sb = new StringBuilder();
+
+			for (Record record : records) {
+				String header = "" //
+						+ "[" + (record.result ? "OK__" : "FAIL") //
+						+ ":" + record.depth //
+						+ "]";
+				sb.append(String.format("%-10s ", header));
+				for (int i = 1; i < record.depth; i++)
+					sb.append("| ");
+				sb.append(Formatter.dump(record.query));
+				sb.append("\n");
+			}
+
+			return sb.toString();
+		}
+
+		public String getStackTrace() {
+			List<Node> traces = new ArrayList<Node>();
+			Record record = currentRecord;
+
+			while (record != null) {
+				traces.add(record.query);
+				record = record.parent;
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = traces.size(); i > 0; i--)
+				sb.append(traces.get(i - 1) + "\n");
+
+			return sb.toString();
+		}
+
+		public Record getCurrentRecord() {
+			return currentRecord;
+		}
+
+		public int getCurrentDepth() {
+			return tracer.currentDepth;
+		}
+	}
+
 	/**
 	 * The set of rules which is read-only.
 	 */
@@ -275,6 +333,17 @@ public class Prover {
 	}
 
 	/**
+	 * Goals ahead.
+	 */
+	public Node getRemaining() {
+		return rem;
+	}
+
+	public void setRemaining(Node rem) {
+		this.rem = rem;
+	}
+
+	/**
 	 * Alternative path to succeed.
 	 */
 	public Node getAlternative() {
@@ -293,17 +362,10 @@ public class Prover {
 	}
 
 	/**
-	 * Gets stack dump when trace is enabled.
+	 * Traces program flow.
 	 */
-	public Node getTrace() {
-		return trace;
-	}
-
-	/**
-	 * Depth of predicate call trace.
-	 */
-	public int getDepth() {
-		return depth;
+	public Tracer getTracer() {
+		return tracer;
 	}
 
 }
