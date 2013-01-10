@@ -20,14 +20,27 @@ public class PrettyPrinter {
 	private Map<Integer, Integer> lengthByIds = new HashMap<Integer, Integer>();
 	private StringBuilder sb = new StringBuilder();
 	private int nLines = 0;
+	private int currentLineIndent = 0;
 
 	private static final int LINELENGTH = 80; // Estimated
 	private static final String INDENTSPACES = "    ";
-	private static final Set<Node> LINEBREAKERKEYWORDS = new HashSet<Node>(
+	private static final Set<Node> LINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
 			Arrays.asList(Atom.create("else-if")));
+	private static final Set<Node> PREFERLINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
+			Arrays.asList(Atom.create("else")));
 
 	private static final Set<Operator> LINEBREAKAFTEROPERATORS = new HashSet<Operator>(
 			Arrays.asList(TermOp.CONTD_, TermOp.FUN___));
+
+	private static class OperatorPosition {
+		private int indent;
+		private int y;
+
+		public OperatorPosition(int indent, int y) {
+			this.indent = indent;
+			this.y = y;
+		}
+	}
 
 	public String prettyPrint(Node node) {
 		estimateLengths(node);
@@ -46,9 +59,12 @@ public class PrettyPrinter {
 			Operator op = tree.getOperator();
 			int prec = op.getPrecedence();
 			boolean needPars = prec < prec0;
+			int parsIndent = 0;
 
-			if (needPars)
+			if (needPars) {
+				parsIndent = currentLineIndent;
 				append("(");
+			}
 
 			if (x + length > LINELENGTH)
 				if (isLookingLikeList(op, node))
@@ -72,25 +88,27 @@ public class PrettyPrinter {
 					// Breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
 							&& es1 != null //
-							&& x + es0 + es1 + opLength < LINELENGTH) {
+							&& x + es0 + es1 + opLength < LINELENGTH
+							|| PREFERLINEBREAKBEFOREKEYWORDS.contains(r0)) {
 						prettyPrint0(left, leftPrec);
-						int yOp = appendOperator(op);
+						OperatorPosition opPos = appendOperator(op);
 						prettyPrint0(right, rightPrec);
-						closeBraces(op, yOp);
+						closeBraces(op, opPos);
 					} else { // Breaks after the operator
 						boolean incRightIndent = Tree.decompose(right, op) == null;
+						int indent0 = 0;
 
 						prettyPrint0(left, leftPrec);
+						OperatorPosition opPos = appendOperatorLineFeed(op);
 
 						if (incRightIndent)
-							incrementIndent();
+							indent0 = incrementIndent();
 
-						int yOp = appendOperatorLineFeed(op);
 						prettyPrint0(right, rightPrec);
-						closeBraces(op, yOp);
+						closeBraces(op, opPos);
 
 						if (incRightIndent)
-							decrementIndent();
+							revertIndent(indent0);
 					}
 				}
 			else
@@ -98,11 +116,11 @@ public class PrettyPrinter {
 
 			if (needPars) {
 				if (y != getY())
-					nl();
+					nl(parsIndent);
 				append(")");
 			}
 		} else {
-			if (LINEBREAKERKEYWORDS.contains(node) && !isLineBegin())
+			if (LINEBREAKBEFOREKEYWORDS.contains(node) && !isLineBegin())
 				nl();
 
 			append(Formatter.dump(node)); // Space sufficient
@@ -123,14 +141,14 @@ public class PrettyPrinter {
 				else
 					prettyPrint0(tree.getLeft(), prec1);
 
-				int yOp = appendOperatorLineFeed(op);
+				OperatorPosition opPos = appendOperatorLineFeed(op);
 
 				if (!isLeftAssoc)
 					prettyPrintList(op, tree.getRight());
 				else
 					prettyPrint0(tree.getRight(), prec1);
 
-				closeBraces(op, yOp);
+				closeBraces(op, opPos);
 				return;
 			}
 		}
@@ -138,19 +156,15 @@ public class PrettyPrinter {
 		prettyPrint0(node, prec);
 	}
 
-	private void closeBraces(Operator op, int y) {
+	private void closeBraces(Operator op, OperatorPosition opPos) {
 		if (op == TermOp.BRACES) {
-			if (y != getY())
-				nl();
+			if (opPos.y != getY())
+				nl(opPos.indent);
 			append("}");
 		}
 	}
 
 	private int estimateLengths(Node node) {
-		return estimateLengths(node, 0);
-	}
-
-	private int estimateLengths(Node node, int prec0) {
 		node = node.finalNode();
 		int key = getKey(node);
 		Integer length = lengthByIds.get(key);
@@ -162,19 +176,12 @@ public class PrettyPrinter {
 				Tree tree = (Tree) node;
 
 				Operator op = tree.getOperator();
-				int prec = op.getPrecedence();
-				Assoc assoc = op.getAssoc();
-				int leftPrec = prec - (assoc == Assoc.LEFT ? 1 : 0);
-				int rightPrec = prec - (assoc == Assoc.RIGHT ? 1 : 0);
-				if (op == TermOp.BRACES)
-					leftPrec = rightPrec = 0;
-
-				int len0 = estimateLengths(tree.getLeft(), leftPrec);
-				int len1 = estimateLengths(tree.getRight(), rightPrec);
+				int len0 = estimateLengths(tree.getLeft());
+				int len1 = estimateLengths(tree.getRight());
 				int opLength = op.getName().length();
 
 				// Rough estimation
-				len = len0 + len1 + opLength + (prec < prec0 ? 2 : 0);
+				len = len0 + len1 + opLength + 2;
 			} else
 				len = Formatter.dump(node).length();
 
@@ -204,33 +211,31 @@ public class PrettyPrinter {
 				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.nil);
 	}
 
-	private int appendOperatorLineFeed(Operator op) {
+	private OperatorPosition appendOperatorLineFeed(Operator op) {
 		boolean lineBreakAfterOp = LINEBREAKAFTEROPERATORS.contains(op);
 		if (!lineBreakAfterOp)
 			nl();
-		int y = appendOperator(op);
+		OperatorPosition result = appendOperator(op);
 		if (lineBreakAfterOp || op == TermOp.NEXT__)
 			nl();
-		return y;
+		return result;
 	}
 
-	private int appendOperator(Operator op) {
+	private OperatorPosition appendOperator(Operator op) {
 		String name = op.getName();
 		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
 		if (isLineBegin())
 			name = FormatUtil.leftTrim(name);
 		append(name);
-		return getY();
+		return new OperatorPosition(currentLineIndent, getY());
 	}
 
-	private void incrementIndent() {
-		indent++;
-		if (isLineBegin())
-			append(INDENTSPACES);
+	private int incrementIndent() {
+		return indent++;
 	}
 
-	private void decrementIndent() {
-		indent--;
+	private void revertIndent(int indent0) {
+		indent = indent0;
 	}
 
 	private boolean isLineBegin() {
@@ -249,17 +254,21 @@ public class PrettyPrinter {
 		return nLines;
 	}
 
-	private void nl() {
-		append("\n");
-		pre(indent);
-		nLines++;
-	}
-
 	private int getLineBeginPosition() {
 		int pos = sb.length();
 		while (--pos > 0 && sb.charAt(pos) != '\n')
 			;
 		return pos + 1;
+	}
+
+	private void nl() {
+		nl(indent);
+	}
+
+	private void nl(int indent) {
+		append("\n");
+		nLines++;
+		pre(currentLineIndent = indent);
 	}
 
 	private void pre(int indent) {
