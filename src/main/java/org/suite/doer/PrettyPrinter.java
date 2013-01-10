@@ -95,15 +95,15 @@ public class PrettyPrinter {
 						prettyPrint0(right, rightPrec);
 						closeBraces(op, opPos);
 					} else { // Breaks after the operator
-						boolean incRightIndent = Tree.decompose(right, op) == null;
+						boolean incRightIndent = tree1 == null;
 						int indent0 = 0;
 
 						prettyPrint0(left, leftPrec);
-						OperatorPosition opPos = appendOperatorLineFeed(op);
 
 						if (incRightIndent)
 							indent0 = incrementIndent();
 
+						OperatorPosition opPos = appendOperatorLineFeed(op);
 						prettyPrint0(right, rightPrec);
 						closeBraces(op, opPos);
 
@@ -135,18 +135,17 @@ public class PrettyPrinter {
 
 			if (tree.getOperator() == op) {
 				boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+				OperatorPosition opPos;
 
-				if (isLeftAssoc)
+				if (isLeftAssoc) {
 					prettyPrintList(op, tree.getLeft());
-				else
-					prettyPrint0(tree.getLeft(), prec1);
-
-				OperatorPosition opPos = appendOperatorLineFeed(op);
-
-				if (!isLeftAssoc)
+					opPos = appendOperatorLineFeed(op);
+					prettyPrintIndented(tree.getRight(), prec1);
+				} else {
+					prettyPrintIndented(tree.getLeft(), prec1);
+					opPos = appendOperatorLineFeed(op);
 					prettyPrintList(op, tree.getRight());
-				else
-					prettyPrint0(tree.getRight(), prec1);
+				}
 
 				closeBraces(op, opPos);
 				return;
@@ -154,6 +153,12 @@ public class PrettyPrinter {
 		}
 
 		prettyPrint0(node, prec);
+	}
+
+	private void prettyPrintIndented(Node left, int prec) {
+		int indent0 = incrementIndent();
+		prettyPrint0(left, prec);
+		revertIndent(indent0);
 	}
 
 	private void closeBraces(Operator op, OperatorPosition opPos) {
@@ -230,8 +235,10 @@ public class PrettyPrinter {
 		return new OperatorPosition(currentLineIndent, getY());
 	}
 
-	private int incrementIndent() {
-		return indent++;
+	private int incrementIndent() { // Would not jump by two
+		int indent0 = indent;
+		indent = Math.min(indent, currentLineIndent) + 1;
+		return indent0;
 	}
 
 	private void revertIndent(int indent0) {
