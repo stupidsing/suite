@@ -88,8 +88,8 @@ public class PrettyPrinter {
 					// Breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
 							&& es1 != null //
-							&& x + es0 + es1 + opLength < LINELENGTH
-							|| PREFERLINEBREAKBEFOREKEYWORDS.contains(r0)) {
+							&& x + es0 + es1 + opLength < LINELENGTH //
+							&& !PREFERLINEBREAKBEFOREKEYWORDS.contains(r0)) {
 						prettyPrint0(left, leftPrec);
 						OperatorPosition opPos = appendOperator(op);
 						prettyPrint0(right, rightPrec);
