@@ -1,11 +1,6 @@
 append () .list .list #
 append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 
-enable-trace
-	:- to.atom ".call" .call
-	, asserta (.call :- write 'TRACE: ', dump .call, nl, fail)
-#
-
 -- Converts tuple (a b c) to/from list (a, b, c,) with terminating nil
 enlist .a .b :- bound .b, .b = (.a,), ! #
 enlist () () :- ! #

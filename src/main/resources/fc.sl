@@ -7,7 +7,6 @@
 
 () :- import.file 'fc-parse.sl'
 	, import.file 'fc-type-inference.sl'
---	, enable-trace
 #
 
 compile-function .mode .libs .do .c0
