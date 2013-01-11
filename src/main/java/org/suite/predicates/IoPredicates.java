@@ -32,7 +32,7 @@ public class IoPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			String date = FormatUtil.dtFmt.format(new Date());
 			String trace = prover.getTracer().getStackTrace();
-			LogUtil.info("STACK-TRACE", "-- Trace at " + date + " --\n" + trace);
+			LogUtil.info("TRACE", "-- Stack trace at " + date + " --\n" + trace);
 			return true;
 		}
 	}

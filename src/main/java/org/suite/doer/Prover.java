@@ -2,6 +2,7 @@ package org.suite.doer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -18,6 +19,7 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
+import org.util.FormatUtil;
 import org.util.LogUtil;
 
 public class Prover {
@@ -65,8 +67,11 @@ public class Prover {
 
 		boolean result = prove0(query);
 
-		if (isEnableTrace)
-			LogUtil.info("TRACE", tracer.getDump());
+		if (isEnableTrace) {
+			String date = FormatUtil.dtFmt.format(new Date());
+			String dump = tracer.getDump();
+			LogUtil.info("DUMP", "-- Prover dump at " + date + " --\n" + dump);
+		}
 
 		return result;
 	}
