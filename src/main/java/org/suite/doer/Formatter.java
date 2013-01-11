@@ -78,15 +78,12 @@ public class Formatter {
 			Tree tree = (Tree) node;
 			Operator operator = tree.getOperator();
 			int ourPrec = operator.getPrecedence();
-			boolean needParentheses = (ourPrec <= parentPrec);
+			Assoc assoc = operator.getAssoc();
+			boolean isNeedParentheses = ourPrec <= parentPrec;
+			int leftPrec = ourPrec - (assoc == Assoc.LEFT ? 1 : 0);
+			int rightPrec = ourPrec - (assoc == Assoc.RIGHT ? 1 : 0);
 
-			int leftPrec = ourPrec, rightPrec = ourPrec;
-			if (operator.getAssoc() == Assoc.LEFT)
-				leftPrec--;
-			else if (operator.getAssoc() == Assoc.RIGHT)
-				rightPrec--;
-
-			if (needParentheses)
+			if (isNeedParentheses)
 				sb.append('(');
 
 			format(tree.getLeft(), leftPrec);
@@ -107,7 +104,7 @@ public class Formatter {
 				sb.append("}");
 			}
 
-			if (needParentheses)
+			if (isNeedParentheses)
 				sb.append(')');
 		} else if (node instanceof Reference)
 			sb.append(Generalizer.DEFAULTPREFIX + ((Reference) node).getId());

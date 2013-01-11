@@ -22,13 +22,14 @@ public class PrettyPrinter {
 	private int nLines = 0;
 	private int currentLineIndent = 0;
 
-	private static final int LINELENGTH = 80; // Estimated
+	private static final int LINELENGTH = 96; // Estimated
+	private static final int SQUEEZELINELENGTH = 8;
 	private static final String INDENTSPACES = "    ";
+
 	private static final Set<Node> LINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
 			Arrays.asList(Atom.create("else-if")));
 	private static final Set<Node> PREFERLINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
 			Arrays.asList(Atom.create("else")));
-
 	private static final Set<Operator> LINEBREAKAFTEROPERATORS = new HashSet<Operator>(
 			Arrays.asList(TermOp.CONTD_, TermOp.FUN___));
 
@@ -44,11 +45,14 @@ public class PrettyPrinter {
 
 	public String prettyPrint(Node node) {
 		estimateLengths(node);
-		prettyPrint0(node, 0);
+		prettyPrint0(node, null, 0);
 		return sb.toString();
 	}
 
-	private void prettyPrint0(Node node, int prec0) {
+	private void prettyPrint0(Node node //
+			, Operator op0 // for avoiding unnecessary indenting
+			, int prec0 // for parenthesizing
+	) {
 		node = node.finalNode();
 		int x = getX(), y = getY();
 		int length = getEstimatedLength(node);
@@ -58,11 +62,12 @@ public class PrettyPrinter {
 			Tree tree = (Tree) node;
 			Operator op = tree.getOperator();
 			int prec = op.getPrecedence();
-			boolean needPars = prec < prec0;
-			int parsIndent = 0;
+			boolean isNeedPars = prec <= prec0;
+			int parsIndent = 0, parsIndent0 = 0;
 
-			if (needPars) {
+			if (isNeedPars) {
 				parsIndent = currentLineIndent;
+				parsIndent0 = incrementIndent();
 				append("(");
 			}
 
@@ -90,34 +95,40 @@ public class PrettyPrinter {
 							&& es1 != null //
 							&& x + es0 + es1 + opLength < LINELENGTH //
 							&& !PREFERLINEBREAKBEFOREKEYWORDS.contains(r0)) {
-						prettyPrint0(left, leftPrec);
+						prettyPrint0(left, op, leftPrec);
 						OperatorPosition opPos = appendOperator(op);
-						prettyPrint0(right, rightPrec);
+						prettyPrint0(right, op, rightPrec);
 						closeBraces(op, opPos);
 					} else { // Breaks after the operator
-						boolean incRightIndent = tree1 == null;
+						boolean isIncRightIndent = op != op0;
 						int indent0 = 0;
 
-						prettyPrint0(left, leftPrec);
+						prettyPrint0(left, op, leftPrec);
 
-						if (incRightIndent)
+						if (isIncRightIndent)
 							indent0 = incrementIndent();
 
-						OperatorPosition opPos = appendOperatorLineFeed(op);
-						prettyPrint0(right, rightPrec);
+						OperatorPosition opPos;
+						if (getLineSize() + getEstimatedLength(right) < SQUEEZELINELENGTH)
+							opPos = appendOperator(op);
+						else
+							opPos = appendOperatorLineFeed(op);
+
+						prettyPrint0(right, op, rightPrec);
 						closeBraces(op, opPos);
 
-						if (incRightIndent)
+						if (isIncRightIndent)
 							revertIndent(indent0);
 					}
 				}
 			else
 				append(Formatter.dump(node));
 
-			if (needPars) {
+			if (isNeedPars) {
 				if (y != getY())
 					nl(parsIndent);
 				append(")");
+				revertIndent(parsIndent0);
 			}
 		} else {
 			if (LINEBREAKBEFOREKEYWORDS.contains(node) && !isLineBegin())
@@ -152,12 +163,12 @@ public class PrettyPrinter {
 			}
 		}
 
-		prettyPrint0(node, prec);
+		prettyPrint0(node, op, prec);
 	}
 
 	private void prettyPrintIndented(Node left, int prec) {
 		int indent0 = incrementIndent();
-		prettyPrint0(left, prec);
+		prettyPrint0(left, null, prec);
 		revertIndent(indent0);
 	}
 
@@ -167,6 +178,21 @@ public class PrettyPrinter {
 				nl(opPos.indent);
 			append("}");
 		}
+	}
+
+	private boolean isLookingLikeList(Operator op, Node node) {
+		if (node instanceof Tree) {
+			Tree tree = (Tree) node;
+
+			if (tree.getOperator() == op) {
+				boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+				Node child = isLeftAssoc ? tree.getLeft() : tree.getRight();
+				return isLookingLikeList(op, child);
+			}
+		}
+
+		return op != TermOp.TUPLE_
+				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.nil);
 	}
 
 	private int estimateLengths(Node node) {
@@ -201,27 +227,12 @@ public class PrettyPrinter {
 		return lengthByIds.get(getKey(node));
 	}
 
-	private boolean isLookingLikeList(Operator op, Node node) {
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-
-			if (tree.getOperator() == op) {
-				boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
-				Node child = isLeftAssoc ? tree.getLeft() : tree.getRight();
-				return isLookingLikeList(op, child);
-			}
-		}
-
-		return op != TermOp.TUPLE_
-				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.nil);
-	}
-
 	private OperatorPosition appendOperatorLineFeed(Operator op) {
-		boolean lineBreakAfterOp = LINEBREAKAFTEROPERATORS.contains(op);
-		if (!lineBreakAfterOp)
+		boolean isLineFeedAfterOp = LINEBREAKAFTEROPERATORS.contains(op);
+		if (!isLineFeedAfterOp)
 			nl();
 		OperatorPosition result = appendOperator(op);
-		if (lineBreakAfterOp || op == TermOp.NEXT__)
+		if (isLineFeedAfterOp || op == TermOp.NEXT__)
 			nl();
 		return result;
 	}
@@ -247,25 +258,41 @@ public class PrettyPrinter {
 
 	private boolean isLineBegin() {
 		boolean result = true;
-		String l = sb.substring(getLineBeginPosition(), sb.length());
+		String l = sb.substring(getLineBeginPosition(), getCurrentPosition());
 		for (char c : l.toCharArray())
 			result &= Character.isWhitespace(c);
 		return result;
 	}
 
+	private int getLineSize() {
+		return getCurrentPosition() - getLineContentBeginPosition();
+	}
+
 	private int getX() {
-		return sb.length() - getLineBeginPosition();
+		return getCurrentPosition() - getLineBeginPosition();
 	}
 
 	private int getY() {
 		return nLines;
 	}
 
+	private int getLineContentBeginPosition() {
+		int pos = getLineBeginPosition();
+		while (pos < getCurrentPosition()
+				&& Character.isWhitespace(sb.charAt(pos)))
+			pos++;
+		return pos;
+	}
+
 	private int getLineBeginPosition() {
-		int pos = sb.length();
+		int pos = getCurrentPosition();
 		while (--pos > 0 && sb.charAt(pos) != '\n')
 			;
 		return pos + 1;
+	}
+
+	private int getCurrentPosition() {
+		return sb.length();
 	}
 
 	private void nl() {
