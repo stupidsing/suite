@@ -29,7 +29,7 @@ public class PrettyPrinter {
 	private static final Set<Node> LINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
 			Arrays.asList(Atom.create("else-if")));
 	private static final Set<Node> PREFERLINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
-			Arrays.asList(Atom.create("else")));
+			Arrays.asList(Atom.create("else"), Atom.create("then")));
 	private static final Set<Operator> LINEBREAKAFTEROPERATORS = new HashSet<Operator>(
 			Arrays.asList(TermOp.CONTD_, TermOp.FUN___));
 
