@@ -31,7 +31,7 @@ public class PrettyPrinter {
 	private static final Set<Node> PREFERLINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
 			Arrays.asList(Atom.create("else"), Atom.create("then")));
 	private static final Set<Operator> LINEBREAKAFTEROPERATORS = new HashSet<Operator>(
-			Arrays.asList(TermOp.CONTD_, TermOp.FUN___));
+			Arrays.asList(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___));
 
 	private static class OperatorPosition {
 		private int indent;
@@ -239,6 +239,7 @@ public class PrettyPrinter {
 
 	private OperatorPosition appendOperator(Operator op) {
 		String name = op.getName();
+		name = (op == TermOp.BRACES ? " " : "") + name;
 		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
 		if (isLineBegin())
 			name = FormatUtil.leftTrim(name);
