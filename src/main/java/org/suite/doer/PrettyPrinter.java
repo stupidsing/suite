@@ -86,13 +86,12 @@ public class PrettyPrinter {
 
 					Tree tree1 = Tree.decompose(right, op);
 					Node r0 = tree1 != null ? tree1.getLeft() : null;
-					Integer es0 = getEstimatedLength(left);
-					Integer es1 = r0 != null ? getEstimatedLength(r0) : null;
+					int es0 = getEstimatedLength(left);
+					int es1 = r0 != null ? getEstimatedLength(r0) : LINELENGTH;
 					int opLength = op.getName().length();
 
 					// Breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
-							&& es1 != null //
 							&& x + es0 + es1 + opLength < LINELENGTH //
 							&& !PREFERLINEBREAKBEFOREKEYWORDS.contains(r0)) {
 						prettyPrint0(left, op, leftPrec);
@@ -223,8 +222,9 @@ public class PrettyPrinter {
 		return length;
 	}
 
-	private Integer getEstimatedLength(Node node) {
-		return lengthByIds.get(getKey(node));
+	private int getEstimatedLength(Node node) {
+		Integer length = lengthByIds.get(getKey(node));
+		return length != null ? length : LINELENGTH; // Maximum if not found
 	}
 
 	private OperatorPosition appendOperatorLineFeed(Operator op) {
