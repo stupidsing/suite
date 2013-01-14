@@ -162,6 +162,7 @@ public class PrettyPrinter {
 			}
 		}
 
+		// if (node != Atom.nil) // Suppress list termination
 		prettyPrint0(node, op, prec);
 	}
 
