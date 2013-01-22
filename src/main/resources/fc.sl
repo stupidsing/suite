@@ -165,6 +165,12 @@ fc-add-functions STANDARD .p (
 	define id = (v =>
 		v
 	) >>
+	define maximum = (a => b =>
+		if (a > b) then a else b
+	) >>
+	define minimum = (a => b =>
+		if (a > b) then b else a
+	) >>
 	define not = (x =>
 		if x then false else true
 	) >>
@@ -275,6 +281,12 @@ fc-add-functions STANDARD .p (
 	define reverse =
 		fold-left {a => b => b, a} {}
 	>>
+	define substring = (start => end => list =>
+		let len = length {list} >>
+		let s = (if (start >= 0) then start else (len + start)) >>
+		let e = (if (end > 0) then end else (len + end)) >>
+		drop {s} | take {e} | list
+	) >>
 	define uniq =
 		fold-right {item => list =>
 			if-bind (list = (item, \t)) then list else (item, list)

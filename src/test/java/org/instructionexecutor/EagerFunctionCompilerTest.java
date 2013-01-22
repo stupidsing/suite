@@ -273,6 +273,16 @@ public class EagerFunctionCompilerTest {
 	}
 
 	@Test
+	public void testSubstring() {
+		assertEquals(eval("\"abcdefghij\""), eval("" //
+				+ "substring {0} {10} {\"abcdefghij\"}"));
+		assertEquals(eval("\"ef\""), eval("" //
+				+ "substring {4} {6} {\"abcdefghij\"}"));
+		assertEquals(eval("\"cdefgh\""), eval("" //
+				+ "substring {2} {-2} {\"abcdefghij\"}"));
+	}
+
+	@Test
 	public void testSwitch() {
 		assertEquals(eval("\"C\""), eval("" //
 				+ "define switch = (p => case \n" //
