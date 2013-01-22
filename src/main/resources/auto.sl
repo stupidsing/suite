@@ -14,11 +14,6 @@ fold (.head, .tail) .r0/.rx .action
 	, fold .tail .r1/.rx .action
 #
 
-if .if then .then _ :- .if, !, .then #
-if _ then _ end-if :- ! #
-if _ then _ else .else :- !, .else #
-if _ then _ else-if .elseIf :- !, if .elseIf #
-
 length () 0 #
 length (_, .r) .l1 :- length .r .l0, let .l1 (.l0 + 1) #
 
@@ -41,9 +36,6 @@ replace .node/.node _/_ #
 sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
 sum .a .b .c :- bound .a, bound .c, let .a (.a - .c) #
 sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
-
-twin-list (.e0, _) (.e1, _) .e0 .e1 #
-twin-list (_, .es0) (_, .es1) .e0 .e1 :- twin-list .es0 .es1 .e0 .e1 #
 
 use .fn
 	:- concat "src/main/resources/" .fn .fn1
