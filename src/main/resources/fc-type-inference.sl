@@ -15,6 +15,11 @@
 infer-type-rule .p .env .tr/.tr .type
 	:- find-simple-type .p .env .type, !
 #
+infer-type-rule (USING .lib .do) .env .tr/.tr .type
+	:- !, load-precompiled-library .lib
+	, infer-type-rule-using-libs (.lib,) .do .env .tr1 .type
+	, resolve-types .tr1
+#
 infer-type-rule (OPTION CHECK-TUPLE-TYPE .do) .ue/.ve/.te/.oe .tr0/.trx .definedType
 	:- !, infer-type-rule .do .ue/.ve/.te/.oe .tr0/.tr1 .tupleType
 	, .tupleType = TUPLE-OF .name .types

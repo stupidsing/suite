@@ -53,7 +53,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 infer-type-rule ($$PRECOMPILE .uvto .trs _) .uvto .trs NUMBER :- ! #
 
 -- Eager evaluation
-fc-eager-compile ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
+fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
 
 -- Lazy evaluation
 fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #

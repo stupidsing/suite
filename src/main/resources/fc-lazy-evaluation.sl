@@ -2,10 +2,6 @@
 -- functional program compiler with lazy evaluation
 
 fc-compile LAZY .do .env .c0/.cx/.d0/.dx/.reg
-	:- fc-lazy-compile .do .env .c0/.cx/.d0/.dx/.reg
-#
-
-fc-lazy-compile .do .env .c0/.cx/.d0/.dx/.reg
 	:- fc-lazy-compile-to-thunk .do .env .c0/.c1/.d0/.dx/.closureReg
 	, .c1 = (_ CALL-CLOSURE .reg .closureReg
 		, _ SET-CLOSURE-RESULT .closureReg .reg
@@ -24,7 +20,7 @@ fc-lazy-compile-to-thunk (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.r
 #
 fc-lazy-compile-to-thunk (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-lazy-compile .if .env .c0/.c1/.d0/.d1/.ifReg
+	, fc-compile LAZY .if .env .c0/.c1/.d0/.d1/.ifReg
 	, .c1 = (_ IF-FALSE .label1 .ifReg, .c2)
 	, fc-lazy-compile-to-thunk .then .env .c2/.c3/.d1/.d2/.thenReg
 	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg
@@ -48,7 +44,7 @@ fc-lazy-compile-to-thunk (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 fc-lazy-compile-to-thunk (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
 	:- member (_lhead, _ltail, _thead, _ttail,) .var
 	, fc-define-default-fun 1 .var .call
-	, !, fc-lazy-compile .p .env .c0/.c1/.d0/.dx/.paramReg
+	, !, fc-compile LAZY .p .env .c0/.c1/.d0/.dx/.paramReg
 	, .c1 = (_ PUSH .paramReg, _ SERVICE .reg .call 1, .cx)
 #
 fc-lazy-compile-to-thunk (TUPLE .name (.e, .es)) .env .cdr
@@ -79,7 +75,7 @@ fc-lazy-compile-to-value .do .env .cdr
 #
 fc-lazy-compile-to-value (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-lazy-compile .callee .env .c0/.c1/.d0/.d1/.r1
+	, fc-compile LAZY .callee .env .c0/.c1/.d0/.d1/.r1
 	, fc-lazy-compile-to-thunk .parameter .env .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ PUSH .r2
 		, _ CALL-CLOSURE .closureReg .r1
@@ -93,8 +89,8 @@ fc-lazy-compile-to-value (TUPLE .name ()) .env .c0/.cx/.d/.d/.reg
 #
 fc-lazy-compile-to-value (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-lazy-compile .left .env .c0/.c1/.d0/.d1/.r1
-	, fc-lazy-compile .right .env .c1/.c2/.d1/.dx/.r2
+	, fc-compile LAZY .left .env .c0/.c1/.d0/.d1/.r1
+	, fc-compile LAZY .right .env .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
 fc-lazy-compile-to-value (CONSTANT .c) _ .c0/.cx/.d/.d/.reg
@@ -129,7 +125,7 @@ fc-lazy-compile-default-fun .n .paramWraps (INVOKE .p .chain) .env .c0/.cx/.d0/.
 	, fc-lazy-compile-default-fun .n1 .paramWrap:.paramWraps .chain .env .c2/.cx/.d1/.dx/.reg
 	, (.paramWrap = THUNK
 		, fc-lazy-compile-to-thunk .p .env .c0/.c1/.d0/.d1/.paramReg
-	; fc-lazy-compile .p .env .c0/.c1/.d0/.d1/.paramReg
+	; fc-compile LAZY .p .env .c0/.c1/.d0/.d1/.paramReg
 	)
 	, .c1 = (_ PUSH .paramReg, .c2)
 #
