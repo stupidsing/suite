@@ -204,8 +204,8 @@ public class SuiteUtil {
 				: getEagerFunCompiler();
 		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		String libraries = getLibraries(config);
-		String s = "compile-function .mode (" + libraries + ") .program .code"
+		String program = appendLibraries(config);
+		String s = "compile-function .mode (" + program + ") .code"
 				+ (config.isDumpCode ? ", pretty.print .code" : "");
 		Node node = SuiteUtil.parse(s);
 
@@ -238,10 +238,9 @@ public class SuiteUtil {
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		Node node = SuiteUtil.parse(".libs = (" + getLibraries(config) + ")" //
-				+ ", load-precompiled-libraries .libs" //
-				+ ", fc-parse .program .p" //
-				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
+		Node node = SuiteUtil.parse("" //
+				+ "fc-parse (" + appendLibraries(config) + ") .p" //
+				+ ", infer-type-rule .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .type .t");
 
@@ -264,10 +263,11 @@ public class SuiteUtil {
 		return compiler;
 	}
 
-	private static String getLibraries(FunCompilerConfig config) {
+	private static String appendLibraries(FunCompilerConfig config) {
 		StringBuilder sb = new StringBuilder();
 		for (String library : config.libraries)
-			sb.append(library + ", ");
+			sb.append("using " + library + " >> ");
+		sb.append("(.program)");
 		return sb.toString();
 	}
 

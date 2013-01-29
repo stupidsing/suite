@@ -9,33 +9,28 @@
 	, import.file 'fc-type-inference.sl'
 #
 
-compile-function .mode .libs .do .c0
-	:- compile-function-with-precompile .mode .libs .do .c0
---	:- compile-function-without-precompile .mode .libs .do .c0
-#
-
-compile-function-with-precompile .mode .libs .do .c0
-	:- load-precompiled-libraries .libs
-	, compile-function-using-libs .mode .libs .do .c0
-#
-
 compile-function-without-precompile .mode (.lib, .libs) .do .c
 	:- !, load-library .lib
 	, fc-add-functions .lib .do .do1
 	, compile-function-without-precompile .mode .libs .do1 .c
 #
 compile-function-without-precompile .mode () .do .c
-	:- compile-function-using-libs .mode () .do .c
+	:- compile-function .mode .do .c
 #
 
-compile-function-using-libs .mode .libs .do .c0
+compile-function .mode .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, !, fc-parse .do .parsed
-	, !, infer-type-rule-using-libs .libs .parsed ()/()/()/() .tr0/.trx _
+	, !, infer-type-rule .parsed ()/()/()/() .tr0/.trx _
 	, !, resolve-types .tr0/.trx
-	, !, fc-compile-using-libs .mode .libs .parsed 0/() .c1/.c2/.d0/()/.reg
+	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ EXIT .reg, _ LEAVE, .d0)
 	, !, fc-assign-line-number 0 .c0
+#
+
+fc-compile .mode (USING .lib .do) .fve .cdr
+	:- !, load-precompiled-library .lib
+	, fc-compile-using-libs .mode (.lib,) .do .fve .cdr
 #
 
 infer-type-rule-using-libs () .do .uvto .tr .type
@@ -45,16 +40,6 @@ infer-type-rule-using-libs () .do .uvto .tr .type
 fc-compile-using-libs .mode () .do .fve .cdr
 	:- !, fc-compile .mode .do .fve .cdr
 #
-
-fc-compile .mode (USING .lib .do) .fve .cdr
-	:- !, load-precompiled-library .lib
-	, fc-compile-using-libs .mode (.lib,) .do .fve .cdr
-#
-
-load-precompiled-libraries (.lib, .libs)
-	:- load-precompiled-library .lib, load-precompiled-libraries .libs
-#
-load-precompiled-libraries () #
 
 load-precompiled-library .lib
 	:- once (fc-imported-precompile-library .lib
