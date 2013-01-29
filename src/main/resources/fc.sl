@@ -227,6 +227,11 @@ fc-add-functions STANDARD .p (
 		else
 			anything => ()
 	) >>
+	define append = (
+		if-match:: \h, \t
+		then:: cons {h} . append {t}
+		else:: id
+	) >>
 	define apply =
 		fold-left {x => f => f {x}}
 	>>
@@ -235,11 +240,6 @@ fc-add-functions STANDARD .p (
 	>>
 	define fold = (fun => list =>
 		fold-left {fun} {head | list} {tail | list}
-	) >>
-	define concat2 = (
-		if-match:: \h, \t
-		then:: cons {h} . concat2 {t}
-		else:: id
 	) >>
 	define filter = (fun =>
 		fold-right {
@@ -283,7 +283,7 @@ fc-add-functions STANDARD .p (
 		} {}
 	>>
 	define concat =
-		fold-left {concat2} {}
+		fold-left {append} {}
 	>>
 	define cross = (fun => l1 => l2 =>
 		map {e1 => map {fun | e1} | l2} | l1
@@ -297,7 +297,7 @@ fc-add-functions STANDARD .p (
 		if (i > 0) then
 			unsigned-int-to-str
 		else-if (i < 0) then
-			concat2 {"-"} . unsigned-int-to-str . `0 -`
+			append {"-"} . unsigned-int-to-str . `0 -`
 		else
 			anything => "0"
 		| i
@@ -367,6 +367,9 @@ fc-add-functions STANDARD .p (
 	) >>
 	define ends-with = (end =>
 		starts-with {reverse | end} . reverse
+	) >>
+	define join = (separator =>
+		concat . map {flip {append} | separator,}
 	) >>
 	define quick-sort = (cmp =>
 		if-match (\pivot, \t) then

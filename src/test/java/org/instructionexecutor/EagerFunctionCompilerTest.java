@@ -14,6 +14,12 @@ import org.suite.node.Tree;
 public class EagerFunctionCompilerTest {
 
 	@Test
+	public void testAppend() {
+		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
+				+ "append {1, 2, 3, 4,} {5, 6, 7, 8,}"));
+	}
+
+	@Test
 	public void testApply() {
 		assertEquals(Int.create(2), eval("" //
 				+ "apply {1} {(a => 2),}"));
@@ -33,8 +39,6 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testConcat() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
-				+ "concat2 {1, 2, 3, 4,} {5, 6, 7, 8,}"));
 		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6,"), eval("" //
 				+ "concat {(1, 2,), (3, 4,), (5, 6,),}"));
 	}

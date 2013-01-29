@@ -126,7 +126,7 @@ fc-parse-sugar (.l | .r) .p1 :- !, fc-parse (.l {.r}) .p1 #
 fc-parse-sugar (.l << .r) .p1 :- !, fc-parse (.r {.l}) .p1 #
 fc-parse-sugar (anything => .do) .p1 :- !, temp .v, fc-parse (.v => .do) .p1 #
 fc-parse-sugar (not .b) .p1 :- !, fc-parse (not {.b}) .p1 #
-fc-parse-sugar (.a ++ .b) .p1 :- !, fc-parse (concat2 {.a} {.b}) .p1 #
+fc-parse-sugar (.a ++ .b) .p1 :- !, fc-parse (append {.a} {.b}) .p1 #
 fc-parse-sugar (.s until .e) .p1 :- !, fc-parse (range {.s} {.e} {1}) .p1 #
 fc-parse-sugar (/.f/) .p1 :- !, fc-parse .f .p1 #
 fc-parse-sugar (.a /.f/) .p1 :- !, fc-parse (.b => .f {.a} {.b}) .p1 #
