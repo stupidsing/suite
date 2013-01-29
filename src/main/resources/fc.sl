@@ -341,7 +341,7 @@ fc-add-functions STANDARD .p (
 			()
 	) >>
 	define contains = (m =>
-		fold {or} . map {starts-with | m} . tails
+		fold-left {or} {false} . map {starts-with | m} . tails
 	) >>
 	define dump as (any :t in (:t => list-of number)) = no-type-check (
 		let dump-string = (s =>
