@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.instructionexecutor.InstructionExecutorUtil.Closure;
-import org.instructionexecutor.InstructionExecutorUtil.Frame;
-import org.instructionexecutor.InstructionExecutorUtil.Instruction;
+import org.instructionexecutor.InstructionUtil.Closure;
+import org.instructionexecutor.InstructionUtil.Frame;
+import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Generalizer;
