@@ -22,9 +22,9 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testApply() {
 		assertEquals(Int.create(2), eval("" //
-				+ "apply {1} {(a => 2),}"));
+				+ "apply {(a => 2),} {1}"));
 		assertEquals(Int.create(2), eval("" //
-				+ "apply {4} {`+ 1`, `* 2`, `/ 5`,}"));
+				+ "apply {`+ 1`, `* 2`, `/ 5`,} {4}"));
 	}
 
 	@Test

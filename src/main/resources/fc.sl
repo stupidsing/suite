@@ -233,7 +233,7 @@ fc-add-functions STANDARD .p (
 		else:: id
 	) >>
 	define apply =
-		fold-left {x => f => f {x}}
+		flip {fold-left {x => f => f {x}}}
 	>>
 	define equals as (any :t in (:t => :t => boolean)) =
 		no-type-check (a => b => compare {a} {b} = 0)
@@ -247,7 +247,7 @@ fc-add-functions STANDARD .p (
 		} {}
 	) >>
 	define get = (n =>
-		head . (flip {apply} | repeat {n} | tail)
+		head . (apply | repeat {n} | tail)
 	) >>
 	define length =
 		fold-left {v => e => v + 1} {0}
@@ -336,7 +336,7 @@ fc-add-functions STANDARD .p (
 		if (width > 0) then
 			let w1 = width - 1 >>
 			let gets = (cons {id} | reverse | tails | repeat {w1} | tail) >>
-			map {f => map {head . flip {apply} {f}} {m}} | gets
+			map {f => map {head . apply {f}} {m}} | gets
 		else
 			()
 	) >>
