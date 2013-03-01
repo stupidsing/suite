@@ -24,7 +24,7 @@ public class LazyFunctionCompilerTest {
 
 		assertEquals(Int.create(89), eval("" // Real co-recursion!
 				+ "define fib = (i1 => i2 => i2, fib {i2} {i1 + i2}) >> \n" //
-				+ "head | apply {repeat {10} | tail} | fib {0} {1}"));
+				+ "get {10} | fib {0} {1}"));
 	}
 
 	@Test
@@ -32,8 +32,7 @@ public class LazyFunctionCompilerTest {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = ( \n" //
 				+ "    1, 1, zip {`+`} {fib} {tail {fib}} \n" //
-				+ ") >> \n" //
-				+ "head | apply {repeat {10} | tail} | fib"));
+				+ ") >> get {10} | fib"));
 	}
 
 	@Test
