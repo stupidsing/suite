@@ -29,7 +29,7 @@ public class CompositeRuleSearcher implements RuleSearcher {
 		if (!rules.isEmpty()) {
 
 			// Clone all the rules once to clear local variable references
-			List<Rule> newRules = new ArrayList<Rule>(rules.size());
+			List<Rule> newRules = new ArrayList<>(rules.size());
 			Cloner cloner = new Cloner();
 			for (Rule rule : rules)
 				newRules.add(cloner.clone(rule));
@@ -45,7 +45,7 @@ public class CompositeRuleSearcher implements RuleSearcher {
 	 */
 	@Override
 	public List<Rule> getRules() {
-		List<Rule> rules = new ArrayList<Rule>();
+		List<Rule> rules = new ArrayList<>();
 		rules.addAll(first.getRules());
 		rules.addAll(second.getRules());
 		return rules;

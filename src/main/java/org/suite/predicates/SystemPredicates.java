@@ -22,7 +22,7 @@ public class SystemPredicates {
 		public boolean prove(Prover prover, Node parameter);
 	}
 
-	private Map<String, SystemPredicate> predicates = new HashMap<String, SystemPredicate>();
+	private Map<String, SystemPredicate> predicates = new HashMap<>();
 
 	private Prover prover;
 
@@ -131,7 +131,7 @@ public class SystemPredicates {
 	}
 
 	private class CompareAndSet implements SystemPredicate {
-		private final Map<Node, Node> map = new HashMap<Node, Node>();
+		private final Map<Node, Node> map = new HashMap<>();
 
 		public synchronized boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 3);
@@ -159,7 +159,7 @@ public class SystemPredicates {
 
 	private class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Stack<Node> stack = new Stack<Node>();
+			final Stack<Node> stack = new Stack<>();
 			final Node params[] = Predicate.getParameters(ps, 3);
 
 			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Station() {

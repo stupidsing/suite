@@ -84,7 +84,7 @@ public class RuleSetPredicates {
 			if (ps != Atom.nil)
 				proto = Prototype.get(ps);
 
-			List<Node> nodes = new ArrayList<Node>();
+			List<Node> nodes = new ArrayList<>();
 
 			for (Rule rule : prover.getRuleSet().getRules()) {
 				Prototype p1 = Prototype.get(rule);

@@ -158,7 +158,7 @@ public class InstructionUtil {
 	}
 
 	public static List<Node> extractTuple(Node node) {
-		List<Node> rs = new ArrayList<Node>(5);
+		List<Node> rs = new ArrayList<>(5);
 		Tree tree;
 
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {

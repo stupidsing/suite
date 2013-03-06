@@ -35,7 +35,7 @@ public class RuleSet implements RuleSearcher {
 		}
 	}
 
-	private List<Rule> rules = new ArrayList<Rule>();
+	private List<Rule> rules = new ArrayList<>();
 
 	// Index rules by prototype.
 	// Have to use a multi-map implementation that allow null keys.

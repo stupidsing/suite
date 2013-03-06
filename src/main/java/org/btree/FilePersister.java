@@ -97,7 +97,7 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>> {
 			channel.read(buffer, pageNo * pageSize);
 			buffer.rewind();
 
-			B_Tree.Page<Key> page = new B_Tree.Page<Key>(pageNo);
+			B_Tree.Page<Key> page = new B_Tree.Page<>(pageNo);
 			List<B_Tree.KeyPointer<Key>> keyPointers = page.keyPointers;
 
 			char nodeType = buffer.getChar();
@@ -122,11 +122,11 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>> {
 	}
 
 	private void addLeaf(List<B_Tree.KeyPointer<Key>> kps, Key k, Value v) {
-		kps.add(new B_Tree.KeyPointer<Key>(k, new B_Tree.Leaf<Value>(v)));
+		kps.add(new B_Tree.KeyPointer<>(k, new B_Tree.Leaf<>(v)));
 	}
 
 	private void addBranch(List<B_Tree.KeyPointer<Key>> kps, Key k, int branch) {
-		kps.add(new B_Tree.KeyPointer<Key>(k, new B_Tree.Branch(branch)));
+		kps.add(new B_Tree.KeyPointer<>(k, new B_Tree.Branch(branch)));
 	}
 
 	public void save(int pageNo, B_Tree.Page<Key> page) {

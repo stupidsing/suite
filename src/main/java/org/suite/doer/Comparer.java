@@ -15,7 +15,7 @@ public class Comparer implements Comparator<Node> {
 
 	public static final Comparer comparer = new Comparer();
 
-	private static Map<Class<? extends Node>, Integer> order = new HashMap<Class<? extends Node>, Integer>();
+	private static Map<Class<? extends Node>, Integer> order = new HashMap<>();
 	static {
 		order.put(Reference.class, 0);
 		order.put(Int.class, 10);

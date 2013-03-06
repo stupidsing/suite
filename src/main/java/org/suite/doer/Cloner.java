@@ -10,7 +10,7 @@ import org.suite.node.Tree;
 
 public class Cloner {
 
-	private Map<Reference, Reference> references = new HashMap<Reference, Reference>();
+	private Map<Reference, Reference> references = new HashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.getHead()), clone(rule.getTail()));

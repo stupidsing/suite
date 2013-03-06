@@ -88,7 +88,7 @@ public class FormatPredicates {
 
 		private static Node fromRpn(String rpn) {
 			String elems[] = rpn.split("\n");
-			List<Node> stack = new ArrayList<Node>();
+			List<Node> stack = new ArrayList<>();
 
 			for (String elem : elems) {
 				if (elem.isEmpty())

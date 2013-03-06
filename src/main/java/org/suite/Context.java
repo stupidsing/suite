@@ -10,7 +10,7 @@ import org.suite.node.Atom;
 
 public class Context {
 
-	private Map<String, WeakReference<Atom>> atomPool = new HashMap<String, WeakReference<Atom>>();
+	private Map<String, WeakReference<Atom>> atomPool = new HashMap<>();
 
 	public void gc() {
 		Collection<WeakReference<Atom>> values = atomPool.values();

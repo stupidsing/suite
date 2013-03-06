@@ -11,7 +11,7 @@ public class Predicate {
 
 	// (a, b, c, d) becomes { a, b, c, d } in Java
 	public static Node[] getParameters(Node node, int n) {
-		List<Node> results = new ArrayList<Node>(n);
+		List<Node> results = new ArrayList<>(n);
 		Tree tree;
 
 		for (int i = 1; i < n; i++)

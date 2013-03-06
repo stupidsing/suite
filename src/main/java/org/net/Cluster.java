@@ -36,7 +36,7 @@ public class Cluster {
 
 	private MultiSetter<String> onJoined = Util.multiSetter();
 	private MultiSetter<String> onLeft = Util.multiSetter();
-	private Map<Class<?>, Transformer<?, ?>> onReceive = new HashMap<Class<?>, Transformer<?, ?>>();
+	private Map<Class<?>, Transformer<?, ?>> onReceive = new HashMap<>();
 
 	public static class ClusterException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
@@ -62,12 +62,11 @@ public class Cluster {
 		this.peers = peers;
 		probe = new ClusterProbe(me, peers);
 
-		nio = new NioDispatcher<ClusterChannel>(
-				new ChannelListenerFactory<ClusterChannel>() {
-					public ClusterChannel create() {
-						return new ClusterChannel(me);
-					}
-				});
+		nio = new NioDispatcher<>(new ChannelListenerFactory<ClusterChannel>() {
+			public ClusterChannel create() {
+				return new ClusterChannel(me);
+			}
+		});
 	}
 
 	public void start() throws IOException {

@@ -18,7 +18,7 @@ public class Formatter {
 
 	private Operator operators[];
 	private boolean isDump;
-	private Set<Integer> set = new HashSet<Integer>();
+	private Set<Integer> set = new HashSet<>();
 	private StringBuilder sb = new StringBuilder();
 
 	public Formatter(Operator operators[], boolean isDump) {

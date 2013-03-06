@@ -30,7 +30,7 @@ public class Prover {
 
 	private boolean isEnableTrace = false;
 	private Tracer tracer;
-	private static final Set<String> NOTRACEPREDICATES = new HashSet<String>(
+	private static final Set<String> NOTRACEPREDICATES = new HashSet<>(
 			Arrays.asList("member", "replace"));
 
 	private static final Node OK = Atom.nil;
@@ -218,7 +218,7 @@ public class Prover {
 	}
 
 	public class Tracer {
-		private List<Record> records = new ArrayList<Record>();
+		private List<Record> records = new ArrayList<>();
 		private Record currentRecord = null;
 		private int currentDepth;
 
@@ -295,7 +295,7 @@ public class Prover {
 		}
 
 		public String getStackTrace() {
-			List<Node> traces = new ArrayList<Node>();
+			List<Node> traces = new ArrayList<>();
 			Record record = currentRecord;
 
 			while (record != null) {

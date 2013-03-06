@@ -21,7 +21,7 @@ public class Generalizer {
 	private static final Node CUT = Atom.create("!");
 
 	private String variablePrefix = DEFAULTPREFIX;
-	private Map<Node, Reference> variables = new HashMap<Node, Reference>();
+	private Map<Node, Reference> variables = new HashMap<>();
 	private Node cut;
 
 	public Node generalize(Node node) {
@@ -55,7 +55,7 @@ public class Generalizer {
 		StringBuilder sb = new StringBuilder();
 		List<Entry<Node, Reference>> entries;
 
-		entries = new ArrayList<Entry<Node, Reference>>(variables.entrySet());
+		entries = new ArrayList<>(variables.entrySet());
 
 		Collections.sort(entries, new Comparator<Entry<Node, Reference>>() {
 			public int compare(Entry<Node, Reference> e0,

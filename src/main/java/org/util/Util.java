@@ -59,27 +59,27 @@ public class Util {
 	// Allows generic-object creation with type parameter inductions
 
 	public static <T> Stack<T> createStack() {
-		return new Stack<T>();
+		return new Stack<>();
 	}
 
 	public static <T> Vector<T> createVector() {
-		return new Vector<T>();
+		return new Vector<>();
 	}
 
 	public static <T> List<T> createList() {
-		return new ArrayList<T>();
+		return new ArrayList<>();
 	}
 
 	public static <T> List<T> createList(Collection<T> c) {
-		return new ArrayList<T>(c);
+		return new ArrayList<>(c);
 	}
 
 	public static <T> Set<T> createHashSet() {
-		return new HashSet<T>();
+		return new HashSet<>();
 	}
 
 	public static <K, V> Map<K, V> createHashMap() {
-		return new HashMap<K, V>();
+		return new HashMap<>();
 	}
 
 	public static long createDate(int year, int month, int day) {
@@ -107,7 +107,7 @@ public class Util {
 		}
 
 		public static <T1, T2> Pair<T1, T2> create(T1 t1, T2 t2) {
-			return new Pair<T1, T2>(t1, t2);
+			return new Pair<>(t1, t2);
 		}
 
 		public boolean equals(Object o) {
@@ -190,14 +190,14 @@ public class Util {
 	}
 
 	public static <I, O> Collection<O> map(Collection<I> in, Transformer<I, O> t) {
-		ArrayList<O> out = new ArrayList<O>(in.size());
+		ArrayList<O> out = new ArrayList<>(in.size());
 		for (I i : in)
 			out.add(t.perform(i));
 		return out;
 	}
 
 	public static class MultiSetter<I> implements Setter<I> {
-		private Collection<Setter<I>> setters = new ArrayList<Setter<I>>();
+		private Collection<Setter<I>> setters = new ArrayList<>();
 
 		public Void perform(I i) {
 			for (Setter<I> setter : setters)
@@ -220,7 +220,7 @@ public class Util {
 	}
 
 	public static <I> MultiSetter<I> multiSetter() {
-		return new MultiSetter<I>();
+		return new MultiSetter<>();
 	}
 
 	/**

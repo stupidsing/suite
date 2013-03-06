@@ -15,7 +15,7 @@ import org.suite.node.Tree;
 import com.google.common.collect.BiMap;
 
 public class InstructionExtractor {
-	private List<Instruction> enters = new ArrayList<Instruction>();
+	private List<Instruction> enters = new ArrayList<>();
 	private BiMap<Integer, Node> constantPool;
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
@@ -24,7 +24,7 @@ public class InstructionExtractor {
 
 	public List<Instruction> extractInstructions(Node node) {
 		Tree tree;
-		List<Instruction> list = new ArrayList<Instruction>();
+		List<Instruction> list = new ArrayList<>();
 
 		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
 			Instruction instruction = extract(tree.getLeft());

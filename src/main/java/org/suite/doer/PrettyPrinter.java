@@ -17,7 +17,7 @@ import org.util.FormatUtil;
 public class PrettyPrinter {
 
 	private int indent;
-	private Map<Integer, Integer> lengthByIds = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> lengthByIds = new HashMap<>();
 	private StringBuilder sb = new StringBuilder();
 	private int nLines = 0;
 	private int currentLineIndent = 0;

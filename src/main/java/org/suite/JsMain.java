@@ -35,7 +35,7 @@ public class JsMain {
 		LogUtil.initLog4j(Level.INFO);
 
 		try {
-			List<String> filenames = new ArrayList<String>();
+			List<String> filenames = new ArrayList<>();
 
 			for (String arg : args)
 				if (!arg.equals(""))
