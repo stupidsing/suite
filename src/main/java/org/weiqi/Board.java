@@ -24,22 +24,24 @@ public class Board extends Array<Occupation> {
 	};
 
 	/**
-	 * Plays a move on the Weiqi board.
+	 * Plays a move on the Weiqi board. Do not check for repeats in game state
+	 * history since Board do not have them. Use GameSet.moveIfPossible() for
+	 * the rule-accordance version.
 	 * 
 	 * This method do not take use of GroupAnalysis for performance reasons.
 	 */
-	public MoveType moveIfPossible(Coordinate c, Occupation player) {
-		MoveType type = MoveType.PLACEMENT;
+	public MoveType playIfSeemsPossible(Coordinate c, Occupation player) {
+		MoveType type;
 		Occupation current = get(c);
 		Occupation opponent = player.opponent();
 
 		if (current == Occupation.EMPTY) {
+			type = MoveType.PLACEMENT;
 			set(c, player);
 
 			for (Coordinate neighbour : c.neighbours())
-				if (get(neighbour) == opponent)
-					if (killIfDead(neighbour))
-						type = MoveType.CAPTURE;
+				if (get(neighbour) == opponent && killIfDead(neighbour))
+					type = MoveType.CAPTURE;
 
 			if (!hasBreath(c)) {
 				set(c, Occupation.EMPTY);
@@ -62,11 +64,11 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean hasBreath(Coordinate c) {
-		Set<Coordinate> group = new HashSet<Coordinate>();
+		Set<Coordinate> group = new HashSet<>();
 		Occupation color = get(c);
 		group.add(c);
 
-		Stack<Coordinate> unexplored = new Stack<Coordinate>();
+		Stack<Coordinate> unexplored = new Stack<>();
 		unexplored.push(c);
 
 		while (!unexplored.isEmpty())
@@ -88,20 +90,21 @@ public class Board extends Array<Occupation> {
 		Occupation color = get(c);
 		group.add(c);
 
-		Stack<Coordinate> unexplored = new Stack<Coordinate>();
+		Stack<Coordinate> unexplored = new Stack<>();
 		unexplored.push(c);
 
 		while (!unexplored.isEmpty())
 			for (Coordinate c1 : unexplored.pop().neighbours())
 				if (get(c1) == color && group.add(c1))
 					unexplored.push(c1);
+
 		return group;
 	}
 
 	/**
 	 * Plays a move on the Weiqi board. Uses group analysis which is slower.
 	 */
-	public void move1(Coordinate c, Occupation player) {
+	public void play1(Coordinate c, Occupation player) {
 		Occupation current = get(c);
 		Occupation opponent = player.opponent();
 

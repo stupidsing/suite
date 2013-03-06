@@ -5,8 +5,8 @@ import org.weiqi.Weiqi.Occupation;
 
 public class UserInterface {
 
-	public static void display(Board board) {
-		System.out.println(board.toString());
+	public static void display(GameSet gameSet) {
+		System.out.println(gameSet.getBoard().toString());
 	}
 
 	public static Board importBoard(String s) {

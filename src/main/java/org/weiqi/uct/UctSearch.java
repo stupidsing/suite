@@ -54,7 +54,7 @@ public class UctSearch<Move> {
 			nRaveVisits.put(move, new AtomicInteger());
 		}
 
-		root = new UctNode<Move>();
+		root = new UctNode<>();
 		Thread threads[] = new Thread[numberOfThreads];
 		final AtomicInteger count = new AtomicInteger();
 		final long end = System.currentTimeMillis() + boundedTime;
@@ -116,7 +116,7 @@ public class UctSearch<Move> {
 					UctNode<Move> child = null;
 
 					for (Move move : visitor.elaborateMoves()) {
-						UctNode<Move> newChild = new UctNode<Move>(move);
+						UctNode<Move> newChild = new UctNode<>(move);
 						newChild.sibling = child;
 						child = newChild;
 					}

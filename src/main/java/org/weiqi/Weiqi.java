@@ -73,7 +73,7 @@ public class Weiqi {
 		}
 
 		public static <T1> Array<T1> create() {
-			return new Array<T1>();
+			return new Array<>();
 		}
 
 		public void dump() {

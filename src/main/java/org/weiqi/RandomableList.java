@@ -4,29 +4,29 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
+public class RandomableList<T> extends ArrayList<T> implements Iterable<T> {
 
 	private static final long serialVersionUID = 1l;
 
 	private static final Random random = new Random();
 
-	public RandomList() {
+	public RandomableList() {
 		super();
 	}
 
-	public RandomList(int n) {
+	public RandomableList(int n) {
 		super(n);
 	}
 
-	public boolean add(T t) {
+	public boolean addByRandomSwap(T t) {
 		int size = size();
 
 		if (size > 0) {
 			int position = random.nextInt(size);
-			super.add(get(position));
+			add(get(position));
 			set(position, t);
 		} else
-			super.add(t);
+			add(t);
 
 		return true;
 	}
@@ -40,19 +40,19 @@ public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
 		return size > 0 ? get(size - 1) : null;
 	}
 
-	public T remove(int i) {
+	public T removeBySwap(int i) {
 		int size = size();
-		T first, last;
+		T removed, last;
 
 		if (size > i) {
-			first = get(i);
-			last = super.remove(size - 1);
+			removed = get(i);
+			last = removeLast();
 			if (size > i + 1)
 				set(i, last);
 		} else
-			first = null;
+			removed = null;
 
-		return first;
+		return removed;
 	}
 
 	public T removeLast() {
@@ -73,7 +73,7 @@ public class RandomList<T> extends ArrayList<T> implements Iterable<T> {
 			}
 
 			public void remove() {
-				RandomList.this.remove(i);
+				RandomableList.this.removeBySwap(i);
 			}
 		};
 	}

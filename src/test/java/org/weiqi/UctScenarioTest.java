@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.weiqi.UctWeiqi.Visitor;
 import org.weiqi.Weiqi.Occupation;
 import org.weiqi.uct.UctSearch;
 
@@ -25,7 +24,7 @@ public class UctScenarioTest {
 				+ ". . O X O . . \n" //
 				+ ". . . X O . . \n" //
 				+ ". . . . . . . \n" //
-		), Occupation.BLACK);
+		), Occupation.WHITE);
 		testScenario(gameSet, Coordinate.c(5, 2));
 	}
 
@@ -44,7 +43,7 @@ public class UctScenarioTest {
 	}
 
 	private void testScenario(GameSet gameSet, Coordinate bestMove) {
-		Visitor visitor = new Visitor(new GameSet(gameSet));
+		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(new GameSet(gameSet));
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 		search.setNumberOfThreads(2);
 		search.setNumberOfSimulations(20000);
