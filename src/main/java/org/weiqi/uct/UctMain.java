@@ -11,6 +11,7 @@ import org.weiqi.GameSet;
 import org.weiqi.RandomableList;
 import org.weiqi.UctWeiqi;
 import org.weiqi.UserInterface;
+import org.weiqi.Weiqi;
 import org.weiqi.Weiqi.Occupation;
 
 /**
@@ -25,7 +26,8 @@ public class UctMain<Move> {
 		DecimalFormat df = new DecimalFormat("0.000");
 		int nThreads = 2;
 		int nSimulations = 20000;
-		int boundedTime = 300000;
+		int boundedTime = 30000;
+		Weiqi.adjustSize(7);
 
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
@@ -50,7 +52,7 @@ public class UctMain<Move> {
 			System.out.println(player //
 					+ " " + move //
 					+ " " + df.format(search.getWinningChance()) //
-					+ " " + (start - end) + "ms");
+					+ " " + (end - start) + "ms");
 
 			gameSet.play(move);
 			UserInterface.display(gameSet);
