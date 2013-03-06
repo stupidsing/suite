@@ -121,3 +121,8 @@ t23-merge-T3R
 t23-merge-T3R .t .t #
 
 t23-compare .a .b :- .a < .b #
+
+if .if then .then _ :- .if, !, .then #
+if _ then _ end-if :- ! #
+if _ then _ else .else :- !, .else #
+if _ then _ else-if .elseIf :- !, if .elseIf #

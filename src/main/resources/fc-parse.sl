@@ -65,10 +65,10 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 	)
 #
 fc-parse (prove-with-result .vvs .constant .result) .parsed
-	:- !, fc-parse (prove | c .vvs (.constant . .result)) .parsed
+	:- !, fc-parse (c .vvs (.constant . .result) | prove) .parsed
 #
 fc-parse (prove .vvs .constant) .parsed
-	:- !, fc-parse (prove | c .vvs .constant) .parsed
+	:- !, fc-parse (c .vvs .constant | prove) .parsed
 #
 fc-parse (c (.vvs/.var:.value) .constant) .parsed
 	:- !, fc-parse (subst {.value} {c .vvs (.constant . .var)}) .parsed
@@ -122,8 +122,7 @@ fc-parse-sugar .t .p1
 #
 fc-parse-sugar (.l, .r) .p1 :- !, fc-parse (_cons {.l} {.r}) .p1 #
 fc-parse-sugar (.l . .r) .p1 :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .p1 #
-fc-parse-sugar (.l | .r) .p1 :- !, fc-parse (.l {.r}) .p1 #
-fc-parse-sugar (.l << .r) .p1 :- !, fc-parse (.r {.l}) .p1 #
+fc-parse-sugar (.l | .r) .p1 :- !, fc-parse (.r {.l}) .p1 #
 fc-parse-sugar (anything => .do) .p1 :- !, temp .v, fc-parse (.v => .do) .p1 #
 fc-parse-sugar (not .b) .p1 :- !, fc-parse (not {.b}) .p1 #
 fc-parse-sugar (.a ++ .b) .p1 :- !, fc-parse (append {.a} {.b}) .p1 #

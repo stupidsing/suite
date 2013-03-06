@@ -128,15 +128,15 @@ fc-add-functions STANDARD .p (
 	define compare as (any :t in (:t => :t => number)) = no-type-check (
 		a => b =>
 		if (is-tree {a} && is-tree {b}) then
-			let c0 = compare {head | a} {head | b} >>
+			let c0 = compare {a | head} {b | head} >>
 			if:: c0 = 0
-			then:: compare {tail | a} {tail | b}
+			then:: compare {a | tail} {b | tail}
 			else:: c0
 		else:: _compare {a} {b}
 	) >>
 	define drop = (n => list =>
 		if:: n > 0 && is-tree {list}
-		then:: drop {n - 1} | tail | list
+		then:: list | tail | drop {n - 1} 
 		else:: list
 	) >>
 	define flip = (f => x => y =>
@@ -187,7 +187,7 @@ fc-add-functions STANDARD .p (
 			if:: is-tree {s} && head {s} = 45
 			then:: `0 - ` . unsigned-str-to-int . tail
 			else:: unsigned-str-to-int
-		| s
+		{s}
 	) >>
 	define tails =
 		if-match:: \h, \t
@@ -196,7 +196,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define take = (n => list =>
 		if:: n > 0 && is-tree {list}
-		then:: cons {head | list} | take {n - 1} | tail | list
+		then:: list | tail | take {n - 1} | cons {list | head}
 		else:: ()
 	) >>
 	define take-while = (fun =>
@@ -216,7 +216,7 @@ fc-add-functions STANDARD .p (
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		if:: is-tree {r}
-		then:: cons {head | r} | unfold-right {fun} | head | tail | r
+		then:: r | tail | head | unfold-right {fun} | cons {r | head}
 		else:: ()
 	) >>
 	define zip = (fun =>
@@ -239,7 +239,7 @@ fc-add-functions STANDARD .p (
 		no-type-check (a => b => compare {a} {b} = 0)
 	>>
 	define fold = (fun => list =>
-		fold-left {fun} {head | list} {tail | list}
+		fold-left {fun} {list | head} {list | tail}
 	) >>
 	define filter = (fun =>
 		fold-right {
@@ -247,7 +247,7 @@ fc-add-functions STANDARD .p (
 		} {}
 	) >>
 	define get = (n =>
-		head . (apply | repeat {n} | tail)
+		head . (tail | repeat {n} | apply)
 	) >>
 	define length =
 		fold-left {v => e => v + 1} {0}
@@ -275,7 +275,7 @@ fc-add-functions STANDARD .p (
 		let len = length {list} >>
 		let s = (if (start >= 0) then start else (len + start)) >>
 		let e = (if (end > 0) then end else (len + end)) >>
-		drop {s} | take {e} | list
+		list | take {e} | drop {s}
 	) >>
 	define uniq =
 		fold-right {item => list =>
@@ -286,34 +286,33 @@ fc-add-functions STANDARD .p (
 		fold-left {append} {}
 	>>
 	define cross = (fun => l1 => l2 =>
-		map {e1 => map {fun | e1} | l2} | l1
+		l1 | map {e1 => l2 | map {e1 | fun}}
 	) >>
 	define int-to-str = (i =>
 		let unsigned-int-to-str =
 			reverse
 			. map {`+ 48`}
 			. unfold-right {i => if (i != 0) then (i % 10, i / 10,) else ()}
-		>>
-		if (i > 0) then
-			unsigned-int-to-str
-		else-if (i < 0) then
-			append {"-"} . unsigned-int-to-str . `0 -`
-		else
-			anything => "0"
-		| i
+		>> i |
+			if (i > 0) then
+				unsigned-int-to-str
+			else-if (i < 0) then
+				append {"-"} . unsigned-int-to-str . `0 -`
+			else
+				anything => "0"
 	) >>
 	define merge-sort = (merge => list =>
 		let len = length {list} >>
 		if (len > 1) then
 			let len2 = len / 2 >>
-			define list0 = (merge-sort {merge} | take {len2} | list) >>
-			define list1 = (merge-sort {merge} | drop {len2} | list) >>
+			define list0 = (list | take {len2} | merge-sort {merge}) >>
+			define list1 = (list | drop {len2} | merge-sort {merge}) >>
 			merge {list0} {list1}
 		else
 			list
 	) >>
 	define range = (start => end => inc =>
-		unfold-right {i => if (i < end) then (i, i + inc,) else ()} | start
+		unfold-right {i => if (i < end) then (i, i + inc,) else ()} {start}
 	) >>
 	define starts-with = (
 		if-match (\sh, \st) then
@@ -332,51 +331,51 @@ fc-add-functions STANDARD .p (
 		any :t in (list-of list-of :t => list-of list-of :t)
 	) = (m =>
 		let height = length {m} >>
-		let width = if (height > 0) then (length . head | m) else 0 >>
+		let width = if (height > 0) then (m | head | length) else 0 >>
 		if (width > 0) then
 			let w1 = width - 1 >>
-			let gets = (cons {id} | reverse | tails | repeat {w1} | tail) >>
-			map {f => map {head . apply {f}} {m}} | gets
+			let gets = (tail | repeat {w1} | tails | reverse | cons {id}) >>
+			gets | map {f => map {head . apply {f}} {m}}
 		else
 			()
 	) >>
 	define contains = (m =>
-		fold-left {or} {false} . map {starts-with | m} . tails
+		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump as (any :t in (:t => list-of number)) = no-type-check (
 		let dump-string = (s =>
 			let length = prove-with-result /_s:s (string.length _s _l) _l >>
-			map {i =>
+			0 until length | map {i =>
 				prove-with-result /_s:s/_i:i (
 					substring _s _i 0 _c, to.int _c _asc
 				) _asc
-			} | 0 until length
+			}
 		) >>
 		let dump0 = (prec => n =>
 			if (is-tree {n}) then
-				if prec then (s => concat {"(", s, ")",}) else id
-				| concat {dump0 {true} {head | n}, ", ", dump0 {false} {tail | n},}
+				concat {dump0 {true} {n | head}, ", ", dump0 {false} {n | tail},}
+				| if prec then (s => concat {"(", s, ")",}) else id
 			else-if (equals {n} {}) then
 				"()"
 			else-if (prove /_n:n (is.atom _n)) then
-				dump-string | prove-with-result /_n:n (to.string _n _s) _s
+				prove-with-result /_n:n (to.string _n _s) _s | dump-string
 			else
 				int-to-str {n}
 		) >>
 		dump0 {false}
 	) >>
 	define ends-with = (end =>
-		starts-with {reverse | end} . reverse
+		starts-with {end | reverse} . reverse
 	) >>
 	define join = (separator =>
-		concat . map {flip {append} | separator,}
+		concat . map {separator, | flip {append}}
 	) >>
 	define quick-sort = (cmp =>
 		if-match (\pivot, \t) then
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
-			let l0 = (quick-sort {cmp} | filter {filter0} | t) >>
-			let l1 = (quick-sort {cmp} | filter {filter1} | t) >>
+			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
+			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
 			concat {l0, (pivot,), l1,}
 		else
 			()

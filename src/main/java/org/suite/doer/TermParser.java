@@ -13,7 +13,7 @@ public class TermParser extends Parser {
 		FUN___(" => ", Assoc.RIGHT), //
 		CONTD_(" >> ", Assoc.RIGHT), //
 		PIPE__(" << ", Assoc.LEFT), //
-		SEP___(" | ", Assoc.RIGHT), //
+		SEP___(" | ", Assoc.LEFT), //
 		JOIN__(" . ", Assoc.LEFT), //
 		OR____(";", Assoc.RIGHT), //
 		AND___(",", Assoc.RIGHT), //

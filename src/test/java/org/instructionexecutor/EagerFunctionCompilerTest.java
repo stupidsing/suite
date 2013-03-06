@@ -204,7 +204,7 @@ public class EagerFunctionCompilerTest {
 				+ "define p = (`+ 1`) >> \n" //
 				+ "define q = (`* 2`) >> \n" //
 				+ "define r = (`- 3`) >> \n" //
-				+ "9 << p << q << r"));
+				+ "9 | p | q | r"));
 	}
 
 	@Test
