@@ -24,7 +24,7 @@ public class GroupAnalysis {
 		private final int id;
 		private Group parent;
 
-		public Group(int id, Occupation color) {
+		private Group(int id, Occupation color) {
 			this.id = id;
 			this.color = color;
 		}

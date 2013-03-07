@@ -1,10 +1,10 @@
 package org.weiqi;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.util.Util;
+import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
 
@@ -31,24 +31,22 @@ public class Judge {
 
 	public static void checkGroupsLiveness(Board board, Array<Boolean> alives) {
 		GroupAnalysis ga = new GroupAnalysis(board);
-		Map<Integer, Occupation> groupColors = ga.getGroupColors();
 
 		// Judge which groups are eyes, i.e. surrounded by only one colour
-		Map<Integer, Boolean> groupIsEye = Util.createHashMap();
+		Map<Group, Boolean> groupIsEye = Util.createHashMap();
 
-		for (Entry<Integer, Occupation> entry : groupColors.entrySet())
-			if (entry.getValue() == Occupation.EMPTY) {
-				Integer groupId = entry.getKey();
+		for (Group group : ga.getGroups())
+			if (group.color == Occupation.EMPTY) {
 				Set<Occupation> colors = Util.createHashSet();
 
-				for (Integer neighborGroupId : ga.getTouches(groupId)) {
-					Occupation color = groupColors.get(neighborGroupId);
+				for (Group neighborGroup : group.touches) {
+					Occupation color = neighborGroup.color;
 					if (color != Occupation.EMPTY)
 						colors.add(color);
 				}
 
 				// Has two colours
-				groupIsEye.put(groupId, colors.size() <= 1);
+				groupIsEye.put(group, colors.size() <= 1);
 			}
 	}
 
