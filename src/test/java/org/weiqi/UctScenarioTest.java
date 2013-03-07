@@ -42,6 +42,20 @@ public class UctScenarioTest {
 		testScenario(gameSet, Coordinate.c(5, 3));
 	}
 
+	@Test
+	public void testLiveAndDeath1() {
+		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+				+ ". O . O X . . \n" //
+				+ "O . . O X . . \n" //
+				+ ". . . O X X X \n" //
+				+ ". O O O X . . \n" //
+				+ "O O X X X O . \n" //
+				+ "X X X . O . O \n" //
+				+ ". . X . . . . \n" //
+		), Occupation.BLACK);
+		testScenario(gameSet, Coordinate.c(6, 5));
+	}
+
 	private void testScenario(GameSet gameSet, Coordinate bestMove) {
 		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(new GameSet(gameSet));
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
