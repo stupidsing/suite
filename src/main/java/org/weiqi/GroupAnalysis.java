@@ -99,12 +99,12 @@ public class GroupAnalysis {
 		}
 	}
 
-	public Group getGroupByCoord(Coordinate c) {
-		return groupByCoord.get(c);
-	}
-
 	public Set<Group> getGroups() {
 		return groups;
+	}
+
+	public Group getGroup(Coordinate c) {
+		return groupByCoord.get(c);
 	}
 
 }

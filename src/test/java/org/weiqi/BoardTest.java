@@ -58,8 +58,8 @@ public class BoardTest {
 		board.set(Coordinate.c(18, 1), Occupation.WHITE);
 
 		GroupAnalysis ga = new GroupAnalysis(board);
-		Group blackGroup = ga.getGroupByCoord(Coordinate.c(15, 15));
-		Group whiteGroup = ga.getGroupByCoord(Coordinate.c(17, 0));
+		Group blackGroup = ga.getGroup(Coordinate.c(15, 15));
+		Group whiteGroup = ga.getGroup(Coordinate.c(17, 0));
 
 		assertEquals(361 - 7, blackGroup.coords.size());
 		assertEquals(3, whiteGroup.touches.size());
