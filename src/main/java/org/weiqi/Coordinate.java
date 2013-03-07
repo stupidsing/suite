@@ -1,26 +1,47 @@
 package org.weiqi;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Coordinate implements Comparable<Coordinate> {
 
-	private int x, y;
+	private final int x, y;
+	private final List<Coordinate> neighbours = new ArrayList<>();
 
-	private static Coordinates coordinates;
+	private static Coordinate coords[][];
+	private static final List<Coordinate> all = new ArrayList<>();
+
 	static {
 		initialize();
 	}
 
-	private static class Coordinates {
-		private final Coordinate coords[][];
+	/**
+	 * Performed when initializing, or after a board resize.
+	 */
+	public static void initialize() {
+		coords = new Coordinate[Weiqi.size][Weiqi.size];
+		all.clear();
 
-		private Coordinates() {
-			coords = new Coordinate[Weiqi.size][Weiqi.size];
+		for (int x = 0; x < Weiqi.size; x++)
+			for (int y = 0; y < Weiqi.size; y++)
+				all.add(coords[x][y] = new Coordinate(x, y));
 
-			for (int x = 0; x < Weiqi.size; x++)
-				for (int y = 0; y < Weiqi.size; y++)
-					coords[x][y] = new Coordinate(x, y);
-		}
+		for (int x = 0; x < Weiqi.size; x++)
+			for (int y = 0; y < Weiqi.size; y++) {
+				Coordinate c0 = coords[x][y];
+
+				if (x > 0) {
+					Coordinate c1 = coords[x - 1][y];
+					c0.neighbours.add(c1);
+					c1.neighbours.add(c0);
+				}
+
+				if (y > 0) {
+					Coordinate c2 = coords[x][y - 1];
+					c0.neighbours.add(c2);
+					c2.neighbours.add(c0);
+				}
+			}
 	}
 
 	private Coordinate(int x, int y) {
@@ -28,15 +49,8 @@ public class Coordinate implements Comparable<Coordinate> {
 		this.y = y;
 	}
 
-	/**
-	 * Performed after a board resize.
-	 */
-	public static void initialize() {
-		coordinates = new Coordinates();
-	}
-
 	public static Coordinate c(int x, int y) {
-		return coordinates.coords[x][y];
+		return coords[x][y];
 	}
 
 	public int getArrayPosition() {
@@ -65,68 +79,11 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	public Iterable<Coordinate> neighbours() {
-		return new Iterable<Coordinate>() {
-			public Iterator<Coordinate> iterator() {
-				return new Iterator<Coordinate>() {
-					public int n = 0;
-
-					public boolean hasNext() {
-						return n < (y == 0 ? 3 : 4);
-					}
-
-					public Coordinate next() {
-						switch (n++) {
-						case 0:
-							if (x < Weiqi.size - 1)
-								return Coordinate.c(x + 1, y);
-						case 1:
-							if (x > 0)
-								return Coordinate.c(x - 1, y);
-						case 2:
-							if (y < Weiqi.size - 1)
-								return Coordinate.c(x, y + 1);
-						case 3:
-							if (y > 0)
-								return Coordinate.c(x, y - 1);
-						default:
-							throw new RuntimeException("Run out of neighbours");
-						}
-					}
-
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-				};
-			}
-		};
+		return neighbours;
 	}
 
 	public static Iterable<Coordinate> all() {
-		return new Iterable<Coordinate>() {
-			public Iterator<Coordinate> iterator() {
-				return new Iterator<Coordinate>() {
-					public Coordinate c = new Coordinate(0, 0);
-
-					public boolean hasNext() {
-						return c.x < Weiqi.size && c.y < Weiqi.size;
-					}
-
-					public Coordinate next() {
-						Coordinate ret = Coordinate.c(c.x, c.y);
-						c.y++;
-						if (c.y == Weiqi.size) {
-							c.x++;
-							c.y = 0;
-						}
-						return ret;
-					}
-
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-				};
-			}
-		};
+		return all;
 	}
 
 	@Override
@@ -134,6 +91,7 @@ public class Coordinate implements Comparable<Coordinate> {
 		return getArrayPosition();
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		if (object instanceof Coordinate) {
 			Coordinate c = (Coordinate) object;

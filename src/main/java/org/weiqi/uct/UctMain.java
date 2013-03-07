@@ -31,8 +31,10 @@ public class UctMain<Move> {
 
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
+		boolean auto = false;
+		boolean quit = false;
 
-		while (true) {
+		while (!quit) {
 			GameSet gameSet1 = new GameSet(gameSet);
 			UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet1);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
@@ -57,12 +59,18 @@ public class UctMain<Move> {
 			gameSet.play(move);
 			UserInterface.display(gameSet);
 
-			while (gameSet.getNextPlayer() == Occupation.WHITE)
+			while (!auto && !quit
+					&& gameSet.getNextPlayer() == Occupation.WHITE)
 				try {
-					String pos[] = br.readLine().split(",");
-					Integer x = Integer.valueOf(pos[0]);
-					Integer y = Integer.valueOf(pos[1]);
-					gameSet.play(Coordinate.c(x, y));
+					String line = br.readLine();
+
+					if (line != null) {
+						String pos[] = line.split(",");
+						Integer x = Integer.valueOf(pos[0]);
+						Integer y = Integer.valueOf(pos[1]);
+						gameSet.play(Coordinate.c(x, y));
+					} else
+						quit = true;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
