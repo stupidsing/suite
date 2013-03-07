@@ -3,9 +3,10 @@ package org.weiqi;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.util.Util.Pair;
+
 public class Coordinate implements Comparable<Coordinate> {
 
-	private final int x, y;
 	private final int index;
 	private final List<Coordinate> leftOrUp = new ArrayList<>();
 	private final List<Coordinate> neighbors = new ArrayList<>();
@@ -49,13 +50,50 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	private Coordinate(int x, int y) {
-		this.x = x;
-		this.y = y;
 		index = (x << Weiqi.shift) + y;
 	}
 
 	public static Coordinate c(int x, int y) {
 		return coords[x][y];
+	}
+
+	public int getX() {
+		return getLocation().t1;
+	}
+
+	public int getY() {
+		return getLocation().t2;
+	}
+
+	private Pair<Integer, Integer> getLocation() {
+		int x = index >> Weiqi.shift;
+		int y = index & ((1 << Weiqi.shift) - 1);
+		return Pair.create(x, y);
+	}
+
+	@Override
+	public int hashCode() {
+		return index;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Coordinate) {
+			Coordinate c = (Coordinate) object;
+			return index == c.index;
+		} else
+			return false;
+	}
+
+	@Override
+	public int compareTo(Coordinate coord) {
+		return index - coord.index;
+	}
+
+	@Override
+	public String toString() {
+		Pair<Integer, Integer> location = getLocation();
+		return String.format("%d,%d", location.t1, location.t2);
 	}
 
 	public int index() {
@@ -72,40 +110,6 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	public static Iterable<Coordinate> all() {
 		return all;
-	}
-
-	@Override
-	public int hashCode() {
-		return index;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object instanceof Coordinate) {
-			Coordinate c = (Coordinate) object;
-			return x == c.x && y == c.y;
-		} else
-			return false;
-	}
-
-	@Override
-	public int compareTo(Coordinate coord) {
-		int dx = x - coord.x;
-		int dy = y - coord.y;
-		return (dx << Weiqi.shift) + dy;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("%d,%d", x, y);
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
 	}
 
 }

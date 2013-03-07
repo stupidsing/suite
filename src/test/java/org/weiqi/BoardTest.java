@@ -1,6 +1,7 @@
 package org.weiqi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.util.Util;
+import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Occupation;
 
 public class BoardTest {
@@ -56,8 +58,14 @@ public class BoardTest {
 		board.set(Coordinate.c(18, 1), Occupation.WHITE);
 
 		GroupAnalysis ga = new GroupAnalysis(board);
-		Integer groupId = ga.getGroupId(Coordinate.c(15, 15));
-		assertEquals(4, ga.getNumberOfBreathes(groupId));
+		Group blackGroup = ga.getGroupByCoord(Coordinate.c(15, 15));
+		Group whiteGroup = ga.getGroupByCoord(Coordinate.c(17, 0));
+
+		assertEquals(361 - 7, blackGroup.coords.size());
+		assertEquals(3, whiteGroup.touches.size());
+		assertTrue(blackGroup.touches.contains(whiteGroup));
+		assertTrue(whiteGroup.touches.contains(blackGroup));
+		assertEquals(4, blackGroup.breathes.size());
 	}
 
 	private Board blackBoard() {

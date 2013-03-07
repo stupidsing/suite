@@ -1,23 +1,46 @@
 package org.weiqi;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.util.Util;
-import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 public class GroupAnalysis {
 
 	private Board board;
-	private Array<Integer> groupIdArray = Array.create();
-	private Map<Integer, Occupation> groupColors = Util.createHashMap();
-	private Multimap<Integer, Coordinate> groupCoords = HashMultimap.create();
-	private Multimap<Integer, Integer> groupTouches = HashMultimap.create();
-	private Multimap<Integer, Coordinate> groupBreathes = HashMultimap.create();
+
+	private Map<Coordinate, Group> groupByCoord = new HashMap<>();
+	private Set<Group> groups = new TreeSet<>();
+
+	public static class Group implements Comparable<Group> {
+		public final Occupation color;
+		public final Collection<Coordinate> coords = new ArrayList<>();
+		public final Collection<Group> touches = new TreeSet<>();
+		public final Collection<Coordinate> breathes = new TreeSet<>();
+		private final int id;
+		private Group parent;
+
+		public Group(int id, Occupation color) {
+			this.id = id;
+			this.color = color;
+		}
+
+		private Group root() {
+			Group root = this;
+			while (root.parent != null)
+				root = root.parent;
+			return root;
+		}
+
+		@Override
+		public int compareTo(Group group) {
+			return id - group.id;
+		}
+	}
 
 	public GroupAnalysis(Board board) {
 		this.board = board;
@@ -26,94 +49,62 @@ public class GroupAnalysis {
 	}
 
 	private void assignGroups() {
-
-		// Assign group numbers to groups, including empty groups
 		int nGroups = 0;
-		Map<Integer, Integer> parentGroupIds = Util.createHashMap();
 
 		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);
-			Integer groupId = null;
+			Group group = null; // Must be root
 
 			for (Coordinate c1 : c.leftOrUp())
 				if (board.get(c1) == color) {
-					Integer newGroupId = groupIdArray.get(c1);
+					Group group1 = groupByCoord.get(c1).root();
 
-					if (newGroupId != null) {
-						while (parentGroupIds.containsKey(newGroupId))
-							newGroupId = parentGroupIds.get(newGroupId);
-
-						if (groupId != null) {
-							if (groupId > newGroupId) {
-								Integer temp = groupId;
-								groupId = newGroupId;
-								newGroupId = temp;
-							}
-
-							if (newGroupId.intValue() != groupId.intValue())
-								parentGroupIds.put(newGroupId, groupId);
-						} else
-							groupId = newGroupId;
-					}
+					if (group != null) {
+						if (group != group1)
+							group1.parent = group;
+					} else
+						group = group1;
 				}
 
-			groupIdArray.set(c, groupId != null ? groupId : ++nGroups);
-		}
+			if (group == null)
+				group = new Group(nGroups++, color);
 
-		// Reduces group ID to parent and creates coordinate-to-group-ID mapping
-		for (Coordinate c : Coordinate.all()) {
-			Integer groupId = groupIdArray.get(c);
-			while (parentGroupIds.containsKey(groupId))
-				groupId = parentGroupIds.get(groupId);
-
-			groupIdArray.set(c, groupId);
-			groupColors.put(groupId, board.get(c));
-			groupCoords.put(groupId, c);
+			groupByCoord.put(c, group);
 		}
 	}
 
 	private void assignGroupSurroundings() {
 		for (Coordinate c : Coordinate.all()) {
-			Integer groupId = groupIdArray.get(c);
+			Group group = groupByCoord.get(c).root();
+			groupByCoord.put(c, group);
+			group.coords.add(c);
+			groups.add(group);
+		}
+
+		for (Coordinate c : Coordinate.all()) {
+			Group group = groupByCoord.get(c);
 
 			for (Coordinate c1 : c.leftOrUp()) {
-				Integer groupId1 = groupIdArray.get(c1);
+				Group group1 = groupByCoord.get(c1);
 
-				if (groupId.intValue() != groupId1.intValue()) {
-					groupTouches.put(groupId, groupId1);
-					groupTouches.put(groupId1, groupId);
-
-					if (board.get(c) == Occupation.EMPTY)
-						groupBreathes.put(groupId1, c);
-					if (board.get(c1) == Occupation.EMPTY)
-						groupBreathes.put(groupId, c1);
+				if (group != group1) {
+					group.touches.add(group1);
+					group1.touches.add(group);
 				}
 			}
+
+			if (board.get(c) == Occupation.EMPTY)
+				for (Coordinate c1 : c.neighbors())
+					groupByCoord.get(c1).breathes.add(c);
 		}
 	}
 
-	public Integer getGroupId(Coordinate c) {
-		return groupIdArray.get(c);
+	public Group getGroupByCoord(Coordinate c) {
+		return groupByCoord.get(c);
 	}
 
-	public Map<Integer, Occupation> getGroupColors() {
-		return groupColors;
-	}
-
-	public Occupation getColor(int groupId) {
-		return groupColors.get(groupId);
-	}
-
-	public Collection<Coordinate> getCoords(int groupId) {
-		return groupCoords.get(groupId);
-	}
-
-	public Collection<Integer> getTouches(int groupId) {
-		return groupTouches.get(groupId);
-	}
-
-	public int getNumberOfBreathes(int groupId) {
-		return groupBreathes.get(groupId).size();
+	public Set<Group> getGroups() {
+		return groups;
 	}
 
 }
