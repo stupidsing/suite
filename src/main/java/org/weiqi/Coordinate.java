@@ -6,7 +6,9 @@ import java.util.List;
 public class Coordinate implements Comparable<Coordinate> {
 
 	private final int x, y;
-	private final List<Coordinate> neighbours = new ArrayList<>();
+	private final int index;
+	private final List<Coordinate> leftOrUp = new ArrayList<>();
+	private final List<Coordinate> neighbors = new ArrayList<>();
 
 	private static Coordinate coords[][];
 	private static final List<Coordinate> all = new ArrayList<>();
@@ -32,14 +34,16 @@ public class Coordinate implements Comparable<Coordinate> {
 
 				if (x > 0) {
 					Coordinate c1 = coords[x - 1][y];
-					c0.neighbours.add(c1);
-					c1.neighbours.add(c0);
+					c0.leftOrUp.add(c1);
+					c0.neighbors.add(c1);
+					c1.neighbors.add(c0);
 				}
 
 				if (y > 0) {
 					Coordinate c2 = coords[x][y - 1];
-					c0.neighbours.add(c2);
-					c2.neighbours.add(c0);
+					c0.leftOrUp.add(c2);
+					c0.neighbors.add(c2);
+					c2.neighbors.add(c0);
 				}
 			}
 	}
@@ -47,39 +51,23 @@ public class Coordinate implements Comparable<Coordinate> {
 	private Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
+		index = (x << Weiqi.shift) + y;
 	}
 
 	public static Coordinate c(int x, int y) {
 		return coords[x][y];
 	}
 
-	public int getArrayPosition() {
-		return (x << Weiqi.shift) + y;
+	public int index() {
+		return index;
 	}
 
-	public static Coordinate fromArrayPosition(int position) {
-		int x = position >> Weiqi.shift;
-		int y = position & ((1 << Weiqi.shift) - 1);
-		return c(x, y);
+	public Iterable<Coordinate> leftOrUp() {
+		return leftOrUp;
 	}
 
-	public Coordinate[] leftOrUp() {
-		Coordinate left = x > 0 ? Coordinate.c(x - 1, y) : null;
-		Coordinate up = y > 0 ? Coordinate.c(x, y - 1) : null;
-
-		if (left == null || up == null)
-			if (left != null)
-				return new Coordinate[] { left };
-			else if (up != null)
-				return new Coordinate[] { up };
-			else
-				return new Coordinate[] {};
-		else
-			return new Coordinate[] { left, up };
-	}
-
-	public Iterable<Coordinate> neighbours() {
-		return neighbours;
+	public Iterable<Coordinate> neighbors() {
+		return neighbors;
 	}
 
 	public static Iterable<Coordinate> all() {
@@ -88,7 +76,7 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	@Override
 	public int hashCode() {
-		return getArrayPosition();
+		return index;
 	}
 
 	@Override

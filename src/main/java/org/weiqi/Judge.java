@@ -41,8 +41,8 @@ public class Judge {
 				Integer groupId = entry.getKey();
 				Set<Occupation> colors = Util.createHashSet();
 
-				for (Integer neighbourGroupId : ga.getTouches(groupId)) {
-					Occupation color = groupColors.get(neighbourGroupId);
+				for (Integer neighborGroupId : ga.getTouches(groupId)) {
+					Occupation color = groupColors.get(neighborGroupId);
 					if (color != Occupation.EMPTY)
 						colors.add(color);
 				}

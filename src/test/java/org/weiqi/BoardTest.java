@@ -19,12 +19,12 @@ public class BoardTest {
 	}
 
 	@Test
-	public void testNeighbour() {
+	public void testNeighbor() {
 		Coordinate c = Coordinate.c(10, 10);
-		Set<Coordinate> neighbours = Util.createHashSet();
+		Set<Coordinate> neighbors = Util.createHashSet();
 
-		for (Coordinate c1 : c.neighbours())
-			neighbours.add(c1);
+		for (Coordinate c1 : c.neighbors())
+			neighbors.add(c1);
 
 		assertEquals(new HashSet<Coordinate>( //
 				Arrays.asList( //
@@ -32,7 +32,7 @@ public class BoardTest {
 						, Coordinate.c(11, 10) //
 						, Coordinate.c(10, 9) //
 						, Coordinate.c(10, 11) //
-				)), neighbours);
+				)), neighbors);
 	}
 
 	@Test

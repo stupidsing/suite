@@ -49,9 +49,9 @@ public class UctScenarioTest {
 				+ "O . . O X . . \n" //
 				+ ". . . O X X X \n" //
 				+ ". O O O X . . \n" //
-				+ "O O X X X O . \n" //
+				+ "O O X X X O O \n" //
 				+ "X X X . O . O \n" //
-				+ ". . X . . . . \n" //
+				+ ". . X . O . . \n" //
 		), Occupation.BLACK);
 		testScenario(gameSet, Coordinate.c(6, 5));
 	}

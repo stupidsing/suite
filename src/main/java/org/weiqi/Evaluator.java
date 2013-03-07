@@ -32,8 +32,8 @@ public class Evaluator {
 
 			// Count territory
 			if (color == Occupation.EMPTY) {
-				for (Integer neighbourGroupId : ga.getTouches(groupId))
-					colors.add(ga.getColor(neighbourGroupId));
+				for (Integer neighborGroupId : ga.getTouches(groupId))
+					colors.add(ga.getColor(neighborGroupId));
 
 				us = colors.contains(player);
 				theirs = colors.contains(opponent);

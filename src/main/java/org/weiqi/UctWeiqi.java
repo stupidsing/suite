@@ -60,7 +60,11 @@ public class UctWeiqi {
 		}
 
 		/**
-		 * The "play till both player passes" Monte Carlo.
+		 * The "play till both passes" Monte Carlo, with some customizations:
+		 * 
+		 * - Consider capture moves first;
+		 * 
+		 * - Would not fill a single-eye.
 		 */
 		@Override
 		public boolean evaluateRandomOutcome() {
@@ -80,7 +84,7 @@ public class UctWeiqi {
 					Coordinate c = iter.next();
 					boolean isFillEye = true;
 
-					for (Coordinate c1 : c.neighbours())
+					for (Coordinate c1 : c.neighbors())
 						isFillEye &= board.get(c1) == gameSet.getNextPlayer();
 
 					if (!isFillEye && gameSet.playIfValid(move = new Move(c))) {
@@ -90,16 +94,20 @@ public class UctWeiqi {
 				}
 
 				if (chosenMove != null) {
-					int j = 0;
-					capturedPositions.clear();
+					if (chosenMove.type == MoveType.CAPTURE) {
+						int i = 0;
+						capturedPositions.clear();
 
-					// Add captured positions back to empty group
-					for (Coordinate c1 : chosenMove.position.neighbours())
-						if (chosenMove.neighbourColors[j++] != board.get(c1))
-							capturedPositions.addAll(board.findGroup(c1));
+						// Add captured positions back to empty group
+						for (Coordinate c1 : chosenMove.position.neighbors()) {
+							Occupation neighborColor = chosenMove.neighborColors[i++];
+							if (neighborColor != board.get(c1))
+								capturedPositions.addAll(board.findGroup(c1));
+						}
 
-					for (Coordinate c2 : capturedPositions)
-						empties.addByRandomSwap(c2);
+						for (Coordinate c2 : capturedPositions)
+							empties.addByRandomSwap(c2);
+					}
 
 					nPasses = 0;
 				} else {
@@ -139,8 +147,8 @@ public class UctWeiqi {
 				if (move != null) { // Add empty positions back to empty group
 					int j = 0;
 
-					for (Coordinate c1 : move.position.neighbours())
-						if (move.neighbourColors[j++] != board.get(c1))
+					for (Coordinate c1 : move.position.neighbors())
+						if (move.neighborColors[j++] != board.get(c1))
 							for (Coordinate c2 : board.findGroup(c1))
 								empties.addByRandomSwap(c2);
 				} else

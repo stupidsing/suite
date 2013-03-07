@@ -102,11 +102,11 @@ public class Weiqi {
 		}
 
 		public void set(Coordinate c, T t) {
-			positions[c.getArrayPosition()] = t;
+			positions[c.index()] = t;
 		}
 
 		public T get(Coordinate c) {
-			return positions[c.getArrayPosition()];
+			return positions[c.index()];
 		}
 	}
 

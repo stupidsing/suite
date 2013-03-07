@@ -43,7 +43,7 @@ public class GameSet {
 	public static class Move {
 		public Coordinate position;
 		public MoveType type;
-		public Occupation neighbourColors[] = new Occupation[4];
+		public Occupation neighborColors[] = new Occupation[4];
 
 		public Move() {
 		}
@@ -78,8 +78,8 @@ public class GameSet {
 		Occupation opponent = nextPlayer.opponent();
 		int i = 0;
 
-		for (Coordinate c1 : move.position.neighbours())
-			move.neighbourColors[i++] = board.get(c1);
+		for (Coordinate c1 : move.position.neighbors())
+			move.neighborColors[i++] = board.get(c1);
 
 		move.type = board.playIfSeemsPossible(move.position, nextPlayer);
 		boolean success = move.type != MoveType.INVALID;
@@ -108,12 +108,14 @@ public class GameSet {
 	private void unplay(Move move, Occupation opponent) {
 		previousStates.remove(board.hashCode());
 
-		int i = 0;
-		if (move.type == MoveType.CAPTURE)
-			for (Coordinate c1 : move.position.neighbours())
-				if (move.neighbourColors[i++] != board.get(c1))
+		if (move.type == MoveType.CAPTURE) {
+			int i = 0;
+
+			for (Coordinate c1 : move.position.neighbors())
+				if (move.neighborColors[i++] != board.get(c1))
 					for (Coordinate c2 : board.findGroup(c1))
 						board.set(c2, opponent);
+		}
 
 		board.set(move.position, Occupation.EMPTY);
 	}
