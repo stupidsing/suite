@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.util.Util;
+import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
 
@@ -123,11 +124,11 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean killIfDead1(GroupAnalysis ga, Coordinate c) {
-		Integer groupId = ga.getGroupId(c);
-		boolean isKilled = ga.getNumberOfBreathes(groupId) == 0;
+		Group group = ga.getGroup(c);
+		boolean isKilled = group.breathes.isEmpty();
 
 		if (isKilled)
-			for (Coordinate c1 : ga.getCoords(groupId))
+			for (Coordinate c1 : group.coords)
 				set(c1, Occupation.EMPTY);
 
 		return isKilled;
