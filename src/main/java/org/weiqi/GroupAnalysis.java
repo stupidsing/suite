@@ -71,16 +71,16 @@ public class GroupAnalysis {
 
 			groupByCoord.put(c, group);
 		}
-	}
 
-	private void assignGroupSurroundings() {
 		for (Coordinate c : Coordinate.all()) {
 			Group group = groupByCoord.get(c).root();
 			groupByCoord.put(c, group);
 			group.coords.add(c);
 			groups.add(group);
 		}
+	}
 
+	private void assignGroupSurroundings() {
 		for (Coordinate c : Coordinate.all()) {
 			Group group = groupByCoord.get(c);
 

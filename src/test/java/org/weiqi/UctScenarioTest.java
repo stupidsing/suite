@@ -15,6 +15,20 @@ public class UctScenarioTest {
 	}
 
 	@Test
+	public void testEat() {
+		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+				+ ". . . . . . . \n" //
+				+ ". . X X O . . \n" //
+				+ ". . X O O . . \n" //
+				+ ". X X O X O . \n" //
+				+ "X O O X X O . \n" //
+				+ ". X O X O . . \n" //
+				+ ". . . . . . . \n" //
+		), Occupation.WHITE);
+		testScenario(gameSet, Coordinate.c(6, 3));
+	}
+
+	@Test
 	public void testCapture() {
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
