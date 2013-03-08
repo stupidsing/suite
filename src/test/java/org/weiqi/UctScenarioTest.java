@@ -59,6 +59,20 @@ public class UctScenarioTest {
 	@Test
 	public void testLiveAndDeath1() {
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+				+ ". . X O O O . \n" //
+				+ ". . X O X O . \n" //
+				+ ". X X X X X O \n" //
+				+ "X . . X O O . \n" //
+				+ ". X . O X O O \n" //
+				+ ". . O . X O . \n" //
+				+ ". . O . X . . \n" //
+		), Occupation.BLACK);
+		testScenario(gameSet, Coordinate.c(1, 6));
+	}
+
+	@Test
+	public void testLiveAndDeath2() {
+		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". O . O X . . \n" //
 				+ "O . . O X . . \n" //
 				+ ". . . O X X X \n" //
