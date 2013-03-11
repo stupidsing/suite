@@ -75,7 +75,6 @@ public class GameSet {
 	 * Plays a move on the Weiqi board. Ensure no repeats in game state history.
 	 */
 	private boolean playIfValid(Move move, boolean rollBack) {
-		Occupation opponent = nextPlayer.opponent();
 		int i = 0;
 
 		for (Coordinate c1 : move.position.neighbors())
@@ -89,10 +88,10 @@ public class GameSet {
 			success &= !previousStates.contains(newHashCode);
 
 			if (success && !rollBack) {
-				nextPlayer = opponent;
+				nextPlayer = nextPlayer.opponent();
 				previousStates.add(newHashCode);
 			} else
-				unplay(move, opponent);
+				unplay(move);
 		}
 
 		return success;
@@ -105,10 +104,11 @@ public class GameSet {
 	/**
 	 * Roll back board status; rejuvenate the pieces being eaten.
 	 */
-	private void unplay(Move move, Occupation opponent) {
+	private void unplay(Move move) {
 		previousStates.remove(board.hashCode());
 
 		if (move.type == MoveType.CAPTURE) {
+			Occupation opponent = nextPlayer.opponent();
 			int i = 0;
 
 			for (Coordinate c1 : move.position.neighbors())
