@@ -56,7 +56,7 @@ public class UctWeiqi {
 
 		@Override
 		public void playMove(Coordinate c) {
-			gameSet.play(new Move(c));
+			gameSet.play(c);
 		}
 
 		/**

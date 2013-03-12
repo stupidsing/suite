@@ -89,7 +89,7 @@ public class UctSearch<Move> {
 			while (count.getAndIncrement() < numberOfSimulations) {
 				playSimulation(visitor.cloneVisitor(), root, 0);
 
-				if (++i > 10) {
+				if (++i > 100) {
 					i = 0;
 					if (System.currentTimeMillis() > end)
 						break;
