@@ -42,13 +42,55 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom VRANGE = Atom.create("VRANGE");
 	private static final Atom VTAIL = Atom.create("VTAIL");
 
-	private InputStream in = System.in;
-	private PrintStream out = System.out;
-	private StringBuilder inBuffer = new StringBuilder();
-	private StringBuilder outBuffer = new StringBuilder();
-
 	private Comparer comparer = new Comparer();
 	private Prover prover;
+	private BufferedIO io = new BufferedIO(System.in, System.out);
+
+	private class BufferedIO {
+		private InputStream in;
+		private PrintStream out;
+		private StringBuilder inBuffer = new StringBuilder();
+		private StringBuilder outBuffer = new StringBuilder();
+
+		private BufferedIO(InputStream in, PrintStream out) {
+			this.in = in;
+			this.out = out;
+		}
+
+		private int read(int p) throws IOException {
+			while (p >= inBuffer.length()) {
+				int c = in.read();
+				if (c >= 0)
+					inBuffer.append((char) c);
+				else
+					break;
+			}
+
+			int ch = p < inBuffer.length() ? inBuffer.charAt(p) : -1;
+			return ch;
+		}
+
+		private void write(int p, int c) {
+			if (p >= outBuffer.length())
+				outBuffer.setLength(p + 1);
+
+			outBuffer.setCharAt(p, (char) c);
+		}
+
+		private void flush() {
+			out.print(outBuffer.toString());
+			outBuffer.setLength(0);
+		}
+
+		public void setIn(InputStream in) {
+			this.in = in;
+		}
+
+		public void setOut(PrintStream out) {
+			this.out = out;
+		}
+
+	}
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
@@ -84,35 +126,20 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node right = (Node) dataStack[dsp];
 			result = Tree.create(TermOp.AND___, left, right);
 		} else if (command == FFLUSH) {
-			out.print(outBuffer.toString());
-			outBuffer.setLength(0);
+			io.flush();
 			result = (Node) dataStack[dsp];
 		} else if (command == FGETC)
 			try {
 				int p = ((Int) dataStack[dsp]).getNumber();
-
-				while (p >= inBuffer.length()) {
-					int c = in.read();
-					if (c >= 0)
-						inBuffer.append((char) c);
-					else
-						break;
-				}
-
-				int ch = p < inBuffer.length() ? inBuffer.charAt(p) : -1;
-				result = Int.create(ch);
+				result = Int.create(io.read(p));
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 		else if (command == FPUTC) {
 			int p = ((Int) dataStack[dsp + 2]).getNumber();
 			int c = ((Int) dataStack[dsp + 1]).getNumber();
+			io.write(p, c);
 			result = (Node) dataStack[dsp];
-
-			if (p >= outBuffer.length())
-				outBuffer.setLength(p + 1);
-
-			outBuffer.setCharAt(p, (char) c);
 		} else if (command == HEAD)
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
 		else if (command == ISTREE)
@@ -175,11 +202,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void setIn(InputStream in) {
-		this.in = in;
+		this.io.setIn(in);
 	}
 
 	public void setOut(PrintStream out) {
-		this.out = out;
+		this.io.setOut(out);
 	}
 
 	public void setProver(Prover prover) {
