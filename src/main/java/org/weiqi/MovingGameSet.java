@@ -7,7 +7,7 @@ import org.weiqi.Weiqi.Occupation;
 
 public class MovingGameSet extends GameSet {
 
-	private final Deque<Move> moves = new ArrayDeque<>();
+	private Deque<Move> moves = new ArrayDeque<>();
 
 	public MovingGameSet() {
 		super();
@@ -22,14 +22,19 @@ public class MovingGameSet extends GameSet {
 	}
 
 	@Override
-	public Move play(Coordinate c) {
-		Move move = super.play(c);
+	public Move play(Coordinate coord) {
+		Move move = super.play(coord);
 		moves.push(move);
 		return move;
 	}
 
+	@Override
+	public void pass() {
+		super.pass();
+	}
+
 	public void undo() {
-		unplay(moves.pop());
+		super.unplay(moves.pop());
 	}
 
 }
