@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
+import org.net.Bytes.BytesBuilder;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Generalizer;
@@ -49,8 +50,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private class BufferedIO {
 		private InputStream in;
 		private PrintStream out;
-		private StringBuilder inBuffer = new StringBuilder();
-		private StringBuilder outBuffer = new StringBuilder();
+		private BytesBuilder inBuffer = new BytesBuilder();
+		private BytesBuilder outBuffer = new BytesBuilder();
 
 		private BufferedIO(InputStream in, PrintStream out) {
 			this.in = in;
@@ -58,28 +59,28 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		}
 
 		private int read(int p) throws IOException {
-			while (p >= inBuffer.length()) {
+			while (p >= inBuffer.getSize()) {
 				int c = in.read();
 				if (c >= 0)
-					inBuffer.append((char) c);
+					inBuffer.append((byte) c);
 				else
 					break;
 			}
 
-			int ch = p < inBuffer.length() ? inBuffer.charAt(p) : -1;
+			int ch = p < inBuffer.getSize() ? inBuffer.byteAt(p) : -1;
 			return ch;
 		}
 
 		private void write(int p, int c) {
-			if (p >= outBuffer.length())
-				outBuffer.setLength(p + 1);
+			if (p >= outBuffer.getSize())
+				outBuffer.extend(p + 1);
 
-			outBuffer.setCharAt(p, (char) c);
+			outBuffer.setByteAt(p, (byte) c);
 		}
 
-		private void flush() {
-			out.print(outBuffer.toString());
-			outBuffer.setLength(0);
+		private void flush() throws IOException {
+			out.write(outBuffer.toBytes().getBytes());
+			outBuffer.clear();
 		}
 
 		public void setIn(InputStream in) {
@@ -126,7 +127,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node right = (Node) dataStack[dsp];
 			result = Tree.create(TermOp.AND___, left, right);
 		} else if (command == FFLUSH) {
-			io.flush();
+			try {
+				io.flush();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 			result = (Node) dataStack[dsp];
 		} else if (command == FGETC)
 			try {
