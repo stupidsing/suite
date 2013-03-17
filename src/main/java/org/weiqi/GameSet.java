@@ -65,6 +65,11 @@ public class GameSet {
 					+ " for " + nextPlayer + "\n" + this);
 	}
 
+	public void undo(Move move) {
+		nextPlayer = nextPlayer.opponent();
+		unplay(move);
+	}
+
 	public boolean isValidMove(Move move) {
 		return playIfValid(move, true);
 	}
