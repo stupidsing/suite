@@ -5,6 +5,10 @@ import org.weiqi.Weiqi.Occupation;
 
 public class UserInterface {
 
+	public static void display(GameSet gameSet) {
+		display(gameSet.getBoard());
+	}
+
 	public static void display(Board board) {
 		System.out.println(board.toString());
 	}

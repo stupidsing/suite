@@ -9,7 +9,7 @@ import org.suite.node.Reference;
 
 public class Journal {
 
-	private List<Reference> bounded = new ArrayList<Reference>();
+	private List<Reference> bounded = new ArrayList<>();
 
 	public void addBind(Reference reference, Node target) {
 		if (target instanceof Reference

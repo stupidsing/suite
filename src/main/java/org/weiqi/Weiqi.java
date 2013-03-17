@@ -73,7 +73,7 @@ public class Weiqi {
 		}
 
 		public static <T1> Array<T1> create() {
-			return new Array<T1>();
+			return new Array<>();
 		}
 
 		public void dump() {
@@ -102,11 +102,11 @@ public class Weiqi {
 		}
 
 		public void set(Coordinate c, T t) {
-			positions[c.getArrayPosition()] = t;
+			positions[c.index()] = t;
 		}
 
 		public T get(Coordinate c) {
-			return positions[c.getArrayPosition()];
+			return positions[c.index()];
 		}
 	}
 

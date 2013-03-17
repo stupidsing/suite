@@ -1,20 +1,24 @@
 package org.weiqi;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.weiqi.Board.MoveType;
-import org.weiqi.GameSet.MoveCommand;
+import org.weiqi.GameSet.Move;
 import org.weiqi.Weiqi.Occupation;
 import org.weiqi.uct.UctVisitor;
 
 public class UctWeiqi {
 
 	public static class Visitor implements UctVisitor<Coordinate> {
-		private GameSet gameSet;
+		private final GameSet gameSet;
+		private final Board board;
 
-		public Visitor(GameSet gameSet) {
+		private Visitor(GameSet gameSet) {
 			this.gameSet = gameSet;
+			this.board = gameSet.getBoard();
 		}
 
 		@Override
@@ -29,19 +33,19 @@ public class UctWeiqi {
 
 		@Override
 		public List<Coordinate> elaborateMoves() {
-			MoveCommand move = new MoveCommand();
-			List<Coordinate> captureMoves = new RandomList<Coordinate>();
-			List<Coordinate> otherMoves = new RandomList<Coordinate>();
+			Move move = new Move();
+			RandomableList<Coordinate> captureMoves = new RandomableList<>();
+			RandomableList<Coordinate> otherMoves = new RandomableList<>();
 
 			for (Coordinate c : Coordinate.all())
-				if (gameSet.get(c) == Occupation.EMPTY) {
+				if (board.get(c) == Occupation.EMPTY) {
 					move.position = c;
 
-					if (gameSet.isMovePossible(move))
+					if (gameSet.isValidMove(move))
 						if (move.type == MoveType.CAPTURE)
-							captureMoves.add(c);
+							captureMoves.addByRandomSwap(c);
 						else
-							otherMoves.add(c);
+							otherMoves.addByRandomSwap(c);
 				}
 
 			// Make capture moves at the head;
@@ -52,46 +56,58 @@ public class UctWeiqi {
 
 		@Override
 		public void playMove(Coordinate c) {
-			gameSet.move(new MoveCommand(c));
+			gameSet.play(c);
 		}
 
 		/**
-		 * The "play till both player passes" Monte Carlo.
+		 * The "play till both passes" Monte Carlo, with some customizations:
+		 * 
+		 * - Consider capture moves first;
+		 * 
+		 * - Would not fill a single-eye.
 		 */
 		@Override
 		public boolean evaluateRandomOutcome() {
+			RandomableList<Coordinate> empties = findAllEmptyPositions();
+			Set<Coordinate> capturedPositions = new HashSet<>();
 			Occupation me = gameSet.getNextPlayer();
-			RandomList<Coordinate> empties = findAllEmptyPositions();
-			MoveCommand move = null;
+			Move move, chosenMove = null;
 			int nPasses = 0;
 
-			// Move until someone cannot move anymore,
-			// or maximum iterations reached
+			// Move until someone cannot move anymore, or maximum number of
+			// passes is reached between both players
 			while (nPasses < 2) {
-				move = null;
-
 				Iterator<Coordinate> iter = empties.iterator();
-				while (move == null && iter.hasNext()) {
+				chosenMove = null;
+
+				while (chosenMove == null && iter.hasNext()) {
 					Coordinate c = iter.next();
 					boolean isFillEye = true;
 
-					for (Coordinate c1 : c.neighbours())
-						isFillEye &= gameSet.get(c1) == gameSet.getNextPlayer();
+					for (Coordinate c1 : c.neighbors())
+						isFillEye &= board.get(c1) == gameSet.getNextPlayer();
 
-					if (!isFillEye)
-						if (gameSet.moveIfPossible(move = new MoveCommand(c)))
-							iter.remove();
-						else
-							move = null;
+					if (!isFillEye && gameSet.playIfValid(move = new Move(c))) {
+						iter.remove();
+						chosenMove = move;
+					}
 				}
 
-				if (move != null) { // Add empty positions back to empty group
-					int j = 0;
+				if (chosenMove != null) {
+					if (chosenMove.type == MoveType.CAPTURE) {
+						int i = 0;
+						capturedPositions.clear();
 
-					for (Coordinate c1 : move.position.neighbours())
-						if (move.neighbourColors[j++] != gameSet.get(c1))
-							for (Coordinate c2 : gameSet.findGroup(c1))
-								empties.add(c2);
+						// Add captured positions back to empty group
+						for (Coordinate c1 : chosenMove.position.neighbors()) {
+							Occupation neighborColor = chosenMove.neighborColors[i++];
+							if (neighborColor != board.get(c1))
+								capturedPositions.addAll(board.findGroup(c1));
+						}
+
+						for (Coordinate c2 : capturedPositions)
+							empties.addByRandomSwap(c2);
+					}
 
 					nPasses = 0;
 				} else {
@@ -100,7 +116,7 @@ public class UctWeiqi {
 				}
 			}
 
-			return Evaluator.evaluate(me, gameSet) > 0;
+			return Evaluator.evaluate(me, board) > 0;
 		}
 
 		/**
@@ -108,9 +124,9 @@ public class UctWeiqi {
 		 */
 		public boolean evaluateRandomOutcome0() {
 			Occupation me = gameSet.getNextPlayer();
-			RandomList<Coordinate> empties = findAllEmptyPositions();
+			RandomableList<Coordinate> empties = findAllEmptyPositions();
 			Coordinate pos;
-			MoveCommand move = null;
+			Move move = null;
 
 			// Move until someone cannot move anymore,
 			// or maximum iterations reached
@@ -120,7 +136,7 @@ public class UctWeiqi {
 				// Try a random empty position, if that position does not work,
 				// calls the heavier possible move method
 				if ((pos = empties.last()) != null)
-					if (gameSet.moveIfPossible(move = new MoveCommand(pos)))
+					if (gameSet.playIfValid(move = new Move(pos)))
 						empties.removeLast();
 					else
 						move = null;
@@ -131,10 +147,10 @@ public class UctWeiqi {
 				if (move != null) { // Add empty positions back to empty group
 					int j = 0;
 
-					for (Coordinate c1 : move.position.neighbours())
-						if (move.neighbourColors[j++] != gameSet.get(c1))
-							for (Coordinate c2 : gameSet.findGroup(c1))
-								empties.add(c2);
+					for (Coordinate c1 : move.position.neighbors())
+						if (move.neighborColors[j++] != board.get(c1))
+							for (Coordinate c2 : board.findGroup(c1))
+								empties.addByRandomSwap(c2);
 				} else
 					break; // No moves can be played, current player lost
 			}
@@ -142,14 +158,14 @@ public class UctWeiqi {
 			if (move == null)
 				return gameSet.getNextPlayer() != me;
 			else
-				return Evaluator.evaluate(me, gameSet) > 0;
+				return Evaluator.evaluate(me, board) > 0;
 		}
 
-		private MoveCommand removePossibleMove(Iterator<Coordinate> iter) {
+		private Move removePossibleMove(Iterator<Coordinate> iter) {
 			while (iter.hasNext()) {
-				MoveCommand move = new MoveCommand(iter.next());
+				Move move = new Move(iter.next());
 
-				if (gameSet.moveIfPossible(move)) {
+				if (gameSet.playIfValid(move)) {
 					iter.remove();
 					return move;
 				}
@@ -158,15 +174,19 @@ public class UctWeiqi {
 			return null;
 		}
 
-		public RandomList<Coordinate> findAllEmptyPositions() {
-			RandomList<Coordinate> moves = new RandomList<Coordinate>();
+		private RandomableList<Coordinate> findAllEmptyPositions() {
+			RandomableList<Coordinate> moves = new RandomableList<>();
 
 			for (Coordinate c : Coordinate.all())
-				if (gameSet.get(c) == Occupation.EMPTY)
-					moves.add(c);
+				if (board.get(c) == Occupation.EMPTY)
+					moves.addByRandomSwap(c);
 
 			return moves;
 		}
+	}
+
+	public static Visitor createVisitor(GameSet gameSet) {
+		return new Visitor(gameSet);
 	}
 
 }

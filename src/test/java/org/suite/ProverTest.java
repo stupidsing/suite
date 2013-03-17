@@ -25,7 +25,13 @@ public class ProverTest {
 		RuleSet rs = new RuleSet();
 		SuiteUtil.addRule(rs, "a :- !, fail");
 		SuiteUtil.addRule(rs, "a");
+		SuiteUtil.addRule(rs, "yes");
 		assertFalse(SuiteUtil.proveThis(rs, "a"));
+
+		assertFalse(SuiteUtil.proveThis(rs,
+				"cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
+		assertTrue(SuiteUtil.proveThis(rs,
+				"(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
 	}
 
 	@Test

@@ -1,11 +1,17 @@
 package org.suite.doer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.Prototype;
 import org.suite.kb.RuleSearcher;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.Rule;
@@ -13,6 +19,8 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
+import org.util.FormatUtil;
+import org.util.LogUtil;
 
 public class Prover {
 
@@ -21,14 +29,16 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private boolean isEnableTrace = false;
+	private Tracer tracer;
+	private static final Set<String> NOTRACEPREDICATES = new HashSet<>(
+			Arrays.asList("member", "replace"));
 
 	private static final Node OK = Atom.nil;
 	private static final Node FAIL = Atom.create("fail");
 
-	private Node remaining, alternative;
+	private Node rem, alt; // remaining, alternative
 
 	private Journal journal = new Journal();
-	private Node trace = Atom.nil;
 
 	public Prover(Prover prover) {
 		this(prover.ruleSet);
@@ -52,8 +62,23 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		remaining = OK;
-		alternative = FAIL;
+		if (isEnableTrace)
+			tracer = new Tracer();
+
+		boolean result = prove0(query);
+
+		if (isEnableTrace) {
+			String date = FormatUtil.dtFmt.format(new Date());
+			String dump = tracer.getDump();
+			LogUtil.info("DUMP", "-- Prover dump at " + date + " --\n" + dump);
+		}
+
+		return result;
+	}
+
+	public boolean prove0(Node query) {
+		rem = OK;
+		alt = FAIL;
 
 		while (true) {
 			// LogUtil.info("PROVE", Formatter.dump(query));
@@ -72,22 +97,26 @@ public class Prover {
 						}
 					};
 
-					Tree alt0 = new Tree(TermOp.AND___, right, remaining);
-					alternative = alternative != FAIL ? new Tree(TermOp.OR____,
-							alt0, alternative) : alt0;
-					alternative = new Tree(TermOp.AND___, bt, alternative);
+					Tree alt0 = Tree.create(TermOp.AND___, right, rem);
+					alt = alt != FAIL ? Tree.create(TermOp.OR____, alt0, alt)
+							: alt0;
+					alt = Tree.create(TermOp.AND___, bt, alt);
 					query = left;
 					continue;
 				case AND___:
 					if (right != OK)
-						remaining = new Tree(TermOp.AND___, right, remaining);
+						rem = Tree.create(TermOp.AND___, right, rem);
 					query = left;
 					continue;
 				case EQUAL_:
 					query = isSuccess(bind(left, right));
+					break;
+				default:
 				}
-			} else if (query instanceof Station)
+			} else if (query instanceof Station) {
 				query = isSuccess(((Station) query).run());
+				continue;
+			}
 
 			Boolean result = systemPredicates.call(query);
 			if (result != null)
@@ -95,22 +124,31 @@ public class Prover {
 
 			// Not handled above
 			if (query == OK)
-				if (remaining != OK) {
-					query = remaining;
-					remaining = OK;
+				if (rem != OK) {
+					query = rem;
+					rem = OK;
 				} else
 					return true;
 			else if (query == FAIL)
-				if (alternative != FAIL) {
-					query = alternative;
-					alternative = FAIL;
-					remaining = OK;
+				if (alt != FAIL) {
+					query = alt;
+					alt = FAIL;
+					rem = OK;
 				} else
 					return false;
-			else if (!isEnableTrace)
-				query = expand(query);
-			else
-				query = expandWithTrace(query);
+			else {
+				boolean isTrace = isEnableTrace;
+				Prototype prototype = isTrace ? Prototype.get(query) : null;
+				Node head = prototype != null ? prototype.getHead() : null;
+				Atom atom = head instanceof Atom ? (Atom) head : null;
+				String name = atom != null ? atom.getName() : null;
+				isTrace &= !NOTRACEPREDICATES.contains(name);
+
+				if (!isTrace)
+					query = expand(query);
+				else
+					query = tracer.expandWithTrace(query);
+			}
 		}
 	}
 
@@ -134,32 +172,6 @@ public class Prover {
 		return b ? OK : FAIL;
 	}
 
-	private final class SetTrace extends Station {
-		private Node trace;
-
-		public SetTrace(Node trace) {
-			super();
-			this.trace = trace;
-		}
-
-		public boolean run() {
-			Prover.this.trace = trace;
-			return true;
-		}
-	}
-
-	private Node expandWithTrace(Node query) {
-		Node query1 = new Cloner().clone(query);
-		Tree trace1 = new Tree(TermOp.AND___, query1, trace);
-		Station push = new SetTrace(trace1), pop = new SetTrace(trace);
-
-		alternative = new Tree(TermOp.AND___, pop, alternative);
-		remaining = new Tree(TermOp.AND___, pop, remaining);
-		query = expand(query);
-		query = new Tree(TermOp.AND___, push, query);
-		return query;
-	}
-
 	/**
 	 * Expands an user predicate (with many clauses) to a chain of logic.
 	 * 
@@ -170,7 +182,7 @@ public class Prover {
 	 * @return The chained node.
 	 */
 	private Node expand(Node query) {
-		final Node alt0 = alternative;
+		final Node alt0 = alt;
 		Node ret = FAIL;
 
 		List<Rule> rules = ruleSearcher.getRules(query);
@@ -182,7 +194,7 @@ public class Prover {
 			Generalizer generalizer = new Generalizer();
 			generalizer.setCut(new Station() {
 				public boolean run() {
-					Prover.this.alternative = alt0;
+					Prover.this.alt = alt0;
 					return true;
 				}
 			});
@@ -190,19 +202,121 @@ public class Prover {
 			Node head = generalizer.generalize(rule.getHead());
 			Node tail = generalizer.generalize(rule.getTail());
 
-			ret = new Tree(TermOp.OR____ //
-					, new Tree(TermOp.AND___ //
-							, new Tree(TermOp.EQUAL_ //
+			ret = Tree.create(TermOp.OR____ //
+					, Tree.create(TermOp.AND___ //
+							, Tree.create(TermOp.EQUAL_ //
 									, query //
 									, head //
 							) //
 							, tail //
 					) //
 					, ret //
-			);
+					);
 		}
 
 		return ret;
+	}
+
+	public class Tracer {
+		private List<Record> records = new ArrayList<>();
+		private Record currentRecord = null;
+		private int currentDepth;
+
+		private class Record {
+			private Record parent;
+			private Node query;
+			private int depth;
+			private boolean result;
+
+			private Record(Record parent, Node query, int depth) {
+				this.parent = parent;
+				this.query = query;
+				this.depth = depth;
+			}
+		}
+
+		private Node expandWithTrace(Node query) {
+			Node query1 = new Cloner().clone(query);
+
+			final Record record0 = currentRecord;
+			final int depth0 = currentDepth;
+			final Record record = new Record(record0, query1, currentDepth + 1);
+
+			final Station enter = new Station() {
+				public boolean run() {
+					Tracer.this.currentRecord = record;
+					Tracer.this.currentDepth = record.depth;
+					// appendLog("ENTER", record.query, record.depth);
+					records.add(record);
+					return true;
+				}
+			};
+
+			final Station leaveOk = new Station() {
+				public boolean run() {
+					Tracer.this.currentRecord = record0;
+					Tracer.this.currentDepth = depth0;
+					return record.result = true;
+				}
+			};
+
+			final Station leaveFail = new Station() {
+				public boolean run() {
+					Tracer.this.currentRecord = record0;
+					Tracer.this.currentDepth = depth0;
+					// appendLog("LEAVE", record.query, record.depth);
+					return record.result = false;
+				}
+			};
+
+			alt = Tree.create(TermOp.OR____, leaveFail, alt);
+			rem = Tree.create(TermOp.AND___, leaveOk, rem);
+			query = expand(query);
+			query = Tree.create(TermOp.AND___, enter, query);
+			return query;
+		}
+
+		public String getDump() {
+			StringBuilder sb = new StringBuilder();
+
+			for (Record record : records) {
+				String header = "" //
+						+ "[" + (record.result ? "OK__" : "FAIL") //
+						+ ":" + record.depth //
+						+ "]";
+				sb.append(String.format("%-10s ", header));
+				for (int i = 1; i < record.depth; i++)
+					sb.append("| ");
+				sb.append(Formatter.dump(record.query));
+				sb.append("\n");
+			}
+
+			return sb.toString();
+		}
+
+		public String getStackTrace() {
+			List<Node> traces = new ArrayList<>();
+			Record record = currentRecord;
+
+			while (record != null) {
+				traces.add(record.query);
+				record = record.parent;
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = traces.size(); i > 0; i--)
+				sb.append(traces.get(i - 1) + "\n");
+
+			return sb.toString();
+		}
+
+		public Record getCurrentRecord() {
+			return currentRecord;
+		}
+
+		public int getCurrentDepth() {
+			return tracer.currentDepth;
+		}
 	}
 
 	/**
@@ -229,6 +343,28 @@ public class Prover {
 	}
 
 	/**
+	 * Goals ahead.
+	 */
+	public Node getRemaining() {
+		return rem;
+	}
+
+	public void setRemaining(Node rem) {
+		this.rem = rem;
+	}
+
+	/**
+	 * Alternative path to succeed.
+	 */
+	public Node getAlternative() {
+		return alt;
+	}
+
+	public void setAlternative(Node alt) {
+		this.alt = alt;
+	}
+
+	/**
 	 * The roll-back log of variable binds.
 	 */
 	public Journal getJournal() {
@@ -236,10 +372,10 @@ public class Prover {
 	}
 
 	/**
-	 * Gets stack dump when trace is enabled.
+	 * Traces program flow.
 	 */
-	public Node getTrace() {
-		return trace;
+	public Tracer getTracer() {
+		return tracer;
 	}
 
 }

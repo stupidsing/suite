@@ -27,8 +27,8 @@ public class MathUtil {
 	public static Node simplify(Node node) {
 		int space = 100;
 		int complexity0 = complexity(node);
-		Set<Node> searchedNodes = new HashSet<Node>();
-		List<Node> freshNodes = new ArrayList<Node>();
+		Set<Node> searchedNodes = new HashSet<>();
+		List<Node> freshNodes = new ArrayList<>();
 		searchedNodes.add(node);
 		freshNodes.add(node);
 
@@ -37,7 +37,7 @@ public class MathUtil {
 			if (freshNodes.size() > space)
 				freshNodes = freshNodes.subList(0, space);
 
-			List<Node> freshNodes1 = new ArrayList<Node>();
+			List<Node> freshNodes1 = new ArrayList<>();
 
 			for (Node freshNode : freshNodes)
 				for (Node equateNode : equate(freshNode))
@@ -63,7 +63,7 @@ public class MathUtil {
 		System.out.println(goal);
 
 		if (prover.prove(goal)) {
-			Set<Node> results = new HashSet<Node>();
+			Set<Node> results = new HashSet<>();
 			r = r.finalNode();
 
 			while (r instanceof Tree) {

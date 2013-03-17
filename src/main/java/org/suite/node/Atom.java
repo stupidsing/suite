@@ -48,7 +48,7 @@ public class Atom extends Node {
 		synchronized (pool) {
 			WeakReference<Atom> ref = pool.get(name);
 			if (ref == null || (atom = ref.get()) == null)
-				pool.put(name, new WeakReference<Atom>(atom = new Atom(name)));
+				pool.put(name, new WeakReference<>(atom = new Atom(name)));
 		}
 		return atom;
 	}

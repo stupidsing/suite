@@ -127,7 +127,7 @@ public abstract class ChannelListeners implements ChannelListener {
 		private static final AtomicInteger tokenCounter = new AtomicInteger();
 
 		// TODO clean-up lost requests
-		private Map<Integer, Bytes[]> requests = new HashMap<Integer, Bytes[]>();
+		private Map<Integer, Bytes[]> requests = new HashMap<>();
 
 		private void onRespond(int token, Bytes respond) {
 			Bytes holder[] = requests.get(token);

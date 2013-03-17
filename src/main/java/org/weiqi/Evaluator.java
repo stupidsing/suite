@@ -1,9 +1,9 @@
 package org.weiqi;
 
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.util.Util;
+import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Occupation;
 
 public class Evaluator {
@@ -18,22 +18,21 @@ public class Evaluator {
 		// Count territories by counting groups
 		GroupAnalysis ga = new GroupAnalysis(board);
 
-		for (Entry<Integer, Occupation> entry : ga.getGroupColors().entrySet()) {
-			Integer groupId = entry.getKey();
-			Occupation color = ga.getColor(groupId);
+		for (Group group : ga.getGroups()) {
+			Occupation color = group.color;
 			Set<Occupation> colors = Util.createHashSet();
 			boolean us = false, theirs = false;
 
 			// Count pieces
 			if (color == player)
-				score += PIECESCORE * ga.getCoords(groupId).size();
+				score += PIECESCORE * group.coords.size();
 			else if (color == opponent)
-				score -= PIECESCORE * ga.getCoords(groupId).size();
+				score -= PIECESCORE * group.coords.size();
 
 			// Count territory
 			if (color == Occupation.EMPTY) {
-				for (Integer neighbourGroupId : ga.getTouches(groupId))
-					colors.add(ga.getColor(neighbourGroupId));
+				for (Group neighborGroup : group.touches)
+					colors.add(neighborGroup.color);
 
 				us = colors.contains(player);
 				theirs = colors.contains(opponent);
@@ -43,7 +42,7 @@ public class Evaluator {
 				theirs = true;
 
 			if (!us || !theirs) { // Do not count when it is nearby both colours
-				int scoreDelta = TERRITORYSCORE * ga.getCoords(groupId).size();
+				int scoreDelta = TERRITORYSCORE * group.coords.size();
 				score += !theirs ? scoreDelta : -scoreDelta;
 			}
 		}

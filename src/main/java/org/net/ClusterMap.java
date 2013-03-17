@@ -16,8 +16,8 @@ import org.util.Util.Transformer;
 public class ClusterMap<K, V> {
 
 	private Cluster cluster;
-	private List<String> peers = new ArrayList<String>();
-	private Map<K, V> localMap = new HashMap<K, V>();
+	private List<String> peers = new ArrayList<>();
+	private Map<K, V> localMap = new HashMap<>();
 
 	public ClusterMap(Cluster cluster) {
 		this.cluster = cluster;

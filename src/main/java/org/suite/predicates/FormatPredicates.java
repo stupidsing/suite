@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.suite.SuiteUtil;
 import org.suite.doer.Formatter;
+import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -64,6 +65,14 @@ public class FormatPredicates {
 		}
 	}
 
+	public static class PrettyPrint implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			PrettyPrinter printer = new PrettyPrinter();
+			System.out.println(printer.prettyPrint(ps));
+			return true;
+		}
+	}
+
 	public static class Rpn implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
@@ -79,7 +88,7 @@ public class FormatPredicates {
 
 		private static Node fromRpn(String rpn) {
 			String elems[] = rpn.split("\n");
-			List<Node> stack = new ArrayList<Node>();
+			List<Node> stack = new ArrayList<>();
 
 			for (String elem : elems) {
 				if (elem.isEmpty())
@@ -100,7 +109,7 @@ public class FormatPredicates {
 					int l = stack.size();
 					Node right = stack.remove(l - 1);
 					Node left = stack.remove(l - 2);
-					n = new Tree(op, left, right);
+					n = Tree.create(op, left, right);
 				} else
 					throw new RuntimeException("RPN conversion error: " + elem);
 

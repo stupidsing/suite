@@ -24,8 +24,7 @@ public class LazyFunctionCompilerTest {
 
 		assertEquals(Int.create(89), eval("" // Real co-recursion!
 				+ "define fib = (i1 => i2 => i2, fib {i2} {i1 + i2}) >> \n" //
-				+ "define t = (f => tail {f}) >> \n" //
-				+ "(head . apply {fib {0} {1}} . repeat {10} | t)"));
+				+ "fib {0} {1} | get {10}"));
 	}
 
 	@Test
@@ -33,9 +32,7 @@ public class LazyFunctionCompilerTest {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = ( \n" //
 				+ "    1, 1, zip {`+`} {fib} {tail {fib}} \n" //
-				+ ") >> \n" //
-				+ "define t = (f => tail {f}) >> \n" //
-				+ "(head . apply {fib} . repeat {10} | t)"));
+				+ ") >> fib | get {10}"));
 	}
 
 	@Test
@@ -48,11 +45,11 @@ public class LazyFunctionCompilerTest {
 		assertEquals(Atom.create("true"), eval("" //
 				+ "prove () is.atom abc"));
 		assertEquals(Atom.create("true"), eval("" //
-				+ "prove _v:3/ (_v = 3)"));
+				+ "prove /_v:3 (_v = 3)"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ "prove _v:4/ (_v = 3)"));
+				+ "prove /_v:4 (_v = 3)"));
 		assertEquals(Int.create(4), eval("" //
-				+ "prove-with-result _v:2/ (let _r (2 * _v)) _r"));
+				+ "prove-with-result /_v:2 (let _r (2 * _v)) _r"));
 	}
 
 	@Test

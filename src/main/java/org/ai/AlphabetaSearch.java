@@ -1,6 +1,8 @@
 package org.ai;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import org.util.Util.Pair;
@@ -14,7 +16,7 @@ public class AlphabetaSearch<State> {
 	}
 
 	private Game<State> game;
-	private List<State> moves = new ArrayList<State>();
+	private Deque<State> moves = new ArrayDeque<>();
 
 	public AlphabetaSearch(Game<State> game) {
 		this.game = game;
@@ -25,7 +27,7 @@ public class AlphabetaSearch<State> {
 		return search0(state, depth, 1 + Integer.MIN_VALUE, Integer.MAX_VALUE).t2;
 	}
 
-	public Pair<Integer, List<State>> search0(State state, int depth //
+	private Pair<Integer, List<State>> search0(State state, int depth //
 			, int alpha, int beta) {
 		if (depth > 0) {
 			List<State> states = game.generate(state);
@@ -34,7 +36,7 @@ public class AlphabetaSearch<State> {
 				List<State> principalVariation = null;
 
 				for (State state1 : states) {
-					moves.add(state1);
+					moves.push(state1);
 
 					Pair<Integer, List<State>> result = search0(state1,
 							depth - 1, -beta, -alpha);
@@ -45,7 +47,7 @@ public class AlphabetaSearch<State> {
 						principalVariation = result.t2;
 					}
 
-					moves.remove(moves.size() - 1);
+					moves.pop();
 
 					if (score > beta)
 						break;
@@ -55,7 +57,7 @@ public class AlphabetaSearch<State> {
 			}
 		}
 
-		List<State> moves1 = new ArrayList<State>(moves);
+		List<State> moves1 = new ArrayList<>(moves);
 		return Pair.create(game.evaluate(state), moves1);
 	}
 

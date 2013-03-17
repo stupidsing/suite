@@ -1,10 +1,12 @@
 package org.suite.predicates;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.suite.SuiteUtil;
 import org.suite.doer.Formatter;
+import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.CompositeRuleSearcher;
@@ -49,8 +51,9 @@ public class RuleSetPredicates {
 
 			while (iter.hasPrevious()) {
 				Rule r = iter.previous();
-				Tree node = new Tree(TermOp.IS____, r.getHead(), r.getTail());
-				allRules = new Tree(TermOp.NEXT__, node, allRules);
+				Node head = r.getHead(), tail = r.getTail();
+				Tree node = Tree.create(TermOp.IS____, head, tail);
+				allRules = Tree.create(TermOp.NEXT__, node, allRules);
 			}
 
 			return prover.bind(allRules, ps);
@@ -81,13 +84,22 @@ public class RuleSetPredicates {
 			if (ps != Atom.nil)
 				proto = Prototype.get(ps);
 
+			List<Node> nodes = new ArrayList<>();
+
 			for (Rule rule : prover.getRuleSet().getRules()) {
 				Prototype p1 = Prototype.get(rule);
 				if (proto == null || proto.equals(p1)) {
-					String s = Formatter.dump(RuleSet.formClause(rule));
-					System.out.println(s + " #");
+					Node clause = RuleSet.formClause(rule);
+					nodes.add(clause);
 				}
 			}
+
+			Node node = Atom.nil;
+			for (int i = nodes.size() - 1; i >= 0; i--)
+				node = Tree.create(TermOp.NEXT__, nodes.get(i), node);
+
+			PrettyPrinter printer = new PrettyPrinter();
+			System.out.println(printer.prettyPrint(node));
 
 			return true;
 		}

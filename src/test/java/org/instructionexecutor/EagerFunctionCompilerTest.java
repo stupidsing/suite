@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.suite.SuiteUtil;
+import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -13,11 +14,17 @@ import org.suite.node.Tree;
 public class EagerFunctionCompilerTest {
 
 	@Test
+	public void testAppend() {
+		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
+				+ "append {1, 2, 3, 4,} {5, 6, 7, 8,}"));
+	}
+
+	@Test
 	public void testApply() {
 		assertEquals(Int.create(2), eval("" //
-				+ "apply {1} {(a => 2),}"));
+				+ "apply {(a => 2),} {1}"));
 		assertEquals(Int.create(2), eval("" //
-				+ "apply {4} {`+ 1`, `* 2`, `/ 5`,}"));
+				+ "apply {`+ 1`, `* 2`, `/ 5`,} {4}"));
 	}
 
 	@Test
@@ -32,8 +39,6 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testConcat() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
-				+ "concat2 {1, 2, 3, 4,} {5, 6, 7, 8,}"));
 		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6,"), eval("" //
 				+ "concat {(1, 2,), (3, 4,), (5, 6,),}"));
 	}
@@ -41,9 +46,9 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testContains() {
 		assertEquals(Atom.create("true"), eval("" //
-				+ "contains {9} {7, 8, 9, 10, 11,}"));
+				+ "contains {8, 9,} {7, 8, 9, 10, 11,}"));
 		assertEquals(Atom.create("false"), eval("" //
-				+ "contains {12} {7, 8, 9, 10, 11,}"));
+				+ "contains {11, 12,} {7, 8, 9, 10, 11,}"));
 	}
 
 	@Test
@@ -63,6 +68,14 @@ public class EagerFunctionCompilerTest {
 				+ "    (C:1:, C:2:,), \n" //
 				+ ") >> \n" //
 				+ "cross {a => b => a:b:} {list1} {1, 2,} = result"));
+	}
+
+	@Test
+	public void testEndsWith() {
+		assertEquals(Atom.create("true"),
+				eval("ends-with {1, 2, 3,} {4, 5, 6, 1, 2, 3,}"));
+		assertEquals(Atom.create("false"),
+				eval("ends-with {1, 2, 3,} {4, 5, 3, 1, 2, 6,}"));
 	}
 
 	@Test
@@ -104,6 +117,14 @@ public class EagerFunctionCompilerTest {
 				+ "fold-left {`-`} {100} {6, 7, 8,}"));
 		assertEquals(Int.create(-93), eval("" //
 				+ "fold-right {`-`} {100} {6, 7, 8,}"));
+	}
+
+	@Test
+	public void testGcd() {
+		Node f = SuiteUtil.parse("gcd {6} {9}");
+		FunCompilerConfig c = SuiteUtil.fcc(f);
+		c.addLibrary("MATH");
+		assertEquals(Int.create(3), SuiteUtil.evaluateFunctional(c));
 	}
 
 	@Test
@@ -183,7 +204,7 @@ public class EagerFunctionCompilerTest {
 				+ "define p = (`+ 1`) >> \n" //
 				+ "define q = (`* 2`) >> \n" //
 				+ "define r = (`- 3`) >> \n" //
-				+ "9 << p << q << r"));
+				+ "9 | p | q | r"));
 	}
 
 	@Test
@@ -208,6 +229,12 @@ public class EagerFunctionCompilerTest {
 	public void testMap() {
 		assertEquals(SuiteUtil.parse("5, 6, 7,"), eval("" //
 				+ "map {`+ 2`} {3, 4, 5,}"));
+	}
+
+	@Test
+	public void testMergeSort() {
+		assertEquals(SuiteUtil.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
+				+ "merge-sort {merge} {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
 	}
 
 	@Test
@@ -239,6 +266,24 @@ public class EagerFunctionCompilerTest {
 	public void testReverse() {
 		assertEquals(SuiteUtil.parse("5, 4, 3, 2, 1,"),
 				eval("reverse {1, 2, 3, 4, 5,}"));
+	}
+
+	@Test
+	public void testStartsWith() {
+		assertEquals(Atom.create("true"),
+				eval("starts-with {1, 2, 3,} {1, 2, 3, 4, 5, 6,}"));
+		assertEquals(Atom.create("false"),
+				eval("starts-with {1, 2, 3,} {1, 2, 4, 3, 5, 6,}"));
+	}
+
+	@Test
+	public void testSubstring() {
+		assertEquals(eval("\"abcdefghij\""), eval("" //
+				+ "substring {0} {10} {\"abcdefghij\"}"));
+		assertEquals(eval("\"ef\""), eval("" //
+				+ "substring {4} {6} {\"abcdefghij\"}"));
+		assertEquals(eval("\"cdefgh\""), eval("" //
+				+ "substring {2} {-2} {\"abcdefghij\"}"));
 	}
 
 	@Test
@@ -277,6 +322,12 @@ public class EagerFunctionCompilerTest {
 		String r = "(1, 4, 7,), (2, 5, 8,), (3, 6, 9,),";
 		assertEquals(SuiteUtil.parse(r), eval("" //
 				+ "transpose {(1, 2, 3,), (4, 5, 6,), (7, 8, 9,),}"));
+	}
+
+	@Test
+	public void testUniq() {
+		assertEquals(SuiteUtil.parse("1, 2, 3, 5, 2,"), eval("" //
+				+ "uniq {1, 2, 2, 2, 3, 5, 2,}"));
 	}
 
 	@Test

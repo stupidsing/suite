@@ -27,6 +27,7 @@ public class Prototype {
 	public static Prototype get(Node head) {
 		Operator operator = null;
 		Tree t0 = null, t1;
+
 		while ((t1 = Tree.decompose(head)) != null) {
 			t0 = t1;
 			operator = t0.getOperator();
@@ -52,6 +53,14 @@ public class Prototype {
 					&& Util.equals(head, p.head);
 		} else
 			return false;
+	}
+
+	public Operator getOperator() {
+		return operator;
+	}
+
+	public Node getHead() {
+		return head;
 	}
 
 }

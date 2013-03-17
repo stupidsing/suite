@@ -6,12 +6,15 @@
 -- ? fc-setup-standard-precompile #
 --
 
-fc-setup-standard-precompile
-	:- fc-add-standard-funs .do0 .do1
-	, fc-setup-precompile STANDARD .do1/.do0 'precompiled.rpn'
+fc-setup-precompile .lib
+	:- load-library .lib
+	, home.dir .homeDir
+	, concat .homeDir "/" .lib ".rpn" .filename
+	, fc-add-functions .lib .do0 .do1
+	, fc-setup-precompile0 .lib .do1/.do0 .filename
 #
 
-fc-setup-precompile .lib .do1/($$PRECOMPILE .pc) .filename
+fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	:- .pc = .ues/.ves/.tes/.oes .trs/.trs .fcs
 	, !, write 'Parsing program', nl
 	, !, fc-parse .do1 .parsed
@@ -28,7 +31,8 @@ fc-setup-precompile .lib .do1/($$PRECOMPILE .pc) .filename
 	)
 	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
-	, rpn (.prog0 # .prog1 # .prog2 #) .rpn
+	, .prog3 = fc-imported-precompile-library .lib
+	, rpn (.prog0 # .prog1 # .prog2 # .prog3 #) .rpn
 	, file.write .filename .rpn
 #
 
@@ -36,24 +40,23 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
-	, fc-compile .mode .parsed 0/() .c0/.cx/.d0/.dx/.reg
+	, fc-compile .mode .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
 	, member .fcs .mode/.fc
-	, .fc = .frameDiff/.wes .cs0/.csx/.ds0/.dsx/.regs
+	, .fc = .frame1/.wes .cs0/.csx/.ds0/.dsx/.regs
 	, append .wes .we .we1
 	, .prog = (
 		fc-compile-using-libs .mode (.lib, .libs) .do .frame0/.we .c0/.cx/.d0/.dx/.reg
-			:- let .frame1 (.frame0 + .frameDiff)
-			, fc-compile-using-libs .mode .libs .do .frame1/.we1 .cs0/.csx/.ds0/.dsx/.regs
+			:- fc-compile-using-libs .mode .libs .do .frame1/.we1 .cs0/.csx/.ds0/.dsx/.regs
 	)
 #
 
 infer-type-rule ($$PRECOMPILE .uvto .trs _) .uvto .trs NUMBER :- ! #
 
 -- Eager evaluation
-fc-eager-compile ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
+fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
 
 -- Lazy evaluation
-fc-lazy-compile-wrapped ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
+fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
 
 () :- import.file 'fc.sl'
 	, import.file 'fc-eager-evaluation.sl'

@@ -138,6 +138,10 @@ public class Bytes {
 		public BytesBuilder() {
 		}
 
+		public void clear() {
+			size = 0;
+		}
+
 		public BytesBuilder append(Bytes b) {
 			return append(b.bytes, b.start, b.end);
 		}
@@ -153,15 +157,8 @@ public class Bytes {
 		public BytesBuilder append(byte b[], int start, int end) {
 			int inc = end - start, size1 = size + inc;
 
-			if (bytes.length < size1) {
-				int length1 = bytes.length != 0 ? bytes.length : 1;
-				while (length1 < size1)
-					length1 = length1 < 4096 ? length1 << 1 : length1 * 3 / 2;
-
-				byte bytes1[] = new byte[length1];
-				Util.copyPrimitiveArray(bytes, 0, bytes1, 0, size);
-				bytes = bytes1;
-			}
+			if (bytes.length < size1)
+				extendBuffer(size1);
 
 			Util.copyPrimitiveArray(b, start, bytes, size, inc);
 
@@ -169,8 +166,35 @@ public class Bytes {
 			return this;
 		}
 
+		public void extend(int size1) {
+			extendBuffer(size1);
+			size = size1;
+		}
+
 		public Bytes toBytes() {
 			return new Bytes(bytes, 0, size);
+		}
+
+		public void setByteAt(int n, byte b) {
+			bytes[n] = b;
+		}
+
+		public byte byteAt(int n) {
+			return bytes[n];
+		}
+
+		public int getSize() {
+			return size;
+		}
+
+		private void extendBuffer(int size1) {
+			int length1 = bytes.length != 0 ? bytes.length : 1;
+			while (length1 < size1)
+				length1 = length1 < 4096 ? length1 << 1 : length1 * 3 / 2;
+
+			byte bytes1[] = new byte[length1];
+			Util.copyPrimitiveArray(bytes, 0, bytes1, 0, size);
+			bytes = bytes1;
 		}
 	}
 

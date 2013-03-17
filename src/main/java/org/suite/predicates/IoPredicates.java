@@ -1,12 +1,11 @@
 package org.suite.predicates;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,7 +13,6 @@ import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.node.Node;
 import org.suite.node.Str;
-import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates.SystemPredicate;
 import org.util.FormatUtil;
 import org.util.IoUtil;
@@ -32,21 +30,9 @@ public class IoPredicates {
 
 	public static class DumpStack implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node trace = prover.getTrace();
-			Tree tree;
-			List<Node> traces = new ArrayList<Node>();
-
-			while ((tree = Tree.decompose(trace)) != null) {
-				traces.add(tree.getLeft());
-				trace = tree.getRight();
-			}
-
-			StringBuilder sb = new StringBuilder();
-			for (int i = traces.size(); i > 0; i--)
-				sb.append(traces.get(i - 1) + "\n");
-
 			String date = FormatUtil.dtFmt.format(new Date());
-			LogUtil.info("STACK-TRACE", "-- Trace at " + date + " --\n" + sb);
+			String trace = prover.getTracer().getStackTrace();
+			LogUtil.info("TRACE", "-- Stack trace at " + date + " --\n" + trace);
 			return true;
 		}
 	}
@@ -64,6 +50,12 @@ public class IoPredicates {
 		}
 
 		private static Log log = LogFactory.getLog(Util.currentClass());
+	}
+
+	public static class FileExists implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			return new File(Formatter.display(ps)).exists();
+		}
 	}
 
 	public static class FileRead implements SystemPredicate {
@@ -91,6 +83,14 @@ public class IoPredicates {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+		}
+	}
+
+	public static class HomeDir implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			String homeDir = System.getProperty("home.dir");
+			homeDir = homeDir != null ? homeDir : ".";
+			return prover.bind(new Str(homeDir), ps);
 		}
 	}
 

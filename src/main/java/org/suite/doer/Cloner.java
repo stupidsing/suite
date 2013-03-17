@@ -10,7 +10,7 @@ import org.suite.node.Tree;
 
 public class Cloner {
 
-	private Map<Reference, Reference> references = new HashMap<Reference, Reference>();
+	private Map<Reference, Reference> references = new HashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.getHead()), clone(rule.getTail()));
@@ -35,7 +35,7 @@ public class Cloner {
 			Node left = tree.getLeft(), right = tree.getRight();
 			Node left1 = clone(left), right1 = clone(right);
 			if (left != left1 || right != right1)
-				node = new Tree(tree.getOperator(), left1, right1);
+				node = Tree.create(tree.getOperator(), left1, right1);
 		}
 
 		return node;

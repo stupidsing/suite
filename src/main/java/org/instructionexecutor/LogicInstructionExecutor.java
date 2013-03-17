@@ -3,10 +3,10 @@ package org.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.instructionexecutor.InstructionExecutorUtil.Closure;
-import org.instructionexecutor.InstructionExecutorUtil.CutPoint;
-import org.instructionexecutor.InstructionExecutorUtil.Frame;
-import org.instructionexecutor.InstructionExecutorUtil.Instruction;
+import org.instructionexecutor.InstructionUtil.Closure;
+import org.instructionexecutor.InstructionUtil.CutPoint;
+import org.instructionexecutor.InstructionUtil.Frame;
+import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.doer.Prover;

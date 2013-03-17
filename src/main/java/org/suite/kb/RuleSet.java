@@ -35,7 +35,7 @@ public class RuleSet implements RuleSearcher {
 		}
 	}
 
-	private List<Rule> rules = new ArrayList<Rule>();
+	private List<Rule> rules = new ArrayList<>();
 
 	// Index rules by prototype.
 	// Have to use a multi-map implementation that allow null keys.
@@ -119,7 +119,7 @@ public class RuleSet implements RuleSearcher {
 	public static Node formClause(Rule rule) {
 		Node head = rule.getHead(), tail = rule.getTail();
 		if (tail != Atom.nil)
-			return new Tree(TermOp.IS____, head, tail);
+			return Tree.create(TermOp.IS____, head, tail);
 		else
 			return head;
 	}

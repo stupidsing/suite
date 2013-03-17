@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
@@ -106,7 +107,7 @@ public class SuiteUtil {
 	public static boolean evaluateLogical(Node program) {
 		Prover lc = getLogicalCompiler();
 		Node node = SuiteUtil.parse("compile-logic .program .code");
-		// + ", pp-list .code"
+		// + ", pretty.print .code"
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -124,18 +125,22 @@ public class SuiteUtil {
 	public static class FunCompilerConfig {
 		private Node node;
 		private boolean isLazy;
+		private List<String> libraries = Util.createList();
+		private boolean isTrace = false;
+		private boolean isDumpCode = false;
 		private InputStream in = System.in;
 		private PrintStream out = System.out;
 
-		public static FunCompilerConfig create(String program, boolean isLazy) {
-			return create(parse(program), isLazy);
+		public FunCompilerConfig() {
+			addLibrary("STANDARD");
 		}
 
-		public static FunCompilerConfig create(Node node, boolean isLazy) {
-			FunCompilerConfig c = new FunCompilerConfig();
-			c.setNode(node);
-			c.setLazy(isLazy);
-			return c;
+		public void addLibrary(String library) {
+			libraries.add(library);
+		}
+
+		public void addLibraries(List<String> libs) {
+			libraries.addAll(libs);
 		}
 
 		public void setNode(Node node) {
@@ -144,6 +149,18 @@ public class SuiteUtil {
 
 		public void setLazy(boolean isLazy) {
 			this.isLazy = isLazy;
+		}
+
+		public void setLibraries(List<String> libraries) {
+			this.libraries = libraries;
+		}
+
+		public void setTrace(boolean isTrace) {
+			this.isTrace = isTrace;
+		}
+
+		public void setDumpCode(boolean isDumpCode) {
+			this.isDumpCode = isDumpCode;
 		}
 
 		public void setIn(InputStream in) {
@@ -155,6 +172,21 @@ public class SuiteUtil {
 		}
 	}
 
+	public static FunCompilerConfig fcc(Node node) {
+		return fcc(node, false);
+	}
+
+	public static FunCompilerConfig fcc(String program, boolean isLazy) {
+		return fcc(parse(program), isLazy);
+	}
+
+	public static FunCompilerConfig fcc(Node node, boolean isLazy) {
+		FunCompilerConfig c = new FunCompilerConfig();
+		c.setNode(node);
+		c.setLazy(isLazy);
+		return c;
+	}
+
 	public static Node evaluateEagerFunctional(String program) {
 		return evaluateFunctional(program, false);
 	}
@@ -164,15 +196,18 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctional(String program, boolean isLazy) {
-		return evaluateFunctional(FunCompilerConfig.create(program, isLazy));
+		return evaluateFunctional(fcc(program, isLazy));
 	}
 
 	public static Node evaluateFunctional(FunCompilerConfig config) {
 		Prover compiler = config.isLazy ? getLazyFunCompiler()
 				: getEagerFunCompiler();
+		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		Node node = SuiteUtil.parse("compile-function .mode .program .code");
-		// + ", pp-list .code"
+		String program = appendLibraries(config);
+		String s = "compile-function .mode (" + program + ") .code"
+				+ (config.isDumpCode ? ", pretty.print .code" : "");
+		Node node = SuiteUtil.parse(s);
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -195,16 +230,17 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(String program) {
-		return evaluateFunctionalType(SuiteUtil.parse(program));
+		return evaluateFunctionalType(fcc(SuiteUtil.parse(program)));
 	}
 
-	public static Node evaluateFunctionalType(Node program) {
+	public static Node evaluateFunctionalType(FunCompilerConfig config) {
 		Prover compiler = lazyFunctionalCompiler;
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
+		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		Node node = SuiteUtil.parse(".libs = (STANDARD,)" //
-				+ ", fc-parse .program .p" //
-				+ ", infer-type-rule-using-libs .libs .p ()/()/()/() .tr .t" //
+		Node node = SuiteUtil.parse("" //
+				+ "fc-parse (" + appendLibraries(config) + ") .p" //
+				+ ", infer-type-rule .p ()/()/()/() .tr .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .type .t");
 
@@ -213,12 +249,26 @@ public class SuiteUtil {
 		Node variable = generalizer.getVariable(Atom.create(".program"));
 		Node type = generalizer.getVariable(Atom.create(".type"));
 
-		((Reference) variable).bound(program);
+		((Reference) variable).bound(config.node);
 
 		if (compiler.prove(node))
 			return type.finalNode();
 		else
 			throw new RuntimeException("Type inference error");
+	}
+
+	private static Prover enableTrace(Prover compiler) {
+		compiler = new Prover(compiler);
+		compiler.setEnableTrace(true);
+		return compiler;
+	}
+
+	private static String appendLibraries(FunCompilerConfig config) {
+		StringBuilder sb = new StringBuilder();
+		for (String library : config.libraries)
+			sb.append("using " + library + " >> ");
+		sb.append("(.program)");
+		return sb.toString();
 	}
 
 	public static synchronized Prover getLogicalCompiler() {

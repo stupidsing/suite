@@ -56,7 +56,7 @@ public class B_Tree<Key, Value> {
 
 	public B_Tree(Persister<Page<Key>> persister, Comparator<Key> comparator) {
 		this(persister, comparator, persister.allocate());
-		Page<Key> rootPage = new Page<Key>(root);
+		Page<Key> rootPage = new Page<>(root);
 		save(rootPage);
 	}
 
@@ -98,14 +98,14 @@ public class B_Tree<Key, Value> {
 			keyPointer = page.keyPointers.get(index);
 
 			if (Util.equals(keyPointer.t1, key)) { // Replace existing value?
-				keyPointer.t2 = new Leaf<Value>(value);
+				keyPointer.t2 = new Leaf<>(value);
 				needInsert = false;
 			}
 		}
 
 		if (needInsert)
 			page = addAndSplit(trace, page //
-					, new KeyPointer<Key>(key, new Leaf<Value>(value)));
+					, new KeyPointer<>(key, new Leaf<>(value)));
 
 		save(page);
 	}
@@ -129,20 +129,19 @@ public class B_Tree<Key, Value> {
 				break;
 
 			// Splits list into the two pages
-			Page<Key> p1 = new Page<Key>(persister.allocate()), p2 = page;
+			Page<Key> p1 = new Page<>(persister.allocate()), p2 = page;
 			p1.keyPointers = Util.createList(keyPointers.subList(0, half));
 			p2.keyPointers = Util.createList(keyPointers.subList(half, size));
 			save(p1);
 			save(p2);
 
 			// Propagates to parent
-			toInsert = new KeyPointer<Key>(largest(p1), new Branch(p1.pageNo));
+			toInsert = new KeyPointer<>(largest(p1), new Branch(p1.pageNo));
 
 			if (trace.empty()) { // Have to create a new root
-				page = new Page<Key>(root = persister.allocate());
+				page = new Page<>(root = persister.allocate());
 				add(page, toInsert);
-				add(page, new KeyPointer<Key>(largest(p2),
-						new Branch(p2.pageNo)));
+				add(page, new KeyPointer<>(largest(p2), new Branch(p2.pageNo)));
 				break;
 			}
 		}

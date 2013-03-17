@@ -6,7 +6,7 @@ public class UserInterfaceTest {
 
 	@Test
 	public void test() {
-		UserInterface.display(new Board());
+		UserInterface.display(new GameSet());
 	}
 
 }

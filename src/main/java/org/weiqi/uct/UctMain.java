@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import org.util.Util;
 import org.weiqi.Board;
 import org.weiqi.Coordinate;
 import org.weiqi.GameSet;
-import org.weiqi.RandomList;
-import org.weiqi.UctWeiqi.Visitor;
+import org.weiqi.MovingGameSet;
+import org.weiqi.RandomableList;
+import org.weiqi.UctWeiqi;
 import org.weiqi.UserInterface;
+import org.weiqi.Weiqi;
 import org.weiqi.Weiqi.Occupation;
 
 /**
@@ -20,66 +23,122 @@ import org.weiqi.Weiqi.Occupation;
  */
 public class UctMain<Move> {
 
+	private static final Occupation COMPUTERPLAYER = Occupation.BLACK;
+	private static final Occupation HUMANPLAYER = Occupation.WHITE;
+
+	private static final Occupation STARTINGPLAYER = Occupation.BLACK;
+
 	public static void main(String args[]) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		DecimalFormat df = new DecimalFormat("0.000");
 		int nThreads = 2;
 		int nSimulations = 20000;
-		int boundedTime = 300000;
+		int boundedTime = 30000;
+		Weiqi.adjustSize(7);
 
 		Board board = new Board();
-		GameSet gameSet = new GameSet(board, Occupation.BLACK);
+		MovingGameSet gameSet = new MovingGameSet(board, STARTINGPLAYER);
+		boolean auto = false;
+		boolean quit = false;
+		String status = "LET'S PLAY!";
 
-		while (true) {
-			Visitor visitor = new Visitor(new GameSet(gameSet));
-			UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
+		while (!quit) {
+			GameSet gameSet1 = new GameSet(gameSet);
+			UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet1);
+			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfThreads(nThreads);
 			search.setNumberOfSimulations(nSimulations);
 			search.setBoundedTime(boundedTime);
 
-			System.out.println("THINKING...");
-			long start = System.currentTimeMillis();
-			Coordinate move = search.search();
-			long end = System.currentTimeMillis();
-			if (move == null)
-				break;
+			if (auto || gameSet.getNextPlayer() == COMPUTERPLAYER) {
+				System.out.println("THINKING...");
 
-			Occupation player = gameSet.getNextPlayer();
+				long start = System.currentTimeMillis();
+				Coordinate coord = search.search();
+				long end = System.currentTimeMillis();
 
-			System.out.println(player //
-					+ " " + move //
-					+ " " + df.format(search.getWinningChance()) //
-					+ " " + (start - end) + "ms");
+				if (coord == null)
+					break; // We lose
 
-			gameSet.move(move);
-			UserInterface.display(gameSet);
+				status = gameSet.getNextPlayer() //
+						+ " " + coord //
+						+ " " + df.format(search.getWinningChance()) //
+						+ " " + (end - start) + "ms";
 
-			while (gameSet.getNextPlayer() == Occupation.WHITE)
+				gameSet.play(coord);
+
+				if (auto)
+					display(gameSet, status);
+			}
+
+			while (!auto && !quit && gameSet.getNextPlayer() == HUMANPLAYER)
 				try {
-					String pos[] = br.readLine().split(",");
-					Integer x = Integer.valueOf(pos[0]);
-					Integer y = Integer.valueOf(pos[1]);
-					gameSet.move(Coordinate.c(x, y));
+					display(gameSet, status);
+
+					String line = br.readLine();
+
+					if (line != null)
+						switch (line) {
+						case "auto":
+							auto = true;
+							break;
+						case "load":
+							gameSet = loadGameSet(br);
+							break;
+						case "undo":
+							gameSet.undo();
+							gameSet.undo();
+							status = "AFTER UNDO:";
+							break;
+						default:
+							if (!Util.isBlank(line)) {
+								String pos[] = line.split(",");
+								Integer x = Integer.valueOf(pos[0]);
+								Integer y = Integer.valueOf(pos[1]);
+								gameSet.play(Coordinate.c(x, y));
+							}
+						}
+					else
+						quit = true;
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 		}
 	}
 
+	private static void display(MovingGameSet gameSet, String status) {
+		System.out.println(status);
+		UserInterface.display(gameSet);
+	}
+
+	private static MovingGameSet loadGameSet(BufferedReader br)
+			throws IOException {
+		System.out.println("PLEASE ENTER BOARD DATA AND AN BLANK LINE:\n");
+		String s = null;
+		StringBuilder sb = new StringBuilder();
+
+		do {
+			s = br.readLine();
+		} while (!Util.isBlank(s));
+
+		Board board = UserInterface.importBoard(sb.toString());
+		return new MovingGameSet(board, STARTINGPLAYER);
+	}
+
 	protected static void deepThink() {
 		int seed = 760903274;
 		System.out.println("RANDOM SEED = " + seed);
-		RandomList.setSeed(seed);
+		RandomableList.setSeed(seed);
 
-		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		GameSet gameSet = new GameSet(new Board(), STARTINGPLAYER);
 
-		Visitor visitor = new Visitor(gameSet);
+		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
 
 		Coordinate move = search.search();
-		gameSet.move(move);
+		gameSet.play(move);
 
 		// search.dumpSearch();
 		System.out.println(move);

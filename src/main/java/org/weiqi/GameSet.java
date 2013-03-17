@@ -2,17 +2,23 @@ package org.weiqi;
 
 import java.util.HashSet;
 
+import org.weiqi.Board.MoveType;
 import org.weiqi.Weiqi.Occupation;
 
-public class GameSet extends Board {
+public class GameSet {
 
+	private final Board board;
 	private Occupation nextPlayer;
-	private HashSet<Integer> previousStates = new HashSet<Integer>();
+	private HashSet<Integer> previousStates = new HashSet<>();
 
 	public GameSet() {
-		super();
-		nextPlayer = Occupation.BLACK;
-		previousStates.add(hashCode());
+		this(new Board(), Occupation.BLACK);
+	}
+
+	@SuppressWarnings("unchecked")
+	public GameSet(GameSet gameSet) {
+		this(gameSet.board, gameSet.nextPlayer,
+				(HashSet<Integer>) gameSet.previousStates.clone());
 	}
 
 	/**
@@ -20,71 +26,75 @@ public class GameSet extends Board {
 	 * will be empty, not suitable for real-play scenario.
 	 */
 	public GameSet(Board board, Occupation nextPlayer) {
-		super(board);
+		this(board, nextPlayer, new HashSet<Integer>());
+		previousStates.add(board.hashCode());
+	}
+
+	private GameSet(Board board, Occupation nextPlayer,
+			HashSet<Integer> previousStates) {
+		this.board = new Board(board);
 		this.nextPlayer = nextPlayer;
-		previousStates.add(hashCode());
+		this.previousStates = previousStates;
 	}
 
-	public GameSet(GameSet gameSet) {
-		super(gameSet);
-
-		@SuppressWarnings("unchecked")
-		HashSet<Integer> p = (HashSet<Integer>) gameSet.previousStates.clone();
-
-		nextPlayer = gameSet.nextPlayer;
-		previousStates = p;
-	}
-
-	public static class MoveCommand {
+	/**
+	 * Move that can be played or un-played.
+	 */
+	public static class Move {
 		public Coordinate position;
 		public MoveType type;
-		public Occupation neighbourColors[] = new Occupation[4];
+		public Occupation neighborColors[] = new Occupation[4];
 
-		public MoveCommand() {
+		public Move() {
 		}
 
-		public MoveCommand(Coordinate position) {
+		public Move(Coordinate position) {
 			this.position = position;
 		}
 	}
 
-	public void move(Coordinate c) {
-		move(new MoveCommand(c));
+	public Move play(Coordinate c) {
+		Move move = new Move(c);
+		play(move);
+		return move;
 	}
 
-	public void move(MoveCommand move) {
-		if (!moveIfPossible(move))
+	private void play(Move move) {
+		if (!playIfValid(move))
 			throw new RuntimeException("Invalid move " + move.position
 					+ " for " + nextPlayer + "\n" + this);
 	}
 
-	public boolean isMovePossible(MoveCommand move) {
-		return moveIfPossible(move, true);
+	public boolean isValidMove(Move move) {
+		return playIfValid(move, true);
 	}
 
-	public boolean moveIfPossible(MoveCommand move) {
-		return moveIfPossible(move, false);
+	public boolean playIfValid(Move move) {
+		return playIfValid(move, false);
 	}
 
-	private boolean moveIfPossible(MoveCommand move, boolean rollBack) {
+	/**
+	 * Plays a move on the Weiqi board. Ensure no repeats in game state history.
+	 */
+	private boolean playIfValid(Move move, boolean rollBack) {
 		Occupation opponent = nextPlayer.opponent();
 		int i = 0;
 
-		for (Coordinate c1 : move.position.neighbours())
-			move.neighbourColors[i++] = get(c1);
+		for (Coordinate c1 : move.position.neighbors())
+			move.neighborColors[i++] = board.get(c1);
 
-		move.type = super.moveIfPossible(move.position, nextPlayer);
+		move.type = board.playIfSeemsPossible(move.position, nextPlayer);
 		boolean success = move.type != MoveType.INVALID;
 
 		if (success) {
-			int newHashCode = super.hashCode();
+			int newHashCode = board.hashCode();
 			success &= !previousStates.contains(newHashCode);
 
 			if (success && !rollBack) {
 				nextPlayer = opponent;
 				previousStates.add(newHashCode);
 			} else
-				rollBackMove(move, opponent);
+				unplay(move);
 		}
 
 		return success;
@@ -97,20 +107,25 @@ public class GameSet extends Board {
 	/**
 	 * Roll back board status; rejuvenate the pieces being eaten.
 	 */
-	private void rollBackMove(MoveCommand move, Occupation opponent) {
-		int i = 0;
-		if (move.type == MoveType.CAPTURE)
-			for (Coordinate c1 : move.position.neighbours())
-				if (move.neighbourColors[i++] != get(c1))
-					for (Coordinate c2 : findGroup(c1))
-						set(c2, opponent);
+	public void unplay(Move move) {
+		Occupation opponent = nextPlayer.opponent();
+		previousStates.remove(board.hashCode());
 
-		set(move.position, Occupation.EMPTY);
+		if (move.type == MoveType.CAPTURE) {
+			int i = 0;
+
+			for (Coordinate c1 : move.position.neighbors())
+				if (move.neighborColors[i++] != board.get(c1))
+					for (Coordinate c2 : board.findGroup(c1))
+						board.set(c2, opponent);
+		}
+
+		board.set(move.position, Occupation.EMPTY);
 	}
 
 	@Override
 	public int hashCode() {
-		return super.hashCode() //
+		return board.hashCode() //
 				^ nextPlayer.hashCode() //
 				^ previousStates.hashCode();
 	}
@@ -119,12 +134,16 @@ public class GameSet extends Board {
 	public boolean equals(Object object) {
 		if (object instanceof GameSet) {
 			GameSet other = (GameSet) object;
-			return super.equals(other) //
+			return board.equals(other.board) //
 					&& nextPlayer == other.nextPlayer //
 					&& previousStates.equals(other.previousStates);
 
 		} else
 			return false;
+	}
+
+	public Board getBoard() {
+		return board;
 	}
 
 	public Occupation getNextPlayer() {

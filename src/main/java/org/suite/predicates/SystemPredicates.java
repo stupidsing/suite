@@ -22,7 +22,7 @@ public class SystemPredicates {
 		public boolean prove(Prover prover, Node parameter);
 	}
 
-	private Map<String, SystemPredicate> predicates = new HashMap<String, SystemPredicate>();
+	private Map<String, SystemPredicate> predicates = new HashMap<>();
 
 	private Prover prover;
 
@@ -30,6 +30,8 @@ public class SystemPredicates {
 		this.prover = prover;
 
 		addPredicate("compare.and.set", new CompareAndSet());
+		addPredicate("cut.begin", new CutBegin());
+		addPredicate("cut.end", new CutEnd());
 		addPredicate("find.all", new FindAll());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
@@ -62,6 +64,7 @@ public class SystemPredicates {
 		addPredicate("is.string", new FormatPredicates.IsString());
 		addPredicate("is.tree", new FormatPredicates.IsTree());
 		addPredicate("parse", new FormatPredicates.Parse());
+		addPredicate("pretty.print", new FormatPredicates.PrettyPrint());
 		addPredicate("rpn", new FormatPredicates.Rpn());
 		addPredicate("starts.with", new FormatPredicates.StartsWith());
 		addPredicate("string.length", new FormatPredicates.StringLength());
@@ -75,8 +78,10 @@ public class SystemPredicates {
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());
 		addPredicate("exec", new IoPredicates.Exec());
+		addPredicate("file.exists", new IoPredicates.FileExists());
 		addPredicate("file.read", new IoPredicates.FileRead());
 		addPredicate("file.write", new IoPredicates.FileWrite());
+		addPredicate("home.dir", new IoPredicates.HomeDir());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("write", new IoPredicates.Write());
 
@@ -126,7 +131,7 @@ public class SystemPredicates {
 	}
 
 	private class CompareAndSet implements SystemPredicate {
-		private final Map<Node, Node> map = new HashMap<Node, Node>();
+		private final Map<Node, Node> map = new HashMap<>();
 
 		public synchronized boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 3);
@@ -139,12 +144,25 @@ public class SystemPredicates {
 		}
 	}
 
+	private class CutBegin implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			return prover.bind(ps, prover.getAlternative());
+		}
+	}
+
+	private class CutEnd implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			prover.setAlternative(ps.finalNode());
+			return true;
+		}
+	}
+
 	private class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Stack<Node> stack = new Stack<Node>();
+			final Stack<Node> stack = new Stack<>();
 			final Node params[] = Predicate.getParameters(ps, 3);
 
-			Tree subGoal = new Tree(TermOp.AND___, params[1], new Station() {
+			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Station() {
 				public boolean run() {
 					stack.push(new Cloner().clone(params[0]));
 					return false;
@@ -157,7 +175,7 @@ public class SystemPredicates {
 
 			Node result = Atom.nil;
 			while (!stack.isEmpty())
-				result = new Tree(TermOp.AND___, stack.pop(), result);
+				result = Tree.create(TermOp.AND___, stack.pop(), result);
 
 			return prover.bind(params[2], result);
 		}

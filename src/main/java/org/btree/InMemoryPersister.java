@@ -11,7 +11,7 @@ public class InMemoryPersister<Page> implements Persister<Page> {
 	private AtomicInteger counter = new AtomicInteger();
 
 	public static <Page> InMemoryPersister<Page> create() {
-		return new InMemoryPersister<Page>();
+		return new InMemoryPersister<>();
 	}
 
 	public int allocate() {

@@ -1,6 +1,7 @@
 package org.weiqi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.util.Util;
+import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Occupation;
 
 public class BoardTest {
@@ -19,12 +21,12 @@ public class BoardTest {
 	}
 
 	@Test
-	public void testNeighbour() {
+	public void testNeighbor() {
 		Coordinate c = Coordinate.c(10, 10);
-		Set<Coordinate> neighbours = Util.createHashSet();
+		Set<Coordinate> neighbors = Util.createHashSet();
 
-		for (Coordinate c1 : c.neighbours())
-			neighbours.add(c1);
+		for (Coordinate c1 : c.neighbors())
+			neighbors.add(c1);
 
 		assertEquals(new HashSet<Coordinate>( //
 				Arrays.asList( //
@@ -32,15 +34,15 @@ public class BoardTest {
 						, Coordinate.c(11, 10) //
 						, Coordinate.c(10, 9) //
 						, Coordinate.c(10, 11) //
-				)), neighbours);
+				)), neighbors);
 	}
 
 	@Test
 	public void testEat() {
 		Board board = new Board();
-		board.moveIfPossible(Coordinate.c(0, 1), Occupation.BLACK);
-		board.moveIfPossible(Coordinate.c(0, 0), Occupation.WHITE);
-		board.moveIfPossible(Coordinate.c(1, 0), Occupation.BLACK);
+		board.playIfSeemsPossible(Coordinate.c(0, 1), Occupation.BLACK);
+		board.playIfSeemsPossible(Coordinate.c(0, 0), Occupation.WHITE);
+		board.playIfSeemsPossible(Coordinate.c(1, 0), Occupation.BLACK);
 		assertEquals(board.get(Coordinate.c(0, 0)), Occupation.EMPTY);
 	}
 
@@ -56,8 +58,14 @@ public class BoardTest {
 		board.set(Coordinate.c(18, 1), Occupation.WHITE);
 
 		GroupAnalysis ga = new GroupAnalysis(board);
-		Integer groupId = ga.getGroupId(Coordinate.c(15, 15));
-		assertEquals(4, ga.getNumberOfBreathes(groupId));
+		Group blackGroup = ga.getGroup(Coordinate.c(15, 15));
+		Group whiteGroup = ga.getGroup(Coordinate.c(17, 0));
+
+		assertEquals(361 - 7, blackGroup.coords.size());
+		assertEquals(3, whiteGroup.touches.size());
+		assertTrue(blackGroup.touches.contains(whiteGroup));
+		assertTrue(whiteGroup.touches.contains(blackGroup));
+		assertEquals(4, blackGroup.breathes.size());
 	}
 
 	private Board blackBoard() {
