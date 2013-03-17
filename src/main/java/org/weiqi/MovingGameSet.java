@@ -34,7 +34,7 @@ public class MovingGameSet extends GameSet {
 	}
 
 	public void undo() {
-		super.unplay(moves.pop());
+		super.undo(moves.pop());
 	}
 
 }
