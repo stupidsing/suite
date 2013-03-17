@@ -23,6 +23,11 @@ import org.weiqi.Weiqi.Occupation;
  */
 public class UctMain<Move> {
 
+	private static final Occupation COMPUTERPLAYER = Occupation.BLACK;
+	private static final Occupation HUMANPLAYER = Occupation.WHITE;
+
+	private static final Occupation STARTINGPLAYER = Occupation.BLACK;
+
 	public static void main(String args[]) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		DecimalFormat df = new DecimalFormat("0.000");
@@ -32,7 +37,7 @@ public class UctMain<Move> {
 		Weiqi.adjustSize(7);
 
 		Board board = new Board();
-		MovingGameSet gameSet = new MovingGameSet(board, Occupation.BLACK);
+		MovingGameSet gameSet = new MovingGameSet(board, STARTINGPLAYER);
 		boolean auto = false;
 		boolean quit = false;
 		String status = "LET'S PLAY!";
@@ -45,7 +50,7 @@ public class UctMain<Move> {
 			search.setNumberOfSimulations(nSimulations);
 			search.setBoundedTime(boundedTime);
 
-			if (auto || gameSet.getNextPlayer() == Occupation.BLACK) {
+			if (auto || gameSet.getNextPlayer() == COMPUTERPLAYER) {
 				System.out.println("THINKING...");
 
 				long start = System.currentTimeMillis();
@@ -66,8 +71,7 @@ public class UctMain<Move> {
 					display(gameSet, status);
 			}
 
-			while (!auto && !quit
-					&& gameSet.getNextPlayer() == Occupation.WHITE)
+			while (!auto && !quit && gameSet.getNextPlayer() == HUMANPLAYER)
 				try {
 					display(gameSet, status);
 
@@ -118,7 +122,7 @@ public class UctMain<Move> {
 		} while (!Util.isBlank(s));
 
 		Board board = UserInterface.importBoard(sb.toString());
-		return new MovingGameSet(board, Occupation.BLACK);
+		return new MovingGameSet(board, STARTINGPLAYER);
 	}
 
 	protected static void deepThink() {
@@ -126,7 +130,7 @@ public class UctMain<Move> {
 		System.out.println("RANDOM SEED = " + seed);
 		RandomableList.setSeed(seed);
 
-		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		GameSet gameSet = new GameSet(new Board(), STARTINGPLAYER);
 
 		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);

@@ -131,7 +131,7 @@ public class UctTest {
 	public void testUctGame() {
 		DecimalFormat df = new DecimalFormat("0.000");
 		int nThreads = 2;
-		int nSimulations = 200; // 20000
+		int nSimulations = 5000; // 20000
 		int boundedTime = 300000;
 		int seed = new Random().nextInt();
 
