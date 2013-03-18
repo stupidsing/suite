@@ -12,6 +12,8 @@ public class Atom extends Node {
 	private String name;
 
 	public static final Atom nil = create("");
+	public static final Atom true_ = create("true");
+	public static final Atom false_ = create("false");
 
 	private Atom(String name) {
 		this.name = name;

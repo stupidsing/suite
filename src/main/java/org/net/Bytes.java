@@ -9,11 +9,11 @@ public class Bytes {
 	private byte bytes[]; // Immutable
 	private int start, end;
 
-	private final static byte emptyByteArray[] = new byte[0];
+	private static final byte emptyByteArray[] = new byte[0];
 
-	private final static int reallocSize = 65536;
+	private static final int reallocSize = 65536;
 
-	public final static Bytes emptyBytes = new Bytes(emptyByteArray);
+	public static final Bytes emptyBytes = new Bytes(emptyByteArray);
 
 	public Bytes(byte bytes[]) {
 		this(bytes, 0);
@@ -112,7 +112,7 @@ public class Bytes {
 			return false;
 	}
 
-	private final static String hexDigits = "0123456789ABCDEF";
+	private static final String hexDigits = "0123456789ABCDEF";
 
 	@Override
 	public String toString() {

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.parser.Operator;
 import org.suite.doer.TermParser.TermOp;
-import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.util.Util;
@@ -15,9 +14,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 public class InstructionUtil {
-
-	public static final Atom trueAtom = Atom.create("true");
-	public static final Atom falseAtom = Atom.create("false");
 
 	private static final BiMap<Insn, String> insnNames = HashBiMap.create();
 	private static final Map<Operator, Insn> evalInsns = Util.createHashMap();

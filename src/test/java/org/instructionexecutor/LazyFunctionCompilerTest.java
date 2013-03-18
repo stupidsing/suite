@@ -18,7 +18,7 @@ public class LazyFunctionCompilerTest {
 
 	@Test
 	public void testCorecursion() {
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval("" //
 				+ "define seq = (n => n, seq {n}) >> \n" //
 				+ "head {seq {0}} = 0"));
 
@@ -42,11 +42,11 @@ public class LazyFunctionCompilerTest {
 
 	@Test
 	public void testProve() {
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval("" //
 				+ "prove () is.atom abc"));
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval("" //
 				+ "prove /_v:3 (_v = 3)"));
-		assertEquals(Atom.create("false"), eval("" //
+		assertEquals(Atom.false_, eval("" //
 				+ "prove /_v:4 (_v = 3)"));
 		assertEquals(Int.create(4), eval("" //
 				+ "prove-with-result /_v:2 (let _r (2 * _v)) _r"));
@@ -56,7 +56,7 @@ public class LazyFunctionCompilerTest {
 	public void testString() {
 		assertEquals(Int.create(-34253924), eval("" //
 				+ "str-to-int {\"-34253924\"}"));
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval("" //
 				+ "equals {\"-34253924\"} {int-to-str {-34253924}}"));
 	}
 
@@ -67,8 +67,8 @@ public class LazyFunctionCompilerTest {
 
 	@Test
 	public void testSystem() {
-		assertEquals(Atom.create("true"), eval("1 = 1"));
-		assertEquals(Atom.create("false"), eval("1 = 2"));
+		assertEquals(Atom.true_, eval("1 = 1"));
+		assertEquals(Atom.false_, eval("1 = 2"));
 		eval("cons {1} {}");
 		eval("head {1, 2, 3,}");
 		eval("tail {1, 2, 3,}");

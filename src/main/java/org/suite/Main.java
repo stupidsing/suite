@@ -256,7 +256,7 @@ public class Main {
 			FileInputStream is = new FileInputStream(files.get(0));
 			String expression = IoUtil.readStream(is);
 			Node result = SuiteUtil.evaluateFunctional(expression, isLazy);
-			return result == Atom.create("true");
+			return result == Atom.true_;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
 	}

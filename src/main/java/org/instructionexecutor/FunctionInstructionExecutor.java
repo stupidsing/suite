@@ -168,7 +168,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 				else
 					throw new RuntimeException("Goal failed");
 			else
-				result = Atom.create(prover.prove(node) ? "true" : "false");
+				result = prover.prove(node) ? Atom.true_ : Atom.false_;
 		} else if (command == SUBST) {
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");
