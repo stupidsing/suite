@@ -31,8 +31,8 @@ public class UctMain<Move> {
 	public static void main(String args[]) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		DecimalFormat df = new DecimalFormat("0.000");
-		int nThreads = 2;
-		int nSimulations = 20000;
+		int nThreads = Runtime.getRuntime().availableProcessors();
+		int nSimulations = 10000 * nThreads;
 		int boundedTime = 30000;
 		Weiqi.adjustSize(7);
 

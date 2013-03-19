@@ -130,7 +130,7 @@ public class UctTest {
 	@Test
 	public void testUctGame() {
 		DecimalFormat df = new DecimalFormat("0.000");
-		int nThreads = 2;
+		int nThreads = Runtime.getRuntime().availableProcessors();
 		int nSimulations = 5000; // 20000
 		int boundedTime = 300000;
 		int seed = new Random().nextInt();
