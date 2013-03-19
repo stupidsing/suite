@@ -45,9 +45,9 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testContains() {
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval(""
 				+ "contains {8, 9,} {7, 8, 9, 10, 11,}"));
-		assertEquals(Atom.create("false"), eval("" //
+		assertEquals(Atom.false_, eval(""
 				+ "contains {11, 12,} {7, 8, 9, 10, 11,}"));
 	}
 
@@ -59,7 +59,7 @@ public class EagerFunctionCompilerTest {
 				+ "((9, 1,), (9, 2,),),") //
 				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
 
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval("" //
 				+ "let list1 as list-of one-of (A, B, C,) \n" //
 				+ "    = (A, B, C,) >> \n" //
 				+ "let result = ( \n" //
@@ -72,18 +72,16 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testEndsWith() {
-		assertEquals(Atom.create("true"),
+		assertEquals(Atom.true_,
 				eval("ends-with {1, 2, 3,} {4, 5, 6, 1, 2, 3,}"));
-		assertEquals(Atom.create("false"),
+		assertEquals(Atom.false_,
 				eval("ends-with {1, 2, 3,} {4, 5, 3, 1, 2, 6,}"));
 	}
 
 	@Test
 	public void testEquals() {
-		assertEquals(Atom.create("true"), eval("" //
-				+ "equals {} {}"));
-		assertEquals(Atom.create("false"), eval("" //
-				+ "equals {1, 2,} {1, 3,}"));
+		assertEquals(Atom.true_, eval("equals {} {}"));
+		assertEquals(Atom.false_, eval("equals {1, 2,} {1, 3,}"));
 	}
 
 	@Test
@@ -239,9 +237,9 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testOperator() {
-		assertEquals(Atom.create("true"), eval("" //
+		assertEquals(Atom.true_, eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
-		assertEquals(Atom.create("false"), SuiteUtil.evaluateEagerFunctional("" //
+		assertEquals(Atom.false_, SuiteUtil.evaluateEagerFunctional("" //
 				+ "let list1 as list-of one-of (A, B,) = () >> A = B"));
 	}
 
@@ -270,9 +268,9 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testStartsWith() {
-		assertEquals(Atom.create("true"),
+		assertEquals(Atom.true_,
 				eval("starts-with {1, 2, 3,} {1, 2, 3, 4, 5, 6,}"));
-		assertEquals(Atom.create("false"),
+		assertEquals(Atom.false_,
 				eval("starts-with {1, 2, 3,} {1, 2, 4, 3, 5, 6,}"));
 	}
 

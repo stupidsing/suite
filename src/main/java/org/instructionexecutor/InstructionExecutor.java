@@ -131,7 +131,7 @@ public class InstructionExecutor {
 				regs[insn.op2] = Tree.create(TermOp.find(op), left, right);
 				break;
 			case IFFALSE_______:
-				if (regs[insn.op2] != InstructionUtil.trueAtom)
+				if (regs[insn.op2] != Atom.true_)
 					current.ip = insn.op1;
 				break;
 			case IFNOTEQUALS___:
@@ -193,7 +193,7 @@ public class InstructionExecutor {
 	}
 
 	protected static Atom a(boolean b) {
-		return b ? InstructionUtil.trueAtom : InstructionUtil.falseAtom;
+		return b ? Atom.true_ : Atom.false_;
 	}
 
 	protected static int g(Object node) {
