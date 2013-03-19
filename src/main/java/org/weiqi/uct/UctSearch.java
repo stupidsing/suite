@@ -22,7 +22,7 @@ public class UctSearch<Move> {
 	private static final boolean rave = true;
 	private static final int maxRaveDepth = 4;
 
-	public int numberOfThreads = 2;
+	public int numberOfThreads = Runtime.getRuntime().availableProcessors();
 	public int numberOfSimulations = 10000;
 	public int boundedTime = 10000;
 

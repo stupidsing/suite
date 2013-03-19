@@ -38,7 +38,7 @@ public class UctScenarioTest {
 				+ ". . O X O . . \n" //
 				+ ". . . X O . . \n" //
 				+ ". . . . . . . \n" //
-		), Occupation.WHITE);
+		), Occupation.BLACK);
 		testScenario(gameSet, Coordinate.c(5, 2));
 	}
 
@@ -87,7 +87,6 @@ public class UctScenarioTest {
 	private void testScenario(GameSet gameSet, Coordinate bestMove) {
 		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(new GameSet(gameSet));
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
-		search.setNumberOfThreads(2);
 		search.setNumberOfSimulations(20000);
 
 		Coordinate move = search.search();
