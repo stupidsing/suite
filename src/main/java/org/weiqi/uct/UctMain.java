@@ -57,18 +57,20 @@ public class UctMain<Move> {
 				Coordinate coord = search.search();
 				long end = System.currentTimeMillis();
 
-				if (coord == null)
-					break; // We lose
+				if (coord != null) {
+					status = gameSet.getNextPlayer() //
+							+ " " + coord //
+							+ " " + df.format(search.getWinningChance()) //
+							+ " " + (end - start) + "ms";
 
-				status = gameSet.getNextPlayer() //
-						+ " " + coord //
-						+ " " + df.format(search.getWinningChance()) //
-						+ " " + (end - start) + "ms";
+					gameSet.play(coord);
 
-				gameSet.play(coord);
-
-				if (auto)
-					display(gameSet, status);
+					if (auto)
+						display(gameSet, status);
+				} else {
+					System.out.println("I LOSE");
+					quit = true;
+				}
 			}
 
 			while (!auto && !quit && gameSet.getNextPlayer() == HUMANPLAYER)
