@@ -105,7 +105,7 @@ public class SystemPredicates {
 
 		if (query instanceof Atom) {
 			name = ((Atom) query).getName();
-			pass = Atom.nil;
+			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
 			if (tree.getOperator() != TermOp.TUPLE_)
 				name = tree.getOperator().getName();
@@ -173,7 +173,7 @@ public class SystemPredicates {
 			subProver.prove(subGoal);
 			subProver.undoAllBinds();
 
-			Node result = Atom.nil;
+			Node result = Atom.NIL;
 			while (!stack.isEmpty())
 				result = Tree.create(TermOp.AND___, stack.pop(), result);
 

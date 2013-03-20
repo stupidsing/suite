@@ -22,15 +22,15 @@ public class PrettyPrinter {
 	private int nLines = 0;
 	private int currentLineIndent = 0;
 
-	private static final int LINELENGTH = 96; // Estimated
-	private static final int SQUEEZELINELENGTH = 8;
-	private static final String INDENTSPACES = "    ";
+	private static final int lineLength = 96; // Estimated
+	private static final int squeezeLineLength = 8;
+	private static final String indentSpaces = "    ";
 
-	private static final Set<Node> LINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
+	private static final Set<Node> lineBreakBeforeKeywords = new HashSet<Node>(
 			Arrays.asList(Atom.create("else-if")));
-	private static final Set<Node> PREFERLINEBREAKBEFOREKEYWORDS = new HashSet<Node>(
+	private static final Set<Node> preferLineBreakBeforeKeywords = new HashSet<Node>(
 			Arrays.asList(Atom.create("else")));
-	private static final Set<Operator> LINEBREAKAFTEROPERATORS = new HashSet<Operator>(
+	private static final Set<Operator> lineBreakAfterOperators = new HashSet<Operator>(
 			Arrays.asList(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___));
 
 	private static class OperatorPosition {
@@ -71,7 +71,7 @@ public class PrettyPrinter {
 				append("(");
 			}
 
-			if (x + length > LINELENGTH)
+			if (x + length > lineLength)
 				if (isLookingLikeList(op, node))
 					prettyPrintList(op, node);
 				else {
@@ -87,13 +87,13 @@ public class PrettyPrinter {
 					Tree tree1 = Tree.decompose(right, op);
 					Node r0 = tree1 != null ? tree1.getLeft() : null;
 					int es0 = getEstimatedLength(left);
-					int es1 = r0 != null ? getEstimatedLength(r0) : LINELENGTH;
+					int es1 = r0 != null ? getEstimatedLength(r0) : lineLength;
 					int opLength = op.getName().length();
 
 					// Breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
-							&& x + es0 + es1 + opLength < LINELENGTH //
-							&& !PREFERLINEBREAKBEFOREKEYWORDS.contains(r0)) {
+							&& x + es0 + es1 + opLength < lineLength //
+							&& !preferLineBreakBeforeKeywords.contains(r0)) {
 						prettyPrint0(left, op, leftPrec);
 						OperatorPosition opPos = appendOperator(op);
 						prettyPrint0(right, op, rightPrec);
@@ -108,7 +108,7 @@ public class PrettyPrinter {
 							indent0 = incrementIndent();
 
 						OperatorPosition opPos;
-						if (getLineSize() + getEstimatedLength(right) < SQUEEZELINELENGTH)
+						if (getLineSize() + getEstimatedLength(right) < squeezeLineLength)
 							opPos = appendOperator(op);
 						else
 							opPos = appendOperatorLineFeed(op);
@@ -130,7 +130,7 @@ public class PrettyPrinter {
 				revertIndent(parsIndent0);
 			}
 		} else {
-			if (LINEBREAKBEFOREKEYWORDS.contains(node) && !isLineBegin())
+			if (lineBreakBeforeKeywords.contains(node) && !isLineBegin())
 				nl();
 
 			append(Formatter.dump(node)); // Space sufficient
@@ -192,7 +192,7 @@ public class PrettyPrinter {
 		}
 
 		return op != TermOp.TUPLE_
-				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.nil);
+				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.NIL);
 	}
 
 	private int estimateLengths(Node node) {
@@ -225,11 +225,11 @@ public class PrettyPrinter {
 
 	private int getEstimatedLength(Node node) {
 		Integer length = lengthByIds.get(getKey(node));
-		return length != null ? length : LINELENGTH; // Maximum if not found
+		return length != null ? length : lineLength; // Maximum if not found
 	}
 
 	private OperatorPosition appendOperatorLineFeed(Operator op) {
-		boolean isLineFeedAfterOp = LINEBREAKAFTEROPERATORS.contains(op);
+		boolean isLineFeedAfterOp = lineBreakAfterOperators.contains(op);
 		if (!isLineFeedAfterOp)
 			nl();
 		OperatorPosition result = appendOperator(op);
@@ -309,7 +309,7 @@ public class PrettyPrinter {
 
 	private void pre(int indent) {
 		for (int i = 0; i < indent; i++)
-			append(INDENTSPACES);
+			append(indentSpaces);
 	}
 
 	private void append(String s) {

@@ -117,7 +117,7 @@ public class SuiteUtil {
 		((Reference) variable).bound(program);
 		if (lc.prove(node)) {
 			Node result = new LogicInstructionExecutor(lc, ics).execute();
-			return result == Atom.true_;
+			return result == Atom.TRUE;
 		} else
 			throw new RuntimeException("Logic compilation error");
 	}

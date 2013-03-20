@@ -27,10 +27,10 @@ public class Parser {
 
 	private Operator operators[];
 
-	public static final String CLOSEGROUPCOMMENT = "=-";
-	public static final String OPENGROUPCOMMENT = "-=";
-	public static final String CLOSELINECOMMENT = "\n";
-	public static final String OPENLINECOMMENT = "--";
+	public static final String closeGroupComment = "=-";
+	public static final String openGroupComment = "-=";
+	public static final String closeLineComment = "\n";
+	public static final String openLineComment = "--";
 
 	private static final List<Character> whitespaces = Arrays.asList( //
 			'\t', '\r', '\n');
@@ -64,7 +64,7 @@ public class Parser {
 	 */
 	private Node parseWithoutComments(String s) {
 		s = s.trim();
-		return !s.isEmpty() ? parseRawString(s) : Atom.nil;
+		return !s.isEmpty() ? parseRawString(s) : Atom.NIL;
 	}
 
 	private Node parseRawString(String s) {
@@ -218,8 +218,8 @@ public class Parser {
 	}
 
 	private String removeComments(String s) {
-		s = removeComments(s, OPENGROUPCOMMENT, CLOSEGROUPCOMMENT);
-		s = removeComments(s, OPENLINECOMMENT, CLOSELINECOMMENT);
+		s = removeComments(s, openGroupComment, closeGroupComment);
+		s = removeComments(s, openLineComment, closeLineComment);
 		return s;
 	}
 

@@ -23,10 +23,10 @@ import org.weiqi.Weiqi.Occupation;
  */
 public class UctMain<Move> {
 
-	private static final Occupation COMPUTERPLAYER = Occupation.BLACK;
-	private static final Occupation HUMANPLAYER = Occupation.WHITE;
+	private static final Occupation computerPlayer = Occupation.BLACK;
+	private static final Occupation humanPlayer = Occupation.WHITE;
 
-	private static final Occupation STARTINGPLAYER = Occupation.BLACK;
+	private static final Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String args[]) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -37,7 +37,7 @@ public class UctMain<Move> {
 		Weiqi.adjustSize(7);
 
 		Board board = new Board();
-		MovingGameSet gameSet = new MovingGameSet(board, STARTINGPLAYER);
+		MovingGameSet gameSet = new MovingGameSet(board, startingPlayer);
 		boolean auto = false;
 		boolean quit = false;
 		String status = "LET'S PLAY!";
@@ -50,7 +50,7 @@ public class UctMain<Move> {
 			search.setNumberOfSimulations(nSimulations);
 			search.setBoundedTime(boundedTime);
 
-			if (auto || gameSet.getNextPlayer() == COMPUTERPLAYER) {
+			if (auto || gameSet.getNextPlayer() == computerPlayer) {
 				System.out.println("THINKING...");
 
 				long start = System.currentTimeMillis();
@@ -73,7 +73,7 @@ public class UctMain<Move> {
 				}
 			}
 
-			while (!auto && !quit && gameSet.getNextPlayer() == HUMANPLAYER)
+			while (!auto && !quit && gameSet.getNextPlayer() == humanPlayer)
 				try {
 					display(gameSet, status);
 
@@ -124,7 +124,7 @@ public class UctMain<Move> {
 		} while (!Util.isBlank(s));
 
 		Board board = UserInterface.importBoard(sb.toString());
-		return new MovingGameSet(board, STARTINGPLAYER);
+		return new MovingGameSet(board, startingPlayer);
 	}
 
 	protected static void deepThink() {
@@ -132,7 +132,7 @@ public class UctMain<Move> {
 		System.out.println("RANDOM SEED = " + seed);
 		RandomableList.setSeed(seed);
 
-		GameSet gameSet = new GameSet(new Board(), STARTINGPLAYER);
+		GameSet gameSet = new GameSet(new Board(), startingPlayer);
 
 		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);

@@ -45,15 +45,15 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private Comparer comparer = new Comparer();
 	private Prover prover;
-	private BufferedIO io = new BufferedIO(System.in, System.out);
+	private BufferedIo io = new BufferedIo(System.in, System.out);
 
-	private class BufferedIO {
+	private class BufferedIo {
 		private InputStream in;
 		private PrintStream out;
 		private BytesBuilder inBuffer = new BytesBuilder();
 		private BytesBuilder outBuffer = new BytesBuilder();
 
-		private BufferedIO(InputStream in, PrintStream out) {
+		private BufferedIo(InputStream in, PrintStream out) {
 			this.in = in;
 			this.out = out;
 		}
@@ -168,7 +168,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 				else
 					throw new RuntimeException("Goal failed");
 			else
-				result = prover.prove(node) ? Atom.true_ : Atom.false_;
+				result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
 		} else if (command == SUBST) {
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");

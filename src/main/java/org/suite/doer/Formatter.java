@@ -92,7 +92,7 @@ public class Formatter {
 				String name = operator.getName();
 				sb.append(name);
 
-				if (operator != TermOp.AND___ || tree.getRight() != Atom.nil) {
+				if (operator != TermOp.AND___ || tree.getRight() != Atom.NIL) {
 					if (operator == TermOp.AND___ || operator == TermOp.OR____)
 						sb.append(' ');
 
@@ -107,7 +107,7 @@ public class Formatter {
 			if (isNeedParentheses)
 				sb.append(')');
 		} else if (node instanceof Reference)
-			sb.append(Generalizer.DEFAULTPREFIX + ((Reference) node).getId());
+			sb.append(Generalizer.defaultPrefix + ((Reference) node).getId());
 		else
 			sb.append(node.getClass().getSimpleName() + '@'
 					+ Integer.toHexString(node.hashCode()));
@@ -131,10 +131,10 @@ public class Formatter {
 					quote = true;
 			}
 
-			if (s.contains(Parser.CLOSEGROUPCOMMENT)
-					|| s.contains(Parser.OPENGROUPCOMMENT)
-					|| s.contains(Parser.CLOSELINECOMMENT)
-					|| s.contains(Parser.OPENLINECOMMENT))
+			if (s.contains(Parser.closeGroupComment)
+					|| s.contains(Parser.openGroupComment)
+					|| s.contains(Parser.closeLineComment)
+					|| s.contains(Parser.openLineComment))
 				quote = true;
 
 			if (quote)

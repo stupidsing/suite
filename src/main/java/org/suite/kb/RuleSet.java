@@ -49,7 +49,7 @@ public class RuleSet implements RuleSearcher {
 		while ((tree = Tree.decompose(node, TermOp.NEXT__)) != null) {
 			Rule rule = formRule(tree.getLeft());
 
-			if (rule.getHead() != Atom.nil)
+			if (rule.getHead() != Atom.NIL)
 				addRule(rule);
 			else {
 				Node goal = new Generalizer().generalize(rule.getTail());
@@ -113,12 +113,12 @@ public class RuleSet implements RuleSearcher {
 		if (tree != null)
 			return new Rule(tree.getLeft(), tree.getRight());
 		else
-			return new Rule(node, Atom.nil);
+			return new Rule(node, Atom.NIL);
 	}
 
 	public static Node formClause(Rule rule) {
 		Node head = rule.getHead(), tail = rule.getTail();
-		if (tail != Atom.nil)
+		if (tail != Atom.NIL)
 			return Tree.create(TermOp.IS____, head, tail);
 		else
 			return head;

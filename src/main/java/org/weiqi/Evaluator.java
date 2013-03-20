@@ -8,8 +8,8 @@ import org.weiqi.Weiqi.Occupation;
 
 public class Evaluator {
 
-	private static final int PIECESCORE = 10;
-	private static final int TERRITORYSCORE = 100;
+	private static final int pieceScore = 10;
+	private static final int territoryScore = 100;
 
 	public static int evaluate(Occupation player, Board board) {
 		int score = 0;
@@ -25,9 +25,9 @@ public class Evaluator {
 
 			// Count pieces
 			if (color == player)
-				score += PIECESCORE * group.coords.size();
+				score += pieceScore * group.coords.size();
 			else if (color == opponent)
-				score -= PIECESCORE * group.coords.size();
+				score -= pieceScore * group.coords.size();
 
 			// Count territory
 			if (color == Occupation.EMPTY) {
@@ -42,7 +42,7 @@ public class Evaluator {
 				theirs = true;
 
 			if (!us || !theirs) { // Do not count when it is nearby both colours
-				int scoreDelta = TERRITORYSCORE * group.coords.size();
+				int scoreDelta = territoryScore * group.coords.size();
 				score += !theirs ? scoreDelta : -scoreDelta;
 			}
 		}
