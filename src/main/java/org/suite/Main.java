@@ -28,7 +28,7 @@ import org.util.LogUtil;
 import org.util.Util;
 
 /**
- * Logic interpreter. Likes Prolog.
+ * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
  * 
  * @author ywsing
  */
