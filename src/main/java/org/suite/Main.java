@@ -280,19 +280,23 @@ public class Main {
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
-				+ "define af-get = (pos => \n" //
-				+ "    define c = fgetc {pos} >> \n" //
-				+ "    if (c >= 0) then (c, af-get {pos + 1}) else () \n" //
+				+ "define source = (io => \n" //
+				+ "    define fgets = (pos => \n" //
+				+ "        define c = fgetc {io} {pos} >> \n" //
+				+ "        if (c >= 0) then (c, fgets {pos + 1}) else () \n" //
+				+ "    ) >> \n" //
+				+ "    fgets {0} \n" //
 				+ ") >> \n" //
-				+ "define af-put = (pos => \n" //
-				+ "    if-match:: \\c, \\cs \n" //
-				+ "    then:: fputc {pos} {c} {af-put {pos + 1} {cs}} \n" //
-				+ "    else:: () \n" //
+				+ "define sink = (io => \n" //
+				+ "    define fputs = (pos => \n" //
+				+ "        if-match:: \\c, \\cs \n" //
+				+ "        then:: fputc {io} {pos} {c} {fputs {pos + 1} {cs}} \n" //
+				+ "        else:: () \n" //
+				+ "    ) >> \n" //
+				+ "    fputs {0} \n" //
 				+ ") >> \n" //
-				+ "define af-in = af-get {0} >> \n" //
-				+ "define af-out = af-put {0} >> \n" //
-				+ "define af-flush = (i => fflush {i}) >> \n" //
-				+ "af-in | (" + func + ") | af-out | af-flush";
+				+ "define flush = (io => i => fflush {io} {i}) >> \n" //
+				+ "source {} | (" + func + ") | sink {} | flush {}";
 	}
 
 	private void configureFunCompiler(FunCompilerConfig c) {
