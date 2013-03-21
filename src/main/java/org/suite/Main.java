@@ -280,17 +280,19 @@ public class Main {
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
-				+ "define af-in = (start => \n" //
-				+ "    define c = fgetc {start} >> \n" //
-				+ "    if (c >= 0) then (c, af-in {start + 1}) else () \n" //
+				+ "define af-get = (p => \n" //
+				+ "    define c = fgetc {p} >> \n" //
+				+ "    if (c >= 0) then (c, af-get {p + 1}) else () \n" //
 				+ ") >> \n" //
-				+ "define af-out = (p => \n" //
+				+ "define af-put = (p => \n" //
 				+ "    if-match:: \\c, \\cs \n" //
-				+ "    then:: fputc {p} {c} {af-out {p + 1} {cs}} \n" //
+				+ "    then:: fputc {p} {c} {af-put {p + 1} {cs}} \n" //
 				+ "    else:: () \n" //
 				+ ") >> \n" //
+				+ "define af-in = af-get {0} >> \n" //
+				+ "define af-out = af-put {0} >> \n" //
 				+ "define af-flush = (i => fflush {i}) >> \n" //
-				+ "0 | af-in | (" + func + ") | af-out {0} | af-flush";
+				+ "af-in | (" + func + ") | af-out | af-flush";
 	}
 
 	private void configureFunCompiler(FunCompilerConfig c) {
