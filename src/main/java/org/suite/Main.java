@@ -280,13 +280,13 @@ public class Main {
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
-				+ "define af-get = (p => \n" //
-				+ "    define c = fgetc {p} >> \n" //
-				+ "    if (c >= 0) then (c, af-get {p + 1}) else () \n" //
+				+ "define af-get = (pos => \n" //
+				+ "    define c = fgetc {pos} >> \n" //
+				+ "    if (c >= 0) then (c, af-get {pos + 1}) else () \n" //
 				+ ") >> \n" //
-				+ "define af-put = (p => \n" //
+				+ "define af-put = (pos => \n" //
 				+ "    if-match:: \\c, \\cs \n" //
-				+ "    then:: fputc {p} {c} {af-put {p + 1} {cs}} \n" //
+				+ "    then:: fputc {pos} {c} {af-put {pos + 1} {cs}} \n" //
 				+ "    else:: () \n" //
 				+ ") >> \n" //
 				+ "define af-in = af-get {0} >> \n" //

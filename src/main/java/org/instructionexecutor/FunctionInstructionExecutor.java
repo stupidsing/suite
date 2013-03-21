@@ -2,6 +2,7 @@ package org.instructionexecutor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.instructionexecutor.InstructionUtil.Closure;
@@ -49,11 +50,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private class BufferedIo {
 		private InputStream in;
-		private PrintStream out;
+		private OutputStream out;
 		private BytesBuilder inBuffer = new BytesBuilder();
 		private BytesBuilder outBuffer = new BytesBuilder();
 
-		private BufferedIo(InputStream in, PrintStream out) {
+		private BufferedIo(InputStream in, OutputStream out) {
 			this.in = in;
 			this.out = out;
 		}
