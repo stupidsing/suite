@@ -18,6 +18,21 @@ public class Tree extends Node {
 		return new Tree(operator, left, right);
 	}
 
+	public static Tree decompose(Node node) {
+		node = node.finalNode();
+		return (node instanceof Tree) ? (Tree) node : null;
+	}
+
+	public static Tree decompose(Node node, Operator operator) {
+		node = node.finalNode();
+		if (node instanceof Tree) {
+			Tree tree = (Tree) node;
+			if (tree.operator == operator)
+				return tree;
+		}
+		return null;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = 1;
@@ -40,21 +55,6 @@ public class Tree extends Node {
 				return false;
 		} else
 			return false;
-	}
-
-	public static Tree decompose(Node node) {
-		node = node.finalNode();
-		return (node instanceof Tree) ? (Tree) node : null;
-	}
-
-	public static Tree decompose(Node node, Operator operator) {
-		node = node.finalNode();
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			if (tree.operator == operator)
-				return tree;
-		}
-		return null;
 	}
 
 	public Operator getOperator() {
