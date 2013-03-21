@@ -280,19 +280,19 @@ public class Main {
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
-				+ "define flush = (io => fflush {io}) >> \n" //
-				+ "define source = (io => \n" //
+				+ "define flush = (os => fflush {os}) >> \n" //
+				+ "define source = (is => \n" //
 				+ "    define fgets = (pos => \n" //
-				+ "        define c = fgetc {io} {pos} >> \n" //
+				+ "        define c = fgetc {is} {pos} >> \n" //
 				+ "        if (c >= 0) then (c, fgets {pos + 1}) else () \n" //
 				+ "    ) >> \n" //
 				+ "    fgets {0} \n" //
 				+ ") >> \n" //
-				+ "define sink = (io => \n" //
+				+ "define sink = (os => \n" //
 				+ "    define fputs = (pos => \n" //
 				+ "        if-match:: \\c, \\cs \n" //
-				+ "        then:: fputc {io} {pos} {c} {fputs {pos + 1} {cs}} \n" //
-				+ "        else:: io \n" //
+				+ "        then:: fputc {os} {pos} {c} {fputs {pos + 1} {cs}} \n" //
+				+ "        else:: os \n" //
 				+ "    ) >> \n" //
 				+ "    flush . fputs {0} \n" //
 				+ ") >> \n" //
