@@ -1,7 +1,7 @@
 package org.suite.predicates;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.suite.SuiteUtil;
 import org.suite.doer.Formatter;
@@ -79,18 +79,17 @@ public class FormatPredicates {
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			if (p1 instanceof Str)
 				return prover.bind(p0, fromRpn(((Str) p1).getValue()));
-			else {
-				StringBuilder sb = new StringBuilder();
-				toRpn(p0, sb);
-				return prover.bind(new Str(sb.toString()), p1);
-			}
+			else
+				return prover.bind(new Str(toRpn(p0)), p1);
 		}
 
 		private static Node fromRpn(String rpn) {
 			String elems[] = rpn.split("\n");
-			List<Node> stack = new ArrayList<>();
+			Deque<Node> deque = new ArrayDeque<>();
+			int index = elems.length;
 
-			for (String elem : elems) {
+			while (index > 0) {
+				String elem = elems[--index];
 				if (elem.isEmpty())
 					continue;
 
@@ -106,39 +105,47 @@ public class FormatPredicates {
 					n = Int.create(Integer.valueOf(s));
 				else if (type == 't') {
 					TermOp op = TermOp.valueOf(s);
-					int l = stack.size();
-					Node right = stack.remove(l - 1);
-					Node left = stack.remove(l - 2);
+					Node left = deque.pop();
+					Node right = deque.pop();
 					n = Tree.create(op, left, right);
 				} else
 					throw new RuntimeException("RPN conversion error: " + elem);
 
-				stack.add(n);
+				deque.push(n);
 			}
 
-			return stack.get(0);
+			return deque.pop();
 		}
 
-		private static void toRpn(Node node, StringBuilder sb) {
-			String s;
-			node = node.finalNode();
+		private static String toRpn(Node node) {
+			StringBuilder sb = new StringBuilder();
+			Deque<Node> deque = new ArrayDeque<>();
 
-			if (node instanceof Atom)
-				s = "\\" + ((Atom) node).getName();
-			else if (node instanceof Int)
-				s = "i" + ((Int) node).getNumber();
-			else if (node instanceof Reference)
-				s = "\\." + ((Reference) node).getId();
-			else if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				toRpn(tree.getLeft(), sb);
-				toRpn(tree.getRight(), sb);
-				s = "t" + tree.getOperator();
-			} else
-				s = "^" + Formatter.dump(node);
+			deque.push(node);
 
-			sb.append(s);
-			sb.append('\n');
+			while (!deque.isEmpty()) {
+				Node n = deque.pop().finalNode();
+				String s;
+
+				if (n instanceof Atom)
+					s = "\\" + ((Atom) n).getName();
+				else if (n instanceof Int)
+					s = "i" + ((Int) n).getNumber();
+				else if (n instanceof Reference)
+					s = "\\." + ((Reference) n).getId();
+				else if (n instanceof Tree) {
+					Tree tree = (Tree) n;
+					s = "t" + tree.getOperator();
+					deque.push(tree.getRight());
+					deque.push(tree.getLeft());
+				} else
+					s = "^" + Formatter.dump(n);
+
+				sb.append(s);
+				sb.append('\n');
+			}
+
+			return sb.toString();
 		}
 	}
 
