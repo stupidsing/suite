@@ -84,7 +84,7 @@ fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 1 _thead HEAD #
 fc-define-default-fun 1 _ttail TAIL #
-fc-define-default-fun 2 fflush FFLUSH #
+fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 4 fputc FPUTC #
 fc-define-default-fun 1 is-tree IS-TREE #
