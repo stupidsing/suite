@@ -2,6 +2,7 @@ package org.suite.node;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.suite.Context;
 import org.suite.Singleton;
@@ -14,8 +15,15 @@ public class Atom extends Node {
 	public static final Atom TRUE = create("true");
 	public static final Atom FALSE = create("false");
 
+	private static final AtomicInteger uniqueCounter = new AtomicInteger();
+
 	private Atom(String name) {
 		this.name = name;
+	}
+
+	public static Atom createUnique() {
+		Context context = Singleton.get().getHiddenContext();
+		return create(context, "TEMP" + uniqueCounter.getAndIncrement());
 	}
 
 	public static Atom create(String name) {

@@ -3,11 +3,8 @@ package org.suite.predicates;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.parser.Operator;
-import org.suite.Context;
-import org.suite.Singleton;
 import org.suite.doer.Cloner;
 import org.suite.doer.Prover;
 import org.suite.doer.Station;
@@ -198,12 +195,8 @@ public class SystemPredicates {
 	}
 
 	private class Temporary implements SystemPredicate {
-		private final AtomicInteger counter = new AtomicInteger();
-
 		public boolean prove(Prover prover, Node ps) {
-			Context hiddenContext = Singleton.get().getHiddenContext();
-			String name = "TEMP" + counter.getAndIncrement();
-			return prover.bind(ps, Atom.create(hiddenContext, name));
+			return prover.bind(ps, Atom.createUnique());
 		}
 	}
 
