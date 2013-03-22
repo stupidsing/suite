@@ -280,7 +280,9 @@ public class Main {
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
-				+ "define flush = (os => fflush {os}) >> \n" //
+				+ "define flush = ( \n" //
+				+ "    os => fflush {os} \n" //
+				+ ") >> \n" //
 				+ "define source = (is => \n" //
 				+ "    define fgets = (pos => \n" //
 				+ "        define c = fgetc {is} {pos} >> \n" //
