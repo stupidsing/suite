@@ -2,7 +2,6 @@ package org.instructionexecutor;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,10 @@ import java.util.Map;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
-import org.net.Bytes.BytesBuilder;
+import org.instructionexecutor.io.IndexedIo.IndexedInput;
+import org.instructionexecutor.io.IndexedIo.IndexedInputStream;
+import org.instructionexecutor.io.IndexedIo.IndexedOutput;
+import org.instructionexecutor.io.IndexedIo.IndexedOutputStream;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Generalizer;
@@ -48,64 +50,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private Comparer comparer = new Comparer();
 	private Prover prover;
-	private Map<Node, BufferedInput> inputs = new HashMap<>();
-	private Map<Node, BufferedOutput> outputs = new HashMap<>();
-
-	private class BufferedInput {
-		private InputStream in;
-		private BytesBuilder inBuffer = new BytesBuilder();
-
-		private BufferedInput(InputStream in) {
-			this.in = in;
-		}
-
-		private int read(int p) throws IOException {
-			while (p >= inBuffer.getSize()) {
-				int c = in.read();
-				if (c >= 0)
-					inBuffer.append((byte) c);
-				else
-					break;
-			}
-
-			int ch = p < inBuffer.getSize() ? inBuffer.byteAt(p) : -1;
-			return ch;
-		}
-
-		public void setIn(InputStream in) {
-			this.in = in;
-		}
-	}
-
-	private class BufferedOutput {
-		private OutputStream out;
-		private BytesBuilder outBuffer = new BytesBuilder();
-
-		private BufferedOutput(OutputStream out) {
-			this.out = out;
-		}
-
-		private void write(int p, int c) {
-			if (p >= outBuffer.getSize())
-				outBuffer.extend(p + 1);
-
-			outBuffer.setByteAt(p, (byte) c);
-		}
-
-		private void flush() throws IOException {
-			out.write(outBuffer.toBytes().getBytes());
-			outBuffer.clear();
-		}
-
-		public void setOut(PrintStream out) {
-			this.out = out;
-		}
-	}
+	private Map<Node, IndexedInput> inputs = new HashMap<>();
+	private Map<Node, IndexedOutput> outputs = new HashMap<>();
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
-		inputs.put(Atom.NIL, new BufferedInput(System.in));
-		outputs.put(Atom.NIL, new BufferedOutput(System.out));
 	}
 
 	@Override
@@ -140,19 +89,15 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		} else if (command == FFLUSH) {
 			Node node = (Node) dataStack[dsp];
 			try {
-				outputs.get(node).flush();
+				outputs.get(node).close();
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 			result = (Node) dataStack[dsp];
 		} else if (command == FGETC) {
 			Node node = (Node) dataStack[dsp + 1];
-			try {
-				int p = ((Int) dataStack[dsp]).getNumber();
-				result = Int.create(inputs.get(node).read(p));
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			int p = ((Int) dataStack[dsp]).getNumber();
+			result = Int.create(inputs.get(node).read(p));
 		} else if (command == FPUTC) {
 			Node node = (Node) dataStack[dsp + 3];
 			int p = ((Int) dataStack[dsp + 2]).getNumber();
@@ -221,11 +166,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void setIn(InputStream in) {
-		inputs.get(Atom.NIL).setIn(in);
+		inputs.put(Atom.NIL, new IndexedInputStream(in));
 	}
 
 	public void setOut(PrintStream out) {
-		outputs.get(Atom.NIL).setOut(out);
+		outputs.put(Atom.NIL, new IndexedOutputStream(out));
 	}
 
 	public void setProver(Prover prover) {
