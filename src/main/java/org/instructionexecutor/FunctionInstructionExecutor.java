@@ -55,6 +55,25 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		super(node);
 	}
 
+	/**
+	 * Evaluates the whole term to actual value by invoking all the thunks.
+	 */
+	public Node unwrap(Node node) {
+		node = node.finalNode();
+
+		if (node instanceof Tree) {
+			Tree tree = (Tree) node;
+			Node left = unwrap(tree.getLeft());
+			Node right = unwrap(tree.getRight());
+			node = Tree.create(tree.getOperator(), left, right);
+		} else if (node instanceof Closure) {
+			Closure closure = (Closure) node;
+			node = unwrap(evaluateClosure(closure));
+		}
+
+		return node;
+	}
+
 	@Override
 	public Node execute() {
 		for (IndexedInput input : inputs.values())

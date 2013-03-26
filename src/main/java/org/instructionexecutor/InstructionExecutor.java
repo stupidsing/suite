@@ -1,9 +1,11 @@
 package org.instructionexecutor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
+import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.doer.Comparer;
 import org.suite.doer.TermParser.TermOp;
@@ -20,20 +22,33 @@ import com.google.common.collect.HashBiMap;
 public class InstructionExecutor {
 
 	private Instruction instructions[];
+	private int unwrapEntryPoint;
+
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 	private static final int stackSize = 4096;
 
 	public InstructionExecutor(Node node) {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
-		List<Instruction> list = extractor.extractInstructions(node);
+
+		List<Instruction> list = new ArrayList<>();
+		list.addAll(extractor.extractInstructions(node));
+		unwrapEntryPoint = list.size();
+		list.add(new Instruction(Insn.CALLCLOSURE___, 1, 0, 0));
+		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
+
 		instructions = list.toArray(new Instruction[list.size()]);
 	}
 
 	public Node execute() {
-		return execute(new Closure(null, 0));
+		return evaluateClosure(new Closure(null, 0));
 	}
 
-	private Node execute(Closure current) {
+	public Node evaluateClosure(Closure c0) {
+		Frame f0 = new Frame(null, 2);
+		f0.registers[0] = c0;
+
+		Closure current = new Closure(f0, unwrapEntryPoint);
+
 		Closure callStack[] = new Closure[stackSize];
 		Node dataStack[] = new Node[stackSize];
 		int i, csp = 0, dsp = 0;

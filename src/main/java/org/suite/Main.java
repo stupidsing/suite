@@ -21,6 +21,7 @@ import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
+import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.util.IoUtil;
@@ -100,7 +101,7 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE, EVALUATE, EVALUATEDUMP, EVALUATESTR, EVALUATETYPE
+		FACT, QUERY, ELABORATE, EVALUATE, EVALUATESTR, EVALUATETYPE
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
@@ -142,9 +143,6 @@ public class Main {
 				} else if (input.startsWith("/")) {
 					type = InputType.ELABORATE;
 					input = input.substring(1);
-				} else if (input.startsWith("\\e")) {
-					type = InputType.EVALUATE;
-					input = input.substring(2);
 				} else if (input.startsWith("\\s")) {
 					type = InputType.EVALUATESTR;
 					input = input.substring(2);
@@ -152,7 +150,7 @@ public class Main {
 					type = InputType.EVALUATETYPE;
 					input = input.substring(2);
 				} else if (input.startsWith("\\")) {
-					type = InputType.EVALUATEDUMP;
+					type = InputType.EVALUATE;
 					input = input.substring(1);
 				} else
 					type = InputType.FACT;
@@ -163,7 +161,6 @@ public class Main {
 
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
-				String prog;
 				FunCompilerConfig fcc;
 
 				switch (type) {
@@ -173,21 +170,19 @@ public class Main {
 				case EVALUATE:
 					fcc = SuiteUtil.fcc(node, isLazy);
 					configureFunCompiler(fcc);
-					Node result = SuiteUtil.evaluateFunctional(fcc);
-					System.out.println(Formatter.dump(result));
-					break;
-				case EVALUATEDUMP:
-					prog = applyFilter("anything => dump {" + input + "}");
-					fcc = SuiteUtil.fcc(prog, isLazy);
-					configureFunCompiler(fcc);
-					SuiteUtil.evaluateFunctional(fcc);
-					System.out.println();
+					node = SuiteUtil.evaluateFunctional(fcc);
+					System.out.println(Formatter.dump(node));
 					break;
 				case EVALUATESTR:
-					prog = applyFilter("anything => " + input);
-					fcc = SuiteUtil.fcc(prog, isLazy);
+					fcc = SuiteUtil.fcc(node, isLazy);
 					configureFunCompiler(fcc);
-					SuiteUtil.evaluateFunctional(fcc);
+					node = SuiteUtil.evaluateFunctional(fcc);
+					Tree tree;
+					while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
+						Int i = (Int) tree.getLeft();
+						System.out.print((char) i.getNumber());
+						node = tree.getRight();
+					}
 					System.out.println();
 					break;
 				case EVALUATETYPE:

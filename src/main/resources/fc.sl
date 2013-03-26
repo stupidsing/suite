@@ -24,7 +24,7 @@ compile-function .mode .do .c0
 	, !, infer-type-rule .parsed ()/()/()/() .tr0/.trx _
 	, !, resolve-types .tr0/.trx
 	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
-	, .c2 = (_ EXIT .reg, _ LEAVE, .d0)
+	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
 	, !, fc-assign-line-number 0 .c0
 #
 

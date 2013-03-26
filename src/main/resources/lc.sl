@@ -11,7 +11,7 @@ compile-logic .call .c0
 		, _ POP _
 		, _ POP _
 		, _ ASSIGN-CONSTANT .returnReg false
-		, .provenLabel EXIT .returnReg
+		, .provenLabel RETURN-VALUE .returnReg
 		, .c1
 	)
 	, lc-parse .call .call1

@@ -228,7 +228,11 @@ public class SuiteUtil {
 			e.setIn(config.in);
 			e.setOut(config.out);
 			e.setProver(compiler);
-			return e.execute();
+
+			Node result = e.execute();
+			if (config.isLazy)
+				result = e.unwrap(result);
+			return result;
 		} else
 			throw new RuntimeException("Function compilation error");
 	}

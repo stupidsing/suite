@@ -48,12 +48,6 @@ public class InstructionExtractor {
 			Atom atom = (Atom) rs.remove(4).finalNode();
 			TermOp operator = TermOp.find((atom).getName());
 			insn = InstructionUtil.getEvalInsn(operator);
-		} else if ("EXIT-FAIL".equals(insnName)) {
-			rs.set(0, Atom.FALSE);
-			insn = Insn.EXIT__________;
-		} else if ("EXIT-OK".equals(insnName)) {
-			rs.set(0, Atom.TRUE);
-			insn = Insn.EXIT__________;
 		} else
 			insn = InstructionUtil.getInsn(insnName);
 
