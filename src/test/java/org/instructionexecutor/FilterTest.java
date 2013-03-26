@@ -2,16 +2,14 @@ package org.instructionexecutor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import org.junit.Test;
 import org.suite.Main;
 import org.suite.SuiteUtil;
 import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.node.Node;
-import org.util.IoUtil;
 
 public class FilterTest {
 
@@ -27,18 +25,17 @@ public class FilterTest {
 	}
 
 	private static Node eval(String in, String out, String program) {
-		byte inBytes[] = in.getBytes(IoUtil.charset);
-		ByteArrayInputStream is = new ByteArrayInputStream(inBytes);
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		StringReader is = new StringReader(in);
+		StringWriter os = new StringWriter();
 
 		String program1 = Main.applyFilter(program);
 
 		FunCompilerConfig config = SuiteUtil.fcc(program1, true);
 		config.setIn(is);
-		config.setOut(new PrintStream(os));
+		config.setOut(os);
 
 		Node result = SuiteUtil.evaluateFunctional(config);
-		assertEquals(out, new String(os.toByteArray(), IoUtil.charset));
+		assertEquals(out, os.toString());
 		return result;
 	}
 

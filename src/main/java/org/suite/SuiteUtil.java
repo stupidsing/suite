@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
@@ -16,6 +19,7 @@ import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Reference;
+import org.util.IoUtil;
 import org.util.Util;
 
 public class SuiteUtil {
@@ -128,8 +132,8 @@ public class SuiteUtil {
 		private List<String> libraries = Util.createList();
 		private boolean isTrace = false;
 		private boolean isDumpCode = false;
-		private InputStream in = System.in;
-		private PrintStream out = System.out;
+		private Reader in = new InputStreamReader(System.in, IoUtil.charset);
+		private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
 
 		public FunCompilerConfig() {
 			addLibrary("STANDARD");
@@ -163,11 +167,11 @@ public class SuiteUtil {
 			this.isDumpCode = isDumpCode;
 		}
 
-		public void setIn(InputStream in) {
+		public void setIn(Reader in) {
 			this.in = in;
 		}
 
-		public void setOut(PrintStream out) {
+		public void setOut(Writer out) {
 			this.out = out;
 		}
 	}

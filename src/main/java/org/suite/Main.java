@@ -1,10 +1,10 @@
 package org.suite;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -113,7 +113,7 @@ public class Main {
 		Prover prover = new Prover(rs);
 		prover.setEnableTrace(isTrace);
 
-		InputStreamReader is = new InputStreamReader(System.in);
+		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
 
 		quit: while (true)
@@ -308,7 +308,7 @@ public class Main {
 		c.addLibraries(libraries);
 		c.setTrace(isTrace);
 		c.setDumpCode(isDumpCode);
-		c.setIn(new ByteArrayInputStream(new byte[0]));
+		c.setIn(new StringReader(""));
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

@@ -2,11 +2,8 @@ package org.instructionexecutor.io;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
-import org.net.Bytes.BytesBuilder;
+import java.io.Reader;
+import java.io.Writer;
 
 /**
  * Implements input and output devices that read/write at specified byte
@@ -21,20 +18,20 @@ public class IndexedIo {
 	}
 
 	public interface IndexedOutput extends Closeable {
-		public void write(int p, int c);
+		public void write(int p, char c);
 	}
 
 	public static class IndexedInputStream implements IndexedInput {
-		private InputStream in;
-		private BytesBuilder inBuffer = new BytesBuilder();
+		private Reader in;
+		private StringBuilder inBuffer = new StringBuilder();
 
-		public IndexedInputStream(InputStream in) {
+		public IndexedInputStream(Reader in) {
 			this.in = in;
 		}
 
 		@Override
 		public int read(int p) {
-			while (p >= inBuffer.getSize()) {
+			while (p >= inBuffer.length()) {
 				int c;
 
 				try {
@@ -44,12 +41,12 @@ public class IndexedIo {
 				}
 
 				if (c >= 0)
-					inBuffer.append((byte) c);
+					inBuffer.append((char) c);
 				else
 					break;
 			}
 
-			return p < inBuffer.getSize() ? inBuffer.byteAt(p) : -1;
+			return p < inBuffer.length() ? inBuffer.charAt(p) : -1;
 		}
 
 		@Override
@@ -57,35 +54,35 @@ public class IndexedIo {
 			in.close();
 		}
 
-		public void setIn(InputStream in) {
+		public void setIn(Reader in) {
 			this.in = in;
 		}
 	}
 
 	public static class IndexedOutputStream implements IndexedOutput {
-		private OutputStream out;
-		private BytesBuilder outBuffer = new BytesBuilder();
+		private Writer out;
+		private StringBuilder outBuffer = new StringBuilder();
 
-		public IndexedOutputStream(OutputStream out) {
+		public IndexedOutputStream(Writer out) {
 			this.out = out;
 		}
 
 		@Override
-		public void write(int p, int c) {
-			if (p >= outBuffer.getSize())
-				outBuffer.extend(p + 1);
+		public void write(int p, char c) {
+			if (p >= outBuffer.length())
+				outBuffer.setLength(p + 1);
 
-			outBuffer.setByteAt(p, (byte) c);
+			outBuffer.setCharAt(p, c);
 		}
 
 		@Override
 		public void close() throws IOException {
-			out.write(outBuffer.toBytes().getBytes());
-			outBuffer.clear();
+			out.write(outBuffer.toString());
+			outBuffer.setLength(0);
 			out.close();
 		}
 
-		public void setOut(PrintStream out) {
+		public void setOut(Writer out) {
 			this.out = out;
 		}
 	}

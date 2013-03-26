@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +29,7 @@ public class NioDispatcherTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		final String hello = "HELLO";
+		final Charset charset = IoUtil.charset;
 
 		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcher<BufferedChannel>(
 				new ChannelListenerFactory<BufferedChannel>() {
@@ -35,7 +37,7 @@ public class NioDispatcherTest {
 						return new BufferedChannel() {
 							public void onConnected() {
 								String s = hello + "\n";
-								send(new Bytes(s.getBytes(IoUtil.charset)));
+								send(new Bytes(s.getBytes(charset)));
 							}
 
 							public void onReceive(Bytes request) {
@@ -51,7 +53,7 @@ public class NioDispatcherTest {
 		try (Socket socket = new Socket("localhost", 5151);
 				InputStream is = socket.getInputStream();
 				OutputStream os = socket.getOutputStream();
-				InputStreamReader isr = new InputStreamReader(is);
+				InputStreamReader isr = new InputStreamReader(is, charset);
 				BufferedReader reader = new BufferedReader(isr);
 				PrintWriter writer = new PrintWriter(os);) {
 			String m = "testing nio";

@@ -1,8 +1,8 @@
 package org.instructionexecutor;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +102,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node node = (Node) dataStack[dsp + 3];
 			int p = ((Int) dataStack[dsp + 2]).getNumber();
 			int c = ((Int) dataStack[dsp + 1]).getNumber();
-			outputs.get(node).write(p, c);
+			outputs.get(node).write(p, (char) c);
 			result = (Node) dataStack[dsp];
 		} else if (command == HEAD)
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
@@ -165,11 +165,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		return result;
 	}
 
-	public void setIn(InputStream in) {
+	public void setIn(Reader in) {
 		inputs.put(Atom.NIL, new IndexedInputStream(in));
 	}
 
-	public void setOut(PrintStream out) {
+	public void setOut(Writer out) {
 		outputs.put(Atom.NIL, new IndexedOutputStream(out));
 	}
 

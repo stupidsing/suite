@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import org.util.IoUtil;
 import org.util.Util;
 import org.weiqi.Board;
 import org.weiqi.Coordinate;
@@ -29,7 +30,8 @@ public class UctMain<Move> {
 	private static final Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String args[]) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		InputStreamReader isr = new InputStreamReader(System.in, IoUtil.charset);
+		BufferedReader br = new BufferedReader(isr);
 		DecimalFormat df = new DecimalFormat("0.000");
 		int nThreads = Runtime.getRuntime().availableProcessors();
 		int nSimulations = 10000 * nThreads;
