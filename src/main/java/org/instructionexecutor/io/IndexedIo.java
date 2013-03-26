@@ -81,6 +81,7 @@ public class IndexedIo {
 		public void flush() {
 			try {
 				out.write(outBuffer.toString());
+				out.flush();
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
