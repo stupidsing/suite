@@ -35,7 +35,7 @@ public class Node implements Comparable<Node> {
 			while (--i >= 0)
 				result = Tree.create(operator, nodes[i], result);
 		} else
-			result = Atom.nil;
+			result = Atom.NIL;
 
 		return result;
 	}

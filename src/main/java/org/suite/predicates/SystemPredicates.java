@@ -3,11 +3,8 @@ package org.suite.predicates;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.parser.Operator;
-import org.suite.Context;
-import org.suite.Singleton;
 import org.suite.doer.Cloner;
 import org.suite.doer.Prover;
 import org.suite.doer.Station;
@@ -105,7 +102,7 @@ public class SystemPredicates {
 
 		if (query instanceof Atom) {
 			name = ((Atom) query).getName();
-			pass = Atom.nil;
+			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
 			if (tree.getOperator() != TermOp.TUPLE_)
 				name = tree.getOperator().getName();
@@ -173,7 +170,7 @@ public class SystemPredicates {
 			subProver.prove(subGoal);
 			subProver.undoAllBinds();
 
-			Node result = Atom.nil;
+			Node result = Atom.NIL;
 			while (!stack.isEmpty())
 				result = Tree.create(TermOp.AND___, stack.pop(), result);
 
@@ -198,12 +195,8 @@ public class SystemPredicates {
 	}
 
 	private class Temporary implements SystemPredicate {
-		private final AtomicInteger counter = new AtomicInteger();
-
 		public boolean prove(Prover prover, Node ps) {
-			Context hiddenContext = Singleton.get().getHiddenContext();
-			String name = "TEMP" + counter.getAndIncrement();
-			return prover.bind(ps, Atom.create(hiddenContext, name));
+			return prover.bind(ps, Atom.createUnique());
 		}
 	}
 

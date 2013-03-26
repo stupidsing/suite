@@ -214,7 +214,7 @@ public class EvalPredicates {
 
 			if (node instanceof Reference) {
 				Reference ref = (Reference) node;
-				node = Atom.create(Generalizer.DEFAULTPREFIX + ref.getId());
+				node = Atom.create(Generalizer.defaultPrefix + ref.getId());
 			} else if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				Node left = tree.getLeft(), right = tree.getRight();

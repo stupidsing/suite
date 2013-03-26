@@ -1,10 +1,10 @@
 package org.suite;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ import org.util.LogUtil;
 import org.util.Util;
 
 /**
- * Logic interpreter. Likes Prolog.
+ * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
  * 
  * @author ywsing
  */
@@ -113,7 +113,7 @@ public class Main {
 		Prover prover = new Prover(rs);
 		prover.setEnableTrace(isTrace);
 
-		InputStreamReader is = new InputStreamReader(System.in);
+		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
 
 		quit: while (true)
@@ -256,7 +256,7 @@ public class Main {
 			FileInputStream is = new FileInputStream(files.get(0));
 			String expression = IoUtil.readStream(is);
 			Node result = SuiteUtil.evaluateFunctional(expression, isLazy);
-			return result == Atom.true_;
+			return result == Atom.TRUE;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
 	}
@@ -280,17 +280,22 @@ public class Main {
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
 		return "" //
-				+ "define af-in = (start => \n" //
-				+ "    define c = fgetc {start} >> \n" //
-				+ "    if (c >= 0) then (c, af-in {start + 1}) else () \n" //
+				+ "define source = (is => \n" //
+				+ "    define fgets = (pos => \n" //
+				+ "        define c = fgetc {is} {pos} >> \n" //
+				+ "        if (c >= 0) then (c, fgets {pos + 1}) else () \n" //
+				+ "    ) >> \n" //
+				+ "    fgets {0} \n" //
 				+ ") >> \n" //
-				+ "define af-out = (p => \n" //
-				+ "    if-match:: \\c, \\cs \n" //
-				+ "    then:: fputc {p} {c} {af-out {p + 1} {cs}} \n" //
-				+ "    else:: () \n" //
+				+ "define sink = (os => \n" //
+				+ "    define fputs = (pos => \n" //
+				+ "        if-match:: \\c, \\cs \n" //
+				+ "        then:: fputc {os} {pos} {c} {fputs {pos + 1} {cs}} \n" //
+				+ "        else:: os \n" //
+				+ "    ) >> \n" //
+				+ "    fputs {0} \n" //
 				+ ") >> \n" //
-				+ "define af-flush = (i => fflush {i}) >> \n" //
-				+ "0 | af-in | (" + func + ") | af-out {0} | af-flush";
+				+ "source {} | (" + func + ") | sink {}";
 	}
 
 	private void configureFunCompiler(FunCompilerConfig c) {
@@ -300,7 +305,7 @@ public class Main {
 		c.addLibraries(libraries);
 		c.setTrace(isTrace);
 		c.setDumpCode(isDumpCode);
-		c.setIn(new ByteArrayInputStream(new byte[0]));
+		c.setIn(new StringReader(""));
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

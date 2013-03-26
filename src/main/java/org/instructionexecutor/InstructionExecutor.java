@@ -30,7 +30,10 @@ public class InstructionExecutor {
 	}
 
 	public Node execute() {
-		Closure current = new Closure(null, 0);
+		return execute(new Closure(null, 0));
+	}
+
+	private Node execute(Closure current) {
 		Closure callStack[] = new Closure[stackSize];
 		Node dataStack[] = new Node[stackSize];
 		int i, csp = 0, dsp = 0;
@@ -121,8 +124,6 @@ public class InstructionExecutor {
 				break;
 			case EXIT__________:
 				return (Node) regs[insn.op1];
-			case EXITVALUE_____:
-				return constantPool.get(insn.op1);
 			case FORMTREE0_____:
 				Node left = (Node) regs[insn.op1];
 				Node right = (Node) regs[insn.op2];
@@ -131,7 +132,7 @@ public class InstructionExecutor {
 				regs[insn.op2] = Tree.create(TermOp.find(op), left, right);
 				break;
 			case IFFALSE_______:
-				if (regs[insn.op2] != Atom.true_)
+				if (regs[insn.op2] != Atom.TRUE)
 					current.ip = insn.op1;
 				break;
 			case IFNOTEQUALS___:
@@ -193,7 +194,7 @@ public class InstructionExecutor {
 	}
 
 	protected static Atom a(boolean b) {
-		return b ? Atom.true_ : Atom.false_;
+		return b ? Atom.TRUE : Atom.FALSE;
 	}
 
 	protected static int g(Object node) {

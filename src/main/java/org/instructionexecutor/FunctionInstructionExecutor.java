@@ -1,13 +1,17 @@
 package org.instructionexecutor;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
-import org.net.Bytes.BytesBuilder;
+import org.instructionexecutor.io.IndexedIo.IndexedInput;
+import org.instructionexecutor.io.IndexedIo.IndexedInputStream;
+import org.instructionexecutor.io.IndexedIo.IndexedOutput;
+import org.instructionexecutor.io.IndexedIo.IndexedOutputStream;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
 import org.suite.doer.Generalizer;
@@ -24,7 +28,6 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom COMPARE = Atom.create("COMPARE");
 	private static final Atom CONS = Atom.create("CONS");
-	private static final Atom FFLUSH = Atom.create("FFLUSH");
 	private static final Atom FGETC = Atom.create("FGETC");
 	private static final Atom FPUTC = Atom.create("FPUTC");
 	private static final Atom HEAD = Atom.create("HEAD");
@@ -45,56 +48,24 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private Comparer comparer = new Comparer();
 	private Prover prover;
-	private BufferedIO io = new BufferedIO(System.in, System.out);
-
-	private class BufferedIO {
-		private InputStream in;
-		private PrintStream out;
-		private BytesBuilder inBuffer = new BytesBuilder();
-		private BytesBuilder outBuffer = new BytesBuilder();
-
-		private BufferedIO(InputStream in, PrintStream out) {
-			this.in = in;
-			this.out = out;
-		}
-
-		private int read(int p) throws IOException {
-			while (p >= inBuffer.getSize()) {
-				int c = in.read();
-				if (c >= 0)
-					inBuffer.append((byte) c);
-				else
-					break;
-			}
-
-			int ch = p < inBuffer.getSize() ? inBuffer.byteAt(p) : -1;
-			return ch;
-		}
-
-		private void write(int p, int c) {
-			if (p >= outBuffer.getSize())
-				outBuffer.extend(p + 1);
-
-			outBuffer.setByteAt(p, (byte) c);
-		}
-
-		private void flush() throws IOException {
-			out.write(outBuffer.toBytes().getBytes());
-			outBuffer.clear();
-		}
-
-		public void setIn(InputStream in) {
-			this.in = in;
-		}
-
-		public void setOut(PrintStream out) {
-			this.out = out;
-		}
-
-	}
+	private Map<Node, IndexedInput> inputs = new HashMap<>();
+	private Map<Node, IndexedOutput> outputs = new HashMap<>();
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
+	}
+
+	@Override
+	public Node execute() {
+		for (IndexedInput input : inputs.values())
+			input.fetch();
+
+		Node node = super.execute();
+
+		for (IndexedOutput output : outputs.values())
+			output.flush();
+
+		return node;
 	}
 
 	@Override
@@ -126,24 +97,15 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
 			result = Tree.create(TermOp.AND___, left, right);
-		} else if (command == FFLUSH) {
-			try {
-				io.flush();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-			result = (Node) dataStack[dsp];
-		} else if (command == FGETC)
-			try {
-				int p = ((Int) dataStack[dsp]).getNumber();
-				result = Int.create(io.read(p));
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		else if (command == FPUTC) {
+		} else if (command == FGETC) {
+			Node node = (Node) dataStack[dsp + 1];
+			int p = ((Int) dataStack[dsp]).getNumber();
+			result = Int.create(inputs.get(node).read(p));
+		} else if (command == FPUTC) {
+			Node node = (Node) dataStack[dsp + 3];
 			int p = ((Int) dataStack[dsp + 2]).getNumber();
 			int c = ((Int) dataStack[dsp + 1]).getNumber();
-			io.write(p, c);
+			outputs.get(node).write(p, (char) c);
 			result = (Node) dataStack[dsp];
 		} else if (command == HEAD)
 			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
@@ -168,7 +130,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 				else
 					throw new RuntimeException("Goal failed");
 			else
-				result = prover.prove(node) ? Atom.true_ : Atom.false_;
+				result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
 		} else if (command == SUBST) {
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");
@@ -206,12 +168,12 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 		return result;
 	}
 
-	public void setIn(InputStream in) {
-		this.io.setIn(in);
+	public void setIn(Reader in) {
+		inputs.put(Atom.NIL, new IndexedInputStream(in));
 	}
 
-	public void setOut(PrintStream out) {
-		this.io.setOut(out);
+	public void setOut(Writer out) {
+		outputs.put(Atom.NIL, new IndexedOutputStream(out));
 	}
 
 	public void setProver(Prover prover) {

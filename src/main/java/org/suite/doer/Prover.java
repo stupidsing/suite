@@ -30,10 +30,10 @@ public class Prover {
 
 	private boolean isEnableTrace = false;
 	private Tracer tracer;
-	private static final Set<String> NOTRACEPREDICATES = new HashSet<>(
+	private static final Set<String> noTracePredicates = new HashSet<>(
 			Arrays.asList("member", "replace"));
 
-	private static final Node OK = Atom.nil;
+	private static final Node OK = Atom.NIL;
 	private static final Node FAIL = Atom.create("fail");
 
 	private Node rem, alt; // remaining, alternative
@@ -142,7 +142,7 @@ public class Prover {
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;
 				String name = atom != null ? atom.getName() : null;
-				isTrace &= !NOTRACEPREDICATES.contains(name);
+				isTrace &= !noTracePredicates.contains(name);
 
 				if (!isTrace)
 					query = expand(query);

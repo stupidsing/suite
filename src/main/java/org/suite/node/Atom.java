@@ -2,42 +2,28 @@ package org.suite.node;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.suite.Context;
 import org.suite.Singleton;
-import org.util.Util;
 
 public class Atom extends Node {
 
 	private String name;
 
-	public static final Atom nil = create("");
-	public static final Atom true_ = create("true");
-	public static final Atom false_ = create("false");
+	public static final Atom NIL = create("");
+	public static final Atom TRUE = create("true");
+	public static final Atom FALSE = create("false");
+
+	private static final AtomicInteger uniqueCounter = new AtomicInteger();
 
 	private Atom(String name) {
 		this.name = name;
 	}
 
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this != object)
-			if (object instanceof Node) {
-				Node node = ((Node) object).finalNode();
-				if (node instanceof Atom) {
-					Atom a = (Atom) node;
-					return Util.equals(name, a.name);
-				} else
-					return false;
-			} else
-				return false;
-		else
-			return true;
+	public static Atom createUnique() {
+		Context context = Singleton.get().getHiddenContext();
+		return create(context, "TEMP" + uniqueCounter.getAndIncrement());
 	}
 
 	public static Atom create(String name) {
@@ -53,6 +39,18 @@ public class Atom extends Node {
 				pool.put(name, new WeakReference<>(atom = new Atom(name)));
 		}
 		return atom;
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return this == object //
+				|| object instanceof Node
+				&& this == ((Node) object).finalNode();
 	}
 
 	public String getName() {

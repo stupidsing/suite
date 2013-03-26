@@ -12,6 +12,18 @@ public class Int extends Node {
 		this.number = number;
 	}
 
+	public static Int create(int i) {
+		Int ret;
+		if (poolLo <= i && i < poolHi) {
+			int index = i - poolLo;
+			ret = pool[index];
+			if (ret == null)
+				ret = pool[index] = new Int(i);
+		} else
+			ret = new Int(i);
+		return ret;
+	}
+
 	@Override
 	public int hashCode() {
 		return number;
@@ -28,18 +40,6 @@ public class Int extends Node {
 				return false;
 		} else
 			return false;
-	}
-
-	public static Int create(int i) {
-		Int ret;
-		if (poolLo <= i && i < poolHi) {
-			int index = i - poolLo;
-			ret = pool[index];
-			if (ret == null)
-				ret = pool[index] = new Int(i);
-		} else
-			ret = new Int(i);
-		return ret;
 	}
 
 	public int getNumber() {

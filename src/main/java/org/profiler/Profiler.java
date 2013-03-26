@@ -18,8 +18,8 @@ import org.util.Util;
 
 public class Profiler {
 
-	private static final int TIMERDURATION = 50;
-	private static final int STACKTRACEDEPTH = 256;
+	private static final int timerDuration = 50;
+	private static final int stackTraceDepth = 256;
 
 	private Timer timer;
 	int nThreadRecords;
@@ -31,7 +31,7 @@ public class Profiler {
 			public void run() {
 				recordStats();
 			}
-		}, 0, TIMERDURATION);
+		}, 0, timerDuration);
 	}
 
 	public void stop() {
@@ -65,7 +65,7 @@ public class Profiler {
 		ThreadMXBean mx = ManagementFactory.getThreadMXBean();
 
 		long threadIds[] = mx.getAllThreadIds();
-		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, STACKTRACEDEPTH);
+		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
 
 		for (ThreadInfo thread : threadInfos)
 			if (thread.getThreadId() != currentThreadId

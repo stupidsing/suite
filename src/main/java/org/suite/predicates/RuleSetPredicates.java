@@ -47,7 +47,7 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			List<Rule> rules = prover.getRuleSearcher().getRules();
 			ListIterator<Rule> iter = rules.listIterator(rules.size());
-			Node allRules = Atom.nil;
+			Node allRules = Atom.NIL;
 
 			while (iter.hasPrevious()) {
 				Rule r = iter.previous();
@@ -81,7 +81,7 @@ public class RuleSetPredicates {
 	public static class ListPredicates implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Prototype proto = null;
-			if (ps != Atom.nil)
+			if (ps != Atom.NIL)
 				proto = Prototype.get(ps);
 
 			List<Node> nodes = new ArrayList<>();
@@ -94,7 +94,7 @@ public class RuleSetPredicates {
 				}
 			}
 
-			Node node = Atom.nil;
+			Node node = Atom.NIL;
 			for (int i = nodes.size() - 1; i >= 0; i--)
 				node = Tree.create(TermOp.NEXT__, nodes.get(i), node);
 

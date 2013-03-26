@@ -10,18 +10,22 @@ import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
 
 public class Connector {
 
 	public void connect() throws UnknownHostException, IOException {
+		Charset charset = IoUtil.charset;
+
 		try (Socket socket = new Socket("wwww.google.com", 80);
 				InputStream is = socket.getInputStream();
 				OutputStream os = socket.getOutputStream();
-				InputStreamReader isr = new InputStreamReader(is);
+				InputStreamReader isr = new InputStreamReader(is, charset);
 				BufferedReader reader = new BufferedReader(isr);
 				PrintWriter writer = new PrintWriter(os);) {
 			writer.print("GET /\r\n\r\n");
