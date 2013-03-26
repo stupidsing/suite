@@ -1,6 +1,5 @@
 package org.instructionexecutor;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom COMPARE = Atom.create("COMPARE");
 	private static final Atom CONS = Atom.create("CONS");
-	private static final Atom FFLUSH = Atom.create("FFLUSH");
 	private static final Atom FGETC = Atom.create("FGETC");
 	private static final Atom FPUTC = Atom.create("FPUTC");
 	private static final Atom HEAD = Atom.create("HEAD");
@@ -55,6 +53,19 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
+	}
+
+	@Override
+	public Node execute() {
+		for (IndexedInput input : inputs.values())
+			input.fetch();
+
+		Node node = super.execute();
+
+		for (IndexedOutput output : outputs.values())
+			output.flush();
+
+		return node;
 	}
 
 	@Override
@@ -86,14 +97,6 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node left = (Node) dataStack[dsp + 1];
 			Node right = (Node) dataStack[dsp];
 			result = Tree.create(TermOp.AND___, left, right);
-		} else if (command == FFLUSH) {
-			Node node = (Node) dataStack[dsp];
-			try {
-				outputs.get(node).close();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-			result = (Node) dataStack[dsp];
 		} else if (command == FGETC) {
 			Node node = (Node) dataStack[dsp + 1];
 			int p = ((Int) dataStack[dsp]).getNumber();

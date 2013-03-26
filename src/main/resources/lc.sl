@@ -3,14 +3,15 @@
 
 compile-logic .call .c0
 	:- .c0 = (_ ENTER
+		, _ ASSIGN-CONSTANT .returnReg true
 		, _ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
 		, _ PUSH .provenReg
 		, _ CALL-CONSTANT .callLabel
 		, _ POP _
 		, _ POP _
-		, _ EXIT-VALUE false
-		, .provenLabel EXIT-VALUE true
+		, _ ASSIGN-CONSTANT .returnReg false
+		, .provenLabel EXIT .returnReg
 		, .c1
 	)
 	, lc-parse .call .call1

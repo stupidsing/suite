@@ -62,7 +62,6 @@ public class InstructionUtil {
 		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
 		EXIT__________("EXIT"), //
-		EXITVALUE_____("EXIT-VALUE"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
 		IFFALSE_______("IF-FALSE"), //

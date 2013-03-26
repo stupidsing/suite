@@ -1,6 +1,5 @@
 package org.instructionexecutor.io;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -13,12 +12,16 @@ import java.io.Writer;
  */
 public class IndexedIo {
 
-	public interface IndexedInput extends Closeable {
+	public interface IndexedInput {
+		public void fetch();
+
 		public int read(int p);
 	}
 
-	public interface IndexedOutput extends Closeable {
+	public interface IndexedOutput {
 		public void write(int p, char c);
+
+		public void flush();
 	}
 
 	public static class IndexedInputStream implements IndexedInput {
@@ -27,6 +30,10 @@ public class IndexedIo {
 
 		public IndexedInputStream(Reader in) {
 			this.in = in;
+		}
+
+		@Override
+		public void fetch() {
 		}
 
 		@Override
@@ -47,11 +54,6 @@ public class IndexedIo {
 			}
 
 			return p < inBuffer.length() ? inBuffer.charAt(p) : -1;
-		}
-
-		@Override
-		public void close() throws IOException {
-			in.close();
 		}
 
 		public void setIn(Reader in) {
@@ -76,10 +78,14 @@ public class IndexedIo {
 		}
 
 		@Override
-		public void close() throws IOException {
-			out.write(outBuffer.toString());
+		public void flush() {
+			try {
+				out.write(outBuffer.toString());
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+
 			outBuffer.setLength(0);
-			out.close();
 		}
 
 		public void setOut(Writer out) {
