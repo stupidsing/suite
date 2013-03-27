@@ -186,6 +186,21 @@ fc-add-functions STANDARD .p (
 		else
 			init,
 	) >>
+	define sink = (os =>
+		define fputs = (pos =>
+			if-match:: \c, \cs
+			then:: fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
+			else:: os
+		) >>
+		fputs {0}
+	) >>
+	define source = (is =>
+		define fgets = (pos =>
+			define c = fgetc {is} {pos} >>
+			if (c >= 0) then (c, fgets {pos + 1}) else ()
+		) >>
+		fgets {0}
+	) >>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
 			if:: is-tree {s} && head {s} = 45
