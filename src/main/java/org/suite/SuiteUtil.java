@@ -15,10 +15,13 @@ import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
+import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Reference;
+import org.suite.node.Tree;
 import org.util.IoUtil;
 import org.util.Util;
 
@@ -320,6 +323,22 @@ public class SuiteUtil {
 
 	public static Node parse(InputStream is) throws IOException {
 		return parser.parse(is);
+	}
+
+	/**
+	 * Forms a string using ASCII codes in a list of number.
+	 */
+	public static String stringize(Node node) {
+		StringBuilder sb = new StringBuilder();
+		Tree tree;
+
+		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
+			Int i = (Int) tree.getLeft();
+			sb.append((char) i.getNumber());
+			node = tree.getRight();
+		}
+
+		return sb.toString();
 	}
 
 }

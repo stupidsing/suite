@@ -14,6 +14,7 @@ import org.instructionexecutor.io.IndexedIo.IndexedOutput;
 import org.instructionexecutor.io.IndexedIo.IndexedOutputStream;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
+import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
@@ -23,6 +24,7 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
+import org.util.LogUtil;
 
 public class FunctionInstructionExecutor extends InstructionExecutor {
 
@@ -132,10 +134,12 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
 		else if (command == ISVECTOR)
 			result = a(dataStack[dsp] instanceof Vector);
-		else if (command == LOG)
-			System.err.println(result = (Node) dataStack[dsp]);
-		else if (command == LOG2) {
-			System.err.println((Node) dataStack[dsp + 1]);
+		else if (command == LOG) {
+			result = (Node) dataStack[dsp];
+			LogUtil.info("LOG", Formatter.display(unwrap(result)));
+		} else if (command == LOG2) {
+			Node ln = unwrap((Node) dataStack[dsp + 1]);
+			LogUtil.info("LOG2", SuiteUtil.stringize(ln));
 			result = (Node) dataStack[dsp];
 		} else if (command == PROVE) {
 			if (prover == null)

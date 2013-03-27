@@ -21,7 +21,6 @@ import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
-import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.util.IoUtil;
@@ -177,13 +176,7 @@ public class Main {
 					fcc = SuiteUtil.fcc(node, isLazy);
 					configureFunCompiler(fcc);
 					node = SuiteUtil.evaluateFunctional(fcc);
-					Tree tree;
-					while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-						Int i = (Int) tree.getLeft();
-						System.out.print((char) i.getNumber());
-						node = tree.getRight();
-					}
-					System.out.println();
+					System.out.println(SuiteUtil.stringize(node).toString());
 					break;
 				case EVALUATETYPE:
 					fcc = SuiteUtil.fcc(node);
