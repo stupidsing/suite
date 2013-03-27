@@ -196,7 +196,7 @@ public class SystemPredicates {
 
 	private class Temporary implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return prover.bind(ps, Atom.createUnique());
+			return prover.bind(ps, Atom.unique());
 		}
 	}
 

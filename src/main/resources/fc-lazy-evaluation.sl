@@ -110,14 +110,15 @@ fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.r
 	:- member (
 		_compare/2/VALUE:VALUE:,
 		_cons/2/THUNK:THUNK:,
+		_log/1/THUNK:,
+		_log2/2/THUNK:THUNK:,
+		_popen/2/THUNK:THUNK:,
 		_prove/1/VALUE:,
 		_subst/2/VALUE:VALUE:,
 		fflush/1/VALUE:,
 		fgetc/2/VALUE:VALUE:,
 		fputc/4/VALUE:VALUE:VALUE:VALUE:,
 		is-tree/1/VALUE:,
-		log/1/THUNK:,
-		log2/2/THUNK:THUNK:,
 	) .var/.n/.paramWraps
 	, fc-define-default-fun .n .var .call
 	, !, .c0 = (_ SERVICE .reg .call .n, .cx)

@@ -256,7 +256,10 @@ children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
 default-fun-type () (LIST-OF _) #
 default-fun-type _cons (FUN-OF .type (FUN-OF (LIST-OF .type) (LIST-OF .type))) #
 default-fun-type _lhead (FUN-OF (LIST-OF .type) .type) #
+default-fun-type _log (FUN-OF .type .type) #
+default-fun-type _log2 (FUN-OF (LIST-OF NUMBER) (FUN-OF .type .type)) #
 default-fun-type _ltail (FUN-OF (LIST-OF .type) (LIST-OF .type)) #
+default-fun-type _popen (FUN-OF (LIST-OF NUMBER) (FUN-OF (LIST-OF NUMBER) (LIST-OF NUMBER))) #
 default-fun-type _prove (FUN-OF _ BOOLEAN) #
 default-fun-type _subst (FUN-OF _ (FUN-OF _ _)) #
 default-fun-type _thead (FUN-OF (TUPLE-OF _ (.type, _)) .type) #

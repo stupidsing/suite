@@ -79,7 +79,10 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _lhead HEAD #
+fc-define-default-fun 1 _log LOG #
+fc-define-default-fun 2 _log2 LOG2 #
 fc-define-default-fun 1 _ltail TAIL #
+fc-define-default-fun 2 _popen POPEN #
 fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 1 _thead HEAD #
@@ -88,8 +91,6 @@ fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 4 fputc FPUTC #
 fc-define-default-fun 1 is-tree IS-TREE #
-fc-define-default-fun 1 log LOG #
-fc-define-default-fun 2 log2 LOG2 #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
 fc-is-tuple-name .t
@@ -117,6 +118,9 @@ fc-error .m :- !, write .m, nl, fail #
 fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
+	define log = (m => _log {m}) >>
+	define log2 = (m => n => _log2 {m} {n}) >>
+	define popen = (command => in => _popen {command} {in}) >>
 	define prove = (goal => _prove {goal}) >>
 	define subst = (var => node => _subst {var} {node}) >>
 	define tail = (list => _ltail {list}) >>

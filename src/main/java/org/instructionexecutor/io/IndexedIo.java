@@ -24,11 +24,11 @@ public class IndexedIo {
 		public void flush();
 	}
 
-	public static class IndexedInputStream implements IndexedInput {
+	public static class IndexedReader implements IndexedInput {
 		private Reader in;
 		private StringBuilder inBuffer = new StringBuilder();
 
-		public IndexedInputStream(Reader in) {
+		public IndexedReader(Reader in) {
 			this.in = in;
 		}
 
@@ -61,11 +61,11 @@ public class IndexedIo {
 		}
 	}
 
-	public static class IndexedOutputStream implements IndexedOutput {
+	public static class IndexedWriter implements IndexedOutput {
 		private Writer out;
 		private StringBuilder outBuffer = new StringBuilder();
 
-		public IndexedOutputStream(Writer out) {
+		public IndexedWriter(Writer out) {
 			this.out = out;
 		}
 
