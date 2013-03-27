@@ -159,6 +159,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 				OutputStream pos = process.getOutputStream();
 
 				pos.write(in);
+				pos.close();
+
 				InputStreamReader reader = new InputStreamReader(pis);
 				inputs.put(result = Atom.unique(), new IndexedReader(reader));
 			} catch (IOException ex) {
