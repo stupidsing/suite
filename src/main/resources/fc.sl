@@ -24,7 +24,7 @@ compile-function .mode .do .c0
 	, !, infer-type-rule .parsed ()/()/()/() .tr0/.trx _
 	, !, resolve-types .tr0/.trx
 	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
-	, .c2 = (_ EXIT .reg, _ LEAVE, .d0)
+	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
 	, !, fc-assign-line-number 0 .c0
 #
 
@@ -79,7 +79,10 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _lhead HEAD #
+fc-define-default-fun 1 _log LOG #
+fc-define-default-fun 2 _log2 LOG2 #
 fc-define-default-fun 1 _ltail TAIL #
+fc-define-default-fun 2 _popen POPEN #
 fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 1 _thead HEAD #
@@ -88,8 +91,6 @@ fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 4 fputc FPUTC #
 fc-define-default-fun 1 is-tree IS-TREE #
-fc-define-default-fun 1 log LOG #
-fc-define-default-fun 2 log2 LOG2 #
 
 fc-is-tuple-name () :- ! # -- Empty atom is list terminator
 fc-is-tuple-name .t
@@ -117,6 +118,9 @@ fc-error .m :- !, write .m, nl, fail #
 fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
+	define log = (m => _log {m}) >>
+	define log2 = (m => n => _log2 {m} {n}) >>
+	define popen = (command => in => _popen {command} {in}) >>
 	define prove = (goal => _prove {goal}) >>
 	define subst = (var => node => _subst {var} {node}) >>
 	define tail = (list => _ltail {list}) >>
@@ -181,6 +185,21 @@ fc-add-functions STANDARD .p (
 			fun {h} {head {r}}, r
 		else
 			init,
+	) >>
+	define sink = (os =>
+		define fputs = (pos =>
+			if-match:: \c, \cs
+			then:: fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
+			else:: os
+		) >>
+		fputs {0}
+	) >>
+	define source = (is =>
+		define fgets = (pos =>
+			define c = fgetc {is} {pos} >>
+			if (c >= 0) then (c, fgets {pos + 1}) else ()
+		) >>
+		fgets {0}
 	) >>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>

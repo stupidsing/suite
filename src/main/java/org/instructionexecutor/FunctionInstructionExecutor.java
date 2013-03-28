@@ -1,5 +1,9 @@
 package org.instructionexecutor;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
@@ -9,11 +13,12 @@ import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.instructionexecutor.io.IndexedIo.IndexedInput;
-import org.instructionexecutor.io.IndexedIo.IndexedInputStream;
 import org.instructionexecutor.io.IndexedIo.IndexedOutput;
-import org.instructionexecutor.io.IndexedIo.IndexedOutputStream;
+import org.instructionexecutor.io.IndexedIo.IndexedReader;
+import org.instructionexecutor.io.IndexedIo.IndexedWriter;
 import org.suite.SuiteUtil;
 import org.suite.doer.Comparer;
+import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
@@ -23,6 +28,8 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
+import org.util.IoUtil;
+import org.util.LogUtil;
 
 public class FunctionInstructionExecutor extends InstructionExecutor {
 
@@ -35,6 +42,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
 	private static final Atom LOG = Atom.create("LOG");
 	private static final Atom LOG2 = Atom.create("LOG2");
+	private static final Atom POPEN = Atom.create("POPEN");
 	private static final Atom PROVE = Atom.create("PROVE");
 	private static final Atom SUBST = Atom.create("SUBST");
 	private static final Atom TAIL = Atom.create("TAIL");
@@ -53,6 +61,25 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	public FunctionInstructionExecutor(Node node) {
 		super(node);
+	}
+
+	/**
+	 * Evaluates the whole term to actual value by invoking all the thunks.
+	 */
+	public Node unwrap(Node node) {
+		node = node.finalNode();
+
+		if (node instanceof Tree) {
+			Tree tree = (Tree) node;
+			Node left = unwrap(tree.getLeft());
+			Node right = unwrap(tree.getRight());
+			node = Tree.create(tree.getOperator(), left, right);
+		} else if (node instanceof Closure) {
+			Closure closure = (Closure) node;
+			node = unwrap(evaluateClosure(closure));
+		}
+
+		return node;
 	}
 
 	@Override
@@ -113,11 +140,32 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
 		else if (command == ISVECTOR)
 			result = a(dataStack[dsp] instanceof Vector);
-		else if (command == LOG)
-			System.err.println(result = (Node) dataStack[dsp]);
-		else if (command == LOG2) {
-			System.err.println((Node) dataStack[dsp + 1]);
+		else if (command == LOG) {
 			result = (Node) dataStack[dsp];
+			LogUtil.info("LOG", Formatter.display(unwrap(result)));
+		} else if (command == LOG2) {
+			Node ln = unwrap((Node) dataStack[dsp + 1]);
+			LogUtil.info("LOG2", SuiteUtil.stringize(ln));
+			result = (Node) dataStack[dsp];
+		} else if (command == POPEN) {
+			Node n0 = unwrap((Node) dataStack[dsp + 1]);
+			Node n1 = unwrap((Node) dataStack[dsp]);
+			String cmd = SuiteUtil.stringize(n0);
+			byte in[] = SuiteUtil.stringize(n1).getBytes(IoUtil.charset);
+
+			try {
+				Process process = Runtime.getRuntime().exec(cmd);
+				InputStream pis = process.getInputStream();
+				OutputStream pos = process.getOutputStream();
+
+				pos.write(in);
+				pos.close();
+
+				InputStreamReader reader = new InputStreamReader(pis);
+				inputs.put(result = Atom.unique(), new IndexedReader(reader));
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		} else if (command == PROVE) {
 			if (prover == null)
 				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
@@ -169,11 +217,11 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void setIn(Reader in) {
-		inputs.put(Atom.NIL, new IndexedInputStream(in));
+		inputs.put(Atom.NIL, new IndexedReader(in));
 	}
 
 	public void setOut(Writer out) {
-		outputs.put(Atom.NIL, new IndexedOutputStream(out));
+		outputs.put(Atom.NIL, new IndexedWriter(out));
 	}
 
 	public void setProver(Prover prover) {

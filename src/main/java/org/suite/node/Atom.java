@@ -21,7 +21,7 @@ public class Atom extends Node {
 		this.name = name;
 	}
 
-	public static Atom createUnique() {
+	public static Atom unique() {
 		Context context = Singleton.get().getHiddenContext();
 		return create(context, "TEMP" + uniqueCounter.getAndIncrement());
 	}

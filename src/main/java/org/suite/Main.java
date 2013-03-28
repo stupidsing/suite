@@ -100,7 +100,7 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE, EVALUATE, EVALUATEDUMP, EVALUATESTR, EVALUATETYPE
+		FACT, QUERY, ELABORATE, EVALUATE, EVALUATESTR, EVALUATETYPE
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
@@ -142,9 +142,6 @@ public class Main {
 				} else if (input.startsWith("/")) {
 					type = InputType.ELABORATE;
 					input = input.substring(1);
-				} else if (input.startsWith("\\e")) {
-					type = InputType.EVALUATE;
-					input = input.substring(2);
 				} else if (input.startsWith("\\s")) {
 					type = InputType.EVALUATESTR;
 					input = input.substring(2);
@@ -152,7 +149,7 @@ public class Main {
 					type = InputType.EVALUATETYPE;
 					input = input.substring(2);
 				} else if (input.startsWith("\\")) {
-					type = InputType.EVALUATEDUMP;
+					type = InputType.EVALUATE;
 					input = input.substring(1);
 				} else
 					type = InputType.FACT;
@@ -163,7 +160,6 @@ public class Main {
 
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
-				String prog;
 				FunCompilerConfig fcc;
 
 				switch (type) {
@@ -173,22 +169,14 @@ public class Main {
 				case EVALUATE:
 					fcc = SuiteUtil.fcc(node, isLazy);
 					configureFunCompiler(fcc);
-					Node result = SuiteUtil.evaluateFunctional(fcc);
-					System.out.println(Formatter.dump(result));
-					break;
-				case EVALUATEDUMP:
-					prog = applyFilter("anything => dump {" + input + "}");
-					fcc = SuiteUtil.fcc(prog, isLazy);
-					configureFunCompiler(fcc);
-					SuiteUtil.evaluateFunctional(fcc);
-					System.out.println();
+					node = SuiteUtil.evaluateFunctional(fcc);
+					System.out.println(Formatter.dump(node));
 					break;
 				case EVALUATESTR:
-					prog = applyFilter("anything => " + input);
-					fcc = SuiteUtil.fcc(prog, isLazy);
+					fcc = SuiteUtil.fcc(node, isLazy);
 					configureFunCompiler(fcc);
-					SuiteUtil.evaluateFunctional(fcc);
-					System.out.println();
+					node = SuiteUtil.evaluateFunctional(fcc);
+					System.out.println(SuiteUtil.stringize(node).toString());
 					break;
 				case EVALUATETYPE:
 					fcc = SuiteUtil.fcc(node);
@@ -279,23 +267,7 @@ public class Main {
 
 	// Public to be called by test case FilterTest.java
 	public static String applyFilter(String func) {
-		return "" //
-				+ "define source = (is => \n" //
-				+ "    define fgets = (pos => \n" //
-				+ "        define c = fgetc {is} {pos} >> \n" //
-				+ "        if (c >= 0) then (c, fgets {pos + 1}) else () \n" //
-				+ "    ) >> \n" //
-				+ "    fgets {0} \n" //
-				+ ") >> \n" //
-				+ "define sink = (os => \n" //
-				+ "    define fputs = (pos => \n" //
-				+ "        if-match:: \\c, \\cs \n" //
-				+ "        then:: fputc {os} {pos} {c} {fputs {pos + 1} {cs}} \n" //
-				+ "        else:: os \n" //
-				+ "    ) >> \n" //
-				+ "    fputs {0} \n" //
-				+ ") >> \n" //
-				+ "source {} | (" + func + ") | sink {}";
+		return "source {} | (" + func + ") | sink {}";
 	}
 
 	private void configureFunCompiler(FunCompilerConfig c) {
