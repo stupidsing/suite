@@ -25,9 +25,9 @@ public class B_TreeTest {
 
 	@Test
 	public void memoryTest() {
-		Persister<B_Tree.Page<Integer>> persister = InMemoryPersister.create();
+		InMemoryPersister<B_Tree.Page<Integer>> imp = new InMemoryPersister<>();
 
-		b_tree = new B_Tree<>(persister, compare);
+		b_tree = new B_Tree<>(imp, imp, compare);
 		b_tree.setBranchFactor(4);
 		b_tree.setLeafFactor(4);
 		shuffleAndTest();
@@ -35,18 +35,18 @@ public class B_TreeTest {
 
 	@Test
 	public void fileTest() throws IOException {
-		FilePersister<Integer, String> fp = new FilePersister<Integer, String>(
-				"/tmp/test.bt" //
-				, new ByteBufferIntAccessor() //
-				, new ByteBufferFixedStringAccessor(16));
-		fp.start();
+		String filename = "/tmp/test.bt";
 
-		b_tree = new B_Tree<>(fp, compare);
-		b_tree.setBranchFactor(16);
-		b_tree.setLeafFactor(16);
-		shuffleAndTest();
-
-		fp.stop();
+		try (FileAllocator al = new FileAllocator(filename);
+				FilePersister<Integer, String> fp = new FilePersister<>(
+						filename //
+						, new ByteBufferIntAccessor() //
+						, new ByteBufferFixedStringAccessor(16));) {
+			b_tree = new B_Tree<>(al, fp, compare);
+			b_tree.setBranchFactor(16);
+			b_tree.setLeafFactor(16);
+			shuffleAndTest();
+		}
 	}
 
 	private void shuffleAndTest() {

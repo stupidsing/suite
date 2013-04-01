@@ -18,6 +18,7 @@ public class B_Tree<Key, Value> {
 
 	public int branchFactor, leafFactor;
 	public Integer root;
+	public Allocator allocator;
 	public Persister<Page<Key>> persister;
 	public Comparator<Key> comparator;
 
@@ -55,16 +56,21 @@ public class B_Tree<Key, Value> {
 		}
 	}
 
-	public B_Tree(Persister<Page<Key>> persister, Comparator<Key> comparator) {
-		this(persister, comparator, persister.allocate());
+	public B_Tree(Allocator allocator //
+			, Persister<Page<Key>> persister //
+			, Comparator<Key> comparator) {
+		this(allocator, persister, comparator, allocator.allocate());
 		Page<Key> rootPage = new Page<>(root);
 		save(rootPage);
 	}
 
-	public B_Tree(Persister<Page<Key>> persister, Comparator<Key> comparator,
-			Integer root) {
+	public B_Tree(Allocator allocator //
+			, Persister<Page<Key>> persister //
+			, Comparator<Key> comparator //
+			, Integer root) {
 		setBranchFactor(16);
 		setLeafFactor(16);
+		this.allocator = allocator;
 		this.persister = persister;
 		this.comparator = comparator;
 		this.root = root;
@@ -130,7 +136,7 @@ public class B_Tree<Key, Value> {
 				break;
 
 			// Splits list into the two pages
-			Page<Key> p1 = new Page<>(persister.allocate()), p2 = page;
+			Page<Key> p1 = new Page<>(allocator.allocate()), p2 = page;
 			p1.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
 			p2.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
 			save(p1);
@@ -140,7 +146,7 @@ public class B_Tree<Key, Value> {
 			toInsert = new KeyPointer<>(largest(p1), new Branch(p1.pageNo));
 
 			if (trace.empty()) { // Have to create a new root
-				page = new Page<>(root = persister.allocate());
+				page = new Page<>(root = allocator.allocate());
 				add(page, toInsert);
 				add(page, new KeyPointer<>(largest(p2), new Branch(p2.pageNo)));
 				break;
@@ -204,7 +210,7 @@ public class B_Tree<Key, Value> {
 
 		if (page.pageNo == root && childPage != null
 				&& page.keyPointers.size() == 1) {
-			persister.deallocate(root);
+			allocator.deallocate(root);
 			root = (page = childPage).pageNo;
 		}
 
@@ -236,7 +242,7 @@ public class B_Tree<Key, Value> {
 	private void merge(Page<Key> parent, Page<Key> p1, Page<Key> p2, int index) {
 		p2.keyPointers.addAll(0, p1.keyPointers);
 		persister.save(p2.pageNo, p2);
-		persister.deallocate(p1.pageNo);
+		allocator.deallocate(p1.pageNo);
 		parent.keyPointers.remove(index);
 	}
 
