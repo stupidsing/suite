@@ -320,8 +320,8 @@ public class B_Tree<Key, Value> {
 		this.persister = persister;
 	}
 
-	public void setCompare(Comparator<Key> compare) {
-		this.comparator = compare;
+	public void setComparator(Comparator<Key> comparator) {
+		this.comparator = comparator;
 	}
 
 }
