@@ -32,7 +32,7 @@ public class Cluster {
 	/**
 	 * Established channels connecting to peers.
 	 */
-	private Map<String, ClusterChannel> channels = Util.createHashMap();
+	private Map<String, ClusterChannel> channels = new HashMap<>();
 
 	private MultiSetter<String> onJoined = Util.multiSetter();
 	private MultiSetter<String> onLeft = Util.multiSetter();

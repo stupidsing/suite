@@ -11,6 +11,7 @@ import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,12 +49,12 @@ public class ClusterProbe extends ThreadedService {
 	/**
 	 * Active nodes with their ages.
 	 */
-	private Map<String, Long> lastActiveTime = Util.createHashMap();
+	private Map<String, Long> lastActiveTime = new HashMap<>();
 
 	/**
 	 * Time-stamp to avoid HELO bombing.
 	 */
-	private Map<String, Long> lastSentTime = Util.createHashMap();
+	private Map<String, Long> lastSentTime = new HashMap<>();
 
 	private Setter<String> onJoined = Util.nullSetter();
 	private Setter<String> onLeft = Util.nullSetter();

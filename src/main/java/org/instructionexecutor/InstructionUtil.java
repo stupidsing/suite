@@ -1,6 +1,7 @@
 package org.instructionexecutor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,6 @@ import org.parser.Operator;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.util.Util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -16,7 +16,7 @@ import com.google.common.collect.HashBiMap;
 public class InstructionUtil {
 
 	private static final BiMap<Insn, String> insnNames = HashBiMap.create();
-	private static final Map<Operator, Insn> evalInsns = Util.createHashMap();
+	private static final Map<Operator, Insn> evalInsns = new HashMap<>();
 
 	static {
 		for (Insn insn : Insn.values())

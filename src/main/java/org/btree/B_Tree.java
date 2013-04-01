@@ -1,6 +1,7 @@
 package org.btree;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
@@ -47,7 +48,7 @@ public class B_Tree<Key, Value> {
 
 	public static class Page<K> {
 		public int pageNo;
-		public List<KeyPointer<K>> keyPointers = Util.createList();
+		public List<KeyPointer<K>> keyPointers = new ArrayList<>();
 
 		public Page(int pageNo) {
 			this.pageNo = pageNo;
@@ -130,8 +131,8 @@ public class B_Tree<Key, Value> {
 
 			// Splits list into the two pages
 			Page<Key> p1 = new Page<>(persister.allocate()), p2 = page;
-			p1.keyPointers = Util.createList(keyPointers.subList(0, half));
-			p2.keyPointers = Util.createList(keyPointers.subList(half, size));
+			p1.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
+			p2.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
 			save(p1);
 			save(p2);
 
@@ -240,7 +241,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	private Stack<Pair<Page<Key>, Integer>> traverse(Key key) {
-		Stack<Pair<Page<Key>, Integer>> walked = Util.createStack();
+		Stack<Pair<Page<Key>, Integer>> walked = new Stack<>();
 		Page<Key> page = null;
 		Integer pageNo = root;
 

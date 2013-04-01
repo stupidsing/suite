@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class DumpUtil {
 					sb.append(" caught " + ex + "\n");
 				}
 
-		Set<String> displayedMethod = Util.createHashSet();
+		Set<String> displayedMethod = new HashSet<>();
 		for (Method method : clazz.getMethods()) {
 			String name = method.getName();
 			try {

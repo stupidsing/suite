@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class ClusterTest {
 	public void testCluster() throws IOException {
 		InetAddress localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = Util.createHashMap();
+		Map<String, InetSocketAddress> peers = new HashMap<>();
 		peers.put("NODE0", new InetSocketAddress(localHost, 3000));
 		peers.put("NODE1", new InetSocketAddress(localHost, 3001));
 

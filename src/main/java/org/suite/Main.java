@@ -36,7 +36,7 @@ public class Main {
 
 	private boolean isLazy = true;
 	private boolean isDefaultLibrary = true;
-	private List<String> libraries = Util.createList();
+	private List<String> libraries = new ArrayList<>();
 	private boolean isTrace = false;
 	private boolean isDumpCode = false;
 
@@ -56,7 +56,7 @@ public class Main {
 		boolean isFilter = false;
 		boolean isFunctional = false;
 		boolean isLogical = false;
-		List<String> inputs = Util.createList();
+		List<String> inputs = new ArrayList<>();
 		Iterator<String> iter = Arrays.asList(args).iterator();
 
 		while (iter.hasNext()) {

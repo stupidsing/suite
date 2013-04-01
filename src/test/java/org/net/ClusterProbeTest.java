@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -19,11 +20,11 @@ public class ClusterProbeTest {
 		int nNodes = 3;
 		InetAddress localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = Util.createHashMap();
+		Map<String, InetSocketAddress> peers = new HashMap<>();
 		for (int i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
-		Map<String, ClusterProbe> probes = Util.createHashMap();
+		Map<String, ClusterProbe> probes = new HashMap<>();
 		for (String name : peers.keySet()) {
 			ClusterProbe probe = new ClusterProbe(name, peers);
 			probes.put(name, probe);

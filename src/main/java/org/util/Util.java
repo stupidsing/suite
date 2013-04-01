@@ -10,13 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,32 +48,6 @@ public class Util {
 			for (char c : s.toCharArray())
 				isBlank &= Character.isWhitespace(c);
 		return isBlank;
-	}
-
-	// Allows generic-object creation with type parameter inductions
-
-	public static <T> Stack<T> createStack() {
-		return new Stack<>();
-	}
-
-	public static <T> Vector<T> createVector() {
-		return new Vector<>();
-	}
-
-	public static <T> List<T> createList() {
-		return new ArrayList<>();
-	}
-
-	public static <T> List<T> createList(Collection<T> c) {
-		return new ArrayList<>(c);
-	}
-
-	public static <T> Set<T> createHashSet() {
-		return new HashSet<>();
-	}
-
-	public static <K, V> Map<K, V> createHashMap() {
-		return new HashMap<>();
 	}
 
 	public static long createDate(int year, int month, int day) {

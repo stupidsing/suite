@@ -1,11 +1,11 @@
 package org.weiqi.uct;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.util.LogUtil;
-import org.util.Util;
 import org.weiqi.Weiqi;
 
 /**
@@ -28,8 +28,8 @@ public class UctSearch<Move> {
 
 	private UctVisitor<Move> visitor;
 	private UctNode<Move> root, best;
-	private Map<Move, AtomicInteger> nRaveWins = Util.createHashMap();
-	private Map<Move, AtomicInteger> nRaveVisits = Util.createHashMap();
+	private Map<Move, AtomicInteger> nRaveWins = new HashMap<>();
+	private Map<Move, AtomicInteger> nRaveVisits = new HashMap<>();
 
 	public static class UctNode<Move> {
 		private Move move;

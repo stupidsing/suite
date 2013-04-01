@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
@@ -132,7 +133,7 @@ public class SuiteUtil {
 	public static class FunCompilerConfig {
 		private Node node;
 		private boolean isLazy;
-		private List<String> libraries = Util.createList();
+		private List<String> libraries = new ArrayList<>();
 		private boolean isTrace = false;
 		private boolean isDumpCode = false;
 		private Reader in = new InputStreamReader(System.in, IoUtil.charset);

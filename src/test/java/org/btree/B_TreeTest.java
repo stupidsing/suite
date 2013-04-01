@@ -27,7 +27,7 @@ public class B_TreeTest {
 	public void memoryTest() {
 		Persister<B_Tree.Page<Integer>> persister = InMemoryPersister.create();
 
-		b_tree = new B_Tree<Integer, String>(persister, compare);
+		b_tree = new B_Tree<>(persister, compare);
 		b_tree.setBranchFactor(4);
 		b_tree.setLeafFactor(4);
 		shuffleAndTest();
@@ -41,7 +41,7 @@ public class B_TreeTest {
 				, new ByteBufferFixedStringAccessor(16));
 		fp.start();
 
-		b_tree = new B_Tree<Integer, String>(fp, compare);
+		b_tree = new B_Tree<>(fp, compare);
 		b_tree.setBranchFactor(16);
 		b_tree.setLeafFactor(16);
 		shuffleAndTest();
