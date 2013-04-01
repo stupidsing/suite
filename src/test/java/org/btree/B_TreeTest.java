@@ -2,6 +2,7 @@ package org.btree;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
@@ -36,6 +37,7 @@ public class B_TreeTest {
 	@Test
 	public void fileTest() throws IOException {
 		String filename = "/tmp/test.bt";
+		new File(filename).delete();
 
 		try (FileAllocator al = new FileAllocator(filename);
 				FilePersister<Integer, String> fp = new FilePersister<>(
@@ -50,8 +52,11 @@ public class B_TreeTest {
 	}
 
 	private void shuffleAndTest() {
+		shuffleNumbers();
+		addAndRemove();
+	}
 
-		// Shuffle the numbers
+	private void shuffleNumbers() {
 		Random random = new Random();
 		for (int i = 0; i < nKeys; i++)
 			keys[i] = i;
@@ -61,8 +66,6 @@ public class B_TreeTest {
 			keys[i] = keys[j];
 			keys[j] = temp;
 		}
-
-		addAndRemove();
 	}
 
 	public void addAndRemove() {
