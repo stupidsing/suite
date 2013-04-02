@@ -13,6 +13,21 @@ import java.util.Set;
 
 public class DumpUtil {
 
+	private Set<Integer> dumpedIds = new HashSet<>();
+
+	private DumpUtil() {
+	}
+
+	public static String dump(Object object) {
+		return dump("", object);
+	}
+
+	public static String dump(String prefix, Object object) {
+		StringBuilder sb = new StringBuilder();
+		dump(prefix, object, sb);
+		return sb.toString();
+	}
+
 	/**
 	 * Dumps object content (public data and getters) through Reflection to a
 	 * string buffer, line-by-line. Probably you want to use the easier 1 or
@@ -32,15 +47,15 @@ public class DumpUtil {
 	 * @param sb
 	 *            String buffer to hold the dumped content.
 	 */
-	public static void dump(String prefix, Object object, StringBuffer sb) {
+	public static void dump(String prefix, Object object, StringBuilder sb) {
 		if (object != null)
-			dump(prefix, object, object.getClass(), sb);
+			new DumpUtil().dump(prefix, object, object.getClass(), sb);
 		else
-			dump(prefix, object, void.class, sb);
+			new DumpUtil().dump(prefix, object, void.class, sb);
 	}
 
-	public static void dump(String prefix, Object object, Class<?> clazz,
-			StringBuffer sb) {
+	public void dump(String prefix, Object object, Class<?> clazz,
+			StringBuilder sb) {
 		sb.append(prefix);
 		sb.append(" =");
 		if (object == null) {
@@ -48,7 +63,12 @@ public class DumpUtil {
 			return;
 		}
 
-		if (clazz == String.class)
+		int id = System.identityHashCode(object);
+
+		if (!dumpedIds.add(id)) {
+			sb.append(" <<recursed>>");
+			return;
+		} else if (clazz == String.class)
 			sb.append(" \"" + object + "\"");
 		else if (!Collection.class.isAssignableFrom(clazz))
 			sb.append(" " + object);

@@ -37,9 +37,11 @@ public class B_TreeTest {
 	@Test
 	public void fileTest() throws IOException {
 		String filename = "/tmp/test.bt";
+		String allocMapFilename = filename + ".alloc";
 		new File(filename).delete();
+		new File(allocMapFilename).delete();
 
-		try (FileAllocator al = new FileAllocator(filename);
+		try (FileAllocator al = new FileAllocator(allocMapFilename);
 				FilePersister<Integer, String> fp = new FilePersister<>(
 						filename //
 						, new ByteBufferIntAccessor() //

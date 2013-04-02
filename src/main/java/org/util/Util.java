@@ -205,7 +205,7 @@ public class Util {
 	 * log4j, with a descriptive name which you gave.
 	 */
 	public static void dump(String name, Object object) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("Dumping ");
 		sb.append(name);
 		DumpUtil.dump("", object, sb);

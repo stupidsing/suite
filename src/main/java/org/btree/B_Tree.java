@@ -26,7 +26,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public static class Leaf<V> implements Pointer {
-		V value;
+		public V value;
 
 		public Leaf(V value) {
 			this.value = value;
@@ -34,7 +34,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public static class Branch implements Pointer {
-		int branch;
+		public int branch;
 
 		public Branch(int branch) {
 			this.branch = branch;
@@ -218,16 +218,15 @@ public class B_Tree<Key, Value> {
 	}
 
 	private int getMaxNodes(Page<Key> page) {
-		List<B_Tree.KeyPointer<Key>> ptrs = page.keyPointers;
-		boolean isBranch = !ptrs.isEmpty()
-				&& ptrs.get(0).t2 instanceof B_Tree.Branch;
+		List<KeyPointer<Key>> ptrs = page.keyPointers;
+		boolean isBranch = !ptrs.isEmpty() && ptrs.get(0).t2 instanceof Branch;
 		return isBranch ? branchFactor : leafFactor;
 	}
 
 	private Page<Key> loadPageIfExists(Page<Key> parent, int index) {
 		if (index >= 0 && index < parent.keyPointers.size()) {
 			Pointer pointer = parent.keyPointers.get(index).t2;
-			if (pointer instanceof B_Tree.Branch)
+			if (pointer instanceof Branch)
 				return persister.load(((Branch) pointer).branch);
 		}
 		return null;
@@ -259,7 +258,7 @@ public class B_Tree<Key, Value> {
 			pageNo = null;
 			if (index < page.keyPointers.size()) {
 				Pointer pointer = page.keyPointers.get(index).t2;
-				if (pointer instanceof B_Tree.Branch)
+				if (pointer instanceof Branch)
 					pageNo = ((Branch) pointer).branch;
 			}
 		}
@@ -293,10 +292,11 @@ public class B_Tree<Key, Value> {
 
 	public void dump(PrintStream w, String pfx, int pageNo) {
 		Page<Key> page = persister.load(pageNo);
+
 		for (KeyPointer<Key> keyPointer : page.keyPointers) {
 			Pointer ptr = keyPointer.t2;
 
-			if (ptr instanceof B_Tree.Branch) {
+			if (ptr instanceof Branch) {
 				dump(w, pfx + "\t", ((Branch) ptr).branch);
 				w.println(pfx + keyPointer.t1);
 			} else
