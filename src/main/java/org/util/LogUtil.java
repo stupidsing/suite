@@ -93,8 +93,7 @@ public class LogUtil {
 		I proxied = (I) Proxy.newProxyInstance(clazz.getClassLoader(), classes,
 				new InvocationHandler() {
 					public Object invoke(Object proxy //
-							, Method method //
-							, Object ps[]) throws Exception {
+							, Method method, Object ps[]) throws Exception {
 						String prefix = clazz.getSimpleName() //
 								+ "." + method.getName() + "()\n";
 
