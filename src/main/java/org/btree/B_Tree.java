@@ -256,6 +256,7 @@ public class B_Tree<Key, Value> {
 			walked.push(Pair.create(page, index));
 
 			pageNo = null;
+
 			if (index < page.keyPointers.size()) {
 				Pointer pointer = page.keyPointers.get(index).t2;
 				if (pointer instanceof Branch)
