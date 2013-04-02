@@ -26,7 +26,7 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 	private static final int pageSize = 4096;
 
 	private static final char LEAF = 'L';
-	private static final char INTERNAL = 'I';
+	private static final char BRANCH = 'I';
 
 	private RandomAccessFile file;
 	private FileChannel channel;
@@ -58,13 +58,13 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 			B_Tree.Page<Key> page = new B_Tree.Page<>(pageNo);
 			List<B_Tree.KeyPointer<Key>> keyPointers = page.keyPointers;
 
-			char nodeType = buffer.getChar();
 			int size = buffer.getInt();
 
 			for (int i = 0; i < size; i++) {
+				char nodeType = buffer.getChar();
 				Key key = keyAccessor.read(buffer);
 
-				if (nodeType == INTERNAL) {
+				if (nodeType == BRANCH) {
 					int branch = buffer.getInt();
 					addBranch(keyPointers, key, branch);
 				} else if (nodeType == LEAF) {
@@ -91,22 +91,21 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 	public void save(int pageNo, B_Tree.Page<Key> page) {
 		try {
 			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
-			List<B_Tree.KeyPointer<Key>> ptrs = page.keyPointers;
-			boolean isBranch = !ptrs.isEmpty()
-					&& ptrs.get(0).t2 instanceof B_Tree.Branch;
+			List<B_Tree.KeyPointer<Key>> keyPointers = page.keyPointers;
 
-			buffer.putChar(isBranch ? INTERNAL : LEAF);
-			buffer.putInt(ptrs.size());
+			buffer.putInt(keyPointers.size());
 
-			for (B_Tree.KeyPointer<Key> keyPtr : ptrs) {
-				keyAccessor.write(buffer, keyPtr.t1);
-
-				if (keyPtr.t2 instanceof B_Tree.Branch) {
-					int branch = ((B_Tree.Branch) keyPtr.t2).branch;
+			for (B_Tree.KeyPointer<Key> keyPointer : keyPointers) {
+				if (keyPointer.t2 instanceof B_Tree.Branch) {
+					int branch = ((B_Tree.Branch) keyPointer.t2).branch;
+					buffer.putChar(BRANCH);
+					keyAccessor.write(buffer, keyPointer.t1);
 					buffer.putInt(branch);
-				} else if (keyPtr.t2 instanceof B_Tree.Leaf) {
+				} else if (keyPointer.t2 instanceof B_Tree.Leaf) {
 					@SuppressWarnings("unchecked")
-					Value value = ((B_Tree.Leaf<Value>) keyPtr.t2).value;
+					Value value = ((B_Tree.Leaf<Value>) keyPointer.t2).value;
+					buffer.putChar(LEAF);
+					keyAccessor.write(buffer, keyPointer.t1);
 					valueAccessor.write(buffer, value);
 				}
 			}

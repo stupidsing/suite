@@ -136,19 +136,19 @@ public class B_Tree<Key, Value> {
 				break;
 
 			// Splits list into the two pages
-			Page<Key> p1 = new Page<>(allocator.allocate()), p2 = page;
-			p1.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
-			p2.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
-			save(p1);
-			save(p2);
+			Page<Key> p0 = new Page<>(allocator.allocate()), p1 = page;
+			p0.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
+			p1.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
+			save(p0);
 
 			// Propagates to parent
-			toInsert = new KeyPointer<>(largest(p1), new Branch(p1.pageNo));
+			toInsert = new KeyPointer<>(largest(p0), new Branch(p0.pageNo));
 
 			if (trace.empty()) { // Have to create a new root
+				save(p1);
 				page = new Page<>(root = allocator.allocate());
 				add(page, toInsert);
-				add(page, new KeyPointer<>(largest(p2), new Branch(p2.pageNo)));
+				add(page, new KeyPointer<>(largest(p1), new Branch(p1.pageNo)));
 				break;
 			}
 		}
