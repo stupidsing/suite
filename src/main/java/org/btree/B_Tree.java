@@ -60,8 +60,7 @@ public class B_Tree<Key, Value> {
 			, Persister<Page<Key>> persister //
 			, Comparator<Key> comparator) {
 		this(allocator, persister, comparator, allocator.allocate());
-		Page<Key> rootPage = new Page<>(root);
-		savePage(rootPage);
+		savePage(new Page<Key>(root));
 	}
 
 	public B_Tree(Allocator allocator //
