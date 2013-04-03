@@ -144,12 +144,12 @@ public class B_Tree<Key, Value> {
 			save(p1);
 
 			// Propagates to parent
-			toInsert = new KeyPointer<>(largest(p0), new Branch(p0.pageNo));
+			toInsert = createPointerToPage(p0);
 
 			if (trace.empty()) { // Have to create a new root
 				page = new Page<>(root = allocator.allocate());
-				add(page, toInsert);
-				add(page, new KeyPointer<>(largest(p1), new Branch(p1.pageNo)));
+				addPointer(page, toInsert);
+				addPointer(page, createPointerToPage(p1));
 				save(page);
 				break;
 			}
@@ -192,7 +192,7 @@ public class B_Tree<Key, Value> {
 							lp.keyPointers.remove(lp.keyPointers.size() - 1));
 					save(childPage);
 					save(lp);
-					page.keyPointers.get(index - 1).t1 = largest(lp);
+					page.keyPointers.set(index - 1, createPointerToPage(lp));
 				}
 			else if (rsize >= lsize && rsize != 0)
 				if (rsize <= half) // Merge
@@ -201,7 +201,7 @@ public class B_Tree<Key, Value> {
 					childPage.keyPointers.add(rp.keyPointers.remove(0));
 					save(childPage);
 					save(rp);
-					page.keyPointers.get(index).t1 = largest(childPage);
+					page.keyPointers.set(index, createPointerToPage(childPage));
 				}
 			else
 				// Left/right node empty, should not happen if re-balanced well
@@ -240,7 +240,7 @@ public class B_Tree<Key, Value> {
 	 */
 	private void merge(Page<Key> parent, Page<Key> p1, Page<Key> p2, int index) {
 		p2.keyPointers.addAll(0, p1.keyPointers);
-		persister.save(p2.pageNo, p2);
+		save(p2);
 		allocator.deallocate(p1.pageNo);
 		parent.keyPointers.remove(index);
 	}
@@ -267,7 +267,7 @@ public class B_Tree<Key, Value> {
 		return walked;
 	}
 
-	private void add(Page<Key> page, KeyPointer<Key> keyPointer) {
+	private void addPointer(Page<Key> page, KeyPointer<Key> keyPointer) {
 		page.keyPointers.add(findPosition(page, keyPointer.t1), keyPointer);
 	}
 
@@ -279,8 +279,10 @@ public class B_Tree<Key, Value> {
 		return i;
 	}
 
-	private Key largest(Page<Key> page) {
-		return page.keyPointers.get(page.keyPointers.size() - 1).t1;
+	private KeyPointer<Key> createPointerToPage(Page<Key> page) {
+		List<KeyPointer<Key>> keyPointers = page.keyPointers;
+		Key largest = keyPointers.get(keyPointers.size() - 1).t1;
+		return new KeyPointer<>(largest, new Branch(page.pageNo));
 	}
 
 	private void save(Page<Key> page) {
