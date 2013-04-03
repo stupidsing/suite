@@ -20,8 +20,8 @@ import java.util.List;
 public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 		Closeable {
 
-	private ByteBufferAccessor<Key> keyAccessor;
-	private ByteBufferAccessor<Value> valueAccessor;
+	private Serializer<Key> keyAccessor;
+	private Serializer<Value> valueAccessor;
 
 	private static final int pageSize = 4096;
 
@@ -32,9 +32,8 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 	private FileChannel channel;
 
 	public FilePersister(String filename //
-			, ByteBufferAccessor<Key> keyAccessor //
-			, ByteBufferAccessor<Value> valueAccessor)
-			throws FileNotFoundException {
+			, Serializer<Key> keyAccessor //
+			, Serializer<Value> valueAccessor) throws FileNotFoundException {
 		this.keyAccessor = keyAccessor;
 		this.valueAccessor = valueAccessor;
 

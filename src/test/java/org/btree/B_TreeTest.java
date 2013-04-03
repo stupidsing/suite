@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
 
-import org.btree.ByteBufferAccessor.ByteBufferFixedStringAccessor;
-import org.btree.ByteBufferAccessor.ByteBufferIntAccessor;
+import org.btree.Serializer.FixedStringSerializer;
+import org.btree.Serializer.IntSerializer;
 import org.junit.Test;
 
 public class B_TreeTest {
@@ -44,8 +44,8 @@ public class B_TreeTest {
 		try (FileAllocator al = new FileAllocator(allocMapFilename);
 				FilePersister<Integer, String> fp = new FilePersister<>(
 						filename //
-						, new ByteBufferIntAccessor() //
-						, new ByteBufferFixedStringAccessor(16));) {
+						, new IntSerializer() //
+						, new FixedStringSerializer(16));) {
 			b_tree = new B_Tree<>(al, fp, compare);
 			b_tree.setBranchFactor(16);
 			b_tree.setLeafFactor(16);
