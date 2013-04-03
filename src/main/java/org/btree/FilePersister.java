@@ -95,7 +95,7 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 
 			buffer.putInt(keyPointers.size());
 
-			for (B_Tree.KeyPointer<Key> keyPointer : keyPointers) {
+			for (B_Tree.KeyPointer<Key> keyPointer : keyPointers)
 				if (keyPointer.t2 instanceof B_Tree.Branch) {
 					int branch = ((B_Tree.Branch) keyPointer.t2).branch;
 					buffer.putChar(BRANCH);
@@ -108,7 +108,6 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 					keyAccessor.write(buffer, keyPointer.t1);
 					valueAccessor.write(buffer, value);
 				}
-			}
 
 			buffer.flip();
 			channel.write(buffer, pageNo * pageSize);

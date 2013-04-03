@@ -19,8 +19,8 @@ public class B_TreeTest {
 	private B_Tree<Integer, String> b_tree;
 
 	private Comparator<Integer> compare = new Comparator<Integer>() {
-		public int compare(Integer i, Integer j) {
-			return i - j;
+		public int compare(Integer i0, Integer i1) {
+			return i0.compareTo(i1);
 		}
 	};
 
@@ -70,7 +70,7 @@ public class B_TreeTest {
 		}
 	}
 
-	public void addAndRemove() {
+	private void addAndRemove() {
 
 		// Inserting this at first makes the tree depth-balanced. Why?
 		b_tree.put(Integer.MAX_VALUE, Integer.toString(Integer.MAX_VALUE));
