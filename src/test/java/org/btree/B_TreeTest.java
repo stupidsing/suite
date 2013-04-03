@@ -71,10 +71,6 @@ public class B_TreeTest {
 	}
 
 	private void addAndRemove() {
-
-		// Inserting this at first makes the tree depth-balanced. Why?
-		b_tree.put(Integer.MAX_VALUE, Integer.toString(Integer.MAX_VALUE));
-
 		for (int i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], keys[i].toString());
 
