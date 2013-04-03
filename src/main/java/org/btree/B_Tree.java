@@ -111,13 +111,12 @@ public class B_Tree<Key, Value> {
 		}
 
 		if (needInsert)
-			page = addAndSplit(trace, page //
-					, new KeyPointer<>(key, new Leaf<>(value)));
-
-		save(page);
+			addAndSplit(trace, page, new KeyPointer<>(key, new Leaf<>(value)));
+		else
+			save(page);
 	}
 
-	private Page<Key> addAndSplit(Stack<Pair<Page<Key>, Integer>> trace,
+	private void addAndSplit(Stack<Pair<Page<Key>, Integer>> trace,
 			Page<Key> page, KeyPointer<Key> toInsert) {
 		Pair<Page<Key>, Integer> pair;
 		Integer index;
@@ -132,28 +131,29 @@ public class B_Tree<Key, Value> {
 			List<KeyPointer<Key>> keyPointers = page.keyPointers;
 			int size = keyPointers.size();
 			int maxNodes = getMaxNodes(page), half = maxNodes / 2;
-			if (size <= maxNodes)
+			if (size <= maxNodes) {
+				save(page);
 				break;
+			}
 
 			// Splits list into the two pages
 			Page<Key> p0 = new Page<>(allocator.allocate()), p1 = page;
 			p0.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
 			p1.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
 			save(p0);
+			save(p1);
 
 			// Propagates to parent
 			toInsert = new KeyPointer<>(largest(p0), new Branch(p0.pageNo));
 
 			if (trace.empty()) { // Have to create a new root
-				save(p1);
 				page = new Page<>(root = allocator.allocate());
 				add(page, toInsert);
 				add(page, new KeyPointer<>(largest(p1), new Branch(p1.pageNo)));
+				save(page);
 				break;
 			}
 		}
-
-		return page;
 	}
 
 	public void remove(Key key) {
