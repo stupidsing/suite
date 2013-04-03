@@ -2,6 +2,7 @@ package org.btree;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
@@ -18,16 +19,16 @@ public class B_TreeTest {
 	private B_Tree<Integer, String> b_tree;
 
 	private Comparator<Integer> compare = new Comparator<Integer>() {
-		public int compare(Integer i, Integer j) {
-			return i - j;
+		public int compare(Integer i0, Integer i1) {
+			return i0.compareTo(i1);
 		}
 	};
 
 	@Test
 	public void memoryTest() {
-		Persister<B_Tree.Page<Integer>> persister = InMemoryPersister.create();
+		InMemoryPersister<B_Tree.Page<Integer>> imp = new InMemoryPersister<>();
 
-		b_tree = new B_Tree<Integer, String>(persister, compare);
+		b_tree = new B_Tree<>(imp, imp, compare);
 		b_tree.setBranchFactor(4);
 		b_tree.setLeafFactor(4);
 		shuffleAndTest();
@@ -35,23 +36,29 @@ public class B_TreeTest {
 
 	@Test
 	public void fileTest() throws IOException {
-		FilePersister<Integer, String> fp = new FilePersister<Integer, String>(
-				"/tmp/test.bt" //
-				, new ByteBufferIntAccessor() //
-				, new ByteBufferFixedStringAccessor(16));
-		fp.start();
+		String filename = "/tmp/test.bt";
+		String allocMapFilename = filename + ".alloc";
+		new File(filename).delete();
+		new File(allocMapFilename).delete();
 
-		b_tree = new B_Tree<Integer, String>(fp, compare);
-		b_tree.setBranchFactor(16);
-		b_tree.setLeafFactor(16);
-		shuffleAndTest();
-
-		fp.stop();
+		try (FileAllocator al = new FileAllocator(allocMapFilename);
+				FilePersister<Integer, String> fp = new FilePersister<>(
+						filename //
+						, new ByteBufferIntAccessor() //
+						, new ByteBufferFixedStringAccessor(16));) {
+			b_tree = new B_Tree<>(al, fp, compare);
+			b_tree.setBranchFactor(16);
+			b_tree.setLeafFactor(16);
+			shuffleAndTest();
+		}
 	}
 
 	private void shuffleAndTest() {
+		shuffleNumbers();
+		addAndRemove();
+	}
 
-		// Shuffle the numbers
+	private void shuffleNumbers() {
 		Random random = new Random();
 		for (int i = 0; i < nKeys; i++)
 			keys[i] = i;
@@ -61,15 +68,9 @@ public class B_TreeTest {
 			keys[i] = keys[j];
 			keys[j] = temp;
 		}
-
-		addAndRemove();
 	}
 
-	public void addAndRemove() {
-
-		// Inserting this at first makes the tree depth-balanced. Why?
-		b_tree.put(Integer.MAX_VALUE, Integer.toString(Integer.MAX_VALUE));
-
+	private void addAndRemove() {
 		for (int i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], keys[i].toString());
 

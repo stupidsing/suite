@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import org.util.Util;
 import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
@@ -87,7 +86,7 @@ public class Board extends Array<Occupation> {
 	}
 
 	protected Set<Coordinate> findGroup(Coordinate c) {
-		Set<Coordinate> group = Util.createHashSet();
+		Set<Coordinate> group = new HashSet<>();
 		Occupation color = get(c);
 		group.add(c);
 

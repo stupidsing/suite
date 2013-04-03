@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.util.Util;
 import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Occupation;
 
@@ -23,7 +22,7 @@ public class BoardTest {
 	@Test
 	public void testNeighbor() {
 		Coordinate c = Coordinate.c(10, 10);
-		Set<Coordinate> neighbors = Util.createHashSet();
+		Set<Coordinate> neighbors = new HashSet<>();
 
 		for (Coordinate c1 : c.neighbors())
 			neighbors.add(c1);

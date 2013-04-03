@@ -1,6 +1,7 @@
 package org.btree;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
@@ -17,6 +18,7 @@ public class B_Tree<Key, Value> {
 
 	public int branchFactor, leafFactor;
 	public Integer root;
+	public Allocator allocator;
 	public Persister<Page<Key>> persister;
 	public Comparator<Key> comparator;
 
@@ -24,7 +26,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public static class Leaf<V> implements Pointer {
-		V value;
+		public V value;
 
 		public Leaf(V value) {
 			this.value = value;
@@ -32,7 +34,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public static class Branch implements Pointer {
-		int branch;
+		public int branch;
 
 		public Branch(int branch) {
 			this.branch = branch;
@@ -47,23 +49,28 @@ public class B_Tree<Key, Value> {
 
 	public static class Page<K> {
 		public int pageNo;
-		public List<KeyPointer<K>> keyPointers = Util.createList();
+		public List<KeyPointer<K>> keyPointers = new ArrayList<>();
 
 		public Page(int pageNo) {
 			this.pageNo = pageNo;
 		}
 	}
 
-	public B_Tree(Persister<Page<Key>> persister, Comparator<Key> comparator) {
-		this(persister, comparator, persister.allocate());
+	public B_Tree(Allocator allocator //
+			, Persister<Page<Key>> persister //
+			, Comparator<Key> comparator) {
+		this(allocator, persister, comparator, allocator.allocate());
 		Page<Key> rootPage = new Page<>(root);
-		save(rootPage);
+		savePage(rootPage);
 	}
 
-	public B_Tree(Persister<Page<Key>> persister, Comparator<Key> comparator,
-			Integer root) {
+	public B_Tree(Allocator allocator //
+			, Persister<Page<Key>> persister //
+			, Comparator<Key> comparator //
+			, Integer root) {
 		setBranchFactor(16);
 		setLeafFactor(16);
+		this.allocator = allocator;
 		this.persister = persister;
 		this.comparator = comparator;
 		this.root = root;
@@ -104,13 +111,12 @@ public class B_Tree<Key, Value> {
 		}
 
 		if (needInsert)
-			page = addAndSplit(trace, page //
-					, new KeyPointer<>(key, new Leaf<>(value)));
-
-		save(page);
+			addAndSplit(trace, page, new KeyPointer<>(key, new Leaf<>(value)));
+		else
+			savePage(page);
 	}
 
-	private Page<Key> addAndSplit(Stack<Pair<Page<Key>, Integer>> trace,
+	private void addAndSplit(Stack<Pair<Page<Key>, Integer>> trace,
 			Page<Key> page, KeyPointer<Key> toInsert) {
 		Pair<Page<Key>, Integer> pair;
 		Integer index;
@@ -125,28 +131,29 @@ public class B_Tree<Key, Value> {
 			List<KeyPointer<Key>> keyPointers = page.keyPointers;
 			int size = keyPointers.size();
 			int maxNodes = getMaxNodes(page), half = maxNodes / 2;
-			if (size <= maxNodes)
+			if (size <= maxNodes) {
+				savePage(page);
 				break;
+			}
 
 			// Splits list into the two pages
-			Page<Key> p1 = new Page<>(persister.allocate()), p2 = page;
-			p1.keyPointers = Util.createList(keyPointers.subList(0, half));
-			p2.keyPointers = Util.createList(keyPointers.subList(half, size));
-			save(p1);
-			save(p2);
+			Page<Key> p0 = new Page<>(allocator.allocate()), p1 = page;
+			p0.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
+			p1.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
+			savePage(p0);
+			savePage(p1);
 
 			// Propagates to parent
-			toInsert = new KeyPointer<>(largest(p1), new Branch(p1.pageNo));
+			toInsert = createPointerToPage(p0);
 
 			if (trace.empty()) { // Have to create a new root
-				page = new Page<>(root = persister.allocate());
-				add(page, toInsert);
-				add(page, new KeyPointer<>(largest(p2), new Branch(p2.pageNo)));
+				page = new Page<>(root = allocator.allocate());
+				addPointer(page, toInsert);
+				addPointer(page, createPointerToPage(p1));
+				savePage(page);
 				break;
 			}
 		}
-
-		return page;
 	}
 
 	public void remove(Key key) {
@@ -172,8 +179,8 @@ public class B_Tree<Key, Value> {
 			page = pair.t1;
 			index = pair.t2;
 
-			Page<Key> lp = loadPageIfExists(page, index - 1);
-			Page<Key> rp = loadPageIfExists(page, index + 1);
+			Page<Key> lp = loadPage(page, index - 1);
+			Page<Key> rp = loadPage(page, index + 1);
 			int lsize = lp != null ? lp.keyPointers.size() : 0;
 			int rsize = rp != null ? rp.keyPointers.size() : 0;
 
@@ -183,18 +190,18 @@ public class B_Tree<Key, Value> {
 				else { // Shift
 					childPage.keyPointers.add(0,
 							lp.keyPointers.remove(lp.keyPointers.size() - 1));
-					save(childPage);
-					save(lp);
-					page.keyPointers.get(index - 1).t1 = largest(lp);
+					savePage(childPage);
+					savePage(lp);
+					page.keyPointers.set(index - 1, createPointerToPage(lp));
 				}
 			else if (rsize >= lsize && rsize != 0)
 				if (rsize <= half) // Merge
 					merge(page, childPage, rp, index);
 				else { // Shift
 					childPage.keyPointers.add(rp.keyPointers.remove(0));
-					save(childPage);
-					save(rp);
-					page.keyPointers.get(index).t1 = largest(childPage);
+					savePage(childPage);
+					savePage(rp);
+					page.keyPointers.set(index, createPointerToPage(childPage));
 				}
 			else
 				// Left/right node empty, should not happen if re-balanced well
@@ -203,27 +210,17 @@ public class B_Tree<Key, Value> {
 
 		if (page.pageNo == root && childPage != null
 				&& page.keyPointers.size() == 1) {
-			persister.deallocate(root);
+			allocator.deallocate(root);
 			root = (page = childPage).pageNo;
 		}
 
-		save(page);
+		savePage(page);
 	}
 
 	private int getMaxNodes(Page<Key> page) {
-		List<B_Tree.KeyPointer<Key>> ptrs = page.keyPointers;
-		boolean isBranch = !ptrs.isEmpty()
-				&& ptrs.get(0).t2 instanceof B_Tree.Branch;
+		List<KeyPointer<Key>> ptrs = page.keyPointers;
+		boolean isBranch = !ptrs.isEmpty() && ptrs.get(0).t2 instanceof Branch;
 		return isBranch ? branchFactor : leafFactor;
-	}
-
-	private Page<Key> loadPageIfExists(Page<Key> parent, int index) {
-		if (index >= 0 && index < parent.keyPointers.size()) {
-			Pointer pointer = parent.keyPointers.get(index).t2;
-			if (pointer instanceof B_Tree.Branch)
-				return persister.load(((Branch) pointer).branch);
-		}
-		return null;
 	}
 
 	/**
@@ -234,13 +231,13 @@ public class B_Tree<Key, Value> {
 	 */
 	private void merge(Page<Key> parent, Page<Key> p1, Page<Key> p2, int index) {
 		p2.keyPointers.addAll(0, p1.keyPointers);
-		persister.save(p2.pageNo, p2);
-		persister.deallocate(p1.pageNo);
+		savePage(p2);
+		allocator.deallocate(p1.pageNo);
 		parent.keyPointers.remove(index);
 	}
 
 	private Stack<Pair<Page<Key>, Integer>> traverse(Key key) {
-		Stack<Pair<Page<Key>, Integer>> walked = Util.createStack();
+		Stack<Pair<Page<Key>, Integer>> walked = new Stack<>();
 		Page<Key> page = null;
 		Integer pageNo = root;
 
@@ -250,9 +247,10 @@ public class B_Tree<Key, Value> {
 			walked.push(Pair.create(page, index));
 
 			pageNo = null;
+
 			if (index < page.keyPointers.size()) {
 				Pointer pointer = page.keyPointers.get(index).t2;
-				if (pointer instanceof B_Tree.Branch)
+				if (pointer instanceof Branch)
 					pageNo = ((Branch) pointer).branch;
 			}
 		}
@@ -260,7 +258,7 @@ public class B_Tree<Key, Value> {
 		return walked;
 	}
 
-	private void add(Page<Key> page, KeyPointer<Key> keyPointer) {
+	private void addPointer(Page<Key> page, KeyPointer<Key> keyPointer) {
 		page.keyPointers.add(findPosition(page, keyPointer.t1), keyPointer);
 	}
 
@@ -272,11 +270,22 @@ public class B_Tree<Key, Value> {
 		return i;
 	}
 
-	private Key largest(Page<Key> page) {
-		return page.keyPointers.get(page.keyPointers.size() - 1).t1;
+	private KeyPointer<Key> createPointerToPage(Page<Key> page) {
+		List<KeyPointer<Key>> keyPointers = page.keyPointers;
+		Key largest = keyPointers.get(keyPointers.size() - 1).t1;
+		return new KeyPointer<>(largest, new Branch(page.pageNo));
 	}
 
-	private void save(Page<Key> page) {
+	private Page<Key> loadPage(Page<Key> parent, int index) {
+		if (index >= 0 && index < parent.keyPointers.size()) {
+			Pointer pointer = parent.keyPointers.get(index).t2;
+			if (pointer instanceof Branch)
+				return persister.load(((Branch) pointer).branch);
+		}
+		return null;
+	}
+
+	private void savePage(Page<Key> page) {
 		persister.save(page.pageNo, page);
 	}
 
@@ -286,10 +295,11 @@ public class B_Tree<Key, Value> {
 
 	public void dump(PrintStream w, String pfx, int pageNo) {
 		Page<Key> page = persister.load(pageNo);
+
 		for (KeyPointer<Key> keyPointer : page.keyPointers) {
 			Pointer ptr = keyPointer.t2;
 
-			if (ptr instanceof B_Tree.Branch) {
+			if (ptr instanceof Branch) {
 				dump(w, pfx + "\t", ((Branch) ptr).branch);
 				w.println(pfx + keyPointer.t1);
 			} else
@@ -313,8 +323,8 @@ public class B_Tree<Key, Value> {
 		this.persister = persister;
 	}
 
-	public void setCompare(Comparator<Key> compare) {
-		this.comparator = compare;
+	public void setComparator(Comparator<Key> comparator) {
+		this.comparator = comparator;
 	}
 
 }

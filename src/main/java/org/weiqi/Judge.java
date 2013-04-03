@@ -1,9 +1,10 @@
 package org.weiqi;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.util.Util;
 import org.weiqi.GroupAnalysis.Group;
 import org.weiqi.Weiqi.Array;
 import org.weiqi.Weiqi.Occupation;
@@ -12,7 +13,7 @@ public class Judge {
 
 	public static Occupation checkByOccupationExistence(Board board) {
 		int nPiecesCount = 0;
-		Set<Occupation> players = Util.createHashSet();
+		Set<Occupation> players = new HashSet<>();
 
 		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);
@@ -33,11 +34,11 @@ public class Judge {
 		GroupAnalysis ga = new GroupAnalysis(board);
 
 		// Judge which groups are eyes, i.e. surrounded by only one colour
-		Map<Group, Boolean> groupIsEye = Util.createHashMap();
+		Map<Group, Boolean> groupIsEye = new HashMap<>();
 
 		for (Group group : ga.getGroups())
 			if (group.color == Occupation.EMPTY) {
-				Set<Occupation> colors = Util.createHashSet();
+				Set<Occupation> colors = new HashSet<>();
 
 				for (Group neighborGroup : group.touches) {
 					Occupation color = neighborGroup.color;

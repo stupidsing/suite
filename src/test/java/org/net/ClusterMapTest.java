@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -23,13 +24,13 @@ public class ClusterMapTest {
 		int nNodes = 3;
 		InetAddress localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = Util.createHashMap();
+		Map<String, InetSocketAddress> peers = new HashMap<>();
 		for (int i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
 		List<String> peerNames = new ArrayList<String>(peers.keySet());
-		Map<String, Cluster> clusters = Util.createHashMap();
-		Map<String, ClusterMap<Integer, String>> clMap = Util.createHashMap();
+		Map<String, Cluster> clusters = new HashMap<>();
+		Map<String, ClusterMap<Integer, String>> clMap = new HashMap<>();
 
 		for (String name : peers.keySet()) {
 			Cluster cluster = new Cluster(name, peers);
