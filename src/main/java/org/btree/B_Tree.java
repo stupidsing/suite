@@ -60,8 +60,7 @@ public class B_Tree<Key, Value> {
 			, Persister<Page<Key>> persister //
 			, Comparator<Key> comparator) {
 		this(allocator, persister, comparator, allocator.allocate());
-		Page<Key> rootPage = new Page<>(root);
-		savePage(rootPage);
+		savePage(new Page<Key>(root));
 	}
 
 	public B_Tree(Allocator allocator //
@@ -144,12 +143,12 @@ public class B_Tree<Key, Value> {
 			savePage(p1);
 
 			// Propagates to parent
-			toInsert = createPointerToPage(p0);
+			toInsert = pointerTo(p0);
 
 			if (trace.empty()) { // Have to create a new root
 				page = new Page<>(root = allocator.allocate());
 				addPointer(page, toInsert);
-				addPointer(page, createPointerToPage(p1));
+				addPointer(page, pointerTo(p1));
 				savePage(page);
 				break;
 			}
@@ -185,33 +184,29 @@ public class B_Tree<Key, Value> {
 			int rsize = rp != null ? rp.keyPointers.size() : 0;
 
 			if (lsize >= rsize && lsize != 0)
-				if (lsize <= half) // Merge
-					merge(page, lp, childPage, index - 1);
-				else { // Shift
-					childPage.keyPointers.add(0,
-							lp.keyPointers.remove(lp.keyPointers.size() - 1));
+				if (lsize > half) { // Shift
+					KeyPointer<Key> out = lp.keyPointers.remove(lsize - 1);
+					childPage.keyPointers.add(0, out);
 					savePage(childPage);
 					savePage(lp);
-					page.keyPointers.set(index - 1, createPointerToPage(lp));
-				}
+					page.keyPointers.set(index - 1, pointerTo(lp));
+				} else
+					merge(page, lp, childPage, index - 1);
 			else if (rsize >= lsize && rsize != 0)
-				if (rsize <= half) // Merge
-					merge(page, childPage, rp, index);
-				else { // Shift
-					childPage.keyPointers.add(rp.keyPointers.remove(0));
+				if (rsize > half) { // Shift
+					KeyPointer<Key> out = rp.keyPointers.remove(0);
+					childPage.keyPointers.add(out);
 					savePage(childPage);
 					savePage(rp);
-					page.keyPointers.set(index, createPointerToPage(childPage));
-				}
-			else
+					page.keyPointers.set(index, pointerTo(childPage));
+				} else
+					merge(page, childPage, rp, index);
+			else {
 				// Left/right node empty, should not happen if re-balanced well
 				page.keyPointers = childPage.keyPointers;
-		}
-
-		if (page.pageNo == root && childPage != null
-				&& page.keyPointers.size() == 1) {
-			allocator.deallocate(root);
-			root = (page = childPage).pageNo;
+				savePage(page);
+				allocator.deallocate(childPage.pageNo);
+			}
 		}
 
 		savePage(page);
@@ -224,15 +219,15 @@ public class B_Tree<Key, Value> {
 	}
 
 	/**
-	 * Merges two successive branches of a page.
+	 * Merge two successive branches of a page.
 	 * 
-	 * p1 and p2 are branches of parent. p1 is located in slot 'index' of
-	 * parent, while p2 is in next.
+	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of
+	 * parent, while p1 is in next.
 	 */
-	private void merge(Page<Key> parent, Page<Key> p1, Page<Key> p2, int index) {
-		p2.keyPointers.addAll(0, p1.keyPointers);
-		savePage(p2);
-		allocator.deallocate(p1.pageNo);
+	private void merge(Page<Key> parent, Page<Key> p0, Page<Key> p1, int index) {
+		p1.keyPointers.addAll(0, p0.keyPointers);
+		savePage(p1);
+		allocator.deallocate(p0.pageNo);
 		parent.keyPointers.remove(index);
 	}
 
@@ -270,7 +265,7 @@ public class B_Tree<Key, Value> {
 		return i;
 	}
 
-	private KeyPointer<Key> createPointerToPage(Page<Key> page) {
+	private KeyPointer<Key> pointerTo(Page<Key> page) {
 		List<KeyPointer<Key>> keyPointers = page.keyPointers;
 		Key largest = keyPointers.get(keyPointers.size() - 1).t1;
 		return new KeyPointer<>(largest, new Branch(page.pageNo));
@@ -290,6 +285,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public void dump(PrintStream w) {
+		w.println("==========");
 		dump(w, "", root);
 	}
 

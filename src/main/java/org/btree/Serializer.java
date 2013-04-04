@@ -9,14 +9,13 @@ import org.util.IoUtil;
  * Defines interface for reading/writing byte buffer. The operation within the
  * same accessor should always put in same number of bytes.
  */
-public interface ByteBufferAccessor<V> {
+public interface Serializer<V> {
 
 	public V read(ByteBuffer buffer);
 
 	public void write(ByteBuffer buffer, V value);
 
-	public static class ByteBufferIntAccessor implements
-			ByteBufferAccessor<Integer> {
+	public static class IntSerializer implements Serializer<Integer> {
 		public Integer read(ByteBuffer buffer) {
 			return buffer.getInt();
 		}
@@ -26,11 +25,10 @@ public interface ByteBufferAccessor<V> {
 		}
 	}
 
-	public static class ByteBufferFixedStringAccessor implements
-			ByteBufferAccessor<String> {
+	public static class FixedStringSerializer implements Serializer<String> {
 		private int length;
 
-		public ByteBufferFixedStringAccessor(int length) {
+		public FixedStringSerializer(int length) {
 			this.length = length;
 		}
 
