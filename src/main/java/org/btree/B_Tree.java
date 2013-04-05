@@ -75,7 +75,6 @@ public class B_Tree<Key, Value> {
 		this.root = root;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Value get(Key key) {
 		Stack<Pair<Page<Key>, Integer>> traverse = traverse(key);
 		Pair<Page<Key>, Integer> last = traverse.peek();
@@ -85,8 +84,11 @@ public class B_Tree<Key, Value> {
 		if (index < page.keyPointers.size()) {
 			Pair<Key, Pointer> keyPointer = page.keyPointers.get(index);
 
-			if (Util.equals(keyPointer.t1, key))
-				return ((Leaf<Value>) keyPointer.t2).value;
+			if (Util.equals(keyPointer.t1, key)) {
+				@SuppressWarnings("unchecked")
+				Leaf<Value> leaf = (Leaf<Value>) keyPointer.t2;
+				return leaf.value;
+			}
 		}
 
 		return null;
