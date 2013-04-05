@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class InMemoryPersister<Page> implements Allocator, Persister<Page> {
+public class InMemoryAllocPersister<Page> implements Allocator, Persister<Page> {
 
 	private Map<Integer, Page> pages = new HashMap<>();
 	private AtomicInteger counter = new AtomicInteger();

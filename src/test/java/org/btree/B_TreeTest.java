@@ -26,7 +26,7 @@ public class B_TreeTest {
 
 	@Test
 	public void memoryTest() {
-		InMemoryPersister<B_Tree.Page<Integer>> imp = new InMemoryPersister<>();
+		InMemoryAllocPersister<B_Tree.Page<Integer>> imp = new InMemoryAllocPersister<>();
 
 		b_tree = new B_Tree<>(imp, imp, compare);
 		b_tree.setBranchFactor(4);
