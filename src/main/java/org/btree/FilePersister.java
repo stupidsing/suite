@@ -17,9 +17,10 @@ import java.util.List;
  * 
  * pageSize >= sizeof(char) + sizeof(int) + leafFactor * sizeof(Value)
  */
-public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
-		Closeable {
+public class FilePersister<Key, Value> implements
+		Persister<B_Tree<Key, Value>.Page>, Closeable {
 
+	private B_Tree<Key, Value> b_tree;
 	private Serializer<Key> keyAccessor;
 	private Serializer<Value> valueAccessor;
 
@@ -31,9 +32,11 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 	private RandomAccessFile file;
 	private FileChannel channel;
 
-	public FilePersister(String filename //
+	public FilePersister(B_Tree<Key, Value> b_tree //
+			, String filename //
 			, Serializer<Key> keyAccessor //
 			, Serializer<Value> valueAccessor) throws FileNotFoundException {
+		this.b_tree = b_tree;
 		this.keyAccessor = keyAccessor;
 		this.valueAccessor = valueAccessor;
 
@@ -48,14 +51,14 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 	}
 
 	@Override
-	public B_Tree.Page<Key> load(int pageNo) {
+	public B_Tree<Key, Value>.Page load(int pageNo) {
 		try {
 			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
 			channel.read(buffer, pageNo * pageSize);
 			buffer.rewind();
 
-			B_Tree.Page<Key> page = new B_Tree.Page<>(pageNo);
-			List<B_Tree.KeyPointer<Key>> keyPointers = page.keyPointers;
+			B_Tree<Key, Value>.Page page = b_tree.new Page(pageNo);
+			List<B_Tree<Key, Value>.KeyPointer> keyPointers = page.keyPointers;
 
 			int size = buffer.getInt();
 
@@ -78,31 +81,34 @@ public class FilePersister<Key, Value> implements Persister<B_Tree.Page<Key>>,
 		}
 	}
 
-	private void addLeaf(List<B_Tree.KeyPointer<Key>> kps, Key k, Value v) {
-		kps.add(new B_Tree.KeyPointer<>(k, new B_Tree.Leaf<>(v)));
+	private void addLeaf(List<B_Tree<Key, Value>.KeyPointer> kps, Key k, Value v) {
+		kps.add(b_tree.new KeyPointer(k, b_tree.new Leaf(v)));
 	}
 
-	private void addBranch(List<B_Tree.KeyPointer<Key>> kps, Key k, int branch) {
-		kps.add(new B_Tree.KeyPointer<>(k, new B_Tree.Branch(branch)));
+	private void addBranch(List<B_Tree<Key, Value>.KeyPointer> kps, Key k,
+			int branch) {
+		kps.add(b_tree.new KeyPointer(k, b_tree.new Branch(branch)));
 	}
 
 	@Override
-	public void save(int pageNo, B_Tree.Page<Key> page) {
+	public void save(int pageNo, B_Tree<Key, Value>.Page page) {
 		try {
 			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
-			List<B_Tree.KeyPointer<Key>> keyPointers = page.keyPointers;
+			List<B_Tree<Key, Value>.KeyPointer> keyPointers = page.keyPointers;
 
 			buffer.putInt(keyPointers.size());
 
-			for (B_Tree.KeyPointer<Key> keyPointer : keyPointers)
+			for (B_Tree<Key, Value>.KeyPointer keyPointer : keyPointers)
 				if (keyPointer.t2 instanceof B_Tree.Branch) {
-					int branch = ((B_Tree.Branch) keyPointer.t2).branch;
+					@SuppressWarnings("unchecked")
+					B_Tree<Key, Value>.Branch branch = (B_Tree<Key, Value>.Branch) keyPointer.t2;
 					buffer.putChar(BRANCH);
 					keyAccessor.write(buffer, keyPointer.t1);
-					buffer.putInt(branch);
+					buffer.putInt(branch.branch);
 				} else if (keyPointer.t2 instanceof B_Tree.Leaf) {
 					@SuppressWarnings("unchecked")
-					Value value = ((B_Tree.Leaf<Value>) keyPointer.t2).value;
+					B_Tree<Key, Value>.Leaf leaf = (B_Tree<Key, Value>.Leaf) keyPointer.t2;
+					Value value = leaf.value;
 					buffer.putChar(LEAF);
 					keyAccessor.write(buffer, keyPointer.t1);
 					valueAccessor.write(buffer, value);

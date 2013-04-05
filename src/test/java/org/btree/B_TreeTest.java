@@ -26,11 +26,14 @@ public class B_TreeTest {
 
 	@Test
 	public void memoryTest() {
-		InMemoryAllocPersister<B_Tree.Page<Integer>> imp = new InMemoryAllocPersister<>();
+		InMemoryAllocPersister<B_Tree<Integer, String>.Page> imap = new InMemoryAllocPersister<>();
 
-		b_tree = new B_Tree<>(imp, imp, compare);
+		b_tree = new B_Tree<>(compare);
+		b_tree.setAllocator(imap);
+		b_tree.setPersister(imap);
 		b_tree.setBranchFactor(4);
 		b_tree.setLeafFactor(4);
+		b_tree.create();
 		shuffleAndTest();
 	}
 
@@ -41,14 +44,19 @@ public class B_TreeTest {
 		new File(filename).delete();
 		new File(allocMapFilename).delete();
 
+		b_tree = new B_Tree<>(compare);
+
 		try (FileAllocator al = new FileAllocator(allocMapFilename);
-				FilePersister<Integer, String> fp = new FilePersister<>(
-						filename //
+				FilePersister<Integer, String> fp = new FilePersister<Integer, String>(
+						b_tree //
+						, filename //
 						, new IntSerializer() //
 						, new FixedStringSerializer(16));) {
-			b_tree = new B_Tree<>(al, fp, compare);
+			b_tree.setAllocator(al);
+			b_tree.setPersister(fp);
 			b_tree.setBranchFactor(16);
 			b_tree.setLeafFactor(16);
+			b_tree.create();
 			shuffleAndTest();
 		}
 	}
@@ -60,8 +68,10 @@ public class B_TreeTest {
 
 	private void shuffleNumbers() {
 		Random random = new Random();
+
 		for (int i = 0; i < nKeys; i++)
 			keys[i] = i;
+
 		for (int i = 0; i < nKeys; i++) {
 			int j = random.nextInt(nKeys);
 			Integer temp = keys[i];
