@@ -1,6 +1,7 @@
 package org.btree;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import org.btree.Serializer.B_TreeSuperBlockSerializer;
 import org.btree.Serializer.FixedStringSerializer;
 import org.btree.Serializer.IntSerializer;
 import org.junit.Test;
+import org.util.Util.Pair;
 
 public class B_TreeTest {
 
@@ -107,6 +109,20 @@ public class B_TreeTest {
 		for (int i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
+		int count = 0, half = nKeys / 2;
+
+		for (Pair<Integer, String> entry : b_tree.range(0, half)) {
+			Integer key = count++;
+			assertEquals(key, entry.t1);
+			assertEquals(Integer.toString(key), entry.t2);
+		}
+
+		for (Pair<Integer, String> entry : b_tree.range(half, nKeys)) {
+			Integer key = count++;
+			assertEquals(key, entry.t1);
+			assertEquals(Integer.toString(key), entry.t2);
+		}
+
 		shuffleNumbers();
 
 		for (int i = 0; i < nKeys; i += 2)
@@ -118,6 +134,9 @@ public class B_TreeTest {
 			b_tree.remove(keys[i]);
 
 		b_tree.dump(System.out);
+
+		for (Pair<Integer, String> entry : b_tree.range(0, nKeys))
+			assertNull(entry);
 	}
 
 }
