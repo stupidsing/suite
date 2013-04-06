@@ -17,7 +17,7 @@ import org.util.Util.Pair;
  */
 public class B_Tree<Key, Value> {
 
-	public int branchFactor, leafFactor;
+	public int branchFactor;
 	public Integer root;
 	public Allocator allocator;
 	public Persister<Page> persister;
@@ -67,7 +67,6 @@ public class B_Tree<Key, Value> {
 
 	public B_Tree(Comparator<Key> comparator) {
 		setBranchFactor(16);
-		setLeafFactor(16);
 		this.comparator = comparator;
 	}
 
@@ -95,56 +94,57 @@ public class B_Tree<Key, Value> {
 		final Traverse s = traverse(start);
 		final Traverse e = traverse(end);
 
-		return new Iterable<Pair<Key, Value>>() {
-			public Iterator<Pair<Key, Value>> iterator() {
-				return new Iterator<Pair<Key, Value>>() {
-					private Traverse traverse = s;
-					private Pair<Key, Value> current;
+		final Iterator<Pair<Key, Value>> iterator = new Iterator<Pair<Key, Value>>() {
+			private Traverse traverse = s;
+			private Pair<Key, Value> current;
 
-					{
-						Pair<Page, Integer> k = s.peek();
+			{
+				Pair<Page, Integer> k = s.peek();
+				KeyPointer kp = k.t1.keyPointers.get(k.t2);
+
+				if (kp.pointer instanceof B_Tree.Branch)
+					next(); // No result for start, search next
+				else
+					current = Pair.create(kp.key, getLeafValue(kp));
+			}
+
+			public boolean hasNext() {
+				Pair<Page, Integer> p0 = traverse.peek();
+				Pair<Page, Integer> p1 = e.peek();
+				return p0.t1.pageNo != p1.t1.pageNo
+						|| !Util.equals(p0.t2, p1.t2);
+			}
+
+			public Pair<Key, Value> next() {
+				Pair<Key, Value> current0 = current;
+
+				while (true) {
+					Pair<Page, Integer> k = traverse.peek();
+					k.t2++;
+
+					if (k.t2 < k.t1.keyPointers.size()) {
 						KeyPointer kp = k.t1.keyPointers.get(k.t2);
 
-						if (kp.pointer instanceof B_Tree.Branch)
-							next(); // No result for start, search next
-						else
+						if (kp.pointer instanceof B_Tree.Branch) {
+							Page page = loadPage(k.t1, k.t2);
+							traverse.push(Pair.create(page, 0));
+						} else {
 							current = Pair.create(kp.key, getLeafValue(kp));
-					}
-
-					public boolean hasNext() {
-						Pair<Page, Integer> p0 = traverse.peek();
-						Pair<Page, Integer> p1 = e.peek();
-						return p0.t1.pageNo != p1.t1.pageNo
-								|| !Util.equals(p0.t2, p1.t2);
-					}
-
-					public Pair<Key, Value> next() {
-						Pair<Key, Value> current0 = current;
-
-						while (true) {
-							Pair<Page, Integer> k = traverse.peek();
-							k.t2++;
-
-							if (k.t2 < k.t1.keyPointers.size()) {
-								KeyPointer kp = k.t1.keyPointers.get(k.t2);
-
-								if (kp.pointer instanceof B_Tree.Branch) {
-									Page page = loadPage(k.t1, k.t2);
-									traverse.push(Pair.create(page, 0));
-								} else {
-									Value value = getLeafValue(kp);
-									current = Pair.create(kp.key, value);
-									return current0;
-								}
-							} else
-								traverse.pop();
+							return current0;
 						}
-					}
+					} else
+						traverse.pop();
+				}
+			}
 
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-				};
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+
+		return new Iterable<Pair<Key, Value>>() {
+			public Iterator<Pair<Key, Value>> iterator() {
+				return iterator;
 			}
 		};
 	}
@@ -186,8 +186,8 @@ public class B_Tree<Key, Value> {
 
 			List<KeyPointer> keyPointers = page.keyPointers;
 			int size = keyPointers.size();
-			int maxNodes = getMaxNodes(page), half = maxNodes / 2;
-			if (size <= maxNodes) {
+			int half = branchFactor / 2;
+			if (size <= branchFactor) {
 				savePage(page);
 				break;
 			}
@@ -225,7 +225,7 @@ public class B_Tree<Key, Value> {
 		page.keyPointers.remove(index);
 
 		while (page.pageNo != root) {
-			int half = getMaxNodes(page) / 2;
+			int half = branchFactor / 2;
 			if (page.keyPointers.size() >= half)
 				break;
 
@@ -267,13 +267,6 @@ public class B_Tree<Key, Value> {
 		}
 
 		savePage(page);
-	}
-
-	private int getMaxNodes(Page page) {
-		List<KeyPointer> ptrs = page.keyPointers;
-		boolean isBranch = !ptrs.isEmpty()
-				&& ptrs.get(0).pointer instanceof B_Tree.Branch;
-		return isBranch ? branchFactor : leafFactor;
 	}
 
 	/**
@@ -379,10 +372,6 @@ public class B_Tree<Key, Value> {
 
 	public void setBranchFactor(int branchFactor) {
 		this.branchFactor = branchFactor;
-	}
-
-	public void setLeafFactor(int leafFactor) {
-		this.leafFactor = leafFactor;
 	}
 
 	public void setRoot(Integer root) {

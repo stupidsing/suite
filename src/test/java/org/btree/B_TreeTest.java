@@ -32,7 +32,6 @@ public class B_TreeTest {
 		b_tree.setAllocator(imap);
 		b_tree.setPersister(imap);
 		b_tree.setBranchFactor(4);
-		b_tree.setLeafFactor(4);
 		b_tree.create();
 		shuffleAndTest();
 	}
@@ -55,7 +54,6 @@ public class B_TreeTest {
 			b_tree.setAllocator(al);
 			b_tree.setPersister(fp);
 			b_tree.setBranchFactor(16);
-			b_tree.setLeafFactor(16);
 			b_tree.create();
 			shuffleAndTest();
 		}
