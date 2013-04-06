@@ -345,6 +345,19 @@ public class B_Tree<Key, Value> {
 			return null;
 	}
 
+	private Page loadPage(int pageNo) {
+		return pagePersister.load(pageNo);
+	}
+
+	private void savePage(Page page) {
+		pagePersister.save(page.pageNo, page);
+	}
+
+	private KeyPointer pointerTo(Page page) {
+		Key largest = page.get(page.size() - 1).key;
+		return new KeyPointer(largest, new Branch(page.pageNo));
+	}
+
 	private KeyPointer getKeyPointer(Slot slot) {
 		return getKeyPointer(slot.page, slot.index);
 	}
@@ -354,14 +367,6 @@ public class B_Tree<Key, Value> {
 			return page.get(index);
 		else
 			return null;
-	}
-
-	private Page loadPage(int pageNo) {
-		return pagePersister.load(pageNo);
-	}
-
-	private void savePage(Page page) {
-		pagePersister.save(page.pageNo, page);
 	}
 
 	int getBranchPageNo(KeyPointer keyPointer) {
@@ -374,11 +379,6 @@ public class B_Tree<Key, Value> {
 		@SuppressWarnings("unchecked")
 		Leaf leaf = (Leaf) keyPointer.pointer;
 		return leaf.value;
-	}
-
-	private KeyPointer pointerTo(Page page) {
-		Key largest = page.get(page.size() - 1).key;
-		return new KeyPointer(largest, new Branch(page.pageNo));
 	}
 
 	public void dump(PrintStream w) {
