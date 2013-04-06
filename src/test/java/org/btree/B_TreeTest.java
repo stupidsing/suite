@@ -61,7 +61,7 @@ public class B_TreeTest {
 
 		b_tree = new TestB_Tree();
 
-		B_TreeSuperBlockSerializer<Integer, String> sbs = new B_TreeSuperBlockSerializer<Integer, String>(
+		B_TreeSuperBlockSerializer<Integer, String> sbs = new B_TreeSuperBlockSerializer<>(
 				b_tree);
 		B_TreePageSerializer<Integer, String> ps = new B_TreePageSerializer<>(
 				b_tree //
