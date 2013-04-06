@@ -98,20 +98,15 @@ public class FilePersister<Key, Value> implements
 
 			buffer.putInt(keyPointers.size());
 
-			for (B_Tree<Key, Value>.KeyPointer keyPointer : keyPointers)
-				if (keyPointer.t2 instanceof B_Tree.Branch) {
-					@SuppressWarnings("unchecked")
-					B_Tree<Key, Value>.Branch branch = (B_Tree<Key, Value>.Branch) keyPointer.t2;
+			for (B_Tree<Key, Value>.KeyPointer kp : keyPointers)
+				if (kp.pointer instanceof B_Tree.Branch) {
 					buffer.putChar(BRANCH);
-					keyAccessor.write(buffer, keyPointer.t1);
-					buffer.putInt(branch.branch);
-				} else if (keyPointer.t2 instanceof B_Tree.Leaf) {
-					@SuppressWarnings("unchecked")
-					B_Tree<Key, Value>.Leaf leaf = (B_Tree<Key, Value>.Leaf) keyPointer.t2;
-					Value value = leaf.value;
+					keyAccessor.write(buffer, kp.key);
+					buffer.putInt(b_tree.toBranch(kp));
+				} else if (kp.pointer instanceof B_Tree.Leaf) {
 					buffer.putChar(LEAF);
-					keyAccessor.write(buffer, keyPointer.t1);
-					valueAccessor.write(buffer, value);
+					keyAccessor.write(buffer, kp.key);
+					valueAccessor.write(buffer, b_tree.getLeafValue(kp));
 				}
 
 			buffer.flip();
