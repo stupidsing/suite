@@ -189,8 +189,8 @@ public class B_Tree<Key, Value> {
 
 			if (traverse.empty()) { // Have to create a new root
 				page = new Page(root = allocator.allocate());
-				addPointer(page, toInsert);
-				addPointer(page, pointerTo(p1));
+				page.keyPointers.add(toInsert);
+				page.keyPointers.add(pointerTo(p1));
 				savePage(page);
 				break;
 			}
@@ -288,6 +288,7 @@ public class B_Tree<Key, Value> {
 
 			if (index < page.keyPointers.size()) {
 				Pointer pointer = page.keyPointers.get(index).t2;
+
 				if (pointer instanceof B_Tree.Branch) {
 					@SuppressWarnings("unchecked")
 					B_Tree<Key, Value>.Branch branch = (Branch) pointer;
@@ -297,10 +298,6 @@ public class B_Tree<Key, Value> {
 		}
 
 		return traversed;
-	}
-
-	private void addPointer(Page page, KeyPointer keyPointer) {
-		page.keyPointers.add(findPosition(page, keyPointer.t1), keyPointer);
 	}
 
 	private int findPosition(Page page, Key key) {
