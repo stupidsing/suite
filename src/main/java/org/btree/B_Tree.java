@@ -27,7 +27,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class Leaf implements Pointer {
-		public Value value;
+		Value value;
 
 		public Leaf(Value value) {
 			this.value = value;
@@ -35,10 +35,10 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class Branch implements Pointer {
-		public int branch;
+		int pageNo;
 
-		public Branch(int branch) {
-			this.branch = branch;
+		public Branch(int pageNo) {
+			this.pageNo = pageNo;
 		}
 	}
 
@@ -53,8 +53,8 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class Page {
-		public int pageNo;
-		public List<KeyPointer> keyPointers = new ArrayList<>();
+		int pageNo;
+		List<KeyPointer> keyPointers = new ArrayList<>();
 
 		public Page(int pageNo) {
 			this.pageNo = pageNo;
@@ -182,41 +182,41 @@ public class B_Tree<Key, Value> {
 	private void addAndSplit(Traverse traverse, Page page, KeyPointer toInsert) {
 		Pair<Page, Integer> pair;
 		Integer index;
+		boolean done = false;
 
 		// Traversed to deepest. Inserts key-value pair
-		while (true) {
+		do {
 			pair = traverse.pop();
 			page = pair.t1;
 			index = pair.t2;
 			page.keyPointers.add(index, toInsert);
 
-			List<KeyPointer> keyPointers = page.keyPointers;
-			int size = keyPointers.size();
-			int half = branchFactor / 2;
-			if (size <= branchFactor) {
+			List<KeyPointer> kps = page.keyPointers;
+			int size = kps.size();
+			done = size <= branchFactor;
+
+			if (!done) { // Splits list into two pages
+				int half = branchFactor / 2;
+				Page p0 = new Page(allocator.allocate()), p1 = page;
+				p0.keyPointers = new ArrayList<>(kps.subList(0, half));
+				p1.keyPointers = new ArrayList<>(kps.subList(half, size));
+				savePage(p0);
+				savePage(p1);
+
+				// Propagates to parent
+				toInsert = pointerTo(p0);
+
+				if (traverse.empty()) { // Have to create a new root
+					create();
+					page = new Page(getRoot());
+					page.keyPointers.add(toInsert);
+					page.keyPointers.add(pointerTo(p1));
+					savePage(page);
+					break;
+				}
+			} else
 				savePage(page);
-				break;
-			}
-
-			// Splits list into the two pages
-			Page p0 = new Page(allocator.allocate()), p1 = page;
-			p0.keyPointers = new ArrayList<>(keyPointers.subList(0, half));
-			p1.keyPointers = new ArrayList<>(keyPointers.subList(half, size));
-			savePage(p0);
-			savePage(p1);
-
-			// Propagates to parent
-			toInsert = pointerTo(p0);
-
-			if (traverse.empty()) { // Have to create a new root
-				create();
-				page = new Page(getRoot());
-				page.keyPointers.add(toInsert);
-				page.keyPointers.add(pointerTo(p1));
-				savePage(page);
-				break;
-			}
-		}
+		} while (!done);
 	}
 
 	public void remove(Key key) {
@@ -330,7 +330,7 @@ public class B_Tree<Key, Value> {
 			if (ptr instanceof B_Tree.Branch) {
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) ptr;
-				dump(w, pfx + "\t", branch.branch);
+				dump(w, pfx + "\t", branch.pageNo);
 				w.println(pfx + kp.key);
 			} else
 				w.println(pfx + kp.key + " = " + getLeafValue(kp));
@@ -340,7 +340,7 @@ public class B_Tree<Key, Value> {
 	int toBranch(KeyPointer keyPointer) {
 		@SuppressWarnings("unchecked")
 		Branch branch = (Branch) keyPointer.pointer;
-		return branch.branch;
+		return branch.pageNo;
 	}
 
 	Value getLeafValue(KeyPointer keyPointer) {
@@ -362,7 +362,7 @@ public class B_Tree<Key, Value> {
 			if (pointer instanceof B_Tree.Branch) {
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) pointer;
-				return pagePersister.load(branch.branch);
+				return pagePersister.load(branch.pageNo);
 			}
 		}
 
