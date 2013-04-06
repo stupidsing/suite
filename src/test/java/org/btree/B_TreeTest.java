@@ -88,12 +88,12 @@ public class B_TreeTest {
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
 		for (int i = 0; i < nKeys; i += 2)
-			b_tree.remove(i);
+			b_tree.remove(keys[i]);
 
 		b_tree.dump(System.out);
 
 		for (int i = 1; i < nKeys; i += 2)
-			b_tree.remove(i);
+			b_tree.remove(keys[i]);
 
 		b_tree.dump(System.out);
 	}
