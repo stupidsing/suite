@@ -18,9 +18,9 @@ import org.util.Util.Pair;
 public class B_Tree<Key, Value> {
 
 	public int branchFactor;
-	public Integer root;
 	public Allocator allocator;
-	public Persister<Page> persister;
+	public Persister<SuperBlock> superBlockPersister;
+	public Persister<Page> pagePersister;
 	public Comparator<Key> comparator;
 
 	public interface Pointer {
@@ -65,13 +65,19 @@ public class B_Tree<Key, Value> {
 		private static final long serialVersionUID = 1l;
 	}
 
+	public class SuperBlock {
+		int root;
+	}
+
 	public B_Tree(Comparator<Key> comparator) {
 		setBranchFactor(16);
 		this.comparator = comparator;
 	}
 
 	public void create() {
-		savePage(new Page(root = allocator.allocate()));
+		int root = allocator.allocate();
+		setRoot(root);
+		savePage(new Page(root));
 	}
 
 	public Value get(Key key) {
@@ -203,7 +209,8 @@ public class B_Tree<Key, Value> {
 			toInsert = pointerTo(p0);
 
 			if (traverse.empty()) { // Have to create a new root
-				page = new Page(root = allocator.allocate());
+				create();
+				page = new Page(getRoot());
 				page.keyPointers.add(toInsert);
 				page.keyPointers.add(pointerTo(p1));
 				savePage(page);
@@ -222,6 +229,7 @@ public class B_Tree<Key, Value> {
 				|| !Util.equals(page.keyPointers.get(index).key, key))
 			return;
 
+		int root = getRoot();
 		page.keyPointers.remove(index);
 
 		while (page.pageNo != root) {
@@ -285,10 +293,10 @@ public class B_Tree<Key, Value> {
 	private Traverse traverse(Key key) {
 		Traverse traversed = new Traverse();
 		Page page = null;
-		Integer pageNo = root;
+		Integer pageNo = getRoot();
 
 		while (pageNo != null) {
-			page = persister.load(pageNo);
+			page = pagePersister.load(pageNo);
 			int index = findPosition(page, key);
 			traversed.push(Pair.create(page, index));
 
@@ -314,7 +322,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public void dump(PrintStream w, String pfx, int pageNo) {
-		Page page = persister.load(pageNo);
+		Page page = pagePersister.load(pageNo);
 
 		for (KeyPointer kp : page.keyPointers) {
 			Pointer ptr = kp.pointer;
@@ -354,7 +362,7 @@ public class B_Tree<Key, Value> {
 			if (pointer instanceof B_Tree.Branch) {
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) pointer;
-				return persister.load(branch.branch);
+				return pagePersister.load(branch.branch);
 			}
 		}
 
@@ -362,28 +370,39 @@ public class B_Tree<Key, Value> {
 	}
 
 	private void savePage(Page page) {
-		persister.save(page.pageNo, page);
+		pagePersister.save(page.pageNo, page);
 	}
 
 	public void dump(PrintStream w) {
 		w.println("==========");
-		dump(w, "", root);
+		dump(w, "", getRoot());
+	}
+
+	private int getRoot() {
+		return superBlockPersister.load(0).root;
+	}
+
+	private void setRoot(int root) {
+		SuperBlock superBlock = superBlockPersister.load(0);
+		superBlock = superBlock != null ? superBlock : new SuperBlock();
+		superBlock.root = root;
+		superBlockPersister.save(0, superBlock);
 	}
 
 	public void setBranchFactor(int branchFactor) {
 		this.branchFactor = branchFactor;
 	}
 
-	public void setRoot(Integer root) {
-		this.root = root;
-	}
-
 	public void setAllocator(Allocator allocator) {
 		this.allocator = allocator;
 	}
 
-	public void setPersister(Persister<Page> persister) {
-		this.persister = persister;
+	public void setSuperBlockPersister(Persister<SuperBlock> superBlockPersister) {
+		this.superBlockPersister = superBlockPersister;
+	}
+
+	public void setPagePersister(Persister<Page> pagePersister) {
+		this.pagePersister = pagePersister;
 	}
 
 	public void setComparator(Comparator<Key> comparator) {
