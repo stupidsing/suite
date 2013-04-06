@@ -13,10 +13,12 @@ import org.junit.Test;
 
 public class B_TreeTest {
 
-	private static final int nKeys = 256;
+	private static final int nKeys = 1024;
 	private Integer keys[] = new Integer[nKeys];
 
 	private B_Tree<Integer, String> b_tree;
+
+	private Random random = new Random();
 
 	private Comparator<Integer> compare = new Comparator<Integer>() {
 		public int compare(Integer i0, Integer i1) {
@@ -60,16 +62,13 @@ public class B_TreeTest {
 	}
 
 	private void shuffleAndTest() {
-		shuffleNumbers();
+		for (int i = 0; i < nKeys; i++)
+			keys[i] = i;
+
 		addAndRemove();
 	}
 
 	private void shuffleNumbers() {
-		Random random = new Random();
-
-		for (int i = 0; i < nKeys; i++)
-			keys[i] = i;
-
 		for (int i = 0; i < nKeys; i++) {
 			int j = random.nextInt(nKeys);
 			Integer temp = keys[i];
@@ -79,11 +78,15 @@ public class B_TreeTest {
 	}
 
 	private void addAndRemove() {
+		shuffleNumbers();
+
 		for (int i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], keys[i].toString());
 
 		for (int i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
+
+		shuffleNumbers();
 
 		for (int i = 0; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
