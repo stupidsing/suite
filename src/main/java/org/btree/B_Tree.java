@@ -2,6 +2,7 @@ package org.btree;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -52,11 +53,17 @@ public class B_Tree<Key, Value> {
 		}
 	}
 
-	public class Page {
+	public class Page extends ArrayList<KeyPointer> {
+		private static final long serialVersionUID = 1l;
 		int pageNo;
-		List<KeyPointer> keyPointers = new ArrayList<>();
 
 		public Page(int pageNo) {
+			super();
+			this.pageNo = pageNo;
+		}
+
+		public Page(int pageNo, List<KeyPointer> keyPointers) {
+			super(keyPointers);
 			this.pageNo = pageNo;
 		}
 	}
@@ -144,7 +151,7 @@ public class B_Tree<Key, Value> {
 
 					if (kp != null)
 						if (kp.pointer instanceof B_Tree.Branch) {
-							Page page = loadPage(slot.page, slot.index);
+							Page page = loadBranch(slot.page, slot.index);
 							currentSlots.push(new Slot(page, 0));
 						} else
 							return Pair.create(kp.key, getLeafValue(kp));
@@ -183,29 +190,26 @@ public class B_Tree<Key, Value> {
 		do {
 			Slot slot = slots.pop();
 			Page page = slot.page;
-			List<KeyPointer> kps = page.keyPointers;
+			page.add(slot.index, toInsert);
 
-			kps.add(slot.index, toInsert);
-
-			int size = kps.size();
+			int size = page.size();
 			done = size <= branchFactor;
 
 			if (!done) { // Splits list into two pages
 				int half = branchFactor / 2;
-				Page p0 = new Page(allocator.allocate()), p1 = page;
-				p0.keyPointers = new ArrayList<>(kps.subList(0, half));
-				p1.keyPointers = new ArrayList<>(kps.subList(half, size));
+				int pageNo0 = allocator.allocate(), pageNo1 = page.pageNo;
+				Page p0 = new Page(pageNo0, page.subList(0, half));
+				Page p1 = new Page(pageNo1, page.subList(half, size));
 				savePage(p0);
 				savePage(p1);
 
-				// Propagates to parent
-				toInsert = pointerTo(p0);
+				toInsert = pointerTo(p0); // Propagates to parent
 
 				if (slots.empty()) { // Have to create a new root
+					KeyPointer pp1 = pointerTo(p1);
+
 					create();
-					page = new Page(getRoot());
-					page.keyPointers.add(toInsert);
-					page.keyPointers.add(pointerTo(p1));
+					page = new Page(getRoot(), Arrays.asList(toInsert, pp1));
 					savePage(page);
 					done = true;
 				}
@@ -215,21 +219,21 @@ public class B_Tree<Key, Value> {
 	}
 
 	public void remove(Key key) {
+		int root = getRoot();
 		Stack<Slot> traverse = traverse(key);
 		Slot slot = traverse.pop();
 		Page page = slot.page;
 		int index = slot.index;
 		KeyPointer keyPointer = getKeyPointer(slot);
 
-		if (keyPointer == null || !Util.equals(keyPointer.key, key))
+		if (keyPointer != null && Util.equals(keyPointer.key, key))
+			page.remove(index);
+		else
 			return;
-
-		int root = getRoot();
-		page.keyPointers.remove(index);
 
 		while (page.pageNo != root) {
 			int half = branchFactor / 2;
-			if (page.keyPointers.size() >= half)
+			if (page.size() >= half)
 				break;
 
 			Page mp = page;
@@ -238,32 +242,34 @@ public class B_Tree<Key, Value> {
 			page = slot.page;
 			index = slot.index;
 
-			Page lp = loadPage(page, index - 1);
-			Page rp = loadPage(page, index + 1);
-			int lsize = lp != null ? lp.keyPointers.size() : 0;
-			int rsize = rp != null ? rp.keyPointers.size() : 0;
+			Page lp = loadBranch(page, index - 1);
+			Page rp = loadBranch(page, index + 1);
+			int lsize = lp != null ? lp.size() : 0;
+			int rsize = rp != null ? rp.size() : 0;
 
 			if (lsize >= rsize && lsize != 0)
 				if (lsize > half) { // Shift
-					KeyPointer out = lp.keyPointers.remove(lsize - 1);
-					mp.keyPointers.add(0, out);
+					KeyPointer out = lp.remove(lsize - 1);
+					mp.add(0, out);
 					savePage(mp);
 					savePage(lp);
-					page.keyPointers.set(index - 1, pointerTo(lp));
+					page.set(index - 1, pointerTo(lp));
 				} else
 					merge(page, lp, mp, index - 1);
 			else if (rsize >= lsize && rsize != 0)
 				if (rsize > half) { // Shift
-					KeyPointer out = rp.keyPointers.remove(0);
-					mp.keyPointers.add(out);
+					KeyPointer out = rp.remove(0);
+					mp.add(out);
 					savePage(mp);
 					savePage(rp);
-					page.keyPointers.set(index, pointerTo(mp));
+					page.set(index, pointerTo(mp));
 				} else
 					merge(page, mp, rp, index);
 			else {
+
 				// Left/right node empty, should not happen if re-balanced well
-				page.keyPointers = mp.keyPointers;
+				page.clear();
+				page.addAll(mp);
 				savePage(page);
 				allocator.deallocate(mp.pageNo);
 			}
@@ -279,10 +285,10 @@ public class B_Tree<Key, Value> {
 	 * parent, while p1 is in next.
 	 */
 	private void merge(Page parent, Page p0, Page p1, int index) {
-		p1.keyPointers.addAll(0, p0.keyPointers);
+		p1.addAll(0, p0);
 		savePage(p1);
 		allocator.deallocate(p0.pageNo);
-		parent.keyPointers.remove(index);
+		parent.remove(index);
 	}
 
 	private Slots traverse(Key key) {
@@ -307,9 +313,9 @@ public class B_Tree<Key, Value> {
 	}
 
 	private int findPosition(Page page, Key key) {
-		int i, size = page.keyPointers.size();
+		int i, size = page.size();
 		for (i = 0; i < size; i++)
-			if (comparator.compare(page.keyPointers.get(i).key, key) >= 0)
+			if (comparator.compare(page.get(i).key, key) >= 0)
 				break;
 		return i;
 	}
@@ -317,7 +323,7 @@ public class B_Tree<Key, Value> {
 	public void dump(PrintStream w, String pfx, int pageNo) {
 		Page page = loadPage(pageNo);
 
-		for (KeyPointer kp : page.keyPointers) {
+		for (KeyPointer kp : page) {
 			Pointer ptr = kp.pointer;
 
 			if (ptr instanceof B_Tree.Branch) {
@@ -330,28 +336,24 @@ public class B_Tree<Key, Value> {
 		}
 	}
 
+	private Page loadBranch(Page page, int index) {
+		KeyPointer keyPointer = getKeyPointer(page, index);
+
+		if (keyPointer != null && keyPointer.pointer instanceof B_Tree.Branch)
+			return loadPage(getBranchPageNo(keyPointer));
+		else
+			return null;
+	}
+
 	private KeyPointer getKeyPointer(Slot slot) {
 		return getKeyPointer(slot.page, slot.index);
 	}
 
 	private KeyPointer getKeyPointer(Page page, Integer index) {
-		List<KeyPointer> keyPointers = page.keyPointers;
-
-		if (index >= 0 && index < keyPointers.size())
-			return keyPointers.get(index);
+		if (index >= 0 && index < page.size())
+			return page.get(index);
 		else
 			return null;
-	}
-
-	private Page loadPage(Page parent, int index) {
-		if (index >= 0 && index < parent.keyPointers.size()) {
-			KeyPointer keyPointer = parent.keyPointers.get(index);
-
-			if (keyPointer.pointer instanceof B_Tree.Branch)
-				return loadPage(getBranchPageNo(keyPointer));
-		}
-
-		return null;
 	}
 
 	private Page loadPage(int pageNo) {
@@ -375,8 +377,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	private KeyPointer pointerTo(Page page) {
-		List<KeyPointer> keyPointers = page.keyPointers;
-		Key largest = keyPointers.get(keyPointers.size() - 1).key;
+		Key largest = page.get(page.size() - 1).key;
 		return new KeyPointer(largest, new Branch(page.pageNo));
 	}
 

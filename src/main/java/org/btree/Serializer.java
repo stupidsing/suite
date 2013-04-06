@@ -58,7 +58,6 @@ public interface Serializer<V> {
 			int size = buffer.getInt();
 
 			B_Tree<Key, Value>.Page page = b_tree.new Page(pageNo);
-			List<B_Tree<Key, Value>.KeyPointer> keyPointers = page.keyPointers;
 
 			for (int i = 0; i < size; i++) {
 				char nodeType = buffer.getChar();
@@ -66,10 +65,10 @@ public interface Serializer<V> {
 
 				if (nodeType == BRANCH) {
 					int branch = buffer.getInt();
-					addBranch(keyPointers, key, branch);
+					addBranch(page, key, branch);
 				} else if (nodeType == LEAF) {
 					Value value = valueAccessor.read(buffer);
-					addLeaf(keyPointers, key, value);
+					addLeaf(page, key, value);
 				}
 			}
 
@@ -77,12 +76,10 @@ public interface Serializer<V> {
 		}
 
 		public void write(ByteBuffer buffer, B_Tree<Key, Value>.Page page) {
-			List<B_Tree<Key, Value>.KeyPointer> keyPointers = page.keyPointers;
-
 			buffer.putInt(page.pageNo);
-			buffer.putInt(keyPointers.size());
+			buffer.putInt(page.size());
 
-			for (B_Tree<Key, Value>.KeyPointer kp : keyPointers)
+			for (B_Tree<Key, Value>.KeyPointer kp : page)
 				if (kp.pointer instanceof B_Tree.Branch) {
 					buffer.putChar(BRANCH);
 					keyAccessor.write(buffer, kp.key);
