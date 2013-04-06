@@ -42,9 +42,13 @@ public class B_Tree<Key, Value> {
 		}
 	}
 
-	public class KeyPointer extends Pair<Key, Pointer> {
-		public KeyPointer(Key t1, Pointer t2) {
-			super(t1, t2);
+	public class KeyPointer {
+		private Key key;
+		private Pointer pointer;
+
+		public KeyPointer(Key key, Pointer pointer) {
+			this.key = key;
+			this.pointer = pointer;
 		}
 	}
 
@@ -78,11 +82,11 @@ public class B_Tree<Key, Value> {
 		Integer index = last.t2;
 
 		if (index < page.keyPointers.size()) {
-			Pair<Key, Pointer> keyPointer = page.keyPointers.get(index);
+			KeyPointer keyPointer = page.keyPointers.get(index);
 
-			if (Util.equals(keyPointer.t1, key)) {
+			if (Util.equals(keyPointer.key, key)) {
 				@SuppressWarnings("unchecked")
-				Leaf leaf = (Leaf) keyPointer.t2;
+				Leaf leaf = (Leaf) keyPointer.pointer;
 				return leaf.value;
 			}
 		}
@@ -97,33 +101,50 @@ public class B_Tree<Key, Value> {
 		return new Iterable<Pair<Key, Value>>() {
 			public Iterator<Pair<Key, Value>> iterator() {
 				return new Iterator<Pair<Key, Value>>() {
-					private Traverse current = s;
+					private Traverse traverse = s;
+					private Pair<Key, Value> current;
+
+					{
+						Pair<Page, Integer> k = s.peek();
+						KeyPointer kp = k.t1.keyPointers.get(k.t2);
+
+						if (kp.pointer instanceof B_Tree.Branch)
+							next(); // No result for start, search next
+						else {
+							@SuppressWarnings("unchecked")
+							Leaf leaf = (Leaf) kp.pointer;
+							current = Pair.create(kp.key, leaf.value);
+						}
+					}
 
 					public boolean hasNext() {
-						Pair<Page, Integer> k0 = current.peek();
+						Pair<Page, Integer> k0 = traverse.peek();
 						Pair<Page, Integer> k1 = e.peek();
 						return k0.t1.pageNo != k1.t1.pageNo
 								|| !Util.equals(k0.t2, k1.t2);
 					}
 
 					public Pair<Key, Value> next() {
+						Pair<Key, Value> current0 = current;
+
 						while (true) {
-							Pair<Page, Integer> k = current.peek();
+							Pair<Page, Integer> k = traverse.peek();
 							k.t2++;
 
 							if (k.t2 < k.t1.keyPointers.size()) {
-								KeyPointer p = k.t1.keyPointers.get(k.t2);
+								KeyPointer kp = k.t1.keyPointers.get(k.t2);
 
-								if (p.t2 instanceof B_Tree.Branch) {
+								if (kp.pointer instanceof B_Tree.Branch) {
 									Page page = loadPage(k.t1, k.t2);
-									current.push(Pair.create(page, 0));
+									traverse.push(Pair.create(page, 0));
 								} else {
 									@SuppressWarnings("unchecked")
-									Leaf leaf = (Leaf) p.t2;
-									return Pair.create(p.t1, leaf.value);
+									Leaf leaf = (Leaf) kp.pointer;
+									current = Pair.create(kp.key, leaf.value);
+									return current0;
 								}
 							} else
-								current.pop();
+								traverse.pop();
 						}
 					}
 
@@ -146,8 +167,8 @@ public class B_Tree<Key, Value> {
 		if (index < page.keyPointers.size()) {
 			keyPointer = page.keyPointers.get(index);
 
-			if (Util.equals(keyPointer.t1, key)) { // Replace existing value?
-				keyPointer.t2 = new Leaf(value);
+			if (Util.equals(keyPointer.key, key)) { // Replace existing value?
+				keyPointer.pointer = new Leaf(value);
 				needInsert = false;
 			}
 		}
@@ -204,7 +225,7 @@ public class B_Tree<Key, Value> {
 		int index = pair.t2;
 
 		if (index >= page.keyPointers.size()
-				|| !Util.equals(page.keyPointers.get(index).t1, key))
+				|| !Util.equals(page.keyPointers.get(index).key, key))
 			return;
 
 		page.keyPointers.remove(index);
@@ -257,7 +278,7 @@ public class B_Tree<Key, Value> {
 	private int getMaxNodes(Page page) {
 		List<KeyPointer> ptrs = page.keyPointers;
 		boolean isBranch = !ptrs.isEmpty()
-				&& ptrs.get(0).t2 instanceof B_Tree.Branch;
+				&& ptrs.get(0).pointer instanceof B_Tree.Branch;
 		return isBranch ? branchFactor : leafFactor;
 	}
 
@@ -287,7 +308,7 @@ public class B_Tree<Key, Value> {
 			pageNo = null;
 
 			if (index < page.keyPointers.size()) {
-				Pointer pointer = page.keyPointers.get(index).t2;
+				Pointer pointer = page.keyPointers.get(index).pointer;
 
 				if (pointer instanceof B_Tree.Branch) {
 					@SuppressWarnings("unchecked")
@@ -303,26 +324,28 @@ public class B_Tree<Key, Value> {
 	private int findPosition(Page page, Key key) {
 		int i, size = page.keyPointers.size();
 		for (i = 0; i < size; i++)
-			if (comparator.compare(page.keyPointers.get(i).t1, key) >= 0)
+			if (comparator.compare(page.keyPointers.get(i).key, key) >= 0)
 				break;
 		return i;
 	}
 
 	private KeyPointer pointerTo(Page page) {
 		List<KeyPointer> keyPointers = page.keyPointers;
-		Key largest = keyPointers.get(keyPointers.size() - 1).t1;
+		Key largest = keyPointers.get(keyPointers.size() - 1).key;
 		return new KeyPointer(largest, new Branch(page.pageNo));
 	}
 
 	private Page loadPage(Page parent, int index) {
 		if (index >= 0 && index < parent.keyPointers.size()) {
-			Pointer pointer = parent.keyPointers.get(index).t2;
+			Pointer pointer = parent.keyPointers.get(index).pointer;
+
 			if (pointer instanceof B_Tree.Branch) {
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) pointer;
 				return persister.load(branch.branch);
 			}
 		}
+
 		return null;
 	}
 
@@ -339,17 +362,17 @@ public class B_Tree<Key, Value> {
 		Page page = persister.load(pageNo);
 
 		for (KeyPointer keyPointer : page.keyPointers) {
-			Pointer ptr = keyPointer.t2;
+			Pointer ptr = keyPointer.pointer;
 
 			if (ptr instanceof B_Tree.Branch) {
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) ptr;
 				dump(w, pfx + "\t", branch.branch);
-				w.println(pfx + keyPointer.t1);
+				w.println(pfx + keyPointer.key);
 			} else {
 				@SuppressWarnings("unchecked")
 				Leaf leaf = (Leaf) ptr;
-				w.println(pfx + keyPointer.t1 + " = " + leaf.value);
+				w.println(pfx + keyPointer.key + " = " + leaf.value);
 			}
 		}
 	}
