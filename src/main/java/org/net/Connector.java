@@ -25,8 +25,8 @@ public class Connector {
 		try (Socket socket = new Socket("wwww.google.com", 80);
 				InputStream is = socket.getInputStream();
 				OutputStream os = socket.getOutputStream();
-				InputStreamReader isr = new InputStreamReader(is, charset);
-				BufferedReader reader = new BufferedReader(isr);
+				Reader isr = new InputStreamReader(is, charset);
+				Reader reader = new BufferedReader(isr);
 				PrintWriter writer = new PrintWriter(os);) {
 			writer.print("GET /\r\n\r\n");
 			while (reader.ready())
@@ -45,8 +45,7 @@ public class Connector {
 					public void run() {
 						try (OutputStream os = socket.getOutputStream();
 								InputStream is = socket.getInputStream();
-								InputStreamReader isr = new InputStreamReader(
-										is);
+								Reader isr = new InputStreamReader(is);
 								Reader reader = new BufferedReader(isr);
 								PrintWriter writer = new PrintWriter(os);) {
 							writer.println("Hello World");
