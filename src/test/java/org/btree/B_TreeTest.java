@@ -52,7 +52,10 @@ public class B_TreeTest {
 
 	@Test
 	public void fileTest() throws IOException {
-		String prefix = "/tmp/test";
+		String path = "/tmp/";
+		new File(path).mkdirs();
+
+		String prefix = path + "test";
 		String superBlockFilename = prefix + ".superblock";
 		String pageFilename = prefix + ".pages";
 		String allocMapFilename = prefix + ".alloc";

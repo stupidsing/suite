@@ -206,10 +206,10 @@ public class B_Tree<Key, Value> {
 				toInsert = pointerTo(p0); // Propagates to parent
 
 				if (slots.empty()) { // Have to create a new root
-					KeyPointer pp1 = pointerTo(p1);
+					KeyPointer kp = pointerTo(p1);
 
 					create();
-					page = new Page(getRoot(), Arrays.asList(toInsert, pp1));
+					page = new Page(getRoot(), Arrays.asList(toInsert, kp));
 					savePage(page);
 					done = true;
 				}
