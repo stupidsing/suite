@@ -175,12 +175,13 @@ public class B_Tree<Key, Value> {
 		Slots slots = traverse(key);
 		Slot slot = slots.peek();
 		KeyPointer keyPointer = getKeyPointer(slot);
+		Leaf leaf = new Leaf(value);
 
 		if (keyPointer != null && Util.equals(keyPointer.key, key)) {
-			keyPointer.pointer = new Leaf(value); // Replace existing value
+			keyPointer.pointer = leaf; // Replace existing value
 			savePage(slot.page);
 		} else
-			addAndSplit(slots, new KeyPointer(key, new Leaf(value)));
+			addAndSplit(slots, new KeyPointer(key, leaf));
 	}
 
 	private void addAndSplit(Slots slots, KeyPointer toInsert) {
@@ -220,8 +221,10 @@ public class B_Tree<Key, Value> {
 
 	public void remove(Key key) {
 		int root = getRoot();
-		Stack<Slot> traverse = traverse(key);
-		Slot slot = traverse.pop();
+		Stack<Slot> slots = traverse(key);
+
+		// Remove the entry
+		Slot slot = slots.pop();
 		Page page = slot.page;
 		int index = slot.index;
 		KeyPointer keyPointer = getKeyPointer(slot);
@@ -231,6 +234,7 @@ public class B_Tree<Key, Value> {
 		else
 			return;
 
+		// Rotates the tree to maintain balance
 		while (page.pageNo != root) {
 			int half = branchFactor / 2;
 			if (page.size() >= half)
@@ -238,7 +242,7 @@ public class B_Tree<Key, Value> {
 
 			Page mp = page;
 
-			slot = traverse.pop();
+			slot = slots.pop();
 			page = slot.page;
 			index = slot.index;
 
