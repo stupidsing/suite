@@ -12,9 +12,9 @@ import java.nio.channels.FileChannel;
  * 
  * The following must holds when using this class:
  * 
- * pageSize >= sizeof(char) + sizeof(int) + branchFactor * sizeof(int)
+ * pageSize >= sizeof(char) + 2 * sizeof(int) + branchFactor * branchPointerSize
  * 
- * pageSize >= sizeof(char) + sizeof(int) + leafFactor * sizeof(Value)
+ * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */
 public class FilePersister<V> implements Persister<V>, Closeable {
 

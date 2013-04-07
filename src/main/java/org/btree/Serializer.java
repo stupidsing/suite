@@ -83,11 +83,11 @@ public interface Serializer<V> {
 				if (kp.pointer instanceof B_Tree.Branch) {
 					buffer.putChar(BRANCH);
 					keyAccessor.write(buffer, kp.key);
-					buffer.putInt(b_tree.getBranchPageNo(kp));
+					buffer.putInt(kp.getBranchPageNo());
 				} else if (kp.pointer instanceof B_Tree.Leaf) {
 					buffer.putChar(LEAF);
 					keyAccessor.write(buffer, kp.key);
-					valueAccessor.write(buffer, b_tree.getLeafValue(kp));
+					valueAccessor.write(buffer, kp.getLeafValue());
 				}
 		}
 
