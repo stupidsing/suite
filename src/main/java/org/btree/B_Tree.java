@@ -18,17 +18,17 @@ import org.util.Util.Pair;
  */
 public class B_Tree<Key, Value> {
 
-	public int branchFactor;
-	public Allocator allocator;
-	public Persister<SuperBlock> superBlockPersister;
-	public Persister<Page> pagePersister;
-	public Comparator<Key> comparator;
+	private int branchFactor;
+	private Allocator allocator;
+	private Persister<SuperBlock> superBlockPersister;
+	private Persister<Page> pagePersister;
+	private Comparator<Key> comparator;
 
 	public interface Pointer {
 	}
 
 	public class Leaf implements Pointer {
-		Value value;
+		public Value value;
 
 		public Leaf(Value value) {
 			this.value = value;
@@ -36,7 +36,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class Branch implements Pointer {
-		int pageNo;
+		public int pageNo;
 
 		public Branch(int pageNo) {
 			this.pageNo = pageNo;
@@ -44,18 +44,30 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class KeyPointer {
-		Key key;
-		Pointer pointer;
+		public Key key;
+		public Pointer pointer;
 
 		KeyPointer(Key key, Pointer pointer) {
 			this.key = key;
 			this.pointer = pointer;
 		}
+
+		public int getBranchPageNo() {
+			@SuppressWarnings("unchecked")
+			Branch branch = (Branch) pointer;
+			return branch.pageNo;
+		}
+
+		public Value getLeafValue() {
+			@SuppressWarnings("unchecked")
+			Leaf leaf = (Leaf) pointer;
+			return leaf.value;
+		}
 	}
 
 	public class Page extends ArrayList<KeyPointer> {
 		private static final long serialVersionUID = 1l;
-		int pageNo;
+		public int pageNo;
 
 		public Page(int pageNo) {
 			super();
@@ -69,12 +81,16 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class Slot {
-		Page page;
-		Integer index;
+		public Page page;
+		public Integer index;
 
 		public Slot(Page page, Integer index) {
 			this.page = page;
 			this.index = index;
+		}
+
+		private KeyPointer getKeyPointer() {
+			return B_Tree.this.getKeyPointer(page, index);
 		}
 	}
 
@@ -83,7 +99,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	public class SuperBlock {
-		int root;
+		public int root;
 	}
 
 	public B_Tree(Comparator<Key> comparator) {
@@ -99,10 +115,10 @@ public class B_Tree<Key, Value> {
 
 	public Value get(Key key) {
 		Slot lastSlot = traverse(key).peek();
-		KeyPointer keyPointer = getKeyPointer(lastSlot);
+		KeyPointer keyPointer = lastSlot.getKeyPointer();
 
 		if (keyPointer != null && Util.equals(keyPointer.key, key))
-			return getLeafValue(keyPointer);
+			return keyPointer.getLeafValue();
 		else
 			return null;
 	}
@@ -116,13 +132,13 @@ public class B_Tree<Key, Value> {
 			private Pair<Key, Value> current;
 
 			{
-				KeyPointer kp = getKeyPointer(startSlots.peek());
+				KeyPointer kp = startSlots.peek().getKeyPointer();
 
 				if (kp != null)
 					if (kp.pointer instanceof B_Tree.Branch)
 						next(); // No result for start, search next
 					else
-						current = Pair.create(kp.key, getLeafValue(kp));
+						current = Pair.create(kp.key, kp.getLeafValue());
 			}
 
 			public boolean hasNext() {
@@ -147,14 +163,14 @@ public class B_Tree<Key, Value> {
 
 				while (true) {
 					Slot slot = currentSlots.peek();
-					KeyPointer kp = getKeyPointer(slot);
+					KeyPointer kp = slot.getKeyPointer();
 
 					if (kp != null)
 						if (kp.pointer instanceof B_Tree.Branch) {
 							Page page = loadBranch(slot.page, slot.index);
 							currentSlots.push(new Slot(page, 0));
 						} else
-							return Pair.create(kp.key, getLeafValue(kp));
+							return Pair.create(kp.key, kp.getLeafValue());
 					else if (currentSlots.size() != 1) {
 						currentSlots.pop();
 						advance();
@@ -174,7 +190,7 @@ public class B_Tree<Key, Value> {
 	public void put(Key key, Value value) {
 		Slots slots = traverse(key);
 		Slot slot = slots.peek();
-		KeyPointer keyPointer = getKeyPointer(slot);
+		KeyPointer keyPointer = slot.getKeyPointer();
 		Leaf leaf = new Leaf(value);
 
 		if (keyPointer != null && Util.equals(keyPointer.key, key)) {
@@ -227,7 +243,7 @@ public class B_Tree<Key, Value> {
 		Slot slot = slots.pop();
 		Page page = slot.page;
 		int index = slot.index;
-		KeyPointer keyPointer = getKeyPointer(slot);
+		KeyPointer keyPointer = slot.getKeyPointer();
 
 		if (keyPointer != null && Util.equals(keyPointer.key, key))
 			page.remove(index);
@@ -308,7 +324,7 @@ public class B_Tree<Key, Value> {
 			traversed.push(new Slot(page, index));
 
 			if (kp != null && kp.pointer instanceof B_Tree.Branch)
-				pageNo = getBranchPageNo(kp);
+				pageNo = kp.getBranchPageNo();
 			else
 				pageNo = null;
 		}
@@ -336,7 +352,7 @@ public class B_Tree<Key, Value> {
 				dump(w, pfx + "\t", branch.pageNo);
 				w.println(pfx + kp.key);
 			} else
-				w.println(pfx + kp.key + " = " + getLeafValue(kp));
+				w.println(pfx + kp.key + " = " + kp.getLeafValue());
 		}
 	}
 
@@ -344,7 +360,7 @@ public class B_Tree<Key, Value> {
 		KeyPointer keyPointer = getKeyPointer(page, index);
 
 		if (keyPointer != null && keyPointer.pointer instanceof B_Tree.Branch)
-			return loadPage(getBranchPageNo(keyPointer));
+			return loadPage(keyPointer.getBranchPageNo());
 		else
 			return null;
 	}
@@ -362,27 +378,11 @@ public class B_Tree<Key, Value> {
 		return new KeyPointer(largest, new Branch(page.pageNo));
 	}
 
-	private KeyPointer getKeyPointer(Slot slot) {
-		return getKeyPointer(slot.page, slot.index);
-	}
-
 	private KeyPointer getKeyPointer(Page page, Integer index) {
 		if (index >= 0 && index < page.size())
 			return page.get(index);
 		else
 			return null;
-	}
-
-	int getBranchPageNo(KeyPointer keyPointer) {
-		@SuppressWarnings("unchecked")
-		Branch branch = (Branch) keyPointer.pointer;
-		return branch.pageNo;
-	}
-
-	Value getLeafValue(KeyPointer keyPointer) {
-		@SuppressWarnings("unchecked")
-		Leaf leaf = (Leaf) keyPointer.pointer;
-		return leaf.value;
 	}
 
 	public void dump(PrintStream w) {
