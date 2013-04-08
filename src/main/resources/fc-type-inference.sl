@@ -12,6 +12,12 @@
 -- that do not need type specialization.
 -- Outside variables are local variables that require type specialization.
 --
+infer-type-rules () _ .tr/.tr () :- ! #
+infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
+	:- infer-type-rule .e .env .tr0/.tr1 .t
+	, infer-type-rules .es .env .tr1/.trx .ts
+#
+
 infer-type-rule .p .env .tr/.tr .type
 	:- find-simple-type .p .env .type, !
 #
@@ -104,12 +110,6 @@ infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
 	; !, fc-error "Undefined variable" .var
 #
 
-infer-type-rules () _ .tr/.tr () :- ! #
-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
-	:- infer-type-rule .e .env .tr0/.tr1 .t
-	, infer-type-rules .es .env .tr1/.trx .ts
-#
-
 find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN-OF .varType .type)
 	:- infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr .type
 	, resolve-types .tr
@@ -134,6 +134,12 @@ infer-compatible-types .a .b .ue/.ve/.te/.oe .tr0/.trx .type
 	)
 #
 
+find-one-of-types () .o/.o :- ! #
+find-one-of-types (.t, .ts) .o0/.ox
+	:- find-one-of-type .t .o0/.o1
+	, find-one-of-types .ts .o1/.ox
+#
+
 -- Finds a reverse-mapping of "one of" relation for looking up
 find-one-of-type .t .o/.o :- not bound .t, ! #
 find-one-of-type (ONE-OF .ts) .o0/.ox
@@ -143,12 +149,6 @@ find-one-of-type (ONE-OF .ts) .o0/.ox
 find-one-of-type .t .o
 	:- children-of-type .t .t .ts/() .ts/()
 	, find-one-of-types .ts .o
-#
-
-find-one-of-types () .o/.o :- ! #
-find-one-of-types (.t, .ts) .o0/.ox
-	:- find-one-of-type .t .o0/.o1
-	, find-one-of-types .ts .o1/.ox
 #
 
 add-one-of-types _ () .o/.o #
@@ -203,7 +203,7 @@ resolve-sub-super-types .env .t0 .t1 .tr1/.trx
 	:- (bound .t0; bound .t1), !
 	, .t0 = TUPLE-OF _, .t1 = TUPLE-OF _
 	, children-of-type .t0 .t1 .ts0/() .ts1/()
-	, sub-super-type-pairs .env .ts0 .ts1 .trx/.trxx
+	, sub-super-type-pair-list .env .ts0 .ts1 .trx/.trxx
 	, resolve-types0 .tr1/.trxx
 #
 
@@ -221,10 +221,16 @@ sub-super-type-pair _ .t0 .t1
 	, replace .type/.t0 .typeVar/_
 #
 
-sub-super-type-pairs _ () () .tr/.tr :- ! #
-sub-super-type-pairs .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
+sub-super-type-pair-list _ () () .tr/.tr :- ! #
+sub-super-type-pair-list .env (.t0, .ts0) (.t1, .ts1) .tr0/.trx
 	:- .tr0 = (SUB-SUPER-TYPES .env .t0 .t1, .tr1)
-	, sub-super-type-pairs .env .ts0 .ts1 .tr1/.trx
+	, sub-super-type-pair-list .env .ts0 .ts1 .tr1/.trx
+#
+
+children-of-types () () .p/.p .q/.q :- ! #
+children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
+	:- .p0 = (.t0, .p1), .q0 = (.t1, .q1)
+	, children-of-types .ts0 .ts1 .p1/.px .q1/.qx
 #
 
 children-of-type (FUN-OF .pt0 .rt0) (FUN-OF .pt1 .rt1) .p0/.px .q0/.qx
@@ -246,12 +252,6 @@ children-of-type (GENERIC-OF .tv .t0) (GENERIC-OF .tv .t1) .p0/.px .q0/.qx
 	, .p0 = (.gt0, .px), .q0 = (.gt1, .qx)
 #
 children-of-type .t .t .p/.p .q/.q #
-
-children-of-types () () .p/.p .q/.q :- ! #
-children-of-types (.t0, .ts0) (.t1, .ts1) .p0/.px .q0/.qx
-	:- .p0 = (.t0, .p1), .q0 = (.t1, .q1)
-	, children-of-types .ts0 .ts1 .p1/.px .q1/.qx
-#
 
 default-fun-type () (LIST-OF _) #
 default-fun-type _cons (FUN-OF .type (FUN-OF (LIST-OF .type) (LIST-OF .type))) #

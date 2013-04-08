@@ -265,7 +265,7 @@ public class Prover {
 					Tracer.this.currentRecord = record0;
 					Tracer.this.currentDepth = depth0;
 					// appendLog("LEAVE", record.query, record.depth);
-					return record.result = false;
+					return false;
 				}
 			};
 
