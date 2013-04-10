@@ -23,7 +23,7 @@ public class FormatUtil {
 		private DateFormat dateFormat;
 
 		public SyncDateFormat(String fmt) {
-			this.dateFormat = new SimpleDateFormat(fmt);
+			dateFormat = new SimpleDateFormat(fmt);
 		}
 
 		public SyncDateFormat(DateFormat dateFormat) {
@@ -43,7 +43,7 @@ public class FormatUtil {
 		private DecimalFormat decimalFormat;
 
 		public SynchronizedDecimalFormat(String fmt) {
-			this.decimalFormat = new DecimalFormat(fmt);
+			decimalFormat = new DecimalFormat(fmt);
 		}
 
 		public SynchronizedDecimalFormat(DecimalFormat decimalFormat) {
@@ -65,10 +65,10 @@ public class FormatUtil {
 
 	public static String leftTrim(String s) {
 		int pos = 0;
-		do {
+		do
 			if (!Character.isWhitespace(s.charAt(pos)))
 				break;
-		} while (++pos < s.length());
+		while (++pos < s.length());
 		return s.substring(pos);
 	}
 

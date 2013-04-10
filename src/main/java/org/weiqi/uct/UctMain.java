@@ -121,9 +121,9 @@ public class UctMain<Move> {
 		String s = null;
 		StringBuilder sb = new StringBuilder();
 
-		do {
+		do
 			s = br.readLine();
-		} while (!Util.isBlank(s));
+		while (!Util.isBlank(s));
 
 		Board board = UserInterface.importBoard(sb.toString());
 		return new MovingGameSet(board, startingPlayer);

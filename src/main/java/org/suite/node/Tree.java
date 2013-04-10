@@ -20,7 +20,7 @@ public class Tree extends Node {
 
 	public static Tree decompose(Node node) {
 		node = node.finalNode();
-		return (node instanceof Tree) ? (Tree) node : null;
+		return node instanceof Tree ? (Tree) node : null;
 	}
 
 	public static Tree decompose(Node node, Operator operator) {

@@ -138,10 +138,10 @@ public class InstructionExecutor {
 				regs[insn.op1] = i(g(regs[insn.op2]) - g(regs[insn.op3]));
 				break;
 			case EXIT__________:
-				return (Node) regs[insn.op1];
+				return regs[insn.op1];
 			case FORMTREE0_____:
-				Node left = (Node) regs[insn.op1];
-				Node right = (Node) regs[insn.op2];
+				Node left = regs[insn.op1];
+				Node right = regs[insn.op2];
 				insn = instructions[current.ip++];
 				String op = ((Atom) constantPool.get(insn.op1)).getName();
 				regs[insn.op2] = Tree.create(TermOp.find(op), left, right);

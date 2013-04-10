@@ -58,7 +58,7 @@ public class Util {
 			int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
-		cal.set(year, month + (Calendar.JANUARY - 1), day, hour, minute, second);
+		cal.set(year, month + Calendar.JANUARY - 1, day, hour, minute, second);
 		return cal.getTimeInMillis();
 	}
 
@@ -88,7 +88,7 @@ public class Util {
 
 		public int hashCode() {
 			int h1 = t1 != null ? t1.hashCode() : 0;
-			int h2 = (t2 != null) ? t2.hashCode() : 0;
+			int h2 = t2 != null ? t2.hashCode() : 0;
 			return h1 ^ h2;
 		}
 
@@ -231,7 +231,7 @@ public class Util {
 	}
 
 	public static <T> int hashCode(T t) {
-		return (t != null) ? t.hashCode() : 0;
+		return t != null ? t.hashCode() : 0;
 	}
 
 	/**

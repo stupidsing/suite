@@ -40,7 +40,7 @@ public class Parser {
 	}
 
 	public Parser(Context context, Operator operators[]) {
-		this.localContext = context;
+		localContext = context;
 		this.operators = operators;
 	}
 

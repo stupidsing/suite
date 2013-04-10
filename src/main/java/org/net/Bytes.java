@@ -31,8 +31,8 @@ public class Bytes {
 
 	public Bytes(Bytes bytes) {
 		this.bytes = bytes.bytes;
-		this.start = bytes.start;
-		this.end = bytes.end;
+		start = bytes.start;
+		end = bytes.end;
 	}
 
 	public boolean isEmpty() {
@@ -119,7 +119,7 @@ public class Bytes {
 		StringBuilder sb = new StringBuilder();
 		for (int i = start; i < end; i++)
 			sb.append(" ") //
-					.append(hexDigits.charAt((bytes[i] >>> 4) & 0x0F)) //
+					.append(hexDigits.charAt(bytes[i] >>> 4 & 0x0F)) //
 					.append(hexDigits.charAt(bytes[i] & 0x0F));
 		return sb.toString();
 	}

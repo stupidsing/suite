@@ -7,7 +7,7 @@ public class Str extends Node {
 	private String value;
 
 	public Str(String name) {
-		this.value = name;
+		value = name;
 	}
 
 	@Override

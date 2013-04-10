@@ -83,7 +83,7 @@ public class AlphabetaSearchTest {
 				else if (state.grid[line[c]] == 'X')
 					nx++;
 
-			int o = (no == 0 || nx == 0) ? scores[no] - scores[nx] : 0;
+			int o = no == 0 || nx == 0 ? scores[no] - scores[nx] : 0;
 			return state.player == 'O' ? o : -o;
 		}
 	};

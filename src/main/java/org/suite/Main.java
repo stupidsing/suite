@@ -122,7 +122,7 @@ public class Main {
 				String line;
 
 				do {
-					System.out.print((sb.length() == 0) ? "=> " : "   ");
+					System.out.print(sb.length() == 0 ? "=> " : "   ");
 
 					if ((line = br.readLine()) != null)
 						sb.append(line + "\n");

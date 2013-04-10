@@ -148,7 +148,7 @@ public class Formatter {
 		StringBuilder sb = new StringBuilder();
 		sb.append(quote);
 
-		for (char ch : s.toCharArray()) {
+		for (char ch : s.toCharArray())
 			if (Character.isWhitespace(ch) && ch != ' ') {
 				if (ch >= 256)
 					sb.append(encodeHex(ch >> 8));
@@ -157,7 +157,6 @@ public class Formatter {
 				sb.append(ch + "" + ch);
 			else
 				sb.append(ch);
-		}
 
 		sb.append(quote);
 		return sb.toString();

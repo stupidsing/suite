@@ -72,7 +72,7 @@ public class Cluster {
 	public void start() throws IOException {
 		probe.setOnJoined(new Setter<String>() {
 			public Void perform(String node) {
-				return Cluster.this.onJoined.perform(node);
+				return onJoined.perform(node);
 			}
 		});
 
@@ -83,7 +83,7 @@ public class Cluster {
 				if (channel != null)
 					channel.stop();
 
-				return Cluster.this.onLeft.perform(node);
+				return onLeft.perform(node);
 			}
 		});
 
