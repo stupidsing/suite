@@ -2,7 +2,7 @@ package org.util;
 
 public class WildcardUtil {
 
-	public static boolean matchString(String pattern, String s) {
+	public static boolean match(String pattern, String s) {
 		if (!pattern.isEmpty()) {
 			char ph = pattern.charAt(0);
 			String pt = pattern.substring(1);
@@ -10,10 +10,10 @@ public class WildcardUtil {
 			if (ph != '*')
 				return !s.isEmpty() //
 						&& s.charAt(0) == ph //
-						&& matchString(pt, s.substring(1));
+						&& match(pt, s.substring(1));
 			else
-				return matchString(pt, s) //
-						|| !s.isEmpty() && matchString(pt, s.substring(1));
+				return match(pt, s) //
+						|| !s.isEmpty() && match(pt, s.substring(1));
 		} else
 			return s.isEmpty();
 	}
