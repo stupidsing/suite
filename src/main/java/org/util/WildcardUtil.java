@@ -18,18 +18,14 @@ public class WildcardUtil {
 			return s.isEmpty();
 	}
 
-	public static boolean matchWildcard(String p0, String p1) {
+	public static boolean match2(String p0, String p1) {
 		if (!p0.isEmpty() && !p1.isEmpty()) {
 			char h0 = p0.charAt(0), h1 = p1.charAt(0);
 			String t0 = p0.substring(1), t1 = p1.substring(1);
 
-			boolean isMatch = false;
-			isMatch |= h0 == '*'
-					&& (matchWildcard(t0, p1) || matchWildcard(p0, t1));
-			isMatch |= h1 == '*'
-					&& (matchWildcard(p0, t1) || matchWildcard(t0, p1));
-			isMatch |= h0 == h1 && matchWildcard(t0, t1);
-			return isMatch;
+			return h0 == '*' && (match2(t0, p1) || match2(p0, t1)) //
+					|| h1 == '*' && (match2(p0, t1) || match2(t0, p1)) //
+					|| h0 == h1 && match2(t0, t1);
 		} else {
 			boolean isWildcardPatterns = true;
 			for (char c0 : p0.toCharArray())
