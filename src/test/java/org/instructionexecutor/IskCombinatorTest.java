@@ -27,8 +27,8 @@ public class IskCombinatorTest {
 				+ "define f = k {i} >> " //
 				+ "define not_ = f {t} >> " //
 				+ "define or_ = k >> " //
-				+ "define and_ = f >> " //
-		;
+				+ "define and_ = f >> ";
+
 		assertEquals(SuiteUtil.parse("1"), eval(isk + tf //
 				+ "t {1} {2}"));
 		assertEquals(SuiteUtil.parse("2"), eval(isk + tf //
