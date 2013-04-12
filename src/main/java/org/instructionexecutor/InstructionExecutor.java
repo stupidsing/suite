@@ -50,11 +50,11 @@ public class InstructionExecutor {
 
 		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
-		Node dataStack[] = new Node[stackSize];
-		int i, dsp = 0;
+		Node stack[] = new Node[stackSize];
+		int i, sp = 0;
 
 		Exec exec = new Exec();
-		exec.dataStack = dataStack;
+		exec.stack = stack;
 
 		Comparer comparer = new Comparer();
 
@@ -166,13 +166,13 @@ public class InstructionExecutor {
 				regs[insn.op1] = new Reference();
 				break;
 			case PUSH__________:
-				dataStack[dsp++] = regs[insn.op1];
+				stack[sp++] = regs[insn.op1];
 				break;
 			case PUSHCONST_____:
-				dataStack[dsp++] = i(insn.op1);
+				stack[sp++] = i(insn.op1);
 				break;
 			case POP___________:
-				regs[insn.op1] = dataStack[--dsp];
+				regs[insn.op1] = stack[--sp];
 				break;
 			case REMARK________:
 				break;
@@ -188,22 +188,22 @@ public class InstructionExecutor {
 				((Closure) regs[insn.op1]).result = regs[insn.op2];
 				break;
 			case TOP___________:
-				regs[insn.op1] = dataStack[dsp + insn.op2];
+				regs[insn.op1] = stack[sp + insn.op2];
 				break;
 			default:
 				exec.current = current;
-				exec.dsp = dsp;
+				exec.sp = sp;
 				execute(exec, insn);
 				current = exec.current;
-				dsp = exec.dsp;
+				sp = exec.sp;
 			}
 		}
 	}
 
 	protected class Exec {
 		protected Activation current;
-		protected Object dataStack[];
-		protected int dsp;
+		protected Object stack[];
+		protected int sp;
 	}
 
 	protected void execute(Exec exec, Instruction insn) {

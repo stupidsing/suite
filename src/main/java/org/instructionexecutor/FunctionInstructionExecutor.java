@@ -104,7 +104,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 		switch (insn.insn) {
 		case SERVICE_______:
-			exec.dsp -= insn.op3;
+			exec.sp -= insn.op3;
 			regs[insn.op1] = sys(exec, constantPool.get(insn.op2));
 			break;
 		default:
@@ -113,44 +113,44 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	private Node sys(Exec exec, Node command) {
-		Object dataStack[] = exec.dataStack;
-		int dsp = exec.dsp;
+		Object stack[] = exec.stack;
+		int sp = exec.sp;
 		Node result;
 
 		if (command == COMPARE) {
-			Node left = (Node) dataStack[dsp + 1];
-			Node right = (Node) dataStack[dsp];
+			Node left = (Node) stack[sp + 1];
+			Node right = (Node) stack[sp];
 			result = Int.create(comparer.compare(left, right));
 		} else if (command == CONS) {
-			Node left = (Node) dataStack[dsp + 1];
-			Node right = (Node) dataStack[dsp];
+			Node left = (Node) stack[sp + 1];
+			Node right = (Node) stack[sp];
 			result = Tree.create(TermOp.AND___, left, right);
 		} else if (command == FGETC) {
-			Node node = (Node) dataStack[dsp + 1];
-			int p = ((Int) dataStack[dsp]).getNumber();
+			Node node = (Node) stack[sp + 1];
+			int p = ((Int) stack[sp]).getNumber();
 			result = Int.create(inputs.get(node).read(p));
 		} else if (command == FPUTC) {
-			Node node = (Node) dataStack[dsp + 3];
-			int p = ((Int) dataStack[dsp + 2]).getNumber();
-			int c = ((Int) dataStack[dsp + 1]).getNumber();
+			Node node = (Node) stack[sp + 3];
+			int p = ((Int) stack[sp + 2]).getNumber();
+			int c = ((Int) stack[sp + 1]).getNumber();
 			outputs.get(node).write(p, (char) c);
-			result = (Node) dataStack[dsp];
+			result = (Node) stack[sp];
 		} else if (command == HEAD)
-			result = Tree.decompose((Node) dataStack[dsp]).getLeft();
+			result = Tree.decompose((Node) stack[sp]).getLeft();
 		else if (command == ISTREE)
-			result = a(Tree.decompose((Node) dataStack[dsp]) != null);
+			result = a(Tree.decompose((Node) stack[sp]) != null);
 		else if (command == ISVECTOR)
-			result = a(dataStack[dsp] instanceof Vector);
+			result = a(stack[sp] instanceof Vector);
 		else if (command == LOG) {
-			result = (Node) dataStack[dsp];
+			result = (Node) stack[sp];
 			LogUtil.info("LOG", Formatter.display(unwrap(result)));
 		} else if (command == LOG2) {
-			Node ln = unwrap((Node) dataStack[dsp + 1]);
+			Node ln = unwrap((Node) stack[sp + 1]);
 			LogUtil.info("LOG2", SuiteUtil.stringize(ln));
-			result = (Node) dataStack[dsp];
+			result = (Node) stack[sp];
 		} else if (command == POPEN) {
-			Node n0 = unwrap((Node) dataStack[dsp + 1]);
-			Node n1 = unwrap((Node) dataStack[dsp]);
+			Node n0 = unwrap((Node) stack[sp + 1]);
+			Node n1 = unwrap((Node) stack[sp]);
 			String cmd = SuiteUtil.stringize(n0);
 			byte in[] = SuiteUtil.stringize(n1).getBytes(IoUtil.charset);
 
@@ -171,7 +171,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			if (prover == null)
 				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
 
-			Node node = (Node) dataStack[dsp];
+			Node node = (Node) stack[sp];
 			Tree tree = Tree.decompose(node, TermOp.JOIN__);
 			if (tree != null)
 				if (prover.prove(tree.getLeft()))
@@ -184,33 +184,33 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");
 
-			Node var = (Node) dataStack[dsp + 1];
-			Tree tree = (Tree) g.generalize((Node) dataStack[dsp]);
+			Node var = (Node) stack[sp + 1];
+			Tree tree = (Tree) g.generalize((Node) stack[sp]);
 			((Reference) tree.getRight()).bound(var);
 			result = tree.getLeft();
 		} else if (command == TAIL)
-			result = Tree.decompose((Node) dataStack[dsp]).getRight();
+			result = Tree.decompose((Node) stack[sp]).getRight();
 		else if (command == VCONCAT) {
-			Vector left = (Vector) dataStack[dsp + 1];
-			Vector right = (Vector) dataStack[dsp];
+			Vector left = (Vector) stack[sp + 1];
+			Vector right = (Vector) stack[sp];
 			result = Vector.concat(left, right);
 		} else if (command == VCONS) {
-			Node head = (Node) dataStack[dsp + 1];
-			Vector tail = (Vector) dataStack[dsp];
+			Node head = (Node) stack[sp + 1];
+			Vector tail = (Vector) stack[sp];
 			result = Vector.cons(head, tail);
 		} else if (command == VELEM)
-			result = new Vector((Node) dataStack[dsp]);
+			result = new Vector((Node) stack[sp]);
 		else if (command == VEMPTY)
 			result = Vector.EMPTY;
 		else if (command == VHEAD)
-			result = ((Vector) dataStack[dsp]).get(0);
+			result = ((Vector) stack[sp]).get(0);
 		else if (command == VRANGE) {
-			Vector vector = (Vector) dataStack[dsp + 2];
-			int s = ((Int) dataStack[dsp + 1]).getNumber();
-			int e = ((Int) dataStack[dsp]).getNumber();
+			Vector vector = (Vector) stack[sp + 2];
+			int s = ((Int) stack[sp + 1]).getNumber();
+			int e = ((Int) stack[sp]).getNumber();
 			return vector.subVector(s, e);
 		} else if (command == VTAIL)
-			result = ((Vector) dataStack[dsp]).subVector(1, 0);
+			result = ((Vector) stack[sp]).subVector(1, 0);
 		else
 			throw new RuntimeException("Unknown system call " + command);
 
