@@ -140,16 +140,24 @@ public class Util {
 			list.remove(--size);
 	}
 
-	public interface Event extends Fun<Void, Void> {
+	public interface Event extends EventEx<RuntimeException> {
+		public void apply();
 	}
 
-	public interface Source<O> extends Fun<Void, O> {
+	public interface EventEx<Ex extends Exception> {
+		public void apply() throws Ex;
 	}
 
-	public interface Sink<I> extends Fun<I, Void> {
+	public interface Source<O> {
+		public O apply();
 	}
 
-	public interface Fun<I, O> extends FunEx<I, O, RuntimeException> {
+	public interface Sink<I> {
+		public void apply(I i);
+	}
+
+	public interface Fun<I, O> {
+		public O apply(I i);
 	}
 
 	public interface FunEx<I, O, Ex extends Exception> {
@@ -166,10 +174,9 @@ public class Util {
 	public static class Sinks<I> implements Sink<I> {
 		private Collection<Sink<I>> sinks = new ArrayList<>();
 
-		public Void apply(I i) {
+		public void apply(I i) {
 			for (Sink<I> sink : sinks)
 				sink.apply(i);
-			return null;
 		}
 
 		public void add(Sink<I> sink) {
@@ -177,13 +184,25 @@ public class Util {
 		}
 	}
 
-	public static <I> Sink<I> nullSink() {
-		Sink<I> setter = new Sink<I>() {
-			public Void apply(I i) {
-				return null;
+	public static Event nullEvent() {
+		return new Event() {
+			public void apply() {
 			}
 		};
-		return setter;
+	}
+
+	public static <Ex extends Exception> EventEx<Ex> nullEventEx() {
+		return new EventEx<Ex>() {
+			public void apply() {
+			}
+		};
+	}
+
+	public static <I> Sink<I> nullSink() {
+		return new Sink<I>() {
+			public void apply(I i) {
+			}
+		};
 	}
 
 	public static <I> Sinks<I> sinks() {

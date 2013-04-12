@@ -17,8 +17,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.net.ChannelListeners.BufferedChannel;
-import org.net.ChannelListeners.RequestResponseChannel;
+import org.net.Channels.BufferedChannel;
+import org.net.Channels.RequestResponseChannel;
+import org.net.Channels.Sender;
 import org.util.IoUtil;
 import org.util.Util;
 import org.util.Util.Fun;
@@ -32,7 +33,8 @@ public class NioDispatcherTest {
 		final Charset charset = IoUtil.charset;
 
 		final BufferedChannel channel = new BufferedChannel() {
-			public void onConnected() {
+			public void onConnected(Sender sender) {
+				super.onConnected(sender);
 				String s = hello + "\n";
 				send(new Bytes(s.getBytes(charset)));
 			}
@@ -42,7 +44,7 @@ public class NioDispatcherTest {
 			}
 		};
 		Source<BufferedChannel> source = new Source<BufferedChannel>() {
-			public BufferedChannel apply(Void i) {
+			public BufferedChannel apply() {
 				return channel;
 			}
 		};
@@ -79,7 +81,7 @@ public class NioDispatcherTest {
 			}
 		};
 		Source<RequestResponseChannel> source = new Source<RequestResponseChannel>() {
-			public RequestResponseChannel apply(Void i) {
+			public RequestResponseChannel apply() {
 				return new RequestResponseChannel(matcher, executor, handler);
 			}
 		};
@@ -104,4 +106,5 @@ public class NioDispatcherTest {
 		executor.awaitTermination(0, TimeUnit.SECONDS);
 		dispatcher.stop();
 	}
+
 }

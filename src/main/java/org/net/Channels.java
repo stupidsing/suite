@@ -10,13 +10,13 @@ import org.util.Util;
 import org.util.Util.Fun;
 import org.util.Util.FunEx;
 
-public class ChannelListeners {
+public class Channels {
 
 	/**
 	 * Channel that will reconnect if failed for any reasons.
 	 */
-	public abstract static class PersistableChannel<CL extends ChannelListener>
-			extends RequestResponseChannel {
+	public abstract static class PersistableChannel<CL extends Channel> extends
+			RequestResponseChannel {
 		private NioDispatcher<CL> dispatcher;
 		private InetSocketAddress address;
 		boolean started;
@@ -42,7 +42,6 @@ public class ChannelListeners {
 
 		@Override
 		public void onClose() {
-			super.onClose();
 			reconnect();
 		}
 
@@ -76,9 +75,28 @@ public class ChannelListeners {
 			this.handler = handler;
 		}
 
+		public void send(char type, int token, Bytes data) {
+			if (!connected)
+				synchronized (this) {
+					while (!connected)
+						Util.wait(this);
+				}
+
+			sendPacket(new BytesBuilder() //
+					.append((byte) type) //
+					.append(NetUtil.bytesValue(token)) //
+					.append(data) //
+					.toBytes());
+		}
+
+		public boolean isConnected() {
+			return connected;
+		}
+
 		@Override
-		public void onConnected() {
+		public void onConnected(Sender sender) {
 			setConnected(true);
+			super.onConnected(sender);
 		}
 
 		@Override
@@ -104,24 +122,6 @@ public class ChannelListeners {
 			}
 		}
 
-		public void send(char type, int token, Bytes data) {
-			if (!connected)
-				synchronized (this) {
-					while (!connected)
-						Util.wait(this);
-				}
-
-			sendPacket(new BytesBuilder() //
-					.append((byte) type) //
-					.append(NetUtil.bytesValue(token)) //
-					.append(data) //
-					.toBytes());
-		}
-
-		public boolean isConnected() {
-			return connected;
-		}
-
 		private synchronized void setConnected(boolean isConnected) {
 			connected = isConnected;
 			notify();
@@ -136,15 +136,6 @@ public class ChannelListeners {
 
 		public abstract void onReceivePacket(Bytes packet);
 
-		@Override
-		public final void onReceive(Bytes message) {
-			received = received.append(message);
-			Bytes packet = receivePacket();
-
-			if (packet != null)
-				onReceivePacket(packet);
-		}
-
 		protected void sendPacket(Bytes packet) {
 			send(new BytesBuilder() //
 					.append(NetUtil.bytesValue(packet.size())) //
@@ -152,31 +143,42 @@ public class ChannelListeners {
 					.toBytes());
 		}
 
-		protected Bytes receivePacket() {
-			Bytes packet = null;
+		@Override
+		public final void onReceive(Bytes message) {
+			received = received.append(message);
 
 			if (received.size() >= 4) {
 				int end = 4 + NetUtil.intValue(received.subbytes(0, 4));
 
 				if (received.size() >= end) {
-					packet = received.subbytes(4, end);
+					Bytes packet = received.subbytes(4, end);
 					received = received.subbytes(end);
+					onReceivePacket(packet);
 				}
 			}
-
-			return packet;
 		}
 	}
 
 	/**
 	 * Channel with a send buffer.
 	 */
-	public abstract static class BufferedChannel implements ChannelListener {
-		private FunEx<Bytes, Bytes, IOException> sender;
+	public abstract static class BufferedChannel implements Channel {
+		private Sender sender;
 		private Bytes toSend = Bytes.emptyBytes;
 
+		public void send(Bytes message) {
+			toSend = toSend.append(message);
+
+			try {
+				onTrySend();
+			} catch (IOException ex) {
+				LogUtil.error(getClass(), ex);
+			}
+		}
+
 		@Override
-		public void onConnected() {
+		public void onConnected(Sender sender) {
+			this.sender = sender;
 		}
 
 		@Override
@@ -184,40 +186,23 @@ public class ChannelListeners {
 		}
 
 		@Override
-		public void trySend() throws IOException {
+		public void onTrySend() throws IOException {
 			toSend = sender.apply(toSend);
 		}
 
-		@Override
-		public void setTrySendDelegate(FunEx<Bytes, Bytes, IOException> sender) {
-			this.sender = sender;
-		}
-
-		public void send(Bytes message) {
-			toSend = toSend.append(message);
-
-			try {
-				trySend();
-			} catch (IOException ex) {
-				LogUtil.error(getClass(), ex);
-			}
-		}
 	}
 
-	public interface ChannelListener {
-		public void onConnected();
+	public interface Channel {
+		public void onConnected(Sender sender);
 
 		public void onClose() throws IOException;
 
 		public void onReceive(Bytes message);
 
-		public void trySend() throws IOException;
+		public void onTrySend() throws IOException;
+	}
 
-		/**
-		 * The event would be invoked when the channel wants to send anything,
-		 * i.e. getMessageToSend() would return data.
-		 */
-		public void setTrySendDelegate(FunEx<Bytes, Bytes, IOException> sender);
+	public interface Sender extends FunEx<Bytes, Bytes, IOException> {
 	}
 
 }

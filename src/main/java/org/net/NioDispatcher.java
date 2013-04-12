@@ -13,40 +13,40 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.net.ChannelListeners.ChannelListener;
+import org.net.Channels.Channel;
+import org.net.Channels.Sender;
 import org.util.LogUtil;
-import org.util.Util.FunEx;
 import org.util.Util.Source;
 
-public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
+public class NioDispatcher<C extends Channel> extends ThreadedService {
 
 	private static final int bufferSize = 4096;
 
-	private Source<CL> channelListenerSource;
+	private Source<C> channelSource;
 	private Selector selector = Selector.open();
 
-	public NioDispatcher(Source<CL> channelListenerSource) throws IOException {
-		this.channelListenerSource = channelListenerSource;
+	public NioDispatcher(Source<C> channelSource) throws IOException {
+		this.channelSource = channelSource;
 	}
 
 	/**
 	 * Establishes connection to other host actively.
 	 */
-	public CL connect(InetSocketAddress address) throws IOException {
-		CL listener = channelListenerSource.apply(null);
-		reconnect(listener, address);
-		return listener;
+	public C connect(InetSocketAddress address) throws IOException {
+		C cl = channelSource.apply();
+		reconnect(cl, address);
+		return cl;
 	}
 
 	/**
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
-	public void reconnect(ChannelListener listener, InetSocketAddress address)
+	public void reconnect(Channel channel, InetSocketAddress address)
 			throws IOException {
-		SocketChannel channel = SocketChannel.open();
-		channel.configureBlocking(false);
-		channel.connect(address);
-		channel.register(selector, SelectionKey.OP_CONNECT, listener);
+		SocketChannel sc = SocketChannel.open();
+		sc.configureBlocking(false);
+		sc.connect(address);
+		sc.register(selector, SelectionKey.OP_CONNECT, channel);
 
 		wakeUpSelector();
 	}
@@ -54,9 +54,9 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 	/**
 	 * Ends connection.
 	 */
-	public void disconnect(CL listener) throws IOException {
+	public void disconnect(C channel) throws IOException {
 		for (SelectionKey key : selector.keys())
-			if (key.attachment() == listener)
+			if (key.attachment() == channel)
 				key.channel().close();
 	}
 
@@ -122,54 +122,51 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 		// LogUtil.info("KEY", dumpKey(key));
 
 		byte buffer[] = new byte[bufferSize];
-		SelectableChannel channel = key.channel();
+		SelectableChannel sc0 = key.channel();
 		Object attachment = key.attachment();
 
 		if (key.isAcceptable()) {
-			final ChannelListener cl = channelListenerSource.apply(null);
-			ServerSocketChannel ssc = (ServerSocketChannel) channel;
+			final Channel channel = channelSource.apply();
+			ServerSocketChannel ssc = (ServerSocketChannel) sc0;
 			Socket socket = ssc.accept().socket();
 			final SocketChannel sc = socket.getChannel();
 
 			sc.configureBlocking(false);
-			key = sc.register(selector, SelectionKey.OP_READ, cl);
+			key = sc.register(selector, SelectionKey.OP_READ, channel);
 
-			cl.setTrySendDelegate(createTrySendDelegate(sc));
-			cl.onConnected();
+			channel.onConnected(createSender(sc));
 		} else
 			synchronized (attachment) {
-				ChannelListener listener = (ChannelListener) attachment;
-				SocketChannel sc = (SocketChannel) channel;
+				Channel channel = (Channel) attachment;
+				SocketChannel sc1 = (SocketChannel) sc0;
 
 				if (key.isConnectable()) {
-					sc.finishConnect();
+					sc1.finishConnect();
 
 					key.interestOps(SelectionKey.OP_READ);
-					listener.setTrySendDelegate(createTrySendDelegate(sc));
-					listener.onConnected();
+					channel.onConnected(createSender(sc1));
 				} else if (key.isReadable()) {
-					int n = sc.read(ByteBuffer.wrap(buffer));
+					int n = sc1.read(ByteBuffer.wrap(buffer));
 
 					if (n >= 0)
-						listener.onReceive(new Bytes(buffer, 0, n));
+						channel.onReceive(new Bytes(buffer, 0, n));
 					else {
-						listener.onClose();
-						sc.close();
+						channel.onClose();
+						sc1.close();
 					}
 				} else if (key.isWritable())
-					listener.trySend();
+					channel.onTrySend();
 			}
 	}
 
-	private FunEx<Bytes, Bytes, IOException> createTrySendDelegate(
-			final SocketChannel channel) {
-		return new FunEx<Bytes, Bytes, IOException>() {
+	private Sender createSender(final SocketChannel sc) {
+		return new Sender() {
 			public Bytes apply(Bytes in) throws IOException {
 
 				// Try to send immediately. If cannot sent all, wait for the
 				// writable event (and send again at that moment).
 				byte bytes[] = in.getBytes();
-				int sent = channel.write(ByteBuffer.wrap(bytes));
+				int sent = sc.write(ByteBuffer.wrap(bytes));
 
 				Bytes out = in.subbytes(sent);
 
@@ -179,7 +176,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 				else
 					ops = SelectionKey.OP_READ;
 
-				SelectionKey key = channel.keyFor(selector);
+				SelectionKey key = sc.keyFor(selector);
 				if (key != null && key.interestOps() != ops)
 					key.interestOps(ops);
 

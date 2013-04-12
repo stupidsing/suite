@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.net.ChannelListeners.PersistableChannel;
+import org.net.Channels.PersistableChannel;
 import org.util.Util;
 import org.util.Util.Fun;
 import org.util.Util.Sink;
@@ -23,7 +23,7 @@ public class Cluster {
 
 	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(
 			new Source<ClusterChannel>() {
-				public ClusterChannel apply(Void i) {
+				public ClusterChannel apply() {
 					return new ClusterChannel(me);
 				}
 			});
@@ -70,19 +70,19 @@ public class Cluster {
 
 	public void start() throws IOException {
 		probe.setOnJoined(new Sink<String>() {
-			public Void apply(String node) {
-				return onJoined.apply(node);
+			public void apply(String node) {
+				onJoined.apply(node);
 			}
 		});
 
 		probe.setOnLeft(new Sink<String>() {
-			public Void apply(String node) {
+			public void apply(String node) {
 				ClusterChannel channel = channels.get(node);
 
 				if (channel != null)
 					channel.stop();
 
-				return onLeft.apply(node);
+				onLeft.apply(node);
 			}
 		});
 
