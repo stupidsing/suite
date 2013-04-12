@@ -218,8 +218,7 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 
 		@Override
-		public void setTrySendDelegate(
-				FunEx<Bytes, Bytes, IOException> sender) {
+		public void setTrySendDelegate(FunEx<Bytes, Bytes, IOException> sender) {
 			this.sender = sender;
 		}
 
