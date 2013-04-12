@@ -2,19 +2,19 @@ package org.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.net.Bytes.BytesBuilder;
-import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util;
+import org.util.Util.Fun;
 import org.util.Util.FunEx;
 
-public abstract class ChannelListeners implements ChannelListener {
+public class ChannelListeners {
 
+	/**
+	 * Channel that will reconnect if failed for any reasons.
+	 */
 	public abstract static class PersistableChannel<CL extends ChannelListener>
 			extends RequestResponseChannel {
 		private NioDispatcher<CL> dispatcher;
@@ -24,8 +24,9 @@ public abstract class ChannelListeners implements ChannelListener {
 		public PersistableChannel(NioDispatcher<CL> dispatcher //
 				, RequestResponseMatcher matcher //
 				, ThreadPoolExecutor executor //
-				, InetSocketAddress address) {
-			super(matcher, executor);
+				, InetSocketAddress address //
+				, Fun<Bytes, Bytes> handler) {
+			super(matcher, executor, handler);
 			this.dispatcher = dispatcher;
 			this.address = address;
 		}
@@ -55,21 +56,25 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 	}
 
-	public abstract static class RequestResponseChannel extends PacketChannel {
+	/**
+	 * Channel that exhibits client/server message exchange.
+	 */
+	public static class RequestResponseChannel extends PacketChannel {
 		private static final char RESPONSE = 'P';
-		private static final char REQUEST = 'Q';
+		static final char REQUEST = 'Q';
 
 		private RequestResponseMatcher matcher;
 		private ThreadPoolExecutor executor;
 		private boolean connected;
+		private Fun<Bytes, Bytes> handler;
 
-		public RequestResponseChannel(RequestResponseMatcher matcher,
-				ThreadPoolExecutor executor) {
+		public RequestResponseChannel(RequestResponseMatcher matcher //
+				, ThreadPoolExecutor executor //
+				, Fun<Bytes, Bytes> handler) {
 			this.matcher = matcher;
 			this.executor = executor;
+			this.handler = handler;
 		}
-
-		public abstract Bytes respondToRequest(Bytes request);
 
 		@Override
 		public void onConnected() {
@@ -89,17 +94,17 @@ public abstract class ChannelListeners implements ChannelListener {
 				final Bytes contents = packet.subbytes(5);
 
 				if (type == RESPONSE)
-					matcher.onRespond(token, contents);
+					matcher.onRespondReceived(token, contents);
 				else if (type == REQUEST)
 					executor.execute(new Runnable() {
 						public void run() {
-							send(RESPONSE, token, respondToRequest(contents));
+							send(RESPONSE, token, handler.apply(contents));
 						}
 					});
 			}
 		}
 
-		private void send(char type, int token, Bytes data) {
+		public void send(char type, int token, Bytes data) {
 			if (!connected)
 				synchronized (this) {
 					while (!connected)
@@ -123,46 +128,9 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 	}
 
-	public static class RequestResponseMatcher {
-		private static final AtomicInteger tokenCounter = new AtomicInteger();
-
-		// TODO clean-up lost requests
-		private Map<Integer, Bytes[]> requests = new HashMap<>();
-
-		private void onRespond(int token, Bytes respond) {
-			Bytes holder[] = requests.get(token);
-
-			if (holder != null)
-				synchronized (holder) {
-					holder[0] = respond;
-					holder.notify();
-				}
-		}
-
-		public Bytes requestForResponse(RequestResponseChannel channel,
-				Bytes request) {
-			return requestForResponse(channel, request, 0);
-		}
-
-		public Bytes requestForResponse(RequestResponseChannel channel,
-				Bytes request, int timeOut) {
-			Integer token = tokenCounter.getAndIncrement();
-			Bytes holder[] = new Bytes[1];
-
-			synchronized (holder) {
-				requests.put(token, holder);
-				channel.send(RequestResponseChannel.REQUEST, token, request);
-
-				while (holder[0] == null)
-					Util.wait(holder, timeOut);
-
-				requests.remove(token);
-			}
-
-			return holder[0];
-		}
-	}
-
+	/**
+	 * Channel that transfer data in the unit of packets.
+	 */
 	public abstract static class PacketChannel extends BufferedChannel {
 		private Bytes received = Bytes.emptyBytes;
 
@@ -200,6 +168,9 @@ public abstract class ChannelListeners implements ChannelListener {
 		}
 	}
 
+	/**
+	 * Channel with a send buffer.
+	 */
 	public abstract static class BufferedChannel implements ChannelListener {
 		private FunEx<Bytes, Bytes, IOException> sender;
 		private Bytes toSend = Bytes.emptyBytes;
@@ -214,7 +185,7 @@ public abstract class ChannelListeners implements ChannelListener {
 
 		@Override
 		public void trySend() throws IOException {
-			toSend = sender.perform(toSend);
+			toSend = sender.apply(toSend);
 		}
 
 		@Override
@@ -231,6 +202,22 @@ public abstract class ChannelListeners implements ChannelListener {
 				LogUtil.error(getClass(), ex);
 			}
 		}
+	}
+
+	public interface ChannelListener {
+		public void onConnected();
+
+		public void onClose() throws IOException;
+
+		public void onReceive(Bytes message);
+
+		public void trySend() throws IOException;
+
+		/**
+		 * The event would be invoked when the channel wants to send anything,
+		 * i.e. getMessageToSend() would return data.
+		 */
+		public void setTrySendDelegate(FunEx<Bytes, Bytes, IOException> sender);
 	}
 
 }

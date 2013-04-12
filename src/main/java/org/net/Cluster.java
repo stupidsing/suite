@@ -1,5 +1,6 @@
 package org.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -8,26 +9,29 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.net.ChannelListeners.PersistableChannel;
-import org.net.ChannelListeners.RequestResponseMatcher;
-import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
-import org.util.Util.Event;
 import org.util.Util.Fun;
 import org.util.Util.Sink;
 import org.util.Util.Sinks;
+import org.util.Util.Source;
 
 public class Cluster {
 
 	private String me;
 	private Map<String, InetSocketAddress> peers;
-
 	private ClusterProbe probe;
 
-	private NioDispatcher<ClusterChannel> nio;
+	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(
+			new Source<ClusterChannel>() {
+				public ClusterChannel apply(Void i) {
+					return new ClusterChannel(me);
+				}
+			});
+
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor = Util.createExecutor();
 
-	private Event unlisten;
+	private Closeable unlisten;
 
 	/**
 	 * Established channels connecting to peers.
@@ -48,11 +52,12 @@ public class Cluster {
 
 	private class ClusterChannel extends PersistableChannel<ClusterChannel> {
 		private ClusterChannel(String peer) {
-			super(nio, matcher, executor, peers.get(peer));
-		}
-
-		public Bytes respondToRequest(Bytes request) {
-			return Cluster.this.respondToRequest(request);
+			super(nio, matcher, executor, peers.get(peer),
+					new Fun<Bytes, Bytes>() {
+						public Bytes apply(Bytes request) {
+							return Cluster.this.respondToRequest(request);
+						}
+					});
 		}
 	}
 
@@ -61,44 +66,38 @@ public class Cluster {
 		this.me = me;
 		this.peers = peers;
 		probe = new ClusterProbe(me, peers);
-
-		nio = new NioDispatcher<>(new ChannelListenerFactory<ClusterChannel>() {
-			public ClusterChannel create() {
-				return new ClusterChannel(me);
-			}
-		});
 	}
 
 	public void start() throws IOException {
 		probe.setOnJoined(new Sink<String>() {
-			public Void perform(String node) {
-				return onJoined.perform(node);
+			public Void apply(String node) {
+				return onJoined.apply(node);
 			}
 		});
 
 		probe.setOnLeft(new Sink<String>() {
-			public Void perform(String node) {
+			public Void apply(String node) {
 				ClusterChannel channel = channels.get(node);
 
 				if (channel != null)
 					channel.stop();
 
-				return onLeft.perform(node);
+				return onLeft.apply(node);
 			}
 		});
 
 		unlisten = nio.listen(peers.get(me).getPort());
-		nio.spawn();
-		probe.spawn();
+		nio.start();
+		probe.start();
 	}
 
 	public void stop() {
 		for (ClusterChannel channel : channels.values())
 			channel.stop();
 
-		nio.unspawn();
-		probe.unspawn();
-		unlisten.perform(null);
+		probe.stop();
+		nio.stop();
+		Util.closeQuietly(unlisten);
 	}
 
 	public Object requestForResponse(String peer, Object request) {
@@ -132,7 +131,7 @@ public class Cluster {
 		@SuppressWarnings("unchecked")
 		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive
 				.get(request.getClass());
-		return NetUtil.serialize(handler.perform(request));
+		return NetUtil.serialize(handler.apply(request));
 	}
 
 	public void addOnJoined(Sink<String> onJoined) {

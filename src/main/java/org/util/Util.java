@@ -153,22 +153,22 @@ public class Util {
 	}
 
 	public interface FunEx<I, O, Ex extends Exception> {
-		public O perform(I i) throws Ex;
+		public O apply(I i) throws Ex;
 	}
 
 	public static <I, O> Collection<O> map(Collection<I> in, Fun<I, O> t) {
 		ArrayList<O> out = new ArrayList<>(in.size());
 		for (I i : in)
-			out.add(t.perform(i));
+			out.add(t.apply(i));
 		return out;
 	}
 
 	public static class Sinks<I> implements Sink<I> {
 		private Collection<Sink<I>> sinks = new ArrayList<>();
 
-		public Void perform(I i) {
+		public Void apply(I i) {
 			for (Sink<I> sink : sinks)
-				sink.perform(i);
+				sink.apply(i);
 			return null;
 		}
 
@@ -179,7 +179,7 @@ public class Util {
 
 	public static <I> Sink<I> nullSink() {
 		Sink<I> setter = new Sink<I>() {
-			public Void perform(I i) {
+			public Void apply(I i) {
 				return null;
 			}
 		};

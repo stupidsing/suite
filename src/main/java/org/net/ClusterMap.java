@@ -34,7 +34,7 @@ public class ClusterMap<K, V> {
 	}
 
 	private final Sink<String> onJoined = new Sink<String>() {
-		public Void perform(String peer) {
+		public Void apply(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.add(peer);
 				Collections.sort(peers);
@@ -44,7 +44,7 @@ public class ClusterMap<K, V> {
 	};
 
 	private final Sink<String> onLeft = new Sink<String>() {
-		public Void perform(String peer) {
+		public Void apply(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.remove(peer);
 				Collections.sort(peers);
@@ -54,7 +54,7 @@ public class ClusterMap<K, V> {
 	};
 
 	private final Fun<GetQuery.Request, GetQuery.Response> onGet = new Fun<GetQuery.Request, GetQuery.Response>() {
-		public GetQuery.Response perform(GetQuery.Request request) {
+		public GetQuery.Response apply(GetQuery.Request request) {
 			GetQuery.Response response = new GetQuery.Response();
 			response.value = localMap.get(request.key);
 			return response;
@@ -62,7 +62,7 @@ public class ClusterMap<K, V> {
 	};
 
 	private final Fun<PutQuery.Request, PutQuery.Response> onPut = new Fun<PutQuery.Request, PutQuery.Response>() {
-		public PutQuery.Response perform(PutQuery.Request request) {
+		public PutQuery.Response apply(PutQuery.Request request) {
 			@SuppressWarnings("unchecked")
 			K key = (K) request.key;
 			@SuppressWarnings("unchecked")

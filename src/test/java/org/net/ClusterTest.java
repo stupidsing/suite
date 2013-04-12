@@ -27,7 +27,7 @@ public class ClusterTest {
 		Cluster cluster1 = new Cluster("NODE1", peers);
 
 		cluster1.setOnReceive(Integer.class, new Fun<Integer, Integer>() {
-			public Integer perform(Integer i) {
+			public Integer apply(Integer i) {
 				return i + 1;
 			}
 		});

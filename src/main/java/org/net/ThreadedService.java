@@ -1,5 +1,7 @@
 package org.net;
 
+import java.io.Closeable;
+
 import org.util.LogUtil;
 import org.util.Util;
 
@@ -11,9 +13,8 @@ public abstract class ThreadedService {
 
 	protected abstract void serve() throws Exception;
 
-	public synchronized void spawn() {
+	public synchronized void start() {
 		running = true;
-
 		thread = new Thread() {
 			public void run() {
 				try {
@@ -30,9 +31,8 @@ public abstract class ThreadedService {
 			Util.wait(this);
 	}
 
-	public synchronized void unspawn() {
+	public synchronized void stop() {
 		running = false;
-
 		thread.interrupt();
 
 		while (started != false)
@@ -41,7 +41,7 @@ public abstract class ThreadedService {
 		thread = null;
 	}
 
-	public boolean isSpawned() {
+	public boolean isStarted() {
 		return started;
 	}
 
@@ -49,7 +49,16 @@ public abstract class ThreadedService {
 		return running;
 	}
 
-	protected synchronized void setStarted(boolean isStarted) {
+	protected Closeable started() {
+		setStarted(true);
+		return new Closeable() {
+			public void close() {
+				setStarted(false);
+			}
+		};
+	}
+
+	private synchronized void setStarted(boolean isStarted) {
 		started = isStarted;
 		notify();
 	}
