@@ -12,9 +12,9 @@ import org.net.ChannelListeners.RequestResponseMatcher;
 import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
 import org.util.Util.Event;
+import org.util.Util.Fun;
 import org.util.Util.MultiSetter;
 import org.util.Util.Setter;
-import org.util.Util.Transformer;
 
 public class Cluster {
 
@@ -36,7 +36,7 @@ public class Cluster {
 
 	private MultiSetter<String> onJoined = Util.multiSetter();
 	private MultiSetter<String> onLeft = Util.multiSetter();
-	private Map<Class<?>, Transformer<?, ?>> onReceive = new HashMap<>();
+	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	public static class ClusterException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
@@ -130,7 +130,7 @@ public class Cluster {
 	private Bytes respondToRequest(Bytes req) {
 		Object request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
-		Transformer<Object, Object> handler = (Transformer<Object, Object>) onReceive
+		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive
 				.get(request.getClass());
 		return NetUtil.serialize(handler.perform(request));
 	}
@@ -143,7 +143,7 @@ public class Cluster {
 		this.onLeft.add(onLeft);
 	}
 
-	public <I, O> void setOnReceive(Class<I> clazz, Transformer<I, O> onReceive) {
+	public <I, O> void setOnReceive(Class<I> clazz, Fun<I, O> onReceive) {
 		this.onReceive.put(clazz, onReceive);
 	}
 

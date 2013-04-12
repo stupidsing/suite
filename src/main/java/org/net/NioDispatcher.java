@@ -14,7 +14,7 @@ import java.util.Iterator;
 import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util.Event;
-import org.util.Util.IoProcess;
+import org.util.Util.FunEx;
 
 public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 
@@ -36,7 +36,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 		 * i.e. getMessageToSend() would return data.
 		 */
 		public void setTrySendDelegate(
-				IoProcess<Bytes, Bytes, IOException> sender);
+				FunEx<Bytes, Bytes, IOException> sender);
 	}
 
 	private static final int bufferSize = 4096;
@@ -183,9 +183,9 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 			}
 	}
 
-	private IoProcess<Bytes, Bytes, IOException> createTrySendDelegate(
+	private FunEx<Bytes, Bytes, IOException> createTrySendDelegate(
 			final SocketChannel channel) {
-		return new IoProcess<Bytes, Bytes, IOException>() {
+		return new FunEx<Bytes, Bytes, IOException>() {
 			public Bytes perform(Bytes in) throws IOException {
 
 				// Try to send immediately. If cannot sent all, wait for the

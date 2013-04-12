@@ -140,24 +140,23 @@ public class Util {
 			list.remove(--size);
 	}
 
-	public interface Event extends Transformer<Void, Void> {
+	public interface Event extends Fun<Void, Void> {
 	}
 
-	public interface Getter<O> extends Transformer<Void, O> {
+	public interface Getter<O> extends Fun<Void, O> {
 	}
 
-	public interface Setter<I> extends Transformer<I, Void> {
+	public interface Setter<I> extends Fun<I, Void> {
 	}
 
-	public interface Transformer<I, O> extends
-			IoProcess<I, O, RuntimeException> {
+	public interface Fun<I, O> extends FunEx<I, O, RuntimeException> {
 	}
 
-	public interface IoProcess<I, O, Ex extends Exception> {
+	public interface FunEx<I, O, Ex extends Exception> {
 		public O perform(I i) throws Ex;
 	}
 
-	public static <I, O> Collection<O> map(Collection<I> in, Transformer<I, O> t) {
+	public static <I, O> Collection<O> map(Collection<I> in, Fun<I, O> t) {
 		ArrayList<O> out = new ArrayList<>(in.size());
 		for (I i : in)
 			out.add(t.perform(i));

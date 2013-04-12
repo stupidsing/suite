@@ -11,7 +11,7 @@ import org.net.Bytes.BytesBuilder;
 import org.net.NioDispatcher.ChannelListener;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.IoProcess;
+import org.util.Util.FunEx;
 
 public abstract class ChannelListeners implements ChannelListener {
 
@@ -201,7 +201,7 @@ public abstract class ChannelListeners implements ChannelListener {
 	}
 
 	public abstract static class BufferedChannel implements ChannelListener {
-		private IoProcess<Bytes, Bytes, IOException> sender;
+		private FunEx<Bytes, Bytes, IOException> sender;
 		private Bytes toSend = Bytes.emptyBytes;
 
 		@Override
@@ -219,7 +219,7 @@ public abstract class ChannelListeners implements ChannelListener {
 
 		@Override
 		public void setTrySendDelegate(
-				IoProcess<Bytes, Bytes, IOException> sender) {
+				FunEx<Bytes, Bytes, IOException> sender) {
 			this.sender = sender;
 		}
 

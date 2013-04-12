@@ -10,8 +10,8 @@ import java.util.Map;
 import org.net.ClusterMapUtil.GetQuery;
 import org.net.ClusterMapUtil.PutQuery;
 import org.util.Util;
+import org.util.Util.Fun;
 import org.util.Util.Setter;
-import org.util.Util.Transformer;
 
 public class ClusterMap<K, V> {
 
@@ -53,7 +53,7 @@ public class ClusterMap<K, V> {
 		}
 	};
 
-	private final Transformer<GetQuery.Request, GetQuery.Response> onGet = new Transformer<GetQuery.Request, GetQuery.Response>() {
+	private final Fun<GetQuery.Request, GetQuery.Response> onGet = new Fun<GetQuery.Request, GetQuery.Response>() {
 		public GetQuery.Response perform(GetQuery.Request request) {
 			GetQuery.Response response = new GetQuery.Response();
 			response.value = localMap.get(request.key);
@@ -61,7 +61,7 @@ public class ClusterMap<K, V> {
 		}
 	};
 
-	private final Transformer<PutQuery.Request, PutQuery.Response> onPut = new Transformer<PutQuery.Request, PutQuery.Response>() {
+	private final Fun<PutQuery.Request, PutQuery.Response> onPut = new Fun<PutQuery.Request, PutQuery.Response>() {
 		public PutQuery.Response perform(PutQuery.Request request) {
 			@SuppressWarnings("unchecked")
 			K key = (K) request.key;
