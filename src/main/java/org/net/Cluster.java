@@ -13,8 +13,8 @@ import org.net.NioDispatcher.ChannelListenerFactory;
 import org.util.Util;
 import org.util.Util.Event;
 import org.util.Util.Fun;
-import org.util.Util.MultiSetter;
-import org.util.Util.Setter;
+import org.util.Util.Sink;
+import org.util.Util.Sinks;
 
 public class Cluster {
 
@@ -34,8 +34,8 @@ public class Cluster {
 	 */
 	private Map<String, ClusterChannel> channels = new HashMap<>();
 
-	private MultiSetter<String> onJoined = Util.multiSetter();
-	private MultiSetter<String> onLeft = Util.multiSetter();
+	private Sinks<String> onJoined = Util.sinks();
+	private Sinks<String> onLeft = Util.sinks();
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	public static class ClusterException extends RuntimeException {
@@ -70,13 +70,13 @@ public class Cluster {
 	}
 
 	public void start() throws IOException {
-		probe.setOnJoined(new Setter<String>() {
+		probe.setOnJoined(new Sink<String>() {
 			public Void perform(String node) {
 				return onJoined.perform(node);
 			}
 		});
 
-		probe.setOnLeft(new Setter<String>() {
+		probe.setOnLeft(new Sink<String>() {
 			public Void perform(String node) {
 				ClusterChannel channel = channels.get(node);
 
@@ -135,11 +135,11 @@ public class Cluster {
 		return NetUtil.serialize(handler.perform(request));
 	}
 
-	public void addOnJoined(Setter<String> onJoined) {
+	public void addOnJoined(Sink<String> onJoined) {
 		this.onJoined.add(onJoined);
 	}
 
-	public void addOnLeft(Setter<String> onLeft) {
+	public void addOnLeft(Sink<String> onLeft) {
 		this.onLeft.add(onLeft);
 	}
 

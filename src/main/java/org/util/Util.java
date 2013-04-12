@@ -143,10 +143,10 @@ public class Util {
 	public interface Event extends Fun<Void, Void> {
 	}
 
-	public interface Getter<O> extends Fun<Void, O> {
+	public interface Source<O> extends Fun<Void, O> {
 	}
 
-	public interface Setter<I> extends Fun<I, Void> {
+	public interface Sink<I> extends Fun<I, Void> {
 	}
 
 	public interface Fun<I, O> extends FunEx<I, O, RuntimeException> {
@@ -163,22 +163,22 @@ public class Util {
 		return out;
 	}
 
-	public static class MultiSetter<I> implements Setter<I> {
-		private Collection<Setter<I>> setters = new ArrayList<>();
+	public static class Sinks<I> implements Sink<I> {
+		private Collection<Sink<I>> sinks = new ArrayList<>();
 
 		public Void perform(I i) {
-			for (Setter<I> setter : setters)
-				setter.perform(i);
+			for (Sink<I> sink : sinks)
+				sink.perform(i);
 			return null;
 		}
 
-		public void add(Setter<I> setter) {
-			setters.add(setter);
+		public void add(Sink<I> sink) {
+			sinks.add(sink);
 		}
 	}
 
-	public static <I> Setter<I> nullSetter() {
-		Setter<I> setter = new Setter<I>() {
+	public static <I> Sink<I> nullSink() {
+		Sink<I> setter = new Sink<I>() {
 			public Void perform(I i) {
 				return null;
 			}
@@ -186,8 +186,8 @@ public class Util {
 		return setter;
 	}
 
-	public static <I> MultiSetter<I> multiSetter() {
-		return new MultiSetter<>();
+	public static <I> Sinks<I> sinks() {
+		return new Sinks<>();
 	}
 
 	/**

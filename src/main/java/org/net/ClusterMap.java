@@ -11,7 +11,7 @@ import org.net.ClusterMapUtil.GetQuery;
 import org.net.ClusterMapUtil.PutQuery;
 import org.util.Util;
 import org.util.Util.Fun;
-import org.util.Util.Setter;
+import org.util.Util.Sink;
 
 public class ClusterMap<K, V> {
 
@@ -33,7 +33,7 @@ public class ClusterMap<K, V> {
 		}
 	}
 
-	private final Setter<String> onJoined = new Setter<String>() {
+	private final Sink<String> onJoined = new Sink<String>() {
 		public Void perform(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.add(peer);
@@ -43,7 +43,7 @@ public class ClusterMap<K, V> {
 		}
 	};
 
-	private final Setter<String> onLeft = new Setter<String>() {
+	private final Sink<String> onLeft = new Sink<String>() {
 		public Void perform(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.remove(peer);

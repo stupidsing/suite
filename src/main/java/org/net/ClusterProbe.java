@@ -21,7 +21,7 @@ import org.util.FormatUtil;
 import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.Setter;
+import org.util.Util.Sink;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -56,8 +56,8 @@ public class ClusterProbe extends ThreadedService {
 	 */
 	private Map<String, Long> lastSentTime = new HashMap<>();
 
-	private Setter<String> onJoined = Util.nullSetter();
-	private Setter<String> onLeft = Util.nullSetter();
+	private Sink<String> onJoined = Util.nullSink();
+	private Sink<String> onLeft = Util.nullSink();
 
 	private enum Command {
 		HELO, FINE, BYEE
@@ -304,11 +304,11 @@ public class ClusterProbe extends ThreadedService {
 			this.peers.put(e.getKey(), new Address(e.getValue()));
 	}
 
-	public void setOnJoined(Setter<String> onJoined) {
+	public void setOnJoined(Sink<String> onJoined) {
 		this.onJoined = onJoined;
 	}
 
-	public void setOnLeft(Setter<String> onLeft) {
+	public void setOnLeft(Sink<String> onLeft) {
 		this.onLeft = onLeft;
 	}
 
