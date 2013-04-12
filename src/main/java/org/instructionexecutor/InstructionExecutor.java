@@ -3,6 +3,7 @@ package org.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Insn;
@@ -47,11 +48,13 @@ public class InstructionExecutor {
 		Frame f0 = new Frame(null, 2);
 		f0.registers[0] = c0;
 
-		Closure current = new Closure(f0, unwrapEntryPoint);
+		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
-		Closure callStack[] = new Closure[stackSize];
 		Node dataStack[] = new Node[stackSize];
-		int i, csp = 0, dsp = 0;
+		int i, dsp = 0;
+
+		Exec exec = new Exec();
+		exec.dataStack = dataStack;
 
 		Comparer comparer = new Comparer();
 
@@ -80,19 +83,16 @@ public class InstructionExecutor {
 				regs[insn.op1] = i(insn.op2);
 				break;
 			case CALL__________:
-				callStack[csp++] = current;
-				current = new Closure(frame, g(regs[insn.op1]));
+				current = new Activation(frame, g(regs[insn.op1]), current);
 				break;
 			case CALLCONST_____:
-				callStack[csp++] = current;
-				current = new Closure(frame, insn.op1);
+				current = new Activation(frame, insn.op1, current);
 				break;
 			case CALLCLOSURE___:
 				Closure closure = (Closure) regs[insn.op2];
-				if (closure.result == null) {
-					callStack[csp++] = current;
-					current = closure.clone();
-				} else
+				if (closure.result == null)
+					current = new Activation(closure, current);
+				else
 					regs[insn.op1] = closure.result;
 				break;
 			case ENTER_________:
@@ -177,11 +177,11 @@ public class InstructionExecutor {
 			case REMARK________:
 				break;
 			case RETURN________:
-				current = callStack[--csp];
+				current = current.previous;
 				break;
 			case RETURNVALUE___:
 				Node returnValue = regs[insn.op1]; // Saves return value
-				current = callStack[--csp];
+				current = current.previous;
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 				break;
 			case SETCLOSURERES_:
@@ -191,16 +191,22 @@ public class InstructionExecutor {
 				regs[insn.op1] = dataStack[dsp + insn.op2];
 				break;
 			default:
-				int pair[] = execute( //
-						current, insn, callStack, csp, dataStack, dsp);
-				csp = pair[0];
-				dsp = pair[1];
+				exec.current = current;
+				exec.dsp = dsp;
+				execute(exec, insn);
+				current = exec.current;
+				dsp = exec.dsp;
 			}
 		}
 	}
 
-	protected int[] execute(Closure current, Instruction insn,
-			Closure callStack[], int csp, Object dataStack[], int dsp) {
+	protected class Exec {
+		protected Activation current;
+		protected Object dataStack[];
+		protected int dsp;
+	}
+
+	protected void execute(Exec exec, Instruction insn) {
 		throw new RuntimeException("Unknown instruction " + insn);
 	}
 

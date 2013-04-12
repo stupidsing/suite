@@ -111,6 +111,19 @@ public class InstructionUtil {
 		}
 	}
 
+	protected static class Activation extends Closure {
+		protected Activation previous;
+
+		protected Activation(Closure closure, Activation previous) {
+			this(closure.frame, closure.ip, previous);
+		}
+
+		protected Activation(Frame frame, int ip, Activation previous) {
+			super(frame, ip);
+			this.previous = previous;
+		}
+	}
+
 	// Indicates a function call with a specified set of framed environment.
 	// Closure must extend Node in order to be put in a list (being cons-ed).
 	protected static class Closure extends Node {
@@ -143,12 +156,12 @@ public class InstructionUtil {
 	}
 
 	protected static class CutPoint {
+		protected Activation activation;
 		protected int journalPointer;
-		protected int callStackPointer;
 
-		protected CutPoint(int journalPointer, int callStackPointer) {
+		protected CutPoint(Activation activation, int journalPointer) {
+			this.activation = activation;
 			this.journalPointer = journalPointer;
-			this.callStackPointer = callStackPointer;
 		}
 	}
 

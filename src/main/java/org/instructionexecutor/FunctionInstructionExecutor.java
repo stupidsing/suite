@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
@@ -96,24 +97,24 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected int[] execute(Closure current, Instruction insn,
-			Closure callStack[], int csp, Object dataStack[], int dsp) {
+	protected void execute(Exec exec, Instruction insn) {
+		Activation current = exec.current;
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
 
 		switch (insn.insn) {
 		case SERVICE_______:
-			dsp -= insn.op3;
-			regs[insn.op1] = sys(constantPool.get(insn.op2), dataStack, dsp);
+			exec.dsp -= insn.op3;
+			regs[insn.op1] = sys(exec, constantPool.get(insn.op2));
 			break;
 		default:
-			return super.execute(current, insn, callStack, csp, dataStack, dsp);
+			super.execute(exec, insn);
 		}
-
-		return new int[] { csp, dsp };
 	}
 
-	private Node sys(Node command, Object dataStack[], int dsp) {
+	private Node sys(Exec exec, Node command) {
+		Object dataStack[] = exec.dataStack;
+		int dsp = exec.dsp;
 		Node result;
 
 		if (command == COMPARE) {

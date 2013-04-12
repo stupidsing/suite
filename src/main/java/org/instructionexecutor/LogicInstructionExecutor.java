@@ -3,7 +3,7 @@ package org.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.instructionexecutor.InstructionUtil.Closure;
+import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.CutPoint;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
@@ -32,16 +32,17 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected int[] execute(Closure current, Instruction insn,
-			Closure callStack[], int csp, Object dataStack[], int dsp) {
+	protected void execute(Exec exec, Instruction insn) {
+		Activation current = exec.current;
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
 
 		switch (insn.insn) {
 		case BIND__________:
 			bindPoints[bsp++] = journal.getPointInTime();
-			if (!Binder.bind( //
-					(Node) regs[insn.op1], (Node) regs[insn.op2], journal))
+			Node node1 = (Node) regs[insn.op1];
+			Node node2 = (Node) regs[insn.op2];
+			if (!Binder.bind(node1, node2, journal))
 				current.ip = insn.op3; // Fail
 			break;
 		case BINDUNDO______:
@@ -49,12 +50,10 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			break;
 		case CUTBEGIN______:
 			regs[insn.op1] = i(cutPoints.size());
-			cutPoints.add(new CutPoint(journal.getPointInTime(), csp));
+			cutPoints.add(new CutPoint(current, journal.getPointInTime()));
 			break;
 		case CUTEND________:
-			int p = cutPoints.get(g(regs[insn.op1])).callStackPointer;
-			while (csp > p)
-				callStack[--csp] = null;
+			current = cutPoints.get(g(regs[insn.op1])).activation;
 			break;
 		case CUTFAIL_______:
 			int cutPointIndex = g(regs[insn.op1]);
@@ -68,10 +67,8 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				current.ip = insn.op2;
 			break;
 		default:
-			return super.execute(current, insn, callStack, csp, dataStack, dsp);
+			super.execute(exec, insn);
 		}
-
-		return new int[] { csp, dsp };
 	}
 
 }
