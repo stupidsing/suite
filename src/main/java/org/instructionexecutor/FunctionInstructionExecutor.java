@@ -64,7 +64,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	}
 
 	/**
-	 * Evaluates the whole term to actual value by invoking all the thunks.
+	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
 	public Node unwrap(Node node) {
 		node = node.finalNode();
