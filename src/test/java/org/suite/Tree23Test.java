@@ -16,7 +16,7 @@ public class Tree23Test {
 		SuiteUtil.importResource(rs, "tree23.sl");
 
 		assertTrue(SuiteUtil.proveThis(rs, "" //
-				+ "tree23-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) () .t \n" //
+				+ "tree23-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
 				+ ", tree23-member .t 4"));
 	}
 
