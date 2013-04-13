@@ -45,9 +45,9 @@ public class EagerFunctionCompilerTest {
 
 	@Test
 	public void testContains() {
-		assertEquals(Atom.TRUE, eval(""
+		assertEquals(Atom.TRUE, eval("" //
 				+ "contains {8, 9,} {7, 8, 9, 10, 11,}"));
-		assertEquals(Atom.FALSE, eval(""
+		assertEquals(Atom.FALSE, eval("" //
 				+ "contains {11, 12,} {7, 8, 9, 10, 11,}"));
 	}
 
@@ -175,14 +175,16 @@ public class EagerFunctionCompilerTest {
 				+ "if-bind (e = f) then 1 else 0"));
 	}
 
-	@Test
+	// After replacing call stack with activation chain, this test would not
+	// stack overflow but exhaust all memory. Test case will not be executed.
+	// @Test
 	public void testInfiniteLoop() {
 		try {
 			// This would fail stack over during type check, so skip that
 			SuiteUtil.evaluateEagerFunctional("no-type-check" //
 					+ " (e => e {e}) {e => e {e}}");
 			throw new RuntimeException();
-		} catch (ArrayIndexOutOfBoundsException ex) {
+		} catch (Throwable th) {
 		}
 	}
 

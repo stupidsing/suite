@@ -10,8 +10,8 @@ import java.util.Map;
 import org.net.ClusterMapUtil.GetQuery;
 import org.net.ClusterMapUtil.PutQuery;
 import org.util.Util;
-import org.util.Util.Setter;
-import org.util.Util.Transformer;
+import org.util.Util.Fun;
+import org.util.Util.Sink;
 
 public class ClusterMap<K, V> {
 
@@ -33,36 +33,34 @@ public class ClusterMap<K, V> {
 		}
 	}
 
-	private final Setter<String> onJoined = new Setter<String>() {
-		public Void perform(String peer) {
+	private final Sink<String> onJoined = new Sink<String>() {
+		public void apply(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.add(peer);
 				Collections.sort(peers);
-				return null;
 			}
 		}
 	};
 
-	private final Setter<String> onLeft = new Setter<String>() {
-		public Void perform(String peer) {
+	private final Sink<String> onLeft = new Sink<String>() {
+		public void apply(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.remove(peer);
 				Collections.sort(peers);
-				return null;
 			}
 		}
 	};
 
-	private final Transformer<GetQuery.Request, GetQuery.Response> onGet = new Transformer<GetQuery.Request, GetQuery.Response>() {
-		public GetQuery.Response perform(GetQuery.Request request) {
+	private final Fun<GetQuery.Request, GetQuery.Response> onGet = new Fun<GetQuery.Request, GetQuery.Response>() {
+		public GetQuery.Response apply(GetQuery.Request request) {
 			GetQuery.Response response = new GetQuery.Response();
 			response.value = localMap.get(request.key);
 			return response;
 		}
 	};
 
-	private final Transformer<PutQuery.Request, PutQuery.Response> onPut = new Transformer<PutQuery.Request, PutQuery.Response>() {
-		public PutQuery.Response perform(PutQuery.Request request) {
+	private final Fun<PutQuery.Request, PutQuery.Response> onPut = new Fun<PutQuery.Request, PutQuery.Response>() {
+		public PutQuery.Response apply(PutQuery.Request request) {
 			@SuppressWarnings("unchecked")
 			K key = (K) request.key;
 			@SuppressWarnings("unchecked")

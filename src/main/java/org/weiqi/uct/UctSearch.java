@@ -219,7 +219,7 @@ public class UctSearch<Move> {
 				for (int i = 0; i < indent; i++)
 					sb.append('\t');
 
-				float winRate = ((float) child.nWins) / child.nVisits;
+				float winRate = (float) child.nWins / child.nVisits;
 				String uct;
 				if (parent != null)
 					uct = df3.format(uct(child //
@@ -270,7 +270,7 @@ public class UctSearch<Move> {
 	}
 
 	public float getWinningChance() {
-		return ((float) best.nWins) / best.nVisits;
+		return (float) best.nWins / best.nVisits;
 	}
 
 	public void setNumberOfThreads(int numberOfThreads) {

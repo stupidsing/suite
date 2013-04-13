@@ -15,7 +15,7 @@ public class FileAllocator implements Allocator, Closeable {
 	private byte allocMap[];
 
 	public FileAllocator(String filename) throws IOException {
-		this.allocMap = new byte[maxPages];
+		allocMap = new byte[maxPages];
 
 		allocMapFile = new RandomAccessFile(filename, "rw");
 		int allocMapSize = Math.max(maxPages, (int) allocMapFile.length());

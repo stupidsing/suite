@@ -1,5 +1,6 @@
 package org.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -21,7 +22,7 @@ import org.util.FormatUtil;
 import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.Setter;
+import org.util.Util.Sink;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -56,8 +57,8 @@ public class ClusterProbe extends ThreadedService {
 	 */
 	private Map<String, Long> lastSentTime = new HashMap<>();
 
-	private Setter<String> onJoined = Util.nullSetter();
-	private Setter<String> onLeft = Util.nullSetter();
+	private Sink<String> onJoined = Util.nullSink();
+	private Sink<String> onLeft = Util.nullSink();
 
 	private enum Command {
 		HELO, FINE, BYEE
@@ -115,15 +116,15 @@ public class ClusterProbe extends ThreadedService {
 	}
 
 	@Override
-	public synchronized void spawn() {
+	public synchronized void start() {
 		lastActiveTime.put(me, System.currentTimeMillis()); // Puts myself in
 		broadcast(Command.HELO);
-		super.spawn();
+		super.start();
 	}
 
 	@Override
-	public synchronized void unspawn() {
-		super.unspawn();
+	public synchronized void stop() {
+		super.stop();
 		broadcast(Command.BYEE);
 		lastActiveTime.clear();
 	}
@@ -138,24 +139,22 @@ public class ClusterProbe extends ThreadedService {
 		dc.socket().bind(address);
 		dc.register(selector, SelectionKey.OP_READ);
 
-		setStarted(true);
+		try (Closeable started = started()) {
+			while (running) {
+				selector.select(500); // Handle network events
 
-		while (running) {
-			selector.select(500); // Handle network events
-
-			synchronized (this) {
-				long current = System.currentTimeMillis();
-				nodeJoined(me, current);
-				processSelectedKeys(current);
-				keepAlive(current);
-				eliminateOutdatedPeers(current);
+				synchronized (this) {
+					long current = System.currentTimeMillis();
+					nodeJoined(me, current);
+					processSelectedKeys(current);
+					keepAlive(current);
+					eliminateOutdatedPeers(current);
+				}
 			}
+
+			for (String peer : lastActiveTime.keySet())
+				onLeft.apply(peer);
 		}
-
-		for (String peer : lastActiveTime.keySet())
-			onLeft.perform(peer);
-
-		setStarted(false);
 
 		dc.close();
 		selector.close();
@@ -204,7 +203,7 @@ public class ClusterProbe extends ThreadedService {
 					sendMessage(remote, formMessage(Command.FINE));
 				else if (data == Command.BYEE
 						&& lastActiveTime.remove(remote) != null)
-					onLeft.perform(remote);
+					onLeft.apply(remote);
 		}
 	}
 
@@ -213,7 +212,7 @@ public class ClusterProbe extends ThreadedService {
 
 		if (oldTime == null || oldTime < time)
 			if (lastActiveTime.put(node, time) == null)
-				onJoined.perform(node);
+				onJoined.apply(node);
 	}
 
 	private void keepAlive(long current) {
@@ -242,7 +241,7 @@ public class ClusterProbe extends ThreadedService {
 
 			if (current - e.getValue() > timeoutDuration) {
 				peerIter.remove();
-				onLeft.perform(node);
+				onLeft.apply(node);
 			}
 		}
 	}
@@ -304,11 +303,11 @@ public class ClusterProbe extends ThreadedService {
 			this.peers.put(e.getKey(), new Address(e.getValue()));
 	}
 
-	public void setOnJoined(Setter<String> onJoined) {
+	public void setOnJoined(Sink<String> onJoined) {
 		this.onJoined = onJoined;
 	}
 
-	public void setOnLeft(Setter<String> onLeft) {
+	public void setOnLeft(Sink<String> onLeft) {
 		this.onLeft = onLeft;
 	}
 

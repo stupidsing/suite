@@ -1,5 +1,6 @@
 package org.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -10,63 +11,42 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.Set;
 
-import org.net.NioDispatcher.ChannelListener;
+import org.net.Channels.Channel;
+import org.net.Channels.Sender;
 import org.util.LogUtil;
-import org.util.Util.Event;
-import org.util.Util.IoProcess;
+import org.util.Util.Source;
 
-public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
-
-	public interface ChannelListenerFactory<CL> {
-		public CL create();
-	}
-
-	public interface ChannelListener {
-		public void onConnected();
-
-		public void onClose() throws IOException;
-
-		public void onReceive(Bytes message);
-
-		public void trySend() throws IOException;
-
-		/**
-		 * The event would be invoked when the channel wants to send anything,
-		 * i.e. getMessageToSend() would return data.
-		 */
-		public void setTrySendDelegate(
-				IoProcess<Bytes, Bytes, IOException> sender);
-	}
+public class NioDispatcher<C extends Channel> extends ThreadedService {
 
 	private static final int bufferSize = 4096;
 
-	private ChannelListenerFactory<CL> factory;
-
+	private Source<C> channelSource;
 	private Selector selector = Selector.open();
 
-	public NioDispatcher(ChannelListenerFactory<CL> factory) throws IOException {
-		this.factory = factory;
+	public NioDispatcher(Source<C> channelSource) throws IOException {
+		this.channelSource = channelSource;
 	}
 
 	/**
 	 * Establishes connection to other host actively.
 	 */
-	public CL connect(InetSocketAddress address) throws IOException {
-		CL listener = factory.create();
-		reconnect(listener, address);
-		return listener;
+	public C connect(InetSocketAddress address) throws IOException {
+		C cl = channelSource.apply();
+		reconnect(cl, address);
+		return cl;
 	}
 
 	/**
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
-	public void reconnect(ChannelListener listener, InetSocketAddress address)
+	public void reconnect(Channel channel, InetSocketAddress address)
 			throws IOException {
-		SocketChannel channel = SocketChannel.open();
-		channel.configureBlocking(false);
-		channel.connect(address);
-		channel.register(selector, SelectionKey.OP_CONNECT, listener);
+		SocketChannel sc = SocketChannel.open();
+		sc.configureBlocking(false);
+		sc.connect(address);
+		sc.register(selector, SelectionKey.OP_CONNECT, channel);
 
 		wakeUpSelector();
 	}
@@ -74,9 +54,9 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 	/**
 	 * Ends connection.
 	 */
-	public void disconnect(CL listener) throws IOException {
+	public void disconnect(C channel) throws IOException {
 		for (SelectionKey key : selector.keys())
-			if (key.attachment() == listener)
+			if (key.attachment() == channel)
 				key.channel().close();
 	}
 
@@ -85,7 +65,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 	 * 
 	 * @return event for switching off the server.
 	 */
-	public Event listen(int port) throws IOException {
+	public Closeable listen(int port) throws IOException {
 		final ServerSocketChannel ssc = ServerSocketChannel.open();
 		ssc.configureBlocking(false);
 		ssc.socket().bind(new InetSocketAddress(port));
@@ -93,50 +73,48 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 
 		wakeUpSelector();
 
-		return new Event() {
-			public Void perform(Void i) {
+		return new Closeable() {
+			public void close() {
 				try {
 					ssc.close();
 				} catch (IOException ex) {
 					LogUtil.error(getClass(), ex);
 				}
-
-				return null;
 			}
 		};
 	}
 
 	@Override
 	protected void serve() throws IOException {
-		setStarted(true);
+		try (Closeable started = started()) {
+			while (running) {
 
-		while (running) {
+				// Unfortunately Selector.wakeup() does not work on my Linux
+				// machines. Thus we specify a time out to allow the selector
+				// freed out temporarily; otherwise the register() methods in
+				// other threads might block forever.
+				selector.select(500);
 
-			// Unfortunately Selector.wakeup() does not work on my Linux
-			// machines. Thus we specify a time out to allow the selector freed
-			// out temporarily; otherwise the register() methods in other
-			// threads might block forever.
-			selector.select(500);
+				// This seems to allow other threads to gain access. Not exactly
+				// the behavior as documented in NIO, but anyway.
+				selector.wakeup();
 
-			// This seems to allow other threads to gain access. Not exactly the
-			// behavior as documented in NIO, but anyway.
-			selector.wakeup();
+				Set<SelectionKey> selectedKeys = selector.selectedKeys();
+				Iterator<SelectionKey> iter = selectedKeys.iterator();
 
-			Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
+				while (iter.hasNext()) {
+					SelectionKey key = iter.next();
+					iter.remove();
 
-			while (iter.hasNext()) {
-				SelectionKey key = iter.next();
-				iter.remove();
-
-				try {
-					processSelectedKey(key);
-				} catch (Exception ex) {
-					LogUtil.error(getClass(), ex);
+					try {
+						processSelectedKey(key);
+					} catch (Exception ex) {
+						LogUtil.error(getClass(), ex);
+					}
 				}
 			}
 		}
 
-		setStarted(false);
 		selector.close();
 	}
 
@@ -144,54 +122,51 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 		// LogUtil.info("KEY", dumpKey(key));
 
 		byte buffer[] = new byte[bufferSize];
-		SelectableChannel channel = key.channel();
+		SelectableChannel sc0 = key.channel();
 		Object attachment = key.attachment();
 
 		if (key.isAcceptable()) {
-			final ChannelListener listener = factory.create();
-			ServerSocketChannel ssc = (ServerSocketChannel) channel;
+			final Channel channel = channelSource.apply();
+			ServerSocketChannel ssc = (ServerSocketChannel) sc0;
 			Socket socket = ssc.accept().socket();
 			final SocketChannel sc = socket.getChannel();
 
 			sc.configureBlocking(false);
-			key = sc.register(selector, SelectionKey.OP_READ, listener);
+			key = sc.register(selector, SelectionKey.OP_READ, channel);
 
-			listener.setTrySendDelegate(createTrySendDelegate(sc));
-			listener.onConnected();
+			channel.onConnected(createSender(sc));
 		} else
 			synchronized (attachment) {
-				ChannelListener listener = (ChannelListener) attachment;
-				SocketChannel sc = (SocketChannel) channel;
+				Channel channel = (Channel) attachment;
+				SocketChannel sc1 = (SocketChannel) sc0;
 
 				if (key.isConnectable()) {
-					sc.finishConnect();
+					sc1.finishConnect();
 
 					key.interestOps(SelectionKey.OP_READ);
-					listener.setTrySendDelegate(createTrySendDelegate(sc));
-					listener.onConnected();
+					channel.onConnected(createSender(sc1));
 				} else if (key.isReadable()) {
-					int n = sc.read(ByteBuffer.wrap(buffer));
+					int n = sc1.read(ByteBuffer.wrap(buffer));
 
 					if (n >= 0)
-						listener.onReceive(new Bytes(buffer, 0, n));
+						channel.onReceive(new Bytes(buffer, 0, n));
 					else {
-						listener.onClose();
-						sc.close();
+						channel.onClose();
+						sc1.close();
 					}
 				} else if (key.isWritable())
-					listener.trySend();
+					channel.onTrySend();
 			}
 	}
 
-	private IoProcess<Bytes, Bytes, IOException> createTrySendDelegate(
-			final SocketChannel channel) {
-		return new IoProcess<Bytes, Bytes, IOException>() {
-			public Bytes perform(Bytes in) throws IOException {
+	private Sender createSender(final SocketChannel sc) {
+		return new Sender() {
+			public Bytes apply(Bytes in) throws IOException {
 
 				// Try to send immediately. If cannot sent all, wait for the
 				// writable event (and send again at that moment).
 				byte bytes[] = in.getBytes();
-				int sent = channel.write(ByteBuffer.wrap(bytes));
+				int sent = sc.write(ByteBuffer.wrap(bytes));
 
 				Bytes out = in.subbytes(sent);
 
@@ -201,7 +176,7 @@ public class NioDispatcher<CL extends ChannelListener> extends ThreadedService {
 				else
 					ops = SelectionKey.OP_READ;
 
-				SelectionKey key = channel.keyFor(selector);
+				SelectionKey key = sc.keyFor(selector);
 				if (key != null && key.interestOps() != ops)
 					key.interestOps(ops);
 

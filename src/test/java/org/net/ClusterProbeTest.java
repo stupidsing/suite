@@ -28,7 +28,7 @@ public class ClusterProbeTest {
 		for (String name : peers.keySet()) {
 			ClusterProbe probe = new ClusterProbe(name, peers);
 			probes.put(name, probe);
-			probe.spawn();
+			probe.start();
 		}
 
 		Util.sleep(10 * 1000);
@@ -38,7 +38,7 @@ public class ClusterProbeTest {
 		assertActiveNodesSize(nNodes, probes);
 
 		for (ClusterProbe probe : probes.values())
-			probe.unspawn();
+			probe.stop();
 
 		Util.sleep(5 * 1000);
 

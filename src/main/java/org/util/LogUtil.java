@@ -87,35 +87,37 @@ public class LogUtil {
 	public static <I> I proxy(Class<I> interface_, final I object) {
 		@SuppressWarnings("unchecked")
 		final Class<I> clazz = (Class<I>) object.getClass();
+		ClassLoader classLoader = clazz.getClassLoader();
 		Class<?> classes[] = { interface_ };
 
+		InvocationHandler handler = new InvocationHandler() {
+			public Object invoke(Object proxy, Method method, Object ps[])
+					throws Exception {
+				String prefix = clazz.getSimpleName() //
+						+ "." + method.getName() + "()\n";
+
+				String pd = "";
+				if (ps != null)
+					for (int i = 0; i < ps.length; i++)
+						pd += DumpUtil.dump("p" + i, ps[i]);
+
+				info("proxy", prefix + pd);
+
+				try {
+					Object value = method.invoke(object, ps);
+					String rd = DumpUtil.dump("return", value);
+					info("proxy", prefix + rd);
+					return value;
+				} catch (Exception ex) {
+					error("proxy", ex);
+					throw ex;
+				}
+			}
+		};
+
 		@SuppressWarnings("unchecked")
-		I proxied = (I) Proxy.newProxyInstance(clazz.getClassLoader(), classes,
-				new InvocationHandler() {
-					public Object invoke(Object proxy //
-							, Method method, Object ps[]) throws Exception {
-						String prefix = clazz.getSimpleName() //
-								+ "." + method.getName() + "()\n";
-
-						String pd = "";
-						if (ps != null)
-							for (int i = 0; i < ps.length; i++)
-								pd += DumpUtil.dump("p" + i, ps[i]);
-
-						info("proxy", prefix + pd);
-
-						try {
-							Object value = method.invoke(object, ps);
-							String rd = DumpUtil.dump("return", value);
-							info("proxy", prefix + rd);
-							return value;
-						} catch (Exception ex) {
-							error("proxy", ex);
-							throw ex;
-						}
-					}
-				});
-
+		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
 		return proxied;
 	}
+
 }

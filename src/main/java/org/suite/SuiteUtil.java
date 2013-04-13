@@ -250,11 +250,14 @@ public class SuiteUtil {
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		Node node = SuiteUtil.parse("" //
-				+ "fc-parse (" + appendLibraries(config) + ") .p" //
-				+ ", infer-type-rule .p ()/()/()/() .tr .t" //
-				+ ", resolve-types .tr" //
-				+ ", fc-parse-type .type .t");
+		Node node = SuiteUtil
+				.parse("" //
+						+ "fc-parse ("
+						+ appendLibraries(config)
+						+ ") .p" //
+						+ ", infer-type-rule .p ()/()/()/() .tr .t" //
+						+ ", resolve-types .tr" //
+						+ ", once (fc-parse-type .type .t; fc-parse-tuple-type .type .t)");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

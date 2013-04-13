@@ -10,9 +10,9 @@ public class NetUtil {
 
 	public static int intValue(Bytes bytes) {
 		int value = 0, i = 4;
-		do {
+		do
 			value = value << 8 | bytes.byteAt(--i) & 0xFF;
-		} while (i > 0);
+		while (i > 0);
 		return value;
 	}
 

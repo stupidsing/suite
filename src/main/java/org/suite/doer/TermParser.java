@@ -43,7 +43,7 @@ public class TermParser extends Parser {
 
 		private TermOp(String name, Assoc associativity) {
 			this.name = name;
-			this.assoc = associativity;
+			assoc = associativity;
 		}
 
 		static {

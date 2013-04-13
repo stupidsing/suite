@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.util.Util;
-import org.util.Util.Transformer;
+import org.util.Util.Fun;
 
 public class ClusterTest {
 
@@ -26,12 +26,11 @@ public class ClusterTest {
 		Cluster cluster0 = new Cluster("NODE0", peers);
 		Cluster cluster1 = new Cluster("NODE1", peers);
 
-		cluster1.setOnReceive(Integer.class,
-				new Transformer<Integer, Integer>() {
-					public Integer perform(Integer i) {
-						return i + 1;
-					}
-				});
+		cluster1.setOnReceive(Integer.class, new Fun<Integer, Integer>() {
+			public Integer apply(Integer i) {
+				return i + 1;
+			}
+		});
 
 		cluster0.start();
 		cluster1.start();

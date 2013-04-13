@@ -123,7 +123,7 @@ lc-compile (EQ .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
 #
 lc-compile (DEFINE-RULES .rules .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
-	, lc-categorize-rules .rules .groups
+	, lc-merge-rules .rules .groups
 	, lc-prototype-labels .groups .pls/.pls1
 	, lc-compile-rules .groups .pls1 .d1/.dx
 	, !, lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.d1
@@ -153,14 +153,14 @@ lc-compile (SYSTEM-CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	, .c3 = (.failLabel LABEL .failLabel, .cx)
 #
 
-lc-categorize-rules () _ #
-lc-categorize-rules (.rule, .remains) .groups
+lc-merge-rules () _ #
+lc-merge-rules (.rule, .remains) .groups
 	:- .rule = RULE .head .tail
 	, lc-call-prototype .head .proto
 	, member .groups .proto/.rules
 	, member .rules .rule
 	, !
-	, lc-categorize-rules .remains .groups
+	, lc-merge-rules .remains .groups
 #
 
 lc-flatten-rules () FAIL :- ! #

@@ -126,14 +126,13 @@ public class DumpUtil {
 		if (Collection.class.isAssignableFrom(clazz))
 			for (Object o1 : (Collection<?>) object)
 				dump(prefix + "[" + count++ + "]", o1, sb);
-		else if (Map.class.isAssignableFrom(clazz)) {
+		else if (Map.class.isAssignableFrom(clazz))
 			for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
 				Object key = entry.getKey(), value = entry.getValue();
 				dump(prefix + "[" + count + "].getKey()", key, sb);
 				dump(prefix + "[" + count + "].getValue()", value, sb);
 				count++;
 			}
-		}
 	}
 
 	/**

@@ -23,8 +23,8 @@ public class Formatter {
 			this.start = start;
 			this.begin = begin;
 			this.end = end;
-			this.preSpace = buffer.substring(start, begin);
-			this.token = buffer.substring(begin, end);
+			preSpace = buffer.substring(start, begin);
+			token = buffer.substring(begin, end);
 		}
 	}
 
@@ -198,13 +198,13 @@ public class Formatter {
 			if (begin + 1 < length) {
 				char ch = buffer.charAt(begin), ch1 = buffer.charAt(begin + 1);
 
-				String endTag = (ch == '-' && ch1 == '-') ? "\n"
-						: (ch == '/' && ch1 == '*') ? "*/" //
+				String endTag = ch == '-' && ch1 == '-' ? "\n" //
+						: ch == '/' && ch1 == '*' ? "*/" //
 								: null;
 
 				if (endTag != null) {
 					int pos = buffer.indexOf(endTag, begin + 2);
-					begin = (pos != -1) ? pos + endTag.length() : length;
+					begin = pos != -1 ? pos + endTag.length() : length;
 					continue;
 				}
 			}

@@ -67,7 +67,7 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	private Pair<Integer, Integer> getLocation() {
 		int x = index >> Weiqi.shift;
-		int y = index & ((1 << Weiqi.shift) - 1);
+		int y = index & (1 << Weiqi.shift) - 1;
 		return Pair.create(x, y);
 	}
 

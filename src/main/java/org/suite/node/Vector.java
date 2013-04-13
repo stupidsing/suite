@@ -20,8 +20,8 @@ public class Vector extends Node {
 		}
 
 		private Data(int len, int startUsed) {
-			this.nodes = new Node[len];
-			this.endUsed = this.startUsed = startUsed;
+			nodes = new Node[len];
+			endUsed = this.startUsed = startUsed;
 		}
 
 		private void insertBefore(Node n) {
@@ -61,8 +61,8 @@ public class Vector extends Node {
 
 	private Vector(Data data) {
 		this.data = data;
-		this.start = data.startUsed;
-		this.end = data.endUsed;
+		start = data.startUsed;
+		end = data.endUsed;
 	}
 
 	private Vector(Data data, int start, int end) {

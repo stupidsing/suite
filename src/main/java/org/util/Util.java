@@ -58,7 +58,7 @@ public class Util {
 			int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
-		cal.set(year, month + (Calendar.JANUARY - 1), day, hour, minute, second);
+		cal.set(year, month + Calendar.JANUARY - 1, day, hour, minute, second);
 		return cal.getTimeInMillis();
 	}
 
@@ -88,7 +88,7 @@ public class Util {
 
 		public int hashCode() {
 			int h1 = t1 != null ? t1.hashCode() : 0;
-			int h2 = (t2 != null) ? t2.hashCode() : 0;
+			int h2 = t2 != null ? t2.hashCode() : 0;
 			return h1 ^ h2;
 		}
 
@@ -140,55 +140,73 @@ public class Util {
 			list.remove(--size);
 	}
 
-	public interface Event extends Transformer<Void, Void> {
+	public interface Event extends EventEx<RuntimeException> {
+		public void apply();
 	}
 
-	public interface Getter<O> extends Transformer<Void, O> {
+	public interface EventEx<Ex extends Exception> {
+		public void apply() throws Ex;
 	}
 
-	public interface Setter<I> extends Transformer<I, Void> {
+	public interface Source<O> {
+		public O apply();
 	}
 
-	public interface Transformer<I, O> extends
-			IoProcess<I, O, RuntimeException> {
+	public interface Sink<I> {
+		public void apply(I i);
 	}
 
-	public interface IoProcess<I, O, Ex extends Exception> {
-		public O perform(I i) throws Ex;
+	public interface Fun<I, O> {
+		public O apply(I i);
 	}
 
-	public static <I, O> Collection<O> map(Collection<I> in, Transformer<I, O> t) {
+	public interface FunEx<I, O, Ex extends Exception> {
+		public O apply(I i) throws Ex;
+	}
+
+	public static <I, O> Collection<O> map(Collection<I> in, Fun<I, O> t) {
 		ArrayList<O> out = new ArrayList<>(in.size());
 		for (I i : in)
-			out.add(t.perform(i));
+			out.add(t.apply(i));
 		return out;
 	}
 
-	public static class MultiSetter<I> implements Setter<I> {
-		private Collection<Setter<I>> setters = new ArrayList<>();
+	public static class Sinks<I> implements Sink<I> {
+		private Collection<Sink<I>> sinks = new ArrayList<>();
 
-		public Void perform(I i) {
-			for (Setter<I> setter : setters)
-				setter.perform(i);
-			return null;
+		public void apply(I i) {
+			for (Sink<I> sink : sinks)
+				sink.apply(i);
 		}
 
-		public void add(Setter<I> setter) {
-			setters.add(setter);
+		public void add(Sink<I> sink) {
+			sinks.add(sink);
 		}
 	}
 
-	public static <I> Setter<I> nullSetter() {
-		Setter<I> setter = new Setter<I>() {
-			public Void perform(I i) {
-				return null;
+	public static Event nullEvent() {
+		return new Event() {
+			public void apply() {
 			}
 		};
-		return setter;
 	}
 
-	public static <I> MultiSetter<I> multiSetter() {
-		return new MultiSetter<>();
+	public static <Ex extends Exception> EventEx<Ex> nullEventEx() {
+		return new EventEx<Ex>() {
+			public void apply() {
+			}
+		};
+	}
+
+	public static <I> Sink<I> nullSink() {
+		return new Sink<I>() {
+			public void apply(I i) {
+			}
+		};
+	}
+
+	public static <I> Sinks<I> sinks() {
+		return new Sinks<>();
 	}
 
 	/**
@@ -231,7 +249,7 @@ public class Util {
 	}
 
 	public static <T> int hashCode(T t) {
-		return (t != null) ? t.hashCode() : 0;
+		return t != null ? t.hashCode() : 0;
 	}
 
 	/**

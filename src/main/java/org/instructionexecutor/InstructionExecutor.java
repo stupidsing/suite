@@ -3,6 +3,7 @@ package org.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Insn;
@@ -47,11 +48,13 @@ public class InstructionExecutor {
 		Frame f0 = new Frame(null, 2);
 		f0.registers[0] = c0;
 
-		Closure current = new Closure(f0, unwrapEntryPoint);
+		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
-		Closure callStack[] = new Closure[stackSize];
-		Node dataStack[] = new Node[stackSize];
-		int i, csp = 0, dsp = 0;
+		Node stack[] = new Node[stackSize];
+		int i, sp = 0;
+
+		Exec exec = new Exec();
+		exec.stack = stack;
 
 		Comparer comparer = new Comparer();
 
@@ -80,19 +83,16 @@ public class InstructionExecutor {
 				regs[insn.op1] = i(insn.op2);
 				break;
 			case CALL__________:
-				callStack[csp++] = current;
-				current = new Closure(frame, g(regs[insn.op1]));
+				current = new Activation(frame, g(regs[insn.op1]), current);
 				break;
 			case CALLCONST_____:
-				callStack[csp++] = current;
-				current = new Closure(frame, insn.op1);
+				current = new Activation(frame, insn.op1, current);
 				break;
 			case CALLCLOSURE___:
 				Closure closure = (Closure) regs[insn.op2];
-				if (closure.result == null) {
-					callStack[csp++] = current;
-					current = closure.clone();
-				} else
+				if (closure.result == null)
+					current = new Activation(closure, current);
+				else
 					regs[insn.op1] = closure.result;
 				break;
 			case ENTER_________:
@@ -138,10 +138,10 @@ public class InstructionExecutor {
 				regs[insn.op1] = i(g(regs[insn.op2]) - g(regs[insn.op3]));
 				break;
 			case EXIT__________:
-				return (Node) regs[insn.op1];
+				return regs[insn.op1];
 			case FORMTREE0_____:
-				Node left = (Node) regs[insn.op1];
-				Node right = (Node) regs[insn.op2];
+				Node left = regs[insn.op1];
+				Node right = regs[insn.op2];
 				insn = instructions[current.ip++];
 				String op = ((Atom) constantPool.get(insn.op1)).getName();
 				regs[insn.op2] = Tree.create(TermOp.find(op), left, right);
@@ -166,41 +166,47 @@ public class InstructionExecutor {
 				regs[insn.op1] = new Reference();
 				break;
 			case PUSH__________:
-				dataStack[dsp++] = regs[insn.op1];
+				stack[sp++] = regs[insn.op1];
 				break;
 			case PUSHCONST_____:
-				dataStack[dsp++] = i(insn.op1);
+				stack[sp++] = i(insn.op1);
 				break;
 			case POP___________:
-				regs[insn.op1] = dataStack[--dsp];
+				regs[insn.op1] = stack[--sp];
 				break;
 			case REMARK________:
 				break;
 			case RETURN________:
-				current = callStack[--csp];
+				current = current.previous;
 				break;
 			case RETURNVALUE___:
 				Node returnValue = regs[insn.op1]; // Saves return value
-				current = callStack[--csp];
+				current = current.previous;
 				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
 				break;
 			case SETCLOSURERES_:
 				((Closure) regs[insn.op1]).result = regs[insn.op2];
 				break;
 			case TOP___________:
-				regs[insn.op1] = dataStack[dsp + insn.op2];
+				regs[insn.op1] = stack[sp + insn.op2];
 				break;
 			default:
-				int pair[] = execute( //
-						current, insn, callStack, csp, dataStack, dsp);
-				csp = pair[0];
-				dsp = pair[1];
+				exec.current = current;
+				exec.sp = sp;
+				execute(exec, insn);
+				current = exec.current;
+				sp = exec.sp;
 			}
 		}
 	}
 
-	protected int[] execute(Closure current, Instruction insn,
-			Closure callStack[], int csp, Object dataStack[], int dsp) {
+	protected class Exec {
+		protected Activation current;
+		protected Object stack[];
+		protected int sp;
+	}
+
+	protected void execute(Exec exec, Instruction insn) {
 		throw new RuntimeException("Unknown instruction " + insn);
 	}
 

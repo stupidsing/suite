@@ -1,5 +1,6 @@
 package org.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -7,36 +8,39 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.net.ChannelListeners.PersistableChannel;
-import org.net.ChannelListeners.RequestResponseMatcher;
-import org.net.NioDispatcher.ChannelListenerFactory;
+import org.net.Channels.PersistableChannel;
 import org.util.Util;
-import org.util.Util.Event;
-import org.util.Util.MultiSetter;
-import org.util.Util.Setter;
-import org.util.Util.Transformer;
+import org.util.Util.Fun;
+import org.util.Util.Sink;
+import org.util.Util.Sinks;
+import org.util.Util.Source;
 
 public class Cluster {
 
 	private String me;
 	private Map<String, InetSocketAddress> peers;
-
 	private ClusterProbe probe;
 
-	private NioDispatcher<ClusterChannel> nio;
+	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(
+			new Source<ClusterChannel>() {
+				public ClusterChannel apply() {
+					return new ClusterChannel(me);
+				}
+			});
+
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor = Util.createExecutor();
 
-	private Event unlisten;
+	private Closeable unlisten;
 
 	/**
 	 * Established channels connecting to peers.
 	 */
 	private Map<String, ClusterChannel> channels = new HashMap<>();
 
-	private MultiSetter<String> onJoined = Util.multiSetter();
-	private MultiSetter<String> onLeft = Util.multiSetter();
-	private Map<Class<?>, Transformer<?, ?>> onReceive = new HashMap<>();
+	private Sinks<String> onJoined = Util.sinks();
+	private Sinks<String> onLeft = Util.sinks();
+	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	public static class ClusterException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
@@ -48,11 +52,12 @@ public class Cluster {
 
 	private class ClusterChannel extends PersistableChannel<ClusterChannel> {
 		private ClusterChannel(String peer) {
-			super(nio, matcher, executor, peers.get(peer));
-		}
-
-		public Bytes respondToRequest(Bytes request) {
-			return Cluster.this.respondToRequest(request);
+			super(nio, matcher, executor, peers.get(peer),
+					new Fun<Bytes, Bytes>() {
+						public Bytes apply(Bytes request) {
+							return Cluster.this.respondToRequest(request);
+						}
+					});
 		}
 	}
 
@@ -61,44 +66,38 @@ public class Cluster {
 		this.me = me;
 		this.peers = peers;
 		probe = new ClusterProbe(me, peers);
-
-		nio = new NioDispatcher<>(new ChannelListenerFactory<ClusterChannel>() {
-			public ClusterChannel create() {
-				return new ClusterChannel(me);
-			}
-		});
 	}
 
 	public void start() throws IOException {
-		probe.setOnJoined(new Setter<String>() {
-			public Void perform(String node) {
-				return Cluster.this.onJoined.perform(node);
+		probe.setOnJoined(new Sink<String>() {
+			public void apply(String node) {
+				onJoined.apply(node);
 			}
 		});
 
-		probe.setOnLeft(new Setter<String>() {
-			public Void perform(String node) {
+		probe.setOnLeft(new Sink<String>() {
+			public void apply(String node) {
 				ClusterChannel channel = channels.get(node);
 
 				if (channel != null)
 					channel.stop();
 
-				return Cluster.this.onLeft.perform(node);
+				onLeft.apply(node);
 			}
 		});
 
 		unlisten = nio.listen(peers.get(me).getPort());
-		nio.spawn();
-		probe.spawn();
+		nio.start();
+		probe.start();
 	}
 
 	public void stop() {
 		for (ClusterChannel channel : channels.values())
 			channel.stop();
 
-		nio.unspawn();
-		probe.unspawn();
-		unlisten.perform(null);
+		probe.stop();
+		nio.stop();
+		Util.closeQuietly(unlisten);
 	}
 
 	public Object requestForResponse(String peer, Object request) {
@@ -130,20 +129,20 @@ public class Cluster {
 	private Bytes respondToRequest(Bytes req) {
 		Object request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
-		Transformer<Object, Object> handler = (Transformer<Object, Object>) onReceive
+		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive
 				.get(request.getClass());
-		return NetUtil.serialize(handler.perform(request));
+		return NetUtil.serialize(handler.apply(request));
 	}
 
-	public void addOnJoined(Setter<String> onJoined) {
+	public void addOnJoined(Sink<String> onJoined) {
 		this.onJoined.add(onJoined);
 	}
 
-	public void addOnLeft(Setter<String> onLeft) {
+	public void addOnLeft(Sink<String> onLeft) {
 		this.onLeft.add(onLeft);
 	}
 
-	public <I, O> void setOnReceive(Class<I> clazz, Transformer<I, O> onReceive) {
+	public <I, O> void setOnReceive(Class<I> clazz, Fun<I, O> onReceive) {
 		this.onReceive.put(clazz, onReceive);
 	}
 

@@ -45,7 +45,7 @@ public class Prover {
 	}
 
 	public Prover(RuleSet ruleSet) {
-		this.ruleSearcher = ruleSet;
+		ruleSearcher = ruleSet;
 		this.ruleSet = ruleSet;
 	}
 
@@ -194,7 +194,7 @@ public class Prover {
 			Generalizer generalizer = new Generalizer();
 			generalizer.setCut(new Station() {
 				public boolean run() {
-					Prover.this.alt = alt0;
+					alt = alt0;
 					return true;
 				}
 			});
@@ -244,8 +244,8 @@ public class Prover {
 
 			final Station enter = new Station() {
 				public boolean run() {
-					Tracer.this.currentRecord = record;
-					Tracer.this.currentDepth = record.depth;
+					currentRecord = record;
+					currentDepth = record.depth;
 					// appendLog("ENTER", record.query, record.depth);
 					records.add(record);
 					return true;
@@ -254,18 +254,18 @@ public class Prover {
 
 			final Station leaveOk = new Station() {
 				public boolean run() {
-					Tracer.this.currentRecord = record0;
-					Tracer.this.currentDepth = depth0;
+					currentRecord = record0;
+					currentDepth = depth0;
 					return record.result = true;
 				}
 			};
 
 			final Station leaveFail = new Station() {
 				public boolean run() {
-					Tracer.this.currentRecord = record0;
-					Tracer.this.currentDepth = depth0;
+					currentRecord = record0;
+					currentDepth = depth0;
 					// appendLog("LEAVE", record.query, record.depth);
-					return record.result = false;
+					return false;
 				}
 			};
 
