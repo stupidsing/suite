@@ -19,7 +19,7 @@ public class Channels {
 			RequestResponseChannel {
 		private NioDispatcher<CL> dispatcher;
 		private InetSocketAddress address;
-		boolean started;
+		boolean isStarted;
 
 		public PersistableChannel(NioDispatcher<CL> dispatcher //
 				, RequestResponseMatcher matcher //
@@ -32,12 +32,12 @@ public class Channels {
 		}
 
 		public synchronized void start() {
-			started = true;
+			isStarted = true;
 			reconnect();
 		}
 
 		public synchronized void stop() {
-			started = false;
+			isStarted = false;
 		}
 
 		@Override
@@ -46,7 +46,7 @@ public class Channels {
 		}
 
 		private void reconnect() {
-			if (started && !isConnected())
+			if (isStarted && !isConnected())
 				try {
 					dispatcher.reconnect(this, address);
 				} catch (IOException ex) {
@@ -64,7 +64,7 @@ public class Channels {
 
 		private RequestResponseMatcher matcher;
 		private ThreadPoolExecutor executor;
-		private boolean connected;
+		private boolean isConnected;
 		private Fun<Bytes, Bytes> handler;
 
 		public RequestResponseChannel(RequestResponseMatcher matcher //
@@ -76,9 +76,9 @@ public class Channels {
 		}
 
 		public void send(char type, int token, Bytes data) {
-			if (!connected)
+			if (!isConnected)
 				synchronized (this) {
-					while (!connected)
+					while (!isConnected)
 						Util.wait(this);
 				}
 
@@ -90,7 +90,7 @@ public class Channels {
 		}
 
 		public boolean isConnected() {
-			return connected;
+			return isConnected;
 		}
 
 		@Override
@@ -123,7 +123,7 @@ public class Channels {
 		}
 
 		private synchronized void setConnected(boolean isConnected) {
-			connected = isConnected;
+			this.isConnected = isConnected;
 			notify();
 		}
 	}

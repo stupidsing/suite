@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -19,7 +18,7 @@ import org.util.Util;
 
 public class Connector {
 
-	public void connect() throws UnknownHostException, IOException {
+	public void connect() throws IOException {
 		Charset charset = IoUtil.charset;
 
 		try (Socket socket = new Socket("wwww.google.com", 80);
