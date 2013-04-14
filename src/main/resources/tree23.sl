@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 -- 2-3 tree implementation
 
+tree23-member .tree .v :- bound .v, !, tree23-get .tree .v #
 tree23-member L:.v .v #
 tree23-member (T2 .n0 _ .n1) .v
 	:- tree23-member .n0 .v
@@ -10,6 +11,20 @@ tree23-member (T3 .n0 _ .n1 _ .n2) .v
 	:- tree23-member .n0 .v
 	; tree23-member .n1 .v
 	; tree23-member .n2 .v
+#
+
+tree23-get L:.v .v #
+tree23-get (T2 .n0 .pivot .n1) .v
+	:- tree23-compare .v .pivot
+	, !, tree23-get .n0 .v
+	; tree23-get .n1 .v
+#
+tree23-get (T3 .n0 .pivot0 .n1 .pivot1 .n2) .v
+	:- tree23-compare .v .pivot0
+	, !, tree23-get .n0 .v
+	; tree23-compare .v .pivot1
+	, !, tree23-get .n1 .v
+	; tree23-get .n2 .v
 #
 
 tree23-add-list () .tree/.tree #
@@ -87,4 +102,5 @@ tree23-merge-right-T3 (
 #
 tree23-merge-right-T3 .tree/.tree #
 
-tree23-compare .a .b :- .a < .b #
+tree23-compare .k0/_ .k1/_ :- !, .k0 < .k1 #
+tree23-compare .v0 .v1 :- .v0 < .v1 #

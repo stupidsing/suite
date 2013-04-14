@@ -233,6 +233,18 @@ public class Prover {
 				this.query = query;
 				this.depth = depth;
 			}
+
+			private void appendTo(StringBuilder sb) {
+				String header = "" //
+						+ "[" + (result ? "OK__" : "FAIL") //
+						+ ":" + depth //
+						+ "]";
+				sb.append(String.format("%-10s ", header));
+				for (int i = 1; i < depth; i++)
+					sb.append("| ");
+				sb.append(Formatter.dump(query));
+				sb.append("\n");
+			}
 		}
 
 		private Node expandWithTrace(Node query) {
@@ -246,7 +258,6 @@ public class Prover {
 				public boolean run() {
 					currentRecord = record;
 					currentDepth = record.depth;
-					// appendLog("ENTER", record.query, record.depth);
 					records.add(record);
 					return true;
 				}
@@ -264,7 +275,6 @@ public class Prover {
 				public boolean run() {
 					currentRecord = record0;
 					currentDepth = depth0;
-					// appendLog("LEAVE", record.query, record.depth);
 					return false;
 				}
 			};
@@ -278,19 +288,8 @@ public class Prover {
 
 		public String getDump() {
 			StringBuilder sb = new StringBuilder();
-
-			for (Record record : records) {
-				String header = "" //
-						+ "[" + (record.result ? "OK__" : "FAIL") //
-						+ ":" + record.depth //
-						+ "]";
-				sb.append(String.format("%-10s ", header));
-				for (int i = 1; i < record.depth; i++)
-					sb.append("| ");
-				sb.append(Formatter.dump(record.query));
-				sb.append("\n");
-			}
-
+			for (Record record : records)
+				record.appendTo(sb);
 			return sb.toString();
 		}
 
