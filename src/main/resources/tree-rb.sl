@@ -25,7 +25,7 @@ rb-depth (_ .n0 _ .n1) .depth
 rb-merge () .tree .tree #
 rb-merge (_ .n0 .pivot .n1) .tree0 .treex
 	:- rb-merge .n0 .tree0 .tree1
-	, rb-add .pivot .tree1 .tree2
+	, rb-add .pivot .tree1/.tree2
 	, rb-merge .n1 .tree2 .treex
 #
 
@@ -39,21 +39,20 @@ rb-add .v .tree/(BLACK .npn) :- rb-add0 .v .tree/(_ .npn) #
 
 rb-add0 .v ()/(RED () .v ()) #
 rb-add0 .v (.color .n0 .pivot .n1)/.treex
-	:- rb-compare .v .pivot
+	:- rb-compare .v .pivot, !
 	, rb-add0 .v .n0/.newn0
 	, rb-balance (.color .newn0 .pivot .n1)/.treex
-	; rb-compare .pivot .v
+	; rb-compare .pivot .v, !
 	, rb-add0 .v .n1/.newn1
 	, rb-balance (.color .n0 .pivot .newn1)/.treex
+	; .color .n0 .v .n1 = .treex
 #
 
-rb-balance (BLACK .rr .p2 .n3)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
-	:- .rr = RED (RED .n0 .p0 .n1) .p1 .n2
-	; .rr = RED .n0 .p0 (RED .n1 .p1 .n2)
-#
-rb-balance (BLACK .n0 .p0 .rr)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
-	:- .rr = RED (RED .n1 .p1 .n2) .p2 .n3
-	; .rr = RED .n1 .p1 (RED .n2 .p2 .n3)
+rb-balance (BLACK .npn)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
+	:- .npn = (RED .npn1) .p2 .n3
+	, (.npn1 = (RED .n0 .p0 .n1) .p1 .n2; .npn1 = .n0 .p0 (RED .n1 .p1 .n2))
+	; .npn = .n0 .p0 (RED .npn1)
+	, (.npn1 = (RED .n1 .p1 .n2) .p2 .n3; .npn1 = .n1 .p1 (RED .n2 .p2 .n3))
 #
 rb-balance .tree/.tree #
 

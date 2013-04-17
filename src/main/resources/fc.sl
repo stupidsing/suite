@@ -116,13 +116,13 @@ fc-assign-line-number .n (.n _, .remains)
 
 fc-error .m :- !, write .m, nl, fail #
 
-fc-dict-merge .t0 .t1 .t2 :- append .t0 .t1 .t2, ! #
- 
-fc-dict-add .v .t0/(.v, .t0) :- ! #
+fc-dict-merge .t0 .t1 .t2 :- rb-merge .t0 .t1 .t2, ! #
 
-fc-dict-get .t .v :- member .t .v, ! #
+fc-dict-add .v .t0/.t1 :- rb-add .v .t0/.t1, ! #
 
-fc-dict-member .t .v :- member .t .v #
+fc-dict-get .v .t :- rb-get .v .t, ! #
+
+fc-dict-member .v .t :- rb-member .v .t #
 
 fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>
