@@ -37,6 +37,8 @@ rb-add-list (.v, .vs) .tree0/.treex
 
 rb-add .v .tree/(BLACK .npn) :- rb-add0 .v .tree/(_ .npn) #
 
+-- There is a special replacement case (last line of rb-add0), necessary for
+-- functional compiler to replace already-defined variables.
 rb-add0 .v ()/(RED () .v ()) #
 rb-add0 .v (.color .n0 .pivot .n1)/.treex
 	:- rb-compare .v .pivot, !
