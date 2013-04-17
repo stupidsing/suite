@@ -7,6 +7,7 @@
 
 () :- import.file 'fc-parse.sl'
 	, import.file 'fc-type-inference.sl'
+	, import.file 'tree-rb.sl'
 #
 
 compile-function-without-precompile .mode (.lib, .libs) .do .c
@@ -114,6 +115,14 @@ fc-assign-line-number .n (.n _, .remains)
 #
 
 fc-error .m :- !, write .m, nl, fail #
+
+fc-dict-merge .t0 .t1 .t2 :- append .t0 .t1 .t2, ! #
+ 
+fc-dict-add .v .t0/(.v, .t0) :- ! #
+
+fc-dict-get .t .v :- member .t .v, ! #
+
+fc-dict-member .t .v :- member .t .v #
 
 fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>

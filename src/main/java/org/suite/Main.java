@@ -37,8 +37,8 @@ public class Main {
 	private boolean isLazy = true;
 	private boolean isDefaultLibrary = true;
 	private List<String> libraries = new ArrayList<>();
-	private boolean isTrace = false;
-	private boolean isDumpCode = false;
+	private boolean isTrace = SuiteUtil.isTrace;
+	private boolean isDumpCode = SuiteUtil.isDumpCode;
 
 	public static void main(String args[]) {
 		LogUtil.initLog4j();

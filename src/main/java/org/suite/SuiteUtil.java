@@ -28,6 +28,9 @@ import org.util.Util;
 
 public class SuiteUtil {
 
+	public static final boolean isTrace = false;
+	public static final boolean isDumpCode = false;
+
 	private static TermParser parser = new TermParser();
 	private static Prover logicalCompiler;
 	private static Prover eagerFunctionalCompiler;
@@ -134,8 +137,8 @@ public class SuiteUtil {
 		private Node node;
 		private boolean isLazy;
 		private List<String> libraries = new ArrayList<>();
-		private boolean isTrace = false;
-		private boolean isDumpCode = false;
+		private boolean isTrace = SuiteUtil.isTrace;
+		private boolean isDumpCode = SuiteUtil.isDumpCode;
 		private Reader in = new InputStreamReader(System.in, IoUtil.charset);
 		private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
 
@@ -250,14 +253,13 @@ public class SuiteUtil {
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		Node node = SuiteUtil
-				.parse("" //
-						+ "fc-parse ("
-						+ appendLibraries(config)
-						+ ") .p" //
-						+ ", infer-type-rule .p ()/()/()/() .tr .t" //
-						+ ", resolve-types .tr" //
-						+ ", once (fc-parse-type .type .t; fc-parse-tuple-type .type .t)");
+		Node node = SuiteUtil.parse("" //
+				+ "fc-parse (" + appendLibraries(config) + ") .p" //
+				+ ", infer-type-rule .p ()/()/()/() .tr .t" //
+				+ ", resolve-types .tr" //
+				+ ", once (" //
+				+ "    fc-parse-type .type .t; fc-parse-tuple-type .type .t" //
+				+ ")");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

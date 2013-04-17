@@ -2,10 +2,10 @@
 -- Type inference predicates
 --
 -- Environment consists of:
--- .ue - list of inside variables and their corresponding types
--- .ve - list of outside variables and their corresponding types
--- .te - list of type names and their corresponding types
--- .oe - list of tuples and their corresponding one-of types
+-- .ue - dictionary of inside variables / their corresponding types
+-- .ve - dictionary of outside variables / their corresponding types
+-- .te - dictionary of type names / their corresponding types
+-- .oe - list of tuples / their corresponding one-of types
 -- .tr - type deduction rule to be assembled
 --
 -- Inside variables include parent function definitions and parameter variables
@@ -44,11 +44,13 @@ infer-type-rule (OPTION (DEF-ONE-OF-TYPE .def) .do) .ue/.ve/.te/.oe .tr .type
 #
 infer-type-rule (OPTION (DEF-TYPE .name .def) .do) .ue/.ve/.te/.oe .tr .type
 	:- !
-	, infer-type-rule .do .ue/.ve/(.name/.def, .te)/.oe .tr .type
+	, fc-dict-add .name/.def .te/.te1
+	, infer-type-rule .do .ue/.ve/.te1/.oe .tr .type
 #
 infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
-	, .env1 = (.name/.varType, .ue)/.ve/.te/.oe
+	, fc-dict-add .name/.varType .ue/.ue1
+	, .env1 = .ue1/.ve/.te/.oe
 	, once (infer-type-rule .value .env1 .tr0/.tr1 .varType
 		; fc-error "at variable" .name
 	)
@@ -58,8 +60,10 @@ infer-type-rule (
 	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .name .value .do
 ) .ue/.ve/.te/.oe .tr0/.trx .type
 	:- !
-	, .insideEnv = (.name/.varType, .ue)/.ve/.te/.oe
-	, .outsideEnv = .ue/(.name/.varType, .ve)/.te/.oe
+	, fc-dict-add .name/.varType .ue/.ue1
+	, fc-dict-add .name/.varType .ve/.ve1
+	, .insideEnv = .ue1/.ve/.te/.oe
+	, .outsideEnv = .ue/.ve1/.te/.oe
 	, once (infer-type-rule .value .insideEnv .tr0/.tr1 .varType
 		; fc-error "at variable" .name
 	)
@@ -97,21 +101,22 @@ infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te/.oe .tr0/.trx .type
 	, .tr1 = (SUB-SUPER-TYPES .te/.oe .type0 .type, .trx)
 #
 infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te/.oe .tr .type
-	:- !, member .ue .var/.varType
+	:- !, fc-dict-get .ue .var/.varType
 	, infer-type-rule .do .ue/.ve/.te/.oe .tr .type
 #
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !, infer-type-rule .do .env .tr .type
 #
 infer-type-rule (VARIABLE .var) .ue/.ve/.te/.oe .tr0/.trx .type
-	:- (member .ve .var/.varType
+	:- (fc-dict-get .ve .var/.varType
 		, !, .tr0 = (GEN-SPEC-TYPES .varType .type, .trx)
 	)
 	; !, fc-error "Undefined variable" .var
 #
 
 find-simple-type (FUN .var .do) .ue/.ve/.te/.oe (FUN-OF .varType .type)
-	:- infer-type-rule .do (.var/.varType, .ue)/.ve/.te/.oe .tr .type
+	:- fc-dict-add .var/.varType .ue/.ue1
+	, infer-type-rule .do .ue1/.ve/.te/.oe .tr .type
 	, resolve-types .tr
 #
 find-simple-type (CONSTANT _) _ _ #
@@ -121,7 +126,7 @@ find-simple-type (STRING _) _ STRING #
 find-simple-type (TUPLE () ()) _ (LIST-OF _) #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
 find-simple-type (VARIABLE .var) .ue/.ve/.te/.oe .type
-	:- member .ue .var/.type
+	:- fc-dict-get .ue .var/.type
 	; default-fun-type .var .type
 #
 
@@ -207,7 +212,7 @@ resolve-sub-super-types .env .t0 .t1 .tr1/.trx
 	, resolve-types0 .tr1/.trxx
 #
 
-sub-super-type-pair .te/_ .t (TYPE .name) :- member .te .name/.t #
+sub-super-type-pair .te/_ .t (TYPE .name) :- fc-dict-get .te .name/.t #
 sub-super-type-pair _/.oe .t0 .t1 :- member .oe .t0/.t1 #
 sub-super-type-pair .env .t0 .t1
 	:- bound .t1

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.suite.Binder;
 import org.suite.Journal;
+import org.suite.SuiteUtil;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
 import org.suite.kb.RuleSearcher;
@@ -28,7 +29,7 @@ public class Prover {
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
-	private boolean isEnableTrace = false;
+	private boolean isEnableTrace = SuiteUtil.isTrace;
 	private Tracer tracer;
 	private static final Set<String> noTracePredicates = new HashSet<>(
 			Arrays.asList("member", "replace"));
