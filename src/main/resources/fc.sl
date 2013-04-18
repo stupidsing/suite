@@ -7,7 +7,7 @@
 
 () :- import.file 'fc-parse.sl'
 	, import.file 'fc-type-inference.sl'
-	, import.file 'tree-rb.sl'
+	, import.file 'rb-tree.sl'
 #
 
 compile-function-without-precompile .mode (.lib, .libs) .do .c
