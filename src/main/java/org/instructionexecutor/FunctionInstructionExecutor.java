@@ -36,6 +36,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom COMPARE = Atom.create("COMPARE");
 	private static final Atom CONS = Atom.create("CONS");
+	private static final Atom ERROR = Atom.create("ERROR");
 	private static final Atom FGETC = Atom.create("FGETC");
 	private static final Atom FPUTC = Atom.create("FPUTC");
 	private static final Atom HEAD = Atom.create("HEAD");
@@ -125,7 +126,9 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			Node left = (Node) stack[sp + 1];
 			Node right = (Node) stack[sp];
 			result = Tree.create(TermOp.AND___, left, right);
-		} else if (command == FGETC) {
+		} else if (command == ERROR)
+			throw new RuntimeException("Error termination");
+		else if (command == FGETC) {
 			Node node = (Node) stack[sp + 1];
 			int p = ((Int) stack[sp]).getNumber();
 			result = Int.create(inputs.get(node).read(p));
