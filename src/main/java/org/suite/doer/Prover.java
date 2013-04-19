@@ -131,8 +131,7 @@ public class Prover {
 					return false;
 			else {
 				boolean isTrace = isEnableTrace;
-				Prototype prototype = isTrace ? Prototype
-						.get(query) : null;
+				Prototype prototype = isTrace ? Prototype.get(query) : null;
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;
 				String name = atom != null ? atom.getName() : null;
