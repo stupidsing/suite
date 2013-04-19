@@ -6,12 +6,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 
 public class RbTreeTest {
 
 	@Test
 	public void test() throws IOException {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.importResource(rs, "auto.sl");
 		SuiteUtil.importResource(rs, "rb-tree.sl");
 

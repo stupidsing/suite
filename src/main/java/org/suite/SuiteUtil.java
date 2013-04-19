@@ -17,7 +17,9 @@ import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -41,7 +43,7 @@ public class SuiteUtil {
 	private static String importerRoot = "";
 
 	public static void addRule(RuleSet rs, String rule) {
-		rs.addRule(parser.parse(rule));
+		rs.addRule(Rule.formRule(parser.parse(rule)));
 	}
 
 	public static synchronized boolean importFrom(RuleSet rs, String name)
@@ -62,7 +64,7 @@ public class SuiteUtil {
 
 		try {
 			is = new FileInputStream(filename);
-			return rs.importFrom(SuiteUtil.parse(is));
+			return RuleSetUtil.importFrom(rs, SuiteUtil.parse(is));
 		} finally {
 			Util.closeQuietly(is);
 			isImportFromClasspath = wasFromClasspath;
@@ -82,7 +84,7 @@ public class SuiteUtil {
 		try {
 			is = cl.getResourceAsStream(classpath);
 			if (is != null)
-				return rs.importFrom(SuiteUtil.parse(is));
+				return RuleSetUtil.importFrom(rs, SuiteUtil.parse(is));
 			else
 				throw new RuntimeException("Cannot find resource " + classpath);
 		} finally {
@@ -311,7 +313,7 @@ public class SuiteUtil {
 	}
 
 	public static Prover getProver(String toImports[]) {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 
 		try {
 			for (String toImport : toImports)

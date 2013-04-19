@@ -19,7 +19,9 @@ import org.suite.doer.Prover;
 import org.suite.doer.Station;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -104,7 +106,7 @@ public class Main {
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.importResource(rs, "auto.sl");
 
 		for (String importFilename : importFilenames)
@@ -164,7 +166,7 @@ public class Main {
 
 				switch (type) {
 				case FACT:
-					rs.addRule(node);
+					rs.addRule(Rule.formRule(node));
 					break;
 				case EVALUATE:
 					fcc = SuiteUtil.fcc(node, isLazy);
@@ -219,7 +221,7 @@ public class Main {
 	public boolean runLogical(List<String> files) throws IOException {
 		boolean result = true;
 
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		result &= SuiteUtil.importResource(rs, "auto.sl");
 
 		for (String file : files)

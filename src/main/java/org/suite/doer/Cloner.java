@@ -3,7 +3,7 @@ package org.suite.doer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.suite.kb.RuleSet.Rule;
+import org.suite.kb.Rule;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;

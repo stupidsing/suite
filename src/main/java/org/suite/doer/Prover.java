@@ -13,9 +13,8 @@ import org.suite.Journal;
 import org.suite.SuiteUtil;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
-import org.suite.kb.RuleSearcher;
+import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -25,7 +24,6 @@ import org.util.LogUtil;
 
 public class Prover {
 
-	private RuleSearcher ruleSearcher;
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
@@ -46,13 +44,7 @@ public class Prover {
 	}
 
 	public Prover(RuleSet ruleSet) {
-		ruleSearcher = ruleSet;
 		this.ruleSet = ruleSet;
-	}
-
-	public Prover(RuleSearcher ruleSearcher, Prover prover) {
-		this(prover.ruleSet);
-		this.ruleSearcher = ruleSearcher;
 	}
 
 	/**
@@ -139,7 +131,8 @@ public class Prover {
 					return false;
 			else {
 				boolean isTrace = isEnableTrace;
-				Prototype prototype = isTrace ? Prototype.get(query) : null;
+				Prototype prototype = isTrace ? Prototype
+						.get(query) : null;
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;
 				String name = atom != null ? atom.getName() : null;
@@ -186,7 +179,7 @@ public class Prover {
 		final Node alt0 = alt;
 		Node ret = FAIL;
 
-		List<Rule> rules = ruleSearcher.getRules(query);
+		List<Rule> rules = ruleSet.searchRule(query);
 		ListIterator<Rule> iter = rules.listIterator(rules.size());
 
 		while (iter.hasPrevious()) {
@@ -317,13 +310,6 @@ public class Prover {
 		public int getCurrentDepth() {
 			return tracer.currentDepth;
 		}
-	}
-
-	/**
-	 * The set of rules which is read-only.
-	 */
-	public RuleSearcher getRuleSearcher() {
-		return ruleSearcher;
 	}
 
 	/**

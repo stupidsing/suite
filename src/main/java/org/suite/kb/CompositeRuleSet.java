@@ -4,17 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.suite.doer.Cloner;
-import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Node;
 
-public class CompositeRuleSearcher implements RuleSearcher {
+public class CompositeRuleSet implements RuleSet {
 
-	private RuleSearcher first;
-	private RuleSearcher second;
+	private RuleSet first;
+	private RuleSet second;
 
-	public CompositeRuleSearcher(RuleSearcher first, RuleSearcher second) {
+	public CompositeRuleSet(RuleSet first, RuleSet second) {
 		this.first = first;
 		this.second = second;
+	}
+
+	@Override
+	public void clear() {
+		first.clear();
+		second.clear();
+	}
+
+	@Override
+	public void addRule(Rule rule) {
+		second.addRule(rule);
+	}
+
+	@Override
+	public void addRuleToFront(Rule rule) {
+		second.addRuleToFront(rule);
+	}
+
+	@Override
+	public void removeRule(Rule rule) {
+		first.removeRule(rule);
+		second.removeRule(rule);
 	}
 
 	/**
@@ -23,8 +44,8 @@ public class CompositeRuleSearcher implements RuleSearcher {
 	 * Otherwise return what we got from parent rule set.
 	 */
 	@Override
-	public List<Rule> getRules(Node head) {
-		List<Rule> rules = first.getRules(head);
+	public List<Rule> searchRule(Node head) {
+		List<Rule> rules = first.searchRule(head);
 
 		if (!rules.isEmpty()) {
 
@@ -35,7 +56,7 @@ public class CompositeRuleSearcher implements RuleSearcher {
 				newRules.add(cloner.clone(rule));
 			rules = newRules;
 		} else
-			rules = second.getRules(head);
+			rules = second.searchRule(head);
 
 		return rules;
 	}
