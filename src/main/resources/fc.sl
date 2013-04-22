@@ -243,9 +243,10 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define zip = (fun => match
-		=> \h0, \t0 | match
+		=> \h0, \t0 | (match
 			=> \h1, \t1 | fun {h0} {h1}, zip {fun} {t0} {t1}
 			=> otherwise ()
+		)
 		=> otherwise (anything => ())
 	) >>
 	define append = (match
@@ -335,9 +336,10 @@ fc-add-functions STANDARD .p (
 		unfold-right {i => if (i < end) then (i, i + inc,) else ()} {start}
 	) >>
 	define starts-with = (match
-		=> \sh, \st | match
+		=> \sh, \st | (match
 			=> sh, \t | starts-with {st} {t}
 			=> otherwise false
+		)
 		=> otherwise (anything => true)
 	) >>
 	define split = (separator =>
