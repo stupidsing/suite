@@ -104,11 +104,11 @@ fc-parse .d _ :- fc-error "Unknown expression" .d #
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
-fc-parse-sugar (.bind => .then || .otherwise) .p
+fc-parse-sugar (.bind => .then || .otherwise) .p1
 	:- !, temp .var
 	, fc-parse (.var =>
 		if-bind (.var = .bind) then .then else (.otherwise {.var})
-	) .p
+	) .p1
 #
 fc-parse-sugar (otherwise .p) .p1 :- fc-parse (anything => .p) .p1 #
 fc-parse-sugar (.l && .r) .p1 :- !, fc-parse (and {.l} {.r}) .p1 #
