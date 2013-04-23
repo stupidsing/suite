@@ -10,15 +10,15 @@ fc-compile EAGER (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, .frame1 = .frame + 1
-	, .env1 = .frame1/(.var/(%REG/.varReg/.frame1), .ve)
-	, fc-compile EAGER .do .env1 .d2/.d3/.d4/.dx/.returnReg
+	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
+	, fc-compile EAGER .do .frame1/.ve1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
 fc-compile EAGER (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !
-	, .env1 = .frame/(.var/(%REG/.r1/.frame), .ve)
-	, fc-compile EAGER .value .env1 .c0/.c1/.d0/.d1/.r1
-	, fc-compile EAGER .do .env1 .c1/.cx/.d1/.dx/.reg
+	, fc-dict-add .var/(%REG/.r1/.frame) .ve/.ve1
+	, fc-compile EAGER .value .frame/.ve1 .c0/.c1/.d0/.d1/.r1
+	, fc-compile EAGER .do .frame/.ve1 .c1/.cx/.d1/.dx/.reg
 #
 fc-compile EAGER .do .env .cdr :- fc-eager-default-fun .do .env .cdr, ! #
 fc-compile EAGER (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
@@ -58,7 +58,7 @@ fc-compile EAGER (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
 fc-compile EAGER (VARIABLE .var) .frame/.ve  .c0/.cx/.d/.d/.reg1
-	:- member .ve .var/(%REG/.reg/.frame0)
+	:- fc-dict-get .ve .var/(%REG/.reg/.frame0)
 	, !, fc-frame-difference .frame0 .frame .frameDiff
 	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1
 		; .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDiff .reg, .cx)

@@ -17,7 +17,9 @@ import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -27,6 +29,9 @@ import org.util.IoUtil;
 import org.util.Util;
 
 public class SuiteUtil {
+
+	public static final boolean isTrace = false;
+	public static final boolean isDumpCode = false;
 
 	private static TermParser parser = new TermParser();
 	private static Prover logicalCompiler;
@@ -38,7 +43,7 @@ public class SuiteUtil {
 	private static String importerRoot = "";
 
 	public static void addRule(RuleSet rs, String rule) {
-		rs.addRule(parser.parse(rule));
+		rs.addRule(Rule.formRule(parser.parse(rule)));
 	}
 
 	public static synchronized boolean importFrom(RuleSet rs, String name)
@@ -59,7 +64,7 @@ public class SuiteUtil {
 
 		try {
 			is = new FileInputStream(filename);
-			return rs.importFrom(SuiteUtil.parse(is));
+			return RuleSetUtil.importFrom(rs, SuiteUtil.parse(is));
 		} finally {
 			Util.closeQuietly(is);
 			isImportFromClasspath = wasFromClasspath;
@@ -79,7 +84,7 @@ public class SuiteUtil {
 		try {
 			is = cl.getResourceAsStream(classpath);
 			if (is != null)
-				return rs.importFrom(SuiteUtil.parse(is));
+				return RuleSetUtil.importFrom(rs, SuiteUtil.parse(is));
 			else
 				throw new RuntimeException("Cannot find resource " + classpath);
 		} finally {
@@ -134,8 +139,8 @@ public class SuiteUtil {
 		private Node node;
 		private boolean isLazy;
 		private List<String> libraries = new ArrayList<>();
-		private boolean isTrace = false;
-		private boolean isDumpCode = false;
+		private boolean isTrace = SuiteUtil.isTrace;
+		private boolean isDumpCode = SuiteUtil.isDumpCode;
 		private Reader in = new InputStreamReader(System.in, IoUtil.charset);
 		private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
 
@@ -250,14 +255,13 @@ public class SuiteUtil {
 		compiler = compiler != null ? compiler : getEagerFunCompiler();
 		compiler = config.isTrace ? enableTrace(compiler) : compiler;
 
-		Node node = SuiteUtil
-				.parse("" //
-						+ "fc-parse ("
-						+ appendLibraries(config)
-						+ ") .p" //
-						+ ", infer-type-rule .p ()/()/()/() .tr .t" //
-						+ ", resolve-types .tr" //
-						+ ", once (fc-parse-type .type .t; fc-parse-tuple-type .type .t)");
+		Node node = SuiteUtil.parse("" //
+				+ "fc-parse (" + appendLibraries(config) + ") .p" //
+				+ ", infer-type-rule .p ()/()/()/() .tr .t" //
+				+ ", resolve-types .tr" //
+				+ ", once (" //
+				+ "    fc-parse-type .type .t; fc-parse-tuple-type .type .t" //
+				+ ")");
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
@@ -309,7 +313,7 @@ public class SuiteUtil {
 	}
 
 	public static Prover getProver(String toImports[]) {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 
 		try {
 			for (String toImport : toImports)

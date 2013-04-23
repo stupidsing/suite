@@ -14,9 +14,9 @@ fc-lazy-compile-to-thunk (OPTION _ .do) .env .cdr
 #
 fc-lazy-compile-to-thunk (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !
-	, .env1 = .frame/(.var/(%REG/.r1/.frame), .ve)
-	, fc-lazy-compile-to-thunk .value .env1 .c0/.c1/.d0/.d1/.r1
-	, fc-lazy-compile-to-thunk .do .env1 .c1/.cx/.d1/.dx/.reg
+	, fc-dict-add .var/(%REG/.r1/.frame) .ve/.ve1
+	, fc-lazy-compile-to-thunk .value .frame/.ve1 .c0/.c1/.d0/.d1/.r1
+	, fc-lazy-compile-to-thunk .do .frame/.ve1 .c1/.cx/.d1/.dx/.reg
 #
 fc-lazy-compile-to-thunk (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -35,7 +35,7 @@ fc-lazy-compile-to-thunk (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	)
 #
 fc-lazy-compile-to-thunk (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
-	:- member .ve .var/(%REG/.reg/.frame0)
+	:- fc-dict-get .ve .var/(%REG/.reg/.frame0)
 	, !, fc-frame-difference .frame0 .frame .frameDiff
 	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1
 		; .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDiff .reg, .cx)
@@ -66,8 +66,8 @@ fc-lazy-compile-to-value (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, .frame1 = .frame + 1
-	, .env1 = .frame1/(.var/(%REG/.varReg/.frame1), .ve)
-	, fc-lazy-compile-to-thunk .do .env1 .d2/.d3/.d4/.dx/.returnReg
+	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
+	, fc-lazy-compile-to-thunk .do .frame1/.ve1 .d2/.d3/.d4/.dx/.returnReg
 	, .d3 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d4)
 #
 fc-lazy-compile-to-value .do .env .cdr
@@ -115,6 +115,7 @@ fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.r
 		_popen/2/THUNK:THUNK:,
 		_prove/1/VALUE:,
 		_subst/2/VALUE:VALUE:,
+		error/0/,
 		fflush/1/VALUE:,
 		fgetc/2/VALUE:VALUE:,
 		fputc/4/VALUE:VALUE:VALUE:VALUE:,

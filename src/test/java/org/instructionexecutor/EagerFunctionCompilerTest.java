@@ -289,11 +289,11 @@ public class EagerFunctionCompilerTest {
 	@Test
 	public void testSwitch() {
 		assertEquals(eval("\"C\""), eval("" //
-				+ "define switch = (p => case \n" //
-				+ "    || (p = 1) \"A\" \n" //
-				+ "    || (p = 2) \"B\" \n" //
-				+ "    || (p = 3) \"C\" \n" //
-				+ "    || \"D\" \n" //
+				+ "define switch = (match \n" //
+				+ "    => 1 | \"A\" \n" //
+				+ "    => 2 | \"B\" \n" //
+				+ "    => 3 | \"C\" \n" //
+				+ "    => otherwise \"D\" \n" //
 				+ ") >> \n" //
 				+ "switch {3}"));
 	}

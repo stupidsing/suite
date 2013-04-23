@@ -10,11 +10,11 @@ import java.util.Set;
 
 import org.suite.Binder;
 import org.suite.Journal;
+import org.suite.SuiteUtil;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
-import org.suite.kb.RuleSearcher;
+import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.Rule;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -24,11 +24,10 @@ import org.util.LogUtil;
 
 public class Prover {
 
-	private RuleSearcher ruleSearcher;
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
-	private boolean isEnableTrace = false;
+	private boolean isEnableTrace = SuiteUtil.isTrace;
 	private Tracer tracer;
 	private static final Set<String> noTracePredicates = new HashSet<>(
 			Arrays.asList("member", "replace"));
@@ -45,13 +44,7 @@ public class Prover {
 	}
 
 	public Prover(RuleSet ruleSet) {
-		ruleSearcher = ruleSet;
 		this.ruleSet = ruleSet;
-	}
-
-	public Prover(RuleSearcher ruleSearcher, Prover prover) {
-		this(prover.ruleSet);
-		this.ruleSearcher = ruleSearcher;
 	}
 
 	/**
@@ -185,7 +178,7 @@ public class Prover {
 		final Node alt0 = alt;
 		Node ret = FAIL;
 
-		List<Rule> rules = ruleSearcher.getRules(query);
+		List<Rule> rules = ruleSet.searchRule(query);
 		ListIterator<Rule> iter = rules.listIterator(rules.size());
 
 		while (iter.hasPrevious()) {
@@ -233,6 +226,18 @@ public class Prover {
 				this.query = query;
 				this.depth = depth;
 			}
+
+			private void appendTo(StringBuilder sb) {
+				String header = "" //
+						+ "[" + (result ? "OK__" : "FAIL") //
+						+ ":" + depth //
+						+ "]";
+				sb.append(String.format("%-10s ", header));
+				for (int i = 1; i < depth; i++)
+					sb.append("| ");
+				sb.append(Formatter.dump(query));
+				sb.append("\n");
+			}
 		}
 
 		private Node expandWithTrace(Node query) {
@@ -246,7 +251,6 @@ public class Prover {
 				public boolean run() {
 					currentRecord = record;
 					currentDepth = record.depth;
-					// appendLog("ENTER", record.query, record.depth);
 					records.add(record);
 					return true;
 				}
@@ -264,7 +268,6 @@ public class Prover {
 				public boolean run() {
 					currentRecord = record0;
 					currentDepth = depth0;
-					// appendLog("LEAVE", record.query, record.depth);
 					return false;
 				}
 			};
@@ -278,19 +281,8 @@ public class Prover {
 
 		public String getDump() {
 			StringBuilder sb = new StringBuilder();
-
-			for (Record record : records) {
-				String header = "" //
-						+ "[" + (record.result ? "OK__" : "FAIL") //
-						+ ":" + record.depth //
-						+ "]";
-				sb.append(String.format("%-10s ", header));
-				for (int i = 1; i < record.depth; i++)
-					sb.append("| ");
-				sb.append(Formatter.dump(record.query));
-				sb.append("\n");
-			}
-
+			for (Record record : records)
+				record.appendTo(sb);
 			return sb.toString();
 		}
 
@@ -317,13 +309,6 @@ public class Prover {
 		public int getCurrentDepth() {
 			return tracer.currentDepth;
 		}
-	}
-
-	/**
-	 * The set of rules which is read-only.
-	 */
-	public RuleSearcher getRuleSearcher() {
-		return ruleSearcher;
 	}
 
 	/**

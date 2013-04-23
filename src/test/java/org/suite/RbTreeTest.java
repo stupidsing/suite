@@ -6,18 +6,20 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 
-public class Tree23Test {
+public class RbTreeTest {
 
 	@Test
 	public void test() throws IOException {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.importResource(rs, "auto.sl");
-		SuiteUtil.importResource(rs, "tree23.sl");
+		SuiteUtil.importResource(rs, "rb-tree.sl");
 
 		assertTrue(SuiteUtil.proveThis(rs, "" //
-				+ "tree23-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
-				+ ", tree23-member .t 4"));
+				+ "rb-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
+				+ ", rb-get .t 8" //
+				+ ", rb-member .t 4"));
 	}
 
 }

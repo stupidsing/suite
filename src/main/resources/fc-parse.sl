@@ -104,12 +104,17 @@ fc-parse .d _ :- fc-error "Unknown expression" .d #
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
-fc-parse-sugar (case || .if .then || .cases) (IF .if1 .then1 .else)
+fc-parse-sugar (case => .if | .then => .cases) (IF .if1 .then1 .else)
 	:- !, fc-parse .if .if1
 	, fc-parse .then .then1
-	, fc-parse (case || .cases) .else
+	, fc-parse (case => .cases) .else
 #
-fc-parse-sugar (case || .do) .p1 :- !, fc-parse .do .p1 #
+fc-parse-sugar (case => otherwise .do) .p1 :- !, fc-parse .do .p1 #
+fc-parse-sugar (match => .matches) .p
+	:- !, temp .var
+	, fc-parse-matches .var .matches .p1
+	, fc-parse (.var => .p1) .p
+#
 fc-parse-sugar (.l && .r) .p1 :- !, fc-parse (and {.l} {.r}) .p1 #
 fc-parse-sugar (.l || .r) .p1 :- !, fc-parse (or {.l} {.r}) .p1 #
 fc-parse-sugar .t .p1
@@ -131,9 +136,6 @@ fc-parse-sugar (/.f/) .p1 :- !, fc-parse .f .p1 #
 fc-parse-sugar (.a /.f/) .p1 :- !, fc-parse (.b => .f {.a} {.b}) .p1 #
 fc-parse-sugar (/.f/ .b) .p1 :- !, fc-parse (.a => .f {.a} {.b}) .p1 #
 fc-parse-sugar (.a /.f/ .b) .p1 :- !, fc-parse (.f {.a} {.b}) .p1 #
-fc-parse-sugar (if-match .v1 .thenElse) .p1
-	:- !, temp .v0, fc-parse (.v0 => if-bind (.v0 = .v1) .thenElse) .p1
-#
 fc-parse-sugar (if-bind (.v0 = .v1) then .then else .else) .parsed
 	:- !
 	, fc-parse .v0 .vp0
@@ -142,6 +144,13 @@ fc-parse-sugar (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
+
+fc-parse-matches .var (.bind | .then => .matches) .p1
+	:- !
+	, fc-parse-matches .var .matches .else
+	, .p1 = if-bind (.var = .bind) then .then else .else
+#
+fc-parse-matches .var (otherwise .p) .p #
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)

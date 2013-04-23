@@ -20,7 +20,7 @@ public class B_TreeTest {
 	private static final int nKeys = 1024;
 	private Integer keys[] = new Integer[nKeys];
 
-	private TestB_Tree b_tree;
+	private B_Tree1 b_tree;
 
 	private Random random = new Random();
 
@@ -30,18 +30,18 @@ public class B_TreeTest {
 		}
 	};
 
-	private static class TestB_Tree extends B_Tree<Integer, String> {
-		public TestB_Tree() {
+	private static class B_Tree1 extends B_Tree<Integer, String> {
+		public B_Tree1() {
 			super(compare);
 		}
 	}
 
 	@Test
 	public void memoryTest() {
-		InMemoryAllocPersister<TestB_Tree.SuperBlock> sbimap = new InMemoryAllocPersister<>();
-		InMemoryAllocPersister<TestB_Tree.Page> pimap = new InMemoryAllocPersister<>();
+		InMemoryAllocPersister<B_Tree1.SuperBlock> sbimap = new InMemoryAllocPersister<>();
+		InMemoryAllocPersister<B_Tree1.Page> pimap = new InMemoryAllocPersister<>();
 
-		b_tree = new TestB_Tree();
+		b_tree = new B_Tree1();
 		b_tree.setAllocator(pimap);
 		b_tree.setSuperBlockPersister(sbimap);
 		b_tree.setPagePersister(pimap);
@@ -55,16 +55,16 @@ public class B_TreeTest {
 		String path = "/tmp/";
 		new File(path).mkdirs();
 
-		String prefix = path + "test";
-		String superBlockFilename = prefix + ".superblock";
-		String pageFilename = prefix + ".pages";
-		String allocMapFilename = prefix + ".alloc";
+		String prefix = path + "test-btree";
+		String sbf = prefix + ".superblock";
+		String amf = prefix + ".alloc";
+		String pf = prefix + ".pages";
 
-		new File(superBlockFilename).delete();
-		new File(pageFilename).delete();
-		new File(allocMapFilename).delete();
+		String filenames[] = { sbf, amf, pf };
+		for (String filename : filenames)
+			new File(filename).delete();
 
-		b_tree = new TestB_Tree();
+		b_tree = new B_Tree1();
 
 		B_TreeSuperBlockSerializer<Integer, String> sbs = new B_TreeSuperBlockSerializer<>(
 				b_tree);
@@ -73,11 +73,10 @@ public class B_TreeTest {
 				, new IntSerializer() //
 				, new FixedStringSerializer(16));
 
-		try (FileAllocator al = new FileAllocator(allocMapFilename);
-				FilePersister<TestB_Tree.SuperBlock> sbp = new FilePersister<>(
-						superBlockFilename, sbs);
-				FilePersister<TestB_Tree.Page> pp = new FilePersister<>(
-						pageFilename, ps);) {
+		try (FileAllocator al = new FileAllocator(amf);
+				FilePersister<B_Tree1.SuperBlock> sbp = new FilePersister<>(
+						sbf, sbs);
+				FilePersister<B_Tree1.Page> pp = new FilePersister<>(pf, ps);) {
 			b_tree.setAllocator(al);
 			b_tree.setSuperBlockPersister(sbp);
 			b_tree.setPagePersister(pp);

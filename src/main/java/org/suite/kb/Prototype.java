@@ -1,62 +1,73 @@
 package org.suite.kb;
 
-import org.parser.Operator;
 import org.suite.doer.Generalizer;
-import org.suite.kb.RuleSet.Rule;
+import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.util.Util;
 
+/**
+ * Index rules by the first atom in their heads.
+ * 
+ * @author ywsing
+ */
 public class Prototype {
 
-	private Operator operator;
 	private Node head;
 
 	private static Generalizer generalizer = new Generalizer();
 
-	public Prototype(Operator operator, Node head) {
-		this.operator = operator;
+	public Prototype(Node head) {
 		this.head = head;
 	}
 
 	public static Prototype get(Rule rule) {
-		return get(rule.getHead());
+		return get(rule, 0);
 	}
 
-	public static Prototype get(Node head) {
-		Operator operator = null;
-		Tree t0 = null, t1;
+	public static Prototype get(Rule rule, int n) {
+		return get(rule.getHead(), n);
+	}
 
-		while ((t1 = Tree.decompose(head)) != null) {
-			t0 = t1;
-			operator = t0.getOperator();
-			head = t0.getLeft();
+	public static Prototype get(Node node) {
+		return get(node, 0);
+	}
+
+	public static Prototype get(Node node, int n) {
+		for (int i = 0; i < n; i++) {
+			Tree tree = Tree.decompose(node);
+			node = tree != null ? tree.getRight() : Atom.NIL;
 		}
 
-		if (!generalizer.isVariant(head) && !(head instanceof Reference))
-			return new Prototype(operator, head);
-		else
-			return null;
+		if (node != null) {
+			Tree t0 = null, t1;
+
+			while ((t1 = Tree.decompose(node)) != null) {
+				t0 = t1;
+				node = t0.getLeft();
+			}
+		}
+
+		boolean indexable = node != null //
+				&& !generalizer.isVariant(node) //
+				&& !(node instanceof Reference);
+
+		return indexable ? new Prototype(node) : null;
 	}
 
 	@Override
 	public int hashCode() {
-		return Util.hashCode(operator) ^ Util.hashCode(head);
+		return Util.hashCode(head);
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof Prototype) {
 			Prototype p = (Prototype) object;
-			return Util.equals(operator, p.operator)
-					&& Util.equals(head, p.head);
+			return Util.equals(head, p.head);
 		} else
 			return false;
-	}
-
-	public Operator getOperator() {
-		return operator;
 	}
 
 	public Node getHead() {

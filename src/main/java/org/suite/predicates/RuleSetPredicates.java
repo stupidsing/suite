@@ -9,10 +9,11 @@ import org.suite.doer.Formatter;
 import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
-import org.suite.kb.CompositeRuleSearcher;
+import org.suite.kb.CompositeRuleSet;
 import org.suite.kb.Prototype;
+import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.Rule;
+import org.suite.kb.RuleSet.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -23,7 +24,7 @@ public class RuleSetPredicates {
 	public static class Asserta implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			prover.getRuleSet().addRuleToFront(params[0]);
+			prover.getRuleSet().addRuleToFront(Rule.formRule(params[0]));
 			return true;
 		}
 	}
@@ -31,7 +32,7 @@ public class RuleSetPredicates {
 	public static class Assertz implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			prover.getRuleSet().addRule(params[0]);
+			prover.getRuleSet().addRule(Rule.formRule(params[0]));
 			return true;
 		}
 	}
@@ -45,7 +46,7 @@ public class RuleSetPredicates {
 
 	public static class GetAllRules implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			List<Rule> rules = prover.getRuleSearcher().getRules();
+			List<Rule> rules = prover.getRuleSet().getRules();
 			ListIterator<Rule> iter = rules.listIterator(rules.size());
 			Node allRules = Atom.NIL;
 
@@ -62,7 +63,7 @@ public class RuleSetPredicates {
 
 	public static class Import implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return prover.getRuleSet().importFrom(ps);
+			return RuleSetUtil.importFrom(prover.getRuleSet(), ps);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class RuleSetPredicates {
 			for (Rule rule : prover.getRuleSet().getRules()) {
 				Prototype p1 = Prototype.get(rule);
 				if (proto == null || proto.equals(p1)) {
-					Node clause = RuleSet.formClause(rule);
+					Node clause = Rule.formClause(rule);
 					nodes.add(clause);
 				}
 			}
@@ -108,7 +109,7 @@ public class RuleSetPredicates {
 	public static class Retract implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			prover.getRuleSet().removeRule(params[0]);
+			prover.getRuleSet().removeRule(Rule.formRule(params[0]));
 			return true;
 		}
 	}
@@ -116,11 +117,11 @@ public class RuleSetPredicates {
 	public static class With implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 2);
-			RuleSet ruleSet = new RuleSet();
-			ruleSet.importFrom(params[0]);
-			CompositeRuleSearcher ruleSearcher = new CompositeRuleSearcher(
-					ruleSet, prover.getRuleSearcher());
-			return new Prover(ruleSearcher, prover).prove(params[1]);
+			RuleSet ruleSet = RuleSetUtil.create();
+			RuleSetUtil.importFrom(ruleSet, params[0]);
+			CompositeRuleSet ruleSet1 = new CompositeRuleSet(ruleSet,
+					prover.getRuleSet());
+			return new Prover(ruleSet1).prove(params[1]);
 		}
 	}
 

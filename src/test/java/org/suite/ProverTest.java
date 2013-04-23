@@ -7,12 +7,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 
 public class ProverTest {
 
 	@Test
 	public void testAppend() {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.addRule(rs, "app () .l .l");
 		SuiteUtil.addRule(rs, "app (.h, .r) .l (.h, .r1) :- app .r .l .r1");
 
@@ -22,7 +23,7 @@ public class ProverTest {
 
 	@Test
 	public void testCut() {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.addRule(rs, "a :- !, fail");
 		SuiteUtil.addRule(rs, "a");
 		SuiteUtil.addRule(rs, "yes");
@@ -42,7 +43,7 @@ public class ProverTest {
 
 	@Test
 	public void testMember() {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.addRule(rs, "mem ([.e, _], .e)");
 		SuiteUtil.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
@@ -60,7 +61,7 @@ public class ProverTest {
 
 	@Test
 	public void testProve() {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.addRule(rs, "a");
 		SuiteUtil.addRule(rs, "b");
 		SuiteUtil.addRule(rs, "c");
@@ -89,7 +90,7 @@ public class ProverTest {
 
 	@Test
 	public void testSystemPredicates() {
-		RuleSet rs = new RuleSet();
+		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.addRule(rs, "mem ([.e, _], .e)");
 		SuiteUtil.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
@@ -104,7 +105,7 @@ public class ProverTest {
 	}
 
 	private boolean proveThis(String s) {
-		return SuiteUtil.proveThis(new RuleSet(), s);
+		return SuiteUtil.proveThis(RuleSetUtil.create(), s);
 	}
 
 }

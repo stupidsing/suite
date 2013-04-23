@@ -7,6 +7,7 @@
 
 () :- import.file 'fc-parse.sl'
 	, import.file 'fc-type-inference.sl'
+	, import.file 'rb-tree.sl'
 #
 
 compile-function-without-precompile .mode (.lib, .libs) .do .c
@@ -87,6 +88,7 @@ fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 1 _thead HEAD #
 fc-define-default-fun 1 _ttail TAIL #
+fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 4 fputc FPUTC #
@@ -114,6 +116,14 @@ fc-assign-line-number .n (.n _, .remains)
 #
 
 fc-error .m :- !, write .m, nl, fail #
+
+fc-dict-merge .t0 .t1 .t2 :- rb-merge .t0 .t1 .t2, ! #
+
+fc-dict-add .v .t0/.t1 :- rb-add .v .t0/.t1, ! #
+
+fc-dict-get .v .t :- rb-get .v .t, ! #
+
+fc-dict-member .v .t :- rb-member .v .t #
 
 fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>
@@ -146,15 +156,13 @@ fc-add-functions STANDARD .p (
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>
-	define fold-left = (fun => init =>
-		if-match:: \h, \t
-		then:: fold-left {fun} {fun {init} {h}} {t}
-		else:: init
+	define fold-left = (fun => init => match
+		=> \h, \t | fold-left {fun} {fun {init} {h}} {t}
+		=> otherwise init
 	) >>
-	define fold-right = (fun => init =>
-		if-match:: \h, \t
-		then:: fun {h} {fold-right {fun} {init} {t}}
-		else:: init
+	define fold-right = (fun => init => match
+		=> \h, \t | fun {h} {fold-right {fun} {init} {t}}
+		=> otherwise init
 	) >>
 	define id = (v =>
 		v
@@ -174,23 +182,20 @@ fc-add-functions STANDARD .p (
 	define repeat = (n => elem =>
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
-	define scan-left = (fun => init =>
-		if-match:: \h, \t
-		then:: init, scan-left {fun} {fun {init} {h}} {t}
-		else:: init,
+	define scan-left = (fun => init => match
+		=> \h, \t | init, scan-left {fun} {fun {init} {h}} {t}
+		=> otherwise (init,)
 	) >>
-	define scan-right = (fun => init =>
-		if-match (\h, \t) then
+	define scan-right = (fun => init => match
+		=> \h, \t |
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
-		else
-			init,
+		=> otherwise (init,)
 	) >>
 	define sink = (os =>
-		define fputs = (pos =>
-			if-match:: \c, \cs
-			then:: fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
-			else:: os
+		define fputs = (pos => match
+			=> \c, \cs | fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
+			=> otherwise os
 		) >>
 		fputs {0}
 	) >>
@@ -208,20 +213,19 @@ fc-add-functions STANDARD .p (
 			else:: unsigned-str-to-int
 		{s}
 	) >>
-	define tails =
-		if-match:: \h, \t
-		then:: (h, t), tails {t}
-		else:: ()
-	>>
+	define tails = (match
+		=> \h, \t | (h, t), tails {t}
+		=> otherwise ()
+	) >>
 	define take = (n => list =>
 		if:: n > 0 && is-tree {list}
 		then:: list | tail | take {n - 1} | cons {list | head}
 		else:: ()
 	) >>
-	define take-while = (fun =>
-		if-match:: \elem, \elems
-		then:: if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
-		else:: ()
+	define take-while = (fun => match
+		=> \elem, \elems |
+			if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
+		=> otherwise ()
 	) >>
 	define tget0 =
 		tuple-head
@@ -238,18 +242,16 @@ fc-add-functions STANDARD .p (
 		then:: r | tail | head | unfold-right {fun} | cons {r | head}
 		else:: ()
 	) >>
-	define zip = (fun =>
-		if-match (\h0, \t0) then
-			if-match:: \h1, \t1
-			then:: fun {h0} {h1}, zip {fun} {t0} {t1}
-			else:: ()
-		else
-			anything => ()
+	define zip = (fun => match
+		=> \h0, \t0 | (match
+			=> \h1, \t1 | fun {h0} {h1}, zip {fun} {t0} {t1}
+			=> otherwise ()
+		)
+		=> otherwise (anything => ())
 	) >>
-	define append = (
-		if-match:: \h, \t
-		then:: cons {h} . append {t}
-		else:: id
+	define append = (match
+		=> \h, \t | cons {h} . append {t}
+		=> otherwise id
 	) >>
 	define apply =
 		flip {fold-left {x => f => f {x}}}
@@ -333,13 +335,12 @@ fc-add-functions STANDARD .p (
 	define range = (start => end => inc =>
 		unfold-right {i => if (i < end) then (i, i + inc,) else ()} {start}
 	) >>
-	define starts-with = (
-		if-match (\sh, \st) then
-			if-match:: sh, \t
-			then:: starts-with {st} {t}
-			else:: false
-		else
-			anything => true
+	define starts-with = (match
+		=> \sh, \st | (match
+			=> sh, \t | starts-with {st} {t}
+			=> otherwise false
+		)
+		=> otherwise (anything => true)
 	) >>
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
@@ -389,15 +390,14 @@ fc-add-functions STANDARD .p (
 	define join = (separator =>
 		concat . map {separator, | flip {append}}
 	) >>
-	define quick-sort = (cmp =>
-		if-match (\pivot, \t) then
+	define quick-sort = (cmp => match
+		=> \pivot, \t |
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
 			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
 			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
 			concat {l0, (pivot,), l1,}
-		else
-			()
+		=> otherwise ()
 	) >>
 	.p
 ) #
