@@ -7,7 +7,7 @@
 
 () :- import.file 'fc-parse.sl'
 	, import.file 'fc-type-inference.sl'
-	, import.file 'rb-tree.sl'
+	, import.file 'rbt.sl'
 #
 
 compile-function-without-precompile .mode (.lib, .libs) .do .c
@@ -117,13 +117,13 @@ fc-assign-line-number .n (.n _, .remains)
 
 fc-error .m :- !, write .m, nl, fail #
 
-fc-dict-merge .t0 .t1 .t2 :- rb-merge .t0 .t1 .t2, ! #
+fc-dict-merge .t0 .t1 .t2 :- rbt-merge .t0 .t1 .t2, ! #
 
-fc-dict-add .v .t0/.t1 :- rb-add .v .t0/.t1, ! #
+fc-dict-add .v .t0/.t1 :- rbt-add .v .t0/.t1, ! #
 
-fc-dict-get .v .t :- rb-get .v .t, ! #
+fc-dict-get .v .t :- rbt-get .v .t, ! #
 
-fc-dict-member .v .t :- rb-member .v .t #
+fc-dict-member .v .t :- rbt-member .v .t #
 
 fc-add-functions STANDARD .p (
 	define cons = (head => tail => _cons {head} {tail}) >>
