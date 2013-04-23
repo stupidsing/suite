@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Red-black tree implementation
+-- red-black tree implementation
 --
 -- adapted from http://rosettacode.org/wiki/Pattern_matching#Prolog
 --
