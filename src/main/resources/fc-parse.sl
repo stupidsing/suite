@@ -1,5 +1,5 @@
 fc-parse .t .parsed
-	:- bound .t, fc-parse-sugar .t .parsed, !
+	:- bound .t, fc-parse-sugar .t .t1, fc-parse .t1 .parsed, !
 #
 fc-parse (.var as .type => .do) (FUN .var .do1)
 	:- !, fc-parse-type .type .type1
@@ -64,6 +64,14 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
 	)
 #
+fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
+	:- !
+	, fc-parse .v0 .vp0
+	, fc-parse .v1 .vp1
+	, fc-parse .then .thenp
+	, fc-parse .else .elsep
+	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
+#
 fc-parse (prove-with-result .vvs .constant .result) .parsed
 	:- !, fc-parse (c .vvs (.constant . .result) | prove) .parsed
 #
@@ -106,40 +114,30 @@ fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-sugar (.bind => .then || .otherwise) .p1
 	:- !, temp .var
-	, fc-parse (.var =>
-		if-bind (.var = .bind) then .then else (.otherwise {.var})
-	) .p1
+	, .p1 = (.var => if-bind (.var = .bind) then .then else (.otherwise {.var}))
 #
-fc-parse-sugar (otherwise .p) .p1 :- fc-parse (anything => .p) .p1 #
-fc-parse-sugar (.l && .r) .p1 :- !, fc-parse (and {.l} {.r}) .p1 #
-fc-parse-sugar (.l || .r) .p1 :- !, fc-parse (or {.l} {.r}) .p1 #
-fc-parse-sugar .t .p1
+fc-parse-sugar (otherwise .p) (anything => .p) #
+fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
+fc-parse-sugar (.l || .r) (or {.l} {.r}) :- ! #
+fc-parse-sugar .t (.var => .t1)
 	:- tree .t () .op .right, fc-operator .op, !
-	, temp .var, tree .t1 .var .op .right, fc-parse (.var => .t1) .p1
+	, temp .var, tree .t1 .var .op .right
 #
-fc-parse-sugar .t .p1
+fc-parse-sugar .t (.var => .t1)
 	:- tree .t .left .op (), fc-operator .op, !
-	, temp .var, tree .t1 .left .op .var, fc-parse (.var => .t1) .p1
+	, temp .var, tree .t1 .left .op .var
 #
-fc-parse-sugar (.l, .r) .p1 :- !, fc-parse (_cons {.l} {.r}) .p1 #
-fc-parse-sugar (.l . .r) .p1 :- !, temp .v, fc-parse (.v => .l {.r {.v}}) .p1 #
-fc-parse-sugar (.l | .r) .p1 :- !, fc-parse (.r {.l}) .p1 #
-fc-parse-sugar (anything => .do) .p1 :- !, temp .v, fc-parse (.v => .do) .p1 #
-fc-parse-sugar (not .b) .p1 :- !, fc-parse (not {.b}) .p1 #
-fc-parse-sugar (.a ++ .b) .p1 :- !, fc-parse (append {.a} {.b}) .p1 #
-fc-parse-sugar (.s until .e) .p1 :- !, fc-parse (range {.s} {.e} {1}) .p1 #
-fc-parse-sugar (/.f/) .p1 :- !, fc-parse .f .p1 #
-fc-parse-sugar (.a /.f/) .p1 :- !, fc-parse (.b => .f {.a} {.b}) .p1 #
-fc-parse-sugar (/.f/ .b) .p1 :- !, fc-parse (.a => .f {.a} {.b}) .p1 #
-fc-parse-sugar (.a /.f/ .b) .p1 :- !, fc-parse (.f {.a} {.b}) .p1 #
-fc-parse-sugar (if-bind (.v0 = .v1) then .then else .else) .parsed
-	:- !
-	, fc-parse .v0 .vp0
-	, fc-parse .v1 .vp1
-	, fc-parse .then .thenp
-	, fc-parse .else .elsep
-	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
-#
+fc-parse-sugar (.l, .r) (_cons {.l} {.r}) :- ! #
+fc-parse-sugar (.l . .r) (.v => .l {.r {.v}}) :- !, temp .v #
+fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
+fc-parse-sugar (anything => .do) (.v => .do) :- !, temp .v #
+fc-parse-sugar (not .b) (not {.b}) :- ! #
+fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
+fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
+fc-parse-sugar (/.f/) .f :- ! #
+fc-parse-sugar (.a /.f/) (.b => .f {.a} {.b}) :- ! #
+fc-parse-sugar (/.f/ .b) (.a => .f {.a} {.b}) :- ! #
+fc-parse-sugar (.a /.f/ .b) fc-parse (.f {.a} {.b}) :- ! #
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
