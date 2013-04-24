@@ -27,8 +27,9 @@ public class Prover {
 	private RuleSet ruleSet;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
-	private boolean isEnableTrace = SuiteUtil.isTrace;
+	private boolean isEnableTrace;
 	private Tracer tracer;
+
 	private static final Set<String> noTracePredicates = new HashSet<>(
 			Arrays.asList("member", "replace"));
 
@@ -40,11 +41,17 @@ public class Prover {
 	private Journal journal = new Journal();
 
 	public Prover(Prover prover) {
-		this(prover.ruleSet);
+		this(prover.ruleSet, prover.isEnableTrace, prover.tracer);
 	}
 
 	public Prover(RuleSet ruleSet) {
+		this(ruleSet, SuiteUtil.isTrace, null);
+	}
+
+	public Prover(RuleSet ruleSet, boolean isEnableTrace, Tracer tracer) {
 		this.ruleSet = ruleSet;
+		this.isEnableTrace = isEnableTrace;
+		this.tracer = tracer;
 	}
 
 	/**
