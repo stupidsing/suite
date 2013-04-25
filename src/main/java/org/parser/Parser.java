@@ -68,20 +68,21 @@ public class Parser {
 	}
 
 	private Node parseRawString(String s) {
-		char first = s.charAt(0), last = s.charAt(s.length() - 1);
+		int end = s.length();
+		char first = s.charAt(0), last = s.charAt(end - 1);
 
 		for (Operator operator : operators) {
-			if (operator == TermOp.BRACES && last != '}')
-				continue;
-
 			int pos = ParserUtil.search(s, operator);
 
 			if (operator == TermOp.BRACES)
-				s = Util.substr(s, 0, -1);
+				if (pos >= 0 && last == '}')
+					end--;
+				else
+					continue;
 
-			if (pos != -1) {
+			if (pos >= 0) {
 				String l = s.substring(0, pos);
-				String r = s.substring(pos + operator.getName().length());
+				String r = s.substring(pos + operator.getName().length(), end);
 
 				return Tree.create(operator //
 						, parseWithoutComments(l) //
