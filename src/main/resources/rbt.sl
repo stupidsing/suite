@@ -4,7 +4,6 @@
 -- adapted from http://rosettacode.org/wiki/Pattern_matching#Prolog
 --
 
-rbt-member .tree .v :- bound .v, !, rbt-get .tree .v #
 rbt-member (_ .n _ _) .v :- rbt-member .n .v #
 rbt-member (_ _ .v _) .v #
 rbt-member (_ _ _ .n) .v :- rbt-member .n .v #
