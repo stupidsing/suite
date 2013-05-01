@@ -38,10 +38,13 @@ import org.util.Util;
 public class Main {
 
 	private boolean isLazy = true;
-	private boolean isDefaultLibrary = true;
-	private List<String> libraries = new ArrayList<>();
+	private List<String> libraries = SuiteUtil.libraries;
 	private boolean isTrace = SuiteUtil.isTrace;
 	private boolean isDumpCode = SuiteUtil.isDumpCode;
+
+	private boolean isFilter = false;
+	private boolean isFunctional = false;
+	private boolean isLogical = false;
 
 	public static void main(String args[]) {
 		LogUtil.initLog4j();
@@ -55,37 +58,14 @@ public class Main {
 
 	private void run(String args[]) throws IOException {
 		int code = 0;
-
-		boolean isFilter = false;
-		boolean isFunctional = false;
-		boolean isLogical = false;
 		List<String> inputs = new ArrayList<>();
 		Iterator<String> iter = Arrays.asList(args).iterator();
 
 		while (iter.hasNext()) {
 			String arg = iter.next();
 
-			if (arg.startsWith("-dump-code"))
-				isDumpCode = true;
-			else if (arg.startsWith("-eager"))
-				isLazy = false;
-			else if (arg.startsWith("-filter"))
-				isFilter = true;
-			else if (arg.startsWith("-functional"))
-				isFunctional = true;
-			else if (arg.startsWith("-lazy"))
-				isLazy = true;
-			else if (arg.startsWith("-library") && iter.hasNext())
-				libraries.addAll(Arrays.asList(iter.next().split(",")));
-			else if (arg.startsWith("-logical"))
-				isLogical = true;
-			else if (arg.startsWith("-no-default-library"))
-				isDefaultLibrary = false;
-			else if (arg.startsWith("-precompile") && iter.hasNext())
-				for (String lib : iter.next().split(","))
-					runPrecompile(lib);
-			else if (arg.startsWith("-trace"))
-				isTrace = true;
+			if (arg.startsWith("-"))
+				processOption(arg, iter);
 			else
 				inputs.add(arg);
 		}
@@ -102,7 +82,38 @@ public class Main {
 		System.exit(code);
 	}
 
+	private void processOption(String arg, Iterator<String> iter) {
+		processOption(arg, iter, true);
+	}
+
+	private void processOption(String arg, Iterator<String> iter, boolean on) {
+		if (arg.equals("-dump-code"))
+			isDumpCode = on;
+		else if (arg.equals("-eager"))
+			isLazy = !on;
+		else if (arg.equals("-filter"))
+			isFilter = on;
+		else if (arg.equals("-functional"))
+			isFunctional = on;
+		else if (arg.equals("-lazy"))
+			isLazy = on;
+		else if (arg.equals("-library") && iter.hasNext())
+			libraries.addAll(Arrays.asList(iter.next().split(",")));
+		else if (arg.equals("-logical"))
+			isLogical = on;
+		else if (arg.startsWith("-no-"))
+			processOption("-" + arg.substring(4), iter, false);
+		else if (arg.equals("-precompile") && iter.hasNext())
+			for (String lib : iter.next().split(","))
+				runPrecompile(lib);
+		else if (arg.equals("-trace"))
+			isTrace = on;
+		else
+			throw new RuntimeException("Unknown option " + arg);
+	}
+
 	public enum InputType {
+		OPTION("-"), //
 		FACT(""), //
 		QUERY("?"), //
 		QUERYELABORATE("/"), //
@@ -124,9 +135,6 @@ public class Main {
 
 		for (String importFilename : importFilenames)
 			SuiteUtil.importFile(rs, importFilename);
-
-		Prover prover = new Prover(rs);
-		prover.setEnableTrace(isTrace);
 
 		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
@@ -169,9 +177,19 @@ public class Main {
 
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
+
+				Prover prover = new Prover(rs);
+				prover.setEnableTrace(isTrace);
+
 				FunCompilerConfig fcc;
 
 				switch (type) {
+				case OPTION:
+					List<String> args = Arrays.asList(("-" + input).split(" "));
+					Iterator<String> iter = args.iterator();
+					while (iter.hasNext())
+						processOption(iter.next(), iter);
+					break;
 				case FACT:
 					rs.addRule(Rule.formRule(node));
 					break;
@@ -284,10 +302,7 @@ public class Main {
 	}
 
 	private void configureFunCompiler(FunCompilerConfig c) {
-		if (!isDefaultLibrary)
-			c.setLibraries(new ArrayList<String>());
-
-		c.addLibraries(libraries);
+		c.setLibraries(libraries);
 		c.setTrace(isTrace);
 		c.setDumpCode(isDumpCode);
 		c.setIn(new StringReader(""));
