@@ -14,12 +14,12 @@ public class RbTreeTest {
 	public void test() throws IOException {
 		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.importResource(rs, "auto.sl");
-		SuiteUtil.importResource(rs, "rb-tree.sl");
+		SuiteUtil.importResource(rs, "rbt.sl");
 
 		assertTrue(SuiteUtil.proveThis(rs, "" //
-				+ "rb-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
-				+ ", rb-get .t 8" //
-				+ ", rb-member .t 4"));
+				+ "rbt-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
+				+ ", rbt-get .t 8" //
+				+ ", rbt-member .t 4"));
 	}
 
 }
