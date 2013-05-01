@@ -16,36 +16,6 @@
 -- A; E :- C, D, F
 
 -------------------------------------------------------------------------------
--- longest common subsequence
-
-lcs .a .b .lcs :- lcs-memoized .a .b .lcs ()/_ #
-
-lcs-memoized .a .b .lcs .t0/.tx
-	:- hash .a/.b .hash
-	, t23-map .hash/.cached .t0/.t1
-	, once (bound .cached, .t1 = .tx; lcs0 .a .b .cached .t1/.tx)
-	, .lcs = .cached
-#
-
-lcs0 () _ () _ :- ! #
-lcs0 _ () () _ :- ! #
-lcs0 (.head, .tail1) (.head, .tail2) (.head, .lcs) .t0/.tx
-	:- lcs-memoized .tail1 .tail2 .lcs .t0/.tx
-	, !
-#
-lcs0 (.head1, .tail1) (.head2, .tail2) .lcs .t0/.tx
-	:- lcs-memoized (.head1, .tail1) .tail2 .lcs1 .t0/.t1
-	, lcs-memoized .tail1 (.head2, .tail2) .lcs2 .t1/.tx
-	, longer .lcs1 .lcs2 .lcs
-#
-
-longer .l .r .result :- longer0 .l .r L, !, .result = .l; .result = .r #
-
-longer0 _ () L #
-longer0 () _ R #
-longer0 (_, .l1) (_, .l2) .which :- longer0 .l1 .l2 .which #
-
--------------------------------------------------------------------------------
 -- meta-programming
 
 meta .kb (.a, .b) :- meta .kb .a, meta .kb .b #

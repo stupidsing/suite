@@ -15,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
+import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
 import org.suite.doer.Station;
 import org.suite.doer.TermParser;
@@ -102,7 +103,19 @@ public class Main {
 	}
 
 	public enum InputType {
-		FACT, QUERY, ELABORATE, EVALUATE, EVALUATESTR, EVALUATETYPE
+		FACT(""), //
+		QUERY("?"), //
+		QUERYELABORATE("/"), //
+		EVALUATE("\\"), //
+		EVALUATESTR("\\s"), //
+		EVALUATETYPE("\\t"), //
+		PRETTYPRINT("\\p");
+
+		String prefix;
+
+		private InputType(String prefix) {
+			this.prefix = prefix;
+		}
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
@@ -133,28 +146,22 @@ public class Main {
 				} while (!line.isEmpty() && !line.endsWith("#"));
 
 				String input = sb.toString();
-				InputType type;
 
 				if (Util.isBlank(input))
 					continue;
 
-				if (input.startsWith("?")) {
-					type = InputType.QUERY;
-					input = input.substring(1);
-				} else if (input.startsWith("/")) {
-					type = InputType.ELABORATE;
-					input = input.substring(1);
-				} else if (input.startsWith("\\s")) {
-					type = InputType.EVALUATESTR;
-					input = input.substring(2);
-				} else if (input.startsWith("\\t")) {
-					type = InputType.EVALUATETYPE;
-					input = input.substring(2);
-				} else if (input.startsWith("\\")) {
-					type = InputType.EVALUATE;
-					input = input.substring(1);
-				} else
-					type = InputType.FACT;
+				InputType type = null;
+
+				commandFound: for (int i = Math.min(2, input.length()); i >= 0; i--) {
+					String starts = input.substring(0, i);
+
+					for (InputType inputType : InputType.values())
+						if (Util.equals(starts, inputType.prefix)) {
+							type = inputType;
+							input = input.substring(i);
+							break commandFound;
+						}
+				}
 
 				input = input.trim();
 				if (input.endsWith("#"))
@@ -186,14 +193,18 @@ public class Main {
 					node = SuiteUtil.evaluateFunctionalType(fcc);
 					System.out.println(Formatter.dump(node));
 					break;
-				default:
+				case PRETTYPRINT:
+					System.out.println(new PrettyPrinter().prettyPrint(node));
+					break;
+				case QUERY:
+				case QUERYELABORATE:
 					final Generalizer generalizer = new Generalizer();
 					node = generalizer.generalize(node);
 
 					if (type == InputType.QUERY) {
 						boolean q = prover.prove(node);
 						System.out.println(q ? "Yes\n" : "No\n");
-					} else if (type == InputType.ELABORATE) {
+					} else if (type == InputType.QUERYELABORATE) {
 						Node elab = new Station() {
 							public boolean run() {
 								String dump = generalizer.dumpVariables();
