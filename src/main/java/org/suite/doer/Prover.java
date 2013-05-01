@@ -63,17 +63,16 @@ public class Prover {
 	 */
 	public boolean prove(Node query) {
 		if (isEnableTrace)
-			tracer = new Tracer();
-
-		boolean result = prove0(query);
-
-		if (isEnableTrace) {
-			String date = FormatUtil.dtFmt.format(new Date());
-			String dump = tracer.getDump();
-			LogUtil.info("DUMP", "-- Prover dump at " + date + " --\n" + dump);
-		}
-
-		return result;
+			try {
+				tracer = new Tracer();
+				return prove0(query);
+			} finally {
+				String d = FormatUtil.dtFmt.format(new Date());
+				String dump = tracer.getDump();
+				LogUtil.info("DUMP", "-- Prover dump at " + d + " --\n" + dump);
+			}
+		else
+			return prove0(query);
 	}
 
 	public boolean prove0(Node query) {
@@ -253,6 +252,9 @@ public class Prover {
 			final Record record0 = currentRecord;
 			final int depth0 = currentDepth;
 			final Record record = new Record(record0, query1, currentDepth + 1);
+
+			if (record.depth >= 64)
+				throw new RuntimeException("Maximum depth reached during trace");
 
 			final Station enter = new Station() {
 				public boolean run() {
