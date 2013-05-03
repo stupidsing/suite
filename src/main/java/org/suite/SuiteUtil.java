@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
@@ -32,6 +33,7 @@ public class SuiteUtil {
 
 	public static final boolean isTrace = false;
 	public static final boolean isDumpCode = false;
+	public static final List<String> libraries = Arrays.asList("STANDARD");
 
 	private static TermParser parser = new TermParser();
 	private static Prover logicalCompiler;
@@ -145,7 +147,8 @@ public class SuiteUtil {
 		private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
 
 		public FunCompilerConfig() {
-			addLibrary("STANDARD");
+			if (SuiteUtil.libraries != null)
+				addLibraries(SuiteUtil.libraries);
 		}
 
 		public void addLibrary(String library) {
