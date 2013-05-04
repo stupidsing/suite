@@ -22,7 +22,7 @@ compile-function-without-precompile .mode () .do .c
 compile-function .mode .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, !, fc-parse .do .parsed
-	, !, infer-type-rule .parsed ()/()/()/() .tr0/.trx _
+	, !, infer-type-rule .parsed ()/()/() .tr0/.trx _
 	, !, resolve-types .tr0/.trx
 	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
@@ -94,12 +94,6 @@ fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 4 fputc FPUTC #
 fc-define-default-fun 1 is-tree IS-TREE #
 
-fc-is-tuple-name () :- ! # -- Empty atom is list terminator
-fc-is-tuple-name .t
-	:- is.atom .t, to.string .t .s, substring .s 0 1 .c
-	, .c >= "A", .c <= "Z"
-#
-
 fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
 		' = ', ' != ',
@@ -139,7 +133,7 @@ fc-add-functions STANDARD .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
-	define compare as (any :t in (:t => :t => number)) = no-type-check (
+	define compare as (:t :- :t => :t => number) = no-type-check (
 		a => b =>
 		if (is-tree {a} && is-tree {b}) then
 			let c0 = compare {a | head} {b | head} >>
@@ -256,7 +250,7 @@ fc-add-functions STANDARD .p (
 	define apply =
 		flip {fold-left {x => f => f {x}}}
 	>>
-	define equals as (any :t in (:t => :t => boolean)) =
+	define equals as (:t :- :t => :t => boolean) =
 		no-type-check (a => b => compare {a} {b} = 0)
 	>>
 	define fold = (fun => list =>
@@ -348,7 +342,7 @@ fc-add-functions STANDARD .p (
 		. tails . cons {separator}
 	) >>
 	define transpose as (
-		any :t in (list-of list-of :t => list-of list-of :t)
+		:t :- list-of list-of :t => list-of list-of :t
 	) = (m =>
 		let height = length {m} >>
 		let width = if (height > 0) then (m | head | length) else 0 >>
@@ -362,7 +356,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump as (any :t in (:t => list-of number)) = no-type-check (
+	define dump as (:t :- :t => list-of number) = no-type-check (
 		let dump-string = (s =>
 			let length = prove-with-result /_s:s (string.length _s _l) _l >>
 			0 until length | map {i =>

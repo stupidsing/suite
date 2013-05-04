@@ -60,12 +60,15 @@ public class EagerFunctionCompilerTest {
 				, eval("cross {a => b => a, b,} {7, 8, 9,} {1, 2,}"));
 
 		assertEquals(Atom.TRUE, eval("" //
-				+ "let list1 as list-of one-of (A, B, C,) \n" //
-				+ "    = (A, B, C,) >> \n" //
+				+ "define type (A %) as (t,) >> \n" //
+				+ "define type (B %) as (t,) >> \n" //
+				+ "define type (C %) as (t,) >> \n" //
+				+ "let list1 as list-of t \n" //
+				+ "    = (A %, B %, C %,) >> \n" //
 				+ "let result = ( \n" //
-				+ "    (A:1:, A:2:,), \n" //
-				+ "    (B:1:, B:2:,), \n" //
-				+ "    (C:1:, C:2:,), \n" //
+				+ "    ((A %):1:, (A %):2:,), \n" //
+				+ "    ((B %):1:, (B %):2:,), \n" //
+				+ "    ((C %):1:, (C %):2:,), \n" //
 				+ ") >> \n" //
 				+ "cross {a => b => a:b:} {list1} {1, 2,} = result"));
 	}
@@ -165,13 +168,17 @@ public class EagerFunctionCompilerTest {
 				+ "if-bind (1:2: = \\i:2:) then i else 0"));
 
 		assertEquals(Int.create(3), eval("" //
-				+ "define type t = one-of (A, B number, C boolean,) >> \n" //
-				+ "let e = B 3 >> \n" //
-				+ "if-bind (e = B \\i) then i else 0"));
+				+ "define type (A %) as (t,) >> \n" //
+				+ "define type (B number %) as (t,) >> \n" //
+				+ "define type (C boolean %) as (t,) >> \n" //
+				+ "let e = B 3 % >> \n" //
+				+ "if-bind (e = B \\i %) then i else 0"));
 		assertEquals(Int.create(0), eval("" //
-				+ "define type t = one-of (A, B number, C boolean,) >> \n" //
-				+ "let e = B 3 >> \n" //
-				+ "let f = C false >> \n" //
+				+ "define type (A %) as (t,) >> \n" //
+				+ "define type (B number %) as (t,) >> \n" //
+				+ "define type (C boolean %) as (t,) >> \n" //
+				+ "let e = B 3 % >> \n" //
+				+ "let f = C false % >> \n" //
 				+ "if-bind (e = f) then 1 else 0"));
 	}
 
@@ -242,7 +249,9 @@ public class EagerFunctionCompilerTest {
 		assertEquals(Atom.TRUE, eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
 		assertEquals(Atom.FALSE, SuiteUtil.evaluateEagerFunctional("" //
-				+ "let list1 as list-of one-of (A, B,) = () >> A = B"));
+				+ "define type (A %) as (t,) >> \n" //
+				+ "define type (B %) as (t,) >> \n" //
+				+ "let list1 as list-of t = () >> A % = B %"));
 	}
 
 	@Test

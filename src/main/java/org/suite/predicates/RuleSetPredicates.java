@@ -24,7 +24,8 @@ public class RuleSetPredicates {
 	public static class Asserta implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			prover.getRuleSet().addRuleToFront(Rule.formRule(params[0]));
+			RuleSet ruleSet = prover.ruleSet();
+			ruleSet.addRuleToFront(Rule.formRule(params[0]));
 			return true;
 		}
 	}
@@ -32,21 +33,23 @@ public class RuleSetPredicates {
 	public static class Assertz implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			prover.getRuleSet().addRule(Rule.formRule(params[0]));
+			RuleSet ruleSet = prover.ruleSet();
+			ruleSet.addRule(Rule.formRule(params[0]));
 			return true;
 		}
 	}
 
 	public static class Clear implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			prover.getRuleSet().clear();
+			prover.ruleSet().clear();
 			return true;
 		}
 	}
 
 	public static class GetAllRules implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			List<Rule> rules = prover.getRuleSet().getRules();
+			RuleSet ruleSet = prover.ruleSet();
+			List<Rule> rules = ruleSet.getRules();
 			ListIterator<Rule> iter = rules.listIterator(rules.size());
 			Node allRules = Atom.NIL;
 
@@ -63,7 +66,7 @@ public class RuleSetPredicates {
 
 	public static class Import implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return RuleSetUtil.importFrom(prover.getRuleSet(), ps);
+			return RuleSetUtil.importFrom(prover.ruleSet(), ps);
 		}
 	}
 
@@ -71,7 +74,7 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			String filename = Formatter.display(ps);
 			try {
-				return SuiteUtil.importFrom(prover.getRuleSet(), filename);
+				return SuiteUtil.importFrom(prover.ruleSet(), filename);
 			} catch (Exception ex) {
 				throw new RuntimeException( //
 						"Exception when importing " + filename, ex);
@@ -87,7 +90,7 @@ public class RuleSetPredicates {
 
 			List<Node> nodes = new ArrayList<>();
 
-			for (Rule rule : prover.getRuleSet().getRules()) {
+			for (Rule rule : prover.ruleSet().getRules()) {
 				Prototype p1 = Prototype.get(rule);
 				if (proto == null || proto.equals(p1)) {
 					Node clause = Rule.formClause(rule);
@@ -101,7 +104,6 @@ public class RuleSetPredicates {
 
 			PrettyPrinter printer = new PrettyPrinter();
 			System.out.println(printer.prettyPrint(node));
-
 			return true;
 		}
 	}
@@ -109,7 +111,7 @@ public class RuleSetPredicates {
 	public static class Retract implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			prover.getRuleSet().removeRule(Rule.formRule(params[0]));
+			prover.ruleSet().removeRule(Rule.formRule(params[0]));
 			return true;
 		}
 	}
@@ -117,11 +119,11 @@ public class RuleSetPredicates {
 	public static class With implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 2);
-			RuleSet ruleSet = RuleSetUtil.create();
-			RuleSetUtil.importFrom(ruleSet, params[0]);
-			CompositeRuleSet ruleSet1 = new CompositeRuleSet(ruleSet,
-					prover.getRuleSet());
-			return new Prover(ruleSet1).prove(params[1]);
+			RuleSet rs = prover.ruleSet();
+			RuleSet rs1 = RuleSetUtil.create();
+			RuleSetUtil.importFrom(rs1, params[0]);
+			CompositeRuleSet ruleSet = new CompositeRuleSet(rs1, rs);
+			return new Prover(ruleSet).prove(params[1]);
 		}
 	}
 

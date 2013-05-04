@@ -1,16 +1,11 @@
 package org.suite.doer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 import org.suite.Binder;
 import org.suite.Journal;
-import org.suite.SuiteUtil;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
 import org.suite.kb.Rule;
@@ -21,17 +16,13 @@ import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
 import org.util.FormatUtil;
 import org.util.LogUtil;
+import org.util.Util.Fun;
 
 public class Prover {
 
-	private RuleSet ruleSet;
+	private ProverConfiguration cfg;
+	private ProveTracer tracer;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
-
-	private boolean isEnableTrace;
-	private Tracer tracer;
-
-	private static final Set<String> noTracePredicates = new HashSet<>(
-			Arrays.asList("member", "replace"));
 
 	private static final Node OK = Atom.NIL;
 	private static final Node FAIL = Atom.create("fail");
@@ -41,16 +32,15 @@ public class Prover {
 	private Journal journal = new Journal();
 
 	public Prover(Prover prover) {
-		this(prover.ruleSet, prover.isEnableTrace, prover.tracer);
+		this(prover.cfg, prover.tracer);
 	}
 
 	public Prover(RuleSet ruleSet) {
-		this(ruleSet, SuiteUtil.isTrace, null);
+		this(new ProverConfiguration(ruleSet), null);
 	}
 
-	public Prover(RuleSet ruleSet, boolean isEnableTrace, Tracer tracer) {
-		this.ruleSet = ruleSet;
-		this.isEnableTrace = isEnableTrace;
+	public Prover(ProverConfiguration cfg, ProveTracer tracer) {
+		this.cfg = cfg;
 		this.tracer = tracer;
 	}
 
@@ -62,9 +52,9 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		if (isEnableTrace)
+		if (cfg.isEnableTrace())
 			try {
-				tracer = new Tracer();
+				tracer = new ProveTracer();
 				return prove0(query);
 			} finally {
 				String d = FormatUtil.dtFmt.format(new Date());
@@ -136,17 +126,22 @@ public class Prover {
 				} else
 					return false;
 			else {
-				boolean isTrace = isEnableTrace;
+				boolean isTrace = cfg.isEnableTrace();
 				Prototype prototype = isTrace ? Prototype.get(query) : null;
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;
 				String name = atom != null ? atom.getName() : null;
-				isTrace &= !noTracePredicates.contains(name);
+				isTrace &= !cfg.getNoTracePredicates().contains(name);
 
 				if (!isTrace)
 					query = expand(query);
 				else
-					query = tracer.expandWithTrace(query);
+					query = tracer.expandWithTrace(query, this,
+							new Fun<Node, Node>() {
+								public Node apply(Node node) {
+									return expand(node);
+								}
+							});
 			}
 		}
 	}
@@ -184,7 +179,7 @@ public class Prover {
 		final Node alt0 = alt;
 		Node ret = FAIL;
 
-		List<Rule> rules = ruleSet.searchRule(query);
+		List<Rule> rules = cfg.ruleSet().searchRule(query);
 		ListIterator<Rule> iter = rules.listIterator(rules.size());
 
 		while (iter.hasPrevious()) {
@@ -216,124 +211,16 @@ public class Prover {
 		return ret;
 	}
 
-	public class Tracer {
-		private List<Record> records = new ArrayList<>();
-		private Record currentRecord = null;
-		private int currentDepth;
-
-		private class Record {
-			private Record parent;
-			private Node query;
-			private int depth;
-			private boolean result;
-
-			private Record(Record parent, Node query, int depth) {
-				this.parent = parent;
-				this.query = query;
-				this.depth = depth;
-			}
-
-			private void appendTo(StringBuilder sb) {
-				String header = "" //
-						+ "[" + (result ? "OK__" : "FAIL") //
-						+ ":" + depth //
-						+ "]";
-				sb.append(String.format("%-10s ", header));
-				for (int i = 1; i < depth; i++)
-					sb.append("| ");
-				sb.append(Formatter.dump(query));
-				sb.append("\n");
-			}
-		}
-
-		private Node expandWithTrace(Node query) {
-			Node query1 = new Cloner().clone(query);
-
-			final Record record0 = currentRecord;
-			final int depth0 = currentDepth;
-			final Record record = new Record(record0, query1, currentDepth + 1);
-
-			if (record.depth >= 64)
-				throw new RuntimeException("Maximum depth reached during trace");
-
-			final Station enter = new Station() {
-				public boolean run() {
-					currentRecord = record;
-					currentDepth = record.depth;
-					records.add(record);
-					return true;
-				}
-			};
-
-			final Station leaveOk = new Station() {
-				public boolean run() {
-					currentRecord = record0;
-					currentDepth = depth0;
-					return record.result = true;
-				}
-			};
-
-			final Station leaveFail = new Station() {
-				public boolean run() {
-					currentRecord = record0;
-					currentDepth = depth0;
-					return false;
-				}
-			};
-
-			alt = Tree.create(TermOp.OR____, leaveFail, alt);
-			rem = Tree.create(TermOp.AND___, leaveOk, rem);
-			query = expand(query);
-			query = Tree.create(TermOp.AND___, enter, query);
-			return query;
-		}
-
-		public String getDump() {
-			StringBuilder sb = new StringBuilder();
-			for (Record record : records)
-				record.appendTo(sb);
-			return sb.toString();
-		}
-
-		public String getStackTrace() {
-			List<Node> traces = new ArrayList<>();
-			Record record = currentRecord;
-
-			while (record != null) {
-				traces.add(record.query);
-				record = record.parent;
-			}
-
-			StringBuilder sb = new StringBuilder();
-			for (int i = traces.size(); i > 0; i--)
-				sb.append(traces.get(i - 1) + "\n");
-
-			return sb.toString();
-		}
-
-		public Record getCurrentRecord() {
-			return currentRecord;
-		}
-
-		public int getCurrentDepth() {
-			return tracer.currentDepth;
-		}
+	public ProverConfiguration configuration() {
+		return cfg;
 	}
 
-	/**
-	 * The set of rules which is mutable (may assert/retract).
-	 * 
-	 * Allows access from predicates.
-	 */
-	public RuleSet getRuleSet() {
-		return ruleSet;
+	public RuleSet ruleSet() {
+		return cfg.ruleSet();
 	}
 
-	/**
-	 * Allows taking stack dump, with performance hit.
-	 */
-	public void setEnableTrace(boolean isEnableTrace) {
-		this.isEnableTrace = isEnableTrace;
+	public ProveTracer getTracer() {
+		return tracer;
 	}
 
 	/**
@@ -363,13 +250,6 @@ public class Prover {
 	 */
 	public Journal getJournal() {
 		return journal;
-	}
-
-	/**
-	 * Traces program flow.
-	 */
-	public Tracer getTracer() {
-		return tracer;
 	}
 
 }

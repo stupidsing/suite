@@ -7,13 +7,15 @@ fc-parse (.var as .type => .do) (FUN .var .do1)
 	, fc-parse .do .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
-fc-parse (define type .type = .def >> .do) (
-	OPTION (DEF-ONE-OF-TYPE .def1) OPTION (DEF-TYPE .type .def1) .do1
-) :- !, fc-parse-type .def .def1
+fc-parse (define type .type as .classes for any .typeVars >> .do) (
+	OPTION (DEF-TYPE .type1 .classes1 .typeVars1) .do1
+) :- !, fc-parse-type .type .type1
+	, fc-parse-type-list .classes .classes1
+	, fc-parse-type-list .typeVars .typeVars1
 	, fc-parse .do .do1
 #
-fc-parse (define type .type >> .do) (OPTION (DEF-TYPE .type _) .do1) -- Type variable
-	:- !, fc-parse .do .do1
+fc-parse (define type .type as .classes >> .do) .do1
+	:- !, fc-parse (define type .type as .classes for any () >> .do) .do1
 #
 fc-parse (.value as .type) (OPTION (CAST .type1) .value1)
 	:- !, fc-parse-type .type .type1
@@ -26,9 +28,7 @@ fc-parse (using .lib >> .do) (USING .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define .var as .type = .value >> .do) (
-	OPTION (DEF-ONE-OF-TYPE .type1) (
-		OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .var .value2 .do1
-	)
+	OPTION ALLOW-RECURSIVE-DEFINITION (DEF-VAR .var .value2 .do1)
 ) :- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
@@ -39,11 +39,8 @@ fc-parse (define .var = .value >> .do) (
 ) :- !, fc-parse .value .value1
 	, fc-parse .do .do1
 #
-fc-parse (let .var as .type = .value >> .do) (
-	OPTION (DEF-ONE-OF-TYPE .type1) (
-		DEF-VAR .var .value2 .do1
-	)
-) :- !, fc-parse-type .type .type1
+fc-parse (let .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
+	:- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
 	, .value2 = OPTION (CAST .type1) .value1
@@ -85,13 +82,17 @@ fc-parse (c () .constant) (CONSTANT .constant) :- ! #
 fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
 	:- !, fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
 #
-fc-parse (.name .elems) (OPTION CHECK-TUPLE-TYPE (TUPLE .name .elems2))
-	:- !, enlist .elems .elems1, fc-parse-list .elems1 .elems2
+fc-parse (.name .elem .elems) (TUPLE .name (.elem1, .elems1))
+	:- !
+	, fc-parse .elem .elem1
+	, fc-parse (.name .elems) (TUPLE .name .elems1)
 #
+fc-parse (.name %) (TUPLE .name ()) :- ! #
 fc-parse .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
 	, fc-operator .oper
-	, !, fc-parse .left .left1
+	, !
+	, fc-parse .left .left1
 	, fc-parse .right .right1
 #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
@@ -104,7 +105,6 @@ fc-parse .s .n
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
 #
 fc-parse () (TUPLE () ()) :- ! #
-fc-parse .t (OPTION CHECK-TUPLE-TYPE (TUPLE .t ())) :- fc-is-tuple-name .t, ! #
 fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
@@ -141,39 +141,32 @@ fc-parse-sugar (.a /.f/ .b) fc-parse (.f {.a} {.b}) :- ! #
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
-	:- !, fc-parse-type .paramType .paramType1
+	:- !
+	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
 fc-parse-type (.type {.paramType}) (INSTANCE-OF .paramType1 .type1)
-	:- !, fc-parse-type .type .type1
+	:- !
+	, fc-parse-type .type .type1
 	, fc-parse-type .paramType .paramType1
 #
-fc-parse-type (one-of .types) (ONE-OF .types1)
-	:- !, fc-parse-tuple-type-list .types .types1
-#
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
-fc-parse-type (any .typeVar in .type) (GENERIC-OF .typeVar1 .type1)
-	:- !, fc-parse-type .typeVar .typeVar1
+fc-parse-type (.name .type .types) (TUPLE-OF .name (.type1, .types1))
+	:- !
 	, fc-parse-type .type .type1
+	, fc-parse-type (.name .types) (TUPLE-OF .name .types1)
+#
+fc-parse-type (.name %) (TUPLE-OF .name ()) :- ! #
+fc-parse-type (.typeVar :- .type) (GENERIC-OF .typeVar1 .type1)
+	:- bound .typeVar, !
+	, fc-parse-type .type .type1
+	, fc-parse-type .typeVar .typeVar1
 #
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
 fc-parse-type string STRING :- ! #
 fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
-fc-parse-type .t (TYPE .t) :- is.atom .t #
-
-fc-parse-tuple-type-list () () :- ! #
-fc-parse-tuple-type-list (.type, .types) (.type1, .types1)
-	:- fc-parse-tuple-type .type .type1, fc-parse-tuple-type-list .types .types1
-#
-
-fc-parse-tuple-type (.name .types) (TUPLE-OF .name .types2)
-	:- !, once (
-		bound .types, enlist .types .types1, fc-parse-type-list .types1 .types2
-		; fc-parse-type-list .types1 .types2, enlist .types .types1
-	)
-#
-fc-parse-tuple-type .t (TUPLE-OF .t ()) :- fc-is-tuple-name .t, ! #
+fc-parse-type .t (CLASS .t) :- is.atom .t #
 
 fc-parse-type-list () () :- ! #
 fc-parse-type-list (.type, .types) (.type1, .types1)

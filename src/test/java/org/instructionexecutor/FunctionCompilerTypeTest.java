@@ -8,6 +8,11 @@ import org.suite.node.Node;
 
 public class FunctionCompilerTypeTest {
 
+	private static final String variant = "" //
+			+ "define type (A %) as (t,) >> \n" //
+			+ "define type (B number %) as (t,) >> \n" //
+			+ "define type (C boolean %) as (t,) >> \n";
+
 	@Test
 	public void testBasic() {
 		assertEquals(SuiteUtil.parse("boolean") //
@@ -16,9 +21,9 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testDefineType() {
-		getType("define type t = number >> \n" //
-				+ "let v as t = 1 >> \n" //
-				+ "v = 99");
+		getType("define type (KG number %) as (weight,) >> \n" //
+				+ "let v as weight = KG 1 % >> \n" //
+				+ "v = KG 99 %");
 		getType("repeat {23}");
 	}
 
@@ -27,10 +32,10 @@ public class FunctionCompilerTypeTest {
 		String cases[] = { "1 + \"abc\"" //
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
-				, "define type t = one-of (BTREE t t,) >> \n" //
-						+ "let v as t = BTREE 2 3 >> 1" //
-				, "define type t = one-of (A, B number, C boolean,) >> A 4" //
-				, "define type t = one-of (A, B number, C boolean,) >> B" //
+				, "define type (BTREE t t) as (btree,) >> \n" //
+						+ "let v as btree = BTREE 2 3 >> 1" //
+				, variant + "A 4" //
+				, variant + "B" //
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
@@ -55,19 +60,20 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testInstance() {
 		String define = " \n" //
-				+ "define type linked-list = \n" //
-				+ "    any :t in one-of (NODE :t (linked-list {:t}), NIL,) \n" //
-				+ ">> \n";
+				+ "define type (NODE :t (linked-list {:t}) %) as (linked-list {:t},) for any (:t,) >> \n" //
+				+ "define type (NIL %) as (linked-list {:t},) for any (:t,) >> \n";
 
-		getType(define + "NIL");
-		getType(define + "NODE false NIL");
+		getType(define + "NIL %");
+		getType(define + "NODE false (NIL %) %");
 
 		assertEquals(SuiteUtil.parse("boolean"), getType(define //
-				+ "let n = NODE true NIL >> \n" //
-				+ "NODE false n = NIL"));
+				+ "let n = NODE true (NIL %) % >> \n" //
+				+ "NODE false n % = NIL %"));
 		getTypeMustFail(define //
-				+ "let n = NODE true NIL >> \n" //
-				+ "NODE 1 n");
+				+ "NODE 1 n % = NODE false n %");
+		getTypeMustFail(define //
+				+ "let n = NODE true (NIL %) % >> \n" //
+				+ "NODE 1 n % = NIL %");
 	}
 
 	@Test
@@ -81,26 +87,28 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testOneOf() {
 		getType("" //
-				+ "define type t = one-of (NIL, BTREE t t,) >> \n" //
-				+ "let u as t = NIL >> \n" //
-				+ "let v as t = NIL >> \n" //
-				+ "v = BTREE (BTREE NIL NIL) NIL");
+				+ "define type (NIL %) as (t,) >> \n" //
+				+ "define type (BTREE t t %) as (t,) >> \n" //
+				+ "let u as t = NIL % >> \n" //
+				+ "let v as t = NIL % >> \n" //
+				+ "v = BTREE (BTREE (NIL %) (NIL %) %) (NIL %) %");
 	}
 
 	@Test
 	public void testTuple() {
-		getType("define type t = one-of (A, B number, C boolean,) >> A");
-		getType("define type t = one-of (A, B number, C boolean,) >> B 4");
-		getType("define type t = one-of (A, B number, C boolean,) >> C true");
-		getType("define type t = one-of (A, B number, C boolean,) >> "
-				+ "if true then A else-if true then (B 3) else (C false)");
-		getType("define type bt = one-of (BTREE number number,) >> \n"
-				+ "BTREE 2 3 = BTREE 4 6");
-		getTypeMustFail("define type t1 = one-of (T1 number number,) >> \n"
-				+ "define type t2 = one-of (T2 number number,) >> \n"
-				+ "T1 2 3 = T2 2 3");
-		getTypeMustFail("define type bt = one-of (BTREE number number,) >> \n"
-				+ "BTREE 2 3 = BTREE \"a\" 6");
+		getType(variant + "A %");
+		getType(variant + "B 4 %");
+		getType(variant + "C true %");
+		getType(variant + "if true then (A %)" //
+				+ " else-if true then (B 3 %)" //
+				+ " else (C false %)");
+		getType("define type (BTREE number number %) as (btree,) >> \n"
+				+ "BTREE 2 3 % = BTREE 4 6 %");
+		getTypeMustFail("define type (T1 number number %) as (t1,) >> \n"
+				+ "define type (T2 number number %) as (t2,) >> \n"
+				+ "T1 2 3 % = T2 2 3 %");
+		getTypeMustFail("define type (BTREE number number %) as (btree,) >> \n"
+				+ "BTREE 2 3 % = BTREE \"a\" 6 %");
 	}
 
 	private static void getTypeMustFail(String c) {
