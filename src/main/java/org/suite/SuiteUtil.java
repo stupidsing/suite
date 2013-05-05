@@ -288,7 +288,8 @@ public class SuiteUtil {
 	private static String appendLibraries(FunCompilerConfig config) {
 		StringBuilder sb = new StringBuilder();
 		for (String library : config.libraries)
-			sb.append("using " + library + " >> ");
+			if (!Util.isBlank(library))
+				sb.append("using " + library + " >> ");
 		sb.append("(.program)");
 		return sb.toString();
 	}
