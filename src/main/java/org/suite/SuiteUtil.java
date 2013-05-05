@@ -31,10 +31,12 @@ import org.util.Util;
 
 public class SuiteUtil {
 
+	// Compilation defaults
 	public static final boolean isTrace = false;
 	public static final boolean isDumpCode = false;
 	public static final List<String> libraries = Arrays.asList("STANDARD");
 
+	// Compilation objects
 	private static TermParser parser = new TermParser();
 	private static Prover logicalCompiler;
 	private static Prover eagerFunctionalCompiler;

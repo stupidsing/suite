@@ -71,9 +71,9 @@ public class Main {
 		}
 
 		if (isFilter)
-			code = runFilter(inputs, isLazy) ? 0 : 1;
+			code = runFilter(inputs) ? 0 : 1;
 		else if (isFunctional)
-			code = runFunctional(inputs, isLazy) ? 0 : 1;
+			code = runFunctional(inputs) ? 0 : 1;
 		else if (isLogical)
 			code = runLogical(inputs) ? 0 : 1;
 		else
@@ -97,8 +97,8 @@ public class Main {
 			isFunctional = on;
 		else if (arg.equals("-lazy"))
 			isLazy = on;
-		else if (arg.equals("-library") && iter.hasNext())
-			libraries.addAll(Arrays.asList(iter.next().split(",")));
+		else if (arg.equals("-libraries") && iter.hasNext())
+			libraries = Arrays.asList(iter.next().split(","));
 		else if (arg.equals("-logical"))
 			isLogical = on;
 		else if (arg.startsWith("-no-"))
@@ -259,8 +259,7 @@ public class Main {
 		return result;
 	}
 
-	public boolean runFilter(List<String> inputs, boolean isLazy)
-			throws IOException {
+	public boolean runFilter(List<String> inputs) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		for (String input : inputs)
 			sb.append(input + " ");
@@ -269,8 +268,7 @@ public class Main {
 		return true;
 	}
 
-	public boolean runFunctional(List<String> files, boolean isLazy)
-			throws IOException {
+	public boolean runFunctional(List<String> files) throws IOException {
 		if (files.size() == 1) {
 			FileInputStream is = new FileInputStream(files.get(0));
 			String expression = IoUtil.readStream(is);
