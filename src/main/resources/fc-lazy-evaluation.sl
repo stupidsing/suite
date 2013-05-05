@@ -120,6 +120,7 @@ fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.r
 		fgetc/2/VALUE:VALUE:,
 		fputc/4/VALUE:VALUE:VALUE:VALUE:,
 		is-tree/1/VALUE:,
+		is-tuple/1/VALUE:,
 	) .var/.n/.paramWraps
 	, fc-define-default-fun .n .var .call
 	, !, .c0 = (_ SERVICE .reg .call .n, .cx)

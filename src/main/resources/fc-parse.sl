@@ -139,6 +139,9 @@ fc-parse-sugar (.a /.f/) (.b => .f {.a} {.b}) :- ! #
 fc-parse-sugar (/.f/ .b) (.a => .f {.a} {.b}) :- ! #
 fc-parse-sugar (.a /.f/ .b) fc-parse (.f {.a} {.b}) :- ! #
 
+fc-parse-anon-tuple () () :- ! #
+fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
+
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
@@ -178,9 +181,6 @@ fc-parse-bind-variable .v .vd
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 
-fc-parse-anon-tuple () () :- ! #
-fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #
-
 fc-bind .v0 .v1 .tep :- .v0 = NEW-VARIABLE _, !, fc-bind0 .v1 .v0 .tep #
 fc-bind .v0 .v1 .tep :- .v1 = NEW-VARIABLE _, !, fc-bind0 .v0 .v1 .tep #
 fc-bind .v0 .v1 .tep
@@ -213,17 +213,19 @@ fc-bind0 (TUPLE .n0 .e0) (TUPLE .n1 .e1) .then .else .parsed
 fc-bind0 .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
 	:- !
 #
-fc-bind0 .v0 .v1 .then .else (IF (INVOKE .v0 VARIABLE is-tree) .then1 .else)
-	:- fc-bind-cons .v1 .h1 .t1, !
+fc-bind0 .v0 .v1 .then .else (
+	IF (INVOKE .v0 VARIABLE is-tree) .then1 .else
+) :- fc-bind-cons .v1 .h1 .t1, !
 	, .h0 = INVOKE .v0 VARIABLE _lhead
 	, .t0 = INVOKE .v0 VARIABLE _ltail
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
 #
-fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else .parsed
-	:- !
+fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else (
+	IF (INVOKE .v0 VARIABLE is-tuple) .then1 .else
+) :- !
 	, .h0 = INVOKE .v0 VARIABLE _thead
 	, .t0 = INVOKE .v0 VARIABLE _ttail
-	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .parsed
+	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .then1
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
 	:- !
