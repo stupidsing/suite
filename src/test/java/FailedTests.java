@@ -75,14 +75,6 @@ public class FailedTests {
 				+ ")");
 	}
 
-	@Test
-	public void testFailNumber() { // cannot derive number!
-		System.out.println(getType("" //
-				+ "define type (A %) of (t,) >> " //
-				+ "define type (B %) of (t,) >> " //
-				+ "((A %):1:, (B %):1:,)"));
-	}
-
 	private static Node eval(String f) {
 		return SuiteUtil.evaluateEagerFunctional(f);
 	}

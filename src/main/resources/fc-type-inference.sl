@@ -186,8 +186,11 @@ sub-super-type-pair-list .te (.t0/.t1, .ts) .tr0/.trx
 	, sub-super-type-pair-list .te .ts .tr1/.trx
 #
 
-choose-one-pair (.t0/.t1, _) .t0/.t1 #
+choose-one-pair (.t0/.t1, .ts) .t0/.t1 :- equate-pairs .ts #
 choose-one-pair (.t/.t, .ts) .tr :- choose-one-pair .ts .tr #
+
+equate-pairs () #
+equate-pairs (.t/.t, .ts) :- equate-pairs .ts #
 
 instantiate-type () .tc .tc #
 instantiate-type (.typeVar, .typeVars) .tc0 .tcx

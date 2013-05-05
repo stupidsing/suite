@@ -28,7 +28,7 @@ public class ProveTracer {
 		}
 
 		private void appendTo(StringBuilder sb, int pos) {
-			if (Boolean.FALSE)
+			if (Boolean.TRUE)
 				sb.append(String.format("[%4s:%-2d]  " //
 						, nOkays > 0 ? "OK__" : "FAIL", depth));
 			else
