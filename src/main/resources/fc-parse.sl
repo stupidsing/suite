@@ -7,17 +7,17 @@ fc-parse (.var as .type => .do) (FUN .var .do1)
 	, fc-parse .do .do2
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
-fc-parse (define type .type as .classes for any .typeVars >> .do) (
+fc-parse (define type .type of .classes for any .typeVars >> .do) (
 	OPTION (DEF-TYPE .type1 .classes1 .typeVars1) .do1
 ) :- !, fc-parse-type .type .type1
 	, fc-parse-type-list .classes .classes1
 	, fc-parse-type-list .typeVars .typeVars1
 	, fc-parse .do .do1
 #
-fc-parse (define type .type as .classes >> .do) .do1
-	:- !, fc-parse (define type .type as .classes for any () >> .do) .do1
+fc-parse (define type .type of .classes >> .do) .do1
+	:- !, fc-parse (define type .type of .classes for any () >> .do) .do1
 #
-fc-parse (.value as .type) (OPTION (CAST .type1) .value1)
+fc-parse (.value as .type) (OPTION (CAST DOWN .type1) .value1)
 	:- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 #
@@ -32,7 +32,7 @@ fc-parse (define .var as .type = .value >> .do) (
 ) :- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
-	, .value2 = OPTION (CAST .type1) .value1
+	, .value2 = OPTION (CAST DOWN .type1) .value1
 #
 fc-parse (define .var = .value >> .do) (
 	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .var .value1 .do1
@@ -43,7 +43,7 @@ fc-parse (let .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
 	:- !, fc-parse-type .type .type1
 	, fc-parse .value .value1
 	, fc-parse .do .do1
-	, .value2 = OPTION (CAST .type1) .value1
+	, .value2 = OPTION (CAST DOWN .type1) .value1
 #
 fc-parse (let .var = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !, fc-parse .value .value1
@@ -221,7 +221,7 @@ fc-bind0 .v0 .v1 .then .else (
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
 #
 fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else (
-	IF (INVOKE .v0 VARIABLE is-tuple) .then1 .else
+	IF (INVOKE (OPTION (CAST UP _) .v0) VARIABLE is-tuple) .then1 .else
 ) :- !
 	, .h0 = INVOKE .v0 VARIABLE _thead
 	, .t0 = INVOKE .v0 VARIABLE _ttail

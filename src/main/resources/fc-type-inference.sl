@@ -81,9 +81,13 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
 	:- !, infer-type-rules .elems .env .tr .types
 #
-infer-type-rule (OPTION (CAST .type) .do) .ue/.ve/.te .tr0/.trx .type
+infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
-	, .tr1 = (SUB-SUPER-TYPES .te .type0 .type, .trx)
+	, once (
+		.dir = DOWN, .subType = .type0, .superType = .type
+		; .dir = UP, .subType = .type, .superType = .type0
+	)
+	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te .tr .type
 	:- !, fc-dict-get .ue .var/.varType

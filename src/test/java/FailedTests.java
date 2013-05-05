@@ -66,9 +66,9 @@ public class FailedTests {
 	@Test
 	public void test() { // takes very long
 		eval("" //
-				+ "define type (A %) as (t,) >> \n" //
-				+ "define type (B %) as (t,) >> \n" //
-				+ "define type (C %) as (t,) >> ( \n" //
+				+ "define type (A %) of (t,) >> \n" //
+				+ "define type (B %) of (t,) >> \n" //
+				+ "define type (C %) of (t,) >> ( \n" //
 				+ "    ((A %):1:, (A %):2:,), \n" //
 				+ "    ((B %):1:, (B %):2:,), \n" //
 				+ "    ((C %):1:, (C %):2:,), \n" //
@@ -78,8 +78,8 @@ public class FailedTests {
 	@Test
 	public void testFailNumber() { // cannot derive number!
 		System.out.println(getType("" //
-				+ "define type (A %) as (t,) >> " //
-				+ "define type (B %) as (t,) >> " //
+				+ "define type (A %) of (t,) >> " //
+				+ "define type (B %) of (t,) >> " //
 				+ "((A %):1:, (B %):1:,)"));
 	}
 

@@ -9,9 +9,9 @@ import org.suite.node.Node;
 public class FunctionCompilerTypeTest {
 
 	private static final String variant = "" //
-			+ "define type (A %) as (t,) >> \n" //
-			+ "define type (B number %) as (t,) >> \n" //
-			+ "define type (C boolean %) as (t,) >> \n";
+			+ "define type (A %) of (t,) >> \n" //
+			+ "define type (B number %) of (t,) >> \n" //
+			+ "define type (C boolean %) of (t,) >> \n";
 
 	@Test
 	public void testBasic() {
@@ -21,7 +21,7 @@ public class FunctionCompilerTypeTest {
 
 	@Test
 	public void testDefineType() {
-		getType("define type (KG number %) as (weight,) >> \n" //
+		getType("define type (KG number %) of (weight,) >> \n" //
 				+ "let v as weight = KG 1 % >> \n" //
 				+ "v = KG 99 %");
 		getType("repeat {23}");
@@ -32,7 +32,7 @@ public class FunctionCompilerTypeTest {
 		String cases[] = { "1 + \"abc\"" //
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
-				, "define type (BTREE t t) as (btree,) >> \n" //
+				, "define type (BTREE t t) of (btree,) >> \n" //
 						+ "let v as btree = BTREE 2 3 >> 1" //
 				, variant + "A 4" //
 				, variant + "B" //
@@ -60,8 +60,8 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testInstance() {
 		String define = " \n" //
-				+ "define type (NODE :t (linked-list {:t}) %) as (linked-list {:t},) for any (:t,) >> \n" //
-				+ "define type (NIL %) as (linked-list {:t},) for any (:t,) >> \n";
+				+ "define type (NODE :t (linked-list {:t}) %) of (linked-list {:t},) for any (:t,) >> \n" //
+				+ "define type (NIL %) of (linked-list {:t},) for any (:t,) >> \n";
 
 		getType(define + "NIL %");
 		getType(define + "NODE false (NIL %) %");
@@ -87,8 +87,8 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testOneOf() {
 		getType("" //
-				+ "define type (NIL %) as (t,) >> \n" //
-				+ "define type (BTREE t t %) as (t,) >> \n" //
+				+ "define type (NIL %) of (t,) >> \n" //
+				+ "define type (BTREE t t %) of (t,) >> \n" //
 				+ "let u as t = NIL % >> \n" //
 				+ "let v as t = NIL % >> \n" //
 				+ "v = BTREE (BTREE (NIL %) (NIL %) %) (NIL %) %");
@@ -102,12 +102,12 @@ public class FunctionCompilerTypeTest {
 		getType(variant + "if true then (A %)" //
 				+ " else-if true then (B 3 %)" //
 				+ " else (C false %)");
-		getType("define type (BTREE number number %) as (btree,) >> \n"
+		getType("define type (BTREE number number %) of (btree,) >> \n"
 				+ "BTREE 2 3 % = BTREE 4 6 %");
-		getTypeMustFail("define type (T1 number number %) as (t1,) >> \n"
-				+ "define type (T2 number number %) as (t2,) >> \n"
+		getTypeMustFail("define type (T1 number number %) of (t1,) >> \n"
+				+ "define type (T2 number number %) of (t2,) >> \n"
 				+ "T1 2 3 % = T2 2 3 %");
-		getTypeMustFail("define type (BTREE number number %) as (btree,) >> \n"
+		getTypeMustFail("define type (BTREE number number %) of (btree,) >> \n"
 				+ "BTREE 2 3 % = BTREE \"a\" 6 %");
 	}
 
