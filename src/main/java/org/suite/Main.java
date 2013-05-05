@@ -194,15 +194,11 @@ public class Main {
 					rs.addRule(Rule.formRule(node));
 					break;
 				case EVALUATE:
-					fcc = SuiteUtil.fcc(node, isLazy);
-					configureFunCompiler(fcc);
-					node = SuiteUtil.evaluateFunctional(fcc);
+					node = evaluateFunctional(node);
 					System.out.println(Formatter.dump(node));
 					break;
 				case EVALUATESTR:
-					fcc = SuiteUtil.fcc(node, isLazy);
-					configureFunCompiler(fcc);
-					node = SuiteUtil.evaluateFunctional(fcc);
+					node = evaluateFunctional(node);
 					System.out.println(SuiteUtil.stringize(node).toString());
 					break;
 				case EVALUATETYPE:
@@ -264,15 +260,16 @@ public class Main {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		SuiteUtil.evaluateFunctional(applyFilter(sb.toString()), isLazy);
+		Node node = SuiteUtil.parse(applyFilter(sb.toString()));
+		evaluateFunctional(node);
 		return true;
 	}
 
 	public boolean runFunctional(List<String> files) throws IOException {
 		if (files.size() == 1) {
 			FileInputStream is = new FileInputStream(files.get(0));
-			String expression = IoUtil.readStream(is);
-			Node result = SuiteUtil.evaluateFunctional(expression, isLazy);
+			Node node = SuiteUtil.parse(IoUtil.readStream(is));
+			Node result = evaluateFunctional(node);
 			return result == Atom.TRUE;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
@@ -299,8 +296,15 @@ public class Main {
 		return "source {} | (" + func + ") | sink {}";
 	}
 
+	private Node evaluateFunctional(Node node) {
+		FunCompilerConfig fcc = SuiteUtil.fcc(node);
+		configureFunCompiler(fcc);
+		return SuiteUtil.evaluateFunctional(fcc);
+	}
+
 	private void configureFunCompiler(FunCompilerConfig c) {
 		c.setLibraries(libraries);
+		c.setLazy(isLazy);
 		c.setTrace(isTrace);
 		c.setDumpCode(isDumpCode);
 		c.setIn(new StringReader(""));
