@@ -1,11 +1,6 @@
 fc-parse .t .parsed
 	:- bound .t, fc-parse-sugar .t .t1, fc-parse .t1 .parsed, !
 #
-fc-parse (.var as .type => .do) (FUN .var .do1)
-	:- !, fc-parse-type .type .type1
-	, .do1 = OPTION (AS .var .type1) .do2
-	, fc-parse .do .do2
-#
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type of .classes for any .typeVars >> .do) (
 	OPTION (DEF-TYPE .type1 .classes1 .typeVars1) .do1
@@ -17,8 +12,11 @@ fc-parse (define type .type of .classes for any .typeVars >> .do) (
 fc-parse (define type .type of .classes >> .do) .do1
 	:- !, fc-parse (define type .type of .classes for any () >> .do) .do1
 #
-fc-parse (.value as .type) (OPTION (CAST DOWN .type1) .value1)
-	:- !, fc-parse-type .type .type1
+fc-parse .do (OPTION (CAST DOWN .type1) .value1)
+	:- (.do = .value as .type
+		; .do = type .type .value
+	), !
+	, fc-parse-type .type .type1
 	, fc-parse .value .value1
 #
 fc-parse (no-type-check .do) (OPTION NO-TYPE-CHECK .do1)
@@ -27,23 +25,10 @@ fc-parse (no-type-check .do) (OPTION NO-TYPE-CHECK .do1)
 fc-parse (using .lib >> .do) (USING .lib .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (define .var as .type = .value >> .do) (
-	OPTION ALLOW-RECURSIVE-DEFINITION (DEF-VAR .var .value2 .do1)
-) :- !, fc-parse-type .type .type1
-	, fc-parse .value .value1
-	, fc-parse .do .do1
-	, .value2 = OPTION (CAST DOWN .type1) .value1
-#
 fc-parse (define .var = .value >> .do) (
 	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .var .value1 .do1
 ) :- !, fc-parse .value .value1
 	, fc-parse .do .do1
-#
-fc-parse (let .var as .type = .value >> .do) (DEF-VAR .var .value2 .do1)
-	:- !, fc-parse-type .type .type1
-	, fc-parse .value .value1
-	, fc-parse .do .do1
-	, .value2 = OPTION (CAST DOWN .type1) .value1
 #
 fc-parse (let .var = .value >> .do) (DEF-VAR .var .value1 .do1)
 	:- !, fc-parse .value .value1

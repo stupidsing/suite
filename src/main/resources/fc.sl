@@ -134,15 +134,16 @@ fc-add-functions STANDARD .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
-	define compare as (:t :- :t => :t => number) = no-type-check (
-		a => b =>
-		if (is-tree {a} && is-tree {b}) then
-			let c0 = compare {a | head} {b | head} >>
-			if:: c0 = 0
-			then:: compare {a | tail} {b | tail}
-			else:: c0
-		else:: _compare {a} {b}
-	) >>
+	define compare = type (:t :- :t => :t => number)
+		no-type-check (a => b =>
+			if (is-tree {a} && is-tree {b}) then
+				let c0 = compare {a | head} {b | head} >>
+				if:: c0 = 0
+				then:: compare {a | tail} {b | tail}
+				else:: c0
+			else:: _compare {a} {b}
+		)
+	>>
 	define drop = (n => list =>
 		if:: n > 0 && is-tree {list}
 		then:: list | tail | drop {n - 1} 
@@ -251,7 +252,7 @@ fc-add-functions STANDARD .p (
 	define apply =
 		flip {fold-left {x => f => f {x}}}
 	>>
-	define equals as (:t :- :t => :t => boolean) =
+	define equals = type (:t :- :t => :t => boolean)
 		no-type-check (a => b => compare {a} {b} = 0)
 	>>
 	define fold = (fun => list =>
@@ -342,9 +343,9 @@ fc-add-functions STANDARD .p (
 		. filter {`= separator` . head}
 		. tails . cons {separator}
 	) >>
-	define transpose as (
+	define transpose = type (
 		:t :- list-of list-of :t => list-of list-of :t
-	) = (m =>
+	) (m =>
 		let height = length {m} >>
 		let width = if (height > 0) then (m | head | length) else 0 >>
 		if (width > 0) then
@@ -357,7 +358,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump as (:t :- :t => list-of number) = no-type-check (
+	define dump  = type (:t :- :t => list-of number) no-type-check (
 		let dump-string = (s =>
 			let length = prove-with-result /_s:s (string.length _s _l) _l >>
 			0 until length | map {i =>

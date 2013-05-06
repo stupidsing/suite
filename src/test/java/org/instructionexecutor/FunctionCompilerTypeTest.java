@@ -22,7 +22,7 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testDefineType() {
 		getType("define type (KG number %) of (weight,) >> \n" //
-				+ "let v as weight = KG 1 % >> \n" //
+				+ "let v = type weight (KG 1 %) >> \n" //
 				+ "v = KG 99 %");
 		getType("repeat {23}");
 	}
@@ -33,7 +33,7 @@ public class FunctionCompilerTypeTest {
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
 				, "define type (BTREE t t) of (btree,) >> \n" //
-						+ "let v as btree = BTREE 2 3 >> 1" //
+						+ "let v = type btree (BTREE 2 3) >> 1" //
 				, variant + "A 4" //
 				, variant + "B" //
 		};
@@ -89,8 +89,8 @@ public class FunctionCompilerTypeTest {
 		getType("" //
 				+ "define type (NIL %) of (t,) >> \n" //
 				+ "define type (BTREE t t %) of (t,) >> \n" //
-				+ "let u as t = NIL % >> \n" //
-				+ "let v as t = NIL % >> \n" //
+				+ "let u = type t (NIL %) >> \n" //
+				+ "let v = type t (NIL %) >> \n" //
 				+ "v = BTREE (BTREE (NIL %) (NIL %) %) (NIL %) %");
 	}
 

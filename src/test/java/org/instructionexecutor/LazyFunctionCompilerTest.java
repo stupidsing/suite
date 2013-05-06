@@ -13,7 +13,7 @@ public class LazyFunctionCompilerTest {
 	@Test
 	public void testClosure() {
 		assertEquals(SuiteUtil.parse("4") //
-				, eval("define v as number = 4 >> (i => j => v) {1} {2}"));
+				, eval("define v = type number 4 >> (i => j => v) {1} {2}"));
 	}
 
 	@Test
