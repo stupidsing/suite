@@ -162,7 +162,7 @@ fc-parse-type-list (.type, .types) (.type1, .types1)
 #
 
 fc-parse-bind-variable .v .vd
-	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "\"
+	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "$"
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 

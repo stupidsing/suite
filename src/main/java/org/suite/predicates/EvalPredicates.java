@@ -232,7 +232,7 @@ public class EvalPredicates {
 
 		public boolean prove(Prover prover, Node ps) {
 			int n = counter.getAndIncrement();
-			return prover.bind(ps, Atom.create("$$T" + n));
+			return prover.bind(ps, Atom.create("temp$$" + n));
 		}
 	}
 

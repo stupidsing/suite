@@ -47,16 +47,18 @@ public class FailedTests {
 				+ "define type (RED %) of (color,) >> \n" //
 				+ "define type (BLACK %) of (color,) >> \n" //
 				+ "define type (EMPTY %) of (rb-tree,) for any (:t,) >> \n" //
-				+ "define type (RB-TREE color (rb-tree {:t}) :t (rb-tree {:t}) %) of (rb-tree {:t},) for any (:t,) >> \n" //
-				+ "define add = (v => \\n" //
-				+ "  define add0 = (tr => \\n" //
-				+ "    if-bind:: tr = RB-TREE RED \\a \\b \\c % \n" //
-				+ "    then:: EMPTY \\n" //
-				+ "    else:: EMPTY \\n" //
-				+ "  ) >> \n" //
-				+ "  if-match:: RB-TREE \\color \\n0 \\pivot \\n1 % \n" //
-				+ "  then:: add0 {RB-TREE BLACK n0 pivot n1 %} \\n" //
-				+ "  else:: error \\n" //
+				+ "define type ( \n" //
+				+ "    RB-TREE color (rb-tree {:t}) :t (rb-tree {:t}) % \n" //
+				+ ") of (rb-tree {:t},) for any (:t,) >> \n" //
+				+ "define add = (v => \n" //
+				+ "    define add0 = (tr => \n" //
+				+ "        if-bind:: tr = RB-TREE RED $a $b $c % \n" //
+				+ "        then:: EMPTY \n" //
+				+ "        else:: EMPTY \n" //
+				+ "    ) >> \n" //
+				+ "    if-match:: RB-TREE $color $n0 $pivot $n1 % \n" //
+				+ "    then:: add0 {RB-TREE BLACK n0 pivot n1 %} \n" //
+				+ "    else:: error \n" //
 				+ ") >> \n" //
 				+ "3 \n" //
 		);

@@ -159,19 +159,19 @@ public class EagerFunctionCompilerTest {
 
 		assertEquals(Int.create(0), eval("" //
 				+ "let v = true:1:2: >> \n"
-				+ "if-bind (v = true:\\i:3:) then i else 0"));
+				+ "if-bind (v = true:$i:3:) then i else 0"));
 		assertEquals(Int.create(1), eval("" //
 				+ "let v = true:1:2: >> \n"
-				+ "if-bind (v = true:\\i:2:) then i else 0"));
+				+ "if-bind (v = true:$i:2:) then i else 0"));
 		assertEquals(Int.create(1), eval("" //
-				+ "if-bind (1:2: = \\i:2:) then i else 0"));
+				+ "if-bind (1:2: = $i:2:) then i else 0"));
 
 		assertEquals(Int.create(3), eval("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B number %) of (t,) >> \n" //
 				+ "define type (C boolean %) of (t,) >> \n" //
 				+ "let e = B 3 % >> \n" //
-				+ "if-bind (e = B \\i %) then i else 0"));
+				+ "if-bind (e = B $i %) then i else 0"));
 		assertEquals(Int.create(0), eval("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B number %) of (t,) >> \n" //
