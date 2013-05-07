@@ -262,7 +262,7 @@ public class SuiteUtil {
 
 		Node node = SuiteUtil.parse("" //
 				+ "fc-parse (" + appendLibraries(config) + ") .p" //
-				+ ", infer-type-rule .p ()/()/() .tr .t" //
+				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .type .t");
 

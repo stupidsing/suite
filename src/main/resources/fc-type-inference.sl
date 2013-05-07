@@ -22,7 +22,7 @@ infer-type-rule .p .env .tr/.tr .type
 #
 infer-type-rule (USING .lib .do) .env .tr/.tr .type
 	:- !, load-precompiled-library .lib
-	, infer-type-rule-using-libs (.lib,) .do .env .tr1 .type
+	, infer-type-rule-using-libs (.lib,) .do .env .tr1/() .type
 	, resolve-types .tr1
 #
 infer-type-rule (
@@ -105,7 +105,7 @@ infer-type-rule (VARIABLE .var) .ue/.ve/.te .tr0/.trx .type
 
 find-simple-type (FUN .var .do) .ue/.ve/.te (FUN-OF .varType .type)
 	:- fc-dict-add .var/.varType .ue/.ue1
-	, infer-type-rule .do .ue1/.ve/.te .tr .type
+	, infer-type-rule .do .ue1/.ve/.te .tr/() .type
 	, resolve-types .tr
 #
 find-simple-type (CONSTANT _) _ _ #
@@ -137,18 +137,15 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 -- - Try bind specialized type to generic type;
 -- - Do not resolve super-type relation when both types are not clear;
 -- - Morph children types if still cannot resolve.
-resolve-types0 .tr0/.trx :- same .tr0 .trx, ! #
-resolve-types0 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)/.trx
-	:- !, resolve-sub-super-types .te .t0 .t1 .tr1/.trx
+resolve-types0 () :- ! #
+resolve-types0 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
+	:- !, resolve-sub-super-types .te .t0 .t1 .tr1
 #
-resolve-types0 (SPEC-GEN-TYPES .t0 .t1, .tr1)/.trx
-	:- !, clone .t1 .t0, resolve-types0 .tr1/.trx
+resolve-types0 (SPEC-GEN-TYPES .t0 .t1, .tr1)
+	:- !, clone .t1 .t0, resolve-types0 .tr1
 #
-resolve-types0 (TYPE-IN-TYPES .t .ts, .tr1)/.trx
-	:- !, member .ts .t, resolve-types0 .tr1/.trx
-#
-resolve-types0 (.a, .tr1)/.tr2 -- Shuffles the first one to the back
-	:- !, .tr2 = (.a, .trx), resolve-types0 .tr1/.trx
+resolve-types0 (TYPE-IN-TYPES .t .ts, .tr1)
+	:- !, member .ts .t, resolve-types0 .tr1
 #
 resolve-types0 _ :- !, fc-error "Not enough type information" #
 
@@ -178,12 +175,6 @@ sub-super-type-pair .te .t0 .t1 -- morph children types to their super
 	, children-of-type .t0 .t1 .ts/()
 	, choose-one-pair .ts .childType0/.childType1
 	, sub-super-type-pair .te .childType0 .childType1
-#
-
-sub-super-type-pair-list _ () .tr/.tr :- ! #
-sub-super-type-pair-list .te (.t0/.t1, .ts) .tr0/.trx
-	:- .tr0 = (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
-	, sub-super-type-pair-list .te .ts .tr1/.trx
 #
 
 choose-one-pair (.t0/.t1, .ts) .t0/.t1 :- equate-pairs .ts #
