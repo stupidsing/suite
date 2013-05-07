@@ -53,11 +53,18 @@ lc-parse-clause fail FAIL :- ! #
 lc-parse-clause .cut CUT :- to.atom "!" .cut, ! #
 lc-parse-clause .tree (.oper1 .left1 .right1)
 	:- tree .tree .left .oper .right
-	, member (','/AND, ';'/OR,
-		' = '/EQ, ' != '/NE, ' > '/GT, ' < '/LT, ' >= '/GE, ' <= '/LE,
-	) .oper/.oper1, !
+	, member (','/AND, ';'/OR,) .oper/.oper1, !
 	, lc-parse-clause .left .left1
 	, lc-parse-clause .right .right1
+#
+lc-parse-clause .tree (.oper1 .left1 .right1)
+	:- tree .tree .left .oper .right
+	, member (
+		' = '/EQ, ' != '/NE, ' > '/GT, ' < '/LT, ' >= '/GE, ' <= '/LE,
+	) .oper/.oper1
+	, !
+	, lc-parse-pattern .left .left1
+	, lc-parse-pattern .right .right1
 #
 lc-parse-clause .call .callx
 	:- lc-parse-call .call .call1
@@ -70,18 +77,17 @@ lc-parse-clause .call .callx
 #
 lc-parse-clause .d _ :- write "Unknown expression" .d, nl, fail #
 
-lc-parse-call .head .head2
-	:- !, enlist .head .head1, lc-parse-pattern .head1 .head2
-#
+lc-parse-call .head .head1 :- !, lc-parse-pattern .head .head1 #
 
-lc-parse-pattern .tree .tree1
-	:- tree .tree .left .oper .right
-	, tree .tree1 .left1 .oper .right1, !
+lc-parse-pattern .tree (TREE .oper .left1 .right1)
+	:- tree .tree .left .oper .right, !
 	, lc-parse-pattern .left .left1
 	, lc-parse-pattern .right .right1
 #
 lc-parse-pattern .var (VAR .var) :- lc-is-variable .var, ! #
-lc-parse-pattern .e .e #
+lc-parse-pattern .a (ATOM .a) :- is.atom .a #
+lc-parse-pattern .i (NUMBER .i) :- is.int .i #
+lc-parse-pattern .s (STR .s) :- is.string .s #
 
 --lc-compile .p :- write lc-compile .p, nl, fail #
 lc-compile ($$BYTECODE .bytecode) .more .env .c0/.cx/.d0/.dx
@@ -169,7 +175,8 @@ lc-flatten-rules (RULE .head .tail, .remains) (OR .head1 .tail1)
 	, lc-flatten-rules .remains .tail1
 #
 
-lc-call-prototype (.name, .call) .name/.n :- length .call .n #
+lc-call-prototype (TREE _ .left _) .name :- lc-call-prototype .left .name #
+lc-call-prototype .name .name #
 
 lc-params-length .ps .n
 	:- if (bound .ps, .ps = _ .ps1) then (
@@ -204,25 +211,26 @@ lc-create-node (VAR .var) .vs .c0/.cx/.reg
 	)
 	, !
 #
-lc-create-node .a _ .c0/.cx/.reg
-	:- is.atom .a, !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx)
+lc-create-node (ATOM .a) _ .c0/.cx/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx)
 #
-lc-create-node .i _ .c0/.cx/.reg
-	:- is.int .i, !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
+lc-create-node (NUMBER .i) _ .c0/.cx/.reg
+	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
 #
-lc-create-node .s _ .c0/.cx/.reg
-	:- is.string .s, !, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx)
+lc-create-node (STRING .s) _ .c0/.cx/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx)
 #
-lc-create-node .tree .vs .c0/.cx/.reg
-	:- tree .tree .left .operator .right
-	, lc-create-node .left .vs .c0/.c1/.regl
+lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
+	:- lc-create-node .left .vs .c0/.c1/.regl
 	, lc-create-node .right .vs .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
-lc-system-call-prototype let/2 #
-lc-system-call-prototype once/1 #
-lc-system-call-prototype find.all/3 #
+lc-system-call-prototype (ATOM dump) #
+lc-system-call-prototype (ATOM let) #
+lc-system-call-prototype (ATOM nl) #
+lc-system-call-prototype (ATOM once) #
+lc-system-call-prototype (ATOM find.all) #
 
 lc-is-variable .variable
 	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot

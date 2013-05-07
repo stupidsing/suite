@@ -113,14 +113,16 @@ public class Main {
 	}
 
 	public enum InputType {
-		OPTION("-"), //
-		FACT(""), //
-		QUERY("?"), //
-		QUERYELABORATE("/"), //
 		EVALUATE("\\"), //
 		EVALUATESTR("\\s"), //
 		EVALUATETYPE("\\t"), //
-		PRETTYPRINT("\\p");
+		FACT(""), //
+		OPTION("-"), //
+		PRETTYPRINT("\\p"), //
+		QUERY("?"), //
+		QUERYCOMPILED("\\l"), //
+		QUERYELABORATE("/"), //
+		;
 
 		String prefix;
 
@@ -184,15 +186,6 @@ public class Main {
 				FunCompilerConfig fcc;
 
 				switch (type) {
-				case OPTION:
-					List<String> args = Arrays.asList(("-" + input).split(" "));
-					Iterator<String> iter = args.iterator();
-					while (iter.hasNext())
-						processOption(iter.next(), iter);
-					break;
-				case FACT:
-					rs.addRule(Rule.formRule(node));
-					break;
 				case EVALUATE:
 					node = evaluateFunctional(node);
 					System.out.println(Formatter.dump(node));
@@ -207,6 +200,15 @@ public class Main {
 					node = SuiteUtil.evaluateFunctionalType(fcc);
 					System.out.println(Formatter.dump(node));
 					break;
+				case FACT:
+					rs.addRule(Rule.formRule(node));
+					break;
+				case OPTION:
+					List<String> args = Arrays.asList(("-" + input).split(" "));
+					Iterator<String> iter = args.iterator();
+					while (iter.hasNext())
+						processOption(iter.next(), iter);
+					break;
 				case PRETTYPRINT:
 					System.out.println(new PrettyPrinter().prettyPrint(node));
 					break;
@@ -217,7 +219,7 @@ public class Main {
 
 					if (type == InputType.QUERY) {
 						boolean q = prover.prove(node);
-						System.out.println(q ? "Yes\n" : "No\n");
+						System.out.println(yesNo(q));
 					} else if (type == InputType.QUERYELABORATE) {
 						Node elab = new Station() {
 							public boolean run() {
@@ -237,6 +239,10 @@ public class Main {
 						else
 							System.out.println(count[0] + " solutions\n");
 					}
+					break;
+				case QUERYCOMPILED:
+					boolean result = SuiteUtil.evaluateLogical(node, isTrace);
+					System.out.println(yesNo(result));
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(Main.class, ex);
@@ -308,6 +314,10 @@ public class Main {
 		c.setTrace(isTrace);
 		c.setDumpCode(isDumpCode);
 		c.setIn(new StringReader(""));
+	}
+
+	private String yesNo(boolean q) {
+		return q ? "Yes\n" : "No\n";
 	}
 
 	private static Log log = LogFactory.getLog(Util.currentClass());

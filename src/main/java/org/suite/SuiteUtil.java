@@ -118,11 +118,13 @@ public class SuiteUtil {
 	}
 
 	public static boolean evaluateLogical(String program) {
-		return evaluateLogical(parse(program));
+		return evaluateLogical(parse(program), false);
 	}
 
-	public static boolean evaluateLogical(Node program) {
+	public static boolean evaluateLogical(Node program, boolean isTrace) {
 		Prover lc = getLogicalCompiler();
+		lc = isTrace ? enableTrace(lc) : lc;
+
 		Node node = SuiteUtil.parse("compile-logic .program .code");
 		// + ", pretty.print .code"
 
