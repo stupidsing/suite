@@ -48,8 +48,8 @@ public class FailedTests {
 				+ "define type (BLACK %) of (color,) >> \n" //
 				+ "define type (EMPTY %) of (rb-tree,) for any (:t,) >> \n" //
 				+ "define type ( \n" //
-				+ "    RB-TREE color (rb-tree {:t}) :t (rb-tree {:t}) % \n" //
-				+ ") of (rb-tree {:t},) for any (:t,) >> \n" //
+				+ "    RB-TREE color rb-tree/:t :t rb-tree/:t % \n" //
+				+ ") of (rb-tree/:t,) for any (:t,) >> \n" //
 				+ "define add = (v => \n" //
 				+ "    define add0 = (tr => \n" //
 				+ "        if-bind:: tr = RB-TREE RED $a $b $c % \n" //

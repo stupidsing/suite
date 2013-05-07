@@ -60,8 +60,8 @@ public class FunctionCompilerTypeTest {
 	@Test
 	public void testInstance() {
 		String define = " \n" //
-				+ "define type (NODE :t (linked-list {:t}) %) of (linked-list {:t},) for any (:t,) >> \n" //
-				+ "define type (NIL %) of (linked-list {:t},) for any (:t,) >> \n";
+				+ "define type (NODE :t linked-list/:t %) of (linked-list/:t,) for any (:t,) >> \n" //
+				+ "define type (NIL %) of (linked-list/:t,) for any (:t,) >> \n";
 
 		getType(define + "NIL %");
 		getType(define + "NODE false (NIL %) %");
