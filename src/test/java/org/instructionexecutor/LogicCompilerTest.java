@@ -46,6 +46,12 @@ public class LogicCompilerTest {
 	}
 
 	@Test
+	public void testOnce() throws IOException {
+		assertTrue(eval("once (.v = 1; .v = 2), .v = 1"));
+		assertFalse(eval("once (.v = 1; .v = 2), .v = 2"));
+	}
+
+	@Test
 	public void testVariables() throws IOException {
 		assertTrue(eval(".a = 1, 1 = .a"));
 		assertFalse(eval(".a = 1, .a = 2"));
