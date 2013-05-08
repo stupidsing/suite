@@ -51,6 +51,7 @@ lc-parse-rule .head (RULE .head1 YES) :- lc-parse-call .head .head1 #
 lc-parse-clause () YES :- ! #
 lc-parse-clause fail FAIL :- ! #
 lc-parse-clause .cut CUT :- to.atom "!" .cut, ! #
+lc-parse-clause (once .do) (ONCE .do1) :- fc-parse-clause .do .do1, ! #
 lc-parse-clause .tree (.oper1 .left1 .right1)
 	:- tree .tree .left .oper .right
 	, member (','/AND, ';'/OR,) .oper/.oper1, !
@@ -118,6 +119,12 @@ lc-compile (OR .a .b) .more .env .c0/.cx/.d0/.dx
 lc-compile ($$CUT .cutPoint .failLabel) .more .env .c0/.cx/.d0/.dx
 	:- !, lc-compile .more YES .env .c0/.c1/.d0/.dx
 	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
+#
+lc-compile (ONCE .do) .more .env .c0/.cx/.d/.d
+	:- !
+	, .c0 = (_ CUT-BEGIN .cutPoint, .c1)
+	, lc-compile .do ($$CUT .cutPoint .failLabel, .more) .env .c1/.c2/.d/.d
+	, .c2 = (.failLabel LABEL .failLabel, .cx)
 #
 lc-compile (EQ .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
