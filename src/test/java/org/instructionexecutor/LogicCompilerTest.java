@@ -20,6 +20,8 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testCut() throws IOException {
+		assertTrue(eval("(.a = 1; .a = 2), !, .a = 1"));
+		assertFalse(eval("(.a = 1; .a = 2), !, .a = 2"));
 		assertFalse(eval(".a = 1, !, .b = 2, fail; .b = 3"));
 	}
 
@@ -43,6 +45,14 @@ public class LogicCompilerTest {
 	public void testLogic() throws IOException {
 		assertTrue(eval("1 = 2; 3 = 3"));
 		assertFalse(eval("3 = 3, 1 = 2"));
+	}
+
+	@Test
+	public void testNot() throws IOException {
+		assertTrue(eval("not (1 = 2)"));
+		assertTrue(eval("not (1 = 1)"));
+		assertTrue(eval("not (.v = 1), .v = 2"));
+		assertFalse(eval("not (.v = 1), 1 = 2"));
 	}
 
 	@Test

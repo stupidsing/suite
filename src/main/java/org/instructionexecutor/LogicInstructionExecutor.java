@@ -52,14 +52,12 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			regs[insn.op1] = i(cutPoints.size());
 			cutPoints.add(new CutPoint(current, journal.getPointInTime()));
 			break;
-		case CUTEND________:
-			current = cutPoints.get(g(regs[insn.op1])).activation;
-			break;
 		case CUTFAIL_______:
 			int cutPointIndex = g(regs[insn.op1]);
 			CutPoint cutPoint = cutPoints.get(cutPointIndex);
-			journal.undoBinds(cutPoint.journalPointer);
 			Util.truncate(cutPoints, cutPointIndex);
+			current = cutPoint.activation;
+			journal.undoBinds(cutPoint.journalPointer);
 			current.ip = insn.op2;
 			break;
 		case PROVESYS______:

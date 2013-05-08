@@ -47,7 +47,6 @@ public class InstructionUtil {
 		CALLCONST_____("CALL-CONSTANT"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
-		CUTEND________("CUT-END"), //
 		CUTFAIL_______("CUT-FAIL"), //
 		ENTER_________("ENTER"), //
 		EVALADD_______("EVAL-ADD"), //
