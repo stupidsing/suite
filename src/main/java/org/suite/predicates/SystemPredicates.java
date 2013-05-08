@@ -47,8 +47,8 @@ public class SystemPredicates {
 				new EvalPredicates.GeneralizeWithPrefix());
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("let", new EvalPredicates.Let());
-		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("map.erase", new EvalPredicates.MapErase());
+		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("same", new EvalPredicates.Same());
 		addPredicate("specialize", new EvalPredicates.Specialize());
