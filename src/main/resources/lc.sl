@@ -255,12 +255,44 @@ lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
 
 lc-system-call-prototype (ATOM bound) #
 lc-system-call-prototype (ATOM clone) #
+lc-system-call-prototype (ATOM concat) #
 lc-system-call-prototype (ATOM dump) #
+lc-system-call-prototype (ATOM dump.stack) #
 lc-system-call-prototype (ATOM eval.js) #
-lc-system-call-prototype (ATOM let) #
-lc-system-call-prototype (ATOM nl) #
+lc-system-call-prototype (ATOM exec) #
+lc-system-call-prototype (ATOM file.exists) #
+lc-system-call-prototype (ATOM file.read) #
+lc-system-call-prototype (ATOM file.write) #
 lc-system-call-prototype (ATOM find.all) #
-lc-system-call-prototype (ATOM temporary) #
+lc-system-call-prototype (ATOM generalize) #
+lc-system-call-prototype (ATOM generalize.prefix) #
+lc-system-call-prototype (ATOM hash) #
+lc-system-call-prototype (ATOM home.dir) #
+lc-system-call-prototype (ATOM is.atom) #
+lc-system-call-prototype (ATOM is.int) #
+lc-system-call-prototype (ATOM is.string) #
+lc-system-call-prototype (ATOM is.tree) #
+lc-system-call-prototype (ATOM let) #
+lc-system-call-prototype (ATOM map.erase) #
+lc-system-call-prototype (ATOM map.retrieve) #
+lc-system-call-prototype (ATOM nl) #
+lc-system-call-prototype (ATOM parse) #
+lc-system-call-prototype (ATOM pretty.print) #
+lc-system-call-prototype (ATOM random) #
+lc-system-call-prototype (ATOM rpn) #
+lc-system-call-prototype (ATOM same) #
+lc-system-call-prototype (ATOM specialize) #
+lc-system-call-prototype (ATOM starts.with) #
+lc-system-call-prototype (ATOM string.length) #
+lc-system-call-prototype (ATOM substring) #
+lc-system-call-prototype (ATOM temp) #
+lc-system-call-prototype (ATOM to.atom) #
+lc-system-call-prototype (ATOM to.dump.string) #
+lc-system-call-prototype (ATOM to.int) #
+lc-system-call-prototype (ATOM to.string) #
+lc-system-call-prototype (ATOM tree) #
+lc-system-call-prototype (ATOM trim) #
+lc-system-call-prototype (ATOM write) #
 
 lc-is-variable .variable
 	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot
