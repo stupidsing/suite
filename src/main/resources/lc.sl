@@ -136,13 +136,23 @@ lc-compile (NOT .do) .more .env .c0/.cx/.d0/.dx
 	, .c2 = (.failLabel LABEL .failLabel, .c3)
 	, lc-compile .more YES .env .c3/.cx/.d1/.dx
 #
-lc-compile (EQ .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
-	:- !
+lc-compile (.oper .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
+	:- once (
+		.oper = EQ
+		, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
+		, .c5 = (_ BIND-UNDO, .cx)
+		; member (GE, GT, LE, LT, NE,) .oper
+		, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
+		, .c2 = (_ .inst .resultReg .reg0 .reg1
+			, _ IF-FALSE .failLabel .resultReg
+			, .c3
+		)
+		, .c5 = .cx
+	), !
 	, lc-create-node .a .vs .c0/.c1/.reg0
 	, lc-create-node .b .vs .c1/.c2/.reg1
-	, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
 	, lc-compile .more YES .pls/.vs .c3/.c4/.d0/.dx
-	, .c4 = (.failLabel LABEL .failLabel, _ BIND-UNDO, .cx)
+	, .c4 = (.failLabel LABEL .failLabel, .c5)
 #
 lc-compile (DEFINE-RULES .rules .call) .more .pls/.vs .c0/.cx/.d0/.dx
 	:- !
@@ -243,10 +253,14 @@ lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 
+lc-system-call-prototype (ATOM bound) #
+lc-system-call-prototype (ATOM clone) #
 lc-system-call-prototype (ATOM dump) #
+lc-system-call-prototype (ATOM eval.js) #
 lc-system-call-prototype (ATOM let) #
 lc-system-call-prototype (ATOM nl) #
 lc-system-call-prototype (ATOM find.all) #
+lc-system-call-prototype (ATOM temporary) #
 
 lc-is-variable .variable
 	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot

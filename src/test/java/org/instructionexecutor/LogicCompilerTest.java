@@ -3,15 +3,13 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.Test;
 import org.suite.SuiteUtil;
 
 public class LogicCompilerTest {
 
 	@Test
-	public void test() throws IOException {
+	public void test() {
 		assertTrue(eval("()"));
 		assertTrue(eval("3 = 3"));
 		assertFalse(eval("fail"));
@@ -19,14 +17,22 @@ public class LogicCompilerTest {
 	}
 
 	@Test
-	public void testCut() throws IOException {
+	public void testCut() {
 		assertTrue(eval("(.a = 1; .a = 2), !, .a = 1"));
 		assertFalse(eval("(.a = 1; .a = 2), !, .a = 2"));
 		assertFalse(eval(".a = 1, !, .b = 2, fail; .b = 3"));
 	}
 
 	@Test
-	public void testFibonacci() throws IOException {
+	public void testEval() {
+		assertTrue(eval("3 < 4"));
+		assertTrue(eval("3 <= 4"));
+		assertFalse(eval("4 > 4"));
+		assertFalse(eval("3 >= 4"));
+	}
+
+	@Test
+	public void testFibonacci() {
 		assertTrue(eval("" //
 				+ "( \n" //
 				+ "    fib 0 1 # \n" //
@@ -42,13 +48,13 @@ public class LogicCompilerTest {
 	}
 
 	@Test
-	public void testLogic() throws IOException {
+	public void testLogic() {
 		assertTrue(eval("1 = 2; 3 = 3"));
 		assertFalse(eval("3 = 3, 1 = 2"));
 	}
 
 	@Test
-	public void testNot() throws IOException {
+	public void testNot() {
 		assertTrue(eval("not (1 = 2)"));
 		assertTrue(eval("not (1 = 1)"));
 		assertTrue(eval("not (.v = 1), .v = 2"));
@@ -56,25 +62,25 @@ public class LogicCompilerTest {
 	}
 
 	@Test
-	public void testOnce() throws IOException {
+	public void testOnce() {
 		assertTrue(eval("once (.v = 1; .v = 2), .v = 1"));
 		assertFalse(eval("once (.v = 1; .v = 2), .v = 2"));
 	}
 
 	@Test
-	public void testVariables() throws IOException {
+	public void testVariables() {
 		assertTrue(eval(".a = 1, 1 = .a"));
 		assertFalse(eval(".a = 1, .a = 2"));
 	}
 
 	@Test
-	public void testWith() throws IOException {
+	public void testWith() {
 		assertTrue(eval("(p 2 # p 3 #) >> p .v, .v = 3"));
 		assertFalse(eval("(p 2 :- ! # p 3 #) >> p .v, .v = 3"));
 		assertTrue(eval("(p .v :- q .v # q 3 #) >> p 3"));
 	}
 
-	private boolean eval(String program) throws IOException {
+	private boolean eval(String program) {
 		return SuiteUtil.evaluateLogical(program);
 	}
 
