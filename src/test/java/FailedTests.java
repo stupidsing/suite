@@ -76,6 +76,12 @@ public class FailedTests {
 				+ ")");
 	}
 
+	@Test
+	public void testOr() {
+		SuiteUtil.evaluateLogical("(fail; .b = 1), .b = 2, yes");
+		SuiteUtil.evaluateLogical("(yes; .b = 1), .b = 2, fail");
+	}
+
 	private static Node eval(String f) {
 		return SuiteUtil.evaluateEagerFunctional(f);
 	}
