@@ -98,10 +98,10 @@ lc-compile ($$BYTECODE .bytecode) .more .env .c0/.cx/.d0/.dx
 	:- !, .c0 = (.bytecode, .c1)
 	, lc-compile .more YES .env .c1/.cx/.d0/.dx
 #
-lc-compile ($$SCOPE .call .pls1) .more .pls/.v .c0/.cx/.d0/.dx
+lc-compile ($$SCOPE .call .pls1) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
-	, (.more/.more1 = YES/YES; .more1 = $$SCOPE .more .pls)
-	, lc-compile .call .more1 .pls1/.v .c0/.cx/.d0/.dx
+	, once (.more/.more1 = YES/YES; .more1 = $$SCOPE .more .pls)
+	, lc-compile .call .more1 .pls1/.v0/.vx .c0/.cx/.d0/.dx
 #
 lc-compile FAIL _ _/.v/.v .c/.c/.d/.d :- ! #
 lc-compile YES .more .env .c0/.cx/.d0/.dx
@@ -114,9 +114,9 @@ lc-compile (OR .a .b) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
 	, .bc = CALL-CONSTANT .label
 	, lc-compile .a (AND ($$BYTECODE _ .bc) FAIL) .pls/.v0/.v1 .c0/.c1/.d0/.d1
-	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .pls/.v1/.vx .c1/.cx/.d1/.d2
+	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .pls/.v1/.v2 .c1/.cx/.d1/.d2
 	, .d2 = (.label LABEL .label, .d3)
-	, lc-compile .more YES .pls/.v/.v .d3/.d4/.d5/.dx
+	, lc-compile .more YES .pls/.v2/.vx .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
 #
 lc-compile ($$CUT .cutPoint .failLabel) .more .env .c0/.cx/.d0/.dx

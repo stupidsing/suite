@@ -1,19 +1,6 @@
 append () .list .list #
 append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 
--- Converts tuple (a b c) to/from list (a, b, c,) with terminating nil
-enlist .a .b :- bound .b, .b = (.a,), ! #
-enlist () () :- ! #
-enlist (.item .items) (.item, .items1) :- !, enlist .items .items1 #
-enlist .a .b :- bound .a, .b = (.a,), ! #
-
-fold () .r/.r _ #
-fold (.head, .tail) .r0/.rx .action
-	:- generalize.prefix .action "_" (.head .r0/.r1 => .do)
-	, .do
-	, fold .tail .r1/.rx .action
-#
-
 length () 0 #
 length (_, .r) .l1 :- length .r .l0, let .l1 (.l0 + 1) #
 
