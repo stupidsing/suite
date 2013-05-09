@@ -211,13 +211,13 @@ lc-bind0 .node0 .node1 .v0/.vx .c0/.cx/.f0/.fx
 	, lc-bind-register .reg0 .node1 .v1/.vx .c1/.cx/.f0/.fx
 #
 
-lc-bind-register .reg (TREE .oper .nl .nr) .v/.v .c0/.cx/.f/.f
+lc-bind-register .reg (TREE .oper .nl .nr) .v/.v .c0/.cx/.f0/.fx
 	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .f
 		, _ DECOMPOSE-TREE1 .reg0 .reg1
 		, .c1
 	)
-	, lc-bind-register .reg0 .nl .c1/.c2/.f
-	, lc-bind-register .reg1 .nr .c2/.cx/.f
+	, lc-bind-register .reg0 .nl .c1/.c2/.f1/.fx
+	, lc-bind-register .reg1 .nr .c2/.cx/.f0/.f1
 #
 lc-bind-register .reg0 .node1 .v .c0/.cx/.f0/.fx
 	:- lc-create-node .node1 .v .c0/.c1/.reg1
