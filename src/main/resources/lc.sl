@@ -91,7 +91,7 @@ lc-parse-pattern .tree (TREE .oper .left1 .right1)
 lc-parse-pattern .var (VAR .var) :- lc-is-variable .var, ! #
 lc-parse-pattern .a (ATOM .a) :- is.atom .a #
 lc-parse-pattern .i (NUMBER .i) :- is.int .i #
-lc-parse-pattern .s (STR .s) :- is.string .s #
+lc-parse-pattern .s (STRING .s) :- is.string .s #
 
 --lc-compile .p :- write lc-compile .p, nl, fail #
 lc-compile ($$BYTECODE .bytecode) .more .env .c0/.cx/.d0/.dx

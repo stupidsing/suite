@@ -3,8 +3,12 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.suite.SuiteUtil;
+import org.suite.node.Node;
+import org.util.IoUtil;
 
 public class LogicCompilerTest {
 
@@ -14,6 +18,14 @@ public class LogicCompilerTest {
 		assertTrue(eval("3 = 3"));
 		assertFalse(eval("fail"));
 		assertFalse(eval("1 = 2"));
+	}
+
+	@Test
+	public void testAuto() throws IOException {
+		Class<?> clazz = getClass();
+		String preds = IoUtil.readStream(clazz.getResourceAsStream("/auto.sl"));
+		Node n = SuiteUtil.parse("(" + preds + ") >> member (a, b, c,) c");
+		assertTrue(SuiteUtil.evaluateLogical(n, true, false));
 	}
 
 	@Test
