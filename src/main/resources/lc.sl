@@ -59,7 +59,7 @@ lc-parse .tree (.oper1 .left1 .right1)
 	, lc-parse-pattern .right .right1
 #
 lc-parse .call .callx
-	:- lc-parse-call .call .call1
+	:- lc-parse-pattern .call .call1
 	, lc-call-prototype .call1 .proto
 	, (lc-system-call-prototype .proto, !
 		, lc-parse-pattern .call .call2
@@ -75,11 +75,9 @@ lc-parse-rules (.rule # .rules) (.rule1, .rules1)
 #
 
 lc-parse-rule (.head :- .tail) (RULE .head1 .tail1)
-	:- !, lc-parse-call .head .head1, lc-parse .tail .tail1
+	:- !, lc-parse-pattern .head .head1, lc-parse .tail .tail1
 #
-lc-parse-rule .head (RULE .head1 YES) :- lc-parse-call .head .head1 #
-
-lc-parse-call .head .head1 :- !, lc-parse-pattern .head .head1 #
+lc-parse-rule .head (RULE .head1 YES) :- lc-parse-pattern .head .head1 #
 
 lc-parse-pattern .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right, !
@@ -228,6 +226,16 @@ lc-bind-register .reg0 .node1 .v .c0/.cx/.f0/.fx
 	, .f0 = (.failLabel BIND-UNDO, .fx)
 #
 
+lc-compile-rules () _ .c/.c :- ! #
+lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
+	:- lc-flatten-rules .rules .call
+	, member .pls .proto/.callLabel
+	, .l = '-----'
+	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
+	, compile-call .call .pls .c1/.c2/.callLabel
+	, lc-compile-rules .remains .pls .c2/.cx
+#
+
 lc-flatten-rules () FAIL :- ! #
 lc-flatten-rules (RULE .head .tail, .remains) (OR .head1 .tail1)
 	:- .head1 = AND ($$BYTECODE _ TOP .reg -1) AND (EQ $$REG:.reg .head) .tail
@@ -250,16 +258,6 @@ lc-params-length .ps .n
 lc-prototype-labels () .pls/.pls :- ! #
 lc-prototype-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
 	:- lc-prototype-labels .tail .pls/.pls1
-#
-
-lc-compile-rules () _ .c/.c :- ! #
-lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
-	:- lc-flatten-rules .rules .call
-	, member .pls .proto/.callLabel
-	, .l = '-----'
-	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
-	, compile-call .call .pls .c1/.c2/.callLabel
-	, lc-compile-rules .remains .pls .c2/.cx
 #
 
 lc-create-node $$REG:.reg .v/.v .c/.c/.reg :- ! #
