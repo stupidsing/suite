@@ -25,7 +25,7 @@ public class LogicCompilerTest {
 		Class<?> clazz = getClass();
 		String preds = IoUtil.readStream(clazz.getResourceAsStream("/auto.sl"));
 		Node n = SuiteUtil.parse("(" + preds + ") >> member (a, b, c,) c");
-		assertTrue(SuiteUtil.evaluateLogical(n, true, false));
+		assertTrue(SuiteUtil.evaluateLogical(n, false, false));
 	}
 
 	@Test

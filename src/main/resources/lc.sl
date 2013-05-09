@@ -89,6 +89,7 @@ lc-parse-pattern .tree (TREE .oper .left1 .right1)
 	, lc-parse-pattern .right .right1
 #
 lc-parse-pattern .var (VAR .var) :- lc-is-variable .var, ! #
+lc-parse-pattern .wildcard (VAR .var) :- to.atom "_" .wildcard, temp .var, ! #
 lc-parse-pattern .a (ATOM .a) :- is.atom .a #
 lc-parse-pattern .i (NUMBER .i) :- is.int .i #
 lc-parse-pattern .s (STRING .s) :- is.string .s #
@@ -165,19 +166,23 @@ lc-compile (DEFINE-RULES .rules .call) .more .pls/.v .c0/.cx/.d0/.dx
 lc-compile (CALL .call) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
 	, lc-call-prototype .call .proto
-	, lc-create-node .call .v0/.v1 .c0/.c1/.reg
-	, member .pls .proto/.callLabel
-	, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
-		, _ PUSH .provenReg
-		, _ PUSH .reg
-		, _ CALL-CONSTANT .callLabel
-		, _ POP _
-		, _ POP _
-		, .cx
+	, lc-create-node .call .v0/.v1 .c0/.c1/.reg, (
+		member .pls .proto/.callLabel, !
+		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
+			, _ PUSH .provenReg
+			, _ PUSH .reg
+			, _ CALL-CONSTANT .callLabel
+			, _ POP _
+			, _ POP _
+			, .cx
+		)
+		, .d0 = (.provenLabel LABEL .provenLabel, .d1)
+		, lc-compile .more YES .pls/.v1/.vx .d1/.d2/.d3/.dx
+		, .d2 = (_ RETURN, .d3)
+		; .c1 = (_ PROVE-INTERPRET .reg .failLabel, .c2)
+		, lc-compile .more YES .pls/.v1/.vx .c2/.c3/.d0/.dx
+		, .c3 = (.failLabel LABEL .failLabel, .cx)
 	)
-	, .d0 = (.provenLabel LABEL .provenLabel, .d1)
-	, lc-compile .more YES .pls/.v1/.vx .d1/.d2/.d3/.dx
-	, .d2 = (_ RETURN, .d3)
 #
 lc-compile (SYSTEM-CALL .call) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !

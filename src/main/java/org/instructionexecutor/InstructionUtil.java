@@ -77,6 +77,7 @@ public class InstructionUtil {
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
+		PROVEINTERPRET("PROVE-INTERPRET"), //
 		PROVESYS______("PROVE-SYS"), //
 		PUSH__________("PUSH"), //
 		PUSHCONST_____("PUSH-CONSTANT"), //

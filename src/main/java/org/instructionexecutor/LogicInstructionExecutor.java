@@ -16,6 +16,7 @@ import org.util.Util;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
+	private Prover prover;
 	private Journal journal;
 	private SystemPredicates systemPredicates;
 
@@ -27,6 +28,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 
 	public LogicInstructionExecutor(Prover prover, Node node) {
 		super(node);
+		this.prover = prover;
 		journal = prover.getJournal();
 		systemPredicates = new SystemPredicates(prover);
 	}
@@ -59,6 +61,10 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			current = cutPoint.activation;
 			journal.undoBinds(cutPoint.journalPointer);
 			current.ip = insn.op2;
+			break;
+		case PROVEINTERPRET:
+			if (!prover.prove((Node) regs[insn.op1]))
+				current.ip = insn.op2;
 			break;
 		case PROVESYS______:
 			if (!systemPredicates.call((Node) regs[insn.op1]))
