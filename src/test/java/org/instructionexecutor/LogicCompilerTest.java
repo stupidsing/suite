@@ -80,6 +80,12 @@ public class LogicCompilerTest {
 	}
 
 	@Test
+	public void testOrBinds() {
+		SuiteUtil.evaluateLogical("(fail; .b = 1), .b = 2, yes");
+		SuiteUtil.evaluateLogical("(yes; .b = 1), .b = 2, fail");
+	}
+
+	@Test
 	public void testVariables() {
 		assertTrue(eval(".a = 1, 1 = .a"));
 		assertFalse(eval(".a = 1, .a = 2"));
