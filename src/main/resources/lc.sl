@@ -34,34 +34,22 @@ compile-call .call .pls .c0/.cx/.label
 #
 
 lc-parse (.rules >> .clause) (DEFINE-RULES .rules1 .clause1)
-	:- !, lc-parse-rules .rules .rules1, lc-parse-clause .clause .clause1
+	:- !, lc-parse-rules .rules .rules1, lc-parse .clause .clause1
 #
-lc-parse .clause .clause1 :- lc-parse-clause .clause .clause1 #
-
-lc-parse-rules () () :- ! #
-lc-parse-rules (.rule # .rules) (.rule1, .rules1)
-	:- lc-parse-rule .rule .rule1, lc-parse-rules .rules .rules1
-#
-
-lc-parse-rule (.head :- .tail) (RULE .head1 .tail1)
-	:- !, lc-parse-call .head .head1, lc-parse-clause .tail .tail1
-#
-lc-parse-rule .head (RULE .head1 YES) :- lc-parse-call .head .head1 #
-
-lc-parse-clause () YES :- ! #
-lc-parse-clause fail FAIL :- ! #
-lc-parse-clause .cut CUT :- to.atom "!" .cut, ! #
-lc-parse-clause (.p .do) (.p1 .do1)
+lc-parse () YES :- ! #
+lc-parse fail FAIL :- ! #
+lc-parse .cut CUT :- to.atom "!" .cut, ! #
+lc-parse (.p .do) (.p1 .do1)
 	:- member (once/ONCE, not/NOT,) .p/.p1, !
-	, lc-parse-clause .do .do1
+	, lc-parse .do .do1
 #
-lc-parse-clause .tree (.oper1 .left1 .right1)
+lc-parse .tree (.oper1 .left1 .right1)
 	:- tree .tree .left .oper .right
 	, member (','/AND, ';'/OR,) .oper/.oper1, !
-	, lc-parse-clause .left .left1
-	, lc-parse-clause .right .right1
+	, lc-parse .left .left1
+	, lc-parse .right .right1
 #
-lc-parse-clause .tree (.oper1 .left1 .right1)
+lc-parse .tree (.oper1 .left1 .right1)
 	:- tree .tree .left .oper .right
 	, member (
 		' = '/EQ, ' != '/NE, ' > '/GT, ' < '/LT, ' >= '/GE, ' <= '/LE,
@@ -70,7 +58,7 @@ lc-parse-clause .tree (.oper1 .left1 .right1)
 	, lc-parse-pattern .left .left1
 	, lc-parse-pattern .right .right1
 #
-lc-parse-clause .call .callx
+lc-parse .call .callx
 	:- lc-parse-call .call .call1
 	, lc-call-prototype .call1 .proto
 	, (lc-system-call-prototype .proto, !
@@ -79,7 +67,17 @@ lc-parse-clause .call .callx
 	; .callx = CALL .call1
 	)
 #
-lc-parse-clause .d _ :- write "Unknown expression" .d, nl, fail #
+lc-parse .d _ :- write "Unknown expression" .d, nl, fail #
+
+lc-parse-rules () () :- ! #
+lc-parse-rules (.rule # .rules) (.rule1, .rules1)
+	:- lc-parse-rule .rule .rule1, lc-parse-rules .rules .rules1
+#
+
+lc-parse-rule (.head :- .tail) (RULE .head1 .tail1)
+	:- !, lc-parse-call .head .head1, lc-parse .tail .tail1
+#
+lc-parse-rule .head (RULE .head1 YES) :- lc-parse-call .head .head1 #
 
 lc-parse-call .head .head1 :- !, lc-parse-pattern .head .head1 #
 
