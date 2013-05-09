@@ -118,15 +118,17 @@ public class SuiteUtil {
 	}
 
 	public static boolean evaluateLogical(String program) {
-		return evaluateLogical(parse(program), false);
+		return evaluateLogical(parse(program), false, false);
 	}
 
-	public static boolean evaluateLogical(Node program, boolean isTrace) {
+	public static boolean evaluateLogical(Node program, boolean isTrace,
+			boolean isDumpCode) {
 		Prover lc = getLogicalCompiler();
 		lc = isTrace ? enableTrace(lc) : lc;
 
-		Node node = SuiteUtil.parse("compile-logic .program .code");
-		// + ", pretty.print .code"
+		String goal = "compile-logic .program .code"
+				+ (isDumpCode ? ", pretty.print .code" : "");
+		Node node = SuiteUtil.parse(goal);
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);

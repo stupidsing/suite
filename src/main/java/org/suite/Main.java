@@ -141,7 +141,7 @@ public class Main {
 		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
 
-		quit: while (true)
+		while (true)
 			try {
 				StringBuilder sb = new StringBuilder();
 				String line;
@@ -152,7 +152,7 @@ public class Main {
 					if ((line = br.readLine()) != null)
 						sb.append(line + "\n");
 					else
-						break quit;
+						return;
 				} while (!line.isEmpty() && !line.endsWith("#"));
 
 				String input = sb.toString();
@@ -184,6 +184,7 @@ public class Main {
 				prover.configuration().setEnableTrace(isTrace);
 
 				FunCompilerConfig fcc;
+				boolean r;
 
 				switch (type) {
 				case EVALUATE:
@@ -217,10 +218,9 @@ public class Main {
 					final Generalizer generalizer = new Generalizer();
 					node = generalizer.generalize(node);
 
-					if (type == InputType.QUERY) {
-						boolean q = prover.prove(node);
-						System.out.println(yesNo(q));
-					} else if (type == InputType.QUERYELABORATE) {
+					if (type == InputType.QUERY)
+						System.out.println(yesNo(prover.prove(node)));
+					else if (type == InputType.QUERYELABORATE) {
 						Node elab = new Station() {
 							public boolean run() {
 								String dump = generalizer.dumpVariables();
@@ -241,8 +241,8 @@ public class Main {
 					}
 					break;
 				case QUERYCOMPILED:
-					boolean result = SuiteUtil.evaluateLogical(node, isTrace);
-					System.out.println(yesNo(result));
+					r = SuiteUtil.evaluateLogical(node, isTrace, isDumpCode);
+					System.out.println(yesNo(r));
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(Main.class, ex);

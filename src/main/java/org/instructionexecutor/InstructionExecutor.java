@@ -63,6 +63,7 @@ public class InstructionExecutor {
 			Node regs[] = frame != null ? frame.registers : null;
 			int ip = current.ip++;
 			Instruction insn = instructions[ip];
+			TermOp op;
 
 			// org.util.LogUtil.info("TRACE", ip + "> " + insn);
 
@@ -94,6 +95,18 @@ public class InstructionExecutor {
 					current = new Activation(closure, current);
 				else
 					regs[insn.op1] = closure.result;
+				break;
+			case DECOMPOSETREE0:
+				Node node = regs[insn.op1];
+				op = TermOp.find(((Atom) constantPool.get(insn.op2)).getName());
+				int branch = insn.op3;
+				insn = instructions[current.ip++];
+				Tree tree = Tree.decompose(node, op);
+				if (tree != null) {
+					regs[insn.op1] = tree.getLeft();
+					regs[insn.op2] = tree.getRight();
+				} else
+					ip = branch;
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op1);
@@ -143,8 +156,8 @@ public class InstructionExecutor {
 				Node left = regs[insn.op1];
 				Node right = regs[insn.op2];
 				insn = instructions[current.ip++];
-				String op = ((Atom) constantPool.get(insn.op1)).getName();
-				regs[insn.op2] = Tree.create(TermOp.find(op), left, right);
+				op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
+				regs[insn.op2] = Tree.create(op, left, right);
 				break;
 			case IFFALSE_______:
 				if (regs[insn.op2] != Atom.TRUE)

@@ -28,7 +28,7 @@ compile-call .call .pls .c0/.cx/.label
 	, replace .call/.call1 CUT/($$CUT .cutPoint .failLabel)
 	, lc-compile .call1 (
 		AND ($$BYTECODE _ CALL-CLOSURE .provenReg .provenReg) FAIL
-	) .pls/_ .c1/.c2/.c3/.c4
+	) .pls/()/_ .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel RETURN, .c3)
 	, .c4 = (_ LEAVE, .cx)
 #
@@ -98,25 +98,25 @@ lc-compile ($$BYTECODE .bytecode) .more .env .c0/.cx/.d0/.dx
 	:- !, .c0 = (.bytecode, .c1)
 	, lc-compile .more YES .env .c1/.cx/.d0/.dx
 #
-lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.dx
+lc-compile ($$SCOPE .call .pls1) .more .pls/.v .c0/.cx/.d0/.dx
 	:- !
 	, (.more/.more1 = YES/YES; .more1 = $$SCOPE .more .pls)
-	, lc-compile .call .more1 .pls1/.vs .c0/.cx/.d0/.dx
+	, lc-compile .call .more1 .pls1/.v .c0/.cx/.d0/.dx
 #
-lc-compile FAIL _ _ .c/.c/.d/.d :- ! #
+lc-compile FAIL _ _/.v/.v .c/.c/.d/.d :- ! #
 lc-compile YES .more .env .c0/.cx/.d0/.dx
 	:- !, lc-compile .more YES .env .c0/.cx/.d0/.dx
 #
 lc-compile (AND .a .b) .more .env .c0/.cx/.d0/.dx
 	:- !, lc-compile .a (AND .b .more) .env .c0/.cx/.d0/.dx
 #
-lc-compile (OR .a .b) .more .env .c0/.cx/.d0/.dx
+lc-compile (OR .a .b) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
 	, .bc = CALL-CONSTANT .label
-	, lc-compile .a (AND ($$BYTECODE _ .bc) FAIL) .env .c0/.c1/.d0/.d1
-	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .env .c1/.cx/.d1/.d2
+	, lc-compile .a (AND ($$BYTECODE _ .bc) FAIL) .pls/.v0/.v1 .c0/.c1/.d0/.d1
+	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .pls/.v1/.vx .c1/.cx/.d1/.d2
 	, .d2 = (.label LABEL .label, .d3)
-	, lc-compile .more YES .env .d3/.d4/.d5/.dx
+	, lc-compile .more YES .pls/.v/.v .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
 #
 lc-compile ($$CUT .cutPoint .failLabel) .more .env .c0/.cx/.d0/.dx
@@ -129,42 +129,43 @@ lc-compile (ONCE .do) .more .env .c0/.cx/.d0/.dx
 	, lc-compile .do (AND ($$CUT .cutPoint .failLabel) .more) .env .c1/.c2/.d0/.dx
 	, .c2 = (.failLabel LABEL .failLabel, .cx)
 #
-lc-compile (NOT .do) .more .env .c0/.cx/.d0/.dx
+lc-compile (NOT .do) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
 	, .c0 = (_ CUT-BEGIN .cutPoint, .c1)
-	, lc-compile .do (AND ($$CUT .cutPoint .failLabel) FAIL) .env .c1/.c2/.d0/.d1
+	, lc-compile .do (AND ($$CUT .cutPoint .failLabel) FAIL) .pls/.v0/.v1 .c1/.c2/.d0/.d1
 	, .c2 = (.failLabel LABEL .failLabel, .c3)
-	, lc-compile .more YES .env .c3/.cx/.d1/.dx
+	, lc-compile .more YES .pls/.v1/.vx .c3/.cx/.d1/.dx
 #
-lc-compile (.oper .a .b) .more .pls/.vs .c0/.cx/.d0/.dx
-	:- once (
-		.oper = EQ
-		, .c2 = (_ BIND .reg0 .reg1 .failLabel, .c3)
-		, .c5 = (_ BIND-UNDO, .cx)
-		; member (GE, GT, LE, LT, NE,) .oper
-		, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
-		, .c2 = (_ .inst .resultReg .reg0 .reg1
-			, _ IF-FALSE .failLabel .resultReg
-			, .c3
-		)
-		, .c5 = .cx
-	), !
-	, lc-create-node .a .vs .c0/.c1/.reg0
-	, lc-create-node .b .vs .c1/.c2/.reg1
-	, lc-compile .more YES .pls/.vs .c3/.c4/.d0/.dx
+lc-compile (EQ .a .b) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
+	:- !
+	, lc-bind .a .b .v0/.v1 .c0/.c1/.c2/.cx
+	, lc-compile .more YES .pls/.v1/.vx .c1/.c2/.d0/.dx
+#
+lc-compile (.oper .a .b) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
+	:- member (GE, GT, LE, LT, NE,) .oper
+	, !
+	, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
+	, lc-create-node .a .v0/.v1 .c0/.c1/.reg0
+	, lc-create-node .b .v1/.v2 .c1/.c2/.reg1
+	, .c2 = (_ .inst .resultReg .reg0 .reg1
+		, _ IF-FALSE .failLabel .resultReg
+		, .c3
+	)
+	, lc-compile .more YES .pls/.v2/.vx .c3/.c4/.d0/.dx
 	, .c4 = (.failLabel LABEL .failLabel, .c5)
+	, .c5 = .cx
 #
-lc-compile (DEFINE-RULES .rules .call) .more .pls/.vs .c0/.cx/.d0/.dx
+lc-compile (DEFINE-RULES .rules .call) .more .pls/.v .c0/.cx/.d0/.dx
 	:- !
 	, lc-merge-rules .rules .groups
 	, lc-prototype-labels .groups .pls/.pls1
 	, lc-compile-rules .groups .pls1 .d1/.dx
-	, !, lc-compile ($$SCOPE .call .pls1) .more .pls/.vs .c0/.cx/.d0/.d1
+	, !, lc-compile ($$SCOPE .call .pls1) .more .pls/.v .c0/.cx/.d0/.d1
 #
-lc-compile (CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
+lc-compile (CALL .call) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
 	, lc-call-prototype .call .proto
-	, lc-create-node .call .vs .c0/.c1/.reg
+	, lc-create-node .call .v0/.v1 .c0/.c1/.reg
 	, member .pls .proto/.callLabel
 	, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
@@ -175,14 +176,14 @@ lc-compile (CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
 		, .cx
 	)
 	, .d0 = (.provenLabel LABEL .provenLabel, .d1)
-	, lc-compile .more YES .pls/.vs .d1/.d2/.d3/.dx
+	, lc-compile .more YES .pls/.v1/.vx .d1/.d2/.d3/.dx
 	, .d2 = (_ RETURN, .d3)
 #
-lc-compile (SYSTEM-CALL .call) .more .pls/.vs .c0/.cx/.d0/.dx
+lc-compile (SYSTEM-CALL .call) .more .pls/.v0/.vx .c0/.cx/.d0/.dx
 	:- !
-	, lc-create-node .call .vs .c0/.c1/.reg
+	, lc-create-node .call .v0/.v1 .c0/.c1/.reg
 	, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
-	, lc-compile .more YES .pls/.vs .c2/.c3/.d0/.dx
+	, lc-compile .more YES .pls/.v1/.vx .c2/.c3/.d0/.dx
 	, .c3 = (.failLabel LABEL .failLabel, .cx)
 #
 
@@ -194,6 +195,34 @@ lc-merge-rules (.rule, .remains) .groups
 	, member .rules .rule
 	, !
 	, lc-merge-rules .remains .groups
+#
+
+lc-bind (TREE .tree) .node .v .cs :- !, lc-bind0 .node (TREE .tree) .v .cs #
+lc-bind .node0 .node1 .v .cs :- lc-bind0 .node0 .node1 .v .cs #
+
+lc-bind0 .node .node .v/.v .c/.c/.f/.f :- not (.node = $$REG:_) #
+lc-bind0 (TREE .oper .nl0 .nr0) (TREE .oper .nl1 .nr1) .v0/.vx .c0/.cx/.f0/.fx
+	:- !
+	, lc-bind .nl0 .nl1 .v0/.v1 .c0/.c1/.f1/.fx
+	, lc-bind .nr0 .nr1 .v1/.vx .c1/.cx/.f0/.f1
+#
+lc-bind0 .node0 .node1 .v0/.vx .c0/.cx/.f0/.fx
+	:- lc-create-node .node0 .v0/.v1 .c0/.c1/.reg0
+	, lc-bind-register .reg0 .node1 .v1/.vx .c1/.cx/.f0/.fx
+#
+
+lc-bind-register .reg (TREE .oper .nl .nr) .v/.v .c0/.cx/.f/.f
+	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .f
+		, _ DECOMPOSE-TREE1 .reg0 .reg1
+		, .c1
+	)
+	, lc-bind-register .reg0 .nl .c1/.c2/.f
+	, lc-bind-register .reg1 .nr .c2/.cx/.f
+#
+lc-bind-register .reg0 .node1 .v .c0/.cx/.f0/.fx
+	:- lc-create-node .node1 .v .c0/.c1/.reg1
+	, .c1 = (_ BIND .reg0 .reg1 .failLabel, .cx)
+	, .f0 = (.failLabel BIND-UNDO, .fx)
 #
 
 lc-flatten-rules () FAIL :- ! #
@@ -230,26 +259,24 @@ lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	, lc-compile-rules .remains .pls .c2/.cx
 #
 
-lc-create-node $$REG:.reg _ .c/.c/.reg :- ! #
-lc-create-node (VAR .var) .vs .c0/.cx/.reg
-	:- !, member .vs .var/.reg/.first
-	, (bound .first, .c0 = .cx
-		; .first = N, .c0 = (_ NEW-NODE .reg, .cx)
-	)
-	, !
+lc-create-node $$REG:.reg .v/.v .c/.c/.reg :- ! #
+lc-create-node (VAR .var) .v0/.vx .c0/.cx/.reg
+	:- member .v0 .var/.reg, !
+		, .v0 = .vx, .c0 = .cx
+	; .vx = (.var/.reg, .v0), .c0 = (_ NEW-NODE .reg, .cx)
 #
-lc-create-node (ATOM .a) _ .c0/.cx/.reg
+lc-create-node (ATOM .a) .v/.v .c0/.cx/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx)
 #
-lc-create-node (NUMBER .i) _ .c0/.cx/.reg
+lc-create-node (NUMBER .i) .v/.v .c0/.cx/.reg
 	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
 #
-lc-create-node (STRING .s) _ .c0/.cx/.reg
+lc-create-node (STRING .s) .v/.v .c0/.cx/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .s, .cx)
 #
-lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
-	:- lc-create-node .left .vs .c0/.c1/.regl
-	, lc-create-node .right .vs .c1/.c2/.regr
+lc-create-node (TREE .operator .left .right) .v0/.vx .c0/.cx/.reg
+	:- lc-create-node .left .v0/.v1 .c0/.c1/.regl
+	, lc-create-node .right .v1/.vx .c1/.c2/.regr
 	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
 #
 

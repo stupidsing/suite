@@ -48,6 +48,8 @@ public class InstructionUtil {
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
 		CUTFAIL_______("CUT-FAIL"), //
+		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
+		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
