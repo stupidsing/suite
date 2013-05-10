@@ -36,6 +36,8 @@ rbt-add-list (.v, .vs) .tree0/.treex
 
 rbt-add .v .tree/(BLACK .npn) :- rbt-add0 ADD .v .tree/(_ .npn) #
 
+rbt-bind .v .tree/(BLACK .npn) :- rbt-add0 BIND .v .tree/(_ .npn) #
+
 rbt-replace .v .tree/(BLACK .npn) :- rbt-add0 REPLACE .v .tree/(_ .npn) #
 
 rbt-add0 _ .v ()/(RED () .v ()) #
@@ -46,7 +48,10 @@ rbt-add0  .mode .v (.color .n0 .pivot .n1)/.treex
 	; rbt-compare .pivot .v, !
 	, rbt-add0 .mode .v .n1/.newn1
 	, rbt-balance (.color .n0 .pivot .newn1)/.treex
-	; .mode = REPLACE, .color .n0 .v .n1 = .treex
+	; .mode = BIND
+		, .pivot = .v, .color .n0 .v .n1 = .treex
+	; .mode = REPLACE
+		, .color .n0 .v .n1 = .treex
 #
 
 rbt-balance (BLACK .npn)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
