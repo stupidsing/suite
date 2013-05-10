@@ -23,9 +23,9 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	, !, resolve-types .tr
 	, !, .prog0 = (
 		infer-type-rule-using-libs (.lib, .libs) .do .ue/.ve/.te .tr1 .type
-			:- fc-dict-merge .ue .ues .ue1
-			, fc-dict-merge .ve .ves .ve1
-			, fc-dict-merge .te .tes .te1
+			:- fc-dict-merge-replace .ue .ues .ue1
+			, fc-dict-merge-replace .ve .ves .ve1
+			, fc-dict-merge-replace .te .tes .te1
 			, infer-type-rule-using-libs .libs .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
@@ -44,7 +44,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	, .fc = .frame1/.wes .cs0/.csx/.ds0/.dsx/.regs
 	, .prog = (
 		fc-compile-using-libs .mode (.lib, .libs) .do .frame0/.we .c0/.cx/.d0/.dx/.reg
-			:- fc-dict-merge .we .wes .we1
+			:- fc-dict-merge-replace .we .wes .we1
 			, fc-compile-using-libs .mode .libs .do .frame1/.we1 .cs0/.csx/.ds0/.dsx/.regs
 	)
 #

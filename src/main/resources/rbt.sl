@@ -12,6 +12,13 @@ rbt-get (_ .n0 .pivot _) .v :- rbt-compare .v .pivot, !, rbt-get .n0 .v #
 rbt-get (_ _ .pivot .n1) .v :- rbt-compare .pivot .v, !, rbt-get .n1 .v #
 rbt-get (_ _ .v _) .v #
 
+rbt-get-list () .l/.l #
+rbt-get-list (_ .n0 .pivot .n1) .l0/.lx
+	:- rbt-get-list .n0 .l0/.l1
+	, .l1 = (.pivot, .l2)
+	, rbt-get-list .n1 .l2/.lx
+#
+
 rbt-depth () 0 #
 rbt-depth (_ .n0 _ .n1) .depth
 	:- rbt-depth .n0 .d0
