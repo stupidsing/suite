@@ -37,13 +37,13 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	protected void execute(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
-		Object regs[] = frame != null ? frame.registers : null;
+		Node regs[] = frame != null ? frame.registers : null;
 
 		switch (insn.insn) {
 		case BIND__________:
 			bindPoints[bsp++] = journal.getPointInTime();
-			Node node0 = (Node) regs[insn.op0];
-			Node node1 = (Node) regs[insn.op1];
+			Node node0 = regs[insn.op0];
+			Node node1 = regs[insn.op1];
 			if (!Binder.bind(node0, node1, journal))
 				current.ip = insn.op2; // Fail
 			break;
@@ -63,11 +63,11 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			current.ip = insn.op1;
 			break;
 		case PROVEINTERPRET:
-			if (!prover.prove((Node) regs[insn.op0]))
+			if (!prover.prove(regs[insn.op0]))
 				current.ip = insn.op1;
 			break;
 		case PROVESYS______:
-			if (!systemPredicates.call((Node) regs[insn.op0]))
+			if (!systemPredicates.call(regs[insn.op0]))
 				current.ip = insn.op1;
 			break;
 		default:
