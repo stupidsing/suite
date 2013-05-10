@@ -21,11 +21,17 @@ rbt-depth (_ .n0 _ .n1) .depth
 	, !
 #
 
-rbt-merge () .tree .tree #
-rbt-merge (_ .n0 .pivot .n1) .tree0 .treex
-	:- rbt-merge .n0 .tree0 .tree1
-	, rbt-add .pivot .tree1/.tree2
-	, rbt-merge .n1 .tree2 .treex
+rbt-merge-add .t :- rbt-merge0 ADD .t #
+
+rbt-merge-bind .t :- rbt-merge0 BIND .t #
+
+rbt-merge-replace .t :- rbt-merge0 REPLACE .t #
+
+rbt-merge0 _ () .tree .tree #
+rbt-merge0 .mode (_ .n0 .pivot .n1) .tree0 .treex
+	:- rbt-merge0 .mode .n0 .tree0 .tree1
+	, rbt-add1 .mode .pivot .tree1/.tree2
+	, rbt-merge0 .mode .n1 .tree2 .treex
 #
 
 rbt-add-list () .tree/.tree #
@@ -34,11 +40,13 @@ rbt-add-list (.v, .vs) .tree0/.treex
 	, rbt-add-list .vs .tree1/.treex
 #
 
-rbt-add .v .tree/(BLACK .npn) :- rbt-add0 ADD .v .tree/(_ .npn) #
+rbt-add .v .t :- rbt-add1 ADD .v .t #
 
-rbt-bind .v .tree/(BLACK .npn) :- rbt-add0 BIND .v .tree/(_ .npn) #
+rbt-bind .v .t :- rbt-add1 BIND .v .t #
 
-rbt-replace .v .tree/(BLACK .npn) :- rbt-add0 REPLACE .v .tree/(_ .npn) #
+rbt-replace .v .t :- rbt-add1 REPLACE .v .t #
+
+rbt-add1 .mode .v .tree/(BLACK .npn) :- rbt-add0 .mode .v .tree/(_ .npn) #
 
 rbt-add0 _ .v ()/(RED () .v ()) #
 rbt-add0  .mode .v (.color .n0 .pivot .n1)/.treex
