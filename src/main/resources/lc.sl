@@ -62,8 +62,7 @@ lc-parse .call .callx
 	:- lc-parse-pattern .call .call1
 	, lc-call-prototype .call1 .proto
 	, (lc-system-call-prototype .proto, !
-		, lc-parse-pattern .call .call2
-		, .callx = SYSTEM-CALL .call2
+		, .callx = SYSTEM-CALL .call1
 	; .callx = CALL .call1
 	)
 #
