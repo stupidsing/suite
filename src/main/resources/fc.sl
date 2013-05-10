@@ -114,7 +114,8 @@ fc-error .m :- !, write .m, nl, fail #
 
 fc-dict-merge .t0 .t1 .t2 :- rbt-merge .t0 .t1 .t2, ! #
 
-fc-dict-add .v .t0/.t1 :- rbt-add .v .t0/.t1, ! #
+-- use replace, necessary to redefine already-defined variables
+fc-dict-add .v .t0/.t1 :- rbt-replace .v .t0/.t1, ! #
 
 fc-dict-get .v .t :- rbt-get .v .t, ! #
 

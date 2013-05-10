@@ -34,19 +34,19 @@ rbt-add-list (.v, .vs) .tree0/.treex
 	, rbt-add-list .vs .tree1/.treex
 #
 
-rbt-add .v .tree/(BLACK .npn) :- rbt-add0 .v .tree/(_ .npn) #
+rbt-add .v .tree/(BLACK .npn) :- rbt-add0 ADD .v .tree/(_ .npn) #
 
--- There is a special replacement case (last line of rbt-add0), necessary for
--- functional compiler to replace already-defined variables.
-rbt-add0 .v ()/(RED () .v ()) #
-rbt-add0 .v (.color .n0 .pivot .n1)/.treex
+rbt-replace .v .tree/(BLACK .npn) :- rbt-add0 REPLACE .v .tree/(_ .npn) #
+
+rbt-add0 _ .v ()/(RED () .v ()) #
+rbt-add0  .mode .v (.color .n0 .pivot .n1)/.treex
 	:- rbt-compare .v .pivot, !
-	, rbt-add0 .v .n0/.newn0
+	, rbt-add0 .mode .v .n0/.newn0
 	, rbt-balance (.color .newn0 .pivot .n1)/.treex
 	; rbt-compare .pivot .v, !
-	, rbt-add0 .v .n1/.newn1
+	, rbt-add0 .mode .v .n1/.newn1
 	, rbt-balance (.color .n0 .pivot .newn1)/.treex
-	; .color .n0 .v .n1 = .treex
+	; .mode = REPLACE, .color .n0 .v .n1 = .treex
 #
 
 rbt-balance (BLACK .npn)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
