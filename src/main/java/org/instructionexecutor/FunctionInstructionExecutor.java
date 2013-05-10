@@ -105,8 +105,8 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 
 		switch (insn.insn) {
 		case SERVICE_______:
-			exec.sp -= insn.op3;
-			regs[insn.op1] = sys(exec, constantPool.get(insn.op2));
+			exec.sp -= insn.op2;
+			regs[insn.op0] = sys(exec, constantPool.get(insn.op1));
 			break;
 		default:
 			super.execute(exec, insn);

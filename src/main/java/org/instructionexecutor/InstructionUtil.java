@@ -99,17 +99,17 @@ public class InstructionUtil {
 
 	protected static class Instruction {
 		protected Insn insn;
-		protected int op1, op2, op3;
+		protected int op0, op1, op2;
 
-		protected Instruction(Insn insn, int op1, int op2, int op3) {
+		protected Instruction(Insn insn, int op0, int op1, int op2) {
 			this.insn = insn;
+			this.op0 = op0;
 			this.op1 = op1;
 			this.op2 = op2;
-			this.op3 = op3;
 		}
 
 		public String toString() {
-			return insn.name + " " + op1 + ", " + op2 + ", " + op3;
+			return insn.name + " " + op0 + ", " + op1 + ", " + op2;
 		}
 	}
 

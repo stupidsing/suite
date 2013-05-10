@@ -77,7 +77,7 @@ public class InstructionExtractor {
 
 				// Allocates new register in current local frame
 				Instruction enter = enters.get(enters.size() - 1);
-				int registerNumber = enter.op1++;
+				int registerNumber = enter.op0++;
 
 				((Reference) node).bound(Int.create(registerNumber));
 				return registerNumber;

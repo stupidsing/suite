@@ -42,33 +42,33 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		switch (insn.insn) {
 		case BIND__________:
 			bindPoints[bsp++] = journal.getPointInTime();
+			Node node0 = (Node) regs[insn.op0];
 			Node node1 = (Node) regs[insn.op1];
-			Node node2 = (Node) regs[insn.op2];
-			if (!Binder.bind(node1, node2, journal))
-				current.ip = insn.op3; // Fail
+			if (!Binder.bind(node0, node1, journal))
+				current.ip = insn.op2; // Fail
 			break;
 		case BINDUNDO______:
 			journal.undoBinds(bindPoints[--bsp]);
 			break;
 		case CUTBEGIN______:
-			regs[insn.op1] = i(cutPoints.size());
+			regs[insn.op0] = i(cutPoints.size());
 			cutPoints.add(new CutPoint(current, journal.getPointInTime()));
 			break;
 		case CUTFAIL_______:
-			int cutPointIndex = g(regs[insn.op1]);
+			int cutPointIndex = g(regs[insn.op0]);
 			CutPoint cutPoint = cutPoints.get(cutPointIndex);
 			Util.truncate(cutPoints, cutPointIndex);
 			current = cutPoint.activation;
 			journal.undoBinds(cutPoint.journalPointer);
-			current.ip = insn.op2;
+			current.ip = insn.op1;
 			break;
 		case PROVEINTERPRET:
-			if (!prover.prove((Node) regs[insn.op1]))
-				current.ip = insn.op2;
+			if (!prover.prove((Node) regs[insn.op0]))
+				current.ip = insn.op1;
 			break;
 		case PROVESYS______:
-			if (!systemPredicates.call((Node) regs[insn.op1]))
-				current.ip = insn.op2;
+			if (!systemPredicates.call((Node) regs[insn.op0]))
+				current.ip = insn.op1;
 			break;
 		default:
 			super.execute(exec, insn);

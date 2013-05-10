@@ -9,36 +9,36 @@ import org.util.Util;
 
 public class Binder {
 
-	public static boolean bind(Node n1, Node n2, Journal journal) {
+	public static boolean bind(Node n0, Node n1, Journal journal) {
+		n0 = n0.finalNode();
 		n1 = n1.finalNode();
-		n2 = n2.finalNode();
 
-		if (n1 instanceof Reference) {
-			journal.addBind((Reference) n1, n2);
+		if (n0 instanceof Reference) {
+			journal.addBind((Reference) n0, n1);
 			return true;
-		} else if (n2 instanceof Reference) {
-			journal.addBind((Reference) n2, n1);
+		} else if (n1 instanceof Reference) {
+			journal.addBind((Reference) n1, n0);
 			return true;
 		}
 
-		if (n1 == n2)
+		if (n0 == n1)
 			return true;
 
+		Class<? extends Node> clazz0 = n0.getClass();
 		Class<? extends Node> clazz1 = n1.getClass();
-		Class<? extends Node> clazz2 = n2.getClass();
 
-		if (clazz1 != clazz2)
+		if (clazz0 != clazz1)
 			return false;
-		else if (clazz1 == Int.class)
-			return ((Int) n1).getNumber() == ((Int) n2).getNumber();
-		else if (clazz1 == Str.class)
-			return Util.equals(((Str) n1).getValue(), ((Str) n2).getValue());
-		else if (clazz1 == Tree.class) {
+		else if (clazz0 == Int.class)
+			return ((Int) n0).getNumber() == ((Int) n1).getNumber();
+		else if (clazz0 == Str.class)
+			return Util.equals(((Str) n0).getValue(), ((Str) n1).getValue());
+		else if (clazz0 == Tree.class) {
+			Tree t0 = (Tree) n0;
 			Tree t1 = (Tree) n1;
-			Tree t2 = (Tree) n2;
-			return t1.getOperator() == t2.getOperator()
-					&& bind(t1.getLeft(), t2.getLeft(), journal)
-					&& bind(t1.getRight(), t2.getRight(), journal);
+			return t0.getOperator() == t1.getOperator()
+					&& bind(t0.getLeft(), t1.getLeft(), journal)
+					&& bind(t0.getRight(), t1.getRight(), journal);
 		} else
 			return false;
 	}

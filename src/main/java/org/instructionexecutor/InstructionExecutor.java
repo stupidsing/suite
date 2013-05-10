@@ -69,123 +69,123 @@ public class InstructionExecutor {
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
-				regs[insn.op1] = new Closure(frame, insn.op2);
+				regs[insn.op0] = new Closure(frame, insn.op1);
 				break;
 			case ASSIGNFRAMEREG:
-				i = insn.op2;
+				i = insn.op1;
 				while (i++ < 0)
 					frame = frame.previous;
-				regs[insn.op1] = frame.registers[insn.op3];
+				regs[insn.op0] = frame.registers[insn.op2];
 				break;
 			case ASSIGNCONST___:
-				regs[insn.op1] = constantPool.get(insn.op2);
+				regs[insn.op0] = constantPool.get(insn.op1);
 				break;
 			case ASSIGNINT_____:
-				regs[insn.op1] = i(insn.op2);
+				regs[insn.op0] = i(insn.op1);
 				break;
 			case CALL__________:
-				current = new Activation(frame, g(regs[insn.op1]), current);
+				current = new Activation(frame, g(regs[insn.op0]), current);
 				break;
 			case CALLCONST_____:
-				current = new Activation(frame, insn.op1, current);
+				current = new Activation(frame, insn.op0, current);
 				break;
 			case CALLCLOSURE___:
-				Closure closure = (Closure) regs[insn.op2];
+				Closure closure = (Closure) regs[insn.op1];
 				if (closure.result == null)
 					current = new Activation(closure, current);
 				else
-					regs[insn.op1] = closure.result;
+					regs[insn.op0] = closure.result;
 				break;
 			case DECOMPOSETREE0:
-				Node node = regs[insn.op1];
-				op = TermOp.find(((Atom) constantPool.get(insn.op2)).getName());
-				int branch = insn.op3;
+				Node node = regs[insn.op0];
+				op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
+				int branch = insn.op2;
 				insn = instructions[current.ip++];
 				Tree tree = Tree.decompose(node, op);
 				if (tree != null) {
-					regs[insn.op1] = tree.getLeft();
-					regs[insn.op2] = tree.getRight();
+					regs[insn.op0] = tree.getLeft();
+					regs[insn.op1] = tree.getRight();
 				} else
 					ip = branch;
 				break;
 			case ENTER_________:
-				current.frame = new Frame(frame, insn.op1);
+				current.frame = new Frame(frame, insn.op0);
 				break;
 			case EVALADD_______:
-				regs[insn.op1] = i(g(regs[insn.op2]) + g(regs[insn.op3]));
+				regs[insn.op0] = i(g(regs[insn.op1]) + g(regs[insn.op2]));
 				break;
 			case EVALDIV_______:
-				regs[insn.op1] = i(g(regs[insn.op2]) / g(regs[insn.op3]));
+				regs[insn.op0] = i(g(regs[insn.op1]) / g(regs[insn.op2]));
 				break;
 			case EVALEQ________:
-				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
-				regs[insn.op1] = a(i == 0);
+				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
+				regs[insn.op0] = a(i == 0);
 				break;
 			case EVALGE________:
-				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
-				regs[insn.op1] = a(i >= 0);
+				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
+				regs[insn.op0] = a(i >= 0);
 				break;
 			case EVALGT________:
-				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
-				regs[insn.op1] = a(i > 0);
+				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
+				regs[insn.op0] = a(i > 0);
 				break;
 			case EVALLE________:
-				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
-				regs[insn.op1] = a(i <= 0);
+				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
+				regs[insn.op0] = a(i <= 0);
 				break;
 			case EVALLT________:
-				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
-				regs[insn.op1] = a(i < 0);
+				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
+				regs[insn.op0] = a(i < 0);
 				break;
 			case EVALNE________:
-				i = comparer.compare(regs[insn.op2], regs[insn.op3]);
-				regs[insn.op1] = a(i != 0);
+				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
+				regs[insn.op0] = a(i != 0);
 				break;
 			case EVALMOD_______:
-				regs[insn.op1] = i(g(regs[insn.op2]) % g(regs[insn.op3]));
+				regs[insn.op0] = i(g(regs[insn.op1]) % g(regs[insn.op2]));
 				break;
 			case EVALMUL_______:
-				regs[insn.op1] = i(g(regs[insn.op2]) * g(regs[insn.op3]));
+				regs[insn.op0] = i(g(regs[insn.op1]) * g(regs[insn.op2]));
 				break;
 			case EVALSUB_______:
-				regs[insn.op1] = i(g(regs[insn.op2]) - g(regs[insn.op3]));
+				regs[insn.op0] = i(g(regs[insn.op1]) - g(regs[insn.op2]));
 				break;
 			case EXIT__________:
-				return regs[insn.op1];
+				return regs[insn.op0];
 			case FORMTREE0_____:
-				Node left = regs[insn.op1];
-				Node right = regs[insn.op2];
+				Node left = regs[insn.op0];
+				Node right = regs[insn.op1];
 				insn = instructions[current.ip++];
-				op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
-				regs[insn.op2] = Tree.create(op, left, right);
+				op = TermOp.find(((Atom) constantPool.get(insn.op0)).getName());
+				regs[insn.op1] = Tree.create(op, left, right);
 				break;
 			case IFFALSE_______:
-				if (regs[insn.op2] != Atom.TRUE)
-					current.ip = insn.op1;
+				if (regs[insn.op1] != Atom.TRUE)
+					current.ip = insn.op0;
 				break;
 			case IFNOTEQUALS___:
-				if (regs[insn.op2] != regs[insn.op3])
-					current.ip = insn.op1;
+				if (regs[insn.op1] != regs[insn.op2])
+					current.ip = insn.op0;
 				break;
 			case JUMP__________:
-				current.ip = insn.op1;
+				current.ip = insn.op0;
 				break;
 			case LABEL_________:
 				break;
 			case LOG___________:
-				LogUtil.info("EXEC", constantPool.get(insn.op1).toString());
+				LogUtil.info("EXEC", constantPool.get(insn.op0).toString());
 				break;
 			case NEWNODE_______:
-				regs[insn.op1] = new Reference();
+				regs[insn.op0] = new Reference();
 				break;
 			case PUSH__________:
-				stack[sp++] = regs[insn.op1];
+				stack[sp++] = regs[insn.op0];
 				break;
 			case PUSHCONST_____:
-				stack[sp++] = i(insn.op1);
+				stack[sp++] = i(insn.op0);
 				break;
 			case POP___________:
-				regs[insn.op1] = stack[--sp];
+				regs[insn.op0] = stack[--sp];
 				break;
 			case REMARK________:
 				break;
@@ -193,15 +193,15 @@ public class InstructionExecutor {
 				current = current.previous;
 				break;
 			case RETURNVALUE___:
-				Node returnValue = regs[insn.op1]; // Saves return value
+				Node returnValue = regs[insn.op0]; // Saves return value
 				current = current.previous;
-				current.frame.registers[instructions[current.ip - 1].op1] = returnValue;
+				current.frame.registers[instructions[current.ip - 1].op0] = returnValue;
 				break;
 			case SETCLOSURERES_:
-				((Closure) regs[insn.op1]).result = regs[insn.op2];
+				((Closure) regs[insn.op0]).result = regs[insn.op1];
 				break;
 			case TOP___________:
-				regs[insn.op1] = stack[sp + insn.op2];
+				regs[insn.op0] = stack[sp + insn.op1];
 				break;
 			default:
 				exec.current = current;
