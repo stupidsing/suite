@@ -284,9 +284,9 @@ public class Util {
 
 	public static String substr(String s, int start, int end) {
 		int length = s.length();
-		while (start < 0)
+		if (start < 0)
 			start += length;
-		while (end <= 0)
+		if (end <= 0)
 			end += length;
 		return s.substring(start, end);
 	}
