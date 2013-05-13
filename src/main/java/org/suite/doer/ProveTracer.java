@@ -15,11 +15,11 @@ public class ProveTracer {
 	private int currentDepth;
 
 	private class Record {
+		private int start, end = -1;
 		private Record parent;
 		private Node query;
 		private int depth;
 		private int nOkays;
-		private int end = -1;
 
 		private Record(Record parent, Node query, int depth) {
 			this.parent = parent;
@@ -27,13 +27,15 @@ public class ProveTracer {
 			this.depth = depth;
 		}
 
-		private void appendTo(StringBuilder sb, int pos) {
+		private void appendTo(StringBuilder sb) {
 			if (Boolean.TRUE)
 				sb.append(String.format("[%4s:%-2d]  " //
 						, nOkays > 0 ? "OK__" : "FAIL", depth));
 			else
-				sb.append(String.format("[pos=%-5d, OKs=%-2d, end=%-5s]  " //
-						, pos //
+				sb.append(String.format(
+						"%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
+						, start //
+						, parent != null ? parent.start : 0 //
 						, nOkays //
 						, end >= 0 ? String.valueOf(end) : ""));
 
@@ -59,6 +61,7 @@ public class ProveTracer {
 			public boolean run() {
 				currentRecord = record;
 				currentDepth = record.depth;
+				record.start = records.size();
 				records.add(record);
 				return true;
 			}
@@ -97,11 +100,8 @@ public class ProveTracer {
 
 	public String getDump() {
 		StringBuilder sb = new StringBuilder();
-		int n = 0;
-
 		for (Record record : records)
-			record.appendTo(sb, n++);
-
+			record.appendTo(sb);
 		return sb.toString();
 	}
 
