@@ -126,8 +126,8 @@ public class Formatter {
 					quote = true;
 
 			for (Operator operator : operators) {
-				String name = operator.getName();
-				if (!name.trim().isEmpty() && s.contains(name))
+				String name = operator.getName().trim();
+				if (!name.isEmpty() && s.contains(name))
 					quote = true;
 			}
 
