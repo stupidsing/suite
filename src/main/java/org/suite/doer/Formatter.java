@@ -125,9 +125,11 @@ public class Formatter {
 						|| c == '\'' || c == '"' || c == '`')
 					quote = true;
 
+			String spaced = " " + s + " ";
+
 			for (Operator operator : operators) {
-				String name = operator.getName().trim();
-				if (!name.isEmpty() && s.contains(name))
+				String name = operator.getName();
+				if (!name.trim().isEmpty() && spaced.contains(name))
 					quote = true;
 			}
 
