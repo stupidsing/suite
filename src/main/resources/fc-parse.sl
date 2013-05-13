@@ -1,5 +1,5 @@
 fc-parse .t .parsed
-	:- bound .t, fc-parse-sugar .t .t1, fc-parse .t1 .parsed, !
+	:- bound .t, fc-parse-sugar .t .t1, !, fc-parse .t1 .parsed
 #
 fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
 fc-parse (define type .type of .classes for any .typeVars >> .do) (
