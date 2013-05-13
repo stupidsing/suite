@@ -57,8 +57,4 @@ public class FailedTests {
 		return SuiteUtil.evaluateEagerFunctional(f);
 	}
 
-	private static Node getType(String a) {
-		return SuiteUtil.evaluateFunctionalType(a);
-	}
-
 }
