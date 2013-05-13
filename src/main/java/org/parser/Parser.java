@@ -153,7 +153,6 @@ public class Parser {
 			length = line.length();
 
 			if (length != 0) { // Ignore empty lines
-
 				int startPos = 0, endPos = length;
 
 				// Find operators at beginning and end of line
