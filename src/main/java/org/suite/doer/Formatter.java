@@ -13,6 +13,7 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Str;
 import org.suite.node.Tree;
+import org.util.Util;
 
 public class Formatter {
 
@@ -32,6 +33,27 @@ public class Formatter {
 
 	public static String dump(Node node) {
 		return new Formatter(TermOp.values(), true).format(node);
+	}
+
+	public static String treeize(Node node) {
+		StringBuilder sb = new StringBuilder();
+		treeize(node, sb, "");
+		return sb.toString();
+	}
+
+	private static void treeize(Node node, StringBuilder sb, String indent) {
+		Tree tree = Tree.decompose(node);
+
+		if (tree != null) {
+			String op = tree.getOperator().getName();
+			op = Util.equals(op, " ") ? "[]" : op.trim();
+			String indent1 = indent + "  ";
+
+			treeize(tree.getLeft(), sb, indent1);
+			sb.append(indent + op + "\n");
+			treeize(tree.getRight(), sb, indent1);
+		} else
+			sb.append(indent + dump(node) + "\n");
 	}
 
 	private String format(Node node) {
