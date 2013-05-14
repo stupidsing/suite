@@ -32,7 +32,7 @@ public class ProveTracer {
 				sb.append(String.format("[%4s:%-2d]  " //
 						, nOkays > 0 ? "OK__" : "FAIL", depth));
 			else
-				sb.append(String.format(
+				sb.append(String.format( //
 						"%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
 						, start //
 						, parent != null ? parent.start : 0 //
