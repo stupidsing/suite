@@ -46,16 +46,18 @@ public class ParserUtil {
 		return -1;
 	}
 
-	public static int search(String s, Operator operator) {
+	public static String[] search(String s, Operator operator) {
 		return search(s, operator.getName(), operator.getAssoc());
 	}
 
-	public static int search(String s, String name, Assoc assoc) {
+	public static String[] search(String s, String name, Assoc assoc) {
 		return search(s, name, assoc, true);
 	}
 
-	public static int search(String s, String name, Assoc assoc,
-			boolean isCheckDepth) {
+	public static String[] search(String s //
+			, String name //
+			, Assoc assoc //
+			, boolean isCheckDepth) {
 		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
@@ -70,12 +72,15 @@ public class ParserUtil {
 				if (isCheckDepth)
 					depth = ParserUtil.checkDepth(depth, c);
 
-				if (depth == 0 && s.startsWith(name, pos))
-					return pos;
+				if (depth == 0 && s.startsWith(name, pos)) {
+					String left = s.substring(0, pos);
+					String right = s.substring(pos + nameLength);
+					return new String[] { left, right };
+				}
 			}
 		}
 
-		return -1;
+		return null;
 	}
 
 	public static int getQuoteChange(int quote, char c) {

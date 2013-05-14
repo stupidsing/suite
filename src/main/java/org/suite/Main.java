@@ -175,7 +175,7 @@ public class Main {
 
 				input = input.trim();
 				if (input.endsWith("#"))
-					input = input.substring(0, input.length() - 1);
+					input = Util.substr(input, 0, -1);
 
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());

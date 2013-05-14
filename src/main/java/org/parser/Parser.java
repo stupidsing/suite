@@ -72,22 +72,18 @@ public class Parser {
 		char first = s.charAt(0), last = s.charAt(end - 1);
 
 		for (Operator operator : operators) {
-			int pos = ParserUtil.search(s, operator);
+			String lr[] = ParserUtil.search(s, operator);
 
 			if (operator == TermOp.BRACES)
-				if (pos >= 0 && last == '}')
-					end--;
+				if (lr != null && last == '}')
+					lr[1] = Util.substr(lr[1], 0, -1);
 				else
 					continue;
 
-			if (pos >= 0) {
-				String l = s.substring(0, pos);
-				String r = s.substring(pos + operator.getName().length(), end);
-
+			if (lr != null)
 				return Tree.create(operator //
-						, parseWithoutComments(l) //
-						, parseWithoutComments(r));
-			}
+						, parseWithoutComments(lr[0]) //
+						, parseWithoutComments(lr[1]));
 		}
 
 		if (first == '(' && last == ')' //
@@ -132,10 +128,16 @@ public class Parser {
 
 		while (!s.isEmpty()) {
 			String line;
-			int pos = ParserUtil.search(s, "\n", Assoc.RIGHT, false);
-			pos = pos >= 0 ? pos : s.length();
-			line = s.substring(0, pos);
-			s = pos < s.length() ? s.substring(pos + 1) : "";
+			String lr[];
+
+			lr = ParserUtil.search(s, "\n", Assoc.RIGHT, false);
+			if (lr != null) {
+				line = lr[0];
+				s = lr[1];
+			} else {
+				line = s;
+				s = "";
+			}
 
 			int length = line.length();
 			int indent = 0;
@@ -145,11 +147,8 @@ public class Parser {
 			line = line.substring(indent).trim();
 
 			// Converts :: notation, "if:: a" becomes "if (a)"
-			int colonPos = ParserUtil.search(line, "::", Assoc.RIGHT);
-			if (colonPos >= 0)
-				line = line.substring(0, colonPos) + " ("
-						+ line.substring(colonPos + 2) + ")";
-
+			lr = ParserUtil.search(line, "::", Assoc.RIGHT);
+			line = lr != null ? lr[0] + " (" + lr[1] + ")" : line;
 			length = line.length();
 
 			if (length != 0) { // Ignore empty lines
