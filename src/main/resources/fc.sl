@@ -147,7 +147,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define drop = (n => list =>
 		if:: n > 0 && is-tree {list}
-		then:: list | tail | drop {n - 1} 
+		then:: list | tail | drop {n - 1}
 		else:: list
 	) >>
 	define flip = (f => x => y =>
