@@ -35,10 +35,10 @@ public class FailedTests {
 		for (int i = 0; i < 32; i++)
 			sb.append(i + ", ");
 
+		String list = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,";
 		assertTrue(SuiteUtil.proveThis(rs, "" //
-				+ "23t-add-list ("
-				+ "    a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,"
-				+ ") T/.t" + ",  pretty.print .t, nl, dump .d, nl"));
+				+ "23t-add-list (" + list + ") T/.t" //
+				+ ",  pretty.print .t, nl, dump .d, nl"));
 	}
 
 	@Test
