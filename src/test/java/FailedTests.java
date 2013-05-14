@@ -26,7 +26,7 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test2() throws IOException { // not balanced
+	public void test1() throws IOException { // not balanced
 		RuleSet rs = RuleSetUtil.create();
 		SuiteUtil.importResource(rs, "auto.sl");
 		SuiteUtil.importResource(rs, "23t.sl");
@@ -42,7 +42,7 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test() { // takes very long
+	public void test2() { // takes very long
 		eval("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B %) of (t,) >> \n" //
