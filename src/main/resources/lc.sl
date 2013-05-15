@@ -48,7 +48,7 @@ lc-parse () YES () :- ! #
 lc-parse fail FAIL () :- ! #
 lc-parse .cut CUT () :- to.atom "!" .cut, ! #
 lc-parse (.p .do) (.p1 .do1) .nv
-	:- member (once/ONCE, not/NOT,) .p/.p1, !
+	:- member (once/ONCE, not/NOT, sink/SINK,) .p/.p1, !
 	, lc-parse .do .do1 .nv
 #
 lc-parse .tree (.oper1 .left1 .right1) .nv
@@ -164,6 +164,11 @@ lc-compile (NOT .do) .rem .pls/.vs .c0/.cx/.d0/.dx
 	, .c2 = (.failLabel LABEL .failLabel, .c3)
 	, lc-compile .rem YES .pls/.vs .c3/.cx/.d1/.dx
 #
+lc-compile (SINK .do) .rem .pls/.vs .c0/.cx/.d/.d
+	:- !
+	, lc-create-node .a .vs .c0/.c1/.reg
+	, .c1 = (_ SINK .reg, .cx)
+#
 lc-compile (EQ .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, lc-bind .a .b .vs .c0/.c1/.c2/.cx
@@ -244,12 +249,13 @@ lc-bind0 .node0 .node1 .vs .c0/.cx/.f0/.fx
 #
 
 lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f0/.fx
-	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .f
+	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .failLabel
 		, _ DECOMPOSE-TREE1 .reg0 .reg1
 		, .c1
 	)
-	, lc-bind-register .reg0 .nl .c1/.c2/.f1/.fx
+	, lc-bind-register .reg0 .nl .c1/.c2/.f1/.f2
 	, lc-bind-register .reg1 .nr .c2/.cx/.f0/.f1
+	, .f2 = (.failLabel LABEL .failLabel, .fx)
 #
 lc-bind-register .reg0 .node1 .v .c0/.cx/.f0/.fx
 	:- lc-create-node .node1 .v .c0/.c1/.reg1

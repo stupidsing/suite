@@ -13,12 +13,14 @@ import org.suite.doer.Prover;
 import org.suite.node.Node;
 import org.suite.predicates.SystemPredicates;
 import org.util.Util;
+import org.util.Util.Sink;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
 	private Prover prover;
 	private Journal journal;
 	private SystemPredicates systemPredicates;
+	private Sink<Node> sink;
 
 	private static final int stackSize = 4096;
 
@@ -26,11 +28,12 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
 
-	public LogicInstructionExecutor(Prover prover, Node node) {
+	public LogicInstructionExecutor(Prover prover, Node node, Sink<Node> sink) {
 		super(node);
 		this.prover = prover;
 		journal = prover.getJournal();
 		systemPredicates = new SystemPredicates(prover);
+		this.sink = sink;
 	}
 
 	@Override
@@ -52,13 +55,14 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			break;
 		case CUTBEGIN______:
 			regs[insn.op0] = i(cutPoints.size());
-			cutPoints.add(new CutPoint(current, journal.getPointInTime()));
+			cutPoints.add(new CutPoint(current, bsp, journal.getPointInTime()));
 			break;
 		case CUTFAIL_______:
 			int cutPointIndex = g(regs[insn.op0]);
 			CutPoint cutPoint = cutPoints.get(cutPointIndex);
 			Util.truncate(cutPoints, cutPointIndex);
 			current = cutPoint.activation;
+			bsp = cutPoint.bindStackPointer;
 			journal.undoBinds(cutPoint.journalPointer);
 			current.ip = insn.op1;
 			break;
@@ -69,6 +73,9 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		case PROVESYS______:
 			if (!systemPredicates.call(regs[insn.op0]))
 				current.ip = insn.op1;
+			break;
+		case SINK__________:
+			sink.apply(regs[insn.op0]);
 			break;
 		default:
 			super.execute(exec, insn);

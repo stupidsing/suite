@@ -184,7 +184,6 @@ public class Main {
 				prover.configuration().setEnableTrace(isTrace);
 
 				FunCompilerConfig fcc;
-				boolean r;
 
 				switch (type) {
 				case EVALUATE:
@@ -241,8 +240,11 @@ public class Main {
 					}
 					break;
 				case QUERYCOMPILED:
-					r = SuiteUtil.evaluateLogical(node, isTrace, isDumpCode);
-					System.out.println(yesNo(r));
+					List<Node> nodes = SuiteUtil.evaluateLogical(node //
+							, Atom.NIL //
+							, isTrace //
+							, isDumpCode);
+					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(Main.class, ex);

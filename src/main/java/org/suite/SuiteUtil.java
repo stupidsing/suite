@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
+import org.instructionexecutor.InstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
@@ -28,6 +29,7 @@ import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.util.IoUtil;
 import org.util.Util;
+import org.util.Util.Sink;
 
 public class SuiteUtil {
 
@@ -118,27 +120,44 @@ public class SuiteUtil {
 	}
 
 	public static boolean evaluateLogical(String program) {
-		return evaluateLogical(parse(program), false, false);
+		return evaluateLogical(parse(program));
 	}
 
-	public static boolean evaluateLogical(Node program, boolean isTrace,
-			boolean isDumpCode) {
+	public static boolean evaluateLogical(Node program) {
+		return !evaluateLogical(program, Atom.NIL, false, false).isEmpty();
+	}
+
+	public static List<Node> evaluateLogical(Node program //
+			, Node eval //
+			, boolean isTrace //
+			, boolean isDumpCode) {
 		Prover lc = getLogicalCompiler();
 		lc = isTrace ? enableTrace(lc) : lc;
 
-		String goal = "compile-logic .program .code"
+		String goal = "compile-logic (.program, sink .eval) .code"
 				+ (isDumpCode ? ", pretty.print .code" : "");
 		Node node = SuiteUtil.parse(goal);
 
 		Generalizer generalizer = new Generalizer();
 		node = generalizer.generalize(node);
-		Node variable = generalizer.getVariable(Atom.create(".program"));
-		Node ics = generalizer.getVariable(Atom.create(".code"));
+		Node pn = generalizer.getVariable(Atom.create(".program"));
+		Node en = generalizer.getVariable(Atom.create(".eval"));
+		Node cn = generalizer.getVariable(Atom.create(".code"));
 
-		((Reference) variable).bound(program);
+		((Reference) pn).bound(program);
+		((Reference) en).bound(eval);
 		if (lc.prove(node)) {
-			Node result = new LogicInstructionExecutor(lc, ics).execute();
-			return result == Atom.TRUE;
+			final List<Node> nodes = new ArrayList<>();
+
+			Sink<Node> s = new Sink<Node>() {
+				public void apply(Node node) {
+					nodes.add(node);
+				}
+			};
+
+			InstructionExecutor exec = new LogicInstructionExecutor(lc, cn, s);
+			exec.execute();
+			return nodes;
 		} else
 			throw new RuntimeException("Logic compilation error");
 	}

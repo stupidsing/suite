@@ -25,7 +25,7 @@ public class LogicCompilerTest {
 		Class<?> clazz = getClass();
 		String preds = IoUtil.readStream(clazz.getResourceAsStream("/auto.sl"));
 		Node n = SuiteUtil.parse("(" + preds + ") >> member (a, b, c,) c");
-		assertTrue(SuiteUtil.evaluateLogical(n, false, false));
+		assertTrue(SuiteUtil.evaluateLogical(n));
 	}
 
 	@Test
@@ -33,6 +33,10 @@ public class LogicCompilerTest {
 		assertTrue(eval("(.a = 1; .a = 2), !, .a = 1"));
 		assertFalse(eval("(.a = 1; .a = 2), !, .a = 2"));
 		assertFalse(eval(".a = 1, !, .b = 2, fail; .b = 3"));
+		assertTrue(eval("(a .b :- !, .b = 1 #) >> (.b = 1; .b = 2), a .b"));
+		assertTrue(eval("(a :- fail # a :- ! #) >> a"));
+		assertTrue(eval("(a :- fail, ! # a #) >> a"));
+		assertFalse(eval("(a :- !, fail # a #) >> a"));
 	}
 
 	@Test
@@ -47,8 +51,8 @@ public class LogicCompilerTest {
 	public void testFibonacci() {
 		assertTrue(eval("" //
 				+ "( \n" //
-				+ "    fib 0 1 # \n" //
-				+ "    fib 1 1 # \n" //
+				+ "    fib 0 1 :- ! # \n" //
+				+ "    fib 1 1 :- ! # \n" //
 				+ "    fib .n .f \n" //
 				+ "        :- let .n1 (.n - 1) \n" //
 				+ "        , let .n2 (.n1 - 1) \n" //

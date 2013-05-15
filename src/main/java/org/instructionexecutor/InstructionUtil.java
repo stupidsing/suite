@@ -85,6 +85,7 @@ public class InstructionUtil {
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
+		SINK__________("SINK"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
 		SERVICE_______("SERVICE"), //
 		TOP___________("TOP"), //
@@ -159,10 +160,13 @@ public class InstructionUtil {
 
 	protected static class CutPoint {
 		protected Activation activation;
+		protected int bindStackPointer;
 		protected int journalPointer;
 
-		protected CutPoint(Activation activation, int journalPointer) {
+		protected CutPoint(Activation activation, int bindStackPointer,
+				int journalPointer) {
 			this.activation = activation;
+			this.bindStackPointer = bindStackPointer;
 			this.journalPointer = journalPointer;
 		}
 	}
