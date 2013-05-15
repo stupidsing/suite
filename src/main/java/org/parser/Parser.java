@@ -63,15 +63,20 @@ public class Parser {
 	 * Parse without comments.
 	 */
 	private Node parseWithoutComments(String s) {
-		s = s.trim();
-		return !s.isEmpty() ? parseRawString(s) : Atom.NIL;
+		return parseWithoutComments(s, 0);
 	}
 
-	private Node parseRawString(String s) {
+	private Node parseWithoutComments(String s, int fromOp) {
+		s = s.trim();
+		return !s.isEmpty() ? parseRawString(s, fromOp) : Atom.NIL;
+	}
+
+	private Node parseRawString(String s, int fromOp) {
 		int end = s.length();
 		char first = s.charAt(0), last = s.charAt(end - 1);
 
-		for (Operator operator : operators) {
+		for (int i = fromOp; i < operators.length; i++) {
+			Operator operator = operators[i];
 			String lr[] = ParserUtil.search(s, operator);
 
 			if (operator == TermOp.BRACES)
@@ -80,17 +85,21 @@ public class Parser {
 				else
 					continue;
 
-			if (lr != null)
+			if (lr != null) {
+				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
+				int li = fromOp + (isLeftAssoc ? 0 : 1);
+				int ri = fromOp + (isLeftAssoc ? 1 : 0);
 				return Tree.create(operator //
-						, parseWithoutComments(lr[0]) //
-						, parseWithoutComments(lr[1]));
+						, parseWithoutComments(lr[0], li) //
+						, parseWithoutComments(lr[1], ri));
+			}
 		}
 
 		if (first == '(' && last == ')' //
 				|| first == '[' && last == ']')
 			return parseWithoutComments(Util.substr(s, 1, -1));
 		if (first == '`' && last == '`')
-			return parseRawString(" " + Util.substr(s, 1, -1) + " ");
+			return parseRawString(" " + Util.substr(s, 1, -1) + " ", 0);
 
 		try {
 			return Int.create(Integer.parseInt(s));
