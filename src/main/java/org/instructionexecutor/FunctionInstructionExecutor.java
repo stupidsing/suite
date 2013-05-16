@@ -172,7 +172,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 			}
 		} else if (command == PROVE) {
 			if (prover == null)
-				prover = SuiteUtil.getProver(new String[] { "auto.sl" });
+				prover = SuiteUtil.createProver(new String[] { "auto.sl" });
 
 			Node node = (Node) stack[sp];
 			Tree tree = Tree.decompose(node, TermOp.JOIN__);

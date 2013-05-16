@@ -17,6 +17,7 @@ import org.instructionexecutor.InstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
+import org.suite.doer.ProverConfiguration;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Rule;
@@ -40,9 +41,9 @@ public class SuiteUtil {
 
 	// Compilation objects
 	private static TermParser parser = new TermParser();
-	private static Prover logicalCompiler;
-	private static Prover eagerFunctionalCompiler;
-	private static Prover lazyFunctionalCompiler;
+	private static RuleSet logicalCompiler;
+	private static RuleSet eagerFunctionalCompiler;
+	private static RuleSet lazyFunctionalCompiler;
 
 	// The directory of the file we are now importing
 	private static boolean isImportFromClasspath = false;
@@ -124,15 +125,16 @@ public class SuiteUtil {
 	}
 
 	public static boolean evaluateLogical(Node program) {
-		return !evaluateLogical(program, Atom.NIL, false, false).isEmpty();
+		ProverConfiguration pc = new ProverConfiguration();
+		return !evaluateLogical(program, Atom.NIL, pc, false).isEmpty();
 	}
 
 	public static List<Node> evaluateLogical(Node program //
 			, Node eval //
-			, boolean isTrace //
+			, ProverConfiguration pc //
 			, boolean isDumpCode) {
-		Prover lc = getLogicalCompiler();
-		lc = isTrace ? enableTrace(lc) : lc;
+		RuleSet rs = createLogicalCompiler();
+		Prover lc = new Prover(new ProverConfiguration(rs, pc));
 
 		String goal = "compile-logic (.program, sink .eval) .code"
 				+ (isDumpCode ? ", pretty.print .code" : "");
@@ -167,7 +169,7 @@ public class SuiteUtil {
 		private Node node;
 		private boolean isLazy;
 		private List<String> libraries = new ArrayList<>();
-		private boolean isTrace = SuiteUtil.isTrace;
+		private ProverConfiguration proverConfiguration = new ProverConfiguration();
 		private boolean isDumpCode = SuiteUtil.isDumpCode;
 		private Reader in = new InputStreamReader(System.in, IoUtil.charset);
 		private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
@@ -197,8 +199,9 @@ public class SuiteUtil {
 			this.libraries = libraries;
 		}
 
-		public void setTrace(boolean isTrace) {
-			this.isTrace = isTrace;
+		public void setProverConfiguration(
+				ProverConfiguration proverConfiguration) {
+			this.proverConfiguration = proverConfiguration;
 		}
 
 		public void setDumpCode(boolean isDumpCode) {
@@ -242,9 +245,9 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctional(FunCompilerConfig config) {
-		Prover compiler = config.isLazy ? getLazyFunCompiler()
-				: getEagerFunCompiler();
-		compiler = config.isTrace ? enableTrace(compiler) : compiler;
+		Prover compiler = new Prover(new ProverConfiguration(
+				config.isLazy ? createLazyFunCompiler()
+						: createEagerFunCompiler(), config.proverConfiguration));
 
 		String program = appendLibraries(config);
 		String s = "compile-function .mode (" + program + ") .code"
@@ -280,9 +283,8 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctionalType(FunCompilerConfig config) {
-		Prover compiler = lazyFunctionalCompiler;
-		compiler = compiler != null ? compiler : getEagerFunCompiler();
-		compiler = config.isTrace ? enableTrace(compiler) : compiler;
+		Prover compiler = new Prover(new ProverConfiguration(
+				createEagerFunCompiler(), config.proverConfiguration));
 
 		Node node = SuiteUtil.parse("" //
 				+ "fc-parse (" + appendLibraries(config) + ") .p" //
@@ -303,12 +305,6 @@ public class SuiteUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private static Prover enableTrace(Prover compiler) {
-		compiler = new Prover(compiler);
-		compiler.configuration().setTrace(true);
-		return compiler;
-	}
-
 	private static String appendLibraries(FunCompilerConfig config) {
 		StringBuilder sb = new StringBuilder();
 		for (String library : config.libraries)
@@ -318,39 +314,41 @@ public class SuiteUtil {
 		return sb.toString();
 	}
 
-	public static synchronized Prover getLogicalCompiler() {
+	private static synchronized RuleSet createLogicalCompiler() {
 		if (logicalCompiler == null)
-			logicalCompiler = getProver(new String[] { "auto.sl", "lc.sl" });
+			logicalCompiler = createRuleSet(new String[] { "auto.sl", "lc.sl" });
 		return logicalCompiler;
 	}
 
-	public static synchronized Prover getEagerFunCompiler() {
+	private static synchronized RuleSet createEagerFunCompiler() {
 		if (eagerFunctionalCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-eager-evaluation.sl" };
-			eagerFunctionalCompiler = getProver(imports);
+			eagerFunctionalCompiler = createRuleSet(imports);
 		}
 		return eagerFunctionalCompiler;
 	}
 
-	public static synchronized Prover getLazyFunCompiler() {
+	private static synchronized RuleSet createLazyFunCompiler() {
 		if (lazyFunctionalCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-lazy-evaluation.sl" };
-			lazyFunctionalCompiler = getProver(imports);
+			lazyFunctionalCompiler = createRuleSet(imports);
 		}
 		return lazyFunctionalCompiler;
 	}
 
-	public static Prover getProver(String toImports[]) {
-		RuleSet rs = RuleSetUtil.create();
+	public static Prover createProver(String toImports[]) {
+		return new Prover(createRuleSet(toImports));
+	}
 
+	private static RuleSet createRuleSet(String toImports[]) {
+		RuleSet rs = RuleSetUtil.create();
 		try {
 			for (String toImport : toImports)
 				SuiteUtil.importResource(rs, toImport);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-
-		return new Prover(rs);
+		return rs;
 	}
 
 	public static Node parse(String s) {

@@ -15,7 +15,7 @@ import org.suite.node.Tree;
 
 public class MathUtil {
 
-	private static final Prover prover = SuiteUtil.getProver(new String[] {
+	private static final Prover prover = SuiteUtil.createProver(new String[] {
 			"auto.sl", "math.sl" });
 
 	private static Comparator<Node> comparator = new Comparator<Node>() {

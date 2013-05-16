@@ -6,12 +6,17 @@ import java.util.Set;
 
 import org.suite.SuiteUtil;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSet.RuleSetUtil;
 
 public class ProverConfiguration {
 
 	private RuleSet ruleSet;
 	private boolean isTrace;
 	private Set<String> noTracePredicates;
+
+	public ProverConfiguration() {
+		this(RuleSetUtil.create());
+	}
 
 	public ProverConfiguration(RuleSet ruleSet) {
 		this(ruleSet //
@@ -20,7 +25,11 @@ public class ProverConfiguration {
 	}
 
 	public ProverConfiguration(ProverConfiguration pc) {
-		this(pc.ruleSet, pc.isTrace, pc.noTracePredicates);
+		this(pc.ruleSet, pc);
+	}
+
+	public ProverConfiguration(RuleSet ruleSet, ProverConfiguration pc) {
+		this(ruleSet, pc.isTrace, pc.noTracePredicates);
 	}
 
 	public ProverConfiguration(RuleSet ruleSet //
@@ -33,6 +42,10 @@ public class ProverConfiguration {
 
 	public RuleSet ruleSet() {
 		return ruleSet;
+	}
+
+	public void setRuleSet(RuleSet ruleSet) {
+		this.ruleSet = ruleSet;
 	}
 
 	public boolean isTrace() {

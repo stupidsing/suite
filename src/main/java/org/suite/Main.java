@@ -17,6 +17,7 @@ import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
+import org.suite.doer.ProverConfiguration;
 import org.suite.doer.Station;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
@@ -180,8 +181,7 @@ public class Main {
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
 
-				Prover prover = new Prover(rs);
-				prover.configuration().setTrace(isTrace);
+				Prover prover = new Prover(configureProver(rs));
 
 				FunCompilerConfig fcc;
 
@@ -242,7 +242,7 @@ public class Main {
 				case QUERYCOMPILED:
 					List<Node> nodes = SuiteUtil.evaluateLogical(node //
 							, Atom.NIL //
-							, isTrace //
+							, configureProver() //
 							, isDumpCode);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
@@ -287,7 +287,7 @@ public class Main {
 		System.out.println("Pre-compiling " + libraryName + "... ");
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
-		Prover prover = SuiteUtil.getProver(imports);
+		Prover prover = SuiteUtil.createProver(imports);
 		prover.configuration().setTrace(isTrace);
 
 		String goal = "fc-setup-precompile " + libraryName;
@@ -311,11 +311,21 @@ public class Main {
 	}
 
 	private void configureFunCompiler(FunCompilerConfig c) {
-		c.setLibraries(libraries);
 		c.setLazy(isLazy);
-		c.setTrace(isTrace);
+		c.setLibraries(libraries);
+		c.setProverConfiguration(configureProver());
 		c.setDumpCode(isDumpCode);
 		c.setIn(new StringReader(""));
+	}
+
+	private ProverConfiguration configureProver() {
+		return configureProver(null);
+	}
+
+	private ProverConfiguration configureProver(RuleSet rs) {
+		ProverConfiguration proverConfiguration = new ProverConfiguration(rs);
+		proverConfiguration.setTrace(isTrace);
+		return proverConfiguration;
 	}
 
 	private String yesNo(boolean q) {
