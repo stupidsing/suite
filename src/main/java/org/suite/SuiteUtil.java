@@ -146,6 +146,7 @@ public class SuiteUtil {
 
 		((Reference) pn).bound(program);
 		((Reference) en).bound(eval);
+
 		if (lc.prove(node)) {
 			final List<Node> nodes = new ArrayList<>();
 
