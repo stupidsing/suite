@@ -28,12 +28,13 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
 
-	public LogicInstructionExecutor(Prover prover, Node node, Sink<Node> sink) {
+	public LogicInstructionExecutor(Node node, Prover prover, Sink<Node> sink) {
 		super(node);
 		this.prover = prover;
+		this.sink = sink;
+
 		journal = prover.getJournal();
 		systemPredicates = new SystemPredicates(prover);
-		this.sink = sink;
 	}
 
 	@Override

@@ -156,7 +156,7 @@ public class SuiteUtil {
 				}
 			};
 
-			InstructionExecutor exec = new LogicInstructionExecutor(lc, cn, s);
+			InstructionExecutor exec = new LogicInstructionExecutor(cn, lc, s);
 			exec.execute();
 			return nodes;
 		} else
