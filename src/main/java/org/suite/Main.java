@@ -38,14 +38,17 @@ import org.util.Util;
  */
 public class Main {
 
-	private boolean isLazy = true;
-	private List<String> libraries = SuiteUtil.libraries;
-	private boolean isTrace = SuiteUtil.isTrace;
-	private boolean isDumpCode = SuiteUtil.isDumpCode;
+	private FunCompilerConfig fcc = new FunCompilerConfig();
+	private ProverConfiguration pc = new ProverConfiguration();
 
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
+
+	public Main() {
+		fcc.setProverConfiguration(pc);
+		fcc.setIn(new StringReader(""));
+	}
 
 	public static void main(String args[]) {
 		LogUtil.initLog4j();
@@ -89,17 +92,17 @@ public class Main {
 
 	private void processOption(String arg, Iterator<String> iter, boolean on) {
 		if (arg.equals("-dump-code"))
-			isDumpCode = on;
+			fcc.setDumpCode(on);
 		else if (arg.equals("-eager"))
-			isLazy = !on;
+			fcc.setLazy(!on);
 		else if (arg.equals("-filter"))
 			isFilter = on;
 		else if (arg.equals("-functional"))
 			isFunctional = on;
 		else if (arg.equals("-lazy"))
-			isLazy = on;
+			fcc.setLazy(on);
 		else if (arg.equals("-libraries") && iter.hasNext())
-			libraries = Arrays.asList(iter.next().split(","));
+			fcc.setLibraries(Arrays.asList(iter.next().split(",")));
 		else if (arg.equals("-logical"))
 			isLogical = on;
 		else if (arg.startsWith("-no-"))
@@ -108,7 +111,7 @@ public class Main {
 			for (String lib : iter.next().split(","))
 				runPrecompile(lib);
 		else if (arg.equals("-trace"))
-			isTrace = on;
+			pc.setTrace(on);
 		else
 			throw new RuntimeException("Unknown option " + arg);
 	}
@@ -133,8 +136,8 @@ public class Main {
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
-		RuleSet rs = RuleSetUtil.create();
-		SuiteUtil.importResource(rs, "auto.sl");
+		RuleSet rs = pc.ruleSet();
+		SuiteUtil.importResource(pc.ruleSet(), "auto.sl");
 
 		for (String importFilename : importFilenames)
 			SuiteUtil.importFile(rs, importFilename);
@@ -181,9 +184,7 @@ public class Main {
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
 
-				Prover prover = new Prover(configureProver(rs));
-
-				FunCompilerConfig fcc;
+				Prover prover = new Prover(pc);
 
 				switch (type) {
 				case EVALUATE:
@@ -195,8 +196,7 @@ public class Main {
 					System.out.println(SuiteUtil.stringize(node).toString());
 					break;
 				case EVALUATETYPE:
-					fcc = SuiteUtil.fcc(node);
-					configureFunCompiler(fcc);
+					fcc.setNode(node);
 					node = SuiteUtil.evaluateFunctionalType(fcc);
 					System.out.println(Formatter.dump(node));
 					break;
@@ -242,8 +242,8 @@ public class Main {
 				case QUERYCOMPILED:
 					List<Node> nodes = SuiteUtil.evaluateLogical(node //
 							, Atom.NIL //
-							, configureProver() //
-							, isDumpCode);
+							, pc //
+							, false);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {
@@ -287,8 +287,8 @@ public class Main {
 		System.out.println("Pre-compiling " + libraryName + "... ");
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
-		Prover prover = SuiteUtil.createProver(imports);
-		prover.configuration().setTrace(isTrace);
+		RuleSet rs = SuiteUtil.createRuleSet(imports);
+		Prover prover = new Prover(new ProverConfiguration(rs, pc));
 
 		String goal = "fc-setup-precompile " + libraryName;
 		Node node = SuiteUtil.parse(goal);
@@ -305,27 +305,8 @@ public class Main {
 	}
 
 	private Node evaluateFunctional(Node node) {
-		FunCompilerConfig fcc = SuiteUtil.fcc(node);
-		configureFunCompiler(fcc);
+		fcc.setNode(node);
 		return SuiteUtil.evaluateFunctional(fcc);
-	}
-
-	private void configureFunCompiler(FunCompilerConfig c) {
-		c.setLazy(isLazy);
-		c.setLibraries(libraries);
-		c.setProverConfiguration(configureProver());
-		c.setDumpCode(isDumpCode);
-		c.setIn(new StringReader(""));
-	}
-
-	private ProverConfiguration configureProver() {
-		return configureProver(null);
-	}
-
-	private ProverConfiguration configureProver(RuleSet rs) {
-		ProverConfiguration proverConfiguration = new ProverConfiguration(rs);
-		proverConfiguration.setTrace(isTrace);
-		return proverConfiguration;
 	}
 
 	private String yesNo(boolean q) {

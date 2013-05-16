@@ -340,7 +340,7 @@ public class SuiteUtil {
 		return new Prover(createRuleSet(toImports));
 	}
 
-	private static RuleSet createRuleSet(String toImports[]) {
+	public static RuleSet createRuleSet(String toImports[]) {
 		RuleSet rs = RuleSetUtil.create();
 		try {
 			for (String toImport : toImports)
