@@ -10,15 +10,25 @@ import org.suite.kb.RuleSet;
 public class ProverConfiguration {
 
 	private RuleSet ruleSet;
-	private boolean isTrace = SuiteUtil.isTrace;
-	private Set<String> noTracePredicates = new HashSet<>(Arrays.asList(
-			"member", "replace"));
-
-	public ProverConfiguration() {
-	}
+	private boolean isTrace;
+	private Set<String> noTracePredicates;
 
 	public ProverConfiguration(RuleSet ruleSet) {
+		this(ruleSet //
+				, SuiteUtil.isTrace //
+				, new HashSet<>(Arrays.asList("member", "replace")));
+	}
+
+	public ProverConfiguration(ProverConfiguration pc) {
+		this(pc.ruleSet, pc.isTrace, pc.noTracePredicates);
+	}
+
+	public ProverConfiguration(RuleSet ruleSet //
+			, boolean isTrace //
+			, Set<String> noTracePredicates) {
 		this.ruleSet = ruleSet;
+		this.isTrace = isTrace;
+		this.noTracePredicates = noTracePredicates;
 	}
 
 	public RuleSet ruleSet() {
