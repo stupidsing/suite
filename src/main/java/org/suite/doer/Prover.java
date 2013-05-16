@@ -52,7 +52,7 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		if (cfg.isEnableTrace())
+		if (cfg.isTrace())
 			try {
 				tracer = new ProveTracer();
 				return prove0(query);
@@ -126,7 +126,7 @@ public class Prover {
 				} else
 					return false;
 			else {
-				boolean isTrace = cfg.isEnableTrace();
+				boolean isTrace = cfg.isTrace();
 				Prototype prototype = isTrace ? Prototype.get(query) : null;
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;

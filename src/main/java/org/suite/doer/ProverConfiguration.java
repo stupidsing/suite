@@ -10,7 +10,7 @@ import org.suite.kb.RuleSet;
 public class ProverConfiguration {
 
 	private RuleSet ruleSet;
-	private boolean isEnableTrace = SuiteUtil.isTrace;
+	private boolean isTrace = SuiteUtil.isTrace;
 	private Set<String> noTracePredicates = new HashSet<>(Arrays.asList(
 			"member", "replace"));
 
@@ -25,12 +25,12 @@ public class ProverConfiguration {
 		return ruleSet;
 	}
 
-	public boolean isEnableTrace() {
-		return isEnableTrace;
+	public boolean isTrace() {
+		return isTrace;
 	}
 
-	public void setEnableTrace(boolean isEnableTrace) {
-		this.isEnableTrace = isEnableTrace;
+	public void setTrace(boolean isTrace) {
+		this.isTrace = isTrace;
 	}
 
 	public Set<String> getNoTracePredicates() {

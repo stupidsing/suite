@@ -181,7 +181,7 @@ public class Main {
 				Node node = new TermParser().parse(input.trim());
 
 				Prover prover = new Prover(rs);
-				prover.configuration().setEnableTrace(isTrace);
+				prover.configuration().setTrace(isTrace);
 
 				FunCompilerConfig fcc;
 
@@ -288,7 +288,7 @@ public class Main {
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
 		Prover prover = SuiteUtil.getProver(imports);
-		prover.configuration().setEnableTrace(isTrace);
+		prover.configuration().setTrace(isTrace);
 
 		String goal = "fc-setup-precompile " + libraryName;
 		Node node = SuiteUtil.parse(goal);

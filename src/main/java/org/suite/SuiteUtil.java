@@ -305,7 +305,7 @@ public class SuiteUtil {
 
 	private static Prover enableTrace(Prover compiler) {
 		compiler = new Prover(compiler);
-		compiler.configuration().setEnableTrace(true);
+		compiler.configuration().setTrace(true);
 		return compiler;
 	}
 
