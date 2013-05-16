@@ -13,13 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.instructionexecutor.FunctionInstructionExecutor;
-import org.instructionexecutor.InstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfiguration;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.Prototype;
 import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.RuleSetUtil;
@@ -133,6 +133,20 @@ public class SuiteUtil {
 			, Node eval //
 			, ProverConfiguration pc //
 			, boolean isDumpCode) {
+		final List<Node> nodes = new ArrayList<>();
+		evaluateLogical(program, eval, pc, isDumpCode, new Sink<Node>() {
+			public void apply(Node node) {
+				nodes.add(node);
+			}
+		});
+		return nodes;
+	}
+
+	public static void evaluateLogical(Node program //
+			, Node eval //
+			, ProverConfiguration pc //
+			, boolean isDumpCode //
+			, Sink<Node> sink) {
 		RuleSet rs = createLogicalCompiler();
 		Prover lc = new Prover(new ProverConfiguration(rs, pc));
 
@@ -149,19 +163,9 @@ public class SuiteUtil {
 		((Reference) pn).bound(program);
 		((Reference) en).bound(eval);
 
-		if (lc.prove(node)) {
-			final List<Node> nodes = new ArrayList<>();
-
-			Sink<Node> s = new Sink<Node>() {
-				public void apply(Node node) {
-					nodes.add(node);
-				}
-			};
-
-			InstructionExecutor exec = new LogicInstructionExecutor(cn, lc, s);
-			exec.execute();
-			return nodes;
-		} else
+		if (lc.prove(node))
+			new LogicInstructionExecutor(cn, lc, sink).execute();
+		else
 			throw new RuntimeException("Logic compilation error");
 	}
 
@@ -245,9 +249,10 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunctional(FunCompilerConfig config) {
-		Prover compiler = new Prover(new ProverConfiguration(
-				config.isLazy ? createLazyFunCompiler()
-						: createEagerFunCompiler(), config.proverConfiguration));
+		RuleSet rs = config.isLazy ? createLazyFunCompiler()
+				: createEagerFunCompiler();
+		ProverConfiguration pc = config.proverConfiguration;
+		Prover compiler = new Prover(new ProverConfiguration(rs, pc));
 
 		String program = appendLibraries(config);
 		String s = "compile-function .mode (" + program + ") .code"
@@ -264,6 +269,7 @@ public class SuiteUtil {
 
 		((Reference) modeRef).bound(mode);
 		((Reference) progRef).bound(config.node);
+
 		if (compiler.prove(node)) {
 			FunctionInstructionExecutor e = new FunctionInstructionExecutor(ics);
 			e.setIn(config.in);
@@ -373,6 +379,28 @@ public class SuiteUtil {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * Convert rules in a rule set back into to #-separated format.
+	 * 
+	 * May specify a prototype to limit the rules listed.
+	 */
+	public static Node getRuleList(RuleSet ruleSet, Prototype proto) {
+		List<Node> nodes = new ArrayList<>();
+
+		for (Rule rule : ruleSet.getRules()) {
+			Prototype p1 = Prototype.get(rule);
+			if (proto == null || proto.equals(p1)) {
+				Node clause = Rule.formClause(rule);
+				nodes.add(clause);
+			}
+		}
+
+		Node node = Atom.NIL;
+		for (int i = nodes.size() - 1; i >= 0; i--)
+			node = Tree.create(TermOp.NEXT__, nodes.get(i), node);
+		return node;
 	}
 
 }

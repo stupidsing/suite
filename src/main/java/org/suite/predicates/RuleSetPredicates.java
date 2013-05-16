@@ -1,6 +1,5 @@
 package org.suite.predicates;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -88,20 +87,7 @@ public class RuleSetPredicates {
 			if (ps != Atom.NIL)
 				proto = Prototype.get(ps);
 
-			List<Node> nodes = new ArrayList<>();
-
-			for (Rule rule : prover.ruleSet().getRules()) {
-				Prototype p1 = Prototype.get(rule);
-				if (proto == null || proto.equals(p1)) {
-					Node clause = Rule.formClause(rule);
-					nodes.add(clause);
-				}
-			}
-
-			Node node = Atom.NIL;
-			for (int i = nodes.size() - 1; i >= 0; i--)
-				node = Tree.create(TermOp.NEXT__, nodes.get(i), node);
-
+			Node node = SuiteUtil.getRuleList(prover.ruleSet(), proto);
 			PrettyPrinter printer = new PrettyPrinter();
 			System.out.println(printer.prettyPrint(node));
 			return true;
