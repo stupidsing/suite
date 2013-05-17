@@ -39,12 +39,12 @@ public class Prover {
 		this(new ProverConfig(ruleSet));
 	}
 
-	public Prover(ProverConfig pc) {
-		this(pc, null);
+	public Prover(ProverConfig proverConfig) {
+		this(proverConfig, null);
 	}
 
-	public Prover(ProverConfig pc, ProveTracer tracer) {
-		this.config = pc;
+	public Prover(ProverConfig proverConfig, ProveTracer tracer) {
+		this.config = proverConfig;
 		this.tracer = tracer;
 	}
 

@@ -183,27 +183,27 @@ public class SuiteUtil {
 		return evaluateFun(fcc(program, isLazy));
 	}
 
-	public static Node evaluateFun(FunCompilerConfig config) {
-		RuleSet rs = config.isLazy() ? lazyFunRuleSet() : eagerFunRuleSet();
-		ProverConfig pc = config.getProverConfig();
+	public static Node evaluateFun(FunCompilerConfig fcc) {
+		RuleSet rs = fcc.isLazy() ? lazyFunRuleSet() : eagerFunRuleSet();
+		ProverConfig pc = fcc.getProverConfig();
 		Prover compiler = new Prover(new ProverConfig(rs, pc));
 
-		Atom mode = Atom.create(config.isLazy() ? "LAZY" : "EAGER");
-		String program = appendLibraries(config, ".1");
+		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
+		String program = appendLibraries(fcc, ".1");
 		Reference code = new Reference();
 
 		String s = "compile-function .0 (" + program + ") .2"
-				+ (config.isDumpCode() ? ", pretty.print .2" : "");
-		Node node = SuiteUtil.substitute(s, mode, config.getNode(), code);
+				+ (fcc.isDumpCode() ? ", pretty.print .2" : "");
+		Node node = SuiteUtil.substitute(s, mode, fcc.getNode(), code);
 
 		if (compiler.prove(node)) {
 			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setIn(config.getIn());
-			e.setOut(config.getOut());
+			e.setIn(fcc.getIn());
+			e.setOut(fcc.getOut());
 			e.setProver(compiler);
 
 			Node result = e.execute();
-			if (config.isLazy())
+			if (fcc.isLazy())
 				result = e.unwrap(result);
 			return result;
 		} else

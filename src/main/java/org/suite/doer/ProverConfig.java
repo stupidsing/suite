@@ -24,12 +24,12 @@ public class ProverConfig {
 				, new HashSet<>(Arrays.asList("member", "replace")));
 	}
 
-	public ProverConfig(ProverConfig pc) {
-		this(pc.ruleSet, pc);
+	public ProverConfig(ProverConfig proverConfig) {
+		this(proverConfig.ruleSet, proverConfig);
 	}
 
-	public ProverConfig(RuleSet ruleSet, ProverConfig pc) {
-		this(ruleSet, pc.isTrace, pc.noTracePredicates);
+	public ProverConfig(RuleSet ruleSet, ProverConfig proverConfig) {
+		this(ruleSet, proverConfig.isTrace, proverConfig.noTracePredicates);
 	}
 
 	public ProverConfig(RuleSet ruleSet //

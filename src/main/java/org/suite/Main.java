@@ -38,14 +38,14 @@ import org.util.Util;
 public class Main {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
-	private ProverConfig pc = new ProverConfig();
+	private ProverConfig proverConfig = new ProverConfig();
 
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
 
 	public Main() {
-		fcc.setProverConfig(pc);
+		fcc.setProverConfig(proverConfig);
 		fcc.setIn(new StringReader(""));
 	}
 
@@ -110,7 +110,7 @@ public class Main {
 			for (String lib : iter.next().split(","))
 				runPrecompile(lib);
 		else if (arg.equals("-trace"))
-			pc.setTrace(on);
+			proverConfig.setTrace(on);
 		else
 			throw new RuntimeException("Unknown option " + arg);
 	}
@@ -135,8 +135,8 @@ public class Main {
 	};
 
 	public void run(List<String> importFilenames) throws IOException {
-		RuleSet rs = pc.ruleSet();
-		SuiteUtil.importResource(pc.ruleSet(), "auto.sl");
+		RuleSet rs = proverConfig.ruleSet();
+		SuiteUtil.importResource(proverConfig.ruleSet(), "auto.sl");
 
 		for (String importFilename : importFilenames)
 			SuiteUtil.importFile(rs, importFilename);
@@ -183,7 +183,7 @@ public class Main {
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
 
-				Prover prover = new Prover(pc);
+				Prover prover = new Prover(proverConfig);
 
 				switch (type) {
 				case EVALUATE:
@@ -241,7 +241,7 @@ public class Main {
 				case QUERYCOMPILED:
 					List<Node> nodes = SuiteUtil.evaluateLogical(node //
 							, Atom.NIL //
-							, pc //
+							, proverConfig //
 							, false);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
@@ -287,7 +287,7 @@ public class Main {
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
 		RuleSet rs = SuiteUtil.createRuleSet(imports);
-		Prover prover = new Prover(new ProverConfig(rs, pc));
+		Prover prover = new Prover(new ProverConfig(rs, proverConfig));
 
 		String goal = "fc-setup-precompile " + libraryName;
 		Node node = SuiteUtil.parse(goal);
