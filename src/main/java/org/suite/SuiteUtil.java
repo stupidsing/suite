@@ -165,10 +165,10 @@ public class SuiteUtil {
 	}
 
 	public static FunCompilerConfig fcc(Node node, boolean isLazy) {
-		FunCompilerConfig c = new FunCompilerConfig();
-		c.setNode(node);
-		c.setLazy(isLazy);
-		return c;
+		FunCompilerConfig fcc = new FunCompilerConfig();
+		fcc.setNode(node);
+		fcc.setLazy(isLazy);
+		return fcc;
 	}
 
 	public static Node evaluateEagerFun(String program) {
