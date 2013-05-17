@@ -149,22 +149,14 @@ public class SuiteUtil {
 			, Sink<Node> sink) {
 		RuleSet rs = createLogicalCompiler();
 		Prover lc = new Prover(new ProverConfiguration(rs, pc));
+		Reference code = new Reference();
 
-		String goal = "compile-logic (.program, sink .eval) .code"
-				+ (isDumpCode ? ", pretty.print .code" : "");
-		Node node = SuiteUtil.parse(goal);
-
-		Generalizer generalizer = new Generalizer();
-		node = generalizer.generalize(node);
-		Node pn = generalizer.getVariable(Atom.create(".program"));
-		Node en = generalizer.getVariable(Atom.create(".eval"));
-		Node cn = generalizer.getVariable(Atom.create(".code"));
-
-		((Reference) pn).bound(program);
-		((Reference) en).bound(eval);
+		String goal = "compile-logic (.0, sink .1) .2"
+				+ (isDumpCode ? ", pretty.print .2" : "");
+		Node node = SuiteUtil.substitute(goal, program, eval, code);
 
 		if (lc.prove(node))
-			new LogicInstructionExecutor(cn, lc, sink).execute();
+			new LogicInstructionExecutor(code, lc, sink).execute();
 		else
 			throw new RuntimeException("Logic compilation error");
 	}
@@ -254,24 +246,17 @@ public class SuiteUtil {
 		ProverConfiguration pc = config.proverConfiguration;
 		Prover compiler = new Prover(new ProverConfiguration(rs, pc));
 
-		String program = appendLibraries(config);
-		String s = "compile-function .mode (" + program + ") .code"
-				+ (config.isDumpCode ? ", pretty.print .code" : "");
-		Node node = SuiteUtil.parse(s);
-
-		Generalizer generalizer = new Generalizer();
-		node = generalizer.generalize(node);
-		Node modeRef = generalizer.getVariable(Atom.create(".mode"));
-		Node progRef = generalizer.getVariable(Atom.create(".program"));
-		Node ics = generalizer.getVariable(Atom.create(".code"));
-
 		Atom mode = Atom.create(config.isLazy ? "LAZY" : "EAGER");
+		String program = appendLibraries(config, ".1");
+		Reference code = new Reference();
 
-		((Reference) modeRef).bound(mode);
-		((Reference) progRef).bound(config.node);
+		String s = "compile-function .0 (" + program + ") .2"
+				+ (config.isDumpCode ? ", pretty.print .2" : "");
+		Node node = SuiteUtil.substitute(s, mode, config.node, code);
 
 		if (compiler.prove(node)) {
-			FunctionInstructionExecutor e = new FunctionInstructionExecutor(ics);
+			FunctionInstructionExecutor e = new FunctionInstructionExecutor(
+					code);
 			e.setIn(config.in);
 			e.setOut(config.out);
 			e.setProver(compiler);
@@ -292,18 +277,14 @@ public class SuiteUtil {
 		Prover compiler = new Prover(new ProverConfiguration(
 				createEagerFunCompiler(), config.proverConfiguration));
 
-		Node node = SuiteUtil.parse("" //
-				+ "fc-parse (" + appendLibraries(config) + ") .p" //
+		Reference type = new Reference();
+
+		Node node = SuiteUtil.substitute("" //
+				+ "fc-parse (" + appendLibraries(config, ".0") + ") .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
-				+ ", fc-parse-type .type .t");
-
-		Generalizer generalizer = new Generalizer();
-		node = generalizer.generalize(node);
-		Node variable = generalizer.getVariable(Atom.create(".program"));
-		Node type = generalizer.getVariable(Atom.create(".type"));
-
-		((Reference) variable).bound(config.node);
+				+ ", fc-parse-type .1 .t" //
+		, config.node, type);
 
 		if (compiler.prove(node))
 			return type.finalNode();
@@ -311,12 +292,13 @@ public class SuiteUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private static String appendLibraries(FunCompilerConfig config) {
+	private static String appendLibraries(FunCompilerConfig config,
+			String variable) {
 		StringBuilder sb = new StringBuilder();
 		for (String library : config.libraries)
 			if (!Util.isBlank(library))
 				sb.append("using " + library + " >> ");
-		sb.append("(.program)");
+		sb.append("(" + variable + ")");
 		return sb.toString();
 	}
 
@@ -401,6 +383,20 @@ public class SuiteUtil {
 		for (int i = nodes.size() - 1; i >= 0; i--)
 			node = Tree.create(TermOp.NEXT__, nodes.get(i), node);
 		return node;
+	}
+
+	public static Node substitute(String s, Node... nodes) {
+		Node result = parse(s);
+		Generalizer generalizer = new Generalizer();
+		result = generalizer.generalize(result);
+		int i = 0;
+
+		for (Node node : nodes) {
+			Node variable = generalizer.getVariable(Atom.create("." + i++));
+			((Reference) variable).bound(node);
+		}
+
+		return result;
 	}
 
 }
