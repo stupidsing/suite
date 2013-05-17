@@ -214,18 +214,18 @@ public class SuiteUtil {
 		return evaluateFunType(fcc(SuiteUtil.parse(program)));
 	}
 
-	public static Node evaluateFunType(FunCompilerConfig config) {
+	public static Node evaluateFunType(FunCompilerConfig fcc) {
 		Prover compiler = new Prover(new ProverConfig( //
-				eagerFunRuleSet(), config.getProverConfig()));
+				eagerFunRuleSet(), fcc.getProverConfig()));
 
 		Reference type = new Reference();
 
 		Node node = SuiteUtil.substitute("" //
-				+ "fc-parse (" + appendLibraries(config, ".0") + ") .p" //
+				+ "fc-parse (" + appendLibraries(fcc, ".0") + ") .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .1 .t" //
-		, config.getNode(), type);
+		, fcc.getNode(), type);
 
 		if (compiler.prove(node))
 			return type.finalNode();
@@ -233,10 +233,9 @@ public class SuiteUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private static String appendLibraries(FunCompilerConfig config,
-			String variable) {
+	private static String appendLibraries(FunCompilerConfig fcc, String variable) {
 		StringBuilder sb = new StringBuilder();
-		for (String library : config.getLibraries())
+		for (String library : fcc.getLibraries())
 			if (!Util.isBlank(library))
 				sb.append("using " + library + " >> ");
 		sb.append("(" + variable + ")");
