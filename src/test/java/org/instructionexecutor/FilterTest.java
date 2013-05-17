@@ -34,7 +34,7 @@ public class FilterTest {
 		config.setIn(is);
 		config.setOut(os);
 
-		Node result = SuiteUtil.evaluateFunctional(config);
+		Node result = SuiteUtil.evaluateFun(config);
 		assertEquals(out, os.toString());
 		return result;
 	}

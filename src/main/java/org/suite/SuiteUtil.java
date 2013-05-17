@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.instructionexecutor.FunctionInstructionExecutor;
+import org.instructionexecutor.FunInstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
@@ -42,8 +42,8 @@ public class SuiteUtil {
 	// Compilation objects
 	private static TermParser parser = new TermParser();
 	private static RuleSet logicalCompiler;
-	private static RuleSet eagerFunctionalCompiler;
-	private static RuleSet lazyFunctionalCompiler;
+	private static RuleSet eagerFunCompiler;
+	private static RuleSet lazyFunCompiler;
 
 	// The directory of the file we are now importing
 	private static boolean isImportFromClasspath = false;
@@ -228,19 +228,19 @@ public class SuiteUtil {
 		return c;
 	}
 
-	public static Node evaluateEagerFunctional(String program) {
-		return evaluateFunctional(program, false);
+	public static Node evaluateEagerFun(String program) {
+		return evaluateFun(program, false);
 	}
 
-	public static Node evaluateLazyFunctional(String program) {
-		return evaluateFunctional(program, true);
+	public static Node evaluateLazyFun(String program) {
+		return evaluateFun(program, true);
 	}
 
-	public static Node evaluateFunctional(String program, boolean isLazy) {
-		return evaluateFunctional(fcc(program, isLazy));
+	public static Node evaluateFun(String program, boolean isLazy) {
+		return evaluateFun(fcc(program, isLazy));
 	}
 
-	public static Node evaluateFunctional(FunCompilerConfig config) {
+	public static Node evaluateFun(FunCompilerConfig config) {
 		RuleSet rs = config.isLazy ? createLazyFunCompiler()
 				: createEagerFunCompiler();
 		ProverConfiguration pc = config.proverConfiguration;
@@ -255,8 +255,7 @@ public class SuiteUtil {
 		Node node = SuiteUtil.substitute(s, mode, config.node, code);
 
 		if (compiler.prove(node)) {
-			FunctionInstructionExecutor e = new FunctionInstructionExecutor(
-					code);
+			FunInstructionExecutor e = new FunInstructionExecutor(code);
 			e.setIn(config.in);
 			e.setOut(config.out);
 			e.setProver(compiler);
@@ -269,11 +268,11 @@ public class SuiteUtil {
 			throw new RuntimeException("Function compilation error");
 	}
 
-	public static Node evaluateFunctionalType(String program) {
-		return evaluateFunctionalType(fcc(SuiteUtil.parse(program)));
+	public static Node evaluateFunType(String program) {
+		return evaluateFunType(fcc(SuiteUtil.parse(program)));
 	}
 
-	public static Node evaluateFunctionalType(FunCompilerConfig config) {
+	public static Node evaluateFunType(FunCompilerConfig config) {
 		Prover compiler = new Prover(new ProverConfiguration(
 				createEagerFunCompiler(), config.proverConfiguration));
 
@@ -309,19 +308,19 @@ public class SuiteUtil {
 	}
 
 	private static synchronized RuleSet createEagerFunCompiler() {
-		if (eagerFunctionalCompiler == null) {
+		if (eagerFunCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-eager-evaluation.sl" };
-			eagerFunctionalCompiler = createRuleSet(imports);
+			eagerFunCompiler = createRuleSet(imports);
 		}
-		return eagerFunctionalCompiler;
+		return eagerFunCompiler;
 	}
 
 	private static synchronized RuleSet createLazyFunCompiler() {
-		if (lazyFunctionalCompiler == null) {
+		if (lazyFunCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-lazy-evaluation.sl" };
-			lazyFunctionalCompiler = createRuleSet(imports);
+			lazyFunCompiler = createRuleSet(imports);
 		}
-		return lazyFunctionalCompiler;
+		return lazyFunCompiler;
 	}
 
 	public static Prover createProver(String toImports[]) {

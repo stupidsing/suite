@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.suite.SuiteUtil;
 import org.suite.node.Node;
 
-public class OlderFunctionCompilerTest {
+public class OlderFunCompilerTest {
 
 	private static final String concatList0 = "" //
 			+ "define concat-list0 = split {h => t => \n" //
@@ -59,7 +59,7 @@ public class OlderFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateEagerFunctional(f);
+		return SuiteUtil.evaluateEagerFun(f);
 	}
 
 }

@@ -11,7 +11,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 
-public class EagerFunctionCompilerTest {
+public class EagerFunCompilerTest {
 
 	@Test
 	public void testAppend() {
@@ -124,7 +124,7 @@ public class EagerFunctionCompilerTest {
 		Node f = SuiteUtil.parse("gcd {6} {9}");
 		FunCompilerConfig c = SuiteUtil.fcc(f);
 		c.addLibrary("MATH");
-		assertEquals(Int.create(3), SuiteUtil.evaluateFunctional(c));
+		assertEquals(Int.create(3), SuiteUtil.evaluateFun(c));
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class EagerFunctionCompilerTest {
 	public void testInfiniteLoop() {
 		try {
 			// This would fail stack over during type check, so skip that
-			SuiteUtil.evaluateEagerFunctional("no-type-check" //
+			SuiteUtil.evaluateEagerFun("no-type-check" //
 					+ " (e => e {e}) {e => e {e}}");
 			throw new RuntimeException();
 		} catch (Throwable th) {
@@ -247,7 +247,7 @@ public class EagerFunctionCompilerTest {
 	public void testOperator() {
 		assertEquals(Atom.TRUE, eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
-		assertEquals(Atom.FALSE, SuiteUtil.evaluateEagerFunctional("" //
+		assertEquals(Atom.FALSE, SuiteUtil.evaluateEagerFun("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B %) of (t,) >> \n" //
 				+ "let list1 = type (list-of t) () >> A % = B %"));
@@ -346,7 +346,7 @@ public class EagerFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateEagerFunctional(f);
+		return SuiteUtil.evaluateEagerFun(f);
 	}
 
 }

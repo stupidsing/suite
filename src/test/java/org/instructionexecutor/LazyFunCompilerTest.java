@@ -8,7 +8,7 @@ import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
 
-public class LazyFunctionCompilerTest {
+public class LazyFunCompilerTest {
 
 	@Test
 	public void testClosure() {
@@ -75,7 +75,7 @@ public class LazyFunctionCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateLazyFunctional(f);
+		return SuiteUtil.evaluateLazyFun(f);
 	}
 
 }

@@ -32,7 +32,7 @@ import org.suite.node.Vector;
 import org.util.IoUtil;
 import org.util.LogUtil;
 
-public class FunctionInstructionExecutor extends InstructionExecutor {
+public class FunInstructionExecutor extends InstructionExecutor {
 
 	private static final Atom COMPARE = Atom.create("COMPARE");
 	private static final Atom CONS = Atom.create("CONS");
@@ -61,7 +61,7 @@ public class FunctionInstructionExecutor extends InstructionExecutor {
 	private Map<Node, IndexedInput> inputs = new HashMap<>();
 	private Map<Node, IndexedOutput> outputs = new HashMap<>();
 
-	public FunctionInstructionExecutor(Node node) {
+	public FunInstructionExecutor(Node node) {
 		super(node);
 	}
 

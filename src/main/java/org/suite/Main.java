@@ -197,7 +197,7 @@ public class Main {
 					break;
 				case EVALUATETYPE:
 					fcc.setNode(node);
-					node = SuiteUtil.evaluateFunctionalType(fcc);
+					node = SuiteUtil.evaluateFunType(fcc);
 					System.out.println(Formatter.dump(node));
 					break;
 				case FACT:
@@ -306,7 +306,7 @@ public class Main {
 
 	private Node evaluateFunctional(Node node) {
 		fcc.setNode(node);
-		return SuiteUtil.evaluateFunctional(fcc);
+		return SuiteUtil.evaluateFun(fcc);
 	}
 
 	private String yesNo(boolean q) {

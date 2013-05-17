@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.suite.SuiteUtil;
 import org.suite.node.Node;
 
-public class FunctionCompilerTypeTest {
+public class FunCompilerTypeTest {
 
 	private static final String variant = "" //
 			+ "define type (A %) of (t,) >> \n" //
@@ -121,7 +121,7 @@ public class FunctionCompilerTypeTest {
 	}
 
 	private static Node getType(String a) {
-		return SuiteUtil.evaluateFunctionalType(a);
+		return SuiteUtil.evaluateFunType(a);
 	}
 
 }
