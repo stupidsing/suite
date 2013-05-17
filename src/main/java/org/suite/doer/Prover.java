@@ -20,7 +20,7 @@ import org.util.Util.Fun;
 
 public class Prover {
 
-	private ProverConfiguration cfg;
+	private ProverConfig config;
 	private ProveTracer tracer;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
@@ -32,19 +32,19 @@ public class Prover {
 	private Journal journal = new Journal();
 
 	public Prover(Prover prover) {
-		this(prover.cfg, prover.tracer);
+		this(prover.config, prover.tracer);
 	}
 
 	public Prover(RuleSet ruleSet) {
-		this(new ProverConfiguration(ruleSet));
+		this(new ProverConfig(ruleSet));
 	}
 
-	public Prover(ProverConfiguration pc) {
+	public Prover(ProverConfig pc) {
 		this(pc, null);
 	}
 
-	public Prover(ProverConfiguration pc, ProveTracer tracer) {
-		this.cfg = pc;
+	public Prover(ProverConfig pc, ProveTracer tracer) {
+		this.config = pc;
 		this.tracer = tracer;
 	}
 
@@ -56,7 +56,7 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		if (cfg.isTrace())
+		if (config.isTrace())
 			try {
 				tracer = new ProveTracer();
 				return prove0(query);
@@ -130,12 +130,12 @@ public class Prover {
 				} else
 					return false;
 			else {
-				boolean isTrace = cfg.isTrace();
+				boolean isTrace = config.isTrace();
 				Prototype prototype = isTrace ? Prototype.get(query) : null;
 				Node head = prototype != null ? prototype.getHead() : null;
 				Atom atom = head instanceof Atom ? (Atom) head : null;
 				String name = atom != null ? atom.getName() : null;
-				isTrace &= !cfg.getNoTracePredicates().contains(name);
+				isTrace &= !config.getNoTracePredicates().contains(name);
 
 				if (!isTrace)
 					query = expand(query);
@@ -183,7 +183,7 @@ public class Prover {
 		final Node alt0 = alt;
 		Node ret = FAIL;
 
-		List<Rule> rules = cfg.ruleSet().searchRule(query);
+		List<Rule> rules = config.ruleSet().searchRule(query);
 		ListIterator<Rule> iter = rules.listIterator(rules.size());
 
 		while (iter.hasPrevious()) {
@@ -215,12 +215,12 @@ public class Prover {
 		return ret;
 	}
 
-	public ProverConfiguration configuration() {
-		return cfg;
+	public ProverConfig config() {
+		return config;
 	}
 
 	public RuleSet ruleSet() {
-		return cfg.ruleSet();
+		return config.ruleSet();
 	}
 
 	public ProveTracer getTracer() {

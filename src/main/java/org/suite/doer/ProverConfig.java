@@ -8,31 +8,31 @@ import org.suite.SuiteUtil;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.RuleSetUtil;
 
-public class ProverConfiguration {
+public class ProverConfig {
 
 	private RuleSet ruleSet;
 	private boolean isTrace;
 	private Set<String> noTracePredicates;
 
-	public ProverConfiguration() {
+	public ProverConfig() {
 		this(RuleSetUtil.create());
 	}
 
-	public ProverConfiguration(RuleSet ruleSet) {
+	public ProverConfig(RuleSet ruleSet) {
 		this(ruleSet //
 				, SuiteUtil.isTrace //
 				, new HashSet<>(Arrays.asList("member", "replace")));
 	}
 
-	public ProverConfiguration(ProverConfiguration pc) {
+	public ProverConfig(ProverConfig pc) {
 		this(pc.ruleSet, pc);
 	}
 
-	public ProverConfiguration(RuleSet ruleSet, ProverConfiguration pc) {
+	public ProverConfig(RuleSet ruleSet, ProverConfig pc) {
 		this(ruleSet, pc.isTrace, pc.noTracePredicates);
 	}
 
-	public ProverConfiguration(RuleSet ruleSet //
+	public ProverConfig(RuleSet ruleSet //
 			, boolean isTrace //
 			, Set<String> noTracePredicates) {
 		this.ruleSet = ruleSet;

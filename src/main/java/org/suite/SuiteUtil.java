@@ -4,10 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +12,7 @@ import org.instructionexecutor.FunInstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
-import org.suite.doer.ProverConfiguration;
+import org.suite.doer.ProverConfig;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
@@ -28,7 +24,6 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
-import org.util.IoUtil;
 import org.util.Util;
 import org.util.Util.Sink;
 
@@ -125,13 +120,13 @@ public class SuiteUtil {
 	}
 
 	public static boolean evaluateLogical(Node program) {
-		ProverConfiguration pc = new ProverConfiguration();
+		ProverConfig pc = new ProverConfig();
 		return !evaluateLogical(program, Atom.NIL, pc, false).isEmpty();
 	}
 
 	public static List<Node> evaluateLogical(Node program //
 			, Node eval //
-			, ProverConfiguration pc //
+			, ProverConfig pc //
 			, boolean isDumpCode) {
 		final List<Node> nodes = new ArrayList<>();
 		evaluateLogical(program, eval, pc, isDumpCode, new Sink<Node>() {
@@ -144,11 +139,11 @@ public class SuiteUtil {
 
 	public static void evaluateLogical(Node program //
 			, Node eval //
-			, ProverConfiguration pc //
+			, ProverConfig pc //
 			, boolean isDumpCode //
 			, Sink<Node> sink) {
-		RuleSet rs = createLogicalCompiler();
-		Prover lc = new Prover(new ProverConfiguration(rs, pc));
+		RuleSet rs = logicalRuleSet();
+		Prover lc = new Prover(new ProverConfig(rs, pc));
 		Reference code = new Reference();
 
 		String goal = "compile-logic (.0, sink .1) .2"
@@ -159,58 +154,6 @@ public class SuiteUtil {
 			new LogicInstructionExecutor(code, lc, sink).execute();
 		else
 			throw new RuntimeException("Logic compilation error");
-	}
-
-	public static class FunCompilerConfig {
-		private Node node;
-		private boolean isLazy;
-		private List<String> libraries = new ArrayList<>();
-		private ProverConfiguration proverConfiguration = new ProverConfiguration();
-		private boolean isDumpCode = SuiteUtil.isDumpCode;
-		private Reader in = new InputStreamReader(System.in, IoUtil.charset);
-		private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
-
-		public FunCompilerConfig() {
-			if (SuiteUtil.libraries != null)
-				addLibraries(SuiteUtil.libraries);
-		}
-
-		public void addLibrary(String library) {
-			libraries.add(library);
-		}
-
-		public void addLibraries(List<String> libs) {
-			libraries.addAll(libs);
-		}
-
-		public void setNode(Node node) {
-			this.node = node;
-		}
-
-		public void setLazy(boolean isLazy) {
-			this.isLazy = isLazy;
-		}
-
-		public void setLibraries(List<String> libraries) {
-			this.libraries = libraries;
-		}
-
-		public void setProverConfiguration(
-				ProverConfiguration proverConfiguration) {
-			this.proverConfiguration = proverConfiguration;
-		}
-
-		public void setDumpCode(boolean isDumpCode) {
-			this.isDumpCode = isDumpCode;
-		}
-
-		public void setIn(Reader in) {
-			this.in = in;
-		}
-
-		public void setOut(Writer out) {
-			this.out = out;
-		}
 	}
 
 	public static FunCompilerConfig fcc(Node node) {
@@ -241,27 +184,26 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFun(FunCompilerConfig config) {
-		RuleSet rs = config.isLazy ? createLazyFunCompiler()
-				: createEagerFunCompiler();
-		ProverConfiguration pc = config.proverConfiguration;
-		Prover compiler = new Prover(new ProverConfiguration(rs, pc));
+		RuleSet rs = config.isLazy() ? lazyFunRuleSet() : eagerFunRuleSet();
+		ProverConfig pc = config.getProverConfig();
+		Prover compiler = new Prover(new ProverConfig(rs, pc));
 
-		Atom mode = Atom.create(config.isLazy ? "LAZY" : "EAGER");
+		Atom mode = Atom.create(config.isLazy() ? "LAZY" : "EAGER");
 		String program = appendLibraries(config, ".1");
 		Reference code = new Reference();
 
 		String s = "compile-function .0 (" + program + ") .2"
-				+ (config.isDumpCode ? ", pretty.print .2" : "");
-		Node node = SuiteUtil.substitute(s, mode, config.node, code);
+				+ (config.isDumpCode() ? ", pretty.print .2" : "");
+		Node node = SuiteUtil.substitute(s, mode, config.getNode(), code);
 
 		if (compiler.prove(node)) {
 			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setIn(config.in);
-			e.setOut(config.out);
+			e.setIn(config.getIn());
+			e.setOut(config.getOut());
 			e.setProver(compiler);
 
 			Node result = e.execute();
-			if (config.isLazy)
+			if (config.isLazy())
 				result = e.unwrap(result);
 			return result;
 		} else
@@ -273,8 +215,8 @@ public class SuiteUtil {
 	}
 
 	public static Node evaluateFunType(FunCompilerConfig config) {
-		Prover compiler = new Prover(new ProverConfiguration(
-				createEagerFunCompiler(), config.proverConfiguration));
+		Prover compiler = new Prover(new ProverConfig( //
+				eagerFunRuleSet(), config.getProverConfig()));
 
 		Reference type = new Reference();
 
@@ -283,7 +225,7 @@ public class SuiteUtil {
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .1 .t" //
-		, config.node, type);
+		, config.getNode(), type);
 
 		if (compiler.prove(node))
 			return type.finalNode();
@@ -294,20 +236,20 @@ public class SuiteUtil {
 	private static String appendLibraries(FunCompilerConfig config,
 			String variable) {
 		StringBuilder sb = new StringBuilder();
-		for (String library : config.libraries)
+		for (String library : config.getLibraries())
 			if (!Util.isBlank(library))
 				sb.append("using " + library + " >> ");
 		sb.append("(" + variable + ")");
 		return sb.toString();
 	}
 
-	private static synchronized RuleSet createLogicalCompiler() {
+	private static synchronized RuleSet logicalRuleSet() {
 		if (logicalCompiler == null)
 			logicalCompiler = createRuleSet(new String[] { "auto.sl", "lc.sl" });
 		return logicalCompiler;
 	}
 
-	private static synchronized RuleSet createEagerFunCompiler() {
+	private static synchronized RuleSet eagerFunRuleSet() {
 		if (eagerFunCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-eager-evaluation.sl" };
 			eagerFunCompiler = createRuleSet(imports);
@@ -315,7 +257,7 @@ public class SuiteUtil {
 		return eagerFunCompiler;
 	}
 
-	private static synchronized RuleSet createLazyFunCompiler() {
+	private static synchronized RuleSet lazyFunRuleSet() {
 		if (lazyFunCompiler == null) {
 			String imports[] = { "auto.sl", "fc.sl", "fc-lazy-evaluation.sl" };
 			lazyFunCompiler = createRuleSet(imports);

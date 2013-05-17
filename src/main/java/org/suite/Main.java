@@ -12,12 +12,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
-import org.suite.doer.ProverConfiguration;
+import org.suite.doer.ProverConfig;
 import org.suite.doer.Station;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
@@ -39,14 +38,14 @@ import org.util.Util;
 public class Main {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
-	private ProverConfiguration pc = new ProverConfiguration();
+	private ProverConfig pc = new ProverConfig();
 
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
 
 	public Main() {
-		fcc.setProverConfiguration(pc);
+		fcc.setProverConfig(pc);
 		fcc.setIn(new StringReader(""));
 	}
 
@@ -288,7 +287,7 @@ public class Main {
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
 		RuleSet rs = SuiteUtil.createRuleSet(imports);
-		Prover prover = new Prover(new ProverConfiguration(rs, pc));
+		Prover prover = new Prover(new ProverConfig(rs, pc));
 
 		String goal = "fc-setup-precompile " + libraryName;
 		Node node = SuiteUtil.parse(goal);

@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.suite.FunCompilerConfig;
 import org.suite.SuiteUtil;
-import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;

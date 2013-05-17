@@ -6,9 +6,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import org.junit.Test;
+import org.suite.FunCompilerConfig;
 import org.suite.Main;
 import org.suite.SuiteUtil;
-import org.suite.SuiteUtil.FunCompilerConfig;
 import org.suite.node.Node;
 
 public class FilterTest {
