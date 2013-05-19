@@ -173,7 +173,7 @@ public class InstructionExecutor {
 			case LABEL_________:
 				break;
 			case LOG___________:
-				LogUtil.info("EXEC", constantPool.get(insn.op0).toString());
+				LogUtil.info(constantPool.get(insn.op0).toString());
 				break;
 			case NEWNODE_______:
 				regs[insn.op0] = new Reference();

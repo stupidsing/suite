@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.node.Node;
@@ -17,7 +15,6 @@ import org.suite.predicates.SystemPredicates.SystemPredicate;
 import org.util.FormatUtil;
 import org.util.IoUtil;
 import org.util.LogUtil;
-import org.util.Util;
 
 public class IoPredicates {
 
@@ -32,7 +29,7 @@ public class IoPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			String date = FormatUtil.dtFmt.format(new Date());
 			String trace = prover.getTracer().getStackTrace();
-			LogUtil.info("TRACE", "-- Stack trace at " + date + " --\n" + trace);
+			LogUtil.info("-- Stack trace at " + date + " --\n" + trace);
 			return true;
 		}
 	}
@@ -44,12 +41,10 @@ public class IoPredicates {
 					String cmd = ((Str) ps).getValue();
 					return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 				} catch (Exception ex) { // IOException or InterruptedException
-					log.error(this, ex);
+					LogUtil.error(ex);
 				}
 			return false;
 		}
-
-		private static Log log = LogFactory.getLog(Util.currentClass());
 	}
 
 	public static class FileExists implements SystemPredicate {

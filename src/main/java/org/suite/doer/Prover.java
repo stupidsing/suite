@@ -63,7 +63,7 @@ public class Prover {
 			} finally {
 				String d = FormatUtil.dtFmt.format(new Date());
 				String dump = tracer.getDump();
-				LogUtil.info("DUMP", "-- Prover dump at " + d + " --\n" + dump);
+				LogUtil.info("-- Prover dump at " + d + " --\n" + dump);
 			}
 		else
 			return prove0(query);

@@ -20,7 +20,7 @@ public abstract class ThreadedService {
 				try {
 					serve();
 				} catch (Exception ex) {
-					LogUtil.error(getClass(), ex);
+					LogUtil.error(ex);
 				}
 			}
 		};

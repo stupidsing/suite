@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.parser.Operator.Assoc;
 import org.suite.Context;
 import org.suite.Singleton;
@@ -121,7 +119,7 @@ public class Parser {
 		}
 
 		if (quote != 0 || depth != 0)
-			LogUtil.info("PARSER", "Suspicious input when parsing " + s);
+			LogUtil.info("Suspicious input when parsing " + s);
 
 		return Atom.create(localContext, s);
 	}
@@ -264,12 +262,10 @@ public class Parser {
 			}
 		} catch (Exception ex) {
 			// StringIndexOutOfBoundsException, NumberFormatException
-			log.error(Util.currentClass(), ex);
+			LogUtil.error(ex);
 		}
 
 		return s;
 	}
-
-	private static Log log = LogFactory.getLog(Util.currentClass());
 
 }

@@ -172,7 +172,7 @@ public class Channels {
 			try {
 				onTrySend();
 			} catch (IOException ex) {
-				LogUtil.error(getClass(), ex);
+				LogUtil.error(ex);
 			}
 		}
 

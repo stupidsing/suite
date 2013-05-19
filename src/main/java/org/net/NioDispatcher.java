@@ -78,7 +78,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 				try {
 					ssc.close();
 				} catch (IOException ex) {
-					LogUtil.error(getClass(), ex);
+					LogUtil.error(ex);
 				}
 			}
 		};
@@ -109,7 +109,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 					try {
 						processSelectedKey(key);
 					} catch (Exception ex) {
-						LogUtil.error(getClass(), ex);
+						LogUtil.error(ex);
 					}
 				}
 			}

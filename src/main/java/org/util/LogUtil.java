@@ -12,14 +12,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import sun.reflect.Reflection;
+
 public class LogUtil {
 
-	private static boolean initialized = false;
 	private static int maxStackTraceLength = 99;
 
-	public static void initLog4j() {
-		if (!initialized)
-			initLog4j(Level.INFO);
+	static {
+		initLog4j(Level.INFO);
 	}
 
 	public static void initLog4j(Level level) {
@@ -40,23 +40,35 @@ public class LogUtil {
 		logger.removeAllAppenders();
 		logger.addAppender(console);
 		logger.addAppender(file);
-
-		initialized = true;
 	}
 
-	public static void info(String cat, String message) {
-		initLog4j();
-		LogFactory.getLog(cat).info(message);
+	public static void info(String message) {
+		Class<?> clazz = Reflection.getCallerClass(2);
+		info(clazz, message);
 	}
 
-	public static void error(Class<?> clazz, Throwable th) {
-		error(clazz.getName(), th);
+	private static void info(Class<?> clazz, String message) {
+		LogFactory.getLog(clazz).info(message);
 	}
 
-	public static void error(String cat, Throwable th) {
-		initLog4j();
+	public static void error(Throwable th) {
+		Class<?> clazz = Reflection.getCallerClass(2);
+		error(clazz, th);
+	}
+
+	private static void error(Class<?> clazz, Throwable th) {
 		boolean isTrimmed = trimStackTrace(th);
-		LogFactory.getLog(cat).error(isTrimmed ? "(Trimmed)" : "", th);
+		LogFactory.getLog(clazz).error(isTrimmed ? "(Trimmed)" : "", th);
+	}
+
+	public static void fatal(Throwable th) {
+		Class<?> clazz = Reflection.getCallerClass(2);
+		fatal(clazz, th);
+	}
+
+	private static void fatal(Class<?> clazz, Throwable th) {
+		boolean isTrimmed = trimStackTrace(th);
+		LogFactory.getLog(clazz).fatal(isTrimmed ? "(Trimmed)" : "", th);
 	}
 
 	private static boolean trimStackTrace(Throwable th) {
@@ -89,23 +101,23 @@ public class LogUtil {
 		InvocationHandler handler = new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object ps[])
 					throws Exception {
-				String prefix = clazz.getSimpleName() //
-						+ "." + method.getName() + "()\n";
+				String methodName = method.getName();
+				String prefix = methodName + "()\n";
 
 				String pd = "";
 				if (ps != null)
 					for (int i = 0; i < ps.length; i++)
 						pd += DumpUtil.dump("p" + i, ps[i]);
 
-				info("proxy", prefix + pd);
+				info(clazz, prefix + pd);
 
 				try {
 					Object value = method.invoke(object, ps);
 					String rd = DumpUtil.dump("return", value);
-					info("proxy", prefix + rd);
+					info(clazz, prefix + rd);
 					return value;
 				} catch (Exception ex) {
-					error("proxy", ex);
+					error(clazz, ex);
 					throw ex;
 				}
 			}

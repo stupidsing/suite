@@ -169,7 +169,7 @@ public class ClusterProbe extends ThreadedService {
 			try {
 				processSelectedKey(current, key);
 			} catch (Exception ex) {
-				LogUtil.error(getClass(), ex);
+				LogUtil.error(ex);
 			}
 		}
 	}
@@ -264,7 +264,7 @@ public class ClusterProbe extends ThreadedService {
 			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
 			lastSentTime.put(remote, System.currentTimeMillis());
 		} catch (IOException ex) {
-			LogUtil.error(getClass(), ex);
+			LogUtil.error(ex);
 		}
 	}
 

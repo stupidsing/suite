@@ -64,7 +64,7 @@ public class TelnetServer {
 					process.destroy();
 				}
 			} catch (Exception ex) {
-				LogUtil.error(getClass(), ex);
+				LogUtil.error(ex);
 			} finally {
 				Util.closeQuietly(socket);
 			}
@@ -104,7 +104,7 @@ public class TelnetServer {
 						break;
 				}
 			} catch (Exception ex) {
-				LogUtil.error(getClass(), ex);
+				LogUtil.error(ex);
 			} finally {
 				quitter.set(true);
 			}

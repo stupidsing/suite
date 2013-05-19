@@ -49,7 +49,7 @@ public class Connector {
 								PrintWriter writer = new PrintWriter(os);) {
 							writer.println("Hello World");
 						} catch (IOException ex) {
-							LogUtil.error(Connector.this.getClass(), ex);
+							LogUtil.error(ex);
 						}
 					}
 				});

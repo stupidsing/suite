@@ -146,10 +146,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = a(stack[sp] instanceof Vector);
 		else if (command == LOG) {
 			result = (Node) stack[sp];
-			LogUtil.info("LOG", Formatter.display(unwrap(result)));
+			LogUtil.info(Formatter.display(unwrap(result)));
 		} else if (command == LOG2) {
 			Node ln = unwrap((Node) stack[sp + 1]);
-			LogUtil.info("LOG2", SuiteUtil.stringize(ln));
+			LogUtil.info(SuiteUtil.stringize(ln));
 			result = (Node) stack[sp];
 		} else if (command == POPEN) {
 			Node n0 = unwrap((Node) stack[sp + 1]);

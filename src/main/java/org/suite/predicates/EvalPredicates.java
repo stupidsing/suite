@@ -9,8 +9,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.parser.Operator;
 import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
@@ -25,7 +23,7 @@ import org.suite.node.Reference;
 import org.suite.node.Str;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates.SystemPredicate;
-import org.util.Util;
+import org.util.LogUtil;
 
 public class EvalPredicates {
 
@@ -74,7 +72,7 @@ public class EvalPredicates {
 			try {
 				result = engine.eval(js);
 			} catch (ScriptException ex) {
-				log.error(js, ex);
+				LogUtil.error(ex);
 				return false;
 			}
 
@@ -257,7 +255,5 @@ public class EvalPredicates {
 				return false;
 		}
 	}
-
-	private static Log log = LogFactory.getLog(Util.currentClass());
 
 }

@@ -66,7 +66,7 @@ public class UctSearch<Move> {
 			for (int i = 0; i < numberOfThreads; i++)
 				threads[i].join();
 		} catch (InterruptedException ex) {
-			LogUtil.error("", ex);
+			LogUtil.error(ex);
 		}
 
 		// Finds best node

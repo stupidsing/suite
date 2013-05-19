@@ -8,11 +8,8 @@ import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.util.LogUtil;
-import org.util.Util;
 
 /**
  * Starts program using a JavaScript script. Perhaps you can avoid using Spring
@@ -52,7 +49,7 @@ public class JsMain {
 
 			wait();
 		} catch (Throwable ex) {
-			log.fatal("main()", ex);
+			LogUtil.fatal(ex);
 			ex.printStackTrace();
 		}
 	}
@@ -69,7 +66,5 @@ public class JsMain {
 	public ScriptEngine getScriptEngine() {
 		return engine;
 	}
-
-	private static Log log = LogFactory.getLog(Util.currentClass());
 
 }

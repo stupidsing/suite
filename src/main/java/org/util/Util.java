@@ -15,9 +15,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import sun.reflect.Reflection;
 
 public class Util {
@@ -101,7 +98,7 @@ public class Util {
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException ex) {
-			log.error("", ex);
+			LogUtil.error(ex);
 			Thread.currentThread().interrupt();
 		}
 	}
@@ -227,7 +224,7 @@ public class Util {
 		sb.append("Dumping ");
 		sb.append(name);
 		DumpUtil.dump("", object, sb);
-		log.info(sb.toString());
+		LogUtil.info(sb.toString());
 	}
 
 	/**
@@ -308,7 +305,5 @@ public class Util {
 				throw new RuntimeException(ex);
 			}
 	}
-
-	private static Log log = LogFactory.getLog(Util.currentClass());
 
 }

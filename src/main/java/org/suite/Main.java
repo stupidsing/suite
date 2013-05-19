@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.PrettyPrinter;
@@ -50,12 +48,10 @@ public class Main {
 	}
 
 	public static void main(String args[]) {
-		LogUtil.initLog4j();
-
 		try {
 			new Main().run(args);
 		} catch (Throwable ex) {
-			log.error(Main.class, ex);
+			LogUtil.error(ex);
 		}
 	}
 
@@ -246,7 +242,7 @@ public class Main {
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {
-				LogUtil.error(Main.class, ex);
+				LogUtil.error(ex);
 			}
 	}
 
@@ -311,7 +307,5 @@ public class Main {
 	private String yesNo(boolean q) {
 		return q ? "Yes\n" : "No\n";
 	}
-
-	private static Log log = LogFactory.getLog(Util.currentClass());
 
 }
