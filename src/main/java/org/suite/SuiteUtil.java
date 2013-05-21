@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.instructionexecutor.FunInstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
+import org.suite.doer.Cloner;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
@@ -43,6 +44,18 @@ public class SuiteUtil {
 	// The directory of the file we are now importing
 	private static boolean isImportFromClasspath = false;
 	private static String importerRoot = "";
+
+	private static class Collector implements Sink<Node> {
+		private List<Node> nodes = new ArrayList<>();
+
+		public void apply(Node node) {
+			nodes.add(new Cloner().clone(node));
+		}
+
+		public List<Node> getNodes() {
+			return nodes;
+		}
+	}
 
 	public static void addRule(RuleSet rs, String rule) {
 		rs.addRule(Rule.formRule(parser.parse(rule)));
@@ -109,35 +122,28 @@ public class SuiteUtil {
 	}
 
 	public static boolean proveThis(RuleSet rs, String s) {
-		Node node = parse(s);
-		node = new Generalizer().generalize(node);
-		Prover prover = new Prover(rs);
-		return prover.prove(node);
+		return new Prover(rs).prove(new Generalizer().generalize(parse(s)));
 	}
 
-	public static boolean evaluateLogical(String program) {
-		return evaluateLogical(parse(program));
+	public static boolean evaluateLogical(String lps) {
+		return evaluateLogical(parse(lps));
 	}
 
-	public static boolean evaluateLogical(Node program) {
+	public static boolean evaluateLogical(Node lp) {
 		ProverConfig pc = new ProverConfig();
-		return !evaluateLogical(program, Atom.NIL, pc, false).isEmpty();
+		return !evaluateLogical(lp, Atom.NIL, pc, false).isEmpty();
 	}
 
-	public static List<Node> evaluateLogical(Node program //
+	public static List<Node> evaluateLogical(Node lp //
 			, Node eval //
 			, ProverConfig pc //
 			, boolean isDumpCode) {
-		final List<Node> nodes = new ArrayList<>();
-		evaluateLogical(program, eval, pc, isDumpCode, new Sink<Node>() {
-			public void apply(Node node) {
-				nodes.add(node);
-			}
-		});
-		return nodes;
+		Collector sink = new Collector();
+		evaluateLogical(lp, eval, pc, isDumpCode, sink);
+		return sink.getNodes();
 	}
 
-	public static void evaluateLogical(Node program //
+	public static void evaluateLogical(Node lp //
 			, Node eval //
 			, ProverConfig pc //
 			, boolean isDumpCode //
@@ -148,7 +154,7 @@ public class SuiteUtil {
 
 		String goal = "compile-logic (.0, sink .1) .2"
 				+ (isDumpCode ? ", pretty.print .2" : "");
-		Node node = SuiteUtil.substitute(goal, program, eval, code);
+		Node node = SuiteUtil.substitute(goal, lp, eval, code);
 
 		if (lc.prove(node))
 			new LogicInstructionExecutor(code, lc, sink).execute();
@@ -156,31 +162,31 @@ public class SuiteUtil {
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	public static FunCompilerConfig fcc(Node node) {
-		return fcc(node, false);
+	public static FunCompilerConfig fcc(Node fp) {
+		return fcc(fp, false);
 	}
 
-	public static FunCompilerConfig fcc(String program, boolean isLazy) {
-		return fcc(parse(program), isLazy);
+	public static FunCompilerConfig fcc(String fps, boolean isLazy) {
+		return fcc(parse(fps), isLazy);
 	}
 
-	public static FunCompilerConfig fcc(Node node, boolean isLazy) {
+	public static FunCompilerConfig fcc(Node fp, boolean isLazy) {
 		FunCompilerConfig fcc = new FunCompilerConfig();
-		fcc.setNode(node);
+		fcc.setNode(fp);
 		fcc.setLazy(isLazy);
 		return fcc;
 	}
 
-	public static Node evaluateEagerFun(String program) {
-		return evaluateFun(program, false);
+	public static Node evaluateEagerFun(String fp) {
+		return evaluateFun(fp, false);
 	}
 
-	public static Node evaluateLazyFun(String program) {
-		return evaluateFun(program, true);
+	public static Node evaluateLazyFun(String fp) {
+		return evaluateFun(fp, true);
 	}
 
-	public static Node evaluateFun(String program, boolean isLazy) {
-		return evaluateFun(fcc(program, isLazy));
+	private static Node evaluateFun(String fp, boolean isLazy) {
+		return evaluateFun(fcc(fp, isLazy));
 	}
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
@@ -210,8 +216,8 @@ public class SuiteUtil {
 			throw new RuntimeException("Function compilation error");
 	}
 
-	public static Node evaluateFunType(String program) {
-		return evaluateFunType(fcc(SuiteUtil.parse(program)));
+	public static Node evaluateFunType(String fps) {
+		return evaluateFunType(fcc(SuiteUtil.parse(fps)));
 	}
 
 	public static Node evaluateFunType(FunCompilerConfig fcc) {
