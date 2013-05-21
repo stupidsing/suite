@@ -47,8 +47,9 @@ lc-parse (.rules >> .clause) (DEFINE-RULES .rules1 .clause1) .nv
 lc-parse () YES () :- ! #
 lc-parse fail FAIL () :- ! #
 lc-parse .cut CUT () :- to.atom "!" .cut, ! #
+lc-parse (sink .n) (SINK .n1) .nv :- !, lc-parse-pattern .n .n1 .nv #
 lc-parse (.p .do) (.p1 .do1) .nv
-	:- member (once/ONCE, not/NOT, sink/SINK,) .p/.p1, !
+	:- member (once/ONCE, not/NOT,) .p/.p1, !
 	, lc-parse .do .do1 .nv
 #
 lc-parse .tree (.oper1 .left1 .right1) .nv
@@ -166,7 +167,7 @@ lc-compile (NOT .do) .rem .pls/.vs .c0/.cx/.d0/.dx
 #
 lc-compile (SINK .do) .rem .pls/.vs .c0/.cx/.d/.d
 	:- !
-	, lc-create-node .a .vs .c0/.c1/.reg
+	, lc-create-node .do .vs .c0/.c1/.reg
 	, .c1 = (_ SINK .reg, .cx)
 #
 lc-compile (EQ .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
