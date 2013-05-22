@@ -79,7 +79,7 @@ public class SuiteEvaluationUtil {
 		Node code = singleResult(finder, lp);
 
 		if (code != null) {
-			Prover p = new Prover(new ProverConfig(rs, pc));
+			Prover p = new Prover(pc);
 			new LogicInstructionExecutor(code, p, source, sink).execute();
 		} else
 			throw new RuntimeException("Logic compilation error");
