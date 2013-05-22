@@ -12,7 +12,7 @@ import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.search.InterpretedProver;
+import org.suite.search.InterpretedProveBuilder;
 import org.suite.search.ProveSearch.Builder;
 import org.suite.search.ProveSearch.Finder;
 import org.util.FunUtil;
@@ -75,7 +75,7 @@ public class SuiteEvaluationUtil {
 				+ (isDumpCode ? ", pretty.print .2" : "");
 		Node node = SuiteUtil.substitute(goal, Builder.in, eval, Builder.out);
 
-		Finder finder = new InterpretedProver(pc).build(rs, node);
+		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, lp);
 
 		if (code != null) {
@@ -110,7 +110,7 @@ public class SuiteEvaluationUtil {
 				, Builder.in //
 				, Builder.out);
 
-		Finder finder = new InterpretedProver(pc).build(rs, node);
+		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, fcc.getNode());
 
 		if (code != null) {
@@ -142,7 +142,7 @@ public class SuiteEvaluationUtil {
 				+ ", fc-parse-type .1 .t" //
 		, Builder.in, Builder.out);
 
-		Finder finder = new InterpretedProver(pc).build(rs, node);
+		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node type = singleResult(finder, fcc.getNode());
 
 		if (type != null)
