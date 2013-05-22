@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.suite.Binder;
 import org.suite.Journal;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
@@ -15,8 +14,8 @@ import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
 import org.util.FormatUtil;
+import org.util.FunUtil.Fun;
 import org.util.LogUtil;
-import org.util.Util.Fun;
 
 public class Prover {
 

@@ -20,10 +20,10 @@ import org.junit.Test;
 import org.net.Channels.BufferedChannel;
 import org.net.Channels.RequestResponseChannel;
 import org.net.Channels.Sender;
+import org.util.FunUtil.Fun;
+import org.util.FunUtil.Source;
 import org.util.IoUtil;
 import org.util.Util;
-import org.util.Util.Fun;
-import org.util.Util.Source;
 
 public class NioDispatcherTest {
 

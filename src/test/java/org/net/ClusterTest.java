@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.util.FunUtil.Fun;
 import org.util.Util;
-import org.util.Util.Fun;
 
 public class ClusterTest {
 

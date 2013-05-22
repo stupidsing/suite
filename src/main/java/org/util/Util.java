@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -135,75 +133,6 @@ public class Util {
 		int size = list.size();
 		while (size > n)
 			list.remove(--size);
-	}
-
-	public interface Event extends EventEx<RuntimeException> {
-		public void apply();
-	}
-
-	public interface EventEx<Ex extends Exception> {
-		public void apply() throws Ex;
-	}
-
-	public interface Source<O> {
-		public O apply();
-	}
-
-	public interface Sink<I> {
-		public void apply(I i);
-	}
-
-	public interface Fun<I, O> {
-		public O apply(I i);
-	}
-
-	public interface FunEx<I, O, Ex extends Exception> {
-		public O apply(I i) throws Ex;
-	}
-
-	public static <I, O> Collection<O> map(Collection<I> in, Fun<I, O> t) {
-		ArrayList<O> out = new ArrayList<>(in.size());
-		for (I i : in)
-			out.add(t.apply(i));
-		return out;
-	}
-
-	public static class Sinks<I> implements Sink<I> {
-		private Collection<Sink<I>> sinks = new ArrayList<>();
-
-		public void apply(I i) {
-			for (Sink<I> sink : sinks)
-				sink.apply(i);
-		}
-
-		public void add(Sink<I> sink) {
-			sinks.add(sink);
-		}
-	}
-
-	public static Event nullEvent() {
-		return new Event() {
-			public void apply() {
-			}
-		};
-	}
-
-	public static <Ex extends Exception> EventEx<Ex> nullEventEx() {
-		return new EventEx<Ex>() {
-			public void apply() {
-			}
-		};
-	}
-
-	public static <I> Sink<I> nullSink() {
-		return new Sink<I>() {
-			public void apply(I i) {
-			}
-		};
-	}
-
-	public static <I> Sinks<I> sinks() {
-		return new Sinks<>();
 	}
 
 	/**

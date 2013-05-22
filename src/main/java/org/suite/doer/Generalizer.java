@@ -98,7 +98,7 @@ public class Generalizer {
 		return node == CUT;
 	}
 
-	public Node getVariable(Node name) {
+	public Reference getVariable(Node name) {
 		return variables.get(name);
 	}
 

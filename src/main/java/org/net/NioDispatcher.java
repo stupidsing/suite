@@ -15,8 +15,8 @@ import java.util.Set;
 
 import org.net.Channels.Channel;
 import org.net.Channels.Sender;
+import org.util.FunUtil.Source;
 import org.util.LogUtil;
-import org.util.Util.Source;
 
 public class NioDispatcher<C extends Channel> extends ThreadedService {
 

@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.net.Channels.PersistableChannel;
+import org.util.FunUtil.Fun;
+import org.util.FunUtil.Sink;
+import org.util.FunUtil.Sinks;
+import org.util.FunUtil.Source;
 import org.util.Util;
-import org.util.Util.Fun;
-import org.util.Util.Sink;
-import org.util.Util.Sinks;
-import org.util.Util.Source;
 
 public class Cluster {
 
@@ -38,8 +38,8 @@ public class Cluster {
 	 */
 	private Map<String, ClusterChannel> channels = new HashMap<>();
 
-	private Sinks<String> onJoined = Util.sinks();
-	private Sinks<String> onLeft = Util.sinks();
+	private Sinks<String> onJoined = new Sinks<>();
+	private Sinks<String> onLeft = new Sinks<>();
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	public static class ClusterException extends RuntimeException {

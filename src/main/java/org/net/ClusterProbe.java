@@ -19,10 +19,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.util.FormatUtil;
+import org.util.FunUtil;
+import org.util.FunUtil.Sink;
 import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.Sink;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -57,8 +58,8 @@ public class ClusterProbe extends ThreadedService {
 	 */
 	private Map<String, Long> lastSentTime = new HashMap<>();
 
-	private Sink<String> onJoined = Util.nullSink();
-	private Sink<String> onLeft = Util.nullSink();
+	private Sink<String> onJoined = FunUtil.nullSink();
+	private Sink<String> onLeft = FunUtil.nullSink();
 
 	private enum Command {
 		HELO, FINE, BYEE

@@ -6,7 +6,7 @@ import java.util.List;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.util.Util.Fun;
+import org.util.FunUtil.Fun;
 
 public class ProveTracer {
 

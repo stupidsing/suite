@@ -9,9 +9,9 @@ import java.util.Map;
 
 import org.net.ClusterMapUtil.GetQuery;
 import org.net.ClusterMapUtil.PutQuery;
+import org.util.FunUtil.Fun;
+import org.util.FunUtil.Sink;
 import org.util.Util;
-import org.util.Util.Fun;
-import org.util.Util.Sink;
 
 public class ClusterMap<K, V> {
 

@@ -86,6 +86,7 @@ public class InstructionUtil {
 		RETURNVALUE___("RETURN-VALUE"), //
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
 		SINK__________("SINK"), //
+		SOURCE________("SOURCE"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
 		SERVICE_______("SERVICE"), //
 		TOP___________("TOP"), //

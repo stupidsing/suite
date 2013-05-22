@@ -41,15 +41,22 @@ public class TermParser extends Parser {
 		public final Assoc assoc;
 		public int precedence;
 
+		static {
+			int precedence = 0;
+			for (TermOp operator : values())
+				operator.precedence = ++precedence;
+		}
+
 		private TermOp(String name, Assoc associativity) {
 			this.name = name;
 			assoc = associativity;
 		}
 
-		static {
-			int precedence = 0;
+		public static TermOp find(String name) {
 			for (TermOp operator : values())
-				operator.precedence = ++precedence;
+				if (Util.equals(operator.name, name))
+					return operator;
+			return null;
 		}
 
 		public String getName() {
@@ -62,13 +69,6 @@ public class TermParser extends Parser {
 
 		public int getPrecedence() {
 			return precedence;
-		}
-
-		public static TermOp find(String name) {
-			for (TermOp operator : values())
-				if (Util.equals(operator.name, name))
-					return operator;
-			return null;
 		}
 	}
 

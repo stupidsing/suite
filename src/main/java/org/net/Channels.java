@@ -5,10 +5,10 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.net.Bytes.BytesBuilder;
+import org.util.FunUtil.Fun;
+import org.util.FunUtil.FunEx;
 import org.util.LogUtil;
 import org.util.Util;
-import org.util.Util.Fun;
-import org.util.Util.FunEx;
 
 public class Channels {
 
