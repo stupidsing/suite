@@ -19,10 +19,12 @@ public class CompiledProveBuilder implements Builder {
 		final Prover lc = new Prover(ruleSet);
 		final Reference code = new Reference();
 
-		Node node = SuiteUtil.substitute("compile-logic (.0 >> .1, sink .2) .3" //
+		Node node = SuiteUtil.substitute(
+				"compile-logic (.0 >> source .1, .2, sink .3) .4" //
 				, SuiteUtil.getRuleList(ruleSet, null) //
-				, goal //
 				, Builder.in //
+				, goal //
+				, Builder.out //
 				, code);
 		new Prover(SuiteUtil.logicalRuleSet()).prove(node);
 
