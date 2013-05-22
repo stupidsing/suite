@@ -41,11 +41,11 @@ public class SuiteEvaluationUtil {
 	public boolean proveThis(RuleSet rs, String s) {
 		Prover prover = new Prover(rs);
 		Generalizer generalizer = new Generalizer();
-		return prover.prove(generalizer.generalize(SuiteUtil.parse(s)));
+		return prover.prove(generalizer.generalize(Suite.parse(s)));
 	}
 
 	public boolean evaluateLogical(String lps) {
-		return evaluateLogical(SuiteUtil.parse(lps));
+		return evaluateLogical(Suite.parse(lps));
 	}
 
 	public boolean evaluateLogical(Node lp) {
@@ -69,11 +69,11 @@ public class SuiteEvaluationUtil {
 			, boolean isDumpCode //
 			, Source<Node> source //
 			, Sink<Node> sink) {
-		RuleSet rs = SuiteUtil.logicalRuleSet();
+		RuleSet rs = Suite.logicalRuleSet();
 
 		String goal = "compile-logic (.0, sink .1) .2"
 				+ (isDumpCode ? ", pretty.print .2" : "");
-		Node node = SuiteUtil.substitute(goal, Builder.in, eval, Builder.out);
+		Node node = Suite.substitute(goal, Builder.in, eval, Builder.out);
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, lp);
@@ -94,18 +94,18 @@ public class SuiteEvaluationUtil {
 	}
 
 	private Node evaluateFun(String fp, boolean isLazy) {
-		return evaluateFun(SuiteUtil.fcc(fp, isLazy));
+		return evaluateFun(Suite.fcc(fp, isLazy));
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
-		RuleSet rs = fcc.isLazy() ? SuiteUtil.lazyFunRuleSet() : SuiteUtil
+		RuleSet rs = fcc.isLazy() ? Suite.lazyFunRuleSet() : Suite
 				.eagerFunRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 		String program = appendLibraries(fcc, ".1");
 
 		String s = "compile-function .0 (" + program + ") .2"
 				+ (fcc.isDumpCode() ? ", pretty.print .2" : "");
-		Node node = SuiteUtil.substitute(s //
+		Node node = Suite.substitute(s //
 				, Atom.create(fcc.isLazy() ? "LAZY" : "EAGER") //
 				, Builder.in //
 				, Builder.out);
@@ -128,14 +128,14 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFunType(String fps) {
-		return evaluateFunType(SuiteUtil.fcc(SuiteUtil.parse(fps)));
+		return evaluateFunType(Suite.fcc(Suite.parse(fps)));
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
-		RuleSet rs = SuiteUtil.eagerFunRuleSet();
+		RuleSet rs = Suite.eagerFunRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 
-		Node node = SuiteUtil.substitute("" //
+		Node node = Suite.substitute("" //
 				+ "fc-parse (" + appendLibraries(fcc, ".0") + ") .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //

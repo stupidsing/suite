@@ -3,7 +3,7 @@ package org.suite.predicates;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.doer.Formatter;
 import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
@@ -73,7 +73,7 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			String filename = Formatter.display(ps);
 			try {
-				return SuiteUtil.importFrom(prover.ruleSet(), filename);
+				return Suite.importFrom(prover.ruleSet(), filename);
 			} catch (Exception ex) {
 				throw new RuntimeException( //
 						"Exception when importing " + filename, ex);
@@ -87,7 +87,7 @@ public class RuleSetPredicates {
 			if (ps != Atom.NIL)
 				proto = Prototype.get(ps);
 
-			Node node = SuiteUtil.getRuleList(prover.ruleSet(), proto);
+			Node node = Suite.getRuleList(prover.ruleSet(), proto);
 			PrettyPrinter printer = new PrettyPrinter();
 			System.out.println(printer.prettyPrint(node));
 			return true;

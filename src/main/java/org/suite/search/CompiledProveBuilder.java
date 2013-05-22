@@ -1,7 +1,7 @@
 package org.suite.search;
 
 import org.instructionexecutor.LogicInstructionExecutor;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.doer.Prover;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
@@ -19,14 +19,14 @@ public class CompiledProveBuilder implements Builder {
 		final Prover lc = new Prover(ruleSet);
 		final Reference code = new Reference();
 
-		Node node = SuiteUtil.substitute(
+		Node node = Suite.substitute(
 				"compile-logic (.0 >> source .1, .2, sink .3) .4" //
-				, SuiteUtil.getRuleList(ruleSet, null) //
+				, Suite.getRuleList(ruleSet, null) //
 				, Builder.in //
 				, goal //
 				, Builder.out //
 				, code);
-		new Prover(SuiteUtil.logicalRuleSet()).prove(node);
+		new Prover(Suite.logicalRuleSet()).prove(node);
 
 		return new Finder() {
 			public void find(Node in, final Sink<Node> sink) {

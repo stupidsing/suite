@@ -3,7 +3,7 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -12,7 +12,7 @@ public class LazyFunCompilerTest {
 
 	@Test
 	public void testClosure() {
-		assertEquals(SuiteUtil.parse("4") //
+		assertEquals(Suite.parse("4") //
 				, eval("define v = type number 4 >> (i => j => v) {1} {2}"));
 	}
 
@@ -75,7 +75,7 @@ public class LazyFunCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateLazyFun(f);
+		return Suite.evaluateLazyFun(f);
 	}
 
 }

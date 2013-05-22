@@ -3,7 +3,7 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Node;
 
 public class IskCombinatorTest {
@@ -16,7 +16,7 @@ public class IskCombinatorTest {
 	@Test
 	public void testSksk() {
 		String sksk = "s {k} {s} {k}";
-		assertEquals(SuiteUtil.parse("1"), eval(isk //
+		assertEquals(Suite.parse("1"), eval(isk //
 				+ "(" + sksk + ") {1} {2}"));
 	}
 
@@ -29,9 +29,9 @@ public class IskCombinatorTest {
 				+ "define or_ = k >> " //
 				+ "define and_ = f >> ";
 
-		assertEquals(SuiteUtil.parse("1"), eval(isk + tf //
+		assertEquals(Suite.parse("1"), eval(isk + tf //
 				+ "t {1} {2}"));
-		assertEquals(SuiteUtil.parse("2"), eval(isk + tf //
+		assertEquals(Suite.parse("2"), eval(isk + tf //
 				+ "f {1} {2}"));
 
 		// eval(isk + tf + "t {or_} {f}") becomes t
@@ -39,7 +39,7 @@ public class IskCombinatorTest {
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateEagerFun(f);
+		return Suite.evaluateEagerFun(f);
 	}
 
 }

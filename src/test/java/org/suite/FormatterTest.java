@@ -26,7 +26,7 @@ public class FormatterTest {
 	}
 
 	private void testFormat(String s) {
-		Node node = SuiteUtil.parse(s);
+		Node node = Suite.parse(s);
 		assertEquals(s, Formatter.display(node));
 	}
 

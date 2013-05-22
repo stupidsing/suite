@@ -20,9 +20,9 @@ public class ComparerTest {
 
 	@Test
 	public void testOrdinality() {
-		assertTrue(comparer.compare(SuiteUtil.parse("1 = 2"), Int.create(3)) > 0);
-		assertTrue(comparer.compare(SuiteUtil.parse("a"), Int.create(3)) > 0);
-		assertTrue(comparer.compare(SuiteUtil.parse("b"), new Reference()) > 0);
+		assertTrue(comparer.compare(Suite.parse("1 = 2"), Int.create(3)) > 0);
+		assertTrue(comparer.compare(Suite.parse("a"), Int.create(3)) > 0);
+		assertTrue(comparer.compare(Suite.parse("b"), new Reference()) > 0);
 	}
 
 }

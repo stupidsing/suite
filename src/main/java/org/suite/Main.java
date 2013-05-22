@@ -132,10 +132,10 @@ public class Main {
 
 	public void run(List<String> importFilenames) throws IOException {
 		RuleSet rs = proverConfig.ruleSet();
-		SuiteUtil.importResource(proverConfig.ruleSet(), "auto.sl");
+		Suite.importResource(proverConfig.ruleSet(), "auto.sl");
 
 		for (String importFilename : importFilenames)
-			SuiteUtil.importFile(rs, importFilename);
+			Suite.importFile(rs, importFilename);
 
 		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
@@ -188,11 +188,11 @@ public class Main {
 					break;
 				case EVALUATESTR:
 					node = evaluateFunctional(node);
-					System.out.println(SuiteUtil.stringize(node).toString());
+					System.out.println(Suite.stringize(node).toString());
 					break;
 				case EVALUATETYPE:
 					fcc.setNode(node);
-					node = SuiteUtil.evaluateFunType(fcc);
+					node = Suite.evaluateFunType(fcc);
 					System.out.println(Formatter.dump(node));
 					break;
 				case FACT:
@@ -235,7 +235,7 @@ public class Main {
 					}
 					break;
 				case QUERYCOMPILED:
-					List<Node> nodes = SuiteUtil.evaluateLogical(node //
+					List<Node> nodes = Suite.evaluateLogical(node //
 							, Atom.NIL //
 							, proverConfig //
 							, false);
@@ -250,10 +250,10 @@ public class Main {
 		boolean result = true;
 
 		RuleSet rs = RuleSetUtil.create();
-		result &= SuiteUtil.importResource(rs, "auto.sl");
+		result &= Suite.importResource(rs, "auto.sl");
 
 		for (String file : files)
-			result &= SuiteUtil.importFile(rs, file);
+			result &= Suite.importFile(rs, file);
 
 		return result;
 	}
@@ -263,7 +263,7 @@ public class Main {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		Node node = SuiteUtil.parse(applyFilter(sb.toString()));
+		Node node = Suite.parse(applyFilter(sb.toString()));
 		evaluateFunctional(node);
 		return true;
 	}
@@ -271,7 +271,7 @@ public class Main {
 	public boolean runFunctional(List<String> files) throws IOException {
 		if (files.size() == 1) {
 			FileInputStream is = new FileInputStream(files.get(0));
-			Node node = SuiteUtil.parse(IoUtil.readStream(is));
+			Node node = Suite.parse(IoUtil.readStream(is));
 			Node result = evaluateFunctional(node);
 			return result == Atom.TRUE;
 		} else
@@ -282,11 +282,11 @@ public class Main {
 		System.out.println("Pre-compiling " + libraryName + "... ");
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
-		RuleSet rs = SuiteUtil.createRuleSet(imports);
+		RuleSet rs = Suite.createRuleSet(imports);
 		Prover prover = new Prover(new ProverConfig(rs, proverConfig));
 
 		String goal = "fc-setup-precompile " + libraryName;
-		Node node = SuiteUtil.parse(goal);
+		Node node = Suite.parse(goal);
 
 		if (prover.prove(node))
 			System.out.println("Pre-compilation success\n");
@@ -301,7 +301,7 @@ public class Main {
 
 	private Node evaluateFunctional(Node node) {
 		fcc.setNode(node);
-		return SuiteUtil.evaluateFun(fcc);
+		return Suite.evaluateFun(fcc);
 	}
 
 	private String yesNo(boolean q) {

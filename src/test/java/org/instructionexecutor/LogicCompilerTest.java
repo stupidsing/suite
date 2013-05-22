@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Node;
 import org.util.IoUtil;
 
@@ -24,8 +24,8 @@ public class LogicCompilerTest {
 	public void testAuto() throws IOException {
 		Class<?> clazz = getClass();
 		String preds = IoUtil.readStream(clazz.getResourceAsStream("/auto.sl"));
-		Node n = SuiteUtil.parse("(" + preds + ") >> member (a, b, c,) c");
-		assertTrue(SuiteUtil.evaluateLogical(n));
+		Node n = Suite.parse("(" + preds + ") >> member (a, b, c,) c");
+		assertTrue(Suite.evaluateLogical(n));
 	}
 
 	@Test
@@ -85,8 +85,8 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testOrBinds() {
-		SuiteUtil.evaluateLogical("(fail; .b = 1), .b = 2, yes");
-		SuiteUtil.evaluateLogical("(yes; .b = 1), .b = 2, fail");
+		Suite.evaluateLogical("(fail; .b = 1), .b = 2, yes");
+		Suite.evaluateLogical("(yes; .b = 1), .b = 2, fail");
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class LogicCompilerTest {
 	}
 
 	private boolean eval(String program) {
-		return SuiteUtil.evaluateLogical(program);
+		return Suite.evaluateLogical(program);
 	}
 
 }

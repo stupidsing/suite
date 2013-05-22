@@ -3,7 +3,7 @@ package org.suite.predicates;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.doer.Formatter;
 import org.suite.doer.PrettyPrinter;
 import org.suite.doer.Prover;
@@ -61,7 +61,7 @@ public class FormatPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(SuiteUtil.parse(Formatter.display(p0)), p1);
+			return prover.bind(Suite.parse(Formatter.display(p0)), p1);
 		}
 	}
 
@@ -100,7 +100,7 @@ public class FormatPredicates {
 				if (type == '\\')
 					n = Atom.create(s);
 				else if (type == '^')
-					n = SuiteUtil.parse(s);
+					n = Suite.parse(s);
 				else if (type == 'i')
 					n = Int.create(Integer.valueOf(s));
 				else if (type == 't') {

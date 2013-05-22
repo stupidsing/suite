@@ -17,7 +17,7 @@ import org.instructionexecutor.io.IndexedIo.IndexedInput;
 import org.instructionexecutor.io.IndexedIo.IndexedOutput;
 import org.instructionexecutor.io.IndexedIo.IndexedReader;
 import org.instructionexecutor.io.IndexedIo.IndexedWriter;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
@@ -149,13 +149,13 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			LogUtil.info(Formatter.display(unwrap(result)));
 		} else if (command == LOG2) {
 			Node ln = unwrap((Node) stack[sp + 1]);
-			LogUtil.info(SuiteUtil.stringize(ln));
+			LogUtil.info(Suite.stringize(ln));
 			result = (Node) stack[sp];
 		} else if (command == POPEN) {
 			Node n0 = unwrap((Node) stack[sp + 1]);
 			Node n1 = unwrap((Node) stack[sp]);
-			String cmd = SuiteUtil.stringize(n0);
-			byte in[] = SuiteUtil.stringize(n1).getBytes(IoUtil.charset);
+			String cmd = Suite.stringize(n0);
+			byte in[] = Suite.stringize(n1).getBytes(IoUtil.charset);
 
 			try {
 				Process process = Runtime.getRuntime().exec(cmd);
@@ -172,7 +172,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			}
 		} else if (command == PROVE) {
 			if (prover == null)
-				prover = SuiteUtil.createProver(new String[] { "auto.sl" });
+				prover = Suite.createProver(new String[] { "auto.sl" });
 
 			Node node = (Node) stack[sp];
 			Tree tree = Tree.decompose(node, TermOp.JOIN__);

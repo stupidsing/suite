@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.suite.FunCompilerConfig;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -15,7 +15,7 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testAppend() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
+		assertEquals(Suite.parse("1, 2, 3, 4, 5, 6, 7, 8,"), eval("" //
 				+ "append {1, 2, 3, 4,} {5, 6, 7, 8,}"));
 	}
 
@@ -39,7 +39,7 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testConcat() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6,"), eval("" //
+		assertEquals(Suite.parse("1, 2, 3, 4, 5, 6,"), eval("" //
 				+ "concat {(1, 2,), (3, 4,), (5, 6,),}"));
 	}
 
@@ -53,7 +53,7 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testCross() {
-		assertEquals(SuiteUtil.parse("" //
+		assertEquals(Suite.parse("" //
 				+ "((7, 1,), (7, 2,),), " //
 				+ "((8, 1,), (8, 2,),), " //
 				+ "((9, 1,), (9, 2,),),") //
@@ -99,7 +99,7 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testFilter() {
-		assertEquals(SuiteUtil.parse("4, 6,"), eval("" //
+		assertEquals(Suite.parse("4, 6,"), eval("" //
 				+ "filter {n => n % 2 = 0} {3, 4, 5, 6,}"));
 	}
 
@@ -121,10 +121,10 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testGcd() {
-		Node f = SuiteUtil.parse("gcd {6} {9}");
-		FunCompilerConfig c = SuiteUtil.fcc(f);
+		Node f = Suite.parse("gcd {6} {9}");
+		FunCompilerConfig c = Suite.fcc(f);
 		c.addLibrary("MATH");
-		assertEquals(Int.create(3), SuiteUtil.evaluateFun(c));
+		assertEquals(Int.create(3), Suite.evaluateFun(c));
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class EagerFunCompilerTest {
 	public void testInfiniteLoop() {
 		try {
 			// This would fail stack over during type check, so skip that
-			SuiteUtil.evaluateEagerFun("no-type-check" //
+			Suite.evaluateEagerFun("no-type-check" //
 					+ " (e => e {e}) {e => e {e}}");
 			throw new RuntimeException();
 		} catch (Throwable th) {
@@ -233,13 +233,13 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testMap() {
-		assertEquals(SuiteUtil.parse("5, 6, 7,"), eval("" //
+		assertEquals(Suite.parse("5, 6, 7,"), eval("" //
 				+ "map {`+ 2`} {3, 4, 5,}"));
 	}
 
 	@Test
 	public void testMergeSort() {
-		assertEquals(SuiteUtil.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
+		assertEquals(Suite.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
 				+ "merge-sort {merge} {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
 	}
 
@@ -247,7 +247,7 @@ public class EagerFunCompilerTest {
 	public void testOperator() {
 		assertEquals(Atom.TRUE, eval("" //
 				+ "and {1 = 1} {or {1 = 0} {1 = 1}}"));
-		assertEquals(Atom.FALSE, SuiteUtil.evaluateEagerFun("" //
+		assertEquals(Atom.FALSE, Suite.evaluateEagerFun("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B %) of (t,) >> \n" //
 				+ "let list1 = type (list-of t) () >> A % = B %"));
@@ -255,24 +255,24 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testQuickSort() {
-		assertEquals(SuiteUtil.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
+		assertEquals(Suite.parse("0, 1, 2, 3, 4, 5, 6, 7, 8, 9,"), eval("" //
 				+ "quick-sort {`<`} {5, 3, 2, 8, 6, 4, 1, 0, 9, 7,}"));
 	}
 
 	@Test
 	public void testRange() {
-		assertEquals(SuiteUtil.parse("2, 5, 8, 11,"), eval("" //
+		assertEquals(Suite.parse("2, 5, 8, 11,"), eval("" //
 				+ "range {2} {14} {3}"));
 	}
 
 	@Test
 	public void testRepeat() {
-		assertEquals(SuiteUtil.parse("3, 3, 3, 3,"), eval("repeat {4} {3}"));
+		assertEquals(Suite.parse("3, 3, 3, 3,"), eval("repeat {4} {3}"));
 	}
 
 	@Test
 	public void testReverse() {
-		assertEquals(SuiteUtil.parse("5, 4, 3, 2, 1,"),
+		assertEquals(Suite.parse("5, 4, 3, 2, 1,"),
 				eval("reverse {1, 2, 3, 4, 5,}"));
 	}
 
@@ -315,38 +315,38 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testTails() {
-		assertEquals(SuiteUtil.parse("(1, 2, 3,), (2, 3,), (3,),"),
+		assertEquals(Suite.parse("(1, 2, 3,), (2, 3,), (3,),"),
 				eval("tails {1, 2, 3,}"));
 	}
 
 	@Test
 	public void testTake() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 4,"), eval("" //
+		assertEquals(Suite.parse("1, 2, 3, 4,"), eval("" //
 				+ "take {4} {1, 2, 3, 4, 5, 6, 7,}"));
 	}
 
 	@Test
 	public void testTranspose() {
 		String r = "(1, 4, 7,), (2, 5, 8,), (3, 6, 9,),";
-		assertEquals(SuiteUtil.parse(r), eval("" //
+		assertEquals(Suite.parse(r), eval("" //
 				+ "transpose {(1, 2, 3,), (4, 5, 6,), (7, 8, 9,),}"));
 	}
 
 	@Test
 	public void testUniq() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 5, 2,"), eval("" //
+		assertEquals(Suite.parse("1, 2, 3, 5, 2,"), eval("" //
 				+ "uniq {1, 2, 2, 2, 3, 5, 2,}"));
 	}
 
 	@Test
 	public void testZip() {
-		assertEquals(SuiteUtil.parse("(1, 5,), (2, 6,), (3, 7,),"), eval("" //
+		assertEquals(Suite.parse("(1, 5,), (2, 6,), (3, 7,),"), eval("" //
 				+ "define zip-up = zip {a => b => a, b,} >> \n" //
 				+ "zip-up {1, 2, 3,} {5, 6, 7,}"));
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateEagerFun(f);
+		return Suite.evaluateEagerFun(f);
 	}
 
 }

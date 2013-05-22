@@ -31,7 +31,7 @@ public class SuiteCompileUtil {
 	}
 
 	private RuleSet createRuleSet(String toImports[]) {
-		return SuiteUtil.createRuleSet(toImports);
+		return Suite.createRuleSet(toImports);
 	}
 
 }

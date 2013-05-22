@@ -13,9 +13,9 @@ public class ImportTest {
 	@Test
 	public void testImport() throws IOException {
 		RuleSet rs = RuleSetUtil.create();
-		SuiteUtil.importResource(rs, "auto.sl");
-		assertTrue(SuiteUtil.proveThis(rs, "list"));
-		assertTrue(SuiteUtil.proveThis(rs, "list repeat"));
+		Suite.importResource(rs, "auto.sl");
+		assertTrue(Suite.proveThis(rs, "list"));
+		assertTrue(Suite.proveThis(rs, "list repeat"));
 	}
 
 }

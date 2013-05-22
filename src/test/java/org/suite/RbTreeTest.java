@@ -13,10 +13,10 @@ public class RbTreeTest {
 	@Test
 	public void test() throws IOException {
 		RuleSet rs = RuleSetUtil.create();
-		SuiteUtil.importResource(rs, "auto.sl");
-		SuiteUtil.importResource(rs, "rbt.sl");
+		Suite.importResource(rs, "auto.sl");
+		Suite.importResource(rs, "rbt.sl");
 
-		assertTrue(SuiteUtil.proveThis(rs, "" //
+		assertTrue(Suite.proveThis(rs, "" //
 				+ "rbt-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
 				+ ", rbt-get .t 8" //
 				+ ", rbt-member .t 4"));

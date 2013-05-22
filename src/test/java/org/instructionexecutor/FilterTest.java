@@ -8,7 +8,7 @@ import java.io.StringWriter;
 import org.junit.Test;
 import org.suite.FunCompilerConfig;
 import org.suite.Main;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Node;
 
 public class FilterTest {
@@ -30,11 +30,11 @@ public class FilterTest {
 
 		String program1 = Main.applyFilter(program);
 
-		FunCompilerConfig config = SuiteUtil.fcc(program1, true);
+		FunCompilerConfig config = Suite.fcc(program1, true);
 		config.setIn(is);
 		config.setOut(os);
 
-		Node result = SuiteUtil.evaluateFun(config);
+		Node result = Suite.evaluateFun(config);
 		assertEquals(out, os.toString());
 		return result;
 	}

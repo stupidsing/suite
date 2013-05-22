@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.RuleSetUtil;
 
@@ -20,7 +20,7 @@ public class ProverConfig {
 
 	public ProverConfig(RuleSet ruleSet) {
 		this(ruleSet //
-				, SuiteUtil.isTrace //
+				, Suite.isTrace //
 				, new HashSet<>(Arrays.asList("member", "replace")));
 	}
 

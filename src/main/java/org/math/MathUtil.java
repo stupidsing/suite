@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Node;
@@ -15,7 +15,7 @@ import org.suite.node.Tree;
 
 public class MathUtil {
 
-	private static final Prover prover = SuiteUtil.createProver(new String[] {
+	private static final Prover prover = Suite.createProver(new String[] {
 			"auto.sl", "math.sl" });
 
 	private static Comparator<Node> comparator = new Comparator<Node>() {

@@ -3,7 +3,7 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Node;
 
 public class OlderFunCompilerTest {
@@ -39,27 +39,27 @@ public class OlderFunCompilerTest {
 
 	@Test
 	public void testConcat() {
-		assertEquals(SuiteUtil.parse("1, 2, 3, 4, 5, 6,"), eval("" //
+		assertEquals(Suite.parse("1, 2, 3, 4, 5, 6,"), eval("" //
 				+ ifTree + split + concatList0 //
 				+ "concat-list0 {(1, 2,), (3, 4,), (5, 6,),}"));
 	}
 
 	@Test
 	public void testFilter() {
-		assertEquals(SuiteUtil.parse("4, 6,"), eval("" //
+		assertEquals(Suite.parse("4, 6,"), eval("" //
 				+ ifTree + split + filter0 //
 				+ "filter0 {n => n % 2 = 0} {3, 4, 5, 6,}"));
 	}
 
 	@Test
 	public void testMap() {
-		assertEquals(SuiteUtil.parse("5, 6, 7,"), eval("" //
+		assertEquals(Suite.parse("5, 6, 7,"), eval("" //
 				+ ifTree + split + map0 //
 				+ "map0 {n => n + 2} {3, 4, 5,}"));
 	}
 
 	private static Node eval(String f) {
-		return SuiteUtil.evaluateEagerFun(f);
+		return Suite.evaluateEagerFun(f);
 	}
 
 }

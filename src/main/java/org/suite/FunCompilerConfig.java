@@ -17,13 +17,13 @@ public class FunCompilerConfig {
 	private boolean isLazy;
 	private List<String> libraries = new ArrayList<>();
 	private ProverConfig proverConfig = new ProverConfig();
-	private boolean isDumpCode = SuiteUtil.isDumpCode;
+	private boolean isDumpCode = Suite.isDumpCode;
 	private Reader in = new InputStreamReader(System.in, IoUtil.charset);
 	private Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
 
 	public FunCompilerConfig() {
-		if (SuiteUtil.libraries != null)
-			addLibraries(SuiteUtil.libraries);
+		if (Suite.libraries != null)
+			addLibraries(Suite.libraries);
 	}
 
 	public void addLibrary(String library) {

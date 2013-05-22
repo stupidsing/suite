@@ -9,7 +9,7 @@ public class ParserTest {
 
 	@Test
 	public void testParse() {
-		assertNotNull(Tree.decompose(SuiteUtil.parse("!, a")).getLeft());
+		assertNotNull(Tree.decompose(Suite.parse("!, a")).getLeft());
 	}
 
 }

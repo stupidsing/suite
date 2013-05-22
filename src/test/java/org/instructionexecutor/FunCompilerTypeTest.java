@@ -3,7 +3,7 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.suite.SuiteUtil;
+import org.suite.Suite;
 import org.suite.node.Node;
 
 public class FunCompilerTypeTest {
@@ -15,7 +15,7 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testBasic() {
-		assertEquals(SuiteUtil.parse("boolean") //
+		assertEquals(Suite.parse("boolean") //
 				, getType("4 = 8"));
 	}
 
@@ -47,13 +47,13 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testFun() {
-		assertEquals(SuiteUtil.parse("number => number") //
+		assertEquals(Suite.parse("number => number") //
 				, getType("a => a + 1"));
-		assertEquals(SuiteUtil.parse("number") //
+		assertEquals(Suite.parse("number") //
 				, getType("define f = (a => a + 1) >> f {3}"));
-		assertEquals(SuiteUtil.parse("boolean => boolean => boolean") //
+		assertEquals(Suite.parse("boolean => boolean => boolean") //
 				, getType("and"));
-		assertEquals(SuiteUtil.parse("number => list-of number") //
+		assertEquals(Suite.parse("number => list-of number") //
 				, getType("v => v, reverse {1,}"));
 	}
 
@@ -66,7 +66,7 @@ public class FunCompilerTypeTest {
 		getType(define + "NIL %");
 		getType(define + "NODE false (NIL %) %");
 
-		assertEquals(SuiteUtil.parse("boolean"), getType(define //
+		assertEquals(Suite.parse("boolean"), getType(define //
 				+ "let n = NODE true (NIL %) % >> \n" //
 				+ "NODE false n % = NIL %"));
 		getTypeMustFail(define //
@@ -78,9 +78,9 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testList() {
-		assertEquals(SuiteUtil.parse("list-of number") //
+		assertEquals(Suite.parse("list-of number") //
 				, getType("1,"));
-		assertEquals(SuiteUtil.parse("list-of (list-of number)") //
+		assertEquals(Suite.parse("list-of (list-of number)") //
 				, getType("\"a\", \"b\", \"c\", \"d\","));
 	}
 
@@ -121,7 +121,7 @@ public class FunCompilerTypeTest {
 	}
 
 	private static Node getType(String a) {
-		return SuiteUtil.evaluateFunType(a);
+		return Suite.evaluateFunType(a);
 	}
 
 }
