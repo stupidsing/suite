@@ -66,7 +66,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			int cutPointIndex = g(regs[insn.op0]);
 			CutPoint cutPoint = cutPoints.get(cutPointIndex);
 			Util.truncate(cutPoints, cutPointIndex);
-			current = cutPoint.activation;
+			exec.current = cutPoint.activation;
 			bsp = cutPoint.bindStackPointer;
 			journal.undoBinds(cutPoint.journalPointer);
 			current.ip = insn.op1;

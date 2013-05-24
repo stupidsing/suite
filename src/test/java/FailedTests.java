@@ -56,9 +56,28 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test3() {
+	public void test3() { // test3 and test4 can only live one; change
+							// LogicInstructionExecutor.java:69
+		Suite.evaluateLogical( //
+				Suite.parse("(.a = 1; .a = 2), !, .a = 1") //
+				, Atom.NIL //
+				, new ProverConfig() //
+				, true);
+	}
+
+	@Test
+	public void test4() {
 		Suite.evaluateLogical( //
 				Suite.parse("(a#) >> a, !") //
+				, Atom.NIL //
+				, new ProverConfig() //
+				, true);
+	}
+
+	@Test
+	public void test5() {
+		Suite.evaluateLogical( //
+				Suite.parse(".c0 = .c1, lc-parse () .call1 _, !, dump .call1, nl") //
 				, Atom.NIL //
 				, new ProverConfig() //
 				, true);

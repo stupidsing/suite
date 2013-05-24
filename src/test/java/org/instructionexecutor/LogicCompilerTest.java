@@ -37,6 +37,7 @@ public class LogicCompilerTest {
 		assertTrue(eval("(a :- fail # a :- ! #) >> a"));
 		assertTrue(eval("(a :- fail, ! # a #) >> a"));
 		assertFalse(eval("(a :- !, fail # a #) >> a"));
+		assertTrue(eval("(a#) >> a, !"));
 	}
 
 	@Test
