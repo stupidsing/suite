@@ -7,7 +7,6 @@ import java.io.StringWriter;
 
 import org.junit.Test;
 import org.suite.FunCompilerConfig;
-import org.suite.Main;
 import org.suite.Suite;
 import org.suite.node.Node;
 
@@ -28,7 +27,7 @@ public class FilterTest {
 		StringReader is = new StringReader(in);
 		StringWriter os = new StringWriter();
 
-		String program1 = Main.applyFilter(program);
+		String program1 = Suite.applyFilter(program);
 
 		FunCompilerConfig config = Suite.fcc(program1, true);
 		config.setIn(is);

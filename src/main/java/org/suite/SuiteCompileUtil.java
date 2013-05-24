@@ -1,6 +1,9 @@
 package org.suite;
 
+import org.suite.doer.Prover;
+import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
+import org.suite.node.Node;
 
 public class SuiteCompileUtil {
 
@@ -28,6 +31,22 @@ public class SuiteCompileUtil {
 			lazyFunCompiler = createRuleSet(imports);
 		}
 		return lazyFunCompiler;
+	}
+
+	public void precompile(String libraryName, ProverConfig proverConfig) {
+		System.out.println("Pre-compiling " + libraryName + "... ");
+		String imports[] = { "auto.sl", "fc-precompile.sl" };
+
+		RuleSet rs = createRuleSet(imports);
+		Prover prover = new Prover(new ProverConfig(rs, proverConfig));
+
+		String goal = "fc-setup-precompile " + libraryName;
+		Node node = Suite.parse(goal);
+
+		if (prover.prove(node))
+			System.out.println("Pre-compilation success\n");
+		else
+			System.out.println("Pre-compilation failed");
 	}
 
 	private RuleSet createRuleSet(String toImports[]) {

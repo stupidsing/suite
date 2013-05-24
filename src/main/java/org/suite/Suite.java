@@ -31,6 +31,10 @@ public class Suite {
 	private static SuiteImportUtil suiteImportUtil = new SuiteImportUtil();
 	private static SuiteParseUtil suiteParseUtil = new SuiteParseUtil();
 
+	public static String applyFilter(String func) {
+		return "source {} | (" + func + ") | sink {}";
+	}
+
 	public static FunCompilerConfig fcc(Node fp) {
 		return fcc(fp, false);
 	}
@@ -111,6 +115,10 @@ public class Suite {
 
 	public static RuleSet lazyFunRuleSet() {
 		return suiteCompileUtil.lazyFunRuleSet();
+	}
+
+	public static void precompile(String libraryName, ProverConfig proverConfig) {
+		suiteCompileUtil.precompile(libraryName, proverConfig);
 	}
 
 	// --------------------------------

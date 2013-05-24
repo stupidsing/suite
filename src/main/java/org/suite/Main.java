@@ -123,7 +123,7 @@ public class Main {
 			processOption("-" + arg.substring(4), iter, false);
 		else if (arg.equals("-precompile") && iter.hasNext())
 			for (String lib : iter.next().split(","))
-				runPrecompile(lib);
+				Suite.precompile(lib, proverConfig);
 		else if (arg.equals("-trace"))
 			proverConfig.setTrace(on);
 		else
@@ -263,7 +263,7 @@ public class Main {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		Node node = Suite.parse(applyFilter(sb.toString()));
+		Node node = Suite.parse(Suite.applyFilter(sb.toString()));
 		evaluateFunctional(node);
 		return true;
 	}
@@ -276,27 +276,6 @@ public class Main {
 			return result == Atom.TRUE;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
-	}
-
-	private void runPrecompile(String libraryName) {
-		System.out.println("Pre-compiling " + libraryName + "... ");
-		String imports[] = { "auto.sl", "fc-precompile.sl" };
-
-		RuleSet rs = Suite.createRuleSet(imports);
-		Prover prover = new Prover(new ProverConfig(rs, proverConfig));
-
-		String goal = "fc-setup-precompile " + libraryName;
-		Node node = Suite.parse(goal);
-
-		if (prover.prove(node))
-			System.out.println("Pre-compilation success\n");
-		else
-			System.out.println("Pre-compilation failed");
-	}
-
-	// Public to be called by test case FilterTest.java
-	private String applyFilter(String func) {
-		return "source {} | (" + func + ") | sink {}";
 	}
 
 	private Node evaluateFunctional(Node node) {

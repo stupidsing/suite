@@ -4,8 +4,10 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.suite.Suite;
+import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSet.RuleSetUtil;
+import org.suite.node.Atom;
 import org.suite.node.Node;
 
 public class FailedTests {
@@ -51,6 +53,15 @@ public class FailedTests {
 				+ "    ((B %):1:, (B %):2:,), \n" //
 				+ "    ((C %):1:, (C %):2:,), \n" //
 				+ ")");
+	}
+
+	@Test
+	public void test3() {
+		Suite.evaluateLogical( //
+				Suite.parse("(a#) >> a, !") //
+				, Atom.NIL //
+				, new ProverConfig() //
+				, false);
 	}
 
 	private static Node eval(String f) {
