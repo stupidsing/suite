@@ -139,6 +139,7 @@ public class PrettyPrinter {
 
 	private void prettyPrintList(Operator op, Node node) {
 		int prec = op.getPrecedence(), prec1 = prec - 1;
+		node = node.finalNode();
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
@@ -181,14 +182,13 @@ public class PrettyPrinter {
 	}
 
 	private boolean isLookingLikeList(Operator op, Node node) {
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
+		node = node.finalNode();
+		Tree tree = Tree.decompose(node);
 
-			if (tree.getOperator() == op) {
-				boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
-				Node child = isLeftAssoc ? tree.getLeft() : tree.getRight();
-				return isLookingLikeList(op, child);
-			}
+		if (tree != null && tree.getOperator() == op) {
+			boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+			Node child = isLeftAssoc ? tree.getLeft() : tree.getRight();
+			return isLookingLikeList(op, child);
 		}
 
 		return op != TermOp.TUPLE_
@@ -317,7 +317,7 @@ public class PrettyPrinter {
 	}
 
 	private int getKey(Node node) {
-		return System.identityHashCode(node);
+		return System.identityHashCode(node.finalNode());
 	}
 
 }

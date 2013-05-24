@@ -61,7 +61,7 @@ public class FailedTests {
 				Suite.parse("(a#) >> a, !") //
 				, Atom.NIL //
 				, new ProverConfig() //
-				, false);
+				, true);
 	}
 
 	private static Node eval(String f) {
