@@ -42,6 +42,25 @@ public class Main {
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
 
+	private enum InputType {
+		EVALUATE("\\"), //
+		EVALUATESTR("\\s"), //
+		EVALUATETYPE("\\t"), //
+		FACT(""), //
+		OPTION("-"), //
+		PRETTYPRINT("\\p"), //
+		QUERY("?"), //
+		QUERYCOMPILED("\\l"), //
+		QUERYELABORATE("/"), //
+		;
+
+		String prefix;
+
+		private InputType(String prefix) {
+			this.prefix = prefix;
+		}
+	};
+
 	public Main() {
 		fcc.setProverConfig(proverConfig);
 		fcc.setIn(new StringReader(""));
@@ -111,26 +130,7 @@ public class Main {
 			throw new RuntimeException("Unknown option " + arg);
 	}
 
-	public enum InputType {
-		EVALUATE("\\"), //
-		EVALUATESTR("\\s"), //
-		EVALUATETYPE("\\t"), //
-		FACT(""), //
-		OPTION("-"), //
-		PRETTYPRINT("\\p"), //
-		QUERY("?"), //
-		QUERYCOMPILED("\\l"), //
-		QUERYELABORATE("/"), //
-		;
-
-		String prefix;
-
-		private InputType(String prefix) {
-			this.prefix = prefix;
-		}
-	};
-
-	public void run(List<String> importFilenames) throws IOException {
+	private void run(List<String> importFilenames) throws IOException {
 		RuleSet rs = proverConfig.ruleSet();
 		Suite.importResource(proverConfig.ruleSet(), "auto.sl");
 
@@ -246,7 +246,7 @@ public class Main {
 			}
 	}
 
-	public boolean runLogical(List<String> files) throws IOException {
+	private boolean runLogical(List<String> files) throws IOException {
 		boolean result = true;
 
 		RuleSet rs = RuleSetUtil.create();
@@ -258,7 +258,7 @@ public class Main {
 		return result;
 	}
 
-	public boolean runFilter(List<String> inputs) throws IOException {
+	private boolean runFilter(List<String> inputs) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		for (String input : inputs)
 			sb.append(input + " ");
@@ -268,7 +268,7 @@ public class Main {
 		return true;
 	}
 
-	public boolean runFunctional(List<String> files) throws IOException {
+	private boolean runFunctional(List<String> files) throws IOException {
 		if (files.size() == 1) {
 			FileInputStream is = new FileInputStream(files.get(0));
 			Node node = Suite.parse(IoUtil.readStream(is));
@@ -278,7 +278,7 @@ public class Main {
 			throw new RuntimeException("Only one evaluation is allowed");
 	}
 
-	public void runPrecompile(String libraryName) {
+	private void runPrecompile(String libraryName) {
 		System.out.println("Pre-compiling " + libraryName + "... ");
 		String imports[] = { "auto.sl", "fc-precompile.sl" };
 
@@ -295,7 +295,7 @@ public class Main {
 	}
 
 	// Public to be called by test case FilterTest.java
-	public static String applyFilter(String func) {
+	private String applyFilter(String func) {
 		return "source {} | (" + func + ") | sink {}";
 	}
 
