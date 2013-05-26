@@ -67,9 +67,9 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			CutPoint cutPoint = cutPoints.get(cutPointIndex);
 			Util.truncate(cutPoints, cutPointIndex);
 			exec.current = cutPoint.activation;
+			exec.current.ip = insn.op1;
 			bsp = cutPoint.bindStackPointer;
 			journal.undoBinds(cutPoint.journalPointer);
-			current.ip = insn.op1;
 			break;
 		case PROVEINTERPRET:
 			if (!prover.prove(regs[insn.op0]))

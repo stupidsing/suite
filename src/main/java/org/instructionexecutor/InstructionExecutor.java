@@ -65,7 +65,7 @@ public class InstructionExecutor {
 			Instruction insn = instructions[ip];
 			TermOp op;
 
-			// org.util.LogUtil.info("TRACE", ip + "> " + insn);
+			// org.util.LogUtil.info(ip + "> " + insn);
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
