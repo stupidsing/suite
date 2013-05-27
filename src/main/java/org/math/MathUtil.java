@@ -1,6 +1,7 @@
 package org.math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -15,8 +16,8 @@ import org.suite.node.Tree;
 
 public class MathUtil {
 
-	private static final Prover prover = Suite.createProver(new String[] {
-			"auto.sl", "math.sl" });
+	private static final Prover prover = Suite.createProver(Arrays.asList(
+			"auto.sl", "math.sl"));
 
 	private static Comparator<Node> comparator = new Comparator<Node>() {
 		public int compare(Node n0, Node n1) {

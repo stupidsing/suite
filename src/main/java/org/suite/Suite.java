@@ -183,11 +183,11 @@ public class Suite {
 		return suiteImportUtil.importResource(rs, classpath);
 	}
 
-	public static Prover createProver(String[] toImports) {
+	public static Prover createProver(List<String> toImports) {
 		return suiteImportUtil.createProver(toImports);
 	}
 
-	public static RuleSet createRuleSet(String[] toImports) {
+	public static RuleSet createRuleSet(List<String> toImports) {
 		return suiteImportUtil.createRuleSet(toImports);
 	}
 

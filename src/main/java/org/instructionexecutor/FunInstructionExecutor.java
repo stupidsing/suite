@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -172,7 +173,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			}
 		} else if (command == PROVE) {
 			if (prover == null)
-				prover = Suite.createProver(new String[] { "auto.sl" });
+				prover = Suite.createProver(Arrays.asList("auto.sl"));
 
 			Node node = (Node) stack[sp];
 			Tree tree = Tree.decompose(node, TermOp.JOIN__);

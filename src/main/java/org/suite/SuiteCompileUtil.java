@@ -1,5 +1,8 @@
 package org.suite;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
@@ -13,29 +16,27 @@ public class SuiteCompileUtil {
 
 	public synchronized RuleSet logicalRuleSet() {
 		if (logicalCompiler == null)
-			logicalCompiler = createRuleSet(new String[] { "auto.sl", "lc.sl" });
+			logicalCompiler = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
 		return logicalCompiler;
 	}
 
 	public synchronized RuleSet eagerFunRuleSet() {
-		if (eagerFunCompiler == null) {
-			String imports[] = { "auto.sl", "fc.sl", "fc-eager-evaluation.sl" };
-			eagerFunCompiler = createRuleSet(imports);
-		}
+		if (eagerFunCompiler == null)
+			eagerFunCompiler = createRuleSet(Arrays.asList( //
+					"auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
 		return eagerFunCompiler;
 	}
 
 	public synchronized RuleSet lazyFunRuleSet() {
-		if (lazyFunCompiler == null) {
-			String imports[] = { "auto.sl", "fc.sl", "fc-lazy-evaluation.sl" };
-			lazyFunCompiler = createRuleSet(imports);
-		}
+		if (lazyFunCompiler == null)
+			lazyFunCompiler = createRuleSet(Arrays.asList( //
+					"auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
 		return lazyFunCompiler;
 	}
 
 	public void precompile(String libraryName, ProverConfig proverConfig) {
 		System.out.println("Pre-compiling " + libraryName + "... ");
-		String imports[] = { "auto.sl", "fc-precompile.sl" };
+		List<String> imports = Arrays.asList("auto.sl", "fc-precompile.sl");
 
 		RuleSet rs = createRuleSet(imports);
 		Prover prover = new Prover(new ProverConfig(rs, proverConfig));
@@ -49,7 +50,7 @@ public class SuiteCompileUtil {
 			System.out.println("Pre-compilation failed");
 	}
 
-	private RuleSet createRuleSet(String toImports[]) {
+	private RuleSet createRuleSet(List<String> toImports) {
 		return Suite.createRuleSet(toImports);
 	}
 

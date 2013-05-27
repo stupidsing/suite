@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.suite.doer.Prover;
 import org.suite.kb.Rule;
@@ -69,11 +70,11 @@ public class SuiteImportUtil {
 		}
 	}
 
-	public Prover createProver(String toImports[]) {
+	public Prover createProver(List<String> toImports) {
 		return new Prover(createRuleSet(toImports));
 	}
 
-	public RuleSet createRuleSet(String toImports[]) {
+	public RuleSet createRuleSet(List<String> toImports) {
 		RuleSet rs = RuleSetUtil.create();
 		try {
 			for (String toImport : toImports)
