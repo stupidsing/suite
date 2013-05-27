@@ -21,8 +21,7 @@ public class JsMain {
 
 	private final List<String> defaultJsFiles = Arrays.asList("conf/loader.js");
 
-	private final ScriptEngine engine = new ScriptEngineManager()
-			.getEngineByExtension("js");
+	private final ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 	public static void main(String args[]) {
 		instance.run(args);

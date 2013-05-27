@@ -30,8 +30,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
 	private int bsp = 0;
 
-	public LogicInstructionExecutor(Node node, Prover prover,
-			Source<Node> source, Sink<Node> sink) {
+	public LogicInstructionExecutor(Node node, Prover prover, Source<Node> source, Sink<Node> sink) {
 		super(node);
 		this.prover = prover;
 		this.source = source;
@@ -59,11 +58,11 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			journal.undoBinds(bindPoints[--bsp]);
 			break;
 		case CUTBEGIN______:
-			regs[insn.op0] = i(cutPoints.size());
+			regs[insn.op0] = number(cutPoints.size());
 			cutPoints.add(new CutPoint(current, bsp, journal.getPointInTime()));
 			break;
 		case CUTFAIL_______:
-			int cutPointIndex = g(regs[insn.op0]);
+			int cutPointIndex = i(regs[insn.op0]);
 			CutPoint cutPoint = cutPoints.get(cutPointIndex);
 			Util.truncate(cutPoints, cutPointIndex);
 			exec.current = cutPoint.activation;

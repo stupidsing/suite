@@ -8,12 +8,9 @@ public class WildcardUtil {
 			String pt = pattern.substring(1);
 
 			if (ph != '*')
-				return !s.isEmpty() //
-						&& s.charAt(0) == ph //
-						&& match(pt, s.substring(1));
+				return !s.isEmpty() && s.charAt(0) == ph && match(pt, s.substring(1));
 			else
-				return match(pt, s) //
-						|| !s.isEmpty() && match(pt, s.substring(1));
+				return match(pt, s) || !s.isEmpty() && match(pt, s.substring(1));
 		} else
 			return s.isEmpty();
 	}

@@ -154,7 +154,7 @@ public class FormatPredicates {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 
-			return p0 instanceof Atom && p1 instanceof Atom
+			return p0 instanceof Atom && p1 instanceof Atom //
 					&& ((Atom) p0).getName().startsWith(((Atom) p1).getName());
 		}
 	}

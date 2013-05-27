@@ -66,16 +66,13 @@ public class B_TreeTest {
 
 		b_tree = new B_Tree1();
 
-		B_TreeSuperBlockSerializer<Integer, String> sbs = new B_TreeSuperBlockSerializer<>(
-				b_tree);
-		B_TreePageSerializer<Integer, String> ps = new B_TreePageSerializer<>(
-				b_tree //
+		B_TreeSuperBlockSerializer<Integer, String> sbs = new B_TreeSuperBlockSerializer<>(b_tree);
+		B_TreePageSerializer<Integer, String> ps = new B_TreePageSerializer<>(b_tree //
 				, new IntSerializer() //
 				, new FixedStringSerializer(16));
 
 		try (FileAllocator al = new FileAllocator(amf);
-				FilePersister<B_Tree1.SuperBlock> sbp = new FilePersister<>(
-						sbf, sbs);
+				FilePersister<B_Tree1.SuperBlock> sbp = new FilePersister<>(sbf, sbs);
 				FilePersister<B_Tree1.Page> pp = new FilePersister<>(pf, ps);) {
 			b_tree.setAllocator(al);
 			b_tree.setSuperBlockPersister(sbp);

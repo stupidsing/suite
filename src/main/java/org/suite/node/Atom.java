@@ -49,8 +49,7 @@ public class Atom extends Node {
 	@Override
 	public boolean equals(Object object) {
 		return this == object //
-				|| object instanceof Node
-				&& this == ((Node) object).finalNode();
+				|| object instanceof Node && this == ((Node) object).finalNode();
 	}
 
 	public String getName() {

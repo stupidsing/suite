@@ -15,8 +15,7 @@ public class IoUtil {
 
 	public static final Charset charset = Charset.forName("UTF-8");
 
-	public static void moveFile(File from, File to)
-			throws FileNotFoundException, IOException {
+	public static void moveFile(File from, File to) throws FileNotFoundException, IOException {
 
 		// Serious problem that renameTo do not work across partitions in Linux!
 		// We fall back to copy the file if renameTo() failed.
@@ -26,8 +25,7 @@ public class IoUtil {
 		}
 	}
 
-	public static void copyFile(File from, File to)
-			throws FileNotFoundException, IOException {
+	public static void copyFile(File from, File to) throws FileNotFoundException, IOException {
 		InputStream in = new FileInputStream(from);
 		OutputStream out = new FileOutputStream(to);
 		// OutputStream out = new FileOutputStream(f2, true); // Append
@@ -47,13 +45,11 @@ public class IoUtil {
 		return sb.toString();
 	}
 
-	public static void writeStream(OutputStream out, String content)
-			throws IOException {
+	public static void writeStream(OutputStream out, String content) throws IOException {
 		out.write(content.getBytes(IoUtil.charset));
 	}
 
-	public static void copyStream(InputStream in, OutputStream out)
-			throws IOException {
+	public static void copyStream(InputStream in, OutputStream out) throws IOException {
 		try {
 			int len;
 			byte buffer[] = new byte[bufferSize];

@@ -142,9 +142,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		} else if (command == HEAD)
 			result = Tree.decompose((Node) stack[sp]).getLeft();
 		else if (command == ISTREE)
-			result = a(Tree.decompose((Node) stack[sp]) != null);
+			result = atom(Tree.decompose((Node) stack[sp]) != null);
 		else if (command == ISVECTOR)
-			result = a(stack[sp] instanceof Vector);
+			result = atom(stack[sp] instanceof Vector);
 		else if (command == LOG) {
 			result = (Node) stack[sp];
 			LogUtil.info(Formatter.display(unwrap(result)));

@@ -90,8 +90,7 @@ public class AlphabetaSearchTest {
 
 	@Test
 	public void test() {
-		AlphabetaSearch<TicTacToe> search = new AlphabetaSearch<TicTacToe>(
-				ticTacToeGame);
+		AlphabetaSearch<TicTacToe> search = new AlphabetaSearch<TicTacToe>(ticTacToeGame);
 
 		TicTacToe state = new TicTacToe();
 		System.out.println(search.search(state, 20));

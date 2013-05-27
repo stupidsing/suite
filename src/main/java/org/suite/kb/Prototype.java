@@ -49,10 +49,7 @@ public class Prototype {
 			}
 		}
 
-		boolean indexable = node != null //
-				&& !generalizer.isVariant(node) //
-				&& !(node instanceof Reference);
-
+		boolean indexable = node != null && !generalizer.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
 	}
 

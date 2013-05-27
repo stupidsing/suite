@@ -27,8 +27,7 @@ public class AlphabetaSearch<State> {
 		return search0(state, depth, 1 + Integer.MIN_VALUE, Integer.MAX_VALUE).t2;
 	}
 
-	private Pair<Integer, List<State>> search0(State state, int depth //
-			, int alpha, int beta) {
+	private Pair<Integer, List<State>> search0(State state, int depth, int alpha, int beta) {
 		if (depth > 0) {
 			List<State> states = game.generate(state);
 
@@ -38,8 +37,7 @@ public class AlphabetaSearch<State> {
 				for (State state1 : states) {
 					moves.push(state1);
 
-					Pair<Integer, List<State>> result = search0(state1,
-							depth - 1, -beta, -alpha);
+					Pair<Integer, List<State>> result = search0(state1, depth - 1, -beta, -alpha);
 					int score = -result.t1;
 
 					if (score > alpha) {

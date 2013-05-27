@@ -20,8 +20,7 @@ import com.jcraft.jsch.UserInfo;
 
 public class Ssh {
 
-	public int execute(String command) throws SftpException, JSchException,
-			IOException {
+	public int execute(String command) throws SftpException, JSchException, IOException {
 		Session session = null;
 		ChannelExec channel = null;
 
@@ -44,8 +43,7 @@ public class Ssh {
 		}
 	}
 
-	public void putFile(String src, String dest) throws FileNotFoundException,
-			SftpException, JSchException {
+	public void putFile(String src, String dest) throws FileNotFoundException, SftpException, JSchException {
 		Session session = null;
 		ChannelSftp channel = null;
 
@@ -60,8 +58,7 @@ public class Ssh {
 		}
 	}
 
-	private Session createSession(String host, int port, String user,
-			final String password) throws JSchException {
+	private Session createSession(String host, int port, String user, final String password) throws JSchException {
 		JSch jsch = new JSch();
 
 		Properties config = new Properties();

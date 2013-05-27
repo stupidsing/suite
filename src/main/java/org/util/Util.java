@@ -49,8 +49,7 @@ public class Util {
 		return createDate(year, month, day, 0, 0, 0);
 	}
 
-	public static long createDate(int year, int month, int day, int hour,
-			int minute, int second) {
+	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		cal.clear();
 		cal.set(year, month + Calendar.JANUARY - 1, day, hour, minute, second);
@@ -114,9 +113,7 @@ public class Util {
 	}
 
 	public static ThreadPoolExecutor createExecutor() {
-		return new ThreadPoolExecutor(8, 32 //
-				, 10, TimeUnit.SECONDS //
-				, new ArrayBlockingQueue<Runnable>(256));
+		return new ThreadPoolExecutor(8, 32, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
 	}
 
 	public static <E> E unique(List<E> list) {
@@ -181,8 +178,7 @@ public class Util {
 	/**
 	 * Clones slowly by serializing and de-serializing.
 	 */
-	public static <T> T copy(T clonee) throws IOException,
-			ClassNotFoundException {
+	public static <T> T copy(T clonee) throws IOException, ClassNotFoundException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(baos);
 		out.writeObject(clonee);
@@ -196,14 +192,12 @@ public class Util {
 		return cloned;
 	}
 
-	public static <T> void copyArray(T from[], int fromIndex //
-			, T to[], int toIndex, int size) {
+	public static <T> void copyArray(T from[], int fromIndex, T to[], int toIndex, int size) {
 		if (size != 0)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
 	}
 
-	public static <T> void copyPrimitiveArray(Object from, int fromIndex //
-			, Object to, int toIndex, int size) {
+	public static <T> void copyPrimitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
 		if (size != 0)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
 	}

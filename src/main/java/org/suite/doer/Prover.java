@@ -90,8 +90,7 @@ public class Prover {
 					};
 
 					Tree alt0 = Tree.create(TermOp.AND___, right, rem);
-					alt = alt != FAIL ? Tree.create(TermOp.OR____, alt0, alt)
-							: alt0;
+					alt = alt != FAIL ? Tree.create(TermOp.OR____, alt0, alt) : alt0;
 					alt = Tree.create(TermOp.AND___, bt, alt);
 					query = left;
 					continue;
@@ -139,12 +138,11 @@ public class Prover {
 				if (!isTrace)
 					query = expand(query);
 				else
-					query = tracer.expandWithTrace(query, this,
-							new Fun<Node, Node>() {
-								public Node apply(Node node) {
-									return expand(node);
-								}
-							});
+					query = tracer.expandWithTrace(query, this, new Fun<Node, Node>() {
+						public Node apply(Node node) {
+							return expand(node);
+						}
+					});
 			}
 		}
 	}

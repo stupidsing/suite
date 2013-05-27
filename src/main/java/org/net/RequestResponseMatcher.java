@@ -14,13 +14,11 @@ public class RequestResponseMatcher {
 	// TODO clean-up lost requests
 	private Map<Integer, Bytes[]> requests = new HashMap<>();
 
-	public Bytes requestForResponse(RequestResponseChannel channel,
-			Bytes request) {
+	public Bytes requestForResponse(RequestResponseChannel channel, Bytes request) {
 		return requestForResponse(channel, request, 0);
 	}
 
-	public Bytes requestForResponse(RequestResponseChannel channel,
-			Bytes request, int timeOut) {
+	public Bytes requestForResponse(RequestResponseChannel channel, Bytes request, int timeOut) {
 		Integer token = tokenCounter.getAndIncrement();
 		Bytes holder[] = new Bytes[1];
 

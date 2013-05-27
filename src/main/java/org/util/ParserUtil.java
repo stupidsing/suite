@@ -54,10 +54,7 @@ public class ParserUtil {
 		return search(s, name, assoc, true);
 	}
 
-	public static String[] search(String s //
-			, String name //
-			, Assoc assoc //
-			, boolean isCheckDepth) {
+	public static String[] search(String s, String name, Assoc assoc, boolean isCheckDepth) {
 		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;

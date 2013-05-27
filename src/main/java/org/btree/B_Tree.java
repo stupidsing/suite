@@ -144,8 +144,7 @@ public class B_Tree<Key, Value> {
 			public boolean hasNext() {
 				Slot currentSlot = currentSlots.peek();
 				Slot endSlot = endSlots.peek();
-				return currentSlot.page.pageNo != endSlot.page.pageNo
-						|| !Util.equals(currentSlot.index, endSlot.index);
+				return currentSlot.page.pageNo != endSlot.page.pageNo || !Util.equals(currentSlot.index, endSlot.index);
 			}
 
 			public Pair<Key, Value> next() {

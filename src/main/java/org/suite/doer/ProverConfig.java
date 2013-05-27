@@ -19,9 +19,7 @@ public class ProverConfig {
 	}
 
 	public ProverConfig(RuleSet ruleSet) {
-		this(ruleSet //
-				, Suite.isTrace //
-				, new HashSet<>(Arrays.asList("member", "replace")));
+		this(ruleSet, Suite.isTrace, new HashSet<>(Arrays.asList("member", "replace")));
 	}
 
 	public ProverConfig(ProverConfig proverConfig) {
@@ -32,9 +30,7 @@ public class ProverConfig {
 		this(ruleSet, proverConfig.isTrace, proverConfig.noTracePredicates);
 	}
 
-	public ProverConfig(RuleSet ruleSet //
-			, boolean isTrace //
-			, Set<String> noTracePredicates) {
+	public ProverConfig(RuleSet ruleSet, boolean isTrace, Set<String> noTracePredicates) {
 		this.ruleSet = ruleSet;
 		this.isTrace = isTrace;
 		this.noTracePredicates = noTracePredicates;

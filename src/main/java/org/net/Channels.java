@@ -15,8 +15,7 @@ public class Channels {
 	/**
 	 * Channel that will reconnect if failed for any reasons.
 	 */
-	public abstract static class PersistableChannel<CL extends Channel> extends
-			RequestResponseChannel {
+	public abstract static class PersistableChannel<CL extends Channel> extends RequestResponseChannel {
 		private NioDispatcher<CL> dispatcher;
 		private InetSocketAddress address;
 		boolean isStarted;
@@ -67,9 +66,7 @@ public class Channels {
 		private boolean isConnected;
 		private Fun<Bytes, Bytes> handler;
 
-		public RequestResponseChannel(RequestResponseMatcher matcher //
-				, ThreadPoolExecutor executor //
-				, Fun<Bytes, Bytes> handler) {
+		public RequestResponseChannel(RequestResponseMatcher matcher, ThreadPoolExecutor executor, Fun<Bytes, Bytes> handler) {
 			this.matcher = matcher;
 			this.executor = executor;
 			this.handler = handler;

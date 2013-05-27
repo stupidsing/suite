@@ -131,8 +131,7 @@ public class Formatter {
 		} else if (node instanceof Reference)
 			sb.append(Generalizer.defaultPrefix + ((Reference) node).getId());
 		else
-			sb.append(node.getClass().getSimpleName() + '@'
-					+ Integer.toHexString(node.hashCode()));
+			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
 	}
 
 	public String quoteAtomIfRequired(String s) {
@@ -155,9 +154,7 @@ public class Formatter {
 					quote = true;
 			}
 
-			if (s.contains(Parser.closeGroupComment)
-					|| s.contains(Parser.openGroupComment)
-					|| s.contains(Parser.closeLineComment)
+			if (s.contains(Parser.closeGroupComment) || s.contains(Parser.openGroupComment) || s.contains(Parser.closeLineComment)
 					|| s.contains(Parser.openLineComment))
 				quote = true;
 

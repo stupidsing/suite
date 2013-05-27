@@ -68,15 +68,12 @@ public class Profiler {
 		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
 
 		for (ThreadInfo thread : threadInfos)
-			if (thread.getThreadId() != currentThreadId
-					&& thread.getThreadState() == State.RUNNABLE
+			if (thread.getThreadId() != currentThreadId && thread.getThreadState() == State.RUNNABLE
 					&& !thread.getThreadName().equals("ReaderThread")) {
 				String lastName = null;
 
 				for (StackTraceElement elem : thread.getStackTrace()) {
-					String name = elem.getClassName() //
-							+ "." + elem.getMethodName() //
-							+ " (" + elem.getFileName() + ")";
+					String name = elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")";
 
 					if (!Util.equals(name, lastName)) { // Eliminate duplicates
 						lastName = name;

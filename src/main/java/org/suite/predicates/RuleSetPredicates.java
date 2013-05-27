@@ -75,8 +75,7 @@ public class RuleSetPredicates {
 			try {
 				return Suite.importFrom(prover.ruleSet(), filename);
 			} catch (Exception ex) {
-				throw new RuntimeException( //
-						"Exception when importing " + filename, ex);
+				throw new RuntimeException("Exception when importing " + filename, ex);
 			}
 		}
 	}

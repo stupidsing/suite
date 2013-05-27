@@ -26,12 +26,10 @@ public class PrettyPrinter {
 	private static final int squeezeLineLength = 8;
 	private static final String indentSpaces = "    ";
 
-	private static final Set<Node> lineBreakBeforeKeywords = new HashSet<Node>(
-			Arrays.asList(Atom.create("else-if")));
-	private static final Set<Node> preferLineBreakBeforeKeywords = new HashSet<Node>(
-			Arrays.asList(Atom.create("else")));
-	private static final Set<Operator> lineBreakAfterOperators = new HashSet<Operator>(
-			Arrays.asList(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___));
+	private static final Set<Node> lineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else-if")));
+	private static final Set<Node> preferLineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else")));
+	private static final Set<Operator> lineBreakAfterOperators = new HashSet<Operator>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_,
+			TermOp.FUN___));
 
 	private static class OperatorPosition {
 		private int indent;
@@ -191,8 +189,7 @@ public class PrettyPrinter {
 			return isLookingLikeList(op, child);
 		}
 
-		return op != TermOp.TUPLE_
-				&& (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.NIL);
+		return op != TermOp.TUPLE_ && (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.NIL);
 	}
 
 	private int estimateLengths(Node node) {
@@ -280,8 +277,7 @@ public class PrettyPrinter {
 
 	private int getLineContentBeginPosition() {
 		int pos = getLineBeginPosition();
-		while (pos < getCurrentPosition()
-				&& Character.isWhitespace(sb.charAt(pos)))
+		while (pos < getCurrentPosition() && Character.isWhitespace(sb.charAt(pos)))
 			pos++;
 		return pos;
 	}

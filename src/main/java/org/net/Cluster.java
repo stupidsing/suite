@@ -21,12 +21,11 @@ public class Cluster {
 	private Map<String, InetSocketAddress> peers;
 	private ClusterProbe probe;
 
-	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(
-			new Source<ClusterChannel>() {
-				public ClusterChannel apply() {
-					return new ClusterChannel(me);
-				}
-			});
+	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(new Source<ClusterChannel>() {
+		public ClusterChannel apply() {
+			return new ClusterChannel(me);
+		}
+	});
 
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor = Util.createExecutor();
@@ -52,17 +51,15 @@ public class Cluster {
 
 	private class ClusterChannel extends PersistableChannel<ClusterChannel> {
 		private ClusterChannel(String peer) {
-			super(nio, matcher, executor, peers.get(peer),
-					new Fun<Bytes, Bytes>() {
-						public Bytes apply(Bytes request) {
-							return Cluster.this.respondToRequest(request);
-						}
-					});
+			super(nio, matcher, executor, peers.get(peer), new Fun<Bytes, Bytes>() {
+				public Bytes apply(Bytes request) {
+					return Cluster.this.respondToRequest(request);
+				}
+			});
 		}
 	}
 
-	public Cluster(final String me, Map<String, InetSocketAddress> peers)
-			throws IOException {
+	public Cluster(final String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
 		this.peers = peers;
 		probe = new ClusterProbe(me, peers);
@@ -129,8 +126,7 @@ public class Cluster {
 	private Bytes respondToRequest(Bytes req) {
 		Object request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive
-				.get(request.getClass());
+		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive.get(request.getClass());
 		return NetUtil.serialize(handler.apply(request));
 	}
 

@@ -58,8 +58,7 @@ public class Generalizer {
 		entries = new ArrayList<>(variables.entrySet());
 
 		Collections.sort(entries, new Comparator<Entry<Node, Reference>>() {
-			public int compare(Entry<Node, Reference> e0,
-					Entry<Node, Reference> e1) {
+			public int compare(Entry<Node, Reference> e0, Entry<Node, Reference> e1) {
 				return e0.getKey().compareTo(e1.getKey());
 			}
 		});
@@ -90,8 +89,7 @@ public class Generalizer {
 	}
 
 	private boolean isVariable(Node node) {
-		return node instanceof Atom
-				&& ((Atom) node).getName().startsWith(variablePrefix);
+		return node instanceof Atom && ((Atom) node).getName().startsWith(variablePrefix);
 	}
 
 	private static boolean isCut(Node node) {

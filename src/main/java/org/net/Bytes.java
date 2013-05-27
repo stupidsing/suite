@@ -79,14 +79,12 @@ public class Bytes {
 
 	private void checkOpenBounds(int index) {
 		if (index < start || index > end)
-			throw new IndexOutOfBoundsException("Index " + (index - start)
-					+ " is not within [0-" + (end - start) + "}");
+			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
 	}
 
 	private void checkClosedBounds(int index) {
 		if (index < start || index >= end)
-			throw new IndexOutOfBoundsException("Index " + (index - start)
-					+ " is not within [0-" + (end - start) + "]");
+			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 
 	@Override

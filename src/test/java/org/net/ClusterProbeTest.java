@@ -54,8 +54,7 @@ public class ClusterProbeTest {
 		}
 	}
 
-	private void assertActiveNodesSize(int nNodes,
-			Map<String, ClusterProbe> probes) {
+	private void assertActiveNodesSize(int nNodes, Map<String, ClusterProbe> probes) {
 		for (ClusterProbe probe : probes.values())
 			assertEquals(nNodes, probe.getActivePeers().size());
 	}

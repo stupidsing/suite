@@ -22,16 +22,14 @@ public class SuiteImportUtil {
 		rs.addRule(Rule.formRule(Suite.parse(rule)));
 	}
 
-	public synchronized boolean importFrom(RuleSet rs, String name)
-			throws IOException {
+	public synchronized boolean importFrom(RuleSet rs, String name) throws IOException {
 		if (isImportFromClasspath)
 			return importResource(rs, name);
 		else
 			return importFile(rs, name);
 	}
 
-	public synchronized boolean importFile(RuleSet rs, String filename)
-			throws IOException {
+	public synchronized boolean importFile(RuleSet rs, String filename) throws IOException {
 		FileInputStream is = null;
 
 		boolean wasFromClasspath = isImportFromClasspath;
@@ -48,8 +46,7 @@ public class SuiteImportUtil {
 		}
 	}
 
-	public synchronized boolean importResource(RuleSet rs, String classpath)
-			throws IOException {
+	public synchronized boolean importResource(RuleSet rs, String classpath) throws IOException {
 		ClassLoader cl = Suite.class.getClassLoader();
 		InputStream is = null;
 
@@ -85,8 +82,7 @@ public class SuiteImportUtil {
 		return rs;
 	}
 
-	private String setImporterRoot(boolean isFromClasspath, String name,
-			String oldRoot) {
+	private String setImporterRoot(boolean isFromClasspath, String name, String oldRoot) {
 		isImportFromClasspath = isFromClasspath;
 
 		if (!name.startsWith(File.separator))

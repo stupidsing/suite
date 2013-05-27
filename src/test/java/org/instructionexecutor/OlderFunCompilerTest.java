@@ -31,11 +31,9 @@ public class OlderFunCompilerTest {
 			+ "    else f2 \n" //
 			+ ") >> \n";
 
-	private static final String map0 = "" //
-			+ "define map0 = (fun => split {h => t => fun {h}, map0 {fun} {t}}) >> \n";
+	private static final String map0 = "define map0 = (fun => split {h => t => fun {h}, map0 {fun} {t}}) >> \n";
 
-	private static final String split = "" //
-			+ "define split = (fun => list => if-tree {list} {fun} {}) >> \n";
+	private static final String split = "define split = (fun => list => if-tree {list} {fun} {}) >> \n";
 
 	@Test
 	public void testConcat() {

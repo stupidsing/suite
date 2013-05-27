@@ -30,8 +30,7 @@ public class Parser {
 	public static final String closeLineComment = "\n";
 	public static final String openLineComment = "--";
 
-	private static final List<Character> whitespaces = Arrays.asList( //
-			'\t', '\r', '\n');
+	private static final List<Character> whitespaces = Arrays.asList('\t', '\r', '\n');
 
 	public Parser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
@@ -87,14 +86,11 @@ public class Parser {
 				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 				int li = fromOp + (isLeftAssoc ? 0 : 1);
 				int ri = fromOp + (isLeftAssoc ? 1 : 0);
-				return Tree.create(operator //
-						, parseWithoutComments(lr[0], li) //
-						, parseWithoutComments(lr[1], ri));
+				return Tree.create(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
 			}
 		}
 
-		if (first == '(' && last == ')' //
-				|| first == '[' && last == ']')
+		if (first == '(' && last == ')' || first == '[' && last == ']')
 			return parseWithoutComments(Util.substr(s, 1, -1));
 		if (first == '`' && last == '`')
 			return parseRawString(" " + Util.substr(s, 1, -1) + " ", 0);

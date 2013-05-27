@@ -237,10 +237,7 @@ public class Main {
 				case QUERYCOMPILED:
 					Node ruleList = Suite.getRuleList(rs, null);
 					node = Tree.create(TermOp.CONTD_, ruleList, node);
-					List<Node> nodes = Suite.evaluateLogical(node //
-							, Atom.NIL //
-							, proverConfig //
-							, false);
+					List<Node> nodes = Suite.evaluateLogical(node, Atom.NIL, proverConfig, false);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {

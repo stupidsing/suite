@@ -19,8 +19,7 @@ public class FilterTest {
 
 	@Test
 	public void testSplit() {
-		eval("abc def ghi", "abc\ndef\nghi",
-				"tail . concat . map {cons {10}} . split {32}");
+		eval("abc def ghi", "abc\ndef\nghi", "tail . concat . map {cons {10}} . split {32}");
 	}
 
 	private static Node eval(String in, String out, String program) {

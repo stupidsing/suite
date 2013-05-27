@@ -24,8 +24,7 @@ public class FilePersister<V> implements Persister<V>, Closeable {
 	private FileChannel channel;
 	private Serializer<V> serializer;
 
-	public FilePersister(String filename, Serializer<V> serializer)
-			throws FileNotFoundException {
+	public FilePersister(String filename, Serializer<V> serializer) throws FileNotFoundException {
 		file = new RandomAccessFile(filename, "rw");
 		channel = file.getChannel();
 		this.serializer = serializer;

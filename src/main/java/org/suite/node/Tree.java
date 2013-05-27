@@ -48,9 +48,7 @@ public class Tree extends Node {
 			Node node = ((Node) object).finalNode();
 			if (node instanceof Tree) {
 				Tree t = (Tree) node;
-				return operator == t.operator //
-						&& Util.equals(left, t.left)
-						&& Util.equals(right, t.right);
+				return operator == t.operator && Util.equals(left, t.left) && Util.equals(right, t.right);
 			} else
 				return false;
 		} else

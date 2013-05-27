@@ -43,8 +43,7 @@ public class SystemPredicates {
 		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
 		addPredicate("generalize", new EvalPredicates.Generalize());
-		addPredicate("generalize.prefix",
-				new EvalPredicates.GeneralizeWithPrefix());
+		addPredicate("generalize.prefix", new EvalPredicates.GeneralizeWithPrefix());
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("map.erase", new EvalPredicates.MapErase());

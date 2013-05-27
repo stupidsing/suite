@@ -53,26 +53,17 @@ public class SuiteEvaluationUtil {
 		return !evaluateLogical(lp, Atom.NIL, pc, false).isEmpty();
 	}
 
-	public List<Node> evaluateLogical(Node lp //
-			, Node eval //
-			, ProverConfig pc //
-			, boolean isDumpCode) {
+	public List<Node> evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode) {
 		Source<Node> source = FunUtil.nullSource();
 		Collector sink = new Collector();
 		evaluateLogical(lp, eval, pc, isDumpCode, source, sink);
 		return sink.getNodes();
 	}
 
-	private void evaluateLogical(Node lp //
-			, Node eval //
-			, ProverConfig pc //
-			, boolean isDumpCode //
-			, Source<Node> source //
-			, Sink<Node> sink) {
+	private void evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode, Source<Node> source, Sink<Node> sink) {
 		RuleSet rs = Suite.logicalRuleSet();
 
-		String goal = "compile-logic (.0, sink .1) .2"
-				+ (isDumpCode ? ", pretty.print .2" : "");
+		String goal = "compile-logic (.0, sink .1) .2" + (isDumpCode ? ", pretty.print .2" : "");
 		Node node = Suite.substitute(goal, Builder.in, eval, Builder.out);
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
@@ -98,13 +89,11 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
-		RuleSet rs = fcc.isLazy() ? Suite.lazyFunRuleSet() : Suite
-				.eagerFunRuleSet();
+		RuleSet rs = fcc.isLazy() ? Suite.lazyFunRuleSet() : Suite.eagerFunRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 		String program = appendLibraries(fcc, ".1");
 
-		String s = "compile-function .0 (" + program + ") .2"
-				+ (fcc.isDumpCode() ? ", pretty.print .2" : "");
+		String s = "compile-function .0 (" + program + ") .2" + (fcc.isDumpCode() ? ", pretty.print .2" : "");
 		Node node = Suite.substitute(s //
 				, Atom.create(fcc.isLazy() ? "LAZY" : "EAGER") //
 				, Builder.in //

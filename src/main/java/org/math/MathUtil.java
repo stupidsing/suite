@@ -16,8 +16,7 @@ import org.suite.node.Tree;
 
 public class MathUtil {
 
-	private static final Prover prover = Suite.createProver(Arrays.asList(
-			"auto.sl", "math.sl"));
+	private static final Prover prover = Suite.createProver(Arrays.asList("auto.sl", "math.sl"));
 
 	private static Comparator<Node> comparator = new Comparator<Node>() {
 		public int compare(Node n0, Node n1) {
@@ -42,8 +41,7 @@ public class MathUtil {
 
 			for (Node freshNode : freshNodes)
 				for (Node equateNode : equate(freshNode))
-					if (!searchedNodes.contains(equateNode)
-							&& complexity(equateNode) < complexity0 + 1) {
+					if (!searchedNodes.contains(equateNode) && complexity(equateNode) < complexity0 + 1) {
 						searchedNodes.add(equateNode);
 						freshNodes1.add(equateNode);
 					}
@@ -57,8 +55,7 @@ public class MathUtil {
 	public static Set<Node> equate(Node node) {
 		Node v = Node.ref(), r = Node.ref();
 
-		Node equate = Node.list(Node.atom("equate") //
-				, Node.list(TermOp.EQUAL_, node, v));
+		Node equate = Node.list(Node.atom("equate"), Node.list(TermOp.EQUAL_, node, v));
 		Node goal = Node.list(Node.atom("find.all"), v, equate, r);
 
 		System.out.println(goal);

@@ -23,8 +23,7 @@ public class Judge {
 
 		if (nPiecesCount > 1)
 			for (Occupation player : Weiqi.players)
-				if (players.contains(player)
-						&& !players.contains(player.opponent()))
+				if (players.contains(player) && !players.contains(player.opponent()))
 					return player;
 
 		return null;

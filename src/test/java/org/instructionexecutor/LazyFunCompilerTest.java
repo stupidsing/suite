@@ -12,8 +12,7 @@ public class LazyFunCompilerTest {
 
 	@Test
 	public void testClosure() {
-		assertEquals(Suite.parse("4") //
-				, eval("define v = type number 4 >> (i => j => v) {1} {2}"));
+		assertEquals(Suite.parse("4"), eval("define v = type number 4 >> (i => j => v) {1} {2}"));
 	}
 
 	@Test
@@ -42,22 +41,16 @@ public class LazyFunCompilerTest {
 
 	@Test
 	public void testProve() {
-		assertEquals(Atom.TRUE, eval("" //
-				+ "prove () is.atom abc"));
-		assertEquals(Atom.TRUE, eval("" //
-				+ "prove /_v:3 (_v = 3)"));
-		assertEquals(Atom.FALSE, eval("" //
-				+ "prove /_v:4 (_v = 3)"));
-		assertEquals(Int.create(4), eval("" //
-				+ "prove-with-result /_v:2 (let _r (2 * _v)) _r"));
+		assertEquals(Atom.TRUE, eval("prove () is.atom abc"));
+		assertEquals(Atom.TRUE, eval("prove /_v:3 (_v = 3)"));
+		assertEquals(Atom.FALSE, eval("prove /_v:4 (_v = 3)"));
+		assertEquals(Int.create(4), eval("prove-with-result /_v:2 (let _r (2 * _v)) _r"));
 	}
 
 	@Test
 	public void testString() {
-		assertEquals(Int.create(-34253924), eval("" //
-				+ "str-to-int {\"-34253924\"}"));
-		assertEquals(Atom.TRUE, eval("" //
-				+ "equals {\"-34253924\"} {int-to-str {-34253924}}"));
+		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
+		assertEquals(Atom.TRUE, eval("equals {\"-34253924\"} {int-to-str {-34253924}}"));
 	}
 
 	@Test

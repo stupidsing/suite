@@ -54,8 +54,7 @@ public class DumpUtil {
 			new DumpUtil().dump(prefix, object, void.class, sb);
 	}
 
-	public void dump(String prefix, Object object, Class<?> clazz,
-			StringBuilder sb) {
+	public void dump(String prefix, Object object, Class<?> clazz, StringBuilder sb) {
 		sb.append(prefix);
 		sb.append(" =");
 		if (object == null) {
@@ -97,9 +96,7 @@ public class DumpUtil {
 		for (Method method : clazz.getMethods()) {
 			String name = method.getName();
 			try {
-				if (name.startsWith("get")
-						&& method.getParameterTypes().length == 0
-						&& !displayedMethod.contains(name)) {
+				if (name.startsWith("get") && method.getParameterTypes().length == 0 && !displayedMethod.contains(name)) {
 					Object o = method.invoke(object);
 					if (!(o instanceof Class<?>))
 						dump(prefix + "." + name + "()", o, sb);
@@ -139,8 +136,7 @@ public class DumpUtil {
 	 * Types that do not require per-member dump.
 	 */
 	private static boolean isSimpleType(Class<?> clazz) {
-		return clazz.isPrimitive() || clazz == String.class
-				|| clazz == Date.class || clazz == Timestamp.class;
+		return clazz.isPrimitive() || clazz == String.class || clazz == Date.class || clazz == Timestamp.class;
 	}
 
 }

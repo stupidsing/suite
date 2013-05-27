@@ -15,8 +15,7 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testBasic() {
-		assertEquals(Suite.parse("boolean") //
-				, getType("4 = 8"));
+		assertEquals(Suite.parse("boolean"), getType("4 = 8"));
 	}
 
 	@Test
@@ -59,7 +58,7 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testInstance() {
-		String define = " \n" //
+		String define = "" //
 				+ "define type (NODE :t linked-list/:t %) of (linked-list/:t,) for any (:t,) >> \n" //
 				+ "define type (NIL %) of (linked-list/:t,) for any (:t,) >> \n";
 
@@ -69,19 +68,15 @@ public class FunCompilerTypeTest {
 		assertEquals(Suite.parse("boolean"), getType(define //
 				+ "let n = NODE true (NIL %) % >> \n" //
 				+ "NODE false n % = NIL %"));
-		getTypeMustFail(define //
-				+ "NODE 1 n % = NODE false n %");
-		getTypeMustFail(define //
-				+ "let n = NODE true (NIL %) % >> \n" //
+		getTypeMustFail(define + "NODE 1 n % = NODE false n %");
+		getTypeMustFail(define + "let n = NODE true (NIL %) % >> \n" //
 				+ "NODE 1 n % = NIL %");
 	}
 
 	@Test
 	public void testList() {
-		assertEquals(Suite.parse("list-of number") //
-				, getType("1,"));
-		assertEquals(Suite.parse("list-of (list-of number)") //
-				, getType("\"a\", \"b\", \"c\", \"d\","));
+		assertEquals(Suite.parse("list-of number"), getType("1,"));
+		assertEquals(Suite.parse("list-of (list-of number)"), getType("\"a\", \"b\", \"c\", \"d\","));
 	}
 
 	@Test
@@ -99,16 +94,11 @@ public class FunCompilerTypeTest {
 		getType(variant + "A %");
 		getType(variant + "B 4 %");
 		getType(variant + "C true %");
-		getType(variant + "if true then (A %)" //
-				+ " else-if true then (B 3 %)" //
-				+ " else (C false %)");
-		getType("define type (BTREE number number %) of (btree,) >> \n"
-				+ "BTREE 2 3 % = BTREE 4 6 %");
-		getTypeMustFail("define type (T1 number number %) of (t1,) >> \n"
-				+ "define type (T2 number number %) of (t2,) >> \n"
+		getType(variant + "if true then (A %) else-if true then (B 3 %) else (C false %)");
+		getType("define type (BTREE number number %) of (btree,) >> \n" + "BTREE 2 3 % = BTREE 4 6 %");
+		getTypeMustFail("define type (T1 number number %) of (t1,) >> \n" + "define type (T2 number number %) of (t2,) >> \n"
 				+ "T1 2 3 % = T2 2 3 %");
-		getTypeMustFail("define type (BTREE number number %) of (btree,) >> \n"
-				+ "BTREE 2 3 % = BTREE \"a\" 6 %");
+		getTypeMustFail("define type (BTREE number number %) of (btree,) >> \n" + "BTREE 2 3 % = BTREE \"a\" 6 %");
 	}
 
 	private static void getTypeMustFail(String c) {

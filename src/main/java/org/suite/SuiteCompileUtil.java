@@ -22,15 +22,13 @@ public class SuiteCompileUtil {
 
 	public synchronized RuleSet eagerFunRuleSet() {
 		if (eagerFunCompiler == null)
-			eagerFunCompiler = createRuleSet(Arrays.asList( //
-					"auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
+			eagerFunCompiler = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
 		return eagerFunCompiler;
 	}
 
 	public synchronized RuleSet lazyFunRuleSet() {
 		if (lazyFunCompiler == null)
-			lazyFunCompiler = createRuleSet(Arrays.asList( //
-					"auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
+			lazyFunCompiler = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
 		return lazyFunCompiler;
 	}
 

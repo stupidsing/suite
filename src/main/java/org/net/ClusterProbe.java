@@ -105,8 +105,7 @@ public class ClusterProbe extends ThreadedService {
 		}
 	}
 
-	public ClusterProbe(String me, Map<String, InetSocketAddress> peers)
-			throws IOException {
+	public ClusterProbe(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this();
 		setMe(me);
 		setPeers(peers);
@@ -175,8 +174,7 @@ public class ClusterProbe extends ThreadedService {
 		}
 	}
 
-	private void processSelectedKey(long current, SelectionKey key)
-			throws IOException {
+	private void processSelectedKey(long current, SelectionKey key) throws IOException {
 		DatagramChannel dc = (DatagramChannel) key.channel();
 
 		if (key.isReadable()) {
@@ -202,8 +200,7 @@ public class ClusterProbe extends ThreadedService {
 			if (peers.get(remote) != null)
 				if (data == Command.HELO) // Reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
-				else if (data == Command.BYEE
-						&& lastActiveTime.remove(remote) != null)
+				else if (data == Command.BYEE && lastActiveTime.remove(remote) != null)
 					onLeft.apply(remote);
 		}
 	}

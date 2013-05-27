@@ -164,8 +164,7 @@ public class InstructionUtil {
 		protected int bindStackPointer;
 		protected int journalPointer;
 
-		protected CutPoint(Activation activation, int bindStackPointer,
-				int journalPointer) {
+		protected CutPoint(Activation activation, int bindStackPointer, int journalPointer) {
 			this.activation = activation;
 			this.bindStackPointer = bindStackPointer;
 			this.journalPointer = journalPointer;

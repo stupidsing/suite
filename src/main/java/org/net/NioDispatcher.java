@@ -41,8 +41,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 	/**
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
-	public void reconnect(Channel channel, InetSocketAddress address)
-			throws IOException {
+	public void reconnect(Channel channel, InetSocketAddress address) throws IOException {
 		SocketChannel sc = SocketChannel.open();
 		sc.configureBlocking(false);
 		sc.connect(address);

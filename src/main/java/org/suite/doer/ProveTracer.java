@@ -29,15 +29,14 @@ public class ProveTracer {
 
 		private void appendTo(StringBuilder sb) {
 			if (Boolean.TRUE)
-				sb.append(String.format("[%4s:%-2d]  " //
-						, nOkays > 0 ? "OK__" : "FAIL", depth));
+				sb.append(String.format("[%4s:%-2d]  ", nOkays > 0 ? "OK__" : "FAIL", depth));
 			else
-				sb.append(String.format( //
-						"%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
+				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
 						, start //
 						, parent != null ? parent.start : 0 //
 						, nOkays //
-						, end >= 0 ? String.valueOf(end) : ""));
+						, end >= 0 ? String.valueOf(end) : "" //
+				));
 
 			for (int i = 1; i < depth; i++)
 				sb.append("| ");
@@ -46,8 +45,7 @@ public class ProveTracer {
 		}
 	}
 
-	public Node expandWithTrace(Node query, Prover prover,
-			Fun<Node, Node> expand) {
+	public Node expandWithTrace(Node query, Prover prover, Fun<Node, Node> expand) {
 		Node query1 = new Cloner().clone(query);
 
 		final Record record0 = currentRecord;

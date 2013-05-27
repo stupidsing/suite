@@ -140,8 +140,7 @@ public class Suite {
 		return suiteEvaluationUtil.evaluateLogical(lp);
 	}
 
-	public static List<Node> evaluateLogical(Node lp, Node eval,
-			ProverConfig pc, boolean isDumpCode) {
+	public static List<Node> evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode) {
 		return suiteEvaluationUtil.evaluateLogical(lp, eval, pc, isDumpCode);
 	}
 
@@ -168,18 +167,15 @@ public class Suite {
 	// --------------------------------
 	// Import utilities
 
-	public static boolean importFrom(RuleSet rs, String name)
-			throws IOException {
+	public static boolean importFrom(RuleSet rs, String name) throws IOException {
 		return suiteImportUtil.importFrom(rs, name);
 	}
 
-	public static boolean importFile(RuleSet rs, String filename)
-			throws IOException {
+	public static boolean importFile(RuleSet rs, String filename) throws IOException {
 		return suiteImportUtil.importFile(rs, filename);
 	}
 
-	public static boolean importResource(RuleSet rs, String classpath)
-			throws IOException {
+	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
 		return suiteImportUtil.importResource(rs, classpath);
 	}
 

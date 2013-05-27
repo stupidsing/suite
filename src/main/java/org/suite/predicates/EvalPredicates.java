@@ -61,8 +61,7 @@ public class EvalPredicates {
 	}
 
 	public static class EvalJs implements SystemPredicate {
-		private final ScriptEngine engine = new ScriptEngineManager()
-				.getEngineByExtension("js");
+		private final ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);

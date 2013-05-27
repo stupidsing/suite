@@ -98,8 +98,7 @@ public class Formatter {
 			node = parseExpression(input, n + 1);
 
 			if (!operator.isRightPrecedence) {
-				if ((construct = createIfMatch(input, operator.type, //
-						Arrays.asList(node), operator.name)) != null) {
+				if ((construct = createIfMatch(input, operator.type, Arrays.asList(node), operator.name)) != null) {
 					construct.nodes.add(parseExpression(input, n));
 					node = construct;
 				}
@@ -107,8 +106,7 @@ public class Formatter {
 				Construct rightest = null, subTree;
 				Node lastNode = node;
 
-				while ((subTree = createIfMatch(input, operator.type, //
-						Arrays.asList(lastNode), operator.name)) != null) {
+				while ((subTree = createIfMatch(input, operator.type, Arrays.asList(lastNode), operator.name)) != null) {
 					if (rightest != null)
 						rightest.nodes.set(2, subTree);
 					else
@@ -143,8 +141,7 @@ public class Formatter {
 		return createIfMatch(input, type, null, toMatch);
 	}
 
-	private Construct createIfMatch(InputBuffer input, Type type,
-			List<Node> before, String toMatch) {
+	private Construct createIfMatch(InputBuffer input, Type type, List<Node> before, String toMatch) {
 		Construct construct;
 		if (before != null)
 			construct = new Construct(type, new ArrayList<Node>(before));
@@ -153,8 +150,7 @@ public class Formatter {
 		return addIfMatch(input, toMatch, construct) ? construct : null;
 	}
 
-	private boolean addIfMatch(InputBuffer input, final String toMatch,
-			Construct construct) {
+	private boolean addIfMatch(InputBuffer input, final String toMatch, Construct construct) {
 		Token token = fetchToken(input);
 		if (token.token.equalsIgnoreCase(toMatch)) {
 			eatUpToken(input, token);
@@ -198,9 +194,7 @@ public class Formatter {
 			if (begin + 1 < length) {
 				char ch = buffer.charAt(begin), ch1 = buffer.charAt(begin + 1);
 
-				String endTag = ch == '-' && ch1 == '-' ? "\n" //
-						: ch == '/' && ch1 == '*' ? "*/" //
-								: null;
+				String endTag = ch == '-' && ch1 == '-' ? "\n" : ch == '/' && ch1 == '*' ? "*/" : null;
 
 				if (endTag != null) {
 					int pos = buffer.indexOf(endTag, begin + 2);
@@ -217,8 +211,7 @@ public class Formatter {
 			char ch = buffer.charAt(end);
 
 			if (Character.isJavaIdentifierStart(ch))
-				while (end < length
-						&& Character.isJavaIdentifierPart(buffer.charAt(end)))
+				while (end < length && Character.isJavaIdentifierPart(buffer.charAt(end)))
 					end++;
 			else if (Character.isDigit(buffer.charAt(end)))
 				while (end < length && Character.isDigit(buffer.charAt(end)))
@@ -233,8 +226,7 @@ public class Formatter {
 						|| ch == '<' && ch1 == '>' //
 						|| ch == '>' && ch1 == '<' //
 						|| ch == '!' && ch1 == '=' //
-						|| ch == '|' && ch1 == '|' //
-				)
+						|| ch == '|' && ch1 == '|')
 					end++;
 			}
 		}

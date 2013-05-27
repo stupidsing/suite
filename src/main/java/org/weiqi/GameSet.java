@@ -17,8 +17,7 @@ public class GameSet {
 
 	@SuppressWarnings("unchecked")
 	public GameSet(GameSet gameSet) {
-		this(gameSet.board, gameSet.nextPlayer,
-				(HashSet<Integer>) gameSet.previousStates.clone());
+		this(gameSet.board, gameSet.nextPlayer, (HashSet<Integer>) gameSet.previousStates.clone());
 	}
 
 	/**
@@ -30,8 +29,7 @@ public class GameSet {
 		previousStates.add(board.hashCode());
 	}
 
-	private GameSet(Board board, Occupation nextPlayer,
-			HashSet<Integer> previousStates) {
+	private GameSet(Board board, Occupation nextPlayer, HashSet<Integer> previousStates) {
 		this.board = new Board(board);
 		this.nextPlayer = nextPlayer;
 		this.previousStates = previousStates;
@@ -61,8 +59,7 @@ public class GameSet {
 
 	private void play(Move move) {
 		if (!playIfValid(move))
-			throw new RuntimeException("Invalid move " + move.position
-					+ " for " + nextPlayer + "\n" + this);
+			throw new RuntimeException("Invalid move " + move.position + " for " + nextPlayer + "\n" + this);
 	}
 
 	public void undo(Move move) {
@@ -130,18 +127,14 @@ public class GameSet {
 
 	@Override
 	public int hashCode() {
-		return board.hashCode() //
-				^ nextPlayer.hashCode() //
-				^ previousStates.hashCode();
+		return board.hashCode() ^ nextPlayer.hashCode() ^ previousStates.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof GameSet) {
 			GameSet other = (GameSet) object;
-			return board.equals(other.board) //
-					&& nextPlayer == other.nextPlayer //
-					&& previousStates.equals(other.previousStates);
+			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 
 		} else
 			return false;

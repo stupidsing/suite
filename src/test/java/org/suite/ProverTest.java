@@ -17,8 +17,7 @@ public class ProverTest {
 		Suite.addRule(rs, "app () .l .l");
 		Suite.addRule(rs, "app (.h, .r) .l (.h, .r1) :- app .r .l .r1");
 
-		assertTrue(Suite.proveThis(rs,
-				"app (a, b, c,) (d, e,) (a, b, c, d, e,)"));
+		assertTrue(Suite.proveThis(rs, "app (a, b, c,) (d, e,) (a, b, c, d, e,)"));
 	}
 
 	@Test
@@ -29,16 +28,13 @@ public class ProverTest {
 		Suite.addRule(rs, "yes");
 		assertFalse(Suite.proveThis(rs, "a"));
 
-		assertFalse(Suite.proveThis(rs,
-				"cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
-		assertTrue(Suite.proveThis(rs,
-				"(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
+		assertFalse(Suite.proveThis(rs, "cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
+		assertTrue(Suite.proveThis(rs, "(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
 	}
 
 	@Test
 	public void testFindAll() {
-		assertTrue(proveThis("find.all .v (.v = a; .v = b; .v = c) .results"
-				+ ", .results = (a, b, c, )"));
+		assertTrue(proveThis("find.all .v (.v = a; .v = b; .v = c) .results" + ", .results = (a, b, c, )"));
 	}
 
 	@Test
@@ -49,8 +45,7 @@ public class ProverTest {
 
 		assertTrue(Suite.proveThis(rs, "mem ([a, ], a)"));
 		assertTrue(Suite.proveThis(rs, "mem ([a, b, c, ], .v)"));
-		assertTrue(Suite.proveThis(rs,
-				".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l"));
+		assertTrue(Suite.proveThis(rs, ".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l"));
 		assertFalse(Suite.proveThis(rs, "mem ([a, b, c, ], d)"));
 	}
 
@@ -94,8 +89,7 @@ public class ProverTest {
 		Suite.addRule(rs, "mem ([.e, _], .e)");
 		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
-		assertTrue(Suite.proveThis(rs,
-				".l = [1, 2,], find.all .v (mem (.l, .v)) .l"));
+		assertTrue(Suite.proveThis(rs, ".l = [1, 2,], find.all .v (mem (.l, .v)) .l"));
 	}
 
 	@Test

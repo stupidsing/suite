@@ -81,10 +81,10 @@ public class InstructionExecutor {
 				regs[insn.op0] = constantPool.get(insn.op1);
 				break;
 			case ASSIGNINT_____:
-				regs[insn.op0] = i(insn.op1);
+				regs[insn.op0] = number(insn.op1);
 				break;
 			case CALL__________:
-				current = new Activation(frame, g(regs[insn.op0]), current);
+				current = new Activation(frame, i(regs[insn.op0]), current);
 				break;
 			case CALLCONST_____:
 				current = new Activation(frame, insn.op0, current);
@@ -112,43 +112,43 @@ public class InstructionExecutor {
 				current.frame = new Frame(frame, insn.op0);
 				break;
 			case EVALADD_______:
-				regs[insn.op0] = i(g(regs[insn.op1]) + g(regs[insn.op2]));
+				regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
 				break;
 			case EVALDIV_______:
-				regs[insn.op0] = i(g(regs[insn.op1]) / g(regs[insn.op2]));
+				regs[insn.op0] = number(i(regs[insn.op1]) / i(regs[insn.op2]));
 				break;
 			case EVALEQ________:
 				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-				regs[insn.op0] = a(i == 0);
+				regs[insn.op0] = atom(i == 0);
 				break;
 			case EVALGE________:
 				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-				regs[insn.op0] = a(i >= 0);
+				regs[insn.op0] = atom(i >= 0);
 				break;
 			case EVALGT________:
 				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-				regs[insn.op0] = a(i > 0);
+				regs[insn.op0] = atom(i > 0);
 				break;
 			case EVALLE________:
 				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-				regs[insn.op0] = a(i <= 0);
+				regs[insn.op0] = atom(i <= 0);
 				break;
 			case EVALLT________:
 				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-				regs[insn.op0] = a(i < 0);
+				regs[insn.op0] = atom(i < 0);
 				break;
 			case EVALNE________:
 				i = comparer.compare(regs[insn.op1], regs[insn.op2]);
-				regs[insn.op0] = a(i != 0);
+				regs[insn.op0] = atom(i != 0);
 				break;
 			case EVALMOD_______:
-				regs[insn.op0] = i(g(regs[insn.op1]) % g(regs[insn.op2]));
+				regs[insn.op0] = number(i(regs[insn.op1]) % i(regs[insn.op2]));
 				break;
 			case EVALMUL_______:
-				regs[insn.op0] = i(g(regs[insn.op1]) * g(regs[insn.op2]));
+				regs[insn.op0] = number(i(regs[insn.op1]) * i(regs[insn.op2]));
 				break;
 			case EVALSUB_______:
-				regs[insn.op0] = i(g(regs[insn.op1]) - g(regs[insn.op2]));
+				regs[insn.op0] = number(i(regs[insn.op1]) - i(regs[insn.op2]));
 				break;
 			case EXIT__________:
 				return regs[insn.op0];
@@ -182,7 +182,7 @@ public class InstructionExecutor {
 				stack[sp++] = regs[insn.op0];
 				break;
 			case PUSHCONST_____:
-				stack[sp++] = i(insn.op0);
+				stack[sp++] = number(insn.op0);
 				break;
 			case POP___________:
 				regs[insn.op0] = stack[--sp];
@@ -223,15 +223,15 @@ public class InstructionExecutor {
 		throw new RuntimeException("Unknown instruction " + insn);
 	}
 
-	protected static Int i(int n) {
+	protected static Int number(int n) {
 		return Int.create(n);
 	}
 
-	protected static Atom a(boolean b) {
+	protected static Atom atom(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
 	}
 
-	protected static int g(Object node) {
+	protected static int i(Object node) {
 		return ((Int) node).getNumber();
 	}
 

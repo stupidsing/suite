@@ -31,8 +31,7 @@ public class TelnetServer {
 		}
 
 		public void run() {
-			try (InputStream sis = socket.getInputStream();
-					OutputStream sos = socket.getOutputStream();) {
+			try (InputStream sis = socket.getInputStream(); OutputStream sos = socket.getOutputStream();) {
 				Process process = Runtime.getRuntime().exec("bash");
 
 				try (InputStream pis = process.getInputStream();
@@ -41,9 +40,7 @@ public class TelnetServer {
 					AtomicBoolean quitter = new AtomicBoolean(false);
 
 					try {
-						Thread threads[] = {
-								new CopyStreamThread(pis, sos, quitter),
-								new CopyStreamThread(pes, sos, quitter),
+						Thread threads[] = { new CopyStreamThread(pis, sos, quitter), new CopyStreamThread(pes, sos, quitter),
 								new CopyStreamThread(sis, pos, quitter) };
 
 						for (Thread thread : threads)
@@ -76,8 +73,7 @@ public class TelnetServer {
 		private OutputStream os;
 		private AtomicBoolean quitter;
 
-		private CopyStreamThread(InputStream is, OutputStream os,
-				AtomicBoolean quitter) {
+		private CopyStreamThread(InputStream is, OutputStream os, AtomicBoolean quitter) {
 			this.is = is;
 			this.os = os;
 			this.quitter = quitter;

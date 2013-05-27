@@ -85,8 +85,7 @@ public class NioDispatcherTest {
 				return new RequestResponseChannel(matcher, executor, handler);
 			}
 		};
-		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<>(
-				source);
+		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<>(source);
 
 		dispatcher.start();
 		try (Closeable closeServer = dispatcher.listen(5151)) {

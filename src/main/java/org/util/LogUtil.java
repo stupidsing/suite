@@ -99,8 +99,7 @@ public class LogUtil {
 		Class<?> classes[] = { interface_ };
 
 		InvocationHandler handler = new InvocationHandler() {
-			public Object invoke(Object proxy, Method method, Object ps[])
-					throws Exception {
+			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {
 				String methodName = method.getName();
 				String prefix = methodName + "()\n";
 

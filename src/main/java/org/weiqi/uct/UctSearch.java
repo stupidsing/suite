@@ -104,8 +104,7 @@ public class UctSearch<Move> {
 	 * @return true if the next player will win after UCT selections and
 	 *         evaluation after random moves.
 	 */
-	private boolean playSimulation(UctVisitor<Move> visitor,
-			UctNode<Move> node, int depth) {
+	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node, int depth) {
 		boolean outcome;
 
 		if (node.nVisits != 0) {
@@ -175,20 +174,17 @@ public class UctSearch<Move> {
 		return !outcome;
 	}
 
-	private float uct(UctNode<Move> child, double lnParentVisits,
-			double lnParentRaveVisits) {
+	private float uct(UctNode<Move> child, double lnParentVisits, double lnParentRaveVisits) {
 		float beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
 		beta = Math.min(Math.max(beta, 0f), 1f);
 
 		float raveWins = getMoveRave(nRaveWins, child.move);
 		float raveVisits = getMoveRave(nRaveVisits, child.move);
-		float rave = raveWins / raveVisits + explorationFactor
-				* (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
+		float rave = raveWins / raveVisits + explorationFactor * (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
 
 		float wins = child.nWins;
 		float visits = child.nVisits;
-		float uct = wins / visits + explorationFactor
-				* (float) Math.sqrt(lnParentVisits / (5f * visits));
+		float uct = wins / visits + explorationFactor * (float) Math.sqrt(lnParentVisits / (5f * visits));
 
 		return (1f - beta) * rave + beta * uct;
 	}
@@ -209,8 +205,7 @@ public class UctSearch<Move> {
 		System.out.println(sb);
 	}
 
-	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent,
-			UctNode<Move> child) {
+	private void dumpSearch(StringBuilder sb, int indent, UctNode<Move> parent, UctNode<Move> child) {
 		if (indent > 9)
 			return;
 
@@ -248,8 +243,7 @@ public class UctSearch<Move> {
 
 	private String getPrincipalVar(UctNode<Move> node) {
 		UctNode<Move> bestChild = node.bestChild;
-		return (node.move != null ? node.move : "") //
-				+ (bestChild != null ? " => " + getPrincipalVar(bestChild) : "");
+		return (node.move != null ? node.move : "") + (bestChild != null ? " => " + getPrincipalVar(bestChild) : "");
 	}
 
 	public void dumpRave() {

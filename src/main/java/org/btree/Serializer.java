@@ -16,8 +16,7 @@ public interface Serializer<V> {
 
 	public void write(ByteBuffer buffer, V value);
 
-	public static class B_TreeSuperBlockSerializer<Key, Value> implements
-			Serializer<B_Tree<Key, Value>.SuperBlock> {
+	public static class B_TreeSuperBlockSerializer<Key, Value> implements Serializer<B_Tree<Key, Value>.SuperBlock> {
 		private B_Tree<Key, Value> b_tree;
 		private IntSerializer intSerializer = new IntSerializer();
 
@@ -36,8 +35,7 @@ public interface Serializer<V> {
 		}
 	}
 
-	public static class B_TreePageSerializer<Key, Value> implements
-			Serializer<B_Tree<Key, Value>.Page> {
+	public static class B_TreePageSerializer<Key, Value> implements Serializer<B_Tree<Key, Value>.Page> {
 		private B_Tree<Key, Value> b_tree;
 		private Serializer<Key> keyAccessor;
 		private Serializer<Value> valueAccessor;
@@ -45,9 +43,7 @@ public interface Serializer<V> {
 		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
 
-		public B_TreePageSerializer(B_Tree<Key, Value> b_tree //
-				, Serializer<Key> keyAccessor //
-				, Serializer<Value> valueAccessor) {
+		public B_TreePageSerializer(B_Tree<Key, Value> b_tree, Serializer<Key> keyAccessor, Serializer<Value> valueAccessor) {
 			this.b_tree = b_tree;
 			this.keyAccessor = keyAccessor;
 			this.valueAccessor = valueAccessor;
@@ -91,13 +87,11 @@ public interface Serializer<V> {
 				}
 		}
 
-		private void addLeaf(List<B_Tree<Key, Value>.KeyPointer> kps, Key k,
-				Value v) {
+		private void addLeaf(List<B_Tree<Key, Value>.KeyPointer> kps, Key k, Value v) {
 			kps.add(b_tree.new KeyPointer(k, b_tree.new Leaf(v)));
 		}
 
-		private void addBranch(List<B_Tree<Key, Value>.KeyPointer> kps, Key k,
-				int branch) {
+		private void addBranch(List<B_Tree<Key, Value>.KeyPointer> kps, Key k, int branch) {
 			kps.add(b_tree.new KeyPointer(k, b_tree.new Branch(branch)));
 		}
 
