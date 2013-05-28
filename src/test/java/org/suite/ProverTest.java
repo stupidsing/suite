@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.RuleSetUtil;
+import org.suite.kb.RuleSetUtil;
 
 public class ProverTest {
 
@@ -26,15 +26,16 @@ public class ProverTest {
 		Suite.addRule(rs, "a :- !, fail");
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "yes");
-		assertFalse(Suite.proveThis(rs, "a"));
 
+		assertFalse(Suite.proveThis(rs, "a"));
 		assertFalse(Suite.proveThis(rs, "cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
 		assertTrue(Suite.proveThis(rs, "(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
 	}
 
 	@Test
 	public void testFindAll() {
-		assertTrue(proveThis("find.all .v (.v = a; .v = b; .v = c) .results" + ", .results = (a, b, c, )"));
+		RuleSet rs = RuleSetUtil.create();
+		assertTrue(Suite.proveThis(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c, )"));
 	}
 
 	@Test
@@ -51,7 +52,7 @@ public class ProverTest {
 
 	@Test
 	public void testNotNot() throws IOException {
-		assertTrue(proveThis("not not (.a = 3), not bound .a"));
+		assertTrue(Suite.proveThis(RuleSetUtil.create(), "not not (.a = 3), not bound .a"));
 	}
 
 	@Test
@@ -94,12 +95,10 @@ public class ProverTest {
 
 	@Test
 	public void testWrite() {
-		assertTrue(proveThis("write (1 + 2 * 3), nl"));
-		assertTrue(proveThis("write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
-	}
+		RuleSet rs = RuleSetUtil.create();
 
-	private boolean proveThis(String s) {
-		return Suite.proveThis(RuleSetUtil.create(), s);
+		assertTrue(Suite.proveThis(rs, "write (1 + 2 * 3), nl"));
+		assertTrue(Suite.proveThis(rs, "write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
 	}
 
 }

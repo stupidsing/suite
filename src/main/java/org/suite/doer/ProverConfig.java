@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.suite.Suite;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.RuleSetUtil;
+import org.suite.kb.RuleSetUtil;
 
 public class ProverConfig {
 

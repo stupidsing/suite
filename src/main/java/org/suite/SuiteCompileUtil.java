@@ -34,13 +34,10 @@ public class SuiteCompileUtil {
 
 	public void precompile(String libraryName, ProverConfig proverConfig) {
 		System.out.println("Pre-compiling " + libraryName + "... ");
-		List<String> imports = Arrays.asList("auto.sl", "fc-precompile.sl");
 
-		RuleSet rs = createRuleSet(imports);
+		RuleSet rs = createRuleSet(Arrays.asList("auto.sl", "fc-precompile.sl"));
 		Prover prover = new Prover(new ProverConfig(rs, proverConfig));
-
-		String goal = "fc-setup-precompile " + libraryName;
-		Node node = Suite.parse(goal);
+		Node node = Suite.parse("fc-setup-precompile " + libraryName);
 
 		if (prover.prove(node))
 			System.out.println("Pre-compilation success\n");

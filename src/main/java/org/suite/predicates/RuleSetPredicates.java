@@ -12,7 +12,7 @@ import org.suite.kb.CompositeRuleSet;
 import org.suite.kb.Prototype;
 import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.RuleSetUtil;
+import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -32,8 +32,7 @@ public class RuleSetPredicates {
 	public static class Assertz implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 1);
-			RuleSet ruleSet = prover.ruleSet();
-			ruleSet.addRule(Rule.formRule(params[0]));
+			Suite.addRule(prover.ruleSet(), params[0]);
 			return true;
 		}
 	}

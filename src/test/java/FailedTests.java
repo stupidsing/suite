@@ -1,20 +1,18 @@
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.RuleSetUtil;
 import org.suite.node.Node;
 
 public class FailedTests {
 
 	@Test
 	public void test0() throws IOException { // not balanced
-		RuleSet rs = RuleSetUtil.create();
-		Suite.importResource(rs, "auto.sl");
-		Suite.importResource(rs, "23t.sl");
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 32; i++)
@@ -25,9 +23,7 @@ public class FailedTests {
 
 	@Test
 	public void test1() throws IOException { // not balanced
-		RuleSet rs = RuleSetUtil.create();
-		Suite.importResource(rs, "auto.sl");
-		Suite.importResource(rs, "23t.sl");
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 32; i++)

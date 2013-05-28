@@ -18,9 +18,8 @@ import org.suite.doer.ProverConfig;
 import org.suite.doer.Station;
 import org.suite.doer.TermParser;
 import org.suite.doer.TermParser.TermOp;
-import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSet.RuleSetUtil;
+import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -196,7 +195,7 @@ public class Main {
 					System.out.println(Formatter.dump(node));
 					break;
 				case FACT:
-					rs.addRule(Rule.formRule(node));
+					Suite.addRule(rs, node);
 					break;
 				case OPTION:
 					List<String> args = Arrays.asList(("-" + input).split(" "));

@@ -31,6 +31,14 @@ public class Suite {
 	private static SuiteImportUtil suiteImportUtil = new SuiteImportUtil();
 	private static SuiteParseUtil suiteParseUtil = new SuiteParseUtil();
 
+	public static void addRule(RuleSet rs, String rule) {
+		addRule(rs, Suite.parse(rule));
+	}
+
+	public static void addRule(RuleSet rs, Node node) {
+		rs.addRule(Rule.formRule(node));
+	}
+
 	public static String applyFilter(String func) {
 		return "source {} | (" + func + ") | sink {}";
 	}
@@ -48,22 +56,6 @@ public class Suite {
 		fcc.setNode(fp);
 		fcc.setLazy(isLazy);
 		return fcc;
-	}
-
-	/**
-	 * Forms a string using ASCII codes in a list of number.
-	 */
-	public static String stringize(Node node) {
-		StringBuilder sb = new StringBuilder();
-		Tree tree;
-
-		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-			Int i = (Int) tree.getLeft();
-			sb.append((char) i.getNumber());
-			node = tree.getRight();
-		}
-
-		return sb.toString();
 	}
 
 	/**
@@ -86,6 +78,22 @@ public class Suite {
 		for (int i = nodes.size() - 1; i >= 0; i--)
 			node = Tree.create(TermOp.NEXT__, nodes.get(i), node);
 		return node;
+	}
+
+	/**
+	 * Forms a string using ASCII codes in a list of number.
+	 */
+	public static String stringize(Node node) {
+		StringBuilder sb = new StringBuilder();
+		Tree tree;
+
+		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
+			Int i = (Int) tree.getLeft();
+			sb.append((char) i.getNumber());
+			node = tree.getRight();
+		}
+
+		return sb.toString();
 	}
 
 	public static Node substitute(String s, Node... nodes) {
@@ -124,16 +132,12 @@ public class Suite {
 	// --------------------------------
 	// Evaluation utilities
 
-	public static void addRule(RuleSet rs, String rule) {
-		suiteImportUtil.addRule(rs, rule);
-	}
-
-	public static boolean proveThis(RuleSet rs, String s) {
-		return suiteEvaluationUtil.proveThis(rs, s);
+	public static boolean proveThis(RuleSet rs, String gs) {
+		return suiteEvaluationUtil.proveThis(rs, gs);
 	}
 
 	public static boolean evaluateLogical(String lps) {
-		return suiteEvaluationUtil.evaluateLogical(lps);
+		return evaluateLogical(Suite.parse(lps));
 	}
 
 	public static boolean evaluateLogical(Node lp) {
@@ -145,11 +149,15 @@ public class Suite {
 	}
 
 	public static Node evaluateEagerFun(String fp) {
-		return suiteEvaluationUtil.evaluateEagerFun(fp);
+		return evaluateFun(fp, false);
 	}
 
 	public static Node evaluateLazyFun(String fp) {
-		return suiteEvaluationUtil.evaluateLazyFun(fp);
+		return evaluateFun(fp, true);
+	}
+
+	public static Node evaluateFun(String fp, boolean isLazy) {
+		return evaluateFun(Suite.fcc(fp, isLazy));
 	}
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
@@ -157,7 +165,7 @@ public class Suite {
 	}
 
 	public static Node evaluateFunType(String fps) {
-		return suiteEvaluationUtil.evaluateFunType(fps);
+		return evaluateFunType(Suite.fcc(Suite.parse(fps)));
 	}
 
 	public static Node evaluateFunType(FunCompilerConfig fcc) {

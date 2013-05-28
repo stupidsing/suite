@@ -38,14 +38,10 @@ public class SuiteEvaluationUtil {
 		}
 	}
 
-	public boolean proveThis(RuleSet rs, String s) {
+	public boolean proveThis(RuleSet rs, String gs) {
 		Prover prover = new Prover(rs);
 		Generalizer generalizer = new Generalizer();
-		return prover.prove(generalizer.generalize(Suite.parse(s)));
-	}
-
-	public boolean evaluateLogical(String lps) {
-		return evaluateLogical(Suite.parse(lps));
+		return prover.prove(generalizer.generalize(Suite.parse(gs)));
 	}
 
 	public boolean evaluateLogical(Node lp) {
@@ -76,18 +72,6 @@ public class SuiteEvaluationUtil {
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	public Node evaluateEagerFun(String fp) {
-		return evaluateFun(fp, false);
-	}
-
-	public Node evaluateLazyFun(String fp) {
-		return evaluateFun(fp, true);
-	}
-
-	private Node evaluateFun(String fp, boolean isLazy) {
-		return evaluateFun(Suite.fcc(fp, isLazy));
-	}
-
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunRuleSet() : Suite.eagerFunRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
@@ -114,10 +98,6 @@ public class SuiteEvaluationUtil {
 			return result;
 		} else
 			throw new RuntimeException("Function compilation error");
-	}
-
-	public Node evaluateFunType(String fps) {
-		return evaluateFunType(Suite.fcc(Suite.parse(fps)));
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
