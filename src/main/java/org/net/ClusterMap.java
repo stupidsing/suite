@@ -34,7 +34,7 @@ public class ClusterMap<K, V> {
 	}
 
 	private final Sink<String> onJoined = new Sink<String>() {
-		public void apply(String peer) {
+		public void sink(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.add(peer);
 				Collections.sort(peers);
@@ -43,7 +43,7 @@ public class ClusterMap<K, V> {
 	};
 
 	private final Sink<String> onLeft = new Sink<String>() {
-		public void apply(String peer) {
+		public void sink(String peer) {
 			synchronized (ClusterMap.this) {
 				peers.remove(peer);
 				Collections.sort(peers);

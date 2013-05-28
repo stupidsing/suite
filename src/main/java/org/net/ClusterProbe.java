@@ -153,7 +153,7 @@ public class ClusterProbe extends ThreadedService {
 			}
 
 			for (String peer : lastActiveTime.keySet())
-				onLeft.apply(peer);
+				onLeft.sink(peer);
 		}
 
 		dc.close();
@@ -201,7 +201,7 @@ public class ClusterProbe extends ThreadedService {
 				if (data == Command.HELO) // Reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
 				else if (data == Command.BYEE && lastActiveTime.remove(remote) != null)
-					onLeft.apply(remote);
+					onLeft.sink(remote);
 		}
 	}
 
@@ -210,7 +210,7 @@ public class ClusterProbe extends ThreadedService {
 
 		if (oldTime == null || oldTime < time)
 			if (lastActiveTime.put(node, time) == null)
-				onJoined.apply(node);
+				onJoined.sink(node);
 	}
 
 	private void keepAlive(long current) {
@@ -239,7 +239,7 @@ public class ClusterProbe extends ThreadedService {
 
 			if (current - e.getValue() > timeoutDuration) {
 				peerIter.remove();
-				onLeft.apply(node);
+				onLeft.sink(node);
 			}
 		}
 	}

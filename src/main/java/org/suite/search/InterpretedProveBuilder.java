@@ -36,7 +36,7 @@ public class InterpretedProveBuilder implements Builder {
 
 				prover.prove(Tree.create(TermOp.AND___, goal1, new Station() {
 					public boolean run() {
-						sink.apply(out1);
+						sink.sink(out1);
 						return false;
 					}
 				}));

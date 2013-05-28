@@ -25,7 +25,7 @@ public class SuiteEvaluationUtil {
 	private class Collector implements Sink<Node> {
 		private List<Node> nodes = new ArrayList<>();
 
-		public void apply(Node node) {
+		public void sink(Node node) {
 			nodes.add(new Cloner().clone(node));
 		}
 
@@ -57,11 +57,10 @@ public class SuiteEvaluationUtil {
 	}
 
 	private void evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode, Source<Node> source, Sink<Node> sink) {
-		RuleSet rs = Suite.logicalRuleSet();
-
 		String goal = "compile-logic (.0, sink .1) .2" + (isDumpCode ? ", pretty.print .2" : "");
 		Node node = Suite.substitute(goal, Builder.in, eval, Builder.out);
 
+		RuleSet rs = Suite.logicalRuleSet();
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, lp);
 

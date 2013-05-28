@@ -22,7 +22,7 @@ public class Cluster {
 	private ClusterProbe probe;
 
 	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(new Source<ClusterChannel>() {
-		public ClusterChannel apply() {
+		public ClusterChannel source() {
 			return new ClusterChannel(me);
 		}
 	});
@@ -67,19 +67,19 @@ public class Cluster {
 
 	public void start() throws IOException {
 		probe.setOnJoined(new Sink<String>() {
-			public void apply(String node) {
-				onJoined.apply(node);
+			public void sink(String node) {
+				onJoined.sink(node);
 			}
 		});
 
 		probe.setOnLeft(new Sink<String>() {
-			public void apply(String node) {
+			public void sink(String node) {
 				ClusterChannel channel = channels.get(node);
 
 				if (channel != null)
 					channel.stop();
 
-				onLeft.apply(node);
+				onLeft.sink(node);
 			}
 		});
 

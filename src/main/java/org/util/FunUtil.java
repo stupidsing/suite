@@ -14,11 +14,11 @@ public class FunUtil {
 	}
 
 	public interface Source<O> {
-		public O apply();
+		public O source();
 	}
 
 	public interface Sink<I> {
-		public void apply(I i);
+		public void sink(I i);
 	}
 
 	public interface Fun<I, O> {
@@ -32,9 +32,9 @@ public class FunUtil {
 	public static class Sinks<I> implements Sink<I> {
 		private Collection<Sink<I>> sinks = new ArrayList<>();
 
-		public void apply(I i) {
+		public void sink(I i) {
 			for (Sink<I> sink : sinks)
-				sink.apply(i);
+				sink.sink(i);
 		}
 
 		public void add(Sink<I> sink) {
@@ -62,14 +62,14 @@ public class FunUtil {
 
 	public static <I> Sink<I> nullSink() {
 		return new Sink<I>() {
-			public void apply(I i) {
+			public void sink(I i) {
 			}
 		};
 	}
 
 	public static <O> Source<O> source(final O o) {
 		return new Source<O>() {
-			public O apply() {
+			public O source() {
 				return o;
 			}
 		};

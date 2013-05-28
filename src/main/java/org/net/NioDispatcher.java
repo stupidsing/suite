@@ -33,7 +33,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 	 * Establishes connection to other host actively.
 	 */
 	public C connect(InetSocketAddress address) throws IOException {
-		C cl = channelSource.apply();
+		C cl = channelSource.source();
 		reconnect(cl, address);
 		return cl;
 	}
@@ -125,7 +125,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 		Object attachment = key.attachment();
 
 		if (key.isAcceptable()) {
-			final Channel channel = channelSource.apply();
+			final Channel channel = channelSource.source();
 			ServerSocketChannel ssc = (ServerSocketChannel) sc0;
 			Socket socket = ssc.accept().socket();
 			final SocketChannel sc = socket.getChannel();

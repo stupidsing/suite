@@ -79,10 +79,10 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				current.ip = insn.op1;
 			break;
 		case SINK__________:
-			sink.apply(regs[insn.op0]);
+			sink.sink(regs[insn.op0]);
 			break;
 		case SOURCE________:
-			regs[insn.op0] = source.apply();
+			regs[insn.op0] = source.source();
 			break;
 		default:
 			super.execute(exec, insn);

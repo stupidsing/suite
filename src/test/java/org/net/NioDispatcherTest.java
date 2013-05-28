@@ -44,7 +44,7 @@ public class NioDispatcherTest {
 			}
 		};
 		Source<BufferedChannel> source = new Source<BufferedChannel>() {
-			public BufferedChannel apply() {
+			public BufferedChannel source() {
 				return channel;
 			}
 		};
@@ -81,7 +81,7 @@ public class NioDispatcherTest {
 			}
 		};
 		Source<RequestResponseChannel> source = new Source<RequestResponseChannel>() {
-			public RequestResponseChannel apply() {
+			public RequestResponseChannel source() {
 				return new RequestResponseChannel(matcher, executor, handler);
 			}
 		};
