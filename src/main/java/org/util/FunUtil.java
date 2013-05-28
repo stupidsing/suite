@@ -5,10 +5,6 @@ import java.util.Collection;
 
 public class FunUtil {
 
-	public interface EventEx<Ex extends Exception> {
-		public void apply() throws Ex;
-	}
-
 	public interface Source<O> {
 		public O source();
 	}
@@ -36,13 +32,6 @@ public class FunUtil {
 		public void add(Sink<I> sink) {
 			sinks.add(sink);
 		}
-	}
-
-	public static <Ex extends Exception> EventEx<Ex> nullEventEx() {
-		return new EventEx<Ex>() {
-			public void apply() {
-			}
-		};
 	}
 
 	public static <O> Source<O> nullSource() {
