@@ -5,10 +5,6 @@ import java.util.Collection;
 
 public class FunUtil {
 
-	public interface Event extends EventEx<RuntimeException> {
-		public void apply();
-	}
-
 	public interface EventEx<Ex extends Exception> {
 		public void apply() throws Ex;
 	}
@@ -42,13 +38,6 @@ public class FunUtil {
 		}
 	}
 
-	public static Event nullEvent() {
-		return new Event() {
-			public void apply() {
-			}
-		};
-	}
-
 	public static <Ex extends Exception> EventEx<Ex> nullEventEx() {
 		return new EventEx<Ex>() {
 			public void apply() {
@@ -73,13 +62,6 @@ public class FunUtil {
 				return o;
 			}
 		};
-	}
-
-	public static <I, O> Collection<O> map(Fun<I, O> t, Collection<I> in) {
-		ArrayList<O> out = new ArrayList<>(in.size());
-		for (I i : in)
-			out.add(t.apply(i));
-		return out;
 	}
 
 }
