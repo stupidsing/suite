@@ -1,14 +1,25 @@
 package org.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.util.FunUtil.Fun;
 
 public abstract class DefaultValueMap<K, V> implements Map<K, V> {
 
 	private Map<K, V> map;
+	private Fun<K, V> fun;
 
-	protected abstract V getDefaultValue(K key);
+	public DefaultValueMap(Fun<K, V> fun) {
+		this(new HashMap<K, V>(), fun);
+	}
+
+	public DefaultValueMap(Map<K, V> map, Fun<K, V> fun) {
+		this.map = map;
+		this.fun = fun;
+	}
 
 	@Override
 	public void clear() {
@@ -36,7 +47,7 @@ public abstract class DefaultValueMap<K, V> implements Map<K, V> {
 		if (value == null) {
 			@SuppressWarnings("unchecked")
 			K key = (K) k;
-			map.put(key, value = getDefaultValue(key));
+			map.put(key, value = fun.apply(key));
 		}
 		return value;
 	}
