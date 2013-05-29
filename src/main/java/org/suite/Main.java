@@ -4,7 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -59,11 +63,6 @@ public class Main {
 			this.prefix = prefix;
 		}
 	};
-
-	public Main() {
-		fcc.setProverConfig(proverConfig);
-		fcc.setIn(new StringReader(""));
-	}
 
 	public static void main(String args[]) {
 		try {
@@ -262,7 +261,9 @@ public class Main {
 			sb.append(input + " ");
 
 		Node node = Suite.parse(Suite.applyFilter(sb.toString()));
-		evaluateFunctional(node);
+		Reader in = new InputStreamReader(System.in, IoUtil.charset);
+		Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
+		evaluateFunctional(in, out, node);
 		return true;
 	}
 
@@ -277,7 +278,14 @@ public class Main {
 	}
 
 	private Node evaluateFunctional(Node node) {
+		return evaluateFunctional(new StringReader(""), new StringWriter(), node);
+	}
+
+	private Node evaluateFunctional(Reader in, Writer out, Node node) {
 		fcc.setNode(node);
+		fcc.setProverConfig(proverConfig);
+		fcc.setIn(in);
+		fcc.setOut(out);
 		return Suite.evaluateFun(fcc);
 	}
 

@@ -8,32 +8,31 @@ import java.io.StringWriter;
 import org.junit.Test;
 import org.suite.FunCompilerConfig;
 import org.suite.Suite;
-import org.suite.node.Node;
 
 public class FilterTest {
 
 	@Test
 	public void testDirect() {
-		eval("abcdef", "abcdef", "c => c");
+		assertEquals("abcdef", eval("c => c", "abcdef"));
 	}
 
 	@Test
 	public void testSplit() {
-		eval("abc def ghi", "abc\ndef\nghi", "tail . concat . map {cons {10}} . split {32}");
+		assertEquals("abc\ndef\nghi", eval("tail . concat . map {cons {10}} . split {32}", "abc def ghi"));
 	}
 
-	private static Node eval(String in, String out, String program) {
-		StringReader is = new StringReader(in);
-		StringWriter os = new StringWriter();
+	private static String eval(String program, String in) {
+		StringReader reader = new StringReader(in);
+		StringWriter writer = new StringWriter();
 
 		String program1 = Suite.applyFilter(program);
 
-		FunCompilerConfig config = Suite.fcc(program1, true);
-		config.setIn(is);
-		config.setOut(os);
+		FunCompilerConfig fcc = Suite.fcc(program1, true);
+		fcc.setIn(reader);
+		fcc.setOut(writer);
 
-		Node result = Suite.evaluateFun(config);
-		assertEquals(out, os.toString());
+		Suite.evaluateFun(fcc);
+		String result = writer.toString();
 		return result;
 	}
 
