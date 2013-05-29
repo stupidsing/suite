@@ -114,15 +114,13 @@ fc-parse-sugar .t (.var => .t1)
 #
 fc-parse-sugar (.l, .r) (_cons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.v => .l {.r {.v}}) :- !, temp .v #
+fc-parse-sugar (.l; .r) (.r . .l) :- ! #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (anything => .do) (.v => .do) :- !, temp .v #
 fc-parse-sugar (not .b) (not {.b}) :- ! #
 fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
-fc-parse-sugar (/.f/) .f :- ! #
-fc-parse-sugar (.a /.f/) (.b => .f {.a} {.b}) :- ! #
-fc-parse-sugar (/.f/ .b) (.a => .f {.a} {.b}) :- ! #
-fc-parse-sugar (.a /.f/ .b) fc-parse (.f {.a} {.b}) :- ! #
+fc-parse-sugar (.f/) (flip {.f}) :- ! #
 
 fc-parse-anon-tuple () () :- ! #
 fc-parse-anon-tuple .h:.t0 (.h, .t1) :- fc-parse-anon-tuple .t0 .t1 #

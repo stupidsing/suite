@@ -29,5 +29,3 @@ sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 whatever .g :- once (.g; yes) #
 
 yes #
-
-() :- write 'READY', nl #

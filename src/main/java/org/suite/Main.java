@@ -138,6 +138,8 @@ public class Main {
 		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
 
+		System.out.println("READY");
+
 		while (true)
 			try {
 				StringBuilder sb = new StringBuilder();
