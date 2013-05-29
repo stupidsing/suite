@@ -359,7 +359,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump  = type (:t :- :t => list-of number) no-type-check (
+	define dump = type (:t :- :t => list-of number) no-type-check (
 		let dump-string = (s =>
 			let length = prove-with-result /_s:s (string.length _s _l) _l >>
 			0 until length | map {i =>
