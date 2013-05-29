@@ -150,7 +150,7 @@ public class Prover {
 	/**
 	 * Performs binding of two items.
 	 * 
-	 * @Return true if success.
+	 * @return true if success.
 	 */
 	public boolean bind(Node left, Node right) {
 		return Binder.bind(left, right, journal);

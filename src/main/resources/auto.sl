@@ -2,7 +2,7 @@ append () .list .list #
 append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 
 length () 0 #
-length (_, .r) .l1 :- length .r .l0, let .l1 (.l0 + 1) #
+length (_, .r) .l1 :- length .r .l0, sum .l1 .l0 1 #
 
 member (.e, _) .e #
 member (_, .tail) .e :- member .tail .e #
@@ -23,7 +23,7 @@ replace .t0/.t1 .from/.to
 replace .node/.node _/_ #
 
 sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
-sum .a .b .c :- bound .a, bound .c, let .a (.a - .c) #
+sum .a .b .c :- bound .a, bound .c, let .b (.a - .c) #
 sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 
 whatever .g :- once (.g; yes) #
