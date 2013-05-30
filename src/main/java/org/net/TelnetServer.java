@@ -40,8 +40,9 @@ public class TelnetServer {
 					AtomicBoolean quitter = new AtomicBoolean(false);
 
 					try {
-						Thread threads[] = { new CopyStreamThread(pis, sos, quitter), new CopyStreamThread(pes, sos, quitter),
-								new CopyStreamThread(sis, pos, quitter) };
+						Thread threads[] = { new CopyStreamThread(pis, sos, quitter) //
+								, new CopyStreamThread(pes, sos, quitter) //
+								, new CopyStreamThread(sis, pos, quitter) };
 
 						for (Thread thread : threads)
 							thread.start();
@@ -52,7 +53,6 @@ public class TelnetServer {
 								break;
 							} catch (IllegalThreadStateException ex) {
 								Thread.sleep(100);
-								continue;
 							}
 					} finally {
 						quitter.set(true);
