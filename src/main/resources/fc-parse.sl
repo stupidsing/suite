@@ -99,7 +99,11 @@ fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-sugar (match || .bind => .then || .otherwise) .p1
 	:- !, temp .var
-	, .p1 = (.var => if-bind (.var = .bind) then .then else ((match || .otherwise) {.var}))
+	, .p1 = (.var =>
+		if-bind (.var = .bind)
+		then .then
+		else ((match || .otherwise) {.var})
+	)
 #
 fc-parse-sugar (match || otherwise .p) (anything => .p) :- ! #
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
