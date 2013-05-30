@@ -154,11 +154,13 @@ fc-add-functions STANDARD .p (
 		f {y} {x}
 	) >>
 	define fold-left = (fun => init =>
-		$h, $t => fold-left {fun} {fun {init} {h}} {t}
+		match
+		|| $h, $t => fold-left {fun} {fun {init} {h}} {t}
 		|| otherwise init
 	) >>
 	define fold-right = (fun => init =>
-		$h, $t => fun {h} {fold-right {fun} {init} {t}}
+		match
+		|| $h, $t => fun {h} {fold-right {fun} {init} {t}}
 		|| otherwise init
 	) >>
 	define id = (v =>
@@ -180,18 +182,21 @@ fc-add-functions STANDARD .p (
 		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
 	) >>
 	define scan-left = (fun => init =>
-		$h, $t => init, scan-left {fun} {fun {init} {h}} {t}
+		match
+		|| $h, $t => init, scan-left {fun} {fun {init} {h}} {t}
 		|| otherwise (init,)
 	) >>
 	define scan-right = (fun => init =>
-		$h, $t =>
+		match
+		|| $h, $t =>
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
 		|| otherwise (init,)
 	) >>
 	define sink = (os =>
 		define fputs = (pos =>
-			$c, $cs => fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
+			match
+			|| $c, $cs => fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
 			|| otherwise os
 		) >>
 		fputs {0}
@@ -211,7 +216,8 @@ fc-add-functions STANDARD .p (
 		{s}
 	) >>
 	define tails = (
-		$h, $t => (h, t), tails {t}
+		match
+		|| $h, $t => (h, t), tails {t}
 		|| otherwise ()
 	) >>
 	define take = (n => list =>
@@ -220,7 +226,8 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define take-while = (fun =>
-		$elem, $elems =>
+		match
+		|| $elem, $elems =>
 			if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
 		|| otherwise ()
 	) >>
@@ -240,14 +247,17 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define zip = (fun =>
-		$h0, $t0 => (
-			$h1, $t1 => fun {h0} {h1}, zip {fun} {t0} {t1}
+		match
+		|| $h0, $t0 => (
+			match
+			|| $h1, $t1 => fun {h0} {h1}, zip {fun} {t0} {t1}
 			|| otherwise ()
 		)
 		|| otherwise (anything => ())
 	) >>
 	define append = (
-		$h, $t => cons {h} . append {t}
+		match
+		|| $h, $t => cons {h} . append {t}
 		|| otherwise id
 	) >>
 	define apply =
@@ -333,8 +343,10 @@ fc-add-functions STANDARD .p (
 		unfold-right {i => if (i < end) then (i, i + inc,) else ()} {start}
 	) >>
 	define starts-with = (
-		$sh, $st => (
-			sh, $t => starts-with {st} {t}
+		match
+		|| $sh, $st => (
+			match
+			|| sh, $t => starts-with {st} {t}
 			|| otherwise false
 		)
 		|| otherwise (anything => true)
@@ -388,7 +400,8 @@ fc-add-functions STANDARD .p (
 		concat . map {separator, | flip {append}}
 	) >>
 	define quick-sort = (cmp =>
-		$pivot, $t =>
+		match
+		|| $pivot, $t =>
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
 			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>

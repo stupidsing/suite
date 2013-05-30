@@ -31,8 +31,8 @@ public class FunCompilerTypeTest {
 		String cases[] = { "1 + \"abc\"" //
 				, "(f => f {0}) | 1" //
 				, "define fib = (i2 => dummy => 1, fib {i2}) >> ()" //
-				, "define type (BTREE t t) of (btree,) >> \n" //
-						+ "let v = type btree (BTREE 2 3) >> 1" //
+				, "define type (BTREE t t %) of (btree,) >> \n" //
+						+ "let v = type btree (BTREE 2 3 %) >> 1" //
 				, variant + "A 4" //
 				, variant + "B" //
 		};
