@@ -117,6 +117,10 @@ public class Suite {
 		return suiteCompileUtil.logicalRuleSet();
 	}
 
+	public static RuleSet funRuleSet() {
+		return suiteCompileUtil.funRuleSet();
+	}
+
 	public static RuleSet eagerFunRuleSet() {
 		return suiteCompileUtil.eagerFunRuleSet();
 	}

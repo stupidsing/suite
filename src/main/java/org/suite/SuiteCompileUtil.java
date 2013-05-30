@@ -10,26 +10,33 @@ import org.suite.node.Node;
 
 public class SuiteCompileUtil {
 
-	private RuleSet logicalCompiler;
-	private RuleSet eagerFunCompiler;
-	private RuleSet lazyFunCompiler;
+	private RuleSet logicalRuleSet;
+	private RuleSet funRuleSet;
+	private RuleSet eagerFunRuleSet;
+	private RuleSet lazyFunRuleSet;
 
 	public synchronized RuleSet logicalRuleSet() {
-		if (logicalCompiler == null)
-			logicalCompiler = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
-		return logicalCompiler;
+		if (logicalRuleSet == null)
+			logicalRuleSet = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
+		return logicalRuleSet;
+	}
+
+	public synchronized RuleSet funRuleSet() {
+		if (funRuleSet == null)
+			funRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
+		return funRuleSet;
 	}
 
 	public synchronized RuleSet eagerFunRuleSet() {
-		if (eagerFunCompiler == null)
-			eagerFunCompiler = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
-		return eagerFunCompiler;
+		if (eagerFunRuleSet == null)
+			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
+		return eagerFunRuleSet;
 	}
 
 	public synchronized RuleSet lazyFunRuleSet() {
-		if (lazyFunCompiler == null)
-			lazyFunCompiler = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
-		return lazyFunCompiler;
+		if (lazyFunRuleSet == null)
+			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
+		return lazyFunRuleSet;
 	}
 
 	public void precompile(String libraryName, ProverConfig proverConfig) {

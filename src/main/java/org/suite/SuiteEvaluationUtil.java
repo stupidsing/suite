@@ -100,7 +100,7 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
-		RuleSet rs = Suite.eagerFunRuleSet();
+		RuleSet rs = Suite.funRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 
 		Node node = Suite.substitute("" //
