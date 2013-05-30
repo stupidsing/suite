@@ -6,7 +6,7 @@ public interface Operator {
 		LEFT, RIGHT
 	}
 
-    public String getName();
+	public String getName();
 
 	public Assoc getAssoc();
 
