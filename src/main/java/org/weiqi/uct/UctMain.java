@@ -121,7 +121,7 @@ public class UctMain<Move> {
 		StringBuilder sb = new StringBuilder();
 
 		do
-			s = br.readLine();
+			sb.append((s = br.readLine()) + "\n");
 		while (!Util.isBlank(s));
 
 		Board board = UserInterface.importBoard(sb.toString());
