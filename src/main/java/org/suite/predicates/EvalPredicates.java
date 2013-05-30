@@ -150,7 +150,7 @@ public class EvalPredicates {
 		}
 	}
 
-	private static final Map<Node, Node> store = new TreeMap<Node, Node>();
+	private static final Map<Node, Node> store = new TreeMap<>();
 
 	public static class MapRetrieve implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {

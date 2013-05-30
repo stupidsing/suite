@@ -27,12 +27,11 @@ public class BoardTest {
 		for (Coordinate c1 : c.neighbors())
 			neighbors.add(c1);
 
-		assertEquals(new HashSet<Coordinate>( //
-				Arrays.asList( //
-						Coordinate.c(9, 10) //
-						, Coordinate.c(11, 10) //
-						, Coordinate.c(10, 9) //
-						, Coordinate.c(10, 11) //
+		assertEquals(new HashSet<>(Arrays.asList( //
+				Coordinate.c(9, 10) //
+				, Coordinate.c(11, 10) //
+				, Coordinate.c(10, 9) //
+				, Coordinate.c(10, 11) //
 				)), neighbors);
 	}
 

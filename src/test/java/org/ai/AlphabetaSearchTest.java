@@ -39,7 +39,7 @@ public class AlphabetaSearchTest {
 		private final int scores[] = new int[] { 0, 1, 10, 10000 };
 
 		public List<TicTacToe> generate(TicTacToe state) {
-			List<TicTacToe> states = new ArrayList<TicTacToe>();
+			List<TicTacToe> states = new ArrayList<>();
 
 			if (!isEnd(state))
 				for (int i = 0; i < 9; i++)
@@ -90,7 +90,7 @@ public class AlphabetaSearchTest {
 
 	@Test
 	public void test() {
-		AlphabetaSearch<TicTacToe> search = new AlphabetaSearch<TicTacToe>(ticTacToeGame);
+		AlphabetaSearch<TicTacToe> search = new AlphabetaSearch<>(ticTacToeGame);
 
 		TicTacToe state = new TicTacToe();
 		System.out.println(search.search(state, 20));

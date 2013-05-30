@@ -48,7 +48,7 @@ public class SwingDemo {
 
 			@Override
 			public Object getValueAt(int row, int col) {
-				return new Integer(row * col);
+				return row * col;
 			}
 
 			@Override

@@ -140,10 +140,6 @@ public class InstructionUtil {
 			this.ip = ip;
 		}
 
-		protected Closure clone() {
-			return new Closure(frame, ip);
-		}
-
 		public String toString() {
 			return "frameSize = " + frame.registers.length + ", IP = " + ip;
 		}

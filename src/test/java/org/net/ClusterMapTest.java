@@ -28,7 +28,7 @@ public class ClusterMapTest {
 		for (int i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
-		List<String> peerNames = new ArrayList<String>(peers.keySet());
+		List<String> peerNames = new ArrayList<>(peers.keySet());
 		Map<String, Cluster> clusters = new HashMap<>();
 		Map<String, ClusterMap<Integer, String>> clMap = new HashMap<>();
 

@@ -144,7 +144,7 @@ public class Formatter {
 	private Construct createIfMatch(InputBuffer input, Type type, List<Node> before, String toMatch) {
 		Construct construct;
 		if (before != null)
-			construct = new Construct(type, new ArrayList<Node>(before));
+			construct = new Construct(type, new ArrayList<>(before));
 		else
 			construct = new Construct(type);
 		return addIfMatch(input, toMatch, construct) ? construct : null;

@@ -27,7 +27,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private static final int stackSize = 4096;
 
 	private int bindPoints[] = new int[stackSize];
-	private List<CutPoint> cutPoints = new ArrayList<CutPoint>();
+	private List<CutPoint> cutPoints = new ArrayList<>();
 	private int bsp = 0;
 
 	public LogicInstructionExecutor(Node node, Prover prover, Source<Node> source, Sink<Node> sink) {

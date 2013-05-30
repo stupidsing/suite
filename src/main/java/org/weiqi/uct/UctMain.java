@@ -136,7 +136,7 @@ public class UctMain<Move> {
 		GameSet gameSet = new GameSet(new Board(), startingPlayer);
 
 		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet);
-		UctSearch<Coordinate> search = new UctSearch<Coordinate>(visitor);
+		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
 

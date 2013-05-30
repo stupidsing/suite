@@ -40,16 +40,21 @@ public class InstructionExtractor {
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;
 
-		if ("ASSIGN-BOOL".equals(insnName))
+		switch (insnName) {
+		case "ASSIGN-BOOL":
 			insn = Insn.ASSIGNCONST___;
-		else if ("ASSIGN-STR".equals(insnName))
+			break;
+		case "ASSIGN-STR":
 			insn = Insn.ASSIGNCONST___;
-		else if ("EVALUATE".equals(insnName)) {
+			break;
+		case "EVALUATE":
 			Atom atom = (Atom) rs.remove(4).finalNode();
 			TermOp operator = TermOp.find(atom.getName());
 			insn = InstructionUtil.getEvalInsn(operator);
-		} else
+			break;
+		default:
 			insn = InstructionUtil.getInsn(insnName);
+		}
 
 		if (insn != null) {
 			Instruction instruction = new Instruction(insn //

@@ -47,9 +47,7 @@ public class NetUtil {
 			@SuppressWarnings("unchecked")
 			T t = (T) in.readObject();
 			return t;
-		} catch (ClassNotFoundException ex) {
-			throw new RuntimeException(ex);
-		} catch (IOException ex) {
+		} catch (ClassNotFoundException | IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
