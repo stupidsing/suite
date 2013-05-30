@@ -22,7 +22,6 @@ public class Profiler {
 	private static final int stackTraceDepth = 256;
 
 	private Timer timer;
-	int nThreadRecords;
 	private Map<String, int[]> record = new HashMap<>();
 
 	public void start() {
