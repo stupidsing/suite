@@ -7,10 +7,10 @@ import org.util.FunUtil.Sink;
 
 public class ProveSearch {
 
-	public interface Builder {
-		public static final Atom in = Atom.create(".in");
-		public static final Atom out = Atom.create(".out");
+	public static final Atom in = Atom.create(".in");
+	public static final Atom out = Atom.create(".out");
 
+	public interface Builder {
 		public Finder build(RuleSet ruleSet, Node goal);
 	}
 

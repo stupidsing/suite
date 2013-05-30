@@ -13,7 +13,7 @@ import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.search.InterpretedProveBuilder;
-import org.suite.search.ProveSearch.Builder;
+import org.suite.search.ProveSearch;
 import org.suite.search.ProveSearch.Finder;
 import org.util.FunUtil;
 import org.util.FunUtil.Sink;
@@ -58,7 +58,7 @@ public class SuiteEvaluationUtil {
 
 	private void evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode, Source<Node> source, Sink<Node> sink) {
 		String goal = "compile-logic (.0, sink .1) .2" + (isDumpCode ? ", pretty.print .2" : "");
-		Node node = Suite.substitute(goal, Builder.in, eval, Builder.out);
+		Node node = Suite.substitute(goal, ProveSearch.in, eval, ProveSearch.out);
 
 		RuleSet rs = Suite.logicalRuleSet();
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
@@ -79,8 +79,8 @@ public class SuiteEvaluationUtil {
 		String s = "compile-function .0 (" + program + ") .2" + (fcc.isDumpCode() ? ", pretty.print .2" : "");
 		Node node = Suite.substitute(s //
 				, Atom.create(fcc.isLazy() ? "LAZY" : "EAGER") //
-				, Builder.in //
-				, Builder.out);
+				, ProveSearch.in //
+				, ProveSearch.out);
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, fcc.getNode());
@@ -108,7 +108,7 @@ public class SuiteEvaluationUtil {
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .1 .t" //
-		, Builder.in, Builder.out);
+		, ProveSearch.in, ProveSearch.out);
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node type = singleResult(finder, fcc.getNode());

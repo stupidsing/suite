@@ -21,9 +21,9 @@ public class CompiledProveBuilder implements Builder {
 
 		Node node = Suite.substitute("compile-logic (.0 >> source .1, .2, sink .3) .4" //
 				, Suite.getRuleList(ruleSet, null) //
-				, Builder.in //
+				, ProveSearch.in //
 				, goal //
-				, Builder.out //
+				, ProveSearch.out //
 				, code);
 		new Prover(Suite.logicalRuleSet()).prove(node);
 

@@ -25,8 +25,8 @@ public class InterpretedProveBuilder implements Builder {
 	public Finder build(RuleSet rs, Node goal) {
 		Generalizer generalizer = new Generalizer();
 		final Node goal1 = generalizer.generalize(goal);
-		final Reference in1 = generalizer.getVariable(in);
-		final Reference out1 = generalizer.getVariable(out);
+		final Reference in1 = generalizer.getVariable(ProveSearch.in);
+		final Reference out1 = generalizer.getVariable(ProveSearch.out);
 		final Prover prover = new Prover(new ProverConfig(rs, proverConfig));
 
 		return new Finder() {
