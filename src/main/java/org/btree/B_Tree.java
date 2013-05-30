@@ -200,7 +200,7 @@ public class B_Tree<Key, Value> {
 	}
 
 	private void addAndSplit(Slots slots, KeyPointer toInsert) {
-		boolean done = false;
+		boolean done;
 
 		// Traversed to deepest. Inserts key-value pair
 		do {
@@ -312,7 +312,7 @@ public class B_Tree<Key, Value> {
 
 	private Slots traverse(Key key) {
 		Slots traversed = new Slots();
-		Page page = null;
+		Page page;
 		Integer pageNo = getRoot();
 
 		while (pageNo != null) {

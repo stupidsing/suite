@@ -94,7 +94,7 @@ public class SystemPredicates {
 	}
 
 	public Boolean call(Node query) {
-		SystemPredicate predicate = null;
+		SystemPredicate predicate;
 		Tree tree;
 		String name = null;
 		Node pass = query;

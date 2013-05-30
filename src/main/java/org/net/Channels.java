@@ -192,7 +192,7 @@ public class Channels {
 	public interface Channel {
 		public void onConnected(Sender sender);
 
-		public void onClose() throws IOException;
+		public void onClose();
 
 		public void onReceive(Bytes message);
 

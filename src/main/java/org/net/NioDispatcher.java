@@ -131,7 +131,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 			final SocketChannel sc = socket.getChannel();
 
 			sc.configureBlocking(false);
-			key = sc.register(selector, SelectionKey.OP_READ, channel);
+			sc.register(selector, SelectionKey.OP_READ, channel);
 
 			channel.onConnected(createSender(sc));
 		} else

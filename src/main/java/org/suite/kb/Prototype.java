@@ -41,7 +41,7 @@ public class Prototype {
 		}
 
 		if (node != null) {
-			Tree t0 = null, t1;
+			Tree t0, t1;
 
 			while ((t1 = Tree.decompose(node)) != null) {
 				t0 = t1;

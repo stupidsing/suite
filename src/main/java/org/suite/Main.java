@@ -257,7 +257,7 @@ public class Main {
 		return result;
 	}
 
-	private boolean runFilter(List<String> inputs) throws IOException {
+	private boolean runFilter(List<String> inputs) {
 		StringBuilder sb = new StringBuilder();
 		for (String input : inputs)
 			sb.append(input + " ");

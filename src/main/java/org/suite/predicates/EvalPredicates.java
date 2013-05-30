@@ -112,7 +112,7 @@ public class EvalPredicates {
 		}
 
 		public int evaluate(Node node) {
-			int result = 0;
+			int result;
 			node = node.finalNode();
 			Tree tree = Tree.decompose(node);
 

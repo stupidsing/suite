@@ -20,7 +20,7 @@ import com.jcraft.jsch.UserInfo;
 
 public class Ssh {
 
-	public int execute(String command) throws SftpException, JSchException, IOException {
+	public int execute(String command) throws JSchException, IOException {
 		Session session = null;
 		ChannelExec channel = null;
 

@@ -18,7 +18,7 @@ public class RandomableList<T> extends ArrayList<T> implements Iterable<T> {
 		super(n);
 	}
 
-	public boolean addByRandomSwap(T t) {
+	public void addByRandomSwap(T t) {
 		int size = size();
 
 		if (size > 0) {
@@ -27,8 +27,6 @@ public class RandomableList<T> extends ArrayList<T> implements Iterable<T> {
 			set(position, t);
 		} else
 			add(t);
-
-		return true;
 	}
 
 	public T first() {

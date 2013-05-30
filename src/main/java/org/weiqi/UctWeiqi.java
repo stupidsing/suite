@@ -71,7 +71,7 @@ public class UctWeiqi {
 			RandomableList<Coordinate> empties = findAllEmptyPositions();
 			Set<Coordinate> capturedPositions = new HashSet<>();
 			Occupation me = gameSet.getNextPlayer();
-			Move move, chosenMove = null;
+			Move move, chosenMove;
 			int nPasses = 0;
 
 			// Move until someone cannot move anymore, or maximum number of

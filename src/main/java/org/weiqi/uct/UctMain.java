@@ -117,7 +117,7 @@ public class UctMain<Move> {
 
 	private static MovingGameSet loadGameSet(BufferedReader br) throws IOException {
 		System.out.println("PLEASE ENTER BOARD DATA AND AN BLANK LINE:\n");
-		String s = null;
+		String s;
 		StringBuilder sb = new StringBuilder();
 
 		do

@@ -106,7 +106,7 @@ public class InstructionExecutor {
 					regs[insn.op0] = tree.getLeft();
 					regs[insn.op1] = tree.getRight();
 				} else
-					ip = branch;
+					current.ip = branch;
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op0);
