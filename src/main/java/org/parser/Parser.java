@@ -97,7 +97,7 @@ public class Parser {
 
 		try {
 			return Int.create(Integer.parseInt(s));
-		} catch (Exception ex) {
+		} catch (Exception ignored) {
 		}
 
 		if (first == '"' && last == '"')
