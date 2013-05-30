@@ -52,10 +52,9 @@ public class Weiqi {
 				return ".";
 			}
 		}
+	}
 
-	};
-
-	public static Occupation players[] = { Occupation.BLACK, Occupation.WHITE };
+    public static Occupation players[] = { Occupation.BLACK, Occupation.WHITE };
 
 	/**
 	 * A generic board type.

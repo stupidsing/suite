@@ -68,10 +68,6 @@ public class Formatter {
 	 *            Node to be converted.
 	 * @param parentPrec
 	 *            Minimum operator precedence without adding parentheses.
-	 * @param isDump
-	 *            If specified as true, the output would be machine-parsable.
-	 * @param sb
-	 *            Buffer to hold output.
 	 */
 	private void format(Node node, int parentPrec) {
 		node = node.finalNode();

@@ -26,7 +26,7 @@ public class Connector {
 				OutputStream os = socket.getOutputStream();
 				Reader isr = new InputStreamReader(is, charset);
 				Reader reader = new BufferedReader(isr);
-				PrintWriter writer = new PrintWriter(os);) {
+				PrintWriter writer = new PrintWriter(os)) {
 			writer.print("GET /\r\n\r\n");
 			while (reader.ready())
 				System.out.println((char) reader.read());
@@ -34,7 +34,7 @@ public class Connector {
 	}
 
 	public void listen() throws IOException {
-		try (ServerSocket server = new ServerSocket(5151);) {
+		try (ServerSocket server = new ServerSocket(5151)) {
 			ThreadPoolExecutor executor = Util.createExecutor();
 
 			while (true) {
@@ -46,7 +46,7 @@ public class Connector {
 								InputStream is = socket.getInputStream();
 								Reader isr = new InputStreamReader(is);
 								Reader reader = new BufferedReader(isr);
-								PrintWriter writer = new PrintWriter(os);) {
+								PrintWriter writer = new PrintWriter(os)) {
 							writer.println("Hello World");
 						} catch (IOException ex) {
 							LogUtil.error(ex);

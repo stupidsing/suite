@@ -31,12 +31,12 @@ public class TelnetServer {
 		}
 
 		public void run() {
-			try (InputStream sis = socket.getInputStream(); OutputStream sos = socket.getOutputStream();) {
+			try (InputStream sis = socket.getInputStream(); OutputStream sos = socket.getOutputStream()) {
 				Process process = Runtime.getRuntime().exec("bash");
 
 				try (InputStream pis = process.getInputStream();
 						InputStream pes = process.getErrorStream();
-						OutputStream pos = process.getOutputStream();) {
+						OutputStream pos = process.getOutputStream()) {
 					AtomicBoolean quitter = new AtomicBoolean(false);
 
 					try {

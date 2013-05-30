@@ -172,8 +172,6 @@ public class Prover {
 	 * 
 	 * @param query
 	 *            The invocation pattern.
-	 * @param remaining
-	 *            The final goal to be appended.
 	 * @return The chained node.
 	 */
 	private Node expand(Node query) {

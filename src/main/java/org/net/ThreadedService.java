@@ -27,7 +27,7 @@ public abstract class ThreadedService {
 
 		thread.start();
 
-		while (started != true)
+		while (!started)
 			Util.wait(this);
 	}
 
@@ -35,7 +35,7 @@ public abstract class ThreadedService {
 		running = false;
 		thread.interrupt();
 
-		while (started != false)
+		while (started)
 			Util.wait(this);
 
 		thread = null;

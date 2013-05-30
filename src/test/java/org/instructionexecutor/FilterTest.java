@@ -32,8 +32,7 @@ public class FilterTest {
 		fcc.setOut(writer);
 
 		Suite.evaluateFun(fcc);
-		String result = writer.toString();
-		return result;
+		return writer.toString();
 	}
 
 }

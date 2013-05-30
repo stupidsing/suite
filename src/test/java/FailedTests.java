@@ -24,11 +24,6 @@ public class FailedTests {
 	@Test
 	public void test1() throws IOException { // not balanced
 		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 32; i++)
-			sb.append(i + ", ");
-
 		String list = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,";
 		assertTrue(Suite.proveThis(rs, "23t-add-list (" + list + ") T/.t,  pretty.print .t, nl, dump .d, nl"));
 	}

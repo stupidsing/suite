@@ -16,7 +16,7 @@ import sun.reflect.Reflection;
 
 public class LogUtil {
 
-	private static int maxStackTraceLength = 99;
+	private static final int maxStackTraceLength = 99;
 
 	static {
 		initLog4j(Level.INFO);

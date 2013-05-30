@@ -58,7 +58,7 @@ public class NioDispatcherTest {
 				OutputStream os = socket.getOutputStream();
 				InputStreamReader isr = new InputStreamReader(is, charset);
 				BufferedReader reader = new BufferedReader(isr);
-				PrintWriter writer = new PrintWriter(os);) {
+				PrintWriter writer = new PrintWriter(os)) {
 			String m = "testing nio";
 			writer.println(m);
 			writer.flush();

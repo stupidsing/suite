@@ -1,4 +1,4 @@
-package org.btree;
+\\package org.btree;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -73,7 +73,7 @@ public class B_TreeTest {
 
 		try (FileAllocator al = new FileAllocator(amf);
 				FilePersister<B_Tree1.SuperBlock> sbp = new FilePersister<>(sbf, sbs);
-				FilePersister<B_Tree1.Page> pp = new FilePersister<>(pf, ps);) {
+				FilePersister<B_Tree1.Page> pp = new FilePersister<>(pf, ps) {
 			b_tree.setAllocator(al);
 			b_tree.setSuperBlockPersister(sbp);
 			b_tree.setPagePersister(pp);

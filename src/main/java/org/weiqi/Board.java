@@ -21,9 +21,9 @@ public class Board extends Array<Occupation> {
 
 	public enum MoveType {
 		PLACEMENT, CAPTURE, INVALID
-	};
+	}
 
-	/**
+    /**
 	 * Plays a move on the Weiqi board. Do not check for repeats in game state
 	 * history since Board do not have them. Use GameSet.moveIfPossible() for
 	 * the rule-accordance version.

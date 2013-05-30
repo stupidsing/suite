@@ -62,9 +62,9 @@ public class Main {
 		private InputType(String prefix) {
 			this.prefix = prefix;
 		}
-	};
+	}
 
-	public static void main(String args[]) {
+    public static void main(String args[]) {
 		try {
 			new Main().run(args);
 		} catch (Throwable ex) {
@@ -188,7 +188,7 @@ public class Main {
 					break;
 				case EVALUATESTR:
 					node = evaluateFunctional(node);
-					System.out.println(Suite.stringize(node).toString());
+					System.out.println(Suite.stringize(node));
 					break;
 				case EVALUATETYPE:
 					fcc.setNode(node);

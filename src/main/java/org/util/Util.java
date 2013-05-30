@@ -161,7 +161,7 @@ public class Util {
 		if (t1 == null ^ t2 == null)
 			return false;
 		else
-			return t1 != null ? t1.equals(t2) : true;
+			return t1 == null || t1.equals(t2);
 	}
 
 	public static <T extends Comparable<T>> int compare(T t1, T t2) {
