@@ -7,12 +7,17 @@ import java.util.Set;
 import org.suite.Suite;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSetUtil;
+import org.suite.node.Node;
+import org.util.FunUtil.Sink;
+import org.util.FunUtil.Source;
 
 public class ProverConfig {
 
 	private RuleSet ruleSet;
 	private boolean isTrace;
 	private Set<String> noTracePredicates;
+	private Source<Node> source;
+	private Sink<Node> sink;
 
 	public ProverConfig() {
 		this(RuleSetUtil.create());
@@ -58,6 +63,22 @@ public class ProverConfig {
 
 	public void setNoTracePredicates(Set<String> noTracePredicates) {
 		this.noTracePredicates = noTracePredicates;
+	}
+
+	public Source<Node> getSource() {
+		return source;
+	}
+
+	public void setSource(Source<Node> source) {
+		this.source = source;
+	}
+
+	public Sink<Node> getSink() {
+		return sink;
+	}
+
+	public void setSink(Sink<Node> sink) {
+		this.sink = sink;
 	}
 
 }

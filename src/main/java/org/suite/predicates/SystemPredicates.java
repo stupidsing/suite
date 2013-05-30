@@ -79,6 +79,8 @@ public class SystemPredicates {
 		addPredicate("file.write", new IoPredicates.FileWrite());
 		addPredicate("home.dir", new IoPredicates.HomeDir());
 		addPredicate("nl", new IoPredicates.Nl());
+		addPredicate("sink", new IoPredicates.Sink());
+		addPredicate("source", new IoPredicates.Source());
 		addPredicate("write", new IoPredicates.Write());
 
 		addPredicate("asserta", new RuleSetPredicates.Asserta());

@@ -148,8 +148,8 @@ public class Suite {
 		return suiteEvaluationUtil.evaluateLogical(lp);
 	}
 
-	public static List<Node> evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode) {
-		return suiteEvaluationUtil.evaluateLogical(lp, eval, pc, isDumpCode);
+	public static List<Node> evaluateLogical(Node lp, ProverConfig pc, boolean isDumpCode) {
+		return suiteEvaluationUtil.evaluateLogical(lp, pc, isDumpCode);
 	}
 
 	public static Node evaluateEagerFun(String fp) {

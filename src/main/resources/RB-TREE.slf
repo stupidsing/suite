@@ -1,0 +1,35 @@
+define type (RED %) of (color,) >>
+define type (BLACK %) of (color,) >>
+define type (EMPTY %) of (rb-tree/:t,) for any (:t,) >>
+define type (RB-TREE color RB-TREE/:t :t RB-TREE/:t %) of (rb-tree/:t,) for any (:t,) >>
+define red = RED % >>
+define blk = BLACK % >>
+define add = (v =>
+	define add0 = (
+		define balance = (
+			match
+			|| RB-TREE blk (RB-TREE red (RB-TREE red $n0 $p0 $n1 %) $p1 $n2 %) $p2 $n3 % =>
+				RB-TREE red (RB-TREE blk n0 p0 n1 %) p1 (RB-TREE blk n2 p2 n3 %)
+			|| RB-TREE blk (RB-TREE red $n0 $p0 (RB-TREE red $n1 $p1 $n2 %) %) $p2 $n3 % =>
+				RB-TREE red (RB-TREE blk n0 p0 n1 %) p1 (RB-TREE blk n2 p2 n3 %)
+			|| RB-TREE blk $n0 $p0 (RB-TREE red (RB-TREE red $n1 $p1 $n2 %) $p2 $n3 %) % =>
+				RB-TREE red (RB-TREE blk n0 p0 n1 %) p1 (RB-TREE blk n2 p2 n3 %)
+			|| RB-TREE blk $n0 $p0 (RB-TREE red $n1 $p1 (RB-TREE red $n2 $p2 $n3 %) %) % =>
+				RB-TREE red (RB-TREE blk n0 p0 n1 %) p1 (RB-TREE blk n2 p2 n3 %)
+			|| id
+		) >>
+		match
+		|| EMPTY % =>
+			RB-TREE red (EMPTY %) v (EMPTY %) %
+		|| RB-TREE $color $n0 $pivot $n1 % =>
+			if (v < pivot) then
+				RB-TREE color (add0 {n0}) pivot n1 | balance
+			else-if (v > pivot) then
+				RB-TREE color n0 pivot (add0 {n1}) | balance
+			else error
+		|| otherwise error
+	) >>
+	match
+	|| RB-TREE $color $n0 $pivot $n1 % => RB-TREE blk n0 pivot n1 % | add0
+	|| otherwise error
+) >>

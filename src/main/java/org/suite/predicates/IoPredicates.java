@@ -96,6 +96,20 @@ public class IoPredicates {
 		}
 	}
 
+	public static class Sink implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			prover.config().getSink().sink(ps);
+			return false;
+		}
+	}
+
+	public static class Source implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node source = prover.config().getSource().source();
+			return prover.bind(ps, source);
+		}
+	}
+
 	public static class Write implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			System.out.print(Formatter.display(ps));

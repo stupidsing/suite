@@ -47,10 +47,6 @@ lc-parse (.rules >> .clause) (DEFINE-RULES .rules1 .clause1) .nv
 lc-parse () YES () :- ! #
 lc-parse fail FAIL () :- ! #
 lc-parse .cut CUT () :- to.atom "!" .cut, ! #
-lc-parse (.p .n) (.p1 .n1) .nv
-	:- member (source/SOURCE, sink/SINK,) .p/.p1 
-	, !, lc-parse-pattern .n .n1 .nv
-#
 lc-parse (.p .do) (.p1 .do1) .nv
 	:- member (once/ONCE, not/NOT,) .p/.p1, !
 	, lc-parse .do .do1 .nv
@@ -167,12 +163,6 @@ lc-compile (NOT .do) .rem .pls/.vs .c0/.cx/.d0/.dx
 	) .pls/.vs .c1/.c2/.d0/.d1
 	, .c2 = (.failLabel LABEL .failLabel, .c3)
 	, lc-compile .rem YES .pls/.vs .c3/.cx/.d1/.dx
-#
-lc-compile (.p .do) .rem .pls/.vs .c0/.cx/.d/.d
-	:- member (SOURCE, SINK,) .p
-	, !
-	, lc-create-node .do .vs .c0/.c1/.reg
-	, .c1 = (_ .p .reg, .cx)
 #
 lc-compile (EQ .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !

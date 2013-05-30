@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.instructionexecutor.FunInstructionExecutor;
-import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.doer.Cloner;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
@@ -12,8 +11,8 @@ import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
+import org.suite.search.CompiledProveBuilderL1;
 import org.suite.search.InterpretedProveBuilder;
-import org.suite.search.ProveSearch;
 import org.suite.search.ProveSearch.Finder;
 import org.util.FunUtil;
 import org.util.FunUtil.Sink;
@@ -45,42 +44,34 @@ public class SuiteEvaluationUtil {
 	}
 
 	public boolean evaluateLogical(Node lp) {
+		Node goal = Suite.substitute(".0, sink ()", lp);
 		ProverConfig pc = new ProverConfig();
-		return !evaluateLogical(lp, Atom.NIL, pc, false).isEmpty();
+		return !evaluateLogical(goal, pc, false).isEmpty();
 	}
 
-	public List<Node> evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode) {
-		Source<Node> source = FunUtil.nullSource();
-		Collector sink = new Collector();
-		evaluateLogical(lp, eval, pc, isDumpCode, source, sink);
-		return sink.getNodes();
-	}
+	public List<Node> evaluateLogical(Node lp, ProverConfig pc, boolean isDumpCode) {
+		Collector collector = new Collector();
 
-	private void evaluateLogical(Node lp, Node eval, ProverConfig pc, boolean isDumpCode, Source<Node> source, Sink<Node> sink) {
-		String goal = "compile-logic (.0, sink .1) .2" + (isDumpCode ? ", pretty.print .2" : "");
-		Node node = Suite.substitute(goal, ProveSearch.in, eval, ProveSearch.out);
+		Source<Node> source = FunUtil.<Node> nullSource();
+		Sink<Node> sink = collector;
+		pc.setSource(source);
+		pc.setSink(sink);
 
-		RuleSet rs = Suite.logicalRuleSet();
-		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
-		Node code = singleResult(finder, lp);
+		CompiledProveBuilderL1 builder = new CompiledProveBuilderL1(pc, isDumpCode);
+		Finder finder = builder.build(pc.ruleSet(), lp);
+		finder.find(source, sink);
 
-		if (code != null) {
-			Prover p = new Prover(pc);
-			new LogicInstructionExecutor(code, p, source, sink).execute();
-		} else
-			throw new RuntimeException("Logic compilation error");
+		return collector.getNodes();
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunRuleSet() : Suite.eagerFunRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
-		String program = appendLibraries(fcc, ".1");
 
-		String s = "compile-function .0 (" + program + ") .2" + (fcc.isDumpCode() ? ", pretty.print .2" : "");
-		Node node = Suite.substitute(s //
-				, Atom.create(fcc.isLazy() ? "LAZY" : "EAGER") //
-				, ProveSearch.in //
-				, ProveSearch.out);
+		String s = "source .in, compile-function .0 (" + appendLibraries(fcc, ".in") + ") .out" //
+				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
+				+ ", sink .out";
+		Node node = Suite.substitute(s, Atom.create(fcc.isLazy() ? "LAZY" : "EAGER"));
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, fcc.getNode());
@@ -103,12 +94,12 @@ public class SuiteEvaluationUtil {
 		RuleSet rs = Suite.funRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 
-		Node node = Suite.substitute("" //
-				+ "fc-parse (" + appendLibraries(fcc, ".0") + ") .p" //
+		Node node = Suite.parse("source .in" //
+				+ "fc-parse (" + appendLibraries(fcc, ".in") + ") .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
-				+ ", fc-parse-type .1 .t" //
-		, ProveSearch.in, ProveSearch.out);
+				+ ", fc-parse-type .out .t" //
+				+ ", sink .out");
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
 		Node type = singleResult(finder, fcc.getNode());
@@ -130,7 +121,7 @@ public class SuiteEvaluationUtil {
 
 	private Node singleResult(Finder finder, Node in) {
 		Collector sink = new Collector();
-		finder.find(in, sink);
+		finder.find(FunUtil.source(in), sink);
 		return sink.getNode();
 	}
 
