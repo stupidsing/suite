@@ -2,7 +2,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 import org.suite.Suite;
@@ -60,7 +59,7 @@ public class FailedTests {
 		Node goal = Suite.substitute(".0, sink ()", Atom.NIL);
 
 		Builder builder = new CompiledProveBuilderLevel2(new ProverConfig(), false);
-		List<Node> nodes = Suite.evaluateLogical(builder, rs, goal);
+		Suite.evaluateLogical(builder, rs, goal);
 	}
 
 	private static Node eval(String f) {
