@@ -1,14 +1,14 @@
 package org.instructionexecutor;
 
-import org.junit.Test;
-import org.suite.FunCompilerConfig;
-import org.suite.Suite;
-import org.suite.node.Node;
+import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.suite.FunCompilerConfig;
+import org.suite.Suite;
+import org.suite.node.Node;
 
 public class FilterTest {
 
