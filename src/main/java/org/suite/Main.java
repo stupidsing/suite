@@ -261,7 +261,7 @@ public class Main {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		Node node = Suite.parse(Suite.applyFilter(sb.toString()));
+		Node node = Suite.applyFilter(Suite.parse(sb.toString()));
 		Reader in = new InputStreamReader(System.in, IoUtil.charset);
 		Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
 		evaluateFunctional(in, out, node);

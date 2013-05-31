@@ -40,8 +40,8 @@ public class Suite {
 		rs.addRule(Rule.formRule(node));
 	}
 
-	public static String applyFilter(String func) {
-		return "source {} | (" + func + ") | sink {}";
+	public static Node applyFilter(Node func) {
+		return Suite.substitute("source {} | .0 | sink {}", func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {

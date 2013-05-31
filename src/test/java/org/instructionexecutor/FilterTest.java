@@ -1,13 +1,14 @@
 package org.instructionexecutor;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.suite.FunCompilerConfig;
+import org.suite.Suite;
+import org.suite.node.Node;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import org.junit.Test;
-import org.suite.FunCompilerConfig;
-import org.suite.Suite;
+import static org.junit.Assert.assertEquals;
 
 public class FilterTest {
 
@@ -25,9 +26,9 @@ public class FilterTest {
 		StringReader reader = new StringReader(in);
 		StringWriter writer = new StringWriter();
 
-		String program1 = Suite.applyFilter(program);
+		Node node = Suite.applyFilter(Suite.parse(program));
 
-		FunCompilerConfig fcc = Suite.fcc(program1, true);
+		FunCompilerConfig fcc = Suite.fcc(node, true);
 		fcc.setIn(reader);
 		fcc.setOut(writer);
 
