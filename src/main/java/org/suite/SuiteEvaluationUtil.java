@@ -66,15 +66,16 @@ public class SuiteEvaluationUtil {
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
+		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 		ProverConfig pc = fcc.getProverConfig();
 
-		String s = "source .in, compile-function .0 (" + appendLibraries(fcc, ".in") + ") .out" //
+		String eval = "source .in, compile-function .0 .in .out" //
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
 				+ ", sink .out";
-		Node node = Suite.substitute(s, Atom.create(fcc.isLazy() ? "LAZY" : "EAGER"));
+		Node node = Suite.substitute(eval, mode);
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
-		Node code = singleResult(finder, fcc.getNode());
+		Node code = singleResult(finder, appendLibraries(fcc));
 
 		if (code != null) {
 			FunInstructionExecutor e = new FunInstructionExecutor(code);
@@ -95,14 +96,14 @@ public class SuiteEvaluationUtil {
 		ProverConfig pc = fcc.getProverConfig();
 
 		Node node = Suite.parse("source .in" //
-				+ "fc-parse (" + appendLibraries(fcc, ".in") + ") .p" //
+				+ ", fc-parse .in .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 
 		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
-		Node type = singleResult(finder, fcc.getNode());
+		Node type = singleResult(finder, appendLibraries(fcc));
 
 		if (type != null)
 			return type.finalNode();
@@ -110,13 +111,12 @@ public class SuiteEvaluationUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private String appendLibraries(FunCompilerConfig fcc, String variable) {
-		StringBuilder sb = new StringBuilder();
+	private Node appendLibraries(FunCompilerConfig fcc) {
+		Node node = fcc.getNode();
 		for (String library : fcc.getLibraries())
 			if (!Util.isBlank(library))
-				sb.append("using " + library + " >> ");
-		sb.append("(" + variable + ")");
-		return sb.toString();
+				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
+		return node;
 	}
 
 	private Node singleResult(Finder finder, Node in) {

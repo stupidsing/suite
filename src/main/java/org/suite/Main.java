@@ -27,7 +27,7 @@ import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel1;
+import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel2;
 import org.suite.search.ProveSearch.Builder;
 import org.util.IoUtil;
 import org.util.LogUtil;
@@ -181,21 +181,16 @@ public class Main {
 				final int count[] = { 0 };
 				Node node = new TermParser().parse(input.trim());
 
-				Prover prover = new Prover(proverConfig);
-
 				switch (type) {
 				case EVALUATE:
-					node = evaluateFunctional(node);
-					System.out.println(Formatter.dump(node));
+					System.out.println(Formatter.dump(evaluateFunctional(node)));
 					break;
 				case EVALUATESTR:
-					node = evaluateFunctional(node);
-					System.out.println(Suite.stringize(node));
+					System.out.println(Suite.stringize(evaluateFunctional(node)));
 					break;
 				case EVALUATETYPE:
 					fcc.setNode(node);
-					node = Suite.evaluateFunType(fcc);
-					System.out.println(Formatter.dump(node));
+					System.out.println(Formatter.dump(Suite.evaluateFunType(fcc)));
 					break;
 				case FACT:
 					Suite.addRule(ruleSet, node);
@@ -213,6 +208,7 @@ public class Main {
 				case QUERYELABORATE:
 					final Generalizer generalizer = new Generalizer();
 					node = generalizer.generalize(node);
+					Prover prover = new Prover(proverConfig);
 
 					if (type == InputType.QUERY)
 						System.out.println(yesNo(prover.prove(node)));
@@ -238,7 +234,7 @@ public class Main {
 					break;
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
-					Builder builder = new CompiledProveBuilderLevel1(proverConfig, fcc.isDumpCode());
+					Builder builder = new CompiledProveBuilderLevel2(proverConfig, fcc.isDumpCode());
 					List<Node> nodes = Suite.evaluateLogical(builder, ruleSet, node);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}

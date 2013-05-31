@@ -19,7 +19,7 @@ public class CompiledProveBuilder implements Builder {
 	private Finder compiler;
 
 	/**
-	 * Interpretes the logic compiler to compile given code, then execute.
+	 * Interpretes the logic compiler to compile the given code, then execute.
 	 */
 	public static class CompiledProveBuilderLevel1 extends CompiledProveBuilder {
 		public CompiledProveBuilderLevel1(ProverConfig proverConfig, boolean isDumpCode) {
@@ -28,7 +28,7 @@ public class CompiledProveBuilder implements Builder {
 	}
 
 	/**
-	 * Compiles the logic compiler, execute it to compile given code, then
+	 * Compiles the logic compiler, execute it to compile the given code, then
 	 * execute.
 	 */
 	public static class CompiledProveBuilderLevel2 extends CompiledProveBuilder {

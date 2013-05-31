@@ -2,11 +2,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.suite.Suite;
+import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSetUtil;
+import org.suite.node.Atom;
 import org.suite.node.Node;
+import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel2;
+import org.suite.search.ProveSearch.Builder;
 
 public class FailedTests {
 
@@ -38,6 +44,22 @@ public class FailedTests {
 				+ "    ((B %):1:, (B %):2:,), \n" //
 				+ "    ((C %):1:, (C %):2:,), \n" //
 				+ ")");
+	}
+
+	@Test
+	public void test3() {
+		RuleSet rs = RuleSetUtil.create();
+		RuleSetUtil.importFrom(rs, Suite.parse("" //
+				+ "member (.e, _) .e #" //
+				+ "member (_, .tail) .e :- member .tail .e #" //
+				+ "sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #" //
+				+ "sum .a .b .c :- bound .a, bound .c, let .b (.a - .c) #" //
+				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #"));
+
+		Node goal = Suite.substitute(".0, sink ()", Atom.NIL);
+
+		Builder builder = new CompiledProveBuilderLevel2(new ProverConfig(), false);
+		List<Node> nodes = Suite.evaluateLogical(builder, rs, goal);
 	}
 
 	private static Node eval(String f) {
