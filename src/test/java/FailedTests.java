@@ -54,7 +54,8 @@ public class FailedTests {
 				+ "member (_, .tail) .e :- member .tail .e #" //
 				+ "sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #" //
 				+ "sum .a .b .c :- bound .a, bound .c, let .b (.a - .c) #" //
-				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #"));
+				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #" //
+		));
 
 		Node goal = Suite.substitute(".0, sink ()", Atom.NIL);
 
