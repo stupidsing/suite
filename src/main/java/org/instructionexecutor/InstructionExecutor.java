@@ -22,11 +22,12 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionExecutor {
 
+	private static final int stackSize = 4096;
+
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
-	private static final int stackSize = 4096;
 
 	public InstructionExecutor(Node node) {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
