@@ -17,7 +17,6 @@ public class CompiledProveBuilder implements Builder {
 
 	private ProverConfig proverConfig;
 	private Finder compiler;
-	private boolean isDumpCode = false;
 
 	/**
 	 * Interpretes the logic compiler to compile given code, then execute.
@@ -39,9 +38,8 @@ public class CompiledProveBuilder implements Builder {
 	}
 
 	public CompiledProveBuilder(Builder builder, ProverConfig proverConfig, boolean isDumpCode) {
-		this.compiler = createCompiler(builder);
+		this.compiler = createCompiler(builder, isDumpCode);
 		this.proverConfig = proverConfig;
-		this.isDumpCode = isDumpCode;
 	}
 
 	@Override
@@ -77,7 +75,7 @@ public class CompiledProveBuilder implements Builder {
 			throw new RuntimeException("Logic compilation error");
 	}
 
-	private Finder createCompiler(Builder builder) {
+	private Finder createCompiler(Builder builder, boolean isDumpCode) {
 		String compile = "source .in, compile-logic .in .out";
 		compile += isDumpCode ? ", pretty.print .out" : "";
 		compile += ", sink .out";
