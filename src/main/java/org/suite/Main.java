@@ -131,11 +131,11 @@ public class Main {
 	}
 
 	private void run(List<String> importFilenames) throws IOException {
-		RuleSet rs = proverConfig.ruleSet();
+		RuleSet ruleSet = proverConfig.ruleSet();
 		Suite.importResource(proverConfig.ruleSet(), "auto.sl");
 
 		for (String importFilename : importFilenames)
-			Suite.importFile(rs, importFilename);
+			Suite.importFile(ruleSet, importFilename);
 
 		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
 		BufferedReader br = new BufferedReader(is);
@@ -198,7 +198,7 @@ public class Main {
 					System.out.println(Formatter.dump(node));
 					break;
 				case FACT:
-					Suite.addRule(rs, node);
+					Suite.addRule(ruleSet, node);
 					break;
 				case OPTION:
 					List<String> args = Arrays.asList(("-" + input).split(" "));
@@ -239,7 +239,6 @@ public class Main {
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
 					Builder builder = new CompiledProveBuilderLevel1(proverConfig, fcc.isDumpCode());
-					RuleSet ruleSet = proverConfig.ruleSet();
 					List<Node> nodes = Suite.evaluateLogical(builder, ruleSet, node);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
@@ -251,11 +250,11 @@ public class Main {
 	private boolean runLogical(List<String> files) throws IOException {
 		boolean result = true;
 
-		RuleSet rs = RuleSetUtil.create();
-		result &= Suite.importResource(rs, "auto.sl");
+		RuleSet ruleSet = RuleSetUtil.create();
+		result &= Suite.importResource(ruleSet, "auto.sl");
 
 		for (String file : files)
-			result &= Suite.importFile(rs, file);
+			result &= Suite.importFile(ruleSet, file);
 
 		return result;
 	}

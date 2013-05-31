@@ -23,9 +23,9 @@ public class InterpretedProveBuilder implements Builder {
 	}
 
 	@Override
-	public Finder build(RuleSet rs, Node goal) {
+	public Finder build(RuleSet ruleSet, Node goal) {
 		final Node goal1 = new Generalizer().generalize(goal);
-		final ProverConfig config = new ProverConfig(rs, proverConfig);
+		final ProverConfig config = new ProverConfig(ruleSet, proverConfig);
 
 		return new Finder() {
 			public void find(Source<Node> source, Sink<Node> sink) {

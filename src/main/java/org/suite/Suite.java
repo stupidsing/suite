@@ -60,14 +60,14 @@ public class Suite {
 		return fcc;
 	}
 
-	public static Node ruleSetToNode(RuleSet ruleSet) {
-		return getRuleList(ruleSet, null);
+	public static Node ruleSetToNode(RuleSet rs) {
+		return getRuleList(rs, null);
 	}
 
 	public static RuleSet nodeToRuleSet(Node node) {
-		RuleSet ruleSet = RuleSetUtil.create();
-		RuleSetUtil.importFrom(ruleSet, node);
-		return ruleSet;
+		RuleSet rs = RuleSetUtil.create();
+		RuleSetUtil.importFrom(rs, node);
+		return rs;
 	}
 
 	/**
@@ -75,10 +75,10 @@ public class Suite {
 	 * 
 	 * May specify a prototype to limit the rules listed.
 	 */
-	public static Node getRuleList(RuleSet ruleSet, Prototype proto) {
+	public static Node getRuleList(RuleSet rs, Prototype proto) {
 		List<Node> nodes = new ArrayList<>();
 
-		for (Rule rule : ruleSet.getRules()) {
+		for (Rule rule : rs.getRules()) {
 			Prototype p1 = Prototype.get(rule);
 			if (proto == null || proto.equals(p1)) {
 				Node clause = Rule.formClause(rule);
@@ -160,8 +160,8 @@ public class Suite {
 		return suiteEvaluationUtil.evaluateLogical(lp);
 	}
 
-	public static List<Node> evaluateLogical(Builder builder, RuleSet ruleSet, Node lp) {
-		return suiteEvaluationUtil.evaluateLogical(builder, ruleSet, lp);
+	public static List<Node> evaluateLogical(Builder builder, RuleSet rs, Node lp) {
+		return suiteEvaluationUtil.evaluateLogical(builder, rs, lp);
 	}
 
 	public static Node evaluateEagerFun(String fp) {

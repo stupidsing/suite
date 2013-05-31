@@ -103,11 +103,10 @@ public class RuleSetPredicates {
 	public static class With implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Predicate.getParameters(ps, 2);
-			RuleSet rs = prover.ruleSet();
-			RuleSet rs1 = RuleSetUtil.create();
-			RuleSetUtil.importFrom(rs1, params[0]);
-			CompositeRuleSet ruleSet = new CompositeRuleSet(rs1, rs);
-			return new Prover(ruleSet).prove(params[1]);
+			RuleSet ruleSet = prover.ruleSet();
+			RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
+			CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
+			return new Prover(ruleSet2).prove(params[1]);
 		}
 	}
 
