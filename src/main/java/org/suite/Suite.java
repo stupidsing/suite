@@ -19,6 +19,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
+import org.suite.search.ProveSearch.Builder;
 
 public class Suite {
 
@@ -159,8 +160,8 @@ public class Suite {
 		return suiteEvaluationUtil.evaluateLogical(lp);
 	}
 
-	public static List<Node> evaluateLogical(Node lp, ProverConfig pc, boolean isDumpCode) {
-		return suiteEvaluationUtil.evaluateLogical(lp, pc, isDumpCode);
+	public static List<Node> evaluateLogical(Builder builder, RuleSet ruleSet, Node lp) {
+		return suiteEvaluationUtil.evaluateLogical(builder, ruleSet, lp);
 	}
 
 	public static Node evaluateEagerFun(String fp) {

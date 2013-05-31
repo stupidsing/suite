@@ -27,6 +27,8 @@ import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
+import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel1;
+import org.suite.search.ProveSearch.Builder;
 import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
@@ -236,7 +238,9 @@ public class Main {
 					break;
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
-					List<Node> nodes = Suite.evaluateLogical(node, proverConfig, fcc.isDumpCode());
+					Builder builder = new CompiledProveBuilderLevel1(proverConfig, fcc.isDumpCode());
+					RuleSet ruleSet = proverConfig.ruleSet();
+					List<Node> nodes = Suite.evaluateLogical(builder, ruleSet, node);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {
@@ -272,7 +276,7 @@ public class Main {
 		if (files.size() == 1) {
 			FileInputStream is = new FileInputStream(files.get(0));
 			Node node = Suite.parse(IoUtil.readStream(is));
-            return evaluateFunctional(node) == Atom.TRUE;
+			return evaluateFunctional(node) == Atom.TRUE;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
 	}

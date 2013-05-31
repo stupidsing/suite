@@ -45,19 +45,20 @@ public class SuiteEvaluationUtil {
 	}
 
 	public boolean evaluateLogical(Node lp) {
+		ProverConfig proverConfig = new ProverConfig();
+		Builder builder = new CompiledProveBuilderLevel1(proverConfig, false);
+		RuleSet ruleSet = proverConfig.ruleSet();
 		Node goal = Suite.substitute(".0, sink ()", lp);
-		ProverConfig pc = new ProverConfig();
-		return !evaluateLogical(goal, pc, false).isEmpty();
+		return !evaluateLogical(builder, ruleSet, goal).isEmpty();
 	}
 
-	public List<Node> evaluateLogical(Node lp, ProverConfig pc, boolean isDumpCode) {
+	public List<Node> evaluateLogical(Builder builder, RuleSet ruleSet, Node lp) {
 		Collector collector = new Collector();
 
-		Source<Node> source = FunUtil.<Node> nullSource();
+		Source<Node> source = FunUtil.nullSource();
 		Sink<Node> sink = collector;
 
-		Builder builder = new CompiledProveBuilderLevel1(pc, isDumpCode);
-		Finder finder = builder.build(pc.ruleSet(), lp);
+		Finder finder = builder.build(ruleSet, lp);
 		finder.find(source, sink);
 
 		return collector.getNodes();
