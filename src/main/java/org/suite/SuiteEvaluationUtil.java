@@ -55,8 +55,6 @@ public class SuiteEvaluationUtil {
 
 		Source<Node> source = FunUtil.<Node> nullSource();
 		Sink<Node> sink = collector;
-		pc.setSource(source);
-		pc.setSink(sink);
 
 		Builder builder = new CompiledProveBuilderLevel1(pc, isDumpCode);
 		Finder finder = builder.build(pc.ruleSet(), lp);
