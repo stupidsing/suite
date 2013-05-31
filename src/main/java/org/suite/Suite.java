@@ -125,20 +125,20 @@ public class Suite {
 	// --------------------------------
 	// Compilation utilities
 
-	public static RuleSet logicalRuleSet() {
-		return suiteCompileUtil.logicalRuleSet();
+	public static RuleSet logicalCompilerRuleSet() {
+		return suiteCompileUtil.logicalCompilerRuleSet();
 	}
 
-	public static RuleSet funRuleSet() {
-		return suiteCompileUtil.funRuleSet();
+	public static RuleSet funCompilerRuleSet() {
+		return suiteCompileUtil.funCompilerRuleSet();
 	}
 
-	public static RuleSet eagerFunRuleSet() {
-		return suiteCompileUtil.eagerFunRuleSet();
+	public static RuleSet eagerFunCompilerRuleSet() {
+		return suiteCompileUtil.eagerFunCompilerRuleSet();
 	}
 
-	public static RuleSet lazyFunRuleSet() {
-		return suiteCompileUtil.lazyFunRuleSet();
+	public static RuleSet lazyFunCompilerRuleSet() {
+		return suiteCompileUtil.lazyFunCompilerRuleSet();
 	}
 
 	public static void precompile(String libraryName, ProverConfig proverConfig) {

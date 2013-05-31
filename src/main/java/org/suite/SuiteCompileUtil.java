@@ -15,25 +15,25 @@ public class SuiteCompileUtil {
 	private RuleSet eagerFunRuleSet;
 	private RuleSet lazyFunRuleSet;
 
-	public synchronized RuleSet logicalRuleSet() {
+	public synchronized RuleSet logicalCompilerRuleSet() {
 		if (logicalRuleSet == null)
 			logicalRuleSet = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
 		return logicalRuleSet;
 	}
 
-	public synchronized RuleSet funRuleSet() {
+	public synchronized RuleSet funCompilerRuleSet() {
 		if (funRuleSet == null)
 			funRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
 		return funRuleSet;
 	}
 
-	public synchronized RuleSet eagerFunRuleSet() {
+	public synchronized RuleSet eagerFunCompilerRuleSet() {
 		if (eagerFunRuleSet == null)
 			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
 		return eagerFunRuleSet;
 	}
 
-	public synchronized RuleSet lazyFunRuleSet() {
+	public synchronized RuleSet lazyFunCompilerRuleSet() {
 		if (lazyFunRuleSet == null)
 			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
 		return lazyFunRuleSet;

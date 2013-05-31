@@ -65,7 +65,7 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
-		RuleSet rs = fcc.isLazy() ? Suite.lazyFunRuleSet() : Suite.eagerFunRuleSet();
+		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 
 		String s = "source .in, compile-function .0 (" + appendLibraries(fcc, ".in") + ") .out" //
@@ -91,7 +91,7 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
-		RuleSet rs = Suite.funRuleSet();
+		RuleSet rs = Suite.funCompilerRuleSet();
 		ProverConfig pc = fcc.getProverConfig();
 
 		Node node = Suite.parse("source .in" //
