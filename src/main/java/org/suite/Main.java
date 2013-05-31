@@ -272,8 +272,7 @@ public class Main {
 		if (files.size() == 1) {
 			FileInputStream is = new FileInputStream(files.get(0));
 			Node node = Suite.parse(IoUtil.readStream(is));
-			Node result = evaluateFunctional(node);
-			return result == Atom.TRUE;
+            return evaluateFunctional(node) == Atom.TRUE;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
 	}
