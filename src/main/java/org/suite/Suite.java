@@ -13,6 +13,7 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
 import org.suite.kb.Rule;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
@@ -56,6 +57,16 @@ public class Suite {
 		fcc.setNode(fp);
 		fcc.setLazy(isLazy);
 		return fcc;
+	}
+
+	public static Node ruleSetToNode(RuleSet ruleSet) {
+		return getRuleList(ruleSet, null);
+	}
+
+	public static RuleSet nodeToRuleSet(Node node) {
+		RuleSet ruleSet = RuleSetUtil.create();
+		RuleSetUtil.importFrom(ruleSet, node);
+		return ruleSet;
 	}
 
 	/**

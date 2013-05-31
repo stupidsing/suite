@@ -11,8 +11,9 @@ import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.search.CompiledProveBuilderL1;
+import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel1;
 import org.suite.search.InterpretedProveBuilder;
+import org.suite.search.ProveSearch.Builder;
 import org.suite.search.ProveSearch.Finder;
 import org.util.FunUtil;
 import org.util.FunUtil.Sink;
@@ -57,7 +58,7 @@ public class SuiteEvaluationUtil {
 		pc.setSource(source);
 		pc.setSink(sink);
 
-		CompiledProveBuilderL1 builder = new CompiledProveBuilderL1(pc, isDumpCode);
+		Builder builder = new CompiledProveBuilderLevel1(pc, isDumpCode);
 		Finder finder = builder.build(pc.ruleSet(), lp);
 		finder.find(source, sink);
 

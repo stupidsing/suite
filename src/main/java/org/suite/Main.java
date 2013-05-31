@@ -236,7 +236,7 @@ public class Main {
 					break;
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
-					List<Node> nodes = Suite.evaluateLogical(node, proverConfig, false);
+					List<Node> nodes = Suite.evaluateLogical(node, proverConfig, fcc.isDumpCode());
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {
