@@ -27,7 +27,7 @@ import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel2;
+import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel1;
 import org.suite.search.ProveSearch.Builder;
 import org.util.IoUtil;
 import org.util.LogUtil;
@@ -234,7 +234,7 @@ public class Main {
 					break;
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
-					Builder builder = new CompiledProveBuilderLevel2(proverConfig, fcc.isDumpCode());
+					Builder builder = new CompiledProveBuilderLevel1(proverConfig, fcc.isDumpCode());
 					List<Node> nodes = Suite.evaluateLogical(builder, ruleSet, node);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}

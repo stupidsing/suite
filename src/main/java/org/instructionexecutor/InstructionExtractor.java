@@ -1,6 +1,8 @@
 package org.instructionexecutor;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import org.instructionexecutor.InstructionUtil.Insn;
@@ -16,7 +18,7 @@ import com.google.common.collect.BiMap;
 
 public class InstructionExtractor {
 
-	private List<Instruction> enters = new ArrayList<>();
+	private Deque<Instruction> enters = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
@@ -64,9 +66,9 @@ public class InstructionExtractor {
 					, getRegisterNumber(rs, 4));
 
 			if (insn == Insn.ENTER_________)
-				enters.add(instruction);
+				enters.push(instruction);
 			else if (insn == Insn.LEAVE_________)
-				enters.remove(enters.size() - 1);
+				enters.pop();
 
 			return instruction;
 		} else
@@ -82,7 +84,7 @@ public class InstructionExtractor {
 			else if (node instanceof Reference) { // Transient register
 
 				// Allocates new register in current local frame
-				Instruction enter = enters.get(enters.size() - 1);
+				Instruction enter = enters.getFirst();
 				int registerNumber = enter.op0++;
 
 				((Reference) node).bound(Int.create(registerNumber));
