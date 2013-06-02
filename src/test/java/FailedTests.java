@@ -46,7 +46,7 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test3() {
+	public void test3() { // need to increase InstructionExecutor.stackSize
 		RuleSet rs = RuleSetUtil.create();
 		RuleSetUtil.importFrom(rs, Suite.parse("" //
 				+ "member (.e, _) .e #" //
