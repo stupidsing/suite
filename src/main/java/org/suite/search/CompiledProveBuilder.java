@@ -44,7 +44,7 @@ public class CompiledProveBuilder implements Builder {
 
 	@Override
 	public Finder build(final RuleSet ruleSet, Node goal) {
-		Node goal1 = Suite.substitute(".0 >> .1", Suite.getRuleList(ruleSet, null), goal);
+		Node goal1 = Suite.substitute(".0 >> .1", Suite.ruleSetToNode(ruleSet), goal);
 		final Node code = compile(goal1);
 		final ProverConfig proverConfig = new ProverConfig(ruleSet, this.proverConfig);
 
