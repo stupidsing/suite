@@ -65,8 +65,7 @@ public class Parser {
 	}
 
 	private Node parseRawString(String s, int fromOp) {
-		int end = s.length();
-		char first = s.charAt(0), last = s.charAt(end - 1);
+		char first = Util.charAt(s, 0), last = Util.charAt(s, -1);
 
 		for (int i = fromOp; i < operators.length; i++) {
 			Operator operator = operators[i];
@@ -75,7 +74,7 @@ public class Parser {
 			if (operator == TermOp.BRACES)
 				if (lr != null) {
 					String right = lr[1].trim();
-					if (right.charAt(right.length() - 1) == '}')
+					if (Util.charAt(right, -1) == '}')
 						lr[1] = Util.substr(right, 0, -1);
 					else
 						continue;

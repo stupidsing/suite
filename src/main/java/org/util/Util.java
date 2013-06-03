@@ -187,9 +187,15 @@ public class Util {
 			System.arraycopy(from, fromIndex, to, toIndex, size);
 	}
 
-	public static <T> void copyPrimitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
+	public static void copyPrimitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
 		if (size != 0)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
+	public static char charAt(String s, int pos) {
+		if (pos < 0)
+			pos += s.length();
+		return s.charAt(pos);
 	}
 
 	public static String substr(String s, int start, int end) {
