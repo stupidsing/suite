@@ -125,7 +125,8 @@ public class Parser {
 	 */
 	private String convertIndents(String s) {
 		StringBuilder sb = new StringBuilder();
-		int lastIndent = 0;
+		int nLastIndents = 0;
+		String lastIndent = "";
 
 		s = "\n" + s + "\n";
 
@@ -142,12 +143,17 @@ public class Parser {
 				s = "";
 			}
 
-			int length = line.length();
-			int indent = 0;
-			while (indent < length && line.charAt(indent) == '\t')
-				indent++;
+			int length = line.length(), nIndents = 0;
+			while (nIndents < length && Character.isWhitespace(line.charAt(nIndents)))
+				nIndents++;
 
-			line = line.substring(indent).trim();
+			String indent = line.substring(0, nIndents);
+			line = line.substring(nIndents).trim();
+
+			if (!lastIndent.startsWith(indent) && !lastIndent.startsWith(lastIndent))
+				throw new RuntimeException("Indent mismatch");
+
+			lastIndent = indent;
 
 			// Converts :: notation, "if:: a" becomes "if (a)"
 			lr = ParserUtil.search(line, "::", Assoc.RIGHT);
@@ -176,20 +182,22 @@ public class Parser {
 
 				// Insert parentheses by line indentation
 				String decoratedLine = "";
-				while (lastIndent > indent) {
+				while (nLastIndents > nIndents) {
 					decoratedLine += ") ";
-					lastIndent--;
+					nLastIndents--;
 				}
 				decoratedLine += line.substring(0, startPos);
-				while (lastIndent < indent) {
+				while (nLastIndents < nIndents) {
 					decoratedLine += " (";
-					lastIndent++;
+					nLastIndents++;
 				}
 				decoratedLine += line.substring(startPos, endPos);
 				decoratedLine += line.substring(endPos);
 
 				sb.append(decoratedLine + "\n");
 			}
+
+			nLastIndents = nIndents;
 		}
 
 		return sb.toString();

@@ -10,9 +10,7 @@ public class OlderFunCompilerTest {
 
 	private static final String concatList0 = "" //
 			+ "define concat-list0 = split {h => t => \n" //
-			+ "    if-tree {h} \n" //
-			+ "        {h1 => t1 => h1, concat-list0 {t1, t}} \n" //
-			+ "        {concat-list0 {t}} \n" //
+			+ "    if-tree {h} {h1 => t1 => h1, concat-list0 {t1, t}} {concat-list0 {t}} \n" //
 			+ "} >> \n";
 
 	private static final String filter0 = "" //
