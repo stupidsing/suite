@@ -116,16 +116,6 @@ public class Util {
 		return new ThreadPoolExecutor(8, 32, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
 	}
 
-	public static <E> E unique(List<E> list) {
-		int size = list.size();
-		if (size == 0)
-			throw new RuntimeException("Result is empty");
-		if (size > 1)
-			throw new RuntimeException("Result not unique");
-		else
-			return list.get(0);
-	}
-
 	public static <E> void truncate(List<E> list, int n) {
 		int size = list.size();
 		while (size > n)
