@@ -243,7 +243,7 @@ lc-bind0 .node0 .node1 .vs .c0/.cx/.f0/.fx
 	, lc-bind-register .reg0 .node1 .vs .c1/.cx/.f0/.fx
 #
 
--= This will not work if the register is free!
+-= TODO this will not work if the register is free!
 lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f0/.fx
 	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .failLabel
 		, _ DECOMPOSE-TREE1 .reg0 .reg1
