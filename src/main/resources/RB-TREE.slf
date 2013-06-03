@@ -23,9 +23,9 @@ define add = (v =>
 			RB-TREE red (EMPTY %) v (EMPTY %) %
 		|| RB-TREE $color $n0 $pivot $n1 % =>
 			if (v < pivot) then
-				RB-TREE color (add0 {n0}) pivot n1 | balance
+				RB-TREE color (add0 {n0}) pivot n1 % | balance
 			else-if (v > pivot) then
-				RB-TREE color n0 pivot (add0 {n1}) | balance
+				RB-TREE color n0 pivot (add0 {n1}) % | balance
 			else error
 		|| otherwise error
 	) >>
