@@ -243,17 +243,19 @@ lc-bind0 .node0 .node1 .vs .c0/.cx/.f0/.fx
 	, lc-bind-register .reg0 .node1 .vs .c1/.cx/.f0/.fx
 #
 
+-= This will not work if the register is free!
 lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f0/.fx
 	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .failLabel
 		, _ DECOMPOSE-TREE1 .reg0 .reg1
 		, .c1
 	)
-	, lc-bind-register .reg0 .nl .c1/.c2/.f1/.f2
-	, lc-bind-register .reg1 .nr .c2/.cx/.f0/.f1
+	, lc-bind-register .reg0 .nl .vs .c1/.c2/.f1/.f2
+	, lc-bind-register .reg1 .nr .vs .c2/.cx/.f0/.f1
 	, .f2 = (.failLabel LABEL .failLabel, .fx)
 #
-lc-bind-register .reg0 .node1 .v .c0/.cx/.f0/.fx
-	:- lc-create-node .node1 .v .c0/.c1/.reg1
+=-
+lc-bind-register .reg0 .node1 .vs .c0/.cx/.f0/.fx
+	:- lc-create-node .node1 .vs .c0/.c1/.reg1
 	, .c1 = (_ BIND .reg0 .reg1 .failLabel, .cx)
 	, .f0 = (.failLabel BIND-UNDO, .fx)
 #
