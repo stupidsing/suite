@@ -41,10 +41,6 @@ public class Parser {
 		this.operators = operators;
 	}
 
-	public Node parseClassPathFile(String fn) throws IOException {
-		return parse(getClass().getClassLoader().getResourceAsStream(fn));
-	}
-
 	public Node parse(InputStream is) throws IOException {
 		return parse(IoUtil.readStream(is));
 	}
@@ -77,10 +73,13 @@ public class Parser {
 			String lr[] = ParserUtil.search(s, operator);
 
 			if (operator == TermOp.BRACES)
-				if (lr != null && last == '}')
-					lr[1] = Util.substr(lr[1], 0, -1);
-				else
-					continue;
+				if (lr != null) {
+					String right = lr[1].trim();
+					if (right.charAt(right.length() - 1) == '}')
+						lr[1] = Util.substr(right, 0, -1);
+					else
+						continue;
+				}
 
 			if (lr != null) {
 				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
@@ -105,17 +104,19 @@ public class Parser {
 
 		if (first == '\'' && last == '\'')
 			s = unescape(Util.substr(s, 1, -1), "'");
+		else {
+			int quote = 0, depth = 0;
 
-		// Shows warning if the atom has mismatched quotes or brackets
-		int quote = 0, depth = 0;
-		for (char c : s.toCharArray()) {
-			quote = ParserUtil.getQuoteChange(quote, c);
-			if (quote == 0)
-				depth = ParserUtil.checkDepth(depth, c);
+			// Shows warning if the atom has mismatched quotes or brackets
+			for (char c : s.toCharArray()) {
+				quote = ParserUtil.getQuoteChange(quote, c);
+				if (quote == 0)
+					depth = ParserUtil.checkDepth(depth, c);
+			}
+
+			if (quote != 0 || depth != 0)
+				LogUtil.info("Suspicious input when parsing " + s);
 		}
-
-		if (quote != 0 || depth != 0)
-			LogUtil.info("Suspicious input when parsing " + s);
 
 		return Atom.create(localContext, s);
 	}
@@ -256,8 +257,7 @@ public class Parser {
 
 				pos++;
 			}
-		} catch (Exception ex) {
-			// StringIndexOutOfBoundsException, NumberFormatException
+		} catch (StringIndexOutOfBoundsException | NumberFormatException ex) {
 			LogUtil.error(ex);
 		}
 

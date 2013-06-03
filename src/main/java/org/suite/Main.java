@@ -75,7 +75,7 @@ public class Main {
 	}
 
 	private void run(String args[]) throws IOException {
-		int code = 0;
+		boolean result = true;
 		List<String> inputs = new ArrayList<>();
 		Iterator<String> iter = Arrays.asList(args).iterator();
 
@@ -83,28 +83,31 @@ public class Main {
 			String arg = iter.next();
 
 			if (arg.startsWith("-"))
-				processOption(arg, iter);
+				result &= processOption(arg, iter);
 			else
 				inputs.add(arg);
 		}
 
-		if (isFilter)
-			code = runFilter(inputs) ? 0 : 1;
-		else if (isFunctional)
-			code = runFunctional(inputs) ? 0 : 1;
-		else if (isLogical)
-			code = runLogical(inputs) ? 0 : 1;
-		else
-			run(inputs);
+		if (result)
+			if (isFilter)
+				result &= runFilter(inputs);
+			else if (isFunctional)
+				result &= runFunctional(inputs);
+			else if (isLogical)
+				result &= runLogical(inputs);
+			else
+				result &= run(inputs);
 
-		System.exit(code);
+		System.exit(result ? 0 : 1);
 	}
 
-	private void processOption(String arg, Iterator<String> iter) {
-		processOption(arg, iter, true);
+	private boolean processOption(String arg, Iterator<String> iter) {
+		return processOption(arg, iter, true);
 	}
 
-	private void processOption(String arg, Iterator<String> iter, boolean on) {
+	private boolean processOption(String arg, Iterator<String> iter, boolean on) {
+		boolean result = true;
+
 		if (arg.equals("-dump-code"))
 			fcc.setDumpCode(on);
 		else if (arg.equals("-eager"))
@@ -120,17 +123,19 @@ public class Main {
 		else if (arg.equals("-logical"))
 			isLogical = on;
 		else if (arg.startsWith("-no-"))
-			processOption("-" + arg.substring(4), iter, false);
+			result &= processOption("-" + arg.substring(4), iter, false);
 		else if (arg.equals("-precompile") && iter.hasNext())
 			for (String lib : iter.next().split(","))
-				Suite.precompile(lib, proverConfig);
+				result &= Suite.precompile(lib, proverConfig);
 		else if (arg.equals("-trace"))
 			proverConfig.setTrace(on);
 		else
 			throw new RuntimeException("Unknown option " + arg);
+
+		return result;
 	}
 
-	private void run(List<String> importFilenames) throws IOException {
+	private boolean run(List<String> importFilenames) throws IOException {
 		RuleSet ruleSet = proverConfig.ruleSet();
 		Suite.importResource(proverConfig.ruleSet(), "auto.sl");
 
@@ -153,7 +158,7 @@ public class Main {
 					if ((line = br.readLine()) != null)
 						sb.append(line + "\n");
 					else
-						return;
+						return true;
 				} while (!line.isEmpty() && !line.endsWith("#"));
 
 				String input = sb.toString();

@@ -109,12 +109,14 @@ fc-parse-sugar (match || otherwise .p) (anything => .p) :- ! #
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
 fc-parse-sugar (.l || .r) (or {.l} {.r}) :- ! #
 fc-parse-sugar .t (.var => .t1)
-	:- tree .t () .op .right, fc-operator .op, !
-	, temp .var, tree .t1 .var .op .right
+	:- tree .t () .op .right
+	, (fc-operator .op; .op = '{')
+	, !, temp .var, tree .t1 .var .op .right
 #
 fc-parse-sugar .t (.var => .t1)
-	:- tree .t .left .op (), fc-operator .op, !
-	, temp .var, tree .t1 .left .op .var
+	:- tree .t .left .op ()
+	, fc-operator .op
+	, !, temp .var, tree .t1 .left .op .var
 #
 fc-parse-sugar (.l, .r) (_cons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.v => .l {.r {.v}}) :- !, temp .v #

@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -60,6 +61,11 @@ public class FailedTests {
 
 		Builder builder = new CompiledProveBuilderLevel2(new ProverConfig(), false);
 		Suite.evaluateLogical(builder, rs, goal);
+	}
+
+	@Test
+	public void test4() {
+		assertEquals(Suite.parse("{0}"), Suite.parse("`{0}`"));
 	}
 
 	private static Node eval(String f) {

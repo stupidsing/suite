@@ -141,8 +141,8 @@ public class Suite {
 		return suiteCompileUtil.lazyFunCompilerRuleSet();
 	}
 
-	public static void precompile(String libraryName, ProverConfig proverConfig) {
-		suiteCompileUtil.precompile(libraryName, proverConfig);
+	public static boolean precompile(String libraryName, ProverConfig proverConfig) {
+		return suiteCompileUtil.precompile(libraryName, proverConfig);
 	}
 
 	// --------------------------------

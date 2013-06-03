@@ -39,17 +39,20 @@ public class SuiteCompileUtil {
 		return lazyFunRuleSet;
 	}
 
-	public void precompile(String libraryName, ProverConfig pc) {
+	public boolean precompile(String libraryName, ProverConfig pc) {
 		System.out.println("Pre-compiling " + libraryName + "... ");
 
 		RuleSet rs = createRuleSet(Arrays.asList("auto.sl", "fc-precompile.sl"));
 		Prover prover = new Prover(new ProverConfig(rs, pc));
 		Node node = Suite.parse("fc-setup-precompile " + libraryName);
+		boolean result = prover.prove(node);
 
-		if (prover.prove(node))
+		if (result)
 			System.out.println("Pre-compilation success\n");
 		else
 			System.out.println("Pre-compilation failed");
+
+		return result;
 	}
 
 	private RuleSet createRuleSet(List<String> toImports) {
