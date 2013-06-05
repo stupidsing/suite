@@ -22,22 +22,6 @@ import org.util.Util;
 
 public class SuiteEvaluationUtil {
 
-	private class Collector implements Sink<Node> {
-		private List<Node> nodes = new ArrayList<>();
-
-		public void sink(Node node) {
-			nodes.add(new Cloner().clone(node));
-		}
-
-		public Node getNode() {
-			return nodes.size() == 1 ? nodes.get(0) : null;
-		}
-
-		public List<Node> getNodes() {
-			return nodes;
-		}
-	}
-
 	public boolean proveThis(RuleSet rs, String gs) {
 		Node goal = new Generalizer().generalize(Suite.parse(gs));
 		return !evaluateLogical(new InterpretedProveBuilder(), rs, goal).isEmpty();
@@ -52,15 +36,7 @@ public class SuiteEvaluationUtil {
 	}
 
 	public List<Node> evaluateLogical(Builder builder, RuleSet rs, Node lp) {
-		Collector collector = new Collector();
-
-		Source<Node> source = FunUtil.nullSource();
-		Sink<Node> sink = collector;
-
-		Finder finder = builder.build(rs, lp);
-		finder.find(source, sink);
-
-		return collector.getNodes();
+		return collect(builder.build(rs, lp), Atom.NIL);
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
@@ -119,9 +95,22 @@ public class SuiteEvaluationUtil {
 	}
 
 	private Node singleResult(Finder finder, Node in) {
-		Collector sink = new Collector();
-		finder.find(FunUtil.source(in), sink);
-		return sink.getNode();
+		List<Node> nodes = collect(finder, in);
+		return nodes.size() == 1 ? nodes.get(0) : null;
+	}
+
+	private List<Node> collect(Finder finder, Node in) {
+		final List<Node> nodes = new ArrayList<>();
+
+		Source<Node> source = FunUtil.source(in);
+		Sink<Node> sink = new Sink<Node>() {
+			public void sink(Node node) {
+				nodes.add(new Cloner().clone(node));
+			}
+		};
+
+		finder.find(source, sink);
+		return nodes;
 	}
 
 }
