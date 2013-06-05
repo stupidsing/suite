@@ -63,11 +63,6 @@ public class FailedTests {
 		Suite.evaluateLogical(builder, rs, goal);
 	}
 
-	@Test
-	public void test4() {
-		assertEquals(Suite.parse("{0}"), Suite.parse("`{0}`"));
-	}
-
 	private static Node eval(String f) {
 		return Suite.evaluateEagerFun(f);
 	}
