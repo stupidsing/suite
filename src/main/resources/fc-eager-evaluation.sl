@@ -34,12 +34,12 @@ fc-compile EAGER (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	, fc-compile EAGER .then .env .c2/.c3/.d1/.d2/.thenReg
 	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg
 		, _ JUMP .label2
-		, .label1 LABEL .label1
+		, .label1 LABEL
 		, .c4
 	)
 	, fc-compile EAGER .else .env .c4/.c5/.d2/.dx/.elseReg
 	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg
-		, .label2 LABEL .label2
+		, .label2 LABEL
 		, .cx
 	)
 #

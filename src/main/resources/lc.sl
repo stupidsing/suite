@@ -139,7 +139,7 @@ lc-compile (OR .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	, .bc = CALL-CONSTANT .label
 	, lc-compile .a (AND ($$BYTECODE _ .bc) FAIL) .pls/.vs .c0/.c1/.d0/.d1
 	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .pls/.vs .c1/.cx/.d1/.d2
-	, .d2 = (.label LABEL .label, .d3)
+	, .d2 = (.label LABEL, .d3)
 	, lc-compile .rem YES .pls/.vs .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
 #
@@ -153,7 +153,7 @@ lc-compile (ONCE .do) .rem .env .c0/.cx/.d0/.dx
 	, lc-compile .do (
 		AND ($$CUT .cutPoint .failLabel) .rem
 	) .env .c1/.c2/.d0/.dx
-	, .c2 = (.failLabel LABEL .failLabel, .cx)
+	, .c2 = (.failLabel LABEL, .cx)
 #
 lc-compile (NOT .do) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !
@@ -161,7 +161,7 @@ lc-compile (NOT .do) .rem .pls/.vs .c0/.cx/.d0/.dx
 	, lc-compile .do (
 		AND ($$CUT .cutPoint .failLabel) FAIL
 	) .pls/.vs .c1/.c2/.d0/.d1
-	, .c2 = (.failLabel LABEL .failLabel, .c3)
+	, .c2 = (.failLabel LABEL, .c3)
 	, lc-compile .rem YES .pls/.vs .c3/.cx/.d1/.dx
 #
 lc-compile (EQ .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
@@ -180,7 +180,7 @@ lc-compile (.oper .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 		, .c3
 	)
 	, lc-compile .rem YES .pls/.vs .c3/.c4/.d0/.dx
-	, .c4 = (.failLabel LABEL .failLabel, .c5)
+	, .c4 = (.failLabel LABEL, .c5)
 	, .c5 = .cx
 #
 lc-compile (DEFINE-RULES .rules .call) .rem .pls/.vs .c0/.cx/.d0/.dx
@@ -203,12 +203,12 @@ lc-compile (CALL .call) .rem .pls/.vs .c0/.cx/.d0/.dx
 			, _ POP _
 			, .cx
 		)
-		, .d0 = (.provenLabel LABEL .provenLabel, .d1)
+		, .d0 = (.provenLabel LABEL, .d1)
 		, lc-compile .rem YES .pls/.vs .d1/.d2/.d3/.dx
 		, .d2 = (_ RETURN, .d3)
 		; .c1 = (_ PROVE-INTERPRET .reg .failLabel, .c2)
 		, lc-compile .rem YES .pls/.vs .c2/.c3/.d0/.dx
-		, .c3 = (.failLabel LABEL .failLabel, .cx)
+		, .c3 = (.failLabel LABEL, .cx)
 	)
 #
 lc-compile (SYSTEM-CALL .call) .rem .pls/.vs .c0/.cx/.d0/.dx
@@ -216,7 +216,7 @@ lc-compile (SYSTEM-CALL .call) .rem .pls/.vs .c0/.cx/.d0/.dx
 	, lc-create-node .call .vs .c0/.c1/.reg
 	, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
 	, lc-compile .rem YES .pls/.vs .c2/.c3/.d0/.dx
-	, .c3 = (.failLabel LABEL .failLabel, .cx)
+	, .c3 = (.failLabel LABEL, .cx)
 #
 
 lc-merge-rules () _ #
@@ -250,7 +250,7 @@ lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f0/.fx
 	)
 	, lc-bind-register .reg0 .nl .vs .c1/.c2/.f1/.f2
 	, lc-bind-register .reg1 .nr .vs .c2/.cx/.f0/.f1
-	, .f2 = (.failLabel LABEL .failLabel, _ BIND-UNDO, .fx)
+	, .f2 = (.failLabel LABEL, _ BIND-UNDO, .fx)
 #
 lc-bind-register .reg0 .node1 .vs .c0/.cx/.f0/.fx
 	:- lc-create-node .node1 .vs .c0/.c1/.reg1
