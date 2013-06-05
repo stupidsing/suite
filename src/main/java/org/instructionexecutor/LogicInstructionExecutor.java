@@ -68,8 +68,8 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			TermOp op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
 
 			Instruction insn1 = getInstructions()[current.ip++];
-			int rl = insn1.op0,
-			rr = insn1.op1;
+			int rl = insn1.op0;
+			int rr = insn1.op1;
 
 			if (node instanceof Tree) {
 				Tree tree = (Tree) node;
