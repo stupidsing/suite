@@ -60,9 +60,9 @@ fc-lazy-compile-to-thunk .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	, !
 #
 
-fc-lazy-compile-to-value (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
+fc-lazy-compile-to-value (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- !
-	, .c0 = (_ ASSIGN-CLOSURE .reg .funcLabel, .cx)
+	, .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
 	, .d0 = (.funcLabel ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, .frame1 = .frame + 1
