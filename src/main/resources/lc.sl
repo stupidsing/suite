@@ -48,7 +48,7 @@ lc-parse () YES () :- ! #
 lc-parse fail FAIL () :- ! #
 lc-parse .cut CUT () :- to.atom "!" .cut, ! #
 lc-parse (.p .do) (.p1 .do1) .nv
-	:- member (once/ONCE, not/NOT,) .p/.p1, !
+	:- member (not/NOT, once/ONCE,) .p/.p1, !
 	, lc-parse .do .do1 .nv
 #
 lc-parse .tree (.oper1 .left1 .right1) .nv
