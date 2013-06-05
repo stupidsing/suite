@@ -97,18 +97,6 @@ public class InstructionExecutor {
 				else
 					regs[insn.op0] = closure.result;
 				break;
-			case DECOMPOSETREE0:
-				Node node = regs[insn.op0];
-				op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
-				int branch = insn.op2;
-				insn = instructions[current.ip++];
-				Tree tree = Tree.decompose(node, op);
-				if (tree != null) {
-					regs[insn.op0] = tree.getLeft();
-					regs[insn.op1] = tree.getRight();
-				} else
-					current.ip = branch;
-				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op0);
 				break;
@@ -234,6 +222,10 @@ public class InstructionExecutor {
 
 	protected static int i(Object node) {
 		return ((Int) node).getNumber();
+	}
+
+	protected Instruction[] getInstructions() {
+		return instructions;
 	}
 
 }

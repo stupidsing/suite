@@ -10,7 +10,11 @@ import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.Journal;
 import org.suite.doer.Binder;
 import org.suite.doer.Prover;
+import org.suite.doer.TermParser.TermOp;
+import org.suite.node.Atom;
 import org.suite.node.Node;
+import org.suite.node.Reference;
+import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
 import org.util.Util;
 
@@ -42,10 +46,28 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		switch (insn.insn) {
 		case BIND__________:
 			bindPoints[bsp++] = journal.getPointInTime();
-			Node node0 = regs[insn.op0];
-			Node node1 = regs[insn.op1];
-			if (!Binder.bind(node0, node1, journal))
+			if (!Binder.bind(regs[insn.op0], regs[insn.op1], journal))
 				current.ip = insn.op2; // Fail
+			break;
+		case BINDTREE0_____:
+			bindPoints[bsp++] = journal.getPointInTime();
+			Node node = regs[insn.op0].finalNode();
+			TermOp op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
+			int branch = insn.op2;
+			insn = getInstructions()[current.ip++];
+			Node l0 = regs[insn.op0],
+			r0 = regs[insn.op1];
+
+			boolean binded;
+
+			if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+				binded = Binder.bind(l0, tree.getLeft(), journal) && Binder.bind(r0, tree.getRight(), journal);
+			} else if (binded = (node instanceof Reference))
+				((Reference) node).bound(Tree.create(op, l0, r0));
+
+			if (!binded)
+				current.ip = branch;
 			break;
 		case BINDUNDO______:
 			journal.undoBinds(bindPoints[--bsp]);
