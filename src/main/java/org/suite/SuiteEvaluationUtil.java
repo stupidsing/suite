@@ -39,9 +39,8 @@ public class SuiteEvaluationUtil {
 	}
 
 	public boolean proveThis(RuleSet rs, String gs) {
-		Prover prover = new Prover(rs);
-		Generalizer generalizer = new Generalizer();
-		return prover.prove(generalizer.generalize(Suite.parse(gs)));
+		Node goal = new Generalizer().generalize(Suite.parse(gs));
+		return !evaluateLogical(new InterpretedProveBuilder(), rs, goal).isEmpty();
 	}
 
 	public boolean evaluateLogical(Node lp) {
