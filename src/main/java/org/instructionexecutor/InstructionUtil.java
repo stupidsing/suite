@@ -42,14 +42,14 @@ public class InstructionUtil {
 		ASSIGNGLOBAL__("ASSIGN-GLOBAL"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		BIND__________("BIND"), //
-		BINDTREE0_____("BIND-TREE0"), //
-		BINDTREE1_____("BIND-TREE1"), //
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
 		CALLCONST_____("CALL-CONSTANT"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CUTBEGIN______("CUT-BEGIN"), //
 		CUTFAIL_______("CUT-FAIL"), //
+		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
+		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //

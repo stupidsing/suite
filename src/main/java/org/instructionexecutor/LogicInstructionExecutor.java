@@ -49,29 +49,6 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			if (!Binder.bind(regs[insn.op0], regs[insn.op1], journal))
 				current.ip = insn.op2; // Fail
 			break;
-		case BINDTREE0_____:
-			bindPoints[bsp++] = journal.getPointInTime();
-			Node node = regs[insn.op0].finalNode();
-			TermOp op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
-			int branch = insn.op2;
-			insn = getInstructions()[current.ip++];
-			Node l0 = regs[insn.op0],
-			r0 = regs[insn.op1];
-
-			boolean binded;
-
-			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				binded = Binder.bind(l0, tree.getLeft(), journal) && Binder.bind(r0, tree.getRight(), journal);
-			} else if (binded = (node instanceof Reference))
-				((Reference) node).bound(Tree.create(op, l0, r0));
-
-			if (!binded)
-				current.ip = branch;
-			break;
-		case BINDUNDO______:
-			journal.undoBinds(bindPoints[--bsp]);
-			break;
 		case CUTBEGIN______:
 			regs[insn.op0] = number(cutPoints.size());
 			cutPoints.add(new CutPoint(current, bsp, journal.getPointInTime()));
@@ -84,6 +61,32 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			exec.current.ip = insn.op1;
 			bsp = cutPoint.bindStackPointer;
 			journal.undoBinds(cutPoint.journalPointer);
+			break;
+		case DECOMPOSETREE0:
+			bindPoints[bsp++] = journal.getPointInTime();
+			Node node = regs[insn.op0].finalNode();
+			TermOp op = TermOp.find(((Atom) constantPool.get(insn.op1)).getName());
+
+			Instruction insn1 = getInstructions()[current.ip++];
+			int rl = insn1.op0,
+			rr = insn1.op1;
+
+			if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+
+				if (tree.getOperator() == op) {
+					regs[rl] = tree.getLeft();
+					regs[rr] = tree.getRight();
+				} else
+					current.ip = insn.op2;
+			} else if (node instanceof Reference) {
+				Tree tree = Tree.create(op, regs[rl] = new Reference(), regs[rr] = new Reference());
+				((Reference) node).bound(tree);
+			} else
+				current.ip = insn.op2;
+			break;
+		case BINDUNDO______:
+			journal.undoBinds(bindPoints[--bsp]);
 			break;
 		case PROVEINTERPRET:
 			if (!prover.prove(regs[insn.op0]))
