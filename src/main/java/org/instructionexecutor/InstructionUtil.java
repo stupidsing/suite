@@ -114,6 +114,18 @@ public class InstructionUtil {
 		}
 	}
 
+	protected static class CutPoint {
+		protected Activation activation;
+		protected int bindStackPointer;
+		protected int journalPointer;
+
+		protected CutPoint(Activation activation, int bindStackPointer, int journalPointer) {
+			this.activation = activation;
+			this.bindStackPointer = bindStackPointer;
+			this.journalPointer = journalPointer;
+		}
+	}
+
 	protected static class Activation extends Closure {
 		protected Activation previous;
 
@@ -151,18 +163,6 @@ public class InstructionUtil {
 		protected Frame(Frame previous, int frameSize) {
 			this.previous = previous;
 			registers = new Node[frameSize];
-		}
-	}
-
-	protected static class CutPoint {
-		protected Activation activation;
-		protected int bindStackPointer;
-		protected int journalPointer;
-
-		protected CutPoint(Activation activation, int bindStackPointer, int journalPointer) {
-			this.activation = activation;
-			this.bindStackPointer = bindStackPointer;
-			this.journalPointer = journalPointer;
 		}
 	}
 

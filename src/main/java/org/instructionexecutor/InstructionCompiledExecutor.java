@@ -17,12 +17,12 @@ import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.Journal;
 import org.suite.Suite;
+import org.suite.doer.Binder;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
-import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
 import org.util.IoUtil;
@@ -107,6 +107,13 @@ public class InstructionCompiledExecutor {
 			case ASSIGNINT_____:
 				registerTypes[op0] = int.class;
 				app("#{reg} = #{num}", op0, op1);
+				break;
+			case BIND__________:
+				app("bindPoints[bsp++] = journal.getPointInTime()");
+				app("if (!Binder.bind(#{reg-node}, #{reg-node}, journal)) #{jump}", op0, op1, op2);
+				break;
+			case BINDUNDO______:
+				app("journal.undoBinds(bindPoints[--bsp])");
 				break;
 			case CALL__________:
 				pushCallee();
@@ -211,7 +218,7 @@ public class InstructionCompiledExecutor {
 				app("LogUtil.info(#{str}.toString())", defineConstant(constant));
 				break;
 			case NEWNODE_______:
-				registerTypes[op0] = Reference.class;
+				registerTypes[op0] = Node.class;
 				app("#{reg} = new Reference()", op0);
 				break;
 			case PUSH__________:
@@ -252,13 +259,16 @@ public class InstructionCompiledExecutor {
 					app("#{reg} = Tree.create(TermOp.AND___, left, right)", op0);
 				} else if (node == ERROR__)
 					app("throw new RuntimeException(\"Error termination\")");
-				else if (node == HEAD___)
+				else if (node == HEAD___) {
+					registerTypes[op0] = Node.class;
 					app("#{reg} = Tree.decompose((Node) ds[dsp]).getLeft()", op0);
-				else if (node == ISTREE_)
+				} else if (node == ISTREE_) {
+					registerTypes[op0] = Node.class;
 					app("#{reg} = Tree.decompose((Node) ds[dsp]) != null ? TRUE : FALSE", op0);
-				else if (node == TAIL___)
+				} else if (node == TAIL___) {
+					registerTypes[op0] = Node.class;
 					app("#{reg} = Tree.decompose((Node) ds[dsp]).getRight()", op0);
-				else
+				} else
 					// TODO FunInstructionExecutor.sys()
 					throw new RuntimeException("Unknown service " + node);
 				break;
@@ -289,6 +299,7 @@ public class InstructionCompiledExecutor {
 				+ "package org.compiled; \n" //
 				+ "import org.suite.node.*; \n" //
 				+ "import " + Atom.class.getCanonicalName() + "; \n" //
+				+ "import " + Binder.class.getCanonicalName() + "; \n" //
 				+ "import " + Closure.class.getCanonicalName() + "; \n" //
 				+ "import " + Int.class.getCanonicalName() + "; \n" //
 				+ "import " + Journal.class.getCanonicalName() + "; \n" //
