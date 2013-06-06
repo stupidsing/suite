@@ -86,8 +86,8 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testOrBinds() {
-		Suite.evaluateLogical("(fail; .b = 1), .b = 2, yes");
-		Suite.evaluateLogical("(yes; .b = 1), .b = 2, fail");
+		eval("(fail; .b = 1), .b = 2, yes");
+		eval("(yes; .b = 1), .b = 2, fail");
 	}
 
 	@Test

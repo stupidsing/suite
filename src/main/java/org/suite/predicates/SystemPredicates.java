@@ -32,6 +32,7 @@ public class SystemPredicates {
 		addPredicate("find.all", new FindAll());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
+		addPredicate("system.predicate", new SystemPredicate_());
 		addPredicate("temporary", new Temporary());
 
 		addPredicate("bound", new EvalPredicates.Bound());
@@ -192,6 +193,15 @@ public class SystemPredicates {
 	private class Once implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return new Prover(prover).prove0(ps);
+		}
+	}
+
+	private class SystemPredicate_ implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			ps = ps.finalNode();
+			Atom atom = ps instanceof Atom ? (Atom) ps : null;
+			String name = atom != null ? atom.getName() : null;
+			return name != null ? predicates.containsKey(name) : false;
 		}
 	}
 

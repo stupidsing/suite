@@ -54,7 +54,7 @@ fc-lazy-compile-to-thunk (TUPLE .name (.e, .es)) .env .cdr
 #
 fc-lazy-compile-to-thunk .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
-	, .d0 = (.funcLabel ENTER, .d1)
+	, .d0 = (.funcLabel LABEL, _ ENTER, .d1)
 	, fc-lazy-compile-to-value .do (.frame + 1)/.ve .d1/.d2/.d3/.dx/.returnReg
 	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 	, !
@@ -63,7 +63,7 @@ fc-lazy-compile-to-thunk .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 fc-lazy-compile-to-value (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
-	, .d0 = (.funcLabel ENTER, .d1)
+	, .d0 = (.funcLabel LABEL, _ ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1

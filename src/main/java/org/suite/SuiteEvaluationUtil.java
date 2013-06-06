@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.instructionexecutor.FunInstructionExecutor;
 import org.suite.doer.Cloner;
-import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
@@ -23,14 +22,15 @@ import org.util.Util;
 public class SuiteEvaluationUtil {
 
 	public boolean proveThis(RuleSet rs, String gs) {
-		Node goal = new Generalizer().generalize(Suite.parse(gs));
-		return !evaluateLogical(new InterpretedProveBuilder(), rs, goal).isEmpty();
+		return prove(new InterpretedProveBuilder(), rs, Suite.parse(gs));
 	}
 
 	public boolean evaluateLogical(Node lp) {
 		ProverConfig pc = new ProverConfig();
-		Builder builder = new CompiledProveBuilderLevel1(pc, false);
-		RuleSet rs = pc.ruleSet();
+		return prove(new CompiledProveBuilderLevel1(pc, false), pc.ruleSet(), lp);
+	}
+
+	private boolean prove(Builder builder, RuleSet rs, Node lp) {
 		Node goal = Suite.substitute(".0, sink ()", lp);
 		return !evaluateLogical(builder, rs, goal).isEmpty();
 	}

@@ -7,7 +7,7 @@ fc-compile EAGER (OPTION _ .do) .env .cdr
 fc-compile EAGER (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
-	, .d0 = (.funcLabel ENTER, .d1)
+	, .d0 = (.funcLabel LABEL, _ ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
