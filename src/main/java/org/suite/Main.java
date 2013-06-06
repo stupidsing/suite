@@ -27,7 +27,7 @@ import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel1;
+import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
 import org.suite.search.ProveSearch.Builder;
 import org.util.IoUtil;
 import org.util.LogUtil;
@@ -35,7 +35,7 @@ import org.util.Util;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
- * 
+ *
  * @author ywsing
  */
 public class Main {
@@ -239,7 +239,7 @@ public class Main {
 					break;
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
-					Builder builder = new CompiledProveBuilderLevel1(proverConfig, fcc.isDumpCode());
+					Builder builder = new CompiledProverBuilderLevel1(proverConfig, fcc.isDumpCode());
 					List<Node> nodes = Suite.evaluateLogical(builder, ruleSet, node);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}

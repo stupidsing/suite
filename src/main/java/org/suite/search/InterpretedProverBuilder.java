@@ -10,15 +10,15 @@ import org.suite.search.ProveSearch.Finder;
 import org.util.FunUtil.Sink;
 import org.util.FunUtil.Source;
 
-public class InterpretedProveBuilder implements Builder {
+public class InterpretedProverBuilder implements Builder {
 
 	private ProverConfig proverConfig;
 
-	public InterpretedProveBuilder() {
+	public InterpretedProverBuilder() {
 		this(new ProverConfig());
 	}
 
-	public InterpretedProveBuilder(ProverConfig proverConfig) {
+	public InterpretedProverBuilder(ProverConfig proverConfig) {
 		this.proverConfig = proverConfig;
 	}
 

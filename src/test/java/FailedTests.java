@@ -10,7 +10,7 @@ import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel2;
+import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
 import org.suite.search.ProveSearch.Builder;
 
 public class FailedTests {
@@ -58,7 +58,7 @@ public class FailedTests {
 
 		Node goal = Suite.substitute(".0, sink ()", Atom.NIL);
 
-		Builder builder = new CompiledProveBuilderLevel2(new ProverConfig(), false);
+		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
 		Suite.evaluateLogical(builder, rs, goal);
 	}
 

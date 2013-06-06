@@ -13,7 +13,7 @@ import org.util.FunUtil;
 import org.util.FunUtil.Sink;
 import org.util.FunUtil.Source;
 
-public class CompiledProveBuilder implements Builder {
+public class CompiledProverBuilder implements Builder {
 
 	private ProverConfig proverConfig;
 	private Finder compiler;
@@ -21,9 +21,9 @@ public class CompiledProveBuilder implements Builder {
 	/**
 	 * Interpretes the logic compiler to compile the given code, then execute.
 	 */
-	public static class CompiledProveBuilderLevel1 extends CompiledProveBuilder {
-		public CompiledProveBuilderLevel1(ProverConfig proverConfig, boolean isDumpCode) {
-			super(new InterpretedProveBuilder(), proverConfig, isDumpCode);
+	public static class CompiledProverBuilderLevel1 extends CompiledProverBuilder {
+		public CompiledProverBuilderLevel1(ProverConfig proverConfig, boolean isDumpCode) {
+			super(new InterpretedProverBuilder(), proverConfig, isDumpCode);
 		}
 	}
 
@@ -31,13 +31,13 @@ public class CompiledProveBuilder implements Builder {
 	 * Compiles the logic compiler, execute it to compile the given code, then
 	 * execute.
 	 */
-	public static class CompiledProveBuilderLevel2 extends CompiledProveBuilder {
-		public CompiledProveBuilderLevel2(ProverConfig proverConfig, boolean isDumpCode) {
-			super(new CompiledProveBuilderLevel1(proverConfig, false), proverConfig, isDumpCode);
+	public static class CompiledProverBuilderLevel2 extends CompiledProverBuilder {
+		public CompiledProverBuilderLevel2(ProverConfig proverConfig, boolean isDumpCode) {
+			super(new CompiledProverBuilderLevel1(proverConfig, false), proverConfig, isDumpCode);
 		}
 	}
 
-	public CompiledProveBuilder(Builder builder, ProverConfig proverConfig, boolean isDumpCode) {
+	public CompiledProverBuilder(Builder builder, ProverConfig proverConfig, boolean isDumpCode) {
 		this.compiler = createCompiler(builder, isDumpCode);
 		this.proverConfig = proverConfig;
 	}

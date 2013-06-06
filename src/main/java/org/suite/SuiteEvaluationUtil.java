@@ -10,8 +10,8 @@ import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.search.CompiledProveBuilder.CompiledProveBuilderLevel1;
-import org.suite.search.InterpretedProveBuilder;
+import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
+import org.suite.search.InterpretedProverBuilder;
 import org.suite.search.ProveSearch.Builder;
 import org.suite.search.ProveSearch.Finder;
 import org.util.FunUtil;
@@ -22,12 +22,12 @@ import org.util.Util;
 public class SuiteEvaluationUtil {
 
 	public boolean proveThis(RuleSet rs, String gs) {
-		return prove(new InterpretedProveBuilder(), rs, Suite.parse(gs));
+		return prove(new InterpretedProverBuilder(), rs, Suite.parse(gs));
 	}
 
 	public boolean evaluateLogical(Node lp) {
 		ProverConfig pc = new ProverConfig();
-		return prove(new CompiledProveBuilderLevel1(pc, false), pc.ruleSet(), lp);
+		return prove(new CompiledProverBuilderLevel1(pc, false), pc.ruleSet(), lp);
 	}
 
 	private boolean prove(Builder builder, RuleSet rs, Node lp) {
@@ -49,7 +49,7 @@ public class SuiteEvaluationUtil {
 				+ ", sink .out";
 		Node node = Suite.substitute(eval, mode);
 
-		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
+		Finder finder = new InterpretedProverBuilder(pc).build(rs, node);
 		Node code = singleResult(finder, appendLibraries(fcc));
 
 		if (code != null) {
@@ -77,7 +77,7 @@ public class SuiteEvaluationUtil {
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 
-		Finder finder = new InterpretedProveBuilder(pc).build(rs, node);
+		Finder finder = new InterpretedProverBuilder(pc).build(rs, node);
 		Node type = singleResult(finder, appendLibraries(fcc));
 
 		if (type != null)
