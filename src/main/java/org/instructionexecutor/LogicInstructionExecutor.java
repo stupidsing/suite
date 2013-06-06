@@ -38,7 +38,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected void execute(Exec exec, Instruction insn) {
+	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
 		Node regs[] = frame != null ? frame.registers : null;
@@ -97,7 +97,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				current.ip = insn.op1;
 			break;
 		default:
-			super.execute(exec, insn);
+			super.handle(exec, insn);
 		}
 	}
 

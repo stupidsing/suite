@@ -43,7 +43,7 @@ public class InstructionCompiledExecutor {
 	private AtomicInteger counter = new AtomicInteger();
 
 	private StringBuilder clazzsec = new StringBuilder();
-	private StringBuilder methodsec = new StringBuilder();
+	private StringBuilder localsec = new StringBuilder();
 	private StringBuilder swsec = new StringBuilder();
 
 	private int ip;
@@ -196,7 +196,7 @@ public class InstructionCompiledExecutor {
 					app(clazzsec, "private #{str} r#{num}", typeName, r);
 				}
 				app(clazzsec, "}");
-				app(methodsec, "#{fr-class} #{fr}");
+				app(localsec, "#{fr-class} #{fr}");
 				break;
 			case LOG___________:
 				constant = constantPool.get(op0);
@@ -232,13 +232,14 @@ public class InstructionCompiledExecutor {
 			case SERVICE_______:
 				app("dsp -= #{num}", op2);
 				node = constantPool.get(op1);
-				// TODO FunInstructionExecutor.sys()
 				if (node == COMPARE) {
 					registerTypes[op0] = int.class;
 					app("Node left = (Node) ds[dsp + 1]");
 					app("Node right = (Node) ds[dsp]");
 					app("#{reg} = comparer.compare(left, right)", op0);
-				}
+				} else
+					// TODO FunInstructionExecutor.sys()
+					throw new RuntimeException("Unknown service " + node);
 				break;
 			case SETRESULT_____:
 				registerTypes[op0] = Node.class;
@@ -254,8 +255,8 @@ public class InstructionCompiledExecutor {
 				app("#{reg} = ds[dsp + #{num}]", op0, op1);
 				break;
 			default:
-				throw new RuntimeException("Unknown instruction " + insn);
 				// TODO LogicInstructionExecutor.execute()
+				throw new RuntimeException("Unknown instruction " + insn);
 			}
 		}
 
@@ -281,7 +282,7 @@ public class InstructionCompiledExecutor {
 				+ "} \n" //
 				+ "} \n" //
 				+ "} \n" //
-		, className, clazzsec, methodsec, swsec);
+		, className, clazzsec, localsec, swsec);
 
 		String filename = "src/main/java/org/instructionexecutor/" + className + ".java";
 		try (OutputStream os = new FileOutputStream(filename)) {

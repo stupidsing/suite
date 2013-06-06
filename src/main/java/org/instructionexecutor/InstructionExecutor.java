@@ -200,7 +200,7 @@ public class InstructionExecutor {
 			default:
 				exec.current = current;
 				exec.sp = sp;
-				execute(exec, insn);
+				handle(exec, insn);
 				current = exec.current;
 				sp = exec.sp;
 			}
@@ -213,7 +213,7 @@ public class InstructionExecutor {
 		protected int sp;
 	}
 
-	protected void execute(Exec exec, Instruction insn) {
+	protected void handle(Exec exec, Instruction insn) {
 		throw new RuntimeException("Unknown instruction " + insn);
 	}
 

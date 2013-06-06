@@ -99,7 +99,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected void execute(Exec exec, Instruction insn) {
+	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
@@ -110,7 +110,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			regs[insn.op0] = sys(exec, constantPool.get(insn.op1));
 			break;
 		default:
-			super.execute(exec, insn);
+			super.handle(exec, insn);
 		}
 	}
 
