@@ -35,7 +35,8 @@ public class InstructionExecutor {
 		List<Instruction> list = new ArrayList<>();
 		list.addAll(extractor.extractInstructions(node));
 		unwrapEntryPoint = list.size();
-		list.add(new Instruction(Insn.CALLCLOSURE___, 1, 0, 0));
+		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
+		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
 		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
 
 		instructions = list.toArray(new Instruction[list.size()]);
@@ -52,6 +53,7 @@ public class InstructionExecutor {
 		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
 		Node stack[] = new Node[stackSize];
+		Node returnValue = null;
 		int i, sp = 0;
 
 		Exec exec = new Exec();
@@ -91,11 +93,11 @@ public class InstructionExecutor {
 				current = new Activation(frame, insn.op0, current);
 				break;
 			case CALLCLOSURE___:
-				Closure closure = (Closure) regs[insn.op1];
+				Closure closure = (Closure) regs[insn.op0];
 				if (closure.result == null)
 					current = new Activation(closure, current);
 				else
-					regs[insn.op0] = closure.result;
+					returnValue = closure.result;
 				break;
 			case ENTER_________:
 				current.frame = new Frame(frame, insn.op0);
@@ -182,12 +184,15 @@ public class InstructionExecutor {
 				current = current.previous;
 				break;
 			case RETURNVALUE___:
-				Node returnValue = regs[insn.op0]; // Saves return value
+				returnValue = regs[insn.op0];
 				current = current.previous;
-				current.frame.registers[instructions[current.ip - 1].op0] = returnValue;
+				break;
+			case SETRESULT_____:
+				regs[insn.op0] = returnValue;
 				break;
 			case SETCLOSURERES_:
-				((Closure) regs[insn.op0]).result = regs[insn.op1];
+				regs[insn.op0] = returnValue;
+				((Closure) regs[insn.op1]).result = returnValue;
 				break;
 			case TOP___________:
 				regs[insn.op0] = stack[sp + insn.op1];

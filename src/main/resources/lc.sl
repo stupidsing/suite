@@ -31,9 +31,7 @@ compile-call .call .pls .c0/.cx/.label
 		, .c1
 	)
 	, replace .call/.call1 CUT/($$CUT .cutPoint .failLabel)
-	, lc-compile .call1 (
-		AND ($$BYTECODE _ CALL-CLOSURE .provenReg .provenReg) FAIL
-	) .pls/() .c1/.c2/.c3/.c4
+	, lc-compile .call1 (AND ($$BYTECODE _ CALL-CLOSURE .provenReg) FAIL) .pls/() .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel LABEL, _ RETURN, .c3)
 	, .c4 = (_ LEAVE, .cx)
 #

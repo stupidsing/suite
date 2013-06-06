@@ -25,7 +25,7 @@ fc-compile EAGER (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- !
 	, fc-compile EAGER .callee .env .c0/.c1/.d0/.d1/.r1
 	, fc-compile EAGER .parameter .env .c1/.c2/.d1/.dx/.r2
-	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .reg .r1, .cx)
+	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .r1, _ SET-RESULT .reg, .cx)
 #
 fc-compile EAGER (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- !

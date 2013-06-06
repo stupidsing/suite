@@ -85,6 +85,7 @@ public class InstructionUtil {
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
+		SETRESULT_____("SET-RESULT"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
 		SERVICE_______("SERVICE"), //
 		TOP___________("TOP"), //

@@ -3,8 +3,8 @@
 
 fc-compile LAZY .do .env .c0/.cx/.d0/.dx/.reg
 	:- fc-lazy-compile-to-thunk .do .env .c0/.c1/.d0/.dx/.closureReg
-	, .c1 = (_ CALL-CLOSURE .reg .closureReg
-		, _ SET-CLOSURE-RESULT .closureReg .reg
+	, .c1 = (_ CALL-CLOSURE .closureReg
+		, _ SET-CLOSURE-RESULT .reg .closureReg
 		, .cx
 	)
 #
@@ -78,9 +78,10 @@ fc-lazy-compile-to-value (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	, fc-compile LAZY .callee .env .c0/.c1/.d0/.d1/.r1
 	, fc-lazy-compile-to-thunk .parameter .env .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ PUSH .r2
-		, _ CALL-CLOSURE .closureReg .r1
-		, _ CALL-CLOSURE .reg .closureReg
-		, _ SET-CLOSURE-RESULT .closureReg .reg
+		, _ CALL-CLOSURE .r1
+		, _ SET-RESULT .closureReg
+		, _ CALL-CLOSURE .closureReg
+		, _ SET-CLOSURE-RESULT .reg .closureReg
 		, .cx
 	)
 #
