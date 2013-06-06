@@ -283,7 +283,7 @@ public class InstructionCompiledExecutor {
 				+ "} \n" //
 		, className, clazzsec, methodsec, swsec);
 
-		String filename = "src/main/java/org/instructionexecutor/Output.java";
+		String filename = "src/main/java/org/instructionexecutor/" + className + ".java";
 		try (OutputStream os = new FileOutputStream(filename)) {
 			os.write(java.getBytes(IoUtil.charset));
 		} catch (IOException ex) {
