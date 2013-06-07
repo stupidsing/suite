@@ -67,9 +67,15 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
 	 * string.
 	 */
-	public String unwrapToString(Node node) throws IOException {
+	public String unwrapToString(Node node) {
 		StringWriter writer = new StringWriter();
-		unwrap(node, writer);
+
+		try {
+			unwrap(node, writer);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+
 		return writer.toString();
 	}
 
@@ -168,8 +174,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		} else if (command == POPEN) {
 			Node n0 = unwrap((Node) stack[sp + 1]);
 			Node n1 = unwrap((Node) stack[sp]);
-			String cmd = Suite.stringize(n0);
-			byte in[] = Suite.stringize(n1).getBytes(IoUtil.charset);
+			String cmd = unwrapToString(n0);
+			byte in[] = unwrapToString(n1).getBytes(IoUtil.charset);
 
 			try {
 				Process process = Runtime.getRuntime().exec(cmd);

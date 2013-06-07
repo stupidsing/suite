@@ -1,4 +1,3 @@
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -67,27 +66,22 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test4() {
-		assertEquals("bcdefg", eval("map {`+ 1`}", "abcdef"));
-	}
-
-	private static Node eval(String f) {
-		return Suite.evaluateEagerFun(f);
-	}
-
-	private static String eval(String program, String in) {
-		StringReader reader = new StringReader(in);
+	public void test4() { // some node(s) become cyclic, causing stack overflow
+		StringReader reader = new StringReader("");
 		StringWriter writer = new StringWriter();
-		Node node = Suite.applyFilter(Suite.parse(program));
-		FunCompilerConfig fcc = Suite.fcc(node, true);
+		Node node = Suite.applyFilter(Suite.parse("id"));
+		FunCompilerConfig fcc = Suite.fcc(node, false);
 
 		try {
 			Suite.evaluateFunIo(fcc, reader, writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		writer.toString();
+	}
 
-		return writer.toString();
+	private static Node eval(String f) {
+		return Suite.evaluateEagerFun(f);
 	}
 
 }

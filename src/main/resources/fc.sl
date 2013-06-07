@@ -125,7 +125,6 @@ fc-add-functions STANDARD .p (
 	define head = (list => _lhead {list}) >>
 	define log = (m => _log {m}) >>
 	define log2 = (m => n => _log2 {m} {n}) >>
-	define popen = (command => in => _popen {command} {in}) >>
 	define prove = (goal => _prove {goal}) >>
 	define subst = (var => node => _subst {var} {node}) >>
 	define tail = (list => _ltail {list}) >>
@@ -286,6 +285,9 @@ fc-add-functions STANDARD .p (
 				list0
 		else
 			list1
+	) >>
+	define popen = (command => in =>
+		in | _popen {command} | source
 	) >>
 	define reverse =
 		fold-left {a => b => b, a} {}
