@@ -5,8 +5,8 @@ import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
-import org.suite.search.ProveSearch.Builder;
-import org.suite.search.ProveSearch.Finder;
+import org.suite.search.ProverBuilder.Builder;
+import org.suite.search.ProverBuilder.Finder;
 import org.util.FunUtil.Sink;
 import org.util.FunUtil.Source;
 

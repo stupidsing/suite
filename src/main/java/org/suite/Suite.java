@@ -2,6 +2,8 @@ package org.suite;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
-import org.suite.search.ProveSearch.Builder;
+import org.suite.search.ProverBuilder.Builder;
 
 public class Suite {
 
@@ -42,7 +44,7 @@ public class Suite {
 	}
 
 	public static Node applyFilter(Node func) {
-		return Suite.substitute("source {} | .0 | sink {}", func);
+		return Suite.substitute("source {} | .0", func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {
@@ -178,6 +180,10 @@ public class Suite {
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
 		return suiteEvaluationUtil.evaluateFun(fcc);
+	}
+
+	public static void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
+		suiteEvaluationUtil.evaluateFunIo(fcc, reader, writer);
 	}
 
 	public static Node evaluateFunType(String fps) {

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,9 +16,7 @@ import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.instructionexecutor.io.IndexedIo.IndexedInput;
-import org.instructionexecutor.io.IndexedIo.IndexedOutput;
 import org.instructionexecutor.io.IndexedIo.IndexedReader;
-import org.instructionexecutor.io.IndexedIo.IndexedWriter;
 import org.suite.Suite;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
@@ -39,7 +38,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private static final Atom CONS = Atom.create("CONS");
 	private static final Atom ERROR = Atom.create("ERROR");
 	private static final Atom FGETC = Atom.create("FGETC");
-	private static final Atom FPUTC = Atom.create("FPUTC");
 	private static final Atom HEAD = Atom.create("HEAD");
 	private static final Atom ISTREE = Atom.create("IS-TREE");
 	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
@@ -60,10 +58,38 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private Comparer comparer = new Comparer();
 	private Prover prover;
 	private Map<Node, IndexedInput> inputs = new HashMap<>();
-	private Map<Node, IndexedOutput> outputs = new HashMap<>();
 
 	public FunInstructionExecutor(Node node) {
 		super(node);
+	}
+
+	/**
+	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
+	 * string.
+	 */
+	public String unwrapToString(Node node) throws IOException {
+		StringWriter writer = new StringWriter();
+		unwrap(node, writer);
+		return writer.toString();
+	}
+
+	/**
+	 * Evaluates the whole (lazy) term to a list of numbers, and write
+	 * corresponding characters into the writer.
+	 */
+	public void unwrap(Node node, Writer writer) throws IOException {
+		while (true) {
+			node = node.finalNode();
+
+			if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+				writer.write(((Int) unwrap(tree.getLeft())).getNumber());
+				node = tree.getRight();
+			} else if (node instanceof Closure)
+				node = evaluateClosure((Closure) node);
+			else if (node == Atom.NIL)
+				break;
+		}
 	}
 
 	/**
@@ -85,17 +111,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		return node;
 	}
 
-	@Override
-	public Node execute() {
-		for (IndexedInput input : inputs.values())
-			input.fetch();
-
-		Node node = super.execute();
-
-		for (IndexedOutput output : outputs.values())
-			output.flush();
-
-		return node;
+	public void executeIo(Reader reader, Writer writer) throws IOException {
+		inputs.put(Atom.NIL, new IndexedReader(reader));
+		unwrap(super.execute(), writer);
 	}
 
 	@Override
@@ -132,13 +150,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		else if (command == FGETC) {
 			Node node = (Node) stack[sp + 1];
 			int p = ((Int) stack[sp]).getNumber();
-			result = Int.create(inputs.get(node).read(p));
-		} else if (command == FPUTC) {
-			Node node = (Node) stack[sp + 3];
-			int p = ((Int) stack[sp + 2]).getNumber();
-			int c = ((Int) stack[sp + 1]).getNumber();
-			outputs.get(node).write(p, (char) c);
-			result = (Node) stack[sp];
+			int c = inputs.get(node).read(p);
+			result = Int.create(c);
 		} else if (command == HEAD)
 			result = Tree.decompose((Node) stack[sp]).getLeft();
 		else if (command == ISTREE)
@@ -219,14 +232,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			throw new RuntimeException("Unknown system call " + command);
 
 		return result;
-	}
-
-	public void setIn(Reader in) {
-		inputs.put(Atom.NIL, new IndexedReader(in));
-	}
-
-	public void setOut(Writer out) {
-		outputs.put(Atom.NIL, new IndexedWriter(out));
 	}
 
 	public void setProver(Prover prover) {

@@ -1,5 +1,8 @@
 package org.suite;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +15,8 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
 import org.suite.search.InterpretedProverBuilder;
-import org.suite.search.ProveSearch.Builder;
-import org.suite.search.ProveSearch.Finder;
+import org.suite.search.ProverBuilder.Builder;
+import org.suite.search.ProverBuilder.Finder;
 import org.util.FunUtil;
 import org.util.FunUtil.Sink;
 import org.util.FunUtil.Source;
@@ -40,11 +43,23 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
+		FunInstructionExecutor executor = configureFunExecutor(fcc);
+		Node result = executor.execute();
+		return fcc.isLazy() ? executor.unwrap(result) : result;
+	}
+
+	public void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
+		FunInstructionExecutor executor = configureFunExecutor(fcc);
+		executor.executeIo(reader, writer);
+	}
+
+	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 		ProverConfig pc = fcc.getProverConfig();
 
-		String eval = "source .in, compile-function .0 .in .out" //
+		String eval = "source .in" //
+				+ ", compile-function .0 .in .out" //
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
 				+ ", sink .out";
 		Node node = Suite.substitute(eval, mode);
@@ -54,14 +69,8 @@ public class SuiteEvaluationUtil {
 
 		if (code != null) {
 			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setIn(fcc.getIn());
-			e.setOut(fcc.getOut());
 			e.setProver(new Prover(new ProverConfig(rs, pc)));
-
-			Node result = e.execute();
-			if (fcc.isLazy())
-				result = e.unwrap(result);
-			return result;
+			return e;
 		} else
 			throw new RuntimeException("Function compilation error");
 	}

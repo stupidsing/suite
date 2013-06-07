@@ -2,7 +2,6 @@ package org.instructionexecutor.io;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 
 /**
  * Implements input and output devices that read/write at specified byte
@@ -13,15 +12,7 @@ import java.io.Writer;
 public class IndexedIo {
 
 	public interface IndexedInput {
-		public void fetch();
-
 		public int read(int p);
-	}
-
-	public interface IndexedOutput {
-		public void write(int p, char c);
-
-		public void flush();
 	}
 
 	public static class IndexedReader implements IndexedInput {
@@ -30,10 +21,6 @@ public class IndexedIo {
 
 		public IndexedReader(Reader in) {
 			this.in = in;
-		}
-
-		@Override
-		public void fetch() {
 		}
 
 		@Override
@@ -58,39 +45,6 @@ public class IndexedIo {
 
 		public void setIn(Reader in) {
 			this.in = in;
-		}
-	}
-
-	public static class IndexedWriter implements IndexedOutput {
-		private Writer out;
-		private StringBuilder outBuffer = new StringBuilder();
-
-		public IndexedWriter(Writer out) {
-			this.out = out;
-		}
-
-		@Override
-		public void write(int p, char c) {
-			if (p >= outBuffer.length())
-				outBuffer.setLength(p + 1);
-
-			outBuffer.setCharAt(p, c);
-		}
-
-		@Override
-		public void flush() {
-			try {
-				out.write(outBuffer.toString());
-				out.flush();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-
-			outBuffer.setLength(0);
-		}
-
-		public void setOut(Writer out) {
-			this.out = out;
 		}
 	}
 

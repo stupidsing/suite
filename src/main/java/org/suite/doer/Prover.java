@@ -73,7 +73,7 @@ public class Prover {
 		alt = FAIL;
 
 		while (true) {
-			// LogUtil.info("PROVE", Formatter.dump(query));
+			// LogUtil.info(Formatter.dump(query));
 
 			Tree tree = Tree.decompose(query);
 			if (tree != null) {

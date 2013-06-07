@@ -91,7 +91,6 @@ fc-define-default-fun 1 _ttail TAIL #
 fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 1 fflush FFLUSH #
 fc-define-default-fun 2 fgetc FGETC #
-fc-define-default-fun 4 fputc FPUTC #
 fc-define-default-fun 1 is-tree IS-TREE #
 fc-define-default-fun 1 is-tuple IS-TREE #
 
@@ -192,14 +191,6 @@ fc-add-functions STANDARD .p (
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}, r
 		|| otherwise (init,)
-	) >>
-	define sink = (os =>
-		define fputs = (pos =>
-			match
-			|| $c, $cs => fputc {os} {pos} {c} {fputs {pos + 1} {cs}}
-			|| otherwise os
-		) >>
-		fputs {0}
 	) >>
 	define source = (is =>
 		define fgets = (pos =>

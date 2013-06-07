@@ -119,7 +119,6 @@ fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.r
 		error/0/,
 		fflush/1/VALUE:,
 		fgetc/2/VALUE:VALUE:,
-		fputc/4/VALUE:VALUE:VALUE:VALUE:,
 		is-tree/1/VALUE:,
 		is-tuple/1/VALUE:,
 	) .var/.n/.paramWraps

@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +26,7 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
-import org.suite.search.ProveSearch.Builder;
+import org.suite.search.ProverBuilder.Builder;
 import org.util.IoUtil;
 import org.util.LogUtil;
 import org.util.Util;
@@ -260,15 +258,15 @@ public class Main {
 		return result;
 	}
 
-	private boolean runFilter(List<String> inputs) {
+	private boolean runFilter(List<String> inputs) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		for (String input : inputs)
 			sb.append(input + " ");
 
 		Node node = Suite.applyFilter(Suite.parse(sb.toString()));
-		Reader in = new InputStreamReader(System.in, IoUtil.charset);
-		Writer out = new OutputStreamWriter(System.out, IoUtil.charset);
-		evaluateFunctional(in, out, node);
+		Reader reader = new InputStreamReader(System.in, IoUtil.charset);
+		Writer writer = new OutputStreamWriter(System.out, IoUtil.charset);
+		evaluateFunctional(node, reader, writer);
 		return true;
 	}
 
@@ -282,15 +280,18 @@ public class Main {
 	}
 
 	private Node evaluateFunctional(Node node) {
-		return evaluateFunctional(new StringReader(""), new StringWriter(), node);
+		configureFcc(node);
+		return Suite.evaluateFun(fcc);
 	}
 
-	private Node evaluateFunctional(Reader in, Writer out, Node node) {
+	private void evaluateFunctional(Node node, Reader reader, Writer writer) throws IOException {
+		configureFcc(node);
+		Suite.evaluateFunIo(fcc, reader, writer);
+	}
+
+	private void configureFcc(Node node) {
 		fcc.setNode(node);
 		fcc.setProverConfig(proverConfig);
-		fcc.setIn(in);
-		fcc.setOut(out);
-		return Suite.evaluateFun(fcc);
 	}
 
 	private String yesNo(boolean q) {

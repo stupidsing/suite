@@ -1,9 +1,13 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.suite.FunCompilerConfig;
 import org.suite.Suite;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
@@ -11,7 +15,7 @@ import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
-import org.suite.search.ProveSearch.Builder;
+import org.suite.search.ProverBuilder.Builder;
 
 public class FailedTests {
 
@@ -62,8 +66,28 @@ public class FailedTests {
 		Suite.evaluateLogical(builder, rs, goal);
 	}
 
+	@Test
+	public void test4() {
+		assertEquals("bcdefg", eval("map {`+ 1`}", "abcdef"));
+	}
+
 	private static Node eval(String f) {
 		return Suite.evaluateEagerFun(f);
+	}
+
+	private static String eval(String program, String in) {
+		StringReader reader = new StringReader(in);
+		StringWriter writer = new StringWriter();
+		Node node = Suite.applyFilter(Suite.parse(program));
+		FunCompilerConfig fcc = Suite.fcc(node, true);
+
+		try {
+			Suite.evaluateFunIo(fcc, reader, writer);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+
+		return writer.toString();
 	}
 
 }

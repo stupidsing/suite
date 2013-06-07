@@ -18,6 +18,7 @@ import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.Journal;
 import org.suite.Suite;
 import org.suite.doer.Binder;
+import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Prover;
 import org.suite.node.Atom;
@@ -301,6 +302,7 @@ public class InstructionCompiledExecutor {
 				+ "import " + Atom.class.getCanonicalName() + "; \n" //
 				+ "import " + Binder.class.getCanonicalName() + "; \n" //
 				+ "import " + Closure.class.getCanonicalName() + "; \n" //
+				+ "import " + Comparer.class.getCanonicalName() + "; \n" //
 				+ "import " + Int.class.getCanonicalName() + "; \n" //
 				+ "import " + Journal.class.getCanonicalName() + "; \n" //
 				+ "import " + LogUtil.class.getCanonicalName() + "; \n" //
@@ -317,8 +319,10 @@ public class InstructionCompiledExecutor {
 				+ "public static void exec() { \n" //
 				+ "int ip = 0; \n" //
 				+ "Node returnValue = null; \n" //
-				+ "Node left, right; \n" //
+				+ "int n; \n" //
+				+ "Node node, left, right; \n" //
 				+ "\n" //
+				+ "Comparer comparer = new Comparer();; \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "\n" //

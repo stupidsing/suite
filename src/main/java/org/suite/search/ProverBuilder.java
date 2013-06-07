@@ -5,7 +5,7 @@ import org.suite.node.Node;
 import org.util.FunUtil.Sink;
 import org.util.FunUtil.Source;
 
-public class ProveSearch {
+public class ProverBuilder {
 
 	public interface Builder {
 		public Finder build(RuleSet ruleSet, Node goal);

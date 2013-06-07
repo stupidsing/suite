@@ -220,7 +220,6 @@ default-fun-type _ttail (FUN-OF (TUPLE-OF .n (_, .types)) (TUPLE-OF .n .types)) 
 default-fun-type error _ #
 default-fun-type fflush (FUN-OF .type .type) #
 default-fun-type fgetc (FUN-OF _ (FUN-OF NUMBER NUMBER)) #
-default-fun-type fputc (FUN-OF _ (FUN-OF NUMBER (FUN-OF NUMBER (FUN-OF .type .type)))) #
 default-fun-type is-tree (FUN-OF (LIST-OF .type) BOOLEAN) #
 default-fun-type is-tuple (FUN-OF (TUPLE-OF _ (_, _)) BOOLEAN) #
 default-fun-type log (FUN-OF .type .type) #
