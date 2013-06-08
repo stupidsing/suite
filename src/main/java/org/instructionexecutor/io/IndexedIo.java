@@ -42,10 +42,6 @@ public class IndexedIo {
 
 			return p < inBuffer.length() ? inBuffer.charAt(p) : -1;
 		}
-
-		public void setIn(Reader in) {
-			this.in = in;
-		}
 	}
 
 }
