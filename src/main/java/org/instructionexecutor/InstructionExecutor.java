@@ -20,7 +20,7 @@ import org.util.LogUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
-public class InstructionExecutor {
+public class InstructionExecutor implements AutoCloseable {
 
 	private static final int stackSize = 4096;
 
@@ -227,6 +227,10 @@ public class InstructionExecutor {
 
 	protected static int i(Object node) {
 		return ((Int) node).getNumber();
+	}
+
+	@Override
+	public void close() {
 	}
 
 	protected Instruction[] getInstructions() {

@@ -1,5 +1,6 @@
 package org.suite.search;
 
+import org.instructionexecutor.InstructionExecutor;
 import org.instructionexecutor.LogicInstructionExecutor;
 import org.suite.Suite;
 import org.suite.doer.Cloner;
@@ -53,7 +54,10 @@ public class CompiledProverBuilder implements Builder {
 				proverConfig.setSource(source);
 				proverConfig.setSink(sink);
 				Prover prover = new Prover(proverConfig);
-				new LogicInstructionExecutor(code, prover).execute();
+
+				try (InstructionExecutor executor = new LogicInstructionExecutor(code, prover)) {
+					executor.execute();
+				}
 			}
 		};
 	}

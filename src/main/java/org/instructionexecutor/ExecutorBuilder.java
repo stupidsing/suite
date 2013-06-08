@@ -17,7 +17,9 @@ public class ExecutorBuilder {
 		public Executor build(final Node code) {
 			return new Executor() {
 				public void execute() {
-					new FunInstructionExecutor(code).execute();
+					try (InstructionExecutor executor = new FunInstructionExecutor(code)) {
+						executor.execute();
+					}
 				}
 			};
 		}
@@ -33,7 +35,9 @@ public class ExecutorBuilder {
 		public Executor build(final Node code) {
 			return new Executor() {
 				public void execute() {
-					new LogicInstructionExecutor(code, prover).execute();
+					try (InstructionExecutor executor = new LogicInstructionExecutor(code, prover)) {
+						executor.execute();
+					}
 				}
 			};
 		}

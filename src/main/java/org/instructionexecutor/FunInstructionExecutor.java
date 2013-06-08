@@ -119,16 +119,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	public Node execute() {
-		Node result = super.execute();
-
-		for (IndexedInput input : inputs.values())
-			input.close();
-
-		return result;
-	}
-
-	@Override
 	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
@@ -240,6 +230,12 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			throw new RuntimeException("Unknown system call " + command);
 
 		return result;
+	}
+
+	@Override
+	public void close() {
+		for (IndexedInput input : inputs.values())
+			input.close();
 	}
 
 	public void setProver(Prover prover) {
