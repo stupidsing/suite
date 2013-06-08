@@ -107,10 +107,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			Node left = unwrap(tree.getLeft());
 			Node right = unwrap(tree.getRight());
 			node = Tree.create(tree.getOperator(), left, right);
-		} else if (node instanceof Closure) {
-			Closure closure = (Closure) node;
-			node = unwrap(evaluateClosure(closure));
-		}
+		} else if (node instanceof Closure)
+			node = unwrap(evaluateClosure((Closure) node));
 
 		return node;
 	}
