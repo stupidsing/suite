@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Implements input and output devices that read/write at specified byte
- * positions rather than serially.
+ * Implements input devices that read/write at specified byte positions rather
+ * than serially.
  * 
  * @author ywsing
  */
