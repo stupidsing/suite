@@ -13,11 +13,13 @@ public class IndexedIo {
 
 	public interface IndexedInput {
 		public int read(int p);
+
+		public void close();
 	}
 
 	public static class IndexedReader implements IndexedInput {
 		private Reader in;
-		private StringBuilder inBuffer = new StringBuilder();
+		private StringBuilder sb = new StringBuilder();
 
 		public IndexedReader(Reader in) {
 			this.in = in;
@@ -25,7 +27,7 @@ public class IndexedIo {
 
 		@Override
 		public int read(int p) {
-			while (p >= inBuffer.length()) {
+			while (p >= sb.length()) {
 				int c;
 
 				try {
@@ -35,12 +37,20 @@ public class IndexedIo {
 				}
 
 				if (c >= 0)
-					inBuffer.append((char) c);
+					sb.append((char) c);
 				else
 					break;
 			}
 
-			return p < inBuffer.length() ? inBuffer.charAt(p) : -1;
+			return p < sb.length() ? sb.charAt(p) : -1;
+		}
+
+		public void close() {
+			try {
+				in.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 	}
 

@@ -1,9 +1,8 @@
 package org.instructionexecutor;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -29,7 +28,6 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
-import org.util.IoUtil;
 import org.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
@@ -123,6 +121,16 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
+	public Node execute() {
+		Node result = super.execute();
+
+		for (IndexedInput input : inputs.values())
+			input.close();
+
+		return result;
+	}
+
+	@Override
 	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
@@ -173,20 +181,16 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = (Node) stack[sp];
 		} else if (command == POPEN) {
 			Node n0 = unwrap((Node) stack[sp + 1]);
-			Node n1 = unwrap((Node) stack[sp]);
-			String cmd = unwrapToString(n0);
-			byte in[] = unwrapToString(n1).getBytes(IoUtil.charset);
+			Node n1 = (Node) stack[sp];
 
 			try {
-				Process process = Runtime.getRuntime().exec(cmd);
-				InputStream pis = process.getInputStream();
-				OutputStream pos = process.getOutputStream();
+				Process process = Runtime.getRuntime().exec(unwrapToString(n0));
+				InputStreamReader reader = new InputStreamReader(process.getInputStream());
 
-				pos.write(in);
-				pos.close();
-
-				InputStreamReader reader = new InputStreamReader(pis);
-				inputs.put(result = Atom.unique(), new IndexedReader(reader));
+				try (OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream())) {
+					unwrap(n1, writer);
+					inputs.put(result = Atom.unique(), new IndexedReader(reader));
+				}
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
