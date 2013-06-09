@@ -44,8 +44,10 @@ public class FailedTests {
 				+ ")");
 	}
 
+	// need to increase InstructionExecutor.stackSize, or implement tail
+	// recursion
 	@Test
-	public void test3() { // need to increase InstructionExecutor.stackSize
+	public void test3() {
 		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
 				+ "member (.e, _) .e #" //
 				+ "member (_, .tail) .e :- member .tail .e #" //
