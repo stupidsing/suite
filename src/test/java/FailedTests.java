@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
-import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
@@ -46,14 +45,7 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test3() { // Unknown expression sink!?
-		Node goal = Suite.parse("(), sink ()");
-		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
-		Suite.evaluateLogical(builder, RuleSetUtil.create(), goal);
-	}
-
-	@Test
-	public void test4() { // need to increase InstructionExecutor.stackSize
+	public void test3() { // need to increase InstructionExecutor.stackSize
 		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
 				+ "member (.e, _) .e #" //
 				+ "member (_, .tail) .e :- member .tail .e #" //
