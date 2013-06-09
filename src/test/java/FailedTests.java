@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
-import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
 import org.suite.search.ProverBuilder.Builder;
@@ -56,8 +55,7 @@ public class FailedTests {
 				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #" //
 		));
 
-		Node goal = Suite.substitute(".0, sink ()", Atom.NIL);
-
+		Node goal = Suite.parse("(), sink ()");
 		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
 		Suite.evaluateLogical(builder, rs, goal);
 	}
