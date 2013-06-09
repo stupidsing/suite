@@ -5,11 +5,13 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.suite.Suite;
+import org.suite.doer.Formatter;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
 import org.suite.search.ProverBuilder.Builder;
+import org.util.IoUtil;
 
 public class FailedTests {
 
@@ -58,6 +60,18 @@ public class FailedTests {
 		Node goal = Suite.parse("(), sink ()");
 		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
 		Suite.evaluateLogical(builder, rs, goal);
+	}
+
+	// Unknown expression otherwise error
+	@Test
+	public void test4() throws IOException {
+		byte bytes[] = new byte[65536];
+		int nBytes = getClass().getResourceAsStream("/RB-TREE.slf").read(bytes);
+		String s = new String(bytes, 0, nBytes, IoUtil.charset);
+		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
+		System.out.println("IN:\n" + fp);
+		Node result = Suite.evaluateEagerFun(fp);
+		System.out.println("OUT:\n" + Formatter.dump(result));
 	}
 
 	private static Node eval(String f) {
