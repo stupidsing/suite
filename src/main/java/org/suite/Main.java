@@ -135,7 +135,7 @@ public class Main {
 
 	private boolean run(List<String> importFilenames) throws IOException {
 		RuleSet ruleSet = proverConfig.ruleSet();
-		Suite.importResource(proverConfig.ruleSet(), "auto.sl");
+		Suite.importResource(ruleSet, "auto.sl");
 
 		for (String importFilename : importFilenames)
 			Suite.importFile(ruleSet, importFilename);

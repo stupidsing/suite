@@ -1,12 +1,9 @@
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.suite.FunCompilerConfig;
 import org.suite.Suite;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
@@ -49,9 +46,15 @@ public class FailedTests {
 	}
 
 	@Test
-	public void test3() { // need to increase InstructionExecutor.stackSize
-		RuleSet rs = RuleSetUtil.create();
-		RuleSetUtil.importFrom(rs, Suite.parse("" //
+	public void test3() { // Unknown expression sink!?
+		Node goal = Suite.parse("(), sink ()");
+		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
+		Suite.evaluateLogical(builder, RuleSetUtil.create(), goal);
+	}
+
+	@Test
+	public void test4() { // need to increase InstructionExecutor.stackSize
+		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
 				+ "member (.e, _) .e #" //
 				+ "member (_, .tail) .e :- member .tail .e #" //
 				+ "sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #" //
@@ -63,21 +66,6 @@ public class FailedTests {
 
 		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
 		Suite.evaluateLogical(builder, rs, goal);
-	}
-
-	@Test
-	public void test4() { // some node(s) become cyclic, causing stack overflow
-		StringReader reader = new StringReader("");
-		StringWriter writer = new StringWriter();
-		Node node = Suite.applyFilter(Suite.parse("id"));
-		FunCompilerConfig fcc = Suite.fcc(node, false);
-
-		try {
-			Suite.evaluateFunIo(fcc, reader, writer);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		writer.toString();
 	}
 
 	private static Node eval(String f) {
