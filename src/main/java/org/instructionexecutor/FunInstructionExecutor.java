@@ -164,8 +164,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = (Node) stack[sp];
 			LogUtil.info(Formatter.display(unwrap(result)));
 		} else if (command == LOG2) {
-			Node ln = unwrap((Node) stack[sp + 1]);
-			LogUtil.info(Suite.stringize(ln));
+			LogUtil.info(unwrapToString((Node) stack[sp + 1]));
 			result = (Node) stack[sp];
 		} else if (command == POPEN) {
 			Node n0 = unwrap((Node) stack[sp + 1]);
@@ -173,11 +172,12 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 			try {
 				Process process = Runtime.getRuntime().exec(unwrapToString(n0));
+
 				InputStreamReader reader = new InputStreamReader(process.getInputStream());
+				inputs.put(result = Atom.unique(), new IndexedReader(reader));
 
 				try (OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream())) {
 					unwrap(n1, writer);
-					inputs.put(result = Atom.unique(), new IndexedReader(reader));
 				}
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
