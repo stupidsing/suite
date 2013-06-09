@@ -43,13 +43,16 @@ public class SuiteEvaluationUtil {
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
-		FunInstructionExecutor executor = configureFunExecutor(fcc);
-		Node result = executor.execute();
-		return fcc.isLazy() ? executor.unwrap(result) : result;
+		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
+			Node result = executor.execute();
+			return fcc.isLazy() ? executor.unwrap(result) : result;
+		}
 	}
 
 	public void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
-		configureFunExecutor(fcc).executeIo(reader, writer);
+		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
+			executor.executeIo(reader, writer);
+		}
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
