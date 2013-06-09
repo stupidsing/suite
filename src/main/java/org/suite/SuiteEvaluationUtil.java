@@ -49,8 +49,7 @@ public class SuiteEvaluationUtil {
 	}
 
 	public void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
-		FunInstructionExecutor executor = configureFunExecutor(fcc);
-		executor.executeIo(reader, writer);
+		configureFunExecutor(fcc).executeIo(reader, writer);
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
