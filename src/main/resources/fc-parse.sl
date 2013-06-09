@@ -43,7 +43,8 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 	, fc-parse .if .if1
 	, fc-parse .then .then1
 	, (.otherwise = else .else, !, fc-parse .else .else1
-		; .otherwise = else-if .elseif, fc-parse (if .elseif) .else1
+		; .otherwise = else-if .elseif, !, fc-parse (if .elseif) .else1
+		; fc-error "Unknown else clause" .otherwise
 	)
 #
 fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed

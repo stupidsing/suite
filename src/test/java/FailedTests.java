@@ -74,6 +74,12 @@ public class FailedTests {
 		System.out.println("OUT:\n" + Formatter.dump(result));
 	}
 
+	// Strange error message "Unknown expression if b"
+	@Test
+	public void test5() throws IOException {
+		Suite.evaluateEagerFun("if a then b");
+	}
+
 	private static Node eval(String f) {
 		return Suite.evaluateEagerFun(f);
 	}
