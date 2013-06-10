@@ -35,7 +35,7 @@ public class Ssh {
 				Util.sleep(100);
 
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			IoUtil.copyStream(channel.getInputStream(), bos);
+			IoUtil.copy(channel.getInputStream(), bos);
 
 			return channel.getExitStatus();
 		} finally {

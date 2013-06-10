@@ -55,10 +55,9 @@ public class IoPredicates {
 
 	public static class FileRead implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			try {
-				final Node params[] = Predicate.getParameters(ps, 2);
-				String filename = Formatter.display(params[0]);
-				InputStream is = new FileInputStream(filename);
+			final Node params[] = Predicate.getParameters(ps, 2);
+			String filename = Formatter.display(params[0]);
+			try (InputStream is = new FileInputStream(filename)) {
 				String content = IoUtil.readStream(is);
 				return prover.bind(new Str(content), params[1]);
 			} catch (IOException ex) {

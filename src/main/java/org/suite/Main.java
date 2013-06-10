@@ -271,11 +271,12 @@ public class Main {
 	}
 
 	private boolean runFunctional(List<String> files) throws IOException {
-		if (files.size() == 1) {
-			FileInputStream is = new FileInputStream(files.get(0));
-			Node node = Suite.parse(IoUtil.readStream(is));
-			return evaluateFunctional(node) == Atom.TRUE;
-		} else
+		if (files.size() == 1)
+			try (FileInputStream is = new FileInputStream(files.get(0))) {
+				Node node = Suite.parse(is);
+				return evaluateFunctional(node) == Atom.TRUE;
+			}
+		else
 			throw new RuntimeException("Only one evaluation is allowed");
 	}
 

@@ -26,35 +26,31 @@ public class IoUtil {
 	}
 
 	public static void copyFile(File from, File to) throws IOException {
-		InputStream in = new FileInputStream(from);
-		OutputStream out = new FileOutputStream(to);
-		// OutputStream out = new FileOutputStream(f2, true); // Append
-
-		copyStream(in, out);
+		copy(new FileInputStream(from), new FileOutputStream(to));
+		// new FileOutputStream(f2, true); // Append
 	}
 
 	public static String readStream(InputStream in) throws IOException {
-		char buffer[] = new char[bufferSize];
-		StringBuilder sb = new StringBuilder();
-		InputStreamReader reader = new InputStreamReader(in);
+		try (InputStream in_ = in) {
+			char buffer[] = new char[bufferSize];
+			StringBuilder sb = new StringBuilder();
+			InputStreamReader reader = new InputStreamReader(in_);
 
-		while (reader.ready()) {
-			int n = reader.read(buffer);
-			sb.append(new String(buffer, 0, n));
+			while (reader.ready()) {
+				int n = reader.read(buffer);
+				sb.append(new String(buffer, 0, n));
+			}
+
+			return sb.toString();
 		}
-
-		return sb.toString();
 	}
 
-	public static void copyStream(InputStream in, OutputStream out) throws IOException {
-		try {
+	public static void copy(InputStream in, OutputStream out) throws IOException {
+		try (InputStream in_ = in; OutputStream out_ = out) {
 			int len;
 			byte buffer[] = new byte[bufferSize];
-			while ((len = in.read(buffer)) > 0)
-				out.write(buffer, 0, len);
-		} finally {
-			in.close();
-			out.close();
+			while ((len = in_.read(buffer)) > 0)
+				out_.write(buffer, 0, len);
 		}
 	}
 
