@@ -10,7 +10,7 @@ import org.suite.doer.Prover;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSetUtil;
 
-public class SuiteImportUtil {
+public class ImportUtil {
 
 	// The directory of the file we are now importing
 	private boolean isImportFromClasspath = false;

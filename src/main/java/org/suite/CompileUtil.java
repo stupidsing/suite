@@ -8,7 +8,7 @@ import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
 
-public class SuiteCompileUtil {
+public class CompileUtil {
 
 	private RuleSet logicalRuleSet;
 	private RuleSet funRuleSet;

@@ -6,7 +6,7 @@ import java.io.InputStream;
 import org.suite.doer.TermParser;
 import org.suite.node.Node;
 
-public class SuiteParseUtil {
+public class ParseUtil {
 
 	private TermParser parser = new TermParser();
 

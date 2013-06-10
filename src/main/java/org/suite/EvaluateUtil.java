@@ -22,7 +22,7 @@ import org.util.FunUtil.Sink;
 import org.util.FunUtil.Source;
 import org.util.Util;
 
-public class SuiteEvaluationUtil {
+public class EvaluateUtil {
 
 	public boolean proveThis(RuleSet rs, String gs) {
 		return prove(new InterpretedProverBuilder(), rs, Suite.parse(gs));

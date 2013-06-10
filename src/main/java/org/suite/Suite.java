@@ -30,10 +30,10 @@ public class Suite {
 	public static final boolean isDumpCode = false;
 	public static final List<String> libraries = Arrays.asList("STANDARD");
 
-	private static SuiteCompileUtil suiteCompileUtil = new SuiteCompileUtil();
-	private static SuiteEvaluationUtil suiteEvaluationUtil = new SuiteEvaluationUtil();
-	private static SuiteImportUtil suiteImportUtil = new SuiteImportUtil();
-	private static SuiteParseUtil suiteParseUtil = new SuiteParseUtil();
+	private static CompileUtil compileUtil = new CompileUtil();
+	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
+	private static ImportUtil importUtil = new ImportUtil();
+	private static ParseUtil parseUtil = new ParseUtil();
 
 	public static void addRule(RuleSet rs, String rule) {
 		addRule(rs, Suite.parse(rule));
@@ -70,7 +70,7 @@ public class Suite {
 
 	/**
 	 * Convert rules in a rule set back into to #-separated format.
-	 * 
+	 *
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node getRuleList(RuleSet rs, Prototype proto) {
@@ -124,30 +124,30 @@ public class Suite {
 	// Compilation utilities
 
 	public static RuleSet logicalCompilerRuleSet() {
-		return suiteCompileUtil.logicalCompilerRuleSet();
+		return compileUtil.logicalCompilerRuleSet();
 	}
 
 	public static RuleSet funCompilerRuleSet() {
-		return suiteCompileUtil.funCompilerRuleSet();
+		return compileUtil.funCompilerRuleSet();
 	}
 
 	public static RuleSet eagerFunCompilerRuleSet() {
-		return suiteCompileUtil.eagerFunCompilerRuleSet();
+		return compileUtil.eagerFunCompilerRuleSet();
 	}
 
 	public static RuleSet lazyFunCompilerRuleSet() {
-		return suiteCompileUtil.lazyFunCompilerRuleSet();
+		return compileUtil.lazyFunCompilerRuleSet();
 	}
 
 	public static boolean precompile(String libraryName, ProverConfig proverConfig) {
-		return suiteCompileUtil.precompile(libraryName, proverConfig);
+		return compileUtil.precompile(libraryName, proverConfig);
 	}
 
 	// --------------------------------
 	// Evaluation utilities
 
 	public static boolean proveThis(RuleSet rs, String gs) {
-		return suiteEvaluationUtil.proveThis(rs, gs);
+		return evaluateUtil.proveThis(rs, gs);
 	}
 
 	public static boolean evaluateLogical(String lps) {
@@ -155,11 +155,11 @@ public class Suite {
 	}
 
 	public static boolean evaluateLogical(Node lp) {
-		return suiteEvaluationUtil.evaluateLogical(lp);
+		return evaluateUtil.evaluateLogical(lp);
 	}
 
 	public static List<Node> evaluateLogical(Builder builder, RuleSet rs, Node lp) {
-		return suiteEvaluationUtil.evaluateLogical(builder, rs, lp);
+		return evaluateUtil.evaluateLogical(builder, rs, lp);
 	}
 
 	public static Node evaluateEagerFun(String fp) {
@@ -175,11 +175,11 @@ public class Suite {
 	}
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
-		return suiteEvaluationUtil.evaluateFun(fcc);
+		return evaluateUtil.evaluateFun(fcc);
 	}
 
 	public static void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
-		suiteEvaluationUtil.evaluateFunIo(fcc, reader, writer);
+		evaluateUtil.evaluateFunIo(fcc, reader, writer);
 	}
 
 	public static Node evaluateFunType(String fps) {
@@ -187,41 +187,41 @@ public class Suite {
 	}
 
 	public static Node evaluateFunType(FunCompilerConfig fcc) {
-		return suiteEvaluationUtil.evaluateFunType(fcc);
+		return evaluateUtil.evaluateFunType(fcc);
 	}
 
 	// --------------------------------
 	// Import utilities
 
 	public static boolean importFrom(RuleSet rs, String name) throws IOException {
-		return suiteImportUtil.importFrom(rs, name);
+		return importUtil.importFrom(rs, name);
 	}
 
 	public static boolean importFile(RuleSet rs, String filename) throws IOException {
-		return suiteImportUtil.importFile(rs, filename);
+		return importUtil.importFile(rs, filename);
 	}
 
 	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
-		return suiteImportUtil.importResource(rs, classpath);
+		return importUtil.importResource(rs, classpath);
 	}
 
 	public static Prover createProver(List<String> toImports) {
-		return suiteImportUtil.createProver(toImports);
+		return importUtil.createProver(toImports);
 	}
 
 	public static RuleSet createRuleSet(List<String> toImports) {
-		return suiteImportUtil.createRuleSet(toImports);
+		return importUtil.createRuleSet(toImports);
 	}
 
 	// --------------------------------
 	// Parse utilities
 
 	public static Node parse(String s) {
-		return suiteParseUtil.parse(s);
+		return parseUtil.parse(s);
 	}
 
 	public static Node parse(InputStream is) throws IOException {
-		return suiteParseUtil.parse(is);
+		return parseUtil.parse(is);
 	}
 
 }
