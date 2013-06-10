@@ -41,7 +41,7 @@ import com.google.common.collect.HashBiMap;
  * 
  * Possible types: closure, int, node (atom/reference/tree)
  */
-public class InstructionCompiledExecutor {
+public class InstructionCompiler {
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 	private AtomicInteger counter = new AtomicInteger();
@@ -56,14 +56,7 @@ public class InstructionCompiledExecutor {
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
-	private Atom COMPARE = Atom.create("COMPARE");
-	private Atom CONS___ = Atom.create("CONS");
-	private Atom ERROR__ = Atom.create("ERROR");
-	private Atom HEAD___ = Atom.create("HEAD");
-	private Atom ISTREE_ = Atom.create("ISTREE");
-	private Atom TAIL___ = Atom.create("TAIL");
-
-	public InstructionCompiledExecutor(Node node) {
+	public InstructionCompiler(Node node) {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
@@ -134,12 +127,27 @@ public class InstructionCompiledExecutor {
 				app("continue");
 				app("} else #{reg} = #{reg-clos}.result", op0, op1);
 				break;
+			case COMPARE_______:
+				registerTypes[op0] = int.class;
+				app("left = (Node) ds[--dsp]");
+				app("right = (Node) ds[--dsp]");
+				app("#{reg} = comparer.compare(left, right)", op0);
+				break;
+			case CONS__________:
+				registerTypes[op0] = Node.class;
+				app("left = (Node) ds[--dsp]");
+				app("right = (Node) ds[--dsp]");
+				app("#{reg} = Tree.create(TermOp.AND___, left, right)", op0);
+				break;
 			case ENTER_________:
 				lastEnterIps.push(ip);
 				registerTypes = new Class<?>[op0];
 				var0 = "oldFrame" + counter.getAndIncrement();
 				app("#{fr-class} #{str} = #{fr}", parentFrames.get(ip), var0);
 				app("#{fr} = new #{fr-class}(#{fr})", ip);
+				break;
+			case ERROR_________:
+				app("throw new RuntimeException(\"Error termination\")");
 				break;
 			case EVALADD_______:
 				registerTypes[op0] = int.class;
@@ -194,11 +202,19 @@ public class InstructionCompiledExecutor {
 				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op2,
 						((Atom) constantPool.get(op0)).getName(), op0, op1);
 				break;
+			case HEAD__________:
+				registerTypes[op0] = Node.class;
+				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getLeft()", op0);
+				break;
 			case IFFALSE_______:
 				app("if (!#{reg-bool}) #{jump}", op1, op0);
 				break;
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
+				break;
+			case ISTREE________:
+				registerTypes[op0] = Node.class;
+				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null ? TRUE : FALSE", op0);
 				break;
 			case JUMP__________:
 				app("#{jump}", op0);
@@ -245,34 +261,6 @@ public class InstructionCompiledExecutor {
 				popCaller();
 				app("returnValue = #{str}", var0);
 				break;
-			case SERVICE_______:
-				app("dsp -= #{num}", op2);
-				node = constantPool.get(op1);
-				if (node == COMPARE) {
-					registerTypes[op0] = int.class;
-					app("left = (Node) ds[dsp + 1]");
-					app("right = (Node) ds[dsp]");
-					app("#{reg} = comparer.compare(left, right)", op0);
-				} else if (node == CONS___) {
-					registerTypes[op0] = Node.class;
-					app("left = (Node) ds[dsp + 1]");
-					app("right = (Node) ds[dsp]");
-					app("#{reg} = Tree.create(TermOp.AND___, left, right)", op0);
-				} else if (node == ERROR__)
-					app("throw new RuntimeException(\"Error termination\")");
-				else if (node == HEAD___) {
-					registerTypes[op0] = Node.class;
-					app("#{reg} = Tree.decompose((Node) ds[dsp]).getLeft()", op0);
-				} else if (node == ISTREE_) {
-					registerTypes[op0] = Node.class;
-					app("#{reg} = Tree.decompose((Node) ds[dsp]) != null ? TRUE : FALSE", op0);
-				} else if (node == TAIL___) {
-					registerTypes[op0] = Node.class;
-					app("#{reg} = Tree.decompose((Node) ds[dsp]).getRight()", op0);
-				} else
-					// TODO FunInstructionExecutor.sys()
-					throw new RuntimeException("Unknown service " + node);
-				break;
 			case SETRESULT_____:
 				registerTypes[op0] = Node.class;
 				app("#{reg} = returnValue", op0);
@@ -281,6 +269,10 @@ public class InstructionCompiledExecutor {
 				registerTypes[op0] = Node.class;
 				app("#{reg} = returnValue", op0);
 				app("#{reg-clos}.result = #{reg}", op1, op0);
+				break;
+			case TAIL__________:
+				registerTypes[op0] = Node.class;
+				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);
 				break;
 			case TOP___________:
 				registerTypes[op0] = Node.class;

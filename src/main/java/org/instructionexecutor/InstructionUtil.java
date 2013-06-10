@@ -46,11 +46,14 @@ public class InstructionUtil {
 		CALL__________("CALL"), //
 		CALLCONST_____("CALL-CONSTANT"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
+		COMPARE_______("COMPARE"), //
+		CONS__________("CONS"), //
 		CUTBEGIN______("CUT-BEGIN"), //
 		CUTFAIL_______("CUT-FAIL"), //
 		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
 		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //
+		ERROR_________("ERROR"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
@@ -63,20 +66,28 @@ public class InstructionUtil {
 		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
 		EXIT__________("EXIT"), //
+		FGETC_________("FGETC"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
+		HEAD__________("HEAD"), //
 		IFFALSE_______("IF-FALSE"), //
 		IFGE__________("IF-GE"), //
 		IFGT__________("IF-GT"), //
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
+		ISTREE________("IS-TREE"), //
+		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //
 		LABEL_________("LABEL"), //
 		LOG___________("LOG"), //
+		LOG1__________("LOG1"), //
+		LOG2__________("LOG2"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
+		POPEN_________("POPEN"), //
+		PROVE_________("PROVE"), //
 		PROVEINTERPRET("PROVE-INTERPRET"), //
 		PROVESYS______("PROVE-SYS"), //
 		PUSH__________("PUSH"), //
@@ -87,8 +98,16 @@ public class InstructionUtil {
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
 		SETRESULT_____("SET-RESULT"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
-		SERVICE_______("SERVICE"), //
+		SUBST_________("SUBST"), //
+		TAIL__________("TAIL"), //
 		TOP___________("TOP"), //
+		VCONCAT_______("VCONCAT"), //
+		VCONS_________("VCONS"), //
+		VELEM_________("VELEM"), //
+		VEMPTY________("VEMPTY"), //
+		VHEAD_________("VHEAD"), //
+		VRANGE________("VRANGE"), //
+		VTAIL_________("VTAIL"), //
 		;
 
 		String name;

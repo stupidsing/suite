@@ -80,7 +80,7 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 2 _cons CONS #
 fc-define-default-fun 1 _lhead HEAD #
-fc-define-default-fun 1 _log LOG #
+fc-define-default-fun 1 _log LOG1 #
 fc-define-default-fun 2 _log2 LOG2 #
 fc-define-default-fun 1 _ltail TAIL #
 fc-define-default-fun 2 _popen POPEN #

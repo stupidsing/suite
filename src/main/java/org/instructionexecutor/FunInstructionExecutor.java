@@ -21,6 +21,7 @@ import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
+import org.suite.doer.ProverConfig;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -32,29 +33,8 @@ import org.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
-	private static final Atom COMPARE = Atom.create("COMPARE");
-	private static final Atom CONS = Atom.create("CONS");
-	private static final Atom ERROR = Atom.create("ERROR");
-	private static final Atom FGETC = Atom.create("FGETC");
-	private static final Atom HEAD = Atom.create("HEAD");
-	private static final Atom ISTREE = Atom.create("IS-TREE");
-	private static final Atom ISVECTOR = Atom.create("IS-VECTOR");
-	private static final Atom LOG = Atom.create("LOG");
-	private static final Atom LOG2 = Atom.create("LOG2");
-	private static final Atom POPEN = Atom.create("POPEN");
-	private static final Atom PROVE = Atom.create("PROVE");
-	private static final Atom SUBST = Atom.create("SUBST");
-	private static final Atom TAIL = Atom.create("TAIL");
-	private static final Atom VCONCAT = Atom.create("VCONCAT");
-	private static final Atom VCONS = Atom.create("VCONS");
-	private static final Atom VELEM = Atom.create("VELEM");
-	private static final Atom VEMPTY = Atom.create("VEMPTY");
-	private static final Atom VHEAD = Atom.create("VHEAD");
-	private static final Atom VRANGE = Atom.create("VRANGE");
-	private static final Atom VTAIL = Atom.create("VTAIL");
-
 	private Comparer comparer = new Comparer();
-	private Prover prover;
+	private ProverConfig proverConfig;
 	private Map<Node, IndexedInput> inputs = new HashMap<>();
 
 	public FunInstructionExecutor(Node node) {
@@ -124,51 +104,51 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
 
-		switch (insn.insn) {
-		case SERVICE_______:
-			exec.sp -= insn.op2;
-			regs[insn.op0] = sys(exec, constantPool.get(insn.op1));
-			break;
-		default:
-			super.handle(exec, insn);
-		}
-	}
-
-	private Node sys(Exec exec, Node command) {
 		Object stack[] = exec.stack;
 		int sp = exec.sp;
-		Node result;
 
-		if (command == COMPARE) {
-			Node left = (Node) stack[sp + 1];
-			Node right = (Node) stack[sp];
+		Node node, left, right, result;
+		Tree tree;
+
+		switch (insn.insn) {
+		case COMPARE_______:
+			left = (Node) stack[--sp ];
+			right = (Node) stack[--sp];
 			result = Int.create(comparer.compare(left, right));
-		} else if (command == CONS) {
-			Node left = (Node) stack[sp + 1];
-			Node right = (Node) stack[sp];
+			break;
+		case CONS__________:
+			left = (Node) stack[--sp];
+			right = (Node) stack[--sp];
 			result = Tree.create(TermOp.AND___, left, right);
-		} else if (command == ERROR)
+			break;
+		case ERROR_________:
 			throw new RuntimeException("Error termination");
-		else if (command == FGETC) {
-			Node node = (Node) stack[sp + 1];
-			int p = ((Int) stack[sp]).getNumber();
+		case FGETC_________:
+			node = (Node) stack[--sp];
+			int p = ((Int) stack[--sp]).getNumber();
 			int c = inputs.get(node).read(p);
 			result = Int.create(c);
-		} else if (command == HEAD)
-			result = Tree.decompose((Node) stack[sp]).getLeft();
-		else if (command == ISTREE)
-			result = atom(Tree.decompose((Node) stack[sp]) != null);
-		else if (command == ISVECTOR)
-			result = atom(stack[sp] instanceof Vector);
-		else if (command == LOG) {
-			result = (Node) stack[sp];
+			break;
+		case HEAD__________:
+			result = Tree.decompose((Node) stack[--sp]).getLeft();
+			break;
+		case ISTREE________:
+			result = atom(Tree.decompose((Node) stack[--sp]) != null);
+			break;
+		case ISVECTOR______:
+			result = atom(stack[--sp] instanceof Vector);
+			break;
+		case LOG1__________:
+			result = (Node) stack[--sp];
 			LogUtil.info(Formatter.display(unwrap(result)));
-		} else if (command == LOG2) {
-			LogUtil.info(unwrapToString((Node) stack[sp + 1]));
-			result = (Node) stack[sp];
-		} else if (command == POPEN) {
-			Node n0 = unwrap((Node) stack[sp + 1]);
-			Node n1 = (Node) stack[sp];
+			break;
+		case LOG2__________:
+			LogUtil.info(unwrapToString((Node) stack[--sp]));
+			result = (Node) stack[--sp];
+			break;
+		case POPEN_________:
+			Node n0 = unwrap((Node) stack[--sp]);
+			Node n1 = (Node) stack[--sp];
 
 			try {
 				Process process = Runtime.getRuntime().exec(unwrapToString(n0));
@@ -182,12 +162,18 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-		} else if (command == PROVE) {
-			if (prover == null)
+			break;
+		case PROVE_________:
+			Prover prover;
+
+			if (proverConfig != null)
+				prover = new Prover(proverConfig);
+			else
 				prover = Suite.createProver(Arrays.asList("auto.sl"));
 
-			Node node = (Node) stack[sp];
-			Tree tree = Tree.decompose(node, TermOp.JOIN__);
+			node = (Node) stack[--sp];
+			tree = Tree.decompose(node, TermOp.JOIN__);
+
 			if (tree != null)
 				if (prover.prove(tree.getLeft()))
 					result = tree.getRight().finalNode();
@@ -195,41 +181,53 @@ public class FunInstructionExecutor extends InstructionExecutor {
 					throw new RuntimeException("Goal failed");
 			else
 				result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
-		} else if (command == SUBST) {
+			break;
+		case SUBST_________:
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");
 
-			Node var = (Node) stack[sp + 1];
-			Tree tree = (Tree) g.generalize((Node) stack[sp]);
+			Node var = (Node) stack[--sp];
+			tree = (Tree) g.generalize((Node) stack[--sp]);
 			((Reference) tree.getRight()).bound(var);
 			result = tree.getLeft();
-		} else if (command == TAIL)
-			result = Tree.decompose((Node) stack[sp]).getRight();
-		else if (command == VCONCAT) {
-			Vector left = (Vector) stack[sp + 1];
-			Vector right = (Vector) stack[sp];
-			result = Vector.concat(left, right);
-		} else if (command == VCONS) {
-			Node head = (Node) stack[sp + 1];
-			Vector tail = (Vector) stack[sp];
+			break;
+		case TAIL__________:
+			result = Tree.decompose((Node) stack[--sp]).getRight();
+			break;
+		case VCONCAT_______:
+			Vector vector0 = (Vector) stack[--sp];
+			Vector vector1 = (Vector) stack[--sp];
+			result = Vector.concat(vector0, vector1);
+			break;
+		case VCONS_________:
+			Node head = (Node) stack[--sp];
+			Vector tail = (Vector) stack[--sp];
 			result = Vector.cons(head, tail);
-		} else if (command == VELEM)
-			result = new Vector((Node) stack[sp]);
-		else if (command == VEMPTY)
+			break;
+		case VELEM_________:
+			result = new Vector((Node) stack[--sp]);
+			break;
+		case VEMPTY________:
 			result = Vector.EMPTY;
-		else if (command == VHEAD)
-			result = ((Vector) stack[sp]).get(0);
-		else if (command == VRANGE) {
-			Vector vector = (Vector) stack[sp + 2];
-			int s = ((Int) stack[sp + 1]).getNumber();
-			int e = ((Int) stack[sp]).getNumber();
-			return vector.subVector(s, e);
-		} else if (command == VTAIL)
-			result = ((Vector) stack[sp]).subVector(1, 0);
-		else
-			throw new RuntimeException("Unknown system call " + command);
+			break;
+		case VHEAD_________:
+			result = ((Vector) stack[--sp]).get(0);
+			break;
+		case VRANGE________:
+			Vector vector = (Vector) stack[--sp];
+			int s = ((Int) stack[--sp]).getNumber();
+			int e = ((Int) stack[--sp]).getNumber();
+			result = vector.subVector(s, e);
+			break;
+		case VTAIL_________:
+			result = ((Vector) stack[--sp]).subVector(1, 0);
+			break;
+		default:
+			throw new RuntimeException("Unknown instruction " + insn);
+		}
 
-		return result;
+		exec.sp = sp;
+		regs[insn.op0] = result;
 	}
 
 	@Override
@@ -238,8 +236,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			input.close();
 	}
 
-	public void setProver(Prover prover) {
-		this.prover = prover;
+	public void setProverConfig(ProverConfig proverConfig) {
+		this.proverConfig = proverConfig;
 	}
 
 }

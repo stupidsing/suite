@@ -45,7 +45,7 @@ fc-lazy-compile-to-thunk (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
 	:- member (_lhead, _ltail, _thead, _ttail,) .var
 	, fc-define-default-fun 1 .var .call
 	, !, fc-compile LAZY .p .env .c0/.c1/.d0/.dx/.paramReg
-	, .c1 = (_ PUSH .paramReg, _ SERVICE .reg .call 1, .cx)
+	, .c1 = (_ PUSH .paramReg, _ .call .reg 1, .cx)
 #
 fc-lazy-compile-to-thunk (TUPLE .name (.e, .es)) .env .cdr
 	:- !, fc-lazy-compile-to-thunk (
@@ -123,7 +123,7 @@ fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.r
 		is-tuple/1/VALUE:,
 	) .var/.n/.paramWraps
 	, fc-define-default-fun .n .var .call
-	, !, .c0 = (_ SERVICE .reg .call .n, .cx)
+	, !, .c0 = (_ .call .reg .n, .cx)
 #
 fc-lazy-compile-default-fun .n .paramWraps (INVOKE .p .chain) .env .c0/.cx/.d0/.dx/.reg
 	:- let .n1 (.n + 1)

@@ -98,7 +98,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				current.ip = insn.op1;
 			break;
 		default:
-			super.handle(exec, insn);
+			throw new RuntimeException("Unknown instruction " + insn);
 		}
 	}
 

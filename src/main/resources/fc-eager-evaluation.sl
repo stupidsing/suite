@@ -89,5 +89,5 @@ fc-eager-default-fun0 (INVOKE .p .pred) .frame .c0/.cx/.d0/.dx/.reg .n
 #
 fc-eager-default-fun0 (VARIABLE .pred) _ .c0/.cx/.d/.d/.reg .n
 	:- fc-define-default-fun .n .pred .call, !
-	, .c0 = (_ SERVICE .reg .call .n, .cx)
+	, .c0 = (_ .call .reg .n, .cx)
 #

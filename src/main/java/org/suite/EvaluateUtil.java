@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.instructionexecutor.FunInstructionExecutor;
 import org.suite.doer.Cloner;
-import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
@@ -71,7 +70,7 @@ public class EvaluateUtil {
 
 		if (code != null) {
 			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setProver(new Prover(new ProverConfig(rs, pc)));
+			e.setProverConfig(new ProverConfig(rs, pc));
 			return e;
 		} else
 			throw new RuntimeException("Function compilation error");
