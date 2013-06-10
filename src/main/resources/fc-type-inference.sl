@@ -132,11 +132,13 @@ resolve-types .tr :- resolve-types0 .tr, ! #
 resolve-types _ :- fc-error "Unable to resolve types" #
 
 -- When resolving types:
--- - Flatten all logical-AND conditions;
--- - Try bind equivalent sub-type to super-type relations;
--- - Try bind specialized type to generic type;
--- - Do not resolve super-type relation when both types are not clear;
--- - Morph children types if still cannot resolve.
+-- - Try bind equivalent sub-type to super-type relation;
+--   - Do not resolve relation when both types are not clear;
+--   - Generalize generic types to resolve;
+--   - Try reduce to type classes to resolve;
+--   - Try morph children types to resolve;
+-- - Try bind generic-type and specialized-type relation;
+-- - Try bind type choice relation.
 resolve-types0 () :- ! #
 resolve-types0 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
 	:- !, resolve-sub-super-types .te .t0 .t1 .tr1
