@@ -112,7 +112,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 		switch (insn.insn) {
 		case COMPARE_______:
-			left = (Node) stack[--sp ];
+			left = (Node) stack[--sp];
 			right = (Node) stack[--sp];
 			result = Int.create(comparer.compare(left, right));
 			break;
@@ -164,13 +164,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			}
 			break;
 		case PROVE_________:
-			Prover prover;
-
-			if (proverConfig != null)
-				prover = new Prover(proverConfig);
-			else
-				prover = Suite.createProver(Arrays.asList("auto.sl"));
-
+			Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
 			node = (Node) stack[--sp];
 			tree = Tree.decompose(node, TermOp.JOIN__);
 
