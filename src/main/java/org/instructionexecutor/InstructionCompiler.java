@@ -15,19 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
-import org.suite.Journal;
-import org.suite.Suite;
-import org.suite.doer.Binder;
-import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
-import org.suite.doer.Prover;
 import org.suite.node.Atom;
-import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.suite.predicates.SystemPredicates;
 import org.util.IoUtil;
-import org.util.LogUtil;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -48,7 +40,7 @@ public class InstructionCompiler {
 
 	private StringBuilder clazzsec = new StringBuilder();
 	private StringBuilder localsec = new StringBuilder();
-	private StringBuilder swsec = new StringBuilder();
+	private StringBuilder switchsec = new StringBuilder();
 
 	private int ip;
 	private Deque<Integer> lastEnterIps = new ArrayDeque<>();
@@ -290,19 +282,12 @@ public class InstructionCompiler {
 
 		String java = String.format("" //
 				+ "package org.compiled; \n" //
+				+ "import org.suite.*; \n" //
+				+ "import org.suite.doer.*; \n" //
 				+ "import org.suite.node.*; \n" //
-				+ "import " + Atom.class.getCanonicalName() + "; \n" //
-				+ "import " + Binder.class.getCanonicalName() + "; \n" //
+				+ "import org.suite.predicates.*; \n" //
+				+ "import org.suite.util.*; \n" //
 				+ "import " + Closure.class.getCanonicalName() + "; \n" //
-				+ "import " + Comparer.class.getCanonicalName() + "; \n" //
-				+ "import " + Int.class.getCanonicalName() + "; \n" //
-				+ "import " + Journal.class.getCanonicalName() + "; \n" //
-				+ "import " + LogUtil.class.getCanonicalName() + "; \n" //
-				+ "import " + Node.class.getCanonicalName() + "; \n" //
-				+ "import " + Prover.class.getCanonicalName() + "; \n" //
-				+ "import " + SystemPredicates.class.getCanonicalName() + "; \n" //
-				+ "import " + Suite.class.getCanonicalName() + "; \n" //
-				+ "import " + Tree.class.getCanonicalName() + "; \n" //
 				+ "\n" //
 				+ "public class %s { \n" //
 				+ "private static final Atom FALSE = Atom.create(\"false\");" //
@@ -326,7 +311,7 @@ public class InstructionCompiler {
 				+ "} \n" //
 				+ "} \n" //
 				+ "} \n" //
-		, className, clazzsec, localsec, swsec);
+		, className, clazzsec, localsec, switchsec);
 
 		String filename = "src/main/java/org/instructionexecutor/" + className + ".java";
 		try (OutputStream os = new FileOutputStream(filename)) {
@@ -357,7 +342,7 @@ public class InstructionCompiler {
 	}
 
 	private void app(String fmt, Object... ps) {
-		app(swsec, fmt, ps);
+		app(switchsec, fmt, ps);
 	}
 
 	private void app(StringBuilder section, String fmt, Object... ps) {
