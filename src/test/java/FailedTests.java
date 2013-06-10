@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.Formatter;
-import org.suite.doer.PrettyPrinter;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
@@ -68,7 +67,6 @@ public class FailedTests {
 	public void test4() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
-		System.out.println("IN:\n" + new PrettyPrinter().prettyPrint(Suite.parse(fp)));
 		Node result = Suite.evaluateEagerFun(fp);
 		System.out.println("OUT:\n" + Formatter.dump(result));
 	}
