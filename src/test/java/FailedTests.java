@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.Formatter;
+import org.suite.doer.PrettyPrinter;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
@@ -35,7 +36,7 @@ public class FailedTests {
 
 	@Test
 	public void test2() { // takes very long
-		eval("" //
+		Suite.evaluateEagerFun("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B %) of (t,) >> \n" //
 				+ "define type (C %) of (t,) >> ( \n" //
@@ -62,14 +63,12 @@ public class FailedTests {
 		Suite.evaluateLogical(builder, rs, goal);
 	}
 
-	// Unknown expression otherwise error
+	// Runs forever!
 	@Test
 	public void test4() throws IOException {
-		byte bytes[] = new byte[65536];
-		int nBytes = getClass().getResourceAsStream("/RB-TREE.slf").read(bytes);
-		String s = new String(bytes, 0, nBytes, IoUtil.charset);
+		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
-		System.out.println("IN:\n" + fp);
+		System.out.println("IN:\n" + new PrettyPrinter().prettyPrint(Suite.parse(fp)));
 		Node result = Suite.evaluateEagerFun(fp);
 		System.out.println("OUT:\n" + Formatter.dump(result));
 	}
@@ -78,10 +77,6 @@ public class FailedTests {
 	@Test
 	public void test5() throws IOException {
 		Suite.evaluateEagerFun("if a then b");
-	}
-
-	private static Node eval(String f) {
-		return Suite.evaluateEagerFun(f);
 	}
 
 }

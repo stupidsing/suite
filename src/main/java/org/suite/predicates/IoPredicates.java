@@ -69,15 +69,17 @@ public class IoPredicates {
 
 	public static class FileWrite implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			try {
-				final Node params[] = Predicate.getParameters(ps, 2);
-				String filename = Formatter.display(params[0]);
-				String content = Formatter.display(params[1]);
-				IoUtil.writeStream(new FileOutputStream(filename), content);
-				return true;
+			final Node params[] = Predicate.getParameters(ps, 2);
+			String filename = Formatter.display(params[0]);
+			String content = Formatter.display(params[1]);
+
+			try (FileOutputStream fos = new FileOutputStream(filename)) {
+				fos.write(content.getBytes(IoUtil.charset));
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+
+			return true;
 		}
 	}
 

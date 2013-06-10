@@ -51,10 +51,6 @@ public class Suite {
 		return fcc(fp, false);
 	}
 
-	public static FunCompilerConfig fcc(String fps, boolean isLazy) {
-		return fcc(parse(fps), isLazy);
-	}
-
 	public static FunCompilerConfig fcc(Node fp, boolean isLazy) {
 		FunCompilerConfig fcc = new FunCompilerConfig();
 		fcc.setNode(fp);
@@ -175,7 +171,7 @@ public class Suite {
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {
-		return evaluateFun(Suite.fcc(fp, isLazy));
+		return evaluateFun(Suite.fcc(Suite.parse(fp), isLazy));
 	}
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
