@@ -23,14 +23,21 @@ public class FailedTests {
 		for (int i = 0; i < 32; i++)
 			sb.append(i + ", ");
 
-		assertTrue(Suite.proveThis(rs, "23t-add-list (" + sb + ") T/.t, pretty.print .t, nl, dump .d, nl"));
+		assertTrue(Suite.proveThis(rs, "23t-add-list (" + sb + ") T/.t, pretty.print .t, nl"));
 	}
 
 	@Test
 	public void test1() throws IOException { // not balanced
 		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
 		String list = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,";
-		assertTrue(Suite.proveThis(rs, "23t-add-list (" + list + ") T/.t,  pretty.print .t, nl, dump .d, nl"));
+		assertTrue(Suite.proveThis(rs, "23t-add-list (" + list + ") T/.t,  pretty.print .t, nl"));
+	}
+
+	@Test
+	public void test1a() throws IOException {
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
+		String list = "z,y,x,w,v,u,t,s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,";
+		assertTrue(Suite.proveThis(rs, "23t-add-list (" + list + ") T/.t, pretty.print .t, nl"));
 	}
 
 	@Test

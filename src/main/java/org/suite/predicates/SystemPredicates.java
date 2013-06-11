@@ -70,6 +70,7 @@ public class SystemPredicates {
 		addPredicate("to.dump.string", new FormatPredicates.ToDumpString());
 		addPredicate("to.int", new FormatPredicates.ToInt());
 		addPredicate("to.string", new FormatPredicates.ToString());
+		addPredicate("treeize", new FormatPredicates.Treeize());
 		addPredicate("trim", new FormatPredicates.Trim());
 
 		addPredicate("dump", new IoPredicates.Dump());

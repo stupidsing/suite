@@ -158,6 +158,14 @@ public class FormatPredicates {
 		}
 	}
 
+	public static class Treeize implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+			return prover.bind(p1, new Str(Formatter.treeize(p0)));
+		}
+	}
+
 	public static class Trim implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
