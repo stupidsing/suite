@@ -1,7 +1,4 @@
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.junit.Test;
 import org.suite.Suite;
@@ -16,32 +13,7 @@ import org.util.IoUtil;
 public class FailedTests {
 
 	@Test
-	public void test0() throws IOException { // not balanced
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 32; i++)
-			sb.append(i + ", ");
-
-		assertTrue(Suite.proveThis(rs, "23t-add-list (" + sb + ") T/.t, pretty.print .t, nl"));
-	}
-
-	@Test
-	public void test1() throws IOException { // not balanced
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
-		String list = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,";
-		assertTrue(Suite.proveThis(rs, "23t-add-list (" + list + ") T/.t,  pretty.print .t, nl"));
-	}
-
-	@Test
-	public void test1a() throws IOException {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "23t.sl"));
-		String list = "z,y,x,w,v,u,t,s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,";
-		assertTrue(Suite.proveThis(rs, "23t-add-list (" + list + ") T/.t, pretty.print .t, nl"));
-	}
-
-	@Test
-	public void test2() { // takes very long
+	public void test0() { // takes very long
 		Suite.evaluateEagerFun("" //
 				+ "define type (A %) of (t,) >> \n" //
 				+ "define type (B %) of (t,) >> \n" //
@@ -55,7 +27,7 @@ public class FailedTests {
 	// need to increase InstructionExecutor.stackSize, or implement tail
 	// recursion
 	@Test
-	public void test3() {
+	public void test1() {
 		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
 				+ "member (.e, _) .e #" //
 				+ "member (_, .tail) .e :- member .tail .e #" //
@@ -71,7 +43,7 @@ public class FailedTests {
 
 	// Runs forever!
 	@Test
-	public void test4() throws IOException {
+	public void test2() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
 		Node result = Suite.evaluateEagerFun(fp);
@@ -80,7 +52,7 @@ public class FailedTests {
 
 	// Strange error message "Unknown expression if b"
 	@Test
-	public void test5() throws IOException {
+	public void test3() throws IOException {
 		Suite.evaluateEagerFun("if a then b");
 	}
 
