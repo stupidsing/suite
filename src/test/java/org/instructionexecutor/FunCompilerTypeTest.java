@@ -95,10 +95,12 @@ public class FunCompilerTypeTest {
 		getType(variant + "B 4 %");
 		getType(variant + "C true %");
 		getType(variant + "if true then (A %) else-if true then (B 3 %) else (C false %)");
-		getType("define type (BTREE number number %) of (btree,) >> \n" + "BTREE 2 3 % = BTREE 4 6 %");
-		getTypeMustFail("define type (T1 number number %) of (t1,) >> \n" + "define type (T2 number number %) of (t2,) >> \n"
-				+ "T1 2 3 % = T2 2 3 %");
-		getTypeMustFail("define type (BTREE number number %) of (btree,) >> \n" + "BTREE 2 3 % = BTREE \"a\" 6 %");
+		getType("define type (BTREE number number %) of (btree,) >> \n" //
+				+ "BTREE 2 3 % = BTREE 4 6 %");
+		getTypeMustFail("define type (T1 number number %) of (t1,) >> \n" //
+				+ "define type (T2 number number %) of (t2,) >> \n" + "T1 2 3 % = T2 2 3 %");
+		getTypeMustFail("define type (BTREE number number %) of (btree,) >> \n" //
+				+ "BTREE 2 3 % = BTREE \"a\" 6 %");
 	}
 
 	private static void getTypeMustFail(String c) {
