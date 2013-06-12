@@ -159,8 +159,8 @@ public class SystemPredicates {
 
 	private class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Stack<Node> stack = new Stack<>();
 			final Node params[] = Predicate.getParameters(ps, 3);
+			final Stack<Node> stack = new Stack<>();
 
 			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Station() {
 				public boolean run() {
