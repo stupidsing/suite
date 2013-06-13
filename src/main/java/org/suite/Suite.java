@@ -11,6 +11,7 @@ import java.util.List;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
+import org.suite.doer.ProverConfig.TraceLevel;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.kb.Prototype;
 import org.suite.kb.Rule;
@@ -29,6 +30,7 @@ public class Suite {
 	public static final boolean isTrace = false;
 	public static final boolean isDumpCode = false;
 	public static final List<String> libraries = Arrays.asList("STANDARD");
+	public static final TraceLevel traceLevel = TraceLevel.SIMPLE;
 
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();

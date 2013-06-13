@@ -43,7 +43,7 @@ public class ProverConfig {
 	public ProverConfig(RuleSet ruleSet, boolean isTrace, Set<String> noTracePredicates) {
 		this.ruleSet = ruleSet;
 		this.isTrace = isTrace;
-		this.traceLevel = TraceLevel.SIMPLE;
+		this.traceLevel = Suite.traceLevel;
 		this.noTracePredicates = noTracePredicates;
 	}
 
