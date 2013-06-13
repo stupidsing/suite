@@ -55,6 +55,17 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
+		Node code = compileFunCode(fcc);
+
+		if (code != null) {
+			FunInstructionExecutor e = new FunInstructionExecutor(code);
+			e.setProverConfig(fcc.getProverConfig());
+			return e;
+		} else
+			throw new RuntimeException("Function compilation error");
+	}
+
+	private Node compileFunCode(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 		ProverConfig pc = fcc.getProverConfig();
@@ -66,14 +77,7 @@ public class EvaluateUtil {
 		Node node = Suite.substitute(eval, mode);
 
 		Finder finder = new InterpretedProverBuilder(pc).build(rs, node);
-		Node code = singleResult(finder, appendLibraries(fcc));
-
-		if (code != null) {
-			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setProverConfig(new ProverConfig(rs, pc));
-			return e;
-		} else
-			throw new RuntimeException("Function compilation error");
+		return singleResult(finder, appendLibraries(fcc));
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {

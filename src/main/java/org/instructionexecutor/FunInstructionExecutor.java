@@ -2,11 +2,13 @@ package org.instructionexecutor;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	private Comparer comparer = new Comparer();
 	private ProverConfig proverConfig;
-	private Map<Node, IndexedInput> inputs = new HashMap<>();
+	private Map<Node, IndexedInput> inputs = Collections.synchronizedMap(new HashMap<Node, IndexedInput>());
 
 	public FunInstructionExecutor(Node node) {
 		super(node);
@@ -149,19 +151,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case POPEN_________:
 			Node n0 = unwrap((Node) stack[--sp]);
 			Node n1 = (Node) stack[--sp];
-
-			try {
-				Process process = Runtime.getRuntime().exec(unwrapToString(n0));
-
-				InputStreamReader reader = new InputStreamReader(process.getInputStream());
-				inputs.put(result = Atom.unique(), new IndexedReader(reader));
-
-				try (OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream())) {
-					unwrap(n1, writer);
-				}
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			result = handleProcessOpen(n0, n1);
 			break;
 		case PROVE_________:
 			Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
@@ -222,6 +212,33 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 		exec.sp = sp;
 		regs[insn.op0] = result;
+	}
+
+	private Node handleProcessOpen(Node n0, final Node n1) {
+		try {
+			Node result = Atom.unique();
+			final Process process = Runtime.getRuntime().exec(unwrapToString(n0));
+
+			InputStreamReader reader = new InputStreamReader(process.getInputStream());
+			inputs.put(result, new IndexedReader(reader));
+
+			// Use a separate thread to write to the process, so that read and
+			// write occur at the same time and would not block up.
+			// Have to make sure the executors are thread-safe!
+			new Thread() {
+				public void run() {
+					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
+						unwrap(n1, writer);
+					} catch (IOException ex) {
+						LogUtil.error(ex);
+					}
+				}
+			}.start();
+
+			return result;
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override

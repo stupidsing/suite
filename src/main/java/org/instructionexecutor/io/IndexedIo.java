@@ -26,7 +26,7 @@ public class IndexedIo {
 		}
 
 		@Override
-		public int read(int p) {
+		public synchronized int read(int p) {
 			while (p >= sb.length()) {
 				int c;
 
@@ -45,7 +45,8 @@ public class IndexedIo {
 			return p < sb.length() ? sb.charAt(p) : -1;
 		}
 
-		public void close() {
+		@Override
+		public synchronized void close() {
 			try {
 				in.close();
 			} catch (IOException ex) {
