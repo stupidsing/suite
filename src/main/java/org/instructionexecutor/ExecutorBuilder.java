@@ -1,8 +1,14 @@
 package org.instructionexecutor;
 
 import org.suite.doer.Prover;
+import org.suite.doer.ProverConfig;
 import org.suite.node.Node;
 
+/**
+ * Input/output (executeIo)?
+ *
+ * Unwrapping in lazy functional mode?
+ */
 public class ExecutorBuilder {
 
 	public interface Builder {
@@ -13,11 +19,18 @@ public class ExecutorBuilder {
 		public void execute();
 	}
 
-	public class InterpretedFunExecutorBuilder implements Builder {
+	public static class InterpretedFunExecutorBuilder implements Builder {
+		private ProverConfig proverConfig;
+
+		public InterpretedFunExecutorBuilder(ProverConfig proverConfig) {
+			this.proverConfig = proverConfig;
+		}
+
 		public Executor build(final Node code) {
 			return new Executor() {
 				public void execute() {
-					try (InstructionExecutor executor = new FunInstructionExecutor(code)) {
+					try (FunInstructionExecutor executor = new FunInstructionExecutor(code)) {
+						executor.setProverConfig(proverConfig);
 						executor.execute();
 					}
 				}
@@ -25,7 +38,7 @@ public class ExecutorBuilder {
 		}
 	}
 
-	public class InterpretedLogicExecutorBuilder implements Builder {
+	public static class InterpretedLogicExecutorBuilder implements Builder {
 		private Prover prover;
 
 		public InterpretedLogicExecutorBuilder(Prover prover) {
