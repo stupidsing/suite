@@ -39,7 +39,7 @@ import org.util.Util;
 public class Main {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
-	private ProverConfig proverConfig = new ProverConfig();
+	private ProverConfig proverConfig = fcc.getProverConfig();
 
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
@@ -281,18 +281,13 @@ public class Main {
 	}
 
 	private Node evaluateFunctional(Node node) {
-		configureFcc(node);
+		fcc.setNode(node);
 		return Suite.evaluateFun(fcc);
 	}
 
 	private void evaluateFunctional(Node node, Reader reader, Writer writer) throws IOException {
-		configureFcc(node);
-		Suite.evaluateFunIo(fcc, reader, writer);
-	}
-
-	private void configureFcc(Node node) {
 		fcc.setNode(node);
-		fcc.setProverConfig(proverConfig);
+		Suite.evaluateFunIo(fcc, reader, writer);
 	}
 
 	private String yesNo(boolean q) {
