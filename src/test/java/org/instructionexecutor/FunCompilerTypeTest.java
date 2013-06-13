@@ -98,7 +98,8 @@ public class FunCompilerTypeTest {
 		getType("define type (BTREE number number %) of (btree,) >> \n" //
 				+ "BTREE 2 3 % = BTREE 4 6 %");
 		getTypeMustFail("define type (T1 number number %) of (t1,) >> \n" //
-				+ "define type (T2 number number %) of (t2,) >> \n" + "T1 2 3 % = T2 2 3 %");
+				+ "define type (T2 number number %) of (t2,) >> \n" //
+				+ "T1 2 3 % = T2 2 3 %");
 		getTypeMustFail("define type (BTREE number number %) of (btree,) >> \n" //
 				+ "BTREE 2 3 % = BTREE \"a\" 6 %");
 	}
