@@ -3,6 +3,7 @@ package org.suite.doer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.suite.doer.ProverConfig.TraceLevel;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -10,6 +11,7 @@ import org.util.FunUtil.Fun;
 
 public class ProveTracer {
 
+	private ProverConfig proverConfig;
 	private List<Record> records = new ArrayList<>();
 	private Record currentRecord = null;
 	private int currentDepth;
@@ -28,9 +30,11 @@ public class ProveTracer {
 		}
 
 		private void appendTo(StringBuilder sb) {
-			if (Boolean.TRUE)
+			TraceLevel traceLevel = proverConfig.getTraceLevel();
+
+			if (traceLevel == TraceLevel.SIMPLE)
 				sb.append(String.format("[%4s:%-2d]  ", nOkays > 0 ? "OK__" : "FAIL", depth));
-			else
+			else if (traceLevel == TraceLevel.DETAIL)
 				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
 						, start //
 						, parent != null ? parent.start : 0 //
@@ -43,6 +47,10 @@ public class ProveTracer {
 			sb.append(Formatter.dump(query));
 			sb.append("\n");
 		}
+	}
+
+	public ProveTracer(ProverConfig proverConfig) {
+		this.proverConfig = proverConfig;
 	}
 
 	public Node expandWithTrace(Node query, Prover prover, Fun<Node, Node> expand) {

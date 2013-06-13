@@ -15,9 +15,14 @@ public class ProverConfig {
 
 	private RuleSet ruleSet;
 	private boolean isTrace;
+	private TraceLevel traceLevel;
 	private Set<String> noTracePredicates;
 	private Source<Node> source;
 	private Sink<Node> sink;
+
+	public enum TraceLevel {
+		NONE, LOG, SIMPLE, DETAIL
+	}
 
 	public ProverConfig() {
 		this(RuleSetUtil.create());
@@ -38,6 +43,7 @@ public class ProverConfig {
 	public ProverConfig(RuleSet ruleSet, boolean isTrace, Set<String> noTracePredicates) {
 		this.ruleSet = ruleSet;
 		this.isTrace = isTrace;
+		this.traceLevel = TraceLevel.SIMPLE;
 		this.noTracePredicates = noTracePredicates;
 	}
 
@@ -55,6 +61,14 @@ public class ProverConfig {
 
 	public void setTrace(boolean isTrace) {
 		this.isTrace = isTrace;
+	}
+
+	public TraceLevel getTraceLevel() {
+		return traceLevel;
+	}
+
+	public void setTraceLevel(TraceLevel traceLevel) {
+		this.traceLevel = traceLevel;
 	}
 
 	public Set<String> getNoTracePredicates() {
