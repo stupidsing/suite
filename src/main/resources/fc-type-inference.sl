@@ -118,7 +118,7 @@ infer-type-rule (OPTION _ .do) .env .tr .type
 #
 infer-type-rule (VARIABLE .var) .ue/.ve/.te .tr0/.trx .type
 	:- (fc-dict-get .ve .var/.varType
-		, !, .tr0 = (CLONE-FROM-TO-TYPES .type .varType, .trx)
+		, !, .tr0 = (CLONE-TO-FROM-TYPES .type .varType, .trx)
 	)
 	; !, fc-error "Undefined variable" .var
 #
@@ -166,7 +166,7 @@ resolve-types0 (DUMP .d, .tr1)
 resolve-types0 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
 	:- !, resolve-sub-super-types .te .t0 .t1, resolve-types0 .tr1
 #
-resolve-types0 (CLONE-FROM-TO-TYPES .t0 .t1, .tr1)
+resolve-types0 (CLONE-TO-FROM-TYPES .t0 .t1, .tr1)
 	:- !, clone .t1 .t0, resolve-types0 .tr1
 #
 resolve-types0 (TYPE-IN-TYPES .t .ts, .tr1)
@@ -175,7 +175,7 @@ resolve-types0 (TYPE-IN-TYPES .t .ts, .tr1)
 resolve-types0 _ :- !, fc-error "Not enough type information" #
 
 resolve-sub-super-types _ .t .t #
-resolve-sub-super-types .te .t0 .tx 
+resolve-sub-super-types .te .t0 .tx
 	:- bound .t0
 	, sub-super-type-pair .te .t0 .t1
 	, resolve-sub-super-types .te .t1 .tx
@@ -196,9 +196,12 @@ sub-super-type-pair .te .t0 .t1 -- morph children types to their supers
 	, choose-one-pair .ts .childType0/.childType1
 	, sub-super-type-pair .te .childType0 .childType1
 #
-sub-super-type-pair _ .t0 (GENERIC-OF .typeVar .type)
+sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t0 .t1 #
+sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t1 .t0 #
+
+generic-specific-pair (GENERIC-OF .typeVar .type) .t1
 	:- bound .typeVar
-	, replace .type/.t0 .typeVar/_
+	, replace .type/.t1 .typeVar/_
 #
 
 choose-one-pair (.t0/.t1, .ts) .t0/.t1 :- equate-pairs .ts #
@@ -211,7 +214,7 @@ instantiate-type () .tc .tc #
 instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 	:- replace  .tc0/.tc1 .typeVar/_
 	, instantiate-type .typeVars .tc1 .tcx
-#	
+#
 
 children-of-types () () .pq/.pq :- ! #
 children-of-types (.t0, .ts0) (.t1, .ts1) .pq0/.pqx

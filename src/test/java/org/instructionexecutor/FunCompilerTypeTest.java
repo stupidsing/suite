@@ -57,6 +57,18 @@ public class FunCompilerTypeTest {
 	}
 
 	@Test
+	public void testGeneric() {
+		assertEquals(Suite.parse("list-of rb-tree/number") //
+				, getType("" //
+						+ "define type (EMPTY %) of (rb-tree/:t,) for any (:t,) >> \n" //
+						+ "define map = type (:a :- :b :- (:a => :b) => list-of :a => list-of :b) (error) >> \n" //
+						+ "define add = type (:t :- :t => rb-tree/:t) (v => EMPTY %) >> \n" //
+						+ "1, | map {add} \n" //
+				));
+
+	}
+
+	@Test
 	public void testInstance() {
 		String define = "" //
 				+ "define type (NODE :t linked-list/:t %) of (linked-list/:t,) for any (:t,) >> \n" //
