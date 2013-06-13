@@ -57,7 +57,7 @@ public class Prover {
 	public boolean prove(Node query) {
 		if (config.isTrace())
 			try {
-				tracer = new ProveTracer();
+				tracer = new ProveTracer(config);
 				return prove0(query);
 			} finally {
 				String d = FormatUtil.dtFmt.format(new Date());
