@@ -147,7 +147,7 @@ fc-parse-type (.name .type .types) (TUPLE-OF .name (.type1, .types1))
 #
 fc-parse-type (.name %) (TUPLE-OF .name ()) :- ! #
 fc-parse-type (.typeVar :- .type) (GENERIC-OF .typeVar1 .type1)
-	:- bound .typeVar, !
+	:- !
 	, fc-parse-type .type .type1
 	, fc-parse-type .typeVar .typeVar1
 #
