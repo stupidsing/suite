@@ -12,18 +12,6 @@ import org.util.IoUtil;
 
 public class FailedTests {
 
-	@Test
-	public void test0() { // takes very long
-		Suite.evaluateEagerFun("" //
-				+ "define type (A %) of (t,) >> \n" //
-				+ "define type (B %) of (t,) >> \n" //
-				+ "define type (C %) of (t,) >> ( \n" //
-				+ "    ((A %):1:, (A %):2:,), \n" //
-				+ "    ((B %):1:, (B %):2:,), \n" //
-				+ "    ((C %):1:, (C %):2:,), \n" //
-				+ ")");
-	}
-
 	// need to increase InstructionExecutor.stackSize, or implement tail
 	// recursion
 	@Test

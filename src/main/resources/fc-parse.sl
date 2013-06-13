@@ -68,12 +68,12 @@ fc-parse (c () .constant) (CONSTANT .constant) :- ! #
 fc-parse .an0:.an1 (TUPLE $$ANON .elems1)
 	:- !, fc-parse-anon-tuple .an0:.an1 .elems, fc-parse-list .elems .elems1
 #
-fc-parse (.name .elem .elems) (TUPLE .name (.elem1, .elems1))
+fc-parse (.name .elem .elems) (OPTION CHECK-TUPLE-TYPE TUPLE .name (.elem1, .elems1))
 	:- !
 	, fc-parse .elem .elem1
-	, fc-parse (.name .elems) (TUPLE .name .elems1)
+	, fc-parse (.name .elems) (OPTION CHECK-TUPLE-TYPE TUPLE .name .elems1)
 #
-fc-parse (.name %) (TUPLE .name ()) :- ! #
+fc-parse (.name %) (OPTION CHECK-TUPLE-TYPE TUPLE .name ()) :- ! #
 fc-parse .tree (TREE .oper .left1 .right1)
 	:- tree .tree .left .oper .right
 	, fc-operator .oper
@@ -139,11 +139,6 @@ fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
-fc-parse-type .type/.paramType (INSTANCE-OF .paramType1 .type1)
-	:- !
-	, fc-parse-type .type .type1
-	, fc-parse-type .paramType .paramType1
-#
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type (.name .type .types) (TUPLE-OF .name (.type1, .types1))
 	:- !
@@ -156,10 +151,16 @@ fc-parse-type (.typeVar :- .type) (GENERIC-OF .typeVar1 .type1)
 	, fc-parse-type .type .type1
 	, fc-parse-type .typeVar .typeVar1
 #
+-- Keeps contained in class definition for tuple matching.
+fc-parse-type .type/.paramType (CLASS (PARAMETERIZED .paramType1 .class))
+	:- !
+	, fc-parse-type .type (CLASS .class)
+	, fc-parse-type .paramType .paramType1
+#
+fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
 fc-parse-type string STRING :- ! #
-fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type .t (CLASS .t) :- is.atom .t #
 
 fc-parse-type-list () () :- ! #
@@ -211,11 +212,14 @@ fc-bind0 .v0 .v1 .then .else (
 	, .t0 = INVOKE .v0 VARIABLE _ltail
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
 #
-fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else (
-	IF (INVOKE (OPTION (CAST UP _) .v0) VARIABLE is-tuple) .then1 .else
+fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else ( -- Upcast type class to tuple types
+	DEF-VAR .tupleVar (OPTION (CAST UP _) .v0) (
+		IF (INVOKE (VARIABLE .tupleVar) (VARIABLE is-tuple)) .then1 .else
+	)
 ) :- !
-	, .h0 = INVOKE .v0 VARIABLE _thead
-	, .t0 = INVOKE .v0 VARIABLE _ttail
+	, temp .tupleVar
+	, .h0 = INVOKE (VARIABLE .tupleVar) VARIABLE _thead
+	, .t0 = INVOKE (VARIABLE .tupleVar) VARIABLE _ttail
 	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .then1
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
