@@ -4,8 +4,7 @@ define type (EMPTY %) of (rb-tree/:t,) for any (:t,) >>
 define type (RB-TREE color rb-tree/:t :t rb-tree/:t %) of (rb-tree/:t,) for any (:t,) >>
 define cr = RED % >>
 define cb = BLACK % >>
-define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (
-	v =>
+define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 	define add0 = type (:t :- rb-tree/:t => rb-tree/:t) (
 		define balance = type (:t :- rb-tree/:t => rb-tree/:t) (
 			match
