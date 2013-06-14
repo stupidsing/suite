@@ -15,6 +15,7 @@ compile-logic .call .c0
 		, _ ASSIGN-CONSTANT .returnReg false
 		, .provenLabel LABEL
 		, _ EXIT .returnReg
+		, _ LEAVE
 		, .c1
 	)
 	, lc-parse .call .call1 .nv
