@@ -374,7 +374,7 @@ public class InstructionCompiler {
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
-				+ "while(true) { switch(ip) { \n" //
+				+ "while(true) switch(ip++) { \n" //
 				+ "%s \n" //
 				+ "default: \n" //
 				+ "} \n" //
