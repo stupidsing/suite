@@ -1,5 +1,6 @@
 package org.instructionexecutor;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,6 +18,7 @@ import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.doer.Formatter;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -26,14 +28,20 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
+ * TODO ASSIGN-FRAME-REG has unknown destination register type
+ *
  * TODO variant type for closure invocation return value
- * 
+ *
  * Possible types: closure, int, node (atom/number/reference/tree)
  */
 public class InstructionCompiler {
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 	private AtomicInteger counter = new AtomicInteger();
+
+	private String filename;
+	private String packageName = getClass().getPackage().getName();
+	private String className;
 
 	private StringBuilder clazzsec = new StringBuilder();
 	private StringBuilder localsec = new StringBuilder();
@@ -42,11 +50,16 @@ public class InstructionCompiler {
 	private int ip;
 	private Map<Integer, Integer> parentFrames = new HashMap<>();
 	private Deque<Integer> lastEnterIps = new ArrayDeque<>();
+	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
 	private Class<?> registerTypes[];
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
-	public InstructionCompiler(Node node) {
+	public interface CompiledRun {
+		public Node exec(RuleSet ruleSet);
+	}
+
+	public void compile(Node node) {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
@@ -69,7 +82,7 @@ public class InstructionCompiler {
 		while (ip < instructions.size()) {
 			Instruction insn = instructions.get(ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			app("case #{num}: // #{str}", ip, insn.toString());
+			app("case #{num}: // #{str}", ip, insn);
 
 			// LogUtil.info("Compiling instruction " + insn);
 
@@ -79,9 +92,13 @@ public class InstructionCompiler {
 				app("#{reg} = new Closure(#{fr}, #{num})", op0, op1);
 				break;
 			case ASSIGNFRAMEREG:
+				int f = lastEnterIps.peek();
 				s = "";
-				for (int i = 0; i < op1; i++)
+				for (int i = 0; i < op1; i++) {
+					f = parentFrames.get(f);
 					s += ".previous";
+				}
+				registerTypes[op0] = registerTypesByFrame.get(f)[op2];
 				app("#{reg} = #{fr}#{str}.r#{num}", op0, s, op2);
 				break;
 			case ASSIGNCONST___:
@@ -110,13 +127,12 @@ public class InstructionCompiler {
 				app("#{jump}", op0);
 				break;
 			case CALLCLOSURE___:
-				registerTypes[op0] = Node.class;
-				app("if (#{reg-clos}.result == null) {", op1);
+				app("if (#{reg-clos}.result == null) {", op0);
 				pushCallee();
-				app("ip = #{reg-clos}.ip", op1);
-				app("#{fr} = #{reg-clos}.frame", op1);
+				app("frame = #{reg-clos}.frame", op0);
+				app("ip = #{reg-clos}.ip", op0);
 				app("if (true) continue");
-				app("} else #{reg} = #{reg-clos}.result", op0, op1);
+				app("} else returnValue = #{reg-clos}.result", op0);
 				break;
 			case COMPARE_______:
 				registerTypes[op0] = int.class;
@@ -155,7 +171,8 @@ public class InstructionCompiler {
 			case ENTER_________:
 				lastEnterIps.push(ip);
 				registerTypes = new Class<?>[op0];
-				app("#{fr} = new #{fr-class}(#{prev-fr})");
+				registerTypesByFrame.put(lastEnterIps.peek(), registerTypes);
+				app("#{fr} = new #{fr-class}((#{prev-fr-class}) frame)");
 				break;
 			case ERROR_________:
 				app("throw new RuntimeException(\"Error termination\")");
@@ -295,23 +312,36 @@ public class InstructionCompiler {
 			app("break");
 		}
 
-		String className = "CompiledRun" + counter.getAndIncrement();
+		className = "CompiledRun" + counter.getAndIncrement();
 
 		String java = String.format("" //
-				+ "package org.instructionexecutor; \n" //
+				+ "package " + packageName + "; \n" //
 				+ "import org.suite.*; \n" //
 				+ "import org.suite.doer.*; \n" //
 				+ "import org.suite.kb.*; \n" //
 				+ "import org.suite.node.*; \n" //
 				+ "import org.suite.predicates.*; \n" //
 				+ "import org.util.*; \n" //
-				+ "import " + Closure.class.getCanonicalName() + "; \n" //
+				+ "import " + CompiledRun.class.getCanonicalName() + "; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
 				+ "\n" //
-				+ "public class %s { \n" //
+				+ "public class %s implements CompiledRun { \n" //
 				+ "private static final int stackSize = 4096; \n" //
+				+ "\n" //
+				+ "interface Frame { \n" //
+				+ "} \n" //
+				+ "\n" //
+				+ "private static class Closure extends Node { \n" //
+				+ "private Closure(Frame frame, int ip) { \n" //
+				+ "this.frame = frame; this.ip = ip; \n" //
+				+ "} \n" //
+				+ "private Frame frame; \n" //
+				+ "private int ip; \n" //
+				+ "private Node result; \n" //
+				+ "} \n" //
+				+ "\n" //
 				+ "private static class CutPoint { \n" //
-				+ "private Object frame; \n" //
+				+ "private Frame frame; \n" //
 				+ "private int ip; \n" //
 				+ "private int bsp; \n" //
 				+ "private int csp; \n" //
@@ -334,6 +364,7 @@ public class InstructionCompiler {
 				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, left, right; \n" //
+				+ "Frame frame = null; \n" //
 				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
 				+ "Comparer comparer = new Comparer(); \n" //
@@ -343,7 +374,7 @@ public class InstructionCompiler {
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
-				+ "while(true) switch(ip) { \n" //
+				+ "while(true) { switch(ip) { \n" //
 				+ "%s \n" //
 				+ "default: \n" //
 				+ "} \n" //
@@ -351,7 +382,10 @@ public class InstructionCompiler {
 				+ "} \n" //
 		, className, clazzsec, localsec, switchsec);
 
-		String filename = "src/main/java/org/instructionexecutor/" + className + ".java";
+		String pathName = "src/main/java/" + packageName.replace('.', '/');
+		filename = pathName + "/" + className + ".java";
+		new File(pathName).mkdirs();
+
 		try (OutputStream os = new FileOutputStream(filename)) {
 			os.write(java.getBytes(IoUtil.charset));
 		} catch (IOException ex) {
@@ -360,7 +394,7 @@ public class InstructionCompiler {
 	}
 
 	private void generateFrame() {
-		app(clazzsec, "private static class #{fr-class} {");
+		app(clazzsec, "private static class #{fr-class} implements Frame {");
 		app(clazzsec, "private #{prev-fr-class} previous");
 		app(clazzsec, "private #{fr-class}(#{prev-fr-class} previous) { this.previous = previous; }");
 
@@ -479,6 +513,14 @@ public class InstructionCompiler {
 
 	private String reg(int reg) {
 		return String.format("f%d.r%d", lastEnterIps.peek(), reg);
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public String getClassName() {
+		return packageName + "." + className;
 	}
 
 }
