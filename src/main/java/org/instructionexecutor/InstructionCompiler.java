@@ -16,6 +16,7 @@ import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.doer.Formatter;
+import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
@@ -39,6 +40,7 @@ public class InstructionCompiler {
 	private StringBuilder switchsec = new StringBuilder();
 
 	private int ip;
+	private Map<Integer, Integer> parentFrames = new HashMap<>();
 	private Deque<Integer> lastEnterIps = new ArrayDeque<>();
 	private Class<?> registerTypes[];
 
@@ -50,7 +52,6 @@ public class InstructionCompiler {
 
 		// Find out the parent of closures.
 		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
-		Map<Integer, Integer> parentFrames = new HashMap<>();
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
@@ -65,10 +66,12 @@ public class InstructionCompiler {
 		Node constant;
 		String var0, s;
 
-		for (ip = 0; ip < instructions.size(); ip++) {
-			Instruction insn = instructions.get(ip);
+		while (ip < instructions.size()) {
+			Instruction insn = instructions.get(ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			app("case #{num}: ", ip);
+			app("case #{num}: // #{str}", ip, insn.toString());
+
+			// LogUtil.info("Compiling instruction " + insn);
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
@@ -100,7 +103,7 @@ public class InstructionCompiler {
 			case CALL__________:
 				pushCallee();
 				app("ip = #{reg-num}", op0);
-				app("continue");
+				app("if (true) continue");
 				break;
 			case CALLCONST_____:
 				pushCallee();
@@ -108,11 +111,11 @@ public class InstructionCompiler {
 				break;
 			case CALLCLOSURE___:
 				registerTypes[op0] = Node.class;
-				app("if(#{reg-clos}.result == null) {", op1);
+				app("if (#{reg-clos}.result == null) {", op1);
 				pushCallee();
 				app("ip = #{reg-clos}.ip", op1);
 				app("#{fr} = #{reg-clos}.frame", op1);
-				app("continue");
+				app("if (true) continue");
 				app("} else #{reg} = #{reg-clos}.result", op0, op1);
 				break;
 			case COMPARE_______:
@@ -127,12 +130,32 @@ public class InstructionCompiler {
 				app("right = (Node) ds[--dsp]");
 				app("#{reg} = Tree.create(TermOp.AND___, left, right)", op0);
 				break;
+			case CUTBEGIN______:
+				registerTypes[op0] = int.class;
+				app("#{reg} = cpsp", op0);
+				app("cutPoint = new CutPoint()");
+				app("cutPoint.frame = #{fr}");
+				app("cutPoint.ip = ip");
+				app("cutPoint.bsp = bsp");
+				app("cutPoint.csp = csp");
+				app("cutPoint.jp = journal.getPointInTime()");
+				app("cutPoints[cpsp++] = cutPoint");
+				break;
+			case CUTFAIL_______:
+				app("int cpsp1 = #{reg}", op0);
+				app("cutPoint = cutPoints[cpsp1]");
+				app("while (cpsp > cpsp1) cutPoints[--cpsp] = null");
+				app("${fr} = (${fr-class}) cutPoint.frame");
+				app("bsp = cutPoint.bsp");
+				app("csp = cutPoint.csp");
+				app("journal.undoBinds(cutPoint.jp)");
+				app("ip = #{reg}", op1);
+				app("#{jump}", op1);
+				break;
 			case ENTER_________:
 				lastEnterIps.push(ip);
 				registerTypes = new Class<?>[op0];
-				var0 = "oldFrame" + counter.getAndIncrement();
-				app("#{fr-class} #{str} = #{fr}", parentFrames.get(ip), var0);
-				app("#{fr} = new #{fr-class}(#{fr})", ip);
+				app("#{fr} = new #{fr-class}(#{prev-fr})");
 				break;
 			case ERROR_________:
 				app("throw new RuntimeException(\"Error termination\")");
@@ -182,13 +205,13 @@ public class InstructionCompiler {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				app("return #{reg}", op0);
+				app("if (true) return #{reg}", op0);
 				break;
 			case FORMTREE0_____:
-				registerTypes[op0] = Tree.class;
 				insn = instructions.get(ip++);
-				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op2,
-						((Atom) constantPool.get(op0)).getName(), op0, op1);
+				registerTypes[insn.op1] = Tree.class;
+				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
+						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
 				break;
 			case HEAD__________:
 				registerTypes[op0] = Node.class;
@@ -210,13 +233,8 @@ public class InstructionCompiler {
 			case LABEL_________:
 				break;
 			case LEAVE_________:
-				app(clazzsec, "private static class #{fr-class} {", lastEnterIps.pop());
-				for (int r = 0; r < registerTypes.length; r++) {
-					String typeName = registerTypes[r].getSimpleName();
-					app(clazzsec, "private #{str} r#{num}", typeName, r);
-				}
-				app(clazzsec, "}");
-				app(localsec, "#{fr-class} #{fr}");
+				generateFrame();
+				lastEnterIps.pop();
 				break;
 			case LOG___________:
 				constant = constantPool.get(op0);
@@ -226,21 +244,24 @@ public class InstructionCompiler {
 				registerTypes[op0] = Node.class;
 				app("#{reg} = new Reference()", op0);
 				break;
+			case POP___________:
+				registerTypes[op0] = Node.class;
+				app("#{reg} = ds[--dsp]", op0);
+				break;
+			case PROVESYS______:
+				app("if (!systemPredicates.call(#{reg-node})) #{jump}", op0, op1);
+				break;
 			case PUSH__________:
 				app("ds[dsp++] = #{reg-node}", op0);
 				break;
 			case PUSHCONST_____:
 				app("ds[dsp++] = Int.create(#{num})", op0);
 				break;
-			case POP___________:
-				registerTypes[op0] = Node.class;
-				app("#{reg} = ds[--dsp]", op0);
-				break;
 			case REMARK________:
 				break;
 			case RETURN________:
 				popCaller();
-				app("continue");
+				app("if (true) continue");
 				break;
 			case RETURNVALUE___:
 				s = registerTypes[op0].getSimpleName(); // Return value type
@@ -277,15 +298,18 @@ public class InstructionCompiler {
 		String className = "CompiledRun" + counter.getAndIncrement();
 
 		String java = String.format("" //
-				+ "package org.compiled; \n" //
+				+ "package org.instructionexecutor; \n" //
 				+ "import org.suite.*; \n" //
 				+ "import org.suite.doer.*; \n" //
+				+ "import org.suite.kb.*; \n" //
 				+ "import org.suite.node.*; \n" //
 				+ "import org.suite.predicates.*; \n" //
-				+ "import org.suite.util.*; \n" //
+				+ "import org.util.*; \n" //
 				+ "import " + Closure.class.getCanonicalName() + "; \n" //
+				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
 				+ "\n" //
 				+ "public class %s { \n" //
+				+ "private static final int stackSize = 4096; \n" //
 				+ "private static class CutPoint { \n" //
 				+ "private Object frame; \n" //
 				+ "private int ip; \n" //
@@ -294,21 +318,26 @@ public class InstructionCompiler {
 				+ "private int jp; \n" //
 				+ "} \n" //
 				+ "\n" //
-				+ "private static final Atom FALSE = Atom.create(\"false\");" //
-				+ "private static final Atom TRUE = Atom.create(\"true\");" //
+				+ "private static final Atom FALSE = Atom.create(\"false\"); \n" //
+				+ "private static final Atom TRUE = Atom.create(\"true\"); \n" //
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
-				+ "public static void exec() { \n" //
+				+ "public static Node exec(RuleSet ruleSet) { \n" //
 				+ "int ip = 0; \n" //
 				+ "Node returnValue = null; \n" //
+				+ "int cs[] = new int[stackSize]; \n" //
+				+ "Node ds[] = new Node[stackSize]; \n" //
+				+ "Object fs[] = new Object[stackSize]; \n" //
 				+ "int bindPoints[] = new int[stackSize]; \n" //
-				+ "List<CutPoint> cutPoints = new ArrayList<>(); \n" //
-				+ "int bsp = 0; \n" //
+				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
+				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, left, right; \n" //
+				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
 				+ "Comparer comparer = new Comparer(); \n" //
+				+ "Prover prover = new Prover(ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "\n" //
@@ -330,6 +359,21 @@ public class InstructionCompiler {
 		}
 	}
 
+	private void generateFrame() {
+		app(clazzsec, "private static class #{fr-class} {");
+		app(clazzsec, "private #{prev-fr-class} previous");
+		app(clazzsec, "private #{fr-class}(#{prev-fr-class} previous) { this.previous = previous; }");
+
+		for (int r = 0; r < registerTypes.length; r++) {
+			String typeName = registerTypes[r].getSimpleName();
+			app(clazzsec, "private #{str} r#{num}", typeName, r);
+		}
+
+		app(clazzsec, "}");
+
+		app(localsec, "#{fr-class} #{fr} = null");
+	}
+
 	private void pushCallee() {
 		app("cs[csp] = ip");
 		app("fs[csp] = #{fr}");
@@ -339,7 +383,7 @@ public class InstructionCompiler {
 	private void popCaller() {
 		app("--csp");
 		app("ip = cs[csp]");
-		app("#{fr} = fs[csp]");
+		app("#{fr} = (#{fr-class}) fs[csp]");
 	}
 
 	private String defineConstant(Node node) {
@@ -364,7 +408,7 @@ public class InstructionCompiler {
 
 			String s0, s1, s2;
 
-			if (pos0 > 0 && pos1 > 0) {
+			if (pos0 >= 0 && pos1 >= 0) {
 				s0 = fmt.substring(0, pos0);
 				s1 = fmt.substring(pos0 + 2, pos1);
 				s2 = fmt.substring(pos1 + 1);
@@ -373,58 +417,68 @@ public class InstructionCompiler {
 				s1 = s2 = "";
 			}
 
-			int reg;
-
-			switch (s1) {
-			case "fr":
-				s1 = String.format("f%d", lastEnterIps.peek());
-				break;
-			case "fr-class":
-				s1 = String.format("Frame%d", iter.next());
-				break;
-			case "jump":
-				s1 = String.format("{ ip = %d; continue; }", iter.next());
-				break;
-			case "num":
-				s1 = String.format("%d", iter.next());
-				break;
-			case "reg":
-				s1 = reg((int) iter.next());
-				break;
-			case "reg-clos":
-				reg = (int) iter.next();
-				s1 = reg(reg);
-				if (registerTypes[reg] == Node.class)
-					s1 = "((Closure) " + s1 + ")";
-				break;
-			case "reg-node":
-				reg = (int) iter.next();
-				s1 = reg(reg);
-				if (registerTypes[reg] == int.class)
-					s1 = "Int.create(" + s1 + ")";
-				break;
-			case "reg-num":
-				reg = (int) iter.next();
-				s1 = reg(reg);
-				if (registerTypes[reg] == Node.class)
-					s1 = "((Int) " + s1 + ").getValue()";
-				break;
-			case "str":
-				s1 = String.format("%s", iter.next());
-			}
-
 			section.append(s0);
-			section.append(s1);
+			section.append(substitute(s1, iter));
 			fmt = s2;
 		}
 
 		section.append(";\n");
 	}
 
+	private String substitute(String s, Iterator<Object> iter) {
+		int reg;
+		Integer frameNo = !lastEnterIps.isEmpty() ? lastEnterIps.peek() : null;
+		Integer parentFrameNo = frameNo != null ? parentFrames.get(frameNo) : null;
+
+		switch (s) {
+		case "fr":
+			s = String.format("f%d", frameNo);
+			break;
+		case "fr-class":
+			s = String.format("Frame%d", frameNo);
+			break;
+		case "jump": // Dummy if for suppressing dead code error
+			s = String.format("{ ip = %d; if (true) continue; }", iter.next());
+			break;
+		case "num":
+			s = String.format("%d", iter.next());
+			break;
+		case "prev-fr":
+			s = parentFrameNo != null ? String.format("f%d", parentFrameNo) : null;
+			break;
+		case "prev-fr-class":
+			s = parentFrameNo != null ? String.format("Frame%d", parentFrameNo) : "Object";
+			break;
+		case "reg":
+			s = reg((int) iter.next());
+			break;
+		case "reg-clos":
+			reg = (int) iter.next();
+			s = reg(reg);
+			if (Node.class.isAssignableFrom(registerTypes[reg]))
+				s = "((Closure) " + s + ")";
+			break;
+		case "reg-node":
+			reg = (int) iter.next();
+			s = reg(reg);
+			if (registerTypes[reg] == int.class)
+				s = "Int.create(" + s + ")";
+			break;
+		case "reg-num":
+			reg = (int) iter.next();
+			s = reg(reg);
+			if (Node.class.isAssignableFrom(registerTypes[reg]))
+				s = "((Int) " + s + ").getValue()";
+			break;
+		case "str":
+			s = String.format("%s", iter.next());
+		}
+
+		return s;
+	}
+
 	private String reg(int reg) {
-		String s1;
-		s1 = String.format("f%d.r%d", lastEnterIps.peek(), reg);
-		return s1;
+		return String.format("f%d.r%d", lastEnterIps.peek(), reg);
 	}
 
 }
