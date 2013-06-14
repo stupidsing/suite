@@ -27,11 +27,7 @@ import com.google.common.collect.HashBiMap;
 /**
  * TODO variant type for closure invocation return value
  * 
- * TODO variant type for stack-popped/-topped value
- * 
- * TODO unknown register for passing return value
- * 
- * Possible types: closure, int, node (atom/reference/tree)
+ * Possible types: closure, int, node (atom/number/reference/tree)
  */
 public class InstructionCompiler {
 
@@ -290,16 +286,29 @@ public class InstructionCompiler {
 				+ "import " + Closure.class.getCanonicalName() + "; \n" //
 				+ "\n" //
 				+ "public class %s { \n" //
+				+ "private static class CutPoint { \n" //
+				+ "private Object frame; \n" //
+				+ "private int ip; \n" //
+				+ "private int bsp; \n" //
+				+ "private int csp; \n" //
+				+ "private int jp; \n" //
+				+ "} \n" //
+				+ "\n" //
 				+ "private static final Atom FALSE = Atom.create(\"false\");" //
 				+ "private static final Atom TRUE = Atom.create(\"true\");" //
+				+ "\n" //
 				+ "%s" //
+				+ "\n" //
 				+ "public static void exec() { \n" //
 				+ "int ip = 0; \n" //
 				+ "Node returnValue = null; \n" //
+				+ "int bindPoints[] = new int[stackSize]; \n" //
+				+ "List<CutPoint> cutPoints = new ArrayList<>(); \n" //
+				+ "int bsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, left, right; \n" //
 				+ "\n" //
-				+ "Comparer comparer = new Comparer();; \n" //
+				+ "Comparer comparer = new Comparer(); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "\n" //

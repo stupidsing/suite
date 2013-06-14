@@ -1,8 +1,5 @@
 package org.instructionexecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.CutPoint;
 import org.instructionexecutor.InstructionUtil.Frame;
@@ -16,7 +13,6 @@ import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.predicates.SystemPredicates;
-import org.util.Util;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
@@ -27,9 +23,8 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private static final int stackSize = 4096;
 
 	private int bindPoints[] = new int[stackSize];
-	private int bsp = 0;
-
-	private List<CutPoint> cutPoints = new ArrayList<>();
+	private CutPoint cutPoints[] = new CutPoint[stackSize];
+	private int bsp = 0, csp = 0;
 
 	public LogicInstructionExecutor(Node node, Prover prover) {
 		super(node);
@@ -51,13 +46,15 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				current.ip = insn.op2; // Fail
 			break;
 		case CUTBEGIN______:
-			regs[insn.op0] = number(cutPoints.size());
-			cutPoints.add(new CutPoint(current, bsp, journal.getPointInTime()));
+			regs[insn.op0] = number(csp);
+			cutPoints[csp++] = new CutPoint(current, bsp, journal.getPointInTime());
 			break;
 		case CUTFAIL_______:
-			int cutPointIndex = i(regs[insn.op0]);
-			CutPoint cutPoint = cutPoints.get(cutPointIndex);
-			Util.truncate(cutPoints, cutPointIndex);
+			int csp1 = i(regs[insn.op0]);
+			CutPoint cutPoint = cutPoints[csp1];
+			while (csp > csp1)
+				cutPoints[--csp] = null;
+
 			exec.current = cutPoint.activation;
 			exec.current.ip = insn.op1;
 			bsp = cutPoint.bindStackPointer;

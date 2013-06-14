@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Calendar;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -114,12 +113,6 @@ public class Util {
 
 	public static ThreadPoolExecutor createExecutor() {
 		return new ThreadPoolExecutor(8, 32, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
-	}
-
-	public static <E> void truncate(List<E> list, int n) {
-		int size = list.size();
-		while (size > n)
-			list.remove(--size);
 	}
 
 	/**

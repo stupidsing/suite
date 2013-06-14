@@ -53,8 +53,8 @@ public class InstructionExecutor implements AutoCloseable {
 		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
 		Node stack[] = new Node[stackSize];
+		int sp = 0;
 		Node returnValue = null;
-		int i, sp = 0;
 
 		Exec exec = new Exec();
 		exec.stack = stack;
@@ -66,7 +66,9 @@ public class InstructionExecutor implements AutoCloseable {
 			Node regs[] = frame != null ? frame.registers : null;
 			int ip = current.ip++;
 			Instruction insn = instructions[ip];
+
 			TermOp op;
+			int i;
 
 			// org.util.LogUtil.info(ip + "> " + insn);
 
