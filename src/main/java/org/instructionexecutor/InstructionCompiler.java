@@ -20,7 +20,6 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.util.FunUtil.Fun;
 import org.util.IoUtil;
 
 import com.google.common.collect.BiMap;
