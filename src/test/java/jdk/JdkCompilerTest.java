@@ -40,10 +40,7 @@ public class JdkCompilerTest {
 
 		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
 
-		try (StandardJavaFileManager sjfm = jc.getStandardFileManager( //
-				null //
-				, null //
-				, null)) {
+		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
 			File file = new File(srcFile);
 			jc.getTask(null //
 					, null //

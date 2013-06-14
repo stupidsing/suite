@@ -20,6 +20,7 @@ import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
+import org.util.FunUtil.Fun;
 import org.util.IoUtil;
 
 import com.google.common.collect.BiMap;
@@ -323,7 +324,7 @@ public class InstructionCompiler {
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
-				+ "public static Node exec(RuleSet ruleSet) { \n" //
+				+ "public Node exec(RuleSet ruleSet) { \n" //
 				+ "int ip = 0; \n" //
 				+ "Node returnValue = null; \n" //
 				+ "int cs[] = new int[stackSize]; \n" //
