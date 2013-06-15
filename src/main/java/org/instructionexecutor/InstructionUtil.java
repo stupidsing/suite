@@ -8,11 +8,13 @@ import java.util.Map;
 
 import org.parser.Operator;
 import org.suite.Suite;
+import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
+import org.suite.node.Reference;
 import org.suite.node.Tree;
 
 import com.google.common.collect.BiMap;
@@ -225,6 +227,15 @@ public class InstructionUtil {
 			result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
 
 		return result;
+	}
+
+	public static Node execSubst(Node node, Node var) {
+		Generalizer generalizer = new Generalizer();
+		generalizer.setVariablePrefix("_");
+
+		Tree tree = (Tree) generalizer.generalize(node);
+		((Reference) tree.getRight()).bound(var);
+		return tree.getLeft();
 	}
 
 }

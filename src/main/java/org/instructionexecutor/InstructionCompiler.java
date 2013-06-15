@@ -88,9 +88,10 @@ public class InstructionCompiler {
 		while (ip < instructions.size()) {
 			Instruction insn = instructions.get(ip);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			app("case #{num}: // #{str}", ip++, insn);
+			app("case #{num}: // #{str}", ip, insn);
 
-			// LogUtil.info("Compiling instruction " + insn);
+			LogUtil.info("Compiling instruction (IP = " + ip + ") " + insn);
+			ip++;
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
@@ -317,6 +318,12 @@ public class InstructionCompiler {
 				app("#{reg} = returnValue", op0);
 				app("#{reg-clos}.result = #{reg}", op1, op0);
 				break;
+			case SUBST_________:
+				registerTypes[op0] = Node.class;
+				app("var = (Node) ds[--dsp])");
+				app("node = (Node) ds[--dsp])");
+				app("#{reg} = InstructionUtil.execSubst(node, var)", op0);
+				break;
 			case TAIL__________:
 				registerTypes[op0] = Node.class;
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);
@@ -373,7 +380,7 @@ public class InstructionCompiler {
 				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
 				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
-				+ "Node node, left, right; \n" //
+				+ "Node node, var, left, right; \n" //
 				+ "Frame frame = null; \n" //
 				+ "CutPoint cutPoint; \n" //
 				+ "\n" //

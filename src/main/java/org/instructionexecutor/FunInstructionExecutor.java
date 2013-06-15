@@ -19,13 +19,11 @@ import org.instructionexecutor.io.IndexedIo.IndexedInput;
 import org.instructionexecutor.io.IndexedIo.IndexedReader;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
-import org.suite.doer.Generalizer;
 import org.suite.doer.ProverConfig;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
-import org.suite.node.Reference;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
 import org.util.LogUtil;
@@ -107,7 +105,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		int dsp = exec.sp;
 
 		Node node, left, right, result;
-		Tree tree;
 
 		switch (insn.insn) {
 		case COMPARE_______:
@@ -155,13 +152,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = InstructionUtil.execProve(proverConfig, node);
 			break;
 		case SUBST_________:
-			Generalizer generalizer = new Generalizer();
-			generalizer.setVariablePrefix("_");
-
 			Node var = (Node) ds[--dsp];
-			tree = (Tree) generalizer.generalize((Node) ds[--dsp]);
-			((Reference) tree.getRight()).bound(var);
-			result = tree.getLeft();
+			node = (Node) ds[--dsp];
+			result = InstructionUtil.execSubst(node, var);
 			break;
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
