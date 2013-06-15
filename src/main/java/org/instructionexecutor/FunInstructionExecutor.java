@@ -167,11 +167,11 @@ public class FunInstructionExecutor extends InstructionExecutor {
 				result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
 			break;
 		case SUBST_________:
-			Generalizer g = new Generalizer();
-			g.setVariablePrefix("_");
+			Generalizer generalizer = new Generalizer();
+			generalizer.setVariablePrefix("_");
 
 			Node var = (Node) ds[--dsp];
-			tree = (Tree) g.generalize((Node) ds[--dsp]);
+			tree = (Tree) generalizer.generalize((Node) ds[--dsp]);
 			((Reference) tree.getRight()).bound(var);
 			result = tree.getLeft();
 			break;
