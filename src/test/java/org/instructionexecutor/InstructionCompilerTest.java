@@ -40,7 +40,7 @@ public class InstructionCompilerTest {
 	}
 
 	private Node compileLogical(Node program) {
-		RuleSet ruleSet = Suite.logicalCompilerRuleSet();
+		RuleSet ruleSet = Suite.logicCompilerRuleSet();
 		Node goal = Suite.parse("source .in, compile-logic .in .out, sink .out");
 		return compile(program, ruleSet, goal);
 	}
