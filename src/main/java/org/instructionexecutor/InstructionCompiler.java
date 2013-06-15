@@ -282,6 +282,10 @@ public class InstructionCompiler {
 				registerTypes[op0] = Node.class;
 				app("#{reg} = ds[--dsp]", op0);
 				break;
+			case PROVE_________:
+				registerTypes[op0] = Node.class;
+				app("#{reg} = InstructionUtil.execProve(proverConfig, (Node) ds[--dsp])", op0);
+				break;
 			case PROVESYS______:
 				app("if (!systemPredicates.call(#{reg-node})) #{jump}", op0, op1);
 				break;

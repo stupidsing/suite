@@ -19,7 +19,7 @@ import org.util.FunUtil;
 
 public class InstructionCompilerTest {
 
-	// @Test
+	@Test
 	public void testEagerFunctional() throws IOException {
 		Node goal = Suite.parse("using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}");
 		Node code = compileEagerFunctional(goal);

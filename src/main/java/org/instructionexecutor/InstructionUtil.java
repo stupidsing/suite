@@ -1,12 +1,17 @@
 package org.instructionexecutor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.parser.Operator;
+import org.suite.Suite;
+import org.suite.doer.Prover;
+import org.suite.doer.ProverConfig;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 
@@ -204,6 +209,22 @@ public class InstructionUtil {
 
 	public static Insn getInsn(String insnName) {
 		return InstructionUtil.insnNames.inverse().get(insnName);
+	}
+
+	public static Node execProve(ProverConfig proverConfig, Node node) {
+		Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
+		Tree tree = Tree.decompose(node, TermOp.JOIN__);
+		Node result;
+
+		if (tree != null)
+			if (prover.prove(tree.getLeft()))
+				result = tree.getRight().finalNode();
+			else
+				throw new RuntimeException("Goal failed");
+		else
+			result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
+
+		return result;
 	}
 
 }

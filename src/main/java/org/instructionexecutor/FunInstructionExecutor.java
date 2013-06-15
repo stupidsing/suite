@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +17,9 @@ import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.instructionexecutor.io.IndexedIo.IndexedInput;
 import org.instructionexecutor.io.IndexedIo.IndexedReader;
-import org.suite.Suite;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
-import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
@@ -154,17 +151,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = handleProcessOpen(n0, n1);
 			break;
 		case PROVE_________:
-			Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
 			node = (Node) ds[--dsp];
-			tree = Tree.decompose(node, TermOp.JOIN__);
-
-			if (tree != null)
-				if (prover.prove(tree.getLeft()))
-					result = tree.getRight().finalNode();
-				else
-					throw new RuntimeException("Goal failed");
-			else
-				result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
+			result = InstructionUtil.execProve(proverConfig, node);
 			break;
 		case SUBST_________:
 			Generalizer generalizer = new Generalizer();
