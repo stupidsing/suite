@@ -106,56 +106,56 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		Frame frame = current.frame;
 		Object regs[] = frame != null ? frame.registers : null;
 
-		Object stack[] = exec.stack;
-		int sp = exec.sp;
+		Object ds[] = exec.stack;
+		int dsp = exec.sp;
 
 		Node node, left, right, result;
 		Tree tree;
 
 		switch (insn.insn) {
 		case COMPARE_______:
-			left = (Node) stack[--sp];
-			right = (Node) stack[--sp];
+			left = (Node) ds[--dsp];
+			right = (Node) ds[--dsp];
 			result = Int.create(comparer.compare(left, right));
 			break;
 		case CONS__________:
-			left = (Node) stack[--sp];
-			right = (Node) stack[--sp];
+			left = (Node) ds[--dsp];
+			right = (Node) ds[--dsp];
 			result = Tree.create(TermOp.AND___, left, right);
 			break;
 		case ERROR_________:
 			throw new RuntimeException("Error termination");
 		case FGETC_________:
-			node = (Node) stack[--sp];
-			int p = ((Int) stack[--sp]).getNumber();
+			node = (Node) ds[--dsp];
+			int p = ((Int) ds[--dsp]).getNumber();
 			int c = inputs.get(node).read(p);
 			result = Int.create(c);
 			break;
 		case HEAD__________:
-			result = Tree.decompose((Node) stack[--sp]).getLeft();
+			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;
 		case ISTREE________:
-			result = atom(Tree.decompose((Node) stack[--sp]) != null);
+			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
 			break;
 		case ISVECTOR______:
-			result = atom(stack[--sp] instanceof Vector);
+			result = atom(ds[--dsp] instanceof Vector);
 			break;
 		case LOG1__________:
-			result = (Node) stack[--sp];
+			result = (Node) ds[--dsp];
 			LogUtil.info(Formatter.display(unwrap(result)));
 			break;
 		case LOG2__________:
-			LogUtil.info(unwrapToString((Node) stack[--sp]));
-			result = (Node) stack[--sp];
+			LogUtil.info(unwrapToString((Node) ds[--dsp]));
+			result = (Node) ds[--dsp];
 			break;
 		case POPEN_________:
-			Node n0 = unwrap((Node) stack[--sp]);
-			Node n1 = (Node) stack[--sp];
+			Node n0 = unwrap((Node) ds[--dsp]);
+			Node n1 = (Node) ds[--dsp];
 			result = handleProcessOpen(n0, n1);
 			break;
 		case PROVE_________:
 			Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
-			node = (Node) stack[--sp];
+			node = (Node) ds[--dsp];
 			tree = Tree.decompose(node, TermOp.JOIN__);
 
 			if (tree != null)
@@ -170,47 +170,47 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			Generalizer g = new Generalizer();
 			g.setVariablePrefix("_");
 
-			Node var = (Node) stack[--sp];
-			tree = (Tree) g.generalize((Node) stack[--sp]);
+			Node var = (Node) ds[--dsp];
+			tree = (Tree) g.generalize((Node) ds[--dsp]);
 			((Reference) tree.getRight()).bound(var);
 			result = tree.getLeft();
 			break;
 		case TAIL__________:
-			result = Tree.decompose((Node) stack[--sp]).getRight();
+			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
 		case VCONCAT_______:
-			Vector vector0 = (Vector) stack[--sp];
-			Vector vector1 = (Vector) stack[--sp];
+			Vector vector0 = (Vector) ds[--dsp];
+			Vector vector1 = (Vector) ds[--dsp];
 			result = Vector.concat(vector0, vector1);
 			break;
 		case VCONS_________:
-			Node head = (Node) stack[--sp];
-			Vector tail = (Vector) stack[--sp];
+			Node head = (Node) ds[--dsp];
+			Vector tail = (Vector) ds[--dsp];
 			result = Vector.cons(head, tail);
 			break;
 		case VELEM_________:
-			result = new Vector((Node) stack[--sp]);
+			result = new Vector((Node) ds[--dsp]);
 			break;
 		case VEMPTY________:
 			result = Vector.EMPTY;
 			break;
 		case VHEAD_________:
-			result = ((Vector) stack[--sp]).get(0);
+			result = ((Vector) ds[--dsp]).get(0);
 			break;
 		case VRANGE________:
-			Vector vector = (Vector) stack[--sp];
-			int s = ((Int) stack[--sp]).getNumber();
-			int e = ((Int) stack[--sp]).getNumber();
+			Vector vector = (Vector) ds[--dsp];
+			int s = ((Int) ds[--dsp]).getNumber();
+			int e = ((Int) ds[--dsp]).getNumber();
 			result = vector.subVector(s, e);
 			break;
 		case VTAIL_________:
-			result = ((Vector) stack[--sp]).subVector(1, 0);
+			result = ((Vector) ds[--dsp]).subVector(1, 0);
 			break;
 		default:
 			throw new RuntimeException("Unknown instruction " + insn);
 		}
 
-		exec.sp = sp;
+		exec.sp = dsp;
 		regs[insn.op0] = result;
 	}
 

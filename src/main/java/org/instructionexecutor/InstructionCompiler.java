@@ -65,7 +65,7 @@ public class InstructionCompiler {
 		this.packageName = getClass().getPackage().getName();
 	}
 
-	public void compile(Node node) {
+	public CompiledRun compile(Node node) throws IOException {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
@@ -263,6 +263,17 @@ public class InstructionCompiler {
 				constant = constantPool.get(op0);
 				app("LogUtil.info(#{str}.toString())", defineConstant(constant));
 				break;
+			case LOG1__________:
+				registerTypes[op0] = Node.class;
+				app("node = (Node) ds[--dsp]", op0);
+				app("LogUtil.info(node.toString())");
+				app("#{reg} = node", op0);
+				break;
+			case LOG2__________:
+				registerTypes[op0] = Node.class;
+				app("LogUtil.info(((Node) ds[--dsp]).toString())");
+				app("#{reg} = (Node) ds[--dsp]", op0);
+				break;
 			case NEWNODE_______:
 				registerTypes[op0] = Node.class;
 				app("#{reg} = new Reference()", op0);
@@ -386,9 +397,9 @@ public class InstructionCompiler {
 
 		try (OutputStream os = new FileOutputStream(filename)) {
 			os.write(java.getBytes(IoUtil.charset));
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
 		}
+
+		return getCompiledRun();
 	}
 
 	private void generateFrame() {
@@ -513,7 +524,7 @@ public class InstructionCompiler {
 		return String.format("f%d.r%d", lastEnterIps.peek(), reg);
 	}
 
-	public CompiledRun getCompiledRun() throws IOException {
+	private CompiledRun getCompiledRun() throws IOException {
 		String binDir = basePathName;
 		new File(binDir).mkdirs();
 
@@ -522,12 +533,13 @@ public class InstructionCompiler {
 		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
 			File file = new File(filename);
 
-			jc.getTask(null //
+			if (!jc.getTask(null //
 					, null //
 					, null //
 					, Arrays.asList("-d", binDir) //
 					, null //
-					, sjfm.getJavaFileObjects(file)).call();
+					, sjfm.getJavaFileObjects(file)).call())
+				throw new RuntimeException("Java compilation error");
 		}
 
 		URLClassLoader ucl = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
