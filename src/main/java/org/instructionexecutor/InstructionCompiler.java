@@ -36,10 +36,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * TODO ASSIGN-FRAME-REG has unknown destination register type
- * 
- * TODO variant type for closure invocation return value
- * 
  * Possible types: closure, int, node (atom/number/reference/tree)
  */
 public class InstructionCompiler {
