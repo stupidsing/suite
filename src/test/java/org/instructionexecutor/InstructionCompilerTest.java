@@ -18,6 +18,7 @@ import org.util.FunUtil;
 
 public class InstructionCompilerTest {
 
+	// @Test
 	public void testEagerFunctional() throws IOException {
 		Node goal = Suite.parse("using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}");
 		Node code = compileEagerFunctional(goal);
@@ -33,31 +34,20 @@ public class InstructionCompilerTest {
 
 	private Node compileEagerFunctional(Node program) {
 		InterpretedProverBuilder builder = new InterpretedProverBuilder();
-		final Node holder[] = new Node[] { null };
-
 		Node goal = Suite.parse("source .in, compile-function EAGER .in .out, sink .out");
 		Finder compiler = builder.build(Suite.eagerFunCompilerRuleSet(), goal);
-
-		compiler.find(FunUtil.source(program), new FunUtil.Sink<Node>() {
-			public void sink(Node node) {
-				holder[0] = new Cloner().clone(node);
-			}
-		});
-
-		Node code = holder[0];
-
-		if (code != null)
-			return code;
-		else
-			throw new RuntimeException("Functional compilation error");
+		return compile(program, compiler);
 	}
 
 	private Node compileLogical(Node program) {
 		InterpretedProverBuilder builder = new InterpretedProverBuilder();
-		final Node holder[] = new Node[] { null };
-
 		Node goal = Suite.parse("source .in, compile-logic .in .out, sink .out");
 		Finder compiler = builder.build(Suite.logicalCompilerRuleSet(), goal);
+		return compile(program, compiler);
+	}
+
+	private Node compile(Node program, Finder compiler) {
+		final Node holder[] = new Node[] { null };
 
 		compiler.find(FunUtil.source(program), new FunUtil.Sink<Node>() {
 			public void sink(Node node) {
@@ -70,7 +60,7 @@ public class InstructionCompilerTest {
 		if (code != null)
 			return code;
 		else
-			throw new RuntimeException("Logic compilation error");
+			throw new RuntimeException("Compilation error");
 	}
 
 	private Node execute(Node code) throws IOException {
