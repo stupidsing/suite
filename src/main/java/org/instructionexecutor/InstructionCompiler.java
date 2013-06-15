@@ -74,8 +74,10 @@ public class InstructionCompiler {
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
+			// Recognize frames and their parents.
+			// Assumes ENTER instruction should be after LABEL.
 			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFrames.put(insn.op2, lastEnterIps.peek());
+				parentFrames.put(insn.op1 + 1, lastEnterIps.peek());
 			else if (insn.insn == Insn.ENTER_________)
 				lastEnterIps.push(ip);
 			else if (insn.insn == Insn.LEAVE_________)
@@ -101,7 +103,7 @@ public class InstructionCompiler {
 			case ASSIGNFRAMEREG:
 				int f = lastEnterIps.peek();
 				s = "";
-				for (int i = 0; i < op1; i++) {
+				for (int i = op1; i < 0; i++) {
 					f = parentFrames.get(f);
 					s += ".previous";
 				}
@@ -176,7 +178,7 @@ public class InstructionCompiler {
 				app("#{jump}", op1);
 				break;
 			case ENTER_________:
-				lastEnterIps.push(ip);
+				lastEnterIps.push(ip - 1);
 				registerTypes = new Class<?>[op0];
 				registerTypesByFrame.put(lastEnterIps.peek(), registerTypes);
 				app("#{fr} = new #{fr-class}((#{prev-fr-class}) frame)");
