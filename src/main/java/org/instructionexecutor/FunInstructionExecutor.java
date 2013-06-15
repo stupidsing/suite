@@ -7,16 +7,13 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
-import org.instructionexecutor.io.IndexedIo.IndexedInput;
-import org.instructionexecutor.io.IndexedIo.IndexedReader;
+import org.instructionexecutor.io.IndexedIo;
+import org.instructionexecutor.io.IndexedReader;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.ProverConfig;
@@ -32,7 +29,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	private Comparer comparer = new Comparer();
 	private ProverConfig proverConfig;
-	private Map<Node, IndexedInput> inputs = Collections.synchronizedMap(new HashMap<Node, IndexedInput>());
+	private IndexedIo indexedIo = new IndexedIo();
 
 	public FunInstructionExecutor(Node node) {
 		super(node);
@@ -91,7 +88,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void executeIo(Reader reader, Writer writer) throws IOException {
-		inputs.put(Atom.NIL, new IndexedReader(reader));
+		indexedIo.put(Atom.NIL, new IndexedReader(reader));
 		unwrap(super.execute(), writer);
 	}
 
@@ -122,7 +119,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case FGETC_________:
 			node = (Node) ds[--dsp];
 			int p = ((Int) ds[--dsp]).getNumber();
-			int c = inputs.get(node).read(p);
+			int c = indexedIo.get(node).read(p);
 			result = Int.create(c);
 			break;
 		case HEAD__________:
@@ -143,9 +140,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = (Node) ds[--dsp];
 			break;
 		case POPEN_________:
-			Node n0 = unwrap((Node) ds[--dsp]);
+			Node n0 = (Node) ds[--dsp];
 			Node n1 = (Node) ds[--dsp];
-			result = handleProcessOpen(n0, n1);
+			result = execPopen(indexedIo, n0, n1);
 			break;
 		case PROVE_________:
 			node = (Node) ds[--dsp];
@@ -195,13 +192,13 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		regs[insn.op0] = result;
 	}
 
-	private Node handleProcessOpen(Node n0, final Node n1) {
+	private Node execPopen(IndexedIo indexedIo, Node n0, final Node n1) {
 		try {
 			Node result = Atom.unique();
 			final Process process = Runtime.getRuntime().exec(unwrapToString(n0));
 
 			InputStreamReader reader = new InputStreamReader(process.getInputStream());
-			inputs.put(result, new IndexedReader(reader));
+			indexedIo.put(result, new IndexedReader(reader));
 
 			// Use a separate thread to write to the process, so that read and
 			// write occur at the same time and would not block up.
@@ -224,8 +221,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	@Override
 	public void close() {
-		for (IndexedInput input : inputs.values())
-			input.close();
+		indexedIo.close();
 	}
 
 	public void setProverConfig(ProverConfig proverConfig) {

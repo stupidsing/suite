@@ -233,6 +233,14 @@ public class InstructionCompiler {
 			case EXIT__________:
 				app("if (true) return #{reg}", op0);
 				break;
+			case FGETC_________:
+				registerTypes[op0] = Node.class;
+				app("{");
+				app("node = (Node) ds[--dsp]");
+				app("int p = ((Int) ds[--dsp]).getNumber()");
+				app("#{reg} = Int.create(indexedIo.get(node).read(p))", op0);
+				app("}");
+				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
 				registerTypes[insn.op1] = Tree.class;
@@ -346,6 +354,7 @@ public class InstructionCompiler {
 
 		String java = String.format("" //
 				+ "package " + packageName + "; \n" //
+				+ "import org.instructionexecutor.io.*; \n" //
 				+ "import org.suite.*; \n" //
 				+ "import org.suite.doer.*; \n" //
 				+ "import org.suite.kb.*; \n" //
@@ -361,8 +370,10 @@ public class InstructionCompiler {
 				+ "public class %s implements CompiledRun { \n" //
 				+ "private static final int stackSize = 4096; \n" //
 				+ "\n" //
-				+ "private static final Atom FALSE = Atom.create(\"false\"); \n" //
-				+ "private static final Atom TRUE = Atom.create(\"true\"); \n" //
+				+ "private static final Atom FALSE = Atom.FALSE; \n" //
+				+ "private static final Atom TRUE = Atom.TRUE; \n" //
+				+ "\n" //
+				+ "private IndexedIo indexedIo = new IndexedIo(); \n" //
 				+ "\n" //
 				+ "private Closeable closeable; \n" //
 				+ "\n" //

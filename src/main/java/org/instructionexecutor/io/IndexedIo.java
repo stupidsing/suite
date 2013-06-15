@@ -1,7 +1,10 @@
 package org.instructionexecutor.io;
 
-import java.io.IOException;
-import java.io.Reader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.suite.node.Node;
 
 /**
  * Implements input devices that read/write at specified byte positions rather
@@ -9,7 +12,9 @@ import java.io.Reader;
  * 
  * @author ywsing
  */
-public class IndexedIo {
+public class IndexedIo implements AutoCloseable {
+
+	private Map<Node, IndexedInput> inputs = Collections.synchronizedMap(new HashMap<Node, IndexedInput>());
 
 	public interface IndexedInput {
 		public int read(int p);
@@ -17,42 +22,18 @@ public class IndexedIo {
 		public void close();
 	}
 
-	public static class IndexedReader implements IndexedInput {
-		private Reader in;
-		private StringBuilder sb = new StringBuilder();
+	public IndexedInput get(Node key) {
+		return inputs.get(key);
+	}
 
-		public IndexedReader(Reader in) {
-			this.in = in;
-		}
+	public IndexedInput put(Node key, IndexedInput value) {
+		return inputs.put(key, value);
+	}
 
-		@Override
-		public synchronized int read(int p) {
-			while (p >= sb.length()) {
-				int c;
-
-				try {
-					c = in.read();
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-
-				if (c >= 0)
-					sb.append((char) c);
-				else
-					break;
-			}
-
-			return p < sb.length() ? sb.charAt(p) : -1;
-		}
-
-		@Override
-		public synchronized void close() {
-			try {
-				in.close();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
+	@Override
+	public void close() {
+		for (IndexedInput input : inputs.values())
+			input.close();
 	}
 
 }
