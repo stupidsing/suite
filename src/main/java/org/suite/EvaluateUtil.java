@@ -68,7 +68,6 @@ public class EvaluateUtil {
 	private Node compileFunCode(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
-		ProverConfig pc = fcc.getProverConfig();
 
 		String eval = "source .in" //
 				+ ", compile-function .0 .in .out" //
@@ -76,13 +75,11 @@ public class EvaluateUtil {
 				+ ", sink .out";
 		Node node = Suite.substitute(eval, mode);
 
-		Finder finder = new InterpretedProverBuilder(pc).build(rs, node);
-		return singleResult(finder, appendLibraries(fcc));
+		return compileFun(rs, fcc, node);
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
 		RuleSet rs = Suite.funCompilerRuleSet();
-		ProverConfig pc = fcc.getProverConfig();
 
 		Node node = Suite.parse("source .in" //
 				+ ", fc-parse .in .p" //
@@ -91,8 +88,7 @@ public class EvaluateUtil {
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 
-		Finder finder = new InterpretedProverBuilder(pc).build(rs, node);
-		Node type = singleResult(finder, appendLibraries(fcc));
+		Node type = compileFun(rs, fcc, node);
 
 		if (type != null)
 			return type.finalNode();
@@ -100,17 +96,21 @@ public class EvaluateUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private Node appendLibraries(FunCompilerConfig fcc) {
+	private Node compileFun(RuleSet rs, FunCompilerConfig fcc, Node compileNode) {
+		ProverConfig pc = fcc.getProverConfig();
+		Finder finder = new InterpretedProverBuilder(pc).build(rs, compileNode);
+		List<Node> nodes = collect(finder, appnedLibraries(fcc));
+		return nodes.size() == 1 ? nodes.get(0) : null;
+	}
+
+	private Node appnedLibraries(FunCompilerConfig fcc) {
 		Node node = fcc.getNode();
+
 		for (String library : fcc.getLibraries())
 			if (!Util.isBlank(library))
 				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
-		return node;
-	}
 
-	private Node singleResult(Finder finder, Node in) {
-		List<Node> nodes = collect(finder, in);
-		return nodes.size() == 1 ? nodes.get(0) : null;
+		return node;
 	}
 
 	private List<Node> collect(Finder finder, Node in) {
