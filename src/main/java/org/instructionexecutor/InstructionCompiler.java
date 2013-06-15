@@ -39,8 +39,9 @@ public class InstructionCompiler {
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 	private AtomicInteger counter = new AtomicInteger();
 
+	private String packageName;
+	private String pathName;
 	private String filename;
-	private String packageName = getClass().getPackage().getName();
 	private String className;
 
 	private StringBuilder clazzsec = new StringBuilder();
@@ -57,6 +58,11 @@ public class InstructionCompiler {
 
 	public interface CompiledRun {
 		public Node exec(RuleSet ruleSet);
+	}
+
+	public InstructionCompiler(String basePath) {
+		this.packageName = getClass().getPackage().getName();
+		this.pathName = basePath + "/" + packageName.replace('.', '/');
 	}
 
 	public void compile(Node node) {
@@ -80,9 +86,9 @@ public class InstructionCompiler {
 		String var0, s;
 
 		while (ip < instructions.size()) {
-			Instruction insn = instructions.get(ip++);
+			Instruction insn = instructions.get(ip);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			app("case #{num}: // #{str}", ip, insn);
+			app("case #{num}: // #{str}", ip++, insn);
 
 			// LogUtil.info("Compiling instruction " + insn);
 
@@ -374,15 +380,17 @@ public class InstructionCompiler {
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
-				+ "while(true) switch(ip++) { \n" //
+				+ "while (true) { \n" //
+				// + "System.out.println(ip); \n" //
+				+ "switch(ip++) { \n" //
 				+ "%s \n" //
 				+ "default: \n" //
 				+ "} \n" //
 				+ "} \n" //
 				+ "} \n" //
+				+ "} \n" //
 		, className, clazzsec, localsec, switchsec);
 
-		String pathName = "src/main/java/" + packageName.replace('.', '/');
 		filename = pathName + "/" + className + ".java";
 		new File(pathName).mkdirs();
 
