@@ -13,8 +13,8 @@ public class ImportTest {
 	@Test
 	public void testImport() throws IOException {
 		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl"));
-		assertTrue(Suite.proveThis(rs, "list"));
-		assertTrue(Suite.proveThis(rs, "list repeat"));
+		assertTrue(Suite.proveLogic(rs, "list"));
+		assertTrue(Suite.proveLogic(rs, "list repeat"));
 	}
 
 }

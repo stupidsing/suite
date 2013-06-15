@@ -26,7 +26,7 @@ public class FailedTests {
 
 		Node goal = Suite.parse("(), sink ()");
 		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
-		Suite.evaluateLogical(builder, rs, goal);
+		Suite.evaluateLogic(builder, rs, goal);
 	}
 
 	// Runs forever!
@@ -34,14 +34,14 @@ public class FailedTests {
 	public void test2() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
-		Node result = Suite.evaluateEagerFun(fp);
+		Node result = Suite.evaluateFun(fp, false);
 		System.out.println("OUT:\n" + Formatter.dump(result));
 	}
 
 	// Strange error message "Unknown expression if b"
 	@Test
 	public void test3() throws IOException {
-		Suite.evaluateEagerFun("if a then b");
+		Suite.evaluateFun("if a then b", false);
 	}
 
 }

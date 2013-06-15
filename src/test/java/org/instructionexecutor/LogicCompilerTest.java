@@ -14,10 +14,10 @@ public class LogicCompilerTest {
 
 	@Test
 	public void test() {
-		assertTrue(eval("()"));
-		assertTrue(eval("3 = 3"));
-		assertFalse(eval("fail"));
-		assertFalse(eval("1 = 2"));
+		assertTrue(prove("()"));
+		assertTrue(prove("3 = 3"));
+		assertFalse(prove("fail"));
+		assertFalse(prove("1 = 2"));
 	}
 
 	@Test
@@ -25,32 +25,32 @@ public class LogicCompilerTest {
 		Class<?> clazz = getClass();
 		String preds = IoUtil.readStream(clazz.getResourceAsStream("/auto.sl"));
 		Node n = Suite.parse("(" + preds + ") >> member (a, b, c,) c");
-		assertTrue(Suite.evaluateLogical(n));
+		assertTrue(Suite.proveLogic(n));
 	}
 
 	@Test
 	public void testCut() {
-		assertTrue(eval("(.a = 1; .a = 2), !, .a = 1"));
-		assertFalse(eval("(.a = 1; .a = 2), !, .a = 2"));
-		assertFalse(eval(".a = 1, !, .b = 2, fail; .b = 3"));
-		assertTrue(eval("(a .b :- !, .b = 1 #) >> (.b = 1; .b = 2), a .b"));
-		assertTrue(eval("(a :- fail # a :- ! #) >> a"));
-		assertTrue(eval("(a :- fail, ! # a #) >> a"));
-		assertFalse(eval("(a :- !, fail # a #) >> a"));
-		assertTrue(eval("(a#) >> a, !"));
+		assertTrue(prove("(.a = 1; .a = 2), !, .a = 1"));
+		assertFalse(prove("(.a = 1; .a = 2), !, .a = 2"));
+		assertFalse(prove(".a = 1, !, .b = 2, fail; .b = 3"));
+		assertTrue(prove("(a .b :- !, .b = 1 #) >> (.b = 1; .b = 2), a .b"));
+		assertTrue(prove("(a :- fail # a :- ! #) >> a"));
+		assertTrue(prove("(a :- fail, ! # a #) >> a"));
+		assertFalse(prove("(a :- !, fail # a #) >> a"));
+		assertTrue(prove("(a#) >> a, !"));
 	}
 
 	@Test
 	public void testEval() {
-		assertTrue(eval("3 < 4"));
-		assertTrue(eval("3 <= 4"));
-		assertFalse(eval("4 > 4"));
-		assertFalse(eval("3 >= 4"));
+		assertTrue(prove("3 < 4"));
+		assertTrue(prove("3 <= 4"));
+		assertFalse(prove("4 > 4"));
+		assertFalse(prove("3 >= 4"));
 	}
 
 	@Test
 	public void testFibonacci() {
-		assertTrue(eval("" //
+		assertTrue(prove("" //
 				+ "( \n" //
 				+ "    fib 0 1 :- ! # \n" //
 				+ "    fib 1 1 :- ! # \n" //
@@ -66,45 +66,45 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testLogic() {
-		assertTrue(eval("1 = 2; 3 = 3"));
-		assertFalse(eval("3 = 3, 1 = 2"));
+		assertTrue(prove("1 = 2; 3 = 3"));
+		assertFalse(prove("3 = 3, 1 = 2"));
 	}
 
 	@Test
 	public void testNot() {
-		assertTrue(eval("not (1 = 2)"));
-		assertTrue(eval("not (1 = 1)"));
-		assertTrue(eval("not (.v = 1), .v = 2"));
-		assertFalse(eval("not (.v = 1), 1 = 2"));
+		assertTrue(prove("not (1 = 2)"));
+		assertTrue(prove("not (1 = 1)"));
+		assertTrue(prove("not (.v = 1), .v = 2"));
+		assertFalse(prove("not (.v = 1), 1 = 2"));
 	}
 
 	@Test
 	public void testOnce() {
-		assertTrue(eval("once (.v = 1; .v = 2), .v = 1"));
-		assertFalse(eval("once (.v = 1; .v = 2), .v = 2"));
+		assertTrue(prove("once (.v = 1; .v = 2), .v = 1"));
+		assertFalse(prove("once (.v = 1; .v = 2), .v = 2"));
 	}
 
 	@Test
 	public void testOrBinds() {
-		eval("(fail; .b = 1), .b = 2, yes");
-		eval("(yes; .b = 1), .b = 2, fail");
+		prove("(fail; .b = 1), .b = 2, yes");
+		prove("(yes; .b = 1), .b = 2, fail");
 	}
 
 	@Test
 	public void testVariables() {
-		assertTrue(eval(".a = 1, 1 = .a"));
-		assertFalse(eval(".a = 1, .a = 2"));
+		assertTrue(prove(".a = 1, 1 = .a"));
+		assertFalse(prove(".a = 1, .a = 2"));
 	}
 
 	@Test
 	public void testWith() {
-		assertTrue(eval("(p 2 # p 3 #) >> p .v, .v = 3"));
-		assertFalse(eval("(p 2 :- ! # p 3 #) >> p .v, .v = 3"));
-		assertTrue(eval("(p .v :- q .v # q 3 #) >> p 3"));
+		assertTrue(prove("(p 2 # p 3 #) >> p .v, .v = 3"));
+		assertFalse(prove("(p 2 :- ! # p 3 #) >> p .v, .v = 3"));
+		assertTrue(prove("(p .v :- q .v # q 3 #) >> p 3"));
 	}
 
-	private boolean eval(String program) {
-		return Suite.evaluateLogical(program);
+	private boolean prove(String program) {
+		return Suite.proveLogic(program);
 	}
 
 }

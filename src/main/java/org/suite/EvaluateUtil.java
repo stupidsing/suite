@@ -24,22 +24,22 @@ import org.util.Util;
 
 public class EvaluateUtil {
 
-	public boolean proveThis(RuleSet rs, Node lp) {
-		Builder builder = new InterpretedProverBuilder();
-		return prove(builder, rs, lp);
-	}
-
-	public boolean evaluateLogical(Node lp) {
+	public boolean proveLogic(Node lp) {
 		Builder builder = new CompiledProverBuilderLevel1(new ProverConfig(), false);
 		return prove(builder, RuleSetUtil.create(), lp);
 	}
 
-	private boolean prove(Builder builder, RuleSet rs, Node lp) {
-		Node goal = Suite.substitute(".0, sink ()", lp);
-		return !evaluateLogical(builder, rs, goal).isEmpty();
+	public boolean proveLogic(RuleSet rs, Node lp) {
+		Builder builder = new InterpretedProverBuilder();
+		return prove(builder, rs, lp);
 	}
 
-	public List<Node> evaluateLogical(Builder builder, RuleSet rs, Node lp) {
+	private boolean prove(Builder builder, RuleSet rs, Node lp) {
+		Node goal = Suite.substitute(".0, sink ()", lp);
+		return !evaluateLogic(builder, rs, goal).isEmpty();
+	}
+
+	public List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
 		return collect(builder.build(rs, lp), Atom.NIL);
 	}
 
@@ -66,7 +66,7 @@ public class EvaluateUtil {
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
 				+ ", sink .out", mode);
 
-		Node code = compileFun(rs, fcc, node);
+		Node code = doFcc(rs, node, fcc);
 
 		if (code != null) {
 			FunInstructionExecutor e = new FunInstructionExecutor(code);
@@ -87,7 +87,7 @@ public class EvaluateUtil {
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 
-		Node type = compileFun(rs, fcc, node);
+		Node type = doFcc(rs, node, fcc);
 
 		if (type != null)
 			return type;
@@ -95,11 +95,21 @@ public class EvaluateUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private Node compileFun(RuleSet rs, FunCompilerConfig fcc, Node compileNode) {
-		ProverConfig pc = fcc.getProverConfig();
-		Finder finder = new InterpretedProverBuilder(pc).build(rs, compileNode);
+	private Node doFcc(RuleSet rs, Node compileNode, FunCompilerConfig fcc) {
+		Builder builder = new InterpretedProverBuilder(fcc.getProverConfig());
+		Finder finder = builder.build(rs, compileNode);
 		List<Node> nodes = collect(finder, appendLibraries(fcc));
 		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
+	}
+
+	private Node appendLibraries(FunCompilerConfig fcc) {
+		Node node = fcc.getNode();
+
+		for (String library : fcc.getLibraries())
+			if (!Util.isBlank(library))
+				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
+
+		return node;
 	}
 
 	private List<Node> collect(Finder finder, Node in) {
@@ -114,16 +124,6 @@ public class EvaluateUtil {
 
 		finder.find(source, sink);
 		return nodes;
-	}
-
-	private Node appendLibraries(FunCompilerConfig fcc) {
-		Node node = fcc.getNode();
-
-		for (String library : fcc.getLibraries())
-			if (!Util.isBlank(library))
-				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
-
-		return node;
 	}
 
 }

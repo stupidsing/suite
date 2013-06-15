@@ -161,7 +161,7 @@ public class EagerFunCompilerTest {
 	public void testInfiniteLoop() {
 		try {
 			// This would fail stack over during type check, so skip that
-			Suite.evaluateEagerFun("no-type-check (e => e {e}) {e => e {e}}");
+			Suite.evaluateFun("no-type-check (e => e {e}) {e => e {e}}", false);
 			throw new RuntimeException();
 		} catch (Throwable th) {
 		}
@@ -213,10 +213,10 @@ public class EagerFunCompilerTest {
 	@Test
 	public void testOperator() {
 		assertEquals(Atom.TRUE, eval("and {1 = 1} {or {1 = 0} {1 = 1}}"));
-		assertEquals(Atom.FALSE, Suite.evaluateEagerFun("" //
-				+ "define type (A %) of (t,) >> \n" //
-				+ "define type (B %) of (t,) >> \n" //
-				+ "let list1 = type (list-of t) () >> A % = B %"));
+		assertEquals(Atom.FALSE, Suite.evaluateFun("" //
+		+ "define type (A %) of (t,) >> \n" //
+		+ "define type (B %) of (t,) >> \n" //
+		+ "let list1 = type (list-of t) () >> A % = B %", false));
 	}
 
 	@Test
@@ -301,7 +301,7 @@ public class EagerFunCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return Suite.evaluateEagerFun(f);
+		return Suite.evaluateFun(f, false);
 	}
 
 }

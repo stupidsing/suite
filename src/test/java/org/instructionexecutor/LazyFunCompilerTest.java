@@ -68,7 +68,7 @@ public class LazyFunCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return Suite.evaluateLazyFun(f);
+		return Suite.evaluateFun(f, true);
 	}
 
 }

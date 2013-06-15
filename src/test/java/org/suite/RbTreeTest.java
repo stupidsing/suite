@@ -14,7 +14,7 @@ public class RbTreeTest {
 	public void test() throws IOException {
 		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "rbt.sl"));
 
-		assertTrue(Suite.proveThis(rs, "" //
+		assertTrue(Suite.proveLogic(rs, "" //
 				+ "rbt-add-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
 				+ ", rbt-get .t 8" //
 				+ ", rbt-member .t 4"));

@@ -238,7 +238,7 @@ public class Main {
 				case QUERYCOMPILED:
 					node = Suite.substitute(".0, sink ()", node);
 					Builder builder = new CompiledProverBuilderLevel1(proverConfig, fcc.isDumpCode());
-					List<Node> nodes = Suite.evaluateLogical(builder, ruleSet, node);
+					List<Node> nodes = Suite.evaluateLogic(builder, ruleSet, node);
 					System.out.println(yesNo(!nodes.isEmpty()));
 				}
 			} catch (Throwable ex) {

@@ -15,7 +15,7 @@ public class CompileUtil {
 	private RuleSet eagerFunRuleSet;
 	private RuleSet lazyFunRuleSet;
 
-	public synchronized RuleSet logicalCompilerRuleSet() {
+	public synchronized RuleSet logicCompilerRuleSet() {
 		if (logicalRuleSet == null)
 			logicalRuleSet = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
 		return logicalRuleSet;

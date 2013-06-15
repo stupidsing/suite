@@ -55,7 +55,7 @@ public class OlderFunCompilerTest {
 	}
 
 	private static Node eval(String f) {
-		return Suite.evaluateEagerFun(f);
+		return Suite.evaluateFun(f, false);
 	}
 
 }

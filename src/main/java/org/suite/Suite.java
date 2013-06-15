@@ -125,8 +125,8 @@ public class Suite {
 	// --------------------------------
 	// Compilation utilities
 
-	public static RuleSet logicalCompilerRuleSet() {
-		return compileUtil.logicalCompilerRuleSet();
+	public static RuleSet logicCompilerRuleSet() {
+		return compileUtil.logicCompilerRuleSet();
 	}
 
 	public static RuleSet funCompilerRuleSet() {
@@ -148,28 +148,20 @@ public class Suite {
 	// --------------------------------
 	// Evaluation utilities
 
-	public static boolean proveThis(RuleSet rs, String gs) {
-		return evaluateUtil.proveThis(rs, Suite.parse(gs));
+	public static boolean proveLogic(String lps) {
+		return proveLogic(Suite.parse(lps));
 	}
 
-	public static boolean evaluateLogical(String lps) {
-		return evaluateLogical(Suite.parse(lps));
+	public static boolean proveLogic(RuleSet rs, String gs) {
+		return evaluateUtil.proveLogic(rs, Suite.parse(gs));
 	}
 
-	public static boolean evaluateLogical(Node lp) {
-		return evaluateUtil.evaluateLogical(lp);
+	public static boolean proveLogic(Node lp) {
+		return evaluateUtil.proveLogic(lp);
 	}
 
-	public static List<Node> evaluateLogical(Builder builder, RuleSet rs, Node lp) {
-		return evaluateUtil.evaluateLogical(builder, rs, lp);
-	}
-
-	public static Node evaluateEagerFun(String fp) {
-		return evaluateFun(fp, false);
-	}
-
-	public static Node evaluateLazyFun(String fp) {
-		return evaluateFun(fp, true);
+	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
+		return evaluateUtil.evaluateLogic(builder, rs, lp);
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {

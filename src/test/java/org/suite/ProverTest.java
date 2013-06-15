@@ -17,7 +17,7 @@ public class ProverTest {
 		Suite.addRule(rs, "app () .l .l");
 		Suite.addRule(rs, "app (.h, .r) .l (.h, .r1) :- app .r .l .r1");
 
-		assertTrue(Suite.proveThis(rs, "app (a, b, c,) (d, e,) (a, b, c, d, e,)"));
+		assertTrue(Suite.proveLogic(rs, "app (a, b, c,) (d, e,) (a, b, c, d, e,)"));
 	}
 
 	@Test
@@ -27,15 +27,15 @@ public class ProverTest {
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "yes");
 
-		assertFalse(Suite.proveThis(rs, "a"));
-		assertFalse(Suite.proveThis(rs, "cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
-		assertTrue(Suite.proveThis(rs, "(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
+		assertFalse(Suite.proveLogic(rs, "a"));
+		assertFalse(Suite.proveLogic(rs, "cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
+		assertTrue(Suite.proveLogic(rs, "(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
 	}
 
 	@Test
 	public void testFindAll() {
 		RuleSet rs = RuleSetUtil.create();
-		assertTrue(Suite.proveThis(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c, )"));
+		assertTrue(Suite.proveLogic(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c, )"));
 	}
 
 	@Test
@@ -44,15 +44,15 @@ public class ProverTest {
 		Suite.addRule(rs, "mem ([.e, _], .e)");
 		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
-		assertTrue(Suite.proveThis(rs, "mem ([a, ], a)"));
-		assertTrue(Suite.proveThis(rs, "mem ([a, b, c, ], .v)"));
-		assertTrue(Suite.proveThis(rs, ".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l"));
-		assertFalse(Suite.proveThis(rs, "mem ([a, b, c, ], d)"));
+		assertTrue(Suite.proveLogic(rs, "mem ([a, ], a)"));
+		assertTrue(Suite.proveLogic(rs, "mem ([a, b, c, ], .v)"));
+		assertTrue(Suite.proveLogic(rs, ".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l"));
+		assertFalse(Suite.proveLogic(rs, "mem ([a, b, c, ], d)"));
 	}
 
 	@Test
 	public void testNotNot() throws IOException {
-		assertTrue(Suite.proveThis(RuleSetUtil.create(), "not not (.a = 3), not bound .a"));
+		assertTrue(Suite.proveLogic(RuleSetUtil.create(), "not not (.a = 3), not bound .a"));
 	}
 
 	@Test
@@ -65,23 +65,23 @@ public class ProverTest {
 		Suite.addRule(rs, "a b c");
 		Suite.addRule(rs, ".var is a man");
 
-		assertTrue(Suite.proveThis(rs, ""));
-		assertTrue(Suite.proveThis(rs, "a"));
-		assertTrue(Suite.proveThis(rs, "a, b"));
-		assertTrue(Suite.proveThis(rs, "a, b, c"));
-		assertTrue(Suite.proveThis(rs, "a, fail; b"));
-		assertTrue(Suite.proveThis(rs, "a b c"));
-		assertTrue(Suite.proveThis(rs, "abc is a man"));
-		assertTrue(Suite.proveThis(rs, ".v = a, .v = b; .v = c"));
-		assertTrue(Suite.proveThis(rs, "[1, 2, 3] = [1, 2, 3]"));
+		assertTrue(Suite.proveLogic(rs, ""));
+		assertTrue(Suite.proveLogic(rs, "a"));
+		assertTrue(Suite.proveLogic(rs, "a, b"));
+		assertTrue(Suite.proveLogic(rs, "a, b, c"));
+		assertTrue(Suite.proveLogic(rs, "a, fail; b"));
+		assertTrue(Suite.proveLogic(rs, "a b c"));
+		assertTrue(Suite.proveLogic(rs, "abc is a man"));
+		assertTrue(Suite.proveLogic(rs, ".v = a, .v = b; .v = c"));
+		assertTrue(Suite.proveLogic(rs, "[1, 2, 3] = [1, 2, 3]"));
 
-		assertFalse(Suite.proveThis(rs, "fail"));
-		assertFalse(Suite.proveThis(rs, "d"));
-		assertFalse(Suite.proveThis(rs, "a, fail"));
-		assertFalse(Suite.proveThis(rs, "fail, a"));
-		assertFalse(Suite.proveThis(rs, "a b d"));
-		assertFalse(Suite.proveThis(rs, "a = b"));
-		assertFalse(Suite.proveThis(rs, ".v = a, .v = b"));
+		assertFalse(Suite.proveLogic(rs, "fail"));
+		assertFalse(Suite.proveLogic(rs, "d"));
+		assertFalse(Suite.proveLogic(rs, "a, fail"));
+		assertFalse(Suite.proveLogic(rs, "fail, a"));
+		assertFalse(Suite.proveLogic(rs, "a b d"));
+		assertFalse(Suite.proveLogic(rs, "a = b"));
+		assertFalse(Suite.proveLogic(rs, ".v = a, .v = b"));
 	}
 
 	@Test
@@ -90,15 +90,15 @@ public class ProverTest {
 		Suite.addRule(rs, "mem ([.e, _], .e)");
 		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
-		assertTrue(Suite.proveThis(rs, ".l = [1, 2,], find.all .v (mem (.l, .v)) .l"));
+		assertTrue(Suite.proveLogic(rs, ".l = [1, 2,], find.all .v (mem (.l, .v)) .l"));
 	}
 
 	@Test
 	public void testWrite() {
 		RuleSet rs = RuleSetUtil.create();
 
-		assertTrue(Suite.proveThis(rs, "write (1 + 2 * 3), nl"));
-		assertTrue(Suite.proveThis(rs, "write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
+		assertTrue(Suite.proveLogic(rs, "write (1 + 2 * 3), nl"));
+		assertTrue(Suite.proveLogic(rs, "write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
 	}
 
 }

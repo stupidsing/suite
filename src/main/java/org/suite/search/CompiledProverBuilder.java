@@ -83,7 +83,7 @@ public class CompiledProverBuilder implements Builder {
 		String compile = "source .in, compile-logic .in .out";
 		compile += isDumpCode ? ", pretty.print .out" : "";
 		compile += ", sink .out";
-		return builder.build(Suite.logicalCompilerRuleSet(), Suite.parse(compile));
+		return builder.build(Suite.logicCompilerRuleSet(), Suite.parse(compile));
 	}
 
 }
