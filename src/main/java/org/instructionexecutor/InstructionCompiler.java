@@ -1,9 +1,12 @@
 package org.instructionexecutor;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -13,25 +16,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.tools.JavaCompiler;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
+
+import org.instructionexecutor.CompiledRunUtil.CompiledRun;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.doer.Formatter;
 import org.suite.doer.TermParser.TermOp;
-import org.suite.kb.RuleSet;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.util.IoUtil;
+import org.util.LogUtil;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
  * TODO ASSIGN-FRAME-REG has unknown destination register type
- *
+ * 
  * TODO variant type for closure invocation return value
- *
+ * 
  * Possible types: closure, int, node (atom/number/reference/tree)
  */
 public class InstructionCompiler {
@@ -39,8 +47,8 @@ public class InstructionCompiler {
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 	private AtomicInteger counter = new AtomicInteger();
 
+	private String basePathName;
 	private String packageName;
-	private String pathName;
 	private String filename;
 	private String className;
 
@@ -56,13 +64,9 @@ public class InstructionCompiler {
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
-	public interface CompiledRun {
-		public Node exec(RuleSet ruleSet);
-	}
-
-	public InstructionCompiler(String basePath) {
+	public InstructionCompiler(String basePathName) {
+		this.basePathName = basePathName;
 		this.packageName = getClass().getPackage().getName();
-		this.pathName = basePath + "/" + packageName.replace('.', '/');
 	}
 
 	public void compile(Node node) {
@@ -328,34 +332,23 @@ public class InstructionCompiler {
 				+ "import org.suite.node.*; \n" //
 				+ "import org.suite.predicates.*; \n" //
 				+ "import org.util.*; \n" //
+				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
 				+ "import " + CompiledRun.class.getCanonicalName() + "; \n" //
+				+ "import " + CompiledRunUtil.class.getCanonicalName() + ".*; \n" //
+				+ "import " + IOException.class.getCanonicalName() + "; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
 				+ "\n" //
 				+ "public class %s implements CompiledRun { \n" //
 				+ "private static final int stackSize = 4096; \n" //
 				+ "\n" //
-				+ "interface Frame { \n" //
-				+ "} \n" //
-				+ "\n" //
-				+ "private static class Closure extends Node { \n" //
-				+ "private Closure(Frame frame, int ip) { \n" //
-				+ "this.frame = frame; this.ip = ip; \n" //
-				+ "} \n" //
-				+ "private Frame frame; \n" //
-				+ "private int ip; \n" //
-				+ "private Node result; \n" //
-				+ "} \n" //
-				+ "\n" //
-				+ "private static class CutPoint { \n" //
-				+ "private Frame frame; \n" //
-				+ "private int ip; \n" //
-				+ "private int bsp; \n" //
-				+ "private int csp; \n" //
-				+ "private int jp; \n" //
-				+ "} \n" //
-				+ "\n" //
 				+ "private static final Atom FALSE = Atom.create(\"false\"); \n" //
 				+ "private static final Atom TRUE = Atom.create(\"true\"); \n" //
+				+ "\n" //
+				+ "private Closeable closeable; \n" //
+				+ "\n" //
+				+ "public %s(Closeable closeable) { this.closeable = closeable; } \n" //
+				+ "\n" //
+				+ "public void close() throws IOException { closeable.close(); } \n" //
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
@@ -389,8 +382,9 @@ public class InstructionCompiler {
 				+ "} \n" //
 				+ "} \n" //
 				+ "} \n" //
-		, className, clazzsec, localsec, switchsec);
+		, className, className, clazzsec, localsec, switchsec);
 
+		String pathName = basePathName + "/" + packageName.replace('.', '/');
 		filename = pathName + "/" + className + ".java";
 		new File(pathName).mkdirs();
 
@@ -523,12 +517,37 @@ public class InstructionCompiler {
 		return String.format("f%d.r%d", lastEnterIps.peek(), reg);
 	}
 
-	public String getFilename() {
-		return filename;
-	}
+	public CompiledRun getCompiledRun() throws IOException {
+		String binDir = basePathName;
+		new File(binDir).mkdirs();
 
-	public String getClassName() {
-		return packageName + "." + className;
+		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
+
+		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
+			File file = new File(filename);
+
+			jc.getTask(null //
+					, null //
+					, null //
+					, Arrays.asList("-d", binDir) //
+					, null //
+					, sjfm.getJavaFileObjects(file)).call();
+		}
+
+		URLClassLoader ucl = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
+		CompiledRun compiledRun;
+
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends CompiledRun> clazz = (Class<? extends CompiledRun>) ucl.loadClass(packageName + "." + className);
+			LogUtil.info("Class " + clazz.getSimpleName() + " has been successfully loaded");
+			compiledRun = clazz.getConstructor(new Class<?>[] { Closeable.class }).newInstance(ucl);
+		} catch (ReflectiveOperationException ex) {
+			ucl.close();
+			throw new RuntimeException(ex);
+		}
+
+		return compiledRun;
 	}
 
 }
