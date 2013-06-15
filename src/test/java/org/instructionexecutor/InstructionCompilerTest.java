@@ -8,6 +8,7 @@ import org.instructionexecutor.CompiledRunUtil.CompiledRun;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.Cloner;
+import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -33,20 +34,20 @@ public class InstructionCompilerTest {
 	}
 
 	private Node compileEagerFunctional(Node program) {
-		InterpretedProverBuilder builder = new InterpretedProverBuilder();
+		RuleSet ruleSet = Suite.eagerFunCompilerRuleSet();
 		Node goal = Suite.parse("source .in, compile-function EAGER .in .out, sink .out");
-		Finder compiler = builder.build(Suite.eagerFunCompilerRuleSet(), goal);
-		return compile(program, compiler);
+		return compile(program, ruleSet, goal);
 	}
 
 	private Node compileLogical(Node program) {
-		InterpretedProverBuilder builder = new InterpretedProverBuilder();
+		RuleSet ruleSet = Suite.logicalCompilerRuleSet();
 		Node goal = Suite.parse("source .in, compile-logic .in .out, sink .out");
-		Finder compiler = builder.build(Suite.logicalCompilerRuleSet(), goal);
-		return compile(program, compiler);
+		return compile(program, ruleSet, goal);
 	}
 
-	private Node compile(Node program, Finder compiler) {
+	private Node compile(Node program, RuleSet ruleSet, Node goal) {
+		InterpretedProverBuilder builder = new InterpretedProverBuilder();
+		Finder compiler = builder.build(ruleSet, goal);
 		final Node holder[] = new Node[] { null };
 
 		compiler.find(FunUtil.source(program), new FunUtil.Sink<Node>() {
