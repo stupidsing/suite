@@ -92,7 +92,7 @@ public class EvaluateUtil {
 		Node type = compileFun(rs, fcc, node);
 
 		if (type != null)
-			return type.finalNode();
+			return type;
 		else
 			throw new RuntimeException("Type inference error");
 	}
@@ -101,7 +101,7 @@ public class EvaluateUtil {
 		ProverConfig pc = fcc.getProverConfig();
 		Finder finder = new InterpretedProverBuilder(pc).build(rs, compileNode);
 		List<Node> nodes = collect(finder, appnedLibraries(fcc));
-		return nodes.size() == 1 ? nodes.get(0) : null;
+		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
 	}
 
 	private Node appnedLibraries(FunCompilerConfig fcc) {
