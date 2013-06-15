@@ -69,11 +69,11 @@ public class EvaluateUtil {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 
-		String eval = "source .in" //
+		Node node = Suite.substitute("" //
+				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
-				+ ", sink .out";
-		Node node = Suite.substitute(eval, mode);
+				+ ", sink .out", mode);
 
 		return compileFun(rs, fcc, node);
 	}
@@ -81,7 +81,8 @@ public class EvaluateUtil {
 	public Node evaluateFunType(FunCompilerConfig fcc) {
 		RuleSet rs = Suite.funCompilerRuleSet();
 
-		Node node = Suite.parse("source .in" //
+		Node node = Suite.parse("" //
+				+ "source .in" //
 				+ ", fc-parse .in .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
 				+ ", resolve-types .tr" //
