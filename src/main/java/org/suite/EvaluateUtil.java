@@ -10,6 +10,7 @@ import org.instructionexecutor.FunInstructionExecutor;
 import org.suite.doer.Cloner;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
+import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
@@ -23,13 +24,14 @@ import org.util.Util;
 
 public class EvaluateUtil {
 
-	public boolean proveThis(RuleSet rs, String gs) {
-		return prove(new InterpretedProverBuilder(), rs, Suite.parse(gs));
+	public boolean proveThis(RuleSet rs, Node lp) {
+		Builder builder = new InterpretedProverBuilder();
+		return prove(builder, rs, lp);
 	}
 
 	public boolean evaluateLogical(Node lp) {
-		ProverConfig pc = new ProverConfig();
-		return prove(new CompiledProverBuilderLevel1(pc, false), pc.ruleSet(), lp);
+		Builder builder = new CompiledProverBuilderLevel1(new ProverConfig(), false);
+		return prove(builder, RuleSetUtil.create(), lp);
 	}
 
 	private boolean prove(Builder builder, RuleSet rs, Node lp) {
@@ -55,17 +57,6 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		Node code = compileFunCode(fcc);
-
-		if (code != null) {
-			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setProverConfig(fcc.getProverConfig());
-			return e;
-		} else
-			throw new RuntimeException("Function compilation error");
-	}
-
-	private Node compileFunCode(FunCompilerConfig fcc) {
 		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 
@@ -75,7 +66,14 @@ public class EvaluateUtil {
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
 				+ ", sink .out", mode);
 
-		return compileFun(rs, fcc, node);
+		Node code = compileFun(rs, fcc, node);
+
+		if (code != null) {
+			FunInstructionExecutor e = new FunInstructionExecutor(code);
+			e.setProverConfig(fcc.getProverConfig());
+			return e;
+		} else
+			throw new RuntimeException("Function compilation error");
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
@@ -100,18 +98,8 @@ public class EvaluateUtil {
 	private Node compileFun(RuleSet rs, FunCompilerConfig fcc, Node compileNode) {
 		ProverConfig pc = fcc.getProverConfig();
 		Finder finder = new InterpretedProverBuilder(pc).build(rs, compileNode);
-		List<Node> nodes = collect(finder, appnedLibraries(fcc));
+		List<Node> nodes = collect(finder, appendLibraries(fcc));
 		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
-	}
-
-	private Node appnedLibraries(FunCompilerConfig fcc) {
-		Node node = fcc.getNode();
-
-		for (String library : fcc.getLibraries())
-			if (!Util.isBlank(library))
-				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
-
-		return node;
 	}
 
 	private List<Node> collect(Finder finder, Node in) {
@@ -126,6 +114,16 @@ public class EvaluateUtil {
 
 		finder.find(source, sink);
 		return nodes;
+	}
+
+	private Node appendLibraries(FunCompilerConfig fcc) {
+		Node node = fcc.getNode();
+
+		for (String library : fcc.getLibraries())
+			if (!Util.isBlank(library))
+				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
+
+		return node;
 	}
 
 }

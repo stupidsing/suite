@@ -149,7 +149,7 @@ public class Suite {
 	// Evaluation utilities
 
 	public static boolean proveThis(RuleSet rs, String gs) {
-		return evaluateUtil.proveThis(rs, gs);
+		return evaluateUtil.proveThis(rs, Suite.parse(gs));
 	}
 
 	public static boolean evaluateLogical(String lps) {
