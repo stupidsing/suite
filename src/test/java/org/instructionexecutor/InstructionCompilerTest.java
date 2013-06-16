@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.instructionexecutor.CompiledRunUtil.Closure;
 import org.instructionexecutor.CompiledRunUtil.CompiledRun;
 import org.junit.Test;
 import org.suite.Suite;
@@ -68,7 +69,7 @@ public class InstructionCompilerTest {
 		String basePathName = "/tmp/" + InstructionCompiler.class.getName();
 
 		try (CompiledRun compiledRun = new InstructionCompiler(basePathName).compile(code)) {
-			return compiledRun.exec(RuleSetUtil.create());
+			return compiledRun.exec(RuleSetUtil.create(), new Closure(null, 0));
 		}
 	}
 

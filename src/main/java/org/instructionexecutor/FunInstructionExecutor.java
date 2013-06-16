@@ -13,7 +13,6 @@ import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.instructionexecutor.io.IndexedIo;
-import org.instructionexecutor.io.IndexedReader;
 import org.suite.doer.Comparer;
 import org.suite.doer.Formatter;
 import org.suite.doer.ProverConfig;

@@ -92,7 +92,7 @@ public class InstructionCompiler {
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
 			app("case #{num}: // #{str}", ip, insn);
 
-			LogUtil.info("Compiling instruction (IP = " + ip + ") " + insn);
+			// LogUtil.info("Compiling instruction (IP = " + ip + ") " + insn);
 			ip++;
 
 			switch (insn.insn) {
@@ -383,8 +383,9 @@ public class InstructionCompiler {
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
-				+ "public Node exec(RuleSet ruleSet) { \n" //
-				+ "int ip = 0; \n" //
+				+ "public Node exec(RuleSet ruleSet, Closure closure) { \n" //
+				+ "Frame frame = closure.frame; \n" //
+				+ "int ip = closure.ip; \n" //
 				+ "Node returnValue = null; \n" //
 				+ "int cs[] = new int[stackSize]; \n" //
 				+ "Node ds[] = new Node[stackSize]; \n" //
@@ -394,7 +395,6 @@ public class InstructionCompiler {
 				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, var, left, right; \n" //
-				+ "Frame frame = null; \n" //
 				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
 				+ "Comparer comparer = new Comparer(); \n" //

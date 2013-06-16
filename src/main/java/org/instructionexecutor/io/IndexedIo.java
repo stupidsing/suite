@@ -10,7 +10,7 @@ import org.suite.node.Node;
 /**
  * Implements input devices that read/write at specified byte positions rather
  * than serially.
- *
+ * 
  * @author ywsing
  */
 public class IndexedIo implements AutoCloseable {
