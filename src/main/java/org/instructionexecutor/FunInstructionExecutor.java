@@ -35,6 +35,11 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		super(node);
 	}
 
+	public void executeIo(Reader reader, Writer writer) throws IOException {
+		indexedIo.put(Atom.NIL, reader);
+		unwrap(super.execute(), writer);
+	}
+
 	/**
 	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
 	 * string.
@@ -85,11 +90,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			node = unwrap(evaluateClosure((Closure) node));
 
 		return node;
-	}
-
-	public void executeIo(Reader reader, Writer writer) throws IOException {
-		indexedIo.put(Atom.NIL, new IndexedReader(reader));
-		unwrap(super.execute(), writer);
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			final Process process = Runtime.getRuntime().exec(unwrapToString(n0));
 
 			InputStreamReader reader = new InputStreamReader(process.getInputStream());
-			indexedIo.put(result, new IndexedReader(reader));
+			indexedIo.put(result, reader);
 
 			// Use a separate thread to write to the process, so that read and
 			// write occur at the same time and would not block up.

@@ -1,5 +1,6 @@
 package org.instructionexecutor.io;
 
+import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,7 @@ import org.suite.node.Node;
 /**
  * Implements input devices that read/write at specified byte positions rather
  * than serially.
- * 
+ *
  * @author ywsing
  */
 public class IndexedIo implements AutoCloseable {
@@ -26,8 +27,8 @@ public class IndexedIo implements AutoCloseable {
 		return inputs.get(key);
 	}
 
-	public IndexedInput put(Node key, IndexedInput value) {
-		return inputs.put(key, value);
+	public IndexedInput put(Node key, Reader reader) {
+		return inputs.put(key, new IndexedReader(reader));
 	}
 
 	@Override
