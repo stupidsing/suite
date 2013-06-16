@@ -8,7 +8,11 @@ import org.suite.node.Node;
 public class CompiledRunUtil {
 
 	public interface CompiledRun extends Closeable {
-		public Node exec(RuleSet ruleSet, Closure closure);
+		public Node exec(CompiledRunConfig config, Closure closure);
+	}
+
+	public static class CompiledRunConfig {
+		public RuleSet ruleSet;
 	}
 
 	public interface Frame {

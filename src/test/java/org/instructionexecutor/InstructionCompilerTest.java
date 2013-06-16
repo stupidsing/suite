@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.instructionexecutor.CompiledRunUtil.Closure;
 import org.instructionexecutor.CompiledRunUtil.CompiledRun;
+import org.instructionexecutor.CompiledRunUtil.CompiledRunConfig;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.Cloner;
@@ -68,8 +69,11 @@ public class InstructionCompilerTest {
 	private Node execute(Node code) throws IOException {
 		String basePathName = "/tmp/" + InstructionCompiler.class.getName();
 
+		CompiledRunConfig config = new CompiledRunConfig();
+		config.ruleSet = RuleSetUtil.create();
+
 		try (CompiledRun compiledRun = new InstructionCompiler(basePathName).compile(code)) {
-			return compiledRun.exec(RuleSetUtil.create(), new Closure(null, 0));
+			return compiledRun.exec(config, new Closure(null, 0));
 		}
 	}
 

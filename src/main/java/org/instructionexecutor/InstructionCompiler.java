@@ -383,7 +383,7 @@ public class InstructionCompiler {
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
-				+ "public Node exec(RuleSet ruleSet, Closure closure) { \n" //
+				+ "public Node exec(CompiledRunConfig config, Closure closure) { \n" //
 				+ "Frame frame = closure.frame; \n" //
 				+ "int ip = closure.ip; \n" //
 				+ "Node returnValue = null; \n" //
@@ -398,7 +398,7 @@ public class InstructionCompiler {
 				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
 				+ "Comparer comparer = new Comparer(); \n" //
-				+ "Prover prover = new Prover(ruleSet); \n" //
+				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "\n" //
@@ -549,6 +549,8 @@ public class InstructionCompiler {
 	}
 
 	private CompiledRun getCompiledRun() throws IOException {
+		LogUtil.info("Compiling run " + filename);
+
 		String binDir = basePathName;
 		new File(binDir).mkdirs();
 
@@ -566,13 +568,14 @@ public class InstructionCompiler {
 				throw new RuntimeException("Java compilation error");
 		}
 
+		LogUtil.info("Loading class " + className);
+
 		URLClassLoader ucl = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
 		CompiledRun compiledRun;
 
 		try {
 			@SuppressWarnings("unchecked")
 			Class<? extends CompiledRun> clazz = (Class<? extends CompiledRun>) ucl.loadClass(packageName + "." + className);
-			LogUtil.info("Class " + clazz.getSimpleName() + " has been successfully loaded");
 			compiledRun = clazz.getConstructor(new Class<?>[] { Closeable.class }).newInstance(ucl);
 		} catch (ReflectiveOperationException ex) {
 			ucl.close();
