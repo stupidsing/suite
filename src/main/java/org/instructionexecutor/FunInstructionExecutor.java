@@ -153,8 +153,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			Node result = Atom.unique();
 			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(n0, unwrapper));
 
-			InputStreamReader reader = new InputStreamReader(process.getInputStream());
-			indexedIo.put(result, reader);
+			indexedIo.put(result, new InputStreamReader(process.getInputStream()));
 
 			// Use a separate thread to write to the process, so that read and
 			// write occur at the same time and would not block up.
