@@ -1,5 +1,6 @@
 import java.io.IOException;
 
+import org.instructionexecutor.InstructionCompilerTest;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.Formatter;
@@ -42,6 +43,12 @@ public class FailedTests {
 	@Test
 	public void test3() throws IOException {
 		Suite.evaluateFun("if a then b", false);
+	}
+
+	// Unknown instruction POPEN
+	@Test
+	public void test4() throws IOException {
+		new InstructionCompilerTest().testEagerFunctional();
 	}
 
 }
