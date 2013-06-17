@@ -1,9 +1,6 @@
 package org.instructionexecutor;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -98,11 +95,11 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case POPEN_________:
 			Node n0 = (Node) ds[--dsp];
 			Node n1 = (Node) ds[--dsp];
-			result = execPopen(indexedIo, n0, n1);
+			result = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper);
 			break;
 		case PROVE_________:
 			node = (Node) ds[--dsp];
-			result = InstructionUtil.execProve(proverConfig, node);
+			result = InstructionUtil.execProve(node, proverConfig);
 			break;
 		case SUBST_________:
 			Node var = (Node) ds[--dsp];
@@ -146,32 +143,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 		exec.sp = dsp;
 		regs[insn.op0] = result;
-	}
-
-	private Node execPopen(IndexedIo indexedIo, Node n0, final Node n1) {
-		try {
-			Node result = Atom.unique();
-			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(n0, unwrapper));
-
-			indexedIo.put(result, new InputStreamReader(process.getInputStream()));
-
-			// Use a separate thread to write to the process, so that read and
-			// write occur at the same time and would not block up.
-			// Have to make sure the executors are thread-safe!
-			new Thread() {
-				public void run() {
-					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ExpandUtil.expand(n1, unwrapper, writer);
-					} catch (IOException ex) {
-						LogUtil.error(ex);
-					}
-				}
-			}.start();
-
-			return result;
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	@Override

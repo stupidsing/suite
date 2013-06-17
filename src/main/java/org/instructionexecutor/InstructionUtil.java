@@ -1,11 +1,17 @@
 package org.instructionexecutor;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.instructionexecutor.io.IndexedIo;
 import org.parser.Operator;
 import org.suite.Suite;
 import org.suite.doer.Generalizer;
@@ -16,6 +22,8 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
+import org.util.FunUtil;
+import org.util.LogUtil;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -213,7 +221,33 @@ public class InstructionUtil {
 		return InstructionUtil.insnNames.inverse().get(insnName);
 	}
 
-	public static Node execProve(ProverConfig proverConfig, Node node) {
+	public static Node execPopen(Node n0, final Node n1, IndexedIo indexedIo, final FunUtil.Fun<Node, Node> unwrapper) {
+		try {
+			Node result = Atom.unique();
+			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(n0, unwrapper));
+
+			indexedIo.put(result, new InputStreamReader(process.getInputStream()));
+
+			// Use a separate thread to write to the process, so that read and
+			// write occur at the same time and would not block up.
+			// Have to make sure the executors are thread-safe!
+			new Thread() {
+				public void run() {
+					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
+						ExpandUtil.expand(n1, unwrapper, writer);
+					} catch (IOException ex) {
+						LogUtil.error(ex);
+					}
+				}
+			}.start();
+
+			return result;
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public static Node execProve(Node node, ProverConfig proverConfig) {
 		Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
 		Tree tree = Tree.decompose(node, TermOp.JOIN__);
 		Node result;

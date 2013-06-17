@@ -145,15 +145,15 @@ public class InstructionCompiler {
 				break;
 			case COMPARE_______:
 				registerTypes[op0] = int.class;
-				app("left = (Node) ds[--dsp]");
-				app("right = (Node) ds[--dsp]");
-				app("#{reg} = comparer.compare(left, right)", op0);
+				app("n0 = (Node) ds[--dsp]");
+				app("n1 = (Node) ds[--dsp]");
+				app("#{reg} = comparer.compare(n0, n1)", op0);
 				break;
 			case CONS__________:
 				registerTypes[op0] = Node.class;
-				app("left = (Node) ds[--dsp]");
-				app("right = (Node) ds[--dsp]");
-				app("#{reg} = Tree.create(TermOp.AND___, left, right)", op0);
+				app("n0 = (Node) ds[--dsp]");
+				app("n1 = (Node) ds[--dsp]");
+				app("#{reg} = Tree.create(TermOp.AND___, n0, n1)", op0);
 				break;
 			case CUTBEGIN______:
 				registerTypes[op0] = int.class;
@@ -236,9 +236,9 @@ public class InstructionCompiler {
 			case FGETC_________:
 				registerTypes[op0] = Node.class;
 				app("{");
-				app("node = (Node) ds[--dsp]");
+				app("n0 = (Node) ds[--dsp]");
 				app("int p = ((Int) ds[--dsp]).getNumber()");
-				app("#{reg} = Int.create(indexedIo.get(node).read(p))", op0);
+				app("#{reg} = Int.create(indexedIo.get(n0).read(p))", op0);
 				app("}");
 				break;
 			case FORMTREE0_____:
@@ -276,8 +276,8 @@ public class InstructionCompiler {
 				break;
 			case LOG1__________:
 				registerTypes[op0] = Node.class;
-				app("node = (Node) ds[--dsp]", op0);
-				app("LogUtil.info(node.toString())");
+				app("n0 = (Node) ds[--dsp]", op0);
+				app("LogUtil.info(n0.toString())");
 				app("#{reg} = node", op0);
 				break;
 			case LOG2__________:
@@ -292,6 +292,12 @@ public class InstructionCompiler {
 			case POP___________:
 				registerTypes[op0] = Node.class;
 				app("#{reg} = ds[--dsp]", op0);
+				break;
+			case POPEN_________:
+				registerTypes[op0] = Node.class;
+				app("n0 = ds[--dsp]");
+				app("n1 = ds[--dsp]");
+				app("#{reg} = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper)", op0);
 				break;
 			case PROVE_________:
 				registerTypes[op0] = Node.class;
@@ -330,9 +336,9 @@ public class InstructionCompiler {
 				break;
 			case SUBST_________:
 				registerTypes[op0] = Node.class;
-				app("var = (Node) ds[--dsp])");
-				app("node = (Node) ds[--dsp])");
-				app("#{reg} = InstructionUtil.execSubst(node, var)", op0);
+				app("n0 = (Node) ds[--dsp])");
+				app("n1 = (Node) ds[--dsp])");
+				app("#{reg} = InstructionUtil.execSubst(n1, v0)", op0);
 				break;
 			case TAIL__________:
 				registerTypes[op0] = Node.class;
@@ -373,7 +379,9 @@ public class InstructionCompiler {
 				+ "private static final Atom FALSE = Atom.FALSE; \n" //
 				+ "private static final Atom TRUE = Atom.TRUE; \n" //
 				+ "\n" //
+				+ "\n" //
 				+ "private IndexedIo indexedIo = new IndexedIo(); \n" //
+				+ "private Unwrapper unwrapper = CompiledRunUtil.getUnwrapper(this); \n" //
 				+ "\n" //
 				+ "private Closeable closeable; \n" //
 				+ "\n" //
@@ -394,7 +402,7 @@ public class InstructionCompiler {
 				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
 				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
-				+ "Node node, var, left, right; \n" //
+				+ "Node node, n0, n1, var; \n" //
 				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
 				+ "Comparer comparer = new Comparer(); \n" //
