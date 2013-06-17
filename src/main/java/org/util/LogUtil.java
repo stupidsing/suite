@@ -43,8 +43,7 @@ public class LogUtil {
 	}
 
 	public static void info(String message) {
-		Class<?> clazz = Reflection.getCallerClass(2);
-		info(clazz, message);
+		info(Reflection.getCallerClass(2), message);
 	}
 
 	private static void info(Class<?> clazz, String message) {
@@ -52,8 +51,7 @@ public class LogUtil {
 	}
 
 	public static void error(Throwable th) {
-		Class<?> clazz = Reflection.getCallerClass(2);
-		error(clazz, th);
+		error(Reflection.getCallerClass(2), th);
 	}
 
 	private static void error(Class<?> clazz, Throwable th) {
@@ -62,8 +60,7 @@ public class LogUtil {
 	}
 
 	public static void fatal(Throwable th) {
-		Class<?> clazz = Reflection.getCallerClass(2);
-		fatal(clazz, th);
+		fatal(Reflection.getCallerClass(2), th);
 	}
 
 	private static void fatal(Class<?> clazz, Throwable th) {
