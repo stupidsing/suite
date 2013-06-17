@@ -36,7 +36,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Possible types: closure, int, node (atom/number/reference/tree)
+ * Possible register types: boolean, closure, int, node
+ * (atom/number/reference/tree)
  */
 public class InstructionCompiler {
 
@@ -52,11 +53,9 @@ public class InstructionCompiler {
 	private StringBuilder localsec = new StringBuilder();
 	private StringBuilder switchsec = new StringBuilder();
 
-	private int ip;
 	private Map<Integer, Integer> parentFrames = new HashMap<>();
 	private Deque<Integer> lastEnterIps = new ArrayDeque<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
-	private Class<?> registerTypes[];
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
@@ -69,23 +68,15 @@ public class InstructionCompiler {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
-		// Find out the parent of closures.
-		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
-		for (int ip = 0; ip < instructions.size(); ip++) {
-			Instruction insn = instructions.get(ip);
+		findFrameInformation(instructions);
 
-			// Recognize frames and their parents.
-			// Assumes ENTER instruction should be after LABEL.
-			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFrames.put(insn.op1 + 1, lastEnterIps.peek());
-			else if (insn.insn == Insn.ENTER_________)
-				lastEnterIps.push(ip);
-			else if (insn.insn == Insn.LEAVE_________)
-				lastEnterIps.pop();
-		}
+		// Find out register types in each frame
+		findRegisterInformation(instructions);
 
+		// Translate instruction code into Java
 		Node constant;
-		String var0, s;
+		String s;
+		int ip = 0;
 
 		while (ip < instructions.size()) {
 			Instruction insn = instructions.get(ip);
@@ -97,26 +88,19 @@ public class InstructionCompiler {
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
-				registerTypes[op0] = Closure.class;
 				app("#{reg} = new Closure(#{fr}, #{num})", op0, op1);
 				break;
 			case ASSIGNFRAMEREG:
-				int f = lastEnterIps.peek();
 				s = "";
-				for (int i = op1; i < 0; i++) {
-					f = parentFrames.get(f);
+				for (int i = op1; i < 0; i++)
 					s += ".previous";
-				}
-				registerTypes[op0] = registerTypesByFrame.get(f)[op2];
-				app("#{reg} = #{fr}#{str}.r#{num}", op0, s, op2);
+				app("#{reg} = CompiledRunUtil.toNode(#{fr}#{str}.r#{num})", op0, s, op2);
 				break;
 			case ASSIGNCONST___:
-				registerTypes[op0] = Node.class;
 				constant = constantPool.get(op1);
 				app("#{reg} = #{str}", op0, defineConstant(constant));
 				break;
 			case ASSIGNINT_____:
-				registerTypes[op0] = int.class;
 				app("#{reg} = #{num}", op0, op1);
 				break;
 			case BIND__________:
@@ -144,19 +128,16 @@ public class InstructionCompiler {
 				app("} else returnValue = #{reg-clos}.result", op0);
 				break;
 			case COMPARE_______:
-				registerTypes[op0] = int.class;
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = comparer.compare(n0, n1)", op0);
 				break;
 			case CONS__________:
-				registerTypes[op0] = Node.class;
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = Tree.create(TermOp.AND___, n0, n1)", op0);
 				break;
 			case CUTBEGIN______:
-				registerTypes[op0] = int.class;
 				app("#{reg} = cpsp", op0);
 				app("cutPoint = new CutPoint()");
 				app("cutPoint.frame = #{fr}");
@@ -179,62 +160,48 @@ public class InstructionCompiler {
 				break;
 			case ENTER_________:
 				lastEnterIps.push(ip - 1);
-				registerTypes = new Class<?>[op0];
-				registerTypesByFrame.put(lastEnterIps.peek(), registerTypes);
 				app("#{fr} = new #{fr-class}((#{prev-fr-class}) frame)");
 				break;
 			case ERROR_________:
 				app("throw new RuntimeException(\"Error termination\")");
 				break;
 			case EVALADD_______:
-				registerTypes[op0] = int.class;
 				app("#{reg} = #{reg-num} + #{reg-num}", op0, op1, op2);
 				break;
 			case EVALDIV_______:
-				registerTypes[op0] = int.class;
 				app("#{reg} = #{reg-num} / #{reg-num}", op0, op1, op2);
 				break;
 			case EVALEQ________:
-				registerTypes[op0] = int.class;
 				app("#{reg} = " + compare + " == 0", op0, op1, op2);
 				break;
 			case EVALGE________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = " + compare + " >= 0", op0, op1, op2);
 				break;
 			case EVALGT________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = " + compare + " > 0", op0, op1, op2);
 				break;
 			case EVALLE________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = " + compare + " <= 0", op0, op1, op2);
 				break;
 			case EVALLT________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = " + compare + " < 0", op0, op1, op2);
 				break;
 			case EVALNE________:
-				registerTypes[op0] = int.class;
 				app("#{reg} = " + compare + " != 0", op0, op1, op2);
 				break;
 			case EVALMOD_______:
-				registerTypes[op0] = int.class;
-				app("#{reg} = #{reg-num} %% #{reg-num}", op0, op1, op2);
+				app("#{reg} = #{reg-num} % #{reg-num}", op0, op1, op2);
 				break;
 			case EVALMUL_______:
-				registerTypes[op0] = int.class;
 				app("#{reg} = #{reg-num} * #{reg-num}", op0, op1, op2);
 				break;
 			case EVALSUB_______:
-				registerTypes[op0] = int.class;
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
 				app("if (true) return #{reg}", op0);
 				break;
 			case FGETC_________:
-				registerTypes[op0] = Node.class;
 				app("{");
 				app("n0 = (Node) ds[--dsp]");
 				app("int p = ((Int) ds[--dsp]).getNumber()");
@@ -243,12 +210,10 @@ public class InstructionCompiler {
 				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
-				registerTypes[insn.op1] = Tree.class;
 				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
 						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
 				break;
 			case HEAD__________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getLeft()", op0);
 				break;
 			case IFFALSE_______:
@@ -258,8 +223,7 @@ public class InstructionCompiler {
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
 				break;
 			case ISTREE________:
-				registerTypes[op0] = Node.class;
-				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null ? TRUE : FALSE", op0);
+				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null", op0);
 				break;
 			case JUMP__________:
 				app("#{jump}", op0);
@@ -275,33 +239,27 @@ public class InstructionCompiler {
 				app("LogUtil.info(#{str}.toString())", defineConstant(constant));
 				break;
 			case LOG1__________:
-				registerTypes[op0] = Node.class;
 				app("n0 = (Node) ds[--dsp]", op0);
 				app("LogUtil.info(n0.toString())");
-				app("#{reg} = node", op0);
+				app("#{reg} = n0", op0);
 				break;
 			case LOG2__________:
-				registerTypes[op0] = Node.class;
 				app("LogUtil.info(((Node) ds[--dsp]).toString())");
 				app("#{reg} = (Node) ds[--dsp]", op0);
 				break;
 			case NEWNODE_______:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = new Reference()", op0);
 				break;
 			case POP___________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = ds[--dsp]", op0);
 				break;
 			case POPEN_________:
-				registerTypes[op0] = Node.class;
 				app("n0 = ds[--dsp]");
 				app("n1 = ds[--dsp]");
 				app("#{reg} = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper)", op0);
 				break;
 			case PROVE_________:
-				registerTypes[op0] = Node.class;
-				app("#{reg} = InstructionUtil.execProve(proverConfig, (Node) ds[--dsp])", op0);
+				app("#{reg} = InstructionUtil.execProve((Node) ds[--dsp], prover.config())", op0);
 				break;
 			case PROVESYS______:
 				app("if (!systemPredicates.call(#{reg-node})) #{jump}", op0, op1);
@@ -319,33 +277,25 @@ public class InstructionCompiler {
 				app("if (true) continue");
 				break;
 			case RETURNVALUE___:
-				s = registerTypes[op0].getSimpleName(); // Return value type
-				var0 = "returnValue" + counter.getAndIncrement();
-				app("#{str} #{str} = #{reg}", s, var0, op0);
+				app("returnValue = #{reg-node}", op0);
 				popCaller();
-				app("returnValue = #{str}", var0);
 				break;
 			case SETRESULT_____:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = returnValue", op0);
 				break;
 			case SETCLOSURERES_:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = returnValue", op0);
 				app("#{reg-clos}.result = #{reg}", op1, op0);
 				break;
 			case SUBST_________:
-				registerTypes[op0] = Node.class;
-				app("n0 = (Node) ds[--dsp])");
-				app("n1 = (Node) ds[--dsp])");
-				app("#{reg} = InstructionUtil.execSubst(n1, v0)", op0);
+				app("n0 = (Node) ds[--dsp]");
+				app("n1 = (Node) ds[--dsp]");
+				app("#{reg} = InstructionUtil.execSubst(n1, n0)", op0);
 				break;
 			case TAIL__________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);
 				break;
 			case TOP___________:
-				registerTypes[op0] = Node.class;
 				app("#{reg} = ds[dsp + #{num}]", op0, op1);
 				break;
 			default:
@@ -367,6 +317,7 @@ public class InstructionCompiler {
 				+ "import org.suite.node.*; \n" //
 				+ "import org.suite.predicates.*; \n" //
 				+ "import org.util.*; \n" //
+				+ "import org.util.FunUtil.*; \n" //
 				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
 				+ "import " + CompiledRun.class.getCanonicalName() + "; \n" //
 				+ "import " + CompiledRunUtil.class.getCanonicalName() + ".*; \n" //
@@ -379,9 +330,7 @@ public class InstructionCompiler {
 				+ "private static final Atom FALSE = Atom.FALSE; \n" //
 				+ "private static final Atom TRUE = Atom.TRUE; \n" //
 				+ "\n" //
-				+ "\n" //
 				+ "private IndexedIo indexedIo = new IndexedIo(); \n" //
-				+ "private Unwrapper unwrapper = CompiledRunUtil.getUnwrapper(this); \n" //
 				+ "\n" //
 				+ "private Closeable closeable; \n" //
 				+ "\n" //
@@ -409,6 +358,7 @@ public class InstructionCompiler {
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
+				+ "Fun<Node, Node> unwrapper = CompiledRunUtil.getUnwrapper(config, this); \n" //
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
@@ -431,10 +381,128 @@ public class InstructionCompiler {
 			os.write(java.getBytes(IoUtil.charset));
 		}
 
+		// Compile the Java, load the class, return an instantiated object
 		return getCompiledRun();
 	}
 
+	private void findFrameInformation(List<Instruction> instructions) {
+
+		// Find out the parent of closures.
+		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
+		for (int ip = 0; ip < instructions.size(); ip++) {
+			Instruction insn = instructions.get(ip);
+
+			// Recognize frames and their parents.
+			// Assumes ENTER instruction should be after LABEL.
+			if (insn.insn == Insn.ASSIGNCLOSURE_)
+				parentFrames.put(insn.op1 + 1, lastEnterIps.peek());
+			else if (insn.insn == Insn.ENTER_________)
+				lastEnterIps.push(ip);
+			else if (insn.insn == Insn.LEAVE_________)
+				lastEnterIps.pop();
+		}
+	}
+
+	private void findRegisterInformation(List<Instruction> instructions) {
+		Class<?> registerTypes[] = null;
+		int ip = 0;
+
+		while (ip < instructions.size()) {
+			Instruction insn = instructions.get(ip);
+			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
+
+			ip++;
+
+			switch (insn.insn) {
+			case ASSIGNCLOSURE_:
+				registerTypes[op0] = Closure.class;
+				break;
+			case ASSIGNFRAMEREG:
+				int f = lastEnterIps.peek();
+				for (int i = op1; i < 0; i++)
+					f = parentFrames.get(f);
+				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
+				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
+					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
+				break;
+			case ASSIGNCONST___:
+				registerTypes[op0] = Node.class;
+				break;
+			case ASSIGNINT_____:
+			case COMPARE_______:
+				registerTypes[op0] = int.class;
+				break;
+			case CONS__________:
+				registerTypes[op0] = Node.class;
+				break;
+			case CUTBEGIN______:
+				registerTypes[op0] = int.class;
+				break;
+			case ENTER_________:
+				lastEnterIps.push(ip - 1);
+				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
+				break;
+			case EVALADD_______:
+			case EVALDIV_______:
+				registerTypes[op0] = int.class;
+				break;
+			case EVALEQ________:
+			case EVALGE________:
+			case EVALGT________:
+			case EVALLE________:
+			case EVALLT________:
+			case EVALNE________:
+				registerTypes[op0] = boolean.class;
+				break;
+			case EVALMOD_______:
+			case EVALMUL_______:
+			case EVALSUB_______:
+				registerTypes[op0] = int.class;
+				break;
+			case FGETC_________:
+				registerTypes[op0] = Node.class;
+				break;
+			case FORMTREE0_____:
+				insn = instructions.get(ip++);
+				registerTypes[insn.op1] = Tree.class;
+				break;
+			case HEAD__________:
+				registerTypes[op0] = Node.class;
+				break;
+			case ISTREE________:
+				registerTypes[op0] = boolean.class;
+				break;
+			case LEAVE_________:
+				lastEnterIps.pop();
+				break;
+			case LOG1__________:
+			case LOG2__________:
+			case NEWNODE_______:
+			case POP___________:
+			case POPEN_________:
+			case PROVE_________:
+			case SETRESULT_____:
+			case SETCLOSURERES_:
+			case SUBST_________:
+			case TAIL__________:
+			case TOP___________:
+				registerTypes[op0] = Node.class;
+				break;
+			default:
+			}
+
+			// app("break");
+		}
+	}
+
+	private Integer currentFrame() {
+		return lastEnterIps.peek();
+	}
+
 	private void generateFrame() {
+		Integer frameNo = !lastEnterIps.isEmpty() ? currentFrame() : null;
+		Class<?> registerTypes[] = frameNo != null ? registerTypes = registerTypesByFrame.get(frameNo) : null;
+
 		app(clazzsec, "private static class #{fr-class} implements Frame {");
 		app(clazzsec, "private #{prev-fr-class} previous");
 		app(clazzsec, "private #{fr-class}(#{prev-fr-class} previous) { this.previous = previous; }");
@@ -493,17 +561,18 @@ public class InstructionCompiler {
 			}
 
 			section.append(s0);
-			section.append(substitute(s1, iter));
+			section.append(decode(s1, iter));
 			fmt = s2;
 		}
 
 		section.append(";\n");
 	}
 
-	private String substitute(String s, Iterator<Object> iter) {
+	private String decode(String s, Iterator<Object> iter) {
 		int reg;
-		Integer frameNo = !lastEnterIps.isEmpty() ? lastEnterIps.peek() : null;
+		Integer frameNo = !lastEnterIps.isEmpty() ? currentFrame() : null;
 		Integer parentFrameNo = frameNo != null ? parentFrames.get(frameNo) : null;
+		Class<?> registerTypes[] = frameNo != null ? registerTypes = registerTypesByFrame.get(frameNo) : null;
 
 		switch (s) {
 		case "fr":
@@ -527,6 +596,12 @@ public class InstructionCompiler {
 		case "reg":
 			s = reg((int) iter.next());
 			break;
+		case "reg-bool":
+			reg = (int) iter.next();
+			s = reg(reg);
+			if (Node.class.isAssignableFrom(registerTypes[reg]))
+				s = "(" + s + " == TRUE)";
+			break;
 		case "reg-clos":
 			reg = (int) iter.next();
 			s = reg(reg);
@@ -536,14 +611,17 @@ public class InstructionCompiler {
 		case "reg-node":
 			reg = (int) iter.next();
 			s = reg(reg);
-			if (registerTypes[reg] == int.class)
+			Class<?> sourceClazz = registerTypes[reg];
+			if (sourceClazz == boolean.class)
+				s = "(" + s + " ? TRUE : FALSE)";
+			else if (sourceClazz == int.class)
 				s = "Int.create(" + s + ")";
 			break;
 		case "reg-num":
 			reg = (int) iter.next();
 			s = reg(reg);
 			if (Node.class.isAssignableFrom(registerTypes[reg]))
-				s = "((Int) " + s + ").getValue()";
+				s = "((Int) " + s + ").getNumber()";
 			break;
 		case "str":
 			s = String.format("%s", iter.next());
@@ -553,7 +631,7 @@ public class InstructionCompiler {
 	}
 
 	private String reg(int reg) {
-		return String.format("f%d.r%d", lastEnterIps.peek(), reg);
+		return String.format("f%d.r%d", currentFrame(), reg);
 	}
 
 	private CompiledRun getCompiledRun() throws IOException {

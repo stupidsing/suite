@@ -3,6 +3,8 @@ package org.instructionexecutor;
 import java.io.Closeable;
 
 import org.suite.kb.RuleSet;
+import org.suite.node.Atom;
+import org.suite.node.Int;
 import org.suite.node.Node;
 import org.util.FunUtil.Fun;
 
@@ -47,6 +49,19 @@ public class CompiledRunUtil {
 				return node;
 			}
 		};
+	}
+
+	public static Node toNode(boolean b) {
+		return b ? Atom.TRUE : Atom.FALSE;
+	}
+
+	public static Node toNode(int i) {
+		return Int.create(i);
+	}
+
+	// Generic type signature allows passing in Closure returning Closure
+	public static <T extends Node> T toNode(T n) {
+		return n;
 	}
 
 }
