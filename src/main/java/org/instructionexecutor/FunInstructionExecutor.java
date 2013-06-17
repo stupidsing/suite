@@ -30,7 +30,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private ProverConfig proverConfig;
 	private IndexedIo indexedIo = new IndexedIo();
 
-	Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
+	private Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 		public Node apply(Node node) {
 			node = node.finalNode();
 			if (node instanceof Closure)
