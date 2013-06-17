@@ -45,10 +45,16 @@ public class FailedTests {
 		Suite.evaluateFun("if a then b", false);
 	}
 
-	// Unknown instruction POPEN
+	// Code too large
 	@Test
 	public void test4() throws IOException {
 		new InstructionCompilerTest().testEagerFunctional();
+	}
+
+	// Index out of bounds on RETURN-VALUE
+	@Test
+	public void test5() throws IOException {
+		new InstructionCompilerTest().testFunctional();
 	}
 
 }

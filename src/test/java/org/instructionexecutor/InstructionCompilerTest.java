@@ -22,6 +22,13 @@ import org.util.FunUtil;
 public class InstructionCompilerTest {
 
 	@Test
+	public void testFunctional() throws IOException {
+		Node goal = Suite.parse("1 + 2 * 3");
+		Node code = compileEagerFunctional(goal);
+		assertEquals(Int.create(7), execute(code));
+	}
+
+	@Test
 	public void testEagerFunctional() throws IOException {
 		Node goal = Suite.parse("using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}");
 		Node code = compileEagerFunctional(goal);
