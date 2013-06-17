@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.instructionexecutor.ExpandUtil;
 import org.instructionexecutor.FunInstructionExecutor;
 import org.suite.doer.Cloner;
 import org.suite.doer.ProverConfig;
@@ -46,7 +47,7 @@ public class EvaluateUtil {
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
 			Node result = executor.execute();
-			return fcc.isLazy() ? executor.unwrap(result) : result;
+			return fcc.isLazy() ? ExpandUtil.expand(result, executor.getUnwrapper()) : result;
 		}
 	}
 

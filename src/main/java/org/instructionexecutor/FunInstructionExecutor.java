@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.instructionexecutor.InstructionUtil.Activation;
@@ -22,6 +21,7 @@ import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.node.Vector;
+import org.util.FunUtil.Fun;
 import org.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
@@ -30,65 +30,22 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private ProverConfig proverConfig;
 	private IndexedIo indexedIo = new IndexedIo();
 
+	Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
+		public Node apply(Node node) {
+			node = node.finalNode();
+			if (node instanceof Closure)
+				node = evaluateClosure((Closure) node);
+			return node;
+		}
+	};
+
 	public FunInstructionExecutor(Node node) {
 		super(node);
 	}
 
 	public void executeIo(Reader reader, Writer writer) throws IOException {
 		indexedIo.put(Atom.NIL, reader);
-		unwrap(super.execute(), writer);
-	}
-
-	/**
-	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
-	 * string.
-	 */
-	public String unwrapToString(Node node) {
-		StringWriter writer = new StringWriter();
-
-		try {
-			unwrap(node, writer);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-
-		return writer.toString();
-	}
-
-	/**
-	 * Evaluates the whole (lazy) term to a list of numbers, and write
-	 * corresponding characters into the writer.
-	 */
-	public void unwrap(Node node, Writer writer) throws IOException {
-		while (true) {
-			node = node.finalNode();
-
-			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				writer.write(((Int) unwrap(tree.getLeft())).getNumber());
-				node = tree.getRight();
-			} else if (node instanceof Closure)
-				node = evaluateClosure((Closure) node);
-			else if (node == Atom.NIL)
-				break;
-		}
-	}
-
-	/**
-	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
-	 */
-	public Node unwrap(Node node) {
-		node = node.finalNode();
-
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			Node left = unwrap(tree.getLeft());
-			Node right = unwrap(tree.getRight());
-			node = Tree.create(tree.getOperator(), left, right);
-		} else if (node instanceof Closure)
-			node = unwrap(evaluateClosure((Closure) node));
-
-		return node;
+		ExpandUtil.expand(super.execute(), unwrapper, writer);
 	}
 
 	@Override
@@ -132,10 +89,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case LOG1__________:
 			result = (Node) ds[--dsp];
-			LogUtil.info(Formatter.display(unwrap(result)));
+			LogUtil.info(Formatter.display(ExpandUtil.expand(result, unwrapper)));
 			break;
 		case LOG2__________:
-			LogUtil.info(unwrapToString((Node) ds[--dsp]));
+			LogUtil.info(ExpandUtil.expandString((Node) ds[--dsp], unwrapper));
 			result = (Node) ds[--dsp];
 			break;
 		case POPEN_________:
@@ -194,7 +151,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private Node execPopen(IndexedIo indexedIo, Node n0, final Node n1) {
 		try {
 			Node result = Atom.unique();
-			final Process process = Runtime.getRuntime().exec(unwrapToString(n0));
+			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(n0, unwrapper));
 
 			InputStreamReader reader = new InputStreamReader(process.getInputStream());
 			indexedIo.put(result, reader);
@@ -205,7 +162,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			new Thread() {
 				public void run() {
 					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						unwrap(n1, writer);
+						ExpandUtil.expand(n1, unwrapper, writer);
 					} catch (IOException ex) {
 						LogUtil.error(ex);
 					}
@@ -221,6 +178,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	@Override
 	public void close() {
 		indexedIo.close();
+	}
+
+	public Fun<Node, Node> getUnwrapper() {
+		return unwrapper;
 	}
 
 	public void setProverConfig(ProverConfig proverConfig) {
