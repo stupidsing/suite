@@ -84,7 +84,7 @@ public class InstructionCompiler {
 		className = "CompiledRun" + counter.getAndIncrement();
 
 		String java = String.format("" //
-				+ "package " + packageName + "; \n" //
+				+ "package %s; \n" //
 				+ "import org.instructionexecutor.io.*; \n" //
 				+ "import org.suite.*; \n" //
 				+ "import org.suite.doer.*; \n" //
@@ -148,7 +148,7 @@ public class InstructionCompiler {
 				+ "} \n" //
 				+ "} \n" //
 				+ "} \n" //
-		, className, className, clazzsec, localsec, switchsec);
+		, packageName, className, className, clazzsec, localsec, switchsec);
 
 		String pathName = basePathName + "/" + packageName.replace('.', '/');
 		filename = pathName + "/" + className + ".java";
