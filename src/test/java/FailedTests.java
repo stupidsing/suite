@@ -51,10 +51,4 @@ public class FailedTests {
 		new InstructionCompilerTest().testEagerFunctional();
 	}
 
-	// Index out of bounds on RETURN-VALUE
-	@Test
-	public void test5() throws IOException {
-		new InstructionCompilerTest().testFunctional();
-	}
-
 }

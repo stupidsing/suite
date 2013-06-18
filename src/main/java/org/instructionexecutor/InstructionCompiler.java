@@ -68,12 +68,205 @@ public class InstructionCompiler {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
+		// Identify frame regions
 		findFrameInformation(instructions);
 
 		// Find out register types in each frame
 		findRegisterInformation(instructions);
 
 		// Translate instruction code into Java
+		translateInstructions(instructions);
+
+		className = "CompiledRun" + counter.getAndIncrement();
+
+		String java = String.format("" //
+				+ "package " + packageName + "; \n" //
+				+ "import org.instructionexecutor.io.*; \n" //
+				+ "import org.suite.*; \n" //
+				+ "import org.suite.doer.*; \n" //
+				+ "import org.suite.kb.*; \n" //
+				+ "import org.suite.node.*; \n" //
+				+ "import org.suite.predicates.*; \n" //
+				+ "import org.util.*; \n" //
+				+ "import org.util.FunUtil.*; \n" //
+				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
+				+ "import " + CompiledRun.class.getCanonicalName() + "; \n" //
+				+ "import " + CompiledRunUtil.class.getCanonicalName() + ".*; \n" //
+				+ "import " + IOException.class.getCanonicalName() + "; \n" //
+				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
+				+ "\n" //
+				+ "public class %s implements CompiledRun { \n" //
+				+ "private static final int stackSize = 4096; \n" //
+				+ "\n" //
+				+ "private static final Atom FALSE = Atom.FALSE; \n" //
+				+ "private static final Atom TRUE = Atom.TRUE; \n" //
+				+ "\n" //
+				+ "private IndexedIo indexedIo = new IndexedIo(); \n" //
+				+ "\n" //
+				+ "private Closeable closeable; \n" //
+				+ "\n" //
+				+ "public %s(Closeable closeable) { this.closeable = closeable; } \n" //
+				+ "\n" //
+				+ "public void close() throws IOException { closeable.close(); } \n" //
+				+ "\n" //
+				+ "%s" //
+				+ "\n" //
+				+ "public Node exec(CompiledRunConfig config, Closure closure) { \n" //
+				+ "Frame frame = closure.frame; \n" //
+				+ "int ip = closure.ip; \n" //
+				+ "Node returnValue = null; \n" //
+				+ "int cs[] = new int[stackSize]; \n" //
+				+ "Node ds[] = new Node[stackSize]; \n" //
+				+ "Object fs[] = new Object[stackSize]; \n" //
+				+ "int bindPoints[] = new int[stackSize]; \n" //
+				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
+				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
+				+ "int n; \n" //
+				+ "Node node, n0, n1, var; \n" //
+				+ "CutPoint cutPoint; \n" //
+				+ "\n" //
+				+ "Comparer comparer = new Comparer(); \n" //
+				+ "Prover prover = new Prover(config.ruleSet); \n" //
+				+ "Journal journal = prover.getJournal(); \n" //
+				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
+				+ "Fun<Node, Node> unwrapper = CompiledRunUtil.getUnwrapper(config, this); \n" //
+				+ "\n" //
+				+ "%s \n" //
+				+ "\n" //
+				+ "while (true) { \n" //
+				// + "System.out.println(ip); \n" //
+				+ "switch(ip++) { \n" //
+				+ "%s \n" //
+				+ "default: \n" //
+				+ "} \n" //
+				+ "} \n" //
+				+ "} \n" //
+				+ "} \n" //
+		, className, className, clazzsec, localsec, switchsec);
+
+		String pathName = basePathName + "/" + packageName.replace('.', '/');
+		filename = pathName + "/" + className + ".java";
+		new File(pathName).mkdirs();
+
+		try (OutputStream os = new FileOutputStream(filename)) {
+			os.write(java.getBytes(IoUtil.charset));
+		}
+
+		// Compile the Java, load the class, return an instantiated object
+		return getCompiledRun();
+	}
+
+	private void findFrameInformation(List<Instruction> instructions) {
+
+		// Find out the parent of closures.
+		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
+		for (int ip = 0; ip < instructions.size(); ip++) {
+			Instruction insn = instructions.get(ip);
+
+			// Recognize frames and their parents.
+			// Assumes ENTER instruction should be after LABEL.
+			if (insn.insn == Insn.ASSIGNCLOSURE_)
+				parentFrames.put(insn.op1 + 1, lastEnterIps.peek());
+			else if (insn.insn == Insn.ENTER_________)
+				lastEnterIps.push(ip);
+			else if (insn.insn == Insn.LEAVE_________)
+				lastEnterIps.pop();
+		}
+	}
+
+	private void findRegisterInformation(List<Instruction> instructions) {
+		Class<?> registerTypes[] = null;
+		int ip = 0;
+
+		while (ip < instructions.size()) {
+			Instruction insn = instructions.get(ip);
+			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
+
+			ip++;
+
+			switch (insn.insn) {
+			case ASSIGNCLOSURE_:
+				registerTypes[op0] = Closure.class;
+				break;
+			case ASSIGNFRAMEREG:
+				int f = lastEnterIps.peek();
+				for (int i = op1; i < 0; i++)
+					f = parentFrames.get(f);
+				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
+				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
+					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
+				break;
+			case ASSIGNCONST___:
+				registerTypes[op0] = Node.class;
+				break;
+			case ASSIGNINT_____:
+			case COMPARE_______:
+				registerTypes[op0] = int.class;
+				break;
+			case CONS__________:
+				registerTypes[op0] = Node.class;
+				break;
+			case CUTBEGIN______:
+				registerTypes[op0] = int.class;
+				break;
+			case ENTER_________:
+				lastEnterIps.push(ip - 1);
+				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
+				break;
+			case EVALADD_______:
+			case EVALDIV_______:
+				registerTypes[op0] = int.class;
+				break;
+			case EVALEQ________:
+			case EVALGE________:
+			case EVALGT________:
+			case EVALLE________:
+			case EVALLT________:
+			case EVALNE________:
+				registerTypes[op0] = boolean.class;
+				break;
+			case EVALMOD_______:
+			case EVALMUL_______:
+			case EVALSUB_______:
+				registerTypes[op0] = int.class;
+				break;
+			case FGETC_________:
+				registerTypes[op0] = Node.class;
+				break;
+			case FORMTREE0_____:
+				insn = instructions.get(ip++);
+				registerTypes[insn.op1] = Tree.class;
+				break;
+			case HEAD__________:
+				registerTypes[op0] = Node.class;
+				break;
+			case ISTREE________:
+				registerTypes[op0] = boolean.class;
+				break;
+			case LEAVE_________:
+				lastEnterIps.pop();
+				break;
+			case LOG1__________:
+			case LOG2__________:
+			case NEWNODE_______:
+			case POP___________:
+			case POPEN_________:
+			case PROVE_________:
+			case SETRESULT_____:
+			case SETCLOSURERES_:
+			case SUBST_________:
+			case TAIL__________:
+			case TOP___________:
+				registerTypes[op0] = Node.class;
+				break;
+			default:
+			}
+
+			// app("break");
+		}
+	}
+
+	private void translateInstructions(List<Instruction> instructions) {
 		Node constant;
 		String s;
 		int ip = 0;
@@ -278,7 +471,11 @@ public class InstructionCompiler {
 				break;
 			case RETURNVALUE___:
 				app("returnValue = #{reg-node}", op0);
-				popCaller();
+				if (parentFrames.get(currentFrame()) != null)
+					popCaller();
+				else
+					// Root frame, directly returns
+					app("if (true) return returnValue");
 				break;
 			case SETRESULT_____:
 				app("#{reg} = returnValue", op0);
@@ -304,194 +501,6 @@ public class InstructionCompiler {
 			}
 
 			app("break");
-		}
-
-		className = "CompiledRun" + counter.getAndIncrement();
-
-		String java = String.format("" //
-				+ "package " + packageName + "; \n" //
-				+ "import org.instructionexecutor.io.*; \n" //
-				+ "import org.suite.*; \n" //
-				+ "import org.suite.doer.*; \n" //
-				+ "import org.suite.kb.*; \n" //
-				+ "import org.suite.node.*; \n" //
-				+ "import org.suite.predicates.*; \n" //
-				+ "import org.util.*; \n" //
-				+ "import org.util.FunUtil.*; \n" //
-				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
-				+ "import " + CompiledRun.class.getCanonicalName() + "; \n" //
-				+ "import " + CompiledRunUtil.class.getCanonicalName() + ".*; \n" //
-				+ "import " + IOException.class.getCanonicalName() + "; \n" //
-				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
-				+ "\n" //
-				+ "public class %s implements CompiledRun { \n" //
-				+ "private static final int stackSize = 4096; \n" //
-				+ "\n" //
-				+ "private static final Atom FALSE = Atom.FALSE; \n" //
-				+ "private static final Atom TRUE = Atom.TRUE; \n" //
-				+ "\n" //
-				+ "private IndexedIo indexedIo = new IndexedIo(); \n" //
-				+ "\n" //
-				+ "private Closeable closeable; \n" //
-				+ "\n" //
-				+ "public %s(Closeable closeable) { this.closeable = closeable; } \n" //
-				+ "\n" //
-				+ "public void close() throws IOException { closeable.close(); } \n" //
-				+ "\n" //
-				+ "%s" //
-				+ "\n" //
-				+ "public Node exec(CompiledRunConfig config, Closure closure) { \n" //
-				+ "Frame frame = closure.frame; \n" //
-				+ "int ip = closure.ip; \n" //
-				+ "Node returnValue = null; \n" //
-				+ "int cs[] = new int[stackSize]; \n" //
-				+ "Node ds[] = new Node[stackSize]; \n" //
-				+ "Object fs[] = new Object[stackSize]; \n" //
-				+ "int bindPoints[] = new int[stackSize]; \n" //
-				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
-				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
-				+ "int n; \n" //
-				+ "Node node, n0, n1, var; \n" //
-				+ "CutPoint cutPoint; \n" //
-				+ "\n" //
-				+ "Comparer comparer = new Comparer(); \n" //
-				+ "Prover prover = new Prover(config.ruleSet); \n" //
-				+ "Journal journal = prover.getJournal(); \n" //
-				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
-				+ "Fun<Node, Node> unwrapper = CompiledRunUtil.getUnwrapper(config, this); \n" //
-				+ "\n" //
-				+ "%s \n" //
-				+ "\n" //
-				+ "while (true) { \n" //
-				// + "System.out.println(ip); \n" //
-				+ "switch(ip++) { \n" //
-				+ "%s \n" //
-				+ "default: \n" //
-				+ "} \n" //
-				+ "} \n" //
-				+ "} \n" //
-				+ "} \n" //
-		, className, className, clazzsec, localsec, switchsec);
-
-		String pathName = basePathName + "/" + packageName.replace('.', '/');
-		filename = pathName + "/" + className + ".java";
-		new File(pathName).mkdirs();
-
-		try (OutputStream os = new FileOutputStream(filename)) {
-			os.write(java.getBytes(IoUtil.charset));
-		}
-
-		// Compile the Java, load the class, return an instantiated object
-		return getCompiledRun();
-	}
-
-	private void findFrameInformation(List<Instruction> instructions) {
-
-		// Find out the parent of closures.
-		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
-		for (int ip = 0; ip < instructions.size(); ip++) {
-			Instruction insn = instructions.get(ip);
-
-			// Recognize frames and their parents.
-			// Assumes ENTER instruction should be after LABEL.
-			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFrames.put(insn.op1 + 1, lastEnterIps.peek());
-			else if (insn.insn == Insn.ENTER_________)
-				lastEnterIps.push(ip);
-			else if (insn.insn == Insn.LEAVE_________)
-				lastEnterIps.pop();
-		}
-	}
-
-	private void findRegisterInformation(List<Instruction> instructions) {
-		Class<?> registerTypes[] = null;
-		int ip = 0;
-
-		while (ip < instructions.size()) {
-			Instruction insn = instructions.get(ip);
-			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-
-			ip++;
-
-			switch (insn.insn) {
-			case ASSIGNCLOSURE_:
-				registerTypes[op0] = Closure.class;
-				break;
-			case ASSIGNFRAMEREG:
-				int f = lastEnterIps.peek();
-				for (int i = op1; i < 0; i++)
-					f = parentFrames.get(f);
-				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
-				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
-					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
-				break;
-			case ASSIGNCONST___:
-				registerTypes[op0] = Node.class;
-				break;
-			case ASSIGNINT_____:
-			case COMPARE_______:
-				registerTypes[op0] = int.class;
-				break;
-			case CONS__________:
-				registerTypes[op0] = Node.class;
-				break;
-			case CUTBEGIN______:
-				registerTypes[op0] = int.class;
-				break;
-			case ENTER_________:
-				lastEnterIps.push(ip - 1);
-				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
-				break;
-			case EVALADD_______:
-			case EVALDIV_______:
-				registerTypes[op0] = int.class;
-				break;
-			case EVALEQ________:
-			case EVALGE________:
-			case EVALGT________:
-			case EVALLE________:
-			case EVALLT________:
-			case EVALNE________:
-				registerTypes[op0] = boolean.class;
-				break;
-			case EVALMOD_______:
-			case EVALMUL_______:
-			case EVALSUB_______:
-				registerTypes[op0] = int.class;
-				break;
-			case FGETC_________:
-				registerTypes[op0] = Node.class;
-				break;
-			case FORMTREE0_____:
-				insn = instructions.get(ip++);
-				registerTypes[insn.op1] = Tree.class;
-				break;
-			case HEAD__________:
-				registerTypes[op0] = Node.class;
-				break;
-			case ISTREE________:
-				registerTypes[op0] = boolean.class;
-				break;
-			case LEAVE_________:
-				lastEnterIps.pop();
-				break;
-			case LOG1__________:
-			case LOG2__________:
-			case NEWNODE_______:
-			case POP___________:
-			case POPEN_________:
-			case PROVE_________:
-			case SETRESULT_____:
-			case SETCLOSURERES_:
-			case SUBST_________:
-			case TAIL__________:
-			case TOP___________:
-				registerTypes[op0] = Node.class;
-				break;
-			default:
-			}
-
-			// app("break");
 		}
 	}
 
