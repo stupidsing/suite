@@ -53,6 +53,7 @@ public class InstructionCompiler {
 	private StringBuilder localsec = new StringBuilder();
 	private StringBuilder switchsec = new StringBuilder();
 
+	private int exitPoint;
 	private Map<Integer, Integer> parentFrames = new HashMap<>();
 	private Deque<Integer> lastEnterIps = new ArrayDeque<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
@@ -67,6 +68,9 @@ public class InstructionCompiler {
 	public CompiledRun compile(Node node) throws IOException {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
+
+		exitPoint = instructions.size();
+		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
 		// Identify frame regions
 		findFrameInformation(instructions);
@@ -132,6 +136,8 @@ public class InstructionCompiler {
 				+ "Fun<Node, Node> unwrapper = CompiledRunUtil.getUnwrapper(config, this); \n" //
 				+ "\n" //
 				+ "%s \n" //
+				+ "\n" //
+				+ "cs[csp++] = " + exitPoint + "; \n" //
 				+ "\n" //
 				+ "while (true) { \n" //
 				// + "System.out.println(ip); \n" //
@@ -392,7 +398,10 @@ public class InstructionCompiler {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				app("if (true) return #{reg}", op0);
+				if (!lastEnterIps.isEmpty())
+					app("if (true) return #{reg}", op0);
+				else
+					app("if (true) return returnValue"); // Grand exit point
 				break;
 			case FGETC_________:
 				app("{");
@@ -471,11 +480,7 @@ public class InstructionCompiler {
 				break;
 			case RETURNVALUE___:
 				app("returnValue = #{reg-node}", op0);
-				if (parentFrames.get(currentFrame()) != null)
-					popCaller();
-				else
-					// Root frame, directly returns
-					app("if (true) return returnValue");
+				popCaller();
 				break;
 			case SETRESULT_____:
 				app("#{reg} = returnValue", op0);
@@ -581,7 +586,7 @@ public class InstructionCompiler {
 		int reg;
 		Integer frameNo = !lastEnterIps.isEmpty() ? currentFrame() : null;
 		Integer parentFrameNo = frameNo != null ? parentFrames.get(frameNo) : null;
-		Class<?> registerTypes[] = frameNo != null ? registerTypes = registerTypesByFrame.get(frameNo) : null;
+		Class<?> registerTypes[] = frameNo != null ? registerTypesByFrame.get(frameNo) : null;
 
 		switch (s) {
 		case "fr":
