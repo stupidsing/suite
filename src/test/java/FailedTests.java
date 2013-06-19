@@ -1,6 +1,6 @@
 import java.io.IOException;
 
-import org.instructionexecutor.InstructionCompilerTest;
+import org.instructionexecutor.InstructionTranslatorTest;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.Formatter;
@@ -48,7 +48,7 @@ public class FailedTests {
 	// Code too large
 	@Test
 	public void test3() throws IOException {
-		new InstructionCompilerTest().testEagerFunctional();
+		new InstructionTranslatorTest().testEagerFunctional();
 	}
 
 }
