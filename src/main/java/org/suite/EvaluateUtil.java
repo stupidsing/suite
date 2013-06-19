@@ -58,7 +58,7 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		RuleSet rs = fcc.isLazy() ? Suite.lazyFunCompilerRuleSet() : Suite.eagerFunCompilerRuleSet();
+		RuleSet rs = Suite.funCompilerRuleSet(fcc.isLazy());
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 
 		Node node = Suite.substitute("" //

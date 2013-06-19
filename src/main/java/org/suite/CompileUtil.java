@@ -27,16 +27,8 @@ public class CompileUtil {
 		return funRuleSet;
 	}
 
-	public synchronized RuleSet eagerFunCompilerRuleSet() {
-		if (eagerFunRuleSet == null)
-			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
-		return eagerFunRuleSet;
-	}
-
-	public synchronized RuleSet lazyFunCompilerRuleSet() {
-		if (lazyFunRuleSet == null)
-			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
-		return lazyFunRuleSet;
+	public RuleSet funCompilerRuleSet(boolean isLazy) {
+		return isLazy ? lazyFunCompilerRuleSet() : eagerFunCompilerRuleSet();
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {
@@ -53,6 +45,18 @@ public class CompileUtil {
 			System.out.println("Pre-compilation failed");
 
 		return result;
+	}
+
+	private synchronized RuleSet eagerFunCompilerRuleSet() {
+		if (eagerFunRuleSet == null)
+			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
+		return eagerFunRuleSet;
+	}
+
+	private synchronized RuleSet lazyFunCompilerRuleSet() {
+		if (lazyFunRuleSet == null)
+			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
+		return lazyFunRuleSet;
 	}
 
 	private RuleSet createRuleSet(List<String> toImports) {

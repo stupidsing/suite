@@ -16,22 +16,30 @@ import org.suite.node.Atom;
 import org.suite.node.Int;
 import org.suite.node.Node;
 import org.suite.search.InterpretedProverBuilder;
+import org.suite.search.ProverBuilder.Builder;
 import org.suite.search.ProverBuilder.Finder;
 import org.util.FunUtil;
 
 public class InstructionCompilerTest {
 
 	@Test
-	public void testFunctional() throws IOException {
+	public void testEagerFunctional() throws IOException {
 		Node goal = Suite.parse("1 + 2 * 3");
-		Node code = compileEagerFunctional(goal);
+		Node code = compileFunctional(goal, false);
 		assertEquals(Int.create(7), execute(code));
 	}
 
 	@Test
-	public void testEagerFunctional() throws IOException {
+	public void testLazyFunctional() throws IOException {
+		Node goal = Suite.parse("1 + 2 * 3");
+		Node code = compileFunctional(goal, true);
+		assertEquals(Int.create(7), execute(code));
+	}
+
+	@Test
+	public void testStandardLibrary() throws IOException {
 		Node goal = Suite.parse("using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}");
-		Node code = compileEagerFunctional(goal);
+		Node code = compileFunctional(goal, false);
 		assertEquals(Int.create(9), execute(code));
 	}
 
@@ -42,20 +50,21 @@ public class InstructionCompilerTest {
 		assertEquals(Atom.TRUE, execute(code));
 	}
 
-	private Node compileEagerFunctional(Node program) {
-		RuleSet ruleSet = Suite.eagerFunCompilerRuleSet();
-		Node goal = Suite.parse("source .in, compile-function EAGER .in .out, sink .out");
-		return compile(program, ruleSet, goal);
+	private Node compileFunctional(Node program, boolean isLazy) {
+		RuleSet ruleSet = Suite.funCompilerRuleSet(isLazy);
+		Atom mode = Atom.create(isLazy ? "LAZY" : "EAGER");
+		Node goal = Suite.substitute("source .in, compile-function .0 .in .out, sink .out", mode);
+		return compile(ruleSet, goal, program);
 	}
 
 	private Node compileLogical(Node program) {
 		RuleSet ruleSet = Suite.logicCompilerRuleSet();
 		Node goal = Suite.parse("source .in, compile-logic .in .out, sink .out");
-		return compile(program, ruleSet, goal);
+		return compile(ruleSet, goal, program);
 	}
 
-	private Node compile(Node program, RuleSet ruleSet, Node goal) {
-		InterpretedProverBuilder builder = new InterpretedProverBuilder();
+	private Node compile(RuleSet ruleSet, Node goal, Node program) {
+		Builder builder = new InterpretedProverBuilder();
 		Finder compiler = builder.build(ruleSet, goal);
 		final Node holder[] = new Node[] { null };
 

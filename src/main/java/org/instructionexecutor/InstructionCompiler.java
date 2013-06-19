@@ -41,8 +41,9 @@ import com.google.common.collect.HashBiMap;
  */
 public class InstructionCompiler {
 
-	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
-	private AtomicInteger counter = new AtomicInteger();
+	private static AtomicInteger counter = new AtomicInteger();
+
+	private BiMap<Integer, Node> constantPool = HashBiMap.create();
 
 	private String basePathName;
 	private String packageName;
@@ -522,7 +523,7 @@ public class InstructionCompiler {
 	private void popCaller() {
 		app("--csp");
 		app("ip = cs[csp]");
-		app("#{fr} = (#{fr-class}) fs[csp]");
+		app("#{prev-fr} = (#{prev-fr-class}) fs[csp]");
 	}
 
 	private String defineConstant(Node node) {
@@ -584,10 +585,10 @@ public class InstructionCompiler {
 			s = String.format("%d", iter.next());
 			break;
 		case "prev-fr":
-			s = parentFrameNo != null ? String.format("f%d", parentFrameNo) : null;
+			s = parentFrameNo != null ? String.format("f%d", parentFrameNo) : "frame";
 			break;
 		case "prev-fr-class":
-			s = parentFrameNo != null ? String.format("Frame%d", parentFrameNo) : "Object";
+			s = parentFrameNo != null ? String.format("Frame%d", parentFrameNo) : "Frame";
 			break;
 		case "reg":
 			s = reg((int) iter.next());
