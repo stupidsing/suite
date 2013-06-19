@@ -49,7 +49,7 @@ public class Prover {
 
 	/**
 	 * Try to prove a query clause. Perform bindings on the way.
-	 * 
+	 *
 	 * @param query
 	 *            Clause to be proved.
 	 * @return true if success.
@@ -145,47 +145,8 @@ public class Prover {
 	}
 
 	/**
-	 * Performs binding of two items.
-	 * 
-	 * @return true if success.
-	 */
-	public boolean bind(Node left, Node right) {
-		return Binder.bind(left, right, journal);
-	}
-
-	/**
-	 * Resets all bind done by this prover.
-	 */
-	public void undoAllBinds() {
-		journal.undoBinds(0);
-	}
-
-	private Node andTree(Node n0, Node n1) {
-		return formOp(n0, n1, OK, FAIL, TermOp.AND___);
-	}
-
-	private Node orTree(Node n0, Node n1) {
-		return formOp(n0, n1, FAIL, OK, TermOp.OR____);
-	}
-
-	private Node formOp(Node n0, Node n1, Node bail, Node done, TermOp op) {
-		if (n0 == bail)
-			return n1;
-		else if (n1 == bail)
-			return n0;
-		else if (n0 == done || n1 == done)
-			return done;
-		else
-			return Tree.create(op, n0, n1);
-	}
-
-	private Node isSuccess(boolean b) {
-		return b ? OK : FAIL;
-	}
-
-	/**
 	 * Expands an user predicate (with many clauses) to a chain of logic.
-	 * 
+	 *
 	 * @param query
 	 *            The invocation pattern.
 	 * @return The chained node.
@@ -224,6 +185,45 @@ public class Prover {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Performs binding of two items.
+	 *
+	 * @return true if success.
+	 */
+	public boolean bind(Node left, Node right) {
+		return Binder.bind(left, right, journal);
+	}
+
+	/**
+	 * Resets all bind done by this prover.
+	 */
+	public void undoAllBinds() {
+		journal.undoBinds(0);
+	}
+
+	private Node andTree(Node n0, Node n1) {
+		return formOp(n0, n1, OK, FAIL, TermOp.AND___);
+	}
+
+	private Node orTree(Node n0, Node n1) {
+		return formOp(n0, n1, FAIL, OK, TermOp.OR____);
+	}
+
+	private Node formOp(Node n0, Node n1, Node bail, Node done, TermOp op) {
+		if (n0 == bail)
+			return n1;
+		else if (n1 == bail)
+			return n0;
+		else if (n0 == done || n1 == done)
+			return done;
+		else
+			return Tree.create(op, n0, n1);
+	}
+
+	private Node isSuccess(boolean b) {
+		return b ? OK : FAIL;
 	}
 
 	public ProverConfig config() {
