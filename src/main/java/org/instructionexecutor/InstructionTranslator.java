@@ -485,7 +485,6 @@ public class InstructionTranslator {
 				app("#{reg} = ds[dsp + #{num}]", op0, op1);
 				break;
 			default:
-				// TODO LogicInstructionExecutor.execute()
 				throw new RuntimeException("Unknown instruction " + insn);
 			}
 
