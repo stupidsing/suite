@@ -89,14 +89,11 @@ public class Prover {
 						}
 					};
 
-					Tree alt0 = Tree.create(TermOp.AND___, right, rem);
-					alt = alt != FAIL ? Tree.create(TermOp.OR____, alt0, alt) : alt0;
-					alt = Tree.create(TermOp.AND___, bt, alt);
+					alt = andTree(bt, orTree(andTree(right, rem), alt));
 					query = left;
 					continue;
 				case AND___:
-					if (right != OK)
-						rem = Tree.create(TermOp.AND___, right, rem);
+					rem = andTree(right, rem);
 					query = left;
 					continue;
 				case EQUAL_:
@@ -161,6 +158,25 @@ public class Prover {
 	 */
 	public void undoAllBinds() {
 		journal.undoBinds(0);
+	}
+
+	private Node andTree(Node n0, Node n1) {
+		return formOp(n0, n1, OK, FAIL, TermOp.AND___);
+	}
+
+	private Node orTree(Node n0, Node n1) {
+		return formOp(n0, n1, FAIL, OK, TermOp.OR____);
+	}
+
+	private Node formOp(Node n0, Node n1, Node bail, Node done, TermOp op) {
+		if (n0 == bail)
+			return n1;
+		else if (n1 == bail)
+			return n0;
+		else if (n0 == done || n1 == done)
+			return done;
+		else
+			return Tree.create(op, n0, n1);
 	}
 
 	private Node isSuccess(boolean b) {
