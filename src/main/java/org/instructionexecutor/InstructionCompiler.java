@@ -191,67 +191,32 @@ public class InstructionCompiler {
 			ip++;
 
 			switch (insn.insn) {
-			case ASSIGNCLOSURE_:
-				registerTypes[op0] = Closure.class;
-				break;
-			case ASSIGNFRAMEREG:
-				int f = lastEnterIps.peek();
-				for (int i = op1; i < 0; i++)
-					f = parentFrames.get(f);
-				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
-				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
-					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
-				break;
-			case ASSIGNCONST___:
-				registerTypes[op0] = Node.class;
-				break;
-			case ASSIGNINT_____:
-			case COMPARE_______:
-				registerTypes[op0] = int.class;
-				break;
-			case CONS__________:
-				registerTypes[op0] = Node.class;
-				break;
-			case CUTBEGIN______:
-				registerTypes[op0] = int.class;
-				break;
-			case ENTER_________:
-				lastEnterIps.push(ip - 1);
-				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
-				break;
-			case EVALADD_______:
-			case EVALDIV_______:
-				registerTypes[op0] = int.class;
-				break;
 			case EVALEQ________:
 			case EVALGE________:
 			case EVALGT________:
 			case EVALLE________:
 			case EVALLT________:
 			case EVALNE________:
+			case ISTREE________:
 				registerTypes[op0] = boolean.class;
 				break;
+			case ASSIGNCLOSURE_:
+				registerTypes[op0] = Closure.class;
+				break;
+			case ASSIGNINT_____:
+			case COMPARE_______:
+			case CUTBEGIN______:
+			case EVALADD_______:
+			case EVALDIV_______:
 			case EVALMOD_______:
 			case EVALMUL_______:
 			case EVALSUB_______:
 				registerTypes[op0] = int.class;
 				break;
+			case ASSIGNCONST___:
+			case CONS__________:
 			case FGETC_________:
-				registerTypes[op0] = Node.class;
-				break;
-			case FORMTREE0_____:
-				insn = instructions.get(ip++);
-				registerTypes[insn.op1] = Tree.class;
-				break;
 			case HEAD__________:
-				registerTypes[op0] = Node.class;
-				break;
-			case ISTREE________:
-				registerTypes[op0] = boolean.class;
-				break;
-			case LEAVE_________:
-				lastEnterIps.pop();
-				break;
 			case LOG1__________:
 			case LOG2__________:
 			case NEWNODE_______:
@@ -265,10 +230,27 @@ public class InstructionCompiler {
 			case TOP___________:
 				registerTypes[op0] = Node.class;
 				break;
+			case ASSIGNFRAMEREG:
+				int f = lastEnterIps.peek();
+				for (int i = op1; i < 0; i++)
+					f = parentFrames.get(f);
+				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
+				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
+					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
+				break;
+			case ENTER_________:
+				lastEnterIps.push(ip - 1);
+				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
+				break;
+			case FORMTREE0_____:
+				insn = instructions.get(ip++);
+				registerTypes[insn.op1] = Tree.class;
+				break;
+			case LEAVE_________:
+				lastEnterIps.pop();
+				break;
 			default:
 			}
-
-			// app("break");
 		}
 	}
 
