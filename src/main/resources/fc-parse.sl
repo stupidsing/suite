@@ -232,7 +232,9 @@ fc-bind0 .v0 .v1 .then .else (
 
 fc-bind-cons (INVOKE .t INVOKE .h VARIABLE _cons) .h .t #
 
-fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
-	:- fc-bind .h0 .h1 .then1 .else .parsed
-	, fc-bind .t0 .t1 .then .else .then1
+fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (FUN BOOLEAN .else) .parsed)
+	:- temp .elseVar
+	, .else1 = INVOKE (BOOLEAN TRUE) (VARIABLE .elseVar)
+	, fc-bind .h0 .h1 .then1 .else1 .parsed
+	, fc-bind .t0 .t1 .then .else1 .then1
 #
