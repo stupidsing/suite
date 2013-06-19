@@ -34,14 +34,14 @@ fc-lazy-compile-to-thunk (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 		, .cx
 	)
 #
-fc-lazy-compile-to-thunk (VARIABLE .var) .frame/.ve .c0/.cx/.d/.d/.reg1
+fc-lazy-compile-to-thunk (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 	:- fc-dict-get .ve .var/(%REG/.reg/.frame0)
 	, !, fc-frame-difference .frame0 .frame .frameDiff
 	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1
 		; .c0 = (_ ASSIGN-FRAME-REG .reg1 .frameDiff .reg, .cx)
 	)
 #
-fc-lazy-compile-to-thunk (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
+fc-lazy-compile-to-thunk (INVOKE .p (VAR .var)) .env .c0/.cx/.d0/.dx/.reg
 	:- member (_lhead, _ltail, _thead, _ttail,) .var
 	, fc-define-default-fun 1 .var .call
 	, !, fc-compile LAZY .p .env .c0/.c1/.d0/.dx/.paramReg
@@ -49,7 +49,7 @@ fc-lazy-compile-to-thunk (INVOKE .p (VARIABLE .var)) .env .c0/.cx/.d0/.dx/.reg
 #
 fc-lazy-compile-to-thunk (TUPLE .name (.e, .es)) .env .cdr
 	:- !, fc-lazy-compile-to-thunk (
-		INVOKE (TUPLE .name .es) (INVOKE .e (VARIABLE _cons))
+		INVOKE (TUPLE .name .es) (INVOKE .e (VAR _cons))
 	) .env .cdr
 #
 fc-lazy-compile-to-thunk .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
@@ -107,7 +107,7 @@ fc-lazy-compile-to-value (STRING .s) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
 #
 
-fc-lazy-compile-default-fun .n .paramWraps (VARIABLE .var) .env .c0/.cx/.d/.d/.reg
+fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
 		_compare/2/VALUE:VALUE:,
 		_cons/2/THUNK:THUNK:,

@@ -91,8 +91,8 @@ fc-parse .s .n
 	, to.int .c .ascii, fc-parse (.ascii, .cs) .n
 #
 fc-parse () (TUPLE () ()) :- ! #
-fc-parse .v (NEW-VARIABLE .nv) :- fc-parse-bind-variable .v .nv, ! #
-fc-parse .v (VARIABLE .v) :- is.atom .v, ! #
+fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
+fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
 fc-parse-list () () :- ! #
@@ -173,8 +173,8 @@ fc-parse-bind-variable .v .vd
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 
-fc-bind .v0 .v1 .tep :- .v0 = NEW-VARIABLE _, !, fc-bind0 .v1 .v0 .tep #
-fc-bind .v0 .v1 .tep :- .v1 = NEW-VARIABLE _, !, fc-bind0 .v0 .v1 .tep #
+fc-bind .v0 .v1 .tep :- .v0 = NEW-VAR _, !, fc-bind0 .v1 .v0 .tep #
+fc-bind .v0 .v1 .tep :- .v1 = NEW-VAR _, !, fc-bind0 .v0 .v1 .tep #
 fc-bind .v0 .v1 .tep
 	:- once (fc-bind-cons .v0 _ _
 		; .v0 = TUPLE _ _
@@ -202,30 +202,30 @@ fc-bind0 (TUPLE .n0 .e0) (TUPLE .n1 .e1) .then .else .parsed
 	; .parsed = .else
 	)
 #
-fc-bind0 .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
+fc-bind0 .v0 (NEW-VAR .nv) .then .else (DEF-VAR .nv .v0 .then)
 	:- !
 #
 fc-bind0 .v0 .v1 .then .else (
 	DEF-VAR .elseVar (FUN BOOLEAN .else) DEF-VAR .v0var .v0 (
-		IF (INVOKE (VARIABLE .v0var) (VARIABLE is-tree)) .then1 .else1
+		IF (INVOKE (VAR .v0var) (VAR is-tree)) .then1 .else1
 	)
 ) :- fc-bind-cons .v1 .h1 .t1
 	, !
 	, temp .v0var, temp .elseVar
-	, .else1 = INVOKE (BOOLEAN TRUE) (VARIABLE .elseVar)
-	, .h0 = INVOKE (VARIABLE .v0var) (VARIABLE _lhead)
-	, .t0 = INVOKE (VARIABLE .v0var) (VARIABLE _ltail)
+	, .else1 = INVOKE (BOOLEAN TRUE) (VAR .elseVar)
+	, .h0 = INVOKE (VAR .v0var) (VAR _lhead)
+	, .t0 = INVOKE (VAR .v0var) (VAR _ltail)
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else1 .then1
 #
 fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else ( -- Upcast type class to tuple types
 	DEF-VAR .elseVar (FUN BOOLEAN .else) DEF-VAR .v0var (OPTION (CAST UP _) .v0) (
-		IF (INVOKE (VARIABLE .v0var) (VARIABLE is-tuple)) .then1 .else1
+		IF (INVOKE (VAR .v0var) (VAR is-tuple)) .then1 .else1
 	)
 ) :- !
 	, temp .v0var, temp .elseVar
-	, .else1 = INVOKE (BOOLEAN TRUE) (VARIABLE .elseVar)
-	, .h0 = INVOKE (VARIABLE .v0var) (VARIABLE _thead)
-	, .t0 = INVOKE (VARIABLE .v0var) (VARIABLE _ttail)
+	, .else1 = INVOKE (BOOLEAN TRUE) (VAR .elseVar)
+	, .h0 = INVOKE (VAR .v0var) (VAR _thead)
+	, .t0 = INVOKE (VAR .v0var) (VAR _ttail)
 	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else1 .then1
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
@@ -233,14 +233,14 @@ fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
 	, fc-bind .v0 .v1 .then .else .parsed
 #
 fc-bind0 .v0 .v1 .then .else (
-	IF (INVOKE .v0 INVOKE .v1 VARIABLE equals) .then .else
+	IF (INVOKE .v0 INVOKE .v1 VAR equals) .then .else
 ) #
 
-fc-bind-cons (INVOKE .t INVOKE .h VARIABLE _cons) .h .t #
+fc-bind-cons (INVOKE .t INVOKE .h VAR _cons) .h .t #
 
 fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (FUN BOOLEAN .else) .parsed)
 	:- temp .elseVar
-	, .else1 = INVOKE (BOOLEAN TRUE) (VARIABLE .elseVar)
+	, .else1 = INVOKE (BOOLEAN TRUE) (VAR .elseVar)
 	, fc-bind .h0 .h1 .then1 .else1 .parsed
 	, fc-bind .t0 .t1 .then .else1 .then1
 #

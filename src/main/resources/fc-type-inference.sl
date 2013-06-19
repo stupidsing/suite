@@ -14,11 +14,11 @@
 -- Kinds of generic types:
 -- - Generic type class, usually used in abstract data structures.
 --   Written like B-TREE/:t.
---   Represented internally as (CLASS (PARAMETERIZED (VARIABLE t) B-TREE)).
+--   Represented internally as (CLASS (PARAMETERIZED (VAR t) B-TREE)).
 --   Resolved by binding the type structures.
 -- - Generic type, usually used in method signatures.
 --   Written like :t :- .t => .t.
---   Represented internally as (GENERIC-OF (VARIABLE t) FUN-OF (VARIABLE t) (VARIABLE t)).
+--   Represented internally as (GENERIC-OF (VAR t) FUN-OF (VAR t) (VAR t)).
 --   Resolved by SUB-SUPER-TYPES.
 -- - Generic type caused by not enough variable information during type inference.
 --   Any variable usage, in case having unbinded variables, will also be cloned.
@@ -116,7 +116,7 @@ infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te .tr .type
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !, infer-type-rule .do .env .tr .type
 #
-infer-type-rule (VARIABLE .var) .ue/.ve/.te .tr0/.trx .type
+infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 	:- (fc-dict-get .ve .var/.varType
 		, !, .tr0 = (CLONE-TO-FROM-TYPES .type .varType, .trx)
 	)
@@ -134,7 +134,7 @@ find-simple-type (NUMBER _) _ NUMBER #
 find-simple-type (STRING _) _ STRING #
 find-simple-type (TUPLE () ()) _ (LIST-OF _) #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
-find-simple-type (VARIABLE .var) .ue/.ve/.te .type
+find-simple-type (VAR .var) .ue/.ve/.te .type
 	:- fc-dict-get .ue .var/.type
 	; default-fun-type .var .type
 #
