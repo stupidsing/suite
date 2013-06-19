@@ -19,6 +19,7 @@ import org.suite.search.InterpretedProverBuilder;
 import org.suite.search.ProverBuilder.Builder;
 import org.suite.search.ProverBuilder.Finder;
 import org.util.FunUtil;
+import org.util.FunUtil.Sink;
 
 public class InstructionTranslatorTest {
 
@@ -68,7 +69,7 @@ public class InstructionTranslatorTest {
 		Finder compiler = builder.build(ruleSet, goal);
 		final Node holder[] = new Node[] { null };
 
-		compiler.find(FunUtil.source(program), new FunUtil.Sink<Node>() {
+		compiler.find(FunUtil.source(program), new Sink<Node>() {
 			public void sink(Node node) {
 				holder[0] = new Cloner().clone(node);
 			}
