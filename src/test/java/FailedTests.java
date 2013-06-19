@@ -16,7 +16,7 @@ public class FailedTests {
 	// Need to increase InstructionExecutor.stackSize, or implement tail
 	// recursion
 	@Test
-	public void test1() {
+	public void test0() {
 		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
 				+ "member (.e, _) .e #" //
 				+ "member (_, .tail) .e :- member .tail .e #" //
@@ -32,7 +32,7 @@ public class FailedTests {
 
 	// Type check take 16 seconds
 	@Test
-	public void test2() throws IOException {
+	public void test1() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
 		Node result = Suite.evaluateFun(fp, false);
@@ -41,13 +41,13 @@ public class FailedTests {
 
 	// Strange error message "Unknown expression if b"
 	@Test
-	public void test3() throws IOException {
+	public void test2() throws IOException {
 		Suite.evaluateFun("if a then b", false);
 	}
 
 	// Code too large
 	@Test
-	public void test4() throws IOException {
+	public void test3() throws IOException {
 		new InstructionCompilerTest().testEagerFunctional();
 	}
 
