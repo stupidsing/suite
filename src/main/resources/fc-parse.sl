@@ -206,10 +206,13 @@ fc-bind0 .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
 	:- !
 #
 fc-bind0 .v0 .v1 .then .else (
-	IF (INVOKE .v0 VARIABLE is-tree) .then1 .else
+	DEF-VAR .treeVar .v0 (
+		IF (INVOKE (VARIABLE .treeVar) (VARIABLE is-tree)) .then1 .else
+	)
 ) :- fc-bind-cons .v1 .h1 .t1, !
-	, .h0 = INVOKE .v0 VARIABLE _lhead
-	, .t0 = INVOKE .v0 VARIABLE _ltail
+	, temp .treeVar
+	, .h0 = INVOKE (VARIABLE .treeVar) (VARIABLE _lhead)
+	, .t0 = INVOKE (VARIABLE .treeVar) (VARIABLE _ltail)
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
 #
 fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else ( -- Upcast type class to tuple types
@@ -218,8 +221,8 @@ fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else ( -- Upcast type class to tuple t
 	)
 ) :- !
 	, temp .tupleVar
-	, .h0 = INVOKE (VARIABLE .tupleVar) VARIABLE _thead
-	, .t0 = INVOKE (VARIABLE .tupleVar) VARIABLE _ttail
+	, .h0 = INVOKE (VARIABLE .tupleVar) (VARIABLE _thead)
+	, .t0 = INVOKE (VARIABLE .tupleVar) (VARIABLE _ttail)
 	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .then1
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
