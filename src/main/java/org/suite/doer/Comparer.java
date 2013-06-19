@@ -25,28 +25,28 @@ public class Comparer implements Comparator<Node> {
 	}
 
 	@Override
-	public int compare(Node n1, Node n2) {
+	public int compare(Node n0, Node n1) {
+		n0 = n0.finalNode();
 		n1 = n1.finalNode();
-		n2 = n2.finalNode();
-		Class<? extends Node> clazz1 = n1.getClass();
-		Class<? extends Node> clazz2 = n2.getClass();
+		Class<? extends Node> clazz1 = n0.getClass();
+		Class<? extends Node> clazz2 = n1.getClass();
 
 		if (clazz1 == clazz2)
 			if (clazz1 == Atom.class)
-				return ((Atom) n1).getName().compareTo(((Atom) n2).getName());
+				return ((Atom) n0).getName().compareTo(((Atom) n1).getName());
 			else if (clazz1 == Int.class)
-				return ((Int) n1).getNumber() - ((Int) n2).getNumber();
+				return ((Int) n0).getNumber() - ((Int) n1).getNumber();
 			else if (clazz1 == Str.class)
-				return ((Str) n1).getValue().compareTo(((Str) n2).getValue());
+				return ((Str) n0).getValue().compareTo(((Str) n1).getValue());
 			else if (clazz1 == Tree.class) {
-				Tree t1 = (Tree) n1;
-				Tree t2 = (Tree) n2;
+				Tree t1 = (Tree) n0;
+				Tree t2 = (Tree) n1;
 				int c = t1.getOperator().getPrecedence() - t2.getOperator().getPrecedence();
 				c = c != 0 ? c : compare(t1.getLeft(), t2.getLeft());
 				c = c != 0 ? c : compare(t1.getRight(), t2.getRight());
 				return c;
 			} else
-				return n1.hashCode() - n2.hashCode();
+				return n0.hashCode() - n1.hashCode();
 		else
 			return order.get(clazz1) - order.get(clazz2);
 	}
