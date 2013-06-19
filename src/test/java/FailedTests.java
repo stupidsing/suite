@@ -30,7 +30,7 @@ public class FailedTests {
 		Suite.evaluateLogic(builder, rs, goal);
 	}
 
-	// Type check take 16 seconds
+	// Type check take 11 seconds
 	@Test
 	public void test1() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
