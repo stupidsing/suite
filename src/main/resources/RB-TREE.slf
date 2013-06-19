@@ -31,5 +31,5 @@ define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 	) >>
 	match
 	|| RB-TREE $color $n0 $pivot $n1 % => RB-TREE cb n0 pivot n1 % | add0
-	|| otherwise error
+	|| add0
 ) >>

@@ -13,7 +13,7 @@ import org.util.IoUtil;
 
 public class FailedTests {
 
-	// need to increase InstructionExecutor.stackSize, or implement tail
+	// Need to increase InstructionExecutor.stackSize, or implement tail
 	// recursion
 	@Test
 	public void test1() {
@@ -30,7 +30,7 @@ public class FailedTests {
 		Suite.evaluateLogic(builder, rs, goal);
 	}
 
-	// Runs forever!
+	// Type check take 16 seconds
 	@Test
 	public void test2() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
