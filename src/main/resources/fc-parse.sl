@@ -206,24 +206,27 @@ fc-bind0 .v0 (NEW-VARIABLE .nv) .then .else (DEF-VAR .nv .v0 .then)
 	:- !
 #
 fc-bind0 .v0 .v1 .then .else (
-	DEF-VAR .treeVar .v0 (
-		IF (INVOKE (VARIABLE .treeVar) (VARIABLE is-tree)) .then1 .else
+	DEF-VAR .elseVar (FUN BOOLEAN .else) DEF-VAR .v0var .v0 (
+		IF (INVOKE (VARIABLE .v0var) (VARIABLE is-tree)) .then1 .else1
 	)
-) :- fc-bind-cons .v1 .h1 .t1, !
-	, temp .treeVar
-	, .h0 = INVOKE (VARIABLE .treeVar) (VARIABLE _lhead)
-	, .t0 = INVOKE (VARIABLE .treeVar) (VARIABLE _ltail)
-	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .then1
+) :- fc-bind-cons .v1 .h1 .t1
+	, !
+	, temp .v0var, temp .elseVar
+	, .else1 = INVOKE (BOOLEAN TRUE) (VARIABLE .elseVar)
+	, .h0 = INVOKE (VARIABLE .v0var) (VARIABLE _lhead)
+	, .t0 = INVOKE (VARIABLE .v0var) (VARIABLE _ltail)
+	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else1 .then1
 #
 fc-bind0 .v0 (TUPLE .n (.h1, .t1)) .then .else ( -- Upcast type class to tuple types
-	DEF-VAR .tupleVar (OPTION (CAST UP _) .v0) (
-		IF (INVOKE (VARIABLE .tupleVar) (VARIABLE is-tuple)) .then1 .else
+	DEF-VAR .elseVar (FUN BOOLEAN .else) DEF-VAR .v0var (OPTION (CAST UP _) .v0) (
+		IF (INVOKE (VARIABLE .v0var) (VARIABLE is-tuple)) .then1 .else1
 	)
 ) :- !
-	, temp .tupleVar
-	, .h0 = INVOKE (VARIABLE .tupleVar) (VARIABLE _thead)
-	, .t0 = INVOKE (VARIABLE .tupleVar) (VARIABLE _ttail)
-	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else .then1
+	, temp .v0var, temp .elseVar
+	, .else1 = INVOKE (BOOLEAN TRUE) (VARIABLE .elseVar)
+	, .h0 = INVOKE (VARIABLE .v0var) (VARIABLE _thead)
+	, .t0 = INVOKE (VARIABLE .v0var) (VARIABLE _ttail)
+	, fc-bind-pair .h0 .t0 .h1 (TUPLE .n .t1) .then .else1 .then1
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
 	:- !
