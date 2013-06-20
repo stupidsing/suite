@@ -72,10 +72,10 @@ lc-parse .tree (.oper1 .left1 .right1) .nv
 lc-parse .call .callx .nv
 	:- lc-parse-pattern .call .call1 .nv
 	, lc-call-prototype .call1 .proto
-	, (lc-system-call-prototype .proto, !
+	, once (lc-system-call-prototype .proto
 		, .callx = SYSTEM-CALL .call1
 	; .callx = CALL .call1
-	)
+	), !
 #
 lc-parse .d _ :- write "Unknown expression" .d, nl, fail #
 
