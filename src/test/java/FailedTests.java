@@ -1,15 +1,14 @@
 import java.io.IOException;
 
+import org.instructionexecutor.FunRbTreeTest;
 import org.instructionexecutor.InstructionTranslatorTest;
 import org.junit.Test;
 import org.suite.Suite;
-import org.suite.doer.Formatter;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
 import org.suite.search.ProverBuilder.Builder;
-import org.util.IoUtil;
 
 public class FailedTests {
 
@@ -33,10 +32,7 @@ public class FailedTests {
 	// Type check take 11 seconds
 	@Test
 	public void test1() throws IOException {
-		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
-		String fp = s + "0 until 10 | map {add} | apply | {EMPTY %}\n";
-		Node result = Suite.evaluateFun(fp, false);
-		System.out.println("OUT:\n" + Formatter.dump(result));
+		new FunRbTreeTest().test();
 	}
 
 	// Strange error message "Unknown expression if b"
