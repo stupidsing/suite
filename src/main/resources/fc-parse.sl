@@ -140,12 +140,12 @@ fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 	, fc-parse-type .returnType .returnType1
 #
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
+fc-parse-type (.name %) (TUPLE-OF .name ()) :- ! #
 fc-parse-type (.name .type .types) (TUPLE-OF .name (.type1, .types1))
 	:- !
 	, fc-parse-type .type .type1
 	, fc-parse-type (.name .types) (TUPLE-OF .name .types1)
 #
-fc-parse-type (.name %) (TUPLE-OF .name ()) :- ! #
 fc-parse-type (.typeVar :- .type) (GENERIC-OF .typeVar1 .type1)
 	:- !
 	, fc-parse-type .type .type1

@@ -116,7 +116,7 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testGet() {
-		assertEquals(Int.create(3), eval("get {2} {1:2:3:4:}"));
+		assertEquals(Int.create(3), eval("get {2} {1, 2, 3, 4,}"));
 	}
 
 	@Test
@@ -280,6 +280,11 @@ public class EagerFunCompilerTest {
 	@Test
 	public void testTake() {
 		assertEquals(Suite.parse("1, 2, 3, 4,"), eval("take {4} {1, 2, 3, 4, 5, 6, 7,}"));
+	}
+
+	@Test
+	public void testTget2() {
+		assertEquals(Int.create(3), eval("tget2 {1:2:3:4:}"));
 	}
 
 	@Test

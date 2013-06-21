@@ -3,7 +3,11 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.suite.Journal;
 import org.suite.Suite;
+import org.suite.doer.Binder;
+import org.suite.doer.Formatter;
+import org.suite.doer.Generalizer;
 import org.suite.node.Node;
 
 public class FunCompilerTypeTest {
@@ -102,6 +106,12 @@ public class FunCompilerTypeTest {
 	}
 
 	@Test
+	public void testStandard() {
+		checkType("using STANDARD >> ends-with", "list-of T => _", "list-of T => list-of T => boolean");
+		checkType("using STANDARD >> join", "T => _", "T => list-of list-of T => list-of T");
+	}
+
+	@Test
 	public void testTuple() {
 		getType(variant + "A %");
 		getType(variant + "B 4 %");
@@ -116,17 +126,24 @@ public class FunCompilerTypeTest {
 				+ "BTREE 2 3 % = BTREE \"a\" 6 %");
 	}
 
-	private static void getTypeMustFail(String c) {
+	private void checkType(String f, String bindTo, String ts) {
+		Node type;
+		type = getType(f);
+		Binder.bind(type, new Generalizer().generalize(Suite.parse(bindTo)), new Journal());
+		assertEquals(ts, Formatter.dump(type));
+	}
+
+	private static void getTypeMustFail(String f) {
 		try {
-			getType(c);
+			getType(f);
 		} catch (RuntimeException ex) {
 			return;
 		}
-		throw new RuntimeException("Cannot catch type error of: " + c);
+		throw new RuntimeException("Cannot catch type error of: " + f);
 	}
 
-	private static Node getType(String a) {
-		return Suite.evaluateFunType(a);
+	private static Node getType(String f) {
+		return Suite.evaluateFunType(f);
 	}
 
 }

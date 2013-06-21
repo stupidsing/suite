@@ -349,14 +349,12 @@ fc-add-functions STANDARD .p (
 		. filter {`= separator` . head}
 		. tails . cons {separator}
 	) >>
-	define transpose = type (
-		:t :- list-of list-of :t => list-of list-of :t
-	) (m =>
+	define transpose = (m =>
 		let height = length {m} >>
 		let width = if (height > 0) then (m | head | length) else 0 >>
 		if (width > 0) then
 			let w1 = width - 1 >>
-			let gets = (tail | repeat {w1} | tails | reverse | cons {id}) >>
+			let gets = (tail | repeat {w1} | tails | reverse | cons {}) >>
 			gets | map {f => map {head . apply {f}} {m}}
 		else
 			()

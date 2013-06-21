@@ -47,17 +47,4 @@ public class FailedTests {
 		new InstructionTranslatorTest().testEagerFunctional();
 	}
 
-
-	// should be something like list-of .t => list-of .t => boolean
-	@Test
-	public void test4() {
-		System.out.println(Suite.evaluateFunType("using STANDARD >> ends-with"));
-	}
-
-	// should be something like .t => list-of list-of .t => list-of .t
-	@Test
-	public void test5() {
-		System.out.println(Suite.evaluateFunType("using STANDARD >> join"));
-	}
-
 }

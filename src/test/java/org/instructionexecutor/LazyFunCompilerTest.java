@@ -36,7 +36,7 @@ public class LazyFunCompilerTest {
 
 	@Test
 	public void testGet() {
-		assertEquals(Int.create(3), eval("get {2} {1:2:3:4:}"));
+		assertEquals(Int.create(3), eval("get {2} {1, 2, 3, 4,}"));
 	}
 
 	@Test
@@ -65,6 +65,11 @@ public class LazyFunCompilerTest {
 		eval("cons {1} {}");
 		eval("head {1, 2, 3,}");
 		eval("tail {1, 2, 3,}");
+	}
+
+	@Test
+	public void testTget2() {
+		assertEquals(Int.create(3), eval("tget2 {1:2:3:4:}"));
 	}
 
 	private static Node eval(String f) {

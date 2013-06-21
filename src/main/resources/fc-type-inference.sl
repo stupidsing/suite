@@ -57,16 +57,17 @@ infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type
 #
 infer-type-rule (
 	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .name .value .do
-) .ue/.ve/.te .tr0/.trx .type
+) .ue/.ve/.te .tr .type
 	:- !
 	, fc-dict-add .name/.varType .ue/.ue1
 	, fc-dict-add .name/.varType .ve/.ve1
 	, .insideEnv = .ue1/.ve/.te
 	, .outsideEnv = .ue/.ve1/.te
-	, once (infer-type-rule .value .insideEnv .tr0/.tr1 .varType
+	, once (infer-type-rule .value .insideEnv .vtr/() .varType
+		, resolve-types .vtr
 		; fc-error "at variable" .name
 	)
-	, infer-type-rule .do .outsideEnv .tr1/.trx .type
+	, infer-type-rule .do .outsideEnv .tr .type
 #
 infer-type-rule (OPTION CHECK-TUPLE-TYPE .tuple) .ue/.ve/.te .tr0/.trx .classType
 	:- !
