@@ -49,7 +49,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	)
 #
 
-infer-type-rule ($$PRECOMPILE .uvto .trs _) .uvto .trs NUMBER :- ! #
+infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
 -- Eager evaluation
 fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
