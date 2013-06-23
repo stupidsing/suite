@@ -127,6 +127,9 @@ infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 find-simple-type (FUN .var .do) .ue/.ve/.te (FUN-OF .varType .type)
 	:- fc-dict-add .var/.varType .ue/.ue1
 	, infer-type-rule .do .ue1/.ve/.te .tr/() .type
+	-- No big reason except performance for resolving types here for lambda operator.
+	-- Theoretically function should be handled in infer-type-rule without resolve,
+	-- but we need to be faster anyway.
 	, resolve-types .tr
 #
 find-simple-type (CONSTANT _) _ _ #
