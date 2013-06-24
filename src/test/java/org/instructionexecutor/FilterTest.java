@@ -3,8 +3,10 @@ package org.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import org.junit.Test;
 import org.suite.FunCompilerConfig;
@@ -29,18 +31,15 @@ public class FilterTest {
 	}
 
 	private static String eval(String program, String in) {
-		StringReader reader = new StringReader(in);
-		StringWriter writer = new StringWriter();
 		Node node = Suite.applyFilter(Suite.parse(program));
 		FunCompilerConfig fcc = Suite.fcc(node, true);
 
-		try {
+		try (Reader reader = new StringReader(in); Writer writer = new StringWriter()) {
 			Suite.evaluateFunIo(fcc, reader, writer);
+			return writer.toString();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-
-		return writer.toString();
 	}
 
 }

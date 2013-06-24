@@ -69,14 +69,19 @@ public class Main implements AutoCloseable {
 	}
 
 	public static void main(String args[]) {
+		int code;
+
 		try (Main main = new Main()) {
-			main.run(args);
+			code = main.run(args);
 		} catch (Throwable ex) {
 			LogUtil.error(ex);
+			code = 1;
 		}
+
+		System.exit(code);
 	}
 
-	private void run(String args[]) throws IOException {
+	private int run(String args[]) throws IOException {
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
 		Iterator<String> iter = Arrays.asList(args).iterator();
@@ -100,7 +105,7 @@ public class Main implements AutoCloseable {
 			else
 				result &= run(inputs);
 
-		System.exit(result ? 0 : 1);
+		return result ? 0 : 1;
 	}
 
 	private boolean processOption(String arg, Iterator<String> iter) {

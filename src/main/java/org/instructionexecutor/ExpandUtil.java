@@ -33,15 +33,19 @@ public class ExpandUtil {
 	 * corresponding characters into the writer.
 	 */
 	public static void expand(Node node, Fun<Node, Node> unwrapper, Writer writer) throws IOException {
-		while (true) {
+		while (node != Atom.NIL) {
 			node = unwrapper.apply(node);
+			Tree tree = Tree.decompose(node);
 
-			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				writer.write(((Int) unwrapper.apply(tree.getLeft())).getNumber());
+			if (tree != null) {
+				int c = ((Int) unwrapper.apply(tree.getLeft())).getNumber();
+				writer.write(c);
 				node = tree.getRight();
-			} else if (node == Atom.NIL)
-				break;
+
+				if (c == 10)
+					writer.flush();
+			} else
+				throw new RuntimeException("Not a list, unable to expand");
 		}
 	}
 
