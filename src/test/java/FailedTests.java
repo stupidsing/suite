@@ -44,7 +44,7 @@ public class FailedTests {
 	// Code too large
 	@Test
 	public void test3() throws IOException {
-		new InstructionTranslatorTest().testEagerFunctional();
+		new InstructionTranslatorTest().testStandardLibrary();
 	}
 
 }
