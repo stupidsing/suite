@@ -1,11 +1,6 @@
-- How to build the project?
+- How to build and set up the project?
 
-mvn -Dmaven.test.skip=true assembly:single
-
-
-- The program reports STANDARD.rpn file isn't there. What can I do?
-
-Runs org.suite.PrecompileMain to perform pre-compilation. I usually run from eclipse.
+Execute run.sh. It performs pre-compilation as well.
 
 
 - I get assertion error when running org.weiqi.UctScenarioTest.testCapture() test case. What can I do?
