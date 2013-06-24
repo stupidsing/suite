@@ -142,7 +142,7 @@ public class InstructionTranslator {
 				+ "\n" //
 				+ "while (true) { \n" //
 				// + "System.out.println(ip); \n" //
-				+ "switch(ip++) { \n" //
+				+ "switch(ip) { \n" //
 				+ "%s \n" //
 				+ "default: \n" //
 				+ "} \n" //
@@ -294,20 +294,20 @@ public class InstructionTranslator {
 				app("journal.undoBinds(bindPoints[--bsp])");
 				break;
 			case CALL__________:
-				pushCallee();
+				pushCallee(ip);
 				app("ip = #{reg-num}", op0);
-				app("if (true) continue");
+				app("continue");
 				break;
 			case CALLCONST_____:
-				pushCallee();
+				pushCallee(ip);
 				app("#{jump}", op0);
 				break;
 			case CALLCLOSURE___:
 				app("if (#{reg-clos}.result == null) {", op0);
-				pushCallee();
+				pushCallee(ip);
 				app("frame = #{reg-clos}.frame", op0);
 				app("ip = #{reg-clos}.ip", op0);
-				app("if (true) continue");
+				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
 				break;
 			case COMPARE_______:
@@ -383,9 +383,9 @@ public class InstructionTranslator {
 				break;
 			case EXIT__________:
 				if (!lastEnterIps.isEmpty())
-					app("if (true) return #{reg}", op0);
+					app("return #{reg}", op0);
 				else
-					app("if (true) return returnValue"); // Grand exit point
+					app("return returnValue"); // Grand exit point
 				break;
 			case FGETC_________:
 				app("{");
@@ -460,7 +460,6 @@ public class InstructionTranslator {
 				break;
 			case RETURN________:
 				popCaller();
-				app("if (true) continue");
 				break;
 			case RETURNVALUE___:
 				app("returnValue = #{reg-node}", op0);
@@ -487,8 +486,6 @@ public class InstructionTranslator {
 			default:
 				throw new RuntimeException("Unknown instruction " + insn);
 			}
-
-			app("break");
 		}
 	}
 
@@ -514,8 +511,8 @@ public class InstructionTranslator {
 		app(localsec, "#{fr-class} #{fr} = null");
 	}
 
-	private void pushCallee() {
-		app("cs[csp] = ip");
+	private void pushCallee(int ip) {
+		app("cs[csp] = " + ip);
 		app("fs[csp] = #{fr}");
 		app("csp++");
 	}
@@ -524,6 +521,7 @@ public class InstructionTranslator {
 		app("--csp");
 		app("ip = cs[csp]");
 		app("#{prev-fr} = (#{prev-fr-class}) fs[csp]");
+		app("continue");
 	}
 
 	private String defineConstant(Node node) {
@@ -562,7 +560,10 @@ public class InstructionTranslator {
 			fmt = s2;
 		}
 
-		section.append(";\n");
+		char lastChar = section.charAt(section.length() - 1);
+
+		if (lastChar != ';' && lastChar != '}')
+			section.append(";\n");
 	}
 
 	private String decode(String s, Iterator<Object> iter) {
@@ -579,7 +580,7 @@ public class InstructionTranslator {
 			s = String.format("Frame%d", frameNo);
 			break;
 		case "jump": // Dummy if for suppressing dead code error
-			s = String.format("{ ip = %d; if (true) continue; }", iter.next());
+			s = String.format("{ ip = %d; continue; }", iter.next());
 			break;
 		case "num":
 			s = String.format("%d", iter.next());
