@@ -75,6 +75,10 @@ infer-type-rule (OPTION CHECK-TUPLE-TYPE .tuple) .ue/.ve/.te .tr0/.trx .classTyp
 	, .classType = CLASS _
 	, .tr1 = (SUB-SUPER-TYPES .te .tupleType .classType, .trx)
 #
+infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
+	:- fc-dict-add .var/.varType .ue/.ue1
+	, infer-type-rule .do .ue1/.ve/.te .tr .type
+#
 infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
 	:- !
 	, infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
@@ -124,12 +128,8 @@ infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 	; !, fc-error "Undefined variable" .var
 #
 
-find-simple-type (FUN .var .do) .ue/.ve/.te (FUN-OF .varType .type)
-	:- fc-dict-add .var/.varType .ue/.ue1
-	, infer-type-rule .do .ue1/.ve/.te .tr/() .type
-	-- No big reason except performance for resolving types here for lambda operator.
-	-- Theoretically function should be handled in infer-type-rule without resolve,
-	-- but we need to be faster anyway.
+find-simple-type (OPTION RESOLVE-TYPES .do) .env .type
+	:- infer-type-rule .do .env .tr/() .type
 	, resolve-types .tr
 #
 find-simple-type (CONSTANT _) _ _ #

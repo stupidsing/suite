@@ -1,7 +1,8 @@
 fc-parse .t .parsed
 	:- bound .t, fc-parse-sugar .t .t1, !, fc-parse .t1 .parsed
 #
-fc-parse (.var => .do) (FUN .var .do1) :- !, fc-parse .do .do1 #
+-- No big reason except performance for resolving types here for lambda operator. We need to be faster anyway.
+fc-parse (.var => .do) (OPTION RESOLVE-TYPES (FUN .var .do1)) :- !, fc-parse .do .do1 #
 fc-parse (define type .type of .classes for any .typeVars >> .do) (
 	OPTION (DEF-TYPE .type1 .classes1 .typeVars1) .do1
 ) :- !, fc-parse-type .type .type1
