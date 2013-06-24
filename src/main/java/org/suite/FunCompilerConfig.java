@@ -9,7 +9,7 @@ import org.suite.node.Node;
 public class FunCompilerConfig {
 
 	private Node node;
-	private boolean isLazy;
+	private boolean isLazy = true;
 	private List<String> libraries = new ArrayList<>();
 	private ProverConfig proverConfig = new ProverConfig();
 	private boolean isDumpCode = Suite.isDumpCode;

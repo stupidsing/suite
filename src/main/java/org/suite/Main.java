@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ import org.util.Util;
  * 
  * @author ywsing
  */
-public class Main {
+public class Main implements AutoCloseable {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
 	private ProverConfig proverConfig = fcc.getProverConfig();
@@ -44,6 +45,9 @@ public class Main {
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
+
+	private Reader reader = new InputStreamReader(System.in, IoUtil.charset);
+	private Writer writer = new OutputStreamWriter(System.out, IoUtil.charset);
 
 	private enum InputType {
 		EVALUATE("\\"), //
@@ -65,8 +69,8 @@ public class Main {
 	}
 
 	public static void main(String args[]) {
-		try {
-			new Main().run(args);
+		try (Main main = new Main()) {
+			main.run(args);
 		} catch (Throwable ex) {
 			LogUtil.error(ex);
 		}
@@ -140,8 +144,7 @@ public class Main {
 		for (String importFilename : importFilenames)
 			Suite.importFile(ruleSet, importFilename);
 
-		InputStreamReader is = new InputStreamReader(System.in, IoUtil.charset);
-		BufferedReader br = new BufferedReader(is);
+		BufferedReader br = new BufferedReader(reader);
 
 		System.out.println("READY");
 
@@ -189,7 +192,10 @@ public class Main {
 					System.out.println(Formatter.dump(evaluateFunctional(node)));
 					break;
 				case EVALUATESTR:
-					System.out.println(Suite.stringize(evaluateFunctional(node)));
+					try (Reader reader = new StringReader("")) {
+						evaluateFunctionalIo(node, reader, writer);
+						writer.flush();
+					}
 					break;
 				case EVALUATETYPE:
 					fcc.setNode(node);
@@ -264,9 +270,7 @@ public class Main {
 			sb.append(input + " ");
 
 		Node node = Suite.applyFilter(Suite.parse(sb.toString()));
-		Reader reader = new InputStreamReader(System.in, IoUtil.charset);
-		Writer writer = new OutputStreamWriter(System.out, IoUtil.charset);
-		evaluateFunctional(node, reader, writer);
+		evaluateFunctionalIo(node, reader, writer);
 		return true;
 	}
 
@@ -285,13 +289,19 @@ public class Main {
 		return Suite.evaluateFun(fcc);
 	}
 
-	private void evaluateFunctional(Node node, Reader reader, Writer writer) throws IOException {
+	private void evaluateFunctionalIo(Node node, Reader reader, Writer writer) throws IOException {
 		fcc.setNode(node);
 		Suite.evaluateFunIo(fcc, reader, writer);
 	}
 
 	private String yesNo(boolean q) {
 		return q ? "Yes\n" : "No\n";
+	}
+
+	@Override
+	public void close() throws Exception {
+		reader.close();
+		writer.close();
 	}
 
 }

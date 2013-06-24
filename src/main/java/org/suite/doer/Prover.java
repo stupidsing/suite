@@ -49,7 +49,7 @@ public class Prover {
 
 	/**
 	 * Try to prove a query clause. Perform bindings on the way.
-	 *
+	 * 
 	 * @param query
 	 *            Clause to be proved.
 	 * @return true if success.
@@ -146,7 +146,7 @@ public class Prover {
 
 	/**
 	 * Expands an user predicate (with many clauses) to a chain of logic.
-	 *
+	 * 
 	 * @param query
 	 *            The invocation pattern.
 	 * @return The chained node.
@@ -189,7 +189,7 @@ public class Prover {
 
 	/**
 	 * Performs binding of two items.
-	 *
+	 * 
 	 * @return true if success.
 	 */
 	public boolean bind(Node left, Node right) {

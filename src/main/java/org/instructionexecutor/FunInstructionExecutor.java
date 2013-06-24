@@ -42,7 +42,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	public void executeIo(Reader reader, Writer writer) throws IOException {
 		indexedIo.put(Atom.NIL, reader);
-		ExpandUtil.expand(super.execute(), unwrapper, writer);
+		ExpandUtil.expand(execute(), unwrapper, writer);
 	}
 
 	@Override
