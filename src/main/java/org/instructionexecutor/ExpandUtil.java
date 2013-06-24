@@ -33,7 +33,7 @@ public class ExpandUtil {
 	 * corresponding characters into the writer.
 	 */
 	public static void expand(Node node, Fun<Node, Node> unwrapper, Writer writer) throws IOException {
-		while (node != Atom.NIL) {
+		while (true) {
 			node = unwrapper.apply(node);
 			Tree tree = Tree.decompose(node);
 
@@ -44,7 +44,9 @@ public class ExpandUtil {
 
 				if (c == 10)
 					writer.flush();
-			} else
+			} else if (node == Atom.NIL)
+				return;
+			else
 				throw new RuntimeException("Not a list, unable to expand");
 		}
 	}
