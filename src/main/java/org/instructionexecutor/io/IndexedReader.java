@@ -7,7 +7,10 @@ import org.instructionexecutor.io.IndexedIo.IndexedInput;
 
 public class IndexedReader implements IndexedInput {
 
+	private static final int bufferLimit = 256;
+
 	private Reader in;
+	private int offset;
 	private StringBuilder sb = new StringBuilder();
 
 	public IndexedReader(Reader in) {
@@ -16,7 +19,7 @@ public class IndexedReader implements IndexedInput {
 
 	@Override
 	public synchronized int read(int p) {
-		while (p >= sb.length()) {
+		while (p - offset >= sb.length()) {
 			int c;
 
 			try {
@@ -25,13 +28,24 @@ public class IndexedReader implements IndexedInput {
 				throw new RuntimeException(ex);
 			}
 
-			if (c >= 0)
+			if (c >= 0) {
 				sb.append((char) c);
-			else
+
+				if (sb.length() > bufferLimit) {
+					int shift = sb.length() - bufferLimit / 2;
+					sb.delete(0, shift);
+					offset += shift;
+				}
+			} else
 				break;
 		}
 
-		return p < sb.length() ? sb.charAt(p) : -1;
+		int index = p - offset;
+
+		if (index >= 0)
+			return index < sb.length() ? sb.charAt(index) : -1;
+		else
+			throw new RuntimeException("Cannot unwind flushed input buffer");
 	}
 
 	@Override
