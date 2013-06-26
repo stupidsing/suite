@@ -207,7 +207,7 @@ fc-add-functions STANDARD .p (
 	define tails = (
 		match
 		|| $h, $t => (h, t), tails {t}
-		|| otherwise ()
+		|| otherwise (,)
 	) >>
 	define take = (n => list =>
 		if:: n > 0 && is-tree {list}
@@ -346,6 +346,7 @@ fc-add-functions STANDARD .p (
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
 		. filter {`= separator` . head}
+		. filter {not . equals {}}
 		. tails . cons {separator}
 	) >>
 	define transpose = (m =>
@@ -353,7 +354,7 @@ fc-add-functions STANDARD .p (
 		let width = if (height > 0) then (m | head | length) else 0 >>
 		if (width > 0) then
 			let w1 = width - 1 >>
-			let gets = (tail | repeat {w1} | tails | reverse | cons {}) >>
+			let gets = (tail | repeat {w1} | tails | reverse) >>
 			gets | map {f => map {head . apply {f}} {m}}
 		else
 			()
