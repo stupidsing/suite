@@ -54,7 +54,7 @@ public class FailedTests {
 		new InstructionTranslatorTest().testStandardLibrary();
 	}
 
-	// Cannot resolve types
+	// Cannot resolve types... if we remove equals from fc.sl and fc-parse.sl
 	@Test
 	public void test4() throws IOException {
 		String fp = "" //
