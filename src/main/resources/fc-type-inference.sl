@@ -238,7 +238,7 @@ children-of-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .pq
 children-of-type .t .t .pq/.pq #
 
 default-fun-type () (LIST-OF _) #
-default-fun-type _compare (FUN-OF .type (FUN-OF .type BOOLEAN)) #
+default-fun-type _compare (FUN-OF .type (FUN-OF .type NUMBER)) #
 default-fun-type _cons (FUN-OF .type (FUN-OF (LIST-OF .type) (LIST-OF .type))) #
 default-fun-type _lhead (FUN-OF (LIST-OF .type) .type) #
 default-fun-type _log (FUN-OF .type .type) #
