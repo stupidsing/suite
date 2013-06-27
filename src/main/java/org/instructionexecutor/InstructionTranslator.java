@@ -56,7 +56,6 @@ public class InstructionTranslator {
 	private StringBuilder localsec = new StringBuilder();
 	private StringBuilder switchsec = new StringBuilder();
 
-	private int exitPoint;
 	private List<Integer> frames = new ArrayList<>();
 	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
@@ -74,7 +73,7 @@ public class InstructionTranslator {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
-		exitPoint = instructions.size();
+		int exitPoint = instructions.size();
 		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
 		// Identify frame regions
