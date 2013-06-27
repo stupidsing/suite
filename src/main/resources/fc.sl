@@ -138,9 +138,6 @@ fc-add-functions STANDARD .p (
 		then:: list | tail | drop {n - 1}
 		else:: list
 	) >>
-	define equals = (a => b =>
-		compare {a} {b} = 0
-	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>
@@ -366,7 +363,7 @@ fc-add-functions STANDARD .p (
 			if (is-tree {n}) then
 				concat {dump0 {true} {n | head}, ", ", dump0 {false} {n | tail},}
 				| if prec then (s => concat {"(", s, ")",}) else id
-			else-if (equals {n} {}) then
+			else-if (n = ()) then
 				"()"
 			else-if (prove /_n:n (is.atom _n)) then
 				prove-with-result /_n:n (to.string _n _s) _s | dump-string
