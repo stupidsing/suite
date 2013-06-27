@@ -3,12 +3,19 @@ import java.io.IOException;
 import org.instructionexecutor.FunRbTreeTest;
 import org.instructionexecutor.InstructionTranslatorTest;
 import org.junit.Test;
+import org.suite.FunCompilerConfig;
 import org.suite.Suite;
+import org.suite.doer.Formatter;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
+import org.suite.search.InterpretedProverBuilder;
 import org.suite.search.ProverBuilder.Builder;
+import org.suite.search.ProverBuilder.Finder;
+import org.util.FunUtil;
+import org.util.FunUtil.Sink;
+import org.util.FunUtil.Source;
 
 public class FailedTests {
 
@@ -45,6 +52,46 @@ public class FailedTests {
 	@Test
 	public void test3() throws IOException {
 		new InstructionTranslatorTest().testStandardLibrary();
+	}
+
+	// Cannot resolve types
+	@Test
+	public void test4() throws IOException {
+		String fp = "" //
+				+ "define equals = (a => b => _compare {a} {b} = 0) >> \n" //
+				+ "define type (A %) of (rb-tree,) >> \n" //
+				+ "define type (B %) of (rb-tree,) >> \n" //
+				+ "(v => \n" //
+				+ "  match \n" //
+				+ "  || A % => error \n" //
+				+ "  || B % => error \n" //
+				+ "  || otherwise error \n" //
+				+ ") {A %} \n";
+
+		System.out.println(fp);
+
+		FunCompilerConfig fcc = Suite.fcc(Suite.parse(fp));
+		fcc.getLibraries().clear();
+
+		Node node = Suite.parse("asserta (resolve-types .rt :- dump resolve-types .rt, nl, fail)" //
+				+ ", source .in" //
+				+ ", fc-parse .in .p" //
+				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
+				+ ", resolve-types .tr" //
+				+ ", fc-parse-type .out .t" //
+				+ ", sink .out");
+
+		Builder builder = new InterpretedProverBuilder(fcc.getProverConfig());
+		Finder finder = builder.build(Suite.funCompilerRuleSet(), node);
+
+		Source<Node> source = FunUtil.source(fcc.getNode());
+		Sink<Node> sink = new Sink<Node>() {
+			public void sink(Node node) {
+				System.out.println("TYPE = \n" + Formatter.dump(node));
+			}
+		};
+
+		finder.find(source, sink);
 	}
 
 }
