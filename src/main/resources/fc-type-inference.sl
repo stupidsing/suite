@@ -76,7 +76,8 @@ infer-type-rule (OPTION CHECK-TUPLE-TYPE .tuple) .ue/.ve/.te .tr0/.trx .classTyp
 	, .tr1 = (SUB-SUPER-TYPES .te .tupleType .classType, .trx)
 #
 infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
-	:- fc-dict-add .var/.varType .ue/.ue1
+	:- !
+	, fc-dict-add .var/.varType .ue/.ue1
 	, infer-type-rule .do .ue1/.ve/.te .tr .type
 #
 infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
@@ -89,7 +90,8 @@ infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
 	)
 #
 infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
-	:- !, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
+	:- !
+	, infer-type-rule .if .env .tr0/.tr1 BOOLEAN
 	, infer-compatible-types .then .else .env .tr1/.trx .type
 #
 infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
@@ -104,7 +106,8 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, .type = BOOLEAN
 #
 infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
-	:- !, infer-type-rules .elems .env .tr .types
+	:- !
+	, infer-type-rules .elems .env .tr .types
 #
 infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
@@ -115,11 +118,13 @@ infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te .tr .type
-	:- !, fc-dict-get .ue .var/.varType
+	:- !
+	, fc-dict-get .ue .var/.varType
 	, infer-type-rule .do .ue/.ve/.te .tr .type
 #
 infer-type-rule (OPTION _ .do) .env .tr .type
-	:- !, infer-type-rule .do .env .tr .type
+	:- !
+	, infer-type-rule .do .env .tr .type
 #
 infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 	:- (fc-dict-get .ve .var/.varType

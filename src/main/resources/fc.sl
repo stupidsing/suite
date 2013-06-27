@@ -337,7 +337,7 @@ fc-add-functions STANDARD .p (
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
 		. filter {`= separator` . head}
-		. filter {not . `equals {}`}
+		. filter {not . `= ()`}
 		. tails . cons {separator}
 	) >>
 	define transpose = (m =>
