@@ -54,12 +54,6 @@ public class FailedTests {
 		Suite.evaluateFun("() != ()", true);
 	}
 
-	// Duplicate error messages
-	@Test
-	public void test5() throws IOException {
-		Suite.evaluateFunType(".v => not {`= ()` {}}");
-	}
-
 	// ArrayIndexOutOfBoundsException
 	@Test
 	public void test6() throws IOException {

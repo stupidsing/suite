@@ -122,6 +122,11 @@ infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te .tr .type
 	, fc-dict-get .ue .var/.varType
 	, infer-type-rule .do .ue/.ve/.te .tr .type
 #
+infer-type-rule (OPTION RESOLVE-TYPES .do) .env .tr/.tr .type
+	:- !
+	, infer-type-rule .do .env .tr1/() .type
+	, resolve-types .tr1
+#
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !
 	, infer-type-rule .do .env .tr .type
@@ -133,10 +138,6 @@ infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 	; !, fc-error "Undefined variable" .var
 #
 
-find-simple-type (OPTION RESOLVE-TYPES .do) .env .type
-	:- infer-type-rule .do .env .tr/() .type
-	, resolve-types .tr
-#
 find-simple-type (CONSTANT _) _ _ #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (NUMBER _) _ NUMBER #
