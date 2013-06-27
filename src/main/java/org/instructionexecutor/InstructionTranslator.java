@@ -581,7 +581,9 @@ public class InstructionTranslator {
 		char lastChar = section.charAt(section.length() - 1);
 
 		if (lastChar != ';' && lastChar != '{' && lastChar != '}')
-			section.append(";\n");
+			section.append(";");
+
+		section.append("\n");
 	}
 
 	private String decode(String s, Iterator<Object> iter) {
