@@ -56,7 +56,7 @@ public class FailedTests {
 
 	// ArrayIndexOutOfBoundsException
 	@Test
-	public void test6() throws IOException {
+	public void test5() throws IOException {
 		Suite.evaluateFun("() = ()", true);
 	}
 
