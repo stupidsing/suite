@@ -56,8 +56,9 @@ public class InstructionTranslator {
 
 	private int exitPoint;
 	private Map<Integer, Integer> parentFrames = new HashMap<>();
-	private Deque<Integer> lastEnterIps = new ArrayDeque<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
+
+	private Deque<Integer> lastEnterIps = new ArrayDeque<>(); // stack of ENTERs
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
