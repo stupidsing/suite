@@ -201,25 +201,9 @@ sub-super-type-pair .te .type1 .class1 -- reduce to type classes
 	, member .classes .class
 	, instantiate-type .typeVars .type/.class .type1/.class1
 #
-sub-super-type-pair .te .t0 .t1 -- morph children types to their supers
-	:- bound .t0
-	, children-of-type .t0 .t1 .ts/()
-	, choose-one-pair .ts .childType0/.childType1
-	, sub-super-type-pair .te .childType0 .childType1
-#
+sub-super-type-pair .te .t0 .t1 :- bound .t0, sub-super-type-pair0 .te .t0 .t1 #
 sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t0 .t1 #
 sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t1 .t0 #
-
-generic-specific-pair (GENERIC-OF .typeVar .type) .t1
-	:- bound .typeVar
-	, replace .type/.t1 .typeVar/_
-#
-
-choose-one-pair (.t0/.t1, .ts) .t0/.t1 :- equate-pairs .ts #
-choose-one-pair (.t/.t, .ts) .tr :- choose-one-pair .ts .tr #
-
-equate-pairs () #
-equate-pairs (.t/.t, .ts) :- equate-pairs .ts #
 
 instantiate-type () .tc .tc #
 instantiate-type (.typeVar, .typeVars) .tc0 .tcx
@@ -227,22 +211,24 @@ instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 	, instantiate-type .typeVars .tc1 .tcx
 #
 
-children-of-types () () .pq/.pq :- ! #
-children-of-types (.t0, .ts0) (.t1, .ts1) .pq0/.pqx
-	:- .pq0 = (.t0/.t1, .pq1)
-	, children-of-types .ts0 .ts1 .pq1/.pqx
+sub-super-type-pair0 .te (FUN-OF .it0 .ot0) (FUN-OF .it1 .ot1) -- morph children types to their supers
+	:- sub-super-type-pair .te .it0 .it1
+	; sub-super-type-pair .te .ot1 .ot0
+#
+sub-super-type-pair0 .te (LIST-OF .t0) (LIST-OF .t1)
+	:- sub-super-type-pair .te .t0 .t1
+#
+sub-super-type-pair0 .te (TUPLE-OF .name (.t0, .ts)) (TUPLE-OF .name (.t1, .ts))
+	:- sub-super-type-pair .te .t0 .t1
+#
+sub-super-type-pair0 .te (TUPLE-OF .name (.t, .ts0)) (TUPLE-OF .name (.t, .ts1))
+	:- sub-super-type-pair .te (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1)
 #
 
-children-of-type (FUN-OF .pt0 .rt0) (FUN-OF .pt1 .rt1) .pq0/.pqx
-	:- !, .pq0 = (.pt0/.pt1, .rt0/.rt1, .pqx)
+generic-specific-pair (GENERIC-OF .typeVar .type) .t1
+	:- bound .typeVar
+	, replace .type/.t1 .typeVar/_
 #
-children-of-type (LIST-OF .t0) (LIST-OF .t1) .pq0/.pqx
-	:- !, .pq0 = (.t0/.t1, .pqx)
-#
-children-of-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .pq
-	:- !, children-of-types .ts0 .ts1 .pq
-#
-children-of-type .t .t .pq/.pq #
 
 default-fun-type () (LIST-OF _) #
 default-fun-type _compare (FUN-OF .type (FUN-OF .type NUMBER)) #
