@@ -55,7 +55,7 @@ public class InstructionTranslator {
 	private StringBuilder switchsec = new StringBuilder();
 
 	private int exitPoint;
-	private Map<Integer, Integer> parentFrames = new HashMap<>();
+	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
 
 	private Deque<Integer> lastEnterIps = new ArrayDeque<>(); // stack of ENTERs
@@ -173,7 +173,7 @@ public class InstructionTranslator {
 			// Recognize frames and their parents.
 			// Assumes ENTER instruction should be after LABEL.
 			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFrames.put(insn.op1 + 1, lastEnterIps.peek());
+				parentFramesByFrame.put(insn.op1 + 1, lastEnterIps.peek());
 			else if (insn.insn == Insn.ENTER_________)
 				lastEnterIps.push(ip);
 			else if (insn.insn == Insn.LEAVE_________)
@@ -238,7 +238,7 @@ public class InstructionTranslator {
 			case ASSIGNFRAMEREG:
 				int f = lastEnterIps.peek();
 				for (int i = op1; i < 0; i++)
-					f = parentFrames.get(f);
+					f = parentFramesByFrame.get(f);
 				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
 				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
 					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
@@ -585,7 +585,7 @@ public class InstructionTranslator {
 	private String decode(String s, Iterator<Object> iter) {
 		int reg;
 		Integer frameNo = !lastEnterIps.isEmpty() ? currentFrame() : null;
-		Integer parentFrameNo = frameNo != null ? parentFrames.get(frameNo) : null;
+		Integer parentFrameNo = frameNo != null ? parentFramesByFrame.get(frameNo) : null;
 		Class<?> registerTypes[] = frameNo != null ? registerTypesByFrame.get(frameNo) : null;
 
 		switch (s) {
