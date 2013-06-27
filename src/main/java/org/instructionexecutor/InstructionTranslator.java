@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
@@ -56,10 +57,11 @@ public class InstructionTranslator {
 	private StringBuilder switchsec = new StringBuilder();
 
 	private int exitPoint;
+	private List<Integer> frames = new ArrayList<>();
 	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
 
-	private Deque<Integer> lastEnterIps = new ArrayDeque<>(); // stack of ENTERs
+	private int currentIp;
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
@@ -166,19 +168,25 @@ public class InstructionTranslator {
 	}
 
 	private void findFrameInformation(List<Instruction> instructions) {
+		Deque<Integer> lastEnterIps = new ArrayDeque<>();
 
 		// Find out the parent of closures.
 		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
+			if (insn.insn == Insn.ENTER_________)
+				lastEnterIps.push(ip);
+
+			Integer frame = !lastEnterIps.isEmpty() ? lastEnterIps.peek() : null;
+			frames.add(frame);
+
 			// Recognize frames and their parents.
 			// Assumes ENTER instruction should be after LABEL.
 			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFramesByFrame.put(insn.op1 + 1, lastEnterIps.peek());
-			else if (insn.insn == Insn.ENTER_________)
-				lastEnterIps.push(ip);
-			else if (insn.insn == Insn.LEAVE_________)
+				parentFramesByFrame.put(insn.op1 + 1, frame);
+
+			if (insn.insn == Insn.LEAVE_________)
 				lastEnterIps.pop();
 		}
 	}
@@ -188,7 +196,7 @@ public class InstructionTranslator {
 		int ip = 0;
 
 		while (ip < instructions.size()) {
-			Instruction insn = instructions.get(ip);
+			Instruction insn = instructions.get(currentIp = ip);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
 
 			ip++;
@@ -238,7 +246,7 @@ public class InstructionTranslator {
 				registerTypes[insn.op1] = Tree.class;
 				break;
 			case ASSIGNFRAMEREG:
-				int f = lastEnterIps.peek();
+				int f = currentFrame();
 				for (int i = op1; i < 0; i++)
 					f = parentFramesByFrame.get(f);
 				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
@@ -248,11 +256,7 @@ public class InstructionTranslator {
 			case DECOMPOSETREE1:
 				registerTypes[op1] = registerTypes[op2] = Node.class;
 			case ENTER_________:
-				lastEnterIps.push(ip - 1);
 				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
-				break;
-			case LEAVE_________:
-				lastEnterIps.pop();
 				break;
 			default:
 			}
@@ -265,13 +269,9 @@ public class InstructionTranslator {
 		int ip = 0;
 
 		while (ip < instructions.size()) {
-			Instruction insn = instructions.get(ip);
+			Instruction insn = instructions.get(currentIp = ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			app("case #{num}: // #{str}", ip, insn);
-
-			// LogUtil.info("Translating instruction (IP = " + ip + ") " +
-			// insn);
-			ip++;
+			app("case #{num}: // #{str}", currentIp, insn);
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
@@ -360,7 +360,6 @@ public class InstructionTranslator {
 				app("} else #{jump}", op1);
 				break;
 			case ENTER_________:
-				lastEnterIps.push(ip - 1);
 				app("#{fr} = new #{fr-class}((#{prev-fr-class}) frame)");
 				break;
 			case ERROR_________:
@@ -400,7 +399,8 @@ public class InstructionTranslator {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				if (!lastEnterIps.isEmpty())
+				Integer frame = currentFrame();
+				if (frame != null)
 					app("return #{reg}", op0);
 				else
 					app("return returnValue"); // Grand exit point
@@ -436,7 +436,6 @@ public class InstructionTranslator {
 				break;
 			case LEAVE_________:
 				generateFrame();
-				lastEnterIps.pop();
 				break;
 			case LOG___________:
 				constant = constantPool.get(op0);
@@ -507,12 +506,8 @@ public class InstructionTranslator {
 		}
 	}
 
-	private Integer currentFrame() {
-		return lastEnterIps.peek();
-	}
-
 	private void generateFrame() {
-		Integer frameNo = !lastEnterIps.isEmpty() ? currentFrame() : null;
+		Integer frameNo = currentFrame();
 		Class<?> registerTypes[] = frameNo != null ? registerTypes = registerTypesByFrame.get(frameNo) : null;
 
 		app(clazzsec, "private static class #{fr-class} implements Frame {");
@@ -588,7 +583,7 @@ public class InstructionTranslator {
 
 	private String decode(String s, Iterator<Object> iter) {
 		int reg;
-		Integer frameNo = !lastEnterIps.isEmpty() ? currentFrame() : null;
+		Integer frameNo = currentFrame();
 		Integer parentFrameNo = frameNo != null ? parentFramesByFrame.get(frameNo) : null;
 		Class<?> registerTypes[] = frameNo != null ? registerTypesByFrame.get(frameNo) : null;
 
@@ -650,6 +645,10 @@ public class InstructionTranslator {
 
 	private String reg(int reg) {
 		return String.format("f%d.r%d", currentFrame(), reg);
+	}
+
+	private Integer currentFrame() {
+		return frames.get(currentIp);
 	}
 
 	private TranslatedRun getTranslatedRun() throws IOException {
