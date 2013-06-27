@@ -164,9 +164,10 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 -- When resolving types:
 -- - Try bind equivalent sub-type to super-type relation;
 --   - Do not resolve relation when both types are not clear;
---   - Generalize generic types to resolve;
 --   - Try reduce to type classes to resolve;
 --   - Try morph children types to resolve;
+--   - Generalize generic types to resolve;
+--   - Try delay resolve if both types are unbinded;
 -- - Try bind generic-type and specialized-type relation;
 -- - Try bind type choice relation.
 resolve-types0 () :- ! #
