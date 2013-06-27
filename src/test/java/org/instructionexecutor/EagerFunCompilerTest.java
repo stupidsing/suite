@@ -74,8 +74,8 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testEquals() {
-		assertEquals(Atom.TRUE, eval("equals {} {}"));
-		assertEquals(Atom.FALSE, eval("equals {1, 2,} {1, 3,}"));
+		assertEquals(Atom.TRUE, eval("() = ()"));
+		assertEquals(Atom.FALSE, eval("(1, 2,) = (1, 3,)"));
 	}
 
 	@Test

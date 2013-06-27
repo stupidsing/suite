@@ -50,7 +50,7 @@ public class LazyFunCompilerTest {
 	@Test
 	public void testString() {
 		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
-		assertEquals(Atom.TRUE, eval("equals {\"-34253924\"} {int-to-str {-34253924}}"));
+		assertEquals(Atom.TRUE, eval("\"-34253924\" = int-to-str {-34253924}"));
 	}
 
 	@Test
