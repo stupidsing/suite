@@ -59,7 +59,7 @@ public class InstructionExecutor implements AutoCloseable {
 		Exec exec = new Exec();
 		exec.stack = stack;
 
-		Comparer comparer = new Comparer();
+		Comparer comparer = comparer();
 
 		for (;;) {
 			Frame frame = current.frame;
@@ -217,6 +217,10 @@ public class InstructionExecutor implements AutoCloseable {
 
 	protected void handle(Exec exec, Instruction insn) {
 		throw new RuntimeException("Unknown instruction " + insn);
+	}
+
+	protected Comparer comparer() {
+		return new Comparer();
 	}
 
 	protected static Int number(int n) {

@@ -7,6 +7,7 @@ import java.io.Writer;
 import org.instructionexecutor.InstructionUtil.Activation;
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Frame;
+import org.instructionexecutor.InstructionUtil.FunComparer;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.instructionexecutor.io.IndexedIo;
 import org.suite.doer.Comparer;
@@ -23,7 +24,6 @@ import org.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
-	private Comparer comparer = new Comparer();
 	private ProverConfig proverConfig;
 	private IndexedIo indexedIo = new IndexedIo();
 
@@ -35,6 +35,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			return node;
 		}
 	};
+
+	private Comparer comparer = new FunComparer(unwrapper);
 
 	public FunInstructionExecutor(Node node) {
 		super(node);
@@ -146,12 +148,17 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	public void close() {
-		indexedIo.close();
+	protected Comparer comparer() {
+		return comparer;
 	}
 
 	public Fun<Node, Node> getUnwrapper() {
 		return unwrapper;
+	}
+
+	@Override
+	public void close() {
+		indexedIo.close();
 	}
 
 	public void setProverConfig(ProverConfig proverConfig) {

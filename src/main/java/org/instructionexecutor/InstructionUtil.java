@@ -14,6 +14,7 @@ import java.util.Map;
 import org.instructionexecutor.io.IndexedIo;
 import org.parser.Operator;
 import org.suite.Suite;
+import org.suite.doer.Comparer;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
@@ -22,7 +23,7 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Reference;
 import org.suite.node.Tree;
-import org.util.FunUtil;
+import org.util.FunUtil.Fun;
 import org.util.LogUtil;
 
 import com.google.common.collect.BiMap;
@@ -57,6 +58,7 @@ public class InstructionUtil {
 		ASSIGNGLOBAL__("ASSIGN-GLOBAL"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		BIND__________("BIND"), //
+		BINDMARK______("BIND-MARK"), //
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
 		CALLCONST_____("CALL-CONSTANT"), //
@@ -150,12 +152,10 @@ public class InstructionUtil {
 
 	protected static class CutPoint {
 		protected Activation activation;
-		protected int bindStackPointer;
 		protected int journalPointer;
 
-		protected CutPoint(Activation activation, int bindStackPointer, int journalPointer) {
+		protected CutPoint(Activation activation, int journalPointer) {
 			this.activation = activation;
-			this.bindStackPointer = bindStackPointer;
 			this.journalPointer = journalPointer;
 		}
 	}
@@ -200,6 +200,18 @@ public class InstructionUtil {
 		}
 	}
 
+	public static class FunComparer extends Comparer {
+		private Fun<Node, Node> unwrapper;
+
+		public FunComparer(Fun<Node, Node> unwrapper) {
+			this.unwrapper = unwrapper;
+		}
+
+		public int compare(Node n0, Node n1) {
+			return super.compare(unwrapper.apply(n0), unwrapper.apply(n1));
+		}
+	}
+
 	public static List<Node> extractTuple(Node node) {
 		List<Node> rs = new ArrayList<>(5);
 		Tree tree;
@@ -221,7 +233,7 @@ public class InstructionUtil {
 		return InstructionUtil.insnNames.inverse().get(insnName);
 	}
 
-	public static Node execPopen(Node n0, final Node n1, IndexedIo indexedIo, final FunUtil.Fun<Node, Node> unwrapper) {
+	public static Node execPopen(Node n0, final Node n1, IndexedIo indexedIo, final Fun<Node, Node> unwrapper) {
 		try {
 			Node result = Atom.unique();
 			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(n0, unwrapper));

@@ -120,6 +120,7 @@ fc-dict-merge-replace .t0 .t1 .t2 :- rbt-merge-replace .t0 .t1 .t2, ! #
 fc-dict-member .v .t :- rbt-member .v .t #
 
 fc-add-functions STANDARD .p (
+	define compare = (a => b => _compare {a} {b}) >>
 	define cons = (head => tail => _cons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
 	define log = (m => _log {m}) >>
@@ -132,20 +133,13 @@ fc-add-functions STANDARD .p (
 	define and = (x => y =>
 		if x then y else false
 	) >>
-	define compare = type (:t :- :t => :t => number)
-		no-type-check (a => b =>
-			if (is-tree {a} && is-tree {b}) then
-				let c0 = compare {a | head} {b | head} >>
-				if:: c0 = 0
-				then:: compare {a | tail} {b | tail}
-				else:: c0
-			else:: _compare {a} {b}
-		)
-	>>
 	define drop = (n => list =>
 		if:: n > 0 && is-tree {list}
 		then:: list | tail | drop {n - 1}
 		else:: list
+	) >>
+	define equals = (a => b =>
+		_compare {a} {b} = 0
 	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
@@ -165,6 +159,19 @@ fc-add-functions STANDARD .p (
 	) >>
 	define maximum = (a => b =>
 		if (a > b) then a else b
+	) >>
+	define merge = (list0 => list1 =>
+		if-bind (list0 = ($h0, $t0)) then
+			if-bind (list1 = ($h1, $t1)) then
+				if:: h0 < h1
+				then:: h0, merge {t0} {list1}
+				else-if:: h0 > h1
+				then:: h1, merge {list0} {t1}
+				else:: h0, h1, merge {t0} {t1}
+			else
+				list0
+		else
+			list1
 	) >>
 	define minimum = (a => b =>
 		if (a > b) then b else a
@@ -252,9 +259,6 @@ fc-add-functions STANDARD .p (
 	define apply =
 		flip {fold-left {x => f => f {x}}}
 	>>
-	define equals = type (:t :- :t => :t => boolean)
-		no-type-check (a => b => compare {a} {b} = 0)
-	>>
 	define fold = (fun => list =>
 		fold-left {fun} {list | head} {list | tail}
 	) >>
@@ -271,19 +275,6 @@ fc-add-functions STANDARD .p (
 	>>
 	define map = (fun =>
 		fold-right {i => list => fun {i}, list} {}
-	) >>
-	define merge = (list0 => list1 =>
-		if-bind (list0 = ($h0, $t0)) then
-			if-bind (list1 = ($h1, $t1)) then
-				if:: h0 < h1
-				then:: h0, merge {t0} {list1}
-				else-if:: h0 > h1
-				then:: h1, merge {list0} {t1}
-				else:: h0, h1, merge {t0} {t1}
-			else
-				list0
-		else
-			list1
 	) >>
 	define popen = (command => in =>
 		in | _popen {command} | source
@@ -346,7 +337,7 @@ fc-add-functions STANDARD .p (
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
 		. filter {`= separator` . head}
-		. filter {not . equals {}}
+		. filter {not . `= ()`}
 		. tails . cons {separator}
 	) >>
 	define transpose = (m =>

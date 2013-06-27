@@ -41,6 +41,10 @@ lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
 	:- rbt-get-list .nv .nvs/()
 #
 
+lc-parse .clause .clause2 .nv
+	:- lc-parse-sugar .clause .clause1
+	, !, lc-parse .clause1 .clause2 .nv
+#
 lc-parse (.rules >> .clause) (DEFINE-RULES .rules1 .clause1) .nv
 	:- !, lc-parse-rules .rules .rules1
 	, lc-parse .clause .clause1 .nv
@@ -78,6 +82,8 @@ lc-parse .call .callx .nv
 	), !
 #
 lc-parse .d _ :- write "Unknown expression" .d, nl, fail #
+
+lc-parse-sugar (.a != .b) (not (.a = .b)) #
 
 lc-parse-rules () () :- ! #
 lc-parse-rules (.rule # .rules) (.rule1, .rules1)
@@ -156,14 +162,20 @@ lc-compile (ONCE .do) .rem .env .c0/.cx/.d0/.dx
 	) .env .c1/.c2/.d0/.dx
 	, .c2 = (.failLabel LABEL, .cx)
 #
-lc-compile (NOT .do) .rem .pls/.vs .c0/.cx/.d0/.dx
+lc-compile (NOT .do) .rem .env .c0/.cx/.d0/.dx
 	:- !
-	, .c0 = (_ CUT-BEGIN .cutPoint, .c1)
+	, .c0 = (_ BIND-MARK .pit
+		, _ CUT-BEGIN .cutPoint
+		, .c1
+	)
 	, lc-compile .do (
 		AND ($$CUT .cutPoint .failLabel) FAIL
-	) .pls/.vs .c1/.c2/.d0/.d1
-	, .c2 = (.failLabel LABEL, .c3)
-	, lc-compile .rem YES .pls/.vs .c3/.cx/.d1/.dx
+	) .env .c1/.c2/.d0/.d1
+	, lc-compile .rem YES .env .c2/.c3/.d1/.dx
+	, .c3 = (.failLabel LABEL
+		, _ BIND-UNDO .pit
+		, .cx
+	)
 #
 lc-compile (EQ .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !
@@ -171,7 +183,7 @@ lc-compile (EQ .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	, lc-compile .rem YES .pls/.vs .c1/.c2/.d0/.dx
 #
 lc-compile (.oper .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
-	:- member (GE, GT, LE, LT, NE,) .oper
+	:- member (EQ, GE, GT, LE, LT, NE,) .oper
 	, !
 	, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
 	, lc-create-node .a .vs .c0/.c1/.reg0
@@ -233,7 +245,7 @@ lc-merge-rules (.rule, .remains) .groups
 lc-bind (TREE .tree) .node .vs .cs :- !, lc-bind0 .node (TREE .tree) .vs .cs #
 lc-bind .node0 .node1 .vs .cs :- lc-bind0 .node0 .node1 .vs .cs #
 
-lc-bind0 .node .node .vs .c/.c/.f/.f :- not (.node = $$REG:_) #
+lc-bind0 .node .node .vs .c/.c/.f/.f :- not (.node = $$REG:_), ! #
 lc-bind0 (TREE .oper .nl0 .nr0) (TREE .oper .nl1 .nr1) .vs .c0/.cx/.f0/.fx
 	:- !
 	, lc-bind .nl0 .nl1 .vs .c0/.c1/.f1/.fx
@@ -245,18 +257,25 @@ lc-bind0 .node0 .node1 .vs .c0/.cx/.f0/.fx
 #
 
 lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f0/.fx
-	:- .c0 = (_ DECOMPOSE-TREE0 .reg .oper .failLabel
-		, _ DECOMPOSE-TREE1 .reg0 .reg1
+	:- .c0 = (_ BIND-MARK .pit
+		, _ DECOMPOSE-TREE0 .reg .failLabel
+		, _ DECOMPOSE-TREE1 .oper .reg0 .reg1
 		, .c1
 	)
 	, lc-bind-register .reg0 .nl .vs .c1/.c2/.f1/.f2
 	, lc-bind-register .reg1 .nr .vs .c2/.cx/.f0/.f1
-	, .f2 = (.failLabel LABEL, _ BIND-UNDO, .fx)
+	, .f2 = (.failLabel LABEL, _ BIND-UNDO .pit, .fx)
 #
 lc-bind-register .reg0 .node1 .vs .c0/.cx/.f0/.fx
 	:- lc-create-node .node1 .vs .c0/.c1/.reg1
-	, .c1 = (_ BIND .reg0 .reg1 .failLabel, .cx)
-	, .f0 = (.failLabel LABEL, _ BIND-UNDO, .fx)
+	, .c1 = (_ BIND-MARK .pit
+		, _ BIND .reg0 .reg1 .failLabel
+		, .cx
+	)
+	, .f0 = (.failLabel LABEL
+		, _ BIND-UNDO .pit
+		, .fx
+	)
 #
 
 lc-compile-rules () _ .c/.c :- ! #
@@ -311,7 +330,10 @@ lc-create-node (STRING .s) _ .c0/.cx/.reg
 lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
 	:- lc-create-node .left .vs .c0/.c1/.regl
 	, lc-create-node .right .vs .c1/.c2/.regr
-	, .c2 = (_ FORM-TREE0 .regl .regr, _ FORM-TREE1 .operator .reg, .cx)
+	, .c2 = (_ FORM-TREE0 .regl .regr
+		, _ FORM-TREE1 .operator .reg
+		, .cx
+	)
 #
 
 lc-system-call-prototype (ATOM .systemPredicate) :- system.predicate .systemPredicate #

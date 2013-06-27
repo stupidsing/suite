@@ -123,9 +123,8 @@ public class InstructionTranslator {
 				+ "int cs[] = new int[stackSize]; \n" //
 				+ "Node ds[] = new Node[stackSize]; \n" //
 				+ "Object fs[] = new Object[stackSize]; \n" //
-				+ "int bindPoints[] = new int[stackSize]; \n" //
 				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
-				+ "int bsp = 0, csp = 0, dsp = 0, cpsp = 0; \n" //
+				+ "int csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, n0, n1, var; \n" //
 				+ "CutPoint cutPoint; \n" //
@@ -205,6 +204,7 @@ public class InstructionTranslator {
 				registerTypes[op0] = Closure.class;
 				break;
 			case ASSIGNINT_____:
+			case BINDMARK______:
 			case COMPARE_______:
 			case CUTBEGIN______:
 			case EVALADD_______:
@@ -231,6 +231,9 @@ public class InstructionTranslator {
 			case TOP___________:
 				registerTypes[op0] = Node.class;
 				break;
+			case FORMTREE1_____:
+				registerTypes[insn.op1] = Tree.class;
+				break;
 			case ASSIGNFRAMEREG:
 				int f = lastEnterIps.peek();
 				for (int i = op1; i < 0; i++)
@@ -239,13 +242,11 @@ public class InstructionTranslator {
 				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
 					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
 				break;
+			case DECOMPOSETREE1:
+				registerTypes[op1] = registerTypes[op2] = Node.class;
 			case ENTER_________:
 				lastEnterIps.push(ip - 1);
 				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
-				break;
-			case FORMTREE0_____:
-				insn = instructions.get(ip++);
-				registerTypes[insn.op1] = Tree.class;
 				break;
 			case LEAVE_________:
 				lastEnterIps.pop();
@@ -287,11 +288,13 @@ public class InstructionTranslator {
 				app("#{reg} = #{num}", op0, op1);
 				break;
 			case BIND__________:
-				app("bindPoints[bsp++] = journal.getPointInTime()");
 				app("if (!Binder.bind(#{reg-node}, #{reg-node}, journal)) #{jump}", op0, op1, op2);
 				break;
+			case BINDMARK______:
+				app("#{reg} = journal.getPointInTime()", op0);
+				break;
 			case BINDUNDO______:
-				app("journal.undoBinds(bindPoints[--bsp])");
+				app("journal.undoBinds(#{reg-num})", op0);
 				break;
 			case CALL__________:
 				pushCallee(ip);
@@ -325,7 +328,6 @@ public class InstructionTranslator {
 				app("cutPoint = new CutPoint()");
 				app("cutPoint.frame = #{fr}");
 				app("cutPoint.ip = ip");
-				app("cutPoint.bsp = bsp");
 				app("cutPoint.csp = csp");
 				app("cutPoint.jp = journal.getPointInTime()");
 				app("cutPoints[cpsp++] = cutPoint");
@@ -335,11 +337,24 @@ public class InstructionTranslator {
 				app("cutPoint = cutPoints[cpsp1]");
 				app("while (cpsp > cpsp1) cutPoints[--cpsp] = null");
 				app("${fr} = (${fr-class}) cutPoint.frame");
-				app("bsp = cutPoint.bsp");
 				app("csp = cutPoint.csp");
 				app("journal.undoBinds(cutPoint.jp)");
 				app("ip = #{reg}", op1);
 				app("#{jump}", op1);
+				break;
+			case DECOMPOSETREE0:
+				app("node = #{reg-node}.finalNode()", op0);
+				insn = instructions.get(ip++);
+				app("if (node instanceof Tree) {");
+				app("Tree tree = (Tree) node;");
+				app("if (tree.getOperator() == TermOp.#{str}) {", insn.op0);
+				app("#{reg} = tree.getLeft()", insn.op1);
+				app("#{reg} = tree.getRight()", insn.op2);
+				app("} else #{jump}", op1);
+				app("} else if (node instanceof Reference) {");
+				app("Tree tree = Tree.create(op, #{reg} = new Reference(), #{reg} = new Reference())", insn.op1, insn.op2);
+				app("journal.addBind((Reference) node, tree)");
+				app("} else #{jump}", op1);
 				break;
 			case ENTER_________:
 				lastEnterIps.push(ip - 1);
@@ -562,7 +577,7 @@ public class InstructionTranslator {
 
 		char lastChar = section.charAt(section.length() - 1);
 
-		if (lastChar != ';' && lastChar != '}')
+		if (lastChar != ';' && lastChar != '{' && lastChar != '}')
 			section.append(";\n");
 	}
 
@@ -579,7 +594,7 @@ public class InstructionTranslator {
 		case "fr-class":
 			s = String.format("Frame%d", frameNo);
 			break;
-		case "jump": // Dummy if for suppressing dead code error
+		case "jump":
 			s = String.format("{ ip = %d; continue; }", iter.next());
 			break;
 		case "num":
