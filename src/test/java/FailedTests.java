@@ -1,3 +1,5 @@
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 
 import org.instructionexecutor.FunRbTreeTest;
@@ -5,7 +7,7 @@ import org.instructionexecutor.InstructionTranslatorTest;
 import org.junit.Test;
 import org.suite.FunCompilerConfig;
 import org.suite.Suite;
-import org.suite.doer.Formatter;
+import org.suite.doer.Cloner;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.node.Node;
@@ -84,14 +86,19 @@ public class FailedTests {
 		Builder builder = new InterpretedProverBuilder(fcc.getProverConfig());
 		Finder finder = builder.build(Suite.funCompilerRuleSet(), node);
 
+		final Node type[] = new Node[] { null };
+
 		Source<Node> source = FunUtil.source(fcc.getNode());
+
 		Sink<Node> sink = new Sink<Node>() {
 			public void sink(Node node) {
-				System.out.println("TYPE = \n" + Formatter.dump(node));
+				type[0] = new Cloner().clone(node);
 			}
 		};
 
 		finder.find(source, sink);
+
+		assertNotNull(type[0]);
 	}
 
 }
