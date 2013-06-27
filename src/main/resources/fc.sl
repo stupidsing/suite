@@ -139,7 +139,7 @@ fc-add-functions STANDARD .p (
 		else:: list
 	) >>
 	define equals = (a => b =>
-		_compare {a} {b} = 0
+		compare {a} {b} = 0
 	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
