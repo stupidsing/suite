@@ -67,13 +67,7 @@ public class InstructionTranslator {
 		int exitPoint = instructions.size();
 		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
-		// Identify frame regions
-		analyzer.findFrameInformation(instructions);
-
-		// Find out register types in each frame
-		analyzer.findRegisterInformation(instructions);
-
-		// Translate instruction code into Java
+		analyzer.analyze(instructions);
 		translateInstructions(instructions);
 
 		className = "TranslatedRun" + counter.getAndIncrement();

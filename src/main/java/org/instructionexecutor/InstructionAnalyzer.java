@@ -19,7 +19,16 @@ public class InstructionAnalyzer {
 	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
 
-	public void findFrameInformation(List<Instruction> instructions) {
+	public void analyze(List<Instruction> instructions) {
+
+		// Identify frame regions
+		findFrameInformation(instructions);
+
+		// Find out register types in each frame
+		findRegisterInformation(instructions);
+	}
+
+	private void findFrameInformation(List<Instruction> instructions) {
 		Deque<Integer> lastEnterIps = new ArrayDeque<>();
 
 		// Find out the parent of closures.
@@ -43,7 +52,7 @@ public class InstructionAnalyzer {
 		}
 	}
 
-	public void findRegisterInformation(List<Instruction> instructions) {
+	private void findRegisterInformation(List<Instruction> instructions) {
 		Class<?> registerTypes[] = null;
 		int ip = 0;
 
