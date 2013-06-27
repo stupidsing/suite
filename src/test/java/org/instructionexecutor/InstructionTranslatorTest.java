@@ -46,7 +46,7 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testLogical() throws IOException {
-		Node goal = Suite.parse(".a = 1, .b = .a, dump .b");
+		Node goal = Suite.parse(".a = 1, (.a = 2; .a = 1), .b = .a, dump .b");
 		Node code = compileLogical(goal);
 		assertEquals(Atom.TRUE, execute(code));
 	}
