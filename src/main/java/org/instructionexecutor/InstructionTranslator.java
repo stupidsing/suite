@@ -7,21 +7,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.FunComparer;
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
@@ -30,7 +24,6 @@ import org.suite.doer.Formatter;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.node.Tree;
 import org.util.IoUtil;
 import org.util.LogUtil;
 
@@ -56,9 +49,7 @@ public class InstructionTranslator {
 	private StringBuilder localsec = new StringBuilder();
 	private StringBuilder switchsec = new StringBuilder();
 
-	private List<Integer> frames = new ArrayList<>();
-	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
-	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
+	private InstructionAnalyzer analyzer = new InstructionAnalyzer();
 
 	private int currentIp;
 
@@ -77,10 +68,10 @@ public class InstructionTranslator {
 		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
 		// Identify frame regions
-		findFrameInformation(instructions);
+		analyzer.findFrameInformation(instructions);
 
 		// Find out register types in each frame
-		findRegisterInformation(instructions);
+		analyzer.findRegisterInformation(instructions);
 
 		// Translate instruction code into Java
 		translateInstructions(instructions);
@@ -164,102 +155,6 @@ public class InstructionTranslator {
 
 		// Compile the Java, load the class, return an instantiated object
 		return getTranslatedRun();
-	}
-
-	private void findFrameInformation(List<Instruction> instructions) {
-		Deque<Integer> lastEnterIps = new ArrayDeque<>();
-
-		// Find out the parent of closures.
-		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
-		for (int ip = 0; ip < instructions.size(); ip++) {
-			Instruction insn = instructions.get(ip);
-
-			if (insn.insn == Insn.ENTER_________)
-				lastEnterIps.push(ip);
-
-			Integer frame = !lastEnterIps.isEmpty() ? lastEnterIps.peek() : null;
-			frames.add(frame);
-
-			// Recognize frames and their parents.
-			// Assumes ENTER instruction should be after LABEL.
-			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFramesByFrame.put(insn.op1 + 1, frame);
-
-			if (insn.insn == Insn.LEAVE_________)
-				lastEnterIps.pop();
-		}
-	}
-
-	private void findRegisterInformation(List<Instruction> instructions) {
-		Class<?> registerTypes[] = null;
-		int ip = 0;
-
-		while (ip < instructions.size()) {
-			Instruction insn = instructions.get(currentIp = ip);
-			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-
-			ip++;
-
-			switch (insn.insn) {
-			case EVALEQ________:
-			case EVALGE________:
-			case EVALGT________:
-			case EVALLE________:
-			case EVALLT________:
-			case EVALNE________:
-			case ISTREE________:
-				registerTypes[op0] = boolean.class;
-				break;
-			case ASSIGNCLOSURE_:
-				registerTypes[op0] = Closure.class;
-				break;
-			case ASSIGNINT_____:
-			case BINDMARK______:
-			case COMPARE_______:
-			case CUTBEGIN______:
-			case EVALADD_______:
-			case EVALDIV_______:
-			case EVALMOD_______:
-			case EVALMUL_______:
-			case EVALSUB_______:
-				registerTypes[op0] = int.class;
-				break;
-			case ASSIGNCONST___:
-			case CONS__________:
-			case FGETC_________:
-			case HEAD__________:
-			case LOG1__________:
-			case LOG2__________:
-			case NEWNODE_______:
-			case POP___________:
-			case POPEN_________:
-			case PROVE_________:
-			case SETRESULT_____:
-			case SETCLOSURERES_:
-			case SUBST_________:
-			case TAIL__________:
-			case TOP___________:
-				registerTypes[op0] = Node.class;
-				break;
-			case FORMTREE1_____:
-				registerTypes[insn.op1] = Tree.class;
-				break;
-			case ASSIGNFRAMEREG:
-				int f = currentFrame();
-				for (int i = op1; i < 0; i++)
-					f = parentFramesByFrame.get(f);
-				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
-				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
-					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
-				break;
-			case DECOMPOSETREE1:
-				registerTypes[op1] = registerTypes[op2] = Node.class;
-			case ENTER_________:
-				registerTypesByFrame.put(currentFrame(), registerTypes = new Class<?>[op0]);
-				break;
-			default:
-			}
-		}
 	}
 
 	private void translateInstructions(List<Instruction> instructions) {
@@ -507,7 +402,7 @@ public class InstructionTranslator {
 
 	private void generateFrame() {
 		Integer frameNo = currentFrame();
-		Class<?> registerTypes[] = frameNo != null ? registerTypes = registerTypesByFrame.get(frameNo) : null;
+		Class<?> registerTypes[] = frameNo != null ? registerTypes = analyzer.getRegisterTypesByFrame().get(frameNo) : null;
 
 		app(clazzsec, "private static class #{fr-class} implements Frame {");
 		app(clazzsec, "private #{prev-fr-class} previous");
@@ -583,8 +478,8 @@ public class InstructionTranslator {
 	private String decode(String s, Iterator<Object> iter) {
 		int reg;
 		Integer frameNo = currentFrame();
-		Integer parentFrameNo = frameNo != null ? parentFramesByFrame.get(frameNo) : null;
-		Class<?> registerTypes[] = frameNo != null ? registerTypesByFrame.get(frameNo) : null;
+		Integer parentFrameNo = frameNo != null ? analyzer.getParentFramesByFrame().get(frameNo) : null;
+		Class<?> registerTypes[] = frameNo != null ? analyzer.getRegisterTypesByFrame().get(frameNo) : null;
 
 		switch (s) {
 		case "fr":
@@ -647,7 +542,7 @@ public class InstructionTranslator {
 	}
 
 	private Integer currentFrame() {
-		return frames.get(currentIp);
+		return analyzer.getFrames().get(currentIp);
 	}
 
 	private TranslatedRun getTranslatedRun() throws IOException {
