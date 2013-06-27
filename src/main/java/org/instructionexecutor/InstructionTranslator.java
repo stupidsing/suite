@@ -21,6 +21,7 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import org.instructionexecutor.InstructionUtil.Closure;
+import org.instructionexecutor.InstructionUtil.FunComparer;
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.instructionexecutor.TranslatedRunUtil.TranslatedRun;
@@ -96,6 +97,7 @@ public class InstructionTranslator {
 				+ "import org.util.*; \n" //
 				+ "import org.util.FunUtil.*; \n" //
 				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
+				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
 				+ "import " + TranslatedRun.class.getCanonicalName() + "; \n" //
 				+ "import " + TranslatedRunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //
@@ -130,11 +132,11 @@ public class InstructionTranslator {
 				+ "Node node, n0, n1, var; \n" //
 				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
-				+ "Comparer comparer = new Comparer(); \n" //
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "Fun<Node, Node> unwrapper = TranslatedRunUtil.getUnwrapper(config, this); \n" //
+				+ "Comparer comparer = new FunComparer(unwrapper); \n" //
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
