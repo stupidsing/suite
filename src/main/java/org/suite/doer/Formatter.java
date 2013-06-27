@@ -17,22 +17,20 @@ import org.util.Util;
 
 public class Formatter {
 
-	private Operator operators[];
 	private boolean isDump;
 	private Set<Integer> set = new HashSet<>();
 	private StringBuilder sb = new StringBuilder();
 
-	public Formatter(Operator operators[], boolean isDump) {
-		this.operators = operators;
+	public Formatter(boolean isDump) {
 		this.isDump = isDump;
 	}
 
 	public static String display(Node node) {
-		return new Formatter(TermOp.values(), false).format(node);
+		return new Formatter(false).format(node);
 	}
 
 	public static String dump(Node node) {
-		return new Formatter(TermOp.values(), true).format(node);
+		return new Formatter(true).format(node);
 	}
 
 	public static String treeize(Node node) {
@@ -135,24 +133,21 @@ public class Formatter {
 			boolean quote = false;
 
 			for (char c : s.toCharArray())
-				if (c <= 32 //
-						|| c == '(' || c == ')' //
-						|| c == '[' || c == ']' //
-						|| c == '{' || c == '}' //
-						|| c == '\'' || c == '"' || c == '`')
-					quote = true;
+				quote |= !('0' <= c && c <= '9') //
+						&& !('a' <= c && c <= 'z') //
+						&& !('A' <= c && c <= 'Z') //
+						&& c != '.' && c != '-' && c != '_' && c != '$';
 
-			String spaced = " " + s + " ";
+			quote |= s.contains(Parser.closeGroupComment) //
+					|| s.contains(Parser.openGroupComment) //
+					|| s.contains(Parser.closeLineComment) //
+					|| s.contains(Parser.openLineComment);
 
-			for (Operator operator : operators) {
-				String name = operator.getName();
-				if (!name.trim().isEmpty() && spaced.contains(name))
-					quote = true;
+			try {
+				Integer.parseInt(s);
+				quote |= true;
+			} catch (Exception ignored) {
 			}
-
-			if (s.contains(Parser.closeGroupComment) || s.contains(Parser.openGroupComment) || s.contains(Parser.closeLineComment)
-					|| s.contains(Parser.openLineComment))
-				quote = true;
 
 			if (quote)
 				s = quote(s, '\'');

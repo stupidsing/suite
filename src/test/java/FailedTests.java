@@ -47,17 +47,4 @@ public class FailedTests {
 		new InstructionTranslatorTest().testStandardLibrary();
 	}
 
-	// Structural comparisons
-	@Test
-	public void test4() throws IOException {
-		Suite.evaluateFun("() = ()", true);
-		Suite.evaluateFun("() != ()", true);
-	}
-
-	// ArrayIndexOutOfBoundsException
-	@Test
-	public void test5() throws IOException {
-		Suite.evaluateFun("() = ()", true);
-	}
-
 }

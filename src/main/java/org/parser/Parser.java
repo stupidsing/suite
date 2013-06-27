@@ -25,10 +25,10 @@ public class Parser {
 
 	private Operator operators[];
 
-	public static final String closeGroupComment = "=-";
 	public static final String openGroupComment = "-=";
-	public static final String closeLineComment = "\n";
+	public static final String closeGroupComment = "=-";
 	public static final String openLineComment = "--";
+	public static final String closeLineComment = "\n";
 
 	private static final List<Character> whitespaces = Arrays.asList('\t', '\r', '\n');
 
@@ -71,16 +71,17 @@ public class Parser {
 			Operator operator = operators[i];
 			String lr[] = ParserUtil.search(s, operator);
 
-			if (operator == TermOp.BRACES)
-				if (lr != null) {
+			if (lr != null) {
+				if (operator == TermOp.BRACES) {
 					String right = lr[1].trim();
 					if (Util.charAt(right, -1) == '}')
 						lr[1] = Util.substr(right, 0, -1);
 					else
 						continue;
-				}
+				} else if (operator == TermOp.TUPLE_)
+					if (Util.isBlank(lr[0]) || Util.isBlank(lr[1]))
+						continue;
 
-			if (lr != null) {
 				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 				int li = fromOp + (isLeftAssoc ? 0 : 1);
 				int ri = fromOp + (isLeftAssoc ? 1 : 0);
@@ -91,7 +92,7 @@ public class Parser {
 		if (first == '(' && last == ')' || first == '[' && last == ']')
 			return parseWithoutComments(Util.substr(s, 1, -1));
 		if (first == '`' && last == '`')
-			return parseRawString(" " + Util.substr(s, 1, -1) + " ", 0);
+			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
 		try {
 			return Int.create(Integer.parseInt(s));
@@ -104,6 +105,7 @@ public class Parser {
 		if (first == '\'' && last == '\'')
 			s = unescape(Util.substr(s, 1, -1), "'");
 		else {
+			s = s.trim(); // Trim unquoted atoms
 			int quote = 0, depth = 0;
 
 			// Shows warning if the atom has mismatched quotes or brackets
