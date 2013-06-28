@@ -74,7 +74,8 @@ public class FailedTests {
 		FunCompilerConfig fcc = Suite.fcc(Suite.parse(fp));
 		fcc.getLibraries().clear();
 
-		Node node = Suite.parse("asserta (resolve-types .rt :- dump resolve-types .rt, nl, fail)" //
+		Node node = Suite.parse("" //
+				+ "asserta (resolve-types .rt :- dump resolve-types .rt, nl, fail)" //
 				+ ", source .in" //
 				+ ", fc-parse .in .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
