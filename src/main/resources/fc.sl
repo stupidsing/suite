@@ -138,6 +138,9 @@ fc-add-functions STANDARD .p (
 		then:: list | tail | drop {n - 1}
 		else:: list
 	) >>
+	define equals = (a => b =>
+		compare {a} {b} = 0
+	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>

@@ -2,7 +2,7 @@ fc-parse .t .parsed
 	:- bound .t, fc-parse-sugar .t .t1, !, fc-parse .t1 .parsed
 #
 -- No big reason except performance for resolving types here for lambda operator. We need to be faster anyway.
-fc-parse (.var => .do) (OPTION RESOLVE-TYPES (FUN .var .do1))
+fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define type .type of .classes for any .typeVars >> .do) (
@@ -242,7 +242,7 @@ fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
 	, fc-bind .v0 .v1 .then .else .parsed
 #
 fc-bind0 .v0 .v1 .then .else (
-	IF (TREE ' = ' .v0 .v1) .then .else
+	IF (INVOKE .v0 INVOKE .v1 VAR equals) .then .else
 ) #
 
 fc-bind-cons (INVOKE .t INVOKE .h VAR _cons) .h .t #
