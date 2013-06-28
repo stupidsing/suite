@@ -161,6 +161,27 @@ infer-compatible-types .a .b .ue/.ve/.te .tr0/.trx .type
 resolve-types .tr :- resolve-types0 .tr, ! #
 resolve-types _ :- fc-error "Unable to resolve types" #
 
+resolve-types0 .tr
+	:- once (sort-resolve-types .tr .ps .nps)
+	, (.ps = (), !, resolve-types1 .tr
+		; resolve-types1 .ps, resolve-types0 .nps
+	)
+#
+
+-- Sort the resolve type rules by easiness
+sort-resolve-types () () () :- ! #
+sort-resolve-types (.tr, .trs) (.tr, .ps) .nps
+	:- easy-resolve-type .tr
+	, !, sort-resolve-types .trs .ps .nps
+#
+sort-resolve-types (.tr, .trs) .ps (.tr, .nps)
+	:- sort-resolve-types .trs .ps .nps
+#
+
+easy-resolve-type (SUB-SUPER-TYPES _ .t _) :- bound .t #
+easy-resolve-type (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
+easy-resolve-type (TYPE-IN-TYPES _) #
+
 -- When resolving types:
 -- - Try bind equivalent sub-type to super-type relation;
 --   - Do not resolve relation when both types are not clear;
@@ -170,20 +191,20 @@ resolve-types _ :- fc-error "Unable to resolve types" #
 --   - Try delay resolve if both types are unbinded;
 -- - Try bind generic-type and specialized-type relation;
 -- - Try bind type choice relation.
-resolve-types0 () :- ! #
-resolve-types0 (DUMP .d, .tr1)
-	:- !, dump .d, nl, resolve-types0 .tr1
+resolve-types1 () :- ! #
+resolve-types1 (DUMP .d, .tr1)
+	:- !, dump .d, nl, resolve-types1 .tr1
 #
-resolve-types0 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
-	:- !, resolve-sub-super-types .te .t0 .t1, resolve-types0 .tr1
+resolve-types1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
+	:- !, resolve-sub-super-types .te .t0 .t1, resolve-types1 .tr1
 #
-resolve-types0 (CLONE-TO-FROM-TYPES .t0 .t1, .tr1)
-	:- !, clone .t1 .t0, resolve-types0 .tr1
+resolve-types1 (CLONE-TO-FROM-TYPES .t0 .t1, .tr1)
+	:- !, clone .t1 .t0, resolve-types1 .tr1
 #
-resolve-types0 (TYPE-IN-TYPES .t .ts, .tr1)
-	:- !, member .ts .t, resolve-types0 .tr1
+resolve-types1 (TYPE-IN-TYPES .t .ts, .tr1)
+	:- !, member .ts .t, resolve-types1 .tr1
 #
-resolve-types0 _ :- !, fc-error "Not enough type information" #
+resolve-types1 _ :- !, fc-error "Not enough type information" #
 
 resolve-sub-super-types _ .t .t #
 resolve-sub-super-types .te .t0 .tx
@@ -211,9 +232,10 @@ instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 	, instantiate-type .typeVars .tc1 .tcx
 #
 
-sub-super-type-pair0 .te (FUN-OF .it0 .ot0) (FUN-OF .it1 .ot1) -- morph children types to their supers
-	:- sub-super-type-pair .te .it0 .it1
-	; sub-super-type-pair .te .ot1 .ot0
+-- Morph children types to their supers
+sub-super-type-pair0 .te (FUN-OF .it0 .ot0) (FUN-OF .it1 .ot1)
+	:- sub-super-type-pair .te .it1 .it0
+	; sub-super-type-pair .te .ot0 .ot1
 #
 sub-super-type-pair0 .te (LIST-OF .t0) (LIST-OF .t1)
 	:- sub-super-type-pair .te .t0 .t1
