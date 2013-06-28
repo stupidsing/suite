@@ -1,6 +1,7 @@
 package org.instructionexecutor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.suite.Journal;
@@ -107,8 +108,15 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testStandard() {
-		checkType("using STANDARD >> ends-with", "list-of T => _", "list-of T => list-of T => boolean");
-		checkType("using STANDARD >> join", "T => _", "T => list-of list-of T => list-of T");
+		checkType("using STANDARD >> ends-with" //
+				, "list-of T => _" //
+				, "list-of T => list-of T => boolean");
+		checkType("using STANDARD >> join" //
+				, "T => _" //
+				, "T => list-of list-of T => list-of T");
+		checkType("using STANDARD >> merge-sort" //
+				, "(list-of T => _) => _" //
+				, "(list-of T => list-of T => list-of T) => list-of T => list-of T");
 	}
 
 	@Test
@@ -129,7 +137,7 @@ public class FunCompilerTypeTest {
 	private void checkType(String f, String bindTo, String ts) {
 		Node type;
 		type = getType(f);
-		Binder.bind(type, new Generalizer().generalize(Suite.parse(bindTo)), new Journal());
+		assertTrue(Binder.bind(type, new Generalizer().generalize(Suite.parse(bindTo)), new Journal()));
 		assertEquals(ts, Formatter.dump(type));
 	}
 
