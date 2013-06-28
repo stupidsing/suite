@@ -4,8 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Insn;
@@ -18,6 +20,7 @@ public class InstructionAnalyzer {
 	private List<Integer> frames = new ArrayList<>();
 	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
 	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
+	private Set<Integer> requireParentFrame = new HashSet<>();
 
 	public void analyze(List<Instruction> instructions) {
 
@@ -107,8 +110,10 @@ public class InstructionAnalyzer {
 				break;
 			case ASSIGNFRAMEREG:
 				int f = frames.get(currentIp);
-				for (int i = op1; i < 0; i++)
+				for (int i = op1; i < 0; i++) {
+					requireParentFrame.add(f);
 					f = parentFramesByFrame.get(f);
+				}
 				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
 				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
 					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
@@ -134,6 +139,10 @@ public class InstructionAnalyzer {
 
 	public Class<?>[] getRegisterTypes(Integer frame) {
 		return registerTypesByFrame.get(frame);
+	}
+
+	public boolean isRequireParent(Integer frame) {
+		return requireParentFrame.contains(frame);
 	}
 
 }

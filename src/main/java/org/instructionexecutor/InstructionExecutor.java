@@ -73,6 +73,7 @@ public class InstructionExecutor implements AutoCloseable {
 			int ip = current.ip++;
 			Instruction insn = instructions[ip];
 
+			Closure closure;
 			TermOp op;
 			int i;
 
@@ -101,14 +102,15 @@ public class InstructionExecutor implements AutoCloseable {
 				current = new Activation(frame, insn.op0, current);
 				break;
 			case CALLCLOSURE___:
-				Closure closure = (Closure) regs[insn.op0];
+				closure = (Closure) regs[insn.op0];
 				if (closure.result == null)
 					current = new Activation(closure, current);
 				else
 					returnValue = closure.result;
 				break;
 			case ENTER_________:
-				current.frame = new Frame(frame, insn.op0);
+				Frame parent = analyzer.isRequireParent(analyzer.getFrame(ip)) ? frame : null;
+				current.frame = new Frame(parent, insn.op0);
 				break;
 			case EVALADD_______:
 				regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
@@ -200,7 +202,9 @@ public class InstructionExecutor implements AutoCloseable {
 				break;
 			case SETCLOSURERES_:
 				regs[insn.op0] = returnValue;
-				((Closure) regs[insn.op1]).result = returnValue;
+				closure = ((Closure) regs[insn.op1]);
+				closure.frame = null; // Facilitates garbage collection
+				closure.result = returnValue;
 				break;
 			case TOP___________:
 				regs[insn.op0] = stack[sp + insn.op1];

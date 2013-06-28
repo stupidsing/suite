@@ -248,7 +248,9 @@ public class InstructionTranslator {
 				app("} else #{jump}", op1);
 				break;
 			case ENTER_________:
-				app("#{fr} = new #{fr-class}((#{prev-fr-class}) frame)");
+				boolean isRequireParentFrame = analyzer.isRequireParent(analyzer.getFrame(currentIp));
+				String previousFrame = isRequireParentFrame ? "(#{prev-fr-class}) frame" : "null";
+				app("#{fr} = new #{fr-class}(" + previousFrame + ")");
 				break;
 			case ERROR_________:
 				app("throw new RuntimeException(\"Error termination\")");
