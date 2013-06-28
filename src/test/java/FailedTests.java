@@ -60,9 +60,9 @@ public class FailedTests {
 	@Test
 	public void test4() throws IOException {
 		String fp = "" //
-				+ "define equals = (a => b => _compare {a} {b} = 0) >> \n" //
-				+ "define type (A %) of (rb-tree,) >> \n" //
-				+ "define type (B %) of (rb-tree,) >> \n" //
+				+ "define equals = (a => b => true) >> \n" //
+				+ "define type (A %) of (cl,) >> \n" //
+				+ "define type (B %) of (cl,) >> \n" //
 				+ "(v => \n" //
 				+ "  match \n" //
 				+ "  || A % => error \n" //
