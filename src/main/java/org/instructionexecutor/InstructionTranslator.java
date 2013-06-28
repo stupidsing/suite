@@ -248,8 +248,8 @@ public class InstructionTranslator {
 				app("} else #{jump}", op1);
 				break;
 			case ENTER_________:
-				boolean isRequireParentFrame = analyzer.isRequireParent(analyzer.getFrame(currentIp));
-				String previousFrame = isRequireParentFrame ? "(#{prev-fr-class}) frame" : "null";
+				boolean isRequireParent = analyzer.isRequireParent(analyzer.getFrame(currentIp));
+				String previousFrame = isRequireParent ? "(#{prev-fr-class}) frame" : "null";
 				app("#{fr} = new #{fr-class}(" + previousFrame + ")");
 				break;
 			case ERROR_________:
