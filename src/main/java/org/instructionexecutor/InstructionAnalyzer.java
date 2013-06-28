@@ -115,6 +115,7 @@ public class InstructionAnalyzer {
 				break;
 			case DECOMPOSETREE1:
 				registerTypes[op1] = registerTypes[op2] = Node.class;
+				break;
 			case ENTER_________:
 				registerTypesByFrame.put(frames.get(currentIp), registerTypes = new Class<?>[op0]);
 				break;
