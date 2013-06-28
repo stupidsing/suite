@@ -25,13 +25,13 @@ public class InstructionAnalyzer {
 	public void analyze(List<Instruction> instructions) {
 
 		// Identify frame regions
-		findFrameInformation(instructions);
+		analyzeFrames(instructions);
 
 		// Find out register types in each frame
-		findRegisterInformation(instructions);
+		analyzeFrameRegisters(instructions);
 	}
 
-	private void findFrameInformation(List<Instruction> instructions) {
+	private void analyzeFrames(List<Instruction> instructions) {
 		Deque<Integer> lastEnterIps = new ArrayDeque<>();
 
 		// Find out the parent of closures.
@@ -55,7 +55,7 @@ public class InstructionAnalyzer {
 		}
 	}
 
-	private void findRegisterInformation(List<Instruction> instructions) {
+	private void analyzeFrameRegisters(List<Instruction> instructions) {
 		Class<?> registerTypes[] = null;
 		int ip = 0;
 
