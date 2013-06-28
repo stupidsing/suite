@@ -242,7 +242,7 @@ fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
 	, fc-bind .v0 .v1 .then .else .parsed
 #
 fc-bind0 .v0 .v1 .then .else (
-	IF (INVOKE .v0 INVOKE .v1 VAR equals) .then .else
+	IF (TREE ' = ' .v0 .v1) .then .else
 ) #
 
 fc-bind-cons (INVOKE .t INVOKE .h VAR _cons) .h .t #
