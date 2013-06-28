@@ -29,17 +29,23 @@ public class InstructionExecutor implements AutoCloseable {
 
 	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
 
+	private InstructionAnalyzer analyzer = new InstructionAnalyzer();
+
 	public InstructionExecutor(Node node) {
 		InstructionExtractor extractor = new InstructionExtractor(constantPool);
 
+		List<Instruction> instructions0 = extractor.extractInstructions(node);
+		analyzer.analyze(instructions0);
+
 		List<Instruction> list = new ArrayList<>();
-		list.addAll(extractor.extractInstructions(node));
-		unwrapEntryPoint = list.size();
+		list.addAll(instructions0);
 		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
 		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
 		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
 
 		instructions = list.toArray(new Instruction[list.size()]);
+
+		unwrapEntryPoint = instructions0.size();
 	}
 
 	public Node execute() {

@@ -396,7 +396,7 @@ public class InstructionTranslator {
 
 	private void generateFrame() {
 		Integer frameNo = currentFrame();
-		Class<?> registerTypes[] = frameNo != null ? registerTypes = analyzer.getRegisterTypesByFrame().get(frameNo) : null;
+		Class<?> registerTypes[] = frameNo != null ? registerTypes = analyzer.getRegisterTypes(frameNo) : null;
 
 		app(clazzsec, "private static class #{fr-class} implements Frame {");
 		app(clazzsec, "private #{prev-fr-class} previous");
@@ -472,8 +472,8 @@ public class InstructionTranslator {
 	private String decode(String s, Iterator<Object> iter) {
 		int reg;
 		Integer frameNo = currentFrame();
-		Integer parentFrameNo = frameNo != null ? analyzer.getParentFramesByFrame().get(frameNo) : null;
-		Class<?> registerTypes[] = frameNo != null ? analyzer.getRegisterTypesByFrame().get(frameNo) : null;
+		Integer parentFrameNo = frameNo != null ? analyzer.getParentFrame(frameNo) : null;
+		Class<?> registerTypes[] = frameNo != null ? analyzer.getRegisterTypes(frameNo) : null;
 
 		switch (s) {
 		case "fr":
@@ -536,7 +536,7 @@ public class InstructionTranslator {
 	}
 
 	private Integer currentFrame() {
-		return analyzer.getFrames().get(currentIp);
+		return analyzer.getFrame(currentIp);
 	}
 
 	private TranslatedRun getTranslatedRun() throws IOException {

@@ -124,16 +124,16 @@ public class InstructionAnalyzer {
 		}
 	}
 
-	public List<Integer> getFrames() {
-		return frames;
+	public Integer getFrame(Integer ip) {
+		return frames.get(ip);
 	}
 
-	public Map<Integer, Integer> getParentFramesByFrame() {
-		return parentFramesByFrame;
+	public Integer getParentFrame(Integer frame) {
+		return parentFramesByFrame.get(frame);
 	}
 
-	public Map<Integer, Class<?>[]> getRegisterTypesByFrame() {
-		return registerTypesByFrame;
+	public Class<?>[] getRegisterTypes(Integer frame) {
+		return registerTypesByFrame.get(frame);
 	}
 
 }
