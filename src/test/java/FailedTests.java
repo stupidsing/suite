@@ -63,8 +63,7 @@ public class FailedTests {
 				+ "define equals = (a => b => true) >> \n" //
 				+ "define type (A %) of (cl,) >> \n" //
 				+ "define type (B %) of (cl,) >> \n" //
-				+ "(v => \n" //
-				+ "  match \n" //
+				+ "(match \n" //
 				+ "  || A % => error \n" //
 				+ "  || B % => error \n" //
 				+ "  || otherwise error \n" //
