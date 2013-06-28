@@ -58,14 +58,14 @@ public class FailedTests {
 	public void test4() throws IOException {
 		String f = "" //
 				+ "define merge-sort = (merge => list => \n" //
-				+ "    if true then \n" //
-				+ "        define list0 = (list | _ltail | merge-sort {merge}) >> \n" //
-				+ "        merge {list0} {list0} \n" //
-				+ "    else list \n" //
+				+ "  if true then \n" //
+				+ "    define list0 = (list | _ltail) >> merge {list0} \n" //
+				+ "  else list \n" //
 				+ ") >> \n" //
-				+ "merge-sort \n";
+				+ "merge-sort \n" //
+		;
 
-		checkType(f, "(list-of T => _) => _", "(list-of T => list-of T => list-of T) => list-of T => list-of T");
+		checkType(f, "(list-of T => _) => _", "(list-of T => list-of T) => list-of T => list-of T");
 	}
 
 	private void checkType(String f, String bindTo, String ts) {

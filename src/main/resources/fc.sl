@@ -313,8 +313,8 @@ fc-add-functions STANDARD .p (
 		let len = length {list} >>
 		if (len > 1) then
 			let len2 = len / 2 >>
-			define list0 = (list | take {len2} | merge-sort {merge}) >>
-			define list1 = (list | drop {len2} | merge-sort {merge}) >>
+			let list0 = (list | take {len2} | merge-sort {merge}) >>
+			let list1 = (list | drop {len2} | merge-sort {merge}) >>
 			merge {list0} {list1}
 		else
 			list
