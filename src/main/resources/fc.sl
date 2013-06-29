@@ -195,8 +195,8 @@ fc-add-functions STANDARD .p (
 		|| otherwise (init,)
 	) >>
 	define source = (is =>
-		define fgets = (pos =>
-			define c = fgetc {is} {pos} >>
+		let fgets = (pos =>
+			let c = fgetc {is} {pos} >>
 			if (c >= 0) then (c, fgets {pos + 1}) else ()
 		) >>
 		fgets {0}

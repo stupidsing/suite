@@ -2,7 +2,10 @@ lc-deterministic .a
 	:- member (CUT, FAIL, YES,) .a, !
 #
 lc-deterministic (.a _)
-	:- member (NOT, ONCE,) .a, !
+	:- member (NOT, ONCE, SYSTEM-CALL,) .a, !
+#
+lc-deterministic (.oper _)
+	:- member (EQ, GE, GT, LE, LT, NE,) .oper, !
 #
 lc-deterministic (AND .a .b)
     :- (lc-deterministic .a; lc-cut-choices .b)
@@ -11,10 +14,6 @@ lc-deterministic (AND .a .b)
 lc-deterministic (OR .a .b)
 	:- lc-cut-choices .a, lc-deterministic .b
 #
-lc-deterministic (.oper _)
-	:- member (EQ, GE, GT, LE, LT, NE,) .oper, !
-#
-lc-deterministic (SYSTEM-CALL _) :- ! #
 
 lc-cut-choices (AND .a .b)
 	:- lc-cut-choices .b
