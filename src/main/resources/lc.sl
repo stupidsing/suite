@@ -144,8 +144,10 @@ lc-compile (AND .a .b) .rem .env .c0/.cx/.d0/.dx
 lc-compile (OR .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, .bc = CALL-CONSTANT .label
-	, lc-compile .a (AND ($$BYTECODE _ .bc) FAIL) .pls/.vs .c0/.c1/.d0/.d1
-	, lc-compile .b (AND ($$BYTECODE _ .bc) FAIL) .pls/.vs .c1/.cx/.d1/.d2
+	, .c0 = (_ BIND-MARK .pitReg, .c1)
+	, lc-compile (AND .a ($$BYTECODE _ .bc)) FAIL .pls/.vs .c1/.c2/.d0/.d1
+	, .c2 = (_ BIND-UNDO .pitReg, .c3)
+	, lc-compile (AND .b ($$BYTECODE _ .bc)) FAIL .pls/.vs .c3/.cx/.d1/.d2
 	, .d2 = (.label LABEL, .d3)
 	, lc-compile .rem YES .pls/.vs .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
@@ -257,25 +259,18 @@ lc-bind0 .node0 .node1 .vs .c0/.cx/.f0/.fx
 #
 
 lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f0/.fx
-	:- .c0 = (_ BIND-MARK .pit
-		, _ DECOMPOSE-TREE0 .reg .failLabel
+	:- .c0 = (_ DECOMPOSE-TREE0 .reg .failLabel
 		, _ DECOMPOSE-TREE1 .oper .reg0 .reg1
 		, .c1
 	)
 	, lc-bind-register .reg0 .nl .vs .c1/.c2/.f1/.f2
 	, lc-bind-register .reg1 .nr .vs .c2/.cx/.f0/.f1
-	, .f2 = (.failLabel LABEL, _ BIND-UNDO .pit, .fx)
+	, .f2 = (.failLabel LABEL, .fx)
 #
 lc-bind-register .reg0 .node1 .vs .c0/.cx/.f0/.fx
 	:- lc-create-node .node1 .vs .c0/.c1/.reg1
-	, .c1 = (_ BIND-MARK .pit
-		, _ BIND .reg0 .reg1 .failLabel
-		, .cx
-	)
-	, .f0 = (.failLabel LABEL
-		, _ BIND-UNDO .pit
-		, .fx
-	)
+	, .c1 = (_ BIND .reg0 .reg1 .failLabel, .cx)
+	, .f0 = (.failLabel LABEL, .fx)
 #
 
 lc-compile-rules () _ .c/.c :- ! #
