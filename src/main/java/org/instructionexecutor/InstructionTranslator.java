@@ -189,11 +189,6 @@ public class InstructionTranslator {
 				break;
 			case CALL__________:
 				pushCallee(ip);
-				app("ip = #{reg-num}", op0);
-				app("continue");
-				break;
-			case CALLCONST_____:
-				pushCallee(ip);
 				app("#{jump}", op0);
 				break;
 			case CALLCLOSURE___:
@@ -203,6 +198,11 @@ public class InstructionTranslator {
 				app("ip = #{reg-clos}.ip", op0);
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
+				break;
+			case CALLREG_______:
+				pushCallee(ip);
+				app("ip = #{reg-num}", op0);
+				app("continue");
 				break;
 			case COMPARE_______:
 				app("n0 = (Node) ds[--dsp]");
@@ -322,6 +322,9 @@ public class InstructionTranslator {
 			case JUMP__________:
 				app("#{jump}", op0);
 				break;
+			case JUMPREG_______:
+				app("{ ip = #{reg-num}; continue; }", op0);
+				break;
 			case LABEL_________:
 				break;
 			case LEAVE_________:
@@ -345,6 +348,9 @@ public class InstructionTranslator {
 				break;
 			case POP___________:
 				app("#{reg} = ds[--dsp]", op0);
+				break;
+			case POPANY________:
+				app("--dsp");
 				break;
 			case POPEN_________:
 				app("n0 = ds[--dsp]");

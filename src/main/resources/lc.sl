@@ -1,17 +1,19 @@
 -------------------------------------------------------------------------------
 -- logical program compiler
 
-() :- import.file 'rbt.sl' #
+() :- import.file 'code-generation.sl'
+	, import.file 'rbt.sl'
+#
 
-compile-logic .call .c0
+compile-logic .call .code
 	:- .c0 = (_ ENTER
 		, _ ASSIGN-CONSTANT .returnReg true
 		, _ ASSIGN-CLOSURE .provenReg .provenLabel
 		, _ PUSH .provenReg
 		, _ PUSH .provenReg
-		, _ CALL-CONSTANT .callLabel
-		, _ POP _
-		, _ POP _
+		, _ CALL .callLabel
+		, _ POP-ANY
+		, _ POP-ANY
 		, _ ASSIGN-CONSTANT .returnReg false
 		, .provenLabel LABEL
 		, _ EXIT .returnReg
@@ -20,11 +22,11 @@ compile-logic .call .c0
 	)
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
-	, !, compile-call .call2 () .c1/()/.callLabel
-	, !, lc-assign-line-number 0 .c0
+	, !, lc-compile-call .call2 () .c1/()/.callLabel
+	, !, generate-code .c0 .code
 #
 
-compile-call .call .pls .c0/.cx/.label
+lc-compile-call .call .pls .c0/.cx/.label
 	:- .c0 = (.label LABEL
 		, _ ENTER
 		, _ CUT-BEGIN .cutPoint
@@ -145,7 +147,7 @@ lc-compile (OR FAIL .do) .ps :- !, lc-compile .do .ps #
 lc-compile (OR .do FAIL) .ps :- !, lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !
-	, .bc = CALL-CONSTANT .label
+	, .bc = CALL .label
 	, .c0 = (_ BIND-MARK .pitReg, .c1)
 	, lc-compile (AND .a ($$BYTECODE _ .bc)) FAIL .pls/.vs .c1/.c2/.d0/.d1
 	, .c2 = (_ BIND-UNDO .pitReg, .c3)
@@ -215,9 +217,9 @@ lc-compile (CALL .call) .rem .pls/.vs .c0/.cx/.d0/.dx
 		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
 			, _ PUSH .provenReg
 			, _ PUSH .reg
-			, _ CALL-CONSTANT .callLabel
-			, _ POP _
-			, _ POP _
+			, _ CALL .callLabel
+			, _ POP-ANY
+			, _ POP-ANY
 			, .cx
 		)
 		, .d0 = (.provenLabel LABEL, .d1)
@@ -281,7 +283,7 @@ lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 	, member .pls .proto/.callLabel
 	, .l = '-----'
 	, .c0 = (_ REMARK .l .proto .l, .c1) -- debug purpose
-	, compile-call .call .pls .c1/.c2/.callLabel
+	, lc-compile-call .call .pls .c1/.c2/.callLabel
 	, lc-compile-rules .remains .pls .c2/.cx
 #
 
@@ -337,11 +339,6 @@ lc-system-call-prototype (ATOM .systemPredicate) :- system.predicate .systemPred
 
 lc-is-variable .variable
 	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot
-#
-
-lc-assign-line-number _ () #
-lc-assign-line-number .n (.n _, .remains)
-	:- let .n1 (.n + 1), lc-assign-line-number .n1 .remains
 #
 
 lc-dict-get .v .t :- rbt-get .v .t, ! #

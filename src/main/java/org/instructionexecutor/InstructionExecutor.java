@@ -96,9 +96,6 @@ public class InstructionExecutor implements AutoCloseable {
 				regs[insn.op0] = number(insn.op1);
 				break;
 			case CALL__________:
-				current = new Activation(frame, i(regs[insn.op0]), current);
-				break;
-			case CALLCONST_____:
 				current = new Activation(frame, insn.op0, current);
 				break;
 			case CALLCLOSURE___:
@@ -107,6 +104,9 @@ public class InstructionExecutor implements AutoCloseable {
 					current = new Activation(closure, current);
 				else
 					returnValue = closure.result;
+				break;
+			case CALLREG_______:
+				current = new Activation(frame, i(regs[insn.op0]), current);
 				break;
 			case ENTER_________:
 				Frame parent = analyzer.isRequireParent(analyzer.getFrame(ip)) ? frame : null;
@@ -171,6 +171,9 @@ public class InstructionExecutor implements AutoCloseable {
 			case JUMP__________:
 				current.ip = insn.op0;
 				break;
+			case JUMPREG_______:
+				current.ip = i(regs[insn.op0]);
+				break;
 			case LABEL_________:
 				break;
 			case LOG___________:
@@ -187,6 +190,9 @@ public class InstructionExecutor implements AutoCloseable {
 				break;
 			case POP___________:
 				regs[insn.op0] = stack[--sp];
+				break;
+			case POPANY________:
+				--sp;
 				break;
 			case REMARK________:
 				break;

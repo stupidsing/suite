@@ -5,7 +5,8 @@
 --
 -- .mode can be EAGER or LAZY
 
-() :- import.file 'fc-parse.sl'
+() :- import.file 'code-generation.sl'
+	, import.file 'fc-parse.sl'
 	, import.file 'fc-type-inference.sl'
 	, import.file 'rbt.sl'
 #
@@ -19,14 +20,14 @@ compile-function-without-precompile .mode () .do .c
 	:- compile-function .mode .do .c
 #
 
-compile-function .mode .do .c0
+compile-function .mode .do .code
 	:- .c0 = (_ ENTER, .c1)
 	, !, fc-parse .do .parsed
 	, !, infer-type-rule .parsed ()/()/() .tr/() _
 	, !, resolve-types .tr
 	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
-	, !, fc-assign-line-number 0 .c0
+	, !, generate-code .c0 .code
 #
 
 fc-compile .mode (USING .lib .do) .fve .cdr
@@ -102,11 +103,6 @@ fc-operator .oper
 
 fc-is-boolean true #
 fc-is-boolean false #
-
-fc-assign-line-number _ () #
-fc-assign-line-number .n (.n _, .remains)
-	:- let .n1 (.n + 1), fc-assign-line-number .n1 .remains
-#
 
 fc-error .m :- !, write .m, nl, fail #
 

@@ -61,8 +61,8 @@ public class InstructionUtil {
 		BINDMARK______("BIND-MARK"), //
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
-		CALLCONST_____("CALL-CONSTANT"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
+		CALLREG_______("CALL-REG"), //
 		COMPARE_______("COMPARE"), //
 		CONS__________("CONS"), //
 		CUTBEGIN______("CUT-BEGIN"), //
@@ -96,6 +96,7 @@ public class InstructionUtil {
 		ISTREE________("IS-TREE"), //
 		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //
+		JUMPREG_______("JUMP-REG"), //
 		LABEL_________("LABEL"), //
 		LOG___________("LOG"), //
 		LOG1__________("LOG1"), //
@@ -103,6 +104,7 @@ public class InstructionUtil {
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
+		POPANY________("POP-ANY"), //
 		POPEN_________("POPEN"), //
 		PROVE_________("PROVE"), //
 		PROVEINTERPRET("PROVE-INTERPRET"), //
