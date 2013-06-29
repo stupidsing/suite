@@ -136,7 +136,7 @@ public class Formatter {
 				quote |= !('0' <= c && c <= '9') //
 						&& !('a' <= c && c <= 'z') //
 						&& !('A' <= c && c <= 'Z') //
-						&& c != '.' && c != '-' && c != '_' && c != '$';
+						&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
 
 			quote |= s.contains(Parser.closeGroupComment) //
 					|| s.contains(Parser.openGroupComment) //
