@@ -141,6 +141,8 @@ lc-compile YES .rem .env .c0/.cx/.d0/.dx
 lc-compile (AND .a .b) .rem .env .c0/.cx/.d0/.dx
 	:- !, lc-compile .a (AND .b .rem) .env .c0/.cx/.d0/.dx
 #
+lc-compile (OR FAIL .do) .ps :- !, lc-compile .do .ps #
+lc-compile (OR .do FAIL) .ps :- !, lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	:- !
 	, .bc = CALL-CONSTANT .label
