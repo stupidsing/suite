@@ -61,7 +61,7 @@ public class Main implements AutoCloseable {
 		QUERYELABORATE("/"), //
 		;
 
-		String prefix;
+		private String prefix;
 
 		private InputType(String prefix) {
 			this.prefix = prefix;
