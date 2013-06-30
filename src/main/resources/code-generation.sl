@@ -13,21 +13,16 @@ optimize (_ PUSH .reg0
 	, _ .call .target
 	, _ POP-ANY
 	, _ POP-ANY
-	, .label0 LABEL
-	, .label1 LABEL
-	, _ RETURN
 	, .insts0
 ) (_ POP-ANY
 	, _ POP-ANY
 	, _ PUSH .reg0
 	, _ PUSH .reg1
 	, _ .jump .target
-	, .label0 LABEL
-	, .label1 LABEL
-	, _ RETURN
 	, .insts1
 )
-	:- !
+	:- is-returning .insts0
+	, !
 	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
 	, optimize .insts0 .insts1
 #
@@ -35,6 +30,9 @@ optimize (.inst, .insts0) (.inst, .insts1)
 	:- !, optimize .insts0 .insts1
 #
 optimize () () #
+
+is-returning (_ LABEL, .insts) :- is-returning .insts, ! #
+is-returning (_ RETURN, _) #
 
 assign-line-number _ () #
 assign-line-number .n (.n _, .remains)

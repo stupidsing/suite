@@ -24,7 +24,7 @@ public class CompiledProverBuilder implements Builder {
 	 */
 	public static class CompiledProverBuilderLevel1 extends CompiledProverBuilder {
 		public CompiledProverBuilderLevel1(ProverConfig proverConfig, boolean isDumpCode) {
-			super(new InterpretedProverBuilder(), proverConfig, isDumpCode);
+			super(new InterpretedProverBuilder(proverConfig), proverConfig, isDumpCode);
 		}
 	}
 
