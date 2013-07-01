@@ -55,6 +55,12 @@ public class Tree extends Node {
 			return false;
 	}
 
+	// This method violates the immutable property of the tree.
+	// Only used by cloner for performance purpose.
+	public static void forceSetRight(Tree tree, Node right) {
+		tree.right = right;
+	}
+
 	public Operator getOperator() {
 		return operator;
 	}
