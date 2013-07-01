@@ -32,15 +32,7 @@ compile-function .mode .do .code
 
 fc-compile .mode (USING .lib .do) .fve .cdr
 	:- !, load-precompiled-library .lib
-	, fc-compile-using-libs .mode (.lib,) .do .fve .cdr
-#
-
-infer-type-rule-using-libs () .do .uvto .tr .type
-	:- infer-type-rule .do .uvto .tr .type
-#
-
-fc-compile-using-libs .mode () .do .fve .cdr
-	:- !, fc-compile .mode .do .fve .cdr
+	, fc-compile-using-lib .mode .lib .do .fve .cdr
 #
 
 load-precompiled-library .lib

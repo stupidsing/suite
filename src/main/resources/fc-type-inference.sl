@@ -36,7 +36,7 @@ infer-type-rule .p .env .tr/.tr .type
 #
 infer-type-rule (USING .lib .do) .env .tr/.tr .type
 	:- !, load-precompiled-library .lib
-	, infer-type-rule-using-libs (.lib,) .do .env .tr1/() .type
+	, infer-type-rule-using-lib .lib .do .env .tr1/() .type
 	, resolve-types .tr1
 #
 infer-type-rule (
