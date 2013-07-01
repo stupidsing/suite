@@ -24,31 +24,40 @@ import org.util.FunUtil.Sink;
 public class InstructionTranslatorTest {
 
 	@Test
+	public void testCut() throws IOException {
+		assertLogical("(.v = 1; .v = 2), !, .v = 1", Atom.TRUE);
+		assertLogical("(.v = 1; .v = 2), !, .v = 2", Atom.FALSE);
+	}
+
+	@Test
 	public void testEagerFunctional() throws IOException {
-		Node goal = Suite.parse("1 + 2 * 3");
-		Node code = compileFunctional(goal, false);
-		assertEquals(Int.create(7), execute(code));
+		assertFunctional("1 + 2 * 3", false, Int.create(7));
 	}
 
 	@Test
 	public void testLazyFunctional() throws IOException {
-		Node goal = Suite.parse("1 + 2 * 3");
-		Node code = compileFunctional(goal, true);
-		assertEquals(Int.create(7), execute(code));
+		assertFunctional("1 + 2 * 3", true, Int.create(7));
 	}
 
 	@Test
 	public void testStandardLibrary() throws IOException {
-		Node goal = Suite.parse("using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}");
-		Node code = compileFunctional(goal, false);
-		assertEquals(Int.create(9), execute(code));
+		String program = "using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}";
+		assertFunctional(program, false, Int.create(9));
 	}
 
 	@Test
 	public void testLogical() throws IOException {
-		Node goal = Suite.parse(".a = 1, (.a = 2; .a = 1), .b = .a, dump .b");
-		Node code = compileLogical(goal);
-		assertEquals(Atom.TRUE, execute(code));
+		assertLogical(".a = 1, (.a = 2; .a = 1), .b = .a, dump .b", Atom.TRUE);
+	}
+
+	private void assertFunctional(String program, boolean isLazy, Int result) throws IOException {
+		Node code = compileFunctional(Suite.parse(program), isLazy);
+		assertEquals(result, execute(code));
+	}
+
+	private void assertLogical(String goal, Atom result) throws IOException {
+		Node code = compileLogical(Suite.parse(goal));
+		assertEquals(result, execute(code));
 	}
 
 	private Node compileFunctional(Node program, boolean isLazy) {

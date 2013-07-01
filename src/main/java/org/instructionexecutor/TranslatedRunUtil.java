@@ -32,14 +32,6 @@ public class TranslatedRunUtil {
 		public Node result;
 	}
 
-	public static class CutPoint {
-		public Frame frame;
-		public int ip;
-		public int bsp;
-		public int csp;
-		public int jp;
-	}
-
 	public static Fun<Node, Node> getUnwrapper(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
 		return new Fun<Node, Node>() {
 			public Node apply(Node node) {

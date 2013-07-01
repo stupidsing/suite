@@ -29,11 +29,11 @@ compile-logic .call .code
 lc-compile-call .call .pls .c0/.cx/.label
 	:- .c0 = (.label LABEL
 		, _ ENTER
-		, _ CUT-BEGIN .cutPoint
+		, _ BACKUP-CSP .cspReg
 		, _ TOP .provenReg -2
 		, .c1
 	)
-	, replace .call/.call1 CUT/($$CUT .cutPoint .failLabel)
+	, replace .call/.call1 CUT/($$CUT .cspReg .failLabel)
 	, lc-compile .call1 (AND ($$BYTECODE _ CALL-CLOSURE .provenReg) FAIL) .pls/() .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel LABEL, _ RETURN, .c3)
 	, .c4 = (_ LEAVE, .cx)
@@ -156,27 +156,23 @@ lc-compile (OR .a .b) .rem .pls/.vs .c0/.cx/.d0/.dx
 	, lc-compile .rem YES .pls/.vs .d3/.d4/.d5/.dx
 	, .d4 = (_ RETURN, .d5)
 #
-lc-compile ($$CUT .cutPoint .failLabel) .rem .env .c0/.cx/.d0/.dx
+lc-compile ($$CUT .cspReg .failLabel) .rem .env .c0/.cx/.d0/.dx
 	:- !, lc-compile .rem YES .env .c0/.c1/.d0/.dx
-	, .c1 = (_ CUT-FAIL .cutPoint .failLabel, .cx)
+	, .c1 = (_ RESTORE-CSP .cspReg, _ JUMP .failLabel, .cx)
 #
 lc-compile (ONCE .do) .rem .env .c0/.cx/.d0/.dx
 	:- !
-	, .c0 = (_ CUT-BEGIN .cutPoint, .c1)
-	, lc-compile .do (
-		AND ($$CUT .cutPoint .failLabel) .rem
-	) .env .c1/.c2/.d0/.dx
+	, .c0 = (_ BACKUP-CSP .cspReg, .c1)
+	, lc-compile .do (AND ($$CUT .cspReg .failLabel) .rem) .env .c1/.c2/.d0/.dx
 	, .c2 = (.failLabel LABEL, .cx)
 #
 lc-compile (NOT .do) .rem .env .c0/.cx/.d0/.dx
 	:- !
 	, .c0 = (_ BIND-MARK .pit
-		, _ CUT-BEGIN .cutPoint
+		, _ BACKUP-CSP .cspReg
 		, .c1
 	)
-	, lc-compile .do (
-		AND ($$CUT .cutPoint .failLabel) FAIL
-	) .env .c1/.c2/.d0/.d1
+	, lc-compile .do (AND ($$CUT .cspReg .failLabel) FAIL) .env .c1/.c2/.d0/.d1
 	, lc-compile .rem YES .env .c2/.c3/.d1/.dx
 	, .c3 = (.failLabel LABEL
 		, _ BIND-UNDO .pit

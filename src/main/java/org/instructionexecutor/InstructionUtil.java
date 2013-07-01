@@ -57,6 +57,7 @@ public class InstructionUtil {
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNGLOBAL__("ASSIGN-GLOBAL"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
+		BACKUPCSP_____("BACKUP-CSP"), //
 		BIND__________("BIND"), //
 		BINDMARK______("BIND-MARK"), //
 		BINDUNDO______("BIND-UNDO"), //
@@ -65,8 +66,6 @@ public class InstructionUtil {
 		CALLREG_______("CALL-REG"), //
 		COMPARE_______("COMPARE"), //
 		CONS__________("CONS"), //
-		CUTBEGIN______("CUT-BEGIN"), //
-		CUTFAIL_______("CUT-FAIL"), //
 		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
 		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //
@@ -112,6 +111,7 @@ public class InstructionUtil {
 		PUSH__________("PUSH"), //
 		PUSHCONST_____("PUSH-CONSTANT"), //
 		REMARK________("REMARK"), //
+		RESTORECSP____("RESTORE-CSP"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
@@ -149,16 +149,6 @@ public class InstructionUtil {
 
 		public String toString() {
 			return insn.name + " " + op0 + ", " + op1 + ", " + op2;
-		}
-	}
-
-	protected static class CutPoint {
-		protected Activation activation;
-		protected int journalPointer;
-
-		protected CutPoint(Activation activation, int journalPointer) {
-			this.activation = activation;
-			this.journalPointer = journalPointer;
 		}
 	}
 

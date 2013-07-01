@@ -78,9 +78,9 @@ public class InstructionAnalyzer {
 				registerTypes[op0] = Closure.class;
 				break;
 			case ASSIGNINT_____:
+			case BACKUPCSP_____:
 			case BINDMARK______:
 			case COMPARE_______:
-			case CUTBEGIN______:
 			case EVALADD_______:
 			case EVALDIV_______:
 			case EVALMOD_______:

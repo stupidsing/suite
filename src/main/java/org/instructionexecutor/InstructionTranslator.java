@@ -112,11 +112,9 @@ public class InstructionTranslator {
 				+ "int cs[] = new int[stackSize]; \n" //
 				+ "Node ds[] = new Node[stackSize]; \n" //
 				+ "Object fs[] = new Object[stackSize]; \n" //
-				+ "CutPoint cutPoints[] = new CutPoint[stackSize]; \n" //
 				+ "int csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, n0, n1, var; \n" //
-				+ "CutPoint cutPoint; \n" //
 				+ "\n" //
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
@@ -178,6 +176,9 @@ public class InstructionTranslator {
 			case ASSIGNINT_____:
 				app("#{reg} = #{num}", op0, op1);
 				break;
+			case BACKUPCSP_____:
+				app("#{reg} = csp", op0);
+				break;
 			case BIND__________:
 				app("if (!Binder.bind(#{reg-node}, #{reg-node}, journal)) #{jump}", op0, op1, op2);
 				break;
@@ -213,25 +214,6 @@ public class InstructionTranslator {
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = Tree.create(TermOp.AND___, n0, n1)", op0);
-				break;
-			case CUTBEGIN______:
-				app("#{reg} = cpsp", op0);
-				app("cutPoint = new CutPoint()");
-				app("cutPoint.frame = #{fr}");
-				app("cutPoint.ip = ip");
-				app("cutPoint.csp = csp");
-				app("cutPoint.jp = journal.getPointInTime()");
-				app("cutPoints[cpsp++] = cutPoint");
-				break;
-			case CUTFAIL_______:
-				app("int cpsp1 = #{reg}", op0);
-				app("cutPoint = cutPoints[cpsp1]");
-				app("while (cpsp > cpsp1) cutPoints[--cpsp] = null");
-				app("${fr} = (${fr-class}) cutPoint.frame");
-				app("csp = cutPoint.csp");
-				app("journal.undoBinds(cutPoint.jp)");
-				app("ip = #{reg}", op1);
-				app("#{jump}", op1);
 				break;
 			case DECOMPOSETREE0:
 				app("node = #{reg-node}.finalNode()", op0);
@@ -370,6 +352,9 @@ public class InstructionTranslator {
 				app("ds[dsp++] = Int.create(#{num})", op0);
 				break;
 			case REMARK________:
+				break;
+			case RESTORECSP____:
+				app("csp = #{reg-num}", op0);
 				break;
 			case RETURN________:
 				popCaller();

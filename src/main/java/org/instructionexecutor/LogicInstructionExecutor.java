@@ -1,7 +1,6 @@
 package org.instructionexecutor;
 
 import org.instructionexecutor.InstructionUtil.Activation;
-import org.instructionexecutor.InstructionUtil.CutPoint;
 import org.instructionexecutor.InstructionUtil.Frame;
 import org.instructionexecutor.InstructionUtil.Instruction;
 import org.suite.Journal;
@@ -20,11 +19,6 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private Journal journal;
 	private SystemPredicates systemPredicates;
 
-	private static final int stackSize = 4096;
-
-	private CutPoint cutPoints[] = new CutPoint[stackSize];
-	private int csp = 0;
-
 	public LogicInstructionExecutor(Node node, Prover prover) {
 		super(node);
 		this.prover = prover;
@@ -40,6 +34,9 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		Instruction insn1;
 
 		switch (insn.insn) {
+		case BACKUPCSP_____:
+			regs[insn.op0] = exec.current.previous;
+			break;
 		case BIND__________:
 			if (!Binder.bind(regs[insn.op0], regs[insn.op1], journal))
 				current.ip = insn.op2; // Fail
@@ -49,20 +46,6 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			break;
 		case BINDUNDO______:
 			journal.undoBinds(i(regs[insn.op0]));
-			break;
-		case CUTBEGIN______:
-			regs[insn.op0] = number(csp);
-			cutPoints[csp++] = new CutPoint(current, journal.getPointInTime());
-			break;
-		case CUTFAIL_______:
-			int csp1 = i(regs[insn.op0]);
-			CutPoint cutPoint = cutPoints[csp1];
-			while (csp > csp1)
-				cutPoints[--csp] = null;
-
-			exec.current = cutPoint.activation;
-			exec.current.ip = insn.op1;
-			journal.undoBinds(cutPoint.journalPointer);
 			break;
 		case DECOMPOSETREE0:
 			Node node = regs[insn.op0].finalNode();
@@ -93,6 +76,9 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		case PROVESYS______:
 			if (!systemPredicates.call(regs[insn.op0]))
 				current.ip = insn.op1;
+			break;
+		case RESTORECSP____:
+			exec.current.previous = (Activation) regs[insn.op0];
 			break;
 		default:
 			throw new RuntimeException("Unknown instruction " + insn);
