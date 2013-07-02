@@ -37,7 +37,7 @@ infer-type-rule .p .env .tr/.tr .type
 infer-type-rule (USING .lib .do) .env .tr/.tr .type
 	:- !, load-precompiled-library .lib
 	, infer-type-rule-using-lib .lib .do .env .tr1/() .type
-	, resolve-types .tr1
+	, resolve-type-rules .tr1
 #
 infer-type-rule (
 	OPTION (DEF-TYPE .definedType .classes .typeVars) .do
@@ -64,7 +64,7 @@ infer-type-rule (
 	, .insideEnv = .ue1/.ve/.te
 	, .outsideEnv = .ue/.ve1/.te
 	, once (infer-type-rule .value .insideEnv .vtr/() .varType
-		, resolve-types .vtr
+		, resolve-type-rules .vtr
 		; fc-error "at variable" .name
 	)
 	, infer-type-rule .do .outsideEnv .tr .type
@@ -122,10 +122,10 @@ infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te .tr .type
 	, fc-dict-get .ue .var/.varType
 	, infer-type-rule .do .ue/.ve/.te .tr .type
 #
-infer-type-rule (OPTION RESOLVE-TYPES .do) .env .tr/.tr .type
+infer-type-rule (OPTION resolve-type-ruleS .do) .env .tr/.tr .type
 	:- !
 	, infer-type-rule .do .env .tr1/() .type
-	, resolve-types .tr1
+	, resolve-type-rules .tr1
 #
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !
@@ -158,29 +158,29 @@ infer-compatible-types .a .b .ue/.ve/.te .tr0/.trx .type
 	)
 #
 
-resolve-types .tr :- resolve-types0 .tr, ! #
-resolve-types _ :- fc-error "Unable to resolve types" #
+resolve-type-rules .tr :- resolve-type-rules0 .tr, ! #
+resolve-type-rules _ :- fc-error "Unable to resolve types" #
 
-resolve-types0 .tr
-	:- once (sort-resolve-types .tr .ps .nps)
-	, (.ps = (), !, resolve-types1 .tr
-		; resolve-types1 .ps, resolve-types0 .nps
+resolve-type-rules0 .tr
+	:- once (sort-resolve-type-rules .tr .ps .nps)
+	, (.ps = (), !, resolve-type-rules1 .tr
+		; resolve-type-rules1 .ps, resolve-type-rules0 .nps
 	)
 #
 
 -- Sort the resolve type rules by easiness
-sort-resolve-types () () () :- ! #
-sort-resolve-types (.tr, .trs) (.tr, .ps) .nps
-	:- easy-resolve-type .tr
-	, !, sort-resolve-types .trs .ps .nps
+sort-resolve-type-rules () () () :- ! #
+sort-resolve-type-rules (.tr, .trs) (.tr, .ps) .nps
+	:- easy-resolve-type-rule .tr
+	, !, sort-resolve-type-rules .trs .ps .nps
 #
-sort-resolve-types (.tr, .trs) .ps (.tr, .nps)
-	:- sort-resolve-types .trs .ps .nps
+sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
+	:- sort-resolve-type-rules .trs .ps .nps
 #
 
-easy-resolve-type (SUB-SUPER-TYPES _ .t _) :- bound .t #
-easy-resolve-type (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
-easy-resolve-type (TYPE-IN-TYPES _) #
+easy-resolve-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
+easy-resolve-type-rule (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
+easy-resolve-type-rule (TYPE-IN-TYPES _) #
 
 -- When resolving types:
 -- - Try bind equivalent sub-type to super-type relation;
@@ -191,20 +191,20 @@ easy-resolve-type (TYPE-IN-TYPES _) #
 --   - Try delay resolve if both types are unbinded;
 -- - Try bind generic-type and specialized-type relation;
 -- - Try bind type choice relation.
-resolve-types1 () :- ! #
-resolve-types1 (DUMP .d, .tr1)
-	:- !, dump .d, nl, resolve-types1 .tr1
+resolve-type-rules1 () :- ! #
+resolve-type-rules1 (DUMP .d, .tr1)
+	:- !, dump .d, nl, resolve-type-rules1 .tr1
 #
-resolve-types1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
-	:- !, resolve-sub-super-types .te .t0 .t1, resolve-types1 .tr1
+resolve-type-rules1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
+	:- !, resolve-sub-super-types .te .t0 .t1, resolve-type-rules1 .tr1
 #
-resolve-types1 (CLONE-TO-FROM-TYPES .t0 .t1, .tr1)
-	:- !, clone .t1 .t0, resolve-types1 .tr1
+resolve-type-rules1 (CLONE-TO-FROM-TYPES .t0 .t1, .tr1)
+	:- !, clone .t1 .t0, resolve-type-rules1 .tr1
 #
-resolve-types1 (TYPE-IN-TYPES .t .ts, .tr1)
-	:- !, member .ts .t, resolve-types1 .tr1
+resolve-type-rules1 (TYPE-IN-TYPES .t .ts, .tr1)
+	:- !, member .ts .t, resolve-type-rules1 .tr1
 #
-resolve-types1 _ :- !, fc-error "Not enough type information" #
+resolve-type-rules1 _ :- !, fc-error "Not enough type information" #
 
 resolve-sub-super-types _ .t .t #
 resolve-sub-super-types .te .t0 .tx

@@ -84,7 +84,7 @@ public class EvaluateUtil {
 				+ "source .in" //
 				+ ", fc-parse .in .p" //
 				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
-				+ ", resolve-types .tr" //
+				+ ", resolve-type-rules .tr" //
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 

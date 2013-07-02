@@ -20,7 +20,7 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	, !, fc-parse .do1 .parsed
 	, !, write 'Inferencing types', nl
 	, !, infer-type-rule .parsed ()/()/() .tr/() NUMBER
-	, !, resolve-types .tr
+	, !, resolve-type-rules .tr
 	, !, .prog0 = (
 		infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
 			:- fc-dict-merge-replace .ue .ues .ue1
