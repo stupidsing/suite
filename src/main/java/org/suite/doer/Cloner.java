@@ -22,12 +22,12 @@ public class Cloner {
 		return tree.getRight();
 	}
 
-	public void cloneRight(Tree tree) {
+	private void cloneRight(Tree tree) {
 		while (true) {
 			Node right = tree.getRight().finalNode();
 
 			if (right instanceof Reference)
-				right = getNewRef((Reference) right);
+				right = getNewReference((Reference) right);
 
 			if (right instanceof Tree) {
 				Tree rightTree = (Tree) right;
@@ -46,7 +46,7 @@ public class Cloner {
 		node = node.finalNode();
 
 		if (node instanceof Reference)
-			node = getNewRef((Reference) node);
+			node = getNewReference((Reference) node);
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
@@ -59,7 +59,7 @@ public class Cloner {
 		return node;
 	}
 
-	private Node getNewRef(Reference oldRef) {
+	private Node getNewReference(Reference oldRef) {
 		Node node = references.get(oldRef);
 
 		if (node == null) {
