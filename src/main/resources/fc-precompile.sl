@@ -41,15 +41,15 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	, member .fcs .mode/.fc
 	, .fc = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
 	, (.mode = EAGER -- Eager code is always compiled into .c0/.cx section
-		, optimize-segment .c0/.cs0 .co0/.cso0
-		, optimize-segment .csx/.cx .csox/.cox
-		, optimize-segment .d0/.ds0 .do0/.dso0
-		, optimize-segment .dsx/.dx .dsox/.dox
+		, cg-optimize-segment .c0/.cs0 .co0/.cso0
+		, cg-optimize-segment .csx/.cx .csox/.cox
+		, cg-optimize-segment .d0/.ds0 .do0/.dso0
+		, cg-optimize-segment .dsx/.dx .dsox/.dox
 	; .mode = LAZY -- Lazy code is always compiled into .d0/.dx section
-		, optimize-segment .c0/.cx .co0/.cox
-		, optimize-segment .d0/.cs0 .do0/.cso0
-		, optimize-segment .csx/.ds0 .csox/.dso0
-		, optimize-segment .dsx/.dx .dsox/.dox
+		, cg-optimize-segment .c0/.cx .co0/.cox
+		, cg-optimize-segment .d0/.cs0 .do0/.cso0
+		, cg-optimize-segment .csx/.ds0 .csox/.dso0
+		, cg-optimize-segment .dsx/.dx .dsox/.dox
 	)
 	, .prog = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg

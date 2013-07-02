@@ -27,7 +27,8 @@ compile-function .mode .do .c0
 	, !, resolve-types .tr
 	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
-	, !, generate-code .c0
+	, !, cg-
+	generate-code .c0
 #
 
 fc-compile .mode (USING .lib .do) .fve .cdr

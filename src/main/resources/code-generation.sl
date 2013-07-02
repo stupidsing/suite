@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- code generator and peep hole optimizer
 
-optimize-segment .c0/() .co0/.cox
+cg-optimize-segment .c0/() .co0/.cox
 	:- cg-optimize .c0 .co
 	, append .co .cox .co0
 #
@@ -31,7 +31,7 @@ cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 cg-is-returning (_ LABEL, .insts) :- !, cg-is-returning .insts #
 cg-is-returning (_ RETURN, _) #
 
-generate-code .code :- cg-assign-line-numbers 0 .code, ! #
+cg-generate-code .code :- cg-assign-line-numbers 0 .code, ! #
 
 cg-assign-line-numbers _ () #
 cg-assign-line-numbers .n (.n _, .insts)
