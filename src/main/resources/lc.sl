@@ -23,7 +23,8 @@ compile-logic .call .code
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
 	, !, lc-compile-call .call2 () .c1/()/.callLabel
-	, !, generate-code .c0 .code
+	, !, optimize .c0 .code
+	, !, generate-code .code
 #
 
 lc-compile-call .call .pls .c0/.cx/.label

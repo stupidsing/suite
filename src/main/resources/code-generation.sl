@@ -1,12 +1,6 @@
 -------------------------------------------------------------------------------
 -- code generator and peep hole optimizer
 
-generate-code .code0 .codex
-	:- optimize .code0 .codex
-	, !, assign-line-numbers 0 .codex
-	, !
-#
-
 -- optimize tail calls
 optimize .li0 .ri0
 	:- push-pop-pairs .li0/.li1 .li2/.li3 .ri1/.ri2 .ri0/.ri1
@@ -32,7 +26,9 @@ push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 is-returning (_ LABEL, .insts) :- !, is-returning .insts #
 is-returning (_ RETURN, _) #
 
+generate-code .code :- assign-line-numbers 0 .code, ! #
+
 assign-line-numbers _ () #
-assign-line-numbers .n (.n _, .remains)
-	:- let .n1 (.n + 1), assign-line-numbers .n1 .remains
+assign-line-numbers .n (.n _, .insts)
+	:- let .n1 (.n + 1), assign-line-numbers .n1 .insts
 #

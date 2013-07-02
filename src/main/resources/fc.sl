@@ -20,14 +20,14 @@ compile-function-without-precompile .mode () .do .c
 	:- compile-function .mode .do .c
 #
 
-compile-function .mode .do .code
+compile-function .mode .do .c0
 	:- .c0 = (_ ENTER, .c1)
 	, !, fc-parse .do .parsed
 	, !, infer-type-rule .parsed ()/()/() .tr/() _
 	, !, resolve-types .tr
 	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
-	, !, generate-code .c0 .code
+	, !, generate-code .c0
 #
 
 fc-compile .mode (USING .lib .do) .fve .cdr
