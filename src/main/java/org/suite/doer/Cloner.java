@@ -59,13 +59,13 @@ public class Cloner {
 		return node;
 	}
 
-	private Node getNewReference(Reference oldRef) {
-		Node node = references.get(oldRef);
+	private Node getNewReference(Reference oldReference) {
+		Node node = references.get(oldReference);
 
 		if (node == null) {
-			Reference newRef = new Reference();
-			node = newRef;
-			references.put(oldRef, newRef);
+			Reference newReference = new Reference();
+			node = newReference;
+			references.put(oldReference, newReference);
 		}
 
 		return node;

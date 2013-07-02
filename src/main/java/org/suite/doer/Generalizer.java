@@ -25,29 +25,37 @@ public class Generalizer {
 	private Node cut;
 
 	public Node generalize(Node node) {
-		node = node.finalNode();
+		Tree tree = Tree.create(null, null, node);
+		generalizeRight(tree);
+		return tree.getRight();
+	}
 
-		if (isWildcard(node))
-			node = new Reference();
-		else if (isVariable(node)) {
-			Reference reference = variables.get(node);
+	private void generalizeRight(Tree tree) {
+		while (true) {
+			Node right = tree.getRight().finalNode();
 
-			if (reference == null)
-				variables.put(node, reference = new Reference());
+			if (isWildcard(right))
+				right = new Reference();
+			else if (isVariable(right)) {
+				Reference reference = variables.get(right);
 
-			node = reference;
-		} else if (isCut(node) && cut != null) // Substitutes cut symbol to cut
-			node = cut;
-		else if (node instanceof Tree) {
-			Tree t = (Tree) node;
-			Node l = t.getLeft(), r = t.getRight();
-			Node gl = generalize(l), gr = generalize(r);
+				if (reference == null)
+					variables.put(right, reference = new Reference());
 
-			if (gl != l || gr != r)
-				node = Tree.create(t.getOperator(), gl, gr);
+				right = reference;
+			} else if (isCut(right) && cut != null) // Changes cut symbol to cut
+				right = cut;
+			else if (right instanceof Tree) {
+				Tree rightTree = (Tree) right;
+				rightTree = Tree.create(rightTree.getOperator(), generalize(rightTree.getLeft()), rightTree.getRight());
+				Tree.forceSetRight(tree, rightTree);
+				tree = rightTree;
+				continue;
+			}
+
+			Tree.forceSetRight(tree, right);
+			break;
 		}
-
-		return node;
 	}
 
 	public String dumpVariables() {
