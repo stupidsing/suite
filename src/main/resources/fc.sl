@@ -6,8 +6,8 @@
 -- .mode can be EAGER or LAZY
 
 () :- import.file 'code-generation.sl'
+	, import.file 'fc-infer-type.sl'
 	, import.file 'fc-parse.sl'
-	, import.file 'fc-type-inference.sl'
 	, import.file 'rbt.sl'
 #
 

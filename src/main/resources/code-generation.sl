@@ -3,7 +3,7 @@
 
 generate-code .code0 .codex
 	:- optimize .code0 .codex
-	, !, assign-line-number 0 .codex
+	, !, assign-line-numbers 0 .codex
 	, !
 #
 
@@ -32,7 +32,7 @@ push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 is-returning (_ LABEL, .insts) :- !, is-returning .insts #
 is-returning (_ RETURN, _) #
 
-assign-line-number _ () #
-assign-line-number .n (.n _, .remains)
-	:- let .n1 (.n + 1), assign-line-number .n1 .remains
+assign-line-numbers _ () #
+assign-line-numbers .n (.n _, .remains)
+	:- let .n1 (.n + 1), assign-line-numbers .n1 .remains
 #
