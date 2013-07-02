@@ -28,23 +28,23 @@ public class Generalizer {
 		node = node.finalNode();
 
 		if (isWildcard(node))
-			return new Reference();
+			node = new Reference();
 		else if (isVariable(node)) {
-			Reference reference;
-			if (!variables.containsKey(node)) {
-				reference = new Reference();
-				variables.put(node, reference);
-			} else
-				reference = variables.get(node);
-			return reference;
+			Reference reference = variables.get(node);
+
+			if (reference == null)
+				variables.put(node, reference = new Reference());
+
+			node = reference;
 		} else if (isCut(node) && cut != null) // Substitutes cut symbol to cut
-			return cut;
+			node = cut;
 		else if (node instanceof Tree) {
 			Tree t = (Tree) node;
 			Node l = t.getLeft(), r = t.getRight();
 			Node gl = generalize(l), gr = generalize(r);
+
 			if (gl != l || gr != r)
-				return Tree.create(t.getOperator(), gl, gr);
+				node = Tree.create(t.getOperator(), gl, gr);
 		}
 
 		return node;
