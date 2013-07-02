@@ -5,6 +5,11 @@ import org.instructionexecutor.InstructionTranslatorTest;
 import org.instructionexecutor.LogicCompilerLevel2Test;
 import org.junit.Test;
 import org.suite.Suite;
+import org.suite.doer.ProverConfig;
+import org.suite.kb.RuleSet;
+import org.suite.node.Node;
+import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
+import org.suite.search.ProverBuilder.Builder;
 
 public class FailedTests {
 
@@ -29,6 +34,19 @@ public class FailedTests {
 	@Test
 	public void test3() throws IOException {
 		new LogicCompilerLevel2Test().test1();
+	}
+
+	// Simplified case
+	@Test
+	public void test4() throws IOException {
+		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" + "replace :- ! #\n"));
+
+		ProverConfig proverConfig = new ProverConfig();
+		proverConfig.setTrace(true);
+
+		Node goal = Suite.parse("(), sink ()");
+		Builder builder = new CompiledProverBuilderLevel2(proverConfig, false);
+		Suite.evaluateLogic(builder, rs, goal);
 	}
 
 }
