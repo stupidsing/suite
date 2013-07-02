@@ -26,7 +26,7 @@ public class LogUtil {
 		PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 
 		ConsoleAppender console = new ConsoleAppender(layout);
-		console.setWriter(new PrintWriter(System.out));
+		console.setWriter(new PrintWriter(System.err));
 		console.activateOptions();
 
 		DailyRollingFileAppender file = new DailyRollingFileAppender();
