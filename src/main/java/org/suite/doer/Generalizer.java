@@ -73,6 +73,7 @@ public class Generalizer {
 			sb.append(" = ");
 			sb.append(Formatter.dump(entry.getValue()));
 		}
+
 		return sb.toString();
 	}
 
