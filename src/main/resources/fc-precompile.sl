@@ -35,27 +35,31 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	, file.write .filename .rpn
 #
 
-fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
-
 fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
 	, fc-compile .mode .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
 	, member .fcs .mode/.fc
-	, .fc = .frame1/.wes .cs0/.csx/.ds0/.dsx/.regs
+	, .fc = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
+	, .c0/.cs0 = .co0/.cso0
+	, .csx/.cx = .csox/.cox
+	, .d0/.ds0 = .do0/.dso0
+	, .dsx/.dx = .dsox/.dox
 	, .prog = (
-		fc-compile-using-lib .mode .lib .do .frame0/.we .c0/.cx/.d0/.dx/.reg
-			:- fc-dict-merge-replace .we .wes .we1
-			, fc-compile .mode .do .frame1/.we1 .cs0/.csx/.ds0/.dsx/.regs
+		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
+			:- fc-dict-merge-replace .ve .ves .ve1
+			, fc-compile .mode .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
 	)
 #
+
+fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
 -- Eager evaluation
-fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc EAGER/.fveCdr #
+fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fve .cdr :- , member .pcc EAGER/(.fve .cdr), ! #
 
 -- Lazy evaluation
-fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fveCdr :- !, member .pcc LAZY/.fveCdr #
+fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fve .cdr :- member .pcc LAZY/(.fve .cdr), ! #
 
 () :- import.file 'fc.sl'
 	, import.file 'fc-eager-evaluation.sl'
