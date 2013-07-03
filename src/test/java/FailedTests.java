@@ -39,13 +39,10 @@ public class FailedTests {
 	// Simplified case
 	@Test
 	public void test4() throws IOException {
-		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" + "replace :- ! #\n"));
+		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("predicate :- ! #\n"));
 
-		ProverConfig proverConfig = new ProverConfig();
-		proverConfig.setTrace(true);
-
-		Node goal = Suite.parse("(), sink ()");
-		Builder builder = new CompiledProverBuilderLevel2(proverConfig, false);
+		Node goal = Suite.parse("sink ()");
+		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
 		Suite.evaluateLogic(builder, rs, goal);
 	}
 

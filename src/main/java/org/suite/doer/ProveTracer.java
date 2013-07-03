@@ -56,51 +56,52 @@ public class ProveTracer {
 	public Node expandWithTrace(Node query, Prover prover, Fun<Node, Node> expand) {
 		Node query1 = new Cloner().clone(query);
 
-		final Record record0 = currentRecord;
-		final int depth0 = currentDepth;
-		final Record record = new Record(record0, query1, currentDepth + 1);
+		if (currentDepth < 64) {
+			final Record record0 = currentRecord;
+			final int depth0 = currentDepth;
+			final Record record = new Record(record0, query1, currentDepth + 1);
 
-		if (record.depth >= 64)
-			throw new RuntimeException("Maximum depth reached during trace");
+			final Station enter = new Station() {
+				public boolean run() {
+					currentRecord = record;
+					currentDepth = record.depth;
+					record.start = records.size();
+					records.add(record);
+					return true;
+				}
+			};
 
-		final Station enter = new Station() {
-			public boolean run() {
-				currentRecord = record;
-				currentDepth = record.depth;
-				record.start = records.size();
-				records.add(record);
-				return true;
-			}
-		};
+			final Station leaveOk = new Station() {
+				public boolean run() {
+					currentRecord = record0;
+					currentDepth = depth0;
+					record.nOkays++;
+					return true;
+				}
+			};
 
-		final Station leaveOk = new Station() {
-			public boolean run() {
-				currentRecord = record0;
-				currentDepth = depth0;
-				record.nOkays++;
-				return true;
-			}
-		};
+			final Station leaveFail = new Station() {
+				public boolean run() {
+					currentRecord = record0;
+					currentDepth = depth0;
+					record.end = records.size();
+					return false;
+				}
+			};
 
-		final Station leaveFail = new Station() {
-			public boolean run() {
-				currentRecord = record0;
-				currentDepth = depth0;
-				record.end = records.size();
-				return false;
-			}
-		};
+			Node alt = prover.getAlternative();
+			Node rem = prover.getRemaining();
 
-		Node alt = prover.getAlternative();
-		Node rem = prover.getRemaining();
+			alt = Tree.create(TermOp.OR____, leaveFail, alt);
+			rem = Tree.create(TermOp.AND___, leaveOk, rem);
+			query = expand.apply(query);
+			query = Tree.create(TermOp.AND___, enter, query);
 
-		alt = Tree.create(TermOp.OR____, leaveFail, alt);
-		rem = Tree.create(TermOp.AND___, leaveOk, rem);
-		query = expand.apply(query);
-		query = Tree.create(TermOp.AND___, enter, query);
+			prover.setAlternative(alt);
+			prover.setRemaining(rem);
+		} else
+			query = expand.apply(query);
 
-		prover.setAlternative(alt);
-		prover.setRemaining(rem);
 		return query;
 	}
 
