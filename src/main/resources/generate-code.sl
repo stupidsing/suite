@@ -1,25 +1,37 @@
 -------------------------------------------------------------------------------
 -- code generator and peep hole optimizer
 
-cg-optimize-segment .c0/() .co0/.cox
-	:- cg-optimize .c0 .co
+cg-optimize-segment .c/() .co0/.cox
+	:- cg-optimize .c .co
 	, append .co .cox .co0
 #
 
--- optimize tail calls
-cg-optimize .li0 .ri0
+cg-optimize .c0 .cx
+	:- cg-optimize-dup-labels .c0 .c1
+	, cg-optimize-tail-calls .c1 .cx
+#
+
+cg-optimize-dup-labels (.label LABEL, .label LABEL, .insts0) .insts1
+	:- !, cg-optimize-dup-labels (.label LABEL, .insts0) .insts1
+#
+cg-optimize-dup-labels (.inst, .insts0) (.inst, .insts1)
+	:- !, cg-optimize-dup-labels .insts0 .insts1
+#
+cg-optimize-dup-labels () () #
+
+cg-optimize-tail-calls .li0 .ri0
 	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri1/.ri2 .ri0/.ri1
 	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
 	, .li1 = (_ .call .target, .li2)
 	, cg-is-returning .li3
 	, .ri2 = (_ .jump .target, .ri3)
 	, !
-	, cg-optimize .li3 .ri3
+	, cg-optimize-tail-calls .li3 .ri3
 #
-cg-optimize (.inst, .insts0) (.inst, .insts1)
-	:- !, cg-optimize .insts0 .insts1
+cg-optimize-tail-calls (.inst, .insts0) (.inst, .insts1)
+	:- !, cg-optimize-tail-calls .insts0 .insts1
 #
-cg-optimize () () #
+cg-optimize-tail-calls () () #
 
 cg-push-pop-pairs
 (_ PUSH .reg, .i0)/.ix (_ POP-ANY, .j0)/.jx
