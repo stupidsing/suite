@@ -23,10 +23,11 @@ cg-optimize-tail-calls .li0 .ri0
 	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri1/.ri2 .ri0/.ri1
 	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
 	, .li1 = (_ .call .target, .li2)
-	, cg-is-returning .li3
-	, .ri2 = (_ .jump .target, .ri3)
+	, cg-is-restore-csp .li3/.li4 .ri2/.ri3
+	, cg-is-returning .li4
+	, .ri3 = (_ .jump .target, .ri4)
 	, !
-	, cg-optimize-tail-calls .li3 .ri3
+	, cg-optimize-tail-calls .li4 .ri4
 #
 cg-optimize-tail-calls (.inst, .insts0) (.inst, .insts1)
 	:- !, cg-optimize-tail-calls .insts0 .insts1
@@ -39,6 +40,9 @@ cg-push-pop-pairs
 	:- !, cg-push-pop-pairs .i0/.ix .j0/.jx .k0/.kx .l0/.lx
 #
 cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
+
+cg-is-restore-csp (_ RESTORE-CSP .cspReg, .i)/.i (_ RESTORE-CSP .cspReg, .j)/.j :- ! #
+cg-is-restore-csp .i/.i .j/.j #
 
 cg-is-returning (_ LABEL, .insts) :- !, cg-is-returning .insts #
 cg-is-returning (_ RETURN, _) #
