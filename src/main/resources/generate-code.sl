@@ -44,8 +44,11 @@ cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 cg-is-restore-csp (_ RESTORE-CSP .cspReg, .i)/.i (_ RESTORE-CSP .cspReg, .j)/.j :- ! #
 cg-is-restore-csp .i/.i .j/.j #
 
-cg-is-returning (_ LABEL, .insts) :- !, cg-is-returning .insts #
+cg-is-returning (.inst, .insts) :- !, cg-is-skip .inst, cg-is-returning .insts #
 cg-is-returning (_ RETURN, _) #
+
+cg-is-skip (_ LABEL) #
+cg-is-skip (_ REMARK _) #
 
 cg-generate-code .code :- cg-assign-line-numbers 0 .code, ! #
 
