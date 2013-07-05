@@ -12,8 +12,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import sun.reflect.Reflection;
-
 public class Util {
 
 	public static String currentPackage() {
@@ -23,9 +21,12 @@ public class Util {
 	}
 
 	public static Class<?> currentClass() {
-		return Reflection.getCallerClass(2);
-		// try { return Class.forName(getStackTrace(3).getClassName()); } catch
-		// (ClassNotFoundException ex) { ex.printStackTrace(); return null; }
+		try {
+			return Class.forName(getStackTrace(3).getClassName());
+		} catch (ClassNotFoundException ex) {
+			ex.printStackTrace();
+			return null;
+		}
 	}
 
 	public static String currentMethod() {

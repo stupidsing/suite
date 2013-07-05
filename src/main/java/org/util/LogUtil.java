@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
@@ -12,11 +13,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import sun.reflect.Reflection;
-
 public class LogUtil {
 
 	private static final int maxStackTraceLength = 99;
+	private static final Log suiteLog = LogFactory.getLog("suite");
 
 	static {
 		initLog4j(Level.INFO);
@@ -43,29 +43,17 @@ public class LogUtil {
 	}
 
 	public static void info(String message) {
-		info(Reflection.getCallerClass(2), message);
-	}
-
-	private static void info(Class<?> clazz, String message) {
-		LogFactory.getLog(clazz).info(message);
+		suiteLog.info(message);
 	}
 
 	public static void error(Throwable th) {
-		error(Reflection.getCallerClass(2), th);
-	}
-
-	private static void error(Class<?> clazz, Throwable th) {
 		boolean isTrimmed = trimStackTrace(th);
-		LogFactory.getLog(clazz).error(isTrimmed ? "(Trimmed)" : "", th);
+		suiteLog.error(isTrimmed ? "(Trimmed)" : "", th);
 	}
 
 	public static void fatal(Throwable th) {
-		fatal(Reflection.getCallerClass(2), th);
-	}
-
-	private static void fatal(Class<?> clazz, Throwable th) {
 		boolean isTrimmed = trimStackTrace(th);
-		LogFactory.getLog(clazz).fatal(isTrimmed ? "(Trimmed)" : "", th);
+		suiteLog.fatal(isTrimmed ? "(Trimmed)" : "", th);
 	}
 
 	private static boolean trimStackTrace(Throwable th) {
@@ -105,15 +93,16 @@ public class LogUtil {
 					for (int i = 0; i < ps.length; i++)
 						pd += DumpUtil.dump("p" + i, ps[i]);
 
-				info(clazz, prefix + pd);
+				LogFactory.getLog(clazz).info(prefix + pd);
 
 				try {
 					Object value = method.invoke(object, ps);
 					String rd = DumpUtil.dump("return", value);
-					info(clazz, prefix + rd);
+					LogFactory.getLog(clazz).info(prefix + rd);
 					return value;
 				} catch (Exception ex) {
-					error(clazz, ex);
+					boolean isTrimmed = trimStackTrace(ex);
+					LogFactory.getLog(clazz).error(isTrimmed ? "(Trimmed)" : "", ex);
 					throw ex;
 				}
 			}
