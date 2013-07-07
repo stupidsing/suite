@@ -2,6 +2,7 @@ import java.io.IOException;
 
 import org.instructionexecutor.FunRbTreeTest;
 import org.instructionexecutor.InstructionTranslatorTest;
+import org.instructionexecutor.LogicCompilerLevel2Test;
 import org.junit.Test;
 import org.suite.Suite;
 import org.suite.doer.ProverConfig;
@@ -22,6 +23,11 @@ public class FailedTests {
 	@Test
 	public void test1() throws IOException {
 		Suite.evaluateFun("if a then b", false);
+	}
+
+	@Test
+	public void test2() throws IOException {
+		new LogicCompilerLevel2Test().test1();
 	}
 
 }

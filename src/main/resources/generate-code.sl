@@ -19,34 +19,11 @@ cg-optimize-dup-labels (.inst, .insts0) (.inst, .insts1)
 #
 cg-optimize-dup-labels () () #
 
-cg-optimize-jumps0 (.inst .inst, .insts) :- !, cg-optimize-jumps0 .insts #
-cg-optimize-jumps0 () #
-
-cg-optimize-jumps1 (.inst0, .insts0) (.inst1, .insts1)
-	:- !
-	, once (cg-jump-target-instruction .inst0 .inst1; .inst0 = .inst1)
-	, cg-optimize-jumps1 .insts0 .insts1
-#
-cg-optimize-jumps1 () () #
-
-cg-jump-target-instruction (_ JUMP _ JUMP .target) .inst1
-	:- !, cg-jump-target-instruction (_ JUMP .target) .inst1
-#
-cg-jump-target-instruction (_ JUMP .redirInst) .redirInst
-	:- cg-redirect-instruction .redirInst, !
-#
-
-cg-redirect-instruction (_ CALL _) #
-cg-redirect-instruction (_ CALL-CLOSURE _) #
-cg-redirect-instruction (_ CALL-REG _) #
-cg-redirect-instruction (_ RETURN) #
-cg-redirect-instruction (_ RETURN-VALUE _) #
-
 cg-optimize-tail-calls .li0 .ri0
 	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri1/.ri2 .ri0/.ri1
 	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
 	, .li1 = (_ .call .target, .li2)
-	, cg-is-restore-csp .li3/.li4 .ri2/.ri3
+	, cg-is-restore-csp-dsp .li3/.li4 .ri2/.ri3
 	, cg-is-returning .li4
 	, .ri3 = (_ .jump .target, .ri4)
 	, !
@@ -64,8 +41,12 @@ cg-push-pop-pairs
 #
 cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 
-cg-is-restore-csp (_ RESTORE-CSP .cspReg, .i)/.i (_ RESTORE-CSP .cspReg, .j)/.j :- ! #
-cg-is-restore-csp .i/.i .j/.j #
+cg-is-restore-csp-dsp
+(_ RESTORE-DSP .dspReg, _ RESTORE-CSP .cspReg, .i)/.i
+(_ RESTORE-DSP .dspReg, _ RESTORE-CSP .cspReg, .j)/.j
+	:- !
+#
+cg-is-restore-csp-dsp .i/.i .j/.j #
 
 cg-is-returning (.inst, .insts) :- cg-is-skip .inst, !, cg-is-returning .insts #
 cg-is-returning (_ RETURN, _) #

@@ -166,8 +166,8 @@ lc-compile CUT .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 lc-compile (CUT .cspReg .dspReg .failLabel) .rem .env .c0/.cx/.d0/.dx
 	:- !
 	, lc-compile .rem YES .env .c0/.c1/.d0/.dx
-	, .c1 = (_ RESTORE-CSP .cspReg
-		, _ RESTORE-DSP .dspReg
+	, .c1 = (_ RESTORE-DSP .dspReg
+		, _ RESTORE-CSP .cspReg
 		, _ JUMP .failLabel
 		, .cx
 	)
