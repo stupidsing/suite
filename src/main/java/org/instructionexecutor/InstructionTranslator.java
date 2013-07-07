@@ -65,6 +65,7 @@ public class InstructionTranslator {
 		List<Instruction> instructions = extractor.extractInstructions(node);
 
 		int exitPoint = instructions.size();
+		instructions.add(new Instruction(Insn.LABEL_________, 0, 0, 0));
 		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
 		analyzer.analyze(instructions);
@@ -153,11 +154,18 @@ public class InstructionTranslator {
 		Node constant;
 		String s;
 		int ip = 0;
+		boolean isGenerateLabel = true;
 
 		while (ip < instructions.size()) {
 			Instruction insn = instructions.get(currentIp = ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			app("case #{num}: // #{str}", currentIp, insn);
+
+			app("// (#{num}) #{str}", currentIp, insn);
+
+			if (isGenerateLabel || insn.insn == Insn.LABEL_________) {
+				app("case #{num}:", currentIp);
+				isGenerateLabel = false;
+			}
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
@@ -176,8 +184,9 @@ public class InstructionTranslator {
 			case ASSIGNINT_____:
 				app("#{reg} = #{num}", op0, op1);
 				break;
-			case BACKUPCSP_____:
+			case BACKUPCSPDSP__:
 				app("#{reg} = csp", op0);
+				app("#{reg} = dsp", op1);
 				break;
 			case BIND__________:
 				app("if (!Binder.bind(#{reg-node}, #{reg-node}, journal)) #{jump}", op0, op1, op2);
@@ -191,6 +200,7 @@ public class InstructionTranslator {
 			case CALL__________:
 				pushCallee(ip);
 				app("#{jump}", op0);
+				isGenerateLabel = true;
 				break;
 			case CALLCLOSURE___:
 				app("if (#{reg-clos}.result == null) {", op0);
@@ -199,11 +209,13 @@ public class InstructionTranslator {
 				app("ip = #{reg-clos}.ip", op0);
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
+				isGenerateLabel = true;
 				break;
 			case CALLREG_______:
 				pushCallee(ip);
 				app("ip = #{reg-num}", op0);
 				app("continue");
+				isGenerateLabel = true;
 				break;
 			case COMPARE_______:
 				app("n0 = (Node) ds[--dsp]");
@@ -303,9 +315,11 @@ public class InstructionTranslator {
 				break;
 			case JUMP__________:
 				app("#{jump}", op0);
+				isGenerateLabel = true;
 				break;
 			case JUMPREG_______:
 				app("{ ip = #{reg-num}; continue; }", op0);
+				isGenerateLabel = true;
 				break;
 			case LABEL_________:
 				break;
@@ -353,8 +367,9 @@ public class InstructionTranslator {
 				break;
 			case REMARK________:
 				break;
-			case RESTORECSP____:
+			case RESTORECSPDSP_:
 				app("csp = #{reg-num}", op0);
+				app("dsp = #{reg-num}", op1);
 				break;
 			case RETURN________:
 				popCaller();

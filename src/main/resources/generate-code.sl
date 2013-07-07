@@ -8,6 +8,7 @@ cg-optimize-segment .c/() .co0/.cox
 
 cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
+	, once (not is.compiled; pretty.print cg-optimize-tail-calls .c1 .cx, nl)
 	, cg-optimize-tail-calls .c1 .cx
 #
 
@@ -18,6 +19,29 @@ cg-optimize-dup-labels (.inst, .insts0) (.inst, .insts1)
 	:- !, cg-optimize-dup-labels .insts0 .insts1
 #
 cg-optimize-dup-labels () () #
+
+cg-optimize-jumps0 (.inst .inst, .insts) :- !, cg-optimize-jumps0 .insts #
+cg-optimize-jumps0 () #
+
+cg-optimize-jumps1 (.inst0, .insts0) (.inst1, .insts1)
+	:- !
+	, once (cg-jump-target-instruction .inst0 .inst1; .inst0 = .inst1)
+	, cg-optimize-jumps1 .insts0 .insts1
+#
+cg-optimize-jumps1 () () #
+
+cg-jump-target-instruction (_ JUMP _ JUMP .target) .inst1
+	:- !, cg-jump-target-instruction (_ JUMP .target) .inst1
+#
+cg-jump-target-instruction (_ JUMP .redirInst) .redirInst
+	:- cg-redirect-instruction .redirInst, !
+#
+
+cg-redirect-instruction (_ CALL _) #
+cg-redirect-instruction (_ CALL-CLOSURE _) #
+cg-redirect-instruction (_ CALL-REG _) #
+cg-redirect-instruction (_ RETURN) #
+cg-redirect-instruction (_ RETURN-VALUE _) #
 
 cg-optimize-tail-calls .li0 .ri0
 	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri1/.ri2 .ri0/.ri1

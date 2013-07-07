@@ -78,7 +78,6 @@ public class InstructionAnalyzer {
 				registerTypes[op0] = Closure.class;
 				break;
 			case ASSIGNINT_____:
-			case BACKUPCSP_____:
 			case BINDMARK______:
 			case COMPARE_______:
 			case EVALADD_______:
@@ -117,6 +116,10 @@ public class InstructionAnalyzer {
 				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
 				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
 					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
+				break;
+			case BACKUPCSPDSP__:
+				registerTypes[op0] = Node.class;
+				registerTypes[op1] = int.class;
 				break;
 			case DECOMPOSETREE1:
 				registerTypes[op1] = registerTypes[op2] = Node.class;
