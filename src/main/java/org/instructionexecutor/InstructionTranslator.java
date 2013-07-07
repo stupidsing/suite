@@ -380,10 +380,12 @@ public class InstructionTranslator {
 				break;
 			case RETURN________:
 				popCaller();
+				isGenerateLabel = true;
 				break;
 			case RETURNVALUE___:
 				app("returnValue = #{reg-node}", op0);
 				popCaller();
+				isGenerateLabel = true;
 				break;
 			case SETRESULT_____:
 				restoreFrame();
