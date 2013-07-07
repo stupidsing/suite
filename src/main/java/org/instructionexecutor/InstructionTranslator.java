@@ -200,12 +200,14 @@ public class InstructionTranslator {
 				app("journal.undoBinds(#{reg-num})", op0);
 				break;
 			case CALL__________:
+				backupFrame();
 				pushCallee(ip);
 				app("#{jump}", op0);
 				isGenerateLabel = true;
 				break;
 			case CALLCLOSURE___:
 				app("if (#{reg-clos}.result == null) {", op0);
+				backupFrame();
 				pushCallee(ip);
 				app("frame = #{reg-clos}.frame", op0);
 				app("ip = #{reg-clos}.ip", op0);
@@ -214,6 +216,7 @@ public class InstructionTranslator {
 				isGenerateLabel = true;
 				break;
 			case CALLREG_______:
+				backupFrame();
 				pushCallee(ip);
 				app("ip = #{reg-num}", op0);
 				app("continue");
@@ -383,9 +386,11 @@ public class InstructionTranslator {
 				popCaller();
 				break;
 			case SETRESULT_____:
+				restoreFrame();
 				app("#{reg} = returnValue", op0);
 				break;
 			case SETCLOSURERES_:
+				restoreFrame();
 				app("#{reg} = returnValue", op0);
 				app("#{reg-clos}.result = #{reg}", op1, op0);
 				break;
@@ -426,15 +431,21 @@ public class InstructionTranslator {
 
 	private void pushCallee(int ip) {
 		app("cs[csp] = " + ip);
-		app("fs[csp] = #{fr}");
 		app("csp++");
 	}
 
 	private void popCaller() {
 		app("--csp");
 		app("ip = cs[csp]");
-		app("#{prev-fr} = (#{prev-fr-class}) fs[csp]");
 		app("continue");
+	}
+
+	private void backupFrame() {
+		app("fs[csp] = #{fr}");
+	}
+
+	private void restoreFrame() {
+		app("#{fr} = (#{fr-class}) fs[csp]");
 	}
 
 	private String defineConstant(Node node) {
