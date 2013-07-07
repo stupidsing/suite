@@ -34,9 +34,11 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		Instruction insn1;
 
 		switch (insn.insn) {
-		case BACKUPCSPDSP__:
+		case BACKUPCSP_____:
 			regs[insn.op0] = exec.current.previous;
-			regs[insn.op1] = number(exec.sp);
+			break;
+		case BACKUPDSP_____:
+			regs[insn.op0] = number(exec.sp);
 			break;
 		case BIND__________:
 			if (!Binder.bind(regs[insn.op0], regs[insn.op1], journal))
@@ -78,9 +80,11 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			if (!systemPredicates.call(regs[insn.op0]))
 				current.ip = insn.op1;
 			break;
-		case RESTORECSPDSP_:
+		case RESTORECSP____:
 			exec.current.previous = (Activation) regs[insn.op0];
-			exec.sp = i(regs[insn.op1]);
+			break;
+		case RESTOREDSP____:
+			exec.sp = i(regs[insn.op0]);
 			break;
 		default:
 			throw new RuntimeException("Unknown instruction " + insn);

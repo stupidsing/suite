@@ -30,7 +30,8 @@ compile-logic .call .code
 lc-compile-call .call .pls .c0/.cx/.label
 	:- .c0 = (.label LABEL
 		, _ ENTER
-		, _ BACKUP-CSP-DSP .cspReg .dspReg
+		, _ BACKUP-CSP .cspReg
+		, _ BACKUP-DSP .dspReg
 		, _ TOP .provenReg -2
 		, .c1
 	)
@@ -165,18 +166,26 @@ lc-compile CUT .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 lc-compile (CUT .cspReg .dspReg .failLabel) .rem .env .c0/.cx/.d0/.dx
 	:- !
 	, lc-compile .rem YES .env .c0/.c1/.d0/.dx
-	, .c1 = (_ RESTORE-CSP-DSP .cspReg .dspReg, _ JUMP .failLabel, .cx)
+	, .c1 = (_ RESTORE-CSP .cspReg
+		, _ RESTORE-DSP .dspReg
+		, _ JUMP .failLabel
+		, .cx
+	)
 #
 lc-compile (ONCE .do) .rem .env .c0/.cx/.d0/.dx
 	:- !
-	, .c0 = (_ BACKUP-CSP-DSP .cspReg .dspReg, .c1)
+	, .c0 = (_ BACKUP-CSP .cspReg
+		, _ BACKUP-DSP .dspReg
+		, .c1
+	)
 	, lc-compile .do (AND (CUT .cspReg .dspReg .failLabel) .rem) .env .c1/.c2/.d0/.dx
 	, .c2 = (.failLabel LABEL, .cx)
 #
 lc-compile (NOT .do) .rem .env .c0/.cx/.d0/.dx
 	:- !
 	, .c0 = (_ BIND-MARK .pit
-		, _ BACKUP-CSP-DSP .cspReg .dspReg
+		, _ BACKUP-CSP .cspReg
+		, _ BACKUP-DSP .dspReg
 		, .c1
 	)
 	, lc-compile .do (AND (CUT .cspReg .dspReg .failLabel) FAIL) .env .c1/.c2/.d0/.d1

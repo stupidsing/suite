@@ -184,9 +184,11 @@ public class InstructionTranslator {
 			case ASSIGNINT_____:
 				app("#{reg} = #{num}", op0, op1);
 				break;
-			case BACKUPCSPDSP__:
+			case BACKUPCSP_____:
 				app("#{reg} = csp", op0);
-				app("#{reg} = dsp", op1);
+				break;
+			case BACKUPDSP_____:
+				app("#{reg} = dsp", op0);
 				break;
 			case BIND__________:
 				app("if (!Binder.bind(#{reg-node}, #{reg-node}, journal)) #{jump}", op0, op1, op2);
@@ -367,9 +369,11 @@ public class InstructionTranslator {
 				break;
 			case REMARK________:
 				break;
-			case RESTORECSPDSP_:
+			case RESTORECSP____:
 				app("csp = #{reg-num}", op0);
-				app("dsp = #{reg-num}", op1);
+				break;
+			case RESTOREDSP____:
+				app("dsp = #{reg-num}", op0);
 				break;
 			case RETURN________:
 				popCaller();

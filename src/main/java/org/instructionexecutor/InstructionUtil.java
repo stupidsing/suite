@@ -57,7 +57,8 @@ public class InstructionUtil {
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNGLOBAL__("ASSIGN-GLOBAL"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
-		BACKUPCSPDSP__("BACKUP-CSP-DSP"), //
+		BACKUPCSP_____("BACKUP-CSP"), //
+		BACKUPDSP_____("BACKUP-DSP"), //
 		BIND__________("BIND"), //
 		BINDMARK______("BIND-MARK"), //
 		BINDUNDO______("BIND-UNDO"), //
@@ -111,7 +112,8 @@ public class InstructionUtil {
 		PUSH__________("PUSH"), //
 		PUSHCONST_____("PUSH-CONSTANT"), //
 		REMARK________("REMARK"), //
-		RESTORECSPDSP_("RESTORE-CSP-DSP"), //
+		RESTORECSP____("RESTORE-CSP"), //
+		RESTOREDSP____("RESTORE-DSP"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //

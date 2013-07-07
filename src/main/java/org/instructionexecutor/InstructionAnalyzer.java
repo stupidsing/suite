@@ -117,9 +117,11 @@ public class InstructionAnalyzer {
 				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
 					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
 				break;
-			case BACKUPCSPDSP__:
+			case BACKUPCSP_____:
 				registerTypes[op0] = int.class;
-				registerTypes[op1] = int.class;
+				break;
+			case BACKUPDSP_____:
+				registerTypes[op0] = int.class;
 				break;
 			case DECOMPOSETREE1:
 				registerTypes[op1] = registerTypes[op2] = Node.class;
