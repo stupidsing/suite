@@ -8,7 +8,6 @@ cg-optimize-segment .c/() .co0/.cox
 
 cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
-	, once (not is.compiled; pretty.print cg-optimize-tail-calls .c1 .cx, nl)
 	, cg-optimize-tail-calls .c1 .cx
 #
 
