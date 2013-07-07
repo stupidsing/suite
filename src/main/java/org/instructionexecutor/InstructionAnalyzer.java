@@ -118,7 +118,7 @@ public class InstructionAnalyzer {
 					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
 				break;
 			case BACKUPCSPDSP__:
-				registerTypes[op0] = Node.class;
+				registerTypes[op0] = int.class;
 				registerTypes[op1] = int.class;
 				break;
 			case DECOMPOSETREE1:
