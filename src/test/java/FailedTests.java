@@ -24,23 +24,4 @@ public class FailedTests {
 		Suite.evaluateFun("if a then b", false);
 	}
 
-	// Some kind of frame casting error
-	@Test
-	public void test2() throws IOException {
-		new InstructionTranslatorTest().testStandardLibrary();
-	}
-
-	// Require tail recursion to work
-	@Test
-	public void test3() {
-		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
-				+ "member (.e, _) .e #" //
-				+ "member (_, .tail) .e :- member .tail .e #" //
-		));
-
-		Node goal = Suite.parse("(), sink ()");
-		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
-		Suite.evaluateLogic(builder, rs, goal);
-	}
-
 }
