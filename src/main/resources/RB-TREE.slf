@@ -1,3 +1,4 @@
+using STANDARD >>
 define type (RED %) of (color,) >>
 define type (BLACK %) of (color,) >>
 define type (EMPTY %) of (rb-tree/:t,) for any (:t,) >>
