@@ -45,18 +45,15 @@ cg-substitute-redirections (.insn, .cs) (_, .ccs) (.insn, .ds)
 #
 cg-substitute-redirections () () () #
 
-cg-redirect-instruction (CALL _) #
-cg-redirect-instruction (CALL-CLOSURE _) #
-cg-redirect-instruction (CALL-REG _) #
 cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
 cg-optimize-tail-calls .li0 .ri0
-	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri1/.ri2 .ri0/.ri1
+	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri2/.ri3 .ri1/.ri2
 	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
 	, .li1 = (_ .call .target, .li2)
-	, cg-is-restore-csp-dsp .li3/.li4 .ri2/.ri3
+	, cg-is-restore-csp-dsp .li3/.li4 .ri0/.ri1
 	, cg-is-returning .li4
 	, .ri3 = (_ .jump .target, .ri4)
 	, !

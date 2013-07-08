@@ -1,7 +1,6 @@
 import java.io.IOException;
 
 import org.instructionexecutor.FunRbTreeTest;
-import org.instructionexecutor.InstructionTranslatorTest;
 import org.instructionexecutor.LogicCompilerLevel2Test;
 import org.junit.Test;
 import org.suite.Suite;
