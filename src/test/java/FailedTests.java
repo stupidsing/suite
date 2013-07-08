@@ -29,16 +29,4 @@ public class FailedTests {
 		new LogicCompilerLevel2Test().test1();
 	}
 
-	@Test
-	public void test3() {
-		RuleSet rs = Suite.nodeToRuleSet(Suite.parse(""));
-
-		ProverConfig proverConfig = new ProverConfig();
-		// proverConfig.setTrace(true);
-
-		Node goal = Suite.parse("(), sink ()");
-		Builder builder = new CompiledProverBuilderLevel2(proverConfig, true);
-		Suite.evaluateLogic(builder, rs, goal);
-	}
-
 }
