@@ -24,9 +24,4 @@ public class FailedTests {
 		Suite.evaluateFun("if a then b", false);
 	}
 
-	@Test
-	public void test2() throws IOException {
-		new LogicCompilerLevel2Test().test1();
-	}
-
 }
