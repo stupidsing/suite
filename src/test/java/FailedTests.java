@@ -1,14 +1,8 @@
 import java.io.IOException;
 
 import org.instructionexecutor.FunRbTreeTest;
-import org.instructionexecutor.LogicCompilerLevel2Test;
 import org.junit.Test;
 import org.suite.Suite;
-import org.suite.doer.ProverConfig;
-import org.suite.kb.RuleSet;
-import org.suite.node.Node;
-import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
-import org.suite.search.ProverBuilder.Builder;
 
 public class FailedTests {
 
