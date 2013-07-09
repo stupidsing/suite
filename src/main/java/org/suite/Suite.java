@@ -156,12 +156,12 @@ public class Suite {
 		return evaluateUtil.proveLogic(builder, rs, Suite.parse(lps));
 	}
 
-	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
-		return evaluateLogic(builder, rs, Suite.parse(lps));
+	public static boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
+		return evaluateUtil.proveLogic(builder, rs, lp);
 	}
 
-	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
-		return evaluateUtil.evaluateLogic(builder, rs, lp);
+	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
+		return evaluateUtil.evaluateLogic(builder, rs, Suite.parse(lps));
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {

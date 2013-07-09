@@ -27,6 +27,8 @@ import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
+import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
+import org.suite.search.InterpretedProverBuilder;
 import org.suite.search.ProverBuilder.Builder;
 import org.util.IoUtil;
 import org.util.LogUtil;
@@ -58,6 +60,7 @@ public class Main implements AutoCloseable {
 		PRETTYPRINT("\\p"), //
 		QUERY("?"), //
 		QUERYCOMPILED("\\l"), //
+		QUERYCOMPILED2("\\ll"), //
 		QUERYELABORATE("/"), //
 		;
 
@@ -174,7 +177,7 @@ public class Main implements AutoCloseable {
 
 				InputType type = null;
 
-				commandFound: for (int i = Math.min(2, input.length()); i >= 0; i--) {
+				commandFound: for (int i = Math.min(3, input.length()); i >= 0; i--) {
 					String starts = input.substring(0, i);
 
 					for (InputType inputType : InputType.values())
@@ -219,6 +222,8 @@ public class Main implements AutoCloseable {
 					System.out.println(new PrettyPrinter().prettyPrint(node));
 					break;
 				case QUERY:
+					query(new InterpretedProverBuilder(proverConfig), ruleSet, node);
+					break;
 				case QUERYELABORATE:
 					final Generalizer generalizer = new Generalizer();
 					node = generalizer.generalize(node);
@@ -247,14 +252,18 @@ public class Main implements AutoCloseable {
 					}
 					break;
 				case QUERYCOMPILED:
-					node = Suite.substitute(".0, sink ()", node);
-					Builder builder = new CompiledProverBuilderLevel1(proverConfig, fcc.isDumpCode());
-					List<Node> nodes = Suite.evaluateLogic(builder, ruleSet, node);
-					System.out.println(yesNo(!nodes.isEmpty()));
+					query(new CompiledProverBuilderLevel1(proverConfig, fcc.isDumpCode()), ruleSet, node);
+					break;
+				case QUERYCOMPILED2:
+					query(new CompiledProverBuilderLevel2(proverConfig, fcc.isDumpCode()), ruleSet, node);
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
 			}
+	}
+
+	private void query(Builder builder, RuleSet ruleSet, Node node) {
+		System.out.println(yesNo(Suite.proveLogic(builder, ruleSet, node)));
 	}
 
 	private boolean runLogical(List<String> files) throws IOException {
