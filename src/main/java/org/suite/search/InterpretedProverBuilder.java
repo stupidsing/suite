@@ -25,13 +25,13 @@ public class InterpretedProverBuilder implements Builder {
 	@Override
 	public Finder build(RuleSet ruleSet, Node goal) {
 		final Node goal1 = new Generalizer().generalize(goal);
-		final ProverConfig config = new ProverConfig(ruleSet, proverConfig);
+		final ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
 		return new Finder() {
 			public void find(Source<Node> source, Sink<Node> sink) {
-				config.setSource(source);
-				config.setSink(sink);
-				new Prover(config).prove(goal1);
+				proverConfig1.setSource(source);
+				proverConfig1.setSink(sink);
+				new Prover(proverConfig1).prove(goal1);
 			}
 		};
 	}

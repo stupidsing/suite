@@ -26,8 +26,7 @@ import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
-import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
-import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
+import org.suite.search.CompiledProverBuilder;
 import org.suite.search.InterpretedProverBuilder;
 import org.suite.search.ProverBuilder.Builder;
 import org.util.IoUtil;
@@ -252,10 +251,10 @@ public class Main implements AutoCloseable {
 					}
 					break;
 				case QUERYCOMPILED:
-					query(new CompiledProverBuilderLevel1(proverConfig, fcc.isDumpCode()), ruleSet, node);
+					query(CompiledProverBuilder.level1(proverConfig, fcc.isDumpCode()), ruleSet, node);
 					break;
 				case QUERYCOMPILED2:
-					query(new CompiledProverBuilderLevel2(proverConfig, fcc.isDumpCode()), ruleSet, node);
+					query(CompiledProverBuilder.level2(proverConfig, fcc.isDumpCode()), ruleSet, node);
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(ex);

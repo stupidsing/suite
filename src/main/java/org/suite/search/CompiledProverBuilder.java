@@ -20,40 +20,37 @@ public class CompiledProverBuilder implements Builder {
 	private Finder compiler;
 
 	/**
-	 * Interpretes the logic compiler to compile the given code, then execute.
+	 * Creates a builder that interpretes the logic compiler to compile the
+	 * given code, then execute.
 	 */
-	public static class CompiledProverBuilderLevel1 extends CompiledProverBuilder {
-		public CompiledProverBuilderLevel1(ProverConfig proverConfig, boolean isDumpCode) {
-			super(new InterpretedProverBuilder(proverConfig), proverConfig, isDumpCode);
-		}
+	public static CompiledProverBuilder level1(ProverConfig proverConfig, boolean isDumpCode) {
+		return new CompiledProverBuilder(new InterpretedProverBuilder(proverConfig), proverConfig, isDumpCode);
 	}
 
 	/**
-	 * Compiles the logic compiler, execute it to compile the given code, then
-	 * execute.
+	 * Creates a builder that compiles the logic compiler, execute it to compile
+	 * the given code, then execute.
 	 */
-	public static class CompiledProverBuilderLevel2 extends CompiledProverBuilder {
-		public CompiledProverBuilderLevel2(ProverConfig proverConfig, boolean isDumpCode) {
-			super(new CompiledProverBuilderLevel1(proverConfig, false), proverConfig, isDumpCode);
-		}
+	public static CompiledProverBuilder level2(ProverConfig proverConfig, boolean isDumpCode) {
+		return new CompiledProverBuilder(level1(proverConfig, false), proverConfig, isDumpCode);
 	}
 
-	public CompiledProverBuilder(Builder builder, ProverConfig proverConfig, boolean isDumpCode) {
+	private CompiledProverBuilder(Builder builder, ProverConfig proverConfig, boolean isDumpCode) {
 		this.compiler = createCompiler(builder, isDumpCode);
 		this.proverConfig = proverConfig;
 	}
 
 	@Override
-	public Finder build(final RuleSet ruleSet, Node goal) {
+	public Finder build(RuleSet ruleSet, Node goal) {
 		Node goal1 = Suite.substitute(".0 >> .1", Suite.ruleSetToNode(ruleSet), goal);
 		final Node code = compile(goal1);
-		final ProverConfig proverConfig = new ProverConfig(ruleSet, this.proverConfig);
+		final ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
 		return new Finder() {
 			public void find(Source<Node> source, Sink<Node> sink) {
-				proverConfig.setSource(source);
-				proverConfig.setSink(sink);
-				Prover prover = new Prover(proverConfig);
+				proverConfig1.setSource(source);
+				proverConfig1.setSink(sink);
+				Prover prover = new Prover(proverConfig1);
 
 				try (InstructionExecutor executor = new LogicInstructionExecutor(code, prover)) {
 					executor.execute();

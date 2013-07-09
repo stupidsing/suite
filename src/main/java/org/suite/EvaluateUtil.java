@@ -14,7 +14,7 @@ import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSetUtil;
 import org.suite.node.Atom;
 import org.suite.node.Node;
-import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel1;
+import org.suite.search.CompiledProverBuilder;
 import org.suite.search.InterpretedProverBuilder;
 import org.suite.search.ProverBuilder.Builder;
 import org.suite.search.ProverBuilder.Finder;
@@ -26,7 +26,7 @@ import org.util.Util;
 public class EvaluateUtil {
 
 	public boolean proveLogic(Node lp) {
-		Builder builder = new CompiledProverBuilderLevel1(new ProverConfig(), false);
+		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
 		return proveLogic(builder, RuleSetUtil.create(), lp);
 	}
 

@@ -7,7 +7,7 @@ import org.suite.Suite;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
 import org.suite.kb.RuleSetUtil;
-import org.suite.search.CompiledProverBuilder.CompiledProverBuilderLevel2;
+import org.suite.search.CompiledProverBuilder;
 import org.suite.search.ProverBuilder.Builder;
 
 public class LogicCompilerLevel2Test {
@@ -23,7 +23,7 @@ public class LogicCompilerLevel2Test {
 				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #" //
 		));
 
-		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
+		Builder builder = CompiledProverBuilder.level2(new ProverConfig(), false);
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 
@@ -33,7 +33,7 @@ public class LogicCompilerLevel2Test {
 		RuleSet rs = RuleSetUtil.create();
 		Suite.importResource(rs, "auto.sl");
 
-		Builder builder = new CompiledProverBuilderLevel2(new ProverConfig(), false);
+		Builder builder = CompiledProverBuilder.level2(new ProverConfig(), false);
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 
