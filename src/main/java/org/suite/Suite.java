@@ -157,7 +157,11 @@ public class Suite {
 	}
 
 	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
-		return evaluateUtil.evaluateLogic(builder, rs, Suite.parse(lps));
+		return evaluateLogic(builder, rs, Suite.parse(lps));
+	}
+
+	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
+		return evaluateUtil.evaluateLogic(builder, rs, lp);
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {

@@ -3,10 +3,10 @@ package org.suite;
 import java.util.Arrays;
 import java.util.List;
 
-import org.suite.doer.Prover;
 import org.suite.doer.ProverConfig;
 import org.suite.kb.RuleSet;
-import org.suite.node.Node;
+import org.suite.search.InterpretedProverBuilder;
+import org.suite.search.ProverBuilder.Builder;
 
 public class CompileUtil {
 
@@ -35,9 +35,8 @@ public class CompileUtil {
 		System.out.println("Pre-compiling " + libraryName + "... ");
 
 		RuleSet rs = createRuleSet(Arrays.asList("auto.sl", "fc-precompile.sl"));
-		Prover prover = new Prover(new ProverConfig(rs, pc));
-		Node node = Suite.parse("fc-setup-precompile " + libraryName);
-		boolean result = prover.prove(node);
+		Builder builder = new InterpretedProverBuilder(pc);
+		boolean result = Suite.proveLogic(builder, rs, "fc-setup-precompile " + libraryName);
 
 		if (result)
 			System.out.println("Pre-compilation success\n");

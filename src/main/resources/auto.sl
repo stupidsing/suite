@@ -26,6 +26,8 @@ sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #
 sum .a .b .c :- bound .a, bound .c, let .b (.a - .c) #
 sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 
+trace .pred :- asserta (.pred .ps :- dump .pred .ps, nl, fail) #
+
 whatever .g :- once (.g; yes) #
 
 yes #

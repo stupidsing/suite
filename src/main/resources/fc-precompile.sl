@@ -38,7 +38,7 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
 	, fc-compile .mode .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
-	, member .fcs .mode/.fc
+	, once member .fcs .mode/.fc
 	, .fc = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
 	, (.mode = EAGER -- Eager code is always compiled into .c0/.cx section
 		, cg-optimize-segment .c0/.cs0 .co0/.cso0
