@@ -42,7 +42,7 @@ public class CompileUtil {
 		if (result)
 			System.out.println("Pre-compilation success\n");
 		else
-			System.out.println("Pre-compilation failed");
+			System.out.println("Pre-compilation failed\n");
 
 		return result;
 	}

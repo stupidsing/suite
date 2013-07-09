@@ -27,15 +27,14 @@ public class EvaluateUtil {
 
 	public boolean proveLogic(Node lp) {
 		Builder builder = new CompiledProverBuilderLevel1(new ProverConfig(), false);
-		return prove(builder, RuleSetUtil.create(), lp);
+		return proveLogic(builder, RuleSetUtil.create(), lp);
 	}
 
 	public boolean proveLogic(RuleSet rs, Node lp) {
-		Builder builder = new InterpretedProverBuilder();
-		return prove(builder, rs, lp);
+		return proveLogic(new InterpretedProverBuilder(), rs, lp);
 	}
 
-	private boolean prove(Builder builder, RuleSet rs, Node lp) {
+	public boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
 		Node goal = Suite.substitute(".0, sink ()", lp);
 		return !evaluateLogic(builder, rs, goal).isEmpty();
 	}

@@ -137,27 +137,27 @@ public class Suite {
 		return compileUtil.funCompilerRuleSet(isLazy);
 	}
 
-	public static boolean precompile(String libraryName, ProverConfig proverConfig) {
-		return compileUtil.precompile(libraryName, proverConfig);
+	public static boolean precompile(String libraryName, ProverConfig pc) {
+		return compileUtil.precompile(libraryName, pc);
 	}
 
 	// --------------------------------
 	// Evaluation utilities
 
 	public static boolean proveLogic(String lps) {
-		return proveLogic(Suite.parse(lps));
+		return evaluateUtil.proveLogic(Suite.parse(lps));
 	}
 
-	public static boolean proveLogic(RuleSet rs, String gs) {
-		return evaluateUtil.proveLogic(rs, Suite.parse(gs));
+	public static boolean proveLogic(RuleSet rs, String lps) {
+		return evaluateUtil.proveLogic(rs, Suite.parse(lps));
 	}
 
-	public static boolean proveLogic(Node lp) {
-		return evaluateUtil.proveLogic(lp);
+	public static boolean proveLogic(Builder builder, RuleSet rs, String lps) {
+		return evaluateUtil.proveLogic(builder, rs, Suite.parse(lps));
 	}
 
-	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
-		return evaluateUtil.evaluateLogic(builder, rs, lp);
+	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
+		return evaluateUtil.evaluateLogic(builder, rs, Suite.parse(lps));
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {
