@@ -3,11 +3,7 @@ package org.instructionexecutor;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.instructionexecutor.InstructionUtil.Closure;
 import org.instructionexecutor.InstructionUtil.Insn;
@@ -17,22 +13,62 @@ import org.suite.node.Tree;
 
 public class InstructionAnalyzer {
 
-	private List<Integer> frames = new ArrayList<>();
-	private Map<Integer, Integer> parentFramesByFrame = new HashMap<>();
-	private Map<Integer, Class<?>[]> registerTypesByFrame = new HashMap<>();
-	private Set<Integer> requireParentFrame = new HashSet<>();
+	private List<AnalyzedFrame> framesByIp = new ArrayList<>();
+
+	public static class AnalyzedFrame {
+		private int id;
+		private boolean isRequireParent = false;
+		private AnalyzedFrame parent;
+		private List<AnalyzedRegister> registers;
+
+		public AnalyzedFrame(int id) {
+			this.id = id;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public boolean isRequireParent() {
+			return isRequireParent;
+		}
+
+		public AnalyzedFrame getParent() {
+			return parent;
+		}
+
+		public List<AnalyzedRegister> getRegisters() {
+			return registers;
+		}
+	}
+
+	public static class AnalyzedRegister {
+		private Class<?> clazz;
+		private boolean isUsedExternally = false;
+
+		public Class<?> getClazz() {
+			return clazz;
+		}
+
+		public boolean isUsedExternally() {
+			return isUsedExternally;
+		}
+	}
 
 	public void analyze(List<Instruction> instructions) {
 
 		// Identify frame regions
 		analyzeFrames(instructions);
 
+		// Discover frame hierarchy
+		analyzeParentFrames(instructions);
+
 		// Find out register types in each frame
 		analyzeFrameRegisters(instructions);
 	}
 
 	private void analyzeFrames(List<Instruction> instructions) {
-		Deque<Integer> lastEnterIps = new ArrayDeque<>();
+		Deque<AnalyzedFrame> analyzedFrames = new ArrayDeque<>();
 
 		// Find out the parent of closures.
 		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
@@ -40,29 +76,36 @@ public class InstructionAnalyzer {
 			Instruction insn = instructions.get(ip);
 
 			if (insn.insn == Insn.ENTER_________)
-				lastEnterIps.push(ip);
+				analyzedFrames.push(new AnalyzedFrame(ip));
 
-			Integer frame = !lastEnterIps.isEmpty() ? lastEnterIps.peek() : null;
-			frames.add(frame);
+			AnalyzedFrame frame = !analyzedFrames.isEmpty() ? analyzedFrames.peek() : null;
+			framesByIp.add(frame);
+
+			if (insn.insn == Insn.LEAVE_________)
+				analyzedFrames.pop();
+		}
+	}
+
+	private void analyzeParentFrames(List<Instruction> instructions) {
+		for (int ip = 0; ip < instructions.size(); ip++) {
+			Instruction insn = instructions.get(ip);
 
 			// Recognize frames and their parents.
 			// Assumes ENTER instruction should be after LABEL.
 			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				parentFramesByFrame.put(insn.op1 + 1, frame);
-
-			if (insn.insn == Insn.LEAVE_________)
-				lastEnterIps.pop();
+				framesByIp.get(insn.op1 + 1).parent = framesByIp.get(ip);
 		}
 	}
 
 	private void analyzeFrameRegisters(List<Instruction> instructions) {
-		Class<?> registerTypes[] = null;
 		int ip = 0;
 
 		while (ip < instructions.size()) {
 			int currentIp = ip;
 			Instruction insn = instructions.get(ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
+			AnalyzedFrame frame = framesByIp.get(currentIp);
+			List<AnalyzedRegister> registers = frame != null ? frame.registers : null;
 
 			switch (insn.insn) {
 			case EVALEQ________:
@@ -72,12 +115,14 @@ public class InstructionAnalyzer {
 			case EVALLT________:
 			case EVALNE________:
 			case ISTREE________:
-				registerTypes[op0] = boolean.class;
+				registers.get(op0).clazz = boolean.class;
 				break;
 			case ASSIGNCLOSURE_:
-				registerTypes[op0] = Closure.class;
+				registers.get(op0).clazz = Closure.class;
 				break;
 			case ASSIGNINT_____:
+			case BACKUPCSP_____:
+			case BACKUPDSP_____:
 			case BINDMARK______:
 			case COMPARE_______:
 			case EVALADD_______:
@@ -85,7 +130,7 @@ public class InstructionAnalyzer {
 			case EVALMOD_______:
 			case EVALMUL_______:
 			case EVALSUB_______:
-				registerTypes[op0] = int.class;
+				registers.get(op0).clazz = int.class;
 				break;
 			case ASSIGNCONST___:
 			case CONS__________:
@@ -102,52 +147,41 @@ public class InstructionAnalyzer {
 			case SUBST_________:
 			case TAIL__________:
 			case TOP___________:
-				registerTypes[op0] = Node.class;
+				registers.get(op0).clazz = Node.class;
 				break;
 			case FORMTREE1_____:
-				registerTypes[insn.op1] = Tree.class;
+				registers.get(insn.op1).clazz = Tree.class;
 				break;
 			case ASSIGNFRAMEREG:
-				int f = frames.get(currentIp);
+				AnalyzedFrame frame1 = frame;
 				for (int i = op1; i < 0; i++) {
-					requireParentFrame.add(f);
-					f = parentFramesByFrame.get(f);
+					frame1.isRequireParent = true;
+					frame1 = frame1.parent;
 				}
-				Class<?> clazz1 = registerTypesByFrame.get(f)[op2];
-				if (registerTypes[op0] != clazz1) // Merge into Node if clashed
-					registerTypes[op0] = registerTypes[op0] != null ? Node.class : clazz1;
-				break;
-			case BACKUPCSP_____:
-				registerTypes[op0] = int.class;
-				break;
-			case BACKUPDSP_____:
-				registerTypes[op0] = int.class;
+
+				if (frame != frame1)
+					frame1.registers.get(op2).isUsedExternally = true;
+
+				Class<?> clazz1 = frame1.registers.get(op2).clazz;
+				AnalyzedRegister register = registers.get(op0);
+				if (register.clazz != clazz1) // Merge into Node if clashed
+					register.clazz = register.clazz != null ? Node.class : clazz1;
 				break;
 			case DECOMPOSETREE1:
-				registerTypes[op1] = registerTypes[op2] = Node.class;
+				registers.get(op1).clazz = registers.get(op2).clazz = Node.class;
 				break;
 			case ENTER_________:
-				registerTypesByFrame.put(frames.get(currentIp), registerTypes = new Class<?>[op0]);
+				registers = frame.registers = new ArrayList<>();
+				for (int i = 0; i < op0; i++)
+					registers.add(new AnalyzedRegister());
 				break;
 			default:
 			}
 		}
 	}
 
-	public Integer getFrame(Integer ip) {
-		return frames.get(ip);
-	}
-
-	public Integer getParentFrame(Integer frame) {
-		return parentFramesByFrame.get(frame);
-	}
-
-	public Class<?>[] getRegisterTypes(Integer frame) {
-		return registerTypesByFrame.get(frame);
-	}
-
-	public boolean isRequireParent(Integer frame) {
-		return requireParentFrame.contains(frame);
+	public AnalyzedFrame getFrame(Integer ip) {
+		return framesByIp.get(ip);
 	}
 
 }

@@ -16,6 +16,8 @@ import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+import org.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
+import org.instructionexecutor.InstructionAnalyzer.AnalyzedRegister;
 import org.instructionexecutor.InstructionUtil.FunComparer;
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
@@ -250,7 +252,7 @@ public class InstructionTranslator {
 				app("} else #{jump}", op1);
 				break;
 			case ENTER_________:
-				boolean isRequireParent = analyzer.isRequireParent(analyzer.getFrame(currentIp));
+				boolean isRequireParent = analyzer.getFrame(currentIp).isRequireParent();
 				String previousFrame = isRequireParent ? "(#{prev-fr-class}) frame" : "null";
 				app("#{fr} = new #{fr-class}(" + previousFrame + ")");
 				break;
@@ -291,8 +293,7 @@ public class InstructionTranslator {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				Integer frame = currentFrame();
-				if (frame != null)
+				if (currentFrame() != null)
 					app("return #{reg}", op0);
 				else
 					app("return returnValue"); // Grand exit point
@@ -417,15 +418,15 @@ public class InstructionTranslator {
 	}
 
 	private void generateFrame() {
-		Integer frameNo = currentFrame();
-		Class<?> registerTypes[] = frameNo != null ? registerTypes = analyzer.getRegisterTypes(frameNo) : null;
+		AnalyzedFrame frame = currentFrame();
+		List<AnalyzedRegister> registers = frame != null ? frame.getRegisters() : null;
 
 		app(clazzsec, "private static class #{fr-class} implements Frame {");
 		app(clazzsec, "private #{prev-fr-class} previous");
 		app(clazzsec, "private #{fr-class}(#{prev-fr-class} previous) { this.previous = previous; }");
 
-		for (int r = 0; r < registerTypes.length; r++) {
-			String typeName = registerTypes[r].getSimpleName();
+		for (int r = 0; r < registers.size(); r++) {
+			String typeName = registers.get(r).getClazz().getSimpleName();
 			app(clazzsec, "private #{str} r#{num}", typeName, r);
 		}
 
@@ -499,16 +500,16 @@ public class InstructionTranslator {
 
 	private String decode(String s, Iterator<Object> iter) {
 		int reg;
-		Integer frameNo = currentFrame();
-		Integer parentFrameNo = frameNo != null ? analyzer.getParentFrame(frameNo) : null;
-		Class<?> registerTypes[] = frameNo != null ? analyzer.getRegisterTypes(frameNo) : null;
+		AnalyzedFrame frame = currentFrame();
+		AnalyzedFrame parentFrame = frame != null ? frame.getParent() : null;
+		List<AnalyzedRegister> registers = frame != null ? frame.getRegisters() : null;
 
 		switch (s) {
 		case "fr":
-			s = String.format("f%d", frameNo);
+			s = String.format("f%d", frame.getId());
 			break;
 		case "fr-class":
-			s = String.format("Frame%d", frameNo);
+			s = String.format("Frame%d", frame.getId());
 			break;
 		case "jump":
 			s = String.format("{ ip = %d; continue; }", iter.next());
@@ -517,10 +518,10 @@ public class InstructionTranslator {
 			s = String.format("%d", iter.next());
 			break;
 		case "prev-fr":
-			s = parentFrameNo != null ? String.format("f%d", parentFrameNo) : "frame";
+			s = parentFrame != null ? String.format("f%d", parentFrame.getId()) : "frame";
 			break;
 		case "prev-fr-class":
-			s = parentFrameNo != null ? String.format("Frame%d", parentFrameNo) : "Frame";
+			s = parentFrame != null ? String.format("Frame%d", parentFrame.getId()) : "Frame";
 			break;
 		case "reg":
 			s = reg((int) iter.next());
@@ -528,19 +529,19 @@ public class InstructionTranslator {
 		case "reg-bool":
 			reg = (int) iter.next();
 			s = reg(reg);
-			if (Node.class.isAssignableFrom(registerTypes[reg]))
+			if (Node.class.isAssignableFrom(registers.get(reg).getClazz()))
 				s = "(" + s + " == TRUE)";
 			break;
 		case "reg-clos":
 			reg = (int) iter.next();
 			s = reg(reg);
-			if (Node.class.isAssignableFrom(registerTypes[reg]))
+			if (Node.class.isAssignableFrom(registers.get(reg).getClazz()))
 				s = "((Closure) " + s + ")";
 			break;
 		case "reg-node":
 			reg = (int) iter.next();
 			s = reg(reg);
-			Class<?> sourceClazz = registerTypes[reg];
+			Class<?> sourceClazz = registers.get(reg).getClazz();
 			if (sourceClazz == boolean.class)
 				s = "(" + s + " ? TRUE : FALSE)";
 			else if (sourceClazz == int.class)
@@ -549,7 +550,7 @@ public class InstructionTranslator {
 		case "reg-num":
 			reg = (int) iter.next();
 			s = reg(reg);
-			if (Node.class.isAssignableFrom(registerTypes[reg]))
+			if (Node.class.isAssignableFrom(registers.get(reg).getClazz()))
 				s = "((Int) " + s + ").getNumber()";
 			break;
 		case "str":
@@ -560,10 +561,10 @@ public class InstructionTranslator {
 	}
 
 	private String reg(int reg) {
-		return String.format("f%d.r%d", currentFrame(), reg);
+		return String.format("f%d.r%d", currentFrame().getId(), reg);
 	}
 
-	private Integer currentFrame() {
+	private AnalyzedFrame currentFrame() {
 		return analyzer.getFrame(currentIp);
 	}
 

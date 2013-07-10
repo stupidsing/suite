@@ -112,7 +112,7 @@ public class InstructionExecutor implements AutoCloseable {
 				current = new Activation(frame, i(regs[insn.op0]), current);
 				break;
 			case ENTER_________:
-				Frame parent = analyzer.isRequireParent(analyzer.getFrame(ip)) ? frame : null;
+				Frame parent = analyzer.getFrame(ip).isRequireParent() ? frame : null;
 				current.frame = new Frame(parent, insn.op0);
 				break;
 			case EVALADD_______:
