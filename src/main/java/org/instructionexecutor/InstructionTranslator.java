@@ -79,7 +79,7 @@ public class InstructionTranslator {
 		className = "TranslatedRun" + counter.getAndIncrement();
 
 		String java = String.format("" //
-				+ "package %s; \n" //
+				+ "package " + packageName + "; \n" //
 				+ "import org.instructionexecutor.io.*; \n" //
 				+ "import org.suite.*; \n" //
 				+ "import org.suite.doer.*; \n" //
@@ -95,7 +95,7 @@ public class InstructionTranslator {
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
 				+ "\n" //
-				+ "public class %s implements TranslatedRun { \n" //
+				+ "public class " + className + " implements TranslatedRun { \n" //
 				+ "private static final int stackSize = 4096; \n" //
 				+ "\n" //
 				+ "private static final Atom FALSE = Atom.FALSE; \n" //
@@ -105,7 +105,7 @@ public class InstructionTranslator {
 				+ "\n" //
 				+ "private Closeable closeable; \n" //
 				+ "\n" //
-				+ "public %s(Closeable closeable) { this.closeable = closeable; } \n" //
+				+ "public " + className + "(Closeable closeable) { this.closeable = closeable; } \n" //
 				+ "\n" //
 				+ "public void close() throws IOException { closeable.close(); } \n" //
 				+ "\n" //
@@ -141,7 +141,7 @@ public class InstructionTranslator {
 				+ "} \n" //
 				+ "} \n" //
 				+ "} \n" //
-		, packageName, className, className, clazzsec, localsec, switchsec);
+		, clazzsec, localsec, switchsec);
 
 		String pathName = basePathName + "/" + packageName.replace('.', '/');
 		filename = pathName + "/" + className + ".java";
