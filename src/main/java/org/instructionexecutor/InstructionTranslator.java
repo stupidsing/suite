@@ -61,8 +61,11 @@ public class InstructionTranslator {
 	}
 
 	public TranslatedRun translate(Node node) throws IOException {
-		InstructionExtractor extractor = new InstructionExtractor(constantPool);
-		List<Instruction> instructions = extractor.extractInstructions(node);
+		List<Instruction> instructions;
+
+		try (InstructionExtractor extractor = new InstructionExtractor(constantPool)) {
+			instructions = extractor.extractInstructions(node);
+		}
 
 		int exitPoint = instructions.size();
 		instructions.add(new Instruction(Insn.LABEL_________, 0, 0, 0));

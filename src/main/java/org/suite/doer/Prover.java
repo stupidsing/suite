@@ -200,7 +200,7 @@ public class Prover {
 	 * Resets all bind done by this prover.
 	 */
 	public void undoAllBinds() {
-		journal.undoBinds(0);
+		journal.undoAllBinds();
 	}
 
 	private Node andTree(Node n0, Node n1) {

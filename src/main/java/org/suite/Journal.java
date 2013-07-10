@@ -27,6 +27,10 @@ public class Journal {
 		return bounded.size();
 	}
 
+	public void undoAllBinds() {
+		undoBinds(0);
+	}
+
 	public void undoBinds(int pointInTime) {
 		ListIterator<Reference> iter = bounded.listIterator(pointInTime);
 		while (iter.hasNext()) {

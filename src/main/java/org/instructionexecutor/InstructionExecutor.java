@@ -32,9 +32,12 @@ public class InstructionExecutor implements AutoCloseable {
 	private InstructionAnalyzer analyzer = new InstructionAnalyzer();
 
 	public InstructionExecutor(Node node) {
-		InstructionExtractor extractor = new InstructionExtractor(constantPool);
+		List<Instruction> instructions0;
 
-		List<Instruction> instructions0 = extractor.extractInstructions(node);
+		try (InstructionExtractor extractor = new InstructionExtractor(constantPool)) {
+			instructions0 = extractor.extractInstructions(node);
+		}
+
 		analyzer.analyze(instructions0);
 
 		List<Instruction> list = new ArrayList<>();

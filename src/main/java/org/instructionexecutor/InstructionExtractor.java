@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.instructionexecutor.InstructionUtil.Insn;
 import org.instructionexecutor.InstructionUtil.Instruction;
+import org.suite.Journal;
+import org.suite.doer.Binder;
 import org.suite.doer.TermParser.TermOp;
 import org.suite.node.Atom;
 import org.suite.node.Int;
@@ -16,10 +18,11 @@ import org.suite.node.Tree;
 
 import com.google.common.collect.BiMap;
 
-public class InstructionExtractor {
+public class InstructionExtractor implements AutoCloseable {
 
 	private Deque<Instruction> enters = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
+	private Journal journal = new Journal();
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
 		this.constantPool = constantPool;
@@ -87,7 +90,7 @@ public class InstructionExtractor {
 				Instruction enter = enters.getFirst();
 				int registerNumber = enter.op0++;
 
-				((Reference) node).bound(Int.create(registerNumber));
+				Binder.bind(node, Int.create(registerNumber), journal);
 				return registerNumber;
 			} else
 				// ASSIGN-BOOL, ASSIGN-STR, PROVE
@@ -105,6 +108,11 @@ public class InstructionExtractor {
 			return pointer1;
 		} else
 			return pointer;
+	}
+
+	@Override
+	public void close() {
+		journal.undoAllBinds();
 	}
 
 }

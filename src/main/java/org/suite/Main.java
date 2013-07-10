@@ -145,6 +145,7 @@ public class Main implements AutoCloseable {
 	}
 
 	private boolean run(List<String> importFilenames) throws IOException {
+		Builder builderL2 = null;
 		RuleSet ruleSet = proverConfig.ruleSet();
 		Suite.importResource(ruleSet, "auto.sl");
 
@@ -254,7 +255,9 @@ public class Main implements AutoCloseable {
 					query(CompiledProverBuilder.level1(proverConfig, fcc.isDumpCode()), ruleSet, node);
 					break;
 				case QUERYCOMPILED2:
-					query(CompiledProverBuilder.level2(proverConfig, fcc.isDumpCode()), ruleSet, node);
+					if (builderL2 == null)
+						builderL2 = CompiledProverBuilder.level2(proverConfig, fcc.isDumpCode());
+					query(builderL2, ruleSet, node);
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
