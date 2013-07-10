@@ -35,7 +35,7 @@ import org.util.Util;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
- * 
+ *
  * @author ywsing
  */
 public class Main implements AutoCloseable {
@@ -58,8 +58,8 @@ public class Main implements AutoCloseable {
 		OPTION("-"), //
 		PRETTYPRINT("\\p"), //
 		QUERY("?"), //
-		QUERYCOMPILED("\\l"), //
-		QUERYCOMPILED2("\\ll"), //
+		QUERYCOMPILED("/l"), //
+		QUERYCOMPILED2("/ll"), //
 		QUERYELABORATE("/"), //
 		;
 
