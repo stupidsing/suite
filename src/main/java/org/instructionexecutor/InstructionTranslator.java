@@ -421,18 +421,26 @@ public class InstructionTranslator {
 		AnalyzedFrame frame = currentFrame();
 		List<AnalyzedRegister> registers = frame != null ? frame.getRegisters() : null;
 
+		app(localsec, "#{fr-class} #{fr} = null");
+
 		app(clazzsec, "private static class #{fr-class} implements Frame {");
 		app(clazzsec, "private #{prev-fr-class} previous");
 		app(clazzsec, "private #{fr-class}(#{prev-fr-class} previous) { this.previous = previous; }");
 
 		for (int r = 0; r < registers.size(); r++) {
-			String typeName = registers.get(r).getClazz().getSimpleName();
-			app(clazzsec, "private #{str} r#{num}", typeName, r);
+			AnalyzedRegister register = registers.get(r);
+			Class<?> clazz = register.getClazz();
+			String typeName = clazz.getSimpleName();
+
+			if (register.isUsedExternally())
+				app(clazzsec, "private #{str} r#{num}", typeName, r);
+			else {
+				String init = clazz == boolean.class ? "false" : clazz == int.class ? "0" : "null";
+				app(localsec, "#{str} f#{num}_r#{num} = #{str}", typeName, frame.getId(), r, init);
+			}
 		}
 
 		app(clazzsec, "}");
-
-		app(localsec, "#{fr-class} #{fr} = null");
 	}
 
 	private void pushCallee(int ip) {
@@ -561,7 +569,13 @@ public class InstructionTranslator {
 	}
 
 	private String reg(int reg) {
-		return String.format("f%d.r%d", currentFrame().getId(), reg);
+		AnalyzedFrame frame = currentFrame();
+		int frameNo = frame.getId();
+
+		if (frame.getRegisters().get(reg).isUsedExternally())
+			return String.format("f%d.r%d", frameNo, reg);
+		else
+			return String.format("f%d_r%d", frameNo, reg);
 	}
 
 	private AnalyzedFrame currentFrame() {
