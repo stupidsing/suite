@@ -157,7 +157,6 @@ public class InstructionTranslator {
 
 	private void translateInstructions(List<Instruction> instructions) {
 		Node constant;
-		String s;
 		int ip = 0;
 		boolean isGenerateLabel = true;
 
@@ -177,10 +176,13 @@ public class InstructionTranslator {
 				app("#{reg} = new Closure(#{fr}, #{num})", op0, op1);
 				break;
 			case ASSIGNFRAMEREG:
-				s = "";
-				for (int i = op1; i < 0; i++)
-					s += ".previous";
-				app("#{reg} = TranslatedRunUtil.toNode(#{fr}#{str}.r#{num})", op0, s, op2);
+				if (op1 != 0) {
+					String prevs = "";
+					for (int i = op1; i < 0; i++)
+						prevs += ".previous";
+					app("#{reg} = TranslatedRunUtil.toNode(#{fr}#{str}.r#{num})", op0, prevs, op2);
+				} else
+					app("#{reg} = TranslatedRunUtil.toNode(#{reg})", op0, op2);
 				break;
 			case ASSIGNCONST___:
 				constant = constantPool.get(op1);
