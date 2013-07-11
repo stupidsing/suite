@@ -253,18 +253,19 @@ generic-specific-pair (GENERIC-OF .typeVar .type) .t1
 #
 
 default-fun-type () (LIST-OF _) #
-default-fun-type _compare (FUN-OF .type (FUN-OF .type NUMBER)) #
-default-fun-type _cons (FUN-OF .type (FUN-OF (LIST-OF .type) (LIST-OF .type))) #
-default-fun-type _lhead (FUN-OF (LIST-OF .type) .type) #
-default-fun-type _log (FUN-OF .type .type) #
-default-fun-type _log2 (FUN-OF (LIST-OF NUMBER) (FUN-OF .type .type)) #
-default-fun-type _ltail (FUN-OF (LIST-OF .type) (LIST-OF .type)) #
+default-fun-type _compare (FUN-OF .t (FUN-OF .t NUMBER)) #
+default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
+default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
+default-fun-type _log (FUN-OF .t .t) #
+default-fun-type _log2 (FUN-OF (LIST-OF NUMBER) (FUN-OF .t .t)) #
+default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 default-fun-type _popen (FUN-OF (LIST-OF NUMBER) (FUN-OF (LIST-OF NUMBER) (LIST-OF NUMBER))) #
 default-fun-type _prove (FUN-OF _ BOOLEAN) #
 default-fun-type _subst (FUN-OF _ (FUN-OF _ _)) #
-default-fun-type _thead (FUN-OF (TUPLE-OF _ (.type, _)) .type) #
-default-fun-type _ttail (FUN-OF (TUPLE-OF .n (_, .types)) (TUPLE-OF .n .types)) #
+default-fun-type _tcons (FUN-OF .t (FUN-OF (TUPLE-OF .n .ts) (TUPLE-OF .n (.t, .ts)))) #
+default-fun-type _thead (FUN-OF (TUPLE-OF _ (.t, _)) .t) #
+default-fun-type _ttail (FUN-OF (TUPLE-OF .n (_, .ts)) (TUPLE-OF .n .ts)) #
 default-fun-type error _ #
 default-fun-type fgetc (FUN-OF _ (FUN-OF NUMBER NUMBER)) #
-default-fun-type is-tree (FUN-OF (LIST-OF .type) BOOLEAN) #
+default-fun-type is-tree (FUN-OF (LIST-OF .t) BOOLEAN) #
 default-fun-type is-tuple (FUN-OF (TUPLE-OF _ (_, _)) BOOLEAN) #

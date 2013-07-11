@@ -48,7 +48,7 @@ fc-compile EAGER (TUPLE .name ()) .env .c0/.cx/.d/.d/.reg
 #
 fc-compile EAGER (TUPLE .name (.e, .es)) .env .cdr
 	:- !, fc-compile EAGER (
-		INVOKE (TUPLE .name .es) (INVOKE .e (VAR _cons))
+		INVOKE (TUPLE .name .es) (INVOKE .e (VAR _tcons))
 	) .env .cdr
 #
 fc-compile EAGER (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg

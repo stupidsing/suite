@@ -71,7 +71,7 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 #
 
 fc-define-default-fun 2 _compare COMPARE #
-fc-define-default-fun 2 _cons CONS #
+fc-define-default-fun 2 _lcons CONS #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
 fc-define-default-fun 2 _log2 LOG2 #
@@ -79,6 +79,7 @@ fc-define-default-fun 1 _ltail TAIL #
 fc-define-default-fun 2 _popen POPEN #
 fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
+fc-define-default-fun 2 _tcons CONS #
 fc-define-default-fun 1 _thead HEAD #
 fc-define-default-fun 1 _ttail TAIL #
 fc-define-default-fun 0 error ERROR #
@@ -109,7 +110,7 @@ fc-dict-member .v .t :- rbt-member .v .t #
 
 fc-add-functions STANDARD .p (
 	define compare = (a => b => _compare {a} {b}) >>
-	define cons = (head => tail => _cons {head} {tail}) >>
+	define cons = (head => tail => _lcons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
 	define log = (m => _log {m}) >>
 	define log2 = (m => n => _log2 {m} {n}) >>

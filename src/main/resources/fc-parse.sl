@@ -128,7 +128,7 @@ fc-parse-sugar `.t`	(.var => .t1)
 	, !, temp .var
 	, tree .t1 .left .op .var
 #
-fc-parse-sugar (.l, .r) (_cons {.l} {.r}) :- ! #
+fc-parse-sugar (.l, .r) (_lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l; .r) (.r . .l) :- ! #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
@@ -245,7 +245,7 @@ fc-bind0 .v0 .v1 .then .else (
 	IF (TREE ' = ' .v0 .v1) .then .else
 ) #
 
-fc-bind-cons (INVOKE .t INVOKE .h VAR _cons) .h .t #
+fc-bind-cons (INVOKE .t INVOKE .h VAR _lcons) .h .t #
 
 fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (FUN BOOLEAN .else) .parsed)
 	:- temp .elseVar

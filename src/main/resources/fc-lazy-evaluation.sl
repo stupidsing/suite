@@ -49,7 +49,7 @@ fc-lazy-compile-to-thunk (INVOKE .p (VAR .var)) .env .c0/.cx/.d0/.dx/.reg
 #
 fc-lazy-compile-to-thunk (TUPLE .name (.e, .es)) .env .cdr
 	:- !, fc-lazy-compile-to-thunk (
-		INVOKE (TUPLE .name .es) (INVOKE .e (VAR _cons))
+		INVOKE (TUPLE .name .es) (INVOKE .e (VAR _tcons))
 	) .env .cdr
 #
 fc-lazy-compile-to-thunk .do .frame/.ve .c0/.cx/.d0/.dx/.closureReg
@@ -110,12 +110,13 @@ fc-lazy-compile-to-value (STRING .s) _ .c0/.cx/.d/.d/.reg
 fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
 		_compare/2/VALUE:VALUE:,
-		_cons/2/THUNK:THUNK:,
+		_lcons/2/THUNK:THUNK:,
 		_log/1/THUNK:,
 		_log2/2/THUNK:THUNK:,
 		_popen/2/THUNK:THUNK:,
 		_prove/1/VALUE:,
 		_subst/2/VALUE:VALUE:,
+		_tcons/2/THUNK:THUNK:,
 		error/0/,
 		fgetc/2/VALUE:VALUE:,
 		is-tree/1/VALUE:,
