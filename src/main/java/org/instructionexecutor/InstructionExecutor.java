@@ -55,7 +55,13 @@ public class InstructionExecutor implements AutoCloseable {
 		return evaluateClosure(new Closure(null, 0));
 	}
 
-	public Node evaluateClosure(Closure c0) {
+	public Node evaluateClosure(Closure closure) {
+		if (closure.result == null)
+			closure.result = evaluateClosure0(closure);
+		return closure.result;
+	}
+
+	private Node evaluateClosure0(Closure c0) {
 		Frame f0 = new Frame(null, 2);
 		f0.registers[0] = c0;
 

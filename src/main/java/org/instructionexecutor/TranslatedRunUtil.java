@@ -36,8 +36,12 @@ public class TranslatedRunUtil {
 		return new Fun<Node, Node>() {
 			public Node apply(Node node) {
 				node = node.finalNode();
-				if (node instanceof Closure)
-					node = translatedRun.exec(config, (Closure) node);
+				if (node instanceof Closure) {
+					Closure closure = (Closure) node;
+					if (closure.result == null)
+						closure.result = translatedRun.exec(config, closure);
+					node = closure.result;
+				}
 				return node;
 			}
 		};
