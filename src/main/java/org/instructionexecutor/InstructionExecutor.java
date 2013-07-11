@@ -217,7 +217,7 @@ public class InstructionExecutor implements AutoCloseable {
 				break;
 			case SETCLOSURERES_:
 				regs[insn.op0] = returnValue;
-				closure = ((Closure) regs[insn.op1]);
+				closure = (Closure) regs[insn.op1];
 				closure.frame = null; // Facilitates garbage collection
 				closure.result = returnValue;
 				break;

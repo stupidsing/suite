@@ -35,7 +35,7 @@ import org.util.Util;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
- *
+ * 
  * @author ywsing
  */
 public class Main implements AutoCloseable {
