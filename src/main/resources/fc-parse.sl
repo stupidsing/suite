@@ -194,10 +194,9 @@ fc-bind .v0 .v1 .tep
 fc-bind .v0 .v1 .tep :- fc-bind0 .v0 .v1 .tep #
 
 fc-bind0 .v0 .v1 .then .else .parsed
-	:- (fc-bind-cons .v0 .h0 .t0, fc-bind-cons .v1 .h1 .t1
-		; .v0 = TUPLE .n (.h0, .hs0), .v1 = TUPLE .n (.h1, .hs1)
-		, .t0 = TUPLE .n .hs0, .t1 = TUPLE .n .hs1
-	), !
+	:- fc-bind-cons .v0 .h0 .t0
+	, fc-bind-cons .v1 .h1 .t1
+	, !
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
 fc-bind0 (TUPLE .n0 .e0) (TUPLE .n1 .e1) .then .else .parsed
