@@ -57,7 +57,7 @@ fc-compile EAGER (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	, fc-compile EAGER .right .env .c1/.c2/.d1/.dx/.r2
 	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
 #
-fc-compile EAGER (VAR .var) .frame/.ve  .c0/.cx/.d/.d/.reg1
+fc-compile EAGER (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 	:- fc-dict-get .ve .var/(%REG/.reg/.frame0)
 	, !, fc-frame-difference .frame0 .frame .frameDiff
 	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1

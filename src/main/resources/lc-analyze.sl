@@ -8,8 +8,8 @@ lc-deterministic (.oper _)
 	:- member (EQ, GE, GT, LE, LT, NE,) .oper, !
 #
 lc-deterministic (AND .a .b)
-    :- (lc-deterministic .a; lc-cut-choices .b)
-    , lc-deterministic .b
+	:- (lc-deterministic .a; lc-cut-choices .b)
+	, lc-deterministic .b
 #
 lc-deterministic (OR .a .b)
 	:- lc-cut-choices .a, lc-deterministic .b
