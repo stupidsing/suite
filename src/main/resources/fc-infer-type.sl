@@ -228,7 +228,7 @@ sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t1 .t0 #
 
 instantiate-type () .tc .tc #
 instantiate-type (.typeVar, .typeVars) .tc0 .tcx
-	:- replace  .tc0/.tc1 .typeVar/_
+	:- replace .tc0/.tc1 .typeVar/_
 	, instantiate-type .typeVars .tc1 .tcx
 #
 
