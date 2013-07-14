@@ -86,8 +86,7 @@ public class FunCompilerTypeTest {
 				+ "let n = NODE true (NIL %) % >> \n" //
 				+ "NODE false n % = NIL %"));
 		getTypeMustFail(define + "NODE 1 n % = NODE false n %");
-		getTypeMustFail(define + "let n = NODE true (NIL %) % >> \n" //
-				+ "NODE 1 n % = NIL %");
+		getTypeMustFail(define + "let n = NODE true (NIL %) % >> NODE 1 n % = NIL %");
 	}
 
 	@Test
