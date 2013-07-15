@@ -183,7 +183,9 @@ fc-parse-bind-variable .v .vd
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 
-fc-is-atom .a :- is.atom .a, to.string .a .s, substring .s 0 1 "%%" #
+fc-is-atom .a :- is.atom .a, to.string .a .s, substring .s 0 1 .ch
+	, "A" <= .ch, .ch <= "Z"
+#
 
 fc-is-boolean true #
 fc-is-boolean false #

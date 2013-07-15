@@ -14,9 +14,9 @@ import org.suite.node.Node;
 public class FunCompilerTypeTest {
 
 	private static final String variant = "" //
-			+ "define type %A of (t,) >> \n" //
-			+ "define type (%B number []) of (t,) >> \n" //
-			+ "define type (%C boolean []) of (t,) >> \n";
+			+ "define type A of (t,) >> \n" //
+			+ "define type (B number []) of (t,) >> \n" //
+			+ "define type (C boolean []) of (t,) >> \n";
 
 	@Test
 	public void testBasic() {
@@ -25,9 +25,9 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testDefineType() {
-		getType("define type (%KG number []) of (weight,) >> \n" //
-				+ "let v = type weight (%KG 1 []) >> \n" //
-				+ "v = %KG 99 []");
+		getType("define type (KG number []) of (weight,) >> \n" //
+				+ "let v = type weight (KG 1 []) >> \n" //
+				+ "v = KG 99 []");
 		getType("repeat {23}");
 	}
 
@@ -61,9 +61,9 @@ public class FunCompilerTypeTest {
 	public void testGeneric() {
 		assertEquals(Suite.parse("list-of rb-tree/number") //
 				, getType("" //
-						+ "define type %EMPTY of (rb-tree/$t,) for any ($t,) >> \n" //
+						+ "define type EMPTY of (rb-tree/$t,) for any ($t,) >> \n" //
 						+ "define map = type (:a :- :b :- (:a => :b) => list-of :a => list-of :b) (error) >> \n" //
-						+ "define add = type ($t :- $t => rb-tree/$t) (v => %EMPTY) >> \n" //
+						+ "define add = type ($t :- $t => rb-tree/$t) (v => EMPTY) >> \n" //
 						+ "1; | map {add} \n" //
 				));
 	}
@@ -71,25 +71,25 @@ public class FunCompilerTypeTest {
 	@Test
 	public void testInstance() {
 		String define = "" //
-				+ "define type %NIL of (list/:t,) for any (:t,) >> \n" //
-				+ "define type (%NODE :t list/:t []) of (list/:t,) for any (:t,) >> \n" //
-				+ "define type (%NODE2 :t :t list/:t []) of (list/:t,) for any (:t,) >> \n" //
+				+ "define type NIL of (list/:t,) for any (:t,) >> \n" //
+				+ "define type (NODE :t list/:t []) of (list/:t,) for any (:t,) >> \n" //
+				+ "define type (NODE2 :t :t list/:t []) of (list/:t,) for any (:t,) >> \n" //
 		;
 
-		getType(define + "%NIL");
-		getType(define + "%NODE false %NIL []");
-		getType(define + "%NODE2 1 2 (%NODE 3 %NIL []) []");
+		getType(define + "NIL");
+		getType(define + "NODE false NIL []");
+		getType(define + "NODE2 1 2 (NODE 3 NIL []) []");
 
 		assertEquals(Suite.parse("boolean"), getType(define //
-				+ "let n = %NODE true %NIL [] >> \n" //
-				+ "%NODE false n [] = %NIL"));
-		getTypeMustFail(define + "%NODE []");
-		getTypeMustFail(define + "%NODE 1 []");
-		getTypeMustFail(define + "%NODE 1 (%NODE true %NIL) []");
-		getTypeMustFail(define + "%NODE2 1 true %NIL []");
-		getTypeMustFail(define + "%NODE2 1 2 (%NODE true %NIL []) []");
-		getTypeMustFail(define + "%NODE 1 %NIL [] = %NODE false %NIL []");
-		getTypeMustFail(define + "let n = %NODE true %NIL [] >> %NODE 1 n []");
+				+ "let n = NODE true NIL [] >> \n" //
+				+ "NODE false n [] = NIL"));
+		getTypeMustFail(define + "NODE []");
+		getTypeMustFail(define + "NODE 1 []");
+		getTypeMustFail(define + "NODE 1 (NODE true NIL) []");
+		getTypeMustFail(define + "NODE2 1 true NIL []");
+		getTypeMustFail(define + "NODE2 1 2 (NODE true NIL []) []");
+		getTypeMustFail(define + "NODE 1 NIL [] = NODE false NIL []");
+		getTypeMustFail(define + "let n = NODE true NIL [] >> NODE 1 n []");
 	}
 
 	@Test
@@ -101,11 +101,11 @@ public class FunCompilerTypeTest {
 	@Test
 	public void testOneOf() {
 		getType("" //
-				+ "define type %NIL of (t,) >> \n" //
-				+ "define type (%BTREE t t []) of (t,) >> \n" //
-				+ "let u = type t %NIL >> \n" //
-				+ "let v = type t %NIL >> \n" //
-				+ "v = %BTREE (%BTREE %NIL %NIL []) %NIL []");
+				+ "define type NIL of (t,) >> \n" //
+				+ "define type (BTREE t t []) of (t,) >> \n" //
+				+ "let u = type t NIL >> \n" //
+				+ "let v = type t NIL >> \n" //
+				+ "v = BTREE (BTREE NIL NIL []) NIL []");
 	}
 
 	@Test
@@ -123,19 +123,19 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testTuple() {
-		getType(variant + "%A");
-		getType(variant + "%B 4 []");
-		getType(variant + "%C true []");
-		getType(variant + "if true then %A else-if true then (%B 3 []) else (%C false [])");
-		getType("define type (%BTREE number number []) of (btree,) >> %BTREE 2 3 [] = %BTREE 4 6 []");
+		getType(variant + "A");
+		getType(variant + "B 4 []");
+		getType(variant + "C true []");
+		getType(variant + "if true then A else-if true then (B 3 []) else (C false [])");
+		getType("define type (BTREE number number []) of (btree,) >> BTREE 2 3 [] = BTREE 4 6 []");
 
-		getTypeMustFail(variant + "%A 4 []");
-		getTypeMustFail(variant + "%B []");
-		getTypeMustFail("define type (%T1 number number []) of (t1,) >> \n" //
-				+ "define type (%T2 number number []) of (t2,) >> \n" //
-				+ "%T1 2 3 [] = %T2 2 3 []");
-		getTypeMustFail("define type (%BTREE number number []) of (btree,) >> \n" //
-				+ "%BTREE 2 3 [] = %BTREE \"a\" 6 []");
+		getTypeMustFail(variant + "A 4 []");
+		getTypeMustFail(variant + "B []");
+		getTypeMustFail("define type (T1 number number []) of (t1,) >> \n" //
+				+ "define type (T2 number number []) of (t2,) >> \n" //
+				+ "T1 2 3 [] = T2 2 3 []");
+		getTypeMustFail("define type (BTREE number number []) of (btree,) >> \n" //
+				+ "BTREE 2 3 [] = BTREE \"a\" 6 []");
 	}
 
 	private void checkType(String f, String bindTo, String ts) {

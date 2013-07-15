@@ -16,7 +16,7 @@ public class FunRbTreeTest {
 	@Test
 	public void test() throws IOException {
 		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
-		String fp = s + "0 until 10 | map {add} | apply | {%EMPTY}\n";
+		String fp = s + "0 until 10 | map {add} | apply | {EMPTY}\n";
 		Node result = Suite.evaluateFun(fp, false);
 		assertNotNull(result);
 		System.out.println("OUT:\n" + Formatter.dump(result));
