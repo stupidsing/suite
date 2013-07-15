@@ -11,6 +11,7 @@ import java.util.Set;
 import org.suite.Suite;
 import org.suite.doer.Prover;
 import org.suite.doer.TermParser.TermOp;
+import org.suite.node.Atom;
 import org.suite.node.Node;
 import org.suite.node.Tree;
 
@@ -55,8 +56,8 @@ public class MathUtil {
 	public static Set<Node> equate(Node node) {
 		Node v = Node.ref(), r = Node.ref();
 
-		Node equate = Node.list(Node.atom("equate"), Node.list(TermOp.EQUAL_, node, v));
-		Node goal = Node.list(Node.atom("find.all"), v, equate, r);
+		Node equate = Node.list(Atom.create("equate"), Node.list(TermOp.EQUAL_, node, v));
+		Node goal = Node.list(Atom.create("find.all"), v, equate, r);
 
 		System.out.println(goal);
 

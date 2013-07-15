@@ -1,4 +1,4 @@
-package org.profiler;
+package org.sample;
 
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;

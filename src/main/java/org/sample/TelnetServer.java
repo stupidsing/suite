@@ -1,4 +1,4 @@
-package org.net;
+package org.sample;
 
 import java.io.IOException;
 import java.io.InputStream;

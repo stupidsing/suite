@@ -152,7 +152,7 @@ fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 
 fc-parse-type [] (ATOM-OF []) :- ! #
 fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
 fc-parse-type .do (PAIR-OF .type0 .type1)
-	:- (.do = (.t0 .t1); .do = (.t0, .t1)), !
+	:- (.do = (.t0, .t1); .do = (.t0 .t1)), !
 	, fc-parse-type .t0 .type0
 	, fc-parse-type .t1 .type1
 #

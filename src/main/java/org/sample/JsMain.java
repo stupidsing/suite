@@ -1,4 +1,4 @@
-package org.suite;
+package org.sample;
 
 import java.io.FileReader;
 import java.util.ArrayList;

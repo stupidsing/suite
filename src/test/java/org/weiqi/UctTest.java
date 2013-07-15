@@ -7,7 +7,7 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.profiler.Profiler;
+import org.sample.Profiler;
 import org.util.Util;
 import org.weiqi.Weiqi.Occupation;
 import org.weiqi.uct.UctSearch;

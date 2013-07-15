@@ -13,16 +13,20 @@ public class Node implements Comparable<Node> {
 		return this;
 	}
 
-	public static Atom atom(String name) {
-		return Atom.create(name);
-	}
-
-	public static Int num(int integer) {
-		return Int.create(integer);
-	}
-
 	public static Reference ref() {
 		return new Reference();
+	}
+
+	public static Node list(List<Node> nodes) {
+		return list(TermOp.TUPLE_, nodes);
+	}
+
+	public static Node list(Node... nodes) {
+		return list(TermOp.TUPLE_, nodes);
+	}
+
+	public static Node list(Operator operator, List<Node> nodes) {
+		return list(operator, nodes.toArray(new Node[nodes.size()]));
 	}
 
 	public static Node list(Operator operator, Node... nodes) {
@@ -38,18 +42,6 @@ public class Node implements Comparable<Node> {
 			result = Atom.NIL;
 
 		return result;
-	}
-
-	public static Node list(Operator operator, List<Node> nodes) {
-		return list(operator, nodes.toArray(new Node[nodes.size()]));
-	}
-
-	public static Node list(List<Node> nodes) {
-		return list(TermOp.TUPLE_, nodes);
-	}
-
-	public static Node list(Node... nodes) {
-		return list(TermOp.TUPLE_, nodes);
 	}
 
 	@Override
