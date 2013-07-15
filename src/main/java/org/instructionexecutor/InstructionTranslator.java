@@ -234,7 +234,12 @@ public class InstructionTranslator {
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = comparer.compare(n0, n1)", op0);
 				break;
-			case CONS__________:
+			case CONSLIST______:
+				app("n0 = (Node) ds[--dsp]");
+				app("n1 = (Node) ds[--dsp]");
+				app("#{reg} = Tree.create(TermOp.OR____, n0, n1)", op0);
+				break;
+			case CONSPAIR______:
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = Tree.create(TermOp.AND___, n0, n1)", op0);

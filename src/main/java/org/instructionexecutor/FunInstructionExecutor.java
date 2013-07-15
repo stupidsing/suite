@@ -64,7 +64,12 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			right = (Node) ds[--dsp];
 			result = Int.create(comparer.compare(left, right));
 			break;
-		case CONS__________:
+		case CONSLIST______:
+			left = (Node) ds[--dsp];
+			right = (Node) ds[--dsp];
+			result = Tree.create(TermOp.OR____, left, right);
+			break;
+		case CONSPAIR______:
 			left = (Node) ds[--dsp];
 			right = (Node) ds[--dsp];
 			result = Tree.create(TermOp.AND___, left, right);

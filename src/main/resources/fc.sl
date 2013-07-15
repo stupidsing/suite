@@ -72,21 +72,21 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 #
 
 fc-define-default-fun 2 _compare COMPARE #
-fc-define-default-fun 2 _lcons CONS #
+fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
 fc-define-default-fun 2 _log2 LOG2 #
 fc-define-default-fun 1 _ltail TAIL #
+fc-define-default-fun 2 _pcons CONS-PAIR #
+fc-define-default-fun 1 _pleft HEAD #
 fc-define-default-fun 2 _popen POPEN #
+fc-define-default-fun 1 _pright TAIL #
 fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
-fc-define-default-fun 2 _tcons CONS #
-fc-define-default-fun 1 _thead HEAD #
-fc-define-default-fun 1 _ttail TAIL #
 fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 2 fgetc FGETC #
+fc-define-default-fun 1 is-pair IS-TREE #
 fc-define-default-fun 1 is-tree IS-TREE #
-fc-define-default-fun 1 is-tuple IS-TREE #
 
 fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
@@ -94,9 +94,6 @@ fc-operator .oper
 		' > ', ' < ', ' >= ', ' <= ',
 	) .oper
 #
-
-fc-is-boolean true #
-fc-is-boolean false #
 
 fc-error .m :- !, write .m, nl, fail #
 
@@ -118,8 +115,8 @@ fc-add-functions STANDARD .p (
 	define prove = (goal => _prove {goal}) >>
 	define subst = (var => node => _subst {var} {node}) >>
 	define tail = (list => _ltail {list}) >>
-	define tuple-head = (list => _thead {list}) >>
-	define tuple-tail = (list => _ttail {list}) >>
+	define tuple-head = (tuple => _pleft {tuple}) >>
+	define tuple-tail = (tuple => _pright {tuple}) >>
 	define and = (x => y =>
 		if x then y else false
 	) >>
@@ -133,12 +130,12 @@ fc-add-functions STANDARD .p (
 	) >>
 	define fold-left = (fun => init =>
 		match
-		|| $h, $t => fold-left {fun} {fun {init} {h}} {t}
+		|| $h; $t => fold-left {fun} {fun {init} {h}} {t}
 		|| otherwise init
 	) >>
 	define fold-right = (fun => init =>
 		match
-		|| $h, $t => fun {h} {fold-right {fun} {init} {t}}
+		|| $h; $t => fun {h} {fold-right {fun} {init} {t}}
 		|| otherwise init
 	) >>
 	define id = (v =>
@@ -148,13 +145,13 @@ fc-add-functions STANDARD .p (
 		if (a > b) then a else b
 	) >>
 	define merge = (list0 => list1 =>
-		if-bind (list0 = ($h0, $t0)) then
-			if-bind (list1 = ($h1, $t1)) then
+		if-bind (list0 = ($h0; $t0)) then
+			if-bind (list1 = ($h1; $t1)) then
 				if:: h0 < h1
-				then:: h0, merge {t0} {list1}
+				then:: h0; merge {t0} {list1}
 				else-if:: h0 > h1
-				then:: h1, merge {list0} {t1}
-				else:: h0, h1, merge {t0} {t1}
+				then:: h1; merge {list0} {t1}
+				else:: h0; h1; merge {t0} {t1}
 			else
 				list0
 		else
@@ -170,24 +167,24 @@ fc-add-functions STANDARD .p (
 		if x then true else y
 	) >>
 	define repeat = (n => elem =>
-		if (n > 0) then (elem, repeat {n - 1} {elem}) else ()
+		if (n > 0) then (elem; repeat {n - 1} {elem}) else ()
 	) >>
 	define scan-left = (fun => init =>
 		match
-		|| $h, $t => init, scan-left {fun} {fun {init} {h}} {t}
-		|| otherwise (init,)
+		|| $h; $t => init; scan-left {fun} {fun {init} {h}} {t}
+		|| otherwise (init;)
 	) >>
 	define scan-right = (fun => init =>
 		match
-		|| $h, $t =>
+		|| $h; $t =>
 			let r = scan-right {fun} {init} {t} >>
-			fun {h} {head {r}}, r
-		|| otherwise (init,)
+			fun {h} {head {r}}; r
+		|| otherwise (init;)
 	) >>
 	define source = (is =>
 		let fgets = (pos =>
 			let c = fgetc {is} {pos} >>
-			if (c >= 0) then (c, fgets {pos + 1}) else ()
+			if (c >= 0) then (c; fgets {pos + 1}) else ()
 		) >>
 		fgets {0}
 	) >>
@@ -200,8 +197,8 @@ fc-add-functions STANDARD .p (
 	) >>
 	define tails = (
 		match
-		|| $h, $t => (h, t), tails {t}
-		|| otherwise (,)
+		|| $h; $t => (h; t); tails {t}
+		|| otherwise (;)
 	) >>
 	define take = (n => list =>
 		if:: n > 0 && is-tree {list}
@@ -210,8 +207,8 @@ fc-add-functions STANDARD .p (
 	) >>
 	define take-while = (fun =>
 		match
-		|| $elem, $elems =>
-			if (fun {elem}) then (elem, take-while {fun} {elems}) else ()
+		|| $elem; $elems =>
+			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
 		|| otherwise ()
 	) >>
 	define tget0 =
@@ -231,16 +228,16 @@ fc-add-functions STANDARD .p (
 	) >>
 	define zip = (fun =>
 		match
-		|| $h0, $t0 => (
+		|| $h0; $t0 => (
 			match
-			|| $h1, $t1 => fun {h0} {h1}, zip {fun} {t0} {t1}
+			|| $h1; $t1 => fun {h0} {h1}; zip {fun} {t0} {t1}
 			|| otherwise ()
 		)
 		|| otherwise (anything => ())
 	) >>
 	define append = (
 		match
-		|| $h, $t => cons {h} . append {t}
+		|| $h; $t => cons {h} . append {t}
 		|| otherwise id
 	) >>
 	define apply =
@@ -251,7 +248,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define filter = (fun =>
 		fold-right {
-			item => list => if (fun {item}) then (item, list) else list
+			item => list => if (fun {item}) then (item; list) else list
 		} {}
 	) >>
 	define get = (n =>
@@ -261,13 +258,13 @@ fc-add-functions STANDARD .p (
 		fold-left {v => e => v + 1} {0}
 	>>
 	define map = (fun =>
-		fold-right {i => list => fun {i}, list} {}
+		fold-right {i => list => fun {i}; list} {}
 	) >>
 	define popen = (command => in =>
 		in | _popen {command} | source
 	) >>
 	define reverse =
-		fold-left {a => b => b, a} {}
+		fold-left {a => b => b; a} {}
 	>>
 	define substring = (start => end => list =>
 		let len = length {list} >>
@@ -277,7 +274,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define uniq =
 		fold-right {item => list =>
-			if-bind (list = (item, $t)) then list else (item, list)
+			if-bind (list = (item; $t)) then list else (item; list)
 		} {}
 	>>
 	define concat =
@@ -290,7 +287,7 @@ fc-add-functions STANDARD .p (
 		let unsigned-int-to-str =
 			reverse
 			. map {`+ 48`}
-			. unfold-right {i => if (i != 0) then (i % 10, i / 10,) else ()}
+			. unfold-right {i => if (i != 0) then (i % 10; i / 10;) else ()}
 		>> i |
 			if (i > 0) then
 				unsigned-int-to-str
@@ -310,13 +307,13 @@ fc-add-functions STANDARD .p (
 			list
 	) >>
 	define range = (start => end => inc =>
-		unfold-right {i => if (i < end) then (i, i + inc,) else ()} {start}
+		unfold-right {i => if (i < end) then (i; i + inc;) else ()} {start}
 	) >>
 	define starts-with = (
 		match
-		|| $sh, $st => (
+		|| $sh; $st => (
 			match
-			|| sh, $t => starts-with {st} {t}
+			|| sh; $t => starts-with {st} {t}
 			|| otherwise false
 		)
 		|| otherwise (anything => true)
@@ -351,8 +348,8 @@ fc-add-functions STANDARD .p (
 		) >>
 		let dump0 = (prec => n =>
 			if (is-tree {n}) then
-				concat {dump0 {true} {n | head}, ", ", dump0 {false} {n | tail},}
-				| if prec then (s => concat {"(", s, ")",}) else id
+				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
+				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (n = ()) then
 				"()"
 			else-if (prove /_n:n (is.atom _n)) then
@@ -366,16 +363,16 @@ fc-add-functions STANDARD .p (
 		starts-with {end | reverse} . reverse
 	) >>
 	define join = (separator =>
-		concat . map {separator, | flip {append}}
+		concat . map {separator; | flip {append}}
 	) >>
 	define quick-sort = (cmp =>
 		match
-		|| $pivot, $t =>
+		|| $pivot; $t =>
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
 			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
 			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
-			concat {l0, (pivot,), l1,}
+			concat {l0; (pivot;); l1;}
 		|| otherwise ()
 	) >>
 	.p

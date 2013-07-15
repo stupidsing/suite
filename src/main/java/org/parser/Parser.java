@@ -89,6 +89,8 @@ public class Parser {
 			}
 		}
 
+		if (Arrays.asList("[]").contains(s))
+			return Atom.create(s);
 		if (first == '(' && last == ')' || first == '[' && last == ']')
 			return parseWithoutComments(Util.substr(s, 1, -1));
 		if (first == '`' && last == '`')

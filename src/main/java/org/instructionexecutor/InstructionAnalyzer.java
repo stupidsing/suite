@@ -133,7 +133,8 @@ public class InstructionAnalyzer {
 				registers.get(op0).clazz = int.class;
 				break;
 			case ASSIGNCONST___:
-			case CONS__________:
+			case CONSPAIR______:
+			case CONSLIST______:
 			case FGETC_________:
 			case HEAD__________:
 			case LOG1__________:

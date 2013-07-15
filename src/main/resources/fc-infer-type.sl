@@ -56,24 +56,22 @@ infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type
 	, infer-type-rule .do .env1 .tr1/.trx .type
 #
 infer-type-rule (
-	OPTION ALLOW-RECURSIVE-DEFINITION DEF-VAR .name .value .do
-) .ue/.ve/.te .tr .type
+	OPTION ALLOW-RECURSIVE (DEF-VAR .name .value .do)
+) .ue/.ve/.te .tr0/.trx .type
 	:- !
 	, fc-dict-add .name/.varType .ue/.ue1
 	, fc-dict-add .name/.varType .ve/.ve1
 	, .insideEnv = .ue1/.ve/.te
 	, .outsideEnv = .ue/.ve1/.te
-	, once (infer-type-rule .value .insideEnv .vtr/() .varType
-		, resolve-type-rules .vtr
+	, once (infer-type-rule .value .insideEnv .tr0/.tr1 .varType
 		; fc-error "at variable" .name
 	)
-	, infer-type-rule .do .outsideEnv .tr .type
+	, infer-type-rule .do .outsideEnv .tr1/.trx .type
 #
-infer-type-rule (OPTION CHECK-TUPLE-TYPE .tuple) .ue/.ve/.te .tr0/.trx .classType
+infer-type-rule (OPTION CAST-TO-CLASS .pair) .env .tr .classType
 	:- !
-	, infer-type-rule .tuple .ue/.ve/.te .tr0/.tr1 .tupleType
 	, .classType = CLASS _
-	, .tr1 = (SUB-SUPER-TYPES .te .tupleType .classType, .trx)
+	, infer-type-rule (OPTION (CAST DOWN .classType) .pair) .env .tr .classType
 #
 infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
 	:- !
@@ -105,9 +103,10 @@ infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, infer-compatible-types .left .right .env .tr0/.trx _
 	, .type = BOOLEAN
 #
-infer-type-rule (TUPLE .name .elems) .env .tr (TUPLE-OF .name .types)
+infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	:- !
-	, infer-type-rules .elems .env .tr .types
+	, infer-type-rule .v0 .env .tr0/.tr1 .t0
+	, infer-type-rule .v1 .env .tr1/.trx .t1
 #
 infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
@@ -116,16 +115,6 @@ infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 		; .dir = UP, .subType = .type, .superType = .type0
 	)
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
-#
-infer-type-rule (OPTION (AS .var .varType) .do) .ue/.ve/.te .tr .type
-	:- !
-	, fc-dict-get .ue .var/.varType
-	, infer-type-rule .do .ue/.ve/.te .tr .type
-#
-infer-type-rule (OPTION resolve-type-ruleS .do) .env .tr/.tr .type
-	:- !
-	, infer-type-rule .do .env .tr1/() .type
-	, resolve-type-rules .tr1
 #
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !
@@ -138,11 +127,16 @@ infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 	; !, fc-error "Undefined variable" .var
 #
 
+find-simple-type (OPTION RESOLVE-TYPE .do) .env .type
+	:- infer-type-rule .do .env .tr/() .type
+	, resolve-type-rules .tr
+#
 find-simple-type (CONSTANT _) _ _ #
+find-simple-type (ATOM ()) _ (LIST-OF _) #
+find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (NUMBER _) _ NUMBER #
 find-simple-type (STRING _) _ STRING #
-find-simple-type (TUPLE () ()) _ (LIST-OF _) #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
 find-simple-type (VAR .var) .ue/.ve/.te .type
 	:- fc-dict-get .ue .var/.type
@@ -226,12 +220,6 @@ sub-super-type-pair .te .t0 .t1 :- bound .t0, sub-super-type-pair0 .te .t0 .t1 #
 sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t0 .t1 #
 sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t1 .t0 #
 
-instantiate-type () .tc .tc #
-instantiate-type (.typeVar, .typeVars) .tc0 .tcx
-	:- replace .tc0/.tc1 .typeVar/_
-	, instantiate-type .typeVars .tc1 .tcx
-#
-
 -- Morph children types to their supers
 sub-super-type-pair0 .te (FUN-OF .it0 .ot0) (FUN-OF .it1 .ot1)
 	:- sub-super-type-pair .te .it1 .it0
@@ -240,16 +228,22 @@ sub-super-type-pair0 .te (FUN-OF .it0 .ot0) (FUN-OF .it1 .ot1)
 sub-super-type-pair0 .te (LIST-OF .t0) (LIST-OF .t1)
 	:- sub-super-type-pair .te .t0 .t1
 #
-sub-super-type-pair0 .te (TUPLE-OF .name (.t0, .ts)) (TUPLE-OF .name (.t1, .ts))
-	:- sub-super-type-pair .te .t0 .t1
+sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .st0 .t1)
+	:- sub-super-type-pair .te .t0 .st0
 #
-sub-super-type-pair0 .te (TUPLE-OF .name (.t, .ts0)) (TUPLE-OF .name (.t, .ts1))
-	:- sub-super-type-pair .te (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1)
+sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .t0 .st1)
+	:- sub-super-type-pair .te .t1 .st1
 #
 
 generic-specific-pair (GENERIC-OF .typeVar .type) .t1
 	:- bound .typeVar
 	, replace .type/.t1 .typeVar/_
+#
+
+instantiate-type () .tc .tc #
+instantiate-type (.typeVar, .typeVars) .tc0 .tcx
+	:- replace .tc0/.tc1 .typeVar/_
+	, instantiate-type .typeVars .tc1 .tcx
 #
 
 default-fun-type () (LIST-OF _) #
@@ -262,10 +256,10 @@ default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 default-fun-type _popen (FUN-OF (LIST-OF NUMBER) (FUN-OF (LIST-OF NUMBER) (LIST-OF NUMBER))) #
 default-fun-type _prove (FUN-OF _ BOOLEAN) #
 default-fun-type _subst (FUN-OF _ (FUN-OF _ _)) #
-default-fun-type _tcons (FUN-OF .t (FUN-OF (TUPLE-OF .n .ts) (TUPLE-OF .n (.t, .ts)))) #
-default-fun-type _thead (FUN-OF (TUPLE-OF _ (.t, _)) .t) #
-default-fun-type _ttail (FUN-OF (TUPLE-OF .n (_, .ts)) (TUPLE-OF .n .ts)) #
+default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
+default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
+default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #
 default-fun-type error _ #
 default-fun-type fgetc (FUN-OF _ (FUN-OF NUMBER NUMBER)) #
+default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
 default-fun-type is-tree (FUN-OF (LIST-OF .t) BOOLEAN) #
-default-fun-type is-tuple (FUN-OF (TUPLE-OF _ (_, _)) BOOLEAN) #

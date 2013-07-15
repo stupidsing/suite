@@ -1,36 +1,36 @@
 using STANDARD >>
-define type (RED %) of (color,) >>
-define type (BLACK %) of (color,) >>
-define type (EMPTY %) of (rb-tree/:t,) for any (:t,) >>
-define type (RB-TREE color rb-tree/:t :t rb-tree/:t %) of (rb-tree/:t,) for any (:t,) >>
-define cr = RED % >>
-define cb = BLACK % >>
+define type %RED of (color,) >>
+define type %BLACK of (color,) >>
+define type %EMPTY of (rb-tree/:t,) for any (:t,) >>
+define type (%RB-TREE color rb-tree/:t :t rb-tree/:t []) of (rb-tree/:t,) for any (:t,) >>
+define cr = type color %RED >>
+define cb = type color %BLACK >>
 define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 	define add0 = type (:t :- rb-tree/:t => rb-tree/:t) (
 		define balance = type (:t :- rb-tree/:t => rb-tree/:t) (
 			match
-			|| RB-TREE cb (RB-TREE cr (RB-TREE cr $n0 $p0 $n1 %) $p1 $n2 %) $p2 $n3 % =>
-				RB-TREE cr (RB-TREE cb n0 p0 n1 %) p1 (RB-TREE cb n2 p2 n3 %) %
-			|| RB-TREE cb (RB-TREE cr $n0 $p0 (RB-TREE cr $n1 $p1 $n2 %) %) $p2 $n3 % =>
-				RB-TREE cr (RB-TREE cb n0 p0 n1 %) p1 (RB-TREE cb n2 p2 n3 %) %
-			|| RB-TREE cb $n0 $p0 (RB-TREE cr (RB-TREE cr $n1 $p1 $n2 %) $p2 $n3 %) % =>
-				RB-TREE cr (RB-TREE cb n0 p0 n1 %) p1 (RB-TREE cb n2 p2 n3 %) %
-			|| RB-TREE cb $n0 $p0 (RB-TREE cr $n1 $p1 (RB-TREE cr $n2 $p2 $n3 %) %) % =>
-				RB-TREE cr (RB-TREE cb n0 p0 n1 %) p1 (RB-TREE cb n2 p2 n3 %) %
+			|| %RB-TREE cb (%RB-TREE cr (%RB-TREE cr $n0 $p0 $n1 []) $p1 $n2 []) $p2 $n3 [] =>
+				%RB-TREE cr (%RB-TREE cb n0 p0 n1 []) p1 (%RB-TREE cb n2 p2 n3 []) []
+			|| %RB-TREE cb (%RB-TREE cr $n0 $p0 (%RB-TREE cr $n1 $p1 $n2 []) []) $p2 $n3 [] =>
+				%RB-TREE cr (%RB-TREE cb n0 p0 n1 []) p1 (%RB-TREE cb n2 p2 n3 []) []
+			|| %RB-TREE cb $n0 $p0 (%RB-TREE cr (%RB-TREE cr $n1 $p1 $n2 []) $p2 $n3 []) [] =>
+				%RB-TREE cr (%RB-TREE cb n0 p0 n1 []) p1 (%RB-TREE cb n2 p2 n3 []) []
+			|| %RB-TREE cb $n0 $p0 (%RB-TREE cr $n1 $p1 (%RB-TREE cr $n2 $p2 $n3 []) []) [] =>
+				%RB-TREE cr (%RB-TREE cb n0 p0 n1 []) p1 (%RB-TREE cb n2 p2 n3 []) []
 			|| id
 		) >>
 		match
-		|| EMPTY % =>
-			RB-TREE cr (EMPTY %) v (EMPTY %) %
-		|| RB-TREE $color $n0 $pivot $n1 % =>
+		|| %EMPTY =>
+			%RB-TREE cr %EMPTY v %EMPTY []
+		|| %RB-TREE $color $n0 $pivot $n1 [] =>
 			if (v < pivot) then
-				RB-TREE color (add0 {n0}) pivot n1 % | balance
+				%RB-TREE color (add0 {n0}) pivot n1 [] | balance
 			else-if (v > pivot) then
-				RB-TREE color n0 pivot (add0 {n1}) % | balance
+				%RB-TREE color n0 pivot (add0 {n1}) [] | balance
 			else error
 		|| otherwise error
 	) >>
 	match
-	|| RB-TREE $color $n0 $pivot $n1 % => RB-TREE cb n0 pivot n1 % | add0
+	|| %RB-TREE $color $n0 $pivot $n1 [] => %RB-TREE cb n0 pivot n1 [] | add0
 	|| add0
 ) >>

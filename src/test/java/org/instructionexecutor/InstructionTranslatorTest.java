@@ -41,7 +41,7 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testStandardLibrary() throws IOException {
-		String program = "using STANDARD >> 1, 2, 3, | map {`+ 1`} | fold-left {`+`} {0}";
+		String program = "using STANDARD >> 1; 2; 3; | map {`+ 1`} | fold-left {`+`} {0}";
 		assertFunctional(program, false, Int.create(9));
 	}
 

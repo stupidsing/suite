@@ -56,7 +56,7 @@ rbt-replace .v .t :- rbt-add1 REPLACE .v .t #
 rbt-add1 .mode .v .tree/(BLACK .npn) :- rbt-add0 .mode .v .tree/(_ .npn) #
 
 rbt-add0 _ .v ()/(RED () .v ()) #
-rbt-add0 .mode .v (.color .n0 .pivot .n1)/.treex
+rbt-add0  .mode .v (.color .n0 .pivot .n1)/.treex
 	:- rbt-compare .v .pivot, !
 	, rbt-add0 .mode .v .n0/.newn0
 	, rbt-balance (.color .newn0 .pivot .n1)/.treex

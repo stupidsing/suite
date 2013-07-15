@@ -66,7 +66,8 @@ public class InstructionUtil {
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CALLREG_______("CALL-REG"), //
 		COMPARE_______("COMPARE"), //
-		CONS__________("CONS"), //
+		CONSLIST______("CONS-LIST"), //
+		CONSPAIR______("CONS-PAIR"), //
 		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
 		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //

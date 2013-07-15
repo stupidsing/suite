@@ -23,9 +23,9 @@ fc-compile EAGER (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 fc-compile EAGER .do .env .cdr :- fc-eager-default-fun .do .env .cdr, ! #
 fc-compile EAGER (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile EAGER .callee .env .c0/.c1/.d0/.d1/.r1
-	, fc-compile EAGER .parameter .env .c1/.c2/.d1/.dx/.r2
-	, .c2 = (_ PUSH .r2, _ CALL-CLOSURE .r1, _ SET-RESULT .reg, .cx)
+	, fc-compile EAGER .callee .env .c0/.c1/.d0/.d1/.r0
+	, fc-compile EAGER .parameter .env .c1/.c2/.d1/.dx/.r1
+	, .c2 = (_ PUSH .r1, _ CALL-CLOSURE .r0, _ SET-RESULT .reg, .cx)
 #
 fc-compile EAGER (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- !
@@ -43,21 +43,16 @@ fc-compile EAGER (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 		, .cx
 	)
 #
-fc-compile EAGER (TUPLE .name ()) .env .c0/.cx/.d/.d/.reg
-	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .name, .cx)
-#
-fc-compile EAGER (TUPLE .name (.e, .es)) .env .cdr
-	:- !, fc-compile EAGER (
-		INVOKE (TUPLE .name .es) (INVOKE .e (VAR _tcons))
-	) .env .cdr
+fc-compile EAGER (PAIR .left .right) .env .cdr
+	:- !, fc-compile EAGER (INVOKE .right (INVOKE .left (VAR _pcons))) .env .cdr
 #
 fc-compile EAGER (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	:- !
-	, fc-compile EAGER .left .env .c0/.c1/.d0/.d1/.r1
-	, fc-compile EAGER .right .env .c1/.c2/.d1/.dx/.r2
-	, .c2 = (_ EVALUATE .reg .r1 .oper .r2, .cx)
+	, fc-compile EAGER .left .env .c0/.c1/.d0/.d1/.r0
+	, fc-compile EAGER .right .env .c1/.c2/.d1/.dx/.r1
+	, .c2 = (_ EVALUATE .reg .r0 .oper .r1, .cx)
 #
-fc-compile EAGER (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
+fc-compile EAGER (VAR .var) .frame/.ve  .c0/.cx/.d/.d/.reg1
 	:- fc-dict-get .ve .var/(%REG/.reg/.frame0)
 	, !, fc-frame-difference .frame0 .frame .frameDiff
 	, (.frameDiff = 0, !, .c0 = .cx, .reg = .reg1
@@ -66,6 +61,9 @@ fc-compile EAGER (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 #
 fc-compile EAGER (CONSTANT .c) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .c, .cx)
+#
+fc-compile EAGER (ATOM .a) _ .c0/.cx/.d/.d/.reg
+	:- !, .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx)
 #
 fc-compile EAGER (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-BOOL .reg .b, .cx)

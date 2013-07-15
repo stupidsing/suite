@@ -18,11 +18,11 @@ public class LazyFunCompilerTest {
 	@Test
 	public void testCorecursion() {
 		assertEquals(Atom.TRUE, eval("" //
-				+ "define seq = (n => n, seq {n}) >> \n" //
+				+ "define seq = (n => n; seq {n}) >> \n" //
 				+ "head {seq {0}} = 0"));
 
 		assertEquals(Int.create(89), eval("" // Real co-recursion!
-				+ "define fib = (i1 => i2 => i2, fib {i2} {i1 + i2}) >> \n" //
+				+ "define fib = (i1 => i2 => i2; fib {i2} {i1 + i2}) >> \n" //
 				+ "fib {0} {1} | get {10}"));
 	}
 
@@ -30,13 +30,13 @@ public class LazyFunCompilerTest {
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
 				+ "define fib = ( \n" //
-				+ "    1, 1, zip {`+`} {fib} {tail {fib}} \n" //
+				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
 				+ ") >> fib | get {10}"));
 	}
 
 	@Test
 	public void testGet() {
-		assertEquals(Int.create(3), eval("get {2} {1, 2, 3, 4,}"));
+		assertEquals(Int.create(3), eval("get {2} {1; 2; 3; 4;}"));
 	}
 
 	@Test
@@ -63,13 +63,13 @@ public class LazyFunCompilerTest {
 		assertEquals(Atom.TRUE, eval("1 = 1"));
 		assertEquals(Atom.FALSE, eval("1 = 2"));
 		eval("cons {1} {}");
-		eval("head {1, 2, 3,}");
-		eval("tail {1, 2, 3,}");
+		eval("head {1; 2; 3;}");
+		eval("tail {1; 2; 3;}");
 	}
 
 	@Test
 	public void testTget2() {
-		assertEquals(Int.create(3), eval("tget2 {1:2:3:4:}"));
+		assertEquals(Int.create(3), eval("tget2 {1, 2, 3, 4,}"));
 	}
 
 	private static Node eval(String f) {
