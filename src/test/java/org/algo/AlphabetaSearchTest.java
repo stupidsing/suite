@@ -1,10 +1,11 @@
-package org.ai;
+package org.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ai.AlphabetaSearch.Game;
+import org.algo.AlphabetaSearch;
+import org.algo.AlphabetaSearch.Game;
 import org.junit.Test;
 
 public class AlphabetaSearchTest {

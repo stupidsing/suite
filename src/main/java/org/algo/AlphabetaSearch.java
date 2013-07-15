@@ -1,4 +1,4 @@
-package org.ai;
+package org.algo;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

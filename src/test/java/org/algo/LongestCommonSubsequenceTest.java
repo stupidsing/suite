@@ -1,10 +1,11 @@
-package org.lcs;
+package org.algo;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.algo.LongestCommonSubsequence;
 import org.junit.Test;
 
 public class LongestCommonSubsequenceTest {

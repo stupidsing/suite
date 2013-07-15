@@ -1,4 +1,4 @@
-package org.lcs;
+package org.algo;
 
 import java.util.ArrayList;
 import java.util.Collections;
