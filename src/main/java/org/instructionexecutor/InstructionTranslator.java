@@ -90,10 +90,10 @@ public class InstructionTranslator {
 				+ "import org.util.FunUtil.*; \n" //
 				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
 				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
-				+ "import " + TranslatedRun.class.getCanonicalName() + "; \n" //
-				+ "import " + TranslatedRunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
+				+ "import " + TranslatedRun.class.getCanonicalName() + "; \n" //
+				+ "import " + TranslatedRunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "\n" //
 				+ "public class " + className + " implements TranslatedRun { \n" //
 				+ "private static final int stackSize = 4096; \n" //
