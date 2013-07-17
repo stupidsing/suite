@@ -36,7 +36,7 @@ define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 ) >>
 define list = type (:t :- rb-tree/:t => list-of :t) (
 	match
-	|| RB-TREE $color $n0 $pivot $n1 [] => concat {to-list {n0}; (pivot;); to-list {n1};}
+	|| RB-TREE $color $n0 $pivot $n1 [] => concat {list {n0}; (pivot;); list {n1};}
 	|| EMPTY => ()
 	|| otherwise error
 ) >>
