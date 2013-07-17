@@ -27,24 +27,24 @@ public class SwingEditor {
 	}
 
 	private void run() {
-		final JLabel topLabel = new JLabel("Top");
+		final JLabel topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
 
-		JTextPane editor = new JTextPane();
+		JTextPane editor = applyDefaults(new JTextPane());
 
 		Component box = Box.createRigidArea(new Dimension(8, 8));
-		JLabel showHideLabel = new JLabel("Show / Hide");
-		JLabel okLabel = new JLabel("OK");
+		JLabel showHideLabel = applyDefaults(new JLabel("Show / Hide"));
+		JLabel okLabel = applyDefaults(new JLabel("OK"));
 
 		// Flow layout allows the components to be their preferred size
 		final JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-		panel.add(applyDefaults(topLabel));
-		panel.add(applyDefaults(editor));
+		panel.add(topLabel);
+		panel.add(editor);
 		panel.add(box);
-		panel.add(applyDefaults(showHideLabel));
-		panel.add(applyDefaults(okLabel));
+		panel.add(showHideLabel);
+		panel.add(okLabel);
 
 		JFrame frame = new JFrame(getClass().getSimpleName());
 		frame.setSize(new Dimension(1024, 768));
