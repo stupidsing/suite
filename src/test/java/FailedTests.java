@@ -35,7 +35,7 @@ public class FailedTests {
 		String s = "" //
 				+ "define type EMPTY of (clazz/:t,) for any (:t,) >>\n" //
 				+ "define add = type (:t :- clazz/:t => clazz/:t) (a => a) >>\n" //
-				+ "add; | _lhead | {EMPTY}\n";
+				+ "add | {EMPTY}\n";
 		System.out.println(s);
 
 		String t = Suite.evaluateFunType(s).toString();
