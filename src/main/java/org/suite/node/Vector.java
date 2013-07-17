@@ -106,7 +106,7 @@ public class Vector extends Node {
 		return data.nodes[start + i];
 	}
 
-	public Vector subVector(int s, int e) {
+	public Vector range(int s, int e) {
 		int length = length();
 		while (s < 0)
 			s += length;

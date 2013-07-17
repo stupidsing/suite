@@ -139,10 +139,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			Vector vector = (Vector) ds[--dsp];
 			int s = ((Int) ds[--dsp]).getNumber();
 			int e = ((Int) ds[--dsp]).getNumber();
-			result = vector.subVector(s, e);
+			result = vector.range(s, e);
 			break;
 		case VTAIL_________:
-			result = ((Vector) ds[--dsp]).subVector(1, 0);
+			result = ((Vector) ds[--dsp]).range(1, 0);
 			break;
 		default:
 			throw new RuntimeException("Unknown instruction " + insn);
