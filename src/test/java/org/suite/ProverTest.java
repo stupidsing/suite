@@ -35,7 +35,14 @@ public class ProverTest {
 	@Test
 	public void testFindAll() {
 		RuleSet rs = RuleSetUtil.create();
-		assertTrue(Suite.proveLogic(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c, )"));
+		assertTrue(Suite.proveLogic(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c,)"));
+	}
+
+	@Test
+	public void testIsCyclic() {
+		RuleSet rs = RuleSetUtil.create();
+		assertFalse(Suite.proveLogic(rs, ".a = (a, b, c,), is.cyclic .a"));
+		assertTrue(Suite.proveLogic(rs, ".a = (a, b, .a, c,), is.cyclic .a"));
 	}
 
 	@Test
