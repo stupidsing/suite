@@ -40,7 +40,7 @@ define list = type (:t :- rb-tree/:t => list-of :t) (
 	|| EMPTY => ()
 	|| otherwise error
 ) >>
-define put-key-value = (key => value =>
+define add-key-value = (key => value =>
 	add {key, value}
 ) >>
 define get-key = (key =>
