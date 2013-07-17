@@ -116,6 +116,11 @@ infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	)
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
+infer-type-rule (OPTION RESOLVE-TYPE .do) .env .tr/.tr .type
+	:- !
+	, infer-type-rule .do .env .tr1/() .type
+	, resolve-type-rules .tr1
+#
 infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !
 	, infer-type-rule .do .env .tr .type
@@ -127,10 +132,6 @@ infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
 	; !, fc-error "Undefined variable" .var
 #
 
-find-simple-type (OPTION RESOLVE-TYPE .do) .env .type
-	:- infer-type-rule .do .env .tr/() .type
-	, resolve-type-rules .tr
-#
 find-simple-type (CONSTANT _) _ _ #
 find-simple-type (ATOM ()) _ (LIST-OF _) #
 find-simple-type (ATOM .a) _ (ATOM-OF .a) #
