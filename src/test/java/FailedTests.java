@@ -29,4 +29,18 @@ public class FailedTests {
 		assertNotEquals('.', t.charAt(0));
 	}
 
+	// Reduced case of test2()
+	@Test
+	public void test3() {
+		String s = "" //
+				+ "define type EMPTY of (clazz/:t,) for any (:t,) >>\n" //
+				+ "define add = type (:t :- clazz/:t => clazz/:t) (a => a) >>\n" //
+				+ "add; | _lhead | {EMPTY}\n";
+		System.out.println(s);
+
+		String t = Suite.evaluateFunType(s).toString();
+		System.out.println(t);
+		assertNotEquals('.', t.charAt(0));
+	}
+
 }
