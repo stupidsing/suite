@@ -46,6 +46,7 @@ public class SystemPredicates {
 		addPredicate("generalize", new EvalPredicates.Generalize());
 		addPredicate("generalize.prefix", new EvalPredicates.GeneralizeWithPrefix());
 		addPredicate("hash", new EvalPredicates.Hash());
+		addPredicate("is.cyclic", new EvalPredicates.IsCyclic());
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());

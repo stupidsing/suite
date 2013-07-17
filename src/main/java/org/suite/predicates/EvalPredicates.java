@@ -12,6 +12,7 @@ import javax.script.ScriptException;
 import org.parser.Operator;
 import org.suite.doer.Cloner;
 import org.suite.doer.Comparer;
+import org.suite.doer.Cyclic;
 import org.suite.doer.Formatter;
 import org.suite.doer.Generalizer;
 import org.suite.doer.Prover;
@@ -101,6 +102,12 @@ public class EvalPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			return prover.bind(Int.create(params[0].hashCode()), params[1]);
+		}
+	}
+
+	public static class IsCyclic implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			return new Cyclic().isCyclic(ps);
 		}
 	}
 
