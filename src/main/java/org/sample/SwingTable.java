@@ -19,7 +19,7 @@ import javax.swing.table.AbstractTableModel;
 /**
  * A boring demonstration of various Swing components.
  */
-public class SwingDemo {
+public class SwingTable {
 
 	@SuppressWarnings("unused")
 	private LayoutManager layoutManager;
