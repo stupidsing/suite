@@ -40,10 +40,10 @@ define list = type (:t :- rb-tree/:t => list-of :t) (
 	|| EMPTY => ()
 	|| otherwise error
 ) >>
-define add-key-value = (key => value =>
+define add-key-value = type (:k :- :v :- :k => :v => rb-tree/(:k, :v) => rb-tree/(:k, :v)) (key => value =>
 	add {key, value}
 ) >>
-define get-key = type (:k :- :v :- rb-tree/(:k, :v) => :k => :v) (key =>
+define get-key = type (:k :- :v :- :k => rb-tree/(:k, :v) => :v) (key =>
 	match
 	|| RB-TREE $color $n0 ($key1, $value1) $n1 [] =>
 		if (key != key1) then
