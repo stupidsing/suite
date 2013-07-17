@@ -32,7 +32,9 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
 	, .prog3 = fc-imported-precompile-library .lib
 	, !, write 'Saving file' .filename, nl
-	, rpn (.prog0 # .prog1 # .prog2 # .prog3 #) .rpn
+	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
+	, once (not is.cyclic .prog; fc-error "Cyclic output detected")
+	, rpn .prog .rpn
 	, file.write .filename .rpn
 #
 
