@@ -222,9 +222,11 @@ sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t0 .t1 #
 sub-super-type-pair _ .t0 .t1 :- generic-specific-pair .t1 .t0 #
 
 -- Morph children types to their supers
-sub-super-type-pair0 .te (FUN-OF .it0 .ot0) (FUN-OF .it1 .ot1)
+sub-super-type-pair0 .te (FUN-OF .it0 .ot) (FUN-OF .it1 .ot)
 	:- sub-super-type-pair .te .it1 .it0
-	; sub-super-type-pair .te .ot0 .ot1
+#
+sub-super-type-pair0 .te (FUN-OF .it .ot0) (FUN-OF .it .ot1)
+	:- sub-super-type-pair .te .ot0 .ot1
 #
 sub-super-type-pair0 .te (LIST-OF .t0) (LIST-OF .t1)
 	:- sub-super-type-pair .te .t0 .t1
