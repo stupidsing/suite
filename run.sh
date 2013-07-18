@@ -12,7 +12,7 @@ SRCTIME=$(find "${HOMEDIR}/pom.xml" "${HOMEDIR}/src/main/" -type f | xargs stat 
 	[ ${SRCTIME} -le ${BUILDTIME} ] ||
 	(
 		mvn -Dmaven.test.skip=true install assembly:single &&
-		java ${OPTS} -jar "${JAR}" -precompile STANDARD,MATH < /dev/null
+		java ${OPTS} -jar "${JAR}" -precompile STANDARD < /dev/null
 	)
 ) &&
 rlwrap -H ${HOME}/.suite_history java ${OPTS} -jar "${JAR}" "$@"
