@@ -110,40 +110,6 @@ public class Main implements AutoCloseable {
 		return result ? 0 : 1;
 	}
 
-	private boolean processOption(String arg, Iterator<String> iter) {
-		return processOption(arg, iter, true);
-	}
-
-	private boolean processOption(String arg, Iterator<String> iter, boolean on) {
-		boolean result = true;
-
-		if (arg.equals("-dump-code"))
-			fcc.setDumpCode(on);
-		else if (arg.equals("-eager"))
-			fcc.setLazy(!on);
-		else if (arg.equals("-filter"))
-			isFilter = on;
-		else if (arg.equals("-functional"))
-			isFunctional = on;
-		else if (arg.equals("-lazy"))
-			fcc.setLazy(on);
-		else if (arg.equals("-libraries") && iter.hasNext())
-			fcc.setLibraries(Arrays.asList(iter.next().split(",")));
-		else if (arg.equals("-logical"))
-			isLogical = on;
-		else if (arg.startsWith("-no-"))
-			result &= processOption("-" + arg.substring(4), iter, false);
-		else if (arg.equals("-precompile") && iter.hasNext())
-			for (String lib : iter.next().split(","))
-				result &= Suite.precompile(lib, proverConfig);
-		else if (arg.equals("-trace"))
-			proverConfig.setTrace(on);
-		else
-			throw new RuntimeException("Unknown option " + arg);
-
-		return result;
-	}
-
 	private boolean run(List<String> importFilenames) throws IOException {
 		Builder builderL2 = null;
 		RuleSet ruleSet = proverConfig.ruleSet();
@@ -262,6 +228,40 @@ public class Main implements AutoCloseable {
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
 			}
+	}
+
+	private boolean processOption(String arg, Iterator<String> iter) {
+		return processOption(arg, iter, true);
+	}
+
+	private boolean processOption(String arg, Iterator<String> iter, boolean on) {
+		boolean result = true;
+
+		if (arg.equals("-dump-code"))
+			fcc.setDumpCode(on);
+		else if (arg.equals("-eager"))
+			fcc.setLazy(!on);
+		else if (arg.equals("-filter"))
+			isFilter = on;
+		else if (arg.equals("-functional"))
+			isFunctional = on;
+		else if (arg.equals("-lazy"))
+			fcc.setLazy(on);
+		else if (arg.equals("-libraries") && iter.hasNext())
+			fcc.setLibraries(Arrays.asList(iter.next().split(",")));
+		else if (arg.equals("-logical"))
+			isLogical = on;
+		else if (arg.startsWith("-no-"))
+			result &= processOption("-" + arg.substring(4), iter, false);
+		else if (arg.equals("-precompile") && iter.hasNext())
+			for (String lib : iter.next().split(","))
+				result &= Suite.precompile(lib, proverConfig);
+		else if (arg.equals("-trace"))
+			proverConfig.setTrace(on);
+		else
+			throw new RuntimeException("Unknown option " + arg);
+
+		return result;
 	}
 
 	private void query(Builder builder, RuleSet ruleSet, Node node) {
