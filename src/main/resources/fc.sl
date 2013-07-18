@@ -85,8 +85,8 @@ fc-define-default-fun 1 _prove PROVE #
 fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 2 fgetc FGETC #
+fc-define-default-fun 1 is-list IS-TREE #
 fc-define-default-fun 1 is-pair IS-TREE #
-fc-define-default-fun 1 is-tree IS-TREE #
 
 fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
@@ -121,7 +121,7 @@ fc-add-functions STANDARD .p (
 		if x then y else false
 	) >>
 	define drop = (n => list =>
-		if:: n > 0 && is-tree {list}
+		if:: n > 0 && is-list {list}
 		then:: list | tail | drop {n - 1}
 		else:: list
 	) >>
@@ -190,7 +190,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
-			if:: is-tree {s} && head {s} = 45
+			if:: is-list {s} && head {s} = 45
 			then:: `0 - ` . unsigned-str-to-int . tail
 			else:: unsigned-str-to-int
 		{s}
@@ -201,7 +201,7 @@ fc-add-functions STANDARD .p (
 		|| otherwise (;)
 	) >>
 	define take = (n => list =>
-		if:: n > 0 && is-tree {list}
+		if:: n > 0 && is-list {list}
 		then:: list | tail | take {n - 1} | cons {list | head}
 		else:: ()
 	) >>
@@ -222,7 +222,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
-		if:: is-tree {r}
+		if:: is-list {r}
 		then:: r | tail | head | unfold-right {fun} | cons {r | head}
 		else:: ()
 	) >>
@@ -347,7 +347,7 @@ fc-add-functions STANDARD .p (
 			}
 		) >>
 		let dump0 = (prec => n =>
-			if (is-tree {n}) then
+			if (is-list {n}) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (n = ()) then

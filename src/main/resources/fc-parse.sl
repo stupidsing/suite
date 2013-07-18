@@ -214,7 +214,7 @@ fc-bind0 .v0 (NEW-VAR .nv) .then .else (DEF-VAR .nv .v0 .then)
 #
 fc-bind0 .v0 .v1 .then .else (
 	DEF-VAR .elseVar (FUN BOOLEAN .else) DEF-VAR .v0var .v0 (
-		IF (INVOKE (VAR .v0var) (VAR is-tree)) (
+		IF (INVOKE (VAR .v0var) (VAR is-list)) (
 			DEF-VAR .headVar (INVOKE (VAR .v0var) (VAR _lhead))
 			DEF-VAR .tailVar (INVOKE (VAR .v0var) (VAR _ltail))
 			.then1

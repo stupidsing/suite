@@ -264,5 +264,5 @@ default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
 default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #
 default-fun-type error _ #
 default-fun-type fgetc (FUN-OF _ (FUN-OF NUMBER NUMBER)) #
+default-fun-type is-list (FUN-OF (LIST-OF .t) BOOLEAN) #
 default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
-default-fun-type is-tree (FUN-OF (LIST-OF .t) BOOLEAN) #

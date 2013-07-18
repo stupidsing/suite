@@ -117,8 +117,8 @@ fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 		_subst/2/VALUE:VALUE:,
 		error/0/,
 		fgetc/2/VALUE:VALUE:,
+		is-list/1/VALUE:,
 		is-pair/1/VALUE:,
-		is-tree/1/VALUE:,
 	) .var/.n/.paramWraps
 	, fc-define-default-fun .n .var .call
 	, !, .c0 = (_ .call .reg .n, .cx)
