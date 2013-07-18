@@ -101,13 +101,13 @@ public class Main implements AutoCloseable {
 
 		if (result)
 			if (isFilter)
-				result &= runFilter(inputs);
+				result &= runFilter(inputs); // Inputs as program
 			else if (isFunctional)
-				result &= runFunctional(inputs);
+				result &= runFunctional(inputs); // Inputs as files
 			else if (isLogical)
-				result &= runLogical(inputs);
+				result &= runLogical(inputs); // Inputs as files
 			else
-				result &= run(inputs);
+				result &= run(inputs); // Inputs as files
 
 		return result ? 0 : 1;
 	}
