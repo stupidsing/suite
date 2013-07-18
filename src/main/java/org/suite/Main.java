@@ -74,10 +74,12 @@ public class Main implements AutoCloseable {
 		int code;
 
 		try (Main main = new Main()) {
-			code = main.run(args);
-		} catch (Throwable ex) {
-			LogUtil.error(ex);
-			code = 1;
+			try {
+				code = main.run(args);
+			} catch (Throwable ex) {
+				LogUtil.error(ex);
+				code = 1;
+			}
 		}
 
 		System.exit(code);
@@ -315,9 +317,9 @@ public class Main implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
-		reader.close();
-		writer.close();
+	public void close() {
+		Util.closeQuietly(reader);
+		Util.closeQuietly(writer);
 	}
 
 }
