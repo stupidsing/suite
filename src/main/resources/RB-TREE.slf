@@ -5,8 +5,8 @@ define type EMPTY of (rb-tree/:t,) for any (:t,) >>
 define type (RB-TREE color rb-tree/:t :t rb-tree/:t []) of (rb-tree/:t,) for any (:t,) >>
 define cr = type color RED >>
 define cb = type color BLACK >>
-define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
-	define add0 = type (:t :- rb-tree/:t => rb-tree/:t) (
+define rbt-append = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
+	define append0 = type (:t :- rb-tree/:t => rb-tree/:t) (
 		define balance = type (:t :- rb-tree/:t => rb-tree/:t) (
 			match
 			|| RB-TREE cb (RB-TREE cr (RB-TREE cr $n0 $p0 $n1 []) $p1 $n2 []) $p2 $n3 [] =>
@@ -24,30 +24,30 @@ define add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 			RB-TREE cr EMPTY v EMPTY []
 		|| RB-TREE $color $n0 $pivot $n1 [] =>
 			if (v < pivot) then
-				RB-TREE color (add0 {n0}) pivot n1 [] | balance
+				RB-TREE color (append0 {n0}) pivot n1 [] | balance
 			else-if (v > pivot) then
-				RB-TREE color n0 pivot (add0 {n1}) [] | balance
+				RB-TREE color n0 pivot (append0 {n1}) [] | balance
 			else error
 		|| otherwise error
 	) >>
 	match
-	|| RB-TREE $color $n0 $pivot $n1 [] => RB-TREE cb n0 pivot n1 [] | add0
-	|| add0
+	|| RB-TREE $color $n0 $pivot $n1 [] => RB-TREE cb n0 pivot n1 [] | append0
+	|| append0
 ) >>
-define list = type (:t :- rb-tree/:t => list-of :t) (
+define rbt-to-list = type (:t :- rb-tree/:t => list-of :t) (
 	match
-	|| RB-TREE $color $n0 $pivot $n1 [] => concat {list {n0}; (pivot;); list {n1};}
+	|| RB-TREE $color $n0 $pivot $n1 [] => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
 	|| EMPTY => ()
 	|| otherwise error
 ) >>
-define add-key-value = type (:k :- :v :- :k => :v => rb-tree/(:k, :v) => rb-tree/(:k, :v)) (key => value =>
-	add {key, value}
+define dict-append = type (:k :- :v :- :k => :v => rb-tree/(:k, :v) => rb-tree/(:k, :v)) (key => value =>
+	rbt-append {key, value}
 ) >>
-define get-key = type (:k :- :v :- :k => rb-tree/(:k, :v) => :v) (key =>
+define dict-get = type (:k :- :v :- :k => rb-tree/(:k, :v) => :v) (key =>
 	match
 	|| RB-TREE $color $n0 ($key1, $value1) $n1 [] =>
 		if (key != key1) then
-			get-key {key} {if (key < key1) then n0 else n1}
+			dict-get {key} {if (key < key1) then n0 else n1}
 		else
 			value1
 	|| otherwise error

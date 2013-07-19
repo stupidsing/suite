@@ -20,7 +20,7 @@ import javax.swing.JTextPane;
  */
 public class SwingEditor {
 
-	private Font font = new Font("Lucida Sans Typewriter", Font.PLAIN, 10);
+	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
 
 	public static void main(String args[]) {
 		new SwingEditor().run();
