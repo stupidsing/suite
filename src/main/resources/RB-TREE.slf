@@ -1,12 +1,12 @@
 using STANDARD >>
 define type RED of (color,) >>
 define type BLACK of (color,) >>
-define type EMPTY of (rb-tree/:t,) for any (:t,) >>
 define type (RB-TREE color rb-tree/:t :t rb-tree/:t []) of (rb-tree/:t,) for any (:t,) >>
+define type EMPTY of (rb-tree/:t,) for any (:t,) >>
 define cr = type color RED >>
 define cb = type color BLACK >>
-define rbt-append = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
-	define append0 = type (:t :- rb-tree/:t => rb-tree/:t) (
+define rbt-add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
+	define add0 = type (:t :- rb-tree/:t => rb-tree/:t) (
 		define balance = type (:t :- rb-tree/:t => rb-tree/:t) (
 			match
 			|| RB-TREE cb (RB-TREE cr (RB-TREE cr $n0 $p0 $n1 []) $p1 $n2 []) $p2 $n3 [] =>
@@ -20,19 +20,19 @@ define rbt-append = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 			|| id
 		) >>
 		match
-		|| EMPTY =>
-			RB-TREE cr EMPTY v EMPTY []
 		|| RB-TREE $color $n0 $pivot $n1 [] =>
 			if (v < pivot) then
-				RB-TREE color (append0 {n0}) pivot n1 [] | balance
+				RB-TREE color (add0 {n0}) pivot n1 [] | balance
 			else-if (v > pivot) then
-				RB-TREE color n0 pivot (append0 {n1}) [] | balance
+				RB-TREE color n0 pivot (add0 {n1}) [] | balance
 			else error
+		|| EMPTY =>
+			RB-TREE cr EMPTY v EMPTY []
 		|| otherwise error
 	) >>
 	match
-	|| RB-TREE $color $n0 $pivot $n1 [] => RB-TREE cb n0 pivot n1 [] | append0
-	|| append0
+	|| RB-TREE $color $n0 $pivot $n1 [] => RB-TREE cb n0 pivot n1 [] | add0
+	|| add0
 ) >>
 define rbt-to-list = type (:t :- rb-tree/:t => list-of :t) (
 	match
@@ -40,8 +40,8 @@ define rbt-to-list = type (:t :- rb-tree/:t => list-of :t) (
 	|| EMPTY => ()
 	|| otherwise error
 ) >>
-define dict-append = type (:k :- :v :- :k => :v => rb-tree/(:k, :v) => rb-tree/(:k, :v)) (key => value =>
-	rbt-append {key, value}
+define dict-add = type (:k :- :v :- :k => :v => rb-tree/(:k, :v) => rb-tree/(:k, :v)) (key => value =>
+	rbt-add {key, value}
 ) >>
 define dict-get = type (:k :- :v :- :k => rb-tree/(:k, :v) => :v) (key =>
 	match
