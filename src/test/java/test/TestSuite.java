@@ -4,8 +4,9 @@ import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.suite.ProverTest;
-import org.util.LogUtil;
+
+import suite.lp.doer.ProverTest;
+import suite.util.LogUtil;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ ProverTest.class })

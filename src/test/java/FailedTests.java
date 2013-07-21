@@ -1,8 +1,9 @@
 import java.io.IOException;
 
-import org.instructionexecutor.FunRbTreeTest;
 import org.junit.Test;
-import org.suite.Suite;
+
+import suite.instructionexecutor.FunRbTreeTest;
+import suite.lp.Suite;
 
 public class FailedTests {
 

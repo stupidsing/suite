@@ -13,7 +13,8 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import org.junit.Test;
-import org.util.IoUtil;
+
+import suite.util.IoUtil;
 
 public class JdkCompilerTest {
 
