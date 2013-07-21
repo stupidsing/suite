@@ -4,7 +4,10 @@
 equate (.f = .f) #
 equate (.f = .h) :- equate (.f = .g), equate1 (.g = .h) #
 
-equate1 (.f = .g) :- (bound .f; bound .g), (equate0 (.f = .g); equate0 (.g = .f)) #
+equate1 (.f = .g)
+	:- once (bound .f; bound .g)
+	, (equate0 (.f = .g); equate0 (.g = .f))
+#
 
 equate0 (.f + .g = .g + .f) #
 equate0 (.f - .g = .f + .g * -1) #
@@ -21,6 +24,7 @@ equate0 (_ ^ 0 = 1) #
 equate0 (.f ^ 1 = .f) #
 equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
 equate0 (.f ^ (.g + .h) = .f ^ .g * .f ^ .h) #
+equate0 (.f ^ (.g * .h) = .(f ^ .g) ^ .h) #
 equate0 (.tree0 = .tree1)
 	:- tree .tree0 .f0 .op .g0
 	, tree .tree1 .f1 .op .g1
