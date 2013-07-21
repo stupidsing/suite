@@ -111,7 +111,7 @@ public class FunCompilerTypeTest {
 
 	@Test
 	public void testRbTree() {
-		String fps = "using RB-TREE >> 0 until 10 | map {add-key-value/ {1}} | apply | {EMPTY}";
+		String fps = "using RB-TREE >> 0 until 10 | map {dict-add/ {1}} | apply | {EMPTY}";
 		assertEquals("rb-tree/(number, number)", getTypeString(fps));
 	}
 

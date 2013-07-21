@@ -80,14 +80,14 @@ public class InstructionTranslator {
 
 		String java = String.format("" //
 				+ "package " + packageName + "; \n" //
-				+ "import org.instructionexecutor.io.*; \n" //
-				+ "import org.suite.*; \n" //
-				+ "import org.suite.doer.*; \n" //
-				+ "import org.suite.kb.*; \n" //
-				+ "import org.suite.node.*; \n" //
-				+ "import org.suite.predicates.*; \n" //
-				+ "import org.util.*; \n" //
-				+ "import org.util.FunUtil.*; \n" //
+				+ "import suite.instructionexecutor.io.*; \n" //
+				+ "import suite.lp.*; \n" //
+				+ "import suite.lp.doer.*; \n" //
+				+ "import suite.lp.kb.*; \n" //
+				+ "import suite.lp.node.*; \n" //
+				+ "import suite.lp.predicates.*; \n" //
+				+ "import suite.util.*; \n" //
+				+ "import suite.util.FunUtil.*; \n" //
 				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
 				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //

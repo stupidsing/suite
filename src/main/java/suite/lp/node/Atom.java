@@ -43,7 +43,7 @@ public class Atom extends Node {
 
 	@Override
 	public int hashCode() {
-		return name.hashCode();
+		return System.identityHashCode(this);
 	}
 
 	@Override
