@@ -56,7 +56,7 @@ public class MathUtil {
 	public static Set<Node> equate(Node node) {
 		Node v = Node.ref(), r = Node.ref();
 
-		Node equate = Node.list(Atom.create("equate"), Node.list(TermOp.EQUAL_, node, v));
+		Node equate = Node.list(Atom.create("equate1"), Node.list(TermOp.EQUAL_, node, v));
 		Node goal = Node.list(Atom.create("find.all"), v, equate, r);
 
 		System.out.println(goal);

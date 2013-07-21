@@ -1,11 +1,11 @@
 -------------------------------------------------------------------------------
 -- symbolic mathematics
 
-equate (.f = .g) :- equate1 (.f = .g) #
+equate (.f = .f) #
+equate (.f = .h) :- equate (.f = .g), equate1 (.g = .h) #
 
 equate1 (.f = .g) :- (bound .f; bound .g), (equate0 (.f = .g); equate0 (.g = .f)) #
 
-equate0 (.f = .f) #
 equate0 (.f + .g = .g + .f) #
 equate0 (.f - .g = .f + .g * -1) #
 equate0 (.f * .g = .g * .f) #
@@ -23,8 +23,9 @@ equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
 equate0 (.f ^ (.g + .h) = .f ^ .g * .f ^ .h) #
 equate0 (.tree0 = .tree1)
 	:- tree .tree0 .f0 .op .g0
-	, equate1 (.f0 = .f1)
-	, equate1 (.g0 = .g1)
+	, (equate1 (.f0 = .f1), .g0 = .g1
+		; equate1 (.g0 = .g1), .f0 = f1
+	)
 	, tree .tree1 .f1 .op .g1
 #
 equate0 (.tree = .value)
@@ -34,6 +35,7 @@ equate0 (.tree = .value)
 	, let .value .tree
 #
 
+equate0 (E ^ (LN .f) = .f) #
 equate0 (LN (E ^ .f) = .f) #
 equate0 (LN (.f * .g) = (LN .f) + (LN .g)) #
 equate0 (LN (.f ^ .g) = .g * (LN .f)) #
@@ -56,7 +58,8 @@ equate0 (DV (E ^ .x) .x = E ^ .x) #
 equate0 (DV (LN .x) .x = 1 / .x) #
 equate0 (DV (SIN .x) .x = COS .x) #
 equate0 (DV (COS .x) .x = -1 * SIN .x) #
-equate0 (DV .y0 .x0 = DV .y1 .x1) :- equate1 (.y0 = .y1), equate1 (.x0 = .x1) #
+equate0 (DV .y .x0 = DV .y .x1) :- equate1 (.x0 = .x1) #
+equate0 (DV .y0 .x = DV .y1 .x) :- equate1 (.y0 = .y1) #
 
 complexity .f 0 :- (is.int .f; is.atom .f), ! #
 complexity .tree .n
