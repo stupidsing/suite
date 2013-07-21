@@ -23,10 +23,10 @@ equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
 equate0 (.f ^ (.g + .h) = .f ^ .g * .f ^ .h) #
 equate0 (.tree0 = .tree1)
 	:- tree .tree0 .f0 .op .g0
+	, tree .tree1 .f1 .op .g1
 	, (equate1 (.f0 = .f1), .g0 = .g1
 		; equate1 (.g0 = .g1), .f0 = f1
 	)
-	, tree .tree1 .f1 .op .g1
 #
 equate0 (.tree = .value)
 	:- tree .tree .f .op .g
