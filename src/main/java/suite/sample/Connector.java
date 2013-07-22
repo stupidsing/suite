@@ -1,4 +1,4 @@
-package suite.net;
+package suite.sample;
 
 import java.io.BufferedReader;
 import java.io.IOException;
