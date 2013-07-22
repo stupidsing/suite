@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import suite.net.cluster.ClusterProbe;
 import suite.util.Util;
 
 public class ClusterProbeTest {

@@ -1,4 +1,4 @@
-package suite.net;
+package suite.net.cluster;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.net.ClusterMapUtil.GetQuery;
-import suite.net.ClusterMapUtil.PutQuery;
+import suite.net.cluster.ClusterMapUtil.GetQuery;
+import suite.net.cluster.ClusterMapUtil.PutQuery;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.Util;

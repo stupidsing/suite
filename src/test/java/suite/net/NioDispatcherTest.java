@@ -18,9 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import suite.net.Channels.BufferedChannel;
-import suite.net.Channels.RequestResponseChannel;
-import suite.net.Channels.Sender;
+import suite.net.channels.BufferedChannel;
+import suite.net.channels.RequestResponseChannel;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.IoUtil;

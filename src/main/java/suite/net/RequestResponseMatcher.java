@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.net.Channels.RequestResponseChannel;
+import suite.net.channels.RequestResponseChannel;
 import suite.util.Util;
 
 public class RequestResponseMatcher {

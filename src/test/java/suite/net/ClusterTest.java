@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import suite.net.cluster.Cluster;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 

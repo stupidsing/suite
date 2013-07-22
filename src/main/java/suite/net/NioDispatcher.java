@@ -13,8 +13,8 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-import suite.net.Channels.Channel;
-import suite.net.Channels.Sender;
+import suite.net.channels.Channel;
+import suite.net.channels.Channel.Sender;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 

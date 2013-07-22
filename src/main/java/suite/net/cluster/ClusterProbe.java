@@ -1,4 +1,4 @@
-package suite.net;
+package suite.net.cluster;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import suite.net.ThreadedService;
 import suite.util.FormatUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;

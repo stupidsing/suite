@@ -14,6 +14,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import suite.net.cluster.Cluster;
+import suite.net.cluster.ClusterMap;
 import suite.util.Util;
 
 public class ClusterMapTest {
