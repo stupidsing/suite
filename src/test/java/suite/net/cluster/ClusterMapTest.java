@@ -1,4 +1,4 @@
-package suite.net;
+package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
 
