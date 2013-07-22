@@ -24,8 +24,7 @@ public class Connector {
 		try (Socket socket = new Socket("wwww.google.com", 80);
 				InputStream is = socket.getInputStream();
 				OutputStream os = socket.getOutputStream();
-				Reader isr = new InputStreamReader(is, charset);
-				Reader reader = new BufferedReader(isr);
+				Reader reader = new BufferedReader(new InputStreamReader(is, charset));
 				PrintWriter writer = new PrintWriter(os)) {
 			writer.print("GET /\r\n\r\n");
 			while (reader.ready())
@@ -44,8 +43,7 @@ public class Connector {
 					public void run() {
 						try (OutputStream os = socket.getOutputStream();
 								InputStream is = socket.getInputStream();
-								Reader isr = new InputStreamReader(is);
-								Reader reader = new BufferedReader(isr);
+								Reader isr = new BufferedReader(new InputStreamReader(is));
 								PrintWriter writer = new PrintWriter(os)) {
 							writer.println("Hello World");
 						} catch (IOException ex) {
