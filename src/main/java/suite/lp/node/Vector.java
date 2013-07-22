@@ -124,7 +124,7 @@ public class Vector extends Node {
 	public int hashCode() {
 		int result = 1;
 		for (int i = start; i < end; i++) {
-			int h = Util.hashCode(data.nodes[i + data.startUsed]);
+			int h = Util.hashCode(data.nodes[i]);
 			result = 31 * result + h;
 		}
 		return result;
@@ -136,6 +136,7 @@ public class Vector extends Node {
 
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
+
 			if (node instanceof Vector) {
 				Vector v = (Vector) node;
 				result = end - start == v.end - v.start;
