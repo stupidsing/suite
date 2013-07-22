@@ -14,7 +14,14 @@ fc-setup-precompile .lib
 	, fc-setup-precompile0 .lib .do1/.do0 .filename
 #
 
-fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
+fc-setup-precompile0 .lib .do1/.do0 .filename
+	:- fc-precompile .lib .do1/.do0 .prog
+	, !, write 'Saving file' .filename, nl
+	, rpn .prog .rpn
+	, file.write .filename .rpn
+#
+
+fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	:- .pc = .ues/.ves/.tes .trs/.trs .fcs
 	, !, write 'Parsing program', nl
 	, !, fc-parse .do1 .parsed
@@ -31,11 +38,9 @@ fc-setup-precompile0 .lib .do1/($$PRECOMPILE .pc) .filename
 	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
 	, .prog3 = fc-imported-precompile-library .lib
-	, !, write 'Saving file' .filename, nl
 	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
+	, !, write 'Verifying output', nl
 	, once (not is.cyclic .prog; fc-error "Cyclic output detected")
-	, rpn .prog .rpn
-	, file.write .filename .rpn
 #
 
 fc-dump-precompile .mode .lib .fcs .parsed .prog
