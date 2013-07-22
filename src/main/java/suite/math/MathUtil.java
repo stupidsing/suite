@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.lp.Suite;
+import suite.lp.doer.Complexity;
 import suite.lp.doer.Prover;
 import suite.lp.doer.TermParser.TermOp;
 import suite.lp.node.Atom;
@@ -17,17 +18,18 @@ import suite.lp.node.Tree;
 
 public class MathUtil {
 
+	private static final Complexity complexity = new Complexity();
 	private static final Prover prover = Suite.createProver(Arrays.asList("auto.sl", "math.sl"));
 
 	private static Comparator<Node> comparator = new Comparator<Node>() {
 		public int compare(Node n0, Node n1) {
-			return complexity(n0) - complexity(n1);
+			return complexity.complexity(n0) - complexity.complexity(n1);
 		}
 	};
 
 	public static Node simplify(Node node) {
 		int space = 100;
-		int complexity0 = complexity(node);
+		int complexity0 = complexity.complexity(node);
 		Set<Node> searchedNodes = new HashSet<>();
 		List<Node> freshNodes = new ArrayList<>();
 		searchedNodes.add(node);
@@ -42,7 +44,7 @@ public class MathUtil {
 
 			for (Node freshNode : freshNodes)
 				for (Node equateNode : equate(freshNode))
-					if (!searchedNodes.contains(equateNode) && complexity(equateNode) < complexity0 + 1) {
+					if (!searchedNodes.contains(equateNode) && complexity.complexity(equateNode) < complexity0 + 1) {
 						searchedNodes.add(equateNode);
 						freshNodes1.add(equateNode);
 					}
@@ -74,16 +76,6 @@ public class MathUtil {
 			return results;
 		} else
 			return null;
-	}
-
-	public static int complexity(Node node) {
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			Node l = tree.getLeft();
-			Node r = tree.getRight();
-			return Math.max(complexity(l), complexity(r)) + 1;
-		} else
-			return 0;
 	}
 
 }
