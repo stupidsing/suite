@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -23,6 +24,8 @@ public class LogUtil {
 	}
 
 	public static void initLog4j(Level level) {
+		File logDir = new File(System.getProperty("home.dir"), "logs");
+
 		PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 
 		ConsoleAppender console = new ConsoleAppender(layout);
@@ -30,7 +33,7 @@ public class LogUtil {
 		console.activateOptions();
 
 		DailyRollingFileAppender file = new DailyRollingFileAppender();
-		file.setFile("logs/suite.log");
+		file.setFile(new File(logDir, "suite.log").toString());
 		file.setDatePattern("'.'yyyyMMdd");
 		file.setLayout(layout);
 		file.activateOptions();
