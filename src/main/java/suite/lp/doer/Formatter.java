@@ -44,7 +44,7 @@ public class Formatter {
 
 		if (tree != null) {
 			String op = tree.getOperator().getName();
-			op = Util.equals(op, " ") ? "[]" : op.trim();
+			op = Util.equals(op, " ") ? "<>" : op.trim();
 			String indent1 = indent + "  ";
 
 			treeize(tree.getLeft(), sb, indent1);
