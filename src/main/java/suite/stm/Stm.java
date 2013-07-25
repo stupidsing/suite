@@ -1,6 +1,16 @@
 package suite.stm;
 
+import suite.util.FunUtil.Sink;
+
 public class Stm {
+
+	public static enum TransactionStatus {
+		ABORTED, ACTIVE, COMMITTED
+	}
+
+	public static class AbortException extends TransactionException {
+		private static final long serialVersionUID = 1l;
+	}
 
 	public static class DeadlockException extends TransactionException {
 		private static final long serialVersionUID = 1l;
@@ -26,6 +36,23 @@ public class Stm {
 		public T read(Transaction transaction) throws InterruptedException, TransactionException;
 
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException;
+	}
+
+	public static boolean doTransaction(TransactionManager transactionManager, Sink<Transaction> fun) {
+		Transaction transaction = transactionManager.createTransaction();
+
+		try {
+			try {
+				fun.sink(transaction);
+				return true;
+			} finally {
+				transaction.commit();
+			}
+		} catch (Exception ex) {
+			transaction.rollback();
+		}
+
+		return false;
 	}
 
 }
