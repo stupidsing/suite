@@ -13,7 +13,9 @@ import suite.stm.Stm.TransactionManager;
  * 
  * Less aborts (only on dead-locks), but prone to waits.
  * 
- * FIXME read upon read. FIXME transaction versioning.
+ * FIXME read upon read.
+ * 
+ * FIXME transaction versioning.
  * 
  * @author ywsing
  */
