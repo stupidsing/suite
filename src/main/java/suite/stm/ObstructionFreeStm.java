@@ -15,15 +15,13 @@ import suite.stm.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
- * 
+ *
  * FIXME read after read, value might be changed.
- * 
+ *
  * FIXME read after write, confused versioning.
- * 
- * FIXME transaction versioning.
- * 
+ *
  * TEST T0 read A, T1 write A, T1 write B, T0 read B
- * 
+ *
  * @author ywsing
  */
 public class ObstructionFreeStm implements TransactionManager {
