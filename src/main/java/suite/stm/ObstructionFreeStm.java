@@ -61,7 +61,7 @@ public class ObstructionFreeStm implements TransactionManager {
 			return writeTimestamp;
 		}
 
-		private void waitForAnotherTransaction(ObstructionFreeTransaction target) throws InterruptedException, TransactionException {
+		private void waitForAnotherTransaction(ObstructionFreeTransaction target) throws InterruptedException, DeadlockException {
 			synchronized (ObstructionFreeStm.class) {
 				ObstructionFreeTransaction t = target;
 
