@@ -15,13 +15,13 @@ import suite.stm.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
- *
+ * 
  * FIXME read after read, value might be changed.
- *
+ * 
  * FIXME read after write, confused versioning.
- *
+ * 
  * TEST T0 read A, T1 write A, T1 write B, T0 read B
- *
+ * 
  * @author ywsing
  */
 public class ObstructionFreeStm implements TransactionManager {
@@ -39,7 +39,7 @@ public class ObstructionFreeStm implements TransactionManager {
 
 		public void commit() throws AbortException {
 			for (ObstructionFreeMemory<?> memory : touchedMemories)
-				if (readTimestamp < memory.timestamp0 && writeTimestamp < memory.timestamp0)
+				if (readTimestamp < memory.timestamp0 && memory.timestamp0 < writeTimestamp)
 					throw new AbortException();
 
 			setStatus(TransactionStatus.COMMITTED);
