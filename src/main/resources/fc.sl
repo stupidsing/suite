@@ -144,6 +144,9 @@ fc-add-functions STANDARD .p (
 	define id = (v =>
 		v
 	) >>
+	define invoke = (f => x =>
+		f {x}
+	) >>
 	define lesser = (a => b =>
 		if (a > b) then b else a
 	) >>
@@ -241,7 +244,7 @@ fc-add-functions STANDARD .p (
 		|| otherwise id
 	) >>
 	define apply =
-		flip {fold-left {x => f => f {x}}}
+		invoke/ | fold-left | flip
 	>>
 	define fold = (fun => list =>
 		fold-left {fun} {list | head} {list | tail}
