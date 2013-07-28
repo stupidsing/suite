@@ -113,6 +113,7 @@ public class ObstructionFreeStm implements TransactionManager {
 
 				// Finishes other committed transactions;
 				// update value by being owner temporarily
+				// TODO synchronizing problem
 				if (theirTransaction != null && theirTransaction.status == TransactionStatus.COMMITTED)
 					if (owner.compareAndSet(theirTransaction, ourTransaction)) {
 						timestamp0 = timestamp1;
