@@ -138,11 +138,14 @@ fc-add-functions STANDARD .p (
 		|| $h; $t => fun {h} {fold-right {fun} {init} {t}}
 		|| otherwise init
 	) >>
+	define greater = (a => b =>
+		if (a > b) then a else b
+	) >>
 	define id = (v =>
 		v
 	) >>
-	define maximum = (a => b =>
-		if (a > b) then a else b
+	define lesser = (a => b =>
+		if (a > b) then b else a
 	) >>
 	define merge = (list0 => list1 =>
 		if-bind (list0 = ($h0; $t0)) then
@@ -156,9 +159,6 @@ fc-add-functions STANDARD .p (
 				list0
 		else
 			list1
-	) >>
-	define minimum = (a => b =>
-		if (a > b) then b else a
 	) >>
 	define not = (x =>
 		if x then false else true
@@ -296,6 +296,12 @@ fc-add-functions STANDARD .p (
 			else
 				anything => "0"
 	) >>
+	define maximum =
+		fold {greater}
+	>>
+	define minimum =
+		fold {lesser}
+	>>
 	define merge-sort = (merge => list =>
 		let len = length {list} >>
 		if (len > 1) then
