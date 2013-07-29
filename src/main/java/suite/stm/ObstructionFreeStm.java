@@ -174,7 +174,6 @@ public class ObstructionFreeStm implements TransactionManager {
 
 	private void wait(ObstructionFreeTransaction source, ObstructionFreeTransaction target) throws InterruptedException,
 			DeadlockException {
-
 		synchronized (ObstructionFreeStm.class) {
 			ObstructionFreeTransaction root = target;
 
