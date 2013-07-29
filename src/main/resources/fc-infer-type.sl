@@ -153,8 +153,10 @@ infer-compatible-types .a .b .ue/.ve/.te .tr0/.trx .type
 	)
 #
 
-resolve-type-rules .tr :- resolve-type-rules0 .tr, ! #
-resolve-type-rules _ :- fc-error "Unable to resolve types" #
+resolve-type-rules .tr
+	:- once (not is.cyclic .tr; fc-error "Cyclic types")
+	, once (resolve-type-rules0 .tr; fc-error "Unmatched types")
+#
 
 resolve-type-rules0 .tr
 	:- once (sort-resolve-type-rules .tr .ps .nps)
