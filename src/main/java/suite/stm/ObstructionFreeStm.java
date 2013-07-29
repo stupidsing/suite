@@ -32,17 +32,23 @@ public class ObstructionFreeStm implements TransactionManager {
 
 	private class ObstructionFreeTransaction implements Transaction {
 		private volatile TransactionStatus status = TransactionStatus.ACTIVE;
-		private ObstructionFreeTransaction waitingFor;
+		private volatile ObstructionFreeTransaction waitingFor;
 		private int readTimestamp = nullTimestamp;
 		private int writeTimestamp = nullTimestamp;
 		private Set<ObstructionFreeMemory<?>> touchedMemories = new HashSet<>();
 
 		public void commit() throws AbortException {
-			for (ObstructionFreeMemory<?> memory : touchedMemories)
-				if (readTimestamp < memory.timestamp0 && memory.timestamp0 < writeTimestamp)
-					throw new AbortException();
+			boolean isCommit = true;
 
-			setStatus(TransactionStatus.COMMITTED);
+			// If some touched values are discovered to be modified between our
+			// read/write time, we must abort
+			for (ObstructionFreeMemory<?> memory : touchedMemories)
+				isCommit &= memory.owner.get() == this || readTimestamp >= memory.timestamp0 || memory.timestamp0 >= writeTimestamp;
+
+			if (isCommit)
+				setStatus(TransactionStatus.COMMITTED);
+			else
+				throw new AbortException();
 		}
 
 		public void rollback() {
@@ -56,35 +62,14 @@ public class ObstructionFreeStm implements TransactionManager {
 		}
 
 		private int writeTimestamp() {
+			readTimestamp(); // Read time before write time
+
 			if (writeTimestamp == nullTimestamp)
 				writeTimestamp = clock.getAndIncrement();
 			return writeTimestamp;
 		}
 
-		private void waitForAnotherTransaction(ObstructionFreeTransaction target) throws InterruptedException, DeadlockException {
-			synchronized (ObstructionFreeStm.class) {
-				ObstructionFreeTransaction t = target;
-
-				// Detects waiting cycles and abort if deadlock is happening
-				while (t != null)
-					if (t != this)
-						t = t.waitingFor;
-					else {
-						setStatus(TransactionStatus.ABORTED);
-						throw new DeadlockException();
-					}
-
-				waitingFor = target;
-			}
-
-			try {
-				target.waitStatus();
-			} finally {
-				waitingFor = null;
-			}
-		}
-
-		private void waitStatus() throws InterruptedException {
+		private void waitForCompletion() throws InterruptedException {
 			if (status == TransactionStatus.ACTIVE)
 				synchronized (this) {
 					while (status == TransactionStatus.ACTIVE)
@@ -98,38 +83,63 @@ public class ObstructionFreeStm implements TransactionManager {
 		}
 	}
 
-	private static class ObstructionFreeMemory<T> implements Memory<T> {
+	private class ObstructionFreeMemory<T> implements Memory<T> {
 		private AtomicReference<ObstructionFreeTransaction> owner = new AtomicReference<>();
 		private volatile int timestamp0;
 		private volatile T value0;
 		private volatile int timestamp1;
 		private volatile T value1;
 
+		/**
+		 * Read would obtain the value between two checks of the owner.
+		 * 
+		 * If the owner or its status found out be changed, read needs to be
+		 * performed again.
+		 * 
+		 * Timestamp checking is done to avoid reading too up-to-date data.
+		 */
 		public T read(Transaction transaction) throws AbortException {
 			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
 
 			while (true) {
-				ObstructionFreeTransaction theirTransaction = owner.get();
+				ObstructionFreeTransaction theirTransaction0 = owner.get();
+				TransactionStatus theirStatus0 = theirTransaction0 != null ? theirTransaction0.status : null;
+				long timestamp;
+				T value;
 
-				// Finishes other committed transactions;
-				// update value by being owner temporarily
-				// TODO synchronizing problem
-				if (theirTransaction != null && theirTransaction.status == TransactionStatus.COMMITTED)
-					if (owner.compareAndSet(theirTransaction, ourTransaction)) {
-						timestamp0 = timestamp1;
-						value0 = value1;
-						owner.set(null); // Loses the owner status
+				if (theirTransaction0 != ourTransaction && theirStatus0 != TransactionStatus.COMMITTED) {
+					timestamp = timestamp0;
+					value = value0;
+				} else {
+					timestamp = timestamp1;
+					value = value1;
+				}
+
+				ObstructionFreeTransaction theirTransaction1 = owner.get();
+				TransactionStatus theirStatus1 = theirTransaction1 != null ? theirTransaction1.status : null;
+
+				// Retry if owner or owner status changed
+				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1) {
+					int readTimestamp = ourTransaction.readTimestamp();
+
+					if (theirTransaction0 == ourTransaction || timestamp <= readTimestamp) {
+						ourTransaction.touchedMemories.add(this);
+						return value;
 					} else
-						continue;
-
-				if (timestamp0 <= ourTransaction.readTimestamp()) {
-					ourTransaction.touchedMemories.add(this);
-					return value0;
-				} else
-					throw new AbortException();
+						throw new AbortException();
+				}
 			}
 		}
 
+		/**
+		 * Write would obtain the owner right.
+		 * 
+		 * If someone else is the owner, the write would block until that owner
+		 * completes. Simple waiting hierarchy is implemented in transaction
+		 * class to detect deadlocks.
+		 * 
+		 * Timestamp checking is done to avoid changing too up-to-date data.
+		 */
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException {
 			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
 			ObstructionFreeTransaction theirTransaction;
@@ -139,7 +149,7 @@ public class ObstructionFreeStm implements TransactionManager {
 				if (theirTransaction != null) {
 
 					// Waits until previous owner complete
-					ourTransaction.waitForAnotherTransaction(theirTransaction);
+					ObstructionFreeStm.this.wait(ourTransaction, theirTransaction);
 
 					if (owner.compareAndSet(theirTransaction, ourTransaction)) {
 						if (theirTransaction.status == TransactionStatus.COMMITTED) {
@@ -154,12 +164,37 @@ public class ObstructionFreeStm implements TransactionManager {
 
 			int writeTimestamp = ourTransaction.writeTimestamp();
 
-			if (timestamp1 <= writeTimestamp) {
+			if (timestamp0 <= writeTimestamp) {
 				ourTransaction.touchedMemories.add(this);
 				timestamp1 = writeTimestamp;
 				value1 = t;
 			} else
 				throw new AbortException();
+		}
+	}
+
+	private void wait(ObstructionFreeTransaction source, ObstructionFreeTransaction target) throws InterruptedException,
+			DeadlockException {
+
+		synchronized (ObstructionFreeStm.class) {
+			ObstructionFreeTransaction root = target;
+
+			// Detects waiting cycles and abort if deadlock is happening
+			while (root != null)
+				if (root != source)
+					root = root.waitingFor;
+				else {
+					source.setStatus(TransactionStatus.ABORTED);
+					throw new DeadlockException();
+				}
+
+			source.waitingFor = target;
+		}
+
+		try {
+			target.waitForCompletion();
+		} finally {
+			source.waitingFor = null;
 		}
 	}
 
