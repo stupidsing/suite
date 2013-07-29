@@ -25,4 +25,10 @@ public class FailedTests {
 		Suite.evaluateFun("`{}`", false);
 	}
 
+	// Non-stoppable resolve-types
+	@Test
+	public void test3() {
+		Suite.evaluateFunType("define combos = (t => t | combos | {v => v}) >> combos");
+	}
+
 }

@@ -97,6 +97,13 @@ public class IoPredicates {
 		}
 	}
 
+	public static class Log implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			LogUtil.info(Formatter.dump(ps));
+			return true;
+		}
+	}
+
 	public static class Sink implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			prover.config().getSink().sink(ps);

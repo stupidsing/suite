@@ -81,6 +81,7 @@ public class SystemPredicates {
 		addPredicate("file.read", new IoPredicates.FileRead());
 		addPredicate("file.write", new IoPredicates.FileWrite());
 		addPredicate("home.dir", new IoPredicates.HomeDir());
+		addPredicate("log", new IoPredicates.Log());
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("sink", new IoPredicates.Sink());
 		addPredicate("source", new IoPredicates.Source());
