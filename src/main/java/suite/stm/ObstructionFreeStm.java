@@ -35,14 +35,14 @@ public class ObstructionFreeStm implements TransactionManager {
 		private volatile ObstructionFreeTransaction waitingFor;
 		private int readTimestamp = nullTimestamp;
 		private int writeTimestamp = nullTimestamp;
-		private Set<ObstructionFreeMemory<?>> touchedMemories = new HashSet<>();
+		private Set<ObstructionFreeMemory<?>> readMemories = new HashSet<>();
 
 		public void commit() throws AbortException {
 			boolean isCommit = true;
 
 			// If some touched values are discovered to be modified between our
 			// read/write time, we must abort
-			for (ObstructionFreeMemory<?> memory : touchedMemories)
+			for (ObstructionFreeMemory<?> memory : readMemories)
 				isCommit &= memory.owner.get() == this || readTimestamp >= memory.timestamp0 || memory.timestamp0 >= writeTimestamp;
 
 			if (isCommit)
@@ -62,11 +62,16 @@ public class ObstructionFreeStm implements TransactionManager {
 		}
 
 		private int writeTimestamp() {
-			readTimestamp(); // Read time before write time
+			readTimestamp(); // Read before write
 
 			if (writeTimestamp == nullTimestamp)
 				writeTimestamp = clock.getAndIncrement();
 			return writeTimestamp;
+		}
+
+		private synchronized void setStatus(TransactionStatus status1) {
+			status = status1;
+			notifyAll();
 		}
 
 		private void waitForCompletion() throws InterruptedException {
@@ -75,11 +80,6 @@ public class ObstructionFreeStm implements TransactionManager {
 					while (status == TransactionStatus.ACTIVE)
 						wait();
 				}
-		}
-
-		private synchronized void setStatus(TransactionStatus status1) {
-			status = status1;
-			notifyAll();
 		}
 	}
 
@@ -122,10 +122,9 @@ public class ObstructionFreeStm implements TransactionManager {
 				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1) {
 					int readTimestamp = ourTransaction.readTimestamp();
 
-					if (theirTransaction0 == ourTransaction || timestamp <= readTimestamp) {
-						ourTransaction.touchedMemories.add(this);
+					if (theirTransaction0 == ourTransaction || timestamp <= readTimestamp)
 						return value;
-					} else
+					else
 						throw new AbortException();
 				}
 			}
@@ -165,7 +164,7 @@ public class ObstructionFreeStm implements TransactionManager {
 			int writeTimestamp = ourTransaction.writeTimestamp();
 
 			if (timestamp0 <= writeTimestamp) {
-				ourTransaction.touchedMemories.add(this);
+				ourTransaction.readMemories.add(this);
 				timestamp1 = writeTimestamp;
 				value1 = t;
 			} else
@@ -179,7 +178,7 @@ public class ObstructionFreeStm implements TransactionManager {
 		synchronized (ObstructionFreeStm.class) {
 			ObstructionFreeTransaction root = target;
 
-			// Detects waiting cycles and abort if deadlock is happening
+			// Detect waiting cycles and abort if deadlock is happening
 			while (root != null)
 				if (root != source)
 					root = root.waitingFor;
