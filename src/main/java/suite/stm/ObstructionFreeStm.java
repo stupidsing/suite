@@ -122,9 +122,10 @@ public class ObstructionFreeStm implements TransactionManager {
 				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1) {
 					int readTimestamp = ourTransaction.readTimestamp();
 
-					if (theirTransaction0 == ourTransaction || timestamp <= readTimestamp)
+					if (theirTransaction0 == ourTransaction || timestamp <= readTimestamp) {
+						ourTransaction.readMemories.add(this);
 						return value;
-					else
+					} else
 						throw new AbortException();
 				}
 			}
@@ -164,7 +165,6 @@ public class ObstructionFreeStm implements TransactionManager {
 			int writeTimestamp = ourTransaction.writeTimestamp();
 
 			if (timestamp0 <= writeTimestamp) {
-				ourTransaction.readMemories.add(this);
 				timestamp1 = writeTimestamp;
 				value1 = t;
 			} else
