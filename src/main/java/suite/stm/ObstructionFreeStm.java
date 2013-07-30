@@ -16,11 +16,11 @@ import suite.stm.Stm.TransactionStatus;
 /**
  * Implements software transactional memory by locking.
  * 
- * FIXME read after read, value might be changed.
+ * FIXME read after read.
  * 
  * FIXME read after write, confused versioning.
  * 
- * TEST T0 read A, T1 write A, T1 write B, T0 read B
+ * TEST T0 read A, T1 write A, T1 write B, T1 commit, T0 read B
  * 
  * @author ywsing
  */
@@ -33,17 +33,19 @@ public class ObstructionFreeStm implements TransactionManager {
 	private class ObstructionFreeTransaction implements Transaction {
 		private volatile TransactionStatus status = TransactionStatus.ACTIVE;
 		private volatile ObstructionFreeTransaction waitingFor;
-		private int readTimestamp = nullTimestamp;
-		private int writeTimestamp = nullTimestamp;
+		private int readTimestamp = clock.getAndIncrement();
+		private int commitTimestamp = nullTimestamp;
 		private Set<ObstructionFreeMemory<?>> readMemories = new HashSet<>();
 
 		public void commit() throws AbortException {
 			boolean isCommit = true;
+			commitTimestamp = clock.getAndIncrement();
 
 			// If some touched values are discovered to be modified between our
 			// read/write time, we must abort
 			for (ObstructionFreeMemory<?> memory : readMemories)
-				isCommit &= memory.owner.get() == this || readTimestamp >= memory.timestamp0 || memory.timestamp0 >= writeTimestamp;
+				isCommit &= memory.owner.get() == this //
+						|| readTimestamp >= memory.timestamp0 || memory.timestamp0 >= commitTimestamp;
 
 			if (isCommit)
 				setStatus(TransactionStatus.COMMITTED);
@@ -53,20 +55,6 @@ public class ObstructionFreeStm implements TransactionManager {
 
 		public void rollback() {
 			setStatus(TransactionStatus.ABORTED);
-		}
-
-		private int readTimestamp() {
-			if (readTimestamp == nullTimestamp)
-				readTimestamp = clock.getAndIncrement();
-			return readTimestamp;
-		}
-
-		private int writeTimestamp() {
-			readTimestamp(); // Read before write
-
-			if (writeTimestamp == nullTimestamp)
-				writeTimestamp = clock.getAndIncrement();
-			return writeTimestamp;
 		}
 
 		private synchronized void setStatus(TransactionStatus status1) {
@@ -87,7 +75,6 @@ public class ObstructionFreeStm implements TransactionManager {
 		private AtomicReference<ObstructionFreeTransaction> owner = new AtomicReference<>();
 		private volatile int timestamp0;
 		private volatile T value0;
-		private volatile int timestamp1;
 		private volatile T value1;
 
 		/**
@@ -111,7 +98,7 @@ public class ObstructionFreeStm implements TransactionManager {
 					timestamp = timestamp0;
 					value = value0;
 				} else {
-					timestamp = timestamp1;
+					timestamp = theirTransaction0.commitTimestamp;
 					value = value1;
 				}
 
@@ -119,15 +106,12 @@ public class ObstructionFreeStm implements TransactionManager {
 				TransactionStatus theirStatus1 = theirTransaction1 != null ? theirTransaction1.status : null;
 
 				// Retry if owner or owner status changed
-				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1) {
-					int readTimestamp = ourTransaction.readTimestamp();
-
-					if (theirTransaction0 == ourTransaction || timestamp <= readTimestamp) {
+				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1)
+					if (theirTransaction0 == ourTransaction || timestamp <= ourTransaction.readTimestamp) {
 						ourTransaction.readMemories.add(this);
 						return value;
 					} else
 						throw new AbortException();
-				}
 			}
 		}
 
@@ -153,7 +137,7 @@ public class ObstructionFreeStm implements TransactionManager {
 
 					if (owner.compareAndSet(theirTransaction, ourTransaction)) {
 						if (theirTransaction.status == TransactionStatus.COMMITTED) {
-							timestamp0 = timestamp1;
+							timestamp0 = theirTransaction.commitTimestamp;
 							value0 = value1;
 						}
 
@@ -162,12 +146,9 @@ public class ObstructionFreeStm implements TransactionManager {
 				} else if (owner.compareAndSet(theirTransaction, ourTransaction))
 					break;
 
-			int writeTimestamp = ourTransaction.writeTimestamp();
-
-			if (timestamp0 <= writeTimestamp) {
-				timestamp1 = writeTimestamp;
+			if (timestamp0 <= ourTransaction.readTimestamp)
 				value1 = t;
-			} else
+			else
 				throw new AbortException();
 		}
 	}
