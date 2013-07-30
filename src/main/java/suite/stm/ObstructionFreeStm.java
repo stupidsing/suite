@@ -74,7 +74,7 @@ public class ObstructionFreeStm implements TransactionManager {
 		/**
 		 * Read would obtain the value between two checks of the owner.
 		 * 
-		 * If the owner or its status found out be changed, read needs to be
+		 * If the owner or its status is found to be changed, read needs to be
 		 * performed again.
 		 * 
 		 * Timestamp checking is done to avoid reading too up-to-date data.
