@@ -13,6 +13,7 @@ import suite.lp.node.Tree;
 import suite.parser.Operator;
 import suite.parser.Operator.Assoc;
 import suite.parser.Parser;
+import suite.util.ParserUtil;
 import suite.util.Util;
 
 public class Formatter {
@@ -143,11 +144,7 @@ public class Formatter {
 					|| s.contains(Parser.closeLineComment) //
 					|| s.contains(Parser.openLineComment);
 
-			try {
-				Integer.parseInt(s);
-				quote |= true;
-			} catch (Exception ignored) {
-			}
+			quote |= ParserUtil.isInteger(s);
 
 			if (quote)
 				s = quote(s, '\'');
