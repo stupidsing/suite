@@ -98,6 +98,8 @@ public class Parser {
 
 		if (ParserUtil.isInteger(s))
 			return Int.create(Integer.parseInt(s));
+		if (s.startsWith("+x"))
+			return Int.create(Integer.parseInt(s.substring(2), 16));
 
 		if (first == '"' && last == '"')
 			return new Str(unescape(Util.substr(s, 1, -1), "\""));

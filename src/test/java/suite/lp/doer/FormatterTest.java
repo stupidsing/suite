@@ -13,22 +13,34 @@ import suite.util.Util;
 public class FormatterTest {
 
 	@Test
-	public void testFormatter() {
+	public void testDisplay() {
 		assertEquals("123", Formatter.display(Int.create(123)));
-		testFormat("1 + 2 * 3");
-		testFormat("1 * 2 - 3");
-		testFormat("1 - 2 - 3");
-		testFormat("1 + 2 + 3");
-		testFormat("(1 + 2) * 3");
-		testFormat("a - b - c");
-		testFormat("a - (b - c)");
-		testFormat("(a, b) = (c, d)");
+		testDisplay("1 + 2 * 3");
+		testDisplay("1 * 2 - 3");
+		testDisplay("1 - 2 - 3");
+		testDisplay("1 + 2 + 3");
+		testDisplay("(1 + 2) * 3");
+		testDisplay("a - b - c");
+		testDisplay("a - (b - c)");
+		testDisplay("(a, b) = (c, d)");
 		Util.dump(Util.currentMethod(), Formatter.display(new Reference()));
 	}
 
-	private void testFormat(String s) {
+	@Test
+	public void testDump() {
+		testDump("-1");
+		testDump("'-1'");
+		testDump("'+xFEDC3210'");
+	}
+
+	private void testDisplay(String s) {
 		Node node = Suite.parse(s);
 		assertEquals(s, Formatter.display(node));
+	}
+
+	private void testDump(String s) {
+		Node node = Suite.parse(s);
+		assertEquals(s, Formatter.dump(node));
 	}
 
 }
