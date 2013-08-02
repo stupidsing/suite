@@ -96,10 +96,8 @@ public class Parser {
 		if (first == '`' && last == '`')
 			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
-		try {
+		if (ParserUtil.isInteger(s))
 			return Int.create(Integer.parseInt(s));
-		} catch (Exception ignored) {
-		}
 
 		if (first == '"' && last == '"')
 			return new Str(unescape(Util.substr(s, 1, -1), "\""));

@@ -71,4 +71,20 @@ public class ParserUtil {
 		return quote;
 	}
 
+	public static boolean isInteger(String s) {
+		boolean result;
+
+		if (!s.isEmpty()) {
+			if (s.charAt(0) == '-')
+				s = s.substring(1);
+
+			result = !s.isEmpty();
+			for (char c : s.toCharArray())
+				result &= Character.isDigit(c);
+		} else
+			result = false;
+
+		return result;
+	}
+
 }
