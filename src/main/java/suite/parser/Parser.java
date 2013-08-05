@@ -100,6 +100,8 @@ public class Parser {
 			return Int.create(Integer.parseInt(s));
 		if (s.startsWith("+x"))
 			return Int.create(Integer.parseInt(s.substring(2), 16));
+		if (s.startsWith("+'") && s.endsWith("'") && s.length() == 4)
+			return Int.create((int) s.charAt(2));
 
 		if (first == '"' && last == '"')
 			return new Str(unescape(Util.substr(s, 1, -1), "\""));
