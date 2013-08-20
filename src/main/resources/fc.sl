@@ -372,7 +372,7 @@ fc-add-functions STANDARD .p (
 		starts-with {end | reverse} . reverse
 	) >>
 	define join = (separator =>
-		concat . map {separator; | flip {append}}
+		concat . map {separator; | append/}
 	) >>
 	define quick-sort = (cmp =>
 		match
