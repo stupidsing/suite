@@ -254,7 +254,7 @@ fc-add-functions STANDARD .p (
 		in | _popen {command} | source
 	) >>
 	define reverse =
-		fold-left {a => b => b; a} {}
+		fold-left {cons/} {}
 	>>
 	define substring = (start => end => list =>
 		let len = length {list} >>
