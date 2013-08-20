@@ -150,19 +150,6 @@ fc-add-functions STANDARD .p (
 	define lesser = (a => b =>
 		if (a > b) then b else a
 	) >>
-	define merge = (list0 => list1 =>
-		if-bind (list0 = ($h0; $t0)) then
-			if-bind (list1 = ($h1; $t1)) then
-				if:: h0 < h1
-				then:: h0; merge {t0} {list1}
-				else-if:: h0 > h1
-				then:: h1; merge {list0} {t1}
-				else:: h0; h1; merge {t0} {t1}
-			else
-				list0
-		else
-			list1
-	) >>
 	define not = (x =>
 		if x then false else true
 	) >>
@@ -305,13 +292,13 @@ fc-add-functions STANDARD .p (
 	define minimum =
 		fold {lesser}
 	>>
-	define merge-sort = (merge => list =>
+	define merge = (merger => list =>
 		let len = length {list} >>
 		if (len > 1) then
 			let len2 = len / 2 >>
-			let list0 = (list | take {len2} | merge-sort {merge}) >>
-			let list1 = (list | drop {len2} | merge-sort {merge}) >>
-			merge {list0} {list1}
+			let list0 = (list | take {len2} | merge {merger}) >>
+			let list1 = (list | drop {len2} | merge {merger}) >>
+			merger {list0} {list1}
 		else
 			list
 	) >>
@@ -373,6 +360,22 @@ fc-add-functions STANDARD .p (
 	) >>
 	define join = (separator =>
 		concat . map {separator; | append/}
+	) >>
+	define merge-sort = (
+		define merger = (list0 => list1 =>
+			if-bind (list0 = ($h0; $t0)) then
+				if-bind (list1 = ($h1; $t1)) then
+					if:: h0 < h1
+					then:: h0; merger {t0} {list1}
+					else-if:: h0 > h1
+					then:: h1; merger {list0} {t1}
+					else:: h0; h1; merger {t0} {t1}
+				else
+					list0
+			else
+				list1
+		) >>
+		merge {merger}
 	) >>
 	define quick-sort = (cmp =>
 		match
