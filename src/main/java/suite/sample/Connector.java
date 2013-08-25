@@ -12,14 +12,14 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 import suite.util.LogUtil;
 import suite.util.Util;
 
 public class Connector {
 
 	public void connect() throws IOException {
-		Charset charset = IoUtil.charset;
+		Charset charset = FileUtil.charset;
 
 		try (Socket socket = new Socket("wwww.google.com", 80);
 				InputStream is = socket.getInputStream();

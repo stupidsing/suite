@@ -22,7 +22,7 @@ import suite.net.ThreadedService;
 import suite.util.FormatUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 import suite.util.LogUtil;
 import suite.util.Util;
 
@@ -187,7 +187,7 @@ public class ClusterProbe extends ThreadedService {
 			buffer.get(bytes);
 			buffer.rewind();
 
-			String splitted[] = new String(bytes, IoUtil.charset).split(",");
+			String splitted[] = new String(bytes, FileUtil.charset).split(",");
 			Command data = Command.valueOf(splitted[0]);
 			String remote = splitted[1];
 
@@ -273,7 +273,7 @@ public class ClusterProbe extends ThreadedService {
 		for (Entry<String, Long> e : lastActiveTime.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());
 
-		return sb.toString().getBytes(IoUtil.charset);
+		return sb.toString().getBytes(FileUtil.charset);
 	}
 
 	public boolean isActive(String node) {

@@ -22,7 +22,7 @@ import suite.net.channels.BufferedChannel;
 import suite.net.channels.RequestResponseChannel;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 import suite.util.Util;
 
 public class NioDispatcherTest {
@@ -30,7 +30,7 @@ public class NioDispatcherTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		final String hello = "HELLO";
-		final Charset charset = IoUtil.charset;
+		final Charset charset = FileUtil.charset;
 
 		final BufferedChannel channel = new BufferedChannel() {
 			public void onConnected(Sender sender) {
@@ -94,7 +94,7 @@ public class NioDispatcherTest {
 			RequestResponseChannel client = dispatcher.connect(address);
 
 			for (String s : new String[] { "ABC", "WXYZ", "" }) {
-				byte bs[] = s.getBytes(IoUtil.charset);
+				byte bs[] = s.getBytes(FileUtil.charset);
 				Bytes request = new Bytes(bs);
 				Bytes response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);

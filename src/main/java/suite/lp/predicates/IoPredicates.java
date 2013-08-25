@@ -13,7 +13,7 @@ import suite.lp.node.Node;
 import suite.lp.node.Str;
 import suite.lp.predicates.SystemPredicates.SystemPredicate;
 import suite.util.FormatUtil;
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 import suite.util.LogUtil;
 import suite.util.To;
 
@@ -74,7 +74,7 @@ public class IoPredicates {
 			String content = Formatter.display(params[1]);
 
 			try (FileOutputStream fos = new FileOutputStream(filename)) {
-				fos.write(content.getBytes(IoUtil.charset));
+				fos.write(content.getBytes(FileUtil.charset));
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}

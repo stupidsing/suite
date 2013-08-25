@@ -29,7 +29,7 @@ import suite.lp.node.Tree;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 import suite.util.LogUtil;
 import suite.util.Util;
 
@@ -47,8 +47,8 @@ public class Main implements AutoCloseable {
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
 
-	private Reader reader = new InputStreamReader(System.in, IoUtil.charset);
-	private Writer writer = new OutputStreamWriter(System.out, IoUtil.charset);
+	private Reader reader = new InputStreamReader(System.in, FileUtil.charset);
+	private Writer writer = new OutputStreamWriter(System.out, FileUtil.charset);
 
 	private enum InputType {
 		EVALUATE("\\"), //

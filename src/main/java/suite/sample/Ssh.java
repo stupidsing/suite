@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-import suite.util.IoUtil;
+import suite.util.Copy;
 import suite.util.Util;
 
 import com.jcraft.jsch.Channel;
@@ -34,8 +34,9 @@ public class Ssh {
 			while (!channel.isClosed())
 				Util.sleep(100);
 
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			IoUtil.copy(channel.getInputStream(), bos);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			Copy.stream(channel.getInputStream(), baos);
+			baos.close();
 
 			return channel.getExitStatus();
 		} finally {

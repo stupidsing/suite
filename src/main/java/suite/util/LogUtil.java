@@ -68,7 +68,7 @@ public class LogUtil {
 
 			if (st0.length > maxStackTraceLength) {
 				StackTraceElement st1[] = new StackTraceElement[maxStackTraceLength];
-				Util.copyArray(st0, 0, st1, 0, maxStackTraceLength);
+				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);
 
 				isTrimmed = true;

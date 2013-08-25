@@ -1,11 +1,7 @@
 package suite.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -43,33 +39,6 @@ public class Util {
 			return t1 != null ? 1 : -1;
 		else
 			return t1 != null ? t1.compareTo(t2) : 0;
-	}
-
-	/**
-	 * Clones slowly by serializing and de-serializing.
-	 */
-	public static <T> T copy(T clonee) throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(baos);
-		out.writeObject(clonee);
-		out.flush();
-		out.close();
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-		ObjectInputStream in = new ObjectInputStream(bais);
-		@SuppressWarnings("unchecked")
-		T cloned = (T) in.readObject();
-		return cloned;
-	}
-
-	public static <T> void copyArray(T from[], int fromIndex, T to[], int toIndex, int size) {
-		if (size != 0)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void copyPrimitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
-		if (size != 0)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
 	}
 
 	public static long createDate(int year, int month, int day) {

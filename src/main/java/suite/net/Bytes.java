@@ -2,7 +2,7 @@ package suite.net;
 
 import java.util.Arrays;
 
-import suite.util.Util;
+import suite.util.Copy;
 
 public class Bytes {
 
@@ -158,7 +158,7 @@ public class Bytes {
 			if (bytes.length < size1)
 				extendBuffer(size1);
 
-			Util.copyPrimitiveArray(b, start, bytes, size, inc);
+			Copy.primitiveArray(b, start, bytes, size, inc);
 
 			size += inc;
 			return this;
@@ -191,7 +191,7 @@ public class Bytes {
 				length1 = length1 < 4096 ? length1 << 1 : length1 * 3 / 2;
 
 			byte bytes1[] = new byte[length1];
-			Util.copyPrimitiveArray(bytes, 0, bytes1, 0, size);
+			Copy.primitiveArray(bytes, 0, bytes1, 0, size);
 			bytes = bytes1;
 		}
 	}

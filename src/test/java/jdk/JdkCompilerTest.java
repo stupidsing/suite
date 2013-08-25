@@ -14,7 +14,7 @@ import javax.tools.ToolProvider;
 
 import org.junit.Test;
 
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 
 public class JdkCompilerTest {
 
@@ -36,7 +36,7 @@ public class JdkCompilerTest {
 				+ "}";
 
 		try (OutputStream os = new FileOutputStream(srcFile)) {
-			os.write(src.getBytes(IoUtil.charset));
+			os.write(src.getBytes(FileUtil.charset));
 		}
 
 		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();

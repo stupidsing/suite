@@ -4,13 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-public class IoUtil {
-
-	private static final int bufferSize = 4096;
+public class FileUtil {
 
 	public static final Charset charset = Charset.forName("UTF-8");
 
@@ -25,17 +21,8 @@ public class IoUtil {
 	}
 
 	public static void copyFile(File from, File to) throws IOException {
-		copy(new FileInputStream(from), new FileOutputStream(to));
+		Copy.stream(new FileInputStream(from), new FileOutputStream(to));
 		// new FileOutputStream(f2, true); // Append
-	}
-
-	public static void copy(InputStream in, OutputStream out) throws IOException {
-		try (InputStream in_ = in; OutputStream out_ = out) {
-			int len;
-			byte buffer[] = new byte[bufferSize];
-			while ((len = in_.read(buffer)) > 0)
-				out_.write(buffer, 0, len);
-		}
 	}
 
 }

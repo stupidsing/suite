@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the
@@ -108,11 +108,11 @@ public interface Serializer<V> {
 			byte bs[] = new byte[length];
 			int l = buffer.getInt();
 			buffer.get(bs);
-			return new String(bs, IoUtil.charset).substring(0, l);
+			return new String(bs, FileUtil.charset).substring(0, l);
 		}
 
 		public void write(ByteBuffer buffer, String value) {
-			byte bs[] = Arrays.copyOf(value.getBytes(IoUtil.charset), length);
+			byte bs[] = Arrays.copyOf(value.getBytes(FileUtil.charset), length);
 			buffer.putInt(value.length());
 			buffer.put(bs);
 		}

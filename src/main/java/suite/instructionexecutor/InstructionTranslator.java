@@ -26,7 +26,7 @@ import suite.lp.doer.Formatter;
 import suite.lp.doer.TermParser.TermOp;
 import suite.lp.node.Atom;
 import suite.lp.node.Node;
-import suite.util.IoUtil;
+import suite.util.FileUtil;
 import suite.util.LogUtil;
 
 import com.google.common.collect.BiMap;
@@ -148,7 +148,7 @@ public class InstructionTranslator {
 		new File(pathName).mkdirs();
 
 		try (OutputStream os = new FileOutputStream(filename)) {
-			os.write(java.getBytes(IoUtil.charset));
+			os.write(java.getBytes(FileUtil.charset));
 		}
 
 		// Compile the Java, load the class, return an instantiated object

@@ -14,7 +14,7 @@ public class To {
 
 	public static String string(InputStream in) throws IOException {
 		try (InputStream in_ = in) {
-			return string(new InputStreamReader(in_, IoUtil.charset));
+			return string(new InputStreamReader(in_, FileUtil.charset));
 		}
 	}
 
