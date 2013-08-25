@@ -23,7 +23,7 @@ import com.google.common.collect.HashBiMap;
 public class InstructionExecutor implements AutoCloseable {
 
 	private static final int stackSize = 4096;
-	private static final boolean debug = Boolean.TRUE.booleanValue();
+	private static final boolean debug = Boolean.FALSE.booleanValue();
 
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
