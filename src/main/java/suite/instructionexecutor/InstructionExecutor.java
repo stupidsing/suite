@@ -23,6 +23,7 @@ import com.google.common.collect.HashBiMap;
 public class InstructionExecutor implements AutoCloseable {
 
 	private static final int stackSize = 4096;
+	private static final boolean debug = Boolean.TRUE.booleanValue();
 
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
@@ -86,7 +87,8 @@ public class InstructionExecutor implements AutoCloseable {
 			TermOp op;
 			int i;
 
-			// org.util.LogUtil.info(ip + "> " + insn);
+			if (debug)
+				StatisticsCollector.getInstance().collect(insn);
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:

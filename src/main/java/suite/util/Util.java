@@ -14,10 +14,77 @@ import java.util.concurrent.TimeUnit;
 
 public class Util {
 
-	public static String currentPackage() {
-		String cls = getStackTrace(3).getClassName();
-		int pos = cls.lastIndexOf(".");
-		return cls.substring(0, pos);
+	public static char charAt(String s, int pos) {
+		if (pos < 0)
+			pos += s.length();
+		return s.charAt(pos);
+	}
+
+	public static void closeQuietly(Closeable o) {
+		if (o != null)
+			try {
+				o.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+	}
+
+	public static void closeQuietly(Socket o) {
+		if (o != null)
+			try {
+				o.close();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+	}
+
+	public static <T extends Comparable<T>> int compare(T t1, T t2) {
+		if (t1 == null ^ t2 == null)
+			return t1 != null ? 1 : -1;
+		else
+			return t1 != null ? t1.compareTo(t2) : 0;
+	}
+
+	/**
+	 * Clones slowly by serializing and de-serializing.
+	 */
+	public static <T> T copy(T clonee) throws IOException, ClassNotFoundException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(baos);
+		out.writeObject(clonee);
+		out.flush();
+		out.close();
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		ObjectInputStream in = new ObjectInputStream(bais);
+		@SuppressWarnings("unchecked")
+		T cloned = (T) in.readObject();
+		return cloned;
+	}
+
+	public static <T> void copyArray(T from[], int fromIndex, T to[], int toIndex, int size) {
+		if (size != 0)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
+	public static void copyPrimitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
+		if (size != 0)
+			System.arraycopy(from, fromIndex, to, toIndex, size);
+	}
+
+	public static long createDate(int year, int month, int day) {
+		return createDate(year, month, day, 0, 0, 0);
+	}
+
+	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		cal.set(year, Calendar.JANUARY + month - 1, day, hour, minute, second);
+		return cal.getTimeInMillis();
+	}
+
+	public static ThreadPoolExecutor createExecutor() {
+		return new ThreadPoolExecutor(8, 32, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
 	}
 
 	public static Class<?> currentClass() {
@@ -33,87 +100,10 @@ public class Util {
 		return getStackTrace(3).getMethodName();
 	}
 
-	private static StackTraceElement getStackTrace(int n) {
-		return Thread.currentThread().getStackTrace()[n];
-	}
-
-	public static boolean isBlank(String s) {
-		boolean isBlank = true;
-		if (s != null)
-			for (char c : s.toCharArray())
-				isBlank &= Character.isWhitespace(c);
-		return isBlank;
-	}
-
-	public static long createDate(int year, int month, int day) {
-		return createDate(year, month, day, 0, 0, 0);
-	}
-
-	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(year, Calendar.JANUARY + month - 1, day, hour, minute, second);
-		return cal.getTimeInMillis();
-	}
-
-	public static class Pair<T1, T2> {
-		public T1 t1;
-		public T2 t2;
-
-		public Pair() {
-		}
-
-		public Pair(T1 t1, T2 t2) {
-			this.t1 = t1;
-			this.t2 = t2;
-		}
-
-		public static <T1, T2> Pair<T1, T2> create(T1 t1, T2 t2) {
-			return new Pair<>(t1, t2);
-		}
-
-		public boolean equals(Object o) {
-			if (o instanceof Pair<?, ?>) {
-				Pair<?, ?> t = (Pair<?, ?>) o;
-				return Util.equals(t1, t.t1) && Util.equals(t2, t.t2);
-			} else
-				return false;
-		}
-
-		public int hashCode() {
-			int h1 = t1 != null ? t1.hashCode() : 0;
-			int h2 = t2 != null ? t2.hashCode() : 0;
-			return h1 ^ h2;
-		}
-
-		public String toString() {
-			return t1.toString() + ":" + t2.toString();
-		}
-	}
-
-	public static void sleep(long time) {
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
-			Thread.currentThread().interrupt();
-		}
-	}
-
-	public static void wait(Object object) {
-		wait(object, 0);
-	}
-
-	public static void wait(Object object, int timeOut) {
-		try {
-			object.wait(timeOut);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-	}
-
-	public static ThreadPoolExecutor createExecutor() {
-		return new ThreadPoolExecutor(8, 32, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
+	public static String currentPackage() {
+		String cls = getStackTrace(3).getClassName();
+		int pos = cls.lastIndexOf(".");
+		return cls.substring(0, pos);
 	}
 
 	/**
@@ -148,48 +138,29 @@ public class Util {
 			return t1 == null || t1.equals(t2);
 	}
 
-	public static <T extends Comparable<T>> int compare(T t1, T t2) {
-		if (t1 == null ^ t2 == null)
-			return t1 != null ? 1 : -1;
-		else
-			return t1 != null ? t1.compareTo(t2) : 0;
+	private static StackTraceElement getStackTrace(int n) {
+		return Thread.currentThread().getStackTrace()[n];
 	}
 
 	public static <T> int hashCode(T t) {
 		return t != null ? t.hashCode() : 0;
 	}
 
-	/**
-	 * Clones slowly by serializing and de-serializing.
-	 */
-	public static <T> T copy(T clonee) throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(baos);
-		out.writeObject(clonee);
-		out.flush();
-		out.close();
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-		ObjectInputStream in = new ObjectInputStream(bais);
-		@SuppressWarnings("unchecked")
-		T cloned = (T) in.readObject();
-		return cloned;
+	public static boolean isBlank(String s) {
+		boolean isBlank = true;
+		if (s != null)
+			for (char c : s.toCharArray())
+				isBlank &= Character.isWhitespace(c);
+		return isBlank;
 	}
 
-	public static <T> void copyArray(T from[], int fromIndex, T to[], int toIndex, int size) {
-		if (size != 0)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-	}
-
-	public static void copyPrimitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
-		if (size != 0)
-			System.arraycopy(from, fromIndex, to, toIndex, size);
-	}
-
-	public static char charAt(String s, int pos) {
-		if (pos < 0)
-			pos += s.length();
-		return s.charAt(pos);
+	public static void sleep(long time) {
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException ex) {
+			LogUtil.error(ex);
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	public static String substr(String s, int start, int end) {
@@ -201,22 +172,16 @@ public class Util {
 		return s.substring(start, end);
 	}
 
-	public static void closeQuietly(Closeable o) {
-		if (o != null)
-			try {
-				o.close();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+	public static void wait(Object object) {
+		wait(object, 0);
 	}
 
-	public static void closeQuietly(Socket o) {
-		if (o != null)
-			try {
-				o.close();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+	public static void wait(Object object, int timeOut) {
+		try {
+			object.wait(timeOut);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 }

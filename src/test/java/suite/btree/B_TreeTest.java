@@ -14,7 +14,7 @@ import suite.btree.Serializer.B_TreePageSerializer;
 import suite.btree.Serializer.B_TreeSuperBlockSerializer;
 import suite.btree.Serializer.FixedStringSerializer;
 import suite.btree.Serializer.IntSerializer;
-import suite.util.Util.Pair;
+import suite.util.Pair;
 
 public class B_TreeTest {
 

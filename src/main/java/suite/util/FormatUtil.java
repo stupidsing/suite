@@ -38,14 +38,14 @@ public class FormatUtil {
 		}
 	}
 
-	public static class SynchronizedDecimalFormat {
+	public static class SyncDecimalFormat {
 		private DecimalFormat decimalFormat;
 
-		public SynchronizedDecimalFormat(String fmt) {
+		public SyncDecimalFormat(String fmt) {
 			decimalFormat = new DecimalFormat(fmt);
 		}
 
-		public SynchronizedDecimalFormat(DecimalFormat decimalFormat) {
+		public SyncDecimalFormat(DecimalFormat decimalFormat) {
 			this.decimalFormat = decimalFormat;
 		}
 
