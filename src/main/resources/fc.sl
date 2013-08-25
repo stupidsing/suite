@@ -92,6 +92,7 @@ fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
 		' = ', ' != ',
 		' > ', ' < ', ' >= ', ' <= ',
+		'.',
 	) .oper
 #
 
@@ -231,7 +232,7 @@ fc-add-functions STANDARD .p (
 		|| otherwise id
 	) >>
 	define apply =
-		invoke/ | fold-left | flip
+		fold-right {`.`} {id}
 	>>
 	define fold = (fun => list =>
 		fold-left {fun} {list | head} {list | tail}

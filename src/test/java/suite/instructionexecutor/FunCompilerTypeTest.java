@@ -123,7 +123,7 @@ public class FunCompilerTypeTest {
 		checkType("using STANDARD >> join" //
 				, "T => _" //
 				, "T => list-of list-of T => list-of T");
-		checkType("using STANDARD >> merge-sort" //
+		checkType("using STANDARD >> merge" //
 				, "(list-of T => _) => _" //
 				, "(list-of T => list-of T => list-of T) => list-of T => list-of T");
 	}

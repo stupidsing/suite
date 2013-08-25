@@ -22,7 +22,7 @@ public class EagerFunCompilerTest {
 	@Test
 	public void testApply() {
 		assertEquals(Int.create(2), eval("apply {(a => 2);} {1}"));
-		assertEquals(Int.create(2), eval("apply {`+ 1`; `* 2`; `/ 5`;} {4}"));
+		assertEquals(Int.create(2), eval("apply {`/ 5`; `* 2`; `+ 1`;} {4}"));
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class EagerFunCompilerTest {
 
 	@Test
 	public void testMergeSort() {
-		assertEquals(Suite.parse("0; 1; 2; 3; 4; 5; 6; 7; 8; 9;"), eval("merge-sort {merge} {5; 3; 2; 8; 6; 4; 1; 0; 9; 7;}"));
+		assertEquals(Suite.parse("0; 1; 2; 3; 4; 5; 6; 7; 8; 9;"), eval("merge-sort {5; 3; 2; 8; 6; 4; 1; 0; 9; 7;}"));
 	}
 
 	@Test
