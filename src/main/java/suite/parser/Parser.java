@@ -14,9 +14,9 @@ import suite.lp.node.Node;
 import suite.lp.node.Str;
 import suite.lp.node.Tree;
 import suite.parser.Operator.Assoc;
-import suite.util.IoUtil;
 import suite.util.LogUtil;
 import suite.util.ParserUtil;
+import suite.util.To;
 import suite.util.Util;
 
 public class Parser {
@@ -42,7 +42,7 @@ public class Parser {
 	}
 
 	public Node parse(InputStream is) throws IOException {
-		return parse(IoUtil.readStream(is));
+		return parse(To.string(is));
 	}
 
 	public Node parse(String s) {

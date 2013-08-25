@@ -15,6 +15,7 @@ import suite.lp.predicates.SystemPredicates.SystemPredicate;
 import suite.util.FormatUtil;
 import suite.util.IoUtil;
 import suite.util.LogUtil;
+import suite.util.To;
 
 public class IoPredicates {
 
@@ -58,7 +59,7 @@ public class IoPredicates {
 			final Node params[] = Predicate.getParameters(ps, 2);
 			String filename = Formatter.display(params[0]);
 			try (InputStream is = new FileInputStream(filename)) {
-				String content = IoUtil.readStream(is);
+				String content = To.string(is);
 				return prover.bind(new Str(content), params[1]);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);

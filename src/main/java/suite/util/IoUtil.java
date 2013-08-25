@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.charset.Charset;
 
 public class IoUtil {
@@ -29,26 +27,6 @@ public class IoUtil {
 	public static void copyFile(File from, File to) throws IOException {
 		copy(new FileInputStream(from), new FileOutputStream(to));
 		// new FileOutputStream(f2, true); // Append
-	}
-
-	public static String readStream(InputStream in) throws IOException {
-		try (InputStream in_ = in) {
-			return readReader(new InputStreamReader(in_, IoUtil.charset));
-		}
-	}
-
-	public static String readReader(InputStreamReader reader) throws IOException {
-		try (Reader reader_ = reader) {
-			char buffer[] = new char[bufferSize];
-			StringBuilder sb = new StringBuilder();
-
-			while (reader_.ready()) {
-				int n = reader_.read(buffer);
-				sb.append(new String(buffer, 0, n));
-			}
-
-			return sb.toString();
-		}
 	}
 
 	public static void copy(InputStream in, OutputStream out) throws IOException {

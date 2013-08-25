@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.lp.Suite;
-import suite.util.IoUtil;
+import suite.util.To;
 
 public class LogicCompilerTest {
 
@@ -23,7 +23,7 @@ public class LogicCompilerTest {
 	@Test
 	public void testAuto() throws IOException {
 		Class<?> clazz = getClass();
-		String preds = IoUtil.readStream(clazz.getResourceAsStream("/auto.sl"));
+		String preds = To.string(clazz.getResourceAsStream("/auto.sl"));
 		String goal = "(" + preds + ") >> member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));
 	}

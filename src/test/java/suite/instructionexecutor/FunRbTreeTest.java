@@ -9,14 +9,14 @@ import org.junit.Test;
 import suite.lp.Suite;
 import suite.lp.doer.Formatter;
 import suite.lp.node.Node;
-import suite.util.IoUtil;
+import suite.util.To;
 
 public class FunRbTreeTest {
 
 	// Type check take 11 seconds
 	@Test
 	public void test() throws IOException {
-		String s = IoUtil.readStream(getClass().getResourceAsStream("/RB-TREE.slf"));
+		String s = To.string(getClass().getResourceAsStream("/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {rbt-add} | apply | {EMPTY}\n";
 		Node result = Suite.evaluateFun(fp, false);
 		assertNotNull(result);
