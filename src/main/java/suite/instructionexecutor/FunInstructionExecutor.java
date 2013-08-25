@@ -73,7 +73,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case CONSPAIR______:
 			left = (Node) ds[--dsp];
 			right = (Node) ds[--dsp];
-			result = Tree.create(TermOp.AND___, left, right);
+			result = Tree.create(TermOp.TUPLE_, left, right);
 			break;
 		case ERROR_________:
 			throw new RuntimeException("Error termination");
