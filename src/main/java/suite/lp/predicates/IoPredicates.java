@@ -12,8 +12,8 @@ import suite.lp.doer.Prover;
 import suite.lp.node.Node;
 import suite.lp.node.Str;
 import suite.lp.predicates.SystemPredicates.SystemPredicate;
-import suite.util.FormatUtil;
 import suite.util.FileUtil;
+import suite.util.FormatUtil;
 import suite.util.LogUtil;
 import suite.util.To;
 

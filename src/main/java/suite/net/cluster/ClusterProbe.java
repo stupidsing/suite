@@ -19,10 +19,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.net.ThreadedService;
+import suite.util.FileUtil;
 import suite.util.FormatUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
-import suite.util.FileUtil;
 import suite.util.LogUtil;
 import suite.util.Util;
 

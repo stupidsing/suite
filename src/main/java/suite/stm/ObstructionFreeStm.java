@@ -15,9 +15,9 @@ import suite.stm.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
- *
+ * 
  * TODO Nested transactions
- *
+ * 
  * @author ywsing
  */
 public class ObstructionFreeStm implements TransactionManager {
@@ -75,10 +75,10 @@ public class ObstructionFreeStm implements TransactionManager {
 
 		/**
 		 * Read would obtain the value between two checks of the owner.
-		 *
+		 * 
 		 * If the owner or its status is found to be changed, read needs to be
 		 * performed again.
-		 *
+		 * 
 		 * Timestamp checking is done to avoid reading too up-to-date data.
 		 */
 		public T read(Transaction transaction) throws AbortException {
@@ -113,11 +113,11 @@ public class ObstructionFreeStm implements TransactionManager {
 
 		/**
 		 * Write would obtain the owner right.
-		 *
+		 * 
 		 * If someone else is the owner, the write would block until that owner
 		 * completes. Simple waiting hierarchy is implemented in transaction
 		 * class to detect deadlocks.
-		 *
+		 * 
 		 * Timestamp checking is done to avoid changing too up-to-date data.
 		 */
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException {

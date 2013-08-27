@@ -20,9 +20,9 @@ import org.junit.Test;
 
 import suite.net.channels.BufferedChannel;
 import suite.net.channels.RequestResponseChannel;
+import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.FileUtil;
 import suite.util.Util;
 
 public class NioDispatcherTest {
