@@ -123,6 +123,10 @@ public class Util {
 		return isBlank;
 	}
 
+	public static boolean isNotBlank(String s) {
+		return !isBlank(s);
+	}
+
 	public static void sleep(long time) {
 		try {
 			Thread.sleep(time);
@@ -130,6 +134,14 @@ public class Util {
 			LogUtil.error(ex);
 			Thread.currentThread().interrupt();
 		}
+	}
+
+	public static Pair<String, String> split(String s, String delimiter) {
+		int pos = s.indexOf(delimiter);
+		if (pos >= 0)
+			return Pair.create(s.substring(0, pos), s.substring(pos + delimiter.length()));
+		else
+			return Pair.create(s, "");
 	}
 
 	public static String substr(String s, int start, int end) {
