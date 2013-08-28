@@ -1,3 +1,4 @@
+// '\''
 package suite.parser;
 
 import java.util.Arrays;
@@ -60,8 +61,21 @@ public class Lexer {
 		if (position < chars.length) {
 			int start = position;
 			char ch = chars[position++];
+			boolean isQuote = false;
 
-			if (Character.isWhitespace(ch)) {
+			if (ch == '\'') {
+				while (position < chars.length && (isQuote || chars[position] != '\'')) {
+					isQuote = !isQuote && chars[position] == '\\';
+					position++;
+				}
+				position++;
+			} else if (ch == '"') {
+				while (position < chars.length && (isQuote || chars[position] != '"')) {
+					isQuote = !isQuote && chars[position] == '\\';
+					position++;
+				}
+				position++;
+			} else if (Character.isWhitespace(ch)) {
 				while (position < chars.length && Character.isWhitespace(chars[position]))
 					position++;
 				return nextToken();
@@ -79,5 +93,4 @@ public class Lexer {
 		} else
 			return null;
 	}
-
 }
