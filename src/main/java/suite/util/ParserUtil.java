@@ -13,6 +13,30 @@ public class ParserUtil {
 		return depth;
 	}
 
+	public static int getQuoteChange(int quote, char c) {
+		if (c == quote)
+			quote = 0;
+		else if (quote == 0 && (c == '\'' || c == '"' || c == '`'))
+			quote = c;
+		return quote;
+	}
+
+	public static boolean isInteger(String s) {
+		boolean result;
+
+		if (!s.isEmpty()) {
+			if (s.charAt(0) == '-')
+				s = s.substring(1);
+
+			result = !s.isEmpty();
+			for (char c : s.toCharArray())
+				result &= Character.isDigit(c);
+		} else
+			result = false;
+
+		return result;
+	}
+
 	public static int search(String s, int start, String toMatch) {
 		int nameLength = toMatch.length();
 		int end = s.length() - nameLength;
@@ -61,30 +85,6 @@ public class ParserUtil {
 		}
 
 		return null;
-	}
-
-	public static int getQuoteChange(int quote, char c) {
-		if (c == quote)
-			quote = 0;
-		else if (quote == 0 && (c == '\'' || c == '"' || c == '`'))
-			quote = c;
-		return quote;
-	}
-
-	public static boolean isInteger(String s) {
-		boolean result;
-
-		if (!s.isEmpty()) {
-			if (s.charAt(0) == '-')
-				s = s.substring(1);
-
-			result = !s.isEmpty();
-			for (char c : s.toCharArray())
-				result &= Character.isDigit(c);
-		} else
-			result = false;
-
-		return result;
 	}
 
 }
