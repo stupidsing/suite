@@ -1,4 +1,4 @@
-package suite.lp.doer;
+package suite.parser;
 
 import static org.junit.Assert.assertNotNull;
 
