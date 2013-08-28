@@ -26,7 +26,9 @@ import suite.lp.doer.Formatter;
 import suite.lp.doer.TermParser.TermOp;
 import suite.lp.node.Atom;
 import suite.lp.node.Node;
+import suite.parser.Subst;
 import suite.util.FileUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 
 import com.google.common.collect.BiMap;
@@ -483,27 +485,13 @@ public class InstructionTranslator {
 
 	private void app(StringBuilder section, String fmt, Object... ps) {
 		List<Object> list = Arrays.asList(ps);
-		Iterator<Object> iter = list.iterator();
+		final Iterator<Object> iter = list.iterator();
 
-		while (!fmt.isEmpty()) {
-			int pos0 = fmt.indexOf("#{");
-			int pos1 = fmt.indexOf("}", pos0);
-
-			String s0, s1, s2;
-
-			if (pos0 >= 0 && pos1 >= 0) {
-				s0 = fmt.substring(0, pos0);
-				s1 = fmt.substring(pos0 + 2, pos1);
-				s2 = fmt.substring(pos1 + 1);
-			} else {
-				s0 = fmt;
-				s1 = s2 = "";
+		new Subst("#{", "}").subst(fmt, new Fun<String, String>() {
+			public String apply(String key) {
+				return decode(key, iter);
 			}
-
-			section.append(s0);
-			section.append(decode(s1, iter));
-			fmt = s2;
-		}
+		}, section);
 
 		char lastChar = section.charAt(section.length() - 1);
 
