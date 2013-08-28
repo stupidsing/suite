@@ -61,17 +61,17 @@ public class Lexer {
 		if (position < chars.length) {
 			int start = position;
 			char ch = chars[position++];
-			boolean isQuote = false;
+			boolean isEscape = false;
 
 			if (ch == '\'') {
-				while (position < chars.length && (isQuote || chars[position] != '\'')) {
-					isQuote = !isQuote && chars[position] == '\\';
+				while (position < chars.length && (isEscape || chars[position] != '\'')) {
+					isEscape = !isEscape && chars[position] == '\\';
 					position++;
 				}
 				position++;
 			} else if (ch == '"') {
-				while (position < chars.length && (isQuote || chars[position] != '"')) {
-					isQuote = !isQuote && chars[position] == '\\';
+				while (position < chars.length && (isEscape || chars[position] != '"')) {
+					isEscape = !isEscape && chars[position] == '\\';
 					position++;
 				}
 				position++;
