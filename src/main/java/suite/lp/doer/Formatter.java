@@ -10,6 +10,7 @@ import suite.lp.node.Node;
 import suite.lp.node.Reference;
 import suite.lp.node.Str;
 import suite.lp.node.Tree;
+import suite.parser.Escaper;
 import suite.parser.Operator;
 import suite.parser.Operator.Assoc;
 import suite.parser.Parser;
@@ -89,7 +90,7 @@ public class Formatter {
 			sb.append(s);
 		} else if (node instanceof Str) {
 			String s = ((Str) node).getValue();
-			s = isDump ? quote(s, '"') : s;
+			s = isDump ? Escaper.escape(s, '"') : s;
 			sb.append(s);
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
@@ -147,32 +148,10 @@ public class Formatter {
 			quote |= ParserUtil.isInteger(s);
 
 			if (quote)
-				s = quote(s, '\'');
+				s = Escaper.escape(s, '\'');
 		} else
 			s = "()";
 		return s;
-	}
-
-	public String quote(String s, char quote) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(quote);
-
-		for (char ch : s.toCharArray())
-			if (Character.isWhitespace(ch) && ch != ' ') {
-				if (ch >= 256)
-					sb.append(encodeHex(ch >> 8));
-				sb.append(encodeHex(ch & 0xff));
-			} else if (ch == quote || ch == '%')
-				sb.append(ch + "" + ch);
-			else
-				sb.append(ch);
-
-		sb.append(quote);
-		return sb.toString();
-	}
-
-	private String encodeHex(int i) {
-		return "%" + String.format("%02x", i).toUpperCase();
 	}
 
 }

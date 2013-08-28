@@ -53,6 +53,8 @@ public class InstructionTranslator {
 	private StringBuilder localsec = new StringBuilder();
 	private StringBuilder switchsec = new StringBuilder();
 
+	private Subst subst = new Subst("#{", "}");
+
 	private InstructionAnalyzer analyzer = new InstructionAnalyzer();
 
 	private int currentIp;
@@ -487,7 +489,7 @@ public class InstructionTranslator {
 		List<Object> list = Arrays.asList(ps);
 		final Iterator<Object> iter = list.iterator();
 
-		new Subst("#{", "}").subst(fmt, new Fun<String, String>() {
+		subst.subst(fmt, new Fun<String, String>() {
 			public String apply(String key) {
 				return decode(key, iter);
 			}

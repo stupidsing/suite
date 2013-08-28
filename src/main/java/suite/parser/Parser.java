@@ -104,10 +104,10 @@ public class Parser {
 			return Int.create(s.charAt(2));
 
 		if (first == '"' && last == '"')
-			return new Str(unescape(Util.substr(s, 1, -1), "\""));
+			return new Str(Escaper.unescape(Util.substr(s, 1, -1), "\""));
 
 		if (first == '\'' && last == '\'')
-			s = unescape(Util.substr(s, 1, -1), "'");
+			s = Escaper.unescape(Util.substr(s, 1, -1), "'");
 		else {
 			s = s.trim(); // Trim unquoted atoms
 			int quote = 0, depth = 0;
@@ -251,30 +251,6 @@ public class Parser {
 				return s;
 			s = s.substring(0, pos1) + s.substring(pos2 + closeLength);
 		}
-	}
-
-	private static String unescape(String s, String quote) {
-		s = s.replace(quote + quote, quote);
-
-		try {
-			int pos = 0;
-			while ((pos = s.indexOf('%', pos)) != -1) {
-				int pos1 = pos + 1;
-
-				if (pos1 < s.length() && s.charAt(pos1) != '%') {
-					String hex = s.substring(pos1, pos + 3);
-					char c = (char) Integer.parseInt(hex, 16);
-					s = s.substring(0, pos) + c + s.substring(pos + 3);
-				} else
-					s = s.substring(0, pos) + s.substring(pos1);
-
-				pos++;
-			}
-		} catch (StringIndexOutOfBoundsException | NumberFormatException ex) {
-			LogUtil.error(ex);
-		}
-
-		return s;
 	}
 
 }
