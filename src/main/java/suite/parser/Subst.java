@@ -2,7 +2,6 @@ package suite.parser;
 
 import java.util.Map;
 
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 
 public class Subst {
