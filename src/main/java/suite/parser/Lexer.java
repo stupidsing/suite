@@ -58,40 +58,55 @@ public class Lexer {
 	}
 
 	private String nextToken() {
-		if (position < chars.length) {
+		if (!eof()) {
 			int start = position;
-			char ch = chars[position++];
 			boolean isEscape = false;
+			char ch = peekChar();
+
+			StringBuilder sb = new StringBuilder();
+			sb.append(nextChar());
 
 			if (ch == '\'') {
-				while (position < chars.length && (isEscape || chars[position] != '\'')) {
-					isEscape = !isEscape && chars[position] == '\\';
-					position++;
+				while (!eof() && (isEscape || peekChar() != '\'')) {
+					isEscape = !isEscape && peekChar() == '\\';
+					sb.append(nextChar());
 				}
-				position++;
+				sb.append(nextChar());
 			} else if (ch == '"') {
-				while (position < chars.length && (isEscape || chars[position] != '"')) {
-					isEscape = !isEscape && chars[position] == '\\';
-					position++;
+				while (!eof() && (isEscape || peekChar() != '"')) {
+					isEscape = !isEscape && peekChar() == '\\';
+					sb.append(nextChar());
 				}
-				position++;
+				sb.append(nextChar());
 			} else if (Character.isWhitespace(ch)) {
-				while (position < chars.length && Character.isWhitespace(chars[position]))
-					position++;
+				while (!eof() && Character.isWhitespace(peekChar()))
+					sb.append(nextChar());
 				return nextToken();
 			} else if (Character.isDigit(ch))
-				while (position < chars.length && Character.isDigit(chars[position]))
-					position++;
+				while (!eof() && Character.isDigit(peekChar()))
+					sb.append(nextChar());
 			else if (Character.isJavaIdentifierStart(ch))
-				while (position < chars.length && Character.isJavaIdentifierPart(chars[position]))
-					position++;
+				while (!eof() && Character.isJavaIdentifierPart(peekChar()))
+					sb.append(nextChar());
 			else
-				while (position < chars.length && operators.contains(new String(chars, start, position + 1 - start)))
-					position++;
+				while (!eof() && operators.contains(new String(chars, start, position + 1 - start)))
+					sb.append(nextChar());
 
-			return new String(chars, start, position - start);
+			return sb.toString();
 		} else
 			return null;
+	}
+
+	private boolean eof() {
+		return position >= chars.length;
+	}
+
+	private char peekChar() {
+		return chars[position];
+	}
+
+	private char nextChar() {
+		return chars[position++];
 	}
 
 }

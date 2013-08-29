@@ -7,9 +7,10 @@ import org.junit.Test;
 
 public class LexerTest {
 
+	private int bufferSize = 4096;
+
 	@Test
 	public void test() throws IOException {
-		int bufferSize = 4096;
 		char buffer[] = new char[bufferSize];
 		StringBuilder sb = new StringBuilder();
 		int nCharsRead;
