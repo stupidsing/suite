@@ -14,18 +14,18 @@ import java.util.Set;
 public class DumpUtil {
 
 	private Set<Integer> dumpedIds = new HashSet<>();
+	private StringBuilder sb = new StringBuilder();
 
-	private DumpUtil() {
+	public DumpUtil() {
+		this(new StringBuilder());
+	}
+
+	public DumpUtil(StringBuilder sb) {
+		this.sb = sb;
 	}
 
 	public static String dump(Object object) {
 		return dump("", object);
-	}
-
-	public static String dump(String prefix, Object object) {
-		StringBuilder sb = new StringBuilder();
-		dump(prefix, object, sb);
-		return sb.toString();
 	}
 
 	/**
@@ -46,17 +46,25 @@ public class DumpUtil {
 	 *            The monster.
 	 * @param sb
 	 *            String buffer to hold the dumped content.
+	 * @return
 	 */
-	public static void dump(String prefix, Object object, StringBuilder sb) {
-		if (object != null)
-			new DumpUtil().dump(prefix, object, object.getClass(), sb);
-		else
-			new DumpUtil().dump(prefix, object, void.class, sb);
+	public static String dump(String prefix, Object object) {
+		DumpUtil dumpUtil = new DumpUtil();
+		dumpUtil.d(prefix, object);
+		return dumpUtil.sb.toString();
 	}
 
-	public void dump(String prefix, Object object, Class<?> clazz, StringBuilder sb) {
+	public void d(String prefix, Object object) {
+		if (object != null)
+			d(prefix, object, object.getClass());
+		else
+			d(prefix, object, void.class);
+	}
+
+	private void d(String prefix, Object object, Class<?> clazz) {
 		sb.append(prefix);
 		sb.append(" =");
+
 		if (object == null) {
 			sb.append(" null\n");
 			return;
@@ -67,69 +75,81 @@ public class DumpUtil {
 		if (!dumpedIds.add(id)) {
 			sb.append(" <<recursed>>");
 			return;
-		} else if (clazz == String.class)
-			sb.append(" \"" + object + "\"");
-		else if (!Collection.class.isAssignableFrom(clazz))
-			sb.append(" " + object);
-		sb.append(" [" + clazz.getSimpleName() + "]\n");
-
-		// Some easy classes do not require windy listings
-		if (isSimpleType(clazz))
-			return;
-
-		for (Field field : clazz.getFields())
-			if (!Modifier.isStatic(field.getModifiers()))
-				try {
-					String name = field.getName();
-					Object o = field.get(object);
-					Class<?> type = field.getType();
-					if (isSimpleType(type))
-						dump(prefix + "." + name, o, type, sb);
-					else
-						dump(prefix + "." + name, o, sb);
-				} catch (Throwable ex) {
-					sb.append(prefix + "." + field.getName());
-					sb.append(" caught " + ex + "\n");
-				}
-
-		Set<String> displayedMethod = new HashSet<>();
-		for (Method method : clazz.getMethods()) {
-			String name = method.getName();
-			try {
-				if (name.startsWith("get") && method.getParameterTypes().length == 0 && !displayedMethod.contains(name)) {
-					Object o = method.invoke(object);
-					if (!(o instanceof Class<?>))
-						dump(prefix + "." + name + "()", o, sb);
-
-					// Do not display same method of different base classes
-					displayedMethod.add(name);
-				}
-			} catch (Throwable ex) {
-				sb.append(prefix + "." + name + "()");
-				sb.append(" caught " + ex + "\n");
-			}
 		}
 
-		int count = 0;
+		try {
+			if (clazz == String.class)
+				sb.append(" \"" + object + "\"");
 
-		if (clazz.isArray())
-			if (clazz.getComponentType() == int.class)
-				for (int i : (int[]) object)
-					dump(prefix + "[" + count++ + "]", i, sb);
-			else if (Object.class.isAssignableFrom(clazz.getComponentType()))
-				for (Object o1 : (Object[]) object)
-					dump(prefix + "[" + count++ + "]", o1, sb);
+			if (!Collection.class.isAssignableFrom(clazz))
+				sb.append(" " + object);
 
-		if (Collection.class.isAssignableFrom(clazz))
-			for (Object o1 : (Collection<?>) object)
-				dump(prefix + "[" + count++ + "]", o1, sb);
-		else if (Map.class.isAssignableFrom(clazz))
-			for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
-				Object key = entry.getKey(), value = entry.getValue();
-				dump(prefix + "[" + count + "].getKey()", key, sb);
-				dump(prefix + "[" + count + "].getValue()", value, sb);
-				count++;
+			sb.append(" [" + clazz.getSimpleName() + "]\n");
+
+			// Some easy classes do not require windy listings
+			if (isSimpleType(clazz))
+				return;
+
+			for (Field field : clazz.getFields())
+				if (!Modifier.isStatic(field.getModifiers()))
+					try {
+						String name = field.getName();
+						Object o = field.get(object);
+						Class<?> type = field.getType();
+						if (isSimpleType(type))
+							d(prefix + "." + name, o, type);
+						else
+							d(prefix + "." + name, o);
+					} catch (Throwable ex) {
+						sb.append(prefix + "." + field.getName());
+						sb.append(" caught " + ex + "\n");
+					}
+
+			Set<String> displayedMethod = new HashSet<>();
+
+			for (Method method : clazz.getMethods()) {
+				String name = method.getName();
+				try {
+					if (name.startsWith("get") //
+							&& method.getParameterTypes().length == 0 //
+							&& !displayedMethod.contains(name)) {
+						Object o = method.invoke(object);
+						if (!(o instanceof Class<?>))
+							dump(prefix + "." + name + "()", o);
+
+						// Do not display same method of different base
+						// classes
+						displayedMethod.add(name);
+					}
+				} catch (Throwable ex) {
+					sb.append(prefix + "." + name + "()");
+					sb.append(" caught " + ex + "\n");
+				}
 			}
+
+			int count = 0;
+
+			if (clazz.isArray())
+				if (clazz.getComponentType() == int.class)
+					for (int i : (int[]) object)
+						dump(prefix + "[" + count++ + "]", i);
+				else if (Object.class.isAssignableFrom(clazz.getComponentType()))
+					for (Object o1 : (Object[]) object)
+						dump(prefix + "[" + count++ + "]", o1);
+
+			if (Collection.class.isAssignableFrom(clazz))
+				for (Object o1 : (Collection<?>) object)
+					dump(prefix + "[" + count++ + "]", o1);
+			else if (Map.class.isAssignableFrom(clazz))
+				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
+					Object key = entry.getKey(), value = entry.getValue();
+					dump(prefix + "[" + count + "].getKey()", key);
+					dump(prefix + "[" + count + "].getValue()", value);
+					count++;
+				}
+		} finally {
+			dumpedIds.remove(id);
+		}
 	}
 
 	/**

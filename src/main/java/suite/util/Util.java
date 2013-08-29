@@ -92,7 +92,7 @@ public class Util {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Dumping ");
 		sb.append(name);
-		DumpUtil.dump("", object, sb);
+		new DumpUtil(sb).d("", object);
 		LogUtil.info(sb.toString());
 	}
 
