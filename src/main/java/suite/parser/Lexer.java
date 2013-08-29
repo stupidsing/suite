@@ -1,14 +1,17 @@
-// '\''
 package suite.parser;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 public class Lexer {
 
-	private char chars[];
-	private int position = 0;
+	private boolean eof;
+	private char peeked;
+	private Reader reader;
 
 	private List<String> operators = Arrays.asList( //
 			"++", "--", "+", "-", "~", "!", //
@@ -26,7 +29,11 @@ public class Lexer {
 			"=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>=", ">>>=");
 
 	public Lexer(String in) {
-		this.chars = in.toCharArray();
+		this(new StringReader(in));
+	}
+
+	public Lexer(Reader reader) {
+		this.reader = reader;
 	}
 
 	public Iterable<String> tokens() {
@@ -58,38 +65,37 @@ public class Lexer {
 	}
 
 	private String nextToken() {
-		if (!eof()) {
-			int start = position;
+		if (!eof) {
 			boolean isEscape = false;
-			char ch = peekChar();
+			char ch = peeked;
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(nextChar());
 
 			if (ch == '\'') {
-				while (!eof() && (isEscape || peekChar() != '\'')) {
-					isEscape = !isEscape && peekChar() == '\\';
+				while (!eof && (isEscape || peeked != '\'')) {
+					isEscape = !isEscape && peeked == '\\';
 					sb.append(nextChar());
 				}
 				sb.append(nextChar());
 			} else if (ch == '"') {
-				while (!eof() && (isEscape || peekChar() != '"')) {
-					isEscape = !isEscape && peekChar() == '\\';
+				while (!eof && (isEscape || peeked != '"')) {
+					isEscape = !isEscape && peeked == '\\';
 					sb.append(nextChar());
 				}
 				sb.append(nextChar());
 			} else if (Character.isWhitespace(ch)) {
-				while (!eof() && Character.isWhitespace(peekChar()))
+				while (!eof && Character.isWhitespace(peeked))
 					sb.append(nextChar());
 				return nextToken();
 			} else if (Character.isDigit(ch))
-				while (!eof() && Character.isDigit(peekChar()))
+				while (!eof && Character.isDigit(peeked))
 					sb.append(nextChar());
 			else if (Character.isJavaIdentifierStart(ch))
-				while (!eof() && Character.isJavaIdentifierPart(peekChar()))
+				while (!eof && Character.isJavaIdentifierPart(peeked))
 					sb.append(nextChar());
 			else
-				while (!eof() && operators.contains(new String(chars, start, position + 1 - start)))
+				while (!eof && operators.contains(sb.toString() + peeked))
 					sb.append(nextChar());
 
 			return sb.toString();
@@ -97,16 +103,18 @@ public class Lexer {
 			return null;
 	}
 
-	private boolean eof() {
-		return position >= chars.length;
-	}
-
-	private char peekChar() {
-		return chars[position];
-	}
-
 	private char nextChar() {
-		return chars[position++];
+		char ch = peeked;
+		try {
+			int read = reader.read();
+			if (read >= 0)
+				peeked = (char) read;
+			else
+				eof = true;
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		return ch;
 	}
 
 }
