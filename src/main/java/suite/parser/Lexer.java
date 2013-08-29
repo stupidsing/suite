@@ -103,6 +103,10 @@ public class Lexer {
 			return null;
 	}
 
+	public boolean eof() {
+		return eof;
+	}
+
 	private char nextChar() {
 		char ch = peeked;
 		try {
