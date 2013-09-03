@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import suite.lp.FunCompilerConfig;
-import suite.lp.Suite;
-import suite.lp.node.Atom;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
-import suite.lp.node.Tree;
+import suite.Suite;
+import suite.fp.FunCompilerConfig;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Tree;
 
 public class EagerFunCompilerTest {
 

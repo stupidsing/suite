@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import suite.lp.Suite;
+import suite.Suite;
 import suite.lp.kb.RuleSet;
 import suite.lp.kb.RuleSetUtil;
-import suite.lp.node.Node;
+import suite.node.Node;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 

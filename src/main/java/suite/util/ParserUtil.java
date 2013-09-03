@@ -1,7 +1,7 @@
 package suite.util;
 
-import suite.parser.Operator;
-import suite.parser.Operator.Assoc;
+import suite.node.io.Operator;
+import suite.node.io.Operator.Assoc;
 
 public class ParserUtil {
 

@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
-import suite.lp.doer.Formatter;
-import suite.lp.node.Node;
+import suite.Suite;
+import suite.node.Node;
+import suite.node.io.Formatter;
 import suite.util.To;
 
 public class FunRbTreeTest {

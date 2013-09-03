@@ -4,9 +4,9 @@ import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.node.Node;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.node.Node;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 

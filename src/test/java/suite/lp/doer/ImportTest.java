@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
+import suite.Suite;
 import suite.lp.kb.RuleSet;
 
 public class ImportTest {

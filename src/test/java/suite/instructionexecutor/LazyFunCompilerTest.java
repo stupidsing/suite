@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
-import suite.lp.node.Atom;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
+import suite.Suite;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Node;
 
 public class LazyFunCompilerTest {
 

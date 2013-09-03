@@ -8,8 +8,8 @@ import java.util.List;
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.lp.node.Node;
-import suite.lp.node.Tree;
+import suite.node.Node;
+import suite.node.Tree;
 
 public class InstructionAnalyzer {
 

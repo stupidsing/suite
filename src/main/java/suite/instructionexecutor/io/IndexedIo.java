@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.lp.node.Node;
+import suite.node.Node;
 
 /**
  * Implements input devices that read/write at specified byte positions rather

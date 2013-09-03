@@ -1,6 +1,6 @@
 package suite.lp.doer;
 
-import suite.lp.node.Node;
+import suite.node.Node;
 
 /**
  * A node that is actually a runnable (with some parameters). When the prover

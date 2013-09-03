@@ -1,11 +1,11 @@
 package suite.lp.doer;
 
 import suite.lp.Journal;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
-import suite.lp.node.Str;
-import suite.lp.node.Tree;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Str;
+import suite.node.Tree;
 import suite.util.Util;
 
 public class Binder {

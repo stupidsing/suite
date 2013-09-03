@@ -1,7 +1,7 @@
 package suite.lp.search;
 
 import suite.lp.kb.RuleSet;
-import suite.lp.node.Node;
+import suite.node.Node;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 

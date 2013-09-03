@@ -6,12 +6,12 @@ import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
-import suite.lp.doer.TermParser.TermOp;
-import suite.lp.node.Atom;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
-import suite.lp.node.Tree;
-import suite.lp.predicates.SystemPredicates;
+import suite.lp.predicate.SystemPredicates;
+import suite.node.Atom;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Tree;
+import suite.node.io.TermParser.TermOp;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 

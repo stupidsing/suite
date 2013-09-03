@@ -1,15 +1,15 @@
 package suite.lp.search;
 
+import suite.Suite;
 import suite.instructionexecutor.InstructionExecutor;
 import suite.instructionexecutor.LogicInstructionExecutor;
-import suite.lp.Suite;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.node.Node;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.node.Node;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;

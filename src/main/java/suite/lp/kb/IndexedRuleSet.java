@@ -2,7 +2,7 @@ package suite.lp.kb;
 
 import java.util.List;
 
-import suite.lp.node.Node;
+import suite.node.Node;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;

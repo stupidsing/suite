@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.lp.doer.Cloner;
-import suite.lp.node.Node;
+import suite.node.Node;
 
 public class LinearRuleSet implements RuleSet {
 

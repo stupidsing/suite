@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
+import suite.node.Node;
+import suite.node.Reference;
 
 public class Journal {
 

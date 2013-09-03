@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
+import suite.Suite;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.kb.RuleSetUtil;

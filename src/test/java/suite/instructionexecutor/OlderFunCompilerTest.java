@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
-import suite.lp.node.Node;
+import suite.Suite;
+import suite.node.Node;
 
 public class OlderFunCompilerTest {
 

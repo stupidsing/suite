@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import suite.Suite;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.kb.RuleSetUtil;

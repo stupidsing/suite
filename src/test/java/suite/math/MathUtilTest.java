@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
-import suite.lp.node.Int;
+import suite.Suite;
+import suite.node.Int;
 
 public class MathUtilTest {
 

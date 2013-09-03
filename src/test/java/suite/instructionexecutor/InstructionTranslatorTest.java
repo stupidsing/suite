@@ -6,19 +6,19 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.Suite;
 import suite.instructionexecutor.TranslatedRunUtil.Closure;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRunConfig;
-import suite.lp.Suite;
 import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
 import suite.lp.kb.RuleSetUtil;
-import suite.lp.node.Atom;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Node;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 

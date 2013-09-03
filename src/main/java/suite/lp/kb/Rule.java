@@ -1,9 +1,9 @@
 package suite.lp.kb;
 
-import suite.lp.doer.TermParser.TermOp;
-import suite.lp.node.Atom;
-import suite.lp.node.Node;
-import suite.lp.node.Tree;
+import suite.node.Atom;
+import suite.node.Node;
+import suite.node.Tree;
+import suite.node.io.TermParser.TermOp;
 
 public class Rule {
 

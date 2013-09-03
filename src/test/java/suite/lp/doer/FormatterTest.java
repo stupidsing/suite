@@ -4,10 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
+import suite.Suite;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.io.Formatter;
 import suite.util.Util;
 
 public class FormatterTest {

@@ -5,12 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import suite.Suite;
 import suite.lp.Journal;
-import suite.lp.Suite;
 import suite.lp.doer.Binder;
-import suite.lp.doer.Formatter;
 import suite.lp.doer.Generalizer;
-import suite.lp.node.Node;
+import suite.node.Node;
+import suite.node.io.Formatter;
 
 public class FunCompilerTypeTest {
 

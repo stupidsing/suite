@@ -4,8 +4,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
-import suite.lp.node.Tree;
+import suite.Suite;
+import suite.node.Tree;
 
 public class ParserTest {
 

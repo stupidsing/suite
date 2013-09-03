@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.lp.kb.Rule;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
-import suite.lp.node.Tree;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Tree;
 
 public class Cloner {
 

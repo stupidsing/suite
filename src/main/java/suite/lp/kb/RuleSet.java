@@ -2,7 +2,7 @@ package suite.lp.kb;
 
 import java.util.List;
 
-import suite.lp.node.Node;
+import suite.node.Node;
 
 public interface RuleSet {
 

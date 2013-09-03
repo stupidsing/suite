@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.lp.Suite;
-import suite.lp.doer.Complexity;
+import suite.Suite;
 import suite.lp.doer.Prover;
-import suite.lp.doer.TermParser.TermOp;
-import suite.lp.node.Atom;
-import suite.lp.node.Node;
-import suite.lp.node.Tree;
+import suite.node.Atom;
+import suite.node.Node;
+import suite.node.Tree;
+import suite.node.io.TermParser.TermOp;
+import suite.node.util.Complexity;
 
 public class MathUtil {
 

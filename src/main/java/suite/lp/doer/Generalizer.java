@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.lp.node.Atom;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
-import suite.lp.node.Tree;
+import suite.node.Atom;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Tree;
+import suite.node.io.Formatter;
 
 public class Generalizer {
 

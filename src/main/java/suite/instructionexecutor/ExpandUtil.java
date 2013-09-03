@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import suite.lp.node.Atom;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
-import suite.lp.node.Tree;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Tree;
 import suite.util.FunUtil.Fun;
 
 public class ExpandUtil {

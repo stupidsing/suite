@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.lp.doer.ProverConfig.TraceLevel;
-import suite.lp.doer.TermParser.TermOp;
-import suite.lp.node.Node;
-import suite.lp.node.Tree;
+import suite.node.Node;
+import suite.node.Tree;
+import suite.node.io.Formatter;
+import suite.node.io.TermParser.TermOp;
 import suite.util.FunUtil.Fun;
 
 public class ProveTracer {

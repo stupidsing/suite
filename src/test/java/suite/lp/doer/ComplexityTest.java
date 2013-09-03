@@ -4,7 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.lp.Suite;
+import suite.Suite;
+import suite.node.util.Complexity;
 
 public class ComplexityTest {
 

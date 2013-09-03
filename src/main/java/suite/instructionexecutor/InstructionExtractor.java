@@ -9,12 +9,12 @@ import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
-import suite.lp.doer.TermParser.TermOp;
-import suite.lp.node.Atom;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
-import suite.lp.node.Tree;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Tree;
+import suite.node.io.TermParser.TermOp;
 
 import com.google.common.collect.BiMap;
 

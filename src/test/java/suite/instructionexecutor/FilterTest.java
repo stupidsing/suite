@@ -10,9 +10,9 @@ import java.io.Writer;
 
 import org.junit.Test;
 
-import suite.lp.FunCompilerConfig;
-import suite.lp.Suite;
-import suite.lp.node.Node;
+import suite.Suite;
+import suite.fp.FunCompilerConfig;
+import suite.node.Node;
 
 public class FilterTest {
 

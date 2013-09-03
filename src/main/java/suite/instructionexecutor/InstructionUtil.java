@@ -11,18 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.Suite;
 import suite.instructionexecutor.io.IndexedIo;
-import suite.lp.Suite;
-import suite.lp.doer.Comparer;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConfig;
-import suite.lp.doer.TermParser.TermOp;
-import suite.lp.node.Atom;
-import suite.lp.node.Node;
-import suite.lp.node.Reference;
-import suite.lp.node.Tree;
-import suite.parser.Operator;
+import suite.node.Atom;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Tree;
+import suite.node.io.Operator;
+import suite.node.io.TermParser.TermOp;
+import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 

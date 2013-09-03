@@ -3,9 +3,9 @@ package suite.instructionexecutor;
 import java.io.Closeable;
 
 import suite.lp.kb.RuleSet;
-import suite.lp.node.Atom;
-import suite.lp.node.Int;
-import suite.lp.node.Node;
+import suite.node.Atom;
+import suite.node.Int;
+import suite.node.Node;
 import suite.util.FunUtil.Fun;
 
 public class TranslatedRunUtil {
