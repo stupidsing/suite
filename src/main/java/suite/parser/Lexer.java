@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 public class Lexer {
 
@@ -13,7 +14,7 @@ public class Lexer {
 	private char peeked;
 	private Reader reader;
 
-	private List<String> operators = Arrays.asList( //
+	private Set<String> operators = new HashSet<>(Arrays.asList( //
 			"++", "--", "+", "-", "~", "!", //
 			"*", "/", "%", //
 			"+", "-", //
@@ -26,7 +27,7 @@ public class Lexer {
 			"&&", //
 			"||", //
 			"?", ":", //
-			"=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>=", ">>>=");
+			"=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>=", ">>>="));
 
 	public Lexer(String in) {
 		this(new StringReader(in));
