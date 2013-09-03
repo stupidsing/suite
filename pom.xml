@@ -59,7 +59,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>suite.lp.Main</mainClass>
+							<mainClass>suite.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -36,6 +36,18 @@ public class LazyFunCompilerTest {
 	}
 
 	@Test
+	public void testFold() {
+		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
+				+ "define inf-series = (n => n; inf-series {n + 1}) >> " //
+				+ "0 | inf-series | fold-right {`;`} {} | take {5}"));
+
+		// On the other hand, same call using fold-left would result in infinite
+		// loop, like this:
+		// define is = (n => n; is {n + 1}) >>
+		// 0 | is | fold-left {`;`/} {} | take {5}
+	}
+
+	@Test
 	public void testGet() {
 		assertEquals(Int.create(3), eval("get {2} {1; 2; 3; 4;}"));
 	}
