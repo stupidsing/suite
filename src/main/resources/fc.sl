@@ -129,12 +129,12 @@ fc-add-functions STANDARD .p (
 	define flip = (f => x => y =>
 		f {y} {x}
 	) >>
-	define fold-left = (fun => init =>
+	define fold-left = (fun => init => -- possible for tail recursion optimization
 		match
 		|| $h; $t => fold-left {fun} {fun {init} {h}} {t}
 		|| otherwise init
 	) >>
-	define fold-right = (fun => init =>
+	define fold-right = (fun => init => -- possible for short-circuit evaluation
 		match
 		|| $h; $t => fun {h} {fold-right {fun} {init} {t}}
 		|| otherwise init
