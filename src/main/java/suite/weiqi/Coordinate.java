@@ -58,11 +58,11 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	public int getX() {
-		return getLocation().t1;
+		return getLocation().t0;
 	}
 
 	public int getY() {
-		return getLocation().t2;
+		return getLocation().t1;
 	}
 
 	private Pair<Integer, Integer> getLocation() {
@@ -93,7 +93,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	@Override
 	public String toString() {
 		Pair<Integer, Integer> location = getLocation();
-		return String.format("%d,%d", location.t1, location.t2);
+		return String.format("%d,%d", location.t0, location.t1);
 	}
 
 	public int index() {

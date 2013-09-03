@@ -1,38 +1,41 @@
 package suite.util;
 
-public class Pair<T1, T2> {
+public class Pair<T0, T1> {
 
+	public T0 t0;
 	public T1 t1;
-	public T2 t2;
 
 	public Pair() {
 	}
 
-	public Pair(T1 t1, T2 t2) {
-		this.t1 = t1;
-		this.t2 = t2;
+	public Pair(T0 t1, T1 t2) {
+		this.t0 = t1;
+		this.t1 = t2;
 	}
 
-	public static <T1, T2> Pair<T1, T2> create(T1 t1, T2 t2) {
-		return new Pair<>(t1, t2);
+	public static <T0, T1> Pair<T0, T1> create(T0 t0, T1 t1) {
+		return new Pair<>(t0, t1);
 	}
 
-	public boolean equals(Object o) {
-		if (o instanceof Pair<?, ?>) {
-			Pair<?, ?> t = (Pair<?, ?>) o;
-			return Util.equals(t1, t.t1) && Util.equals(t2, t.t2);
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Pair<?, ?>) {
+			Pair<?, ?> other = (Pair<?, ?>) object;
+			return Util.equals(t0, other.t0) && Util.equals(t1, other.t1);
 		} else
 			return false;
 	}
 
+	@Override
 	public int hashCode() {
-		int h1 = t1 != null ? t1.hashCode() : 0;
-		int h2 = t2 != null ? t2.hashCode() : 0;
+		int h1 = t0 != null ? t0.hashCode() : 0;
+		int h2 = t1 != null ? t1.hashCode() : 0;
 		return h1 ^ h2;
 	}
 
+	@Override
 	public String toString() {
-		return t1.toString() + ":" + t2.toString();
+		return t0.toString() + ":" + t1.toString();
 	}
 
 }

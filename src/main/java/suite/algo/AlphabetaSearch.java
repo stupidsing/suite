@@ -24,7 +24,7 @@ public class AlphabetaSearch<State> {
 
 	public List<State> search(State state, int depth) {
 		moves.clear();
-		return search0(state, depth, 1 + Integer.MIN_VALUE, Integer.MAX_VALUE).t2;
+		return search0(state, depth, 1 + Integer.MIN_VALUE, Integer.MAX_VALUE).t1;
 	}
 
 	private Pair<Integer, List<State>> search0(State state, int depth, int alpha, int beta) {
@@ -38,11 +38,11 @@ public class AlphabetaSearch<State> {
 					moves.push(state1);
 
 					Pair<Integer, List<State>> result = search0(state1, depth - 1, -beta, -alpha);
-					int score = -result.t1;
+					int score = -result.t0;
 
 					if (score > alpha) {
 						alpha = score;
-						principalVariation = result.t2;
+						principalVariation = result.t1;
 					}
 
 					moves.pop();
