@@ -45,14 +45,12 @@ public class Lexer {
 				return nextToken != null;
 			}
 
-			@Override
 			public String next() {
 				String result = nextToken;
 				nextToken = nextToken();
 				return result;
 			}
 
-			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
