@@ -1,11 +1,17 @@
-package suite.node;
+package suite.fp;
 
+import suite.node.Node;
 import suite.util.Util;
 
 /**
  * A list of nodes that can be easily expanded in left or right direction.
  */
 public class Vector extends Node {
+
+	public static Vector EMPTY = new Vector(new Node[0]);
+
+	private Data data;
+	private int start, end;
 
 	private static class Data { // Immutable
 		private Node nodes[];
@@ -44,11 +50,6 @@ public class Vector extends Node {
 			System.arraycopy(n, s, nodes, endUsed, l1);
 		}
 	}
-
-	public static Vector EMPTY = new Vector(new Node[0]);
-
-	private Data data;
-	private int start, end;
 
 	public Vector(Node node) {
 		this(new Node[] { node });
