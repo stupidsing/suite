@@ -3,7 +3,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.instructionexecutor.FunRbTreeTest;
+import suite.fp.eval.FunRbTreeTest;
 
 public class FailedTests {
 

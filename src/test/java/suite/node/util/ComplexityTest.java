@@ -1,11 +1,10 @@
-package suite.lp.doer;
+package suite.node.util;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import suite.Suite;
-import suite.node.util.Complexity;
 
 public class ComplexityTest {
 

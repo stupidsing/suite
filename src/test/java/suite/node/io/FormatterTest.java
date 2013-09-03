@@ -1,4 +1,4 @@
-package suite.lp.doer;
+package suite.node.io;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,7 +8,6 @@ import suite.Suite;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.io.Formatter;
 import suite.util.Util;
 
 public class FormatterTest {

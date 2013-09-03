@@ -1,4 +1,4 @@
-package suite.lp.doer;
+package suite.node.util;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.node.Int;
 import suite.node.Reference;
-import suite.node.util.Comparer;
 
 public class ComparerTest {
 
