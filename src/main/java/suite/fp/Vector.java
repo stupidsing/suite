@@ -46,8 +46,8 @@ public class Vector extends Node {
 
 		private void insertAfter(Node n[], int s, int e) {
 			int l1 = e - s;
-			endUsed += l1;
 			System.arraycopy(n, s, nodes, endUsed, l1);
+			endUsed += l1;
 		}
 	}
 
