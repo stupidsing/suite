@@ -24,6 +24,15 @@ public class Copy {
 			System.arraycopy(from, fromIndex, to, toIndex, size);
 	}
 
+	public static void readerToWriter(Reader in, Writer out) throws IOException {
+		try (Reader in_ = in) {
+			int len;
+			char buffer[] = new char[bufferSize];
+			while ((len = in_.read(buffer)) >= 0)
+				out.write(buffer, 0, len);
+		}
+	}
+
 	/**
 	 * Clones slowly by serializing and de-serializing.
 	 */
@@ -39,15 +48,6 @@ public class Copy {
 		@SuppressWarnings("unchecked")
 		T cloned = (T) in.readObject();
 		return cloned;
-	}
-
-	public static void readerToWriter(Reader in, Writer out) throws IOException {
-		try (Reader in_ = in) {
-			int len;
-			char buffer[] = new char[bufferSize];
-			while ((len = in_.read(buffer)) >= 0)
-				out.write(buffer, 0, len);
-		}
 	}
 
 	public static void stream(InputStream in, OutputStream out) throws IOException {
