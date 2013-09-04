@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 
 public class Copy {
 
@@ -39,11 +41,20 @@ public class Copy {
 		return cloned;
 	}
 
+	public static void readerToWriter(Reader in, Writer out) throws IOException {
+		try (Reader in_ = in) {
+			int len;
+			char buffer[] = new char[bufferSize];
+			while ((len = in_.read(buffer)) >= 0)
+				out.write(buffer, 0, len);
+		}
+	}
+
 	public static void stream(InputStream in, OutputStream out) throws IOException {
 		try (InputStream in_ = in) {
 			int len;
 			byte buffer[] = new byte[bufferSize];
-			while ((len = in_.read(buffer)) > 0)
+			while ((len = in_.read(buffer)) >= 0)
 				out.write(buffer, 0, len);
 		}
 	}
