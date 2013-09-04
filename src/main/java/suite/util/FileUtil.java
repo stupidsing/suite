@@ -21,8 +21,10 @@ public class FileUtil {
 	}
 
 	public static void copyFile(File from, File to) throws IOException {
-		Copy.stream(new FileInputStream(from), new FileOutputStream(to));
-		// new FileOutputStream(f2, true); // Append
+		try (FileOutputStream fos = new FileOutputStream(to)) {
+			// new FileOutputStream(f2, true); // Append
+			Copy.stream(new FileInputStream(from), fos);
+		}
 	}
 
 }
