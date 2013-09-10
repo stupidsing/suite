@@ -24,6 +24,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Cyclic;
+import suite.node.util.Replacer;
 import suite.util.LogUtil;
 
 public class EvalPredicates {
@@ -197,6 +198,13 @@ public class EvalPredicates {
 			Int p0 = (Int) params[0].finalNode();
 			int randomNumber = random.nextInt(p0.getNumber());
 			return prover.bind(params[1], Int.create(randomNumber));
+		}
+	}
+
+	public static class ReplacePredicate implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 4);
+			return prover.bind(params[1], Replacer.replace(params[0], params[2], params[3]));
 		}
 	}
 

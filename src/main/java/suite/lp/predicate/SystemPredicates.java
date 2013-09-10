@@ -51,6 +51,7 @@ public class SystemPredicates {
 		addPredicate("map.erase", new EvalPredicates.MapErase());
 		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
+		addPredicate("replace", new EvalPredicates.ReplacePredicate());
 		addPredicate("same", new EvalPredicates.Same());
 		addPredicate("specialize", new EvalPredicates.Specialize());
 		addPredicate("temp", new EvalPredicates.Temp());
