@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- functional program interpreter
+-- lazy functional program interpreter
 
 fl (define .var = .value >> .do) .result
 	:- !
