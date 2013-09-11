@@ -26,7 +26,6 @@ public class SystemPredicates {
 	public SystemPredicates(Prover prover) {
 		this.prover = prover;
 
-		addPredicate("compare.and.set", new CompareAndSet());
 		addPredicate("cut.begin", new CutBegin());
 		addPredicate("cut.end", new CutEnd());
 		addPredicate("find.all", new FindAll());
@@ -48,8 +47,6 @@ public class SystemPredicates {
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("is.cyclic", new EvalPredicates.IsCyclic());
 		addPredicate("let", new EvalPredicates.Let());
-		addPredicate("map.erase", new EvalPredicates.MapErase());
-		addPredicate("map.retrieve", new EvalPredicates.MapRetrieve());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
 		addPredicate("replace", new EvalPredicates.ReplacePredicate());
 		addPredicate("same", new EvalPredicates.Same());
@@ -88,8 +85,8 @@ public class SystemPredicates {
 		addPredicate("source", new IoPredicates.Source());
 		addPredicate("write", new IoPredicates.Write());
 
-		addPredicate("asserta", new RuleSetPredicates.Asserta());
 		addPredicate("assert", new RuleSetPredicates.Assertz());
+		addPredicate("asserta", new RuleSetPredicates.Asserta());
 		addPredicate("assertz", new RuleSetPredicates.Assertz());
 		addPredicate("clear", new RuleSetPredicates.Clear());
 		addPredicate("import", new RuleSetPredicates.Import());
@@ -131,20 +128,6 @@ public class SystemPredicates {
 
 	private void addPredicate(String name, SystemPredicate pred) {
 		predicates.put(name, pred);
-	}
-
-	private class CompareAndSet implements SystemPredicate {
-		private final Map<Node, Node> map = new HashMap<>();
-
-		public synchronized boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 3);
-			Node key = params[0], value = map.get(key);
-
-			boolean result = value == null || prover.bind(value, params[1]);
-			if (result)
-				map.put(key, params[2]);
-			return result;
-		}
 	}
 
 	private class CutBegin implements SystemPredicate {

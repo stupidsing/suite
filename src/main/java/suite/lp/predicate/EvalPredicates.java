@@ -1,8 +1,6 @@
 package suite.lp.predicate;
 
-import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.script.ScriptEngine;
@@ -155,24 +153,6 @@ public class EvalPredicates {
 				throw new RuntimeException("Unable to evaluate expression");
 
 			return result;
-		}
-	}
-
-	private static final Map<Node, Node> store = new TreeMap<>();
-
-	public static class MapRetrieve implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
-			Node value = store.get(params[0]);
-			if (value == null)
-				store.put(params[0], value = new Reference());
-			return prover.bind(value, params[1]);
-		}
-	}
-
-	public static class MapErase implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return store.remove(ps) != null;
 		}
 	}
 
