@@ -3,8 +3,8 @@
 
 fl (define .var = .value >> .do) .result
 	:- !
-	, replace .value value1 .var .value1
-	, replace .do do1 .var .value1
+	, replace .value .value1 .var .value1
+	, replace .do .do1 .var .value1
 	, fl .do1 .result
 #
 fl (head {.pair}) .result :- !, fl .pair (.result, _) #
@@ -27,5 +27,6 @@ fl (.a + .b) ($ => .c)
 	, fl (.b {$}) .b1
 	, let .c (.a + .b)
 #
+fl (.var => .do) (.var => .do) :- ! #
 fl (.a, .b) (.a, .b) :- ! #
 fl .node ($ => .node) #
