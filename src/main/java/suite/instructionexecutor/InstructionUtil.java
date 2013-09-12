@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.Suite;
+import suite.instructionexecutor.fun.InvocableFun.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -94,6 +95,7 @@ public class InstructionUtil {
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
+		IJAVA_________("INVOKE-JAVA"), //
 		ISTREE________("IS-TREE"), //
 		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //
@@ -226,6 +228,24 @@ public class InstructionUtil {
 
 	public static Insn getInsn(String insnName) {
 		return InstructionUtil.insnNames.inverse().get(insnName);
+	}
+
+	public static Node execInvokeJava(String clazzName, Node node, Fun<Node, Node> unwrapper) {
+		Class<? extends InvocableJavaFun> clazz;
+
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends InvocableJavaFun> clazz0 = (Class<? extends InvocableJavaFun>) Class.forName(clazzName);
+			clazz = clazz0;
+		} catch (ClassNotFoundException ex1) {
+			throw new RuntimeException(ex1);
+		}
+
+		try {
+			return clazz.newInstance().invoke(unwrapper, node);
+		} catch (ReflectiveOperationException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static Node execPopen(Node n0, final Node n1, IndexedIo indexedIo, final Fun<Node, Node> unwrapper) {

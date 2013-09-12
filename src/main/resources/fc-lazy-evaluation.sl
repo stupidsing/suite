@@ -108,6 +108,7 @@ fc-lazy-compile-to-value (STRING .s) _ .c0/.cx/.d/.d/.reg
 fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
 		_compare/2/VALUE:VALUE:,
+		_ijava/2/THUNK:THUNK:,
 		_lcons/2/THUNK:THUNK:,
 		_log/1/THUNK:,
 		_log2/2/THUNK:THUNK:,

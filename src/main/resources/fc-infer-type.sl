@@ -253,6 +253,7 @@ instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 
 default-fun-type () (LIST-OF _) #
 default-fun-type _compare (FUN-OF .t (FUN-OF .t NUMBER)) #
+default-fun-type _ijava (FUN-OF (LIST-OF NUMBER) (FUN-OF _ _)) #
 default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
 default-fun-type _log (FUN-OF .t .t) #
