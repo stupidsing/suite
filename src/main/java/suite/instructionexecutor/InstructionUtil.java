@@ -95,7 +95,7 @@ public class InstructionUtil {
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
-		IJAVA_________("INVOKE-JAVA"), //
+		INVOKEJAVA____("INVOKE-JAVA"), //
 		ISTREE________("IS-TREE"), //
 		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //

@@ -86,7 +86,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;
-		case IJAVA_________:
+		case INVOKEJAVA____:
 			String clazzName = ExpandUtil.expandString((Node) ds[--dsp], unwrapper);
 			node = (Node) ds[--dsp];
 			result = InstructionUtil.execInvokeJava(clazzName, node, unwrapper);
