@@ -260,8 +260,6 @@ default-fun-type _log (FUN-OF .t .t) #
 default-fun-type _log2 (FUN-OF (LIST-OF NUMBER) (FUN-OF .t .t)) #
 default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 default-fun-type _popen (FUN-OF (LIST-OF NUMBER) (FUN-OF (LIST-OF NUMBER) (LIST-OF NUMBER))) #
-default-fun-type _prove (FUN-OF _ BOOLEAN) #
-default-fun-type _subst (FUN-OF _ (FUN-OF _ _)) #
 default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
 default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
 default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #

@@ -373,9 +373,6 @@ public class InstructionTranslator {
 				app("n1 = ds[--dsp]");
 				app("#{reg} = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper)", op0);
 				break;
-			case PROVE_________:
-				app("#{reg} = InstructionUtil.execProve((Node) ds[--dsp], prover.config())", op0);
-				break;
 			case PROVESYS______:
 				app("if (!systemPredicates.call(#{reg-node})) #{jump}", op0, op1);
 				break;
@@ -410,11 +407,6 @@ public class InstructionTranslator {
 				restoreFrame();
 				app("#{reg} = returnValue", op0);
 				app("#{reg-clos}.result = #{reg}", op1, op0);
-				break;
-			case SUBST_________:
-				app("n0 = (Node) ds[--dsp]");
-				app("n1 = (Node) ds[--dsp]");
-				app("#{reg} = InstructionUtil.execSubst(n1, n0)", op0);
 				break;
 			case TAIL__________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);

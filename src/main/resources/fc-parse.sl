@@ -58,16 +58,6 @@ fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
-fc-parse (prove-with-result .vvs .constant .result) .parsed
-	:- !, fc-parse (c .vvs (.constant . .result) | prove) .parsed
-#
-fc-parse (prove .vvs .constant) .parsed
-	:- !, fc-parse (c .vvs .constant | prove) .parsed
-#
-fc-parse (c (.vvs/.var:.value) .constant) .parsed
-	:- !, fc-parse (subst {.value} {c .vvs (.constant . .var)}) .parsed
-#
-fc-parse (c () .constant) (CONSTANT .constant) :- ! #
 fc-parse [] (OPTION CAST-TO-CLASS (ATOM [])) :- ! #
 fc-parse (.p0 .p1) (OPTION CAST-TO-CLASS (PAIR .parsed0 .parsed1))
 	:- !

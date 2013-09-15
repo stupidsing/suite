@@ -142,10 +142,8 @@ public class InstructionAnalyzer {
 			case NEWNODE_______:
 			case POP___________:
 			case POPEN_________:
-			case PROVE_________:
 			case SETRESULT_____:
 			case SETCLOSURERES_:
-			case SUBST_________:
 			case TAIL__________:
 			case TOP___________:
 				registers.get(op0).clazz = Node.class;

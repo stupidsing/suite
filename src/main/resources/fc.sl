@@ -82,8 +82,6 @@ fc-define-default-fun 2 _pcons CONS-PAIR #
 fc-define-default-fun 1 _pleft HEAD #
 fc-define-default-fun 2 _popen POPEN #
 fc-define-default-fun 1 _pright TAIL #
-fc-define-default-fun 1 _prove PROVE #
-fc-define-default-fun 2 _subst SUBST #
 fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 1 is-list IS-TREE #
@@ -114,8 +112,6 @@ fc-add-functions STANDARD .p (
 	define head = (list => _lhead {list}) >>
 	define log = (m => _log {m}) >>
 	define log2 = (m => n => _log2 {m} {n}) >>
-	define prove = (goal => _prove {goal}) >>
-	define subst = (var => node => _subst {var} {node}) >>
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
@@ -336,22 +332,14 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump = type (:t :- :t => list-of number) no-type-check (
-		let dump-string = (s =>
-			let length = prove-with-result /_s:s (string.length _s _l) _l >>
-			0 until length | map {i =>
-				prove-with-result /_s:s/_i:i (
-					substring _s _i 0 _c, to.int _c _asc
-				) _asc
-			}
-		) >>
 		let dump0 = (prec => n =>
 			if (is-list {n}) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (n = ()) then
 				"()"
-			else-if (prove /_n:n (is.atom _n)) then
-				prove-with-result /_n:n (to.string _n _s) _s | dump-string
+			else-if (_ijava {CLASS!suite.instructionexecutor.fun.InvocableJava$GetType} {n} = ATOM) then
+				_ijava {CLASS!suite.instructionexecutor.fun.InvocableJava$AtomString} {n}
 			else
 				int-to-str {n}
 		) >>

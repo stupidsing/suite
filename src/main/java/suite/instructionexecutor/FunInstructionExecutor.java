@@ -14,7 +14,6 @@ import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.fun.InvocableJava.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
-import suite.lp.doer.ProverConfig;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -27,7 +26,6 @@ import suite.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
-	private ProverConfig proverConfig;
 	private IndexedIo indexedIo = new IndexedIo();
 
 	private Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
@@ -116,15 +114,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			Node n1 = (Node) ds[--dsp];
 			result = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper);
 			break;
-		case PROVE_________:
-			node = (Node) ds[--dsp];
-			result = InstructionUtil.execProve(node, proverConfig);
-			break;
-		case SUBST_________:
-			Node var = (Node) ds[--dsp];
-			node = (Node) ds[--dsp];
-			result = InstructionUtil.execSubst(node, var);
-			break;
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
@@ -196,10 +185,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	@Override
 	public void close() {
 		indexedIo.close();
-	}
-
-	public void setProverConfig(ProverConfig proverConfig) {
-		this.proverConfig = proverConfig;
 	}
 
 }

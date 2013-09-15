@@ -6,20 +6,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.Suite;
 import suite.instructionexecutor.fun.InvocableJava.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
-import suite.lp.doer.Generalizer;
-import suite.lp.doer.Prover;
-import suite.lp.doer.ProverConfig;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
@@ -109,7 +103,6 @@ public class InstructionUtil {
 		POP___________("POP"), //
 		POPANY________("POP-ANY"), //
 		POPEN_________("POPEN"), //
-		PROVE_________("PROVE"), //
 		PROVEINTERPRET("PROVE-INTERPRET"), //
 		PROVESYS______("PROVE-SYS"), //
 		PUSH__________("PUSH"), //
@@ -122,7 +115,6 @@ public class InstructionUtil {
 		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
 		SETRESULT_____("SET-RESULT"), //
 		STOREGLOBAL___("STORE-GLOBAL"), //
-		SUBST_________("SUBST"), //
 		TAIL__________("TAIL"), //
 		TOP___________("TOP"), //
 		VCONCAT_______("VCONCAT"), //
@@ -272,31 +264,6 @@ public class InstructionUtil {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	public static Node execProve(Node node, ProverConfig proverConfig) {
-		Prover prover = proverConfig != null ? new Prover(proverConfig) : Suite.createProver(Arrays.asList("auto.sl"));
-		Tree tree = Tree.decompose(node, TermOp.JOIN__);
-		Node result;
-
-		if (tree != null)
-			if (prover.prove(tree.getLeft()))
-				result = tree.getRight().finalNode();
-			else
-				throw new RuntimeException("Goal failed");
-		else
-			result = prover.prove(node) ? Atom.TRUE : Atom.FALSE;
-
-		return result;
-	}
-
-	public static Node execSubst(Node node, Node var) {
-		Generalizer generalizer = new Generalizer();
-		generalizer.setVariablePrefix("_");
-
-		Tree tree = (Tree) generalizer.generalize(node);
-		((Reference) tree.getRight()).bound(var);
-		return tree.getLeft();
 	}
 
 }

@@ -69,11 +69,9 @@ public class EvaluateUtil {
 
 		Node code = doFcc(rs, node, fcc);
 
-		if (code != null) {
-			FunInstructionExecutor e = new FunInstructionExecutor(code);
-			e.setProverConfig(fcc.getProverConfig());
-			return e;
-		} else
+		if (code != null)
+			return new FunInstructionExecutor(code);
+		else
 			throw new RuntimeException("Function compilation error");
 	}
 
