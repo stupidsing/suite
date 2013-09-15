@@ -28,11 +28,14 @@ fl (.a = .b) ($ => .c)
 	, !, .c = true
 	; !, .c = false
 #
-fl (.a + .b) ($ => .c)
-	:- !
+fl .tree ($ => .c)
+	:- tree .tree .a .oper .b
+	, member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper 
+	, !
 	, fl (.a {$}) .a1
 	, fl (.b {$}) .b1
-	, let .c (.a1 + .b1)
+	, tree .tree1 .a1 .oper .b1
+	, let .c .tree1
 #
 fl (.var => .do) (.var => .do) :- ! #
 fl (.a, .b) (.a1, .b1)
