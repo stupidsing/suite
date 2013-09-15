@@ -12,8 +12,8 @@ import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.instructionexecutor.fun.InvocableJava.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
+import suite.lp.invocable.Invocables.InvocableFunction;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -153,7 +153,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		regs[insn.op0] = result;
 	}
 
-	public Closure createInvocableJavaFunClosure(Class<? extends InvocableJavaFun> clazz, Node node) {
+	public Closure createJavaInvocableFunctionClosure(Class<? extends InvocableFunction> clazz, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
 		frame.registers[1] = Atom.create("CLASS!" + clazz.getName());

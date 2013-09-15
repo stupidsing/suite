@@ -333,14 +333,14 @@ fc-add-functions STANDARD .p (
 	) >>
 	define dump = type (:t :- :t => list-of number) no-type-check (
 		let dump0 = (prec => n =>
-			let type = _ijava {CLASS!suite.instructionexecutor.fun.InvocableJava$GetType} {n} >>
+			let type = _ijava {CLASS!suite.lp.invocable.Invocables$GetType} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				_ijava {CLASS!suite.instructionexecutor.fun.InvocableJava$AtomString} {n}
+				_ijava {CLASS!suite.lp.invocable.Invocables$AtomString} {n}
 			else
 				int-to-str {n}
 		) >>

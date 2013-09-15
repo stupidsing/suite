@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.instructionexecutor.fun.InvocableJava.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
+import suite.lp.invocable.Invocables.InvocableFunction;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -223,11 +223,11 @@ public class InstructionUtil {
 	}
 
 	public static Node execInvokeJava(FunInstructionExecutor executor, String clazzName, Node node) {
-		Class<? extends InvocableJavaFun> clazz;
+		Class<? extends InvocableFunction> clazz;
 
 		try {
 			@SuppressWarnings("unchecked")
-			Class<? extends InvocableJavaFun> clazz0 = (Class<? extends InvocableJavaFun>) Class.forName(clazzName);
+			Class<? extends InvocableFunction> clazz0 = (Class<? extends InvocableFunction>) Class.forName(clazzName);
 			clazz = clazz0;
 		} catch (ClassNotFoundException ex1) {
 			throw new RuntimeException(ex1);
