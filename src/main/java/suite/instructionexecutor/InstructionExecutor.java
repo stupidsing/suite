@@ -39,17 +39,10 @@ public class InstructionExecutor implements AutoCloseable {
 			instructions0 = extractor.extractInstructions(node);
 		}
 
-		analyzer.analyze(instructions0);
-
-		List<Instruction> list = new ArrayList<>();
-		list.addAll(instructions0);
-		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
-		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
-		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
-
+		List<Instruction> list = new ArrayList<>(instructions0);
+		postprocessInstructions(list);
+		analyzer.analyze(list);
 		instructions = list.toArray(new Instruction[list.size()]);
-
-		unwrapEntryPoint = instructions0.size();
 	}
 
 	public Node execute() {
@@ -244,6 +237,15 @@ public class InstructionExecutor implements AutoCloseable {
 
 	protected void handle(Exec exec, Instruction insn) {
 		throw new RuntimeException("Unknown instruction " + insn);
+	}
+
+	protected void postprocessInstructions(List<Instruction> list) {
+		list.add(new Instruction(Insn.ENTER_________, 2, 0, 0));
+		unwrapEntryPoint = list.size();
+		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
+		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
+		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
+		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 	}
 
 	protected Comparer comparer() {

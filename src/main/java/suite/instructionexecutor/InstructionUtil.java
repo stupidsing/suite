@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.Suite;
-import suite.instructionexecutor.fun.InvocableFun.InvocableJavaFun;
+import suite.instructionexecutor.fun.InvocableJava.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -209,6 +209,14 @@ public class InstructionUtil {
 		}
 	}
 
+	public static Insn getEvalInsn(TermOp operator) {
+		return InstructionUtil.evalInsns.get(operator);
+	}
+
+	public static Insn getInsn(String insnName) {
+		return InstructionUtil.insnNames.inverse().get(insnName);
+	}
+
 	public static List<Node> extractTuple(Node node) {
 		List<Node> rs = new ArrayList<>(5);
 		Tree tree;
@@ -222,15 +230,7 @@ public class InstructionUtil {
 		return rs;
 	}
 
-	public static Insn getEvalInsn(TermOp operator) {
-		return InstructionUtil.evalInsns.get(operator);
-	}
-
-	public static Insn getInsn(String insnName) {
-		return InstructionUtil.insnNames.inverse().get(insnName);
-	}
-
-	public static Node execInvokeJava(String clazzName, Node node, Fun<Node, Node> unwrapper) {
+	public static Node execInvokeJava(FunInstructionExecutor executor, String clazzName, Node node) {
 		Class<? extends InvocableJavaFun> clazz;
 
 		try {
@@ -242,7 +242,7 @@ public class InstructionUtil {
 		}
 
 		try {
-			return clazz.newInstance().invoke(unwrapper, node);
+			return clazz.newInstance().invoke(executor, node);
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}

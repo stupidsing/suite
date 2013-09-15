@@ -160,13 +160,15 @@ public class InstructionAnalyzer {
 					frame1 = frame1.parent;
 				}
 
-				if (frame != frame1)
-					frame1.registers.get(op2).isUsedExternally = true;
+				AnalyzedRegister op0register = registers.get(op0);
+				AnalyzedRegister op2Register = frame1.registers.get(op2);
 
-				Class<?> clazz1 = frame1.registers.get(op2).clazz;
-				AnalyzedRegister register = registers.get(op0);
-				if (register.clazz != clazz1) // Merge into Node if clashed
-					register.clazz = register.clazz != null ? Node.class : clazz1;
+				if (frame != frame1)
+					op2Register.isUsedExternally = true;
+
+				// Merge into Node if clashed
+				if (op0register.clazz != op2Register.clazz)
+					op0register.clazz = op0register.clazz != null ? Node.class : op2Register.clazz;
 				break;
 			case DECOMPOSETREE1:
 				registers.get(op1).clazz = registers.get(op2).clazz = Node.class;

@@ -3,13 +3,16 @@ package suite.instructionexecutor;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
 
 import suite.fp.Vector;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
+import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
+import suite.instructionexecutor.fun.InvocableJava.InvocableJavaFun;
 import suite.instructionexecutor.io.IndexedIo;
 import suite.lp.doer.ProverConfig;
 import suite.node.Atom;
@@ -37,6 +40,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	};
 
 	private Comparer comparer = new FunComparer(unwrapper);
+
+	private int invokeJavaEntryPoint;
 
 	public FunInstructionExecutor(Node node) {
 		super(node);
@@ -88,9 +93,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case INVOKEJAVA____:
 			Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp]);
+			node = unwrapper.apply((Node) ds[--dsp]);
 			String clazzName = atom.toString().split("!")[1];
-			node = (Node) ds[--dsp];
-			result = InstructionUtil.execInvokeJava(clazzName, node, unwrapper);
+			result = InstructionUtil.execInvokeJava(this, clazzName, node);
 			break;
 		case ISTREE________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -157,6 +162,26 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 		exec.sp = dsp;
 		regs[insn.op0] = result;
+	}
+
+	public Closure createInvocableJavaFunClosure(Class<? extends InvocableJavaFun> clazz, Node node) {
+		Frame frame = new Frame(null, 3);
+		frame.registers[0] = node;
+		frame.registers[1] = Atom.create("CLASS!" + clazz.getName());
+		return new Closure(frame, invokeJavaEntryPoint);
+	}
+
+	@Override
+	protected void postprocessInstructions(List<Instruction> list) {
+		list.add(new Instruction(Insn.ENTER_________, 3, 0, 0));
+		invokeJavaEntryPoint = list.size();
+		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
+		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
+		list.add(new Instruction(Insn.INVOKEJAVA____, 2, 2, 0));
+		list.add(new Instruction(Insn.RETURNVALUE___, 2, 0, 0));
+		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
+
+		super.postprocessInstructions(list);
 	}
 
 	@Override
