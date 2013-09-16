@@ -163,6 +163,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	@Override
 	protected void postprocessInstructions(List<Instruction> list) {
 		list.add(new Instruction(Insn.ENTER_________, 3, 0, 0));
+
 		invokeJavaEntryPoint = list.size();
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));

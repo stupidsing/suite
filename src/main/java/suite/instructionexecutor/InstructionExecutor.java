@@ -241,6 +241,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 	protected void postprocessInstructions(List<Instruction> list) {
 		list.add(new Instruction(Insn.ENTER_________, 2, 0, 0));
+
 		unwrapEntryPoint = list.size();
 		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
 		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
