@@ -243,7 +243,7 @@ public class InstructionUtil {
 	public static Node execPopen(Node n0, final Node n1, IndexedIo indexedIo, final Fun<Node, Node> unwrapper) {
 		try {
 			Node result = Atom.unique();
-			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(n0, unwrapper));
+			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(unwrapper, n0));
 
 			indexedIo.put(result, new InputStreamReader(process.getInputStream()));
 
@@ -253,7 +253,7 @@ public class InstructionUtil {
 			new Thread() {
 				public void run() {
 					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ExpandUtil.expand(n1, unwrapper, writer);
+						ExpandUtil.expand(unwrapper, n1, writer);
 					} catch (IOException ex) {
 						LogUtil.error(ex);
 					}

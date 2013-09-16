@@ -330,6 +330,14 @@ public class InstructionTranslator {
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
 				break;
+			case INVOKEJAVA____:
+				app("{");
+				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
+				app("node = unwrapper.apply((Node) ds[--dsp])");
+				app("String clazzName = atom.toString().split(\"!\")[1]");
+				app("result = InstructionUtil.execInvokeJava(this, clazzName, node)");
+				app("}");
+				break;
 			case ISTREE________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null", op0);
 				break;

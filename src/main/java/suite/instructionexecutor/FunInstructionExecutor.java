@@ -47,7 +47,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	public void executeIo(Reader reader, Writer writer) throws IOException {
 		indexedIo.put(Atom.NIL, reader);
-		ExpandUtil.expand(execute(), unwrapper, writer);
+		ExpandUtil.expand(unwrapper, execute(), writer);
 	}
 
 	@Override
@@ -103,10 +103,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case LOG1__________:
 			result = (Node) ds[--dsp];
-			LogUtil.info(Formatter.display(ExpandUtil.expand(result, unwrapper)));
+			LogUtil.info(Formatter.display(ExpandUtil.expand(unwrapper, result)));
 			break;
 		case LOG2__________:
-			LogUtil.info(ExpandUtil.expandString((Node) ds[--dsp], unwrapper));
+			LogUtil.info(ExpandUtil.expandString(unwrapper, (Node) ds[--dsp]));
 			result = (Node) ds[--dsp];
 			break;
 		case POPEN_________:

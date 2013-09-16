@@ -62,7 +62,7 @@ public class Invocables {
 
 	public static class StringLength implements InvocableFunction {
 		public Node invoke(FunInstructionExecutor executor, Node input) {
-			return Int.create(ExpandUtil.expandString(input, executor.getUnwrapper()).length());
+			return Int.create(ExpandUtil.expandString(executor.getUnwrapper(), input).length());
 		}
 	}
 

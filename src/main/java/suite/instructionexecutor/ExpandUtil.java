@@ -16,11 +16,11 @@ public class ExpandUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
 	 * string.
 	 */
-	public static String expandString(Node node, Fun<Node, Node> unwrapper) {
+	public static String expandString(Fun<Node, Node> unwrapper, Node node) {
 		StringWriter writer = new StringWriter();
 
 		try {
-			expand(node, unwrapper, writer);
+			expand(unwrapper, node, writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -32,7 +32,7 @@ public class ExpandUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and write
 	 * corresponding characters into the writer.
 	 */
-	public static void expand(Node node, Fun<Node, Node> unwrapper, Writer writer) throws IOException {
+	public static void expand(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
 		while (true) {
 			node = unwrapper.apply(node);
 			Tree tree = Tree.decompose(node);
@@ -54,13 +54,13 @@ public class ExpandUtil {
 	/**
 	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
-	public static Node expand(Node node, Fun<Node, Node> unwrapper) {
+	public static Node expand(Fun<Node, Node> unwrapper, Node node) {
 		node = unwrapper.apply(node);
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = expand(tree.getLeft(), unwrapper);
-			Node right = expand(tree.getRight(), unwrapper);
+			Node left = expand(unwrapper, tree.getLeft());
+			Node right = expand(unwrapper, tree.getRight());
 			node = Tree.create(tree.getOperator(), left, right);
 		}
 
