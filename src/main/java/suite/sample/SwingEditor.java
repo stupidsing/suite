@@ -13,13 +13,13 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -37,7 +37,7 @@ public class SwingEditor {
 		JLabel topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
 
-		JTextPane editor = applyDefaults(new JTextPane());
+		JEditorPane editor = applyDefaults(new JEditorPane());
 
 		Component box = Box.createRigidArea(new Dimension(8, 8));
 		JLabel okLabel = applyDefaults(new JLabel("OK"));
