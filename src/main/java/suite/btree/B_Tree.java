@@ -16,7 +16,7 @@ import suite.util.Util;
  * 
  * @author ywsing
  */
-public class B_Tree<Key, Value> {
+public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 
 	private int branchFactor;
 	private Allocator allocator;
