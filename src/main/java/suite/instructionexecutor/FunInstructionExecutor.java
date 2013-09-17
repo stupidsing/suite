@@ -153,7 +153,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		regs[insn.op0] = result;
 	}
 
-	public Closure createJavaInvocableFunctionClosure(Class<? extends InvocableFunction> clazz, Node node) {
+	public Closure wrapInvocableFunction(Class<? extends InvocableFunction> clazz, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
 		frame.registers[1] = Atom.create("CLASS!" + clazz.getName());

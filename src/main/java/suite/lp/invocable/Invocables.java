@@ -26,8 +26,8 @@ public class Invocables {
 			String name = ((Atom) executor.getUnwrapper().apply(input)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = executor.createJavaInvocableFunctionClosure(Id.class, Int.create(name.charAt(0)));
-				Node right = executor.createJavaInvocableFunctionClosure(AtomString.class, Atom.create(name.substring(1)));
+				Node left = executor.wrapInvocableFunction(Id.class, Int.create(name.charAt(0)));
+				Node right = executor.wrapInvocableFunction(AtomString.class, Atom.create(name.substring(1)));
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
