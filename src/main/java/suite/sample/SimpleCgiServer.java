@@ -16,10 +16,10 @@ import suite.util.Util;
 public class SimpleCgiServer {
 
 	public static void main(String args[]) throws IOException {
-		run();
+		new SimpleCgiServer().run();
 	}
 
-	private static void run() throws IOException {
+	private void run() throws IOException {
 		try (ServerSocket serverSocket = new ServerSocket(4000)) {
 			while (true)
 				new SimpleCgiHandlerThread(serverSocket.accept()).start();
