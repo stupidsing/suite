@@ -338,7 +338,7 @@ public class InstructionTranslator {
 				app("result = InstructionUtil.execInvokeJava(this, clazzName, node)");
 				app("}");
 				break;
-			case ISTREE________:
+			case ISCONS________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null", op0);
 				break;
 			case JUMP__________:

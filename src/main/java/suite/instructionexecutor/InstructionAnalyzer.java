@@ -114,7 +114,7 @@ public class InstructionAnalyzer {
 			case EVALLE________:
 			case EVALLT________:
 			case EVALNE________:
-			case ISTREE________:
+			case ISCONS________:
 				registers.get(op0).clazz = boolean.class;
 				break;
 			case ASSIGNCLOSURE_:

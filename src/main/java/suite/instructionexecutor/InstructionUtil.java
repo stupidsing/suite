@@ -90,7 +90,7 @@ public class InstructionUtil {
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		INVOKEJAVA____("INVOKE-JAVA"), //
-		ISTREE________("IS-TREE"), //
+		ISCONS________("IS-CONS"), //
 		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //
 		JUMPREG_______("JUMP-REG"), //

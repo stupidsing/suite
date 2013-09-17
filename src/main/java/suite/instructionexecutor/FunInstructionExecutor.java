@@ -95,7 +95,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			String clazzName = atom.toString().split("!")[1];
 			result = InstructionUtil.execInvokeJava(this, clazzName, node);
 			break;
-		case ISTREE________:
+		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
 			break;
 		case ISVECTOR______:

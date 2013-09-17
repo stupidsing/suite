@@ -84,8 +84,8 @@ fc-define-default-fun 2 _popen POPEN #
 fc-define-default-fun 1 _pright TAIL #
 fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 2 fgetc FGETC #
-fc-define-default-fun 1 is-list IS-TREE #
-fc-define-default-fun 1 is-pair IS-TREE #
+fc-define-default-fun 1 is-list IS-CONS #
+fc-define-default-fun 1 is-pair IS-CONS #
 
 fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
