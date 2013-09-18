@@ -3,6 +3,7 @@ package suite.util;
 import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -103,10 +104,11 @@ public class LogUtil {
 					String rd = DumpUtil.dump("return", value);
 					LogFactory.getLog(clazz).info(prefix + rd);
 					return value;
-				} catch (Exception ex) {
-					boolean isTrimmed = trimStackTrace(ex);
-					LogFactory.getLog(clazz).error(isTrimmed ? "(Trimmed)" : "", ex);
-					throw ex;
+				} catch (InvocationTargetException ite) {
+					Throwable th = ite.getTargetException();
+					boolean isTrimmed = trimStackTrace(th);
+					LogFactory.getLog(clazz).error(isTrimmed ? "(Trimmed)" : "", th);
+					throw th instanceof Exception ? (Exception) th : ite;
 				}
 			}
 		};
