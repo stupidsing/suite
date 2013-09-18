@@ -33,9 +33,9 @@ public class Connector {
 	}
 
 	public void listen() throws IOException {
-		try (ServerSocket server = new ServerSocket(5151)) {
-			ThreadPoolExecutor executor = Util.createExecutor();
+		ThreadPoolExecutor executor = Util.createExecutor();
 
+		try (ServerSocket server = new ServerSocket(5151)) {
 			while (true) {
 				final Socket socket = server.accept();
 
@@ -52,6 +52,8 @@ public class Connector {
 					}
 				});
 			}
+		} finally {
+			executor.shutdown();
 		}
 	}
 

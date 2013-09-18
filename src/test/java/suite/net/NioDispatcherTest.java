@@ -85,9 +85,10 @@ public class NioDispatcherTest {
 				return new RequestResponseChannel(matcher, executor, handler);
 			}
 		};
-		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<>(source);
 
+		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<>(source);
 		dispatcher.start();
+
 		try (Closeable closeServer = dispatcher.listen(5151)) {
 			InetAddress localHost = InetAddress.getLocalHost();
 			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
@@ -102,8 +103,8 @@ public class NioDispatcherTest {
 			}
 		}
 
-		executor.awaitTermination(0, TimeUnit.SECONDS);
 		dispatcher.stop();
+		executor.awaitTermination(0, TimeUnit.SECONDS);
 	}
 
 }

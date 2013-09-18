@@ -32,7 +32,7 @@ public class Cluster {
 	});
 
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
-	private ThreadPoolExecutor executor = Util.createExecutor();
+	private ThreadPoolExecutor executor;
 
 	private Closeable unlisten;
 
@@ -70,6 +70,11 @@ public class Cluster {
 	}
 
 	public void start() throws IOException {
+		executor = Util.createExecutor();
+
+		unlisten = nio.listen(peers.get(me).getPort());
+		nio.start();
+
 		probe.setOnJoined(new Sink<String>() {
 			public void sink(String node) {
 				onJoined.sink(node);
@@ -87,8 +92,6 @@ public class Cluster {
 			}
 		});
 
-		unlisten = nio.listen(peers.get(me).getPort());
-		nio.start();
 		probe.start();
 	}
 
@@ -99,6 +102,8 @@ public class Cluster {
 		probe.stop();
 		nio.stop();
 		Util.closeQuietly(unlisten);
+
+		executor.shutdown();
 	}
 
 	public Object requestForResponse(String peer, Object request) {
