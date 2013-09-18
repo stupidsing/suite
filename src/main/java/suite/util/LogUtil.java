@@ -84,34 +84,38 @@ public class LogUtil {
 	public static <I> I proxy(Class<I> interface_, final I object) {
 		@SuppressWarnings("unchecked")
 		final Class<I> clazz = (Class<I>) object.getClass();
-		ClassLoader classLoader = clazz.getClassLoader();
-		Class<?> classes[] = { interface_ };
+		final Log log = LogFactory.getLog(clazz);
 
 		InvocationHandler handler = new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {
 				String methodName = method.getName();
 				String prefix = methodName + "()\n";
+				StringBuilder sb = new StringBuilder();
 
-				String pd = "";
+				sb.append(prefix);
+
 				if (ps != null)
 					for (int i = 0; i < ps.length; i++)
-						pd += DumpUtil.dump("p" + i, ps[i]);
+						DumpUtil.dump(sb, "p" + i, ps[i]);
 
-				LogFactory.getLog(clazz).info(prefix + pd);
+				log.info(sb.toString());
 
 				try {
 					Object value = method.invoke(object, ps);
 					String rd = DumpUtil.dump("return", value);
-					LogFactory.getLog(clazz).info(prefix + rd);
+					log.info(prefix + rd);
 					return value;
 				} catch (InvocationTargetException ite) {
 					Throwable th = ite.getTargetException();
 					boolean isTrimmed = trimStackTrace(th);
-					LogFactory.getLog(clazz).error(isTrimmed ? "(Trimmed)" : "", th);
+					log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
 					throw th instanceof Exception ? (Exception) th : ite;
 				}
 			}
 		};
+
+		ClassLoader classLoader = clazz.getClassLoader();
+		Class<?> classes[] = { interface_ };
 
 		@SuppressWarnings("unchecked")
 		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);

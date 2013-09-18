@@ -54,6 +54,10 @@ public class DumpUtil {
 		return dumpUtil.sb.toString();
 	}
 
+	public static void dump(StringBuilder sb, String prefix, Object object) {
+		new DumpUtil(sb).d(prefix, object);
+	}
+
 	public void d(String prefix, Object object) {
 		if (object != null)
 			d(prefix, object, object.getClass());
