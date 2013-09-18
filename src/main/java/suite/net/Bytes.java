@@ -56,7 +56,7 @@ public class Bytes {
 		checkOpenBounds(end);
 		Bytes result = new Bytes(bytes, start, end);
 
-		// Avoids small range bytes object keeping a large buffer
+		// Avoid small pack of bytes object keeping a large buffer
 		if (bytes.length >= reallocSize && end - start < reallocSize / 4)
 			result = emptyBytes.append(result); // Do not share reference
 
