@@ -7,14 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.util.FileUtil;
-import suite.util.LogUtil;
-import suite.util.Util;
+import suite.util.SocketUtil;
+import suite.util.SocketUtil.Rw;
 
 public class Connector {
 
@@ -33,28 +31,11 @@ public class Connector {
 	}
 
 	public void listen() throws IOException {
-		ThreadPoolExecutor executor = Util.createExecutor();
-
-		try (ServerSocket server = new ServerSocket(5151)) {
-			while (true) {
-				final Socket socket = server.accept();
-
-				executor.execute(new Runnable() {
-					public void run() {
-						try (OutputStream os = socket.getOutputStream();
-								InputStream is = socket.getInputStream();
-								Reader isr = new BufferedReader(new InputStreamReader(is));
-								PrintWriter writer = new PrintWriter(os)) {
-							writer.println("Hello World");
-						} catch (IOException ex) {
-							LogUtil.error(ex);
-						}
-					}
-				});
+		SocketUtil.listen(5151, new Rw() {
+			public void serve(Reader reader, PrintWriter writer) throws IOException {
+				writer.println("Hello World");
 			}
-		} finally {
-			executor.shutdown();
-		}
+		});
 	}
 
 }

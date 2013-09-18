@@ -254,7 +254,7 @@ public class InstructionUtil {
 				public void run() {
 					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
 						ExpandUtil.expand(unwrapper, n1, writer);
-					} catch (IOException ex) {
+					} catch (Exception ex) {
 						LogUtil.error(ex);
 					}
 				}

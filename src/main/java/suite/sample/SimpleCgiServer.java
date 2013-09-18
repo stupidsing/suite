@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import suite.util.FileUtil;
-import suite.util.LogUtil;
-import suite.util.Util;
+import suite.util.SocketUtil;
+import suite.util.SocketUtil.Io;
 
 public class SimpleCgiServer {
 
@@ -21,41 +19,22 @@ public class SimpleCgiServer {
 	}
 
 	private void run() throws IOException {
-		try (ServerSocket serverSocket = new ServerSocket(4000)) {
-			while (true)
-				new SimpleCgiHandlerThread(serverSocket.accept()).start();
-		}
-	}
+		SocketUtil.listen(4000, new Io() {
+			public void serve(InputStream is, OutputStream os) throws IOException {
+				Map<String, String> headers = readHeaders(is);
 
-	protected void serve(Map<String, String> headers, OutputStream os) throws IOException {
-		headers.getClass();
-
-		OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
-		writer.write("<html>" + headers + "</html>");
-	}
-
-	public class SimpleCgiHandlerThread extends Thread {
-		private Socket socket;
-
-		private SimpleCgiHandlerThread(Socket socket) {
-			this.socket = socket;
-		}
-
-		public void run() {
-			try (InputStream sis = socket.getInputStream(); OutputStream sos = socket.getOutputStream()) {
-				Map<String, String> headers = readHeaders(sis);
-
-				sos.write(("Status: 200 OK\r\n" //
+				os.write(("Status: 200 OK\r\n" //
 						+ "Content-Type: text/html\r\n" //
 						+ "\r\n").getBytes(FileUtil.charset));
 
-				serve(headers, sos);
-			} catch (Exception ex) {
-				LogUtil.error(ex);
-			} finally {
-				Util.closeQuietly(socket);
+				SimpleCgiServer.this.serve(headers, os);
 			}
-		}
+		});
+	}
+
+	protected void serve(Map<String, String> headers, OutputStream os) throws IOException {
+		OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+		writer.write("<html>" + headers + "</html>");
 	}
 
 	private Map<String, String> readHeaders(InputStream sis) throws IOException {
