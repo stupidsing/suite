@@ -3,6 +3,7 @@ package suite.sample;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.IntBuffer;
@@ -28,7 +29,9 @@ public class SimpleCgiServer {
 
 	protected void serve(Map<String, String> headers, OutputStream os) throws IOException {
 		headers.getClass();
-		os.write("<html></html>".getBytes(FileUtil.charset));
+
+		OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+		writer.write("<html>" + headers + "</html>");
 	}
 
 	public class SimpleCgiHandlerThread extends Thread {
