@@ -17,24 +17,24 @@ public class Invocables {
 	private static final Atom TREE = Atom.create("TREE");
 	private static final Atom UNKNOWN = Atom.create("UNKNOWN");
 
-	public interface InvocableFunction {
-		public Node invoke(FunInstructionExecutor executor, Node input);
+	public static abstract class InvocableNode extends Node {
+		public abstract Node invoke(FunInstructionExecutor executor, Node input);
 	}
 
-	public static class AtomString implements InvocableFunction {
+	public static class AtomString extends InvocableNode {
 		public Node invoke(FunInstructionExecutor executor, Node input) {
 			String name = ((Atom) executor.getUnwrapper().apply(input)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = executor.wrapInvocableFunction(Id.class, Int.create(name.charAt(0)));
-				Node right = executor.wrapInvocableFunction(AtomString.class, Atom.create(name.substring(1)));
+				Node left = executor.wrapInvocableNode(new Id(), Int.create(name.charAt(0)));
+				Node right = executor.wrapInvocableNode(this, Atom.create(name.substring(1)));
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
 		}
 	}
 
-	public static class GetType implements InvocableFunction {
+	public static class GetType extends InvocableNode {
 		public Node invoke(FunInstructionExecutor executor, Node input) {
 			Node node = executor.getUnwrapper().apply(input);
 			Atom type;
@@ -54,13 +54,13 @@ public class Invocables {
 		}
 	}
 
-	public static class Id implements InvocableFunction {
+	public static class Id extends InvocableNode {
 		public Node invoke(FunInstructionExecutor executor, Node input) {
 			return input;
 		}
 	}
 
-	public static class StringLength implements InvocableFunction {
+	public static class StringLength extends InvocableNode {
 		public Node invoke(FunInstructionExecutor executor, Node input) {
 			return Int.create(ExpandUtil.expandString(executor.getUnwrapper(), input).length());
 		}

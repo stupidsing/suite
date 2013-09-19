@@ -13,7 +13,7 @@ import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.io.IndexedIo;
-import suite.lp.invocable.Invocables.InvocableFunction;
+import suite.lp.invocable.Invocables.InvocableNode;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -88,11 +88,15 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;
-		case INVOKEJAVA____:
+		case INVOKEJAVACLS_:
 			Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp]);
-			node = unwrapper.apply((Node) ds[--dsp]);
 			String clazzName = atom.toString().split("!")[1];
-			result = InstructionUtil.execInvokeJava(this, clazzName, node);
+			result = InstructionUtil.execInvokeJavaClass(this, clazzName);
+			break;
+		case INVOKEJAVAOBJ_:
+			InvocableNode invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
+			node = unwrapper.apply((Node) ds[--dsp]);
+			result = invocableNode.invoke(this, node);
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -152,10 +156,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		regs[insn.op0] = result;
 	}
 
-	public Closure wrapInvocableFunction(Class<? extends InvocableFunction> clazz, Node node) {
+	public Closure wrapInvocableNode(InvocableNode invocableNode, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
-		frame.registers[1] = Atom.create("CLASS!" + clazz.getName());
+		frame.registers[1] = invocableNode;
 		return new Closure(frame, invokeJavaEntryPoint);
 	}
 
@@ -166,7 +170,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		invokeJavaEntryPoint = list.size();
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
-		list.add(new Instruction(Insn.INVOKEJAVA____, 2, 2, 0));
+		list.add(new Instruction(Insn.INVOKEJAVAOBJ_, 2, 2, 0));
 		list.add(new Instruction(Insn.RETURNVALUE___, 2, 0, 0));
 		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 

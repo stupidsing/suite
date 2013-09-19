@@ -330,7 +330,7 @@ public class InstructionTranslator {
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
 				break;
-			case INVOKEJAVA____:
+			case INVOKEJAVACLS_:
 				app("{");
 				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
 				app("node = unwrapper.apply((Node) ds[--dsp])");

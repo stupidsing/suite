@@ -72,7 +72,8 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 #
 
 fc-define-default-fun 2 _compare COMPARE #
-fc-define-default-fun 2 _ijava INVOKE-JAVA #
+fc-define-default-fun 1 _ijavaclass INVOKE-JAVA-CLASS #
+fc-define-default-fun 2 _ijavaobject INVOKE-JAVA-OBJECT #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
@@ -332,15 +333,17 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump = type (:t :- :t => list-of number) no-type-check (
+		define get-type = _ijavaclass {CLASS!suite.lp.invocable.Invocables$GetType} >>
+		define atom-string = _ijavaclass {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
-			let type = _ijava {CLASS!suite.lp.invocable.Invocables$GetType} {n} >>
+			let type = _ijavaobject {get-type} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				_ijava {CLASS!suite.lp.invocable.Invocables$AtomString} {n}
+				_ijavaobject {atom-string} {n}
 			else
 				int-to-str {n}
 		) >>
