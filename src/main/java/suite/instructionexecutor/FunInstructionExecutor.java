@@ -95,7 +95,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case INVOKEJAVAOBJ_:
 			InvocableNode invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
-			node = unwrapper.apply((Node) ds[--dsp]);
+			node = (Node) ds[--dsp];
 			result = invocableNode.invoke(this, node);
 			break;
 		case ISCONS________:
