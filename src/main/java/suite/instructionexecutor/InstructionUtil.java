@@ -223,7 +223,7 @@ public class InstructionUtil {
 		return rs;
 	}
 
-	public static InvocableNode execInvokeJavaClass(FunInstructionExecutor executor, String clazzName) {
+	public static InvocableNode execInvokeJavaClass(String clazzName) {
 		Class<? extends InvocableNode> clazz;
 
 		try {
