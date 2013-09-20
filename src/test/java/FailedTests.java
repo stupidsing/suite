@@ -13,12 +13,6 @@ public class FailedTests {
 		new FunRbTreeTest().test();
 	}
 
-	// Strange error message "Unknown expression if b"
-	@Test
-	public void test1() throws IOException {
-		Suite.evaluateFun("if a then b", false);
-	}
-
 	// Strange error message "Unknown expression (temp$$0 => temp$$0 {})"
 	@Test
 	public void test2() throws IOException {
