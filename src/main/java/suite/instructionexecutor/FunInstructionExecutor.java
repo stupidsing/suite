@@ -90,7 +90,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case INVOKEJAVACLS_:
 			Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp]);
-			String clazzName = atom.toString().split("!")[1];
+			String clazzName = atom.getName().split("!")[1];
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
 		case INVOKEJAVAOBJ_:
