@@ -90,7 +90,9 @@ public class InstructionUtil {
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		INVOKEJAVACLS_("INVOKE-JAVA-CLASS"), //
+		INVOKEJAVAOBJ0("INVOKE-JAVA-OBJ0"), //
 		INVOKEJAVAOBJ1("INVOKE-JAVA-OBJ1"), //
+		INVOKEJAVAOBJ2("INVOKE-JAVA-OBJ2"), //
 		ISCONS________("IS-CONS"), //
 		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //

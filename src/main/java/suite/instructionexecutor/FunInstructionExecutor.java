@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import suite.fp.Vector;
@@ -60,30 +61,31 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		Object ds[] = exec.stack;
 		int dsp = exec.sp;
 
-		Node node, left, right, result;
+		Node n0, n1, result;
+		InvocableNode invocableNode;
 
 		switch (insn.insn) {
 		case COMPARE_______:
-			left = (Node) ds[--dsp];
-			right = (Node) ds[--dsp];
-			result = Int.create(comparer.compare(left, right));
+			n0 = (Node) ds[--dsp];
+			n1 = (Node) ds[--dsp];
+			result = Int.create(comparer.compare(n0, n1));
 			break;
 		case CONSLIST______:
-			left = (Node) ds[--dsp];
-			right = (Node) ds[--dsp];
-			result = Tree.create(TermOp.OR____, left, right);
+			n0 = (Node) ds[--dsp];
+			n1 = (Node) ds[--dsp];
+			result = Tree.create(TermOp.OR____, n0, n1);
 			break;
 		case CONSPAIR______:
-			left = (Node) ds[--dsp];
-			right = (Node) ds[--dsp];
-			result = Tree.create(TermOp.TUPLE_, left, right);
+			n0 = (Node) ds[--dsp];
+			n1 = (Node) ds[--dsp];
+			result = Tree.create(TermOp.TUPLE_, n0, n1);
 			break;
 		case ERROR_________:
 			throw new RuntimeException("Error termination");
 		case FGETC_________:
-			node = (Node) ds[--dsp];
+			n0 = (Node) ds[--dsp];
 			int p = ((Int) ds[--dsp]).getNumber();
-			int c = indexedIo.get(node).read(p);
+			int c = indexedIo.get(n0).read(p);
 			result = Int.create(c);
 			break;
 		case HEAD__________:
@@ -94,10 +96,20 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			String clazzName = atom.getName().split("!")[1];
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
+		case INVOKEJAVAOBJ0:
+			invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
+			result = invocableNode.invoke(this, Collections.<Node> emptyList());
+			break;
 		case INVOKEJAVAOBJ1:
-			InvocableNode invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
-			node = (Node) ds[--dsp];
-			result = invocableNode.invoke(this, Arrays.asList(node));
+			invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
+			n0 = (Node) ds[--dsp];
+			result = invocableNode.invoke(this, Arrays.asList(n0));
+			break;
+		case INVOKEJAVAOBJ2:
+			invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
+			n0 = (Node) ds[--dsp];
+			n1 = (Node) ds[--dsp];
+			result = invocableNode.invoke(this, Arrays.asList(n0, n1));
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -114,8 +126,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = (Node) ds[--dsp];
 			break;
 		case POPEN_________:
-			Node n0 = (Node) ds[--dsp];
-			Node n1 = (Node) ds[--dsp];
+			n0 = (Node) ds[--dsp];
+			n1 = (Node) ds[--dsp];
 			result = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper);
 			break;
 		case TAIL__________:

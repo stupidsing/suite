@@ -73,7 +73,9 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 1 _ijavaclass INVOKE-JAVA-CLASS #
+fc-define-default-fun 1 _ijavaobject0 INVOKE-JAVA-OBJ0 #
 fc-define-default-fun 2 _ijavaobject1 INVOKE-JAVA-OBJ1 #
+fc-define-default-fun 3 _ijavaobject2 INVOKE-JAVA-OBJ2 #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
