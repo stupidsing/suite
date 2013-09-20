@@ -1,5 +1,7 @@
 package suite.lp.invocable;
 
+import java.util.List;
+
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.node.Atom;
@@ -18,12 +20,12 @@ public class Invocables {
 	private static final Atom UNKNOWN = Atom.create("UNKNOWN");
 
 	public static abstract class InvocableNode extends Node {
-		public abstract Node invoke(FunInstructionExecutor executor, Node input);
+		public abstract Node invoke(FunInstructionExecutor executor, List<Node> inputs);
 	}
 
 	public static class AtomString extends InvocableNode {
-		public Node invoke(FunInstructionExecutor executor, Node input) {
-			String name = ((Atom) executor.getUnwrapper().apply(input)).getName();
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			String name = ((Atom) executor.getUnwrapper().apply(inputs.get(0))).getName();
 
 			if (!name.isEmpty()) {
 				Node left = executor.wrapInvocableNode(new Id(), Int.create(name.charAt(0)));
@@ -35,8 +37,8 @@ public class Invocables {
 	}
 
 	public static class GetType extends InvocableNode {
-		public Node invoke(FunInstructionExecutor executor, Node input) {
-			Node node = executor.getUnwrapper().apply(input);
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			Node node = executor.getUnwrapper().apply(inputs.get(0));
 			Atom type;
 
 			if (node instanceof Atom)
@@ -55,14 +57,14 @@ public class Invocables {
 	}
 
 	public static class Id extends InvocableNode {
-		public Node invoke(FunInstructionExecutor executor, Node input) {
-			return input;
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			return inputs.get(0);
 		}
 	}
 
 	public static class StringLength extends InvocableNode {
-		public Node invoke(FunInstructionExecutor executor, Node input) {
-			return Int.create(ExpandUtil.expandString(executor.getUnwrapper(), input).length());
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			return Int.create(ExpandUtil.expandString(executor.getUnwrapper(), inputs.get(0)).length());
 		}
 	}
 

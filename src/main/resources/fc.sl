@@ -73,7 +73,7 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 
 fc-define-default-fun 2 _compare COMPARE #
 fc-define-default-fun 1 _ijavaclass INVOKE-JAVA-CLASS #
-fc-define-default-fun 2 _ijavaobject INVOKE-JAVA-OBJECT #
+fc-define-default-fun 2 _ijavaobject1 INVOKE-JAVA-OBJ1 #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
@@ -336,14 +336,14 @@ fc-add-functions STANDARD .p (
 		define get-type = _ijavaclass {CLASS!suite.lp.invocable.Invocables$GetType} >>
 		define atom-string = _ijavaclass {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
-			let type = _ijavaobject {get-type} {n} >>
+			let type = _ijavaobject1 {get-type} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				_ijavaobject {atom-string} {n}
+				_ijavaobject1 {atom-string} {n}
 			else
 				int-to-str {n}
 		) >>

@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 
 import suite.fp.Vector;
@@ -93,10 +94,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			String clazzName = atom.getName().split("!")[1];
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
-		case INVOKEJAVAOBJ_:
+		case INVOKEJAVAOBJ1:
 			InvocableNode invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
 			node = (Node) ds[--dsp];
-			result = invocableNode.invoke(this, node);
+			result = invocableNode.invoke(this, Arrays.asList(node));
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -170,7 +171,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		invokeJavaEntryPoint = list.size();
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
-		list.add(new Instruction(Insn.INVOKEJAVAOBJ_, 2, 2, 0));
+		list.add(new Instruction(Insn.INVOKEJAVAOBJ1, 2, 2, 0));
 		list.add(new Instruction(Insn.RETURNVALUE___, 2, 0, 0));
 		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 
