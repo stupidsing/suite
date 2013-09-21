@@ -363,10 +363,6 @@ public class InstructionTranslator {
 				app("LogUtil.info(n0.toString())");
 				app("#{reg} = n0", op0);
 				break;
-			case LOG2__________:
-				app("LogUtil.info(((Node) ds[--dsp]).toString())");
-				app("#{reg} = (Node) ds[--dsp]", op0);
-				break;
 			case NEWNODE_______:
 				app("#{reg} = new Reference()", op0);
 				break;

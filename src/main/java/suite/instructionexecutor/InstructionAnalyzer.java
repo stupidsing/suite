@@ -138,7 +138,6 @@ public class InstructionAnalyzer {
 			case FGETC_________:
 			case HEAD__________:
 			case LOG1__________:
-			case LOG2__________:
 			case NEWNODE_______:
 			case POP___________:
 			case POPEN_________:

@@ -121,10 +121,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = (Node) ds[--dsp];
 			LogUtil.info(Formatter.display(ExpandUtil.expand(unwrapper, result)));
 			break;
-		case LOG2__________:
-			LogUtil.info(ExpandUtil.expandString(unwrapper, (Node) ds[--dsp]));
-			result = (Node) ds[--dsp];
-			break;
 		case POPEN_________:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];

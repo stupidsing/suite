@@ -260,7 +260,6 @@ default-fun-type _ijavaobject2 (FUN-OF _ (FUN-OF _ (FUN-OF _ _))) #
 default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
 default-fun-type _log (FUN-OF .t .t) #
-default-fun-type _log2 (FUN-OF (LIST-OF NUMBER) (FUN-OF .t .t)) #
 default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 default-fun-type _popen (FUN-OF (LIST-OF NUMBER) (FUN-OF (LIST-OF NUMBER) (LIST-OF NUMBER))) #
 default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #

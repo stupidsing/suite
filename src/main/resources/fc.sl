@@ -79,7 +79,6 @@ fc-define-default-fun 3 _ijavaobject2 INVOKE-JAVA-OBJ2 #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
-fc-define-default-fun 2 _log2 LOG2 #
 fc-define-default-fun 1 _ltail TAIL #
 fc-define-default-fun 2 _pcons CONS-PAIR #
 fc-define-default-fun 1 _pleft HEAD #
@@ -114,7 +113,7 @@ fc-add-functions STANDARD .p (
 	define cons = (head => tail => _lcons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
 	define log = (m => _log {m}) >>
-	define log2 = (m => n => _log2 {m} {n}) >>
+	define log2 = (m => n => _ijavaobject2 {_ijavaclass {CLASS!suite.lp.invocable.Invocables$Log2}} {m} {n}) >>
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>

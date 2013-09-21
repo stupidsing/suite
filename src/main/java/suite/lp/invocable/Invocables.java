@@ -10,6 +10,8 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
+import suite.util.FunUtil.Fun;
+import suite.util.LogUtil;
 
 public class Invocables {
 
@@ -59,6 +61,14 @@ public class Invocables {
 	public static class Id extends InvocableNode {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			return inputs.get(0);
+		}
+	}
+
+	public static class Log2 extends InvocableNode {
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			Fun<Node, Node> unwrapper = executor.getUnwrapper();
+			LogUtil.info(ExpandUtil.expandString(unwrapper, inputs.get(0)));
+			return unwrapper.apply(inputs.get(1));
 		}
 	}
 

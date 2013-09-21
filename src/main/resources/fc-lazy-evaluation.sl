@@ -114,7 +114,6 @@ fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 		_ijavaobject2/3/THUNK:THUNK:THUNK:,
 		_lcons/2/THUNK:THUNK:,
 		_log/1/THUNK:,
-		_log2/2/THUNK:THUNK:,
 		_pcons/2/THUNK:THUNK:,
 		_popen/2/THUNK:THUNK:,
 		error/0/,

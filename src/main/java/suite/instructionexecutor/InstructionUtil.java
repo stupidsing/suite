@@ -100,7 +100,6 @@ public class InstructionUtil {
 		LABEL_________("LABEL"), //
 		LOG___________("LOG"), //
 		LOG1__________("LOG1"), //
-		LOG2__________("LOG2"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
