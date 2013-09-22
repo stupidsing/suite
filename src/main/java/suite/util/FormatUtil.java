@@ -1,7 +1,9 @@
 package suite.util;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FormatUtil {
 
@@ -10,9 +12,25 @@ public class FormatUtil {
 
 	// Dang, the date formats and decimal formats are not thread-safe!! Wrap
 	// them and make the method calls synchronised.
-	public static final DateFormat dateFmt = SynchronizeUtil.proxy(DateFormat.class, new SimpleDateFormat(ymd));
-	public static final DateFormat timeFmt = SynchronizeUtil.proxy(DateFormat.class, new SimpleDateFormat(hms));
-	public static final DateFormat dtFmt = SynchronizeUtil.proxy(DateFormat.class, new SimpleDateFormat(ymd + " " + hms));
+	public static final SyncDateFormat dateFmt = new SyncDateFormat(ymd);
+	public static final SyncDateFormat timeFmt = new SyncDateFormat(hms);
+	public static final SyncDateFormat dtFmt = new SyncDateFormat(ymd + " " + hms);
+
+	public static class SyncDateFormat {
+		private DateFormat df;
+
+		public SyncDateFormat(String fmt) {
+			df = new SimpleDateFormat(fmt);
+		}
+
+		public synchronized String format(Date date) {
+			return df.format(date);
+		}
+
+		public synchronized Date parse(String s) throws ParseException {
+			return df.parse(s);
+		}
+	}
 
 	public static String leftTrim(String s) {
 		int pos = 0;
