@@ -7,7 +7,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.node.Int;
 
-public class MathUtilTest {
+public class SymbolicMathUtilTest {
 
 	@Test
 	public void test() {
