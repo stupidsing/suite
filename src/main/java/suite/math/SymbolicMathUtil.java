@@ -43,7 +43,7 @@ public class SymbolicMathUtil {
 			List<Node> freshNodes1 = new ArrayList<>();
 
 			for (Node freshNode : freshNodes)
-				for (Node equateNode : equate(freshNode))
+				for (Node equateNode : findEqualities(freshNode))
 					if (!searchedNodes.contains(equateNode) && complexity.complexity(equateNode) < complexity0 + 1) {
 						searchedNodes.add(equateNode);
 						freshNodes1.add(equateNode);
@@ -55,13 +55,11 @@ public class SymbolicMathUtil {
 		return Collections.min(searchedNodes, comparator);
 	}
 
-	public static Set<Node> equate(Node node) {
+	private static Set<Node> findEqualities(Node node) {
 		Node v = Node.ref(), r = Node.ref();
 
 		Node equate = Node.list(Atom.create("equate1"), Node.list(TermOp.EQUAL_, node, v));
 		Node goal = Node.list(Atom.create("find.all"), v, equate, r);
-
-		System.out.println(goal);
 
 		if (prover.prove(goal)) {
 			Set<Node> results = new HashSet<>();
