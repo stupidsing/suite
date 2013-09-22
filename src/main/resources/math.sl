@@ -64,11 +64,3 @@ equate0 (DV (SIN .x) .x = COS .x) #
 equate0 (DV (COS .x) .x = -1 * SIN .x) #
 equate0 (DV .y .x0 = DV .y .x1) :- equate1 (.x0 = .x1) #
 equate0 (DV .y0 .x = DV .y1 .x) :- equate1 (.y0 = .y1) #
-
-complexity .f 0 :- (is.int .f; is.atom .f), ! #
-complexity .tree .n
-	:- tree .tree .left _ .right
-	, complexity .left .ln
-	, complexity .right .rn
-	, let .n (.ln + .rn + 1)
-#
