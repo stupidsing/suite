@@ -11,7 +11,7 @@ public class MathUtilTest {
 
 	@Test
 	public void test() {
-		assertEquals(Int.create(3), MathUtil.simplify(Suite.parse("1 + 2")));
+		assertEquals(Int.create(3), SymbolicMathUtil.simplify(Suite.parse("1 + 2")));
 	}
 
 }
