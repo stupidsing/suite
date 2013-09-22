@@ -112,11 +112,15 @@ fc-add-functions STANDARD .p (
 	define compare = (a => b => _compare {a} {b}) >>
 	define cons = (head => tail => _lcons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
+	define ijavaclass = (name => _ijavaclass {name}) >>
+	define ijavaobject0 = (name => _ijavaobject0 {name}) >>
+	define ijavaobject1 = (name => p0 => _ijavaobject1 {name} {p0}) >>
+	define ijavaobject2 = (name => p0 => p1 => _ijavaobject2 {name} {p0} {p1}) >>
 	define log = (m => _log {m}) >>
-	define log2 = (m => n => _ijavaobject2 {_ijavaclass {CLASS!suite.lp.invocable.Invocables$Log2}} {m} {n}) >>
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
+	define log2 = (m => n => ijavaobject2 {ijavaclass {CLASS!suite.lp.invocable.Invocables$Log2}} {m} {n}) >>
 	define and = (x => y =>
 		if x then y else false
 	) >>
@@ -334,8 +338,8 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump = type (:t :- :t => list-of number) no-type-check (
-		define get-type = _ijavaclass {CLASS!suite.lp.invocable.Invocables$GetType} >>
-		define atom-string = _ijavaclass {CLASS!suite.lp.invocable.Invocables$AtomString} >>
+		define get-type = ijavaclass {CLASS!suite.lp.invocable.Invocables$GetType} >>
+		define atom-string = ijavaclass {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
 			let type = _ijavaobject1 {get-type} {n} >>
 			if (n = ()) then
@@ -344,7 +348,7 @@ fc-add-functions STANDARD .p (
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				_ijavaobject1 {atom-string} {n}
+				ijavaobject1 {atom-string} {n}
 			else
 				int-to-str {n}
 		) >>

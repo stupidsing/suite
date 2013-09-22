@@ -133,6 +133,10 @@ fc-parse-sugar .s (.ascii; .cs)
 #
 
 fc-parse-type .t .t :- not bound .t, ! #
+fc-parse-type .underscore (GENERIC-OF .typeVar .typeVar)
+	:- to.string .underscore "_", !
+	, .typeVar = TYPE-VAR .temp, temp .temp
+#
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1
