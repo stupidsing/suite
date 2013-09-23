@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,12 +40,22 @@ public class HttpServer {
 				, OutputStream os) throws IOException;
 	}
 
+	public interface QueryAttrHandler {
+		public void handle(String method //
+				, String server //
+				, String path //
+				, Map<String, String> attrs //
+				, Map<String, String> headers //
+				, InputStream is //
+				, OutputStream os) throws IOException;
+	}
+
 	public static void main(String args[]) throws IOException {
-		new HttpServer().run(new Handler() {
+		new HttpServer().run(new QueryAttrHandler() {
 			public void handle(String method //
 					, String server //
 					, String path //
-					, String query //
+					, Map<String, String> attrs //
 					, Map<String, String> headers //
 					, InputStream is //
 					, OutputStream os) throws IOException {
@@ -53,11 +64,33 @@ public class HttpServer {
 							+ "<br/>method = " + method //
 							+ "<br/>server = " + server //
 							+ "<br/>path = " + path //
-							+ "<br/>query = " + query //
+							+ "<br/>attrs = " + attrs //
 							+ "<br/>headers = " + headers //
 							+ "</html>";
 					writer.write(s);
 				}
+			}
+		});
+	}
+
+	private void run(final QueryAttrHandler queryAttrHandler) throws IOException {
+		run(new Handler() {
+			public void handle(String method //
+					, String server //
+					, String path //
+					, String query //
+					, Map<String, String> headers //
+					, InputStream is //
+					, OutputStream os) throws IOException {
+				String qs[] = query.split("&");
+				Map<String, String> attrs = new HashMap<>();
+
+				for (String q : qs) {
+					Pair<String, String> pair = Util.split2(q, "=");
+					attrs.put(pair.t0, URLDecoder.decode(pair.t1, "UTF-8"));
+				}
+
+				queryAttrHandler.handle(method, server, path, attrs, headers, is, os);
 			}
 		});
 	}
@@ -93,6 +126,8 @@ public class HttpServer {
 					query = null;
 				}
 
+				String path1 = URLDecoder.decode(path, "UTF-8");
+
 				if (!Util.equals(protocol, "HTTP/1.1"))
 					throw new RuntimeException("Only HTTP/1.1 is supported");
 
@@ -105,7 +140,7 @@ public class HttpServer {
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-				handler.handle(method, server, path, query, headers, is, baos);
+				handler.handle(method, server, path1, query, headers, is, baos);
 
 				String responseHeader = "HTTP/1.1 200 OK\r\n" //
 						+ "Content-Length: " + baos.size() + "\r\n" //
@@ -132,8 +167,10 @@ public class HttpServer {
 				throw new RuntimeException("Line too long");
 		}
 
-		if (sb.charAt(sb.length() - 1) == 13)
-			sb.deleteCharAt(sb.length() - 1);
+		int length = sb.length();
+
+		if (sb.charAt(length - 1) == 13)
+			sb.deleteCharAt(length - 1);
 
 		return sb.toString();
 	}
