@@ -1,13 +1,10 @@
 package suite.sample;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +15,18 @@ import suite.util.SocketUtil;
 import suite.util.SocketUtil.Io;
 import suite.util.Util;
 
+/**
+ * A very crude HTTP server.
+ * 
+ * Possible improvements:
+ * 
+ * TODO persistent connection; requires wrapping input stream before passing
+ * into handler
+ * 
+ * TODO less output buffering
+ * 
+ * @author yw.sing
+ */
 public class HttpServer {
 
 	public interface Handler {
@@ -26,6 +35,7 @@ public class HttpServer {
 				, String path //
 				, String query //
 				, Map<String, String> headers //
+				, InputStream is //
 				, OutputStream os) throws IOException;
 	}
 
@@ -36,6 +46,7 @@ public class HttpServer {
 					, String path //
 					, String query //
 					, Map<String, String> headers //
+					, InputStream is //
 					, OutputStream os) throws IOException {
 				try (Writer writer = new OutputStreamWriter(os, FileUtil.charset)) {
 					String s = "<html>" //
@@ -54,11 +65,9 @@ public class HttpServer {
 	private void run(final Handler handler) throws IOException {
 		SocketUtil.listen(80, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
-				BufferedReader br = new BufferedReader(new InputStreamReader(is, FileUtil.charset));
-
 				String line, ls[];
 
-				line = readLine(br);
+				line = readLine(is);
 				ls = line.split(" ");
 				String method = ls[0], url = ls[1], protocol = ls[2];
 				String server, pqs;
@@ -89,14 +98,14 @@ public class HttpServer {
 
 				Map<String, String> headers = new HashMap<>();
 
-				while (!(line = readLine(br)).isEmpty()) {
+				while (!(line = readLine(is)).isEmpty()) {
 					Pair<String, String> pair = Util.split2(line, ":");
 					headers.put(pair.t0, pair.t1);
 				}
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-				handler.handle(method, server, path, query, headers, baos);
+				handler.handle(method, server, path, query, headers, is, baos);
 
 				String responseHeader = "HTTP/1.1 200 OK\r\n" //
 						+ "Content-Length: " + baos.size() + "\r\n" //
@@ -110,14 +119,14 @@ public class HttpServer {
 	}
 
 	/**
-	 * Reads a line from a reader with a maximum line length limit. Removes
+	 * Reads a line from a stream with a maximum line length limit. Removes
 	 * carriage return if it is DOS-mode line feed (CR-LF).
 	 */
-	private String readLine(Reader reader) throws IOException {
+	private String readLine(InputStream is) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		int c;
 
-		while ((c = reader.read()) != 10) {
+		while ((c = is.read()) != 10) {
 			sb.append((char) c);
 			if (sb.length() > 65536)
 				throw new RuntimeException("Line too long");
