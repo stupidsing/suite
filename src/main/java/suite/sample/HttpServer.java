@@ -24,7 +24,7 @@ import suite.util.Util;
  * TODO persistent connection; requires wrapping input stream before passing
  * into handler
  * 
- * TODO less output buffering
+ * TODO direct output without buffering
  * 
  * @author yw.sing
  */
@@ -82,7 +82,7 @@ public class HttpServer {
 					, Map<String, String> headers //
 					, InputStream is //
 					, OutputStream os) throws IOException {
-				String qs[] = query.split("&");
+				String qs[] = query != null ? query.split("&") : new String[0];
 				Map<String, String> attrs = new HashMap<>();
 
 				for (String q : qs) {
@@ -96,7 +96,7 @@ public class HttpServer {
 	}
 
 	private void run(final Handler handler) throws IOException {
-		SocketUtil.listen(80, new Io() {
+		SocketUtil.listen(8051, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				String line, ls[];
 
@@ -138,9 +138,13 @@ public class HttpServer {
 					headers.put(pair.t0, pair.t1);
 				}
 
+				String cls = headers.get("Content-Length");
+				int contentLength = cls != null ? Integer.valueOf(cls) : 0;
+				InputStream cis = sizeLimitedInputStream(is, contentLength);
+
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-				handler.handle(method, server, path1, query, headers, is, baos);
+				handler.handle(method, server, path1, query, headers, cis, baos);
 
 				String responseHeader = "HTTP/1.1 200 OK\r\n" //
 						+ "Content-Length: " + baos.size() + "\r\n" //
@@ -151,6 +155,22 @@ public class HttpServer {
 				os.write(baos.toByteArray());
 			}
 		});
+	}
+
+	private InputStream sizeLimitedInputStream(final InputStream is, final int size) {
+		return new BasicInputStream(is) {
+			private int remaining = size;
+
+			public int read() throws IOException {
+				return remaining-- > 0 ? is.read() : -1;
+			}
+
+			public int read(byte bytes[], int offset, int length) throws IOException {
+				int nBytesRead = is.read(bytes, offset, Math.min(length, remaining));
+				remaining -= nBytesRead;
+				return nBytesRead;
+			}
+		};
 	}
 
 	/**
