@@ -136,10 +136,10 @@ public class Util {
 		}
 	}
 
-	public static Pair<String, String> split(String s, String delimiter) {
+	public static Pair<String, String> split2(String s, String delimiter) {
 		int pos = s.indexOf(delimiter);
 		if (pos >= 0)
-			return Pair.create(s.substring(0, pos), s.substring(pos + delimiter.length()));
+			return Pair.create(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
 		else
 			return Pair.create(s, "");
 	}

@@ -14,11 +14,20 @@ import suite.util.SocketUtil.Io;
 
 public class SimpleCgiServer {
 
-	public static void main(String args[]) throws IOException {
-		new SimpleCgiServer().run();
+	public interface Handler {
+		public void handle(Map<String, String> headers, OutputStream os) throws IOException;
 	}
 
-	private void run() throws IOException {
+	public static void main(String args[]) throws IOException {
+		new SimpleCgiServer().run(new Handler() {
+			public void handle(Map<String, String> headers, OutputStream os) throws IOException {
+				OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+				writer.write("<html>" + headers + "</html>");
+			}
+		});
+	}
+
+	private void run(final Handler handler) throws IOException {
 		SocketUtil.listen(4000, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				Map<String, String> headers = readHeaders(is);
@@ -27,14 +36,9 @@ public class SimpleCgiServer {
 						+ "Content-Type: text/html\r\n" //
 						+ "\r\n").getBytes(FileUtil.charset));
 
-				SimpleCgiServer.this.serve(headers, os);
+				handler.handle(headers, os);
 			}
 		});
-	}
-
-	protected void serve(Map<String, String> headers, OutputStream os) throws IOException {
-		OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
-		writer.write("<html>" + headers + "</html>");
 	}
 
 	private Map<String, String> readHeaders(InputStream sis) throws IOException {
