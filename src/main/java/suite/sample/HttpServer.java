@@ -21,8 +21,7 @@ import suite.util.Util;
  * 
  * Possible improvements:
  * 
- * TODO persistent connection; requires wrapping input stream before passing
- * into handler
+ * TODO persistent connection
  * 
  * TODO direct output without buffering
  * 
