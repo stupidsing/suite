@@ -95,6 +95,7 @@ public class HttpServer {
 				}
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
 				handler.handle(method, server, path, query, headers, baos);
 
 				String responseHeader = "HTTP/1.1 200 OK\r\n" //
