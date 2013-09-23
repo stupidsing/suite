@@ -67,8 +67,8 @@ public class HttpServer {
 						pqs = url;
 					}
 
-					String path, query;
 					int pos = pqs.indexOf('?');
+					String path, query;
 
 					if (pos >= 0) {
 						path = pqs.substring(0, pos);
