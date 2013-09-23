@@ -53,16 +53,17 @@ public class B_TreeTest {
 
 	@Test
 	public void fileTest() throws IOException {
-		String path = "/tmp/";
+		String path = "/tmp";
+		String name = "test-btree";
+
 		new File(path).mkdirs();
 
-		String prefix = path + "test-btree";
+		String prefix = path + "/" + name;
 		String sbf = prefix + ".superblock";
 		String amf = prefix + ".alloc";
 		String pf = prefix + ".pages";
 
-		String filenames[] = { sbf, amf, pf };
-		for (String filename : filenames)
+		for (String filename : new String[] { sbf, amf, pf })
 			new File(filename).delete();
 
 		b_tree = new B_Tree1();

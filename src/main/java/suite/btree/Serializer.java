@@ -97,6 +97,24 @@ public interface Serializer<V> {
 
 	}
 
+	public static class ByteArraySerializer implements Serializer<byte[]> {
+		private int length;
+
+		public ByteArraySerializer(int length) {
+			this.length = length;
+		}
+
+		public byte[] read(ByteBuffer buffer) {
+			byte bs[] = new byte[length];
+			buffer.get(bs);
+			return bs;
+		}
+
+		public void write(ByteBuffer buffer, byte value[]) {
+			buffer.put(value);
+		}
+	}
+
 	public static class FixedStringSerializer implements Serializer<String> {
 		private int length;
 
