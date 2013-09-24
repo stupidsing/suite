@@ -31,6 +31,10 @@ public abstract class BasicInputStream extends InputStream {
 		return is.read();
 	}
 
+	public int read(byte bytes[]) throws IOException {
+		return is.read(bytes);
+	}
+
 	public int read(byte bytes[], int offset, int length) throws IOException {
 		return is.read(bytes, offset, length);
 	}

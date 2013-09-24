@@ -14,6 +14,17 @@ import suite.util.Util;
 
 public class HttpUtil {
 
+	public static Map<String, String> getCookieAttrs(String query) throws UnsupportedEncodingException {
+		String qs[] = query != null ? query.split(";") : new String[0];
+		Map<String, String> attrs = new HashMap<>();
+
+		for (String q : qs) {
+			Pair<String, String> pair = Util.split2(q, "=");
+			attrs.put(pair.t0, URLDecoder.decode(pair.t1, "UTF-8"));
+		}
+		return attrs;
+	}
+
 	public static Map<String, String> getPostedAttrs(InputStream is) throws IOException {
 		int size = 4096;
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -35,6 +46,7 @@ public class HttpUtil {
 			Pair<String, String> pair = Util.split2(q, "=");
 			attrs.put(pair.t0, URLDecoder.decode(pair.t1, "UTF-8"));
 		}
+
 		return attrs;
 	}
 

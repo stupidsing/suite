@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.util.FileUtil;
 import suite.util.LogUtil;
@@ -31,32 +32,18 @@ import suite.util.Util;
 public class HttpServer {
 
 	public interface Handler {
-		public void handle(String method //
-				, String server //
-				, String path //
-				, String query //
-				, Map<String, String> headers //
-				, InputStream is //
-				, OutputStream os) throws IOException;
+		public void handle(HttpRequest request, HttpResponse response) throws IOException;
 	}
 
 	public static void main(String args[]) throws IOException {
 		new HttpServer().run(new Handler() {
-			public void handle(String method //
-					, String server //
-					, String path //
-					, String query //
-					, Map<String, String> headers //
-					, InputStream is //
-					, OutputStream os) throws IOException {
-				try (Writer writer = new OutputStreamWriter(os, FileUtil.charset)) {
+			public void handle(HttpRequest request, HttpResponse response) throws IOException {
+				try (Writer writer = new OutputStreamWriter(response.getOutputStream(), FileUtil.charset)) {
 					writer.write("<html>" //
-							+ "<br/>method = " + method //
-							+ "<br/>server = " + server //
-							+ "<br/>path = " + path //
-							+ "<br/>attrs = " + HttpUtil.getAttrs(query) //
-							+ "<br/>headers = " + headers //
-							+ "</html>");
+							+ "<br/>method = " + request.getMethod() + "<br/>server = " + request.getServer()
+							+ "<br/>path = "
+							+ request.getPath() + "<br/>attrs = " + HttpUtil.getAttrs(request.getQuery()) //
+							+ "<br/>headers = " + request.getHeaders() + "</html>");
 				}
 			}
 		});
@@ -65,8 +52,9 @@ public class HttpServer {
 	private void run(final Handler handler) throws IOException {
 		SocketUtil.listen(8051, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
+				HashMap<String, String> responseHeaders = new HashMap<String, String>();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				String status;
+				HttpResponse response = new HttpResponse("200 OK", responseHeaders, baos);
 
 				try {
 					String line, ls[];
@@ -76,56 +64,57 @@ public class HttpServer {
 					String method = ls[0], url = ls[1], protocol = ls[2];
 					String server, pqs;
 
-					if (url.startsWith("http://")) {
-						String url1 = url.substring(7);
-						int pos = url1.indexOf(':');
-						server = url1.substring(0, pos);
-						pqs = url1.substring(pos);
+					Pair<String, String> pp = Util.split2(url, "://");
+
+					if (Util.isNotBlank(pp.t1)) {
+						Pair<String, String> sp = Util.split2(pp.t1, "/");
+						server = sp.t0;
+						pqs = sp.t1;
 					} else {
 						server = "";
 						pqs = url;
 					}
 
-					int pos = pqs.indexOf('?');
-					String path, query;
+					Pair<String, String> pq = Util.split2(pqs, "?");
+					String path = pq.t0;
+					String query = pq.t1;
 
-					if (pos >= 0) {
-						path = pqs.substring(0, pos);
-						query = pqs.substring(pos + 1);
-					} else {
-						path = pqs;
-						query = null;
-					}
-
-					String path1 = URLDecoder.decode(path, "UTF-8");
+					String path1 = path.startsWith("/") ? path : "/" + path;
+					String path2 = URLDecoder.decode(path1, "UTF-8");
 
 					if (!Util.equals(protocol, "HTTP/1.1"))
 						throw new RuntimeException("Only HTTP/1.1 is supported");
 
-					Map<String, String> headers = new HashMap<>();
+					Map<String, String> requestHeaders = new HashMap<>();
 
 					while (!(line = readLine(is)).isEmpty()) {
 						Pair<String, String> pair = Util.split2(line, ":");
-						headers.put(pair.t0, pair.t1);
+						requestHeaders.put(pair.t0, pair.t1);
 					}
 
-					String cls = headers.get("Content-Length");
+					String cls = requestHeaders.get("Content-Length");
 					int contentLength = cls != null ? Integer.parseInt(cls) : 0;
 					InputStream cis = sizeLimitedInputStream(is, contentLength);
 
-					handler.handle(method, server, path1, query, headers, cis, baos);
-					status = "200 OK";
+					HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
+
+					handler.handle(request, response);
 				} catch (Exception ex) {
 					LogUtil.error(ex);
-					status = "500 Internal server error";
+					response.setStatus("500 Internal server error");
 				}
 
-				String responseHeader = "HTTP/1.1 " + status + "\r\n" //
-						+ "Content-Length: " + baos.size() + "\r\n" //
-						+ "Content-Type: text/html; charset=UTF-8\r\n" //
-						+ "\r\n";
+				responseHeaders.put("Content-Length", Integer.toString(baos.size()));
+				responseHeaders.put("Content-Type", "text/html; charset=UTF-8");
 
-				os.write(responseHeader.getBytes(FileUtil.charset));
+				StringBuilder sb = new StringBuilder();
+
+				sb.append("HTTP/1.1 " + response.getStatus() + "\r\n");
+				for (Entry<String, String> entry : responseHeaders.entrySet())
+					sb.append(entry.getKey() + ": " + entry.getValue() + "\r\n");
+				sb.append("\r\n");
+
+				os.write(sb.toString().getBytes(FileUtil.charset));
 				os.write(baos.toByteArray());
 			}
 		});
