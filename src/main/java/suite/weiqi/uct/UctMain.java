@@ -97,8 +97,8 @@ public class UctMain<Move> {
 						default:
 							if (!Util.isBlank(line)) {
 								String pos[] = line.split(",");
-								Integer x = Integer.valueOf(pos[0]);
-								Integer y = Integer.valueOf(pos[1]);
+								int x = Integer.parseInt(pos[0]);
+								int y = Integer.parseInt(pos[1]);
 								gameSet.play(Coordinate.c(x, y));
 							}
 						}

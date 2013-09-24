@@ -194,7 +194,7 @@ public class ClusterProbe extends ThreadedService {
 			// Refreshes member time accordingly
 			for (int i = 2; i < splitted.length; i += 2) {
 				String node = splitted[i];
-				Long newTime = Long.valueOf(splitted[i + 1]);
+				long newTime = Long.parseLong(splitted[i + 1]);
 				nodeJoined(node, newTime);
 			}
 
@@ -206,7 +206,7 @@ public class ClusterProbe extends ThreadedService {
 		}
 	}
 
-	private void nodeJoined(String node, Long time) {
+	private void nodeJoined(String node, long time) {
 		Long oldTime = lastActiveTime.get(node);
 
 		if (oldTime == null || oldTime < time)

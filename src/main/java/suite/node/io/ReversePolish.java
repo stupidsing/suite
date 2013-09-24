@@ -32,7 +32,7 @@ public class ReversePolish {
 			else if (type == '^')
 				n = Suite.parse(s);
 			else if (type == 'i')
-				n = Int.create(Integer.valueOf(s));
+				n = Int.create(Integer.parseInt(s));
 			else if (type == 't') {
 				TermOp op = TermOp.valueOf(s);
 				Node left = deque.pop();

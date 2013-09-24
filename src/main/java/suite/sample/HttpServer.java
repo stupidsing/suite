@@ -59,14 +59,13 @@ public class HttpServer {
 					, InputStream is //
 					, OutputStream os) throws IOException {
 				try (Writer writer = new OutputStreamWriter(os, FileUtil.charset)) {
-					String s = "<html>" //
+					writer.write("<html>" //
 							+ "<br/>method = " + method //
 							+ "<br/>server = " + server //
 							+ "<br/>path = " + path //
 							+ "<br/>attrs = " + attrs //
 							+ "<br/>headers = " + headers //
-							+ "</html>";
-					writer.write(s);
+							+ "</html>");
 				}
 			}
 		});
@@ -138,7 +137,7 @@ public class HttpServer {
 				}
 
 				String cls = headers.get("Content-Length");
-				int contentLength = cls != null ? Integer.valueOf(cls) : 0;
+				int contentLength = cls != null ? Integer.parseInt(cls) : 0;
 				InputStream cis = sizeLimitedInputStream(is, contentLength);
 
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
