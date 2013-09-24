@@ -10,7 +10,6 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.http.HttpUtil.QueryAttrHandler;
 import suite.util.FileUtil;
 import suite.util.LogUtil;
 import suite.util.Pair;
@@ -42,11 +41,11 @@ public class HttpServer {
 	}
 
 	public static void main(String args[]) throws IOException {
-		new HttpServer().run(new QueryAttrHandler() {
+		new HttpServer().run(new Handler() {
 			public void handle(String method //
 					, String server //
 					, String path //
-					, Map<String, String> attrs //
+					, String query //
 					, Map<String, String> headers //
 					, InputStream is //
 					, OutputStream os) throws IOException {
@@ -55,16 +54,12 @@ public class HttpServer {
 							+ "<br/>method = " + method //
 							+ "<br/>server = " + server //
 							+ "<br/>path = " + path //
-							+ "<br/>attrs = " + attrs //
+							+ "<br/>attrs = " + HttpUtil.getAttrs(query) //
 							+ "<br/>headers = " + headers //
 							+ "</html>");
 				}
 			}
 		});
-	}
-
-	private void run(final QueryAttrHandler queryAttrHandler) throws IOException {
-		run(HttpUtil.queryAttrHandler(queryAttrHandler));
 	}
 
 	private void run(final Handler handler) throws IOException {

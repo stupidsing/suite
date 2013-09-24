@@ -1,41 +1,30 @@
 package suite.http;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.http.HttpServer.Handler;
 import suite.util.Pair;
 import suite.util.Util;
 
 public class HttpUtil {
 
-	public interface QueryAttrHandler {
-		public void handle(String method //
-				, String server //
-				, String path //
-				, Map<String, String> attrs //
-				, Map<String, String> headers //
-				, InputStream is //
-				, OutputStream os) throws IOException;
-	}
+	public static Map<String, String> getPostedAttrs(InputStream is) throws IOException {
+		int size = 4096;
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+		char buffer[] = new char[size];
+		int nCharsRead;
 
-	public static Handler queryAttrHandler(final QueryAttrHandler queryAttrHandler) {
-		return new Handler() {
-			public void handle(String method //
-					, String server //
-					, String path //
-					, String query //
-					, Map<String, String> headers //
-					, InputStream is //
-					, OutputStream os) throws IOException {
-				queryAttrHandler.handle(method, server, path, getAttrs(query), headers, is, os);
-			}
-		};
+		while ((nCharsRead = br.read(buffer)) >= 0)
+			sb.append(buffer, 0, nCharsRead);
+
+		return HttpUtil.getAttrs(sb.toString());
 	}
 
 	public static Map<String, String> getAttrs(String query) throws UnsupportedEncodingException {
