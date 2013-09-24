@@ -43,9 +43,10 @@ public class HttpSessionManager {
 				String password = attrs.get("password");
 				String url = attrs.get("url");
 
-				if (authenticator.authenticate(username, password))
+				if (authenticator.authenticate(username, password)) {
+					// TODO add session
 					protectedHandler.handle(method, server, path, query, headers, is, os);
-				else
+				} else
 					showLoginPage(os, url, true);
 			} else
 				showLoginPage(os, path, false);
