@@ -20,12 +20,6 @@ public class HttpSessionManager {
 		public boolean authenticate(String username, String password);
 	}
 
-	private static class Session {
-		private String username;
-		private String sessionId;
-		private long lastActiveDt;
-	}
-
 	public class HttpSessionHandler implements Handler {
 		private Handler protectedHandler;
 
