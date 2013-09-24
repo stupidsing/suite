@@ -20,6 +20,12 @@ public class HttpSessionManager {
 		public boolean authenticate(String username, String password);
 	}
 
+	private static class Session {
+		private String username;
+		private String sessionId;
+		private long lastActiveDt;
+	}
+
 	public class HttpSessionHandler implements Handler {
 		private Handler protectedHandler;
 
@@ -45,6 +51,7 @@ public class HttpSessionManager {
 
 				if (authenticator.authenticate(username, password)) {
 					// TODO add session
+					// TODO set cookie
 					protectedHandler.handle(method, server, path, query, headers, is, os);
 				} else
 					showLoginPage(os, url, true);
