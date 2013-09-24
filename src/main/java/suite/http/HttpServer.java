@@ -1,4 +1,4 @@
-package suite.sample;
+package suite.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

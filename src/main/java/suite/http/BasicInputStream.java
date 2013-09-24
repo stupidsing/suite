@@ -1,4 +1,4 @@
-package suite.sample;
+package suite.http;
 
 import java.io.IOException;
 import java.io.InputStream;
