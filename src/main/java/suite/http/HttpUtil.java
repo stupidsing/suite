@@ -22,6 +22,7 @@ public class HttpUtil {
 			Pair<String, String> pair = Util.split2(q, "=");
 			attrs.put(pair.t0, URLDecoder.decode(pair.t1, "UTF-8"));
 		}
+
 		return attrs;
 	}
 
