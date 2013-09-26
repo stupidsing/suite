@@ -7,7 +7,7 @@ import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 
-public abstract class DefaultValueMap<K, V> implements Map<K, V> {
+public class DefaultValueMap<K, V> implements Map<K, V> {
 
 	private Map<K, V> map;
 	private Fun<K, V> fun;
@@ -37,7 +37,7 @@ public abstract class DefaultValueMap<K, V> implements Map<K, V> {
 	}
 
 	@Override
-	public Set<java.util.Map.Entry<K, V>> entrySet() {
+	public Set<Entry<K, V>> entrySet() {
 		return map.entrySet();
 	}
 
@@ -64,7 +64,10 @@ public abstract class DefaultValueMap<K, V> implements Map<K, V> {
 
 	@Override
 	public V put(K key, V value) {
-		return map.put(key, value);
+		if (!Util.equals(value, fun.apply(key)))
+			return map.put(key, value);
+		else
+			return map.remove(value);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package suite.sample;
+package suite.editor;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -22,11 +22,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-public class SwingEditorView {
+public class EditorView {
 
 	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
 
-	private SwingEditorController controller;
+	private EditorController controller;
 
 	private JLabel leftLabel;
 	private JLabel topLabel;
@@ -76,7 +76,7 @@ public class SwingEditorView {
 	}
 
 	private JMenuBar createMenuBar() {
-		final SwingEditorView view = this;
+		final EditorView view = this;
 
 		JMenuItem openMenuItem = applyDefaults(new JMenuItem("Open...", KeyEvent.VK_O));
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -87,7 +87,7 @@ public class SwingEditorView {
 		JMenuItem quitMenuItem = applyDefaults(new JMenuItem("Quit", KeyEvent.VK_Q));
 		quitMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				controller.quit(SwingEditorView.this);
+				controller.quit(EditorView.this);
 			}
 		});
 
@@ -140,7 +140,7 @@ public class SwingEditorView {
 		return menuBar;
 	}
 
-	public void setController(SwingEditorController controller) {
+	public void setController(EditorController controller) {
 		this.controller = controller;
 	}
 
