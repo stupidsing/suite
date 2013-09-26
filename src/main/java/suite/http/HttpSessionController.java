@@ -18,7 +18,7 @@ public class HttpSessionController {
 	public static final long TIMEOUTDURATION = 3600 * 1000l;
 
 	private Authenticator authenticator;
-	private SessionManager sessionManager;
+	private SessionManager sessionManager = new HttpSessionManager();
 	private Random random = new SecureRandom();
 
 	public interface Authenticator {
@@ -29,6 +29,8 @@ public class HttpSessionController {
 		public Session get(String id);
 
 		public void put(String id, Session session);
+
+		public void remove(String id);
 	}
 
 	public class Session {
@@ -44,7 +46,12 @@ public class HttpSessionController {
 		}
 	}
 
-	public class HttpSessionHandler implements Handler {
+	public HttpSessionHandler getSessionHandler(Handler handler) {
+		return new HttpSessionHandler(handler);
+
+	}
+
+	private class HttpSessionHandler implements Handler {
 		private Handler protectedHandler;
 
 		public HttpSessionHandler(Handler protectedHandler) {
@@ -87,22 +94,6 @@ public class HttpSessionController {
 				showLoginPage(response.getOutputStream(), request.getPath(), false);
 		}
 
-		public HttpSessionHandler getSessionHandler(Handler handler) {
-			return new HttpSessionHandler(handler);
-
-		}
-
-		private String generateRandomSessionId() {
-			byte bytes[] = new byte[16];
-			random.nextBytes(bytes);
-
-			StringBuilder sb = new StringBuilder();
-			for (byte b : bytes)
-				sb.append(String.format("%02x", b));
-
-			return sb.toString();
-		}
-
 		private void showProtectedPage(String sessionId, HttpRequest request, HttpResponse response) throws IOException {
 			response.getHeaders().put("Set-Cookie", "session=" + sessionId + "; Path=/");
 
@@ -129,6 +120,17 @@ public class HttpSessionController {
 						+ "</html>");
 			}
 		}
+	}
+
+	private String generateRandomSessionId() {
+		byte bytes[] = new byte[16];
+		random.nextBytes(bytes);
+
+		StringBuilder sb = new StringBuilder();
+		for (byte b : bytes)
+			sb.append(String.format("%02x", b));
+
+		return sb.toString();
 	}
 
 }

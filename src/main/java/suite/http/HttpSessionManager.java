@@ -37,6 +37,11 @@ public class HttpSessionManager implements SessionManager {
 			}
 	}
 
+	@Override
+	public void remove(String id) {
+		sessions.remove(id);
+	}
+
 	private int lg2(int n) {
 		int i = 0;
 		while (n > 0) {
