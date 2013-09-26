@@ -76,6 +76,8 @@ public class SwingEditorView {
 	}
 
 	private JMenuBar createMenuBar() {
+		final SwingEditorView view = this;
+
 		JMenuItem openMenuItem = applyDefaults(new JMenuItem("Open...", KeyEvent.VK_O));
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 
@@ -102,7 +104,7 @@ public class SwingEditorView {
 		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
 		leftMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				controller.left(SwingEditorView.this);
+				controller.left(view);
 			}
 		});
 
@@ -110,7 +112,7 @@ public class SwingEditorView {
 		topMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
 		topMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				controller.top(SwingEditorView.this);
+				controller.top(view);
 			}
 		});
 
@@ -122,7 +124,7 @@ public class SwingEditorView {
 		JMenuItem runMenuItem = applyDefaults(new JMenuItem("Run", KeyEvent.VK_R));
 		runMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				controller.run(SwingEditorView.this);
+				controller.run(view);
 			}
 		});
 
