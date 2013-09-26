@@ -28,11 +28,15 @@ public class SwingEditorView {
 
 	private SwingEditorController controller;
 
+	private JLabel leftLabel;
 	private JLabel topLabel;
 	private JEditorPane editor;
-	private JPanel panel;
+	private JFrame frame;
 
 	public JFrame run() {
+		JLabel leftLabel = this.leftLabel = applyDefaults(new JLabel("Left"));
+		leftLabel.setVisible(false);
+
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
 
@@ -41,20 +45,26 @@ public class SwingEditorView {
 		Component box = Box.createRigidArea(new Dimension(8, 8));
 		JLabel okLabel = applyDefaults(new JLabel("OK"));
 
-		// Flow layout allows the components to be their preferred size
-		JPanel panel = this.panel = new JPanel();
-		panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		panel.add(topLabel);
-		panel.add(editor);
-		panel.add(box);
-		panel.add(okLabel);
+		JPanel verticalPanel = new JPanel();
+		verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
+		verticalPanel.add(topLabel);
+		verticalPanel.add(editor);
+		verticalPanel.add(box);
+		verticalPanel.add(okLabel);
 
-		JFrame frame = new JFrame(getClass().getSimpleName());
-		frame.setContentPane(panel);
+		// Flow layout allows the components to be their preferred size
+		JPanel horizontalPanel = new JPanel();
+		horizontalPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+		horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
+		horizontalPanel.add(leftLabel);
+		horizontalPanel.add(verticalPanel);
+
+		JFrame frame = this.frame = new JFrame(getClass().getSimpleName());
+		frame.setContentPane(horizontalPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setJMenuBar(createMenuBar(panel, topLabel));
-		frame.setSize(new Dimension(1024, 768));
+		frame.setJMenuBar(createMenuBar());
+		frame.setSize(new Dimension(1280, 768));
+		frame.setVisible(true);
 
 		okLabel.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
@@ -62,11 +72,10 @@ public class SwingEditorView {
 			}
 		});
 
-		frame.setVisible(true);
 		return frame;
 	}
 
-	private JMenuBar createMenuBar(final JPanel panel, final JLabel topLabel) {
+	private JMenuBar createMenuBar() {
 		JMenuItem openMenuItem = applyDefaults(new JMenuItem("Open...", KeyEvent.VK_O));
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 
@@ -89,6 +98,14 @@ public class SwingEditorView {
 		JMenu editMenu = applyDefaults(new JMenu("Edit"));
 		editMenu.setMnemonic(KeyEvent.VK_E);
 
+		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
+		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
+		leftMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.left(SwingEditorView.this);
+			}
+		});
+
 		JMenuItem topMenuItem = applyDefaults(new JMenuItem("Top", KeyEvent.VK_T));
 		topMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
 		topMenuItem.addActionListener(new ActionListener() {
@@ -99,6 +116,7 @@ public class SwingEditorView {
 
 		JMenu viewMenu = applyDefaults(new JMenu("View"));
 		viewMenu.setMnemonic(KeyEvent.VK_V);
+		viewMenu.add(leftMenuItem);
 		viewMenu.add(topMenuItem);
 
 		JMenuItem runMenuItem = applyDefaults(new JMenuItem("Run", KeyEvent.VK_R));
@@ -124,6 +142,10 @@ public class SwingEditorView {
 		this.controller = controller;
 	}
 
+	public JLabel getLeftLabel() {
+		return leftLabel;
+	}
+
 	public JLabel getTopLabel() {
 		return topLabel;
 	}
@@ -132,8 +154,8 @@ public class SwingEditorView {
 		return editor;
 	}
 
-	public JPanel getPanel() {
-		return panel;
+	public JFrame getFrame() {
+		return frame;
 	}
 
 	private <T extends JComponent> T applyDefaults(T t) {
