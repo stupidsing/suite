@@ -4,8 +4,6 @@ import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +37,7 @@ public class Profiler {
 	}
 
 	public String dump() {
-		List<Entry<String, int[]>> entries = new ArrayList<>(record.entrySet());
-
-		Collections.sort(entries, new Comparator<Entry<String, int[]>>() {
+		List<Entry<String, int[]>> entries = Util.sort(record.entrySet(), new Comparator<Entry<String, int[]>>() {
 			public int compare(Entry<String, int[]> e0, Entry<String, int[]> e1) {
 				return e1.getValue()[0] - e0.getValue()[0];
 			}

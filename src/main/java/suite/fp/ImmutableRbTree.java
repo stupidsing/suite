@@ -1,8 +1,11 @@
 package suite.fp;
 
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.Iterator;
 
-public class ImmutableRbTree<T> {
+public class ImmutableRbTree<T> implements Iterable<T> {
 
 	private Node<T> root;
 	private Comparator<T> comparator;
@@ -27,6 +30,39 @@ public class ImmutableRbTree<T> {
 	private ImmutableRbTree(Node<T> root, Comparator<T> comparator) {
 		this.root = root;
 		this.comparator = comparator;
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<T>() {
+			private Deque<Node<T>> nodes = new ArrayDeque<>();
+
+			{
+				pushLefts(root);
+			}
+
+			public boolean hasNext() {
+				return !nodes.isEmpty();
+			}
+
+			public T next() {
+				Node<T> node = nodes.pop();
+				T result = node.pivot;
+				pushLefts(node.right);
+				return result;
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			private void pushLefts(Node<T> node) {
+				while (node != null) {
+					nodes.push(node);
+					node = node.left;
+				}
+			}
+		};
 	}
 
 	public T find(T t) {

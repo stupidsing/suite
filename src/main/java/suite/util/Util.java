@@ -3,7 +3,12 @@ package suite.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -134,6 +139,18 @@ public class Util {
 			LogUtil.error(ex);
 			Thread.currentThread().interrupt();
 		}
+	}
+
+	public static <T extends Comparable<? super T>> List<T> sort(Collection<T> list) {
+		List<T> list1 = new ArrayList<>(list);
+		Collections.sort(list1);
+		return list1;
+	}
+
+	public static <T> List<T> sort(Collection<T> list, Comparator<? super T> comparator) {
+		List<T> list1 = new ArrayList<>(list);
+		Collections.sort(list1, comparator);
+		return list1;
 	}
 
 	public static Pair<String, String> split2(String s, String delimiter) {

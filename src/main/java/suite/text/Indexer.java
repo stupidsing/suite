@@ -53,4 +53,8 @@ public class Indexer {
 		return keysByMatch.get(match);
 	}
 
+	public DefaultValueMap<String, List<Key>> getKeysByMatch() {
+		return keysByMatch;
+	}
+
 }

@@ -1,7 +1,5 @@
 package suite.lp.doer;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +11,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.util.Util;
 
 public class Generalizer {
 
@@ -62,11 +61,7 @@ public class Generalizer {
 	public String dumpVariables() {
 		boolean first = true;
 		StringBuilder sb = new StringBuilder();
-		List<Entry<Node, Reference>> entries;
-
-		entries = new ArrayList<>(variables.entrySet());
-
-		Collections.sort(entries, new Comparator<Entry<Node, Reference>>() {
+		List<Entry<Node, Reference>> entries = Util.sort(variables.entrySet(), new Comparator<Entry<Node, Reference>>() {
 			public int compare(Entry<Node, Reference> e0, Entry<Node, Reference> e1) {
 				return e0.getKey().compareTo(e1.getKey());
 			}
