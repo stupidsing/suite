@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -110,6 +111,28 @@ public class Util {
 			return false;
 		else
 			return t1 == null || t1.equals(t2);
+	}
+
+	public static Iterable<Character> getChars(final String s) {
+		return new Iterable<Character>() {
+			public Iterator<Character> iterator() {
+				return new Iterator<Character>() {
+					private int index = 0;
+
+					public boolean hasNext() {
+						return index < s.length();
+					}
+
+					public Character next() {
+						return s.charAt(index++);
+					}
+
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
 	}
 
 	private static StackTraceElement getStackTrace(int n) {

@@ -1,16 +1,15 @@
 package suite.text;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import suite.util.DefaultValueMap;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class Indexer {
 
-	private DefaultValueMap<String, List<Key>> keysByMatch = new DefaultValueMap<String, List<Key>>(new Fun<String, List<Key>>() {
-		public List<Key> apply(String key) {
+	private Trie<List<Key>> trie = new Trie<>((char) 32, (char) 128, new Source<List<Key>>() {
+		public List<Key> source() {
 			return new ArrayList<>();
 		}
 	});
@@ -38,23 +37,20 @@ public class Indexer {
 
 		for (int start = 0; start < length; start++) {
 			int end = start + 1;
+			Trie<List<Key>>.Node node = trie.getRoot(), node1;
 
-			List<Key> list = null;
-
-			while (end < length && !(list = keysByMatch.get(text.substring(start, end))).isEmpty())
+			while (end < length && (node1 = trie.descend(node, text.charAt(end))) != null) {
+				node = node1;
 				end++;
+			}
 
-			if (list != null)
-				list.add(new Key(id, start));
+			trie.putNode(node, text.charAt(end), node1 = trie.new Node());
+			node1.getValue().add(new Key(id, start));
 		}
 	}
 
-	public Collection<Key> getKeys(String match) {
-		return keysByMatch.get(match);
-	}
-
-	public DefaultValueMap<String, List<Key>> getKeysByMatch() {
-		return keysByMatch;
+	public Map<String, List<Key>> getMap() {
+		return trie.getMap();
 	}
 
 }

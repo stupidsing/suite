@@ -6,11 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
 import suite.text.Indexer.Key;
-import suite.util.DefaultValueMap;
 import suite.util.FileUtil;
 import suite.util.Util;
 
@@ -39,10 +39,10 @@ public class IndexerTest {
 				indexer.index(filename, sb.toString());
 			}
 
-			DefaultValueMap<String, List<Key>> keysByMatch = indexer.getKeysByMatch();
+			Map<String, List<Key>> map = indexer.getMap();
 
-			for (String key : Util.sort(keysByMatch.keySet())) {
-				int n = keysByMatch.get(key).size();
+			for (String key : Util.sort(map.keySet())) {
+				int n = map.get(key).size();
 				if (n > 1 && key.length() < 8)
 					System.out.println(String.format("%-5d \"%s\"", n, key));
 			}
