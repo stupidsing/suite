@@ -1,6 +1,7 @@
 package suite.editor;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import suite.Suite;
 import suite.node.Node;
@@ -15,8 +16,8 @@ public class EditorController {
 	}
 
 	public void left(EditorView view) {
-		JLabel leftLabel = view.getLeftLabel();
-		leftLabel.setVisible(!leftLabel.isVisible());
+		JPanel leftPanel = view.getLeftPanel();
+		leftPanel.setVisible(!leftPanel.isVisible());
 		view.repaint();
 	}
 
@@ -33,9 +34,10 @@ public class EditorController {
 	public void run(EditorView view) {
 		Node node = Suite.evaluateFun(view.getEditor().getText(), true);
 
-		JLabel topLabel = view.getTopLabel();
-		topLabel.setText(Formatter.dump(node));
-		topLabel.setVisible(true);
+		JLabel bottomLabel = view.getBottomLabel();
+		bottomLabel.setText(Formatter.dump(node));
+		bottomLabel.setVisible(true);
+		view.repaint();
 	}
 
 	public void top(EditorView view) {

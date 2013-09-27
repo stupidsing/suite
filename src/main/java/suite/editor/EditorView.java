@@ -20,26 +20,31 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 public class EditorView {
+
+	private static final int windowWidth = 1280;
+	private static final int windowHeight = 768;
 
 	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
 
 	private EditorController controller;
 
-	private JLabel bottomLabel;
-	private JEditorPane editor;
 	private JFrame frame;
-	private JLabel leftLabel;
+
+	private JPanel leftPanel;
 	private JLabel rightLabel;
 	private JLabel topLabel;
+	private JLabel bottomLabel;
+
+	private JEditorPane editor;
 
 	public JFrame run() {
-		JLabel bottomLabel = this.bottomLabel = applyDefaults(new JLabel("Bottom"));
-		bottomLabel.setVisible(false);
+		JTextField leftTextField = applyDefaults(new JTextField(32));
 
-		JLabel leftLabel = this.leftLabel = applyDefaults(new JLabel("Left"));
+		JLabel leftLabel = applyDefaults(new JLabel("Left"));
 		leftLabel.setVisible(false);
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
@@ -48,32 +53,28 @@ public class EditorView {
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
 
+		JLabel bottomLabel = this.bottomLabel = applyDefaults(new JLabel("Bottom"));
+		bottomLabel.setVisible(false);
+
+		JPanel leftPanel = this.leftPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, leftTextField, leftLabel);
+		leftPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 
 		Component box = Box.createRigidArea(new Dimension(8, 8));
 		JLabel okLabel = applyDefaults(new JLabel("OK"));
 
-		JPanel verticalPanel = new JPanel();
-		verticalPanel.setLayout(new BoxLayout(verticalPanel, BoxLayout.Y_AXIS));
-		verticalPanel.add(topLabel);
-		verticalPanel.add(editor);
-		verticalPanel.add(box);
-		verticalPanel.add(okLabel);
-		verticalPanel.add(bottomLabel);
+		JPanel verticalPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, topLabel, editor, box, okLabel, bottomLabel);
 
 		// Flow layout allows the components to be their preferred size
-		JPanel horizontalPanel = new JPanel();
+		JPanel horizontalPanel = createBoxLayoutPanel(BoxLayout.X_AXIS, leftPanel, verticalPanel, rightLabel);
 		horizontalPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-		horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
-		horizontalPanel.add(leftLabel);
-		horizontalPanel.add(verticalPanel);
-		horizontalPanel.add(rightLabel);
 
 		JFrame frame = this.frame = new JFrame(getClass().getSimpleName());
 		frame.setContentPane(horizontalPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
-		frame.setSize(new Dimension(1280, 768));
+		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
 		okLabel.addMouseListener(new MouseAdapter() {
@@ -83,6 +84,10 @@ public class EditorView {
 		});
 
 		return frame;
+	}
+
+	public void repaint() {
+		frame.repaint();
 	}
 
 	private JMenuBar createMenuBar() {
@@ -98,23 +103,6 @@ public class EditorView {
 		quitMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				controller.quit(EditorView.this);
-			}
-		});
-
-		JMenu fileMenu = applyDefaults(new JMenu("File"));
-		fileMenu.setMnemonic(KeyEvent.VK_F);
-		fileMenu.add(openMenuItem);
-		fileMenu.add(saveMenuItem);
-		fileMenu.add(quitMenuItem);
-
-		JMenu editMenu = applyDefaults(new JMenu("Edit"));
-		editMenu.setMnemonic(KeyEvent.VK_E);
-
-		JMenuItem bottomMenuItem = applyDefaults(new JMenuItem("Bottom", KeyEvent.VK_B));
-		bottomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.ALT_MASK));
-		bottomMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
-				controller.bottom(view);
 			}
 		});
 
@@ -142,12 +130,13 @@ public class EditorView {
 			}
 		});
 
-		JMenu viewMenu = applyDefaults(new JMenu("View"));
-		viewMenu.setMnemonic(KeyEvent.VK_V);
-		viewMenu.add(bottomMenuItem);
-		viewMenu.add(leftMenuItem);
-		viewMenu.add(rightMenuItem);
-		viewMenu.add(topMenuItem);
+		JMenuItem bottomMenuItem = applyDefaults(new JMenuItem("Bottom", KeyEvent.VK_B));
+		bottomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.ALT_MASK));
+		bottomMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.bottom(view);
+			}
+		});
 
 		JMenuItem runMenuItem = applyDefaults(new JMenuItem("Run", KeyEvent.VK_R));
 		runMenuItem.addActionListener(new ActionListener() {
@@ -156,9 +145,10 @@ public class EditorView {
 			}
 		});
 
-		JMenu projectMenu = applyDefaults(new JMenu("Project"));
-		projectMenu.setMnemonic(KeyEvent.VK_P);
-		projectMenu.add(runMenuItem);
+		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, openMenuItem, saveMenuItem, quitMenuItem);
+		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E);
+		JMenu viewMenu = createMenu("View", KeyEvent.VK_V, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
+		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, runMenuItem);
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
@@ -169,8 +159,24 @@ public class EditorView {
 		return menuBar;
 	}
 
-	public void repaint() {
-		frame.repaint();
+	private JMenu createMenu(String title, int keyEvent, JMenuItem... menuItems) {
+		JMenu menu = applyDefaults(new JMenu(title));
+		menu.setMnemonic(keyEvent);
+
+		for (Component component : menuItems)
+			menu.add(component);
+
+		return menu;
+	}
+
+	private JPanel createBoxLayoutPanel(int boxLayout, Component... components) {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, boxLayout));
+
+		for (Component component : components)
+			panel.add(component);
+
+		return panel;
 	}
 
 	private <T extends JComponent> T applyDefaults(T t) {
@@ -187,12 +193,8 @@ public class EditorView {
 		return bottomLabel;
 	}
 
-	public JEditorPane getEditor() {
-		return editor;
-	}
-
-	public JLabel getLeftLabel() {
-		return leftLabel;
+	public JPanel getLeftPanel() {
+		return leftPanel;
 	}
 
 	public JLabel getRightLabel() {
@@ -201,6 +203,10 @@ public class EditorView {
 
 	public JLabel getTopLabel() {
 		return topLabel;
+	}
+
+	public JEditorPane getEditor() {
+		return editor;
 	}
 
 }
