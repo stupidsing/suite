@@ -165,6 +165,7 @@ public class EditorView {
 		menuBar.add(editMenu);
 		menuBar.add(viewMenu);
 		menuBar.add(projectMenu);
+
 		return menuBar;
 	}
 
