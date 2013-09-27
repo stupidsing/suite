@@ -63,7 +63,8 @@ public class Profiler {
 		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
 
 		for (ThreadInfo thread : threadInfos)
-			if (thread.getThreadId() != currentThreadId && thread.getThreadState() == State.RUNNABLE
+			if (thread.getThreadId() != currentThreadId //
+					&& thread.getThreadState() == State.RUNNABLE //
 					&& !thread.getThreadName().equals("ReaderThread")) {
 				String lastName = null;
 
