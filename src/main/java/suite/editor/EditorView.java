@@ -28,14 +28,22 @@ public class EditorView {
 
 	private EditorController controller;
 
-	private JLabel leftLabel;
-	private JLabel topLabel;
+	private JLabel bottomLabel;
 	private JEditorPane editor;
 	private JFrame frame;
+	private JLabel leftLabel;
+	private JLabel rightLabel;
+	private JLabel topLabel;
 
 	public JFrame run() {
+		JLabel bottomLabel = this.bottomLabel = applyDefaults(new JLabel("Bottom"));
+		bottomLabel.setVisible(false);
+
 		JLabel leftLabel = this.leftLabel = applyDefaults(new JLabel("Left"));
 		leftLabel.setVisible(false);
+
+		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
+		rightLabel.setVisible(false);
 
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
@@ -51,6 +59,7 @@ public class EditorView {
 		verticalPanel.add(editor);
 		verticalPanel.add(box);
 		verticalPanel.add(okLabel);
+		verticalPanel.add(bottomLabel);
 
 		// Flow layout allows the components to be their preferred size
 		JPanel horizontalPanel = new JPanel();
@@ -58,6 +67,7 @@ public class EditorView {
 		horizontalPanel.setLayout(new BoxLayout(horizontalPanel, BoxLayout.X_AXIS));
 		horizontalPanel.add(leftLabel);
 		horizontalPanel.add(verticalPanel);
+		horizontalPanel.add(rightLabel);
 
 		JFrame frame = this.frame = new JFrame(getClass().getSimpleName());
 		frame.setContentPane(horizontalPanel);
@@ -100,11 +110,27 @@ public class EditorView {
 		JMenu editMenu = applyDefaults(new JMenu("Edit"));
 		editMenu.setMnemonic(KeyEvent.VK_E);
 
+		JMenuItem bottomMenuItem = applyDefaults(new JMenuItem("Bottom", KeyEvent.VK_B));
+		bottomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.ALT_MASK));
+		bottomMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.bottom(view);
+			}
+		});
+
 		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
 		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
 		leftMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				controller.left(view);
+			}
+		});
+
+		JMenuItem rightMenuItem = applyDefaults(new JMenuItem("Right", KeyEvent.VK_R));
+		rightMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
+		rightMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.right(view);
 			}
 		});
 
@@ -118,7 +144,9 @@ public class EditorView {
 
 		JMenu viewMenu = applyDefaults(new JMenu("View"));
 		viewMenu.setMnemonic(KeyEvent.VK_V);
+		viewMenu.add(bottomMenuItem);
 		viewMenu.add(leftMenuItem);
+		viewMenu.add(rightMenuItem);
 		viewMenu.add(topMenuItem);
 
 		JMenuItem runMenuItem = applyDefaults(new JMenuItem("Run", KeyEvent.VK_R));
@@ -140,30 +168,38 @@ public class EditorView {
 		return menuBar;
 	}
 
-	public void setController(EditorController controller) {
-		this.controller = controller;
-	}
-
-	public JLabel getLeftLabel() {
-		return leftLabel;
-	}
-
-	public JLabel getTopLabel() {
-		return topLabel;
-	}
-
-	public JEditorPane getEditor() {
-		return editor;
-	}
-
-	public JFrame getFrame() {
-		return frame;
+	public void repaint() {
+		frame.repaint();
 	}
 
 	private <T extends JComponent> T applyDefaults(T t) {
 		t.setFont(font);
 		t.setAlignmentX(Component.CENTER_ALIGNMENT);
 		return t;
+	}
+
+	public void setController(EditorController controller) {
+		this.controller = controller;
+	}
+
+	public JLabel getBottomLabel() {
+		return bottomLabel;
+	}
+
+	public JEditorPane getEditor() {
+		return editor;
+	}
+
+	public JLabel getLeftLabel() {
+		return leftLabel;
+	}
+
+	public JLabel getRightLabel() {
+		return rightLabel;
+	}
+
+	public JLabel getTopLabel() {
+		return topLabel;
 	}
 
 }

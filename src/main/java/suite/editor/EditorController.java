@@ -8,15 +8,26 @@ import suite.node.io.Formatter;
 
 public class EditorController {
 
+	public void bottom(EditorView view) {
+		JLabel bottomLabel = view.getBottomLabel();
+		bottomLabel.setVisible(!bottomLabel.isVisible());
+		view.repaint();
+	}
+
 	public void left(EditorView view) {
 		JLabel leftLabel = view.getLeftLabel();
-
 		leftLabel.setVisible(!leftLabel.isVisible());
-		view.getFrame().repaint();
+		view.repaint();
 	}
 
 	public void quit(EditorView view) {
 		System.exit(0);
+	}
+
+	public void right(EditorView view) {
+		JLabel rightLabel = view.getRightLabel();
+		rightLabel.setVisible(!rightLabel.isVisible());
+		view.repaint();
 	}
 
 	public void run(EditorView view) {
@@ -29,9 +40,8 @@ public class EditorController {
 
 	public void top(EditorView view) {
 		JLabel topLabel = view.getTopLabel();
-
 		topLabel.setVisible(!topLabel.isVisible());
-		view.getFrame().repaint();
+		view.repaint();
 	}
 
 }
