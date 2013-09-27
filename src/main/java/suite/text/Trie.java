@@ -1,6 +1,8 @@
 package suite.text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import suite.util.FunUtil.Source;
@@ -13,9 +15,13 @@ public class Trie<V> {
 	private Source<V> source;
 
 	public class Node {
-		@SuppressWarnings("unchecked")
-		private Node branches[] = (Node[]) new Object[end - start];
+		private List<Node> branches = new ArrayList<>(end - start);
 		private V value = source.source();
+
+		public Node() {
+			for (int i = start; i < end; i++)
+				branches.add(null);
+		}
 
 		public V getValue() {
 			return value;
@@ -36,6 +42,10 @@ public class Trie<V> {
 		this.source = source;
 	}
 
+	public Node getRoot() {
+		return root;
+	}
+
 	public Map<String, V> getMap() {
 		Map<String, V> map = new HashMap<>();
 		getMap(root, "", map);
@@ -46,52 +56,44 @@ public class Trie<V> {
 		map.put(s, node.value);
 
 		for (char ch = start; ch < end; ch++) {
-			Node child = node.branches[ch - start];
+			Node child = descend(node, ch);
 			if (child != null)
 				getMap(child, s + ch, map);
 		}
 	}
 
-	public Node getRoot() {
-		return root;
-	}
-
 	public V get(String s) {
-		return descendReadOnly(root, s).value;
+		return descend(root, s).value;
 	}
 
 	public void put(String s, V value) {
 		Node node = root;
-		node = descend(node, s);
+		node = descendCreate(node, s);
 		node.value = value;
 	}
 
-	public Node descendReadOnly(Node node, String s) {
+	public Node descend(Node node, String s) {
 		for (char ch : Util.getChars(s))
-			node = node != null ? getNode(node, ch) : null;
+			node = node != null ? descend(node, ch) : null;
 		return node;
 	}
 
-	public Node descend(Node node, String s) {
+	public Node descendCreate(Node node, String s) {
 		for (char ch : Util.getChars(s)) {
-			Node node1 = getNode(node, ch);
+			Node node1 = descend(node, ch);
 			if (node1 == null)
-				putNode(node1, ch, node1 = new Node());
+				put(node1, ch, node1 = new Node());
 			node = node1;
 		}
 		return node;
 	}
 
 	public Node descend(Node node, char ch) {
-		return getNode(node, ch);
+		return node.branches.get(ch - start);
 	}
 
-	private Node getNode(Node node, char ch) {
-		return node.branches[ch - start];
-	}
-
-	public void putNode(Node node, char ch, Node child) {
-		node.branches[ch - start] = child;
+	public void put(Node node, char ch, Node child) {
+		node.branches.set(ch - start, child);
 	}
 
 }

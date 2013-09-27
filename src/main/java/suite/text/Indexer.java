@@ -44,7 +44,7 @@ public class Indexer {
 				end++;
 			}
 
-			trie.putNode(node, text.charAt(end), node1 = trie.new Node());
+			trie.put(node, text.charAt(end), node1 = trie.new Node());
 			node1.getValue().add(new Key(id, start));
 		}
 	}
