@@ -21,10 +21,12 @@ public abstract class HttpHandler implements Handler {
 		this.request = request;
 		this.response = response;
 
-		try (Reader reader = new InputStreamReader(request.getInputStream(), FileUtil.charset);
-				Writer writer = new OutputStreamWriter(response.getOutputStream(), FileUtil.charset)) {
-			handle(reader, writer);
-		}
+		Reader reader = new InputStreamReader(request.getInputStream(), FileUtil.charset);
+		Writer writer = new OutputStreamWriter(response.getOutputStream(), FileUtil.charset);
+
+		handle(reader, writer);
+
+		writer.flush();
 	}
 
 }

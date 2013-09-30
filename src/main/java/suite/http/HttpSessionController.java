@@ -3,7 +3,6 @@ package suite.http;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Random;
@@ -95,7 +94,7 @@ public class HttpSessionController {
 					showLoginPage(response.getOutputStream(), path, true);
 			} else if (Util.equals(request.getPath(), "/logout")) {
 				if (sessionId != null)
-					sessionManager.put(sessionId, null);
+					sessionManager.remove(sessionId);
 
 				showLoginPage(response.getOutputStream(), "/", false);
 			} else if (session != null && current < session.lastRequestDt + TIMEOUTDURATION) {
@@ -114,22 +113,24 @@ public class HttpSessionController {
 		private void showLoginPage(OutputStream os //
 				, String redirectPath //
 				, boolean isLoginFailed) throws IOException {
-			try (Writer writer = new OutputStreamWriter(os, FileUtil.charset)) {
-				writer.write("<html>" //
-						+ "<head><title>Login</title></head>" //
-						+ "<body>" //
-						+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
-						+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "") //
-						+ "<form name=\"login\" action=\"/login\" method=\"post\">" //
-						+ "Username <input type=\"text\" name=\"username\" /><br/>" //
-						+ "Password <input type=\"password\" name=\"password\" /><br/>" //
-						+ "<input type=\"hidden\" name=\"path\" value=\"" + HtmlUtil.encode(redirectPath) + "\" />" //
-						+ "<input type=\"submit\" value=\"Login\">" //
-						+ "</form>" //
-						+ "</font>" //
-						+ "</body>" //
-						+ "</html>");
-			}
+			OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+
+			writer.write("<html>" //
+					+ "<head><title>Login</title></head>" //
+					+ "<body>" //
+					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
+					+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "") //
+					+ "<form name=\"login\" action=\"/login\" method=\"post\">" //
+					+ "Username <input type=\"text\" name=\"username\" /><br/>" //
+					+ "Password <input type=\"password\" name=\"password\" /><br/>" //
+					+ "<input type=\"hidden\" name=\"path\" value=\"" + HtmlUtil.encode(redirectPath) + "\" />" //
+					+ "<input type=\"submit\" value=\"Login\">" //
+					+ "</form>" //
+					+ "</font>" //
+					+ "</body>" //
+					+ "</html>");
+
+			writer.flush();
 		}
 	}
 

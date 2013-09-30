@@ -22,7 +22,7 @@ public class HttpRequest {
 	}
 
 	public String getLogString() {
-		return method + " " + server + " " + path;
+		return method + " " + path;
 	}
 
 	public String getMethod() {
