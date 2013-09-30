@@ -13,6 +13,8 @@ public class HtmlUtil {
 	}
 
 	public static String decode(String in) {
+		String decoded;
+
 		if (in != null) {
 			StringBuilder sb = new StringBuilder();
 			int index = 0;
@@ -41,12 +43,16 @@ public class HtmlUtil {
 					sb.append(ch);
 			}
 
-			return sb.toString();
+			decoded = sb.toString();
 		} else
-			return null;
+			decoded = null;
+
+		return decoded;
 	}
 
 	public static String encode(String in) {
+		String encoded;
+
 		if (in != null) {
 			StringBuilder sb = new StringBuilder();
 
@@ -64,9 +70,11 @@ public class HtmlUtil {
 					sb.append(ch);
 			}
 
-			return sb.toString();
+			encoded = sb.toString();
 		} else
-			return null;
+			encoded = null;
+
+		return encoded;
 	}
 
 	private static void initialize() {

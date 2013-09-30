@@ -81,6 +81,7 @@ public class HttpServer {
 					InputStream cis = sizeLimitedInputStream(is, contentLength);
 					HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
 
+					LogUtil.info(request.getLogString());
 					handler.handle(request, response);
 				} catch (Exception ex) {
 					LogUtil.error(ex);
