@@ -38,54 +38,56 @@ public class HttpServer {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				HashMap<String, String> responseHeaders = new HashMap<String, String>();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+				String line, ls[];
+
+				line = readLine(is);
+				ls = line.split(" ");
+				String method = ls[0], url = ls[1], protocol = ls[2];
+				String server, pqs;
+
+				Pair<String, String> pp = Util.split2(url, "://");
+
+				if (Util.isNotBlank(pp.t1)) {
+					Pair<String, String> sp = Util.split2(pp.t1, "/");
+					server = sp.t0;
+					pqs = sp.t1;
+				} else {
+					server = "";
+					pqs = url;
+				}
+
+				Pair<String, String> pq = Util.split2(pqs, "?");
+				String path = pq.t0;
+				String query = pq.t1;
+
+				String path1 = path.startsWith("/") ? path : "/" + path;
+				String path2 = URLDecoder.decode(path1, "UTF-8");
+
+				if (!Util.equals(protocol, "HTTP/1.1"))
+					throw new RuntimeException("Only HTTP/1.1 is supported");
+
+				Map<String, String> requestHeaders = new HashMap<>();
+
+				while (!(line = readLine(is)).isEmpty()) {
+					Pair<String, String> pair = Util.split2(line, ":");
+					requestHeaders.put(pair.t0, pair.t1);
+				}
+
+				String cls = requestHeaders.get("Content-Length");
+				int contentLength = cls != null ? Integer.parseInt(cls) : 0;
+				InputStream cis = sizeLimitedInputStream(is, contentLength);
+
+				HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
 				HttpResponse response = new HttpResponse("200 OK", responseHeaders, baos);
 
 				try {
-					String line, ls[];
-
-					line = readLine(is);
-					ls = line.split(" ");
-					String method = ls[0], url = ls[1], protocol = ls[2];
-					String server, pqs;
-
-					Pair<String, String> pp = Util.split2(url, "://");
-
-					if (Util.isNotBlank(pp.t1)) {
-						Pair<String, String> sp = Util.split2(pp.t1, "/");
-						server = sp.t0;
-						pqs = sp.t1;
-					} else {
-						server = "";
-						pqs = url;
-					}
-
-					Pair<String, String> pq = Util.split2(pqs, "?");
-					String path = pq.t0;
-					String query = pq.t1;
-
-					String path1 = path.startsWith("/") ? path : "/" + path;
-					String path2 = URLDecoder.decode(path1, "UTF-8");
-
-					if (!Util.equals(protocol, "HTTP/1.1"))
-						throw new RuntimeException("Only HTTP/1.1 is supported");
-
-					Map<String, String> requestHeaders = new HashMap<>();
-
-					while (!(line = readLine(is)).isEmpty()) {
-						Pair<String, String> pair = Util.split2(line, ":");
-						requestHeaders.put(pair.t0, pair.t1);
-					}
-
-					String cls = requestHeaders.get("Content-Length");
-					int contentLength = cls != null ? Integer.parseInt(cls) : 0;
-					InputStream cis = sizeLimitedInputStream(is, contentLength);
-					HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
-
-					LogUtil.info(request.getLogString());
 					handler.handle(request, response);
 				} catch (Exception ex) {
 					LogUtil.error(ex);
 					response.setStatus("500 Internal server error");
+				} finally {
+					LogUtil.info(request.getLogString() + " " + response.getLogString());
 				}
 
 				responseHeaders.put("Content-Length", Integer.toString(baos.size()));
