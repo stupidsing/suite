@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,21 +33,7 @@ public class HttpServer {
 		public void handle(HttpRequest request, HttpResponse response) throws IOException;
 	}
 
-	public static void main(String args[]) throws IOException {
-		new HttpServer().run(new Handler() {
-			public void handle(HttpRequest request, HttpResponse response) throws IOException {
-				try (Writer writer = new OutputStreamWriter(response.getOutputStream(), FileUtil.charset)) {
-					writer.write("<html>" //
-							+ "<br/>method = " + request.getMethod() + "<br/>server = " + request.getServer()
-							+ "<br/>path = "
-							+ request.getPath() + "<br/>attrs = " + HttpUtil.getAttrs(request.getQuery()) //
-							+ "<br/>headers = " + request.getHeaders() + "</html>");
-				}
-			}
-		});
-	}
-
-	private void run(final Handler handler) throws IOException {
+	public void run(final Handler handler) throws IOException {
 		SocketUtil.listen(8051, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				HashMap<String, String> responseHeaders = new HashMap<String, String>();
