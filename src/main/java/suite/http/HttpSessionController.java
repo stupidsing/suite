@@ -46,6 +46,10 @@ public class HttpSessionController {
 		}
 	}
 
+	public HttpSessionController(Authenticator authenticator) {
+		this.authenticator = authenticator;
+	}
+
 	public HttpSessionHandler getSessionHandler(Handler handler) {
 		return new HttpSessionHandler(handler);
 
@@ -68,7 +72,7 @@ public class HttpSessionController {
 				Map<String, String> attrs = HttpUtil.getPostedAttrs(request.getInputStream());
 				String username = attrs.get("username");
 				String password = attrs.get("password");
-				String url = attrs.get("url");
+				String path = attrs.get("path");
 
 				if (authenticator.authenticate(username, password)) {
 					sessionId = generateRandomSessionId();
@@ -79,9 +83,16 @@ public class HttpSessionController {
 
 					sessionManager.put(sessionId, session);
 
-					showProtectedPage(sessionId, request, response);
+					HttpRequest request1 = new HttpRequest(request.getMethod() //
+							, request.getServer() //
+							, path //
+							, request.getQuery() //
+							, request.getHeaders() //
+							, request.getInputStream());
+
+					showProtectedPage(sessionId, request1, response);
 				} else
-					showLoginPage(response.getOutputStream(), url, true);
+					showLoginPage(response.getOutputStream(), path, true);
 			} else if (Util.equals(request.getPath(), "/logout")) {
 				if (sessionId != null)
 					sessionManager.put(sessionId, null);
@@ -101,7 +112,7 @@ public class HttpSessionController {
 		}
 
 		private void showLoginPage(OutputStream os //
-				, String redirectUrl //
+				, String redirectPath //
 				, boolean isLoginFailed) throws IOException {
 			try (Writer writer = new OutputStreamWriter(os, FileUtil.charset)) {
 				writer.write("<html>" //
@@ -109,10 +120,10 @@ public class HttpSessionController {
 						+ "<body>" //
 						+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
 						+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "") //
-						+ "<form name=\"login\" action=\"/login\" method=\"get\">" //
-						+ "Username <input type=\"text\" name=\"username\" />" //
-						+ "Password <input type=\"password\" name=\"password\" />" //
-						+ "<input type=\"hidden\" name=\"url\" value=\"" + HtmlUtil.encode(redirectUrl) + "\" />" //
+						+ "<form name=\"login\" action=\"/login\" method=\"post\">" //
+						+ "Username <input type=\"text\" name=\"username\" /><br/>" //
+						+ "Password <input type=\"password\" name=\"password\" /><br/>" //
+						+ "<input type=\"hidden\" name=\"path\" value=\"" + HtmlUtil.encode(redirectPath) + "\" />" //
 						+ "<input type=\"submit\" value=\"Login\">" //
 						+ "</form>" //
 						+ "</font>" //

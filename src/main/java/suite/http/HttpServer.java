@@ -79,7 +79,6 @@ public class HttpServer {
 					String cls = requestHeaders.get("Content-Length");
 					int contentLength = cls != null ? Integer.parseInt(cls) : 0;
 					InputStream cis = sizeLimitedInputStream(is, contentLength);
-
 					HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
 
 					handler.handle(request, response);
@@ -113,9 +112,17 @@ public class HttpServer {
 			}
 
 			public int read(byte bytes[], int offset, int length) throws IOException {
-				int nBytesRead = is.read(bytes, offset, Math.min(length, remaining));
-				remaining -= nBytesRead;
-				return nBytesRead;
+				int result;
+
+				if (remaining > 0) {
+					result = is.read(bytes, offset, Math.min(length, remaining));
+
+					if (result >= 0)
+						remaining -= result;
+				} else
+					result = -1;
+
+				return result;
 			}
 		};
 	}

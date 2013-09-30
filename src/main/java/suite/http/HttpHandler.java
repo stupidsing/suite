@@ -23,7 +23,7 @@ public abstract class HttpHandler implements Handler {
 
 		try (Reader reader = new InputStreamReader(request.getInputStream(), FileUtil.charset);
 				Writer writer = new OutputStreamWriter(response.getOutputStream(), FileUtil.charset)) {
-			handle(request, response);
+			handle(reader, writer);
 		}
 	}
 

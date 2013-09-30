@@ -15,6 +15,10 @@ public class HttpResponse {
 		this.outputStream = outputStream;
 	}
 
+	public String getLogString() {
+		return status;
+	}
+
 	public String getStatus() {
 		return status;
 	}

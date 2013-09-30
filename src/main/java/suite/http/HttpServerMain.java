@@ -5,8 +5,16 @@ import java.io.Reader;
 import java.io.Writer;
 
 import suite.http.HttpServer.Handler;
+import suite.http.HttpSessionController.Authenticator;
+import suite.util.Util;
 
 public class HttpServerMain {
+
+	private Authenticator authenticator = new Authenticator() {
+		public boolean authenticate(String username, String password) {
+			return Util.equals(username, "user") && Util.equals(password, "");
+		}
+	};
 
 	private Handler handler0 = new HttpHandler() {
 		protected void handle(Reader reader, Writer writer) throws IOException {
@@ -18,13 +26,16 @@ public class HttpServerMain {
 		}
 	};
 
+	private Handler handler1 = new HttpSessionController(authenticator).getSessionHandler(handler0);
+
 	public static void main(String args[]) throws IOException {
 		new HttpServerMain().run();
 	}
 
 	private void run() throws IOException {
 		handler0.getClass();
-		new HttpServer().run(handler0);
+		handler1.getClass();
+		new HttpServer().run(handler1);
 	}
 
 }

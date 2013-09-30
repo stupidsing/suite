@@ -21,6 +21,10 @@ public class HttpRequest {
 		this.inputStream = inputStream;
 	}
 
+	public String getLogString() {
+		return method + " " + server + " " + path;
+	}
+
 	public String getMethod() {
 		return method;
 	}
