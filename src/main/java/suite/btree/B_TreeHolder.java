@@ -10,11 +10,11 @@ import suite.btree.Serializer.B_TreeSuperBlockSerializer;
 
 public class B_TreeHolder<Key, Value> implements Closeable {
 
-	private B_Tree<Key, Value> b_tree;
-
 	private FileAllocator al;
 	private FilePersister<B_Tree<Key, Value>.SuperBlock> sbp;
 	private FilePersister<B_Tree<Key, Value>.Page> pp;
+
+	private B_Tree<Key, Value> b_tree;
 
 	public B_TreeHolder(String path //
 			, String name //
