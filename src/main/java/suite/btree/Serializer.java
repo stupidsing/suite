@@ -43,10 +43,10 @@ public interface Serializer<V> {
 		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
 
-		public B_TreePageSerializer(B_Tree<Key, Value> b_tree, Serializer<Key> keyAccessor, Serializer<Value> valueAccessor) {
+		public B_TreePageSerializer(B_Tree<Key, Value> b_tree, Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
 			this.b_tree = b_tree;
-			this.keyAccessor = keyAccessor;
-			this.valueAccessor = valueAccessor;
+			this.keyAccessor = keySerializer;
+			this.valueAccessor = valueSerializer;
 		}
 
 		public B_Tree<Key, Value>.Page read(ByteBuffer buffer) {

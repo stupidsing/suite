@@ -3,15 +3,12 @@ package suite.btree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Random;
 
 import org.junit.Test;
 
-import suite.btree.Serializer.B_TreePageSerializer;
-import suite.btree.Serializer.B_TreeSuperBlockSerializer;
 import suite.btree.Serializer.FixedStringSerializer;
 import suite.btree.Serializer.IntSerializer;
 import suite.util.Pair;
@@ -21,7 +18,7 @@ public class B_TreeTest {
 	private static final int nKeys = 1024;
 	private Integer keys[] = new Integer[nKeys];
 
-	private B_Tree1 b_tree;
+	private B_Tree<Integer, String> b_tree;
 
 	private Random random = new Random();
 
@@ -55,32 +52,16 @@ public class B_TreeTest {
 	public void fileTest() throws IOException {
 		String path = "/tmp";
 		String name = "test-btree";
+		boolean isNew = true;
 
-		new File(path).mkdirs();
-
-		String prefix = path + "/" + name;
-		String sbf = prefix + ".superblock";
-		String amf = prefix + ".alloc";
-		String pf = prefix + ".pages";
-
-		for (String filename : new String[] { sbf, amf, pf })
-			new File(filename).delete();
-
-		b_tree = new B_Tree1();
-
-		B_TreeSuperBlockSerializer<Integer, String> sbs = new B_TreeSuperBlockSerializer<>(b_tree);
-		B_TreePageSerializer<Integer, String> ps = new B_TreePageSerializer<>(b_tree //
+		try (B_TreeHolder<Integer, String> holder = new B_TreeHolder<>( //
+				path //
+				, name //
+				, isNew //
+				, compare //
 				, new IntSerializer() //
-				, new FixedStringSerializer(16));
-
-		try (FileAllocator al = new FileAllocator(amf);
-				FilePersister<B_Tree1.SuperBlock> sbp = new FilePersister<>(sbf, sbs);
-				FilePersister<B_Tree1.Page> pp = new FilePersister<>(pf, ps)) {
-			b_tree.setAllocator(al);
-			b_tree.setSuperBlockPersister(sbp);
-			b_tree.setPagePersister(pp);
-			b_tree.setBranchFactor(16);
-			b_tree.create();
+				, new FixedStringSerializer(16))) {
+			b_tree = holder.get();
 			shuffleAndTest();
 		}
 	}
