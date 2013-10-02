@@ -16,18 +16,16 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private B_Tree<Key, Value> b_tree;
 
-	public B_TreeHolder(String path //
-			, String name //
+	public B_TreeHolder(String pathName //
 			, boolean isNew //
 			, Comparator<Key> comparator //
 			, Serializer<Key> ks //
 			, Serializer<Value> vs) throws IOException {
-		new File(path).mkdirs();
+		new File(pathName).getParentFile().mkdirs();
 
-		String prefix = path + "/" + name;
-		String sbf = prefix + ".superblock";
-		String amf = prefix + ".alloc";
-		String pf = prefix + ".pages";
+		String sbf = pathName + ".superblock";
+		String amf = pathName + ".alloc";
+		String pf = pathName + ".pages";
 
 		if (isNew)
 			for (String filename : new String[] { sbf, amf, pf })
@@ -51,15 +49,15 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			b_tree.create();
 	}
 
-	public B_Tree<Key, Value> get() {
-		return b_tree;
-	}
-
 	@Override
 	public void close() throws IOException {
 		pp.close();
 		sbp.close();
 		al.close();
+	}
+
+	public B_Tree<Key, Value> get() {
+		return b_tree;
 	}
 
 }

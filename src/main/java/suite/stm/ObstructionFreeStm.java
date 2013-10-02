@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import suite.stm.ObstructionFreeStm.ObstructionFreeTransaction;
 import suite.stm.Stm.AbortException;
 import suite.stm.Stm.DeadlockException;
 import suite.stm.Stm.Memory;
@@ -20,19 +21,26 @@ import suite.stm.Stm.TransactionStatus;
  * 
  * @author ywsing
  */
-public class ObstructionFreeStm implements TransactionManager {
+public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTransaction> {
 
 	private static final int nullTimestamp = -1;
 
 	private AtomicInteger clock = new AtomicInteger();
 
-	private class ObstructionFreeTransaction implements Transaction {
+	protected class ObstructionFreeTransaction implements Transaction {
 		private volatile TransactionStatus status = TransactionStatus.ACTIVE;
 		private volatile ObstructionFreeTransaction waitingFor;
 		private volatile int readTimestamp = clock.getAndIncrement();
 		private volatile int commitTimestamp = nullTimestamp;
 		private Set<ObstructionFreeMemory<?>> readMemories = new HashSet<>();
+		private ObstructionFreeTransaction parent;
 
+		/**
+		 * Tries to finish a transaction. Make sure all children committed
+		 * before committing the parent.
+		 * 
+		 * @throws AbortException
+		 */
 		public void commit() throws AbortException {
 			boolean isCommit = true;
 			commitTimestamp = clock.getAndIncrement();
@@ -40,8 +48,9 @@ public class ObstructionFreeStm implements TransactionManager {
 			// If some touched values are discovered to be modified between our
 			// read/write time, we must abort
 			for (ObstructionFreeMemory<?> memory : readMemories)
-				isCommit &= memory.owner.get() == this //
-						|| readTimestamp >= memory.timestamp0 || memory.timestamp0 >= commitTimestamp;
+				isCommit &= isDescendantOf(memory.owner.get(), this) //
+						|| memory.timestamp0 <= readTimestamp //
+						|| memory.timestamp0 >= commitTimestamp;
 
 			if (isCommit)
 				setStatus(TransactionStatus.COMMITTED);
@@ -49,6 +58,9 @@ public class ObstructionFreeStm implements TransactionManager {
 				throw new AbortException();
 		}
 
+		/**
+		 * Abort a transaction. Must abort all children first.
+		 */
 		public void rollback() {
 			setStatus(TransactionStatus.ABORTED);
 		}
@@ -90,7 +102,8 @@ public class ObstructionFreeStm implements TransactionManager {
 				long timestamp;
 				T value;
 
-				if (theirTransaction0 != ourTransaction && theirStatus0 != TransactionStatus.COMMITTED) {
+				if (theirStatus0 != TransactionStatus.COMMITTED //
+						&& !isDescendantOf(ourTransaction, theirTransaction0)) {
 					timestamp = timestamp0;
 					value = value0;
 				} else {
@@ -103,7 +116,7 @@ public class ObstructionFreeStm implements TransactionManager {
 
 				// Retry if owner or owner status changed
 				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1)
-					if (theirTransaction0 == ourTransaction || timestamp <= ourTransaction.readTimestamp) {
+					if (isDescendantOf(ourTransaction, theirTransaction0) || timestamp <= ourTransaction.readTimestamp) {
 						ourTransaction.readMemories.add(this);
 						return value;
 					} else
@@ -118,14 +131,14 @@ public class ObstructionFreeStm implements TransactionManager {
 		 * completes. Simple waiting hierarchy is implemented in transaction
 		 * class to detect deadlocks.
 		 * 
-		 * Timestamp checking is done to avoid changing too up-to-date data.
+		 * Timestamp checking is done to avoid changing post-modified data.
 		 */
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException {
 			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
 			ObstructionFreeTransaction theirTransaction;
 
 			// Makes ourself the owner
-			while ((theirTransaction = owner.get()) != ourTransaction)
+			while (!isDescendantOf(ourTransaction, theirTransaction = owner.get()))
 				if (theirTransaction != null) {
 
 					// Waits until previous owner complete
@@ -149,33 +162,51 @@ public class ObstructionFreeStm implements TransactionManager {
 		}
 	}
 
-	private void wait(ObstructionFreeTransaction source, ObstructionFreeTransaction target) throws InterruptedException,
+	private void wait(ObstructionFreeTransaction waiter, ObstructionFreeTransaction waitee) throws InterruptedException,
 			DeadlockException {
 		synchronized (ObstructionFreeStm.class) {
-			ObstructionFreeTransaction root = target;
 
 			// Detect waiting cycles and abort if deadlock is happening
-			while (root != null)
-				if (root != source)
-					root = root.waitingFor;
-				else {
-					source.setStatus(TransactionStatus.ABORTED);
-					throw new DeadlockException();
-				}
-
-			source.waitingFor = target;
+			if (!isWaitingFor(waitee, waiter))
+				waiter.waitingFor = waitee;
+			else {
+				waiter.setStatus(TransactionStatus.ABORTED);
+				throw new DeadlockException();
+			}
 		}
 
 		try {
-			target.waitForCompletion();
+			waitee.waitForCompletion();
 		} finally {
-			source.waitingFor = null;
+			waiter.waitingFor = null;
 		}
 	}
 
+	private boolean isDescendantOf(ObstructionFreeTransaction descendant, Transaction ascendant) {
+		if (descendant != null && ascendant != null)
+			if (ascendant != this)
+				return isDescendantOf(descendant.parent, ascendant);
+			else
+				return true;
+		else
+			return false;
+	}
+
+	private boolean isWaitingFor(ObstructionFreeTransaction waiter, ObstructionFreeTransaction waitee) {
+		if (waiter != null && waitee != null)
+			if (waiter != waitee)
+				return isWaitingFor(waiter.waitingFor, waitee) || isWaitingFor(waiter, waitee.parent);
+			else
+				return true;
+		else
+			return false;
+	}
+
 	@Override
-	public Transaction createTransaction() {
-		return new ObstructionFreeTransaction();
+	public ObstructionFreeTransaction createTransaction(ObstructionFreeTransaction parent) {
+		ObstructionFreeTransaction transaction = new ObstructionFreeTransaction();
+		transaction.parent = parent;
+		return transaction;
 	}
 
 	@Override

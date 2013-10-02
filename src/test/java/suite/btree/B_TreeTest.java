@@ -50,13 +50,11 @@ public class B_TreeTest {
 
 	@Test
 	public void fileTest() throws IOException {
-		String path = "/tmp";
-		String name = "test-btree";
+		String pathName = "/tmp/test-btree";
 		boolean isNew = true;
 
 		try (B_TreeHolder<Integer, String> holder = new B_TreeHolder<>( //
-				path //
-				, name //
+				pathName //
 				, isNew //
 				, compare //
 				, new IntSerializer() //

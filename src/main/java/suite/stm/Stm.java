@@ -20,8 +20,8 @@ public class Stm {
 		private static final long serialVersionUID = 1l;
 	}
 
-	public interface TransactionManager {
-		public Transaction createTransaction();
+	public interface TransactionManager<Tx extends Transaction> {
+		public Tx createTransaction(Tx parent);
 
 		public <T> Memory<T> createMemory(Class<T> clazz);
 	}
@@ -38,16 +38,13 @@ public class Stm {
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException;
 	}
 
-	public static boolean doTransaction(TransactionManager transactionManager, Sink<Transaction> fun) {
-		Transaction transaction = transactionManager.createTransaction();
+	public static <Tx extends Transaction> boolean doTransaction(TransactionManager<Tx> transactionManager, Sink<Tx> fun) {
+		Tx transaction = transactionManager.createTransaction(null);
 
 		try {
-			try {
-				fun.sink(transaction);
-				return true;
-			} finally {
-				transaction.commit();
-			}
+			fun.sink(transaction);
+			transaction.commit();
+			return true;
 		} catch (Exception ex) {
 			transaction.rollback();
 		}
