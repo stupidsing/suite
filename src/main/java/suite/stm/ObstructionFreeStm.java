@@ -27,6 +27,18 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 	private AtomicInteger clock = new AtomicInteger();
 
+	@Override
+	public ObstructionFreeTransaction createTransaction(ObstructionFreeTransaction parent) {
+		ObstructionFreeTransaction transaction = new ObstructionFreeTransaction();
+		transaction.parent = parent;
+		return transaction;
+	}
+
+	@Override
+	public <T> Memory<T> createMemory(Class<T> clazz) {
+		return new ObstructionFreeMemory<>();
+	}
+
 	protected class ObstructionFreeTransaction implements Transaction {
 		private volatile TransactionStatus status = TransactionStatus.ACTIVE;
 		private volatile ObstructionFreeTransaction waitingFor;
@@ -200,18 +212,6 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 				return true;
 		else
 			return false;
-	}
-
-	@Override
-	public ObstructionFreeTransaction createTransaction(ObstructionFreeTransaction parent) {
-		ObstructionFreeTransaction transaction = new ObstructionFreeTransaction();
-		transaction.parent = parent;
-		return transaction;
-	}
-
-	@Override
-	public <T> Memory<T> createMemory(Class<T> clazz) {
-		return new ObstructionFreeMemory<>();
 	}
 
 }
