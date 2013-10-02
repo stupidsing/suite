@@ -1,5 +1,6 @@
 package suite.editor;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -39,10 +40,12 @@ public class EditorView {
 	private JLabel topLabel;
 	private JLabel bottomLabel;
 
+	private JTextField leftTextField;
+
 	private JEditorPane editor;
 
 	public JFrame run() {
-		JTextField leftTextField = applyDefaults(new JTextField(32));
+		JTextField leftTextField = this.leftTextField = applyDefaults(new JTextField(32));
 
 		JLabel leftLabel = applyDefaults(new JLabel("Left"));
 		leftLabel.setVisible(false);
@@ -56,8 +59,12 @@ public class EditorView {
 		JLabel bottomLabel = this.bottomLabel = applyDefaults(new JLabel("Bottom"));
 		bottomLabel.setVisible(false);
 
-		JPanel leftPanel = this.leftPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, leftTextField, leftLabel);
+		JPanel leftPanel = this.leftPanel = new JPanel();
+		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+		leftPanel.setMinimumSize(new Dimension(windowWidth / 4, windowHeight));
+		leftPanel.add(leftTextField, BorderLayout.PAGE_START);
+		leftPanel.add(leftLabel, BorderLayout.CENTER);
 
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 
@@ -99,8 +106,8 @@ public class EditorView {
 		JMenuItem saveMenuItem = applyDefaults(new JMenuItem("Save", KeyEvent.VK_S));
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 
-		JMenuItem quitMenuItem = applyDefaults(new JMenuItem("Quit", KeyEvent.VK_Q));
-		quitMenuItem.addActionListener(new ActionListener() {
+		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Exit", KeyEvent.VK_X));
+		exitMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				controller.quit(EditorView.this);
 			}
@@ -145,7 +152,7 @@ public class EditorView {
 			}
 		});
 
-		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, openMenuItem, saveMenuItem, quitMenuItem);
+		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, openMenuItem, saveMenuItem, exitMenuItem);
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E);
 		JMenu viewMenu = createMenu("View", KeyEvent.VK_V, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
 		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, runMenuItem);
@@ -203,6 +210,10 @@ public class EditorView {
 
 	public JLabel getTopLabel() {
 		return topLabel;
+	}
+
+	public JTextField getLeftTextField() {
+		return leftTextField;
 	}
 
 	public JEditorPane getEditor() {

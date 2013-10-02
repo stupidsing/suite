@@ -18,6 +18,7 @@ public class EditorController {
 	public void left(EditorView view) {
 		JPanel leftPanel = view.getLeftPanel();
 		leftPanel.setVisible(!leftPanel.isVisible());
+		view.getLeftTextField().requestFocus();
 		view.repaint();
 	}
 
