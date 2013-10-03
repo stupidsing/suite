@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -21,6 +22,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
@@ -38,9 +40,11 @@ public class EditorView {
 	private JPanel leftPanel;
 	private JLabel rightLabel;
 	private JLabel topLabel;
-	private JLabel bottomLabel;
+	private JPanel bottomPanel;
 
 	private JTextField leftTextField;
+
+	private JTextArea bottomTextArea;
 
 	private JEditorPane editor;
 
@@ -56,8 +60,10 @@ public class EditorView {
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
 
-		JLabel bottomLabel = this.bottomLabel = applyDefaults(new JLabel("Bottom"));
-		bottomLabel.setVisible(false);
+		JTextArea bottomTextArea = this.bottomTextArea = applyDefaults(new JTextArea("Bottom"));
+		bottomTextArea.setEditable(false);
+		bottomTextArea.setRows(8);
+		bottomTextArea.setVisible(false);
 
 		JPanel leftPanel = this.leftPanel = new JPanel();
 		leftPanel.setLayout(new BorderLayout());
@@ -66,12 +72,14 @@ public class EditorView {
 		leftPanel.add(leftTextField, BorderLayout.PAGE_START);
 		leftPanel.add(leftLabel, BorderLayout.CENTER);
 
+		JPanel bottomPanel = this.bottomPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, bottomTextArea);
+
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 
 		Component box = Box.createRigidArea(new Dimension(8, 8));
-		JLabel okLabel = applyDefaults(new JLabel("OK"));
+		JButton okButton = applyDefaults(new JButton("OK"));
 
-		JPanel verticalPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, topLabel, editor, box, okLabel, bottomLabel);
+		JPanel verticalPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, topLabel, editor, box, okButton, bottomPanel);
 
 		// Flow layout allows the components to be their preferred size
 		JPanel horizontalPanel = createBoxLayoutPanel(BoxLayout.X_AXIS, leftPanel, verticalPanel, rightLabel);
@@ -84,7 +92,7 @@ public class EditorView {
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
-		okLabel.addMouseListener(new MouseAdapter() {
+		okButton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
 				System.out.println("GOT " + event);
 			}
@@ -94,6 +102,7 @@ public class EditorView {
 	}
 
 	public void repaint() {
+		frame.revalidate();
 		frame.repaint();
 	}
 
@@ -196,8 +205,8 @@ public class EditorView {
 		this.controller = controller;
 	}
 
-	public JLabel getBottomLabel() {
-		return bottomLabel;
+	public JPanel getBottomPanel() {
+		return bottomPanel;
 	}
 
 	public JPanel getLeftPanel() {
@@ -214,6 +223,10 @@ public class EditorView {
 
 	public JTextField getLeftTextField() {
 		return leftTextField;
+	}
+
+	public JTextArea getBottomTextArea() {
+		return bottomTextArea;
 	}
 
 	public JEditorPane getEditor() {
