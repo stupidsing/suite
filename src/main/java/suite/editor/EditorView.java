@@ -111,6 +111,8 @@ public class EditorView {
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
+		repaint();
+
 		editor.requestFocus();
 
 		return frame;
