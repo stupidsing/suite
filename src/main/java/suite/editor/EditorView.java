@@ -13,15 +13,18 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -51,10 +54,16 @@ public class EditorView {
 	public JFrame run() {
 		JTextField leftTextField = this.leftTextField = applyDefaults(new JTextField(32));
 
-		JLabel leftLabel = applyDefaults(new JLabel("Left"));
-		leftLabel.setVisible(false);
+		DefaultListModel<String> listModel = new DefaultListModel<>();
+		listModel.addElement("Jane Doe");
+		listModel.addElement("John Smith");
+		listModel.addElement("Kathy Green");
 
-		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
+		JList<String> leftList = applyDefaults(new JList<>(listModel));
+
+		Dimension verticalPanelDim = new Dimension(windowWidth / 4, windowHeight);
+
+		JLabel rightLabel = this.rightLabel = fixSize(applyDefaults(new JLabel("Right")), verticalPanelDim);
 		rightLabel.setVisible(false);
 
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
@@ -62,22 +71,32 @@ public class EditorView {
 
 		JTextArea bottomTextArea = this.bottomTextArea = applyDefaults(new JTextArea("Bottom"));
 		bottomTextArea.setEditable(false);
-		bottomTextArea.setRows(8);
+		bottomTextArea.setRows(12);
 		bottomTextArea.setVisible(false);
 
-		JPanel leftPanel = this.leftPanel = new JPanel();
+		JScrollPane scrollPane = new JScrollPane(bottomTextArea //
+				, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED //
+				, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+		JPanel leftPanel = this.leftPanel = fixSize(new JPanel(), verticalPanelDim);
 		leftPanel.setLayout(new BorderLayout());
 		leftPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-		leftPanel.setMinimumSize(new Dimension(windowWidth / 4, windowHeight));
 		leftPanel.add(leftTextField, BorderLayout.PAGE_START);
-		leftPanel.add(leftLabel, BorderLayout.CENTER);
+		leftPanel.add(leftList, BorderLayout.CENTER);
 
-		JPanel bottomPanel = this.bottomPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, bottomTextArea);
+		JPanel bottomPanel = this.bottomPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, scrollPane);
+		bottomPanel.setMaximumSize(new Dimension(windowWidth, windowHeight / 4));
 
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 
 		Component box = Box.createRigidArea(new Dimension(8, 8));
+
 		JButton okButton = applyDefaults(new JButton("OK"));
+		okButton.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent event) {
+				controller.run(EditorView.this);
+			}
+		});
 
 		JPanel verticalPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, topLabel, editor, box, okButton, bottomPanel);
 
@@ -92,11 +111,7 @@ public class EditorView {
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
-		okButton.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent event) {
-				System.out.println("GOT " + event);
-			}
-		});
+		editor.requestFocus();
 
 		return frame;
 	}
@@ -195,6 +210,12 @@ public class EditorView {
 		return panel;
 	}
 
+	private <T extends JComponent> T fixSize(T t, Dimension dim) {
+		t.setMinimumSize(dim);
+		t.setMaximumSize(dim);
+		return t;
+	}
+
 	private <T extends JComponent> T applyDefaults(T t) {
 		t.setFont(font);
 		t.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -205,19 +226,19 @@ public class EditorView {
 		this.controller = controller;
 	}
 
-	public JPanel getBottomPanel() {
+	public JPanel getBottomToolbar() {
 		return bottomPanel;
 	}
 
-	public JPanel getLeftPanel() {
+	public JPanel getLeftToolbar() {
 		return leftPanel;
 	}
 
-	public JLabel getRightLabel() {
+	public JComponent getRightToolbar() {
 		return rightLabel;
 	}
 
-	public JLabel getTopLabel() {
+	public JLabel getTopToolbar() {
 		return topLabel;
 	}
 
