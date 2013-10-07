@@ -9,22 +9,22 @@ import javax.swing.JComponent;
 public class LayoutCalculator {
 
 	public interface Node {
-		public Dimension minimum();
+		public Vector minimum();
 
-		public Dimension maximum();
+		public Vector maximum();
 	}
 
 	private class Leaf implements Node {
 		private JComponent component;
 
-		public Dimension minimum() {
-			Dimension size = component.getMinimumSize();
-			return size != null ? size : new Dimension(0, 0);
+		public Vector minimum() {
+			Vector size = toVector(component.getMinimumSize());
+			return size != null ? size : new Vector(0, 0);
 		}
 
-		public Dimension maximum() {
-			Dimension size = component.getMaximumSize();
-			return size != null ? size : new Dimension(65536, 65536);
+		public Vector maximum() {
+			Vector size = toVector(component.getMaximumSize());
+			return size != null ? size : new Vector(65536, 65536);
 		}
 	}
 
@@ -32,65 +32,109 @@ public class LayoutCalculator {
 		private Orientation orientation;
 		private List<Node> nodes;
 
-		public Dimension minimum() {
-			int minX = 0, minY = 0;
+		public Vector minimum() {
+			int minWidth = 0, minHeight = 0;
 
-			for (Node node : nodes)
-				if (orientation == Orientation.HORIZONTAL) {
-					minX += node.minimum().width;
-					minY = Math.max(minY, node.minimum().height);
-				} else {
-					minX = Math.max(minX, node.minimum().width);
-					minY += node.minimum().height;
-				}
+			for (Node node : nodes) {
+				Vector min = node.minimum();
+				minWidth += min.width(orientation);
+				minHeight = Math.max(minHeight, min.height(orientation));
+			}
 
-			return new Dimension(minX, minY);
+			return new Vector(orientation, minWidth, minHeight);
 		}
 
-		public Dimension maximum() {
-			int maxX = 0, maxY = 0;
+		public Vector maximum() {
+			int maxWidth = 0, maxHeight = 0;
 
-			for (Node node : nodes)
-				if (orientation == Orientation.HORIZONTAL) {
-					maxX += node.maximum().width;
-					maxY = Math.max(maxY, node.maximum().height);
-				} else {
-					maxX = Math.max(maxX, node.maximum().width);
-					maxY += node.maximum().height;
-				}
+			for (Node node : nodes) {
+				Vector max = node.maximum();
+				maxWidth += max.width(orientation);
+				maxHeight = Math.max(maxHeight, max.height(orientation));
+			}
 
-			return new Dimension(maxX, maxY);
+			return new Vector(orientation, maxWidth, maxHeight);
+		}
+	}
+
+	private static class Vector {
+		private int x, y;
+
+		public Vector(Orientation orientation, int w, int h) {
+			this(orientation == Orientation.HORIZONTAL ? w : h, orientation == Orientation.HORIZONTAL ? h : w);
+		}
+
+		public Vector(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		public int width(Orientation orientation) {
+			return orientation == Orientation.HORIZONTAL ? x : y;
+		}
+
+		public int height(Orientation orientation) {
+			return orientation == Orientation.HORIZONTAL ? y : x;
+		}
+	}
+
+	private static class Rect {
+		private Vector v0, v1;
+
+		public Rect(Vector v0, Vector v1) {
+			this.v0 = v0;
+			this.v1 = v1;
+		}
+
+		public int width(Orientation orientation) {
+			return orientation == Orientation.HORIZONTAL ? xdiff() : ydiff();
+		}
+
+		public int xdiff() {
+			return v1.x - v0.x;
+		}
+
+		public int ydiff() {
+			return v1.y - v0.y;
 		}
 	}
 
 	private enum Orientation {
 		HORIZONTAL, VERTICAL
-	};
+	}
 
-	public void arrange(Node node, Rectangle rectangle) {
+	public void arrange(Node node, Rect rect) {
 		if (node instanceof Layout) {
 			Layout layout = (Layout) node;
-			Dimension minimum = layout.minimum();
-			Dimension maximum = layout.maximum();
+			Orientation ori = layout.orientation;
+			Vector minimum = layout.minimum();
+			Vector maximum = layout.maximum();
 
-			int extraX = rectangle.width - minimum.width;
-			int extraY = rectangle.height - minimum.height;
-			int bufferX = maximum.width - minimum.width;
-			int bufferY = maximum.height - minimum.height;
+			int extra = rect.width(ori) - minimum.width(ori);
+			int buffer = maximum.width(ori) - minimum.width(ori);
+			int w = rect.v0.width(ori);
 
-			if (layout.orientation == Orientation.HORIZONTAL) {
-				double x = rectangle.getMinX();
+			for (Node childNode : layout.nodes) {
+				Vector max = childNode.maximum();
+				Vector min = childNode.minimum();
+				int w0 = min.width(ori) + extra * (max.width(ori) - min.width(ori)) / buffer;
 
-				for (Node childNode : layout.nodes) {
-					int width = childNode.minimum().width + rectangle.width * extraX / bufferX;
-					arrange(childNode, new Rectangle(x, rectangle.getMinY(), x + width, rectangle.getMaxY()));
-					x += width;
-				}
-			} else {
+				Vector v0 = new Vector(ori, w, rect.v0.height(ori));
+				Vector v1 = new Vector(ori, w + w0, rect.v1.height(ori));
+				arrange(childNode, new Rect(v0, v1));
+
+				w += w0;
 			}
-		} else {
-			Leaf leaf = (Leaf) node;
-			leaf.component.setBounds(rectangle);
-		}
+		} else
+			((Leaf) node).component.setBounds(toRectangle(rect));
 	}
+
+	private Rectangle toRectangle(Rect rect) {
+		return new Rectangle(rect.v0.x, rect.v1.y, rect.xdiff(), rect.ydiff());
+	}
+
+	private Vector toVector(Dimension dim) {
+		return dim != null ? new Vector(dim.width, dim.height) : null;
+	}
+
 }
