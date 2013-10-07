@@ -1,6 +1,5 @@
 package suite.editor;
 
-import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,51 +9,14 @@ public class Layout {
 
 	public static class Leaf implements Node {
 		public JComponent component;
-
-		public Vector minimum() {
-			Vector size = toVector(component.getMinimumSize());
-			return size != null ? size : new Vector(0, 0);
-		}
-
-		public Vector maximum() {
-			Vector size = toVector(component.getMaximumSize());
-			return size != null ? size : new Vector(65536, 65536);
-		}
 	}
 
 	public static class Box implements Node {
 		public Orientation orientation;
 		public List<Node> nodes;
-
-		public Vector minimum() {
-			int minWidth = 0, minHeight = 0;
-
-			for (Node node : nodes) {
-				Vector min = node.minimum();
-				minWidth += min.width(orientation);
-				minHeight = Math.max(minHeight, min.height(orientation));
-			}
-
-			return new Vector(orientation, minWidth, minHeight);
-		}
-
-		public Vector maximum() {
-			int maxWidth = 0, maxHeight = 0;
-
-			for (Node node : nodes) {
-				Vector max = node.maximum();
-				maxWidth += max.width(orientation);
-				maxHeight = Math.max(maxHeight, max.height(orientation));
-			}
-
-			return new Vector(orientation, maxWidth, maxHeight);
-		}
 	}
 
 	public interface Node {
-		public Vector minimum();
-
-		public Vector maximum();
 	}
 
 	public static class Vector {
@@ -114,10 +76,6 @@ public class Layout {
 		box.orientation = ori;
 		box.nodes = Arrays.asList(nodes);
 		return box;
-	}
-
-	private static Vector toVector(Dimension dim) {
-		return dim != null ? new Vector(dim.width, dim.height) : null;
 	}
 
 }
