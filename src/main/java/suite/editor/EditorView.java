@@ -116,6 +116,7 @@ public class EditorView {
 
 		if (Boolean.FALSE) {
 			Layout layout = new Layout();
+
 			new LayoutCalculator().arrange(layout.layout(Orientation.HORIZONTAL //
 					, layout.layout(Orientation.VERTICAL //
 							, layout.c(leftTextField) //
