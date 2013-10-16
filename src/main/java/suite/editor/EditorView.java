@@ -29,6 +29,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import suite.editor.Layout.Orientation;
+import suite.editor.Layout.Rect;
+
 public class EditorView {
 
 	private static final int windowWidth = 1280;
@@ -111,6 +114,24 @@ public class EditorView {
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
+		if (Boolean.FALSE) {
+			Layout layout = new Layout();
+			new LayoutCalculator().arrange(layout.layout(Orientation.HORIZONTAL //
+					, layout.layout(Orientation.VERTICAL //
+							, layout.c(leftTextField) //
+							, layout.c(leftList) //
+					) //
+					, layout.layout(Orientation.VERTICAL //
+							, layout.c(topLabel) //
+							, layout.c(editor) //
+							, layout.c(box) //
+							, layout.c(okButton) //
+							, layout.layout(Orientation.VERTICAL //
+									, layout.c(scrollPane) //
+							)) //
+					, layout.c(rightLabel)) //
+					, new Rect(0, 0, windowWidth, windowHeight));
+		}
 		repaint();
 
 		editor.requestFocus();

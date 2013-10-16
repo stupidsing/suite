@@ -1,14 +1,13 @@
 package suite.editor;
 
+import java.awt.Component;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.JComponent;
 
 public class Layout {
 
 	public static class Leaf implements Node {
-		public JComponent component;
+		public Component component;
 	}
 
 	public static class Box implements Node {
@@ -43,6 +42,10 @@ public class Layout {
 	public static class Rect {
 		public Vector v0, v1;
 
+		public Rect(int x0, int y0, int x1, int y1) {
+			this(new Vector(x0, y0), new Vector(x1, y1));
+		}
+
 		public Rect(Vector v0, Vector v1) {
 			this.v0 = v0;
 			this.v1 = v1;
@@ -65,7 +68,7 @@ public class Layout {
 		HORIZONTAL, VERTICAL
 	}
 
-	public Leaf c(JComponent component) {
+	public Leaf c(Component component) {
 		Leaf leaf = new Leaf();
 		leaf.component = component;
 		return leaf;
