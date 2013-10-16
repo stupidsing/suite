@@ -132,6 +132,7 @@ public class EditorView {
 					, layout.c(rightLabel)) //
 					, new Rect(0, 0, windowWidth, windowHeight));
 		}
+
 		repaint();
 
 		editor.requestFocus();
