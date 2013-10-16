@@ -3,6 +3,8 @@ package suite.editor;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
+import javax.swing.JComponent;
+
 import suite.editor.Layout.Box;
 import suite.editor.Layout.Leaf;
 import suite.editor.Layout.Node;
@@ -54,8 +56,8 @@ public class LayoutCalculator {
 
 			maximum = new Vector(ori, maxWidth, maxHeight);
 		} else {
-			Leaf leaf = (Leaf) node;
-			Vector size = toVector(leaf.component.getMaximumSize());
+			JComponent component = ((Leaf) node).component;
+			Vector size = component.isVisible() ? toVector(component.getMaximumSize()) : null;
 			maximum = size != null ? size : new Vector(65536, 65536);
 		}
 
@@ -78,8 +80,8 @@ public class LayoutCalculator {
 
 			minimum = new Vector(ori, minWidth, minHeight);
 		} else {
-			Leaf leaf = (Leaf) node;
-			Vector size = toVector(leaf.component.getMinimumSize());
+			JComponent component = ((Leaf) node).component;
+			Vector size = component.isVisible() ? toVector(component.getMinimumSize()) : null;
 			minimum = size != null ? size : new Vector(0, 0);
 		}
 
