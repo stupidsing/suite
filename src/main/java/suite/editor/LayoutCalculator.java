@@ -17,7 +17,7 @@ public class LayoutCalculator {
 	public void arrange(Container container, Node node) {
 		container.setLayout(null);
 
-		Rect rect = new Rect(new Vector(0, 0), toVector(container.getSize()));
+		Rect rect = new Rect(Vector.ORIGIN, toVector(container.getSize()));
 		arrange(container, rect, node);
 	}
 
@@ -73,7 +73,7 @@ public class LayoutCalculator {
 			maximum = new Vector(ori, maxWidth, maxHeight);
 		} else {
 			Leaf leaf = (Leaf) node;
-			Vector size = isVisible(leaf) ? leaf.max : new Vector(0, 0);
+			Vector size = isVisible(leaf) ? leaf.max : Vector.ORIGIN;
 			maximum = size != null ? size : new Vector(65536, 65536);
 		}
 
@@ -98,7 +98,7 @@ public class LayoutCalculator {
 		} else {
 			Leaf leaf = (Leaf) node;
 			Vector size = isVisible(leaf) ? leaf.min : null;
-			minimum = size != null ? size : new Vector(0, 0);
+			minimum = size != null ? size : Vector.ORIGIN;
 		}
 
 		return minimum;
