@@ -96,9 +96,9 @@ public class Matrix {
 
 			for (int r1 = 0; r1 < size; r1++)
 				if (r != r1) {
-					factor = -m.v[r1][r];
-					addMultipliedRow(m, r, factor, r1);
-					addMultipliedRow(n, r, factor, r1);
+					float factor1 = -m.v[r1][r];
+					addMultipliedRow(m, r, factor1, r1);
+					addMultipliedRow(n, r, factor1, r1);
 				}
 		}
 
