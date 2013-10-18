@@ -73,8 +73,7 @@ public class LayoutCalculator {
 			maximum = new Vector(ori, maxWidth, maxHeight);
 		} else {
 			Leaf leaf = (Leaf) node;
-			boolean isVisible = leaf.component == null || leaf.component.isVisible();
-			Vector size = isVisible ? leaf.max : new Vector(0, 0);
+			Vector size = isVisible(leaf) ? leaf.max : new Vector(0, 0);
 			maximum = size != null ? size : new Vector(65536, 65536);
 		}
 
@@ -98,12 +97,15 @@ public class LayoutCalculator {
 			minimum = new Vector(ori, minWidth, minHeight);
 		} else {
 			Leaf leaf = (Leaf) node;
-			boolean isVisible = leaf.component == null || leaf.component.isVisible();
-			Vector size = isVisible ? leaf.min : null;
+			Vector size = isVisible(leaf) ? leaf.min : null;
 			minimum = size != null ? size : new Vector(0, 0);
 		}
 
 		return minimum;
+	}
+
+	private boolean isVisible(Leaf leaf) {
+		return leaf.component == null || leaf.component.isVisible();
 	}
 
 	private Rectangle toRectangle(Rect rect) {
