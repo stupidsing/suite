@@ -2,10 +2,10 @@ package suite.math;
 
 public class Matrix {
 
-	private final float m[][];
+	private final float v[][];
 
-	public Matrix(float m[][]) {
-		this.m = m;
+	public Matrix(float v[][]) {
+		this.v = v;
 	}
 
 	public static Matrix add(Matrix m, Matrix n) {
@@ -17,7 +17,7 @@ public class Matrix {
 
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
-					o[i][j] = m.m[i][j] + n.m[i][j];
+					o[i][j] = m.v[i][j] + n.v[i][j];
 
 			return new Matrix(o);
 		} else
@@ -31,7 +31,7 @@ public class Matrix {
 
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				o[i][j] = -m.m[i][j];
+				o[i][j] = -m.v[i][j];
 
 		return new Matrix(o);
 	}
@@ -43,7 +43,7 @@ public class Matrix {
 
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
-				o[j][i] = m.m[i][j];
+				o[j][i] = m.v[i][j];
 
 		return new Matrix(o);
 	}
@@ -57,7 +57,7 @@ public class Matrix {
 			for (int i = 0; i < m.height(); i++)
 				for (int j = 0; j < n.width(); j++)
 					for (int k = 0; k < ks; k++)
-						o[i][j] += m.m[i][k] * n.m[k][j];
+						o[i][j] += m.v[i][k] * n.v[k][j];
 
 			return new Matrix(o);
 		} else
@@ -65,11 +65,11 @@ public class Matrix {
 	}
 
 	public int height() {
-		return m.length;
+		return v.length;
 	}
 
 	public int width() {
-		return m[0].length;
+		return v[0].length;
 	}
 
 }
