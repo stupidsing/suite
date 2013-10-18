@@ -1,6 +1,5 @@
 package suite.editor;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,9 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -23,14 +20,13 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import suite.editor.Layout.Node;
 import suite.editor.Layout.Orientation;
-import suite.editor.Layout.Rect;
 
 public class EditorView {
 
@@ -41,15 +37,16 @@ public class EditorView {
 
 	private EditorController controller;
 
+	private Node layout;
+
 	private JFrame frame;
 
-	private JPanel leftPanel;
 	private JLabel rightLabel;
 	private JLabel topLabel;
-	private JPanel bottomPanel;
 
 	private JTextField leftTextField;
 
+	private JScrollPane scrollPane;
 	private JTextArea bottomTextArea;
 
 	private JEditorPane editor;
@@ -64,9 +61,7 @@ public class EditorView {
 
 		JList<String> leftList = applyDefaults(new JList<>(listModel));
 
-		Dimension verticalPanelDim = new Dimension(windowWidth / 4, windowHeight);
-
-		JLabel rightLabel = this.rightLabel = fixSize(applyDefaults(new JLabel("Right")), verticalPanelDim);
+		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
 
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
@@ -77,18 +72,9 @@ public class EditorView {
 		bottomTextArea.setRows(12);
 		bottomTextArea.setVisible(false);
 
-		JScrollPane scrollPane = new JScrollPane(bottomTextArea //
+		JScrollPane scrollPane = this.scrollPane = new JScrollPane(bottomTextArea //
 				, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED //
 				, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		JPanel leftPanel = this.leftPanel = fixSize(new JPanel(), verticalPanelDim);
-		leftPanel.setLayout(new BorderLayout());
-		leftPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-		leftPanel.add(leftTextField, BorderLayout.PAGE_START);
-		leftPanel.add(leftList, BorderLayout.CENTER);
-
-		JPanel bottomPanel = this.bottomPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, scrollPane);
-		bottomPanel.setMaximumSize(new Dimension(windowWidth, windowHeight / 4));
 
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 
@@ -101,38 +87,30 @@ public class EditorView {
 			}
 		});
 
-		JPanel verticalPanel = createBoxLayoutPanel(BoxLayout.Y_AXIS, topLabel, editor, box, okButton, bottomPanel);
-
-		// Flow layout allows the components to be their preferred size
-		JPanel horizontalPanel = createBoxLayoutPanel(BoxLayout.X_AXIS, leftPanel, verticalPanel, rightLabel);
-		horizontalPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-
 		JFrame frame = this.frame = new JFrame(getClass().getSimpleName());
-		frame.setContentPane(horizontalPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 
-		if (Boolean.FALSE) {
-			Layout layout = new Layout();
+		int u = 64, u2 = u * 2;
 
-			new LayoutCalculator().arrange(layout.layout(Orientation.HORIZONTAL //
-					, layout.layout(Orientation.VERTICAL //
-							, layout.c(leftTextField) //
-							, layout.c(leftList) //
-					) //
-					, layout.layout(Orientation.VERTICAL //
-							, layout.c(topLabel) //
-							, layout.c(editor) //
-							, layout.c(box) //
-							, layout.c(okButton) //
-							, layout.layout(Orientation.VERTICAL //
-									, layout.c(scrollPane) //
-							)) //
-					, layout.c(rightLabel)) //
-					, new Rect(0, 0, windowWidth, windowHeight));
-		}
+		layout = Layout.layout(Orientation.HORIZONTAL //
+				, Layout.layout(Orientation.VERTICAL //
+						, Layout.fh(leftTextField, u, 16) //
+						, Layout.c(leftList, u, u) //
+				) //
+				, Layout.layout(Orientation.VERTICAL //
+						, Layout.fh(topLabel, u2, 64) //
+						, Layout.c(editor, u2, u2) //
+						, Layout.fh(box, u2, 8) //
+						, Layout.fwh(okButton, 48, 16) //
+						, Layout.layout(Orientation.VERTICAL //
+								, Layout.c(scrollPane, u2, u) //
+						) //
+				) //
+				, Layout.c(rightLabel, u, u) //
+				);
 
 		repaint();
 
@@ -142,7 +120,7 @@ public class EditorView {
 	}
 
 	public void repaint() {
-		frame.revalidate();
+		new LayoutCalculator().arrange(frame.getContentPane(), layout);
 		frame.repaint();
 	}
 
@@ -225,22 +203,6 @@ public class EditorView {
 		return menu;
 	}
 
-	private JPanel createBoxLayoutPanel(int boxLayout, Component... components) {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, boxLayout));
-
-		for (Component component : components)
-			panel.add(component);
-
-		return panel;
-	}
-
-	private <T extends JComponent> T fixSize(T t, Dimension dim) {
-		t.setMinimumSize(dim);
-		t.setMaximumSize(dim);
-		return t;
-	}
-
 	private <T extends JComponent> T applyDefaults(T t) {
 		t.setFont(font);
 		t.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -251,12 +213,12 @@ public class EditorView {
 		this.controller = controller;
 	}
 
-	public JPanel getBottomToolbar() {
-		return bottomPanel;
+	public JComponent getBottomToolbar() {
+		return scrollPane;
 	}
 
-	public JPanel getLeftToolbar() {
-		return leftPanel;
+	public JComponent getLeftToolbar() {
+		return leftTextField;
 	}
 
 	public JComponent getRightToolbar() {

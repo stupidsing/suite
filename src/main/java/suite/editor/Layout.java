@@ -8,6 +8,7 @@ public class Layout {
 
 	public static class Leaf implements Node {
 		public Component component;
+		public Vector min, max;
 	}
 
 	public static class Box implements Node {
@@ -68,13 +69,31 @@ public class Layout {
 		HORIZONTAL, VERTICAL
 	}
 
-	public Leaf c(Component component) {
+	public static Leaf c(Component component, int w, int h) {
+		return leaf(component, new Vector(w, h), new Vector(w << 8, h << 8));
+	}
+
+	public static Leaf fw(Component component, int w, int h) {
+		return leaf(component, new Vector(w, h), new Vector(w, h << 8));
+	}
+
+	public static Leaf fh(Component component, int w, int h) {
+		return leaf(component, new Vector(w, h), new Vector(w << 8, h));
+	}
+
+	public static Leaf fwh(Component component, int w, int h) {
+		return leaf(component, new Vector(w, h), new Vector(w, h));
+	}
+
+	private static Leaf leaf(Component component, Vector min, Vector max) {
 		Leaf leaf = new Leaf();
 		leaf.component = component;
+		leaf.min = min;
+		leaf.max = max;
 		return leaf;
 	}
 
-	public Box layout(Orientation ori, Node... nodes) {
+	public static Box layout(Orientation ori, Node... nodes) {
 		Box box = new Box();
 		box.orientation = ori;
 		box.nodes = Arrays.asList(nodes);

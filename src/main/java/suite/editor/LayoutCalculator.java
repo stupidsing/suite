@@ -1,6 +1,7 @@
 package suite.editor;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
@@ -13,7 +14,14 @@ import suite.editor.Layout.Vector;
 
 public class LayoutCalculator {
 
-	public void arrange(Node node, Rect rect) {
+	public void arrange(Container container, Node node) {
+		container.setLayout(null);
+
+		Rect rect = new Rect(new Vector(0, 0), toVector(container.getSize()));
+		arrange(container, rect, node);
+	}
+
+	private void arrange(Container container, Rect rect, Node node) {
 		if (node instanceof Box) {
 			Box box = (Box) node;
 			Orientation ori = box.orientation;
@@ -34,12 +42,15 @@ public class LayoutCalculator {
 
 				Vector v0 = new Vector(ori, w, rect.v0.height(ori));
 				Vector v1 = new Vector(ori, w + w0, rect.v1.height(ori));
-				arrange(childNode, new Rect(v0, v1));
+				arrange(container, new Rect(v0, v1), childNode);
 
 				w += w0;
 			}
-		} else
-			((Leaf) node).component.setBounds(toRectangle(rect));
+		} else if (node instanceof Leaf) {
+			Component component = ((Leaf) node).component;
+			component.setBounds(toRectangle(rect));
+			container.add(component);
+		}
 	}
 
 	private Vector maximum(Node node) {
@@ -58,8 +69,9 @@ public class LayoutCalculator {
 
 			maximum = new Vector(ori, maxWidth, maxHeight);
 		} else {
-			Component component = ((Leaf) node).component;
-			Vector size = component.isVisible() ? toVector(component.getMaximumSize()) : new Vector(0, 0);
+			Leaf leaf = (Leaf) node;
+			Component component = leaf.component;
+			Vector size = component.isVisible() ? leaf.max : new Vector(0, 0);
 			maximum = size != null ? size : new Vector(65536, 65536);
 		}
 
@@ -82,8 +94,9 @@ public class LayoutCalculator {
 
 			minimum = new Vector(ori, minWidth, minHeight);
 		} else {
-			Component component = ((Leaf) node).component;
-			Vector size = component.isVisible() ? toVector(component.getMinimumSize()) : null;
+			Leaf leaf = (Leaf) node;
+			Component component = leaf.component;
+			Vector size = component.isVisible() ? leaf.min : null;
 			minimum = size != null ? size : new Vector(0, 0);
 		}
 
@@ -91,7 +104,7 @@ public class LayoutCalculator {
 	}
 
 	private Rectangle toRectangle(Rect rect) {
-		return new Rectangle(rect.v0.x, rect.v1.y, rect.xdiff(), rect.ydiff());
+		return new Rectangle(rect.v0.x, rect.v0.y, rect.xdiff(), rect.ydiff());
 	}
 
 	private static Vector toVector(Dimension dim) {
