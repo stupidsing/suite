@@ -69,19 +69,19 @@ public class Layout {
 		HORIZONTAL, VERTICAL
 	}
 
-	public static Leaf c(Component component, int w, int h) {
+	public static Leaf co(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w << 8, h << 8));
 	}
 
-	public static Leaf fw(Component component, int w, int h) {
-		return leaf(component, new Vector(w, h), new Vector(w, h << 8));
-	}
-
-	public static Leaf fh(Component component, int w, int h) {
+	public static Leaf hb(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w << 8, h));
 	}
 
-	public static Leaf fwh(Component component, int w, int h) {
+	public static Leaf vb(Component component, int w, int h) {
+		return leaf(component, new Vector(w, h), new Vector(w, h << 8));
+	}
+
+	public static Leaf fx(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w, h));
 	}
 
@@ -93,7 +93,7 @@ public class Layout {
 		return leaf;
 	}
 
-	public static Box layout(Orientation ori, Node... nodes) {
+	public static Box lay(Orientation ori, Node... nodes) {
 		Box box = new Box();
 		box.orientation = ori;
 		box.nodes = Arrays.asList(nodes);

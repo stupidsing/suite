@@ -48,8 +48,11 @@ public class LayoutCalculator {
 			}
 		} else if (node instanceof Leaf) {
 			Component component = ((Leaf) node).component;
-			component.setBounds(toRectangle(rect));
-			container.add(component);
+
+			if (component != null) {
+				component.setBounds(toRectangle(rect));
+				container.add(component);
+			}
 		}
 	}
 
@@ -71,7 +74,7 @@ public class LayoutCalculator {
 		} else {
 			Leaf leaf = (Leaf) node;
 			Component component = leaf.component;
-			Vector size = component.isVisible() ? leaf.max : new Vector(0, 0);
+			Vector size = component == null || component.isVisible() ? leaf.max : new Vector(0, 0);
 			maximum = size != null ? size : new Vector(65536, 65536);
 		}
 
@@ -96,7 +99,7 @@ public class LayoutCalculator {
 		} else {
 			Leaf leaf = (Leaf) node;
 			Component component = leaf.component;
-			Vector size = component.isVisible() ? leaf.min : null;
+			Vector size = component == null || component.isVisible() ? leaf.min : null;
 			minimum = size != null ? size : new Vector(0, 0);
 		}
 

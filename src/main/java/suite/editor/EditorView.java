@@ -95,21 +95,25 @@ public class EditorView {
 
 		int u = 64, u2 = u * 2;
 
-		layout = Layout.layout(Orientation.HORIZONTAL //
-				, Layout.layout(Orientation.VERTICAL //
-						, Layout.fh(leftTextField, u, 16) //
-						, Layout.c(leftList, u, u) //
+		layout = Layout.lay(Orientation.HORIZONTAL //
+				, Layout.lay(Orientation.VERTICAL //
+						, Layout.hb(leftTextField, u, 24) //
+						, Layout.co(leftList, u, u) //
 				) //
-				, Layout.layout(Orientation.VERTICAL //
-						, Layout.fh(topLabel, u2, 64) //
-						, Layout.c(editor, u2, u2) //
-						, Layout.fh(box, u2, 8) //
-						, Layout.fwh(okButton, 48, 16) //
-						, Layout.layout(Orientation.VERTICAL //
-								, Layout.c(scrollPane, u2, u) //
+				, Layout.lay(Orientation.VERTICAL //
+						, Layout.hb(topLabel, u2, 64) //
+						, Layout.co(editor, u2, u2) //
+						, Layout.hb(box, u2, 8) //
+						, Layout.lay(Orientation.HORIZONTAL //
+								, Layout.hb(null, u2, 24) //
+								, Layout.fx(okButton, 64, 24) //
+								, Layout.hb(null, u2, 24) //
+						) //
+						, Layout.lay(Orientation.VERTICAL //
+								, Layout.co(scrollPane, u2, u) //
 						) //
 				) //
-				, Layout.c(rightLabel, u, u) //
+				, Layout.co(rightLabel, u, u) //
 				);
 
 		repaint();
