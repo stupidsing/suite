@@ -94,21 +94,13 @@ public class Matrix {
 			mulRow(m, r, factor);
 			mulRow(n, r, factor);
 
-			for (int r1 = r + 1; r1 < size; r1++) {
-				factor = -m.v[r1][r];
-				addMultipliedRow(m, r, factor, r1);
-				addMultipliedRow(n, r, factor, r1);
-			}
+			for (int r1 = 0; r1 < size; r1++)
+				if (r != r1) {
+					factor = -m.v[r1][r];
+					addMultipliedRow(m, r, factor, r1);
+					addMultipliedRow(n, r, factor, r1);
+				}
 		}
-
-		// Now m becomes an upper-right matrix, with all 1s in diagonal line
-
-		for (int r = size - 1; r >= 0; r--)
-			for (int r1 = r - 1; r1 >= 0; r1--) {
-				float factor = -m.v[r1][r];
-				addMultipliedRow(m, r, factor, r1);
-				addMultipliedRow(n, r, factor, r1);
-			}
 
 		return n;
 	}
