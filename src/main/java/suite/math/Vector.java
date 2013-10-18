@@ -2,7 +2,7 @@ package suite.math;
 
 public class Vector {
 
-	private float x, y, z;
+	private final float x, y, z;
 
 	public Vector(float x, float y, float z) {
 		this.x = x;
