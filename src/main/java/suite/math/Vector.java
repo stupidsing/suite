@@ -14,6 +14,10 @@ public class Vector {
 		return new Vector(u.x + v.x, u.y + v.y, u.z + v.z);
 	}
 
+	public static Vector neg(Vector v) {
+		return new Vector(-v.x, -v.y, -v.z);
+	}
+
 	public static float dot(Vector u, Vector v) {
 		return u.x * v.x + u.y * v.y + u.z * v.z;
 	}
