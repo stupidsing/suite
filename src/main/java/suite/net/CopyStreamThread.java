@@ -6,6 +6,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import suite.util.LogUtil;
 
+/**
+ * Copies data from one stream to another, and exits when a quit flag is set.
+ * 
+ * Set the quit flag if this exits; this handles socket being closed case.
+ * 
+ * Ugly implementation using polling.
+ * 
+ * @author ywsing
+ */
 public class CopyStreamThread extends Thread {
 
 	private InputStream is;
