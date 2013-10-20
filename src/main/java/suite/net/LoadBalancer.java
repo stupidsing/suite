@@ -17,7 +17,7 @@ import suite.util.SocketUtil.Io;
 public class LoadBalancer {
 
 	private List<String> servers;
-	private volatile List<String> alives;
+	private volatile List<String> alives = new ArrayList<>();
 	private AtomicInteger counter = new AtomicInteger();
 
 	private int port = 80;
