@@ -1,5 +1,7 @@
 package suite.math;
 
+import java.util.Arrays;
+
 public class Matrix {
 
 	private final float v[][];
@@ -135,6 +137,16 @@ public class Matrix {
 
 	public int width() {
 		return v[0].length;
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.deepHashCode(v);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof Matrix && Arrays.deepEquals(v, ((Matrix) object).v);
 	}
 
 }
