@@ -6,7 +6,7 @@
 -- 3. skolemising
 -- 4. moving "for-all" outwards
 -- 5. distributing AND over OR
--- 6.putting into clauses (ANDs of ORs form)
+-- 6. putting into clauses (ANDs of ORs form)
 -- 
 -- resolution:
 -- 
