@@ -136,7 +136,7 @@ find-simple-type (CONSTANT _) _ _ #
 find-simple-type (ATOM ()) _ (LIST-OF _) #
 find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
-find-simple-type (DO _) _ (DO-OF _) #
+--find-simple-type (DO _) _ (DO-OF _) #
 find-simple-type (NUMBER _) _ NUMBER #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
 find-simple-type (VAR .var) .ue/.ve/.te .type

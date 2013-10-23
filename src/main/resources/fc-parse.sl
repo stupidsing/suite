@@ -85,7 +85,7 @@ fc-parse .tree (TREE .oper .left1 .right1)
 fc-parse () (ATOM ()) :- ! #
 fc-parse .a (ATOM .a) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
-fc-parse (do # .do) (DO .do) :- ! #
+--fc-parse (do # .do) (DO .do) :- ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
@@ -151,7 +151,7 @@ fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type [] (ATOM-OF []) :- ! #
 fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
-fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #
+--fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #
 fc-parse-type .do (PAIR-OF .type0 .type1)
 	:- (.do = (.t0, .t1); .do = (.t0 .t1)), !
 	, fc-parse-type .t0 .type0
