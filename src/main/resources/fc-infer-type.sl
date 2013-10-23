@@ -95,7 +95,7 @@ infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
 	, infer-compatible-types .left .right .env .tr0/.tr1 .type
-	, .tr1 = (TYPE-IN-TYPES .type (NUMBER, STRING,), .trx)
+	, .tr1 = (TYPE-IN-TYPES .type (NUMBER,), .trx)
 	; member (' - ', ' * ', ' / ', ' %% ',) .oper, !
 	, infer-compatible-types .left .right .env .tr0/.trx .type
 	, .type = NUMBER
@@ -137,7 +137,6 @@ find-simple-type (ATOM ()) _ (LIST-OF _) #
 find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (NUMBER _) _ NUMBER #
-find-simple-type (STRING _) _ STRING #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
 find-simple-type (VAR .var) .ue/.ve/.te .type
 	:- fc-dict-get .ue .var/.type

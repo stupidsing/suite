@@ -32,8 +32,6 @@ fc-validate (PAIR .left0 .right0) (PAIR .left1 .right1)
 	:- fc-validate .left0 .left1
 	, fc-validate .right0 .right1
 #
-fc-validate (STRING .s) (STRING .s)
-#
 fc-validate (TREE .oper .left0 .right0) (TREE .oper .left1 .right1)
 	:- fc-validate .left0 .left1
 	, fc-validate .right0 .right1

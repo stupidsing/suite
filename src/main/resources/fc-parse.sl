@@ -80,7 +80,6 @@ fc-parse () (ATOM ()) :- ! #
 fc-parse .a (ATOM .a) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
---fc-parse .s (STRING .s) :- is.string .s, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
@@ -164,7 +163,6 @@ fc-parse-type .type/.paramType (CLASS (PARAMETERIZED .paramType1 .class))
 fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
-fc-parse-type string STRING :- ! #
 fc-parse-type .t (CLASS .t) :- is.atom .t #
 
 fc-parse-type-list () () :- ! #

@@ -101,9 +101,6 @@ fc-lazy-compile-to-value (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
 fc-lazy-compile-to-value (NUMBER .i) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
 #
-fc-lazy-compile-to-value (STRING .s) _ .c0/.cx/.d/.d/.reg
-	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
-#
 
 fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 	:- member (

@@ -71,9 +71,6 @@ fc-compile EAGER (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
 fc-compile EAGER (NUMBER .i) _ .c0/.cx/.d/.d/.reg
 	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
 #
-fc-compile EAGER (STRING .s) _ .c0/.cx/.d/.d/.reg
-	:- !, .c0 = (_ ASSIGN-STR .reg .s, .cx)
-#
 
 fc-eager-default-fun .call .frame .result
 	:- fc-eager-default-fun0 .call .frame .result 0
