@@ -7,6 +7,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import suite.Suite;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -57,6 +58,13 @@ public class EvalPredicates {
 			default:
 				throw new RuntimeException("Unknown comparison");
 			}
+		}
+	}
+
+	public static class EvalFun implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Predicate.getParameters(ps, 2);
+			return prover.bind(Suite.evaluateFun(Suite.fcc(params[0], true)), params[1]);
 		}
 	}
 
