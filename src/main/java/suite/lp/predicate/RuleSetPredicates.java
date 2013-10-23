@@ -22,7 +22,7 @@ public class RuleSetPredicates {
 
 	public static class Asserta implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Predicate.getParameters(ps, 1);
+			Node params[] = Node.toFixedSizeArray(ps, 1);
 			RuleSet ruleSet = prover.ruleSet();
 			ruleSet.addRuleToFront(Rule.formRule(params[0]));
 			return true;
@@ -31,7 +31,7 @@ public class RuleSetPredicates {
 
 	public static class Assertz implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Predicate.getParameters(ps, 1);
+			Node params[] = Node.toFixedSizeArray(ps, 1);
 			Suite.addRule(prover.ruleSet(), params[0]);
 			return true;
 		}
@@ -94,7 +94,7 @@ public class RuleSetPredicates {
 
 	public static class Retract implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Predicate.getParameters(ps, 1);
+			Node params[] = Node.toFixedSizeArray(ps, 1);
 			prover.ruleSet().removeRule(Rule.formRule(params[0]));
 			return true;
 		}
@@ -102,7 +102,7 @@ public class RuleSetPredicates {
 
 	public static class With implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Predicate.getParameters(ps, 2);
+			Node params[] = Node.toFixedSizeArray(ps, 2);
 			RuleSet ruleSet = prover.ruleSet();
 			RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
 			CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);

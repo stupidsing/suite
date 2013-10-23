@@ -13,7 +13,6 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
 
 import com.google.common.collect.BiMap;
@@ -29,20 +28,14 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	public List<Instruction> extractInstructions(Node node) {
-		Tree tree;
 		List<Instruction> list = new ArrayList<>();
-
-		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-			Instruction instruction = extract(tree.getLeft());
-			list.add(instruction);
-			node = tree.getRight();
-		}
-
+		for (Node elem : Node.iter(node))
+			list.add(extract(elem));
 		return list;
 	}
 
 	private Instruction extract(Node node) {
-		List<Node> rs = InstructionUtil.extractTuple(node);
+		List<Node> rs = Node.tupleToList(node);
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;
 

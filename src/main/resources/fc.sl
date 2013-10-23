@@ -72,10 +72,10 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 #
 
 fc-define-default-fun 2 _compare COMPARE #
-fc-define-default-fun 1 _ijavaclass INVOKE-JAVA-CLASS #
-fc-define-default-fun 1 _ijavaobject0 INVOKE-JAVA-OBJ0 #
-fc-define-default-fun 2 _ijavaobject1 INVOKE-JAVA-OBJ1 #
-fc-define-default-fun 3 _ijavaobject2 INVOKE-JAVA-OBJ2 #
+fc-define-default-fun 1 _ijavacls INVOKE-JAVA-CLASS #
+fc-define-default-fun 1 _ijavaobj0 INVOKE-JAVA-OBJ0 #
+fc-define-default-fun 2 _ijavaobj1 INVOKE-JAVA-OBJ1 #
+fc-define-default-fun 3 _ijavaobj2 INVOKE-JAVA-OBJ2 #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _log LOG1 #
@@ -109,22 +109,22 @@ fc-dict-merge-replace .t0 .t1 .t2 :- rbt-merge-replace .t0 .t1 .t2, ! #
 
 fc-dict-member .v .t :- rbt-member .v .t #
 
--- There are few functions that are not pure: ijavaobject*, popen
+-- There are few functions that are not pure: ijavaobj*, popen
 -- Logs are considered 'invisible', so they are not counted for now.
 
 fc-add-functions STANDARD .p (
 	define compare = (a => b => _compare {a} {b}) >>
 	define cons = (head => tail => _lcons {head} {tail}) >>
 	define head = (list => _lhead {list}) >>
-	define ijavaclass = (name => _ijavaclass {name}) >>
-	define ijavaobject0 = (name => _ijavaobject0 {name}) >>
-	define ijavaobject1 = (name => p0 => _ijavaobject1 {name} {p0}) >>
-	define ijavaobject2 = (name => p0 => p1 => _ijavaobject2 {name} {p0} {p1}) >>
+	define ijavacls = (name => _ijavacls {name}) >>
+	define ijavaobj0 = (name => _ijavaobj0 {name}) >>
+	define ijavaobj1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
+	define ijavaobj2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
 	define log = (m => _log {m}) >>
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
-	define log2 = (m => n => ijavaobject2 {ijavaclass {CLASS!suite.lp.invocable.Invocables$Log2}} {m} {n}) >>
+	define log2 = (m => n => ijavaobj2 {ijavacls {CLASS!suite.lp.invocable.Invocables$Log2}} {m} {n}) >>
 	define and = (x => y =>
 		if x then y else false
 	) >>
@@ -342,17 +342,17 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump = type (:t :- :t => list-of number) no-type-check (
-		define get-type = ijavaclass {CLASS!suite.lp.invocable.Invocables$GetType} >>
-		define atom-string = ijavaclass {CLASS!suite.lp.invocable.Invocables$AtomString} >>
+		define get-type = ijavacls {CLASS!suite.lp.invocable.Invocables$GetType} >>
+		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
-			let type = _ijavaobject1 {get-type} {n} >>
+			let type = _ijavaobj1 {get-type} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				ijavaobject1 {atom-string} {n}
+				ijavaobj1 {atom-string} {n}
 			else
 				int-to-str {n}
 		) >>

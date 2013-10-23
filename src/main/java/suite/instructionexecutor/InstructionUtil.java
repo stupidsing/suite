@@ -5,16 +5,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.instructionexecutor.io.IndexedIo;
 import suite.lp.invocable.Invocables.InvocableNode;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
@@ -209,19 +206,6 @@ public class InstructionUtil {
 
 	public static Insn getInsn(String insnName) {
 		return InstructionUtil.insnNames.inverse().get(insnName);
-	}
-
-	public static List<Node> extractTuple(Node node) {
-		List<Node> rs = new ArrayList<>(5);
-		Tree tree;
-
-		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			rs.add(tree.getLeft());
-			node = tree.getRight();
-		}
-
-		rs.add(node);
-		return rs;
 	}
 
 	public static InvocableNode execInvokeJavaClass(String clazzName) {

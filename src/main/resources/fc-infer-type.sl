@@ -253,10 +253,10 @@ instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 
 default-fun-type () (LIST-OF _) #
 default-fun-type _compare (FUN-OF .t (FUN-OF .t NUMBER)) #
-default-fun-type _ijavaclass (FUN-OF (ATOM-OF _) (ATOM-OF $JAVA-OBJECT)) #
-default-fun-type _ijavaobject0 (FUN-OF (ATOM-OF $JAVA-OBJECT) _) #
-default-fun-type _ijavaobject1 (FUN-OF (ATOM-OF $JAVA-OBJECT) (FUN-OF _ _)) #
-default-fun-type _ijavaobject2 (FUN-OF (ATOM-OF $JAVA-OBJECT) (FUN-OF _ (FUN-OF _ _))) #
+default-fun-type _ijavacls (FUN-OF (ATOM-OF _) (ATOM-OF $JAVA-OBJECT)) #
+default-fun-type _ijavaobj0 (FUN-OF (ATOM-OF $JAVA-OBJECT) _) #
+default-fun-type _ijavaobj1 (FUN-OF (ATOM-OF $JAVA-OBJECT) (FUN-OF _ _)) #
+default-fun-type _ijavaobj2 (FUN-OF (ATOM-OF $JAVA-OBJECT) (FUN-OF _ (FUN-OF _ _))) #
 default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
 default-fun-type _log (FUN-OF .t .t) #

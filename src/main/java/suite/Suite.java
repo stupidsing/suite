@@ -99,12 +99,10 @@ public class Suite {
 	 */
 	public static String stringize(Node node) {
 		StringBuilder sb = new StringBuilder();
-		Tree tree;
 
-		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-			Int i = (Int) tree.getLeft();
+		for (Node elem : Node.iter(node)) {
+			Int i = (Int) elem;
 			sb.append((char) i.getNumber());
-			node = tree.getRight();
 		}
 
 		return sb.toString();

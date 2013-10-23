@@ -1,5 +1,7 @@
 package suite.node;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import suite.node.io.Formatter;
@@ -11,10 +13,6 @@ public class Node implements Comparable<Node> {
 
 	public Node finalNode() {
 		return this;
-	}
-
-	public static Reference ref() {
-		return new Reference();
 	}
 
 	public static Node list(List<Node> nodes) {
@@ -42,6 +40,68 @@ public class Node implements Comparable<Node> {
 			result = Atom.NIL;
 
 		return result;
+	}
+
+	public static Reference ref() {
+		return new Reference();
+	}
+
+	public static Node[] toFixedSizeArray(Node node, int n) {
+		List<Node> results = new ArrayList<>(n);
+		Tree tree;
+
+		for (int i = 1; i < n; i++)
+			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+				results.add(tree.getLeft());
+				node = tree.getRight();
+			} else
+				throw new RuntimeException("Not enough parameters");
+
+		results.add(node);
+		return results.toArray(new Node[results.size()]);
+	}
+
+	public static Iterable<Node> iter(Node node) {
+		return iter(TermOp.AND___, node);
+	}
+
+	public static Iterable<Node> iter(final Operator operator, final Node node0) {
+		final Iterator<Node> iterator = new Iterator<Node>() {
+			private Tree tree = Tree.decompose(node0, operator);
+
+			public boolean hasNext() {
+				return tree != null;
+			}
+
+			public Node next() {
+				Node next = tree.getLeft();
+				tree = Tree.decompose(tree.getRight(), operator);
+				return next;
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
+
+		return new Iterable<Node>() {
+			public Iterator<Node> iterator() {
+				return iterator;
+			}
+		};
+	}
+
+	public static List<Node> tupleToList(Node node) {
+		List<Node> rs = new ArrayList<>();
+		Tree tree;
+
+		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+			rs.add(tree.getLeft());
+			node = tree.getRight();
+		}
+
+		rs.add(node);
+		return rs;
 	}
 
 	@Override

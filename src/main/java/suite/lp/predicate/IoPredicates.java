@@ -56,7 +56,7 @@ public class IoPredicates {
 
 	public static class FileRead implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
+			final Node params[] = Node.toFixedSizeArray(ps, 2);
 			String filename = Formatter.display(params[0]);
 			try (InputStream is = new FileInputStream(filename)) {
 				String content = To.string(is);
@@ -69,7 +69,7 @@ public class IoPredicates {
 
 	public static class FileWrite implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Predicate.getParameters(ps, 2);
+			final Node params[] = Node.toFixedSizeArray(ps, 2);
 			String filename = Formatter.display(params[0]);
 			String content = Formatter.display(params[1]);
 
