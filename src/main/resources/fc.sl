@@ -2,7 +2,7 @@
 -- functional program compiler
 --
 -- Also need to import one of the following backends:
--- fc-eager-evaluation.sl, fc-lazy-evaluation.sl
+-- fc-evaluate-eager.sl, fc-evaluate-lazy.sl
 --
 -- .mode can be EAGER or LAZY
 

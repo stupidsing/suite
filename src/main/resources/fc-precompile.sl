@@ -77,6 +77,6 @@ fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fve .cdr :- , member .pcc EAGER/(.fve 
 fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fve .cdr :- member .pcc LAZY/(.fve .cdr), ! #
 
 () :- import.file 'fc.sl'
-	, import.file 'fc-eager-evaluation.sl'
-	, import.file 'fc-lazy-evaluation.sl'
+	, import.file 'fc-evaluate-eager.sl'
+	, import.file 'fc-evaluate-lazy.sl'
 #

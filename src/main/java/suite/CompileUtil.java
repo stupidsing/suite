@@ -48,13 +48,13 @@ public class CompileUtil {
 
 	private synchronized RuleSet eagerFunCompilerRuleSet() {
 		if (eagerFunRuleSet == null)
-			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-eager-evaluation.sl"));
+			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-evaluate-eager.sl"));
 		return eagerFunRuleSet;
 	}
 
 	private synchronized RuleSet lazyFunCompilerRuleSet() {
 		if (lazyFunRuleSet == null)
-			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-lazy-evaluation.sl"));
+			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl", "fc-evaluate-lazy.sl"));
 		return lazyFunRuleSet;
 	}
 
