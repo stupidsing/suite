@@ -30,11 +30,17 @@ fc-parse (using .lib >> .do) (USING .lib .do1)
 #
 fc-parse (define .var = .value >> .do) (
 	OPTION ALLOW-RECURSIVE (DEF-VAR .var (OPTION RESOLVE-TYPE .value1) .do1)
-) :- !, fc-parse .value .value1
+) :- !
+	, once (fc-parse .value .value1
+		; fc-error "at variable" .var
+	)
 	, fc-parse .do .do1
 #
 fc-parse (let .var = .value >> .do) (DEF-VAR .var (OPTION RESOLVE-TYPE .value1) .do1)
-	:- !, fc-parse .value .value1
+	:- !
+	, once (fc-parse .value .value1
+		; fc-error "at variable" .var
+	)
 	, fc-parse .do .do1
 #
 fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
@@ -79,6 +85,7 @@ fc-parse .tree (TREE .oper .left1 .right1)
 fc-parse () (ATOM ()) :- ! #
 fc-parse .a (ATOM .a) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
+fc-parse (do # .do) (DO .do) :- ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
@@ -144,6 +151,7 @@ fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type [] (ATOM-OF []) :- ! #
 fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
+fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #
 fc-parse-type .do (PAIR-OF .type0 .type1)
 	:- (.do = (.t0, .t1); .do = (.t0 .t1)), !
 	, fc-parse-type .t0 .type0
