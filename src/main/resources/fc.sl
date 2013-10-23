@@ -110,7 +110,7 @@ fc-dict-merge-replace .t0 .t1 .t2 :- rbt-merge-replace .t0 .t1 .t2, ! #
 fc-dict-member .v .t :- rbt-member .v .t #
 
 -- There are few functions that are not pure: ijavaobj*, popen
--- Logs are considered 'invisible', so they are not counted for now.
+-- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
 	define compare = (a => b => _compare {a} {b}) >>
