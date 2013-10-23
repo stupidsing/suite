@@ -124,7 +124,7 @@ fc-add-functions STANDARD .p (
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
-	define log2 = (m => n => ijavaobj2 {ijavacls {CLASS!suite.lp.invocable.Invocables$Log2}} {m} {n}) >>
+	define log2 = (ijavaobj2 {ijavacls {CLASS!suite.lp.invocable.Invocables$Log2}}) >>
 	define and = (x => y =>
 		if x then y else false
 	) >>
