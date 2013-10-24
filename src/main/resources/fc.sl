@@ -78,14 +78,11 @@ fc-define-default-fun 2 _ijavaobj1 INVOKE-JAVA-OBJ1 #
 fc-define-default-fun 3 _ijavaobj2 INVOKE-JAVA-OBJ2 #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
-fc-define-default-fun 1 _log LOG1 #
 fc-define-default-fun 1 _ltail TAIL #
 fc-define-default-fun 2 _pcons CONS-PAIR #
 fc-define-default-fun 1 _pleft HEAD #
-fc-define-default-fun 2 _popen POPEN #
 fc-define-default-fun 1 _pright TAIL #
 fc-define-default-fun 0 error ERROR #
-fc-define-default-fun 2 fgetc FGETC #
 fc-define-default-fun 1 is-list IS-CONS #
 fc-define-default-fun 1 is-pair IS-CONS #
 
@@ -120,11 +117,21 @@ fc-add-functions STANDARD .p (
 	define ijavaobj0 = (name => _ijavaobj0 {name}) >>
 	define ijavaobj1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
 	define ijavaobj2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
-	define log = (m => _log {m}) >>
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
-	define log2 = (ijavaobj2 {ijavacls {CLASS!suite.lp.invocable.Invocables$Log2}}) >>
+	define _popen = type (string => string => string) no-type-check (
+		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
+	) >>
+	define fgetc = type (_ => number => number) no-type-check (
+		CLASS!suite.lp.invocable.Invocables$Fgetc | ijavacls | ijavaobj2
+	) >>
+	define log = type (:t :- :t => :t) no-type-check (
+		CLASS!suite.lp.invocable.Invocables$Log1 | ijavacls | ijavaobj1
+	) >>
+	define log2 = type (:t :- string => :t => :t) no-type-check (
+		CLASS!suite.lp.invocable.Invocables$Log2 | ijavacls | ijavaobj2
+	) >>
 	define and = (x => y =>
 		if x then y else false
 	) >>

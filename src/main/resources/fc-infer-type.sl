@@ -259,13 +259,10 @@ default-fun-type _ijavaobj1 (FUN-OF (ATOM-OF $JAVA-OBJECT) (FUN-OF _ _)) #
 default-fun-type _ijavaobj2 (FUN-OF (ATOM-OF $JAVA-OBJECT) (FUN-OF _ (FUN-OF _ _))) #
 default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
-default-fun-type _log (FUN-OF .t .t) #
 default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
-default-fun-type _popen (FUN-OF (LIST-OF NUMBER) (FUN-OF (LIST-OF NUMBER) (LIST-OF NUMBER))) #
 default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
 default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
 default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #
 default-fun-type error _ #
-default-fun-type fgetc (FUN-OF _ (FUN-OF NUMBER NUMBER)) #
 default-fun-type is-list (FUN-OF (LIST-OF .t) BOOLEAN) #
 default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #

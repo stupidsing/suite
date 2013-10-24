@@ -19,11 +19,9 @@ import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Formatter;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
@@ -78,12 +76,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case ERROR_________:
 			throw new RuntimeException("Error termination");
-		case FGETC_________:
-			data = (Data<?>) ds[--dsp];
-			int p = ((Int) ds[--dsp]).getNumber();
-			int c = ((IndexedReader) data.getData()).read(p);
-			result = Int.create(c);
-			break;
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;
@@ -112,15 +104,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case ISVECTOR______:
 			result = atom(ds[--dsp] instanceof Vector);
-			break;
-		case LOG1__________:
-			result = (Node) ds[--dsp];
-			LogUtil.info(Formatter.display(ExpandUtil.expand(unwrapper, result)));
-			break;
-		case POPEN_________:
-			n0 = (Node) ds[--dsp];
-			n1 = (Node) ds[--dsp];
-			result = InstructionUtil.execPopen(n0, n1, unwrapper);
 			break;
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();

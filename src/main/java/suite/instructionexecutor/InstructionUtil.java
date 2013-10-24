@@ -77,7 +77,6 @@ public class InstructionUtil {
 		EVALNE________("EVAL-NE"), //
 		EVALSUB_______("EVAL-SUB"), //
 		EXIT__________("EXIT"), //
-		FGETC_________("FGETC"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
 		HEAD__________("HEAD"), //
@@ -102,7 +101,6 @@ public class InstructionUtil {
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //
 		POPANY________("POP-ANY"), //
-		POPEN_________("POPEN"), //
 		PROVEINTERPRET("PROVE-INTERPRET"), //
 		PROVESYS______("PROVE-SYS"), //
 		PUSH__________("PUSH"), //

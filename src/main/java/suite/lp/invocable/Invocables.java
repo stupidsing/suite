@@ -1,15 +1,25 @@
 package suite.lp.invocable;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
+import suite.instructionexecutor.IndexedReader;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.io.Formatter;
 import suite.node.io.TermParser.TermOp;
+import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 
@@ -51,6 +61,15 @@ public class Invocables {
 	// }
 	// }
 
+	public static class Fgetc extends Invocable {
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			Data<?> data = (Data<?>) executor.getUnwrapper().apply(inputs.get(0));
+			int p = ((Int) executor.getUnwrapper().apply(inputs.get(1))).getNumber();
+			int c = ((IndexedReader) data.getData()).read(p);
+			return Int.create(c);
+		}
+	}
+
 	public static class GetType extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			Node node = executor.getUnwrapper().apply(inputs.get(0));
@@ -77,11 +96,56 @@ public class Invocables {
 		}
 	}
 
+	public static class Log1 extends Invocable {
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			Fun<Node, Node> unwrapper = executor.getUnwrapper();
+			Node node = inputs.get(0);
+			LogUtil.info(Formatter.display(ExpandUtil.expand(unwrapper, unwrapper.apply(node))));
+			return node;
+		}
+	}
+
 	public static class Log2 extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = executor.getUnwrapper();
 			LogUtil.info(ExpandUtil.expandString(unwrapper, inputs.get(0)));
 			return unwrapper.apply(inputs.get(1));
+		}
+	}
+
+	public static class Popen extends Invocable {
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			final Fun<Node, Node> unwrapper = executor.getUnwrapper();
+			Node cmd = inputs.get(0);
+			final Node in = inputs.get(1);
+
+			try {
+				final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(unwrapper, cmd));
+				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
+				Node result = new Data<IndexedReader>(new IndexedReader(isr));
+
+				// Use a separate thread to write to the process, so that read
+				// and write occur at the same time and would not block up.
+				// The input stream is also closed by this thread.
+				// Have to make sure the executors are thread-safe!
+				new Thread() {
+					public void run() {
+						try (InputStream pes = process.getErrorStream();
+								OutputStream pos = process.getOutputStream();
+								Writer writer = new OutputStreamWriter(pos)) {
+							ExpandUtil.expandToWriter(unwrapper, in, writer);
+							process.waitFor();
+						} catch (Exception ex) {
+							LogUtil.error(ex);
+						}
+					}
+				}.start();
+
+				return result;
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+
 		}
 	}
 

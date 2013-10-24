@@ -105,8 +105,6 @@ public class InstructionTranslator {
 				+ "private static final Atom FALSE = Atom.FALSE; \n" //
 				+ "private static final Atom TRUE = Atom.TRUE; \n" //
 				+ "\n" //
-				+ "private IndexedIo indexedIo = new IndexedIo(); \n" //
-				+ "\n" //
 				+ "private Closeable closeable; \n" //
 				+ "\n" //
 				+ "public " + className + "(Closeable closeable) { this.closeable = closeable; } \n" //
@@ -309,13 +307,6 @@ public class InstructionTranslator {
 				else
 					app("return returnValue"); // Grand exit point
 				break;
-			case FGETC_________:
-				app("{");
-				app("n0 = (Node) ds[--dsp]");
-				app("int p = ((Int) ds[--dsp]).getNumber()");
-				app("#{reg} = Int.create(indexedIo.get(n0).read(p))", op0);
-				app("}");
-				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
 				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
@@ -371,11 +362,6 @@ public class InstructionTranslator {
 				break;
 			case POPANY________:
 				app("--dsp");
-				break;
-			case POPEN_________:
-				app("n0 = ds[--dsp]");
-				app("n1 = ds[--dsp]");
-				app("#{reg} = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper)", op0);
 				break;
 			case PROVESYS______:
 				app("if (!systemPredicates.call(#{reg-node})) #{jump}", op0, op1);

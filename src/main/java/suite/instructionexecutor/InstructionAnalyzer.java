@@ -135,12 +135,10 @@ public class InstructionAnalyzer {
 			case ASSIGNCONST___:
 			case CONSPAIR______:
 			case CONSLIST______:
-			case FGETC_________:
 			case HEAD__________:
 			case LOG1__________:
 			case NEWNODE_______:
 			case POP___________:
-			case POPEN_________:
 			case SETRESULT_____:
 			case SETCLOSURERES_:
 			case TAIL__________:
