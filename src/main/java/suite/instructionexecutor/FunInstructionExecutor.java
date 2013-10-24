@@ -15,8 +15,9 @@ import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.io.IndexedIo;
-import suite.lp.invocable.Invocables.InvocableNode;
+import suite.lp.invocable.Invocables.Invocable;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
@@ -62,7 +63,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		int dsp = exec.sp;
 
 		Node n0, n1, result;
-		InvocableNode invocableNode;
+		Data<?> data;
 
 		switch (insn.insn) {
 		case COMPARE_______:
@@ -97,19 +98,19 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
 		case INVOKEJAVAOBJ0:
-			invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
-			result = invocableNode.invoke(this, Collections.<Node> emptyList());
+			data = (Data<?>) unwrapper.apply((Node) ds[--dsp]);
+			result = ((Invocable) data.getData()).invoke(this, Collections.<Node> emptyList());
 			break;
 		case INVOKEJAVAOBJ1:
-			invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
+			data = (Data<?>) unwrapper.apply((Node) ds[--dsp]);
 			n0 = (Node) ds[--dsp];
-			result = invocableNode.invoke(this, Arrays.asList(n0));
+			result = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0));
 			break;
 		case INVOKEJAVAOBJ2:
-			invocableNode = (InvocableNode) unwrapper.apply((Node) ds[--dsp]);
+			data = (Data<?>) unwrapper.apply((Node) ds[--dsp]);
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = invocableNode.invoke(this, Arrays.asList(n0, n1));
+			result = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0, n1));
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -165,10 +166,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		regs[insn.op0] = result;
 	}
 
-	public Closure wrapInvocableNode(InvocableNode invocableNode, Node node) {
+	public Closure wrapInvocableNode(Invocable invocable, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
-		frame.registers[1] = invocableNode;
+		frame.registers[1] = new Data<Invocable>(invocable);
 		return new Closure(frame, invokeJavaEntryPoint);
 	}
 

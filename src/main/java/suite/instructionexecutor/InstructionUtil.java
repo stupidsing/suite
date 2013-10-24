@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.instructionexecutor.io.IndexedIo;
-import suite.lp.invocable.Invocables.InvocableNode;
+import suite.lp.invocable.Invocables.Invocable;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
@@ -208,19 +209,19 @@ public class InstructionUtil {
 		return InstructionUtil.insnNames.inverse().get(insnName);
 	}
 
-	public static InvocableNode execInvokeJavaClass(String clazzName) {
-		Class<? extends InvocableNode> clazz;
+	public static Data<Invocable> execInvokeJavaClass(String clazzName) {
+		Class<? extends Invocable> clazz;
 
 		try {
 			@SuppressWarnings("unchecked")
-			Class<? extends InvocableNode> clazz0 = (Class<? extends InvocableNode>) Class.forName(clazzName);
+			Class<? extends Invocable> clazz0 = (Class<? extends Invocable>) Class.forName(clazzName);
 			clazz = clazz0;
 		} catch (ClassNotFoundException ex1) {
 			throw new RuntimeException(ex1);
 		}
 
 		try {
-			return clazz.newInstance();
+			return new Data<Invocable>(clazz.newInstance());
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}

@@ -21,11 +21,11 @@ public class Invocables {
 	private static final Atom TREE = Atom.create("TREE");
 	private static final Atom UNKNOWN = Atom.create("UNKNOWN");
 
-	public static abstract class InvocableNode extends Node {
+	public static abstract class Invocable {
 		public abstract Node invoke(FunInstructionExecutor executor, List<Node> inputs);
 	}
 
-	public static class AtomString extends InvocableNode {
+	public static class AtomString extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			String name = ((Atom) executor.getUnwrapper().apply(inputs.get(0))).getName();
 
@@ -38,7 +38,7 @@ public class Invocables {
 		}
 	}
 
-	// public static class Exec extends InvocableNode {
+	// public static class Exec extends Invocable {
 	// public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 	// Node program = executor.getUnwrapper().apply(inputs.get(0));
 	//
@@ -51,7 +51,7 @@ public class Invocables {
 	// }
 	// }
 
-	public static class GetType extends InvocableNode {
+	public static class GetType extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			Node node = executor.getUnwrapper().apply(inputs.get(0));
 			Atom type;
@@ -71,13 +71,13 @@ public class Invocables {
 		}
 	}
 
-	public static class Id extends InvocableNode {
+	public static class Id extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			return inputs.get(0);
 		}
 	}
 
-	public static class Log2 extends InvocableNode {
+	public static class Log2 extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = executor.getUnwrapper();
 			LogUtil.info(ExpandUtil.expandString(unwrapper, inputs.get(0)));
@@ -85,7 +85,7 @@ public class Invocables {
 		}
 	}
 
-	public static class StringLength extends InvocableNode {
+	public static class StringLength extends Invocable {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			return Int.create(ExpandUtil.expandString(executor.getUnwrapper(), inputs.get(0)).length());
 		}
