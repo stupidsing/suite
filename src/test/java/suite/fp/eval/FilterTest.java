@@ -32,11 +32,10 @@ public class FilterTest {
 	}
 
 	private static String eval(String program, String in) {
-		Node node = Suite.applyFilter(Suite.parse(program));
-		FunCompilerConfig fcc = Suite.fcc(node, true);
-
 		try (Reader reader = new StringReader(in); Writer writer = new StringWriter()) {
-			Suite.evaluateFunIo(fcc, reader, writer);
+			Node node = Suite.applyReader(reader, Suite.parse(program));
+			FunCompilerConfig fcc = Suite.fcc(node, true);
+			Suite.evaluateFunToWriter(fcc, writer);
 			return writer.toString();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

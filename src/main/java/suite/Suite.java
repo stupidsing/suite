@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
+import suite.instructionexecutor.IndexedReader;
 import suite.lp.ImportUtil;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -20,6 +21,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -47,8 +49,9 @@ public class Suite {
 		rs.addRule(Rule.formRule(node));
 	}
 
-	public static Node applyFilter(Node func) {
-		return Suite.substitute("source {} | .0", func);
+	public static Node applyReader(Reader reader, Node func) {
+		Data<IndexedReader> data = new Data<IndexedReader>(new IndexedReader(reader));
+		return Suite.substitute("source {atom:`.0`} | .1", data, func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {
@@ -172,8 +175,8 @@ public class Suite {
 		return evaluateUtil.evaluateFun(fcc);
 	}
 
-	public static void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
-		evaluateUtil.evaluateFunIo(fcc, reader, writer);
+	public static void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
+		evaluateUtil.evaluateFunToWriter(fcc, writer);
 	}
 
 	public static Node evaluateFunType(String fps) {

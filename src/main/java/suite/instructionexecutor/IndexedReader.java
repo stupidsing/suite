@@ -1,11 +1,11 @@
-package suite.instructionexecutor.io;
+package suite.instructionexecutor;
 
 import java.io.IOException;
 import java.io.Reader;
 
-import suite.instructionexecutor.io.IndexedIo.IndexedInput;
+import suite.util.Util;
 
-public class IndexedReader implements IndexedInput {
+public class IndexedReader {
 
 	private static final int bufferLimit = 256;
 
@@ -17,7 +17,6 @@ public class IndexedReader implements IndexedInput {
 		this.in = in;
 	}
 
-	@Override
 	public synchronized int read(int p) {
 		while (p - offset >= sb.length()) {
 			int c;
@@ -36,8 +35,10 @@ public class IndexedReader implements IndexedInput {
 					sb.delete(0, shift);
 					offset += shift;
 				}
-			} else
+			} else {
+				Util.closeQuietly(in);
 				break;
+			}
 		}
 
 		int index = p - offset;
@@ -48,7 +49,6 @@ public class IndexedReader implements IndexedInput {
 			throw new RuntimeException("Cannot unwind flushed input buffer");
 	}
 
-	@Override
 	public synchronized void close() {
 		try {
 			in.close();

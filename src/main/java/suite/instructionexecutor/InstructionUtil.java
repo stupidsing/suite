@@ -1,6 +1,7 @@
 package suite.instructionexecutor;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -8,14 +9,13 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.instructionexecutor.io.IndexedIo;
 import suite.lp.invocable.Invocables.Invocable;
-import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
+import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 
@@ -227,20 +227,23 @@ public class InstructionUtil {
 		}
 	}
 
-	public static Node execPopen(Node n0, final Node n1, IndexedIo indexedIo, final Fun<Node, Node> unwrapper) {
+	public static Node execPopen(Node n0, final Node n1, final Fun<Node, Node> unwrapper) {
 		try {
-			Node result = Atom.unique();
 			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(unwrapper, n0));
-
-			indexedIo.put(result, new InputStreamReader(process.getInputStream()));
+			InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
+			Node result = new Data<IndexedReader>(new IndexedReader(isr));
 
 			// Use a separate thread to write to the process, so that read and
 			// write occur at the same time and would not block up.
+			// The input stream is also closed by this thread.
 			// Have to make sure the executors are thread-safe!
 			new Thread() {
 				public void run() {
-					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ExpandUtil.expand(unwrapper, n1, writer);
+					try (InputStream pes = process.getErrorStream();
+							OutputStream pos = process.getOutputStream();
+							Writer writer = new OutputStreamWriter(pos)) {
+						ExpandUtil.expandToWriter(unwrapper, n1, writer);
+						process.waitFor();
 					} catch (Exception ex) {
 						LogUtil.error(ex);
 					}
@@ -252,5 +255,4 @@ public class InstructionUtil {
 			throw new RuntimeException(ex);
 		}
 	}
-
 }

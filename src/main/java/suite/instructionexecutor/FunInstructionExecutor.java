@@ -1,7 +1,6 @@
 package suite.instructionexecutor;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +13,6 @@ import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.instructionexecutor.io.IndexedIo;
 import suite.lp.invocable.Invocables.Invocable;
 import suite.node.Atom;
 import suite.node.Data;
@@ -28,8 +26,6 @@ import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 
 public class FunInstructionExecutor extends InstructionExecutor {
-
-	private IndexedIo indexedIo = new IndexedIo();
 
 	private Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 		public Node apply(Node node) {
@@ -48,9 +44,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		super(node);
 	}
 
-	public void executeIo(Reader reader, Writer writer) throws IOException {
-		indexedIo.put(Atom.NIL, reader);
-		ExpandUtil.expand(unwrapper, execute(), writer);
+	public void executeToWriter(Writer writer) throws IOException {
+		ExpandUtil.expandToWriter(unwrapper, execute(), writer);
 	}
 
 	@Override
@@ -84,9 +79,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case ERROR_________:
 			throw new RuntimeException("Error termination");
 		case FGETC_________:
-			n0 = (Node) ds[--dsp];
+			data = (Data<?>) ds[--dsp];
 			int p = ((Int) ds[--dsp]).getNumber();
-			int c = indexedIo.get(n0).read(p);
+			int c = ((IndexedReader) data.getData()).read(p);
 			result = Int.create(c);
 			break;
 		case HEAD__________:
@@ -125,7 +120,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case POPEN_________:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = InstructionUtil.execPopen(n0, n1, indexedIo, unwrapper);
+			result = InstructionUtil.execPopen(n0, n1, unwrapper);
 			break;
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
@@ -198,7 +193,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	@Override
 	public void close() {
-		indexedIo.close();
 	}
 
 }

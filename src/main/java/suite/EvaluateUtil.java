@@ -1,7 +1,6 @@
 package suite;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +50,9 @@ public class EvaluateUtil {
 		}
 	}
 
-	public void evaluateFunIo(FunCompilerConfig fcc, Reader reader, Writer writer) throws IOException {
+	public void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
-			executor.executeIo(reader, writer);
+			executor.executeToWriter(writer);
 		}
 	}
 

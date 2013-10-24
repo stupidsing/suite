@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -243,10 +242,8 @@ public class Main implements AutoCloseable {
 	}
 
 	private void printEvaluatedString(Node node) throws IOException {
-		try (Reader reader = new StringReader("")) {
-			evaluateFunctionalIo(node, reader, writer);
-			writer.flush();
-		}
+		evaluateFunctionalToWriter(node, writer);
+		writer.flush();
 	}
 
 	private boolean processOption(String arg, Iterator<String> iter) {
@@ -304,8 +301,8 @@ public class Main implements AutoCloseable {
 		for (String input : inputs)
 			sb.append(input + " ");
 
-		Node node = Suite.applyFilter(Suite.parse(sb.toString()));
-		evaluateFunctionalIo(node, reader, writer);
+		Node node = Suite.applyReader(reader, Suite.parse(sb.toString()));
+		evaluateFunctionalToWriter(node, writer);
 		return true;
 	}
 
@@ -324,9 +321,9 @@ public class Main implements AutoCloseable {
 		return Suite.evaluateFun(fcc);
 	}
 
-	private void evaluateFunctionalIo(Node node, Reader reader, Writer writer) throws IOException {
+	private void evaluateFunctionalToWriter(Node node, Writer writer) throws IOException {
 		fcc.setNode(node);
-		Suite.evaluateFunIo(fcc, reader, writer);
+		Suite.evaluateFunToWriter(fcc, writer);
 	}
 
 	private String yesNo(boolean q) {

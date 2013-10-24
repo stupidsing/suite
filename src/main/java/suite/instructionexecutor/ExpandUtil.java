@@ -20,7 +20,7 @@ public class ExpandUtil {
 		StringWriter writer = new StringWriter();
 
 		try {
-			expand(unwrapper, node, writer);
+			expandToWriter(unwrapper, node, writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -32,7 +32,7 @@ public class ExpandUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and write
 	 * corresponding characters into the writer.
 	 */
-	public static void expand(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
+	public static void expandToWriter(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
 		while (true) {
 			node = unwrapper.apply(node);
 			Tree tree = Tree.decompose(node);
