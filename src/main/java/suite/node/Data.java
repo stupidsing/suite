@@ -15,6 +15,11 @@ public class Data<T> extends Node {
 	}
 
 	@Override
+	public String toString() {
+		return "Data [" + (data != null ? data.toString() : "null") + "]";
+	}
+
+	@Override
 	public int hashCode() {
 		return Util.hashCode(data);
 	}
