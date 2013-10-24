@@ -53,6 +53,8 @@ public class Main implements AutoCloseable {
 
 	private enum InputType {
 		EVALUATE("\\"), //
+		EVALUATEDO("\\d"), //
+		EVALUATEDOSTR("\\ds"), //
 		EVALUATESTR("\\s"), //
 		EVALUATETYPE("\\t"), //
 		FACT(""), //
@@ -168,11 +170,17 @@ public class Main implements AutoCloseable {
 				case EVALUATE:
 					System.out.println(Formatter.dump(evaluateFunctional(node)));
 					break;
+				case EVALUATEDO:
+					node = Suite.substitute("type (_ => _) no-type-check (.0 as do-of _) | {}", node);
+					System.out.println(Formatter.dump(evaluateFunctional(node)));
+					break;
+				case EVALUATEDOSTR:
+					node = Suite.substitute("type (_ => _) no-type-check (.0 as do-of string) | {}", node);
+					printEvaluatedString(node);
+					break;
 				case EVALUATESTR:
-					try (Reader reader = new StringReader("")) {
-						evaluateFunctionalIo(node, reader, writer);
-						writer.flush();
-					}
+					node = Suite.substitute(".0 as string", node);
+					printEvaluatedString(node);
 					break;
 				case EVALUATETYPE:
 					fcc.setNode(node);
@@ -231,6 +239,13 @@ public class Main implements AutoCloseable {
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
 			}
+	}
+
+	private void printEvaluatedString(Node node) throws IOException {
+		try (Reader reader = new StringReader("")) {
+			evaluateFunctionalIo(node, reader, writer);
+			writer.flush();
+		}
 	}
 
 	private boolean processOption(String arg, Iterator<String> iter) {

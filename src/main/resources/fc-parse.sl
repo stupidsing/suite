@@ -85,7 +85,6 @@ fc-parse .tree (TREE .oper .left1 .right1)
 fc-parse () (ATOM ()) :- ! #
 fc-parse .a (ATOM .a) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
---fc-parse (do # .do) (DO .do) :- ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
@@ -125,6 +124,9 @@ fc-parse-sugar (.l; .r) (_lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 --fc-parse-sugar (.l; .r) (.r . .l) :- ! #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
+fc-parse-sugar (do # .do) (
+	(type (:t :- (number => :t) => do-of :t) no-type-check id) {dummy => .do}
+) :- ! #
 fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
 fc-parse-sugar (not .b) (not {.b}) :- ! #
@@ -139,10 +141,7 @@ fc-parse-sugar .s (.ascii; .cs)
 #
 
 fc-parse-type .t .t :- not bound .t, ! #
-fc-parse-type .underscore (GENERIC-OF .typeVar .typeVar)
-	:- to.string .underscore "_", !
-	, .typeVar = TYPE-VAR .temp, temp .temp
-#
+fc-parse-type .underscore _ :- to.string .underscore "_", ! #
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1
@@ -151,7 +150,7 @@ fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type [] (ATOM-OF []) :- ! #
 fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
---fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #
+fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #
 fc-parse-type .do (PAIR-OF .type0 .type1)
 	:- (.do = (.t0, .t1); .do = (.t0 .t1)), !
 	, fc-parse-type .t0 .type0
@@ -171,6 +170,7 @@ fc-parse-type .type/.paramType (CLASS (PARAMETERIZED .paramType1 .class))
 fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
+fc-parse-type string (LIST-OF NUMBER) :- ! #
 fc-parse-type .t (CLASS .t) :- is.atom .t #
 
 fc-parse-type-list () () :- ! #

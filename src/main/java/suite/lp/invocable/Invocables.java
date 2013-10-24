@@ -38,6 +38,19 @@ public class Invocables {
 		}
 	}
 
+	// public static class Exec extends InvocableNode {
+	// public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+	// Node program = executor.getUnwrapper().apply(inputs.get(0));
+	//
+	// for (Node step : Node.iter(TermOp.NEXT__, program)) {
+	// List<Node> list = Node.tupleToList(step);
+	//
+	// if (list.get(0) == ATOM.create("return"))
+	// ;
+	// }
+	// }
+	// }
+
 	public static class GetType extends InvocableNode {
 		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
 			Node node = executor.getUnwrapper().apply(inputs.get(0));

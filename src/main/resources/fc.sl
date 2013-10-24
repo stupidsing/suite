@@ -259,7 +259,7 @@ fc-add-functions STANDARD .p (
 		fold-right {i => list => fun {i}; list} {}
 	) >>
 	define popen = (command => in =>
-		in | _popen {command} | source
+		do # in | _popen {command} | source
 	) >>
 	define reverse =
 		fold-left {cons/} {}
@@ -341,7 +341,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump = type (:t :- :t => list-of number) no-type-check (
+	define dump = type (:t :- :t => string) no-type-check (
 		define get-type = ijavacls {CLASS!suite.lp.invocable.Invocables$GetType} >>
 		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
