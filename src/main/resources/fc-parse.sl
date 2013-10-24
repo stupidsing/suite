@@ -125,7 +125,11 @@ fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 --fc-parse-sugar (.l; .r) (.r . .l) :- ! #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do # .do) (
-	(type (:t :- (number => :t) => do-of :t) no-type-check id) {dummy => .do}
+	define fun-to-monad = type (:t :- (number => :t) => do-of :t) (no-type-check id) >>
+	define monad-to-fun = type (:t :- do-of :t => (number => :t)) (no-type-check id) >>
+	fun-to-monad {dummy =>
+		define exec = ({0} . monad-to-fun) >> .do
+	}
 ) :- ! #
 fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
