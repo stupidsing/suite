@@ -17,13 +17,13 @@ import suite.fp.FunCompilerConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConfig;
-import suite.lp.doer.Station;
 import suite.lp.kb.RuleSet;
 import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
@@ -31,6 +31,7 @@ import suite.node.io.PrettyPrinter;
 import suite.node.io.TermParser;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
+import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Util;
 
@@ -209,16 +210,16 @@ public class Main implements AutoCloseable {
 					if (type == InputType.QUERY)
 						System.out.println(yesNo(prover.prove(node)));
 					else if (type == InputType.QUERYELABORATE) {
-						Node elab = new Station() {
-							public boolean run() {
+						Node elab = new Data<Source<Boolean>>(new Source<Boolean>() {
+							public Boolean source() {
 								String dump = generalizer.dumpVariables();
 								if (!dump.isEmpty())
 									System.out.println(dump);
 
 								count[0]++;
-								return false;
+								return Boolean.FALSE;
 							}
-						};
+						});
 
 						prover.prove(Tree.create(TermOp.AND___, node, elab));
 

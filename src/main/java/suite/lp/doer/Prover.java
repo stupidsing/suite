@@ -10,11 +10,13 @@ import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 
 public class Prover {
@@ -82,12 +84,12 @@ public class Prover {
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
 					final int pit = journal.getPointInTime();
-					Node bt = new Station() {
-						public boolean run() {
+					Node bt = new Data<Source<Boolean>>(new Source<Boolean>() {
+						public Boolean source() {
 							journal.undoBinds(pit);
-							return true;
+							return Boolean.TRUE;
 						}
-					};
+					});
 
 					alt = andTree(bt, orTree(andTree(right, rem), alt));
 					query = left;
@@ -101,8 +103,10 @@ public class Prover {
 					break;
 				default:
 				}
-			} else if (query instanceof Station) {
-				query = isSuccess(((Station) query).run());
+			} else if (query instanceof Data) {
+				Object data = ((Data<?>) query).getData();
+				Object bool = ((Source<?>) data).source();
+				query = isSuccess((Boolean) bool);
 				continue;
 			}
 
@@ -162,12 +166,12 @@ public class Prover {
 			Rule rule = iter.previous();
 
 			Generalizer generalizer = new Generalizer();
-			generalizer.setCut(new Station() {
-				public boolean run() {
+			generalizer.setCut(new Data<Source<Boolean>>(new Source<Boolean>() {
+				public Boolean source() {
 					alt = alt0;
 					return true;
 				}
-			});
+			}));
 
 			Node head = generalizer.generalize(rule.getHead());
 			Node tail = generalizer.generalize(rule.getTail());

@@ -6,12 +6,13 @@ import java.util.Stack;
 
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
-import suite.lp.doer.Station;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
+import suite.util.FunUtil.Source;
 
 public class SystemPredicates {
 
@@ -149,12 +150,12 @@ public class SystemPredicates {
 			final Node params[] = Node.toFixedSizeArray(ps, 3);
 			final Stack<Node> stack = new Stack<>();
 
-			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Station() {
-				public boolean run() {
+			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Data<Source<Boolean>>(new Source<Boolean>() {
+				public Boolean source() {
 					stack.push(new Cloner().clone(params[0]));
-					return false;
+					return Boolean.FALSE;
 				}
-			});
+			}));
 
 			Prover subProver = new Prover(prover);
 			subProver.prove0(subGoal);

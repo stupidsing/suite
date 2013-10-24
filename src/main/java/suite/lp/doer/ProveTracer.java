@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.lp.doer.ProverConfig.TraceLevel;
+import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class ProveTracer {
 
@@ -62,33 +64,33 @@ public class ProveTracer {
 			final int depth0 = currentDepth;
 			final Record record = new Record(record0, query1, currentDepth + 1);
 
-			final Station enter = new Station() {
-				public boolean run() {
+			final Data<Source<Boolean>> enter = new Data<Source<Boolean>>(new Source<Boolean>() {
+				public Boolean source() {
 					currentRecord = record;
 					currentDepth = record.depth;
 					record.start = records.size();
 					records.add(record);
-					return true;
+					return Boolean.TRUE;
 				}
-			};
+			});
 
-			final Station leaveOk = new Station() {
-				public boolean run() {
+			final Data<Source<Boolean>> leaveOk = new Data<Source<Boolean>>(new Source<Boolean>() {
+				public Boolean source() {
 					currentRecord = record0;
 					currentDepth = depth0;
 					record.nOkays++;
-					return true;
+					return Boolean.TRUE;
 				}
-			};
+			});
 
-			final Station leaveFail = new Station() {
-				public boolean run() {
+			final Data<Source<Boolean>> leaveFail = new Data<Source<Boolean>>(new Source<Boolean>() {
+				public Boolean source() {
 					currentRecord = record0;
 					currentDepth = depth0;
 					record.end = records.size();
-					return false;
+					return Boolean.TRUE;
 				}
-			};
+			});
 
 			Node alt = prover.getAlternative();
 			Node rem = prover.getRemaining();
