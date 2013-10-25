@@ -57,7 +57,7 @@ public class Matrix {
 			float z1 = m.v[2][0] * v.getX() + m.v[2][1] * v.getY() + m.v[2][2] * v.getZ();
 			return new Vector(x1, y1, z1);
 		} else
-			throw new RuntimeException("Wrong matrix sizes");
+			throw new RuntimeException("Wrong matrix size");
 	}
 
 	public static Matrix mul(Matrix m, Matrix n) {
