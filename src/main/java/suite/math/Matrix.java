@@ -139,6 +139,10 @@ public class Matrix {
 		return v[0].length;
 	}
 
+	public float[][] get() {
+		return v;
+	}
+
 	@Override
 	public int hashCode() {
 		return Arrays.deepHashCode(v);
