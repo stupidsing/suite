@@ -155,4 +155,10 @@ public class Invocables {
 		}
 	}
 
+	public static class Throw extends Invocable {
+		public Node invoke(FunInstructionExecutor executor, List<Node> inputs) {
+			throw new RuntimeException("Error termination");
+		}
+	}
+
 }

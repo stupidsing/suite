@@ -1,11 +1,5 @@
 package suite.instructionexecutor;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,9 +9,7 @@ import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
-import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -64,7 +56,6 @@ public class InstructionUtil {
 		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
 		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //
-		ERROR_________("ERROR"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
@@ -225,32 +216,4 @@ public class InstructionUtil {
 		}
 	}
 
-	public static Node execPopen(Node n0, final Node n1, final Fun<Node, Node> unwrapper) {
-		try {
-			final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(unwrapper, n0));
-			InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
-			Node result = new Data<IndexedReader>(new IndexedReader(isr));
-
-			// Use a separate thread to write to the process, so that read and
-			// write occur at the same time and would not block up.
-			// The input stream is also closed by this thread.
-			// Have to make sure the executors are thread-safe!
-			new Thread() {
-				public void run() {
-					try (InputStream pes = process.getErrorStream();
-							OutputStream pos = process.getOutputStream();
-							Writer writer = new OutputStreamWriter(pos)) {
-						ExpandUtil.expandToWriter(unwrapper, n1, writer);
-						process.waitFor();
-					} catch (Exception ex) {
-						LogUtil.error(ex);
-					}
-				}
-			}.start();
-
-			return result;
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
 }

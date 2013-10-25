@@ -171,11 +171,11 @@ public class Main implements AutoCloseable {
 					System.out.println(Formatter.dump(evaluateFunctional(node)));
 					break;
 				case EVALUATEDO:
-					node = Suite.substitute("type (_ => _) no-type-check (.0 as do-of _) | {}", node);
+					node = substituteEvaluateDo(node, Atom.create("any"));
 					System.out.println(Formatter.dump(evaluateFunctional(node)));
 					break;
 				case EVALUATEDOSTR:
-					node = Suite.substitute("type (_ => _) no-type-check (.0 as do-of string) | {}", node);
+					node = substituteEvaluateDo(node, Atom.create("string"));
 					printEvaluatedString(node);
 					break;
 				case EVALUATESTR:
@@ -239,6 +239,10 @@ public class Main implements AutoCloseable {
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
 			}
+	}
+
+	private Node substituteEvaluateDo(Node node, Atom returnType) {
+		return Suite.substitute("type (any => any) no-type-check (.0 as do-of .1) | {}", node, returnType);
 	}
 
 	private void printEvaluatedString(Node node) throws IOException {

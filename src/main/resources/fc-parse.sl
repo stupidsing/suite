@@ -1,7 +1,6 @@
 fc-parse .t .parsed
 	:- bound .t, fc-parse-sugar .t .t1, !, fc-parse .t1 .parsed
 #
--- No big reason except performance for resolving types here for lambda operator. We need to be faster anyway.
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
@@ -94,6 +93,7 @@ fc-parse .d _ :- fc-error "Unknown expression" .d #
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
+fc-parse-sugar error (throw {}) :- ! #
 fc-parse-sugar (match || .bind => .then || .otherwise) .p1
 	:- !, temp .var
 	, .p1 = (.var =>
@@ -146,7 +146,7 @@ fc-parse-sugar .s (.ascii; .cs)
 #
 
 fc-parse-type .t .t :- not bound .t, ! #
-fc-parse-type .underscore _ :- to.string .underscore "_", ! #
+fc-parse-type any .t :- not bound .t, ! #
 fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1

@@ -74,8 +74,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			n1 = (Node) ds[--dsp];
 			result = Tree.create(TermOp.TUPLE_, n0, n1);
 			break;
-		case ERROR_________:
-			throw new RuntimeException("Error termination");
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;

@@ -82,7 +82,6 @@ fc-define-default-fun 1 _ltail TAIL #
 fc-define-default-fun 2 _pcons CONS-PAIR #
 fc-define-default-fun 1 _pleft HEAD #
 fc-define-default-fun 1 _pright TAIL #
-fc-define-default-fun 0 error ERROR #
 fc-define-default-fun 1 is-list IS-CONS #
 fc-define-default-fun 1 is-pair IS-CONS #
 
@@ -123,7 +122,10 @@ fc-add-functions STANDARD .p (
 	define _popen = type (string => string => string) no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
 	) >>
-	define fgetc = type (_ => number => number) no-type-check (
+	define throw = type (any => any) no-type-check (
+		CLASS!suite.lp.invocable.Invocables$Throw | ijavacls | ijavaobj1
+	) >>
+	define fgetc = type (any => number => number) no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Fgetc | ijavacls | ijavaobj2
 	) >>
 	define log = type (:t :- :t => :t) no-type-check (

@@ -263,6 +263,5 @@ default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
 default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
 default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #
-default-fun-type error _ #
 default-fun-type is-list (FUN-OF (LIST-OF .t) BOOLEAN) #
 default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
