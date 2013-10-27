@@ -1,3 +1,6 @@
+() :- import.file 'rbt.sl'
+#
+
 -- 1. convert implication operators: (P => Q) becomes (~P ^ Q)
 prove0 (IMP .p .q) (AND (NOT .p1) .q1)
 	:- !, prove0 .p .p1, prove0 .q .q1
@@ -85,6 +88,31 @@ prove4-list () #
 prove4-list (.p .p1, .ts) .ts :- prove4 .p .p1 , prove4-list .ts #
 
 -- 6. putting into clauses (ANDs of ORs form)
+prove5-index (OR .p .q)
+	:- !, prove5-index .p, prove5-index .q
+#
+prove5-index .p
+	:- prove5-list-ands .p ()/.list
+	, index-ands () .list ()/.rbt
+#
+
+prove5-list-ands (AND .p .q) .l0/.lx
+	:- !
+	, prove5-list-ands .p .l0/.l1
+	, prove5-list-ands .q .l1/.lx
+#
+prove5-list-ands .p .l0/.lx
+	:- .lx = (.p, .l0)
+#
+
+index-ands _ () .rb/.rb #
+index-ands .pre (.p, .post) .rb0/.rbx
+	:- rbt-get .rb0 .p:.list
+	, once (bound .list; .list = ())
+	, list1 = (.p:.pre:.post, .list)
+	, rbt-replace .p:.list1 .rb0/.rbx
+#
+-- ...
 
 transform (IMP .p .q) (AND (NOT .p1) .q1) (.p .p1, .q .q1,) :- ! #
 transform (AND .p .q) (AND .p1 .q1) (.p .p1, .q .q1,) :- ! #
