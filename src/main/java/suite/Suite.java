@@ -49,6 +49,10 @@ public class Suite {
 		rs.addRule(Rule.formRule(node));
 	}
 
+	public static Node applyDo(Node node, Atom returnType) {
+		return Suite.substitute("type (any => any) no-type-check (.0 as do-of .1) | {}", node, returnType);
+	}
+
 	public static Node applyReader(Reader reader, Node func) {
 		Data<IndexedReader> data = new Data<IndexedReader>(new IndexedReader(reader));
 		return Suite.substitute("source {atom:`.0`} | .1", data, func);
