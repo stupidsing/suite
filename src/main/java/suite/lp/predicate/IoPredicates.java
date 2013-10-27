@@ -9,6 +9,7 @@ import java.util.Date;
 
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.Formatter;
@@ -45,6 +46,14 @@ public class IoPredicates {
 					LogUtil.error(ex);
 				}
 			return false;
+		}
+	}
+
+	public static class Exit implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			int code = ps instanceof Int ? ((Int) ps).getNumber() : 0;
+			System.exit(code);
+			return true;
 		}
 	}
 
