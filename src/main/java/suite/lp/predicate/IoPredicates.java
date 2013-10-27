@@ -51,8 +51,7 @@ public class IoPredicates {
 
 	public static class Exit implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			int code = ps instanceof Int ? ((Int) ps).getNumber() : 0;
-			System.exit(code);
+			System.exit(ps instanceof Int ? ((Int) ps).getNumber() : 0);
 			return true;
 		}
 	}
