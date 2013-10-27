@@ -92,27 +92,20 @@ prove5-index (OR .p .q)
 	:- !, prove5-index .p, prove5-index .q
 #
 prove5-index .p
-	:- prove5-list-ands .p ()/.list
-	, index-ands () .list ()/.rbt
-#
-
-prove5-list-ands (AND .p .q) .l0/.lx
-	:- !
-	, prove5-list-ands .p .l0/.l1
-	, prove5-list-ands .q .l1/.lx
-#
-prove5-list-ands .p .l0/.lx
-	:- .lx = (.p, .l0)
-#
-
-index-ands _ () .rb/.rb #
-index-ands .pre (.p, .post) .rb0/.rbx
-	:- rbt-get .rb0 .p:.list
-	, once (bound .list; .list = ())
-	, list1 = (.p:.pre:.post, .list)
-	, rbt-replace .p:.list1 .rb0/.rbx
+	:- prove5-index-ands .p ()/.rbt
 #
 -- ...
+
+prove5-index-ands (AND .p .q) .rb0/.rbx
+	:- !
+	, prove5-index-ands .p .rb0/.rb1
+	, prove5-index-ands .q .rb1/.rbx
+#
+prove5-index-ands .p .rb0/.rbx
+	:- rbt-get .rb0 .p:.list
+	, once (bound .list; .list = ())
+	, rbt-replace .p:(.pre:.post, .list) .rb0/.rbx
+#
 
 transform (IMP .p .q) (AND (NOT .p1) .q1) (.p .p1, .q .q1,) :- ! #
 transform (AND .p .q) (AND .p1 .q1) (.p .p1, .q .q1,) :- ! #
