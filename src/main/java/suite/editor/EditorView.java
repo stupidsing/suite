@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -92,6 +94,11 @@ public class EditorView {
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
+		frame.addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent event) {
+				calculateLayout();
+			}
+		});
 
 		int u = 64, u2 = u * 2;
 
@@ -124,8 +131,12 @@ public class EditorView {
 	}
 
 	public void repaint() {
-		new LayoutCalculator().arrange(frame.getContentPane(), layout);
+		calculateLayout();
 		frame.repaint();
+	}
+
+	private void calculateLayout() {
+		new LayoutCalculator().arrange(frame.getContentPane(), layout);
 	}
 
 	private JMenuBar createMenuBar() {

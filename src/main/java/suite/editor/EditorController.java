@@ -1,6 +1,7 @@
 package suite.editor;
 
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JTextArea;
 
 import suite.Suite;
@@ -34,10 +35,13 @@ public class EditorController {
 	}
 
 	public void run(EditorView view) {
+		JEditorPane editor = view.getEditor();
+		String selectedText = editor.getSelectedText();
+		String text = selectedText != null ? selectedText : editor.getText();
 		String result;
 
 		try {
-			Node node = Suite.evaluateFun(view.getEditor().getText(), true);
+			Node node = Suite.evaluateFun(text, true);
 			result = Formatter.dump(node);
 		} catch (Exception ex) {
 			result = To.string(ex);
