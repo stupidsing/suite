@@ -35,10 +35,12 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 			, fc-dict-merge-replace .te .tes .te1
 			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
+	, !, write 'Lazyifying', nl
+	, !, fc-lazyify .do2 .do3
 	, !, write 'Optimizing', nl
-	, !, fc-optimize .do2 .do3
-	, !, fc-dump-precompile EAGER .lib .fcs .do3 .prog1
-	, !, fc-dump-precompile LAZY .lib .fcs .do3 .prog2
+	, !, fc-optimize .do3 .do4
+	, !, fc-dump-precompile EAGER .lib .fcs .do4 .prog1
+	, !, fc-dump-precompile LAZY .lib .fcs .do4 .prog2
 	, .prog3 = fc-imported-precompile-library .lib
 	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
 	, !, write 'Verifying output', nl
@@ -73,6 +75,9 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 -- Type inferencer
 infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
+
+-- Lazyifier
+fc-lazyify ($$PRECOMPILE .p) ($$PRECOMPILE .p) :- ! #
 
 -- Optimizer
 fc-optimize ($$PRECOMPILE .p) ($$PRECOMPILE .p) :- ! #
