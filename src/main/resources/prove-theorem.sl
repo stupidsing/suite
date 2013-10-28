@@ -40,7 +40,7 @@ prove2 .vars (FOR-ALL .var .p) (FOR-ALL .var .p1)
 prove2 .vars (THERE-EXISTS .var .p) .p1
 	:- !, temp .functionName
 	, form-function .vars .functionName .var1
-	, replace .p .p1 .var .var1
+	, replace .var .var1 .p .p1
 #
 prove2 .vars .p .p1
 	:- transform .p .p1 .ts

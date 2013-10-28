@@ -242,12 +242,12 @@ sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .t0 .st1)
 
 generic-specific-pair (GENERIC-OF .typeVar .type) .t1
 	:- bound .typeVar
-	, replace .type .t1 .typeVar _
+	, replace .typeVar _ .type .t1
 #
 
 instantiate-type () .tc .tc #
 instantiate-type (.typeVar, .typeVars) .tc0 .tcx
-	:- replace .tc0 .tc1 .typeVar _
+	:- replace .typeVar _ .tc0 .tc1
 	, instantiate-type .typeVars .tc1 .tcx
 #
 

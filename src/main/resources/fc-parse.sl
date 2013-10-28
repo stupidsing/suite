@@ -132,6 +132,9 @@ fc-parse-sugar (do # .do) (
 		define exec = ({0} . monad-to-fun) >> .do
 	}
 ) :- ! #
+fc-parse-sugar (define-macro .var = .value >> .do) .do1
+	:- !, replace .var .value .do .do1
+#
 fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
 fc-parse-sugar (not .b) (not {.b}) :- ! #

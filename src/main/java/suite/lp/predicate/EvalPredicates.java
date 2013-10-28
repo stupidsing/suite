@@ -192,7 +192,7 @@ public class EvalPredicates {
 	public static class ReplacePredicate implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Node.toFixedSizeArray(ps, 4);
-			return prover.bind(params[1], Replacer.replace(params[0], params[2], params[3]));
+			return prover.bind(Replacer.replace(params[2], params[0], params[1]), params[3]);
 		}
 	}
 

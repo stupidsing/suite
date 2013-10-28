@@ -3,8 +3,8 @@
 
 fl (define .var = .value >> .do) .result
 	:- !
-	, replace .value .value1 .var .value1
-	, replace .do .do1 .var .value1
+	, replace .var .value1 .value .value1
+	, replace .var .value1 .do .do1
 	, fl .do1 .result
 #
 fl (head {.pair}) .result :- !, fl .pair (.result, _) #
@@ -13,7 +13,7 @@ fl (.fun {$}) .result :- !, fl .fun ($ => .result) #
 fl (.fun {.value}) .result
 	:- !
 	, fl .fun (.var => .do)
-	, replace .do .do1 .var .value
+	, replace .var .value .do .do1
 	, fl .do1 .result
 #
 fl (if .if then .then else .else) .result
