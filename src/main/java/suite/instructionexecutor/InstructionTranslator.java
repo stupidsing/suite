@@ -84,12 +84,14 @@ public class InstructionTranslator {
 
 		String java = String.format("" //
 				+ "package " + packageName + "; \n" //
-				+ "import suite.instructionexecutor.io.*; \n" //
+				+ "import suite.*; \n" //
+				+ "import suite.instructionexecutor.*; \n" //
 				+ "import suite.lp.*; \n" //
 				+ "import suite.lp.doer.*; \n" //
 				+ "import suite.lp.kb.*; \n" //
-				+ "import suite.lp.node.*; \n" //
-				+ "import suite.lp.predicates.*; \n" //
+				+ "import suite.lp.predicate.*; \n" //
+				+ "import suite.node.*; \n" //
+				+ "import suite.node.util.*; \n" //
 				+ "import suite.util.*; \n" //
 				+ "import suite.util.FunUtil.*; \n" //
 				+ "import " + Closeable.class.getCanonicalName() + "; \n" //

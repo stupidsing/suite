@@ -72,7 +72,7 @@ prove3 (OR (FOR-ALL .e .p) .q) (FOR-ALL .e .pq1)
 prove3 (OR .p (FOR-ALL .e .q)) (FOR-ALL .e .pq1)
 	:- !, prove3 (OR .p .q) .pq1
 #
-prove3 .p .p1 :- transform .p .p1 .ts , prove3-list .ts
+prove3 .p .p1 :- transform .p .p1 .ts, prove3-list .ts
 #
 
 prove3-list () #
@@ -81,7 +81,7 @@ prove3-list (.p .p1, .ts) .ts :- prove3 .p .p1 , prove3-list .ts #
 -- 5. distributing AND over OR
 prove4 (OR (AND .p .q) .r) .pqr :- !, prove4 (AND (OR .p .r) (OR .q .r)) .pqr #
 prove4 (OR .p (AND .q .r)) .pqr :- !, prove4 (AND (OR .p .q) (OR .p .r)) .pqr #
-prove4 .p .p1 :- transform .p .p1 .ts , prove4-list .ts
+prove4 .p .p1 :- transform .p .p1 .ts, prove4-list .ts
 #
 
 prove4-list () #
