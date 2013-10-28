@@ -73,6 +73,9 @@ fc-validate-type (ATOM-OF .atom) (ATOM-OF .atom)
 #
 fc-validate-type (CLASS .class) (CLASS .class)
 #
+fc-validate-type (DO-OF .type0) (DO-OF .type1)
+	:- fc-validate-type .type0 .type1
+#
 fc-validate-type (FUN-OF .paramType0 .returnType0) (FUN-OF .paramType1 .returnType1)
 	:- fc-validate-type .paramType0 .paramType1
 	, fc-validate-type .returnType0 .returnType1
