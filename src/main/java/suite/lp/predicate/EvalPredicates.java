@@ -54,7 +54,7 @@ public class EvalPredicates {
 	public static class Contains implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Node.toFixedSizeArray(ps, 2);
-			return new Replacer().contains(params[1], params[0]);
+			return Replacer.contains(params[1], params[0]);
 		}
 	}
 
