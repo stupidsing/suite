@@ -21,6 +21,7 @@ public class FailedTests {
 		new InstructionTranslatorTest().testStandardLibrary();
 	}
 
+	// UnsupportedOperationException
 	@Test
 	public void test2() throws IOException {
 		new InstructionTranslatorTest().testAtomString();

@@ -34,22 +34,8 @@ public class TranslatedRunUtil {
 		public Node result;
 	}
 
-	public static InvocableBridge getWrappingBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
-		final Fun<Node, Node> unwrapper = getUnwrapper(config, translatedRun);
-
-		return new InvocableBridge() {
-			public Fun<Node, Node> getUnwrapper() {
-				return unwrapper;
-			}
-
-			public Node wrapInvocableNode(Invocable invocable, Node node) {
-				throw new UnsupportedOperationException();
-			}
-		};
-	}
-
-	private static Fun<Node, Node> getUnwrapper(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
-		return new Fun<Node, Node>() {
+	public static InvocableBridge getInvocableBridge(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
+		final Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 			public Node apply(Node node) {
 				node = node.finalNode();
 				if (node instanceof Closure) {
@@ -59,6 +45,16 @@ public class TranslatedRunUtil {
 					node = closure.result;
 				}
 				return node;
+			}
+		};
+
+		return new InvocableBridge() {
+			public Fun<Node, Node> getUnwrapper() {
+				return unwrapper;
+			}
+
+			public Node wrapInvocableNode(Invocable invocable, Node node) {
+				throw new UnsupportedOperationException();
 			}
 		};
 	}

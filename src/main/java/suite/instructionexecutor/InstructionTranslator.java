@@ -131,7 +131,7 @@ public class InstructionTranslator {
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
-				+ "WrappingBridge bridge = TranslatedRunUtil.getWrappingBridge(config, this); \n" //
+				+ "InvocableBridge bridge = TranslatedRunUtil.getInvocableBridge(config, this); \n" //
 				+ "Fun<Node, Node> unwrapper = bridge.getUnwrapper(); \n" //
 				+ "Comparer comparer = new FunComparer(unwrapper); \n" //
 				+ "\n" //
