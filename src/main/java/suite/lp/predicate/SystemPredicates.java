@@ -36,6 +36,7 @@ public class SystemPredicates {
 		addPredicate("temporary", new Temporary());
 
 		addPredicate("bound", new EvalPredicates.Bound());
+		addPredicate("complexity", new EvalPredicates.ComplexityPredicate());
 		addPredicate("clone", new EvalPredicates.Clone());
 		addPredicate("eval.fun", new EvalPredicates.EvalFun());
 		addPredicate("eval.js", new EvalPredicates.EvalJs());

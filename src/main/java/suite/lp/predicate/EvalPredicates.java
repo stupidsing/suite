@@ -22,6 +22,7 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
+import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.Replacer;
 import suite.util.LogUtil;
@@ -33,6 +34,13 @@ public class EvalPredicates {
 	public static class Bound implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			return !(ps.finalNode() instanceof Reference);
+		}
+	}
+
+	public static class ComplexityPredicate implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Node.toFixedSizeArray(ps, 2);
+			return prover.bind(Int.create(new Complexity().complexity(params[0])), params[1]);
 		}
 	}
 
