@@ -84,10 +84,12 @@ public class InstructionTranslator {
 
 		String java = String.format("" //
 				+ "package " + packageName + "; \n" //
+				+ "import java.util.*; \n" //
 				+ "import suite.*; \n" //
 				+ "import suite.instructionexecutor.*; \n" //
 				+ "import suite.lp.*; \n" //
 				+ "import suite.lp.doer.*; \n" //
+				+ "import suite.lp.invocable.Invocables.*; \n" //
 				+ "import suite.lp.kb.*; \n" //
 				+ "import suite.lp.predicate.*; \n" //
 				+ "import suite.node.*; \n" //
@@ -325,7 +327,20 @@ public class InstructionTranslator {
 				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
 				app("node = unwrapper.apply((Node) ds[--dsp])");
 				app("String clazzName = atom.toString().split(\"!\")[1]");
-				app("result = InstructionUtil.execInvokeJava(this, clazzName, node)");
+				app("#{reg} = InstructionUtil.execInvokeJavaClass(clazzName)", op0);
+				app("}");
+				break;
+			case INVOKEJAVAOBJ0:
+			case INVOKEJAVAOBJ1:
+			case INVOKEJAVAOBJ2:
+				app("{");
+				app("Data<?> data = (Data<?>) unwrapper.apply((Node) ds[--dsp])");
+				app("List<Node> list = new ArrayList<>(2)");
+				if (insn.insn == Insn.INVOKEJAVAOBJ1)
+					app("list.add((Node) ds[--dsp])");
+				if (insn.insn == Insn.INVOKEJAVAOBJ1 || insn.insn == Insn.INVOKEJAVAOBJ2)
+					app("list.add((Node) ds[--dsp])");
+				app("#{reg} = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0, n1))", op0);
 				app("}");
 				break;
 			case ISCONS________:

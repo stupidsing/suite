@@ -136,6 +136,10 @@ public class InstructionAnalyzer {
 			case CONSPAIR______:
 			case CONSLIST______:
 			case HEAD__________:
+			case INVOKEJAVACLS_:
+			case INVOKEJAVAOBJ0:
+			case INVOKEJAVAOBJ1:
+			case INVOKEJAVAOBJ2:
 			case LOG1__________:
 			case NEWNODE_______:
 			case POP___________:
