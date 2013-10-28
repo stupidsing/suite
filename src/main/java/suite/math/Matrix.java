@@ -6,16 +6,26 @@ public class Matrix {
 
 	private final float v[][];
 
+	public Matrix(Matrix m) {
+		this(m.height(), m.width());
+		for (int i = 0; i < height(); i++)
+			for (int j = 0; j < width(); j++)
+				v[i][j] = m.v[i][j];
+	}
+
+	public Matrix(int height, int width) {
+		this(new float[height][width]);
+	}
+
 	public Matrix(float v[][]) {
 		this.v = v;
 	}
 
 	public static Matrix add(Matrix m, Matrix n) {
-		int height = m.height();
-		int width = m.width();
+		int height = m.height(), width = m.width();
 
 		if (height == n.height() && width == n.width()) {
-			Matrix o = new Matrix(new float[height][width]);
+			Matrix o = new Matrix(height, width);
 
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
@@ -27,9 +37,8 @@ public class Matrix {
 	}
 
 	public static Matrix neg(Matrix m) {
-		int height = m.height();
-		int width = m.width();
-		Matrix o = new Matrix(new float[height][width]);
+		int height = m.height(), width = m.width();
+		Matrix o = new Matrix(height, width);
 
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
@@ -39,15 +48,25 @@ public class Matrix {
 	}
 
 	public static Matrix transpose(Matrix m) {
-		int height = m.height();
-		int width = m.width();
-		Matrix o = new Matrix(new float[width][height]);
+		int height = m.height(), width = m.width();
+		Matrix o = new Matrix(width, height);
 
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				o.v[j][i] = m.v[i][j];
 
 		return o;
+	}
+
+	public static Matrix mul(Matrix m, float f) {
+		int height = m.height(), width = m.width();
+		Matrix m1 = new Matrix(height, width);
+
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width; j++)
+				m1.v[i][j] = m.v[i][j] * f;
+
+		return m1;
 	}
 
 	public static Vector mul(Matrix m, Vector v) {
@@ -64,7 +83,7 @@ public class Matrix {
 		int ks = m.width();
 
 		if (ks == n.height()) {
-			Matrix o = new Matrix(new float[m.height()][n.width()]);
+			Matrix o = new Matrix(m.height(), n.width());
 
 			for (int i = 0; i < m.height(); i++)
 				for (int j = 0; j < n.width(); j++)
@@ -79,7 +98,8 @@ public class Matrix {
 	/**
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
-	public static Matrix inverse(Matrix m) {
+	public static Matrix inverse(Matrix m0) {
+		Matrix m = new Matrix(m0); // Do not alter input matrix
 		int size = m.height();
 
 		if (size != m.width())
@@ -134,7 +154,7 @@ public class Matrix {
 	}
 
 	public static Matrix identity(int size) {
-		Matrix n = new Matrix(new float[size][size]);
+		Matrix n = new Matrix(size, size);
 
 		for (int r = 0; r < size; r++)
 			n.v[r][r] = 1f;
@@ -151,6 +171,20 @@ public class Matrix {
 
 	public float[][] get() {
 		return v;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (float row[] : v) {
+			sb.append("[");
+			for (float f : row)
+				sb.append(f + " ");
+			sb.append("]\n");
+		}
+
+		return sb.toString();
 	}
 
 	@Override
