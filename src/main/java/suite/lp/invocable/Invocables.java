@@ -30,10 +30,6 @@ public class Invocables {
 	private static final Atom TREE = Atom.create("TREE");
 	private static final Atom UNKNOWN = Atom.create("UNKNOWN");
 
-	public interface Invocable {
-		public abstract Node invoke(InvocableBridge bridge, List<Node> inputs);
-	}
-
 	public static class AtomString implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			String name = ((Atom) bridge.getUnwrapper().apply(inputs.get(0))).getName();

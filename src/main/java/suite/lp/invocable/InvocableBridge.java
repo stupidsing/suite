@@ -1,6 +1,5 @@
 package suite.lp.invocable;
 
-import suite.lp.invocable.Invocables.Invocable;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
 

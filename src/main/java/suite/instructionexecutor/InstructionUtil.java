@@ -3,7 +3,7 @@ package suite.instructionexecutor;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.lp.invocable.Invocables.Invocable;
+import suite.lp.invocable.Invocable;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;

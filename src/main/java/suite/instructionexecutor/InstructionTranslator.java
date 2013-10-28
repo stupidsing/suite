@@ -89,6 +89,7 @@ public class InstructionTranslator {
 				+ "import suite.instructionexecutor.*; \n" //
 				+ "import suite.lp.*; \n" //
 				+ "import suite.lp.doer.*; \n" //
+				+ "import suite.lp.invocable.*; \n" //
 				+ "import suite.lp.invocable.Invocables.*; \n" //
 				+ "import suite.lp.kb.*; \n" //
 				+ "import suite.lp.predicate.*; \n" //

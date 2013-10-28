@@ -2,8 +2,8 @@ package suite.instructionexecutor;
 
 import java.io.Closeable;
 
+import suite.lp.invocable.Invocable;
 import suite.lp.invocable.InvocableBridge;
-import suite.lp.invocable.Invocables.Invocable;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;
