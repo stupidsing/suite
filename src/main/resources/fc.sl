@@ -7,6 +7,7 @@
 -- .mode can be EAGER or LAZY
 
 () :- import.file 'fc-infer-type.sl'
+	, import.file 'fc-optimize.sl'
 	, import.file 'fc-parse.sl'
 	, import.file 'generate-code.sl'
 	, import.file 'rbt.sl'
@@ -21,12 +22,13 @@ compile-function-without-precompile .mode () .do .c
 	:- compile-function .mode .do .c
 #
 
-compile-function .mode .do .c0
+compile-function .mode .do0 .c0
 	:- .c0 = (_ ENTER, .c1)
-	, !, fc-parse .do .parsed
-	, !, infer-type-rule .parsed ()/()/() .tr/() _
+	, !, fc-parse .do0 .do1
+	, !, infer-type-rule .do1 ()/()/() .tr/() _
 	, !, resolve-type-rules .tr
-	, !, fc-compile .mode .parsed 0/() .c1/.c2/.d0/()/.reg
+	, !, fc-optimize .do1 .do2
+	, !, fc-compile .mode .do2 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
 	, !, cg-generate-code .c0
 #

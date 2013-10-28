@@ -24,9 +24,9 @@ fc-setup-precompile0 .lib .do1/.do0 .filename
 fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	:- .pc = .ues/.ves/.tes .trs/.trs .fcs
 	, !, write 'Parsing program', nl
-	, !, fc-parse .do1 .parsed
+	, !, fc-parse .do1 .do2
 	, !, write 'Inferencing types', nl
-	, !, infer-type-rule .parsed ()/()/() .tr/() NUMBER
+	, !, infer-type-rule .do2 ()/()/() .tr/() NUMBER
 	, !, resolve-type-rules .tr
 	, !, .prog0 = (
 		infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
@@ -35,8 +35,10 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 			, fc-dict-merge-replace .te .tes .te1
 			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
-	, !, fc-dump-precompile EAGER .lib .fcs .parsed .prog1
-	, !, fc-dump-precompile LAZY .lib .fcs .parsed .prog2
+	, !, write 'Optimizing', nl
+	, !, fc-optimize .do2 .do3
+	, !, fc-dump-precompile EAGER .lib .fcs .do3 .prog1
+	, !, fc-dump-precompile LAZY .lib .fcs .do3 .prog2
 	, .prog3 = fc-imported-precompile-library .lib
 	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
 	, !, write 'Verifying output', nl
@@ -66,9 +68,14 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	)
 #
 
+-- Parser
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
+-- Type inferencer
 infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
+
+-- Optimizer
+fc-optimize ($$PRECOMPILE .p) ($$PRECOMPILE .p) :- ! #
 
 -- Eager evaluation
 fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fve .cdr :- , member .pcc EAGER/(.fve .cdr), ! #

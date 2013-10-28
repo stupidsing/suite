@@ -1,16 +1,19 @@
-fc-optimize (DEF-VAR .var .value .do0) .dox
-	:- !
-	, complexity .do0 .complexity
-	, .complexity < 4
+() :- import.file 'fc-transform.sl' #
+
+fc-optimize-disabled (DEF-VAR .var .value .do0) .dox
+	:- once (
+		complexity .value .c, .c < 4
+		complexity .do0 .c, .c < 4
+	)
 	, fc-optimize-substitution .var .value .do0 .dox
 #
 fc-optimize (INVOKE .value (FUN .var .do0)) .dox
 	:- !, fc-optimize-substitution .var .value .do0 .dox
 #
-fc-optimize .p0 .p1 :- fc-transform .p0 .p1 .p0p1s, fc-optimize-list .p0p1s #
+fc-optimize .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-list .ts #
 
 fc-optimize-list () #
-fc-optimize-list (.p0p1, .p0p1s) :- fc-optimize .p0p1, fc-optimize-list .p0p1s #
+fc-optimize-list (.t, .ts) :- fc-optimize .t, fc-optimize-list .ts #
 
 fc-optimize-substitution .var .value .do0 .do1
 	:- replace (VAR .var) .value .do0 .do1
