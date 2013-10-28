@@ -1,3 +1,6 @@
+fc-parse `.t` .parsed
+	:- !, fc-parse-op-sugar .t .t1, fc-parse .t1 .parsed
+#
 fc-parse .t .parsed
 	:- bound .t, fc-parse-sugar .t .t1, !, fc-parse .t1 .parsed
 #
@@ -93,6 +96,22 @@ fc-parse .d _ :- fc-error "Unknown expression" .d #
 fc-parse-list () () :- ! #
 fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
+fc-parse-op-sugar .t .do
+	:- tree .t .left .op .right
+	, fc-operator .op
+	, fc-parse-op-sugar1 .op .left .right .do
+	; fc-error "Invalid operator for lambda expression" .t
+#
+fc-parse-op-sugar1 .op () () (.var0 => .var1 => .t1)
+	:- !, temp .var0, temp .var1 , tree .t1 .var0 .op .var1
+#
+fc-parse-op-sugar1 .op () .right (.var => .t1)
+	:- !, temp .var , tree .t1 .var .op .right
+#
+fc-parse-op-sugar1 .op .left () (.var => .t1)
+	:- !, temp .var , tree .t1 .left .op .var
+#
+
 fc-parse-sugar error (throw {}) :- ! #
 fc-parse-sugar (match || .bind => .then || .otherwise) .p1
 	:- !, temp .var
@@ -106,21 +125,6 @@ fc-parse-sugar (match || .p) .p :- ! #
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
 fc-parse-sugar (.l || .r) (or {.l} {.r}) :- ! #
 fc-parse-sugar ({.t}) (.var => .var {.t}) :- !, temp .var #
-fc-parse-sugar `.t` (.var0 => .var1 => .t1)
-	:- tree .t () .op (), fc-operator .op
-	, !, temp .var0, temp .var1
-	, tree .t1 .var0 .op .var1
-#
-fc-parse-sugar `.t` (.var => .t1)
-	:- tree .t () .op .right, fc-operator .op
-	, !, temp .var
-	, tree .t1 .var .op .right
-#
-fc-parse-sugar `.t`	(.var => .t1)
-	:- tree .t .left .op (), fc-operator .op
-	, !, temp .var
-	, tree .t1 .left .op .var
-#
 fc-parse-sugar (.l; .r) (_lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 --fc-parse-sugar (.l; .r) (.r . .l) :- ! #

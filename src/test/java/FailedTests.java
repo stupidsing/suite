@@ -2,8 +2,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
+import suite.instructionexecutor.InstructionTranslatorTest;
 
 public class FailedTests {
 
@@ -13,10 +13,10 @@ public class FailedTests {
 		new FunRbTreeTest().test();
 	}
 
-	// Strange error message "Unknown expression (temp$$0 => temp$$0 {})"
+	// NullPointerException
 	@Test
-	public void test2() throws IOException {
-		Suite.evaluateFun("`{}`", false);
+	public void test1() throws IOException {
+		new InstructionTranslatorTest().testStandardLibrary();
 	}
 
 }
