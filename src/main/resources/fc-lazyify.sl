@@ -3,6 +3,11 @@ fc-lazyify .const (FUN .var .const)
 	, member (ATOM, BOOLEAN, NUMBER,) .tag
 	, !, temp .var
 #
+fc-lazyify (TREE .oper .left0 .right0) (TREE .oper .left1 .right1)
+	:- !
+	, .left1 = INVOKE (NUMBER 0) .left0
+	, .right1 = INVOKE (NUMBER 0) .right0
+#
 fc-lazyify .do0 .dox :- fc-lazy-compile-default-fun 0 _ .do0 .dox #
 fc-lazyify .p0 .p1 :- fc-transform .p0 .p1 .ts, fc-lazyify-list .ts #
 
