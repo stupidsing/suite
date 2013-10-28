@@ -7,7 +7,7 @@ fc-lazyify .do0 .dox :- fc-lazy-compile-default-fun 0 _ .do0 .dox #
 fc-lazyify .p0 .p1 :- fc-transform .p0 .p1 .ts, fc-lazyify-list .ts #
 
 fc-lazyify-list () #
-fc-lazyify-list (.p0p1, .ts) .ts :- fc-lazyify .p0p1, fc-lazyify-list .ts #
+fc-lazyify-list (.t, .ts) .ts :- fc-lazyify .t, fc-lazyify-list .ts #
 
 fc-lazyify-default-fun .n .paramWraps (VAR .var) (VAR .var)
 	:- member (
