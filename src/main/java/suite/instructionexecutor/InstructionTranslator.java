@@ -131,7 +131,8 @@ public class InstructionTranslator {
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
-				+ "Fun<Node, Node> unwrapper = TranslatedRunUtil.getUnwrapper(config, this); \n" //
+				+ "WrappingBridge bridge = TranslatedRunUtil.getWrappingBridge(config, this); \n" //
+				+ "Fun<Node, Node> unwrapper = bridge.getUnwrapper(); \n" //
 				+ "Comparer comparer = new FunComparer(unwrapper); \n" //
 				+ "\n" //
 				+ "%s \n" //
@@ -340,7 +341,7 @@ public class InstructionTranslator {
 					app("list.add((Node) ds[--dsp])");
 				if (insn.insn == Insn.INVOKEJAVAOBJ1 || insn.insn == Insn.INVOKEJAVAOBJ2)
 					app("list.add((Node) ds[--dsp])");
-				app("#{reg} = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0, n1))", op0);
+				app("#{reg} = ((Invocable) data.getData()).invoke(bridge, list)", op0);
 				app("}");
 				break;
 			case ISCONS________:

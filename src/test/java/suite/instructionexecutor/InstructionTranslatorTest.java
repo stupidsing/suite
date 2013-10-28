@@ -99,8 +99,8 @@ public class InstructionTranslatorTest {
 		TranslatedRunConfig config = new TranslatedRunConfig();
 		config.ruleSet = RuleSetUtil.create();
 
-		try (TranslatedRun compiledRun = new InstructionTranslator(basePathName).translate(code)) {
-			return compiledRun.exec(config, new Closure(null, 0));
+		try (TranslatedRun translatedRun = new InstructionTranslator(basePathName).translate(code)) {
+			return translatedRun.exec(config, new Closure(null, 0));
 		}
 	}
 

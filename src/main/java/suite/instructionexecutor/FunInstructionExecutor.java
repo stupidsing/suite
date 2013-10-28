@@ -23,7 +23,7 @@ import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 
-public class FunInstructionExecutor extends InstructionExecutor {
+public class FunInstructionExecutor extends InstructionExecutor implements WrappingBridge {
 
 	private Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 		public Node apply(Node node) {

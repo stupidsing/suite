@@ -2,6 +2,7 @@ package suite.instructionexecutor;
 
 import java.io.Closeable;
 
+import suite.lp.invocable.Invocables.Invocable;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;
@@ -32,7 +33,21 @@ public class TranslatedRunUtil {
 		public Node result;
 	}
 
-	public static Fun<Node, Node> getUnwrapper(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
+	public static WrappingBridge getWrappingBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
+		final Fun<Node, Node> unwrapper = getUnwrapper(config, translatedRun);
+
+		return new WrappingBridge() {
+			public Fun<Node, Node> getUnwrapper() {
+				return unwrapper;
+			}
+
+			public Node wrapInvocableNode(Invocable invocable, Node node) {
+				return null; // TODO
+			}
+		};
+	}
+
+	private static Fun<Node, Node> getUnwrapper(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
 		return new Fun<Node, Node>() {
 			public Node apply(Node node) {
 				node = node.finalNode();
