@@ -5,6 +5,22 @@ import suite.node.Tree;
 
 public class Replacer {
 
+	public static boolean contains(Node node, Node key) {
+		boolean result;
+
+		if (!node.equals(key)) {
+			Tree tree = Tree.decompose(node);
+
+			if (tree != null)
+				result = contains(tree.getLeft(), key) || contains(tree.getRight(), key);
+			else
+				result = false;
+		} else
+			result = true;
+
+		return result;
+	}
+
 	public static Node replace(Node node0, Node from, Node to) {
 		Node node1;
 
@@ -18,7 +34,7 @@ public class Replacer {
 			else
 				node1 = node0;
 		} else
-			return node1 = to;
+			node1 = to;
 
 		return node1;
 	}

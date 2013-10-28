@@ -37,6 +37,13 @@ public class EvalPredicates {
 		}
 	}
 
+	public static class Clone implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Node.toFixedSizeArray(ps, 2);
+			return prover.bind(new Cloner().clone(params[0]), params[1]);
+		}
+	}
+
 	public static class ComplexityPredicate implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Node.toFixedSizeArray(ps, 2);
@@ -44,10 +51,10 @@ public class EvalPredicates {
 		}
 	}
 
-	public static class Clone implements SystemPredicate {
+	public static class Contains implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Node.toFixedSizeArray(ps, 2);
-			return prover.bind(new Cloner().clone(params[0]), params[1]);
+			return new Replacer().contains(params[1], params[0]);
 		}
 	}
 
