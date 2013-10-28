@@ -41,6 +41,14 @@ public class InstructionTranslatorTest {
 	}
 
 	@Test
+	public void testAtomString() throws IOException {
+		Node node = execute(compileFunctional(Suite.parse("" //
+				+ "define atom-string = _ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >> " //
+				+ "_ijavaobj1 {atom-string} {ATOM}"), false));
+		System.out.println(node);
+	}
+
+	@Test
 	public void testStandardLibrary() throws IOException {
 		String program = "using STANDARD >> 1; 2; 3; | map {`+ 1`} | fold-left {`+`} {0}";
 		assertFunctional(program, false, Int.create(9));

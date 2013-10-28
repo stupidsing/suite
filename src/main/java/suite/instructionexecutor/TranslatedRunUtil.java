@@ -2,6 +2,7 @@ package suite.instructionexecutor;
 
 import java.io.Closeable;
 
+import suite.lp.invocable.InvocableBridge;
 import suite.lp.invocable.Invocables.Invocable;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
@@ -33,16 +34,16 @@ public class TranslatedRunUtil {
 		public Node result;
 	}
 
-	public static WrappingBridge getWrappingBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
+	public static InvocableBridge getWrappingBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
 		final Fun<Node, Node> unwrapper = getUnwrapper(config, translatedRun);
 
-		return new WrappingBridge() {
+		return new InvocableBridge() {
 			public Fun<Node, Node> getUnwrapper() {
 				return unwrapper;
 			}
 
 			public Node wrapInvocableNode(Invocable invocable, Node node) {
-				return null; // TODO
+				throw new UnsupportedOperationException();
 			}
 		};
 	}

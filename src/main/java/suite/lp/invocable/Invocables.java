@@ -10,7 +10,6 @@ import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.IndexedReader;
-import suite.instructionexecutor.WrappingBridge;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -31,12 +30,12 @@ public class Invocables {
 	private static final Atom TREE = Atom.create("TREE");
 	private static final Atom UNKNOWN = Atom.create("UNKNOWN");
 
-	public static abstract class Invocable {
-		public abstract Node invoke(WrappingBridge bridge, List<Node> inputs);
+	public interface Invocable {
+		public abstract Node invoke(InvocableBridge bridge, List<Node> inputs);
 	}
 
-	public static class AtomString extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class AtomString implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			String name = ((Atom) bridge.getUnwrapper().apply(inputs.get(0))).getName();
 
 			if (!name.isEmpty()) {
@@ -48,7 +47,7 @@ public class Invocables {
 		}
 	}
 
-	// public static class Exec extends Invocable {
+	// public static class Exec implements Invocable {
 	// public Node invoke(WrappingBridge bridge, List<Node> inputs) {
 	// Node program = bridge.getUnwrapper().apply(inputs.get(0));
 	//
@@ -61,8 +60,8 @@ public class Invocables {
 	// }
 	// }
 
-	public static class Fgetc extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class Fgetc implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Data<?> data = (Data<?>) bridge.getUnwrapper().apply(inputs.get(0));
 			int p = ((Int) bridge.getUnwrapper().apply(inputs.get(1))).getNumber();
 			int c = ((IndexedReader) data.getData()).read(p);
@@ -70,8 +69,8 @@ public class Invocables {
 		}
 	}
 
-	public static class GetType extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class GetType implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Node node = bridge.getUnwrapper().apply(inputs.get(0));
 			Atom type;
 
@@ -90,14 +89,14 @@ public class Invocables {
 		}
 	}
 
-	public static class Id extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class Id implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			return inputs.get(0);
 		}
 	}
 
-	public static class Log1 extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class Log1 implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			Node node = inputs.get(0);
 			LogUtil.info(Formatter.display(ExpandUtil.expand(unwrapper, unwrapper.apply(node))));
@@ -105,16 +104,16 @@ public class Invocables {
 		}
 	}
 
-	public static class Log2 extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class Log2 implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			LogUtil.info(ExpandUtil.expandString(unwrapper, inputs.get(0)));
 			return unwrapper.apply(inputs.get(1));
 		}
 	}
 
-	public static class Popen extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class Popen implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			final Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			Node cmd = inputs.get(0);
 			final Node in = inputs.get(1);
@@ -149,14 +148,14 @@ public class Invocables {
 		}
 	}
 
-	public static class StringLength extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class StringLength implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			return Int.create(ExpandUtil.expandString(bridge.getUnwrapper(), inputs.get(0)).length());
 		}
 	}
 
-	public static class Throw extends Invocable {
-		public Node invoke(WrappingBridge bridge, List<Node> inputs) {
+	public static class Throw implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			throw new RuntimeException("Error termination");
 		}
 	}

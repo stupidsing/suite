@@ -326,7 +326,6 @@ public class InstructionTranslator {
 			case INVOKEJAVACLS_:
 				app("{");
 				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
-				app("node = unwrapper.apply((Node) ds[--dsp])");
 				app("String clazzName = atom.toString().split(\"!\")[1]");
 				app("#{reg} = InstructionUtil.execInvokeJavaClass(clazzName)", op0);
 				app("}");
@@ -337,9 +336,9 @@ public class InstructionTranslator {
 				app("{");
 				app("Data<?> data = (Data<?>) unwrapper.apply((Node) ds[--dsp])");
 				app("List<Node> list = new ArrayList<>(2)");
-				if (insn.insn == Insn.INVOKEJAVAOBJ1)
-					app("list.add((Node) ds[--dsp])");
 				if (insn.insn == Insn.INVOKEJAVAOBJ1 || insn.insn == Insn.INVOKEJAVAOBJ2)
+					app("list.add((Node) ds[--dsp])");
+				if (insn.insn == Insn.INVOKEJAVAOBJ2)
 					app("list.add((Node) ds[--dsp])");
 				app("#{reg} = ((Invocable) data.getData()).invoke(bridge, list)", op0);
 				app("}");

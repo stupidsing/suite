@@ -13,6 +13,7 @@ import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
+import suite.lp.invocable.InvocableBridge;
 import suite.lp.invocable.Invocables.Invocable;
 import suite.node.Atom;
 import suite.node.Data;
@@ -23,7 +24,7 @@ import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 
-public class FunInstructionExecutor extends InstructionExecutor implements WrappingBridge {
+public class FunInstructionExecutor extends InstructionExecutor implements InvocableBridge {
 
 	private Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 		public Node apply(Node node) {
