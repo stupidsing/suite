@@ -36,7 +36,7 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write 'Lazyifying', nl
-	, !, .do2 = .do3 --fc-lazyify .do2 .do3
+	, !, fc-lazyify .do2 .do3
 	, !, write 'Optimizing', nl
 	, !, fc-optimize .do3 .do4
 	, !, fc-dump-precompile EAGER .lib .fcs .do4 .prog1

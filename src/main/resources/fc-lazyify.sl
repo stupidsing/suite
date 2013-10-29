@@ -1,18 +1,20 @@
-fc-lazyify .const (FUN .var .const)
-	:- .const = .tag .value
-	, member (ATOM, BOOLEAN, NUMBER,) .tag
-	, !, temp .var
-#
-fc-lazyify (TREE .oper .left0 .right0) (TREE .oper .left1 .right1)
-	:- !
-	, .left1 = INVOKE (NUMBER 0) .left0
-	, .right1 = INVOKE (NUMBER 0) .right0
-#
-fc-lazyify .do0 .dox :- fc-lazy-compile-default-fun 0 _ .do0 .dox #
-fc-lazyify .p0 .p1 :- fc-transform .p0 .p1 .ts, fc-lazyify-list .ts #
+() :- import.file 'fc-transform.sl' #
+
+--fc-lazyify .const (FUN .var .const)
+--	:- .const = .tag .value
+--	, member (ATOM, BOOLEAN, NUMBER,) .tag
+--	, !, temp .var
+--#
+--fc-lazyify (TREE .oper .left0 .right0) (TREE .oper .left1 .right1)
+--	:- !
+--	, .left1 = INVOKE (NUMBER 0) .left0
+--	, .right1 = INVOKE (NUMBER 0) .right0
+--#
+--fc-lazyify .do0 .dox :- fc-lazy-compile-default-fun 0 _ .do0 .dox #
+fc-lazyify .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-lazyify-list .ts #
 
 fc-lazyify-list () #
-fc-lazyify-list (.t, .ts) .ts :- fc-lazyify .t, fc-lazyify-list .ts #
+fc-lazyify-list (.t, .ts) :- fc-lazyify .t, fc-lazyify-list .ts #
 
 fc-lazyify-default-fun .n .paramWraps (VAR .var) (VAR .var)
 	:- member (

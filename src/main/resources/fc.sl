@@ -28,7 +28,7 @@ compile-function .mode .do0 .c0
 	, !, fc-parse .do0 .do1
 	, !, infer-type-rule .do1 ()/()/() .tr/() _
 	, !, resolve-type-rules .tr
-	, !, .do1 = .do2 --fc-lazyify .do1 .do2
+	, !, fc-lazyify .do1 .do2
 	, !, fc-optimize .do2 .do3
 	, !, fc-compile .mode .do3 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
