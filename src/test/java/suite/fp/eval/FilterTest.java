@@ -2,17 +2,9 @@ package suite.fp.eval;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-
 import org.junit.Test;
 
 import suite.Suite;
-import suite.fp.FunCompilerConfig;
-import suite.node.Node;
 
 public class FilterTest {
 
@@ -32,14 +24,7 @@ public class FilterTest {
 	}
 
 	private static String eval(String program, String in) {
-		try (Reader reader = new StringReader(in); Writer writer = new StringWriter()) {
-			Node node = Suite.applyReader(reader, Suite.parse(program));
-			FunCompilerConfig fcc = Suite.fcc(node, true);
-			Suite.evaluateFunToWriter(fcc, writer);
-			return writer.toString();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		return Suite.evaluateFilterFun(program, true, in);
 	}
 
 }

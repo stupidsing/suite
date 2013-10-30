@@ -3,6 +3,8 @@ package suite;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -171,8 +173,27 @@ public class Suite {
 		return evaluateUtil.evaluateLogic(builder, rs, Suite.parse(lps));
 	}
 
+	public static String evaluateFilterFun(String program, boolean isLazy, String in) {
+		try (Reader reader = new StringReader(in); Writer writer = new StringWriter()) {
+			evaluateFilterFun(program, isLazy, reader, writer);
+			return writer.toString();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public static void evaluateFilterFun(String program, boolean isLazy, Reader reader, Writer writer) {
+		try {
+			Node node = Suite.applyReader(reader, Suite.parse(program));
+			FunCompilerConfig fcc = Suite.fcc(node, isLazy);
+			evaluateUtil.evaluateFunToWriter(fcc, writer);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public static Node evaluateFun(String fp, boolean isLazy) {
-		return evaluateFun(Suite.fcc(Suite.parse(fp), isLazy));
+		return evaluateUtil.evaluateFun(Suite.fcc(Suite.parse(fp), isLazy));
 	}
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
@@ -184,7 +205,7 @@ public class Suite {
 	}
 
 	public static Node evaluateFunType(String fps) {
-		return evaluateFunType(Suite.fcc(Suite.parse(fps)));
+		return evaluateUtil.evaluateFunType(Suite.fcc(Suite.parse(fps)));
 	}
 
 	public static Node evaluateFunType(FunCompilerConfig fcc) {
