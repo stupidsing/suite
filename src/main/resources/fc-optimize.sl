@@ -19,3 +19,11 @@ fc-optimize-substitution .var .value .do0 .do1
 	:- replace (VAR .var) .value .do0 .do1
 	, fc-optimize .do1 .dox
 #
+
+fc-count-vars (VAR .var) (.var, .vs)/.vs #
+fc-count-vars .p0 .vs :- fc-transform .p0 .p0 ()/.ts, fc-count-vars-list .ts .vs #
+
+fc-count-vars-list () .vs/.vs #
+fc-count-vars-list (.p .p, .ts) .vs0/.vsx
+	:- fc-count-vars .p .vs0/.vs1, fc-count-vars-list .ts .vs1/.vsx
+#

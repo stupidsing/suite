@@ -46,7 +46,7 @@ public class EvaluateUtil {
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
 			Node result = executor.execute();
-			return fcc.isLazy() ? ExpandUtil.expand(executor.getUnwrapper(), result) : result;
+			return fcc.isLazy() ? ExpandUtil.expandFully(executor.getUnwrapper(), result) : result;
 		}
 	}
 

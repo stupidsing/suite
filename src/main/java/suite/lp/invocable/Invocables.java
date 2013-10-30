@@ -95,7 +95,7 @@ public class Invocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			Node node = inputs.get(0);
-			LogUtil.info(Formatter.display(ExpandUtil.expand(unwrapper, unwrapper.apply(node))));
+			LogUtil.info(Formatter.display(ExpandUtil.expandFully(unwrapper, unwrapper.apply(node))));
 			return node;
 		}
 	}
@@ -141,6 +141,24 @@ public class Invocables {
 				throw new RuntimeException(ex);
 			}
 
+		}
+	}
+
+	public static class Seq implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
+			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
+			unwrapFully(unwrapper, inputs.get(0));
+			return unwrapper.apply(inputs.get(1));
+		}
+
+		public static void unwrapFully(Fun<Node, Node> unwrapper, Node node) {
+			node = unwrapper.apply(node);
+
+			if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+				unwrapFully(unwrapper, tree.getLeft());
+				unwrapFully(unwrapper, tree.getRight());
+			}
 		}
 	}
 

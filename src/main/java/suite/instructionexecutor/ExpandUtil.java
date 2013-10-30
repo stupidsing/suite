@@ -54,13 +54,13 @@ public class ExpandUtil {
 	/**
 	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
-	public static Node expand(Fun<Node, Node> unwrapper, Node node) {
+	public static Node expandFully(Fun<Node, Node> unwrapper, Node node) {
 		node = unwrapper.apply(node);
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = expand(unwrapper, tree.getLeft());
-			Node right = expand(unwrapper, tree.getRight());
+			Node left = expandFully(unwrapper, tree.getLeft());
+			Node right = expandFully(unwrapper, tree.getRight());
 			node = Tree.create(tree.getOperator(), left, right);
 		}
 
