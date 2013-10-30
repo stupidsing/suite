@@ -169,7 +169,7 @@ public class Prover {
 			generalizer.setCut(new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
 					alt = alt0;
-					return true;
+					return Boolean.TRUE;
 				}
 			}));
 

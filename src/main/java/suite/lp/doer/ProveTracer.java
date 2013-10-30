@@ -88,7 +88,7 @@ public class ProveTracer {
 					currentRecord = record0;
 					currentDepth = depth0;
 					record.end = records.size();
-					return Boolean.TRUE;
+					return Boolean.FALSE;
 				}
 			});
 
