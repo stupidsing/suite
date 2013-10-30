@@ -10,6 +10,7 @@
 	, import.file 'fc-lazyify.sl'
 	, import.file 'fc-optimize.sl'
 	, import.file 'fc-parse.sl'
+	, import.file 'fc-transform.sl'
 	, import.file 'generate-code.sl'
 	, import.file 'rbt.sl'
 #

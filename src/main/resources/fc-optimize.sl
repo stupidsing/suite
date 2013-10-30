@@ -1,5 +1,3 @@
-() :- import.file 'fc-transform.sl' #
-
 fc-optimize-disabled (DEF-VAR .var .value .do0) .dox
 	:- once (
 		(complexity .value .c; complexity .do0 .c)

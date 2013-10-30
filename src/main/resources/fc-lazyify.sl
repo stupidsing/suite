@@ -1,5 +1,3 @@
-() :- import.file 'fc-transform.sl' #
-
 --fc-lazyify .const (FUN .var .const)
 --	:- .const = .tag .value
 --	, member (ATOM, BOOLEAN, NUMBER,) .tag
