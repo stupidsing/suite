@@ -1,0 +1,15 @@
+define m-seq = type (:t :- do-of _ => do-of :t => do-of :t) (
+	define seq = type (:t :- _ => :t => :t) no-type-check (
+		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
+	) >>
+	do0 => do1 => (do #
+		seq {exec {do0}} {exec {do1}}
+	)
+) >>
+define m-while = type (:t :- do-of boolean => do-of :t => do-of ()) (
+	cond => pred => (do #
+		if:: exec {cond}
+		then:: seq {pred} {while {cond} {pred}}
+		else:: exec {}
+	)
+) >>
