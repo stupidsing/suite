@@ -1,29 +1,40 @@
-fc-optimize-disabled (DEF-VAR .var .value .do0) .dox
+fc-optimize .do0 .dox
+	:- fc-optimize-flow .do0 .dox
+	--, fc-remove-unref-vars .do1 .dox ()/_
+#
+
+fc-optimize-flow-disabled (DEF-VAR .var .value .do0) .dox
 	:- once (
 		(complexity .value .c; complexity .do0 .c)
 		, .c < 4
 	)
 	, not contains .value (VAR .var)
 	, dump "Inlining" .var "=" .value "in" .do0, nl
-	, fc-optimize-substitution .var .value .do0 .dox
+	, fc-optimize-flow-substitution .var .value .do0 .dox
 #
-fc-optimize (INVOKE .value (FUN .var .do0)) .dox
-	:- !, fc-optimize-substitution .var .value .do0 .dox
+fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
+	:- !, fc-optimize-flow-substitution .var .value .do0 .dox
 #
-fc-optimize .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-list .ts #
+fc-optimize-flow .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-flow-list .ts #
 
-fc-optimize-list () #
-fc-optimize-list (.t, .ts) :- fc-optimize .t, fc-optimize-list .ts #
+fc-optimize-flow-list () #
+fc-optimize-flow-list (.t, .ts) :- fc-optimize-flow .t, fc-optimize-flow-list .ts #
 
-fc-optimize-substitution .var .value .do0 .do1
+fc-optimize-flow-substitution .var .value .do0 .do1
 	:- replace (VAR .var) .value .do0 .do1
-	, fc-optimize .do1 .dox
+	, fc-optimize-flow .do1 .dox
 #
 
-fc-count-vars (VAR .var) (.var, .vs)/.vs #
-fc-count-vars .p0 .vs :- fc-transform .p0 .p0 ()/.ts, fc-count-vars-list .ts .vs #
+-- Remove unreferenced variables
+fc-remove-unref-vars (DEF-VAR .var _ .do0) .dox .rb0/.rbx
+	:- fc-remove-unref-vars .do0 .dox ()/.rbs
+	, not rbt-get .rbs .var
+	, !, rbt-merge-bind .rb0 .rbs .rbx
+#
+fc-remove-unref-vars (VAR .var) (VAR .var) .rb :- rbt-bind .var .rb #
+fc-remove-unref-vars .p0 .p1 .rb :- fc-transform .p0 .p1 ()/.ts, fc-remove-unref-vars-list .ts .rb #
 
-fc-count-vars-list () .vs/.vs #
-fc-count-vars-list (.p .p, .ts) .vs0/.vsx
-	:- fc-count-vars .p .vs0/.vs1, fc-count-vars-list .ts .vs1/.vsx
+fc-remove-unref-vars-list () .rb/.rb #
+fc-remove-unref-vars-list (.p0 .p1, .ts) .rb0/.rbx
+	:- fc-remove-unref-vars .p0 .p1 .rb0/.rb1, fc-remove-unref-vars-list .ts .rb1/.rbx
 #

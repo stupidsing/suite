@@ -38,7 +38,7 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	, !, write 'Lazyifying', nl
 	, !, fc-lazyify .do2 .do3
 	, !, write 'Optimizing', nl
-	, !, fc-optimize .do3 .do4
+	, !, fc-optimize-flow .do3 .do4
 	, !, fc-dump-precompile EAGER .lib .fcs .do4 .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .do4 .prog2
 	, .prog3 = fc-imported-precompile-library .lib
