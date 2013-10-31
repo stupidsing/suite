@@ -1,6 +1,6 @@
 fc-optimize .do0 .dox
-	:- fc-optimize-flow .do0 .do1
-	, fc-remove-unref-vars .do1 .dox ()/_
+	:- fc-optimize-flow .do0 .dox
+	--, fc-remove-unref-vars .do1 .dox ()/_
 #
 
 fc-optimize-flow-disabled .do0 .dox
