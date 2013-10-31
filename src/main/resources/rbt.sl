@@ -70,10 +70,13 @@ rbt-add0  .mode .v (.color .n0 .pivot .n1)/.treex
 #
 
 rbt-balance (BLACK .npn)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
-	:- .npn = (RED .npn1) .p2 .n3
-	, (.npn1 = (RED .n0 .p0 .n1) .p1 .n2; .npn1 = .n0 .p0 (RED .n1 .p1 .n2))
-	; .npn = .n0 .p0 (RED .npn1)
-	, (.npn1 = (RED .n1 .p1 .n2) .p2 .n3; .npn1 = .n1 .p1 (RED .n2 .p2 .n3))
+	:- (
+		.npn = (RED .npn1) .p2 .n3
+		, (.npn1 = (RED .n0 .p0 .n1) .p1 .n2; .npn1 = .n0 .p0 (RED .n1 .p1 .n2))
+		; .npn = .n0 .p0 (RED .npn1)
+		, (.npn1 = (RED .n1 .p1 .n2) .p2 .n3; .npn1 = .n1 .p1 (RED .n2 .p2 .n3))
+	)
+	, !
 #
 rbt-balance .tree/.tree #
 
