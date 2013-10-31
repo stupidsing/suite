@@ -76,11 +76,8 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 -- Type inferencer
 infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
--- Lazyifier
-fc-lazyify ($$PRECOMPILE .p) ($$PRECOMPILE .p) :- ! #
-
--- Optimizer
-fc-optimize ($$PRECOMPILE .p) ($$PRECOMPILE .p) :- ! #
+-- Lazyifier & Optimizer
+fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
 -- Eager evaluation
 fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fve .cdr :- , member .pcc EAGER/(.fve .cdr), ! #
