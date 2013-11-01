@@ -3,10 +3,11 @@
 --	, member (ATOM, BOOLEAN, NUMBER,) .tag
 --	, !, temp .var
 --#
---fc-lazyify (TREE .oper .left0 .right0) (TREE .oper .left1 .right1)
+--fc-lazyify (TREE .oper .left0 .right0) .dox
 --	:- !
 --	, .left1 = INVOKE (NUMBER 0) .left0
 --	, .right1 = INVOKE (NUMBER 0) .right0
+--	, temp .var, .dox = FUN .var (TREE .oper .left1 .right1)
 --#
 --fc-lazyify .do0 .dox
 --	:- fc-lazy-compile-default-fun 0 _ .returnWrap .do0 .do1
