@@ -23,7 +23,7 @@ fc-lazyify-list (.t, .ts) :- fc-lazyify .t, fc-lazyify-list .ts #
 fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 	:- member (
 		_compare/2/VALUE:VALUE:/VALUE:,
-		_ijavacls/1/THUNK:/VALUE:,
+		_ijavacls/1/VALUE:/VALUE:,
 		_ijavaobj0/1/VALUE:/VALUE:,
 		_ijavaobj1/2/VALUE:VALUE:/VALUE:,
 		_ijavaobj2/3/VALUE:VALUE:VALUE:/VALUE:,

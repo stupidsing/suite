@@ -79,7 +79,7 @@ public class FunInstructionExecutor extends InstructionExecutor implements Invoc
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;
 		case INVOKEJAVACLS_:
-			Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp]);
+			Atom atom = (Atom) ds[--dsp];
 			String clazzName = atom.getName().split("!")[1];
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
