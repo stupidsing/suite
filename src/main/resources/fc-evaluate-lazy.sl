@@ -106,9 +106,9 @@ fc-lazy-compile-default-fun .n .paramWraps (VAR .var) .env .c0/.cx/.d/.d/.reg
 	:- member (
 		_compare/2/VALUE:VALUE:,
 		_ijavacls/1/THUNK:,
-		_ijavaobj0/1/THUNK:,
-		_ijavaobj1/2/THUNK:THUNK:,
-		_ijavaobj2/3/THUNK:THUNK:THUNK:,
+		_ijavaobj0/1/VALUE:,
+		_ijavaobj1/2/VALUE:VALUE:,
+		_ijavaobj2/3/VALUE:VALUE:VALUE:,
 		_lcons/2/THUNK:THUNK:,
 		_pcons/2/THUNK:THUNK:,
 		is-list/1/VALUE:,

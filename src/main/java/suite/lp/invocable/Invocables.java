@@ -32,7 +32,7 @@ public class Invocables {
 
 	public static class AtomString implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			String name = ((Atom) bridge.getUnwrapper().apply(inputs.get(0))).getName();
+			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
 				Node left = bridge.wrapInvocableNode(new Id(), Int.create(name.charAt(0)));
@@ -45,7 +45,7 @@ public class Invocables {
 
 	// public static class Exec implements Invocable {
 	// public Node invoke(WrappingBridge bridge, List<Node> inputs) {
-	// Node program = bridge.getUnwrapper().apply(inputs.get(0));
+	// Node program = inputs.get(0);
 	//
 	// for (Node step : Node.iter(TermOp.NEXT__, program)) {
 	// List<Node> list = Node.tupleToList(step);
@@ -58,8 +58,8 @@ public class Invocables {
 
 	public static class Fgetc implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Data<?> data = (Data<?>) bridge.getUnwrapper().apply(inputs.get(0));
-			int p = ((Int) bridge.getUnwrapper().apply(inputs.get(1))).getNumber();
+			Data<?> data = (Data<?>) inputs.get(0);
+			int p = ((Int) inputs.get(1)).getNumber();
 			int c = ((IndexedReader) data.getData()).read(p);
 			return Int.create(c);
 		}
@@ -67,7 +67,7 @@ public class Invocables {
 
 	public static class GetType implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Node node = bridge.getUnwrapper().apply(inputs.get(0));
+			Node node = inputs.get(0);
 			Atom type;
 
 			if (node instanceof Atom)
@@ -95,7 +95,7 @@ public class Invocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			Node node = inputs.get(0);
-			LogUtil.info(Formatter.display(ExpandUtil.expandFully(unwrapper, unwrapper.apply(node))));
+			LogUtil.info(Formatter.display(ExpandUtil.expandFully(unwrapper, node)));
 			return node;
 		}
 	}
@@ -104,7 +104,7 @@ public class Invocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			LogUtil.info(ExpandUtil.expandString(unwrapper, inputs.get(0)));
-			return unwrapper.apply(inputs.get(1));
+			return inputs.get(1);
 		}
 	}
 
@@ -146,9 +146,8 @@ public class Invocables {
 
 	public static class Seq implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
-			unwrapFully(unwrapper, inputs.get(0));
-			return unwrapper.apply(inputs.get(1));
+			unwrapFully(bridge.getUnwrapper(), inputs.get(0));
+			return inputs.get(1);
 		}
 
 		public static void unwrapFully(Fun<Node, Node> unwrapper, Node node) {

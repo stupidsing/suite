@@ -122,6 +122,12 @@ fc-parse-sugar (match || .bind => .then || .otherwise) .p1
 	)
 #
 fc-parse-sugar (match || .p) .p :- ! #
+fc-parse-sugar (case || .cond => .then || .otherwise) .p1
+	:- !
+	, once (.cond = (_ = _), .if = if-bind; .if = if)
+	, .p1 = .if .cond then .then else (case || .otherwise)
+#
+fc-parse-sugar (case || .p) .p :- ! #
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
 fc-parse-sugar (.l || .r) (or {.l} {.r}) :- ! #
 fc-parse-sugar ({.t}) (.var => .var {.t}) :- !, temp .var #

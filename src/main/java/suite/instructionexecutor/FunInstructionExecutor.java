@@ -84,16 +84,16 @@ public class FunInstructionExecutor extends InstructionExecutor implements Invoc
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
 		case INVOKEJAVAOBJ0:
-			data = (Data<?>) unwrapper.apply((Node) ds[--dsp]);
+			data = (Data<?>) ds[--dsp];
 			result = ((Invocable) data.getData()).invoke(this, Collections.<Node> emptyList());
 			break;
 		case INVOKEJAVAOBJ1:
-			data = (Data<?>) unwrapper.apply((Node) ds[--dsp]);
+			data = (Data<?>) (Node) ds[--dsp];
 			n0 = (Node) ds[--dsp];
 			result = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0));
 			break;
 		case INVOKEJAVAOBJ2:
-			data = (Data<?>) unwrapper.apply((Node) ds[--dsp]);
+			data = (Data<?>) (Node) ds[--dsp];
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
 			result = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0, n1));
