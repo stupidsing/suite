@@ -23,9 +23,9 @@ fc-setup-precompile0 .lib .do1/.do0 .filename
 
 fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	:- .pc = .ues/.ves/.tes .trs/.trs .fcs
-	, !, write 'Parsing program', nl
+	, !, write "Parsing program", nl
 	, !, fc-parse .do1 .do2
-	, !, write 'Inferencing types', nl
+	, !, write "Inferencing types", nl
 	, !, infer-type-rule .do2 ()/()/() .tr/() NUMBER
 	, !, resolve-type-rules .tr
 	, !, .prog0 = (
@@ -35,9 +35,9 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 			, fc-dict-merge-replace .te .tes .te1
 			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
-	, !, write 'Lazyifying', nl
+	, !, write "Lazyifying", nl
 	, !, fc-lazyify .do2 .do3
-	, !, write 'Optimizing', nl
+	, !, write "Optimizing", nl
 	, !, fc-optimize-flow .do3 .do4
 	, !, fc-dump-precompile EAGER .lib .fcs .do4 .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .do4 .prog2
