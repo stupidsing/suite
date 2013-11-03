@@ -98,18 +98,20 @@ fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
 
 fc-parse-op-sugar .t .do
 	:- tree .t .left .op .right
-	, fc-operator .op
+	, once (fc-operator .op
+		; fc-error "Invalid operator for lambda expression" .t
+	)
 	, fc-parse-op-sugar1 .op .left .right .do
-	; fc-error "Invalid operator for lambda expression" .t
 #
+
 fc-parse-op-sugar1 .op () () (.var0 => .var1 => .t1)
-	:- !, temp .var0, temp .var1 , tree .t1 .var0 .op .var1
+	:- !, temp .var0, temp .var1, tree .t1 .var0 .op .var1
 #
 fc-parse-op-sugar1 .op () .right (.var => .t1)
-	:- !, temp .var , tree .t1 .var .op .right
+	:- !, temp .var, tree .t1 .var .op .right
 #
 fc-parse-op-sugar1 .op .left () (.var => .t1)
-	:- !, temp .var , tree .t1 .left .op .var
+	:- !, temp .var, tree .t1 .left .op .var
 #
 
 fc-parse-sugar error (throw {}) :- ! #
