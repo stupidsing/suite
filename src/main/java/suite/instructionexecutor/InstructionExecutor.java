@@ -243,7 +243,6 @@ public class InstructionExecutor implements AutoCloseable {
 		list.add(new Instruction(Insn.ENTER_________, 2, 0, 0));
 
 		unwrapEntryPoint = list.size();
-		list.add(new Instruction(Insn.PUSHCONST_____, 0, 0, 0));
 		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
 		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
 		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
