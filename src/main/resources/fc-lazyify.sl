@@ -4,6 +4,10 @@ fc-lazyify .const (WRAP .const)
 	:- .const = .tag .value
 	, member (ATOM, BOOLEAN, NUMBER,) .tag, !
 #
+fc-lazyify (FUN .var .do0) (WRAP (FUN .var .do1))
+	:- !
+	, fc-lazyify .do0 .do1
+#
 fc-lazyify (IF .if0 .then0 .else0) (WRAP UNWRAP (IF (UNWRAP .if1) .then1 .else1))
 	:- !
 	, fc-lazyify .if0 .if1
@@ -17,7 +21,7 @@ fc-lazyify .do0 .dox
 		; .returnWrap = VALUE, .dox = WRAP .do1
 	)
 #
-fc-lazyify (INVOKE .value0 .callee0) (WRAP UNWRAP (INVOKE .value1 .callee1))
+fc-lazyify (INVOKE .value0 .callee0) (WRAP UNWRAP (INVOKE .value1 (UNWRAP .callee1)))
 	:- !
 	, fc-lazyify .value0 .value1
 	, fc-lazyify .callee0 .callee1
