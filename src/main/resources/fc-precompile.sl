@@ -36,11 +36,12 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write "Lazyifying", nl
-	, !, fc-lazyify .do2 .do3
+	, !, fc-lazyify .do2 .dol3
 	, !, write "Optimizing", nl
-	, !, fc-optimize-flow .do3 .do4
-	, !, fc-dump-precompile EAGER .lib .fcs .do4 .prog1
-	, !, fc-dump-precompile LAZY .lib .fcs .do4 .prog2
+	, !, fc-optimize-flow .do2 .do3
+	, !, fc-optimize-flow .dol3 .dol4
+	, !, fc-dump-precompile EAGER .lib .fcs .do3 .prog1
+	, !, fc-dump-precompile LAZY .lib .fcs .dol4 .prog2
 	, .prog3 = fc-imported-precompile-library .lib
 	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
 	, !, write 'Verifying output', nl
@@ -50,19 +51,11 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
 	, fc-compile .mode .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
-	, once member .fcs .mode/.fc
-	, .fc = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
-	, (.mode = EAGER -- Eager code is always compiled into .c0/.cx section
-		, cg-optimize-segment .c0/.cs0 .co0/.cso0
-		, cg-optimize-segment .csx/.cx .csox/.cox
-		, cg-optimize-segment .d0/.ds0 .do0/.dso0
-		, cg-optimize-segment .dsx/.dx .dsox/.dox
-	; .mode = LAZY -- Lazy code is always compiled into .d0/.dx section
-		, cg-optimize-segment .c0/.cx .co0/.cox
-		, cg-optimize-segment .d0/.cs0 .do0/.cso0
-		, cg-optimize-segment .csx/.ds0 .csox/.dso0
-		, cg-optimize-segment .dsx/.dx .dsox/.dox
-	)
+	, .fcs = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
+	, cg-optimize-segment .c0/.cs0 .co0/.cso0
+	, cg-optimize-segment .csx/.cx .csox/.cox
+	, cg-optimize-segment .d0/.ds0 .do0/.dso0
+	, cg-optimize-segment .dsx/.dx .dsox/.dox
 	, .prog = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
 			:- fc-dict-merge-replace .ve .ves .ve1
@@ -76,16 +69,10 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 -- Type inferencer
 infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
--- Lazyifier & Optimizer
+-- Lazyifier & optimizer
 fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
--- Eager evaluation
-fc-compile EAGER ($$PRECOMPILE _ _ .pcc) .fve .cdr :- , member .pcc EAGER/(.fve .cdr), ! #
+-- Code generation
+fc-compile _ ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 
--- Lazy evaluation
-fc-lazy-compile-to-value ($$PRECOMPILE _ _ .pcc) .fve .cdr :- member .pcc LAZY/(.fve .cdr), ! #
-
-() :- import.file 'fc.sl'
-	, import.file 'fc-evaluate-eager.sl'
-	, import.file 'fc-evaluate-lazy.sl'
-#
+() :- import.file 'fc.sl' #

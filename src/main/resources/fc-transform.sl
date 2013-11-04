@@ -33,7 +33,13 @@ fc-transform (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 fc-transform (USING .m .do0) (USING .m .do1) .ts0/.tsx
 	:- .tsx = (.do0 .do1, .ts0)
 #
+fc-transform (UNWRAP .do0) (UNWRAP .do1) .ts0/.tsx
+	:- .tsx = (.do0 .do1, .ts0)
+#
 fc-transform (VAR .var) (VAR .var) .ts/.ts
+#
+fc-transform (WRAP .do0) (WRAP .do1) .ts0/.tsx
+	:- .tsx = (.do0 .do1, .ts0)
 #
 
 fc-transform-option ALLOW-RECURSIVE ALLOW-RECURSIVE

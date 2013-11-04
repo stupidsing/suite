@@ -17,8 +17,8 @@ public class StatisticsCollector {
 		return instance;
 	}
 
-	public void collect(Instruction insn) {
-		// LogUtil.info(ip + "> " + insn);
+	public void collect(int ip, Instruction insn) {
+		LogUtil.info(ip + "> " + insn);
 		nInstructionsExecuted++;
 
 		if (insn.insn == Insn.EXIT__________) { // Ends collection

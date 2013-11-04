@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class Main implements AutoCloseable {
 	private FunCompilerConfig fcc = new FunCompilerConfig();
 	private ProverConfig proverConfig = fcc.getProverConfig();
 
+	private boolean isQuiet = false;
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
@@ -125,7 +128,7 @@ public class Main implements AutoCloseable {
 
 		BufferedReader br = new BufferedReader(reader);
 
-		System.out.println("READY");
+		prompt().println("READY");
 
 		while (true)
 			try {
@@ -133,7 +136,7 @@ public class Main implements AutoCloseable {
 				String line;
 
 				do {
-					System.out.print(sb.length() == 0 ? "=> " : "   ");
+					prompt().print(sb.length() == 0 ? "=> " : "   ");
 
 					if ((line = br.readLine()) != null)
 						sb.append(line + "\n");
@@ -206,27 +209,24 @@ public class Main implements AutoCloseable {
 					node = generalizer.generalize(node);
 					Prover prover = new Prover(proverConfig);
 
-					if (type == InputType.QUERY)
-						System.out.println(yesNo(prover.prove(node)));
-					else if (type == InputType.QUERYELABORATE) {
-						Node elab = new Data<Source<Boolean>>(new Source<Boolean>() {
-							public Boolean source() {
-								String dump = generalizer.dumpVariables();
-								if (!dump.isEmpty())
-									System.out.println(dump);
+					Node elab = new Data<Source<Boolean>>(new Source<Boolean>() {
+						public Boolean source() {
+							String dump = generalizer.dumpVariables();
+							if (!dump.isEmpty())
+								prompt().println(dump);
 
-								count[0]++;
-								return Boolean.FALSE;
-							}
-						});
+							count[0]++;
+							return Boolean.FALSE;
+						}
+					});
 
-						prover.prove(Tree.create(TermOp.AND___, node, elab));
+					prover.prove(Tree.create(TermOp.AND___, node, elab));
 
-						if (count[0] == 1)
-							System.out.println(count[0] + " solution\n");
-						else
-							System.out.println(count[0] + " solutions\n");
-					}
+					if (count[0] == 1)
+						prompt().println(count[0] + " solution\n");
+					else
+						prompt().println(count[0] + " solutions\n");
+
 					break;
 				case QUERYCOMPILED:
 					query(CompiledProverBuilder.level1(proverConfig, fcc.isDumpCode()), ruleSet, node);
@@ -239,11 +239,6 @@ public class Main implements AutoCloseable {
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
 			}
-	}
-
-	private void printEvaluatedString(Node node) throws IOException {
-		evaluateFunctionalToWriter(node, writer);
-		writer.flush();
 	}
 
 	private boolean processOption(String arg, Iterator<String> iter) {
@@ -272,6 +267,8 @@ public class Main implements AutoCloseable {
 		else if (arg.equals("-precompile") && iter.hasNext())
 			for (String lib : iter.next().split(","))
 				result &= Suite.precompile(lib, proverConfig);
+		else if (arg.equals("-quiet"))
+			isQuiet = on;
 		else if (arg.equals("-trace"))
 			proverConfig.setTrace(on);
 		else
@@ -280,8 +277,13 @@ public class Main implements AutoCloseable {
 		return result;
 	}
 
+	private void printEvaluatedString(Node node) throws IOException {
+		evaluateFunctionalToWriter(node, writer);
+		writer.flush();
+	}
+
 	private void query(Builder builder, RuleSet ruleSet, Node node) {
-		System.out.println(yesNo(Suite.proveLogic(builder, ruleSet, node)));
+		prompt().println(yesNo(Suite.proveLogic(builder, ruleSet, node)));
 	}
 
 	private boolean runLogical(List<String> files) throws IOException {
@@ -328,6 +330,17 @@ public class Main implements AutoCloseable {
 
 	private String yesNo(boolean q) {
 		return q ? "Yes\n" : "No\n";
+	}
+
+	private PrintStream prompt() {
+		try (OutputStream os = new OutputStream() {
+			public void write(int c) {
+			}
+		}) {
+			return !isQuiet ? System.out : new PrintStream(os);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@Override

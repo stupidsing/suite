@@ -1,12 +1,10 @@
 -------------------------------------------------------------------------------
 -- functional program compiler
 --
--- Also need to import one of the following backends:
--- fc-evaluate-eager.sl, fc-evaluate-lazy.sl
---
 -- .mode can be EAGER or LAZY
 
-() :- import.file 'fc-infer-type.sl'
+() :- import.file 'fc-evaluate.sl'
+	, import.file 'fc-infer-type.sl'
 	, import.file 'fc-lazyify.sl'
 	, import.file 'fc-optimize.sl'
 	, import.file 'fc-parse.sl'
@@ -29,7 +27,9 @@ compile-function .mode .do0 .c0
 	, !, fc-parse .do0 .do1
 	, !, infer-type-rule .do1 ()/()/() .tr/() _
 	, !, resolve-type-rules .tr
-	, !, fc-lazyify .do1 .do2
+	, !, once (.mode = LAZY, fc-lazyify-fun .do1 .do2
+		; .mode = EAGER, .do1 = .do2
+	)
 	, !, fc-optimize .do2 .do3
 	, !, fc-compile .mode .do3 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
@@ -110,7 +110,7 @@ fc-dict-merge-replace .t0 .t1 .t2 :- rbt-merge-replace .t0 .t1 .t2, ! #
 
 fc-dict-member .v .t :- rbt-member .v .t #
 
--- There are few functions that are not pure: ijavaobj*, popen
+-- There are few functions that are not pure: ijavaobj*
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (

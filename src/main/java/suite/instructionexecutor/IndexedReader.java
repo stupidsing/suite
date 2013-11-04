@@ -10,7 +10,8 @@ public class IndexedReader {
 	private static final int bufferLimit = 256;
 
 	private Reader in;
-	private int offset;
+	private int offset = 0;
+	private boolean isClosed = false;
 	private StringBuilder sb = new StringBuilder();
 
 	public IndexedReader(Reader in) {
@@ -21,11 +22,14 @@ public class IndexedReader {
 		while (p - offset >= sb.length()) {
 			int c;
 
-			try {
-				c = in.read();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
+			if (!isClosed)
+				try {
+					c = in.read();
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			else
+				c = -1;
 
 			if (c >= 0) {
 				sb.append((char) c);
@@ -37,6 +41,7 @@ public class IndexedReader {
 				}
 			} else {
 				Util.closeQuietly(in);
+				isClosed = true;
 				break;
 			}
 		}

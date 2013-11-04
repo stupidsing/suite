@@ -4,27 +4,29 @@ fc-optimize .do0 .dox
 #
 
 fc-optimize-flow-disabled .do0 .dox
-	:- fc-define-var .do0 .var .value .do1
+	:- fc-define-var .do0 .var .value .do1 _
 	, once (
 		(complexity .value .c; complexity .do1 .c)
 		, .c < 4
 	)
 	, not contains .value (VAR .var)
 	, dump "Inlining" .var "=" .value "in" .do1, nl
-	, fc-optimize-flow-substitution .var .value .do1 .dox
+	, !, replace (VAR .var) .value .do1 .do2
+	, fc-optimize-flow .do2 .dox
+#
+fc-optimize-flow (UNWRAP WRAP .do0) .dox
+	:- !, fc-optimize-flow .do0 .dox
 #
 fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
-	:- !, fc-optimize-flow-substitution .var .value .do0 .dox
+	:- .value = .type _
+	, member (ATOM, BOOLEAN, NUMBER, VAR,) .type
+	, !, replace (VAR .var) .value .do0 .do1
+	, fc-optimize-flow .do1 .dox
 #
 fc-optimize-flow .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-flow-list .ts #
 
 fc-optimize-flow-list () #
 fc-optimize-flow-list (.t, .ts) :- fc-optimize-flow .t, fc-optimize-flow-list .ts #
-
-fc-optimize-flow-substitution .var .value .do0 .do1
-	:- replace (VAR .var) .value .do0 .do1
-	, fc-optimize-flow .do1 .dox
-#
 
 -- Remove unreferenced variables
 fc-remove-unref-vars .do0 .dox .rb0/.rbx
