@@ -11,7 +11,6 @@ import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
@@ -27,7 +26,7 @@ public class EvaluateUtil {
 
 	public boolean proveLogic(Node lp) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
-		return proveLogic(builder, RuleSetUtil.create(), lp);
+		return proveLogic(builder, Suite.createRuleSet(), lp);
 	}
 
 	public boolean proveLogic(RuleSet rs, Node lp) {

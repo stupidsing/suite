@@ -19,7 +19,6 @@ import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
@@ -289,7 +288,7 @@ public class Main implements AutoCloseable {
 	private boolean runLogical(List<String> files) throws IOException {
 		boolean result = true;
 
-		RuleSet ruleSet = RuleSetUtil.create();
+		RuleSet ruleSet = Suite.createRuleSet();
 		result &= Suite.importResource(ruleSet, "auto.sl");
 
 		for (String file : files)

@@ -7,9 +7,14 @@ import java.io.InputStream;
 import java.util.List;
 
 import suite.Suite;
+import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
+import suite.lp.kb.DoubleIndexedRuleSet;
+import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
+import suite.node.Atom;
+import suite.node.Node;
+import suite.node.io.TermParser.TermOp;
 
 public class ImportUtil {
 
@@ -17,27 +22,27 @@ public class ImportUtil {
 	private boolean isImportFromClasspath = false;
 	private String importerRoot = "";
 
-	public synchronized boolean importFrom(RuleSet rs, String name) throws IOException {
+	public boolean importFrom(RuleSet rs, String name) throws IOException {
 		if (isImportFromClasspath)
 			return importResource(rs, name);
 		else
 			return importFile(rs, name);
 	}
 
-	public synchronized boolean importFile(RuleSet rs, String filename) throws IOException {
+	public boolean importFile(RuleSet rs, String filename) throws IOException {
 		boolean wasFromClasspath = isImportFromClasspath;
 		String oldRoot = importerRoot;
 		filename = setImporterRoot(false, filename, oldRoot);
 
 		try (InputStream is = new FileInputStream(filename)) {
-			return RuleSetUtil.importFrom(rs, Suite.parse(is));
+			return importFrom(rs, Suite.parse(is));
 		} finally {
 			isImportFromClasspath = wasFromClasspath;
 			importerRoot = oldRoot;
 		}
 	}
 
-	public synchronized boolean importResource(RuleSet rs, String classpath) throws IOException {
+	public boolean importResource(RuleSet rs, String classpath) throws IOException {
 		ClassLoader cl = Suite.class.getClassLoader();
 
 		boolean wasFromClasspath = isImportFromClasspath;
@@ -46,7 +51,7 @@ public class ImportUtil {
 
 		try (InputStream is = cl.getResourceAsStream(classpath)) {
 			if (is != null)
-				return RuleSetUtil.importFrom(rs, Suite.parse(is));
+				return importFrom(rs, Suite.parse(is));
 			else
 				throw new RuntimeException("Cannot find resource " + classpath);
 		} finally {
@@ -55,12 +60,30 @@ public class ImportUtil {
 		}
 	}
 
+	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
+		Prover prover = new Prover(ruleSet);
+		boolean result = true;
+
+		for (Node elem : Node.iter(TermOp.NEXT__, node)) {
+			Rule rule = Rule.formRule(elem);
+
+			if (rule.getHead() != Atom.NIL)
+				ruleSet.addRule(rule);
+			else {
+				Node goal = new Generalizer().generalize(rule.getTail());
+				result &= prover.prove(goal);
+			}
+		}
+
+		return result;
+	}
+
 	public Prover createProver(List<String> toImports) {
 		return new Prover(createRuleSet(toImports));
 	}
 
 	public RuleSet createRuleSet(List<String> toImports) {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = createRuleSet();
 		try {
 			for (String toImport : toImports)
 				importResource(rs, toImport);
@@ -68,6 +91,10 @@ public class ImportUtil {
 			throw new RuntimeException(ex);
 		}
 		return rs;
+	}
+
+	public RuleSet createRuleSet() {
+		return new DoubleIndexedRuleSet();
 	}
 
 	private String setImporterRoot(boolean isFromClasspath, String name, String oldRoot) {

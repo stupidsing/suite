@@ -20,7 +20,6 @@ import suite.lp.doer.ProverConfig.TraceLevel;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.node.Atom;
 import suite.node.Data;
@@ -76,8 +75,8 @@ public class Suite {
 	}
 
 	public static RuleSet nodeToRuleSet(Node node) {
-		RuleSet rs = RuleSetUtil.create();
-		RuleSetUtil.importFrom(rs, node);
+		RuleSet rs = createRuleSet();
+		importUtil.importFrom(rs, node);
 		return rs;
 	}
 
@@ -227,12 +226,20 @@ public class Suite {
 		return importUtil.importResource(rs, classpath);
 	}
 
+	public static boolean importFrom(RuleSet ruleSet, Node node) {
+		return importUtil.importFrom(ruleSet, node);
+	}
+
 	public static Prover createProver(List<String> toImports) {
 		return importUtil.createProver(toImports);
 	}
 
 	public static RuleSet createRuleSet(List<String> toImports) {
 		return importUtil.createRuleSet(toImports);
+	}
+
+	public static RuleSet createRuleSet() {
+		return importUtil.createRuleSet();
 	}
 
 	// --------------------------------
