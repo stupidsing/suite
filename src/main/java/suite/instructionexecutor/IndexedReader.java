@@ -11,7 +11,6 @@ public class IndexedReader {
 
 	private Reader in;
 	private int offset = 0;
-	private boolean isClosed = false;
 	private StringBuilder sb = new StringBuilder();
 
 	public IndexedReader(Reader in) {
@@ -22,7 +21,7 @@ public class IndexedReader {
 		while (p - offset >= sb.length()) {
 			int c;
 
-			if (!isClosed)
+			if (in != null)
 				try {
 					c = in.read();
 				} catch (IOException ex) {
@@ -41,7 +40,7 @@ public class IndexedReader {
 				}
 			} else {
 				Util.closeQuietly(in);
-				isClosed = true;
+				in = null;
 				break;
 			}
 		}
