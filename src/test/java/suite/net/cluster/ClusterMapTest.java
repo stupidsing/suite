@@ -41,7 +41,7 @@ public class ClusterMapTest {
 			clMap.put(name, new ClusterMap<Integer, String>(cluster));
 		}
 
-		Util.sleep(5 * 1000);
+		Util.sleepQuietly(5 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
 
