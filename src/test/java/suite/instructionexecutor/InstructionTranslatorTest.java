@@ -12,7 +12,6 @@ import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRunConfig;
 import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -105,7 +104,7 @@ public class InstructionTranslatorTest {
 		String basePathName = "/tmp/" + InstructionTranslator.class.getName();
 
 		TranslatedRunConfig config = new TranslatedRunConfig();
-		config.ruleSet = RuleSetUtil.create();
+		config.ruleSet = Suite.createRuleSet();
 
 		try (TranslatedRun translatedRun = new InstructionTranslator(basePathName).translate(code)) {
 			return translatedRun.exec(config, new Closure(null, 0));

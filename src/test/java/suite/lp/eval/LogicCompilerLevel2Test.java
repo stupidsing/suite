@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 
@@ -31,7 +30,7 @@ public class LogicCompilerLevel2Test {
 	// Still fails...
 	@Test
 	public void test1() throws IOException {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		Suite.importResource(rs, "auto.sl");
 
 		Builder builder = CompiledProverBuilder.level2(new ProverConfig(), false);

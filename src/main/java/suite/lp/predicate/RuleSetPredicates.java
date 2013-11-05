@@ -9,7 +9,6 @@ import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Node;
@@ -64,7 +63,7 @@ public class RuleSetPredicates {
 
 	public static class Import implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return RuleSetUtil.importFrom(prover.ruleSet(), ps);
+			return Suite.importFrom(prover.ruleSet(), ps);
 		}
 	}
 

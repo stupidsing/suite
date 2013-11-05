@@ -9,13 +9,12 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.kb.RuleSet;
-import suite.lp.kb.RuleSetUtil;
 
 public class ProverTest {
 
 	@Test
 	public void testAppend() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "app () .l .l");
 		Suite.addRule(rs, "app (.h, .r) .l (.h, .r1) :- app .r .l .r1");
 
@@ -24,7 +23,7 @@ public class ProverTest {
 
 	@Test
 	public void testCut() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "a :- !, fail");
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "yes");
@@ -36,20 +35,20 @@ public class ProverTest {
 
 	@Test
 	public void testFindAll() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		assertTrue(Suite.proveLogic(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c,)"));
 	}
 
 	@Test
 	public void testIsCyclic() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		assertFalse(Suite.proveLogic(rs, ".a = (a, b, c,), is.cyclic .a"));
 		assertTrue(Suite.proveLogic(rs, ".a = (a, b, .a, c,), is.cyclic .a"));
 	}
 
 	@Test
 	public void testMember() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "mem ([.e, _], .e)");
 		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
@@ -61,12 +60,12 @@ public class ProverTest {
 
 	@Test
 	public void testNotNot() throws IOException {
-		assertTrue(Suite.proveLogic(RuleSetUtil.create(), "not not (.a = 3), not bound .a"));
+		assertTrue(Suite.proveLogic(Suite.createRuleSet(), "not not (.a = 3), not bound .a"));
 	}
 
 	@Test
 	public void testProve() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "b");
 		Suite.addRule(rs, "c");
@@ -95,7 +94,7 @@ public class ProverTest {
 
 	@Test
 	public void testSystemPredicates() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "mem ([.e, _], .e)");
 		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
 
@@ -104,7 +103,7 @@ public class ProverTest {
 
 	@Test
 	public void testWrite() {
-		RuleSet rs = RuleSetUtil.create();
+		RuleSet rs = Suite.createRuleSet();
 
 		assertTrue(Suite.proveLogic(rs, "write (1 + 2 * 3), nl"));
 		assertTrue(Suite.proveLogic(rs, "write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
