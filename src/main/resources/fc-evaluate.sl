@@ -37,7 +37,7 @@ fc-compile .mode (WRAP .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 fc-compile .mode (UNWRAP .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- !
 	, fc-compile .mode .callee .env .c0/.c1/.d0/.dx/.closureReg
-	, .c1 = (_ CALL-CLOSURE .closureReg, _ SET-RESULT .reg .closureReg, .cx)
+	, .c1 = (_ CALL-CLOSURE .closureReg, _ SET-CLOSURE-RESULT .reg .closureReg, .cx)
 #
 fc-compile .mode (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- !

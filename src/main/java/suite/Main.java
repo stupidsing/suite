@@ -126,6 +126,7 @@ public class Main implements AutoCloseable {
 			Suite.importFile(ruleSet, importFilename);
 
 		BufferedReader br = new BufferedReader(reader);
+		boolean code = true;
 
 		prompt().println("READY");
 
@@ -140,8 +141,8 @@ public class Main implements AutoCloseable {
 					if ((line = br.readLine()) != null)
 						sb.append(line + "\n");
 					else
-						return true;
-				} while (!line.isEmpty() && !line.endsWith("#"));
+						return code;
+				} while (!isQuiet && !line.isEmpty() && !line.endsWith("#"));
 
 				String input = sb.toString();
 
@@ -201,7 +202,7 @@ public class Main implements AutoCloseable {
 					System.out.println(new PrettyPrinter().prettyPrint(node));
 					break;
 				case QUERY:
-					query(new InterpretedProverBuilder(proverConfig), ruleSet, node);
+					code = query(new InterpretedProverBuilder(proverConfig), ruleSet, node);
 					break;
 				case QUERYELABORATE:
 					final Generalizer generalizer = new Generalizer();
@@ -228,12 +229,12 @@ public class Main implements AutoCloseable {
 
 					break;
 				case QUERYCOMPILED:
-					query(CompiledProverBuilder.level1(proverConfig, fcc.isDumpCode()), ruleSet, node);
+					code = query(CompiledProverBuilder.level1(proverConfig, fcc.isDumpCode()), ruleSet, node);
 					break;
 				case QUERYCOMPILED2:
 					if (builderL2 == null)
 						builderL2 = CompiledProverBuilder.level2(proverConfig, fcc.isDumpCode());
-					query(builderL2, ruleSet, node);
+					code = query(builderL2, ruleSet, node);
 				}
 			} catch (Throwable ex) {
 				LogUtil.error(ex);
@@ -281,8 +282,10 @@ public class Main implements AutoCloseable {
 		writer.flush();
 	}
 
-	private void query(Builder builder, RuleSet ruleSet, Node node) {
-		prompt().println(yesNo(Suite.proveLogic(builder, ruleSet, node)));
+	private boolean query(Builder builder, RuleSet ruleSet, Node node) {
+		boolean result = Suite.proveLogic(builder, ruleSet, node);
+		prompt().println(yesNo(result));
+		return result;
 	}
 
 	private boolean runLogical(List<String> files) throws IOException {
