@@ -32,7 +32,7 @@ public class Ssh {
 			channel.connect();
 
 			while (!channel.isClosed())
-				Util.sleep(100);
+				Util.sleepQuietly(100);
 
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			Copy.stream(channel.getInputStream(), baos);

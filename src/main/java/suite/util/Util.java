@@ -155,7 +155,7 @@ public class Util {
 		return !isBlank(s);
 	}
 
-	public static void sleep(long time) {
+	public static void sleepQuietly(long time) {
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException ex) {

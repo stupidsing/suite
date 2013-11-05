@@ -32,7 +32,7 @@ public class ClusterProbeTest {
 			probe.start();
 		}
 
-		Util.sleep(10 * 1000);
+		Util.sleepQuietly(10 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
 		dumpActivePeers(probes);
@@ -41,7 +41,7 @@ public class ClusterProbeTest {
 		for (ClusterProbe probe : probes.values())
 			probe.stop();
 
-		Util.sleep(5 * 1000);
+		Util.sleepQuietly(5 * 1000);
 
 		System.out.println("=== CLUSTER STOPPED (" + new Date() + ") ===\n");
 		dumpActivePeers(probes);

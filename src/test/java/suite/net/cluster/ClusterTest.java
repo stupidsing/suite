@@ -36,7 +36,7 @@ public class ClusterTest {
 		cluster0.start();
 		cluster1.start();
 
-		Util.sleep(2 * 1000);
+		Util.sleepQuietly(2 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
 
