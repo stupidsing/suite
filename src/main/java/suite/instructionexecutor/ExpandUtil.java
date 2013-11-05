@@ -34,13 +34,15 @@ public class ExpandUtil {
 	 */
 	public static void expandToWriter(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
 		while (true) {
-			node = unwrapper.apply(node);
 			Tree tree = Tree.decompose(node);
 
 			if (tree != null) {
 				int c = ((Int) unwrapper.apply(tree.getLeft())).getNumber();
 				writer.write(c);
-				node = tree.getRight();
+				node = unwrapper.apply(tree.getRight());
+
+				// Facilitates garbage collection
+				Tree.forceSetRight(tree, null);
 
 				if (c == 10)
 					writer.flush();

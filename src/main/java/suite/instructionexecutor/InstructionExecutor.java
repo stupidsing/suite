@@ -50,8 +50,10 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	public Node evaluateClosure(Closure closure) {
-		if (closure.result == null)
+		if (closure.result == null) {
 			closure.result = evaluateClosure0(closure);
+			closure.frame = null; // Facilitates garbage collection
+		}
 		return closure.result;
 	}
 
