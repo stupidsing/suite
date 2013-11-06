@@ -26,7 +26,7 @@ public class Checker {
 		for (Rule rule : rules)
 			rulesByPrototype.put(Prototype.get(rule), rule);
 
-		// TODO check for singleton variables
+		// Check for singleton variables
 		for (Entry<Prototype, Rule> entry : rulesByPrototype.entries()) {
 			Prototype prototype = entry.getKey();
 			Rule rule = entry.getValue();
@@ -50,8 +50,13 @@ public class Checker {
 			scanSingletonVariables(isSingleton, tree.getRight());
 		} else if (node instanceof Atom) {
 			Atom atom = (Atom) node;
+			String name = atom.getName();
 
-			if (atom.getName().startsWith(Generalizer.defaultPrefix)) {
+			// Check all variables starting with alphabets; ignore
+			// computer-generated code
+			if (name.startsWith(Generalizer.defaultPrefix) //
+					&& name.length() >= 2 //
+					&& Character.isAlphabetic(name.charAt(1))) {
 				Boolean value = isSingleton.get(atom);
 				if (value == null)
 					value = Boolean.TRUE;
