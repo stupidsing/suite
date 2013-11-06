@@ -8,13 +8,13 @@ define m-seq = type (:t :- do-of _ => do-of :t => do-of :t) (
 ) >>
 define m-seqs = type (:t :- list-of do-of () => do-of ()) (
 	dos => (do #
-		fold-left {m-seq} {do #} {dos}
+		fold-left {m-seq} {do # ()} {dos}
 	)
 ) >>
 define m-while = type (:t :- do-of boolean => do-of :t => do-of ()) (
-	cond => pred => (do #
+	cond => loop => (do #
 		if:: exec {cond}
-		then:: seq {pred} {while {cond} {pred}}
+		then:: seq {loop} {while {cond} {loop}}
 		else:: exec {}
 	)
 ) >>
