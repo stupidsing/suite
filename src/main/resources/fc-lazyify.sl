@@ -1,7 +1,7 @@
 fc-lazyify-fun .p0 (UNWRAP .p1) :- fc-lazyify .p0 .p1 #
 
 fc-lazyify .const (WRAP .const)
-	:- .const = .tag .value
+	:- .const = .tag _
 	, member (ATOM, BOOLEAN, NUMBER,) .tag, !
 #
 fc-lazyify (FUN .var .do0) (WRAP (FUN .var .do1))
@@ -58,7 +58,7 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 		is-list/1/VALUE:/VALUE,
 		is-pair/1/VALUE:/VALUE,
 	) .var/.n/.paramWraps/.returnWrap
-	, fc-define-default-fun .n .var .call
+	, fc-define-default-fun .n .var _
 	, !
 #
 fc-lazyify-default-fun .n .paramWraps .returnWrap (INVOKE .p0 .chain0) (INVOKE .px .chain1)

@@ -50,6 +50,10 @@ public class LogUtil {
 		suiteLog.info(message);
 	}
 
+	public static void warn(String message) {
+		suiteLog.warn(message);
+	}
+
 	public static void error(Throwable th) {
 		boolean isTrimmed = trimStackTrace(th);
 		suiteLog.error(isTrimmed ? "(Trimmed)" : "", th);

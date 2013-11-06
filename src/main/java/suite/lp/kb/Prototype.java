@@ -67,6 +67,11 @@ public class Prototype {
 			return false;
 	}
 
+	@Override
+	public String toString() {
+		return head.toString();
+	}
+
 	public Node getHead() {
 		return head;
 	}

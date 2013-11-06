@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
+import suite.lp.doer.Checker;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
@@ -32,9 +34,9 @@ public class ImportUtil {
 	public boolean importFile(RuleSet rs, String filename) throws IOException {
 		boolean wasFromClasspath = isImportFromClasspath;
 		String oldRoot = importerRoot;
-		filename = setImporterRoot(false, filename, oldRoot);
+		String filename1 = setImporterRoot(false, filename, oldRoot);
 
-		try (InputStream is = new FileInputStream(filename)) {
+		try (InputStream is = new FileInputStream(filename1)) {
 			return importFrom(rs, Suite.parse(is));
 		} finally {
 			isImportFromClasspath = wasFromClasspath;
@@ -47,13 +49,13 @@ public class ImportUtil {
 
 		boolean wasFromClasspath = isImportFromClasspath;
 		String oldRoot = importerRoot;
-		classpath = setImporterRoot(true, classpath, oldRoot);
+		String classpath1 = setImporterRoot(true, classpath, oldRoot);
 
-		try (InputStream is = cl.getResourceAsStream(classpath)) {
+		try (InputStream is = cl.getResourceAsStream(classpath1)) {
 			if (is != null)
 				return importFrom(rs, Suite.parse(is));
 			else
-				throw new RuntimeException("Cannot find resource " + classpath);
+				throw new RuntimeException("Cannot find resource " + classpath1);
 		} finally {
 			isImportFromClasspath = wasFromClasspath;
 			importerRoot = oldRoot;
@@ -61,19 +63,23 @@ public class ImportUtil {
 	}
 
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
+		List<Rule> rules = new ArrayList<>();
+
+		for (Node elem : Node.iter(TermOp.NEXT__, node))
+			rules.add(Rule.formRule(elem));
+
+		new Checker().check(rules);
+
 		Prover prover = new Prover(ruleSet);
 		boolean result = true;
 
-		for (Node elem : Node.iter(TermOp.NEXT__, node)) {
-			Rule rule = Rule.formRule(elem);
-
+		for (Rule rule : rules)
 			if (rule.getHead() != Atom.NIL)
 				ruleSet.addRule(rule);
 			else {
 				Node goal = new Generalizer().generalize(rule.getTail());
 				result &= prover.prove(goal);
 			}
-		}
 
 		return result;
 	}

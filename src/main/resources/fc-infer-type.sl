@@ -125,7 +125,7 @@ infer-type-rule (OPTION _ .do) .env .tr .type
 	:- !
 	, infer-type-rule .do .env .tr .type
 #
-infer-type-rule (VAR .var) .ue/.ve/.te .tr0/.trx .type
+infer-type-rule (VAR .var) _/.ve/_ .tr0/.trx .type
 	:- (fc-dict-get .ve .var/.varType
 		, !, .tr0 = (CLONE-TO-FROM-TYPES .type .varType, .trx)
 	)
@@ -139,7 +139,7 @@ find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (DO _) _ (DO-OF _) #
 find-simple-type (NUMBER _) _ NUMBER #
 find-simple-type (OPTION NO-TYPE-CHECK _) _ _ #
-find-simple-type (VAR .var) .ue/.ve/.te .type
+find-simple-type (VAR .var) .ue/_/_ .type
 	:- fc-dict-get .ue .var/.type
 	; default-fun-type .var .type
 #
@@ -263,5 +263,5 @@ default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
 default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
 default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #
-default-fun-type is-list (FUN-OF (LIST-OF .t) BOOLEAN) #
+default-fun-type is-list (FUN-OF (LIST-OF _) BOOLEAN) #
 default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
