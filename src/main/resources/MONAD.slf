@@ -6,15 +6,15 @@ define m-seq = type (:t :- do-of _ => do-of :t => do-of :t) (
 		seq {exec {do0}} {exec {do1}}
 	)
 ) >>
-define m-seqs = type (:t :- list-of do-of () => do-of ()) (
+define m-seqs = type (:t :- list-of do-of Nothing => do-of Nothing) (
 	dos => (do #
-		fold-left {m-seq} {do # ()} {dos}
+		fold-left {m-seq} {do # Nothing} {dos}
 	)
 ) >>
-define m-while = type (:t :- do-of boolean => do-of :t => do-of ()) (
+define m-while = type (:t :- do-of boolean => do-of :t => do-of Nothing) (
 	cond => loop => (do #
 		if:: exec {cond}
-		then:: seq {loop} {while {cond} {loop}}
+		then:: m-seq {loop} {while {cond} {loop}}
 		else:: exec {}
 	)
 ) >>
