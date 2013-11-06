@@ -46,21 +46,6 @@ public class Node implements Comparable<Node> {
 		return new Reference();
 	}
 
-	public static Node[] toFixedSizeArray(Node node, int n) {
-		List<Node> results = new ArrayList<>(n);
-		Tree tree;
-
-		for (int i = 1; i < n; i++)
-			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-				results.add(tree.getLeft());
-				node = tree.getRight();
-			} else
-				throw new RuntimeException("Not enough parameters");
-
-		results.add(node);
-		return results.toArray(new Node[results.size()]);
-	}
-
 	public static Iterable<Node> iter(Node node) {
 		return iter(TermOp.AND___, node);
 	}
@@ -89,6 +74,21 @@ public class Node implements Comparable<Node> {
 				return iterator;
 			}
 		};
+	}
+
+	public static Node[] tupleToArray(Node node, int n) {
+		List<Node> results = new ArrayList<>(n);
+		Tree tree;
+
+		for (int i = 1; i < n; i++)
+			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+				results.add(tree.getLeft());
+				node = tree.getRight();
+			} else
+				throw new RuntimeException("Not enough parameters");
+
+		results.add(node);
+		return results.toArray(new Node[results.size()]);
 	}
 
 	public static List<Node> tupleToList(Node node) {
