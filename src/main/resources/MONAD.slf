@@ -1,5 +1,5 @@
-define m-seq = type (:t :- do-of _ => do-of :t => do-of :t) (
-	define seq = type (:t :- _ => :t => :t) no-type-check (
+define m-seq = type (:t :- do-of any => do-of :t => do-of :t) (
+	define seq = type (:t :- any => :t => :t) no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
 	) >>
 	do0 => do1 => (do #
