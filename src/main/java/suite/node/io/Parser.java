@@ -70,12 +70,10 @@ public class Parser {
 		for (int i = fromOp; i < operators.length; i++) {
 			Operator operator = operators[i];
 			String lr[] = ParserUtil.search(s, operator);
+			int li, ri;
 
 			if (lr == null)
 				continue;
-
-			boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
-			int li, ri;
 
 			if (operator == TermOp.BRACES) {
 				String right = lr[1].trim();
@@ -91,6 +89,7 @@ public class Parser {
 					if (Util.isBlank(lr[0]) || Util.isBlank(lr[1]))
 						continue;
 
+				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 				li = fromOp + (isLeftAssoc ? 0 : 1);
 				ri = fromOp + (isLeftAssoc ? 1 : 0);
 			}
