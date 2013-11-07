@@ -71,22 +71,31 @@ public class Parser {
 			Operator operator = operators[i];
 			String lr[] = ParserUtil.search(s, operator);
 
-			if (lr != null) {
-				if (operator == TermOp.BRACES) {
-					String right = lr[1].trim();
-					if (Util.charAt(right, -1) == '}')
-						lr[1] = Util.substr(right, 0, -1);
-					else
-						continue;
-				} else if (operator == TermOp.TUPLE_)
+			if (lr == null)
+				continue;
+
+			boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
+			int li, ri;
+
+			if (operator == TermOp.BRACES) {
+				String right = lr[1].trim();
+
+				if (Util.charAt(right, -1) != '}')
+					continue;
+
+				lr[1] = Util.substr(right, 0, -1);
+				li = 0;
+				ri = 0;
+			} else {
+				if (operator == TermOp.TUPLE_)
 					if (Util.isBlank(lr[0]) || Util.isBlank(lr[1]))
 						continue;
 
-				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
-				int li = fromOp + (isLeftAssoc ? 0 : 1);
-				int ri = fromOp + (isLeftAssoc ? 1 : 0);
-				return Tree.create(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
+				li = fromOp + (isLeftAssoc ? 0 : 1);
+				ri = fromOp + (isLeftAssoc ? 1 : 0);
 			}
+
+			return Tree.create(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
 		}
 
 		if (Arrays.asList("[]").contains(s))
