@@ -118,16 +118,7 @@ public class Parser {
 			s = Escaper.unescape(Util.substr(s, 1, -1), "'");
 		else {
 			s = s.trim(); // Trim unquoted atoms
-			int quote = 0, depth = 0;
-
-			// Shows warning if the atom has mismatched quotes or brackets
-			for (char c : s.toCharArray()) {
-				quote = ParserUtil.getQuoteChange(quote, c);
-				if (quote == 0)
-					depth = ParserUtil.checkDepth(depth, c);
-			}
-
-			if (quote != 0 || depth != 0)
+			if (!ParserUtil.isParseable(s))
 				LogUtil.info("Suspicious input when parsing " + s);
 		}
 

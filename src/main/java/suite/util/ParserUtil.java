@@ -37,6 +37,19 @@ public class ParserUtil {
 		return result;
 	}
 
+	public static boolean isParseable(String s) {
+		int quote = 0, depth = 0;
+
+		// Shows warning if the atom has mismatched quotes or brackets
+		for (char c : s.toCharArray()) {
+			quote = ParserUtil.getQuoteChange(quote, c);
+			if (quote == 0)
+				depth = ParserUtil.checkDepth(depth, c);
+		}
+
+		return quote == 0 && depth == 0;
+	}
+
 	public static int search(String s, int start, String toMatch) {
 		int nameLength = toMatch.length();
 		int end = s.length() - nameLength;

@@ -33,6 +33,7 @@ import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
+import suite.util.ParserUtil;
 import suite.util.Util;
 
 /**
@@ -142,7 +143,8 @@ public class Main implements AutoCloseable {
 						sb.append(line + "\n");
 					else
 						return code;
-				} while (!isQuiet && !line.isEmpty() && !line.endsWith("#"));
+				} while (!isQuiet //
+						&& (!ParserUtil.isParseable(line) || !line.isEmpty() && !line.endsWith("#")));
 
 				String input = sb.toString();
 
