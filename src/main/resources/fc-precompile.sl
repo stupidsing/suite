@@ -69,7 +69,7 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 -- Type inferencer
 infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
--- Lazyifier & optimizer
+-- Lazyifier and optimizer
 fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
 -- Code generation
