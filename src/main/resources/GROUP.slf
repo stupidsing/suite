@@ -14,5 +14,5 @@ define group = (
 		else
 			list1
 	) >>
-	merge {grouper} . (`$k, $v` => (k, (v;)))
+	merge {grouper} . map {`$k, $v` => (k, (v;))}
 ) >>
