@@ -286,7 +286,9 @@ fc-add-functions STANDARD .p (
 	) >>
 	define uniq =
 		fold-right {item => list =>
-			if-bind (list = (item; $t)) then list else (item; list)
+			case
+			|| (list = (item; $t)) list
+			|| item; list
 		} {}
 	>>
 	define concat =
@@ -380,17 +382,16 @@ fc-add-functions STANDARD .p (
 	) >>
 	define merge-sort = (
 		define merger = (list0 => list1 =>
-			if-bind (list0 = ($h0; $t0)) then
-				if-bind (list1 = ($h1; $t1)) then
-					if:: h0 < h1
-					then:: h0; merger {t0} {list1}
-					else-if:: h0 > h1
-					then:: h1; merger {list0} {t1}
-					else:: h0; h1; merger {t0} {t1}
-				else
-					list0
-			else
-				list1
+			case
+			|| (list0 = ($h0; $t0))
+				case
+				|| (list1 = ($h1; $t1))
+					case
+					|| (h0 < h1) (h0; merger {t0} {list1})
+					|| (h0 > h1) (h1; merger {list0} {t1})
+					|| h0; h1; merger {t0} {t1}
+				|| list0
+			|| list1
 		) >>
 		merge {merger}
 	) >>
