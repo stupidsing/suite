@@ -85,9 +85,12 @@ public class Parser {
 				li = 0;
 				ri = 0;
 			} else {
-				if (operator == TermOp.TUPLE_)
-					if (Util.isBlank(lr[0]) || Util.isBlank(lr[1]))
-						continue;
+				if (operator == TermOp.TUPLE_) {
+					if (Util.isBlank(lr[0]))
+						return parseRawString(lr[1], fromOp);
+					if (Util.isBlank(lr[1]))
+						return parseRawString(lr[0], fromOp);
+				}
 
 				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 				li = fromOp + (isLeftAssoc ? 0 : 1);

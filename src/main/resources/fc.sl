@@ -152,12 +152,12 @@ fc-add-functions STANDARD .p (
 	) >>
 	define fold-left = (fun => init => -- possible for tail recursion optimization
 		match
-		|| $h; $t => fold-left {fun} {fun {init} {h}} {t}
+		|| `$h; $t` => fold-left {fun} {fun {init} {h}} {t}
 		|| otherwise init
 	) >>
 	define fold-right = (fun => init => -- possible for short-circuit evaluation
 		match
-		|| $h; $t => fun {h} {fold-right {fun} {init} {t}}
+		|| `$h; $t` => fun {h} {fold-right {fun} {init} {t}}
 		|| otherwise init
 	) >>
 	define greater = (a => b =>
@@ -183,12 +183,12 @@ fc-add-functions STANDARD .p (
 	) >>
 	define scan-left = (fun => init =>
 		match
-		|| $h; $t => init; scan-left {fun} {fun {init} {h}} {t}
+		|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
 		|| otherwise (init;)
 	) >>
 	define scan-right = (fun => init =>
 		match
-		|| $h; $t =>
+		|| `$h; $t` =>
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
 		|| otherwise (init;)
@@ -209,7 +209,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define tails = (
 		match
-		|| $h; $t => (h; t); tails {t}
+		|| `$h; $t` => (h; t); tails {t}
 		|| otherwise (;)
 	) >>
 	define take = (n => list =>
@@ -219,7 +219,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define take-while = (fun =>
 		match
-		|| $elem; $elems =>
+		|| `$elem; $elems` =>
 			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
 		|| otherwise ()
 	) >>
@@ -240,16 +240,16 @@ fc-add-functions STANDARD .p (
 	) >>
 	define zip = (fun =>
 		match
-		|| $h0; $t0 => (
+		|| `$h0; $t0` => (
 			match
-			|| $h1; $t1 => fun {h0} {h1}; zip {fun} {t0} {t1}
+			|| `$h1; $t1` => fun {h0} {h1}; zip {fun} {t0} {t1}
 			|| otherwise ()
 		)
 		|| otherwise (anything => ())
 	) >>
 	define append = (
 		match
-		|| $h; $t => cons {h} . append {t}
+		|| `$h; $t` => cons {h} . append {t}
 		|| otherwise id
 	) >>
 	define apply =
@@ -287,7 +287,7 @@ fc-add-functions STANDARD .p (
 	define uniq =
 		fold-right {item => list =>
 			case
-			|| (list = (item; $t)) list
+			|| (list = `item; $t`) list
 			|| item; list
 		} {}
 	>>
@@ -331,9 +331,9 @@ fc-add-functions STANDARD .p (
 	) >>
 	define starts-with = (
 		match
-		|| $sh; $st => (
+		|| `$sh; $st` => (
 			match
-			|| sh; $t => starts-with {st} {t}
+			|| `sh; $t` => starts-with {st} {t}
 			|| otherwise false
 		)
 		|| otherwise (anything => true)
@@ -381,8 +381,8 @@ fc-add-functions STANDARD .p (
 		define grouper as (
 			:k :- :v :- list-of (:k, list-of :v) => list-of (:k, list-of :v) => list-of (:k, list-of :v)
 		) = (list0 => list1 =>
-			if-bind (list0 = ($k0, $v0; $t0)) then
-				if-bind (list1 = ($k1, $v1; $t1)) then
+			if (list0 = `$k0, $v0; $t0`) then
+				if (list1 = `$k1, $v1; $t1`) then
 					case
 					|| (k0 < k1) (k0, v0; grouper {t0} {list1})
 					|| (k0 > k1) (k1, v1; grouper {list0} {t1})
@@ -400,9 +400,9 @@ fc-add-functions STANDARD .p (
 	define merge-sort = (
 		define merger = (list0 => list1 =>
 			case
-			|| (list0 = ($h0; $t0))
+			|| (list0 = `$h0; $t0`)
 				case
-				|| (list1 = ($h1; $t1))
+				|| (list1 = `$h1; $t1`)
 					case
 					|| (h0 < h1) (h0; merger {t0} {list1})
 					|| (h0 > h1) (h1; merger {list0} {t1})
@@ -414,7 +414,7 @@ fc-add-functions STANDARD .p (
 	) >>
 	define quick-sort = (cmp =>
 		match
-		|| $pivot; $t =>
+		|| `$pivot; $t` =>
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
 			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
