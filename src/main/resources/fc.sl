@@ -313,9 +313,6 @@ fc-add-functions STANDARD .p (
 	define maximum =
 		fold {greater}
 	>>
-	define minimum =
-		fold {lesser}
-	>>
 	define merge = (merger => list =>
 		let len = length {list} >>
 		if (len > 1) then
@@ -326,6 +323,9 @@ fc-add-functions STANDARD .p (
 		else
 			list
 	) >>
+	define minimum =
+		fold {lesser}
+	>>
 	define range = (start => end => inc =>
 		unfold-right {i => if (i < end) then (i; i + inc;) else ()} {start}
 	) >>
@@ -376,6 +376,23 @@ fc-add-functions STANDARD .p (
 	) >>
 	define ends-with = (end =>
 		starts-with {end | reverse} . reverse
+	) >>
+	define group = (
+		define grouper as (
+			:k :- :v :- list-of (:k, list-of :v) => list-of (:k, list-of :v) => list-of (:k, list-of :v)
+		) = (list0 => list1 =>
+			if-bind (list0 = ($k0, $v0; $t0)) then
+				if-bind (list1 = ($k1, $v1; $t1)) then
+					case
+					|| (k0 < k1) (k0, v0; grouper {t0} {list1})
+					|| (k0 > k1) (k1, v1; grouper {list0} {t1})
+					|| k0, append {v0} {v1}; grouper {t0} {t1}
+				else
+					list0
+			else
+				list1
+		) >>
+		merge {grouper} . map {`$k, $v` => (k, (v;))}
 	) >>
 	define join = (separator =>
 		concat . map {separator; | append/}
