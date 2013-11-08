@@ -361,7 +361,7 @@ fc-add-functions STANDARD .p (
 		define type-of = ijavacls {CLASS!suite.lp.invocable.Invocables$TypeOf} >>
 		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
-			let type = _ijavaobj1 {get-type} {n} >>
+			let type = _ijavaobj1 {type-of} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
