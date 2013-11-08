@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.TreeSet;
 
@@ -28,6 +32,24 @@ public class FileUtil {
 			files.add(file);
 
 		return files;
+	}
+
+	public static int getPid() {
+		try {
+			RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+
+			Field jvm = runtime.getClass().getDeclaredField("jvm");
+			jvm.setAccessible(true);
+
+			Object vmm = jvm.get(runtime);
+
+			Method method = vmm.getClass().getDeclaredMethod("getProcessId");
+			method.setAccessible(true);
+
+			return (Integer) method.invoke(jvm.get(runtime));
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static void moveFile(File from, File to) throws IOException {

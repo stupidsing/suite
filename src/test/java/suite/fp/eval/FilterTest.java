@@ -8,6 +8,7 @@ import java.io.Writer;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.util.FileUtil;
 import suite.util.Util;
 
 public class FilterTest {
@@ -58,7 +59,7 @@ public class FilterTest {
 					System.gc();
 					System.gc();
 					System.out.println("Dump heap to check memory now");
-					System.out.println("jmap -histo $(pgrep -f junit) | tee /tmp/jmap | less");
+					System.out.println("jmap -histo " + FileUtil.getPid() + " | tee /tmp/jmap | less");
 					Util.sleepQuietly(10 * 1000l);
 				}
 			}
