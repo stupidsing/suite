@@ -7,6 +7,6 @@ public interface InvocableBridge {
 
 	public Fun<Node, Node> getUnwrapper();
 
-	public Node wrapInvocableNode(Invocable invocable, Node node);
+	public Node wrapInvocable(Invocable invocable, Node node);
 
 }

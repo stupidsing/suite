@@ -53,7 +53,7 @@ public class TranslatedRunUtil {
 				return unwrapper;
 			}
 
-			public Node wrapInvocableNode(Invocable invocable, Node node) {
+			public Node wrapInvocable(Invocable invocable, Node node) {
 				throw new UnsupportedOperationException();
 			}
 		};

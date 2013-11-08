@@ -143,7 +143,7 @@ public class FunInstructionExecutor extends InstructionExecutor implements Invoc
 		regs[insn.op0] = result;
 	}
 
-	public Closure wrapInvocableNode(Invocable invocable, Node node) {
+	public Closure wrapInvocable(Invocable invocable, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
 		frame.registers[1] = new Data<Invocable>(invocable);

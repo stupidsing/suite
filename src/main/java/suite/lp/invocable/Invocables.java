@@ -35,8 +35,8 @@ public class Invocables {
 			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = bridge.wrapInvocableNode(new Id(), Int.create(name.charAt(0)));
-				Node right = bridge.wrapInvocableNode(this, Atom.create(name.substring(1)));
+				Node left = bridge.wrapInvocable(new Id(), Int.create(name.charAt(0)));
+				Node right = bridge.wrapInvocable(this, Atom.create(name.substring(1)));
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -49,26 +49,6 @@ public class Invocables {
 			int p = ((Int) inputs.get(1)).getNumber();
 			int c = ((IndexedReader) data.getData()).read(p);
 			return Int.create(c);
-		}
-	}
-
-	public static class GetType implements Invocable {
-		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Node node = inputs.get(0);
-			Atom type;
-
-			if (node instanceof Atom)
-				type = ATOM;
-			else if (node instanceof Int)
-				type = NUMBER;
-			else if (node instanceof Str)
-				type = STRING;
-			else if (node instanceof Tree)
-				type = TREE;
-			else
-				type = UNKNOWN;
-
-			return type;
 		}
 	}
 
@@ -148,15 +128,29 @@ public class Invocables {
 		}
 	}
 
-	public static class StringLength implements Invocable {
-		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			return Int.create(ExpandUtil.expandString(bridge.getUnwrapper(), inputs.get(0)).length());
-		}
-	}
-
 	public static class Throw implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			throw new RuntimeException("Error termination");
+		}
+	}
+
+	public static class TypeOf implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
+			Node node = inputs.get(0);
+			Atom type;
+
+			if (node instanceof Atom)
+				type = ATOM;
+			else if (node instanceof Int)
+				type = NUMBER;
+			else if (node instanceof Str)
+				type = STRING;
+			else if (node instanceof Tree)
+				type = TREE;
+			else
+				type = UNKNOWN;
+
+			return type;
 		}
 	}
 
