@@ -43,19 +43,6 @@ public class Invocables {
 		}
 	}
 
-	// public static class Exec implements Invocable {
-	// public Node invoke(WrappingBridge bridge, List<Node> inputs) {
-	// Node program = inputs.get(0);
-	//
-	// for (Node step : Node.iter(TermOp.NEXT__, program)) {
-	// List<Node> list = Node.tupleToList(step);
-	//
-	// if (list.get(0) == ATOM.create("return"))
-	// ;
-	// }
-	// }
-	// }
-
 	public static class Fgetc implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Data<?> data = (Data<?>) inputs.get(0);
