@@ -32,11 +32,7 @@ public class FailedTests {
 	@Test
 	public void test3() {
 		Suite.evaluateFunType("" //
-				+ "using STANDARD >> \n" //
-				+ "define grp = (list0 => \n" //
-				+ "  if-bind (list0 = ($v0;)) then (v0;); else list0 \n" //
-				+ ") >> \n" //
-				+ "grp {} \n" //
+				+ "define grp = (list0 => (list0;) = list0) >> grp" //
 		);
 	}
 
