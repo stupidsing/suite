@@ -9,7 +9,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 
-public class LazyFunCompilerTest {
+public class LazyFunTest {
 
 	@Test
 	public void testClosure() {

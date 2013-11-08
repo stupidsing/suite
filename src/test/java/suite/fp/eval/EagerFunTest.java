@@ -12,7 +12,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 
-public class EagerFunCompilerTest {
+public class EagerFunTest {
 
 	@Test
 	public void testAppend() {

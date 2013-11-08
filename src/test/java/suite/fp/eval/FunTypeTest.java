@@ -12,7 +12,7 @@ import suite.lp.doer.Generalizer;
 import suite.node.Node;
 import suite.node.io.Formatter;
 
-public class FunCompilerTypeTest {
+public class FunTypeTest {
 
 	@Test
 	public void testBasic() {

@@ -7,7 +7,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.node.Node;
 
-public class OlderFunCompilerTest {
+public class OlderFunTest {
 
 	private static final String concatList0 = "" //
 			+ "define concat-list0 = split {h => t => \n" //

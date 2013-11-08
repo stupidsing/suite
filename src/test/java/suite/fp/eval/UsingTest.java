@@ -8,7 +8,7 @@ import suite.Suite;
 import suite.node.Int;
 import suite.node.Node;
 
-public class UsingCompilerTest {
+public class UsingTest {
 
 	@Test
 	public void test() {
