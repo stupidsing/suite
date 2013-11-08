@@ -53,6 +53,11 @@ public class LazyFunCompilerTest {
 	}
 
 	@Test
+	public void testGroup() {
+		assertEquals(eval("1, (2; 5;);2, (1; 4;);3, (0; 3;);"), eval("group {3, 0; 2, 1; 1, 2; 3, 3; 2, 4; 1, 5;}"));
+	}
+
+	@Test
 	public void testString() {
 		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
 		assertEquals(Atom.TRUE, eval("\"-34253924\" = int-to-str {-34253924}"));

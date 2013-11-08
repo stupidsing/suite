@@ -378,9 +378,7 @@ fc-add-functions STANDARD .p (
 		starts-with {end | reverse} . reverse
 	) >>
 	define group = (
-		define grouper as (
-			:k :- :v :- list-of (:k, list-of :v) => list-of (:k, list-of :v) => list-of (:k, list-of :v)
-		) = (list0 => list1 =>
+		define grouper = (list0 => list1 =>
 			if (list0 = `$k0, $v0; $t0`) then
 				if (list1 = `$k1, $v1; $t1`) then
 					case
