@@ -143,10 +143,13 @@ fc-parse-sugar (do # .do) (
 		define exec = ({0} . monad-to-fun) >> .do
 	}
 ) :- ! #
-fc-parse-sugar (define macro .var = .value >> .do) .do1
+fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
 fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
+fc-parse-sugar (define .var as .type = .value >> .do) (define .var = .value as .type >> .do)
+	:- !
+#
 fc-parse-sugar (.var as .type => .do) (.var1 => (define .var = .var1 as .type >> .do))
 	:- !, temp .var1
 #

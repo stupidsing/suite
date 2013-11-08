@@ -124,19 +124,19 @@ fc-add-functions STANDARD .p (
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
-	define _popen = type (string => string => data-of Stream) no-type-check (
+	define _popen as (string => string => data-of Stream) = no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
 	) >>
-	define throw = type (any => any) no-type-check (
+	define throw as (any => any) = no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Throw | ijavacls | ijavaobj1
 	) >>
-	define fgetc = type (any => number => number) no-type-check (
+	define fgetc as (any => number => number) = no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Fgetc | ijavacls | ijavaobj2
 	) >>
-	define log = type (:t :- :t => :t) no-type-check (
+	define log as (:t :- :t => :t) = no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Log1 | ijavacls | ijavaobj1
 	) >>
-	define log2 = type (:t :- string => :t => :t) no-type-check (
+	define log2 as (:t :- string => :t => :t) = no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Log2 | ijavacls | ijavaobj2
 	) >>
 	define and = (x => y =>
@@ -355,7 +355,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump = type (:t :- :t => string) no-type-check (
+	define dump as type (:t :- :t => string) = no-type-check (
 		define get-type = ijavacls {CLASS!suite.lp.invocable.Invocables$GetType} >>
 		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
