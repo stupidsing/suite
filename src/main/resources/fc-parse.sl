@@ -148,6 +148,7 @@ fc-parse-sugar (define macro .var = .value >> .do) .do1
 #
 fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
+fc-parse-sugar (name .var .do) (define .var = .do >> .var) :- ! #
 fc-parse-sugar (not .b) (not {.b}) :- ! #
 fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #

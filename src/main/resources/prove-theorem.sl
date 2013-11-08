@@ -88,24 +88,30 @@ pt-prove4-list () #
 pt-prove4-list (.p .p1, .ts) .ts :- pt-prove4 .p .p1 , pt-prove4-list .ts #
 
 -- 6. putting into clauses (ANDs of ORs form)
-pt-prove5-index (OR .p .q)
-	:- !, pt-prove5-index .p, pt-prove5-index .q
+pt-prove5-index (AND .p .q) .rb0/.rbx
+	:- !, pt-prove5-index .p .rb0/.rb1
+	, pt-prove5-index .q .rb1/.rbx
 #
-pt-prove5-index .p
-	:- pt-prove5-index-ands .p ()/.rbt
+pt-prove5-index .p .rb
+	:- pt-prove5-list-ors .p .l
+	, pt-prove5-index-ors () .l .rb
 #
--- ...
 
-pt-prove5-index-ands (AND .p .q) .rb0/.rbx
+pt-prove5-list-ors (OR .p .q) .l0/.lx
 	:- !
-	, pt-prove5-index-ands .p .rb0/.rb1
-	, pt-prove5-index-ands .q .rb1/.rbx
+	, pt-prove5-list-ors .p .l0/.l1
+	, pt-prove5-list-ors .q .l1/.lx
 #
-pt-prove5-index-ands .p .rb0/.rbx
-	:- rbt-get .rb0 .p:.list
+pt-prove5-list-ors .p .l0/(.p, .l0) #
+
+pt-prove5-index-ors .pre (.p, .post) .rb0/.rbx
+	:- !
+	, rbt-get .rb0 .p:.list
 	, once (bound .list; .list = ())
-	, rbt-replace .p:(.pre:.post, .list) .rb0/.rbx
+	, rbt-replace .p:(.pre:.post, .list) .rb0/.rb1
+	, pt-prove5-index-ors (.p, .pre) .pre .post .rb1/.rbx
 #
+pt-prove5-index-ors _ () .rb/.rb #
 
 pt-transform (IMP .p .q) (AND (NOT .p1) .q1) (.p .p1, .q .q1,) :- ! #
 pt-transform (AND .p .q) (AND .p1 .q1) (.p .p1, .q .q1,) :- ! #
