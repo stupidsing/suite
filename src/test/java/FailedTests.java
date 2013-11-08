@@ -31,9 +31,7 @@ public class FailedTests {
 	// Cyclic types
 	@Test
 	public void test3() {
-		Suite.evaluateFunType("" //
-				+ "define grp = (list0 => (list0;) = list0) >> grp" //
-		);
+		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
 	}
 
 }

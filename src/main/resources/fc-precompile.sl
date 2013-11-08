@@ -35,6 +35,8 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 			, fc-dict-merge-replace .te .tes .te1
 			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
+	, !, write 'Verifying intermediate output', nl
+	, once (not is.cyclic .do2; fc-error "Cyclic data detected")
 	, !, write "Lazyifying", nl
 	, !, fc-lazyify .do2 .dol3
 	, !, write "Optimizing", nl
@@ -44,8 +46,8 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	, !, fc-dump-precompile LAZY .lib .fcs .dol4 .prog2
 	, .prog3 = fc-imported-precompile-library .lib
 	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
-	, !, write 'Verifying output', nl
-	, once (not is.cyclic .prog; fc-error "Cyclic output detected")
+	, !, write 'Verifying final output', nl
+	, once (not is.cyclic .prog; fc-error "Cyclic data detected")
 #
 
 fc-dump-precompile .mode .lib .fcs .parsed .prog
