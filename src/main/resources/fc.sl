@@ -124,7 +124,7 @@ fc-add-functions STANDARD .p (
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
-	define _popen = type (string => string => string) no-type-check (
+	define _popen = type (string => string => data-of Stream) no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
 	) >>
 	define throw = type (any => any) no-type-check (
@@ -193,7 +193,7 @@ fc-add-functions STANDARD .p (
 			fun {h} {head {r}}; r
 		|| otherwise (init;)
 	) >>
-	define source = (is =>
+	define source = (is as data-of Stream =>
 		let fgets = (pos =>
 			let c = fgetc {is} {pos} >>
 			if (c >= 0) then (c; fgets {pos + 1}) else ()

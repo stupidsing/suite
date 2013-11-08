@@ -67,6 +67,8 @@ fc-transform-type .unbound .unbound
 #
 fc-transform-type (ATOM-OF .atom) (ATOM-OF .atom)
 #
+fc-transform-type (DATA-OF .data) (DATA-OF .data)
+#
 fc-transform-type BOOLEAN BOOLEAN
 #
 fc-transform-type (CLASS .t) (CLASS .t)
