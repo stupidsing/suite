@@ -153,6 +153,9 @@ fc-parse-sugar (define .var as .type = .value >> .do) (define .var = .value as .
 fc-parse-sugar (.var as .type => .do) (.var1 => (define .var = .var1 as .type >> .do))
 	:- !, temp .var1
 #
+fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var = .bind) then .do else error))
+	:- !, temp .var
+#
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
 fc-parse-sugar (name .var .do) (define .var = .do >> .var) :- ! #
 fc-parse-sugar (not .b) (not {.b}) :- ! #
