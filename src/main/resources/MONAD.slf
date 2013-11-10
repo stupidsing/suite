@@ -1,6 +1,6 @@
 using STANDARD >>
 define m-seq = (
-	define seq as (:t :- any => :t => :t) = no-type-check (
+	define seq as (:t :- any => :t => :t) = (
 		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
 	) >>
 	do0 => do1 => (do #

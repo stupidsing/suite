@@ -162,7 +162,7 @@ public class EagerFunTest {
 	public void testInfiniteLoop() {
 		try {
 			// This would fail stack over during type check, so skip that
-			Suite.evaluateFun("no-type-check (e => e {e}) {e => e {e}}", false);
+			Suite.evaluateFun("skip-type-check (e => e {e}) {e => e {e}}", false);
 			throw new RuntimeException();
 		} catch (Throwable th) {
 		}

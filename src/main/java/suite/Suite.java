@@ -51,12 +51,12 @@ public class Suite {
 	}
 
 	public static Node applyDo(Node node, Atom returnType) {
-		return Suite.substitute("type (do-of .1 => number => .1) (no-type-check id) {.0} {0}", node, returnType);
+		return Suite.substitute("type (do-of .1 => number => .1) (skip-type-check id) {.0} {0}", node, returnType);
 	}
 
 	public static Node applyReader(Reader reader, Node func) {
 		Data<IndexedReader> data = new Data<IndexedReader>(new IndexedReader(reader));
-		return Suite.substitute("source {no-type-check atom:`.0`} | .1", data, func);
+		return Suite.substitute("source {skip-type-check atom:`.0`} | .1", data, func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {
