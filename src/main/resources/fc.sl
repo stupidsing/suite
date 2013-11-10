@@ -396,21 +396,6 @@ fc-add-functions STANDARD .p (
 	define join = (separator =>
 		concat . map {separator; | append/}
 	) >>
-	define merge-sort = (
-		define merger = (list0 => list1 =>
-			if (list0 = `$h0; $t0`) then
-				if (list1 = `$h1; $t1`) then
-					case
-					|| (h0 < h1) (h0; merger {t0} {list1})
-					|| (h0 > h1) (h1; merger {list0} {t1})
-					|| h0; h1; merger {t0} {t1}
-				else
-					list0
-			else
-				list1
-		) >>
-		merge {merger}
-	) >>
 	define quick-sort = (cmp =>
 		match
 		|| `$pivot; $t` =>
@@ -420,6 +405,9 @@ fc-add-functions STANDARD .p (
 			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
 			concat {l0; (pivot;); l1;}
 		|| otherwise ()
+	) >>
+	define merge-sort = (
+		concat . map {tuple-tail} . group . map {v => (v, v)}
 	) >>
 	.p
 ) #
