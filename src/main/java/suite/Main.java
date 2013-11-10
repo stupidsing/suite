@@ -144,7 +144,7 @@ public class Main implements AutoCloseable {
 					else
 						return code;
 				} while (!isQuiet //
-						&& (!ParserUtil.isParseable(line) || !line.isEmpty() && !line.endsWith("#")));
+						&& (!ParserUtil.isParseable(sb.toString()) || !line.isEmpty() && !line.endsWith("#")));
 
 				String input = sb.toString();
 

@@ -1,21 +1,19 @@
 using STANDARD >>
-define m-seq = type (:t :- do-of any => do-of :t => do-of :t) (
-	define seq = type (:t :- any => :t => :t) no-type-check (
+define m-seq = (
+	define seq as (:t :- any => :t => :t) = no-type-check (
 		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
 	) >>
 	do0 => do1 => (do #
 		seq {exec {do0}} {exec {do1}}
 	)
 ) >>
-define m-seqs = type (list-of do-of Nothing => do-of Nothing) (
-	dos => (do #
-		fold-right {m-seq} {do # Nothing} {dos}
-	)
+define m-seqs = (
+	dos => fold-right {m-seq} {do # Nothing} {dos}
 ) >>
-define m-while = type (:t :- do-of boolean => do-of :t => do-of Nothing) (
+define m-while = (
 	cond => loop => (do #
 		if:: exec {cond}
-		then:: m-seq {loop} {while {cond} {loop}}
-		else:: exec {}
+		then:: exec {m-seq {loop} {m-while {cond} {loop}}}
+		else:: Nothing
 	)
 ) >>
