@@ -59,7 +59,7 @@ fc-transform-option (DEF-TYPE .type0 .classes0 .typeVars0) (DEF-TYPE .type1 .cla
 #
 fc-transform-option RESOLVE-TYPE RESOLVE-TYPE
 #
-fc-transform-option NO-TYPE-CHECK NO-TYPE-CHECK
+fc-transform-option SKIP-TYPE-CHECK SKIP-TYPE-CHECK
 #
 
 fc-transform-type .unbound .unbound
