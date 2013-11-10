@@ -93,9 +93,7 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(RuleSet rs, Node compileNode, FunCompilerConfig fcc) {
-		// Builder builder = new
-		// InterpretedProverBuilder(fcc.getProverConfig());
-		Builder builder = CompiledProverBuilder.level1(fcc.getProverConfig(), fcc.isDumpCode());
+		Builder builder = new InterpretedProverBuilder(fcc.getProverConfig());
 		Finder finder = builder.build(rs, compileNode);
 		List<Node> nodes = collect(finder, appendLibraries(fcc));
 		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
