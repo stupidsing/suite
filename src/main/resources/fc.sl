@@ -398,16 +398,16 @@ fc-add-functions STANDARD .p (
 	) >>
 	define merge-sort = (
 		define merger = (list0 => list1 =>
-			case
-			|| (list0 = `$h0; $t0`)
-				case
-				|| (list1 = `$h1; $t1`)
+			if (list0 = `$h0; $t0`) then
+				if (list1 = `$h1; $t1`) then
 					case
 					|| (h0 < h1) (h0; merger {t0} {list1})
 					|| (h0 > h1) (h1; merger {list0} {t1})
 					|| h0; h1; merger {t0} {t1}
-				|| list0
-			|| list1
+				else
+					list0
+			else
+				list1
 		) >>
 		merge {merger}
 	) >>
