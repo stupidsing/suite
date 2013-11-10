@@ -24,7 +24,7 @@ fc-parse .do (OPTION (CAST DOWN .type1) .value1)
 	, fc-parse-type .type .type1
 	, fc-parse .value .value1
 #
-fc-parse (skip-type-check  .do) (OPTION SKIP-TYPE-CHECK .do1)
+fc-parse (skip-type-check .do) (OPTION SKIP-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (using .lib >> .do) (USING .lib .do1)
