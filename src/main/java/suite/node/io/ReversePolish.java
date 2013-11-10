@@ -1,7 +1,13 @@
 package suite.node.io;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 import suite.Suite;
 import suite.node.Atom;
@@ -13,13 +19,20 @@ import suite.node.io.TermParser.TermOp;
 
 public class ReversePolish {
 
-	public Node fromRpn(String rpn) {
-		String elems[] = rpn.split("\n");
-		Deque<Node> deque = new ArrayDeque<>();
-		int index = elems.length;
+	public Node fromRpn(String s) {
+		try {
+			return fromRpn(new StringReader(s));
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
-		while (index > 0) {
-			String elem = elems[--index];
+	public Node fromRpn(Reader reader) throws IOException {
+		BufferedReader br = new BufferedReader(reader);
+		Deque<Node> deque = new ArrayDeque<>();
+		String elem;
+
+		while ((elem = br.readLine()) != null) {
 			if (elem.isEmpty())
 				continue;
 
@@ -48,7 +61,7 @@ public class ReversePolish {
 	}
 
 	public String toRpn(Node node) {
-		StringBuilder sb = new StringBuilder();
+		List<String> list = new ArrayList<>();
 		Deque<Node> deque = new ArrayDeque<>();
 
 		deque.push(node);
@@ -71,9 +84,13 @@ public class ReversePolish {
 			} else
 				s = "^" + Formatter.dump(n);
 
-			sb.append(s);
-			sb.append('\n');
+			list.add(s);
 		}
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = list.size() - 1; i >= 0; i--)
+			sb.append(list.get(i) + '\n');
 
 		return sb.toString();
 	}
