@@ -89,6 +89,7 @@ fc-parse atom:`.a` (ATOM .a) :- ! #
 fc-parse .a (ATOM .a) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
+fc-parse .v (NEW-VAR .nv) :- to.string .v "_", temp .nv, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
