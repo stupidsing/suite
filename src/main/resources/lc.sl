@@ -113,7 +113,7 @@ lc-parse-pattern .var (VAR .var) .nv
 	:- lc-is-variable .var, !, lc-dict-add .var/_ ()/.nv
 #
 lc-parse-pattern .wildcard WILDCARD ()
-	:- to.atom "_" .wildcard, temp .var, !
+	:- to.atom "_" .wildcard, !
 #
 lc-parse-pattern .a (ATOM .a) () :- is.atom .a #
 lc-parse-pattern .i (NUMBER .i) () :- is.int .i #
@@ -252,7 +252,7 @@ lc-compile (SYSTEM-CALL .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 
 lc-merge-rules () _ #
 lc-merge-rules (.rule, .remains) .groups
-	:- .rule = RULE .nv .head .tail
+	:- .rule = RULE _ .head _
 	, lc-call-prototype .head .proto
 	, member .groups .proto/.rules
 	, member .rules .rule
@@ -263,7 +263,7 @@ lc-merge-rules (.rule, .remains) .groups
 lc-bind (TREE .tree) .node .vs .cs :- !, lc-bind0 .node (TREE .tree) .vs .cs #
 lc-bind .node0 .node1 .vs .cs :- lc-bind0 .node0 .node1 .vs .cs #
 
-lc-bind0 .node .node .vs .c/.c/.f/.f :- not (.node = $$REG:_), ! #
+lc-bind0 .node .node _ .c/.c/.f/.f :- not (.node = $$REG:_), ! #
 lc-bind0 (TREE .oper .nl0 .nr0) (TREE .oper .nl1 .nr1) .vs .c0/.cx/.f0/.fx
 	:- !
 	, lc-bind .nl0 .nl1 .vs .c0/.c1/.f1/.fx
@@ -324,9 +324,9 @@ lc-prototype-labels (.proto/_, .tail) .pls/(.proto/_, .pls1)
 	:- lc-prototype-labels .tail .pls/.pls1
 #
 
-lc-create-node $$REG:.reg .vs .c/.c/.reg :- ! #
+lc-create-node $$REG:.reg _ .c/.c/.reg :- ! #
 lc-create-node (VAR .var) .vs .c/.c/.reg :- member .vs .var/.reg, ! #
-lc-create-node WILDCARD .vs .c0/.cx/.reg
+lc-create-node WILDCARD _ .c0/.cx/.reg
 	:- .c0 = (_ NEW-NODE .reg, .cx)
 #
 lc-create-node (ATOM .a) _ .c0/.cx/.reg
