@@ -101,10 +101,8 @@ public class Invocables {
 				// Have to make sure the executors are thread-safe!
 				new Thread() {
 					public void run() {
-						try {
-							try (InputStream pes = process.getErrorStream();
-									OutputStream pos = process.getOutputStream();
-									Writer writer = new OutputStreamWriter(pos)) {
+						try (InputStream pes = process.getErrorStream(); OutputStream pos = process.getOutputStream()) {
+							try (Writer writer = new OutputStreamWriter(pos)) {
 								ExpandUtil.expandToWriter(unwrapper, in, writer);
 							}
 
