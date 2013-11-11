@@ -9,10 +9,10 @@ public class TermParser extends Parser {
 		NEXT__("#", Assoc.RIGHT), //
 		IS____(" :- ", Assoc.RIGHT), //
 		CONTD_(" >> ", Assoc.RIGHT), //
-		PIPE__(" << ", Assoc.LEFT), //
 		BIGOR_(" || ", Assoc.RIGHT), //
 		BIGAND(" && ", Assoc.RIGHT), //
 		FUN___(" => ", Assoc.RIGHT), //
+		ARROW_(" -> ", Assoc.RIGHT), //
 		SEP___(" | ", Assoc.LEFT), //
 		JOIN__(" . ", Assoc.LEFT), //
 		OR____(";", Assoc.RIGHT), //

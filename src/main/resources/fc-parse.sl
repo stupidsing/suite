@@ -139,10 +139,12 @@ fc-parse-sugar (.l; .r) (_lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do # .do) (
-	define fun-to-monad = type (:t :- (number => :t) => do-of :t) (skip-type-check id) >>
-	define monad-to-fun = type (:t :- do-of :t => (number => :t)) (skip-type-check id) >>
+	define fun-to-monad = type (:t => (number -> :t) -> do-of :t) (skip-type-check id) >>
+	define monad-to-fun = type (:t => do-of :t -> (number -> :t)) (skip-type-check id) >>
 	fun-to-monad {dummy =>
-		define exec = ({0} . monad-to-fun) >> .do
+		define frame = id {dummy} >>
+		define exec = ({0} . monad-to-fun) >>
+		.do
 	}
 ) :- ! #
 fc-parse-sugar (expand .var = .value >> .do) .do1
@@ -172,7 +174,7 @@ fc-parse-sugar .s (.ascii; .cs)
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type any .t :- not bound .t, ! #
-fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
+fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
@@ -187,13 +189,13 @@ fc-parse-type .do (PAIR-OF .type0 .type1)
 	, fc-parse-type .t0 .type0
 	, fc-parse-type .t1 .type1
 #
-fc-parse-type (.typeVar :- .type) (GENERIC-OF .typeVar1 .type1)
+fc-parse-type (.typeVar => .type) (GENERIC-OF .typeVar1 .type1)
 	:- !
 	, fc-parse-type .type .type1
 	, fc-parse-type .typeVar .typeVar1
 #
 -- Keeps contained in class definition for tuple matching.
-fc-parse-type .type/.paramType (CLASS (PARAMETERIZED .paramType1 .class))
+fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))
 	:- !
 	, fc-parse-type .type (CLASS .class)
 	, fc-parse-type .paramType .paramType1
