@@ -28,7 +28,7 @@ define rbt-add = type (:t :- :t => rb-tree/:t => rb-tree/:t) (v =>
 			else error
 		|| `EMPTY` =>
 			RB-TREE cr EMPTY v EMPTY []
-		|| otherwise error
+		|| anything => error
 	) >>
 	match
 	|| `RB-TREE $color $n0 $pivot $n1 []` => RB-TREE cb n0 pivot n1 [] | add0
@@ -38,7 +38,7 @@ define rbt-to-list = type (:t :- rb-tree/:t => list-of :t) (
 	match
 	|| `RB-TREE $color $n0 $pivot $n1 []` => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
 	|| `EMPTY` => ()
-	|| otherwise error
+	|| anything => error
 ) >>
 define dict-add = type (:k :- :v :- :k => :v => rb-tree/(:k, :v) => rb-tree/(:k, :v)) (key => value =>
 	rbt-add {key, value}
@@ -50,5 +50,5 @@ define dict-get = type (:k :- :v :- :k => rb-tree/(:k, :v) => :v) (key =>
 			dict-get {key} {if (key < key1) then n0 else n1}
 		else
 			value1
-	|| otherwise error
+	|| anything => error
 ) >>

@@ -2,18 +2,18 @@ using STANDARD >>
 define combinations =
 	match
 	|| `$h; $t` => t | combinations | invoke/ | map/ {id; (h | cons | map);} | concat
-	|| otherwise (();)
+	|| anything => ();
 >>
 define permutations =
 	let shuffles =
 		define interleaves = (e =>
 			match
 			|| `$h; $t` => t | interleaves {e} | map {cons {h}} | cons {e; h; t}
-			|| otherwise ((e;);)
+			|| anything => (e;);
 		) >>
 		match
 		|| `$h; $t` => t | shuffles | map {interleaves {h}} | concat
-		|| otherwise (();)
+		|| anything ();
 	>>
 	concat . map {shuffles} . combinations
 >>

@@ -148,7 +148,6 @@ fc-parse-sugar (do # .do) (
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
-fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
 fc-parse-sugar (define .var as .type = .value >> .do) (define .var = .value as .type >> .do)
 	:- !
 #

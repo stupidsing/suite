@@ -261,7 +261,7 @@ public class EagerFunTest {
 				+ "    || 1 => \"A\" \n" //
 				+ "    || 2 => \"B\" \n" //
 				+ "    || 3 => \"C\" \n" //
-				+ "    || otherwise \"D\" \n" //
+				+ "    || anything => \"D\" \n" //
 				+ ") >> \n" //
 				+ "switch {2}"));
 	}

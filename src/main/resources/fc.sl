@@ -154,12 +154,12 @@ fc-add-functions STANDARD .p (
 	define fold-left = (fun => init => -- possible for tail recursion optimization
 		case
 		|| `$h; $t` => fold-left {fun} {fun {init} {h}} {t}
-		|| otherwise init
+		|| anything => init
 	) >>
 	define fold-right = (fun => init => -- possible for short-circuit evaluation
 		case
 		|| `$h; $t` => fun {h} {fold-right {fun} {init} {t}}
-		|| otherwise init
+		|| anything => init
 	) >>
 	define greater = (a => b =>
 		if (a > b) then a else b
@@ -185,14 +185,14 @@ fc-add-functions STANDARD .p (
 	define scan-left = (fun => init =>
 		case
 		|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
-		|| otherwise (init;)
+		|| anything => (init;)
 	) >>
 	define scan-right = (fun => init =>
 		case
 		|| `$h; $t` =>
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
-		|| otherwise (init;)
+		|| anything => (init;)
 	) >>
 	define source = (is as data-of Stream =>
 		let fgets = (pos =>
@@ -211,7 +211,7 @@ fc-add-functions STANDARD .p (
 	define tails = (
 		case
 		|| `$h; $t` => (h; t); tails {t}
-		|| otherwise (;)
+		|| anything => (;)
 	) >>
 	define take = (n => list =>
 		if:: n > 0 && is-list {list}
@@ -222,7 +222,7 @@ fc-add-functions STANDARD .p (
 		case
 		|| `$elem; $elems` =>
 			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
-		|| otherwise ()
+		|| anything => ()
 	) >>
 	define tget0 =
 		first
@@ -244,14 +244,14 @@ fc-add-functions STANDARD .p (
 		|| `$h0; $t0` => (
 			case
 			|| `$h1; $t1` => fun {h0} {h1}; zip {fun} {t0} {t1}
-			|| otherwise ()
+			|| anything => ()
 		)
-		|| otherwise (anything => ())
+		|| anything => anything => ()
 	) >>
 	define append = (
 		case
 		|| `$h; $t` => cons {h} . append {t}
-		|| otherwise id
+		|| anything => id
 	) >>
 	define apply =
 		fold-right {`.`} {id}
@@ -335,12 +335,11 @@ fc-add-functions STANDARD .p (
 	) >>
 	define starts-with = (
 		case
-		|| `$sh; $st` => (
+		|| `$sh; $st` =>
 			case
 			|| `sh; $t` => starts-with {st} {t}
-			|| otherwise false
-		)
-		|| otherwise (anything => true)
+			|| anything => false
+		|| anything => anything => true
 	) >>
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
@@ -407,7 +406,7 @@ fc-add-functions STANDARD .p (
 			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
 			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
 			concat {l0; (pivot;); l1;}
-		|| otherwise ()
+		|| anything => ()
 	) >>
 	define merge-sort = (
 		concat . map {second} . group . map {v => (v, v)}
