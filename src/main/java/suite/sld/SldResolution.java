@@ -74,11 +74,7 @@ public class SldResolution {
 		for (Entry<Node, Source<List<Node>>> entry : orsMap.entrySet()) {
 			Node key = entry.getKey();
 			Source<List<Node>> value0 = entry.getValue();
-			Tree tree;
-
-			boolean isTuple = (tree = Tree.decompose(key, TermOp.TUPLE_)) != null;
-			boolean isAlreadyNegated = isTuple && tree.getLeft() == not;
-			Node negated = isAlreadyNegated ? tree.getRight() : Tree.create(TermOp.TUPLE_, not, key);
+			Node negated = negate(key);
 
 			Source<List<Node>> value1 = orsMap.get(negated);
 
@@ -91,6 +87,13 @@ public class SldResolution {
 		}
 
 		return result[0];
+	}
+
+	private Node negate(Node key) {
+		Tree tree;
+		boolean isTuple = (tree = Tree.decompose(key, TermOp.TUPLE_)) != null;
+		boolean isAlreadyNegated = isTuple && tree.getLeft() == not;
+		return isAlreadyNegated ? tree.getRight() : Tree.create(TermOp.TUPLE_, not, key);
 	}
 
 }
