@@ -152,12 +152,12 @@ fc-add-functions STANDARD .p (
 		f {y} {x}
 	) >>
 	define fold-left = (fun => init => -- possible for tail recursion optimization
-		match
+		case
 		|| `$h; $t` => fold-left {fun} {fun {init} {h}} {t}
 		|| otherwise init
 	) >>
 	define fold-right = (fun => init => -- possible for short-circuit evaluation
-		match
+		case
 		|| `$h; $t` => fun {h} {fold-right {fun} {init} {t}}
 		|| otherwise init
 	) >>
@@ -183,12 +183,12 @@ fc-add-functions STANDARD .p (
 		if (n > 0) then (elem; repeat {n - 1} {elem}) else ()
 	) >>
 	define scan-left = (fun => init =>
-		match
+		case
 		|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
 		|| otherwise (init;)
 	) >>
 	define scan-right = (fun => init =>
-		match
+		case
 		|| `$h; $t` =>
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
@@ -209,7 +209,7 @@ fc-add-functions STANDARD .p (
 		{s}
 	) >>
 	define tails = (
-		match
+		case
 		|| `$h; $t` => (h; t); tails {t}
 		|| otherwise (;)
 	) >>
@@ -219,7 +219,7 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define take-while = (fun =>
-		match
+		case
 		|| `$elem; $elems` =>
 			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
 		|| otherwise ()
@@ -240,16 +240,16 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define zip = (fun =>
-		match
+		case
 		|| `$h0; $t0` => (
-			match
+			case
 			|| `$h1; $t1` => fun {h0} {h1}; zip {fun} {t0} {t1}
 			|| otherwise ()
 		)
 		|| otherwise (anything => ())
 	) >>
 	define append = (
-		match
+		case
 		|| `$h; $t` => cons {h} . append {t}
 		|| otherwise id
 	) >>
@@ -334,9 +334,9 @@ fc-add-functions STANDARD .p (
 		"sh"; "-c"; command; | popen
 	) >>
 	define starts-with = (
-		match
+		case
 		|| `$sh; $st` => (
-			match
+			case
 			|| `sh; $t` => starts-with {st} {t}
 			|| otherwise false
 		)
@@ -400,7 +400,7 @@ fc-add-functions STANDARD .p (
 		concat . map {separator; | append/}
 	) >>
 	define quick-sort = (cmp =>
-		match
+		case
 		|| `$pivot; $t` =>
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>

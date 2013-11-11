@@ -119,15 +119,14 @@ fc-parse-sugar error (throw {}) :- ! #
 fc-parse-sugar (if (`.p` = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
-fc-parse-sugar (match || .bind => .then || .otherwise) .p1
+fc-parse-sugar (case || .bind => .then || .otherwise) .p1
 	:- !, temp .var
 	, .p1 = (.var =>
-		if (.var = .bind)
-		then .then
-		else ((match || .otherwise) {.var})
+		case
+		|| (.var = .bind) .then
+		|| ((case || .otherwise) {.var})
 	)
 #
-fc-parse-sugar (match || .p) .p :- ! #
 fc-parse-sugar (case || .if .then || .otherwise) .p1
 	:- !
 	, .p1 = if .if then .then else (case || .otherwise)
