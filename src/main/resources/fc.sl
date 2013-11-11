@@ -379,19 +379,19 @@ fc-add-functions STANDARD .p (
 		starts-with {end | reverse} . reverse
 	) >>
 	define group = (
-		define grouper = (list0 => list1 =>
+		define group0 = (list0 => list1 =>
 			if (list0 = `$k0, $v0; $t0`) then
 				if (list1 = `$k1, $v1; $t1`) then
 					case
-					|| (k0 < k1) (k0, v0; grouper {t0} {list1})
-					|| (k0 > k1) (k1, v1; grouper {list0} {t1})
-					|| k0, append {v0} {v1}; grouper {t0} {t1}
+					|| (k0 < k1) (k0, v0; group0 {t0} {list1})
+					|| (k0 > k1) (k1, v1; group0 {list0} {t1})
+					|| k0, append {v0} {v1}; group0 {t0} {t1}
 				else
 					list0
 			else
 				list1
 		) >>
-		merge {grouper} . map {`$k, $v` => (k, (v;))}
+		merge {group0} . map {`$k, $v` => (k, (v;))}
 	) >>
 	define join = (separator =>
 		concat . map {separator; | append/}
