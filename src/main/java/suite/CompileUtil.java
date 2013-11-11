@@ -10,25 +10,19 @@ import suite.lp.search.ProverBuilder.Builder;
 
 public class CompileUtil {
 
-	private RuleSet logicalRuleSet;
-	private RuleSet funRuleSet;
-	private RuleSet eagerFunRuleSet;
-	private RuleSet lazyFunRuleSet;
+	private RuleSet logicalCompilerRuleSet;
+	private RuleSet funCompilerRuleSet;
 
 	public synchronized RuleSet logicCompilerRuleSet() {
-		if (logicalRuleSet == null)
-			logicalRuleSet = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
-		return logicalRuleSet;
+		if (logicalCompilerRuleSet == null)
+			logicalCompilerRuleSet = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
+		return logicalCompilerRuleSet;
 	}
 
 	public synchronized RuleSet funCompilerRuleSet() {
-		if (funRuleSet == null)
-			funRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
-		return funRuleSet;
-	}
-
-	public RuleSet funCompilerRuleSet(boolean isLazy) {
-		return isLazy ? lazyFunCompilerRuleSet() : eagerFunCompilerRuleSet();
+		if (funCompilerRuleSet == null)
+			funCompilerRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
+		return funCompilerRuleSet;
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {
@@ -44,18 +38,6 @@ public class CompileUtil {
 			System.out.println("Pre-compilation failed\n");
 
 		return result;
-	}
-
-	private synchronized RuleSet eagerFunCompilerRuleSet() {
-		if (eagerFunRuleSet == null)
-			eagerFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
-		return eagerFunRuleSet;
-	}
-
-	private synchronized RuleSet lazyFunCompilerRuleSet() {
-		if (lazyFunRuleSet == null)
-			lazyFunRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
-		return lazyFunRuleSet;
 	}
 
 	private RuleSet createRuleSet(List<String> toImports) {

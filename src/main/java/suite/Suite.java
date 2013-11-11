@@ -141,10 +141,6 @@ public class Suite {
 		return compileUtil.funCompilerRuleSet();
 	}
 
-	public static RuleSet funCompilerRuleSet(boolean isLazy) {
-		return compileUtil.funCompilerRuleSet(isLazy);
-	}
-
 	public static boolean precompile(String libraryName, ProverConfig pc) {
 		return compileUtil.precompile(libraryName, pc);
 	}

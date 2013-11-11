@@ -56,7 +56,7 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		RuleSet rs = Suite.funCompilerRuleSet(fcc.isLazy());
+		RuleSet rs = Suite.funCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 
 		Node node = Suite.substitute("" //
@@ -93,9 +93,8 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(RuleSet rs, Node compileNode, FunCompilerConfig fcc) {
-		// Builder builder = new
-		// InterpretedProverBuilder(fcc.getProverConfig());
-		Builder builder = CompiledProverBuilder.level1(fcc.getProverConfig(), false);
+		ProverConfig pc = fcc.getProverConfig();
+		Builder builder = new InterpretedProverBuilder(pc);
 		Finder finder = builder.build(rs, compileNode);
 		List<Node> nodes = collect(finder, appendLibraries(fcc));
 		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;

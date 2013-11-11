@@ -69,7 +69,7 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node compileFunctional(Node program, boolean isLazy) {
-		RuleSet ruleSet = Suite.funCompilerRuleSet(isLazy);
+		RuleSet ruleSet = Suite.funCompilerRuleSet();
 		Atom mode = Atom.create(isLazy ? "LAZY" : "EAGER");
 		Node goal = Suite.substitute("source .in, compile-function .0 .in .out, sink .out", mode);
 		return compile(ruleSet, goal, program);
