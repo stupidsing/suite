@@ -121,9 +121,10 @@ infer-type-rule (OPTION RESOLVE-TYPE .do) .env .tr/.tr .type
 	, infer-type-rule .do .env .tr1/() .type
 	, resolve-type-rules .tr1
 #
-infer-type-rule (OPTION _ .do) .env .tr .type
-	:- !
-	, infer-type-rule .do .env .tr .type
+infer-type-rule .do .env .tr .type
+	:- .do = OPTION _ .do1; .do = UNWRAP .do1;  .do = WRAP .do1
+	, !
+	, infer-type-rule .do1 .env .tr .type
 #
 infer-type-rule (VAR .var) _/.ve/_ .tr0/.trx .type
 	:- (fc-dict-get .ve .var/.varType
