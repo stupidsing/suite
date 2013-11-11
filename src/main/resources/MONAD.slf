@@ -1,6 +1,4 @@
 using STANDARD >>
-define m-put = (
-) >>
 define m-seq = (
 	define seq as (:t :- any => :t => :t) = (
 		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
