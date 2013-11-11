@@ -117,27 +117,27 @@ fc-dict-member .v .t :- rbt-member .v .t #
 fc-add-functions STANDARD .p (
 	define compare = (a => b => _compare {a} {b}) >>
 	define cons = (head => tail => _lcons {head} {tail}) >>
+	define first = (tuple => _pleft {tuple}) >>
 	define head = (list => _lhead {list}) >>
 	define ijavacls = (name => _ijavacls {name}) >>
 	define ijavaobj0 = (name => _ijavaobj0 {name}) >>
 	define ijavaobj1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
 	define ijavaobj2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
+	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
-	define tuple-head = (tuple => _pleft {tuple}) >>
-	define tuple-tail = (tuple => _pright {tuple}) >>
-	define _popen as (string => string => data-of Stream) = (
+	define _popen as (list-of string -> string -> data-of Stream) = (
 		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
 	) >>
-	define throw as (any => any) = (
+	define throw as (any -> any) = (
 		CLASS!suite.lp.invocable.Invocables$Throw | ijavacls | ijavaobj1
 	) >>
-	define fgetc as (any => number => number) = (
+	define fgetc as (any -> number -> number) = (
 		CLASS!suite.lp.invocable.Invocables$Fgetc | ijavacls | ijavaobj2
 	) >>
-	define log as (:t :- :t => :t) = (
+	define log as (:t => :t -> :t) = (
 		CLASS!suite.lp.invocable.Invocables$Log1 | ijavacls | ijavaobj1
 	) >>
-	define log2 as (:t :- string => :t => :t) = (
+	define log2 as (:t => string -> :t -> :t) = (
 		CLASS!suite.lp.invocable.Invocables$Log2 | ijavacls | ijavaobj2
 	) >>
 	define and = (x => y =>
@@ -152,14 +152,14 @@ fc-add-functions STANDARD .p (
 		f {y} {x}
 	) >>
 	define fold-left = (fun => init => -- possible for tail recursion optimization
-		match
+		case
 		|| `$h; $t` => fold-left {fun} {fun {init} {h}} {t}
-		|| otherwise init
+		|| anything => init
 	) >>
 	define fold-right = (fun => init => -- possible for short-circuit evaluation
-		match
+		case
 		|| `$h; $t` => fun {h} {fold-right {fun} {init} {t}}
-		|| otherwise init
+		|| anything => init
 	) >>
 	define greater = (a => b =>
 		if (a > b) then a else b
@@ -183,16 +183,16 @@ fc-add-functions STANDARD .p (
 		if (n > 0) then (elem; repeat {n - 1} {elem}) else ()
 	) >>
 	define scan-left = (fun => init =>
-		match
+		case
 		|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
-		|| otherwise (init;)
+		|| anything => (init;)
 	) >>
 	define scan-right = (fun => init =>
-		match
+		case
 		|| `$h; $t` =>
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
-		|| otherwise (init;)
+		|| anything => (init;)
 	) >>
 	define source = (is as data-of Stream =>
 		let fgets = (pos =>
@@ -209,9 +209,9 @@ fc-add-functions STANDARD .p (
 		{s}
 	) >>
 	define tails = (
-		match
+		case
 		|| `$h; $t` => (h; t); tails {t}
-		|| otherwise (;)
+		|| anything => (;)
 	) >>
 	define take = (n => list =>
 		if:: n > 0 && is-list {list}
@@ -219,19 +219,19 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define take-while = (fun =>
-		match
+		case
 		|| `$elem; $elems` =>
 			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
-		|| otherwise ()
+		|| anything => ()
 	) >>
 	define tget0 =
-		tuple-head
+		first
 	>>
 	define tget1 =
-		tuple-head . tuple-tail
+		first . second
 	>>
 	define tget2 =
-		tuple-head . tuple-tail . tuple-tail
+		first . second . second
 	>>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
@@ -240,18 +240,18 @@ fc-add-functions STANDARD .p (
 		else:: ()
 	) >>
 	define zip = (fun =>
-		match
+		case
 		|| `$h0; $t0` => (
-			match
+			case
 			|| `$h1; $t1` => fun {h0} {h1}; zip {fun} {t0} {t1}
-			|| otherwise ()
+			|| anything => ()
 		)
-		|| otherwise (anything => ())
+		|| anything => anything => ()
 	) >>
 	define append = (
-		match
+		case
 		|| `$h; $t` => cons {h} . append {t}
-		|| otherwise id
+		|| anything => id
 	) >>
 	define apply =
 		fold-right {`.`} {id}
@@ -330,14 +330,16 @@ fc-add-functions STANDARD .p (
 	define range = (start => end => inc =>
 		unfold-right {i => if (i < end) then (i; i + inc;) else ()} {start}
 	) >>
+	define sh = (command =>
+		"sh"; "-c"; command; | popen
+	) >>
 	define starts-with = (
-		match
-		|| `$sh; $st` => (
-			match
+		case
+		|| `$sh; $st` =>
+			case
 			|| `sh; $t` => starts-with {st} {t}
-			|| otherwise false
-		)
-		|| otherwise (anything => true)
+			|| anything => false
+		|| anything => anything => true
 	) >>
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
@@ -358,7 +360,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump as type (:t :- :t => string) = skip-type-check (
+	define dump as type (:t => :t -> string) = skip-type-check (
 		define type-of = ijavacls {CLASS!suite.lp.invocable.Invocables$TypeOf} >>
 		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>
@@ -379,35 +381,35 @@ fc-add-functions STANDARD .p (
 		starts-with {end | reverse} . reverse
 	) >>
 	define group = (
-		define grouper = (list0 => list1 =>
+		define group0 = (list0 => list1 =>
 			if (list0 = `$k0, $v0; $t0`) then
 				if (list1 = `$k1, $v1; $t1`) then
 					case
-					|| (k0 < k1) (k0, v0; grouper {t0} {list1})
-					|| (k0 > k1) (k1, v1; grouper {list0} {t1})
-					|| k0, append {v0} {v1}; grouper {t0} {t1}
+					|| (k0 < k1) (k0, v0; group0 {t0} {list1})
+					|| (k0 > k1) (k1, v1; group0 {list0} {t1})
+					|| k0, append {v0} {v1}; group0 {t0} {t1}
 				else
 					list0
 			else
 				list1
 		) >>
-		merge {grouper} . map {`$k, $v` => (k, (v;))}
+		merge {group0} . map {`$k, $v` => (k, (v;))}
 	) >>
 	define join = (separator =>
 		concat . map {separator; | append/}
 	) >>
 	define quick-sort = (cmp =>
-		match
+		case
 		|| `$pivot; $t` =>
 			let filter0 = (not . cmp {pivot}) >>
 			let filter1 = cmp {pivot} >>
 			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
 			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
 			concat {l0; (pivot;); l1;}
-		|| otherwise ()
+		|| anything => ()
 	) >>
 	define merge-sort = (
-		concat . map {tuple-tail} . group . map {v => (v, v)}
+		concat . map {second} . group . map {v => (v, v)}
 	) >>
 	.p
 ) #

@@ -1,5 +1,6 @@
 package suite.node.io;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -105,11 +106,14 @@ public class Formatter {
 			format(tree.getLeft(), leftPrec);
 
 			if (operator != TermOp.BRACES) {
+				if (Arrays.asList(TermOp.NEXT__).contains(operator))
+					sb.append(' ');
+
 				String name = operator.getName();
 				sb.append(name);
 
-				if (operator != TermOp.AND___ || tree.getRight() != Atom.NIL) {
-					if (operator == TermOp.AND___ || operator == TermOp.OR____)
+				if (!Arrays.asList(TermOp.NEXT__, TermOp.AND___).contains(operator) || tree.getRight() != Atom.NIL) {
+					if (Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator))
 						sb.append(' ');
 
 					format(tree.getRight(), rightPrec);

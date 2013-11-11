@@ -23,7 +23,7 @@ public class FunTypeTest {
 	public void testClass() {
 		assertEquals("clazz", getTypeString("" //
 				+ "define type EMPTY of (clazz,) >>\n" //
-				+ "define add = type (clazz => clazz) (a => a) >>\n" //
+				+ "define add = type (clazz -> clazz) (a => a) >>\n" //
 				+ "add | {EMPTY}\n"));
 
 		assertEquals("boolean", getTypeString("" //
@@ -59,22 +59,22 @@ public class FunTypeTest {
 
 	@Test
 	public void testFun() {
-		assertEquals("number => number" //
+		assertEquals("number -> number" //
 				, getTypeString("a => a + 1"));
 		assertEquals("number" //
 				, getTypeString("define f = (a => a + 1) >> f {3}"));
-		assertEquals("boolean => boolean => boolean" //
+		assertEquals("boolean -> boolean -> boolean" //
 				, getTypeString("and"));
-		assertEquals("number => list-of number" //
+		assertEquals("number -> list-of number" //
 				, getTypeString("v => v; reverse {1;}"));
 	}
 
 	@Test
 	public void testGeneric() {
-		assertEquals("list-of rb-tree/number", getTypeString("" //
-				+ "define type EMPTY of (rb-tree/$t,) for any ($t,) >> \n" //
-				+ "define map = type (:a :- :b :- (:a => :b) => list-of :a => list-of :b) (error) >> \n" //
-				+ "define add = type ($t :- $t => rb-tree/$t) (v => EMPTY) >> \n" //
+		assertEquals("list-of (rb-tree {number})", getTypeString("" //
+				+ "define type EMPTY of (rb-tree {$t},) for any ($t,) >> \n" //
+				+ "define map = type (:a => :b => (:a -> :b) -> list-of :a -> list-of :b) (error) >> \n" //
+				+ "define add = type ($t => $t -> rb-tree {$t}) (v => EMPTY) >> \n" //
 				+ "1; | map {add} \n" //
 		));
 	}
@@ -82,9 +82,9 @@ public class FunTypeTest {
 	@Test
 	public void testInstance() {
 		String define = "" //
-				+ "define type NIL of (list/:t,) for any (:t,) >> \n" //
-				+ "define type (NODE :t list/:t []) of (list/:t,) for any (:t,) >> \n" //
-				+ "define type (NODE2 :t :t list/:t []) of (list/:t,) for any (:t,) >> \n" //
+				+ "define type NIL of (list {:t},) for any (:t,) >> \n" //
+				+ "define type (NODE :t (list {:t}) []) of (list {:t},) for any (:t,) >> \n" //
+				+ "define type (NODE2 :t :t (list {:t}) []) of (list {:t},) for any (:t,) >> \n" //
 		;
 
 		getType(define + "NIL");
@@ -112,20 +112,20 @@ public class FunTypeTest {
 	@Test
 	public void testRbTree() {
 		String fps = "using RB-TREE >> 0 until 10 | map {dict-add/ {1}} | apply | {EMPTY}";
-		assertEquals("rb-tree/(number, number)", getTypeString(fps));
+		assertEquals("rb-tree {number, number}", getTypeString(fps));
 	}
 
 	@Test
 	public void testStandard() {
 		checkType("using STANDARD >> ends-with" //
-				, "list-of T => _" //
-				, "list-of T => list-of T => boolean");
+				, "list-of T -> _" //
+				, "list-of T -> list-of T -> boolean");
 		checkType("using STANDARD >> join" //
-				, "T => _" //
-				, "T => list-of list-of T => list-of T");
+				, "T -> _" //
+				, "T -> list-of list-of T -> list-of T");
 		checkType("using STANDARD >> merge" //
-				, "(list-of T => _) => _" //
-				, "(list-of T => list-of T => list-of T) => list-of T => list-of T");
+				, "(list-of T -> _) -> _" //
+				, "(list-of T -> list-of T -> list-of T) -> list-of T -> list-of T");
 	}
 
 	@Test

@@ -121,9 +121,10 @@ infer-type-rule (OPTION RESOLVE-TYPE .do) .env .tr/.tr .type
 	, infer-type-rule .do .env .tr1/() .type
 	, resolve-type-rules .tr1
 #
-infer-type-rule (OPTION _ .do) .env .tr .type
-	:- !
-	, infer-type-rule .do .env .tr .type
+infer-type-rule .do .env .tr .type
+	:- (.do = OPTION _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
+	, !
+	, infer-type-rule .do1 .env .tr .type
 #
 infer-type-rule (VAR .var) _/.ve/_ .tr0/.trx .type
 	:- (fc-dict-get .ve .var/.varType
@@ -133,7 +134,7 @@ infer-type-rule (VAR .var) _/.ve/_ .tr0/.trx .type
 #
 
 find-simple-type (CONSTANT _) _ _ #
-find-simple-type (ATOM ()) _ (LIST-OF _) #
+find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (DO _) _ (DO-OF _) #
@@ -168,16 +169,16 @@ resolve-type-rules0 .tr
 -- Sort the resolve type rules by easiness
 sort-resolve-type-rules () () () :- ! #
 sort-resolve-type-rules (.tr, .trs) (.tr, .ps) .nps
-	:- easy-resolve-type-rule .tr
+	:- resolve-easy-type-rule .tr
 	, !, sort-resolve-type-rules .trs .ps .nps
 #
 sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
 	:- sort-resolve-type-rules .trs .ps .nps
 #
 
-easy-resolve-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
-easy-resolve-type-rule (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
-easy-resolve-type-rule (TYPE-IN-TYPES _) #
+resolve-easy-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
+resolve-easy-type-rule (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
+resolve-easy-type-rule (TYPE-IN-TYPES _) #
 
 -- When resolving types:
 -- - Try bind equivalent sub-type to super-type relation;

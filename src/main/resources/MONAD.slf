@@ -1,5 +1,5 @@
 using STANDARD >>
-define m-seq = (
+define seqm = (
 	define seq as (:t :- any => :t => :t) = (
 		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
 	) >>
@@ -7,13 +7,13 @@ define m-seq = (
 		seq {exec {do0}} {exec {do1}}
 	)
 ) >>
-define m-seqs = (
-	dos => fold-right {m-seq} {do # Nothing} {dos}
+define seqsm = (
+	dos => fold-right {seqm} {do # Nothing} {dos}
 ) >>
-define m-while = (
+define whilem = (
 	cond => loop => (do #
 		if:: exec {cond}
-		then:: exec {m-seq {loop} {m-while {cond} {loop}}}
+		then:: exec {seqm {loop} {whilem {cond} {loop}}}
 		else:: Nothing
 	)
 ) >>

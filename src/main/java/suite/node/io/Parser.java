@@ -60,11 +60,14 @@ public class Parser {
 	}
 
 	private Node parseWithoutComments(String s, int fromOp) {
-		s = s.trim();
-		return !s.isEmpty() ? parseRawString(s, fromOp) : Atom.NIL;
+		return parseRawString(s.trim(), fromOp);
 	}
 
 	private Node parseRawString(String s, int fromOp) {
+		return !s.isEmpty() ? parseRawString0(s, fromOp) : Atom.NIL;
+	}
+
+	private Node parseRawString0(String s, int fromOp) {
 		char first = Util.charAt(s, 0), last = Util.charAt(s, -1);
 
 		for (int i = fromOp; i < operators.length; i++) {
@@ -103,7 +106,7 @@ public class Parser {
 		if (Arrays.asList("[]").contains(s))
 			return Atom.create(s);
 		if (first == '(' && last == ')' || first == '[' && last == ']')
-			return parseWithoutComments(Util.substr(s, 1, -1));
+			return parseRawString(Util.substr(s, 1, -1), 0);
 		if (first == '`' && last == '`')
 			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
@@ -135,8 +138,6 @@ public class Parser {
 		StringBuilder sb = new StringBuilder();
 		int nLastIndents = 0;
 		String lastIndent = "";
-
-		s = "\n" + s + "\n";
 
 		while (!s.isEmpty()) {
 			String line;
@@ -207,6 +208,9 @@ public class Parser {
 
 			nLastIndents = nIndents;
 		}
+
+		while (nLastIndents-- > 0)
+			sb.append(") ");
 
 		return sb.toString();
 	}

@@ -257,11 +257,11 @@ public class EagerFunTest {
 	public void testSwitch() {
 		assertEquals(eval("\"B\""), eval("" //
 				+ "define switch = ( \n" //
-				+ "    match \n" //
+				+ "    case \n" //
 				+ "    || 1 => \"A\" \n" //
 				+ "    || 2 => \"B\" \n" //
 				+ "    || 3 => \"C\" \n" //
-				+ "    || otherwise \"D\" \n" //
+				+ "    || anything => \"D\" \n" //
 				+ ") >> \n" //
 				+ "switch {2}"));
 	}

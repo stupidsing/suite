@@ -2,6 +2,7 @@ package suite.fp;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import suite.Suite;
 import suite.lp.doer.ProverConfig;
@@ -13,8 +14,11 @@ import suite.lp.doer.ProverConfig;
  */
 public class PrecompileMain {
 
+	private static final List<String> allLibraries = Arrays.asList( //
+			"FREQ", "MATH", "MONAD", "PERMUTE", "RB-TREE", "STANDARD");
+
 	public static void main(String args[]) throws IOException {
-		for (String libraryName : Arrays.asList("STANDARD"))
+		for (String libraryName : allLibraries)
 			Suite.precompile(libraryName, new ProverConfig());
 
 		System.out.println("please refresh eclipse workspace");

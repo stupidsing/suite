@@ -119,15 +119,14 @@ fc-parse-sugar error (throw {}) :- ! #
 fc-parse-sugar (if (`.p` = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
-fc-parse-sugar (match || .bind => .then || .otherwise) .p1
+fc-parse-sugar (case || .bind => .then || .otherwise) .p1
 	:- !, temp .var
 	, .p1 = (.var =>
-		if (.var = .bind)
-		then .then
-		else ((match || .otherwise) {.var})
+		case
+		|| (.var = .bind) .then
+		|| ((case || .otherwise) {.var})
 	)
 #
-fc-parse-sugar (match || .p) .p :- ! #
 fc-parse-sugar (case || .if .then || .otherwise) .p1
 	:- !
 	, .p1 = if .if then .then else (case || .otherwise)
@@ -140,16 +139,17 @@ fc-parse-sugar (.l; .r) (_lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do # .do) (
-	define fun-to-monad = type (:t :- (number => :t) => do-of :t) (skip-type-check id) >>
-	define monad-to-fun = type (:t :- do-of :t => (number => :t)) (skip-type-check id) >>
+	define fun-to-monad = type (:t => (number -> :t) -> do-of :t) (skip-type-check id) >>
+	define monad-to-fun = type (:t => do-of :t -> (number -> :t)) (skip-type-check id) >>
 	fun-to-monad {dummy =>
-		define exec = ({0} . monad-to-fun) >> .do
+		define frame = id {dummy} >>
+		define exec = ({0} . monad-to-fun) >>
+		.do
 	}
 ) :- ! #
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
-fc-parse-sugar (otherwise .do) (anything => .do) :- ! #
 fc-parse-sugar (define .var as .type = .value >> .do) (define .var = .value as .type >> .do)
 	:- !
 #
@@ -174,7 +174,7 @@ fc-parse-sugar .s (.ascii; .cs)
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type any .t :- not bound .t, ! #
-fc-parse-type (.paramType => .returnType) (FUN-OF .paramType1 .returnType1)
+fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
@@ -189,13 +189,13 @@ fc-parse-type .do (PAIR-OF .type0 .type1)
 	, fc-parse-type .t0 .type0
 	, fc-parse-type .t1 .type1
 #
-fc-parse-type (.typeVar :- .type) (GENERIC-OF .typeVar1 .type1)
+fc-parse-type (.typeVar => .type) (GENERIC-OF .typeVar1 .type1)
 	:- !
 	, fc-parse-type .type .type1
 	, fc-parse-type .typeVar .typeVar1
 #
 -- Keeps contained in class definition for tuple matching.
-fc-parse-type .type/.paramType (CLASS (PARAMETERIZED .paramType1 .class))
+fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))
 	:- !
 	, fc-parse-type .type (CLASS .class)
 	, fc-parse-type .paramType .paramType1
@@ -246,7 +246,7 @@ fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VAR .nv .v0 .then)
 	:- !
 #
 fc-bind0 .v0 .v1 .then .else (
-	DEF-VAR .elseVar (FUN BOOLEAN .else) DEF-VAR .v0var .v0 (
+	DEF-VAR .elseVar (WRAP .else) DEF-VAR .v0var .v0 (
 		IF (INVOKE (VAR .v0var) (VAR is-list)) (
 			DEF-VAR .headVar (INVOKE (VAR .v0var) (VAR _lhead))
 			DEF-VAR .tailVar (INVOKE (VAR .v0var) (VAR _ltail))
@@ -256,11 +256,11 @@ fc-bind0 .v0 .v1 .then .else (
 ) :- fc-bind-cons .v1 .h1 .t1
 	, !
 	, temp .elseVar, temp .v0var, temp .headVar, temp .tailVar
-	, .else1 = INVOKE (BOOLEAN TRUE) (VAR .elseVar)
+	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind-pair (VAR .headVar) (VAR .tailVar) .h1 .t1 .then .else1 .then1
 #
 fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
-	DEF-VAR .elseVar (FUN BOOLEAN .else)
+	DEF-VAR .elseVar (WRAP .else)
 	DEF-VAR .v0var (OPTION (CAST UP _) .v0) (
 		IF (INVOKE (VAR .v0var) (VAR is-pair)) (
 			DEF-VAR .leftVar (INVOKE (VAR .v0var) (VAR _pleft))
@@ -270,7 +270,7 @@ fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
 	)
 ) :- !
 	, temp .elseVar, temp .v0var, temp .leftVar, temp .rightVar
-	, .else1 = INVOKE (BOOLEAN TRUE) (VAR .elseVar)
+	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind-pair (VAR .leftVar) (VAR .rightVar) .p1 .q1 .then .else1 .then1
 #
 fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
@@ -284,9 +284,9 @@ fc-bind0 .v0 .v1 .then .else (
 fc-bind-cons (INVOKE .t INVOKE .h VAR _lcons) .h .t #
 fc-bind-cons (INVOKE .t INVOKE .h VAR _pcons) .h .t #
 
-fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (FUN BOOLEAN .else) .parsed)
+fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (WRAP .else) .parsed)
 	:- temp .elseVar
-	, .else1 = INVOKE (BOOLEAN TRUE) (VAR .elseVar)
+	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind .h0 .h1 .then1 .else1 .parsed
 	, fc-bind .t0 .t1 .then .else1 .then1
 #
