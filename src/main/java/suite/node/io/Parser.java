@@ -106,7 +106,7 @@ public class Parser {
 		if (Arrays.asList("[]").contains(s))
 			return Atom.create(s);
 		if (first == '(' && last == ')' || first == '[' && last == ']')
-			return parseWithoutComments(Util.substr(s, 1, -1));
+			return parseRawString(Util.substr(s, 1, -1), 0);
 		if (first == '`' && last == '`')
 			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
