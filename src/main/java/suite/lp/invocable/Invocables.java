@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
@@ -20,6 +21,7 @@ import suite.node.io.Formatter;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.LogUtil;
 
 public class Invocables {
@@ -78,11 +80,18 @@ public class Invocables {
 	public static class Popen implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			final Fun<Node, Node> unwrapper = bridge.getUnwrapper();
-			Node cmd = inputs.get(0);
+			final List<String> list = new ArrayList<>();
+
+			ExpandUtil.expandList(unwrapper, inputs.get(0), new Sink<Node>() {
+				public void sink(Node node) {
+					list.add(ExpandUtil.expandString(unwrapper, node));
+				}
+			});
+
 			final Node in = inputs.get(1);
 
 			try {
-				final Process process = Runtime.getRuntime().exec(ExpandUtil.expandString(unwrapper, cmd));
+				final Process process = Runtime.getRuntime().exec(list.toArray(new String[0]));
 				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
 				Node result = new Data<IndexedReader>(new IndexedReader(isr));
 
@@ -107,7 +116,6 @@ public class Invocables {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-
 		}
 	}
 

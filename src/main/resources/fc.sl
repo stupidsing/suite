@@ -125,7 +125,7 @@ fc-add-functions STANDARD .p (
 	define tail = (list => _ltail {list}) >>
 	define tuple-head = (tuple => _pleft {tuple}) >>
 	define tuple-tail = (tuple => _pright {tuple}) >>
-	define _popen as (string => string => data-of Stream) = (
+	define _popen as (list-of string => string => data-of Stream) = (
 		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
 	) >>
 	define throw as (any => any) = (
@@ -329,6 +329,9 @@ fc-add-functions STANDARD .p (
 	>>
 	define range = (start => end => inc =>
 		unfold-right {i => if (i < end) then (i; i + inc;) else ()} {start}
+	) >>
+	define sh = (command =>
+		"sh"; "-c"; command; | popen
 	) >>
 	define starts-with = (
 		match
