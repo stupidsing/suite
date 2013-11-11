@@ -51,7 +51,7 @@ public class Suite {
 	}
 
 	public static Node applyDo(Node node, Atom returnType) {
-		return Suite.substitute("type (do-of .1 => number => .1) (skip-type-check id) {.0} {0}", node, returnType);
+		return Suite.substitute("type (do-of .1 -> number -> .1) (skip-type-check id) {.0} {0}", node, returnType);
 	}
 
 	public static Node applyReader(Reader reader, Node func) {
