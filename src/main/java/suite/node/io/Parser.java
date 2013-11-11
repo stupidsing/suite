@@ -60,11 +60,14 @@ public class Parser {
 	}
 
 	private Node parseWithoutComments(String s, int fromOp) {
-		s = s.trim();
-		return !s.isEmpty() ? parseRawString(s, fromOp) : Atom.NIL;
+		return parseRawString(s.trim(), fromOp);
 	}
 
 	private Node parseRawString(String s, int fromOp) {
+		return !s.isEmpty() ? parseRawString0(s, fromOp) : Atom.NIL;
+	}
+
+	private Node parseRawString0(String s, int fromOp) {
 		char first = Util.charAt(s, 0), last = Util.charAt(s, -1);
 
 		for (int i = fromOp; i < operators.length; i++) {

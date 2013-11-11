@@ -122,7 +122,7 @@ infer-type-rule (OPTION RESOLVE-TYPE .do) .env .tr/.tr .type
 	, resolve-type-rules .tr1
 #
 infer-type-rule .do .env .tr .type
-	:- .do = OPTION _ .do1; .do = UNWRAP .do1;  .do = WRAP .do1
+	:- .do = OPTION _ .do1; .do = UNWRAP .do1; .do = WRAP .do1
 	, !
 	, infer-type-rule .do1 .env .tr .type
 #
@@ -169,16 +169,16 @@ resolve-type-rules0 .tr
 -- Sort the resolve type rules by easiness
 sort-resolve-type-rules () () () :- ! #
 sort-resolve-type-rules (.tr, .trs) (.tr, .ps) .nps
-	:- easy-resolve-type-rule .tr
+	:- resolve-easy-type-rule .tr
 	, !, sort-resolve-type-rules .trs .ps .nps
 #
 sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
 	:- sort-resolve-type-rules .trs .ps .nps
 #
 
-easy-resolve-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
-easy-resolve-type-rule (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
-easy-resolve-type-rule (TYPE-IN-TYPES _) #
+resolve-easy-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
+resolve-easy-type-rule (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
+resolve-easy-type-rule (TYPE-IN-TYPES _) #
 
 -- When resolving types:
 -- - Try bind equivalent sub-type to super-type relation;
