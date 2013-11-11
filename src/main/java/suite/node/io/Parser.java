@@ -139,8 +139,6 @@ public class Parser {
 		int nLastIndents = 0;
 		String lastIndent = "";
 
-		s = "\n" + s + "\n";
-
 		while (!s.isEmpty()) {
 			String line;
 			String lr[];
@@ -210,6 +208,9 @@ public class Parser {
 
 			nLastIndents = nIndents;
 		}
+
+		while (nLastIndents-- > 0)
+			sb.append(") ");
 
 		return sb.toString();
 	}

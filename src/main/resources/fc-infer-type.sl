@@ -122,7 +122,7 @@ infer-type-rule (OPTION RESOLVE-TYPE .do) .env .tr/.tr .type
 	, resolve-type-rules .tr1
 #
 infer-type-rule .do .env .tr .type
-	:- .do = OPTION _ .do1; .do = UNWRAP .do1; .do = WRAP .do1
+	:- (.do = OPTION _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
 	, !
 	, infer-type-rule .do1 .env .tr .type
 #
@@ -134,7 +134,7 @@ infer-type-rule (VAR .var) _/.ve/_ .tr0/.trx .type
 #
 
 find-simple-type (CONSTANT _) _ _ #
-find-simple-type (ATOM ()) _ (LIST-OF _) #
+find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (DO _) _ (DO-OF _) #
