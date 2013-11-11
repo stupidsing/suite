@@ -9,8 +9,22 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 
 public class ExpandUtil {
+
+	public static void expandList(Fun<Node, Node> unwrapper, Node node, Sink<Node> sink) {
+		Tree tree;
+
+		while ((tree = Tree.decompose(node)) != null) {
+			sink.sink(unwrapper.apply(tree.getLeft()));
+			node = unwrapper.apply(tree.getRight());
+			Tree.forceSetRight(tree, null); // Facilitates garbage collection
+		}
+
+		if (node != Atom.NIL)
+			throw new RuntimeException("Not a list, unable to expand");
+	}
 
 	/**
 	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
@@ -32,25 +46,19 @@ public class ExpandUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and write
 	 * corresponding characters into the writer.
 	 */
-	public static void expandToWriter(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
-		while (true) {
-			Tree tree = Tree.decompose(node);
-
-			if (tree != null) {
-				int c = ((Int) unwrapper.apply(tree.getLeft())).getNumber();
-				writer.write(c);
-				node = unwrapper.apply(tree.getRight());
-
-				// Facilitates garbage collection
-				Tree.forceSetRight(tree, null);
-
-				if (c == 10)
-					writer.flush();
-			} else if (node == Atom.NIL)
-				return;
-			else
-				throw new RuntimeException("Not a list, unable to expand");
-		}
+	public static void expandToWriter(final Fun<Node, Node> unwrapper, Node node, final Writer writer) throws IOException {
+		expandList(unwrapper, node, new Sink<Node>() {
+			public void sink(Node node) {
+				try {
+					int c = ((Int) node).getNumber();
+					writer.write(c);
+					if (c == 10)
+						writer.flush();
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		});
 	}
 
 	/**
