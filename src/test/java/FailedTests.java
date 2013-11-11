@@ -1,26 +1,10 @@
-import static org.junit.Assert.assertNotNull;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
 import suite.instructionexecutor.InstructionTranslatorTest;
-import suite.lp.doer.Cloner;
-import suite.lp.doer.ProverConfig;
-import suite.lp.doer.Specializer;
-import suite.lp.search.CompiledProverBuilder;
-import suite.lp.search.ProverBuilder.Builder;
-import suite.lp.search.ProverBuilder.Finder;
-import suite.node.Atom;
-import suite.node.Node;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 
 public class FailedTests {
 
@@ -49,6 +33,5 @@ public class FailedTests {
 	public void test3() {
 		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
 	}
-
 
 }
