@@ -123,8 +123,8 @@ fc-add-functions STANDARD .p (
 	define ijavaobj1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
 	define ijavaobj2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
 	define tail = (list => _ltail {list}) >>
-	define tuple-head = (tuple => _pleft {tuple}) >>
-	define tuple-tail = (tuple => _pright {tuple}) >>
+	define first = (tuple => _pleft {tuple}) >>
+	define second = (tuple => _pright {tuple}) >>
 	define _popen as (list-of string => string => data-of Stream) = (
 		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
 	) >>
@@ -225,13 +225,13 @@ fc-add-functions STANDARD .p (
 		|| otherwise ()
 	) >>
 	define tget0 =
-		tuple-head
+		first
 	>>
 	define tget1 =
-		tuple-head . tuple-tail
+		first . second
 	>>
 	define tget2 =
-		tuple-head . tuple-tail . tuple-tail
+		first . second . second
 	>>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
@@ -410,7 +410,7 @@ fc-add-functions STANDARD .p (
 		|| otherwise ()
 	) >>
 	define merge-sort = (
-		concat . map {tuple-tail} . group . map {v => (v, v)}
+		concat . map {second} . group . map {v => (v, v)}
 	) >>
 	.p
 ) #
