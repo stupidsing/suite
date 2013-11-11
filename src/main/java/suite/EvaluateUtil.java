@@ -10,6 +10,7 @@ import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
@@ -59,11 +60,11 @@ public class EvaluateUtil {
 		RuleSet rs = Suite.funCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 
-		Node node = Suite.substitute("" //
+		Node node = new Specializer().specialize(Suite.substitute("" //
 				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
-				+ ", sink .out", mode);
+				+ ", sink .out", mode));
 
 		Node code = doFcc(rs, node, fcc);
 

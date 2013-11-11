@@ -360,14 +360,12 @@ public class InstructionTranslator {
 			case LEAVE_________:
 				generateFrame();
 				break;
-			case LOG___________:
+			case LOGCONST______:
 				constant = constantPool.get(op0);
 				app("LogUtil.info(#{str}.toString())", defineConstant(constant));
 				break;
-			case LOG1__________:
-				app("n0 = (Node) ds[--dsp]", op0);
-				app("LogUtil.info(n0.toString())");
-				app("#{reg} = n0", op0);
+			case LOGREG________:
+				app("LogUtil.info(#{reg}.toString())", op0);
 				break;
 			case NEWNODE_______:
 				app("#{reg} = new Reference()", op0);

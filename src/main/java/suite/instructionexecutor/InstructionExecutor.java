@@ -182,8 +182,11 @@ public class InstructionExecutor implements AutoCloseable {
 				break;
 			case LABEL_________:
 				break;
-			case LOG___________:
+			case LOGCONST______:
 				LogUtil.info(constantPool.get(insn.op0).toString());
+				break;
+			case LOGREG________:
+				LogUtil.info(regs[insn.op0].toString());
 				break;
 			case NEWNODE_______:
 				regs[insn.op0] = new Reference();

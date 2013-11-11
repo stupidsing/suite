@@ -86,8 +86,8 @@ public class InstructionUtil {
 		JUMP__________("JUMP"), //
 		JUMPREG_______("JUMP-REG"), //
 		LABEL_________("LABEL"), //
-		LOG___________("LOG"), //
-		LOG1__________("LOG1"), //
+		LOGCONST______("LOG-CONSTANT"), //
+		LOGREG________("LOG-REG"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
 		POP___________("POP"), //

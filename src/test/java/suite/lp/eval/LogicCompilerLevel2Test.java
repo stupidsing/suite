@@ -27,7 +27,6 @@ public class LogicCompilerLevel2Test {
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 
-	// Still fails...
 	@Test
 	public void test1() throws IOException {
 		RuleSet rs = Suite.createRuleSet();

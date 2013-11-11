@@ -140,7 +140,7 @@ public class InstructionAnalyzer {
 			case INVOKEJAVAOBJ0:
 			case INVOKEJAVAOBJ1:
 			case INVOKEJAVAOBJ2:
-			case LOG1__________:
+			case LOGREG________:
 			case NEWNODE_______:
 			case POP___________:
 			case SETRESULT_____:

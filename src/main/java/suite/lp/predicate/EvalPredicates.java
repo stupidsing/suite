@@ -11,6 +11,7 @@ import suite.Suite;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
+import suite.lp.doer.Specializer;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Int;
@@ -221,24 +222,7 @@ public class EvalPredicates {
 	public static class Specialize implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Node.tupleToArray(ps, 2);
-			return prover.bind(specialize(params[0]), params[1]);
-		}
-
-		private static Node specialize(Node node) {
-			node = node.finalNode();
-
-			if (node instanceof Reference) {
-				Reference ref = (Reference) node;
-				node = Atom.create(Generalizer.defaultPrefix + ref.getId());
-			} else if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				Node left = tree.getLeft(), right = tree.getRight();
-				Node left1 = specialize(left), right1 = specialize(right);
-				if (left != left1 || right != right1)
-					node = Tree.create(tree.getOperator(), left1, right1);
-			}
-
-			return node;
+			return prover.bind(new Specializer().specialize(params[0]), params[1]);
 		}
 	}
 

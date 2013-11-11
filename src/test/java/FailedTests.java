@@ -1,3 +1,5 @@
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,11 +12,11 @@ import suite.fp.eval.FunRbTreeTest;
 import suite.instructionexecutor.InstructionTranslatorTest;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Specializer;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
-import suite.node.Int;
 import suite.node.Node;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
@@ -48,29 +50,5 @@ public class FailedTests {
 		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
 	}
 
-	// Functional compilation Goal failed
-	@Test
-	public void test4() {
-		Node node = Suite.substitute("" //
-				+ "source .in" //
-				+ ", compile-function .0 .in .out" //
-				+ ", sink .out" //
-		, Atom.create("LAZY"));
-
-		ProverConfig pc = new ProverConfig();
-		Builder builder = CompiledProverBuilder.level1(pc, false);
-		Finder finder = builder.build(Suite.createRuleSet(Arrays.asList("auto.sl", "fc.sl")), node);
-		final List<Node> nodes = new ArrayList<>();
-
-		Source<Node> source = FunUtil.source((Node) Int.create(1));
-		Sink<Node> sink = new Sink<Node>() {
-			public void sink(Node node) {
-				nodes.add(new Cloner().clone(node));
-			}
-		};
-
-		finder.find(source, sink);
-		System.out.println(nodes.size() == 1 ? nodes.get(0).finalNode() : null);
-	}
 
 }
