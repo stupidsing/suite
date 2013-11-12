@@ -70,11 +70,8 @@ public class SldResolution {
 		}
 
 		for (Entry<Node, Source<List<Node>>> entry : orsMap.entrySet()) {
-			Node key = entry.getKey();
 			Source<List<Node>> value0 = entry.getValue();
-			Node negated = negate(key);
-
-			Source<List<Node>> value1 = orsMap.get(negated);
+			Source<List<Node>> value1 = orsMap.get(negate(entry.getKey()));
 
 			if (value1 != null)
 				System.out.println(Util.add(value0.source(), value1.source()));
