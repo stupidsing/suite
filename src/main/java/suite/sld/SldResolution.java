@@ -1,5 +1,6 @@
 package suite.sld;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class SldResolution {
 
 	private static final Atom not = Atom.create("NOT");
 
-	public Node resolve(final Node node) {
+	public List<Node> resolve(final Node node) {
 		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "prove-theorem.sl"));
 		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
 		Finder finder = builder.build(ruleSet //
@@ -45,15 +46,15 @@ public class SldResolution {
 						+ ", sink .n6" //
 				));
 
-		final Node result[] = new Node[] { null };
+		final Node sunk[] = new Node[] { null };
 
 		finder.find(FunUtil.source(node), new Sink<Node>() {
 			public void sink(Node node) {
-				result[0] = new Cloner().clone(node);
+				sunk[0] = new Cloner().clone(node);
 			}
 		});
 
-		Node n0 = result[0];
+		Node n0 = sunk[0];
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
 
 		for (Node n1 : Node.iter(n0, TermOp.AND___)) {
@@ -70,15 +71,17 @@ public class SldResolution {
 			}
 		}
 
+		List<Node> results = new ArrayList<>();
+
 		for (Entry<Node, Source<List<Node>>> entry : orsMap.entrySet()) {
 			Source<List<Node>> value0 = entry.getValue();
 			Source<List<Node>> value1 = orsMap.get(negate(entry.getKey()));
 
 			if (value1 != null)
-				System.out.println(Util.add(value0.source(), value1.source()));
+				results.add(Node.list(TermOp.AND___, Util.add(value0.source(), value1.source())));
 		}
 
-		return result[0];
+		return results;
 	}
 
 	private Node negate(Node key) {

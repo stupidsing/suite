@@ -1,10 +1,13 @@
 package suite.sld;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 
 import suite.Suite;
+import suite.node.Atom;
 import suite.node.Node;
 
 public class SldResolutionTest {
@@ -12,7 +15,9 @@ public class SldResolutionTest {
 	@Test
 	public void test() {
 		Node node = Suite.parse("AND (OR (VAR A) (VAR B)) (OR (NOT (VAR A)) (VAR C))");
-		assertNotNull(new SldResolution().resolve(node));
+		List<Node> results = new SldResolution().resolve(node);
+		System.out.println(results);
+		assertTrue(results != Atom.NIL);
 	}
 
 }
