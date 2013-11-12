@@ -5,6 +5,7 @@ import java.util.List;
 
 import suite.lp.doer.Cloner;
 import suite.node.Node;
+import suite.util.Util;
 
 public class CompositeRuleSet implements RuleSet {
 
@@ -66,10 +67,7 @@ public class CompositeRuleSet implements RuleSet {
 	 */
 	@Override
 	public List<Rule> getRules() {
-		List<Rule> rules = new ArrayList<>();
-		rules.addAll(first.getRules());
-		rules.addAll(second.getRules());
-		return rules;
+		return Util.add(first.getRules(), second.getRules());
 	}
 
 }

@@ -16,6 +16,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Util {
 
+	public static <T> List<T> add(List<T> list0, List<T> list1) {
+		List<T> list = new ArrayList<>();
+		list.addAll(list0);
+		list.addAll(list1);
+		return list;
+	}
+
 	public static char charAt(String s, int pos) {
 		if (pos < 0)
 			pos += s.length();

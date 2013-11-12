@@ -1,6 +1,5 @@
 package suite.sld;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.Map.Entry;
 
 import suite.Suite;
 import suite.lp.doer.ProverConfig;
+import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
@@ -19,6 +19,7 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.To;
+import suite.util.Util;
 
 /**
  * Selective linear definite clause resolution.
@@ -30,9 +31,9 @@ public class SldResolution {
 	private static final Atom not = Atom.create("NOT");
 
 	public Node resolve(final Node node) {
+		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "prove-theorem.sl"));
 		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
-
-		Finder finder = builder.build(Suite.createRuleSet(Arrays.asList("prove-theorem.sl")) //
+		Finder finder = builder.build(ruleSet //
 				, Suite.parse("source .n0" //
 						+ ", pt-prove0 .n0 .n1" //
 						+ ", pt-prove1 .n1 .n2" //
@@ -62,10 +63,7 @@ public class SldResolution {
 
 				orsMap.put(ors.get(index), new Source<List<Node>>() {
 					public List<Node> source() {
-						List<Node> ors1 = new ArrayList<>();
-						ors1.addAll(ors.subList(0, index));
-						ors1.addAll(ors.subList(index + 1, ors.size()));
-						return ors1;
+						return Util.add(ors.subList(0, index), ors.subList(index + 1, ors.size()));
 					}
 				});
 			}
@@ -78,21 +76,16 @@ public class SldResolution {
 
 			Source<List<Node>> value1 = orsMap.get(negated);
 
-			if (value1 != null) {
-				List<Node> merged = new ArrayList<>();
-				merged.addAll(value0.source());
-				merged.addAll(value1.source());
-				System.out.println(merged);
-			}
+			if (value1 != null)
+				System.out.println(Util.add(value0.source(), value1.source()));
 		}
 
 		return result[0];
 	}
 
 	private Node negate(Node key) {
-		Tree tree;
-		boolean isTuple = (tree = Tree.decompose(key, TermOp.TUPLE_)) != null;
-		boolean isAlreadyNegated = isTuple && tree.getLeft() == not;
+		Tree tree = Tree.decompose(key, TermOp.TUPLE_);
+		boolean isAlreadyNegated = tree != null && tree.getLeft() == not;
 		return isAlreadyNegated ? tree.getRight() : Tree.create(TermOp.TUPLE_, not, key);
 	}
 
