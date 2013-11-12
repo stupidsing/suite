@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.Suite;
+import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
@@ -37,10 +38,10 @@ public class SldResolution {
 				, Suite.parse("source .n0" //
 						+ ", pt-prove0 .n0 .n1" //
 						+ ", pt-prove1 .n1 .n2" //
-						+ ", pt-prove1a .n2 .n3" //
-						+ ", pt-prove2 .n3 .n4" //
-						+ ", pt-prove3 .n4 .n5" //
-						+ ", pt-prove4 .n5 .n6" //
+						+ ", pt-prove2 .n2 .n3" //
+						+ ", pt-prove3 () .n3 .n4" //
+						+ ", pt-prove4 .n4 .n5" //
+						+ ", pt-prove5 .n5 ()/.n6" //
 						+ ", sink .n6" //
 				));
 
@@ -48,15 +49,15 @@ public class SldResolution {
 
 		finder.find(FunUtil.source(node), new Sink<Node>() {
 			public void sink(Node node) {
-				result[0] = node;
+				result[0] = new Cloner().clone(node);
 			}
 		});
 
 		Node n0 = result[0];
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
 
-		for (Node n1 : Node.iter(TermOp.AND___, n0)) {
-			final List<Node> ors = To.list(Node.iter(TermOp.OR____, n1));
+		for (Node n1 : Node.iter(n0, TermOp.AND___)) {
+			final List<Node> ors = To.list(Node.iter(n1, TermOp.AND___));
 
 			for (int i = 0; i < ors.size(); i++) {
 				final int index = i;

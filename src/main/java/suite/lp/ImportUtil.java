@@ -65,7 +65,7 @@ public class ImportUtil {
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
 		List<Rule> rules = new ArrayList<>();
 
-		for (Node elem : Node.iter(TermOp.NEXT__, node))
+		for (Node elem : Node.iter(node, TermOp.NEXT__))
 			rules.add(Rule.formRule(elem));
 
 		new Checker().check(rules);

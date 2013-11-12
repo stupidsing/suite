@@ -47,10 +47,10 @@ public class Node implements Comparable<Node> {
 	}
 
 	public static Iterable<Node> iter(Node node) {
-		return iter(TermOp.AND___, node);
+		return iter(node, TermOp.AND___);
 	}
 
-	public static Iterable<Node> iter(final Operator operator, final Node node0) {
+	public static Iterable<Node> iter(final Node node0, final Operator operator) {
 		final Iterator<Node> iterator = new Iterator<Node>() {
 			private Tree tree = Tree.decompose(node0, operator);
 

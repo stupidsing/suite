@@ -710,7 +710,8 @@ struct Node *expand(struct Node *query, struct Node *cut, struct Node *rules) {
 				, newTree(equalOp
 					, query
 					, tree->left
-				) , tree->right
+				)
+				, tree->right
 			), expanded
 		);
 
