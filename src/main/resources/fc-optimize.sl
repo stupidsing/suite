@@ -14,14 +14,19 @@ fc-optimize-flow-disabled .do0 .dox
 	, !, fc-replace-var-by-value .var .value .do1 .do2
 	, fc-optimize-flow .do2 .dox
 #
+fc-optimize-flow .do0 .dox
+	:- fc-define-var .do0 .var .value .do1 _
+	, .value = .type _
+	, member (ATOM, BOOLEAN, NUMBER, VAR,) .type
+	, not contains (VAR .var) .value
+	, !, fc-replace-var-by-value .var .value .do1 .do2
+	, fc-optimize-flow .do2 .dox
+#
 fc-optimize-flow (UNWRAP WRAP .do0) .dox
 	:- !, fc-optimize-flow .do0 .dox
 #
 fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
-	:- .value = .type _
-	, member (ATOM, BOOLEAN, NUMBER, VAR,) .type
-	, !, fc-replace-var-by-value .var .value .do0 .do1
-	, fc-optimize-flow .do1 .dox
+	:- !, fc-optimize-flow (DEF-VAR .var .value .do0) .dox
 #
 fc-optimize-flow .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-flow-list .ts #
 
