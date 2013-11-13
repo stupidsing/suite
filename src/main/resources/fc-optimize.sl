@@ -11,7 +11,7 @@ fc-optimize-flow-disabled .do0 .dox
 	)
 	, not contains .value (VAR .var)
 	, dump "Inlining" .var "=" .value "in" .do1, nl
-	, !, replace (VAR .var) .value .do1 .do2
+	, !, fc-replace-var-by-value .var .value .do1 .do2
 	, fc-optimize-flow .do2 .dox
 #
 fc-optimize-flow (UNWRAP WRAP .do0) .dox
@@ -20,7 +20,7 @@ fc-optimize-flow (UNWRAP WRAP .do0) .dox
 fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
 	:- .value = .type _
 	, member (ATOM, BOOLEAN, NUMBER, VAR,) .type
-	, !, replace (VAR .var) .value .do0 .do1
+	, !, fc-replace-var-by-value .var .value .do0 .do1
 	, fc-optimize-flow .do1 .dox
 #
 fc-optimize-flow .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-flow-list .ts #
@@ -55,4 +55,25 @@ fc-define-var
 fc-define-var
 (OPTION ALLOW-RECURSIVE DEF-VAR .var0 .value0 .do0) .var0 .value0 .do0
 (OPTION ALLOW-RECURSIVE DEF-VAR .var1 .value1 .do1) .var1 .value1 .do1
+#
+
+fc-replace-var-by-value .v0 .value (VAR .v0) .value
+	:- !
+#
+fc-replace-var-by-value .v0 _ (OPTION ALLOW-RECURSIVE (DEF-VAR .v0 .value .do)) (DEF-VAR .v0 .value .do)
+	:- ! -- Variable scope overrided by another one
+#
+fc-replace-var-by-value .v0 .v1 (DEF-VAR .v0 .value0 .do) (DEF-VAR .v0 .value1 .do)
+	:- ! -- Variable scope overrided in value field only
+	, fc-replace-var-by-value .v0 .v1 .value0 .value1
+#
+fc-replace-var-by-value .v0 .v1 .p0 .p1
+	:- fc-transform .p0 .p1 ()/.ts
+	, fc-replace-var-by-value-list .v0 .v1 .ts
+#
+
+fc-replace-var-by-value-list _ _ () #
+fc-replace-var-by-value-list .v0 .v1 (.t, .ts)
+	:- fc-replace-var-by-value .v0 .v1 .t
+	, fc-replace-var-by-value-list .v0 .v1 .ts
 #
