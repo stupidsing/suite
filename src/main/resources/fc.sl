@@ -293,7 +293,7 @@ fc-add-functions STANDARD .p (
 		} {}
 	>>
 	define concat =
-		fold-left {append} {}
+		fold-right {append} {}
 	>>
 	define cross = (fun => l1 => l2 =>
 		l1 | map {e1 => l2 | map {e1 | fun}}
