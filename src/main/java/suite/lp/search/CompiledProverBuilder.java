@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.LogUtil;
 
 public class CompiledProverBuilder implements Builder {
 
@@ -60,20 +61,26 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	private Node compile(Node program) {
-		final Node holder[] = new Node[] { null };
+		long start = System.currentTimeMillis();
 
-		compiler.find(FunUtil.source(program), new Sink<Node>() {
-			public void sink(Node node) {
-				holder[0] = new Cloner().clone(node);
-			}
-		});
+		try {
+			final Node holder[] = new Node[] { null };
 
-		Node code = holder[0];
+			compiler.find(FunUtil.source(program), new Sink<Node>() {
+				public void sink(Node node) {
+					holder[0] = new Cloner().clone(node);
+				}
+			});
 
-		if (code != null)
-			return code;
-		else
-			throw new RuntimeException("Logic compilation error");
+			Node code = holder[0];
+
+			if (code != null)
+				return code;
+			else
+				throw new RuntimeException("Logic compilation error");
+		} finally {
+			LogUtil.info("Code compiled performed in " + (System.currentTimeMillis() - start) + "ms");
+		}
 	}
 
 	private Finder createCompiler(Builder builder, boolean isDumpCode) {

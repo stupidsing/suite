@@ -21,6 +21,7 @@ import suite.node.Node;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.LogUtil;
 import suite.util.Util;
 
 public class EvaluateUtil {
@@ -94,11 +95,17 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(RuleSet rs, Node compileNode, FunCompilerConfig fcc) {
-		ProverConfig pc = fcc.getProverConfig();
-		Builder builder = new InterpretedProverBuilder(pc);
-		Finder finder = builder.build(rs, compileNode);
-		List<Node> nodes = collect(finder, appendLibraries(fcc));
-		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
+		long start = System.currentTimeMillis();
+
+		try {
+			ProverConfig pc = fcc.getProverConfig();
+			Builder builder = new InterpretedProverBuilder(pc);
+			Finder finder = builder.build(rs, compileNode);
+			List<Node> nodes = collect(finder, appendLibraries(fcc));
+			return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
+		} finally {
+			LogUtil.info("Code compiled performed in " + (System.currentTimeMillis() - start) + "ms");
+		}
 	}
 
 	private Node appendLibraries(FunCompilerConfig fcc) {
