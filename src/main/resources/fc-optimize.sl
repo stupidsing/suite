@@ -3,17 +3,6 @@ fc-optimize .do0 .dox
 	, fc-remove-unref-vars .do1 .dox ()/_
 #
 
-fc-optimize-flow-disabled .do0 .dox
-	:- fc-define-var .do0 .var .value .do1 _
-	, once (
-		(complexity .value .c; complexity .do1 .c)
-		, .c < 4
-	)
-	, not contains .value (VAR .var)
-	, dump "Inlining" .var "=" .value "in" .do1, nl
-	, !, fc-replace-var-by-value .var .value .do1 .do2
-	, fc-optimize-flow .do2 .dox
-#
 fc-optimize-flow .do0 .dox
 	:- fc-define-var .do0 .var .value .do1 _
 	, .value = .type _
