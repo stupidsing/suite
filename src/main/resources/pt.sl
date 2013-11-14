@@ -1,4 +1,11 @@
-() :- import.file 'rbt.sl'
+pt-prove .n0 .nx
+	:- pt-prove0 .n0 .n1
+	, pt-prove1 .n1 .n2
+	, pt-prove2 .n2 .n3
+	, pt-prove3 .n3 .n4
+	, pt-prove4 .n4 .n5
+	, pt-prove5 .n5 ()/.n6
+	, pt-prove6 .n6 .nx
 #
 
 -- 0. Convert implication operators: (P => Q) becomes (~P ^ Q)
@@ -107,15 +114,17 @@ pt-prove5-ors .p .ors0/.orsx
 -- 6. Put into clauses (ANDs of ORs form)
 pt-prove6 .ands .results
 	:- find.all .ors (
-		pt-prove6-extract .ands (NOT .term) .corrs1
-		, pt-prove6-extract .ands .term .corrs0
+		pt-prove6-extract .ands (NOT .term) .corrs0
+		, pt-prove6-extract .ands .term .corrs1
 		, append .corrs0 .corrs1 .ors
 	) .results
 #
 
-pt-prove6-extract (.ors, .ands) .term .corrs
+pt-prove6-extract (.ors, _) .term .corrs
 	:- pt-prove6-extract-ors () .ors .term .corrs
-	, pt-prove6-extract .ands
+#
+pt-prove6-extract (_, .ands) .term .corrs
+	:- pt-prove6-extract .ands .term .corrs
 #
 
 pt-prove6-extract-ors _ () _ _ #
