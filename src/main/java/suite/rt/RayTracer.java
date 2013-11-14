@@ -65,7 +65,7 @@ public class RayTracer {
 		Vector color;
 		RayHit rayHit;
 
-		if (depth > 0 && (rayHit = scene.hit(startPoint, direction)) != null) {2
+		if (depth > 0 && (rayHit = scene.hit(startPoint, direction)) != null) {
 			RayHitDetail d = rayHit.detail();
 			Vector hitPoint = d.hitPoint();
 			Vector normal = Vector.norm(d.normal());
