@@ -4,11 +4,10 @@ define merge-freqs = (
 		list0 => list1 =>
 			if (list0 = `$f0, $n0; $t0`) then
 				if (list1 = `$f1, $n1; $t1`) then
-					if:: n0 < n1
-					then:: f0, n0; merger {t0} {list1}
-					else-if:: n0 > n1
-					then:: f1, n1; merger {list0} {t1}
-					else:: (f0 + f1, n0); merger {t0} {t1}
+					case
+					|| (n0 < n1) (f0, n0; merger {t0} {list1})
+					|| (n0 > n1) (f1, n1; merger {list0} {t1})
+					|| (f0 + f1, n0); merger {t0} {t1}
 				else
 					list0
 			else
