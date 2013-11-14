@@ -1,21 +1,4 @@
 -------------------------------------------------------------------------------
--- theorem proving
---
--- 1. convert implication operators: (P => Q) becomes (~P ^ Q)
--- 2. move negation inwards
--- 3. skolemising
--- 4. moving "for-all" outwards
--- 5. distributing AND over OR
--- 6. putting into clauses (ANDs of ORs form)
--- 
--- resolution:
--- 
--- A; B :- C, D
--- E :- B, F
--- becomes
--- A; E :- C, D, F
-
--------------------------------------------------------------------------------
 -- format check
 
 define-signature .sign :- signature-prototype .sign .sign #
