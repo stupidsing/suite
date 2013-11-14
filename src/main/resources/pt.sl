@@ -57,23 +57,25 @@ pt-prove3-list () #
 pt-prove3-list (.p .p1, .ts) :- pt-prove3 .p .p1, pt-prove3-list .ts #
 
 -- 4. Skolemising
-pt-prove4 .vars (FOR-ALL .var .p) (FOR-ALL .var .p1)
-	:- !, pt-prove4 (.var, .vars) .p .p1
+pt-prove4 .p .p1 :- pt-prove4-skolemise () .p .p1 #
+
+pt-prove4-skolemise .vars (FOR-ALL .var .p) (FOR-ALL .var .p1)
+	:- !, pt-prove4-skolemise (.var, .vars) .p .p1
 #
-pt-prove4 .vars (THERE-EXISTS .var .p) .p1
+pt-prove4-skolemise .vars (THERE-EXISTS .var .p) .p1
 	:- !, temp .functionName
 	, form-function .vars .functionName .var1
 	, replace .var .var1 .p .p1
 #
-pt-prove4 .vars .p .p1
+pt-prove4-skolemise .vars .p .p1
 	:- pt-transform .p .p1 .ts
-	, pt-prove4-list .vars .ts
+	, pt-prove4-skolemise-list .vars .ts
 #
 
-pt-prove4-list _ () #
-pt-prove4-list .vars (.p .p1, .ts)
-	:- pt-prove4 .vars .p .p1
-	, pt-prove4-list .vars .ts
+pt-prove4-skolemise-list _ () #
+pt-prove4-skolemise-list .vars (.p .p1, .ts)
+	:- pt-prove4-skolemise .vars .p .p1
+	, pt-prove4-skolemise-list .vars .ts
 #
 
 form-function () .p .p #

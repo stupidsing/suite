@@ -41,7 +41,7 @@ public class SldResolution {
 						+ ", pt-prove1 .n1 .n2" //
 						+ ", pt-prove2 .n2 .n3" //
 						+ ", pt-prove3 .n3 .n4" //
-						+ ", pt-prove4 () .n4 .n5" //
+						+ ", pt-prove4 .n4 .n5" //
 						+ ", pt-prove5 .n5 ()/.n6" //
 						+ ", sink .n6" //
 				));
