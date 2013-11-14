@@ -104,7 +104,7 @@ public class EvaluateUtil {
 			List<Node> nodes = collect(finder, appendLibraries(fcc));
 			return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
 		} finally {
-			LogUtil.info("Code compiled performed in " + (System.currentTimeMillis() - start) + "ms");
+			LogUtil.info("Code compiled in " + (System.currentTimeMillis() - start) + "ms");
 		}
 	}
 

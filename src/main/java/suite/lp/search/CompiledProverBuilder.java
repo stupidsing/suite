@@ -77,7 +77,7 @@ public class CompiledProverBuilder implements Builder {
 			else
 				throw new RuntimeException("Logic compilation error");
 		} finally {
-			LogUtil.info("Code compiled performed in " + (System.currentTimeMillis() - start) + "ms");
+			LogUtil.info("Code compiled in " + (System.currentTimeMillis() - start) + "ms");
 		}
 	}
 
