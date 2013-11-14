@@ -4,7 +4,6 @@ import suite.Suite;
 import suite.instructionexecutor.InstructionExecutor;
 import suite.instructionexecutor.LogicInstructionExecutor;
 import suite.lp.doer.Cloner;
-import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
@@ -51,9 +50,8 @@ public class CompiledProverBuilder implements Builder {
 			public void find(Source<Node> source, Sink<Node> sink) {
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
-				Prover prover = new Prover(proverConfig1);
 
-				try (InstructionExecutor executor = new LogicInstructionExecutor(code, prover)) {
+				try (InstructionExecutor executor = new LogicInstructionExecutor(code, proverConfig1)) {
 					executor.execute();
 				}
 			}

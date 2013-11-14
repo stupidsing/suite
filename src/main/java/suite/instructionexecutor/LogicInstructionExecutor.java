@@ -6,6 +6,7 @@ import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
+import suite.lp.doer.ProverConfig;
 import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
 import suite.node.Node;
@@ -16,13 +17,11 @@ import suite.node.io.TermParser.TermOp;
 public class LogicInstructionExecutor extends InstructionExecutor {
 
 	private Prover prover;
-	private Journal journal;
 	private SystemPredicates systemPredicates;
 
-	public LogicInstructionExecutor(Node node, Prover prover) {
+	public LogicInstructionExecutor(Node node, ProverConfig proverConfig) {
 		super(node);
-		this.prover = prover;
-		journal = prover.getJournal();
+		this.prover = new Prover(proverConfig);
 		systemPredicates = new SystemPredicates(prover);
 	}
 
@@ -31,6 +30,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		Activation current = exec.current;
 		Frame frame = current.frame;
 		Node regs[] = frame != null ? frame.registers : null;
+		Journal journal = prover.getJournal();
 		Instruction insn1;
 
 		switch (insn.insn) {
