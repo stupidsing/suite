@@ -185,14 +185,14 @@ fc-add-functions STANDARD .p (
 	define scan-left = (fun => init =>
 		case
 		|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
-		|| anything => (init;)
+		|| anything => init;
 	) >>
 	define scan-right = (fun => init =>
 		case
 		|| `$h; $t` =>
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
-		|| anything => (init;)
+		|| anything => init;
 	) >>
 	define source = (is as data-of Stream =>
 		let fgets = (pos =>
@@ -241,11 +241,10 @@ fc-add-functions STANDARD .p (
 	) >>
 	define zip = (fun =>
 		case
-		|| `$h0; $t0` => (
+		|| `$h0; $t0` =>
 			case
 			|| `$h1; $t1` => fun {h0} {h1}; zip {fun} {t0} {t1}
 			|| anything => ()
-		)
 		|| anything => anything => ()
 	) >>
 	define append = (
@@ -393,7 +392,7 @@ fc-add-functions STANDARD .p (
 			else
 				list1
 		) >>
-		merge {group0} . map {`$k, $v` => (k, (v;))}
+		merge {group0} . map {`$k, $v` => k, (v;)}
 	) >>
 	define join = (separator =>
 		concat . map {separator; | append/}
@@ -409,7 +408,7 @@ fc-add-functions STANDARD .p (
 		|| anything => ()
 	) >>
 	define merge-sort = (
-		concat . map {second} . group . map {v => (v, v)}
+		concat . map {second} . group . map {v => v, v}
 	) >>
 	.p
 ) #
