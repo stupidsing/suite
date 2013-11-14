@@ -68,8 +68,8 @@ public class RayTracer {
 		if (depth > 0 && (rayHit = scene.hit(startPoint, direction)) != null) {
 			RayHitDetail d = rayHit.detail();
 			Vector hitPoint = d.hitPoint();
-			Vector normal = Vector.norm(d.normal());
 
+			Vector normal = Vector.norm(d.normal());
 			Vector reflectingDirection = Vector.add(direction, Vector.mul(normal, -2f * Vector.dot(direction, normal)));
 			Vector reflecting = trace(depth - 1, hitPoint, reflectingDirection);
 			color = multiplyComponents(reflecting, d.reflectionIndex());

@@ -60,11 +60,11 @@ public class Sphere implements RayTraceObject {
 						}
 
 						public Vector reflectionIndex() {
-							return new Vector(0.1f, 0.1f, 0.1f);
+							return new Vector(0.8f, 0.8f, 0.8f);
 						}
 
 						public Vector refractionIndex() {
-							return new Vector(0.1f, 0.1f, 0.1f);
+							return new Vector(0.8f, 0.8f, 0.8f);
 						}
 					};
 				}
