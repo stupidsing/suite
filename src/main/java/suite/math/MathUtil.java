@@ -2,6 +2,8 @@ package suite.math;
 
 public class MathUtil {
 
+	public static final float epsilon = 0.00001f;
+
 	public static int steinGcd(int n0, int n1) {
 		int shift = 0;
 
