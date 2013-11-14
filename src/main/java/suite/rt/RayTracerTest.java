@@ -12,6 +12,7 @@ public class RayTracerTest {
 	public void test() throws IOException {
 		AmbientLight lighting = new AmbientLight(new Vector(0f, 0f, -1f), new Vector(0f, 0f, .8f));
 		Sphere scene = new Sphere(new Vector(0f, 0f, 5f), 1f);
-		new RayTracer(lighting, scene).trace(320, 200, 320);
+		new RayTracer(lighting, scene).trace(640, 480, 640);
 	}
+
 }

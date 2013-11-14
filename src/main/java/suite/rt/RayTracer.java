@@ -43,6 +43,10 @@ public class RayTracer {
 		this.scene = scene;
 	}
 
+	public void trace(int sizeX, int sizeY) throws IOException {
+		trace(sizeX, sizeY, sizeX); // Default view distance
+	}
+
 	public void trace(int sizeX, int sizeY, int viewDistance) throws IOException {
 		BufferedImage bufferedImage = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
 
