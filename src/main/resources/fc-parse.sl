@@ -31,7 +31,7 @@ fc-parse (using .lib >> .do) (USING .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define .var = .value >> .do) (
-	PRAGMA ALLOW-RECURSIVE (DEF-VAR .var (OPTION RESOLVE-TYPE .value1) .do1)
+	PRAGMA ALLOW-RECURSIVE (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var

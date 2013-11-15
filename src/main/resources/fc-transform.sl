@@ -20,12 +20,12 @@ fc-transform (NEW-VAR .var) (NEW-VAR .var) .ts/.ts
 #
 fc-transform (NUMBER .i) (NUMBER .i) .ts/.ts
 #
-fc-transform (PRAGMA .option0 .do0) (OPTION .option1 .do1) .ts0/.tsx
-	:- fc-transform-option .option0 .option1
-	, .tsx = (.do0 .do1, .ts0)
-#
 fc-transform (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
 	:- .tsx = (.left0 .left1, .right0 .right1, .ts0)
+#
+fc-transform (PRAGMA .option0 .do0) (PRAGMA .option1 .do1) .ts0/.tsx
+	:- fc-transform-option .option0 .option1
+	, .tsx = (.do0 .do1, .ts0)
 #
 fc-transform (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .tsx = (.left0 .left1, .right0 .right1, .ts0)
