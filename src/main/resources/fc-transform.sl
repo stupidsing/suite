@@ -20,7 +20,7 @@ fc-transform (NEW-VAR .var) (NEW-VAR .var) .ts/.ts
 #
 fc-transform (NUMBER .i) (NUMBER .i) .ts/.ts
 #
-fc-transform (OPTION .option0 .do0) (OPTION .option1 .do1) .ts0/.tsx
+fc-transform (PRAGMA .option0 .do0) (OPTION .option1 .do1) .ts0/.tsx
 	:- fc-transform-option .option0 .option1
 	, .tsx = (.do0 .do1, .ts0)
 #

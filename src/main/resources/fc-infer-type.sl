@@ -40,7 +40,7 @@ infer-type-rule (USING .lib .do) .env .tr/.tr .type
 	, resolve-type-rules .tr1
 #
 infer-type-rule (
-	OPTION (DEF-TYPE .definedType .classes .typeVars) .do
+	PRAGMA (DEF-TYPE .definedType .classes .typeVars) .do
 ) .ue/.ve/.te .tr .type
 	:- !
 	, .te1 = (.definedType/.classes/.typeVars, .te)
@@ -56,7 +56,7 @@ infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type
 	, infer-type-rule .do .env1 .tr1/.trx .type
 #
 infer-type-rule (
-	OPTION ALLOW-RECURSIVE (DEF-VAR .name .value .do)
+	PRAGMA ALLOW-RECURSIVE (DEF-VAR .name .value .do)
 ) .ue/.ve/.te .tr0/.trx .type
 	:- !
 	, fc-dict-add .name/.varType .ue/.ue1
@@ -68,10 +68,10 @@ infer-type-rule (
 	)
 	, infer-type-rule .do .outsideEnv .tr1/.trx .type
 #
-infer-type-rule (OPTION CAST-TO-CLASS .pair) .env .tr .classType
+infer-type-rule (PRAGMA CAST-TO-CLASS .pair) .env .tr .classType
 	:- !
 	, .classType = CLASS _
-	, infer-type-rule (OPTION (CAST DOWN .classType) .pair) .env .tr .classType
+	, infer-type-rule (PRAGMA (CAST DOWN .classType) .pair) .env .tr .classType
 #
 infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
 	:- !
@@ -108,7 +108,7 @@ infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	, infer-type-rule .v0 .env .tr0/.tr1 .t0
 	, infer-type-rule .v1 .env .tr1/.trx .t1
 #
-infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
+infer-type-rule (PRAGMA (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
 	, once (
 		.dir = DOWN, .subType = .type0, .superType = .type
@@ -116,13 +116,13 @@ infer-type-rule (OPTION (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	)
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
-infer-type-rule (OPTION RESOLVE-TYPE .do) .env .tr/.tr .type
+infer-type-rule (PRAGMA RESOLVE-TYPE .do) .env .tr/.tr .type
 	:- !
 	, infer-type-rule .do .env .tr1/() .type
 	, resolve-type-rules .tr1
 #
 infer-type-rule .do .env .tr .type
-	:- (.do = OPTION _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
+	:- (.do = PRAGMA _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
 	, !
 	, infer-type-rule .do1 .env .tr .type
 #
@@ -139,7 +139,7 @@ find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 find-simple-type (BOOLEAN _) _ BOOLEAN #
 find-simple-type (DO _) _ (DO-OF _) #
 find-simple-type (NUMBER _) _ NUMBER #
-find-simple-type (OPTION SKIP-TYPE-CHECK _) _ _ #
+find-simple-type (PRAGMA SKIP-TYPE-CHECK _) _ _ #
 find-simple-type (VAR .var) .ue/_/_ .type
 	:- fc-dict-get .ue .var/.type
 	; default-fun-type .var .type

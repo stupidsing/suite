@@ -8,7 +8,7 @@ fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define type .type of .classes for any .typeVars >> .do) (
-	OPTION (DEF-TYPE .type1 .classes1 .typeVars1) .do1
+	PRAGMA (DEF-TYPE .type1 .classes1 .typeVars1) .do1
 ) :- !, fc-parse-type .type .type1
 	, fc-parse-type-list .classes .classes1
 	, fc-parse-type-list .typeVars .typeVars1
@@ -17,28 +17,28 @@ fc-parse (define type .type of .classes for any .typeVars >> .do) (
 fc-parse (define type .type of .classes >> .do) .do1
 	:- !, fc-parse (define type .type of .classes for any () >> .do) .do1
 #
-fc-parse .do (OPTION (CAST DOWN .type1) .value1)
+fc-parse .do (PRAGMA (CAST DOWN .type1) .value1)
 	:- (.do = .value as .type
 		; .do = type .type .value
 	), !
 	, fc-parse-type .type .type1
 	, fc-parse .value .value1
 #
-fc-parse (skip-type-check .do) (OPTION SKIP-TYPE-CHECK .do1)
+fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (using .lib >> .do) (USING .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define .var = .value >> .do) (
-	OPTION ALLOW-RECURSIVE (DEF-VAR .var (OPTION RESOLVE-TYPE .value1) .do1)
+	PRAGMA ALLOW-RECURSIVE (DEF-VAR .var (OPTION RESOLVE-TYPE .value1) .do1)
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
 	)
 	, fc-parse .do .do1
 #
-fc-parse (let .var = .value >> .do) (DEF-VAR .var (OPTION RESOLVE-TYPE .value1) .do1)
+fc-parse (let .var = .value >> .do) (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
 	:- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
@@ -66,11 +66,11 @@ fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
-fc-parse [] (OPTION CAST-TO-CLASS (ATOM [])) :- ! #
-fc-parse (.p0 .p1) (OPTION CAST-TO-CLASS (PAIR .parsed0 .parsed1))
+fc-parse [] (PRAGMA CAST-TO-CLASS (ATOM [])) :- ! #
+fc-parse (.p0 .p1) (PRAGMA CAST-TO-CLASS (PAIR .parsed0 .parsed1))
 	:- !
 	, fc-parse .p0 .parsed0
-	, fc-parse .p1 (OPTION CAST-TO-CLASS .parsed1)
+	, fc-parse .p1 (PRAGMA CAST-TO-CLASS .parsed1)
 #
 fc-parse (.p0, .p1) (PAIR .parsed0 .parsed1)
 	:- !
@@ -229,7 +229,7 @@ fc-bind .v0 .v1 .tep :- .v1 = NEW-VAR _, !, fc-bind0 .v0 .v1 .tep #
 fc-bind .v0 .v1 .tep
 	:- once (fc-bind-cons .v0 _ _
 		; .v0 = PAIR _ _
-		; .v0 = OPTION _
+		; .v0 = PRAGMA _
 	)
 	, !, fc-bind0 .v1 .v0 .tep
 #
@@ -262,7 +262,7 @@ fc-bind0 .v0 .v1 .then .else (
 #
 fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
 	DEF-VAR .elseVar (WRAP .else)
-	DEF-VAR .v0var (OPTION (CAST UP _) .v0) (
+	DEF-VAR .v0var (PRAGMA (CAST UP _) .v0) (
 		IF (INVOKE (VAR .v0var) (VAR is-pair)) (
 			DEF-VAR .leftVar (INVOKE (VAR .v0var) (VAR _pleft))
 			DEF-VAR .rightVar (INVOKE (VAR .v0var) (VAR _pright))
@@ -274,7 +274,7 @@ fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
 	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind-pair (VAR .leftVar) (VAR .rightVar) .p1 .q1 .then .else1 .then1
 #
-fc-bind0 .v0 (OPTION _ .v1) .then .else .parsed
+fc-bind0 .v0 (PRAGMA _ .v1) .then .else .parsed
 	:- !
 	, fc-bind .v0 .v1 .then .else .parsed
 #

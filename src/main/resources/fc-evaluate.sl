@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- functional program compiler with eager evaluation
 
-fc-compile .mode (OPTION _ .do) .env .cdr
+fc-compile .mode (PRAGMA _ .do) .env .cdr
 	:- !, fc-compile .mode .do .env .cdr
 #
 fc-compile .mode (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
