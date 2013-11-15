@@ -8,13 +8,18 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import suite.math.Vector;
+import suite.util.LogUtil;
 
 public class RayTracer {
 
-	private Lighting lighting;
+	private LightSource lightSource;
 	private RayTraceObject scene;
 
 	public interface RayTraceObject {
+
+		/**
+		 * Calculates hit point with a ray. Assumes direction is normalized.
+		 */
 		public RayHit hit(Vector startPoint, Vector direction);
 	}
 
@@ -34,12 +39,14 @@ public class RayTracer {
 		public Vector refractionIndex();
 	}
 
-	public interface Lighting {
+	public interface LightSource {
+		public Vector source();
+
 		public Vector lit(Vector startPoint, Vector direction);
 	}
 
-	public RayTracer(Lighting lighting, RayTraceObject scene) {
-		this.lighting = lighting;
+	public RayTracer(LightSource lightSource, RayTraceObject scene) {
+		this.lightSource = lightSource;
 		this.scene = scene;
 	}
 
@@ -54,10 +61,19 @@ public class RayTracer {
 
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
-				Vector startPoint = Vector.origin;
-				Vector direction = new Vector(x - centreX, y - centreY, viewDistance);
-				Vector color = trace(depth, startPoint, direction);
-				bufferedImage.setRGB(x, y, new Color(color.getX(), color.getY(), color.getZ()).getRGB());
+				Color color;
+
+				try {
+					Vector startPoint = Vector.origin;
+					Vector direction = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
+					Vector lit = trace(depth, startPoint, direction);
+					color = new Color(lit.getX(), lit.getY(), lit.getZ());
+				} catch (Exception ex) {
+					LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
+					color = new Color(1f, 1f, 1f);
+				}
+
+				bufferedImage.setRGB(x, y, color.getRGB());
 			}
 
 		File file = new File("/tmp/ray-tracer.png");
@@ -79,7 +95,7 @@ public class RayTracer {
 
 			// TODO refraction
 		} else
-			color = lighting.lit(startPoint, direction);
+			color = lightSource.lit(startPoint, direction);
 
 		return color;
 	}

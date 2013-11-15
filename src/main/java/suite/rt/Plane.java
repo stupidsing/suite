@@ -6,34 +6,25 @@ import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayHitDetail;
 import suite.rt.RayTracer.RayTraceObject;
 
-public class Sphere implements RayTraceObject {
+public class Plane implements RayTraceObject {
 
-	private Vector centre;
-	private float radius;
+	private Vector normal;
+	private float originIndex;
 
-	public Sphere(Vector centre, float radius) {
-		this.centre = centre;
-		this.radius = radius;
+	public Plane(Vector normal, float originIndex) {
+		this.normal = normal;
+		this.originIndex = originIndex;
 	}
 
 	@Override
 	public RayHit hit(final Vector startPoint, final Vector direction) {
-		Vector start0 = Vector.sub(startPoint, centre);
-		float dist; // Distance the ray travelled, positive if hits
+		float denum = Vector.dot(normal, direction);
+		float dist;
 
-		float b = 2 * Vector.dot(start0, direction);
-		float c = Vector.dot(start0, start0) - radius * radius;
-		float discriminant = b * b - 4 * c;
-
-		if (discriminant > 0) { // Hit?
-			float sqrt = (float) Math.sqrt(discriminant);
-
-			if (-b - sqrt > 0)
-				dist = (-b - sqrt) / 2f;
-			else
-				dist = (-b + sqrt) / 2f;
-		} else
-			dist = -1f;
+		if (Math.abs(denum) > MathUtil.epsilon)
+			dist = -(Vector.dot(normal, startPoint) + originIndex) / denum;
+		else
+			dist = -1f; // Treats as not-hit
 
 		final float distance = dist;
 
@@ -52,7 +43,7 @@ public class Sphere implements RayTraceObject {
 						}
 
 						public Vector normal() {
-							return Vector.sub(hitPoint, centre);
+							return normal;
 						}
 
 						public Vector reflectionIndex() {

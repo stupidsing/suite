@@ -1,21 +1,29 @@
 package suite.rt;
 
 import suite.math.Vector;
-import suite.rt.RayTracer.Lighting;
+import suite.rt.RayTracer.LightSource;
 
-public class AmbientLight implements Lighting {
+public class AmbientLight implements LightSource {
 
-	private Vector lightDirection;
+	private Vector source;
 	private Vector color;
 
-	public AmbientLight(Vector lightDirection, Vector color) {
-		this.lightDirection = Vector.norm(lightDirection);
+	public AmbientLight(Vector source, Vector color) {
+		this.source = source;
 		this.color = color;
 	}
 
 	@Override
+	public Vector source() {
+		return source;
+	}
+
+	@Override
 	public Vector lit(Vector startPoint, Vector direction) {
-		float factor = Vector.dot(direction, lightDirection) / (float) Math.sqrt(Vector.dot(direction, direction));
+		Vector lightDirection = Vector.sub(source, startPoint);
+		float factor = Vector.dot(direction, lightDirection) //
+				/ (float) Math.sqrt(Vector.dot(lightDirection, lightDirection)) //
+				/ (float) Math.sqrt(Vector.dot(direction, direction));
 		return factor > 0 ? Vector.mul(color, factor) : Vector.origin;
 	}
 
