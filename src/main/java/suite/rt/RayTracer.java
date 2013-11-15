@@ -47,14 +47,13 @@ public class RayTracer {
 		trace(sizeX, sizeY, sizeX); // Default view distance
 	}
 
-	public void trace(int sizeX, int sizeY, int viewDistance) throws IOException {
-		BufferedImage bufferedImage = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
-
-		int centreX = sizeX / 2, centreY = sizeY / 2;
+	public void trace(int width, int height, int viewDistance) throws IOException {
+		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		int centreX = width / 2, centreY = height / 2;
 		int depth = 4;
 
-		for (int x = 0; x < sizeX; x++)
-			for (int y = 0; y < sizeY; y++) {
+		for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++) {
 				Vector startPoint = Vector.origin;
 				Vector direction = new Vector(x - centreX, y - centreY, viewDistance);
 				Vector color = trace(depth, startPoint, direction);
