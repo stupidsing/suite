@@ -174,6 +174,7 @@ fc-parse-sugar .s (.ascii; .cs)
 
 fc-parse-type .t .t :- not bound .t, ! #
 fc-parse-type any .t :- not bound .t, ! #
+fc-parse-type _ .t :- is.cyclic .t, !, fc-error "Cyclic type" .t #
 fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1
