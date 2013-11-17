@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
@@ -12,7 +13,7 @@ import suite.util.LogUtil;
 
 public class RayTracer {
 
-	private LightSource lightSource;
+	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
 
 	public interface RayTraceObject {
@@ -45,8 +46,8 @@ public class RayTracer {
 		public Vector lit(Vector startPoint, Vector direction);
 	}
 
-	public RayTracer(LightSource lightSource, RayTraceObject scene) {
-		this.lightSource = lightSource;
+	public RayTracer(Collection<LightSource> lightSources, RayTraceObject scene) {
+		this.lightSources = lightSources;
 		this.scene = scene;
 	}
 
@@ -94,8 +95,12 @@ public class RayTracer {
 			color = multiplyComponents(reflecting, d.reflectionIndex());
 
 			// TODO refraction
-		} else
-			color = lightSource.lit(startPoint, direction);
+		} else {
+			color = Vector.origin;
+
+			for (LightSource lightSource : lightSources)
+				color = Vector.add(color, lightSource.lit(startPoint, direction));
+		}
 
 		return color;
 	}
