@@ -16,22 +16,22 @@ public class Sphere implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Vector startPoint, Vector direction) {
-		final Vector direction1 = Vector.norm(direction);
+	public RayHit hit(final Vector startPoint, final Vector direction) {
+		float a = Vector.normsq(direction);
 		Vector start0 = Vector.sub(startPoint, centre);
 		float dist; // Distance the ray travelled, positive if hits
 
-		float b = 2 * Vector.dot(start0, direction1);
+		float b = 2 * Vector.dot(start0, direction);
 		float c = Vector.normsq(start0) - radius * radius;
-		float discriminant = b * b - 4 * c;
+		float discriminant = b * b - 4 * a * c;
 
 		if (discriminant > 0) { // Hit?
 			float sqrt = (float) Math.sqrt(discriminant);
 
 			if (-b - sqrt > 0)
-				dist = (-b - sqrt) / 2f;
+				dist = (-b - sqrt) / (2f * a);
 			else
-				dist = (-b + sqrt) / 2f;
+				dist = (-b + sqrt) / (2f * a);
 		} else
 			dist = -1f;
 
@@ -44,7 +44,7 @@ public class Sphere implements RayTraceObject {
 				}
 
 				public RayHitDetail detail() {
-					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction1, distance));
+					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, distance));
 
 					return new RayHitDetail() {
 						public Vector hitPoint() {
