@@ -22,7 +22,7 @@ public class Plane implements RayTraceObject {
 		float dist;
 
 		if (Math.abs(denum) > MathUtil.epsilon)
-			dist = -(Vector.dot(normal, startPoint) + originIndex) / denum;
+			dist = -(Vector.dot(normal, startPoint) + originIndex) * Vector.normsq(direction) / denum;
 		else
 			dist = -1f; // Treats as not-hit
 
@@ -46,12 +46,16 @@ public class Plane implements RayTraceObject {
 							return normal;
 						}
 
+						public Vector litIndex() {
+							return new Vector(0.2f, 0.2f, 0.2f);
+						}
+
 						public Vector reflectionIndex() {
 							return new Vector(0.8f, 0.8f, 0.8f);
 						}
 
 						public Vector refractionIndex() {
-							return new Vector(0.8f, 0.8f, 0.8f);
+							return new Vector(0f, 0f, 0f);
 						}
 					};
 				}

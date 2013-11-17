@@ -22,7 +22,7 @@ public class DirectionalLight implements LightSource {
 	public Vector lit(Vector startPoint, Vector direction) {
 		Vector lightDirection = Vector.sub(source, startPoint);
 		float factor = Vector.dot(direction, lightDirection)
-				/ (float) Math.sqrt(Vector.dot(lightDirection, lightDirection) * Vector.dot(direction, direction));
+				/ (float) Math.sqrt(Vector.normsq(lightDirection) * Vector.normsq(direction));
 		return factor > 0 ? Vector.mul(color, factor) : Vector.origin;
 	}
 

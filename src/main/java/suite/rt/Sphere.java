@@ -21,8 +21,8 @@ public class Sphere implements RayTraceObject {
 		Vector start0 = Vector.sub(startPoint, centre);
 		float dist; // Distance the ray travelled, positive if hits
 
-		float b = 2 * Vector.dot(start0, direction);
-		float c = Vector.dot(start0, start0) - radius * radius;
+		float b = 2 * Vector.dot(start0, direction) / Vector.normsq(direction);
+		float c = Vector.normsq(start0) - radius * radius;
 		float discriminant = b * b - 4 * c;
 
 		if (discriminant > 0) { // Hit?
@@ -55,12 +55,16 @@ public class Sphere implements RayTraceObject {
 							return Vector.sub(hitPoint, centre);
 						}
 
+						public Vector litIndex() {
+							return new Vector(0.2f, 0.2f, 0.2f);
+						}
+
 						public Vector reflectionIndex() {
 							return new Vector(0.8f, 0.8f, 0.8f);
 						}
 
 						public Vector refractionIndex() {
-							return new Vector(0.8f, 0.8f, 0.8f);
+							return new Vector(0f, 0f, 0f);
 						}
 					};
 				}

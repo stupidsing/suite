@@ -35,6 +35,8 @@ public class RayTracer {
 
 		public Vector normal();
 
+		public Vector litIndex();
+
 		public Vector reflectionIndex();
 
 		public Vector refractionIndex();

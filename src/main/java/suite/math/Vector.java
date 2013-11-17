@@ -28,6 +28,10 @@ public class Vector {
 		return new Vector(-v.x, -v.y, -v.z);
 	}
 
+	public static float normsq(Vector u) {
+		return dot(u, u);
+	}
+
 	public static float dot(Vector u, Vector v) {
 		return u.x * v.x + u.y * v.y + u.z * v.z;
 	}
@@ -37,7 +41,7 @@ public class Vector {
 	}
 
 	public static Vector norm(Vector v) {
-		return mul(v, 1f / (float) Math.sqrt(dot(v, v)));
+		return mul(v, 1f / (float) Math.sqrt(normsq(v)));
 	}
 
 	@Override
