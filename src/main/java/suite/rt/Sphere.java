@@ -1,6 +1,5 @@
 package suite.rt;
 
-import suite.math.MathUtil;
 import suite.math.Vector;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayHitDetail;
@@ -17,11 +16,12 @@ public class Sphere implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Vector startPoint, final Vector direction) {
+	public RayHit hit(final Vector startPoint, Vector direction) {
+		final Vector direction1 = Vector.norm(direction);
 		Vector start0 = Vector.sub(startPoint, centre);
 		float dist; // Distance the ray travelled, positive if hits
 
-		float b = 2 * Vector.dot(start0, direction) / Vector.normsq(direction);
+		float b = 2 * Vector.dot(start0, direction1);
 		float c = Vector.normsq(start0) - radius * radius;
 		float discriminant = b * b - 4 * c;
 
@@ -37,14 +37,14 @@ public class Sphere implements RayTraceObject {
 
 		final float distance = dist;
 
-		if (distance > MathUtil.epsilon)
+		if (distance > RayTracer.negligibleDistance)
 			return new RayHit() {
 				public float distance() {
 					return distance;
 				}
 
 				public RayHitDetail detail() {
-					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, distance));
+					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction1, distance));
 
 					return new RayHitDetail() {
 						public Vector hitPoint() {
@@ -56,11 +56,11 @@ public class Sphere implements RayTraceObject {
 						}
 
 						public Vector litIndex() {
-							return new Vector(0.2f, 0.2f, 0.2f);
+							return new Vector(0.5f, 0.5f, 0.5f);
 						}
 
 						public Vector reflectionIndex() {
-							return new Vector(0.8f, 0.8f, 0.8f);
+							return new Vector(0.5f, 0.5f, 0.5f);
 						}
 
 						public Vector refractionIndex() {
@@ -72,5 +72,4 @@ public class Sphere implements RayTraceObject {
 		else
 			return null;
 	}
-
 }

@@ -17,25 +17,26 @@ public class Plane implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Vector startPoint, final Vector direction) {
-		float denum = Vector.dot(normal, direction);
+	public RayHit hit(final Vector startPoint, Vector direction) {
+		final Vector direction1 = Vector.norm(direction);
+		float denum = Vector.dot(normal, direction1);
 		float dist;
 
 		if (Math.abs(denum) > MathUtil.epsilon)
-			dist = -(Vector.dot(normal, startPoint) + originIndex) * Vector.normsq(direction) / denum;
+			dist = -(Vector.dot(normal, startPoint) + originIndex) / denum;
 		else
 			dist = -1f; // Treats as not-hit
 
 		final float distance = dist;
 
-		if (distance > MathUtil.epsilon)
+		if (distance > RayTracer.negligibleDistance)
 			return new RayHit() {
 				public float distance() {
 					return distance;
 				}
 
 				public RayHitDetail detail() {
-					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, distance));
+					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction1, distance));
 
 					return new RayHitDetail() {
 						public Vector hitPoint() {
@@ -47,11 +48,11 @@ public class Plane implements RayTraceObject {
 						}
 
 						public Vector litIndex() {
-							return new Vector(0.2f, 0.2f, 0.2f);
+							return new Vector(0.5f, 0.5f, 0.5f);
 						}
 
 						public Vector reflectionIndex() {
-							return new Vector(0.8f, 0.8f, 0.8f);
+							return new Vector(0.5f, 0.5f, 0.5f);
 						}
 
 						public Vector refractionIndex() {

@@ -13,6 +13,8 @@ import suite.util.LogUtil;
 
 public class RayTracer {
 
+	public static final float negligibleDistance = 0.001f;
+
 	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
 
@@ -68,7 +70,7 @@ public class RayTracer {
 
 				try {
 					Vector startPoint = Vector.origin;
-					Vector direction = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
+					Vector direction = new Vector(x - centreX, y - centreY, viewDistance);
 					Vector lit = trace(depth, startPoint, direction);
 					color = new Color(lit.getX(), lit.getY(), lit.getZ());
 				} catch (Exception ex) {
@@ -91,10 +93,21 @@ public class RayTracer {
 			RayHitDetail d = rayHit.detail();
 			Vector hitPoint = d.hitPoint();
 
+			Vector lightingColor = Vector.origin;
+
+			for (LightSource lightSource : lightSources) {
+				RayHit rayHit1 = scene.hit(hitPoint, Vector.sub(lightSource.source(), hitPoint));
+
+				if (rayHit1 == null)
+					lightingColor = Vector.add(lightingColor, lightSource.lit(startPoint, direction));
+			}
+
 			Vector normal = Vector.norm(d.normal());
 			Vector reflectingDirection = Vector.add(direction, Vector.mul(normal, -2f * Vector.dot(direction, normal)));
-			Vector reflecting = trace(depth - 1, hitPoint, reflectingDirection);
-			color = multiplyComponents(reflecting, d.reflectionIndex());
+			Vector reflectingColor = trace(depth - 1, hitPoint, reflectingDirection);
+
+			color = Vector.add(multiplyComponents(lightingColor, d.litIndex()),
+					multiplyComponents(reflectingColor, d.reflectionIndex()));
 
 			// TODO refraction
 		} else {
