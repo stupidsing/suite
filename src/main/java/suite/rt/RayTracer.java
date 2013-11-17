@@ -13,7 +13,7 @@ import suite.util.LogUtil;
 
 public class RayTracer {
 
-	public static final float negligibleDistance = 0.001f;
+	public static final float negligibleAdvance = 0.001f;
 
 	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
@@ -27,7 +27,7 @@ public class RayTracer {
 	}
 
 	public interface RayHit {
-		public float distance();
+		public float advance();
 
 		public RayHitDetail detail();
 	}
@@ -98,7 +98,7 @@ public class RayTracer {
 			for (LightSource lightSource : lightSources) {
 				RayHit rayHit1 = scene.hit(hitPoint, Vector.sub(lightSource.source(), hitPoint));
 
-				if (rayHit1 == null)
+				if (rayHit1 == null || rayHit1.advance() > 1f)
 					lightingColor = Vector.add(lightingColor, lightSource.lit(startPoint, direction));
 			}
 

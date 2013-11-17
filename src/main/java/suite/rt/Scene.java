@@ -32,7 +32,7 @@ public class Scene implements RayTraceObject {
 		if (!hits.isEmpty())
 			return Collections.min(hits, new Comparator<RayHit>() {
 				public int compare(RayHit h0, RayHit h1) {
-					return h0.distance() < h1.distance() ? -1 : 1;
+					return h0.advance() < h1.advance() ? -1 : 1;
 				}
 			});
 		else

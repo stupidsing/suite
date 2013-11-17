@@ -20,23 +20,23 @@ public class Plane implements RayTraceObject {
 	public RayHit hit(final Vector startPoint, final Vector direction) {
 		float norm = (float) Math.sqrt(Vector.normsq(direction));
 		float denum = Vector.dot(normal, direction);
-		float dist;
+		float adv;
 
 		if (Math.abs(denum) > MathUtil.epsilon)
-			dist = -(Vector.dot(normal, startPoint) + originIndex) * norm / denum;
+			adv = -(Vector.dot(normal, startPoint) + originIndex) * norm / denum;
 		else
-			dist = -1f; // Treats as not-hit
+			adv = -1f; // Treats as not-hit
 
-		final float distance = dist;
+		final float advance = adv;
 
-		if (distance > RayTracer.negligibleDistance)
+		if (advance > RayTracer.negligibleAdvance)
 			return new RayHit() {
-				public float distance() {
-					return distance;
+				public float advance() {
+					return advance;
 				}
 
 				public RayHitDetail detail() {
-					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, distance));
+					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, advance));
 
 					return new RayHitDetail() {
 						public Vector hitPoint() {
