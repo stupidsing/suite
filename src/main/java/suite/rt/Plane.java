@@ -22,7 +22,7 @@ public class Plane implements RayTraceObject {
 		float adv;
 
 		if (Math.abs(denum) > MathUtil.epsilon)
-			adv = -(Vector.dot(normal, startPoint) + originIndex) / denum;
+			adv = (originIndex - Vector.dot(normal, startPoint)) / denum;
 		else
 			adv = -1f; // Treats as not-hit
 
