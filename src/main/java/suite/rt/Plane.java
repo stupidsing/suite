@@ -18,12 +18,11 @@ public class Plane implements RayTraceObject {
 
 	@Override
 	public RayHit hit(final Vector startPoint, final Vector direction) {
-		float norm = (float) Math.sqrt(Vector.normsq(direction));
 		float denum = Vector.dot(normal, direction);
 		float adv;
 
 		if (Math.abs(denum) > MathUtil.epsilon)
-			adv = -(Vector.dot(normal, startPoint) + originIndex) * norm / denum;
+			adv = -(Vector.dot(normal, startPoint) + originIndex) / denum;
 		else
 			adv = -1f; // Treats as not-hit
 
