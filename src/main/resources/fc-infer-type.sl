@@ -13,11 +13,11 @@
 --
 -- Kinds of generic types:
 -- - Generic type class, usually used in abstract data structures.
---   Written like B-TREE/:t.
+--   Written like B-TREE {:t}.
 --   Represented internally as (CLASS (PARAMETERIZED (VAR t) B-TREE)).
 --   Resolved by binding the type structures.
 -- - Generic type, usually used in method signatures.
---   Written like :t :- .t => .t.
+--   Written like :t => .t -> .t.
 --   Represented internally as (GENERIC-OF (VAR t) FUN-OF (VAR t) (VAR t)).
 --   Resolved by SUB-SUPER-TYPES.
 -- - Generic type caused by not enough variable information during type inference.
