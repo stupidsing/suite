@@ -46,8 +46,8 @@ public class RayTracerTest {
 	@Test
 	public void testSphereReflection() throws IOException {
 		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cr, 0.4f));
-		RayTraceObject plane = new Plane(v(1f, 0f, 0f), -3f, reflective(cw, 0.8f));
-		Scene scene = new Scene(Arrays.asList(sphere, plane));
+		RayTraceObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, reflective(cw, 0.4f));
+		Scene scene = new Scene(Arrays.asList(sphere, mirror));
 
 		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
 		List<LightSource> lights = Arrays.asList(light);
@@ -72,11 +72,13 @@ public class RayTracerTest {
 
 	@Test
 	public void testMess() throws IOException {
-		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 3f), 1f, reflective(cr, 0.4f));
-		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 5f), 1f, reflective(cg, 0.4f));
-		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 7f), 1f, reflective(cb, 0.4f));
-		RayTraceObject plane = new Plane(v(0f, 1f, 0f), -3f, white());
-		RayTraceObject triangle = new Triangle(v(0.2f, 0.2f, 3f), v(0.2f, 0f, 0f), v(0f, 0.2f, 0f), white());
+		Material silver = reflective(gray(1f), 0.4f);
+
+		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, reflective(cr, 0.4f));
+		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, reflective(cg, 0.4f));
+		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, reflective(cb, 0.4f));
+		RayTraceObject plane = new Plane(v(0f, 1f, 0f), -3f, silver);
+		RayTraceObject triangle = new Triangle(v(0.2f, 0.2f, 3f), v(0.2f, 0f, 0f), v(0f, 0.2f, 0f), silver);
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane, triangle));
 
 		LightSource light0 = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
@@ -93,38 +95,22 @@ public class RayTracerTest {
 		ImageIO.write(bufferedImage, "png", new File(filename));
 	}
 
-	private Material reflective(Vector color, float index) {
-		float index1 = 1f - index;
-		final Vector litIndex = Vector.mul(color, index1);
-		final Vector reflectionIndex = gray(index);
-
+	private Material reflective(final Vector color, final float index) {
 		return new Material() {
-			public Vector litIndex() {
-				return litIndex;
+			public Vector filter() {
+				return color;
 			}
 
-			public Vector reflectionIndex() {
-				return reflectionIndex;
+			public float diffusionIndex() {
+				return 1 - index;
 			}
 
-			public Vector refractionIndex() {
-				return gray(0f);
-			}
-		};
-	}
-
-	private Material white() {
-		return new Material() {
-			public Vector litIndex() {
-				return gray(0.6f);
+			public float reflectionIndex() {
+				return index;
 			}
 
-			public Vector reflectionIndex() {
-				return gray(0.4f);
-			}
-
-			public Vector refractionIndex() {
-				return gray(0f);
+			public float refractionIndex() {
+				return 0f;
 			}
 		};
 	}

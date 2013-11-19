@@ -9,7 +9,7 @@ import suite.util.LogUtil;
 
 public class RayTracer {
 
-	public static final float negligibleAdvance = 0.001f;
+	public static final float negligibleAdvance = 0.00001f;
 
 	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
@@ -37,11 +37,13 @@ public class RayTracer {
 	}
 
 	public interface Material {
-		public Vector litIndex();
+		public Vector filter(); // Filters the light color
 
-		public Vector reflectionIndex();
+		public float diffusionIndex();
 
-		public Vector refractionIndex();
+		public float reflectionIndex();
+
+		public float refractionIndex();
 	}
 
 	public static class Ray {
@@ -80,7 +82,7 @@ public class RayTracer {
 
 				try {
 					Vector startPoint = Vector.origin;
-					Vector dir = new Vector(x - centreX, y - centreY, viewDistance);
+					Vector dir = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
 					Vector lit = limit(traceRay(depth, new Ray(startPoint, dir)));
 					color = new Color(lit.getX(), lit.getY(), lit.getZ());
 				} catch (Exception ex) {
@@ -144,7 +146,11 @@ public class RayTracer {
 		// TODO refraction
 
 		Material material = d.material();
-		return Vector.add(mc(lightColor, material.litIndex()), mc(reflectColor, material.reflectionIndex()));
+		float diffusionIndex = material.diffusionIndex();
+		float reflectionIndex = material.reflectionIndex();
+
+		Vector sum = Vector.add(Vector.mul(lightColor, diffusionIndex), Vector.mul(reflectColor, reflectionIndex));
+		return mc(sum, material.filter());
 	}
 
 	private Vector traceLightSources(Ray ray) {
