@@ -19,6 +19,13 @@ public class Sphere implements RayTraceObject {
 		this.material = material;
 	}
 
+	public static RayTraceObject c(Vector centre, float radius, Material material) {
+		Vector radiusRange = new Vector(radius, radius, radius);
+		Vector min = Vector.sub(centre, radiusRange);
+		Vector max = Vector.add(centre, radiusRange);
+		return new BoundingBox(min, max, new Sphere(centre, radius, material));
+	}
+
 	@Override
 	public RayHit hit(final Ray ray) {
 		float a = Vector.normsq(ray.dir);

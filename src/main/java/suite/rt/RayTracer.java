@@ -113,29 +113,30 @@ public class RayTracer {
 		Vector hitPoint = d.hitPoint();
 		Vector normal = Vector.norm(d.normal());
 
+		// Cast from light sources
 		Vector lightColor = Vector.origin;
 
 		for (LightSource lightSource : lightSources) {
 			Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
-			float dot = Vector.dot(lightDir, normal);
+			float dot0 = Vector.dot(lightDir, normal);
 
-			if (dot > 0) { // Facing the light
+			if (dot0 > 0) { // Facing the light
 				Ray lightRay = new Ray(hitPoint, lightDir);
 				RayHit lightRayHit = scene.hit(lightRay);
 				Vector lightColor1 = Vector.origin;
 
-				if (lightRayHit != null) {
+				if (lightRayHit != null)
 					lightColor1 = traceRayHit(depth, lightRay, lightRayHit);
-				}
 
 				if (lightRayHit == null || lightRayHit.advance() > 1f)
 					lightColor1 = Vector.add(lightColor, lightSource.lit(hitPoint));
 
-				float cos = dot / (float) Math.sqrt(Vector.normsq(lightDir) * Vector.normsq(normal));
+				float cos = dot0 / (float) Math.sqrt(Vector.normsq(lightDir));
 				lightColor = Vector.add(lightColor, Vector.mul(lightColor1, cos));
 			}
 		}
 
+		// Reflection
 		Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * Vector.dot(ray.dir, normal)));
 		Vector reflectColor = traceRay(depth - 1, new Ray(hitPoint, reflectDir));
 
