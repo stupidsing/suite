@@ -9,7 +9,7 @@ import suite.util.LogUtil;
 
 public class RayTracer {
 
-	public static final float negligibleAdvance = 0.00001f;
+	public static final float negligibleAdvance = 0.0001f;
 
 	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
