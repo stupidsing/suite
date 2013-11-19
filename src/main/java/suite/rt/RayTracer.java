@@ -125,20 +125,19 @@ public class RayTracer {
 				// TODO refraction
 
 				color = Vector.add(mc(lightColor, d.litIndex()), mc(reflectColor, d.reflectionIndex()));
-			} else {
-				Vector lightColor = Vector.origin;
+			} else
+				color = sumLightSources(ray);
+		} else
+			color = sumLightSources(ray);
 
-				for (LightSource lightSource : lightSources)
-					lightColor = Vector.add(lightColor, lightSource.lit(new Ray(hitPoint, ray.dir)));
+		return color;
+	}
 
-				color = mc(lightColor, d.litIndex());
-			}
-		} else {
-			color = Vector.origin;
+	private Vector sumLightSources(Ray ray) {
+		Vector color = Vector.origin;
 
-			for (LightSource lightSource : lightSources)
-				color = Vector.add(color, lightSource.lit(ray));
-		}
+		for (LightSource lightSource : lightSources)
+			color = Vector.add(color, lightSource.lit(ray));
 
 		return color;
 	}
