@@ -106,7 +106,6 @@ public class RayTracer {
 		if (depth > 0 && (rayHit = scene.hit(ray)) != null) {
 			RayHitDetail d = rayHit.detail();
 			Vector hitPoint = d.hitPoint();
-
 			Vector lightColor = Vector.origin;
 
 			for (LightSource lightSource : lightSources) {
