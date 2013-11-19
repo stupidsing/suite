@@ -2,6 +2,7 @@ package suite.rt;
 
 import suite.math.MathUtil;
 import suite.math.Vector;
+import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayHitDetail;
 import suite.rt.RayTracer.RayTraceObject;
@@ -17,12 +18,12 @@ public class Plane implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Vector startPoint, final Vector direction) {
-		float denum = Vector.dot(normal, direction);
+	public RayHit hit(final Ray ray) {
+		float denum = Vector.dot(normal, ray.dir);
 		float adv;
 
 		if (Math.abs(denum) > MathUtil.epsilon)
-			adv = (originIndex - Vector.dot(normal, startPoint)) / denum;
+			adv = (originIndex - Vector.dot(normal, ray.startPoint)) / denum;
 		else
 			adv = -1f; // Treats as not-hit
 
@@ -35,7 +36,7 @@ public class Plane implements RayTraceObject {
 				}
 
 				public RayHitDetail detail() {
-					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, advance));
+					final Vector hitPoint = ray.hitPoint(advance);
 
 					return new RayHitDetail() {
 						public Vector hitPoint() {

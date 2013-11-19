@@ -2,6 +2,7 @@ package suite.rt;
 
 import suite.math.Vector;
 import suite.rt.RayTracer.LightSource;
+import suite.rt.RayTracer.Ray;
 
 public class PointLight implements LightSource {
 
@@ -19,10 +20,9 @@ public class PointLight implements LightSource {
 	}
 
 	@Override
-	public Vector lit(Vector startPoint, Vector direction) {
-		Vector lightDirection = Vector.sub(startPoint, source);
-		float factor = Vector.dot(direction, lightDirection)
-				/ (float) Math.sqrt(Vector.normsq(lightDirection) * Vector.normsq(direction));
+	public Vector lit(Ray ray) {
+		Vector lightDir = Vector.sub(ray.startPoint, source);
+		float factor = Vector.dot(ray.dir, lightDir) / (float) Math.sqrt(Vector.normsq(lightDir) * Vector.normsq(ray.dir));
 		return factor > 0 ? Vector.mul(color, factor) : Vector.origin;
 	}
 

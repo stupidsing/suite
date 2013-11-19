@@ -23,7 +23,7 @@ public class RayTracer {
 		/**
 		 * Calculates hit point with a ray. Assumes direction is normalized.
 		 */
-		public RayHit hit(Vector startPoint, Vector direction);
+		public RayHit hit(Ray ray);
 	}
 
 	public interface RayHit {
@@ -44,10 +44,24 @@ public class RayTracer {
 		public Vector refractionIndex();
 	}
 
+	public static class Ray {
+		public Vector startPoint;
+		public Vector dir;
+
+		public Ray(Vector startPoint, Vector dir) {
+			this.startPoint = startPoint;
+			this.dir = dir;
+		}
+
+		public Vector hitPoint(float advance) {
+			return Vector.add(startPoint, Vector.mul(dir, advance));
+		}
+	}
+
 	public interface LightSource {
 		public Vector source();
 
-		public Vector lit(Vector startPoint, Vector direction);
+		public Vector lit(Ray ray);
 	}
 
 	public RayTracer(Collection<LightSource> lightSources, RayTraceObject scene) {
@@ -70,8 +84,8 @@ public class RayTracer {
 
 				try {
 					Vector startPoint = Vector.origin;
-					Vector direction = new Vector(x - centreX, y - centreY, viewDistance);
-					Vector lit = trace(depth, startPoint, direction);
+					Vector dir = new Vector(x - centreX, y - centreY, viewDistance);
+					Vector lit = trace(depth, new Ray(startPoint, dir));
 					color = new Color(lit.getX(), lit.getY(), lit.getZ());
 				} catch (Exception ex) {
 					LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
@@ -85,42 +99,45 @@ public class RayTracer {
 		ImageIO.write(bufferedImage, "png", file);
 	}
 
-	private Vector trace(int depth, Vector startPoint, Vector direction) {
+	private Vector trace(int depth, Ray ray) {
 		Vector color;
 		RayHit rayHit;
 
-		if (depth > 0 && (rayHit = scene.hit(startPoint, direction)) != null) {
+		if (depth > 0 && (rayHit = scene.hit(ray)) != null) {
 			RayHitDetail d = rayHit.detail();
 			Vector hitPoint = d.hitPoint();
 
-			Vector lightingColor = Vector.origin;
+			Vector lightColor = Vector.origin;
 
 			for (LightSource lightSource : lightSources) {
-				RayHit rayHit1 = scene.hit(hitPoint, Vector.sub(lightSource.source(), hitPoint));
+				Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
+				RayHit rayHit1 = scene.hit(new Ray(hitPoint, lightDir));
 
 				if (rayHit1 == null || rayHit1.advance() > 1f)
-					lightingColor = Vector.add(lightingColor, lightSource.lit(startPoint, direction));
+					lightColor = Vector.add(lightColor, lightSource.lit(ray));
 			}
 
 			Vector normal = Vector.norm(d.normal());
-			Vector reflectingDirection = Vector.add(direction, Vector.mul(normal, -2f * Vector.dot(direction, normal)));
-			Vector reflectingColor = trace(depth - 1, hitPoint, reflectingDirection);
+			Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * Vector.dot(ray.dir, normal)));
+			Vector reflectColor = trace(depth - 1, new Ray(hitPoint, reflectDir));
 
-			color = Vector.add(multiplyComponents(lightingColor, d.litIndex()),
-					multiplyComponents(reflectingColor, d.reflectionIndex()));
+			color = Vector.add(mc(lightColor, d.litIndex()), mc(reflectColor, d.reflectionIndex()));
 
 			// TODO refraction
 		} else {
 			color = Vector.origin;
 
 			for (LightSource lightSource : lightSources)
-				color = Vector.add(color, lightSource.lit(startPoint, direction));
+				color = Vector.add(color, lightSource.lit(ray));
 		}
 
 		return color;
 	}
 
-	private static Vector multiplyComponents(Vector u, Vector v) {
+	/**
+	 * Multiply vector components.
+	 */
+	private static Vector mc(Vector u, Vector v) {
 		return new Vector(u.getX() * v.getX(), u.getY() * v.getY(), u.getZ() * v.getZ());
 
 	}

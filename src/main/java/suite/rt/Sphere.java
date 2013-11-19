@@ -1,6 +1,7 @@
 package suite.rt;
 
 import suite.math.Vector;
+import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayHitDetail;
 import suite.rt.RayTracer.RayTraceObject;
@@ -16,12 +17,12 @@ public class Sphere implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Vector startPoint, final Vector direction) {
-		float a = Vector.normsq(direction);
-		Vector start0 = Vector.sub(startPoint, centre);
+	public RayHit hit(final Ray ray) {
+		float a = Vector.normsq(ray.dir);
+		Vector start0 = Vector.sub(ray.startPoint, centre);
 		float adv; // Distance the ray travelled, positive if hits
 
-		float b = 2 * Vector.dot(start0, direction);
+		float b = 2 * Vector.dot(start0, ray.dir);
 		float c = Vector.normsq(start0) - radius * radius;
 		float discriminant = b * b - 4 * a * c;
 
@@ -44,7 +45,7 @@ public class Sphere implements RayTraceObject {
 				}
 
 				public RayHitDetail detail() {
-					final Vector hitPoint = Vector.add(startPoint, Vector.mul(direction, advance));
+					final Vector hitPoint = ray.hitPoint(advance);
 
 					return new RayHitDetail() {
 						public Vector hitPoint() {

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.math.Vector;
+import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayTraceObject;
 
@@ -19,11 +19,11 @@ public class Scene implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(Vector startPoint, Vector direction) {
+	public RayHit hit(Ray ray) {
 		List<RayHit> hits = new ArrayList<>();
 
 		for (RayTraceObject object : objects) {
-			RayHit hit = object.hit(startPoint, direction);
+			RayHit hit = object.hit(new Ray(ray.startPoint, ray.dir));
 
 			if (hit != null)
 				hits.add(hit);
