@@ -2,11 +2,7 @@ package suite.rt;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
-
-import javax.imageio.ImageIO;
 
 import suite.math.Vector;
 import suite.util.LogUtil;
@@ -73,12 +69,8 @@ public class RayTracer {
 		this.scene = scene;
 	}
 
-	public void trace(int sizeX, int sizeY) throws IOException {
-		trace(sizeX, sizeY, sizeX); // Default view distance
-	}
-
-	public void trace(int width, int height, int viewDistance) throws IOException {
-		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	public void trace(BufferedImage bufferedImage, int viewDistance) {
+		int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
 		int centreX = width / 2, centreY = height / 2;
 		int depth = 4;
 
@@ -98,9 +90,6 @@ public class RayTracer {
 
 				bufferedImage.setRGB(x, y, color.getRGB());
 			}
-
-		File file = new File("/tmp/ray-tracer.png");
-		ImageIO.write(bufferedImage, "png", file);
 	}
 
 	private Vector traceRay(int depth, Ray ray) {

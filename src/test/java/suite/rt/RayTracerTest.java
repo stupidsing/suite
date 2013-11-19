@@ -1,8 +1,12 @@
 package suite.rt;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
@@ -27,8 +31,12 @@ public class RayTracerTest {
 
 		LightSource light = new PointLightSource(new Vector(10000f, 10000f, -10000f), new Vector(1, 1, 1f));
 		List<LightSource> lights = Arrays.asList(light);
+		RayTracer rayTracer = new RayTracer(lights, scene);
 
-		new RayTracer(lights, scene).trace(640, 480, 640);
+		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
+		rayTracer.trace(bufferedImage, 640);
+
+		ImageIO.write(bufferedImage, "png", new File("/tmp/ray-tracer.png"));
 	}
 
 	private Material reflective(Vector color, float index) {
