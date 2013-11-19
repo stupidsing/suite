@@ -113,7 +113,7 @@ public class RayTracer {
 				RayHit rayHit1 = scene.hit(new Ray(hitPoint, lightDir));
 
 				if (rayHit1 == null || rayHit1.advance() > 1f)
-					lightColor = Vector.add(lightColor, lightSource.lit(ray));
+					lightColor = Vector.add(lightColor, lightSource.lit(new Ray(hitPoint, ray.dir)));
 			}
 
 			Vector normal = Vector.norm(d.normal());
