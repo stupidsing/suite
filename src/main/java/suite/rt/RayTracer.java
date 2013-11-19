@@ -120,9 +120,9 @@ public class RayTracer {
 			Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * Vector.dot(ray.dir, normal)));
 			Vector reflectColor = trace(depth - 1, new Ray(hitPoint, reflectDir));
 
-			color = Vector.add(mc(lightColor, d.litIndex()), mc(reflectColor, d.reflectionIndex()));
-
 			// TODO refraction
+
+			color = Vector.add(mc(lightColor, d.litIndex()), mc(reflectColor, d.reflectionIndex()));
 		} else {
 			color = Vector.origin;
 
