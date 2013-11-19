@@ -1,6 +1,7 @@
 package suite.rt;
 
 import suite.math.Vector;
+import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayHitDetail;
@@ -10,10 +11,12 @@ public class Sphere implements RayTraceObject {
 
 	private Vector centre;
 	private float radius;
+	private Material material;
 
-	public Sphere(Vector centre, float radius) {
+	public Sphere(Vector centre, float radius, Material material) {
 		this.centre = centre;
 		this.radius = radius;
+		this.material = material;
 	}
 
 	@Override
@@ -56,16 +59,8 @@ public class Sphere implements RayTraceObject {
 							return Vector.sub(hitPoint, centre);
 						}
 
-						public Vector litIndex() {
-							return new Vector(0.5f, 0.5f, 0.5f);
-						}
-
-						public Vector reflectionIndex() {
-							return new Vector(0.5f, 0.5f, 0.5f);
-						}
-
-						public Vector refractionIndex() {
-							return new Vector(0f, 0f, 0f);
+						public Material material() {
+							return material;
 						}
 					};
 				}

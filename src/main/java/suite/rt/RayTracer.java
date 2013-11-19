@@ -37,6 +37,10 @@ public class RayTracer {
 
 		public Vector normal();
 
+		public Material material();
+	}
+
+	public interface Material {
 		public Vector litIndex();
 
 		public Vector reflectionIndex();
@@ -61,7 +65,7 @@ public class RayTracer {
 	public interface LightSource {
 		public Vector source();
 
-		public Vector lit(Ray ray);
+		public Vector lit(Vector point);
 	}
 
 	public RayTracer(Collection<LightSource> lightSources, RayTraceObject scene) {
@@ -85,7 +89,7 @@ public class RayTracer {
 				try {
 					Vector startPoint = Vector.origin;
 					Vector dir = new Vector(x - centreX, y - centreY, viewDistance);
-					Vector lit = limit(trace(depth, new Ray(startPoint, dir)));
+					Vector lit = limit(traceRay(depth, new Ray(startPoint, dir)));
 					color = new Color(lit.getX(), lit.getY(), lit.getZ());
 				} catch (Exception ex) {
 					LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
@@ -99,45 +103,71 @@ public class RayTracer {
 		ImageIO.write(bufferedImage, "png", file);
 	}
 
-	private Vector trace(int depth, Ray ray) {
+	private Vector traceRay(int depth, Ray ray) {
 		Vector color;
-		RayHit rayHit;
 
-		if ((rayHit = scene.hit(ray)) != null) {
-			RayHitDetail d = rayHit.detail();
-			Vector hitPoint = d.hitPoint();
+		if (depth > 0) {
+			RayHit rayHit = scene.hit(ray);
 
-			if (depth > 0) {
-				Vector lightColor = Vector.origin;
-
-				for (LightSource lightSource : lightSources) {
-					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
-					RayHit rayHit1 = scene.hit(new Ray(hitPoint, lightDir));
-
-					if (rayHit1 == null || rayHit1.advance() > 1f)
-						lightColor = Vector.add(lightColor, lightSource.lit(new Ray(hitPoint, ray.dir)));
-				}
-
-				Vector normal = Vector.norm(d.normal());
-				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * Vector.dot(ray.dir, normal)));
-				Vector reflectColor = trace(depth - 1, new Ray(hitPoint, reflectDir));
-
-				// TODO refraction
-
-				color = Vector.add(mc(lightColor, d.litIndex()), mc(reflectColor, d.reflectionIndex()));
-			} else
-				color = sumLightSources(ray);
+			if (rayHit != null)
+				color = traceRayHit(depth, ray, rayHit);
+			else
+				color = traceLightSources(ray);
 		} else
-			color = sumLightSources(ray);
+			color = traceLightSources(ray);
 
 		return color;
 	}
 
-	private Vector sumLightSources(Ray ray) {
+	private Vector traceRayHit(int depth, Ray ray, RayHit rayHit) {
+		RayHitDetail d = rayHit.detail();
+		Vector hitPoint = d.hitPoint();
+		Vector normal = Vector.norm(d.normal());
+
+		Vector lightColor = Vector.origin;
+
+		for (LightSource lightSource : lightSources) {
+			Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
+			float dot = Vector.dot(lightDir, normal);
+
+			if (dot > 0) { // Facing the light
+				Ray lightRay = new Ray(hitPoint, lightDir);
+				RayHit lightRayHit = scene.hit(lightRay);
+				Vector lightColor1 = Vector.origin;
+
+				if (lightRayHit != null) {
+					lightColor1 = traceRayHit(depth, lightRay, lightRayHit);
+				}
+
+				if (lightRayHit == null || lightRayHit.advance() > 1f)
+					lightColor1 = Vector.add(lightColor, lightSource.lit(hitPoint));
+
+				float cos = dot / (float) Math.sqrt(Vector.normsq(lightDir) * Vector.normsq(normal));
+				lightColor = Vector.add(lightColor, Vector.mul(lightColor1, cos));
+			}
+		}
+
+		Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * Vector.dot(ray.dir, normal)));
+		Vector reflectColor = traceRay(depth - 1, new Ray(hitPoint, reflectDir));
+
+		// TODO refraction
+
+		Material material = d.material();
+		return Vector.add(mc(lightColor, material.litIndex()), mc(reflectColor, material.reflectionIndex()));
+	}
+
+	private Vector traceLightSources(Ray ray) {
 		Vector color = Vector.origin;
 
-		for (LightSource lightSource : lightSources)
-			color = Vector.add(color, lightSource.lit(ray));
+		for (LightSource lightSource : lightSources) {
+			Vector lightDir = Vector.sub(lightSource.source(), ray.startPoint);
+			float dot = Vector.dot(lightDir, ray.dir);
+
+			if (dot > 0) {
+				float cos = dot / (float) Math.sqrt(Vector.normsq(lightDir) * Vector.normsq(ray.dir));
+				color = Vector.add(color, Vector.mul(lightSource.lit(ray.startPoint), cos));
+			}
+		}
 
 		return color;
 	}
@@ -151,7 +181,7 @@ public class RayTracer {
 	}
 
 	/**
-	 * Multiply vector components.
+	 * Limit vector components between 0 and 1.
 	 */
 	private static Vector limit(Vector u) {
 		return new Vector(limit(u.getX()), limit(u.getY()), limit(u.getZ()));

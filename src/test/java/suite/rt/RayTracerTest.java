@@ -7,21 +7,62 @@ import org.junit.Test;
 
 import suite.math.Vector;
 import suite.rt.RayTracer.LightSource;
+import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.RayTraceObject;
 
 public class RayTracerTest {
 
+	private Vector RED__ = new Vector(1f, 0f, 0f);
+	private Vector GREEN = new Vector(0f, 1f, 0f);
+	private Vector BLUE_ = new Vector(0f, 0f, 1f);
+
 	@Test
 	public void test() throws IOException {
-		RayTraceObject sphere0 = new Sphere(new Vector(-1f, -1f, 4f), 1f);
-		RayTraceObject sphere1 = new Sphere(new Vector(0f, 0f, 6f), 1f);
-		RayTraceObject sphere2 = new Sphere(new Vector(1f, 1f, 8f), 1f);
-		RayTraceObject plane = new Plane(new Vector(0f, 1f, 0f), -5f);
+		RayTraceObject sphere0 = new Sphere(new Vector(-1f, -1f, 4f), 1f, reflective(RED__, 0.4f));
+		RayTraceObject sphere1 = new Sphere(new Vector(0f, 0f, 6f), 1f, reflective(GREEN, 0.4f));
+		RayTraceObject sphere2 = new Sphere(new Vector(1f, 1f, 8f), 1f, reflective(BLUE_, 0.4f));
+		RayTraceObject plane = new Plane(new Vector(0f, 1f, 0f), -5f, white());
 
-		LightSource light = new PointLight(new Vector(10000f, 10000f, -10000f), new Vector(1, 1, 1f));
+		LightSource light = new PointLightSource(new Vector(10000f, 10000f, -10000f), new Vector(1, 1, 1f));
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane));
 
 		new RayTracer(Arrays.asList(light), scene).trace(640, 480, 640);
+	}
+
+	private Material reflective(Vector color, float index) {
+		float reflectionIndex1 = 1 - index;
+		final Vector litIndex = Vector.mul(color, index);
+		final Vector reflectionIndex = new Vector(reflectionIndex1, reflectionIndex1, reflectionIndex1);
+
+		return new Material() {
+			public Vector litIndex() {
+				return litIndex;
+			}
+
+			public Vector reflectionIndex() {
+				return reflectionIndex;
+			}
+
+			public Vector refractionIndex() {
+				return new Vector(0f, 0f, 0f);
+			}
+		};
+	}
+
+	private Material white() {
+		return new Material() {
+			public Vector litIndex() {
+				return new Vector(0.8f, 0.8f, 0.8f);
+			}
+
+			public Vector reflectionIndex() {
+				return new Vector(0.2f, 0.2f, 0.2f);
+			}
+
+			public Vector refractionIndex() {
+				return new Vector(0f, 0f, 0f);
+			}
+		};
 	}
 
 }

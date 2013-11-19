@@ -2,6 +2,7 @@ package suite.rt;
 
 import suite.math.MathUtil;
 import suite.math.Vector;
+import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayHitDetail;
@@ -11,10 +12,12 @@ public class Plane implements RayTraceObject {
 
 	private Vector normal;
 	private float originIndex;
+	private Material material;
 
-	public Plane(Vector normal, float originIndex) {
+	public Plane(Vector normal, float originIndex, Material material) {
 		this.normal = normal;
 		this.originIndex = originIndex;
+		this.material = material;
 	}
 
 	@Override
@@ -47,16 +50,8 @@ public class Plane implements RayTraceObject {
 							return normal;
 						}
 
-						public Vector litIndex() {
-							return new Vector(0.5f, 0.5f, 0.5f);
-						}
-
-						public Vector reflectionIndex() {
-							return new Vector(0.5f, 0.5f, 0.5f);
-						}
-
-						public Vector refractionIndex() {
-							return new Vector(0f, 0f, 0f);
+						public Material material() {
+							return material;
 						}
 					};
 				}
