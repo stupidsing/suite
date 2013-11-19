@@ -121,20 +121,20 @@ public class RayTracer {
 
 		for (LightSource lightSource : lightSources) {
 			Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
-			float dot0 = Vector.dot(lightDir, normal);
+			float dot = Vector.dot(lightDir, normal);
 
-			if (dot0 > 0) { // Facing the light
+			if (dot > 0) { // Facing the light
 				Ray lightRay = new Ray(hitPoint, lightDir);
 				RayHit lightRayHit = scene.hit(lightRay);
 				Vector lightColor1 = Vector.origin;
 
 				if (lightRayHit != null)
-					lightColor1 = traceRayHit(depth, lightRay, lightRayHit);
+					lightColor1 = Vector.add(lightColor1, traceRayHit(depth, lightRay, lightRayHit));
 
 				if (lightRayHit == null || lightRayHit.advance() > 1f)
-					lightColor1 = Vector.add(lightColor, lightSource.lit(hitPoint));
+					lightColor1 = Vector.add(lightColor1, lightSource.lit(hitPoint));
 
-				float cos = dot0 / (float) Math.sqrt(Vector.normsq(lightDir) * nsn);
+				float cos = dot / (float) Math.sqrt(Vector.normsq(lightDir) * nsn);
 				lightColor = Vector.add(lightColor, Vector.mul(lightColor1, cos));
 			}
 		}

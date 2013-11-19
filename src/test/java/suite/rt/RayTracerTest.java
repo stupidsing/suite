@@ -72,7 +72,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testMess() throws IOException {
-		Material silver = reflective(gray(1f), 0.4f);
+		Material silver = reflective(gray(1f), 0.75f);
 
 		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, reflective(cr, 0.4f));
 		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, reflective(cg, 0.4f));
@@ -81,8 +81,9 @@ public class RayTracerTest {
 		RayTraceObject triangle = new Triangle(v(0.2f, 0.2f, 3f), v(0.2f, 0f, 0f), v(0f, 0.2f, 0f), silver);
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane, triangle));
 
-		LightSource light0 = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
-		List<LightSource> lights = Arrays.asList(light0);
+		LightSource light0 = new PointLightSource(v(10000f, 10000f, -10000f), gray(0.6f));
+		LightSource light1 = new PointLightSource(v(-10000f, 10000f, -10000f), gray(0.6f));
+		List<LightSource> lights = Arrays.asList(light0, light1);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 
@@ -102,7 +103,7 @@ public class RayTracerTest {
 			}
 
 			public float diffusionIndex() {
-				return 1 - index;
+				return 1f - index;
 			}
 
 			public float reflectionIndex() {
