@@ -22,15 +22,13 @@ public class RayTracerTest {
 	private Vector cr = v(1f, 0f, 0f);
 	private Vector cg = v(0f, 1f, 0f);
 	private Vector cb = v(0f, 0f, 1f);
+	private Vector cw = v(1f, 1f, 1f);
 
 	@Test
 	public void testBlank() throws IOException {
 		RayTracer rayTracer = new RayTracer(Collections.<LightSource> emptySet(),
 				new Scene(Collections.<RayTraceObject> emptySet()));
-
-		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
-		rayTracer.trace(bufferedImage, 640);
-		ImageIO.write(bufferedImage, "png", new File("/tmp/ray-tracer-blank.png"));
+		raster(rayTracer, "/tmp/ray-tracer-blank.png");
 	}
 
 	@Test
@@ -42,10 +40,20 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
+		raster(rayTracer, "/tmp/ray-tracer-sphere.png");
+	}
 
-		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
-		rayTracer.trace(bufferedImage, 500);
-		ImageIO.write(bufferedImage, "png", new File("/tmp/ray-tracer-sphere.png"));
+	@Test
+	public void testSphereReflection() throws IOException {
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cr, 0.4f));
+		RayTraceObject plane = new Plane(v(1f, 0f, 0f), -3f, reflective(cw, 0.8f));
+		Scene scene = new Scene(Arrays.asList(sphere, plane));
+
+		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
+		List<LightSource> lights = Arrays.asList(light);
+
+		RayTracer rayTracer = new RayTracer(lights, scene);
+		raster(rayTracer, "/tmp/ray-tracer-sphere-reflection.png");
 	}
 
 	@Test
@@ -59,9 +67,7 @@ public class RayTracerTest {
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 
-		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
-		rayTracer.trace(bufferedImage, 500);
-		ImageIO.write(bufferedImage, "png", new File("/tmp/ray-tracer-spheres.png"));
+		raster(rayTracer, "/tmp/ray-tracer-spheres.png");
 	}
 
 	@Test
@@ -78,9 +84,13 @@ public class RayTracerTest {
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
 
+		raster(rayTracer, "/tmp/ray-tracer.png");
+	}
+
+	private void raster(RayTracer rayTracer, String filename) throws IOException {
 		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
-		rayTracer.trace(bufferedImage, 500);
-		ImageIO.write(bufferedImage, "png", new File("/tmp/ray-tracer.png"));
+		rayTracer.trace(bufferedImage, 640);
+		ImageIO.write(bufferedImage, "png", new File(filename));
 	}
 
 	private Material reflective(Vector color, float index) {
