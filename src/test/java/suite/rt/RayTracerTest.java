@@ -17,15 +17,15 @@ import suite.rt.RayTracer.RayTraceObject;
 
 public class RayTracerTest {
 
-	private Vector RED__ = new Vector(1f, 0f, 0f);
-	private Vector GREEN = new Vector(0f, 1f, 0f);
-	private Vector BLUE_ = new Vector(0f, 0f, 1f);
+	private Vector cr = new Vector(1f, 0f, 0f);
+	private Vector cg = new Vector(0f, 1f, 0f);
+	private Vector cb = new Vector(0f, 0f, 1f);
 
 	@Test
 	public void test() throws IOException {
-		RayTraceObject sphere0 = new Sphere(new Vector(-1f, -1f, 4f), 1f, reflective(RED__, 0.4f));
-		RayTraceObject sphere1 = new Sphere(new Vector(0f, 0f, 6f), 1f, reflective(GREEN, 0.4f));
-		RayTraceObject sphere2 = new Sphere(new Vector(1f, 1f, 8f), 1f, reflective(BLUE_, 0.4f));
+		RayTraceObject sphere0 = new Sphere(new Vector(-1f, -1f, 4f), 1f, reflective(cr, 0.4f));
+		RayTraceObject sphere1 = new Sphere(new Vector(0f, 0f, 6f), 1f, reflective(cg, 0.4f));
+		RayTraceObject sphere2 = new Sphere(new Vector(1f, 1f, 8f), 1f, reflective(cb, 0.4f));
 		RayTraceObject plane = new Plane(new Vector(0f, 1f, 0f), -5f, white());
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane));
 
