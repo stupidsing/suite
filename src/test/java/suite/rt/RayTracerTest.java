@@ -54,11 +54,11 @@ public class RayTracerTest {
 	private Material white() {
 		return new Material() {
 			public Vector litIndex() {
-				return new Vector(0.8f, 0.8f, 0.8f);
+				return new Vector(0.5f, 0.5f, 0.5f);
 			}
 
 			public Vector reflectionIndex() {
-				return new Vector(0.2f, 0.2f, 0.2f);
+				return new Vector(0.5f, 0.5f, 0.5f);
 			}
 
 			public Vector refractionIndex() {
