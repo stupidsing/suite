@@ -2,6 +2,7 @@ package suite.rt;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -22,11 +23,12 @@ public class RayTracerTest {
 		RayTraceObject sphere1 = new Sphere(new Vector(0f, 0f, 6f), 1f, reflective(GREEN, 0.4f));
 		RayTraceObject sphere2 = new Sphere(new Vector(1f, 1f, 8f), 1f, reflective(BLUE_, 0.4f));
 		RayTraceObject plane = new Plane(new Vector(0f, 1f, 0f), -5f, white());
-
-		LightSource light = new PointLightSource(new Vector(10000f, 10000f, -10000f), new Vector(1, 1, 1f));
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane));
 
-		new RayTracer(Arrays.asList(light), scene).trace(640, 480, 640);
+		LightSource light = new PointLightSource(new Vector(10000f, 10000f, -10000f), new Vector(1, 1, 1f));
+		List<LightSource> lights = Arrays.asList(light);
+
+		new RayTracer(lights, scene).trace(640, 480, 640);
 	}
 
 	private Material reflective(Vector color, float index) {
