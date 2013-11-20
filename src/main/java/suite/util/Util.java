@@ -121,7 +121,7 @@ public class Util {
 	}
 
 	public static Iterable<Character> getChars(final String s) {
-		return IterUtil.iterable(new Iterator<Character>() {
+		return iter(new Iterator<Character>() {
 			private int index = 0;
 
 			public boolean hasNext() {
@@ -156,6 +156,14 @@ public class Util {
 
 	public static boolean isNotBlank(String s) {
 		return !isBlank(s);
+	}
+
+	public static <T> Iterable<T> iter(final Iterator<T> iter) {
+		return new Iterable<T>() {
+			public Iterator<T> iterator() {
+				return iter;
+			}
+		};
 	}
 
 	public static void sleepQuietly(long time) {

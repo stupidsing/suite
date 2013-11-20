@@ -8,7 +8,7 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
-import suite.util.IterUtil;
+import suite.util.Util;
 
 public class Node implements Comparable<Node> {
 
@@ -52,7 +52,7 @@ public class Node implements Comparable<Node> {
 	}
 
 	public static Iterable<Node> iter(final Node node0, final Operator operator) {
-		return IterUtil.iterable(new Iterator<Node>() {
+		return Util.iter(new Iterator<Node>() {
 			private Tree tree = Tree.decompose(node0, operator);
 
 			public boolean hasNext() {

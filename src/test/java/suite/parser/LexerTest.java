@@ -5,6 +5,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.util.FunUtil;
+
 public class LexerTest {
 
 	private int bufferSize = 4096;
@@ -20,7 +22,7 @@ public class LexerTest {
 				sb.append(buffer, 0, nCharsRead);
 		}
 
-		for (String token : new Lexer(sb.toString()).tokens())
+		for (String token : FunUtil.iter(new Lexer(sb.toString()).tokens()))
 			System.out.println(token);
 	}
 

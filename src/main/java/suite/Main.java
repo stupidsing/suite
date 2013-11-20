@@ -11,7 +11,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
@@ -31,8 +30,8 @@ import suite.node.io.PrettyPrinter;
 import suite.node.io.TermParser;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
-import suite.util.IterUtil;
 import suite.util.LogUtil;
 import suite.util.ParserUtil;
 import suite.util.Util;
@@ -95,16 +94,14 @@ public class Main implements AutoCloseable {
 	private int run(String args[]) throws IOException {
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
-		Iterator<String> iter = IterUtil.asIter(args);
+		Source<String> source = FunUtil.asSource(args);
+		String arg;
 
-		while (iter.hasNext()) {
-			String arg = iter.next();
-
+		while ((arg = source.source()) != null)
 			if (arg.startsWith("-"))
-				result &= processOption(arg, iter);
+				result &= processOption(arg, source);
 			else
 				inputs.add(arg);
-		}
 
 		if (result)
 			if (isFilter)
@@ -196,9 +193,10 @@ public class Main implements AutoCloseable {
 					Suite.addRule(ruleSet, node);
 					break;
 				case OPTION:
-					Iterator<String> iter = IterUtil.asIter(("-" + input).split(" "));
-					while (iter.hasNext())
-						processOption(iter.next(), iter);
+					Source<String> source = FunUtil.asSource(("-" + input).split(" "));
+					String option;
+					while ((option = source.source()) != null)
+						processOption(option, source);
 					break;
 				case PRETTYPRINT:
 					System.out.println(new PrettyPrinter().prettyPrint(node));
@@ -243,12 +241,13 @@ public class Main implements AutoCloseable {
 			}
 	}
 
-	private boolean processOption(String arg, Iterator<String> iter) {
-		return processOption(arg, iter, true);
+	private boolean processOption(String arg, Source<String> source) {
+		return processOption(arg, source, true);
 	}
 
-	private boolean processOption(String arg, Iterator<String> iter, boolean on) {
+	private boolean processOption(String arg, Source<String> source, boolean on) {
 		boolean result = true;
+		String arg1;
 
 		if (arg.equals("-dump-code"))
 			fcc.setDumpCode(on);
@@ -260,14 +259,14 @@ public class Main implements AutoCloseable {
 			isFunctional = on;
 		else if (arg.equals("-lazy"))
 			fcc.setLazy(on);
-		else if (arg.equals("-libraries") && iter.hasNext())
-			fcc.setLibraries(Arrays.asList(iter.next().split(",")));
+		else if (arg.equals("-libraries") && (arg1 = source.source()) != null)
+			fcc.setLibraries(Arrays.asList(arg1.split(",")));
 		else if (arg.equals("-logical"))
 			isLogical = on;
 		else if (arg.startsWith("-no-"))
-			result &= processOption("-" + arg.substring(4), iter, false);
-		else if (arg.equals("-precompile") && iter.hasNext())
-			for (String lib : iter.next().split(","))
+			result &= processOption("-" + arg.substring(4), source, false);
+		else if (arg.equals("-precompile") && (arg1 = source.source()) != null)
+			for (String lib : arg1.split(","))
 				result &= Suite.precompile(lib, proverConfig);
 		else if (arg.equals("-quiet"))
 			isQuiet = on;

@@ -5,16 +5,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.IterUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -29,7 +27,7 @@ public class Bnf {
 	private Map<String, List<List<String>>> grammars = new HashMap<>();
 
 	private static final String inputCharExcept = "$except-";
-	private static final Iterator<State> noResult = Collections.<State> emptySet().iterator();
+	private static final Source<State> noResult = FunUtil.nullSource();
 
 	private class State {
 		private int end;
@@ -64,77 +62,76 @@ public class Bnf {
 	}
 
 	public boolean recursiveDescent(String s) {
-		Iterator<State> iter = recursiveDescent(target, s, 0);
+		Source<State> source = recursiveDescent(target, s, 0);
+		State state;
 
-		while (iter.hasNext())
-			if (iter.next().end == s.length())
+		while ((state = source.source()) != null)
+			if (state.end == s.length())
 				return true;
 
 		return false;
 	}
 
-	private Iterator<State> recursiveDescent(String target, final String s, int end0) {
+	private Source<State> recursiveDescent(String target, final String s, int end0) {
 		while (end0 < s.length() && Character.isWhitespace(s.charAt(end0)))
 			end0++;
 
 		final int end = end0;
 		List<List<String>> grammar;
-		Iterator<State> result;
+		Source<State> result;
 
 		if (target.length() > 1 && target.endsWith("?"))
-			result = IterUtil.cons(new State(end) //
+			result = FunUtil.cons(new State(end) //
 					, recursiveDescent(Util.substr(target, 0, -1), s, end));
 		else if (target.length() > 1 && target.endsWith("*")) {
 			final String target1 = Util.substr(target, 0, -1);
 
-			result = IterUtil.iter(new Source<State>() {
+			result = new Source<State>() {
 				private State state = new State(end);
-				private Deque<Iterator<State>> iters = new ArrayDeque<>();
+				private Deque<Source<State>> sources = new ArrayDeque<>();
 
 				public State source() {
 					State state0 = state;
 
 					if (state0 != null) {
-						iters.push(recursiveDescent(target1, s, state0.end));
-						Iterator<State> iter = null;
+						sources.push(recursiveDescent(target1, s, state0.end));
 
-						while (!iters.isEmpty() && !(iter = iters.peek()).hasNext())
-							iters.pop();
-
-						state = !iters.isEmpty() ? iter.next() : null;
+						while (!sources.isEmpty() && (state = sources.peek().source()) == null)
+							sources.pop();
 					}
 
 					return state0;
 
 				}
-			});
+			};
 		} else if (target.startsWith(inputCharExcept)) {
 			String exceptChars = target.substring(inputCharExcept.length());
 
 			if (s.length() > end && exceptChars.indexOf(s.indexOf(end)) < 0)
-				result = IterUtil.asIter(new State(end + 1));
+				result = FunUtil.asSource(new State(end + 1));
 			else
 				result = noResult;
 		} else if ((grammar = grammars.get(target)) != null)
-			result = IterUtil.concat(IterUtil.map(new Fun<List<String>, Iterator<State>>() {
-				public Iterator<State> apply(List<String> list) {
-					Iterator<State> iter = IterUtil.asIter(new State(end));
+			result = FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
+				public Source<State> apply(List<String> list) {
+					Source<State> source = FunUtil.asSource(new State(end));
 
 					for (final String item : list)
-						iter = IterUtil.concat(IterUtil.map(new Fun<State, Iterator<State>>() {
-							public Iterator<State> apply(State state) {
+						source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
+							public Source<State> apply(State state) {
 								return recursiveDescent(item, s, state.end);
 							}
-						}, iter));
+						}, source));
 
-					return iter;
+					return source;
 				}
-			}, grammar.iterator()));
+			}, FunUtil.asSource(grammar)));
 		else if (s.startsWith(target, end))
-			result = IterUtil.asIter(new State(end + target.length()));
+			result = FunUtil.asSource(new State(end + target.length()));
 		else
 			result = noResult;
 
 		return result;
 	}
+
 }

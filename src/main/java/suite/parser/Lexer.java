@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import suite.util.FunUtil.Source;
-import suite.util.IterUtil;
 
 public class Lexer {
 
@@ -39,12 +38,12 @@ public class Lexer {
 		this.reader = reader;
 	}
 
-	public Iterable<String> tokens() {
-		return IterUtil.iterable(new Source<String>() {
+	public Source<String> tokens() {
+		return new Source<String>() {
 			public String source() {
 				return nextToken();
 			}
-		});
+		};
 	}
 
 	private String nextToken() {

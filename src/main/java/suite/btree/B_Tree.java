@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-import suite.util.IterUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -180,7 +179,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 			}
 		};
 
-		return IterUtil.iterable(iterator);
+		return Util.iter(iterator);
 	}
 
 	public void put(Key key, Value value) {
