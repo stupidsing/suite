@@ -3,14 +3,17 @@ package suite.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.IterUtil;
 import suite.util.Pair;
 import suite.util.Util;
@@ -80,8 +83,32 @@ public class Bnf {
 
 		if (target.length() > 1 && target.endsWith("?"))
 			result = IterUtil.cons(new State(end) //
-					, recursiveDescent(target.substring(0, target.length() - 1), s, end));
-		else if (target.startsWith(inputCharExcept)) {
+					, recursiveDescent(Util.substr(target, 0, -1), s, end));
+		else if (target.length() > 1 && target.endsWith("*")) {
+			final String target1 = Util.substr(target, 0, -1);
+
+			result = IterUtil.iter(new Source<State>() {
+				private State state = new State(end);
+				private Deque<Iterator<State>> iters = new ArrayDeque<>();
+
+				public State source() {
+					State state0 = state;
+
+					if (state0 != null) {
+						iters.push(recursiveDescent(target1, s, state0.end));
+						Iterator<State> iter = null;
+
+						while (!iters.isEmpty() && !(iter = iters.peek()).hasNext())
+							iters.pop();
+
+						state = !iters.isEmpty() ? iter.next() : null;
+					}
+
+					return state0;
+
+				}
+			});
+		} else if (target.startsWith(inputCharExcept)) {
 			String exceptChars = target.substring(inputCharExcept.length());
 
 			if (s.length() > end && exceptChars.indexOf(s.indexOf(end)) < 0)

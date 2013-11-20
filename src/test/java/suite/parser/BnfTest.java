@@ -10,15 +10,15 @@ import org.junit.Test;
 public class BnfTest {
 
 	@Test
-	public void testDigit() throws IOException {
+	public void testNumber() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		assertTrue(bnf.recursiveDescent("3"));
+		assertTrue(bnf.recursiveDescent("3456"));
 	}
 
 	@Test
 	public void testExpr() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		assertTrue(bnf.recursiveDescent("3 + 4 + 5 + 6"));
+		assertTrue(bnf.recursiveDescent("12 + 34 + 56 + 78"));
 	}
 
 	// @Test
