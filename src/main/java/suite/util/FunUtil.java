@@ -65,8 +65,19 @@ public class FunUtil {
 		};
 	}
 
-	public static <T> Source<T> cons(T t, Source<T> source) {
-		return concat(asSource(source(t), source));
+	public static <T> Source<T> cons(final T t, final Source<T> source) {
+		return new Source<T>() {
+			private boolean isFirst = true;
+
+			public T source() {
+				if (!isFirst)
+					return source.source();
+				else {
+					isFirst = false;
+					return t;
+				}
+			}
+		};
 	}
 
 	public static <T> Source<T> filter(final Fun<T, Boolean> fun, final Source<T> source) {
