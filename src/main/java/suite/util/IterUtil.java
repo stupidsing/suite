@@ -39,7 +39,7 @@ public class IterUtil {
 		return Arrays.asList(t).iterator();
 	}
 
-	public static <T> Iterator<T> cons(T t, final Iterator<T> iter) {
+	public static <T> Iterator<T> cons(T t, Iterator<T> iter) {
 		return concat(asIter(asIter(t), iter));
 	}
 
