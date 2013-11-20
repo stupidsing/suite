@@ -8,6 +8,7 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
+import suite.util.IterUtil;
 
 public class Node implements Comparable<Node> {
 
@@ -51,7 +52,7 @@ public class Node implements Comparable<Node> {
 	}
 
 	public static Iterable<Node> iter(final Node node0, final Operator operator) {
-		final Iterator<Node> iterator = new Iterator<Node>() {
+		return IterUtil.iterable(new Iterator<Node>() {
 			private Tree tree = Tree.decompose(node0, operator);
 
 			public boolean hasNext() {
@@ -67,13 +68,7 @@ public class Node implements Comparable<Node> {
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
-		};
-
-		return new Iterable<Node>() {
-			public Iterator<Node> iterator() {
-				return iterator;
-			}
-		};
+		});
 	}
 
 	public static Node[] tupleToArray(Node node, int n) {

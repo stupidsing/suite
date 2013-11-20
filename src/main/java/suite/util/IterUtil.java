@@ -5,8 +5,34 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class IterUtil {
+
+	private static class SourceIterator<T> implements Iterator<T> {
+		private Source<T> source;
+		private T next = null;
+
+		private SourceIterator(Source<T> source) {
+			this.source = source;
+		}
+
+		public boolean hasNext() {
+			if (next == null)
+				next = source.source();
+			return next != null;
+		}
+
+		public T next() {
+			T next0 = next;
+			next = null;
+			return next0;
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	};
 
 	@SafeVarargs
 	public static <T> Iterator<T> asIter(T... t) {
@@ -18,29 +44,51 @@ public class IterUtil {
 	}
 
 	public static <T> Iterator<T> concat(final Iterator<Iterator<T>> iter) {
-		return new Iterator<T>() {
-			private T next;
+		return iter(new Source<T>() {
 			private Iterator<T> iter0 = Collections.<T> emptySet().iterator();
 
-			public boolean hasNext() {
-				if (next == null) {
-					while (!iter0.hasNext() && iter.hasNext())
-						iter0 = iter.next();
+			public T source() {
+				while (!iter0.hasNext() && iter.hasNext())
+					iter0 = iter.next();
 
-					next = iter0.hasNext() ? iter0.next() : null;
+				return iter0.hasNext() ? iter0.next() : null;
+			}
+		});
+	}
+
+	public static <T> Iterator<T> filter(final Fun<T, Boolean> fun, final Iterator<T> iter) {
+		return iter(new Source<T>() {
+			public T source() {
+				while (iter.hasNext()) {
+					T e = iter.next();
+
+					if (fun.apply(e))
+						return e;
 				}
 
-				return next != null;
+				return null;
 			}
+		});
+	}
 
-			public T next() {
-				T next0 = next;
-				next = null;
-				return next0;
-			}
+	public static <T, R> R fold(Fun<Pair<R, T>, R> fun, R init, Iterator<T> iter) {
+		while (iter.hasNext())
+			init = fun.apply(Pair.create(init, iter.next()));
+		return init;
+	}
 
-			public void remove() {
-				throw new UnsupportedOperationException();
+	public static <T> Iterator<T> iter(Source<T> source) {
+		return new SourceIterator<>(source);
+	}
+
+	public static <T> Iterable<T> iterable(Source<T> source) {
+		return iterable(iter(source));
+	}
+
+	public static <T> Iterable<T> iterable(final Iterator<T> iter) {
+		return new Iterable<T>() {
+			public Iterator<T> iterator() {
+				return iter;
 			}
 		};
 	}
@@ -59,12 +107,6 @@ public class IterUtil {
 				throw new UnsupportedOperationException();
 			}
 		};
-	}
-
-	public static <T, R> R fold(Fun<Pair<R, T>, R> fun, R init, Iterator<T> iter) {
-		while (iter.hasNext())
-			init = fun.apply(Pair.create(init, iter.next()));
-		return init;
 	}
 
 }

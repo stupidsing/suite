@@ -5,8 +5,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+
+import suite.util.FunUtil.Source;
+import suite.util.IterUtil;
 
 public class Lexer {
 
@@ -38,29 +40,11 @@ public class Lexer {
 	}
 
 	public Iterable<String> tokens() {
-		final Iterator<String> iterator = new Iterator<String>() {
-			private String nextToken = nextToken();
-
-			public boolean hasNext() {
-				return nextToken != null;
+		return IterUtil.iterable(new Source<String>() {
+			public String source() {
+				return nextToken();
 			}
-
-			public String next() {
-				String result = nextToken;
-				nextToken = nextToken();
-				return result;
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
-
-		return new Iterable<String>() {
-			public Iterator<String> iterator() {
-				return iterator;
-			}
-		};
+		});
 	}
 
 	private String nextToken() {

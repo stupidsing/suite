@@ -121,25 +121,21 @@ public class Util {
 	}
 
 	public static Iterable<Character> getChars(final String s) {
-		return new Iterable<Character>() {
-			public Iterator<Character> iterator() {
-				return new Iterator<Character>() {
-					private int index = 0;
+		return IterUtil.iterable(new Iterator<Character>() {
+			private int index = 0;
 
-					public boolean hasNext() {
-						return index < s.length();
-					}
-
-					public Character next() {
-						return s.charAt(index++);
-					}
-
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-				};
+			public boolean hasNext() {
+				return index < s.length();
 			}
-		};
+
+			public Character next() {
+				return s.charAt(index++);
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		});
 	}
 
 	private static StackTraceElement getStackTrace(int n) {

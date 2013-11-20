@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import suite.util.IterUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -127,7 +128,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		final Slots startSlots = traverse(startKey);
 		final Slots endSlots = traverse(endKey);
 
-		final Iterator<Pair<Key, Value>> iterator = new Iterator<Pair<Key, Value>>() {
+		Iterator<Pair<Key, Value>> iterator = new Iterator<Pair<Key, Value>>() {
 			private Slots currentSlots = startSlots;
 			private Pair<Key, Value> current;
 
@@ -179,11 +180,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 			}
 		};
 
-		return new Iterable<Pair<Key, Value>>() {
-			public Iterator<Pair<Key, Value>> iterator() {
-				return iterator;
-			}
-		};
+		return IterUtil.iterable(iterator);
 	}
 
 	public void put(Key key, Value value) {
