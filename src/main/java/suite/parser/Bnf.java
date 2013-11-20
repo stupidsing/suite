@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.util.FunUtil.Fun;
 import suite.util.IterUtil;
@@ -59,31 +58,19 @@ public class Bnf {
 			if (target == null)
 				target = lr.t0;
 		}
-
-		validate();
-	}
-
-	private void validate() {
-		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
-			String key = entry.getKey();
-
-			for (List<String> list : entry.getValue())
-				if (Util.equals(key, list.get(0)))
-					throw new RuntimeException("Head recursion in rule " + key);
-		}
 	}
 
 	public boolean recursiveDescent(String s) {
 		Iterator<State> iter = recursiveDescent(target, s, 0);
-		boolean result = false;
 
 		while (iter.hasNext())
-			result |= iter.next().end == s.length();
+			if (iter.next().end == s.length())
+				return true;
 
-		return result;
+		return false;
 	}
 
-	public Iterator<State> recursiveDescent(String target, final String s, int end0) {
+	private Iterator<State> recursiveDescent(String target, final String s, int end0) {
 		while (end0 < s.length() && Character.isWhitespace(s.charAt(end0)))
 			end0++;
 
