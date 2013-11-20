@@ -191,6 +191,19 @@ public class Util {
 			return Pair.create(s, "");
 	}
 
+	public static List<String> splitn(String s, String delimiter) {
+		List<String> results = new ArrayList<>();
+		int pos;
+
+		while ((pos = s.indexOf(delimiter)) >= 0) {
+			results.add(s.substring(0, pos).trim());
+			s = s.substring(pos + delimiter.length()).trim();
+		}
+
+		results.add(s.trim());
+		return results;
+	}
+
 	public static String substr(String s, int start, int end) {
 		int length = s.length();
 		if (start < 0)

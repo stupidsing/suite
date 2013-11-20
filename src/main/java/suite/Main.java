@@ -32,6 +32,7 @@ import suite.node.io.TermParser;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
+import suite.util.IterUtil;
 import suite.util.LogUtil;
 import suite.util.ParserUtil;
 import suite.util.Util;
@@ -94,7 +95,7 @@ public class Main implements AutoCloseable {
 	private int run(String args[]) throws IOException {
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
-		Iterator<String> iter = Arrays.asList(args).iterator();
+		Iterator<String> iter = IterUtil.asIter(args);
 
 		while (iter.hasNext()) {
 			String arg = iter.next();
@@ -195,8 +196,7 @@ public class Main implements AutoCloseable {
 					Suite.addRule(ruleSet, node);
 					break;
 				case OPTION:
-					List<String> args = Arrays.asList(("-" + input).split(" "));
-					Iterator<String> iter = args.iterator();
+					Iterator<String> iter = IterUtil.asIter(("-" + input).split(" "));
 					while (iter.hasNext())
 						processOption(iter.next(), iter);
 					break;
