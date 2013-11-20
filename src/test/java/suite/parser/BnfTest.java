@@ -18,7 +18,7 @@ public class BnfTest {
 	@Test
 	public void testExpr() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		assertTrue(bnf.recursiveDescent("3 + 4"));
+		assertTrue(bnf.recursiveDescent("3 + 4 + 5 + 6"));
 	}
 
 	// @Test
