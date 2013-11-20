@@ -57,10 +57,10 @@ public class FunUtil {
 			private Source<T> source0 = nullSource();
 
 			public T source() {
-				T e = null;
-				while (source0 != null && (e = source0.source()) == null)
+				T t = null;
+				while (source0 != null && (t = source0.source()) == null)
 					source0 = source.source();
-				return e;
+				return t;
 			}
 		};
 	}
@@ -83,12 +83,19 @@ public class FunUtil {
 	public static <T> Source<T> filter(final Fun<T, Boolean> fun, final Source<T> source) {
 		return new Source<T>() {
 			public T source() {
-				T e = null;
-				while ((e = source.source()) != null && !fun.apply(e))
+				T t = null;
+				while ((t = source.source()) != null && !fun.apply(t))
 					;
-				return e;
+				return t;
 			}
 		};
+	}
+
+	public static <T, R> R fold(Fun<Pair<R, T>, R> fun, R init, Source<T> source) {
+		T t;
+		while ((t = source.source()) != null)
+			init = fun.apply(Pair.create(init, t));
+		return init;
 	}
 
 	public static <T> Iterator<T> iterator(final Source<T> source) {

@@ -47,11 +47,11 @@ public class Util {
 			}
 	}
 
-	public static <T extends Comparable<T>> int compare(T t1, T t2) {
-		if (t1 == null ^ t2 == null)
-			return t1 != null ? 1 : -1;
+	public static <T extends Comparable<T>> int compare(T t0, T t1) {
+		if (t0 == null ^ t1 == null)
+			return t0 != null ? 1 : -1;
 		else
-			return t1 != null ? t1.compareTo(t2) : 0;
+			return t0 != null ? t0.compareTo(t1) : 0;
 	}
 
 	public static long createDate(int year, int month, int day) {
@@ -113,11 +113,11 @@ public class Util {
 	 * Imposes typing on equal() function to avoid errors. Also handle null
 	 * value comparisons.
 	 */
-	public static <T> boolean equals(T t1, T t2) {
-		if (t1 == null ^ t2 == null)
+	public static <T> boolean equals(T t0, T t1) {
+		if (t0 == null ^ t1 == null)
 			return false;
 		else
-			return t1 == null || t1.equals(t2);
+			return t0 == null || t0.equals(t1);
 	}
 
 	public static Iterable<Character> getChars(final String s) {

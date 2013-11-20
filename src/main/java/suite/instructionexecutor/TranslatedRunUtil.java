@@ -68,8 +68,8 @@ public class TranslatedRunUtil {
 	}
 
 	// Generic type signature allows passing in Closure returning Closure
-	public static <T extends Node> T toNode(T n) {
-		return n;
+	public static <T extends Node> T toNode(T t) {
+		return t;
 	}
 
 }
