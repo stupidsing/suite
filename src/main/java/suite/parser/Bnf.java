@@ -26,14 +26,16 @@ import suite.util.Util;
  */
 public class Bnf {
 
-	private String target;
+	private String entity;
 	private Map<String, List<List<String>>> grammars = new HashMap<>();
 
 	private static final String inputCharExcept = "$except-";
 
 	private class Parse {
 		private String in;
+		private int length;
 		private int errorPosition = 0;
+		private String errorEntity;
 
 		private final Source<State> noResult = FunUtil.nullSource();
 
@@ -42,56 +44,73 @@ public class Bnf {
 
 			public State(int end) {
 				this.end = end;
-				errorPosition = Math.max(errorPosition, end);
 			}
 		}
 
 		private Parse(String in) {
 			this.in = in;
+			length = in.length();
 		}
 
 		private void parse() {
-			Source<State> source = parse(0, target);
+			Source<State> source = parse(0, entity);
 			State state;
 
 			while ((state = source.source()) != null)
-				if (state.end == in.length())
+				if (state.end == length)
 					return;
 
-			throw new RuntimeException("Syntax error at " + errorPosition);
+			throw new RuntimeException("Syntax error at " + errorPosition + " (" + errorEntity + ")");
 		}
 
-		private Source<State> parse(int end0, String target) {
-			while (end0 < in.length() && Character.isWhitespace(in.charAt(end0)))
+		private Source<State> parse(int end0, String entity) {
+			while (end0 < length && Character.isWhitespace(in.charAt(end0)))
 				end0++;
 
 			final int end = end0;
 			List<List<String>> grammar;
 			Source<State> result;
 
-			if (target.length() > 1 && target.endsWith("?"))
+			if (entity.length() > 1 && entity.endsWith("?"))
 				result = FunUtil.cons(new State(end) //
-						, parse(end, Util.substr(target, 0, -1)));
-			else if (target.length() > 1 && target.endsWith("*"))
-				result = parseRepeatedly(end, Util.substr(target, 0, -1));
-			else if (target.startsWith(inputCharExcept)) {
-				String exceptChars = target.substring(inputCharExcept.length());
+						, parse(end, Util.substr(entity, 0, -1)));
+			else if (entity.length() > 1 && entity.endsWith("*"))
+				result = parseRepeatedly(end, Util.substr(entity, 0, -1));
+			else if (entity.equals("<identifier>")) {
+				int end1 = end;
 
-				if (in.length() > end && exceptChars.indexOf(in.indexOf(end)) < 0)
+				if (length > end1 && Character.isJavaIdentifierStart(in.charAt(end1))) {
+					end1++;
+
+					while (length > end1 && Character.isJavaIdentifierPart(in.charAt(end1)))
+						end1++;
+
+					result = FunUtil.asSource(new State(end1));
+				} else
+					result = noResult;
+			} else if (entity.startsWith(inputCharExcept)) {
+				String exceptChars = entity.substring(inputCharExcept.length());
+
+				if (length > end && exceptChars.indexOf(in.charAt(end)) < 0)
 					result = FunUtil.asSource(new State(end + 1));
 				else
 					result = noResult;
-			} else if ((grammar = grammars.get(target)) != null)
+			} else if ((grammar = grammars.get(entity)) != null)
 				result = parseGrammar(end, grammar);
-			else if (in.startsWith(target, end))
-				result = FunUtil.asSource(new State(end + target.length()));
+			else if (in.startsWith(entity, end))
+				result = FunUtil.asSource(new State(end + entity.length()));
 			else
 				result = noResult;
+
+			if (result == noResult && end0 > errorPosition) {
+				errorPosition = end0;
+				errorEntity = entity;
+			}
 
 			return result;
 		}
 
-		private Source<State> parseRepeatedly(final int end, final String target1) {
+		private Source<State> parseRepeatedly(final int end, final String entity) {
 			return new Source<State>() {
 				private State state = new State(end);
 				private Deque<Source<State>> sources = new ArrayDeque<>();
@@ -100,7 +119,7 @@ public class Bnf {
 					State state0 = state;
 
 					if (state0 != null) {
-						sources.push(parse(state0.end, target1));
+						sources.push(parse(state0.end, entity));
 
 						while (!sources.isEmpty() && (state = sources.peek().source()) == null)
 							sources.pop();
@@ -148,8 +167,8 @@ public class Bnf {
 
 			grammars.put(lr.t0, list);
 
-			if (target == null)
-				target = lr.t0;
+			if (entity == null)
+				entity = lr.t0;
 		}
 
 		preprocess();
