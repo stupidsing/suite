@@ -129,7 +129,7 @@
 <conditional-expression> ::= <conditional-or-expression> | <conditional-or-expression> ? <expression> : <conditional-expression>
 <conditional-or-expression> ::= <conditional-and-expression> | <conditional-or-expression> || <conditional-and-expression>
 <conditional-and-expression> ::= <inclusive-or-expression> | <conditional-and-expression> && <inclusive-or-expression>
-<inclusive-or-expression> ::= <exclusive-or-expression> | <inclusive-or-expression> | <exclusive-or-expression>
+<inclusive-or-expression> ::= <exclusive-or-expression> | <inclusive-or-expression> "|" <exclusive-or-expression>
 <exclusive-or-expression> ::= <and-expression> | <exclusive-or-expression> ^ <and-expression>
 <and-expression> ::= <equality-expression> | <and-expression> & <equality-expression>
 <equality-expression> ::= <relational-expression> | <equality-expression> == <relational-expression> | <equality-expression> != <relational-expression>

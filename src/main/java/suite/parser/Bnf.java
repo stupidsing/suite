@@ -86,6 +86,11 @@ public class Bnf {
 					result = noResult;
 			} else if ((grammar = grammars.get(entity)) != null)
 				result = parseGrammar(end, grammar);
+			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
+				if (in.startsWith(Util.substr(entity, 1, -1), end))
+					result = FunUtil.asSource(new State(end + entity.length() - 2));
+				else
+					result = noResult;
 			else if (in.startsWith(entity, end))
 				result = FunUtil.asSource(new State(end + entity.length()));
 			else
@@ -182,40 +187,61 @@ public class Bnf {
 	/**
 	 * Transform head-recursion rule as follows:
 	 * 
-	 * A = B | A C0 | A C1 | ... | A Cn
+	 * A = B0 | B1 | ... | Bm | A C0 | A C1 | ... | A Cn
 	 * 
 	 * become two rules
 	 * 
-	 * A = B temp*
+	 * A = tempB tempC*
 	 * 
-	 * temp = C0 | C1 | ... | Cn
+	 * tempB = B0 | B1 | ... | Bm
+	 * 
+	 * tempC = C0 | C1 | ... | Cn
 	 */
 	private void preprocess() {
 		Map<String, List<List<String>>> newRules = new HashMap<>();
 
 		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
-			String key = entry.getKey();
+			String entity = entry.getKey();
 			List<List<String>> rule = entry.getValue();
-			List<String> first = Util.first(rule);
-			boolean isModify = rule.size() > 1;
+			int switchPoint = -1;
+			boolean isChangeHeadRecursion = rule.size() > 1;
 
-			for (int i = 1; i < rule.size(); i++)
-				isModify &= Util.equals(Util.first(rule.get(i)), key);
+			for (int i = 0; i < rule.size(); i++) {
+				boolean isHeadRecursion = Util.equals(Util.first(rule.get(i)), entity);
 
-			if (isModify) {
-				String temp = Atom.unique().getName();
-				entry.setValue(Arrays.asList(Arrays.asList(first.get(0), temp + "*")));
+				if (switchPoint < 0) {
+					if (isHeadRecursion)
+						switchPoint = i;
+				} else
+					isChangeHeadRecursion &= isHeadRecursion;
+			}
 
-				List<List<String>> tempRule = new ArrayList<>();
+			isChangeHeadRecursion &= switchPoint >= 0;
 
-				for (int i = 1; i < rule.size(); i++)
-					tempRule.add(Util.sublist(rule.get(i), 1, 0));
+			if (isChangeHeadRecursion) {
+				String tempb = Atom.unique().getName();
+				String tempc = Atom.unique().getName();
+				entry.setValue(Arrays.asList(Arrays.asList(tempb, tempc + "*")));
 
-				newRules.put(temp, tempRule);
+				List<List<String>> tempcRule = new ArrayList<>();
+
+				for (int i = switchPoint; i < rule.size(); i++)
+					tempcRule.add(Util.sublist(rule.get(i), 1, 0));
+
+				newRules.put(tempb, rule.subList(0, switchPoint));
+				newRules.put(tempc, tempcRule);
 			}
 		}
 
 		grammars.putAll(newRules);
+
+		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
+			String entity = entry.getKey();
+
+			for (List<String> rule : entry.getValue())
+				if (Util.equals(Util.first(rule), entity))
+					throw new RuntimeException("Head recursion for" + entity);
+		}
 	}
 
 	public void parse(String s) {
