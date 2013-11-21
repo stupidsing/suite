@@ -65,16 +65,15 @@
 
 # Types
 
-<type> ::= <primitive-type> | <reference-type>
+<type> ::= <primitive-type> | <reference-type> | <type> [ ]
 <primitive-type> ::= <numeric-type> | boolean
 <numeric-type> ::= <integral-type> | <floating-point-type>
 <integral-type> ::= byte | short | int | long | char
 <floating-point-type> ::= float | double
-<reference-type> ::= <class-or-interface-type> | <array-type>
+<reference-type> ::= <class-or-interface-type>
 <class-or-interface-type> ::= <class-type> | <interface-type>
 <class-type> ::= <type-name>
 <interface-type> ::= <type-name>
-<array-type> ::= <type> [ ]
 
 # Blocks and Commands
 
@@ -160,7 +159,7 @@
 # Tokens
 
 <package-name> ::= <identifier> | <package-name> . <identifier>
-<type-name> ::= <identifier> | <package-name> . <identifier>
+<type-name> ::= <identifier> | <type-name> . <identifier>
 <simple-type-name> ::= <identifier>
 <expression-name> ::= <identifier> | <ambiguous-name> . <identifier>
 <method-name> ::= <identifier> | <ambiguous-name> . <identifier>

@@ -16,6 +16,7 @@ import suite.node.Atom;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -30,6 +31,7 @@ public class Bnf {
 	private Map<String, List<List<String>>> grammars = new HashMap<>();
 
 	private static final String inputCharExcept = "$except-";
+	private static final boolean trace = true;
 
 	private class Parse {
 		private String in;
@@ -52,8 +54,8 @@ public class Bnf {
 			length = in.length();
 		}
 
-		private void parse() {
-			Source<State> source = parse(0, entity);
+		private void parse(int end, String entity) {
+			Source<State> source = parseEntity(end, entity);
 			State state;
 
 			while ((state = source.source()) != null)
@@ -63,16 +65,19 @@ public class Bnf {
 			throw new RuntimeException("Syntax error at " + errorPosition + " (" + errorEntity + ")");
 		}
 
-		private Source<State> parse(int end0, String entity) {
+		private Source<State> parseEntity(int end0, String entity) {
 			while (end0 < length && Character.isWhitespace(in.charAt(end0)))
 				end0++;
+
+			if (trace)
+				LogUtil.info("parseEntity(" + entity + "): " + in.substring(end0));
 
 			final int end = end0;
 			List<List<String>> grammar;
 			Source<State> result;
 
 			if (entity.length() > 1 && entity.endsWith("?"))
-				result = FunUtil.cons(new State(end), parse(end, Util.substr(entity, 0, -1)));
+				result = FunUtil.cons(new State(end), parseEntity(end, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
 				result = parseRepeatedly(end, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
@@ -113,7 +118,7 @@ public class Bnf {
 					State state0 = state;
 
 					if (state0 != null) {
-						sources.push(parse(state0.end, entity));
+						sources.push(parseEntity(state0.end, entity));
 
 						while (!sources.isEmpty() && (state = sources.peek().source()) == null)
 							sources.pop();
@@ -132,7 +137,7 @@ public class Bnf {
 					for (final String item : list)
 						source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 							public Source<State> apply(State state) {
-								return parse(state.end, item);
+								return parseEntity(state.end, item);
 							}
 						}, source));
 
@@ -249,7 +254,11 @@ public class Bnf {
 	}
 
 	public void parse(String s) {
-		new Parse(s).parse();
+		parse(s, 0, entity);
+	}
+
+	public void parse(String s, int end, String entity) {
+		new Parse(s).parse(end, entity);
 	}
 
 	@Override
