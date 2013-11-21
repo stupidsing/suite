@@ -30,13 +30,102 @@ public class Bnf {
 	private Map<String, List<List<String>>> grammars = new HashMap<>();
 
 	private static final String inputCharExcept = "$except-";
-	private static final Source<State> noResult = FunUtil.nullSource();
 
-	private class State {
-		private int end;
+	private class Parse {
+		private String in;
+		private int errorPosition = 0;
 
-		public State(int end) {
-			this.end = end;
+		private final Source<State> noResult = FunUtil.nullSource();
+
+		private class State {
+			private int end;
+
+			public State(int end) {
+				this.end = end;
+				errorPosition = Math.max(errorPosition, end);
+			}
+		}
+
+		private Parse(String in) {
+			this.in = in;
+		}
+
+		private void parse() {
+			Source<State> source = parse(0, target);
+			State state;
+
+			while ((state = source.source()) != null)
+				if (state.end == in.length())
+					return;
+
+			throw new RuntimeException("Syntax error at " + errorPosition);
+		}
+
+		private Source<State> parse(int end0, String target) {
+			while (end0 < in.length() && Character.isWhitespace(in.charAt(end0)))
+				end0++;
+
+			final int end = end0;
+			List<List<String>> grammar;
+			Source<State> result;
+
+			if (target.length() > 1 && target.endsWith("?"))
+				result = FunUtil.cons(new State(end) //
+						, parse(end, Util.substr(target, 0, -1)));
+			else if (target.length() > 1 && target.endsWith("*"))
+				result = parseRepeatedly(end, Util.substr(target, 0, -1));
+			else if (target.startsWith(inputCharExcept)) {
+				String exceptChars = target.substring(inputCharExcept.length());
+
+				if (in.length() > end && exceptChars.indexOf(in.indexOf(end)) < 0)
+					result = FunUtil.asSource(new State(end + 1));
+				else
+					result = noResult;
+			} else if ((grammar = grammars.get(target)) != null)
+				result = parseGrammar(end, grammar);
+			else if (in.startsWith(target, end))
+				result = FunUtil.asSource(new State(end + target.length()));
+			else
+				result = noResult;
+
+			return result;
+		}
+
+		private Source<State> parseRepeatedly(final int end, final String target1) {
+			return new Source<State>() {
+				private State state = new State(end);
+				private Deque<Source<State>> sources = new ArrayDeque<>();
+
+				public State source() {
+					State state0 = state;
+
+					if (state0 != null) {
+						sources.push(parse(state0.end, target1));
+
+						while (!sources.isEmpty() && (state = sources.peek().source()) == null)
+							sources.pop();
+					}
+
+					return state0;
+				}
+			};
+		}
+
+		private Source<State> parseGrammar(final int end, List<List<String>> grammar) {
+			return FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
+				public Source<State> apply(List<String> list) {
+					Source<State> source = FunUtil.asSource(new State(end));
+
+					for (final String item : list)
+						source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
+							public Source<State> apply(State state) {
+								return parse(state.end, item);
+							}
+						}, source));
+
+					return source;
+				}
+			}, FunUtil.asSource(grammar)));
 		}
 	}
 
@@ -105,83 +194,8 @@ public class Bnf {
 		grammars.putAll(newRules);
 	}
 
-	public boolean parse(String s) {
-		Source<State> source = parse(s, 0, target);
-		State state;
-
-		while ((state = source.source()) != null)
-			if (state.end == s.length())
-				return true;
-
-		return false;
-	}
-
-	private Source<State> parse(final String s, int end0, String target) {
-		while (end0 < s.length() && Character.isWhitespace(s.charAt(end0)))
-			end0++;
-
-		final int end = end0;
-		List<List<String>> grammar;
-		Source<State> result;
-
-		if (target.length() > 1 && target.endsWith("?"))
-			result = FunUtil.cons(new State(end) //
-					, parse(s, end, Util.substr(target, 0, -1)));
-		else if (target.length() > 1 && target.endsWith("*"))
-			result = parseRepeatedly(s, end, Util.substr(target, 0, -1));
-		else if (target.startsWith(inputCharExcept)) {
-			String exceptChars = target.substring(inputCharExcept.length());
-
-			if (s.length() > end && exceptChars.indexOf(s.indexOf(end)) < 0)
-				result = FunUtil.asSource(new State(end + 1));
-			else
-				result = noResult;
-		} else if ((grammar = grammars.get(target)) != null)
-			result = parseGrammar(s, end, grammar);
-		else if (s.startsWith(target, end))
-			result = FunUtil.asSource(new State(end + target.length()));
-		else
-			result = noResult;
-
-		return result;
-	}
-
-	private Source<State> parseRepeatedly(final String s, final int end, final String target1) {
-		return new Source<State>() {
-			private State state = new State(end);
-			private Deque<Source<State>> sources = new ArrayDeque<>();
-
-			public State source() {
-				State state0 = state;
-
-				if (state0 != null) {
-					sources.push(parse(s, state0.end, target1));
-
-					while (!sources.isEmpty() && (state = sources.peek().source()) == null)
-						sources.pop();
-				}
-
-				return state0;
-
-			}
-		};
-	}
-
-	private Source<State> parseGrammar(final String s, final int end, List<List<String>> grammar) {
-		return FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
-			public Source<State> apply(List<String> list) {
-				Source<State> source = FunUtil.asSource(new State(end));
-
-				for (final String item : list)
-					source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-						public Source<State> apply(State state) {
-							return parse(s, state.end, item);
-						}
-					}, source));
-
-				return source;
-			}
-		}, FunUtil.asSource(grammar)));
+	public void parse(String s) {
+		new Parse(s).parse();
 	}
 
 	@Override
@@ -190,23 +204,16 @@ public class Bnf {
 
 		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
 			sb.append(entry.getKey() + " ::= ");
-
 			boolean first0 = true;
 
 			for (List<String> list : entry.getValue()) {
-				if (!first0)
-					sb.append(" | ");
-				else
-					first0 = false;
-
+				sb.append(!first0 ? " | " : "");
+				first0 = false;
 				boolean first1 = true;
 
 				for (String item : list) {
-					if (!first1)
-						sb.append(" ");
-					else
-						first1 = false;
-
+					sb.append(!first1 ? " " : "");
+					first1 = false;
 					sb.append(item);
 				}
 			}
