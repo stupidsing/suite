@@ -120,6 +120,10 @@ public class Util {
 			return t0 == null || t0.equals(t1);
 	}
 
+	public static <T> T first(Collection<T> c) {
+		return !c.isEmpty() ? c.iterator().next() : null;
+	}
+
 	public static Iterable<Character> getChars(final String s) {
 		return iter(new Iterator<Character>() {
 			private int index = 0;
@@ -206,6 +210,15 @@ public class Util {
 
 		results.add(s.trim());
 		return results;
+	}
+
+	public static <T> List<T> sublist(List<T> list, int start, int end) {
+		int size = list.size();
+		if (start < 0)
+			start += size;
+		if (end <= 0)
+			end += size;
+		return list.subList(start, end);
 	}
 
 	public static String substr(String s, int start, int end) {

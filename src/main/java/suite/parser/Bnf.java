@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import suite.node.Atom;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -59,6 +62,47 @@ public class Bnf {
 			if (target == null)
 				target = lr.t0;
 		}
+
+		preprocess();
+	}
+
+	/**
+	 * Transform head-recursion rule as follows:
+	 * 
+	 * A = B | A C0 | A C1 | ... | A Cn
+	 * 
+	 * become two rules
+	 * 
+	 * A = B temp*
+	 * 
+	 * temp = C0 | C1 | ... | Cn
+	 */
+	private void preprocess() {
+		Map<String, List<List<String>>> newRules = new HashMap<>();
+
+		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
+			String key = entry.getKey();
+			List<List<String>> rule = entry.getValue();
+			List<String> first = Util.first(rule);
+			boolean isModify = rule.size() > 1;
+
+			for (int i = 1; i < rule.size(); i++)
+				isModify &= Util.equals(Util.first(rule.get(i)), key);
+
+			if (isModify) {
+				String temp = Atom.unique().getName();
+				entry.setValue(Arrays.asList(Arrays.asList(first.get(0), temp + "*")));
+
+				List<List<String>> tempRule = new ArrayList<>();
+
+				for (int i = 1; i < rule.size(); i++)
+					tempRule.add(Util.sublist(rule.get(i), 1, 0));
+
+				newRules.put(temp, tempRule);
+			}
+		}
+
+		grammars.putAll(newRules);
 	}
 
 	public boolean parse(String s) {
@@ -138,6 +182,39 @@ public class Bnf {
 				return source;
 			}
 		}, FunUtil.asSource(grammar)));
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
+			sb.append(entry.getKey() + " ::= ");
+
+			boolean first0 = true;
+
+			for (List<String> list : entry.getValue()) {
+				if (!first0)
+					sb.append(" | ");
+				else
+					first0 = false;
+
+				boolean first1 = true;
+
+				for (String item : list) {
+					if (!first1)
+						sb.append(" ");
+					else
+						first1 = false;
+
+					sb.append(item);
+				}
+			}
+
+			sb.append("\n");
+		}
+
+		return sb.toString();
 	}
 
 }
