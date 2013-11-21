@@ -208,32 +208,30 @@ public class Bnf {
 		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
 			String entity = entry.getKey();
 			List<List<String>> rule = entry.getValue();
-			int switchPoint = -1;
-			boolean isChangeHeadRecursion = rule.size() > 1;
+			boolean isAnyHeadRecursion = false;
+			List<Boolean> isHeadRecursions = new ArrayList<>();
 
 			for (int i = 0; i < rule.size(); i++) {
 				boolean isHeadRecursion = Util.equals(Util.first(rule.get(i)), entity);
-
-				if (switchPoint < 0) {
-					if (isHeadRecursion)
-						switchPoint = i;
-				} else
-					isChangeHeadRecursion &= isHeadRecursion;
+				isHeadRecursions.add(isHeadRecursion);
+				isAnyHeadRecursion |= isHeadRecursion;
 			}
 
-			isChangeHeadRecursion &= switchPoint >= 0;
-
-			if (isChangeHeadRecursion) {
+			if (isAnyHeadRecursion) {
 				String tempb = Atom.unique().getName();
 				String tempc = Atom.unique().getName();
 				entry.setValue(Arrays.asList(Arrays.asList(tempb, tempc + "*")));
 
+				List<List<String>> tempbRule = new ArrayList<>();
 				List<List<String>> tempcRule = new ArrayList<>();
 
-				for (int i = switchPoint; i < rule.size(); i++)
-					tempcRule.add(Util.sublist(rule.get(i), 1, 0));
+				for (int i = 0; i < rule.size(); i++)
+					if (isHeadRecursions.get(i))
+						tempcRule.add(Util.sublist(rule.get(i), 1, 0));
+					else
+						tempbRule.add(rule.get(i));
 
-				newRules.put(tempb, rule.subList(0, switchPoint));
+				newRules.put(tempb, tempbRule);
 				newRules.put(tempc, tempcRule);
 			}
 		}
