@@ -72,23 +72,12 @@ public class Bnf {
 			Source<State> result;
 
 			if (entity.length() > 1 && entity.endsWith("?"))
-				result = FunUtil.cons(new State(end) //
-						, parse(end, Util.substr(entity, 0, -1)));
+				result = FunUtil.cons(new State(end), parse(end, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
 				result = parseRepeatedly(end, Util.substr(entity, 0, -1));
-			else if (entity.equals("<identifier>")) {
-				int end1 = end;
-
-				if (length > end1 && Character.isJavaIdentifierStart(in.charAt(end1))) {
-					end1++;
-
-					while (length > end1 && Character.isJavaIdentifierPart(in.charAt(end1)))
-						end1++;
-
-					result = FunUtil.asSource(new State(end1));
-				} else
-					result = noResult;
-			} else if (entity.startsWith(inputCharExcept)) {
+			else if (entity.equals("<identifier>"))
+				result = parseIdentifier(end);
+			else if (entity.startsWith(inputCharExcept)) {
 				String exceptChars = entity.substring(inputCharExcept.length());
 
 				if (length > end && exceptChars.indexOf(in.charAt(end)) < 0)
@@ -145,6 +134,22 @@ public class Bnf {
 					return source;
 				}
 			}, FunUtil.asSource(grammar)));
+		}
+
+		private Source<State> parseIdentifier(int end) {
+			Source<State> result;
+
+			if (length > end && Character.isJavaIdentifierStart(in.charAt(end))) {
+				end++;
+
+				while (length > end && Character.isJavaIdentifierPart(in.charAt(end)))
+					end++;
+
+				result = FunUtil.asSource(new State(end));
+			} else
+				result = noResult;
+
+			return result;
 		}
 	}
 
