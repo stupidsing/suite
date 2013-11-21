@@ -20,7 +20,7 @@
 <interface-type-list> ::= <interface-type> | <interface-type-list> , <interface-type>
 <class-body> ::= { <class-body-declarations>? }
 <class-body-declarations> ::= <class-body-declaration> | <class-body-declarations> <class-body-declaration>
-<class-body-declaration> ::= <class-member-declaration> | <static-initializer> | <constructor-declaration>
+<class-body-declaration> ::= <annotations> <class-member-declaration> | <static-initializer> | <annotations> <constructor-declaration>
 <class-member-declaration> ::= <field-declaration> | <method-declaration>
 <static-initializer> ::= static <block>
 <constructor-declaration> ::= <constructor-modifiers>? <constructor-declarator> <throws>? <constructor-body>
@@ -62,6 +62,11 @@
 <array-initializer> ::= { <variable-initializers>? ,? }
 <variable-initializers> ::= <variable-initializer> | <variable-initializers> , <variable-initializer>
 <variable-initializer> ::= <expression> | <array-initializer>
+
+# Annotations
+
+<annotations> ::= <annotation> | <annotations> <annotation>
+<annotation> ::= @ <identifier>
 
 # Types
 
