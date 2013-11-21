@@ -159,7 +159,7 @@
 <dim-exprs> ::= <dim-expr> | <dim-exprs> <dim-expr>
 <dim-expr> ::= [ <expression> ]
 <dims> ::= [ ] | <dims> [ ]
-<array-access> ::= <expression-name> [ <expression> ] | <primary-no-new-array> [ <expression>]
+<array-access> ::= <expression-name> [ <expression> ] | <primary-no-new-array> [ <expression> ]
 
 # Tokens
 
