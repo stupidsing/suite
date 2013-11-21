@@ -7,24 +7,31 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.util.To;
+
 public class BnfTest {
 
 	@Test
 	public void testNumber() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		assertTrue(bnf.recursiveDescent("3456"));
+		assertTrue(bnf.parse("3456"));
 	}
 
 	@Test
 	public void testExpr() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		assertTrue(bnf.recursiveDescent("12 + 34 + 56 + 78"));
+		assertTrue(bnf.parse("12 + 34 + 56 + 78"));
 	}
 
-	// @Test
+	@Test
+	public void testJava0() throws IOException {
+		Bnf bnf = new Bnf(new FileReader("src/main/bnf/java.bnf"));
+		assertTrue(bnf.parse("public class A {}"));
+	}
+
 	public void testJava() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/java.bnf"));
-		assertTrue(bnf.recursiveDescent("src/test/java/suite/parser/BnfTest.java"));
+		assertTrue(bnf.parse(To.string(new FileReader("src/test/java/suite/parser/BnfTest.java"))));
 	}
 
 }
