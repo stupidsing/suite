@@ -31,7 +31,7 @@ public class Bnf {
 	private Map<String, List<List<String>>> grammars = new HashMap<>();
 
 	private static final String inputCharExcept = "$except-";
-	private static final boolean trace = true;
+	private static final boolean trace = false;
 
 	private class Parse {
 		private String in;
