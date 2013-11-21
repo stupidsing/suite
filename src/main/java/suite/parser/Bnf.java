@@ -235,6 +235,10 @@ public class Bnf {
 
 		grammars.putAll(newRules);
 
+		verify();
+	}
+
+	private void verify() {
 		for (Entry<String, List<List<String>>> entry : grammars.entrySet()) {
 			String entity = entry.getKey();
 
