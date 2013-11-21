@@ -65,7 +65,7 @@
 
 # Annotations
 
-<annotations> ::= <annotation> | <annotations> <annotation>
+<annotations> ::= <annotation>*
 <annotation> ::= @ <identifier>
 
 # Types
