@@ -7,13 +7,19 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 public class To {
 
 	private static final int bufferSize = 4096;
+
+	public static Date date(String s) throws ParseException {
+		return FormatUtil.dateTimeFormat.parse(s);
+	}
 
 	public static <T> List<T> list(Iterable<T> iter) {
 		return list(iter.iterator());
@@ -24,6 +30,10 @@ public class To {
 		while (iter.hasNext())
 			list.add(iter.next());
 		return list;
+	}
+
+	public static String string(Date date) {
+		return FormatUtil.dateTimeFormat.format(date);
 	}
 
 	public static String string(InputStream in) throws IOException {

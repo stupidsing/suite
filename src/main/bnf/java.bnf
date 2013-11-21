@@ -67,9 +67,9 @@
 
 <type> ::= <primitive-type> | <reference-type>
 <primitive-type> ::= <numeric-type> | boolean
-<numeric-type> ::= <integral-type> | <floating-point type>
+<numeric-type> ::= <integral-type> | <floating-point-type>
 <integral-type> ::= byte | short | int | long | char
-<floating-point type> ::= float | double
+<floating-point-type> ::= float | double
 <reference-type> ::= <class-or-interface-type> | <array-type>
 <class-or-interface-type> ::= <class-type> | <interface-type>
 <class-type> ::= <type-name>
@@ -165,7 +165,7 @@
 <expression-name> ::= <identifier> | <ambiguous-name> . <identifier>
 <method-name> ::= <identifier> | <ambiguous-name> . <identifier>
 <ambiguous-name>::= <identifier> | <ambiguous-name> . <identifier>
-<literal> ::= <integer-literal> | <floating-point literal> | <boolean-literal> | <character-literal> | <string-literal> | <null-literal>
+<literal> ::= <integer-literal> | <floating-point-literal> | <boolean-literal> | <character-literal> | <string-literal> | <null-literal>
 <integer-literal> ::= <decimal-integer-literal> | <hex-integer-literal> | <octal-integer-literal>
 <decimal-integer-literal> ::= <decimal-numeral> <integer-type-suffix>?
 <hex-integer-literal> ::= <hex-numeral> <integer-type-suffix>?
@@ -179,7 +179,7 @@
 <hex-digit> :: = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F
 <octal-numeral> ::= 0 <octal-digit> | <octal-numeral> <octal-digit>
 <octal-digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-<floating-point literal> ::= <digits> . <digits>? <exponent-part>? <float-type-suffix>? | <digits> <exponent-part>? <float-type-suffix>?
+<floating-point-literal> ::= <digits> . <digits>? <exponent-part>? <float-type-suffix>? | <digits> <exponent-part>? <float-type-suffix>?
 
 
 <exponent-part> ::= <exponent-indicator> <signed-integer>

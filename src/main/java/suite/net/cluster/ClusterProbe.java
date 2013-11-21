@@ -20,10 +20,10 @@ import java.util.Set;
 
 import suite.net.ThreadedService;
 import suite.util.FileUtil;
-import suite.util.FormatUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.LogUtil;
+import suite.util.To;
 import suite.util.Util;
 
 import com.google.common.collect.BiMap;
@@ -282,10 +282,8 @@ public class ClusterProbe extends ThreadedService {
 
 	public String dumpActivePeers() {
 		StringBuilder sb = new StringBuilder();
-		for (Entry<String, Long> e : lastActiveTime.entrySet()) {
-			String dateStr = FormatUtil.dtFmt.format(new Date(e.getValue()));
-			sb.append(e.getKey() + " (last-active = " + dateStr + ")\n");
-		}
+		for (Entry<String, Long> e : lastActiveTime.entrySet())
+			sb.append(e.getKey() + " (last-active = " + To.string(new Date(e.getValue())) + ")\n");
 		return sb.toString();
 	}
 

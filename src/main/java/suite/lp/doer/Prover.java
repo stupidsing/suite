@@ -14,10 +14,10 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
-import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
+import suite.util.To;
 
 public class Prover {
 
@@ -62,7 +62,7 @@ public class Prover {
 				tracer = new ProveTracer(config);
 				return prove0(query);
 			} finally {
-				String d = FormatUtil.dtFmt.format(new Date());
+				String d = To.string(new Date());
 				String dump = tracer.getDump();
 				LogUtil.info("-- Prover dump at " + d + " --\n" + dump);
 			}
