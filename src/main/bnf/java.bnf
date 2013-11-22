@@ -193,9 +193,9 @@
 <float-type-suffix> ::= f | F | d | D
 <boolean-literal> ::= true | false
 <character-literal> ::= ' <single-character> ' | ' <escape sequence> '
-<single-character> ::= $except-'\
+<single-character> ::= $char-except-'\
 <string-literal> ::= " <string-characters>? "
 <string-characters> ::= <string-character> | <string-characters> <string-character>
-<string-character> ::= $except-"\ | <escape character>
+<string-character> ::= $char-except-"\ | <escape character>
 <null-literal> ::= null
 <keyword> ::= abstract | boolean | break | byte | case | catch | char | class | const | continue | default | do | double | else | extends | final | finally | float | for | goto | if | implements | import | instanceof | int | interface | long | native | new | package | private | protected | public | return | short | static | super | switch | synchronized | this | throw | throws | transient | try | void | volatile | while

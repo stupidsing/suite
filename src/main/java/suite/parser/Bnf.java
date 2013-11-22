@@ -30,7 +30,7 @@ public class Bnf {
 	private String entity;
 	private Map<String, List<List<String>>> grammars = new HashMap<>();
 
-	private static final String inputCharExcept = "$except-";
+	private static final String charExcept = "$char-except-";
 	private static final boolean trace = false;
 
 	private class Parse {
@@ -82,8 +82,8 @@ public class Bnf {
 				result = parseRepeatedly(end, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
 				result = parseIdentifier(end);
-			else if (entity.startsWith(inputCharExcept)) {
-				String exceptChars = entity.substring(inputCharExcept.length());
+			else if (entity.startsWith(charExcept)) {
+				String exceptChars = entity.substring(charExcept.length());
 
 				if (length > end && exceptChars.indexOf(in.charAt(end)) < 0)
 					result = FunUtil.asSource(new State(end + 1));
