@@ -95,7 +95,7 @@ public class Bnf {
 			if (entity.length() > 1 && entity.endsWith("?"))
 				result = FunUtil.cons(state1, parseEntity(state1, stack, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
-				result = parseRepeatedly(state1, stack, Util.substr(entity, 0, -1));
+				result = parseRepeat(state1, stack, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
 				result = parseSkip(state1, expectIdentifier(end));
 			else if (entity.startsWith(charExcept))
@@ -117,7 +117,7 @@ public class Bnf {
 			return result;
 		}
 
-		private Source<State> parseRepeatedly(final State state, final Stack stack, final String entity) {
+		private Source<State> parseRepeat(final State state, final Stack stack, final String entity) {
 			return new Source<State>() {
 				private State state_ = state;
 				private Deque<Source<State>> sources = new ArrayDeque<>();
