@@ -22,6 +22,9 @@ public class RayTracerTest {
 	private Vector cr = v(1f, 0f, 0f);
 	private Vector cg = v(0f, 1f, 0f);
 	private Vector cb = v(0f, 0f, 1f);
+	private Vector cy = v(1f, 1f, 0f);
+	private Vector cp = v(1f, 0f, 1f);
+	private Vector cc = v(0f, 1f, 1f);
 	private Vector cw = v(1f, 1f, 1f);
 
 	@Test
@@ -33,10 +36,10 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphere() throws IOException {
-		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cr, 0.4f));
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cr, 0.3f));
 		Scene scene = new Scene(Arrays.asList(sphere));
 
-		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
+		LightSource light = new PointLightSource(v(-10000f, -10000f, -10000f), gray(1f));
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -45,8 +48,8 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereReflection() throws IOException {
-		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cr, 0.4f));
-		RayTraceObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, reflective(cw, 0.4f));
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cr));
+		RayTraceObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, glassy(cw, 0.8f));
 		Scene scene = new Scene(Arrays.asList(sphere, mirror));
 
 		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
@@ -58,11 +61,11 @@ public class RayTracerTest {
 
 	@Test
 	public void testSpheres() throws IOException {
-		RayTraceObject sphere0 = Sphere.c(v(-2f, 0f, 5f), 1f, reflective(cr, 0.4f));
-		RayTraceObject sphere1 = Sphere.c(v(2f, 0f, 5f), 1f, reflective(cr, 0.4f));
+		RayTraceObject sphere0 = Sphere.c(v(-2f, 0f, 5f), 1f, glassy(cr, 0.8f));
+		RayTraceObject sphere1 = Sphere.c(v(2f, 0f, 5f), 1f, glassy(cr, 0.8f));
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1));
 
-		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1f));
+		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1f));
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -72,17 +75,15 @@ public class RayTracerTest {
 
 	@Test
 	public void testMess() throws IOException {
-		Material silver = reflective(gray(1f), 0.75f);
+		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr, 0.5f));
+		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg, 0.5f));
+		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb, 0.5f));
+		RayTraceObject plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
+		RayTraceObject triangle = new Triangle(v(0.2f, 0.2f, 3f), v(0.2f, 0f, 0f), v(0f, 0.2f, 0f), glassy(cc, 0.8f));
+		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane0, triangle));
 
-		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, reflective(cr, 0.4f));
-		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, reflective(cg, 0.4f));
-		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, reflective(cb, 0.4f));
-		RayTraceObject plane = new Plane(v(0f, 1f, 0f), -3f, silver);
-		RayTraceObject triangle = new Triangle(v(0.2f, 0.2f, 3f), v(0.2f, 0f, 0f), v(0f, 0.2f, 0f), silver);
-		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, plane, triangle));
-
-		LightSource light0 = new PointLightSource(v(10000f, 10000f, -10000f), gray(0.6f));
-		LightSource light1 = new PointLightSource(v(-10000f, 10000f, -10000f), gray(0.6f));
+		LightSource light0 = new PointLightSource(v(10000f, 10000f, -10000f), cp);
+		LightSource light1 = new PointLightSource(v(-10000f, 10000f, -10000f), gray(10f));
 		List<LightSource> lights = Arrays.asList(light0, light1);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -96,22 +97,26 @@ public class RayTracerTest {
 		ImageIO.write(bufferedImage, "png", new File(filename));
 	}
 
-	private Material reflective(final Vector color, final float index) {
+	private Material solid(Vector color) {
+		return material(color, 0f, 0f);
+	}
+
+	private Material glassy(Vector color, float index) {
+		return material(color, index, 1 - index);
+	}
+
+	private Material material(final Vector color, final float reflectionIndex, final float refractionIndex) {
 		return new Material() {
-			public Vector filter() {
+			public Vector surfaceColor() {
 				return color;
 			}
 
-			public float diffusionIndex() {
-				return 1f - index;
-			}
-
 			public float reflectionIndex() {
-				return index;
+				return reflectionIndex;
 			}
 
 			public float refractionIndex() {
-				return 0f;
+				return refractionIndex;
 			}
 		};
 	}
