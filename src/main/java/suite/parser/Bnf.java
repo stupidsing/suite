@@ -81,23 +81,15 @@ public class Bnf {
 			else if (entity.length() > 1 && entity.endsWith("*"))
 				result = parseRepeatedly(end, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
-				result = parseIdentifier(end);
-			else if (entity.startsWith(charExcept)) {
-				String exceptChars = entity.substring(charExcept.length());
-
-				if (end < length && exceptChars.indexOf(in.charAt(end)) < 0)
-					result = FunUtil.asSource(new State(end + 1));
-				else
-					result = noResult;
-			} else if ((grammar = grammars.get(entity)) != null)
+				result = parseSkip(end, skipIdentifier(end));
+			else if (entity.startsWith(charExcept))
+				result = parseSkip(end, skipCharExcept(end, entity.substring(charExcept.length())));
+			else if ((grammar = grammars.get(entity)) != null)
 				result = parseGrammar(end, grammar);
 			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
-				if (in.startsWith(Util.substr(entity, 1, -1), end))
-					result = FunUtil.asSource(new State(end + entity.length() - 2));
-				else
-					result = noResult;
+				result = parseSkip(end, skipString(end, Util.substr(entity, 1, -1)));
 			else if (in.startsWith(entity, end))
-				result = FunUtil.asSource(new State(end + entity.length()));
+				result = parseSkip(end, skipString(end, entity));
 			else
 				result = noResult;
 
@@ -146,20 +138,25 @@ public class Bnf {
 			}, FunUtil.asSource(grammar)));
 		}
 
-		private Source<State> parseIdentifier(int end) {
-			Source<State> result;
+		private Source<State> parseSkip(int start, int end) {
+			return start < end ? FunUtil.asSource(new State(end)) : noResult;
+		}
 
+		private int skipIdentifier(int end) {
 			if (end < length && Character.isJavaIdentifierStart(in.charAt(end))) {
 				end++;
-
 				while (end < length && Character.isJavaIdentifierPart(in.charAt(end)))
 					end++;
+			}
+			return end;
+		}
 
-				result = FunUtil.asSource(new State(end));
-			} else
-				result = noResult;
+		private int skipCharExcept(int end, String excepts) {
+			return end + (end < length && excepts.indexOf(in.charAt(end)) < 0 ? 1 : 0);
+		}
 
-			return result;
+		private int skipString(int end, String s) {
+			return end + (in.startsWith(s, end) ? s.length() : 0);
 		}
 	}
 
