@@ -73,7 +73,7 @@ public class Bnf {
 			if (trace)
 				LogUtil.info("parseEntity(" + entity + "): " + in.substring(end0));
 
-			final int end = end0;
+			int end = end0;
 			List<List<String>> grammar;
 			Source<State> result;
 
