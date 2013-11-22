@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.fp.ImmutableRbTreeMap;
 import suite.node.Atom;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -43,9 +42,23 @@ public class Bnf {
 		private final Source<State> noResult = FunUtil.nullSource();
 
 		private class State {
+			private Stack stack;
 			private int end;
 
-			public State(int end) {
+			public State(Stack stack, int end) {
+				this.stack = stack;
+				this.end = end;
+			}
+		}
+
+		private class Stack {
+			private Stack previous;
+			private String entity;
+			private int end;
+
+			public Stack(Stack previous, String entity, int end) {
+				this.previous = previous;
+				this.entity = entity;
 				this.end = end;
 			}
 		}
@@ -56,7 +69,7 @@ public class Bnf {
 		}
 
 		private void parse(int end, String entity) {
-			Source<State> source = parseEntity(new State(end), new ImmutableRbTreeMap<String, Integer>(), entity);
+			Source<State> source = parseEntity(new State(null, end), null, entity);
 			State state;
 
 			while ((state = source.source()) != null)
@@ -66,7 +79,7 @@ public class Bnf {
 			throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
 		}
 
-		private Source<State> parseEntity(State state, ImmutableRbTreeMap<String, Integer> entities, String entity) {
+		private Source<State> parseEntity(State state, Stack stack, String entity) {
 			int end = state.end;
 
 			while (end < length && Character.isWhitespace(in.charAt(end)))
@@ -75,24 +88,24 @@ public class Bnf {
 			if (trace)
 				LogUtil.info("parseEntity(" + entity + "): " + in.substring(end));
 
-			State state1 = new State(end);
+			State state1 = new State(stack, end);
 			List<List<String>> grammar;
 			Source<State> result;
 
 			if (entity.length() > 1 && entity.endsWith("?"))
-				result = FunUtil.cons(state1, parseEntity(state1, entities, Util.substr(entity, 0, -1)));
+				result = FunUtil.cons(state1, parseEntity(state1, stack, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
-				result = parseRepeatedly(state1, entities, Util.substr(entity, 0, -1));
+				result = parseRepeatedly(state1, stack, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
-				result = parseSkip(state1, skipIdentifier(end));
+				result = parseSkip(state1, expectIdentifier(end));
 			else if (entity.startsWith(charExcept))
-				result = parseSkip(state1, skipCharExcept(end, entity.substring(charExcept.length())));
+				result = parseSkip(state1, expectCharExcept(end, entity.substring(charExcept.length())));
 			else if ((grammar = grammars.get(entity)) != null)
-				result = parseGrammar(state1, entities, entity, grammar);
+				result = parseGrammar(state1, stack, entity, grammar);
 			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
-				result = parseSkip(state1, skipString(end, Util.substr(entity, 1, -1)));
+				result = parseSkip(state1, expectString(end, Util.substr(entity, 1, -1)));
 			else if (in.startsWith(entity, end))
-				result = parseSkip(state1, skipString(end, entity));
+				result = parseSkip(state1, expectString(end, entity));
 			else
 				result = noResult;
 
@@ -104,8 +117,7 @@ public class Bnf {
 			return result;
 		}
 
-		private Source<State> parseRepeatedly(final State state, final ImmutableRbTreeMap<String, Integer> entities,
-				final String entity) {
+		private Source<State> parseRepeatedly(final State state, final Stack stack, final String entity) {
 			return new Source<State>() {
 				private State state_ = state;
 				private Deque<Source<State>> sources = new ArrayDeque<>();
@@ -114,7 +126,7 @@ public class Bnf {
 					State state0 = state_;
 
 					if (state0 != null) {
-						sources.push(parseEntity(state0, entities, entity));
+						sources.push(parseEntity(state0, stack, entity));
 
 						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
 							sources.pop();
@@ -125,13 +137,19 @@ public class Bnf {
 			};
 		}
 
-		private Source<State> parseGrammar(final State state, ImmutableRbTreeMap<String, Integer> entities, String entity,
-				List<List<String>> grammar) {
-			Integer previous = entities.get(entity);
+		private Source<State> parseGrammar(final State state, Stack stack, String entity, List<List<String>> grammar) {
+			Stack s = stack;
+			boolean reentrance = false;
+
+			while (s != null) {
+				reentrance |= Util.equals(entity, s.entity) && state.end == s.end;
+				s = s.previous;
+			}
+
 			Source<State> result;
 
-			if (previous == null || previous.intValue() != state.end) {
-				final ImmutableRbTreeMap<String, Integer> entities1 = entities.replace(entity, state.end);
+			if (!reentrance) {
+				final Stack stack1 = new Stack(stack, entity, state.end);
 
 				result = FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
 					public Source<State> apply(List<String> list) {
@@ -140,7 +158,7 @@ public class Bnf {
 						for (final String item : list)
 							source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 								public Source<State> apply(State state) {
-									return parseEntity(state, entities1, item);
+									return parseEntity(state, stack1, item);
 								}
 							}, source));
 
@@ -154,10 +172,10 @@ public class Bnf {
 		}
 
 		private Source<State> parseSkip(State state, int end) {
-			return state.end < end ? FunUtil.asSource(new State(end)) : noResult;
+			return state.end < end ? FunUtil.asSource(new State(state.stack, end)) : noResult;
 		}
 
-		private int skipIdentifier(int end) {
+		private int expectIdentifier(int end) {
 			if (end < length && Character.isJavaIdentifierStart(in.charAt(end))) {
 				end++;
 				while (end < length && Character.isJavaIdentifierPart(in.charAt(end)))
@@ -166,11 +184,11 @@ public class Bnf {
 			return end;
 		}
 
-		private int skipCharExcept(int end, String excepts) {
+		private int expectCharExcept(int end, String excepts) {
 			return end + (end < length && excepts.indexOf(in.charAt(end)) < 0 ? 1 : 0);
 		}
 
-		private int skipString(int end, String s) {
+		private int expectString(int end, String s) {
 			return end + (in.startsWith(s, end) ? s.length() : 0);
 		}
 
