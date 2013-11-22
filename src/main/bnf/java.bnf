@@ -32,7 +32,7 @@
 <throws> ::= throws <class-type-list>
 <class-type-list> ::= <class-type> | <class-type-list> , <class-type>
 <constructor-body> ::= { <explicit-constructor-invocation>? <block-statements>? }
-<explicit-constructor-invocation>::= this ( <argument-list>? ) | super ( <argument-list>? )
+<explicit-constructor-invocation> ::= this ( <argument-list>? ) | super ( <argument-list>? )
 <field-declaration> ::= <field-modifiers>? <type> <variable-declarators> ;
 <field-modifiers> ::= <field-modifier> | <field-modifiers> <field-modifier>
 <field-modifier> ::= public | protected | private | static | final | transient | volatile
@@ -56,7 +56,7 @@
 <interface-member-declaration> ::= <constant-declaration> | <abstract-method-declaration>
 <constant-declaration> ::= <constant-modifiers> <type> <variable-declarator>
 <constant-modifiers> ::= public | static | final
-<abstract-method-declaration>::= <abstract-method-modifiers>? <result-type> <method-declarator> <throws>? ;
+<abstract-method-declaration> ::= <abstract-method-modifiers>? <result-type> <method-declarator> <throws>? ;
 <abstract-method-modifiers> ::= <abstract-method-modifier> | <abstract-method-modifiers> <abstract-method-modifier>
 <abstract-method-modifier> ::= public | abstract
 <array-initializer> ::= { <variable-initializers>? ,? }
@@ -95,8 +95,8 @@
 <labeled-statement-no-short-if> ::= <identifier> : <statement-no-short-if>
 <expression-statement> ::= <statement-expression> ;
 <statement-expression> ::= <assignment> | <preincrement-expression> | <postincrement-expression> | <predecrement-expression> | <postdecrement-expression> | <method-invocation> | <class-instance-creation-expression>
-<if-then-statement>::= if ( <expression> ) <statement>
-<if-then-else-statement>::= if ( <expression> ) <statement-no-short-if> else <statement>
+<if-then-statement> ::= if ( <expression> ) <statement>
+<if-then-else-statement> ::= if ( <expression> ) <statement-no-short-if> else <statement>
 <if-then-else-statement-no-short-if> ::= if ( <expression> ) <statement-no-short-if> else <statement-no-short-if>
 <switch-statement> ::= switch ( <expression> ) <switch-block>
 <switch-block> ::= { <switch-block-statement-groups>? <switch-labels>? }
@@ -168,7 +168,7 @@
 <simple-type-name> ::= <identifier>
 <expression-name> ::= <identifier> | <ambiguous-name> . <identifier>
 <method-name> ::= <identifier> | <ambiguous-name> . <identifier>
-<ambiguous-name>::= <identifier> | <ambiguous-name> . <identifier>
+<ambiguous-name> ::= <identifier> | <ambiguous-name> . <identifier>
 <literal> ::= <integer-literal> | <floating-point-literal> | <boolean-literal> | <character-literal> | <string-literal> | <null-literal>
 <integer-literal> ::= <decimal-integer-literal> | <hex-integer-literal> | <octal-integer-literal>
 <decimal-integer-literal> ::= <decimal-numeral> <integer-type-suffix>?

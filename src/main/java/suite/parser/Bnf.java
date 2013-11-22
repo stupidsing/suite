@@ -272,7 +272,7 @@ public class Bnf {
 
 			for (List<String> rule : entry.getValue())
 				if (Util.equals(Util.first(rule), entity))
-					throw new RuntimeException("Head recursion for" + entity);
+					throw new RuntimeException("Head recursion for " + entity);
 		}
 	}
 
