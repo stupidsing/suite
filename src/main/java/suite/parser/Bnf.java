@@ -97,15 +97,15 @@ public class Bnf {
 			else if (entity.length() > 1 && entity.endsWith("*"))
 				result = parseRepeat(state1, stack, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
-				result = parseSkip(state1, expectIdentifier(end));
+				result = parseExpect(state1, expectIdentifier(end));
 			else if (entity.startsWith(charExcept))
-				result = parseSkip(state1, expectCharExcept(end, entity.substring(charExcept.length())));
+				result = parseExpect(state1, expectCharExcept(end, entity.substring(charExcept.length())));
 			else if ((grammar = grammars.get(entity)) != null)
 				result = parseGrammar(state1, stack, entity, grammar);
 			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
-				result = parseSkip(state1, expectString(end, Util.substr(entity, 1, -1)));
+				result = parseExpect(state1, expectString(end, Util.substr(entity, 1, -1)));
 			else if (in.startsWith(entity, end))
-				result = parseSkip(state1, expectString(end, entity));
+				result = parseExpect(state1, expectString(end, entity));
 			else
 				result = noResult;
 
@@ -171,7 +171,7 @@ public class Bnf {
 			return result;
 		}
 
-		private Source<State> parseSkip(State state, int end) {
+		private Source<State> parseExpect(State state, int end) {
 			return state.end < end ? FunUtil.asSource(new State(state.stack, end)) : noResult;
 		}
 
