@@ -56,7 +56,7 @@ public class Bnf {
 		}
 
 		private void parse(int end, String entity) {
-			Source<State> source = parseEntity(end, new ImmutableRbTreeMap<String, Integer>(), entity);
+			Source<State> source = parseEntity(new State(end), new ImmutableRbTreeMap<String, Integer>(), entity);
 			State state;
 
 			while ((state = source.source()) != null)
@@ -66,54 +66,57 @@ public class Bnf {
 			throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
 		}
 
-		private Source<State> parseEntity(int end0, ImmutableRbTreeMap<String, Integer> entities, String entity) {
-			while (end0 < length && Character.isWhitespace(in.charAt(end0)))
-				end0++;
+		private Source<State> parseEntity(State state, ImmutableRbTreeMap<String, Integer> entities, String entity) {
+			int end = state.end;
+
+			while (end < length && Character.isWhitespace(in.charAt(end)))
+				end++;
 
 			if (trace)
-				LogUtil.info("parseEntity(" + entity + "): " + in.substring(end0));
+				LogUtil.info("parseEntity(" + entity + "): " + in.substring(end));
 
-			int end = end0;
+			State state1 = new State(end);
 			List<List<String>> grammar;
 			Source<State> result;
 
 			if (entity.length() > 1 && entity.endsWith("?"))
-				result = FunUtil.cons(new State(end), parseEntity(end, entities, Util.substr(entity, 0, -1)));
+				result = FunUtil.cons(state1, parseEntity(state1, entities, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
-				result = parseRepeatedly(end, entities, Util.substr(entity, 0, -1));
+				result = parseRepeatedly(state1, entities, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
-				result = parseSkip(end, skipIdentifier(end));
+				result = parseSkip(state1, skipIdentifier(end));
 			else if (entity.startsWith(charExcept))
-				result = parseSkip(end, skipCharExcept(end, entity.substring(charExcept.length())));
+				result = parseSkip(state1, skipCharExcept(end, entity.substring(charExcept.length())));
 			else if ((grammar = grammars.get(entity)) != null)
-				result = parseGrammar(end, entities, entity, grammar);
+				result = parseGrammar(state1, entities, entity, grammar);
 			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
-				result = parseSkip(end, skipString(end, Util.substr(entity, 1, -1)));
+				result = parseSkip(state1, skipString(end, Util.substr(entity, 1, -1)));
 			else if (in.startsWith(entity, end))
-				result = parseSkip(end, skipString(end, entity));
+				result = parseSkip(state1, skipString(end, entity));
 			else
 				result = noResult;
 
-			if (result == noResult && end0 > errorPosition) {
-				errorPosition = end0;
+			if (result == noResult && end > errorPosition) {
+				errorPosition = end;
 				errorEntity = entity;
 			}
 
 			return result;
 		}
 
-		private Source<State> parseRepeatedly(final int end, final ImmutableRbTreeMap<String, Integer> entities, final String entity) {
+		private Source<State> parseRepeatedly(final State state, final ImmutableRbTreeMap<String, Integer> entities,
+				final String entity) {
 			return new Source<State>() {
-				private State state = new State(end);
+				private State state_ = state;
 				private Deque<Source<State>> sources = new ArrayDeque<>();
 
 				public State source() {
-					State state0 = state;
+					State state0 = state_;
 
 					if (state0 != null) {
-						sources.push(parseEntity(state0.end, entities, entity));
+						sources.push(parseEntity(state0, entities, entity));
 
-						while (!sources.isEmpty() && (state = sources.peek().source()) == null)
+						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
 							sources.pop();
 					}
 
@@ -122,22 +125,22 @@ public class Bnf {
 			};
 		}
 
-		private Source<State> parseGrammar(final int end, ImmutableRbTreeMap<String, Integer> entities, String entity,
+		private Source<State> parseGrammar(final State state, ImmutableRbTreeMap<String, Integer> entities, String entity,
 				List<List<String>> grammar) {
 			Integer previous = entities.get(entity);
 			Source<State> result;
 
-			if (previous == null || previous.intValue() != end) {
-				final ImmutableRbTreeMap<String, Integer> entities1 = entities.replace(entity, end);
+			if (previous == null || previous.intValue() != state.end) {
+				final ImmutableRbTreeMap<String, Integer> entities1 = entities.replace(entity, state.end);
 
 				result = FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
 					public Source<State> apply(List<String> list) {
-						Source<State> source = FunUtil.asSource(new State(end));
+						Source<State> source = FunUtil.asSource(state);
 
 						for (final String item : list)
 							source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 								public Source<State> apply(State state) {
-									return parseEntity(state.end, entities1, item);
+									return parseEntity(state, entities1, item);
 								}
 							}, source));
 
@@ -150,8 +153,8 @@ public class Bnf {
 			return result;
 		}
 
-		private Source<State> parseSkip(int start, int end) {
-			return start < end ? FunUtil.asSource(new State(end)) : noResult;
+		private Source<State> parseSkip(State state, int end) {
+			return state.end < end ? FunUtil.asSource(new State(end)) : noResult;
 		}
 
 		private int skipIdentifier(int end) {
