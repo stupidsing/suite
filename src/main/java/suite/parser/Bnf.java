@@ -85,7 +85,7 @@ public class Bnf {
 			else if (entity.startsWith(charExcept)) {
 				String exceptChars = entity.substring(charExcept.length());
 
-				if (length > end && exceptChars.indexOf(in.charAt(end)) < 0)
+				if (end < length && exceptChars.indexOf(in.charAt(end)) < 0)
 					result = FunUtil.asSource(new State(end + 1));
 				else
 					result = noResult;
@@ -149,10 +149,10 @@ public class Bnf {
 		private Source<State> parseIdentifier(int end) {
 			Source<State> result;
 
-			if (length > end && Character.isJavaIdentifierStart(in.charAt(end))) {
+			if (end < length && Character.isJavaIdentifierStart(in.charAt(end))) {
 				end++;
 
-				while (length > end && Character.isJavaIdentifierPart(in.charAt(end)))
+				while (end < length && Character.isJavaIdentifierPart(in.charAt(end)))
 					end++;
 
 				result = FunUtil.asSource(new State(end));
