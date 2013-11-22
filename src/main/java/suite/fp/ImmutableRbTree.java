@@ -82,24 +82,40 @@ public class ImmutableRbTree<T> implements Iterable<T> {
 	}
 
 	public ImmutableRbTree<T> add(T t) {
+		return add(t, false);
+	}
+
+	/**
+	 * Replaces a value with another. Mainly for dictionary cases to replace
+	 * stored value for the same key.
+	 * 
+	 * Asserts comparator.compare(<original-value>, t) == 0.
+	 */
+	public ImmutableRbTree<T> replace(T t) {
+		return add(t, true);
+	}
+
+	private ImmutableRbTree<T> add(T t, boolean isReplace) {
 		Node<T> node = root;
 
 		if (node != null && !node.isBlack) // Turns red node into black
 			node = new Node<>(true, node.pivot, node.left, node.right);
 
-		return new ImmutableRbTree<>(add0(node, t), comparator);
+		return new ImmutableRbTree<>(add(node, t, isReplace), comparator);
 	}
 
-	private Node<T> add0(Node<T> node, T t) {
+	private Node<T> add(Node<T> node, T t, boolean isReplace) {
 		Node<T> node1;
 
 		if (node != null) {
 			int c = comparator.compare(node.pivot, t);
 
 			if (c < 0)
-				node1 = new Node<>(node.isBlack, node.pivot, add0(node.left, t), node.right);
+				node1 = new Node<>(node.isBlack, node.pivot, add(node.left, t, isReplace), node.right);
 			else if (c > 0)
-				node1 = new Node<>(node.isBlack, node.pivot, node.left, add0(node.right, t));
+				node1 = new Node<>(node.isBlack, node.pivot, node.left, add(node.right, t, isReplace));
+			else if (isReplace)
+				node1 = new Node<>(node.isBlack, t, node.left, node.right);
 			else
 				throw new RuntimeException("Duplicate node " + t);
 		} else
@@ -108,29 +124,29 @@ public class ImmutableRbTree<T> implements Iterable<T> {
 		return balance(node1);
 	}
 
-	private Node<T> balance(Node<T> node) {
-		if (node.isBlack) {
-			Node<T> ln = node.left, rn = node.right;
+	private Node<T> balance(Node<T> n) {
+		if (n.isBlack) {
+			Node<T> ln = n.left, rn = n.right;
 
 			if (ln != null && !ln.isBlack) {
 				Node<T> lln = ln.left, lrn = ln.right;
 				if (lln != null && !lln.isBlack)
-					node = craeteBalancedNode(lln.left, lln.pivot, lln.right, ln.pivot, ln.right, node.pivot, node.right);
+					n = createBalancedNode(lln.left, lln.pivot, lln.right, ln.pivot, lrn, n.pivot, rn);
 				else if (lrn != null && !lrn.isBlack)
-					node = craeteBalancedNode(ln.left, ln.pivot, lrn.left, lrn.pivot, lrn.right, node.pivot, node.right);
+					n = createBalancedNode(lln, ln.pivot, lrn.left, lrn.pivot, lrn.right, n.pivot, rn);
 			} else if (rn != null && !rn.isBlack) {
 				Node<T> rln = rn.left, rrn = rn.right;
 				if (rln != null && !rln.isBlack)
-					node = craeteBalancedNode(node.left, node.pivot, rln.left, rln.pivot, rln.right, ln.pivot, ln.right);
+					n = createBalancedNode(ln, n.pivot, rln.left, rln.pivot, rln.right, rn.pivot, rrn);
 				else if (rrn != null && !rrn.isBlack)
-					node = craeteBalancedNode(node.left, node.pivot, ln.left, ln.pivot, rrn.left, rrn.pivot, rrn.right);
+					n = createBalancedNode(ln, n.pivot, rln, rn.pivot, rrn.left, rrn.pivot, rrn.right);
 			}
 		}
 
-		return node;
+		return n;
 	}
 
-	private Node<T> craeteBalancedNode(Node<T> n0, T p0, Node<T> n1, T p1, Node<T> n2, T p2, Node<T> n3) {
+	private Node<T> createBalancedNode(Node<T> n0, T p0, Node<T> n1, T p1, Node<T> n2, T p2, Node<T> n3) {
 		return new Node<T>(false, p1, new Node<T>(true, p0, n0, n1), new Node<T>(true, p2, n2, n3));
 
 	}

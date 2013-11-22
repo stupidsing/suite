@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.fp.ImmutableRbTreeMap;
 import suite.node.Atom;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -55,17 +56,17 @@ public class Bnf {
 		}
 
 		private void parse(int end, String entity) {
-			Source<State> source = parseEntity(end, entity);
+			Source<State> source = parseEntity(end, new ImmutableRbTreeMap<String, Integer>(), entity);
 			State state;
 
 			while ((state = source.source()) != null)
 				if (state.end == length)
 					return;
 
-			throw new RuntimeException("Syntax error at " + errorPosition + " (" + errorEntity + ")");
+			throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
 		}
 
-		private Source<State> parseEntity(int end0, String entity) {
+		private Source<State> parseEntity(int end0, ImmutableRbTreeMap<String, Integer> entities, String entity) {
 			while (end0 < length && Character.isWhitespace(in.charAt(end0)))
 				end0++;
 
@@ -77,15 +78,15 @@ public class Bnf {
 			Source<State> result;
 
 			if (entity.length() > 1 && entity.endsWith("?"))
-				result = FunUtil.cons(new State(end), parseEntity(end, Util.substr(entity, 0, -1)));
+				result = FunUtil.cons(new State(end), parseEntity(end, entities, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
-				result = parseRepeatedly(end, Util.substr(entity, 0, -1));
+				result = parseRepeatedly(end, entities, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
 				result = parseSkip(end, skipIdentifier(end));
 			else if (entity.startsWith(charExcept))
 				result = parseSkip(end, skipCharExcept(end, entity.substring(charExcept.length())));
 			else if ((grammar = grammars.get(entity)) != null)
-				result = parseGrammar(end, grammar);
+				result = parseGrammar(end, entities, entity, grammar);
 			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
 				result = parseSkip(end, skipString(end, Util.substr(entity, 1, -1)));
 			else if (in.startsWith(entity, end))
@@ -101,7 +102,7 @@ public class Bnf {
 			return result;
 		}
 
-		private Source<State> parseRepeatedly(final int end, final String entity) {
+		private Source<State> parseRepeatedly(final int end, final ImmutableRbTreeMap<String, Integer> entities, final String entity) {
 			return new Source<State>() {
 				private State state = new State(end);
 				private Deque<Source<State>> sources = new ArrayDeque<>();
@@ -110,7 +111,7 @@ public class Bnf {
 					State state0 = state;
 
 					if (state0 != null) {
-						sources.push(parseEntity(state0.end, entity));
+						sources.push(parseEntity(state0.end, entities, entity));
 
 						while (!sources.isEmpty() && (state = sources.peek().source()) == null)
 							sources.pop();
@@ -121,21 +122,32 @@ public class Bnf {
 			};
 		}
 
-		private Source<State> parseGrammar(final int end, List<List<String>> grammar) {
-			return FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
-				public Source<State> apply(List<String> list) {
-					Source<State> source = FunUtil.asSource(new State(end));
+		private Source<State> parseGrammar(final int end, ImmutableRbTreeMap<String, Integer> entities, String entity,
+				List<List<String>> grammar) {
+			Integer previous = entities.get(entity);
+			Source<State> result;
 
-					for (final String item : list)
-						source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-							public Source<State> apply(State state) {
-								return parseEntity(state.end, item);
-							}
-						}, source));
+			if (previous == null || previous.intValue() != end) {
+				final ImmutableRbTreeMap<String, Integer> entities1 = entities.replace(entity, end);
 
-					return source;
-				}
-			}, FunUtil.asSource(grammar)));
+				result = FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
+					public Source<State> apply(List<String> list) {
+						Source<State> source = FunUtil.asSource(new State(end));
+
+						for (final String item : list)
+							source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
+								public Source<State> apply(State state) {
+									return parseEntity(state.end, entities1, item);
+								}
+							}, source));
+
+						return source;
+					}
+				}, FunUtil.asSource(grammar)));
+			} else
+				result = noResult;
+
+			return result;
 		}
 
 		private Source<State> parseSkip(int start, int end) {
@@ -157,6 +169,22 @@ public class Bnf {
 
 		private int skipString(int end, String s) {
 			return end + (in.startsWith(s, end) ? s.length() : 0);
+		}
+
+		private Pair<Integer, Integer> findPosition(int position) {
+			int row = 1, col = 1;
+
+			for (int i = 0; i < position; i++) {
+				col++;
+
+				if (in.charAt(i) == 10) {
+					row++;
+					col = 1;
+				}
+			}
+
+			Pair<Integer, Integer> pos = Pair.create(row, col);
+			return pos;
 		}
 	}
 

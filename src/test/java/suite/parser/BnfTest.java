@@ -33,10 +33,4 @@ public class BnfTest {
 		bnf.parse(To.string(new FileReader("src/test/java/suite/parser/BnfTest.java")));
 	}
 
-	@Test
-	public void testJava2() throws IOException {
-		Bnf bnf = new Bnf(new FileReader("src/main/bnf/java.bnf"));
-		bnf.parse("", 0, "<field-access>");
-	}
-
 }
