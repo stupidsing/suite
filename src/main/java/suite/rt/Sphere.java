@@ -39,7 +39,7 @@ public class Sphere implements RayTraceObject {
 		if (discriminant > 0) { // Hit?
 			float sqrt = (float) Math.sqrt(discriminant);
 
-			if (-b - sqrt > 0)
+			if (sqrt > 0)
 				adv = (-b - sqrt) / (2f * a);
 			else
 				adv = (-b + sqrt) / (2f * a);

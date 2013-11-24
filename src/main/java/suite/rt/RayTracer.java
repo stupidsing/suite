@@ -11,7 +11,6 @@ public class RayTracer {
 
 	public static final float negligibleAdvance = 0.0001f;
 
-	private Vector ambient = new Vector(0.8f, 0.8f, 0.8f);
 	private float refractiveIndexRatio = 1.1f;
 
 	private Collection<LightSource> lightSources;
@@ -154,7 +153,8 @@ public class RayTracer {
 					float dot = Vector.dot(lightDir, normal);
 
 					if (dot > 0) { // Facing the light
-						RayHit lightRayHit = scene.hit(new Ray(hitPoint, lightDir));
+						Vector lightPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
+						RayHit lightRayHit = scene.hit(new Ray(lightPoint, lightDir));
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
@@ -167,7 +167,7 @@ public class RayTracer {
 
 			color1 = mc(color, material.surfaceColor());
 		} else
-			color1 = ambient; // Ambient
+			color1 = Vector.origin;
 
 		return color1;
 	}
