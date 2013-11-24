@@ -11,6 +11,7 @@ public class RayTracer {
 
 	public static final float negligibleAdvance = 0.0001f;
 
+	private int depth = 4;
 	private float refractiveIndexRatio = 1.1f;
 
 	private Collection<LightSource> lightSources;
@@ -72,13 +73,12 @@ public class RayTracer {
 	}
 
 	public void test() {
-		traceRay(4, new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
+		traceRay(depth, new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
 	}
 
 	public void trace(BufferedImage bufferedImage, int viewDistance) {
 		int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
 		int centreX = width / 2, centreY = height / 2;
-		int depth = 4;
 
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
@@ -113,17 +113,17 @@ public class RayTracer {
 			float refractionIndex = material.refractionIndex();
 			Vector color;
 
+			float dot = Vector.dot(ray.dir, normal);
+			boolean isInside = dot > 0f;
+
+			if (isInside) {
+				normal = Vector.neg(normal);
+				dot = -dot;
+			}
+
 			if (depth > 0 && (reflectionIndex > 0f || refractionIndex > 0f)) {
 
 				// Reflection
-				float dot = Vector.dot(ray.dir, normal);
-				boolean isInside = dot > 0f;
-
-				if (isInside) {
-					normal = Vector.neg(normal);
-					dot = -dot;
-				}
-
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
 				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
 
@@ -150,15 +150,15 @@ public class RayTracer {
 
 				for (LightSource lightSource : lightSources) {
 					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
-					float dot = Vector.dot(lightDir, normal);
+					float lightDot = Vector.dot(lightDir, normal);
 
-					if (dot > 0) { // Facing the light
+					if (lightDot > 0) { // Facing the light
 						Vector lightPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
 						RayHit lightRayHit = scene.hit(new Ray(lightPoint, lightDir));
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
-							float cos = dot / (float) Math.sqrt(Vector.normsq(lightDir));
+							float cos = lightDot / (float) Math.sqrt(Vector.normsq(lightDir));
 							color = Vector.add(color, Vector.mul(lightColor, cos));
 						}
 					}
