@@ -39,16 +39,16 @@ public class Sphere implements RayTraceObject {
 		if (discriminant > 0) { // Hit?
 			float sqrt = (float) Math.sqrt(discriminant);
 
-			if (sqrt > 0)
+			if (-b - sqrt > 0)
 				adv = (-b - sqrt) / (2f * a);
 			else
 				adv = (-b + sqrt) / (2f * a);
 		} else
 			adv = -1f;
 
-		final float advance = adv;
+		if (adv > RayTracer.negligibleAdvance) {
+			final float advance = adv;
 
-		if (advance > RayTracer.negligibleAdvance)
 			return new RayHit() {
 				public float advance() {
 					return advance;
@@ -72,7 +72,8 @@ public class Sphere implements RayTraceObject {
 					};
 				}
 			};
-		else
+		} else
 			return null;
 	}
+
 }
