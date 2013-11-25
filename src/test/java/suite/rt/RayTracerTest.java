@@ -56,7 +56,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereMirror() throws IOException {
 		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cr));
-		RayTraceObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, glassy(cw, 0.8f));
+		RayTraceObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, material(cw, 1f, 0f));
 		Scene scene = new Scene(Arrays.asList(sphere, mirror));
 
 		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1.5f));
