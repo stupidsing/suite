@@ -142,7 +142,7 @@ public class Util {
 		});
 	}
 
-	private static StackTraceElement getStackTrace(int n) {
+	public static StackTraceElement getStackTrace(int n) {
 		return Thread.currentThread().getStackTrace()[n];
 	}
 
