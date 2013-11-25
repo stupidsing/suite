@@ -82,19 +82,18 @@ public class RayTracer {
 
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
-				Color color;
+				Vector lit;
 
 				try {
 					Vector startPoint = Vector.origin;
 					Vector dir = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
-					Vector lit = limit(traceRay(depth, new Ray(startPoint, dir)));
-					color = new Color(lit.getX(), lit.getY(), lit.getZ());
+					lit = limit(traceRay(depth, new Ray(startPoint, dir)));
 				} catch (Exception ex) {
 					LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
-					color = new Color(1f, 1f, 1f);
+					lit = new Vector(1f, 1f, 1f);
 				}
 
-				bufferedImage.setRGB(x, y, color.getRGB());
+				bufferedImage.setRGB(x, y, new Color(lit.getX(), lit.getY(), lit.getZ()).getRGB());
 			}
 	}
 
@@ -143,7 +142,7 @@ public class RayTracer {
 				} else
 					refractColor = Vector.origin;
 
-				color = Vector.add(Vector.mul(reflectColor, fresnel),
+				color = Vector.add(Vector.mul(Vector.mul(reflectColor, reflectionIndex), fresnel),
 						Vector.mul(Vector.mul(refractColor, refractionIndex), 1 - fresnel));
 			} else {
 				color = Vector.origin;
