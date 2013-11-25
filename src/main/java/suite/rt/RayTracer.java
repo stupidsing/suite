@@ -72,8 +72,8 @@ public class RayTracer {
 		this.scene = scene;
 	}
 
-	public void test() {
-		traceRay(depth, new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
+	public Vector test() {
+		return traceRay(depth, new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
 	}
 
 	public void trace(BufferedImage bufferedImage, int viewDistance) {
