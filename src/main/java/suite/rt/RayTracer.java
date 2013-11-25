@@ -123,7 +123,7 @@ public class RayTracer {
 
 			if (depth > 0 && (reflectionIndex > 0f || refractionIndex > 0f)) {
 
-				// Reflection
+				// Account reflection
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
 				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
 
@@ -131,7 +131,7 @@ public class RayTracer {
 				Vector reflectPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
-				// Refraction
+				// Account refraction
 				Vector refractColor;
 
 				if (refractionIndex > 0f) {
@@ -148,6 +148,7 @@ public class RayTracer {
 			} else {
 				color = Vector.origin;
 
+				// Account light sources
 				for (LightSource lightSource : lightSources) {
 					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
 					float lightDot = Vector.dot(lightDir, normal);
