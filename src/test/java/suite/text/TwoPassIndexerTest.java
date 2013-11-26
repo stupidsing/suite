@@ -13,8 +13,10 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import suite.text.TwoPassIndexer.Key;
+import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
+import suite.util.FunUtil;
+import suite.util.To;
 import suite.util.Util;
 
 public class TwoPassIndexerTest {
@@ -38,40 +40,33 @@ public class TwoPassIndexerTest {
 		for (String filename : filenames)
 			indexer.pass1(filename, readFile(filename));
 
-		Map<String, List<Key>> map = indexer.getKeysByWord();
+		Map<String, List<Reference>> map = indexer.getKeysByWord();
 
-		List<Entry<String, List<Key>>> entries = Util.sort(map.entrySet(), new Comparator<Entry<String, List<Key>>>() {
-			public int compare(Entry<String, List<Key>> entry0, Entry<String, List<Key>> entry1) {
+		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet(), new Comparator<Entry<String, List<Reference>>>() {
+			public int compare(Entry<String, List<Reference>> entry0, Entry<String, List<Reference>> entry1) {
 				return entry1.getValue().size() - entry0.getValue().size();
 			}
 		});
 
+		System.out.println("Most popular key words:");
+
 		for (int i = 0; i < 32; i++) {
-			Entry<String, List<Key>> entry = entries.get(i);
+			Entry<String, List<Reference>> entry = entries.get(i);
 			System.out.println(String.format("%-5d \"%s\"", entry.getValue().size(), entry.getKey()));
 		}
+
+		System.out.println();
+
+		for (Reference key : FunUtil.iter(indexer.search("IOException")))
+			System.out.println("IOException found in " + key);
 	}
 
 	private String readFile(String filename) throws IOException {
-		StringBuilder sb = new StringBuilder();
-
 		try (FileInputStream fis = new FileInputStream(filename);
 				InputStreamReader isr = new InputStreamReader(fis, FileUtil.charset);
 				BufferedReader br = new BufferedReader(isr)) {
-			int size = 4096, nCharsRead;
-			char buffer[] = new char[size];
-
-			while ((nCharsRead = br.read(buffer)) >= 0)
-				for (int index = 0; index < nCharsRead; index++) {
-					char ch = buffer[index];
-
-					// Fits in trie range; ignore control characters
-					if (32 <= ch && ch < 128)
-						sb.append(ch);
-				}
+			return To.string(br);
 		}
-
-		return sb.toString();
 	}
 
 }
