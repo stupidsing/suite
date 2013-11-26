@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.fp.RbTreeMap;
 import suite.node.Atom;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -42,24 +43,12 @@ public class Bnf {
 		private final Source<State> noResult = FunUtil.nullSource();
 
 		private class State {
-			private Stack stack;
 			private int end;
+			private RbTreeMap<String, Integer> entities;
 
-			public State(Stack stack, int end) {
-				this.stack = stack;
+			private State(int end, RbTreeMap<String, Integer> entities) {
 				this.end = end;
-			}
-		}
-
-		private class Stack {
-			private Stack previous;
-			private String entity;
-			private int end;
-
-			public Stack(Stack previous, String entity, int end) {
-				this.previous = previous;
-				this.entity = entity;
-				this.end = end;
+				this.entities = entities;
 			}
 		}
 
@@ -69,7 +58,7 @@ public class Bnf {
 		}
 
 		private void parse(int end, String entity) {
-			Source<State> source = parseEntity(new State(null, end), null, entity);
+			Source<State> source = parseEntity(new State(end, new RbTreeMap<String, Integer>()), entity);
 			State state;
 
 			while ((state = source.source()) != null)
@@ -79,7 +68,7 @@ public class Bnf {
 			throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
 		}
 
-		private Source<State> parseEntity(State state, Stack stack, String entity) {
+		private Source<State> parseEntity(State state, String entity) {
 			int end = state.end;
 
 			while (end < length && Character.isWhitespace(in.charAt(end)))
@@ -88,20 +77,20 @@ public class Bnf {
 			if (trace)
 				LogUtil.info("parseEntity(" + entity + "): " + in.substring(end));
 
-			State state1 = new State(stack, end);
+			State state1 = new State(end, state.entities);
 			List<List<String>> grammar;
 			Source<State> result;
 
 			if (entity.length() > 1 && entity.endsWith("?"))
-				result = FunUtil.cons(state1, parseEntity(state1, stack, Util.substr(entity, 0, -1)));
+				result = FunUtil.cons(state1, parseEntity(state1, Util.substr(entity, 0, -1)));
 			else if (entity.length() > 1 && entity.endsWith("*"))
-				result = parseRepeat(state1, stack, Util.substr(entity, 0, -1));
+				result = parseRepeat(state1, Util.substr(entity, 0, -1));
 			else if (entity.equals("<identifier>"))
 				result = parseExpect(state1, expectIdentifier(end));
 			else if (entity.startsWith(charExcept))
 				result = parseExpect(state1, expectCharExcept(end, entity.substring(charExcept.length())));
 			else if ((grammar = grammars.get(entity)) != null)
-				result = parseGrammar(state1, stack, entity, grammar);
+				result = parseGrammar(state1, entity, grammar);
 			else if (entity.length() > 1 && entity.startsWith("\"") && entity.endsWith("\""))
 				result = parseExpect(state1, expectString(end, Util.substr(entity, 1, -1)));
 			else if (in.startsWith(entity, end))
@@ -117,7 +106,7 @@ public class Bnf {
 			return result;
 		}
 
-		private Source<State> parseRepeat(final State state, final Stack stack, final String entity) {
+		private Source<State> parseRepeat(final State state, final String entity) {
 			return new Source<State>() {
 				private State state_ = state;
 				private Deque<Source<State>> sources = new ArrayDeque<>();
@@ -126,7 +115,7 @@ public class Bnf {
 					State state0 = state_;
 
 					if (state0 != null) {
-						sources.push(parseEntity(state0, stack, entity));
+						sources.push(parseEntity(state0, entity));
 
 						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
 							sources.pop();
@@ -137,28 +126,22 @@ public class Bnf {
 			};
 		}
 
-		private Source<State> parseGrammar(final State state, Stack stack, String entity, List<List<String>> grammar) {
-			Stack s = stack;
-			boolean reentrance = false;
-
-			while (s != null) {
-				reentrance |= Util.equals(entity, s.entity) && state.end == s.end;
-				s = s.previous;
-			}
-
+		private Source<State> parseGrammar(State state, final String entity, List<List<String>> grammar) {
+			Integer lastEnd = state.entities.get(entity);
+			boolean reentrance = lastEnd != null && lastEnd.intValue() == state.end;
 			Source<State> result;
 
 			if (!reentrance) {
-				final Stack stack1 = new Stack(stack, entity, state.end);
+				final State state1 = new State(state.end, state.entities.replace(entity, state.end));
 
 				result = FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
 					public Source<State> apply(List<String> list) {
-						Source<State> source = FunUtil.asSource(state);
+						Source<State> source = FunUtil.asSource(state1);
 
 						for (final String item : list)
 							source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 								public Source<State> apply(State state) {
-									return parseEntity(state, stack1, item);
+									return parseEntity(state, item);
 								}
 							}, source));
 
@@ -172,7 +155,7 @@ public class Bnf {
 		}
 
 		private Source<State> parseExpect(State state, int end) {
-			return state.end < end ? FunUtil.asSource(new State(state.stack, end)) : noResult;
+			return state.end < end ? FunUtil.asSource(new State(end, state.entities)) : noResult;
 		}
 
 		private int expectIdentifier(int end) {
