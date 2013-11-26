@@ -77,24 +77,55 @@ public class RayTracer {
 		return traceRay(depth, new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
 	}
 
-	public void trace(BufferedImage bufferedImage, int viewDistance) {
-		int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
-		int centreX = width / 2, centreY = height / 2;
+	public void trace(BufferedImage bufferedImage, final int viewDistance) {
+		int nThreads = 4;
+		final int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
+		final int centreX = width / 2, centreY = height / 2;
+		final Vector pixels[][] = new Vector[width][height];
+		final int xs[] = new int[nThreads + 1];
+
+		for (int i = 0; i <= nThreads; i++)
+			xs[i] = width * i / nThreads;
+
+		Thread threads[] = new Thread[nThreads];
+
+		for (int i = 0; i < nThreads; i++) {
+			final int i1 = i;
+
+			threads[i1] = new Thread() {
+				public void run() {
+					for (int x = xs[i1]; x < xs[i1 + 1]; x++)
+						for (int y = 0; y < height; y++) {
+							Vector lit;
+
+							try {
+								Vector startPoint = Vector.origin;
+								Vector dir = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
+								lit = traceRay(depth, new Ray(startPoint, dir));
+							} catch (Exception ex) {
+								LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
+								lit = new Vector(1f, 1f, 1f);
+							}
+
+							pixels[x][y] = lit;
+						}
+				}
+			};
+		}
+
+		for (int i = 0; i < nThreads; i++)
+			threads[i].start();
+		for (int i = 0; i < nThreads; i++)
+			try {
+				threads[i].join();
+			} catch (InterruptedException ex) {
+				throw new RuntimeException(ex);
+			}
 
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
-				Vector lit;
-
-				try {
-					Vector startPoint = Vector.origin;
-					Vector dir = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
-					lit = limit(traceRay(depth, new Ray(startPoint, dir)));
-				} catch (Exception ex) {
-					LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
-					lit = new Vector(1f, 1f, 1f);
-				}
-
-				bufferedImage.setRGB(x, y, new Color(lit.getX(), lit.getY(), lit.getZ()).getRGB());
+				Vector pixel = limit(pixels[x][y]);
+				bufferedImage.setRGB(x, y, new Color(pixel.getX(), pixel.getY(), pixel.getZ()).getRGB());
 			}
 	}
 
