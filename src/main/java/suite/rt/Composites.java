@@ -7,28 +7,11 @@ import java.util.List;
 
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayIntersection;
 import suite.rt.RayTracer.RayTraceObject;
+import suite.util.FunUtil.Fun;
+import suite.util.Pair;
 
 public class Composites {
-
-	public class Union implements RayTraceObject {
-		private Collection<RayTraceObject> objects;
-
-		public Union(Collection<RayTraceObject> objects) {
-			this.objects = objects;
-		}
-
-		public List<RayHit> hit(Ray ray) {
-			List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
-			List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
-
-			for (int i = 1; i < rayHitsList.size(); i++)
-				rayHits = union(rayHits, rayHitsList.get(i));
-
-			return rayHits;
-		}
-	}
 
 	public class Intersect implements RayTraceObject {
 		private Collection<RayTraceObject> objects;
@@ -38,13 +21,11 @@ public class Composites {
 		}
 
 		public List<RayHit> hit(Ray ray) {
-			List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
-			List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
-
-			for (int i = 1; i < rayHitsList.size(); i++)
-				rayHits = intersect(rayHits, rayHitsList.get(i));
-
-			return rayHits;
+			return join(objects, ray, new Fun<Pair<Boolean, Boolean>, Boolean>() {
+				public Boolean apply(Pair<Boolean, Boolean> pair) {
+					return pair.t0 && pair.t1;
+				}
+			});
 		}
 	}
 
@@ -60,22 +41,30 @@ public class Composites {
 		public List<RayHit> hit(Ray ray) {
 			List<RayHit> subjectRayHits = RayTracer.filterRayHits(subject.hit(new Ray(ray.startPoint, ray.dir)));
 			List<RayHit> objectRayHits = RayTracer.filterRayHits(object.hit(new Ray(ray.startPoint, ray.dir)));
-
-			// Adds a dummy and negate the hits
-			objectRayHits.add(new RayHit() {
-				public float advance() {
-					return 0f;
-				}
-
-				public RayIntersection intersection() {
-					return null;
-				}
-			});
-
 			Collections.sort(subjectRayHits, RayHit.comparator);
 			Collections.sort(objectRayHits, RayHit.comparator);
 
-			return intersect(subjectRayHits, objectRayHits);
+			return join(subjectRayHits, objectRayHits, new Fun<Pair<Boolean, Boolean>, Boolean>() {
+				public Boolean apply(Pair<Boolean, Boolean> pair) {
+					return pair.t0 && !pair.t1;
+				}
+			});
+		}
+	}
+
+	public class Union implements RayTraceObject {
+		private Collection<RayTraceObject> objects;
+
+		public Union(Collection<RayTraceObject> objects) {
+			this.objects = objects;
+		}
+
+		public List<RayHit> hit(Ray ray) {
+			return join(objects, ray, new Fun<Pair<Boolean, Boolean>, Boolean>() {
+				public Boolean apply(Pair<Boolean, Boolean> pair) {
+					return pair.t0 || pair.t1;
+				}
+			});
 		}
 	}
 
@@ -90,15 +79,17 @@ public class Composites {
 		return rayHitsList;
 	}
 
-	private List<RayHit> intersect(List<RayHit> rayHits, List<RayHit> intersectRayHits) {
-		return join(rayHits, intersectRayHits, false);
+	private List<RayHit> join(Collection<RayTraceObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
+		List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
+		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
+
+		for (int i = 1; i < rayHitsList.size(); i++)
+			rayHits = join(rayHits, rayHitsList.get(i), fun);
+
+		return rayHits;
 	}
 
-	private List<RayHit> union(List<RayHit> rayHits, List<RayHit> intersectRayHits) {
-		return join(rayHits, intersectRayHits, true);
-	}
-
-	private List<RayHit> join(List<RayHit> rayHits0, List<RayHit> rayHits1, boolean isUnion) {
+	private List<RayHit> join(List<RayHit> rayHits0, List<RayHit> rayHits1, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<RayHit> rayHits2 = new ArrayList<>();
 		boolean isInside0 = false, isInside1 = false;
 		int size0 = rayHits0.size(), size1 = rayHits1.size();
@@ -108,7 +99,6 @@ public class Composites {
 		while (index0 < size0 && index1 < size1) {
 			RayHit rayHit0 = index0 < size0 ? rayHits1.get(index0) : null;
 			RayHit rayHit1 = index1 < size1 ? rayHits1.get(index1) : null;
-
 			boolean isAdvance0 = rayHit0 != null ? rayHit1 != null ? rayHit0.advance() < rayHit1.advance() : true : false;
 
 			if (isAdvance0) {
@@ -120,7 +110,7 @@ public class Composites {
 			}
 
 			boolean isInsideBefore = isInsideNow;
-			isInsideNow = isUnion ? (isInside0 || isInside1) : (isInside0 && isInside1);
+			isInsideNow = fun.apply(Pair.create(isInside0, isInside1));
 
 			if (isInsideBefore != isInsideNow)
 				rayHits2.add(isAdvance0 ? rayHit0 : rayHit1);
