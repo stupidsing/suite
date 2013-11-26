@@ -14,6 +14,7 @@ public class RayTracer {
 	private int depth = 4;
 	private float refractiveIndexRatio = 1.1f;
 	private float mix = 0.1f;
+	private Vector ambient = Vector.origin;
 
 	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
@@ -199,7 +200,7 @@ public class RayTracer {
 
 			color1 = mc(color, material.surfaceColor());
 		} else
-			color1 = Vector.origin;
+			color1 = ambient;
 
 		return color1;
 	}
