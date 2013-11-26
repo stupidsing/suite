@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.text.Indexer.Key;
 import suite.util.DefaultValueMap;
 import suite.util.FunUtil.Fun;
 
@@ -21,7 +20,25 @@ public class TwoPassIndexer {
 		}
 	});
 
-	public void pass1(String id, String text) {
+	public static class Key {
+		private String id;
+		private int offset;
+
+		public Key(String id, int offset) {
+			this.id = id;
+			this.offset = offset;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public int getOffset() {
+			return offset;
+		}
+	}
+
+	public void pass0(String id, String text) {
 		int length = text.length();
 
 		for (int start = 0; start < length; start++) {
@@ -35,7 +52,7 @@ public class TwoPassIndexer {
 		}
 	}
 
-	public void pass2(String id, String text) {
+	public void pass1(String id, String text) {
 		int length = text.length();
 
 		for (int start = 0; start < length; start++) {

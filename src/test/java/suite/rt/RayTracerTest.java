@@ -38,11 +38,11 @@ public class RayTracerTest {
 	@Test
 	public void testMess() throws IOException {
 		RayTraceObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr, 0.8f));
-		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg, 0.8f));
-		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb, 0.8f));
+		RayTraceObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr, 1f));
+		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg, 1f));
+		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb, 1f));
 		RayTraceObject plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
-		RayTraceObject triangle = new Triangle(v(0.3f, 0.3f, 3f), v(0.3f, 0f, 0f), v(0f, 0.3f, 0f), glassy(cc, 0.8f));
+		RayTraceObject triangle = new Triangle(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc, 1f));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
 		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);

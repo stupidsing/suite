@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import suite.text.Indexer.Key;
+import suite.text.TwoPassIndexer.Key;
 import suite.util.FileUtil;
 import suite.util.Util;
 
@@ -33,10 +33,10 @@ public class TwoPassIndexerTest {
 		}
 
 		for (String filename : filenames)
-			indexer.pass1(filename, readFile(filename));
+			indexer.pass0(filename, readFile(filename));
 
 		for (String filename : filenames)
-			indexer.pass2(filename, readFile(filename));
+			indexer.pass1(filename, readFile(filename));
 
 		Map<String, List<Key>> map = indexer.getKeysByWord();
 
