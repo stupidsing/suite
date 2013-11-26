@@ -98,29 +98,36 @@ public class Composites {
 		return join(rayHits, intersectRayHits, true);
 	}
 
-	private List<RayHit> join(List<RayHit> rayHits, List<RayHit> joinRayHits, boolean isUnion) {
-		List<RayHit> rayHits1 = new ArrayList<>();
-		boolean isInside = false;
-		RayHit rayHit;
-		int i = 0, j = 0;
+	private List<RayHit> join(List<RayHit> rayHits0, List<RayHit> rayHits1, boolean isUnion) {
+		List<RayHit> rayHits2 = new ArrayList<>();
+		boolean isInside0 = false, isInside1 = false;
+		int size0 = rayHits0.size(), size1 = rayHits1.size();
+		int index0 = 0, index1 = 0;
+		boolean isInsideNow = false;
 
-		while (i < joinRayHits.size()) {
-			RayHit joinRayHit = joinRayHits.get(i);
+		while (index0 < size0 && index1 < size1) {
+			RayHit rayHit0 = index0 < size0 ? rayHits1.get(index0) : null;
+			RayHit rayHit1 = index1 < size1 ? rayHits1.get(index1) : null;
 
-			while (j < rayHits.size() && (rayHit = rayHits.get(j)).advance() < joinRayHit.advance()) {
-				rayHits1.add(isInside ? rayHit : joinRayHit);
-				j++;
+			boolean isAdvance0 = rayHit0 != null ? rayHit1 != null ? rayHit0.advance() < rayHit1.advance() : true : false;
+
+			if (isAdvance0) {
+				isInside0 = !isInside0;
+				index0++;
+			} else {
+				isInside1 = !isInside1;
+				index1++;
 			}
 
-			if (isUnion)
-				rayHits1.add(joinRayHit);
+			boolean isInsideBefore = isInsideNow;
+			isInsideNow = isUnion ? (isInside0 || isInside1) : (isInside0 && isInside1);
 
-			isInside = !isInside;
-			i++;
+			if (isInsideBefore != isInsideNow)
+				rayHits2.add(isAdvance0 ? rayHit0 : rayHit1);
 		}
 
 		// Eliminate duplicates
-		return eliminateDuplicates(rayHits1);
+		return eliminateDuplicates(rayHits2);
 	}
 
 	private List<RayHit> eliminateDuplicates(List<RayHit> rayHits1) {
