@@ -115,6 +115,7 @@ public class RayTracer {
 
 		for (int i = 0; i < nThreads; i++)
 			threads[i].start();
+
 		for (int i = 0; i < nThreads; i++)
 			try {
 				threads[i].join();
