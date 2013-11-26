@@ -30,7 +30,7 @@ public class Planar {
 			Vector v0 = Vector.add(origin, axis0);
 			Vector v1 = Vector.add(origin, axis1);
 			Triangle triangle = new Triangle(origin, axis0, axis1, material);
-			return BoundingBox.bound(Arrays.asList(v0, v1), triangle);
+			return BoundingBox.bound(Arrays.asList(origin, v0, v1), triangle);
 		}
 
 		@Override
