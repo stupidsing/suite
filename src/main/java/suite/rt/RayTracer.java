@@ -164,7 +164,7 @@ public class RayTracer {
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
 				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
 				float cos1 = 1 - cos;
-				float fresnel = mix + (cos1 * cos1 * cos1) * (1 - mix);
+				float fresnel = mix + cos1 * cos1 * cos1 * (1 - mix);
 				Vector reflectPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
