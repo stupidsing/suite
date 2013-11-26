@@ -10,7 +10,7 @@ import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayTraceObject;
 
-public class Planar {
+public class Planars {
 
 	public static class Parallelogram extends PlanarObject implements RayTraceObject {
 		public Parallelogram(Vector origin, Vector axis0, Vector axis1, Material material) {

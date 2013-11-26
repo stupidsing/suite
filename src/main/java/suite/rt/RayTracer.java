@@ -36,6 +36,12 @@ public class RayTracer {
 		public float advance();
 
 		public RayIntersection intersection();
+
+		public Comparator<RayHit> comparator = new Comparator<RayHit>() {
+			public int compare(RayHit rh0, RayHit rh1) {
+				return rh0.advance() < rh1.advance() ? -1 : 1;
+			}
+		};
 	}
 
 	public interface RayIntersection {
@@ -211,17 +217,21 @@ public class RayTracer {
 	}
 
 	private RayHit nearestHit(List<RayHit> rayHits) {
+		List<RayHit> rayHits1 = filterRayHits(rayHits);
+		return !rayHits1.isEmpty() ? Collections.min(rayHits1, RayHit.comparator) : null;
+	}
+
+	/**
+	 * Remove hits that are shooting backwards.
+	 */
+	public static List<RayHit> filterRayHits(List<RayHit> rayHits) {
 		List<RayHit> rayHits1 = new ArrayList<>();
 
 		for (RayHit rayHit : rayHits)
 			if (rayHit.advance() > 0)
 				rayHits1.add(rayHit);
 
-		return !rayHits1.isEmpty() ? Collections.min(rayHits1, new Comparator<RayHit>() {
-			public int compare(RayHit rh0, RayHit rh1) {
-				return rh0.advance() < rh1.advance() ? -1 : 1;
-			}
-		}) : null;
+		return rayHits1;
 	}
 
 	/**

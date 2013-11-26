@@ -58,24 +58,25 @@ public class BoundingBox implements RayTraceObject {
 	}
 
 	private boolean isIntersect(float startX, float dirX, float minX, float maxX, float startY, float dirY, float minY, float maxY) {
+		boolean isIntersect;
+
 		if (Math.abs(dirX) > MathUtil.epsilon) {
 			float gradient = dirY / dirX;
-			float y0_ = (minX - startX) * gradient + startY;
-			float y1_ = (maxX - startX) * gradient + startY;
-
 			float y0, y1;
 
-			if (y0_ < y1_) {
-				y0 = y0_;
-				y1 = y1_;
+			if (gradient > 0) {
+				y0 = (minX - startX) * gradient + startY;
+				y1 = (maxX - startX) * gradient + startY;
 			} else {
-				y0 = y1_;
-				y1 = y0_;
+				y0 = (maxX - startX) * gradient + startY;
+				y1 = (minX - startX) * gradient + startY;
 			}
 
-			return minY <= y1 && y0 <= maxY;
+			isIntersect = minY <= y1 && y0 <= maxY;
 		} else
-			return minX <= startX && startX <= maxX;
+			isIntersect = minX <= startX && startX <= maxX;
+
+		return isIntersect;
 	}
 
 }

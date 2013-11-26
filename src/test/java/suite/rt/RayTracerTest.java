@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 
 import suite.math.Vector;
-import suite.rt.Planar.Triangle;
+import suite.rt.Planars.Triangle;
 import suite.rt.RayTracer.LightSource;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.RayTraceObject;
