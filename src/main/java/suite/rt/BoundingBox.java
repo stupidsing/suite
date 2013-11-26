@@ -1,5 +1,7 @@
 package suite.rt;
 
+import java.util.Collection;
+
 import suite.math.MathUtil;
 import suite.math.Vector;
 import suite.rt.RayTracer.Ray;
@@ -15,6 +17,24 @@ public class BoundingBox implements RayTraceObject {
 		this.min = min;
 		this.max = max;
 		this.object = object;
+	}
+
+	public static BoundingBox bound(Collection<Vector> points, RayTraceObject object) {
+		float min = Float.NEGATIVE_INFINITY, max = Float.POSITIVE_INFINITY;
+		float minX = max, minY = max, minZ = max;
+		float maxX = min, maxY = min, maxZ = min;
+
+		for (Vector point : points) {
+			float x = point.getX(), y = point.getY(), z = point.getZ();
+			minX = Math.min(minX, x);
+			minY = Math.min(minY, y);
+			minZ = Math.min(minZ, z);
+			maxX = Math.max(maxX, x);
+			maxY = Math.max(maxY, y);
+			maxZ = Math.max(maxZ, z);
+		}
+
+		return new BoundingBox(new Vector(minX, minY, minZ), new Vector(maxX, maxY, maxZ), object);
 	}
 
 	@Override

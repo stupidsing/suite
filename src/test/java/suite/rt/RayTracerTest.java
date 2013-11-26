@@ -42,7 +42,7 @@ public class RayTracerTest {
 		RayTraceObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg, 1f));
 		RayTraceObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb, 1f));
 		RayTraceObject plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
-		RayTraceObject triangle = new Triangle(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc, 1f));
+		RayTraceObject triangle = Triangle.c(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc, 1f));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
 		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);

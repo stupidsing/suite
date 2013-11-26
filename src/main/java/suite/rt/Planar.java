@@ -1,5 +1,7 @@
 package suite.rt;
 
+import java.util.Arrays;
+
 import suite.math.Vector;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
@@ -22,6 +24,13 @@ public class Planar {
 	public static class Triangle extends PlanarObject implements RayTraceObject {
 		public Triangle(Vector origin, Vector axis0, Vector axis1, Material material) {
 			super(origin, axis0, axis1, material);
+		}
+
+		public static RayTraceObject c(Vector origin, Vector axis0, Vector axis1, Material material) {
+			Vector v0 = Vector.add(origin, axis0);
+			Vector v1 = Vector.add(origin, axis1);
+			Triangle triangle = new Triangle(origin, axis0, axis1, material);
+			return BoundingBox.bound(Arrays.asList(v0, v1), triangle);
 		}
 
 		@Override
