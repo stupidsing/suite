@@ -15,6 +15,14 @@ public class Planar {
 			super(origin, axis0, axis1, material);
 		}
 
+		public static RayTraceObject c(Vector origin, Vector axis0, Vector axis1, Material material) {
+			Vector v0 = Vector.add(origin, axis0);
+			Vector v1 = Vector.add(origin, axis1);
+			Vector v2 = Vector.add(origin, Vector.add(axis0, axis1));
+			Parallelogram parallelogram = new Parallelogram(origin, axis0, axis1, material);
+			return BoundingBox.bound(Arrays.asList(origin, v0, v1, v2), parallelogram);
+		}
+
 		@Override
 		public boolean isHit(float x, float y) {
 			return 0f <= x && x < 1f && 0f <= y && y < 1f;
