@@ -12,25 +12,25 @@ public class BnfTest {
 	@Test
 	public void testNumber() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		bnf.parse("3456");
+		System.out.println(bnf.parse("3456"));
 	}
 
 	@Test
 	public void testExpr() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/expression.bnf"));
-		bnf.parse("12 + 34 + 56 + 78");
+		System.out.println(bnf.parse("12 + 34 + 56 + 78"));
 	}
 
 	@Test
 	public void testJava0() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/java.bnf"));
-		bnf.parse("public class A { int a; }");
+		System.out.println(bnf.parse("public class A { int a; }"));
 	}
 
 	@Test
 	public void testJava() throws IOException {
 		Bnf bnf = new Bnf(new FileReader("src/main/bnf/java.bnf"));
-		bnf.parse(To.string(new FileReader("src/test/java/suite/parser/BnfTest.java")));
+		System.out.println(bnf.parse(To.string(new FileReader("src/test/java/suite/parser/BnfTest.java"))));
 	}
 
 }

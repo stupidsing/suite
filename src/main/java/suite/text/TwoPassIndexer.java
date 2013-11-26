@@ -35,16 +35,16 @@ public class TwoPassIndexer {
 			this.offset = offset;
 		}
 
+		public String toString() {
+			return id + "(" + offset + ")";
+		}
+
 		public String getId() {
 			return id;
 		}
 
 		public int getOffset() {
 			return offset;
-		}
-
-		public String toString() {
-			return id + "(" + offset + ")";
 		}
 	}
 
