@@ -65,7 +65,7 @@ public class TwoPassIndexerTest {
 				for (int index = 0; index < nCharsRead; index++) {
 					char ch = buffer[index];
 
-					// Fit in trie range; ignore control characters
+					// Fits in trie range; ignore control characters
 					if (32 <= ch && ch < 128)
 						sb.append(ch);
 				}
