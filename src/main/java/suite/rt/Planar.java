@@ -1,6 +1,8 @@
 package suite.rt;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import suite.math.Vector;
 import suite.rt.RayTracer.Material;
@@ -51,6 +53,7 @@ public class Planar {
 		private Vector origin;
 		private Vector axis0, axis1;
 		private Plane plane;
+		private float invAxis0, invAxis1;
 
 		public PlanarObject(Vector origin, Vector axis0, Vector axis1, Material material) {
 			this.origin = origin;
@@ -59,22 +62,24 @@ public class Planar {
 
 			Vector normal = Vector.cross(axis0, axis1);
 			plane = new Plane(normal, Vector.dot(origin, normal), material);
+			invAxis0 = 1f / Vector.normsq(axis0);
+			invAxis1 = 1f / Vector.normsq(axis1);
 		}
 
 		@Override
-		public RayHit hit(final Ray ray) {
-			RayHit rayHit;
-			RayHit rayHit0 = plane.hit(ray);
+		public List<RayHit> hit(final Ray ray) {
+			List<RayHit> rayHits = new ArrayList<>();
 
-			if (rayHit0 != null) {
-				Vector planarDir = Vector.sub(rayHit0.intersection().hitPoint(), origin);
-				float x = Vector.dot(planarDir, axis0) / Vector.normsq(axis0);
-				float y = Vector.dot(planarDir, axis1) / Vector.normsq(axis1);
-				rayHit = isHit(x, y) ? rayHit0 : null;
-			} else
-				rayHit = null;
+			for (RayHit rayHit : plane.hit(ray)) {
+				Vector planarDir = Vector.sub(rayHit.intersection().hitPoint(), origin);
+				float x = Vector.dot(planarDir, axis0) * invAxis0;
+				float y = Vector.dot(planarDir, axis1) * invAxis1;
 
-			return rayHit;
+				if (isHit(x, y))
+					rayHits.add(rayHit);
+			}
+
+			return rayHits;
 		}
 
 		public abstract boolean isHit(float x, float y);

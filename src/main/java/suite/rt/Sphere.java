@@ -1,5 +1,9 @@
 package suite.rt;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import suite.math.Vector;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
@@ -27,53 +31,49 @@ public class Sphere implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Ray ray) {
+	public List<RayHit> hit(final Ray ray) {
 		float a = Vector.normsq(ray.dir);
 		Vector start0 = Vector.sub(ray.startPoint, centre);
-		float adv; // Distance the ray travelled, positive if hits
 
 		float b = 2 * Vector.dot(start0, ray.dir);
 		float c = Vector.normsq(start0) - radius * radius;
 		float discriminant = b * b - 4 * a * c;
+		List<RayHit> rayHits;
 
 		if (discriminant > 0) { // Hit?
 			float sqrt = (float) Math.sqrt(discriminant);
-
-			if (-b - sqrt > 0)
-				adv = (-b - sqrt) / (2f * a);
-			else
-				adv = (-b + sqrt) / (2f * a);
+			float denom = 1 / (2f * a);
+			rayHits = Arrays.asList(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else
-			adv = -1f;
+			rayHits = Collections.emptyList();
 
-		if (adv > RayTracer.negligibleAdvance) {
-			final float advance = adv;
+		return rayHits;
+	}
 
-			return new RayHit() {
-				public float advance() {
-					return advance;
-				}
+	private RayHit rayHit(final Ray ray, final float advance) {
+		return new RayHit() {
+			public float advance() {
+				return advance;
+			}
 
-				public RayIntersection intersection() {
-					final Vector hitPoint = ray.hitPoint(advance);
+			public RayIntersection intersection() {
+				final Vector hitPoint = ray.hitPoint(advance);
 
-					return new RayIntersection() {
-						public Vector hitPoint() {
-							return hitPoint;
-						}
+				return new RayIntersection() {
+					public Vector hitPoint() {
+						return hitPoint;
+					}
 
-						public Vector normal() {
-							return Vector.sub(hitPoint, centre);
-						}
+					public Vector normal() {
+						return Vector.sub(hitPoint, centre);
+					}
 
-						public Material material() {
-							return material;
-						}
-					};
-				}
-			};
-		} else
-			return null;
+					public Material material() {
+						return material;
+					}
+				};
+			}
+		};
 	}
 
 }

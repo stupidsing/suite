@@ -2,7 +2,11 @@ package suite.rt;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import suite.math.Vector;
 import suite.util.LogUtil;
@@ -24,7 +28,7 @@ public class RayTracer {
 		/**
 		 * Calculates hit point with a ray. Assumes direction is normalized.
 		 */
-		public RayHit hit(Ray ray);
+		public List<RayHit> hit(Ray ray);
 	}
 
 	public interface RayHit {
@@ -132,7 +136,8 @@ public class RayTracer {
 	}
 
 	private Vector traceRay(int depth, Ray ray) {
-		RayHit rayHit = scene.hit(ray);
+		RayHit rayHit = nearestHit(scene.hit(ray));
+
 		Vector color1;
 
 		if (rayHit != null) {
@@ -187,7 +192,7 @@ public class RayTracer {
 
 					if (lightDot > 0) { // Facing the light
 						Vector lightPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
-						RayHit lightRayHit = scene.hit(new Ray(lightPoint, lightDir));
+						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
@@ -203,6 +208,20 @@ public class RayTracer {
 			color1 = ambient;
 
 		return color1;
+	}
+
+	private RayHit nearestHit(List<RayHit> rayHits) {
+		List<RayHit> rayHits1 = new ArrayList<>();
+
+		for (RayHit rayHit : rayHits)
+			if (rayHit.advance() > 0)
+				rayHits1.add(rayHit);
+
+		return !rayHits1.isEmpty() ? Collections.min(rayHits1, new Comparator<RayHit>() {
+			public int compare(RayHit rh0, RayHit rh1) {
+				return rh0.advance() < rh1.advance() ? -1 : 1;
+			}
+		}) : null;
 	}
 
 	/**

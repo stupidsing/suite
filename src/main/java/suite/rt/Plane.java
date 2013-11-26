@@ -1,5 +1,9 @@
 package suite.rt;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import suite.math.MathUtil;
 import suite.math.Vector;
 import suite.rt.RayTracer.Material;
@@ -21,7 +25,7 @@ public class Plane implements RayTraceObject {
 	}
 
 	@Override
-	public RayHit hit(final Ray ray) {
+	public List<RayHit> hit(final Ray ray) {
 		float denum = Vector.dot(normal, ray.dir);
 		float adv;
 
@@ -32,8 +36,8 @@ public class Plane implements RayTraceObject {
 
 		final float advance = adv;
 
-		if (advance > RayTracer.negligibleAdvance)
-			return new RayHit() {
+		if (advance > RayTracer.negligibleAdvance) {
+			RayHit rayHit = new RayHit() {
 				public float advance() {
 					return advance;
 				}
@@ -56,8 +60,10 @@ public class Plane implements RayTraceObject {
 					};
 				}
 			};
-		else
-			return null;
+
+			return Arrays.asList(rayHit);
+		} else
+			return Collections.<RayHit> emptyList();
 	}
 
 }
