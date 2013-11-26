@@ -6,9 +6,9 @@ import java.util.Iterator;
 import suite.util.Pair;
 import suite.util.Util;
 
-public class ImmutableRbTreeMap<K extends Comparable<K>, V> {
+public class RbTreeMap<K extends Comparable<K>, V> {
 
-	private ImmutableRbTree<Pair<K, V>> tree = new ImmutableRbTree<Pair<K, V>>(new Comparator<Pair<K, V>>() {
+	private RbTree<Pair<K, V>> tree = new RbTree<Pair<K, V>>(new Comparator<Pair<K, V>>() {
 		public int compare(Pair<K, V> p0, Pair<K, V> p1) {
 			K k0 = p0 != null ? p0.t0 : null;
 			K k1 = p1 != null ? p1.t0 : null;
@@ -16,10 +16,10 @@ public class ImmutableRbTreeMap<K extends Comparable<K>, V> {
 		}
 	});
 
-	public ImmutableRbTreeMap() {
+	public RbTreeMap() {
 	}
 
-	public ImmutableRbTreeMap(ImmutableRbTree<Pair<K, V>> tree) {
+	public RbTreeMap(RbTree<Pair<K, V>> tree) {
 		this.tree = tree;
 	}
 
@@ -32,12 +32,12 @@ public class ImmutableRbTreeMap<K extends Comparable<K>, V> {
 		return tree.iterator();
 	}
 
-	public ImmutableRbTreeMap<K, V> put(K k, V v) {
-		return new ImmutableRbTreeMap<K, V>(tree.add(Pair.create(k, v)));
+	public RbTreeMap<K, V> put(K k, V v) {
+		return new RbTreeMap<K, V>(tree.add(Pair.create(k, v)));
 	}
 
-	public ImmutableRbTreeMap<K, V> replace(K k, V v) {
-		return new ImmutableRbTreeMap<K, V>(tree.replace(Pair.create(k, v)));
+	public RbTreeMap<K, V> replace(K k, V v) {
+		return new RbTreeMap<K, V>(tree.replace(Pair.create(k, v)));
 	}
 
 	@Override

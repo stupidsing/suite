@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 
-public class ImmutableRbTree<T> implements Iterable<T> {
+public class RbTree<T> implements Iterable<T> {
 
 	private Node<T> root;
 	private Comparator<T> comparator;
@@ -23,11 +23,11 @@ public class ImmutableRbTree<T> implements Iterable<T> {
 		}
 	}
 
-	public ImmutableRbTree(Comparator<T> comparator) {
+	public RbTree(Comparator<T> comparator) {
 		this(null, comparator);
 	}
 
-	private ImmutableRbTree(Node<T> root, Comparator<T> comparator) {
+	private RbTree(Node<T> root, Comparator<T> comparator) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -81,7 +81,7 @@ public class ImmutableRbTree<T> implements Iterable<T> {
 		return null;
 	}
 
-	public ImmutableRbTree<T> add(T t) {
+	public RbTree<T> add(T t) {
 		return add(t, false);
 	}
 
@@ -91,17 +91,17 @@ public class ImmutableRbTree<T> implements Iterable<T> {
 	 * 
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public ImmutableRbTree<T> replace(T t) {
+	public RbTree<T> replace(T t) {
 		return add(t, true);
 	}
 
-	private ImmutableRbTree<T> add(T t, boolean isReplace) {
+	private RbTree<T> add(T t, boolean isReplace) {
 		Node<T> node = root;
 
 		if (node != null && !node.isBlack) // Turns red node into black
 			node = new Node<>(true, node.pivot, node.left, node.right);
 
-		return new ImmutableRbTree<>(add(node, t, isReplace), comparator);
+		return new RbTree<>(add(node, t, isReplace), comparator);
 	}
 
 	private Node<T> add(Node<T> node, T t, boolean isReplace) {
