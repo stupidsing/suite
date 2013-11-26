@@ -13,6 +13,7 @@ public class RayTracer {
 
 	private int depth = 4;
 	private float refractiveIndexRatio = 1.1f;
+	private float mix = 0.1f;
 
 	private Collection<LightSource> lightSources;
 	private RayTraceObject scene;
@@ -98,7 +99,6 @@ public class RayTracer {
 	}
 
 	private Vector traceRay(int depth, Ray ray) {
-		float mix = 0.1f;
 		RayHit rayHit = scene.hit(ray);
 		Vector color1;
 
@@ -125,8 +125,8 @@ public class RayTracer {
 				// Account reflection
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
 				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
-
-				float fresnel = mix + ((float) Math.pow(1 - cos, 3)) * (1 - mix);
+				float cos1 = 1 - cos;
+				float fresnel = mix + (cos1 * cos1 * cos1) * (1 - mix);
 				Vector reflectPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
