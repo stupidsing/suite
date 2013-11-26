@@ -5,7 +5,7 @@ import suite.math.Vector;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayHitDetail;
+import suite.rt.RayTracer.RayIntersection;
 import suite.rt.RayTracer.RayTraceObject;
 
 public class Plane implements RayTraceObject {
@@ -38,10 +38,10 @@ public class Plane implements RayTraceObject {
 					return advance;
 				}
 
-				public RayHitDetail detail() {
+				public RayIntersection intersection() {
 					final Vector hitPoint = ray.hitPoint(advance);
 
-					return new RayHitDetail() {
+					return new RayIntersection() {
 						public Vector hitPoint() {
 							return hitPoint;
 						}

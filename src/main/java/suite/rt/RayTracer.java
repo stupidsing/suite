@@ -30,10 +30,10 @@ public class RayTracer {
 	public interface RayHit {
 		public float advance();
 
-		public RayHitDetail detail();
+		public RayIntersection intersection();
 	}
 
-	public interface RayHitDetail {
+	public interface RayIntersection {
 		public Vector hitPoint();
 
 		public Vector normal();
@@ -136,11 +136,11 @@ public class RayTracer {
 		Vector color1;
 
 		if (rayHit != null) {
-			RayHitDetail d = rayHit.detail();
-			Vector hitPoint = d.hitPoint();
-			Vector normal = Vector.norm(d.normal());
+			RayIntersection i = rayHit.intersection();
+			Vector hitPoint = i.hitPoint();
+			Vector normal = Vector.norm(i.normal());
 
-			Material material = d.material();
+			Material material = i.material();
 			float reflectionIndex = material.reflectionIndex();
 			float refractionIndex = material.refractionIndex();
 			Vector color;

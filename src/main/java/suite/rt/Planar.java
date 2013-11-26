@@ -67,7 +67,7 @@ public class Planar {
 			RayHit rayHit0 = plane.hit(ray);
 
 			if (rayHit0 != null) {
-				Vector planarDir = Vector.sub(rayHit0.detail().hitPoint(), origin);
+				Vector planarDir = Vector.sub(rayHit0.intersection().hitPoint(), origin);
 				float x = Vector.dot(planarDir, axis0) / Vector.normsq(axis0);
 				float y = Vector.dot(planarDir, axis1) / Vector.normsq(axis1);
 				rayHit = isHit(x, y) ? rayHit0 : null;
