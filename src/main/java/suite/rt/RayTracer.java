@@ -15,6 +15,7 @@ public class RayTracer {
 
 	public static final float negligibleAdvance = 0.0001f;
 
+	private int nThreads = 4;
 	private int depth = 4;
 	private float refractiveIndexRatio = 1.1f;
 	private float mix = 0.1f;
@@ -83,7 +84,6 @@ public class RayTracer {
 	}
 
 	public void trace(BufferedImage bufferedImage, final int viewDistance) {
-		int nThreads = 4;
 		final int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
 		final int centreX = width / 2, centreY = height / 2;
 		final Vector pixels[][] = new Vector[width][height];
