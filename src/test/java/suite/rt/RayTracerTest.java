@@ -55,7 +55,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereMirror() throws IOException {
-		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cr));
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
 		RayTraceObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, material(cw, 1f, 0f));
 		Scene scene = new Scene(Arrays.asList(sphere, mirror));
 
@@ -69,7 +69,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereReflection() throws IOException {
 		RayTraceObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, material(cr, 1f, 0f));
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, material(cb, 1f, 0f));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -82,7 +82,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereRefraction() throws IOException {
 		RayTraceObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, material(cr, 0f, 1f));
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, material(cb, 0f, 1f));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -95,7 +95,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereSolid() throws IOException {
 		RayTraceObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cr));
+		RayTraceObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -108,8 +108,8 @@ public class RayTracerTest {
 	@Test
 	public void testSpheres() throws IOException {
 		RayTraceObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTraceObject sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cr, 0.8f));
-		RayTraceObject sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cr, 0.8f));
+		RayTraceObject sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb, 0.8f));
+		RayTraceObject sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb, 0.8f));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1.5f));
