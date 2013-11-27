@@ -32,9 +32,8 @@ public class Sphere implements RayTrace {
 
 	@Override
 	public List<RayHit> hit(final Ray ray) {
-		float a = Vector.normsq(ray.dir);
 		Vector start0 = Vector.sub(ray.startPoint, centre);
-
+		float a = Vector.normsq(ray.dir);
 		float b = 2 * Vector.dot(start0, ray.dir);
 		float c = Vector.normsq(start0) - radius * radius;
 		float discriminant = b * b - 4 * a * c;
