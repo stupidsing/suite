@@ -41,23 +41,20 @@ public class RayUtil {
 		int size0 = rayHits0.size(), size1 = rayHits1.size();
 		int index0 = 0, index1 = 0;
 		boolean b0, b1;
-		boolean isInside0 = false, isInside1 = false, isInsideNow = false;
+		boolean isInsideNow = false;
 
 		while ((b0 = index0 < size0) | (b1 = index1 < size1)) {
 			RayHit rayHit0 = b0 ? rayHits0.get(index0) : null;
 			RayHit rayHit1 = b1 ? rayHits1.get(index1) : null;
 			boolean isAdvance0 = b0 ? b1 ? rayHit0.advance() < rayHit1.advance() : true : false;
 
-			if (isAdvance0) {
-				isInside0 = !isInside0;
+			if (isAdvance0)
 				index0++;
-			} else {
-				isInside1 = !isInside1;
+			else
 				index1++;
-			}
 
 			boolean isInsideBefore = isInsideNow;
-			isInsideNow = fun.apply(Pair.create(isInside0, isInside1));
+			isInsideNow = fun.apply(Pair.create(index0 % 2 == 1, index1 % 2 == 1));
 
 			if (isInsideBefore != isInsideNow)
 				rayHits2.add(isAdvance0 ? rayHit0 : rayHit1);
