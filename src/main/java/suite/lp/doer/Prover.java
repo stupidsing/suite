@@ -76,9 +76,10 @@ public class Prover {
 
 		while (true) {
 			// LogUtil.info(Formatter.dump(query));
+			query = query.finalNode();
 
-			Tree tree = Tree.decompose(query);
-			if (tree != null) {
+			if (query instanceof Tree) {
+				Tree tree = (Tree) query;
 				final Node left = tree.getLeft(), right = tree.getRight();
 
 				switch ((TermOp) tree.getOperator()) {
