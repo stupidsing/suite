@@ -21,6 +21,30 @@ public class Matrix {
 		this.v = v;
 	}
 
+	public static Matrix rotate(float angle) {
+		float sin = (float) Math.sin(angle);
+		float cos = (float) Math.cos(angle);
+		return new Matrix(new float[][] { { cos, -sin }, { sin, cos } });
+	}
+
+	public static Matrix rotateX(float angle) {
+		float sin = (float) Math.sin(angle);
+		float cos = (float) Math.cos(angle);
+		return new Matrix(new float[][] { { 0f, 0f, 0f }, { 0f, cos, -sin }, { 0f, sin, cos } });
+	}
+
+	public static Matrix rotateY(float angle) {
+		float sin = (float) Math.sin(angle);
+		float cos = (float) Math.cos(angle);
+		return new Matrix(new float[][] { { cos, 0f, -sin }, { 0f, 0f, 0f }, { sin, 0f, cos } });
+	}
+
+	public static Matrix rotateZ(float angle) {
+		float sin = (float) Math.sin(angle);
+		float cos = (float) Math.cos(angle);
+		return new Matrix(new float[][] { { cos, -sin, 0f }, { sin, cos, 0f }, { 0f, 0f, 0f } });
+	}
+
 	public static Matrix add(Matrix m, Matrix n) {
 		int height = m.height(), width = m.width();
 
