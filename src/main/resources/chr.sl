@@ -44,7 +44,7 @@ chr-retract-list (.c, .cs) .facts0 .factsx
 	, chr-retract-list .cs .facts1 .factsx
 #
 
-chr-retract .c (.c, .facts) .facts#
+chr-retract .c (.c, .facts) .facts #
 chr-retract .c (.fact, .facts0) (.fact, .factsx) :- chr-retract .c .facts0 .factsx #
 
 chr-assert-list () .facts .facts
