@@ -1,4 +1,4 @@
-package suite.rt;
+package suite.rt.planars;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -6,13 +6,14 @@ import java.util.List;
 
 import suite.math.MathUtil;
 import suite.math.Vector;
+import suite.rt.RayTracer;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayIntersection;
-import suite.rt.RayTracer.RayTraceObject;
+import suite.rt.RayTracer.RayTrace;
 
-public class Plane implements RayTraceObject {
+public class Plane implements RayTrace {
 
 	private Vector normal;
 	private float originIndex;

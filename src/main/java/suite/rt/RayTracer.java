@@ -2,7 +2,6 @@ package suite.rt;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,9 +21,9 @@ public class RayTracer {
 	private Vector ambient = Vector.origin;
 
 	private Collection<LightSource> lightSources;
-	private RayTraceObject scene;
+	private RayTrace scene;
 
-	public interface RayTraceObject {
+	public interface RayTrace {
 
 		/**
 		 * Calculates hit point with a ray. Assumes direction is normalized.
@@ -80,7 +79,7 @@ public class RayTracer {
 		public Vector lit(Vector point);
 	}
 
-	public RayTracer(Collection<LightSource> lightSources, RayTraceObject scene) {
+	public RayTracer(Collection<LightSource> lightSources, RayTrace scene) {
 		this.lightSources = lightSources;
 		this.scene = scene;
 	}
@@ -217,21 +216,8 @@ public class RayTracer {
 	}
 
 	private RayHit nearestHit(List<RayHit> rayHits) {
-		List<RayHit> rayHits1 = filterRayHits(rayHits);
+		List<RayHit> rayHits1 = RayUtil.filterRayHits(rayHits);
 		return !rayHits1.isEmpty() ? Collections.min(rayHits1, RayHit.comparator) : null;
-	}
-
-	/**
-	 * Remove hits that are shooting backwards.
-	 */
-	public static List<RayHit> filterRayHits(List<RayHit> rayHits) {
-		List<RayHit> rayHits1 = new ArrayList<>();
-
-		for (RayHit rayHit : rayHits)
-			if (rayHit.advance() > 0)
-				rayHits1.add(rayHit);
-
-		return rayHits1;
 	}
 
 	/**
