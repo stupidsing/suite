@@ -61,7 +61,7 @@ public class RayUtil {
 		}
 
 		// Eliminate duplicates
-		return eliminateRayHitsDuplicates(rayHits2);
+		return eliminateRayHitDuplicates(rayHits2);
 	}
 
 	private static List<List<RayHit>> getRayHitsList(Ray ray, Collection<RayTrace> objects) {
@@ -76,7 +76,7 @@ public class RayUtil {
 		return rayHitsList;
 	}
 
-	private static List<RayHit> eliminateRayHitsDuplicates(List<RayHit> rayHits0) {
+	private static List<RayHit> eliminateRayHitDuplicates(List<RayHit> rayHits0) {
 		List<RayHit> rayHits1 = new ArrayList<>();
 		int size = rayHits0.size();
 		RayHit rayHit;
