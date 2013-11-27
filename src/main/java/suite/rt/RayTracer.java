@@ -164,12 +164,10 @@ public class RayTracer {
 			}
 
 			if (depth > 0 && (reflectionIndex > 0f || refractionIndex > 0f)) {
+				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
 
 				// Account reflection
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
-				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
-				float cos1 = 1 - cos;
-				float fresnel = mix + cos1 * cos1 * cos1 * (1 - mix);
 				Vector reflectPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
@@ -185,6 +183,8 @@ public class RayTracer {
 				} else
 					refractColor = Vector.origin;
 
+				float cos1 = 1 - cos;
+				float fresnel = mix + cos1 * cos1 * cos1 * (1 - mix);
 				color = Vector.add(Vector.mul(Vector.mul(reflectColor, reflectionIndex), fresnel),
 						Vector.mul(Vector.mul(refractColor, refractionIndex), 1 - fresnel));
 			} else {
