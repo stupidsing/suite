@@ -33,20 +33,6 @@ public class RayTracerTest {
 	private Vector cw = v(1f, 1f, 1f);
 
 	@Test
-	public void testCompositeUnionFail() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, glassy(cb, 0.8f));
-		RayTrace sphere1 = Sphere.c(v(0.5f, 0f, 5f), 1f, glassy(cb, 0.8f));
-		Scene scene = new Scene(Arrays.asList(sky, new Union(Arrays.asList(sphere0, sphere1))));
-
-		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1.5f));
-		List<LightSource> lights = Arrays.asList(light);
-
-		RayTracer rayTracer = new RayTracer(lights, scene);
-		rayTracer.test();
-	}
-
-	@Test
 	public void testBlank() throws IOException {
 		RayTracer rayTracer = new RayTracer(Collections.<LightSource> emptySet(), new Scene(Collections.<RayTrace> emptySet()));
 		raster(rayTracer);
