@@ -31,7 +31,7 @@ chr-match0 .given .if .then .when .facts0 .factsx
 	, chr-retract-list .if .facts0 .facts1
 	, .when
 	, !
-	, append .then .facts1 .factsx
+	, chr-assert .then .facts1 .factsx
 #
 
 chr-list _ () #
@@ -45,6 +45,16 @@ chr-retract-list (.c, .cs) .facts0 .factsx
 
 chr-retract .c (.c, .facts) .facts #
 chr-retract .c (.fact, .facts0) (.fact, .factsx) :- chr-retract .c .facts0 .factsx #
+
+chr-assert () .facts .facts #
+chr-assert (.a = .b, .newFacts) .facts0 (.a = .b, .factsx)
+	:- !
+	, replace .a .b .facts0 .facts1
+	, chr-assert .newFacts .facts1 .factsx
+#
+chr-assert (.newFact, .newFacts) .facts0 (.newFact, .factsx)
+	:- chr-assert .newFacts .facts0 .factsx
+#
 
 test
 	:- chr-chain (
