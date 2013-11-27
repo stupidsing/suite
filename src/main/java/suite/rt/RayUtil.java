@@ -26,17 +26,17 @@ public class RayUtil {
 		return rayHits1;
 	}
 
-	public static List<RayHit> join(Collection<RayTrace> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
+	public static List<RayHit> joinRayHits(Collection<RayTrace> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
 		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
 
 		for (int i = 1; i < rayHitsList.size(); i++)
-			rayHits = join(rayHits, rayHitsList.get(i), fun);
+			rayHits = joinRayHits(rayHits, rayHitsList.get(i), fun);
 
 		return rayHits;
 	}
 
-	public static List<RayHit> join(List<RayHit> rayHits0, List<RayHit> rayHits1, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
+	public static List<RayHit> joinRayHits(List<RayHit> rayHits0, List<RayHit> rayHits1, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<RayHit> rayHits2 = new ArrayList<>();
 		int size0 = rayHits0.size(), size1 = rayHits1.size();
 		int index0 = 0, index1 = 0;
@@ -64,7 +64,7 @@ public class RayUtil {
 		}
 
 		// Eliminate duplicates
-		return eliminateDuplicates(rayHits2);
+		return eliminateRayHitsDuplicates(rayHits2);
 	}
 
 	private static List<List<RayHit>> getRayHitsList(Ray ray, Collection<RayTrace> objects) {
@@ -79,7 +79,7 @@ public class RayUtil {
 		return rayHitsList;
 	}
 
-	private static List<RayHit> eliminateDuplicates(List<RayHit> rayHits0) {
+	private static List<RayHit> eliminateRayHitsDuplicates(List<RayHit> rayHits0) {
 		List<RayHit> rayHits1 = new ArrayList<>();
 		int size = rayHits0.size();
 		RayHit rayHit;

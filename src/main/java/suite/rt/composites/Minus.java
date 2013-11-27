@@ -27,7 +27,7 @@ public class Minus implements RayTrace {
 		Collections.sort(subjectRayHits, RayHit.comparator);
 		Collections.sort(objectRayHits, RayHit.comparator);
 
-		return RayUtil.join(subjectRayHits, objectRayHits, new Fun<Pair<Boolean, Boolean>, Boolean>() {
+		return RayUtil.joinRayHits(subjectRayHits, objectRayHits, new Fun<Pair<Boolean, Boolean>, Boolean>() {
 			public Boolean apply(Pair<Boolean, Boolean> pair) {
 				return pair.t0 && !pair.t1;
 			}

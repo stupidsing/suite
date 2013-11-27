@@ -20,7 +20,7 @@ public class Union implements RayTrace {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		return RayUtil.join(objects, ray, new Fun<Pair<Boolean, Boolean>, Boolean>() {
+		return RayUtil.joinRayHits(objects, ray, new Fun<Pair<Boolean, Boolean>, Boolean>() {
 			public Boolean apply(Pair<Boolean, Boolean> pair) {
 				return pair.t0 || pair.t1;
 			}
