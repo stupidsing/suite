@@ -37,12 +37,6 @@ compile-function .mode .do0 .c0
 	, !, cg-generate-code .c0
 #
 
-fc-compile .mode (USING /.lib .do) .fve .cdr
-	:- !, fc-load-library .lib
-	, fc-add-functions .lib .do .do1
-	, fc-compile .mode .do1 .fve .cdr
-#
-
 fc-compile .mode (USING .lib .do) .fve .cdr
 	:- !, fc-load-precompiled-library .lib
 	, fc-compile-using-lib .mode .lib .do .fve .cdr
