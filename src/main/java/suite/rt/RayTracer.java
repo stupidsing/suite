@@ -16,8 +16,10 @@ public class RayTracer {
 
 	private int nThreads = 4;
 	private int depth = 4;
-	private float refractiveIndexRatio = 1.1f;
-	private float mix = 0.1f;
+	private float refractiveIndex0 = 1.1f;
+	private float refractiveIndex1 = 1f;
+	private float refractiveIndexRatio = refractiveIndex0 / refractiveIndex1;
+	private float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
 	private Vector ambient = Vector.origin;
 
 	private Collection<LightSource> lightSources;
@@ -54,9 +56,7 @@ public class RayTracer {
 	public interface Material {
 		public Vector surfaceColor();
 
-		public float reflectionIndex();
-
-		public float refractionIndex();
+		public boolean isTransparent();
 	}
 
 	public static class Ray {
@@ -151,8 +151,6 @@ public class RayTracer {
 			Vector normal = Vector.norm(i.normal());
 
 			Material material = i.material();
-			float reflectionIndex = material.reflectionIndex();
-			float refractionIndex = material.refractionIndex();
 			Vector color;
 
 			float dot = Vector.dot(ray.dir, normal);
@@ -163,7 +161,7 @@ public class RayTracer {
 				dot = -dot;
 			}
 
-			if (depth > 0 && (reflectionIndex > 0f || refractionIndex > 0f)) {
+			if (depth > 0 && material.isTransparent()) {
 				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
 
 				// Account reflection
@@ -172,21 +170,16 @@ public class RayTracer {
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// Account refraction
-				Vector refractColor;
-
-				if (refractionIndex > 0f) {
-					float eta = isInside ? refractiveIndexRatio : 1f / refractiveIndexRatio;
-					float k = 1 - eta * eta * (1 - cos * cos);
-					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta), Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
-					Vector refractPoint = Vector.add(hitPoint, Vector.mul(normal, -negligibleAdvance));
-					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
-				} else
-					refractColor = Vector.origin;
+				float eta = isInside ? refractiveIndexRatio : 1f / refractiveIndexRatio;
+				float k = 1 - eta * eta * (1 - cos * cos);
+				Vector refractDir = Vector.add(Vector.mul(ray.dir, eta), Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
+				Vector refractPoint = Vector.add(hitPoint, Vector.mul(normal, -negligibleAdvance));
+				Vector refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 
 				float cos1 = 1 - cos;
-				float fresnel = mix + cos1 * cos1 * cos1 * (1 - mix);
-				color = Vector.add(Vector.mul(Vector.mul(reflectColor, reflectionIndex), fresnel),
-						Vector.mul(Vector.mul(refractColor, refractionIndex), 1 - fresnel));
+				float cos2 = cos1 * cos1;
+				float fresnel = mix + cos1 * cos2 * cos2 * (1 - mix);
+				color = Vector.add(Vector.mul(reflectColor, fresnel), Vector.mul(refractColor, 1 - fresnel));
 			} else {
 				color = Vector.origin;
 

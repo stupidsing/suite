@@ -24,12 +24,12 @@ import suite.util.Util;
 
 public class RayTracerTest {
 
-	private Vector cr = v(1f, 0f, 0f);
-	private Vector cg = v(0f, 1f, 0f);
-	private Vector cb = v(0f, 0f, 1f);
-	private Vector cy = v(1f, 1f, 0f);
-	private Vector cp = v(1f, 0f, 1f);
-	private Vector cc = v(0f, 1f, 1f);
+	private Vector cr = v(1f, 0.4f, 0.4f);
+	private Vector cg = v(0.4f, 1f, 0.4f);
+	private Vector cb = v(0.4f, 0.4f, 1f);
+	private Vector cy = v(1f, 1f, 0.4f);
+	private Vector cp = v(1f, 0.4f, 1f);
+	private Vector cc = v(0.4f, 1f, 1f);
 	private Vector cw = v(1f, 1f, 1f);
 
 	@Test
@@ -83,11 +83,11 @@ public class RayTracerTest {
 	@Test
 	public void testMess() throws IOException {
 		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr, 1f));
-		RayTrace sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg, 1f));
-		RayTrace sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb, 1f));
+		RayTrace sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr));
+		RayTrace sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg));
+		RayTrace sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb));
 		RayTrace plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
-		RayTrace triangle = Triangle.c(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc, 1f));
+		RayTrace triangle = Triangle.c(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
 		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);
@@ -101,7 +101,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereMirror() throws IOException {
 		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
-		RayTrace mirror = new Plane(v(1f, 0f, 0f), -0.3f, material(cw, 1f, 0f));
+		RayTrace mirror = new Plane(v(1f, 0f, 0f), -0.3f, glassy(cw));
 		Scene scene = new Scene(Arrays.asList(sphere, mirror));
 
 		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1.5f));
@@ -114,7 +114,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereReflection() throws IOException {
 		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, material(cb, 1f, 0f));
+		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -127,7 +127,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereRefraction() throws IOException {
 		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, material(cb, 0f, 1f));
+		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -153,8 +153,8 @@ public class RayTracerTest {
 	@Test
 	public void testSpheres() throws IOException {
 		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb, 0.8f));
-		RayTrace sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb, 0.8f));
+		RayTrace sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb));
+		RayTrace sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1.5f));
@@ -173,25 +173,21 @@ public class RayTracerTest {
 	}
 
 	private Material solid(Vector color) {
-		return material(color, 0f, 0f);
+		return material(color, false);
 	}
 
-	private Material glassy(Vector color, float index) {
-		return material(color, index, index);
+	private Material glassy(Vector color) {
+		return material(color, true);
 	}
 
-	private Material material(final Vector color, final float reflectionIndex, final float refractionIndex) {
+	private Material material(final Vector color, final boolean isTransparent) {
 		return new Material() {
 			public Vector surfaceColor() {
 				return color;
 			}
 
-			public float reflectionIndex() {
-				return reflectionIndex;
-			}
-
-			public float refractionIndex() {
-				return refractionIndex;
+			public boolean isTransparent() {
+				return isTransparent;
 			}
 		};
 	}
