@@ -53,7 +53,7 @@ load-precompiled-library .lib
 #
 
 load-library .lib
-	:- once (fc-imported .lib
+	:- once (fc-imported-library .lib
 		; home.dir .homeDir
 		, concat .homeDir "/src/main/resources/" .lib ".slf" .slfFilename
 		, whatever (file.exists .slfFilename
