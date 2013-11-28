@@ -438,7 +438,7 @@ public class InstructionTranslator {
 			Class<?> clazz = register.getClazz();
 			String typeName = clazz.getSimpleName();
 
-			if (register.isUsedExternally())
+			if (!register.isTemporal())
 				app(clazzsec, "private #{str} r#{num}", typeName, r);
 			else {
 				String init = clazz == boolean.class ? "false" : clazz == int.class ? "0" : "null";
@@ -564,7 +564,7 @@ public class InstructionTranslator {
 		AnalyzedFrame frame = currentFrame();
 		int frameNo = frame.getId();
 
-		if (frame.getRegisters().get(reg).isUsedExternally())
+		if (!frame.getRegisters().get(reg).isTemporal())
 			return String.format("f%d.r%d", frameNo, reg);
 		else
 			return String.format("f%d_r%d", frameNo, reg);

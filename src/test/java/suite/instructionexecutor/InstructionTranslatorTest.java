@@ -24,6 +24,20 @@ import suite.util.FunUtil.Sink;
 public class InstructionTranslatorTest {
 
 	@Test
+	public void testFail() throws IOException {
+		String program = "using /STANDARD >> " //
+				+ "define fr = (" //
+				+ "case " //
+				+ "|| `$h; $t` => h; fr {t} " //
+				+ "|| anything => () " //
+				+ ") >> " //
+				+ "1; 2; | fr";
+		System.out.println(program);
+		Node code = compileFunctional(Suite.parse(program), false);
+		System.out.println(execute(code));
+	}
+
+	@Test
 	public void testCut() throws IOException {
 		assertLogical("(.v = 1; .v = 2), !, .v = 1", Atom.TRUE);
 		assertLogical("(.v = 1; .v = 2), !, .v = 2", Atom.FALSE);
@@ -49,7 +63,7 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testStandardLibrary() throws IOException {
-		String program = "using STANDARD >> 1; 2; 3; | map {`+ 1`} | fold-left {`+`} {0}";
+		String program = "using /STANDARD >> 1; 2; 3; | map {`+ 1`} | fold-left {`+`} {0}";
 		assertFunctional(program, false, Int.create(9));
 	}
 

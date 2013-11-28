@@ -44,14 +44,25 @@ public class InstructionAnalyzer {
 
 	public static class AnalyzedRegister {
 		private Class<?> clazz;
-		private boolean isUsedExternally = false;
+		private boolean isUsedExternally = true;
 
 		public Class<?> getClazz() {
 			return clazz;
 		}
 
+		/**
+		 * Analyzes whether code of other frames would access this variable.
+		 */
 		public boolean isUsedExternally() {
 			return isUsedExternally;
+		}
+
+		/**
+		 * Analyzes whether the variable can be stored in a local variable,
+		 * instead of a instance variable in a frame.
+		 */
+		public boolean isTemporal() {
+			return false;
 		}
 	}
 
