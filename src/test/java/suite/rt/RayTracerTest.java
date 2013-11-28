@@ -35,7 +35,7 @@ public class RayTracerTest {
 	@Test
 	public void testBlank() throws IOException {
 		RayTracer rayTracer = new RayTracer(Collections.<LightSource> emptySet(), new Scene(Collections.<RtObject> emptySet()));
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light0, light1);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -133,7 +133,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -159,7 +159,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
 	@Test
@@ -173,10 +173,10 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		raster(rayTracer);
+		rasterize(rayTracer);
 	}
 
-	private void raster(RayTracer rayTracer) throws IOException {
+	private void rasterize(RayTracer rayTracer) throws IOException {
 		String filename = "/tmp/" + Util.getStackTrace(3).getMethodName() + ".png";
 
 		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
