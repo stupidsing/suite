@@ -14,6 +14,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import suite.util.FunUtil.Source;
+
 public class Util {
 
 	public static <T> List<T> add(List<T> list0, List<T> list1) {
@@ -199,17 +201,25 @@ public class Util {
 			return Pair.create(s, "");
 	}
 
-	public static List<String> splitn(String s, String delimiter) {
-		List<String> results = new ArrayList<>();
-		int pos;
+	public static Iterable<String> splitn(final String s, final String delimiter) {
+		return FunUtil.iter(new Source<String>() {
+			private int pos = 0;
 
-		while ((pos = s.indexOf(delimiter)) >= 0) {
-			results.add(s.substring(0, pos).trim());
-			s = s.substring(pos + delimiter.length()).trim();
-		}
+			public String source() {
+				String splitted;
+				int pos1;
 
-		results.add(s.trim());
-		return results;
+				if ((pos1 = s.indexOf(delimiter, pos)) >= 0) {
+					splitted = s.substring(pos, pos1).trim();
+					pos = pos1 + delimiter.length();
+				} else if (!(splitted = s.substring(pos).trim()).isEmpty())
+					pos = s.length();
+				else
+					splitted = null;
+
+				return splitted;
+			}
+		});
 	}
 
 	public static <T> List<T> sublist(List<T> list, int start, int end) {

@@ -20,6 +20,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -275,7 +276,7 @@ public class Bnf {
 			List<List<String>> list = new ArrayList<>();
 
 			for (String item : Util.splitn(" " + lr.t1 + " ", " | "))
-				list.add(Util.splitn(item, " "));
+				list.add(To.list(Util.splitn(item, " ")));
 
 			grammars.put(lr.t0, list);
 
