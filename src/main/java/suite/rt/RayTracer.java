@@ -16,7 +16,7 @@ public class RayTracer {
 
 	private int nThreads = 4;
 	private int depth = 4;
-	private float refractiveIndex0 = 1.2f;
+	private float refractiveIndex0 = 1.05f;
 	private float refractiveIndex1 = 1f;
 	private float refractiveIndexRatio = refractiveIndex0 / refractiveIndex1;
 	private float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
@@ -230,6 +230,18 @@ public class RayTracer {
 
 	private static float limit(float f) {
 		return Math.min(1f, Math.max(0f, f));
+	}
+
+	public void setnThreads(int nThreads) {
+		this.nThreads = nThreads;
+	}
+
+	public void setDepth(int depth) {
+		this.depth = depth;
+	}
+
+	public void setAmbient(Vector ambient) {
+		this.ambient = ambient;
 	}
 
 }
