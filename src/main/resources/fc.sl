@@ -14,7 +14,7 @@
 #
 
 compile-function-without-precompile .mode (.lib, .libs) .do .c
-	:- !, load-library .lib
+	:- !, fc-load-library .lib
 	, fc-add-functions .lib .do .do1
 	, compile-function-without-precompile .mode .libs .do1 .c
 #
@@ -37,22 +37,18 @@ compile-function .mode .do0 .c0
 	, !, cg-generate-code .c0
 #
 
+fc-compile .mode (LOAD .lib .do) .fve .cdr
+	:- !, fc-load-library .lib
+	, fc-add-functions .lib .do .do1
+	, fc-compile .mode .do1 .fve .cdr
+#
+
 fc-compile .mode (USING .lib .do) .fve .cdr
-	:- !, load-precompiled-library .lib
+	:- !, fc-load-precompiled-library .lib
 	, fc-compile-using-lib .mode .lib .do .fve .cdr
 #
 
-load-precompiled-library .lib
-	:- once (fc-imported-precompile-library .lib
-		; home.dir .homeDir
-		, concat .homeDir "/" .lib ".rpn" .rpnFilename
-		, file.read .rpnFilename .rpn
-		, rpn .precompiled .rpn
-		, import .precompiled
-	)
-#
-
-load-library .lib
+fc-load-library .lib
 	:- once (fc-imported-library .lib
 		; home.dir .homeDir
 		, concat .homeDir "/src/main/resources/" .lib ".slf" .slfFilename
@@ -64,6 +60,16 @@ load-library .lib
 			, assert (fc-add-functions .lib .var .node)
 			, assert (fc-imported-library .lib)
 		)
+	)
+#
+
+fc-load-precompiled-library .lib
+	:- once (fc-imported-precompile-library .lib
+		; home.dir .homeDir
+		, concat .homeDir "/" .lib ".rpn" .rpnFilename
+		, file.read .rpnFilename .rpn
+		, rpn .precompiled .rpn
+		, import .precompiled
 	)
 #
 
