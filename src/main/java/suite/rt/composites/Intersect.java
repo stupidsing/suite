@@ -5,16 +5,16 @@ import java.util.List;
 
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 import suite.rt.RayUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 
-public class Intersect implements RayTrace {
+public class Intersect implements RtObject {
 
-	private Collection<RayTrace> objects;
+	private Collection<RtObject> objects;
 
-	public Intersect(Collection<RayTrace> objects) {
+	public Intersect(Collection<RtObject> objects) {
 		this.objects = objects;
 	}
 

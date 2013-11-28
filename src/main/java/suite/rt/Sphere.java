@@ -9,9 +9,9 @@ import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayIntersection;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 
-public class Sphere implements RayTrace {
+public class Sphere implements RtObject {
 
 	private Vector centre;
 	private float radius;
@@ -23,7 +23,7 @@ public class Sphere implements RayTrace {
 		this.material = material;
 	}
 
-	public static RayTrace c(Vector centre, float radius, Material material) {
+	public static RtObject c(Vector centre, float radius, Material material) {
 		Vector radiusRange = new Vector(radius, radius, radius);
 		Vector min = Vector.sub(centre, radiusRange);
 		Vector max = Vector.add(centre, radiusRange);

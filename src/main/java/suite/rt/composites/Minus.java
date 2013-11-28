@@ -5,17 +5,17 @@ import java.util.List;
 
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 import suite.rt.RayUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 
-public class Minus implements RayTrace {
+public class Minus implements RtObject {
 
-	private RayTrace subject;
-	private RayTrace object;
+	private RtObject subject;
+	private RtObject object;
 
-	public Minus(RayTrace subject, RayTrace object) {
+	public Minus(RtObject subject, RtObject object) {
 		this.subject = subject;
 		this.object = object;
 	}

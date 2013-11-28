@@ -23,9 +23,9 @@ public class RayTracer {
 	private Vector ambient = Vector.origin;
 
 	private Collection<LightSource> lightSources;
-	private RayTrace scene;
+	private RtObject scene;
 
-	public interface RayTrace {
+	public interface RtObject {
 
 		/**
 		 * Calculates hit point with a ray. Assumes direction is normalized.
@@ -79,7 +79,7 @@ public class RayTracer {
 		public Vector lit(Vector point);
 	}
 
-	public RayTracer(Collection<LightSource> lightSources, RayTrace scene) {
+	public RayTracer(Collection<LightSource> lightSources, RtObject scene) {
 		this.lightSources = lightSources;
 		this.scene = scene;
 	}

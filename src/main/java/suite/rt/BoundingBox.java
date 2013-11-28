@@ -8,20 +8,20 @@ import suite.math.MathUtil;
 import suite.math.Vector;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 
-public class BoundingBox implements RayTrace {
+public class BoundingBox implements RtObject {
 
 	private Vector min, max;
-	private RayTrace object;
+	private RtObject object;
 
-	public BoundingBox(Vector min, Vector max, RayTrace object) {
+	public BoundingBox(Vector min, Vector max, RtObject object) {
 		this.min = min;
 		this.max = max;
 		this.object = object;
 	}
 
-	public static BoundingBox bound(Collection<Vector> points, RayTrace object) {
+	public static BoundingBox bound(Collection<Vector> points, RtObject object) {
 		float min = Float.NEGATIVE_INFINITY, max = Float.POSITIVE_INFINITY;
 		float minX = max, minY = max, minZ = max;
 		float maxX = min, maxY = min, maxZ = min;

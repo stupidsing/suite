@@ -14,7 +14,7 @@ import org.junit.Test;
 import suite.math.Vector;
 import suite.rt.RayTracer.LightSource;
 import suite.rt.RayTracer.Material;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 import suite.rt.composites.Intersect;
 import suite.rt.composites.Minus;
 import suite.rt.composites.Union;
@@ -34,15 +34,15 @@ public class RayTracerTest {
 
 	@Test
 	public void testBlank() throws IOException {
-		RayTracer rayTracer = new RayTracer(Collections.<LightSource> emptySet(), new Scene(Collections.<RayTrace> emptySet()));
+		RayTracer rayTracer = new RayTracer(Collections.<LightSource> emptySet(), new Scene(Collections.<RtObject> emptySet()));
 		raster(rayTracer);
 	}
 
 	@Test
 	public void testCompositeIntersect() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, solid(cb));
-		RayTrace sphere1 = Sphere.c(v(0.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
+		RtObject sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sphere1 = Sphere.c(v(0.5f, 0f, 5f), 1f, solid(cb));
 		Scene scene = new Scene(Arrays.asList(sky, new Intersect(Arrays.asList(sphere0, sphere1))));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -54,9 +54,9 @@ public class RayTracerTest {
 
 	@Test
 	public void testCompositeMinus() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, solid(cb));
-		RayTrace sphere1 = Sphere.c(v(0.5f, 0f, 4f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
+		RtObject sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sphere1 = Sphere.c(v(0.5f, 0f, 4f), 1f, solid(cb));
 		Scene scene = new Scene(Arrays.asList(sky, new Minus(sphere0, sphere1)));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -68,9 +68,9 @@ public class RayTracerTest {
 
 	@Test
 	public void testCompositeUnion() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, solid(cb));
-		RayTrace sphere1 = Sphere.c(v(0.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
+		RtObject sphere0 = Sphere.c(v(-0.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sphere1 = Sphere.c(v(0.5f, 0f, 5f), 1f, solid(cb));
 		Scene scene = new Scene(Arrays.asList(sky, new Union(Arrays.asList(sphere0, sphere1))));
 
 		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
@@ -82,7 +82,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testLight() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
 		Scene scene = new Scene(Arrays.asList(sky));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
@@ -94,12 +94,12 @@ public class RayTracerTest {
 
 	@Test
 	public void testMess() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr));
-		RayTrace sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg));
-		RayTrace sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb));
-		RayTrace plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
-		RayTrace triangle = Triangle.c(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
+		RtObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr));
+		RtObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg));
+		RtObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb));
+		RtObject plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
+		RtObject triangle = Triangle.c(v(0.5f, 0.5f, 3f), v(0.5f, 0f, 0f), v(0f, 0.5f, 0f), glassy(cc));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
 		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);
@@ -112,8 +112,8 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereMirror() throws IOException {
-		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
-		RayTrace mirror = new Plane(v(1f, 0f, 0f), -0.3f, glassy(cw));
+		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
+		RtObject mirror = new Plane(v(1f, 0f, 0f), -0.3f, glassy(cw));
 		Scene scene = new Scene(Arrays.asList(sphere, mirror));
 
 		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1.5f));
@@ -125,8 +125,8 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereReflection() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
+		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
@@ -138,8 +138,8 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereRefraction() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
+		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
@@ -151,8 +151,8 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereSolid() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RayTrace sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
+		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 1.5f), cw);
@@ -164,9 +164,9 @@ public class RayTracerTest {
 
 	@Test
 	public void testSpheres() throws IOException {
-		RayTrace sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
-		RayTrace sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb));
-		RayTrace sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb));
+		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(0.4f)));
+		RtObject sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb));
+		RtObject sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1.5f));

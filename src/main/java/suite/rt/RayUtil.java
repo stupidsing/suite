@@ -7,7 +7,7 @@ import java.util.List;
 
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 
@@ -26,7 +26,7 @@ public class RayUtil {
 		return rayHits1;
 	}
 
-	public static List<RayHit> joinRayHits(Collection<RayTrace> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
+	public static List<RayHit> joinRayHits(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
 		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
 
@@ -64,10 +64,10 @@ public class RayUtil {
 		return eliminateRayHitDuplicates(rayHits2);
 	}
 
-	private static List<List<RayHit>> getRayHitsList(Ray ray, Collection<RayTrace> objects) {
+	private static List<List<RayHit>> getRayHitsList(Ray ray, Collection<RtObject> objects) {
 		List<List<RayHit>> rayHitsList = new ArrayList<>();
 
-		for (RayTrace object : objects) {
+		for (RtObject object : objects) {
 			List<RayHit> rayHits = RayUtil.filterRayHits(object.hit(new Ray(ray.startPoint, ray.dir)));
 			Collections.sort(rayHits, RayHit.comparator);
 			rayHitsList.add(rayHits);

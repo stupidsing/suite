@@ -6,13 +6,13 @@ import java.util.List;
 
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 
-public class Scene implements RayTrace {
+public class Scene implements RtObject {
 
-	private Collection<RayTrace> objects;
+	private Collection<RtObject> objects;
 
-	public Scene(Collection<RayTrace> objects) {
+	public Scene(Collection<RtObject> objects) {
 		this.objects = objects;
 	}
 
@@ -20,7 +20,7 @@ public class Scene implements RayTrace {
 	public List<RayHit> hit(Ray ray) {
 		List<RayHit> rayHits = new ArrayList<>();
 
-		for (RayTrace object : objects)
+		for (RtObject object : objects)
 			rayHits.addAll(object.hit(new Ray(ray.startPoint, ray.dir)));
 
 		return rayHits;

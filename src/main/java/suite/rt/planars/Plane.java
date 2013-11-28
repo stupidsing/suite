@@ -11,9 +11,9 @@ import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RayIntersection;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 
-public class Plane implements RayTrace {
+public class Plane implements RtObject {
 
 	private Vector normal;
 	private float originIndex;

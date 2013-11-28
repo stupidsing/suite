@@ -7,9 +7,9 @@ import suite.math.Vector;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 
-public abstract class Planar implements RayTrace {
+public abstract class Planar implements RtObject {
 
 	private Vector origin;
 	private Vector axis0, axis1;

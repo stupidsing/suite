@@ -5,9 +5,9 @@ import java.util.Arrays;
 import suite.math.Vector;
 import suite.rt.BoundingBox;
 import suite.rt.RayTracer.Material;
-import suite.rt.RayTracer.RayTrace;
+import suite.rt.RayTracer.RtObject;
 
-public class Parallelogram extends Planar implements RayTrace {
+public class Parallelogram extends Planar implements RtObject {
 
 	public Parallelogram(Vector origin, Vector axis0, Vector axis1, Material material) {
 		super(origin, axis0, axis1, new IsHit() {
@@ -17,7 +17,7 @@ public class Parallelogram extends Planar implements RayTrace {
 		}, material);
 	}
 
-	public static RayTrace c(Vector origin, Vector axis0, Vector axis1, Material material) {
+	public static RtObject c(Vector origin, Vector axis0, Vector axis1, Material material) {
 		Vector v0 = Vector.add(origin, axis0);
 		Vector v1 = Vector.add(origin, axis1);
 		Vector v2 = Vector.add(origin, Vector.add(axis0, axis1));
