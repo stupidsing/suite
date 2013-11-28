@@ -16,7 +16,7 @@ public class RayTracer {
 
 	private int nThreads = 4;
 	private int depth = 4;
-	private float refractiveIndex0 = 1.1f;
+	private float refractiveIndex0 = 1.2f;
 	private float refractiveIndex1 = 1f;
 	private float refractiveIndexRatio = refractiveIndex0 / refractiveIndex1;
 	private float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
