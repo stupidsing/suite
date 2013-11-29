@@ -16,6 +16,8 @@ import org.junit.Test;
 import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
 import suite.util.FunUtil;
+import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
 
@@ -27,12 +29,22 @@ public class TwoPassIndexerTest {
 
 		List<String> filenames = new ArrayList<>();
 
-		for (File file : FileUtil.findFiles(new File("src/test/java"))) {
-			String filename = file.getAbsolutePath();
+		Source<File> files0 = FileUtil.findFiles(new File("src/test/java"));
 
-			if (filename.endsWith(".java"))
-				filenames.add(filename);
-		}
+		Source<String> files1 = FunUtil.map(new Fun<File, String>() {
+			public String apply(File file) {
+				return file.getAbsolutePath();
+			}
+		}, files0);
+
+		Source<String> files2 = FunUtil.filter(new Fun<String, Boolean>() {
+			public Boolean apply(String filename) {
+				return filename.endsWith(".java");
+			}
+		}, files1);
+
+		for (String filename : FunUtil.iter(files2))
+			filenames.add(filename);
 
 		for (String filename : filenames)
 			indexer.pass0(filename, readFile(filename));

@@ -9,7 +9,10 @@ import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.util.TreeSet;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+import suite.util.FunUtil.Source;
 
 public class FileUtil {
 
@@ -22,16 +25,27 @@ public class FileUtil {
 		}
 	}
 
-	public static TreeSet<File> findFiles(File file) {
-		TreeSet<File> files = new TreeSet<>();
+	public static Source<File> findFiles(final File file) {
+		return new Source<File>() {
+			private Deque<File> stack = new ArrayDeque<>();
+			{
+				stack.push(file);
+			}
 
-		if (file.isDirectory())
-			for (File child : file.listFiles())
-				files.addAll(findFiles(child));
-		else
-			files.add(file);
+			public File source() {
+				while (!stack.isEmpty()) {
+					File f = stack.pop();
 
-		return files;
+					if (f.isDirectory())
+						for (File child : f.listFiles())
+							stack.push(child);
+					else
+						return f;
+				}
+
+				return null;
+			}
+		};
 	}
 
 	public static int getPid() {
