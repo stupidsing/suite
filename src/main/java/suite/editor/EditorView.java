@@ -36,32 +36,35 @@ public class EditorView {
 	private static final int windowHeight = 768;
 
 	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
+	private Font narrowFont = new Font("Sans", Font.PLAIN, 12);
 
 	private EditorController controller;
 
-	private Node layout;
-
-	private JFrame frame;
-
-	private JLabel rightLabel;
-	private JLabel topLabel;
-
-	private JTextField leftTextField;
-
-	private JScrollPane scrollPane;
 	private JTextArea bottomTextArea;
-
 	private JEditorPane editor;
+	private JFrame frame;
+	private Node layout;
+	private JTextField leftTextField;
+	private DefaultListModel<String> listModel;
+	private JLabel rightLabel;
+	private JScrollPane scrollPane;
+	private JLabel topLabel;
 
 	public JFrame run() {
 		JTextField leftTextField = this.leftTextField = applyDefaults(new JTextField(32));
+		leftTextField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				controller.searchFiles(EditorView.this);
+			}
+		});
 
-		DefaultListModel<String> listModel = new DefaultListModel<>();
+		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("Jane Doe");
 		listModel.addElement("John Smith");
 		listModel.addElement("Kathy Green");
 
 		JList<String> leftList = applyDefaults(new JList<>(listModel));
+		leftList.setFont(narrowFont);
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
@@ -236,6 +239,10 @@ public class EditorView {
 		return leftTextField;
 	}
 
+	public DefaultListModel<String> getListModel() {
+		return listModel;
+	}
+
 	public JComponent getRightToolbar() {
 		return rightLabel;
 	}
@@ -244,16 +251,16 @@ public class EditorView {
 		return topLabel;
 	}
 
-	public JTextField getLeftTextField() {
-		return leftTextField;
-	}
-
 	public JTextArea getBottomTextArea() {
 		return bottomTextArea;
 	}
 
 	public JEditorPane getEditor() {
 		return editor;
+	}
+
+	public JTextField getLeftTextField() {
+		return leftTextField;
 	}
 
 }
