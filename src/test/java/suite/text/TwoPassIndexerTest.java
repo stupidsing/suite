@@ -25,10 +25,6 @@ public class TwoPassIndexerTest {
 
 	@Test
 	public void test() throws IOException {
-		TwoPassIndexer indexer = new TwoPassIndexer();
-
-		List<String> filenames = new ArrayList<>();
-
 		Source<File> files0 = FileUtil.findFiles(new File("src/test/java"));
 
 		Source<String> files1 = FunUtil.map(new Fun<File, String>() {
@@ -43,8 +39,12 @@ public class TwoPassIndexerTest {
 			}
 		}, files1);
 
+		List<String> filenames = new ArrayList<>();
+
 		for (String filename : FunUtil.iter(files2))
 			filenames.add(filename);
+
+		TwoPassIndexer indexer = new TwoPassIndexer();
 
 		for (String filename : filenames)
 			indexer.pass0(filename, readFile(filename));
