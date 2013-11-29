@@ -82,7 +82,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testCopyCat() throws IOException {
-		RtObject sphere0 = Sphere.c(v(0f, 10004f, 20f), 10000f, solid(v(0.2f, 0.2f, 0.2f)));
+		RtObject sphere0 = Sphere.c(v(0f, 1004f, 20f), 1000f, solid(v(0.2f, 0.2f, 0.2f)));
 		RtObject sphere1 = Sphere.c(v(0f, 0f, 20f), 4f, glassy(v(1f, 0.32f, 0.36f)));
 		RtObject sphere2 = Sphere.c(v(5f, 1f, 15f), 2f, glassy(v(0.9f, 0.76f, 0.46f)));
 		RtObject sphere3 = Sphere.c(v(5f, 0f, 25f), 3f, glassy(v(0.65f, 0.77f, 0.97f)));
@@ -92,11 +92,11 @@ public class RayTracerTest {
 
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, sphere3, sphere4));
 
-		LightSource light0 = new PointLightSource(v(0f, -20f, 30f), gray(3f));
+		LightSource light0 = new PointLightSource(v(0f, -20f, 30f), gray(5f));
 		List<LightSource> lights = Arrays.asList(light0);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		rayTracer.setAmbient(gray(2f));
+		rayTracer.setAmbient(gray(1f));
 
 		rasterize(rayTracer);
 	}

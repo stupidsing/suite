@@ -16,7 +16,7 @@ public class RayTracer {
 
 	private int nThreads = 4;
 	private int depth = 4;
-	private float refractiveIndex0 = 1f;
+	private float refractiveIndex0 = 1.05f;
 	private float refractiveIndex1 = 1f;
 	private float refractiveIndexRatio = refractiveIndex0 / refractiveIndex1;
 	private float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
@@ -89,7 +89,11 @@ public class RayTracer {
 	}
 
 	public Vector test() {
-		return traceRay(depth, new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
+		return test(new Ray(Vector.origin, new Vector(0f, 0f, 1f)));
+	}
+
+	public Vector test(Ray ray) {
+		return traceRay(depth, ray);
 	}
 
 	public void trace(BufferedImage bufferedImage, final int viewDistance) {
@@ -195,9 +199,6 @@ public class RayTracer {
 					if (lightDot > 0) { // Facing the light
 						Vector lightPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
-
-						if (lightRayHit != null)
-							System.out.println("LRH: " + lightRayHit != null ? lightRayHit.advance() : null);
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
