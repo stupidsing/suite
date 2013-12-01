@@ -61,10 +61,10 @@ public class ReversePolish {
 	}
 
 	public String toRpn(Node node) {
-		List<String> list = new ArrayList<>();
 		Deque<Node> deque = new ArrayDeque<>();
-
 		deque.push(node);
+
+		List<String> list = new ArrayList<>();
 
 		while (!deque.isEmpty()) {
 			Node n = deque.pop().finalNode();
