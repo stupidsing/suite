@@ -18,10 +18,9 @@ public class RayTracer {
 	private int depth = 4;
 
 	private float refractiveIndex0 = 1f;
-	private float refractiveIndex1 = 1.1f;
+	private float refractiveIndex1 = 1.5f;
 	private float enterRefractiveRatio = refractiveIndex0 / refractiveIndex1;
 	private float exitRefractiveRatio = refractiveIndex1 / refractiveIndex0;
-	private float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
 
 	private Vector ambient = Vector.origin;
 
@@ -188,9 +187,20 @@ public class RayTracer {
 					Vector refractPoint = Vector.add(hitPoint, Vector.mul(normal, -negligibleAdvance));
 					Vector refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 
-					float cos1 = 1 - cos;
-					float cos2 = cos1 * cos1;
-					float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
+					// Accurate Fresnel equation
+					float cos1 = (float) Math.sqrt(k);
+					float f0 = (eta * cos - cos1) / (eta * cos + cos1);
+					float f1 = (cos - eta * cos1) / (cos + eta * cos1);
+					float fresnel = (f0 * f0 + f1 * f1) / 2f;
+
+					// Schick approximation
+					// private float mix = (float) Math.pow(
+					// (refractiveIndex0 - refractiveIndex1)
+					// / (refractiveIndex0 + refractiveIndex1), 2f);
+					// float cos1 = 1 - cos;
+					// float cos2 = cos1 * cos1;
+					// float schlickApproximatedFresnel = mix + (1 - mix) *
+					// cos1 * cos2 * cos2;
 					color = Vector.add(Vector.mul(reflectColor, fresnel), Vector.mul(refractColor, 1f - fresnel));
 				} else
 					color = reflectColor; // Total internal reflection
