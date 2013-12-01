@@ -92,11 +92,11 @@ public class RayTracerTest {
 
 		Scene scene = new Scene(Arrays.asList(sphere0, sphere1, sphere2, sphere3, sphere4));
 
-		LightSource light0 = new PointLightSource(v(0f, -20f, 30f), gray(5f));
+		LightSource light0 = new PointLightSource(v(0f, -20f, 30f), gray(3f));
 		List<LightSource> lights = Arrays.asList(light0);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		rayTracer.setAmbient(gray(1f));
+		rayTracer.setAmbient(gray(0.8f));
 
 		rasterize(rayTracer);
 	}

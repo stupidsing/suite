@@ -16,10 +16,13 @@ public class RayTracer {
 
 	private int nThreads = 4;
 	private int depth = 4;
-	private float refractiveIndex0 = 1.05f;
-	private float refractiveIndex1 = 1f;
-	private float refractiveIndexRatio = refractiveIndex0 / refractiveIndex1;
+
+	private float refractiveIndex0 = 1f;
+	private float refractiveIndex1 = 1.1f;
+	private float enterRefractiveRatio = refractiveIndex0 / refractiveIndex1;
+	private float exitRefractiveRatio = refractiveIndex1 / refractiveIndex0;
 	private float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
+
 	private Vector ambient = Vector.origin;
 
 	private Collection<LightSource> lightSources;
@@ -178,16 +181,20 @@ public class RayTracer {
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// Account refraction
-				float eta = isInside ? refractiveIndexRatio : 1f / refractiveIndexRatio;
+				float eta = isInside ? exitRefractiveRatio : enterRefractiveRatio;
 				float k = 1 - eta * eta * (1 - cos * cos);
-				Vector refractDir = Vector.add(Vector.mul(ray.dir, eta), Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
-				Vector refractPoint = Vector.add(hitPoint, Vector.mul(normal, -negligibleAdvance));
-				Vector refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 
-				float cos1 = 1 - cos;
-				float cos2 = cos1 * cos1;
-				float fresnel = mix + cos1 * cos2 * cos2 * (1 - mix);
-				color = Vector.add(Vector.mul(reflectColor, fresnel), Vector.mul(refractColor, 1 - fresnel));
+				if (k >= 0) {
+					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta), Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
+					Vector refractPoint = Vector.add(hitPoint, Vector.mul(normal, -negligibleAdvance));
+					Vector refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
+
+					float cos1 = 1 - cos;
+					float cos2 = cos1 * cos1;
+					float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
+					color = Vector.add(Vector.mul(reflectColor, fresnel), Vector.mul(refractColor, 1f - fresnel));
+				} else
+					color = reflectColor; // Total internal reflection
 			} else {
 				color = Vector.origin;
 
