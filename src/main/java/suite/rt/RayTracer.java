@@ -153,7 +153,6 @@ public class RayTracer {
 
 	private Vector traceRay(int depth, Ray ray) {
 		RayHit rayHit = nearestHit(scene.hit(ray));
-
 		Vector color1;
 
 		if (rayHit != null) {
