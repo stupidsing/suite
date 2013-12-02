@@ -35,7 +35,6 @@ public class InspectUtil {
 			className = "null";
 		else {
 			Class<?> clazz = object.getClass();
-			className = clazz.getCanonicalName();
 
 			if (clazz == Array.class) {
 				Object[] a = (Object[]) object;
@@ -60,6 +59,8 @@ public class InspectUtil {
 					} catch (IllegalAccessException ex) {
 						throw new RuntimeException(ex);
 					}
+
+			className = clazz.getCanonicalName();
 		}
 
 		result.put("@class", className);
