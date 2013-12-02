@@ -3,7 +3,7 @@ package suite.util;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 
-public class ParserUtil {
+public class ParseUtil {
 
 	public static int checkDepth(int depth, char c) {
 		if (c == '(' || c == '[' || c == '{')
@@ -42,9 +42,9 @@ public class ParserUtil {
 
 		// Shows warning if the atom has mismatched quotes or brackets
 		for (char c : s.toCharArray()) {
-			quote = ParserUtil.getQuoteChange(quote, c);
+			quote = ParseUtil.getQuoteChange(quote, c);
 			if (quote == 0)
-				depth = ParserUtil.checkDepth(depth, c);
+				depth = ParseUtil.checkDepth(depth, c);
 		}
 
 		return quote == 0 && depth == 0;
@@ -87,7 +87,7 @@ public class ParserUtil {
 
 			if (quote == 0) {
 				if (isCheckDepth)
-					depth = ParserUtil.checkDepth(depth, c);
+					depth = ParseUtil.checkDepth(depth, c);
 
 				if (depth == 0 && s.startsWith(name, pos)) {
 					String left = s.substring(0, pos);

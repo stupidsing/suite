@@ -15,7 +15,7 @@ import suite.node.io.TermParser.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.util.LogUtil;
-import suite.util.ParserUtil;
+import suite.util.ParseUtil;
 import suite.util.To;
 import suite.util.Util;
 
@@ -72,7 +72,7 @@ public class Parser {
 
 		for (int i = fromOp; i < operators.length; i++) {
 			Operator operator = operators[i];
-			String lr[] = ParserUtil.search(s, operator);
+			String lr[] = ParseUtil.search(s, operator);
 			int li, ri;
 
 			if (lr == null)
@@ -110,7 +110,7 @@ public class Parser {
 		if (first == '`' && last == '`')
 			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
-		if (ParserUtil.isInteger(s))
+		if (ParseUtil.isInteger(s))
 			return Int.create(Integer.parseInt(s));
 		if (s.startsWith("+x"))
 			return Int.create(Integer.parseInt(s.substring(2), 16));
@@ -124,7 +124,7 @@ public class Parser {
 			s = Escaper.unescape(Util.substr(s, 1, -1), "'");
 		else {
 			s = s.trim(); // Trim unquoted atoms
-			if (!ParserUtil.isParseable(s))
+			if (!ParseUtil.isParseable(s))
 				LogUtil.info("Suspicious input when parsing " + s);
 		}
 
@@ -143,7 +143,7 @@ public class Parser {
 			String line;
 			String lr[];
 
-			lr = ParserUtil.search(s, "\n", Assoc.RIGHT, false);
+			lr = ParseUtil.search(s, "\n", Assoc.RIGHT, false);
 			if (lr != null) {
 				line = lr[0];
 				s = lr[1];
@@ -165,7 +165,7 @@ public class Parser {
 			lastIndent = indent;
 
 			// Converts :: notation, "if:: a" becomes "if (a)"
-			lr = ParserUtil.search(line, "::", Assoc.RIGHT);
+			lr = ParseUtil.search(line, "::", Assoc.RIGHT);
 			line = lr != null ? lr[0] + " (" + lr[1] + ")" : line;
 			length = line.length();
 
@@ -230,7 +230,7 @@ public class Parser {
 
 	private String replace(String s, String from, String to) {
 		while (true) {
-			int pos = ParserUtil.search(s, 0, from);
+			int pos = ParseUtil.search(s, 0, from);
 
 			if (pos != -1)
 				s = s.substring(0, pos) + to + s.substring(pos + from.length());
@@ -249,10 +249,10 @@ public class Parser {
 		int closeLength = !isWhitespaces(close) ? close.length() : 0;
 
 		while (true) {
-			int pos1 = ParserUtil.search(s, 0, open);
+			int pos1 = ParseUtil.search(s, 0, open);
 			if (pos1 == -1)
 				return s;
-			int pos2 = ParserUtil.search(s, pos1 + open.length(), close);
+			int pos2 = ParseUtil.search(s, pos1 + open.length(), close);
 			if (pos2 == -1)
 				return s;
 			s = s.substring(0, pos1) + s.substring(pos2 + closeLength);

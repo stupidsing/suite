@@ -33,7 +33,7 @@ import suite.util.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
-import suite.util.ParserUtil;
+import suite.util.ParseUtil;
 import suite.util.Util;
 
 /**
@@ -142,7 +142,7 @@ public class Main implements AutoCloseable {
 					else
 						return code;
 				} while (!isQuiet //
-						&& (!ParserUtil.isParseable(sb.toString()) || !line.isEmpty() && !line.endsWith("#")));
+						&& (!ParseUtil.isParseable(sb.toString()) || !line.isEmpty() && !line.endsWith("#")));
 
 				String input = sb.toString();
 

@@ -13,7 +13,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermParser.TermOp;
-import suite.util.ParserUtil;
+import suite.util.ParseUtil;
 import suite.util.Util;
 
 public class Formatter {
@@ -147,7 +147,7 @@ public class Formatter {
 					|| s.contains(Parser.closeLineComment) //
 					|| s.contains(Parser.openLineComment);
 
-			quote |= ParserUtil.isInteger(s);
+			quote |= ParseUtil.isInteger(s);
 
 			if (quote)
 				s = Escaper.escape(s, '\'');

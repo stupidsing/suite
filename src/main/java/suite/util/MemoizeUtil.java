@@ -2,7 +2,7 @@ package suite.util;
 
 import suite.util.FunUtil.Source;
 
-public class MemoizerUtil {
+public class MemoizeUtil {
 
 	public static class TimedMemoizer<T> {
 		private Source<T> source;
