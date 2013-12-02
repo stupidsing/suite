@@ -37,9 +37,9 @@ public class InspectUtil {
 			Class<?> clazz = object.getClass();
 
 			if (clazz == Array.class) {
-				Object[] a = (Object[]) object;
-				for (int i = 0; i < a.length; i++)
-					result.put(i, toMap(a[i]));
+				Object[] array = (Object[]) object;
+				for (int i = 0; i < array.length; i++)
+					result.put(i, toMap(array[i]));
 			} else if (Collection.class.isAssignableFrom(clazz)) {
 				Collection<?> col = (Collection<?>) object;
 				Iterator<?> iter = col.iterator();
