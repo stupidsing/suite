@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,9 +62,10 @@ public class InspectUtil {
 					result.put(i, get(a[i]));
 			} else if (Collection.class.isAssignableFrom(clazz)) {
 				Collection<?> col = (Collection<?>) object;
+				Iterator<?> iter = col.iterator();
 				int i = 0;
 
-				while (col.iterator().hasNext())
+				while (iter.hasNext())
 					result.put(i++, get(col.iterator().next()));
 			} else if (Map.class.isAssignableFrom(clazz))
 				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
