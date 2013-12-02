@@ -96,6 +96,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light0);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
+		rayTracer.setAdjustFresnel(0.1f);
 		rayTracer.setAmbient(gray(0.8f));
 
 		rasterize(rayTracer);

@@ -22,6 +22,8 @@ public class RayTracer {
 	private float enterRefractiveRatio = refractiveIndex0 / refractiveIndex1;
 	private float exitRefractiveRatio = refractiveIndex1 / refractiveIndex0;
 
+	private float adjustFresnel = 0f;
+
 	private Vector ambient = Vector.origin;
 
 	private Collection<LightSource> lightSources;
@@ -201,7 +203,11 @@ public class RayTracer {
 					// float cos2 = cos1 * cos1;
 					// float schlickApproximatedFresnel = mix + (1 - mix) *
 					// cos1 * cos2 * cos2;
-					color = Vector.add(Vector.mul(reflectColor, fresnel), Vector.mul(refractColor, 1f - fresnel));
+
+					// Fresnel is often too low. Mark it up for visual effect.
+					float fresnel1 = adjustFresnel + fresnel * (1 - adjustFresnel);
+
+					color = Vector.add(Vector.mul(reflectColor, fresnel1), Vector.mul(refractColor, 1f - fresnel1));
 				} else
 					color = reflectColor; // Total internal reflection
 			} else {
@@ -262,6 +268,10 @@ public class RayTracer {
 
 	public void setDepth(int depth) {
 		this.depth = depth;
+	}
+
+	public void setAdjustFresnel(float adjustFresnel) {
+		this.adjustFresnel = adjustFresnel;
 	}
 
 	public void setAmbient(Vector ambient) {

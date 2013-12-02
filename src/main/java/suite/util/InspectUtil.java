@@ -1,19 +1,16 @@
 package suite.util;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * .. Converts (supposedly) any Java structures to a recursive tagged list of
- * key-value format.
+ * .. Converts (supposedly) any Java structures to a recursive map.
  * 
  * @author ywsing
  */
@@ -27,43 +24,51 @@ public class InspectUtil {
 		private List<Field> fields;
 	}
 
-	public static Map<Object, Object> toMap(Object object) {
-		Map<Object, Object> result = new HashMap<>();
-		String className;
+	private InspectUtil() {
+	}
 
-		if (object == null)
-			className = "null";
-		else {
+	public static Object mapify(Object object) {
+		Object result;
+
+		if (object != null) {
 			Class<?> clazz = object.getClass();
 
-			if (clazz == Array.class) {
-				Object[] array = (Object[]) object;
-				for (int i = 0; i < array.length; i++)
-					result.put(i, toMap(array[i]));
-			} else if (Collection.class.isAssignableFrom(clazz)) {
-				Collection<?> col = (Collection<?>) object;
-				Iterator<?> iter = col.iterator();
-				int i = 0;
+			if (clazz.isPrimitive() //
+					|| clazz.isEnum() //
+					|| clazz == Boolean.class //
+					|| clazz == String.class //
+					|| Number.class.isAssignableFrom(clazz))
+				result = object;
+			else {
+				Map<Object, Object> map = new HashMap<>();
+				map.put("@class", clazz.getCanonicalName());
 
-				while (iter.hasNext())
-					result.put(i++, toMap(col.iterator().next()));
-			} else if (Map.class.isAssignableFrom(clazz))
-				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
-					result.put(toMap(entry.getKey()), toMap(entry.getValue()));
-			else if (clazz.isPrimitive() || clazz == String.class)
-				result.put("value", object);
-			else
-				for (Field field : getFields(object))
-					try {
-						result.put(toMap(field.getName()), toMap(field.get(object)));
-					} catch (IllegalAccessException ex) {
-						throw new RuntimeException(ex);
-					}
+				if (clazz.isArray()) {
+					Object[] array = (Object[]) object;
+					for (int i = 0; i < array.length; i++)
+						map.put(i, mapify(array[i]));
+				} else if (Collection.class.isAssignableFrom(clazz)) {
+					Collection<?> col = (Collection<?>) object;
+					int i = 0;
 
-			className = clazz.getCanonicalName();
-		}
+					for (Object elem : col)
+						map.put(i++, mapify(elem));
+				} else if (Map.class.isAssignableFrom(clazz))
+					for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
+						map.put(mapify(entry.getKey()), mapify(entry.getValue()));
+				else
+					for (Field field : instance.getFields(object))
+						try {
+							map.put(mapify(field.getName()), mapify(field.get(object)));
+						} catch (IllegalAccessException ex) {
+							throw new RuntimeException(ex);
+						}
 
-		result.put("@class", className);
+				result = map;
+			}
+		} else
+			result = null;
+
 		return result;
 	}
 
@@ -72,17 +77,17 @@ public class InspectUtil {
 		if (o0 != o1)
 			result = o0 != null && o1 != null //
 					&& o0.getClass() == o1.getClass() //
-					&& Util.equals(toList(o0), toList(o1));
+					&& Util.equals(instance.toList(o0), instance.toList(o1));
 		else
 			result = true;
 		return result;
 	}
 
 	public static int hashCode(Object object) {
-		return toList(object).hashCode();
+		return instance.toList(object).hashCode();
 	}
 
-	private static List<Object> toList(Object object) {
+	private List<Object> toList(Object object) {
 		List<Object> list = new ArrayList<>();
 
 		for (Field field : getFields(object))
@@ -95,7 +100,7 @@ public class InspectUtil {
 		return list;
 	}
 
-	private static List<Field> getFields(Object object) {
+	private List<Field> getFields(Object object) {
 		return instance.getClassInformation(object.getClass()).fields;
 	}
 
