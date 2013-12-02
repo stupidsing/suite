@@ -42,11 +42,7 @@ public class InspectUtil {
 		return toList(object).hashCode();
 	}
 
-	private static List<Object> toList(Object object) {
-		return new ArrayList<>(instance.get(object).values());
-	}
-
-	private Map<Object, Object> get(final Object object) {
+	public Map<Object, Object> get(final Object object) {
 		Map<Object, Object> result = new HashMap<>();
 		String className;
 
@@ -83,6 +79,19 @@ public class InspectUtil {
 
 		result.put("@class", className);
 		return result;
+	}
+
+	private static List<Object> toList(Object object) {
+		List<Object> list = new ArrayList<>();
+
+		for (Field field : getFields(object))
+			try {
+				list.add(field.get(object));
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+
+		return list;
 	}
 
 	private static List<Field> getFields(Object object) {
