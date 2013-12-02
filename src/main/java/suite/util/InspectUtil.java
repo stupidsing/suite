@@ -27,6 +27,45 @@ public class InspectUtil {
 		private List<Field> fields;
 	}
 
+	public static Map<Object, Object> toMap(Object object) {
+		Map<Object, Object> result = new HashMap<>();
+		String className;
+
+		if (object == null)
+			className = "null";
+		else {
+			Class<?> clazz = object.getClass();
+			className = clazz.getCanonicalName();
+
+			if (clazz == Array.class) {
+				Object[] a = (Object[]) object;
+				for (int i = 0; i < a.length; i++)
+					result.put(i, toMap(a[i]));
+			} else if (Collection.class.isAssignableFrom(clazz)) {
+				Collection<?> col = (Collection<?>) object;
+				Iterator<?> iter = col.iterator();
+				int i = 0;
+
+				while (iter.hasNext())
+					result.put(i++, toMap(col.iterator().next()));
+			} else if (Map.class.isAssignableFrom(clazz))
+				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
+					result.put(toMap(entry.getKey()), toMap(entry.getValue()));
+			else if (clazz.isPrimitive() || clazz == String.class)
+				result.put("value", object);
+			else
+				for (Field field : getFields(object))
+					try {
+						result.put(toMap(field.getName()), toMap(field.get(object)));
+					} catch (IllegalAccessException ex) {
+						throw new RuntimeException(ex);
+					}
+		}
+
+		result.put("@class", className);
+		return result;
+	}
+
 	public static <T> boolean equals(T o0, T o1) {
 		boolean result;
 		if (o0 != o1)
@@ -40,45 +79,6 @@ public class InspectUtil {
 
 	public static int hashCode(Object object) {
 		return toList(object).hashCode();
-	}
-
-	public Map<Object, Object> get(final Object object) {
-		Map<Object, Object> result = new HashMap<>();
-		String className;
-
-		if (object == null)
-			className = "null";
-		else {
-			Class<?> clazz = object.getClass();
-			className = clazz.getCanonicalName();
-
-			if (clazz == Array.class) {
-				Object[] a = (Object[]) object;
-				for (int i = 0; i < a.length; i++)
-					result.put(i, get(a[i]));
-			} else if (Collection.class.isAssignableFrom(clazz)) {
-				Collection<?> col = (Collection<?>) object;
-				Iterator<?> iter = col.iterator();
-				int i = 0;
-
-				while (iter.hasNext())
-					result.put(i++, get(col.iterator().next()));
-			} else if (Map.class.isAssignableFrom(clazz))
-				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
-					result.put(get(entry.getKey()), get(entry.getValue()));
-			else if (clazz.isPrimitive() || clazz == String.class)
-				result.put("value", object);
-			else
-				for (Field field : getFields(object))
-					try {
-						result.put(get(field.getName()), get(field.get(object)));
-					} catch (IllegalAccessException ex) {
-						throw new RuntimeException(ex);
-					}
-		}
-
-		result.put("@class", className);
-		return result;
 	}
 
 	private static List<Object> toList(Object object) {
