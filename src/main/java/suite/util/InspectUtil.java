@@ -1,6 +1,7 @@
 package suite.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -117,10 +118,11 @@ public class InspectUtil {
 		ClassInformation ci = new ClassInformation();
 		ci.fields = new ArrayList<>(parent.fields);
 
-		for (Field field : clazz.getDeclaredFields()) {
-			field.setAccessible(true);
-			ci.fields.add(field);
-		}
+		for (Field field : clazz.getDeclaredFields())
+			if (!Modifier.isStatic(field.getModifiers())) {
+				field.setAccessible(true);
+				ci.fields.add(field);
+			}
 
 		return ci;
 	}
