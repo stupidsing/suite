@@ -9,6 +9,7 @@ import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.InspectUtil;
 
 public class ProverConfig {
 
@@ -44,6 +45,16 @@ public class ProverConfig {
 		this.isTrace = isTrace;
 		this.traceLevel = Suite.traceLevel;
 		this.noTracePredicates = noTracePredicates;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return InspectUtil.equals(this, object);
+	}
+
+	@Override
+	public int hashCode() {
+		return InspectUtil.hashCode(this);
 	}
 
 	public RuleSet ruleSet() {

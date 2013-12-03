@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +120,8 @@ public class InspectUtil {
 	}
 
 	private List<Field> getFields0(Class<?> clazz) {
-		List<Field> parentFields = getFields(clazz.getSuperclass());
+		Class<?> superClass = clazz.getSuperclass();
+		List<Field> parentFields = superClass != null ? getFields(superClass) : Collections.<Field> emptyList();
 		List<Field> fields = new ArrayList<>(parentFields);
 
 		for (Field field : clazz.getDeclaredFields())
