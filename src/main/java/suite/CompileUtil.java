@@ -7,28 +7,29 @@ import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
+import suite.util.CacheUtil;
+import suite.util.FunUtil.Fun;
 
 public class CompileUtil {
 
-	private RuleSet logicalCompilerRuleSet;
-	private RuleSet funCompilerRuleSet;
+	private Fun<List<String>, RuleSet> createRuleSetFun = new CacheUtil().proxy(new Fun<List<String>, RuleSet>() {
+		public RuleSet apply(List<String> filenames) {
+			return Suite.createRuleSet(filenames);
+		}
+	});
 
 	public synchronized RuleSet logicCompilerRuleSet() {
-		if (logicalCompilerRuleSet == null)
-			logicalCompilerRuleSet = createRuleSet(Arrays.asList("auto.sl", "lc.sl"));
-		return logicalCompilerRuleSet;
+		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc.sl"));
 	}
 
 	public synchronized RuleSet funCompilerRuleSet() {
-		if (funCompilerRuleSet == null)
-			funCompilerRuleSet = createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
-		return funCompilerRuleSet;
+		return createRuleSetFun.apply(Arrays.asList("auto.sl", "fc.sl"));
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {
-		System.out.println("Pre-compiling " + libraryName + "... ");
+		System.out.println("Pre-compiling " + libraryName + "...");
 
-		RuleSet rs = createRuleSet(Arrays.asList("auto.sl", "fc-precompile.sl"));
+		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc-precompile.sl"));
 		Builder builder = new InterpretedProverBuilder(pc);
 		boolean result = Suite.proveLogic(builder, rs, "fc-setup-precompile " + libraryName);
 
@@ -38,10 +39,6 @@ public class CompileUtil {
 			System.out.println("Pre-compilation failed\n");
 
 		return result;
-	}
-
-	private RuleSet createRuleSet(List<String> toImports) {
-		return Suite.createRuleSet(toImports);
 	}
 
 }
