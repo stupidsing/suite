@@ -8,7 +8,7 @@ import suite.util.FileUtil;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the
- * same accessor should always put in same number of bytes.
+ * same accessor should always put in the same number of bytes.
  */
 public interface Serializer<V> {
 
