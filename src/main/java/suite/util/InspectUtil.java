@@ -84,17 +84,17 @@ public class InspectUtil {
 		if (o0 != o1)
 			result = o0 != null && o1 != null //
 					&& o0.getClass() == o1.getClass() //
-					&& Util.equals(instance.toList(o0), instance.toList(o1));
+					&& Util.equals(instance.list(o0), instance.list(o1));
 		else
 			result = true;
 		return result;
 	}
 
 	public static int hashCode(Object object) {
-		return instance.toList(object).hashCode();
+		return instance.list(object).hashCode();
 	}
 
-	private List<Object> toList(Object object) {
+	private List<Object> list(Object object) {
 		List<Object> list = new ArrayList<>();
 
 		for (Field field : getFields(object))
