@@ -27,15 +27,12 @@ chr-match (given .given if .if then .then when .when end) .facts0 .factsx
 #
 
 chr-match0 .given .if .then .when .facts0 .factsx
-	:- chr-query-list .facts0 .given
-	, chr-retract-list .if .facts0 .facts1
+	:- chr-retract-list .if .facts0 .facts1
+	, chr-retract-list .given .facts1 _
 	, .when
 	, !
 	, chr-assert-list .then .facts1 .factsx
 #
-
-chr-query-list _ () #
-chr-query-list .facts (.c, .cs) :- member .facts .c, chr-query-list .facts .cs #
 
 chr-retract-list () .facts .facts
 #
@@ -58,7 +55,7 @@ chr-assert-list (.newFact, .newFacts) .facts0 (.newFact, .factsx)
 	:- chr-assert-list .newFacts .facts0 .factsx
 #
 
-test
+chr-test
 	:- chr-chain (
 		if (.x LE .x,) then () end,
 		if (.x LE .y, .y LE .x,) then (.x = .y,) end,
