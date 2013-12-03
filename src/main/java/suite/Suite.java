@@ -118,6 +118,7 @@ public class Suite {
 
 	public static Node substitute(String s, Node... nodes) {
 		Node result = parse(s);
+
 		Generalizer generalizer = new Generalizer();
 		result = generalizer.generalize(result);
 		int i = 0;
