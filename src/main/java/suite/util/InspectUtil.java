@@ -44,11 +44,11 @@ public class InspectUtil {
 				Map<Object, Object> map;
 
 				if (clazz.isArray())
-					map = mapify(Arrays.asList((Object[]) object));
+					map = instance.mapifyCollection(Arrays.asList((Object[]) object));
 				else if (Set.class.isAssignableFrom(clazz))
-					map = mapify(new TreeSet<>((Set<?>) object));
+					map = instance.mapifyCollection(new TreeSet<>((Set<?>) object));
 				else if (Collection.class.isAssignableFrom(clazz))
-					map = mapify((Collection<?>) object);
+					map = instance.mapifyCollection((Collection<?>) object);
 				else if (Map.class.isAssignableFrom(clazz)) {
 					map = new HashMap<>();
 					for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
@@ -72,7 +72,7 @@ public class InspectUtil {
 		return result;
 	}
 
-	private static Map<Object, Object> mapify(Collection<?> col) {
+	private Map<Object, Object> mapifyCollection(Collection<?> col) {
 		int i = 0;
 		Map<Object, Object> map = new HashMap<>();
 		for (Object elem : col)
