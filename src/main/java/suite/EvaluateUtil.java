@@ -99,7 +99,7 @@ public class EvaluateUtil {
 
 		try {
 			ProverConfig pc = fcc.getProverConfig();
-			Builder builder = new InterpretedProverBuilder(pc);
+			Builder builder = CompiledProverBuilder.level1(pc, false);
 			Finder finder = builder.build(rs, compileNode);
 			List<Node> nodes = collect(finder, appendLibraries(fcc));
 			return nodes.size() == 1 ? nodes.get(0).finalNode() : null;

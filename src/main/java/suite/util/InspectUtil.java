@@ -3,11 +3,14 @@ package suite.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,36 +40,43 @@ public class InspectUtil {
 					|| Number.class.isAssignableFrom(clazz))
 				result = object;
 			else {
-				Map<Object, Object> map = new HashMap<>();
-				map.put("@class", clazz.getCanonicalName());
+				Map<Object, Object> map;
 
-				if (clazz.isArray()) {
-					Object[] array = (Object[]) object;
-					for (int i = 0; i < array.length; i++)
-						map.put(i, mapify(array[i]));
-				} else if (Collection.class.isAssignableFrom(clazz)) {
-					Collection<?> col = (Collection<?>) object;
-					int i = 0;
-
-					for (Object elem : col)
-						map.put(i++, mapify(elem));
-				} else if (Map.class.isAssignableFrom(clazz))
+				if (clazz.isArray())
+					map = mapify(Arrays.asList((Object[]) object));
+				else if (Set.class.isAssignableFrom(clazz))
+					map = mapify(new TreeSet<>((Set<?>) object));
+				else if (Collection.class.isAssignableFrom(clazz))
+					map = mapify((Collection<?>) object);
+				else if (Map.class.isAssignableFrom(clazz)) {
+					map = new HashMap<>();
 					for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
 						map.put(mapify(entry.getKey()), mapify(entry.getValue()));
-				else
+				} else {
+					map = new HashMap<>();
 					for (Field field : instance.getFields(object))
 						try {
 							map.put(mapify(field.getName()), mapify(field.get(object)));
 						} catch (IllegalAccessException ex) {
 							throw new RuntimeException(ex);
 						}
+				}
 
+				map.put("@class", clazz.getCanonicalName());
 				result = map;
 			}
 		} else
 			result = null;
 
 		return result;
+	}
+
+	private static Map<Object, Object> mapify(Collection<?> col) {
+		int i = 0;
+		Map<Object, Object> map = new HashMap<>();
+		for (Object elem : col)
+			map.put(i++, mapify(elem));
+		return map;
 	}
 
 	public static <T> boolean equals(T o0, T o1) {
