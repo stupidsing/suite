@@ -24,14 +24,21 @@ import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 
-public class FunInstructionExecutor extends InstructionExecutor implements InvocableBridge {
+public class FunInstructionExecutor extends InstructionExecutor {
 
 	private Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 		public Node apply(Node node) {
-			node = node.finalNode();
-			if (node instanceof Closure)
-				node = evaluateClosure((Closure) node);
-			return node;
+			return unwrap0(node);
+		}
+	};
+
+	private InvocableBridge invocableBridge = new InvocableBridge() {
+		public Fun<Node, Node> getUnwrapper() {
+			return unwrapper;
+		}
+
+		public Node wrapInvocable(Invocable invocable, Node node) {
+			return wrapInvocable0(invocable, node);
 		}
 	};
 
@@ -85,18 +92,18 @@ public class FunInstructionExecutor extends InstructionExecutor implements Invoc
 			break;
 		case INVOKEJAVAOBJ0:
 			data = (Data<?>) ds[--dsp];
-			result = ((Invocable) data.getData()).invoke(this, Collections.<Node> emptyList());
+			result = ((Invocable) data.getData()).invoke(invocableBridge, Collections.<Node> emptyList());
 			break;
 		case INVOKEJAVAOBJ1:
 			data = (Data<?>) (Node) ds[--dsp];
 			n0 = (Node) ds[--dsp];
-			result = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0));
+			result = ((Invocable) data.getData()).invoke(invocableBridge, Arrays.asList(n0));
 			break;
 		case INVOKEJAVAOBJ2:
 			data = (Data<?>) (Node) ds[--dsp];
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = ((Invocable) data.getData()).invoke(this, Arrays.asList(n0, n1));
+			result = ((Invocable) data.getData()).invoke(invocableBridge, Arrays.asList(n0, n1));
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -143,13 +150,6 @@ public class FunInstructionExecutor extends InstructionExecutor implements Invoc
 		regs[insn.op0] = result;
 	}
 
-	public Closure wrapInvocable(Invocable invocable, Node node) {
-		Frame frame = new Frame(null, 3);
-		frame.registers[0] = node;
-		frame.registers[1] = new Data<Invocable>(invocable);
-		return new Closure(frame, invokeJavaEntryPoint);
-	}
-
 	@Override
 	protected void postprocessInstructions(List<Instruction> list) {
 		list.add(new Instruction(Insn.ENTER_________, 3, 0, 0));
@@ -167,6 +167,20 @@ public class FunInstructionExecutor extends InstructionExecutor implements Invoc
 	@Override
 	protected Comparer comparer() {
 		return comparer;
+	}
+
+	private Node unwrap0(Node node) {
+		node = node.finalNode();
+		if (node instanceof Closure)
+			node = evaluateClosure((Closure) node);
+		return node;
+	}
+
+	private Node wrapInvocable0(Invocable invocable, Node node) {
+		Frame frame = new Frame(null, 3);
+		frame.registers[0] = node;
+		frame.registers[1] = new Data<Invocable>(invocable);
+		return new Closure(frame, FunInstructionExecutor.this.invokeJavaEntryPoint);
 	}
 
 	public Fun<Node, Node> getUnwrapper() {
