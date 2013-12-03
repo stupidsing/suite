@@ -19,11 +19,7 @@ public class InspectUtil {
 
 	private static InspectUtil instance = new InspectUtil();
 
-	private Map<Class<?>, ClassInformation> clazzInformation = new ConcurrentHashMap<>();
-
-	private class ClassInformation {
-		private List<Field> fields;
-	}
+	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
 
 	private InspectUtil() {
 	}
@@ -102,29 +98,27 @@ public class InspectUtil {
 	}
 
 	private List<Field> getFields(Object object) {
-		return instance.getClassInformation(object.getClass()).fields;
+		return getFields(object.getClass());
 	}
 
-	private ClassInformation getClassInformation(Class<?> clazz) {
-		ClassInformation ci = clazzInformation.get(clazz);
+	private List<Field> getFields(Class<?> clazz) {
+		List<Field> ci = fieldsByClass.get(clazz);
 		if (ci == null)
-			clazzInformation.put(clazz, ci = getClassInformation0(clazz));
+			fieldsByClass.put(clazz, ci = getFields0(clazz));
 		return ci;
 	}
 
-	private ClassInformation getClassInformation0(Class<?> clazz) {
-		ClassInformation parent = getClassInformation(clazz.getSuperclass());
-
-		ClassInformation ci = new ClassInformation();
-		ci.fields = new ArrayList<>(parent.fields);
+	private List<Field> getFields0(Class<?> clazz) {
+		List<Field> parentFields = getFields(clazz.getSuperclass());
+		List<Field> fields = new ArrayList<>(parentFields);
 
 		for (Field field : clazz.getDeclaredFields())
 			if (!Modifier.isStatic(field.getModifiers())) {
 				field.setAccessible(true);
-				ci.fields.add(field);
+				fields.add(field);
 			}
 
-		return ci;
+		return fields;
 	}
 
 }
