@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.util.FunUtil.Fun;
+
 public class CacheUtil {
 
 	private Map<Key, Object> results = new ConcurrentHashMap<>();
@@ -43,6 +45,12 @@ public class CacheUtil {
 			} else
 				return false;
 		}
+	}
+
+	public <I, O> Fun<I, O> proxy(Fun<I, O> fun) {
+		@SuppressWarnings("unchecked")
+		Fun<I, O> proxy = (Fun<I, O>) proxy(Fun.class, fun);
+		return proxy;
 	}
 
 	public <I> I proxy(Class<I> interface_, I object) {
