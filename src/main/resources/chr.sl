@@ -60,7 +60,7 @@ chr-test
 		if (.x LE .x,) then () end,
 		if (.x LE .y, .y LE .x,) then (.x = .y,) end,
 		given (.x LE .y, .y LE .z,) if () then (.x LE .z,) end,
-		given (.x LE y,) if (.x LE .y,) if () then () end,
+		given (.x LE .y,) if (.x LE .y,) if () then () end,
 	) (
 		A LE B, B LE C, C LE A,
 	) .factsx
