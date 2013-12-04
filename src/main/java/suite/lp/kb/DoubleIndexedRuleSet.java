@@ -17,7 +17,7 @@ import com.google.common.collect.ListMultimap;
  */
 public class DoubleIndexedRuleSet extends IndexedRuleSet {
 
-	// Index rules by prototype.
+	// Index rules by prototypes.
 	// Have to use a multi-map implementation that allow null keys.
 	private Map<Prototype, ListMultimap<Prototype, Rule>> index0 = new HashMap<>();
 
