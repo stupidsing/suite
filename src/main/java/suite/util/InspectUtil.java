@@ -124,11 +124,14 @@ public class InspectUtil {
 		List<Field> parentFields = superClass != null ? getFields(superClass) : Collections.<Field> emptyList();
 		List<Field> fields = new ArrayList<>(parentFields);
 
-		for (Field field : clazz.getDeclaredFields())
-			if (!Modifier.isStatic(field.getModifiers())) {
+		for (Field field : clazz.getDeclaredFields()) {
+			int modifiers = field.getModifiers();
+
+			if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
 				field.setAccessible(true);
 				fields.add(field);
 			}
+		}
 
 		return fields;
 	}
