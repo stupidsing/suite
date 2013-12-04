@@ -1,5 +1,6 @@
 package suite.lp.predicate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -102,14 +103,18 @@ public class RuleSetPredicates {
 			RuleSet ruleSet = prover.ruleSet();
 			Journal journal = prover.getJournal();
 			int pit = journal.getPointInTime();
+			List<Rule> targets = new ArrayList<>();
 
 			for (Rule rule : ruleSet.getRules()) {
 				if (Binder.bind(rule0.getHead(), rule.getHead(), journal) //
 						&& Binder.bind(rule0.getTail(), rule.getTail(), journal))
-					ruleSet.removeRule(rule);
+					targets.add(rule);
 
 				journal.undoBinds(pit);
 			}
+
+			for (Rule rule : targets)
+				ruleSet.removeRule(rule);
 
 			return true;
 		}
