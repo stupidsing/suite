@@ -39,7 +39,7 @@ public class CacheUtil {
 		public boolean equals(Object object) {
 			if (object instanceof Key) {
 				Key other = (Key) object;
-				return System.identityHashCode(bean) == System.identityHashCode(other.bean) //
+				return bean == other.bean //
 						&& Util.equals(method, other.method) //
 						&& Arrays.deepEquals(arguments, other.arguments);
 			} else
