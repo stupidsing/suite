@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.lp.doer.ProverConfig;
+import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
@@ -22,8 +23,16 @@ public class CompileUtil {
 		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc.sl"));
 	}
 
+	/**
+	 * Returns rule set for functional compiler.
+	 * 
+	 * The functional compiler would perform asserts when libraries are used.
+	 * 
+	 * Use composite rule set to store new rules, and avoid original rule set
+	 * being altered.
+	 */
 	public synchronized RuleSet funCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("auto.sl", "fc.sl"));
+		return new CompositeRuleSet(createRuleSetFun.apply(Arrays.asList("auto.sl", "fc.sl")));
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {

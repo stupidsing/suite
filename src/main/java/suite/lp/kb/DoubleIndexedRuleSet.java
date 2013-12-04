@@ -22,12 +22,6 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 	private Map<Prototype, ListMultimap<Prototype, Rule>> index0 = new HashMap<>();
 
 	@Override
-	public void clear() {
-		super.clear();
-		index0.clear();
-	}
-
-	@Override
 	public void addRule(Rule rule) {
 		super.addRule(rule);
 		List<Rule> rules1 = ruleList(rule);

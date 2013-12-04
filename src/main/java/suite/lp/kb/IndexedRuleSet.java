@@ -19,12 +19,6 @@ public class IndexedRuleSet extends LinearRuleSet {
 	private ListMultimap<Prototype, Rule> index = ArrayListMultimap.create();
 
 	@Override
-	public void clear() {
-		super.clear();
-		index.clear();
-	}
-
-	@Override
 	public void addRule(Rule rule) {
 		super.addRule(rule);
 		index.get(Prototype.get(rule)).add(rule);

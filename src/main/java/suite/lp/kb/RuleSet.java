@@ -6,8 +6,6 @@ import suite.node.Node;
 
 public interface RuleSet {
 
-	public void clear();
-
 	public void addRule(Rule rule);
 
 	public void addRuleToFront(Rule rule);

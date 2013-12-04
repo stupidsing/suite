@@ -18,13 +18,35 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
+import suite.util.CacheUtil;
 import suite.util.FunUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
+import suite.util.Pair;
 import suite.util.Util;
 
 public class EvaluateUtil {
+
+	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = new CacheUtil().proxy(new Fun<Pair<Boolean, Boolean>, Node>() {
+		public Node apply(Pair<Boolean, Boolean> pair) {
+			Atom mode = Atom.create(pair.t0 ? "LAZY" : "EAGER");
+
+			return new Specializer().specialize(Suite.substitute("" //
+					+ "source .in" //
+					+ ", compile-function .0 .in .out" //
+					+ (pair.t1 ? ", pretty.print .out" : "") //
+					+ ", sink .out", mode));
+		}
+	});
+
+	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = new CacheUtil().proxy(new Fun<Pair<ProverConfig, Node>, Finder>() {
+		public Finder apply(Pair<ProverConfig, Node> pair) {
+			Builder builder = CompiledProverBuilder.level1(pair.t0, false);
+			return builder.build(Suite.funCompilerRuleSet(), pair.t1);
+		}
+	});
 
 	public boolean proveLogic(Node lp) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
@@ -58,14 +80,7 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
-
-		Node node = new Specializer().specialize(Suite.substitute("" //
-				+ "source .in" //
-				+ ", compile-function .0 .in .out" //
-				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
-				+ ", sink .out", mode));
-
+		Node node = fccNodeFun.apply(Pair.create(fcc.isLazy(), fcc.isDumpCode()));
 		Node code = doFcc(node, fcc);
 
 		if (code != null)
@@ -95,10 +110,9 @@ public class EvaluateUtil {
 		long start = System.currentTimeMillis();
 
 		try {
-			RuleSet rs = Suite.funCompilerRuleSet();
 			ProverConfig pc = fcc.getProverConfig();
-			Builder builder = new InterpretedProverBuilder(pc);
-			Finder finder = builder.build(rs, compileNode);
+			Finder finder = fccFinderFun.apply(Pair.create(pc, compileNode));
+
 			List<Node> nodes = collect(finder, appendLibraries(fcc));
 			return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
 		} finally {

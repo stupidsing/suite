@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import suite.Suite;
+import suite.lp.Journal;
+import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.Prototype;
@@ -32,13 +34,6 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Node.tupleToArray(ps, 1);
 			Suite.addRule(prover.ruleSet(), params[0]);
-			return true;
-		}
-	}
-
-	public static class Clear implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			prover.ruleSet().clear();
 			return true;
 		}
 	}
@@ -95,6 +90,27 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Node.tupleToArray(ps, 1);
 			prover.ruleSet().removeRule(Rule.formRule(params[0]));
+			return true;
+		}
+	}
+
+	public static class RetractAll implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Node.tupleToArray(ps, 1);
+			Rule rule0 = Rule.formRule(params[0]);
+
+			RuleSet ruleSet = prover.ruleSet();
+			Journal journal = prover.getJournal();
+			int pit = journal.getPointInTime();
+
+			for (Rule rule : ruleSet.getRules()) {
+				if (Binder.bind(rule0.getHead(), rule.getHead(), journal) //
+						&& Binder.bind(rule0.getTail(), rule.getTail(), journal))
+					ruleSet.removeRule(rule);
+
+				journal.undoBinds(pit);
+			}
+
 			return true;
 		}
 	}

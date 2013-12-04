@@ -18,11 +18,6 @@ public class LinearRuleSet implements RuleSet {
 	}
 
 	@Override
-	public void clear() {
-		rules.clear();
-	}
-
-	@Override
 	public void addRule(Rule rule) {
 		rule = new Cloner().clone(rule);
 		rules.add(rule);
