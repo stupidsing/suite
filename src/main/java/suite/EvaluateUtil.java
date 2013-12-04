@@ -58,7 +58,6 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		RuleSet rs = Suite.funCompilerRuleSet();
 		Atom mode = Atom.create(fcc.isLazy() ? "LAZY" : "EAGER");
 
 		Node node = new Specializer().specialize(Suite.substitute("" //
@@ -67,7 +66,7 @@ public class EvaluateUtil {
 				+ (fcc.isDumpCode() ? ", pretty.print .out" : "") //
 				+ ", sink .out", mode));
 
-		Node code = doFcc(rs, node, fcc);
+		Node code = doFcc(node, fcc);
 
 		if (code != null)
 			return new FunInstructionExecutor(code);
@@ -76,8 +75,6 @@ public class EvaluateUtil {
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
-		RuleSet rs = Suite.funCompilerRuleSet();
-
 		Node node = Suite.parse("" //
 				+ "source .in" //
 				+ ", fc-parse .in .p" //
@@ -86,7 +83,7 @@ public class EvaluateUtil {
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 
-		Node type = doFcc(rs, node, fcc);
+		Node type = doFcc(node, fcc);
 
 		if (type != null)
 			return type;
@@ -94,10 +91,11 @@ public class EvaluateUtil {
 			throw new RuntimeException("Type inference error");
 	}
 
-	private Node doFcc(RuleSet rs, Node compileNode, FunCompilerConfig fcc) {
+	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
 		long start = System.currentTimeMillis();
 
 		try {
+			RuleSet rs = Suite.funCompilerRuleSet();
 			ProverConfig pc = fcc.getProverConfig();
 			Builder builder = new InterpretedProverBuilder(pc);
 			Finder finder = builder.build(rs, compileNode);
