@@ -30,9 +30,9 @@ public class CacheUtil {
 
 		public int hashCode() {
 			int result = 1;
-			result = 31 * result + Arrays.deepHashCode(arguments);
-			result = 31 * result + Util.hashCode(bean);
+			result = 31 * result + System.identityHashCode(bean);
 			result = 31 * result + Util.hashCode(method);
+			result = 31 * result + Arrays.deepHashCode(arguments);
 			return result;
 		}
 
