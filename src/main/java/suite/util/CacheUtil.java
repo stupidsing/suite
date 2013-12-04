@@ -49,7 +49,7 @@ public class CacheUtil {
 
 	public <I, O> Fun<I, O> proxy(Fun<I, O> fun) {
 		@SuppressWarnings("unchecked")
-		Fun<I, O> proxy = (Fun<I, O>) proxy(Fun.class, fun);
+		Fun<I, O> proxy = proxy(Fun.class, fun);
 		return proxy;
 	}
 
