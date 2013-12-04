@@ -18,6 +18,7 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
+import suite.util.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 
@@ -101,7 +102,7 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node execute(Node code) throws IOException {
-		String basePathName = "/tmp/" + InstructionTranslator.class.getName();
+		String basePathName = FileUtil.tmp + "/" + InstructionTranslator.class.getName();
 
 		TranslatedRunConfig config = new TranslatedRunConfig();
 		config.ruleSet = Suite.createRuleSet();

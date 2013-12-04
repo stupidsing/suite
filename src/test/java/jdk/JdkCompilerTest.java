@@ -20,8 +20,8 @@ public class JdkCompilerTest {
 
 	@Test
 	public void test() throws IOException, ReflectiveOperationException {
-		String srcDir = "/tmp/src";
-		String binDir = "/tmp/bin";
+		String srcDir = FileUtil.tmp + "/src";
+		String binDir = FileUtil.tmp + "/bin";
 		String className = "HelloWorld";
 
 		new File(srcDir).mkdirs();

@@ -20,6 +20,7 @@ import suite.rt.composites.Minus;
 import suite.rt.composites.Union;
 import suite.rt.planars.Plane;
 import suite.rt.planars.Triangle;
+import suite.util.FileUtil;
 import suite.util.Util;
 
 public class RayTracerTest {
@@ -199,7 +200,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		String filename = "/tmp/" + Util.getStackTrace(3).getMethodName() + ".png";
+		String filename = FileUtil.tmp + "/" + Util.getStackTrace(3).getMethodName() + ".png";
 
 		BufferedImage bufferedImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
 		rayTracer.trace(bufferedImage, 640);

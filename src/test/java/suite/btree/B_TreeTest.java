@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import suite.btree.Serializer.FixedStringSerializer;
 import suite.btree.Serializer.IntSerializer;
+import suite.util.FileUtil;
 import suite.util.Pair;
 
 public class B_TreeTest {
@@ -50,7 +51,7 @@ public class B_TreeTest {
 
 	@Test
 	public void fileTest() throws IOException {
-		String pathName = "/tmp/test-btree";
+		String pathName = FileUtil.tmp + "/test-btree";
 		boolean isNew = true;
 
 		try (B_TreeHolder<Integer, String> holder = new B_TreeHolder<>( //

@@ -66,7 +66,10 @@ public class FilterTest {
 					System.gc();
 					System.gc();
 					System.out.println("Dump heap to check memory now");
-					System.out.println("jmap -histo " + FileUtil.getPid() + " | tee /tmp/jmap | less");
+					System.out.println("" //
+							+ "jmap -histo " + FileUtil.getPid() //
+							+ " | tee " + FileUtil.tmp + "/jmap" //
+							+ " | less");
 					Util.sleepQuietly(10 * 1000l);
 				}
 			}

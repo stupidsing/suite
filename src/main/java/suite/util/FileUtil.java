@@ -16,6 +16,7 @@ import suite.util.FunUtil.Source;
 
 public class FileUtil {
 
+	public static final String tmp = "/tmp";
 	public static final Charset charset = Charset.forName("UTF-8");
 
 	public static void copyFile(File from, File to) throws IOException {
