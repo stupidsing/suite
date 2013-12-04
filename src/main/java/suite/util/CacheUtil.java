@@ -30,7 +30,7 @@ public class CacheUtil {
 
 		public int hashCode() {
 			int result = 1;
-			result = 31 * result + Arrays.hashCode(arguments);
+			result = 31 * result + Arrays.deepHashCode(arguments);
 			result = 31 * result + Util.hashCode(bean);
 			result = 31 * result + Util.hashCode(method);
 			return result;
