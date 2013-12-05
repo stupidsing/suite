@@ -15,7 +15,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * .. Converts (supposedly) any Java structures to a recursive map.
+ * Converts (supposedly) any Java structures to a recursive map.
  * 
  * @author ywsing
  */
