@@ -72,12 +72,63 @@ public class InspectUtil {
 		return result;
 	}
 
+	public static Object unmapify(Class<?> clazz, Object object) {
+		Object result;
+
+		if (object != null) {
+			if (clazz.isPrimitive() //
+					|| clazz.isEnum() //
+					|| clazz == Boolean.class //
+					|| clazz == String.class //
+					|| Number.class.isAssignableFrom(clazz))
+				result = clazz.cast(object);
+			else {
+				@SuppressWarnings("unchecked")
+				Map<Object, Object> map = (Map<Object, Object>) object;
+
+				if (clazz.isArray())
+					result = instance.unmapifyCollection(map, new ArrayList<>()).toArray(new Object[0]);
+				else if (Collection.class.isAssignableFrom(clazz))
+					try {
+						@SuppressWarnings("unchecked")
+						Collection<Object> col = (Collection<Object>) clazz.newInstance();
+						result = instance.unmapifyCollection(map, col);
+					} catch (ReflectiveOperationException ex) {
+						throw new RuntimeException(ex);
+					}
+				else if (Map.class.isAssignableFrom(clazz)) {
+					Map<Object, Object> map1 = new HashMap<>();
+					for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
+						map1.put(unmapify(String.class, entry.getKey()), unmapify(String.class, entry.getValue()));
+					result = map1;
+				} else
+					try {
+						result = clazz.newInstance();
+						for (Field field : instance.getFields(result))
+							field.set(result, map.get(unmapify(String.class, field.getName())));
+					} catch (ReflectiveOperationException ex) {
+						throw new RuntimeException(ex);
+					}
+			}
+		} else
+			result = null;
+
+		return result;
+	}
+
 	private Map<Object, Object> mapifyCollection(Collection<?> col) {
 		int i = 0;
 		Map<Object, Object> map = new HashMap<>();
 		for (Object elem : col)
 			map.put(i++, mapify(elem));
 		return map;
+	}
+
+	private Collection<Object> unmapifyCollection(Map<Object, Object> map, Collection<Object> col) {
+		int i = 0;
+		while (map.containsKey(i))
+			col.add(map.get(i++));
+		return col;
 	}
 
 	public static <T> boolean equals(T o0, T o1) {
