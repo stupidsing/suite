@@ -62,7 +62,9 @@ public class EditorController {
 					JTextArea bottomTextArea = view.getBottomTextArea();
 					bottomTextArea.setText(result);
 					bottomTextArea.setVisible(true);
+
 					view.repaint();
+					view.getEditor().requestFocus();
 				}
 			};
 
