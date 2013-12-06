@@ -110,7 +110,7 @@ public class EditorController {
 		view.repaint();
 	}
 
-	private void run(final EditorView view, final Fun<String, String> evaluateFun) {
+	private void run(final EditorView view, final Fun<String, String> fun) {
 		JEditorPane editor = view.getEditor();
 		String selectedText = editor.getSelectedText();
 		final String text = selectedText != null ? selectedText : editor.getText();
@@ -122,7 +122,7 @@ public class EditorController {
 					bottomTextArea.setEnabled(false);
 					bottomTextArea.setText("RUNNING...");
 
-					String result = evaluateFun.apply(text);
+					String result = fun.apply(text);
 
 					bottomTextArea.setText(result);
 					bottomTextArea.setEnabled(true);
