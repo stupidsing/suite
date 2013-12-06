@@ -7,16 +7,16 @@ import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 
-public class DefaultValueMap<K, V> implements Map<K, V> {
+public class DefaultFunMap<K, V> implements Map<K, V> {
 
 	private Map<K, V> map;
 	private Fun<K, V> fun;
 
-	public DefaultValueMap(Fun<K, V> fun) {
+	public DefaultFunMap(Fun<K, V> fun) {
 		this(new HashMap<K, V>(), fun);
 	}
 
-	public DefaultValueMap(Map<K, V> map, Fun<K, V> fun) {
+	public DefaultFunMap(Map<K, V> map, Fun<K, V> fun) {
 		this.map = map;
 		this.fun = fun;
 	}
