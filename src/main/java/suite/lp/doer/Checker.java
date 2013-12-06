@@ -42,28 +42,33 @@ public class Checker {
 	}
 
 	private void scanSingletonVariables(Map<Atom, Boolean> isSingleton, Node node) {
-		node = node.finalNode();
+		for (;;) {
+			node = node.finalNode();
 
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			scanSingletonVariables(isSingleton, tree.getLeft());
-			scanSingletonVariables(isSingleton, tree.getRight());
-		} else if (node instanceof Atom) {
-			Atom atom = (Atom) node;
-			String name = atom.getName();
+			if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+				scanSingletonVariables(isSingleton, tree.getLeft());
+				node = tree.getRight();
+				continue;
+			} else if (node instanceof Atom) {
+				Atom atom = (Atom) node;
+				String name = atom.getName();
 
-			// Check all variables starting with alphabets; ignore
-			// computer-generated code
-			if (name.startsWith(Generalizer.defaultPrefix) //
-					&& name.length() >= 2 //
-					&& Character.isAlphabetic(name.charAt(1))) {
-				Boolean value = isSingleton.get(atom);
-				if (value == null)
-					value = Boolean.TRUE;
-				else if (value == true)
-					value = Boolean.FALSE;
-				isSingleton.put(atom, value);
+				// Check all variables starting with alphabets; ignore
+				// computer-generated code
+				if (name.startsWith(Generalizer.defaultPrefix) //
+						&& name.length() >= 2 //
+						&& Character.isAlphabetic(name.charAt(1))) {
+					Boolean value = isSingleton.get(atom);
+					if (value == null)
+						value = Boolean.TRUE;
+					else if (value == true)
+						value = Boolean.FALSE;
+					isSingleton.put(atom, value);
+				}
 			}
+
+			break;
 		}
 	}
 
