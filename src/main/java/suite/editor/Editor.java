@@ -10,7 +10,7 @@ public class Editor {
 
 		EditorView view = new EditorView();
 		view.setController(controller);
-		view.run();
+		view.run(Editor.class.getSimpleName());
 	}
 
 }

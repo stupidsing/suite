@@ -359,7 +359,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump as type (:t => :t -> string) = skip-type-check (
+	define dump as (:t => :t -> string) = skip-type-check (
 		define type-of = ijavacls {CLASS!suite.lp.invocable.Invocables$TypeOf} >>
 		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
 		let dump0 = (prec => n =>

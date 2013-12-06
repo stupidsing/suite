@@ -50,7 +50,7 @@ public class EditorView {
 	private JScrollPane scrollPane;
 	private JLabel topLabel;
 
-	public JFrame run() {
+	public JFrame run(String title) {
 		JTextField leftTextField = this.leftTextField = applyDefaults(new JTextField(32));
 		leftTextField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -92,7 +92,7 @@ public class EditorView {
 			}
 		});
 
-		JFrame frame = this.frame = new JFrame(getClass().getSimpleName());
+		JFrame frame = this.frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
@@ -190,14 +190,14 @@ public class EditorView {
 			}
 		});
 
-		JMenuItem evalMenuItem = applyDefaults(new JMenuItem("Evaluate", KeyEvent.VK_R));
+		JMenuItem evalMenuItem = applyDefaults(new JMenuItem("Evaluate", KeyEvent.VK_E));
 		evalMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				controller.evaluate(view);
 			}
 		});
 
-		JMenuItem evalTypeMenuItem = applyDefaults(new JMenuItem("Evaluate Type", KeyEvent.VK_R));
+		JMenuItem evalTypeMenuItem = applyDefaults(new JMenuItem("Evaluate Type", KeyEvent.VK_T));
 		evalTypeMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
 				controller.evaluateType(view);
