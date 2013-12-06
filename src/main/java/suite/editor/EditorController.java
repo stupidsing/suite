@@ -44,33 +44,38 @@ public class EditorController {
 		view.repaint();
 	}
 
-	public void run(final EditorView view) {
-		JEditorPane editor = view.getEditor();
-		String selectedText = editor.getSelectedText();
-		final String text = selectedText != null ? selectedText : editor.getText();
+	public void evaluate(EditorView view) {
+		run(view, new Fun<String, String>() {
+			public String apply(String text) {
+				String result;
 
-		if (runThread == null || !runThread.isAlive()) {
-			runThread = new Thread() {
-				public void run() {
-					String result;
-					try {
-						Node node = Suite.evaluateFun(text, true);
-						result = Formatter.dump(node);
-					} catch (Exception ex) {
-						result = To.string(ex);
-					}
-					JTextArea bottomTextArea = view.getBottomTextArea();
-					bottomTextArea.setText(result);
-					bottomTextArea.setVisible(true);
-
-					view.repaint();
-					view.getEditor().requestFocus();
+				try {
+					Node node = Suite.evaluateFun(text, true);
+					result = Formatter.dump(node);
+				} catch (Exception ex) {
+					result = To.string(ex);
 				}
-			};
 
-			runThread.start();
-		} else
-			JOptionPane.showMessageDialog(view.getFrame(), "Previous run in progress");
+				return result;
+			}
+		});
+	}
+
+	public void evaluateType(EditorView view) {
+		run(view, new Fun<String, String>() {
+			public String apply(String text) {
+				String result;
+
+				try {
+					Node node = Suite.evaluateFunType(text);
+					result = Formatter.dump(node);
+				} catch (Exception ex) {
+					result = To.string(ex);
+				}
+
+				return result;
+			}
+		});
 	}
 
 	public void searchFiles(EditorView view) {
@@ -103,6 +108,34 @@ public class EditorController {
 		JComponent top = view.getTopToolbar();
 		top.setVisible(!top.isVisible());
 		view.repaint();
+	}
+
+	private void run(final EditorView view, final Fun<String, String> evaluateFun) {
+		JEditorPane editor = view.getEditor();
+		String selectedText = editor.getSelectedText();
+		final String text = selectedText != null ? selectedText : editor.getText();
+
+		if (runThread == null || !runThread.isAlive()) {
+			runThread = new Thread() {
+				public void run() {
+					JTextArea bottomTextArea = view.getBottomTextArea();
+					bottomTextArea.setEnabled(false);
+					bottomTextArea.setText("RUNNING...");
+
+					String result = evaluateFun.apply(text);
+
+					bottomTextArea.setText(result);
+					bottomTextArea.setEnabled(true);
+					bottomTextArea.setVisible(true);
+
+					view.repaint();
+					view.getEditor().requestFocus();
+				}
+			};
+
+			runThread.start();
+		} else
+			JOptionPane.showMessageDialog(view.getFrame(), "Previous run in progress");
 	}
 
 }

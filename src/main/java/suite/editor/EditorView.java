@@ -88,7 +88,7 @@ public class EditorView {
 		JButton okButton = applyDefaults(new JButton("OK"));
 		okButton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
-				controller.run(EditorView.this);
+				controller.evaluate(EditorView.this);
 			}
 		});
 
@@ -190,17 +190,24 @@ public class EditorView {
 			}
 		});
 
-		JMenuItem runMenuItem = applyDefaults(new JMenuItem("Run", KeyEvent.VK_R));
-		runMenuItem.addActionListener(new ActionListener() {
+		JMenuItem evalMenuItem = applyDefaults(new JMenuItem("Evaluate", KeyEvent.VK_R));
+		evalMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				controller.run(view);
+				controller.evaluate(view);
+			}
+		});
+
+		JMenuItem evalTypeMenuItem = applyDefaults(new JMenuItem("Evaluate Type", KeyEvent.VK_R));
+		evalTypeMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.evaluateType(view);
 			}
 		});
 
 		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, openMenuItem, saveMenuItem, exitMenuItem);
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E);
 		JMenu viewMenu = createMenu("View", KeyEvent.VK_V, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
-		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, runMenuItem);
+		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, evalMenuItem, evalTypeMenuItem);
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
