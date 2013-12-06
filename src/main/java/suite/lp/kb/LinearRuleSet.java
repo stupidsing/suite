@@ -5,6 +5,7 @@ import java.util.List;
 
 import suite.lp.doer.Cloner;
 import suite.node.Node;
+import suite.util.Util;
 
 public class LinearRuleSet implements RuleSet {
 
@@ -42,6 +43,19 @@ public class LinearRuleSet implements RuleSet {
 	@Override
 	public List<Rule> getRules() {
 		return rules;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof LinearRuleSet)
+			return Util.equals(rules, ((LinearRuleSet) object).rules);
+		else
+			return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return rules.hashCode();
 	}
 
 }

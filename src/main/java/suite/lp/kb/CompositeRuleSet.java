@@ -6,6 +6,7 @@ import java.util.List;
 import suite.Suite;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
+import suite.util.InspectUtil;
 import suite.util.Util;
 
 public class CompositeRuleSet implements RuleSet {
@@ -66,6 +67,16 @@ public class CompositeRuleSet implements RuleSet {
 	@Override
 	public List<Rule> getRules() {
 		return Util.add(first.getRules(), second.getRules());
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return InspectUtil.equals(this, object);
+	}
+
+	@Override
+	public int hashCode() {
+		return InspectUtil.hashCode(this);
 	}
 
 }
