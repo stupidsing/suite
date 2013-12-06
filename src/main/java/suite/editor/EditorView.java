@@ -259,6 +259,10 @@ public class EditorView {
 		return editor;
 	}
 
+	public JFrame getFrame() {
+		return frame;
+	}
+
 	public JTextField getLeftTextField() {
 		return leftTextField;
 	}

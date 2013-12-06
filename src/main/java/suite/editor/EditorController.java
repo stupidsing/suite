@@ -5,6 +5,7 @@ import java.io.File;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
 import suite.Suite;
@@ -17,6 +18,8 @@ import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class EditorController {
+
+	private Thread runThread;
 
 	public void bottom(EditorView view) {
 		JComponent bottom = view.getBottomToolbar();
@@ -41,23 +44,31 @@ public class EditorController {
 		view.repaint();
 	}
 
-	public void run(EditorView view) {
+	public void run(final EditorView view) {
 		JEditorPane editor = view.getEditor();
 		String selectedText = editor.getSelectedText();
-		String text = selectedText != null ? selectedText : editor.getText();
-		String result;
+		final String text = selectedText != null ? selectedText : editor.getText();
 
-		try {
-			Node node = Suite.evaluateFun(text, true);
-			result = Formatter.dump(node);
-		} catch (Exception ex) {
-			result = To.string(ex);
-		}
+		if (runThread == null || !runThread.isAlive()) {
+			runThread = new Thread() {
+				public void run() {
+					String result;
+					try {
+						Node node = Suite.evaluateFun(text, true);
+						result = Formatter.dump(node);
+					} catch (Exception ex) {
+						result = To.string(ex);
+					}
+					JTextArea bottomTextArea = view.getBottomTextArea();
+					bottomTextArea.setText(result);
+					bottomTextArea.setVisible(true);
+					view.repaint();
+				}
+			};
 
-		JTextArea bottomTextArea = view.getBottomTextArea();
-		bottomTextArea.setText(result);
-		bottomTextArea.setVisible(true);
-		view.repaint();
+			runThread.start();
+		} else
+			JOptionPane.showMessageDialog(view.getFrame(), "Previous run in progress");
 	}
 
 	public void searchFiles(EditorView view) {
