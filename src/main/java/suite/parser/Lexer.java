@@ -14,8 +14,9 @@ public class Lexer {
 	private boolean eof;
 	private char peeked;
 	private Reader reader;
+	private Set<String> operators;
 
-	private Set<String> operators = new HashSet<>(Arrays.asList( //
+	private static final Set<String> javaOperators = new HashSet<>(Arrays.asList( //
 			"++", "--", "+", "-", "~", "!", //
 			"*", "/", "%", //
 			"+", "-", //
@@ -31,11 +32,17 @@ public class Lexer {
 			"=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>=", ">>>="));
 
 	public Lexer(String in) {
-		this(new StringReader(in));
+		this(in, javaOperators);
 	}
 
-	public Lexer(Reader reader) {
+	public Lexer(String in, Set<String> operators) {
+		this(new StringReader(in), javaOperators);
+
+	}
+
+	public Lexer(Reader reader, Set<String> operators) {
 		this.reader = reader;
+		this.operators = operators;
 	}
 
 	public Source<String> tokens() {
