@@ -88,9 +88,7 @@ public class InspectUtil {
 				try {
 					@SuppressWarnings("unchecked")
 					Map<Object, Object> map = (Map<Object, Object>) object;
-					Object storedClazzValue = map.get("@class");
-					Class<?> storedClazz = storedClazzValue != null ? Class.forName(storedClazzValue.toString()) : null;
-					Class<?> targetClazz1 = targetClazz != null ? targetClazz : storedClazz;
+					Class<?> targetClazz1 = targetClazz != null ? targetClazz : Class.forName(map.get("@class").toString());
 
 					if (targetClazz1.isArray()) {
 						ArrayList<Object> list = new ArrayList<>();
@@ -104,7 +102,7 @@ public class InspectUtil {
 					} else if (Map.class.isAssignableFrom(targetClazz1)) {
 						Map<Object, Object> map1 = new HashMap<>();
 						for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet())
-							map1.put(unmapify(String.class, entry.getKey()), unmapify(String.class, entry.getValue()));
+							map1.put(unmapify(null, entry.getKey()), unmapify(null, entry.getValue()));
 						result = map1;
 					} else {
 						result = targetClazz1.newInstance();
