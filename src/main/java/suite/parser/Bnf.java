@@ -37,25 +37,25 @@ public class Bnf {
 	private static final boolean trace = false;
 
 	public class Node {
-		private int end;
 		private String entity;
+		private int end;
 		private List<Node> nodes = new ArrayList<>();
 
-		public Node(int end, String entity) {
-			this.end = end;
+		public Node(String entity, int end) {
 			this.entity = entity;
+			this.end = end;
 		}
 
 		public String toString() {
 			return entity + "@" + end + nodes;
 		}
 
-		public int getEnd() {
-			return end;
-		}
-
 		public String getEntity() {
 			return entity;
+		}
+
+		public int getEnd() {
+			return end;
 		}
 	}
 
@@ -107,7 +107,7 @@ public class Bnf {
 						s = s.previous;
 					}
 
-					Node root = new Node(0, null);
+					Node root = new Node(null, 0);
 
 					Deque<Node> stack = new ArrayDeque<>();
 					stack.push(root);
@@ -117,7 +117,7 @@ public class Bnf {
 							while (state_.depth < stack.size())
 								stack.pop();
 
-							Node node = new Node(state_.end, state_.entity);
+							Node node = new Node(state_.entity, state_.end);
 							stack.peek().nodes.add(node);
 							stack.push(node);
 						}
