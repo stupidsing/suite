@@ -135,7 +135,7 @@ public class EditorController {
 
 			runThread.start();
 		} else
-			JOptionPane.showMessageDialog(view.getFrame(), "Previous run in progress");
+			JOptionPane.showMessageDialog(view.getFrame(), "Previous evaluation in progress");
 	}
 
 }
