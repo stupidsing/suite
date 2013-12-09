@@ -89,7 +89,7 @@ public class ClusterProbe extends ThreadedService {
 
 		@Override
 		public boolean equals(Object object) {
-			if (object instanceof Address) {
+			if (Util.clazz(object) == Address.class) {
 				Address other = (Address) object;
 				return ip[0] == other.ip[0] //
 						&& ip[1] == other.ip[1] //

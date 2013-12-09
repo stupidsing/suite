@@ -2,6 +2,8 @@ package suite.math;
 
 import java.util.Arrays;
 
+import suite.util.Util;
+
 public class Matrix {
 
 	private final float v[][];
@@ -218,7 +220,7 @@ public class Matrix {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof Matrix && Arrays.deepEquals(v, ((Matrix) object).v);
+		return Util.clazz(object) == Matrix.class && Arrays.deepEquals(v, ((Matrix) object).v);
 	}
 
 }

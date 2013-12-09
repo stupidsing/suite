@@ -138,7 +138,7 @@ public class Vector extends Node {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
 
-			if (node instanceof Vector) {
+			if (Util.clazz(node) == Vector.class) {
 				Vector v = (Vector) node;
 				result = end - start == v.end - v.start;
 				int si = start, di = v.start;

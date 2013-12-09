@@ -46,7 +46,7 @@ public class Tree extends Node {
 	public boolean equals(Object object) {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
-			if (node instanceof Tree) {
+			if (Util.clazz(node) == Tree.class) {
 				Tree t = (Tree) node;
 				return operator == t.operator && Util.equals(left, t.left) && Util.equals(right, t.right);
 			} else

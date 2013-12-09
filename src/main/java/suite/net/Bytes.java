@@ -3,6 +3,7 @@ package suite.net;
 import java.util.Arrays;
 
 import suite.util.Copy;
+import suite.util.Util;
 
 public class Bytes {
 
@@ -97,7 +98,7 @@ public class Bytes {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Bytes) {
+		if (Util.clazz(object) == Bytes.class) {
 			Bytes other = (Bytes) object;
 			int diff = other.start - start;
 

@@ -2,6 +2,8 @@ package suite.weiqi;
 
 import java.util.Arrays;
 
+import suite.util.Util;
+
 public class Weiqi {
 
 	public static int size;
@@ -93,7 +95,7 @@ public class Weiqi {
 
 		@Override
 		public boolean equals(Object object) {
-			if (object instanceof Array) {
+			if (Util.clazz(object) == Array.class) {
 				Array<?> array = (Array<?>) object;
 				return Arrays.equals(positions, array.positions);
 			} else

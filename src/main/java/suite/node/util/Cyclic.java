@@ -5,6 +5,7 @@ import java.util.Set;
 
 import suite.node.Node;
 import suite.node.Tree;
+import suite.util.Util;
 
 public class Cyclic {
 
@@ -22,7 +23,7 @@ public class Cyclic {
 		}
 
 		public boolean equals(Object object) {
-			if (object instanceof IdHashNode)
+			if (Util.clazz(object) == IdHashNode.class)
 				return node == ((IdHashNode) object).node;
 			else
 				return false;

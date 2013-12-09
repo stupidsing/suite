@@ -4,6 +4,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
+import suite.util.Util;
 
 public class Rule {
 
@@ -40,7 +41,7 @@ public class Rule {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Rule) {
+		if (Util.clazz(object) == Rule.class) {
 			Rule other = (Rule) object;
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else

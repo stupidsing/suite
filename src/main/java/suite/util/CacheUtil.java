@@ -37,7 +37,7 @@ public class CacheUtil {
 		}
 
 		public boolean equals(Object object) {
-			if (object instanceof Key) {
+			if (Util.clazz(object) == Key.class) {
 				Key other = (Key) object;
 				return bean == other.bean //
 						&& Util.equals(method, other.method) //

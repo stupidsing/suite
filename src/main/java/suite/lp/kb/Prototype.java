@@ -60,7 +60,7 @@ public class Prototype {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Prototype) {
+		if (Util.clazz(object) == Prototype.class) {
 			Prototype p = (Prototype) object;
 			return Util.equals(head, p.head);
 		} else

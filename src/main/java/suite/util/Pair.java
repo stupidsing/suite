@@ -19,7 +19,7 @@ public class Pair<T0, T1> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Pair<?, ?>) {
+		if (Util.clazz(object) == Pair.class) {
 			Pair<?, ?> other = (Pair<?, ?>) object;
 			return Util.equals(t0, other.t0) && Util.equals(t1, other.t1);
 		} else

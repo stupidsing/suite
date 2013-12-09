@@ -19,7 +19,7 @@ public class Str extends Node {
 	public boolean equals(Object object) {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
-			if (node instanceof Str) {
+			if (Util.clazz(node) == Str.class) {
 				Str str = (Str) node;
 				return Util.equals(value, str.value);
 			} else

@@ -31,6 +31,28 @@ public class Util {
 		return s.charAt(pos);
 	}
 
+	public static Iterable<Character> chars(final String s) {
+		return iter(new Iterator<Character>() {
+			private int index = 0;
+
+			public boolean hasNext() {
+				return index < s.length();
+			}
+
+			public Character next() {
+				return s.charAt(index++);
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		});
+	}
+
+	public static Class<?> clazz(Object object) {
+		return object != null ? object.getClass() : null;
+	}
+
 	public static void closeQuietly(Closeable o) {
 		if (o != null)
 			try {
@@ -124,24 +146,6 @@ public class Util {
 
 	public static <T> T first(Collection<T> c) {
 		return !c.isEmpty() ? c.iterator().next() : null;
-	}
-
-	public static Iterable<Character> getChars(final String s) {
-		return iter(new Iterator<Character>() {
-			private int index = 0;
-
-			public boolean hasNext() {
-				return index < s.length();
-			}
-
-			public Character next() {
-				return s.charAt(index++);
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		});
 	}
 
 	public static StackTraceElement getStackTrace(int n) {

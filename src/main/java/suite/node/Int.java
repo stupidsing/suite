@@ -1,5 +1,7 @@
 package suite.node;
 
+import suite.util.Util;
+
 public class Int extends Node {
 
 	private int number;
@@ -33,7 +35,7 @@ public class Int extends Node {
 	public boolean equals(Object object) {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
-			if (node instanceof Int) {
+			if (Util.clazz(node) == Int.class) {
 				Int i = (Int) node;
 				return number == i.number;
 			} else

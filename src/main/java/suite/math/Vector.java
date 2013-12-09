@@ -1,5 +1,7 @@
 package suite.math;
 
+import suite.util.Util;
+
 public class Vector {
 
 	public static final Vector origin = new Vector(0f, 0f, 0f);
@@ -60,7 +62,7 @@ public class Vector {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Vector) {
+		if (Util.clazz(object) == Vector.class) {
 			Vector vector = (Vector) object;
 			return x == vector.x && y == vector.y && z == vector.z;
 		} else
