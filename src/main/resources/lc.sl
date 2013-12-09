@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- logical program compiler
 
-() :- import.file 'generate-code.sl'
+() :- import.file 'cg-generate-code.sl'
 	, import.file 'rbt.sl'
 #
 
