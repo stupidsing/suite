@@ -50,19 +50,34 @@ cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
 cg-optimize-tail-calls .li0 .ri0
-	:- cg-push-pop-pairs .li0/.li1 .li2/.li3 .ri2/.ri3 .ri1/.ri2
+	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
+	, cg-push-pop-pairs .li1/.li2 .li3/.li4 .ri2/.ri3 .ri1/.ri2
 	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
-	, .li1 = (_ .call .target, .li2)
-	, cg-is-restore-csp-dsp .li3/.li4 .ri0/.ri1
-	, cg-is-returning .li4
+	, .li2 = (_ .call .target, .li3)
+	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
+	, cg-is-skip .li6/.li7
+	, cg-is-returning .li8
+	, cg-verify-push-pop-bind-pairs .pairs
 	, .ri3 = (_ .jump .target, .ri4)
 	, !
-	, cg-optimize-tail-calls .li4 .ri4
+	, cg-optimize-tail-calls .li6 .ri4
 #
 cg-optimize-tail-calls (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-tail-calls .insns0 .insns1
 #
 cg-optimize-tail-calls () () #
+
+cg-push-pop-bind-pairs
+(_ BIND-MARK .pr0, _ PUSH .pr1, .i)/.i
+(_ POP-ANY, .j)/.j
+(_ TOP .pr2 -3, _ BIND-UNDO .pr3, .k)/.k
+.pr0/.pr1/.pr2/.pr3
+#
+cg-push-pop-bind-pairs .i/.i .j/.j ()/()/()/() #
+
+cg-verify-push-pop-bind-pairs .pr0/.pr1/.pr2/.pr3
+	:- same .pr0 .pr1, same .pr2 .pr3
+#
 
 cg-push-pop-pairs
 (_ PUSH .reg, .i0)/.ix (_ POP-ANY, .j0)/.jx
@@ -78,11 +93,11 @@ cg-is-restore-csp-dsp
 #
 cg-is-restore-csp-dsp .i/.i .j/.j #
 
-cg-is-returning (.insn, .insns) :- cg-is-skip .insn, !, cg-is-returning .insns #
-cg-is-returning (_ RETURN, _) #
+cg-is-skip (_ LABEL, .i0)/.ix :- cg-is-skip .i0/.ix #
+cg-is-skip (_ REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
+cg-is-skip .i/.i #
 
-cg-is-skip (_ LABEL) #
-cg-is-skip (_ REMARK _) #
+cg-is-returning (_ RETURN, _) #
 
 cg-generate-code .code :- cg-assign-line-numbers 0 .code, ! #
 

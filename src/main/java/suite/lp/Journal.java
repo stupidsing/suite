@@ -33,6 +33,7 @@ public class Journal {
 
 	public void undoBinds(int pointInTime) {
 		ListIterator<Reference> iter = bounded.listIterator(pointInTime);
+
 		while (iter.hasNext()) {
 			iter.next().unbound();
 			iter.remove();

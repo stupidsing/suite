@@ -1,6 +1,7 @@
 package suite.lp.eval;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +41,7 @@ public class LogicCompilerLevel1Test {
 
 		Node input = Suite.parse("1 + 2");
 
-		Node result = collect(filenames, goal, input);
+		Node result = collectSingle(filenames, goal, input);
 		System.out.println(result);
 		assertNotNull(result);
 	}
@@ -56,21 +57,20 @@ public class LogicCompilerLevel1Test {
 		Suite.addRule(rs, "member (.e, _) .e");
 		Suite.addRule(rs, "member (_, .tail) .e :- member .tail .e");
 
-		// Node goal =
-		// Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
-		Node goal = Suite.parse("source .lln, member .lln .ln, dump .ln, nl, sink ()");
+		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node program = Suite.parse("((1, 2,), (3, 4,),)");
+		List<Node> results = collect(rs, goal, program);
 
-		Node result = collect(rs, goal, program);
-		System.out.println(result);
-		assertNotNull(result);
+		System.out.println(results);
+		assertTrue(results.size() == 4);
 	}
 
-	private Node collect(List<String> filenames, Node goal, Node input) {
-		return collect(Suite.createRuleSet(filenames), goal, input);
+	private Node collectSingle(List<String> filenames, Node goal, Node input) {
+		List<Node> nodes = collect(Suite.createRuleSet(filenames), goal, input);
+		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
 	}
 
-	private Node collect(RuleSet rs, Node goal, Node input) {
+	private List<Node> collect(RuleSet rs, Node goal, Node input) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
 		Finder finder = builder.build(rs, goal);
 		final List<Node> nodes = new ArrayList<>();
@@ -83,8 +83,7 @@ public class LogicCompilerLevel1Test {
 		};
 
 		finder.find(source, sink);
-
-		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
+		return nodes;
 	}
 
 }

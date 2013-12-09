@@ -9,9 +9,12 @@ compile-logic .call .code
 	:- .c0 = (_ ENTER
 		, _ ASSIGN-CONSTANT .returnReg true
 		, _ ASSIGN-CLOSURE .provenReg .provenLabel
+		, _ BIND-MARK .pitReg
+		, _ PUSH .pitReg
 		, _ PUSH .provenReg
 		, _ PUSH .provenReg
 		, _ CALL .callLabel
+		, _ POP-ANY
 		, _ POP-ANY
 		, _ POP-ANY
 		, _ ASSIGN-CONSTANT .returnReg false
@@ -37,7 +40,12 @@ lc-compile-call .call .pls .c0/.cx/.label
 	)
 	, .rem = AND ($$BYTECODE _ CALL-CLOSURE .provenReg) FAIL
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .failLabel) .c1/.c2/.c3/.c4
-	, .c2 = (.failLabel LABEL, _ RETURN, .c3)
+	, .c2 = (.failLabel LABEL
+		, _ TOP .pitReg -3
+		, _ BIND-UNDO .pitReg
+		, _ RETURN
+		, .c3
+	)
 	, .c4 = (_ LEAVE, .cx)
 #
 
@@ -227,9 +235,12 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 	, lc-create-node .call .vs .c0/.c1/.reg, (
 		member .pls .proto/.callLabel, !
 		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
+			, _ BIND-MARK .pitReg
+			, _ PUSH .pitReg
 			, _ PUSH .provenReg
 			, _ PUSH .reg
 			, _ CALL .callLabel
+			, _ POP-ANY
 			, _ POP-ANY
 			, _ POP-ANY
 			, .cx
