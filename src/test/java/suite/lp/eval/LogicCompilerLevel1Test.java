@@ -45,6 +45,11 @@ public class LogicCompilerLevel1Test {
 		assertNotNull(result);
 	}
 
+	/**
+	 * Call member two times. This test might fail in some poor tail recursion
+	 * optimization implementations, as some variables are not unbounded when
+	 * backtracking.
+	 */
 	@Test
 	public void testMemberOfMember() {
 		RuleSet rs = Suite.createRuleSet();
