@@ -16,7 +16,7 @@ import suite.stm.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
- * 
+ *
  * @author ywsing
  */
 public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTransaction> {
@@ -48,7 +48,7 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 		/**
 		 * Tries to finish a transaction. Make sure all children committed
 		 * before committing the parent.
-		 * 
+		 *
 		 * @throws AbortException
 		 */
 		public void commit() throws AbortException {
@@ -97,11 +97,11 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 		/**
 		 * Read would obtain the value between two checks of the owner.
-		 * 
+		 *
 		 * If the owner or its status is found to be changed, read needs to be
 		 * performed again.
-		 * 
-		 * Timestamp checking is done to avoid reading too up-to-date data.
+		 *
+		 * Perform timestamp checking to avoid reading too up-to-date data.
 		 */
 		public T read(Transaction transaction) throws AbortException {
 			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
@@ -124,7 +124,7 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 				ObstructionFreeTransaction theirTransaction1 = owner.get();
 				TransactionStatus theirStatus1 = theirTransaction1 != null ? theirTransaction1.status : null;
 
-				// Retry if owner or owner status changed
+				// Retries if owner or owner status changed
 				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1)
 					if (isDescendantOf(ourTransaction, theirTransaction0) || timestamp <= ourTransaction.readTimestamp) {
 						ourTransaction.readMemories.add(this);
@@ -136,11 +136,11 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 		/**
 		 * Write would obtain the owner right.
-		 * 
+		 *
 		 * If someone else is the owner, the write would block until that owner
 		 * completes. Simple waiting hierarchy is implemented in transaction
 		 * class to detect deadlocks.
-		 * 
+		 *
 		 * Timestamp checking is done to avoid changing post-modified data.
 		 */
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException {
