@@ -24,10 +24,10 @@ public class RbTree<T> implements Iterable<T> {
 	}
 
 	public RbTree(Comparator<T> comparator) {
-		this(null, comparator);
+		this(comparator, null);
 	}
 
-	private RbTree(Node<T> root, Comparator<T> comparator) {
+	private RbTree(Comparator<T> comparator, Node<T> root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -101,7 +101,7 @@ public class RbTree<T> implements Iterable<T> {
 		if (node != null && !node.isBlack) // Turns red node into black
 			node = new Node<>(true, node.pivot, node.left, node.right);
 
-		return new RbTree<>(add(node, t, isReplace), comparator);
+		return new RbTree<>(comparator, add(node, t, isReplace));
 	}
 
 	private Node<T> add(Node<T> node, T t, boolean isReplace) {
