@@ -12,7 +12,7 @@ import suite.util.Util;
  * 
  * @author ywsing
  */
-public class Prototype {
+public class Prototype implements Comparable<Prototype> {
 
 	private Node head;
 
@@ -74,6 +74,11 @@ public class Prototype {
 
 	public Node getHead() {
 		return head;
+	}
+
+	@Override
+	public int compareTo(Prototype other) {
+		return head.compareTo(other.head);
 	}
 
 }

@@ -18,11 +18,20 @@ import suite.util.FunUtil.Source;
 
 public class Util {
 
-	public static <T> List<T> add(List<T> list0, List<T> list1) {
-		List<T> list = new ArrayList<>();
-		list.addAll(list0);
-		list.addAll(list1);
-		return list;
+	@SafeVarargs
+	public static <T> List<T> add(List<T>... lists) {
+		List<T> resultList = new ArrayList<>();
+		for (List<T> list : lists)
+			resultList.addAll(list);
+		return resultList;
+	}
+
+	public static <T> T at(List<T> list, int pos) {
+		int size = list.size();
+		if (pos < 0)
+			pos += size;
+		pos = Math.min(size, pos);
+		return list.get(pos);
 	}
 
 	public static char charAt(String s, int pos) {
@@ -230,8 +239,9 @@ public class Util {
 		int size = list.size();
 		if (start < 0)
 			start += size;
-		if (end <= 0)
+		if (end < start)
 			end += size;
+		end = Math.min(size, end);
 		return list.subList(start, end);
 	}
 
@@ -239,8 +249,9 @@ public class Util {
 		int length = s.length();
 		if (start < 0)
 			start += length;
-		if (end <= 0)
+		if (end < start)
 			end += length;
+		end = Math.min(length, end);
 		return s.substring(start, end);
 	}
 

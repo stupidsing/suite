@@ -7,15 +7,15 @@ import java.util.Iterator;
 
 public class RbTree<T> implements Iterable<T> {
 
-	private Node<T> root;
+	private Node root;
 	private Comparator<T> comparator;
 
-	private static class Node<T> {
+	private class Node {
 		private boolean isBlack;
 		private T pivot;
-		private Node<T> left, right;
+		private Node left, right;
 
-		private Node(boolean isBlack, T pivot, Node<T> left, Node<T> right) {
+		private Node(boolean isBlack, T pivot, Node left, Node right) {
 			this.isBlack = isBlack;
 			this.pivot = pivot;
 			this.left = left;
@@ -27,7 +27,7 @@ public class RbTree<T> implements Iterable<T> {
 		this(comparator, null);
 	}
 
-	private RbTree(Comparator<T> comparator, Node<T> root) {
+	private RbTree(Comparator<T> comparator, Node root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -35,7 +35,7 @@ public class RbTree<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
-			private Deque<Node<T>> nodes = new ArrayDeque<>();
+			private Deque<Node> nodes = new ArrayDeque<>();
 
 			{
 				pushLefts(root);
@@ -46,7 +46,7 @@ public class RbTree<T> implements Iterable<T> {
 			}
 
 			public T next() {
-				Node<T> node = nodes.pop();
+				Node node = nodes.pop();
 				T result = node.pivot;
 				pushLefts(node.right);
 				return result;
@@ -56,7 +56,7 @@ public class RbTree<T> implements Iterable<T> {
 				throw new UnsupportedOperationException();
 			}
 
-			private void pushLefts(Node<T> node) {
+			private void pushLefts(Node node) {
 				while (node != null) {
 					nodes.push(node);
 					node = node.left;
@@ -66,7 +66,7 @@ public class RbTree<T> implements Iterable<T> {
 	}
 
 	public T find(T t) {
-		Node<T> node = root;
+		Node node = root;
 
 		while (node != null) {
 			int c = comparator.compare(node.pivot, t);
@@ -96,46 +96,46 @@ public class RbTree<T> implements Iterable<T> {
 	}
 
 	private RbTree<T> add(T t, boolean isReplace) {
-		Node<T> node = root;
+		Node node = root;
 
 		if (node != null && !node.isBlack) // Turns red node into black
-			node = new Node<>(true, node.pivot, node.left, node.right);
+			node = new Node(true, node.pivot, node.left, node.right);
 
 		return new RbTree<>(comparator, add(node, t, isReplace));
 	}
 
-	private Node<T> add(Node<T> node, T t, boolean isReplace) {
-		Node<T> node1;
+	private Node add(Node node, T t, boolean isReplace) {
+		Node node1;
 
 		if (node != null) {
 			int c = comparator.compare(node.pivot, t);
 
 			if (c < 0)
-				node1 = new Node<>(node.isBlack, node.pivot, add(node.left, t, isReplace), node.right);
+				node1 = new Node(node.isBlack, node.pivot, add(node.left, t, isReplace), node.right);
 			else if (c > 0)
-				node1 = new Node<>(node.isBlack, node.pivot, node.left, add(node.right, t, isReplace));
+				node1 = new Node(node.isBlack, node.pivot, node.left, add(node.right, t, isReplace));
 			else if (isReplace)
-				node1 = new Node<>(node.isBlack, t, node.left, node.right);
+				node1 = new Node(node.isBlack, t, node.left, node.right);
 			else
 				throw new RuntimeException("Duplicate node " + t);
 		} else
-			node1 = new Node<>(false, t, null, null);
+			node1 = new Node(false, t, null, null);
 
 		return balance(node1);
 	}
 
-	private Node<T> balance(Node<T> n) {
+	private Node balance(Node n) {
 		if (n.isBlack) {
-			Node<T> ln = n.left, rn = n.right;
+			Node ln = n.left, rn = n.right;
 
 			if (ln != null && !ln.isBlack) {
-				Node<T> lln = ln.left, lrn = ln.right;
+				Node lln = ln.left, lrn = ln.right;
 				if (lln != null && !lln.isBlack)
 					n = createBalancedNode(lln.left, lln.pivot, lln.right, ln.pivot, lrn, n.pivot, rn);
 				else if (lrn != null && !lrn.isBlack)
 					n = createBalancedNode(lln, ln.pivot, lrn.left, lrn.pivot, lrn.right, n.pivot, rn);
 			} else if (rn != null && !rn.isBlack) {
-				Node<T> rln = rn.left, rrn = rn.right;
+				Node rln = rn.left, rrn = rn.right;
 				if (rln != null && !rln.isBlack)
 					n = createBalancedNode(ln, n.pivot, rln.left, rln.pivot, rln.right, rn.pivot, rrn);
 				else if (rrn != null && !rrn.isBlack)
@@ -146,8 +146,8 @@ public class RbTree<T> implements Iterable<T> {
 		return n;
 	}
 
-	private Node<T> createBalancedNode(Node<T> n0, T p0, Node<T> n1, T p1, Node<T> n2, T p2, Node<T> n3) {
-		return new Node<T>(false, p1, new Node<T>(true, p0, n0, n1), new Node<T>(true, p2, n2, n3));
+	private Node createBalancedNode(Node n0, T p0, Node n1, T p1, Node n2, T p2, Node n3) {
+		return new Node(false, p1, new Node(true, p0, n0, n1), new Node(true, p2, n2, n3));
 
 	}
 

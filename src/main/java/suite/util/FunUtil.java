@@ -43,11 +43,13 @@ public class FunUtil {
 	}
 
 	public static <O> Source<O> asSource(final List<O> list) {
-		return new Source<O>() {
-			private int i = 0;
+		return asSource(list.iterator());
+	}
 
+	public static <O> Source<O> asSource(final Iterator<O> iter) {
+		return new Source<O>() {
 			public O source() {
-				return i < list.size() ? list.get(i++) : null;
+				return iter.hasNext() ? iter.next() : null;
 			}
 		};
 	}
