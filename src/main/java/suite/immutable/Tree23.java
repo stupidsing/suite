@@ -1,4 +1,4 @@
-package suite.fp;
+package suite.immutable;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import suite.util.Util;
 
-public class Tree23<T> implements Iterable<T> {
+public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 
 	private int maxSize = 4;
 	private int halfSize = maxSize / 2;

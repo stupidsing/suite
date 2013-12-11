@@ -1,11 +1,11 @@
-package suite.fp;
+package suite.immutable;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 
-public class RbTree<T> implements Iterable<T> {
+public class RbTree<T> implements Iterable<T>, ImmutableTree<T> {
 
 	private Node root;
 	private Comparator<T> comparator;
@@ -93,6 +93,10 @@ public class RbTree<T> implements Iterable<T> {
 	 */
 	public RbTree<T> replace(T t) {
 		return add(t, true);
+	}
+
+	public RbTree<T> remove(T t) {
+		throw new UnsupportedOperationException();
 	}
 
 	private RbTree<T> add(T t, boolean isReplace) {

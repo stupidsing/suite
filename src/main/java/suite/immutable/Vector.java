@@ -1,4 +1,4 @@
-package suite.fp;
+package suite.immutable;
 
 import suite.node.Node;
 import suite.util.Util;

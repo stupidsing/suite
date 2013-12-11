@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 import org.junit.Test;
 
+import suite.immutable.Tree23;
+
 public class Tree23Test {
 
 	@Test

@@ -3,8 +3,8 @@
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//import suite.fp.RbTreeMap;
-//import suite.fp.RbTreeSet;
+//import suite.immutable.ImmutableMap;
+//import suite.immutable.ImmutableSet;
 //import suite.lp.kb.Prototype;
 //import suite.node.Node;
 //import suite.util.FunUtil;
@@ -25,7 +25,7 @@
 //	private List<Rule> rules = new ArrayList<>();
 //
 //	private class State {
-//		private RbTreeMap<Prototype, RbTreeSet<Node>> facts = new RbTreeMap<>();
+//		private ImmutableMap<Prototype, ImmutableSet<Node>> facts = new ImmutableMap<>();
 //	}
 //
 //	private class Rule {
@@ -36,14 +36,14 @@
 //	}
 //
 //	private class Match {
-//		private RbTreeSet<Node> givensMatched = new RbTreeSet<>();
-//		private RbTreeSet<Node> ifsMatched = new RbTreeSet<>();
+//		private ImmutableSet<Node> givensMatched = new ImmutableSet<>();
+//		private ImmutableSet<Node> ifsMatched = new ImmutableSet<>();
 //
 //		public Match() {
-//			this(new RbTreeSet<Node>(), new RbTreeSet<Node>());
+//			this(new ImmutableSet<Node>(), new ImmutableSet<Node>());
 //		}
 //
-//		public Match(RbTreeSet<Node> givensMatched, RbTreeSet<Node> ifsMatched) {
+//		public Match(ImmutableSet<Node> givensMatched, ImmutableSet<Node> ifsMatched) {
 //			this.givensMatched = givensMatched;
 //			this.ifsMatched = ifsMatched;
 //		}
@@ -68,8 +68,9 @@
 //					states = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 //						public Source<State> apply(final State state) {
 //							final Prototype prototype = getPrototype(if_);
-//							final RbTreeSet<Node> facts = state.facts.get(prototype);
+//							final ImmutableSet<Node> facts = state.facts.get(prototype);
 //							Source<Node> nodes = FunUtil.asSource(facts.iterator());
+//
 //							return FunUtil.map(new Fun<Node, State>() {
 //								public State apply(Node node) {
 //									State state1 = new State();

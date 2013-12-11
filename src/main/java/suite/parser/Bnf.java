@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.fp.RbTreeMap;
+import suite.immutable.ImmutableMap;
 import suite.node.Atom;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -70,15 +70,18 @@ public class Bnf {
 		private class State {
 			private State previous;
 			private int end;
-			private RbTreeMap<String, Integer> entities; // Avoids re-entrance
+
+			/** Store parsing entities to avoid re-entrance. */
+			private ImmutableMap<String, Integer> entities;
+
 			private int depth;
 			private String entity;
 
-			private State(State previous, int end, RbTreeMap<String, Integer> entities) {
+			private State(State previous, int end, ImmutableMap<String, Integer> entities) {
 				this(previous, end, entities, previous.depth, null);
 			}
 
-			private State(State previous, int end, RbTreeMap<String, Integer> entities, int depth, String entity) {
+			private State(State previous, int end, ImmutableMap<String, Integer> entities, int depth, String entity) {
 				this.previous = previous;
 				this.end = end;
 				this.entities = entities;
@@ -93,7 +96,7 @@ public class Bnf {
 		}
 
 		private Node parse(int end, String entity) {
-			State initialState = new State(null, end, new RbTreeMap<String, Integer>(), 0, null);
+			State initialState = new State(null, end, new ImmutableMap<String, Integer>(), 0, null);
 			Source<State> source = parseEntity(initialState, entity);
 			State state;
 
@@ -187,14 +190,14 @@ public class Bnf {
 		}
 
 		private Source<State> parseGrammar(State state, final String entity, List<List<String>> grammar) {
-			final RbTreeMap<String, Integer> entities = state.entities;
+			final ImmutableMap<String, Integer> entities = state.entities;
 			Integer lastEnd = entities.get(entity);
 			boolean isReentrance = lastEnd != null && lastEnd.intValue() == state.end;
 			Source<State> result;
 
 			if (!isReentrance) {
 				final int depth = state.depth;
-				RbTreeMap<String, Integer> entities1 = entities.replace(entity, state.end);
+				ImmutableMap<String, Integer> entities1 = entities.replace(entity, state.end);
 				final State state1 = new State(state, state.end, entities1, depth + 1, entity);
 
 				result = FunUtil.concat(FunUtil.map(new Fun<List<String>, Source<State>>() {
