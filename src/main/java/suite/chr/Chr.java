@@ -75,7 +75,7 @@ public class Chr {
 			public Source<State> apply(final State state) {
 				final ImmutableSet<Node> facts = state.facts.get(prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
-				Source<Node> bindedIfs = FunUtil.filter(bindFun, FunUtil.asSource(facts));
+				Source<Node> bindedIfs = filter(FunUtil.asSource(facts), bindFun);
 
 				return map(bindedIfs, new Fun<Node, State>() {
 					public State apply(Node node) {
@@ -94,7 +94,6 @@ public class Chr {
 				ImmutableSet<Node> facts = state.facts.get(prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
 				boolean isMatch = or(map(FunUtil.asSource(facts), bindFun));
-
 				return isMatch ? FunUtil.asSource(state) : FunUtil.<State> nullSource();
 			}
 		}));
@@ -112,11 +111,11 @@ public class Chr {
 	}
 
 	private Source<State> chrWhen(Source<State> states, final Node when) {
-		return FunUtil.filter(new Fun<State, Boolean>() {
+		return filter(states, new Fun<State, Boolean>() {
 			public Boolean apply(State state) {
 				return prover.prove(when);
 			}
-		}, states);
+		});
 	}
 
 	private Fun<Node, Boolean> bindFun(final Journal journal, final Node node0) {
@@ -136,6 +135,10 @@ public class Chr {
 			if (b == Boolean.TRUE)
 				return true;
 		return false;
+	}
+
+	private <T> Source<T> filter(Source<T> source, Fun<T, Boolean> fun) {
+		return FunUtil.filter(fun, source);
 	}
 
 	private <T0, T1> Source<T1> map(Source<T0> source, Fun<T0, T1> fun) {
