@@ -6,9 +6,9 @@ import java.util.Iterator;
 import suite.util.Pair;
 import suite.util.Util;
 
-public class ImmutableMap<K extends Comparable<K>, V> {
+public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
-	private ImmutableTree<Pair<K, V>> tree = new RbTree<Pair<K, V>>(new Comparator<Pair<K, V>>() {
+	private ImmutableTree<Pair<K, V>> tree = new Tree23<Pair<K, V>>(new Comparator<Pair<K, V>>() {
 		public int compare(Pair<K, V> p0, Pair<K, V> p1) {
 			K k0 = p0 != null ? p0.t0 : null;
 			K k1 = p1 != null ? p1.t0 : null;
@@ -28,6 +28,7 @@ public class ImmutableMap<K extends Comparable<K>, V> {
 		return pair != null ? pair.t1 : null;
 	}
 
+	@Override
 	public Iterator<Pair<K, V>> iterator() {
 		return tree.iterator();
 	}

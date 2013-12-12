@@ -1,6 +1,7 @@
 package suite.chr;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import suite.Suite;
@@ -11,10 +12,15 @@ import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
+import suite.node.Atom;
 import suite.node.Node;
+import suite.node.Reference;
+import suite.node.util.Replacer;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Pair;
+import suite.util.To;
 
 /**
  * Constraint handling rules implementation.
@@ -34,14 +40,54 @@ public class Chr {
 	}
 
 	private class State {
-		private ImmutableMap<Prototype, ImmutableSet<Node>> facts = new ImmutableMap<>();
+		private ImmutableMap<Prototype, ImmutableSet<Node>> facts;
 
 		public State(ImmutableMap<Prototype, ImmutableSet<Node>> facts) {
 			this.facts = facts;
 		}
 	}
 
-	public State chr(final State state) {
+	public void addRule(Node node) {
+		Node v0 = atom(".givens"), v1 = atom(".ifs"), v2 = atom(".thens"), v3 = atom(".when");
+
+		Journal journal = new Journal();
+		Generalizer generalizer = new Generalizer();
+		Node bind = Suite.substitute("given .0 if .1 then .2 when .3 end", v0, v1, v2, v3);
+
+		if (Binder.bind(generalizer.generalize(bind), node, journal)) {
+			Rule rule = new Rule();
+			rule.givens = To.list(Node.iter(generalizer.getVariable(v0)));
+			rule.ifs = To.list(Node.iter(generalizer.getVariable(v1)));
+			rule.thens = To.list(Node.iter(generalizer.getVariable(v2)));
+			rule.when = generalizer.getVariable(v3);
+			rules.add(rule);
+		} else
+			throw new RuntimeException("Invalid rule " + node);
+	}
+
+	public Collection<Node> chr(Collection<Node> nodes) {
+		ImmutableMap<Prototype, ImmutableSet<Node>> facts = new ImmutableMap<>();
+
+		for (Node node : nodes) {
+			Prototype prototype = getPrototype(node);
+			facts.put(prototype, getFacts(facts, prototype).add(node));
+		}
+
+		State state = new State(facts);
+		State state1;
+
+		while ((state1 = chr(state)) != null)
+			state = state1;
+
+		List<Node> nodes1 = new ArrayList<>();
+
+		for (Pair<Prototype, ImmutableSet<Node>> pair : state.facts)
+			nodes1.addAll(To.list(pair.t1));
+
+		return nodes1;
+	}
+
+	private State chr(final State state) {
 		return FunUtil.concat(map(FunUtil.asSource(rules), new Fun<Rule, Source<State>>() {
 			public Source<State> apply(Rule rule) {
 				return chr(state, rule);
@@ -73,7 +119,7 @@ public class Chr {
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
 			public Source<State> apply(final State state) {
-				final ImmutableSet<Node> facts = state.facts.get(prototype);
+				final ImmutableSet<Node> facts = getFacts(state.facts, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 				Source<Node> bindedIfs = filter(FunUtil.asSource(facts), bindFun);
 
@@ -91,7 +137,7 @@ public class Chr {
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
 			public Source<State> apply(final State state) {
-				ImmutableSet<Node> facts = state.facts.get(prototype);
+				ImmutableSet<Node> facts = getFacts(state.facts, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
 				boolean isMatch = or(map(FunUtil.asSource(facts), bindFun));
 				return isMatch ? FunUtil.asSource(state) : FunUtil.<State> nullSource();
@@ -104,18 +150,45 @@ public class Chr {
 
 		return map(states, new Fun<State, State>() {
 			public State apply(State state) {
-				ImmutableSet<Node> facts = state.facts.get(prototype);
+				ImmutableSet<Node> facts = getFacts(state.facts, prototype);
 				return new State(state.facts.replace(prototype, facts.add(then)));
 			}
 		});
 	}
 
 	private Source<State> chrWhen(Source<State> states, final Node when) {
-		return filter(states, new Fun<State, Boolean>() {
-			public Boolean apply(State state) {
-				return prover.prove(when);
-			}
-		});
+		Generalizer generalizer = new Generalizer();
+		Node a = atom(".a"), b = atom(".b");
+		Source<State> states1;
+
+		if (Binder.bind(when, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {
+			final Reference from = generalizer.getVariable(a);
+			final Reference to = generalizer.getVariable(b);
+
+			states1 = map(states, new Fun<State, State>() {
+				public State apply(State state) {
+					ImmutableMap<Prototype, ImmutableSet<Node>> facts1 = new ImmutableMap<>();
+
+					for (Pair<Prototype, ImmutableSet<Node>> pair : state.facts) {
+						ImmutableSet<Node> nodes = new ImmutableSet<Node>();
+
+						for (Node node : pair.t1)
+							nodes = nodes.add(Replacer.replace(node, from, to));
+
+						state.facts.put(pair.t0, nodes);
+					}
+
+					return new State(facts1);
+				}
+			});
+		} else
+			states1 = filter(states, new Fun<State, Boolean>() {
+				public Boolean apply(State state) {
+					return prover.prove(when);
+				}
+			});
+
+		return states1;
 	}
 
 	private Fun<Node, Boolean> bindFun(final Journal journal, final Node node0) {
@@ -143,6 +216,15 @@ public class Chr {
 
 	private <T0, T1> Source<T1> map(Source<T0> source, Fun<T0, T1> fun) {
 		return FunUtil.map(fun, source);
+	}
+
+	private Node atom(String name) {
+		return Atom.create(name);
+	}
+
+	private ImmutableSet<Node> getFacts(ImmutableMap<Prototype, ImmutableSet<Node>> facts, final Prototype prototype) {
+		ImmutableSet<Node> results = facts.get(prototype);
+		return results != null ? results : new ImmutableSet<Node>();
 	}
 
 	private Prototype getPrototype(Node node) {

@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 import org.junit.Test;
 
+import suite.util.To;
+
 public class Tree23Test {
 
 	private int max = 32;
@@ -32,10 +34,16 @@ public class Tree23Test {
 	public void test1() {
 		Tree23<Integer> tree23 = new Tree23<>(comparator);
 
+		for (Integer i : To.list(tree23.iterator()))
+			System.out.println(i);
+
 		for (int i = 0; i < max; i += 2)
 			tree23 = tree23.add(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.add(i);
+
+		for (Integer i : To.list(tree23.iterator()))
+			System.out.println(i);
 
 		System.out.println(tree23.toString());
 		for (int i = 0; i < max; i += 2)

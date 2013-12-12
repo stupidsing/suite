@@ -37,7 +37,8 @@ public class Binder {
 		else if (clazz0 == Tree.class) {
 			Tree t0 = (Tree) n0;
 			Tree t1 = (Tree) n1;
-			return t0.getOperator() == t1.getOperator() && bind(t0.getLeft(), t1.getLeft(), journal)
+			return t0.getOperator() == t1.getOperator() //
+					&& bind(t0.getLeft(), t1.getLeft(), journal) //
 					&& bind(t0.getRight(), t1.getRight(), journal);
 		} else
 			return false;
