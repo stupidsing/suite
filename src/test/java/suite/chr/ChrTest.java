@@ -1,6 +1,9 @@
 package suite.chr;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -12,14 +15,23 @@ public class ChrTest {
 
 	@Test
 	public void test() {
-		Chr chr = new Chr();
-		chr.addRule(Suite.parse("given () if (LE.x .x,) then () when () end"));
-		chr.addRule(Suite.parse("given () if (LE .x .y, LE .y .x,) then (.x = .y,) when () end"));
-		chr.addRule(Suite.parse("given (LE .x .y,) if (LE .x .y,) then () when () end"));
-		chr.addRule(Suite.parse("given (LE .x .y, LE .y .z,) if () then (LE .x .z,) when () end"));
+		Chr chr = chr(Arrays.asList( //
+				"given () if (LE.x .x,) then () when () end" //
+				, "given () if (LE .x .y, LE .y .x,) then (.x = .y,) when () end" //
+				, "given (LE .x .y,) if (LE .x .y,) then () when () end" //
+				, "given (LE .x .y, LE .y .z,) if () then (LE .x .z,) when () end"));
 
 		List<Node> facts = Arrays.asList(Suite.parse("LE A B"), Suite.parse("LE B C"), Suite.parse("LE C A"));
-		System.out.println(chr.chr(facts));
+		Collection<Node> facts1 = chr.chr(facts);
+		assertEquals(2, facts1.size());
+		System.out.println(facts1);
+	}
+
+	private Chr chr(List<String> rules) {
+		Chr chr = new Chr();
+		for (String s : rules)
+			chr.addRule(Suite.parse(s));
+		return chr;
 	}
 
 }

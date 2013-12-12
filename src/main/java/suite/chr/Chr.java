@@ -66,14 +66,13 @@ public class Chr {
 	}
 
 	public Collection<Node> chr(Collection<Node> nodes) {
-		ImmutableMap<Prototype, ImmutableSet<Node>> facts = new ImmutableMap<>();
+		State state = new State(new ImmutableMap<Prototype, ImmutableSet<Node>>());
 
 		for (Node node : nodes) {
 			Prototype prototype = getPrototype(node);
-			facts.put(prototype, getFacts(facts, prototype).add(node));
+			state = setFacts(state, prototype, getFacts(state, prototype).replace(node));
 		}
 
-		State state = new State(facts);
 		State state1;
 
 		while ((state1 = chr(state)) != null)
@@ -119,13 +118,13 @@ public class Chr {
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
 			public Source<State> apply(final State state) {
-				final ImmutableSet<Node> facts = getFacts(state.facts, prototype);
+				final ImmutableSet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 				Source<Node> bindedIfs = filter(FunUtil.asSource(facts), bindFun);
 
 				return map(bindedIfs, new Fun<Node, State>() {
 					public State apply(Node node) {
-						return new State(state.facts.replace(prototype, facts.remove(node)));
+						return setFacts(state, prototype, facts.remove(node));
 					}
 				});
 			}
@@ -137,7 +136,7 @@ public class Chr {
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
 			public Source<State> apply(final State state) {
-				ImmutableSet<Node> facts = getFacts(state.facts, prototype);
+				ImmutableSet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
 				boolean isMatch = or(map(FunUtil.asSource(facts), bindFun));
 				return isMatch ? FunUtil.asSource(state) : FunUtil.<State> nullSource();
@@ -146,26 +145,14 @@ public class Chr {
 	}
 
 	private Source<State> chrThen(Source<State> states, final Node then) {
-		final Prototype prototype = getPrototype(then);
-
-		return map(states, new Fun<State, State>() {
-			public State apply(State state) {
-				ImmutableSet<Node> facts = getFacts(state.facts, prototype);
-				return new State(state.facts.replace(prototype, facts.add(then)));
-			}
-		});
-	}
-
-	private Source<State> chrWhen(Source<State> states, final Node when) {
 		Generalizer generalizer = new Generalizer();
 		Node a = atom(".a"), b = atom(".b");
-		Source<State> states1;
 
-		if (Binder.bind(when, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {
+		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {
 			final Reference from = generalizer.getVariable(a);
 			final Reference to = generalizer.getVariable(b);
 
-			states1 = map(states, new Fun<State, State>() {
+			states = map(states, new Fun<State, State>() {
 				public State apply(State state) {
 					ImmutableMap<Prototype, ImmutableSet<Node>> facts1 = new ImmutableMap<>();
 
@@ -173,22 +160,31 @@ public class Chr {
 						ImmutableSet<Node> nodes = new ImmutableSet<Node>();
 
 						for (Node node : pair.t1)
-							nodes = nodes.add(Replacer.replace(node, from, to));
+							nodes = nodes.replace(Replacer.replace(node, from, to));
 
-						state.facts.put(pair.t0, nodes);
+						facts1 = facts1.put(pair.t0, nodes);
 					}
 
 					return new State(facts1);
 				}
 			});
-		} else
-			states1 = filter(states, new Fun<State, Boolean>() {
-				public Boolean apply(State state) {
-					return prover.prove(when);
-				}
-			});
+		}
 
-		return states1;
+		return map(states, new Fun<State, State>() {
+			public State apply(State state) {
+				Prototype prototype = getPrototype(then);
+				ImmutableSet<Node> facts = getFacts(state, prototype);
+				return setFacts(state, prototype, facts.replace(then));
+			}
+		});
+	}
+
+	private Source<State> chrWhen(Source<State> states, final Node when) {
+		return filter(states, new Fun<State, Boolean>() {
+			public Boolean apply(State state) {
+				return prover.prove(when);
+			}
+		});
 	}
 
 	private Fun<Node, Boolean> bindFun(final Journal journal, final Node node0) {
@@ -222,9 +218,14 @@ public class Chr {
 		return Atom.create(name);
 	}
 
-	private ImmutableSet<Node> getFacts(ImmutableMap<Prototype, ImmutableSet<Node>> facts, final Prototype prototype) {
-		ImmutableSet<Node> results = facts.get(prototype);
+	private ImmutableSet<Node> getFacts(State state, Prototype prototype) {
+		ImmutableSet<Node> results = state.facts.get(prototype);
 		return results != null ? results : new ImmutableSet<Node>();
+	}
+
+	private State setFacts(State state, Prototype prototype, ImmutableSet<Node> nodes) {
+		ImmutableMap<Prototype, ImmutableSet<Node>> facts = state.facts;
+		return new State(nodes.iterator().hasNext() ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
 	private Prototype getPrototype(Node node) {

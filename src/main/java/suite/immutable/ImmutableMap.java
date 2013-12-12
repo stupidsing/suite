@@ -41,6 +41,10 @@ public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K
 		return new ImmutableMap<K, V>(tree.replace(Pair.create(k, v)));
 	}
 
+	public ImmutableMap<K, V> remove(K k) {
+		return new ImmutableMap<K, V>(tree.remove(Pair.create(k, (V) null)));
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

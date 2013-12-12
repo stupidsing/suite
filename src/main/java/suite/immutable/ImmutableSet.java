@@ -33,6 +33,10 @@ public class ImmutableSet<V extends Comparable<V>> implements Iterable<V> {
 		return new ImmutableSet<V>(tree.add(v));
 	}
 
+	public ImmutableSet<V> replace(V v) {
+		return new ImmutableSet<V>(tree.replace(v));
+	}
+
 	public ImmutableSet<V> remove(V v) {
 		return new ImmutableSet<V>(tree.remove(v));
 	}
