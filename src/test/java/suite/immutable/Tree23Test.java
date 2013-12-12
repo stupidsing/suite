@@ -34,24 +34,28 @@ public class Tree23Test {
 	public void test1() {
 		Tree23<Integer> tree23 = new Tree23<>(comparator);
 
-		for (Integer i : To.list(tree23.iterator()))
-			System.out.println(i);
+		System.out.println(tree23.toString());
+		dump(tree23);
 
 		for (int i = 0; i < max; i += 2)
 			tree23 = tree23.add(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.add(i);
 
-		for (Integer i : To.list(tree23.iterator()))
-			System.out.println(i);
-
 		System.out.println(tree23.toString());
+		dump(tree23);
+
 		for (int i = 0; i < max; i += 2)
 			tree23 = tree23.remove(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.remove(i);
+	}
 
-		System.out.println(tree23.toString());
+	private void dump(Tree23<Integer> tree23) {
+		System.out.print("LIST = ");
+		for (Integer i : To.list(tree23.iterator()))
+			System.out.print(i + " ");
+		System.out.println();
 	}
 
 }

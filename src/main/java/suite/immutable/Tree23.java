@@ -8,6 +8,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
+import suite.util.FunUtil;
+import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
@@ -58,35 +60,39 @@ public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return new Iterator<T>() {
+		return FunUtil.iterator(new Source<T>() {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
-
 			{
-				pushLefts(root.slots);
+				stack.push(root.slots);
 			}
 
-			public boolean hasNext() {
-				return !stack.isEmpty();
+			public T source() {
+				List<Slot> slots = Collections.emptyList();
+
+				while (!stack.isEmpty() && (slots = stack.pop()).isEmpty())
+					;
+
+				return push(slots);
 			}
 
-			public T next() {
-				List<Slot> slots = stack.pop();
-				T result = slots.get(0).pivot;
-				pushLefts(Util.sublist(slots, 1, 0));
-				return result;
-			}
+			private T push(List<Slot> slots) {
+				T t;
 
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
+				if (!slots.isEmpty()) {
+					Slot slot0 = slots.get(0);
+					Node node = slot0.node;
+					stack.push(Util.sublist(slots, 1, 0));
 
-			private void pushLefts(List<Slot> slots) {
-				while (!slots.isEmpty()) {
-					stack.push(slots);
-					slots = slots.get(0).node.slots;
-				}
+					if (node != null)
+						t = push(node.slots);
+					else
+						t = slot0.pivot;
+				} else
+					t = null;
+
+				return t;
 			}
-		};
+		});
 	}
 
 	public T find(T t) {
