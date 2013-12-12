@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import suite.util.Util;
 
-public class ImmutableSet<V extends Comparable<V>> {
+public class ImmutableSet<V extends Comparable<V>> implements Iterable<V> {
 
 	private ImmutableTree<V> tree = new Tree23<V>(new Comparator<V>() {
 		public int compare(V p0, V p1) {
@@ -24,6 +24,7 @@ public class ImmutableSet<V extends Comparable<V>> {
 		return tree.find(k);
 	}
 
+	@Override
 	public Iterator<V> iterator() {
 		return tree.iterator();
 	}
