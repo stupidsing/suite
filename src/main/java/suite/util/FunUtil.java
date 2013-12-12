@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 public class FunUtil {
 
@@ -42,8 +41,8 @@ public class FunUtil {
 		return asSource(Arrays.asList(array));
 	}
 
-	public static <O> Source<O> asSource(final List<O> list) {
-		return asSource(list.iterator());
+	public static <O> Source<O> asSource(Iterable<O> iterable) {
+		return asSource(iterable.iterator());
 	}
 
 	public static <O> Source<O> asSource(final Iterator<O> iter) {
