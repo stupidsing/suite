@@ -62,16 +62,15 @@ public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 	public Iterator<T> iterator() {
 		return FunUtil.iterator(new Source<T>() {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
+
 			{
 				stack.push(root.slots);
 			}
 
 			public T source() {
 				List<Slot> slots = Collections.emptyList();
-
 				while (!stack.isEmpty() && (slots = stack.pop()).isEmpty())
 					;
-
 				return push(slots);
 			}
 
@@ -82,11 +81,7 @@ public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 					Slot slot0 = slots.get(0);
 					Node node = slot0.node;
 					stack.push(Util.sublist(slots, 1, 0));
-
-					if (node != null)
-						t = push(node.slots);
-					else
-						t = slot0.pivot;
+					t = node != null ? push(node.slots) : slot0.pivot;
 				} else
 					t = null;
 
