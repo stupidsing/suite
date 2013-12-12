@@ -185,7 +185,7 @@ public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 				// Merges with a neighbor if reached minimum number of nodes
 				if (slot1.size() < halfSize)
 					if (s0 > 0)
-						replaceSlots = merge(slots0.get(s0--).node.slots, slot1);
+						replaceSlots = merge(slots0.get(--s0).node.slots, slot1);
 					else if (s1 < size)
 						replaceSlots = merge(slot1, slots0.get(s1++).node.slots);
 					else
