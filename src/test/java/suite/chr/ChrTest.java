@@ -21,4 +21,5 @@ public class ChrTest {
 		List<Node> facts = Arrays.asList(Suite.parse("LE A B"), Suite.parse("LE B C"), Suite.parse("LE C A"));
 		System.out.println(chr.chr(facts));
 	}
+
 }
