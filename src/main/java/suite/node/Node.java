@@ -87,16 +87,16 @@ public class Node implements Comparable<Node> {
 	}
 
 	public static List<Node> tupleToList(Node node) {
-		List<Node> rs = new ArrayList<>();
+		List<Node> results = new ArrayList<>();
 		Tree tree;
 
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			rs.add(tree.getLeft());
+			results.add(tree.getLeft());
 			node = tree.getRight();
 		}
 
-		rs.add(node);
-		return rs;
+		results.add(node);
+		return results;
 	}
 
 	@Override
