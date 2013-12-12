@@ -28,7 +28,7 @@ public class ImmutableSet<V extends Comparable<V>> {
 		return tree.iterator();
 	}
 
-	public ImmutableSet<V> put(V v) {
+	public ImmutableSet<V> add(V v) {
 		return new ImmutableSet<V>(tree.add(v));
 	}
 
