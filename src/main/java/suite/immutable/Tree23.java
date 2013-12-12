@@ -68,10 +68,10 @@ public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 			}
 
 			public T source() {
-				List<Slot> slots = Collections.emptyList();
-				while (!stack.isEmpty() && (slots = stack.pop()).isEmpty())
+				T t = null;
+				while (!stack.isEmpty() && (t = push(stack.pop())) == null)
 					;
-				return push(slots);
+				return t;
 			}
 
 			private T push(List<Slot> slots) {
