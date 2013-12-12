@@ -193,7 +193,7 @@ public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
 				else
 					replaceSlots = Arrays.asList(slot(slot1));
 			} else
-				replaceSlots = Collections.<Slot> emptyList();
+				replaceSlots = Collections.emptyList();
 		else
 			throw new RuntimeException("Node not found " + t);
 
