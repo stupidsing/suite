@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 
-public class RbTree<T> implements Iterable<T>, ImmutableTree<T> {
+public class RbTree<T> implements ImmutableTree<T> {
 
 	private Node root;
 	private Comparator<T> comparator;

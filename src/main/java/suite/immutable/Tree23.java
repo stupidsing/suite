@@ -12,7 +12,7 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
-public class Tree23<T> implements Iterable<T>, ImmutableTree<T> {
+public class Tree23<T> implements ImmutableTree<T> {
 
 	private int maxSize = 4;
 	private int halfSize = maxSize / 2;
