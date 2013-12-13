@@ -6,7 +6,7 @@ public interface UctVisitor<Move> {
 
 	public UctVisitor<Move> cloneVisitor();
 
-	public Iterable<Move> getAllMovesOnBoard();
+	public Iterable<Move> getAllMoves();
 
 	public List<Move> elaborateMoves();
 

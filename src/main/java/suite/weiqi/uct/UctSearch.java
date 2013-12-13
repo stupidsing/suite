@@ -49,7 +49,7 @@ public class UctSearch<Move> {
 	}
 
 	public Move search() {
-		for (Move move : visitor.getAllMovesOnBoard()) {
+		for (Move move : visitor.getAllMoves()) {
 			nRaveWins.put(move, new AtomicInteger());
 			nRaveVisits.put(move, new AtomicInteger());
 		}
@@ -248,7 +248,7 @@ public class UctSearch<Move> {
 
 	public void dumpRave() {
 		int n = 0;
-		for (Move move : visitor.getAllMovesOnBoard()) {
+		for (Move move : visitor.getAllMoves()) {
 			float nWins = getMoveRave(nRaveWins, move);
 			float nTotals = getMoveRave(nRaveVisits, move);
 			String s = nTotals > 0 ? df3.format(nWins / nTotals) : "  -  ";

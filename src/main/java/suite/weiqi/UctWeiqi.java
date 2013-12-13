@@ -27,7 +27,7 @@ public class UctWeiqi {
 		}
 
 		@Override
-		public Iterable<Coordinate> getAllMovesOnBoard() {
+		public Iterable<Coordinate> getAllMoves() {
 			return Coordinate.all();
 		}
 
