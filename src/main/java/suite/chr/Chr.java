@@ -40,10 +40,10 @@ public class Chr {
 	}
 
 	private class State {
-		private ImmutableMap<Prototype, ImmutableSet<Node>> facts;
+		private ImmutableMap<Prototype, ImmutableSet<Node>> factsByPrototype;
 
-		public State(ImmutableMap<Prototype, ImmutableSet<Node>> facts) {
-			this.facts = facts;
+		public State(ImmutableMap<Prototype, ImmutableSet<Node>> factsByPrototype) {
+			this.factsByPrototype = factsByPrototype;
 		}
 	}
 
@@ -65,12 +65,12 @@ public class Chr {
 			throw new RuntimeException("Invalid rule " + node);
 	}
 
-	public Collection<Node> chr(Collection<Node> nodes) {
+	public Collection<Node> chr(Collection<Node> facts) {
 		State state = new State(new ImmutableMap<Prototype, ImmutableSet<Node>>());
 
-		for (Node node : nodes) {
-			Prototype prototype = getPrototype(node);
-			state = setFacts(state, prototype, getFacts(state, prototype).replace(node));
+		for (Node fact : facts) {
+			Prototype prototype = getPrototype(fact);
+			state = setFacts(state, prototype, getFacts(state, prototype).replace(fact));
 		}
 
 		State state1;
@@ -80,7 +80,7 @@ public class Chr {
 
 		List<Node> nodes1 = new ArrayList<>();
 
-		for (Pair<Prototype, ImmutableSet<Node>> pair : state.facts)
+		for (Pair<Prototype, ImmutableSet<Node>> pair : state.factsByPrototype)
 			nodes1.addAll(To.list(pair.t1));
 
 		return nodes1;
@@ -120,8 +120,8 @@ public class Chr {
 			public Source<State> apply(final State state) {
 				final ImmutableSet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
-				Source<Node> bindedIfs = filter(facts.source(), bindFun);
 
+				Source<Node> bindedIfs = filter(facts.source(), bindFun);
 				return map(bindedIfs, new Fun<Node, State>() {
 					public State apply(Node node) {
 						return setFacts(state, prototype, facts.remove(node));
@@ -154,18 +154,17 @@ public class Chr {
 
 			states = map(states, new Fun<State, State>() {
 				public State apply(State state) {
-					ImmutableMap<Prototype, ImmutableSet<Node>> facts1 = new ImmutableMap<>();
+					ImmutableMap<Prototype, ImmutableSet<Node>> factsByPrototype1 = new ImmutableMap<>();
+					for (Pair<Prototype, ImmutableSet<Node>> pair : state.factsByPrototype)
+						factsByPrototype1 = factsByPrototype1.put(pair.t0, replace(pair.t1));
+					return new State(factsByPrototype1);
+				}
 
-					for (Pair<Prototype, ImmutableSet<Node>> pair : state.facts) {
-						ImmutableSet<Node> nodes = new ImmutableSet<Node>();
-
-						for (Node node : pair.t1)
-							nodes = nodes.replace(Replacer.replace(node, from, to));
-
-						facts1 = facts1.put(pair.t0, nodes);
-					}
-
-					return new State(facts1);
+				private ImmutableSet<Node> replace(ImmutableSet<Node> facts) {
+					ImmutableSet<Node> facts1 = new ImmutableSet<Node>();
+					for (Node node : facts)
+						facts1 = facts1.replace(Replacer.replace(node, from, to));
+					return facts1;
 				}
 			});
 		}
@@ -219,12 +218,12 @@ public class Chr {
 	}
 
 	private ImmutableSet<Node> getFacts(State state, Prototype prototype) {
-		ImmutableSet<Node> results = state.facts.get(prototype);
+		ImmutableSet<Node> results = state.factsByPrototype.get(prototype);
 		return results != null ? results : new ImmutableSet<Node>();
 	}
 
 	private State setFacts(State state, Prototype prototype, ImmutableSet<Node> nodes) {
-		ImmutableMap<Prototype, ImmutableSet<Node>> facts = state.facts;
+		ImmutableMap<Prototype, ImmutableSet<Node>> facts = state.factsByPrototype;
 		return new State(nodes.source().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
