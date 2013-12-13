@@ -3,7 +3,8 @@ package suite.immutable;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
-import java.util.Iterator;
+
+import suite.util.FunUtil.Source;
 
 public class RbTree<T> implements ImmutableTree<T> {
 
@@ -33,27 +34,25 @@ public class RbTree<T> implements ImmutableTree<T> {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return new Iterator<T>() {
+	public Source<T> source() {
+		return new Source<T>() {
 			private Deque<Node> nodes = new ArrayDeque<>();
 
 			{
 				pushLefts(root);
 			}
 
-			public boolean hasNext() {
-				return !nodes.isEmpty();
-			}
+			public T source() {
+				T result;
 
-			public T next() {
-				Node node = nodes.pop();
-				T result = node.pivot;
-				pushLefts(node.right);
+				if (!nodes.isEmpty()) {
+					Node node = nodes.pop();
+					pushLefts(node.right);
+					result = node.pivot;
+				} else
+					result = null;
+
 				return result;
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
 			}
 
 			private void pushLefts(Node node) {

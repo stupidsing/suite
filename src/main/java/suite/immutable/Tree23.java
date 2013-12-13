@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 
-import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -59,8 +57,8 @@ public class Tree23<T> implements ImmutableTree<T> {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return FunUtil.iterator(new Source<T>() {
+	public Source<T> source() {
+		return new Source<T>() {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
 
 			{
@@ -87,7 +85,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 
 				return t;
 			}
-		});
+		};
 	}
 
 	public T find(T t) {

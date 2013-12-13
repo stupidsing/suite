@@ -3,6 +3,8 @@ package suite.immutable;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import suite.util.FunUtil;
+import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class ImmutableSet<V extends Comparable<V>> implements Iterable<V> {
@@ -20,13 +22,17 @@ public class ImmutableSet<V extends Comparable<V>> implements Iterable<V> {
 		this.tree = tree;
 	}
 
-	public V get(V k) {
-		return tree.find(k);
-	}
-
 	@Override
 	public Iterator<V> iterator() {
-		return tree.iterator();
+		return FunUtil.iterator(source());
+	}
+
+	public Source<V> source() {
+		return tree.source();
+	}
+
+	public V get(V k) {
+		return tree.find(k);
 	}
 
 	public ImmutableSet<V> add(V v) {
@@ -46,7 +52,7 @@ public class ImmutableSet<V extends Comparable<V>> implements Iterable<V> {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");
 
-		for (V v : Util.iter(tree.iterator()))
+		for (V v : this)
 			sb.append(v + ", ");
 
 		sb.append(")");

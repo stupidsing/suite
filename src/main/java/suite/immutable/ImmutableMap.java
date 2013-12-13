@@ -3,6 +3,8 @@ package suite.immutable;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import suite.util.FunUtil;
+import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -23,14 +25,18 @@ public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K
 		this.tree = tree;
 	}
 
+	@Override
+	public Iterator<Pair<K, V>> iterator() {
+		return FunUtil.iterator(source());
+	}
+
+	public Source<Pair<K, V>> source() {
+		return tree.source();
+	}
+
 	public V get(K k) {
 		Pair<K, V> pair = tree.find(Pair.create(k, (V) null));
 		return pair != null ? pair.t1 : null;
-	}
-
-	@Override
-	public Iterator<Pair<K, V>> iterator() {
-		return tree.iterator();
 	}
 
 	public ImmutableMap<K, V> put(K k, V v) {
@@ -50,7 +56,7 @@ public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 
-		for (Pair<K, V> pair : Util.iter(tree.iterator()))
+		for (Pair<K, V> pair : this)
 			sb.append(pair.t0 + " = " + pair.t1 + ", ");
 
 		sb.append("}");

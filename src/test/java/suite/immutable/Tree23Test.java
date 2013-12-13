@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.junit.Test;
 
-import suite.util.To;
+import suite.util.FunUtil;
 
 public class Tree23Test {
 
@@ -53,7 +53,7 @@ public class Tree23Test {
 
 	private void dump(Tree23<Integer> tree23) {
 		System.out.print("LIST = ");
-		for (Integer i : To.list(tree23.iterator()))
+		for (Integer i : FunUtil.iter(tree23.source()))
 			System.out.print(i + " ");
 		System.out.println();
 	}

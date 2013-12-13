@@ -1,6 +1,10 @@
 package suite.immutable;
 
-public interface ImmutableTree<T> extends Iterable<T> {
+import suite.util.FunUtil.Source;
+
+public interface ImmutableTree<T> {
+
+	public Source<T> source();
 
 	public T find(T t);
 

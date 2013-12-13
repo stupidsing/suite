@@ -120,7 +120,7 @@ public class Chr {
 			public Source<State> apply(final State state) {
 				final ImmutableSet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
-				Source<Node> bindedIfs = filter(FunUtil.asSource(facts), bindFun);
+				Source<Node> bindedIfs = filter(facts.source(), bindFun);
 
 				return map(bindedIfs, new Fun<Node, State>() {
 					public State apply(Node node) {
@@ -138,7 +138,7 @@ public class Chr {
 			public Source<State> apply(final State state) {
 				ImmutableSet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
-				boolean isMatch = or(map(FunUtil.asSource(facts), bindFun));
+				boolean isMatch = or(map(facts.source(), bindFun));
 				return isMatch ? FunUtil.asSource(state) : FunUtil.<State> nullSource();
 			}
 		}));
@@ -225,7 +225,7 @@ public class Chr {
 
 	private State setFacts(State state, Prototype prototype, ImmutableSet<Node> nodes) {
 		ImmutableMap<Prototype, ImmutableSet<Node>> facts = state.facts;
-		return new State(nodes.iterator().hasNext() ? facts.replace(prototype, nodes) : facts.remove(prototype));
+		return new State(nodes.source().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
 	private Prototype getPrototype(Node node) {
