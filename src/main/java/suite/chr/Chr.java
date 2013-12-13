@@ -15,6 +15,8 @@ import suite.lp.kb.Prototype;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Tree;
+import suite.node.io.TermParser.TermOp;
 import suite.node.util.Replacer;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -36,7 +38,7 @@ public class Chr {
 		private List<Node> givens = new ArrayList<>();
 		private List<Node> ifs = new ArrayList<>();
 		private List<Node> thens = new ArrayList<>();
-		private Node when;
+		private Node when = Atom.NIL;
 	}
 
 	private class State {
@@ -48,21 +50,32 @@ public class Chr {
 	}
 
 	public void addRule(Node node) {
-		Node v0 = atom(".givens"), v1 = atom(".ifs"), v2 = atom(".thens"), v3 = atom(".when");
+		Rule rule = new Rule();
 
-		Journal journal = new Journal();
-		Generalizer generalizer = new Generalizer();
-		Node bind = Suite.substitute("given .0 if .1 then .2 when .3 end", v0, v1, v2, v3);
+		while (node != Atom.create("end")) {
+			Tree t0 = Tree.decompose(node, TermOp.TUPLE_);
+			Tree t1 = t0 != null ? Tree.decompose(t0.getRight(), TermOp.TUPLE_) : null;
 
-		if (Binder.bind(generalizer.generalize(bind), node, journal)) {
-			Rule rule = new Rule();
-			rule.givens = To.list(Node.iter(generalizer.getVariable(v0)));
-			rule.ifs = To.list(Node.iter(generalizer.getVariable(v1)));
-			rule.thens = To.list(Node.iter(generalizer.getVariable(v2)));
-			rule.when = generalizer.getVariable(v3);
-			rules.add(rule);
-		} else
-			throw new RuntimeException("Invalid rule " + node);
+			if (t1 != null) {
+				Node key = t0.getLeft();
+				Node value = t1.getLeft();
+				node = t1.getRight();
+
+				if (key == Atom.create("given"))
+					rule.givens = To.list(Node.iter(value));
+				else if (key == Atom.create("if"))
+					rule.ifs = To.list(Node.iter(value));
+				else if (key == Atom.create("then"))
+					rule.thens = To.list(Node.iter(value));
+				else if (key == Atom.create("when"))
+					rule.when = value;
+				else
+					throw new RuntimeException("Invalid key " + key);
+			} else
+				throw new RuntimeException("Invalid rule " + node);
+		}
+
+		rules.add(rule);
 	}
 
 	public Collection<Node> chr(Collection<Node> facts) {

@@ -16,10 +16,10 @@ public class ChrTest {
 	@Test
 	public void test() {
 		Chr chr = chr(Arrays.asList( //
-				"given () if (LE.x .x,) then () when () end" //
-				, "given () if (LE .x .y, LE .y .x,) then (.x = .y,) when () end" //
-				, "given (LE .x .y,) if (LE .x .y,) then () when () end" //
-				, "given (LE .x .y, LE .y .z,) if () then (LE .x .z,) when () end"));
+				"if (LE.x .x,) then () end" //
+				, "if (LE .x .y, LE .y .x,) then (.x = .y,) end" //
+				, "given (LE .x .y,) if (LE .x .y,) then () end" //
+				, "given (LE .x .y, LE .y .z,) if () then (LE .x .z,) end"));
 
 		List<Node> facts = Arrays.asList(Suite.parse("LE A B"), Suite.parse("LE B C"), Suite.parse("LE C A"));
 		Collection<Node> facts1 = chr.chr(facts);
