@@ -162,6 +162,8 @@ public class Chr {
 		Node a = atom(".a"), b = atom(".b");
 
 		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {
+
+			// Built-in syntactic equality
 			final Reference from = generalizer.getVariable(a);
 			final Reference to = generalizer.getVariable(b);
 

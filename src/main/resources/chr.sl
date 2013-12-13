@@ -46,7 +46,7 @@ chr-retract .c (.fact, .facts0) (.fact, .factsx) :- chr-retract .c .facts0 .fact
 
 chr-assert-list () .facts .facts
 #
-chr-assert-list (.a = .b, .newFacts) .facts0 (.a = .b, .factsx)
+chr-assert-list (.a = .b, .newFacts) .facts0 (.a = .b, .factsx) -- Built-in syntactic equality
 	:- !
 	, replace .a .b .facts0 .facts1
 	, chr-assert-list .newFacts .facts1 .factsx
