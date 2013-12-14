@@ -58,23 +58,31 @@ public class Tree23<T> implements ImmutableTree<T> {
 
 	@Override
 	public Source<T> source() {
+		return source(null, null);
+	}
+
+	private Source<T> source(final T start, final T end) {
 		return new Source<T>() {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
 
 			{
-				stack.push(root.slots);
+				List<Slot> slots = root.slots;
+				int size = slots.size();
+				int i = 0;
+				while (i < size && start != null && compare(slots.get(i).pivot, start) < 0)
+					i++;
+				stack.push(slots.subList(i, size));
 			}
 
 			public T source() {
 				T t = null;
 				while (!stack.isEmpty() && (t = push(stack.pop())) == null)
 					;
-				return t;
+				return compare(t, end) < 0 ? t : null;
 			}
 
 			private T push(List<Slot> slots) {
 				T t;
-
 				if (!slots.isEmpty()) {
 					Slot slot0 = slots.get(0);
 					Node node = slot0.node;
@@ -82,7 +90,6 @@ public class Tree23<T> implements ImmutableTree<T> {
 					t = node != null ? push(node.slots) : slot0.pivot;
 				} else
 					t = null;
-
 				return t;
 			}
 		};
