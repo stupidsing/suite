@@ -189,16 +189,14 @@ public class Util {
 		int size = list.size();
 		if (pos < 0)
 			pos += size;
-		pos = Math.min(size, pos);
-		return list.subList(0, pos);
+		return list.subList(0, Math.min(size, pos));
 	}
 
 	public static <T> List<T> right(List<T> list, int pos) {
 		int size = list.size();
 		if (pos < 0)
 			pos += size;
-		pos = Math.min(size, pos);
-		return list.subList(pos, size);
+		return list.subList(Math.min(size, pos), size);
 	}
 
 	public static void sleepQuietly(long time) {
