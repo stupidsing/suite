@@ -151,7 +151,6 @@ public class RbTree<T> implements ImmutableTree<T> {
 
 	private Node createBalancedNode(Node n0, T p0, Node n1, T p1, Node n2, T p2, Node n3) {
 		return new Node(false, p1, new Node(true, p0, n0, n1), new Node(true, p2, n2, n3));
-
 	}
 
 }
