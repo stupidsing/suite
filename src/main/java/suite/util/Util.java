@@ -185,6 +185,22 @@ public class Util {
 		};
 	}
 
+	public static <T> List<T> left(List<T> list, int pos) {
+		int size = list.size();
+		if (pos < 0)
+			pos += size;
+		pos = Math.min(size, pos);
+		return list.subList(0, pos);
+	}
+
+	public static <T> List<T> right(List<T> list, int pos) {
+		int size = list.size();
+		if (pos < 0)
+			pos += size;
+		pos = Math.min(size, pos);
+		return list.subList(pos, size);
+	}
+
 	public static void sleepQuietly(long time) {
 		try {
 			Thread.sleep(time);
@@ -233,16 +249,6 @@ public class Util {
 				return splitted;
 			}
 		});
-	}
-
-	public static <T> List<T> sublist(List<T> list, int start, int end) {
-		int size = list.size();
-		if (start < 0)
-			start += size;
-		if (end < start)
-			end += size;
-		end = Math.min(size, end);
-		return list.subList(start, end);
 	}
 
 	public static String substr(String s, int start, int end) {

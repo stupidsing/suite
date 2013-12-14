@@ -71,7 +71,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 				int i = 0;
 				while (i < size && start != null && compare(slots.get(i).pivot, start) < 0)
 					i++;
-				stack.push(slots.subList(i, size));
+				stack.push(Util.right(slots, i));
 			}
 
 			public T source() {
@@ -86,7 +86,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 				if (!slots.isEmpty()) {
 					Slot slot0 = slots.get(0);
 					Node node = slot0.node;
-					stack.push(Util.sublist(slots, 1, 0));
+					stack.push(Util.right(slots, 1));
 					t = node != null ? push(node.slots) : slot0.pivot;
 				} else
 					t = null;
@@ -156,15 +156,15 @@ public class Tree23<T> implements ImmutableTree<T> {
 		else
 			throw new RuntimeException("Duplicate node " + t);
 
-		List<Slot> slots1 = Util.add(Util.sublist(slots0, 0, i), replaceSlots, Util.sublist(slots0, i + 1, 0));
+		List<Slot> slots1 = Util.add(Util.left(slots0, i), replaceSlots, Util.right(slots0, i + 1));
 		List<Slot> slots2;
 
 		// Checks if need to split
 		if (slots1.size() < maxSize)
 			slots2 = Arrays.asList(slot(slots1));
 		else { // Splits into two if reached maximum number of nodes
-			List<Slot> leftSlots = Util.sublist(slots1, 0, halfSize);
-			List<Slot> rightSlots = Util.sublist(slots1, halfSize, 0);
+			List<Slot> leftSlots = Util.left(slots1, halfSize);
+			List<Slot> rightSlots = Util.right(slots1, halfSize);
 			slots2 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
@@ -203,7 +203,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 		else
 			throw new RuntimeException("Node not found " + t);
 
-		return Util.add(Util.sublist(slots0, 0, s0), replaceSlots, Util.sublist(slots0, s1, 0));
+		return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 	}
 
 	private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
@@ -213,11 +213,11 @@ public class Tree23<T> implements ImmutableTree<T> {
 			List<Slot> leftSlots, rightSlots;
 
 			if (slots0.size() > halfSize) {
-				leftSlots = Util.sublist(slots0, 0, -1);
+				leftSlots = Util.left(slots0, -1);
 				rightSlots = Util.add(Arrays.asList(Util.at(slots0, -1)), slots1);
 			} else {
 				leftSlots = Util.add(slots0, Arrays.asList(Util.at(slots1, 0)));
-				rightSlots = Util.sublist(slots1, 1, 0);
+				rightSlots = Util.right(slots1, 1);
 			}
 
 			merged = Arrays.asList(slot(leftSlots), slot(rightSlots));

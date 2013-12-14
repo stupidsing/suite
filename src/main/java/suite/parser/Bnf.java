@@ -328,7 +328,7 @@ public class Bnf {
 
 				for (int i = 0; i < rule.size(); i++)
 					if (isHeadRecursions.get(i))
-						tempcRule.add(Util.sublist(rule.get(i), 1, 0));
+						tempcRule.add(Util.right(rule.get(i), 1));
 					else
 						tempbRule.add(rule.get(i));
 
