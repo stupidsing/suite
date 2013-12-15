@@ -82,15 +82,18 @@ public class Tree23<T> implements ImmutableTree<T> {
 			}
 
 			private T push(List<Slot> slots) {
-				T t;
-				if (!slots.isEmpty()) {
+				while (!slots.isEmpty()) {
 					Slot slot0 = slots.get(0);
-					Node node = slot0.node;
 					stack.push(Util.right(slots, 1));
-					t = node != null ? push(node.slots) : slot0.pivot;
-				} else
-					t = null;
-				return t;
+					Node node = slot0.node;
+
+					if (node != null)
+						slots = node.slots;
+					else
+						return slot0.pivot;
+				}
+
+				return null;
 			}
 		};
 	}
