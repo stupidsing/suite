@@ -26,14 +26,6 @@ public class Util {
 		return resultList;
 	}
 
-	public static <T> T at(List<T> list, int pos) {
-		int size = list.size();
-		if (pos < 0)
-			pos += size;
-		pos = Math.min(size, pos);
-		return list.get(pos);
-	}
-
 	public static char charAt(String s, int pos) {
 		if (pos < 0)
 			pos += s.length();
@@ -183,6 +175,10 @@ public class Util {
 				return iter;
 			}
 		};
+	}
+
+	public static <T> T last(List<T> c) {
+		return !c.isEmpty() ? c.get(c.size() - 1) : null;
 	}
 
 	public static <T> List<T> left(List<T> list, int pos) {

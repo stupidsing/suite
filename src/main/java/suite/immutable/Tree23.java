@@ -37,7 +37,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 		private T pivot;
 
 		public Slot(Node node) {
-			this(node, getLastPivot(node.slots));
+			this(node, Util.last(node.slots).pivot);
 		}
 
 		public Slot(Node node, T pivot) {
@@ -217,9 +217,9 @@ public class Tree23<T> implements ImmutableTree<T> {
 
 			if (slots0.size() > halfSize) {
 				leftSlots = Util.left(slots0, -1);
-				rightSlots = Util.add(Arrays.asList(Util.at(slots0, -1)), slots1);
+				rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
 			} else {
-				leftSlots = Util.add(slots0, Arrays.asList(Util.at(slots1, 0)));
+				leftSlots = Util.add(slots0, Arrays.asList(Util.first(slots1)));
 				rightSlots = Util.right(slots1, 1);
 			}
 
@@ -239,10 +239,6 @@ public class Tree23<T> implements ImmutableTree<T> {
 			node = new Node(slots);
 
 		return node;
-	}
-
-	private T getLastPivot(List<Slot> slots) {
-		return slots.get(slots.size() - 1).pivot;
 	}
 
 	private Slot slot(List<Slot> slots) {
