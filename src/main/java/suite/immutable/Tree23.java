@@ -67,11 +67,23 @@ public class Tree23<T> implements ImmutableTree<T> {
 
 			{
 				List<Slot> slots = root.slots;
-				int size = slots.size();
-				int i = 0;
-				while (i < size && start != null && compare(slots.get(i).pivot, start) < 0)
-					i++;
-				stack.push(Util.right(slots, i));
+
+				for (;;) {
+					int size = slots.size();
+					Slot slot = null;
+					int i = 0;
+
+					while (i < size && start != null && compare((slot = slots.get(i)).pivot, start) < 0)
+						i++;
+
+					if (slot != null) {
+						stack.push(Util.right(slots, i + 1));
+						slots = slot.node.slots;
+					} else {
+						stack.push(Util.right(slots, i));
+						break;
+					}
+				}
 			}
 
 			public T source() {
