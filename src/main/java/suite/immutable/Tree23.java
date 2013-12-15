@@ -266,7 +266,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 		if (node != null)
 			for (Slot slot : node.slots) {
 				dump(sb, slot.node, indent + "  ");
-				sb.append(indent + slot.pivot + "\n");
+				sb.append(indent + (slot.pivot != null ? slot.pivot : "<infinity>") + "\n");
 			}
 	}
 
