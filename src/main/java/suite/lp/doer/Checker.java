@@ -42,7 +42,7 @@ public class Checker {
 	}
 
 	private void scanSingletonVariables(Map<Atom, Boolean> isSingleton, Node node) {
-		for (;;) {
+		while (true) {
 			node = node.finalNode();
 
 			if (node instanceof Tree) {

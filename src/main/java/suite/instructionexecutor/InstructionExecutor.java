@@ -72,7 +72,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 		Comparer comparer = comparer();
 
-		for (;;)
+		while (true)
 			try {
 				Frame frame = current.frame;
 				Node regs[] = frame != null ? frame.registers : null;

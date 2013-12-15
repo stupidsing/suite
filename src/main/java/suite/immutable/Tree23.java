@@ -68,7 +68,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 			{
 				List<Slot> slots = root.slots;
 
-				for (;;) {
+				while (true) {
 					int size = slots.size();
 					Slot slot = null;
 					int i = 0;
