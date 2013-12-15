@@ -21,7 +21,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 	private class Node {
 		private List<Slot> slots;
 
-		public Node(List<Slot> slots) {
+		private Node(List<Slot> slots) {
 			this.slots = slots;
 		}
 	}
@@ -36,11 +36,11 @@ public class Tree23<T> implements ImmutableTree<T> {
 		private Node node;
 		private T pivot;
 
-		public Slot(Node node) {
+		private Slot(Node node) {
 			this(node, Util.last(node.slots).pivot);
 		}
 
-		public Slot(Node node, T pivot) {
+		private Slot(Node node, T pivot) {
 			this.node = node;
 			this.pivot = pivot;
 		}
