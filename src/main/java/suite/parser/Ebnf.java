@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil;
@@ -141,6 +143,8 @@ public class Ebnf {
 				if (rootGrammarName == null)
 					rootGrammarName = lr.t0;
 			}
+
+		reduceHeadRecursion();
 	}
 
 	private Grammar parseGrammar(String s) {
@@ -234,16 +238,17 @@ public class Ebnf {
 					stack.push(root);
 
 					for (State state_ : states) {
-						while (state_.depth < stack.size())
+						if (state_.depth < stack.size())
 							stack.pop().end = state_.pos;
 
-						Node node = new Node(state_.name, state_.pos);
+						if (state_.depth > stack.size()) {
+							Node node = new Node(state_.name, state_.pos);
 
-						if (state_.name != null)
-							stack.peek().nodes.add(node);
+							if (state_.name != null)
+								stack.peek().nodes.add(node);
 
-						while (state_.depth > stack.size())
 							stack.push(node);
+						}
 					}
 
 					return root.nodes.get(0);
@@ -485,6 +490,67 @@ public class Ebnf {
 			Pair<Integer, Integer> pos = Pair.create(row, col);
 			return pos;
 		}
+	}
+
+	private void reduceHeadRecursion() {
+		for (Entry<String, Grammar> entry : new ArrayList<>(grammars.entrySet())) {
+			String name = entry.getKey();
+			Grammar grammar = entry.getValue();
+			grammars.put(name, reduceHeadRecursion(name, grammar));
+		}
+	}
+
+	/**
+	 * Transform head-recursion rule as follows:
+	 * 
+	 * A = B0 | B1 | ... | Bm | A C0 | A C1 | ... | A Cn
+	 * 
+	 * become two rules
+	 * 
+	 * A = tempB tempC*
+	 * 
+	 * tempB = B0 | B1 | ... | Bm
+	 * 
+	 * tempC = C0 | C1 | ... | Cn
+	 */
+	private Grammar reduceHeadRecursion(String name, Grammar grammar0) {
+		Grammar grammar = lookup(grammar0);
+		OrGrammar orGrammar = grammar instanceof OrGrammar ? (OrGrammar) grammar : null;
+		Grammar grammar1;
+
+		if (orGrammar != null) {
+			List<Grammar> listb = new ArrayList<>();
+			List<Grammar> listc = new ArrayList<>();
+
+			for (Grammar childGrammar : orGrammar.grammars) {
+				if (childGrammar instanceof JoinGrammar) {
+					List<Grammar> grammars = ((JoinGrammar) childGrammar).grammars;
+
+					if (lookup(grammars.get(0)) == grammar) {
+						listc.add(new JoinGrammar(Util.right(grammars, 1)));
+						continue;
+					}
+				}
+
+				listb.add(childGrammar);
+			}
+
+			if (!listc.isEmpty()) {
+				String tempb = name + "-Head";
+				String tempc = name + "-Tail";
+				grammars.put(tempb, new OrGrammar(listb));
+				grammars.put(tempc, new OrGrammar(listc));
+				grammar1 = new JoinGrammar(Arrays.asList(new NamedGrammar(tempb), new RepeatGrammar(new NamedGrammar(tempc))));
+			} else
+				grammar1 = grammar;
+		} else
+			grammar1 = grammar;
+
+		return grammar1;
+	}
+
+	private Grammar lookup(Grammar grammar) {
+		return grammar instanceof NamedGrammar ? grammars.get(((NamedGrammar) grammar).name) : grammar;
 	}
 
 }
