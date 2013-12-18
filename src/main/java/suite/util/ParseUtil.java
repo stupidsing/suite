@@ -1,5 +1,8 @@
 package suite.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 
@@ -68,6 +71,19 @@ public class ParseUtil {
 
 	public static String[] search(String s, Operator operator) {
 		return search(s, operator.getName(), operator.getAssoc());
+	}
+
+	public static List<String> searchn(String s, String name, Assoc assoc) {
+		List<String> list = new ArrayList<>();
+		String lr[];
+
+		while ((lr = search(s, name, assoc, true)) != null) {
+			list.add(lr[0]);
+			s = lr[1];
+		}
+
+		list.add(s);
+		return list;
 	}
 
 	public static String[] search(String s, String name, Assoc assoc) {
