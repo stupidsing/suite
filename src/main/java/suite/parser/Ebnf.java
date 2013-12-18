@@ -107,6 +107,19 @@ public class Ebnf {
 			return name + "@" + start + "-" + end + nodes;
 		}
 
+		public String toPrettyPrint() {
+			StringBuilder sb = new StringBuilder();
+			prettyPrint("", sb);
+			return sb.toString();
+		}
+
+		private void prettyPrint(String indent, StringBuilder sb) {
+			String indent1 = indent + "  ";
+			sb.append(indent + name + "@" + start + "-" + end + "\n");
+			for (Node node : nodes)
+				node.prettyPrint(indent1, sb);
+		}
+
 		public String getEntity() {
 			return name;
 		}
