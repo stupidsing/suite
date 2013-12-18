@@ -196,7 +196,7 @@ public class Ebnf {
 			private int depth;
 
 			private State(State previous, int pos) {
-				this(previous, pos, null, previous.depth);
+				this(previous, pos, previous.name, previous.depth);
 			}
 
 			private State(State previous, int pos, String name, int depth) {
@@ -300,9 +300,9 @@ public class Ebnf {
 			else
 				states = noResult;
 
-			if (states == noResult && pos > errorPosition) {
+			if (states == noResult && state1.name != null && pos >= errorPosition) {
 				errorPosition = pos;
-				errorName = state.name;
+				errorName = state1.name;
 			}
 
 			return states;
