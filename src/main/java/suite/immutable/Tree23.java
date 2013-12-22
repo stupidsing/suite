@@ -36,10 +36,6 @@ public class Tree23<T> implements ImmutableTree<T> {
 		private Node node;
 		private T pivot;
 
-		private Slot(Node node) {
-			this(node, Util.last(node.slots).pivot);
-		}
-
 		private Slot(Node node, T pivot) {
 			this.node = node;
 			this.pivot = pivot;
@@ -254,7 +250,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 	}
 
 	private Slot slot(List<Slot> slots) {
-		return new Slot(new Node(slots));
+		return new Slot(new Node(slots), Util.last(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {
