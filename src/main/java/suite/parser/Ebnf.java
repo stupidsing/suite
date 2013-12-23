@@ -90,6 +90,15 @@ public class Ebnf {
 		}
 	}
 
+	private class CharRangeGrammar implements Grammar {
+		private char start, end;
+
+		public CharRangeGrammar(char start, char end) {
+			this.start = start;
+			this.end = end;
+		}
+	}
+
 	public class Node {
 		private String name;
 		private int start, end;
@@ -160,6 +169,8 @@ public class Ebnf {
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)));
 		else if (s.endsWith("?"))
 			grammar = new OptionalGrammar(parseGrammar(Util.substr(s, 0, -1)));
+		else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']')
+			grammar = new CharRangeGrammar(s.charAt(1), s.charAt(3));
 		else if (s.startsWith("(") && s.endsWith(")"))
 			grammar = parseGrammar(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\""))
@@ -278,6 +289,8 @@ public class Ebnf {
 				states = parseRepeat(state1, child(grammar));
 			else if (grammar instanceof TokenGrammar)
 				states = parseExpect(state1, expectString(pos, ((TokenGrammar) grammar).token));
+			else if (grammar instanceof CharRangeGrammar)
+				states = parseCharRange(pos, state1, (CharRangeGrammar) grammar);
 			else
 				states = noResult;
 
@@ -308,8 +321,6 @@ public class Ebnf {
 				states = parseExpect(state1, expectIntegerLiteral(pos));
 			else if (name.equals("<STRING_LITERAL>"))
 				states = parseExpect(state1, expectStringLiteral(pos));
-			else if (name.length() == 5 && name.charAt(0) == '[' && name.charAt(2) == '-' && name.charAt(4) == ']')
-				states = parseExpect(state1, expectCharRange(pos, name.charAt(1), name.charAt(3)));
 			else
 				states = parse(state1, grammars.get(name));
 
@@ -361,6 +372,10 @@ public class Ebnf {
 					return state0;
 				}
 			};
+		}
+
+		private Source<State> parseCharRange(int pos, State state, CharRangeGrammar grammar) {
+			return parseExpect(state, expectCharRange(state.pos, grammar.start, grammar.end));
 		}
 
 		private Source<State> parseExpect(State state, int end) {
