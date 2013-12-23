@@ -22,21 +22,23 @@ selected-reference ::= expression ("AS"? alias-name)?
 set-expressions ::= set-expression ("," set-expressions)?
 table-reference ::= table-name ("AS"? alias-name)?
 
+alias-name ::= <IDENTIFIER>
 order-by-expression ::= expression ("ASC" | "DESC")? ("NULLS" ("FIRST" | "LAST"))?
 ors-condition ::= ands-condition ("AND" ors-condition)?
+
 ands-condition ::= "NOT"? simple-condition
+
 simple-condition ::= expression condition-operator expression
 
 condition-operator ::= "=" | "!=" | "<" | ">" | "<=" | ">=" | "IN"
 expression ::= constant | field-expression | "(" expression ")"
-set-expression ::= field-expression "=" expression
 
 constant ::= <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <STRING_LITERAL>
 field-expression ::= (table-expression ".")? field-name
+set-expression ::= field-expression "=" expression
 
+field-name ::= <IDENTIFIER>
 table-expression ::= (schema-name ".")? table-name
 
-alias-name ::= <IDENTIFIER>
-field-name ::= <IDENTIFIER>
 schema-name ::= <IDENTIFIER>
 table-name ::= <IDENTIFIER>

@@ -28,7 +28,7 @@ public class EbnfTest {
 	}
 
 	@Test
-	public void testJava0() throws IOException {
+	public void testJavaSimple() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("public class C { public void f() { int a; } }"));
 	}
@@ -37,6 +37,12 @@ public class EbnfTest {
 	public void testJava() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse(To.string(new FileReader("src/test/java/suite/parser/EbnfTest.java"))));
+	}
+
+	@Test
+	public void testSql() throws IOException {
+		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
+		System.out.println(ebnf.parse("SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 = 2", 0, "sql"));
 	}
 
 }
