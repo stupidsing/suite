@@ -288,7 +288,7 @@ public class Ebnf {
 			else if (grammar instanceof RepeatGrammar)
 				states = parseRepeat(state1, child(grammar));
 			else if (grammar instanceof TokenGrammar)
-				states = parseExpect(state1, expectString(pos, ((TokenGrammar) grammar).token));
+				states = parseToken(state1, (TokenGrammar) grammar);
 			else if (grammar instanceof CharRangeGrammar)
 				states = parseCharRange(pos, state1, (CharRangeGrammar) grammar);
 			else
@@ -372,6 +372,10 @@ public class Ebnf {
 					return state0;
 				}
 			};
+		}
+
+		private Source<State> parseToken(State state, TokenGrammar grammar) {
+			return parseExpect(state, expectString(state.pos, (grammar).token));
 		}
 
 		private Source<State> parseCharRange(int pos, State state, CharRangeGrammar grammar) {
