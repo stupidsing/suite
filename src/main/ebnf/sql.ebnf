@@ -1,17 +1,22 @@
 sql ::= select | insert | update | delete
 
 delete ::= "DELETE" "FROM" table-references where?
-insert ::= "INSERT" "INTO" table-expression ("(" insert-fields ")")? "VALUES" "(" insert-values ")"
-select ::= "SELECT" selected-references "FROM" table-references where? (having | group-by | order-by)*
+insert ::= "INSERT" "INTO" table-expression (select | ("(" insert-fields ")")? "VALUES" "(" insert-values ")")
+select ::= unions-select (("MINUS" | "UNION") select)?
 update ::= "UPDATE" table-references set where?
+
+insert-fields ::= field-name ("," insert-fields)?
+insert-values ::= expression ("," insert-values)?
+set ::= "SET" set-expressions
+unions-select ::= intersect-select ("INTERSECT" unions-select)?
+
+intersect-select ::= "SELECT" selected-references "FROM" table-references where? (having | group-by | order-by)* | "(" select ")"
 
 group-by ::= "GROUP" "BY" group-by-expressions
 having ::= "HAVING" condition
-insert-fields ::= field-name ("," insert-fields)?
-insert-values ::= expression ("," insert-values)?
 order-by ::= "ORDER" "BY" order-by-expressions
-set ::= "SET" set-expressions
 selected-references ::= selected-reference ("," selected-references)?
+set-expressions ::= set-expression ("," set-expressions)?
 table-references ::= table-reference ("," table-references)?
 where ::= "WHERE" condition
 
@@ -19,8 +24,7 @@ condition ::= ors-condition ("OR" condition)?
 group-by-expressions ::= field-expression ("," group-by-expressions)?
 order-by-expressions ::= order-by-expression ("," order-by-expressions)?
 selected-reference ::= expression ("AS"? alias-name)?
-set-expressions ::= set-expression ("," set-expressions)?
-table-reference ::= table-name ("AS"? alias-name)?
+table-reference ::= (select | table-name) ("AS"? alias-name)?
 
 alias-name ::= <IDENTIFIER>
 order-by-expression ::= expression ("ASC" | "DESC")? ("NULLS" ("FIRST" | "LAST"))?
@@ -31,7 +35,8 @@ ands-condition ::= "NOT"? simple-condition
 simple-condition ::= expression condition-operator expression
 
 condition-operator ::= "=" | "!=" | "<" | ">" | "<=" | ">=" | "IN"
-expression ::= constant | field-expression | "(" expression ")"
+expression ::= constant | field-expression | "(" (expressions | select) ")"
+expressions ::= expression ("," expressions)?
 
 constant ::= <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <STRING_LITERAL>
 field-expression ::= (table-expression ".")? field-name
