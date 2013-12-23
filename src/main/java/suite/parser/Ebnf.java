@@ -46,19 +46,23 @@ public class Ebnf {
 		}
 	}
 
-	private class OrGrammar implements Grammar {
+	private abstract class CompositeGrammar implements Grammar {
 		private List<Grammar> grammars;
 
-		public OrGrammar(List<Grammar> grammars) {
+		public CompositeGrammar(List<Grammar> grammars) {
 			this.grammars = grammars;
 		}
 	}
 
-	private class JoinGrammar implements Grammar {
-		private List<Grammar> grammars;
+	private class OrGrammar extends CompositeGrammar {
+		public OrGrammar(List<Grammar> grammars) {
+			super(grammars);
+		}
+	}
 
+	private class JoinGrammar extends CompositeGrammar {
 		public JoinGrammar(List<Grammar> grammars) {
-			this.grammars = grammars;
+			super(grammars);
 		}
 	}
 
@@ -69,8 +73,11 @@ public class Ebnf {
 	}
 
 	private class RepeatGrammar extends WrappingGrammar {
-		private RepeatGrammar(Grammar grammar) {
+		private boolean isAllowNone;
+
+		private RepeatGrammar(Grammar grammar, boolean isAllowNone) {
 			super(grammar);
+			this.isAllowNone = isAllowNone;
 		}
 	}
 
@@ -153,6 +160,7 @@ public class Ebnf {
 					rootGrammarName = lr.t0;
 			}
 
+		verify();
 		reduceHeadRecursion();
 	}
 
@@ -166,7 +174,9 @@ public class Ebnf {
 		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
 			grammar = new JoinGrammar(parseGrammars(list));
 		else if (s.endsWith("*"))
-			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)));
+			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), true);
+		else if (s.endsWith("+"))
+			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
 		else if (s.endsWith("?"))
 			grammar = new OptionalGrammar(parseGrammar(Util.substr(s, 0, -1)));
 		else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']')
@@ -284,9 +294,9 @@ public class Ebnf {
 			else if (grammar instanceof JoinGrammar)
 				states = parseJoin(state1, (JoinGrammar) grammar);
 			else if (grammar instanceof OptionalGrammar)
-				states = FunUtil.cons(state1, parse(state1, child(grammar)));
+				states = FunUtil.cons(state1, parse(state1, child((OptionalGrammar) grammar)));
 			else if (grammar instanceof RepeatGrammar)
-				states = parseRepeat(state1, child(grammar));
+				states = parseRepeat(state1, (RepeatGrammar) grammar);
 			else if (grammar instanceof TokenGrammar)
 				states = parseToken(state1, (TokenGrammar) grammar);
 			else if (grammar instanceof CharRangeGrammar)
@@ -331,22 +341,18 @@ public class Ebnf {
 			}, states);
 		}
 
-		private Grammar child(Grammar grammar) {
-			return ((WrappingGrammar) grammar).grammar;
-		}
-
 		private Source<State> parseOr(final State state, final OrGrammar grammar) {
 			return FunUtil.concat(FunUtil.map(new Fun<Grammar, Source<State>>() {
 				public Source<State> apply(Grammar childGrammar) {
 					return parse(state, childGrammar);
 				}
-			}, FunUtil.asSource(grammar.grammars)));
+			}, FunUtil.asSource(children(grammar))));
 		}
 
 		private Source<State> parseJoin(State state, final JoinGrammar grammar) {
 			Source<State> source = FunUtil.asSource(state);
 
-			for (final Grammar childGrammar : grammar.grammars)
+			for (final Grammar childGrammar : children(grammar))
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 					public Source<State> apply(State state) {
 						return parse(state, childGrammar);
@@ -354,6 +360,13 @@ public class Ebnf {
 				}, source));
 
 			return source;
+		}
+
+		private Source<State> parseRepeat(State state, RepeatGrammar grammar) {
+			Source<State> states = parseRepeat(state, child(grammar));
+
+			// Skips first if it is a '+'
+			return grammar.isAllowNone || states.source() != null ? states : noResult;
 		}
 
 		private Source<State> parseRepeat(final State state, final Grammar grammar) {
@@ -528,6 +541,25 @@ public class Ebnf {
 		}
 	}
 
+	private void verify() {
+		for (Grammar grammar : grammars.values())
+			verify(grammar);
+	}
+
+	private void verify(Grammar grammar) {
+		if (grammar instanceof NamedGrammar) {
+			String name = ((NamedGrammar) grammar).name;
+			boolean isNameExists = name.startsWith("<") && name.endsWith(">") || grammars.containsKey(name);
+
+			if (!isNameExists)
+				throw new RuntimeException("Grammar " + name + " not exist");
+		} else if (grammar instanceof WrappingGrammar)
+			verify(child((WrappingGrammar) grammar));
+		else if (grammar instanceof CompositeGrammar)
+			for (Grammar child : children((CompositeGrammar) grammar))
+				verify(child);
+	}
+
 	private void reduceHeadRecursion() {
 		for (Entry<String, Grammar> entry : new ArrayList<>(grammars.entrySet())) {
 			String name = entry.getKey();
@@ -558,9 +590,9 @@ public class Ebnf {
 			List<Grammar> listb = new ArrayList<>();
 			List<Grammar> listc = new ArrayList<>();
 
-			for (Grammar childGrammar : orGrammar.grammars) {
+			for (Grammar childGrammar : children(orGrammar)) {
 				if (childGrammar instanceof JoinGrammar) {
-					List<Grammar> grammars = ((JoinGrammar) childGrammar).grammars;
+					List<Grammar> grammars = children((JoinGrammar) childGrammar);
 
 					if (lookup(grammars.get(0)) == grammar) {
 						listc.add(new JoinGrammar(Util.right(grammars, 1)));
@@ -578,7 +610,7 @@ public class Ebnf {
 				grammars.put(tempc, new OrGrammar(listc));
 				NamedGrammar tempbGrammar = new NamedGrammar(tempb);
 				NamedGrammar tempcGrammar = new NamedGrammar(tempc);
-				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar)));
+				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar, true)));
 			} else
 				grammar1 = grammar;
 		} else
@@ -591,6 +623,14 @@ public class Ebnf {
 		String name = grammar instanceof NamedGrammar ? ((NamedGrammar) grammar).name : null;
 		Grammar grammar1 = name != null ? grammars.get(name) : null;
 		return grammar1 != null ? grammar1 : grammar;
+	}
+
+	private Grammar child(WrappingGrammar grammar) {
+		return grammar.grammar;
+	}
+
+	private List<Grammar> children(CompositeGrammar grammar) {
+		return grammar.grammars;
 	}
 
 }

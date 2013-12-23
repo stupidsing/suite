@@ -1,6 +1,6 @@
 sql ::= select | insert | update | delete
 
-delete ::= "DELETE" "FROM" table-reference where?
+delete ::= "DELETE" "FROM" table-references where?
 insert ::= "INSERT" "INTO" table-expression ("(" insert-fields ")")? "VALUES" "(" insert-values ")"
 select ::= "SELECT" selected-references "FROM" table-references where? (having | group-by | order-by)*
 update ::= "UPDATE" table-references set where?
