@@ -266,33 +266,9 @@ public class Ebnf {
 			State state1 = new State(state, pos);
 			Source<State> states;
 
-			if (grammar instanceof NamedGrammar) {
-				NamedGrammar namedGrammar = (NamedGrammar) grammar;
-				final String name = namedGrammar.name;
-				final int depth = state1.depth;
-				state1 = deepen(state1, name);
-
-				if (name.equals("<EOF>"))
-					states = state1.pos == length ? FunUtil.asSource(state1) : noResult;
-				else if (name.equals("<CHARACTER_LITERAL>"))
-					states = parseExpect(state1, expectCharLiteral(pos));
-				else if (name.equals("<FLOATING_POINT_LITERAL>"))
-					states = parseExpect(state1, expectFloatLiteral(pos));
-				else if (name.equals("<IDENTIFIER>"))
-					states = parseExpect(state1, expectIdentifier(pos));
-				else if (name.equals("<INTEGER_LITERAL>"))
-					states = parseExpect(state1, expectIntegerLiteral(pos));
-				else if (name.equals("<STRING_LITERAL>"))
-					states = parseExpect(state1, expectStringLiteral(pos));
-				else
-					states = parse(state1, grammars.get(name));
-
-				states = FunUtil.map(new Fun<State, State>() {
-					public State apply(State state) {
-						return undeepen(state, depth);
-					}
-				}, states);
-			} else if (grammar instanceof OrGrammar)
+			if (grammar instanceof NamedGrammar)
+				states = parseNamedGrammar(state1, (NamedGrammar) grammar);
+			else if (grammar instanceof OrGrammar)
 				states = parseOr(state1, (OrGrammar) grammar);
 			else if (grammar instanceof JoinGrammar)
 				states = parseJoin(state1, (JoinGrammar) grammar);
@@ -313,22 +289,39 @@ public class Ebnf {
 			return states;
 		}
 
-		private Source<State> parseRepeat(final State state, final Grammar grammar) {
-			return new Source<State>() {
-				private State state_ = state;
-				private Deque<Source<State>> sources = new ArrayDeque<>();
+		private Source<State> parseNamedGrammar(State state, NamedGrammar namedGrammar) {
+			Source<State> states;
+			String name = namedGrammar.name;
+			final int depth = state.depth;
+			int pos = state.pos;
+			State state1 = deepen(state, name);
 
-				public State source() {
-					State state0 = state_;
-					if (state0 != null) {
-						sources.push(parse(state0, grammar));
+			if (name.equals("<EOF>"))
+				states = state1.pos == length ? FunUtil.asSource(state1) : noResult;
+			else if (name.equals("<CHARACTER_LITERAL>"))
+				states = parseExpect(state1, expectCharLiteral(pos));
+			else if (name.equals("<FLOATING_POINT_LITERAL>"))
+				states = parseExpect(state1, expectFloatLiteral(pos));
+			else if (name.equals("<IDENTIFIER>"))
+				states = parseExpect(state1, expectIdentifier(pos));
+			else if (name.equals("<INTEGER_LITERAL>"))
+				states = parseExpect(state1, expectIntegerLiteral(pos));
+			else if (name.equals("<STRING_LITERAL>"))
+				states = parseExpect(state1, expectStringLiteral(pos));
+			else if (name.length() == 5 && name.charAt(0) == '[' && name.charAt(2) == '-' && name.charAt(4) == ']')
+				states = parseExpect(state1, expectCharRange(pos, name.charAt(1), name.charAt(3)));
+			else
+				states = parse(state1, grammars.get(name));
 
-						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
-							sources.pop();
-					}
-					return state0;
+			return FunUtil.map(new Fun<State, State>() {
+				public State apply(State state) {
+					return undeepen(state, depth);
 				}
-			};
+			}, states);
+		}
+
+		private Grammar child(Grammar grammar) {
+			return ((WrappingGrammar) grammar).grammar;
 		}
 
 		private Source<State> parseOr(final State state, final OrGrammar grammar) {
@@ -352,8 +345,22 @@ public class Ebnf {
 			return source;
 		}
 
-		private Grammar child(Grammar grammar) {
-			return ((WrappingGrammar) grammar).grammar;
+		private Source<State> parseRepeat(final State state, final Grammar grammar) {
+			return new Source<State>() {
+				private State state_ = state;
+				private Deque<Source<State>> sources = new ArrayDeque<>();
+
+				public State source() {
+					State state0 = state_;
+					if (state0 != null) {
+						sources.push(parse(state0, grammar));
+
+						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
+							sources.pop();
+					}
+					return state0;
+				}
+			};
 		}
 
 		private Source<State> parseExpect(State state, int end) {
@@ -439,8 +446,18 @@ public class Ebnf {
 			return end;
 		}
 
-		private int expectString(int end, String s) {
-			return end + (in.startsWith(s, end) ? s.length() : 0);
+		private int expectString(int start, String s) {
+			return start + (in.startsWith(s, start) ? s.length() : 0);
+		}
+
+		private int expectCharRange(int start, char s, char e) {
+			int end;
+			if (start < length) {
+				char ch = in.charAt(start);
+				end = start + (s <= ch && ch <= e ? 1 : 0);
+			} else
+				end = start;
+			return end;
 		}
 
 		private int expectWhitespaces(int start) {
@@ -540,7 +557,9 @@ public class Ebnf {
 				String tempc = name + "-Tail";
 				grammars.put(tempb, new OrGrammar(listb));
 				grammars.put(tempc, new OrGrammar(listc));
-				grammar1 = new JoinGrammar(Arrays.asList(new NamedGrammar(tempb), new RepeatGrammar(new NamedGrammar(tempc))));
+				NamedGrammar tempbGrammar = new NamedGrammar(tempb);
+				NamedGrammar tempcGrammar = new NamedGrammar(tempc);
+				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar)));
 			} else
 				grammar1 = grammar;
 		} else
@@ -550,7 +569,9 @@ public class Ebnf {
 	}
 
 	private Grammar lookup(Grammar grammar) {
-		return grammar instanceof NamedGrammar ? grammars.get(((NamedGrammar) grammar).name) : grammar;
+		String name = grammar instanceof NamedGrammar ? ((NamedGrammar) grammar).name : null;
+		Grammar grammar1 = name != null ? grammars.get(name) : null;
+		return grammar1 != null ? grammar1 : grammar;
 	}
 
 }

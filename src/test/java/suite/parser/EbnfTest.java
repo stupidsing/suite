@@ -10,13 +10,19 @@ import suite.util.To;
 public class EbnfTest {
 
 	@Test
+	public void testExpression() throws IOException {
+		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/expression.ebnf"));
+		System.out.println(ebnf.parse("1 + 2 + 3", 0, "<expression>"));
+	}
+
+	@Test
 	public void testId() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("abc", 0, "<IDENTIFIER>"));
 	}
 
 	@Test
-	public void testExpression() throws IOException {
+	public void testJavaExpression() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("\"1\" + \"2\"", 0, "Expression"));
 	}

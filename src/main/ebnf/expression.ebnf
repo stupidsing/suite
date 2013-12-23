@@ -1,0 +1,3 @@
+<expression> ::= <number> | <number> "+" <expression>
+<number> ::= <digit> | <digit> <number>
+<digit> ::= [0-9]
