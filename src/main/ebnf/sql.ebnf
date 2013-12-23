@@ -1,0 +1,42 @@
+sql ::= select | insert | update | delete
+
+delete ::= "DELETE" "FROM" table-reference where?
+insert ::= "INSERT" "INTO" table-expression ("(" insert-fields ")")? "VALUES" "(" insert-values ")"
+select ::= "SELECT" selected-references "FROM" table-references where? (having | group-by | order-by)*
+update ::= "UPDATE" table-references set where?
+
+group-by ::= "GROUP" "BY" group-by-expressions
+having ::= "HAVING" condition
+insert-fields ::= field-name ("," insert-fields)?
+insert-values ::= expression ("," insert-values)?
+order-by ::= "ORDER" "BY" order-by-expressions
+set ::= "SET" set-expressions
+selected-references ::= selected-reference ("," selected-references)?
+table-references ::= table-reference ("," table-references)?
+where ::= "WHERE" condition
+
+condition ::= ors-condition ("OR" condition)?
+group-by-expressions ::= field-expression ("," group-by-expressions)?
+order-by-expressions ::= order-by-expression ("," order-by-expressions)?
+selected-reference ::= expression ("AS"? alias-name)?
+set-expressions ::= set-expression ("," set-expressions)?
+table-reference ::= table-name ("AS"? alias-name)?
+
+order-by-expression ::= expression ("ASC" | "DESC")? ("NULLS" ("FIRST" | "LAST"))?
+ors-condition ::= ands-condition ("AND" ors-condition)?
+ands-condition ::= "NOT"? simple-condition
+simple-condition ::= expression condition-operator expression
+
+condition-operator ::= "=" | "!=" | "<" | ">" | "<=" | ">=" | "IN"
+expression ::= constant | field-expression | "(" expression ")"
+set-expression ::= field-expression "=" expression
+
+constant ::= <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <STRING_LITERAL>
+field-expression ::= (table-expression ".")? field-name
+
+table-expression ::= (schema-name ".")? table-name
+
+alias-name ::= <IDENTIFIER>
+field-name ::= <IDENTIFIER>
+schema-name ::= <IDENTIFIER>
+table-name ::= <IDENTIFIER>
