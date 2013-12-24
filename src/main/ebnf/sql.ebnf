@@ -37,8 +37,8 @@ ands-condition ::= "NOT"? simple-condition
 simple-condition ::= expression condition-operator expression
 
 condition-operator ::= "=" | "!=" | "<" | ">" | "<=" | ">=" | "IN"
-expression ::= constant | field-expression | "(" (expressions | select) ")"
 expressions ::= expression ("," expressions)?
+expression ::= constant | field-expression | "(" (expressions | select) ")"
 
 constant ::= <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <STRING_LITERAL>
 field-expression ::= (table-expression ".")? field-name
