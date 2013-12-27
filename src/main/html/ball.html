@@ -35,6 +35,16 @@
 			canvas0.height = height;
 			var context0 = canvas0.getContext("2d");
 			
+			var move = function() {
+				ballx += dx;
+				bally += dy;
+				
+				if (ballx < 0) { ballx = 0; dx = 2; }
+				if (bally < 0) { bally = 0; dy = 2; }
+				if (ballx > width) { ballx = width; dx = -2; }
+				if (bally > height) { bally = height; dy = -2; }
+			};
+			
 			var repaint = function() {
 				context0.fillStyle = "#777777";
 				context0.fillRect(0, 0, width, height);
@@ -55,14 +65,7 @@
 			};
 			
 			var tick = function() {
-				ballx += dx;
-				bally += dy;
-				
-				if (ballx < 0) { ballx = 0; dx = 2; }
-				if (bally < 0) { bally = 0; dy = 2; }
-				if (ballx > width) { ballx = width; dx = -2; }
-				if (bally > height) { bally = height; dy = -2; }
-				
+				move();				
 				repaint();
 				setTimeout(tick, 25);
 			};
