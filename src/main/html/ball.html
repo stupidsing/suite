@@ -73,13 +73,13 @@
 			document.onkeydown = function(e) { log("onkeydown = " + key(e)); };
 			document.onkeyup = function(e) { log("onkeyup = " + key(e)); };
 			document.onmousemove = function(e) {
-				if (!e) var e = window.event;
-				if (e.pageX || e.pageY) {
-					x = e.pageX;
-					y = e.pageY;
-				} else if (e.clientX || e.clientY) {
-					x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-					y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+				var e1 = (!e) ? window.event : e;
+				if (e1.pageX || e1.pageY) {
+					x = e1.pageX;
+					y = e1.pageY;
+				} else if (e1.clientX || e1.clientY) {
+					x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+					y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 				}
 				log("onmousemove = " + x + ", " + y);
 			};
