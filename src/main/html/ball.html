@@ -25,15 +25,17 @@
 			};
 			
 			var canvas = document.getElementById("canvas");
-			var context = canvas.getContext("2d");
 			var width = canvas.width, height = canvas.height;
-			var ballx = width / 2, bally = height / 2;
-			var dx = 2, dy = 2;
-			
+
 			var canvas0 = document.createElement("canvas"); // off-screen buffer
 			canvas0.width = width;
 			canvas0.height = height;
+			
+			var context = canvas.getContext("2d");
 			var context0 = canvas0.getContext("2d");
+			
+			var ballx = width / 2, bally = height / 2;
+			var dx = 2, dy = 2;
 			
 			var move = function() {
 				ballx += dx;
