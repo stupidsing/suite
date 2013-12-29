@@ -19,9 +19,8 @@
 				// alert(m);
 			};
 			
-			var key = function(e) {
-				var key = (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
-				return String.fromCharCode(key);
+			var tokeycode = function(e) {
+				return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
 			};
 			
 			var canvas = document.getElementById("canvas");
@@ -36,6 +35,19 @@
 			
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
+			
+			var pressed = {};
+			
+			var input = function() {
+				var dx = 0, dy = 0;
+				if (pressed[37]) dx = -1;
+				else if (pressed[38]) dy = -1;
+				else if (pressed[39]) dx = 1;
+				else if (pressed[40]) dy = 1;
+				
+				ballx += 2 * dx;
+				bally += 2 * dy;
+			};
 			
 			var move = function() {
 				ballx += dx;
@@ -67,13 +79,23 @@
 			};
 			
 			var tick = function() {
+				input();
 				move();				
 				repaint();
 				setTimeout(tick, 25);
 			};
 			
-			document.onkeydown = function(e) { log("onkeydown = " + key(e)); };
-			document.onkeyup = function(e) { log("onkeyup = " + key(e)); };
+			document.onkeydown = function(e) {
+				var keycode = tokeycode(e);
+				log("onkeydown = " + keycode + "/" + String.fromCharCode(e));
+				pressed[keycode] = true;
+			};
+			document.onkeyup = function(e) {
+				var keycode = tokeycode(e);
+				log("onkeyup = " + keycode + "/" + String.fromCharCode(e));
+				pressed[keycode] = false;
+			};
+			
 			document.onmousemove = function(e) {
 				var e1 = (!e) ? window.event : e;
 				if (e1.pageX || e1.pageY) {
