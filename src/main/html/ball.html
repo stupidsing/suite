@@ -20,31 +20,41 @@
 			// alert(m);
 		};
 		
-		var tokeycode = function(e) {
-			return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
-		};
-		
 		var canvas = document.getElementById("canvas");
 		var width = canvas.width, height = canvas.height;
 
-		var canvas0 = document.createElement("canvas"); // off-screen buffer
-		canvas0.width = width;
-		canvas0.height = height;
-		
-		var context = canvas.getContext("2d");
-		var context0 = canvas0.getContext("2d");
-		
-		var input = function() {
+		var keyboard = function() {
+			var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };		
+			
 			var pressed = {};
 			document.onkeydown = function(e) { pressed[tokeycode(e)] = true; };
 			document.onkeyup = function(e) { pressed[tokeycode(e)] = false; };
 			// log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
 			
-			var input = {};
-			input.keydirx = function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
-			input.keydiry = function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
-			input.paused = function() { return pressed[80]; }
-			return input;
+			var keyboard = {};
+			keyboard.dirx = function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
+			keyboard.diry = function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
+			keyboard.paused = function() { return pressed[80]; }
+			return keyboard;
+		}();
+		
+
+		var mouse = function() {
+			var x, y;
+					
+			document.onmousemove = function(e) {
+				var e1 = (!e) ? window.event : e;
+				if (e1.pageX || e1.pageY) {
+					x = e1.pageX;
+					y = e1.pageY;
+				} else if (e1.clientX || e1.clientY) {
+					x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+					y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+				}
+				log("onmousemove = " + x + ", " + y);
+			};
+			document.onmousedown = function(e) {
+			};
 		}();
 		
 		var ball = function() {
@@ -52,9 +62,9 @@
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
 			
-			ball.input = function(input) {
-				ballx += 2 * input.keydirx();
-				bally += 2 * input.keydiry();
+			ball.input = function(keyboard) {
+				ballx += 2 * keyboard.dirx();
+				bally += 2 * keyboard.diry();
 			};
 			
 			ball.move = function() {
@@ -86,50 +96,50 @@
 		}();
 		
 		var objects = [ball];
+
+		var controller = function() {					
+			var canvas0 = document.createElement("canvas"); // off-screen buffer
+			canvas0.width = width;
+			canvas0.height = height;
+			
+			var context = canvas.getContext("2d");
+			var context0 = canvas0.getContext("2d");
+			
+			repaint = function(context) {
+				context.fillStyle = "#777777";
+				context.fillRect(0, 0, width, height);
+				
+				context.fillStyle = "#000000";
+				context.font = "10px Helvetica";
+				context.fillText("Demo", 16, height - 16);
+				
+				for (var i = 0; i < objects.length; i++) {
+					object = objects[i];
+					object.draw(context);
+				}
+			};
+			
+			var controller = {};
+			
+			controller.tick = function() {
+				var paused = keyboard.paused();
+				
+				for (var i = 0; i < objects.length; i++) {
+					object = objects[i];
+					object.input(keyboard);
+					if (!paused) object.move();				
+				}
+				
+				repaint(context0);
+				context.drawImage(canvas0, 0, 0);
+				
+				setTimeout(controller.tick, 25);
+			};
+			
+			return controller;
+		}();
 		
-		var repaint = function(context) {
-			context.fillStyle = "#777777";
-			context.fillRect(0, 0, width, height);
-			
-			context.font = "30px Helvetica";
-			context.strokeText("Demo", 16, height - 16);
-			
-			for (var i = 0; i < objects.length; i++) {
-				object = objects[i];
-				object.draw(context);
-			}
-		};
-		
-		var tick = function() {
-			var paused = input.paused();
-			
-			for (var i = 0; i < objects.length; i++) {
-				object = objects[i];
-				object.input(input);
-				if (!paused) object.move();				
-			}
-			
-			repaint(context0);
-			context.drawImage(canvas0, 0, 0);
-			
-			setTimeout(tick, 25);
-		};
-		
-		document.onmousemove = function(e) {
-			var e1 = (!e) ? window.event : e;
-			if (e1.pageX || e1.pageY) {
-				x = e1.pageX;
-				y = e1.pageY;
-			} else if (e1.clientX || e1.clientY) {
-				x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-				y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-			}
-			log("onmousemove = " + x + ", " + y);
-		};
-		document.onmousedown = function(e) {
-		};
-		
-		tick();
+		controller.tick();
 	</script>
 	
 </html>
