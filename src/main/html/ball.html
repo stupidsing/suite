@@ -7,49 +7,57 @@
 			Your browser does not support HTML5 Canvas.
 		</canvas>
 		
-		<textarea id="log" rows="10" cols="132">
+		<textarea id="log" rows="5" cols="80">
 			== START ==
 		</textarea>
+	</body>
+	
+	<script type="text/javascript">
+		var log = function(m) {
+			var text = document.getElementById("log").value + m + "\n";
+			if (text.length > 256) text = text.substring(text.length - 256, text.length);
+			document.getElementById("log").value = text;
+			// alert(m);
+		};
 		
-		<script type="text/javascript">
-			var log = function(m) {
-				var text = document.getElementById("log").value + m + "\n";
-				if (text.length > 256) text = text.substring(text.length - 256, text.length);
-				document.getElementById("log").value = text;
-				// alert(m);
-			};
-			
-			var tokeycode = function(e) {
-				return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
-			};
-			
-			var canvas = document.getElementById("canvas");
-			var width = canvas.width, height = canvas.height;
+		var tokeycode = function(e) {
+			return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
+		};
+		
+		var canvas = document.getElementById("canvas");
+		var width = canvas.width, height = canvas.height;
 
-			var canvas0 = document.createElement("canvas"); // off-screen buffer
-			canvas0.width = width;
-			canvas0.height = height;
+		var canvas0 = document.createElement("canvas"); // off-screen buffer
+		canvas0.width = width;
+		canvas0.height = height;
+		
+		var context = canvas.getContext("2d");
+		var context0 = canvas0.getContext("2d");
+		
+		var input = function() {
+			var pressed = {};
+			document.onkeydown = function(e) { pressed[tokeycode(e)] = true; };
+			document.onkeyup = function(e) { pressed[tokeycode(e)] = false; };
+			// log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
 			
-			var context = canvas.getContext("2d");
-			var context0 = canvas0.getContext("2d");
-			
+			var input = {};
+			input.keydirx = function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
+			input.keydiry = function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
+			input.paused = function() { return pressed[80]; }
+			return input;
+		}();
+		
+		var ball = function() {
+			var ball = {};
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
 			
-			var pressed = {};
-			
-			var input = function() {
-				var dx = 0, dy = 0;
-				if (pressed[37]) dx = -1;
-				else if (pressed[38]) dy = -1;
-				else if (pressed[39]) dx = 1;
-				else if (pressed[40]) dy = 1;
-				
-				ballx += 2 * dx;
-				bally += 2 * dy;
+			ball.input = function(input) {
+				ballx += 2 * input.keydirx();
+				bally += 2 * input.keydiry();
 			};
 			
-			var move = function() {
+			ball.move = function() {
 				ballx += dx;
 				bally += dy;
 				
@@ -59,60 +67,69 @@
 				if (bally > height) { bally = height; dy = -2; }
 			};
 			
-			var repaint = function() {
+			ball.draw = function(context) {
 				var radius = 8;
 				
-				context0.fillStyle = "#777777";
-				context0.fillRect(0, 0, width, height);
+				context.fillStyle = "#000000";
+				context.moveTo(ballx - radius, bally);
+				context.lineTo(ballx + radius, bally);
+				context.moveTo(ballx, bally - radius);
+				context.lineTo(ballx, bally + radius);
+				context.stroke();
 				
-				context0.fillStyle = "#000000";
-				context0.moveTo(ballx - radius, bally);
-				context0.lineTo(ballx + radius, bally);
-				context0.moveTo(ballx, bally - radius);
-				context0.lineTo(ballx, bally + radius);
-				context0.stroke();
-				
-				context0.font = "30px Helvetica";
-				context0.strokeText("Demo", 16, height - 16);
-				
-				context0.beginPath();
-				context0.arc(ballx, bally, radius, 0, 2 * Math.PI);
-				context0.stroke();
-				
-				context.drawImage(canvas0, 0, 0);
+				context.beginPath();
+				context.arc(ballx, bally, radius, 0, 2 * Math.PI);
+				context.stroke();
 			};
 			
-			var tick = function() {
-				input();
-				if (!pressed[80]) move();				
-				repaint();
-				setTimeout(tick, 25);
-			};
+			return ball;
+		}();
+		
+		var objects = [ball];
+		
+		var repaint = function(context) {
+			context.fillStyle = "#777777";
+			context.fillRect(0, 0, width, height);
 			
-			document.onkeydown = function(e) {
-				log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
-				pressed[tokeycode(e)] = true;
-			};
-			document.onkeyup = function(e) {
-				pressed[tokeycode(e)] = false;
-			};
+			context.font = "30px Helvetica";
+			context.strokeText("Demo", 16, height - 16);
 			
-			document.onmousemove = function(e) {
-				var e1 = (!e) ? window.event : e;
-				if (e1.pageX || e1.pageY) {
-					x = e1.pageX;
-					y = e1.pageY;
-				} else if (e1.clientX || e1.clientY) {
-					x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-					y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-				}
-				log("onmousemove = " + x + ", " + y);
-			};
-			document.onmousedown = function(e) {
-			};
+			for (var i = 0; i < objects.length; i++ ) {
+				object = objects[i];
+				object.draw(context);
+			}
+		};
+		
+		var tick = function() {
+			var paused = input.paused();
 			
-			tick();
-		</script>
-	</body>
-
+			for (var i = 0; i < objects.length; i++ ) {
+				object = objects[i];
+				object.input(input);
+				if (!paused) object.move();				
+			}
+			
+			repaint(context0);
+			context.drawImage(canvas0, 0, 0);
+			
+			setTimeout(tick, 25);
+		};
+		
+		document.onmousemove = function(e) {
+			var e1 = (!e) ? window.event : e;
+			if (e1.pageX || e1.pageY) {
+				x = e1.pageX;
+				y = e1.pageY;
+			} else if (e1.clientX || e1.clientY) {
+				x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+				y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+			}
+			log("onmousemove = " + x + ", " + y);
+		};
+		document.onmousedown = function(e) {
+		};
+		
+		tick();
+	</script>
+	
 </html>
