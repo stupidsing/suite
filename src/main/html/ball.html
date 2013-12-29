@@ -60,19 +60,23 @@
 			};
 			
 			var repaint = function() {
+				var radius = 8;
+				
 				context0.fillStyle = "#777777";
 				context0.fillRect(0, 0, width, height);
 				
 				context0.fillStyle = "#000000";
-				context0.moveTo(0, 0);
-				context0.lineTo(width, height);
+				context0.moveTo(ballx - radius, bally);
+				context0.lineTo(ballx + radius, bally);
+				context0.moveTo(ballx, bally - radius);
+				context0.lineTo(ballx, bally + radius);
 				context0.stroke();
 				
 				context0.font = "30px Helvetica";
 				context0.strokeText("Demo", 16, height - 16);
 				
 				context0.beginPath();
-				context0.arc(ballx, bally, 8, 0, 2 * Math.PI);
+				context0.arc(ballx, bally, radius, 0, 2 * Math.PI);
 				context0.stroke();
 				
 				context.drawImage(canvas0, 0, 0);
@@ -80,13 +84,13 @@
 			
 			var tick = function() {
 				input();
-				move();				
+				if (!pressed[80]) move();				
 				repaint();
 				setTimeout(tick, 25);
 			};
 			
 			document.onkeydown = function(e) {
-				log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(e));
+				log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
 				pressed[tokeycode(e)] = true;
 			};
 			document.onkeyup = function(e) {
