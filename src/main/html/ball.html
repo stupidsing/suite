@@ -94,7 +94,7 @@
 			context.font = "30px Helvetica";
 			context.strokeText("Demo", 16, height - 16);
 			
-			for (var i = 0; i < objects.length; i++ ) {
+			for (var i = 0; i < objects.length; i++) {
 				object = objects[i];
 				object.draw(context);
 			}
@@ -103,7 +103,7 @@
 		var tick = function() {
 			var paused = input.paused();
 			
-			for (var i = 0; i < objects.length; i++ ) {
+			for (var i = 0; i < objects.length; i++) {
 				object = objects[i];
 				object.input(input);
 				if (!paused) object.move();				
