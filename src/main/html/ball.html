@@ -86,14 +86,11 @@
 			};
 			
 			document.onkeydown = function(e) {
-				var keycode = tokeycode(e);
-				log("onkeydown = " + keycode + "/" + String.fromCharCode(e));
-				pressed[keycode] = true;
+				log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(e));
+				pressed[tokeycode(e)] = true;
 			};
 			document.onkeyup = function(e) {
-				var keycode = tokeycode(e);
-				log("onkeyup = " + keycode + "/" + String.fromCharCode(e));
-				pressed[keycode] = false;
+				pressed[tokeycode(e)] = false;
 			};
 			
 			document.onmousemove = function(e) {
