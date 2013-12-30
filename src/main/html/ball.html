@@ -29,6 +29,7 @@
 			var pressed = {};
 			document.onkeydown = function(e) { pressed[tokeycode(e)] = true; };
 			document.onkeyup = function(e) { pressed[tokeycode(e)] = false; };
+			
 			// log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
 			
 			var keyboard = {};
@@ -38,10 +39,10 @@
 			return keyboard;
 		}();
 		
-
 		var mouse = function() {
 			var x, y;
-					
+			var down;
+			
 			document.onmousemove = function(e) {
 				var e1 = (!e) ? window.event : e;
 				if (e1.pageX || e1.pageY) {
@@ -53,8 +54,8 @@
 				}
 				log("onmousemove = " + x + ", " + y);
 			};
-			document.onmousedown = function(e) {
-			};
+			document.onmousedown = function(e) { down = true; };
+			document.onmouseup = function(e) { up = true; };
 		}();
 		
 		var ball = function() {
