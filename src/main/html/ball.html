@@ -123,12 +123,11 @@
 					var objects = [ball];
 					
 					if (!keyboard.paused()) {
-						map(function(object) {
+						objects = filter(function(object) {
 							object.input(keyboard);
 							object.move();
+							return object.alive();
 						}, objects);
-						
-						objects = filter(function(object) { return object.alive(); }, objects);
 						
 						repaint(context0, objects);
 						context.drawImage(canvas0, 0, 0);
