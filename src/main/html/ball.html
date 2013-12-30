@@ -21,9 +21,8 @@
 		};
 		
 		var canvas = document.getElementById("canvas");
-		var width = canvas.width, height = canvas.height;
 
-		var keyboard = function() {
+		var keyboard = function(document) {
 			var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };		
 			
 			var pressed = {};
@@ -37,9 +36,9 @@
 				, diry: function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
 				, paused: function() { return pressed[80]; }
 			};
-		}();
+		}(document);
 		
-		var mouse = function() {
+		var mouse = function(document) {
 			var x, y;
 			var down;
 			
@@ -56,9 +55,9 @@
 			};
 			document.onmousedown = function(e) { down = true; };
 			document.onmouseup = function(e) { up = true; };
-		}();
+		}(document);
 		
-		var ball = function() {
+		var ball = function(width, height) {
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
 			
@@ -92,11 +91,13 @@
 					context.stroke();
 				}
 			};
-		}();
+		}(canvas.width, canvas.height);
 		
 		var objects = [ball];
 		
-		var controller = function() {					
+		var controller = function(canvas, keyboard, mouse) {					
+			var width = canvas.width, height = canvas.height;
+			
 			var canvas0 = document.createElement("canvas"); // off-screen buffer
 			canvas0.width = width;
 			canvas0.height = height;
@@ -112,10 +113,8 @@
 				context.font = "10px Helvetica";
 				context.fillText("Demo", 16, height - 16);
 				
-				for (var i = 0; i < objects.length; i++) {
-					object = objects[i];
-					object.draw(context);
-				}
+				for (var i = 0; i < objects.length; i++)
+					objects[i].draw(context);
 			};
 			
 			return {
@@ -134,13 +133,16 @@
 						repaint(context0, objects);
 						context.drawImage(canvas0, 0, 0);
 					}
-					
-					setTimeout(controller.tick, 25);
 				}
 			};
-		}();
+		}(canvas, keyboard, mouse);
 		
-		controller.tick();
+		var tick = function() {
+			controller.tick();
+			setTimeout(tick, 25);
+		};
+		
+		tick();
 	</script>
 	
 </html>
