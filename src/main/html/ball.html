@@ -59,7 +59,6 @@
 		}();
 		
 		var ball = function() {
-			var ball = {};
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
 			
@@ -76,6 +75,7 @@
 					if (bally < 0) { bally = 0; dy = 2; }
 					if (ballx > width) { ballx = width; dx = -2; }
 					if (bally > height) { bally = height; dy = -2; }
+					return this;
 				}
 				, draw: function(context) {
 					var radius = 8;
@@ -95,7 +95,7 @@
 		}();
 		
 		var objects = [ball];
-
+		
 		var controller = function() {					
 			var canvas0 = document.createElement("canvas"); // off-screen buffer
 			canvas0.width = width;
@@ -104,7 +104,7 @@
 			var context = canvas.getContext("2d");
 			var context0 = canvas0.getContext("2d");
 			
-			repaint = function(context) {
+			repaint = function(context, objects) {
 				context.fillStyle = "#777777";
 				context.fillRect(0, 0, width, height);
 				
@@ -120,16 +120,20 @@
 			
 			return {
 				tick: function() {
-					var paused = keyboard.paused();
-					
-					for (var i = 0; i < objects.length; i++) {
-						object = objects[i];
-						object.input(keyboard);
-						if (!paused) object.move();				
+					if (!keyboard.paused()) {
+						var objects1 = [];
+						
+						for (var i = 0; i < objects.length; i++) {
+							object = objects[i];
+							object.input(keyboard);
+							objects1.push(object.move());				
+						}
+						
+						objects = objects1;
+						
+						repaint(context0, objects);
+						context.drawImage(canvas0, 0, 0);
 					}
-					
-					repaint(context0);
-					context.drawImage(canvas0, 0, 0);
 					
 					setTimeout(controller.tick, 25);
 				}
