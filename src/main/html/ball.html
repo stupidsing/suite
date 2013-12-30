@@ -144,8 +144,7 @@
 				context.font = "10px Helvetica";
 				context.fillText("Demo", 16, height - 16);
 				
-				for (var i = 0; i < objects.length; i++)
-					objects[i].draw(context);
+				map(function(object) { object.draw(context); }, objects);
 			};
 			
 			return {
@@ -153,11 +152,10 @@
 					var objects = [ball];
 					
 					if (!keyboard.paused()) {
-						for (var i = 0; i < objects.length; i++) {
-							object = objects[i];
+						map(function(object) {
 							object.input(keyboard);
-							object.move();				
-						}
+							object.move();
+						}, objects);
 						
 						objects = filter(function(object) { return object.alive(); }, objects);
 						
