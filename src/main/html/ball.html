@@ -38,6 +38,12 @@
 			return outs;
 		};
 		
+ 		var fold = function(fun, value, ins) {
+			for (var i = 0; i < ins.length; i++)
+				value = fun(value, ins[i]);
+			return value;
+		};
+		
 		var log = function(m) {
 			var text = document.getElementById("log").value + m + "\n";
 			if (text.length > 256) text = text.substring(text.length - 256, text.length);
