@@ -32,11 +32,11 @@
 			
 			// log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
 			
-			var keyboard = {};
-			keyboard.dirx = function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
-			keyboard.diry = function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
-			keyboard.paused = function() { return pressed[80]; }
-			return keyboard;
+			return {
+				dirx: function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
+				, diry: function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
+				, paused: function() { return pressed[80]; }
+			};
 		}();
 		
 		var mouse = function() {
@@ -63,37 +63,35 @@
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
 			
-			ball.input = function(keyboard) {
-				ballx += 2 * keyboard.dirx();
-				bally += 2 * keyboard.diry();
+			return {
+				input: function(keyboard) {
+					ballx += 2 * keyboard.dirx();
+					bally += 2 * keyboard.diry();
+				}				
+				, move: function() {
+					ballx += dx;
+					bally += dy;
+					
+					if (ballx < 0) { ballx = 0; dx = 2; }
+					if (bally < 0) { bally = 0; dy = 2; }
+					if (ballx > width) { ballx = width; dx = -2; }
+					if (bally > height) { bally = height; dy = -2; }
+				}
+				, draw: function(context) {
+					var radius = 8;
+					
+					context.fillStyle = "#000000";
+					context.moveTo(ballx - radius, bally);
+					context.lineTo(ballx + radius, bally);
+					context.moveTo(ballx, bally - radius);
+					context.lineTo(ballx, bally + radius);
+					context.stroke();
+					
+					context.beginPath();
+					context.arc(ballx, bally, radius, 0, 2 * Math.PI);
+					context.stroke();
+				}
 			};
-			
-			ball.move = function() {
-				ballx += dx;
-				bally += dy;
-				
-				if (ballx < 0) { ballx = 0; dx = 2; }
-				if (bally < 0) { bally = 0; dy = 2; }
-				if (ballx > width) { ballx = width; dx = -2; }
-				if (bally > height) { bally = height; dy = -2; }
-			};
-			
-			ball.draw = function(context) {
-				var radius = 8;
-				
-				context.fillStyle = "#000000";
-				context.moveTo(ballx - radius, bally);
-				context.lineTo(ballx + radius, bally);
-				context.moveTo(ballx, bally - radius);
-				context.lineTo(ballx, bally + radius);
-				context.stroke();
-				
-				context.beginPath();
-				context.arc(ballx, bally, radius, 0, 2 * Math.PI);
-				context.stroke();
-			};
-			
-			return ball;
 		}();
 		
 		var objects = [ball];
@@ -120,24 +118,22 @@
 				}
 			};
 			
-			var controller = {};
-			
-			controller.tick = function() {
-				var paused = keyboard.paused();
-				
-				for (var i = 0; i < objects.length; i++) {
-					object = objects[i];
-					object.input(keyboard);
-					if (!paused) object.move();				
+			return {
+				tick: function() {
+					var paused = keyboard.paused();
+					
+					for (var i = 0; i < objects.length; i++) {
+						object = objects[i];
+						object.input(keyboard);
+						if (!paused) object.move();				
+					}
+					
+					repaint(context0);
+					context.drawImage(canvas0, 0, 0);
+					
+					setTimeout(controller.tick, 25);
 				}
-				
-				repaint(context0);
-				context.drawImage(canvas0, 0, 0);
-				
-				setTimeout(controller.tick, 25);
 			};
-			
-			return controller;
 		}();
 		
 		controller.tick();
