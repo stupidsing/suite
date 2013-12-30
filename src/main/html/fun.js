@@ -16,7 +16,7 @@ var filter = function(fun, ins) {
 var concat = function(ins) {
 	var out = [];
 	for (var i = 0; i < ins.length; i++) {
-		child = ins[i];
+		var child = ins[i];
 		for (var j = 0; j < child.length; j++)
 			outs.push(child[j]);
 	}
