@@ -1,3 +1,5 @@
+"use strict";
+
 var map = function(fun, ins) {
 	var outs = [];
 	for (var i = 0; i < ins.length; i++) outs.push(fun(ins[i]));
@@ -7,7 +9,7 @@ var map = function(fun, ins) {
 var filter = function(fun, ins) {
 	var outs = [];
 	for (var i = 0; i < ins.length; i++) {
-		object = ins[i];
+		var object = ins[i];
 		if (fun(object)) outs.push(object);
 	}
 	return outs;

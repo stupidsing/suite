@@ -4,7 +4,7 @@
 	<body>
 		<canvas id="canvas" width="800" height="600" style="z-index:1; border:1px solid #000000">
 			<!-- style="position:fixed; left:10px; top:10px;" -->
-			Your browser does not support HTML5 Canvas.
+			Your browser does not support HTML5 canvas.
 		</canvas>
 		
 		<textarea id="log" rows="5" cols="80">
@@ -15,6 +15,8 @@
 	<script src="fun.js"></script>
 	
 	<script type="text/javascript">
+		"use strict";
+		
 		var log = function(m) {
 			var text = document.getElementById("log").value + m + "\n";
 			if (text.length > 256) text = text.substring(text.length - 256, text.length);
@@ -23,7 +25,7 @@
 		};
 		
 		var canvas = document.getElementById("canvas");
-
+		
 		var keyboard = function(document) {
 			var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };		
 			
@@ -97,7 +99,7 @@
 			};
 		}(canvas.width, canvas.height);
 		
-		var controller = function(canvas, keyboard, mouse) {					
+		var controller = function(canvas, keyboard, mouse, objects) {					
 			var width = canvas.width, height = canvas.height;
 			
 			var canvas0 = document.createElement("canvas"); // off-screen buffer
@@ -107,7 +109,7 @@
 			var context = canvas.getContext("2d");
 			var context0 = canvas0.getContext("2d");
 			
-			repaint = function(context, objects) {
+			var repaint = function(context, objects) {
 				context.fillStyle = "#777777";
 				context.fillRect(0, 0, width, height);
 				
@@ -120,8 +122,6 @@
 			
 			return {
 				tick: function() {
-					var objects = [ball];
-					
 					if (!keyboard.paused()) {
 						objects = filter(function(object) {
 							object.input(keyboard);
@@ -134,7 +134,7 @@
 					}
 				}
 			};
-		}(canvas, keyboard, mouse);
+		}(canvas, keyboard, mouse, [ball]);
 		
 		var tick = function() {
 			controller.tick();
