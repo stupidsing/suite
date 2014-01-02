@@ -6,7 +6,6 @@ function sendKeys(keys) {
 	var i = 0, j = 0;
 	
 	while ((i = j) < keys.length) {
-		var first = keys.charAt(i);
 		j = i;
 		
 		do {
