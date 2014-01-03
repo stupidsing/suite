@@ -6,33 +6,33 @@
 			<!-- style="position:fixed; left:10px; top:10px;" -->
 			Your browser does not support HTML5 canvas.
 		</canvas>
-		
+
 		<textarea id="log" rows="5" cols="80">
 			== START ==
 		</textarea>
 	</body>
-	
+
 	<script src="fun.js"></script>
 	<script src="controller.js"></script>
-	
+
 	<script type="text/javascript">
 		"use strict";
-		
+
 		var canvas = document.getElementById("canvas");
-		
+
 		var ball = function(width, height) {
 			var ballx = width / 2, bally = height / 2;
 			var dx = 2, dy = 2;
-			
+
 			return {
 				input: function(keyboard, mouse) {
 					ballx += 2 * keyboard.dirx();
 					bally += 2 * keyboard.diry();
-				}				
+				}
 				, move: function() {
 					ballx += dx;
 					bally += dy;
-					
+
 					if (ballx < 0) { ballx = 0; dx = 2; }
 					if (bally < 0) { bally = 0; dy = 2; }
 					if (ballx > width) { ballx = width; dx = -2; }
@@ -43,22 +43,22 @@
 				}
 				, draw: function(context) {
 					var radius = 8;
-					
+
 					context.beginPath();
 					context.arc(ballx, bally, radius, 0, 2 * Math.PI);
 					context.stroke();
 				}
 			};
 		}(canvas.width, canvas.height);
-		
+
 		var control = controller(canvas, keyboard(document), mouse(document), [ball]);
-		
+
 		var tick = function() {
 			control.tick();
 			setTimeout(tick, 25);
 		};
-		
+
 		tick();
 	</script>
-	
+
 </html>

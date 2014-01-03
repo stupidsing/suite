@@ -8,14 +8,14 @@ var log = function(m) {
 };
 
 var keyboard = function(document) {
-	var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };		
-	
+	var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };
+
 	var pressed = {};
 	document.onkeydown = function(e) { pressed[tokeycode(e)] = true; };
 	document.onkeyup = function(e) { pressed[tokeycode(e)] = false; };
-	
+
 	// log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
-	
+
 	return {
 		dirx: function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
 		, diry: function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
@@ -27,7 +27,7 @@ var keyboard = function(document) {
 var mouse = function(document) {
 	var x, y;
 	var down;
-	
+
 	document.onmousemove = function(e) {
 		var e1 = (!e) ? window.event : e;
 		if (e1.pageX || e1.pageY) {
@@ -43,27 +43,27 @@ var mouse = function(document) {
 	document.onmouseup = function(e) { up = true; };
 };
 
-var controller = function(canvas, keyboard, mouse, objects) {					
+var controller = function(canvas, keyboard, mouse, objects) {
 	var width = canvas.width, height = canvas.height;
-	
+
 	var canvas0 = document.createElement("canvas"); // off-screen buffer
 	canvas0.width = width;
 	canvas0.height = height;
-	
+
 	var context = canvas.getContext("2d");
 	var context0 = canvas0.getContext("2d");
-	
+
 	var repaint = function(context, objects) {
 		context.fillStyle = "#777777";
 		context.fillRect(0, 0, width, height);
-		
+
 		context.fillStyle = "#000000";
 		context.font = "10px Helvetica";
 		context.fillText("Demo", 16, height - 16);
-		
+
 		map(function(object) { object.draw(context); }, objects);
 	};
-	
+
 	return {
 		tick: function() {
 			if (!keyboard.paused()) {
@@ -72,7 +72,7 @@ var controller = function(canvas, keyboard, mouse, objects) {
 					object.move();
 					return object.spawn();
 				}, objects));
-				
+
 				repaint(context0, objects);
 				context.drawImage(canvas0, 0, 0);
 			}
