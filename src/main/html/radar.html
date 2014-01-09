@@ -1,0 +1,126 @@
+<meta charset="utf-8">
+<html>
+
+	<body>
+		<canvas id="canvas" width="800" height="600" style="z-index:1; border:1px solid #000000">
+			<!-- style="position:fixed; left:10px; top:10px;" -->
+			Your browser does not support HTML5 canvas.
+		</canvas>
+		
+		<textarea id="log" rows="5" cols="80">
+			== START ==
+		</textarea>
+	</body>
+	
+	<script src="fun.js"></script>
+	<script src="controller.js"></script>
+	
+	<script type="text/javascript">
+		"use strict";
+		
+		var canvas = document.getElementById("canvas");
+		var width = canvas.width, height = canvas.height;
+		var centrex = width / 2, centrey = height / 2;
+		var radius = 250;
+		
+		var background = {
+			input: function(keyboard, mouse) {}
+			, move: function() {}
+			, spawn: function() { return [this]; }
+			, draw: function(context) {
+				context.beginPath();
+				context.arc(centrex, centrey, radius, 0, 2 * Math.PI);
+				context.stroke();
+			}
+		};
+		
+		var gun = function() {
+			var angle = 0;
+			var state = 0, fire0, fire1;
+			
+			return {
+				input: function(keyboard, mouse) {
+					if (keyboard.pressed[32]) { state = 1; fire0 = fire1 = 0; }
+				}
+				, move: function() {
+					if (state == 0) angle += .1;
+					else if (state == 1)
+						state = (fire1 += .05) < 1 ? state : 2;
+					else if (state == 2)
+						state = (fire0 += .05) < 1 ? state : 0;
+				}
+				, spawn: function() {
+					return [this];
+				}
+				, draw: function(context) {
+					context.beginPath();
+					context.moveTo(centrex, centrey);
+					context.lineTo(centrex + 16 * Math.cos(angle), centrey + 16 * Math.sin(angle));
+					context.stroke();
+					
+					if (state != 0) {
+						context.strokeStyle = "#CCCC00";
+						context.beginPath();
+						context.arc(centrex, centrey, radius * fire0, angle - .5, angle + .5);
+						context.stroke();
+						context.beginPath();
+						context.arc(centrex, centrey, radius * fire1, angle - .5, angle + .5);
+						context.stroke();
+						/*
+						context.beginPath();
+						context.arc(centrex, centrey, radius * fire0, angle - .5, angle + .5);
+						context.arc(centrex, centrey, radius * fire1, angle - .5, angle + .5);
+						context.strokeStyle = "#CCCC00";
+						context.fillStyle = "#CCCC00";
+						context.fill();
+						*/
+					}
+				}
+			};
+		}();
+		
+		var enemy0 = function() {
+			var angle = 2 * Math.PI * Math.random();
+			var x = centrex + radius * Math.sin(angle);
+			var y = centrey + radius * Math.cos(angle);
+			
+			return {
+				input: function(keyboard, mouse) {
+				}
+				, move: function() {
+					if (Math.random() > .5) {
+						x += Math.floor(Math.random() * 9) - 4;
+						y += Math.floor(Math.random() * 9) - 4;
+					} else {
+						x += x < centrex ? 1 : -1;
+						y += y < centrey ? 1 : -1;
+					}
+				}
+				, spawn: function() {
+					return [this];
+				}
+				, draw: function(context) {
+					context.fillStyle = "#000000";
+					context.moveTo(x - 8, y - 8);
+					context.lineTo(x + 8, y + 8);
+					context.moveTo(x - 8, y + 8);
+					context.lineTo(x + 8, y - 8);
+					context.stroke();
+				}
+			};
+		};
+		
+		var objects = [background, gun];
+		for (var i = 0; i < 10; i++) objects.push(enemy0());
+		
+		var control = controller(canvas, keyboard(document), mouse(document), objects);
+		
+		var tick = function() {
+			control.tick();
+			setTimeout(tick, 25);
+		};
+		
+		tick();
+	</script>
+	
+</html>
