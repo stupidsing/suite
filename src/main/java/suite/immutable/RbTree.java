@@ -6,6 +6,12 @@ import java.util.Deque;
 
 import suite.util.FunUtil.Source;
 
+/**
+ * Immutable Red-Black tree implementation. However, node deletion is not
+ * implemented.
+ * 
+ * @author ywsing
+ */
 public class RbTree<T> implements ImmutableTree<T> {
 
 	private Node root;
