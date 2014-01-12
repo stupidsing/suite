@@ -3,6 +3,7 @@ package suite;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
@@ -43,8 +44,11 @@ public class EvaluateUtil {
 
 	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = new CacheUtil().proxy(new Fun<Pair<ProverConfig, Node>, Finder>() {
 		public Finder apply(Pair<ProverConfig, Node> pair) {
-			Builder builder = CompiledProverBuilder.level1(pair.t0, false);
-			return builder.build(Suite.funCompilerRuleSet(), pair.t1);
+			Builder builder0 = new InterpretedProverBuilder(pair.t0);
+			Builder builder1 = CompiledProverBuilder.level1(pair.t0, false);
+			Arrays.asList(builder0, builder1);
+
+			return builder1.build(Suite.funCompilerRuleSet(), pair.t1);
 		}
 	});
 
