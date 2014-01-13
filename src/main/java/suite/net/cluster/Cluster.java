@@ -57,7 +57,7 @@ public class Cluster {
 		private ClusterChannel(String peer) {
 			super(nio, matcher, executor, peers.get(peer), new Fun<Bytes, Bytes>() {
 				public Bytes apply(Bytes request) {
-					return Cluster.this.respondToRequest(request);
+					return respondToRequest(request);
 				}
 			});
 		}

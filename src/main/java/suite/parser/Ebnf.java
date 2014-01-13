@@ -388,7 +388,7 @@ public class Ebnf {
 		}
 
 		private Source<State> parseToken(State state, TokenGrammar grammar) {
-			return parseExpect(state, expectString(state.pos, (grammar).token));
+			return parseExpect(state, expectString(state.pos, grammar.token));
 		}
 
 		private Source<State> parseCharRange(int pos, State state, CharRangeGrammar grammar) {
