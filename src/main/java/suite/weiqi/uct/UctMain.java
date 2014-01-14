@@ -11,7 +11,7 @@ import suite.weiqi.Board;
 import suite.weiqi.Coordinate;
 import suite.weiqi.GameSet;
 import suite.weiqi.MovingGameSet;
-import suite.weiqi.RandomableList;
+import suite.weiqi.ShuffleUtil;
 import suite.weiqi.UctWeiqi;
 import suite.weiqi.UserInterface;
 import suite.weiqi.Weiqi;
@@ -131,7 +131,7 @@ public class UctMain<Move> {
 	protected static void deepThink() {
 		int seed = 760903274;
 		System.out.println("RANDOM SEED = " + seed);
-		RandomableList.setSeed(seed);
+		ShuffleUtil.setSeed(seed);
 
 		GameSet gameSet = new GameSet(new Board(), startingPlayer);
 

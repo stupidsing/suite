@@ -109,7 +109,7 @@ public class UctTest {
 	public void testUctFirstMove() {
 		int seed = 760903274;
 		System.out.println("RANDOM SEED = " + seed);
-		RandomableList.setSeed(seed);
+		ShuffleUtil.setSeed(seed);
 
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 
@@ -137,7 +137,7 @@ public class UctTest {
 		int seed = new Random().nextInt();
 
 		System.out.println("RANDOM SEED = " + seed);
-		RandomableList.setSeed(seed);
+		ShuffleUtil.setSeed(seed);
 
 		Board board = new Board();
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);

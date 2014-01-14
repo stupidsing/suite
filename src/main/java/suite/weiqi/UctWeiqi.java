@@ -1,10 +1,12 @@
 package suite.weiqi;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import suite.util.Util;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.GameSet.Move;
 import suite.weiqi.Weiqi.Occupation;
@@ -34,8 +36,8 @@ public class UctWeiqi {
 		@Override
 		public List<Coordinate> elaborateMoves() {
 			Move move = new Move();
-			RandomableList<Coordinate> captureMoves = new RandomableList<>();
-			RandomableList<Coordinate> otherMoves = new RandomableList<>();
+			List<Coordinate> captureMoves = new ArrayList<>();
+			List<Coordinate> otherMoves = new ArrayList<>();
 
 			for (Coordinate c : Coordinate.all())
 				if (board.get(c) == Occupation.EMPTY) {
@@ -43,9 +45,9 @@ public class UctWeiqi {
 
 					if (gameSet.isValidMove(move))
 						if (move.type == MoveType.CAPTURE)
-							captureMoves.addByRandomSwap(c);
+							ShuffleUtil.add(captureMoves, c);
 						else
-							otherMoves.addByRandomSwap(c);
+							ShuffleUtil.add(otherMoves, c);
 				}
 
 			// Make capture moves at the head;
@@ -68,7 +70,7 @@ public class UctWeiqi {
 		 */
 		@Override
 		public boolean evaluateRandomOutcome() {
-			RandomableList<Coordinate> empties = findAllEmptyPositions();
+			List<Coordinate> empties = findAllEmptyPositions();
 			Set<Coordinate> capturedPositions = new HashSet<>();
 			Occupation me = gameSet.getNextPlayer();
 			Move move, chosenMove;
@@ -106,7 +108,7 @@ public class UctWeiqi {
 						}
 
 						for (Coordinate c2 : capturedPositions)
-							empties.addByRandomSwap(c2);
+							ShuffleUtil.add(empties, c2);
 					}
 
 					nPasses = 0;
@@ -124,7 +126,7 @@ public class UctWeiqi {
 		 */
 		public boolean evaluateRandomOutcome0() {
 			Occupation me = gameSet.getNextPlayer();
-			RandomableList<Coordinate> empties = findAllEmptyPositions();
+			List<Coordinate> empties = findAllEmptyPositions();
 			Coordinate pos;
 			Move move = null;
 
@@ -135,9 +137,9 @@ public class UctWeiqi {
 
 				// Try a random empty position, if that position does not work,
 				// calls the heavier possible move method
-				if ((pos = empties.last()) != null)
+				if ((pos = Util.last(empties)) != null)
 					if (gameSet.playIfValid(move = new Move(pos)))
-						empties.removeLast();
+						empties.remove(empties.size() - 1);
 					else
 						move = null;
 
@@ -150,7 +152,7 @@ public class UctWeiqi {
 					for (Coordinate c1 : move.position.neighbors())
 						if (move.neighborColors[j++] != board.get(c1))
 							for (Coordinate c2 : board.findGroup(c1))
-								empties.addByRandomSwap(c2);
+								ShuffleUtil.add(empties, c2);
 				} else
 					break; // No moves can be played, current player lost
 			}
@@ -174,12 +176,12 @@ public class UctWeiqi {
 			return null;
 		}
 
-		private RandomableList<Coordinate> findAllEmptyPositions() {
-			RandomableList<Coordinate> moves = new RandomableList<>();
+		private List<Coordinate> findAllEmptyPositions() {
+			List<Coordinate> moves = new ArrayList<>();
 
 			for (Coordinate c : Coordinate.all())
 				if (board.get(c) == Occupation.EMPTY)
-					moves.addByRandomSwap(c);
+					ShuffleUtil.add(moves, c);
 
 			return moves;
 		}

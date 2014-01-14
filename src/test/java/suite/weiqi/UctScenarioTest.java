@@ -17,7 +17,7 @@ public class UctScenarioTest {
 
 	@Test
 	public void testEat() {
-		RandomableList.setSeed(-3089117486356251879l);
+		ShuffleUtil.setSeed(-3089117486356251879l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
 				+ ". . X X O . . \n" //
@@ -32,7 +32,7 @@ public class UctScenarioTest {
 
 	@Test
 	public void testCapture() {
-		RandomableList.setSeed(-8163001483001583703l);
+		ShuffleUtil.setSeed(-8163001483001583703l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
 				+ ". . . X O . . \n" //
@@ -47,7 +47,7 @@ public class UctScenarioTest {
 
 	@Test
 	public void testLiveAndDeath() {
-		RandomableList.setSeed(-1900234906508089780l);
+		ShuffleUtil.setSeed(-1900234906508089780l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ "X X X X X X X \n" //
 				+ "X . . X X . X \n" //
@@ -62,7 +62,7 @@ public class UctScenarioTest {
 
 	@Test
 	public void testLiveAndDeath1() {
-		RandomableList.setSeed(1594738892904866155l);
+		ShuffleUtil.setSeed(1594738892904866155l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . X O O O . \n" //
 				+ ". . X O X O . \n" //
@@ -77,7 +77,7 @@ public class UctScenarioTest {
 
 	@Test
 	public void testLiveAndDeath2() {
-		RandomableList.setSeed(2683853477210701753l);
+		ShuffleUtil.setSeed(2683853477210701753l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". O . O X . . \n" //
 				+ "O . . O X . . \n" //
