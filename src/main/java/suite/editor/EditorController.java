@@ -27,23 +27,6 @@ public class EditorController {
 		view.repaint();
 	}
 
-	public void left(EditorView view) {
-		JComponent left = view.getLeftToolbar();
-		left.setVisible(!left.isVisible());
-		view.getLeftTextField().requestFocus();
-		view.repaint();
-	}
-
-	public void quit(EditorView view) {
-		System.exit(0);
-	}
-
-	public void right(EditorView view) {
-		JComponent right = view.getRightToolbar();
-		right.setVisible(!right.isVisible());
-		view.repaint();
-	}
-
 	public void evaluate(EditorView view) {
 		run(view, new Fun<String, String>() {
 			public String apply(String text) {
@@ -76,6 +59,27 @@ public class EditorController {
 				return result;
 			}
 		});
+	}
+
+	public void left(EditorView view) {
+		JComponent left = view.getLeftToolbar();
+		left.setVisible(!left.isVisible());
+		view.getLeftTextField().requestFocus();
+		view.repaint();
+	}
+
+	public void quit(EditorView view) {
+		System.exit(0);
+	}
+
+	public void right(EditorView view) {
+		JComponent right = view.getRightToolbar();
+		right.setVisible(!right.isVisible());
+		view.repaint();
+	}
+
+	public void searchFor(EditorView view) {
+		view.getLeftTextField().requestFocus();
 	}
 
 	public void searchFiles(EditorView view) {

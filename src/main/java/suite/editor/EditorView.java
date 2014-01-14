@@ -151,6 +151,14 @@ public class EditorView {
 		JMenuItem saveMenuItem = applyDefaults(new JMenuItem("Save", KeyEvent.VK_S));
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 
+		JMenuItem searchMenuItem = applyDefaults(new JMenuItem("Search"));
+		searchMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		searchMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.searchFor(view);
+			}
+		});
+
 		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Exit", KeyEvent.VK_X));
 		exitMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -204,10 +212,17 @@ public class EditorView {
 			}
 		});
 
-		JMenu fileMenu = createMenu("File", KeyEvent.VK_F, openMenuItem, saveMenuItem, exitMenuItem);
-		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E);
-		JMenu viewMenu = createMenu("View", KeyEvent.VK_V, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
-		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P, evalMenuItem, evalTypeMenuItem);
+		JMenu fileMenu = createMenu("File", KeyEvent.VK_F //
+				, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
+
+		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
+		);
+
+		JMenu viewMenu = createMenu("View", KeyEvent.VK_V //
+				, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
+
+		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P //
+				, evalMenuItem, evalTypeMenuItem);
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
