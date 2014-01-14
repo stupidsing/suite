@@ -1,11 +1,12 @@
 package suite.weiqi;
 
 import java.util.List;
-import java.util.Random;
+
+import suite.math.XorShiftRandom;
 
 public class ShuffleUtil {
 
-	private static final Random random = new Random();
+	private static final XorShiftRandom random = new XorShiftRandom();
 
 	public static void setSeed(long seed) {
 		random.setSeed(seed);
@@ -15,7 +16,7 @@ public class ShuffleUtil {
 		int size = list.size();
 
 		if (size > 0) {
-			int position = random.nextInt(size);
+			int position = Math.abs((int) random.nextLong()) % size;
 			list.add(list.get(position));
 			list.set(position, t);
 		} else
