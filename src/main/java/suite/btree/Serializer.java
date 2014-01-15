@@ -8,7 +8,7 @@ import suite.util.FileUtil;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the
- * same accessor should always put in the same number of bytes.
+ * same serializer should always put in the same number of bytes.
  */
 public interface Serializer<V> {
 
@@ -37,16 +37,16 @@ public interface Serializer<V> {
 
 	public static class B_TreePageSerializer<Key, Value> implements Serializer<B_Tree<Key, Value>.Page> {
 		private B_Tree<Key, Value> b_tree;
-		private Serializer<Key> keyAccessor;
-		private Serializer<Value> valueAccessor;
+		private Serializer<Key> keySerializer;
+		private Serializer<Value> valueSerializer;
 
 		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
 
 		public B_TreePageSerializer(B_Tree<Key, Value> b_tree, Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
 			this.b_tree = b_tree;
-			this.keyAccessor = keySerializer;
-			this.valueAccessor = valueSerializer;
+			this.keySerializer = keySerializer;
+			this.valueSerializer = valueSerializer;
 		}
 
 		public B_Tree<Key, Value>.Page read(ByteBuffer buffer) {
@@ -57,13 +57,13 @@ public interface Serializer<V> {
 
 			for (int i = 0; i < size; i++) {
 				char nodeType = buffer.getChar();
-				Key key = keyAccessor.read(buffer);
+				Key key = keySerializer.read(buffer);
 
 				if (nodeType == BRANCH) {
 					int branch = buffer.getInt();
 					addBranch(page, key, branch);
 				} else if (nodeType == LEAF) {
-					Value value = valueAccessor.read(buffer);
+					Value value = valueSerializer.read(buffer);
 					addLeaf(page, key, value);
 				}
 			}
@@ -78,12 +78,12 @@ public interface Serializer<V> {
 			for (B_Tree<Key, Value>.KeyPointer kp : page)
 				if (kp.pointer instanceof B_Tree.Branch) {
 					buffer.putChar(BRANCH);
-					keyAccessor.write(buffer, kp.key);
+					keySerializer.write(buffer, kp.key);
 					buffer.putInt(kp.getBranchPageNo());
 				} else if (kp.pointer instanceof B_Tree.Leaf) {
 					buffer.putChar(LEAF);
-					keyAccessor.write(buffer, kp.key);
-					valueAccessor.write(buffer, kp.getLeafValue());
+					keySerializer.write(buffer, kp.key);
+					valueSerializer.write(buffer, kp.getLeafValue());
 				}
 		}
 
