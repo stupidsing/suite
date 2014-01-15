@@ -23,7 +23,7 @@ public class B_TreeTest {
 
 	private Random random = new Random();
 
-	private static Comparator<Integer> compare = new Comparator<Integer>() {
+	private Comparator<Integer> comparator = new Comparator<Integer>() {
 		public int compare(Integer i0, Integer i1) {
 			return i0.compareTo(i1);
 		}
@@ -37,7 +37,7 @@ public class B_TreeTest {
 		try (B_TreeHolder<Integer, String> holder = new B_TreeHolder<>( //
 				pathName //
 				, isNew //
-				, compare //
+				, comparator //
 				, new IntSerializer() //
 				, new FixedStringSerializer(16))) {
 			b_tree = holder.get();
