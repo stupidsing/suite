@@ -115,10 +115,10 @@ public interface Serializer<V> {
 		}
 	}
 
-	public static class FixedStringSerializer implements Serializer<String> {
+	public static class StringSerializer implements Serializer<String> {
 		private int length;
 
-		public FixedStringSerializer(int length) {
+		public StringSerializer(int length) {
 			this.length = length;
 		}
 

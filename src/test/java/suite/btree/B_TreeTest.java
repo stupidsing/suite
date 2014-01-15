@@ -9,7 +9,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.btree.Serializer.FixedStringSerializer;
+import suite.btree.Serializer.StringSerializer;
 import suite.btree.Serializer.IntSerializer;
 import suite.util.FileUtil;
 import suite.util.Pair;
@@ -39,7 +39,7 @@ public class B_TreeTest {
 				, isNew //
 				, comparator //
 				, new IntSerializer() //
-				, new FixedStringSerializer(16))) {
+				, new StringSerializer(16))) {
 			b_tree = holder.get();
 			shuffleAndTest();
 		}
