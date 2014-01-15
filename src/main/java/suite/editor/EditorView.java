@@ -26,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import suite.editor.Layout.Node;
 import suite.editor.Layout.Orientation;
@@ -65,6 +67,10 @@ public class EditorView {
 
 		JList<String> leftList = applyDefaults(new JList<>(listModel));
 		leftList.setFont(narrowFont);
+		leftList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent event) {
+			}
+		});
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -253,6 +254,8 @@ public class Main implements AutoCloseable {
 			fcc.setDumpCode(on);
 		else if (arg.equals("-eager"))
 			fcc.setLazy(!on);
+		else if (arg.equals("-editor"))
+			new Editor().open();
 		else if (arg.equals("-filter"))
 			isFilter = on;
 		else if (arg.equals("-functional"))
