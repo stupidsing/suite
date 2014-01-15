@@ -10,9 +10,9 @@ import suite.btree.Serializer.B_TreeSuperBlockSerializer;
 
 public class B_TreeHolder<Key, Value> implements Closeable {
 
-	private FileAllocator al;
-	private FilePersister<B_Tree<Key, Value>.SuperBlock> sbp;
-	private FilePersister<B_Tree<Key, Value>.Page> pp;
+	private Allocator al;
+	private Persister<B_Tree<Key, Value>.SuperBlock> sbp;
+	private Persister<B_Tree<Key, Value>.Page> pp;
 
 	private B_Tree<Key, Value> b_tree;
 
@@ -36,9 +36,9 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 		B_TreeSuperBlockSerializer<Key, Value> sbs = new B_TreeSuperBlockSerializer<>(b_tree);
 		B_TreePageSerializer<Key, Value> ps = new B_TreePageSerializer<>(b_tree, ks, vs);
 
-		al = new FileAllocator(amf);
-		sbp = new FilePersister<>(sbf, sbs);
-		pp = new FilePersister<>(pf, ps);
+		al = new Allocator(amf);
+		sbp = new Persister<>(sbf, sbs);
+		pp = new Persister<>(pf, ps);
 
 		b_tree.setAllocator(al);
 		b_tree.setSuperBlockPersister(sbp);

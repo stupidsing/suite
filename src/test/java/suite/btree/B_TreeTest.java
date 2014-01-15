@@ -29,26 +29,6 @@ public class B_TreeTest {
 		}
 	};
 
-	private static class B_Tree1 extends B_Tree<Integer, String> {
-		public B_Tree1() {
-			super(compare);
-		}
-	}
-
-	@Test
-	public void memoryTest() {
-		InMemoryAllocPersister<B_Tree1.SuperBlock> sbimap = new InMemoryAllocPersister<>();
-		InMemoryAllocPersister<B_Tree1.Page> pimap = new InMemoryAllocPersister<>();
-
-		b_tree = new B_Tree1();
-		b_tree.setAllocator(pimap);
-		b_tree.setSuperBlockPersister(sbimap);
-		b_tree.setPagePersister(pimap);
-		b_tree.setBranchFactor(4);
-		b_tree.create();
-		shuffleAndTest();
-	}
-
 	@Test
 	public void fileTest() throws IOException {
 		String pathName = FileUtil.tmp + "/test-btree";
