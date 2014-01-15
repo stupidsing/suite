@@ -197,18 +197,18 @@ public class Tree23<T> implements ImmutableTree<T> {
 
 		if (c >= 0)
 			if (slot.node != null) {
-				List<Slot> slot1 = remove(slot.node.slots, t);
+				List<Slot> slots1 = remove(slot.node.slots, t);
 
 				// Merges with a neighbor if reached minimum number of nodes
-				if (slot1.size() < halfSize)
+				if (slots1.size() < halfSize)
 					if (s0 > 0)
-						replaceSlots = merge(slots0.get(--s0).node.slots, slot1);
+						replaceSlots = merge(slots0.get(--s0).node.slots, slots1);
 					else if (s1 < size)
-						replaceSlots = merge(slot1, slots0.get(s1++).node.slots);
+						replaceSlots = merge(slots1, slots0.get(s1++).node.slots);
 					else
-						replaceSlots = Arrays.asList(slot(slot1));
+						replaceSlots = Arrays.asList(slot(slots1));
 				else
-					replaceSlots = Arrays.asList(slot(slot1));
+					replaceSlots = Arrays.asList(slot(slots1));
 			} else
 				replaceSlots = Collections.emptyList();
 		else
