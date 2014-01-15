@@ -30,7 +30,7 @@ public class EditorController {
 		view.repaint();
 	}
 
-	public void downLeftList(EditorView view) {
+	public void downToSearchList(EditorView view) {
 		JList<String> leftList = view.getLeftList();
 		DefaultListModel<String> listModel = view.getListModel();
 
@@ -155,7 +155,7 @@ public class EditorController {
 		if (runThread == null || !runThread.isAlive()) {
 			runThread = new Thread() {
 				public void run() {
-					JTextArea bottomTextArea = view.getBottomTextArea();
+					JTextArea bottomTextArea = view.getMessageTextArea();
 					bottomTextArea.setEnabled(false);
 					bottomTextArea.setText("RUNNING...");
 

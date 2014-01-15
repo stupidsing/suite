@@ -41,43 +41,43 @@ public class EditorView {
 
 	private EditorController controller;
 
-	private JTextArea bottomTextArea;
 	private JEditorPane editor;
 	private JFrame frame;
 	private Node layout;
-	private JList<String> leftList;
-	private JTextField leftTextField;
+	private JList<String> searchList;
+	private JTextField searchTextField;
+	private JTextArea messageTextArea;
 	private DefaultListModel<String> listModel;
 	private JLabel rightLabel;
-	private JScrollPane scrollPane;
+	private JScrollPane messageScrollPane;
 	private JLabel topLabel;
 
 	public JFrame run(String title) {
-		JTextField leftTextField = this.leftTextField = applyDefaults(new JTextField(32));
-		leftTextField.addActionListener(new ActionListener() {
+		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
+		searchTextField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				controller.searchFiles(EditorView.this);
 			}
 		});
-		leftTextField.addKeyListener(new KeyAdapter() {
+		searchTextField.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.VK_DOWN)
-					controller.downLeftList(EditorView.this);
+					controller.downToSearchList(EditorView.this);
 			}
 		});
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("<Empty>");
 
-		JList<String> leftList = this.leftList = applyDefaults(new JList<>(listModel));
-		leftList.setFont(narrowFont);
-		leftList.addKeyListener(new KeyAdapter() {
+		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
+		searchList.setFont(narrowFont);
+		searchList.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.VK_ENTER)
 					controller.selectList(EditorView.this);
 			}
 		});
-		leftList.addMouseListener(new MouseAdapter() {
+		searchList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
 				if (event.getClickCount() == 2)
 					controller.selectList(EditorView.this);
@@ -90,16 +90,16 @@ public class EditorView {
 		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
 		topLabel.setVisible(false);
 
-		JTextArea bottomTextArea = this.bottomTextArea = applyDefaults(new JTextArea("Bottom"));
-		bottomTextArea.setEditable(false);
-		bottomTextArea.setRows(12);
-		bottomTextArea.setVisible(false);
+		JTextArea messageTextArea = this.messageTextArea = applyDefaults(new JTextArea("Bottom"));
+		messageTextArea.setEditable(false);
+		messageTextArea.setRows(12);
+		messageTextArea.setVisible(false);
 
-		JScrollPane scrollPane = this.scrollPane = new JScrollPane(bottomTextArea //
-				, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED //
-				, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane messageScrollPane = this.messageScrollPane = createScrollPane(messageTextArea);
 
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
+
+		JScrollPane editorScrollPane = createScrollPane(editor);
 
 		Component box = Box.createRigidArea(new Dimension(8, 8));
 
@@ -125,12 +125,12 @@ public class EditorView {
 
 		layout = Layout.lay(Orientation.HORIZONTAL //
 				, Layout.lay(Orientation.VERTICAL //
-						, Layout.hb(leftTextField, u, 24) //
-						, Layout.co(leftList, u, u) //
+						, Layout.hb(searchTextField, u, 24) //
+						, Layout.co(searchList, u, u) //
 				) //
 				, Layout.lay(Orientation.VERTICAL //
 						, Layout.hb(topLabel, u2, 64) //
-						, Layout.co(editor, u2, u2) //
+						, Layout.co(editorScrollPane, u2, u2) //
 						, Layout.hb(box, u2, 8) //
 						, Layout.lay(Orientation.HORIZONTAL //
 								, Layout.hb(null, u2, 24) //
@@ -138,7 +138,7 @@ public class EditorView {
 								, Layout.hb(null, u2, 24) //
 						) //
 						, Layout.lay(Orientation.VERTICAL //
-								, Layout.co(scrollPane, u2, u) //
+								, Layout.co(messageScrollPane, u2, u) //
 						) //
 				) //
 				, Layout.co(rightLabel, u, u) //
@@ -268,6 +268,12 @@ public class EditorView {
 		return menu;
 	}
 
+	private JScrollPane createScrollPane(Component component) {
+		return new JScrollPane(component //
+				, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED //
+				, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	}
+
 	private <T extends JComponent> T applyDefaults(T t) {
 		t.setFont(font);
 		t.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -279,19 +285,23 @@ public class EditorView {
 	}
 
 	public JComponent getBottomToolbar() {
-		return scrollPane;
+		return messageScrollPane;
 	}
 
 	public JList<String> getLeftList() {
-		return leftList;
+		return searchList;
 	}
 
 	public JComponent getLeftToolbar() {
-		return leftTextField;
+		return searchTextField;
 	}
 
 	public DefaultListModel<String> getListModel() {
 		return listModel;
+	}
+
+	public JTextArea getMessageTextArea() {
+		return messageTextArea;
 	}
 
 	public JComponent getRightToolbar() {
@@ -300,10 +310,6 @@ public class EditorView {
 
 	public JLabel getTopToolbar() {
 		return topLabel;
-	}
-
-	public JTextArea getBottomTextArea() {
-		return bottomTextArea;
 	}
 
 	public JEditorPane getEditor() {
@@ -315,7 +321,7 @@ public class EditorView {
 	}
 
 	public JTextField getLeftTextField() {
-		return leftTextField;
+		return searchTextField;
 	}
 
 }
