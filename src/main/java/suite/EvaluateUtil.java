@@ -49,7 +49,7 @@ public class EvaluateUtil {
 			Arrays.asList(builder0, builder1);
 
 			// Using builder1 would break test case FunRbTreeTest by blowing up
-			// the stack
+			// the stack in InstructionExecutor
 			return builder0.build(Suite.funCompilerRuleSet(), pair.t1);
 		}
 	});
