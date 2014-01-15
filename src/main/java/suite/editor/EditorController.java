@@ -1,10 +1,13 @@
 package suite.editor;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
@@ -25,6 +28,16 @@ public class EditorController {
 		JComponent bottom = view.getBottomToolbar();
 		bottom.setVisible(!bottom.isVisible());
 		view.repaint();
+	}
+
+	public void downLeftList(EditorView view) {
+		JList<String> leftList = view.getLeftList();
+		DefaultListModel<String> listModel = view.getListModel();
+
+		leftList.requestFocusInWindow();
+
+		if (!listModel.isEmpty())
+			leftList.setSelectedValue(listModel.get(0), true);
 	}
 
 	public void evaluate(EditorView view) {
@@ -64,8 +77,14 @@ public class EditorController {
 	public void left(EditorView view) {
 		JComponent left = view.getLeftToolbar();
 		left.setVisible(!left.isVisible());
-		view.getLeftTextField().requestFocus();
+		view.getLeftTextField().requestFocusInWindow();
 		view.repaint();
+	}
+
+	public void newFile(EditorView view) {
+		JEditorPane editor = view.getEditor();
+		editor.setText("");
+		editor.requestFocusInWindow();
 	}
 
 	public void quit(EditorView view) {
@@ -79,7 +98,7 @@ public class EditorController {
 	}
 
 	public void searchFor(EditorView view) {
-		view.getLeftTextField().requestFocus();
+		view.getLeftTextField().requestFocusInWindow();
 	}
 
 	public void searchFiles(EditorView view) {
@@ -108,6 +127,20 @@ public class EditorController {
 		}
 	}
 
+	public void selectList(EditorView view) {
+		try {
+			String filename = view.getLeftList().getSelectedValue();
+			String text = To.string(new FileInputStream(filename));
+
+			JEditorPane editor = view.getEditor();
+			editor.setText(text);
+			editor.setCaretPosition(0);
+			editor.requestFocusInWindow();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public void top(EditorView view) {
 		JComponent top = view.getTopToolbar();
 		top.setVisible(!top.isVisible());
@@ -133,7 +166,7 @@ public class EditorController {
 					bottomTextArea.setVisible(true);
 
 					view.repaint();
-					view.getEditor().requestFocus();
+					view.getEditor().requestFocusInWindow();
 				}
 			};
 

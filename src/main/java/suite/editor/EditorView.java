@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,8 +27,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import suite.editor.Layout.Node;
 import suite.editor.Layout.Orientation;
@@ -46,6 +45,7 @@ public class EditorView {
 	private JEditorPane editor;
 	private JFrame frame;
 	private Node layout;
+	private JList<String> leftList;
 	private JTextField leftTextField;
 	private DefaultListModel<String> listModel;
 	private JLabel rightLabel;
@@ -59,16 +59,28 @@ public class EditorView {
 				controller.searchFiles(EditorView.this);
 			}
 		});
+		leftTextField.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_DOWN)
+					controller.downLeftList(EditorView.this);
+			}
+		});
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
-		listModel.addElement("Jane Doe");
-		listModel.addElement("John Smith");
-		listModel.addElement("Kathy Green");
+		listModel.addElement("<Empty>");
 
-		JList<String> leftList = applyDefaults(new JList<>(listModel));
+		JList<String> leftList = this.leftList = applyDefaults(new JList<>(listModel));
 		leftList.setFont(narrowFont);
-		leftList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent event) {
+		leftList.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER)
+					controller.selectList(EditorView.this);
+			}
+		});
+		leftList.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent event) {
+				if (event.getClickCount() == 2)
+					controller.selectList(EditorView.this);
 			}
 		});
 
@@ -132,9 +144,8 @@ public class EditorView {
 				, Layout.co(rightLabel, u, u) //
 				);
 
+		controller.newFile(this);
 		repaint();
-
-		editor.requestFocus();
 
 		return frame;
 	}
@@ -150,6 +161,14 @@ public class EditorView {
 
 	private JMenuBar createMenuBar() {
 		final EditorView view = this;
+
+		JMenuItem newMenuItem = applyDefaults(new JMenuItem("New...", KeyEvent.VK_N));
+		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		newMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.newFile(view);
+			}
+		});
 
 		JMenuItem openMenuItem = applyDefaults(new JMenuItem("Open...", KeyEvent.VK_O));
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -219,7 +238,7 @@ public class EditorView {
 		});
 
 		JMenu fileMenu = createMenu("File", KeyEvent.VK_F //
-				, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
+				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
 		);
@@ -261,6 +280,10 @@ public class EditorView {
 
 	public JComponent getBottomToolbar() {
 		return scrollPane;
+	}
+
+	public JList<String> getLeftList() {
+		return leftList;
 	}
 
 	public JComponent getLeftToolbar() {
