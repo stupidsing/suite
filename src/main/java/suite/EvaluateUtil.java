@@ -48,7 +48,9 @@ public class EvaluateUtil {
 			Builder builder1 = CompiledProverBuilder.level1(pair.t0, false);
 			Arrays.asList(builder0, builder1);
 
-			return builder1.build(Suite.funCompilerRuleSet(), pair.t1);
+			// Using builder1 would break test case FunRbTreeTest by blowing up
+			// the stack
+			return builder0.build(Suite.funCompilerRuleSet(), pair.t1);
 		}
 	});
 
