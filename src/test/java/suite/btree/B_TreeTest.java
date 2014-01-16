@@ -9,8 +9,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.btree.Serializer.StringSerializer;
 import suite.btree.Serializer.IntSerializer;
+import suite.btree.Serializer.StringSerializer;
 import suite.util.FileUtil;
 import suite.util.Pair;
 

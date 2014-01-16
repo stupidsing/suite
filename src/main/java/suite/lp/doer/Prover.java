@@ -31,9 +31,10 @@ public class Prover {
 	private Node rem, alt; // remaining, alternative
 
 	private Journal journal = new Journal();
+	private int initialPointInTime;
 
 	public Prover(Prover prover) {
-		this(prover.config, prover.tracer);
+		this(prover.config, prover.tracer, prover.journal);
 	}
 
 	public Prover(RuleSet ruleSet) {
@@ -41,12 +42,14 @@ public class Prover {
 	}
 
 	public Prover(ProverConfig proverConfig) {
-		this(proverConfig, null);
+		this(proverConfig, null, new Journal());
 	}
 
-	public Prover(ProverConfig proverConfig, ProveTracer tracer) {
+	public Prover(ProverConfig proverConfig, ProveTracer tracer, Journal journal) {
 		this.config = proverConfig;
 		this.tracer = tracer;
+		this.journal = journal;
+		initialPointInTime = journal.getPointInTime();
 	}
 
 	public void elaborate(Node query) {
@@ -213,7 +216,7 @@ public class Prover {
 	 * Resets all bind done by this prover.
 	 */
 	public void undoAllBinds() {
-		journal.undoAllBinds();
+		journal.undoBinds(initialPointInTime);
 	}
 
 	private Node andTree(Node n0, Node n1) {
