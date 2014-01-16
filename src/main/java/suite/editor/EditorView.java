@@ -308,6 +308,10 @@ public class EditorView {
 		return rightLabel;
 	}
 
+	public JTextField getSearchTextField() {
+		return searchTextField;
+	}
+
 	public JLabel getTopToolbar() {
 		return topLabel;
 	}
@@ -318,10 +322,6 @@ public class EditorView {
 
 	public JFrame getFrame() {
 		return frame;
-	}
-
-	public JTextField getLeftTextField() {
-		return searchTextField;
 	}
 
 }

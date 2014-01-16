@@ -10,6 +10,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import suite.Suite;
 import suite.node.Node;
@@ -77,7 +78,7 @@ public class EditorController {
 	public void left(EditorView view) {
 		JComponent left = view.getLeftToolbar();
 		left.setVisible(!left.isVisible());
-		view.getLeftTextField().requestFocusInWindow();
+		view.getSearchTextField().requestFocusInWindow();
 		view.repaint();
 	}
 
@@ -98,14 +99,16 @@ public class EditorController {
 	}
 
 	public void searchFor(EditorView view) {
-		view.getLeftTextField().requestFocusInWindow();
+		JTextField searchTextField = view.getSearchTextField();
+		searchTextField.setCaretPosition(0);
+		searchTextField.requestFocusInWindow();
 	}
 
 	public void searchFiles(EditorView view) {
 		DefaultListModel<String> listModel = view.getListModel();
 		listModel.clear();
 
-		final String text = view.getLeftTextField().getText();
+		final String text = view.getSearchTextField().getText();
 
 		if (!text.isEmpty()) {
 			Source<File> files0 = FileUtil.findFiles(new File("."));
