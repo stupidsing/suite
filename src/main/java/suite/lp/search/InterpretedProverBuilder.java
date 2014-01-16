@@ -31,7 +31,7 @@ public class InterpretedProverBuilder implements Builder {
 			public void find(Source<Node> source, Sink<Node> sink) {
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
-				new Prover(proverConfig1).prove(goal1);
+				new Prover(proverConfig1).elaborate(goal1);
 			}
 		};
 	}

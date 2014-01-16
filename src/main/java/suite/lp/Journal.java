@@ -2,7 +2,6 @@ package suite.lp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import suite.node.Node;
 import suite.node.Reference;
@@ -32,12 +31,9 @@ public class Journal {
 	}
 
 	public void undoBinds(int pointInTime) {
-		ListIterator<Reference> iter = bounded.listIterator(pointInTime);
-
-		while (iter.hasNext()) {
-			iter.next().unbound();
-			iter.remove();
-		}
+		int i = bounded.size();
+		while (i > pointInTime)
+			bounded.remove(--i).unbound();
 	}
 
 	public List<Reference> getBinded() {

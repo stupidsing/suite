@@ -49,6 +49,14 @@ public class Prover {
 		this.tracer = tracer;
 	}
 
+	public void elaborate(Node query) {
+		try {
+			prove(query);
+		} finally {
+			undoAllBinds();
+		}
+	}
+
 	/**
 	 * Try to prove a query clause. Perform bindings on the way.
 	 * 
@@ -70,7 +78,7 @@ public class Prover {
 			return prove0(query);
 	}
 
-	public boolean prove0(Node query) {
+	private boolean prove0(Node query) {
 		rem = OK;
 		alt = FAIL;
 

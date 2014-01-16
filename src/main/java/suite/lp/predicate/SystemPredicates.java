@@ -160,9 +160,7 @@ public class SystemPredicates {
 				}
 			}));
 
-			Prover subProver = new Prover(prover);
-			subProver.prove0(subGoal);
-			subProver.undoAllBinds();
+			new Prover(prover).elaborate(subGoal);
 
 			Node result = Atom.NIL;
 			while (!stack.isEmpty())
@@ -175,7 +173,7 @@ public class SystemPredicates {
 	private class Not implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Prover prover1 = new Prover(prover);
-			boolean result = !prover1.prove0(ps);
+			boolean result = !prover1.prove(ps);
 			if (!result) // Roll back bindings if overall goal is failed
 				prover1.undoAllBinds();
 			return result;
@@ -184,7 +182,7 @@ public class SystemPredicates {
 
 	private class Once implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return new Prover(prover).prove0(ps);
+			return new Prover(prover).prove(ps);
 		}
 	}
 
