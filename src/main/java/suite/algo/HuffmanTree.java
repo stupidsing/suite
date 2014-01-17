@@ -42,20 +42,19 @@ public class HuffmanTree<Key> {
 			this.node0 = node0;
 			this.node1 = node1;
 		}
-
 	}
 
 	public HuffmanTree(Map<Key, Integer> countsByKey) {
 		buildTree(countsByKey);
 	}
 
-	public void encodeToBooleans(Sink<Boolean> sink, List<Key> keys) throws IOException {
+	public void encodeKeys(Sink<Boolean> sink, List<Key> keys) throws IOException {
 		for (Key key : keys)
 			for (char ch : Util.chars(nodesByKey.get(key).locator))
 				sink.sink(ch == '0' ? Boolean.TRUE : Boolean.FALSE);
 	}
 
-	public List<Key> decodeFromBooleans(Source<Boolean> source) throws IOException {
+	public List<Key> decodeKeys(Source<Boolean> source) throws IOException {
 		List<Key> keys = new ArrayList<>();
 		Boolean b;
 
@@ -75,10 +74,8 @@ public class HuffmanTree<Key> {
 
 	public Map<Key, Integer> getTable() {
 		Map<Key, Integer> table = new HashMap<>();
-
 		for (Entry<Key, Node> entry : nodesByKey.entrySet())
 			table.put(entry.getKey(), entry.getValue().count);
-
 		return table;
 	}
 
