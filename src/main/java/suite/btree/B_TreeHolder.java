@@ -15,50 +15,6 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private B_Tree<Key, Value> b_tree;
 
-	public B_TreeHolder(String pathName //
-			, boolean isNew //
-			, Comparator<Key> comparator //
-			, Serializer<Key> ks //
-			, Serializer<Value> vs) throws IOException {
-		new File(pathName).getParentFile().mkdirs();
-
-		String sbf = pathName + ".superblock";
-		String amf = pathName + ".alloc";
-		String pf = pathName + ".pages";
-
-		if (isNew)
-			for (String filename : new String[] { sbf, amf, pf })
-				new File(filename).delete();
-
-		b_tree = new B_Tree<>(comparator);
-
-		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
-		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
-
-		al = new Allocator(amf);
-		sbp = new Persister<>(sbf, sbs);
-		pp = new Persister<>(pf, ps);
-
-		b_tree.setAllocator(al);
-		b_tree.setSuperblockPersister(sbp);
-		b_tree.setPagePersister(pp);
-		b_tree.setBranchFactor(16);
-
-		if (isNew)
-			b_tree.create();
-	}
-
-	@Override
-	public void close() throws IOException {
-		pp.close();
-		sbp.close();
-		al.close();
-	}
-
-	public B_Tree<Key, Value> get() {
-		return b_tree;
-	}
-
 	private class B_TreeSuperblockSerializer implements Serializer<B_Tree<Key, Value>.Superblock> {
 		private B_Tree<Key, Value> b_tree;
 		private IntSerializer intSerializer = new IntSerializer();
@@ -138,6 +94,50 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			kps.add(b_tree.new KeyPointer(k, b_tree.new Branch(branch)));
 		}
 
+	}
+
+	public B_TreeHolder(String pathName //
+			, boolean isNew //
+			, Comparator<Key> comparator //
+			, Serializer<Key> ks //
+			, Serializer<Value> vs) throws IOException {
+		new File(pathName).getParentFile().mkdirs();
+
+		String sbf = pathName + ".superblock";
+		String amf = pathName + ".alloc";
+		String pf = pathName + ".pages";
+
+		if (isNew)
+			for (String filename : new String[] { sbf, amf, pf })
+				new File(filename).delete();
+
+		b_tree = new B_Tree<>(comparator);
+
+		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
+		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
+
+		al = new Allocator(amf);
+		sbp = new Persister<>(sbf, sbs);
+		pp = new Persister<>(pf, ps);
+
+		b_tree.setAllocator(al);
+		b_tree.setSuperblockPersister(sbp);
+		b_tree.setPagePersister(pp);
+		b_tree.setBranchFactor(16);
+
+		if (isNew)
+			b_tree.create();
+	}
+
+	@Override
+	public void close() throws IOException {
+		pp.close();
+		sbp.close();
+		al.close();
+	}
+
+	public B_Tree<Key, Value> get() {
+		return b_tree;
 	}
 
 }
