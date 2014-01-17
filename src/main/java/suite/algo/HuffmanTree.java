@@ -1,8 +1,10 @@
 package suite.algo;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,15 +74,27 @@ public class HuffmanTree<Key> {
 		return keys;
 	}
 
-	public Map<Key, Integer> getTable() {
-		Map<Key, Integer> table = new HashMap<>();
-		for (Entry<Key, Node> entry : nodesByKey.entrySet())
-			table.put(entry.getKey(), entry.getValue().count);
-		return table;
+	public Node readTree(List<Key> keys) {
+		Deque<Node> stack = new ArrayDeque<>();
+
+		for (Key key : keys)
+			if (key == null) {
+				Node node0 = stack.pop();
+				Node node1 = stack.pop();
+				stack.push(new Node(node0, node1));
+			} else
+				stack.push(new Node(0, key));
+
+		return stack.pop();
 	}
 
-	public void setTable(Map<Key, Integer> table) {
-		buildTree(table);
+	public void writeTree(List<Key> keys, Node node) {
+		if (node.node0 != null || node.node1 != null) {
+			writeTree(keys, node.node0);
+			writeTree(keys, node.node1);
+			keys.add(null);
+		} else
+			keys.add(node.key);
 	}
 
 	private void buildTree(Map<Key, Integer> countsByKey) {

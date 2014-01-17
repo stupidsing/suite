@@ -1,15 +1,18 @@
 package suite.algo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
+import suite.util.Util;
 
 public class LempelZivWelch<Unit> {
+
+	private List<Unit> units;
 
 	private class Trie {
 		private Integer index;
@@ -20,45 +23,60 @@ public class LempelZivWelch<Unit> {
 		}
 	}
 
-	public void encode(Source<Unit> source, Sink<Pair<Integer, Unit>> sink) {
+	public LempelZivWelch(List<Unit> units) {
+		this.units = units;
+	}
+
+	public void encode(Source<Unit> source, Sink<Integer> sink) {
 		Trie root = new Trie(null);
 		int index = 0;
+
+		for (Unit unit : units)
+			root.branches.put(unit, new Trie(index++));
+
+		Trie trie = root;
 		Unit unit;
 
 		while ((unit = source.source()) != null) {
-			Trie trie0 = null, trie = root;
+			Trie trie1 = trie.branches.get(unit);
 
-			while (unit != null && trie != null) {
-				trie = (trie0 = trie).branches.get(unit);
-				unit = source.source();
-			}
-
-			if (trie0 != root)
-				sink.sink(Pair.<Integer, Unit> create(trie0.index, null));
-
-			if (unit != null) {
-				sink.sink(Pair.<Integer, Unit> create(null, unit));
-				trie0.branches.put(unit, new Trie(index++));
-			}
+			if (trie1 == null) {
+				sink.sink(trie.index);
+				trie.branches.put(unit, new Trie(index++));
+				trie = root.branches.get(unit);
+			} else
+				trie = trie1;
 		}
+
+		if (trie != root)
+			sink.sink(trie.index);
 	}
 
-	public void decode(Source<Pair<Integer, Unit>> source, Sink<Unit> sink) {
-		Map<Integer, List<Unit>> dictionary = new HashMap<>();
-		int index = 0;
-		Pair<Integer, Unit> pair;
+	public void decode(Source<Integer> source, Sink<Unit> sink) {
+		List<List<Unit>> dict = new ArrayList<>();
+
+		for (Unit unit : units)
+			dict.add(Arrays.asList(unit));
+
+		Integer index;
 		List<Unit> word = new ArrayList<>();
 
-		while ((pair = source.source()) != null)
-			if (pair.t0 != null)
-				for (Unit unit : dictionary.get(pair.t0))
-					sink.sink(unit);
-			else {
-				sink.sink(pair.t1);
-				word.add(pair.t1);
-				dictionary.put(index++, word);
-				word = new ArrayList<>();
-			}
+		while ((index = source.source()) != null) {
+			List<Unit> w0 = word;
+			boolean isExists = index < dict.size();
+			List<Unit> newWord;
+
+			if (isExists)
+				newWord = Util.add(w0, word = dict.get(index));
+			else
+				newWord = word = Util.add(w0, Util.left(w0, 1));
+
+			if (!w0.isEmpty())
+				dict.add(newWord);
+
+			for (Unit unit : word)
+				sink.sink(unit);
+		}
 	}
 
 }
