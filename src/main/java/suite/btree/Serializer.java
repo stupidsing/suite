@@ -16,21 +16,21 @@ public interface Serializer<V> {
 
 	public void write(ByteBuffer buffer, V value);
 
-	public static class B_TreeSuperBlockSerializer<Key, Value> implements Serializer<B_Tree<Key, Value>.SuperBlock> {
+	public static class B_TreeSuperblockSerializer<Key, Value> implements Serializer<B_Tree<Key, Value>.Superblock> {
 		private B_Tree<Key, Value> b_tree;
 		private IntSerializer intSerializer = new IntSerializer();
 
-		public B_TreeSuperBlockSerializer(B_Tree<Key, Value> b_tree) {
+		public B_TreeSuperblockSerializer(B_Tree<Key, Value> b_tree) {
 			this.b_tree = b_tree;
 		}
 
-		public B_Tree<Key, Value>.SuperBlock read(ByteBuffer buffer) {
-			B_Tree<Key, Value>.SuperBlock superBlock = b_tree.new SuperBlock();
-			superBlock.root = intSerializer.read(buffer);
-			return superBlock;
+		public B_Tree<Key, Value>.Superblock read(ByteBuffer buffer) {
+			B_Tree<Key, Value>.Superblock superblock = b_tree.new Superblock();
+			superblock.root = intSerializer.read(buffer);
+			return superblock;
 		}
 
-		public void write(ByteBuffer buffer, B_Tree<Key, Value>.SuperBlock value) {
+		public void write(ByteBuffer buffer, B_Tree<Key, Value>.Superblock value) {
 			intSerializer.write(buffer, value.root);
 		}
 	}

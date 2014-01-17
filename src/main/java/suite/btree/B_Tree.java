@@ -20,7 +20,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 
 	private int branchFactor;
 	private Allocator allocator;
-	private Persister<SuperBlock> superBlockPersister;
+	private Persister<Superblock> superblockPersister;
 	private Persister<Page> pagePersister;
 	private Comparator<Key> comparator;
 
@@ -98,7 +98,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		private static final long serialVersionUID = 1l;
 	}
 
-	public class SuperBlock {
+	public class Superblock {
 		public int root;
 	}
 
@@ -386,14 +386,14 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 	}
 
 	private int getRoot() {
-		return superBlockPersister.load(0).root;
+		return superblockPersister.load(0).root;
 	}
 
 	private void setRoot(int root) {
-		SuperBlock superBlock = superBlockPersister.load(0);
-		superBlock = superBlock != null ? superBlock : new SuperBlock();
-		superBlock.root = root;
-		superBlockPersister.save(0, superBlock);
+		Superblock superblock = superblockPersister.load(0);
+		superblock = superblock != null ? superblock : new Superblock();
+		superblock.root = root;
+		superblockPersister.save(0, superblock);
 	}
 
 	public void setBranchFactor(int branchFactor) {
@@ -404,8 +404,8 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		this.allocator = allocator;
 	}
 
-	public void setSuperBlockPersister(Persister<SuperBlock> superBlockPersister) {
-		this.superBlockPersister = superBlockPersister;
+	public void setSuperblockPersister(Persister<Superblock> superblockPersister) {
+		this.superblockPersister = superblockPersister;
 	}
 
 	public void setPagePersister(Persister<Page> pagePersister) {
