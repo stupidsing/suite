@@ -1,8 +1,9 @@
 package suite.util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 
 public class FunUtil {
@@ -36,21 +37,24 @@ public class FunUtil {
 		}
 	}
 
-	@SafeVarargs
-	public static <O> Source<O> asSource(final O... array) {
-		return asSource(Arrays.asList(array));
-	}
+	public static class Pipe<T> {
+		private Deque<T> deque = new ArrayDeque<T>();
 
-	public static <O> Source<O> asSource(Iterable<O> iterable) {
-		return asSource(iterable.iterator());
-	}
+		public Sink<T> sink() {
+			return new Sink<T>() {
+				public void sink(T t) {
+					deque.addLast(t);
+				}
+			};
+		}
 
-	public static <O> Source<O> asSource(final Iterator<O> iter) {
-		return new Source<O>() {
-			public O source() {
-				return iter.hasNext() ? iter.next() : null;
-			}
-		};
+		public Source<T> source() {
+			return new Source<T>() {
+				public T source() {
+					return !deque.isEmpty() ? deque.removeFirst() : null;
+				}
+			};
+		}
 	}
 
 	public static <T> Source<T> concat(final Source<Source<T>> source) {
@@ -135,20 +139,12 @@ public class FunUtil {
 	}
 
 	public static <O> Source<O> nullSource() {
-		return source(null);
+		return To.source((O) null);
 	}
 
 	public static <I> Sink<I> nullSink() {
 		return new Sink<I>() {
 			public void sink(I i) {
-			}
-		};
-	}
-
-	public static <O> Source<O> source(final O o) {
-		return new Source<O>() {
-			public O source() {
-				return o;
 			}
 		};
 	}

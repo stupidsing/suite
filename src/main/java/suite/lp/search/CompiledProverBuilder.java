@@ -9,10 +9,10 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
+import suite.util.To;
 
 public class CompiledProverBuilder implements Builder {
 
@@ -64,7 +64,7 @@ public class CompiledProverBuilder implements Builder {
 		try {
 			final Node holder[] = new Node[] { null };
 
-			compiler.find(FunUtil.source(program), new Sink<Node>() {
+			compiler.find(To.source(program), new Sink<Node>() {
 				public void sink(Node node) {
 					holder[0] = new Cloner().clone(node);
 				}

@@ -38,14 +38,13 @@ public class LempelZivWelch<Unit> {
 		Unit unit;
 
 		while ((unit = source.source()) != null) {
-			Trie trie1 = trie.branches.get(unit);
-
-			if (trie1 == null) {
+			if (!trie.branches.containsKey(unit)) {
 				sink.sink(trie.index);
 				trie.branches.put(unit, new Trie(index++));
-				trie = root.branches.get(unit);
-			} else
-				trie = trie1;
+				trie = root;
+			}
+
+			trie = trie.branches.get(unit);
 		}
 
 		if (trie != root)
@@ -59,23 +58,28 @@ public class LempelZivWelch<Unit> {
 			dict.add(Arrays.asList(unit));
 
 		Integer index;
-		List<Unit> word = new ArrayList<>();
 
-		while ((index = source.source()) != null) {
-			List<Unit> w0 = word;
-			boolean isExists = index < dict.size();
-			List<Unit> newWord;
+		if ((index = source.source()) != null) {
+			List<Unit> word;
 
-			if (isExists)
-				newWord = Util.add(w0, word = dict.get(index));
-			else
-				newWord = word = Util.add(w0, Util.left(w0, 1));
-
-			if (!w0.isEmpty())
-				dict.add(newWord);
-
-			for (Unit unit : word)
+			for (Unit unit : word = dict.get(index))
 				sink.sink(unit);
+
+			while ((index = source.source()) != null) {
+				List<Unit> w0 = word;
+				List<Unit> newWord;
+
+				if (index < dict.size())
+					newWord = Util.add(w0, word = dict.get(index));
+				else
+					newWord = word = Util.add(w0, Util.left(w0, 1));
+
+				if (!w0.isEmpty())
+					dict.add(newWord);
+
+				for (Unit unit : word)
+					sink.sink(unit);
+			}
 		}
 	}
 

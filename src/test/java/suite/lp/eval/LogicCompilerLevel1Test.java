@@ -19,9 +19,9 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class LogicCompilerLevel1Test {
 
@@ -75,7 +75,7 @@ public class LogicCompilerLevel1Test {
 		Finder finder = builder.build(rs, goal);
 		final List<Node> nodes = new ArrayList<>();
 
-		Source<Node> source = FunUtil.source(input);
+		Source<Node> source = To.source(input);
 		Sink<Node> sink = new Sink<Node>() {
 			public void sink(Node node) {
 				nodes.add(new Cloner().clone(node));

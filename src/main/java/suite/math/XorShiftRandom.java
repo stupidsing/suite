@@ -5,9 +5,9 @@ public class XorShiftRandom {
 	private long seed;
 
 	public long nextLong() {
-		seed ^= (seed << 21);
-		seed ^= (seed >>> 35);
-		seed ^= (seed << 4);
+		seed ^= seed << 21;
+		seed ^= seed >>> 35;
+		seed ^= seed << 4;
 		return seed;
 	}
 

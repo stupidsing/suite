@@ -196,7 +196,7 @@ public class Ebnf {
 			public Grammar apply(String s) {
 				return parseGrammar(s);
 			}
-		}, FunUtil.asSource(list))));
+		}, To.source(list))));
 	}
 
 	public Node parse(String s) {
@@ -320,7 +320,7 @@ public class Ebnf {
 			State state1 = deepen(state, name);
 
 			if (name.equals("<EOF>"))
-				states = state1.pos == length ? FunUtil.asSource(state1) : noResult;
+				states = state1.pos == length ? To.source(state1) : noResult;
 			else if (name.equals("<CHARACTER_LITERAL>"))
 				states = parseExpect(state1, expectCharLiteral(pos));
 			else if (name.equals("<FLOATING_POINT_LITERAL>"))
@@ -346,11 +346,11 @@ public class Ebnf {
 				public Source<State> apply(Grammar childGrammar) {
 					return parse(state, childGrammar);
 				}
-			}, FunUtil.asSource(children(grammar))));
+			}, To.source(children(grammar))));
 		}
 
 		private Source<State> parseJoin(State state, final JoinGrammar grammar) {
-			Source<State> source = FunUtil.asSource(state);
+			Source<State> source = To.source(state);
 
 			for (final Grammar childGrammar : children(grammar))
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
@@ -396,7 +396,7 @@ public class Ebnf {
 		}
 
 		private Source<State> parseExpect(State state, int end) {
-			return state.pos < end ? FunUtil.asSource(new State(state, end)) : noResult;
+			return state.pos < end ? To.source(new State(state, end)) : noResult;
 		}
 
 		private State deepen(State state, String name) {

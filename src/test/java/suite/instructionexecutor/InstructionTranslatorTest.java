@@ -19,8 +19,8 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.util.FileUtil;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
+import suite.util.To;
 
 public class InstructionTranslatorTest {
 
@@ -87,7 +87,7 @@ public class InstructionTranslatorTest {
 		Finder compiler = builder.build(ruleSet, goal);
 		final Node holder[] = new Node[] { null };
 
-		compiler.find(FunUtil.source(program), new Sink<Node>() {
+		compiler.find(To.source(program), new Sink<Node>() {
 			public void sink(Node node) {
 				holder[0] = new Cloner().clone(node);
 			}

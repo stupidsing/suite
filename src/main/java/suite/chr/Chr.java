@@ -100,7 +100,7 @@ public class Chr {
 	}
 
 	private State chr(final State state) {
-		return FunUtil.concat(map(FunUtil.asSource(rules), new Fun<Rule, Source<State>>() {
+		return FunUtil.concat(map(To.source(rules), new Fun<Rule, Source<State>>() {
 			public Source<State> apply(Rule rule) {
 				return chr(state, rule);
 			}
@@ -110,7 +110,7 @@ public class Chr {
 	private Source<State> chr(final State state, Rule rule) {
 		Generalizer generalizer = new Generalizer();
 		final Journal journal = new Journal();
-		Source<State> states = FunUtil.asSource(state);
+		Source<State> states = To.source(state);
 
 		for (Node if_ : rule.ifs)
 			states = chrIf(states, journal, generalizer.generalize(if_));
@@ -152,7 +152,7 @@ public class Chr {
 				ImmutableSet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
 				boolean isMatch = or(map(facts.source(), bindFun));
-				return isMatch ? FunUtil.asSource(state) : FunUtil.<State> nullSource();
+				return isMatch ? To.source(state) : FunUtil.<State> nullSource();
 			}
 		}));
 	}

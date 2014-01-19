@@ -17,7 +17,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.To;
@@ -48,7 +47,7 @@ public class SldResolution {
 
 		final Node sunk[] = new Node[] { null };
 
-		finder.find(FunUtil.source(node), new Sink<Node>() {
+		finder.find(To.source(node), new Sink<Node>() {
 			public void sink(Node node) {
 				sunk[0] = new Cloner().clone(node);
 			}

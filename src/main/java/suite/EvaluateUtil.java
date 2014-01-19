@@ -19,12 +19,12 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.util.CacheUtil;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
+import suite.util.To;
 import suite.util.Util;
 
 public class EvaluateUtil {
@@ -137,7 +137,7 @@ public class EvaluateUtil {
 	private List<Node> collect(Finder finder, Node in) {
 		final List<Node> nodes = new ArrayList<>();
 
-		Source<Node> source = FunUtil.source(in);
+		Source<Node> source = To.source(in);
 		Sink<Node> sink = new Sink<Node>() {
 			public void sink(Node node) {
 				nodes.add(new Cloner().clone(node));

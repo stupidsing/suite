@@ -31,10 +31,10 @@ import suite.node.io.PrettyPrinter;
 import suite.node.io.TermParser;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.ParseUtil;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -95,7 +95,7 @@ public class Main implements AutoCloseable {
 	private int run(String args[]) throws IOException {
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
-		Source<String> source = FunUtil.asSource(args);
+		Source<String> source = To.source(args);
 		String arg;
 
 		while ((arg = source.source()) != null)
@@ -194,7 +194,7 @@ public class Main implements AutoCloseable {
 					Suite.addRule(ruleSet, node);
 					break;
 				case OPTION:
-					Source<String> source = FunUtil.asSource(("-" + input).split(" "));
+					Source<String> source = To.source(("-" + input).split(" "));
 					String option;
 					while ((option = source.source()) != null)
 						processOption(option, source);

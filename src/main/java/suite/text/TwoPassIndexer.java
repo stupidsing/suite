@@ -11,6 +11,7 @@ import suite.util.DefaultFunMap;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class TwoPassIndexer {
 
@@ -93,7 +94,7 @@ public class TwoPassIndexer {
 
 		return FunUtil.concat(FunUtil.map(new Fun<String, Source<Reference>>() {
 			public Source<Reference> apply(String key) {
-				return FunUtil.asSource(referencesByWord.get(key));
+				return To.source(referencesByWord.get(key));
 			}
 		}, keySource));
 	}

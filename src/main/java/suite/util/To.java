@@ -9,9 +9,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import suite.util.FunUtil.Source;
 
 public class To {
 
@@ -30,6 +33,21 @@ public class To {
 		while (iter.hasNext())
 			list.add(iter.next());
 		return list;
+	}
+
+	@SafeVarargs
+	public static <O> Source<O> source(final O... array) {
+		return source(Arrays.asList(array));
+	}
+
+	public static <O> Source<O> source(Iterable<O> iterable) {
+		final Iterator<O> iterator = iterable.iterator();
+
+		return new Source<O>() {
+			public O source() {
+				return iterator.hasNext() ? iterator.next() : null;
+			}
+		};
 	}
 
 	public static String string(Date date) {
