@@ -18,7 +18,7 @@ public class LempelZivWelch<Unit> {
 		private Integer index;
 		private Map<Unit, Trie> branches = new HashMap<>();
 
-		public Trie(Integer index) {
+		private Trie(Integer index) {
 			this.index = index;
 		}
 	}
