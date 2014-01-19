@@ -10,6 +10,11 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
+/**
+ * Lempel-Ziv-Welch compression.
+ * 
+ * @author ywsing
+ */
 public class LempelZivWelch<Unit> {
 
 	private List<Unit> units;
@@ -66,16 +71,15 @@ public class LempelZivWelch<Unit> {
 				sink.sink(unit);
 
 			while ((index = source.source()) != null) {
-				List<Unit> w0 = word;
+				List<Unit> word0 = word;
 				List<Unit> newWord;
 
 				if (index < dict.size())
-					newWord = Util.add(w0, Util.left(word = dict.get(index), 1));
+					newWord = Util.add(word0, Util.left(word = dict.get(index), 1));
 				else
-					newWord = word = Util.add(w0, Util.left(w0, 1));
+					newWord = word = Util.add(word0, Util.left(word0, 1));
 
-				if (!w0.isEmpty())
-					dict.add(newWord);
+				dict.add(newWord);
 
 				for (Unit unit : word)
 					sink.sink(unit);

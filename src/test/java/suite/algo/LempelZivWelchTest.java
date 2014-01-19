@@ -19,18 +19,24 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test0() {
-		String s = "abcabcab";
+		String s = "";
 		assertEquals(s, doTest(s));
 	}
 
 	@Test
 	public void test1() {
+		String s = "abcabcab";
+		assertEquals(s, doTest(s));
+	}
+
+	@Test
+	public void test2() {
 		String s = "abababababababababababababababab";
 		assertEquals(s, doTest(s));
 	}
 
 	@Test
-	public void test2() throws IOException {
+	public void test3() throws IOException {
 		String s = To.string(new FileInputStream("src/main/java/suite/algo/LempelZivWelch.java"));
 		assertEquals(s, doTest(s));
 	}
@@ -49,12 +55,12 @@ public class LempelZivWelchTest {
 		Pipe<Integer> pipe0 = new Pipe<>();
 		Pipe<Byte> pipe1 = new Pipe<>();
 
-		LempelZivWelch<Byte> lzw = new LempelZivWelch<>(alBytes());
+		LempelZivWelch<Byte> lzw = new LempelZivWelch<>(allBytes());
 		lzw.encode(inputSource, pipe0.sink());
 		lzw.decode(pipe0.source(), pipe1.sink());
 
-		BytesBuilder bb = new BytesBuilder();
 		Source<Byte> outputSource = pipe1.source();
+		BytesBuilder bb = new BytesBuilder();
 		Byte b;
 
 		while ((b = outputSource.source()) != null)
@@ -63,7 +69,7 @@ public class LempelZivWelchTest {
 		return new String(bb.toBytes().getBytes(), FileUtil.charset);
 	}
 
-	private List<Byte> alBytes() {
+	private List<Byte> allBytes() {
 		List<Byte> bytes = new ArrayList<>();
 		byte b = 0;
 
