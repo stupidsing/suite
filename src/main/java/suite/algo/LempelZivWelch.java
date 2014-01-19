@@ -70,7 +70,7 @@ public class LempelZivWelch<Unit> {
 				List<Unit> newWord;
 
 				if (index < dict.size())
-					newWord = Util.add(w0, word = dict.get(index));
+					newWord = Util.add(w0, Util.left(word = dict.get(index), 1));
 				else
 					newWord = word = Util.add(w0, Util.left(w0, 1));
 
