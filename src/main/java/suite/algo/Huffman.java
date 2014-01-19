@@ -55,9 +55,9 @@ public class Huffman<Unit> {
 			}
 		};
 
-		Huffman<Unit> huffmanTree = new Huffman<>(buildHistogram(input));
-		huffmanTree.encodeUnits(To.source(input), sink);
-		huffmanTree.writeTree(outputUnits);
+		Huffman<Unit> huffman = new Huffman<>(buildHistogram(input));
+		huffman.encodeUnits(To.source(input), sink);
+		huffman.writeTree(outputUnits);
 
 		return Pair.create(outputUnits, outputBooleans);
 	}
