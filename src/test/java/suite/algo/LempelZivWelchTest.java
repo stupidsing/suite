@@ -25,7 +25,7 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test1() {
-		String s = "abcabcab";
+		String s = "abababa";
 		assertEquals(s, doTest(s));
 	}
 
