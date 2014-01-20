@@ -54,21 +54,21 @@ public class Huffman<Unit> {
 		huffman.encodeUnits(To.source(input), pipeb.sink());
 		huffman.storeTree(pipeu.sink());
 
-		return Pair.create(To.list(pipeu.source()), To.list(pipeb.source()));
+		return Pair.create(To.list(pipeu), To.list(pipeb));
 	}
 
 	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
 		Pipe<Unit> pipe = FunUtil.pipe();
 		new Huffman<>(input.t0).decodeUnits(To.source(input.t1), pipe.sink());
-		return To.list(pipe.source());
-	}
-
-	private Huffman(List<Unit> units) {
-		this.root = loadTree(units);
+		return To.list(pipe);
 	}
 
 	private Huffman(Map<Unit, Integer> countsByUnit) {
 		this.root = buildTree(countsByUnit);
+	}
+
+	private Huffman(List<Unit> units) {
+		this.root = loadTree(units);
 	}
 
 	private void encodeUnits(Source<Unit> source, Sink<Boolean> sink) {
