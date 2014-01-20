@@ -51,9 +51,9 @@ public class Huffman<Unit> {
 		Pipe<Boolean> pipeb = FunUtil.pipe();
 
 		Huffman<Unit> huffman = new Huffman<>();
-		huffman.buildTree(buildHistogram(input));
-		huffman.encodeUnits(To.source(input), pipeb.sink());
-		huffman.saveTree(pipeu.sink());
+		huffman.build(input);
+		huffman.save(pipeu.sink());
+		huffman.encode(To.source(input), pipeb.sink());
 
 		return Pair.create(To.list(pipeu), To.list(pipeb));
 	}
@@ -62,8 +62,8 @@ public class Huffman<Unit> {
 		Pipe<Unit> pipe = FunUtil.pipe();
 
 		Huffman<Unit> huffman = new Huffman<>();
-		huffman.loadTree(input.t0);
-		huffman.decodeUnits(To.source(input.t1), pipe.sink());
+		huffman.load(input.t0);
+		huffman.decode(To.source(input.t1), pipe.sink());
 
 		return To.list(pipe);
 	}
@@ -71,7 +71,7 @@ public class Huffman<Unit> {
 	private Huffman() {
 	}
 
-	private void encodeUnits(Source<Unit> source, Sink<Boolean> sink) {
+	private void encode(Source<Unit> source, Sink<Boolean> sink) {
 		Deque<Boolean> list = new ArrayDeque<>();
 		Unit unit;
 
@@ -88,7 +88,7 @@ public class Huffman<Unit> {
 		}
 	}
 
-	private void decodeUnits(Source<Boolean> source, Sink<Unit> sink) {
+	private void decode(Source<Boolean> source, Sink<Unit> sink) {
 		Boolean b;
 
 		while ((b = source.source()) != null) {
@@ -103,37 +103,7 @@ public class Huffman<Unit> {
 		}
 	}
 
-	private static <Unit> Map<Unit, Integer> buildHistogram(List<Unit> input) {
-		Map<Unit, Integer> countsByUnit = new HashMap<>();
-
-		for (Unit unit : input) {
-			Integer count = countsByUnit.get(unit);
-			countsByUnit.put(unit, (count != null ? count : 0) + 1);
-		}
-
-		return countsByUnit;
-	}
-
-	private void buildTree(Map<Unit, Integer> countsByUnit) {
-		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(0, new Comparator<Node>() {
-			public int compare(Node node0, Node node1) {
-				return node0.count - node1.count;
-			}
-		});
-
-		for (Entry<Unit, Integer> entry : countsByUnit.entrySet())
-			priorityQueue.add(new Node(entry.getValue(), entry.getKey()));
-
-		while (priorityQueue.size() > 1) {
-			Node node0 = priorityQueue.remove();
-			Node node1 = priorityQueue.remove();
-			priorityQueue.add(new Node(node0, node1));
-		}
-
-		root = !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
-	}
-
-	private Node loadTree(List<Unit> units) {
+	private Node load(List<Unit> units) {
 		Deque<Node> stack = new ArrayDeque<>();
 
 		for (Unit unit : units)
@@ -150,17 +120,43 @@ public class Huffman<Unit> {
 		return stack.pop();
 	}
 
-	private void saveTree(Sink<Unit> sink) {
-		saveTree(sink, root);
+	private void save(Sink<Unit> sink) {
+		save(sink, root);
 	}
 
-	private void saveTree(Sink<Unit> sink, Node node) {
+	private void save(Sink<Unit> sink, Node node) {
 		if (node.node0 != null || node.node1 != null) {
-			saveTree(sink, node.node0);
-			saveTree(sink, node.node1);
+			save(sink, node.node0);
+			save(sink, node.node1);
 			sink.sink(null);
 		} else
 			sink.sink(node.unit);
+	}
+
+	private void build(List<Unit> input) {
+		Map<Unit, Integer> histogram = new HashMap<>();
+
+		for (Unit unit : input) {
+			Integer count = histogram.get(unit);
+			histogram.put(unit, (count != null ? count : 0) + 1);
+		}
+
+		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(0, new Comparator<Node>() {
+			public int compare(Node node0, Node node1) {
+				return node0.count - node1.count;
+			}
+		});
+
+		for (Entry<Unit, Integer> entry : histogram.entrySet())
+			priorityQueue.add(new Node(entry.getValue(), entry.getKey()));
+
+		while (priorityQueue.size() > 1) {
+			Node node0 = priorityQueue.remove();
+			Node node1 = priorityQueue.remove();
+			priorityQueue.add(new Node(node0, node1));
+		}
+
+		root = !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
 	}
 
 }
