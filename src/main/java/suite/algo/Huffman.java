@@ -50,25 +50,25 @@ public class Huffman<Unit> {
 		Pipe<Unit> pipeu = FunUtil.pipe();
 		Pipe<Boolean> pipeb = FunUtil.pipe();
 
-		Huffman<Unit> huffman = new Huffman<>(buildHistogram(input));
+		Huffman<Unit> huffman = new Huffman<>();
+		huffman.buildTree(buildHistogram(input));
 		huffman.encodeUnits(To.source(input), pipeb.sink());
-		huffman.storeTree(pipeu.sink());
+		huffman.saveTree(pipeu.sink());
 
 		return Pair.create(To.list(pipeu), To.list(pipeb));
 	}
 
 	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
 		Pipe<Unit> pipe = FunUtil.pipe();
-		new Huffman<>(input.t0).decodeUnits(To.source(input.t1), pipe.sink());
+
+		Huffman<Unit> huffman = new Huffman<>();
+		huffman.loadTree(input.t0);
+		huffman.decodeUnits(To.source(input.t1), pipe.sink());
+
 		return To.list(pipe);
 	}
 
-	private Huffman(Map<Unit, Integer> countsByUnit) {
-		this.root = buildTree(countsByUnit);
-	}
-
-	private Huffman(List<Unit> units) {
-		this.root = loadTree(units);
+	private Huffman() {
 	}
 
 	private void encodeUnits(Source<Unit> source, Sink<Boolean> sink) {
@@ -114,7 +114,7 @@ public class Huffman<Unit> {
 		return countsByUnit;
 	}
 
-	private Node buildTree(Map<Unit, Integer> countsByUnit) {
+	private void buildTree(Map<Unit, Integer> countsByUnit) {
 		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(0, new Comparator<Node>() {
 			public int compare(Node node0, Node node1) {
 				return node0.count - node1.count;
@@ -130,7 +130,7 @@ public class Huffman<Unit> {
 			priorityQueue.add(new Node(node0, node1));
 		}
 
-		return !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
+		root = !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
 	}
 
 	private Node loadTree(List<Unit> units) {
@@ -141,20 +141,23 @@ public class Huffman<Unit> {
 				Node node0 = stack.pop();
 				Node node1 = stack.pop();
 				stack.push(new Node(node0, node1));
-			} else
-				stack.push(new Node(0, unit));
+			} else {
+				Node node = new Node(0, unit);
+				stack.push(node);
+				nodesByUnit.put(unit, node);
+			}
 
 		return stack.pop();
 	}
 
-	private void storeTree(Sink<Unit> sink) {
-		storeTree(sink, root);
+	private void saveTree(Sink<Unit> sink) {
+		saveTree(sink, root);
 	}
 
-	private void storeTree(Sink<Unit> sink, Node node) {
+	private void saveTree(Sink<Unit> sink, Node node) {
 		if (node.node0 != null || node.node1 != null) {
-			storeTree(sink, node.node0);
-			storeTree(sink, node.node1);
+			saveTree(sink, node.node0);
+			saveTree(sink, node.node1);
 			sink.sink(null);
 		} else
 			sink.sink(node.unit);
