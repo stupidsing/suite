@@ -3,10 +3,14 @@ package suite.editor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -148,6 +152,28 @@ public class EditorController {
 		JComponent top = view.getTopToolbar();
 		top.setVisible(!top.isVisible());
 		view.repaint();
+	}
+
+	public void unixFilter(EditorView view) {
+		JFrame frame = view.getFrame();
+		JEditorPane editor = view.getEditor();
+
+		String command = JOptionPane.showInputDialog(frame //
+				, "Enter command:", "Unix Filter", JOptionPane.PLAIN_MESSAGE);
+
+		try {
+			Process process = Runtime.getRuntime().exec(command);
+
+			try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos, FileUtil.charset)) {
+				writer.write(editor.getText());
+			}
+
+			process.waitFor();
+
+			editor.setText(To.string(process.getInputStream()));
+		} catch (IOException | InterruptedException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void run(final EditorView view, final Fun<String, String> fun) {

@@ -3,15 +3,11 @@ package suite.sample;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import suite.net.CopyStreamThread;
-import suite.util.LogUtil;
 import suite.util.SocketUtil;
 import suite.util.SocketUtil.Io;
-import suite.util.Util;
 
 public class TelnetServer {
 
@@ -54,28 +50,6 @@ public class TelnetServer {
 				}
 			}
 		});
-
-		try (ServerSocket serverSocket = new ServerSocket(2323)) {
-			while (true)
-				new TelnetHandlerThread(serverSocket.accept()).start();
-		}
-	}
-
-	public static class TelnetHandlerThread extends Thread {
-		private Socket socket;
-
-		private TelnetHandlerThread(Socket socket) {
-			this.socket = socket;
-		}
-
-		public void run() {
-			try (InputStream sis = socket.getInputStream(); OutputStream sos = socket.getOutputStream()) {
-			} catch (Exception ex) {
-				LogUtil.error(ex);
-			} finally {
-				Util.closeQuietly(socket);
-			}
-		}
 	}
 
 }

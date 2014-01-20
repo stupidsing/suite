@@ -191,6 +191,13 @@ public class EditorView {
 			}
 		});
 
+		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_U));
+		unixFilterMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.unixFilter(EditorView.this);
+			}
+		});
+
 		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
 		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
 		leftMenuItem.addActionListener(new ActionListener() {
@@ -241,7 +248,7 @@ public class EditorView {
 				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
-		);
+				, unixFilterMenuItem);
 
 		JMenu viewMenu = createMenu("View", KeyEvent.VK_V //
 				, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
