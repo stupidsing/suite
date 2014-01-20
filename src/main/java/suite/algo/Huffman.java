@@ -72,15 +72,19 @@ public class Huffman<Unit> {
 	}
 
 	private void encodeUnits(Source<Unit> source, Sink<Boolean> sink) {
+		Deque<Boolean> list = new ArrayDeque<>();
 		Unit unit;
 
 		while ((unit = source.source()) != null) {
 			Node node = nodesByUnit.get(unit), parent;
 
 			while ((parent = node.parent) != null) {
-				sink.sink(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
-				node = node.parent;
+				list.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
+				node = parent;
 			}
+
+			while (!list.isEmpty())
+				sink.sink(list.pop());
 		}
 	}
 
