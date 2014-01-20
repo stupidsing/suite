@@ -35,6 +35,14 @@ public class To {
 		return list;
 	}
 
+	public static <T> List<T> list(Source<T> source) {
+		List<T> list = new ArrayList<>();
+		T t;
+		while ((t = source.source()) != null)
+			list.add(t);
+		return list;
+	}
+
 	@SafeVarargs
 	public static <O> Source<O> source(final O... array) {
 		return source(Arrays.asList(array));

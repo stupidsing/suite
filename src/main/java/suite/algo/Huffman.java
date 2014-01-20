@@ -1,7 +1,6 @@
 package suite.algo;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -10,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
+import suite.util.FunUtil;
+import suite.util.FunUtil.Pipe;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
@@ -46,37 +47,24 @@ public class Huffman<Unit> {
 	}
 
 	public static <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
-		List<Unit> outputUnits = new ArrayList<>();
-		final List<Boolean> outputBooleans = new ArrayList<>();
-
-		Sink<Boolean> sink = new Sink<Boolean>() {
-			public void sink(Boolean b) {
-				outputBooleans.add(b);
-			}
-		};
+		Pipe<Unit> pipeu = FunUtil.pipe();
+		Pipe<Boolean> pipeb = FunUtil.pipe();
 
 		Huffman<Unit> huffman = new Huffman<>(buildHistogram(input));
-		huffman.encodeUnits(To.source(input), sink);
-		huffman.writeTree(outputUnits);
+		huffman.encodeUnits(To.source(input), pipeb.sink());
+		huffman.storeTree(pipeu.sink());
 
-		return Pair.create(outputUnits, outputBooleans);
+		return Pair.create(To.list(pipeu.source()), To.list(pipeb.source()));
 	}
 
 	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
-		final List<Unit> output = new ArrayList<>();
-
-		Sink<Unit> sink = new Sink<Unit>() {
-			public void sink(Unit unit) {
-				output.add(unit);
-			}
-		};
-
-		new Huffman<>(input.t0).decodeUnits(To.source(input.t1), sink);
-		return output;
+		Pipe<Unit> pipe = FunUtil.pipe();
+		new Huffman<>(input.t0).decodeUnits(To.source(input.t1), pipe.sink());
+		return To.list(pipe.source());
 	}
 
 	private Huffman(List<Unit> units) {
-		this.root = readTree(units);
+		this.root = loadTree(units);
 	}
 
 	private Huffman(Map<Unit, Integer> countsByUnit) {
@@ -141,7 +129,7 @@ public class Huffman<Unit> {
 		return !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
 	}
 
-	private Node readTree(List<Unit> units) {
+	private Node loadTree(List<Unit> units) {
 		Deque<Node> stack = new ArrayDeque<>();
 
 		for (Unit unit : units)
@@ -155,17 +143,17 @@ public class Huffman<Unit> {
 		return stack.pop();
 	}
 
-	private void writeTree(List<Unit> units) {
-		writeTree(units, root);
+	private void storeTree(Sink<Unit> sink) {
+		storeTree(sink, root);
 	}
 
-	private void writeTree(List<Unit> units, Node node) {
+	private void storeTree(Sink<Unit> sink, Node node) {
 		if (node.node0 != null || node.node1 != null) {
-			writeTree(units, node.node0);
-			writeTree(units, node.node1);
-			units.add(null);
+			storeTree(sink, node.node0);
+			storeTree(sink, node.node1);
+			sink.sink(null);
 		} else
-			units.add(node.unit);
+			sink.sink(node.unit);
 	}
 
 }
