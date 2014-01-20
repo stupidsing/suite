@@ -22,8 +22,8 @@ import suite.util.To;
  */
 public class Huffman<Unit> {
 
-	private Map<Unit, Node> nodesByUnit = new HashMap<>();
 	private Node root;
+	private Map<Unit, Node> nodesByUnit = new HashMap<>();
 
 	private class Node {
 		private int count;
