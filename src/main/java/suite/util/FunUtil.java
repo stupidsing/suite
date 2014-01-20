@@ -40,6 +40,9 @@ public class FunUtil {
 	public static class Pipe<T> {
 		private Deque<T> deque = new ArrayDeque<T>();
 
+		private Pipe() {
+		}
+
 		public Sink<T> sink() {
 			return new Sink<T>() {
 				public void sink(T t) {
@@ -147,6 +150,10 @@ public class FunUtil {
 			public void sink(I i) {
 			}
 		};
+	}
+
+	public static <T> Pipe<T> pipe() {
+		return new Pipe<>();
 	}
 
 }

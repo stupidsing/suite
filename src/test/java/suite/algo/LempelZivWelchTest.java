@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import suite.net.Bytes.BytesBuilder;
 import suite.util.FileUtil;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Pipe;
 import suite.util.FunUtil.Source;
 import suite.util.To;
@@ -52,8 +53,8 @@ public class LempelZivWelchTest {
 			}
 		};
 
-		Pipe<Integer> pipe0 = new Pipe<>();
-		Pipe<Byte> pipe1 = new Pipe<>();
+		Pipe<Integer> pipe0 = FunUtil.pipe();
+		Pipe<Byte> pipe1 = FunUtil.pipe();
 
 		LempelZivWelch<Byte> lzw = new LempelZivWelch<>(allBytes());
 		lzw.encode(inputSource, pipe0.sink());
