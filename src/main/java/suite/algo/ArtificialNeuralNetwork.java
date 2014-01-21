@@ -41,16 +41,16 @@ public class ArtificialNeuralNetwork {
 		outputs.add(values);
 
 		for (int layer = 0; layer < nLayers; layer++) {
-			float weights[][] = weightsByLayer.get(layer);
-			int nInputs = weights.length;
-			int nOutputs = weights[0].length;
+			float wij[][] = weightsByLayer.get(layer);
+			int ni = wij.length;
+			int nj = wij[0].length;
 
-			float values1[] = new float[nOutputs];
+			float values1[] = new float[nj];
 
-			for (int j = 0; j < nOutputs; j++) {
+			for (int j = 0; j < nj; j++) {
 				float sum = 0f;
-				for (int i = 0; i < nInputs; i++)
-					sum += values[i] * weights[i][j];
+				for (int i = 0; i < ni; i++)
+					sum += values[i] * wij[i][j];
 				values1[j] = activationFunction(sum);
 			}
 
@@ -64,34 +64,34 @@ public class ArtificialNeuralNetwork {
 		float errors[] = null;
 
 		for (int layer = nLayers; layer > 0; layer--) {
-			float weights0[][] = weightsByLayer.get(layer - 1);
-			int n0 = weights0.length;
-			int n1 = weights0[0].length;
-			float diffs[] = new float[n1];
+			float wij[][] = weightsByLayer.get(layer - 1);
+			int ni = wij.length;
+			int nj = wij[0].length;
 
 			float ins[] = activations.get(layer - 1);
 			float outs[] = activations.get(layer);
+			float diffs[] = new float[nj];
 
 			if (layer < nLayers) {
-				float weights1[][] = weightsByLayer.get(layer);
-				int n2 = weights1[0].length;
+				float wjk[][] = weightsByLayer.get(layer);
+				int nk = wjk[0].length;
 
-				for (int j = 0; j < n1; j++) {
+				for (int j = 0; j < nj; j++) {
 					float sum = 0f;
-					for (int k = 0; k < n2; k++)
-						sum += errors[k] * weights1[j][k];
+					for (int k = 0; k < nk; k++)
+						sum += errors[k] * wjk[j][k];
 					diffs[j] = sum;
 				}
 			} else
-				for (int j = 0; j < n1; j++)
+				for (int j = 0; j < nj; j++)
 					diffs[j] = expected[j] - outs[j];
 
-			float errors1[] = new float[n1];
+			float errors1[] = new float[nj];
 
-			for (int j = 0; j < n1; j++) {
+			for (int j = 0; j < nj; j++) {
 				errors1[j] = diffs[j] * activationFunctionGradient(outs[j]);
-				for (int i = 0; i < n0; i++)
-					weights0[i][j] += learningRate * errors1[j] * ins[i];
+				for (int i = 0; i < ni; i++)
+					wij[i][j] += learningRate * errors1[j] * ins[i];
 			}
 
 			errors = errors1;
