@@ -37,6 +37,9 @@ fc-lazyify (TREE .oper .left0 .right0) .dox
 	, fc-lazyify .right0 .right1
 	, .dox = WRAP (TREE .oper (UNWRAP .left1) (UNWRAP .right1))
 #
+fc-lazyify (USING _ .lib .do) (USING LAZY .lib .do)
+	:- !
+#
 fc-lazyify .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-lazyify-list .ts #
 
 fc-lazyify-list () #

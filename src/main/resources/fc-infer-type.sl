@@ -34,7 +34,7 @@ infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 infer-type-rule .p .env .tr/.tr .type
 	:- find-simple-type .p .env .type, !
 #
-infer-type-rule (USING .lib .do) .env .tr/.tr .type
+infer-type-rule (USING _ .lib .do) .env .tr/.tr .type
 	:- !, fc-load-precompiled-library .lib
 	, infer-type-rule-using-lib .lib .do .env .tr1/() .type
 	, resolve-type-rules .tr1

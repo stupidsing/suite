@@ -32,12 +32,12 @@ compile-function .mode .do0 .c0
 		; .mode = EAGER, .do1 = .do2
 	)
 	, !, fc-optimize .do2 .do3
-	, !, fc-compile .mode .do3 0/() .c1/.c2/.d0/()/.reg
+	, !, fc-compile .do3 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
 	, !, cg-generate-code .c0
 #
 
-fc-compile .mode (USING .lib .do) .fve .cdr
+fc-compile (USING .mode .lib .do) .fve .cdr
 	:- !, fc-load-precompiled-library .lib
 	, fc-compile-using-lib .mode .lib .do .fve .cdr
 #

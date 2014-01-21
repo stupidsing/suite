@@ -52,7 +52,7 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 
 fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
-	, fc-compile .mode .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
+	, fc-compile .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
 	, .fcs = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
 	, cg-optimize-segment .c0/.cs0 .co0/.cso0
 	, cg-optimize-segment .csx/.cx .csox/.cox
@@ -61,7 +61,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	, .prog = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
 			:- fc-dict-merge-replace .ve .ves .ve1
-			, fc-compile .mode .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
+			, fc-compile .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
 	)
 #
 
@@ -75,6 +75,6 @@ infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
 -- Code generation
-fc-compile _ ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
+fc-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 
 () :- import.file 'fc.sl' #

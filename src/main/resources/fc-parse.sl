@@ -32,7 +32,7 @@ fc-parse (using /.lib >> .do) .dox
 	, fc-add-functions .lib .do .do1
 	, fc-parse .do1 .dox
 #
-fc-parse (using .lib >> .do) (USING .lib .do1)
+fc-parse (using .lib >> .do) (USING EAGER .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define .var = .value >> .do) (
