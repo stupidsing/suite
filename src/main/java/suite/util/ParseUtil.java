@@ -45,9 +45,9 @@ public class ParseUtil {
 
 		// Shows warning if the atom has mismatched quotes or brackets
 		for (char c : s.toCharArray()) {
-			quote = ParseUtil.getQuoteChange(quote, c);
+			quote = getQuoteChange(quote, c);
 			if (quote == 0)
-				depth = ParseUtil.checkDepth(depth, c);
+				depth = checkDepth(depth, c);
 		}
 
 		return quote == 0 && depth == 0;
@@ -103,7 +103,7 @@ public class ParseUtil {
 
 			if (quote == 0) {
 				if (isCheckDepth)
-					depth = ParseUtil.checkDepth(depth, c);
+					depth = checkDepth(depth, c);
 
 				if (depth == 0 && s.startsWith(name, pos)) {
 					String left = s.substring(0, pos);
