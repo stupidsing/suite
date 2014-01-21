@@ -103,7 +103,7 @@ public class ArtificialNeuralNetwork {
 	}
 
 	private float activationFunctionGradient(float value) {
-		return value * (1 - value);
+		return value * (1f - value);
 	}
 
 }
