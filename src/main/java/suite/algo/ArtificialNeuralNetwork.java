@@ -8,7 +8,7 @@ import suite.util.Util;
 
 public class ArtificialNeuralNetwork {
 
-	private float learningRate = 0.2f;
+	private float learningRate = 1f;
 	private int nLayers;
 	private List<float[][]> weightsByLayer = new ArrayList<>();
 
@@ -22,7 +22,7 @@ public class ArtificialNeuralNetwork {
 
 			for (int i = 0; i < nInputs; i++)
 				for (int j = 0; j < nOutputs; j++)
-					weights[i][j] = 2 * random.nextFloat() - 1f;
+					weights[i][j] = random.nextFloat();
 
 			weightsByLayer.add(weights);
 		}
@@ -99,7 +99,7 @@ public class ArtificialNeuralNetwork {
 	}
 
 	private float activationFunction(float value) {
-		return 1f / (1f + (float) Math.exp(-value)) - 0.5f;
+		return 1f / (1f + (float) Math.exp(-value));
 	}
 
 	private float activationFunctionGradient(float value) {
