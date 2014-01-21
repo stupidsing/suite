@@ -45,13 +45,10 @@ public class Huffman<Unit> {
 	}
 
 	public static <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
-		List<Unit> units = new ArrayList<Unit>();
-
 		Huffman<Unit> huffman = new Huffman<>();
 		huffman.build(input);
-		huffman.save(units);
 
-		return Pair.create(units, To.list(huffman.encode(To.source(input))));
+		return Pair.create(huffman.save(), To.list(huffman.encode(To.source(input))));
 	}
 
 	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
@@ -122,8 +119,10 @@ public class Huffman<Unit> {
 		root = deque.pop();
 	}
 
-	private void save(List<Unit> list) {
+	private List<Unit> save() {
+		List<Unit> list = new ArrayList<>();
 		save(list, root);
+		return list;
 	}
 
 	private void save(List<Unit> list, Node node) {
