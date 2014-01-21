@@ -29,14 +29,14 @@ public class ArtificialNeuralNetwork {
 	}
 
 	public float[] feed(float inputs[]) {
-		return Util.last(calculateActivations(inputs));
+		return Util.last(forwardActivations(inputs));
 	}
 
 	public void train(float inputs[], float expected[]) {
-		backwardPropagate(calculateActivations(inputs), expected);
+		backwardPropagate(forwardActivations(inputs), expected);
 	}
 
-	private List<float[]> calculateActivations(float values[]) {
+	private List<float[]> forwardActivations(float values[]) {
 		List<float[]> outputs = new ArrayList<>();
 		outputs.add(values);
 
