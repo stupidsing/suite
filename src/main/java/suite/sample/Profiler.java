@@ -22,6 +22,16 @@ public class Profiler {
 	private Timer timer;
 	private Map<String, int[]> record = new HashMap<>();
 
+	public String profile(Runnable runnable) {
+		try {
+			start();
+			runnable.run();
+		} finally {
+			stop();
+		}
+		return dump();
+	}
+
 	public void start() {
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -63,7 +73,8 @@ public class Profiler {
 		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
 
 		for (ThreadInfo thread : threadInfos)
-			if (thread.getThreadId() != currentThreadId //
+			if (thread != null //
+					&& thread.getThreadId() != currentThreadId //
 					&& thread.getThreadState() == State.RUNNABLE //
 					&& !thread.getThreadName().equals("ReaderThread")) {
 				String lastName = null;

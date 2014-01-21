@@ -130,50 +130,48 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
-		DecimalFormat df = new DecimalFormat("0.000");
-		int nThreads = Runtime.getRuntime().availableProcessors();
-		int nSimulations = 5000; // 20000
-		int boundedTime = 300000;
-		int seed = new Random().nextInt();
+		System.out.println(new Profiler().profile(new Runnable() {
+			public void run() {
+				DecimalFormat df = new DecimalFormat("0.000");
+				int nThreads = Runtime.getRuntime().availableProcessors();
+				int nSimulations = 5000; // 20000
+				int boundedTime = 300000;
+				int seed = new Random().nextInt();
 
-		System.out.println("RANDOM SEED = " + seed);
-		ShuffleUtil.setSeed(seed);
+				System.out.println("RANDOM SEED = " + seed);
+				ShuffleUtil.setSeed(seed);
 
-		Board board = new Board();
-		GameSet gameSet = new GameSet(board, Occupation.BLACK);
-		long current = System.currentTimeMillis();
+				Board board = new Board();
+				GameSet gameSet = new GameSet(board, Occupation.BLACK);
+				long current = System.currentTimeMillis();
 
-		Profiler profiler = new Profiler();
-		profiler.start();
+				while (true) {
+					GameSet gameSet1 = new GameSet(gameSet);
+					UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet1);
+					UctSearch<Coordinate> search = new UctSearch<>(visitor);
+					search.setNumberOfThreads(nThreads);
+					search.setNumberOfSimulations(nSimulations);
+					search.setBoundedTime(boundedTime);
 
-		while (true) {
-			GameSet gameSet1 = new GameSet(gameSet);
-			UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet1);
-			UctSearch<Coordinate> search = new UctSearch<>(visitor);
-			search.setNumberOfThreads(nThreads);
-			search.setNumberOfSimulations(nSimulations);
-			search.setBoundedTime(boundedTime);
+					Coordinate move = search.search();
+					if (move == null)
+						break;
 
-			Coordinate move = search.search();
-			if (move == null)
-				break;
+					long current0 = current;
+					current = System.currentTimeMillis();
+					Occupation player = gameSet.getNextPlayer();
 
-			long current0 = current;
-			current = System.currentTimeMillis();
-			Occupation player = gameSet.getNextPlayer();
+					search.dumpPrincipalVariation();
+					System.out.println(player //
+							+ " " + move //
+							+ " " + df.format(search.getWinningChance()) //
+							+ " " + (current - current0) + "ms");
 
-			search.dumpPrincipalVariation();
-			System.out.println(player //
-					+ " " + move //
-					+ " " + df.format(search.getWinningChance()) //
-					+ " " + (current - current0) + "ms");
-
-			gameSet.play(move);
-			UserInterface.display(gameSet);
-		}
-
-		profiler.stop();
-		System.out.println(profiler.dump());
+					gameSet.play(move);
+					UserInterface.display(gameSet);
+				}
+			}
+		}));
 	}
 
 }
