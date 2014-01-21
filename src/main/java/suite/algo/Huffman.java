@@ -1,6 +1,7 @@
 package suite.algo;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -9,9 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
-import suite.util.FunUtil;
-import suite.util.FunUtil.Pipe;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.To;
@@ -47,90 +45,94 @@ public class Huffman<Unit> {
 	}
 
 	public static <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
-		Pipe<Unit> pipeu = FunUtil.pipe();
-		Pipe<Boolean> pipeb = FunUtil.pipe();
+		List<Unit> units = new ArrayList<Unit>();
 
 		Huffman<Unit> huffman = new Huffman<>();
 		huffman.build(input);
-		huffman.save(pipeu.sink());
-		huffman.encode(To.source(input), pipeb.sink());
+		huffman.save(units);
 
-		return Pair.create(To.list(pipeu), To.list(pipeb));
+		return Pair.create(units, To.list(huffman.encode(To.source(input))));
 	}
 
 	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
-		Pipe<Unit> pipe = FunUtil.pipe();
-
 		Huffman<Unit> huffman = new Huffman<>();
 		huffman.load(input.t0);
-		huffman.decode(To.source(input.t1), pipe.sink());
 
-		return To.list(pipe);
+		return To.list(huffman.decode(To.source(input.t1)));
 	}
 
 	private Huffman() {
 	}
 
-	private void encode(Source<Unit> source, Sink<Boolean> sink) {
-		Deque<Boolean> list = new ArrayDeque<>();
-		Unit unit;
+	private Source<Boolean> encode(final Source<Unit> source) {
+		return new Source<Boolean>() {
+			private Deque<Boolean> stack = new ArrayDeque<>();
 
-		while ((unit = source.source()) != null) {
-			Node node = nodesByUnit.get(unit), parent;
+			public Boolean source() {
+				Unit unit;
 
-			while ((parent = node.parent) != null) {
-				list.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
-				node = parent;
+				while (stack.isEmpty() && (unit = source.source()) != null) {
+					Node node = nodesByUnit.get(unit), parent;
+
+					while ((parent = node.parent) != null) {
+						stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
+						node = parent;
+					}
+				}
+
+				return !stack.isEmpty() ? stack.pop() : null;
 			}
-
-			while (!list.isEmpty())
-				sink.sink(list.pop());
-		}
+		};
 	}
 
-	private void decode(Source<Boolean> source, Sink<Unit> sink) {
-		Boolean b;
+	private Source<Unit> decode(final Source<Boolean> source) {
+		return new Source<Unit>() {
+			public Unit source() {
+				Boolean b;
 
-		while ((b = source.source()) != null) {
-			Node node = root;
+				if ((b = source.source()) != null) {
+					Node node = root;
 
-			while (node.unit == null) {
-				node = b ? node.node0 : node.node1;
-				b = source.source();
+					while (node.unit == null) {
+						node = b ? node.node0 : node.node1;
+						b = source.source();
+					}
+
+					return node.unit;
+				} else
+					return null;
 			}
-
-			sink.sink(node.unit);
-		}
+		};
 	}
 
-	private Node load(List<Unit> units) {
-		Deque<Node> stack = new ArrayDeque<>();
+	private void load(List<Unit> units) {
+		Deque<Node> deque = new ArrayDeque<>();
 
 		for (Unit unit : units)
 			if (unit == null) {
-				Node node0 = stack.pop();
-				Node node1 = stack.pop();
-				stack.push(new Node(node0, node1));
+				Node node0 = deque.pop();
+				Node node1 = deque.pop();
+				deque.push(new Node(node0, node1));
 			} else {
 				Node node = new Node(0, unit);
-				stack.push(node);
+				deque.push(node);
 				nodesByUnit.put(unit, node);
 			}
 
-		return stack.pop();
+		root = deque.pop();
 	}
 
-	private void save(Sink<Unit> sink) {
-		save(sink, root);
+	private void save(List<Unit> list) {
+		save(list, root);
 	}
 
-	private void save(Sink<Unit> sink, Node node) {
+	private void save(List<Unit> list, Node node) {
 		if (node.node0 != null || node.node1 != null) {
-			save(sink, node.node0);
-			save(sink, node.node1);
-			sink.sink(null);
+			save(list, node.node0);
+			save(list, node.node1);
+			list.add(null);
 		} else
-			sink.sink(node.unit);
+			list.add(node.unit);
 	}
 
 	private void build(List<Unit> input) {
