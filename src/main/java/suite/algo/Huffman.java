@@ -24,6 +24,12 @@ public class Huffman<Unit> {
 	private Node root;
 	private Map<Unit, Node> nodesByUnit = new HashMap<>();
 
+	private Comparator<Node> comparator = new Comparator<Node>() {
+		public int compare(Node node0, Node node1) {
+			return node0.count - node1.count;
+		}
+	};
+
 	private class Node {
 		private int count;
 		private Unit unit;
@@ -135,18 +141,8 @@ public class Huffman<Unit> {
 	}
 
 	private void build(List<Unit> input) {
-		Map<Unit, Integer> histogram = new HashMap<>();
-
-		for (Unit unit : input) {
-			Integer count = histogram.get(unit);
-			histogram.put(unit, (count != null ? count : 0) + 1);
-		}
-
-		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(0, new Comparator<Node>() {
-			public int compare(Node node0, Node node1) {
-				return node0.count - node1.count;
-			}
-		});
+		Map<Unit, Integer> histogram = histogram(input);
+		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(0, comparator);
 
 		for (Entry<Unit, Integer> entry : histogram.entrySet())
 			priorityQueue.add(new Node(entry.getValue(), entry.getKey()));
@@ -158,6 +154,17 @@ public class Huffman<Unit> {
 		}
 
 		root = !priorityQueue.isEmpty() ? priorityQueue.remove() : null;
+	}
+
+	private Map<Unit, Integer> histogram(List<Unit> input) {
+		Map<Unit, Integer> histogram = new HashMap<>();
+
+		for (Unit unit : input) {
+			Integer count = histogram.get(unit);
+			histogram.put(unit, (count != null ? count : 0) + 1);
+		}
+
+		return histogram;
 	}
 
 }
