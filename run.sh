@@ -15,4 +15,5 @@ SRCTIME=$(find "${HOMEDIR}/pom.xml" "${HOMEDIR}/src/main/" -type f | xargs stat 
 		java ${OPTS} -jar "${JAR}" -precompile STANDARD < /dev/null
 	)
 ) &&
-rlwrap -H ${HOME}/.suite_history java ${OPTS} -jar "${JAR}" "$@"
+CMD="java ${OPTS} -jar "${JAR}" "$@"" &&
+(which rlwrap > /dev/null && rlwrap -H ${HOME}/.suite_history ${CMD} || ${CMD})
