@@ -12,8 +12,9 @@ TARGETTIME=$(echo "${JAR}" "${BASE}/STANDARD.rpn" | xargs -I {} sh -c 'stat -c %
 	[ ${SRCTIME} -le ${TARGETTIME} ] ||
 	(
 		mvn -Dmaven.test.skip=true install assembly:single &&
-		(java ${OPTS} -jar "${JAR}" -precompile STANDARD < /dev/null || rm -f ${BASE}/STANDARD.rpn && false)
+		(java ${OPTS} -jar "${JAR}" -precompile STANDARD < /dev/null || (rm -f ${BASE}/STANDARD.rpn && false))
 	)
 ) &&
+
 CMD="java ${OPTS} -jar ${JAR} $@" &&
 (which rlwrap > /dev/null && rlwrap -H ${HOME}/.suite_history ${CMD} || ${CMD})
