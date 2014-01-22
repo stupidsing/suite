@@ -19,4 +19,10 @@ public class ImportTest {
 		assertTrue(Suite.proveLogic(rs, "list repeat"));
 	}
 
+	@Test
+	public void testImportFunCompiler() throws IOException {
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
+		System.out.println(rs.getRules().size());
+	}
+
 }
