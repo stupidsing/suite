@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import suite.file.PageFile;
 import suite.util.Pair;
 import suite.util.Util;
 

@@ -7,6 +7,9 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 
+import suite.file.PageFile;
+import suite.file.Serializer;
+
 public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private Allocator al;
