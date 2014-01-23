@@ -18,11 +18,11 @@ public class Astar<Node> {
 		}
 	};
 
-	private PriorityQueue<NodeInfo> open = new PriorityQueue<>(256, comparator);
-	private Set<Node> closed = new HashSet<>();
-
 	private Fun<Node, Source<Node>> generate;
 	private Fun<Node, Integer> estimate;
+
+	private PriorityQueue<NodeInfo> open = new PriorityQueue<>(256, comparator);
+	private Set<Node> closed = new HashSet<>();
 
 	private class NodeInfo {
 		private NodeInfo previous;
@@ -36,6 +36,12 @@ public class Astar<Node> {
 			this.sunkCost = sunkCost;
 			this.estimatedCost = estimatedCost;
 		}
+	}
+
+	public Astar(Fun<Node, Source<Node>> generate, Fun<Node, Integer> estimate) {
+		super();
+		this.generate = generate;
+		this.estimate = estimate;
 	}
 
 	public List<Node> astar(Node start, Node end) {
