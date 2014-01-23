@@ -14,14 +14,14 @@ import java.nio.ByteBuffer;
  * 
  * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */
-public class PageSerializedFile<V> implements Closeable {
+public class SerializedPageFile<V> implements Closeable {
 
 	private static final int pageSize = 4096;
 
 	private PageFile file;
 	private Serializer<V> serializer;
 
-	public PageSerializedFile(String filename, Serializer<V> serializer) throws FileNotFoundException {
+	public SerializedPageFile(String filename, Serializer<V> serializer) throws FileNotFoundException {
 		file = new PageFile(filename);
 		this.serializer = serializer;
 	}

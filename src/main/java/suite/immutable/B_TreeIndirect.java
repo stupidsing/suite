@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.file.PageSerializedFile;
+import suite.file.SerializedPageFile;
 import suite.file.Serializer;
 import suite.file.Serializer.ListSerializer;
 import suite.file.Serializer.NullableSerializer;
@@ -27,7 +27,7 @@ public class B_TreeIndirect<T> {
 	private Comparator<T> comparator;
 	private Serializer<T> serializer;
 
-	private PageSerializedFile<Page> pageFile;
+	private SerializedPageFile<Page> pageFile;
 	private B_TreeIndirect<Pointer> allocationB_tree;
 
 	private static class Pointer {
@@ -292,7 +292,7 @@ public class B_TreeIndirect<T> {
 		this.comparator = comparator;
 		this.serializer = new NullableSerializer<>(serializer);
 		this.allocationB_tree = allocationB_tree;
-		pageFile = new PageSerializedFile<>(filename, createPageSerializer());
+		pageFile = new SerializedPageFile<>(filename, createPageSerializer());
 	}
 
 	public Source<T> source(Pointer pointer) {
