@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-import suite.file.PageFile;
+import suite.file.SerializedPageFile;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -21,8 +21,8 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 
 	private int branchFactor;
 	private Allocator allocator;
-	private PageFile<Superblock> superblockPageFile;
-	private PageFile<Page> pageFile;
+	private SerializedPageFile<Superblock> superblockPageFile;
+	private SerializedPageFile<Page> pageFile;
 	private Comparator<Key> comparator;
 
 	public interface Pointer {
@@ -405,11 +405,11 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		this.allocator = allocator;
 	}
 
-	public void setSuperblockPageFile(PageFile<Superblock> superblockPageFile) {
+	public void setSuperblockPageFile(SerializedPageFile<Superblock> superblockPageFile) {
 		this.superblockPageFile = superblockPageFile;
 	}
 
-	public void setPageFile(PageFile<Page> pageFile) {
+	public void setPageFile(SerializedPageFile<Page> pageFile) {
 		this.pageFile = pageFile;
 	}
 

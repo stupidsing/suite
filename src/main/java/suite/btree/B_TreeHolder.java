@@ -7,14 +7,14 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.file.PageFile;
+import suite.file.SerializedPageFile;
 import suite.file.Serializer;
 
 public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private Allocator al;
-	private PageFile<B_Tree<Key, Value>.Superblock> sbp;
-	private PageFile<B_Tree<Key, Value>.Page> pp;
+	private SerializedPageFile<B_Tree<Key, Value>.Superblock> sbp;
+	private SerializedPageFile<B_Tree<Key, Value>.Page> pp;
 
 	private B_Tree<Key, Value> b_tree;
 
@@ -120,8 +120,8 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
 		al = new Allocator(amf);
-		sbp = new PageFile<>(sbf, sbs);
-		pp = new PageFile<>(pf, ps);
+		sbp = new SerializedPageFile<>(sbf, sbs);
+		pp = new SerializedPageFile<>(pf, ps);
 
 		b_tree.setAllocator(al);
 		b_tree.setSuperblockPageFile(sbp);
