@@ -80,6 +80,14 @@ public class Util {
 		return set;
 	}
 
+	public static <T extends Comparable<T>> Comparator<T> comparator() {
+		return new Comparator<T>() {
+			public int compare(T t0, T t1) {
+				return compare(t0, t1);
+			}
+		};
+	}
+
 	public static <T extends Comparable<T>> int compare(T t0, T t1) {
 		if (t0 == null ^ t1 == null)
 			return t0 != null ? 1 : -1;

@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import suite.util.SerializeUtil.Serializer;
+
 /**
  * Persists B-tree pages to file on disk.
  * 

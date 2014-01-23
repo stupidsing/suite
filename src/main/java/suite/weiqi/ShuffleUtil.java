@@ -18,7 +18,7 @@ public class ShuffleUtil {
 		if (size > 0) {
 
 			// Quickly finds a value smaller than size
-			int position = ((int) random.nextLong()) & (size - 1);
+			int position = (int) random.nextLong() & size - 1;
 			list.add(list.get(position));
 			list.set(position, t);
 		} else

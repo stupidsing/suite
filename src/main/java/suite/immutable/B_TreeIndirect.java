@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.Set;
 
 import suite.file.SerializedPageFile;
-import suite.file.Serializer;
-import suite.file.Serializer.ListSerializer;
-import suite.file.Serializer.NullableSerializer;
 import suite.util.FunUtil.Source;
+import suite.util.SerializeUtil;
+import suite.util.SerializeUtil.Serializer;
 import suite.util.Util;
 
 public class B_TreeIndirect<T> {
@@ -30,7 +29,25 @@ public class B_TreeIndirect<T> {
 	private SerializedPageFile<Page> pageFile;
 	private B_TreeIndirect<Pointer> allocationB_tree;
 
-	private static class Pointer {
+	public static class Pointer {
+		public static Comparator<Pointer> comparator = new Comparator<Pointer>() {
+			public int compare(Pointer p0, Pointer p1) {
+				return p0.number - p1.number;
+			}
+		};
+
+		public static Serializer<Pointer> serializer = SerializeUtil.nullable(new Serializer<Pointer>() {
+			public Pointer read(ByteBuffer buffer) {
+				Pointer pointer = new Pointer();
+				pointer.number = SerializeUtil.intSerializer.read(buffer);
+				return pointer;
+			}
+
+			public void write(ByteBuffer buffer, Pointer pointer) {
+				SerializeUtil.intSerializer.write(buffer, pointer.number);
+			}
+		});
+
 		private int number;
 	}
 
@@ -70,6 +87,10 @@ public class B_TreeIndirect<T> {
 		private List<Pointer> pointers = Arrays.asList(new Pointer(), new Pointer());
 		private int using = 0;
 
+		private SwappingAllocator(int using) {
+			this.using = using;
+		}
+
 		public Pointer allocate() {
 			return pointers.get(using);
 		}
@@ -88,9 +109,9 @@ public class B_TreeIndirect<T> {
 		private B_TreeIndirect<Pointer> b_tree;
 		private B_TreeIndirect<Pointer>.Transaction transaction;
 
-		public B_TreeAllocator(B_TreeIndirect<Pointer> b_tree) {
+		public B_TreeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> chain) {
 			this.b_tree = b_tree;
-			this.transaction = b_tree.transaction();
+			this.transaction = b_tree.transaction(chain);
 		}
 
 		public Pointer allocate() {
@@ -112,12 +133,14 @@ public class B_TreeIndirect<T> {
 		private Pointer root;
 		private Allocator allocator;
 
-		public Transaction(Allocator allocator) {
+		private Transaction(Allocator allocator) {
 			this.allocator = allocator;
+			root = persist(Arrays.asList(new Slot(null, null)));
 		}
 
-		public void create() {
-			root = persist(Arrays.asList(new Slot(null, null)));
+		private Transaction(Allocator allocator, Pointer root) {
+			this.root = root;
+			this.allocator = allocator;
 		}
 
 		public void add(T t) {
@@ -287,10 +310,14 @@ public class B_TreeIndirect<T> {
 		this(filename, comparator, serializer, null);
 	}
 
+	/**
+	 * Constructor for larger trees that require another tree for page
+	 * allocation management.
+	 */
 	public B_TreeIndirect(String filename, Comparator<T> comparator, Serializer<T> serializer,
 			B_TreeIndirect<Pointer> allocationB_tree) throws FileNotFoundException {
 		this.comparator = comparator;
-		this.serializer = new NullableSerializer<>(serializer);
+		this.serializer = SerializeUtil.nullable(serializer);
 		this.allocationB_tree = allocationB_tree;
 		pageFile = new SerializedPageFile<>(filename, createPageSerializer());
 	}
@@ -365,9 +392,36 @@ public class B_TreeIndirect<T> {
 		return c == 0 ? slot.pivot : null;
 	}
 
-	public Transaction transaction() {
-		Allocator allocator = allocationB_tree != null ? new B_TreeAllocator(allocationB_tree) : new SwappingAllocator();
-		return new Transaction(allocator);
+	public static List<Integer> initializeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> chain, int nPages) {
+		B_TreeIndirect<Pointer>.Transaction transaction = b_tree.init(chain);
+
+		for (int p = 0; p < nPages; p++) {
+			Pointer pointer = new Pointer();
+			pointer.number = p;
+			transaction.add(pointer);
+		}
+
+		return transaction.commit();
+	}
+
+	public List<Integer> initialize(List<Integer> chain) {
+		return init(chain).commit();
+
+	}
+
+	public Transaction init(List<Integer> chain) {
+		return new Transaction(allocator(chain));
+	}
+
+	public Transaction transaction(List<Integer> chain) {
+		Pointer root = new Pointer();
+		root.number = chain.get(0);
+		return new Transaction(allocator(Util.right(chain, 1)), root);
+	}
+
+	private Allocator allocator(List<Integer> chain) {
+		boolean isBta = allocationB_tree != null;
+		return isBta ? new B_TreeAllocator(allocationB_tree, chain) : new SwappingAllocator(chain.get(0));
 	}
 
 	private int compare(T t0, T t1) {
@@ -389,25 +443,13 @@ public class B_TreeIndirect<T> {
 	}
 
 	private Serializer<Page> createPageSerializer() {
-		final Serializer<Pointer> pointerSerializer = new Serializer<Pointer>() {
-			public Pointer read(ByteBuffer buffer) {
-				Pointer pointer = new Pointer();
-				pointer.number = Serializer.intSerializer.read(buffer);
-				return pointer;
-			}
-
-			public void write(ByteBuffer buffer, Pointer pointer) {
-				Serializer.intSerializer.write(buffer, pointer.number);
-			}
-		};
-
-		final ListSerializer<Slot> slotsSerializer = new ListSerializer<Slot>(new Serializer<Slot>() {
+		final Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
 			public Slot read(ByteBuffer buffer) {
-				return new Slot(pointerSerializer.read(buffer), serializer.read(buffer));
+				return new Slot(Pointer.serializer.read(buffer), serializer.read(buffer));
 			}
 
 			public void write(ByteBuffer buffer, Slot slot) {
-				pointerSerializer.write(buffer, slot.pointer);
+				Pointer.serializer.write(buffer, slot.pointer);
 				serializer.write(buffer, slot.pivot);
 			}
 		});

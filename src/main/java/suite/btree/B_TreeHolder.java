@@ -8,7 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import suite.file.SerializedPageFile;
-import suite.file.Serializer;
+import suite.util.SerializeUtil;
+import suite.util.SerializeUtil.Serializer;
 
 public class B_TreeHolder<Key, Value> implements Closeable {
 
@@ -20,7 +21,6 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private class B_TreeSuperblockSerializer implements Serializer<B_Tree<Key, Value>.Superblock> {
 		private B_Tree<Key, Value> b_tree;
-		private IntSerializer intSerializer = new IntSerializer();
 
 		public B_TreeSuperblockSerializer(B_Tree<Key, Value> b_tree) {
 			this.b_tree = b_tree;
@@ -28,12 +28,12 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 		public B_Tree<Key, Value>.Superblock read(ByteBuffer buffer) {
 			B_Tree<Key, Value>.Superblock superblock = b_tree.new Superblock();
-			superblock.root = intSerializer.read(buffer);
+			superblock.root = SerializeUtil.intSerializer.read(buffer);
 			return superblock;
 		}
 
 		public void write(ByteBuffer buffer, B_Tree<Key, Value>.Superblock value) {
-			intSerializer.write(buffer, value.root);
+			SerializeUtil.intSerializer.write(buffer, value.root);
 		}
 	}
 

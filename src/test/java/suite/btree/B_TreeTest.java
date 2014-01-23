@@ -9,10 +9,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.file.Serializer.IntSerializer;
-import suite.file.Serializer.StringSerializer;
 import suite.util.FileUtil;
 import suite.util.Pair;
+import suite.util.SerializeUtil;
 
 public class B_TreeTest {
 
@@ -38,8 +37,8 @@ public class B_TreeTest {
 				pathName //
 				, isNew //
 				, comparator //
-				, new IntSerializer() //
-				, new StringSerializer(16))) {
+				, SerializeUtil.intSerializer //
+				, SerializeUtil.string(16))) {
 			b_tree = holder.get();
 			shuffleAndTest();
 		}
