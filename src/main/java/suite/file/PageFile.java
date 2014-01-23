@@ -21,7 +21,7 @@ public class PageFile implements Closeable {
 	}
 
 	public ByteBuffer load(int pageNo) throws IOException {
-		int start = pageNo * pageSize, end = start + pageNo;
+		int start = pageNo * pageSize, end = start + pageSize;
 		return file.load(start, end);
 	}
 
