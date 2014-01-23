@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.file.PageFile;
+import suite.file.PageSerializedFile;
 import suite.file.Serializer;
 import suite.file.Serializer.ListSerializer;
 import suite.file.Serializer.NullableSerializer;
@@ -27,7 +27,7 @@ public class B_TreeIndirect<T> {
 	private Comparator<T> comparator;
 	private Serializer<T> serializer;
 
-	private PageFile<Page> pageFile;
+	private PageSerializedFile<Page> pageFile;
 	private B_TreeIndirect<Pointer> allocationB_tree;
 
 	private static class Pointer {
@@ -63,7 +63,7 @@ public class B_TreeIndirect<T> {
 
 		public void discard(Pointer pointer);
 
-		public List<Object> commit();
+		public List<Integer> commit();
 	}
 
 	public class SwappingAllocator implements Allocator {
@@ -77,8 +77,8 @@ public class B_TreeIndirect<T> {
 		public void discard(Pointer pointer) {
 		}
 
-		public List<Object> commit() {
-			List<Object> pointer = Arrays.asList((Object) using);
+		public List<Integer> commit() {
+			List<Integer> pointer = Arrays.asList(using);
 			using = 1 - using;
 			return pointer;
 		}
@@ -103,7 +103,7 @@ public class B_TreeIndirect<T> {
 			transaction.add(pointer);
 		}
 
-		public List<Object> commit() {
+		public List<Integer> commit() {
 			return transaction.commit();
 		}
 	}
@@ -144,9 +144,9 @@ public class B_TreeIndirect<T> {
 			root = createRootPage(add(read(root).slots, t, isReplace));
 		}
 
-		public List<Object> commit() {
-			List<Object> result = new ArrayList<>();
-			result.add(root);
+		public List<Integer> commit() {
+			List<Integer> result = new ArrayList<>();
+			result.add(root.number);
 			result.addAll(allocator.commit());
 			return result;
 		}
@@ -292,7 +292,7 @@ public class B_TreeIndirect<T> {
 		this.comparator = comparator;
 		this.serializer = new NullableSerializer<>(serializer);
 		this.allocationB_tree = allocationB_tree;
-		pageFile = new PageFile<>(filename, createPageSerializer());
+		pageFile = new PageSerializedFile<>(filename, createPageSerializer());
 	}
 
 	public Source<T> source(Pointer pointer) {
