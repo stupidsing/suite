@@ -26,9 +26,6 @@ import suite.util.LogUtil;
 import suite.util.To;
 import suite.util.Util;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 /**
  * Probes existence of other nodes in a cluster, using the un-reliable UDP
  * protocol (due to its small messaging overhead).
@@ -47,7 +44,7 @@ public class ClusterProbe extends ThreadedService {
 	/**
 	 * Name/address pairs of all possible peers.
 	 */
-	private BiMap<String, Address> peers = HashBiMap.create();
+	private Map<String, Address> peers = new HashMap<>();
 
 	/**
 	 * Active nodes with their ages.
