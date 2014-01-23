@@ -16,7 +16,7 @@ import java.nio.channels.FileChannel;
  * 
  * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */
-public class Persister<V> implements Closeable {
+public class PageFile<V> implements Closeable {
 
 	private static final int pageSize = 4096;
 
@@ -24,7 +24,7 @@ public class Persister<V> implements Closeable {
 	private FileChannel channel;
 	private Serializer<V> serializer;
 
-	public Persister(String filename, Serializer<V> serializer) throws FileNotFoundException {
+	public PageFile(String filename, Serializer<V> serializer) throws FileNotFoundException {
 		file = new RandomAccessFile(filename, "rw");
 		channel = file.getChannel();
 		this.serializer = serializer;

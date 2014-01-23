@@ -20,8 +20,8 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 
 	private int branchFactor;
 	private Allocator allocator;
-	private Persister<Superblock> superblockPersister;
-	private Persister<Page> pagePersister;
+	private PageFile<Superblock> superblockPageFile;
+	private PageFile<Page> pageFile;
 	private Comparator<Key> comparator;
 
 	public interface Pointer {
@@ -312,7 +312,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		Integer pageNo = getRoot();
 
 		while (pageNo != null) {
-			page = pagePersister.load(pageNo);
+			page = pageFile.load(pageNo);
 			int index = findPosition(page, key);
 			KeyPointer kp = getKeyPointer(page, index);
 
@@ -361,11 +361,11 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 	}
 
 	private Page loadPage(int pageNo) {
-		return pagePersister.load(pageNo);
+		return pageFile.load(pageNo);
 	}
 
 	private void savePage(Page page) {
-		pagePersister.save(page.pageNo, page);
+		pageFile.save(page.pageNo, page);
 	}
 
 	private KeyPointer pointerTo(Page page) {
@@ -386,14 +386,14 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 	}
 
 	private int getRoot() {
-		return superblockPersister.load(0).root;
+		return superblockPageFile.load(0).root;
 	}
 
 	private void setRoot(int root) {
-		Superblock superblock = superblockPersister.load(0);
+		Superblock superblock = superblockPageFile.load(0);
 		superblock = superblock != null ? superblock : new Superblock();
 		superblock.root = root;
-		superblockPersister.save(0, superblock);
+		superblockPageFile.save(0, superblock);
 	}
 
 	public void setBranchFactor(int branchFactor) {
@@ -404,12 +404,12 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		this.allocator = allocator;
 	}
 
-	public void setSuperblockPersister(Persister<Superblock> superblockPersister) {
-		this.superblockPersister = superblockPersister;
+	public void setSuperblockPageFile(PageFile<Superblock> superblockPageFile) {
+		this.superblockPageFile = superblockPageFile;
 	}
 
-	public void setPagePersister(Persister<Page> pagePersister) {
-		this.pagePersister = pagePersister;
+	public void setPageFile(PageFile<Page> pageFile) {
+		this.pageFile = pageFile;
 	}
 
 	public void setComparator(Comparator<Key> comparator) {

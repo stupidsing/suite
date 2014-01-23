@@ -10,8 +10,8 @@ import java.util.List;
 public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private Allocator al;
-	private Persister<B_Tree<Key, Value>.Superblock> sbp;
-	private Persister<B_Tree<Key, Value>.Page> pp;
+	private PageFile<B_Tree<Key, Value>.Superblock> sbp;
+	private PageFile<B_Tree<Key, Value>.Page> pp;
 
 	private B_Tree<Key, Value> b_tree;
 
@@ -117,12 +117,12 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
 		al = new Allocator(amf);
-		sbp = new Persister<>(sbf, sbs);
-		pp = new Persister<>(pf, ps);
+		sbp = new PageFile<>(sbf, sbs);
+		pp = new PageFile<>(pf, ps);
 
 		b_tree.setAllocator(al);
-		b_tree.setSuperblockPersister(sbp);
-		b_tree.setPagePersister(pp);
+		b_tree.setSuperblockPageFile(sbp);
+		b_tree.setPageFile(pp);
 		b_tree.setBranchFactor(16);
 
 		if (isNew)
