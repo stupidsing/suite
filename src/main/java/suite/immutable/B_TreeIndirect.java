@@ -114,10 +114,10 @@ public class B_TreeIndirect<T> {
 
 	public class Transaction {
 		private Pointer root;
-		private Allocator allocatorTransaction;
+		private Allocator allocator;
 
-		public Transaction(Allocator allocatorTransaction) {
-			this.allocatorTransaction = allocatorTransaction;
+		public Transaction(Allocator allocator) {
+			this.allocator = allocator;
 		}
 
 		public void create() {
@@ -139,19 +139,19 @@ public class B_TreeIndirect<T> {
 		}
 
 		public void remove(T t) {
-			allocatorTransaction.discard(root);
+			allocator.discard(root);
 			root = createRootPage(remove(storage.read(root).slots, t));
 		}
 
 		private void add(T t, boolean isReplace) {
-			allocatorTransaction.discard(root);
+			allocator.discard(root);
 			root = createRootPage(add(storage.read(root).slots, t, isReplace));
 		}
 
 		public List<Object> commit() {
 			List<Object> result = new ArrayList<>();
 			result.add(root);
-			result.addAll(allocatorTransaction.commit());
+			result.addAll(allocator.commit());
 			return result;
 		}
 
@@ -259,7 +259,7 @@ public class B_TreeIndirect<T> {
 				pointers1.add(slot.pointer);
 
 			for (Pointer pointer : Util.subtract(pointers0, pointers1))
-				allocatorTransaction.discard(pointer);
+				allocator.discard(pointer);
 		}
 
 		private Pointer createRootPage(List<Slot> slots) {
@@ -279,7 +279,7 @@ public class B_TreeIndirect<T> {
 			Page page = new Page();
 			page.slots = slots;
 
-			Pointer pointer = allocatorTransaction.allocate();
+			Pointer pointer = allocator.allocate();
 			storage.write(pointer, page);
 			return pointer;
 		}
