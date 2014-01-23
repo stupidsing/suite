@@ -8,8 +8,10 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +72,12 @@ public class Util {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+	}
+
+	public static <T> Collection<T> common(Collection<T> c0, Collection<T> c1) {
+		Set<T> set = new HashSet<T>(c0);
+		set.retainAll(c1);
+		return set;
 	}
 
 	public static <T extends Comparable<T>> int compare(T t0, T t1) {

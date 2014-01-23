@@ -1,17 +1,21 @@
 package suite.immutable;
 
+import java.io.FileNotFoundException;
+import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import suite.file.PageFile;
+import suite.file.Serializer;
+import suite.file.Serializer.ListSerializer;
+import suite.file.Serializer.NullableSerializer;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -21,23 +25,13 @@ public class B_TreeIndirect<T> {
 	private int halfSize = maxSize / 2;
 
 	private Comparator<T> comparator;
+	private Serializer<T> serializer;
+
+	private PageFile<Page> pageFile;
 	private B_TreeIndirect<Pointer> allocationB_tree;
 
-	private Storage storage = new Storage();
-
-	private class Storage {
-		private Map<Pointer, Page> disk = new HashMap<>();
-
-		private Page read(Pointer pointer) {
-			return disk.get(pointer);
-		}
-
-		private void write(Pointer pointer, Page page) {
-			disk.put(pointer, page);
-		}
-	}
-
 	private static class Pointer {
+		private int number;
 	}
 
 	private class Page {
@@ -60,7 +54,7 @@ public class B_TreeIndirect<T> {
 		}
 
 		private List<Slot> slots() {
-			return pointer != null ? storage.read(pointer).slots : null;
+			return pointer != null ? read(pointer).slots : null;
 		}
 	}
 
@@ -142,12 +136,12 @@ public class B_TreeIndirect<T> {
 
 		public void remove(T t) {
 			allocator.discard(root);
-			root = createRootPage(remove(storage.read(root).slots, t));
+			root = createRootPage(remove(read(root).slots, t));
 		}
 
 		private void add(T t, boolean isReplace) {
 			allocator.discard(root);
-			root = createRootPage(add(storage.read(root).slots, t, isReplace));
+			root = createRootPage(add(read(root).slots, t, isReplace));
 		}
 
 		public List<Object> commit() {
@@ -252,16 +246,14 @@ public class B_TreeIndirect<T> {
 		}
 
 		private void difference(List<Slot> slots0, List<Slot> slots1) {
-			Set<Pointer> pointers0 = new HashSet<>();
 			Set<Pointer> pointers1 = new HashSet<>();
 
-			for (Slot slot : slots0)
-				pointers0.add(slot.pointer);
 			for (Slot slot : slots1)
 				pointers1.add(slot.pointer);
 
-			for (Pointer pointer : Util.subtract(pointers0, pointers1))
-				allocator.discard(pointer);
+			for (Slot slot : slots0)
+				if (!pointers1.contains(slot.pointer))
+					allocator.discard(slot.pointer);
 		}
 
 		private Pointer createRootPage(List<Slot> slots) {
@@ -282,7 +274,7 @@ public class B_TreeIndirect<T> {
 			page.slots = slots;
 
 			Pointer pointer = allocator.allocate();
-			storage.write(pointer, page);
+			write(pointer, page);
 			return pointer;
 		}
 	}
@@ -291,13 +283,16 @@ public class B_TreeIndirect<T> {
 	 * Constructor for a small tree that would not span more than 1 page, i.e.
 	 * no extra "page allocation tree" is required.
 	 */
-	public B_TreeIndirect(Comparator<T> comparator) {
-		this(comparator, null);
+	public B_TreeIndirect(String filename, Comparator<T> comparator, Serializer<T> serializer) throws FileNotFoundException {
+		this(filename, comparator, serializer, null);
 	}
 
-	public B_TreeIndirect(Comparator<T> comparator, B_TreeIndirect<Pointer> allocationB_tree) {
+	public B_TreeIndirect(String filename, Comparator<T> comparator, Serializer<T> serializer,
+			B_TreeIndirect<Pointer> allocationB_tree) throws FileNotFoundException {
 		this.comparator = comparator;
+		this.serializer = new NullableSerializer<>(serializer);
 		this.allocationB_tree = allocationB_tree;
+		pageFile = new PageFile<>(filename, createPageSerializer());
 	}
 
 	public Source<T> source(Pointer pointer) {
@@ -309,7 +304,7 @@ public class B_TreeIndirect<T> {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
 
 			{
-				List<Slot> slots = storage.read(pointer).slots;
+				List<Slot> slots = read(pointer).slots;
 
 				while (true) {
 					int size = slots.size();
@@ -357,7 +352,7 @@ public class B_TreeIndirect<T> {
 		int c = 1;
 
 		while (pointer != null) {
-			List<Slot> slots = storage.read(pointer).slots;
+			List<Slot> slots = read(pointer).slots;
 			int size = slots.size();
 			int i = 0;
 
@@ -383,6 +378,51 @@ public class B_TreeIndirect<T> {
 			return comparator.compare(t0, t1);
 		else
 			return b0 ? -1 : b1 ? 1 : 0;
+	}
+
+	private Page read(Pointer pointer) {
+		return pageFile.load(pointer.number);
+	}
+
+	private void write(Pointer pointer, Page page) {
+		pageFile.save(pointer.number, page);
+	}
+
+	private Serializer<Page> createPageSerializer() {
+		final Serializer<Pointer> pointerSerializer = new Serializer<Pointer>() {
+			public Pointer read(ByteBuffer buffer) {
+				Pointer pointer = new Pointer();
+				pointer.number = Serializer.intSerializer.read(buffer);
+				return pointer;
+			}
+
+			public void write(ByteBuffer buffer, Pointer pointer) {
+				Serializer.intSerializer.write(buffer, pointer.number);
+			}
+		};
+
+		final ListSerializer<Slot> slotsSerializer = new ListSerializer<Slot>(new Serializer<Slot>() {
+			public Slot read(ByteBuffer buffer) {
+				return new Slot(pointerSerializer.read(buffer), serializer.read(buffer));
+			}
+
+			public void write(ByteBuffer buffer, Slot slot) {
+				pointerSerializer.write(buffer, slot.pointer);
+				serializer.write(buffer, slot.pivot);
+			}
+		});
+
+		return new Serializer<Page>() {
+			public Page read(ByteBuffer buffer) {
+				Page page = new Page();
+				page.slots = slotsSerializer.read(buffer);
+				return page;
+			}
+
+			public void write(ByteBuffer buffer, Page page) {
+				slotsSerializer.write(buffer, page.slots);
+			}
+		};
 	}
 
 }
