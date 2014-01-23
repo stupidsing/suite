@@ -23,17 +23,25 @@ public class B_TreeIndirect<T> {
 	private Comparator<T> comparator;
 	private B_TreeIndirect<Pointer> allocationB_tree;
 
-	private Map<Pointer, Page> disk = new HashMap<>();
+	private Storage storage = new Storage();
+
+	private class Storage {
+		private Map<Pointer, Page> disk = new HashMap<>();
+
+		private Page read(Pointer pointer) {
+			return disk.get(pointer);
+		}
+
+		private void write(Pointer pointer, Page page) {
+			disk.put(pointer, page);
+		}
+	}
 
 	private static class Pointer {
 	}
 
 	private class Page {
 		private List<Slot> slots;
-
-		private Page(List<Slot> slots) {
-			this.slots = slots;
-		}
 	}
 
 	/**
@@ -52,7 +60,7 @@ public class B_TreeIndirect<T> {
 		}
 
 		private List<Slot> slots() {
-			return pointer != null ? read(pointer).slots : null;
+			return pointer != null ? storage.read(pointer).slots : null;
 		}
 	}
 
@@ -132,12 +140,12 @@ public class B_TreeIndirect<T> {
 
 		public void remove(T t) {
 			allocatorTransaction.discard(root);
-			root = createRootPage(remove(read(root).slots, t));
+			root = createRootPage(remove(storage.read(root).slots, t));
 		}
 
 		private void add(T t, boolean isReplace) {
 			allocatorTransaction.discard(root);
-			root = createRootPage(add(read(root).slots, t, isReplace));
+			root = createRootPage(add(storage.read(root).slots, t, isReplace));
 		}
 
 		public List<Object> commit() {
@@ -268,8 +276,11 @@ public class B_TreeIndirect<T> {
 		}
 
 		private Pointer persist(List<Slot> slots) {
+			Page page = new Page();
+			page.slots = slots;
+
 			Pointer pointer = allocatorTransaction.allocate();
-			write(pointer, new Page(slots));
+			storage.write(pointer, page);
 			return pointer;
 		}
 	}
@@ -296,7 +307,7 @@ public class B_TreeIndirect<T> {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
 
 			{
-				List<Slot> slots = read(pointer).slots;
+				List<Slot> slots = storage.read(pointer).slots;
 
 				while (true) {
 					int size = slots.size();
@@ -344,7 +355,7 @@ public class B_TreeIndirect<T> {
 		int c = 1;
 
 		while (pointer != null) {
-			List<Slot> slots = read(pointer).slots;
+			List<Slot> slots = storage.read(pointer).slots;
 			int size = slots.size();
 			int i = 0;
 
@@ -360,14 +371,6 @@ public class B_TreeIndirect<T> {
 	public Transaction transaction() {
 		Allocator allocator = allocationB_tree != null ? new B_TreeAllocator(allocationB_tree) : new SwappingAllocator();
 		return new Transaction(allocator);
-	}
-
-	private Page read(Pointer pointer) {
-		return disk.get(pointer);
-	}
-
-	private void write(Pointer pointer, Page page) {
-		disk.put(pointer, page);
 	}
 
 	private int compare(T t0, T t1) {
