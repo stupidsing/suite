@@ -84,7 +84,9 @@ public class B_TreeIndirect<T> {
 		}
 
 		public List<Object> commit() {
-			return Arrays.asList((Object) using);
+			List<Object> pointer = Arrays.asList((Object) using);
+			using = 1 - using;
+			return pointer;
 		}
 	}
 
