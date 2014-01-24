@@ -17,10 +17,10 @@ public class B_TreeIndirectTest {
 	public void testSingleLevel() throws IOException {
 		try (B_TreeIndirect<Integer> b_tree0 = new B_TreeIndirect<Integer>( //
 				"/tmp/b_tree", Util.<Integer> comparator(), SerializeUtil.intSerializer)) {
-			List<Integer> chain = Arrays.asList(0);
-			chain = b_tree0.initialize(chain);
+			List<Integer> stamp = Arrays.asList(0);
+			stamp = b_tree0.initialize(stamp);
 
-			B_TreeIndirect<Integer>.Transaction transaction = b_tree0.transaction(chain);
+			B_TreeIndirect<Integer>.Transaction transaction = b_tree0.transaction(stamp);
 			int size = 14;
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
@@ -35,7 +35,7 @@ public class B_TreeIndirectTest {
 			while ((integer = source.source()) != null)
 				System.out.println(integer);
 
-			chain = transaction.commit();
+			stamp = transaction.commit();
 		}
 	}
 
@@ -50,17 +50,25 @@ public class B_TreeIndirectTest {
 				B_TreeIndirect<String> b_tree2 = new B_TreeIndirect<String>( //
 						"/tmp/b_tree" + i++, Util.<String> comparator(), SerializeUtil.string(256), b_tree1); //
 		) {
-			List<Integer> chain = Arrays.asList(0);
-			chain = B_TreeIndirect.initializeAllocator(b_tree0, chain, size - 2);
-			chain = B_TreeIndirect.initializeAllocator(b_tree1, chain, size / 2 * (size - 2) - 2);
-			chain = b_tree2.initialize(chain);
+			List<Integer> stamp = Arrays.asList(0);
+			stamp = B_TreeIndirect.initializeAllocator(b_tree0, stamp, size - 2);
+			stamp = B_TreeIndirect.initializeAllocator(b_tree1, stamp, size / 2 * (size - 2) - 2);
+			stamp = b_tree2.initialize(stamp);
 
-			B_TreeIndirect<String>.Transaction transaction = b_tree2.transaction(chain);
+			B_TreeIndirect<String>.Transaction transaction = b_tree2.transaction(stamp);
 			transaction.add("abc");
 			transaction.add("def");
 			transaction.add("ghi");
 
-			chain = transaction.commit();
+			stamp = transaction.commit();
+
+			Source<String> source = b_tree2.source(transaction);
+			String string;
+
+			while ((string = source.source()) != null)
+				System.out.println(string);
+
+			stamp = transaction.commit();
 		}
 	}
 
