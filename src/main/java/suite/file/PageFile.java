@@ -9,10 +9,10 @@ public class PageFile implements Closeable {
 
 	private static final int pageSize = 4096;
 
-	private AccessibleFile file;
+	private RandomAccessibleFile file;
 
 	public PageFile(String filename) throws FileNotFoundException {
-		file = new AccessibleFile(filename);
+		file = new RandomAccessibleFile(filename);
 	}
 
 	@Override

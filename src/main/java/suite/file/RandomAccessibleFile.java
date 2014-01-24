@@ -7,12 +7,12 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-public class AccessibleFile implements Closeable {
+public class RandomAccessibleFile implements Closeable {
 
 	private RandomAccessFile file;
 	private FileChannel channel;
 
-	public AccessibleFile(String filename) throws FileNotFoundException {
+	public RandomAccessibleFile(String filename) throws FileNotFoundException {
 		file = new RandomAccessFile(filename, "rw");
 		channel = file.getChannel();
 	}
