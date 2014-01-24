@@ -14,7 +14,7 @@ import suite.util.Util;
 public class B_TreeIndirectTest {
 
 	@Test
-	public void test0() throws IOException {
+	public void testSingleLevel() throws IOException {
 		try (B_TreeIndirect<Integer> b_tree0 = new B_TreeIndirect<Integer>( //
 				"/tmp/b_tree", Util.<Integer> comparator(), SerializeUtil.intSerializer)) {
 			List<Integer> chain = Arrays.asList(0);
@@ -40,7 +40,7 @@ public class B_TreeIndirectTest {
 	}
 
 	@Test
-	public void test() throws IOException {
+	public void testMultipleLevels() throws IOException {
 		int i = 0;
 
 		try (B_TreeIndirect<Pointer> b_tree0 = new B_TreeIndirect<Pointer>( //

@@ -395,13 +395,11 @@ public class B_TreeIndirect<T> implements Closeable {
 
 	public static List<Integer> initializeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> chain, int nPages) {
 		B_TreeIndirect<Pointer>.Transaction transaction = b_tree.init(chain);
-
 		for (int p = 0; p < nPages; p++) {
 			Pointer pointer = new Pointer();
 			pointer.number = p;
 			transaction.add(pointer);
 		}
-
 		return transaction.commit();
 	}
 
