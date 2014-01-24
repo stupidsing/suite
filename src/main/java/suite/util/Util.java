@@ -75,7 +75,7 @@ public class Util {
 	public static <T extends Comparable<T>> Comparator<T> comparator() {
 		return new Comparator<T>() {
 			public int compare(T t0, T t1) {
-				return compare(t0, t1);
+				return Util.compare(t0, t1);
 			}
 		};
 	}

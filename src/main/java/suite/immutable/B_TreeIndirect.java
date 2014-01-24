@@ -11,10 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.file.SerializedPageFile;
 import suite.util.FunUtil.Source;
@@ -119,7 +117,7 @@ public class B_TreeIndirect<T> implements Closeable {
 		}
 
 		public Pointer allocate() {
-			Pointer pointer = b_tree.source(transaction.root).source();
+			Pointer pointer = b_tree.source(transaction).source();
 			if (pointer != null) {
 				transaction.remove(pointer);
 				return pointer;
@@ -192,9 +190,10 @@ public class B_TreeIndirect<T> implements Closeable {
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
-			if (slot.pointer != null)
+			if (slot.pointer != null) {
+				allocator.discard(slot.pointer);
 				replaceSlots = add(slot.slots(), t, isReplace);
-			else if (c != 0)
+			} else if (c != 0)
 				replaceSlots = Arrays.asList(new Slot(null, t), slot);
 			else if (isReplace)
 				replaceSlots = Arrays.asList(new Slot(null, t));
@@ -202,7 +201,6 @@ public class B_TreeIndirect<T> implements Closeable {
 				throw new RuntimeException("Duplicate node " + t);
 
 			List<Slot> slots1 = Util.add(Util.left(slots0, i), replaceSlots, Util.right(slots0, i + 1));
-			difference(slots0.subList(i, i + 1), replaceSlots);
 
 			List<Slot> slots2;
 
@@ -250,7 +248,9 @@ public class B_TreeIndirect<T> implements Closeable {
 			else
 				throw new RuntimeException("Node not found " + t);
 
-			difference(slots0.subList(s0, s1), replaceSlots);
+			for (int s = s0; s < s1; s++)
+				allocator.discard(slots0.get(s).pointer);
+
 			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 		}
 
@@ -273,17 +273,6 @@ public class B_TreeIndirect<T> implements Closeable {
 				merged = Arrays.asList(slot(Util.add(slots0, slots1)));
 
 			return merged;
-		}
-
-		private void difference(List<Slot> slots0, List<Slot> slots1) {
-			Set<Pointer> pointers1 = new HashSet<>();
-
-			for (Slot slot : slots1)
-				pointers1.add(slot.pointer);
-
-			for (Slot slot : slots0)
-				if (!pointers1.contains(slot.pointer))
-					allocator.discard(slot.pointer);
 		}
 
 		private Pointer createRootPage(List<Slot> slots) {
@@ -334,8 +323,8 @@ public class B_TreeIndirect<T> implements Closeable {
 		pageFile.close();
 	}
 
-	public Source<T> source(Pointer pointer) {
-		return source(pointer, null, null);
+	public Source<T> source(Transaction transaction) {
+		return source(transaction.root, null, null);
 	}
 
 	private Source<T> source(final Pointer pointer, final T start, final T end) {
