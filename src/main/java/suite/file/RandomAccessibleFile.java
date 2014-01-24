@@ -23,6 +23,10 @@ public class RandomAccessibleFile implements Closeable {
 		file.close();
 	}
 
+	public void sync() throws IOException {
+		channel.force(true);
+	}
+
 	public ByteBuffer load(int start, int end) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(end - start);
 		channel.read(buffer, start);

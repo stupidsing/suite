@@ -20,6 +20,10 @@ public class PageFile implements Closeable {
 		file.close();
 	}
 
+	public void sync() throws IOException {
+		file.sync();
+	}
+
 	public ByteBuffer load(int pageNo) throws IOException {
 		int start = pageNo * pageSize, end = start + pageSize;
 		return file.load(start, end);

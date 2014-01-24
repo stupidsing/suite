@@ -33,6 +33,10 @@ public class SerializedPageFile<V> implements Closeable {
 		file.close();
 	}
 
+	public void sync() throws IOException {
+		file.sync();
+	}
+
 	public V load(int pageNo) {
 		try {
 			return serializer.read(file.load(pageNo));
