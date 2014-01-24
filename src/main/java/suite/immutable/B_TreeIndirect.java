@@ -405,7 +405,6 @@ public class B_TreeIndirect<T> implements Closeable {
 
 	public List<Integer> initialize(List<Integer> chain) {
 		return init(chain).commit();
-
 	}
 
 	public Transaction init(List<Integer> chain) {

@@ -41,7 +41,7 @@ public class B_TreeIndirectTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		int i = 0;
+		int i = 0, size = 16;
 
 		try (B_TreeIndirect<Pointer> b_tree0 = new B_TreeIndirect<Pointer>( //
 				"/tmp/b_tree" + i++, Pointer.comparator, Pointer.serializer); //
@@ -51,8 +51,8 @@ public class B_TreeIndirectTest {
 						"/tmp/b_tree" + i++, Util.<String> comparator(), SerializeUtil.string(256), b_tree1); //
 		) {
 			List<Integer> chain = Arrays.asList(0);
-			chain = B_TreeIndirect.initializeAllocator(b_tree0, chain, 14);
-			chain = B_TreeIndirect.initializeAllocator(b_tree1, chain, 8 * 14);
+			chain = B_TreeIndirect.initializeAllocator(b_tree0, chain, size - 2);
+			chain = B_TreeIndirect.initializeAllocator(b_tree1, chain, size / 2 * (size - 2) - 2);
 			chain = b_tree2.initialize(chain);
 
 			B_TreeIndirect<String>.Transaction transaction = b_tree2.transaction(chain);
