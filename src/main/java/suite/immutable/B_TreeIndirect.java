@@ -1,6 +1,8 @@
 package suite.immutable;
 
+import java.io.Closeable;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -8,8 +10,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import suite.file.SerializedPageFile;
@@ -18,9 +22,9 @@ import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 import suite.util.Util;
 
-public class B_TreeIndirect<T> {
+public class B_TreeIndirect<T> implements Closeable {
 
-	private int maxSize = 4;
+	private int maxSize = 16;
 	private int halfSize = maxSize / 2;
 
 	private Comparator<T> comparator;
@@ -116,8 +120,11 @@ public class B_TreeIndirect<T> {
 
 		public Pointer allocate() {
 			Pointer pointer = b_tree.source(transaction.root).source();
-			transaction.remove(pointer);
-			return pointer;
+			if (pointer != null) {
+				transaction.remove(pointer);
+				return pointer;
+			} else
+				throw new RuntimeException("Pages exhausted");
 		}
 
 		public void discard(Pointer pointer) {
@@ -322,6 +329,11 @@ public class B_TreeIndirect<T> {
 		pageFile = new SerializedPageFile<>(filename, createPageSerializer());
 	}
 
+	@Override
+	public void close() throws IOException {
+		pageFile.close();
+	}
+
 	public Source<T> source(Pointer pointer) {
 		return source(pointer, null, null);
 	}
@@ -434,12 +446,16 @@ public class B_TreeIndirect<T> {
 			return b0 ? -1 : b1 ? 1 : 0;
 	}
 
+	private Map<Integer, Page> disk = new HashMap<>();
+
 	private Page read(Pointer pointer) {
-		return pageFile.load(pointer.number);
+		return disk.get(pointer.number);
+		// return pageFile.load(pointer.number);
 	}
 
 	private void write(Pointer pointer, Page page) {
-		pageFile.save(pointer.number, page);
+		disk.put(pointer.number, page);
+		// pageFile.save(pointer.number, page);
 	}
 
 	private Serializer<Page> createPageSerializer() {
