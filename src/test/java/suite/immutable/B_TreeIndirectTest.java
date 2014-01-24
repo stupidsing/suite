@@ -18,9 +18,11 @@ public class B_TreeIndirectTest {
 		try (B_TreeIndirect<Integer> b_tree0 = new B_TreeIndirect<Integer>( //
 				"/tmp/b_tree", Util.<Integer> comparator(), SerializeUtil.intSerializer)) {
 			List<Integer> stamp = Arrays.asList(0);
-			stamp = b_tree0.initialize(stamp);
 
-			B_TreeIndirect<Integer>.Transaction transaction = b_tree0.transaction(stamp);
+			B_TreeIndirect<Integer>.Holder holder = b_tree0.holder();
+			holder.initialize(stamp);
+
+			B_TreeIndirect<Integer>.Transaction transaction = holder.begin();
 			int size = 14;
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
@@ -29,13 +31,13 @@ public class B_TreeIndirectTest {
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
 
-			Source<Integer> source = b_tree0.source(transaction);
+			Source<Integer> source = holder.source(transaction);
 			Integer integer;
 
 			while ((integer = source.source()) != null)
 				System.out.println(integer);
 
-			stamp = transaction.commit();
+			holder.commit(transaction);
 		}
 	}
 
@@ -53,16 +55,18 @@ public class B_TreeIndirectTest {
 			List<Integer> stamp = Arrays.asList(0);
 			stamp = B_TreeIndirect.initializeAllocator(b_tree0, stamp, size - 2);
 			stamp = B_TreeIndirect.initializeAllocator(b_tree1, stamp, size / 2 * (size - 2) - 2);
-			stamp = b_tree2.initialize(stamp);
 
-			B_TreeIndirect<String>.Transaction transaction = b_tree2.transaction(stamp);
+			B_TreeIndirect<String>.Holder holder = b_tree2.holder();
+			holder.initialize(stamp);
+
+			B_TreeIndirect<String>.Transaction transaction = holder.begin();
 			transaction.add("abc");
 			transaction.add("def");
 			transaction.add("ghi");
 
-			stamp = transaction.commit();
+			holder.commit(transaction);
 
-			Source<String> source = b_tree2.source(transaction);
+			Source<String> source = holder.source(transaction);
 			String string;
 
 			while ((string = source.source()) != null)

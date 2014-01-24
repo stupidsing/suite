@@ -28,6 +28,7 @@ public class B_TreeIndirect<T> implements Closeable {
 	private Comparator<T> comparator;
 	private Serializer<T> serializer;
 
+	private String filename;
 	private SerializedPageFile<Page> pageFile;
 	private B_TreeIndirect<Pointer> allocationB_tree;
 
@@ -111,13 +112,13 @@ public class B_TreeIndirect<T> implements Closeable {
 		private B_TreeIndirect<Pointer> b_tree;
 		private B_TreeIndirect<Pointer>.Transaction transaction;
 
-		public B_TreeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> chain) {
+		public B_TreeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> stamp) {
 			this.b_tree = b_tree;
-			this.transaction = b_tree.transaction(chain);
+			this.transaction = b_tree.transaction(stamp);
 		}
 
 		public Pointer allocate() {
-			Pointer pointer = b_tree.source(transaction).source();
+			Pointer pointer = b_tree.source(transaction.root).source();
 			if (pointer != null) {
 				transaction.remove(pointer);
 				return pointer;
@@ -300,6 +301,44 @@ public class B_TreeIndirect<T> implements Closeable {
 		}
 	}
 
+	public class Holder {
+		private SerializedPageFile<List<Integer>> stampFile;
+
+		private Holder() throws FileNotFoundException {
+			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
+		}
+
+		public void initialize(List<Integer> stamp) {
+			write(B_TreeIndirect.this.initialize(stamp));
+		}
+
+		public Transaction begin() {
+			return transaction(read());
+		}
+
+		public void commit(Transaction transaction) throws IOException {
+			List<Integer> stamp = transaction.commit();
+			pageFile.sync();
+			write(stamp);
+		}
+
+		public Source<T> source(Transaction transaction) {
+			return source(transaction, null, null);
+		}
+
+		public Source<T> source(Transaction transaction, T start, T end) {
+			return B_TreeIndirect.this.source(transaction.root, start, end);
+		}
+
+		private List<Integer> read() {
+			return stampFile.load(0);
+		}
+
+		private void write(List<Integer> stamp) {
+			stampFile.save(0, stamp);
+		}
+	}
+
 	/**
 	 * Constructor for a small tree that would not span more than 1 page, i.e.
 	 * no extra "page allocation tree" is required.
@@ -314,6 +353,7 @@ public class B_TreeIndirect<T> implements Closeable {
 	 */
 	public B_TreeIndirect(String filename, Comparator<T> comparator, Serializer<T> serializer,
 			B_TreeIndirect<Pointer> allocationB_tree) throws FileNotFoundException {
+		this.filename = filename;
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
 		this.allocationB_tree = allocationB_tree;
@@ -325,8 +365,12 @@ public class B_TreeIndirect<T> implements Closeable {
 		pageFile.close();
 	}
 
-	public Source<T> source(Transaction transaction) {
-		return source(transaction.root, null, null);
+	public Holder holder() throws FileNotFoundException {
+		return new Holder();
+	}
+
+	private Source<T> source(Pointer pointer) {
+		return source(pointer, null, null);
 	}
 
 	private Source<T> source(final Pointer pointer, final T start, final T end) {
@@ -377,26 +421,8 @@ public class B_TreeIndirect<T> implements Closeable {
 		};
 	}
 
-	public T find(Pointer pointer, T t) {
-		Slot slot = null;
-		int c = 1;
-
-		while (pointer != null) {
-			List<Slot> slots = read(pointer).slots;
-			int size = slots.size();
-			int i = 0;
-
-			while (i < size && (c = compare((slot = slots.get(i)).pivot, t)) < 0)
-				i++;
-
-			pointer = slot.pointer;
-		}
-
-		return c == 0 ? slot.pivot : null;
-	}
-
-	public static List<Integer> initializeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> chain, int nPages) {
-		B_TreeIndirect<Pointer>.Transaction transaction = b_tree.init(chain);
+	public static List<Integer> initializeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> stamp0, int nPages) {
+		B_TreeIndirect<Pointer>.Transaction transaction = b_tree.initialize0(stamp0);
 		for (int p = 0; p < nPages; p++) {
 			Pointer pointer = new Pointer();
 			pointer.number = p;
@@ -405,23 +431,23 @@ public class B_TreeIndirect<T> implements Closeable {
 		return transaction.commit();
 	}
 
-	public List<Integer> initialize(List<Integer> chain) {
-		return init(chain).commit();
+	public List<Integer> initialize(List<Integer> stamp0) {
+		return initialize0(stamp0).commit();
 	}
 
-	public Transaction init(List<Integer> chain) {
-		return new Transaction(allocator(chain));
+	public Transaction initialize0(List<Integer> stamp0) {
+		return new Transaction(allocator(stamp0));
 	}
 
-	public Transaction transaction(List<Integer> chain) {
+	public Transaction transaction(List<Integer> stamp) {
 		Pointer root = new Pointer();
-		root.number = chain.get(0);
-		return new Transaction(allocator(Util.right(chain, 1)), root);
+		root.number = stamp.get(0);
+		return new Transaction(allocator(Util.right(stamp, 1)), root);
 	}
 
-	private Allocator allocator(List<Integer> chain) {
+	private Allocator allocator(List<Integer> stamp) {
 		boolean isBta = allocationB_tree != null;
-		return isBta ? new B_TreeAllocator(allocationB_tree, chain) : new SwappingAllocator(chain.get(0));
+		return isBta ? new B_TreeAllocator(allocationB_tree, stamp) : new SwappingAllocator(stamp.get(0));
 	}
 
 	private int compare(T t0, T t1) {
