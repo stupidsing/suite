@@ -243,15 +243,15 @@ public class B_TreeIndirect<T> implements Closeable {
 							replaceSlots = Arrays.asList(slot(slots1));
 					else
 						replaceSlots = Arrays.asList(slot(slots1));
+
+					for (int s = s0; s < s1; s++)
+						allocator.discard(slots0.get(s).pointer);
 				} else if (c == 0)
 					replaceSlots = Collections.emptyList();
 				else
 					throw new RuntimeException("Node not found " + t);
 			else
 				throw new RuntimeException("Node not found " + t);
-
-			for (int s = s0; s < s1; s++)
-				allocator.discard(slots0.get(s).pointer);
 
 			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 		}
