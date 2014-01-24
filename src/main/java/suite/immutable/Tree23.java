@@ -188,7 +188,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 		int i = 0, c = 1;
 
 		// Finds appropriate slot
-		while (i < size && (c = compare((slot = slots0.get(i)).pivot, t)) < 0)
+		while ((c = compare((slot = slots0.get(i)).pivot, t)) < 0)
 			i++;
 
 		// Removes the node from it
@@ -209,8 +209,10 @@ public class Tree23<T> implements ImmutableTree<T> {
 						replaceSlots = Arrays.asList(slot(slots1));
 				else
 					replaceSlots = Arrays.asList(slot(slots1));
-			} else
+			} else if (c == 0)
 				replaceSlots = Collections.emptyList();
+			else
+				throw new RuntimeException("Node not found " + t);
 		else
 			throw new RuntimeException("Node not found " + t);
 
