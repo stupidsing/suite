@@ -176,7 +176,7 @@ public class SystemPredicates {
 			// Avoids changing hash-code - but making memoize not re-entrant
 			((Reference) var).bound(uniqueReference);
 
-			Node result = findAll.apply(Pair.<Node, Node> create(uniqueReference, params[1]));
+			Node result = findAll.apply(Pair.<Node, Node> create(var, params[1]));
 			return prover.bind(params[2], result);
 		}
 	}
