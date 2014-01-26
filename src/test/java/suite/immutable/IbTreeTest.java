@@ -13,6 +13,8 @@ import suite.util.Util;
 
 public class IbTreeTest {
 
+	private int nSlotsPerPage = 16; // Must be same as IbTree.nSlotsPerPage
+
 	@Test
 	public void testSingleLevel() throws IOException {
 		try (IbTree<Integer> ibTree0 = new IbTree<Integer>( //
@@ -20,10 +22,10 @@ public class IbTreeTest {
 			List<Integer> stamp = Arrays.asList(0);
 
 			IbTree<Integer>.Holder holder = ibTree0.holder();
-			holder.initialize(stamp);
+			holder.build(stamp);
 
 			IbTree<Integer>.Transaction transaction = holder.begin();
-			int size = 14;
+			int size = nSlotsPerPage - 2;
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
 			for (int i = size - 1; i >= 0; i--)
@@ -43,7 +45,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		int i = 0, size = 16;
+		int i = 0;
 
 		try (IbTree<Pointer> ibTree0 = new IbTree<Pointer>( //
 				"/tmp/ibTree" + i++, Pointer.comparator, Pointer.serializer); //
@@ -53,11 +55,12 @@ public class IbTreeTest {
 						"/tmp/ibTree" + i++, Util.<String> comparator(), SerializeUtil.string(256), ibTree1); //
 		) {
 			List<Integer> stamp = Arrays.asList(0);
-			stamp = IbTree.initializeAllocator(ibTree0, stamp, size - 2);
-			stamp = IbTree.initializeAllocator(ibTree1, stamp, size / 2 * (size - 2) - 2);
+			int size = 2;
+			stamp = IbTree.buildAllocator(ibTree0, stamp, size = size * nSlotsPerPage / 2 - 2);
+			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * nSlotsPerPage / 2 - 2);
 
 			IbTree<String>.Holder holder = ibTree2.holder();
-			holder.initialize(stamp);
+			holder.build(stamp);
 
 			IbTree<String>.Transaction transaction = holder.begin();
 			transaction.add("abc");
