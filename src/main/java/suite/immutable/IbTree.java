@@ -36,8 +36,8 @@ import suite.util.Util;
  */
 public class IbTree<T> implements Closeable {
 
-	private int maxSize = 16;
-	private int halfSize = maxSize / 2;
+	private int nSlotsPerPage = 16;
+	private int minSlotsPerPage = nSlotsPerPage / 2;
 
 	private Comparator<T> comparator;
 	private Serializer<T> serializer;
@@ -219,11 +219,11 @@ public class IbTree<T> implements Closeable {
 			List<Slot> slots2;
 
 			// Checks if need to split
-			if (slots1.size() < maxSize)
+			if (slots1.size() < nSlotsPerPage)
 				slots2 = Arrays.asList(slot(slots1));
 			else { // Splits into two if reached maximum number of nodes
-				List<Slot> leftSlots = Util.left(slots1, halfSize);
-				List<Slot> rightSlots = Util.right(slots1, halfSize);
+				List<Slot> leftSlots = Util.left(slots1, minSlotsPerPage);
+				List<Slot> rightSlots = Util.right(slots1, minSlotsPerPage);
 				slots2 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			}
 
@@ -248,7 +248,7 @@ public class IbTree<T> implements Closeable {
 					List<Slot> slots1 = remove(slot.slots(), t);
 
 					// Merges with a neighbor if reached minimum number of nodes
-					if (slots1.size() < halfSize)
+					if (slots1.size() < minSlotsPerPage)
 						if (s0 > 0)
 							replaceSlots = merge(slots0.get(--s0).slots(), slots1);
 						else if (s1 < size)
@@ -273,10 +273,10 @@ public class IbTree<T> implements Closeable {
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
 			List<Slot> merged;
 
-			if (slots0.size() + slots1.size() >= maxSize) {
+			if (slots0.size() + slots1.size() >= nSlotsPerPage) {
 				List<Slot> leftSlots, rightSlots;
 
-				if (slots0.size() > halfSize) {
+				if (slots0.size() > minSlotsPerPage) {
 					leftSlots = Util.left(slots0, -1);
 					rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
 				} else {
