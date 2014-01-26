@@ -9,6 +9,7 @@ import suite.lp.doer.Prover;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
@@ -160,6 +161,8 @@ public class SystemPredicates {
 	}
 
 	private class Memoize implements SystemPredicate {
+		private Reference uniqueReference = new Reference();
+
 		private Fun<Pair<Node, Node>, Node> findAll = new CacheUtil().proxy(new Fun<Pair<Node, Node>, Node>() {
 			public Node apply(Pair<Node, Node> pair) {
 				return findAll(prover, pair.t0, pair.t1);
@@ -168,7 +171,12 @@ public class SystemPredicates {
 
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Node.tupleToArray(ps, 3);
-			Node result = findAll.apply(Pair.create(params[0], params[1]));
+			Node var = params[0];
+
+			// Avoids changing hash-code - but making memoize not re-entrant
+			((Reference) var).bound(uniqueReference);
+
+			Node result = findAll.apply(Pair.<Node, Node> create(uniqueReference, params[1]));
 			return prover.bind(params[2], result);
 		}
 	}
