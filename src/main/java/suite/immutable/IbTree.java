@@ -73,10 +73,9 @@ public class IbTree<T> implements Closeable {
 	}
 
 	/**
-	 * Pointer would be null in leaves. Pivot stores the leaf value.
+	 * In leaves, pointer would be null, and pivot stores the leaf value.
 	 * 
-	 * Pivot would be null at the maximum side of a tree. It represents the
-	 * guarding key.
+	 * Pivot would be null at the maximum side of a tree as the guarding key.
 	 */
 	private class Slot {
 		private Pointer pointer;
