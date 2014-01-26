@@ -321,8 +321,8 @@ public class IbTree<T> implements Closeable {
 			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
-		public void initialize(List<Integer> stamp) {
-			write(IbTree.this.initialize(stamp));
+		public void build(List<Integer> stamp) {
+			write(IbTree.this.build(stamp));
 		}
 
 		public Transaction begin() {
@@ -434,8 +434,8 @@ public class IbTree<T> implements Closeable {
 		};
 	}
 
-	public static List<Integer> initializeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
-		IbTree<Pointer>.Transaction transaction = ibTree.initialize0(stamp0);
+	public static List<Integer> buildAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
+		IbTree<Pointer>.Transaction transaction = ibTree.build0(stamp0);
 		for (int p = 0; p < nPages; p++) {
 			Pointer pointer = new Pointer();
 			pointer.number = p;
@@ -444,11 +444,11 @@ public class IbTree<T> implements Closeable {
 		return transaction.commit();
 	}
 
-	public List<Integer> initialize(List<Integer> stamp0) {
-		return initialize0(stamp0).commit();
+	public List<Integer> build(List<Integer> stamp0) {
+		return build0(stamp0).commit();
 	}
 
-	public Transaction initialize0(List<Integer> stamp0) {
+	public Transaction build0(List<Integer> stamp0) {
 		return new Transaction(allocator(stamp0));
 	}
 
