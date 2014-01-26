@@ -4,6 +4,13 @@
 fc-compile (PRAGMA _ .do) .env .cdr
 	:- !, fc-compile .do .env .cdr
 #
+fc-compile (USING .mode .lib .do) .fve .cdr
+	:- !
+	, memoize .precompiled (fc-load-precompiled-library .lib .precompiled) ((_ # .eagerPred # .lazyPred # _ #),)
+	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
+	, generalize .pred (fc-compile-using-lib .mode .lib .do .fve .cdr :- .tail)
+	, once .tail
+#
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- !
 	, .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)

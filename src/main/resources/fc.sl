@@ -37,11 +37,6 @@ compile-function .mode .do0 .c0
 	, !, cg-generate-code .c0
 #
 
-fc-compile (USING .mode .lib .do) .fve .cdr
-	:- !, fc-load-precompiled-library .lib
-	, fc-compile-using-lib .mode .lib .do .fve .cdr
-#
-
 fc-load-library .lib
 	:- once (fc-imported-library .lib
 		; home.dir .homeDir
@@ -57,14 +52,11 @@ fc-load-library .lib
 	)
 #
 
-fc-load-precompiled-library .lib
-	:- once (fc-imported-precompile-library .lib
-		; home.dir .homeDir
-		, concat .homeDir "/" .lib ".rpn" .rpnFilename
-		, file.read .rpnFilename .rpn
-		, rpn .precompiled .rpn
-		, import .precompiled
-	)
+fc-load-precompiled-library .lib .precompiled
+	:- home.dir .homeDir
+	, concat .homeDir "/" .lib ".rpn" .rpnFilename
+	, file.read .rpnFilename .rpn
+	, rpn .precompiled .rpn
 #
 
 fc-frame-difference .frame0 .frame1 0 :- same .frame0 .frame1, ! #

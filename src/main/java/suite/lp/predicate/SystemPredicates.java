@@ -12,7 +12,10 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
+import suite.util.CacheUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Pair;
 
 public class SystemPredicates {
 
@@ -30,6 +33,7 @@ public class SystemPredicates {
 		addPredicate("cut.begin", new CutBegin());
 		addPredicate("cut.end", new CutEnd());
 		addPredicate("find.all", new FindAll());
+		addPredicate("memoize", new Memoize());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
 		addPredicate("system.predicate", new SystemPredicate_());
@@ -150,22 +154,21 @@ public class SystemPredicates {
 
 	private class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Node.tupleToArray(ps, 3);
-			final Stack<Node> stack = new Stack<>();
+			Node params[] = Node.tupleToArray(ps, 3);
+			return prover.bind(params[2], findAll(prover, params[0], params[1]));
+		}
+	}
 
-			Tree subGoal = Tree.create(TermOp.AND___, params[1], new Data<Source<Boolean>>(new Source<Boolean>() {
-				public Boolean source() {
-					stack.push(new Cloner().clone(params[0]));
-					return Boolean.FALSE;
-				}
-			}));
+	private class Memoize implements SystemPredicate {
+		private Fun<Pair<Node, Node>, Node> findAll = new CacheUtil().proxy(new Fun<Pair<Node, Node>, Node>() {
+			public Node apply(Pair<Node, Node> pair) {
+				return findAll(prover, pair.t0, pair.t1);
+			}
+		});
 
-			new Prover(prover).elaborate(subGoal);
-
-			Node result = Atom.NIL;
-			while (!stack.isEmpty())
-				result = Tree.create(TermOp.AND___, stack.pop(), result);
-
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Node.tupleToArray(ps, 3);
+			Node result = findAll.apply(Pair.create(params[0], params[1]));
 			return prover.bind(params[2], result);
 		}
 	}
@@ -199,6 +202,24 @@ public class SystemPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			return prover.bind(ps, Atom.unique());
 		}
+	}
+
+	private Node findAll(Prover prover, final Node var, Node goal) {
+		final Stack<Node> stack = new Stack<>();
+
+		Tree subGoal = Tree.create(TermOp.AND___, goal, new Data<Source<Boolean>>(new Source<Boolean>() {
+			public Boolean source() {
+				stack.push(new Cloner().clone(var));
+				return Boolean.FALSE;
+			}
+		}));
+
+		new Prover(prover).elaborate(subGoal);
+
+		Node result = Atom.NIL;
+		while (!stack.isEmpty())
+			result = Tree.create(TermOp.AND___, stack.pop(), result);
+		return result;
 	}
 
 }
