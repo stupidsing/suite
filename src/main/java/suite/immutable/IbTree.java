@@ -20,7 +20,21 @@ import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 import suite.util.Util;
 
-public class B_TreeIndirect<T> implements Closeable {
+/**
+ * Immutable, on-disk B-tree implementation.
+ * 
+ * To allow efficient page management, a large B-tree has one smaller B-tree for
+ * storing unused pages, called allocation B-tree. That smaller one might
+ * contain a even smaller allocation B-tree, until it becomes small enough to
+ * fit in a single disk page.
+ * 
+ * Transaction control is done by a "stamp" consisting of a chain of root page
+ * numbers of all B-trees. The holder object persist the stmap into another
+ * file.
+ * 
+ * @author ywsing
+ */
+public class IbTree<T> implements Closeable {
 
 	private int maxSize = 16;
 	private int halfSize = maxSize / 2;
@@ -30,7 +44,7 @@ public class B_TreeIndirect<T> implements Closeable {
 
 	private String filename;
 	private SerializedPageFile<Page> pageFile;
-	private B_TreeIndirect<Pointer> allocationB_tree;
+	private IbTree<Pointer> allocationIbtree;
 
 	public static class Pointer {
 		public static Comparator<Pointer> comparator = new Comparator<Pointer>() {
@@ -108,17 +122,17 @@ public class B_TreeIndirect<T> implements Closeable {
 		}
 	}
 
-	public class B_TreeAllocator implements Allocator {
-		private B_TreeIndirect<Pointer> b_tree;
-		private B_TreeIndirect<Pointer>.Transaction transaction;
+	public class IbTreeAllocator implements Allocator {
+		private IbTree<Pointer> ibTree;
+		private IbTree<Pointer>.Transaction transaction;
 
-		public B_TreeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> stamp) {
-			this.b_tree = b_tree;
-			this.transaction = b_tree.transaction(stamp);
+		public IbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
+			this.ibTree = ibTree;
+			this.transaction = ibTree.transaction(stamp);
 		}
 
 		public Pointer allocate() {
-			Pointer pointer = b_tree.source(transaction.root).source();
+			Pointer pointer = ibTree.source(transaction.root).source();
 			if (pointer != null) {
 				transaction.remove(pointer);
 				return pointer;
@@ -309,7 +323,7 @@ public class B_TreeIndirect<T> implements Closeable {
 		}
 
 		public void initialize(List<Integer> stamp) {
-			write(B_TreeIndirect.this.initialize(stamp));
+			write(IbTree.this.initialize(stamp));
 		}
 
 		public Transaction begin() {
@@ -327,7 +341,7 @@ public class B_TreeIndirect<T> implements Closeable {
 		}
 
 		public Source<T> source(Transaction transaction, T start, T end) {
-			return B_TreeIndirect.this.source(transaction.root, start, end);
+			return IbTree.this.source(transaction.root, start, end);
 		}
 
 		private List<Integer> read() {
@@ -343,7 +357,7 @@ public class B_TreeIndirect<T> implements Closeable {
 	 * Constructor for a small tree that would not span more than 1 page, i.e.
 	 * no extra "page allocation tree" is required.
 	 */
-	public B_TreeIndirect(String filename, Comparator<T> comparator, Serializer<T> serializer) throws FileNotFoundException {
+	public IbTree(String filename, Comparator<T> comparator, Serializer<T> serializer) throws FileNotFoundException {
 		this(filename, comparator, serializer, null);
 	}
 
@@ -351,12 +365,12 @@ public class B_TreeIndirect<T> implements Closeable {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public B_TreeIndirect(String filename, Comparator<T> comparator, Serializer<T> serializer,
-			B_TreeIndirect<Pointer> allocationB_tree) throws FileNotFoundException {
+	public IbTree(String filename, Comparator<T> comparator, Serializer<T> serializer, IbTree<Pointer> allocationIbTree)
+			throws FileNotFoundException {
 		this.filename = filename;
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
-		this.allocationB_tree = allocationB_tree;
+		this.allocationIbtree = allocationIbTree;
 		pageFile = new SerializedPageFile<>(filename, createPageSerializer());
 	}
 
@@ -421,8 +435,8 @@ public class B_TreeIndirect<T> implements Closeable {
 		};
 	}
 
-	public static List<Integer> initializeAllocator(B_TreeIndirect<Pointer> b_tree, List<Integer> stamp0, int nPages) {
-		B_TreeIndirect<Pointer>.Transaction transaction = b_tree.initialize0(stamp0);
+	public static List<Integer> initializeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
+		IbTree<Pointer>.Transaction transaction = ibTree.initialize0(stamp0);
 		for (int p = 0; p < nPages; p++) {
 			Pointer pointer = new Pointer();
 			pointer.number = p;
@@ -446,8 +460,8 @@ public class B_TreeIndirect<T> implements Closeable {
 	}
 
 	private Allocator allocator(List<Integer> stamp) {
-		boolean isBta = allocationB_tree != null;
-		return isBta ? new B_TreeAllocator(allocationB_tree, stamp) : new SwappingAllocator(stamp.get(0));
+		boolean isBta = allocationIbtree != null;
+		return isBta ? new IbTreeAllocator(allocationIbtree, stamp) : new SwappingAllocator(stamp.get(0));
 	}
 
 	private int compare(T t0, T t1) {
