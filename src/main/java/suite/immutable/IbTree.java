@@ -44,7 +44,7 @@ public class IbTree<T> implements Closeable {
 
 	private String filename;
 	private SerializedPageFile<Page> pageFile;
-	private IbTree<Pointer> allocationIbtree;
+	private IbTree<Pointer> allocationIbTree;
 
 	public static class Pointer {
 		public static Comparator<Pointer> comparator = new Comparator<Pointer>() {
@@ -370,7 +370,7 @@ public class IbTree<T> implements Closeable {
 		this.filename = filename;
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
-		this.allocationIbtree = allocationIbTree;
+		this.allocationIbTree = allocationIbTree;
 		pageFile = new SerializedPageFile<>(filename, createPageSerializer());
 	}
 
@@ -460,8 +460,8 @@ public class IbTree<T> implements Closeable {
 	}
 
 	private Allocator allocator(List<Integer> stamp) {
-		boolean isBta = allocationIbtree != null;
-		return isBta ? new IbTreeAllocator(allocationIbtree, stamp) : new SwappingAllocator(stamp.get(0));
+		boolean isBta = allocationIbTree != null;
+		return isBta ? new IbTreeAllocator(allocationIbTree, stamp) : new SwappingAllocator(stamp.get(0));
 	}
 
 	private int compare(T t0, T t1) {
