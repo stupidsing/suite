@@ -44,8 +44,7 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	, !, fc-optimize-flow .dol3 .dol4
 	, !, fc-dump-precompile EAGER .lib .fcs .do3 .prog1
 	, !, fc-dump-precompile LAZY .lib .fcs .dol4 .prog2
-	, .prog3 = fc-imported-precompile-library .lib
-	, .prog = (.prog0 # .prog1 # .prog2 # .prog3 #)
+	, .prog = (.prog0 # .prog1 # .prog2 #)
 	, !, write 'Verifying final output', nl
 	, once (not is.cyclic .prog; fc-error "Cyclic data detected")
 #
