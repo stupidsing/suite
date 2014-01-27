@@ -1,8 +1,5 @@
 package suite.text;
 
-import java.util.Arrays;
-import java.util.List;
-
 import suite.net.Bytes;
 
 public class Segment {
@@ -22,19 +19,16 @@ public class Segment {
 		this.bytes = bytes;
 	}
 
+	public Segment right(int pos) {
+		return new Segment(pos, end, bytes.subbytes(pos - start));
+	}
+
 	public Segment adjust(int offset) {
 		return new Segment(start + offset, end + offset, bytes);
 	}
 
-	public List<Segment> split(int offset) {
-		if (offset < start)
-			return Arrays.asList(new Segment(0), this);
-		else if (offset < end) {
-			Segment segment0 = new Segment(start, offset, bytes.subbytes(0, offset - start));
-			Segment segment1 = new Segment(offset, end, bytes.subbytes(offset - start));
-			return Arrays.asList(segment0, segment1);
-		} else
-			return Arrays.asList(this, new Segment(end));
+	public int length() {
+		return end - start;
 	}
 
 	public int getStart() {
