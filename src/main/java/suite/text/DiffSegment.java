@@ -25,6 +25,10 @@ public class DiffSegment {
 		this.segmentBee = segmentBee;
 	}
 
+	public boolean isChanged() {
+		return segmentAye.getBytes() != segmentBee.getBytes();
+	}
+
 	public DiffSegment adjust(int offsetAye, int offsetBee) {
 		Segment segmentAye1 = segmentAye.adjust(offsetAye);
 		Segment segmentBee1 = segmentBee.adjust(offsetBee);

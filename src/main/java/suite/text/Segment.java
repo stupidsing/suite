@@ -12,6 +12,10 @@ public class Segment {
 
 	public static final Segment nil = new Segment(0, 0, Bytes.emptyBytes);
 
+	public Segment(int pos) {
+		this(pos, pos, Bytes.emptyBytes);
+	}
+
 	public Segment(int start, int end, Bytes bytes) {
 		this.start = start;
 		this.end = end;
@@ -24,13 +28,13 @@ public class Segment {
 
 	public List<Segment> split(int offset) {
 		if (offset < start)
-			return Arrays.asList(nil, this);
+			return Arrays.asList(new Segment(0), this);
 		else if (offset < end) {
 			Segment segment0 = new Segment(start, offset, bytes.subbytes(0, offset - start));
 			Segment segment1 = new Segment(offset, end, bytes.subbytes(offset - start));
 			return Arrays.asList(segment0, segment1);
 		} else
-			return Arrays.asList(this, nil);
+			return Arrays.asList(this, new Segment(end));
 	}
 
 	public int getStart() {
