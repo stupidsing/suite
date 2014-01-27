@@ -170,10 +170,9 @@ public class SystemPredicates {
 
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Node.tupleToArray(ps, 3);
-			Node var = params[0];
 
 			// Avoids changing hash-code - but making memoize not re-entrant
-			((Reference) var).bound(uniqueReference);
+			((Reference) params[0]).bound(uniqueReference);
 
 			return prover.bind(params[2], findAll.apply(params[1]));
 		}
