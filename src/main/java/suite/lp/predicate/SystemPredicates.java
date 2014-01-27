@@ -16,7 +16,6 @@ import suite.node.io.TermParser.TermOp;
 import suite.util.CacheUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 
 public class SystemPredicates {
 
@@ -163,9 +162,9 @@ public class SystemPredicates {
 	private class Memoize implements SystemPredicate {
 		private Reference uniqueReference = new Reference();
 
-		private Fun<Pair<Node, Node>, Node> findAll = new CacheUtil().proxy(new Fun<Pair<Node, Node>, Node>() {
-			public Node apply(Pair<Node, Node> pair) {
-				return findAll(prover, pair.t0, pair.t1);
+		private Fun<Node, Node> findAll = new CacheUtil().proxy(new Fun<Node, Node>() {
+			public Node apply(Node goal) {
+				return findAll(prover, uniqueReference, goal);
 			}
 		});
 
@@ -176,8 +175,7 @@ public class SystemPredicates {
 			// Avoids changing hash-code - but making memoize not re-entrant
 			((Reference) var).bound(uniqueReference);
 
-			Node result = findAll.apply(Pair.<Node, Node> create(var, params[1]));
-			return prover.bind(params[2], result);
+			return prover.bind(params[2], findAll.apply(params[1]));
 		}
 	}
 

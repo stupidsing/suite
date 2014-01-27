@@ -29,7 +29,10 @@ public class Reference extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		return node != this ? node.equals(object) : super.equals(object);
+		if (node == this)
+			return object instanceof Node && super.equals(((Node) object).finalNode());
+		else
+			return node.equals(object);
 	}
 
 	public int getId() {
