@@ -11,10 +11,11 @@ public class Patch {
 		BytesBuilder bytesBuilder = new BytesBuilder();
 
 		for (DiffSegment diffSegment : diffSegments)
-			if (diffSegment.isChanged())
+			if (!diffSegment.isChanged()) {
+				Segment segmentAye = diffSegment.getSegmentAye();
+				bytesBuilder.append(bytes.subbytes(segmentAye.getStart(), segmentAye.getEnd()));
+			} else
 				bytesBuilder.append(diffSegment.getSegmentBee().getBytes());
-			else
-				bytesBuilder.append(bytes.subbytes(diffSegment.getSegmentAye().getStart(), diffSegment.getSegmentAye().getEnd()));
 
 		return bytesBuilder.toBytes();
 	}
