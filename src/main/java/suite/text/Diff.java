@@ -34,15 +34,13 @@ public class Diff {
 	}
 
 	private List<DiffSegment> diff(DiffSegment diffSegment0) {
-		Bytes bytesAye = diffSegment0.getSegmentAye().getBytes();
-		Bytes bytesBee = diffSegment0.getSegmentBee().getBytes();
-		List<DiffSegment> diffSegments = diff(bytesAye, bytesBee);
+		Segment segmentAye = diffSegment0.getSegmentAye();
+		Segment segmentBee = diffSegment0.getSegmentBee();
+		List<DiffSegment> diffSegments = diff(segmentAye.getBytes(), segmentBee.getBytes());
 		List<DiffSegment> diffSegments1 = new ArrayList<>();
-		int startAye = diffSegment0.getSegmentAye().getStart();
-		int startBee = diffSegment0.getSegmentBee().getStart();
 
 		for (DiffSegment diffSegment : diffSegments)
-			diffSegments1.add(diffSegment.adjust(startAye, startBee));
+			diffSegments1.add(diffSegment.adjust(segmentAye.getStart(), segmentBee.getStart()));
 
 		return diffSegments1;
 	}

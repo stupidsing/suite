@@ -19,9 +19,7 @@ public class Segment {
 	}
 
 	public Segment adjust(int offset) {
-		int start1 = start + offset;
-		int end1 = end + offset;
-		return new Segment(start1, end1, bytes);
+		return new Segment(start + offset, end + offset, bytes);
 	}
 
 	public List<Segment> split(int offset) {
