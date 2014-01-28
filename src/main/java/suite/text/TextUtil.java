@@ -6,7 +6,7 @@ import java.util.List;
 import suite.algo.LongestCommonContinuousSequence;
 import suite.net.Bytes;
 import suite.net.Bytes.BytesBuilder;
-import suite.primitive.IntList;
+import suite.util.Pair;
 import suite.util.Util;
 
 public class TextUtil {
@@ -27,18 +27,21 @@ public class TextUtil {
 
 	public Patch diff(Bytes bytesAye, Bytes bytesBee) {
 		LongestCommonContinuousSequence lccs = new LongestCommonContinuousSequence();
-		IntList intList = Util.first(lccs.lccs(bytesAye.getBytes(), bytesBee.getBytes()));
+		Pair<Segment, Segment> diff = Util.first(lccs.lccs(bytesAye, bytesBee));
 
-		PatchSegment patchSegment0 = new PatchSegment(intList //
-				, bytesAye.subbytes(0, intList.get(0)) //
-				, bytesBee.subbytes(0, intList.get(2)));
+		Segment segmentAye = diff.t0, segmentBee = diff.t1;
+		int a0 = 0, a1 = segmentAye.getStart(), a2 = segmentAye.getEnd();
+		int b0 = 0, b1 = segmentBee.getStart(), b2 = segmentBee.getEnd();
 
-		PatchSegment patchSegment1 = new PatchSegment(intList //
-				, bytesAye.subbytes(intList.get(0), intList.get(1)));
+		PatchSegment patchSegment0 = new PatchSegment(a0, b0 //
+				, bytesAye.subbytes(a0, a1) //
+				, bytesBee.subbytes(b0, b1));
 
-		PatchSegment patchSegment2 = new PatchSegment(intList //
-				, bytesAye.subbytes(intList.get(1), bytesAye.size()) //
-				, bytesBee.subbytes(intList.get(3), bytesBee.size()));
+		PatchSegment patchSegment1 = new PatchSegment(segmentAye, segmentBee);
+
+		PatchSegment patchSegment2 = new PatchSegment(a2, b2 //
+				, bytesAye.subbytes(a2) //
+				, bytesBee.subbytes(b2));
 
 		List<PatchSegment> patchSegments = new ArrayList<>();
 		patchSegments.addAll(diff(patchSegment0).getPatchSegments());

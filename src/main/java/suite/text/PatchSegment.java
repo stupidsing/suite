@@ -1,7 +1,6 @@
 package suite.text;
 
 import suite.net.Bytes;
-import suite.primitive.IntList;
 
 public class PatchSegment {
 
@@ -9,12 +8,9 @@ public class PatchSegment {
 	private Segment segmentAye;
 	private Segment segmentBee;
 
-	public PatchSegment(IntList lccs, Bytes bytes) {
-		this(lccs, bytes, bytes);
-	}
-
-	public PatchSegment(IntList lccs, Bytes bytes0, Bytes bytes1) {
-		this(new Segment(lccs.get(0), lccs.get(1), bytes0), new Segment(lccs.get(2), lccs.get(3), bytes1));
+	public PatchSegment(int startAye, int startBee, Bytes bytesAye, Bytes bytesBee) {
+		this(new Segment(startAye, startAye + bytesAye.size(), bytesAye) //
+				, new Segment(startBee, startBee + bytesBee.size(), bytesBee));
 	}
 
 	public PatchSegment(Segment segmentAye, Segment segmentBee) {
