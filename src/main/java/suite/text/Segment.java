@@ -7,12 +7,6 @@ public class Segment {
 	private int start, end;
 	private Bytes bytes;
 
-	public static final Segment nil = new Segment(0, 0, Bytes.emptyBytes);
-
-	public Segment(int pos) {
-		this(pos, pos, Bytes.emptyBytes);
-	}
-
 	public Segment(int start, int end, Bytes bytes) {
 		this.start = start;
 		this.end = end;

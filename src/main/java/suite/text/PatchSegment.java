@@ -26,10 +26,6 @@ public class PatchSegment {
 		return segmentAye.getBytes() != segmentBee.getBytes();
 	}
 
-	public int offset() {
-		return segmentBee.length() - segmentAye.length();
-	}
-
 	public PatchSegment adjust(int offsetAye, int offsetBee) {
 		Segment segmentAye1 = segmentAye.adjust(offsetAye);
 		Segment segmentBee1 = segmentBee.adjust(offsetBee);
