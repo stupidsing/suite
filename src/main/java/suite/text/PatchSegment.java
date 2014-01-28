@@ -1,23 +1,23 @@
 package suite.text;
 
-import suite.fastlist.IntList;
 import suite.net.Bytes;
+import suite.primitive.IntList;
 
-public class DiffSegment {
+public class PatchSegment {
 
 	// segmentAye.bytes == segmentBee.bytes for common segment
 	private Segment segmentAye;
 	private Segment segmentBee;
 
-	public DiffSegment(IntList lccs, Bytes bytes) {
+	public PatchSegment(IntList lccs, Bytes bytes) {
 		this(lccs, bytes, bytes);
 	}
 
-	public DiffSegment(IntList lccs, Bytes bytes0, Bytes bytes1) {
+	public PatchSegment(IntList lccs, Bytes bytes0, Bytes bytes1) {
 		this(new Segment(lccs.get(0), lccs.get(1), bytes0), new Segment(lccs.get(2), lccs.get(3), bytes1));
 	}
 
-	public DiffSegment(Segment segmentAye, Segment segmentBee) {
+	public PatchSegment(Segment segmentAye, Segment segmentBee) {
 		this.segmentAye = segmentAye;
 		this.segmentBee = segmentBee;
 	}
@@ -30,14 +30,14 @@ public class DiffSegment {
 		return segmentBee.length() - segmentAye.length();
 	}
 
-	public DiffSegment adjust(int offsetAye, int offsetBee) {
+	public PatchSegment adjust(int offsetAye, int offsetBee) {
 		Segment segmentAye1 = segmentAye.adjust(offsetAye);
 		Segment segmentBee1 = segmentBee.adjust(offsetBee);
-		return new DiffSegment(segmentAye1, segmentBee1);
+		return new PatchSegment(segmentAye1, segmentBee1);
 	}
 
-	public DiffSegment reverse() {
-		return new DiffSegment(segmentBee, segmentAye);
+	public PatchSegment reverse() {
+		return new PatchSegment(segmentBee, segmentAye);
 	}
 
 	public Segment getSegmentAye() {

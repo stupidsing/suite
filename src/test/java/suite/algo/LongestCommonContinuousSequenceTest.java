@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.fastlist.IntList;
+import suite.primitive.IntList;
 import suite.util.FileUtil;
 
 public class LongestCommonContinuousSequenceTest {

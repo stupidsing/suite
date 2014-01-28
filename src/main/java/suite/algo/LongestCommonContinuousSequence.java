@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import suite.fastlist.IntList;
+import suite.primitive.IntList;
 import suite.util.DefaultFunMap;
 import suite.util.FunUtil.Fun;
 

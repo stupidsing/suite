@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.util.FileUtil;
-
 /**
  * Defines interface for reading/writing byte buffer. The operation within the
  * same serializer should always put in the same number of bytes.

@@ -1,23 +1,23 @@
 package suite.text;
 
+import java.util.Iterator;
 import java.util.List;
 
-import suite.net.Bytes;
-import suite.net.Bytes.BytesBuilder;
+public class Patch implements Iterable<PatchSegment> {
 
-public class Patch {
+	private List<PatchSegment> patchSegments;
 
-	public Bytes patch(Bytes bytes, List<DiffSegment> diffSegments) {
-		BytesBuilder bytesBuilder = new BytesBuilder();
+	public Patch(List<PatchSegment> patchSegments) {
+		this.patchSegments = patchSegments;
+	}
 
-		for (DiffSegment diffSegment : diffSegments)
-			if (!diffSegment.isChanged()) {
-				Segment segmentAye = diffSegment.getSegmentAye();
-				bytesBuilder.append(bytes.subbytes(segmentAye.getStart(), segmentAye.getEnd()));
-			} else
-				bytesBuilder.append(diffSegment.getSegmentBee().getBytes());
+	@Override
+	public Iterator<PatchSegment> iterator() {
+		return patchSegments.iterator();
+	}
 
-		return bytesBuilder.toBytes();
+	public List<PatchSegment> getPatchSegments() {
+		return patchSegments;
 	}
 
 }
