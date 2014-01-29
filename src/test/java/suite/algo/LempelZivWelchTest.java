@@ -67,7 +67,7 @@ public class LempelZivWelchTest {
 		while ((b = outputSource.source()) != null)
 			bb.append(b);
 
-		return new String(bb.toBytes().getBytes(), FileUtil.charset);
+		return To.string(bb.toBytes());
 	}
 
 	private List<Byte> allBytes() {

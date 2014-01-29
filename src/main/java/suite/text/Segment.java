@@ -13,6 +13,10 @@ public class Segment {
 		this.end = end;
 	}
 
+	public boolean isEmpty() {
+		return start == end;
+	}
+
 	public int length() {
 		return end - start;
 	}

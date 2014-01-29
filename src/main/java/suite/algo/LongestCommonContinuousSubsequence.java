@@ -17,26 +17,30 @@ public class LongestCommonContinuousSubsequence {
 
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
 		int rollingSize = Math.min(bytes0.size(), bytes1.size());
-		Map<Integer, Segment> segments0 = createInitialHashes(bytes0, rollingSize);
-		Map<Integer, Segment> segments1 = createInitialHashes(bytes1, rollingSize);
 
-		while (true) {
-			HashSet<Integer> keys = new HashSet<>(segments0.keySet());
-			keys.retainAll(segments1.keySet());
+		if (rollingSize > 0) {
+			Map<Integer, Segment> segments0 = createInitialHashes(bytes0, rollingSize);
+			Map<Integer, Segment> segments1 = createInitialHashes(bytes1, rollingSize);
 
-			for (int key : keys) {
-				Segment segment0 = segments0.get(key);
-				Segment segment1 = segments1.get(key);
-				Bytes b0 = bytes0.subbytes(segment0.getStart(), segment0.getEnd());
-				Bytes b1 = bytes1.subbytes(segment1.getStart(), segment1.getEnd());
-				if (Util.equals(b0, b1))
-					return Pair.create(segment0, segment1);
+			while (true) {
+				HashSet<Integer> keys = new HashSet<>(segments0.keySet());
+				keys.retainAll(segments1.keySet());
+
+				for (int key : keys) {
+					Segment segment0 = segments0.get(key);
+					Segment segment1 = segments1.get(key);
+					Bytes b0 = bytes0.subbytes(segment0.getStart(), segment0.getEnd());
+					Bytes b1 = bytes1.subbytes(segment1.getStart(), segment1.getEnd());
+					if (Util.equals(b0, b1))
+						return Pair.create(segment0, segment1);
+				}
+
+				segments0 = reduceSegments(segments0, bytes0, rollingSize);
+				segments1 = reduceSegments(segments1, bytes1, rollingSize);
+				rollingSize--;
 			}
-
-			segments0 = reduceSegments(segments0, bytes0, rollingSize);
-			segments1 = reduceSegments(segments1, bytes1, rollingSize);
-			rollingSize--;
-		}
+		} else
+			return Pair.create(new Segment(0, 0), new Segment(0, 0));
 	}
 
 	private Map<Integer, Segment> createInitialHashes(Bytes bytes, int rollingSize) {

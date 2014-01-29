@@ -8,6 +8,10 @@ public class PatchDataSegment {
 	private DataSegment dataSegmentAye;
 	private DataSegment dataSegmentBee;
 
+	public PatchDataSegment(int startAye, int startBee, Bytes bytes) {
+		this(startAye, startBee, bytes, bytes);
+	}
+
 	public PatchDataSegment(int startAye, int startBee, Bytes bytesAye, Bytes bytesBee) {
 		this(new DataSegment(startAye, startAye + bytesAye.size(), bytesAye) //
 				, new DataSegment(startBee, startBee + bytesBee.size(), bytesBee));
@@ -16,6 +20,10 @@ public class PatchDataSegment {
 	public PatchDataSegment(DataSegment dataSegmentAye, DataSegment dataSegmentBee) {
 		this.dataSegmentAye = dataSegmentAye;
 		this.dataSegmentBee = dataSegmentBee;
+	}
+
+	public boolean isEmpty() {
+		return dataSegmentAye.isEmpty() && dataSegmentBee.isEmpty();
 	}
 
 	public boolean isChanged() {

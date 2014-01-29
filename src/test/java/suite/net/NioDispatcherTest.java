@@ -23,6 +23,7 @@ import suite.net.channels.RequestResponseChannel;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 import suite.util.Util;
 
 public class NioDispatcherTest {
@@ -36,7 +37,7 @@ public class NioDispatcherTest {
 			public void onConnected(Sender sender) {
 				super.onConnected(sender);
 				String s = hello + "\n";
-				send(new Bytes(s.getBytes(charset)));
+				send(To.bytes(s));
 			}
 
 			public void onReceive(Bytes request) {

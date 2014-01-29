@@ -184,7 +184,7 @@ public class ClusterProbe extends ThreadedService {
 			buffer.get(bytes);
 			buffer.rewind();
 
-			String splitted[] = new String(bytes, FileUtil.charset).split(",");
+			String splitted[] = To.string(bytes).split(",");
 			Command data = Command.valueOf(splitted[0]);
 			String remote = splitted[1];
 

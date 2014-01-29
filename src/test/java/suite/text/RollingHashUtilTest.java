@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.net.Bytes;
-import suite.util.FileUtil;
+import suite.util.To;
 
 public class RollingHashUtilTest {
 
@@ -26,7 +26,7 @@ public class RollingHashUtilTest {
 
 	@Test
 	public void test1() {
-		Bytes bytes = new Bytes("0123456789abcdef".getBytes(FileUtil.charset));
+		Bytes bytes = To.bytes("0123456789abcdef");
 		int size = bytes.size();
 
 		int rollingHash = rollingHashUtil.hash(bytes);
@@ -39,7 +39,7 @@ public class RollingHashUtilTest {
 
 	@Test
 	public void test2() {
-		Bytes bytes = new Bytes("0123456789abcdef".getBytes(FileUtil.charset));
+		Bytes bytes = To.bytes("0123456789abcdef");
 		int size = bytes.size();
 
 		int rollingHash = rollingHashUtil.hash(bytes.subbytes(0, 10));

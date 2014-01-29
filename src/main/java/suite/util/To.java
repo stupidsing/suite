@@ -14,12 +14,17 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import suite.net.Bytes;
 import suite.util.FunUtil.Pipe;
 import suite.util.FunUtil.Source;
 
 public class To {
 
 	private static final int bufferSize = 4096;
+
+	public static Bytes bytes(String s) {
+		return new Bytes(s.getBytes(FileUtil.charset));
+	}
 
 	public static Date date(String s) throws ParseException {
 		return FormatUtil.dateTimeFormat.parse(s);
@@ -61,6 +66,14 @@ public class To {
 				return iterator.hasNext() ? iterator.next() : null;
 			}
 		};
+	}
+
+	public static String string(byte bs[]) {
+		return new String(bs, FileUtil.charset);
+	}
+
+	public static String string(Bytes bytes) {
+		return string(bytes.getBytes());
 	}
 
 	public static String string(Date date) {

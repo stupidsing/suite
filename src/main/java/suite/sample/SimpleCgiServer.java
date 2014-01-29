@@ -11,6 +11,7 @@ import java.util.Map;
 import suite.util.FileUtil;
 import suite.util.SocketUtil;
 import suite.util.SocketUtil.Io;
+import suite.util.To;
 
 public class SimpleCgiServer {
 
@@ -86,7 +87,7 @@ public class SimpleCgiServer {
 		while (nBytesRead < length)
 			nBytesRead += sis.read(bytes);
 
-		return new String(bytes, FileUtil.charset);
+		return To.string(bytes);
 	}
 
 }

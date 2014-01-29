@@ -6,11 +6,6 @@ public class DataSegment extends Segment {
 
 	private Bytes bytes;
 
-	public DataSegment(Segment segment, Bytes bytes) {
-		super(segment);
-		this.bytes = bytes;
-	}
-
 	public DataSegment(int start, int end, Bytes bytes) {
 		super(start, end);
 		this.bytes = bytes;

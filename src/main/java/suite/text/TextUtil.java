@@ -1,6 +1,7 @@
 package suite.text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import suite.algo.LongestCommonContinuousSubsequence;
@@ -27,42 +28,44 @@ public class TextUtil {
 	public PatchData diff(Bytes bytesAye, Bytes bytesBee) {
 		LongestCommonContinuousSubsequence lccs = new LongestCommonContinuousSubsequence();
 		Pair<Segment, Segment> diff = lccs.lccs(bytesAye, bytesBee);
-
 		Segment sa = diff.t0, sb = diff.t1;
 		int a0 = 0, a1 = sa.getStart(), a2 = sa.getEnd();
 		int b0 = 0, b1 = sb.getStart(), b2 = sb.getEnd();
-		DataSegment dsa = new DataSegment(sa, bytesAye.subbytes(a1, a2));
-		DataSegment dsb = new DataSegment(sb, bytesBee.subbytes(b1, b2));
 
-		PatchDataSegment pds0 = new PatchDataSegment(a0, b0 //
-				, bytesAye.subbytes(a0, a1) //
-				, bytesBee.subbytes(b0, b1));
+		if (!sa.isEmpty() && !sb.isEmpty()) {
+			PatchDataSegment pds0 = new PatchDataSegment(a0, b0 //
+					, bytesAye.subbytes(a0, a1) //
+					, bytesBee.subbytes(b0, b1));
 
-		PatchDataSegment pds1 = new PatchDataSegment(dsa, dsb);
+			PatchDataSegment pds1 = new PatchDataSegment(a1, b1 //
+					, bytesAye.subbytes(a1, a2) //
+			);
 
-		PatchDataSegment pds2 = new PatchDataSegment(a2, b2 //
-				, bytesAye.subbytes(a2) //
-				, bytesBee.subbytes(b2));
+			PatchDataSegment pds2 = new PatchDataSegment(a2, b2 //
+					, bytesAye.subbytes(a2) //
+					, bytesBee.subbytes(b2));
 
-		List<PatchDataSegment> pdsList = new ArrayList<>();
-		pdsList.addAll(diff(pds0).getPatchDataSegments());
-		pdsList.add(pds1);
-		pdsList.addAll(diff(pds2).getPatchDataSegments());
+			List<PatchDataSegment> pdsList = new ArrayList<>();
+			pdsList.addAll(diff(pds0).getPatchDataSegments());
+			pdsList.add(pds1);
+			pdsList.addAll(diff(pds2).getPatchDataSegments());
 
-		return new PatchData(pdsList);
+			return new PatchData(pdsList);
+		} else
+			return new PatchData(Arrays.asList( //
+					new PatchDataSegment(a2, b2, bytesAye, bytesBee)));
 	}
 
-	private PatchData diff(PatchDataSegment patchDataSegment0) {
-		DataSegment dsa = patchDataSegment0.getDataSegmentAye();
-		DataSegment dsb = patchDataSegment0.getDataSegmentBee();
+	private PatchData diff(PatchDataSegment patchDataSegment) {
+		DataSegment dsa = patchDataSegment.getDataSegmentAye();
+		DataSegment dsb = patchDataSegment.getDataSegmentBee();
 		PatchData subPatchData = diff(dsa.getBytes(), dsb.getBytes());
-		List<PatchDataSegment> pdsList = subPatchData.getPatchDataSegments();
-		List<PatchDataSegment> pdsList1 = new ArrayList<>();
+		List<PatchDataSegment> pdsList = new ArrayList<>();
 
-		for (PatchDataSegment pds : pdsList)
-			pdsList1.add(pds.adjust(dsa.getStart(), dsb.getStart()));
+		for (PatchDataSegment pds : subPatchData.getPatchDataSegments())
+			pdsList.add(pds.adjust(dsa.getStart(), dsb.getStart()));
 
-		return new PatchData(pdsList1);
+		return new PatchData(pdsList);
 	}
 
 	public Bytes patch(Bytes bytes, PatchData patchData) {
