@@ -14,7 +14,7 @@ public class LongestCommonSubsequenceTest {
 		List<Integer> l1 = Arrays.asList(1, 3, 5, 7, 9);
 		List<Integer> l2 = Arrays.asList(2, 3, 5, 9, 11);
 		List<Integer> answer = Arrays.asList(3, 5, 9);
-		assertEquals(answer, LongestCommonSubsequence.lcs(l1, l2));
+		assertEquals(answer, new LongestCommonSubsequence<Integer>().lcs(l1, l2));
 	}
 
 }
