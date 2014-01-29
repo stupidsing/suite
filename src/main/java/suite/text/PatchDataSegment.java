@@ -1,6 +1,7 @@
 package suite.text;
 
 import suite.net.Bytes;
+import suite.util.Util;
 
 public class PatchDataSegment {
 
@@ -27,7 +28,7 @@ public class PatchDataSegment {
 	}
 
 	public boolean isChanged() {
-		return dataSegmentAye.getBytes() != dataSegmentBee.getBytes();
+		return !Util.equals(dataSegmentAye.getBytes(), dataSegmentBee.getBytes());
 	}
 
 	public PatchDataSegment adjust(int offsetAye, int offsetBee) {

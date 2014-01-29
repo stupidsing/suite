@@ -13,13 +13,15 @@ public class TextUtilTest {
 
 	@Test
 	public void test() throws ConflictException {
-		String a = "abc12def34ghi";
-		String b = "abc56def78ghi";
-		String c = "abc56qwe78ghi";
-		String d = "abc56qwe78ghi";
+		String orig = "abc12def34ghi";
+		String va = "abc56def78ghi";
+		String vb = "abc12qwe34ghi";
+		String orig1 = "abc12def34xyz";
+		String v1a = "abc56def78xyz";
+		String mergedab = "abc56qwe78ghi";
 
 		// Test diff
-		PatchData patchData = textUtil.diff(To.bytes(a), To.bytes(b));
+		PatchData patchData = textUtil.diff(To.bytes(orig), To.bytes(va));
 
 		StringBuilder sb = new StringBuilder();
 		patchData.write(sb);
@@ -33,12 +35,13 @@ public class TextUtilTest {
 		assertEquals(expected, sb.toString());
 
 		// Test patch
-		assertEquals(b, To.string(textUtil.patch(To.bytes(a), patchData)));
+		assertEquals(va, To.string(textUtil.patch(To.bytes(orig), patchData)));
+		assertEquals(v1a, To.string(textUtil.patch(To.bytes(orig1), patchData)));
 
 		// Test merge
-		PatchData patchData1 = textUtil.diff(To.bytes(a), To.bytes(c));
+		PatchData patchData1 = textUtil.diff(To.bytes(orig), To.bytes(vb));
 		PatchData mergedPatchData = textUtil.merge(patchData, patchData1);
-		assertEquals(d, To.string(textUtil.patch(To.bytes(a), mergedPatchData)));
+		assertEquals(mergedab, To.string(textUtil.patch(To.bytes(orig), mergedPatchData)));
 	}
 
 }

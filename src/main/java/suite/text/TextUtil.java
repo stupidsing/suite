@@ -92,9 +92,15 @@ public class TextUtil {
 			boolean isAdvanceX;
 
 			if (isAvailX && isAvailY) {
-				int endX = mdx.patchDataSegments.get(mdx.pos).getDataSegmentAye().getEnd();
-				int endY = mdy.patchDataSegments.get(mdy.pos).getDataSegmentAye().getEnd();
-				isAdvanceX = endX < endY;
+				PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
+				PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
+				int endX = pdsx.getDataSegmentAye().getEnd();
+				int endY = pdsy.getDataSegmentAye().getEnd();
+
+				if (endX == endY)
+					isAdvanceX = !pdsy.isChanged();
+				else
+					isAdvanceX = endX < endY;
 			} else
 				isAdvanceX = isAvailX;
 
@@ -104,15 +110,15 @@ public class TextUtil {
 		return new PatchData(merged);
 	}
 
-	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> patchDataSegments1)
-			throws ConflictException {
+	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {
 		PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
 		PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
+		boolean isSeparate = pdsx.getDataSegmentAye().getEnd() <= pdsy.getDataSegmentAye().getStart();
 
-		if (!pdsy.isChanged()) {
+		if (isSeparate || !pdsy.isChanged()) {
 			DataSegment dsa1 = pdsx.getDataSegmentAye().right(start);
 			DataSegment dsb1 = pdsx.getDataSegmentBee().right(start + mdx.offset);
-			patchDataSegments1.add(new PatchDataSegment(dsa1, dsb1.adjust(mdy.offset)));
+			pdsList.add(new PatchDataSegment(dsa1, dsb1.adjust(mdy.offset)));
 
 			mdx.offset += pdsx.getDataSegmentBee().length() - pdsx.getDataSegmentAye().length();
 			start = pdsx.getDataSegmentAye().getEnd();
