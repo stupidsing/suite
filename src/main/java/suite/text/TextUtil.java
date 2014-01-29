@@ -8,6 +8,7 @@ import suite.algo.LongestCommonContinuousSubsequence;
 import suite.net.Bytes;
 import suite.net.Bytes.BytesBuilder;
 import suite.util.Pair;
+import suite.util.Util;
 
 public class TextUtil {
 
@@ -53,7 +54,7 @@ public class TextUtil {
 			return new PatchData(pdsList);
 		} else
 			return new PatchData(Arrays.asList( //
-					new PatchDataSegment(a2, b2, bytesAye, bytesBee)));
+					new PatchDataSegment(0, 0, bytesAye, bytesBee)));
 	}
 
 	private PatchData diff(PatchDataSegment patchDataSegment) {
@@ -113,20 +114,29 @@ public class TextUtil {
 	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {
 		PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
 		PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
-		boolean isSeparate = pdsx.getDataSegmentAye().getEnd() <= pdsy.getDataSegmentAye().getStart();
+		DataSegment dsxa = pdsx.getDataSegmentAye(), dsxb = pdsx.getDataSegmentBee();
+		DataSegment dsya = pdsy.getDataSegmentAye(), dsyb = pdsy.getDataSegmentBee();
+		boolean isSeparate = dsxa.getEnd() <= dsya.getStart();
+		boolean isTargetsAgree = dsxa.getStart() == dsya.getStart()
+				&& Util.equals(dsxb.getBytes(), dsyb.getBytes().subbytes(0, dsxb.length()));
 
-		if (isSeparate || !pdsy.isChanged()) {
-			DataSegment dsa1 = pdsx.getDataSegmentAye().right(start);
-			DataSegment dsb1 = pdsx.getDataSegmentBee().right(start + mdx.offset);
+		if (isSeparate || !pdsy.isChanged() || isTargetsAgree) {
+			DataSegment dsa1 = dsxa.right(start);
+			DataSegment dsb1 = dsxb.right(start + mdx.offset);
+
+			if (isTargetsAgree) {
+				DataSegment dsya1 = dsya.right(dsxa.getEnd());
+				DataSegment dsyb1 = dsyb.right(dsyb.getStart() + dsxa.length());
+				mdy.patchDataSegments.add(mdy.pos + 1, new PatchDataSegment(dsya1, dsyb1));
+			}
+
 			pdsList.add(new PatchDataSegment(dsa1, dsb1.adjust(mdy.offset)));
 
-			mdx.offset += pdsx.getDataSegmentBee().length() - pdsx.getDataSegmentAye().length();
-			start = pdsx.getDataSegmentAye().getEnd();
+			mdx.offset += dsxb.length() - dsxa.length();
 			mdx.pos++;
+			return dsxa.getEnd();
 		} else
 			throw new ConflictException();
-
-		return start;
 	}
 
 }

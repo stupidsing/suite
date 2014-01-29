@@ -14,34 +14,38 @@ public class TextUtilTest {
 	@Test
 	public void test() throws ConflictException {
 		String orig = "abc12def34ghi";
-		String va = "abc56def78ghi";
-		String vb = "abc12qwe34ghi";
+		String version_a = "abc567def890ghi";
+		String version_b = "abc12qwerty34ghi";
+		String version_c = "xyz567qwerty34ghi";
+		String merged_ab = "abc567qwerty890ghi";
+		String merged_ac = "xyz567qwerty890ghi";
 		String orig1 = "abc12def34xyz";
-		String v1a = "abc56def78xyz";
-		String mergedab = "abc56qwe78ghi";
+		String version1_a = "abc567def890xyz";
 
 		// Test diff
-		PatchData patchData = textUtil.diff(To.bytes(orig), To.bytes(va));
+		PatchData patch_a = textUtil.diff(To.bytes(orig), To.bytes(version_a));
+		System.out.println(patch_a);
 
-		StringBuilder sb = new StringBuilder();
-		patchData.write(sb);
-		System.out.println(sb);
-
-		String expected = "0:3|0:3|N<<abc>>" //
-				+ "3:5|3:5|Y<<12|56>>" //
-				+ "5:8|5:8|N<<def>>" //
-				+ "10:12|8:10|Y<<34|78>>" //
-				+ "10:13|10:13|N<<ghi>>";
-		assertEquals(expected, sb.toString());
+		String expected = "0-3|0-3|=[abc]" //
+				+ "3-5|3-6|C[12|567]" //
+				+ "5-8|6-9|=[def]" //
+				+ "8-10|9-12|C[34|890]" //
+				+ "10-13|12-15|=[ghi]";
+		assertEquals(expected, patch_a.toString());
 
 		// Test patch
-		assertEquals(va, To.string(textUtil.patch(To.bytes(orig), patchData)));
-		assertEquals(v1a, To.string(textUtil.patch(To.bytes(orig1), patchData)));
+		assertEquals(version_a, To.string(textUtil.patch(To.bytes(orig), patch_a)));
+		assertEquals(version1_a, To.string(textUtil.patch(To.bytes(orig1), patch_a)));
 
 		// Test merge
-		PatchData patchData1 = textUtil.diff(To.bytes(orig), To.bytes(vb));
-		PatchData mergedPatchData = textUtil.merge(patchData, patchData1);
-		assertEquals(mergedab, To.string(textUtil.patch(To.bytes(orig), mergedPatchData)));
+		PatchData patch_b = textUtil.diff(To.bytes(orig), To.bytes(version_b));
+		PatchData mergedPatch_ab = textUtil.merge(patch_a, patch_b);
+		assertEquals(merged_ab, To.string(textUtil.patch(To.bytes(orig), mergedPatch_ab)));
+
+		// Test merge that requires agreeing on target content
+		PatchData patch_c = textUtil.diff(To.bytes(orig), To.bytes(version_c));
+		PatchData mergedPatch_ac = textUtil.merge(patch_a, patch_c);
+		assertEquals(merged_ac, To.string(textUtil.patch(To.bytes(orig), mergedPatch_ac)));
 	}
 
 }

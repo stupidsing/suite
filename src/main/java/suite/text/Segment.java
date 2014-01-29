@@ -21,6 +21,11 @@ public class Segment {
 		return end - start;
 	}
 
+	@Override
+	public String toString() {
+		return start + "-" + end;
+	}
+
 	public int getStart() {
 		return start;
 	}

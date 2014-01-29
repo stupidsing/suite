@@ -1,6 +1,7 @@
 package suite.text;
 
 import suite.net.Bytes;
+import suite.util.To;
 import suite.util.Util;
 
 public class PatchDataSegment {
@@ -39,6 +40,22 @@ public class PatchDataSegment {
 
 	public PatchDataSegment reverse() {
 		return new PatchDataSegment(dataSegmentBee, dataSegmentAye);
+	}
+
+	@Override
+	public String toString() {
+		boolean isChanged = isChanged();
+		DataSegment dsa = getDataSegmentAye();
+		DataSegment dsb = getDataSegmentBee();
+		String s0 = dsa + "|" + dsb + "|" + (isChanged ? "C" : "=");
+		String s;
+
+		if (isChanged)
+			s = s0 + "[" + To.string(dsa.getBytes()) + "|" + To.string(dsb.getBytes()) + "]";
+		else
+			s = s0 + "[" + To.string(dsa.getBytes()) + "]";
+
+		return s;
 	}
 
 	public DataSegment getDataSegmentAye() {

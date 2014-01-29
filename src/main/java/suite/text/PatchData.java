@@ -3,8 +3,6 @@ package suite.text;
 import java.util.Iterator;
 import java.util.List;
 
-import suite.util.To;
-
 public class PatchData implements Iterable<PatchDataSegment> {
 
 	private List<PatchDataSegment> patchDataSegments;
@@ -13,27 +11,20 @@ public class PatchData implements Iterable<PatchDataSegment> {
 		this.patchDataSegments = patchDataSegments;
 	}
 
-	public void write(StringBuilder sb) {
-		for (PatchDataSegment pds : patchDataSegments)
-			if (!pds.isEmpty()) {
-				boolean isChanged = pds.isChanged();
-				DataSegment dsa = pds.getDataSegmentAye();
-				DataSegment dsb = pds.getDataSegmentBee();
-
-				sb.append(dsa.getStart() + ":" + dsa.getEnd() //
-						+ "|" + dsb.getStart() + ":" + dsb.getEnd() //
-						+ "|" + (isChanged ? "Y" : "N"));
-
-				if (isChanged)
-					sb.append("<<" + To.string(dsa.getBytes()) + "|" + To.string(dsb.getBytes()) + ">>");
-				else
-					sb.append("<<" + To.string(dsa.getBytes()) + ">>");
-			}
-	}
-
 	@Override
 	public Iterator<PatchDataSegment> iterator() {
 		return patchDataSegments.iterator();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		for (PatchDataSegment pds : patchDataSegments)
+			if (!pds.isEmpty())
+				sb.append(pds.toString());
+
+		return sb.toString();
 	}
 
 	public List<PatchDataSegment> getPatchDataSegments() {
