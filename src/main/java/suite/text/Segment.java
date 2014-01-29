@@ -1,24 +1,16 @@
 package suite.text;
 
-import suite.net.Bytes;
-
 public class Segment {
 
 	private int start, end;
-	private Bytes bytes;
 
-	public Segment(int start, int end, Bytes bytes) {
+	public Segment(Segment segment) {
+		this(segment.start, segment.end);
+	}
+
+	public Segment(int start, int end) {
 		this.start = start;
 		this.end = end;
-		this.bytes = bytes;
-	}
-
-	public Segment right(int pos) {
-		return new Segment(pos, end, bytes.subbytes(pos - start));
-	}
-
-	public Segment adjust(int offset) {
-		return new Segment(start + offset, end + offset, bytes);
 	}
 
 	public int length() {
@@ -31,10 +23,6 @@ public class Segment {
 
 	public int getEnd() {
 		return end;
-	}
-
-	public Bytes getBytes() {
-		return bytes;
 	}
 
 }

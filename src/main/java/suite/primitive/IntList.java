@@ -41,7 +41,7 @@ public class IntList implements Iterable<Integer> {
 		this(list.length, list);
 	}
 
-	public IntList(int size, int[] list) {
+	public IntList(int size, int list[]) {
 		this.size = size;
 		this.list = list;
 	}
