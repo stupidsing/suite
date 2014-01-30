@@ -12,34 +12,36 @@ public class TreeSearch<State> {
 		public boolean isDone(State state);
 	}
 
-	public static <State> boolean breadthFirst(Traverse<State> game, State state) {
+	public static <State> State breadthFirst(Traverse<State> game, State state0) {
 		Set<State> states0 = new HashSet<>();
 
-		states0.add(state);
+		states0.add(state0);
 
 		while (!states0.isEmpty()) {
 			Set<State> states1 = new HashSet<>();
 
-			for (State state0 : states0)
-				if (!game.isDone(state0))
-					states1.addAll(game.generate(state0));
+			for (State state : states0)
+				if (!game.isDone(state))
+					states1.addAll(game.generate(state));
 				else
-					return true;
+					return state;
 
 			states0 = states1;
 		}
 
-		return false;
+		return null;
 	}
 
-	public static <State> boolean depthFirst(Traverse<State> game, State state) {
-		if (!game.isDone(state)) {
-			for (State state1 : game.generate(state))
-				if (depthFirst(game, state1))
-					return true;
-			return false;
+	public static <State> State depthFirst(Traverse<State> game, State state0) {
+		if (!game.isDone(state0)) {
+			for (State state1 : game.generate(state0)) {
+				State statex = depthFirst(game, state1);
+				if (statex != null)
+					return statex;
+			}
+			return null;
 		} else
-			return true;
+			return state0;
 	}
 
 }
