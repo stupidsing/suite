@@ -117,21 +117,6 @@ public class TextUtil {
 		return new PatchData(merged);
 	}
 
-	/**
-	 * Resolving cases :-
-	 * 
-	 * patch X: A -> B / patch Y: A -> B / Result: A -> B
-	 * 
-	 * patch X: A -> B / patch Y: B -> C / Result: A -> C
-	 * 
-	 * patch X: B -> C / patch Y: A -> B / Result: A -> C
-	 * 
-	 * patch X: A -> C / patch Y: B -> C / Result: A -> C
-	 * 
-	 * patch X: A -> B / patch Y: A -> C / Result: ConflictException
-	 * 
-	 * patch X: A -> B / patch Y: C -> D / Result: ConflictException
-	 */
 	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {
 		PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
 		PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
