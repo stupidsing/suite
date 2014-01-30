@@ -1,8 +1,10 @@
 package suite.search;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -59,12 +61,12 @@ public class Astar<Node> {
 				while ((node1 = source.source()) != null)
 					open.add(new NodeInfo(ni, node1, sunkCost1, sunkCost1 + estimate.apply(node1)));
 			} else {
-				LinkedList<Node> result = new LinkedList<>();
+				Deque<Node> deque = new ArrayDeque<>();
 				while (ni != null) {
-					result.addFirst(ni.node);
+					deque.addFirst(ni.node);
 					ni = ni.previous;
 				}
-				return result;
+				return new ArrayList<>(deque);
 			}
 		}
 
