@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.algo.AlphabetaSearch.Game;
+import suite.search.Alphabeta.Game;
 
-public class AlphabetaSearchTest {
+public class AlphabetaTest {
 
 	private static class TicTacToe {
 		char player = 'O';
@@ -91,10 +91,10 @@ public class AlphabetaSearchTest {
 
 	@Test
 	public void test() {
-		AlphabetaSearch<TicTacToe> search = new AlphabetaSearch<>(ticTacToeGame);
+		Alphabeta<TicTacToe> ab = new Alphabeta<>(ticTacToeGame);
 
 		TicTacToe state = new TicTacToe();
-		System.out.println(search.search(state, 20));
+		System.out.println(ab.search(state, 20));
 	}
 
 }

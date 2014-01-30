@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import suite.algo.TreeSearch.Traverse;
+import suite.search.TreeSearch;
+import suite.search.TreeSearch.Traverse;
 import suite.util.Util;
 
 public class LongestCommonSubseqBfs<T> {

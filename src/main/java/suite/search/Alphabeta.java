@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.search;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.List;
 
 import suite.util.Pair;
 
-public class AlphabetaSearch<State> {
+public class Alphabeta<State> {
 
 	public interface Game<State> {
 		public List<State> generate(State state);
@@ -18,7 +18,7 @@ public class AlphabetaSearch<State> {
 	private Game<State> game;
 	private Deque<State> moves = new ArrayDeque<>();
 
-	public AlphabetaSearch(Game<State> game) {
+	public Alphabeta(Game<State> game) {
 		this.game = game;
 	}
 

@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.search;
 
 import java.util.Comparator;
 import java.util.HashSet;
