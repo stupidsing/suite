@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -246,10 +245,10 @@ public class Ebnf {
 
 			while ((state = source.source()) != null)
 				if (state.pos == length) {
-					List<State> states = new LinkedList<>();
+					Deque<State> states = new ArrayDeque<>();
 
 					while (state != null) {
-						states.add(0, state);
+						states.addFirst(state);
 						state = state.previous;
 					}
 
