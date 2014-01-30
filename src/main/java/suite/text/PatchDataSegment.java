@@ -47,13 +47,13 @@ public class PatchDataSegment {
 		boolean isChanged = isChanged();
 		DataSegment dsa = getDataSegmentAye();
 		DataSegment dsb = getDataSegmentBee();
-		String s0 = dsa + "|" + dsb + "|" + (isChanged ? "C" : "=");
+		String s0 = dsa + (isChanged ? "!" : "=") + dsb;
 		String s;
 
 		if (isChanged)
-			s = s0 + "[" + To.string(dsa.getBytes()) + "|" + To.string(dsb.getBytes()) + "]";
+			s = s0 + "[" + To.string(dsa.getBytes()) + "|" + To.string(dsb.getBytes()) + "],";
 		else
-			s = s0 + "[" + To.string(dsa.getBytes()) + "]";
+			s = s0 + "[" + To.string(dsa.getBytes()) + "],";
 
 		return s;
 	}

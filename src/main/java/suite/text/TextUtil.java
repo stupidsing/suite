@@ -22,7 +22,13 @@ public class TextUtil {
 		private int offset;
 
 		public MergeData(List<PatchDataSegment> patchDataSegments) {
-			this.patchDataSegments = patchDataSegments;
+			this.patchDataSegments = new ArrayList<>(patchDataSegments);
+		}
+
+		public void next() {
+			PatchDataSegment pds = patchDataSegments.get(pos);
+			offset += pds.getDataSegmentBee().length() - pds.getDataSegmentAye().length();
+			pos++;
 		}
 	}
 
@@ -111,29 +117,53 @@ public class TextUtil {
 		return new PatchData(merged);
 	}
 
+	/**
+	 * Resolving cases :-
+	 * 
+	 * patch X: A -> B / patch Y: A -> B / Result: A -> B
+	 * 
+	 * patch X: A -> B / patch Y: B -> C / Result: A -> C
+	 * 
+	 * patch X: B -> C / patch Y: A -> B / Result: A -> C
+	 * 
+	 * patch X: A -> C / patch Y: B -> C / Result: A -> C
+	 * 
+	 * patch X: A -> B / patch Y: A -> C / Result: ConflictException
+	 * 
+	 * patch X: A -> B / patch Y: C -> D / Result: ConflictException
+	 */
 	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {
 		PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
 		PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
 		DataSegment dsxa = pdsx.getDataSegmentAye(), dsxb = pdsx.getDataSegmentBee();
 		DataSegment dsya = pdsy.getDataSegmentAye(), dsyb = pdsy.getDataSegmentBee();
-		boolean isSeparate = dsxa.getEnd() <= dsya.getStart();
-		boolean isTargetsAgree = dsxa.getStart() == dsya.getStart()
-				&& Util.equals(dsxb.getBytes(), dsyb.getBytes().subbytes(0, dsxb.length()));
 
-		if (isSeparate || !pdsy.isChanged() || isTargetsAgree) {
+		boolean isSeparate = dsxa.getEnd() <= dsya.getStart();
+
+		int dsxaLength = dsxa.length(), dsxbLength = dsxb.length();
+		int dsyaLength = dsya.length(), dsybLength = dsyb.length();
+		boolean isMappingsAgree = dsxa.getStart() == dsya.getStart()
+				&& dsxaLength <= dsyaLength //
+				&& dsxbLength <= dsybLength //
+				&& Util.equals(dsxa.getBytes(), dsya.getBytes().subbytes(0, dsxaLength))
+				&& Util.equals(dsxb.getBytes(), dsyb.getBytes().subbytes(0, dsyaLength));
+
+		if (isSeparate || !pdsy.isChanged() || isMappingsAgree) {
 			DataSegment dsa1 = dsxa.right(start);
 			DataSegment dsb1 = dsxb.right(start + mdx.offset);
-
-			if (isTargetsAgree) {
-				DataSegment dsya1 = dsya.right(dsxa.getEnd());
-				DataSegment dsyb1 = dsyb.right(dsyb.getStart() + dsxa.length());
-				mdy.patchDataSegments.add(mdy.pos + 1, new PatchDataSegment(dsya1, dsyb1));
-			}
-
 			pdsList.add(new PatchDataSegment(dsa1, dsb1.adjust(mdy.offset)));
 
-			mdx.offset += dsxb.length() - dsxa.length();
-			mdx.pos++;
+			if (isMappingsAgree) {
+				DataSegment dsya0 = dsya.left(dsxa.getEnd());
+				DataSegment dsyb0 = dsyb.left(dsyb.getStart() + dsxbLength);
+				DataSegment dsya1 = dsya.right(dsxa.getEnd());
+				DataSegment dsyb1 = dsyb.right(dsyb.getStart() + dsxbLength);
+				mdy.patchDataSegments.set(mdy.pos, new PatchDataSegment(dsya0, dsyb0));
+				mdy.next();
+				mdy.patchDataSegments.add(mdy.pos, new PatchDataSegment(dsya1, dsyb1));
+			}
+
+			mdx.next();
 			return dsxa.getEnd();
 		} else
 			throw new ConflictException();

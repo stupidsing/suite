@@ -11,6 +11,10 @@ public class DataSegment extends Segment {
 		this.bytes = bytes;
 	}
 
+	public DataSegment left(int pos) {
+		return new DataSegment(getStart(), pos, bytes.subbytes(0, pos - getStart()));
+	}
+
 	public DataSegment right(int pos) {
 		return new DataSegment(pos, getEnd(), bytes.subbytes(pos - getStart()));
 	}
