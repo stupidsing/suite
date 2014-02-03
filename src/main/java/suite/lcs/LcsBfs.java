@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import suite.search.TreeSearch;
-import suite.search.TreeSearch.Traverse;
+import suite.search.Search;
+import suite.search.Search.Traverse;
 import suite.util.Util;
 
 /**
@@ -47,7 +47,7 @@ public class LcsBfs<T> {
 		final int size0 = l0.size();
 		final int size1 = l1.size();
 
-		Node node = TreeSearch.breadthFirst(new Traverse<Node>() {
+		Node node = Search.breadthFirst(new Traverse<Node>() {
 			public List<Node> generate(Node node) {
 				List<Node> nodes = new ArrayList<>();
 				if (node.pos0 < size0)

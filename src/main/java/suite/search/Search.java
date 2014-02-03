@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class TreeSearch<State> {
+public class Search<State> {
 
 	public interface Traverse<State> {
 		public List<State> generate(State state);
