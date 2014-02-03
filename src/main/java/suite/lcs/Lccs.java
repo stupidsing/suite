@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.lcs;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +11,12 @@ import suite.text.Segment;
 import suite.util.Pair;
 import suite.util.Util;
 
-public class LongestCommonContinuousSubsequence {
+/**
+ * Longest common continuous subsequence, using a simple rolling hash method.
+ * 
+ * @author ywsing
+ */
+public class Lccs {
 
 	private RollingHashUtil rh = new RollingHashUtil();
 

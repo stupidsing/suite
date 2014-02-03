@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.lcs;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -9,7 +9,12 @@ import suite.search.TreeSearch;
 import suite.search.TreeSearch.Traverse;
 import suite.util.Util;
 
-public class LongestCommonSubseqBfs<T> {
+/**
+ * Longest common subsequence using breadth-first search.
+ * 
+ * @author ywsing
+ */
+public class LcsBfs<T> {
 
 	private class Node {
 		private Node previous;
@@ -30,8 +35,8 @@ public class LongestCommonSubseqBfs<T> {
 		}
 
 		public boolean equals(Object object) {
-			if (object instanceof LongestCommonSubseqBfs<?>.Node) {
-				LongestCommonSubseqBfs<?>.Node node = (LongestCommonSubseqBfs<?>.Node) object;
+			if (object instanceof LcsBfs<?>.Node) {
+				LcsBfs<?>.Node node = (LcsBfs<?>.Node) object;
 				return pos0 == node.pos0 && pos1 == node.pos1;
 			} else
 				return false;

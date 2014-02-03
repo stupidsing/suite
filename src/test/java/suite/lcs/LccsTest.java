@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.lcs;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,11 +8,11 @@ import suite.text.Segment;
 import suite.util.Pair;
 import suite.util.To;
 
-public class LongestCommonContinuousSubsequenceTest {
+public class LccsTest {
 
 	@Test
 	public void test() {
-		LongestCommonContinuousSubsequence lccs = new LongestCommonContinuousSubsequence();
+		Lccs lccs = new Lccs();
 		Pair<Segment, Segment> result = lccs.lccs(To.bytes("abczzzzz"), To.bytes("zzzzzabc"));
 
 		assertEquals(3, result.t0.getStart());

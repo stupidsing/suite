@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.lcs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +10,12 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
-public class LongestCommonSubsequence<T> {
+/**
+ * Longest common subsequence using dynamic programming.
+ * 
+ * @author ywsing
+ */
+public class LcsDp<T> {
 
 	private final Node emptyNode = new Node(0, FunUtil.<T> nullSource());
 
@@ -38,7 +43,7 @@ public class LongestCommonSubsequence<T> {
 		int size0 = l0.size(), size1 = l1.size();
 
 		@SuppressWarnings("unchecked")
-		Node dp[][] = (Node[][]) new LongestCommonSubsequence<?>.Node[size0][size1];
+		Node dp[][] = (Node[][]) new LcsDp<?>.Node[size0][size1];
 
 		for (int i0 = 0; i0 < size0; i0++)
 			for (int i1 = 0; i1 < size1; i1++) {

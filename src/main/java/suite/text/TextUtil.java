@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.algo.LongestCommonContinuousSubsequence;
+import suite.lcs.Lccs;
 import suite.net.Bytes;
 import suite.net.Bytes.BytesBuilder;
 import suite.util.Pair;
@@ -33,7 +33,7 @@ public class TextUtil {
 	}
 
 	public PatchData diff(Bytes bytesAye, Bytes bytesBee) {
-		LongestCommonContinuousSubsequence lccs = new LongestCommonContinuousSubsequence();
+		Lccs lccs = new Lccs();
 		Pair<Segment, Segment> diff = lccs.lccs(bytesAye, bytesBee);
 		Segment sa = diff.t0, sb = diff.t1;
 		int a0 = 0, a1 = sa.getStart(), a2 = sa.getEnd();

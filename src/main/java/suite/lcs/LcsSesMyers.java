@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.lcs;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
  * 
  * @author ywsing
  */
-public class Myers<T> {
+public class LcsSesMyers<T> {
 
 	public List<T> myers(List<T> list0, List<T> list1) {
 		int size0 = list0.size(), size1 = list1.size();
