@@ -6,64 +6,65 @@ import suite.util.Util;
 
 public class PatchDataSegment {
 
-	// dataSegmentAye.bytes == dataSegmentBee.bytes for common segment
-	private DataSegment dataSegmentAye;
-	private DataSegment dataSegmentBee;
+	// Original data and new data
+	// dataSegmentOrg.bytes == dataSegmentNew.bytes for common segment
+	private DataSegment dataSegmentOrg;
+	private DataSegment dataSegmentNew;
 
-	public PatchDataSegment(int startAye, int startBee, Bytes bytes) {
-		this(startAye, startBee, bytes, bytes);
+	public PatchDataSegment(int startOrg, int startNew, Bytes bytes) {
+		this(startOrg, startNew, bytes, bytes);
 	}
 
-	public PatchDataSegment(int startAye, int startBee, Bytes bytesAye, Bytes bytesBee) {
-		this(new DataSegment(startAye, startAye + bytesAye.size(), bytesAye) //
-				, new DataSegment(startBee, startBee + bytesBee.size(), bytesBee));
+	public PatchDataSegment(int startOrg, int startNew, Bytes bytesOrg, Bytes bytesNew) {
+		this(new DataSegment(startOrg, startOrg + bytesOrg.size(), bytesOrg) //
+				, new DataSegment(startNew, startNew + bytesNew.size(), bytesNew));
 	}
 
-	public PatchDataSegment(DataSegment dataSegmentAye, DataSegment dataSegmentBee) {
-		this.dataSegmentAye = dataSegmentAye;
-		this.dataSegmentBee = dataSegmentBee;
+	public PatchDataSegment(DataSegment dataSegmentOrg, DataSegment dataSegmentNew) {
+		this.dataSegmentOrg = dataSegmentOrg;
+		this.dataSegmentNew = dataSegmentNew;
 	}
 
 	public boolean isEmpty() {
-		return dataSegmentAye.isEmpty() && dataSegmentBee.isEmpty();
+		return dataSegmentOrg.isEmpty() && dataSegmentNew.isEmpty();
 	}
 
 	public boolean isChanged() {
-		return !Util.equals(dataSegmentAye.getBytes(), dataSegmentBee.getBytes());
+		return !Util.equals(dataSegmentOrg.getBytes(), dataSegmentNew.getBytes());
 	}
 
-	public PatchDataSegment adjust(int offsetAye, int offsetBee) {
-		DataSegment dataSegmentAye1 = dataSegmentAye.adjust(offsetAye);
-		DataSegment dataSegmentBee1 = dataSegmentBee.adjust(offsetBee);
-		return new PatchDataSegment(dataSegmentAye1, dataSegmentBee1);
+	public PatchDataSegment adjust(int offsetOrg, int offsetNew) {
+		DataSegment dataSegmentOrg1 = dataSegmentOrg.adjust(offsetOrg);
+		DataSegment dataSegmentNew1 = dataSegmentNew.adjust(offsetNew);
+		return new PatchDataSegment(dataSegmentOrg1, dataSegmentNew1);
 	}
 
 	public PatchDataSegment reverse() {
-		return new PatchDataSegment(dataSegmentBee, dataSegmentAye);
+		return new PatchDataSegment(dataSegmentNew, dataSegmentOrg);
 	}
 
 	@Override
 	public String toString() {
 		boolean isChanged = isChanged();
-		DataSegment dsa = getDataSegmentAye();
-		DataSegment dsb = getDataSegmentBee();
-		String s0 = dsa + (isChanged ? "!" : "=") + dsb;
+		DataSegment dsOrg = getDataSegmentOrg();
+		DataSegment dsNew = getDataSegmentNew();
+		String s0 = dsOrg + (isChanged ? "!" : "=") + dsNew;
 		String s;
 
 		if (isChanged)
-			s = s0 + "[" + To.string(dsa.getBytes()) + "|" + To.string(dsb.getBytes()) + "],";
+			s = s0 + "[" + To.string(dsOrg.getBytes()) + "|" + To.string(dsNew.getBytes()) + "],";
 		else
-			s = s0 + "[" + To.string(dsa.getBytes()) + "],";
+			s = s0 + "[" + To.string(dsOrg.getBytes()) + "],";
 
 		return s;
 	}
 
-	public DataSegment getDataSegmentAye() {
-		return dataSegmentAye;
+	public DataSegment getDataSegmentOrg() {
+		return dataSegmentOrg;
 	}
 
-	public DataSegment getDataSegmentBee() {
-		return dataSegmentBee;
+	public DataSegment getDataSegmentNew() {
+		return dataSegmentNew;
 	}
 
 }
