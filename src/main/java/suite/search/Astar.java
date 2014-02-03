@@ -41,7 +41,6 @@ public class Astar<Node> {
 	}
 
 	public Astar(Fun<Node, Source<Node>> generate, Fun<Node, Integer> estimate) {
-		super();
 		this.generate = generate;
 		this.estimate = estimate;
 	}
