@@ -1,20 +1,13 @@
 package suite.instructionexecutor;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedRegister;
@@ -27,9 +20,8 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.TermParser.TermOp;
 import suite.parser.Subst;
-import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
+import suite.util.JdkUtil;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -38,16 +30,16 @@ import com.google.common.collect.HashBiMap;
  * Possible register types: boolean, closure, int, node
  * (atom/number/reference/tree)
  */
-public class InstructionTranslator {
+public class InstructionTranslator implements Closeable {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
 	private BiMap<Integer, Node> constantPool = HashBiMap.create();
 
-	private String basePathName;
 	private String packageName;
-	private String filename;
 	private String className;
+
+	private JdkUtil jdkUtil;
 
 	private StringBuilder clazzsec = new StringBuilder();
 	private StringBuilder localsec = new StringBuilder();
@@ -61,9 +53,14 @@ public class InstructionTranslator {
 
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
-	public InstructionTranslator(String basePathName) {
-		this.basePathName = basePathName;
+	public InstructionTranslator(String basePathName) throws MalformedURLException {
 		this.packageName = getClass().getPackage().getName();
+		jdkUtil = new JdkUtil(basePathName);
+	}
+
+	@Override
+	public void close() throws IOException {
+		jdkUtil.close();
 	}
 
 	public TranslatedRun translate(Node node) throws IOException {
@@ -97,7 +94,6 @@ public class InstructionTranslator {
 				+ "import suite.node.util.*; \n" //
 				+ "import suite.util.*; \n" //
 				+ "import suite.util.FunUtil.*; \n" //
-				+ "import " + Closeable.class.getCanonicalName() + "; \n" //
 				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
@@ -109,12 +105,6 @@ public class InstructionTranslator {
 				+ "\n" //
 				+ "private static final Atom FALSE = Atom.FALSE; \n" //
 				+ "private static final Atom TRUE = Atom.TRUE; \n" //
-				+ "\n" //
-				+ "private Closeable closeable; \n" //
-				+ "\n" //
-				+ "public " + className + "(Closeable closeable) { this.closeable = closeable; } \n" //
-				+ "\n" //
-				+ "public void close() throws IOException { closeable.close(); } \n" //
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
@@ -151,16 +141,7 @@ public class InstructionTranslator {
 				+ "} \n" //
 		, clazzsec, localsec, switchsec);
 
-		String pathName = basePathName + "/" + packageName.replace('.', '/');
-		filename = pathName + "/" + className + ".java";
-		new File(pathName).mkdirs();
-
-		try (OutputStream os = new FileOutputStream(filename)) {
-			os.write(java.getBytes(FileUtil.charset));
-		}
-
-		// Compile the Java, load the class, return an instantiated object
-		return getTranslatedRun();
+		return getTranslatedRun(java);
 	}
 
 	private void translateInstructions(List<Instruction> instructions) {
@@ -574,41 +555,13 @@ public class InstructionTranslator {
 		return analyzer.getFrame(currentIp);
 	}
 
-	private TranslatedRun getTranslatedRun() throws IOException {
-		LogUtil.info("Translating run " + filename);
-
-		String binDir = basePathName;
-		new File(binDir).mkdirs();
-
-		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-
-		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
-			File file = new File(filename);
-
-			if (!jc.getTask(null //
-					, null //
-					, null //
-					, Arrays.asList("-d", binDir) //
-					, null //
-					, sjfm.getJavaFileObjects(file)).call())
-				throw new RuntimeException("Java compilation error");
-		}
-
-		LogUtil.info("Loading class " + className);
-
-		URLClassLoader ucl = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
-		TranslatedRun translatedRun;
-
+	private TranslatedRun getTranslatedRun(String java) throws IOException, FileNotFoundException {
 		try {
-			@SuppressWarnings("unchecked")
-			Class<? extends TranslatedRun> clazz = (Class<? extends TranslatedRun>) ucl.loadClass(packageName + "." + className);
-			translatedRun = clazz.getConstructor(new Class<?>[] { Closeable.class }).newInstance(ucl);
+			Class<? extends TranslatedRun> clazz = jdkUtil.compile(TranslatedRun.class, java, packageName, className);
+			return clazz.getConstructor().newInstance();
 		} catch (ReflectiveOperationException ex) {
-			ucl.close();
 			throw new RuntimeException(ex);
 		}
-
-		return translatedRun;
 	}
 
 }

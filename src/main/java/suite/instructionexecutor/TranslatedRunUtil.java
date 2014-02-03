@@ -1,7 +1,5 @@
 package suite.instructionexecutor;
 
-import java.io.Closeable;
-
 import suite.lp.invocable.Invocable;
 import suite.lp.invocable.InvocableBridge;
 import suite.lp.kb.RuleSet;
@@ -12,7 +10,7 @@ import suite.util.FunUtil.Fun;
 
 public class TranslatedRunUtil {
 
-	public interface TranslatedRun extends Closeable {
+	public interface TranslatedRun {
 		public Node exec(TranslatedRunConfig config, Closure closure);
 	}
 

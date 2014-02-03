@@ -107,7 +107,8 @@ public class InstructionTranslatorTest {
 		TranslatedRunConfig config = new TranslatedRunConfig();
 		config.ruleSet = Suite.createRuleSet();
 
-		try (TranslatedRun translatedRun = new InstructionTranslator(basePathName).translate(code)) {
+		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePathName)) {
+			TranslatedRun translatedRun = instructionTranslator.translate(code);
 			return translatedRun.exec(config, new Closure(null, 0));
 		}
 	}

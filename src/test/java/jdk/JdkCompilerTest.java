@@ -1,20 +1,12 @@
 package jdk;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 
 import org.junit.Test;
 
 import suite.util.FileUtil;
+import suite.util.JdkUtil;
 
 public class JdkCompilerTest {
 
@@ -22,12 +14,12 @@ public class JdkCompilerTest {
 	public void test() throws IOException, ReflectiveOperationException {
 		String srcDir = FileUtil.tmp + "/src";
 		String binDir = FileUtil.tmp + "/bin";
+
 		String className = "HelloWorld";
 
 		new File(srcDir).mkdirs();
 		new File(binDir).mkdirs();
 
-		String srcFile = srcDir + "/" + className + ".java";
 		String src = "" //
 				+ "public class " + className + " implements Runnable {" //
 				+ "  public void run() {" //
@@ -35,28 +27,8 @@ public class JdkCompilerTest {
 				+ "  }" //
 				+ "}";
 
-		try (OutputStream os = new FileOutputStream(srcFile)) {
-			os.write(src.getBytes(FileUtil.charset));
-		}
-
-		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-
-		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
-			jc.getTask(null //
-					, null //
-					, null //
-					, Arrays.asList("-d", binDir) //
-					, null //
-					, sjfm.getJavaFileObjects(new File(srcFile))).call();
-		}
-
-		URL urls[] = { new URL("file://" + binDir + "/") };
-
-		try (URLClassLoader ucl = new URLClassLoader(urls)) {
-			Class<?> clazz = ucl.loadClass(className);
-			System.out.println("Class has been successfully loaded");
-			Runnable object = (Runnable) clazz.newInstance();
-			object.run();
+		try (JdkUtil jdkUtil = new JdkUtil(srcDir, binDir)) {
+			jdkUtil.compile(Runnable.class, src, "", className).newInstance().run();
 		}
 	}
 
