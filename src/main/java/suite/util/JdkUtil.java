@@ -18,7 +18,7 @@ public class JdkUtil implements Closeable {
 
 	private String srcDir;
 	private String binDir;
-	private URLClassLoader ucl;
+	private URLClassLoader classLoader;
 
 	public JdkUtil(String tmpDir) throws MalformedURLException {
 		this(tmpDir, tmpDir);
@@ -27,13 +27,13 @@ public class JdkUtil implements Closeable {
 	public JdkUtil(String srcDir, String binDir) throws MalformedURLException {
 		this.srcDir = srcDir;
 		this.binDir = binDir;
-		ucl = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
+		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
 
 	}
 
 	@Override
 	public void close() throws IOException {
-		ucl.close();
+		classLoader.close();
 	}
 
 	public <T> Class<? extends T> compile(Class<T> interfaceClazz, String java, String packageName, String className)
@@ -77,7 +77,7 @@ public class JdkUtil implements Closeable {
 			String fullName = (!packageName.isEmpty() ? packageName + "." : "") + className;
 
 			@SuppressWarnings("unchecked")
-			Class<? extends T> clazz = (Class<? extends T>) ucl.loadClass(fullName);
+			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(fullName);
 			return clazz;
 		} catch (ClassNotFoundException ex) {
 			throw new RuntimeException(ex);
