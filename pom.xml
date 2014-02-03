@@ -8,14 +8,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
+			<version>LATEST</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.collections</groupId>
@@ -25,6 +20,11 @@
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		<dependency>
