@@ -9,7 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import suite.sample.Profiler;
+import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
+import suite.uct.UctWeiqi;
 import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;
 

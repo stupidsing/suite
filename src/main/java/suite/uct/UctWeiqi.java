@@ -1,4 +1,4 @@
-package suite.weiqi;
+package suite.uct;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,10 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import suite.uct.UctVisitor;
 import suite.util.Util;
+import suite.weiqi.Board;
 import suite.weiqi.Board.MoveType;
+import suite.weiqi.Coordinate;
+import suite.weiqi.Evaluator;
+import suite.weiqi.GameSet;
 import suite.weiqi.GameSet.Move;
+import suite.weiqi.Weiqi;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UctWeiqi {

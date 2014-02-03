@@ -85,7 +85,7 @@ public class Board extends Array<Occupation> {
 		return false;
 	}
 
-	protected Set<Coordinate> findGroup(Coordinate c) {
+	public Set<Coordinate> findGroup(Coordinate c) {
 		Set<Coordinate> group = new HashSet<>();
 		Occupation color = get(c);
 		group.add(c);

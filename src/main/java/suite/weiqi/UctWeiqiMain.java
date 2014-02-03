@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
+import suite.uct.UctWeiqi;
 import suite.util.FileUtil;
 import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;

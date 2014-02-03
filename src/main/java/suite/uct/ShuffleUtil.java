@@ -1,4 +1,4 @@
-package suite.weiqi;
+package suite.uct;
 
 import java.util.List;
 
