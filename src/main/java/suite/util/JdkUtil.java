@@ -36,8 +36,13 @@ public class JdkUtil implements Closeable {
 		classLoader.close();
 	}
 
-	public <T> Class<? extends T> compile(Class<T> interfaceClazz, String java, String packageName, String className)
-			throws MalformedURLException, IOException {
+	public <T> T newInstance(Class<T> interfaceClazz, String java, String packageName, String className) throws IOException,
+			ReflectiveOperationException {
+		return compile(interfaceClazz, java, packageName, className).newInstance();
+	}
+
+	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String java, String packageName, String className)
+			throws IOException {
 		compile(java, packageName, className);
 		return load(interfaceClazz, packageName, className);
 	}

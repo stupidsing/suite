@@ -28,7 +28,7 @@ public class JdkCompilerTest {
 				+ "}";
 
 		try (JdkUtil jdkUtil = new JdkUtil(srcDir, binDir)) {
-			jdkUtil.compile(Runnable.class, src, "", className).newInstance().run();
+			jdkUtil.newInstance(Runnable.class, src, "", className).run();
 		}
 	}
 
