@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.immutable.IbTree.Pointer;
+import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
 import suite.util.Util;
@@ -18,7 +19,7 @@ public class IbTreeTest {
 	@Test
 	public void testSingleLevel() throws IOException {
 		try (IbTree<Integer> ibTree0 = new IbTree<Integer>( //
-				"/tmp/ibTree", Util.<Integer> comparator(), SerializeUtil.intSerializer)) {
+				FileUtil.tmp + "/ibTree", Util.<Integer> comparator(), SerializeUtil.intSerializer)) {
 			List<Integer> stamp = Arrays.asList(0);
 
 			IbTree<Integer>.Holder holder = ibTree0.holder();
@@ -48,11 +49,11 @@ public class IbTreeTest {
 		int i = 0;
 
 		try (IbTree<Pointer> ibTree0 = new IbTree<Pointer>( //
-				"/tmp/ibTree" + i++, Pointer.comparator, Pointer.serializer); //
+				FileUtil.tmp + "/ibTree" + i++, Pointer.comparator, Pointer.serializer); //
 				IbTree<Pointer> ibTree1 = new IbTree<Pointer>( //
-						"/tmp/ibTree" + i++, Pointer.comparator, Pointer.serializer, ibTree0); //
+						FileUtil.tmp + "/ibTree" + i++, Pointer.comparator, Pointer.serializer, ibTree0); //
 				IbTree<String> ibTree2 = new IbTree<String>( //
-						"/tmp/ibTree" + i++, Util.<String> comparator(), SerializeUtil.string(256), ibTree1); //
+						FileUtil.tmp + "/ibTree" + i++, Util.<String> comparator(), SerializeUtil.string(256), ibTree1); //
 		) {
 			List<Integer> stamp = Arrays.asList(0);
 			int size = 2;
