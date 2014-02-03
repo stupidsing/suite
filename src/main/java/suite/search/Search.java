@@ -6,13 +6,13 @@ import java.util.Set;
 
 public class Search<State> {
 
-	public interface Traverse<State> {
+	public interface Game<State> {
 		public List<State> generate(State state);
 
 		public boolean isDone(State state);
 	}
 
-	public static <State> State breadthFirst(Traverse<State> game, State state0) {
+	public static <State> State breadthFirst(Game<State> game, State state0) {
 		Set<State> states0 = new HashSet<>();
 
 		states0.add(state0);
@@ -32,7 +32,7 @@ public class Search<State> {
 		return null;
 	}
 
-	public static <State> State depthFirst(Traverse<State> game, State state0) {
+	public static <State> State depthFirst(Game<State> game, State state0) {
 		if (!game.isDone(state0)) {
 			for (State state1 : game.generate(state0)) {
 				State statex = depthFirst(game, state1);
