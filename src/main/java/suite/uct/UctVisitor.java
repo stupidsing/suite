@@ -4,8 +4,6 @@ import java.util.List;
 
 public interface UctVisitor<Move> {
 
-	public UctVisitor<Move> cloneVisitor();
-
 	public Iterable<Move> getAllMoves();
 
 	public List<Move> elaborateMoves();
@@ -13,5 +11,7 @@ public interface UctVisitor<Move> {
 	public void playMove(Move move);
 
 	public boolean evaluateRandomOutcome();
+
+	public UctVisitor<Move> cloneVisitor();
 
 }

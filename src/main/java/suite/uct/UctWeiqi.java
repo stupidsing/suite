@@ -28,11 +28,6 @@ public class UctWeiqi {
 		}
 
 		@Override
-		public UctVisitor<Coordinate> cloneVisitor() {
-			return new Visitor(new GameSet(gameSet));
-		}
-
-		@Override
 		public Iterable<Coordinate> getAllMoves() {
 			return Coordinate.all();
 		}
@@ -188,6 +183,11 @@ public class UctWeiqi {
 					ShuffleUtil.add(moves, c);
 
 			return moves;
+		}
+
+		@Override
+		public UctVisitor<Coordinate> cloneVisitor() {
+			return new Visitor(new GameSet(gameSet));
 		}
 	}
 
