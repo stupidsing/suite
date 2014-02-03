@@ -557,7 +557,7 @@ public class InstructionTranslator implements Closeable {
 
 	private TranslatedRun getTranslatedRun(String java) throws IOException, FileNotFoundException {
 		try {
-			return jdkUtil.newInstance(TranslatedRun.class, java, packageName, className);
+			return jdkUtil.newInstance(TranslatedRun.class, packageName, className, java);
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}

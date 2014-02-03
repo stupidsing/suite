@@ -8,7 +8,7 @@ import org.junit.Test;
 import suite.util.FileUtil;
 import suite.util.JdkUtil;
 
-public class JdkCompilerTest {
+public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException, ReflectiveOperationException {
@@ -28,7 +28,7 @@ public class JdkCompilerTest {
 				+ "}";
 
 		try (JdkUtil jdkUtil = new JdkUtil(srcDir, binDir)) {
-			jdkUtil.newInstance(Runnable.class, src, "", className).run();
+			jdkUtil.newInstance(Runnable.class, "", className, src).run();
 		}
 	}
 

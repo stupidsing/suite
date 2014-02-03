@@ -36,18 +36,18 @@ public class JdkUtil implements Closeable {
 		classLoader.close();
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String java, String packageName, String className) throws IOException,
+	public <T> T newInstance(Class<T> interfaceClazz, String packageName, String className, String java) throws IOException,
 			ReflectiveOperationException {
-		return compile(interfaceClazz, java, packageName, className).newInstance();
+		return compile(interfaceClazz, packageName, className, java).newInstance();
 	}
 
-	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String java, String packageName, String className)
+	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
 			throws IOException {
-		compile(java, packageName, className);
+		compile(packageName, className, java);
 		return load(interfaceClazz, packageName, className);
 	}
 
-	private void compile(String java, String packageName, String className) throws IOException {
+	private void compile(String packageName, String className, String java) throws IOException {
 		String pathName = srcDir + "/" + packageName.replace('.', '/');
 		String filename = pathName + "/" + className + ".java";
 		new File(pathName).mkdirs();
