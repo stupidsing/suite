@@ -42,22 +42,21 @@ public class JdkCompilerTest {
 		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
 
 		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
-			File file = new File(srcFile);
 			jc.getTask(null //
 					, null //
 					, null //
 					, Arrays.asList("-d", binDir) //
 					, null //
-					, sjfm.getJavaFileObjects(file)).call();
+					, sjfm.getJavaFileObjects(new File(srcFile))).call();
+		}
 
-			URL urls[] = { new URL("file://" + binDir + "/") };
+		URL urls[] = { new URL("file://" + binDir + "/") };
 
-			try (URLClassLoader ucl = new URLClassLoader(urls)) {
-				Class<?> clazz = ucl.loadClass(className);
-				System.out.println("Class has been successfully loaded");
-				Runnable object = (Runnable) clazz.newInstance();
-				object.run();
-			}
+		try (URLClassLoader ucl = new URLClassLoader(urls)) {
+			Class<?> clazz = ucl.loadClass(className);
+			System.out.println("Class has been successfully loaded");
+			Runnable object = (Runnable) clazz.newInstance();
+			object.run();
 		}
 	}
 
