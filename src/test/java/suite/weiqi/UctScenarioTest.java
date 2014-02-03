@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.uct.UctSearch;
 import suite.weiqi.Weiqi.Occupation;
-import suite.weiqi.uct.UctSearch;
 
 public class UctScenarioTest {
 

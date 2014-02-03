@@ -1,20 +1,13 @@
-package suite.weiqi.uct;
+package suite.weiqi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import suite.uct.UctSearch;
 import suite.util.FileUtil;
 import suite.util.Util;
-import suite.weiqi.Board;
-import suite.weiqi.Coordinate;
-import suite.weiqi.GameSet;
-import suite.weiqi.MovingGameSet;
-import suite.weiqi.ShuffleUtil;
-import suite.weiqi.UctWeiqi;
-import suite.weiqi.UserInterface;
-import suite.weiqi.Weiqi;
 import suite.weiqi.Weiqi.Occupation;
 
 /**
@@ -22,7 +15,7 @@ import suite.weiqi.Weiqi.Occupation;
  * 
  * java -agentlib:hprof=cpu=times,depth=16,interval=1,thread=y
  */
-public class UctMain<Move> {
+public class UctWeiqiMain<Move> {
 
 	private static final Occupation computerPlayer = Occupation.BLACK;
 	private static final Occupation humanPlayer = Occupation.WHITE;

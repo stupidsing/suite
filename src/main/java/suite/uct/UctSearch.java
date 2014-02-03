@@ -1,4 +1,4 @@
-package suite.weiqi.uct;
+package suite.uct;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;

@@ -6,11 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import suite.uct.UctVisitor;
 import suite.util.Util;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.GameSet.Move;
 import suite.weiqi.Weiqi.Occupation;
-import suite.weiqi.uct.UctVisitor;
 
 public class UctWeiqi {
 
