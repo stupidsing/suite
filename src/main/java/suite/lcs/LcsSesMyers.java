@@ -42,7 +42,7 @@ public class LcsSesMyers<T> {
 				// Moves like a snake; down or right for 1 step, then
 				// diagonals
 				int x0 = v0[i0];
-				int x1 = down ? x0 : x0 + 1;
+				int x1 = x0 + (down ? 0 : 1);
 				x2 = x1;
 				y2 = x2 - k1;
 
@@ -70,11 +70,10 @@ public class LcsSesMyers<T> {
 			// Move down or move right?
 			boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
 			int i0 = i1 + (down ? 0 : -1);
-			int k0 = down ? k1 + 1 : k1 - 1;
 
 			// Moves back the snake
 			int x0 = v0[i0];
-			int x1 = down ? x0 : x0 + 1;
+			int x1 = x0 + (down ? 0 : 1);
 			x2 = v1[i1];
 
 			// Saves end point
@@ -83,7 +82,7 @@ public class LcsSesMyers<T> {
 
 			v1 = v0;
 			i1 = i0;
-			k1 = k0;
+			k1 += down ? 1 : -1;
 			x2 = x0;
 			y2 = x2 - k1;
 		}
