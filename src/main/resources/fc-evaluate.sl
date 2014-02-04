@@ -6,7 +6,7 @@ fc-compile (PRAGMA _ .do) .env .cdr
 #
 fc-compile (USING .mode .lib .do) .fve .cdr
 	:- !
-	, memoize .precompiled (fc-load-precompiled-library .lib .precompiled) ((_ # .eagerPred # .lazyPred #),)
+	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
 	, generalize .pred (fc-compile-using-lib .mode .lib .do .fve .cdr :- .tail)
 	, once .tail

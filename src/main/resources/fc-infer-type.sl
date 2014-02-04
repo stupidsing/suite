@@ -36,7 +36,7 @@ infer-type-rule .p .env .tr/.tr .type
 #
 infer-type-rule (USING _ .lib .do) .env .tr/.tr .type
 	:- !
-	, memoize .precompiled (fc-load-precompiled-library .lib .precompiled) ((.pred # _ # _ #),)
+	, fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, generalize .pred (infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail)
 	, once .tail
 	, resolve-type-rules .tr1

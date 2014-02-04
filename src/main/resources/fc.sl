@@ -13,15 +13,6 @@
 	, import.file 'rbt.sl'
 #
 
-compile-function-without-precompile .mode (.lib, .libs) .do .c
-	:- !, fc-load-library .lib
-	, fc-add-functions .lib .do .do1
-	, compile-function-without-precompile .mode .libs .do1 .c
-#
-compile-function-without-precompile .mode () .do .c
-	:- compile-function .mode .do .c
-#
-
 compile-function .mode .do0 .c0
 	:- .c0 = (_ ENTER, .c1)
 	, !, fc-parse .do0 .do1
@@ -37,22 +28,30 @@ compile-function .mode .do0 .c0
 	, !, cg-generate-code .c0
 #
 
-fc-load-library .lib
-	:- once (fc-imported-library .lib
-		; home.dir .homeDir
+fc-load-library .lib .do0 .dox
+	:- memoize .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
+#
+
+fc-load-library0 .lib .slfx
+	:- fc-add-functions .lib .slfx, !
+	; once (
+		home.dir .homeDir
 		, concat .homeDir "/src/main/resources/" .lib ".slf" .slfFilename
 		, whatever (file.exists .slfFilename
 			, file.read .slfFilename .slf
 			, to.atom ".p" .var
-			, concat .slf .var .slf1
-			, parse .slf1 .node
-			, assert (fc-add-functions .lib .var .node)
-			, assert (fc-imported-library .lib)
+			, concat .var "(" .slf .var ")" .slf1
+			, parse .slf1 .slf2
+			, generalize .slf2 .slfx
 		)
 	)
 #
 
-fc-load-precompiled-library .lib .precompiled
+fc-load-precompiled-library .lib .node
+	:- memoize .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
+#
+
+fc-load-precompiled-library0 .lib .precompiled
 	:- home.dir .homeDir
 	, concat .homeDir "/" .lib ".rpn" .rpnFilename
 	, file.read .rpnFilename .rpn

@@ -28,8 +28,7 @@ fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (using /.lib >> .do) .dox
-	:- !, fc-load-library .lib
-	, fc-add-functions .lib .do .do1
+	:- !, fc-load-library .lib .do .do1
 	, fc-parse .do1 .dox
 #
 fc-parse (using .lib >> .do) (USING EAGER .lib .do1)
