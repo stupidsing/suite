@@ -123,8 +123,16 @@ public class TextUtil {
 		DataSegment dsxOrg = pdsx.getDataSegmentOrg(), dsxNew = pdsx.getDataSegmentNew();
 		DataSegment dsyOrg = pdsy.getDataSegmentOrg(), dsyNew = pdsy.getDataSegmentNew();
 
+		// If both patches do not overlap in original sections,
+		// they can be merged
 		boolean isSeparate = dsxOrg.getEnd() <= dsyOrg.getStart();
 
+		// If the longer patch segment is not changing anything,
+		// they can be merged
+		boolean isUnchanged = !pdsy.isChanged();
+
+		// If both patches have same starting (head) content in original and
+		// target sections, the head parts can be merged
 		int dsxOrgLength = dsxOrg.length(), dsxNewLength = dsxNew.length();
 		int dsyOrgLength = dsyOrg.length(), dsyNewLength = dsyNew.length();
 		boolean isMappingsAgree = dsxOrg.getStart() == dsyOrg.getStart()
@@ -133,11 +141,12 @@ public class TextUtil {
 				&& Util.equals(dsxOrg.getBytes(), dsyOrg.getBytes().subbytes(0, dsxOrgLength))
 				&& Util.equals(dsxNew.getBytes(), dsyNew.getBytes().subbytes(0, dsyOrgLength));
 
-		if (isSeparate || !pdsy.isChanged() || isMappingsAgree) {
+		if (isSeparate || isUnchanged || isMappingsAgree) {
 			DataSegment dsOrg1 = dsxOrg.right(start);
 			DataSegment dsNew1 = dsxNew.right(start + mdx.offset);
 			pdsList.add(new PatchDataSegment(dsOrg1, dsNew1.adjust(mdy.offset)));
 
+			// If only the head part can merge, add back tail parts to the lists
 			if (isMappingsAgree) {
 				DataSegment dsyOrg0 = dsyOrg.left(dsxOrg.getEnd());
 				DataSegment dsyNew0 = dsyNew.left(dsyNew.getStart() + dsxNewLength);
