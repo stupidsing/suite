@@ -2,7 +2,6 @@ package suite.lcs;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
@@ -21,29 +20,28 @@ public class LcsSesMyers<T> {
 		int size0 = list0.size(), size1 = list1.size();
 		int nm = size0 + size1;
 
-		int v0[] = new int[2 * nm + 1], v1[] = null;
-		int k0, k1 = 0;
+		int d, i1 = 0;
+		int vdummy[] = new int[] { 0 };
+		int v0[] = vdummy, v1[] = null;
+		int k1 = 0;
 		int x2 = 0, y2 = 0;
 
-		Arrays.fill(v0, Integer.MIN_VALUE);
-		v0[nm + 1] = 0;
-
 		List<int[]> vs = new ArrayList<>();
-		vs.add(v0);
 
-		found: for (int d = 0; d <= nm; d++) {
-			v1 = new int[2 * nm + 1];
+		found: for (d = 0; d <= nm; d++) {
+			v1 = new int[d + 1];
 			vs.add(v1);
 
-			for (k1 = -d; k1 <= d; k1 += 2) {
+			for (i1 = 0; i1 <= d; i1++) {
+				k1 = i1 * 2 - d;
 
 				// Move down or move right?
-				boolean down = k1 == -d || k1 != d && v0[nm + k1 - 1] < v0[nm + k1 + 1];
-				k0 = down ? k1 + 1 : k1 - 1;
+				boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
+				int i0 = i1 + (down ? 0 : -1);
 
 				// Moves like a snake; down or right for 1 step, then
 				// diagonals
-				int x0 = v0[nm + k0];
+				int x0 = v0[i0];
 				int x1 = down ? x0 : x0 + 1;
 				x2 = x1;
 				y2 = x2 - k1;
@@ -54,7 +52,7 @@ public class LcsSesMyers<T> {
 				}
 
 				// Saves end point
-				v1[nm + k1] = x2;
+				v1[i1] = x2;
 
 				// Solution found?
 				if (x2 >= size0 && y2 >= size1)
@@ -66,23 +64,25 @@ public class LcsSesMyers<T> {
 
 		Deque<T> deque = new ArrayDeque<>();
 
-		for (int d = vs.size() - 1; x2 > 0 || y2 > 0; d--) {
-			v0 = vs.get(d - 1);
+		for (; x2 > 0 || y2 > 0; d--) {
+			v0 = d > 0 ? vs.get(d - 1) : vdummy;
 
 			// Move down or move right?
-			boolean down = k1 == -d || k1 != d && v0[nm + k1 - 1] < v0[nm + k1 + 1];
-			k0 = down ? k1 + 1 : k1 - 1;
+			boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
+			int i0 = i1 + (down ? 0 : -1);
+			int k0 = down ? k1 + 1 : k1 - 1;
 
 			// Moves back the snake
-			int x0 = v0[nm + k0];
+			int x0 = v0[i0];
 			int x1 = down ? x0 : x0 + 1;
-			x2 = v1[nm + k1];
+			x2 = v1[i1];
 
 			// Saves end point
 			while (x2 > x1)
 				deque.addFirst(list0.get(--x2));
 
 			v1 = v0;
+			i1 = i0;
 			k1 = k0;
 			x2 = x0;
 			y2 = x2 - k1;
