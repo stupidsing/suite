@@ -5,7 +5,7 @@
 as-assemble AAA (+x37, .e)/.e #
 as-assemble (ADD .acc .imm) .e0/.ex :- as-assemble-acc-imm +x04 .acc .imm .e0/.ex #
 as-assemble (ADD .rm .imm8) (+x83, .e1)/.ex :- as-imm8 .imm8, as-assemble-rm32 .rm 0 .e1/.e2, as-emit8 .imm8 .e2/.ex #
-as-assemble (ADD .rm .imm) .e0/.ex :- as-assemble-rm-imm +x80 .rm 0 .imm .e1/.e2 #
+as-assemble (ADD .rm .imm) .e0/.ex :- as-assemble-rm-imm +x80 .rm 0 .imm .e0/.ex #
 as-assemble (ADD .rm0 .rm1) .e0/.ex :- as-assemble-rm-reg2 +x00 .rm0 .rm1 .e0/.ex #
 as-assemble (DEC .reg) .e0/.ex :- as-assemble-r32 +x48 .reg .e0/.ex #
 as-assemble (DEC .rm) .e0/.ex :- as-assemble-rm +xFE .rm 1 .e0/.ex #
