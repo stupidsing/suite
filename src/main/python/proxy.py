@@ -14,21 +14,17 @@ class Worker(Thread):
 		self.fro = sock
 
 	def run(self):
-		fror = tor = ""
 		to = socket(AF_INET, SOCK_STREAM)
 		to.connect(("www.google.com", 80))
-		while True:
-			selected = select([self.fro, to], [self.fro, to], [self.fro, to])
-			for s in selected[0]:
-				if s == self.fro: fror += s.recv(1024)
-				elif s == to: tor += s.recv(1024)
-			for s in selected[1]:
-				if s == self.fro: tor = tor[s.send(tor):]
-				elif s == to: fror = fror[s.send(fror):]
-			for s in selected[2]:
-				break
-		self.fro.close()
-		to.close()
+		try:
+			while True:
+				selected = select([self.fro, to], [], [], None)[0]
+				if selected[0] == self.fro: to.sendall(self.fro.recv(1024))
+				elif selected[0] == to: self.fro.sendall(to.recv(1024))
+				else: break
+		finally:
+			self.fro.close()
+			to.close()
 
 
 signal(SIGPIPE, SIG_IGN)
@@ -41,5 +37,5 @@ listener.listen(32)
 while select([listener], [], [], None) [0]:
 	sock, address = listener.accept()
 
-	print "ACCEPTED", strftime("%Y-%m-%d %H:%M:%S", localtime())
+	print("ACCEPTED" + strftime("%Y-%m-%d %H:%M:%S", localtime()))
 	Worker(sock).start()
