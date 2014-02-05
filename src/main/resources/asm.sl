@@ -6,34 +6,60 @@ asm-assemble AAA (+x37, .e)/.e #
 asm-assemble (ADD AL .imm) (+x04, .imm, .e)/.e #
 asm-assemble (ADD EAX .imm) (+x05, .e1)/.ex :- asm-emit32 .imm .e1/.ex #
 asm-assemble (ADD .rm .imm8) (+x83, .e1)/.ex :- asm-imm8 .imm8, asm-assemble-rm32 .rm 0 .e1/.e2, asm-emit8 .imm8 .e2/.ex #
-asm-assemble (ADD .rm .imm) (+x80, .e1)/.ex :- asm-assemble-rm8 .rm 0 .e1/.e2, asm-emit8 .imm .e2/.ex #
-asm-assemble (ADD .rm .imm) (+x81, .e1)/.ex :- asm-assemble-rm32 .rm 0 .e1/.e2, asm-emit32 .imm .e2/.ex #
-asm-assemble (ADD .rm .reg) (+x00, .e1)/.ex :- asm-assemble-rm8-r8 .rm .reg .e1/.ex #
-asm-assemble (ADD .rm .reg) (+x01, .e1)/.ex :- asm-assemble-rm32-r32 .rm .reg .e1/.ex #
-asm-assemble (ADD .reg .rm) (+x02, .e1)/.ex :- asm-assemble-rm8-r8 .rm .reg .e1/.ex #
-asm-assemble (ADD .reg .rm) (+x03, .e1)/.ex :- asm-assemble-rm32-r32 .rm .reg .e1/.ex #
-asm-assemble (DEC .reg) (.b, .e)/.e :- asm-assemble-r32 +x48 .reg .b #
-asm-assemble (DEC .rm) (+xFE, .e1)/.ex :- asm-assemble-rm8 .rm 1 .e1/.ex #
-asm-assemble (DEC .rm) (+xFF, .e1)/.ex :- asm-assemble-rm32 .rm 1 .e1/.ex #
-asm-assemble (INC .reg) (.b, .e)/.e :- asm-assemble-r32 +x40 .reg .b #
-asm-assemble (INC .rm) (+xFE, .e1)/.ex :- asm-assemble-rm8 .rm 0 .e1/.ex #
-asm-assemble (INC .rm) (+xFF, .e1)/.ex :- asm-assemble-rm32 .rm 0 .e1/.ex #
-asm-assemble (MOV .reg .imm) (.b, .e1)/.ex :- asm-assemble-r8 +xB0 .reg .b, asm-emit8 .imm .e1/.ex #
-asm-assemble (MOV .reg .imm) (.b, .e1)/.ex :- asm-assemble-r32 +xB8 .reg .b, asm-emit32 .imm .e1/.ex #
-asm-assemble (MOV .rm .imm) (+xC6, .e1)/.ex :- asm-assemble-rm8 .rm 0 .e1/.e2, asm-emit8 .imm .e2/.ex #
-asm-assemble (MOV .rm .imm) (+xC7, .e1)/.ex :- asm-assemble-rm32 .rm 0 .e1/.e2, asm-emit32 .imm .e2/.ex #
-asm-assemble (MOV .rm .reg) (+x88, .e1)/.ex :- asm-assemble-rm8-r8 .rm .reg .e1/.ex #
-asm-assemble (MOV .rm .reg) (+x89, .e1)/.ex :- asm-assemble-rm32-r32 .rm .reg .e1/.ex #
-asm-assemble (MOV .reg .rm) (+x8A, .e1)/.ex :- asm-assemble-rm8-r8 .rm .reg .e1/.ex #
-asm-assemble (MOV .reg .rm) (+x8B, .e1)/.ex :- asm-assemble-rm32-r32 .rm .reg .e1/.ex #
+asm-assemble (ADD .rm .imm) .e0/.ex :- asm-assemble-rm-imm +x80 .rm 0 .imm .e1/.e2 #
+asm-assemble (ADD .rm0 .rm1) .e0/.ex :- asm-assemble-rm-reg2 +x00 .rm0 .rm1 .e0/.ex #
+asm-assemble (DEC .reg) .e0/.ex :- asm-assemble-r32 +x48 .reg .e0/.ex #
+asm-assemble (DEC .rm) .e0/.ex :- asm-assemble-rm +xFE .rm 1 .e0/.ex #
+asm-assemble (INC .reg) .e0/.ex :- asm-assemble-r32 +x40 .reg .e0/.ex #
+asm-assemble (INC .rm) .e0/.ex :- asm-assemble-rm +xFE .rm 0 .e0/.ex #
+asm-assemble (MOV .reg .imm) .e0/.ex :- asm-assemble-reg-imm +xB0 .reg .imm .e0/.ex #
+asm-assemble (MOV .rm .imm) .e0/.ex :- asm-assemble-rm-imm +xC6 .rm 0 .imm .e0/.ex #
+asm-assemble (MOV .rm0 .rm1) .e0/.ex :- asm-assemble-rm-reg +x88 .rm0 .rm1 .e0/.ex #
 asm-assemble (MOV .rm .sreg) (+x8C, .e1)/.ex :- asm-segment-reg .sreg .sr, asm-assemble-rm16 .rm .sr .e1/.ex #
 asm-assemble (MOV .sreg .rm) (+x8D, .e1)/.ex :- asm-segment-reg .sreg .sr, asm-assemble-rm16 .rm .sr .e1/.ex #
 
-asm-assemble-r8 .b .reg .b1 :- asm-reg8 .reg .r, let .b1 (.b + .r) #
-asm-assemble-r32 .b .reg .b1 :- asm-reg32 .reg .r, let .b1 (.b + .r) #
+asm-assemble-rm-imm .b .rm .num .imm (.b, .e1)/.ex
+	:- asm-assemble-rm8 .rm .num .e1/.e2, asm-emit8 .imm .e2/.ex
+#
+asm-assemble-rm-imm .b0 .rm .num .imm (.b1, .e1)/.ex
+	:- asm-assemble-rm32 .rm .num .e1/.e2, asm-emit32 .imm .e2/.ex
+	, let .b1 (.b0 + 1)
+#
 
-asm-assemble-rm8-r8 .rm .reg .e0/.ex :- asm-reg8 .reg .r, asm-assemble-rm8 .rm .r .e0/.ex #
-asm-assemble-rm32-r32 .rm .reg .e0/.ex :- asm-reg32 .reg .r, asm-assemble-rm32 .rm .r .e0/.ex #
+asm-assemble-reg-imm .b0 .reg .imm .e0/.ex
+	:- asm-assemble-r8 .b0 .reg .e0/.e1, asm-emit8 .imm .e1/.ex
+#
+asm-assemble-reg-imm .b0 .reg .imm .e0/.ex
+	:- let .b1 (.b0 + 8)
+	, asm-assemble-r32 .b1 .reg .e0/.e1, asm-emit32 .imm .e1/.ex
+#
+
+asm-assemble-rm-reg2 .b .rm .reg .e0/.ex
+	:- asm-assemble-rm-reg .b .rm .reg .e0/.ex
+#
+asm-assemble-rm-reg2 .b0 .reg .rm .e0/.ex
+	:- let .b1 (.b0 + 2)
+	, asm-assemble-rm-reg .b1 .rm .reg .e0/.ex
+#
+
+asm-assemble-rm-reg .b .rm .reg (.b, .e0)/.ex
+	:- asm-reg8 .reg .r, asm-assemble-rm8 .rm .r .e0/.ex
+#
+asm-assemble-rm-reg .b0 .rm .reg (.b1, .e0)/.ex
+	:- asm-reg32 .reg .r, asm-assemble-rm32 .rm .r .e0/.ex
+	, let .b1 (.b0 + 1)
+#
+
+asm-assemble-rm .b .rm .num (.b, .e1)/.ex
+	:- asm-rm8 .rm, asm-mod-num-rm .rm .num .e1/.ex
+#
+asm-assemble-rm .b0 .rm .num (.b1, .e1)/.ex
+	:- asm-rm32 .rm, asm-mod-num-rm .rm .num .e1/.ex
+	, let .b1 (.b0 + 1)
+#
+
+asm-assemble-r8 .b0 .reg (.b1, .e)/.e :- asm-reg8 .reg .r, let .b1 (.b0 + .r) #
+asm-assemble-r32 .b0 .reg (.b1, .e)/.e :- asm-reg32 .reg .r, let .b1 (.b0 + .r) #
 
 asm-assemble-rm8 .rm .num .e0/.ex :- asm-rm8 .rm, asm-mod-num-rm .rm .num .e0/.ex #
 asm-assemble-rm16 .rm .num .e0/.ex :- asm-rm16 .rm, asm-mod-num-rm .rm .num .e0/.ex #
