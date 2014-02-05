@@ -40,7 +40,7 @@ fc-load-library0 .lib .slfx
 		, whatever (file.exists .slfFilename
 			, file.read .slfFilename .slf
 			, to.atom ".p" .var
-			, concat .var "(" .slf .var ")" .slf1
+			, concat .var " (" .slf .var ")" .slf1
 			, parse .slf1 .slf2
 			, generalize .slf2 .slfx
 		)

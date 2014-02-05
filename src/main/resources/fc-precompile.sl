@@ -3,7 +3,7 @@
 --
 -- to perform pre-compilation:
 -- ./run.sh src/main/resources/fc-precompile.sl
--- ? fc-setup-standard-precompile #
+-- ? fc-setup-precompile STANDARD #
 --
 
 fc-setup-precompile .lib
