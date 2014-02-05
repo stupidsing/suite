@@ -19,10 +19,11 @@ class Worker(Thread):
 		try:
 			while True:
 				selected = select([self.fro, to], [], [self.fro, to])[0][0]
-				d = selected.recv(1024)
-				if selected == self.fro: to.sendall(d)
-				elif selected == to: self.fro.sendall(d)
-				if not d: break
+				data = selected.recv(1024)
+				if data:
+					if selected == self.fro: to.sendall(data)
+					elif selected == to: self.fro.sendall(data)
+				else: break
 		finally:
 			self.fro.close()
 			to.close()
