@@ -26,8 +26,8 @@ asm-assemble (MOV .rm .reg) (+x88, .e1)/.ex :- asm-assemble-rm8-r8 .rm .reg .e1/
 asm-assemble (MOV .rm .reg) (+x89, .e1)/.ex :- asm-assemble-rm32-r32 .rm .reg .e1/.ex #
 asm-assemble (MOV .reg .rm) (+x8A, .e1)/.ex :- asm-assemble-rm8-r8 .rm .reg .e1/.ex #
 asm-assemble (MOV .reg .rm) (+x8B, .e1)/.ex :- asm-assemble-rm32-r32 .rm .reg .e1/.ex #
-asm-assemble (MOV .rm .sreg) (+x8C, .e1)/.ex :- asm-segment-register .sreg .sr, asm-assemble-rm16 .rm .sreg .e1/.ex #
-asm-assemble (MOV .sreg .rm) (+x8D, .e1)/.ex :- asm-segment-register .sreg .sr, asm-assemble-rm16 .rm .sreg .e1/.ex #
+asm-assemble (MOV .rm .sreg) (+x8C, .e1)/.ex :- asm-segment-reg .sreg .sr, asm-assemble-rm16 .rm .sr .e1/.ex #
+asm-assemble (MOV .sreg .rm) (+x8D, .e1)/.ex :- asm-segment-reg .sreg .sr, asm-assemble-rm16 .rm .sr .e1/.ex #
 
 asm-assemble-r8 .b .reg .b1 :- asm-reg8 .reg .r, let .b1 (.b + .r) #
 asm-assemble-r32 .b .reg .b1 :- asm-reg32 .reg .r, let .b1 (.b + .r) #
@@ -40,29 +40,36 @@ asm-assemble-rm16 .rm .num .e0/.ex :- asm-rm16 .rm, asm-mod-num-rm .rm .num .e0/
 asm-assemble-rm32 .rm .num .e0/.ex :- asm-rm32 .rm, asm-mod-num-rm .rm .num .e0/.ex #
 
 asm-mod-num-rm .rm .num (.modregrm, .e1)/.ex
-	:- asm-mod-rm .rm (.modb .rmb) .e1/.ex
-	, let .modregrm (.modb * 64 + .num * .8 + .rmb)
+	:- is.int .num
+	, asm-mod-rm .rm (.modb .rmb) .e1/.ex
+	, let .modregrm (.modb * 64 + .num * 8 + .rmb)
 #
 
 asm-mod-rm .reg (3 .r) .e/.e
 	:- asm-reg32 .reg .r
 #
+asm-mod-rm (`.disp`) (0 5) .e0/.ex
+	:- asm-emit32 .disp .e0/.ex
+#
 asm-mod-rm (`.reg + .disp`) (.mod .r) .e0/.ex
 	:- asm-reg32 .reg .r
-	, not (.r = 4; .r = 12)
 	, asm-disp-mod .disp .mod .e0/.ex
+	, not (.r = 4; .mod = 0, .r = 5; .r = 12; .mod = 0, .r = 13)
 #
-asm-mod-rm (`.indexReg * .scale + .easeReg + .disp`) (.mod 4) (.sib, .e1)/.ex
-	:- asm-sib (`.indexReg * .scale + .easeReg`) .sib
+asm-mod-rm (`.indexReg * .scale + .baseReg + .disp`) (.mod 4) (.sib, .e1)/.ex
+	:- asm-sib (`.indexReg * .scale + .baseReg`) .sib
 	, asm-disp-mod .disp .mod .e1/.ex
 #
 asm-mod-rm (byte `.ptr`) (.mod .rm) .e :- asm-mod-rm `.ptr` (.mod .rm) .e #
 asm-mod-rm (word `.ptr`) (.mod .rm) .e :- asm-mod-rm `.ptr` (.mod .rm) .e #
 asm-mod-rm (dword `.ptr`) (.mod .rm) .e :- asm-mod-rm `.ptr` (.mod .rm) .e #
 asm-mod-rm (qword `.ptr`) (.mod .rm) .e :- asm-mod-rm `.ptr` (.mod .rm) .e #
-asm-mod-rm (`.reg`) (.mod .rm) .e :- asm-mod-rm (`.reg + 0`) (.mod .rm) .e #
-asm-mod-rm (`.indexReg * .scale + .easeReg`) (.mod .rm) .e
-	:- asm-mod-rm (`.indexReg * .scale + .easeReg + 0`) (.mod .rm) .e
+asm-mod-rm (`.reg`) (.mod .rm) .e
+	:- asm-reg32 .reg _
+	, asm-mod-rm (`.reg + 0`) (.mod .rm) .e
+#
+asm-mod-rm (`.indexReg * .scale + .baseReg`) (.mod .rm) .e
+	:- asm-mod-rm (`.indexReg * .scale + .baseReg + 0`) (.mod .rm) .e
 #
 
 asm-disp-mod .disp .mod .e0/.ex
@@ -76,7 +83,7 @@ asm-sib (`.indexReg * .scale + .baseReg`) .sib
 	, asm-reg32 .indexReg .ir
 	, asm-sib-scale .scale .s
 	, asm-reg32 .baseReg .br
-	, let .sib (.s * 64 + .ir * 8 + br)
+	, let .sib (.s * 64 + .ir * 8 + .br)
 #
 
 asm-sib-scale 1 0 #
@@ -84,98 +91,97 @@ asm-sib-scale 2 1 #
 asm-sib-scale 4 2 #
 asm-sib-scale 8 3 #
 
-asm-accum8 AL #
-asm-accum16 AX #
-asm-accum32 EAX #
+asm-rm8 .rm :- asm-rm-size .rm BYTE #
+asm-rm16 .rm :- asm-rm-size .rm WORD #
+asm-rm32 .rm :- asm-rm-size .rm DWORD #
 
-asm-rm8 .rm :- asm-operand-size .rm BYTE #
-asm-rm16 .rm :- asm-operand-size .rm WORD #
-asm-rm32 .rm :- asm-operand-size .rm DWORD #
+asm-reg8 .reg .r :- asm-general-reg .reg BYTE .r #
+asm-reg32 .reg .r :- asm-general-reg .reg DWORD .r #
 
-asm-reg8 .reg .r :- asm-general-register .reg BYTE .r #
-asm-reg32 .reg .r :- asm-general-register .reg DWORD .r #
+asm-imm8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 
-asm-imm8 .imm :- -128 <= .imm, .imm < 128 #
-
-asm-operand-size .reg .size :- asm-general-register .reg .size _ #
-asm-operand-size (byte `_`) BYTE #
-asm-operand-size (word `_`) WORD #
-asm-operand-size (dword `_`) DWORD #
-asm-operand-size (qword `_`) QWORD #
+asm-rm-size .reg .size :- asm-general-reg .reg .size _ #
+asm-rm-size (byte `_`) BYTE #
+asm-rm-size (word `_`) WORD #
+asm-rm-size (dword `_`) DWORD #
+asm-rm-size (qword `_`) QWORD #
+asm-rm-size `_` _ #
 
 asm-emit32 .d32 .e0/.ex
-	:- let .w0 (.d16 mod 65536)
-	, let .w1 (.d16 / 65536)
+	:- is.int .d32
+	, let .w0 (.d32 % 65536)
+	, let .w1 (.d32 / 65536)
 	, asm-emit16 .w0 .e0/.e1
 	, asm-emit16 .w1 .e1/.ex
 #
 
 asm-emit16 .w16 .e0/.ex
-	:- let .b0 (.w16 mod 256)
+	:- is.int .w16
+	, let .b0 (.w16 % 256)
 	, let .b1 (.w16 / 256)
 	, asm-emit8 .b0 .e0/.e1
 	, asm-emit8 .b1 .e1/.ex
 #
 
-asm-emit8 .b8 (.b8, .e)/.e #
+asm-emit8 .b8 (.b8, .e)/.e :- is.int .b8 #
 
-asm-general-register AL BYTE 0 #
-asm-general-register CL BYTE 1 #
-asm-general-register DL BYTE 2 #
-asm-general-register BL BYTE 3 #
-asm-general-register AH BYTE 4 :- asm-mode-amd64; asm-rex-prefix #
-asm-general-register CH BYTE 5 :- asm-mode-amd64; asm-rex-prefix #
-asm-general-register DH BYTE 6 :- asm-mode-amd64; asm-rex-prefix #
-asm-general-register BH BYTE 7 :- asm-mode-amd64; asm-rex-prefix #
-asm-general-register R8B BYTE 8 :- asm-mode-amd64 #
-asm-general-register R9B BYTE 9 :- asm-mode-amd64 #
-asm-general-register R10B BYTE 10 :- asm-mode-amd64 #
-asm-general-register R11B BYTE 11 :- asm-mode-amd64 #
-asm-general-register R12B BYTE 12 :- asm-mode-amd64 #
-asm-general-register R13B BYTE 13 :- asm-mode-amd64 #
-asm-general-register R14B BYTE 14 :- asm-mode-amd64 #
-asm-general-register R15B BYTE 15 :- asm-mode-amd64 #
-asm-general-register AX WORD 0 #
-asm-general-register CX WORD 1 #
-asm-general-register DX WORD 2 #
-asm-general-register BX WORD 3 #
-asm-general-register SP WORD 4 #
-asm-general-register BP WORD 5 #
-asm-general-register SI WORD 6 #
-asm-general-register DI WORD 7 #
-asm-general-register R8W WORD 8 :- asm-mode-amd64 #
-asm-general-register R9W WORD 9 :- asm-mode-amd64 #
-asm-general-register R10W WORD 10 :- asm-mode-amd64 #
-asm-general-register R11W WORD 11 :- asm-mode-amd64 #
-asm-general-register R12W WORD 12 :- asm-mode-amd64 #
-asm-general-register R13W WORD 13 :- asm-mode-amd64 #
-asm-general-register R14W WORD 14 :- asm-mode-amd64 #
-asm-general-register R15W WORD 15 :- asm-mode-amd64 #
-asm-general-register EAX DWORD 0 #
-asm-general-register ECX DWORD 1 #
-asm-general-register EDX DWORD 2 #
-asm-general-register EBX DWORD 3 #
-asm-general-register ESP DWORD 4 #
-asm-general-register EBP DWORD 5 #
-asm-general-register ESI DWORD 6 #
-asm-general-register EDI DWORD 7 #
-asm-general-register R8D DWORD 8 :- asm-mode-amd64 #
-asm-general-register R9D DWORD 9 :- asm-mode-amd64 #
-asm-general-register R10D DWORD 10 :- asm-mode-amd64 #
-asm-general-register R11D DWORD 11 :- asm-mode-amd64 #
-asm-general-register R12D DWORD 12 :- asm-mode-amd64 #
-asm-general-register R13D DWORD 13 :- asm-mode-amd64 #
-asm-general-register R14D DWORD 14 :- asm-mode-amd64 #
-asm-general-register R15D DWORD 15 :- asm-mode-amd64 #
+asm-general-reg AL BYTE 0 #
+asm-general-reg CL BYTE 1 #
+asm-general-reg DL BYTE 2 #
+asm-general-reg BL BYTE 3 #
+asm-general-reg AH BYTE 4 :- asm-mode-amd64; asm-rex-prefix #
+asm-general-reg CH BYTE 5 :- asm-mode-amd64; asm-rex-prefix #
+asm-general-reg DH BYTE 6 :- asm-mode-amd64; asm-rex-prefix #
+asm-general-reg BH BYTE 7 :- asm-mode-amd64; asm-rex-prefix #
+asm-general-reg R8B BYTE 8 :- asm-mode-amd64 #
+asm-general-reg R9B BYTE 9 :- asm-mode-amd64 #
+asm-general-reg R10B BYTE 10 :- asm-mode-amd64 #
+asm-general-reg R11B BYTE 11 :- asm-mode-amd64 #
+asm-general-reg R12B BYTE 12 :- asm-mode-amd64 #
+asm-general-reg R13B BYTE 13 :- asm-mode-amd64 #
+asm-general-reg R14B BYTE 14 :- asm-mode-amd64 #
+asm-general-reg R15B BYTE 15 :- asm-mode-amd64 #
+asm-general-reg AX WORD 0 #
+asm-general-reg CX WORD 1 #
+asm-general-reg DX WORD 2 #
+asm-general-reg BX WORD 3 #
+asm-general-reg SP WORD 4 #
+asm-general-reg BP WORD 5 #
+asm-general-reg SI WORD 6 #
+asm-general-reg DI WORD 7 #
+asm-general-reg R8W WORD 8 :- asm-mode-amd64 #
+asm-general-reg R9W WORD 9 :- asm-mode-amd64 #
+asm-general-reg R10W WORD 10 :- asm-mode-amd64 #
+asm-general-reg R11W WORD 11 :- asm-mode-amd64 #
+asm-general-reg R12W WORD 12 :- asm-mode-amd64 #
+asm-general-reg R13W WORD 13 :- asm-mode-amd64 #
+asm-general-reg R14W WORD 14 :- asm-mode-amd64 #
+asm-general-reg R15W WORD 15 :- asm-mode-amd64 #
+asm-general-reg EAX DWORD 0 #
+asm-general-reg ECX DWORD 1 #
+asm-general-reg EDX DWORD 2 #
+asm-general-reg EBX DWORD 3 #
+asm-general-reg ESP DWORD 4 #
+asm-general-reg EBP DWORD 5 #
+asm-general-reg ESI DWORD 6 #
+asm-general-reg EDI DWORD 7 #
+asm-general-reg R8D DWORD 8 :- asm-mode-amd64 #
+asm-general-reg R9D DWORD 9 :- asm-mode-amd64 #
+asm-general-reg R10D DWORD 10 :- asm-mode-amd64 #
+asm-general-reg R11D DWORD 11 :- asm-mode-amd64 #
+asm-general-reg R12D DWORD 12 :- asm-mode-amd64 #
+asm-general-reg R13D DWORD 13 :- asm-mode-amd64 #
+asm-general-reg R14D DWORD 14 :- asm-mode-amd64 #
+asm-general-reg R15D DWORD 15 :- asm-mode-amd64 #
 
-asm-segment-register ES 0 #
-asm-segment-register CS 1 #
-asm-segment-register SS 2 #
-asm-segment-register DS 3 #
-asm-segment-register FS 4 #
-asm-segment-register GS 5 #
+asm-segment-reg ES 0 #
+asm-segment-reg CS 1 #
+asm-segment-reg SS 2 #
+asm-segment-reg DS 3 #
+asm-segment-reg FS 4 #
+asm-segment-reg GS 5 #
 
-asm-control-register CR0 0 #
-asm-control-register CR2 2 #
-asm-control-register CR3 3 #
-asm-control-register CR4 4 #
+asm-control-reg CR0 0 #
+asm-control-reg CR2 2 #
+asm-control-reg CR3 3 #
+asm-control-reg CR4 4 #
