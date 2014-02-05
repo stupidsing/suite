@@ -18,10 +18,11 @@ class Worker(Thread):
 		to.connect(("www.google.com", 80))
 		try:
 			while True:
-				selected = select([self.fro, to], [], [], None)[0]
-				if selected[0] == self.fro: to.sendall(self.fro.recv(1024))
-				elif selected[0] == to: self.fro.sendall(to.recv(1024))
-				else: break
+				selected = select([self.fro, to], [], [self.fro, to])[0][0]
+				d = selected.recv(1024)
+				if selected == self.fro: to.sendall(d)
+				elif selected == to: self.fro.sendall(d)
+				if not d: break
 		finally:
 			self.fro.close()
 			to.close()
@@ -37,5 +38,5 @@ listener.listen(32)
 while select([listener], [], [], None) [0]:
 	sock, address = listener.accept()
 
-	print("ACCEPTED" + strftime("%Y-%m-%d %H:%M:%S", localtime()))
+	print("ACCEPTED " + strftime("%Y-%m-%d %H:%M:%S", localtime()))
 	Worker(sock).start()
