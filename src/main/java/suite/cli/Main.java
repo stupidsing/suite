@@ -77,7 +77,7 @@ public class Main implements AutoCloseable {
 		BufferedReader br = new BufferedReader(reader);
 		boolean code = true;
 
-		code &= opt.importFile(importFilenames);
+		code &= dispatcher.importFiles(importFilenames);
 		opt.prompt().println("READY");
 
 		while (true)

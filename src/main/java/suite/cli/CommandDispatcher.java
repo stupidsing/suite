@@ -8,10 +8,8 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.Suite;
-import suite.fp.FunCompilerConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
-import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
@@ -36,8 +34,8 @@ import suite.util.Util;
 public class CommandDispatcher {
 
 	private CommandOption opt;
-
-	private Builder builderL2 = null;
+	private RuleSet ruleSet = Suite.createRuleSet();
+	private Builder builderLevel2 = null;
 
 	private enum InputType {
 		EVALUATE("\\"), //
@@ -65,6 +63,14 @@ public class CommandDispatcher {
 		this.opt = opt;
 	}
 
+	public boolean importFiles(List<String> importFilenames) throws IOException {
+		boolean code = true;
+		code &= Suite.importResource(ruleSet, "auto.sl");
+		for (String importFilename : importFilenames)
+			code &= Suite.importFile(ruleSet, importFilename);
+		return code;
+	}
+
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
 		if (!Util.isBlank(input))
 			return dispatchCommand0(input, writer);
@@ -74,11 +80,7 @@ public class CommandDispatcher {
 
 	private boolean dispatchCommand0(String input, Writer writer) throws IOException {
 		PrintWriter pw = new PrintWriter(writer);
-		FunCompilerConfig fcc = opt.getFcc();
-		ProverConfig pc = fcc.getProverConfig();
-		RuleSet rs = pc.ruleSet();
 		boolean code = true;
-
 		InputType type = null;
 
 		commandFound: for (int i = Math.min(3, input.length()); i >= 0; i--) {
@@ -116,11 +118,10 @@ public class CommandDispatcher {
 			printEvaluatedString(writer, node);
 			break;
 		case EVALUATETYPE:
-			fcc.setNode(node);
-			pw.println(Formatter.dump(Suite.evaluateFunType(fcc)));
+			pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
 			break;
 		case FACT:
-			Suite.addRule(rs, node);
+			Suite.addRule(ruleSet, node);
 			break;
 		case OPTION:
 			Source<String> source = To.source(("-" + input).split(" "));
@@ -132,20 +133,20 @@ public class CommandDispatcher {
 			pw.println(new PrettyPrinter().prettyPrint(node));
 			break;
 		case QUERY:
-			code = query(new InterpretedProverBuilder(pc), rs, node);
+			code = query(new InterpretedProverBuilder(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYCOMPILED:
-			code = query(CompiledProverBuilder.level1(pc, fcc.isDumpCode()), rs, node);
+			code = query(CompiledProverBuilder.level1(opt.pc(ruleSet), opt.isDumpCode()), ruleSet, node);
 			break;
 		case QUERYCOMPILED2:
-			if (builderL2 == null)
-				builderL2 = CompiledProverBuilder.level2(pc, fcc.isDumpCode());
-			code = query(builderL2, rs, node);
+			if (builderLevel2 == null)
+				builderLevel2 = CompiledProverBuilder.level2(opt.pc(ruleSet), opt.isDumpCode());
+			code = query(builderLevel2, ruleSet, node);
 			break;
 		case QUERYELABORATE:
 			final Generalizer generalizer = new Generalizer();
 			node = generalizer.generalize(node);
-			Prover prover = new Prover(pc);
+			Prover prover = new Prover(opt.pc(ruleSet));
 
 			Node elab = new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
@@ -215,15 +216,11 @@ public class CommandDispatcher {
 	}
 
 	private Node evaluateFunctional(Node node) {
-		FunCompilerConfig fcc = opt.getFcc();
-		fcc.setNode(node);
-		return Suite.evaluateFun(fcc);
+		return Suite.evaluateFun(opt.fcc(node));
 	}
 
 	private void evaluateFunctionalToWriter(Node node, Writer writer) throws IOException {
-		FunCompilerConfig fcc = opt.getFcc();
-		fcc.setNode(node);
-		Suite.evaluateFunToWriter(fcc, writer);
+		Suite.evaluateFunToWriter(opt.fcc(node), writer);
 	}
 
 	private String yesNo(boolean b) {

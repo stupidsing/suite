@@ -3,13 +3,16 @@ package suite.cli;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
+import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
+import suite.node.Node;
 import suite.util.FunUtil.Source;
 
 /**
@@ -21,15 +24,15 @@ public class CommandOption {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
 
+	private boolean isDumpCode = false;
+	private boolean isLazy = false;
+	private List<String> libraries = new ArrayList<>(Suite.libraries);
+	private boolean isTrace = false;
+
 	private boolean isQuiet = false;
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
-
-	public CommandOption() throws IOException {
-		RuleSet ruleSet = getRuleSet();
-		Suite.importResource(ruleSet, "auto.sl");
-	}
 
 	public boolean processOption(String arg, Source<String> source) {
 		return processOption(arg, source, true);
@@ -70,12 +73,20 @@ public class CommandOption {
 		return result;
 	}
 
-	public boolean importFile(List<String> importFilenames) throws IOException {
-		boolean code = true;
-		RuleSet ruleSet = getRuleSet();
-		for (String importFilename : importFilenames)
-			code &= Suite.importFile(ruleSet, importFilename);
-		return code;
+	public FunCompilerConfig fcc(Node node) {
+		ProverConfig pc = pc(Suite.createRuleSet());
+
+		FunCompilerConfig fcc = new FunCompilerConfig(pc, libraries);
+		fcc.setDumpCode(isDumpCode);
+		fcc.setLazy(isLazy);
+		fcc.setNode(node);
+		return fcc;
+	}
+
+	public ProverConfig pc(RuleSet ruleSet) {
+		ProverConfig pc = new ProverConfig(ruleSet);
+		pc.setTrace(isTrace);
+		return pc;
 	}
 
 	public PrintStream prompt() {
@@ -89,12 +100,8 @@ public class CommandOption {
 		}
 	}
 
-	private RuleSet getRuleSet() {
-		return fcc.getProverConfig().ruleSet();
-	}
-
-	public FunCompilerConfig getFcc() {
-		return fcc;
+	public boolean isDumpCode() {
+		return isDumpCode;
 	}
 
 	public boolean isQuiet() {

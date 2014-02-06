@@ -16,8 +16,12 @@ public class FunCompilerConfig {
 	private boolean isDumpCode = Suite.isDumpCode;
 
 	public FunCompilerConfig() {
-		if (Suite.libraries != null)
-			addLibraries(Suite.libraries);
+		this(new ProverConfig(), new ArrayList<>(Suite.libraries));
+	}
+
+	public FunCompilerConfig(ProverConfig proverConfig, List<String> libraries) {
+		this.proverConfig = proverConfig;
+		this.libraries = libraries;
 	}
 
 	public void addLibrary(String library) {
