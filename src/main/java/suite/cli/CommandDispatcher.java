@@ -134,6 +134,14 @@ public class CommandDispatcher {
 		case QUERY:
 			code = query(new InterpretedProverBuilder(pc), rs, node);
 			break;
+		case QUERYCOMPILED:
+			code = query(CompiledProverBuilder.level1(pc, fcc.isDumpCode()), rs, node);
+			break;
+		case QUERYCOMPILED2:
+			if (builderL2 == null)
+				builderL2 = CompiledProverBuilder.level2(pc, fcc.isDumpCode());
+			code = query(builderL2, rs, node);
+			break;
 		case QUERYELABORATE:
 			final Generalizer generalizer = new Generalizer();
 			node = generalizer.generalize(node);
@@ -156,15 +164,6 @@ public class CommandDispatcher {
 				opt.prompt().println(count[0] + " solution\n");
 			else
 				opt.prompt().println(count[0] + " solutions\n");
-
-			break;
-		case QUERYCOMPILED:
-			code = query(CompiledProverBuilder.level1(pc, fcc.isDumpCode()), rs, node);
-			break;
-		case QUERYCOMPILED2:
-			if (builderL2 == null)
-				builderL2 = CompiledProverBuilder.level2(pc, fcc.isDumpCode());
-			code = query(builderL2, rs, node);
 		}
 
 		pw.flush();
