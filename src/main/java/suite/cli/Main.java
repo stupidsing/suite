@@ -23,8 +23,8 @@ import suite.util.Util;
  */
 public class Main implements AutoCloseable {
 
-	private CliConfig cfg;
-	private CliDispatcher dispatcher;
+	private CommandOption cfg;
+	private CommandDispatcher dispatcher;
 
 	private Reader reader = new InputStreamReader(System.in, FileUtil.charset);
 	private Writer writer = new OutputStreamWriter(System.out, FileUtil.charset);
@@ -45,8 +45,8 @@ public class Main implements AutoCloseable {
 	}
 
 	private int run(String args[]) throws IOException {
-		cfg = new CliConfig();
-		dispatcher = new CliDispatcher(cfg);
+		cfg = new CommandOption();
+		dispatcher = new CommandDispatcher(cfg);
 
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();

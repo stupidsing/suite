@@ -17,7 +17,7 @@ import suite.util.FunUtil.Source;
  * 
  * @author ywsing
  */
-public class CliConfig {
+public class CommandOption {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
 
@@ -26,7 +26,7 @@ public class CliConfig {
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
 
-	public CliConfig() throws IOException {
+	public CommandOption() throws IOException {
 		RuleSet ruleSet = getRuleSet();
 		Suite.importResource(ruleSet, "auto.sl");
 	}

@@ -33,9 +33,9 @@ import suite.util.Util;
  * 
  * @author ywsing
  */
-public class CliDispatcher {
+public class CommandDispatcher {
 
-	private CliConfig cfg;
+	private CommandOption cfg;
 
 	private Builder builderL2 = null;
 
@@ -61,7 +61,7 @@ public class CliDispatcher {
 		}
 	}
 
-	public CliDispatcher(CliConfig cfg) {
+	public CommandDispatcher(CommandOption cfg) {
 		this.cfg = cfg;
 	}
 
