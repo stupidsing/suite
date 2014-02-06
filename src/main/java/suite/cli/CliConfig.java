@@ -9,7 +9,6 @@ import java.util.List;
 import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
-import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.util.FunUtil.Source;
 
@@ -28,7 +27,7 @@ public class CliConfig {
 	private boolean isLogical = false;
 
 	public CliConfig() throws IOException {
-		RuleSet ruleSet = getProverConfig().ruleSet();
+		RuleSet ruleSet = getRuleSet();
 		Suite.importResource(ruleSet, "auto.sl");
 	}
 
@@ -60,11 +59,11 @@ public class CliConfig {
 			result &= processOption("-" + arg.substring(4), source, false);
 		else if (arg.equals("-precompile") && (arg1 = source.source()) != null)
 			for (String lib : arg1.split(","))
-				result &= Suite.precompile(lib, getProverConfig());
+				result &= Suite.precompile(lib, fcc.getProverConfig());
 		else if (arg.equals("-quiet"))
 			isQuiet = on;
 		else if (arg.equals("-trace"))
-			getProverConfig().setTrace(on);
+			fcc.getProverConfig().setTrace(on);
 		else
 			throw new RuntimeException("Unknown option " + arg);
 
@@ -73,7 +72,7 @@ public class CliConfig {
 
 	public boolean importFile(List<String> importFilenames) throws IOException {
 		boolean code = true;
-		RuleSet ruleSet = getProverConfig().ruleSet();
+		RuleSet ruleSet = getRuleSet();
 		for (String importFilename : importFilenames)
 			code &= Suite.importFile(ruleSet, importFilename);
 		return code;
@@ -90,12 +89,12 @@ public class CliConfig {
 		}
 	}
 
-	public FunCompilerConfig getFcc() {
-		return fcc;
+	private RuleSet getRuleSet() {
+		return fcc.getProverConfig().ruleSet();
 	}
 
-	public ProverConfig getProverConfig() {
-		return fcc.getProverConfig();
+	public FunCompilerConfig getFcc() {
+		return fcc;
 	}
 
 	public boolean isQuiet() {
