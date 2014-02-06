@@ -66,14 +66,18 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
+		if (!Util.isBlank(input))
+			return dispatchCommand0(input, writer);
+		else
+			return true;
+	}
+
+	private boolean dispatchCommand0(String input, Writer writer) throws IOException {
 		PrintWriter pw = new PrintWriter(writer);
 		FunCompilerConfig fcc = opt.getFcc();
 		ProverConfig pc = fcc.getProverConfig();
 		RuleSet rs = pc.ruleSet();
 		boolean code = true;
-
-		if (Util.isBlank(input))
-			return true;
 
 		InputType type = null;
 
@@ -162,6 +166,8 @@ public class CommandDispatcher {
 				builderL2 = CompiledProverBuilder.level2(pc, fcc.isDumpCode());
 			code = query(builderL2, rs, node);
 		}
+
+		pw.flush();
 
 		return code;
 	}
