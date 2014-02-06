@@ -42,8 +42,7 @@ public class ProveTracer {
 						, start //
 						, parent != null ? parent.start : 0 //
 						, nOkays //
-						, end >= 0 ? String.valueOf(end) : "" //
-				));
+						, end >= 0 ? String.valueOf(end) : ""));
 
 			for (int i = 1; i < depth; i++)
 				sb.append("| ");
