@@ -35,7 +35,7 @@ import suite.util.Util;
  */
 public class CommandDispatcher {
 
-	private CommandOption cfg;
+	private CommandOption opt;
 
 	private Builder builderL2 = null;
 
@@ -61,13 +61,13 @@ public class CommandDispatcher {
 		}
 	}
 
-	public CommandDispatcher(CommandOption cfg) {
-		this.cfg = cfg;
+	public CommandDispatcher(CommandOption opt) {
+		this.opt = opt;
 	}
 
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
 		PrintWriter pw = new PrintWriter(writer);
-		FunCompilerConfig fcc = cfg.getFcc();
+		FunCompilerConfig fcc = opt.getFcc();
 		ProverConfig pc = fcc.getProverConfig();
 		RuleSet rs = pc.ruleSet();
 		boolean code = true;
@@ -122,7 +122,7 @@ public class CommandDispatcher {
 			Source<String> source = To.source(("-" + input).split(" "));
 			String option;
 			while ((option = source.source()) != null)
-				cfg.processOption(option, source);
+				opt.processOption(option, source);
 			break;
 		case PRETTYPRINT:
 			pw.println(new PrettyPrinter().prettyPrint(node));
@@ -139,7 +139,7 @@ public class CommandDispatcher {
 				public Boolean source() {
 					String dump = generalizer.dumpVariables();
 					if (!dump.isEmpty())
-						cfg.prompt().println(dump);
+						opt.prompt().println(dump);
 
 					count[0]++;
 					return Boolean.FALSE;
@@ -149,9 +149,9 @@ public class CommandDispatcher {
 			prover.prove(Tree.create(TermOp.AND___, node, elab));
 
 			if (count[0] == 1)
-				cfg.prompt().println(count[0] + " solution\n");
+				opt.prompt().println(count[0] + " solution\n");
 			else
-				cfg.prompt().println(count[0] + " solutions\n");
+				opt.prompt().println(count[0] + " solutions\n");
 
 			break;
 		case QUERYCOMPILED:
@@ -205,18 +205,18 @@ public class CommandDispatcher {
 
 	private boolean query(Builder builder, RuleSet ruleSet, Node node) {
 		boolean result = Suite.proveLogic(builder, ruleSet, node);
-		cfg.prompt().println(yesNo(result));
+		opt.prompt().println(yesNo(result));
 		return result;
 	}
 
 	private Node evaluateFunctional(Node node) {
-		FunCompilerConfig fcc = cfg.getFcc();
+		FunCompilerConfig fcc = opt.getFcc();
 		fcc.setNode(node);
 		return Suite.evaluateFun(fcc);
 	}
 
 	private void evaluateFunctionalToWriter(Node node, Writer writer) throws IOException {
-		FunCompilerConfig fcc = cfg.getFcc();
+		FunCompilerConfig fcc = opt.getFcc();
 		fcc.setNode(node);
 		Suite.evaluateFunToWriter(fcc, writer);
 	}

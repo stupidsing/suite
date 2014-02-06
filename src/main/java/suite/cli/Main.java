@@ -23,7 +23,7 @@ import suite.util.Util;
  */
 public class Main implements AutoCloseable {
 
-	private CommandOption cfg;
+	private CommandOption opt;
 	private CommandDispatcher dispatcher;
 
 	private Reader reader = new InputStreamReader(System.in, FileUtil.charset);
@@ -45,8 +45,8 @@ public class Main implements AutoCloseable {
 	}
 
 	private int run(String args[]) throws IOException {
-		cfg = new CommandOption();
-		dispatcher = new CommandDispatcher(cfg);
+		opt = new CommandOption();
+		dispatcher = new CommandDispatcher(opt);
 
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
@@ -55,16 +55,16 @@ public class Main implements AutoCloseable {
 
 		while ((arg = source.source()) != null)
 			if (arg.startsWith("-"))
-				result &= cfg.processOption(arg, source);
+				result &= opt.processOption(arg, source);
 			else
 				inputs.add(arg);
 
 		if (result)
-			if (cfg.isFilter()) // Inputs as program
+			if (opt.isFilter()) // Inputs as program
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
-			else if (cfg.isFunctional()) // Inputs as files
+			else if (opt.isFunctional()) // Inputs as files
 				result &= dispatcher.dispatchFunctional(inputs);
-			else if (cfg.isLogical())
+			else if (opt.isLogical())
 				result &= dispatcher.dispatchLogical(inputs); // Inputs as files
 			else
 				// Inputs as files
@@ -77,8 +77,8 @@ public class Main implements AutoCloseable {
 		BufferedReader br = new BufferedReader(reader);
 		boolean code = true;
 
-		code &= cfg.importFile(importFilenames);
-		cfg.prompt().println("READY");
+		code &= opt.importFile(importFilenames);
+		opt.prompt().println("READY");
 
 		while (true)
 			try {
@@ -86,13 +86,13 @@ public class Main implements AutoCloseable {
 				String line;
 
 				do {
-					cfg.prompt().print(sb.length() == 0 ? "=> " : "   ");
+					opt.prompt().print(sb.length() == 0 ? "=> " : "   ");
 
 					if ((line = br.readLine()) != null)
 						sb.append(line + "\n");
 					else
 						return code;
-				} while (!cfg.isQuiet() //
+				} while (!opt.isQuiet() //
 						&& (!ParseUtil.isParseable(sb.toString()) || !line.isEmpty() && !line.endsWith("#")));
 
 				code &= dispatcher.dispatchCommand(sb.toString(), writer);
