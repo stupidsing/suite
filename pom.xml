@@ -60,7 +60,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>suite.Main</mainClass>
+							<mainClass>suite.cli.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
