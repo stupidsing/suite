@@ -1,4 +1,4 @@
-package suite;
+package suite.cli;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
 import suite.lp.doer.ProverConfig;

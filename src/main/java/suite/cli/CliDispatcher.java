@@ -1,4 +1,4 @@
-package suite;
+package suite.cli;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 
+import suite.Suite;
 import suite.fp.FunCompilerConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;

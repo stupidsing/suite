@@ -1,4 +1,4 @@
-package suite;
+package suite.cli;
 
 import java.io.BufferedReader;
 import java.io.IOException;
