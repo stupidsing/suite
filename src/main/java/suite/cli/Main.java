@@ -67,7 +67,6 @@ public class Main implements AutoCloseable {
 			else if (opt.isLogical())
 				result &= dispatcher.dispatchLogical(inputs); // Inputs as files
 			else
-				// Inputs as files
 				result &= run(inputs);
 
 		return result ? 0 : 1;

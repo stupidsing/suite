@@ -24,28 +24,35 @@ public class CommandOption {
 
 	private FunCompilerConfig fcc = new FunCompilerConfig();
 
-	private boolean isDumpCode = false;
-	private boolean isLazy = false;
-	private List<String> libraries = new ArrayList<>(Suite.libraries);
-	private boolean isTrace = false;
+	// Command dispatching options
+	private boolean isBackground = false;
 
+	// Program type options
 	private boolean isQuiet = false;
 	private boolean isFilter = false;
 	private boolean isFunctional = false;
 	private boolean isLogical = false;
 
+	// Program evaluation options
+	private boolean isDumpCode = false;
+	private boolean isLazy = false;
+	private List<String> libraries = new ArrayList<>(Suite.libraries);
+	private boolean isTrace = false;
+
 	public boolean processOption(String arg, Source<String> source) {
 		return processOption(arg, source, true);
 	}
 
-	public boolean processOption(String arg, Source<String> source, boolean on) {
+	private boolean processOption(String arg, Source<String> source, boolean on) {
 		boolean result = true;
 		String arg1;
 
-		if (arg.equals("-dump-code"))
-			fcc.setDumpCode(on);
+		if (arg.equals("-background"))
+			isBackground = on;
+		else if (arg.equals("-dump-code"))
+			isDumpCode = on;
 		else if (arg.equals("-eager"))
-			fcc.setLazy(!on);
+			isLazy = !on;
 		else if (arg.equals("-editor"))
 			new Editor().open();
 		else if (arg.equals("-filter"))
@@ -53,9 +60,9 @@ public class CommandOption {
 		else if (arg.equals("-functional"))
 			isFunctional = on;
 		else if (arg.equals("-lazy"))
-			fcc.setLazy(on);
+			isLazy = on;
 		else if (arg.equals("-libraries") && (arg1 = source.source()) != null)
-			fcc.setLibraries(Arrays.asList(arg1.split(",")));
+			libraries = Arrays.asList(arg1.split(","));
 		else if (arg.equals("-logical"))
 			isLogical = on;
 		else if (arg.startsWith("-no-"))
@@ -66,7 +73,7 @@ public class CommandOption {
 		else if (arg.equals("-quiet"))
 			isQuiet = on;
 		else if (arg.equals("-trace"))
-			fcc.getProverConfig().setTrace(on);
+			isTrace = on;
 		else
 			throw new RuntimeException("Unknown option " + arg);
 
@@ -80,6 +87,7 @@ public class CommandOption {
 		fcc.setDumpCode(isDumpCode);
 		fcc.setLazy(isLazy);
 		fcc.setNode(node);
+
 		return fcc;
 	}
 
@@ -98,6 +106,10 @@ public class CommandOption {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public boolean isBackground() {
+		return isBackground;
 	}
 
 	public boolean isDumpCode() {
