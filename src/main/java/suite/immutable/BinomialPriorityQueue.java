@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Immutable binomial priority queue.
+ * Immutable binomial priority queue. A dense list implementation.
  * 
  * @author ywsing
  */
@@ -70,7 +70,7 @@ public class BinomialPriorityQueue<T> {
 
 			BinomialPriorityQueue<T> pq0 = new BinomialPriorityQueue<>(comparator, forest0);
 			BinomialPriorityQueue<T> pq1 = new BinomialPriorityQueue<>(comparator, forest1);
-			return pq0.merge(pq1);
+			return pq0.meld(pq1);
 		}
 	}
 
@@ -95,10 +95,10 @@ public class BinomialPriorityQueue<T> {
 	public BinomialPriorityQueue<T> add(T value) {
 		Node forest[] = createForest();
 		forest[0] = new Node(value);
-		return merge(new BinomialPriorityQueue<>(comparator, forest));
+		return meld(new BinomialPriorityQueue<>(comparator, forest));
 	}
 
-	public BinomialPriorityQueue<T> merge(BinomialPriorityQueue<T> pq) {
+	public BinomialPriorityQueue<T> meld(BinomialPriorityQueue<T> pq) {
 		Node forest[] = createForest();
 		Node tree = null;
 
@@ -112,7 +112,7 @@ public class BinomialPriorityQueue<T> {
 			int size = list1.size();
 
 			if (size > 2) {
-				tree = mergeTrees(rank, list1.get(0), list1.get(1));
+				tree = link(rank, list1.get(0), list1.get(1));
 				list1 = list1.subList(2, size);
 			} else
 				tree = null;
@@ -123,15 +123,15 @@ public class BinomialPriorityQueue<T> {
 		return new BinomialPriorityQueue<>(comparator, forest);
 	}
 
-	private Node mergeTrees(int rank, Node tree0, Node tree1) {
+	private Node link(int rank, Node node0, Node node1) {
 		Node smaller, greater;
 
-		if (comparator.compare(tree0.value, tree1.value) <= 0) {
-			smaller = tree0;
-			greater = tree1;
+		if (comparator.compare(node0.value, node1.value) <= 0) {
+			smaller = node0;
+			greater = node1;
 		} else {
-			smaller = tree1;
-			greater = tree0;
+			smaller = node1;
+			greater = node0;
 		}
 
 		List<Node> nodes = new ArrayList<>(rank);
