@@ -99,7 +99,7 @@ public class IbTree<T> implements Closeable {
 		public List<Integer> commit();
 	}
 
-	public class SwappingAllocator implements Allocator {
+	private class SwappingAllocator implements Allocator {
 		private List<Pointer> pointers = Arrays.asList(new Pointer(), new Pointer());
 		private int using = 0;
 
@@ -121,7 +121,7 @@ public class IbTree<T> implements Closeable {
 		}
 	}
 
-	public class IbTreeAllocator implements Allocator {
+	private class IbTreeAllocator implements Allocator {
 		private IbTree<Pointer> ibTree;
 		private IbTree<Pointer>.Transaction transaction;
 

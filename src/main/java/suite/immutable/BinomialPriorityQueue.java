@@ -23,6 +23,21 @@ public class BinomialPriorityQueue<T> {
 	 */
 	private Node trees[];
 
+	private class Node {
+		private List<Node> nodes; // Note that rank(nodes.get(i)) = i
+
+		private T value;
+
+		public Node(T value) {
+			this(new ArrayList<Node>(), value);
+		}
+
+		public Node(List<Node> nodes, T value) {
+			this.nodes = nodes;
+			this.value = value;
+		}
+	}
+
 	private class FindMinimum {
 		private Node tree;
 		private int rank;
@@ -56,21 +71,6 @@ public class BinomialPriorityQueue<T> {
 			BinomialPriorityQueue<T> pq0 = new BinomialPriorityQueue<>(comparator, forest0);
 			BinomialPriorityQueue<T> pq1 = new BinomialPriorityQueue<>(comparator, forest1);
 			return pq0.merge(pq1);
-		}
-	}
-
-	private class Node {
-		private List<Node> nodes; // Note that rank(nodes.get(i)) = i
-
-		private T value;
-
-		public Node(T value) {
-			this(new ArrayList<Node>(), value);
-		}
-
-		public Node(List<Node> nodes, T value) {
-			this.nodes = nodes;
-			this.value = value;
 		}
 	}
 
