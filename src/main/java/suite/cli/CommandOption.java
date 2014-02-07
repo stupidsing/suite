@@ -35,7 +35,7 @@ public class CommandOption {
 
 	// Program evaluation options
 	private boolean isDumpCode = false;
-	private boolean isLazy = false;
+	private boolean isLazy = true;
 	private List<String> libraries = new ArrayList<>(Suite.libraries);
 	private boolean isTrace = false;
 
