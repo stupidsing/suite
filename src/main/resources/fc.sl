@@ -199,11 +199,9 @@ fc-add-functions STANDARD .p (
 			else:: unsigned-str-to-int
 		{s}
 	) >>
-	define tails = (
-		case
-		|| `$h; $t` => (h; t); tails {t}
-		|| anything => (;)
-	) >>
+	define tails =
+		scan-right {cons} {}
+	>>
 	define take = (n => list =>
 		if:: n > 0 && is-list {list}
 		then:: list | tail | take {n - 1} | cons {list | head}
