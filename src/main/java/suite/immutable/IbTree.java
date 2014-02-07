@@ -91,6 +91,16 @@ public class IbTree<T> implements Closeable {
 		}
 	}
 
+	private class FindSlot {
+		private Slot slot = null;
+		private int i = 0, c = 1;
+
+		private FindSlot(List<Slot> slots, T t) {
+			while ((c = compare((slot = slots.get(i)).pivot, t)) < 0)
+				i++;
+		}
+	}
+
 	private interface Allocator {
 		public Pointer allocate();
 
@@ -194,27 +204,22 @@ public class IbTree<T> implements Closeable {
 		}
 
 		private List<Slot> add(List<Slot> slots0, T t, boolean isReplace) {
-			Slot slot = null;
-			int i = 0, c = 1;
-
-			// Finds appropriate slot
-			while ((c = compare((slot = slots0.get(i)).pivot, t)) < 0)
-				i++;
+			FindSlot fs = new FindSlot(slots0, t);
 
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
-			if (slot.pointer != null) {
-				allocator.discard(slot.pointer);
-				replaceSlots = add(slot.slots(), t, isReplace);
-			} else if (c != 0)
-				replaceSlots = Arrays.asList(new Slot(null, t), slot);
+			if (fs.slot.pointer != null) {
+				allocator.discard(fs.slot.pointer);
+				replaceSlots = add(fs.slot.slots(), t, isReplace);
+			} else if (fs.c != 0)
+				replaceSlots = Arrays.asList(new Slot(null, t), fs.slot);
 			else if (isReplace)
 				replaceSlots = Arrays.asList(new Slot(null, t));
 			else
 				throw new RuntimeException("Duplicate node " + t);
 
-			List<Slot> slots1 = Util.add(Util.left(slots0, i), replaceSlots, Util.right(slots0, i + 1));
+			List<Slot> slots1 = Util.add(Util.left(slots0, fs.i), replaceSlots, Util.right(slots0, fs.i + 1));
 
 			List<Slot> slots2;
 
@@ -231,21 +236,17 @@ public class IbTree<T> implements Closeable {
 		}
 
 		private List<Slot> remove(List<Slot> slots0, T t) {
-			int size = slots0.size();
-			Slot slot = null;
-			int i = 0, c = 1;
+			FindSlot fs = new FindSlot(slots0, t);
 
-			// Finds appropriate slot
-			while ((c = compare((slot = slots0.get(i)).pivot, t)) < 0)
-				i++;
+			int size = slots0.size();
 
 			// Removes the node from it
-			int s0 = i, s1 = i + 1;
+			int s0 = fs.i, s1 = fs.i + 1;
 			List<Slot> replaceSlots;
 
-			if (c >= 0)
-				if (slot.pointer != null) {
-					List<Slot> slots1 = remove(slot.slots(), t);
+			if (fs.c >= 0)
+				if (fs.slot.pointer != null) {
+					List<Slot> slots1 = remove(fs.slot.slots(), t);
 
 					// Merges with a neighbor if reached minimum number of nodes
 					if (slots1.size() < minSlotsPerPage)
@@ -260,7 +261,7 @@ public class IbTree<T> implements Closeable {
 
 					for (int s = s0; s < s1; s++)
 						allocator.discard(slots0.get(s).pointer);
-				} else if (c == 0)
+				} else if (fs.c == 0)
 					replaceSlots = Collections.emptyList();
 				else
 					throw new RuntimeException("Node not found " + t);
@@ -394,12 +395,17 @@ public class IbTree<T> implements Closeable {
 				List<Slot> slots = read(pointer).slots;
 
 				while (true) {
-					int size = slots.size();
-					Slot slot = null;
-					int i = 0;
+					Slot slot;
+					int i;
 
-					while (i < size && start != null && compare((slot = slots.get(i)).pivot, start) < 0)
-						i++;
+					if (start != null) {
+						FindSlot fs = new FindSlot(slots, start);
+						slot = fs.slot;
+						i = fs.i;
+					} else {
+						slot = null;
+						i = 0;
+					}
 
 					if (slot != null) {
 						stack.push(Util.right(slots, i + 1));
