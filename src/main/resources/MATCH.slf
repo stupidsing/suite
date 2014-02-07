@@ -1,11 +1,9 @@
 using STANDARD >>
-define apply-pairs = (fun => s =>
-	zip {fun . reverse} {heads {s}} {tails {s}}
-) >>
 define match = (pattern => s =>
+	define splitf = (f => s => zip {f . reverse} {heads {s}} {tails {s}}) >>
 	case
 	|| (pattern = `+'*'; $pt`)
-		s | apply-pairs {s0 => s1 => match {pt} {s1} | map {cons {s0}}} | concat
+		s | splitf {s0 => s1 => match {pt} {s1} | map {cons {s0}}} | concat
 	|| (pattern = `$p; $ps`)
 		if (s = `p; $st`) then (match {ps} {st}) else ()
 	|| (s = "")
