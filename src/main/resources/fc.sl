@@ -199,9 +199,6 @@ fc-add-functions STANDARD .p (
 			else:: unsigned-str-to-int
 		{s}
 	) >>
-	define tails =
-		scan-right {cons} {}
-	>>
 	define take = (n => list =>
 		if:: n > 0 && is-list {list}
 		then:: list | tail | take {n - 1} | cons {list | head}
@@ -255,6 +252,9 @@ fc-add-functions STANDARD .p (
 	define get = (n =>
 		head . (tail | repeat {n} | apply)
 	) >>
+	define heads =
+		scan-left {cons/} {}
+	>>
 	define length =
 		fold-left {v => e => v + 1} {0}
 	>>
@@ -273,6 +273,9 @@ fc-add-functions STANDARD .p (
 		let e = (if (end > 0) then end else (len + end)) >>
 		list | take {e} | drop {s}
 	) >>
+	define tails =
+		scan-right {cons} {}
+	>>
 	define uniq =
 		fold-right {item => list =>
 			case
