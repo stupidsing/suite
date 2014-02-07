@@ -29,7 +29,7 @@ public class FailedTests {
 		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
 	}
 
-	// (Expected) infinite loop
+	// (Expected) infinite loop.
 	// (Actual) short boolean evaluation in Prover skipped the loop:
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));
 	@Test
