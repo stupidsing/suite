@@ -65,6 +65,9 @@ public class ProveTracer {
 
 			final Data<Source<Boolean>> enter = new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
+					if (Thread.interrupted()) // Checks interruption
+						throw new RuntimeException(new InterruptedException());
+
 					currentRecord = record;
 					currentDepth = record.depth;
 					record.start = records.size();
