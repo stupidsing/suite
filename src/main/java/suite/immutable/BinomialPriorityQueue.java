@@ -44,11 +44,15 @@ public class BinomialPriorityQueue<T> {
 
 		private T findMin() {
 			T min = null;
+			Node node;
 
-			for (rank = 0; rank < maxRank; rank++)
-				if ((tree = trees[rank]) != null)
-					if (min == null || comparator.compare(tree.value, min) < 0)
-						min = tree.value;
+			for (int r = 0; r < maxRank; r++)
+				if ((node = trees[r]) != null)
+					if (min == null || comparator.compare(node.value, min) < 0) {
+						tree = node;
+						rank = r;
+						min = node.value;
+					}
 
 			return min;
 		}
@@ -111,7 +115,7 @@ public class BinomialPriorityQueue<T> {
 
 			int size = list1.size();
 
-			if (size > 2) {
+			if (size >= 2) {
 				tree = link(rank, list1.get(0), list1.get(1));
 				list1 = list1.subList(2, size);
 			} else
