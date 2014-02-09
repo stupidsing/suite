@@ -19,14 +19,33 @@ public class ConwayGameOfLifeTest {
 				+ "　　　　　　　　　　　　　　　　\n" //
 		);
 
+		cgol = evolve(cgol, 32);
 		assertEquals(5, cgol.population());
+	}
 
-		for (int i = 0; i < 32; i++) {
+	@Test
+	public void testSpaceship() {
+		ConwayGameOfLife cgol = new ConwayGameOfLife("" //
+				+ "　　　　　　　　　　　　　　　　\n" //
+				+ "　Ｏ　　Ｏ　　　　　　　　　　　\n" //
+				+ "　　　　　Ｏ　　　　　　　　　　\n" //
+				+ "　Ｏ　　　Ｏ　　　　　　　　　　\n" //
+				+ "　　ＯＯＯＯ　　　　　　　　　　\n" //
+				+ "　　　　　　　　　　　　　　　　\n" //
+				+ "　　　　　　　　　　　　　　　　\n" //
+				+ "　　　　　　　　　　　　　　　　\n" //
+		);
+
+		cgol = evolve(cgol, 16);
+		assertEquals(9, cgol.population());
+	}
+
+	private ConwayGameOfLife evolve(ConwayGameOfLife cgol, int times) {
+		for (int i = 0; i < times; i++) {
 			cgol = cgol.evolve(cgol);
 			System.out.println(cgol);
 		}
-
-		assertEquals(5, cgol.population());
+		return cgol;
 	}
 
 }
