@@ -117,19 +117,19 @@ fc-add-functions STANDARD .p (
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
 	define _popen as (list-of string -> string -> data-of Stream) = (
-		CLASS!suite.lp.invocable.Invocables$Popen | ijavacls | ijavaobj2
+		atom:`CLASS!suite.lp.invocable.Invocables$Popen` | ijavacls | ijavaobj2
 	) >>
 	define throw as (any -> any) = (
-		CLASS!suite.lp.invocable.Invocables$Throw | ijavacls | ijavaobj1
+		atom:`CLASS!suite.lp.invocable.Invocables$Throw` | ijavacls | ijavaobj1
 	) >>
 	define fgetc as (any -> number -> number) = (
-		CLASS!suite.lp.invocable.Invocables$Fgetc | ijavacls | ijavaobj2
+		atom:`CLASS!suite.lp.invocable.Invocables$Fgetc` | ijavacls | ijavaobj2
 	) >>
 	define log as (:t => :t -> :t) = (
-		CLASS!suite.lp.invocable.Invocables$Log1 | ijavacls | ijavaobj1
+		atom:`CLASS!suite.lp.invocable.Invocables$Log1` | ijavacls | ijavaobj1
 	) >>
 	define log2 as (:t => string -> :t -> :t) = (
-		CLASS!suite.lp.invocable.Invocables$Log2 | ijavacls | ijavaobj2
+		atom:`CLASS!suite.lp.invocable.Invocables$Log2` | ijavacls | ijavaobj2
 	) >>
 	define and = (x => y =>
 		if x then y else false
@@ -350,8 +350,8 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump as (:t => :t -> string) = skip-type-check (
-		define type-of = ijavacls {CLASS!suite.lp.invocable.Invocables$TypeOf} >>
-		define atom-string = ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >>
+		define type-of = ijavacls {atom:`CLASS!suite.lp.invocable.Invocables$TypeOf`} >>
+		define atom-string = ijavacls {atom:`CLASS!suite.lp.invocable.Invocables$AtomString`} >>
 		let dump0 = (prec => n =>
 			let type = _ijavaobj1 {type-of} {n} >>
 			if (n = ()) then
