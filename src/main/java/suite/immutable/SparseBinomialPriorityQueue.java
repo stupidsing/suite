@@ -1,11 +1,10 @@
 package suite.immutable;
 
-import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 
 /**
- * Immutable binomial priority queue. A sparse list implementation.
+ * Immutable binomial priority queue, implemented using sparse-list of trees.
  * 
  * @author ywsing
  */
@@ -65,24 +64,17 @@ public class SparseBinomialPriorityQueue<T> {
 			ImmutableList<Tree> trees0 = ImmutableList.<Tree> end();
 			ImmutableList<Tree> trees1 = ImmutableList.<Tree> end();
 
-			for (Tree t : reverse(trees))
+			for (Tree t : trees.reverse())
 				if (t.rank != tree.rank)
 					trees0 = ImmutableList.cons(t, trees0);
 
-			Deque<Node> nr = reverse(tree.root.nodes);
+			Deque<Node> nr = tree.root.nodes.reverse();
 			int rank = nr.size();
 
 			for (Node node_ : nr)
 				trees1 = ImmutableList.cons(new Tree(--rank, node_), trees1);
 
 			return new SparseBinomialPriorityQueue<T>(comparator, meld(trees0, trees1));
-		}
-
-		private <U> Deque<U> reverse(ImmutableList<U> list) {
-			Deque<U> deque = new ArrayDeque<>();
-			for (U u : list)
-				deque.addFirst(u);
-			return deque;
 		}
 	}
 

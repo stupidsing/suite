@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 
 import suite.util.FunUtil;
@@ -55,6 +57,13 @@ public class ImmutableList<T> implements Iterable<T> {
 				return t;
 			}
 		});
+	}
+
+	public Deque<T> reverse() {
+		Deque<T> deque = new ArrayDeque<>();
+		for (T t : this)
+			deque.addFirst(t);
+		return deque;
 	}
 
 	public T getHead() {

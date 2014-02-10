@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Immutable binomial priority queue. A dense list implementation.
+ * Immutable binomial priority queue, implemented using dense-list of trees.
  * 
  * @author ywsing
  */
