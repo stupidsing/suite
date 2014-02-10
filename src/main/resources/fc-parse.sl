@@ -7,22 +7,22 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (define type .type of .classes for any .typeVars >> .do) (
+fc-parse (define type .type over .typeVars of .classes >> .do) (
 	PRAGMA (DEF-TYPE .type1 .classes1 .typeVars1) .do1
-) :- !, fc-parse-type .type .type1
+) :- fc-parse-type .type .type1
 	, fc-parse-type-list .classes .classes1
 	, fc-parse-type-list .typeVars .typeVars1
-	, fc-parse .do .do1
+	, !, fc-parse .do .do1
 #
 fc-parse (define type .type of .classes >> .do) .do1
-	:- !, fc-parse (define type .type of .classes for any () >> .do) .do1
+	:- !, fc-parse (define type .type over () of .classes >> .do) .do1
 #
 fc-parse .do (PRAGMA (CAST DOWN .type1) .value1)
 	:- (.do = .value as .type
 		; .do = type .type .value
-	), !
+	)
 	, fc-parse-type .type .type1
-	, fc-parse .value .value1
+	, !, fc-parse .value .value1
 #
 fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
@@ -90,7 +90,7 @@ fc-parse .tree (TREE .oper .left1 .right1)
 #
 fc-parse () (ATOM ()) :- ! #
 fc-parse atom:`.a` (ATOM .a) :- ! #
-fc-parse .a (ATOM .a) :- fc-is-atom .a, ! #
+fc-parse .a (PRAGMA CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (NEW-VAR .nv) :- to.string .v "_", temp .nv, ! #

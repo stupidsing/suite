@@ -72,7 +72,7 @@ public class FunTypeTest {
 	@Test
 	public void testGeneric() {
 		assertEquals("list-of (rb-tree {number})", getTypeString("" //
-				+ "define type EMPTY of (rb-tree {$t},) for any ($t,) >> \n" //
+				+ "define type EMPTY over (:t,) of (rb-tree {:t},) >> \n" //
 				+ "define map = type (:a => :b => (:a -> :b) -> list-of :a -> list-of :b) (error) >> \n" //
 				+ "define add = type ($t => $t -> rb-tree {$t}) (v => EMPTY) >> \n" //
 				+ "1; | map {add} \n" //
@@ -82,9 +82,9 @@ public class FunTypeTest {
 	@Test
 	public void testInstance() {
 		String define = "" //
-				+ "define type NIL of (list {:t},) for any (:t,) >> \n" //
-				+ "define type (NODE :t (list {:t}) []) of (list {:t},) for any (:t,) >> \n" //
-				+ "define type (NODE2 :t :t (list {:t}) []) of (list {:t},) for any (:t,) >> \n" //
+				+ "define type NIL over (:t,) of (list {:t},) >> \n" //
+				+ "define type (NODE :t (list {:t}) []) over (:t,) of (list {:t},) >> \n" //
+				+ "define type (NODE2 :t :t (list {:t}) []) over (:t,) of (list {:t},) >> \n" //
 		;
 
 		getType(define + "NIL");
