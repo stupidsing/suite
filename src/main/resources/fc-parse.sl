@@ -70,11 +70,10 @@ fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
-fc-parse [] (PRAGMA CAST-TO-CLASS (ATOM [])) :- ! #
 fc-parse (.p0 .p1) (PRAGMA CAST-TO-CLASS (PAIR .parsed0 .parsed1))
 	:- !
-	, fc-parse .p0 .parsed0
-	, fc-parse .p1 (PRAGMA CAST-TO-CLASS .parsed1)
+	, fc-parse .p0 (PRAGMA CAST-TO-CLASS .parsed0)
+	, fc-parse .p1 .parsed1
 #
 fc-parse (.p0, .p1) (PAIR .parsed0 .parsed1)
 	:- !
@@ -186,7 +185,6 @@ fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	, fc-parse-type .returnType .returnType1
 #
 fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
-fc-parse-type [] (ATOM-OF []) :- ! #
 fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
 fc-parse-type (data-of .d) (DATA-OF .d) :- ! #
 fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #

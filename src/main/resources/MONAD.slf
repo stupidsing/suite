@@ -1,14 +1,14 @@
 using STANDARD >>
 define seqm = (
-	define seq as (:t :- any => :t => :t) = (
-		CLASS!suite.lp.invocable.Invocables$Seq | ijavacls | ijavaobj2
+	define seq as (:t => any -> :t -> :t) = (
+		atom:`CLASS!suite.lp.invocable.Invocables$Seq` | ijavacls | ijavaobj2
 	) >>
 	do0 => do1 => (do #
 		seq {exec {do0}} {exec {do1}}
 	)
 ) >>
 define seqsm = (
-	dos => fold-right {seqm} {do # Nothing} {dos}
+	fold-right {seqm} {do # Nothing}
 ) >>
 define whilem = (
 	cond => loop => (do #
