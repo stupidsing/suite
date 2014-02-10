@@ -1,4 +1,5 @@
 using STANDARD >>
+define nothing = atom:`Nothing` >>
 define seqm = (
 	define seq as (:t => any -> :t -> :t) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Seq` | ijavacls | ijavaobj2
@@ -8,12 +9,12 @@ define seqm = (
 	)
 ) >>
 define seqsm = (
-	fold-right {seqm} {do # Nothing}
+	fold-right {seqm} {do # nothing}
 ) >>
 define whilem = (
 	cond => loop => (do #
 		if (exec {cond})
 		then (exec {seqm {loop} {whilem {cond} {loop}}})
-		else Nothing
+		else nothing
 	)
 ) >>
