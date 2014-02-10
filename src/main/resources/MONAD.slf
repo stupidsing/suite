@@ -12,8 +12,8 @@ define seqsm = (
 ) >>
 define whilem = (
 	cond => loop => (do #
-		if:: exec {cond}
-		then:: exec {seqm {loop} {whilem {cond} {loop}}}
-		else:: Nothing
+		if (exec {cond})
+		then (exec {seqm {loop} {whilem {cond} {loop}}})
+		else Nothing
 	)
 ) >>

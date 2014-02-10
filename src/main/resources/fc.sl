@@ -135,9 +135,9 @@ fc-add-functions STANDARD .p (
 		if x then y else false
 	) >>
 	define drop = (n => list =>
-		if:: n > 0 && is-list {list}
-		then:: list | tail | drop {n - 1}
-		else:: list
+		if (n > 0 && is-list {list})
+		then (list | tail | drop {n - 1})
+		else list
 	) >>
 	define flip = (f => x => y =>
 		f {y} {x}
@@ -194,15 +194,15 @@ fc-add-functions STANDARD .p (
 	) >>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
-			if:: is-list {s} && head {s} = 45
-			then:: `0 - ` . unsigned-str-to-int . tail
-			else:: unsigned-str-to-int
+			if (is-list {s} && head {s} = 45)
+			then (`0 - ` . unsigned-str-to-int . tail)
+			else unsigned-str-to-int
 		{s}
 	) >>
 	define take = (n => list =>
-		if:: n > 0 && is-list {list}
-		then:: list | tail | take {n - 1} | cons {list | head}
-		else:: ()
+		if (n > 0 && is-list {list})
+		then (list | tail | take {n - 1} | cons {list | head})
+		else ()
 	) >>
 	define take-while = (fun =>
 		case
@@ -221,9 +221,9 @@ fc-add-functions STANDARD .p (
 	>>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
-		if:: is-list {r}
-		then:: r | tail | head | unfold-right {fun} | cons {r | head}
-		else:: ()
+		if (is-list {r})
+		then (r | tail | head | unfold-right {fun} | cons {r | head})
+		else ()
 	) >>
 	define zip = (fun =>
 		case
@@ -312,8 +312,7 @@ fc-add-functions STANDARD .p (
 			let list0 = (list | take {len2} | merge {merger}) >>
 			let list1 = (list | drop {len2} | merge {merger}) >>
 			merger {list0} {list1}
-		else
-			list
+		else list
 	) >>
 	define minimum =
 		fold {lesser}
@@ -345,8 +344,7 @@ fc-add-functions STANDARD .p (
 			let w1 = width - 1 >>
 			let gets = (tail | repeat {w1} | tails | reverse) >>
 			gets | map {f => map {head . apply {f}} {m}}
-		else
-			()
+		else ()
 	) >>
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
@@ -379,10 +377,8 @@ fc-add-functions STANDARD .p (
 					|| (k0 < k1) (k0, v0; group0 {t0} {list1})
 					|| (k0 > k1) (k1, v1; group0 {list0} {t1})
 					|| k0, append {v0} {v1}; group0 {t0} {t1}
-				else
-					list0
-			else
-				list1
+				else list0
+			else list1
 		) >>
 		merge {group0} . map {`$k, $v` => k, (v;)}
 	) >>
