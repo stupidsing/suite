@@ -34,7 +34,7 @@ public class UctScenarioTest {
 
 	@Test
 	public void testCapture() {
-		ShuffleUtil.setSeed(-8163001483001583703l);
+		ShuffleUtil.setSeed(-5334561483001877403l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
 				+ ". . . X O . . \n" //
