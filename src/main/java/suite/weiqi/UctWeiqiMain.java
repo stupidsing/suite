@@ -9,6 +9,7 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctWeiqi;
 import suite.util.FileUtil;
+import suite.util.Pair;
 import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -91,9 +92,9 @@ public class UctWeiqiMain<Move> {
 							break;
 						default:
 							if (!Util.isBlank(line)) {
-								String pos[] = line.split(",");
-								int x = Integer.parseInt(pos[0]);
-								int y = Integer.parseInt(pos[1]);
+								Pair<String, String> pos = Util.split2(line, ",");
+								int x = Integer.parseInt(pos.t0);
+								int y = Integer.parseInt(pos.t1);
 								gameSet.play(Coordinate.c(x, y));
 							}
 						}
