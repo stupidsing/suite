@@ -17,4 +17,8 @@ TARGETTIME=$(echo "${JAR}" "${BASE}/STANDARD.rpn" | xargs -I {} sh -c 'stat -c %
 ) &&
 
 CMD="java ${OPTS} -jar ${JAR} $@" &&
-(which rlwrap > /dev/null && rlwrap -D2 -H ${HOME}/.suite_history -i ${CMD} || ${CMD})
+if which rlwrap > /dev/null; then
+	rlwrap -D2 -H ${HOME}/.suite_history -i ${CMD}
+else
+	${CMD}
+fi
