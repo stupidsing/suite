@@ -181,7 +181,7 @@ public class SystemPredicates {
 	private class Not implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Prover prover1 = new Prover(prover);
-			boolean result = !prover1.prove(ps);
+			boolean result = !prover1.prove0(ps);
 			if (!result) // Roll back bindings if overall goal is failed
 				prover1.undoAllBinds();
 			return result;
@@ -190,7 +190,7 @@ public class SystemPredicates {
 
 	private class Once implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			return new Prover(prover).prove(ps);
+			return new Prover(prover).prove0(ps);
 		}
 	}
 

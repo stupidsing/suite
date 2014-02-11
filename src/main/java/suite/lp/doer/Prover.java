@@ -81,7 +81,7 @@ public class Prover {
 			return prove0(query);
 	}
 
-	private boolean prove0(Node query) {
+	public boolean prove0(Node query) {
 		rem = OK;
 		alt = FAIL;
 
