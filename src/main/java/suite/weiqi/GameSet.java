@@ -97,7 +97,7 @@ public class GameSet {
 				nextPlayer = opponent;
 				previousStates.add(newHashCode);
 			} else
-				unplay(move);
+				unplay0(move);
 		}
 
 		return success;
@@ -111,8 +111,12 @@ public class GameSet {
 	 * Roll back board status; rejuvenate the pieces being eaten.
 	 */
 	public void unplay(Move move) {
-		Occupation opponent = nextPlayer.opponent();
 		previousStates.remove(board.hashCode());
+		unplay0(move);
+	}
+
+	private void unplay0(Move move) {
+		Occupation opponent = nextPlayer.opponent();
 
 		if (move.type == MoveType.CAPTURE) {
 			int i = 0;
