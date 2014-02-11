@@ -23,8 +23,8 @@ fc-transform (NUMBER .i) (NUMBER .i) .ts/.ts
 fc-transform (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
 	:- .tsx = (.left0 .left1, .right0 .right1, .ts0)
 #
-fc-transform (PRAGMA .option0 .do0) (PRAGMA .option1 .do1) .ts0/.tsx
-	:- fc-transform-option .option0 .option1
+fc-transform (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
+	:- fc-transform-pragma .pragma0 .pragma1
 	, .tsx = (.do0 .do1, .ts0)
 #
 fc-transform (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
@@ -42,24 +42,24 @@ fc-transform (WRAP .do0) (WRAP .do1) .ts0/.tsx
 	:- .tsx = (.do0 .do1, .ts0)
 #
 
-fc-transform-option ALLOW-RECURSIVE ALLOW-RECURSIVE
+fc-transform-pragma ALLOW-RECURSIVE ALLOW-RECURSIVE
 #
-fc-transform-option (CAST DOWN .type0) (CAST DOWN .type1)
+fc-transform-pragma (CAST DOWN .type0) (CAST DOWN .type1)
 	:- fc-transform-type .type0 .type1
 #
-fc-transform-option (CAST UP .type0) (CAST UP .type1)
+fc-transform-pragma (CAST UP .type0) (CAST UP .type1)
 	:- fc-transform-type .type0 .type1
 #
-fc-transform-option CAST-TO-CLASS CAST-TO-CLASS
+fc-transform-pragma CAST-TO-CLASS CAST-TO-CLASS
 #
-fc-transform-option (DEF-TYPE .type0 .classes0 .typeVars0) (DEF-TYPE .type1 .classes1 .typeVars1)
+fc-transform-pragma (DEF-TYPE .type0 .classes0 .typeVars0) (DEF-TYPE .type1 .classes1 .typeVars1)
 	:- fc-transform-type .type0 .type1
 	, fc-transform-type-list .classes0 .classes1
 	, fc-transform-type-list .typeVars0 .typeVars1
 #
-fc-transform-option RESOLVE-TYPE RESOLVE-TYPE
+fc-transform-pragma RESOLVE-TYPE RESOLVE-TYPE
 #
-fc-transform-option SKIP-TYPE-CHECK SKIP-TYPE-CHECK
+fc-transform-pragma SKIP-TYPE-CHECK SKIP-TYPE-CHECK
 #
 
 fc-transform-type .unbound .unbound
