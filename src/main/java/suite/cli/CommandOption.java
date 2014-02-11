@@ -22,8 +22,6 @@ import suite.util.FunUtil.Source;
  */
 public class CommandOption {
 
-	private FunCompilerConfig fcc = new FunCompilerConfig();
-
 	// Command dispatching options
 	private boolean isBackground = false;
 
@@ -69,7 +67,7 @@ public class CommandOption {
 			result &= processOption("-" + arg.substring(4), source, false);
 		else if (arg.equals("-precompile") && (arg1 = source.source()) != null)
 			for (String lib : arg1.split(","))
-				result &= Suite.precompile(lib, fcc.getProverConfig());
+				result &= Suite.precompile(lib, pc(null));
 		else if (arg.equals("-quiet"))
 			isQuiet = on;
 		else if (arg.equals("-trace"))
