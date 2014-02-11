@@ -15,11 +15,14 @@ import suite.lp.doer.ProverConfig;
 public class PrecompileMain {
 
 	private static final List<String> allLibraries = Arrays.asList( //
-			"FREQ", "MATH", "MONAD", "PERMUTE", "RB-TREE", "STANDARD");
+			"FREQ", "MATH", "MONAD", "PERMUTE", "RB-TREE", "STANDARD" //
+	);
 
 	public static void main(String args[]) throws IOException {
+		ProverConfig pc = new ProverConfig();
+
 		for (String libraryName : allLibraries)
-			Suite.precompile(libraryName, new ProverConfig());
+			Suite.precompile(libraryName, pc);
 
 		System.out.println("please refresh eclipse workspace");
 	}
