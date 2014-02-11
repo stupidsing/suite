@@ -19,8 +19,8 @@ public class MatchUtil {
 			this(input, 0, ImmutableList.<String> end());
 		}
 
-		private State(State state, int position) {
-			this(state.input, position, state.matches);
+		private State(State state, int advance) {
+			this(state.input, state.pos + advance, state.matches);
 		}
 
 		private State(String input, int position, ImmutableList<String> matches) {
@@ -62,7 +62,7 @@ public class MatchUtil {
 			case '?':
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 					public Source<State> apply(State state) {
-						return !state.eof() ? To.source(new State(state, state.pos + 1)) : noResult;
+						return !state.eof() ? To.source(new State(state, 1)) : noResult;
 					}
 				}, source0));
 				break;
@@ -70,17 +70,17 @@ public class MatchUtil {
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 					public Source<State> apply(State state) {
 						boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-						return isMatch ? To.source(new State(state, state.pos + 1)) : noResult;
+						return isMatch ? To.source(new State(state, 1)) : noResult;
 					}
 				}, source0));
 			}
 		}
 
-		source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-			public Source<State> apply(State state) {
-				return state.eof() ? To.source(state) : noResult;
+		source = FunUtil.filter(new Fun<State, Boolean>() {
+			public Boolean apply(State state) {
+				return state.eof();
 			}
-		}, source));
+		}, source);
 
 		State state = source.source();
 
