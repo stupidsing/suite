@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
+import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.FileUtil;
 import suite.util.Pair;
@@ -42,7 +43,7 @@ public class UctWeiqiMain<Move> {
 
 		while (!quit) {
 			GameSet gameSet1 = new GameSet(gameSet);
-			UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet1);
+			UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfThreads(nThreads);
 			search.setNumberOfSimulations(nSimulations);
@@ -131,7 +132,7 @@ public class UctWeiqiMain<Move> {
 
 		GameSet gameSet = new GameSet(new Board(), startingPlayer);
 
-		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(gameSet);
+		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);

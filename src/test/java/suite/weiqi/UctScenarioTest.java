@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
+import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -93,7 +94,7 @@ public class UctScenarioTest {
 	}
 
 	private void testScenario(GameSet gameSet, Coordinate bestMove) {
-		UctWeiqi.Visitor visitor = UctWeiqi.createVisitor(new GameSet(gameSet));
+		UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(new GameSet(gameSet));
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfSimulations(20000);
 		search.setNumberOfThreads(1);
