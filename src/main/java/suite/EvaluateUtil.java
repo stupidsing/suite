@@ -97,8 +97,8 @@ public class EvaluateUtil {
 		Node node = Suite.parse("" //
 				+ "source .in" //
 				+ ", fc-parse .in .p" //
-				+ ", infer-type-rule .p ()/()/() .tr/() .t" //
-				+ ", resolve-type-rules .tr" //
+				+ ", fc-infer-type-rule .p ()/()/() .tr/() .t" //
+				+ ", fc-resolve-type-rules .tr" //
 				+ ", fc-parse-type .out .t" //
 				+ ", sink .out");
 

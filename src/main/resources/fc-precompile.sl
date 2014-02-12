@@ -25,14 +25,14 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	, !, write "Parsing program", nl
 	, !, fc-parse .do1 .do2
 	, !, write "Inferencing types", nl
-	, !, infer-type-rule .do2 ()/()/() .tr/() NUMBER
-	, !, resolve-type-rules .tr
+	, !, fc-infer-type-rule .do2 ()/()/() .tr/() NUMBER
+	, !, fc-resolve-type-rules .tr
 	, !, .prog0 = (
-		infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
+		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
 			:- fc-dict-merge-replace .ue .ues .ue1
 			, fc-dict-merge-replace .ve .ves .ve1
 			, fc-dict-merge-replace .te .tes .te1
-			, infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
+			, fc-infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write 'Verifying intermediate output', nl
 	, once (not is.cyclic .do2; fc-error "Cyclic data detected")
@@ -67,7 +67,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 -- Type inferencer
-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
+fc-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
 -- Lazyifier and optimizer
 fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
