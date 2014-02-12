@@ -74,12 +74,17 @@ public class Bytes {
 		return end - start;
 	}
 
-	public Bytes subbytes(int start) {
-		return subbytes0(this.start + start, end);
+	public Bytes subbytes(int s) {
+		return subbytes0(start + s, end);
 	}
 
-	public Bytes subbytes(int start, int end) {
-		return subbytes0(this.start + start, this.start + end);
+	public Bytes subbytes(int s, int e) {
+		if (s < 0)
+			s += size();
+		if (e < s)
+			e += size();
+
+		return subbytes0(start + s, start + e);
 	}
 
 	@Override
@@ -150,15 +155,14 @@ public class Bytes {
 		private byte bytes[] = emptyByteArray;
 		private int size;
 
-		public BytesBuilder() {
-		}
-
 		public BytesBuilder append(Bytes b) {
 			return append(b.bytes, b.start, b.end);
 		}
 
 		public BytesBuilder append(byte b) {
-			return append(new byte[] { b });
+			extendBuffer(size + 1);
+			bytes[size++] = b;
+			return this;
 		}
 
 		public BytesBuilder append(byte b[]) {
@@ -166,13 +170,9 @@ public class Bytes {
 		}
 
 		public BytesBuilder append(byte b[], int start, int end) {
-			int inc = end - start, size1 = size + inc;
-
-			if (bytes.length < size1)
-				extendBuffer(size1);
-
+			int inc = end - start;
+			extendBuffer(size + inc);
 			Copy.primitiveArray(b, start, bytes, size, inc);
-
 			size += inc;
 			return this;
 		}
@@ -194,14 +194,18 @@ public class Bytes {
 			return new Bytes(bytes, 0, size);
 		}
 
-		private void extendBuffer(int size1) {
-			int length1 = bytes.length != 0 ? bytes.length : 1;
-			while (length1 < size1)
-				length1 = length1 < 4096 ? length1 << 1 : length1 * 3 / 2;
+		private void extendBuffer(int capacity1) {
+			int capacity0 = bytes.length;
 
-			byte bytes1[] = new byte[length1];
-			Copy.primitiveArray(bytes, 0, bytes1, 0, size);
-			bytes = bytes1;
+			if (capacity0 < capacity1) {
+				int capacity = Math.min(capacity0, 4);
+				while (capacity < capacity1)
+					capacity = capacity < 4096 ? capacity << 1 : capacity * 3 / 2;
+
+				byte bytes1[] = new byte[capacity];
+				Copy.primitiveArray(bytes, 0, bytes1, 0, size);
+				bytes = bytes1;
+			}
 		}
 	}
 
