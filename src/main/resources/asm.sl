@@ -2,7 +2,7 @@
 
 -- Assumes 32-bit mode
 
-as-assemble AAA (+x37, .e)/.e #
+as-assemble (AAA) (+x37, .e)/.e #
 as-assemble (ADD .acc .imm) .e0/.ex :- as-assemble-acc-imm +x04 .acc .imm .e0/.ex #
 as-assemble (ADD .rm .imm8) (+x83, .e1)/.ex :- as-imm8 .imm8, as-assemble-rm32 .rm 0 .e1/.e2, as-emit8 .imm8 .e2/.ex #
 as-assemble (ADD .rm .imm) .e0/.ex :- as-assemble-rm-imm +x80 .rm 0 .imm .e0/.ex #
@@ -11,6 +11,9 @@ as-assemble (DEC .reg) .e0/.ex :- as-assemble-r32 +x48 .reg .e0/.ex #
 as-assemble (DEC .rm) .e0/.ex :- as-assemble-rm +xFE .rm 1 .e0/.ex #
 as-assemble (INC .reg) .e0/.ex :- as-assemble-r32 +x40 .reg .e0/.ex #
 as-assemble (INC .rm) .e0/.ex :- as-assemble-rm +xFE .rm 0 .e0/.ex #
+as-assemble (INT 3) (+x37, .e)/.e #
+as-assemble (INT .imm) (+xCD, .e0)/.ex :- as-emit8 .imm .e0/.ex #
+as-assemble (INTO) (+xCE, .e)/.e #
 as-assemble (JMP .rel8) (+xEB, .e1)/.ex :- as-emit8 .rel8 .e1/.ex #
 as-assemble (JMP .rel32) (+xE9, .e1)/.ex :- as-emit32 .rel32 .e1/.ex #
 as-assemble (JMP .rm) .e0/.ex :- as-assemble-rm32 +xFF .rm 4 .e0/.ex #
