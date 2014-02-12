@@ -34,16 +34,16 @@ public class Bytes implements Iterable<Byte> {
 		}
 	};
 
+	public Bytes(Bytes bytes) {
+		this(bytes.vector, bytes.start, bytes.end);
+	}
+
 	public Bytes(byte bytes[]) {
 		this(bytes, 0);
 	}
 
 	public Bytes(byte bytes[], int start) {
 		this(bytes, start, bytes.length);
-	}
-
-	public Bytes(Bytes bytes) {
-		this(bytes.vector, bytes.start, bytes.end);
 	}
 
 	public Bytes(byte bytes[], int start, int end) {

@@ -30,8 +30,12 @@ public class ImmutableList<T> implements Iterable<T> {
 		return end;
 	}
 
-	public static <T> ImmutableList<T> asList(T t) {
-		return new ImmutableList<>(t, ImmutableList.<T> end());
+	@SafeVarargs
+	public static <T> ImmutableList<T> asList(T... ts) {
+		ImmutableList<T> list = ImmutableList.<T> end();
+		for (T t : ts)
+			list = new ImmutableList<>(t, list);
+		return list;
 	}
 
 	public static <T> ImmutableList<T> cons(T t, ImmutableList<T> list) {
