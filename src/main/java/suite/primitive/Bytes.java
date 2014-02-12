@@ -13,8 +13,9 @@ public class Bytes implements Iterable<Byte> {
 	private int start, end;
 
 	private static final byte emptyByteArray[] = new byte[0];
-	public static final Bytes emptyBytes = new Bytes(emptyByteArray);
 	private static final int reallocSize = 65536;
+
+	public static final Bytes emptyBytes = new Bytes(emptyByteArray);
 
 	public static final Comparator<Bytes> comparator = new Comparator<Bytes>() {
 		public int compare(Bytes bytes0, Bytes bytes1) {
