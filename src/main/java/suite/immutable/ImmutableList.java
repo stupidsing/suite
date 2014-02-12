@@ -63,6 +63,17 @@ public class ImmutableList<T> implements Iterable<T> {
 		});
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		ImmutableList<T> node = this;
+		while (!node.isEmpty()) {
+			sb.append(node.getHead() + ", ");
+			node = node.getTail();
+		}
+		return sb.toString();
+	}
+
 	public Deque<T> reverse() {
 		Deque<T> deque = new ArrayDeque<>();
 		for (T t : this)
