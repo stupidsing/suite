@@ -22,14 +22,19 @@ public class TranslatedRunUtil {
 	}
 
 	public static class Closure extends Node {
+		public Frame frame;
+		public int ip;
+		public Node result;
+
 		public Closure(Frame frame, int ip) {
 			this.frame = frame;
 			this.ip = ip;
 		}
+	}
 
-		public Frame frame;
-		public int ip;
-		public Node result;
+	public static class InvocableFrame implements Frame {
+		public Invocable invocable;
+		public Node node;
 	}
 
 	public static InvocableBridge getInvocableBridge(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
@@ -52,7 +57,10 @@ public class TranslatedRunUtil {
 			}
 
 			public Node wrapInvocable(Invocable invocable, Node node) {
-				throw new UnsupportedOperationException();
+				InvocableFrame frame = new InvocableFrame();
+				frame.invocable = invocable;
+				frame.node = node;
+				return new Closure(frame, InstructionTranslator.invokeJavaEntryPoint);
 			}
 		};
 	}

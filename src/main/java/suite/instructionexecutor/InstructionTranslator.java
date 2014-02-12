@@ -32,6 +32,8 @@ import com.google.common.collect.HashBiMap;
  */
 public class InstructionTranslator implements Closeable {
 
+	public static int invokeJavaEntryPoint = -1;
+
 	private static AtomicInteger counter = new AtomicInteger();
 
 	private BiMap<Integer, Node> constantPool = HashBiMap.create();
@@ -134,6 +136,11 @@ public class InstructionTranslator implements Closeable {
 				// + "System.out.println(ip); \n" //
 				+ "switch(ip) { \n" //
 				+ "%s \n" //
+				+ "case " + invokeJavaEntryPoint + ": \n" //
+				+ "InvocableFrame iframe = (InvocableFrame) frame; \n" //
+				+ "returnValue = iframe.invocable.invoke(bridge, Arrays.asList(iframe.node)); \n" //
+				+ "ip = cs[--csp]; \n" //
+				+ "continue; \n" //
 				+ "default: \n" //
 				+ "} \n" //
 				+ "} \n" //
@@ -431,13 +438,11 @@ public class InstructionTranslator implements Closeable {
 	}
 
 	private void pushCallee(int ip) {
-		app("cs[csp] = " + ip);
-		app("csp++");
+		app("cs[csp++] = " + ip);
 	}
 
 	private void popCaller() {
-		app("--csp");
-		app("ip = cs[csp]");
+		app("ip = cs[--csp]");
 		app("continue");
 	}
 

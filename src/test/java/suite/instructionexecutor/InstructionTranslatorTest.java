@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.util.FileUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -42,10 +44,10 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testAtomString() throws IOException {
-		Node node = execute(compileFunctional(Suite.parse("" //
-				+ "define atom-string = _ijavacls {CLASS!suite.lp.invocable.Invocables$AtomString} >> " //
-				+ "_ijavaobj1 {atom-string} {ATOM}"), false));
-		System.out.println(node);
+		String node = executeToString(compileFunctional(Suite.parse("" //
+				+ "define atom-string = _ijavacls {atom:`CLASS!suite.lp.invocable.Invocables$AtomString`} >> " //
+				+ "_ijavaobj1 {atom-string} {atom:`ATOM`}"), false));
+		assertEquals("ATOM", node);
 	}
 
 	@Test
@@ -102,14 +104,39 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node execute(Node code) throws IOException {
+		return execute(code, new Fun<Fun<Node, Node>, Node>() {
+			public Node apply(Fun<Node, Node> exec) {
+				return exec.apply(new Closure(null, 0));
+			}
+		});
+	}
+
+	private String executeToString(Node code) throws IOException {
+		return execute(code, new Fun<Fun<Node, Node>, String>() {
+			public String apply(Fun<Node, Node> exec) {
+				return ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0)));
+			}
+		});
+	}
+
+	private <T> T execute(Node code, Fun<Fun<Node, Node>, T> fun) throws IOException, MalformedURLException {
 		String basePathName = FileUtil.tmp + "/" + InstructionTranslator.class.getName();
 
-		TranslatedRunConfig config = new TranslatedRunConfig();
+		final TranslatedRunConfig config = new TranslatedRunConfig();
 		config.ruleSet = Suite.createRuleSet();
 
 		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePathName)) {
-			TranslatedRun translatedRun = instructionTranslator.translate(code);
-			return translatedRun.exec(config, new Closure(null, 0));
+			final TranslatedRun translatedRun = instructionTranslator.translate(code);
+
+			Fun<Node, Node> exec = new Fun<Node, Node>() {
+				public Node apply(Node node) {
+					if (node instanceof Closure)
+						node = translatedRun.exec(config, (Closure) node);
+					return node;
+				}
+			};
+
+			return fun.apply(exec);
 		}
 	}
 

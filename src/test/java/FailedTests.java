@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
-import suite.instructionexecutor.InstructionTranslatorTest;
 import suite.lp.kb.RuleSet;
 
 public class FailedTests {
@@ -17,15 +16,9 @@ public class FailedTests {
 		new FunRbTreeTest().test();
 	}
 
-	// UnsupportedOperationException
-	@Test
-	public void test1() throws IOException {
-		new InstructionTranslatorTest().testAtomString();
-	}
-
 	// Cyclic types
 	@Test
-	public void test2() {
+	public void test1() {
 		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
 	}
 
