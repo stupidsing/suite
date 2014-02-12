@@ -5,41 +5,41 @@ fc-transform (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
 fc-transform (CONSTANT .c) (CONSTANT .c) .ts/.ts
 #
 fc-transform (DEF-VAR .var .value0 .do0) (DEF-VAR .var .value1 .do1) .ts0/.tsx
-	:- .tsx = (.value0 .value1, .do0 .do1, .ts0)
+	:- .ts0 = (.value0 .value1, .do0 .do1, .tsx)
 #
 fc-transform (FUN .var .do0) (FUN .var .do1) .ts0/.tsx
-	:- .tsx = (.do0 .do1, .ts0)
+	:- .ts0 = (.do0 .do1, .tsx)
 #
 fc-transform (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) .ts0/.tsx
-	:- .tsx = (.if0 .if1, .then0 .then1, .else0 .else1, .ts0)
+	:- .ts0 = (.if0 .if1, .then0 .then1, .else0 .else1, .tsx)
 #
 fc-transform (INVOKE .param0 .callee0) (INVOKE .param1 .callee1) .ts0/.tsx
-	:- .tsx = (.param0 .param1, .callee0 .callee1, .ts0)
+	:- .ts0 = (.param0 .param1, .callee0 .callee1, .tsx)
 #
 fc-transform (NEW-VAR .var) (NEW-VAR .var) .ts/.ts
 #
 fc-transform (NUMBER .i) (NUMBER .i) .ts/.ts
 #
 fc-transform (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
-	:- .tsx = (.left0 .left1, .right0 .right1, .ts0)
+	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
 #
 fc-transform (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
 	:- fc-transform-pragma .pragma0 .pragma1
-	, .tsx = (.do0 .do1, .ts0)
+	, .ts0 = (.do0 .do1, .tsx)
 #
 fc-transform (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
-	:- .tsx = (.left0 .left1, .right0 .right1, .ts0)
+	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
 #
 fc-transform (USING .mode .m .do0) (USING .mode .m .do1) .ts0/.tsx
-	:- .tsx = (.do0 .do1, .ts0)
+	:- .ts0 = (.do0 .do1, .tsx)
 #
 fc-transform (UNWRAP .do0) (UNWRAP .do1) .ts0/.tsx
-	:- .tsx = (.do0 .do1, .ts0)
+	:- .ts0 = (.do0 .do1, .tsx)
 #
 fc-transform (VAR .var) (VAR .var) .ts/.ts
 #
 fc-transform (WRAP .do0) (WRAP .do1) .ts0/.tsx
-	:- .tsx = (.do0 .do1, .ts0)
+	:- .ts0 = (.do0 .do1, .tsx)
 #
 
 fc-transform-pragma ALLOW-RECURSIVE ALLOW-RECURSIVE

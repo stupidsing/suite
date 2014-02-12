@@ -17,7 +17,7 @@ fc-optimize-flow (UNWRAP WRAP .do0) .dox
 fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
 	:- !, fc-optimize-flow (DEF-VAR .var .value .do0) .dox
 #
-fc-optimize-flow .p0 .p1 :- fc-transform .p0 .p1 ()/.ts, fc-optimize-flow-list .ts #
+fc-optimize-flow .p0 .p1 :- fc-transform .p0 .p1 .ts/(), fc-optimize-flow-list .ts #
 
 fc-optimize-flow-list () #
 fc-optimize-flow-list (.t, .ts) :- fc-optimize-flow .t, fc-optimize-flow-list .ts #
@@ -35,7 +35,7 @@ fc-remove-unref-vars .do0 .dox .rb0/.rbx
 	, !
 #
 fc-remove-unref-vars (VAR .var) (VAR .var) .rb :- !, rbt-bind .var .rb #
-fc-remove-unref-vars .p0 .p1 .rb :- fc-transform .p0 .p1 ()/.ts, fc-remove-unref-vars-list .ts .rb #
+fc-remove-unref-vars .p0 .p1 .rb :- fc-transform .p0 .p1 .ts/(), fc-remove-unref-vars-list .ts .rb #
 
 fc-remove-unref-vars-list () .rb/.rb #
 fc-remove-unref-vars-list (.p0 .p1, .ts) .rb0/.rbx
@@ -62,7 +62,7 @@ fc-replace-var-by-value .v0 .v1 (DEF-VAR .v0 .value0 .do) (DEF-VAR .v0 .value1 .
 	, fc-replace-var-by-value .v0 .v1 .value0 .value1
 #
 fc-replace-var-by-value .v0 .v1 .p0 .p1
-	:- fc-transform .p0 .p1 ()/.ts
+	:- fc-transform .p0 .p1 .ts/()
 	, fc-replace-var-by-value-list .v0 .v1 .ts
 #
 

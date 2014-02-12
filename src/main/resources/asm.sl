@@ -20,7 +20,7 @@ as-assemble (MOV .rm .imm) .e0/.ex :- as-assemble-rm-imm +xC6 .rm 0 .imm .e0/.ex
 as-assemble (MOV .rm0 .rm1) .e0/.ex :- as-assemble-rm-reg2 +x88 .rm0 .rm1 .e0/.ex #
 as-assemble (MOV .rm .sreg) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-assemble-rm16 .rm .sr .e1/.ex #
 as-assemble (MOV .sreg .rm) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-assemble-rm16 .rm .sr .e1/.ex #
-as-assemble RET (+xC3, .e)/.e #
+as-assemble (RET) (+xC3, .e)/.e #
 as-assemble (RET .imm) (+xC2, .e1)/.ex :- as-emit16 .imm .e1/.ex #
 
 as-assemble-rm-imm .b .rm .num .imm (.b, .e1)/.ex
