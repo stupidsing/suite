@@ -34,7 +34,7 @@ public class ImmutableList<T> implements Iterable<T> {
 	public static <T> ImmutableList<T> asList(T... ts) {
 		ImmutableList<T> list = ImmutableList.<T> end();
 		for (T t : ts)
-			list = new ImmutableList<>(t, list);
+			list = cons(t, list);
 		return list;
 	}
 
