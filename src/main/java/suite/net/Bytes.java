@@ -1,6 +1,7 @@
 package suite.net;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 import suite.util.Copy;
 import suite.util.Util;
@@ -16,6 +17,23 @@ public class Bytes {
 
 	public static final Bytes emptyBytes = new Bytes(emptyByteArray);
 
+	public static final Comparator<Bytes> comparator = new Comparator<Bytes>() {
+		public int compare(Bytes bytes0, Bytes bytes1) {
+			int start0 = bytes0.start, start1 = bytes1.start;
+			int size0 = bytes0.size(), size1 = bytes1.size(), minSize = Math.min(size0, size1);
+			int index = 0, c = 0;
+
+			while (c == 0 && index < minSize) {
+				byte b0 = bytes0.bytes[start0 + index];
+				byte b1 = bytes1.bytes[start1 + index];
+				c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
+				index++;
+			}
+
+			return c != 0 ? c : size0 - size1;
+		}
+	};
+
 	public Bytes(byte bytes[]) {
 		this(bytes, 0);
 	}
@@ -24,16 +42,28 @@ public class Bytes {
 		this(bytes, start, bytes.length);
 	}
 
+	public Bytes(Bytes bytes) {
+		this(bytes.bytes, bytes.start, bytes.end);
+	}
+
 	public Bytes(byte bytes[], int start, int end) {
 		this.bytes = bytes;
 		this.start = start;
 		this.end = end;
 	}
 
-	public Bytes(Bytes bytes) {
-		this.bytes = bytes.bytes;
-		start = bytes.start;
-		end = bytes.end;
+	public Bytes append(Bytes a) {
+		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
+		byte nb[] = new byte[newSize];
+		System.arraycopy(bytes, start, nb, 0, size0);
+		System.arraycopy(a.bytes, a.start, nb, size0, size1);
+		return new Bytes(nb);
+	}
+
+	public byte get(int index) {
+		int i1 = index + start;
+		checkClosedBounds(i1);
+		return bytes[i1];
 	}
 
 	public boolean isEmpty() {
@@ -50,42 +80,6 @@ public class Bytes {
 
 	public Bytes subbytes(int start, int end) {
 		return subbytes0(this.start + start, this.start + end);
-	}
-
-	private Bytes subbytes0(int start, int end) {
-		checkOpenBounds(start);
-		checkOpenBounds(end);
-		Bytes result = new Bytes(bytes, start, end);
-
-		// Avoid small pack of bytes object keeping a large buffer
-		if (bytes.length >= reallocSize && end - start < reallocSize / 4)
-			result = emptyBytes.append(result); // Do not share reference
-
-		return result;
-	}
-
-	public Bytes append(Bytes a) {
-		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
-		byte nb[] = new byte[newSize];
-		System.arraycopy(bytes, start, nb, 0, size0);
-		System.arraycopy(a.bytes, a.start, nb, size0, size1);
-		return new Bytes(nb);
-	}
-
-	public byte byteAt(int index) {
-		int i1 = index + start;
-		checkClosedBounds(i1);
-		return bytes[i1];
-	}
-
-	private void checkOpenBounds(int index) {
-		if (index < start || index > end)
-			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
-	}
-
-	private void checkClosedBounds(int index) {
-		if (index < start || index >= end)
-			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 
 	@Override
@@ -109,6 +103,28 @@ public class Bytes {
 			return true;
 		} else
 			return false;
+	}
+
+	private Bytes subbytes0(int start, int end) {
+		checkOpenBounds(start);
+		checkOpenBounds(end);
+		Bytes result = new Bytes(bytes, start, end);
+
+		// Avoid small pack of bytes object keeping a large buffer
+		if (bytes.length >= reallocSize && end - start < reallocSize / 4)
+			result = emptyBytes.append(result); // Do not share reference
+
+		return result;
+	}
+
+	private void checkOpenBounds(int index) {
+		if (index < start || index > end)
+			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "}");
+	}
+
+	private void checkClosedBounds(int index) {
+		if (index < start || index >= end)
+			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 
 	private static final String hexDigits = "0123456789ABCDEF";
@@ -137,10 +153,6 @@ public class Bytes {
 		public BytesBuilder() {
 		}
 
-		public void clear() {
-			size = 0;
-		}
-
 		public BytesBuilder append(Bytes b) {
 			return append(b.bytes, b.start, b.end);
 		}
@@ -165,25 +177,21 @@ public class Bytes {
 			return this;
 		}
 
+		public void clear() {
+			size = 0;
+		}
+
 		public void extend(int size1) {
 			extendBuffer(size1);
 			size = size1;
 		}
 
+		public int size() {
+			return size;
+		}
+
 		public Bytes toBytes() {
 			return new Bytes(bytes, 0, size);
-		}
-
-		public void setByteAt(int n, byte b) {
-			bytes[n] = b;
-		}
-
-		public byte byteAt(int n) {
-			return bytes[n];
-		}
-
-		public int getSize() {
-			return size;
 		}
 
 		private void extendBuffer(int size1) {

@@ -54,9 +54,9 @@ public class Lccs {
 		int size = bytes.size();
 
 		for (int pos = 0; pos <= size - rollingSize; pos++) {
-			hash = rh.roll(hash, bytes.byteAt(pos + rollingSize - 1));
+			hash = rh.roll(hash, bytes.get(pos + rollingSize - 1));
 			segments.put(hash, new Segment(pos, pos + rollingSize));
-			hash = rh.unroll(hash, bytes.byteAt(pos), rollingSize);
+			hash = rh.unroll(hash, bytes.get(pos), rollingSize);
 		}
 
 		return segments;
@@ -70,10 +70,10 @@ public class Lccs {
 			Segment segment = entry.getValue();
 			int start = segment.getStart(), end = segment.getEnd();
 
-			segments1.put(rh.unroll(hash, bytes.byteAt(start), rollingSize), new Segment(start + 1, end));
+			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), new Segment(start + 1, end));
 
 			if (start == 0)
-				segments1.put(rh.unroll(hash, bytes.byteAt(end - 1)), new Segment(start, end - 1));
+				segments1.put(rh.unroll(hash, bytes.get(end - 1)), new Segment(start, end - 1));
 		}
 
 		return segments1;

@@ -6,26 +6,22 @@ import java.util.Iterator;
 
 public class IntList implements Iterable<Integer> {
 
+	private int ints[];
 	private int size;
-	private int list[];
 
 	public static final Comparator<IntList> comparator = new Comparator<IntList>() {
 		public int compare(IntList il0, IntList il1) {
-			int i = 0, c = 0;
+			int size0 = il0.size(), size1 = il1.size(), minSize = Math.min(size0, size1);
+			int index = 0, c = 0;
 
-			while (c == 0)
-				if (i < il0.size)
-					if (i < il1.size) {
-						int i0 = il0.list[i];
-						int i1 = il1.list[i];
-						c = i0 == i1 ? 0 : i0 > i1 ? 1 : -1;
-						i++;
-					} else
-						return 1;
-				else
-					return -1;
+			while (c == 0 && index < minSize) {
+				int i0 = il0.ints[index];
+				int i1 = il1.ints[index];
+				c = i0 == i1 ? 0 : i0 > i1 ? 1 : -1;
+				index++;
+			}
 
-			return c;
+			return c != 0 ? c : size0 - size1;
 		}
 	};
 
@@ -37,13 +33,13 @@ public class IntList implements Iterable<Integer> {
 		this(0, new int[capacity]);
 	}
 
-	public IntList(int list[]) {
-		this(list.length, list);
+	public IntList(int ints[]) {
+		this(ints.length, ints);
 	}
 
 	public IntList(int size, int list[]) {
 		this.size = size;
-		this.list = list;
+		this.ints = list;
 	}
 
 	public static IntList asList(int... in) {
@@ -59,7 +55,7 @@ public class IntList implements Iterable<Integer> {
 	}
 
 	public int get(int i) {
-		return list[i];
+		return ints[i];
 	}
 
 	public Iterator<Integer> iterator() {
@@ -71,7 +67,7 @@ public class IntList implements Iterable<Integer> {
 			}
 
 			public Integer next() {
-				return list[pos++];
+				return ints[pos++];
 			}
 
 			public void remove() {
@@ -89,21 +85,21 @@ public class IntList implements Iterable<Integer> {
 
 		IntList intList = new IntList(end - start);
 		for (int i = start; i < end; i++)
-			intList.list[i - start] = list[i];
+			intList.ints[i - start] = ints[i];
 		return intList;
 	}
 
 	public void add(int i) {
-		if (size >= list.length)
-			list = Arrays.copyOf(list, size * 3 / 2 + 1);
-		list[size++] = i;
+		if (size >= ints.length)
+			ints = Arrays.copyOf(ints, size * 3 / 2 + 1);
+		ints[size++] = i;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 1;
 		for (int i = 0; i < size; i++)
-			result = 31 * result + list[i];
+			result = 31 * result + ints[i];
 		return result;
 	}
 
@@ -118,7 +114,7 @@ public class IntList implements Iterable<Integer> {
 				isEquals = true;
 
 				for (int i = 0; i < size; i++)
-					isEquals &= list[i] != intList.list[i];
+					isEquals &= ints[i] != intList.ints[i];
 			} else
 				isEquals = false;
 		} else
