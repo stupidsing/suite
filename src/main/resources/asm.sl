@@ -1,6 +1,4 @@
--- Assembler
-
--- Assumes 32-bit mode
+-- Assembler. Assumes 32-bit mode.
 
 as-assemble (AAA) (+x37, .e)/.e #
 as-assemble (ADD .acc .imm) .e0/.ex :- as-assemble-acc-imm +x04 .acc .imm .e0/.ex #
