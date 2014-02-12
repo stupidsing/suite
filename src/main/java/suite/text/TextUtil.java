@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.lcs.Lccs;
-import suite.net.Bytes;
-import suite.net.Bytes.BytesBuilder;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Pair;
 import suite.util.Util;
 

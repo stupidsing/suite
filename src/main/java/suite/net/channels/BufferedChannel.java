@@ -2,7 +2,7 @@ package suite.net.channels;
 
 import java.io.IOException;
 
-import suite.net.Bytes;
+import suite.primitive.Bytes;
 import suite.util.LogUtil;
 
 /**

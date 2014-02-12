@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import suite.net.Bytes;
 import suite.net.NioDispatcher;
 import suite.net.RequestResponseMatcher;
+import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 
 /**

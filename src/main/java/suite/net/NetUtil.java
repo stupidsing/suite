@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import suite.primitive.Bytes;
+
 public class NetUtil {
 
 	public static int intValue(Bytes bytes) {

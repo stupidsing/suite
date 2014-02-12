@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import suite.net.Bytes;
 import suite.net.NetUtil;
 import suite.net.NioDispatcher;
 import suite.net.RequestResponseMatcher;
 import suite.net.channels.PersistableChannel;
+import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Sinks;

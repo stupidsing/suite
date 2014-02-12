@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import suite.net.Bytes;
+import suite.primitive.Bytes;
 import suite.util.FunUtil.Pipe;
 import suite.util.FunUtil.Source;
 

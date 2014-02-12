@@ -1,8 +1,8 @@
 package suite.net.channels;
 
-import suite.net.Bytes;
-import suite.net.Bytes.BytesBuilder;
 import suite.net.NetUtil;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
 
 /**
  * Channel that transfer data in the unit of packets.

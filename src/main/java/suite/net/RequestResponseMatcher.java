@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.net.channels.RequestResponseChannel;
+import suite.primitive.Bytes;
 import suite.util.Util;
 
 public class RequestResponseMatcher {

@@ -1,6 +1,6 @@
 package suite.text;
 
-import suite.net.Bytes;
+import suite.primitive.Bytes;
 
 public class RollingHashUtil {
 

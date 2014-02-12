@@ -2,10 +2,10 @@ package suite.net.channels;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
-import suite.net.Bytes;
-import suite.net.Bytes.BytesBuilder;
 import suite.net.NetUtil;
 import suite.net.RequestResponseMatcher;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Fun;
 import suite.util.Util;
 

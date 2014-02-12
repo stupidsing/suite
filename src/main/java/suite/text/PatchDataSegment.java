@@ -1,6 +1,6 @@
 package suite.text;
 
-import suite.net.Bytes;
+import suite.primitive.Bytes;
 import suite.util.To;
 import suite.util.Util;
 
