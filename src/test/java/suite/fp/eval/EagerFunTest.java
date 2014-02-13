@@ -142,17 +142,17 @@ public class EagerFunTest {
 		assertEquals(Int.create(1), eval("if-bind ((1, 2,) = ($i, 2,)) then i else 0"));
 
 		assertEquals(Int.create(3), eval("" //
-				+ "define type (A []) of (t,) >> \n" //
-				+ "define type (B number []) of (t,) >> \n" //
-				+ "define type (C boolean []) of (t,) >> \n" //
-				+ "let e = B 3 [] >> \n" //
-				+ "if-bind (e = B $i []) then i else 0"));
+				+ "define type A of (t,) >> \n" //
+				+ "define type (B number) of (t,) >> \n" //
+				+ "define type (C boolean) of (t,) >> \n" //
+				+ "let e = B 3 >> \n" //
+				+ "if-bind (e = B $i) then i else 0"));
 		assertEquals(Int.create(0), eval("" //
-				+ "define type (A []) of (t,) >> \n" //
-				+ "define type (B number []) of (t,) >> \n" //
-				+ "define type (C boolean []) of (t,) >> \n" //
-				+ "let e = B 3 [] >> \n" //
-				+ "let f = C false [] >> \n" //
+				+ "define type (A) of (t,) >> \n" //
+				+ "define type (B number) of (t,) >> \n" //
+				+ "define type (C boolean) of (t,) >> \n" //
+				+ "let e = B 3 >> \n" //
+				+ "let f = C false >> \n" //
 				+ "if-bind (e = f) then 1 else 0"));
 	}
 
@@ -215,9 +215,9 @@ public class EagerFunTest {
 	public void testOperator() {
 		assertEquals(Atom.TRUE, eval("and {1 = 1} {or {1 = 0} {1 = 1}}"));
 		assertEquals(Atom.FALSE, Suite.evaluateFun("" //
-				+ "define type (A []) of (t,) >> \n" //
-				+ "define type (B []) of (t,) >> \n" //
-				+ "let list1 = type (list-of t) () >> A [] = B []", false));
+				+ "define type A of (t,) >> \n" //
+				+ "define type B of (t,) >> \n" //
+				+ "let list1 = type (list-of t) () >> A = B", false));
 	}
 
 	@Test

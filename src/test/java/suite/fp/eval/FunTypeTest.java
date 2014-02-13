@@ -28,17 +28,17 @@ public class FunTypeTest {
 
 		assertEquals("boolean", getTypeString("" //
 				+ "define type NIL of (t,) >> \n" //
-				+ "define type (BTREE t t []) of (t,) >> \n" //
+				+ "define type (BTREE (t, t)) of (t,) >> \n" //
 				+ "let u = type t NIL >> \n" //
 				+ "let v = type t NIL >> \n" //
-				+ "v = BTREE (BTREE NIL NIL []) NIL []\n"));
+				+ "v = BTREE (BTREE (NIL, NIL), NIL)\n"));
 	}
 
 	@Test
 	public void testDefineType() {
-		getType("define type (KG number []) of (weight,) >> \n" //
-				+ "let v = type weight (KG 1 []) >> \n" //
-				+ "v = KG 99 []\n");
+		getType("define type (KG number) of (weight,) >> \n" //
+				+ "let v = type weight (KG 1) >> \n" //
+				+ "v = KG 99\n");
 		getType("repeat {23}");
 	}
 
@@ -83,24 +83,24 @@ public class FunTypeTest {
 	public void testInstance() {
 		String define = "" //
 				+ "define type NIL over (:t,) of (list {:t},) >> \n" //
-				+ "define type (NODE :t (list {:t}) []) over (:t,) of (list {:t},) >> \n" //
-				+ "define type (NODE2 :t :t (list {:t}) []) over (:t,) of (list {:t},) >> \n" //
+				+ "define type (NODE (:t, list {:t})) over (:t,) of (list {:t},) >> \n" //
+				+ "define type (NODE2 (:t, :t,list {:t})) over (:t,) of (list {:t},) >> \n" //
 		;
 
 		getType(define + "NIL");
-		getType(define + "NODE false NIL []");
-		getType(define + "NODE2 1 2 (NODE 3 NIL []) []");
+		getType(define + "NODE (false, NIL)");
+		getType(define + "NODE2 (1, 2, NODE (3, NIL))");
 
 		assertEquals("boolean", getTypeString(define //
-				+ "let n = NODE true NIL [] >> NODE false n [] = NIL"));
+				+ "let n = NODE (true, NIL) >> NODE (false, n) = NIL"));
 
-		getTypeMustFail(define + "NODE []");
-		getTypeMustFail(define + "NODE 1 []");
-		getTypeMustFail(define + "NODE 1 (NODE true NIL) []");
-		getTypeMustFail(define + "NODE2 1 true NIL []");
-		getTypeMustFail(define + "NODE2 1 2 (NODE true NIL []) []");
-		getTypeMustFail(define + "NODE 1 NIL [] = NODE false NIL []");
-		getTypeMustFail(define + "let n = NODE true NIL [] >> NODE 1 n []");
+		getTypeMustFail(define + "NODE");
+		getTypeMustFail(define + "NODE 1");
+		getTypeMustFail(define + "NODE (1, NODE (true, NIL))");
+		getTypeMustFail(define + "NODE2 (1, true, NIL)");
+		getTypeMustFail(define + "NODE2 (1, 2, NODE (true, NIL))");
+		getTypeMustFail(define + "NODE (1, NIL) = NODE (false, NIL)");
+		getTypeMustFail(define + "let n = NODE (true, NIL) >> NODE (1, n)");
 	}
 
 	@Test
@@ -132,23 +132,23 @@ public class FunTypeTest {
 	public void testTuple() {
 		final String variant = "" //
 				+ "define type A of (t,) >> \n" //
-				+ "define type (B number []) of (t,) >> \n" //
-				+ "define type (C boolean []) of (t,) >> \n";
+				+ "define type (B number) of (t,) >> \n" //
+				+ "define type (C boolean) of (t,) >> \n";
 
 		getType(variant + "A");
-		getType(variant + "B 4 []");
-		getType(variant + "C true []");
-		getType(variant + "if true then A else-if true then (B 3 []) else (C false [])");
-		getType("define type (BTREE number number []) of (btree,) >> BTREE 2 3 [] = BTREE 4 6 []");
+		getType(variant + "B 4");
+		getType(variant + "C true");
+		getType(variant + "if true then A else-if true then (B 3) else (C false)");
+		getType("define type (BTREE (number, number)) of (btree,) >> BTREE (2, 3) = BTREE (4, 6)");
 
-		getTypeMustFail(variant + "A 4 []");
-		getTypeMustFail(variant + "B []");
-		getTypeMustFail(variant + "C 0 []");
-		getTypeMustFail("define type (T1 number number []) of (t1,) >> \n" //
-				+ "define type (T2 number number []) of (t2,) >> \n" //
-				+ "T1 2 3 [] = T2 2 3 []");
-		getTypeMustFail("define type (BTREE number number []) of (btree,) >> \n" //
-				+ "BTREE 2 3 [] = BTREE \"a\" 6 []");
+		getTypeMustFail(variant + "A 4");
+		getTypeMustFail(variant + "B");
+		getTypeMustFail(variant + "C 0");
+		getTypeMustFail("define type (T1 (number, number)) of (t1,) >> \n" //
+				+ "define type (T2 (number, number)) of (t2,) >> \n" //
+				+ "T1 (2, 3) = T2 (2, 3)");
+		getTypeMustFail("define type (BTREE (number, number)) of (btree,) >> \n" //
+				+ "BTREE (2, 3) = BTREE (\"a\", 6)");
 	}
 
 	private void checkType(String fps, String bindTo, String ts) {
