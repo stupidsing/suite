@@ -54,8 +54,10 @@ public class Copy {
 		try (InputStream in_ = in) {
 			int len;
 			byte buffer[] = new byte[bufferSize];
-			while ((len = in_.read(buffer)) >= 0)
+			while ((len = in_.read(buffer)) >= 0) {
 				out.write(buffer, 0, len);
+				out.flush();
+			}
 		}
 	}
 
