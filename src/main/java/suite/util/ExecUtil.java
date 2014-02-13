@@ -14,30 +14,11 @@ public class ExecUtil {
 	private String err;
 	private Thread threads[];
 
-	private class WriteProcessThread extends Thread {
+	private class IoThread extends Thread {
 		private InputStream is;
 		private OutputStream os;
 
-		private WriteProcessThread(InputStream is, OutputStream os) {
-			this.is = is;
-			this.os = os;
-		}
-
-		public void run() {
-			try (InputStream is_ = is; OutputStream os_ = os) {
-				Copy.stream(is_, os_);
-			} catch (InterruptedIOException ex) {
-			} catch (Exception ex) {
-				LogUtil.error(ex);
-			}
-		}
-	}
-
-	private class ReadProcessThread extends Thread {
-		private InputStream is;
-		private OutputStream os;
-
-		private ReadProcessThread(InputStream is, OutputStream os) {
+		private IoThread(InputStream is, OutputStream os) {
 			this.is = is;
 			this.os = os;
 		}
@@ -64,9 +45,9 @@ public class ExecUtil {
 			InputStream pes = process.getErrorStream();
 			OutputStream pos = process.getOutputStream();
 
-			threads = new Thread[] { new ReadProcessThread(pis, bos0) //
-					, new ReadProcessThread(pes, bos1) //
-					, new WriteProcessThread(bis, pos) };
+			threads = new Thread[] { new IoThread(pis, bos0) //
+					, new IoThread(pes, bos1) //
+					, new IoThread(bis, pos) };
 
 			for (Thread thread : threads)
 				thread.start();
