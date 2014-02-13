@@ -73,6 +73,7 @@ fc-define-default-fun 1 _ijavacls INVOKE-JAVA-CLASS #
 fc-define-default-fun 1 _ijavaobj0 INVOKE-JAVA-OBJ0 #
 fc-define-default-fun 2 _ijavaobj1 INVOKE-JAVA-OBJ1 #
 fc-define-default-fun 3 _ijavaobj2 INVOKE-JAVA-OBJ2 #
+fc-define-default-fun 4 _ijavaobj3 INVOKE-JAVA-OBJ3 #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _ltail TAIL #
@@ -114,6 +115,7 @@ fc-add-functions STANDARD .p (
 	define ijavaobj0 = (name => _ijavaobj0 {name}) >>
 	define ijavaobj1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
 	define ijavaobj2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
+	define ijavaobj3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
 	define _popen as (list-of string -> string -> data-of Stream) = (

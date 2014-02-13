@@ -22,6 +22,7 @@ import suite.node.io.TermParser.TermOp;
 import suite.parser.Subst;
 import suite.util.FunUtil.Fun;
 import suite.util.JdkUtil;
+import suite.util.Util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -322,12 +323,11 @@ public class InstructionTranslator implements Closeable {
 			case INVOKEJAVAOBJ0:
 			case INVOKEJAVAOBJ1:
 			case INVOKEJAVAOBJ2:
+			case INVOKEJAVAOBJ3:
 				app("{");
 				app("Data<?> data = (Data<?>) unwrapper.apply((Node) ds[--dsp])");
-				app("List<Node> list = new ArrayList<>(2)");
-				if (insn.insn == Insn.INVOKEJAVAOBJ1 || insn.insn == Insn.INVOKEJAVAOBJ2)
-					app("list.add((Node) ds[--dsp])");
-				if (insn.insn == Insn.INVOKEJAVAOBJ2)
+				app("List<Node> list = new ArrayList<>(3)");
+				for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
 					app("list.add((Node) ds[--dsp])");
 				app("#{reg} = ((Invocable) data.getData()).invoke(bridge, list)", op0);
 				app("}");

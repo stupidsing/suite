@@ -2,8 +2,7 @@ package suite.instructionexecutor;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import suite.immutable.Vector;
@@ -23,6 +22,7 @@ import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
+import suite.util.Util;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
@@ -91,19 +91,14 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
 		case INVOKEJAVAOBJ0:
-			data = (Data<?>) ds[--dsp];
-			result = ((Invocable) data.getData()).invoke(invocableBridge, Collections.<Node> emptyList());
-			break;
 		case INVOKEJAVAOBJ1:
-			data = (Data<?>) (Node) ds[--dsp];
-			n0 = (Node) ds[--dsp];
-			result = ((Invocable) data.getData()).invoke(invocableBridge, Arrays.asList(n0));
-			break;
 		case INVOKEJAVAOBJ2:
-			data = (Data<?>) (Node) ds[--dsp];
-			n0 = (Node) ds[--dsp];
-			n1 = (Node) ds[--dsp];
-			result = ((Invocable) data.getData()).invoke(invocableBridge, Arrays.asList(n0, n1));
+		case INVOKEJAVAOBJ3:
+			data = (Data<?>) ds[--dsp];
+			List<Node> ps = new ArrayList<>(3);
+			for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
+				ps.add((Node) ds[--dsp]);
+			result = ((Invocable) data.getData()).invoke(invocableBridge, ps);
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);

@@ -53,6 +53,7 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 		_ijavaobj0/1/VALUE:/VALUE,
 		_ijavaobj1/2/VALUE:VALUE:/VALUE,
 		_ijavaobj2/3/VALUE:VALUE:VALUE:/VALUE,
+		_ijavaobj3/4/VALUE:VALUE:VALUE:VALUE:/VALUE,
 		_lcons/2/THUNK:THUNK:/VALUE,
 		_lhead/1/VALUE:/THUNK,
 		_ltail/1/VALUE:/THUNK,

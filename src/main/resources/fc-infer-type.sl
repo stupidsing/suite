@@ -260,6 +260,7 @@ fc-default-fun-type _ijavacls (FUN-OF (ATOM-OF 	_) (DATA-OF Invocable)) #
 fc-default-fun-type _ijavaobj0 (FUN-OF (DATA-OF Invocable) _) #
 fc-default-fun-type _ijavaobj1 (FUN-OF (DATA-OF Invocable) (FUN-OF _ _)) #
 fc-default-fun-type _ijavaobj2 (FUN-OF (DATA-OF Invocable) (FUN-OF _ (FUN-OF _ _))) #
+fc-default-fun-type _ijavaobj3 (FUN-OF (DATA-OF Invocable) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 fc-default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
 fc-default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #

@@ -151,6 +151,7 @@ public class InstructionAnalyzer {
 			case INVOKEJAVAOBJ0:
 			case INVOKEJAVAOBJ1:
 			case INVOKEJAVAOBJ2:
+			case INVOKEJAVAOBJ3:
 			case LOGREG________:
 			case NEWNODE_______:
 			case POP___________:
