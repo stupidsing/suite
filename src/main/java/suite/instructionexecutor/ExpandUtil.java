@@ -47,16 +47,21 @@ public class ExpandUtil {
 
 	public static Source<Node> expandList(final Fun<Node, Node> unwrapper, final Node node) {
 		return new Source<Node>() {
-			private Node node_ = node;
+			private Node node_;
 
 			public Node source() {
+
+				// First node is not wrapped, remainings are
+				node_ = node_ != null ? unwrapper.apply(node_) : node;
 				Tree tree;
+
 				if ((tree = Tree.decompose(node_)) != null) {
-					node_ = unwrapper.apply(tree.getRight());
+					Node result = unwrapper.apply(tree.getLeft());
+					node_ = tree.getRight();
 
 					// Facilitates garbage collection
 					Tree.forceSetRight(tree, null);
-					return unwrapper.apply(tree.getLeft());
+					return result;
 				} else if (node_ == Atom.NIL)
 					return null;
 				else
@@ -69,10 +74,12 @@ public class ExpandUtil {
 	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
 	public static Node expandFully(Fun<Node, Node> unwrapper, Node node) {
+		node = unwrapper.apply(node);
+
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = expandFully(unwrapper, unwrapper.apply(tree.getLeft()));
-			Node right = expandFully(unwrapper, unwrapper.apply(tree.getRight()));
+			Node left = expandFully(unwrapper, tree.getLeft());
+			Node right = expandFully(unwrapper, tree.getRight());
 			node = Tree.create(tree.getOperator(), left, right);
 		}
 

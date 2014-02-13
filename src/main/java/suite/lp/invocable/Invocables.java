@@ -12,6 +12,7 @@ import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.IndexedReader;
+import suite.instructionexecutor.IndexedReaderPointer;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -43,15 +44,6 @@ public class Invocables {
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
-		}
-	}
-
-	public static class Fgetc implements Invocable {
-		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Data<?> data = (Data<?>) inputs.get(0);
-			int p = ((Int) inputs.get(1)).getNumber();
-			int c = ((IndexedReader) data.getData()).read(p);
-			return Int.create(c);
 		}
 	}
 
@@ -123,38 +115,22 @@ public class Invocables {
 		}
 	}
 
-	private static class SourceIntern {
-		private int position;
-		private IndexedReader reader;
-
-		private SourceIntern(SourceIntern sourceIntern) {
-			position = sourceIntern.position + 1;
-			reader = sourceIntern.reader;
-		}
-
-		private SourceIntern(IndexedReader reader) {
-			this.reader = reader;
-		}
-	}
-
 	public static class Source_ implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Data<?> data = (Data<?>) inputs.get(0);
-			SourceIntern intern = new SourceIntern((IndexedReader) data.getData());
-			return new Source0().invoke(bridge, Arrays.<Node> asList(new Data<SourceIntern>(intern)));
+			IndexedReader indexedReader = Data.get(inputs.get(0));
+			Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(indexedReader));
+			return new Source0().invoke(bridge, Arrays.<Node> asList(data));
 		}
 	}
 
 	private static class Source0 implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Data<?> data = (Data<?>) inputs.get(0);
-			SourceIntern intern = (SourceIntern) data.getData();
-			int ch = intern.reader.read(intern.position);
+			IndexedReaderPointer intern = Data.get(inputs.get(0));
+			int ch = intern.head();
 
 			if (ch != -1) {
-				SourceIntern intern1 = new SourceIntern(intern);
 				Node left = bridge.wrapInvocable(new Id(), Int.create(ch));
-				Node right = bridge.wrapInvocable(this, new Data<SourceIntern>(intern1));
+				Node right = bridge.wrapInvocable(this, new Data<IndexedReaderPointer>(intern.tail()));
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -163,18 +139,8 @@ public class Invocables {
 
 	public static class Seq implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			unwrapFully(bridge.getUnwrapper(), inputs.get(0));
+			ExpandUtil.expandFully(bridge.getUnwrapper(), inputs.get(0));
 			return inputs.get(1);
-		}
-
-		public static void unwrapFully(Fun<Node, Node> unwrapper, Node node) {
-			node = unwrapper.apply(node);
-
-			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				unwrapFully(unwrapper, tree.getLeft());
-				unwrapFully(unwrapper, tree.getRight());
-			}
 		}
 	}
 

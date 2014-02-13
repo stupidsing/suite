@@ -121,17 +121,17 @@ fc-add-functions STANDARD .p (
 	define _popen as (list-of string -> string -> data-of Stream) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Popen` | ijavacls | ijavaobj2
 	) >>
-	define throw as (any -> any) = (
-		atom:`CLASS!suite.lp.invocable.Invocables$Throw` | ijavacls | ijavaobj1
-	) >>
-	define fgetc as (data-of Stream -> number -> number) = (
-		atom:`CLASS!suite.lp.invocable.Invocables$Fgetc` | ijavacls | ijavaobj2
-	) >>
 	define log as (:t => :t -> :t) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Log1` | ijavacls | ijavaobj1
 	) >>
 	define log2 as (:t => string -> :t -> :t) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Log2` | ijavacls | ijavaobj2
+	) >>
+	define source as (data-of Stream -> string) = (
+		atom:`CLASS!suite.lp.invocable.Invocables$Source_` | ijavacls | ijavaobj1
+	) >>
+	define throw as (any -> any) = (
+		atom:`CLASS!suite.lp.invocable.Invocables$Throw` | ijavacls | ijavaobj1
 	) >>
 	define and = (x => y =>
 		if x then y else false
@@ -186,13 +186,6 @@ fc-add-functions STANDARD .p (
 			let r = scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
 		|| anything => init;
-	) >>
-	define source = (is =>
-		let fgets = (pos =>
-			let c = fgetc {is} {pos} >>
-			if (c >= 0) then (c; fgets {pos + 1}) else ()
-		) >>
-		fgets {0}
 	) >>
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>

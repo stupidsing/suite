@@ -10,6 +10,12 @@ public class Data<T> extends Node {
 		this.data = data;
 	}
 
+	public static <T> T get(Node node) {
+		@SuppressWarnings("unchecked")
+		T t = (T) ((Data<?>) node).getData();
+		return t;
+	}
+
 	public T getData() {
 		return data;
 	}
