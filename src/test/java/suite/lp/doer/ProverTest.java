@@ -29,8 +29,8 @@ public class ProverTest {
 		Suite.addRule(rs, "yes");
 
 		assertFalse(Suite.proveLogic(rs, "a"));
-		assertFalse(Suite.proveLogic(rs, "cut.begin .c, (dump ALT:.c, nl, cut.end .c, fail; yes)"));
-		assertTrue(Suite.proveLogic(rs, "(cut.begin .c, dump ALT:.c, nl, cut.end .c, fail); yes"));
+		assertFalse(Suite.proveLogic(rs, "cut.begin .c, (nl, cut.end .c, fail; yes)"));
+		assertTrue(Suite.proveLogic(rs, "(cut.begin .c, nl, cut.end .c, fail); yes"));
 	}
 
 	@Test

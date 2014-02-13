@@ -14,6 +14,8 @@ import suite.util.To;
 
 public class FindUtil {
 
+	private static Node eoq = new Reference();
+
 	public static Node collectSingle(Finder finder, Node in) {
 		List<Node> list = To.list(collect(finder, in));
 		if (list.size() == 1)
@@ -35,15 +37,10 @@ public class FindUtil {
 	 */
 	private static Source<Node> collect(final Finder finder, final Source<Node> in) {
 		final SynchronousQueue<Node> queue = new SynchronousQueue<>();
-		final Node eoq = new Reference();
 
 		final Sink<Node> sink = new Sink<Node>() {
 			public void sink(Node node) {
-				try {
-					queue.put(new Cloner().clone(node));
-				} catch (InterruptedException ex) {
-					LogUtil.error(ex);
-				}
+				put(queue, new Cloner().clone(node));
 			}
 		};
 
@@ -54,7 +51,7 @@ public class FindUtil {
 				} catch (Exception ex) {
 					LogUtil.error(ex);
 				} finally {
-					queue.offer(eoq);
+					put(queue, eoq);
 				}
 			}
 		}.start();
@@ -69,6 +66,14 @@ public class FindUtil {
 				}
 			}
 		};
+	}
+
+	private static void put(SynchronousQueue<Node> queue, Node node) {
+		try {
+			queue.put(node);
+		} catch (InterruptedException ex) {
+			LogUtil.error(ex);
+		}
 	}
 
 }
