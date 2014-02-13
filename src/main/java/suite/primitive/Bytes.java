@@ -221,7 +221,7 @@ public class Bytes implements Iterable<Byte> {
 			int capacity0 = bytes.length;
 
 			if (capacity0 < capacity1) {
-				int capacity = Math.min(capacity0, 4);
+				int capacity = Math.max(capacity0, 4);
 				while (capacity < capacity1)
 					capacity = capacity < 4096 ? capacity << 1 : capacity * 3 / 2;
 
