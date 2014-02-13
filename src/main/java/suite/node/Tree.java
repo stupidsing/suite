@@ -1,6 +1,10 @@
 package suite.node;
 
+import java.util.Iterator;
+import java.util.List;
+
 import suite.node.io.Operator;
+import suite.node.io.TermParser.TermOp;
 import suite.util.Util;
 
 public class Tree extends Node {
@@ -12,6 +16,53 @@ public class Tree extends Node {
 		this.operator = operator;
 		this.left = left;
 		this.right = right;
+	}
+
+	public static Node[] getParameters(Node node, int n) {
+		Node params[] = new Node[n];
+		Tree tree;
+
+		for (int i = 0; i < n - 1; i++)
+			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+				params[i] = tree.getLeft();
+				node = tree.getRight();
+			} else
+				throw new RuntimeException("Not enough parameters");
+
+		params[n - 1] = node;
+		return params;
+	}
+
+	public static Node list(Operator operator, List<Node> nodes) {
+		Node result = Atom.NIL;
+		int i = nodes.size();
+		while (--i >= 0)
+			result = create(operator, nodes.get(i), result);
+		return result;
+	}
+
+	public static Iterable<Node> iter(final Node node) {
+		return iter(node, TermOp.AND___);
+	}
+
+	public static Iterable<Node> iter(final Node node0, final Operator operator) {
+		return Util.iter(new Iterator<Node>() {
+			private Tree tree = decompose(node0, operator);
+
+			public boolean hasNext() {
+				return tree != null;
+			}
+
+			public Node next() {
+				Node next = tree.getLeft();
+				tree = Tree.decompose(tree.getRight(), operator);
+				return next;
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		});
 	}
 
 	public static Tree create(Operator operator, Node left, Node right) {

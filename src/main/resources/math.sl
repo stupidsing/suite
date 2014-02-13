@@ -24,7 +24,7 @@ equate0 (_ ^ 0 = 1) #
 equate0 (.f ^ 1 = .f) #
 equate0 (.f * (.g + .h) = .f * .g + .f * .h) #
 equate0 (.f ^ (.g + .h) = .f ^ .g * .f ^ .h) #
-equate0 (.f ^ (.g * .h) = .(f ^ .g) ^ .h) #
+equate0 (.f ^ (.g * .h) = (.f ^ .g) ^ .h) #
 equate0 (.tree0 = .tree1)
 	:- tree .tree0 .f0 .op .g0
 	, tree .tree1 .f1 .op .g1
@@ -56,7 +56,7 @@ equate0 (DV .y .x = (DV .y .z) * (DV .z .x)) #
 equate0 (DV (.f + .g) .x = (DV .f .x) + (DV .g .x)) #
 equate0 (DV (.f * .g) .x = (DV .f .x) * .g + .f * (DV .g .x)) #
 equate0 (DV .y .x = 1 / (DV .x .y)) #
-equate0 (DV .f .x = 0) :- is.int .f #
+equate0 (DV .f _ = 0) :- is.int .f #
 equate0 (DV .x .x = 1) #
 equate0 (DV (E ^ .x) .x = E ^ .x) #
 equate0 (DV (LN .x) .x = 1 / .x) #

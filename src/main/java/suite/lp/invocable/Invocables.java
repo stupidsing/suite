@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
@@ -119,6 +120,44 @@ public class Invocables {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
+		}
+	}
+
+	private static class SourceIntern {
+		private int position;
+		private IndexedReader reader;
+
+		private SourceIntern(SourceIntern sourceIntern) {
+			position = sourceIntern.position + 1;
+			reader = sourceIntern.reader;
+		}
+
+		private SourceIntern(IndexedReader reader) {
+			this.reader = reader;
+		}
+	}
+
+	public static class Source_ implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
+			Data<?> data = (Data<?>) inputs.get(0);
+			SourceIntern intern = new SourceIntern((IndexedReader) data.getData());
+			return new Source0().invoke(bridge, Arrays.<Node> asList(new Data<SourceIntern>(intern)));
+		}
+	}
+
+	private static class Source0 implements Invocable {
+		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
+			Data<?> data = (Data<?>) inputs.get(0);
+			SourceIntern intern = (SourceIntern) data.getData();
+			int ch = intern.reader.read(intern.position);
+
+			if (ch != -1) {
+				SourceIntern intern1 = new SourceIntern(intern);
+				Node left = bridge.wrapInvocable(new Id(), Int.create(ch));
+				Node right = bridge.wrapInvocable(this, new Data<SourceIntern>(intern1));
+				return Tree.create(TermOp.OR____, left, right);
+			} else
+				return Atom.NIL;
 		}
 	}
 

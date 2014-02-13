@@ -13,6 +13,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
 
 import com.google.common.collect.BiMap;
@@ -29,13 +30,13 @@ public class InstructionExtractor implements AutoCloseable {
 
 	public List<Instruction> extractInstructions(Node node) {
 		List<Instruction> list = new ArrayList<>();
-		for (Node elem : Node.iter(node))
+		for (Node elem : Tree.iter(node))
 			list.add(extract(elem));
 		return list;
 	}
 
 	private Instruction extract(Node node) {
-		List<Node> rs = Node.tupleToList(node);
+		List<Node> rs = tupleToList(node);
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;
 
@@ -69,6 +70,19 @@ public class InstructionExtractor implements AutoCloseable {
 			return instruction;
 		} else
 			throw new RuntimeException("Unknown opcode " + insnName);
+	}
+
+	private List<Node> tupleToList(Node node) {
+		List<Node> results = new ArrayList<>();
+		Tree tree;
+
+		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+			results.add(tree.getLeft());
+			node = tree.getRight();
+		}
+
+		results.add(node);
+		return results;
 	}
 
 	private int getRegisterNumber(List<Node> rs, int index) {

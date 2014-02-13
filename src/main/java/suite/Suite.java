@@ -6,9 +6,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
@@ -87,16 +86,13 @@ public class Suite {
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node getRuleList(RuleSet rs, Prototype proto) {
-		Deque<Node> deque = new ArrayDeque<>();
+		List<Node> list = new ArrayList<>();
 
 		for (Rule rule : rs.getRules())
 			if (proto == null || proto.equals(Prototype.get(rule)))
-				deque.addFirst(Rule.formClause(rule));
+				list.add(Rule.formClause(rule));
 
-		Node result = Atom.NIL;
-		for (Node node : deque)
-			result = Tree.create(TermOp.NEXT__, node, result);
-		return result;
+		return Tree.list(TermOp.NEXT__, list);
 	}
 
 	/**
@@ -105,7 +101,7 @@ public class Suite {
 	public static String stringize(Node node) {
 		StringBuilder sb = new StringBuilder();
 
-		for (Node elem : Node.iter(node)) {
+		for (Node elem : Tree.iter(node)) {
 			Int i = (Int) elem;
 			sb.append((char) i.getNumber());
 		}

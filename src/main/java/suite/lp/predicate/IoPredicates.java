@@ -12,6 +12,7 @@ import suite.lp.predicate.SystemPredicates.SystemPredicate;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
+import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.util.FileUtil;
 import suite.util.LogUtil;
@@ -63,7 +64,7 @@ public class IoPredicates {
 
 	public static class FileRead implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Node.tupleToArray(ps, 2);
+			final Node params[] = Tree.getParameters(ps, 2);
 			String filename = Formatter.display(params[0]);
 			try (InputStream is = new FileInputStream(filename)) {
 				String content = To.string(is);
@@ -76,7 +77,7 @@ public class IoPredicates {
 
 	public static class FileWrite implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Node.tupleToArray(ps, 2);
+			final Node params[] = Tree.getParameters(ps, 2);
 			String filename = Formatter.display(params[0]);
 			String content = Formatter.display(params[1]);
 

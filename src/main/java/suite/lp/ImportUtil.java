@@ -16,6 +16,7 @@ import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Node;
+import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
 
 public class ImportUtil {
@@ -65,7 +66,7 @@ public class ImportUtil {
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
 		List<Rule> rules = new ArrayList<>();
 
-		for (Node elem : Node.iter(node, TermOp.NEXT__))
+		for (Node elem : Tree.iter(node, TermOp.NEXT__))
 			rules.add(Rule.formRule(elem));
 
 		new Checker().check(rules);

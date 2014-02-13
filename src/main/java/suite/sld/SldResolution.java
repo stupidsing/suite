@@ -30,7 +30,7 @@ public class SldResolution {
 
 	private static final Atom not = Atom.create("NOT");
 
-	public List<Node> resolve(final Node node) {
+	public List<Node> resolve(Node node) {
 		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "pt.sl"));
 		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
 		Finder finder = builder.build(ruleSet //
@@ -47,8 +47,8 @@ public class SldResolution {
 		Node n0 = FindUtil.collectSingle(finder, node);
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
 
-		for (Node n1 : Node.iter(n0, TermOp.AND___)) {
-			final List<Node> ors = To.list(Node.iter(n1, TermOp.AND___));
+		for (Node n1 : Tree.iter(n0, TermOp.AND___)) {
+			final List<Node> ors = To.list(Tree.iter(n1, TermOp.AND___));
 
 			for (int i = 0; i < ors.size(); i++) {
 				final int index = i;
@@ -68,7 +68,7 @@ public class SldResolution {
 			Source<List<Node>> value1 = orsMap.get(negate(entry.getKey()));
 
 			if (value1 != null)
-				results.add(Node.list(TermOp.AND___, Util.add(value0.source(), value1.source())));
+				results.add(Tree.list(TermOp.AND___, Util.add(value0.source(), value1.source())));
 		}
 
 		return results;

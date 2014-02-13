@@ -2,7 +2,6 @@ package suite.lp.predicate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import suite.Suite;
 import suite.lp.Journal;
@@ -24,7 +23,7 @@ public class RuleSetPredicates {
 
 	public static class Asserta implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 1);
+			Node params[] = Tree.getParameters(ps, 1);
 			RuleSet ruleSet = prover.ruleSet();
 			ruleSet.addRuleToFront(Rule.formRule(params[0]));
 			return true;
@@ -33,7 +32,7 @@ public class RuleSetPredicates {
 
 	public static class Assertz implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 1);
+			Node params[] = Tree.getParameters(ps, 1);
 			Suite.addRule(prover.ruleSet(), params[0]);
 			return true;
 		}
@@ -43,17 +42,12 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			RuleSet ruleSet = prover.ruleSet();
 			List<Rule> rules = ruleSet.getRules();
-			ListIterator<Rule> iter = rules.listIterator(rules.size());
-			Node allRules = Atom.NIL;
+			List<Node> nodes = new ArrayList<>();
 
-			while (iter.hasPrevious()) {
-				Rule r = iter.previous();
-				Node head = r.getHead(), tail = r.getTail();
-				Tree node = Tree.create(TermOp.IS____, head, tail);
-				allRules = Tree.create(TermOp.NEXT__, node, allRules);
-			}
+			for (Rule rule : rules)
+				nodes.add(Tree.create(TermOp.IS____, rule.getHead(), rule.getTail()));
 
-			return prover.bind(allRules, ps);
+			return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
 		}
 	}
 
@@ -89,7 +83,7 @@ public class RuleSetPredicates {
 
 	public static class Retract implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 1);
+			Node params[] = Tree.getParameters(ps, 1);
 			prover.ruleSet().removeRule(Rule.formRule(params[0]));
 			return true;
 		}
@@ -97,7 +91,7 @@ public class RuleSetPredicates {
 
 	public static class RetractAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 1);
+			Node params[] = Tree.getParameters(ps, 1);
 			Rule rule0 = Rule.formRule(params[0]);
 
 			RuleSet ruleSet = prover.ruleSet();
@@ -122,7 +116,7 @@ public class RuleSetPredicates {
 
 	public static class With implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			RuleSet ruleSet = prover.ruleSet();
 			RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
 			CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);

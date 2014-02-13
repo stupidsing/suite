@@ -154,7 +154,7 @@ public class SystemPredicates {
 
 	private class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 3);
+			Node params[] = Tree.getParameters(ps, 3);
 			return prover.bind(params[2], findAll(prover, params[0], params[1]));
 		}
 	}
@@ -169,7 +169,7 @@ public class SystemPredicates {
 		});
 
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Node.tupleToArray(ps, 3);
+			Node params[] = Tree.getParameters(ps, 3);
 
 			// Avoids changing hash-code - but making memoize not re-entrant
 			((Reference) params[0]).bound(uniqueReference);

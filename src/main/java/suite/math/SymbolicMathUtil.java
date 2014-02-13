@@ -10,10 +10,9 @@ import java.util.Set;
 
 import suite.Suite;
 import suite.lp.doer.Prover;
-import suite.node.Atom;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.TermParser.TermOp;
 import suite.node.util.Complexity;
 
 public class SymbolicMathUtil {
@@ -56,10 +55,10 @@ public class SymbolicMathUtil {
 	}
 
 	private static Set<Node> findEqualities(Node node) {
-		Node v = Node.ref(), r = Node.ref();
+		Node v = new Reference(), r = new Reference();
 
-		Node equate = Node.list(Atom.create("equate1"), Node.list(TermOp.EQUAL_, node, v));
-		Node goal = Node.list(Atom.create("find.all"), v, equate, r);
+		Node equate = Suite.substitute("equate1 (.0 = .1)", node, v);
+		Node goal = Suite.substitute("find.all .0 .1 .2", v, equate, r);
 
 		if (prover.prove(goal)) {
 			Set<Node> results = new HashSet<>();
