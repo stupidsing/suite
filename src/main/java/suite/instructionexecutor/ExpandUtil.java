@@ -9,21 +9,28 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
+import suite.util.FunUtil.Source;
 
 public class ExpandUtil {
 
-	public static void expandList(Fun<Node, Node> unwrapper, Node node, Sink<Node> sink) {
-		Tree tree;
+	public static Source<Node> expandList(final Fun<Node, Node> unwrapper, final Node node) {
+		return new Source<Node>() {
+			private Node node_ = node;
 
-		while ((tree = Tree.decompose(node)) != null) {
-			sink.sink(unwrapper.apply(tree.getLeft()));
-			node = unwrapper.apply(tree.getRight());
-			Tree.forceSetRight(tree, null); // Facilitates garbage collection
-		}
+			public Node source() {
+				Tree tree;
+				if ((tree = Tree.decompose(node_)) != null) {
+					node_ = unwrapper.apply(tree.getRight());
 
-		if (node != Atom.NIL)
-			throw new RuntimeException("Not a list, unable to expand");
+					// Facilitates garbage collection
+					Tree.forceSetRight(tree, null);
+					return unwrapper.apply(tree.getLeft());
+				} else if (node_ == Atom.NIL)
+					return null;
+				else
+					throw new RuntimeException("Not a list, unable to expand");
+			}
+		};
 	}
 
 	/**
@@ -46,19 +53,16 @@ public class ExpandUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and write
 	 * corresponding characters into the writer.
 	 */
-	public static void expandToWriter(final Fun<Node, Node> unwrapper, Node node, final Writer writer) throws IOException {
-		expandList(unwrapper, node, new Sink<Node>() {
-			public void sink(Node node) {
-				try {
-					int c = ((Int) node).getNumber();
-					writer.write(c);
-					if (c == 10)
-						writer.flush();
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		});
+	public static void expandToWriter(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
+		Source<Node> source = expandList(unwrapper, node);
+		Node n;
+
+		while ((n = source.source()) != null) {
+			int c = ((Int) n).getNumber();
+			writer.write(c);
+			if (c == 10)
+				writer.flush();
+		}
 	}
 
 	/**

@@ -21,7 +21,7 @@ import suite.node.io.Formatter;
 import suite.node.io.TermParser.TermOp;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
+import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 
 public class Invocables {
@@ -80,13 +80,13 @@ public class Invocables {
 	public static class Popen implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			final Fun<Node, Node> unwrapper = bridge.getUnwrapper();
-			final List<String> list = new ArrayList<>();
+			List<String> list = new ArrayList<>();
 
-			ExpandUtil.expandList(unwrapper, inputs.get(0), new Sink<Node>() {
-				public void sink(Node node) {
-					list.add(ExpandUtil.expandString(unwrapper, node));
-				}
-			});
+			Source<Node> source = ExpandUtil.expandList(unwrapper, inputs.get(0));
+			Node node;
+
+			while ((node = source.source()) != null)
+				list.add(ExpandUtil.expandString(unwrapper, node));
 
 			final Node in = inputs.get(1);
 
