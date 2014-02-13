@@ -2,17 +2,16 @@ package suite;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
-import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
+import suite.lp.search.FindUtil;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -20,11 +19,8 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.util.CacheUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
-import suite.util.To;
 import suite.util.Util;
 
 public class EvaluateUtil {
@@ -67,7 +63,7 @@ public class EvaluateUtil {
 	}
 
 	public List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
-		return collect(builder.build(rs, lp), Atom.NIL);
+		return FindUtil.collectList(builder.build(rs, lp), Atom.NIL);
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
@@ -116,9 +112,7 @@ public class EvaluateUtil {
 		try {
 			ProverConfig pc = fcc.getProverConfig();
 			Finder finder = fccFinderFun.apply(Pair.create(pc, compileNode));
-
-			List<Node> nodes = collect(finder, appendLibraries(fcc));
-			return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
+			return FindUtil.collectSingle(finder, appendLibraries(fcc));
 		} finally {
 			LogUtil.info("Code compiled in " + (System.currentTimeMillis() - start) + "ms");
 		}
@@ -132,20 +126,6 @@ public class EvaluateUtil {
 				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
 
 		return node;
-	}
-
-	private List<Node> collect(Finder finder, Node in) {
-		final List<Node> nodes = new ArrayList<>();
-
-		Source<Node> source = To.source(in);
-		Sink<Node> sink = new Sink<Node>() {
-			public void sink(Node node) {
-				nodes.add(new Cloner().clone(node));
-			}
-		};
-
-		finder.find(source, sink);
-		return nodes;
 	}
 
 }

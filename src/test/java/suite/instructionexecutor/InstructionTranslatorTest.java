@@ -11,8 +11,8 @@ import suite.Suite;
 import suite.instructionexecutor.TranslatedRunUtil.Closure;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRunConfig;
-import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
+import suite.lp.search.FindUtil;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -21,8 +21,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.To;
 
 public class InstructionTranslatorTest {
 
@@ -87,20 +85,7 @@ public class InstructionTranslatorTest {
 	private Node compile(RuleSet ruleSet, Node goal, Node program) {
 		Builder builder = new InterpretedProverBuilder();
 		Finder compiler = builder.build(ruleSet, goal);
-		final Node holder[] = new Node[] { null };
-
-		compiler.find(To.source(program), new Sink<Node>() {
-			public void sink(Node node) {
-				holder[0] = new Cloner().clone(node);
-			}
-		});
-
-		Node code = holder[0];
-
-		if (code != null)
-			return code;
-		else
-			throw new RuntimeException("Compilation error");
+		return FindUtil.collectSingle(compiler, program);
 	}
 
 	private Node execute(Node code) throws IOException {

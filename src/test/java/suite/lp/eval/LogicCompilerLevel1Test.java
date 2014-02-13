@@ -3,25 +3,21 @@ package suite.lp.eval;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
+import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
-import suite.util.To;
 
 public class LogicCompilerLevel1Test {
 
@@ -40,8 +36,9 @@ public class LogicCompilerLevel1Test {
 		, Atom.create("LAZY")));
 
 		Node input = Suite.parse("1 + 2");
+		RuleSet rs = Suite.createRuleSet(filenames);
+		Node result = FindUtil.collectSingle(finder(rs, goal), input);
 
-		Node result = collectSingle(filenames, goal, input);
 		System.out.println(result);
 		assertNotNull(result);
 	}
@@ -59,31 +56,15 @@ public class LogicCompilerLevel1Test {
 
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node program = Suite.parse("((1, 2,), (3, 4,),)");
-		List<Node> results = collect(rs, goal, program);
+		List<Node> results = FindUtil.collectList(finder(rs, goal), program);
 
 		System.out.println(results);
 		assertTrue(results.size() == 4);
 	}
 
-	private Node collectSingle(List<String> filenames, Node goal, Node input) {
-		List<Node> nodes = collect(Suite.createRuleSet(filenames), goal, input);
-		return nodes.size() == 1 ? nodes.get(0).finalNode() : null;
-	}
-
-	private List<Node> collect(RuleSet rs, Node goal, Node input) {
+	private Finder finder(RuleSet rs, Node goal) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
-		Finder finder = builder.build(rs, goal);
-		final List<Node> nodes = new ArrayList<>();
-
-		Source<Node> source = To.source(input);
-		Sink<Node> sink = new Sink<Node>() {
-			public void sink(Node node) {
-				nodes.add(new Cloner().clone(node));
-			}
-		};
-
-		finder.find(source, sink);
-		return nodes;
+		return builder.build(rs, goal);
 	}
 
 }

@@ -8,16 +8,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.Suite;
-import suite.lp.doer.Cloner;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
+import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
@@ -45,15 +44,7 @@ public class SldResolution {
 						+ ", sink .n6" //
 				));
 
-		final Node sunk[] = new Node[] { null };
-
-		finder.find(To.source(node), new Sink<Node>() {
-			public void sink(Node node) {
-				sunk[0] = new Cloner().clone(node);
-			}
-		});
-
-		Node n0 = sunk[0];
+		Node n0 = FindUtil.collectSingle(finder, node);
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
 
 		for (Node n1 : Node.iter(n0, TermOp.AND___)) {
