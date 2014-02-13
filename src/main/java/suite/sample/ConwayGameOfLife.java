@@ -48,7 +48,7 @@ public class ConwayGameOfLife {
 						+ (game0[x + 1][y + 1] ? 1 : 0) //
 				;
 
-				game1[x][y] = sum == 3 || (game0[x][y] && sum == 2);
+				game1[x][y] = sum == 3 || game0[x][y] && sum == 2;
 			}
 
 		return new ConwayGameOfLife(game1);
