@@ -1,7 +1,6 @@
 package suite.cli;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -27,8 +26,8 @@ public class Main implements AutoCloseable {
 	private CommandOption opt;
 	private CommandDispatcher dispatcher;
 
-	private Reader reader = new BufferedReader(new InputStreamReader(System.in, FileUtil.charset));
-	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, FileUtil.charset));
+	private Reader reader = new InputStreamReader(System.in, FileUtil.charset);
+	private Writer writer = new OutputStreamWriter(System.out, FileUtil.charset);
 
 	public static void main(String args[]) {
 		int code;
