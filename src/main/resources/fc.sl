@@ -124,7 +124,7 @@ fc-add-functions STANDARD .p (
 	define throw as (any -> any) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Throw` | ijavacls | ijavaobj1
 	) >>
-	define fgetc as (any -> number -> number) = (
+	define fgetc as (data-of Stream -> number -> number) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Fgetc` | ijavacls | ijavaobj2
 	) >>
 	define log as (:t => :t -> :t) = (
@@ -187,7 +187,7 @@ fc-add-functions STANDARD .p (
 			fun {h} {head {r}}; r
 		|| anything => init;
 	) >>
-	define source = (is as data-of Stream =>
+	define source = (is =>
 		let fgets = (pos =>
 			let c = fgetc {is} {pos} >>
 			if (c >= 0) then (c; fgets {pos + 1}) else ()
