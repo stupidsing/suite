@@ -20,8 +20,10 @@ public class FindUtil {
 		List<Node> list = To.list(collect(finder, in));
 		if (list.size() == 1)
 			return list.get(0).finalNode();
+		else if (!list.isEmpty())
+			throw new RuntimeException("Too many results");
 		else
-			throw new RuntimeException("Single result expected");
+			throw new RuntimeException("Failure");
 	}
 
 	public static List<Node> collectList(Finder finder, Node in) {
