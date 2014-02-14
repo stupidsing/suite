@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
@@ -32,7 +33,23 @@ public class LempelZivWelch<Unit> {
 		this.units = units;
 	}
 
-	public void encode(Source<Unit> source, Sink<Integer> sink) {
+	public Source<Integer> encode(final Source<Unit> in) {
+		return FunUtil.suck(new Sink<Sink<Integer>>() {
+			public void sink(Sink<Integer> sink) {
+				encode(in, sink);
+			}
+		});
+	}
+
+	public Source<Unit> decode(final Source<Integer> in) {
+		return FunUtil.suck(new Sink<Sink<Unit>>() {
+			public void sink(Sink<Unit> sink) {
+				decode(in, sink);
+			}
+		});
+	}
+
+	private void encode(Source<Unit> source, Sink<Integer> sink) {
 		Trie root = new Trie(null);
 		int index = 0;
 
@@ -56,7 +73,7 @@ public class LempelZivWelch<Unit> {
 			sink.sink(trie.index);
 	}
 
-	public void decode(Source<Integer> source, Sink<Unit> sink) {
+	private void decode(Source<Integer> source, Sink<Unit> sink) {
 		List<List<Unit>> dict = new ArrayList<>();
 
 		for (Unit unit : units)

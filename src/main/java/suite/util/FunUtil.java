@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.concurrent.SynchronousQueue;
 
 public class FunUtil {
 
@@ -154,6 +155,60 @@ public class FunUtil {
 
 	public static <T> Pipe<T> pipe() {
 		return new Pipe<>();
+	}
+
+	/**
+	 * Sucks data from a sink and produce into a source.
+	 */
+	public static <T> Source<T> suck(final Sink<Sink<T>> fun) {
+
+		// Unfortunately the synchronous queue class do not support null, we
+		// have to use a special object to denote end of data. Thus the queue
+		// needs to be of type Object.
+		final Object eod = new Object();
+		final SynchronousQueue<Object> queue = new SynchronousQueue<>();
+
+		final Sink<T> enqueue = new Sink<T>() {
+			public void sink(T t) {
+				enqueue(queue, t);
+			}
+		};
+
+		new Thread() {
+			public void run() {
+				try {
+					fun.sink(enqueue);
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				} finally {
+					enqueue(queue, eod);
+				}
+			}
+		}.start();
+
+		return new Source<T>() {
+			public T source() {
+				try {
+					Object object = queue.take();
+					if (object != eod) {
+						@SuppressWarnings("unchecked")
+						T t = (T) object;
+						return t;
+					} else
+						return null;
+				} catch (InterruptedException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		};
+	}
+
+	private static <T> void enqueue(SynchronousQueue<T> queue, T t) {
+		try {
+			queue.put(t);
+		} catch (InterruptedException ex) {
+			LogUtil.error(ex);
+		}
 	}
 
 }
