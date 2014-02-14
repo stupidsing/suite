@@ -16,15 +16,15 @@ public class CharsInvocables {
 
 	public static class Append implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Chars chars0 = (Chars) ((Data<?>) inputs.get(0)).getData();
-			Chars chars1 = (Chars) ((Data<?>) inputs.get(1)).getData();
+			Chars chars0 = Data.get(inputs.get(0));
+			Chars chars1 = Data.get(inputs.get(1));
 			return new Data<Chars>(chars0.append(chars1));
 		}
 	}
 
 	public static class CharsString implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Chars chars = (Chars) ((Data<?>) inputs.get(0)).getData();
+			Chars chars = Data.get(inputs.get(0));
 
 			if (!chars.isEmpty()) {
 				Node left = bridge.wrapInvocable(new Id(), Int.create(chars.get(0)));
@@ -46,7 +46,7 @@ public class CharsInvocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			int start = ((Int) inputs.get(0)).getNumber();
 			int end = ((Int) inputs.get(1)).getNumber();
-			Chars chars = (Chars) ((Data<?>) inputs.get(2)).getData();
+			Chars chars = Data.get(inputs.get(2));
 			return new Data<Chars>(chars.subchars(start, end));
 		}
 	}
