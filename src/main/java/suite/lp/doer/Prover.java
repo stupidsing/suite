@@ -116,9 +116,8 @@ public class Prover {
 				default:
 				}
 			} else if (query instanceof Data) {
-				Object data = ((Data<?>) query).getData();
-				Object bool = ((Source<?>) data).source();
-				query = isSuccess((Boolean) bool);
+				Source<Boolean> source = Data.get(query);
+				query = isSuccess(source.source());
 				continue;
 			}
 
