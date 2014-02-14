@@ -5,7 +5,7 @@ define cs-append as (data-of Chars -> data-of Chars -> data-of Chars) = (
 define cs-from-string as (string -> data-of Chars) = (
 	atom:`CLASS!suite.lp.invocable.CharsInvocables$StringChars` | ijavacls | ijavaobj1
 ) >>
-define cs-subchars as (data-of Chars -> number -> number -> data-of Chars) = (
+define cs-subchars as (number -> number -> data-of Chars -> data-of Chars) = (
 	atom:`CLASS!suite.lp.invocable.CharsInvocables$Subchars` | ijavacls | ijavaobj3
 ) >>
 define cs-to-string as (data-of Chars -> string) = (

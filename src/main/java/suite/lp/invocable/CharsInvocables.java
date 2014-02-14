@@ -44,9 +44,9 @@ public class CharsInvocables {
 
 	public static class Subchars implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
-			Chars chars = (Chars) ((Data<?>) inputs.get(0)).getData();
-			int start = ((Int) inputs.get(1)).getNumber();
-			int end = ((Int) inputs.get(2)).getNumber();
+			int start = ((Int) inputs.get(0)).getNumber();
+			int end = ((Int) inputs.get(1)).getNumber();
+			Chars chars = (Chars) ((Data<?>) inputs.get(2)).getData();
 			return new Data<Chars>(chars.subchars(start, end));
 		}
 	}
