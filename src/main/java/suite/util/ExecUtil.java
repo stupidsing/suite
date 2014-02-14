@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 
 public class ExecUtil {
@@ -13,25 +12,6 @@ public class ExecUtil {
 	private String out;
 	private String err;
 	private Thread threads[];
-
-	private class IoThread extends Thread {
-		private InputStream is;
-		private OutputStream os;
-
-		private IoThread(InputStream is, OutputStream os) {
-			this.is = is;
-			this.os = os;
-		}
-
-		public void run() {
-			try (InputStream is_ = is; OutputStream os_ = os) {
-				Copy.stream(is_, os_);
-			} catch (InterruptedIOException ex) {
-			} catch (Exception ex) {
-				LogUtil.error(ex);
-			}
-		}
-	}
 
 	public ExecUtil(String command[], String in) throws IOException {
 		InputStream bis = new ByteArrayInputStream(in.getBytes(FileUtil.charset));
@@ -45,9 +25,9 @@ public class ExecUtil {
 			InputStream pes = process.getErrorStream();
 			OutputStream pos = process.getOutputStream();
 
-			threads = new Thread[] { new IoThread(pis, bos0) //
-					, new IoThread(pes, bos1) //
-					, new IoThread(bis, pos) };
+			threads = new Thread[] { Copy.streamByThread(pis, bos0) //
+					, Copy.streamByThread(pes, bos1) //
+					, Copy.streamByThread(bis, pos) };
 
 			for (Thread thread : threads)
 				thread.start();

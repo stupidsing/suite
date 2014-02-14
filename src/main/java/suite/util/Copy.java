@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -59,6 +60,19 @@ public class Copy {
 				out.flush();
 			}
 		}
+	}
+
+	public static Thread streamByThread(final InputStream is, final OutputStream os) throws IOException {
+		return new Thread() {
+			public void run() {
+				try (InputStream is_ = is; OutputStream os_ = os) {
+					stream(is_, os_);
+				} catch (InterruptedIOException ex) {
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
+			}
+		};
 	}
 
 }

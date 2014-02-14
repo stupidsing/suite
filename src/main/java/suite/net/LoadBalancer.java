@@ -6,10 +6,11 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.util.Copy;
 import suite.util.LogUtil;
 import suite.util.SocketUtil;
 import suite.util.SocketUtil.Io;
@@ -60,9 +61,14 @@ public class LoadBalancer {
 					InputStream sis = socket.getInputStream();
 					OutputStream sos = socket.getOutputStream();
 
-					AtomicBoolean quitter = new AtomicBoolean(false);
-					new CopyStreamThread(is, sos, quitter).start();
-					new CopyStreamThread(sis, os, quitter).start();
+					List<Thread> threads = Arrays.<Thread> asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
+
+					for (Thread thread : threads)
+						thread.start();
+					for (Thread thread : threads)
+						thread.join();
+				} catch (InterruptedException ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 		};
