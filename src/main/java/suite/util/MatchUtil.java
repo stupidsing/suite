@@ -44,9 +44,7 @@ public class MatchUtil {
 	private List<String[]> findMatches(String pattern, String input) {
 		Source<State> source = To.source(new State(input));
 
-		for (final char ch : Util.chars(pattern)) {
-			final Source<State> source0 = source;
-
+		for (final char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
@@ -64,14 +62,14 @@ public class MatchUtil {
 							}
 						};
 					}
-				}, source0));
+				}, source));
 				break;
 			case '?':
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 					public Source<State> apply(State state) {
 						return !state.eof() ? To.source(new State(state, 1)) : noResult;
 					}
-				}, source0));
+				}, source));
 				break;
 			default:
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
@@ -79,9 +77,8 @@ public class MatchUtil {
 						boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
 						return isMatch ? To.source(new State(state, 1)) : noResult;
 					}
-				}, source0));
+				}, source));
 			}
-		}
 
 		source = FunUtil.filter(new Fun<State, Boolean>() {
 			public Boolean apply(State state) {
