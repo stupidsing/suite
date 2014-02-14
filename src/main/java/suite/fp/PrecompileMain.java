@@ -15,7 +15,7 @@ import suite.lp.doer.ProverConfig;
 public class PrecompileMain {
 
 	private static final List<String> allLibraries = Arrays.asList( //
-			"CHARS", "FREQ", "HEAP", "MATCH", "MATH", "MONAD", "PERMUTE", "RB-TREE", "STANDARD" //
+			"ARRAY", "CHARS", "FREQ", "HEAP", "MATCH", "MATH", "MONAD", "PERMUTE", "RB-TREE", "STANDARD" //
 	);
 
 	public static void main(String args[]) throws IOException {
