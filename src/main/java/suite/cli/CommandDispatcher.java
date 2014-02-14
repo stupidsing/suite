@@ -170,7 +170,7 @@ public class CommandDispatcher {
 			node = generalizer.generalize(node);
 			Prover prover = new Prover(opt.pc(ruleSet));
 
-			Node elab = new Data<Source<Boolean>>(new Source<Boolean>() {
+			Node elab = new Data<>(new Source<Boolean>() {
 				public Boolean source() {
 					String dump = generalizer.dumpVariables();
 					if (!dump.isEmpty())

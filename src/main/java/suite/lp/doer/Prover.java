@@ -96,7 +96,7 @@ public class Prover {
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
 					final int pit = journal.getPointInTime();
-					Node bt = new Data<Source<Boolean>>(new Source<Boolean>() {
+					Node bt = new Data<>(new Source<Boolean>() {
 						public Boolean source() {
 							journal.undoBinds(pit);
 							return Boolean.TRUE;
@@ -177,7 +177,7 @@ public class Prover {
 			Rule rule = iter.previous();
 
 			Generalizer generalizer = new Generalizer();
-			generalizer.setCut(new Data<Source<Boolean>>(new Source<Boolean>() {
+			generalizer.setCut(new Data<>(new Source<Boolean>() {
 				public Boolean source() {
 					alt = alt0;
 					return Boolean.TRUE;

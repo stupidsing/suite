@@ -212,7 +212,7 @@ public class SystemPredicates {
 	private Node findAll(Prover prover, final Node var, Node goal) {
 		final Stack<Node> stack = new Stack<>();
 
-		Tree subGoal = Tree.create(TermOp.AND___, goal, new Data<Source<Boolean>>(new Source<Boolean>() {
+		Tree subGoal = Tree.create(TermOp.AND___, goal, new Data<>(new Source<Boolean>() {
 			public Boolean source() {
 				stack.push(new Cloner().clone(var));
 				return Boolean.FALSE;

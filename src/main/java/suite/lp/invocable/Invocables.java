@@ -86,7 +86,7 @@ public class Invocables {
 			try {
 				final Process process = Runtime.getRuntime().exec(list.toArray(new String[0]));
 				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
-				Node result = new Data<IndexedReader>(new IndexedReader(isr));
+				Node result = new Data<>(new IndexedReader(isr));
 
 				// Use a separate thread to write to the process, so that read
 				// and write occur at the same time and would not block up.
@@ -130,7 +130,7 @@ public class Invocables {
 
 			if (ch != -1) {
 				Node left = bridge.wrapInvocable(new Id(), Int.create(ch));
-				Node right = bridge.wrapInvocable(this, new Data<IndexedReaderPointer>(intern.tail()));
+				Node right = bridge.wrapInvocable(this, new Data<>(intern.tail()));
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;

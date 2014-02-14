@@ -175,7 +175,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private Node wrapInvocable0(Invocable invocable, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
-		frame.registers[1] = new Data<Invocable>(invocable);
+		frame.registers[1] = new Data<>(invocable);
 		return new Closure(frame, FunInstructionExecutor.this.invokeJavaEntryPoint);
 	}
 

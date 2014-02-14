@@ -20,7 +20,7 @@ public class ArrayInvocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			List<Node> array0 = Data.get(inputs.get(0));
 			List<Node> array1 = Data.get(inputs.get(1));
-			return new Data<List<Node>>(Util.add(array0, array1));
+			return new Data<>(Util.add(array0, array1));
 		}
 	}
 
@@ -30,7 +30,7 @@ public class ArrayInvocables {
 
 			if (!array.isEmpty()) {
 				Node left = bridge.wrapInvocable(new Id(), array.get(0));
-				Node right = bridge.wrapInvocable(this, new Data<List<Node>>(array.subList(1, array.size())));
+				Node right = bridge.wrapInvocable(this, new Data<>(array.subList(1, array.size())));
 				return Tree.create(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -41,14 +41,14 @@ public class ArrayInvocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			int position = ((Int) inputs.get(0)).getNumber();
 			List<Node> array = Data.get(inputs.get(1));
-			return new Data<List<Node>>(Util.left(array, position));
+			return new Data<>(Util.left(array, position));
 		}
 	}
 
 	public static class ListArray implements Invocable {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			Source<Node> value = ExpandUtil.expandList(bridge.getUnwrapper(), inputs.get(0));
-			return new Data<List<Node>>(To.list(value));
+			return new Data<>(To.list(value));
 		}
 	}
 
@@ -56,7 +56,7 @@ public class ArrayInvocables {
 		public Node invoke(InvocableBridge bridge, List<Node> inputs) {
 			int position = ((Int) inputs.get(0)).getNumber();
 			List<Node> array = Data.get(inputs.get(1));
-			return new Data<List<Node>>(Util.right(array, position));
+			return new Data<>(Util.right(array, position));
 		}
 	}
 

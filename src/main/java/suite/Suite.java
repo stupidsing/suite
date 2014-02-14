@@ -55,7 +55,7 @@ public class Suite {
 	}
 
 	public static Node applyReader(Reader reader, Node func) {
-		Data<IndexedReader> data = new Data<IndexedReader>(new IndexedReader(reader));
+		Data<IndexedReader> data = new Data<>(new IndexedReader(reader));
 		return Suite.substitute("source {skip-type-check atom:`.0`} | .1", data, func);
 	}
 
