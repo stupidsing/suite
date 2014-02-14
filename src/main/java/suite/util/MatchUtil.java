@@ -1,6 +1,8 @@
 package suite.util;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 import suite.immutable.ImmutableList;
 import suite.util.FunUtil.Fun;
@@ -35,6 +37,11 @@ public class MatchUtil {
 	}
 
 	public String[] match(String pattern, String input) {
+		List<String[]> matches = findMatches(pattern, input);
+		return matches.size() == 1 ? matches.get(0) : null;
+	}
+
+	private List<String[]> findMatches(String pattern, String input) {
 		Source<State> source = To.source(new State(input));
 
 		for (final char ch : Util.chars(pattern)) {
@@ -82,13 +89,15 @@ public class MatchUtil {
 			}
 		}, source);
 
-		State state = source.source();
+		List<String[]> results = new ArrayList<>();
+		State state;
 
-		if (state != null) {
+		while ((state = source.source()) != null) {
 			Deque<String> deque = state.matches.reverse();
-			return deque.toArray(new String[deque.size()]);
-		} else
-			return null;
+			results.add(deque.toArray(new String[deque.size()]));
+		}
+
+		return results;
 	}
 
 }
