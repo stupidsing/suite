@@ -2,7 +2,6 @@ package suite.util;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -50,10 +49,9 @@ public class JdkUtil implements Closeable {
 	private void compile(String packageName, String className, String java) throws IOException {
 		String pathName = srcDir + "/" + packageName.replace('.', '/');
 		String filename = pathName + "/" + className + ".java";
-		new File(pathName).mkdirs();
 
 		LogUtil.info("Writing " + filename);
-		try (OutputStream os = new FileOutputStream(filename)) {
+		try (OutputStream os = FileUtil.out(new File(filename))) {
 			os.write(java.getBytes(FileUtil.charset));
 		}
 		File file = new File(filename);

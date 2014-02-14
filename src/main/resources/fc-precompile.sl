@@ -7,8 +7,7 @@
 --
 
 fc-setup-precompile .lib
-	:- home.dir .homeDir
-	, concat .homeDir "/" .lib ".rpn" .filename
+	:- fc-precompiled-library-filename .lib .filename
 	, fc-load-library .lib .do0 .do1
 	, fc-setup-precompile0 .lib .do1/.do0 .filename
 #

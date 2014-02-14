@@ -2,9 +2,9 @@ package suite.lp.predicate;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import suite.lp.doer.Prover;
@@ -81,7 +81,7 @@ public class IoPredicates {
 			String filename = Formatter.display(params[0]);
 			String content = Formatter.display(params[1]);
 
-			try (FileOutputStream fos = new FileOutputStream(filename)) {
+			try (OutputStream fos = FileUtil.out(new File(filename))) {
 				fos.write(content.getBytes(FileUtil.charset));
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);

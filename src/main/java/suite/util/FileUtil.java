@@ -2,8 +2,10 @@ package suite.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
@@ -20,7 +22,7 @@ public class FileUtil {
 	public static final Charset charset = Charset.forName("UTF-8");
 
 	public static void copyFile(File from, File to) throws IOException {
-		try (FileOutputStream fos = new FileOutputStream(to)) {
+		try (OutputStream fos = out(to)) {
 			// new FileOutputStream(f2, true); // Append
 			Copy.stream(new FileInputStream(from), fos);
 		}
@@ -75,6 +77,13 @@ public class FileUtil {
 			copyFile(from, to);
 			from.delete();
 		}
+	}
+
+	public static OutputStream out(File file) throws FileNotFoundException {
+		File parentFile = file.getParentFile();
+		if (parentFile != null)
+			parentFile.mkdirs();
+		return new FileOutputStream(file);
 	}
 
 }
