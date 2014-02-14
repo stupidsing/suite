@@ -191,12 +191,9 @@ public class Prover {
 					, Tree.create(TermOp.AND___ //
 							, Tree.create(TermOp.EQUAL_ //
 									, query //
-									, head //
-							) //
-							, tail //
-					) //
-					, ret //
-					);
+									, head) //
+							, tail) //
+					, ret);
 		}
 
 		return ret;
