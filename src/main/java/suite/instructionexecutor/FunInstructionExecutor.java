@@ -98,7 +98,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			List<Node> ps = new ArrayList<>(3);
 			for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
 				ps.add((Node) ds[--dsp]);
-			result = ((Invocable) data.getData()).invoke(invocableBridge, ps);
+			Invocable invocable = Data.get(data);
+			result = invocable.invoke(invocableBridge, ps);
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);

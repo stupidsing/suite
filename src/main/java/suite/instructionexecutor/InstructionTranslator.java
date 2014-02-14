@@ -329,7 +329,8 @@ public class InstructionTranslator implements Closeable {
 				app("List<Node> list = new ArrayList<>(3)");
 				for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
 					app("list.add((Node) ds[--dsp])");
-				app("#{reg} = ((Invocable) data.getData()).invoke(bridge, list)", op0);
+				app("Invocable invocable = Data.get(data)");
+				app("#{reg} = invocable.invoke(bridge, list)", op0);
 				app("}");
 				break;
 			case ISCONS________:
