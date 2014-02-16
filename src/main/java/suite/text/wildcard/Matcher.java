@@ -6,10 +6,10 @@ import java.util.List;
 
 import suite.immutable.ImmutableList;
 import suite.util.FunUtil;
-import suite.util.To;
-import suite.util.Util;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.To;
+import suite.util.Util;
 
 public class Matcher {
 

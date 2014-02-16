@@ -6,8 +6,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import suite.text.wildcard.WildcardUtil;
-
 public class WildcardUtilTest {
 
 	@Test
