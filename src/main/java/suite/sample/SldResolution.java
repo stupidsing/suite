@@ -1,4 +1,4 @@
-package suite.sld;
+package suite.sample;
 
 import java.util.ArrayList;
 import java.util.Arrays;

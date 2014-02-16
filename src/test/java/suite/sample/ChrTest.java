@@ -1,4 +1,4 @@
-package suite.chr;
+package suite.sample;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.node.Node;
+import suite.sample.Chr;
 
 public class ChrTest {
 

@@ -1,14 +1,17 @@
-package suite.util;
+package suite.text.wildcard;
 
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
 import suite.immutable.ImmutableList;
+import suite.util.FunUtil;
+import suite.util.To;
+import suite.util.Util;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
-public class MatchUtil {
+public class Matcher {
 
 	private final Source<State> noResult = FunUtil.nullSource();
 
@@ -36,12 +39,7 @@ public class MatchUtil {
 		}
 	}
 
-	public String[] match(String pattern, String input) {
-		List<String[]> matches = findMatches(pattern, input);
-		return matches.size() == 1 ? matches.get(0) : null;
-	}
-
-	private List<String[]> findMatches(String pattern, String input) {
+	public List<String[]> matches(String pattern, String input) {
 		Source<State> source = To.source(new State(input));
 
 		for (final char ch : Util.chars(pattern))

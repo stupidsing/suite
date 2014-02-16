@@ -1,4 +1,4 @@
-package suite.chr;
+package suite.sample;
 
 import java.util.ArrayList;
 import java.util.Collection;

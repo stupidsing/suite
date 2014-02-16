@@ -1,4 +1,4 @@
-package suite.sld;
+package suite.sample;
 
 import static org.junit.Assert.assertTrue;
 
