@@ -5,10 +5,16 @@
 
 #define info(m) msg("INFO", __LINE__, (m))
 #define err(m) msg("ERROR", __LINE__, (m))
+#define fatal(m) fmsg("FATAL", __LINE__, (m));
 
 int msg(char *t, int line, char *m) {
 	fprintf(stderr, "[%s] %s in line %d\n", t, m, line);
 	return 1;
+}
+
+int fmsg(char *t, int line, char *m) {
+	msg(t, line, m);
+	exit(1);
 }
 
 int nAllocs;
