@@ -1,10 +1,10 @@
-// gcc -g singlog.c -o singlog && ./singlog
+// gcc -std=c99 -g singlog.c -o singlog && ./singlog
+
+#define _GNU_SOURCE
 
 #include <ctype.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "util.c"
 
 // adjustable parameters
 const int genHashSize = 256;
@@ -25,13 +25,6 @@ const int bufferSize = 65536;
 #define BT__ (256) // only appears in alternative during prove
 #define CUT_ (257)
 #define INV_ (258) // used by findall etc
-
-int nAllocs;
-
-struct Hashtab {
-	int size;
-	void **keys, **values;
-};
 
 struct Node {
 	int refcount;
@@ -80,82 +73,6 @@ struct Hashtab ruleHashtab;
 
 int enabletrace;
 int tracedepth;
-
-#define info(m) msg("INFO", __LINE__, (m))
-#define err(m) msg("ERROR", __LINE__, (m))
-
-int msg(char *t, int line, char *m) {
-	fprintf(stderr, "[%s] %s in line %d\n", t, m, line);
-	return 1;
-}
-
-void *memalloc(int size) {
-	nAllocs++;
-	return malloc(size);
-}
-
-void *memalloczeroed(int size) {
-	void *p = memalloc(size);
-	memset(p, 0, size);
-	return p;
-}
-
-void memfree(void *p) {
-	free(p);
-	nAllocs--;
-}
-
-int hashptr(void *node) {
-	int hash = (intptr_t) node;
-	hash += hash >> 3; // randomize least significant bits
-	return hash;
-}
-
-char *substr(char *start, char *end) {
-	char *result = memalloc(end - start + 1), *s = start, *d = result;
-	while(s < end) *d++ = *s++;
-	*d = 0;
-	return result;
-}
-
-char *dupstr(char *str) {
-	return substr(str, str + strlen(str));
-}
-
-int hashstr(char *start, char *end) {
-	char *s = start;
-	int hash = 1;
-	while(s < end) hash = 31 * hash + 5 + *s++;
-	return hash;
-}
-
-void newhashtab(struct Hashtab *hashtab, int size) {
-	hashtab->size = size;
-	hashtab->keys = memalloczeroed(hashtab->size * sizeof(void*));
-	hashtab->values = memalloczeroed(hashtab->size * sizeof(void*));
-}
-
-void deletehashtab(struct Hashtab hashtab) {
-	memfree(hashtab.values);
-	memfree(hashtab.keys);
-}
-
-int gethashtabpos(struct Hashtab *hashtab, void *key) {
-	void **keys = hashtab->keys, *k;
-	int size = hashtab->size, i = hashptr(key);
-	while((k = keys[i %= size]) && k != key) i++;
-	return i;	
-}
-
-void *gethashtab(struct Hashtab *hashtab, void *key) {
-	return hashtab->values[gethashtabpos(hashtab, key)];
-}
-
-void puthashtab(struct Hashtab *hashtab, void *key, void *value) {
-	int i = gethashtabpos(hashtab, key);
-	hashtab->keys[i] = key;
-	hashtab->values[i] = value;
-}
 
 void unref(struct Node *node);
 
@@ -643,6 +560,8 @@ void rollback(struct Node ***trail, struct Node **to) {
 		unref(ref);
 	}
 }
+
+int bind(struct Node *node0, struct Node *node1, struct Node ***ptrail);
 
 int bind0(struct Node *node0, struct Node *node1, struct Node ***ptrail) {
 	node0 = final(node0);
@@ -1266,7 +1185,7 @@ int handlewrite(struct Node *query, struct Node ***ptrail, struct Node **prem, s
 void init() {
 	int i;
 
-	nAllocs = 0;
+	meminit();
 	nAtomHashes = 0;
 	atomHashSize = 256;
 	atomHashes = memalloczeroed(atomHashSize * sizeof(struct Node*));
@@ -1359,7 +1278,7 @@ void deinit() {
 
 	memfree(atomHashes);
 	nAtomHashes = 0;
-	!nAllocs || err("some memory not freed");
+	memdeinit();
 }
 
 #define test(t) (t) || err("test case failed");
