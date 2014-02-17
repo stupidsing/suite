@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Pipe;
 import suite.util.FunUtil.Source;
 
 public class To {
@@ -39,10 +38,6 @@ public class To {
 		while (iter.hasNext())
 			list.add(iter.next());
 		return list;
-	}
-
-	public static <T> List<T> list(Pipe<T> pipe) {
-		return list(pipe.source());
 	}
 
 	public static <T> List<T> list(Source<T> source) {

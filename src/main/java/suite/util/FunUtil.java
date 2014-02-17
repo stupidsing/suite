@@ -1,9 +1,7 @@
 package suite.util;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.SynchronousQueue;
 
@@ -35,29 +33,6 @@ public class FunUtil {
 
 		public void add(Sink<I> sink) {
 			sinks.add(sink);
-		}
-	}
-
-	public static class Pipe<T> {
-		private Deque<T> deque = new ArrayDeque<T>();
-
-		private Pipe() {
-		}
-
-		public Sink<T> sink() {
-			return new Sink<T>() {
-				public void sink(T t) {
-					deque.addLast(t);
-				}
-			};
-		}
-
-		public Source<T> source() {
-			return new Source<T>() {
-				public T source() {
-					return !deque.isEmpty() ? deque.removeFirst() : null;
-				}
-			};
 		}
 	}
 
@@ -151,10 +126,6 @@ public class FunUtil {
 			public void sink(I i) {
 			}
 		};
-	}
-
-	public static <T> Pipe<T> pipe() {
-		return new Pipe<>();
 	}
 
 	/**
