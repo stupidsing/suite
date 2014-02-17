@@ -57,7 +57,7 @@ public class InstructionTranslator implements Closeable {
 	private String compare = "comparer.compare(#{reg-node}, #{reg-node})";
 
 	public InstructionTranslator(String basePathName) throws MalformedURLException {
-		this.packageName = getClass().getPackage().getName();
+		packageName = getClass().getPackage().getName();
 		jdkUtil = new JdkUtil(basePathName);
 	}
 

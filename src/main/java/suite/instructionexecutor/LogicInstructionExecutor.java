@@ -21,7 +21,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 
 	public LogicInstructionExecutor(Node node, ProverConfig proverConfig) {
 		super(node);
-		this.prover = new Prover(proverConfig);
+		prover = new Prover(proverConfig);
 		systemPredicates = new SystemPredicates(prover);
 	}
 
