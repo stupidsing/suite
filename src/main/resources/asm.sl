@@ -15,6 +15,7 @@ as-assemble (INTO) (+xCE, .e)/.e #
 as-assemble (JMP .rel8) (+xEB, .e1)/.ex :- as-emit8 .rel8 .e1/.ex #
 as-assemble (JMP .rel32) (+xE9, .e1)/.ex :- as-emit32 .rel32 .e1/.ex #
 as-assemble (JMP .rm) .e0/.ex :- as-assemble-rm32 +xFF .rm 4 .e0/.ex #
+as-assemble (LEA .reg .rm) .e0/.ex :- as-assemble-rm-reg +x8D .rm .reg .e0/.ex #
 as-assemble (MOV .reg .imm) .e0/.ex :- as-assemble-reg-imm +xB0 .reg .imm .e0/.ex #
 as-assemble (MOV .rm .imm) .e0/.ex :- as-assemble-rm-imm +xC6 .rm 0 .imm .e0/.ex #
 as-assemble (MOV .rm0 .rm1) .e0/.ex :- as-assemble-rm-reg2 +x88 .rm0 .rm1 .e0/.ex #
