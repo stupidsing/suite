@@ -6,7 +6,7 @@ DEBUGOPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n
 OPTS="-Xss2m -Xmx256m ${DEBUGOPTS} -Dhome.dir=${BASE}"
 
 SRCTIME=$(find "${BASE}/pom.xml" "${BASE}/src/main/" -type f | xargs stat -c %Y | sort -g | tail -1)
-TARGETTIME=$(echo "${JAR}" "${BASE}/STANDARD.rpn" | xargs -I {} sh -c 'stat -c %Y {} 2> /dev/null || echo 0' | sort -g | head -1)
+TARGETTIME=$(echo "${JAR}" "${BASE}/precompiled/STANDARD.rpn" | xargs -I {} sh -c 'stat -c %Y {} 2> /dev/null || echo 0' | sort -g | head -1)
 
 (
 	[ ${SRCTIME} -le ${TARGETTIME} ] ||
