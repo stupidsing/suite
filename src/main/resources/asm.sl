@@ -25,6 +25,7 @@ as-assemble (MOV .sreg .rm) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-asse
 as-assemble (RET) (+xC3, .e)/.e #
 as-assemble (RET .imm) (+xC2, .e1)/.ex :- as-emit16 .imm .e1/.ex #
 
+as-assemble-jump (byte .rel8) .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
 as-assemble-jump .rel8 .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
 as-assemble-jump .rel32 _ .b (+x0F, .b, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
 
