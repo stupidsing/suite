@@ -12,34 +12,34 @@ import suite.util.FunUtil.Source;
  * 
  * @author ywsing
  */
-public class ImmutableList<T> implements Iterable<T> {
+public class IList<T> implements Iterable<T> {
 
-	private final static ImmutableList<?> end = new ImmutableList<Object>(null, null);
+	private final static IList<?> end = new IList<Object>(null, null);
 
 	private T head;
-	private ImmutableList<T> tail;
+	private IList<T> tail;
 
-	public ImmutableList(T head, ImmutableList<T> tail) {
+	public IList(T head, IList<T> tail) {
 		this.head = head;
 		this.tail = tail;
 	}
 
-	public static <T> ImmutableList<T> end() {
+	public static <T> IList<T> end() {
 		@SuppressWarnings("unchecked")
-		ImmutableList<T> end = (ImmutableList<T>) ImmutableList.end;
+		IList<T> end = (IList<T>) IList.end;
 		return end;
 	}
 
 	@SafeVarargs
-	public static <T> ImmutableList<T> asList(T... ts) {
-		ImmutableList<T> list = ImmutableList.<T> end();
+	public static <T> IList<T> asList(T... ts) {
+		IList<T> list = IList.<T> end();
 		for (T t : ts)
 			list = cons(t, list);
 		return list;
 	}
 
-	public static <T> ImmutableList<T> cons(T t, ImmutableList<T> list) {
-		return new ImmutableList<>(t, list);
+	public static <T> IList<T> cons(T t, IList<T> list) {
+		return new IList<>(t, list);
 	}
 
 	public boolean isEmpty() {
@@ -49,7 +49,7 @@ public class ImmutableList<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return FunUtil.iterator(new Source<T>() {
-			private ImmutableList<T> current = ImmutableList.this;
+			private IList<T> current = IList.this;
 
 			public T source() {
 				T t;
@@ -66,7 +66,7 @@ public class ImmutableList<T> implements Iterable<T> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		ImmutableList<T> node = this;
+		IList<T> node = this;
 		while (!node.isEmpty()) {
 			sb.append(node.getHead() + ", ");
 			node = node.getTail();
@@ -85,7 +85,7 @@ public class ImmutableList<T> implements Iterable<T> {
 		return head;
 	}
 
-	public ImmutableList<T> getTail() {
+	public IList<T> getTail() {
 		return tail;
 	}
 

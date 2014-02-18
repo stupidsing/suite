@@ -8,10 +8,10 @@ import java.util.Deque;
  * 
  * @author ywsing
  */
-public class SparseBinomialPriorityQueue<T> {
+public class ISparseBinPriorityQueue<T> {
 
 	private Comparator<T> comparator;
-	private ImmutableList<Tree> trees;
+	private IList<Tree> trees;
 
 	private class Tree {
 		private int rank;
@@ -29,13 +29,13 @@ public class SparseBinomialPriorityQueue<T> {
 
 	private class Node {
 		private T value;
-		private ImmutableList<Node> nodes; // Note that rank(nodes.get(i)) = i
+		private IList<Node> nodes; // Note that rank(nodes.get(i)) = i
 
 		private Node(T value) {
-			this(value, ImmutableList.<Node> end());
+			this(value, IList.<Node> end());
 		}
 
-		private Node(T value, ImmutableList<Node> nodes) {
+		private Node(T value, IList<Node> nodes) {
 			this.nodes = nodes;
 			this.value = value;
 		}
@@ -58,31 +58,31 @@ public class SparseBinomialPriorityQueue<T> {
 			return min;
 		}
 
-		private SparseBinomialPriorityQueue<T> deleteMin() {
+		private ISparseBinPriorityQueue<T> deleteMin() {
 			findMin();
 
-			ImmutableList<Tree> trees0 = ImmutableList.<Tree> end();
-			ImmutableList<Tree> trees1 = ImmutableList.<Tree> end();
+			IList<Tree> trees0 = IList.<Tree> end();
+			IList<Tree> trees1 = IList.<Tree> end();
 
 			for (Tree t : trees.reverse())
 				if (t.rank != tree.rank)
-					trees0 = ImmutableList.cons(t, trees0);
+					trees0 = IList.cons(t, trees0);
 
 			Deque<Node> nr = tree.root.nodes.reverse();
 			int rank = nr.size();
 
 			for (Node node_ : nr)
-				trees1 = ImmutableList.cons(new Tree(--rank, node_), trees1);
+				trees1 = IList.cons(new Tree(--rank, node_), trees1);
 
-			return new SparseBinomialPriorityQueue<T>(comparator, meld(trees0, trees1));
+			return new ISparseBinPriorityQueue<T>(comparator, meld(trees0, trees1));
 		}
 	}
 
-	public SparseBinomialPriorityQueue(Comparator<T> comparator) {
-		this(comparator, ImmutableList.<Tree> end());
+	public ISparseBinPriorityQueue(Comparator<T> comparator) {
+		this(comparator, IList.<Tree> end());
 	}
 
-	public SparseBinomialPriorityQueue(Comparator<T> comparator, ImmutableList<Tree> trees) {
+	public ISparseBinPriorityQueue(Comparator<T> comparator, IList<Tree> trees) {
 		this.comparator = comparator;
 		this.trees = trees;
 	}
@@ -91,22 +91,22 @@ public class SparseBinomialPriorityQueue<T> {
 		return new FindMinimum().findMin();
 	}
 
-	public SparseBinomialPriorityQueue<T> deleteMin() {
+	public ISparseBinPriorityQueue<T> deleteMin() {
 		return new FindMinimum().deleteMin();
 	}
 
-	public SparseBinomialPriorityQueue<T> add(T value) {
-		return new SparseBinomialPriorityQueue<T>(comparator, insert(new Tree(0, new Node(value)), trees));
+	public ISparseBinPriorityQueue<T> add(T value) {
+		return new ISparseBinPriorityQueue<T>(comparator, insert(new Tree(0, new Node(value)), trees));
 	}
 
-	public SparseBinomialPriorityQueue<T> meld(SparseBinomialPriorityQueue<T> pq) {
-		return new SparseBinomialPriorityQueue<>(comparator, meld(trees, pq.trees));
+	public ISparseBinPriorityQueue<T> meld(ISparseBinPriorityQueue<T> pq) {
+		return new ISparseBinPriorityQueue<>(comparator, meld(trees, pq.trees));
 	}
 
-	private ImmutableList<Tree> meld(ImmutableList<Tree> trees0, ImmutableList<Tree> trees1) {
+	private IList<Tree> meld(IList<Tree> trees0, IList<Tree> trees1) {
 		if (!trees0.isEmpty())
 			if (!trees1.isEmpty()) {
-				ImmutableList<Tree> ts0, ts1;
+				IList<Tree> ts0, ts1;
 
 				if (trees0.getHead().rank < trees1.getHead().rank) {
 					ts0 = trees0;
@@ -118,11 +118,11 @@ public class SparseBinomialPriorityQueue<T> {
 
 				Tree head0 = ts0.getHead();
 				Tree head1 = ts1.getHead();
-				ImmutableList<Tree> tail0 = ts0.getTail();
-				ImmutableList<Tree> tail1 = ts1.getTail();
+				IList<Tree> tail0 = ts0.getTail();
+				IList<Tree> tail1 = ts1.getTail();
 
 				if (head0.rank != head1.rank)
-					return ImmutableList.cons(head0, meld(tail0, ImmutableList.cons(head1, tail1)));
+					return IList.cons(head0, meld(tail0, IList.cons(head1, tail1)));
 				else
 					return insert(link(head0, head1), meld(tail0, tail1));
 			} else
@@ -131,10 +131,10 @@ public class SparseBinomialPriorityQueue<T> {
 			return trees1;
 	}
 
-	private ImmutableList<Tree> insert(Tree tree, ImmutableList<Tree> trees) {
+	private IList<Tree> insert(Tree tree, IList<Tree> trees) {
 		Tree tree0;
 		if (trees.isEmpty() || tree.rank < (tree0 = trees.getHead()).rank)
-			return ImmutableList.cons(tree, trees);
+			return IList.cons(tree, trees);
 		else
 			return insert(link(tree, tree0), trees.getTail());
 	}
@@ -151,7 +151,7 @@ public class SparseBinomialPriorityQueue<T> {
 			greater = tree0;
 		}
 
-		return new Tree(rank + 1, new Node(smaller.root.value, ImmutableList.cons(greater.root, smaller.root.nodes)));
+		return new Tree(rank + 1, new Node(smaller.root.value, IList.cons(greater.root, smaller.root.nodes)));
 	}
 
 }

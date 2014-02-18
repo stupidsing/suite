@@ -8,9 +8,9 @@ import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.Util;
 
-public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
+public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
-	private ImmutableTree<Pair<K, V>> tree = new Tree23<Pair<K, V>>(new Comparator<Pair<K, V>>() {
+	private ITree<Pair<K, V>> tree = new I23Tree<Pair<K, V>>(new Comparator<Pair<K, V>>() {
 		public int compare(Pair<K, V> p0, Pair<K, V> p1) {
 			K k0 = p0 != null ? p0.t0 : null;
 			K k1 = p1 != null ? p1.t0 : null;
@@ -18,10 +18,10 @@ public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K
 		}
 	});
 
-	public ImmutableMap() {
+	public IMap() {
 	}
 
-	public ImmutableMap(ImmutableTree<Pair<K, V>> tree) {
+	public IMap(ITree<Pair<K, V>> tree) {
 		this.tree = tree;
 	}
 
@@ -39,16 +39,16 @@ public class ImmutableMap<K extends Comparable<K>, V> implements Iterable<Pair<K
 		return pair != null ? pair.t1 : null;
 	}
 
-	public ImmutableMap<K, V> put(K k, V v) {
-		return new ImmutableMap<K, V>(tree.add(Pair.create(k, v)));
+	public IMap<K, V> put(K k, V v) {
+		return new IMap<K, V>(tree.add(Pair.create(k, v)));
 	}
 
-	public ImmutableMap<K, V> replace(K k, V v) {
-		return new ImmutableMap<K, V>(tree.replace(Pair.create(k, v)));
+	public IMap<K, V> replace(K k, V v) {
+		return new IMap<K, V>(tree.replace(Pair.create(k, v)));
 	}
 
-	public ImmutableMap<K, V> remove(K k) {
-		return new ImmutableMap<K, V>(tree.remove(Pair.create(k, (V) null)));
+	public IMap<K, V> remove(K k) {
+		return new IMap<K, V>(tree.remove(Pair.create(k, (V) null)));
 	}
 
 	@Override

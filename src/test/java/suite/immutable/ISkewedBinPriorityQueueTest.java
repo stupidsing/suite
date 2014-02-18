@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import suite.util.Util;
 
-public class BinomialPriorityQueueTest {
+public class ISkewedBinPriorityQueueTest {
 
 	@Test
 	public void test() {
@@ -21,7 +21,7 @@ public class BinomialPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		BinomialPriorityQueue<Integer> pq = new BinomialPriorityQueue<>(Util.<Integer> comparator());
+		ISkewedBinPriorityQueue<Integer> pq = new ISkewedBinPriorityQueue<>(Util.<Integer> comparator());
 
 		for (int i : list)
 			pq = pq.add(i);

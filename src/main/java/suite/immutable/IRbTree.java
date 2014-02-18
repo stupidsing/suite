@@ -12,7 +12,7 @@ import suite.util.FunUtil.Source;
  * 
  * @author ywsing
  */
-public class RbTree<T> implements ImmutableTree<T> {
+public class IRbTree<T> implements ITree<T> {
 
 	private Node root;
 	private Comparator<T> comparator;
@@ -30,11 +30,11 @@ public class RbTree<T> implements ImmutableTree<T> {
 		}
 	}
 
-	public RbTree(Comparator<T> comparator) {
+	public IRbTree(Comparator<T> comparator) {
 		this(comparator, null);
 	}
 
-	private RbTree(Comparator<T> comparator, Node root) {
+	private IRbTree(Comparator<T> comparator, Node root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -86,7 +86,7 @@ public class RbTree<T> implements ImmutableTree<T> {
 		return null;
 	}
 
-	public RbTree<T> add(T t) {
+	public IRbTree<T> add(T t) {
 		return add(t, false);
 	}
 
@@ -96,21 +96,21 @@ public class RbTree<T> implements ImmutableTree<T> {
 	 * 
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public RbTree<T> replace(T t) {
+	public IRbTree<T> replace(T t) {
 		return add(t, true);
 	}
 
-	public RbTree<T> remove(T t) {
+	public IRbTree<T> remove(T t) {
 		throw new UnsupportedOperationException();
 	}
 
-	private RbTree<T> add(T t, boolean isReplace) {
+	private IRbTree<T> add(T t, boolean isReplace) {
 		Node node = root;
 
 		if (node != null && !node.isBlack) // Turns red node into black
 			node = new Node(true, node.pivot, node.left, node.right);
 
-		return new RbTree<>(comparator, add(node, t, isReplace));
+		return new IRbTree<>(comparator, add(node, t, isReplace));
 	}
 
 	private Node add(Node node, T t, boolean isReplace) {

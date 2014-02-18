@@ -5,7 +5,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.immutable.Vector;
+import suite.immutable.IVector;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -105,38 +105,38 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
 			break;
 		case ISVECTOR______:
-			result = atom(ds[--dsp] instanceof Vector);
+			result = atom(ds[--dsp] instanceof IVector);
 			break;
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
 		case VCONCAT_______:
-			Vector vector0 = (Vector) ds[--dsp];
-			Vector vector1 = (Vector) ds[--dsp];
-			result = Vector.concat(vector0, vector1);
+			IVector vector0 = (IVector) ds[--dsp];
+			IVector vector1 = (IVector) ds[--dsp];
+			result = IVector.concat(vector0, vector1);
 			break;
 		case VCONS_________:
 			Node head = (Node) ds[--dsp];
-			Vector tail = (Vector) ds[--dsp];
-			result = Vector.cons(head, tail);
+			IVector tail = (IVector) ds[--dsp];
+			result = IVector.cons(head, tail);
 			break;
 		case VELEM_________:
-			result = new Vector((Node) ds[--dsp]);
+			result = new IVector((Node) ds[--dsp]);
 			break;
 		case VEMPTY________:
-			result = Vector.EMPTY;
+			result = IVector.EMPTY;
 			break;
 		case VHEAD_________:
-			result = ((Vector) ds[--dsp]).get(0);
+			result = ((IVector) ds[--dsp]).get(0);
 			break;
 		case VRANGE________:
-			Vector vector = (Vector) ds[--dsp];
+			IVector vector = (IVector) ds[--dsp];
 			int s = ((Int) ds[--dsp]).getNumber();
 			int e = ((Int) ds[--dsp]).getNumber();
 			result = vector.range(s, e);
 			break;
 		case VTAIL_________:
-			result = ((Vector) ds[--dsp]).range(1, 0);
+			result = ((IVector) ds[--dsp]).range(1, 0);
 			break;
 		default:
 			throw new RuntimeException("Unknown instruction " + insn);

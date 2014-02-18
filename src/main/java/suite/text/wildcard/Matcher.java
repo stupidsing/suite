@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import suite.immutable.ImmutableList;
+import suite.immutable.IList;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -19,17 +19,17 @@ public class Matcher {
 	private class State {
 		private String input;
 		private int pos;
-		private ImmutableList<String> matches;
+		private IList<String> matches;
 
 		private State(String input) {
-			this(input, 0, ImmutableList.<String> end());
+			this(input, 0, IList.<String> end());
 		}
 
 		private State(State state, int advance) {
 			this(state.input, state.pos + advance, state.matches);
 		}
 
-		private State(String input, int position, ImmutableList<String> matches) {
+		private State(String input, int position, IList<String> matches) {
 			this.input = input;
 			this.pos = position;
 			this.matches = matches;
@@ -82,7 +82,7 @@ public class Matcher {
 							public State source() {
 								if (end <= state.input.length()) {
 									String m = state.input.substring(start, end);
-									return new State(state.input, end++, ImmutableList.cons(m, state.matches));
+									return new State(state.input, end++, IList.cons(m, state.matches));
 								} else
 									return null;
 							}

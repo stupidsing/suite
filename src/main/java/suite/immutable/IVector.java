@@ -6,9 +6,9 @@ import suite.util.Util;
 /**
  * A list of nodes that can be easily expanded in left or right direction.
  */
-public class Vector extends Node {
+public class IVector extends Node {
 
-	public static Vector EMPTY = new Vector(new Node[0]);
+	public static IVector EMPTY = new IVector(new Node[0]);
 
 	private Data data;
 	private int start, end;
@@ -51,55 +51,55 @@ public class Vector extends Node {
 		}
 	}
 
-	public Vector(Node node) {
+	public IVector(Node node) {
 		this(new Node[] { node });
 	}
 
-	public Vector(Node nodes[]) {
+	public IVector(Node nodes[]) {
 		this(new Data());
 		data.insertBefore(nodes, 0, nodes.length);
 	}
 
-	private Vector(Data data) {
+	private IVector(Data data) {
 		this.data = data;
 		start = data.startUsed;
 		end = data.endUsed;
 	}
 
-	private Vector(Data data, int start, int end) {
+	private IVector(Data data, int start, int end) {
 		this.data = data;
 		this.start = start;
 		this.end = end;
 	}
 
-	public static Vector cons(Node n, Vector v) {
+	public static IVector cons(Node n, IVector v) {
 		int vlen = v.length();
 
 		if (v.start == v.data.startUsed && v.start >= 1) {
 			v.data.insertBefore(n);
-			return new Vector(v.data, v.start - 1, v.end);
+			return new IVector(v.data, v.start - 1, v.end);
 		} else {
 			Data data = new Data(vlen + 16, 0);
 			data.insertAfter(n);
 			data.insertAfter(v.data.nodes, v.start, v.end);
-			return new Vector(data, data.startUsed, data.endUsed);
+			return new IVector(data, data.startUsed, data.endUsed);
 		}
 	}
 
-	public static Vector concat(Vector u, Vector v) {
+	public static IVector concat(IVector u, IVector v) {
 		int ulen = u.length(), vlen = v.length();
 
 		if (u.end == u.data.endUsed && u.data.nodes.length - u.end >= vlen) {
 			u.data.insertAfter(v.data.nodes, v.start, v.end);
-			return new Vector(u.data, u.start, u.end + vlen);
+			return new IVector(u.data, u.start, u.end + vlen);
 		} else if (v.start == v.data.startUsed && v.start >= ulen) {
 			v.data.insertBefore(u.data.nodes, u.start, u.end);
-			return new Vector(v.data, v.start - ulen, v.end);
+			return new IVector(v.data, v.start - ulen, v.end);
 		} else {
 			Data data = new Data(ulen + vlen + 16, 0);
 			data.insertAfter(u.data.nodes, u.start, u.end);
 			data.insertAfter(v.data.nodes, v.start, v.end);
-			return new Vector(data, data.startUsed, data.endUsed);
+			return new IVector(data, data.startUsed, data.endUsed);
 		}
 	}
 
@@ -107,14 +107,14 @@ public class Vector extends Node {
 		return data.nodes[start + i];
 	}
 
-	public Vector range(int s, int e) {
+	public IVector range(int s, int e) {
 		int length = length();
 		while (s < 0)
 			s += length;
 		while (e <= 0)
 			e += length;
 		e = Math.min(e, length);
-		return new Vector(data, start + s, start + e);
+		return new IVector(data, start + s, start + e);
 	}
 
 	public int length() {
@@ -138,8 +138,8 @@ public class Vector extends Node {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
 
-			if (Util.clazz(node) == Vector.class) {
-				Vector v = (Vector) node;
+			if (Util.clazz(node) == IVector.class) {
+				IVector v = (IVector) node;
 				result = end - start == v.end - v.start;
 				int si = start, di = v.start;
 

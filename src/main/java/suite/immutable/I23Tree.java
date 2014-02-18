@@ -10,7 +10,7 @@ import java.util.List;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
-public class Tree23<T> implements ImmutableTree<T> {
+public class I23Tree<T> implements ITree<T> {
 
 	private int maxSize = 4;
 	private int halfSize = maxSize / 2;
@@ -42,12 +42,12 @@ public class Tree23<T> implements ImmutableTree<T> {
 		}
 	}
 
-	public Tree23(Comparator<T> comparator) {
+	public I23Tree(Comparator<T> comparator) {
 		this.root = new Node(Arrays.asList(new Slot(null, null)));
 		this.comparator = comparator;
 	}
 
-	private Tree23(Comparator<T> comparator, Node root) {
+	private I23Tree(Comparator<T> comparator, Node root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -125,7 +125,7 @@ public class Tree23<T> implements ImmutableTree<T> {
 		return c == 0 ? slot.pivot : null;
 	}
 
-	public Tree23<T> add(T t) {
+	public I23Tree<T> add(T t) {
 		return add(t, false);
 	}
 
@@ -135,16 +135,16 @@ public class Tree23<T> implements ImmutableTree<T> {
 	 * 
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public Tree23<T> replace(T t) {
+	public I23Tree<T> replace(T t) {
 		return add(t, true);
 	}
 
-	public Tree23<T> remove(T t) {
-		return new Tree23<T>(comparator, createRootNode(remove(root.slots, t)));
+	public I23Tree<T> remove(T t) {
+		return new I23Tree<T>(comparator, createRootNode(remove(root.slots, t)));
 	}
 
-	private Tree23<T> add(T t, boolean isReplace) {
-		return new Tree23<T>(comparator, createRootNode(add(root.slots, t, isReplace)));
+	private I23Tree<T> add(T t, boolean isReplace) {
+		return new I23Tree<T>(comparator, createRootNode(add(root.slots, t, isReplace)));
 	}
 
 	private List<Slot> add(List<Slot> slots0, T t, boolean isReplace) {

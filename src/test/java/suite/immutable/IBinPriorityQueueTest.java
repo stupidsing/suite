@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import suite.util.Util;
 
-public class SparseBinomialPriorityQueueTest {
+public class IBinPriorityQueueTest {
 
 	@Test
 	public void test() {
@@ -21,7 +21,7 @@ public class SparseBinomialPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		SparseBinomialPriorityQueue<Integer> pq = new SparseBinomialPriorityQueue<>(Util.<Integer> comparator());
+		IBinPriorityQueue<Integer> pq = new IBinPriorityQueue<>(Util.<Integer> comparator());
 
 		for (int i : list)
 			pq = pq.add(i);

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import suite.util.FunUtil;
 
-public class Tree23Test {
+public class I23TreeTest {
 
 	private int max = 32;
 
@@ -18,7 +18,7 @@ public class Tree23Test {
 
 	@Test
 	public void test0() {
-		Tree23<Integer> tree23 = new Tree23<>(comparator);
+		I23Tree<Integer> tree23 = new I23Tree<>(comparator);
 
 		for (int i = 0; i < max; i++)
 			tree23 = tree23.add(i);
@@ -32,7 +32,7 @@ public class Tree23Test {
 
 	@Test
 	public void test1() {
-		Tree23<Integer> tree23 = new Tree23<>(comparator);
+		I23Tree<Integer> tree23 = new I23Tree<>(comparator);
 
 		System.out.println(tree23.toString());
 		dump(tree23);
@@ -51,7 +51,7 @@ public class Tree23Test {
 			tree23 = tree23.remove(i);
 	}
 
-	private void dump(Tree23<Integer> tree23) {
+	private void dump(I23Tree<Integer> tree23) {
 		System.out.print("LIST = ");
 		for (Integer i : FunUtil.iter(tree23.source()))
 			System.out.print(i + " ");

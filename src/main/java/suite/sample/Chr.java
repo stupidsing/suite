@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import suite.Suite;
-import suite.immutable.ImmutableMap;
-import suite.immutable.ImmutableSet;
+import suite.immutable.IMap;
+import suite.immutable.ISet;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -42,9 +42,9 @@ public class Chr {
 	}
 
 	private class State {
-		private ImmutableMap<Prototype, ImmutableSet<Node>> factsByPrototype;
+		private IMap<Prototype, ISet<Node>> factsByPrototype;
 
-		public State(ImmutableMap<Prototype, ImmutableSet<Node>> factsByPrototype) {
+		public State(IMap<Prototype, ISet<Node>> factsByPrototype) {
 			this.factsByPrototype = factsByPrototype;
 		}
 	}
@@ -79,7 +79,7 @@ public class Chr {
 	}
 
 	public Collection<Node> chr(Collection<Node> facts) {
-		State state = new State(new ImmutableMap<Prototype, ImmutableSet<Node>>());
+		State state = new State(new IMap<Prototype, ISet<Node>>());
 
 		for (Node fact : facts) {
 			Prototype prototype = getPrototype(fact);
@@ -93,7 +93,7 @@ public class Chr {
 
 		List<Node> nodes1 = new ArrayList<>();
 
-		for (Pair<Prototype, ImmutableSet<Node>> pair : state.factsByPrototype)
+		for (Pair<Prototype, ISet<Node>> pair : state.factsByPrototype)
 			nodes1.addAll(To.list(pair.t1));
 
 		return nodes1;
@@ -131,7 +131,7 @@ public class Chr {
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
 			public Source<State> apply(final State state) {
-				final ImmutableSet<Node> facts = getFacts(state, prototype);
+				final ISet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 
 				Source<Node> bindedIfs = filter(facts.source(), bindFun);
@@ -149,7 +149,7 @@ public class Chr {
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
 			public Source<State> apply(final State state) {
-				ImmutableSet<Node> facts = getFacts(state, prototype);
+				ISet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
 				boolean isMatch = or(map(facts.source(), bindFun));
 				return isMatch ? To.source(state) : FunUtil.<State> nullSource();
@@ -169,14 +169,14 @@ public class Chr {
 
 			states = map(states, new Fun<State, State>() {
 				public State apply(State state) {
-					ImmutableMap<Prototype, ImmutableSet<Node>> factsByPrototype1 = new ImmutableMap<>();
-					for (Pair<Prototype, ImmutableSet<Node>> pair : state.factsByPrototype)
+					IMap<Prototype, ISet<Node>> factsByPrototype1 = new IMap<>();
+					for (Pair<Prototype, ISet<Node>> pair : state.factsByPrototype)
 						factsByPrototype1 = factsByPrototype1.put(pair.t0, replace(pair.t1));
 					return new State(factsByPrototype1);
 				}
 
-				private ImmutableSet<Node> replace(ImmutableSet<Node> facts) {
-					ImmutableSet<Node> facts1 = new ImmutableSet<Node>();
+				private ISet<Node> replace(ISet<Node> facts) {
+					ISet<Node> facts1 = new ISet<Node>();
 					for (Node node : facts)
 						facts1 = facts1.replace(Replacer.replace(node, from, to));
 					return facts1;
@@ -187,7 +187,7 @@ public class Chr {
 		return map(states, new Fun<State, State>() {
 			public State apply(State state) {
 				Prototype prototype = getPrototype(then);
-				ImmutableSet<Node> facts = getFacts(state, prototype);
+				ISet<Node> facts = getFacts(state, prototype);
 				return setFacts(state, prototype, facts.replace(then));
 			}
 		});
@@ -232,13 +232,13 @@ public class Chr {
 		return Atom.create(name);
 	}
 
-	private ImmutableSet<Node> getFacts(State state, Prototype prototype) {
-		ImmutableSet<Node> results = state.factsByPrototype.get(prototype);
-		return results != null ? results : new ImmutableSet<Node>();
+	private ISet<Node> getFacts(State state, Prototype prototype) {
+		ISet<Node> results = state.factsByPrototype.get(prototype);
+		return results != null ? results : new ISet<Node>();
 	}
 
-	private State setFacts(State state, Prototype prototype, ImmutableSet<Node> nodes) {
-		ImmutableMap<Prototype, ImmutableSet<Node>> facts = state.factsByPrototype;
+	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
+		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
 		return new State(nodes.source().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 

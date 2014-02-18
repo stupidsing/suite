@@ -10,7 +10,7 @@ import java.util.List;
  * 
  * @author ywsing
  */
-public class BinomialPriorityQueue<T> {
+public class IBinPriorityQueue<T> {
 
 	private static final int maxRank = 64;
 
@@ -57,7 +57,7 @@ public class BinomialPriorityQueue<T> {
 			return min;
 		}
 
-		private BinomialPriorityQueue<T> deleteMin() {
+		private IBinPriorityQueue<T> deleteMin() {
 			findMin();
 
 			Node forest0[] = createForest();
@@ -72,18 +72,18 @@ public class BinomialPriorityQueue<T> {
 			for (Node node : tree.nodes)
 				forest1[rank++] = node;
 
-			BinomialPriorityQueue<T> pq0 = new BinomialPriorityQueue<>(comparator, forest0);
-			BinomialPriorityQueue<T> pq1 = new BinomialPriorityQueue<>(comparator, forest1);
+			IBinPriorityQueue<T> pq0 = new IBinPriorityQueue<>(comparator, forest0);
+			IBinPriorityQueue<T> pq1 = new IBinPriorityQueue<>(comparator, forest1);
 			return pq0.meld(pq1);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public BinomialPriorityQueue(Comparator<T> comparator) {
-		this(comparator, (BinomialPriorityQueue<T>.Node[]) new BinomialPriorityQueue<?>.Node[maxRank]);
+	public IBinPriorityQueue(Comparator<T> comparator) {
+		this(comparator, (IBinPriorityQueue<T>.Node[]) new IBinPriorityQueue<?>.Node[maxRank]);
 	}
 
-	public BinomialPriorityQueue(Comparator<T> comparator, Node trees[]) {
+	public IBinPriorityQueue(Comparator<T> comparator, Node trees[]) {
 		this.comparator = comparator;
 		this.trees = trees;
 	}
@@ -92,17 +92,17 @@ public class BinomialPriorityQueue<T> {
 		return new FindMinimum().findMin();
 	}
 
-	public BinomialPriorityQueue<T> deleteMin() {
+	public IBinPriorityQueue<T> deleteMin() {
 		return new FindMinimum().deleteMin();
 	}
 
-	public BinomialPriorityQueue<T> add(T value) {
+	public IBinPriorityQueue<T> add(T value) {
 		Node forest[] = createForest();
 		forest[0] = new Node(value);
-		return meld(new BinomialPriorityQueue<>(comparator, forest));
+		return meld(new IBinPriorityQueue<>(comparator, forest));
 	}
 
-	public BinomialPriorityQueue<T> meld(BinomialPriorityQueue<T> pq) {
+	public IBinPriorityQueue<T> meld(IBinPriorityQueue<T> pq) {
 		Node forest[] = createForest();
 		Node tree = null;
 
@@ -124,7 +124,7 @@ public class BinomialPriorityQueue<T> {
 			forest[rank] = !list1.isEmpty() ? list1.get(0) : null;
 		}
 
-		return new BinomialPriorityQueue<>(comparator, forest);
+		return new IBinPriorityQueue<>(comparator, forest);
 	}
 
 	private Node link(int rank, Node node0, Node node1) {
@@ -147,7 +147,7 @@ public class BinomialPriorityQueue<T> {
 
 	private Node[] createForest() {
 		@SuppressWarnings("unchecked")
-		Node forest[] = (BinomialPriorityQueue<T>.Node[]) new BinomialPriorityQueue<?>.Node[maxRank];
+		Node forest[] = (IBinPriorityQueue<T>.Node[]) new IBinPriorityQueue<?>.Node[maxRank];
 		return forest;
 	}
 
