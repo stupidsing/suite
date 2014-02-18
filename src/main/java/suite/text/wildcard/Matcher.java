@@ -8,6 +8,7 @@ import suite.immutable.ImmutableList;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Pair;
 import suite.util.To;
 import suite.util.Util;
 
@@ -41,7 +42,34 @@ public class Matcher {
 
 	public List<String[]> matches(String pattern, String input) {
 		Source<State> source = To.source(new State(input));
+		source = applyPattern(source, pattern);
+		source = FunUtil.filter(new Fun<State, Boolean>() {
+			public Boolean apply(State state) {
+				return state.eof();
+			}
+		}, source);
 
+		List<String[]> results = new ArrayList<>();
+		State state;
+
+		while ((state = source.source()) != null) {
+			Deque<String> deque = state.matches.reverse();
+			results.add(deque.toArray(new String[deque.size()]));
+		}
+
+		return results;
+	}
+
+	public Pair<String[], String> matchStart(String pattern, String input) {
+		Source<State> source = To.source(new State(input));
+		source = applyPattern(source, pattern);
+
+		State state = source.source();
+		Deque<String> deque = state.matches.reverse();
+		return Pair.create(deque.toArray(new String[deque.size()]), input.substring(state.pos));
+	}
+
+	private Source<State> applyPattern(Source<State> source, String pattern) {
 		for (final char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
@@ -77,22 +105,7 @@ public class Matcher {
 					}
 				}, source));
 			}
-
-		source = FunUtil.filter(new Fun<State, Boolean>() {
-			public Boolean apply(State state) {
-				return state.eof();
-			}
-		}, source);
-
-		List<String[]> results = new ArrayList<>();
-		State state;
-
-		while ((state = source.source()) != null) {
-			Deque<String> deque = state.matches.reverse();
-			results.add(deque.toArray(new String[deque.size()]));
-		}
-
-		return results;
+		return source;
 	}
 
 }

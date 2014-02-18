@@ -2,6 +2,8 @@ package suite.text.wildcard;
 
 import java.util.List;
 
+import suite.util.Pair;
+
 public class WildcardUtil {
 
 	public static boolean isMatch(String pattern, String s) {
@@ -42,6 +44,10 @@ public class WildcardUtil {
 
 	public static List<String[]> matches(String pattern, String input) {
 		return new Matcher().matches(pattern, input);
+	}
+
+	public static Pair<String[], String> matchStart(String pattern, String input) {
+		return new Matcher().matchStart(pattern, input);
 	}
 
 }
