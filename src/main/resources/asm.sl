@@ -12,8 +12,8 @@ as-assemble (INC .rm) .e0/.ex :- as-assemble-rm +xFE .rm 0 .e0/.ex #
 as-assemble (INT 3) (+x37, .e)/.e #
 as-assemble (INT .imm) (+xCD, .e0)/.ex :- as-emit8 .imm .e0/.ex #
 as-assemble (INTO) (+xCE, .e)/.e #
-as-assemble (JE .rel) .e0/.ex :- asm-assemble-jump .rel +x74 +x84 .e0/.ex #
-as-assemble (JMP .rel) .e0/.ex :- asm-assemble-jump .rel +xEB +xE9 .e0/.ex #
+as-assemble (JE .rel) .e0/.ex :- asm-assemble-jump .rel +x74 () +x84 .e0/.ex #
+as-assemble (JMP .rel) .e0/.ex :- asm-assemble-jump .rel +xEB +x0F +xE9 .e0/.ex #
 as-assemble (JMP .rm) .e0/.ex :- as-assemble-rm32 +xFF .rm 4 .e0/.ex #
 as-assemble (LABEL _) .e/.e #
 as-assemble (LEA .reg .rm) .e0/.ex :- as-assemble-rm-reg +x8D .rm .reg .e0/.ex #
@@ -27,7 +27,8 @@ as-assemble (RET .imm) (+xC2, .e1)/.ex :- as-emit16 .imm .e1/.ex #
 
 as-assemble-jump (byte .rel8) .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
 as-assemble-jump .rel8 .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
-as-assemble-jump .rel32 _ .b (+x0F, .b, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
+as-assemble-jump .rel32 _ () .b (.b, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
+as-assemble-jump .rel32 _ .b0 .b1 (.b0, .b1, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
 
 as-assemble-rm-imm .b .rm .num .imm (.b, .e1)/.ex
 	:- as-assemble-rm8 .rm .num .e1/.e2, as-emit8 .imm .e2/.ex
