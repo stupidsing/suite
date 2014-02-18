@@ -1,20 +1,21 @@
 package suite.immutable;
 
-import suite.node.Node;
 import suite.util.Util;
 
 /**
  * A list of nodes that can be easily expanded in left or right direction.
  */
-public class IVector extends Node {
+public class IVector<T> {
 
-	public static IVector EMPTY = new IVector(new Node[0]);
+	@SuppressWarnings("unchecked")
+	public T[] emptyArray = (T[]) new Object[0];
+	public IVector<T> empty = new IVector<>(emptyArray);
 
-	private Data data;
+	private Data<T> data;
 	private int start, end;
 
-	private static class Data { // Immutable
-		private Node nodes[];
+	private static class Data<T> {
+		private T nodes[];
 		private int startUsed, endUsed;
 
 		private Data() {
@@ -26,95 +27,92 @@ public class IVector extends Node {
 		}
 
 		private Data(int len, int startUsed) {
-			nodes = new Node[len];
+			@SuppressWarnings("unchecked")
+			T[] array = (T[]) new Object[len];
+			nodes = array;
 			endUsed = this.startUsed = startUsed;
 		}
 
-		private void insertBefore(Node n) {
+		private void insertBefore(T n) {
 			nodes[--startUsed] = n;
 		}
 
-		private void insertAfter(Node n) {
+		private void insertAfter(T n) {
 			nodes[++endUsed] = n;
 		}
 
-		private void insertBefore(Node n[], int s, int e) {
+		private void insertBefore(T n[], int s, int e) {
 			int l1 = e - s;
 			startUsed -= l1;
 			System.arraycopy(n, s, nodes, startUsed, l1);
 		}
 
-		private void insertAfter(Node n[], int s, int e) {
+		private void insertAfter(T n[], int s, int e) {
 			int l1 = e - s;
 			System.arraycopy(n, s, nodes, endUsed, l1);
 			endUsed += l1;
 		}
 	}
 
-	public IVector(Node node) {
-		this(new Node[] { node });
+	public IVector(T node) {
+		this.data = new Data<>();
+		data.insertBefore(node);
 	}
 
-	public IVector(Node nodes[]) {
-		this(new Data());
+	public IVector(T nodes[]) {
+		this.data = new Data<>();
 		data.insertBefore(nodes, 0, nodes.length);
 	}
 
-	private IVector(Data data) {
-		this.data = data;
-		start = data.startUsed;
-		end = data.endUsed;
-	}
-
-	private IVector(Data data, int start, int end) {
+	private IVector(Data<T> data, int start, int end) {
 		this.data = data;
 		this.start = start;
 		this.end = end;
 	}
 
-	public static IVector cons(Node n, IVector v) {
+	public IVector<T> cons(T n, IVector<T> v) {
 		int vlen = v.length();
 
 		if (v.start == v.data.startUsed && v.start >= 1) {
 			v.data.insertBefore(n);
-			return new IVector(v.data, v.start - 1, v.end);
+			return new IVector<>(v.data, v.start - 1, v.end);
 		} else {
-			Data data = new Data(vlen + 16, 0);
+			Data<T> data = new Data<>(vlen + 16, 0);
 			data.insertAfter(n);
 			data.insertAfter(v.data.nodes, v.start, v.end);
-			return new IVector(data, data.startUsed, data.endUsed);
+			return new IVector<>(data, data.startUsed, data.endUsed);
 		}
 	}
 
-	public static IVector concat(IVector u, IVector v) {
+	public IVector<T> concat(IVector<T> u, IVector<T> v) {
 		int ulen = u.length(), vlen = v.length();
 
 		if (u.end == u.data.endUsed && u.data.nodes.length - u.end >= vlen) {
 			u.data.insertAfter(v.data.nodes, v.start, v.end);
-			return new IVector(u.data, u.start, u.end + vlen);
+			return new IVector<>(u.data, u.start, u.end + vlen);
 		} else if (v.start == v.data.startUsed && v.start >= ulen) {
 			v.data.insertBefore(u.data.nodes, u.start, u.end);
-			return new IVector(v.data, v.start - ulen, v.end);
+			return new IVector<>(v.data, v.start - ulen, v.end);
 		} else {
-			Data data = new Data(ulen + vlen + 16, 0);
+			Data<T> data = new Data<>(ulen + vlen + 16, 0);
 			data.insertAfter(u.data.nodes, u.start, u.end);
 			data.insertAfter(v.data.nodes, v.start, v.end);
-			return new IVector(data, data.startUsed, data.endUsed);
+			return new IVector<>(data, data.startUsed, data.endUsed);
 		}
 	}
 
-	public Node get(int i) {
+	public T get(int i) {
 		return data.nodes[start + i];
 	}
 
-	public IVector range(int s, int e) {
+	public IVector<T> range(int s, int e) {
 		int length = length();
 		while (s < 0)
 			s += length;
 		while (e <= 0)
 			e += length;
 		e = Math.min(e, length);
-		return new IVector(data, start + s, start + e);
+		return new IVector<>(data, start + s, start + e);
 	}
 
 	public int length() {
@@ -135,17 +133,14 @@ public class IVector extends Node {
 	public boolean equals(Object object) {
 		boolean result = false;
 
-		if (object instanceof Node) {
-			Node node = ((Node) object).finalNode();
+		if (Util.clazz(object) == IVector.class) {
+			@SuppressWarnings("unchecked")
+			IVector<T> v = (IVector<T>) object;
+			result = end - start == v.end - v.start;
+			int si = start, di = v.start;
 
-			if (Util.clazz(node) == IVector.class) {
-				IVector v = (IVector) node;
-				result = end - start == v.end - v.start;
-				int si = start, di = v.start;
-
-				while (result && si < end)
-					result &= Util.equals(data.nodes[si++], v.data.nodes[di++]);
-			}
+			while (result && si < end)
+				result &= Util.equals(data.nodes[si++], v.data.nodes[di++]);
 		}
 
 		return result;

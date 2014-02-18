@@ -107,13 +107,6 @@ public class InstructionUtil {
 		STOREGLOBAL___("STORE-GLOBAL"), //
 		TAIL__________("TAIL"), //
 		TOP___________("TOP"), //
-		VCONCAT_______("VCONCAT"), //
-		VCONS_________("VCONS"), //
-		VELEM_________("VELEM"), //
-		VEMPTY________("VEMPTY"), //
-		VHEAD_________("VHEAD"), //
-		VRANGE________("VRANGE"), //
-		VTAIL_________("VTAIL"), //
 		;
 
 		String name;

@@ -110,34 +110,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
-		case VCONCAT_______:
-			IVector vector0 = (IVector) ds[--dsp];
-			IVector vector1 = (IVector) ds[--dsp];
-			result = IVector.concat(vector0, vector1);
-			break;
-		case VCONS_________:
-			Node head = (Node) ds[--dsp];
-			IVector tail = (IVector) ds[--dsp];
-			result = IVector.cons(head, tail);
-			break;
-		case VELEM_________:
-			result = new IVector((Node) ds[--dsp]);
-			break;
-		case VEMPTY________:
-			result = IVector.EMPTY;
-			break;
-		case VHEAD_________:
-			result = ((IVector) ds[--dsp]).get(0);
-			break;
-		case VRANGE________:
-			IVector vector = (IVector) ds[--dsp];
-			int s = ((Int) ds[--dsp]).getNumber();
-			int e = ((Int) ds[--dsp]).getNumber();
-			result = vector.range(s, e);
-			break;
-		case VTAIL_________:
-			result = ((IVector) ds[--dsp]).range(1, 0);
-			break;
 		default:
 			throw new RuntimeException("Unknown instruction " + insn);
 		}
