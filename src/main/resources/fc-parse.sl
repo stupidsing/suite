@@ -7,15 +7,21 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (define type .type over .typeVars of .classes >> .do) (
-	PRAGMA (DEF-TYPE .type1 .classes1 .typeVars1) .do1
+fc-parse (define type .type over some .typeVars of some .classes >> .do) (
+	PRAGMA (DEF-TYPE .type1 (.classes1,) .typeVars1) .do1
 ) :- fc-parse-type .type .type1
 	, fc-parse-type-list .classes .classes1
 	, fc-parse-type-list .typeVars .typeVars1
 	, !, fc-parse .do .do1
 #
-fc-parse (define type .type of .classes >> .do) .do1
-	:- !, fc-parse (define type .type over () of .classes >> .do) .do1
+fc-parse (define type .type over some .typeVars of .class >> .do) .do1
+	:- !, fc-parse (define type .type over some .typeVars of some (.class,) >> .do) .do1
+#
+fc-parse (define type .type over .typeVar of .of >> .do) .do1
+	:- !, fc-parse (define type .type over some (.typeVar,) of .of >> .do) .do1
+#
+fc-parse (define type .type of .of >> .do) .do1
+	:- !, fc-parse (define type .type over some () of .of >> .do) .do1
 #
 fc-parse .do (PRAGMA (CAST DOWN .type1) .value1)
 	:- (.do = .value as .type
