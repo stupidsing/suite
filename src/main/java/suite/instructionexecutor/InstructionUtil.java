@@ -83,7 +83,6 @@ public class InstructionUtil {
 		INVOKEJAVAOBJ2("INVOKE-JAVA-OBJ2"), //
 		INVOKEJAVAOBJ3("INVOKE-JAVA-OBJ3"), //
 		ISCONS________("IS-CONS"), //
-		ISVECTOR______("IS-VECTOR"), //
 		JUMP__________("JUMP"), //
 		JUMPREG_______("JUMP-REG"), //
 		LABEL_________("LABEL"), //

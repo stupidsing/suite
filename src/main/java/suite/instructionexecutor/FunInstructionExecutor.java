@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.immutable.IVector;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -103,9 +102,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
-			break;
-		case ISVECTOR______:
-			result = atom(ds[--dsp] instanceof IVector);
 			break;
 		case TAIL__________:
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
