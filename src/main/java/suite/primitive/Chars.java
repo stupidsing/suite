@@ -155,16 +155,9 @@ public class Chars implements Iterable<Character> {
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
 	}
 
-	private static final String hexDigits = "0123456789ABCDEF";
-
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = start; i < end; i++)
-			sb.append(" ") //
-					.append(hexDigits.charAt(vector[i] >>> 4 & 0x0F)) //
-					.append(hexDigits.charAt(vector[i] & 0x0F));
-		return sb.toString();
+		return new String(vector);
 	}
 
 	public char[] getChars() {
