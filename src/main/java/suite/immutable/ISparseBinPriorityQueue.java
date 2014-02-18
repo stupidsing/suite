@@ -96,7 +96,7 @@ public class ISparseBinPriorityQueue<T> {
 	}
 
 	public ISparseBinPriorityQueue<T> add(T value) {
-		return new ISparseBinPriorityQueue<T>(comparator, insert(new Tree(0, new Node(value)), trees));
+		return new ISparseBinPriorityQueue<>(comparator, insert(new Tree(0, new Node(value)), trees));
 	}
 
 	public ISparseBinPriorityQueue<T> meld(ISparseBinPriorityQueue<T> pq) {
