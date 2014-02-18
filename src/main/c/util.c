@@ -119,7 +119,7 @@ void heapdelete(struct Heap *heap) {
 void heapadd(struct Heap *heap, void *item) {
 	int loc = heap->size++;
 	int uploc;
-	while (loc > 0 && heap->comparer(heap->items[uploc = loc / 2], item) < 0) {
+	while(loc > 0 && heap->comparer(heap->items[uploc = loc / 2], item) < 0) {
 		heap->items[loc] = heap->items[uploc];
 		loc = uploc;
 	}
@@ -127,16 +127,16 @@ void heapadd(struct Heap *heap, void *item) {
 }
 
 void *heapremove(struct Heap *heap) {
-	if (heap->size > 0) {
+	if(heap->size > 0) {
 		void *taken = heap->items[0];
 		heap->items[0] = heap->items[--heap->size];
 		int loc = 0, loc0, loc1;
-		while (1) {
+		while(1) {
 			void *item0 = heap->items[loc0 = 2 * loc];
 			void *item1 = heap->items[loc1 = loc0 + 1];
-			if (!item0 && !item1) break;
+			if(!item0 && !item1) break;
 
-			if (heap->comparer(item0, item1) < 0) {
+			if(heap->comparer(item0, item1) < 0) {
 				heap->items[loc] = item0;
 				loc = loc0;
 			} else {
