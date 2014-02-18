@@ -1,3 +1,5 @@
+// gcc -std=c99 -g jitdemo.c -o jitdemo
+
 #define _ISOC11_SOURCE
 #define _POSIX_C_SOURCE 199309L
 
@@ -13,7 +15,7 @@ void *ptr;
 
 void ouch(int sig, siginfo_t *info, void *dummy) {
 	int pageSize = sysconf(_SC_PAGE_SIZE);
-	printf("OUCH! - I got signal %d on %d\n", sig, info->si_addr);
+	printf("OUCH! - I got signal %d on %x\n", sig, info->si_addr);
 	mprotect(ptr, pageSize, PROT_READ | PROT_WRITE) && fatal("mprotect()");
 }
 
