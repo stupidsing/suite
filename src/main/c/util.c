@@ -72,30 +72,30 @@ int hashstr(char *start, char *end) {
 	return hash;
 }
 
-void newhashtab(struct Hashtab *hashtab, int size) {
+void htnew(struct Hashtab *hashtab, int size) {
 	hashtab->size = size;
 	hashtab->keys = memalloczeroed(hashtab->size * sizeof(void*));
 	hashtab->values = memalloczeroed(hashtab->size * sizeof(void*));
 }
 
-void deletehashtab(struct Hashtab hashtab) {
+void htdelete(struct Hashtab hashtab) {
 	memfree(hashtab.values);
 	memfree(hashtab.keys);
 }
 
-int gethashtabpos(struct Hashtab *hashtab, void *key) {
+int htgetpos(struct Hashtab *hashtab, void *key) {
 	void **keys = hashtab->keys, *k;
 	int size = hashtab->size, i = hashptr(key);
 	while((k = keys[i %= size]) && k != key) i++;
 	return i;	
 }
 
-void *gethashtab(struct Hashtab *hashtab, void *key) {
-	return hashtab->values[gethashtabpos(hashtab, key)];
+void *htget(struct Hashtab *hashtab, void *key) {
+	return hashtab->values[htgetpos(hashtab, key)];
 }
 
-void puthashtab(struct Hashtab *hashtab, void *key, void *value) {
-	int i = gethashtabpos(hashtab, key);
+void htput(struct Hashtab *hashtab, void *key, void *value) {
+	int i = htgetpos(hashtab, key);
 	hashtab->keys[i] = key;
 	hashtab->values[i] = value;
 }
@@ -108,7 +108,7 @@ struct Heap {
 	int (*comparer) (void*, void*);
 };
 
-void heapcreate(struct Heap *heap, int (*comparer) (void*, void*)) {
+void heapnew(struct Heap *heap, int (*comparer) (void*, void*)) {
 	heap->size = 0;
 	heap->comparer = comparer;
 }

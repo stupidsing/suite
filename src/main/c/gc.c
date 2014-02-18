@@ -31,7 +31,7 @@ struct Object *markAndSweep(struct Object *root) {
 	}
 
 	struct Heap heap;
-	heapcreate(&heap, &compareaddresses);
+	heapnew(&heap, &compareaddresses);
 
 	object->flag = QUEUED_;
 	heapadd(&heap, root);

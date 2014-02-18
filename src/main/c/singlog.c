@@ -485,8 +485,8 @@ struct Node *clone0(struct Node *node, struct Hashtab *hashtab) {
 	case REF_:
 		if(node->u.target) return node->u.target;
 		else {
-			struct Node *ref = gethashtab(hashtab, node);
-			if(!ref) puthashtab(hashtab, node, ref = newRef());
+			struct Node *ref = htget(hashtab, node);
+			if(!ref) htput(hashtab, node, ref = newRef());
 			return ref;
 		}
 	case TREE:
@@ -500,9 +500,9 @@ struct Node *clone0(struct Node *node, struct Hashtab *hashtab) {
 
 struct Node *clone(struct Node *node) {
 	struct Hashtab hashtab;
-	newhashtab(&hashtab, genHashSize);
+	htnew(&hashtab, genHashSize);
 	struct Node *cloned = clone0(node, &hashtab);
-	deletehashtab(hashtab);
+	htdelete(hashtab);
 	return cloned;
 }
 
@@ -516,8 +516,8 @@ struct Node *generalize0(struct Node *node, struct Hashtab *hashtab) {
 	case ATOM:
 		first = node->u.name[0];
 		if(first == '.' || first == '!') {
-			struct Node *ref = gethashtab(hashtab, node);
-			if(!ref) puthashtab(hashtab, node, ref = newRef());
+			struct Node *ref = htget(hashtab, node);
+			if(!ref) htput(hashtab, node, ref = newRef());
 			return ref;
 		} else if(node == undAtom) return newRef();
 		else return node;
@@ -532,18 +532,18 @@ struct Node *generalize0(struct Node *node, struct Hashtab *hashtab) {
 
 struct Node *generalizeWithCut(struct Node *node, struct Node *cut) {
 	struct Hashtab hashtab;
-	newhashtab(&hashtab, genHashSize);
-	puthashtab(&hashtab, cutAtom, cut);
+	htnew(&hashtab, genHashSize);
+	htput(&hashtab, cutAtom, cut);
 	struct Node *generalized = generalize0(node, &hashtab);
-	deletehashtab(hashtab);
+	htdelete(hashtab);
 	return generalized;
 }
 
 struct Node *generalize(struct Node *node) {
 	struct Hashtab hashtab;
-	newhashtab(&hashtab, genHashSize);
+	htnew(&hashtab, genHashSize);
 	struct Node *generalized = generalize0(node, &hashtab);
-	deletehashtab(hashtab);
+	htdelete(hashtab);
 	return generalized;
 }
 
@@ -697,7 +697,7 @@ retry:
 
 invoke:
 	proto = prototype(goal);
-	if(rule = gethashtab(&ruleHashtab, proto)) {
+	if(rule = htget(&ruleHashtab, proto)) {
 		if(enabletrace) {
 			int handleexit(struct Node*, struct Node***, struct Node**, struct Node**);
 			struct Node *after = newInternal(INV_, goal, &handleexit);
@@ -716,7 +716,7 @@ invoke:
 		assignref(&goal, expanded);
 		unref(cut);
 		goto retry;
-	} else if(ptr = gethashtab(&handlerHashtab, proto)) {
+	} else if(ptr = htget(&handlerHashtab, proto)) {
 handle: ;
 		int (*handler)(struct Node*, struct Node***, struct Node**, struct Node**) = ptr;
 		int result = (*handler)(goal, ptrail, &remaining, &alternative);
@@ -762,7 +762,7 @@ int prove(struct Node *goal) {
 
 void assert(struct Node *rule) {
 	struct Node *proto = prototype(rule);
-	int i = gethashtabpos(&ruleHashtab, proto);
+	int i = htgetpos(&ruleHashtab, proto);
 
 	if(!ruleHashtab.keys[i]) {
 		ruleHashtab.keys[i] = ref(proto);
@@ -821,8 +821,8 @@ void process(char *buffer) {
 	int yesno = buffer[0] == '?', elab = buffer[0] == '/';
 
 	if(yesno || elab) {
-		newhashtab(&genHashtab, genHashSize);
-		puthashtab(&genHashtab, cutAtom, cut = ref(newInternal(CUT_, failAtom, 0)));
+		htnew(&genHashtab, genHashSize);
+		htput(&genHashtab, cutAtom, cut = ref(newInternal(CUT_, failAtom, 0)));
 
 		node = ref(parse(buffer + 1));
 		generalized = ref(generalize0(node, &genHashtab));
@@ -837,7 +837,7 @@ void process(char *buffer) {
 		if(elab) fprintf(stdout, "%d solution%s\n", nSolutions, nSolutions != 1 ? "s" : "");
 		else fputs(lastResult ? "yes\n" : "no\n", stdout);
 
-		deletehashtab(genHashtab);
+		htdelete(genHashtab);
 		unref(generalized);
 		unref(node);
 		unref(cut);
@@ -1145,7 +1145,7 @@ int handlereadeach(struct Node *query, struct Node ***ptrail, struct Node **prem
 int handlerule(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
 	struct Node *ps[2], *rules;
 	getparams(query, 2, ps);
-	rules = gethashtab(&ruleHashtab, ps[1]);
+	rules = htget(&ruleHashtab, ps[1]);
 	return rules ? bindfree(ps[0], rules, ptrail) : 0;
 }
 
@@ -1214,34 +1214,34 @@ void init() {
 
 	importingpath = 0;
 
-	newhashtab(&handlerHashtab, handlerHashSize);
-	puthashtab(&handlerHashtab, ref(getAtom("atom.str")), &handleatomstr);
-	puthashtab(&handlerHashtab, ref(getAtom("clone")), &handleclone);
-	puthashtab(&handlerHashtab, ref(getAtom("dump")), &handledump);
-	puthashtab(&handlerHashtab, ref(getAtom("findall")), &handlefindall);
-	puthashtab(&handlerHashtab, ref(getAtom("import")), &handleimport);
-	puthashtab(&handlerHashtab, ref(getAtom("is.atom")), &handleisatom);
-	puthashtab(&handlerHashtab, ref(getAtom("is.int")), &handleisint);
-	puthashtab(&handlerHashtab, ref(getAtom("is.ref")), &handleisref);
-	puthashtab(&handlerHashtab, ref(getAtom("is.str")), &handleisstr);
-	puthashtab(&handlerHashtab, ref(getAtom("let")), &handlelet);
-	puthashtab(&handlerHashtab, ref(getAtom("let.int")), &handleletint);
-	puthashtab(&handlerHashtab, ref(getAtom("list.str")), &handleliststr);
-	puthashtab(&handlerHashtab, ref(getAtom("nl")), &handlenl);
-	puthashtab(&handlerHashtab, ref(getAtom("not")), &handlenot);
-	puthashtab(&handlerHashtab, ref(getAtom("once")), &handleonce);
-	puthashtab(&handlerHashtab, ref(getAtom("ord")), &handleord);
-	puthashtab(&handlerHashtab, ref(getAtom("parse")), &handleparse);
-	puthashtab(&handlerHashtab, ref(getAtom("read")), &handleread);
-	puthashtab(&handlerHashtab, ref(getAtom("readchar")), &handlereadchar);
-	puthashtab(&handlerHashtab, ref(getAtom("readeach")), &handlereadeach);
-	puthashtab(&handlerHashtab, ref(getAtom("rule")), &handlerule);
-	puthashtab(&handlerHashtab, ref(getAtom("system")), &handlesystem);
-	puthashtab(&handlerHashtab, ref(getAtom("trace")), &handletrace);
-	puthashtab(&handlerHashtab, ref(getAtom("tree")), &handletree);
-	puthashtab(&handlerHashtab, ref(getAtom("write")), &handlewrite);
+	htnew(&handlerHashtab, handlerHashSize);
+	htput(&handlerHashtab, ref(getAtom("atom.str")), &handleatomstr);
+	htput(&handlerHashtab, ref(getAtom("clone")), &handleclone);
+	htput(&handlerHashtab, ref(getAtom("dump")), &handledump);
+	htput(&handlerHashtab, ref(getAtom("findall")), &handlefindall);
+	htput(&handlerHashtab, ref(getAtom("import")), &handleimport);
+	htput(&handlerHashtab, ref(getAtom("is.atom")), &handleisatom);
+	htput(&handlerHashtab, ref(getAtom("is.int")), &handleisint);
+	htput(&handlerHashtab, ref(getAtom("is.ref")), &handleisref);
+	htput(&handlerHashtab, ref(getAtom("is.str")), &handleisstr);
+	htput(&handlerHashtab, ref(getAtom("let")), &handlelet);
+	htput(&handlerHashtab, ref(getAtom("let.int")), &handleletint);
+	htput(&handlerHashtab, ref(getAtom("list.str")), &handleliststr);
+	htput(&handlerHashtab, ref(getAtom("nl")), &handlenl);
+	htput(&handlerHashtab, ref(getAtom("not")), &handlenot);
+	htput(&handlerHashtab, ref(getAtom("once")), &handleonce);
+	htput(&handlerHashtab, ref(getAtom("ord")), &handleord);
+	htput(&handlerHashtab, ref(getAtom("parse")), &handleparse);
+	htput(&handlerHashtab, ref(getAtom("read")), &handleread);
+	htput(&handlerHashtab, ref(getAtom("readchar")), &handlereadchar);
+	htput(&handlerHashtab, ref(getAtom("readeach")), &handlereadeach);
+	htput(&handlerHashtab, ref(getAtom("rule")), &handlerule);
+	htput(&handlerHashtab, ref(getAtom("system")), &handlesystem);
+	htput(&handlerHashtab, ref(getAtom("trace")), &handletrace);
+	htput(&handlerHashtab, ref(getAtom("tree")), &handletree);
+	htput(&handlerHashtab, ref(getAtom("write")), &handlewrite);
 
-	newhashtab(&ruleHashtab, ruleHashSize);
+	htnew(&ruleHashtab, ruleHashSize);
 	enabletrace = tracedepth = 0;
 }
 
@@ -1253,14 +1253,14 @@ void deinit() {
 		if(rule) unref(rule);
 	}
 
-	deletehashtab(ruleHashtab);
+	htdelete(ruleHashtab);
 
 	for(i = 0; i < handlerHashtab.size; i++) {
 		struct Node *proto = handlerHashtab.keys[i];
 		if(proto) unref(proto);
 	}
 
-	deletehashtab(handlerHashtab);
+	htdelete(handlerHashtab);
 
 	unref(cutAtom);
 	unref(undAtom);
