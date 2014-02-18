@@ -8,10 +8,10 @@ fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define type .type over some .typeVars of some .classes >> .do) (
-	PRAGMA (DEF-TYPE .type1 (.classes1,) .typeVars1) .do1
+	PRAGMA (DEF-TYPE .type1 .classes1 .typeVars1) .do1
 ) :- fc-parse-type .type .type1
-	, fc-parse-type-list .classes .classes1
 	, fc-parse-type-list .typeVars .typeVars1
+	, fc-parse-type-list .classes .classes1
 	, !, fc-parse .do .do1
 #
 fc-parse (define type .type over some .typeVars of .class >> .do) .do1
