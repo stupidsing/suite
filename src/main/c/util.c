@@ -1,3 +1,6 @@
+#ifndef utilsource
+#define utilsource
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -147,3 +150,5 @@ void *heapremove(struct Heap *heap) {
 		return taken;
 	} else return 0;
 }
+
+#endif
