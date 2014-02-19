@@ -50,7 +50,10 @@ public class ParseUtil {
 				depth = checkDepth(depth, c);
 		}
 
-		return quote == 0 && depth == 0;
+		if (depth >= 0)
+			return quote == 0 && depth == 0;
+		else
+			throw new RuntimeException("Parse error");
 	}
 
 	public static int search(String s, int start, String toMatch) {

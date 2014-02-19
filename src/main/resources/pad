@@ -86,16 +86,16 @@ define type OPERATOR-MUL of operator >>
 define type OPERATOR-NE of operator >>
 define type OPERATOR-OR of operator >>
 define type OPERATOR-SUB of operator >>
-define type (ATOM list-of number) of fc >> 
+define type (ATOM ([number])) of fc >> 
 define type (BOOLEAN boolean) of fc >> 
 define type (DEF-VAR (fc, fc)) of fc >>
-define type (FUN (list-of number) fc) of fc >>
+define type (FUN ([number]) fc) of fc >>
 define type (IF (fc, fc, fc)) of fc >>
 define type (INVOKE (fc, fc)) of fc >>
 define type (NUMBER number) of fc >>
 define type (PAIR (fc, fc)) of fc >>
 define type (TREE operator (fc, fc)) of fc >>
-define type (VAR (list-of number)) of fc >>
+define type (VAR ([number])) of fc >>
 IF (BOOLEAN true)
 (ATOM "abc")
 (INVOKE (NUMBER 3) (FUN "v" (VAR "v")))

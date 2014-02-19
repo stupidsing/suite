@@ -58,7 +58,7 @@ public class EagerFunTest {
 				+ "define type A of t >> \n" //
 				+ "define type B of t >> \n" //
 				+ "define type C of t >> \n" //
-				+ "let list1 = type (list-of t) (A; B; C;) >> \n" //
+				+ "let list1 = type [t] (A; B; C;) >> \n" //
 				+ "let result = ( \n" //
 				+ "    (A, 1,; A, 2,;); \n" //
 				+ "    (B, 1,; B, 2,;); \n" //
@@ -217,7 +217,7 @@ public class EagerFunTest {
 		assertEquals(Atom.FALSE, Suite.evaluateFun("" //
 				+ "define type A of t >> \n" //
 				+ "define type B of t >> \n" //
-				+ "let list1 = type (list-of t) () >> A = B", false));
+				+ "let list1 = type [t] () >> A = B", false));
 	}
 
 	@Test

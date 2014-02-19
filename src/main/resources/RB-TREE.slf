@@ -34,7 +34,7 @@ define rbt-add = type (:t => :t -> rb-tree {:t} -> rb-tree {:t}) (v =>
 	|| `RB-TREE ($color, $n0, $pivot, $n1)` => RB-TREE (cb, n0, pivot, n1) | add0
 	|| add0
 ) >>
-define rbt-to-list = type (:t => rb-tree {:t} -> list-of :t) (
+define rbt-to-list = type (:t => rb-tree {:t} -> [:t]) (
 	case
 	|| `RB-TREE ($color, $n0, $pivot, $n1)` => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
 	|| `EMPTY` => ()

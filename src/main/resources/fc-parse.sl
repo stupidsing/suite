@@ -190,7 +190,7 @@ fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
-fc-parse-type (list-of .type) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
+fc-parse-type ([.type]) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
 fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
 fc-parse-type (data-of .d) (DATA-OF .d) :- ! #
 fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #

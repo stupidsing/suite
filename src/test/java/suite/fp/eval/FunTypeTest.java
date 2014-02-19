@@ -10,28 +10,27 @@ import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.node.Node;
-import suite.node.io.Formatter;
 
 public class FunTypeTest {
 
 	@Test
 	public void testBasic() {
-		assertEquals("boolean", getTypeString("4 = 8"));
+		assertType("boolean", "4 = 8");
 	}
 
 	@Test
 	public void testClass() {
-		assertEquals("clazz", getTypeString("" //
+		assertType("clazz", "" //
 				+ "define type EMPTY of clazz >>\n" //
 				+ "define add = type (clazz -> clazz) (a => a) >>\n" //
-				+ "add | {EMPTY}\n"));
+				+ "add | {EMPTY}\n");
 
-		assertEquals("boolean", getTypeString("" //
+		assertType("boolean", "" //
 				+ "define type NIL of t >> \n" //
 				+ "define type (BTREE (t, t)) of t >> \n" //
 				+ "let u = type t NIL >> \n" //
 				+ "let v = type t NIL >> \n" //
-				+ "v = BTREE (BTREE (NIL, NIL), NIL)\n"));
+				+ "v = BTREE (BTREE (NIL, NIL), NIL)\n");
 	}
 
 	@Test
@@ -59,24 +58,20 @@ public class FunTypeTest {
 
 	@Test
 	public void testFun() {
-		assertEquals("number -> number" //
-				, getTypeString("a => a + 1"));
-		assertEquals("number" //
-				, getTypeString("define f = (a => a + 1) >> f {3}"));
-		assertEquals("boolean -> boolean -> boolean" //
-				, getTypeString("and"));
-		assertEquals("number -> list-of number" //
-				, getTypeString("v => v; reverse {1;}"));
+		assertType("number -> number", "a => a + 1");
+		assertType("number", "define f = (a => a + 1) >> f {3}");
+		assertType("boolean -> boolean -> boolean", "and");
+		assertType("number -> [number]", "v => v; reverse {1;}");
 	}
 
 	@Test
 	public void testGeneric() {
-		assertEquals("list-of (rb-tree {number})", getTypeString("" //
+		assertType("[rb-tree {number}]", "" //
 				+ "define type EMPTY over :t of (rb-tree {:t}) >> \n" //
-				+ "define map = type (:a => :b => (:a -> :b) -> list-of :a -> list-of :b) (error) >> \n" //
+				+ "define map = type (:a => :b => (:a -> :b) -> [:a] -> [:b]) (error) >> \n" //
 				+ "define add = type ($t => $t -> rb-tree {$t}) (v => EMPTY) >> \n" //
 				+ "1; | map {add} \n" //
-		));
+		);
 	}
 
 	@Test
@@ -91,8 +86,8 @@ public class FunTypeTest {
 		getType(define + "NODE (false, NIL)");
 		getType(define + "NODE2 (1, 2, NODE (3, NIL))");
 
-		assertEquals("boolean", getTypeString(define //
-				+ "let n = NODE (true, NIL) >> NODE (false, n) = NIL"));
+		assertType("boolean", define //
+				+ "let n = NODE (true, NIL) >> NODE (false, n) = NIL");
 
 		getTypeMustFail(define + "NODE");
 		getTypeMustFail(define + "NODE 1");
@@ -105,27 +100,27 @@ public class FunTypeTest {
 
 	@Test
 	public void testList() {
-		assertEquals("list-of number", getTypeString("1;"));
-		assertEquals("list-of list-of number", getTypeString("\"a\"; \"b\"; \"c\"; \"d\";"));
+		assertType("[number]", "1;");
+		assertType("[[number]]", "\"a\"; \"b\"; \"c\"; \"d\";");
 	}
 
 	@Test
 	public void testRbTree() {
 		String fps = "using RB-TREE >> 0 until 10 | map {dict-add/ {1}} | apply | {EMPTY}";
-		assertEquals("rb-tree {number, number}", getTypeString(fps));
+		assertType("rb-tree {number, number}", fps);
 	}
 
 	@Test
 	public void testStandard() {
 		checkType("using STANDARD >> ends-with" //
-				, "list-of T -> _" //
-				, "list-of T -> list-of T -> boolean");
+				, "[T] -> _" //
+				, "[T] -> [T] -> boolean");
 		checkType("using STANDARD >> join" //
 				, "T -> _" //
-				, "T -> list-of list-of T -> list-of T");
+				, "T -> [[T]] -> [T]");
 		checkType("using STANDARD >> merge" //
-				, "(list-of T -> _) -> _" //
-				, "(list-of T -> list-of T -> list-of T) -> list-of T -> list-of T");
+				, "([T] -> _) -> _" //
+				, "([T] -> [T] -> [T]) -> [T] -> [T]");
 	}
 
 	@Test
@@ -157,7 +152,11 @@ public class FunTypeTest {
 		Node type = getType(fps);
 
 		assertTrue(Binder.bind(type, generalizer.generalize(Suite.parse(bindTo)), journal));
-		assertEquals(ts, Formatter.dump(type));
+		assertEquals(Suite.parse(ts), type);
+	}
+
+	private void assertType(String type, String fp) {
+		assertEquals(Suite.parse(type), getType(fp));
 	}
 
 	private static void getTypeMustFail(String fps) {
@@ -167,10 +166,6 @@ public class FunTypeTest {
 			return;
 		}
 		throw new RuntimeException("Cannot catch type error of: " + fps);
-	}
-
-	private String getTypeString(String fps) {
-		return getType(fps).toString();
 	}
 
 	private static Node getType(String fps) {

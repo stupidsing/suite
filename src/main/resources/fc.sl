@@ -122,7 +122,7 @@ fc-add-functions STANDARD .p (
 	define ijavaobj3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
-	define _popen as (list-of string -> string -> data-of Stream) = (
+	define _popen as ([string] -> string -> data-of Stream) = (
 		atom:`CLASS!suite.lp.invocable.Invocables$Popen` | ijavacls | ijavaobj2
 	) >>
 	define log as (:t => :t -> :t) = (
