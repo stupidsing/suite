@@ -12,13 +12,13 @@ public class FailedTests {
 
 	// Type check take 11 seconds
 	@Test
-	public void test0() throws IOException {
+	public void testTypeCheck() throws IOException {
 		new FunRbTreeTest().test();
 	}
 
 	// Cyclic types
 	@Test
-	public void test1() {
+	public void testCyclicType() {
 		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
 	}
 
@@ -30,6 +30,13 @@ public class FailedTests {
 		RuleSet rs = Suite.createRuleSet();
 		Suite.importResource(rs, "auto.sl");
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
+	}
+
+	// Impossible type
+	@Test
+	public void testImpossibleType() {
+		Suite.evaluateFunType("let `$n; $p;` = (true; 3;) >> p");
+		assertTrue(false);
 	}
 
 }
