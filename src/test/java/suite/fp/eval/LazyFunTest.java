@@ -63,6 +63,11 @@ public class LazyFunTest {
 	}
 
 	@Test
+	public void testPartition() {
+		assertEquals(eval("(0; 1; 2; 3; 4;), (5; 6; 7; 8; 9;)"), eval("partition {`< 5`} {0; 1; 2; 3; 4; 5; 6; 7; 8; 9;}"));
+	}
+
+	@Test
 	public void testString() {
 		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
 		assertEquals(Atom.TRUE, eval("\"-34253924\" = int-to-str {-34253924}"));
