@@ -6,9 +6,11 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -81,18 +83,16 @@ public class Profiler {
 					&& thread.getThreadId() != currentThreadId //
 					&& thread.getThreadState() == State.RUNNABLE //
 					&& !thread.getThreadName().equals("ReaderThread")) {
-				String lastName = null;
+				Set<String> elements = new HashSet<>();
 
-				for (StackTraceElement elem : thread.getStackTrace()) {
-					String name = elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")";
+				for (StackTraceElement elem : thread.getStackTrace())
+					elements.add(elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")");
 
-					if (!Util.equals(name, lastName)) { // Eliminate duplicates
-						lastName = name;
-						int counter[] = record.get(name);
-						if (counter == null)
-							record.put(name, counter = new int[] { 0 });
-						counter[0]++;
-					}
+				for (String name : elements) {
+					int counter[] = record.get(name);
+					if (counter == null)
+						record.put(name, counter = new int[] { 0 });
+					counter[0]++;
 				}
 			}
 	}
