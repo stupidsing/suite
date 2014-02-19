@@ -160,7 +160,15 @@ public class SystemPredicates {
 	}
 
 	private class Memoize implements SystemPredicate {
-		private Reference uniqueReference = new Reference();
+		private Reference uniqueReference = new Reference() {
+			public int hashCode() { // Makes the reference hash-able
+				return System.identityHashCode(this);
+			}
+
+			public boolean equals(Object object) {
+				return object == uniqueReference;
+			}
+		};
 
 		private Fun<Node, Node> findAll = new CacheUtil().proxy(new Fun<Node, Node>() {
 			public Node apply(Node goal) {
@@ -170,11 +178,15 @@ public class SystemPredicates {
 
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
+			Reference var = (Reference) params[0];
 
 			// Avoids changing hash-code - but making memoize not re-entrant
-			((Reference) params[0]).bound(uniqueReference);
-
-			return prover.bind(params[2], findAll.apply(params[1]));
+			var.bound(uniqueReference);
+			try {
+				return prover.bind(params[2], findAll.apply(params[1]));
+			} finally {
+				var.unbound();
+			}
 		}
 	}
 

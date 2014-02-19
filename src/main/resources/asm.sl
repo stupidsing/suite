@@ -1,89 +1,92 @@
 -- Assembler. Assumes 32-bit mode.
 
-as-assemble (AAA) (+x37, .e)/.e #
-as-assemble (ADD .acc .imm) .e0/.ex :- as-assemble-acc-imm +x04 .acc .imm .e0/.ex #
-as-assemble (ADD .rm .imm8) (+x83, .e1)/.ex :- as-imm8 .imm8, as-assemble-rm32 .rm 0 .e1/.e2, as-emit8 .imm8 .e2/.ex #
-as-assemble (ADD .rm .imm) .e0/.ex :- as-assemble-rm-imm +x80 .rm 0 .imm .e0/.ex #
-as-assemble (ADD .rm0 .rm1) .e0/.ex :- as-assemble-rm-reg2 +x00 .rm0 .rm1 .e0/.ex #
-as-assemble (DEC .reg) .e0/.ex :- as-assemble-r32 +x48 .reg .e0/.ex #
-as-assemble (DEC .rm) .e0/.ex :- as-assemble-rm +xFE .rm 1 .e0/.ex #
-as-assemble (INC .reg) .e0/.ex :- as-assemble-r32 +x40 .reg .e0/.ex #
-as-assemble (INC .rm) .e0/.ex :- as-assemble-rm +xFE .rm 0 .e0/.ex #
-as-assemble (INT 3) (+x37, .e)/.e #
-as-assemble (INT .imm) (+xCD, .e0)/.ex :- as-emit8 .imm .e0/.ex #
-as-assemble (INTO) (+xCE, .e)/.e #
-as-assemble (JE .rel) .e0/.ex :- asm-assemble-jump .rel +x74 () +x84 .e0/.ex #
-as-assemble (JMP .rel) .e0/.ex :- asm-assemble-jump .rel +xEB +x0F +xE9 .e0/.ex #
-as-assemble (JMP .rm) .e0/.ex :- as-assemble-rm32 +xFF .rm 4 .e0/.ex #
-as-assemble (LABEL _) .e/.e #
-as-assemble (LEA .reg .rm) .e0/.ex :- as-assemble-rm-reg +x8D .rm .reg .e0/.ex #
-as-assemble (MOV .reg .imm) .e0/.ex :- as-assemble-reg-imm +xB0 .reg .imm .e0/.ex #
-as-assemble (MOV .rm .imm) .e0/.ex :- as-assemble-rm-imm +xC6 .rm 0 .imm .e0/.ex #
-as-assemble (MOV .rm0 .rm1) .e0/.ex :- as-assemble-rm-reg2 +x88 .rm0 .rm1 .e0/.ex #
-as-assemble (MOV .rm .sreg) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-assemble-rm16 .rm .sr .e1/.ex #
-as-assemble (MOV .sreg .rm) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-assemble-rm16 .rm .sr .e1/.ex #
-as-assemble (RET) (+xC3, .e)/.e #
-as-assemble (RET .imm) (+xC2, .e1)/.ex :- as-emit16 .imm .e1/.ex #
+as-insns () .e/.e :- ! #
+as-insns (.insn, .insns) .e0/.ex :- once (as-insn .insn .e0/.e1), as-insns .e1/.ex #
 
-as-assemble-jump (byte .rel8) .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
-as-assemble-jump .rel8 .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
-as-assemble-jump .rel32 _ () .b (.b, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
-as-assemble-jump .rel32 _ .b0 .b1 (.b0, .b1, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
+as-insn (AAA) (+x37, .e)/.e #
+as-insn (ADD .acc .imm) .e0/.ex :- as-insn-acc-imm +x04 .acc .imm .e0/.ex #
+as-insn (ADD .rm .imm8) (+x83, .e1)/.ex :- as-imm8 .imm8, as-insn-rm32 .rm 0 .e1/.e2, as-emit8 .imm8 .e2/.ex #
+as-insn (ADD .rm .imm) .e0/.ex :- as-insn-rm-imm +x80 .rm 0 .imm .e0/.ex #
+as-insn (ADD .rm0 .rm1) .e0/.ex :- as-insn-rm-reg2 +x00 .rm0 .rm1 .e0/.ex #
+as-insn (DEC .reg) .e0/.ex :- as-insn-r32 +x48 .reg .e0/.ex #
+as-insn (DEC .rm) .e0/.ex :- as-insn-rm +xFE .rm 1 .e0/.ex #
+as-insn (INC .reg) .e0/.ex :- as-insn-r32 +x40 .reg .e0/.ex #
+as-insn (INC .rm) .e0/.ex :- as-insn-rm +xFE .rm 0 .e0/.ex #
+as-insn (INT 3) (+x37, .e)/.e #
+as-insn (INT .imm) (+xCD, .e0)/.ex :- as-emit8 .imm .e0/.ex #
+as-insn (INTO) (+xCE, .e)/.e #
+as-insn (JE .rel) .e0/.ex :- asm-assemble-jump .rel +x74 +x0F +x84 .e0/.ex #
+as-insn (JMP .rel) .e0/.ex :- asm-assemble-jump .rel +xEB () +xE9 .e0/.ex #
+as-insn (JMP .rm) .e0/.ex :- as-insn-rm32 +xFF .rm 4 .e0/.ex #
+as-insn (LABEL _) .e/.e #
+as-insn (LEA .reg .rm) .e0/.ex :- as-insn-rm-reg +x8D .rm .reg .e0/.ex #
+as-insn (MOV .reg .imm) .e0/.ex :- as-insn-reg-imm +xB0 .reg .imm .e0/.ex #
+as-insn (MOV .rm .imm) .e0/.ex :- as-insn-rm-imm +xC6 .rm 0 .imm .e0/.ex #
+as-insn (MOV .rm0 .rm1) .e0/.ex :- as-insn-rm-reg2 +x88 .rm0 .rm1 .e0/.ex #
+as-insn (MOV .rm .sreg) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-insn-rm16 .rm .sr .e1/.ex #
+as-insn (MOV .sreg .rm) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-insn-rm16 .rm .sr .e1/.ex #
+as-insn (RET) (+xC3, .e)/.e #
+as-insn (RET .imm) (+xC2, .e1)/.ex :- as-emit16 .imm .e1/.ex #
 
-as-assemble-rm-imm .b .rm .num .imm (.b, .e1)/.ex
-	:- as-assemble-rm8 .rm .num .e1/.e2, as-emit8 .imm .e2/.ex
+as-insn-jump (byte .rel8) .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
+as-insn-jump .rel8 .b _ (.b, .e1)/.ex :-as-emit8 .rel8 .e1/.ex #
+as-insn-jump .rel32 _ () .b (.b, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
+as-insn-jump .rel32 _ .b0 .b1 (.b0, .b1, .e1)/.ex :-as-emit32 .rel32 .e1/.ex #
+
+as-insn-rm-imm .b .rm .num .imm (.b, .e1)/.ex
+	:- as-insn-rm8 .rm .num .e1/.e2, as-emit8 .imm .e2/.ex
 #
-as-assemble-rm-imm .b0 .rm .num .imm (.b1, .e1)/.ex
-	:- as-assemble-rm32 .rm .num .e1/.e2, as-emit32 .imm .e2/.ex
+as-insn-rm-imm .b0 .rm .num .imm (.b1, .e1)/.ex
+	:- as-insn-rm32 .rm .num .e1/.e2, as-emit32 .imm .e2/.ex
 	, let .b1 (.b0 + 1)
 #
 
-as-assemble-acc-imm .b AL .imm (.b, .e1)/.ex
+as-insn-acc-imm .b AL .imm (.b, .e1)/.ex
 	:- as-emit8 .imm .e1/.ex
 #
-as-assemble-acc-imm .b0 EAX .imm (.b1, .e1)/.ex
+as-insn-acc-imm .b0 EAX .imm (.b1, .e1)/.ex
 	:- as-emit32 .imm .e1/.ex
 	, let .b1 (.b0 + 8)
 #
 
-as-assemble-reg-imm .b0 .reg .imm .e0/.ex
-	:- as-assemble-r8 .b0 .reg .e0/.e1, as-emit8 .imm .e1/.ex
+as-insn-reg-imm .b0 .reg .imm .e0/.ex
+	:- as-insn-r8 .b0 .reg .e0/.e1, as-emit8 .imm .e1/.ex
 #
-as-assemble-reg-imm .b0 .reg .imm .e0/.ex
+as-insn-reg-imm .b0 .reg .imm .e0/.ex
 	:- let .b1 (.b0 + 8)
-	, as-assemble-r32 .b1 .reg .e0/.e1, as-emit32 .imm .e1/.ex
+	, as-insn-r32 .b1 .reg .e0/.e1, as-emit32 .imm .e1/.ex
 #
 
-as-assemble-rm-reg2 .b .rm .reg .e0/.ex
-	:- as-assemble-rm-reg .b .rm .reg .e0/.ex
+as-insn-rm-reg2 .b .rm .reg .e0/.ex
+	:- as-insn-rm-reg .b .rm .reg .e0/.ex
 #
-as-assemble-rm-reg2 .b0 .reg .rm .e0/.ex
+as-insn-rm-reg2 .b0 .reg .rm .e0/.ex
 	:- let .b1 (.b0 + 2)
-	, as-assemble-rm-reg .b1 .rm .reg .e0/.ex
+	, as-insn-rm-reg .b1 .rm .reg .e0/.ex
 #
 
-as-assemble-rm-reg .b .rm .reg (.b, .e0)/.ex
-	:- as-reg8 .reg .r, as-assemble-rm8 .rm .r .e0/.ex
+as-insn-rm-reg .b .rm .reg (.b, .e0)/.ex
+	:- as-reg8 .reg .r, as-insn-rm8 .rm .r .e0/.ex
 #
-as-assemble-rm-reg .b0 .rm .reg (.b1, .e0)/.ex
-	:- as-reg32 .reg .r, as-assemble-rm32 .rm .r .e0/.ex
+as-insn-rm-reg .b0 .rm .reg (.b1, .e0)/.ex
+	:- as-reg32 .reg .r, as-insn-rm32 .rm .r .e0/.ex
 	, let .b1 (.b0 + 1)
 #
 
-as-assemble-rm .b .rm .num (.b, .e1)/.ex
+as-insn-rm .b .rm .num (.b, .e1)/.ex
 	:- as-rm8 .rm, as-mod-num-rm .rm .num .e1/.ex
 #
-as-assemble-rm .b0 .rm .num (.b1, .e1)/.ex
+as-insn-rm .b0 .rm .num (.b1, .e1)/.ex
 	:- as-rm32 .rm, as-mod-num-rm .rm .num .e1/.ex
 	, let .b1 (.b0 + 1)
 #
 
-as-assemble-r8 .b0 .reg (.b1, .e)/.e :- as-reg8 .reg .r, let .b1 (.b0 + .r) #
-as-assemble-r32 .b0 .reg (.b1, .e)/.e :- as-reg32 .reg .r, let .b1 (.b0 + .r) #
+as-insn-r8 .b0 .reg (.b1, .e)/.e :- as-reg8 .reg .r, let .b1 (.b0 + .r) #
+as-insn-r32 .b0 .reg (.b1, .e)/.e :- as-reg32 .reg .r, let .b1 (.b0 + .r) #
 
-as-assemble-rm8 .rm .num .e0/.ex :- as-rm8 .rm, as-mod-num-rm .rm .num .e0/.ex #
-as-assemble-rm16 .rm .num .e0/.ex :- as-rm16 .rm, as-mod-num-rm .rm .num .e0/.ex #
-as-assemble-rm32 .rm .num .e0/.ex :- as-rm32 .rm, as-mod-num-rm .rm .num .e0/.ex #
+as-insn-rm8 .rm .num .e0/.ex :- as-rm8 .rm, as-mod-num-rm .rm .num .e0/.ex #
+as-insn-rm16 .rm .num .e0/.ex :- as-rm16 .rm, as-mod-num-rm .rm .num .e0/.ex #
+as-insn-rm32 .rm .num .e0/.ex :- as-rm32 .rm, as-mod-num-rm .rm .num .e0/.ex #
 
 as-mod-num-rm .rm .num (.modregrm, .e1)/.ex
 	:- is.int .num

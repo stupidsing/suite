@@ -1,6 +1,6 @@
 package suite.lp.doer;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import suite.lp.kb.Rule;
@@ -10,7 +10,7 @@ import suite.node.Tree;
 
 public class Cloner {
 
-	private Map<Reference, Reference> references = new HashMap<>();
+	private Map<Reference, Reference> references = new IdentityHashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.getHead()), clone(rule.getTail()));

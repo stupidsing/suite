@@ -24,7 +24,10 @@ public class Reference extends Node {
 
 	@Override
 	public int hashCode() {
-		return node != this ? node.hashCode() : super.hashCode();
+		if (node != this)
+			return node.hashCode();
+		else
+			throw new RuntimeException("No hash code for free references");
 	}
 
 	@Override
