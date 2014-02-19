@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.util.Util;
 
@@ -20,6 +21,7 @@ public class Profiler {
 	private static final int stackTraceDepth = 256;
 
 	private Timer timer;
+	private AtomicInteger count = new AtomicInteger();
 	private Map<String, int[]> record = new HashMap<>();
 
 	public String profile(Runnable runnable) {
@@ -54,7 +56,8 @@ public class Profiler {
 		});
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("PROFILING RESULT\n\n");
+		sb.append("PROFILING RESULT\n");
+		sb.append("TOTAL SAMPLES = " + count.get() + "\n\n");
 
 		for (Entry<String, int[]> entry : entries) {
 			String name = entry.getKey();
@@ -71,6 +74,7 @@ public class Profiler {
 
 		long threadIds[] = mx.getAllThreadIds();
 		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
+		count.getAndIncrement();
 
 		for (ThreadInfo thread : threadInfos)
 			if (thread != null //
