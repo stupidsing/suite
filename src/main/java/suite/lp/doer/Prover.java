@@ -184,7 +184,7 @@ public class Prover {
 		return new Lazy(new Source<Node>() {
 			public Node source() {
 				if (!rules.isEmpty()) {
-					final Rule rule = rules.get(0);
+					Rule rule = rules.get(0);
 
 					// Delay generalizing for performance
 					Generalizer generalizer = new Generalizer();
