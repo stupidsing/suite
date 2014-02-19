@@ -167,7 +167,7 @@ public class Prover {
 	 *            The invocation pattern.
 	 * @return The chained node.
 	 */
-	private Node expand(final Node query) {
+	private Node expand(Node query) {
 		final Node alt0 = alt;
 
 		Data<?> cut = new Data<>(new Source<Boolean>() {
