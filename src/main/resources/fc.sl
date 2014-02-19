@@ -167,6 +167,9 @@ fc-add-functions STANDARD .p (
 	define invoke = (f => x =>
 		f {x}
 	) >>
+	define iterate = (f => init =>
+		init; iterate {f} {f {init}}
+	) >>
 	define lesser = (a => b =>
 		if (a > b) then b else a
 	) >>
