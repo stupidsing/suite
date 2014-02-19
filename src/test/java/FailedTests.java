@@ -35,8 +35,11 @@ public class FailedTests {
 	// Impossible type
 	@Test
 	public void testImpossibleType() {
-		Suite.evaluateFunType("let `$n; $p;` = (true; 3;) >> p");
-		assertTrue(false);
+		try {
+			Suite.evaluateFunType("let `$n; $p;` = (true; 3;) >> p");
+			assertTrue(false);
+		} catch (RuntimeException ex) {
+		}
 	}
 
 }
