@@ -407,7 +407,7 @@ fc-add-functions STANDARD .p (
 	define quick-sort = (cmp =>
 		case
 		|| `$pivot; $t` =>
-			let `$l0, $l1` = partition {cmp {pivot}} {quick-sort {cmp} {t}} >>
+			let `$l0, $l1` = partition {cmp/ {pivot}} {quick-sort {cmp} {t}} >>
 			concat {l0; (pivot;); l1;}
 		|| anything => ()
 	) >>
