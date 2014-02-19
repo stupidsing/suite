@@ -79,7 +79,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case CONSPAIR______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Tree.create(TermOp.TUPLE_, n0, n1);
+			result = Tree.create(TermOp.AND___, n0, n1);
 			break;
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
