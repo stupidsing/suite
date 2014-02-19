@@ -53,8 +53,8 @@ public class Generalizer {
 				final Tree rightTree = (Tree) right;
 				final Operator rightOp = rightTree.getOperator();
 
-				// Delay generalizing in large trees for performance
-				if (rightOp == TermOp.IS____ || rightOp == TermOp.NEXT__)
+				// Delay generalizing for performance
+				if (rightOp == TermOp.OR____)
 					right = new Lazy(new Source<Node>() {
 						public Node source() {
 							Node rl = rightTree.getLeft();

@@ -2,7 +2,6 @@ package suite.lp.doer;
 
 import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
 
 import suite.lp.Journal;
 import suite.lp.kb.Prototype;
@@ -11,6 +10,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
 import suite.node.Data;
+import suite.node.Lazy;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
@@ -18,6 +18,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.To;
+import suite.util.Util;
 
 public class Prover {
 
@@ -166,37 +167,43 @@ public class Prover {
 	 *            The invocation pattern.
 	 * @return The chained node.
 	 */
-	private Node expand(Node query) {
+	private Node expand(final Node query) {
 		final Node alt0 = alt;
-		Node ret = FAIL;
 
-		List<Rule> rules = config.ruleSet().searchRule(query);
-		ListIterator<Rule> iter = rules.listIterator(rules.size());
+		Data<?> cut = new Data<>(new Source<Boolean>() {
+			public Boolean source() {
+				alt = alt0;
+				return Boolean.TRUE;
+			}
+		});
 
-		while (iter.hasPrevious()) {
-			Rule rule = iter.previous();
+		return expandClauses(query, cut, config.ruleSet().searchRule(query));
+	}
 
-			Generalizer generalizer = new Generalizer();
-			generalizer.setCut(new Data<>(new Source<Boolean>() {
-				public Boolean source() {
-					alt = alt0;
-					return Boolean.TRUE;
-				}
-			}));
+	private Node expandClauses(final Node query, final Node cut, final List<Rule> rules) {
+		return new Lazy(new Source<Node>() {
+			public Node source() {
+				if (!rules.isEmpty()) {
+					final Rule rule = rules.get(0);
 
-			Node head = generalizer.generalize(rule.getHead());
-			Node tail = generalizer.generalize(rule.getTail());
+					// Delay generalizing for performance
+					Generalizer generalizer = new Generalizer();
+					generalizer.setCut(cut);
 
-			ret = Tree.create(TermOp.OR____ //
-					, Tree.create(TermOp.AND___ //
+					Node head = generalizer.generalize(rule.getHead());
+					Node tail = generalizer.generalize(rule.getTail());
+
+					Node clause = Tree.create(TermOp.AND___ //
 							, Tree.create(TermOp.EQUAL_ //
 									, query //
 									, head) //
-							, tail) //
-					, ret);
-		}
+							, tail);
 
-		return ret;
+					return Tree.create(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
+				} else
+					return FAIL;
+			}
+		});
 	}
 
 	/**
