@@ -112,7 +112,7 @@ public class Formatter {
 				String name = operator.getName();
 				sb.append(name);
 
-				if (!Arrays.asList(TermOp.NEXT__, TermOp.AND___).contains(operator) || tree.getRight() != Atom.NIL) {
+				if (!Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator) || tree.getRight() != Atom.NIL) {
 					if (Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator))
 						sb.append(' ');
 

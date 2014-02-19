@@ -10,8 +10,8 @@ define elem = type (heap {:t} -> :t) (
 define children = type (heap {:t} -> [heap {:t}]) (
 	`HEAP ($elem, $list)` => list
 ) >>
-define find-min = (heap =>
-	if (heap != EMPTY) then (elem {heap}) else error
+define find-min = (
+	elem
 ) >>
 define meld = (heap0 => heap1 =>
 	if (heap0 != EMPTY) then
@@ -26,14 +26,14 @@ define meld = (heap0 => heap1 =>
 	else heap1
 ) >>
 define add = (heap => elem =>
-	meld {HEAP (elem, ())} {heap}
+	meld {HEAP (elem,)} {heap}
 ) >>
 define delete-min = (heap =>
 	 define merge-pairs = (
 		case
 		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
 		|| `$h;` => h
-		|| anything => EMPTY
+		|| anything => error
 	) >>
-	if (heap != EMPTY) then (merge-pairs {children {heap}}) else error
+	merge-pairs {children {heap}}
 ) >>

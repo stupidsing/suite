@@ -176,6 +176,18 @@ fc-add-functions STANDARD .p (
 	define or = (x => y =>
 		if x then true else y
 	) >>
+	define partition = (fun =>
+		define partition0 = (prevs => list =>
+			case
+			|| (list = `$elem; $elems`)
+				if (fun {elem}) then
+					let `$listt, $listf` = partition0 {prevs} {elems} >>
+					(elem; listt), listf
+				else (prevs, list)
+			|| (), prevs
+		) >>
+		partition0 {}
+	) >>
 	define repeat = (n => elem =>
 		if (n > 0) then (elem; repeat {n - 1} {elem}) else ()
 	) >>
