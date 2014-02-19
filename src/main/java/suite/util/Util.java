@@ -99,7 +99,16 @@ public class Util {
 	}
 
 	public static ThreadPoolExecutor createExecutor() {
-		return new ThreadPoolExecutor(8, 32, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
+		return createExecutor(8, 32);
+	}
+
+	public static ThreadPoolExecutor createExecutorByProcessors() {
+		int nProcessors = Runtime.getRuntime().availableProcessors();
+		return createExecutor(nProcessors, nProcessors);
+	}
+
+	private static ThreadPoolExecutor createExecutor(int corePoolSize, int maxPoolSize) {
+		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
 	}
 
 	public static Class<?> currentClass() {
