@@ -53,18 +53,8 @@ public class LazyFunTest {
 	}
 
 	@Test
-	public void testGroup() {
-		assertEquals(eval("1, (2; 5;);2, (1; 4;);3, (0; 3;);"), eval("group {3, 0; 2, 1; 1, 2; 3, 3; 2, 4; 1, 5;}"));
-	}
-
-	@Test
 	public void testIterate() {
 		assertEquals(eval("65536"), eval("iterate {`* 2`} {1} | get {16}"));
-	}
-
-	@Test
-	public void testPartition() {
-		assertEquals(eval("(0; 1; 2; 3; 4;), (5; 6; 7; 8; 9;)"), eval("partition {`< 5`} {0; 1; 2; 3; 4; 5; 6; 7; 8; 9;}"));
 	}
 
 	@Test

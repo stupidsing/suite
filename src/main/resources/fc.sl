@@ -179,17 +179,17 @@ fc-add-functions STANDARD .p (
 	define or = (x => y =>
 		if x then true else y
 	) >>
-	define partition = (fun =>
-		define partition0 = (prevs => list =>
+	define bisect = (fun =>
+		define bisect0 = (prevs => list =>
 			case
 			|| (list = `$elem; $elems`)
 				if (fun {elem}) then
-					let `$listt, $listf` = partition0 {prevs} {elems} >>
+					let `$listt, $listf` = bisect0 {prevs} {elems} >>
 					(elem; listt), listf
 				else (prevs, list)
 			|| (), prevs
 		) >>
-		partition0 {}
+		bisect0 {}
 	) >>
 	define repeat = (n => elem =>
 		if (n > 0) then (elem; repeat {n - 1} {elem}) else ()
@@ -255,6 +255,11 @@ fc-add-functions STANDARD .p (
 	define apply =
 		fold-right {`.`} {id}
 	>>
+	define partition = (fun =>
+		fold-right {
+			e => `$l0, $l1` => if (fun {e}) then ((e; l0), l1) else (l0, (e; l1))
+		} {(), ()}
+	) >>
 	define fold = (fun => list =>
 		fold-left {fun} {list | head} {list | tail}
 	) >>
@@ -402,10 +407,7 @@ fc-add-functions STANDARD .p (
 	define quick-sort = (cmp =>
 		case
 		|| `$pivot; $t` =>
-			let filter0 = (not . cmp {pivot}) >>
-			let filter1 = cmp {pivot} >>
-			let l0 = (t | filter {filter0} | quick-sort {cmp}) >>
-			let l1 = (t | filter {filter1} | quick-sort {cmp}) >>
+			let `$l0, $l1` = partition {cmp {pivot}} {quick-sort {cmp} {t}} >>
 			concat {l0; (pivot;); l1;}
 		|| anything => ()
 	) >>

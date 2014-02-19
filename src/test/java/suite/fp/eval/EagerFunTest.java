@@ -26,6 +26,11 @@ public class EagerFunTest {
 	}
 
 	@Test
+	public void testBisect() {
+		assertEquals(eval("(0; 1; 2; 3; 4;), (5; 6; 7; 8; 9;)"), eval("bisect {`< 5`} {0; 1; 2; 3; 4; 5; 6; 7; 8; 9;}"));
+	}
+
+	@Test
 	public void testClosure() {
 		assertEquals(Int.create(7), eval("" //
 				+ "define add = `+` >> add {3} {4}"));
@@ -118,6 +123,11 @@ public class EagerFunTest {
 	@Test
 	public void testGet() {
 		assertEquals(Int.create(3), eval("get {2} {1; 2; 3; 4;}"));
+	}
+
+	@Test
+	public void testGroup() {
+		assertEquals(eval("1, (2; 5;); 2, (1; 4;); 3, (0; 3;);"), eval("group {3, 0; 2, 1; 1, 2; 3, 3; 2, 4; 1, 5;}"));
 	}
 
 	@Test
@@ -218,6 +228,11 @@ public class EagerFunTest {
 				+ "define type A of t >> \n" //
 				+ "define type B of t >> \n" //
 				+ "let list1 = type [t] () >> A = B", false));
+	}
+
+	@Test
+	public void testPartition() {
+		assertEquals(eval("(1; 3; 0; 2; 4;), (5; 7; 9; 6; 8;)"), eval("partition {`< 5`} {1; 3; 5; 7; 9; 0; 2; 4; 6; 8;}"));
 	}
 
 	@Test
