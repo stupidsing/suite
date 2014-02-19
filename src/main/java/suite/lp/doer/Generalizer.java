@@ -7,10 +7,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.node.Atom;
+import suite.node.Lazy;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.Operator;
+import suite.node.io.TermParser.TermOp;
+import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class Generalizer {
@@ -46,11 +50,24 @@ public class Generalizer {
 			} else if (isCut(right) && cut != null) // Changes cut symbol to cut
 				right = cut;
 			else if (right instanceof Tree) {
-				Tree rightTree = (Tree) right;
-				rightTree = Tree.create(rightTree.getOperator(), generalize(rightTree.getLeft()), rightTree.getRight());
-				Tree.forceSetRight(tree, rightTree);
-				tree = rightTree;
-				continue;
+				final Tree rightTree = (Tree) right;
+				final Operator rightOp = rightTree.getOperator();
+
+				// Delay generalizing in large trees for performance
+				if (rightOp == TermOp.IS____ || rightOp == TermOp.NEXT__)
+					right = new Lazy(new Source<Node>() {
+						public Node source() {
+							Node rl = rightTree.getLeft();
+							Node rr = rightTree.getRight();
+							return Tree.create(rightOp, generalize(rl), generalize(rr));
+						}
+					});
+				else {
+					Tree rightTree1 = Tree.create(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());
+					Tree.forceSetRight(tree, rightTree1);
+					tree = rightTree1;
+					continue;
+				}
 			}
 
 			Tree.forceSetRight(tree, right);

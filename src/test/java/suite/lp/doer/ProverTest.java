@@ -49,13 +49,13 @@ public class ProverTest {
 	@Test
 	public void testMember() {
 		RuleSet rs = Suite.createRuleSet();
-		Suite.addRule(rs, "mem ([.e, _], .e)");
-		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
+		Suite.addRule(rs, "mem ((.e, _), .e)");
+		Suite.addRule(rs, "mem ((_, .remains), .e) :- mem (.remains, .e)");
 
-		assertTrue(Suite.proveLogic(rs, "mem ([a, ], a)"));
-		assertTrue(Suite.proveLogic(rs, "mem ([a, b, c, ], .v)"));
-		assertTrue(Suite.proveLogic(rs, ".l = [1, 2, 3,], find.all .v (mem (.l, .v)) .l"));
-		assertFalse(Suite.proveLogic(rs, "mem ([a, b, c, ], d)"));
+		assertTrue(Suite.proveLogic(rs, "mem ((a, ), a)"));
+		assertTrue(Suite.proveLogic(rs, "mem ((a, b, c, ), .v)"));
+		assertTrue(Suite.proveLogic(rs, ".l = (1, 2, 3,), find.all .v (mem (.l, .v)) .l"));
+		assertFalse(Suite.proveLogic(rs, "mem ((a, b, c, ), d)"));
 	}
 
 	@Test
@@ -95,10 +95,10 @@ public class ProverTest {
 	@Test
 	public void testSystemPredicates() {
 		RuleSet rs = Suite.createRuleSet();
-		Suite.addRule(rs, "mem ([.e, _], .e)");
-		Suite.addRule(rs, "mem ([_, .remains], .e) :- mem (.remains, .e)");
+		Suite.addRule(rs, "mem ((.e, _), .e)");
+		Suite.addRule(rs, "mem ((_, .remains), .e) :- mem (.remains, .e)");
 
-		assertTrue(Suite.proveLogic(rs, ".l = [1, 2,], find.all .v (mem (.l, .v)) .l"));
+		assertTrue(Suite.proveLogic(rs, ".l = (1, 2,), find.all .v (mem (.l, .v)) .l"));
 	}
 
 	@Test
