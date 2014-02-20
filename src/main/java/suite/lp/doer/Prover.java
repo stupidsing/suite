@@ -142,11 +142,14 @@ public class Prover {
 					return false;
 			else {
 				boolean isTrace = config.isTrace();
-				Prototype prototype = isTrace ? Prototype.get(query) : null;
-				Node head = prototype != null ? prototype.getHead() : null;
-				Atom atom = head instanceof Atom ? (Atom) head : null;
-				String name = atom != null ? atom.getName() : null;
-				isTrace &= !config.getNoTracePredicates().contains(name);
+
+				if (isTrace) {
+					Prototype prototype = Prototype.get(query);
+					Node head = prototype != null ? prototype.getHead() : null;
+					Atom atom = head instanceof Atom ? (Atom) head : null;
+					String name = atom != null ? atom.getName() : null;
+					isTrace &= !config.getNoTracePredicates().contains(name);
+				}
 
 				if (!isTrace)
 					query = expand(query);
