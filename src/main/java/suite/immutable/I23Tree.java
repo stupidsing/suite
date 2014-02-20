@@ -15,39 +15,31 @@ public class I23Tree<T> implements ITree<T> {
 	private int maxSize = 4;
 	private int halfSize = maxSize / 2;
 
-	private Node root;
+	private List<Slot> root;
 	private Comparator<T> comparator;
 
-	private class Node {
-		private List<Slot> slots;
-
-		private Node(List<Slot> slots) {
-			this.slots = slots;
-		}
-	}
-
 	/**
-	 * Node would be null in leaves. Pivot stores the leaf value.
+	 * List<Slot> would be null in leaves. Pivot stores the leaf value.
 	 * 
 	 * Pivot would be null at the maximum side of a tree. It represents the
 	 * guarding key.
 	 */
 	private class Slot {
-		private Node node;
+		private List<Slot> slots;
 		private T pivot;
 
-		private Slot(Node node, T pivot) {
-			this.node = node;
+		private Slot(List<Slot> slots, T pivot) {
+			this.slots = slots;
 			this.pivot = pivot;
 		}
 	}
 
 	public I23Tree(Comparator<T> comparator) {
-		this.root = new Node(Arrays.asList(new Slot(null, null)));
+		this.root = Arrays.asList(new Slot(null, null));
 		this.comparator = comparator;
 	}
 
-	private I23Tree(Comparator<T> comparator, Node root) {
+	private I23Tree(Comparator<T> comparator, List<Slot> root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -62,21 +54,21 @@ public class I23Tree<T> implements ITree<T> {
 			private Deque<List<Slot>> stack = new ArrayDeque<>();
 
 			{
-				List<Slot> slots = root.slots;
+				List<Slot> node = root;
 
 				while (true) {
-					int size = slots.size();
+					int size = node.size();
 					Slot slot = null;
 					int i = 0;
 
-					while (i < size && start != null && compare((slot = slots.get(i)).pivot, start) < 0)
+					while (i < size && start != null && compare((slot = node.get(i)).pivot, start) < 0)
 						i++;
 
 					if (slot != null) {
-						stack.push(Util.right(slots, i + 1));
-						slots = slot.node.slots;
+						stack.push(Util.right(node, i + 1));
+						node = slot.slots;
 					} else {
-						stack.push(Util.right(slots, i));
+						stack.push(Util.right(node, i));
 						break;
 					}
 				}
@@ -89,14 +81,14 @@ public class I23Tree<T> implements ITree<T> {
 				return compare(t, end) < 0 ? t : null;
 			}
 
-			private T push(List<Slot> slots) {
-				while (!slots.isEmpty()) {
-					Slot slot0 = slots.get(0);
-					stack.push(Util.right(slots, 1));
-					Node node = slot0.node;
+			private T push(List<Slot> node) {
+				while (!node.isEmpty()) {
+					Slot slot0 = node.get(0);
+					stack.push(Util.right(node, 1));
+					List<Slot> node1 = slot0.slots;
 
-					if (node != null)
-						slots = node.slots;
+					if (node1 != null)
+						node = node1;
 					else
 						return slot0.pivot;
 				}
@@ -107,19 +99,18 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	public T find(T t) {
-		Node node = root;
+		List<Slot> node = root;
 		Slot slot = null;
 		int c = 1;
 
 		while (node != null) {
-			List<Slot> slots = node.slots;
-			int size = slots.size();
+			int size = node.size();
 			int i = 0;
 
-			while (i < size && (c = compare((slot = slots.get(i)).pivot, t)) < 0)
+			while (i < size && (c = compare((slot = node.get(i)).pivot, t)) < 0)
 				i++;
 
-			node = slot.node;
+			node = slot.slots;
 		}
 
 		return c == 0 ? slot.pivot : null;
@@ -140,26 +131,26 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	public I23Tree<T> remove(T t) {
-		return new I23Tree<T>(comparator, createRootNode(remove(root.slots, t)));
+		return new I23Tree<T>(comparator, createRootNode(remove(root, t)));
 	}
 
 	private I23Tree<T> add(T t, boolean isReplace) {
-		return new I23Tree<T>(comparator, createRootNode(add(root.slots, t, isReplace)));
+		return new I23Tree<T>(comparator, createRootNode(add(root, t, isReplace)));
 	}
 
-	private List<Slot> add(List<Slot> slots0, T t, boolean isReplace) {
+	private List<Slot> add(List<Slot> node0, T t, boolean isReplace) {
 		Slot slot = null;
 		int i = 0, c = 1;
 
 		// Finds appropriate slot
-		while ((c = compare((slot = slots0.get(i)).pivot, t)) < 0)
+		while ((c = compare((slot = node0.get(i)).pivot, t)) < 0)
 			i++;
 
 		// Adds the node into it
 		List<Slot> replaceSlots;
 
-		if (slot.node != null)
-			replaceSlots = add(slot.node.slots, t, isReplace);
+		if (slot.slots != null)
+			replaceSlots = add(slot.slots, t, isReplace);
 		else if (c != 0)
 			replaceSlots = Arrays.asList(new Slot(null, t), slot);
 		else if (isReplace)
@@ -167,28 +158,28 @@ public class I23Tree<T> implements ITree<T> {
 		else
 			throw new RuntimeException("Duplicate node " + t);
 
-		List<Slot> slots1 = Util.add(Util.left(slots0, i), replaceSlots, Util.right(slots0, i + 1));
-		List<Slot> slots2;
+		List<Slot> slots1 = Util.add(Util.left(node0, i), replaceSlots, Util.right(node0, i + 1));
+		List<Slot> node1;
 
 		// Checks if need to split
 		if (slots1.size() < maxSize)
-			slots2 = Arrays.asList(slot(slots1));
+			node1 = Arrays.asList(slot(slots1));
 		else { // Splits into two if reached maximum number of nodes
 			List<Slot> leftSlots = Util.left(slots1, halfSize);
 			List<Slot> rightSlots = Util.right(slots1, halfSize);
-			slots2 = Arrays.asList(slot(leftSlots), slot(rightSlots));
+			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
-		return slots2;
+		return node1;
 	}
 
-	private List<Slot> remove(List<Slot> slots0, T t) {
-		int size = slots0.size();
+	private List<Slot> remove(List<Slot> node0, T t) {
+		int size = node0.size();
 		Slot slot = null;
 		int i = 0, c = 1;
 
 		// Finds appropriate slot
-		while ((c = compare((slot = slots0.get(i)).pivot, t)) < 0)
+		while ((c = compare((slot = node0.get(i)).pivot, t)) < 0)
 			i++;
 
 		// Removes the node from it
@@ -196,15 +187,15 @@ public class I23Tree<T> implements ITree<T> {
 		List<Slot> replaceSlots;
 
 		if (c >= 0)
-			if (slot.node != null) {
-				List<Slot> slots1 = remove(slot.node.slots, t);
+			if (slot.slots != null) {
+				List<Slot> slots1 = remove(slot.slots, t);
 
 				// Merges with a neighbor if reached minimum number of nodes
 				if (slots1.size() < halfSize)
 					if (s0 > 0)
-						replaceSlots = merge(slots0.get(--s0).node.slots, slots1);
+						replaceSlots = merge(node0.get(--s0).slots, slots1);
 					else if (s1 < size)
-						replaceSlots = merge(slots1, slots0.get(s1++).node.slots);
+						replaceSlots = merge(slots1, node0.get(s1++).slots);
 					else
 						replaceSlots = Arrays.asList(slot(slots1));
 				else
@@ -212,47 +203,41 @@ public class I23Tree<T> implements ITree<T> {
 			} else if (c == 0)
 				replaceSlots = Collections.emptyList();
 			else
-				throw new RuntimeException("Node not found " + t);
+				throw new RuntimeException("List<Slot> not found " + t);
 		else
-			throw new RuntimeException("Node not found " + t);
+			throw new RuntimeException("List<Slot> not found " + t);
 
-		return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
+		return Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 	}
 
-	private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
+	private List<Slot> merge(List<Slot> node0, List<Slot> node1) {
 		List<Slot> merged;
 
-		if (slots0.size() + slots1.size() >= maxSize) {
+		if (node0.size() + node1.size() >= maxSize) {
 			List<Slot> leftSlots, rightSlots;
 
-			if (slots0.size() > halfSize) {
-				leftSlots = Util.left(slots0, -1);
-				rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
+			if (node0.size() > halfSize) {
+				leftSlots = Util.left(node0, -1);
+				rightSlots = Util.add(Arrays.asList(Util.last(node0)), node1);
 			} else {
-				leftSlots = Util.add(slots0, Arrays.asList(Util.first(slots1)));
-				rightSlots = Util.right(slots1, 1);
+				leftSlots = Util.add(node0, Arrays.asList(Util.first(node1)));
+				rightSlots = Util.right(node1, 1);
 			}
 
 			merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		} else
-			merged = Arrays.asList(slot(Util.add(slots0, slots1)));
+			merged = Arrays.asList(slot(Util.add(node0, node1)));
 
 		return merged;
 	}
 
-	private Node createRootNode(List<Slot> slots) {
-		Node node, node1;
-
-		if (slots.size() == 1 && (node1 = slots.get(0).node) != null)
-			node = node1;
-		else
-			node = new Node(slots);
-
-		return node;
+	private List<Slot> createRootNode(List<Slot> node) {
+		List<Slot> node1;
+		return node.size() == 1 && (node1 = node.get(0).slots) != null ? node1 : node;
 	}
 
 	private Slot slot(List<Slot> slots) {
-		return new Slot(new Node(slots), Util.last(slots).pivot);
+		return new Slot(slots, Util.last(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {
@@ -272,10 +257,10 @@ public class I23Tree<T> implements ITree<T> {
 		return sb.toString();
 	}
 
-	private void dump(StringBuilder sb, Node node, String indent) {
+	private void dump(StringBuilder sb, List<Slot> node, String indent) {
 		if (node != null)
-			for (Slot slot : node.slots) {
-				dump(sb, slot.node, indent + "  ");
+			for (Slot slot : node) {
+				dump(sb, slot.slots, indent + "  ");
 				sb.append(indent + (slot.pivot != null ? slot.pivot : "<infinity>") + "\n");
 			}
 	}
