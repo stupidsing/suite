@@ -122,21 +122,21 @@ fc-add-functions STANDARD .p (
 	define ijavaobj3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
-	define _popen as ([string] -> string -> data-of Stream) = (
+	define _popen as ([string] -> string -> data-of Stream) =
 		atom:`CLASS!suite.lp.invocable.Invocables$Popen` | ijavacls | ijavaobj2
-	) >>
-	define log as (:t => :t -> :t) = (
+	>>
+	define log as (:t => :t -> :t) =
 		atom:`CLASS!suite.lp.invocable.Invocables$Log1` | ijavacls | ijavaobj1
-	) >>
-	define log2 as (:t => string -> :t -> :t) = (
+	>>
+	define log2 as (:t => string -> :t -> :t) =
 		atom:`CLASS!suite.lp.invocable.Invocables$Log2` | ijavacls | ijavaobj2
-	) >>
-	define source as (data-of Stream -> string) = (
+	>>
+	define source as (data-of Stream -> string) =
 		atom:`CLASS!suite.lp.invocable.Invocables$Source_` | ijavacls | ijavaobj1
-	) >>
-	define throw as (any -> any) = (
+	>>
+	define throw as (any -> any) =
 		atom:`CLASS!suite.lp.invocable.Invocables$Throw` | ijavacls | ijavaobj1
-	) >>
+	>>
 	define and = (x => y =>
 		if x then y else false
 	) >>
@@ -247,11 +247,11 @@ fc-add-functions STANDARD .p (
 			|| anything => ()
 		|| anything => anything => ()
 	) >>
-	define append = (
+	define append =
 		case
 		|| `$h; $t` => cons {h} . append {t}
 		|| anything => id
-	) >>
+	>>
 	define apply =
 		fold-right {`.`} {id}
 	>>
@@ -342,14 +342,14 @@ fc-add-functions STANDARD .p (
 	define sh = (command =>
 		"sh"; "-c"; command; | popen
 	) >>
-	define starts-with = (
+	define starts-with =
 		case
 		|| `$sh; $st` =>
 			case
 			|| `sh; $t` => starts-with {st} {t}
 			|| anything => false
 		|| anything => anything => true
-	) >>
+	>>
 	define split = (separator =>
 		map {take-while {`!= separator`} . tail}
 		. filter {`= separator` . head}
@@ -388,7 +388,7 @@ fc-add-functions STANDARD .p (
 	define ends-with = (end =>
 		starts-with {end | reverse} . reverse
 	) >>
-	define group = (
+	define group =
 		define group0 = (list0 => list1 =>
 			if (list0 = `$k0, $v0; $t0`) then
 				if (list1 = `$k1, $v1; $t1`) then
@@ -400,7 +400,7 @@ fc-add-functions STANDARD .p (
 			else list1
 		) >>
 		merge {group0} . map {`$k, $v` => k, (v;)}
-	) >>
+	>>
 	define join = (separator =>
 		concat . map {separator; | append/}
 	) >>
@@ -411,8 +411,8 @@ fc-add-functions STANDARD .p (
 			concat {l0; (pivot;); l1;}
 		|| anything => ()
 	) >>
-	define merge-sort = (
+	define merge-sort =
 		concat . map {second} . group . map {v => v, v}
-	) >>
+	>>
 	.p
 ) #

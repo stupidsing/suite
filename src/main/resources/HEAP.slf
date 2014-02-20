@@ -4,15 +4,15 @@
 using STANDARD >>
 define type EMPTY over :t of (heap {:t}) >>
 define type (HEAP (:t, [heap {:t}])) over :t of (heap {:t}) >>
-define elem = type (heap {:t} -> :t) (
+define elem = type (heap {:t} -> :t)
 	`HEAP ($elem, $list)` => elem
-) >>
-define children = type (heap {:t} -> [heap {:t}]) (
+>>
+define children = type (heap {:t} -> [heap {:t}])
 	`HEAP ($elem, $list)` => list
-) >>
-define find-min = (
+>>
+define find-min =
 	elem
-) >>
+>>
 define meld = (heap0 => heap1 =>
 	if (heap0 != EMPTY) then
 		if (heap1 != EMPTY) then
@@ -29,11 +29,11 @@ define add = (heap => elem =>
 	meld {HEAP (elem,)} {heap}
 ) >>
 define delete-min = (heap =>
-	 define merge-pairs = (
+	define merge-pairs =
 		case
 		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
 		|| `$h;` => h
 		|| anything => error
-	) >>
+	>>
 	merge-pairs {children {heap}}
 ) >>
