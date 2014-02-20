@@ -40,4 +40,5 @@ public class PrecompileMain {
 
 		System.out.println("please refresh eclipse workspace");
 	}
+
 }
