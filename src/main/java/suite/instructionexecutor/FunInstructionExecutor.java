@@ -11,8 +11,8 @@ import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.lp.invocable.Invocable;
-import suite.lp.invocable.InvocableBridge;
+import suite.lp.intrinsic.Intrinsic;
+import suite.lp.intrinsic.IntrinsicBridge;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -31,13 +31,13 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		}
 	};
 
-	private InvocableBridge invocableBridge = new InvocableBridge() {
+	private IntrinsicBridge intrinsicBridge = new IntrinsicBridge() {
 		public Fun<Node, Node> getUnwrapper() {
 			return unwrapper;
 		}
 
-		public Node wrapInvocable(Invocable invocable, Node node) {
-			return wrapInvocable0(invocable, node);
+		public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+			return wrapIntrinsic0(intrinsic, node);
 		}
 	};
 
@@ -66,6 +66,17 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		Data<?> data;
 
 		switch (insn.insn) {
+		case CALLINTRINSIC0:
+		case CALLINTRINSIC1:
+		case CALLINTRINSIC2:
+		case CALLINTRINSIC3:
+			data = (Data<?>) ds[--dsp];
+			List<Node> ps = new ArrayList<>(3);
+			for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
+				ps.add((Node) ds[--dsp]);
+			Intrinsic intrinsic = Data.get(data);
+			result = intrinsic.invoke(intrinsicBridge, ps);
+			break;
 		case COMPARE_______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
@@ -81,24 +92,13 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			n1 = (Node) ds[--dsp];
 			result = Tree.create(TermOp.AND___, n0, n1);
 			break;
-		case HEAD__________:
-			result = Tree.decompose((Node) ds[--dsp]).getLeft();
-			break;
-		case INVOKEJAVACLS_:
+		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];
 			String clazzName = atom.getName().split("!")[1];
 			result = InstructionUtil.execInvokeJavaClass(clazzName);
 			break;
-		case INVOKEJAVAOBJ0:
-		case INVOKEJAVAOBJ1:
-		case INVOKEJAVAOBJ2:
-		case INVOKEJAVAOBJ3:
-			data = (Data<?>) ds[--dsp];
-			List<Node> ps = new ArrayList<>(3);
-			for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
-				ps.add((Node) ds[--dsp]);
-			Invocable invocable = Data.get(data);
-			result = invocable.invoke(invocableBridge, ps);
+		case HEAD__________:
+			result = Tree.decompose((Node) ds[--dsp]).getLeft();
 			break;
 		case ISCONS________:
 			result = atom(Tree.decompose((Node) ds[--dsp]) != null);
@@ -121,7 +121,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		invokeJavaEntryPoint = list.size();
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
-		list.add(new Instruction(Insn.INVOKEJAVAOBJ1, 2, 2, 0));
+		list.add(new Instruction(Insn.CALLINTRINSIC1, 2, 2, 0));
 		list.add(new Instruction(Insn.RETURNVALUE___, 2, 0, 0));
 		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 
@@ -140,10 +140,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		return node;
 	}
 
-	private Node wrapInvocable0(Invocable invocable, Node node) {
+	private Node wrapIntrinsic0(Intrinsic intrinsic, Node node) {
 		Frame frame = new Frame(null, 3);
 		frame.registers[0] = node;
-		frame.registers[1] = new Data<>(invocable);
+		frame.registers[1] = new Data<>(intrinsic);
 		return new Closure(frame, FunInstructionExecutor.this.invokeJavaEntryPoint);
 	}
 

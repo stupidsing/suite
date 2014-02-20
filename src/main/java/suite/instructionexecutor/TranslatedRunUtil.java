@@ -1,7 +1,7 @@
 package suite.instructionexecutor;
 
-import suite.lp.invocable.Invocable;
-import suite.lp.invocable.InvocableBridge;
+import suite.lp.intrinsic.Intrinsic;
+import suite.lp.intrinsic.IntrinsicBridge;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;
@@ -32,12 +32,12 @@ public class TranslatedRunUtil {
 		}
 	}
 
-	public static class InvocableFrame implements Frame {
-		public Invocable invocable;
+	public static class IntrinsicFrame implements Frame {
+		public Intrinsic intrinsic;
 		public Node node;
 	}
 
-	public static InvocableBridge getInvocableBridge(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
+	public static IntrinsicBridge getIntrinsicBridge(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
 		final Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 			public Node apply(Node node) {
 				node = node.finalNode();
@@ -51,14 +51,14 @@ public class TranslatedRunUtil {
 			}
 		};
 
-		return new InvocableBridge() {
+		return new IntrinsicBridge() {
 			public Fun<Node, Node> getUnwrapper() {
 				return unwrapper;
 			}
 
-			public Node wrapInvocable(Invocable invocable, Node node) {
-				InvocableFrame frame = new InvocableFrame();
-				frame.invocable = invocable;
+			public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+				IntrinsicFrame frame = new IntrinsicFrame();
+				frame.intrinsic = intrinsic;
 				frame.node = node;
 				return new Closure(frame, InstructionTranslator.invokeJavaEntryPoint);
 			}

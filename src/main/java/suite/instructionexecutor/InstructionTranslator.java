@@ -89,8 +89,8 @@ public class InstructionTranslator implements Closeable {
 				+ "import suite.instructionexecutor.*; \n" //
 				+ "import suite.lp.*; \n" //
 				+ "import suite.lp.doer.*; \n" //
-				+ "import suite.lp.invocable.*; \n" //
-				+ "import suite.lp.invocable.Invocables.*; \n" //
+				+ "import suite.lp.intrinsic.*; \n" //
+				+ "import suite.lp.intrinsic.Intrinsics.*; \n" //
 				+ "import suite.lp.kb.*; \n" //
 				+ "import suite.lp.predicate.*; \n" //
 				+ "import suite.node.*; \n" //
@@ -125,7 +125,7 @@ public class InstructionTranslator implements Closeable {
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
-				+ "InvocableBridge bridge = TranslatedRunUtil.getInvocableBridge(config, this); \n" //
+				+ "IntrinsicBridge bridge = TranslatedRunUtil.getIntrinsicBridge(config, this); \n" //
 				+ "Fun<Node, Node> unwrapper = bridge.getUnwrapper(); \n" //
 				+ "Comparer comparer = new FunComparer(unwrapper); \n" //
 				+ "\n" //
@@ -138,8 +138,8 @@ public class InstructionTranslator implements Closeable {
 				+ "switch(ip) { \n" //
 				+ "%s \n" //
 				+ "case " + invokeJavaEntryPoint + ": \n" //
-				+ "InvocableFrame iframe = (InvocableFrame) frame; \n" //
-				+ "returnValue = iframe.invocable.invoke(bridge, Arrays.asList(iframe.node)); \n" //
+				+ "IntrinsicFrame iframe = (IntrinsicFrame) frame; \n" //
+				+ "returnValue = iframe.intrinsic.invoke(bridge, Arrays.asList(iframe.node)); \n" //
 				+ "ip = cs[--csp]; \n" //
 				+ "continue; \n" //
 				+ "default: \n" //
@@ -218,6 +218,19 @@ public class InstructionTranslator implements Closeable {
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
 				isGenerateLabel = true;
+				break;
+			case CALLINTRINSIC0:
+			case CALLINTRINSIC1:
+			case CALLINTRINSIC2:
+			case CALLINTRINSIC3:
+				app("{");
+				app("Data<?> data = (Data<?>) unwrapper.apply((Node) ds[--dsp])");
+				app("List<Node> list = new ArrayList<>(3)");
+				for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
+					app("list.add((Node) ds[--dsp])");
+				app("Intrinsic intrinsic = Data.get(data)");
+				app("#{reg} = intrinsic.invoke(bridge, list)", op0);
+				app("}");
 				break;
 			case CALLREG_______:
 				backupFrame();
@@ -304,6 +317,13 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
 						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
 				break;
+			case GETINTRINSIC__:
+				app("{");
+				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
+				app("String clazzName = atom.toString().split(\"!\")[1]");
+				app("#{reg} = InstructionUtil.execInvokeJavaClass(clazzName)", op0);
+				app("}");
+				break;
 			case HEAD__________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getLeft()", op0);
 				break;
@@ -312,26 +332,6 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
-				break;
-			case INVOKEJAVACLS_:
-				app("{");
-				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
-				app("String clazzName = atom.toString().split(\"!\")[1]");
-				app("#{reg} = InstructionUtil.execInvokeJavaClass(clazzName)", op0);
-				app("}");
-				break;
-			case INVOKEJAVAOBJ0:
-			case INVOKEJAVAOBJ1:
-			case INVOKEJAVAOBJ2:
-			case INVOKEJAVAOBJ3:
-				app("{");
-				app("Data<?> data = (Data<?>) unwrapper.apply((Node) ds[--dsp])");
-				app("List<Node> list = new ArrayList<>(3)");
-				for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
-					app("list.add((Node) ds[--dsp])");
-				app("Invocable invocable = Data.get(data)");
-				app("#{reg} = invocable.invoke(bridge, list)", op0);
-				app("}");
 				break;
 			case ISCONS________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null", op0);

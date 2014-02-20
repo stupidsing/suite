@@ -3,7 +3,7 @@ package suite.instructionexecutor;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.lp.invocable.Invocable;
+import suite.lp.intrinsic.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;
@@ -49,6 +49,10 @@ public class InstructionUtil {
 		BINDUNDO______("BIND-UNDO"), //
 		CALL__________("CALL"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
+		CALLINTRINSIC0("CALL-INTRINSIC0"), //
+		CALLINTRINSIC1("CALL-INTRINSIC1"), //
+		CALLINTRINSIC2("CALL-INTRINSIC2"), //
+		CALLINTRINSIC3("CALL-INTRINSIC3"), //
 		CALLREG_______("CALL-REG"), //
 		COMPARE_______("COMPARE"), //
 		CONSLIST______("CONS-LIST"), //
@@ -70,6 +74,7 @@ public class InstructionUtil {
 		EXIT__________("EXIT"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
+		GETINTRINSIC__("GET-INTRINSIC"), //
 		HEAD__________("HEAD"), //
 		IFFALSE_______("IF-FALSE"), //
 		IFGE__________("IF-GE"), //
@@ -77,11 +82,6 @@ public class InstructionUtil {
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
-		INVOKEJAVACLS_("INVOKE-JAVA-CLASS"), //
-		INVOKEJAVAOBJ0("INVOKE-JAVA-OBJ0"), //
-		INVOKEJAVAOBJ1("INVOKE-JAVA-OBJ1"), //
-		INVOKEJAVAOBJ2("INVOKE-JAVA-OBJ2"), //
-		INVOKEJAVAOBJ3("INVOKE-JAVA-OBJ3"), //
 		ISCONS________("IS-CONS"), //
 		JUMP__________("JUMP"), //
 		JUMPREG_______("JUMP-REG"), //
@@ -191,19 +191,19 @@ public class InstructionUtil {
 		return InstructionUtil.insnNames.inverse().get(insnName);
 	}
 
-	public static Data<Invocable> execInvokeJavaClass(String clazzName) {
-		Class<? extends Invocable> clazz;
+	public static Data<Intrinsic> execInvokeJavaClass(String clazzName) {
+		Class<? extends Intrinsic> clazz;
 
 		try {
 			@SuppressWarnings("unchecked")
-			Class<? extends Invocable> clazz0 = (Class<? extends Invocable>) Class.forName(clazzName);
+			Class<? extends Intrinsic> clazz0 = (Class<? extends Intrinsic>) Class.forName(clazzName);
 			clazz = clazz0;
 		} catch (ClassNotFoundException ex1) {
 			throw new RuntimeException(ex1);
 		}
 
 		try {
-			return new Data<Invocable>(clazz.newInstance());
+			return new Data<Intrinsic>(clazz.newInstance());
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}

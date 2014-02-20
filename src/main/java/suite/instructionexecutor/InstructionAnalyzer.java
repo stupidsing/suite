@@ -144,14 +144,14 @@ public class InstructionAnalyzer {
 				registers.get(op0).clazz = int.class;
 				break;
 			case ASSIGNCONST___:
+			case CALLINTRINSIC0:
+			case CALLINTRINSIC1:
+			case CALLINTRINSIC2:
+			case CALLINTRINSIC3:
 			case CONSPAIR______:
 			case CONSLIST______:
+			case GETINTRINSIC__:
 			case HEAD__________:
-			case INVOKEJAVACLS_:
-			case INVOKEJAVAOBJ0:
-			case INVOKEJAVAOBJ1:
-			case INVOKEJAVAOBJ2:
-			case INVOKEJAVAOBJ3:
 			case LOGREG________:
 			case NEWNODE_______:
 			case POP___________:
