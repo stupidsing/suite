@@ -218,6 +218,12 @@ fc-add-functions STANDARD .p (
 		then (list | tail | take {n - 1} | cons {list | head})
 		else ()
 	) >>
+	define take-drop = (n => list =>
+		if (n > 0 && is-list {list}) then
+			let `$t1, $d1` = (list | tail | take-drop {n - 1}) >>
+			cons {list | head} {t1}, d1
+		else (, list)
+	) >>
 	define take-while = (fun =>
 		case
 		|| `$elem; $elems` =>
@@ -327,10 +333,8 @@ fc-add-functions STANDARD .p (
 	define merge = (merger => list =>
 		let len = length {list} >>
 		if (len > 1) then
-			let len2 = len / 2 >>
-			let list0 = (list | take {len2} | merge {merger}) >>
-			let list1 = (list | drop {len2} | merge {merger}) >>
-			merger {list0} {list1}
+			let `$list0, $list1` = take-drop {len / 2} {list} >>
+			merger {list0 | merge {merger}} {list1 | merge {merger}}
 		else list
 	) >>
 	define minimum =
