@@ -1,0 +1,21 @@
+package suite.fp.eval;
+
+import org.junit.Test;
+
+import suite.Suite;
+import suite.lp.doer.ProverConfig;
+import suite.sample.Profiler;
+
+public class PrecompileTest {
+
+	@Test
+	public void test() {
+		System.out.println(new Profiler().profile(new Runnable() {
+			public void run() {
+				ProverConfig pc = new ProverConfig();
+				Suite.precompile("STANDARD", pc);
+			}
+		}));
+	}
+
+}
