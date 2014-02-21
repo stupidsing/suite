@@ -2,8 +2,8 @@ package suite.sample;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import suite.util.Copy;
@@ -44,16 +44,16 @@ public class Ssh {
 		}
 	}
 
-	public void putFile(String src, String dest) throws FileNotFoundException, SftpException, JSchException {
+	public void putFile(String src, String dest) throws IOException, SftpException, JSchException {
 		Session session = null;
 		ChannelSftp channel = null;
 
-		try {
+		try (InputStream fis = new FileInputStream(src)) {
 			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
 
 			channel = (ChannelSftp) session.openChannel("sftp");
 			channel.connect();
-			channel.put(new FileInputStream(src), dest);
+			channel.put(fis, dest);
 		} finally {
 			close(session, channel);
 		}

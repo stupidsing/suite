@@ -1,7 +1,5 @@
 package suite.node.io;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,7 +14,6 @@ import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.util.LogUtil;
 import suite.util.ParseUtil;
-import suite.util.To;
 import suite.util.Util;
 
 public class Parser {
@@ -39,10 +36,6 @@ public class Parser {
 	public Parser(Context context, Operator operators[]) {
 		localContext = context;
 		this.operators = operators;
-	}
-
-	public Node parse(InputStream is) throws IOException {
-		return parse(To.string(is));
 	}
 
 	public Node parse(String s) {

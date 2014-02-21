@@ -94,7 +94,7 @@ lc-parse .call .callx .nv
 	; .callx = CALL .call1
 	), !
 #
-lc-parse .d _ :- write "Unknown expression" .d, nl, fail #
+lc-parse .d _ :- write.error "Unknown expression" .d, nl, fail #
 
 lc-parse-sugar (.a != .b) (not (.a = .b)) #
 

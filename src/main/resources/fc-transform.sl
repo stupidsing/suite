@@ -52,9 +52,9 @@ fc-transform-pragma (CAST UP .type0) (CAST UP .type1)
 #
 fc-transform-pragma CAST-TO-CLASS CAST-TO-CLASS
 #
-fc-transform-pragma (DEF-TYPE .type0 .classes0 .typeVars0) (DEF-TYPE .type1 .classes1 .typeVars1)
+fc-transform-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 .typeVars1)
 	:- fc-transform-type .type0 .type1
-	, fc-transform-type-list .classes0 .classes1
+	, fc-transform-type .class0 .class1
 	, fc-transform-type-list .typeVars0 .typeVars1
 #
 fc-transform-pragma RESOLVE-TYPE RESOLVE-TYPE

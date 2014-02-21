@@ -1,7 +1,6 @@
 package suite.lp;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermParser.TermOp;
+import suite.util.To;
 
 public class ImportUtil {
 
@@ -37,8 +37,8 @@ public class ImportUtil {
 		String oldRoot = importerRoot;
 		String filename1 = setImporterRoot(false, filename, oldRoot);
 
-		try (InputStream is = new FileInputStream(filename1)) {
-			return importFrom(rs, Suite.parse(is));
+		try {
+			return importFrom(rs, Suite.parse(To.string(new File(filename1))));
 		} finally {
 			isImportFromClasspath = wasFromClasspath;
 			importerRoot = oldRoot;
@@ -54,7 +54,7 @@ public class ImportUtil {
 
 		try (InputStream is = cl.getResourceAsStream(classpath1)) {
 			if (is != null)
-				return importFrom(rs, Suite.parse(is));
+				return importFrom(rs, Suite.parse(To.string(is)));
 			else
 				throw new RuntimeException("Cannot find resource " + classpath1);
 		} finally {

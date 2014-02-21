@@ -60,10 +60,10 @@ public class EagerFunTest {
 				, eval("cross {a => b => a; b;} {7; 8; 9;} {1; 2;}"));
 
 		assertEquals(Atom.TRUE, eval("" //
-				+ "define type A of t >> \n" //
-				+ "define type B of t >> \n" //
-				+ "define type C of t >> \n" //
-				+ "let list1 = type [t] (A; B; C;) >> \n" //
+				+ "data t as A >> \n" //
+				+ "data t as B >> \n" //
+				+ "data t as C >> \n" //
+				+ "let list1 = [t] of (A; B; C;) >> \n" //
 				+ "let result = ( \n" //
 				+ "    (A, 1,; A, 2,;); \n" //
 				+ "    (B, 1,; B, 2,;); \n" //
@@ -152,15 +152,15 @@ public class EagerFunTest {
 		assertEquals(Int.create(1), eval("if-bind ((1, 2,) = ($i, 2,)) then i else 0"));
 
 		assertEquals(Int.create(3), eval("" //
-				+ "define type A of t >> \n" //
-				+ "define type (B number) of t >> \n" //
-				+ "define type (C boolean) of t >> \n" //
+				+ "data t as A >> \n" //
+				+ "data t as B number >> \n" //
+				+ "data t as C boolean >> \n" //
 				+ "let e = B 3 >> \n" //
 				+ "if-bind (e = B $i) then i else 0"));
 		assertEquals(Int.create(0), eval("" //
-				+ "define type (A) of t >> \n" //
-				+ "define type (B number) of t >> \n" //
-				+ "define type (C boolean) of t >> \n" //
+				+ "data t as A >> \n" //
+				+ "data t as B number >> \n" //
+				+ "data t as C boolean >> \n" //
 				+ "let e = B 3 >> \n" //
 				+ "let f = C false >> \n" //
 				+ "if-bind (e = f) then 1 else 0"));
@@ -225,9 +225,9 @@ public class EagerFunTest {
 	public void testOperator() {
 		assertEquals(Atom.TRUE, eval("and {1 = 1} {or {1 = 0} {1 = 1}}"));
 		assertEquals(Atom.FALSE, Suite.evaluateFun("" //
-				+ "define type A of t >> \n" //
-				+ "define type B of t >> \n" //
-				+ "let list1 = type [t] () >> A = B", false));
+				+ "data t as A >> \n" //
+				+ "data t as B >> \n" //
+				+ "let list1 = [t] of () >> A = B", false));
 	}
 
 	@Test
@@ -246,8 +246,8 @@ public class EagerFunTest {
 	}
 
 	@Test
-	public void testRepeat() {
-		assertEquals(Suite.parse("3; 3; 3; 3;"), eval("repeat {4} {3}"));
+	public void testReplicate() {
+		assertEquals(Suite.parse("3; 3; 3; 3;"), eval("replicate {4} {3}"));
 	}
 
 	@Test

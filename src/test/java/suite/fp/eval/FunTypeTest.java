@@ -21,24 +21,33 @@ public class FunTypeTest {
 	@Test
 	public void testClass() {
 		assertType("clazz", "" //
-				+ "define type EMPTY of clazz >>\n" //
-				+ "define add = type (clazz -> clazz) (a => a) >>\n" //
-				+ "add | {EMPTY}\n");
+				+ "data clazz as Empty >> \n" //
+				+ "define add = (clazz -> clazz) of (a => a) >> \n" //
+				+ "add | {Empty}");
 
 		assertType("boolean", "" //
-				+ "define type NIL of t >> \n" //
-				+ "define type (BTREE (t, t)) of t >> \n" //
-				+ "let u = type t NIL >> \n" //
-				+ "let v = type t NIL >> \n" //
-				+ "v = BTREE (BTREE (NIL, NIL), NIL)\n");
+				+ "data t as Nil >> \n" //
+				+ "data t as BTree (t, t) >> \n" //
+				+ "let u = t of Nil >> \n" //
+				+ "let v = t of Nil >> \n" //
+				+ "v = BTree (BTree (Nil, Nil), Nil)");
+	}
+
+	@Test
+	public void testClassOfClass() {
+		assertType("c2 {boolean}", "" //
+				+ "data (c0 {:t}) over :t as A :t >> \n" //
+				+ "data (c1 {:t}) over :t as (c0 {:t}) >> \n" //
+				+ "data (c2 {:t}) over :t as (c1 {:t}) >> \n" //
+				+ "(c2 {boolean}) of (A true)");
 	}
 
 	@Test
 	public void testDefineType() {
-		getType("define type (KG number) of weight >> \n" //
-				+ "let v = type weight (KG 1) >> \n" //
-				+ "v = KG 99\n");
-		getType("repeat {23}");
+		getType("data weight as Kg number >> \n" //
+				+ "let v = weight of (Kg 1) >> \n" //
+				+ "v = Kg 99");
+		getType("replicate {23}");
 	}
 
 	@Test
@@ -67,9 +76,9 @@ public class FunTypeTest {
 	@Test
 	public void testGeneric() {
 		assertType("[rb-tree {number}]", "" //
-				+ "define type EMPTY over :t of (rb-tree {:t}) >> \n" //
-				+ "define map = type (:a => :b => (:a -> :b) -> [:a] -> [:b]) (error) >> \n" //
-				+ "define add = type ($t => $t -> rb-tree {$t}) (v => EMPTY) >> \n" //
+				+ "data (rb-tree {:t}) over :t as Empty >> \n" //
+				+ "define map = (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
+				+ "define add = ($t => $t -> rb-tree {$t}) of (v => Empty) >> \n" //
 				+ "1; | map {add} \n" //
 		);
 	}
@@ -77,25 +86,25 @@ public class FunTypeTest {
 	@Test
 	public void testInstance() {
 		String define = "" //
-				+ "define type NIL over :t of (list {:t}) >> \n" //
-				+ "define type (NODE (:t, list {:t})) over :t of (list {:t}) >> \n" //
-				+ "define type (NODE2 (:t, :t, list {:t})) over :t of (list {:t}) >> \n" //
+				+ "data (list {:t}) over :t as Nil >> \n" //
+				+ "data (list {:t}) over :t as Node (:t, list {:t}) >> \n" //
+				+ "data (list {:t}) over :t as Node2 (:t, :t, list {:t}) >> \n" //
 		;
 
-		getType(define + "NIL");
-		getType(define + "NODE (false, NIL)");
-		getType(define + "NODE2 (1, 2, NODE (3, NIL))");
+		getType(define + "Nil");
+		getType(define + "Node (false, Nil)");
+		getType(define + "Node2 (1, 2, Node (3, Nil))");
 
 		assertType("boolean", define //
-				+ "let n = NODE (true, NIL) >> NODE (false, n) = NIL");
+				+ "let n = Node (true, Nil) >> Node (false, n) = Nil");
 
-		getTypeMustFail(define + "NODE");
-		getTypeMustFail(define + "NODE 1");
-		getTypeMustFail(define + "NODE (1, NODE (true, NIL))");
-		getTypeMustFail(define + "NODE2 (1, true, NIL)");
-		getTypeMustFail(define + "NODE2 (1, 2, NODE (true, NIL))");
-		getTypeMustFail(define + "NODE (1, NIL) = NODE (false, NIL)");
-		getTypeMustFail(define + "let n = NODE (true, NIL) >> NODE (1, n)");
+		getTypeMustFail(define + "Node");
+		getTypeMustFail(define + "Node 1");
+		getTypeMustFail(define + "Node (1, Node (true, Nil))");
+		getTypeMustFail(define + "Node2 (1, true, Nil)");
+		getTypeMustFail(define + "Node2 (1, 2, Node (true, Nil))");
+		getTypeMustFail(define + "Node (1, Nil) = Node (false, Nil)");
+		getTypeMustFail(define + "let n = Node (true, Nil) >> Node (1, n)");
 	}
 
 	@Test
@@ -106,7 +115,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testRbTree() {
-		String fps = "using RB-TREE >> 0 until 10 | map {dict-add/ {1}} | apply | {EMPTY}";
+		String fps = "using RB-TREE >> 0 until 10 | map {dict-add/ {1}} | apply | {Empty}";
 		assertType("rb-tree {number, number}", fps);
 	}
 
@@ -126,24 +135,24 @@ public class FunTypeTest {
 	@Test
 	public void testTuple() {
 		final String variant = "" //
-				+ "define type A of t >> \n" //
-				+ "define type (B number) of t >> \n" //
-				+ "define type (C boolean) of t >> \n";
+				+ "data t as A >> \n" //
+				+ "data t as B number >> \n" //
+				+ "data t as C boolean >> \n";
 
 		getType(variant + "A");
 		getType(variant + "B 4");
 		getType(variant + "C true");
 		getType(variant + "if true then A else-if true then (B 3) else (C false)");
-		getType("define type (BTREE (number, number)) of btree >> BTREE (2, 3) = BTREE (4, 6)");
+		getType("data btree as BTree (number, number) >> BTree (2, 3) = BTree (4, 6)");
 
 		getTypeMustFail(variant + "A 4");
 		getTypeMustFail(variant + "B");
 		getTypeMustFail(variant + "C 0");
-		getTypeMustFail("define type (T1 (number, number)) of t1 >> \n" //
-				+ "define type (T2 (number, number)) of t2 >> \n" //
+		getTypeMustFail("data t1 as T1 (number, number) >> \n" //
+				+ "data t2 as T2 (number, number) >> \n" //
 				+ "T1 (2, 3) = T2 (2, 3)");
-		getTypeMustFail("define type (BTREE (number, number)) of btree >> \n" //
-				+ "BTREE (2, 3) = BTREE (\"a\", 6)");
+		getTypeMustFail("data btree as BTree (number, number) >> \n" //
+				+ "BTree (2, 3) = BTree (\"a\", 6)");
 	}
 
 	private void checkType(String fps, String bindTo, String ts) {

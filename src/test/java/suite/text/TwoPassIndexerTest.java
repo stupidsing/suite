@@ -1,10 +1,7 @@
 package suite.text;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -47,10 +44,10 @@ public class TwoPassIndexerTest {
 		TwoPassIndexer indexer = new TwoPassIndexer();
 
 		for (String filename : filenames)
-			indexer.pass0(filename, readFile(filename));
+			indexer.pass0(filename, To.string(new File(filename)));
 
 		for (String filename : filenames)
-			indexer.pass1(filename, readFile(filename));
+			indexer.pass1(filename, To.string(new File(filename)));
 
 		Map<String, List<Reference>> map = indexer.getKeysByWord();
 
@@ -71,14 +68,6 @@ public class TwoPassIndexerTest {
 
 		for (Reference key : FunUtil.iter(indexer.search("IOException")))
 			System.out.println("IOException found in " + key);
-	}
-
-	private String readFile(String filename) throws IOException {
-		try (FileInputStream fis = new FileInputStream(filename);
-				InputStreamReader isr = new InputStreamReader(fis, FileUtil.charset);
-				BufferedReader br = new BufferedReader(isr)) {
-			return To.string(br);
-		}
 	}
 
 }

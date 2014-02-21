@@ -10,13 +10,12 @@ import suite.lp.kb.RuleSet;
 
 public class FailedTests {
 
-	// Type check take 11 seconds
+	// Takes 11 seconds to type check
 	@Test
 	public void testTypeCheck() throws IOException {
 		new FunRbTreeTest().test();
 	}
 
-	// Cyclic types
 	@Test
 	public void testCyclicType() {
 		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
@@ -32,7 +31,6 @@ public class FailedTests {
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
-	// Impossible type
 	@Test
 	public void testImpossibleType() {
 		try {
@@ -40,6 +38,12 @@ public class FailedTests {
 			assertTrue(false);
 		} catch (RuntimeException ex) {
 		}
+	}
+
+	// Takes forever to type check
+	@Test
+	public void testRecursiveType() {
+		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
 	}
 
 }

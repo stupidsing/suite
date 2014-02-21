@@ -22,9 +22,9 @@ void ouch(int sig, siginfo_t *info, void *dummy) {
 int main() {
 	int pageSize = sysconf(_SC_PAGE_SIZE);
 	void *code = aligned_alloc(pageSize, pageSize);
-	((char*)code)[0] = 0xC3; // near RET
+	((char*) code)[0] = 0xC3; // near RET
 	mprotect(code, pageSize, PROT_READ | PROT_EXEC) && fatal("mprotect()");
-	((void(*)())code)();
+	((void(*)()) code)();
 	free(code);
 
 	struct sigaction act;

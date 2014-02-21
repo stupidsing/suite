@@ -92,7 +92,8 @@ public class SystemPredicates {
 		addPredicate("nl", new IoPredicates.Nl());
 		addPredicate("sink", new IoPredicates.Sink());
 		addPredicate("source", new IoPredicates.Source());
-		addPredicate("write", new IoPredicates.Write());
+		addPredicate("write", new IoPredicates.Write(System.out));
+		addPredicate("write.error", new IoPredicates.Write(System.err));
 
 		addPredicate("assert", new RuleSetPredicates.Assertz());
 		addPredicate("asserta", new RuleSetPredicates.Asserta());

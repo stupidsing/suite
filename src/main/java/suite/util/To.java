@@ -1,5 +1,8 @@
 package suite.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -75,9 +78,17 @@ public class To {
 		return FormatUtil.dateTimeFormat.format(date);
 	}
 
+	public static String string(File file) throws IOException {
+		try (InputStream fis = new FileInputStream(file)) {
+			return string(fis);
+		}
+	}
+
 	public static String string(InputStream in) throws IOException {
-		try (InputStream in_ = in) {
-			return string(new InputStreamReader(in_, FileUtil.charset));
+		try (InputStream is = in;
+				InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
+				BufferedReader br = new BufferedReader(isr)) {
+			return string(br);
 		}
 	}
 

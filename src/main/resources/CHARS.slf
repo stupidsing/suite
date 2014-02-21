@@ -1,13 +1,13 @@
 using STANDARD >>
-define cs-append as (data-of Chars -> data-of Chars -> data-of Chars) =
+define cs-append = (data-of Chars -> data-of Chars -> data-of Chars) of
 	atom:`CLASS!suite.lp.intrinsic.CharsIntrinsics$Append` | ijavacls | ijavaobj2
 >>
-define cs-from-string as (string -> data-of Chars) =
+define cs-from-string = (string -> data-of Chars) of
 	atom:`CLASS!suite.lp.intrinsic.CharsIntrinsics$StringChars` | ijavacls | ijavaobj1
 >>
-define cs-subchars as (number -> number -> data-of Chars -> data-of Chars) =
+define cs-subchars = (number -> number -> data-of Chars -> data-of Chars) of
 	atom:`CLASS!suite.lp.intrinsic.CharsIntrinsics$Subchars` | ijavacls | ijavaobj3
 >>
-define cs-to-string as (data-of Chars -> string) =
+define cs-to-string = (data-of Chars -> string) of
 	atom:`CLASS!suite.lp.intrinsic.CharsIntrinsics$CharsString` | ijavacls | ijavaobj1
 >>

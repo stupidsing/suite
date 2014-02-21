@@ -1,10 +1,9 @@
 package suite.lp.predicate;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Date;
 
 import suite.lp.doer.Prover;
@@ -66,8 +65,8 @@ public class IoPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Tree.getParameters(ps, 2);
 			String filename = Formatter.display(params[0]);
-			try (InputStream is = new FileInputStream(filename)) {
-				String content = To.string(is);
+			try {
+				String content = To.string(new File(filename));
 				return prover.bind(new Str(content), params[1]);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
@@ -128,8 +127,14 @@ public class IoPredicates {
 	}
 
 	public static class Write implements SystemPredicate {
+		private PrintStream printStream;
+
+		public Write(PrintStream printStream) {
+			this.printStream = printStream;
+		}
+
 		public boolean prove(Prover prover, Node ps) {
-			System.out.print(Formatter.display(ps));
+			printStream.print(Formatter.display(ps));
 			return true;
 		}
 	}
