@@ -1,45 +1,45 @@
 using STANDARD >>
-data color as RED >>
-data color as BLACK >>
-data (rb-tree {:t}) over :t as RB-TREE (color, rb-tree {:t}, :t, rb-tree {:t}) >>
-data (rb-tree {:t}) over :t as EMPTY >>
+data color as Red >>
+data color as Black >>
+data (rb-tree {:t}) over :t as Tree (color, rb-tree {:t}, :t, rb-tree {:t}) >>
+data (rb-tree {:t}) over :t as Empty >>
 
-define cr = color of RED >>
-define cb = color of BLACK >>
+define cr = color of Red >>
+define cb = color of Black >>
 define rbt-add = (:t => :t -> rb-tree {:t} -> rb-tree {:t}) of (
 v =>
 	define add0 = (:t => rb-tree {:t} -> rb-tree {:t}) of
 		define balance = (:t => rb-tree {:t} -> rb-tree {:t}) of
 			case
-			|| `RB-TREE (cb, RB-TREE (cr, RB-TREE (cr, $n0, $p0, $n1), $p1, $n2), $p2, $n3)` =>
-				RB-TREE (cr, RB-TREE (cb, n0, p0, n1), p1, RB-TREE (cb, n2, p2, n3))
-			|| `RB-TREE (cb, RB-TREE (cr, $n0, $p0, RB-TREE (cr, $n1, $p1, $n2)), $p2, $n3)` =>
-				RB-TREE (cr, RB-TREE (cb, n0, p0, n1), p1, RB-TREE (cb, n2, p2, n3))
-			|| `RB-TREE (cb, $n0, $p0, RB-TREE (cr, RB-TREE (cr, $n1, $p1, $n2), $p2, $n3))` =>
-				RB-TREE (cr, RB-TREE (cb, n0, p0, n1), p1, RB-TREE (cb, n2, p2, n3))
-			|| `RB-TREE (cb, $n0, $p0, RB-TREE (cr, $n1, $p1, RB-TREE (cr, $n2, $p2, $n3)))` =>
-				RB-TREE (cr, RB-TREE (cb, n0, p0, n1), p1, RB-TREE (cb, n2, p2, n3))
+			|| `Tree (cb, Tree (cr, Tree (cr, $n0, $p0, $n1), $p1, $n2), $p2, $n3)` =>
+				Tree (cr, Tree (cb, n0, p0, n1), p1, Tree (cb, n2, p2, n3))
+			|| `Tree (cb, Tree (cr, $n0, $p0, Tree (cr, $n1, $p1, $n2)), $p2, $n3)` =>
+				Tree (cr, Tree (cb, n0, p0, n1), p1, Tree (cb, n2, p2, n3))
+			|| `Tree (cb, $n0, $p0, Tree (cr, Tree (cr, $n1, $p1, $n2), $p2, $n3))` =>
+				Tree (cr, Tree (cb, n0, p0, n1), p1, Tree (cb, n2, p2, n3))
+			|| `Tree (cb, $n0, $p0, Tree (cr, $n1, $p1, Tree (cr, $n2, $p2, $n3)))` =>
+				Tree (cr, Tree (cb, n0, p0, n1), p1, Tree (cb, n2, p2, n3))
 			|| id
 		>>
 		case
-		|| `RB-TREE ($color, $n0, $pivot, $n1)` =>
+		|| `Tree ($color, $n0, $pivot, $n1)` =>
 			if (v < pivot) then
-				RB-TREE (color, add0 {n0}, pivot, n1) | balance
+				Tree (color, add0 {n0}, pivot, n1) | balance
 			else-if (v > pivot) then
-				RB-TREE (color, n0, pivot, add0 {n1}) | balance
+				Tree (color, n0, pivot, add0 {n1}) | balance
 			else error
-		|| `EMPTY` =>
-			RB-TREE (cr, EMPTY, v, EMPTY)
+		|| `Empty` =>
+			Tree (cr, Empty, v, Empty)
 		|| anything => error
 	>>
 	case
-	|| `RB-TREE ($color, $n0, $pivot, $n1)` => RB-TREE (cb, n0, pivot, n1) | add0
+	|| `Tree ($color, $n0, $pivot, $n1)` => Tree (cb, n0, pivot, n1) | add0
 	|| add0
 ) >>
 define rbt-to-list = (:t => rb-tree {:t} -> [:t]) of
 	case
-	|| `RB-TREE ($color, $n0, $pivot, $n1)` => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
-	|| `EMPTY` => ()
+	|| `Tree ($color, $n0, $pivot, $n1)` => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
+	|| `Empty` => ()
 	|| anything => error
 >>
 define dict-add = (:k => :v => :k -> :v -> rb-tree {:k, :v} -> rb-tree {:k, :v}) of (
@@ -49,7 +49,7 @@ key => value =>
 define dict-get = (:k => :v => :k -> rb-tree {:k, :v} -> :v) of (
 key =>
 	case
-	|| `RB-TREE ($color, $n0, ($key1, $value1), $n1)` =>
+	|| `Tree ($color, $n0, ($key1, $value1), $n1)` =>
 		if (key != key1) then
 			dict-get {key} {if (key < key1) then n0 else n1}
 		else
