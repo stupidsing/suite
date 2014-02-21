@@ -37,7 +37,6 @@ key => `Tree $slots` =>
 	if (key = found) then found else error
 ) >>
 define add = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
-key => `Tree $slots` =>
 	define add0 = (:t => :t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	key => slots0 =>
 		let `$left, $slot, $right` = find-slot {key} {slots0} >>
@@ -53,10 +52,10 @@ key => `Tree $slots` =>
 			create-slot {ls}; create-slot {rs};
 		else slots1
 	) >>
+	key => `Tree $slots` =>
 	slots | add0 {key} | create-root
 ) >>
 define remove = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
-key => `Tree $slots` =>
 	define lht = (list =>
 		head {list}, tail {list}
 	) >>
@@ -93,5 +92,6 @@ key => `Tree $slots` =>
 		else-if (key = pivot) then (append {left} {right})
 		else error
 	) >>
+	key => `Tree $slots` =>
 	slots | remove0 {key} | create-root
 ) >>
