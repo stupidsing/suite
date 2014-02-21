@@ -191,8 +191,11 @@ fc-add-functions STANDARD .p (
 		) >>
 		bisect0 {}
 	) >>
-	define repeat = (n => elem =>
-		if (n > 0) then (elem; repeat {n - 1} {elem}) else ()
+	define repeat = (elem =>
+		elem; repeat {elem}
+	) >>
+	define replicate = (n => elem =>
+		if (n > 0) then (elem; replicate {n - 1} {elem}) else ()
 	) >>
 	define scan-left = (fun => init =>
 		case
@@ -275,7 +278,7 @@ fc-add-functions STANDARD .p (
 		} {}
 	) >>
 	define get = (n =>
-		head . (tail | repeat {n} | apply)
+		head . (tail | replicate {n} | apply)
 	) >>
 	define heads =
 		scan-left {cons/} {}
@@ -365,7 +368,7 @@ fc-add-functions STANDARD .p (
 		let width = if (height > 0) then (m | head | length) else 0 >>
 		if (width > 0) then
 			let w1 = width - 1 >>
-			let gets = (tail | repeat {w1} | tails | reverse) >>
+			let gets = (tail | replicate {w1} | tails | reverse) >>
 			gets | map {f => map {head . apply {f}} {m}}
 		else ()
 	) >>

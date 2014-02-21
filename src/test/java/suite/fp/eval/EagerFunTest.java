@@ -246,8 +246,8 @@ public class EagerFunTest {
 	}
 
 	@Test
-	public void testRepeat() {
-		assertEquals(Suite.parse("3; 3; 3; 3;"), eval("repeat {4} {3}"));
+	public void testReplicate() {
+		assertEquals(Suite.parse("3; 3; 3; 3;"), eval("replicate {4} {3}"));
 	}
 
 	@Test

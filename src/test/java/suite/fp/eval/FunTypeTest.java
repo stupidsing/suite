@@ -47,7 +47,7 @@ public class FunTypeTest {
 		getType("data weight as Kg number >> \n" //
 				+ "let v = weight of (Kg 1) >> \n" //
 				+ "v = Kg 99");
-		getType("repeat {23}");
+		getType("replicate {23}");
 	}
 
 	@Test
