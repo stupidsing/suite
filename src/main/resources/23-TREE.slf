@@ -40,7 +40,7 @@ define add = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 key => `Tree $slots0` =>
 	define add0 = (:t => :t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	key => slots0 =>
-		let `$left, $slot, $right` = find-slot {key} {slots0} >>	
+		let `$left, $slot, $right` = find-slot {key} {slots0} >>
 		let `$pivot, $child` = slot >>
 		let replaceSlots =
 			if (child != Empty) then (let `Tree $slots` = child >> add0 {key} {slots})
