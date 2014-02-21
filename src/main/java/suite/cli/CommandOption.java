@@ -10,6 +10,7 @@ import java.util.List;
 import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
+import suite.fp.PrecompileMain;
 import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
@@ -68,6 +69,8 @@ public class CommandOption {
 		else if (arg.equals("-precompile") && (arg1 = source.source()) != null)
 			for (String lib : arg1.split(","))
 				result &= Suite.precompile(lib, pc(null));
+		else if (arg.equals("-precompile-all"))
+			result &= new PrecompileMain().precompile();
 		else if (arg.equals("-quiet"))
 			isQuiet = on;
 		else if (arg.equals("-trace"))

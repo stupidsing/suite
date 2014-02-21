@@ -12,7 +12,7 @@ TARGETTIME=$(echo "${JAR}" "${BASE}/precompiled/STANDARD.rpn" | xargs -I {} sh -
 	[ ${SRCTIME} -le ${TARGETTIME} ] ||
 	(
 		mvn -Dmaven.test.skip=true install assembly:single &&
-		(java ${OPTS} -jar "${JAR}" -precompile STANDARD < /dev/null || (rm -f ${BASE}/precompiled/STANDARD.rpn && false))
+		(java ${OPTS} -jar "${JAR}" -precompile-all < /dev/null || (rm -f ${BASE}/precompiled/STANDARD.rpn && false))
 	)
 ) &&
 

@@ -25,6 +25,14 @@ public class PrecompileMain {
 	);
 
 	public static void main(String args[]) throws IOException {
+		if (new PrecompileMain().precompile())
+			System.out.println("Please refresh eclipse workspace");
+		else
+			System.err.println("COMPILATION FAILURE");
+
+	}
+
+	public boolean precompile() {
 		final ProverConfig pc = new ProverConfig();
 
 		Suite.precompile("STANDARD", pc);
@@ -53,10 +61,7 @@ public class PrecompileMain {
 				ok = false;
 			}
 
-		if (ok)
-			System.out.println("Please refresh eclipse workspace");
-		else
-			System.err.println("COMPILATION FAILURE");
+		return ok;
 	}
 
 }
