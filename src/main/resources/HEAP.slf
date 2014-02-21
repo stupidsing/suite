@@ -4,10 +4,10 @@
 using STANDARD >>
 define type EMPTY over :t of (heap {:t}) >>
 define type (HEAP (:t, [heap {:t}])) over :t of (heap {:t}) >>
-define elem = type (heap {:t} -> :t)
+define elem = (heap {:t} -> :t) of
 	`HEAP ($elem, $list)` => elem
 >>
-define children = type (heap {:t} -> [heap {:t}])
+define children = (heap {:t} -> [heap {:t}]) of
 	`HEAP ($elem, $list)` => list
 >>
 define find-min =

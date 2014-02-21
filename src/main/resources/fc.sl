@@ -122,19 +122,19 @@ fc-add-functions STANDARD .p (
 	define ijavaobj3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
-	define _popen as ([string] -> string -> data-of Stream) =
+	define _popen = ([string] -> string -> data-of Stream) of
 		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Popen` | ijavacls | ijavaobj2
 	>>
-	define log as (:t => :t -> :t) =
+	define log = (:t => :t -> :t) of
 		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Log1` | ijavacls | ijavaobj1
 	>>
-	define log2 as (:t => string -> :t -> :t) =
+	define log2 = (:t => string -> :t -> :t) of
 		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Log2` | ijavacls | ijavaobj2
 	>>
-	define source as (data-of Stream -> string) =
+	define source = (data-of Stream -> string) of
 		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Source_` | ijavacls | ijavaobj1
 	>>
-	define throw as (any -> any) =
+	define throw = (any -> any) of
 		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Throw` | ijavacls | ijavaobj1
 	>>
 	define and = (x => y =>
@@ -372,7 +372,7 @@ fc-add-functions STANDARD .p (
 	define contains = (m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
-	define dump as (:t => :t -> string) = skip-type-check (
+	define dump = (:t => :t -> string) of skip-type-check (
 		define type-of = ijavacls {atom:`CLASS!suite.lp.intrinsic.Intrinsics$TypeOf`} >>
 		define atom-string = ijavacls {atom:`CLASS!suite.lp.intrinsic.Intrinsics$AtomString`} >>
 		let dump0 = (prec => n =>

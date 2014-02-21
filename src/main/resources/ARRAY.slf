@@ -1,16 +1,16 @@
 using STANDARD >>
-define ar-append as (:t => [:t] -> [:t] -> [:t]) =
+define ar-append = (:t => [:t] -> [:t] -> [:t]) of
 	atom:`CLASS!suite.lp.intrinsic.ArrayIntrinsics$Append` | ijavacls | ijavaobj2
 >>
-define ar-from-list as (:t => [:t] -> [:t]) =
+define ar-from-list = (:t => [:t] -> [:t]) of
 	atom:`CLASS!suite.lp.intrinsic.ArrayIntrinsics$ListArray` | ijavacls | ijavaobj1
 >>
-define ar-left as (:t => number -> [:t] -> [:t]) =
+define ar-left = (:t => number -> [:t] -> [:t]) of
 	atom:`CLASS!suite.lp.intrinsic.ArrayIntrinsics$Left` | ijavacls | ijavaobj2
 >>
-define ar-right as (:t => number -> [:t] -> [:t]) =
+define ar-right = (:t => number -> [:t] -> [:t]) of
 	atom:`CLASS!suite.lp.intrinsic.ArrayIntrinsics$Right` | ijavacls | ijavaobj2
 >>
-define ar-to-list as (:t => [:t] -> [:t]) =
+define ar-to-list = (:t => [:t] -> [:t]) of
 	atom:`CLASS!suite.lp.intrinsic.ArrayIntrinsics$ArrayList` | ijavacls | ijavaobj1
 >>

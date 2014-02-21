@@ -1,8 +1,12 @@
 package suite.fp;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.Suite;
@@ -26,19 +30,33 @@ public class PrecompileMain {
 		Suite.precompile("STANDARD", pc);
 
 		ThreadPoolExecutor executor = Util.createExecutorByProcessors();
+		List<Future<Boolean>> futures = new ArrayList<>();
 
 		try {
 			for (final String libraryName : allLibraries)
-				executor.execute(new Runnable() {
-					public void run() {
-						Suite.precompile(libraryName, pc);
+				futures.add(executor.submit(new Callable<Boolean>() {
+					public Boolean call() {
+						return Suite.precompile(libraryName, pc);
 					}
-				});
+				}));
 		} finally {
 			executor.shutdown();
 		}
 
-		System.out.println("please refresh eclipse workspace");
+		boolean ok = true;
+
+		for (Future<Boolean> future : futures)
+			try {
+				ok &= future.get();
+			} catch (InterruptedException | ExecutionException ex) {
+				ex.printStackTrace();
+				ok = false;
+			}
+
+		if (ok)
+			System.out.println("Please refresh eclipse workspace");
+		else
+			System.err.println("COMPILATION FAILURE");
 	}
 
 }

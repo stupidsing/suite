@@ -42,10 +42,10 @@ fc-infer-type-rule (USING _ .lib .do) .env .tr/.tr .type
 	, fc-resolve-type-rules .tr1
 #
 fc-infer-type-rule (
-	PRAGMA (DEF-TYPE .definedType .classes .typeVars) .do
+	PRAGMA (DEF-TYPE .definedType .class .typeVars) .do
 ) .ue/.ve/.te .tr .type
 	:- !
-	, .te1 = (.definedType/.classes/.typeVars, .te)
+	, .te1 = (.definedType/.class/.typeVars, .te)
 	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
 #
 fc-infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type
@@ -218,8 +218,7 @@ fc-resolve-sub-super-types .te .t0 .tx
 
 fc-sub-super-type-pair .te .type1 .class1 -- reduce to type classes
 	:- once (bound .type1; bound .class1)
-	, member .te .type/.classes/.typeVars
-	, member .classes .class
+	, member .te .type/.class/.typeVars
 	, fc-instantiate-type .typeVars .type/.class .type1/.class1
 #
 fc-sub-super-type-pair .te .t0 .t1 :- bound .t0, fc-sub-super-type-pair0 .te .t0 .t1 #

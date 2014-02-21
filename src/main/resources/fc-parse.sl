@@ -7,15 +7,12 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (define type .type over some .typeVars of some .classes >> .do) (
-	PRAGMA (DEF-TYPE .type1 .classes1 .typeVars1) .do1
+fc-parse (define type .type over some .typeVars of .class >> .do) (
+	PRAGMA (DEF-TYPE .type1 .class1 .typeVars1) .do1
 ) :- fc-parse-type .type .type1
 	, fc-parse-type-list .typeVars .typeVars1
-	, fc-parse-type-list .classes .classes1
+	, fc-parse-type .class .class1
 	, !, fc-parse .do .do1
-#
-fc-parse (define type .type over some .typeVars of .class >> .do) .do1
-	:- !, fc-parse (define type .type over some .typeVars of some (.class,) >> .do) .do1
 #
 fc-parse (define type .type over .typeVar of .of >> .do) .do1
 	:- !, fc-parse (define type .type over some (.typeVar,) of .of >> .do) .do1
@@ -23,11 +20,8 @@ fc-parse (define type .type over .typeVar of .of >> .do) .do1
 fc-parse (define type .type of .of >> .do) .do1
 	:- !, fc-parse (define type .type over some () of .of >> .do) .do1
 #
-fc-parse .do (PRAGMA (CAST DOWN .type1) .value1)
-	:- (.do = .value as .type
-		; .do = type .type .value
-	)
-	, fc-parse-type .type .type1
+fc-parse (.type of .value) (PRAGMA (CAST DOWN .type1) .value1)
+	:- fc-parse-type .type .type1
 	, !, fc-parse .value .value1
 #
 fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
@@ -150,8 +144,8 @@ fc-parse-sugar (.l; .r) (_lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do # .do) (
-	define fun-to-monad = type (:t => (number -> :t) -> do-of :t) (skip-type-check id) >>
-	define monad-to-fun = type (:t => do-of :t -> (number -> :t)) (skip-type-check id) >>
+	define fun-to-monad = (:t => (number -> :t) -> do-of :t) of (skip-type-check id) >>
+	define monad-to-fun = (:t => do-of :t -> (number -> :t)) of (skip-type-check id) >>
 	fun-to-monad {dummy =>
 		define frame = id {dummy} >>
 		define exec = ({0} . monad-to-fun) >>
@@ -161,10 +155,7 @@ fc-parse-sugar (do # .do) (
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
-fc-parse-sugar (define .var as .type = .value >> .do) (define .var = .value as .type >> .do)
-	:- !
-#
-fc-parse-sugar (.var as .type => .do) (.var1 => (define .var = .var1 as .type >> .do))
+fc-parse-sugar (.var as .type => .do) (.var1 => (define .var =  .type of .var1 >> .do))
 	:- !, temp .var1
 #
 fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var = .bind) then .do else error))

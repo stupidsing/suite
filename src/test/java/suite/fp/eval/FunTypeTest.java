@@ -21,23 +21,32 @@ public class FunTypeTest {
 	@Test
 	public void testClass() {
 		assertType("clazz", "" //
-				+ "define type EMPTY of clazz >>\n" //
-				+ "define add = type (clazz -> clazz) (a => a) >>\n" //
-				+ "add | {EMPTY}\n");
+				+ "define type EMPTY of clazz >> \n" //
+				+ "define add = (clazz -> clazz) of (a => a) >> \n" //
+				+ "add | {EMPTY}");
 
 		assertType("boolean", "" //
 				+ "define type NIL of t >> \n" //
 				+ "define type (BTREE (t, t)) of t >> \n" //
-				+ "let u = type t NIL >> \n" //
-				+ "let v = type t NIL >> \n" //
-				+ "v = BTREE (BTREE (NIL, NIL), NIL)\n");
+				+ "let u = t of NIL >> \n" //
+				+ "let v = t of NIL >> \n" //
+				+ "v = BTREE (BTREE (NIL, NIL), NIL)");
+	}
+
+	@Test
+	public void testClassOfClass() {
+		assertType("c2 {boolean}", "" //
+				+ "define type (A :t) over :t of (c0 {:t}) >> \n" //
+				+ "define type (c0 {:t}) over :t of (c1 {:t}) >> \n" //
+				+ "define type (c1 {:t}) over :t of (c2 {:t}) >> \n" //
+				+ "(c2 {boolean}) of (A true)");
 	}
 
 	@Test
 	public void testDefineType() {
 		getType("define type (KG number) of weight >> \n" //
-				+ "let v = type weight (KG 1) >> \n" //
-				+ "v = KG 99\n");
+				+ "let v = weight of (KG 1) >> \n" //
+				+ "v = KG 99");
 		getType("repeat {23}");
 	}
 
@@ -68,8 +77,8 @@ public class FunTypeTest {
 	public void testGeneric() {
 		assertType("[rb-tree {number}]", "" //
 				+ "define type EMPTY over :t of (rb-tree {:t}) >> \n" //
-				+ "define map = type (:a => :b => (:a -> :b) -> [:a] -> [:b]) (error) >> \n" //
-				+ "define add = type ($t => $t -> rb-tree {$t}) (v => EMPTY) >> \n" //
+				+ "define map = (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
+				+ "define add = ($t => $t -> rb-tree {$t}) of (v => EMPTY) >> \n" //
 				+ "1; | map {add} \n" //
 		);
 	}
