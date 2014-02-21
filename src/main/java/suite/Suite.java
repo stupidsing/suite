@@ -1,7 +1,6 @@
 package suite;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -27,6 +26,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.TermParser;
 import suite.node.io.TermParser.TermOp;
 
 public class Suite {
@@ -40,7 +40,7 @@ public class Suite {
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
 	private static ImportUtil importUtil = new ImportUtil();
-	private static ParseUtil parseUtil = new ParseUtil();
+	private static TermParser parser = new TermParser();
 
 	public static void addRule(RuleSet rs, String rule) {
 		addRule(rs, Suite.parse(rule));
@@ -236,11 +236,7 @@ public class Suite {
 	// Parse utilities
 
 	public static Node parse(String s) {
-		return parseUtil.parse(s);
-	}
-
-	public static Node parse(InputStream is) throws IOException {
-		return parseUtil.parse(is);
+		return parser.parse(s);
 	}
 
 }

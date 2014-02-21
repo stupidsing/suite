@@ -1,9 +1,7 @@
 package suite.lp.predicate;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
@@ -66,8 +64,8 @@ public class IoPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Tree.getParameters(ps, 2);
 			String filename = Formatter.display(params[0]);
-			try (InputStream is = new FileInputStream(filename)) {
-				String content = To.string(is);
+			try {
+				String content = To.string(new File(filename));
 				return prover.bind(new Str(content), params[1]);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);

@@ -1,7 +1,6 @@
 package suite.editor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -137,7 +136,7 @@ public class EditorController {
 	public void selectList(EditorView view) {
 		try {
 			String filename = view.getLeftList().getSelectedValue();
-			String text = To.string(new FileInputStream(filename));
+			String text = To.string(new File(filename));
 
 			JEditorPane editor = view.getEditor();
 			editor.setText(text);

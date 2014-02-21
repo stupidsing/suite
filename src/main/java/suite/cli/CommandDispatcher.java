@@ -1,6 +1,6 @@
 package suite.cli;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -217,12 +217,10 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchFunctional(List<String> files) throws IOException {
-		if (files.size() == 1)
-			try (FileInputStream is = new FileInputStream(files.get(0))) {
-				Node node = Suite.parse(is);
-				return evaluateFunctional(node) == Atom.TRUE;
-			}
-		else
+		if (files.size() == 1) {
+			Node node = Suite.parse(To.string(new File(files.get(0))));
+			return evaluateFunctional(node) == Atom.TRUE;
+		} else
 			throw new RuntimeException("Only one evaluation is allowed");
 	}
 

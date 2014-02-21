@@ -2,7 +2,7 @@ package suite.algo;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test3() throws IOException {
-		String s = To.string(new FileInputStream("src/main/java/suite/algo/LempelZivWelch.java"));
+		String s = To.string(new File("src/main/java/suite/algo/LempelZivWelch.java"));
 		assertEquals(s, doTest(s));
 	}
 
