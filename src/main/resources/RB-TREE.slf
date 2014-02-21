@@ -1,8 +1,9 @@
 using STANDARD >>
-define type RED of color >>
-define type BLACK of color >>
-define type (RB-TREE (color, rb-tree {:t}, :t, rb-tree {:t})) over :t of (rb-tree {:t}) >>
-define type EMPTY over :t of (rb-tree {:t}) >>
+data color as RED >>
+data color as BLACK >>
+data (rb-tree {:t}) over :t as RB-TREE (color, rb-tree {:t}, :t, rb-tree {:t}) >>
+data (rb-tree {:t}) over :t as EMPTY >>
+
 define cr = color of RED >>
 define cb = color of BLACK >>
 define rbt-add = (:t => :t -> rb-tree {:t} -> rb-tree {:t}) of (

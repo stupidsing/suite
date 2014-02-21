@@ -2,8 +2,9 @@
 -- http://en.wikipedia.org/wiki/Pairing_heap
 
 using STANDARD >>
-define type EMPTY over :t of (heap {:t}) >>
-define type (HEAP (:t, [heap {:t}])) over :t of (heap {:t}) >>
+data (heap {:t}) over :t as EMPTY >>
+data (heap {:t}) over :t as HEAP (:t, [heap {:t}]) >>
+
 define elem = (heap {:t} -> :t) of
 	`HEAP ($elem, $list)` => elem
 >>

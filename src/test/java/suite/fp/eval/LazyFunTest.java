@@ -13,7 +13,7 @@ public class LazyFunTest {
 
 	@Test
 	public void testClosure() {
-		assertEquals(Suite.parse("4"), eval("define v = type number 4 >> (i => j => v) {1} {2}"));
+		assertEquals(Suite.parse("4"), eval("define v = number of 4 >> (i => j => v) {1} {2}"));
 	}
 
 	@Test
