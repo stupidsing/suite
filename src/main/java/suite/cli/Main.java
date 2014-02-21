@@ -92,7 +92,7 @@ public class Main implements AutoCloseable {
 					else
 						return code;
 				} while (!opt.isQuiet() //
-						&& (!ParseUtil.isParseable(sb.toString()) || !line.isEmpty() && !line.endsWith("#")));
+						&& (!ParseUtil.isParseable(sb.toString(), true) || !line.isEmpty() && !line.endsWith("#")));
 
 				code &= dispatcher.dispatchCommand(sb.toString(), writer);
 			} catch (Throwable ex) {

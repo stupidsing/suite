@@ -132,7 +132,7 @@ public class CommandDispatcher {
 			printEvaluatedString(writer, node);
 			break;
 		case EVALUATESTR:
-			node = Suite.substitute(".0 as string", node);
+			node = Suite.substitute("string of .0", node);
 			printEvaluatedString(writer, node);
 			break;
 		case EVALUATETYPE:

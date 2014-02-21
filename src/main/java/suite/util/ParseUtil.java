@@ -41,6 +41,18 @@ public class ParseUtil {
 	}
 
 	public static boolean isParseable(String s) {
+		return isParseable(s, false);
+	}
+
+	/**
+	 * Judges if the input string has balanced quote characters and bracket
+	 * characters.
+	 * 
+	 * @param isThrow
+	 *            if this is set to true, and the string is deemed unparseable
+	 *            even if more characters are added, throw exception.
+	 */
+	public static boolean isParseable(String s, boolean isThrow) {
 		int quote = 0, depth = 0;
 
 		// Shows warning if the atom has mismatched quotes or brackets
@@ -50,7 +62,7 @@ public class ParseUtil {
 				depth = checkDepth(depth, c);
 		}
 
-		if (depth >= 0)
+		if (!isThrow || depth >= 0)
 			return quote == 0 && depth == 0;
 		else
 			throw new RuntimeException("Parse error");
