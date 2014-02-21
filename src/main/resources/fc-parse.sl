@@ -1,8 +1,10 @@
 fc-parse `.t` .parsed
-	:- !, fc-parse-op-sugar .t .t1, fc-parse .t1 .parsed
+	:- fc-parse-op-sugar .t .t1
+	, !, fc-parse .t1 .parsed
 #
 fc-parse .t .parsed
-	:- bound .t, fc-parse-sugar .t .t1, !, fc-parse .t1 .parsed
+	:- bound .t, fc-parse-sugar .t .t1
+	, !, fc-parse .t1 .parsed
 #
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
@@ -105,7 +107,6 @@ fc-parse-op-sugar .t .do
 	, once (
 		fc-operator .op
 		, fc-parse-op-sugar1 .op .left .right .do
-		; fc-error "Invalid lambda expression" .t
 	)
 #
 
