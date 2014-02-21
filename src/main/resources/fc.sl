@@ -96,7 +96,7 @@ fc-operator .oper
 	) .oper
 #
 
-fc-error .m :- !, write .m, nl, fail #
+fc-error .m :- !, write.error .m, nl, fail #
 
 fc-dict-get .v .t :- rbt-get .v .t, ! #
 
