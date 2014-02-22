@@ -95,8 +95,6 @@ public class Parser {
 			return Tree.create(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
 		}
 
-		if (Arrays.asList("[]").contains(s))
-			return Atom.create(s);
 		if (first == '(' && last == ')')
 			return parseRawString(Util.substr(s, 1, -1), 0);
 		if (first == '[' && last == ']')
