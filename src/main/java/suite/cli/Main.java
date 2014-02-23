@@ -15,13 +15,14 @@ import suite.util.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.To;
 import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
  * 
  * @author ywsing
  */
-public class Main implements AutoCloseable {
+public class Main extends ExecutableProgram {
 
 	private CommandOption opt;
 	private CommandDispatcher dispatcher;
@@ -30,21 +31,10 @@ public class Main implements AutoCloseable {
 	private Writer writer = new OutputStreamWriter(System.out, FileUtil.charset);
 
 	public static void main(String args[]) {
-		int code;
-
-		try (Main main = new Main()) {
-			try {
-				code = main.run(args);
-			} catch (Throwable ex) {
-				LogUtil.error(ex);
-				code = 1;
-			}
-		}
-
-		System.exit(code);
+		Util.run(Main.class, args);
 	}
 
-	private int run(String args[]) throws IOException {
+	protected boolean run(String args[]) throws IOException {
 		opt = new CommandOption();
 		dispatcher = new CommandDispatcher(opt);
 
@@ -69,7 +59,7 @@ public class Main implements AutoCloseable {
 			else
 				result &= run(inputs);
 
-		return result ? 0 : 1;
+		return result;
 	}
 
 	private boolean run(List<String> importFilenames) throws IOException {

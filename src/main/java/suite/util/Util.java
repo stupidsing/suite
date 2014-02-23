@@ -14,9 +14,18 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.Level;
+
 import suite.util.FunUtil.Source;
 
 public class Util {
+
+	public static abstract class ExecutableProgram implements AutoCloseable {
+		protected abstract boolean run(String args[]) throws Exception;
+
+		public void close() {
+		}
+	}
 
 	@SafeVarargs
 	public static <T> List<T> add(List<T>... lists) {
@@ -210,6 +219,25 @@ public class Util {
 		if (pos < 0)
 			pos += size;
 		return list.subList(Math.min(size, pos), size);
+	}
+
+	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
+		LogUtil.initLog4j(Level.INFO);
+		int code;
+
+		try (ExecutableProgram main_ = clazz.newInstance()) {
+			try {
+				code = main_.run(args) ? 0 : 1;
+			} catch (Throwable ex) {
+				LogUtil.fatal(ex);
+				code = 2;
+			}
+		} catch (ReflectiveOperationException ex) {
+			LogUtil.fatal(ex);
+			code = 2;
+		}
+
+		System.exit(code);
 	}
 
 	public static void sleepQuietly(long time) {

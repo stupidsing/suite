@@ -12,24 +12,30 @@ import java.util.concurrent.ThreadPoolExecutor;
 import suite.Suite;
 import suite.lp.doer.ProverConfig;
 import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
 /**
  * Performs precompilation.
  * 
  * @author ywsing
  */
-public class PrecompileMain {
+public class PrecompileMain extends ExecutableProgram {
 
-	private static final List<String> allLibraries = Arrays.asList( //
+	private List<String> allLibraries = Arrays.asList( //
 			"23-TREE", "ARRAY", "CHARS", "FREQ", "HEAP", "MATCH", "MATH", "MONAD", "PERMUTE", "RB-TREE" //
 	);
 
 	public static void main(String args[]) throws IOException {
-		if (new PrecompileMain().precompile())
+		Util.run(PrecompileMain.class, args);
+	}
+
+	protected boolean run(String args[]) {
+		boolean ok = precompile();
+		if (ok)
 			System.out.println("Please refresh eclipse workspace");
 		else
 			System.err.println("COMPILATION FAILURE");
-
+		return ok;
 	}
 
 	public boolean precompile() {

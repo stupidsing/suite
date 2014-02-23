@@ -70,7 +70,9 @@ public class CommandOption {
 			for (String lib : arg1.split(","))
 				result &= Suite.precompile(lib, pc(null));
 		else if (arg.equals("-precompile-all"))
-			result &= new PrecompileMain().precompile();
+			try (PrecompileMain precompileMain = new PrecompileMain()) {
+				result &= precompileMain.precompile();
+			}
 		else if (arg.equals("-quiet"))
 			isQuiet = on;
 		else if (arg.equals("-trace"))

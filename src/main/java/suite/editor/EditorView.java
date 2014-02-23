@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 
 import suite.editor.Layout.Node;
 import suite.editor.Layout.Orientation;
@@ -277,8 +278,8 @@ public class EditorView {
 
 	private JScrollPane createScrollPane(Component component) {
 		return new JScrollPane(component //
-				, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED //
-				, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED //
+				, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 
 	private <T extends JComponent> T applyDefaults(T t) {

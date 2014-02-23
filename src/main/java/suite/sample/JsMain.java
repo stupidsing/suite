@@ -1,16 +1,17 @@
 package suite.sample;
 
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
-import org.apache.log4j.Level;
-
-import suite.util.LogUtil;
+import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
 /**
  * Starts program using a JavaScript script. Perhaps you can avoid using Spring
@@ -18,53 +19,39 @@ import suite.util.LogUtil;
  * 
  * @author ywsing
  */
-public class JsMain {
+public class JsMain extends ExecutableProgram {
 
 	private final List<String> defaultJsFiles = Arrays.asList("conf/loader.js");
 
 	private final ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 	public static void main(String args[]) {
-		instance.run(args);
+		Util.run(JsMain.class, args);
 	}
 
-	public synchronized void run(String args[]) {
-		LogUtil.initLog4j(Level.INFO);
+	protected synchronized boolean run(String args[]) throws IOException, ScriptException {
+		List<String> filenames = new ArrayList<>();
 
-		try {
-			List<String> filenames = new ArrayList<>();
+		for (String arg : args)
+			if (!arg.equals(""))
+				if (arg.charAt(0) == '-')
+					engine.eval(arg.substring(1));
+				else
+					filenames.add(arg);
 
-			for (String arg : args)
-				if (!arg.equals(""))
-					if (arg.charAt(0) == '-')
-						engine.eval(arg.substring(1));
-					else
-						filenames.add(arg);
+		if (filenames.size() == 0)
+			filenames = defaultJsFiles;
 
-			if (filenames.size() == 0)
-				filenames = defaultJsFiles;
+		boolean result = true;
 
-			for (String filename : filenames)
-				engine.eval(new FileReader(filename));
-
-			wait();
-		} catch (Throwable ex) {
-			LogUtil.fatal(ex);
-			ex.printStackTrace();
+		for (String filename : filenames) {
+			Object r = engine.eval(new FileReader(filename));
+			result &= r == Boolean.TRUE //
+					|| r instanceof Number && ((Number) r).intValue() != 0 //
+					|| r instanceof String && Util.isNotBlank((String) r);
 		}
-	}
 
-	private JsMain() { // Singleton; disallow other instances
-	}
-
-	public static JsMain getInstance() {
-		return instance;
-	}
-
-	private static JsMain instance = new JsMain();
-
-	public ScriptEngine getScriptEngine() {
-		return engine;
+		return result;
 	}
 
 }
