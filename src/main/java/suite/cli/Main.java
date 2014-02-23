@@ -57,12 +57,12 @@ public class Main extends ExecutableProgram {
 			else if (opt.isLogical())
 				result &= dispatcher.dispatchLogical(inputs); // Inputs as files
 			else
-				result &= run(inputs);
+				result &= runInteractive(inputs);
 
 		return result;
 	}
 
-	private boolean run(List<String> importFilenames) throws IOException {
+	private boolean runInteractive(List<String> importFilenames) throws IOException {
 		BufferedReader br = new BufferedReader(reader);
 		boolean code = true;
 
