@@ -78,14 +78,14 @@ public class Profiler {
 		ThreadInfo threadInfos[] = mx.getThreadInfo(threadIds, stackTraceDepth);
 		count.getAndIncrement();
 
-		for (ThreadInfo thread : threadInfos)
-			if (thread != null //
-					&& thread.getThreadId() != currentThreadId //
-					&& thread.getThreadState() == State.RUNNABLE //
-					&& !thread.getThreadName().equals("ReaderThread")) {
+		for (ThreadInfo threadInfo : threadInfos)
+			if (threadInfo != null //
+					&& threadInfo.getThreadId() != currentThreadId //
+					&& threadInfo.getThreadState() == State.RUNNABLE //
+					&& !threadInfo.getThreadName().equals("ReaderThread")) {
 				Set<String> elements = new HashSet<>();
 
-				for (StackTraceElement elem : thread.getStackTrace())
+				for (StackTraceElement elem : threadInfo.getStackTrace())
 					elements.add(elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")");
 
 				for (String name : elements) {
