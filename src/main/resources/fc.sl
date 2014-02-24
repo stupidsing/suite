@@ -211,7 +211,7 @@ fc-add-functions STANDARD .p (
 	define str-to-int = (s =>
 		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
 			if (is-list {s} && head {s} = 45)
-			then (`0 - ` . unsigned-str-to-int . tail)
+			then (`0 -` . unsigned-str-to-int . tail)
 			else unsigned-str-to-int
 		{s}
 	) >>
