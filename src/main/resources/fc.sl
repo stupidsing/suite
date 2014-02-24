@@ -123,19 +123,19 @@ fc-add-functions STANDARD .p (
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
 	define _popen = ([string] -> string -> data-of Stream) of
-		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Popen` | ijavacls | ijavaobj2
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Popen | ijavacls | ijavaobj2
 	>>
 	define log = (:t => :t -> :t) of
-		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Log1` | ijavacls | ijavaobj1
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log1 | ijavacls | ijavaobj1
 	>>
 	define log2 = (:t => string -> :t -> :t) of
-		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Log2` | ijavacls | ijavaobj2
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log2 | ijavacls | ijavaobj2
 	>>
 	define source = (data-of Stream -> string) of
-		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Source_` | ijavacls | ijavaobj1
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Source_ | ijavacls | ijavaobj1
 	>>
 	define throw = (any -> any) of
-		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Throw` | ijavacls | ijavaobj1
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Throw | ijavacls | ijavaobj1
 	>>
 	define and = (x => y =>
 		if x then y else false
@@ -376,8 +376,8 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump = (:t => :t -> string) of skip-type-check (
-		define type-of = ijavacls {atom:`CLASS!suite.lp.intrinsic.Intrinsics$TypeOf`} >>
-		define atom-string = ijavacls {atom:`CLASS!suite.lp.intrinsic.Intrinsics$AtomString`} >>
+		define type-of = ijavacls {atom:CLASS!suite.lp.intrinsic.Intrinsics$TypeOf} >>
+		define atom-string = ijavacls {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >>
 		let dump0 = (prec => n =>
 			let type = _ijavaobj1 {type-of} {n} >>
 			if (n = ()) then

@@ -1,8 +1,8 @@
 using STANDARD >>
-define nothing = atom:`Nothing` >>
+define nothing = atom:Nothing >>
 define seqm =
 	define seq = (:t => any -> :t -> :t) of
-		atom:`CLASS!suite.lp.intrinsic.Intrinsics$Seq` | ijavacls | ijavaobj2
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Seq | ijavacls | ijavaobj2
 	>>
 	do0 => do1 => (do #
 		seq {exec {do0}} {exec {do1}}
