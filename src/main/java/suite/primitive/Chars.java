@@ -133,6 +133,11 @@ public class Chars implements Iterable<Character> {
 			return false;
 	}
 
+	@Override
+	public String toString() {
+		return new String(vector);
+	}
+
 	private Chars subchars0(int start, int end) {
 		checkOpenBounds(start);
 		checkOpenBounds(end);
@@ -153,11 +158,6 @@ public class Chars implements Iterable<Character> {
 	private void checkClosedBounds(int index) {
 		if (index < start || index >= end)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
-	}
-
-	@Override
-	public String toString() {
-		return new String(vector);
 	}
 
 	public char[] getChars() {

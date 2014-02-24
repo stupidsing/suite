@@ -16,6 +16,7 @@ public class Bytes implements Iterable<Byte> {
 	private static final int reallocSize = 65536;
 
 	public static final Bytes emptyBytes = new Bytes(emptyByteArray);
+	private static final String hexDigits = "0123456789ABCDEF";
 
 	public static final Comparator<Bytes> comparator = new Comparator<Bytes>() {
 		public int compare(Bytes bytes0, Bytes bytes1) {
@@ -133,6 +134,16 @@ public class Bytes implements Iterable<Byte> {
 			return false;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = start; i < end; i++)
+			sb.append(" ") //
+					.append(hexDigits.charAt(vector[i] >>> 4 & 0x0F)) //
+					.append(hexDigits.charAt(vector[i] & 0x0F));
+		return sb.toString();
+	}
+
 	private Bytes subbytes0(int start, int end) {
 		checkOpenBounds(start);
 		checkOpenBounds(end);
@@ -153,18 +164,6 @@ public class Bytes implements Iterable<Byte> {
 	private void checkClosedBounds(int index) {
 		if (index < start || index >= end)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
-	}
-
-	private static final String hexDigits = "0123456789ABCDEF";
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = start; i < end; i++)
-			sb.append(" ") //
-					.append(hexDigits.charAt(vector[i] >>> 4 & 0x0F)) //
-					.append(hexDigits.charAt(vector[i] & 0x0F));
-		return sb.toString();
 	}
 
 	public byte[] getBytes() {
