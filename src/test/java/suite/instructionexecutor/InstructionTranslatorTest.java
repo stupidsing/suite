@@ -43,8 +43,8 @@ public class InstructionTranslatorTest {
 	@Test
 	public void testAtomString() throws IOException {
 		String node = executeToString(compileFunctional(Suite.parse("" //
-				+ "define atom-string = _ijavacls {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >> " //
-				+ "_ijavaobj1 {atom-string} {atom:ATOM}"), false));
+				+ "define atom-string = _getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >> " //
+				+ "_callintrn1 {atom-string} {atom:ATOM}"), false));
 		assertEquals("ATOM", node);
 	}
 

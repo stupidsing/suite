@@ -72,12 +72,12 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 	:- !, fc-frame-difference .frame0 .frame1 .frameDiff
 #
 
+fc-define-default-fun 1 _callintrn0 CALL-INTRINSIC0 #
+fc-define-default-fun 2 _callintrn1 CALL-INTRINSIC1 #
+fc-define-default-fun 3 _callintrn2 CALL-INTRINSIC2 #
+fc-define-default-fun 4 _callintrn3 CALL-INTRINSIC3 #
 fc-define-default-fun 2 _compare COMPARE #
-fc-define-default-fun 1 _ijavacls GET-INTRINSIC #
-fc-define-default-fun 1 _ijavaobj0 CALL-INTRINSIC0 #
-fc-define-default-fun 2 _ijavaobj1 CALL-INTRINSIC1 #
-fc-define-default-fun 3 _ijavaobj2 CALL-INTRINSIC2 #
-fc-define-default-fun 4 _ijavaobj3 CALL-INTRINSIC3 #
+fc-define-default-fun 1 _getintrn GET-INTRINSIC #
 fc-define-default-fun 2 _lcons CONS-LIST #
 fc-define-default-fun 1 _lhead HEAD #
 fc-define-default-fun 1 _ltail TAIL #
@@ -107,35 +107,35 @@ fc-dict-merge-replace .t0 .t1 .t2 :- rbt-merge-replace .t0 .t1 .t2, ! #
 
 fc-dict-member .v .t :- rbt-member .v .t #
 
--- There are few functions that are not pure: ijavaobj*
+-- There are few functions that are not pure: callintrn*
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
+	define callintrn0 = (name => _ijavaobj0 {name}) >>
+	define callintrn1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
+	define callintrn2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
+	define callintrn3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
 	define compare = (a => b => _compare {a} {b}) >>
 	define cons = (head => tail => _lcons {head} {tail}) >>
 	define first = (tuple => _pleft {tuple}) >>
 	define head = (list => _lhead {list}) >>
-	define ijavacls = (name => _ijavacls {name}) >>
-	define ijavaobj0 = (name => _ijavaobj0 {name}) >>
-	define ijavaobj1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
-	define ijavaobj2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
-	define ijavaobj3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
+	define getintrn = (name => _ijavacls {name}) >>
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
 	define _popen = ([string] -> string -> data-of Stream) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Popen | ijavacls | ijavaobj2
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Popen | getintrn | callintrn2
 	>>
 	define log = (:t => :t -> :t) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log1 | ijavacls | ijavaobj1
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log1 | getintrn | callintrn1
 	>>
 	define log2 = (:t => string -> :t -> :t) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log2 | ijavacls | ijavaobj2
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log2 | getintrn | callintrn2
 	>>
 	define source = (data-of Stream -> string) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Source_ | ijavacls | ijavaobj1
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Source_ | getintrn | callintrn1
 	>>
 	define throw = (any -> any) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Throw | ijavacls | ijavaobj1
+		atom:CLASS!suite.lp.intrinsic.Intrinsics$Throw | getintrn | callintrn1
 	>>
 	define and = (x => y =>
 		if x then y else false
@@ -376,17 +376,17 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	) >>
 	define dump = (:t => :t -> string) of skip-type-check (
-		define type-of = ijavacls {atom:CLASS!suite.lp.intrinsic.Intrinsics$TypeOf} >>
-		define atom-string = ijavacls {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >>
+		define type-of = getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$TypeOf} >>
+		define atom-string = getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >>
 		let dump0 = (prec => n =>
-			let type = _ijavaobj1 {type-of} {n} >>
+			let type = _callintrn1 {type-of} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				ijavaobj1 {atom-string} {n}
+				callintrn1 {atom-string} {n}
 			else
 				int-to-str {n}
 		) >>

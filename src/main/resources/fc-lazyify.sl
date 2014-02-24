@@ -49,11 +49,11 @@ fc-lazyify-list (.t, .ts) :- fc-lazyify .t, fc-lazyify-list .ts #
 fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 	:- member (
 		_compare/2/VALUE:VALUE:/VALUE,
-		_ijavacls/1/VALUE:/VALUE,
-		_ijavaobj0/1/VALUE:/VALUE,
-		_ijavaobj1/2/VALUE:VALUE:/VALUE,
-		_ijavaobj2/3/VALUE:VALUE:VALUE:/VALUE,
-		_ijavaobj3/4/VALUE:VALUE:VALUE:VALUE:/VALUE,
+		_getintrn/1/VALUE:/VALUE,
+		_callintrn0/1/VALUE:/VALUE,
+		_callintrn1/2/VALUE:VALUE:/VALUE,
+		_callintrn2/3/VALUE:VALUE:VALUE:/VALUE,
+		_callintrn3/4/VALUE:VALUE:VALUE:VALUE:/VALUE,
 		_lcons/2/THUNK:THUNK:/VALUE,
 		_lhead/1/VALUE:/THUNK,
 		_ltail/1/VALUE:/THUNK,
