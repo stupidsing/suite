@@ -38,10 +38,6 @@ public class Chars implements Iterable<Character> {
 		this(chars.vector, chars.start, chars.end);
 	}
 
-	public Chars(String s) {
-		this(s.toCharArray(), 0);
-	}
-
 	public Chars(char chars[]) {
 		this(chars, 0);
 	}
