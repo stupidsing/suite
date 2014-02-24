@@ -25,6 +25,7 @@ import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
+import suite.util.Util;
 
 public class Intrinsics {
 
@@ -146,7 +147,8 @@ public class Intrinsics {
 
 	public static class Throw implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			throw new RuntimeException("Error termination");
+			String message = ExpandUtil.expandString(bridge.getUnwrapper(), inputs.get(0));
+			throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 		}
 	}
 
