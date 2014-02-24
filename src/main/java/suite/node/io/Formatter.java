@@ -142,10 +142,10 @@ public class Formatter {
 						&& !('A' <= c && c <= 'Z') //
 						&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
 
-			quote |= s.contains(Parser.closeGroupComment) //
-					|| s.contains(Parser.openGroupComment) //
-					|| s.contains(Parser.closeLineComment) //
-					|| s.contains(Parser.openLineComment);
+			quote |= s.contains(CommentProcessor.closeGroupComment) //
+					|| s.contains(CommentProcessor.openGroupComment) //
+					|| s.contains(CommentProcessor.closeLineComment) //
+					|| s.contains(CommentProcessor.openLineComment);
 
 			quote |= ParseUtil.isInteger(s);
 
