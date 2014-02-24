@@ -523,8 +523,8 @@ struct Node *generalize0(struct Node *node, struct Hashtab *hashtab) {
 		else return node;
 	case TREE:
 		tree = node->u.tree;
-		l= generalize0(tree->left, hashtab);
-		r= generalize0(tree->right, hashtab);
+		l = generalize0(tree->left, hashtab);
+		r = generalize0(tree->right, hashtab);
 		if(l != tree->left || r != tree->right) return newTree(tree->operator, l, r);
 	default: return node;
 	}
