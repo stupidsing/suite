@@ -34,16 +34,15 @@ fc-load-library .lib .do0 .dox
 
 fc-load-library0 .lib .slfx
 	:- fc-add-functions .lib .slfx, !
-	; once (
-		home.dir .homeDir
+	; once (home.dir .homeDir
 		, concat .homeDir "/src/main/resources/" .lib ".slf" .slfFilename
-		, whatever (file.exists .slfFilename
-			, file.read .slfFilename .slf
-			, to.atom ".p" .var
-			, concat .var " (" .slf .var ")" .slf1
-			, parse .slf1 .slf2
-			, generalize .slf2 .slfx
-		)
+		, file.exists .slfFilename
+		, file.read .slfFilename .slf
+		, to.atom ".p" .var
+		, concat .var " (" .slf .var ")" .slf1
+		, parse .slf1 .slf2
+		, generalize .slf2 .slfx
+	; fc-error "Library" .lib "not found"
 	)
 #
 
@@ -111,15 +110,15 @@ fc-dict-member .v .t :- rbt-member .v .t #
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
-	define callintrn0 = (name => _ijavaobj0 {name}) >>
-	define callintrn1 = (name => p0 => _ijavaobj1 {name} {p0}) >>
-	define callintrn2 = (name => p0 => p1 => _ijavaobj2 {name} {p0} {p1}) >>
-	define callintrn3 = (name => p0 => p1 => p2 => _ijavaobj3 {name} {p0} {p1} {p2}) >>
+	define callintrn0 = (name => _callintrn0 {name}) >>
+	define callintrn1 = (name => p0 => _callintrn1 {name} {p0}) >>
+	define callintrn2 = (name => p0 => p1 => _callintrn2 {name} {p0} {p1}) >>
+	define callintrn3 = (name => p0 => p1 => p2 => _callintrn3 {name} {p0} {p1} {p2}) >>
 	define compare = (a => b => _compare {a} {b}) >>
 	define cons = (head => tail => _lcons {head} {tail}) >>
 	define first = (tuple => _pleft {tuple}) >>
 	define head = (list => _lhead {list}) >>
-	define getintrn = (name => _ijavacls {name}) >>
+	define getintrn = (name => _getintrn {name}) >>
 	define second = (tuple => _pright {tuple}) >>
 	define tail = (list => _ltail {list}) >>
 	define _popen = ([string] -> string -> data-of Stream) of

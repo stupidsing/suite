@@ -40,32 +40,31 @@ public class PrecompileMain extends ExecutableProgram {
 
 	public boolean precompile() {
 		final ProverConfig pc = new ProverConfig();
-
-		Suite.precompile("STANDARD", pc);
-
-		ThreadPoolExecutor executor = Util.createExecutorByProcessors();
+		boolean ok = Suite.precompile("STANDARD", pc);
 		List<Future<Boolean>> futures = new ArrayList<>();
 
-		try {
-			for (final String libraryName : allLibraries)
-				futures.add(executor.submit(new Callable<Boolean>() {
-					public Boolean call() {
-						return Suite.precompile(libraryName, pc);
-					}
-				}));
-		} finally {
-			executor.shutdown();
-		}
+		if (ok) {
+			ThreadPoolExecutor executor = Util.createExecutorByProcessors();
 
-		boolean ok = true;
-
-		for (Future<Boolean> future : futures)
 			try {
-				ok &= future.get();
-			} catch (InterruptedException | ExecutionException ex) {
-				ex.printStackTrace();
-				ok = false;
+				for (final String libraryName : allLibraries)
+					futures.add(executor.submit(new Callable<Boolean>() {
+						public Boolean call() {
+							return Suite.precompile(libraryName, pc);
+						}
+					}));
+			} finally {
+				executor.shutdown();
 			}
+
+			for (Future<Boolean> future : futures)
+				try {
+					ok &= future.get();
+				} catch (InterruptedException | ExecutionException ex) {
+					ex.printStackTrace();
+					ok = false;
+				}
+		}
 
 		return ok;
 	}
