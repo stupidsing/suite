@@ -92,7 +92,7 @@ public class Prover {
 
 			if (query instanceof Tree) {
 				Tree tree = (Tree) query;
-				final Node left = tree.getLeft(), right = tree.getRight();
+				Node left = tree.getLeft(), right = tree.getRight();
 
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
