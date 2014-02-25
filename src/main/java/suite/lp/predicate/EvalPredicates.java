@@ -1,5 +1,6 @@
 package suite.lp.predicate;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -99,7 +100,7 @@ public class EvalPredicates {
 				return false;
 			}
 
-			String str = result != null ? result.toString() : "";
+			String str = Objects.toString(result, "");
 			return prover.bind(new Str(str), params[1]);
 		}
 	}

@@ -16,7 +16,6 @@ import suite.util.Util;
 
 public class RecursiveParser {
 
-	private TerminalParser terminalParser;
 	private Operator operators[];
 	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
 
@@ -24,16 +23,18 @@ public class RecursiveParser {
 	private Fun<String, String> indentProcessor;
 	private Fun<String, String> whitespaceProcessor;
 
+	private TerminalParser terminalParser;
+
 	public RecursiveParser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
 	}
 
 	public RecursiveParser(Context context, Operator operators[]) {
-		terminalParser = new TerminalParser(context);
 		this.operators = operators;
 		commentProcessor = new CommentProcessor(whitespaces);
 		indentProcessor = new IndentationProcessor(operators);
 		whitespaceProcessor = new WhitespaceProcessor(whitespaces);
+		terminalParser = new TerminalParser(context);
 	}
 
 	public Node parse(String in) {
