@@ -1,9 +1,9 @@
 package suite.node.io;
 
-import java.util.List;
+import java.util.Set;
 
 import suite.util.FunUtil.Fun;
-import suite.util.ParseUtil;
+import suite.util.Util;
 
 /**
  * Unify all whitespaces to the space bar space (ASCII code 32).
@@ -12,28 +12,30 @@ import suite.util.ParseUtil;
  */
 public class WhitespaceProcessor implements Fun<String, String> {
 
-	private List<Character> whitespaces;
+	private Set<Character> whitespaces;
 
-	public WhitespaceProcessor(List<Character> whitespaces) {
+	public WhitespaceProcessor(Set<Character> whitespaces) {
 		this.whitespaces = whitespaces;
 	}
 
 	@Override
 	public String apply(String in) {
-		for (char whitespace : whitespaces)
-			in = replace(in, "" + whitespace, " ");
-		return in;
-	}
+		StringBuilder sb = new StringBuilder();
+		int count = 0;
 
-	private String replace(String in, String from, String to) {
-		while (true) {
-			int pos = ParseUtil.search(in, 0, from);
+		for (char ch : Util.chars(in))
+			if (whitespaces.contains(ch))
+				count++;
+			else {
+				if (count > 0) {
+					sb.append(" ");
+					count = 0;
+				}
 
-			if (pos != -1)
-				in = in.substring(0, pos) + to + in.substring(pos + from.length());
-			else
-				return in;
-		}
+				sb.append(ch);
+			}
+
+		return sb.toString();
 	}
 
 }

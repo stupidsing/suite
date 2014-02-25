@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import java.util.List;
+import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
@@ -17,9 +17,9 @@ public class CommentProcessor implements Fun<String, String> {
 	public final static String openLineComment = "--";
 	public final static String closeLineComment = "\n";
 
-	private List<Character> whitespaces;
+	private Set<Character> whitespaces;
 
-	public CommentProcessor(List<Character> whitespaces) {
+	public CommentProcessor(Set<Character> whitespaces) {
 		this.whitespaces = whitespaces;
 	}
 

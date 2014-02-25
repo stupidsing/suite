@@ -1,7 +1,8 @@
 package suite.node.io;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import suite.node.Atom;
 import suite.node.Int;
@@ -12,6 +13,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermParser.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
+import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -20,11 +22,11 @@ public class Parser {
 
 	private Context localContext;
 	private Operator operators[];
-	private List<Character> whitespaces = Arrays.asList('\t', '\r', '\n');
+	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
 
-	private CommentProcessor commentProcessor;
-	private IndentationProcessor indentProcessor;
-	private WhitespaceProcessor whitespaceProcessor;
+	private Fun<String, String> commentProcessor;
+	private Fun<String, String> indentProcessor;
+	private Fun<String, String> whitespaceProcessor;
 
 	public Parser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
