@@ -1,6 +1,5 @@
 package suite.node.io;
 
-import suite.node.util.Context;
 import suite.util.Util;
 
 public class TermParser extends Parser {
@@ -72,10 +71,6 @@ public class TermParser extends Parser {
 
 	public TermParser() {
 		super(TermOp.values());
-	}
-
-	public TermParser(Context context) {
-		super(context, TermOp.values());
 	}
 
 }

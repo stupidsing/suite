@@ -43,7 +43,7 @@ public class Suite {
 	private static TermParser parser = new TermParser();
 
 	public static void addRule(RuleSet rs, String rule) {
-		addRule(rs, Suite.parse(rule));
+		addRule(rs, parse(rule));
 	}
 
 	public static void addRule(RuleSet rs, Node node) {
@@ -51,12 +51,12 @@ public class Suite {
 	}
 
 	public static Node applyDo(Node node, Atom returnType) {
-		return Suite.substitute("(do-of .1 -> number -> .1) of (skip-type-check id) {.0} {0}", node, returnType);
+		return substitute("(do-of .1 -> number -> .1) of (skip-type-check id) {.0} {0}", node, returnType);
 	}
 
 	public static Node applyReader(Reader reader, Node func) {
 		Data<IndexedReader> data = new Data<>(new IndexedReader(reader));
-		return Suite.substitute("source {skip-type-check atom:.0} | .1", data, func);
+		return substitute("source {skip-type-check atom:.0} | .1", data, func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {
@@ -143,15 +143,15 @@ public class Suite {
 	// Evaluation utilities
 
 	public static boolean proveLogic(String lps) {
-		return evaluateUtil.proveLogic(Suite.parse(lps));
+		return evaluateUtil.proveLogic(parse(lps));
 	}
 
 	public static boolean proveLogic(RuleSet rs, String lps) {
-		return evaluateUtil.proveLogic(rs, Suite.parse(lps));
+		return evaluateUtil.proveLogic(rs, parse(lps));
 	}
 
 	public static boolean proveLogic(Builder builder, RuleSet rs, String lps) {
-		return evaluateUtil.proveLogic(builder, rs, Suite.parse(lps));
+		return evaluateUtil.proveLogic(builder, rs, parse(lps));
 	}
 
 	public static boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
@@ -159,7 +159,7 @@ public class Suite {
 	}
 
 	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
-		return evaluateUtil.evaluateLogic(builder, rs, Suite.parse(lps));
+		return evaluateUtil.evaluateLogic(builder, rs, parse(lps));
 	}
 
 	public static String evaluateFilterFun(String program, boolean isLazy, String in) {
@@ -173,8 +173,8 @@ public class Suite {
 
 	public static void evaluateFilterFun(String program, boolean isLazy, Reader reader, Writer writer) {
 		try {
-			Node node = Suite.applyReader(reader, Suite.parse(program));
-			FunCompilerConfig fcc = Suite.fcc(node, isLazy);
+			Node node = applyReader(reader, parse(program));
+			FunCompilerConfig fcc = fcc(node, isLazy);
 			evaluateUtil.evaluateFunToWriter(fcc, writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -182,7 +182,7 @@ public class Suite {
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {
-		return evaluateUtil.evaluateFun(Suite.fcc(Suite.parse(fp), isLazy));
+		return evaluateUtil.evaluateFun(fcc(parse(fp), isLazy));
 	}
 
 	public static Node evaluateFun(FunCompilerConfig fcc) {
@@ -194,7 +194,7 @@ public class Suite {
 	}
 
 	public static Node evaluateFunType(String fps) {
-		return evaluateUtil.evaluateFunType(Suite.fcc(Suite.parse(fps)));
+		return evaluateUtil.evaluateFunType(fcc(parse(fps)));
 	}
 
 	public static Node evaluateFunType(FunCompilerConfig fcc) {
