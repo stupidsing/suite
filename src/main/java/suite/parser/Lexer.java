@@ -83,13 +83,14 @@ public class Lexer {
 					sb.append(nextChar());
 				return nextToken();
 			} else if (ch == '/' && peeked == '/') { // Single-line comment
-				while (nextChar() != '\n')
+				while (!eof && nextChar() != '\n')
 					;
 				return nextToken();
 			} else if (ch == '/' && peeked == '*') { // Block comment
-				while (nextChar() != '*' || peeked != '/')
+				while (!eof && nextChar() != '*' || peeked != '/')
 					;
-				nextChar();
+				if (!eof)
+					nextChar();
 				return nextToken();
 			} else if (Character.isDigit(ch))
 				while (!eof && Character.isDigit(peeked))
