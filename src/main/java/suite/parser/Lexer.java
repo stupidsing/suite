@@ -9,6 +9,11 @@ import java.util.Set;
 
 import suite.util.FunUtil.Source;
 
+/**
+ * Lexical analyzer.
+ * 
+ * @author ywsing
+ */
 public class Lexer {
 
 	private boolean eof;
@@ -76,6 +81,15 @@ public class Lexer {
 			} else if (Character.isWhitespace(ch)) {
 				while (!eof && Character.isWhitespace(peeked))
 					sb.append(nextChar());
+				return nextToken();
+			} else if (ch == '/' && peeked == '/') { // Single-line comment
+				while (nextChar() != '\n')
+					;
+				return nextToken();
+			} else if (ch == '/' && peeked == '*') { // Block comment
+				while (nextChar() != '*' || peeked != '/')
+					;
+				nextChar();
 				return nextToken();
 			} else if (Character.isDigit(ch))
 				while (!eof && Character.isDigit(peeked))
