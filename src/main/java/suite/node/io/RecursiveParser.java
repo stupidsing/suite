@@ -5,21 +5,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 import suite.node.Atom;
-import suite.node.Int;
 import suite.node.Node;
-import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
-public class Parser {
+public class RecursiveParser {
 
-	private Context localContext;
+	private TerminalParser terminalParser;
 	private Operator operators[];
 	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
 
@@ -27,12 +24,12 @@ public class Parser {
 	private Fun<String, String> indentProcessor;
 	private Fun<String, String> whitespaceProcessor;
 
-	public Parser(Operator operators[]) {
+	public RecursiveParser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
 	}
 
-	public Parser(Context context, Operator operators[]) {
-		localContext = context;
+	public RecursiveParser(Context context, Operator operators[]) {
+		terminalParser = new TerminalParser(context);
 		this.operators = operators;
 		commentProcessor = new CommentProcessor(whitespaces);
 		indentProcessor = new IndentationProcessor(operators);
@@ -103,25 +100,7 @@ public class Parser {
 		if (first == '`' && last == '`')
 			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
-		if (ParseUtil.isInteger(s))
-			return Int.create(Integer.parseInt(s));
-		if (s.startsWith("+x"))
-			return Int.create(Integer.parseInt(s.substring(2), 16));
-		if (s.startsWith("+'") && s.endsWith("'") && s.length() == 4)
-			return Int.create(s.charAt(2));
-
-		if (first == '"' && last == '"')
-			return new Str(Escaper.unescape(Util.substr(s, 1, -1), "\""));
-
-		if (first == '\'' && last == '\'')
-			s = Escaper.unescape(Util.substr(s, 1, -1), "'");
-		else {
-			s = s.trim(); // Trim unquoted atoms
-			if (!ParseUtil.isParseable(s))
-				LogUtil.info("Suspicious input when parsing " + s);
-		}
-
-		return Atom.create(localContext, s);
+		return terminalParser.parseTerminal(s);
 	}
 
 }

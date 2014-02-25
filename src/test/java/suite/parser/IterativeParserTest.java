@@ -42,7 +42,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseColon() {
-		test("a:b c:d e");
+		test("a:b c:d :e f");
 	}
 
 	@Test
@@ -67,15 +67,29 @@ public class IterativeParserTest {
 	}
 
 	@Test
+	public void testParsePredicate() {
+		test("length (_, .r) .l1 :- length .r .l0, sum .l1 .l0 1");
+	}
+
+	@Test
+	public void testParseAuto() throws IOException {
+		String in = To.string(new File("src/main/resources/auto.sl"));
+		Node node = iterativeParser.parse(in);
+		System.out.println(new PrettyPrinter().prettyPrint(node));
+		assertNotNull(Tree.decompose(node));
+	}
+
+	@Test
 	public void testParseFile() throws IOException {
 		String in = To.string(new File("src/main/resources/fc.sl"));
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
-		assertNotNull(Tree.decompose(node).getLeft());
+		assertNotNull(Tree.decompose(node));
 	}
 
 	private void test(String s) {
-		assertEquals(s, Formatter.dump(iterativeParser.parse(s)));
+		String s1 = Formatter.dump(iterativeParser.parse(s));
+		assertEquals(s, s1);
 	}
 
 }

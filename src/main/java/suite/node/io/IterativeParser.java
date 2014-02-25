@@ -11,16 +11,12 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.node.Atom;
-import suite.node.Int;
 import suite.node.Node;
-import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
-import suite.util.ParseUtil;
 import suite.util.Util;
 
 /**
@@ -30,7 +26,7 @@ import suite.util.Util;
  */
 public class IterativeParser {
 
-	private Context localContext;
+	private TerminalParser terminalParser;
 	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n', ' '));
 	private int maxOperatorLength;
 	private Map<String, Operator> operatorsByName = new HashMap<>();
@@ -66,8 +62,8 @@ public class IterativeParser {
 		this(Singleton.get().getGrandContext(), operators);
 	}
 
-	public IterativeParser(Context context, Operator operators[]) {
-		localContext = context;
+	private IterativeParser(Context context, Operator operators[]) {
+		terminalParser = new TerminalParser(context);
 		maxOperatorLength = 0;
 
 		for (Operator operator : operators)
@@ -108,11 +104,11 @@ public class IterativeParser {
 			if (pos < in.length()) {
 				TokenKind kind = detect();
 
-				if (kind == TokenKind.CHAR_)
-					pos++;
-				else if (kind == TokenKind.ID___ || kind == TokenKind.SPACE)
+				if (kind == TokenKind.ID___ || kind == TokenKind.SPACE)
 					while (pos < in.length() && detect() == kind)
 						pos++;
+				else if (kind == TokenKind.CHAR_)
+					pos++;
 				else if (kind == TokenKind.OPER_)
 					pos += detectOperator().getName().length();
 				else if (kind == TokenKind.STR__) {
@@ -208,9 +204,8 @@ public class IterativeParser {
 			Section section = stack.peek();
 			if (!section.isDanglingRight)
 				addOperator(TermOp.TUPLE_);
-			else
-				section.isDanglingRight = false;
 			Tree.forceSetRight(section.last(), node);
+			section.isDanglingRight = false;
 		}
 
 		private void addOperator(Operator operator) {
@@ -237,27 +232,7 @@ public class IterativeParser {
 	}
 
 	private Node parse0(String in) {
-		char first = Util.charAt(in, 0), last = Util.charAt(in, -1);
-
-		if (ParseUtil.isInteger(in))
-			return Int.create(Integer.parseInt(in));
-		if (in.startsWith("+x"))
-			return Int.create(Integer.parseInt(in.substring(2), 16));
-		if (in.startsWith("+'") && in.endsWith("'") && in.length() == 4)
-			return Int.create(in.charAt(2));
-
-		if (first == '"' && last == '"')
-			return new Str(Escaper.unescape(Util.substr(in, 1, -1), "\""));
-
-		if (first == '\'' && last == '\'')
-			in = Escaper.unescape(Util.substr(in, 1, -1), "'");
-		else {
-			in = in.trim(); // Trim unquoted atoms
-			if (!ParseUtil.isParseable(in))
-				LogUtil.info("Suspicious input when parsing " + in);
-		}
-
-		return Atom.create(localContext, in);
+		return terminalParser.parseTerminal(in);
 	}
 
 	private boolean isWhitespace(char ch) {
