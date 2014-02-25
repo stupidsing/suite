@@ -1,8 +1,9 @@
 package suite.text;
 
+import java.util.Objects;
+
 import suite.primitive.Bytes;
 import suite.util.To;
-import suite.util.Util;
 
 public class PatchDataSegment {
 
@@ -30,7 +31,7 @@ public class PatchDataSegment {
 	}
 
 	public boolean isChanged() {
-		return !Util.equals(dataSegmentOrg.getBytes(), dataSegmentNew.getBytes());
+		return !Objects.equals(dataSegmentOrg.getBytes(), dataSegmentNew.getBytes());
 	}
 
 	public PatchDataSegment adjust(int offsetOrg, int offsetNew) {

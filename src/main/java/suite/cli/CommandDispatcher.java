@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import suite.Suite;
@@ -105,7 +106,7 @@ public class CommandDispatcher {
 			String starts = input.substring(0, i);
 
 			for (InputType inputType : InputType.values())
-				if (Util.equals(starts, inputType.prefix)) {
+				if (Objects.equals(starts, inputType.prefix)) {
 					type = inputType;
 					input = input.substring(i);
 					break commandFound;

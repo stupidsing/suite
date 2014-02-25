@@ -1,5 +1,7 @@
 package suite.lp.kb;
 
+import java.util.Objects;
+
 import suite.lp.doer.Generalizer;
 import suite.node.Atom;
 import suite.node.Node;
@@ -55,14 +57,14 @@ public class Prototype implements Comparable<Prototype> {
 
 	@Override
 	public int hashCode() {
-		return Util.hashCode(head);
+		return Objects.hashCode(head);
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Prototype.class) {
 			Prototype p = (Prototype) object;
-			return Util.equals(head, p.head);
+			return Objects.equals(head, p.head);
 		} else
 			return false;
 	}

@@ -68,7 +68,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseFile() throws IOException {
-		String in = To.string(new File("test.sl"));
+		String in = To.string(new File("src/main/resources/fc.sl"));
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node).getLeft());

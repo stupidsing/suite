@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import suite.primitive.Bytes;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;
 import suite.util.Pair;
-import suite.util.Util;
 
 /**
  * Longest common continuous subsequence, using a simple rolling hash method.
@@ -36,7 +36,7 @@ public class Lccs {
 					Segment segment1 = segments1.get(key);
 					Bytes b0 = bytes0.subbytes(segment0.getStart(), segment0.getEnd());
 					Bytes b1 = bytes1.subbytes(segment1.getStart(), segment1.getEnd());
-					if (Util.equals(b0, b1))
+					if (Objects.equals(b0, b1))
 						return Pair.create(segment0, segment1);
 				}
 

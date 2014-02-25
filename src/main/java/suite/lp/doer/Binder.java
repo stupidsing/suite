@@ -1,12 +1,13 @@
 package suite.lp.doer;
 
+import java.util.Objects;
+
 import suite.lp.Journal;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.util.Util;
 
 public class Binder {
 
@@ -33,7 +34,7 @@ public class Binder {
 		else if (clazz0 == Int.class)
 			return ((Int) n0).getNumber() == ((Int) n1).getNumber();
 		else if (clazz0 == Str.class)
-			return Util.equals(((Str) n0).getValue(), ((Str) n1).getValue());
+			return Objects.equals(((Str) n0).getValue(), ((Str) n1).getValue());
 		else if (clazz0 == Tree.class) {
 			Tree t0 = (Tree) n0;
 			Tree t1 = (Tree) n1;

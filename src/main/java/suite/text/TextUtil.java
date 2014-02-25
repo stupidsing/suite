@@ -3,12 +3,12 @@ package suite.text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import suite.lcs.Lccs;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Pair;
-import suite.util.Util;
 
 public class TextUtil {
 
@@ -138,8 +138,8 @@ public class TextUtil {
 		boolean isMappingsAgree = dsxOrg.getStart() == dsyOrg.getStart()
 				&& dsxOrgLength <= dsyOrgLength //
 				&& dsxNewLength <= dsyNewLength //
-				&& Util.equals(dsxOrg.getBytes(), dsyOrg.getBytes().subbytes(0, dsxOrgLength))
-				&& Util.equals(dsxNew.getBytes(), dsyNew.getBytes().subbytes(0, dsyOrgLength));
+				&& Objects.equals(dsxOrg.getBytes(), dsyOrg.getBytes().subbytes(0, dsxOrgLength))
+				&& Objects.equals(dsxNew.getBytes(), dsyNew.getBytes().subbytes(0, dsyOrgLength));
 
 		if (isSeparate || isUnchanged || isMappingsAgree) {
 			DataSegment dsOrg1 = dsxOrg.right(start);

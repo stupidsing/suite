@@ -2,6 +2,7 @@ package suite.node.io;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import suite.lp.doer.Generalizer;
@@ -14,7 +15,6 @@ import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermParser.TermOp;
 import suite.util.ParseUtil;
-import suite.util.Util;
 
 public class Formatter {
 
@@ -45,7 +45,7 @@ public class Formatter {
 
 		if (tree != null) {
 			String op = tree.getOperator().getName();
-			op = Util.equals(op, " ") ? "<>" : op.trim();
+			op = Objects.equals(op, " ") ? "<>" : op.trim();
 			String indent1 = indent + "  ";
 
 			treeize(tree.getLeft(), sb, indent1);

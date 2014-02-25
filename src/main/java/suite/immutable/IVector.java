@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import java.util.Objects;
+
 import suite.util.Util;
 
 /**
@@ -123,7 +125,7 @@ public class IVector<T> {
 	public int hashCode() {
 		int result = 1;
 		for (int i = start; i < end; i++) {
-			int h = Util.hashCode(data.nodes[i]);
+			int h = Objects.hashCode(data.nodes[i]);
 			result = 31 * result + h;
 		}
 		return result;
@@ -140,7 +142,7 @@ public class IVector<T> {
 			int si = start, di = v.start;
 
 			while (result && si < end)
-				result &= Util.equals(data.nodes[si++], v.data.nodes[di++]);
+				result &= Objects.equals(data.nodes[si++], v.data.nodes[di++]);
 		}
 
 		return result;

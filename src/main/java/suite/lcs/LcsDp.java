@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
 
 /**
  * Longest common subsequence using dynamic programming.
@@ -53,7 +53,7 @@ public class LcsDp<T> {
 
 				T t0 = l0.get(i0);
 				T t1 = l1.get(i1);
-				Node lu1 = Util.equals(t0, t1) ? new Node(t0, lu) : lu;
+				Node lu1 = Objects.equals(t0, t1) ? new Node(t0, lu) : lu;
 
 				dp[i0][i1] = Collections.max(Arrays.asList(u, l, lu1), comparator);
 			}

@@ -2,6 +2,7 @@ package suite.node;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.TermParser.TermOp;
@@ -87,9 +88,9 @@ public class Tree extends Node {
 	@Override
 	public int hashCode() {
 		int result = 1;
-		result = 31 * result + Util.hashCode(left);
-		result = 31 * result + Util.hashCode(operator);
-		result = 31 * result + Util.hashCode(right);
+		result = 31 * result + Objects.hashCode(left);
+		result = 31 * result + Objects.hashCode(operator);
+		result = 31 * result + Objects.hashCode(right);
 		return result;
 	}
 
@@ -99,7 +100,7 @@ public class Tree extends Node {
 			Node node = ((Node) object).finalNode();
 			if (Util.clazz(node) == Tree.class) {
 				Tree t = (Tree) node;
-				return operator == t.operator && Util.equals(left, t.left) && Util.equals(right, t.right);
+				return operator == t.operator && Objects.equals(left, t.left) && Objects.equals(right, t.right);
 			} else
 				return false;
 		} else

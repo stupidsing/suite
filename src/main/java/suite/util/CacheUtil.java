@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +32,7 @@ public class CacheUtil {
 		public int hashCode() {
 			int result = 1;
 			result = 31 * result + System.identityHashCode(bean);
-			result = 31 * result + Util.hashCode(method);
+			result = 31 * result + Objects.hashCode(method);
 			result = 31 * result + Arrays.deepHashCode(arguments);
 			return result;
 		}
@@ -40,7 +41,7 @@ public class CacheUtil {
 			if (Util.clazz(object) == Key.class) {
 				Key other = (Key) object;
 				return bean == other.bean //
-						&& Util.equals(method, other.method) //
+						&& Objects.equals(method, other.method) //
 						&& Arrays.deepEquals(arguments, other.arguments);
 			} else
 				return false;

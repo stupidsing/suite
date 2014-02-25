@@ -1,5 +1,7 @@
 package suite.node;
 
+import java.util.Objects;
+
 import suite.util.Util;
 
 public class Str extends Node {
@@ -21,7 +23,7 @@ public class Str extends Node {
 			Node node = ((Node) object).finalNode();
 			if (Util.clazz(node) == Str.class) {
 				Str str = (Str) node;
-				return Util.equals(value, str.value);
+				return Objects.equals(value, str.value);
 			} else
 				return false;
 		} else

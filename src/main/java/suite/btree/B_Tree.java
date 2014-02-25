@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 import suite.file.SerializedPageFile;
@@ -118,7 +119,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		Slot lastSlot = traverse(key).peek();
 		KeyPointer keyPointer = lastSlot.getKeyPointer();
 
-		if (keyPointer != null && Util.equals(keyPointer.key, key))
+		if (keyPointer != null && Objects.equals(keyPointer.key, key))
 			return keyPointer.getLeafValue();
 		else
 			return null;
@@ -145,7 +146,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 			public boolean hasNext() {
 				Slot currentSlot = currentSlots.peek();
 				Slot endSlot = endSlots.peek();
-				return currentSlot.page.pageNo != endSlot.page.pageNo || !Util.equals(currentSlot.index, endSlot.index);
+				return currentSlot.page.pageNo != endSlot.page.pageNo || !Objects.equals(currentSlot.index, endSlot.index);
 			}
 
 			public Pair<Key, Value> next() {
@@ -189,7 +190,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		KeyPointer keyPointer = slot.getKeyPointer();
 		Leaf leaf = new Leaf(value);
 
-		if (keyPointer != null && Util.equals(keyPointer.key, key)) {
+		if (keyPointer != null && Objects.equals(keyPointer.key, key)) {
 			keyPointer.pointer = leaf; // Replace existing value
 			savePage(slot.page);
 		} else
@@ -241,7 +242,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 		int index = slot.index;
 		KeyPointer keyPointer = slot.getKeyPointer();
 
-		if (keyPointer != null && Util.equals(keyPointer.key, key))
+		if (keyPointer != null && Objects.equals(keyPointer.key, key))
 			page.remove(index);
 		else
 			return;

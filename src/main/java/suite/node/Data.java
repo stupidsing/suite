@@ -1,5 +1,7 @@
 package suite.node;
 
+import java.util.Objects;
+
 import suite.util.Util;
 
 public class Data<T> extends Node {
@@ -27,7 +29,7 @@ public class Data<T> extends Node {
 
 	@Override
 	public int hashCode() {
-		return Util.hashCode(data);
+		return Objects.hashCode(data);
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class Data<T> extends Node {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
 			if (Util.clazz(node) == Data.class)
-				return Util.equals(data, ((Data<?>) node).data);
+				return Objects.equals(data, ((Data<?>) node).data);
 			else
 				return false;
 		} else

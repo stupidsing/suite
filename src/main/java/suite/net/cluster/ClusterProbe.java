@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import suite.net.ThreadedService;
@@ -251,7 +252,7 @@ public class ClusterProbe extends ThreadedService {
 		byte bytes[] = formMessage(data);
 
 		for (String remote : peers.keySet())
-			if (!Util.equals(remote, me))
+			if (!Objects.equals(remote, me))
 				sendMessage(remote, bytes);
 	}
 

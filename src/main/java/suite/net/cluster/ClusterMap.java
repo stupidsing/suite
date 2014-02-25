@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import suite.net.cluster.ClusterMapUtil.GetQuery;
 import suite.net.cluster.ClusterMapUtil.PutQuery;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
-import suite.util.Util;
 
 public class ClusterMap<K, V> {
 
@@ -107,7 +107,7 @@ public class ClusterMap<K, V> {
 	}
 
 	private String getPeerByHash(K key) {
-		int hash = Util.hashCode(key);
+		int hash = Objects.hashCode(key);
 		return peers.get(hash % peers.size());
 	}
 

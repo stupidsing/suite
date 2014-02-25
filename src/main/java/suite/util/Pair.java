@@ -1,5 +1,7 @@
 package suite.util;
 
+import java.util.Objects;
+
 public class Pair<T0, T1> {
 
 	public T0 t0;
@@ -21,16 +23,14 @@ public class Pair<T0, T1> {
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Pair.class) {
 			Pair<?, ?> other = (Pair<?, ?>) object;
-			return Util.equals(t0, other.t0) && Util.equals(t1, other.t1);
+			return Objects.equals(t0, other.t0) && Objects.equals(t1, other.t1);
 		} else
 			return false;
 	}
 
 	@Override
 	public int hashCode() {
-		int h1 = t0 != null ? t0.hashCode() : 0;
-		int h2 = t1 != null ? t1.hashCode() : 0;
-		return h1 ^ h2;
+		return Objects.hashCode(t0) ^ Objects.hashCode(t1);
 	}
 
 	@Override

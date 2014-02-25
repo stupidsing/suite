@@ -3,6 +3,7 @@ package suite.util;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import suite.util.FunUtil.Fun;
@@ -64,7 +65,7 @@ public class DefaultFunMap<K, V> implements Map<K, V> {
 
 	@Override
 	public V put(K key, V value) {
-		if (!Util.equals(value, fun.apply(key)))
+		if (!Objects.equals(value, fun.apply(key)))
 			return map.put(key, value);
 		else
 			return map.remove(value);

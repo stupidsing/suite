@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil;
@@ -509,11 +510,11 @@ public class Ebnf {
 		private int expectComment(int start, String sm, String em) {
 			int sl = sm.length(), el = em.length();
 			int pos = start, end;
-			if (pos < length && Util.equals(Util.substr(in, pos, pos + sl), sm)) {
+			if (pos < length && Objects.equals(Util.substr(in, pos, pos + sl), sm)) {
 				pos += 2;
-				while (pos < length && !Util.equals(Util.substr(in, pos, pos + el), em))
+				while (pos < length && !Objects.equals(Util.substr(in, pos, pos + el), em))
 					pos++;
-				if (pos < length && Util.equals(Util.substr(in, pos, pos + el), em)) {
+				if (pos < length && Objects.equals(Util.substr(in, pos, pos + el), em)) {
 					pos += 2;
 					end = pos;
 				} else

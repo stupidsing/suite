@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import suite.util.Util;
+import java.util.Objects;
 
 public class TermParser extends Parser {
 
@@ -51,7 +51,7 @@ public class TermParser extends Parser {
 
 		public static TermOp find(String name) {
 			for (TermOp operator : values())
-				if (Util.equals(operator.name, name))
+				if (Objects.equals(operator.name, name))
 					return operator;
 			return null;
 		}

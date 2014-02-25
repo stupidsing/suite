@@ -4,10 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 import suite.search.Search;
 import suite.search.Search.Game;
-import suite.util.Util;
 
 /**
  * Longest common subsequence using breadth-first search.
@@ -64,7 +64,7 @@ public class LcsBfs<T> {
 			private Node jump(Node node) {
 				while (node.pos0 < size0 //
 						&& node.pos1 < size1 //
-						&& Util.equals(l0.get(node.pos0), l1.get(node.pos1))) {
+						&& Objects.equals(l0.get(node.pos0), l1.get(node.pos1))) {
 					node.pos0++;
 					node.pos1++;
 				}

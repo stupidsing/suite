@@ -160,27 +160,12 @@ public class Util {
 		LogUtil.info(sb.toString());
 	}
 
-	/**
-	 * Imposes typing on equal() function to avoid errors. Also handle null
-	 * value comparisons.
-	 */
-	public static <T> boolean equals(T t0, T t1) {
-		if (t0 == null ^ t1 == null)
-			return false;
-		else
-			return t0 == null || t0.equals(t1);
-	}
-
 	public static <T> T first(Collection<T> c) {
 		return !c.isEmpty() ? c.iterator().next() : null;
 	}
 
 	public static StackTraceElement getStackTrace(int n) {
 		return Thread.currentThread().getStackTrace()[n];
-	}
-
-	public static <T> int hashCode(T t) {
-		return t != null ? t.hashCode() : 0;
 	}
 
 	public static boolean isBlank(String s) {
