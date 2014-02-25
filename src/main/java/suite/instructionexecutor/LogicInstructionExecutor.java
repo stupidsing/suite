@@ -12,7 +12,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 

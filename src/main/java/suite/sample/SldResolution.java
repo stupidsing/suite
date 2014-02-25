@@ -16,7 +16,7 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;

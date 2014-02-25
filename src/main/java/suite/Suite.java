@@ -26,8 +26,8 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.TermParser;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.Parser;
+import suite.node.io.TermOp;
 
 public class Suite {
 
@@ -40,7 +40,7 @@ public class Suite {
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
 	private static ImportUtil importUtil = new ImportUtil();
-	private static TermParser parser = new TermParser();
+	private static Parser parser = new Parser(TermOp.values());
 
 	public static void addRule(RuleSet rs, String rule) {
 		addRule(rs, parse(rule));

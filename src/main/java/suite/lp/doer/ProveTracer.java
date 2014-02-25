@@ -8,7 +8,7 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 

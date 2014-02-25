@@ -18,7 +18,7 @@ import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.parser.Subst;
 import suite.util.FunUtil.Fun;
 import suite.util.JdkUtil;

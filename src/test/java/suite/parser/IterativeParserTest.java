@@ -13,7 +13,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.IterativeParser;
 import suite.node.io.PrettyPrinter;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.To;
 
 public class IterativeParserTest {
@@ -21,32 +21,32 @@ public class IterativeParserTest {
 	private IterativeParser iterativeParser = new IterativeParser(TermOp.values());
 
 	@Test
-	public void testParse0() {
+	public void testParseNil() {
 		test("()");
 	}
 
 	@Test
-	public void testParse1() {
-		assertEquals("a, b", Formatter.dump(iterativeParser.parse("a   , b")));
+	public void testParseSpacedOperator() {
+		assertEquals("a, b", Formatter.dump(iterativeParser.parse("a   ,   b")));
 	}
 
 	@Test
-	public void testParse2() {
+	public void testParseBraces() {
 		test("a {b}");
 	}
 
 	@Test
-	public void testParse3() {
+	public void testParseTupleWithBraces() {
 		test("a b {c}");
 	}
 
 	@Test
-	public void testParse4() {
+	public void testParseColon() {
 		test("a:b c:d e");
 	}
 
 	@Test
-	public void testParse5() {
+	public void testParseException() {
 		try {
 			Node node = iterativeParser.parse("(a");
 			System.out.println(node);
@@ -57,12 +57,12 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParse6() {
+	public void testParseExpression() {
 		test("a, b :- 1 + 2 * (3 + 4) / 5 / 6 + 7");
 	}
 
 	@Test
-	public void testParse7() {
+	public void testParseQuoted() {
 		test("''''");
 	}
 

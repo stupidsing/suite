@@ -7,7 +7,7 @@ import suite.lp.intrinsic.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 

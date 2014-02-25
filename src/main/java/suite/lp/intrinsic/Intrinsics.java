@@ -20,7 +20,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;

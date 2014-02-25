@@ -16,7 +16,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.node.util.Replacer;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;

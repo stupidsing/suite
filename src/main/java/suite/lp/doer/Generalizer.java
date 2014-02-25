@@ -13,7 +13,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 

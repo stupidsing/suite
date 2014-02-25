@@ -21,7 +21,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;

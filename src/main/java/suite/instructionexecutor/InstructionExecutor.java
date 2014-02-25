@@ -13,7 +13,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.util.LogUtil;
 

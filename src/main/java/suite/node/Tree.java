@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import suite.node.io.Operator;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.Util;
 
 public class Tree extends Node {

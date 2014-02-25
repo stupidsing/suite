@@ -16,7 +16,6 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
-import suite.node.io.TermParser.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.util.FunUtil.Fun;

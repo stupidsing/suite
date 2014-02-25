@@ -22,8 +22,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
-import suite.node.io.TermParser;
-import suite.node.io.TermParser.TermOp;
+import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.To;
@@ -118,7 +117,7 @@ public class CommandDispatcher {
 			input = Util.substr(input, 0, -1);
 
 		final int count[] = { 0 };
-		Node node = new TermParser().parse(input.trim());
+		Node node = Suite.parse(input.trim());
 
 		switch (type) {
 		case EVALUATE:

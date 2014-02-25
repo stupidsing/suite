@@ -10,7 +10,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
-import suite.node.io.TermParser.TermOp;
 import suite.util.FormatUtil;
 
 public class PrettyPrinter {

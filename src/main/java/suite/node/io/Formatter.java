@@ -13,7 +13,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
-import suite.node.io.TermParser.TermOp;
 import suite.util.ParseUtil;
 
 public class Formatter {
