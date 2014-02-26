@@ -69,14 +69,22 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		if (config.isTrace())
-			try {
-				tracer = new ProveTracer(config);
-				return prove0(query);
-			} finally {
+		Thread hook = new Thread() {
+			public void run() {
 				String d = To.string(new Date());
 				String dump = tracer.getDump();
 				LogUtil.info("-- Prover dump at " + d + " --\n" + dump);
+			}
+		};
+
+		if (config.isTrace())
+			try {
+				Runtime.getRuntime().addShutdownHook(hook);
+				tracer = new ProveTracer(config);
+				return prove0(query);
+			} finally {
+				hook.run();
+				Runtime.getRuntime().removeShutdownHook(hook);
 			}
 		else
 			return prove0(query);

@@ -230,7 +230,6 @@ public class Util {
 			Thread.sleep(time);
 		} catch (InterruptedException ex) {
 			LogUtil.error(ex);
-			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -293,7 +292,6 @@ public class Util {
 		try {
 			object.wait(timeOut);
 		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
 		}
 	}
 

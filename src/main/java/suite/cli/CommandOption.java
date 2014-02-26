@@ -23,9 +23,6 @@ import suite.util.FunUtil.Source;
  */
 public class CommandOption {
 
-	// Command dispatching options
-	private boolean isBackground = false;
-
 	// Program type options
 	private boolean isQuiet = false;
 	private boolean isFilter = false;
@@ -46,9 +43,7 @@ public class CommandOption {
 		boolean result = true;
 		String arg1;
 
-		if (arg.equals("-background"))
-			isBackground = on;
-		else if (arg.equals("-dump-code"))
+		if (arg.equals("-dump-code"))
 			isDumpCode = on;
 		else if (arg.equals("-eager"))
 			isLazy = !on;
@@ -109,10 +104,6 @@ public class CommandOption {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	public boolean isBackground() {
-		return isBackground;
 	}
 
 	public boolean isDumpCode() {

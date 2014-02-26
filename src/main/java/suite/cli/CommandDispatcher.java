@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
-import java.util.WeakHashMap;
 
 import suite.Suite;
 import suite.lp.doer.Generalizer;
@@ -24,7 +23,6 @@ import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
 import suite.util.To;
 import suite.util.Util;
 
@@ -38,7 +36,6 @@ public class CommandDispatcher {
 	private CommandOption opt;
 	private RuleSet ruleSet = Suite.createRuleSet();
 	private Builder builderLevel2 = null;
-	private WeakHashMap<Thread, Object> threads = new WeakHashMap<>();
 
 	private enum InputType {
 		EVALUATE("\\"), //
@@ -46,7 +43,6 @@ public class CommandDispatcher {
 		EVALUATEDOSTR("\\ds"), //
 		EVALUATESTR("\\s"), //
 		EVALUATETYPE("\\t"), //
-		INTERRUPT("/ti"), //
 		FACT(""), //
 		OPTION("-"), //
 		PRETTYPRINT("\\p"), //
@@ -76,24 +72,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchCommand(final String input, final Writer writer) throws IOException {
-		if (!Util.isBlank(input))
-			if (opt.isBackground()) {
-				Thread thread = new Thread() {
-					public void run() {
-						try {
-							dispatchCommand0(input, writer);
-						} catch (Exception ex) {
-							LogUtil.error(ex);
-						}
-					}
-				};
-				threads.put(thread, null);
-				thread.start();
-				return true;
-			} else
-				return dispatchCommand0(input, writer);
-		else
-			return true;
+		return !Util.isBlank(input) ? dispatchCommand0(input, writer) : true;
 	}
 
 	private boolean dispatchCommand0(String input, Writer writer) throws IOException {
@@ -140,10 +119,6 @@ public class CommandDispatcher {
 			break;
 		case FACT:
 			Suite.addRule(ruleSet, node);
-			break;
-		case INTERRUPT:
-			for (Thread thread : threads.keySet())
-				thread.interrupt();
 			break;
 		case OPTION:
 			Source<String> source = To.source(("-" + input).split(" "));

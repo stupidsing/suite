@@ -65,9 +65,6 @@ public class ProveTracer {
 
 			final Data<Source<Boolean>> enter = new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
-					if (Thread.interrupted()) // Checks interruption
-						throw new RuntimeException(new InterruptedException());
-
 					currentRecord = record;
 					currentDepth = record.depth;
 					record.start = records.size();
@@ -109,9 +106,14 @@ public class ProveTracer {
 	}
 
 	public String getDump() {
+		int size = records.size();
+
+		// This method could be invoked in shutdown hook and the prover might
+		// still be running. Do not use iterator/for-each loop access, those
+		// would cause ConcurrentModificationException.
 		StringBuilder sb = new StringBuilder();
-		for (Record record : records)
-			record.appendTo(sb);
+		for (int i = 0; i < size; i++)
+			records.get(i).appendTo(sb);
 		return sb.toString();
 	}
 
