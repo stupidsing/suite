@@ -33,11 +33,14 @@ public class IterativeParserTest {
 	@Test
 	public void testParseBraces() {
 		test("a {b}");
+		test("a b {c}");
 	}
 
 	@Test
-	public void testParseTupleWithBraces() {
-		test("a b {c}");
+	public void testParseQuotes() {
+		test("''''");
+		test("'`' (0 - ())", "`0 -`");
+		test("'`' (() - ())", "`-`");
 	}
 
 	@Test
@@ -59,11 +62,6 @@ public class IterativeParserTest {
 	@Test
 	public void testParseExpression() {
 		test("a, b :- 1 + 2 * (3 + 4) / 5 / 6 + 7 #");
-	}
-
-	@Test
-	public void testParseQuoted() {
-		test("''''");
 	}
 
 	@Test

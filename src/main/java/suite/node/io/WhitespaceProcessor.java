@@ -26,17 +26,18 @@ public class WhitespaceProcessor implements Fun<String, String> {
 
 		while (pos < in.length()) {
 			char ch = in.charAt(pos++);
-			quote = ParseUtil.getQuoteChange(quote, ch);
 
-			if (quote == 0)
-				if (whitespaces.contains(ch))
-					sb.append(" ");
-				else if (ch == '`')
-					sb.append(" ` ");
+			if (ch != '`') {
+				quote = ParseUtil.getQuoteChange(quote, ch);
+				if (quote == 0)
+					if (whitespaces.contains(ch))
+						sb.append(" ");
+					else
+						sb.append(ch);
 				else
 					sb.append(ch);
-			else
-				sb.append(ch);
+			} else
+				sb.append(" ` ");
 		}
 
 		return sb.toString();
