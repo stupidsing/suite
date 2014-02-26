@@ -21,9 +21,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 /**
- * TODO handle a :b
- * 
- * TODO handle `+ 1`
+ * Non-recursive, performance-improved parser for operator-based languages.
  * 
  * @author ywsing
  */
