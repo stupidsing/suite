@@ -49,7 +49,7 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 
 fc-dump-precompile .mode .lib .fcs .parsed .prog
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
-	, fc-compile .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
+	, fc-compile-node .parsed .frame0/() .c0/.cx/.d0/.dx/.reg .ve0
 	, .fcs = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
 	, cg-optimize-segment .c0/.cs0 .co0/.cso0
 	, cg-optimize-segment .csx/.cx .csox/.cox
@@ -57,9 +57,25 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	, cg-optimize-segment .dsx/.dx .dsox/.dox
 	, .prog = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
-			:- fc-dict-merge-replace .ve .ves .ve1
+			:- once (fc-dict-merge-bind .ve .ve0 _; fc-error "Missing library")
+			, fc-dict-merge-replace .ve .ves .ve1
 			, fc-compile .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
 	)
+#
+
+fc-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg .vex
+	:- !, write 'Loading pre-compiled library' .lib, nl
+	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
+	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
+	, generalize .pred (
+		fc-compile-using-lib .mode .lib ($$PRECOMPILE _ _ .frame/.ve1 _) _/() _ :- .tail
+	)
+	, once .tail
+	, fc-dict-merge-bind .ve .ve1 .ve2
+	, fc-compile-node .do .frame/.ve2 .c0/.cx/.d0/.dx/.reg .vex
+#
+fc-compile-node .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg .ve
+	:- fc-compile .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg
 #
 
 -- Parser

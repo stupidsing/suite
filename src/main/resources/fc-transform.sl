@@ -30,7 +30,7 @@ fc-transform (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
 fc-transform (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
 #
-fc-transform (USING .mode .m .do0) (USING .mode .m .do1) .ts0/.tsx
+fc-transform (USING .mode .linkOption .m .do0) (USING .mode .linkOption .m .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
 fc-transform (UNWRAP .do0) (UNWRAP .do1) .ts0/.tsx

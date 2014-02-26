@@ -4,12 +4,15 @@
 fc-compile (PRAGMA _ .do) .env .cdr
 	:- !, fc-compile .do .env .cdr
 #
-fc-compile (USING .mode .lib .do) .fve .cdr
+fc-compile (USING .mode BUILTIN .lib .do) .fve .cdr
 	:- !
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
 	, generalize .pred (fc-compile-using-lib .mode .lib .do .fve .cdr :- .tail)
 	, once .tail
+#
+fc-compile (USING _ EXTERNAL _ .do) .env .cdr
+	:- !, fc-compile .do .env .cdr
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- !

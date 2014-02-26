@@ -64,7 +64,7 @@ rbt-add0 .mode .v (.color .n0 .pivot .n1)/.treex
 	, rbt-add0 .mode .v .n1/.newn1
 	, rbt-balance (.color .n0 .pivot .newn1)/.treex
 	; .mode = BIND
-		, .color .n0 .pivot .n1 = .treex
+		, .v = .pivot, .color .n0 .v .n1 = .treex
 	; .mode = REPLACE
 		, .color .n0 .v .n1 = .treex
 #

@@ -37,7 +37,7 @@ fc-lazyify (TREE .oper .left0 .right0) .dox
 	, fc-lazyify .right0 .right1
 	, .dox = WRAP (TREE .oper (UNWRAP .left1) (UNWRAP .right1))
 #
-fc-lazyify (USING _ .lib .do0) (USING LAZY .lib .do1)
+fc-lazyify (USING _ .linkOption .lib .do0) (USING LAZY .linkOption .lib .do1)
 	:- !
 	, fc-lazyify .do0 .do1
 #

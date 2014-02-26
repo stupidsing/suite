@@ -101,6 +101,8 @@ fc-dict-get .v .t :- rbt-get .v .t, ! #
 -- use replace, necessary to redefine already-defined variables
 fc-dict-add .v .t0/.t1 :- rbt-replace .v .t0/.t1, ! #
 
+fc-dict-merge-bind .t0 .t1 .t2 :- rbt-merge-bind .t0 .t1 .t2, ! #
+
 fc-dict-merge-replace .t0 .t1 .t2 :- rbt-merge-replace .t0 .t1 .t2, ! #
 
 fc-dict-member .v .t :- rbt-member .v .t #

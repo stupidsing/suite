@@ -29,11 +29,14 @@ fc-parse (.type of .value) (PRAGMA (CAST DOWN .type1) .value1)
 fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (using /.lib >> .do) .dox
+fc-parse (using source .lib >> .do) .dox
 	:- !, fc-load-library .lib .do .do1
 	, fc-parse .do1 .dox
 #
-fc-parse (using .lib >> .do) (USING EAGER .lib .do1)
+fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
+	:- !, fc-parse .do .do1
+#
+fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (define .var = .value >> .do) (
