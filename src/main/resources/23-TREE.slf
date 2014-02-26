@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 data (23-tree {:t}) over :t as Empty >>
 data (23-tree {:t}) over :t as (Tree [:t, 23-tree {:t}]) >>
 

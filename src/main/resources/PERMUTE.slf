@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 define combinations =
 	case
 	|| `$h; $t` => t | combinations | invoke/ | map/ {id; (h | cons | map);} | concat

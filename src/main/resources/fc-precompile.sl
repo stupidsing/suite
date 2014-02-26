@@ -57,7 +57,7 @@ fc-dump-precompile .mode .lib .fcs .parsed .prog
 	, cg-optimize-segment .dsx/.dx .dsox/.dox
 	, .prog = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
-			:- once (fc-dict-merge-bind .ve .ve0 _; fc-error "Missing library")
+			:- fc-dict-merge-bind .ve .ve0 _
 			, fc-dict-merge-replace .ve .ves .ve1
 			, fc-compile .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
 	)

@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 define match = (pattern => s =>
 	define splitf = (f => s => zip {f . reverse} {heads {s}} {tails {s}}) >>
 	case

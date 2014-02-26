@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 define nothing = atom:Nothing >>
 define seqm =
 	define seq = (:t => any -> :t -> :t) of

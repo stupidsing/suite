@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 define cs-append = (data-of Chars -> data-of Chars -> data-of Chars) of
 	atom:CLASS!suite.lp.intrinsic.CharsIntrinsics$Append | getintrn | callintrn2
 >>

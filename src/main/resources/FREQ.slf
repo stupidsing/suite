@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 define merge-freqs =
 	define merger =
 		list0 => list1 =>

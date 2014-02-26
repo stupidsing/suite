@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 define ar-append = (:t => [:t] -> [:t] -> [:t]) of
 	atom:CLASS!suite.lp.intrinsic.ArrayIntrinsics$Append | getintrn | callintrn2
 >>

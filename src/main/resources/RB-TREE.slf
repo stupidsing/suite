@@ -1,4 +1,4 @@
-using STANDARD >>
+using external STANDARD >>
 data color as Red >>
 data color as Black >>
 data (rb-tree {:t}) over :t as Tree (color, rb-tree {:t}, :t, rb-tree {:t}) >>
