@@ -122,12 +122,12 @@ public class IterativeParser {
 
 		private Token detect() {
 			LexType type;
-			Operator operator = null;
+			Operator operator = detectOperator();
 
 			if (pos < in.length()) {
 				char ch = in.charAt(pos);
 
-				if ((operator = detectOperator()) != null)
+				if (operator != null)
 					type = LexType.OPER_;
 				else if (ch == '(' || ch == '[' || ch == '{' //
 						|| ch == ')' || ch == ']' || ch == '}' //
