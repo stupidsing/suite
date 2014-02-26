@@ -2,12 +2,12 @@ package suite.node;
 
 import suite.util.FunUtil.Source;
 
-public class Lazy extends Node {
+public class Suspend extends Node {
 
 	private Source<Node> source;
 	private Node target;
 
-	public Lazy(Source<Node> source) {
+	public Suspend(Source<Node> source) {
 		this.source = source;
 	}
 

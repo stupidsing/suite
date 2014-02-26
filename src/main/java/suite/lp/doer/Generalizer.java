@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.node.Atom;
-import suite.node.Lazy;
+import suite.node.Suspend;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
@@ -55,7 +55,7 @@ public class Generalizer {
 
 				// Delay generalizing for performance
 				if (rightOp == TermOp.OR____)
-					right = new Lazy(new Source<Node>() {
+					right = new Suspend(new Source<Node>() {
 						public Node source() {
 							Node rl = rightTree.getLeft();
 							Node rr = rightTree.getRight();

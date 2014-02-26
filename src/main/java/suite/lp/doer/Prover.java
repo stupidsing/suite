@@ -10,7 +10,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
 import suite.node.Data;
-import suite.node.Lazy;
+import suite.node.Suspend;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
@@ -192,7 +192,7 @@ public class Prover {
 	}
 
 	private Node expandClauses(final Node query, final Node cut, final List<Rule> rules) {
-		return new Lazy(new Source<Node>() {
+		return new Suspend(new Source<Node>() {
 			public Node source() {
 				if (!rules.isEmpty()) {
 					Rule rule = rules.get(0);
