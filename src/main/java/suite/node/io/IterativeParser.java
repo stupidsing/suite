@@ -36,29 +36,6 @@ public class IterativeParser {
 
 	private TerminalParser terminalParser;
 
-	private class Section {
-		private char kind;
-		private List<Tree> list = new ArrayList<>(Arrays.asList(Tree.create(null, null, Atom.NIL)));
-		private boolean isDanglingRight = true;
-
-		public Section(char kind) {
-			this.kind = kind;
-		}
-
-		private Tree first() {
-			return list.get(0);
-		}
-
-		private Tree last() {
-			return Util.last(list);
-		}
-
-		private void push(Tree tree) {
-			list.add(tree);
-			isDanglingRight = true;
-		}
-	}
-
 	public IterativeParser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
 	}
@@ -87,33 +64,44 @@ public class IterativeParser {
 		return new Parse(in).parse();
 	}
 
-	private enum TokenKind {
+	private enum LexType {
 		CHAR_, ID___, OPER_, SPACE, STR__
 	}
 
-	private class Parse {
+	private class Token {
+		private LexType type;
+		private Operator operator;
+		private String data;
+
+		private Token(LexType type, Operator operator) {
+			this.type = type;
+			this.operator = operator;
+		}
+	}
+
+	private class Lex {
 		private String in;
-		private Deque<Section> stack = new ArrayDeque<>();
 		private int pos = 0;
 
-		private Parse(String in) {
+		private Lex(String in) {
 			this.in = in;
 		}
 
-		private String lex() {
+		private Token lex() {
 			int start = pos;
 
 			if (pos < in.length()) {
-				TokenKind kind = detect();
+				Token token = detect();
+				LexType type = token.type;
 
-				if (kind == TokenKind.ID___ || kind == TokenKind.SPACE)
-					while (pos < in.length() && detect() == kind)
+				if (type == LexType.ID___ || type == LexType.SPACE)
+					while (pos < in.length() && detect().type == type)
 						pos++;
-				else if (kind == TokenKind.CHAR_)
+				else if (type == LexType.CHAR_)
 					pos++;
-				else if (kind == TokenKind.OPER_)
-					pos += detectOperator().getName().length();
-				else if (kind == TokenKind.STR__) {
+				else if (type == LexType.OPER_)
+					pos += token.operator.getName().length();
+				else if (type == LexType.STR__) {
 					char quote = in.charAt(pos);
 					while (pos < in.length() && in.charAt(pos) == quote) {
 						pos++;
@@ -123,29 +111,38 @@ public class IterativeParser {
 					}
 				}
 
-				return kind != TokenKind.SPACE ? in.substring(start, pos) : lex();
+				if (type != LexType.SPACE) {
+					token.data = in.substring(start, pos);
+					return token;
+				} else
+					return lex();
 			} else
 				return null;
 		}
 
-		private TokenKind detect() {
+		private Token detect() {
+			LexType type;
+			Operator operator = null;
+
 			if (pos < in.length()) {
 				char ch = in.charAt(pos);
 
-				if (ch == '(' || ch == '[' || ch == '{' //
+				if ((operator = detectOperator()) != null)
+					type = LexType.OPER_;
+				else if (ch == '(' || ch == '[' || ch == '{' //
 						|| ch == ')' || ch == ']' || ch == '}' //
 						|| ch == '`')
-					return TokenKind.CHAR_;
-				else if (detectOperator() != null)
-					return TokenKind.OPER_;
+					type = LexType.CHAR_;
 				else if (isWhitespace(ch))
-					return TokenKind.SPACE;
+					type = LexType.SPACE;
 				else if (ch == '\'' || ch == '"')
-					return TokenKind.STR__;
+					type = LexType.STR__;
 				else
-					return TokenKind.ID___;
+					type = LexType.ID___;
 			} else
-				return null;
+				type = null;
+
+			return new Token(type, operator);
 		}
 
 		private Operator detectOperator() {
@@ -158,16 +155,50 @@ public class IterativeParser {
 
 			return null;
 		}
+	}
+
+	private class Section {
+		private char kind;
+		private List<Tree> list = new ArrayList<>(Arrays.asList(Tree.create(null, null, Atom.NIL)));
+		private boolean isDanglingRight = true;
+
+		public Section(char kind) {
+			this.kind = kind;
+		}
+
+		private Tree first() {
+			return list.get(0);
+		}
+
+		private Tree last() {
+			return Util.last(list);
+		}
+
+		private void push(Tree tree) {
+			list.add(tree);
+			isDanglingRight = true;
+		}
+	}
+
+	private class Parse {
+		private String in;
+		private Deque<Section> stack = new ArrayDeque<>();
+
+		private Parse(String in) {
+			this.in = in;
+		}
 
 		private Node parse() {
+			Lex lex = new Lex(in);
 			stack.push(new Section(' '));
-			String token;
+			Token token;
 
-			while ((token = lex()) != null) {
-				char ch = token.charAt(0);
-				Operator operator;
+			while ((token = lex.lex()) != null) {
+				Operator operator = token.operator;
+				String data = token.data;
+				char ch = data.charAt(0);
 
-				if ((operator = operatorsByName.get(token)) != null) {
+				if (operator != null) {
 					addOperator(operator);
 					if (operator == TermOp.BRACES)
 						stack.push(new Section('{'));
@@ -192,8 +223,8 @@ public class IterativeParser {
 						add(node);
 					} else
 						stack.push(new Section(ch));
-				else if (Util.isNotBlank(token))
-					add(parse0(token));
+				else if (Util.isNotBlank(data))
+					add(parse0(data));
 			}
 
 			if (stack.size() == 1)
