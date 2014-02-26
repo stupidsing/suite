@@ -82,12 +82,17 @@ public class IterativeParser {
 	private class Lex {
 		private String in;
 		private int pos = 0;
+		private Token token0;
 
 		private Lex(String in) {
 			this.in = in;
 		}
 
 		private Token lex() {
+			return token0 = lex0();
+		}
+
+		private Token lex0() {
 			if (pos < in.length()) {
 				int start = pos;
 				Token token = detect();
@@ -113,8 +118,13 @@ public class IterativeParser {
 				if (type != LexType.SPACE) {
 					token.data = in.substring(start, pos);
 					return token;
+				} else if (isKeepSpacesAroundToken(token0) || isKeepSpacesAroundToken(detect())) {
+					token.type = LexType.OPER_;
+					token.operator = TermOp.TUPLE_;
+					token.data = in.substring(start, pos);
+					return token;
 				} else
-					return lex();
+					return lex0();
 			} else
 				return null;
 		}
@@ -146,13 +156,19 @@ public class IterativeParser {
 
 		private Operator detectOperator() {
 			for (int length = maxOperatorLength; length > 0; length--)
-				if (pos + length < in.length()) {
+				if (pos + length <= in.length()) {
 					Operator op = operatorsByName.get(in.substring(pos, pos + length));
 					if (op != null)
 						return op;
 				}
 
 			return null;
+		}
+
+		private boolean isKeepSpacesAroundToken(Token token) {
+			return token != null //
+					&& token.operator != null //
+					&& token.operator.getPrecedence() > TermOp.TUPLE_.getPrecedence();
 		}
 	}
 

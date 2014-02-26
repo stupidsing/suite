@@ -3,7 +3,7 @@ package suite.node.io;
 import java.util.Set;
 
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
+import suite.util.ParseUtil;
 
 /**
  * Unify all whitespaces to the space bar space (ASCII code 32).
@@ -21,19 +21,23 @@ public class WhitespaceProcessor implements Fun<String, String> {
 	@Override
 	public String apply(String in) {
 		StringBuilder sb = new StringBuilder();
-		int count = 0;
+		int pos = 0;
+		int quote = 0;
 
-		for (char ch : Util.chars(in))
-			if (whitespaces.contains(ch))
-				count++;
-			else {
-				if (count > 0) {
+		while (pos < in.length()) {
+			char ch = in.charAt(pos++);
+			quote = ParseUtil.getQuoteChange(quote, ch);
+
+			if (quote == 0)
+				if (whitespaces.contains(ch))
 					sb.append(" ");
-					count = 0;
-				}
-
+				else if (ch == '`')
+					sb.append(" ` ");
+				else
+					sb.append(ch);
+			else
 				sb.append(ch);
-			}
+		}
 
 		return sb.toString();
 	}

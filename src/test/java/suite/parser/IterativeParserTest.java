@@ -27,7 +27,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseSpacedOperator() {
-		assertEquals("a, b", Formatter.dump(iterativeParser.parse("a   ,   b")));
+		test("a, b", "a   ,   b");
 	}
 
 	@Test
@@ -41,8 +41,8 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParseColon() {
-		test("a:b c:d :e f");
+	public void testParseColons() {
+		test("a:b c:d ():e f:() g", "a:b c:d :e f: g");
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseExpression() {
-		test("a, b :- 1 + 2 * (3 + 4) / 5 / 6 + 7");
+		test("a, b :- 1 + 2 * (3 + 4) / 5 / 6 + 7 #");
 	}
 
 	@Test
@@ -87,9 +87,13 @@ public class IterativeParserTest {
 		assertNotNull(Tree.decompose(node));
 	}
 
-	private void test(String s0) {
+	private void test(String s) {
+		test(s, s);
+	}
+
+	private void test(String sx, String s0) {
 		String s1 = Formatter.dump(iterativeParser.parse(s0));
-		assertEquals(s0, s1);
+		assertEquals(sx, s1);
 	}
 
 }
