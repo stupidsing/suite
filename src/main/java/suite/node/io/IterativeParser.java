@@ -3,6 +3,7 @@ package suite.node.io;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,7 +66,7 @@ public class IterativeParser {
 	}
 
 	private enum LexType {
-		CHAR_, ID___, OPER_, SPACE, STR__
+		CHAR_, ID___, OPER_, PLUS_, SPACE, STR__
 	}
 
 	private class Token {
@@ -103,6 +104,8 @@ public class IterativeParser {
 						pos++;
 				else if (type == LexType.CHAR_)
 					pos++;
+				else if (type == LexType.PLUS_)
+					pos += 4;
 				else if (type == LexType.OPER_)
 					pos += token.operator.getName().length();
 				else if (type == LexType.STR__) {
@@ -115,16 +118,23 @@ public class IterativeParser {
 					}
 				}
 
-				if (type != LexType.SPACE) {
-					token.data = in.substring(start, pos);
-					return token;
-				} else if (isKeepSpacesAroundToken(token0) || isKeepSpacesAroundToken(detect())) {
-					token.type = LexType.OPER_;
-					token.operator = TermOp.TUPLE_;
-					token.data = in.substring(start, pos);
-					return token;
-				} else
-					return lex0();
+				token.data = in.substring(start, pos);
+
+				if (type == LexType.SPACE) {
+					List<Integer> precs = new ArrayList<>();
+
+					for (Token t : Arrays.asList(token0, detect()))
+						if (t != null && t.operator != null)
+							precs.add(t.operator.getPrecedence());
+
+					if (!precs.isEmpty() && Collections.min(precs) > TermOp.TUPLE_.getPrecedence()) {
+						token.type = LexType.OPER_;
+						token.operator = TermOp.TUPLE_;
+					} else
+						token = lex0();
+				}
+
+				return token;
 			} else
 				return null;
 		}
@@ -142,6 +152,8 @@ public class IterativeParser {
 						|| ch == ')' || ch == ']' || ch == '}' //
 						|| ch == '`')
 					type = LexType.CHAR_;
+				else if (ch == '+' && pos + 4 < in.length() && "'x".indexOf(in.charAt(pos + 1)) >= 0)
+					type = LexType.PLUS_;
 				else if (ch == ' ')
 					type = LexType.SPACE;
 				else if (ch == '\'' || ch == '"')
@@ -163,12 +175,6 @@ public class IterativeParser {
 				}
 
 			return null;
-		}
-
-		private boolean isKeepSpacesAroundToken(Token token) {
-			return token != null //
-					&& token.operator != null //
-					&& token.operator.getPrecedence() > TermOp.TUPLE_.getPrecedence();
 		}
 	}
 

@@ -90,7 +90,7 @@ fc-parse .tree (TREE .oper .left1 .right1)
 	, fc-parse .right .right1
 #
 fc-parse () (ATOM ()) :- ! #
-fc-parse atom:.a (ATOM .a) :- fc-is-atom .a, ! #
+fc-parse atom:.a (ATOM .a) :- ! #
 fc-parse .a (PRAGMA CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #

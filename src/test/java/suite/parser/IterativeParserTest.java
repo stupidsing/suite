@@ -21,6 +21,11 @@ public class IterativeParserTest {
 	private IterativeParser iterativeParser = new IterativeParser(TermOp.values());
 
 	@Test
+	public void testParseChar() {
+		test("97", "+'a'");
+	}
+
+	@Test
 	public void testParseNil() {
 		test("()");
 	}
@@ -46,6 +51,7 @@ public class IterativeParserTest {
 	@Test
 	public void testParseColons() {
 		test("a:b c:d ():e f:() g", "a:b c:d :e f: g");
+		test("cmp/() {0}", "cmp/ {0}");
 	}
 
 	@Test

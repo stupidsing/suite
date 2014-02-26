@@ -30,12 +30,7 @@ public class PrecompileMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String args[]) {
-		boolean ok = precompile();
-		if (ok)
-			System.out.println("Please refresh eclipse workspace");
-		else
-			System.err.println("COMPILATION FAILURE");
-		return ok;
+		return precompile();
 	}
 
 	public boolean precompile() {
@@ -65,6 +60,11 @@ public class PrecompileMain extends ExecutableProgram {
 					ok = false;
 				}
 		}
+
+		if (ok)
+			System.out.println("Please refresh eclipse workspace");
+		else
+			System.err.println("COMPILATION FAILURE");
 
 		return ok;
 	}
