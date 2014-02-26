@@ -32,7 +32,7 @@ public class EvaluateUtil {
 			return new Specializer().specialize(Suite.substitute("" //
 					+ "source .in" //
 					+ ", compile-function .0 .in .out" //
-					+ (pair.t1 ? ", pretty.print .out" : "") //
+					+ (pair.t1 ? ", specialize .out .outs, pretty.print .outs" : "") //
 					+ ", sink .out", mode));
 		}
 	});
