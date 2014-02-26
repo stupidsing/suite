@@ -145,7 +145,7 @@ public class FunUtil {
 			}
 		};
 
-		new Thread() {
+		final Thread thread = new Thread() {
 			public void run() {
 				try {
 					fun.sink(enqueue);
@@ -155,7 +155,9 @@ public class FunUtil {
 					enqueue(queue, eod);
 				}
 			}
-		}.start();
+		};
+
+		thread.start();
 
 		return new Source<T>() {
 			public T source() {
@@ -168,6 +170,7 @@ public class FunUtil {
 					} else
 						return null;
 				} catch (InterruptedException ex) {
+					thread.interrupt();
 					throw new RuntimeException(ex);
 				}
 			}
