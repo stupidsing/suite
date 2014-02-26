@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -67,10 +68,10 @@ public class InstructionTranslator implements Closeable {
 	}
 
 	public TranslatedRun translate(Node node) throws IOException {
-		List<Instruction> instructions;
+		List<Instruction> instructions = new ArrayList<>();
 
 		try (InstructionExtractor extractor = new InstructionExtractor(constantPool)) {
-			instructions = extractor.extractInstructions(node);
+			extractor.extractInstructions(instructions, node);
 		}
 
 		int exitPoint = instructions.size();

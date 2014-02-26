@@ -28,14 +28,16 @@ public class InstructionExtractor implements AutoCloseable {
 		this.constantPool = constantPool;
 	}
 
-	public List<Instruction> extractInstructions(Node node) {
-		List<Instruction> list = new ArrayList<>();
+	public void extractInstructions(List<Instruction> list, Node node) {
+		int ip = list.size(); // Assigns instruction pointer
 		for (Node elem : Tree.iter(node))
-			list.add(extract(elem));
-		return list;
+			Binder.bind(Tree.decompose(elem).getLeft(), Int.create(ip++), journal);
+
+		for (Node elem : Tree.iter(node))
+			list.add(extract(list.size(), elem));
 	}
 
-	private Instruction extract(Node node) {
+	private Instruction extract(int ip, Node node) {
 		List<Node> rs = tupleToList(node);
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;

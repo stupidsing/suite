@@ -25,7 +25,6 @@ compile-function .mode .do0 .c0
 	, !, fc-optimize .do2 .do3
 	, !, fc-compile .do3 0/() .c1/.c2/.d0/()/.reg
 	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
-	, !, cg-generate-code .c0
 #
 
 fc-load-library .lib .do0 .dox

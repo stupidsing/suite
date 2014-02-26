@@ -98,10 +98,3 @@ cg-is-skip (_ REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
 cg-is-skip .i/.i #
 
 cg-is-returning (_ RETURN, _) #
-
-cg-generate-code .code :- cg-assign-line-numbers 0 .code, ! #
-
-cg-assign-line-numbers _ () #
-cg-assign-line-numbers .n (.n _, .insns)
-	:- let .n1 (.n + 1), cg-assign-line-numbers .n1 .insns
-#
