@@ -32,6 +32,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseSpacedOperator() {
+		test("!, a");
 		test("a, b", "a   ,   b");
 	}
 
