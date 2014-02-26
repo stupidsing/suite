@@ -289,6 +289,11 @@ public class EagerFunTest {
 	}
 
 	@Test
+	public void testTailRecursion() {
+		eval("replicate {65536} {10}");
+	}
+
+	@Test
 	public void testTails() {
 		assertEquals(Suite.parse("(1; 2; 3;); (2; 3;); (3;); ();"), eval("tails {1; 2; 3;}"));
 	}
