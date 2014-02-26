@@ -20,7 +20,9 @@ import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 /**
- * TODO handle `` for operators containing spaces
+ * TODO handle a :b
+ * 
+ * TODO handle `+ 1`
  * 
  * @author ywsing
  */
@@ -33,7 +35,6 @@ public class IterativeParser {
 	private Fun<String, String> commentProcessor;
 	private Fun<String, String> indentProcessor;
 	private Fun<String, String> whitespaceProcessor;
-
 	private TerminalParser terminalParser;
 
 	public IterativeParser(Operator operators[]) {
@@ -53,7 +54,6 @@ public class IterativeParser {
 		commentProcessor = new CommentProcessor(whitespaces);
 		indentProcessor = new IndentationProcessor(operators);
 		whitespaceProcessor = new WhitespaceProcessor(whitespaces);
-
 		terminalParser = new TerminalParser(context);
 	}
 
@@ -88,9 +88,8 @@ public class IterativeParser {
 		}
 
 		private Token lex() {
-			int start = pos;
-
 			if (pos < in.length()) {
+				int start = pos;
 				Token token = detect();
 				LexType type = token.type;
 
@@ -133,7 +132,7 @@ public class IterativeParser {
 						|| ch == ')' || ch == ']' || ch == '}' //
 						|| ch == '`')
 					type = LexType.CHAR_;
-				else if (isWhitespace(ch))
+				else if (ch == ' ')
 					type = LexType.SPACE;
 				else if (ch == '\'' || ch == '"')
 					type = LexType.STR__;
@@ -224,7 +223,7 @@ public class IterativeParser {
 					} else
 						stack.push(new Section(ch));
 				else if (Util.isNotBlank(data))
-					add(parse0(data));
+					add(terminalParser.parseTerminal(data));
 			}
 
 			if (stack.size() == 1)
@@ -262,14 +261,6 @@ public class IterativeParser {
 			list.subList(listPos + 1, list.size()).clear();
 			section.push(tree1);
 		}
-	}
-
-	private Node parse0(String in) {
-		return terminalParser.parseTerminal(in);
-	}
-
-	private boolean isWhitespace(char ch) {
-		return whitespaces.contains(ch);
 	}
 
 }
