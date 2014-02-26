@@ -22,8 +22,7 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testAuto() throws IOException {
-		Class<?> clazz = getClass();
-		String preds = To.string(clazz.getResourceAsStream("/auto.sl"));
+		String preds = To.string(getClass().getResourceAsStream("/auto.sl"));
 		String goal = "(" + preds + ") >> member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));
 	}
@@ -88,6 +87,11 @@ public class LogicCompilerTest {
 	public void testOrBinds() {
 		prove("(fail; .b = 1), .b = 2, yes");
 		prove("(yes; .b = 1), .b = 2, fail");
+	}
+
+	@Test
+	public void testTailRecursion() {
+		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1 #) >> dec 65536"));
 	}
 
 	@Test
