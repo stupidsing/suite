@@ -87,9 +87,9 @@ public class IterativeParserTest {
 		assertNotNull(Tree.decompose(node));
 	}
 
-	private void test(String s) {
-		String s1 = Formatter.dump(iterativeParser.parse(s));
-		assertEquals(s, s1);
+	private void test(String s0) {
+		String s1 = Formatter.dump(iterativeParser.parse(s0));
+		assertEquals(s0, s1);
 	}
 
 }
