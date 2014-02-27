@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.node.Atom;
-import suite.node.Suspend;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
