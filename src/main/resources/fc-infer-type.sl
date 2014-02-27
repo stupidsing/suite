@@ -259,7 +259,7 @@ fc-default-fun-type _callintrn1 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ _)) #
 fc-default-fun-type _callintrn2 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ (FUN-OF _ _))) #
 fc-default-fun-type _callintrn3 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type _compare (FUN-OF .t (FUN-OF .t NUMBER)) #
-fc-default-fun-type _getintrn (FUN-OF (ATOM-OF 	_) (DATA-OF Intrinsic)) #
+fc-default-fun-type _getintrn (FUN-OF (ATOM-OF _) (DATA-OF Intrinsic)) #
 fc-default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 fc-default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
 fc-default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #

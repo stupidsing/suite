@@ -45,7 +45,7 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .preds
 
 fc-precompile-compile .mode .lib .fcs .parsed .pred
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
-	, fc-precompile-compile-node .parsed .frame0/() .c0/.cx/.d0/.dx/.reg .ve0
+	, fc-precompile-compile-node .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
 	, .fcs = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
 	, cg-optimize-segment .c0/.cs0 .co0/.cso0
 	, cg-optimize-segment .csx/.cx .csox/.cox
@@ -53,13 +53,12 @@ fc-precompile-compile .mode .lib .fcs .parsed .pred
 	, cg-optimize-segment .dsx/.dx .dsox/.dox
 	, .pred = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
-			:- fc-dict-union-bind .ve .ve0 _
-			, fc-dict-union-replace .ve .ves .ve1
+			:- fc-dict-union-bind .ve .ves .ve1 -- Import and export symbols
 			, fc-compile .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
 	)
 #
 
-fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg .vex
+fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- !, write 'Loading pre-compiled library' .lib, nl
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
@@ -68,9 +67,9 @@ fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d
 	)
 	, once .tail
 	, fc-dict-union-bind .ve .ve1 .ve2
-	, fc-precompile-compile-node .do .frame/.ve2 .c0/.cx/.d0/.dx/.reg .vex
+	, fc-precompile-compile-node .do .frame/.ve2 .c0/.cx/.d0/.dx/.reg
 #
-fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg .ve
+fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg
 #
 
