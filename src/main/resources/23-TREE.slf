@@ -37,13 +37,16 @@ key => `Tree $slots` =>
 	if (key = found) then found else error
 ) >>
 define insert = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
-	define add0 = (:t => :t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
-	key => slots0 =>
+key =>
+	define add0 = (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
+	slots0 =>
 		let `$left, $slot, $right` = find-slot {key} {slots0} >>
 		let `$pivot, $child` = slot >>
 		let replaceSlots =
-			if (child != Empty) then (let `Tree $slots` = child >> add0 {key} {slots})
-			else-if (key != pivot) then (key, Empty; slot;)
+			if (child != Empty) then
+				let `Tree $childSlots` = child >> pivot, Tree (add0 {childSlots});
+			else-if (key != pivot) then
+				key, Empty; slot;
 			else error
 		>>
 		let slots1 = concat {left; replaceSlots; right;} >>
@@ -52,10 +55,11 @@ define insert = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 			create-slot {ls}; create-slot {rs};
 		else slots1
 	) >>
-	key => `Tree $slots` =>
-	slots | add0 {key} | create-root
+	`Tree $slots` =>
+	slots | add0 | create-root
 ) >>
 define remove = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
+key =>
 	define lht = (list =>
 		head {list}, tail {list}
 	) >>
@@ -74,12 +78,12 @@ define remove = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 				create-slot {snoc {left} {slot}}; create-slot {right1};
 		else (create-slot {append {left} {right}};)
 	) >>
-	define remove0 = (:t => :t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
-	key => slots0 =>
+	define remove0 = (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
+	slots0 =>
 		let `$left, ($pivot, $child), $right` = find-slot {key} {slots0} >>
 		if (child != Empty) then
 			let `Tree $childSlots` = child >>
-			let slots1 = remove0 {key} {childSlots} >>
+			let slots1 = remove0 {childSlots} >>
 			if (length {slots1} < min-branches) then
 				if (left != ()) then
 					let `$left1, ($pivot, Tree $borrowSlots)` = rth {left} >>
@@ -92,6 +96,6 @@ define remove = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 		else-if (key = pivot) then (append {left} {right})
 		else error
 	) >>
-	key => `Tree $slots` =>
-	slots | remove0 {key} | create-root
+	`Tree $slots` =>
+	slots | remove0 | create-root
 ) >>
