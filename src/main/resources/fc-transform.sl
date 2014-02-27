@@ -24,8 +24,8 @@ fc-transform (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
 #
 fc-transform (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
-	:- fc-transform-pragma .pragma0 .pragma1
-	, .ts0 = (.do0 .do1, .tsx)
+	:- fc-transform-pragma .pragma0 .pragma1 .ts0/.ts1
+	, .ts1 = (.do0 .do1, .tsx)
 #
 fc-transform (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
@@ -42,24 +42,29 @@ fc-transform (WRAP .do0) (WRAP .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
 
-fc-transform-pragma ALLOW-RECURSIVE ALLOW-RECURSIVE
+fc-transform-pragma ALLOW-RECURSIVE ALLOW-RECURSIVE .ts/.ts
 #
-fc-transform-pragma (CAST DOWN .type0) (CAST DOWN .type1)
+fc-transform-pragma (CAST DOWN .type0) (CAST DOWN .type1) .ts/.ts
 	:- fc-transform-type .type0 .type1
 #
-fc-transform-pragma (CAST UP .type0) (CAST UP .type1)
+fc-transform-pragma (CAST UP .type0) (CAST UP .type1) .ts/.ts
 	:- fc-transform-type .type0 .type1
 #
-fc-transform-pragma CAST-TO-CLASS CAST-TO-CLASS
+fc-transform-pragma CAST-TO-CLASS CAST-TO-CLASS .ts/.ts
 #
-fc-transform-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 .typeVars1)
+fc-transform-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 .typeVars1) .ts/.ts
 	:- fc-transform-type .type0 .type1
 	, fc-transform-type .class0 .class1
 	, fc-transform-type-list .typeVars0 .typeVars1
 #
-fc-transform-pragma RESOLVE-TYPE RESOLVE-TYPE
+fc-transform-pragma RESOLVE-TYPE RESOLVE-TYPE .ts/.ts
 #
-fc-transform-pragma SKIP-TYPE-CHECK SKIP-TYPE-CHECK
+fc-transform-pragma SKIP-TYPE-CHECK SKIP-TYPE-CHECK .ts/.ts
+#
+fc-transform-pragma (VERIFY-SAME-TYPES .u0 .v0) (VERIFY-SAME-TYPES .u1 .v1) .ts0/.tsx
+	:- fc-transform .u0 .u1 .ts0/.ts1
+	, fc-transform .v0 .v1 .ts1/.tsx
+	, !
 #
 
 fc-transform-type .unbound .unbound

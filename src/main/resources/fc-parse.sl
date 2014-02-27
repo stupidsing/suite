@@ -243,7 +243,8 @@ fc-bind .v0 .v1 .tep :- fc-bind0 .v0 .v1 .tep #
 fc-bind0 .v0 .v1 .then .else .parsed
 	:- fc-bind-cons .v0 .h0 .t0
 	, fc-bind-cons .v1 .h1 .t1
-	, !, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+	, !, .then1 = PRAGMA (VERIFY-SAME-TYPES .v0 .v1) .then -- Handle type fails like .v0 = (1; true;)
+	, fc-bind-pair .h0 .t0 .h1 .t1 .then1 .else .parsed
 #
 fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
 	:- !, fc-bind-pair .p0 .q0 .p1 .q1 .then .else .parsed

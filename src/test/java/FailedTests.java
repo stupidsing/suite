@@ -31,17 +31,6 @@ public class FailedTests {
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
-	// The parser converts the let-bind into head/tails; the type inference of
-	// the list is lost.
-	@Test
-	public void testImpossibleType() {
-		try {
-			Suite.evaluateFunType("let `$n; $p;` = (true; 3;) >> p");
-			assertTrue(false);
-		} catch (RuntimeException ex) {
-		}
-	}
-
 	// Takes forever to type check
 	@Test
 	public void testRecursiveType() {

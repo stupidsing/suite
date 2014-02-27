@@ -37,7 +37,9 @@ fc-infer-type-rule .p .env .tr/.tr .type
 fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
 	:- !
 	, fc-load-precompiled-library .lib (.pred # _ # _ #)
-	, generalize .pred (fc-infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail)
+	, generalize .pred (
+		fc-infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail
+	)
 	, once .tail
 	, fc-resolve-type-rules .tr1
 #
@@ -47,6 +49,11 @@ fc-infer-type-rule (
 	:- !
 	, .te1 = (.definedType/.class/.typeVars, .te)
 	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
+#
+fc-infer-type-rule (PRAGMA (VERIFY-SAME-TYPES .var0 .var1) .do) .env .tr0/.trx .type
+	:- !
+	, fc-infer-compatible-types .var0 .var1 .env .tr0/.tr1 _
+	, fc-infer-type-rule .do .env .tr1/.trx .type
 #
 fc-infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type
 	:- !
@@ -128,8 +135,9 @@ fc-infer-type-rule .do .env .tr .type
 	, !
 	, fc-infer-type-rule .do1 .env .tr .type
 #
-fc-infer-type-rule (VAR .var) _/.ve/_ .tr0/.trx .type
-	:- (fc-dict-get .ve .var/.varType
+fc-infer-type-rule (.tag .var) _/.ve/_ .tr0/.trx .type
+	:- once (.tag = NEW-VAR; .tag = VAR)
+	, (fc-dict-get .ve .var/.varType
 		, !, .tr0 = (CLONE-TO-FROM-TYPES .type .varType, .trx)
 	)
 	; !, fc-error "Undefined variable" .var
@@ -142,9 +150,11 @@ fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
 fc-find-simple-type (DO _) _ (DO-OF _) #
 fc-find-simple-type (NUMBER _) _ NUMBER #
 fc-find-simple-type (PRAGMA SKIP-TYPE-CHECK _) _ _ #
-fc-find-simple-type (VAR .var) .ue/_/_ .type
-	:- fc-dict-get .ue .var/.type
-	; fc-default-fun-type .var .type
+fc-find-simple-type (.tag .var) .ue/_/_ .type
+	:- once (.tag = NEW-VAR; .tag = VAR)
+	, (fc-dict-get .ue .var/.type
+		; fc-default-fun-type .var .type
+	)
 #
 
 fc-infer-compatible-types .a .b .ue/.ve/.te .tr0/.trx .type
