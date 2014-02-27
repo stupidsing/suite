@@ -28,26 +28,26 @@ rbt-depth (_ .n0 _ .n1) .depth
 	, !
 #
 
-rbt-merge-add .t :- rbt-merge0 ADD .t #
+rbt-union-bind .t :- rbt-union0 BIND .t #
 
-rbt-merge-bind .t :- rbt-merge0 BIND .t #
+rbt-union-insert .t :- rbt-union0 INSERT .t #
 
-rbt-merge-replace .t :- rbt-merge0 REPLACE .t #
+rbt-union-replace .t :- rbt-union0 REPLACE .t #
 
-rbt-merge0 _ () .tree .tree #
-rbt-merge0 .mode (_ .n0 .pivot .n1) .tree0 .treex
-	:- rbt-merge0 .mode .n0 .tree0 .tree1
+rbt-union0 _ () .tree .tree #
+rbt-union0 .mode (_ .n0 .pivot .n1) .tree0 .treex
+	:- rbt-union0 .mode .n0 .tree0 .tree1
 	, rbt-add1 .mode .pivot .tree1/.tree2
-	, rbt-merge0 .mode .n1 .tree2 .treex
+	, rbt-union0 .mode .n1 .tree2 .treex
 #
 
-rbt-add-list () .tree/.tree #
-rbt-add-list (.v, .vs) .tree0/.treex
-	:- rbt-add .v .tree0/.tree1
-	, rbt-add-list .vs .tree1/.treex
+rbt-insert-list () .tree/.tree #
+rbt-insert-list (.v, .vs) .tree0/.treex
+	:- rbt-insert .v .tree0/.tree1
+	, rbt-insert-list .vs .tree1/.treex
 #
 
-rbt-add .v .t :- rbt-add1 ADD .v .t #
+rbt-insert .v .t :- rbt-add1 INSERT .v .t #
 
 rbt-bind .v .t :- rbt-add1 BIND .v .t #
 

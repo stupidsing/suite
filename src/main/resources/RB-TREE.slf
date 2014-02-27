@@ -6,7 +6,7 @@ data (rb-tree {:t}) over :t as Empty >>
 
 define cr = color of Red >>
 define cb = color of Black >>
-define rbt-add = (:t => :t -> rb-tree {:t} -> rb-tree {:t}) of (
+define rbt-insert = (:t => :t -> rb-tree {:t} -> rb-tree {:t}) of (
 v =>
 	define add0 = (:t => rb-tree {:t} -> rb-tree {:t}) of
 		define balance = (:t => rb-tree {:t} -> rb-tree {:t}) of
@@ -42,9 +42,9 @@ define rbt-to-list = (:t => rb-tree {:t} -> [:t]) of
 	|| `Empty` => ()
 	|| anything => error
 >>
-define dict-add = (:k => :v => :k -> :v -> rb-tree {:k, :v} -> rb-tree {:k, :v}) of (
+define dict-insert = (:k => :v => :k -> :v -> rb-tree {:k, :v} -> rb-tree {:k, :v}) of (
 key => value =>
-	rbt-add {key, value}
+	rbt-insert {key, value}
 ) >>
 define dict-get = (:k => :v => :k -> rb-tree {:k, :v} -> :v) of (
 key =>

@@ -368,4 +368,4 @@ lc-dict-get .v .t :- rbt-get .v .t, ! #
 -- use replace, necessary to redefine already-defined variables
 lc-dict-add .v .t0/.t1 :- rbt-replace .v .t0/.t1, ! #
 
-lc-dict-merge .t0 .t1 .t2 :- rbt-merge-bind .t0 .t1 .t2, ! #
+lc-dict-merge .t0 .t1 .t2 :- rbt-union-bind .t0 .t1 .t2, ! #

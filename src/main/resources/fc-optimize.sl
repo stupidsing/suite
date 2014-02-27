@@ -26,7 +26,7 @@ fc-optimize-flow-list (.t, .ts) :- fc-optimize-flow .t, fc-optimize-flow-list .t
 fc-remove-unref-vars .do0 .dox .rb0/.rbx
 	:- fc-define-var .do0 .var .value0 .do1 .dow .var .value1 .do2
 	, fc-remove-unref-vars .do1 .do2 ()/.rbs
-	, rbt-merge-bind .rb0 .rbs .rbw
+	, rbt-union-bind .rb0 .rbs .rbw
 	, (
 		rbt-get .rbs .var
 		, !, .dow = .dox, fc-remove-unref-vars .value0 .value1 .rbw/.rbx

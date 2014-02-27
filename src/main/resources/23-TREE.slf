@@ -36,7 +36,7 @@ key => `Tree $slots` =>
 	let found = if (child != Empty) then (find {key} {child}) else pivot >>
 	if (key = found) then found else error
 ) >>
-define add = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
+define insert = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 	define add0 = (:t => :t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	key => slots0 =>
 		let `$left, $slot, $right` = find-slot {key} {slots0} >>

@@ -40,7 +40,7 @@ public class CompileUtil {
 
 		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc-precompile.sl"));
 		Builder builder = new InterpretedProverBuilder(pc);
-		boolean result = Suite.proveLogic(builder, rs, "fc-setup-precompile " + libraryName);
+		boolean result = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
 		if (result)
 			System.out.println("Pre-compilation success\n");

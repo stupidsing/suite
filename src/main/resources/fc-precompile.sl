@@ -3,34 +3,30 @@
 --
 -- to perform pre-compilation:
 -- ./run.sh src/main/resources/fc-precompile.sl
--- ? fc-setup-precompile STANDARD #
+-- ? fc-precompile-lib STANDARD #
 --
 
-fc-setup-precompile .lib
+fc-precompile-lib .lib
 	:- fc-precompiled-library-filename .lib .filename
 	, fc-load-library .lib .do0 .do1
-	, fc-setup-precompile0 .lib .do1/.do0 .filename
-#
-
-fc-setup-precompile0 .lib .do1/.do0 .filename
-	:- fc-precompile .lib .do1/.do0 .prog
+	, fc-precompile .lib .do1/.do0 .preds
 	, !, write 'Saving file' .filename, nl
-	, rpn .prog .rpn
+	, rpn .preds .rpn
 	, file.write .filename .rpn
 #
 
-fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
+fc-precompile .lib .do1/($$PRECOMPILE .pc) .preds
 	:- .pc = .ues/.ves/.tes .trs/.trs .fcs
 	, !, write "Parsing program", nl
 	, !, fc-parse .do1 .do2
 	, !, write "Inferencing types", nl
 	, !, fc-infer-type-rule .do2 ()/()/() .tr/() NUMBER
 	, !, fc-resolve-type-rules .tr
-	, !, .prog0 = (
+	, !, .pred0 = (
 		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
-			:- fc-dict-merge-replace .ue .ues .ue1
-			, fc-dict-merge-replace .ve .ves .ve1
-			, fc-dict-merge-replace .te .tes .te1
+			:- fc-dict-union-replace .ue .ues .ue1
+			, fc-dict-union-replace .ve .ves .ve1
+			, fc-dict-union-replace .te .tes .te1
 			, fc-infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write 'Verifying intermediate output', nl
@@ -40,30 +36,30 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .prog
 	, !, write "Optimizing", nl
 	, !, fc-optimize-flow .do2 .do3
 	, !, fc-optimize-flow .dol3 .dol4
-	, !, fc-dump-precompile EAGER .lib .fcs .do3 .prog1
-	, !, fc-dump-precompile LAZY .lib .fcs .dol4 .prog2
-	, .prog = (.prog0 # .prog1 # .prog2 #)
+	, !, fc-precompile-compile EAGER .lib .fcs .do3 .pred1
+	, !, fc-precompile-compile LAZY .lib .fcs .dol4 .pred2
+	, .preds = (.pred0 # .pred1 # .pred2 #)
 	, !, write 'Verifying final output', nl
-	, once (not is.cyclic .prog; fc-error "Cyclic data detected")
+	, once (not is.cyclic .preds; fc-error "Cyclic data detected")
 #
 
-fc-dump-precompile .mode .lib .fcs .parsed .prog
+fc-precompile-compile .mode .lib .fcs .parsed .pred
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
-	, fc-compile-node .parsed .frame0/() .c0/.cx/.d0/.dx/.reg .ve0
+	, fc-precompile-compile-node .parsed .frame0/() .c0/.cx/.d0/.dx/.reg .ve0
 	, .fcs = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
 	, cg-optimize-segment .c0/.cs0 .co0/.cso0
 	, cg-optimize-segment .csx/.cx .csox/.cox
 	, cg-optimize-segment .d0/.ds0 .do0/.dso0
 	, cg-optimize-segment .dsx/.dx .dsox/.dox
-	, .prog = (
+	, .pred = (
 		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
-			:- fc-dict-merge-bind .ve .ve0 _
-			, fc-dict-merge-replace .ve .ves .ve1
+			:- fc-dict-union-bind .ve .ve0 _
+			, fc-dict-union-replace .ve .ves .ve1
 			, fc-compile .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
 	)
 #
 
-fc-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg .vex
+fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg .vex
 	:- !, write 'Loading pre-compiled library' .lib, nl
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
@@ -71,10 +67,10 @@ fc-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg 
 		fc-compile-using-lib .mode .lib ($$PRECOMPILE _ _ .frame/.ve1 _) _/() _ :- .tail
 	)
 	, once .tail
-	, fc-dict-merge-bind .ve .ve1 .ve2
-	, fc-compile-node .do .frame/.ve2 .c0/.cx/.d0/.dx/.reg .vex
+	, fc-dict-union-bind .ve .ve1 .ve2
+	, fc-precompile-compile-node .do .frame/.ve2 .c0/.cx/.d0/.dx/.reg .vex
 #
-fc-compile-node .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg .ve
+fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg .ve
 	:- fc-compile .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg
 #
 
