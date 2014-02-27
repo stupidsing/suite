@@ -115,7 +115,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testRbTree() {
-		String fps = "using RB-TREE >> 0 until 10 | map {dict-add/ {1}} | apply | {Empty}";
+		String fps = "using RB-TREE >> 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
 		assertType("rb-tree {number, number}", fps);
 	}
 
