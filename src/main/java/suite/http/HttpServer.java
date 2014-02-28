@@ -8,7 +8,6 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 import suite.util.FileUtil;
 import suite.util.LogUtil;
@@ -65,7 +64,7 @@ public class HttpServer {
 				String path1 = path.startsWith("/") ? path : "/" + path;
 				String path2 = URLDecoder.decode(path1, "UTF-8");
 
-				if (!Objects.equals(protocol, "HTTP/1.1"))
+				if (!Util.stringEquals(protocol, "HTTP/1.1"))
 					throw new RuntimeException("Only HTTP/1.1 is supported");
 
 				Map<String, String> requestHeaders = new HashMap<>();

@@ -82,7 +82,7 @@ public class Profiler {
 			if (threadInfo != null //
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //
-					&& !threadInfo.getThreadName().equals("ReaderThread")) {
+					&& !Util.stringEquals(threadInfo.getThreadName(), "ReaderThread")) {
 				Set<String> elements = new HashSet<>();
 
 				for (StackTraceElement elem : threadInfo.getStackTrace())

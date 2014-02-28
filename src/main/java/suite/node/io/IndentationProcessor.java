@@ -3,6 +3,7 @@ package suite.node.io;
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
+import suite.util.Util;
 
 /**
  * Turns indent patterns into parentheses, to provide Python-like parsing.
@@ -58,7 +59,7 @@ public class IndentationProcessor implements Fun<String, String> {
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))
 							startPos = Math.max(startPos, 1 + name.length());
-						if (line.equals(name))
+						if (Util.stringEquals(line, name))
 							startPos = Math.max(startPos, name.length());
 						if (line.endsWith(name))
 							endPos = Math.min(endPos, length - name.length());

@@ -5,12 +5,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 
 import suite.http.HttpServer.Handler;
 import suite.util.FileUtil;
 import suite.util.HtmlUtil;
+import suite.util.Util;
 
 public class HttpSessionController {
 
@@ -67,7 +67,7 @@ public class HttpSessionController {
 			String sessionId = cookie != null ? HttpUtil.getCookieAttrs(cookie).get("session") : null;
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 
-			if (Objects.equals(request.getPath(), "/login")) {
+			if (Util.stringEquals(request.getPath(), "/login")) {
 				Map<String, String> attrs = HttpUtil.getPostedAttrs(request.getInputStream());
 				String username = attrs.get("username");
 				String password = attrs.get("password");
@@ -92,7 +92,7 @@ public class HttpSessionController {
 					showProtectedPage(sessionId, request1, response);
 				} else
 					showLoginPage(response.getOutputStream(), path, true);
-			} else if (Objects.equals(request.getPath(), "/logout")) {
+			} else if (Util.stringEquals(request.getPath(), "/logout")) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 

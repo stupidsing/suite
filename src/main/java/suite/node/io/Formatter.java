@@ -2,7 +2,6 @@ package suite.node.io;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import suite.lp.doer.Generalizer;
@@ -14,6 +13,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.util.ParseUtil;
+import suite.util.Util;
 
 public class Formatter {
 
@@ -44,7 +44,7 @@ public class Formatter {
 
 		if (tree != null) {
 			String op = tree.getOperator().getName();
-			op = Objects.equals(op, " ") ? "<>" : op.trim();
+			op = Util.stringEquals(op, " ") ? "<>" : op.trim();
 			String indent1 = indent + "  ";
 
 			treeize(tree.getLeft(), sb, indent1);

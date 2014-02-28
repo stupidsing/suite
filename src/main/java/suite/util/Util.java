@@ -19,6 +19,8 @@ import org.apache.log4j.Level;
 
 import suite.util.FunUtil.Source;
 
+import com.sun.org.apache.xalan.internal.utils.Objects;
+
 public class Util {
 
 	public static abstract class ExecutableProgram implements AutoCloseable {
@@ -296,6 +298,10 @@ public class Util {
 				return splitted;
 			}
 		});
+	}
+
+	public static boolean stringEquals(String s0, String s1) {
+		return Objects.equals(s0, s1);
 	}
 
 	public static String substr(String s, int start, int end) {

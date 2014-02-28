@@ -33,7 +33,7 @@ public class JsMain extends ExecutableProgram {
 		List<String> filenames = new ArrayList<>();
 
 		for (String arg : args)
-			if (!arg.equals(""))
+			if (!arg.isEmpty())
 				if (arg.charAt(0) == '-')
 					engine.eval(arg.substring(1));
 				else

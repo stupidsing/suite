@@ -1,7 +1,6 @@
 package suite.weiqi;
 
-import java.util.Objects;
-
+import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UserInterface {
@@ -25,7 +24,7 @@ public class UserInterface {
 				Occupation occupation = Occupation.EMPTY;
 
 				for (Occupation o : Occupation.values())
-					if (Objects.equals(cols[y], o.display()))
+					if (Util.stringEquals(cols[y], o.display()))
 						occupation = o;
 
 				board.set(Coordinate.c(x, y), occupation);

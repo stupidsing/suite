@@ -15,6 +15,7 @@ import suite.lp.doer.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.FunUtil.Source;
+import suite.util.Util;
 
 /**
  * Command line interface environment.
@@ -43,34 +44,34 @@ public class CommandOption {
 		boolean result = true;
 		String arg1;
 
-		if (arg.equals("-dump-code"))
+		if (Util.stringEquals(arg, "-dump-code"))
 			isDumpCode = on;
-		else if (arg.equals("-eager"))
+		else if (Util.stringEquals(arg, "-eager"))
 			isLazy = !on;
-		else if (arg.equals("-editor"))
+		else if (Util.stringEquals(arg, "-editor"))
 			new Editor().open();
-		else if (arg.equals("-filter"))
+		else if (Util.stringEquals(arg, "-filter"))
 			isFilter = on;
-		else if (arg.equals("-functional"))
+		else if (Util.stringEquals(arg, "-functional"))
 			isFunctional = on;
-		else if (arg.equals("-lazy"))
+		else if (Util.stringEquals(arg, "-lazy"))
 			isLazy = on;
-		else if (arg.equals("-libraries") && (arg1 = source.source()) != null)
+		else if (Util.stringEquals(arg, "-libraries") && (arg1 = source.source()) != null)
 			libraries = Arrays.asList(arg1.split(","));
-		else if (arg.equals("-logical"))
+		else if (Util.stringEquals(arg, "-logical"))
 			isLogical = on;
 		else if (arg.startsWith("-no-"))
 			result &= processOption("-" + arg.substring(4), source, false);
-		else if (arg.equals("-precompile") && (arg1 = source.source()) != null)
+		else if (Util.stringEquals(arg, "-precompile") && (arg1 = source.source()) != null)
 			for (String lib : arg1.split(","))
 				result &= Suite.precompile(lib, pc(null));
-		else if (arg.equals("-precompile-all"))
+		else if (Util.stringEquals(arg, "-precompile-all"))
 			try (PrecompileMain precompileMain = new PrecompileMain()) {
 				result &= precompileMain.precompile();
 			}
-		else if (arg.equals("-quiet"))
+		else if (Util.stringEquals(arg, "-quiet"))
 			isQuiet = on;
-		else if (arg.equals("-trace"))
+		else if (Util.stringEquals(arg, "-trace"))
 			isTrace = on;
 		else
 			throw new RuntimeException("Unknown option " + arg);

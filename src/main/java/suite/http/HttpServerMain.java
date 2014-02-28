@@ -3,16 +3,16 @@ package suite.http;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Objects;
 
 import suite.http.HttpServer.Handler;
 import suite.http.HttpSessionController.Authenticator;
+import suite.util.Util;
 
 public class HttpServerMain {
 
 	private Authenticator authenticator = new Authenticator() {
 		public boolean authenticate(String username, String password) {
-			return Objects.equals(username, "user") && Objects.equals(password, "");
+			return Util.stringEquals(username, "user") && Util.stringEquals(password, "");
 		}
 	};
 

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil;
@@ -319,17 +318,17 @@ public class Ebnf {
 			int pos = state.pos;
 			State state1 = deepen(state, name);
 
-			if (name.equals("<EOF>"))
+			if (Util.stringEquals(name, "<EOF>"))
 				states = state1.pos == length ? To.source(state1) : noResult;
-			else if (name.equals("<CHARACTER_LITERAL>"))
+			else if (Util.stringEquals(name, "<CHARACTER_LITERAL>"))
 				states = parseExpect(state1, expectCharLiteral(pos));
-			else if (name.equals("<FLOATING_POINT_LITERAL>"))
+			else if (Util.stringEquals(name, "<FLOATING_POINT_LITERAL>"))
 				states = parseExpect(state1, expectFloatLiteral(pos));
-			else if (name.equals("<IDENTIFIER>"))
+			else if (Util.stringEquals(name, "<IDENTIFIER>"))
 				states = parseExpect(state1, expectIdentifier(pos));
-			else if (name.equals("<INTEGER_LITERAL>"))
+			else if (Util.stringEquals(name, "<INTEGER_LITERAL>"))
 				states = parseExpect(state1, expectIntegerLiteral(pos));
-			else if (name.equals("<STRING_LITERAL>"))
+			else if (Util.stringEquals(name, "<STRING_LITERAL>"))
 				states = parseExpect(state1, expectStringLiteral(pos));
 			else
 				states = parse(state1, grammars.get(name));
@@ -510,11 +509,11 @@ public class Ebnf {
 		private int expectComment(int start, String sm, String em) {
 			int sl = sm.length(), el = em.length();
 			int pos = start, end;
-			if (pos < length && Objects.equals(Util.substr(in, pos, pos + sl), sm)) {
+			if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + sl), sm)) {
 				pos += 2;
-				while (pos < length && !Objects.equals(Util.substr(in, pos, pos + el), em))
+				while (pos < length && !Util.stringEquals(Util.substr(in, pos, pos + el), em))
 					pos++;
-				if (pos < length && Objects.equals(Util.substr(in, pos, pos + el), em)) {
+				if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + el), em)) {
 					pos += 2;
 					end = pos;
 				} else
