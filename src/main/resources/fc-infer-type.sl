@@ -50,9 +50,9 @@ fc-infer-type-rule (
 	, .te1 = (.definedType/.class/.typeVars, .te)
 	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
 #
-fc-infer-type-rule (PRAGMA (VERIFY-SAME-TYPES .var0 .var1) .do) .env .tr0/.trx .type
+fc-infer-type-rule (PRAGMA (VERIFY-TYPE .var .varType) .do) .env .tr0/.trx .type
 	:- !
-	, fc-infer-compatible-types .var0 .var1 .env .tr0/.tr1 _
+	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
 	, fc-infer-type-rule .do .env .tr1/.trx .type
 #
 fc-infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type

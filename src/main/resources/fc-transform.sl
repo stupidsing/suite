@@ -61,9 +61,9 @@ fc-transform-pragma RESOLVE-TYPE RESOLVE-TYPE .ts/.ts
 #
 fc-transform-pragma SKIP-TYPE-CHECK SKIP-TYPE-CHECK .ts/.ts
 #
-fc-transform-pragma (VERIFY-SAME-TYPES .u0 .v0) (VERIFY-SAME-TYPES .u1 .v1) .ts0/.tsx
-	:- fc-transform .u0 .u1 .ts0/.ts1
-	, fc-transform .v0 .v1 .ts1/.tsx
+fc-transform-pragma (VERIFY-TYPE .v0 .type0) (VERIFY-TYPE .v1 .type1) .ts0/.tsx
+	:- fc-transform .v0 .v1 .ts0/.tsx
+	, fc-transform-type .type0 .type1
 	, !
 #
 

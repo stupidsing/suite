@@ -243,7 +243,9 @@ fc-bind .v0 .v1 .tep :- fc-bind0 .v0 .v1 .tep #
 fc-bind0 .v0 .v1 .then .else .parsed
 	:- fc-bind-cons .v0 .h0 .t0
 	, fc-bind-cons .v1 .h1 .t1
-	, !, .then1 = PRAGMA (VERIFY-SAME-TYPES .v0 .v1) .then -- Handle type fails like .v0 = (1; true;)
+	, !, .then1 = PRAGMA ( -- Handle type fails like .v0 = (1; true;)
+		VERIFY-TYPE (TREE ' = ' .v0 .v1) BOOLEAN
+	) .then
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then1 .else .parsed
 #
 fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
