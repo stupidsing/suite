@@ -64,7 +64,16 @@ public class Chars implements Iterable<Character> {
 		return new Chars(in);
 	}
 
+	public static Chars concat(Chars... array) {
+		CharsBuilder bb = new CharsBuilder();
+		for (Chars chars : array)
+			bb.append(chars);
+		return bb.toChars();
+	}
+
 	public char get(int index) {
+		if (index < 0)
+			index += size();
 		int i1 = index + start;
 		checkClosedBounds(i1);
 		return vector[i1];

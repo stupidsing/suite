@@ -34,7 +34,7 @@ public class IbTreeTest {
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
 
-			Source<Integer> source = holder.source(transaction);
+			Source<Integer> source = transaction.source();
 			Integer integer;
 
 			while ((integer = source.source()) != null)
@@ -70,7 +70,7 @@ public class IbTreeTest {
 
 			holder.commit(transaction);
 
-			Source<String> source = holder.source(transaction);
+			Source<String> source = transaction.source();
 			String string;
 
 			while ((string = source.source()) != null)

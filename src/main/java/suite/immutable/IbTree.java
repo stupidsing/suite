@@ -4,20 +4,21 @@ import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import suite.file.SerializedPageFile;
+import suite.util.FunUtil;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -170,6 +171,14 @@ public class IbTree<T> implements Closeable {
 		private Transaction(Allocator allocator, Pointer root) {
 			this.root = root;
 			this.allocator = allocator;
+		}
+
+		public Source<T> source() {
+			return source(null, null);
+		}
+
+		public Source<T> source(T start, T end) {
+			return IbTree.this.source(root, start, end);
 		}
 
 		public void add(T t) {
@@ -336,14 +345,6 @@ public class IbTree<T> implements Closeable {
 			write(stamp);
 		}
 
-		public Source<T> source(Transaction transaction) {
-			return source(transaction, null, null);
-		}
-
-		public Source<T> source(Transaction transaction, T start, T end) {
-			return IbTree.this.source(transaction.root, start, end);
-		}
-
 		private List<Integer> read() {
 			return stampFile.load(0);
 		}
@@ -388,56 +389,18 @@ public class IbTree<T> implements Closeable {
 	}
 
 	private Source<T> source(final Pointer pointer, final T start, final T end) {
-		return new Source<T>() {
-			private Deque<List<Slot>> stack = new ArrayDeque<>();
+		List<Slot> node = read(pointer).slots;
+		int i0 = start != null ? new FindSlot(node, start).i : 0;
+		int i1 = end != null ? new FindSlot(node, end).i + 1 : node.size();
 
-			{
-				List<Slot> slots = read(pointer).slots;
-
-				while (true) {
-					Slot slot;
-					int i;
-
-					if (start != null) {
-						FindSlot fs = new FindSlot(slots, start);
-						slot = fs.slot;
-						i = fs.i;
-					} else {
-						slot = null;
-						i = 0;
-					}
-
-					if (slot != null) {
-						stack.push(Util.right(slots, i + 1));
-						slots = slot.slots();
-					} else {
-						stack.push(Util.right(slots, i));
-						break;
-					}
+		if (i0 < i1)
+			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<T>>() {
+				public Source<T> apply(Slot slot) {
+					return slot.pointer != null ? source(slot.pointer, start, end) : To.source(slot.pivot);
 				}
-			}
-
-			public T source() {
-				T t = null;
-				while (!stack.isEmpty() && (t = push(stack.pop())) == null)
-					;
-				return compare(t, end) < 0 ? t : null;
-			}
-
-			private T push(List<Slot> slots) {
-				while (!slots.isEmpty()) {
-					Slot slot0 = slots.get(0);
-					stack.push(Util.right(slots, 1));
-
-					if (slot0.pointer != null)
-						slots = slot0.slots();
-					else
-						return slot0.pivot;
-				}
-
-				return null;
-			}
-		};
+			}, To.source(node.subList(i0, i1))));
+		else
+			return FunUtil.nullSource();
 	}
 
 	public static List<Integer> buildAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {

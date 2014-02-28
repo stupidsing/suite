@@ -65,7 +65,16 @@ public class Bytes implements Iterable<Byte> {
 		return new Bytes(in);
 	}
 
+	public static Bytes concat(Bytes... array) {
+		BytesBuilder bb = new BytesBuilder();
+		for (Bytes bytes : array)
+			bb.append(bytes);
+		return bb.toBytes();
+	}
+
 	public byte get(int index) {
+		if (index < 0)
+			index += size();
 		int i1 = index + start;
 		checkClosedBounds(i1);
 		return vector[i1];
