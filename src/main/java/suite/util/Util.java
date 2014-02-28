@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 
 import suite.util.FunUtil.Source;
-
-import com.sun.org.apache.xalan.internal.utils.Objects;
 
 public class Util {
 
