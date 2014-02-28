@@ -109,11 +109,11 @@ public class IbTree<T> implements Closeable {
 		public List<Integer> commit();
 	}
 
-	private class SwappingAllocator implements Allocator {
+	private class SwappingTablesAllocator implements Allocator {
 		private List<Pointer> pointers = Arrays.asList(new Pointer(), new Pointer());
 		private int using = 0;
 
-		private SwappingAllocator(int using) {
+		private SwappingTablesAllocator(int using) {
 			this.using = using;
 		}
 
@@ -131,11 +131,11 @@ public class IbTree<T> implements Closeable {
 		}
 	}
 
-	private class IbTreeAllocator implements Allocator {
+	private class SubIbTreeAllocator implements Allocator {
 		private IbTree<Pointer> ibTree;
 		private IbTree<Pointer>.Transaction transaction;
 
-		public IbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
+		public SubIbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
 			this.ibTree = ibTree;
 			this.transaction = ibTree.transaction(stamp);
 		}
@@ -465,8 +465,8 @@ public class IbTree<T> implements Closeable {
 	}
 
 	private Allocator allocator(List<Integer> stamp) {
-		boolean isBta = allocationIbTree != null;
-		return isBta ? new IbTreeAllocator(allocationIbTree, stamp) : new SwappingAllocator(stamp.get(0));
+		boolean isSbta = allocationIbTree != null;
+		return isSbta ? new SubIbTreeAllocator(allocationIbTree, stamp) : new SwappingTablesAllocator(stamp.get(0));
 	}
 
 	private int compare(T t0, T t1) {
