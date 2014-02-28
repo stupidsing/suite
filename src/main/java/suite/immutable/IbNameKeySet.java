@@ -88,8 +88,8 @@ public class IbNameKeySet {
 
 	private Source<Bytes> list(final List<Key> prefix, final List<Key> keys0, final List<Key> keys1) {
 		Bytes hash = hash(toName(prefix));
-		Key minKey = !keys0.isEmpty() ? keys0.get(0) : new Key(hash, false, Bytes.emptyBytes, 0);
-		Key maxKey = !keys1.isEmpty() ? keys1.get(0) : new Key(hash, true, Bytes.emptyBytes, 0);
+		Key minKey = !keys0.isEmpty() ? Util.first(keys0) : new Key(hash, false, Bytes.emptyBytes, 0);
+		Key maxKey = !keys1.isEmpty() ? Util.first(keys1) : new Key(hash, true, Bytes.emptyBytes, 0);
 		Source<Bytes> source = transaction.source(minKey.toBytes(), increment(maxKey.toBytes()));
 
 		return FunUtil.concat(FunUtil.map(new Fun<Bytes, Source<Bytes>>() {
@@ -98,8 +98,8 @@ public class IbNameKeySet {
 				List<Key> prefix1 = Util.add(prefix, Arrays.asList(key));
 
 				if (key.size == 0) {
-					List<Key> tailKeys0 = !keys0.isEmpty() ? keys0.subList(1, keys0.size()) : emptyKeys;
-					List<Key> tailKeys1 = !keys1.isEmpty() ? keys1.subList(1, keys1.size()) : emptyKeys;
+					List<Key> tailKeys0 = !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys;
+					List<Key> tailKeys1 = !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys;
 					return list(prefix1, tailKeys0, tailKeys1);
 				} else
 					return To.source(Arrays.asList(toName(prefix1)));
