@@ -19,6 +19,12 @@ public class FunTypeTest {
 	}
 
 	@Test
+	public void testBindList() {
+		assertType("number", "let `$h; $t` = (0; 1;) >> h");
+		getTypeMustFail("let `$h; $t` = (0; true;) >> h");
+	}
+
+	@Test
 	public void testClass() {
 		assertType("clazz", "" //
 				+ "data clazz as Empty >> \n" //

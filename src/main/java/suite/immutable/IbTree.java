@@ -47,6 +47,8 @@ public class IbTree<T> implements Closeable {
 	private IbTree<Pointer> allocationIbTree;
 
 	public static class Pointer {
+		private int number;
+
 		public static Comparator<Pointer> comparator = new Comparator<Pointer>() {
 			public int compare(Pointer p0, Pointer p1) {
 				return p0.number - p1.number;
@@ -64,8 +66,6 @@ public class IbTree<T> implements Closeable {
 				SerializeUtil.intSerializer.write(buffer, pointer.number);
 			}
 		});
-
-		private int number;
 	}
 
 	private class Page {
