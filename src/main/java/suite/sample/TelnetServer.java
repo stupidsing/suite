@@ -18,6 +18,14 @@ public class TelnetServer {
 		new TelnetServer().run();
 	}
 
+	private void run() throws IOException {
+		SocketUtil.listen(2323, new Io() {
+			public void serve(InputStream sis, OutputStream sos) throws IOException {
+				new Server().serve(sis, sos);
+			}
+		});
+	}
+
 	private class Server {
 		private Set<Thread> threads = new HashSet<>();
 
@@ -89,14 +97,6 @@ public class TelnetServer {
 				process.destroy();
 			}
 		}
-	}
-
-	private void run() throws IOException {
-		SocketUtil.listen(2323, new Io() {
-			public void serve(InputStream sis, OutputStream sos) throws IOException {
-				new Server().serve(sis, sos);
-			}
-		});
 	}
 
 }

@@ -2,6 +2,7 @@ package suite.util;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -81,7 +82,7 @@ public class Util {
 			}
 	}
 
-	public static <T extends Comparable<T>> Comparator<T> comparator() {
+	public static <T extends Comparable<? super T>> Comparator<T> comparator() {
 		return new Comparator<T>() {
 			public int compare(T t0, T t1) {
 				return Util.compare(t0, t1);
@@ -89,7 +90,7 @@ public class Util {
 		};
 	}
 
-	public static <T extends Comparable<T>> int compare(T t0, T t1) {
+	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {
 		if (t0 == null ^ t1 == null)
 			return t0 != null ? 1 : -1;
 		else
@@ -197,6 +198,29 @@ public class Util {
 		if (pos < 0)
 			pos += size;
 		return list.subList(0, Math.min(size, pos));
+	}
+
+	/**
+	 * Reads a line from a stream with a maximum line length limit. Removes
+	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
+	 * when dealing with non-ASCII encoding characters.
+	 */
+	public static String readLine(InputStream is) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		int c;
+
+		while ((c = is.read()) != -1 && c != 10) {
+			sb.append((char) c);
+			if (sb.length() > 65536)
+				throw new RuntimeException("Line too long");
+		}
+
+		int length = sb.length();
+
+		if (sb.charAt(length - 1) == 13)
+			sb.deleteCharAt(length - 1);
+
+		return sb.toString();
 	}
 
 	public static <T> List<T> right(List<T> list, int pos) {

@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
-import java.util.Objects;
 
 import suite.Suite;
 import suite.lp.doer.Generalizer;
@@ -22,7 +21,9 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
+import suite.util.CommanderUtil;
 import suite.util.FunUtil.Source;
+import suite.util.Pair;
 import suite.util.To;
 import suite.util.Util;
 
@@ -57,6 +58,10 @@ public class CommandDispatcher {
 		private InputType(String prefix) {
 			this.prefix = prefix;
 		}
+
+		public String toString() {
+			return prefix;
+		}
 	}
 
 	public CommandDispatcher(CommandOption opt) {
@@ -78,20 +83,11 @@ public class CommandDispatcher {
 	private boolean dispatchCommand0(String input, Writer writer) throws IOException {
 		PrintWriter pw = new PrintWriter(writer);
 		boolean code = true;
-		InputType type = null;
 
-		commandFound: for (int i = Math.min(3, input.length()); i >= 0; i--) {
-			String starts = input.substring(0, i);
+		Pair<InputType, String> pair = new CommanderUtil<>(InputType.values()).recognize(input);
+		InputType type = pair.t0;
+		input = pair.t1.trim();
 
-			for (InputType inputType : InputType.values())
-				if (Objects.equals(starts, inputType.prefix)) {
-					type = inputType;
-					input = input.substring(i);
-					break commandFound;
-				}
-		}
-
-		input = input.trim();
 		if (input.endsWith("#"))
 			input = Util.substr(input, 0, -1);
 

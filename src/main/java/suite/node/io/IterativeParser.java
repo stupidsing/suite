@@ -17,7 +17,9 @@ import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
+import suite.util.CommanderUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.Pair;
 import suite.util.Util;
 
 /**
@@ -28,12 +30,11 @@ import suite.util.Util;
 public class IterativeParser {
 
 	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n', ' '));
-	private int maxOperatorLength;
-	private Map<String, Operator> operatorsByName = new HashMap<>();
 
 	private Fun<String, String> commentProcessor;
 	private Fun<String, String> indentProcessor;
 	private Fun<String, String> whitespaceProcessor;
+	private CommanderUtil<Operator> commanderUtil;
 	private TerminalParser terminalParser;
 
 	public IterativeParser(Operator operators[]) {
@@ -41,18 +42,17 @@ public class IterativeParser {
 	}
 
 	private IterativeParser(Context context, Operator operators[]) {
-		maxOperatorLength = 0;
+		Map<String, Operator> operatorsByName = new HashMap<>();
 
 		for (Operator operator : operators)
-			if (operator != TermOp.TUPLE_) {
-				String name = operator.getName();
-				maxOperatorLength = Math.max(maxOperatorLength, name.length());
-				operatorsByName.put(name, operator);
-			}
+			if (operator != TermOp.TUPLE_)
+				operatorsByName.put(operator.getName(), operator);
 
 		commentProcessor = new CommentProcessor(whitespaces);
 		indentProcessor = new IndentationProcessor(operators);
 		whitespaceProcessor = new WhitespaceProcessor(whitespaces);
+
+		commanderUtil = new CommanderUtil<>(operatorsByName);
 		terminalParser = new TerminalParser(context);
 	}
 
@@ -139,7 +139,7 @@ public class IterativeParser {
 
 		private Token detect() {
 			LexType type;
-			Operator operator = detectOperator();
+			Operator operator = Pair.first_(commanderUtil.recognize(in, pos));
 
 			if (pos < in.length()) {
 				char ch = in.charAt(pos);
@@ -162,17 +162,6 @@ public class IterativeParser {
 				type = null;
 
 			return new Token(type, operator);
-		}
-
-		private Operator detectOperator() {
-			for (int length = maxOperatorLength; length > 0; length--)
-				if (pos + length <= in.length()) {
-					Operator op = operatorsByName.get(in.substring(pos, pos + length));
-					if (op != null)
-						return op;
-				}
-
-			return null;
 		}
 	}
 

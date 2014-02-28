@@ -1,22 +1,14 @@
 package suite.immutable;
 
-import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
-import suite.util.Util;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
-	private ITree<Pair<K, V>> tree = new I23Tree<Pair<K, V>>(new Comparator<Pair<K, V>>() {
-		public int compare(Pair<K, V> p0, Pair<K, V> p1) {
-			K k0 = p0 != null ? p0.t0 : null;
-			K k1 = p1 != null ? p1.t0 : null;
-			return Util.compare(k0, k1);
-		}
-	});
+	private ITree<Pair<K, V>> tree = new I23Tree<Pair<K, V>>(Pair.<K, V> comparatorByFirst());
 
 	public IMap() {
 	}
@@ -35,8 +27,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public V get(K k) {
-		Pair<K, V> pair = tree.find(Pair.create(k, (V) null));
-		return pair != null ? pair.t1 : null;
+		return Pair.second(tree.find(Pair.create(k, (V) null)));
 	}
 
 	public IMap<K, V> put(K k, V v) {

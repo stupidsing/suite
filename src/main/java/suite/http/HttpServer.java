@@ -42,7 +42,7 @@ public class HttpServer {
 
 				String line, ls[];
 
-				line = readLine(is);
+				line = Util.readLine(is);
 				ls = line.split(" ");
 				String method = ls[0], url = ls[1], protocol = ls[2];
 				String server, pqs;
@@ -70,7 +70,7 @@ public class HttpServer {
 
 				Map<String, String> requestHeaders = new HashMap<>();
 
-				while (!(line = readLine(is)).isEmpty()) {
+				while (!(line = Util.readLine(is)).isEmpty()) {
 					Pair<String, String> pair = Util.split2(line, ":");
 					requestHeaders.put(pair.t0, pair.t1);
 				}
@@ -129,28 +129,6 @@ public class HttpServer {
 				return result;
 			}
 		};
-	}
-
-	/**
-	 * Reads a line from a stream with a maximum line length limit. Removes
-	 * carriage return if it is DOS-mode line feed (CR-LF).
-	 */
-	private String readLine(InputStream is) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		int c;
-
-		while ((c = is.read()) != 10) {
-			sb.append((char) c);
-			if (sb.length() > 65536)
-				throw new RuntimeException("Line too long");
-		}
-
-		int length = sb.length();
-
-		if (sb.charAt(length - 1) == 13)
-			sb.deleteCharAt(length - 1);
-
-		return sb.toString();
 	}
 
 }
