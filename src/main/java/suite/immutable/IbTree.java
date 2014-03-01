@@ -58,19 +58,26 @@ public class IbTree<T> implements Closeable {
 
 		public static Serializer<Pointer> serializer = SerializeUtil.nullable(new Serializer<Pointer>() {
 			public Pointer read(ByteBuffer buffer) {
-				Pointer pointer = new Pointer();
-				pointer.number = SerializeUtil.intSerializer.read(buffer);
-				return pointer;
+				Integer p = SerializeUtil.intSerializer.read(buffer);
+				return p != null ? new Pointer(p) : null;
 			}
 
 			public void write(ByteBuffer buffer, Pointer pointer) {
-				SerializeUtil.intSerializer.write(buffer, pointer.number);
+				SerializeUtil.intSerializer.write(buffer, pointer != null ? pointer.number : null);
 			}
 		});
+
+		private Pointer(int number) {
+			this.number = number;
+		}
 	}
 
 	private class Page {
 		private List<Slot> slots;
+	}
+
+	private enum SlotType {
+		BRANCH, DATA, TERMINAL
 	}
 
 	/**
@@ -79,16 +86,18 @@ public class IbTree<T> implements Closeable {
 	 * Pivot would be null at the maximum side of a tree as the guarding key.
 	 */
 	private class Slot {
-		private Pointer pointer;
+		private SlotType type;
 		private T pivot;
+		private Pointer pointer;
 
-		private Slot(Pointer pointer, T pivot) {
-			this.pointer = pointer;
+		private Slot(SlotType type, T pivot, Pointer pointer) {
+			this.type = type;
 			this.pivot = pivot;
+			this.pointer = pointer;
 		}
 
 		private List<Slot> slots() {
-			return pointer != null ? read(pointer).slots : null;
+			return type == SlotType.BRANCH ? read(pointer).slots : null;
 		}
 	}
 
@@ -111,7 +120,7 @@ public class IbTree<T> implements Closeable {
 	}
 
 	private class SwappingTablesAllocator implements Allocator {
-		private List<Pointer> pointers = Arrays.asList(new Pointer(), new Pointer());
+		private List<Pointer> pointers = Arrays.asList(new Pointer(0), new Pointer(1));
 		private int using = 0;
 
 		private SwappingTablesAllocator(int using) {
@@ -165,7 +174,7 @@ public class IbTree<T> implements Closeable {
 
 		private Transaction(Allocator allocator) {
 			this.allocator = allocator;
-			root = persist(Arrays.asList(new Slot(null, null)));
+			root = persist(Arrays.asList(new Slot(SlotType.TERMINAL, null, null)));
 		}
 
 		private Transaction(Allocator allocator, Pointer root) {
@@ -218,13 +227,13 @@ public class IbTree<T> implements Closeable {
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
-			if (fs.slot.pointer != null) {
+			if (fs.slot.type == SlotType.BRANCH) {
 				allocator.discard(fs.slot.pointer);
 				replaceSlots = add(fs.slot.slots(), t, isReplace);
 			} else if (fs.c != 0)
-				replaceSlots = Arrays.asList(new Slot(null, t), fs.slot);
+				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, t, null), fs.slot);
 			else if (isReplace)
-				replaceSlots = Arrays.asList(new Slot(null, t));
+				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, t, null));
 			else
 				throw new RuntimeException("Duplicate node " + t);
 
@@ -254,7 +263,7 @@ public class IbTree<T> implements Closeable {
 			List<Slot> replaceSlots;
 
 			if (fs.c >= 0)
-				if (fs.slot.pointer != null) {
+				if (fs.slot.type == SlotType.BRANCH) {
 					List<Slot> slots1 = remove(fs.slot.slots(), t);
 
 					// Merges with a neighbor if reached minimum number of nodes
@@ -311,7 +320,7 @@ public class IbTree<T> implements Closeable {
 		}
 
 		private Slot slot(List<Slot> slots) {
-			return new Slot(persist(slots), Util.last(slots).pivot);
+			return new Slot(SlotType.BRANCH, Util.last(slots).pivot, persist(slots));
 		}
 
 		private Pointer persist(List<Slot> slots) {
@@ -406,8 +415,7 @@ public class IbTree<T> implements Closeable {
 	public static List<Integer> buildAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
 		IbTree<Pointer>.Transaction transaction = ibTree.build0(stamp0);
 		for (int p = 0; p < nPages; p++) {
-			Pointer pointer = new Pointer();
-			pointer.number = p;
+			Pointer pointer = new Pointer(p);
 			transaction.add(pointer);
 		}
 		return transaction.commit();
@@ -422,8 +430,7 @@ public class IbTree<T> implements Closeable {
 	}
 
 	public Transaction transaction(List<Integer> stamp) {
-		Pointer root = new Pointer();
-		root.number = stamp.get(0);
+		Pointer root = new Pointer(stamp.get(0));
 		return new Transaction(allocator(Util.right(stamp, 1)), root);
 	}
 
@@ -457,7 +464,9 @@ public class IbTree<T> implements Closeable {
 	private Serializer<Page> createPageSerializer() {
 		final Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
 			public Slot read(ByteBuffer buffer) {
-				return new Slot(Pointer.serializer.read(buffer), serializer.read(buffer));
+				T pivot = serializer.read(buffer);
+				Pointer pointer = Pointer.serializer.read(buffer);
+				return new Slot(pointer != null ? SlotType.BRANCH : SlotType.TERMINAL, pivot, pointer);
 			}
 
 			public void write(ByteBuffer buffer, Slot slot) {
