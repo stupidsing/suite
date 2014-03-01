@@ -58,12 +58,11 @@ public class IbTree<T> implements Closeable {
 
 		public static Serializer<Pointer> serializer = SerializeUtil.nullable(new Serializer<Pointer>() {
 			public Pointer read(ByteBuffer buffer) {
-				Integer p = SerializeUtil.intSerializer.read(buffer);
-				return p != null ? new Pointer(p) : null;
+				return new Pointer(SerializeUtil.intSerializer.read(buffer));
 			}
 
 			public void write(ByteBuffer buffer, Pointer pointer) {
-				SerializeUtil.intSerializer.write(buffer, pointer != null ? pointer.number : null);
+				SerializeUtil.intSerializer.write(buffer, pointer.number);
 			}
 		});
 
