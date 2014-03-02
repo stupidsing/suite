@@ -73,6 +73,10 @@ public class IbTree<Key> implements Closeable {
 
 	private class Page {
 		private List<Slot> slots;
+
+		private Page(List<Slot> slots) {
+			this.slots = slots;
+		}
 	}
 
 	private enum SlotType {
@@ -359,11 +363,8 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private Pointer persist(List<Slot> slots) {
-			Page page = new Page();
-			page.slots = slots;
-
 			Pointer pointer = allocator.allocate();
-			write(pointer, page);
+			write(pointer, new Page(slots));
 			return pointer;
 		}
 	}
@@ -517,9 +518,7 @@ public class IbTree<Key> implements Closeable {
 
 		return new Serializer<Page>() {
 			public Page read(ByteBuffer buffer) {
-				Page page = new Page();
-				page.slots = slotsSerializer.read(buffer);
-				return page;
+				return new Page(slotsSerializer.read(buffer));
 			}
 
 			public void write(ByteBuffer buffer, Page page) {
