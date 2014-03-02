@@ -458,10 +458,8 @@ public class IbTree<Key> implements Closeable {
 
 	public static List<Integer> buildAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
 		IbTree<Pointer>.Transaction transaction = ibTree.build0(stamp0);
-		for (int p = 0; p < nPages; p++) {
-			Pointer pointer = new Pointer(p);
-			transaction.add(pointer);
-		}
+		for (int p = 0; p < nPages; p++)
+			transaction.add(new Pointer(p));
 		return transaction.stamp();
 	}
 

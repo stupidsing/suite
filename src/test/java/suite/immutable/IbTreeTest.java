@@ -62,14 +62,14 @@ public class IbTreeTest {
 			int size = 2;
 			stamp = IbTree.buildAllocator(ibTree0, stamp, size = size * nSlotsPerPage / 2 - 2);
 			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * nSlotsPerPage / 2 - 2);
+			size = 256;
 
 			IbTree<String>.Holder holder = ibTree2.holder();
 			holder.build(stamp);
 
 			IbTree<String>.Transaction transaction0 = holder.begin();
-			transaction0.add("abc");
-			transaction0.add("def");
-			transaction0.add("ghi");
+			for (int k = 0; k < size; k++)
+				transaction0.add("KEY-" + Integer.toHexString(k));
 
 			holder.commit(transaction0);
 

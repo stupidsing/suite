@@ -22,6 +22,8 @@ import suite.util.FunUtil.Source;
 
 public class Util {
 
+	private static final String hexDigits = "0123456789ABCDEF";
+
 	public static abstract class ExecutableProgram implements AutoCloseable {
 		protected abstract boolean run(String args[]) throws Exception;
 
@@ -168,6 +170,12 @@ public class Util {
 
 	public static StackTraceElement getStackTrace(int n) {
 		return Thread.currentThread().getStackTrace()[n];
+	}
+
+	public static String hex2(byte b) {
+		return "" //
+				+ (hexDigits.charAt(b >>> 4 & 0x0F)) //
+				+ (hexDigits.charAt(b & 0x0F));
 	}
 
 	public static boolean isBlank(String s) {
