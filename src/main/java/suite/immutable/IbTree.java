@@ -168,8 +168,8 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	public class Transaction {
-		private Pointer root;
 		private Allocator allocator;
+		private Pointer root;
 
 		private Transaction(Allocator allocator) {
 			this.allocator = allocator;
@@ -177,8 +177,8 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private Transaction(Allocator allocator, Pointer root) {
-			this.root = root;
 			this.allocator = allocator;
+			this.root = root;
 		}
 
 		public Source<Key> source() {
