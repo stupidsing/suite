@@ -467,7 +467,7 @@ public class IbTree<Key> implements Closeable {
 		return build0(stamp0).stamp();
 	}
 
-	public Transaction build0(List<Integer> stamp0) {
+	private Transaction build0(List<Integer> stamp0) {
 		return new Transaction(allocator(stamp0));
 	}
 
