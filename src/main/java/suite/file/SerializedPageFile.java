@@ -24,17 +24,17 @@ public class SerializedPageFile<V> implements Closeable {
 	private Serializer<V> serializer;
 
 	public SerializedPageFile(String filename, Serializer<V> serializer) throws FileNotFoundException {
-		file = new PageFile(filename);
+		this(new PageFile(filename), serializer);
+	}
+
+	public SerializedPageFile(PageFile file, Serializer<V> serializer) {
+		this.file = file;
 		this.serializer = serializer;
 	}
 
 	@Override
 	public void close() throws IOException {
 		file.close();
-	}
-
-	public void sync() throws IOException {
-		file.sync();
 	}
 
 	public V load(int pageNo) {

@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -42,7 +43,8 @@ public class IbTree<Key> implements Closeable {
 	private Serializer<Key> serializer;
 
 	private String filename;
-	private SerializedPageFile<Page> pageFile;
+	private PageFile pageFile;
+	private SerializedPageFile<Page> serializedPageFile;
 	private IbTree<Pointer> allocationIbTree;
 
 	public static class Pointer {
@@ -207,8 +209,17 @@ public class IbTree<Key> implements Closeable {
 		public void replace(final Key key) {
 			add(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
-					discard(slot);
 					return new Slot(SlotType.TERMINAL, key, null);
+				}
+			});
+		}
+
+		public <Payload> void replace(final Key key, final Payload payload, Serializer<Payload> payloadSerializer) {
+			final Slot slot1 = new Slot(SlotType.TERMINAL, key, null);
+
+			add(key, new Fun<Slot, Slot>() {
+				public Slot apply(Slot slot) {
+					return slot1;
 				}
 			});
 		}
@@ -236,13 +247,12 @@ public class IbTree<Key> implements Closeable {
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
-			if (fs.slot.type == SlotType.BRANCH) {
-				discard(fs.slot);
-				replaceSlots = add(fs.slot.slots(), key, replacer);
-			} else if (fs.c != 0)
+			if (fs.slot.type == SlotType.BRANCH)
+				replaceSlots = add(discard(fs.slot).slots(), key, replacer);
+			else if (fs.c != 0)
 				replaceSlots = Arrays.asList(replacer.apply(null), fs.slot);
 			else
-				replaceSlots = Arrays.asList(replacer.apply(fs.slot));
+				replaceSlots = Arrays.asList(replacer.apply(discard(fs.slot)));
 
 			List<Slot> slots1 = Util.add(Util.left(slots0, fs.i), replaceSlots, Util.right(slots0, fs.i + 1));
 
@@ -330,9 +340,10 @@ public class IbTree<Key> implements Closeable {
 			return new Slot(SlotType.BRANCH, Util.last(slots).pivot, persist(slots));
 		}
 
-		private void discard(Slot slot) {
+		private Slot discard(Slot slot) {
 			if (slot != null && slot.type != SlotType.TERMINAL)
 				allocator.discard(slot.pointer);
+			return slot;
 		}
 
 		private Pointer persist(List<Slot> slots) {
@@ -393,12 +404,13 @@ public class IbTree<Key> implements Closeable {
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
 		this.allocationIbTree = allocationIbTree;
-		pageFile = new SerializedPageFile<>(filename, createPageSerializer());
+		pageFile = new PageFile(filename);
+		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
 	}
 
 	@Override
 	public void close() throws IOException {
-		pageFile.close();
+		serializedPageFile.close();
 	}
 
 	public Holder holder() throws FileNotFoundException {
@@ -409,15 +421,23 @@ public class IbTree<Key> implements Closeable {
 		return source(pointer, null, null);
 	}
 
-	private Source<Key> source(final Pointer pointer, final Key start, final Key end) {
+	private Source<Key> source(Pointer pointer, Key start, Key end) {
+		return FunUtil.map(new Fun<Slot, Key>() {
+			public Key apply(Slot slot) {
+				return slot.pivot;
+			}
+		}, source0(pointer, start, end));
+	}
+
+	private Source<Slot> source0(final Pointer pointer, final Key start, final Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end).i + 1 : node.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<Key>>() {
-				public Source<Key> apply(Slot slot) {
-					return slot.pointer != null ? source(slot.pointer, start, end) : To.source(slot.pivot);
+			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<Slot>>() {
+				public Source<Slot> apply(Slot slot) {
+					return slot.type == SlotType.BRANCH ? source0(slot.pointer, start, end) : To.source(slot);
 				}
 			}, To.source(node.subList(i0, i1))));
 		else
@@ -461,16 +481,12 @@ public class IbTree<Key> implements Closeable {
 			return b0 ? -1 : b1 ? 1 : 0;
 	}
 
-	// private Map<Integer, Page> disk = new HashMap<>();
-
 	private Page read(Pointer pointer) {
-		// return disk.get(pointer.number);
-		return pageFile.load(pointer.number);
+		return serializedPageFile.load(pointer.number);
 	}
 
 	private void write(Pointer pointer, Page page) {
-		// disk.put(pointer.number, page);
-		pageFile.save(pointer.number, page);
+		serializedPageFile.save(pointer.number, page);
 	}
 
 	private Serializer<Page> createPageSerializer() {

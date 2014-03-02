@@ -47,13 +47,16 @@ public class IbTreeTest {
 	@Test
 	public void testMultipleLevels() throws IOException {
 		int i = 0;
+		String f0 = FileUtil.tmp + "/ibTree" + i++;
+		String f1 = FileUtil.tmp + "/ibTree" + i++;
+		String f2 = FileUtil.tmp + "/ibTree" + i++;
 
 		try (IbTree<Pointer> ibTree0 = new IbTree<Pointer>( //
-				FileUtil.tmp + "/ibTree" + i++, Pointer.comparator, Pointer.serializer); //
+				f0, Pointer.comparator, Pointer.serializer); //
 				IbTree<Pointer> ibTree1 = new IbTree<Pointer>( //
-						FileUtil.tmp + "/ibTree" + i++, Pointer.comparator, Pointer.serializer, ibTree0); //
+						f1, Pointer.comparator, Pointer.serializer, ibTree0); //
 				IbTree<String> ibTree2 = new IbTree<String>( //
-						FileUtil.tmp + "/ibTree" + i++, Util.<String> comparator(), SerializeUtil.string(16), ibTree1); //
+						f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1); //
 		) {
 			List<Integer> stamp = Arrays.asList(0);
 			int size = 2;
