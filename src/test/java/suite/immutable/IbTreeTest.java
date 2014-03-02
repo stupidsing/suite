@@ -66,11 +66,11 @@ public class IbTreeTest {
 			int size = 2;
 			stamp = IbTree.buildAllocator(ibTree0, stamp, size = size * maxBranchFactor / 2 - 2);
 			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * maxBranchFactor / 2 - 2);
-			size = 256;
+			size = 782;
 
 			List<String> list = new ArrayList<>();
 			for (int k = 0; k < size; k++)
-				list.add("KEY-" + Util.hex2((byte) k));
+				list.add("KEY-" + Util.hex4(k));
 
 			IbTree<String>.Holder holder = ibTree2.holder();
 			holder.build(stamp);
@@ -82,7 +82,7 @@ public class IbTreeTest {
 				transaction0.add(s);
 			holder.commit(transaction0);
 
-			assertEquals(size, dump(holder.begin()));
+			assertEquals(size, dumpAndCount(holder.begin()));
 
 			Collections.shuffle(list);
 
@@ -91,11 +91,11 @@ public class IbTreeTest {
 				transaction1.remove(s);
 			holder.commit(transaction1);
 
-			assertEquals(0, dump(holder.begin()));
+			assertEquals(0, dumpAndCount(holder.begin()));
 		}
 	}
 
-	private int dump(IbTree<?>.Transaction transaction) {
+	private int dumpAndCount(IbTree<?>.Transaction transaction) {
 		Source<?> source = transaction.source();
 		Object object;
 		int count = 0;

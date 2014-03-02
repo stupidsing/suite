@@ -172,10 +172,18 @@ public class Util {
 		return Thread.currentThread().getStackTrace()[n];
 	}
 
-	public static String hex2(byte b) {
+	public static String hex(int i) {
+		return "" + hexDigits.charAt(i & 0x0F);
+	}
+
+	public static String hex2(int i) {
 		return "" //
-				+ (hexDigits.charAt(b >>> 4 & 0x0F)) //
-				+ (hexDigits.charAt(b & 0x0F));
+				+ (hexDigits.charAt(i >>> 4 & 0x0F)) //
+				+ (hexDigits.charAt(i & 0x0F));
+	}
+
+	public static String hex4(int i) {
+		return hex2(i >>> 8 & 0xFF) + hex2(i & 0xFF);
 	}
 
 	public static boolean isBlank(String s) {
