@@ -25,7 +25,7 @@ public class LogUtil {
 	}
 
 	public static void initLog4j(Level level) {
-		File logDir = new File(System.getProperty("home.dir"), "logs");
+		File logDir = new File(FileUtil.tmp, "logs");
 
 		PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 
