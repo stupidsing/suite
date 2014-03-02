@@ -14,7 +14,7 @@ import suite.util.Util;
 
 public class IbTreeTest {
 
-	private int nSlotsPerPage = 16; // Must be same as IbTree.nSlotsPerPage
+	private int maxBranchFactor = 16; // Must be same as IbTree.maxBranchFactor
 
 	@Test
 	public void testSingleLevel() throws IOException {
@@ -26,7 +26,7 @@ public class IbTreeTest {
 			holder.build(stamp);
 
 			IbTree<Integer>.Transaction transaction = holder.begin();
-			int size = nSlotsPerPage - 2;
+			int size = maxBranchFactor - 2;
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
 			for (int i = size - 1; i >= 0; i--)
@@ -60,8 +60,8 @@ public class IbTreeTest {
 		) {
 			List<Integer> stamp = Arrays.asList(0);
 			int size = 2;
-			stamp = IbTree.buildAllocator(ibTree0, stamp, size = size * nSlotsPerPage / 2 - 2);
-			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * nSlotsPerPage / 2 - 2);
+			stamp = IbTree.buildAllocator(ibTree0, stamp, size = size * maxBranchFactor / 2 - 2);
+			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * maxBranchFactor / 2 - 2);
 			size = 256;
 
 			IbTree<String>.Holder holder = ibTree2.holder();

@@ -13,8 +13,8 @@ import suite.util.Util;
 
 public class I23Tree<T> implements ITree<T> {
 
-	private int maxSize = 4;
-	private int halfSize = maxSize / 2;
+	private int maxBranchFactor = 4;
+	private int minBranchFactor = maxBranchFactor / 2;
 
 	private List<Slot> root;
 	private Comparator<T> comparator;
@@ -127,11 +127,11 @@ public class I23Tree<T> implements ITree<T> {
 		List<Slot> node1;
 
 		// Checks if need to split
-		if (slots1.size() < maxSize)
+		if (slots1.size() < maxBranchFactor)
 			node1 = Arrays.asList(slot(slots1));
 		else { // Splits into two if reached maximum number of nodes
-			List<Slot> leftSlots = Util.left(slots1, halfSize);
-			List<Slot> rightSlots = Util.right(slots1, halfSize);
+			List<Slot> leftSlots = Util.left(slots1, minBranchFactor);
+			List<Slot> rightSlots = Util.right(slots1, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
@@ -153,7 +153,7 @@ public class I23Tree<T> implements ITree<T> {
 				List<Slot> slots1 = remove(fs.slot.slots, t);
 
 				// Merges with a neighbor if reached minimum number of nodes
-				if (slots1.size() < halfSize)
+				if (slots1.size() < minBranchFactor)
 					if (s0 > 0)
 						replaceSlots = merge(node0.get(--s0).slots, slots1);
 					else if (s1 < size)
@@ -175,10 +175,10 @@ public class I23Tree<T> implements ITree<T> {
 	private List<Slot> merge(List<Slot> node0, List<Slot> node1) {
 		List<Slot> merged;
 
-		if (node0.size() + node1.size() >= maxSize) {
+		if (node0.size() + node1.size() >= maxBranchFactor) {
 			List<Slot> leftSlots, rightSlots;
 
-			if (node0.size() > halfSize) {
+			if (node0.size() > minBranchFactor) {
 				leftSlots = Util.left(node0, -1);
 				rightSlots = Util.add(Arrays.asList(Util.last(node0)), node1);
 			} else {

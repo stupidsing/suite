@@ -36,8 +36,8 @@ import suite.util.Util;
  */
 public class IbTree<Key> implements Closeable {
 
-	private int nSlotsPerPage = 16;
-	private int minSlotsPerPage = nSlotsPerPage / 2;
+	private int maxBranchFactor = 16;
+	private int minBranchFactor = maxBranchFactor / 2;
 
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
@@ -271,11 +271,11 @@ public class IbTree<Key> implements Closeable {
 			List<Slot> slots2;
 
 			// Checks if need to split
-			if (slots1.size() < nSlotsPerPage)
+			if (slots1.size() < maxBranchFactor)
 				slots2 = Arrays.asList(slot(slots1));
 			else { // Splits into two if reached maximum number of nodes
-				List<Slot> leftSlots = Util.left(slots1, minSlotsPerPage);
-				List<Slot> rightSlots = Util.right(slots1, minSlotsPerPage);
+				List<Slot> leftSlots = Util.left(slots1, minBranchFactor);
+				List<Slot> rightSlots = Util.right(slots1, minBranchFactor);
 				slots2 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			}
 
@@ -296,7 +296,7 @@ public class IbTree<Key> implements Closeable {
 					List<Slot> slots1 = remove(fs.slot.slots(), key);
 
 					// Merges with a neighbor if reached minimum number of nodes
-					if (slots1.size() < minSlotsPerPage)
+					if (slots1.size() < minBranchFactor)
 						if (s0 > 0)
 							replaceSlots = merge(slots0.get(--s0).slots(), slots1);
 						else if (s1 < size)
@@ -321,10 +321,10 @@ public class IbTree<Key> implements Closeable {
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
 			List<Slot> merged;
 
-			if (slots0.size() + slots1.size() >= nSlotsPerPage) {
+			if (slots0.size() + slots1.size() >= maxBranchFactor) {
 				List<Slot> leftSlots, rightSlots;
 
-				if (slots0.size() > minSlotsPerPage) {
+				if (slots0.size() > minBranchFactor) {
 					leftSlots = Util.left(slots0, -1);
 					rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
 				} else {
