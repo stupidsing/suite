@@ -80,7 +80,7 @@ public class IbTreeTest {
 			while ((string = source.source()) != null)
 				System.out.println(string);
 
-			stamp = transaction1.commit();
+			stamp = transaction1.stamp();
 		}
 	}
 

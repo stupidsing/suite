@@ -163,7 +163,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public List<Integer> commit() {
-			return transaction.commit();
+			return transaction.stamp();
 		}
 	}
 
@@ -241,11 +241,11 @@ public class IbTree<Key> implements Closeable {
 			root = createRootPage(remove(read(root).slots, key));
 		}
 
-		public List<Integer> commit() {
-			List<Integer> result = new ArrayList<>();
-			result.add(root.number);
-			result.addAll(allocator.commit());
-			return result;
+		public List<Integer> stamp() {
+			List<Integer> stamp = new ArrayList<>();
+			stamp.add(root.number);
+			stamp.addAll(allocator.commit());
+			return stamp;
 		}
 
 		private void add(Key key, Fun<Slot, Slot> replacer) {
@@ -384,7 +384,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public void commit(Transaction transaction) throws IOException {
-			List<Integer> stamp = transaction.commit();
+			List<Integer> stamp = transaction.stamp();
 			pageFile.sync();
 			write(stamp);
 		}
@@ -462,11 +462,11 @@ public class IbTree<Key> implements Closeable {
 			Pointer pointer = new Pointer(p);
 			transaction.add(pointer);
 		}
-		return transaction.commit();
+		return transaction.stamp();
 	}
 
 	public List<Integer> build(List<Integer> stamp0) {
-		return build0(stamp0).commit();
+		return build0(stamp0).stamp();
 	}
 
 	public Transaction build0(List<Integer> stamp0) {

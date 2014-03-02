@@ -130,7 +130,7 @@ public class IbNameKeySet {
 	}
 
 	public List<Integer> commit() {
-		return transaction.commit();
+		return transaction.stamp();
 	}
 
 	public Serializer<Bytes> byteArray() {
