@@ -189,6 +189,11 @@ public class IbTree<Key> implements Closeable {
 			return IbTree.this.source(root, start, end);
 		}
 
+		public ByteBuffer payload(Key key) throws IOException {
+			Slot slot = IbTree.this.source0(root, key, null).source();
+			return slot != null && slot.type == SlotType.DATA ? pageFile.load(slot.pointer.number) : null;
+		}
+
 		public void add(final Key key) {
 			add(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
@@ -214,8 +219,15 @@ public class IbTree<Key> implements Closeable {
 			});
 		}
 
-		public <Payload> void replace(final Key key, final Payload payload, Serializer<Payload> payloadSerializer) {
-			final Slot slot1 = new Slot(SlotType.TERMINAL, key, null);
+		public <Payload> void replace(final Key key, final ByteBuffer payload) throws IOException {
+			final Slot slot1;
+
+			if (payload != null) {
+				Pointer pointer = allocator.allocate();
+				pageFile.save(pointer.number, payload);
+				slot1 = new Slot(SlotType.DATA, key, pointer);
+			} else
+				slot1 = new Slot(SlotType.TERMINAL, key, null);
 
 			add(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
