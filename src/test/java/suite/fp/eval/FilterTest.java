@@ -42,13 +42,10 @@ public class FilterTest {
 
 			public int read(char buffer[], int pos, int len) {
 				int nBytesRead = Math.min(count, len);
-
 				if (nBytesRead > 0) {
 					count -= nBytesRead;
-
 					for (int i = 0; i < nBytesRead; i++)
 						buffer[pos + i] = 32;
-
 					return nBytesRead;
 				} else
 					return -1;
@@ -60,7 +57,6 @@ public class FilterTest {
 
 			public void write(char buffer[], int pos, int len) {
 				count += len;
-
 				if (count == size - 1) {
 					System.gc();
 					System.gc();
