@@ -63,10 +63,25 @@ public class IbTreeTest {
 						f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1); //
 		) {
 			List<Integer> stamp = Arrays.asList(0);
+
+			// To project the growth of each tree generation, we need to find
+			// out the minimum tree size If n are pages used, using a very
+			// conservative approach:
+			//
+			// Each branch node occupy one child of its parent, and creates
+			// children at the number of branch factor. Therefore its "gain" is
+			// its branch factor minus one.
+			//
+			// One page is used as the root which has two child at minimum.
+			// Other pages should have half of branch factor at minimum.
+			//
+			// The final result needs to minus by one to exclude the guard node
+			// at rightmost of the tree. This cancels out the extra child from
+			// the root node.
 			int size = 2;
-			stamp = IbTree.buildAllocator(ibTree0, stamp, size = size * maxBranchFactor / 2 - 2);
-			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * maxBranchFactor / 2 - 2);
-			size = 782;
+			stamp = IbTree.buildAllocator(ibTree0, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
+			stamp = IbTree.buildAllocator(ibTree1, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
+			size = (size - 1) * (maxBranchFactor / 2 - 1);
 
 			List<String> list = new ArrayList<>();
 			for (int k = 0; k < size; k++)
