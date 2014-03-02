@@ -36,8 +36,8 @@ import suite.util.Util;
  */
 public class IbTree<Key> implements Closeable {
 
-	private int maxBranchFactor = 16;
-	private int minBranchFactor = maxBranchFactor / 2;
+	public static int maxBranchFactor = 16; // Exclusive
+	public static int minBranchFactor = maxBranchFactor / 2; // Inclusive
 
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;

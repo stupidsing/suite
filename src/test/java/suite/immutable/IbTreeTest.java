@@ -18,7 +18,7 @@ import suite.util.Util;
 
 public class IbTreeTest {
 
-	private int maxBranchFactor = 16; // Must be same as IbTree.maxBranchFactor
+	private int maxBranchFactor = IbTree.maxBranchFactor;
 
 	@Test
 	public void testSingleLevel() throws IOException {
