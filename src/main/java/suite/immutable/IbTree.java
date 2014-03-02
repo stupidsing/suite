@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import suite.file.SerializedPageFile;
 import suite.util.FunUtil;
@@ -189,28 +187,35 @@ public class IbTree<Key> implements Closeable {
 			return IbTree.this.source(root, start, end);
 		}
 
-		public void add(Key key) {
-			add(key, false);
+		public void add(final Key key) {
+			add(key, new Fun<Slot, Slot>() {
+				public Slot apply(Slot slot) {
+					if (slot == null)
+						return new Slot(SlotType.TERMINAL, key, null);
+					else
+						throw new RuntimeException("Duplicate node " + slot.pivot);
+				}
+			});
 		}
 
 		/**
-		 * Replaces a value with another. Mainly for dictionary cases to replace
-		 * stored value for the same key.
+		 * Replaces a value with another. For dictionary cases to replace stored
+		 * value of the same key.
 		 * 
-		 * Asserts comparator.compare(<original-value>, t) == 0.
+		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
-		public void replace(Key key) {
-			add(key, true);
+		public void replace(final Key key) {
+			add(key, new Fun<Slot, Slot>() {
+				public Slot apply(Slot slot) {
+					discard(slot);
+					return new Slot(SlotType.TERMINAL, key, null);
+				}
+			});
 		}
 
 		public void remove(Key key) {
 			allocator.discard(root);
 			root = createRootPage(remove(read(root).slots, key));
-		}
-
-		private void add(Key key, boolean isReplace) {
-			allocator.discard(root);
-			root = createRootPage(add(read(root).slots, key, isReplace));
 		}
 
 		public List<Integer> commit() {
@@ -220,21 +225,24 @@ public class IbTree<Key> implements Closeable {
 			return result;
 		}
 
-		private List<Slot> add(List<Slot> slots0, Key key, boolean isReplace) {
+		private void add(Key key, Fun<Slot, Slot> replacer) {
+			allocator.discard(root);
+			root = createRootPage(add(read(root).slots, key, replacer));
+		}
+
+		private List<Slot> add(List<Slot> slots0, Key key, Fun<Slot, Slot> replacer) {
 			FindSlot fs = new FindSlot(slots0, key);
 
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
 			if (fs.slot.type == SlotType.BRANCH) {
-				allocator.discard(fs.slot.pointer);
-				replaceSlots = add(fs.slot.slots(), key, isReplace);
+				discard(fs.slot);
+				replaceSlots = add(fs.slot.slots(), key, replacer);
 			} else if (fs.c != 0)
-				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, key, null), fs.slot);
-			else if (isReplace)
-				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, key, null));
+				replaceSlots = Arrays.asList(replacer.apply(null), fs.slot);
 			else
-				throw new RuntimeException("Duplicate node " + key);
+				replaceSlots = Arrays.asList(replacer.apply(fs.slot));
 
 			List<Slot> slots1 = Util.add(Util.left(slots0, fs.i), replaceSlots, Util.right(slots0, fs.i + 1));
 
@@ -275,15 +283,15 @@ public class IbTree<Key> implements Closeable {
 							replaceSlots = Arrays.asList(slot(slots1));
 					else
 						replaceSlots = Arrays.asList(slot(slots1));
-
-					for (int s = s0; s < s1; s++)
-						allocator.discard(slots0.get(s).pointer);
 				} else if (fs.c == 0)
 					replaceSlots = Collections.emptyList();
 				else
 					throw new RuntimeException("Node not found " + key);
 			else
 				throw new RuntimeException("Node not found " + key);
+
+			for (int s = s0; s < s1; s++)
+				discard(slots0.get(s));
 
 			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 		}
@@ -320,6 +328,11 @@ public class IbTree<Key> implements Closeable {
 
 		private Slot slot(List<Slot> slots) {
 			return new Slot(SlotType.BRANCH, Util.last(slots).pivot, persist(slots));
+		}
+
+		private void discard(Slot slot) {
+			if (slot != null && slot.type != SlotType.TERMINAL)
+				allocator.discard(slot.pointer);
 		}
 
 		private Pointer persist(List<Slot> slots) {
@@ -448,29 +461,31 @@ public class IbTree<Key> implements Closeable {
 			return b0 ? -1 : b1 ? 1 : 0;
 	}
 
-	private Map<Integer, Page> disk = new HashMap<>();
+	// private Map<Integer, Page> disk = new HashMap<>();
 
 	private Page read(Pointer pointer) {
-		return disk.get(pointer.number);
-		// return pageFile.load(pointer.number);
+		// return disk.get(pointer.number);
+		return pageFile.load(pointer.number);
 	}
 
 	private void write(Pointer pointer, Page page) {
-		disk.put(pointer.number, page);
-		// pageFile.save(pointer.number, page);
+		// disk.put(pointer.number, page);
+		pageFile.save(pointer.number, page);
 	}
 
 	private Serializer<Page> createPageSerializer() {
 		final Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
 			public Slot read(ByteBuffer buffer) {
+				SlotType type = SlotType.values()[SerializeUtil.intSerializer.read(buffer)];
 				Key pivot = serializer.read(buffer);
 				Pointer pointer = Pointer.serializer.read(buffer);
-				return new Slot(pointer != null ? SlotType.BRANCH : SlotType.TERMINAL, pivot, pointer);
+				return new Slot(type, pivot, pointer);
 			}
 
 			public void write(ByteBuffer buffer, Slot slot) {
-				Pointer.serializer.write(buffer, slot.pointer);
+				SerializeUtil.intSerializer.write(buffer, slot.type.ordinal());
 				serializer.write(buffer, slot.pivot);
+				Pointer.serializer.write(buffer, slot.pointer);
 			}
 		});
 

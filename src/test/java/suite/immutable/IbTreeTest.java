@@ -53,7 +53,7 @@ public class IbTreeTest {
 				IbTree<Pointer> ibTree1 = new IbTree<Pointer>( //
 						FileUtil.tmp + "/ibTree" + i++, Pointer.comparator, Pointer.serializer, ibTree0); //
 				IbTree<String> ibTree2 = new IbTree<String>( //
-						FileUtil.tmp + "/ibTree" + i++, Util.<String> comparator(), SerializeUtil.string(256), ibTree1); //
+						FileUtil.tmp + "/ibTree" + i++, Util.<String> comparator(), SerializeUtil.string(16), ibTree1); //
 		) {
 			List<Integer> stamp = Arrays.asList(0);
 			int size = 2;
@@ -63,20 +63,21 @@ public class IbTreeTest {
 			IbTree<String>.Holder holder = ibTree2.holder();
 			holder.build(stamp);
 
-			IbTree<String>.Transaction transaction = holder.begin();
-			transaction.add("abc");
-			transaction.add("def");
-			transaction.add("ghi");
+			IbTree<String>.Transaction transaction0 = holder.begin();
+			transaction0.add("abc");
+			transaction0.add("def");
+			transaction0.add("ghi");
 
-			holder.commit(transaction);
+			holder.commit(transaction0);
 
-			Source<String> source = transaction.source();
+			IbTree<String>.Transaction transaction1 = holder.begin();
+			Source<String> source = transaction1.source();
 			String string;
 
 			while ((string = source.source()) != null)
 				System.out.println(string);
 
-			stamp = transaction.commit();
+			stamp = transaction1.commit();
 		}
 	}
 
