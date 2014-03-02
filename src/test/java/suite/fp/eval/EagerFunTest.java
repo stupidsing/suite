@@ -299,11 +299,6 @@ public class EagerFunTest {
 	}
 
 	@Test
-	public void testTget2() {
-		assertEquals(Int.create(3), eval("tget2 {1, 2, 3, 4,}"));
-	}
-
-	@Test
 	public void testTranspose() {
 		String r = "(1; 4; 7;); (2; 5; 8;); (3; 6; 9;);";
 		assertEquals(Suite.parse(r), eval("transpose {(1; 2; 3;); (4; 5; 6;); (7; 8; 9;);}"));

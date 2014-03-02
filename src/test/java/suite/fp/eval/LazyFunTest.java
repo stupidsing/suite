@@ -72,11 +72,6 @@ public class LazyFunTest {
 		eval("tail {1; 2; 3;}");
 	}
 
-	@Test
-	public void testTget2() {
-		assertEquals(Int.create(3), eval("tget2 {1, 2, 3, 4,}"));
-	}
-
 	private static Node eval(String f) {
 		return Suite.evaluateFun(f, true);
 	}
