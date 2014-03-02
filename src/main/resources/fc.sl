@@ -235,15 +235,6 @@ fc-add-functions STANDARD .p (
 			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
 		|| anything => ()
 	) >>
-	define tget0 =
-		first
-	>>
-	define tget1 =
-		first . second
-	>>
-	define tget2 =
-		first . second . second
-	>>
 	define unfold-right = (fun => init =>
 		let r = fun {init} >>
 		if (is-list {r})

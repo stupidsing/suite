@@ -48,11 +48,6 @@ public class LazyFunTest {
 	}
 
 	@Test
-	public void testGet() {
-		assertEquals(Int.create(3), eval("get {2} {1; 2; 3; 4;}"));
-	}
-
-	@Test
 	public void testIterate() {
 		assertEquals(eval("65536"), eval("iterate {`* 2`} {1} | get {16}"));
 	}

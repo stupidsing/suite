@@ -121,11 +121,6 @@ public class EagerFunTest {
 	}
 
 	@Test
-	public void testGet() {
-		assertEquals(Int.create(3), eval("get {2} {1; 2; 3; 4;}"));
-	}
-
-	@Test
 	public void testGroup() {
 		assertEquals(eval("1, (2; 5;); 2, (1; 4;); 3, (0; 3;);"), eval("group {3, 0; 2, 1; 1, 2; 3, 3; 2, 4; 1, 5;}"));
 	}
