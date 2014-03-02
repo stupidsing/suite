@@ -1,7 +1,11 @@
 package suite.immutable;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -64,24 +68,44 @@ public class IbTreeTest {
 			stamp = IbTree.buildAllocator(ibTree1, stamp, size = size * maxBranchFactor / 2 - 2);
 			size = 256;
 
+			List<String> list = new ArrayList<>();
+			for (int k = 0; k < size; k++)
+				list.add("KEY-" + Util.hex2((byte) k));
+
 			IbTree<String>.Holder holder = ibTree2.holder();
 			holder.build(stamp);
 
-			IbTree<String>.Transaction transaction0 = holder.begin();
-			for (int k = 0; k < size; k++)
-				transaction0.add("KEY-" + Integer.toHexString(k));
+			Collections.shuffle(list);
 
+			IbTree<String>.Transaction transaction0 = holder.begin();
+			for (String s : list)
+				transaction0.add(s);
 			holder.commit(transaction0);
 
+			assertEquals(size, dump(holder.begin()));
+
+			Collections.shuffle(list);
+
 			IbTree<String>.Transaction transaction1 = holder.begin();
-			Source<String> source = transaction1.source();
-			String string;
+			for (String s : list)
+				transaction1.remove(s);
+			holder.commit(transaction1);
 
-			while ((string = source.source()) != null)
-				System.out.println(string);
-
-			stamp = transaction1.stamp();
+			assertEquals(0, dump(holder.begin()));
 		}
+	}
+
+	private int dump(IbTree<?>.Transaction transaction) {
+		Source<?> source = transaction.source();
+		Object object;
+		int count = 0;
+
+		while ((object = source.source()) != null) {
+			System.out.println(object.toString());
+			count++;
+		}
+
+		return count;
 	}
 
 }
