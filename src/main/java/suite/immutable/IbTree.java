@@ -35,13 +35,13 @@ import suite.util.Util;
  * 
  * @author ywsing
  */
-public class IbTree<T> implements Closeable {
+public class IbTree<Key> implements Closeable {
 
 	private int nSlotsPerPage = 16;
 	private int minSlotsPerPage = nSlotsPerPage / 2;
 
-	private Comparator<T> comparator;
-	private Serializer<T> serializer;
+	private Comparator<Key> comparator;
+	private Serializer<Key> serializer;
 
 	private String filename;
 	private SerializedPageFile<Page> pageFile;
@@ -86,10 +86,10 @@ public class IbTree<T> implements Closeable {
 	 */
 	private class Slot {
 		private SlotType type;
-		private T pivot;
+		private Key pivot;
 		private Pointer pointer;
 
-		private Slot(SlotType type, T pivot, Pointer pointer) {
+		private Slot(SlotType type, Key pivot, Pointer pointer) {
 			this.type = type;
 			this.pivot = pivot;
 			this.pointer = pointer;
@@ -104,8 +104,8 @@ public class IbTree<T> implements Closeable {
 		private Slot slot = null;
 		private int i = 0, c = 1;
 
-		private FindSlot(List<Slot> slots, T t) {
-			while ((c = compare((slot = slots.get(i)).pivot, t)) < 0)
+		private FindSlot(List<Slot> slots, Key key) {
+			while ((c = compare((slot = slots.get(i)).pivot, key)) < 0)
 				i++;
 		}
 	}
@@ -181,16 +181,16 @@ public class IbTree<T> implements Closeable {
 			this.allocator = allocator;
 		}
 
-		public Source<T> source() {
+		public Source<Key> source() {
 			return source(null, null);
 		}
 
-		public Source<T> source(T start, T end) {
+		public Source<Key> source(Key start, Key end) {
 			return IbTree.this.source(root, start, end);
 		}
 
-		public void add(T t) {
-			add(t, false);
+		public void add(Key key) {
+			add(key, false);
 		}
 
 		/**
@@ -199,18 +199,18 @@ public class IbTree<T> implements Closeable {
 		 * 
 		 * Asserts comparator.compare(<original-value>, t) == 0.
 		 */
-		public void replace(T t) {
-			add(t, true);
+		public void replace(Key key) {
+			add(key, true);
 		}
 
-		public void remove(T t) {
+		public void remove(Key key) {
 			allocator.discard(root);
-			root = createRootPage(remove(read(root).slots, t));
+			root = createRootPage(remove(read(root).slots, key));
 		}
 
-		private void add(T t, boolean isReplace) {
+		private void add(Key key, boolean isReplace) {
 			allocator.discard(root);
-			root = createRootPage(add(read(root).slots, t, isReplace));
+			root = createRootPage(add(read(root).slots, key, isReplace));
 		}
 
 		public List<Integer> commit() {
@@ -220,21 +220,21 @@ public class IbTree<T> implements Closeable {
 			return result;
 		}
 
-		private List<Slot> add(List<Slot> slots0, T t, boolean isReplace) {
-			FindSlot fs = new FindSlot(slots0, t);
+		private List<Slot> add(List<Slot> slots0, Key key, boolean isReplace) {
+			FindSlot fs = new FindSlot(slots0, key);
 
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
 			if (fs.slot.type == SlotType.BRANCH) {
 				allocator.discard(fs.slot.pointer);
-				replaceSlots = add(fs.slot.slots(), t, isReplace);
+				replaceSlots = add(fs.slot.slots(), key, isReplace);
 			} else if (fs.c != 0)
-				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, t, null), fs.slot);
+				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, key, null), fs.slot);
 			else if (isReplace)
-				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, t, null));
+				replaceSlots = Arrays.asList(new Slot(SlotType.TERMINAL, key, null));
 			else
-				throw new RuntimeException("Duplicate node " + t);
+				throw new RuntimeException("Duplicate node " + key);
 
 			List<Slot> slots1 = Util.add(Util.left(slots0, fs.i), replaceSlots, Util.right(slots0, fs.i + 1));
 
@@ -252,8 +252,8 @@ public class IbTree<T> implements Closeable {
 			return slots2;
 		}
 
-		private List<Slot> remove(List<Slot> slots0, T t) {
-			FindSlot fs = new FindSlot(slots0, t);
+		private List<Slot> remove(List<Slot> slots0, Key key) {
+			FindSlot fs = new FindSlot(slots0, key);
 
 			int size = slots0.size();
 
@@ -263,7 +263,7 @@ public class IbTree<T> implements Closeable {
 
 			if (fs.c >= 0)
 				if (fs.slot.type == SlotType.BRANCH) {
-					List<Slot> slots1 = remove(fs.slot.slots(), t);
+					List<Slot> slots1 = remove(fs.slot.slots(), key);
 
 					// Merges with a neighbor if reached minimum number of nodes
 					if (slots1.size() < minSlotsPerPage)
@@ -281,9 +281,9 @@ public class IbTree<T> implements Closeable {
 				} else if (fs.c == 0)
 					replaceSlots = Collections.emptyList();
 				else
-					throw new RuntimeException("Node not found " + t);
+					throw new RuntimeException("Node not found " + key);
 			else
-				throw new RuntimeException("Node not found " + t);
+				throw new RuntimeException("Node not found " + key);
 
 			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 		}
@@ -366,7 +366,7 @@ public class IbTree<T> implements Closeable {
 	 * Constructor for a small tree that would not span more than 1 page, i.e.
 	 * no extra "page allocation tree" is required.
 	 */
-	public IbTree(String filename, Comparator<T> comparator, Serializer<T> serializer) throws FileNotFoundException {
+	public IbTree(String filename, Comparator<Key> comparator, Serializer<Key> serializer) throws FileNotFoundException {
 		this(filename, comparator, serializer, null);
 	}
 
@@ -374,7 +374,7 @@ public class IbTree<T> implements Closeable {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTree(String filename, Comparator<T> comparator, Serializer<T> serializer, IbTree<Pointer> allocationIbTree)
+	public IbTree(String filename, Comparator<Key> comparator, Serializer<Key> serializer, IbTree<Pointer> allocationIbTree)
 			throws FileNotFoundException {
 		this.filename = filename;
 		this.comparator = comparator;
@@ -392,18 +392,18 @@ public class IbTree<T> implements Closeable {
 		return new Holder();
 	}
 
-	private Source<T> source(Pointer pointer) {
+	private Source<Key> source(Pointer pointer) {
 		return source(pointer, null, null);
 	}
 
-	private Source<T> source(final Pointer pointer, final T start, final T end) {
+	private Source<Key> source(final Pointer pointer, final Key start, final Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end).i + 1 : node.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<T>>() {
-				public Source<T> apply(Slot slot) {
+			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<Key>>() {
+				public Source<Key> apply(Slot slot) {
 					return slot.pointer != null ? source(slot.pointer, start, end) : To.source(slot.pivot);
 				}
 			}, To.source(node.subList(i0, i1))));
@@ -438,12 +438,12 @@ public class IbTree<T> implements Closeable {
 		return isSbta ? new SubIbTreeAllocator(allocationIbTree, stamp) : new SwappingTablesAllocator(stamp.get(0));
 	}
 
-	private int compare(T t0, T t1) {
-		boolean b0 = t0 != null;
-		boolean b1 = t1 != null;
+	private int compare(Key key0, Key key1) {
+		boolean b0 = key0 != null;
+		boolean b1 = key1 != null;
 
 		if (b0 && b1)
-			return comparator.compare(t0, t1);
+			return comparator.compare(key0, key1);
 		else
 			return b0 ? -1 : b1 ? 1 : 0;
 	}
@@ -463,7 +463,7 @@ public class IbTree<T> implements Closeable {
 	private Serializer<Page> createPageSerializer() {
 		final Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
 			public Slot read(ByteBuffer buffer) {
-				T pivot = serializer.read(buffer);
+				Key pivot = serializer.read(buffer);
 				Pointer pointer = Pointer.serializer.read(buffer);
 				return new Slot(pointer != null ? SlotType.BRANCH : SlotType.TERMINAL, pivot, pointer);
 			}
