@@ -5,36 +5,31 @@ using external STANDARD >>
 data (heap {:t}) over :t as Empty >>
 data (heap {:t}) over :t as Heap (:t, [heap {:t}]) >>
 
-define elem = (heap {:t} -> :t) of
+define find-min =
 	`Heap ($elem, $list)` => elem
 >>
-define children = (heap {:t} -> [heap {:t}]) of
-	`Heap ($elem, $list)` => list
->>
-define find-min =
-	elem
->>
-define meld = (heap0 => heap1 =>
-	if (heap0 != Empty) then
-		if (heap1 != Empty) then
-			define elem0 = elem {heap0} >>
-			define elem1 = elem {heap1} >>
+define meld = (:t => heap {:t} -> heap {:t} -> heap {:t}) of (
+heap0 => heap1 =>
+	case
+	|| (heap0 = `Heap ($elem0, $heaps0)`)
+		case
+		|| (heap1 = `Heap ($elem1, $heaps1)`)
 			if (elem0 < elem1) then
-				Heap (elem0, (heap1; children {heap0}))
+				Heap (elem0, (heap1; heaps0))
 			else
-				Heap (elem1, (heap0; children {heap1}))
-		else heap0
-	else heap1
+				Heap (elem1, (heap0; heaps1))
+		|| heap0
+	|| heap1
 ) >>
 define add = (heap => elem =>
 	meld {Heap (elem,)} {heap}
 ) >>
-define delete-min = (heap =>
+define delete-min = (
 	define merge-pairs =
 		case
 		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
 		|| `$h;` => h
 		|| anything => error
 	>>
-	merge-pairs {children {heap}}
+	`Heap ($elem, $heap)` => merge-pairs {heap}
 ) >>
