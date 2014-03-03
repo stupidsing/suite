@@ -18,12 +18,13 @@ import suite.util.Util;
 
 public class IbTreeTest {
 
-	private int maxBranchFactor = IbTree.maxBranchFactor;
+	private int maxBranchFactor = 16;
+	private IbTreeBuilder builder = new IbTreeBuilder(maxBranchFactor);
 
 	@Test
 	public void testSingleLevel() throws IOException {
-		try (IbTree<Integer> ibTree0 = new IbTree<Integer>( //
-				FileUtil.tmp + "/ibTree", Util.<Integer> comparator(), SerializeUtil.intSerializer)) {
+		try (IbTree<Integer> ibTree0 = builder.buildTree(FileUtil.tmp + "/ibTree" //
+		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null)) {
 			List<Integer> stamp = Arrays.asList(0);
 
 			IbTree<Integer>.Holder holder = ibTree0.holder();
@@ -49,13 +50,9 @@ public class IbTreeTest {
 		String f1 = FileUtil.tmp + "/ibTree" + i++;
 		String f2 = FileUtil.tmp + "/ibTree" + i++;
 
-		try (IbTree<Pointer> ibTree0 = new IbTree<Pointer>( //
-				f0, Pointer.comparator, Pointer.serializer); //
-				IbTree<Pointer> ibTree1 = new IbTree<Pointer>( //
-						f1, Pointer.comparator, Pointer.serializer, ibTree0); //
-				IbTree<String> ibTree2 = new IbTree<String>( //
-						f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1); //
-		) {
+		try (IbTree<Pointer> ibTree0 = builder.buildPointerTree(f0);
+				IbTree<Pointer> ibTree1 = builder.buildPointerTree(f1, ibTree0); //
+				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1)) {
 			List<Integer> stamp = Arrays.asList(0);
 
 			// To project the growth of each tree generation, we need to find
@@ -77,12 +74,12 @@ public class IbTreeTest {
 			stamp = IbTree.buildAllocator(ibTree1, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
 			size = (size - 1) * (maxBranchFactor / 2 - 1);
 
+			IbTree<String>.Holder holder = ibTree2.holder();
+			holder.build(stamp);
+
 			List<String> list = new ArrayList<>();
 			for (int k = 0; k < size; k++)
 				list.add("KEY-" + Util.hex4(k));
-
-			IbTree<String>.Holder holder = ibTree2.holder();
-			holder.build(stamp);
 
 			Collections.shuffle(list);
 

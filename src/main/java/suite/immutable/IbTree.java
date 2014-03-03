@@ -36,16 +36,16 @@ import suite.util.Util;
  */
 public class IbTree<Key> implements Closeable {
 
-	public static int maxBranchFactor = 16; // Exclusive
-	public static int minBranchFactor = maxBranchFactor / 2; // Inclusive
-
-	private Comparator<Key> comparator;
-	private Serializer<Key> serializer;
-
 	private String filename;
 	private PageFile pageFile;
 	private SerializedPageFile<Page> serializedPageFile;
 	private IbTree<Pointer> allocationIbTree;
+
+	private int maxBranchFactor; // Exclusive
+	private int minBranchFactor; // Inclusive
+
+	private Comparator<Key> comparator;
+	private Serializer<Key> serializer;
 
 	public static class Pointer {
 		private int number;
@@ -148,7 +148,7 @@ public class IbTree<Key> implements Closeable {
 		private IbTree<Pointer> ibTree;
 		private IbTree<Pointer>.Transaction transaction;
 
-		public SubIbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
+		private SubIbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
 			this.ibTree = ibTree;
 			this.transaction = ibTree.transaction(stamp);
 		}
@@ -400,25 +400,24 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	/**
-	 * Constructor for a small tree that would not span more than 1 page, i.e.
-	 * no extra "page allocation tree" is required.
-	 */
-	public IbTree(String filename, Comparator<Key> comparator, Serializer<Key> serializer) throws FileNotFoundException {
-		this(filename, comparator, serializer, null);
-	}
-
-	/**
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTree(String filename, Comparator<Key> comparator, Serializer<Key> serializer, IbTree<Pointer> allocationIbTree)
-			throws FileNotFoundException {
+	public IbTree(String filename //
+			, int maxBranchFactor //
+			, Comparator<Key> comparator //
+			, Serializer<Key> serializer //
+			, IbTree<Pointer> allocationIbTree) throws FileNotFoundException {
 		this.filename = filename;
-		this.comparator = comparator;
-		this.serializer = SerializeUtil.nullable(serializer);
-		this.allocationIbTree = allocationIbTree;
 		pageFile = new PageFile(filename);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
+		this.allocationIbTree = allocationIbTree;
+
+		this.maxBranchFactor = maxBranchFactor;
+		minBranchFactor = maxBranchFactor / 2;
+
+		this.comparator = comparator;
+		this.serializer = SerializeUtil.nullable(serializer);
 	}
 
 	@Override
@@ -472,7 +471,7 @@ public class IbTree<Key> implements Closeable {
 		return new Transaction(allocator(stamp0));
 	}
 
-	public Transaction transaction(List<Integer> stamp) {
+	private Transaction transaction(List<Integer> stamp) {
 		Pointer root = new Pointer(stamp.get(0));
 		return new Transaction(allocator(Util.right(stamp, 1)), root);
 	}
