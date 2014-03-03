@@ -382,6 +382,16 @@ public class IbTree<Key> implements Closeable {
 			write(create0(stamp).stamp());
 		}
 
+		public List<Integer> createAllocator(List<Integer> stamp0, int nPages) {
+			IbTree<Pointer>.Holder holder = allocationIbTree.holder();
+			holder.create(stamp0);
+
+			IbTree<Pointer>.Transaction transaction = holder.begin();
+			for (int p = 0; p < nPages; p++)
+				transaction.add(new Pointer(p));
+			return transaction.stamp();
+		}
+
 		public Transaction begin() {
 			return transaction(read());
 		}
@@ -456,16 +466,6 @@ public class IbTree<Key> implements Closeable {
 			}, To.source(node.subList(i0, i1))));
 		else
 			return FunUtil.nullSource();
-	}
-
-	public static List<Integer> createAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
-		IbTree<Pointer>.Holder holder = ibTree.holder();
-		holder.create(stamp0);
-
-		IbTree<Pointer>.Transaction transaction = holder.begin();
-		for (int p = 0; p < nPages; p++)
-			transaction.add(new Pointer(p));
-		return transaction.stamp();
 	}
 
 	private Transaction create0(List<Integer> stamp0) {

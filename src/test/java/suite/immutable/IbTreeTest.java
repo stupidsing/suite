@@ -51,9 +51,10 @@ public class IbTreeTest {
 		String f2 = FileUtil.tmp + "/ibTree" + i++;
 
 		try (IbTree<Pointer> ibTree0 = builder.buildPointerTree(f0);
-				IbTree<Pointer> ibTree1 = builder.buildPointerTree(f1, ibTree0); //
+				IbTree<Pointer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
 				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1)) {
 			List<Integer> stamp = Arrays.asList(0);
+			IbTree<String>.Holder holder = ibTree2.holder();
 
 			// To project the growth of each tree generation, we need to find
 			// out the minimum tree size If n are pages used, using a very
@@ -70,11 +71,10 @@ public class IbTreeTest {
 			// at rightmost of the tree. This cancels out the extra child from
 			// the root node.
 			int size = 2;
-			stamp = IbTree.createAllocator(ibTree0, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
-			stamp = IbTree.createAllocator(ibTree1, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
+			stamp = ibTree1.holder().createAllocator(stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
+			stamp = ibTree2.holder().createAllocator(stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
 			size = (size - 1) * (maxBranchFactor / 2 - 1);
 
-			IbTree<String>.Holder holder = ibTree2.holder();
 			holder.create(stamp);
 
 			List<String> list = new ArrayList<>();
