@@ -47,7 +47,7 @@ public class IbTree<Key> implements Closeable {
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
 
-	private Holder holder = new Holder();
+	private Holder holder;
 
 	public static class Pointer {
 		private int number;
@@ -430,6 +430,8 @@ public class IbTree<Key> implements Closeable {
 
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
+
+		holder = new Holder();
 	}
 
 	@Override
