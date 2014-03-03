@@ -47,6 +47,8 @@ public class IbTree<Key> implements Closeable {
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
 
+	private Holder holder = new Holder();
+
 	public static class Pointer {
 		private int number;
 
@@ -119,7 +121,7 @@ public class IbTree<Key> implements Closeable {
 
 		public void discard(Pointer pointer);
 
-		public List<Integer> commit();
+		public List<Integer> stamp();
 	}
 
 	private class SwappingTablesAllocator implements Allocator {
@@ -137,7 +139,7 @@ public class IbTree<Key> implements Closeable {
 		public void discard(Pointer pointer) {
 		}
 
-		public List<Integer> commit() {
+		public List<Integer> stamp() {
 			List<Integer> pointer = Arrays.asList(using);
 			using = 1 - using;
 			return pointer;
@@ -166,7 +168,7 @@ public class IbTree<Key> implements Closeable {
 			transaction.add(pointer);
 		}
 
-		public List<Integer> commit() {
+		public List<Integer> stamp() {
 			return transaction.stamp();
 		}
 	}
@@ -245,10 +247,10 @@ public class IbTree<Key> implements Closeable {
 			root = createRootPage(remove(read(root).slots, key));
 		}
 
-		public List<Integer> stamp() {
+		private List<Integer> stamp() {
 			List<Integer> stamp = new ArrayList<>();
 			stamp.add(root.number);
-			stamp.addAll(allocator.commit());
+			stamp.addAll(allocator.stamp());
 			return stamp;
 		}
 
@@ -376,8 +378,8 @@ public class IbTree<Key> implements Closeable {
 			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
-		public void build(List<Integer> stamp) {
-			write(IbTree.this.build(stamp));
+		public void create(List<Integer> stamp) {
+			write(create0(stamp).stamp());
 		}
 
 		public Transaction begin() {
@@ -425,8 +427,8 @@ public class IbTree<Key> implements Closeable {
 		serializedPageFile.close();
 	}
 
-	public Holder holder() throws FileNotFoundException {
-		return new Holder();
+	public Holder holder() {
+		return holder;
 	}
 
 	private Source<Key> source(Pointer pointer) {
@@ -456,18 +458,17 @@ public class IbTree<Key> implements Closeable {
 			return FunUtil.nullSource();
 	}
 
-	public static List<Integer> buildAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
-		IbTree<Pointer>.Transaction transaction = ibTree.build0(stamp0);
+	public static List<Integer> createAllocator(IbTree<Pointer> ibTree, List<Integer> stamp0, int nPages) {
+		IbTree<Pointer>.Holder holder = ibTree.holder();
+		holder.create(stamp0);
+
+		IbTree<Pointer>.Transaction transaction = holder.begin();
 		for (int p = 0; p < nPages; p++)
 			transaction.add(new Pointer(p));
 		return transaction.stamp();
 	}
 
-	public List<Integer> build(List<Integer> stamp0) {
-		return build0(stamp0).stamp();
-	}
-
-	private Transaction build0(List<Integer> stamp0) {
+	private Transaction create0(List<Integer> stamp0) {
 		return new Transaction(allocator(stamp0));
 	}
 
@@ -476,9 +477,9 @@ public class IbTree<Key> implements Closeable {
 		return new Transaction(allocator(Util.right(stamp, 1)), root);
 	}
 
-	private Allocator allocator(List<Integer> stamp) {
+	private Allocator allocator(List<Integer> stamp0) {
 		boolean isSbta = allocationIbTree != null;
-		return isSbta ? new SubIbTreeAllocator(allocationIbTree, stamp) : new SwappingTablesAllocator(stamp.get(0));
+		return isSbta ? new SubIbTreeAllocator(allocationIbTree, stamp0) : new SwappingTablesAllocator(stamp0.get(0));
 	}
 
 	private int compare(Key key0, Key key1) {

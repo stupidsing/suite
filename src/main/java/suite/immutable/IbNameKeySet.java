@@ -129,10 +129,6 @@ public class IbNameKeySet {
 		}
 	}
 
-	public List<Integer> commit() {
-		return transaction.stamp();
-	}
-
 	public Serializer<Bytes> byteArray() {
 		final Serializer<byte[]> bas = SerializeUtil.byteArray(keyLength);
 

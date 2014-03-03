@@ -28,7 +28,7 @@ public class IbTreeTest {
 			List<Integer> stamp = Arrays.asList(0);
 
 			IbTree<Integer>.Holder holder = ibTree0.holder();
-			holder.build(stamp);
+			holder.create(stamp);
 
 			IbTree<Integer>.Transaction transaction = holder.begin();
 			int size = maxBranchFactor - 2;
@@ -70,12 +70,12 @@ public class IbTreeTest {
 			// at rightmost of the tree. This cancels out the extra child from
 			// the root node.
 			int size = 2;
-			stamp = IbTree.buildAllocator(ibTree0, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
-			stamp = IbTree.buildAllocator(ibTree1, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
+			stamp = IbTree.createAllocator(ibTree0, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
+			stamp = IbTree.createAllocator(ibTree1, stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
 			size = (size - 1) * (maxBranchFactor / 2 - 1);
 
 			IbTree<String>.Holder holder = ibTree2.holder();
-			holder.build(stamp);
+			holder.create(stamp);
 
 			List<String> list = new ArrayList<>();
 			for (int k = 0; k < size; k++)
