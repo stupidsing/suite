@@ -38,13 +38,7 @@ public class IbTreeTest {
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
 
-			Source<Integer> source = transaction.source();
-			Integer integer;
-
-			while ((integer = source.source()) != null)
-				System.out.println(integer);
-
-			holder.commit(transaction);
+			assertEquals(size, dumpAndCount(transaction));
 		}
 	}
 
