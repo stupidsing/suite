@@ -378,8 +378,8 @@ public class IbTree<Key> implements Closeable {
 			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
-		public void create(List<Integer> stamp) {
-			write(create0(stamp).stamp());
+		public void create(List<Integer> stamp0) {
+			write(create0(stamp0).stamp());
 		}
 
 		public List<Integer> createAllocator(List<Integer> stamp0, int nPages) {

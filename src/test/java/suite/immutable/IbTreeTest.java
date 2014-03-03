@@ -57,23 +57,36 @@ public class IbTreeTest {
 			IbTree<String>.Holder holder = ibTree2.holder();
 
 			// To project the growth of each tree generation, we need to find
-			// out the minimum tree size If n are pages used, using a very
+			// out the minimum tree size that would run more than n pages,
+			// caused by any possible split scenario. This is calculated using a
 			// conservative approach:
 			//
-			// Each branch node occupy one child of its parent, and creates
-			// children at the number of branch factor. Therefore its "gain" is
-			// its branch factor minus one.
+			// First, we relate the number of branches in nodes to the size of
+			// the tree. For each branch node, it occupy 1 child of its parent,
+			// and create children at the number of branch factor. Therefore its
+			// "gain" is its branch factor minus 1. The tree root is a single
+			// entry, thus the sum of all "gains" result plus 1 in the total
+			// number of leave nodes.
 			//
-			// One page is used as the root which has two child at minimum.
-			// Other pages should have half of branch factor at minimum.
+			// Second, we find the smallest tree for n pages. 1 page is used as
+			// the root which has 2 children at minimum. Other pages should have
+			// half of branch factor at minimum.
 			//
-			// The final result needs to minus by one to exclude the guard node
-			// at rightmost of the tree. This cancels out the extra child from
-			// the root node.
-			int size = 2;
-			stamp = ibTree1.holder().createAllocator(stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
-			stamp = ibTree2.holder().createAllocator(stamp, size = (size - 1) * (maxBranchFactor / 2 - 1));
-			size = (size - 1) * (maxBranchFactor / 2 - 1);
+			// Third, to cause page exhaustion at next insert, it require a
+			// split to occur. Therefore 1 page should be at its maximum size.
+			// This adds in half of branch factor minus 1 of nodes.
+			//
+			// The final result needs to be minus by 1 to exclude the guard node
+			// at rightmost of the tree.
+			//
+			// In formula, minimum number of nodes causing split:
+			// 1 + 1 + (size - 1) * (minBranchFactor - 1) + minBranchFactor - 1
+			// = size * (minBranchFactor - 1) + 2
+			int minBranchFactor = maxBranchFactor / 2;
+			int size;
+			stamp = ibTree1.holder().createAllocator(stamp, size = maxBranchFactor - 2);
+			stamp = ibTree2.holder().createAllocator(stamp, size = size * (minBranchFactor - 1) + 2);
+			size = size * (minBranchFactor - 1) + 2;
 
 			holder.create(stamp);
 
