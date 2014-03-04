@@ -1,6 +1,5 @@
 package suite.immutable;
 
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -28,47 +27,42 @@ import suite.util.Util;
  */
 public class IbNameKeySet {
 
-	private int hashLength = 256 / 8;
-	private int compareLength = 1;
-	private int pathLength = 24;
-	private int sizeLength = 1;
-	private int keyLength = hashLength + compareLength + pathLength + sizeLength;
+	private static int hashPosition = 0;
+	private static int idPosition = hashPosition + 256 / 8;
+	private static int pathPosition = idPosition + 1;
+	private static int sizePosition = pathPosition + 24;
+	private static int keyLength = sizePosition + 1;
 
 	private List<Key> emptyKeys = Collections.<Key> emptyList();
 
-	private class Key implements Comparable<Key> {
+	public static Serializer<Bytes> serializer = SerializeUtil.bytes(keyLength);
+
+	private class Key {
 		private Bytes hash; // Path prefix hashed using SHA-256
-		private boolean max; // Comparison use only
+		private int id; // Comparison use only
 		private Bytes path; // Path characters
 		private int size; // 0 if this key has children keys
 
 		private Key(Bytes bytes) {
-			this(bytes.subbytes(0, hashLength) //
-					, bytes.subbytes(hashLength, hashLength + sizeLength) //
-					, bytes.get(sizeLength));
+			this(bytes.subbytes(hashPosition, idPosition) //
+					, bytes.get(idPosition) //
+					, bytes.subbytes(pathPosition, sizePosition) //
+					, bytes.get(sizePosition));
 		}
 
 		private Key(Bytes hash, Bytes path, int size) {
-			this(hash, false, path, size);
+			this(hash, 0, path, size);
 		}
 
-		private Key(Bytes hash, boolean max, Bytes path, int size) {
+		private Key(Bytes hash, int id, Bytes path, int size) {
 			this.hash = hash;
-			this.max = max;
+			this.id = id;
 			this.path = path;
 			this.size = size;
 		}
 
-		@Override
-		public int compareTo(Key key0) {
-			int c = 0;
-			c = c == 0 ? Boolean.compare(max, key0.max) : c;
-			c = c == 0 ? Bytes.comparator.compare(path, key0.path) : c;
-			return c;
-		}
-
 		private Bytes toBytes() {
-			return Bytes.concat(hash, Bytes.asList((byte) (max ? 1 : 0)), path, Bytes.asList((byte) size));
+			return Bytes.concat(hash, Bytes.asList((byte) id), path, Bytes.asList((byte) size));
 		}
 	}
 
@@ -88,8 +82,8 @@ public class IbNameKeySet {
 
 	private Source<Bytes> list(final List<Key> prefix, final List<Key> keys0, final List<Key> keys1) {
 		Bytes hash = hash(toName(prefix));
-		Key minKey = !keys0.isEmpty() ? Util.first(keys0) : new Key(hash, false, Bytes.emptyBytes, 0);
-		Key maxKey = !keys1.isEmpty() ? Util.first(keys1) : new Key(hash, true, Bytes.emptyBytes, 0);
+		Key minKey = !keys0.isEmpty() ? Util.first(keys0) : new Key(hash, 0, Bytes.emptyBytes, 0);
+		Key maxKey = !keys1.isEmpty() ? Util.first(keys1) : new Key(hash, 1, Bytes.emptyBytes, 0);
 		Source<Bytes> source = transaction.source(minKey.toBytes(), increment(maxKey.toBytes()));
 
 		return FunUtil.concat(FunUtil.map(new Fun<Bytes, Source<Bytes>>() {
@@ -120,27 +114,13 @@ public class IbNameKeySet {
 
 			if (key.size == 0) {
 				Bytes hash = hash(toName(keys.subList(0, i + 1)));
-				Key minKey = new Key(hash, false, Bytes.emptyBytes, 0);
-				Key maxKey = new Key(hash, true, Bytes.emptyBytes, 0);
+				Key minKey = new Key(hash, 0, Bytes.emptyBytes, 0);
+				Key maxKey = new Key(hash, 1, Bytes.emptyBytes, 0);
 				if (transaction.source(minKey.toBytes(), maxKey.toBytes()) == null)
 					transaction.remove(key.toBytes());
 			} else
 				transaction.remove(key.toBytes());
 		}
-	}
-
-	public Serializer<Bytes> byteArray() {
-		final Serializer<byte[]> bas = SerializeUtil.byteArray(keyLength);
-
-		return new Serializer<Bytes>() {
-			public Bytes read(ByteBuffer buffer) {
-				return new Bytes(bas.read(buffer));
-			}
-
-			public void write(ByteBuffer buffer, Bytes bytes) {
-				bas.write(buffer, bytes.getBytes());
-			}
-		};
 	}
 
 	private List<Key> toKeys(Bytes name) {
@@ -149,6 +129,7 @@ public class IbNameKeySet {
 		int pos = 0, size = name.size();
 
 		while (pos < size) {
+			int pathLength = sizePosition - pathPosition;
 			int pos1 = Math.min(pos + pathLength, size);
 			keys.add(new Key(hash(name.subbytes(0, pos)) //
 					, pad(name.subbytes(pos, pos1), pathLength, (byte) 0) //

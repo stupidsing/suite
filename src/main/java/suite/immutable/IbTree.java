@@ -13,6 +13,7 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
@@ -386,6 +387,12 @@ public class IbTree<Key> implements Closeable {
 			List<Integer> stamp = transaction.stamp();
 			sync();
 			write(stamp);
+		}
+
+		public void io(Sink<Transaction> sink) {
+			Transaction transaction = begin();
+			sink.sink(transaction);
+			commit(transaction);
 		}
 
 		private List<Integer> read() {

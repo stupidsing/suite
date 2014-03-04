@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.Copy;
+import suite.util.To;
 import suite.util.Util;
 
 public class Bytes implements Iterable<Byte> {
@@ -146,7 +147,7 @@ public class Bytes implements Iterable<Byte> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = start; i < end; i++)
-			sb.append(" " + Util.hex2(vector[i]));
+			sb.append(" " + To.hex2(vector[i]));
 		return sb.toString();
 	}
 

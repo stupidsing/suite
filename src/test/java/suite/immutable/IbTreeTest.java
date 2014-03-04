@@ -13,6 +13,7 @@ import suite.immutable.IbTree.Pointer;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
+import suite.util.To;
 import suite.util.Util;
 
 public class IbTreeTest {
@@ -58,7 +59,7 @@ public class IbTreeTest {
 
 			List<String> list = new ArrayList<>();
 			for (int k = 0; k < size; k++)
-				list.add("KEY-" + Util.hex4(k));
+				list.add("KEY-" + To.hex4(k));
 
 			Collections.shuffle(list);
 

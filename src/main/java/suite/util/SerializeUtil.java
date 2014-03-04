@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.primitive.Bytes;
+
 /**
  * Defines interface for reading/writing byte buffer. The operation within the
  * same serializer should always put in the same number of bytes.
@@ -65,20 +67,23 @@ public class SerializeUtil {
 	}
 
 	/**
-	 * Serializes a byte array.
+	 * Serialize bytes.
 	 * 
 	 * Size = length
 	 */
-	public static Serializer<byte[]> byteArray(final int length) {
-		return new Serializer<byte[]>() {
-			public byte[] read(ByteBuffer buffer) {
+	public static Serializer<Bytes> bytes(final int length) {
+		return new Serializer<Bytes>() {
+			public Bytes read(ByteBuffer buffer) {
 				byte bs[] = new byte[length];
 				buffer.get(bs);
-				return bs;
+				return new Bytes(bs);
 			}
 
-			public void write(ByteBuffer buffer, byte value[]) {
-				buffer.put(value);
+			public void write(ByteBuffer buffer, Bytes bytes) {
+				byte[] bs = bytes.getBytes();
+				buffer.put(bs);
+				for (int i = bs.length; i < length; i++)
+					buffer.put((byte) 0);
 			}
 		};
 	}

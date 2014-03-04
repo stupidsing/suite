@@ -23,6 +23,7 @@ import suite.util.FunUtil.Source;
 public class To {
 
 	private static final int bufferSize = 4096;
+	private static final String hexDigits = "0123456789ABCDEF";
 
 	public static Bytes bytes(String s) {
 		return new Bytes(s.getBytes(FileUtil.charset));
@@ -30,6 +31,20 @@ public class To {
 
 	public static Date date(String s) throws ParseException {
 		return FormatUtil.dateTimeFormat.parse(s);
+	}
+
+	public static String hex(int i) {
+		return "" + hexDigits.charAt(i & 0x0F);
+	}
+
+	public static String hex2(int i) {
+		return "" //
+				+ (hexDigits.charAt(i >>> 4 & 0x0F)) //
+				+ (hexDigits.charAt(i & 0x0F));
+	}
+
+	public static String hex4(int i) {
+		return hex2(i >>> 8 & 0xFF) + hex2(i & 0xFF);
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {
