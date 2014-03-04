@@ -28,7 +28,7 @@ public class IbTreeTest {
 			holder.commit(ibTree.create());
 
 			IbTree<Integer>.Transaction transaction = holder.begin();
-			int size = maxBranchFactor - 2;
+			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				transaction.add(i);
 			for (int i = size - 1; i >= 0; i--)
