@@ -11,11 +11,14 @@ import java.util.Objects;
 
 import suite.immutable.btree.IbTree.Pointer;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Fun;
+import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
 import suite.util.Util;
 
 public class FileSystem implements Closeable {
+
+	private static final byte DATAID = 64;
+	private static final byte SIZEID = 65;
 
 	private int pageSize = 4096;
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
@@ -45,92 +48,85 @@ public class FileSystem implements Closeable {
 			li.previous().close();
 	}
 
+	public void create() {
+		ibTree.holder().commit(ibTree.create());
+	}
+
+	public Bytes read(final Bytes name) {
+		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		Bytes hash = keyUtil.hash(name);
+		Bytes payload = transaction.payload(keyUtil.toSeqKey(hash, SIZEID, 0).toBytes());
+
+		if (payload != null) {
+			int seq = 0, size = toSize(payload);
+			BytesBuilder bb = new BytesBuilder();
+
+			for (int s = 0; s < size; s += pageSize)
+				bb.append(transaction.payload(key(hash, DATAID, seq++)));
+
+			return bb.toBytes();
+		} else
+			return null;
+	}
+
 	public List<Bytes> list(final Bytes start, final Bytes end) {
-		return ibTree.holder().transact(new Fun<IbTree<Bytes>.Transaction, List<Bytes>>() {
-			public List<Bytes> apply(IbTree<Bytes>.Transaction transaction) {
-				return To.list(new FileSystemNameKeySet(transaction).source(start, end));
-			}
-		});
+		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		return To.list(new FileSystemNameKeySet(transaction).source(start, end));
 	}
 
 	public void replace(final Bytes name, final Bytes bytes) {
-		ibTree.holder().transact(new Fun<IbTree<Bytes>.Transaction, Object>() {
-			public Object apply(IbTree<Bytes>.Transaction transaction) {
-				Bytes hash = keyUtil.hash(name);
+		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		FileSystemNameKeySet ibNameKeySet = new FileSystemNameKeySet(transaction);
+		Bytes hash = keyUtil.hash(name);
+		Bytes sizeKey = key(hash, SIZEID, 0);
 
-				try {
-					FileSystemNameKeySet ibNameKeySet = new FileSystemNameKeySet(transaction);
-					Bytes sizeKey = key(hash, 65, 0);
+		Bytes nameBytes0 = ibNameKeySet.source(name, null).source();
 
-					Bytes nameBytes0 = ibNameKeySet.source(name, null).source();
+		if (Objects.equals(nameBytes0, name)) { // Remove
+			int seq = 0, size = toSize(transaction.payload(sizeKey));
 
-					if (Objects.equals(nameBytes0, name)) { // Remove
-						int size = toSize(transaction.payload(sizeKey));
-						int seq = 0;
+			ibNameKeySet.remove(name);
+			ibNameKeySet.remove(sizeKey);
+			for (int s = 0; s < size; s += pageSize)
+				transaction.remove(key(hash, DATAID, seq++));
+		}
 
-						ibNameKeySet.remove(name);
-						ibNameKeySet.remove(sizeKey);
+		if (bytes != null) { // Create
+			int pos = 0, seq = 0, size = bytes.size();
 
-						for (int s = 0; s < size; s += pageSize)
-							transaction.remove(key(hash, 64, seq++));
-
-					}
-
-					if (bytes != null) { // Create
-						int pos = 0, seq = 0, size = bytes.size();
-
-						while (pos < size) {
-							int pos1 = Math.max(pos + pageSize, size);
-							transaction.replace(key(hash, 64, seq++), bytes.subbytes(pos, pos1 - pos));
-						}
-
-						ibNameKeySet.add(name);
-						transaction.replace(sizeKey, fromSize(size));
-					}
-
-					return null;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
+			while (pos < size) {
+				int pos1 = Math.min(pos + pageSize, size);
+				transaction.replace(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
+				pos = pos1;
 			}
-		});
+			transaction.replace(sizeKey, fromSize(size));
+			ibNameKeySet.add(name);
+		}
+
+		ibTree.holder().commit(transaction);
 	}
 
 	public void replace(final Bytes name, final int seq, final Bytes bytes) {
-		ibTree.holder().transact(new Fun<IbTree<Bytes>.Transaction, Object>() {
-			public Object apply(IbTree<Bytes>.Transaction transaction) {
-				try {
-					transaction.replace(key(keyUtil.hash(name), 64, seq), bytes);
-					return null;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		});
+		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		transaction.replace(key(keyUtil.hash(name), DATAID, seq), bytes);
+		ibTree.holder().commit(transaction);
 	}
 
 	public void resize(final Bytes name, final int size1) {
-		ibTree.holder().transact(new Fun<IbTree<Bytes>.Transaction, Object>() {
-			public Object apply(IbTree<Bytes>.Transaction transaction) {
-				try {
-					Bytes hash = keyUtil.hash(name);
-					Bytes sizeKey = key(hash, 65, 0);
-					int size0 = toSize(transaction.payload(sizeKey));
-					int nPages0 = (size0 + pageSize - 1) % pageSize;
-					int nPages1 = (size1 + pageSize - 1) % pageSize;
+		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		Bytes hash = keyUtil.hash(name);
+		Bytes sizeKey = key(hash, SIZEID, 0);
+		int size0 = toSize(transaction.payload(sizeKey));
+		int nPages0 = (size0 + pageSize - 1) % pageSize;
+		int nPages1 = (size1 + pageSize - 1) % pageSize;
 
-					for (int page = nPages1; page < nPages0; page++)
-						transaction.remove(key(hash, 64, page));
-					for (int page = nPages0; page < nPages1; page++)
-						transaction.replace(key(hash, 64, page), Bytes.emptyBytes);
+		for (int page = nPages1; page < nPages0; page++)
+			transaction.remove(key(hash, DATAID, page));
+		for (int page = nPages0; page < nPages1; page++)
+			transaction.replace(key(hash, DATAID, page), Bytes.emptyBytes);
 
-					transaction.replace(sizeKey, fromSize(size1));
-					return null;
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		});
+		transaction.replace(sizeKey, fromSize(size1));
+		ibTree.holder().commit(transaction);
 	}
 
 	private Bytes key(Bytes hash, int id, int seq) {

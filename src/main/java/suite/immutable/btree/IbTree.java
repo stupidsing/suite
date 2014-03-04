@@ -201,7 +201,7 @@ public class IbTree<Key> implements Closeable {
 			return IbTree.this.source(root, start, end);
 		}
 
-		public Bytes payload(Key key) throws IOException {
+		public Bytes payload(Key key) {
 			Slot slot = IbTree.this.source0(root, key, null).source();
 			return slot != null && slot.type == SlotType.DATA ? serializedPayloadPageFile.load(slot.pointer.number) : null;
 		}
@@ -231,7 +231,7 @@ public class IbTree<Key> implements Closeable {
 			});
 		}
 
-		public <Payload> void replace(final Key key, final Bytes payload) throws IOException {
+		public <Payload> void replace(final Key key, final Bytes payload) {
 			final Slot slot1;
 
 			if (payload != null) {
@@ -390,13 +390,6 @@ public class IbTree<Key> implements Closeable {
 			write(stamp);
 		}
 
-		public <T> T transact(Fun<Transaction, T> fun) {
-			Transaction transaction = begin();
-			T t = fun.apply(transaction);
-			commit(transaction);
-			return t;
-		}
-
 		private List<Integer> read() {
 			return stampFile.load(0);
 		}
@@ -418,7 +411,7 @@ public class IbTree<Key> implements Closeable {
 			, IbTree<Pointer> allocationIbTree) throws FileNotFoundException {
 		this.filename = filename;
 		this.comparator = comparator;
-		serializer = SerializeUtil.nullable(serializer);
+		this.serializer = SerializeUtil.nullable(serializer);
 
 		pageFile = new PageFile(filename, pageSize);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());

@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.immutable.btree;
 
 import static org.junit.Assert.assertEquals;
 
