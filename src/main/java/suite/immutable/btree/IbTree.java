@@ -152,6 +152,9 @@ public class IbTree<Key> implements Closeable {
 		}
 	}
 
+	// TODO do not discard-allocate same page in same transaction to facilitate
+	// copy-on-write, allocate new ones instead; allocate-discard-reallocate
+	// same page in same transaction is okay
 	private class SubIbTreeAllocator implements Allocator {
 		private IbTree<Pointer> ibTree;
 		private IbTree<Pointer>.Transaction transaction;
