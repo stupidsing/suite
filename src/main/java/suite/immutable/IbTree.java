@@ -107,7 +107,7 @@ public class IbTree<Key> implements Closeable {
 
 	private class FindSlot {
 		private Slot slot = null;
-		private int i = 0, c = 1;
+		private int i = 0, c;
 
 		private FindSlot(List<Slot> slots, Key key) {
 			while ((c = compare((slot = slots.get(i)).pivot, key)) < 0)

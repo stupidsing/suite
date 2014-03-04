@@ -37,7 +37,7 @@ public class I23Tree<T> implements ITree<T> {
 
 	private class FindSlot {
 		private Slot slot = null;
-		private int i = 0, c = 1;
+		private int i = 0, c;
 
 		private FindSlot(List<Slot> slots, T t) {
 			while ((c = compare((slot = slots.get(i)).pivot, t)) < 0)
