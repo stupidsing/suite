@@ -374,27 +374,13 @@ public class IbTree<Key> implements Closeable {
 			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
-		public void create(List<Integer> stamp0) {
-			write(create0(stamp0).stamp());
-		}
-
-		public List<Integer> createAllocator(List<Integer> stamp0, int nPages) {
-			IbTree<Pointer>.Holder holder = allocationIbTree.holder();
-			holder.create(stamp0);
-
-			IbTree<Pointer>.Transaction transaction = holder.begin();
-			for (int p = 0; p < nPages; p++)
-				transaction.add(new Pointer(p));
-			return transaction.stamp();
-		}
-
 		public Transaction begin() {
 			return transaction(read());
 		}
 
-		public void commit(Transaction transaction) throws IOException {
+		public void commit(Transaction transaction) {
 			List<Integer> stamp = transaction.stamp();
-			pageFile.sync();
+			sync();
 			write(stamp);
 		}
 
@@ -439,6 +425,58 @@ public class IbTree<Key> implements Closeable {
 		return holder;
 	}
 
+	/**
+	 * @return Calculate the maximum number of values that can be stored in this
+	 *         tree before running out of pages, regardless of the branching
+	 *         statuses, in a most conservative manner.
+	 * 
+	 *         First, we relate the number of branches in nodes to the size of
+	 *         the tree. For each branch node, it occupy 1 child of its parent,
+	 *         and create children at the number of branch factor. Therefore its
+	 *         "gain" is its branch factor minus 1. The tree root is a single
+	 *         entry, thus the sum of all "gains" result plus 1 in the total
+	 *         number of leave nodes.
+	 * 
+	 *         Second, we find the smallest tree for n pages. 1 page is used as
+	 *         the root which has 2 children at minimum. Other pages should have
+	 *         half of branch factor at minimum.
+	 * 
+	 *         Third, to cause page exhaustion at next insert, it require a
+	 *         split to occur. Therefore 1 page should be at its maximum size.
+	 *         This adds in half of branch factor minus 1 of nodes.
+	 * 
+	 *         The final result needs to be minus by 1 to exclude the guard node
+	 *         at rightmost of the tree.
+	 * 
+	 *         In formula, minimum number of nodes causing split: 1 + 1 + (size
+	 *         - 1) * (minBranchFactor - 1) + minBranchFactor - 1 = size *
+	 *         (minBranchFactor - 1) + 2
+	 */
+	public int guaranteedCapacity() {
+		if (allocationIbTree != null) {
+			int capacity0 = allocationIbTree.guaranteedCapacity();
+			return capacity0 * (minBranchFactor - 1) + 2;
+		} else
+			// There are at most maxBranchFactor - 1 nodes, and need to keep 1
+			// for the guard node too
+			return maxBranchFactor - 2;
+	}
+
+	public Transaction create() {
+		List<Integer> stamp0;
+
+		if (allocationIbTree != null) {
+			IbTree<Pointer>.Transaction transaction0 = allocationIbTree.create();
+			int nPages = allocationIbTree.guaranteedCapacity();
+			for (int p = 0; p < nPages; p++)
+				transaction0.add(new Pointer(p));
+			stamp0 = transaction0.stamp();
+		} else
+			stamp0 = Arrays.asList(0);
+
+		return new Transaction(allocator(stamp0));
+	}
+
 	private Source<Key> source(Pointer pointer) {
 		return source(pointer, null, null);
 	}
@@ -464,10 +502,6 @@ public class IbTree<Key> implements Closeable {
 			}, To.source(node.subList(i0, i1))));
 		else
 			return FunUtil.nullSource();
-	}
-
-	private Transaction create0(List<Integer> stamp0) {
-		return new Transaction(allocator(stamp0));
 	}
 
 	private Transaction transaction(List<Integer> stamp) {
@@ -496,6 +530,14 @@ public class IbTree<Key> implements Closeable {
 
 	private void write(Pointer pointer, Page page) {
 		serializedPageFile.save(pointer.number, page);
+	}
+
+	private void sync() {
+		try {
+			pageFile.sync();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private Serializer<Page> createPageSerializer() {
