@@ -293,24 +293,21 @@ public class IbTree<Key> implements Closeable {
 			int s0 = fs.i, s1 = fs.i + 1;
 			List<Slot> replaceSlots;
 
-			if (fs.c >= 0)
-				if (fs.slot.type == SlotType.BRANCH) {
-					List<Slot> slots1 = remove(fs.slot.slots(), key);
+			if (fs.slot.type == SlotType.BRANCH) {
+				List<Slot> slots1 = remove(fs.slot.slots(), key);
 
-					// Merges with a neighbor if reached minimum number of nodes
-					if (slots1.size() < minBranchFactor)
-						if (s0 > 0)
-							replaceSlots = merge(slots0.get(--s0).slots(), slots1);
-						else if (s1 < size)
-							replaceSlots = merge(slots1, slots0.get(s1++).slots());
-						else
-							replaceSlots = Arrays.asList(slot(slots1));
+				// Merges with a neighbor if reached minimum number of nodes
+				if (slots1.size() < minBranchFactor)
+					if (s0 > 0)
+						replaceSlots = merge(slots0.get(--s0).slots(), slots1);
+					else if (s1 < size)
+						replaceSlots = merge(slots1, slots0.get(s1++).slots());
 					else
 						replaceSlots = Arrays.asList(slot(slots1));
-				} else if (fs.c == 0)
-					replaceSlots = Collections.emptyList();
 				else
-					throw new RuntimeException("Node not found " + key);
+					replaceSlots = Arrays.asList(slot(slots1));
+			} else if (fs.c == 0)
+				replaceSlots = Collections.emptyList();
 			else
 				throw new RuntimeException("Node not found " + key);
 

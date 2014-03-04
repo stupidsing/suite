@@ -148,24 +148,21 @@ public class I23Tree<T> implements ITree<T> {
 		int s0 = fs.i, s1 = fs.i + 1;
 		List<Slot> replaceSlots;
 
-		if (fs.c >= 0)
-			if (fs.slot.slots != null) {
-				List<Slot> slots1 = remove(fs.slot.slots, t);
+		if (fs.slot.slots != null) {
+			List<Slot> slots1 = remove(fs.slot.slots, t);
 
-				// Merges with a neighbor if reached minimum number of nodes
-				if (slots1.size() < minBranchFactor)
-					if (s0 > 0)
-						replaceSlots = merge(node0.get(--s0).slots, slots1);
-					else if (s1 < size)
-						replaceSlots = merge(slots1, node0.get(s1++).slots);
-					else
-						replaceSlots = Arrays.asList(slot(slots1));
+			// Merges with a neighbor if reached minimum number of nodes
+			if (slots1.size() < minBranchFactor)
+				if (s0 > 0)
+					replaceSlots = merge(node0.get(--s0).slots, slots1);
+				else if (s1 < size)
+					replaceSlots = merge(slots1, node0.get(s1++).slots);
 				else
 					replaceSlots = Arrays.asList(slot(slots1));
-			} else if (fs.c == 0)
-				replaceSlots = Collections.emptyList();
 			else
-				throw new RuntimeException("List<Slot> not found " + t);
+				replaceSlots = Arrays.asList(slot(slots1));
+		} else if (fs.c == 0)
+			replaceSlots = Collections.emptyList();
 		else
 			throw new RuntimeException("List<Slot> not found " + t);
 
