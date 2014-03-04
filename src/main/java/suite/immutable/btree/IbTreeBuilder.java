@@ -1,9 +1,9 @@
-package suite.immutable;
+package suite.immutable.btree;
 
 import java.io.FileNotFoundException;
 import java.util.Comparator;
 
-import suite.immutable.IbTree.Pointer;
+import suite.immutable.btree.IbTree.Pointer;
 import suite.util.SerializeUtil.Serializer;
 
 public class IbTreeBuilder {
