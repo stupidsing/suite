@@ -87,7 +87,7 @@ public class IbTree<Key> implements Closeable {
 	/**
 	 * In leaves, pointer would be null, and pivot stores the leaf value.
 	 * 
-	 * Pivot would be null at the maximum side of a tree as the guarding key.
+	 * Pivot would be null at the minimum side of a tree as the guarding key.
 	 */
 	private class Slot {
 		private SlotType type;
@@ -106,12 +106,17 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private class FindSlot {
-		private Slot slot = null;
-		private int i = 0, c;
+		private Slot slot;
+		private int i, c;
 
 		private FindSlot(List<Slot> slots, Key key) {
-			while ((c = compare((slot = slots.get(i)).pivot, key)) < 0)
-				i++;
+			this(slots, key, false);
+		}
+
+		private FindSlot(List<Slot> slots, Key key, boolean isExclusive) {
+			i = slots.size() - 1;
+			while ((c = compare((slot = slots.get(i)).pivot, key)) > 0 || isExclusive && c == 0)
+				i--;
 		}
 	}
 
@@ -264,7 +269,7 @@ public class IbTree<Key> implements Closeable {
 			if (fs.slot.type == SlotType.BRANCH)
 				replaceSlots = add(discard(fs.slot).slots(), key, replacer);
 			else if (fs.c != 0)
-				replaceSlots = Arrays.asList(replacer.apply(null), fs.slot);
+				replaceSlots = Arrays.asList(fs.slot, replacer.apply(null));
 			else
 				replaceSlots = Arrays.asList(replacer.apply(discard(fs.slot)));
 
@@ -349,7 +354,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private Slot slot(List<Slot> slots) {
-			return new Slot(SlotType.BRANCH, Util.last(slots).pivot, persist(slots));
+			return new Slot(SlotType.BRANCH, Util.first(slots).pivot, persist(slots));
 		}
 
 		private Slot discard(Slot slot) {
@@ -490,12 +495,15 @@ public class IbTree<Key> implements Closeable {
 	private Source<Slot> source0(final Pointer pointer, final Key start, final Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
-		int i1 = end != null ? new FindSlot(node, end).i + 1 : node.size();
+		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
 			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<Slot>>() {
 				public Source<Slot> apply(Slot slot) {
-					return slot.type == SlotType.BRANCH ? source0(slot.pointer, start, end) : To.source(slot);
+					if (slot.type == SlotType.BRANCH)
+						return source0(slot.pointer, start, end);
+					else
+						return slot.pivot != null ? To.source(slot) : FunUtil.<Slot> nullSource();
 				}
 			}, To.source(node.subList(i0, i1))));
 		else
@@ -519,7 +527,7 @@ public class IbTree<Key> implements Closeable {
 		if (b0 && b1)
 			return comparator.compare(key0, key1);
 		else
-			return b0 ? -1 : b1 ? 1 : 0;
+			return b0 ? 1 : b1 ? -1 : 0;
 	}
 
 	private Page read(Pointer pointer) {
@@ -541,14 +549,14 @@ public class IbTree<Key> implements Closeable {
 	private Serializer<Page> createPageSerializer() {
 		final Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
 			public Slot read(ByteBuffer buffer) {
-				SlotType type = SlotType.values()[SerializeUtil.intSerializer.read(buffer)];
+				SlotType type = SlotType.values()[buffer.get()];
 				Key pivot = serializer.read(buffer);
 				Pointer pointer = Pointer.serializer.read(buffer);
 				return new Slot(type, pivot, pointer);
 			}
 
 			public void write(ByteBuffer buffer, Slot slot) {
-				SerializeUtil.intSerializer.write(buffer, slot.type.ordinal());
+				buffer.put((byte) slot.type.ordinal());
 				serializer.write(buffer, slot.pivot);
 				Pointer.serializer.write(buffer, slot.pointer);
 			}
@@ -564,5 +572,4 @@ public class IbTree<Key> implements Closeable {
 			}
 		};
 	}
-
 }

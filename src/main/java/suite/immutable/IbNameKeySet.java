@@ -30,7 +30,7 @@ public class IbNameKeySet {
 
 	private int hashLength = 256 / 8;
 	private int compareLength = 1;
-	private int pathLength = 30;
+	private int pathLength = 24;
 	private int sizeLength = 1;
 	private int keyLength = hashLength + compareLength + pathLength + sizeLength;
 

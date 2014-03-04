@@ -22,8 +22,7 @@ public class I23Tree<T> implements ITree<T> {
 	/**
 	 * List<Slot> would be null in leaves. Pivot stores the leaf value.
 	 * 
-	 * Pivot would be null at the maximum side of a tree. It represents the
-	 * guarding key.
+	 * Pivot would be null at the minimum side of a tree as the guarding key.
 	 */
 	private class Slot {
 		private List<Slot> slots;
@@ -36,12 +35,17 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	private class FindSlot {
-		private Slot slot = null;
-		private int i = 0, c;
+		private Slot slot;
+		private int i, c;
 
 		private FindSlot(List<Slot> slots, T t) {
-			while ((c = compare((slot = slots.get(i)).pivot, t)) < 0)
-				i++;
+			this(slots, t, false);
+		}
+
+		private FindSlot(List<Slot> slots, T t, boolean isExclusive) {
+			i = slots.size() - 1;
+			while ((c = compare((slot = slots.get(i)).pivot, t)) > 0 || isExclusive && c == 0)
+				i--;
 		}
 	}
 
@@ -62,12 +66,15 @@ public class I23Tree<T> implements ITree<T> {
 
 	private Source<T> source(final List<Slot> node, final T start, final T end) {
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
-		int i1 = end != null ? new FindSlot(node, end).i + 1 : node.size();
+		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
 			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<T>>() {
 				public Source<T> apply(Slot slot) {
-					return slot.slots != null ? source(slot.slots, start, end) : To.source(slot.pivot);
+					if (slot.slots != null)
+						return source(slot.slots, start, end);
+					else
+						return slot.pivot != null ? To.source(slot.pivot) : FunUtil.<T> nullSource();
 				}
 			}, To.source(node.subList(i0, i1))));
 		else
@@ -117,7 +124,7 @@ public class I23Tree<T> implements ITree<T> {
 		if (fs.slot.slots != null)
 			replaceSlots = add(fs.slot.slots, t, isReplace);
 		else if (fs.c != 0)
-			replaceSlots = Arrays.asList(new Slot(null, t), fs.slot);
+			replaceSlots = Arrays.asList(fs.slot, new Slot(null, t));
 		else if (isReplace)
 			replaceSlots = Arrays.asList(new Slot(null, t));
 		else
@@ -196,7 +203,7 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	private Slot slot(List<Slot> slots) {
-		return new Slot(slots, Util.last(slots).pivot);
+		return new Slot(slots, Util.first(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {
@@ -206,7 +213,7 @@ public class I23Tree<T> implements ITree<T> {
 		if (b0 && b1)
 			return comparator.compare(t0, t1);
 		else
-			return b0 ? -1 : b1 ? 1 : 0;
+			return b0 ? 1 : b1 ? -1 : 0;
 	}
 
 	@Override
@@ -219,8 +226,8 @@ public class I23Tree<T> implements ITree<T> {
 	private void dump(StringBuilder sb, List<Slot> node, String indent) {
 		if (node != null)
 			for (Slot slot : node) {
+				sb.append(indent + (slot.pivot != null ? slot.pivot : "<-inf>") + "\n");
 				dump(sb, slot.slots, indent + "  ");
-				sb.append(indent + (slot.pivot != null ? slot.pivot : "<infinity>") + "\n");
 			}
 	}
 
