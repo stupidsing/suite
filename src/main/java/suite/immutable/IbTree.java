@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -248,10 +247,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private List<Integer> stamp() {
-			List<Integer> stamp = new ArrayList<>();
-			stamp.add(root.number);
-			stamp.addAll(allocator.stamp());
-			return stamp;
+			return Util.add(Arrays.asList(root.number), allocator.stamp());
 		}
 
 		private void add(Key key, Fun<Slot, Slot> replacer) {
