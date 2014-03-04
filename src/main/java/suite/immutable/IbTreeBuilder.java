@@ -9,9 +9,11 @@ import suite.util.SerializeUtil.Serializer;
 public class IbTreeBuilder {
 
 	private int maxBranchFactor;
+	private int pageSize;
 
-	public IbTreeBuilder(int maxBranchFactor) {
+	public IbTreeBuilder(int maxBranchFactor, int pageSize) {
 		this.maxBranchFactor = maxBranchFactor;
+		this.pageSize = pageSize;
 	}
 
 	/**
@@ -27,14 +29,14 @@ public class IbTreeBuilder {
 	 * allocation tree.
 	 */
 	public IbTree<Pointer> buildPointerTree(String filename, IbTree<Pointer> allocationIbTree) throws FileNotFoundException {
-		return new IbTree<Pointer>(filename, maxBranchFactor, Pointer.comparator, Pointer.serializer, allocationIbTree);
+		return buildTree(filename, Pointer.comparator, Pointer.serializer, allocationIbTree);
 	}
 
 	public <Key> IbTree<Key> buildTree(String filename //
 			, Comparator<Key> comparator //
 			, Serializer<Key> serializer //
 			, IbTree<Pointer> allocationIbTree) throws FileNotFoundException {
-		return new IbTree<>(filename, maxBranchFactor, comparator, serializer, allocationIbTree);
+		return new IbTree<>(filename, maxBranchFactor, pageSize, comparator, serializer, allocationIbTree);
 	}
 
 }

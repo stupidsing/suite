@@ -7,12 +7,12 @@ import java.nio.ByteBuffer;
 
 public class PageFile implements Closeable {
 
-	private static final int pageSize = 4096;
-
 	private RandomAccessibleFile file;
+	private int pageSize;
 
-	public PageFile(String filename) throws FileNotFoundException {
+	public PageFile(String filename, int pageSize) throws FileNotFoundException {
 		file = new RandomAccessibleFile(filename);
+		this.pageSize = pageSize;
 	}
 
 	@Override

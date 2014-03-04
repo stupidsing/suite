@@ -374,7 +374,8 @@ public class IbTree<Key> implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Holder() throws FileNotFoundException {
-			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
+			stampFile = new SerializedPageFile<List<Integer>>(new PageFile(filename + ".stamp", 4096),
+					SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
 		public Transaction begin() {
@@ -402,11 +403,12 @@ public class IbTree<Key> implements Closeable {
 	 */
 	public IbTree(String filename //
 			, int maxBranchFactor //
+			, int pageSize //
 			, Comparator<Key> comparator //
 			, Serializer<Key> serializer //
 			, IbTree<Pointer> allocationIbTree) throws FileNotFoundException {
 		this.filename = filename;
-		pageFile = new PageFile(filename);
+		pageFile = new PageFile(filename, pageSize);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
 		this.allocationIbTree = allocationIbTree;
 

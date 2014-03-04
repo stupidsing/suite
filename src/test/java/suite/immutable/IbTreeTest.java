@@ -18,7 +18,8 @@ import suite.util.Util;
 public class IbTreeTest {
 
 	private int maxBranchFactor = 16;
-	private IbTreeBuilder builder = new IbTreeBuilder(maxBranchFactor);
+	private int pageSize = 4096;
+	private IbTreeBuilder builder = new IbTreeBuilder(maxBranchFactor, pageSize);
 
 	@Test
 	public void testSingleLevel() throws IOException {
