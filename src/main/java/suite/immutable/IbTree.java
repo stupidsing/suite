@@ -342,9 +342,10 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private Pointer createRootPage(List<Slot> slots) {
-			Pointer pointer, pointer1;
-			if (slots.size() == 1 && (pointer1 = slots.get(0).pointer) != null)
-				pointer = pointer1;
+			Slot slot;
+			Pointer pointer;
+			if (slots.size() == 1 && (slot = slots.get(0)).type != SlotType.TERMINAL)
+				pointer = slot.pointer;
 			else
 				pointer = persist(slots);
 			return pointer;
