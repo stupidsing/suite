@@ -206,7 +206,10 @@ public class IbTree<Key> implements Closeable {
 
 		public Bytes payload(Key key) {
 			Slot slot = IbTree.this.source0(root, key, null).source();
-			return slot != null && slot.type == SlotType.DATA ? serializedPayloadPageFile.load(slot.pointer.number) : null;
+			if (slot != null && slot.type == SlotType.DATA && compare(slot.pivot, key) == 0)
+				return serializedPayloadPageFile.load(slot.pointer.number);
+			else
+				return null;
 		}
 
 		public void add(final Key key) {
