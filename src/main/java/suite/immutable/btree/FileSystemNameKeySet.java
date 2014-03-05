@@ -58,7 +58,7 @@ public class FileSystemNameKeySet {
 
 	public void add(Bytes name) {
 		for (NameKey key : keyUtil.toNameKeys(name))
-			transaction.replace(key.toBytes());
+			transaction.put(key.toBytes());
 	}
 
 	public void remove(Bytes name) {

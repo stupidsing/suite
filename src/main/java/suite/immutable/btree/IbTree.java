@@ -174,7 +174,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public void discard(Pointer pointer) {
-			transaction.replace(pointer);
+			transaction.put(pointer);
 		}
 
 		public List<Integer> stamp() {
@@ -204,7 +204,7 @@ public class IbTree<Key> implements Closeable {
 			return IbTree.this.source(root, start, end);
 		}
 
-		public Bytes payload(Key key) {
+		public Bytes get(Key key) {
 			Slot slot = IbTree.this.source0(root, key, null).source();
 			if (slot != null && slot.type == SlotType.DATA && compare(slot.pivot, key) == 0)
 				return serializedPayloadPageFile.load(slot.pointer.number);
@@ -216,8 +216,8 @@ public class IbTree<Key> implements Closeable {
 		 * Replaces a value with another without payload. For dictionary cases
 		 * to replace stored value of the same key.
 		 */
-		public void replace(final Key key) {
-			add(key, new Fun<Slot, Slot>() {
+		public void put(final Key key) {
+			update(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
 					return new Slot(SlotType.TERMINAL, key, null);
 				}
@@ -230,12 +230,12 @@ public class IbTree<Key> implements Closeable {
 		 * 
 		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
-		public <Payload> void replace(final Key key, final Bytes payload) {
+		public <Payload> void replace(Key key, Bytes payload) {
 			Pointer pointer = allocator.allocate();
 			serializedPayloadPageFile.save(pointer.number, payload);
 			final Slot slot1 = new Slot(SlotType.DATA, key, pointer);
 
-			add(key, new Fun<Slot, Slot>() {
+			update(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
 					return slot1;
 				}
@@ -251,19 +251,19 @@ public class IbTree<Key> implements Closeable {
 			return Util.add(Arrays.asList(root.number), allocator.stamp());
 		}
 
-		private void add(Key key, Fun<Slot, Slot> replacer) {
+		private void update(Key key, Fun<Slot, Slot> replacer) {
 			allocator.discard(root);
-			root = createRootPage(add(read(root).slots, key, replacer));
+			root = createRootPage(update(read(root).slots, key, replacer));
 		}
 
-		private List<Slot> add(List<Slot> slots0, Key key, Fun<Slot, Slot> replacer) {
+		private List<Slot> update(List<Slot> slots0, Key key, Fun<Slot, Slot> replacer) {
 			FindSlot fs = new FindSlot(slots0, key);
 
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
 			if (fs.slot.type == SlotType.BRANCH)
-				replaceSlots = add(discard(fs.slot).slots(), key, replacer);
+				replaceSlots = update(discard(fs.slot).slots(), key, replacer);
 			else if (fs.c != 0)
 				replaceSlots = Arrays.asList(fs.slot, replacer.apply(null));
 			else
@@ -471,7 +471,7 @@ public class IbTree<Key> implements Closeable {
 			IbTree<Pointer>.Transaction transaction0 = allocationIbTree.create();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				transaction0.replace(new Pointer(p));
+				transaction0.put(new Pointer(p));
 			stamp0 = transaction0.stamp();
 		} else
 			stamp0 = Arrays.asList(0);

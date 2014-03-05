@@ -55,14 +55,14 @@ public class FileSystem implements Closeable {
 	public Bytes read(final Bytes name) {
 		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
 		Bytes hash = keyUtil.hash(name);
-		Bytes payload = transaction.payload(keyUtil.toSeqKey(hash, SIZEID, 0).toBytes());
+		Bytes payload = transaction.get(keyUtil.toSeqKey(hash, SIZEID, 0).toBytes());
 
 		if (payload != null) {
 			int seq = 0, size = toSize(payload);
 			BytesBuilder bb = new BytesBuilder();
 
 			for (int s = 0; s < size; s += pageSize)
-				bb.append(transaction.payload(key(hash, DATAID, seq++)));
+				bb.append(transaction.get(key(hash, DATAID, seq++)));
 
 			return bb.toBytes();
 		} else
@@ -83,7 +83,7 @@ public class FileSystem implements Closeable {
 		Bytes nameBytes0 = ibNameKeySet.list(name, null).source();
 
 		if (Objects.equals(nameBytes0, name)) { // Remove
-			int seq = 0, size = toSize(transaction.payload(sizeKey));
+			int seq = 0, size = toSize(transaction.get(sizeKey));
 
 			ibNameKeySet.remove(name);
 			transaction.remove(sizeKey);
@@ -116,7 +116,7 @@ public class FileSystem implements Closeable {
 		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
-		int size0 = toSize(transaction.payload(sizeKey));
+		int size0 = toSize(transaction.get(sizeKey));
 		int nPages0 = (size0 + pageSize - 1) % pageSize;
 		int nPages1 = (size1 + pageSize - 1) % pageSize;
 

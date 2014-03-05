@@ -34,11 +34,11 @@ public class IbTreeTest {
 			IbTree<Integer>.Transaction transaction = holder.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
-				transaction.replace(i);
+				transaction.put(i);
 			for (int i = size - 1; i >= 0; i--)
 				transaction.remove(i);
 			for (int i = 0; i < size; i++)
-				transaction.replace(i);
+				transaction.put(i);
 
 			assertEquals(size, dumpAndCount(transaction));
 		}
@@ -67,7 +67,7 @@ public class IbTreeTest {
 
 			IbTree<String>.Transaction transaction0 = holder.begin();
 			for (String s : list)
-				transaction0.replace(s);
+				transaction0.put(s);
 			holder.commit(transaction0);
 
 			assertEquals(size, dumpAndCount(holder.begin()));
