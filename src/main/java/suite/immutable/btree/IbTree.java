@@ -151,11 +151,11 @@ public class IbTree<Key> implements Closeable {
 		}
 	}
 
-	private class SwappingTablesAllocator implements Allocator {
+	private class SwappingAllocator implements Allocator {
 		private int using = 0;
 		private Deque<Integer> deque;
 
-		private SwappingTablesAllocator(int using) {
+		private SwappingAllocator(int using) {
 			reset(using);
 		}
 
@@ -523,7 +523,7 @@ public class IbTree<Key> implements Closeable {
 		if (allocationIbTree != null)
 			allocator = new SubIbTreeAllocator(allocationIbTree.transaction(stamp0));
 		else
-			allocator = new DelayedDiscardAllocator(new SwappingTablesAllocator(stamp0.get(0)));
+			allocator = new DelayedDiscardAllocator(new SwappingAllocator(stamp0.get(0)));
 		return allocator;
 	}
 
