@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -74,6 +76,14 @@ public class IbTree<Key> implements Closeable {
 		private Pointer(int number) {
 			this.number = number;
 		}
+
+		public int hashCode() {
+			return number;
+		}
+
+		public boolean equals(Object object) {
+			return Util.clazz(object) == Pointer.class && number == ((Pointer) object).number;
+		}
 	}
 
 	private class Page {
@@ -132,12 +142,45 @@ public class IbTree<Key> implements Closeable {
 		public List<Integer> stamp();
 	}
 
+	private class DelayedAllocator implements Allocator {
+		private Allocator allocator;
+		private Set<Pointer> discarded = new HashSet<>();
+		private Set<Pointer> allocated = new HashSet<>();
+		private Set<Pointer> allocateDiscarded = new HashSet<>();
+
+		private DelayedAllocator(Allocator allocator) {
+			this.allocator = allocator;
+		}
+
+		public Pointer allocate() {
+			Pointer pointer;
+			if (allocateDiscarded.isEmpty())
+				pointer = allocator.allocate();
+			else
+				allocateDiscarded.remove(pointer = allocateDiscarded.iterator().next());
+			allocated.add(pointer);
+			return pointer;
+		}
+
+		public void discard(Pointer pointer) {
+			(allocated.remove(pointer) ? allocateDiscarded : discarded).add(pointer);
+		}
+
+		public List<Integer> stamp() {
+			for (Pointer pointer : discarded)
+				allocator.discard(pointer);
+			for (Pointer pointer : allocateDiscarded)
+				allocator.discard(pointer);
+			return allocator.stamp();
+		}
+	}
+
 	private class SwappingTablesAllocator implements Allocator {
 		private int using = 0;
-		private Deque<Pointer> deque = new ArrayDeque<>();
+		private Deque<Pointer> deque;
 
 		private SwappingTablesAllocator(int using) {
-			resetDeque(using);
+			reset(using);
 		}
 
 		public Pointer allocate() {
@@ -145,25 +188,19 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public void discard(Pointer pointer) {
-			if (pointer.number == using)
-				resetDeque(using);
 		}
 
 		public List<Integer> stamp() {
 			List<Integer> stamp = Arrays.asList(using);
-			resetDeque(1 - using);
+			reset(1 - using);
 			return stamp;
 		}
 
-		private void resetDeque(int using) {
-			deque.clear();
-			deque.push(new Pointer(this.using = using));
+		private void reset(int using) {
+			deque = new ArrayDeque<>(Arrays.asList(new Pointer(this.using = using)));
 		}
 	}
 
-	// TODO do not discard-allocate same page in same transaction to facilitate
-	// copy-on-write, allocate new ones instead; allocate-discard-reallocate
-	// same page in same transaction is okay
 	private class SubIbTreeAllocator implements Allocator {
 		private IbTree<Pointer>.Transaction transaction;
 
@@ -517,8 +554,12 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private Allocator allocator(List<Integer> stamp0) {
-		boolean isSbta = allocationIbTree != null;
-		return isSbta ? new SubIbTreeAllocator(allocationIbTree.transaction(stamp0)) : new SwappingTablesAllocator(stamp0.get(0));
+		Allocator allocator;
+		if (allocationIbTree != null)
+			allocator = new SubIbTreeAllocator(allocationIbTree.transaction(stamp0));
+		else
+			allocator = new DelayedAllocator(new SwappingTablesAllocator(stamp0.get(0)));
+		return allocator;
 	}
 
 	private int compare(Key key0, Key key1) {
