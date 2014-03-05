@@ -294,7 +294,7 @@ public class IbTree<Key> implements Closeable {
 
 		public void remove(Key key) {
 			allocator.discard(root);
-			root = createRootPage(remove(read(root).slots, key));
+			root = createRootPage(delete(read(root).slots, key));
 		}
 
 		private List<Integer> flush() {
@@ -335,7 +335,7 @@ public class IbTree<Key> implements Closeable {
 			return slots2;
 		}
 
-		private List<Slot> remove(List<Slot> slots0, Key key) {
+		private List<Slot> delete(List<Slot> slots0, Key key) {
 			FindSlot fs = new FindSlot(slots0, key);
 
 			int size = slots0.size();
@@ -345,14 +345,14 @@ public class IbTree<Key> implements Closeable {
 			List<Slot> replaceSlots;
 
 			if (fs.slot.type == SlotType.BRANCH) {
-				List<Slot> slots1 = remove(fs.slot.slots(), key);
+				List<Slot> slots1 = delete(discard(fs.slot).slots(), key);
 
 				// Merges with a neighbor if reached minimum number of nodes
 				if (slots1.size() < minBranchFactor)
 					if (s0 > 0)
-						replaceSlots = merge(slots0.get(--s0).slots(), slots1);
+						replaceSlots = merge(discard(slots0.get(--s0)).slots(), slots1);
 					else if (s1 < size)
-						replaceSlots = merge(slots1, slots0.get(s1++).slots());
+						replaceSlots = merge(slots1, discard(slots0.get(s1++)).slots());
 					else
 						replaceSlots = Arrays.asList(slot(slots1));
 				else
@@ -361,9 +361,6 @@ public class IbTree<Key> implements Closeable {
 				replaceSlots = Collections.emptyList();
 			else
 				throw new RuntimeException("Node not found " + key);
-
-			for (int s = s0; s < s1; s++)
-				discard(slots0.get(s));
 
 			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 		}
