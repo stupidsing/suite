@@ -142,13 +142,13 @@ public class IbTree<Key> implements Closeable {
 		public List<Integer> stamp();
 	}
 
-	private class DelayedAllocator implements Allocator {
+	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
 		private Set<Pointer> discarded = new HashSet<>();
 		private Set<Pointer> allocated = new HashSet<>();
 		private Set<Pointer> allocateDiscarded = new HashSet<>();
 
-		private DelayedAllocator(Allocator allocator) {
+		private DelayedDiscardAllocator(Allocator allocator) {
 			this.allocator = allocator;
 		}
 
@@ -558,7 +558,7 @@ public class IbTree<Key> implements Closeable {
 		if (allocationIbTree != null)
 			allocator = new SubIbTreeAllocator(allocationIbTree.transaction(stamp0));
 		else
-			allocator = new DelayedAllocator(new SwappingTablesAllocator(stamp0.get(0)));
+			allocator = new DelayedDiscardAllocator(new SwappingTablesAllocator(stamp0.get(0)));
 		return allocator;
 	}
 
