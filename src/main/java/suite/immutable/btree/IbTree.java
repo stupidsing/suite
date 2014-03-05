@@ -453,10 +453,9 @@ public class IbTree<Key> implements Closeable {
 	 *         (minBranchFactor - 1) + 2
 	 */
 	public int guaranteedCapacity() {
-		if (allocationIbTree != null) {
-			int capacity0 = allocationIbTree.guaranteedCapacity();
-			return capacity0 * (minBranchFactor - 1) + 2;
-		} else
+		if (allocationIbTree != null)
+			return allocationIbTree.guaranteedCapacity() * (minBranchFactor - 1) + 2;
+		else
 			// There are at most maxBranchFactor - 1 nodes, and need to keep 1
 			// for the guard node too
 			return maxBranchFactor - 2;
