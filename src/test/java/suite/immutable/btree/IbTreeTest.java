@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.immutable.btree.IbTree.Pointer;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
@@ -49,8 +48,8 @@ public class IbTreeTest {
 		String f1 = FileUtil.tmp + "/ibTree" + i++;
 		String f2 = FileUtil.tmp + "/ibTree" + i++;
 
-		try (IbTree<Pointer> ibTree0 = builder.buildPointerTree(f0);
-				IbTree<Pointer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
+		try (IbTree<Integer> ibTree0 = builder.buildPointerTree(f0);
+				IbTree<Integer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
 				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1);
 				IbTree<String>.Txm txm = ibTree2.txm()) {
 			txm.commit(ibTree2.create());

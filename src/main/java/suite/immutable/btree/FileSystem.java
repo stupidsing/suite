@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
-import suite.immutable.btree.IbTree.Pointer;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
@@ -22,7 +21,7 @@ public class FileSystem implements Closeable {
 	private int pageSize = 4096;
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
-	private List<IbTree<Pointer>> pointerIbTrees = new ArrayList<>();
+	private List<IbTree<Integer>> pointerIbTrees = new ArrayList<>();
 	private IbTree<Bytes> ibTree;
 	private IbTree<Bytes>.Txm txm;
 
@@ -31,7 +30,7 @@ public class FileSystem implements Closeable {
 		IbTreeBuilder builder = new IbTreeBuilder(pageSize / 64, pageSize);
 
 		int i = 0;
-		IbTree<Pointer> pointerIbTree;
+		IbTree<Integer> pointerIbTree;
 		pointerIbTrees.add(builder.buildPointerTree(filename + i++));
 
 		while ((pointerIbTree = Util.last(pointerIbTrees)).guaranteedCapacity() < nPages)
@@ -45,7 +44,7 @@ public class FileSystem implements Closeable {
 	public void close() {
 		txm.close();
 		ibTree.close();
-		ListIterator<IbTree<Pointer>> li = pointerIbTrees.listIterator();
+		ListIterator<IbTree<Integer>> li = pointerIbTrees.listIterator();
 		while (li.hasPrevious())
 			li.previous().close();
 	}

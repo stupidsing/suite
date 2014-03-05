@@ -47,42 +47,12 @@ public class IbTree<Key> implements Closeable {
 	private PageFile pageFile;
 	private SerializedPageFile<Page> serializedPageFile;
 	private SerializedPageFile<Bytes> serializedPayloadPageFile;
-	private IbTree<Pointer> allocationIbTree;
+	private IbTree<Integer> allocationIbTree;
 
 	private int maxBranchFactor; // Exclusive
 	private int minBranchFactor; // Inclusive
 
-	public static class Pointer {
-		private int number;
-
-		public static Comparator<Pointer> comparator = new Comparator<Pointer>() {
-			public int compare(Pointer p0, Pointer p1) {
-				return p0.number - p1.number;
-			}
-		};
-
-		public static Serializer<Pointer> serializer = SerializeUtil.nullable(new Serializer<Pointer>() {
-			public Pointer read(ByteBuffer buffer) {
-				return new Pointer(SerializeUtil.intSerializer.read(buffer));
-			}
-
-			public void write(ByteBuffer buffer, Pointer pointer) {
-				SerializeUtil.intSerializer.write(buffer, pointer.number);
-			}
-		});
-
-		private Pointer(int number) {
-			this.number = number;
-		}
-
-		public int hashCode() {
-			return number;
-		}
-
-		public boolean equals(Object object) {
-			return Util.clazz(object) == Pointer.class && number == ((Pointer) object).number;
-		}
-	}
+	public static Serializer<Integer> pointerSerializer = SerializeUtil.nullable(SerializeUtil.intSerializer);
 
 	private class Page {
 		private List<Slot> slots;
@@ -104,9 +74,9 @@ public class IbTree<Key> implements Closeable {
 	private class Slot {
 		private SlotType type;
 		private Key pivot;
-		private Pointer pointer;
+		private Integer pointer;
 
-		private Slot(SlotType type, Key pivot, Pointer pointer) {
+		private Slot(SlotType type, Key pivot, Integer pointer) {
 			this.type = type;
 			this.pivot = pivot;
 			this.pointer = pointer;
@@ -133,9 +103,9 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private interface Allocator {
-		public Pointer allocate();
+		public Integer allocate();
 
-		public void discard(Pointer pointer);
+		public void discard(Integer pointer);
 
 		public List<Integer> flush();
 	}
@@ -150,16 +120,16 @@ public class IbTree<Key> implements Closeable {
 	 */
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
-		private Set<Pointer> allocated = new HashSet<>();
-		private Set<Pointer> discarded = new HashSet<>(); // Non-reusable
-		private Set<Pointer> allocateDiscarded = new HashSet<>(); // Reusable
+		private Set<Integer> allocated = new HashSet<>();
+		private Set<Integer> discarded = new HashSet<>(); // Non-reusable
+		private Set<Integer> allocateDiscarded = new HashSet<>(); // Reusable
 
 		private DelayedDiscardAllocator(Allocator allocator) {
 			this.allocator = allocator;
 		}
 
-		public Pointer allocate() {
-			Pointer pointer;
+		public Integer allocate() {
+			Integer pointer;
 			if (allocateDiscarded.isEmpty())
 				pointer = allocator.allocate();
 			else
@@ -168,14 +138,14 @@ public class IbTree<Key> implements Closeable {
 			return pointer;
 		}
 
-		public void discard(Pointer pointer) {
+		public void discard(Integer pointer) {
 			(allocated.remove(pointer) ? allocateDiscarded : discarded).add(pointer);
 		}
 
 		public List<Integer> flush() {
-			for (Pointer pointer : discarded)
+			for (Integer pointer : discarded)
 				allocator.discard(pointer);
-			for (Pointer pointer : allocateDiscarded)
+			for (Integer pointer : allocateDiscarded)
 				allocator.discard(pointer);
 			return allocator.flush();
 		}
@@ -183,17 +153,17 @@ public class IbTree<Key> implements Closeable {
 
 	private class SwappingTablesAllocator implements Allocator {
 		private int using = 0;
-		private Deque<Pointer> deque;
+		private Deque<Integer> deque;
 
 		private SwappingTablesAllocator(int using) {
 			reset(using);
 		}
 
-		public Pointer allocate() {
+		public Integer allocate() {
 			return deque.pop();
 		}
 
-		public void discard(Pointer pointer) {
+		public void discard(Integer pointer) {
 		}
 
 		public List<Integer> flush() {
@@ -203,19 +173,19 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private void reset(int using) {
-			deque = new ArrayDeque<>(Arrays.asList(new Pointer(this.using = using)));
+			deque = new ArrayDeque<>(Arrays.asList(this.using = using));
 		}
 	}
 
 	private class SubIbTreeAllocator implements Allocator {
-		private IbTree<Pointer>.Transaction transaction;
+		private IbTree<Integer>.Transaction transaction;
 
-		private SubIbTreeAllocator(IbTree<Pointer>.Transaction transaction) {
+		private SubIbTreeAllocator(IbTree<Integer>.Transaction transaction) {
 			this.transaction = transaction;
 		}
 
-		public Pointer allocate() {
-			Pointer pointer = transaction.source().source();
+		public Integer allocate() {
+			Integer pointer = transaction.source().source();
 			if (pointer != null) {
 				transaction.remove(pointer);
 				return pointer;
@@ -223,7 +193,7 @@ public class IbTree<Key> implements Closeable {
 				throw new RuntimeException("Pages exhausted");
 		}
 
-		public void discard(Pointer pointer) {
+		public void discard(Integer pointer) {
 			transaction.put(pointer);
 		}
 
@@ -234,14 +204,14 @@ public class IbTree<Key> implements Closeable {
 
 	public class Transaction {
 		private Allocator allocator;
-		private Pointer root;
+		private Integer root;
 
 		private Transaction(Allocator allocator) {
 			this.allocator = allocator;
 			root = persist(Arrays.asList(new Slot(SlotType.TERMINAL, null, null)));
 		}
 
-		private Transaction(Allocator allocator, Pointer root) {
+		private Transaction(Allocator allocator, Integer root) {
 			this.allocator = allocator;
 			this.root = root;
 		}
@@ -257,7 +227,7 @@ public class IbTree<Key> implements Closeable {
 		public Bytes get(Key key) {
 			Slot slot = IbTree.this.source0(root, key, null).source();
 			if (slot != null && slot.type == SlotType.DATA && compare(slot.pivot, key) == 0)
-				return serializedPayloadPageFile.load(slot.pointer.number);
+				return serializedPayloadPageFile.load(slot.pointer);
 			else
 				return null;
 		}
@@ -281,8 +251,8 @@ public class IbTree<Key> implements Closeable {
 		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
 		public <Payload> void replace(Key key, Bytes payload) {
-			Pointer pointer = allocator.allocate();
-			serializedPayloadPageFile.save(pointer.number, payload);
+			Integer pointer = allocator.allocate();
+			serializedPayloadPageFile.save(pointer, payload);
 			final Slot slot1 = new Slot(SlotType.DATA, key, pointer);
 
 			update(key, new Fun<Slot, Slot>() {
@@ -298,7 +268,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private List<Integer> flush() {
-			return Util.add(Arrays.asList(root.number), allocator.flush());
+			return Util.add(Arrays.asList(root), allocator.flush());
 		}
 
 		private void update(Key key, Fun<Slot, Slot> replacer) {
@@ -386,9 +356,9 @@ public class IbTree<Key> implements Closeable {
 			return merged;
 		}
 
-		private Pointer createRootPage(List<Slot> slots) {
+		private Integer createRootPage(List<Slot> slots) {
 			Slot slot;
-			Pointer pointer;
+			Integer pointer;
 			if (slots.size() == 1 && (slot = slots.get(0)).type == SlotType.BRANCH)
 				pointer = slot.pointer;
 			else
@@ -406,8 +376,8 @@ public class IbTree<Key> implements Closeable {
 			return slot;
 		}
 
-		private Pointer persist(List<Slot> slots) {
-			Pointer pointer = allocator.allocate();
+		private Integer persist(List<Slot> slots) {
+			Integer pointer = allocator.allocate();
 			write(pointer, new Page(slots));
 			return pointer;
 		}
@@ -444,7 +414,7 @@ public class IbTree<Key> implements Closeable {
 			, int pageSize //
 			, Comparator<Key> comparator //
 			, Serializer<Key> serializer //
-			, IbTree<Pointer> allocationIbTree) throws FileNotFoundException {
+			, IbTree<Integer> allocationIbTree) throws FileNotFoundException {
 		this.filename = filename;
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
@@ -507,10 +477,10 @@ public class IbTree<Key> implements Closeable {
 		List<Integer> stamp0;
 
 		if (allocationIbTree != null) {
-			IbTree<Pointer>.Transaction transaction0 = allocationIbTree.create();
+			IbTree<Integer>.Transaction transaction0 = allocationIbTree.create();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				transaction0.put(new Pointer(p));
+				transaction0.put(p);
 			stamp0 = transaction0.flush();
 		} else
 			stamp0 = Arrays.asList(0);
@@ -518,7 +488,7 @@ public class IbTree<Key> implements Closeable {
 		return new Transaction(allocator(stamp0));
 	}
 
-	private Source<Key> source(Pointer pointer, Key start, Key end) {
+	private Source<Key> source(Integer pointer, Key start, Key end) {
 		return FunUtil.map(new Fun<Slot, Key>() {
 			public Key apply(Slot slot) {
 				return slot.pivot;
@@ -526,7 +496,7 @@ public class IbTree<Key> implements Closeable {
 		}, source0(pointer, start, end));
 	}
 
-	private Source<Slot> source0(final Pointer pointer, final Key start, final Key end) {
+	private Source<Slot> source0(final Integer pointer, final Key start, final Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
@@ -545,8 +515,7 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private Transaction transaction(List<Integer> stamp) {
-		Pointer root = new Pointer(stamp.get(0));
-		return new Transaction(allocator(Util.right(stamp, 1)), root);
+		return new Transaction(allocator(Util.right(stamp, 1)), stamp.get(0));
 	}
 
 	private Allocator allocator(List<Integer> stamp0) {
@@ -568,12 +537,12 @@ public class IbTree<Key> implements Closeable {
 			return b0 ? 1 : b1 ? -1 : 0;
 	}
 
-	private Page read(Pointer pointer) {
-		return serializedPageFile.load(pointer.number);
+	private Page read(Integer pointer) {
+		return serializedPageFile.load(pointer);
 	}
 
-	private void write(Pointer pointer, Page page) {
-		serializedPageFile.save(pointer.number, page);
+	private void write(Integer pointer, Page page) {
+		serializedPageFile.save(pointer, page);
 	}
 
 	private void sync() {
@@ -589,14 +558,14 @@ public class IbTree<Key> implements Closeable {
 			public Slot read(ByteBuffer buffer) {
 				SlotType type = SlotType.values()[buffer.get()];
 				Key pivot = serializer.read(buffer);
-				Pointer pointer = Pointer.serializer.read(buffer);
+				Integer pointer = pointerSerializer.read(buffer);
 				return new Slot(type, pivot, pointer);
 			}
 
 			public void write(ByteBuffer buffer, Slot slot) {
 				buffer.put((byte) slot.type.ordinal());
 				serializer.write(buffer, slot.pivot);
-				Pointer.serializer.write(buffer, slot.pointer);
+				pointerSerializer.write(buffer, slot.pointer);
 			}
 		});
 
