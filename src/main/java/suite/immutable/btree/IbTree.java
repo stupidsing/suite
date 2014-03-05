@@ -142,10 +142,18 @@ public class IbTree<Key> implements Closeable {
 		public List<Integer> stamp();
 	}
 
+	/**
+	 * Protect discarded pages belonging to previous transactions, so that they
+	 * are not being allocated immediately. This supports immutability (i.e.
+	 * copy-on-write) and with this recovery can succeed.
+	 * 
+	 * On the other hand, allocated and discarded pages are reused here, since
+	 * they belong to current transaction.
+	 */
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
-		private Set<Pointer> discarded = new HashSet<>();
 		private Set<Pointer> allocated = new HashSet<>();
+		private Set<Pointer> discarded = new HashSet<>();
 		private Set<Pointer> allocateDiscarded = new HashSet<>();
 
 		private DelayedDiscardAllocator(Allocator allocator) {
