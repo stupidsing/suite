@@ -152,11 +152,11 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private class SwappingAllocator implements Allocator {
-		private int using = 0;
+		private int using;
 		private Deque<Integer> deque;
 
 		private SwappingAllocator(int using) {
-			reset(using);
+			reset(0);
 		}
 
 		public Integer allocate() {
