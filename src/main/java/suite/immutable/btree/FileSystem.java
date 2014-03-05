@@ -86,7 +86,7 @@ public class FileSystem implements Closeable {
 			int seq = 0, size = toSize(transaction.payload(sizeKey));
 
 			ibNameKeySet.remove(name);
-			ibNameKeySet.remove(sizeKey);
+			transaction.remove(sizeKey);
 			for (int s = 0; s < size; s += pageSize)
 				transaction.remove(key(hash, DATAID, seq++));
 		}

@@ -174,7 +174,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public void discard(Pointer pointer) {
-			transaction.add(pointer);
+			transaction.replace(pointer);
 		}
 
 		public List<Integer> stamp() {
@@ -212,13 +212,14 @@ public class IbTree<Key> implements Closeable {
 				return null;
 		}
 
-		public void add(final Key key) {
+		/**
+		 * Replaces a value with another without payload. For dictionary cases
+		 * to replace stored value of the same key.
+		 */
+		public void replace(final Key key) {
 			add(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
-					if (slot == null)
-						return new Slot(SlotType.TERMINAL, key, null);
-					else
-						throw new RuntimeException("Duplicate node " + slot.pivot);
+					return new Slot(SlotType.TERMINAL, key, null);
 				}
 			});
 		}
@@ -230,14 +231,9 @@ public class IbTree<Key> implements Closeable {
 		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
 		public <Payload> void replace(final Key key, final Bytes payload) {
-			final Slot slot1;
-
-			if (payload != null) {
-				Pointer pointer = allocator.allocate();
-				serializedPayloadPageFile.save(pointer.number, payload);
-				slot1 = new Slot(SlotType.DATA, key, pointer);
-			} else
-				slot1 = new Slot(SlotType.TERMINAL, key, null);
+			Pointer pointer = allocator.allocate();
+			serializedPayloadPageFile.save(pointer.number, payload);
+			final Slot slot1 = new Slot(SlotType.DATA, key, pointer);
 
 			add(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
@@ -475,7 +471,7 @@ public class IbTree<Key> implements Closeable {
 			IbTree<Pointer>.Transaction transaction0 = allocationIbTree.create();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				transaction0.add(new Pointer(p));
+				transaction0.replace(new Pointer(p));
 			stamp0 = transaction0.stamp();
 		} else
 			stamp0 = Arrays.asList(0);

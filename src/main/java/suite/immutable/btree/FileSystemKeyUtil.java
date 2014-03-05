@@ -31,7 +31,7 @@ public class FileSystemKeyUtil {
 		}
 
 		public Bytes toBytes() {
-			return Bytes.concat(super.toBytes(), path, Bytes.asList((byte) size));
+			return Bytes.concat(super.toBytes(), path, Bytes.asList((byte) size)).pad(keyLength, (byte) 0);
 		}
 
 		public Bytes getPath() {
@@ -52,7 +52,7 @@ public class FileSystemKeyUtil {
 		}
 
 		public Bytes toBytes() {
-			return Bytes.concat(super.toBytes(), new Bytes(ByteBuffer.allocate(4).putInt(seq).array()));
+			return Bytes.concat(super.toBytes(), new Bytes(ByteBuffer.allocate(4).putInt(seq).array())).pad(keyLength, (byte) 0);
 		}
 
 		public int getSeq() {
@@ -93,21 +93,23 @@ public class FileSystemKeyUtil {
 	}
 
 	public List<NameKey> toNameKeys(Bytes name) {
-		name = Bytes.concat();
-		List<NameKey> keys = new ArrayList<>();
-		int pos = 0, size = name.size();
+		if (name != null) {
+			List<NameKey> keys = new ArrayList<>();
+			int pos = 0, size = name.size();
 
-		while (pos < size) {
-			int pathLength = sizePosition - pathPosition;
-			int pos1 = Math.min(pos + pathLength, size);
-			keys.add(toNameKey(hash(name.subbytes(0, pos)) //
-					, 0 //
-					, name.subbytes(pos, pos1).pad(pathLength, (byte) 0) //
-					, pos1 == size ? pos1 - pos : 0));
-			pos = pos1;
-		}
+			while (pos < size) {
+				int pathLength = sizePosition - pathPosition;
+				int pos1 = Math.min(pos + pathLength, size);
+				keys.add(toNameKey(hash(name.subbytes(0, pos)) //
+						, 0 //
+						, name.subbytes(pos, pos1).pad(pathLength, (byte) 0) //
+						, pos1 == size ? pos1 - pos : 0));
+				pos = pos1;
+			}
 
-		return keys;
+			return keys;
+		} else
+			return null;
 	}
 
 	public NameKey toNameKey(Bytes bytes) {

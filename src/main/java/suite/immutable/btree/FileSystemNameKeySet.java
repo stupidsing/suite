@@ -31,14 +31,14 @@ public class FileSystemNameKeySet {
 		this.transaction = transaction;
 	}
 
-	public Source<Bytes> list(Bytes start, Bytes end) {
-		return list(emptyKeys, keyUtil.toNameKeys(start), keyUtil.toNameKeys(end));
+	public Source<Bytes> list(Bytes bytes0, Bytes bytes1) {
+		return list(emptyKeys, keyUtil.toNameKeys(bytes0), keyUtil.toNameKeys(bytes1));
 	}
 
 	private Source<Bytes> list(final List<NameKey> prefix, final List<NameKey> keys0, final List<NameKey> keys1) {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
-		NameKey minKey = !keys0.isEmpty() ? Util.first(keys0) : keyUtil.toNameKey(hash, 0, Bytes.emptyBytes, 0);
-		NameKey maxKey = !keys1.isEmpty() ? Util.first(keys1) : keyUtil.toNameKey(hash, 1, Bytes.emptyBytes, 0);
+		final NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
+		final NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
 		Source<Bytes> source = transaction.source(minKey.toBytes(), increment(maxKey.toBytes()));
 
 		return FunUtil.concat(FunUtil.map(new Fun<Bytes, Source<Bytes>>() {
@@ -47,8 +47,8 @@ public class FileSystemNameKeySet {
 				List<NameKey> prefix1 = Util.add(prefix, Arrays.asList(key));
 
 				if (key.getSize() == 0) {
-					List<NameKey> tailKeys0 = !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys;
-					List<NameKey> tailKeys1 = !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys;
+					List<NameKey> tailKeys0 = key == minKey ? (!keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys) : null;
+					List<NameKey> tailKeys1 = key == maxKey ? (!keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys) : null;
 					return list(prefix1, tailKeys0, tailKeys1);
 				} else
 					return To.source(Arrays.asList(keyUtil.toName(prefix1)));
@@ -58,7 +58,7 @@ public class FileSystemNameKeySet {
 
 	public void add(Bytes name) {
 		for (NameKey key : keyUtil.toNameKeys(name))
-			transaction.add(key.toBytes());
+			transaction.replace(key.toBytes());
 	}
 
 	public void remove(Bytes name) {
@@ -69,13 +69,17 @@ public class FileSystemNameKeySet {
 
 			if (key.getSize() == 0) {
 				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
-				NameKey minKey = keyUtil.toNameKey(hash, 0, Bytes.emptyBytes, 0);
-				NameKey maxKey = keyUtil.toNameKey(hash, 1, Bytes.emptyBytes, 0);
+				NameKey minKey = boundingKey(hash, 0);
+				NameKey maxKey = boundingKey(hash, 1);
 				if (transaction.source(minKey.toBytes(), maxKey.toBytes()) == null)
 					transaction.remove(key.toBytes());
 			} else
 				transaction.remove(key.toBytes());
 		}
+	}
+
+	private NameKey boundingKey(Bytes hash, int minMax) {
+		return keyUtil.toNameKey(hash, minMax, Bytes.emptyBytes, 0);
 	}
 
 	private Bytes increment(Bytes bytes) {
