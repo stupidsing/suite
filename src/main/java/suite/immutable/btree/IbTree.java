@@ -224,19 +224,11 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		/**
-		 * Replaces a value with another. For dictionary cases to replace stored
-		 * value of the same key.
+		 * Replaces a value with another, attached with a payload of page data.
+		 * For dictionary cases to replace stored value of the same key.
 		 * 
 		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
-		public void replace(final Key key) {
-			add(key, new Fun<Slot, Slot>() {
-				public Slot apply(Slot slot) {
-					return new Slot(SlotType.TERMINAL, key, null);
-				}
-			});
-		}
-
 		public <Payload> void replace(final Key key, final Bytes payload) {
 			final Slot slot1;
 

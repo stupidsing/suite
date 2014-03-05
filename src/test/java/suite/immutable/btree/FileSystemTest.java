@@ -20,6 +20,7 @@ public class FileSystemTest {
 		try (FileSystem fs = new FileSystem(FileUtil.tmp + "/fs", 64 * 1024)) {
 			fs.create();
 			fs.replace(filename, data);
+			System.out.println(To.string(fs.list(filename, null).get(0)));
 			assertEquals(1, fs.list(filename, null).size());
 			assertEquals(data, fs.read(filename));
 

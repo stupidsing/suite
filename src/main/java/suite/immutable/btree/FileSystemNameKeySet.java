@@ -31,10 +31,6 @@ public class FileSystemNameKeySet {
 		this.transaction = transaction;
 	}
 
-	public Source<Bytes> source(Bytes start, Bytes end) {
-		return transaction.source(start, end);
-	}
-
 	public Source<Bytes> list(Bytes start, Bytes end) {
 		return list(emptyKeys, keyUtil.toNameKeys(start), keyUtil.toNameKeys(end));
 	}

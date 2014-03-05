@@ -71,7 +71,7 @@ public class FileSystem implements Closeable {
 
 	public List<Bytes> list(final Bytes start, final Bytes end) {
 		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
-		return To.list(new FileSystemNameKeySet(transaction).source(start, end));
+		return To.list(new FileSystemNameKeySet(transaction).list(start, end));
 	}
 
 	public void replace(final Bytes name, final Bytes bytes) {
@@ -80,7 +80,7 @@ public class FileSystem implements Closeable {
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 
-		Bytes nameBytes0 = ibNameKeySet.source(name, null).source();
+		Bytes nameBytes0 = ibNameKeySet.list(name, null).source();
 
 		if (Objects.equals(nameBytes0, name)) { // Remove
 			int seq = 0, size = toSize(transaction.payload(sizeKey));
