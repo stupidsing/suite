@@ -26,10 +26,10 @@ public class IbTreeTest {
 	public void testSingleLevel() throws IOException {
 		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree" //
 		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null); //
-				IbTree<Integer>.Io io = ibTree.io()) {
-			io.commit(ibTree.create());
+				IbTree<Integer>.Txm txm = ibTree.txm()) {
+			txm.commit(ibTree.create());
 
-			IbTree<Integer>.Transaction transaction = io.begin();
+			IbTree<Integer>.Transaction transaction = txm.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				transaction.put(i);
@@ -52,8 +52,8 @@ public class IbTreeTest {
 		try (IbTree<Pointer> ibTree0 = builder.buildPointerTree(f0);
 				IbTree<Pointer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
 				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1);
-				IbTree<String>.Io io = ibTree2.io()) {
-			io.commit(ibTree2.create());
+				IbTree<String>.Txm txm = ibTree2.txm()) {
+			txm.commit(ibTree2.create());
 
 			int size = ibTree2.guaranteedCapacity();
 
@@ -63,21 +63,21 @@ public class IbTreeTest {
 
 			Collections.shuffle(list);
 
-			IbTree<String>.Transaction transaction0 = io.begin();
+			IbTree<String>.Transaction transaction0 = txm.begin();
 			for (String s : list)
 				transaction0.put(s);
-			io.commit(transaction0);
+			txm.commit(transaction0);
 
-			assertEquals(size, dumpAndCount(io.begin()));
+			assertEquals(size, dumpAndCount(txm.begin()));
 
 			Collections.shuffle(list);
 
-			IbTree<String>.Transaction transaction1 = io.begin();
+			IbTree<String>.Transaction transaction1 = txm.begin();
 			for (String s : list)
 				transaction1.remove(s);
-			io.commit(transaction1);
+			txm.commit(transaction1);
 
-			assertEquals(0, dumpAndCount(io.begin()));
+			assertEquals(0, dumpAndCount(txm.begin()));
 		}
 	}
 

@@ -413,10 +413,10 @@ public class IbTree<Key> implements Closeable {
 		}
 	}
 
-	public class Io implements Closeable {
+	public class Txm implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
-		private Io() {
+		private Txm() {
 			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
@@ -471,8 +471,8 @@ public class IbTree<Key> implements Closeable {
 		serializedPageFile.close();
 	}
 
-	public Io io() {
-		return new Io();
+	public Txm txm() {
+		return new Txm();
 	}
 
 	/**
