@@ -4,9 +4,11 @@ import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
 
 import suite.file.PageFile;
@@ -131,24 +133,31 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private class SwappingTablesAllocator implements Allocator {
-		private List<Pointer> pointers = Arrays.asList(new Pointer(0), new Pointer(1));
 		private int using = 0;
+		private Deque<Pointer> deque = new ArrayDeque<>();
 
 		private SwappingTablesAllocator(int using) {
-			this.using = using;
+			resetDeque(using);
 		}
 
 		public Pointer allocate() {
-			return pointers.get(using);
+			return deque.pop();
 		}
 
 		public void discard(Pointer pointer) {
+			if (pointer.number == using)
+				resetDeque(using);
 		}
 
 		public List<Integer> stamp() {
-			List<Integer> pointer = Arrays.asList(using);
-			using = 1 - using;
-			return pointer;
+			List<Integer> stamp = Arrays.asList(using);
+			resetDeque(1 - using);
+			return stamp;
+		}
+
+		private void resetDeque(int using) {
+			deque.clear();
+			deque.push(new Pointer(this.using = using));
 		}
 	}
 
