@@ -139,7 +139,7 @@ public class IbTree<Key> implements Closeable {
 
 		public void discard(Pointer pointer);
 
-		public List<Integer> stamp();
+		public List<Integer> flush();
 	}
 
 	/**
@@ -174,12 +174,12 @@ public class IbTree<Key> implements Closeable {
 			(allocated.remove(pointer) ? allocateDiscarded : discarded).add(pointer);
 		}
 
-		public List<Integer> stamp() {
+		public List<Integer> flush() {
 			for (Pointer pointer : discarded)
 				allocator.discard(pointer);
 			for (Pointer pointer : allocateDiscarded)
 				allocator.discard(pointer);
-			return allocator.stamp();
+			return allocator.flush();
 		}
 	}
 
@@ -198,7 +198,7 @@ public class IbTree<Key> implements Closeable {
 		public void discard(Pointer pointer) {
 		}
 
-		public List<Integer> stamp() {
+		public List<Integer> flush() {
 			List<Integer> stamp = Arrays.asList(using);
 			reset(1 - using);
 			return stamp;
@@ -229,8 +229,8 @@ public class IbTree<Key> implements Closeable {
 			transaction.put(pointer);
 		}
 
-		public List<Integer> stamp() {
-			return transaction.stamp();
+		public List<Integer> flush() {
+			return transaction.flush();
 		}
 	}
 
@@ -299,8 +299,8 @@ public class IbTree<Key> implements Closeable {
 			root = createRootPage(remove(read(root).slots, key));
 		}
 
-		private List<Integer> stamp() {
-			return Util.add(Arrays.asList(root.number), allocator.stamp());
+		private List<Integer> flush() {
+			return Util.add(Arrays.asList(root.number), allocator.flush());
 		}
 
 		private void update(Key key, Fun<Slot, Slot> replacer) {
@@ -431,7 +431,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public void commit(Transaction transaction) {
-			List<Integer> stamp = transaction.stamp();
+			List<Integer> stamp = transaction.flush();
 			sync();
 			write(stamp);
 		}
@@ -523,7 +523,7 @@ public class IbTree<Key> implements Closeable {
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
 				transaction0.put(new Pointer(p));
-			stamp0 = transaction0.stamp();
+			stamp0 = transaction0.flush();
 		} else
 			stamp0 = Arrays.asList(0);
 
