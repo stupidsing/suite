@@ -156,7 +156,7 @@ public class IbTree<Key> implements Closeable {
 		private Deque<Integer> deque;
 
 		private SwappingAllocator(int using) {
-			reset(0);
+			reset(using);
 		}
 
 		public Integer allocate() {
