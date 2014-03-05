@@ -52,8 +52,6 @@ public class IbTree<Key> implements Closeable {
 	private int maxBranchFactor; // Exclusive
 	private int minBranchFactor; // Inclusive
 
-	private Holder holder;
-
 	public static class Pointer {
 		private int number;
 
@@ -418,12 +416,11 @@ public class IbTree<Key> implements Closeable {
 		}
 	}
 
-	public class Holder {
+	public class Io implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
-		private Holder() throws FileNotFoundException {
-			stampFile = new SerializedPageFile<List<Integer>>(new PageFile(filename + ".stamp", 4096),
-					SerializeUtil.list(SerializeUtil.intSerializer));
+		private Io() {
+			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
 		public Transaction begin() {
@@ -442,6 +439,10 @@ public class IbTree<Key> implements Closeable {
 
 		private void write(List<Integer> stamp) {
 			stampFile.save(0, stamp);
+		}
+
+		public void close() throws IOException {
+			stampFile.close();
 		}
 	}
 
@@ -466,8 +467,6 @@ public class IbTree<Key> implements Closeable {
 
 		this.maxBranchFactor = maxBranchFactor;
 		minBranchFactor = maxBranchFactor / 2;
-
-		holder = new Holder();
 	}
 
 	@Override
@@ -475,8 +474,8 @@ public class IbTree<Key> implements Closeable {
 		serializedPageFile.close();
 	}
 
-	public Holder holder() {
-		return holder;
+	public Io io() {
+		return new Io();
 	}
 
 	/**

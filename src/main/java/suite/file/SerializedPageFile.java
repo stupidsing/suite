@@ -1,6 +1,7 @@
 package suite.file;
 
 import java.io.Closeable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -21,6 +22,15 @@ public class SerializedPageFile<V> implements Closeable {
 
 	private PageFile pageFile;
 	private Serializer<V> serializer;
+
+	public SerializedPageFile(String filename, Serializer<V> serializer) {
+		try {
+			this.pageFile = new PageFile(filename, pageSize);
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
+		this.serializer = serializer;
+	}
 
 	public SerializedPageFile(PageFile pageFile, Serializer<V> serializer) {
 		this.pageFile = pageFile;

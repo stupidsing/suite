@@ -25,11 +25,11 @@ public class IbTreeTest {
 	@Test
 	public void testSingleLevel() throws IOException {
 		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree" //
-		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null)) {
-			IbTree<Integer>.Holder holder = ibTree.holder();
-			holder.commit(ibTree.create());
+		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null); //
+				IbTree<Integer>.Io io = ibTree.io()) {
+			io.commit(ibTree.create());
 
-			IbTree<Integer>.Transaction transaction = holder.begin();
+			IbTree<Integer>.Transaction transaction = io.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				transaction.put(i);
@@ -51,9 +51,9 @@ public class IbTreeTest {
 
 		try (IbTree<Pointer> ibTree0 = builder.buildPointerTree(f0);
 				IbTree<Pointer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
-				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1)) {
-			IbTree<String>.Holder holder = ibTree2.holder();
-			holder.commit(ibTree2.create());
+				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1);
+				IbTree<String>.Io io = ibTree2.io()) {
+			io.commit(ibTree2.create());
 
 			int size = ibTree2.guaranteedCapacity();
 
@@ -63,21 +63,21 @@ public class IbTreeTest {
 
 			Collections.shuffle(list);
 
-			IbTree<String>.Transaction transaction0 = holder.begin();
+			IbTree<String>.Transaction transaction0 = io.begin();
 			for (String s : list)
 				transaction0.put(s);
-			holder.commit(transaction0);
+			io.commit(transaction0);
 
-			assertEquals(size, dumpAndCount(holder.begin()));
+			assertEquals(size, dumpAndCount(io.begin()));
 
 			Collections.shuffle(list);
 
-			IbTree<String>.Transaction transaction1 = holder.begin();
+			IbTree<String>.Transaction transaction1 = io.begin();
 			for (String s : list)
 				transaction1.remove(s);
-			holder.commit(transaction1);
+			io.commit(transaction1);
 
-			assertEquals(0, dumpAndCount(holder.begin()));
+			assertEquals(0, dumpAndCount(io.begin()));
 		}
 	}
 

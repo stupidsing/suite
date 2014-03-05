@@ -25,6 +25,7 @@ public class FileSystem implements Closeable {
 
 	private List<IbTree<Pointer>> pointerIbTrees = new ArrayList<>();
 	private IbTree<Bytes> ibTree;
+	private IbTree<Bytes>.Io io;
 
 	public FileSystem(String filename, long capacity) throws FileNotFoundException {
 		long nPages = capacity / pageSize;
@@ -38,10 +39,12 @@ public class FileSystem implements Closeable {
 			pointerIbTrees.add(builder.buildPointerTree(filename + i++, pointerIbTree));
 
 		ibTree = builder.buildTree(filename + i++, Bytes.comparator, keyUtil.serializer(), pointerIbTree);
+		io = ibTree.io();
 	}
 
 	@Override
 	public void close() throws IOException {
+		io.close();
 		ibTree.close();
 		ListIterator<IbTree<Pointer>> li = pointerIbTrees.listIterator();
 		while (li.hasPrevious())
@@ -49,11 +52,11 @@ public class FileSystem implements Closeable {
 	}
 
 	public void create() {
-		ibTree.holder().commit(ibTree.create());
+		io.commit(ibTree.create());
 	}
 
 	public Bytes read(final Bytes name) {
-		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		IbTree<Bytes>.Transaction transaction = io.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes payload = transaction.get(keyUtil.toSeqKey(hash, SIZEID, 0).toBytes());
 
@@ -70,12 +73,12 @@ public class FileSystem implements Closeable {
 	}
 
 	public List<Bytes> list(final Bytes start, final Bytes end) {
-		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		IbTree<Bytes>.Transaction transaction = io.begin();
 		return To.list(new FileSystemNameKeySet(transaction).list(start, end));
 	}
 
 	public void replace(final Bytes name, final Bytes bytes) {
-		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		IbTree<Bytes>.Transaction transaction = io.begin();
 		FileSystemNameKeySet ibNameKeySet = new FileSystemNameKeySet(transaction);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
@@ -103,17 +106,17 @@ public class FileSystem implements Closeable {
 			ibNameKeySet.add(name);
 		}
 
-		ibTree.holder().commit(transaction);
+		io.commit(transaction);
 	}
 
 	public void replace(final Bytes name, final int seq, final Bytes bytes) {
-		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		IbTree<Bytes>.Transaction transaction = io.begin();
 		transaction.replace(key(keyUtil.hash(name), DATAID, seq), bytes);
-		ibTree.holder().commit(transaction);
+		io.commit(transaction);
 	}
 
 	public void resize(final Bytes name, final int size1) {
-		IbTree<Bytes>.Transaction transaction = ibTree.holder().begin();
+		IbTree<Bytes>.Transaction transaction = io.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		int size0 = toSize(transaction.get(sizeKey));
@@ -126,7 +129,7 @@ public class FileSystem implements Closeable {
 			transaction.replace(key(hash, DATAID, page), Bytes.emptyBytes);
 
 		transaction.replace(sizeKey, fromSize(size1));
-		ibTree.holder().commit(transaction);
+		io.commit(transaction);
 	}
 
 	private Bytes key(Bytes hash, int id, int seq) {
