@@ -158,8 +158,8 @@ public class IbTree<Key> implements Closeable {
 	private class SubIbTreeAllocator implements Allocator {
 		private IbTree<Pointer>.Transaction transaction;
 
-		private SubIbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
-			this.transaction = ibTree.transaction(stamp);
+		private SubIbTreeAllocator(IbTree<Pointer>.Transaction transaction) {
+			this.transaction = transaction;
 		}
 
 		public Pointer allocate() {
@@ -509,7 +509,7 @@ public class IbTree<Key> implements Closeable {
 
 	private Allocator allocator(List<Integer> stamp0) {
 		boolean isSbta = allocationIbTree != null;
-		return isSbta ? new SubIbTreeAllocator(allocationIbTree, stamp0) : new SwappingTablesAllocator(stamp0.get(0));
+		return isSbta ? new SubIbTreeAllocator(allocationIbTree.transaction(stamp0)) : new SwappingTablesAllocator(stamp0.get(0));
 	}
 
 	private int compare(Key key0, Key key1) {
