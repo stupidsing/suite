@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.immutable.btree.IbTree;
-import suite.immutable.btree.IbTreeBuilder;
 import suite.immutable.btree.IbTree.Pointer;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
