@@ -153,8 +153,8 @@ public class IbTree<Key> implements Closeable {
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
 		private Set<Pointer> allocated = new HashSet<>();
-		private Set<Pointer> discarded = new HashSet<>();
-		private Set<Pointer> allocateDiscarded = new HashSet<>();
+		private Set<Pointer> discarded = new HashSet<>(); // Non-reusable
+		private Set<Pointer> allocateDiscarded = new HashSet<>(); // Reusable
 
 		private DelayedDiscardAllocator(Allocator allocator) {
 			this.allocator = allocator;
