@@ -156,16 +156,14 @@ public class IbTree<Key> implements Closeable {
 	// copy-on-write, allocate new ones instead; allocate-discard-reallocate
 	// same page in same transaction is okay
 	private class SubIbTreeAllocator implements Allocator {
-		private IbTree<Pointer> ibTree;
 		private IbTree<Pointer>.Transaction transaction;
 
 		private SubIbTreeAllocator(IbTree<Pointer> ibTree, List<Integer> stamp) {
-			this.ibTree = ibTree;
 			this.transaction = ibTree.transaction(stamp);
 		}
 
 		public Pointer allocate() {
-			Pointer pointer = ibTree.source(transaction.root).source();
+			Pointer pointer = transaction.source().source();
 			if (pointer != null) {
 				transaction.remove(pointer);
 				return pointer;
@@ -477,10 +475,6 @@ public class IbTree<Key> implements Closeable {
 			stamp0 = Arrays.asList(0);
 
 		return new Transaction(allocator(stamp0));
-	}
-
-	private Source<Key> source(Pointer pointer) {
-		return source(pointer, null, null);
 	}
 
 	private Source<Key> source(Pointer pointer, Key start, Key end) {
