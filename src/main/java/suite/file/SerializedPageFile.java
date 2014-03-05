@@ -38,8 +38,12 @@ public class SerializedPageFile<V> implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
-		pageFile.close();
+	public void close() {
+		try {
+			pageFile.close();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public V load(int pageNo) {

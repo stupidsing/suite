@@ -2,7 +2,6 @@ package suite.immutable.btree;
 
 import java.io.Closeable;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class FileSystem implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		txm.close();
 		ibTree.close();
 		ListIterator<IbTree<Pointer>> li = pointerIbTrees.listIterator();

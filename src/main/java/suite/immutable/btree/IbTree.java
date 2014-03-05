@@ -421,24 +421,16 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public Transaction begin() {
-			return transaction(read());
+			return transaction(stampFile.load(0));
 		}
 
 		public void commit(Transaction transaction) {
 			List<Integer> stamp = transaction.flush();
 			sync();
-			write(stamp);
-		}
-
-		private List<Integer> read() {
-			return stampFile.load(0);
-		}
-
-		private void write(List<Integer> stamp) {
 			stampFile.save(0, stamp);
 		}
 
-		public void close() throws IOException {
+		public void close() {
 			stampFile.close();
 		}
 	}
@@ -467,7 +459,7 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		serializedPageFile.close();
 	}
 
