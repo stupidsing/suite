@@ -39,8 +39,8 @@ public class To {
 
 	public static String hex2(int i) {
 		return "" //
-				+ (hexDigits.charAt(i >>> 4 & 0x0F)) //
-				+ (hexDigits.charAt(i & 0x0F));
+				+ hexDigits.charAt(i >>> 4 & 0x0F) //
+				+ hexDigits.charAt(i & 0x0F);
 	}
 
 	public static String hex4(int i) {

@@ -185,7 +185,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public Integer allocate() {
-			Integer pointer = transaction.source().source();
+			Integer pointer = transaction.keys().source();
 			if (pointer != null) {
 				transaction.remove(pointer);
 				return pointer;
@@ -216,20 +216,21 @@ public class IbTree<Key> implements Closeable {
 			this.root = root;
 		}
 
-		public Source<Key> source() {
-			return source(null, null);
+		public Source<Key> keys() {
+			return keys(null, null);
 		}
 
-		public Source<Key> source(Key start, Key end) {
-			return IbTree.this.source(root, start, end);
+		public Source<Key> keys(Key start, Key end) {
+			return IbTree.this.keys(root, start, end);
 		}
 
-		public Bytes get(Key key) {
-			Slot slot = IbTree.this.source0(root, key, null).source();
-			if (slot != null && slot.type == SlotType.DATA && compare(slot.pivot, key) == 0)
-				return serializedPayloadPageFile.load(slot.pointer);
-			else
-				return null;
+		public Integer getData(Key key) {
+			return get(root, key, SlotType.TERMINAL);
+		}
+
+		public Bytes getPayload(Key key) {
+			Integer pointer = get(root, key, SlotType.DATA);
+			return pointer != null ? serializedPayloadPageFile.load(pointer) : null;
 		}
 
 		/**
@@ -237,11 +238,11 @@ public class IbTree<Key> implements Closeable {
 		 * to replace stored value of the same key.
 		 */
 		public void put(final Key key) {
-			update(key, new Fun<Slot, Slot>() {
-				public Slot apply(Slot slot) {
-					return new Slot(SlotType.TERMINAL, key, null);
-				}
-			});
+			replace(key, new Slot(SlotType.TERMINAL, key, null));
+		}
+
+		public void put(Key key, Integer data) {
+			replace(key, new Slot(SlotType.TERMINAL, key, data));
 		}
 
 		/**
@@ -253,8 +254,10 @@ public class IbTree<Key> implements Closeable {
 		public <Payload> void replace(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
 			serializedPayloadPageFile.save(pointer, payload);
-			final Slot slot1 = new Slot(SlotType.DATA, key, pointer);
+			replace(key, new Slot(SlotType.DATA, key, pointer));
+		}
 
+		private void replace(Key key, final Slot slot1) {
 			update(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
 					return slot1;
@@ -265,10 +268,6 @@ public class IbTree<Key> implements Closeable {
 		public void remove(Key key) {
 			allocator.discard(root);
 			root = createRootPage(delete(read(root).slots, key));
-		}
-
-		private List<Integer> flush() {
-			return Util.add(Arrays.asList(root), allocator.flush());
 		}
 
 		private void update(Key key, Fun<Slot, Slot> replacer) {
@@ -354,6 +353,10 @@ public class IbTree<Key> implements Closeable {
 				merged = Arrays.asList(slot(Util.add(slots0, slots1)));
 
 			return merged;
+		}
+
+		private List<Integer> flush() {
+			return Util.add(Arrays.asList(root), allocator.flush());
 		}
 
 		private Integer createRootPage(List<Slot> slots) {
@@ -488,7 +491,7 @@ public class IbTree<Key> implements Closeable {
 		return new Transaction(allocator(stamp0));
 	}
 
-	private Source<Key> source(Integer pointer, Key start, Key end) {
+	private Source<Key> keys(Integer pointer, Key start, Key end) {
 		return FunUtil.map(new Fun<Slot, Key>() {
 			public Key apply(Slot slot) {
 				return slot.pivot;
@@ -496,7 +499,15 @@ public class IbTree<Key> implements Closeable {
 		}, source0(pointer, start, end));
 	}
 
-	private Source<Slot> source0(final Integer pointer, final Key start, final Key end) {
+	private Integer get(Integer root, Key key, SlotType slotType) {
+		Slot slot = source0(root, key, null).source();
+		if (slot != null && slot.type == slotType && compare(slot.pivot, key) == 0)
+			return slot.pointer;
+		else
+			return null;
+	}
+
+	private Source<Slot> source0(Integer pointer, final Key start, final Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();

@@ -81,7 +81,7 @@ public class IbTreeTest {
 	}
 
 	private int dumpAndCount(IbTree<?>.Transaction transaction) {
-		Source<?> source = transaction.source();
+		Source<?> source = transaction.keys();
 		Object object;
 		int count = 0;
 
