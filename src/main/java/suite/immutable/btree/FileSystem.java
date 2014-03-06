@@ -55,7 +55,7 @@ public class FileSystem implements Closeable {
 	public Bytes read(final Bytes name) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		Bytes hash = keyUtil.hash(name);
-		Integer size = transaction.getData(keyUtil.toDataKey(hash, SIZEID, 0).toBytes());
+		Integer size = transaction.getData(key(hash, SIZEID, 0));
 
 		if (size != null) {
 			int seq = 0;
