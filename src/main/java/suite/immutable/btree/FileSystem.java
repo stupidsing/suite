@@ -60,10 +60,8 @@ public class FileSystem implements Closeable {
 		if (size != null) {
 			int seq = 0;
 			BytesBuilder bb = new BytesBuilder();
-
 			for (int s = 0; s < size; s += pageSize)
 				bb.append(transaction.getPayload(key(hash, DATAID, seq++)));
-
 			return bb.toBytes();
 		} else
 			return null;
