@@ -446,7 +446,7 @@ public class IbTree<Key> implements Closeable {
 	 *         the tree. For each branch node, it occupy 1 child of its parent,
 	 *         and create children at the number of branch factor. Therefore its
 	 *         "gain" is its branch factor minus 1. The tree root is a single
-	 *         entry, thus the sum of all "gains" result plus 1 in the total
+	 *         entry, thus the sum of all "gains" plus 1 result in the total
 	 *         number of leave nodes.
 	 * 
 	 *         Second, we find the smallest tree for n pages. 1 page is used as
@@ -460,13 +460,14 @@ public class IbTree<Key> implements Closeable {
 	 *         The final result needs to be minus by 1 to exclude the guard node
 	 *         at rightmost of the tree.
 	 * 
-	 *         In formula, minimum number of nodes causing split: 1 + 1 + (size
-	 *         - 1) * (minBranchFactor - 1) + minBranchFactor - 1 = size *
-	 *         (minBranchFactor - 1) + 2
+	 *         In formula, minimum number of nodes causing split: 1 + (2 - 1) +
+	 *         (size - 1) * (minBranchFactor - 1) + minBranchFactor - 1 - 1 =
+	 *         size * (minBranchFactor - 1) + 1
 	 */
 	public int guaranteedCapacity() {
 		if (allocationIbTree != null)
-			return allocationIbTree.guaranteedCapacity() * (minBranchFactor - 1) + 2;
+			// Refers the long pile above
+			return allocationIbTree.guaranteedCapacity() * (minBranchFactor - 1) + 1;
 		else
 			// There are at most maxBranchFactor - 1 nodes, and need to keep 1
 			// for the guard node too
