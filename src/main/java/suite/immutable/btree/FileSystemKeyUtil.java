@@ -43,10 +43,10 @@ public class FileSystemKeyUtil {
 		}
 	}
 
-	public class SeqKey extends Key {
+	public class DataKey extends Key {
 		private int seq;
 
-		private SeqKey(Bytes hash, int id, int seq) {
+		private DataKey(Bytes hash, int id, int seq) {
 			super(hash, id);
 			this.seq = seq;
 		}
@@ -124,8 +124,8 @@ public class FileSystemKeyUtil {
 		return new NameKey(hash, id, path, size);
 	}
 
-	public SeqKey toSeqKey(Bytes hash, int id, int seq) {
-		return new SeqKey(hash, id, seq);
+	public DataKey toDataKey(Bytes hash, int id, int seq) {
+		return new DataKey(hash, id, seq);
 	}
 
 	public Bytes hash(Bytes bytes) {
