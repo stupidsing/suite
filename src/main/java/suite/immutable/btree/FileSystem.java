@@ -74,22 +74,25 @@ public class FileSystem implements Closeable {
 
 	public void replace(final Bytes name, final Bytes bytes) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
-		FileSystemNameKeySet ibNameKeySet = new FileSystemNameKeySet(transaction);
+		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(transaction);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 
-		Bytes nameBytes0 = ibNameKeySet.list(name, null).source();
+		Bytes nameBytes0 = fsNameKeySet.list(name, null).source();
+		boolean isRemove = Objects.equals(nameBytes0, name);
+		boolean isCreate = bytes != null;
 
-		if (Objects.equals(nameBytes0, name)) { // Remove
+		if (isRemove) {
 			int seq = 0, size = transaction.getData(sizeKey);
 
-			ibNameKeySet.remove(name);
+			if (!isCreate)
+				fsNameKeySet.remove(name);
 			transaction.remove(sizeKey);
 			for (int s = 0; s < size; s += pageSize)
 				transaction.remove(key(hash, DATAID, seq++));
 		}
 
-		if (bytes != null) { // Create
+		if (isCreate) {
 			int pos = 0, seq = 0, size = bytes.size();
 
 			while (pos < size) {
@@ -98,7 +101,8 @@ public class FileSystem implements Closeable {
 				pos = pos1;
 			}
 			transaction.put(sizeKey, size);
-			ibNameKeySet.add(name);
+			if (!isRemove)
+				fsNameKeySet.add(name);
 		}
 
 		txm.commit(transaction);
