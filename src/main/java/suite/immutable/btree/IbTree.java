@@ -135,7 +135,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public void discard(Integer pointer) {
-			(allocated.remove(pointer) ? allocateDiscarded : discarded).add(pointer);
+			(allocated.remove(pointer) ? allocateDiscarded : discarded).push(pointer);
 		}
 
 		public List<Integer> flush() {
