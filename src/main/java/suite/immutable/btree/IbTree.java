@@ -252,7 +252,7 @@ public class IbTree<Key> implements Closeable {
 		 * 
 		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
-		public <Payload> void replace(Key key, Bytes payload) {
+		public <Payload> void put(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
 			serializedPayloadPageFile.save(pointer, payload);
 			update(key, new Slot(SlotType.DATA, key, pointer));

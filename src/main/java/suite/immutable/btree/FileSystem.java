@@ -2,7 +2,6 @@ package suite.immutable.btree;
 
 import java.io.Closeable;
 import java.io.FileNotFoundException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -56,10 +55,10 @@ public class FileSystem implements Closeable {
 	public Bytes read(final Bytes name) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		Bytes hash = keyUtil.hash(name);
-		Bytes payload = transaction.getPayload(keyUtil.toSeqKey(hash, SIZEID, 0).toBytes());
+		Integer size = transaction.getData(keyUtil.toSeqKey(hash, SIZEID, 0).toBytes());
 
-		if (payload != null) {
-			int seq = 0, size = toSize(payload);
+		if (size != null) {
+			int seq = 0;
 			BytesBuilder bb = new BytesBuilder();
 
 			for (int s = 0; s < size; s += pageSize)
@@ -84,7 +83,7 @@ public class FileSystem implements Closeable {
 		Bytes nameBytes0 = ibNameKeySet.list(name, null).source();
 
 		if (Objects.equals(nameBytes0, name)) { // Remove
-			int seq = 0, size = toSize(transaction.getPayload(sizeKey));
+			int seq = 0, size = transaction.getData(sizeKey);
 
 			ibNameKeySet.remove(name);
 			transaction.remove(sizeKey);
@@ -97,10 +96,10 @@ public class FileSystem implements Closeable {
 
 			while (pos < size) {
 				int pos1 = Math.min(pos + pageSize, size);
-				transaction.replace(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
+				transaction.put(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
 				pos = pos1;
 			}
-			transaction.replace(sizeKey, fromSize(size));
+			transaction.put(sizeKey, size);
 			ibNameKeySet.add(name);
 		}
 
@@ -109,7 +108,7 @@ public class FileSystem implements Closeable {
 
 	public void replace(final Bytes name, final int seq, final Bytes bytes) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
-		transaction.replace(key(keyUtil.hash(name), DATAID, seq), bytes);
+		transaction.put(key(keyUtil.hash(name), DATAID, seq), bytes);
 		txm.commit(transaction);
 	}
 
@@ -117,29 +116,21 @@ public class FileSystem implements Closeable {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
-		int size0 = toSize(transaction.getPayload(sizeKey));
+		int size0 = transaction.getData(sizeKey);
 		int nPages0 = (size0 + pageSize - 1) % pageSize;
 		int nPages1 = (size1 + pageSize - 1) % pageSize;
 
 		for (int page = nPages1; page < nPages0; page++)
 			transaction.remove(key(hash, DATAID, page));
 		for (int page = nPages0; page < nPages1; page++)
-			transaction.replace(key(hash, DATAID, page), Bytes.emptyBytes);
+			transaction.put(key(hash, DATAID, page), Bytes.emptyBytes);
 
-		transaction.replace(sizeKey, fromSize(size1));
+		transaction.put(sizeKey, size1);
 		txm.commit(transaction);
 	}
 
 	private Bytes key(Bytes hash, int id, int seq) {
 		return keyUtil.toSeqKey(hash, id, seq).toBytes();
-	}
-
-	private Bytes fromSize(int size) {
-		return new Bytes(ByteBuffer.allocate(4).putInt(size).array());
-	}
-
-	private int toSize(Bytes payload) {
-		return ByteBuffer.wrap(payload.getBytes()).asIntBuffer().get();
 	}
 
 }
