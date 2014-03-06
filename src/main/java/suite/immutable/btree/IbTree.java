@@ -121,19 +121,15 @@ public class IbTree<Key> implements Closeable {
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
 		private Set<Integer> allocated = new HashSet<>();
-		private Set<Integer> discarded = new HashSet<>(); // Non-reusable
-		private Set<Integer> allocateDiscarded = new HashSet<>(); // Reusable
+		private Deque<Integer> discarded = new ArrayDeque<>(); // Non-reusable
+		private Deque<Integer> allocateDiscarded = new ArrayDeque<>(); // Reusable
 
 		private DelayedDiscardAllocator(Allocator allocator) {
 			this.allocator = allocator;
 		}
 
 		public Integer allocate() {
-			Integer pointer;
-			if (allocateDiscarded.isEmpty())
-				pointer = allocator.allocate();
-			else
-				allocateDiscarded.remove(pointer = allocateDiscarded.iterator().next());
+			Integer pointer = allocateDiscarded.isEmpty() ? allocator.allocate() : allocateDiscarded.pop();
 			allocated.add(pointer);
 			return pointer;
 		}
@@ -143,10 +139,10 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public List<Integer> flush() {
-			for (Integer pointer : discarded)
-				allocator.discard(pointer);
-			for (Integer pointer : allocateDiscarded)
-				allocator.discard(pointer);
+			while (!discarded.isEmpty())
+				allocator.discard(discarded.pop());
+			while (!allocateDiscarded.isEmpty())
+				allocator.discard(allocateDiscarded.pop());
 			return allocator.flush();
 		}
 	}
