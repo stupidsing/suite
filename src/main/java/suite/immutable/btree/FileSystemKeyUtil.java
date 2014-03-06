@@ -52,7 +52,8 @@ public class FileSystemKeyUtil {
 		}
 
 		public Bytes toBytes() {
-			return Bytes.concat(super.toBytes(), new Bytes(ByteBuffer.allocate(4).putInt(seq).array())).pad(keyLength, (byte) 0);
+			byte bs[] = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(seq)).array();
+			return Bytes.concat(super.toBytes(), new Bytes(bs)).pad(keyLength, (byte) 0);
 		}
 
 		public int getSeq() {
