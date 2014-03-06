@@ -460,9 +460,9 @@ public class IbTree<Key> implements Closeable {
 	 *         The final result needs to be minus by 1 to exclude the guard node
 	 *         at rightmost of the tree.
 	 * 
-	 *         In formula, minimum number of nodes causing split: 1 + (2 - 1) +
-	 *         (size - 1) * (minBranchFactor - 1) + minBranchFactor - 1 - 1 =
-	 *         size * (minBranchFactor - 1) + 1
+	 *         In formula, the minimum number of nodes causing split: 1 + (2 -
+	 *         1) + (size - 1) * (minBranchFactor - 1) + minBranchFactor - 1 - 1
+	 *         = size * (minBranchFactor - 1) + 1
 	 */
 	public int guaranteedCapacity() {
 		if (allocationIbTree != null)
