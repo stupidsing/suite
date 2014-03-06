@@ -238,11 +238,11 @@ public class IbTree<Key> implements Closeable {
 		 * to replace stored value of the same key.
 		 */
 		public void put(final Key key) {
-			replace(key, new Slot(SlotType.TERMINAL, key, null));
+			update(key, new Slot(SlotType.TERMINAL, key, null));
 		}
 
 		public void put(Key key, Integer data) {
-			replace(key, new Slot(SlotType.TERMINAL, key, data));
+			update(key, new Slot(SlotType.TERMINAL, key, data));
 		}
 
 		/**
@@ -254,20 +254,20 @@ public class IbTree<Key> implements Closeable {
 		public <Payload> void replace(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
 			serializedPayloadPageFile.save(pointer, payload);
-			replace(key, new Slot(SlotType.DATA, key, pointer));
-		}
-
-		private void replace(Key key, final Slot slot1) {
-			update(key, new Fun<Slot, Slot>() {
-				public Slot apply(Slot slot) {
-					return slot1;
-				}
-			});
+			update(key, new Slot(SlotType.DATA, key, pointer));
 		}
 
 		public void remove(Key key) {
 			allocator.discard(root);
 			root = createRootPage(delete(read(root).slots, key));
+		}
+
+		private void update(Key key, final Slot slot1) {
+			update(key, new Fun<Slot, Slot>() {
+				public Slot apply(Slot slot) {
+					return slot1;
+				}
+			});
 		}
 
 		private void update(Key key, Fun<Slot, Slot> replacer) {
