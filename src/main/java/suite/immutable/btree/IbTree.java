@@ -152,11 +152,11 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private class SwappingAllocator implements Allocator {
-		private int using;
+		private int active;
 		private Deque<Integer> deque;
 
-		private SwappingAllocator(int using) {
-			reset(using);
+		private SwappingAllocator(int active) {
+			reset(active);
 		}
 
 		public Integer allocate() {
@@ -167,13 +167,14 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		public List<Integer> flush() {
-			List<Integer> stamp = Arrays.asList(using);
-			reset(1 - using);
+			List<Integer> stamp = Arrays.asList(active);
+			reset(1 - active);
 			return stamp;
 		}
 
-		private void reset(int using) {
-			deque = new ArrayDeque<>(Arrays.asList(this.using = using));
+		private void reset(int active) {
+			this.active = active;
+			deque = new ArrayDeque<>(Arrays.asList(1 - active));
 		}
 	}
 
