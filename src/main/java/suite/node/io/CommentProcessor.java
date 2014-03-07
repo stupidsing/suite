@@ -32,16 +32,22 @@ public class CommentProcessor implements Fun<String, String> {
 
 	private String removeComments(String in, String open, String close) {
 		int closeLength = !isWhitespaces(close) ? close.length() : 0;
+		int start = 0;
+		StringBuilder sb = new StringBuilder();
 
 		while (true) {
-			int pos1 = ParseUtil.search(in, 0, open);
+			int pos0 = ParseUtil.search(in, start, open);
+			if (pos0 == -1)
+				break;
+			int pos1 = ParseUtil.search(in, pos0 + open.length(), close);
 			if (pos1 == -1)
-				return in;
-			int pos2 = ParseUtil.search(in, pos1 + open.length(), close);
-			if (pos2 == -1)
-				return in;
-			in = in.substring(0, pos1) + in.substring(pos2 + closeLength);
+				break;
+			sb.append(in.substring(start, pos0));
+			start = pos1 + closeLength;
 		}
+
+		sb.append(in.substring(start));
+		return sb.toString();
 	}
 
 	private boolean isWhitespaces(String in) {
