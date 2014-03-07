@@ -119,8 +119,8 @@ public class FileSystem implements Closeable {
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		int size0 = transaction.getData(sizeKey);
-		int nPages0 = (size0 + pageSize - 1) % pageSize;
-		int nPages1 = (size1 + pageSize - 1) % pageSize;
+		int nPages0 = (size0 + pageSize - 1) / pageSize;
+		int nPages1 = (size1 + pageSize - 1) / pageSize;
 
 		for (int page = nPages1; page < nPages0; page++)
 			transaction.remove(key(hash, DATAID, page));
