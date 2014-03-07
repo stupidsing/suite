@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 
-import suite.util.FunUtil.Source;
-
 public class Util {
 
 	public static abstract class ExecutableProgram implements AutoCloseable {
@@ -276,27 +274,6 @@ public class Util {
 			return Pair.create(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
 		else
 			return Pair.create(s, "");
-	}
-
-	public static Iterable<String> splitn(final String s, final String delimiter) {
-		return FunUtil.iter(new Source<String>() {
-			private int pos = 0;
-
-			public String source() {
-				String splitted;
-				int pos1;
-
-				if ((pos1 = s.indexOf(delimiter, pos)) >= 0) {
-					splitted = s.substring(pos, pos1).trim();
-					pos = pos1 + delimiter.length();
-				} else if (!(splitted = s.substring(pos).trim()).isEmpty())
-					pos = s.length();
-				else
-					splitted = null;
-
-				return splitted;
-			}
-		});
 	}
 
 	public static boolean stringEquals(String s0, String s1) {
