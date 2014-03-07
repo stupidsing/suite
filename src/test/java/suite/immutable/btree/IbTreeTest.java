@@ -62,19 +62,28 @@ public class IbTreeTest {
 
 			Collections.shuffle(list);
 
-			IbTree<String>.Transaction transaction0 = txm.begin();
-			for (String s : list)
-				transaction0.put(s);
-			txm.commit(transaction0);
+			// During each transaction, some new pages are required before old
+			// pages can be discarded during commit. If we update too much data,
+			// we would run out of allocatable pages. Here we limit ourselves to
+			// updating 25 keys each.
+
+			for (List<String> subset : Util.splitn(list, 25)) {
+				IbTree<String>.Transaction transaction0 = txm.begin();
+				for (String s : subset)
+					transaction0.put(s);
+				txm.commit(transaction0);
+			}
 
 			assertEquals(size, dumpAndCount(txm.begin()));
 
 			Collections.shuffle(list);
 
-			IbTree<String>.Transaction transaction1 = txm.begin();
-			for (String s : list)
-				transaction1.remove(s);
-			txm.commit(transaction1);
+			for (List<String> subset : Util.splitn(list, 25)) {
+				IbTree<String>.Transaction transaction1 = txm.begin();
+				for (String s : subset)
+					transaction1.remove(s);
+				txm.commit(transaction1);
+			}
 
 			assertEquals(0, dumpAndCount(txm.begin()));
 		}

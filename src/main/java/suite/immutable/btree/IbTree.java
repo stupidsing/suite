@@ -460,17 +460,17 @@ public class IbTree<Key> implements Closeable {
 	 *         split to occur. Therefore 1 page should be at its maximum size.
 	 *         This adds in half of branch factor minus 1 of nodes.
 	 * 
-	 *         The final result needs to be minus by 1 to exclude the guard node
-	 *         at rightmost of the tree.
+	 *         Fourth, the final result needs to be minus by 1 to exclude the
+	 *         guard node at rightmost of the tree.
 	 * 
 	 *         In formula, the minimum number of nodes causing split: 1 + (2 -
-	 *         1) + (size - 1) * (minBranchFactor - 1) + minBranchFactor - 1 - 1
-	 *         = size * (minBranchFactor - 1) + 1
+	 *         1) + (size - 1) * (minBranchFactor - 1) + (minBranchFactor - 1) -
+	 *         1 = size * (minBranchFactor - 1) + 1
 	 */
 	public int guaranteedCapacity() {
 		if (allocationIbTree != null)
 			// Refers the long pile above
-			return allocationIbTree.guaranteedCapacity() * (minBranchFactor - 1) + 1;
+			return allocationIbTree.guaranteedCapacity() * 9 / 10 * (minBranchFactor - 1) + 1;
 		else
 			// There are at most maxBranchFactor - 1 nodes, and need to keep 1
 			// for the guard node too

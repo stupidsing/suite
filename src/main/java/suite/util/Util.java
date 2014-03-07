@@ -276,6 +276,17 @@ public class Util {
 			return Pair.create(s, "");
 	}
 
+	public static <T> List<List<T>> splitn(List<T> list, int n) {
+		int s = 0;
+		List<List<T>> subsets = new ArrayList<>();
+		while (s < list.size()) {
+			int s1 = Math.min(s + n, list.size());
+			subsets.add(list.subList(s, s1));
+			s = s1;
+		}
+		return subsets;
+	}
+
 	public static boolean stringEquals(String s0, String s1) {
 		return Objects.equals(s0, s1);
 	}
