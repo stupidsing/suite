@@ -113,15 +113,6 @@ public class EvalPredicates {
 		}
 	}
 
-	public static class GeneralizeWithPrefix implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 3);
-			Generalizer generalizer = new Generalizer();
-			generalizer.setVariablePrefix(Formatter.display(params[1]));
-			return prover.bind(generalizer.generalize(params[0]), params[2]);
-		}
-	}
-
 	public static class Hash implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Tree.getParameters(ps, 2);

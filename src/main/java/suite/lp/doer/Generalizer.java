@@ -122,10 +122,6 @@ public class Generalizer {
 		return variables.get(name);
 	}
 
-	public void setVariablePrefix(String variablePrefix) {
-		this.variablePrefix = variablePrefix;
-	}
-
 	public void setCut(Node cut) {
 		this.cut = cut;
 	}

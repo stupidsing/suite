@@ -51,7 +51,6 @@ public class SystemPredicates {
 		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
 		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
 		addPredicate("generalize", new EvalPredicates.Generalize());
-		addPredicate("generalize.prefix", new EvalPredicates.GeneralizeWithPrefix());
 		addPredicate("hash", new EvalPredicates.Hash());
 		addPredicate("is.cyclic", new EvalPredicates.IsCyclic());
 		addPredicate("let", new EvalPredicates.Let());
