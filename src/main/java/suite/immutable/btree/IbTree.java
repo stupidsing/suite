@@ -433,6 +433,9 @@ public class IbTree<Key> implements Closeable {
 		serializedPageFile.close();
 	}
 
+	/**
+	 * @return Transaction manager for this immutable B-tree.
+	 */
 	public Txm txm() {
 		return new Txm();
 	}
