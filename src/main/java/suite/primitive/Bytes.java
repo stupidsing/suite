@@ -10,7 +10,7 @@ import suite.util.Util;
 
 public class Bytes implements Iterable<Byte> {
 
-	private byte vector[]; // Immutable
+	private byte bs[]; // Immutable
 	private int start, end;
 
 	private static final byte emptyByteArray[] = new byte[0];
@@ -25,8 +25,8 @@ public class Bytes implements Iterable<Byte> {
 			int index = 0, c = 0;
 
 			while (c == 0 && index < minSize) {
-				byte b0 = bytes0.vector[start0 + index];
-				byte b1 = bytes1.vector[start1 + index];
+				byte b0 = bytes0.bs[start0 + index];
+				byte b1 = bytes1.bs[start1 + index];
 				c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
 				index++;
 			}
@@ -36,7 +36,7 @@ public class Bytes implements Iterable<Byte> {
 	};
 
 	public Bytes(Bytes bytes) {
-		this(bytes.vector, bytes.start, bytes.end);
+		this(bytes.bs, bytes.start, bytes.end);
 	}
 
 	public Bytes(byte bytes[]) {
@@ -48,7 +48,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public Bytes(byte bytes[], int start, int end) {
-		this.vector = bytes;
+		this.bs = bytes;
 		this.start = start;
 		this.end = end;
 	}
@@ -56,8 +56,8 @@ public class Bytes implements Iterable<Byte> {
 	public Bytes append(Bytes a) {
 		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
 		byte nb[] = new byte[newSize];
-		System.arraycopy(vector, start, nb, 0, size0);
-		System.arraycopy(a.vector, a.start, nb, size0, size1);
+		System.arraycopy(bs, start, nb, 0, size0);
+		System.arraycopy(a.bs, a.start, nb, size0, size1);
 		return new Bytes(nb);
 	}
 
@@ -77,7 +77,7 @@ public class Bytes implements Iterable<Byte> {
 			index += size();
 		int i1 = index + start;
 		checkClosedBounds(i1);
-		return vector[i1];
+		return bs[i1];
 	}
 
 	public boolean isEmpty() {
@@ -119,7 +119,7 @@ public class Bytes implements Iterable<Byte> {
 			}
 
 			public Byte next() {
-				return vector[pos++];
+				return bs[pos++];
 			}
 
 			public void remove() {
@@ -132,7 +132,7 @@ public class Bytes implements Iterable<Byte> {
 	public int hashCode() {
 		int result = 1;
 		for (int i = start; i < end; i++)
-			result = 31 * result + vector[i];
+			result = 31 * result + bs[i];
 		return result;
 	}
 
@@ -143,7 +143,7 @@ public class Bytes implements Iterable<Byte> {
 			int diff = other.start - start;
 
 			for (int i = start; i < end; i++)
-				if (vector[i] != other.vector[i + diff])
+				if (bs[i] != other.bs[i + diff])
 					return false;
 
 			return true;
@@ -155,17 +155,17 @@ public class Bytes implements Iterable<Byte> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = start; i < end; i++)
-			sb.append(" " + To.hex2(vector[i]));
+			sb.append(" " + To.hex2(bs[i]));
 		return sb.toString();
 	}
 
 	private Bytes subbytes0(int start, int end) {
 		checkOpenBounds(start);
 		checkOpenBounds(end);
-		Bytes result = new Bytes(vector, start, end);
+		Bytes result = new Bytes(bs, start, end);
 
 		// Avoid small pack of bytes object keeping a large buffer
-		if (vector.length >= reallocSize && end - start < reallocSize / 4)
+		if (bs.length >= reallocSize && end - start < reallocSize / 4)
 			result = emptyBytes.append(result); // Do not share reference
 
 		return result;
@@ -182,10 +182,10 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public byte[] getBytes() {
-		if (start != 0 || end != vector.length)
-			return Arrays.copyOfRange(vector, start, end);
+		if (start != 0 || end != bs.length)
+			return Arrays.copyOfRange(bs, start, end);
 		else
-			return vector;
+			return bs;
 	}
 
 	public static class BytesBuilder {
@@ -193,7 +193,7 @@ public class Bytes implements Iterable<Byte> {
 		private int size;
 
 		public BytesBuilder append(Bytes b) {
-			return append(b.vector, b.start, b.end);
+			return append(b.bs, b.start, b.end);
 		}
 
 		public BytesBuilder append(byte b) {

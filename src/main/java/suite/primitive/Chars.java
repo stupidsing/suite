@@ -9,7 +9,7 @@ import suite.util.Util;
 
 public class Chars implements Iterable<Character> {
 
-	private char vector[]; // Immutable
+	private char cs[]; // Immutable
 	private int start, end;
 
 	private static final char emptyCharArray[] = new char[0];
@@ -24,8 +24,8 @@ public class Chars implements Iterable<Character> {
 			int index = 0, c = 0;
 
 			while (c == 0 && index < minSize) {
-				char b0 = chars0.vector[start0 + index];
-				char b1 = chars1.vector[start1 + index];
+				char b0 = chars0.cs[start0 + index];
+				char b1 = chars1.cs[start1 + index];
 				c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
 				index++;
 			}
@@ -35,7 +35,7 @@ public class Chars implements Iterable<Character> {
 	};
 
 	public Chars(Chars chars) {
-		this(chars.vector, chars.start, chars.end);
+		this(chars.cs, chars.start, chars.end);
 	}
 
 	public Chars(char chars[]) {
@@ -47,7 +47,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars(char chars[], int start, int end) {
-		this.vector = chars;
+		this.cs = chars;
 		this.start = start;
 		this.end = end;
 	}
@@ -55,8 +55,8 @@ public class Chars implements Iterable<Character> {
 	public Chars append(Chars a) {
 		int size0 = size(), size1 = a.size(), newSize = size0 + size1;
 		char nb[] = new char[newSize];
-		System.arraycopy(vector, start, nb, 0, size0);
-		System.arraycopy(a.vector, a.start, nb, size0, size1);
+		System.arraycopy(cs, start, nb, 0, size0);
+		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return new Chars(nb);
 	}
 
@@ -76,7 +76,7 @@ public class Chars implements Iterable<Character> {
 			index += size();
 		int i1 = index + start;
 		checkClosedBounds(i1);
-		return vector[i1];
+		return cs[i1];
 	}
 
 	public boolean isEmpty() {
@@ -118,7 +118,7 @@ public class Chars implements Iterable<Character> {
 			}
 
 			public Character next() {
-				return vector[pos++];
+				return cs[pos++];
 			}
 
 			public void remove() {
@@ -131,7 +131,7 @@ public class Chars implements Iterable<Character> {
 	public int hashCode() {
 		int result = 1;
 		for (int i = start; i < end; i++)
-			result = 31 * result + vector[i];
+			result = 31 * result + cs[i];
 		return result;
 	}
 
@@ -142,7 +142,7 @@ public class Chars implements Iterable<Character> {
 			int diff = other.start - start;
 
 			for (int i = start; i < end; i++)
-				if (vector[i] != other.vector[i + diff])
+				if (cs[i] != other.cs[i + diff])
 					return false;
 
 			return true;
@@ -152,16 +152,16 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public String toString() {
-		return new String(vector);
+		return new String(cs);
 	}
 
 	private Chars subchars0(int start, int end) {
 		checkOpenBounds(start);
 		checkOpenBounds(end);
-		Chars result = new Chars(vector, start, end);
+		Chars result = new Chars(cs, start, end);
 
 		// Avoid small pack of chars object keeping a large buffer
-		if (vector.length >= reallocSize && end - start < reallocSize / 4)
+		if (cs.length >= reallocSize && end - start < reallocSize / 4)
 			result = emptyChars.append(result); // Do not share reference
 
 		return result;
@@ -178,10 +178,10 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public char[] getChars() {
-		if (start != 0 || end != vector.length)
-			return Arrays.copyOfRange(vector, start, end);
+		if (start != 0 || end != cs.length)
+			return Arrays.copyOfRange(cs, start, end);
 		else
-			return vector;
+			return cs;
 	}
 
 	public static class CharsBuilder {
@@ -189,7 +189,7 @@ public class Chars implements Iterable<Character> {
 		private int size;
 
 		public CharsBuilder append(Chars b) {
-			return append(b.vector, b.start, b.end);
+			return append(b.cs, b.start, b.end);
 		}
 
 		public CharsBuilder append(char b) {
