@@ -24,6 +24,8 @@ import suite.util.SerializeUtil.Serializer;
 import suite.util.To;
 import suite.util.Util;
 
+import com.google.common.collect.Iterators;
+
 /**
  * Immutable, on-disk B-tree implementation.
  * 
@@ -486,10 +488,19 @@ public class IbTree<Key> implements Closeable {
 			for (int p = 0; p < nPages; p++)
 				transaction0.put(p);
 			stamp0 = transaction0.flush();
+			System.out.println(" ========================================");
+			allocationIbTree.showCapacity(stamp0);
 		} else
 			stamp0 = Arrays.asList(0);
 
 		return new Transaction(allocator(stamp0));
+	}
+
+	private void showCapacity(List<Integer> stamp) {
+		int size = Iterators.size(FunUtil.iterator(keys(stamp.get(0), null, null)));
+		System.out.println(System.identityHashCode(this) + " FREE = " + size);
+		if (allocationIbTree != null)
+			allocationIbTree.showCapacity(stamp.subList(1, stamp.size()));
 	}
 
 	private Source<Key> keys(Integer pointer, Key start, Key end) {
@@ -535,8 +546,8 @@ public class IbTree<Key> implements Closeable {
 		if (allocationIbTree != null)
 			allocator = new SubIbTreeAllocator(allocationIbTree.transaction(stamp0));
 		else
-			allocator = new DelayedDiscardAllocator(new SwappingAllocator(stamp0.get(0)));
-		return allocator;
+			allocator = new SwappingAllocator(stamp0.get(0));
+		return new DelayedDiscardAllocator(allocator);
 	}
 
 	private int compare(Key key0, Key key1) {
