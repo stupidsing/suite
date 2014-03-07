@@ -46,7 +46,7 @@ public class Cluster {
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
 	public static class ClusterException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1;
 
 		private ClusterException(Throwable cause) {
 			super(cause);
