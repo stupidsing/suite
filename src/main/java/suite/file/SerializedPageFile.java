@@ -23,11 +23,19 @@ public class SerializedPageFile<V> implements Closeable {
 	private PageFile pageFile;
 	private Serializer<V> serializer;
 
+	private static class SerializedPagingException extends RuntimeException {
+		private static final long serialVersionUID = 1l;
+
+		public SerializedPagingException(IOException ex) {
+			super(ex);
+		}
+	}
+
 	public SerializedPageFile(String filename, Serializer<V> serializer) {
 		try {
 			this.pageFile = new PageFile(filename, pageSize);
 		} catch (FileNotFoundException ex) {
-			throw new RuntimeException(ex);
+			throw new SerializedPagingException(ex);
 		}
 		this.serializer = serializer;
 	}
@@ -42,7 +50,7 @@ public class SerializedPageFile<V> implements Closeable {
 		try {
 			pageFile.close();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			throw new SerializedPagingException(ex);
 		}
 	}
 
@@ -50,7 +58,7 @@ public class SerializedPageFile<V> implements Closeable {
 		try {
 			return serializer.read(pageFile.load(pageNo));
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			throw new SerializedPagingException(ex);
 		}
 	}
 
@@ -60,7 +68,7 @@ public class SerializedPageFile<V> implements Closeable {
 			serializer.write(buffer, page);
 			pageFile.save(pageNo, buffer);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			throw new SerializedPagingException(ex);
 		}
 	}
 
