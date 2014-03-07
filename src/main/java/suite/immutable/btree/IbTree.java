@@ -463,6 +463,10 @@ public class IbTree<Key> implements Closeable {
 	 *         Fourth, the final result needs to be minus by 1 to exclude the
 	 *         guard node at rightmost of the tree.
 	 * 
+	 *         Fifth, most transactions would acquire some new pages before old
+	 *         pages could be discarded during commit. We have to reserve 10% of
+	 *         pages for transaction use.
+	 * 
 	 *         In formula, the minimum number of nodes causing split: 1 + (2 -
 	 *         1) + (size - 1) * (minBranchFactor - 1) + (minBranchFactor - 1) -
 	 *         1 = size * (minBranchFactor - 1) + 1
