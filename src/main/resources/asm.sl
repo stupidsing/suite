@@ -27,13 +27,13 @@ as-insn _ (RET) (+xC3, .e)/.e #
 as-insn _ (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 
 as-insn-jump .a (byte .rel8) .b _ _ (.b, .e1)/.ex
-	:- let .rel (.rel8 - .a - 2), as-emit:8 .rel .e1/.ex
+	:- let .rel (.rel8 - .a - 2), as-emit:8 .rel .e1/.ex, !
 #
 as-insn-jump .a (dword .rel32) _ () .b (.b, .e1)/.ex
-	:- let .rel (.rel32 - .a - 5), as-emit:32 .rel .e1/.ex
+	:- let .rel (.rel32 - .a - 5), as-emit:32 .rel .e1/.ex, !
 #
 as-insn-jump .a (dword .rel32) _ .b0 .b1 (.b0, .b1, .e1)/.ex
-	:- .b0 != (), let .rel (.rel32 - .a - 6), as-emit:32 .rel .e1/.ex
+	:- let .rel (.rel32 - .a - 6), as-emit:32 .rel .e1/.ex, !
 #
 as-insn-jump .a .rel8 .b _ (.b, .e1)/.ex
 	:- as-insn-jump .a (byte .rel8) .b _ _ (.b, .e1)/.ex
