@@ -37,7 +37,7 @@ public class Assembler {
 		for (String line : input.split("\n")) {
 			String l = null;
 
-			if (!Character.isWhitespace(line.charAt(0))) {
+			if (line.startsWith(Generalizer.defaultPrefix)) {
 				Pair<String, String> pair = Util.split2(line, " ");
 				l = pair.t0.trim();
 				line = pair.t1.trim();
@@ -47,7 +47,7 @@ public class Assembler {
 			Pair<String, String> pair = Util.split2(line, " ");
 			Node insn = Atom.create(pair.t0);
 			Node ps = convertOperands(Suite.parse(pair.t1));
-			Node labelName = l != null ? Atom.create(Generalizer.defaultPrefix + l) : null;
+			Node labelName = l != null ? Atom.create(l) : null;
 			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, insn, ps));
 			lnis.add(Pair.create(labelName, instruction));
 		}

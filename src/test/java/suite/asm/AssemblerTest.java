@@ -11,7 +11,7 @@ public class AssemblerTest {
 		Bytes bytes = new Assembler().assemble(""//
 				+ "	JMP dword .end \n" //
 				+ "	MOV EAX,16 \n" //
-				+ "end \n" //
+				+ ".end \n" //
 		);
 		System.out.println(bytes);
 	}
