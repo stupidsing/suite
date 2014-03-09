@@ -138,13 +138,6 @@ as-rm:_ `_` _ #
 
 as-reg:.size .reg .r :- as-general-reg:.size .reg .r #
 
-as-rm-size .reg SIZE:.size :- as-general-reg:.size .reg _ #
-as-rm-size (byte `_`) SIZE:8 #
-as-rm-size (word `_`) SIZE:16 #
-as-rm-size (dword `_`) SIZE:32 #
-as-rm-size (qword `_`) SIZE:64 #
-as-rm-size `_` _ #
-
 as-emit:32 .d32 .e0/.ex
 	:- as-imm:32 .d32
 	, let .w0 (.d32 % 65536)
