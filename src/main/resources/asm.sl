@@ -1,7 +1,7 @@
 -- Assembler. Assumes 32-bit mode and 32-bit addressing.
 --
--- as	= assembler 
--- asi	= assemble instruction 
+-- as	= assembler
+-- asi	= assemble instruction
 
 asi:_s _a (() _) .e/.e #
 asi:_s _a (AAA) (+x37, .e)/.e #
