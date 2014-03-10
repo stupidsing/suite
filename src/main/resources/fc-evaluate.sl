@@ -66,7 +66,7 @@ fc-compile (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	)
 #
 fc-compile (PAIR .left .right) .env .cdr
-	:- !, fc-compile (INVOKE .right (INVOKE .left (VAR _pcons))) .env .cdr
+	:- !, fc-compile (INVOKE .right (INVOKE .left (VAR +pcons))) .env .cdr
 #
 fc-compile (TREE .oper .left .right) .env .c0/.cx/.d0/.dx/.reg
 	:- !

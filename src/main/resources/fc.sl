@@ -70,18 +70,18 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 	:- !, fc-frame-difference .frame0 .frame1 .frameDiff
 #
 
-fc-define-default-fun 1 _callintrn0 CALL-INTRINSIC0 #
-fc-define-default-fun 2 _callintrn1 CALL-INTRINSIC1 #
-fc-define-default-fun 3 _callintrn2 CALL-INTRINSIC2 #
-fc-define-default-fun 4 _callintrn3 CALL-INTRINSIC3 #
-fc-define-default-fun 2 _compare COMPARE #
-fc-define-default-fun 1 _getintrn GET-INTRINSIC #
-fc-define-default-fun 2 _lcons CONS-LIST #
-fc-define-default-fun 1 _lhead HEAD #
-fc-define-default-fun 1 _ltail TAIL #
-fc-define-default-fun 2 _pcons CONS-PAIR #
-fc-define-default-fun 1 _pleft HEAD #
-fc-define-default-fun 1 _pright TAIL #
+fc-define-default-fun 1 +callintrn0 CALL-INTRINSIC0 #
+fc-define-default-fun 2 +callintrn1 CALL-INTRINSIC1 #
+fc-define-default-fun 3 +callintrn2 CALL-INTRINSIC2 #
+fc-define-default-fun 4 +callintrn3 CALL-INTRINSIC3 #
+fc-define-default-fun 2 +compare COMPARE #
+fc-define-default-fun 1 +getintrn GET-INTRINSIC #
+fc-define-default-fun 2 +lcons CONS-LIST #
+fc-define-default-fun 1 +lhead HEAD #
+fc-define-default-fun 1 +ltail TAIL #
+fc-define-default-fun 2 +pcons CONS-PAIR #
+fc-define-default-fun 1 +pleft HEAD #
+fc-define-default-fun 1 +pright TAIL #
 fc-define-default-fun 1 is-list IS-CONS #
 fc-define-default-fun 1 is-pair IS-CONS #
 
@@ -113,17 +113,17 @@ fc-dict-member .v .t :- rbt-member .v .t #
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
-	define callintrn0 = (name => _callintrn0 {name}) >>
-	define callintrn1 = (name => p0 => _callintrn1 {name} {p0}) >>
-	define callintrn2 = (name => p0 => p1 => _callintrn2 {name} {p0} {p1}) >>
-	define callintrn3 = (name => p0 => p1 => p2 => _callintrn3 {name} {p0} {p1} {p2}) >>
-	define compare = (a => b => _compare {a} {b}) >>
-	define cons = (head => tail => _lcons {head} {tail}) >>
-	define first = (tuple => _pleft {tuple}) >>
-	define head = (list => _lhead {list}) >>
-	define getintrn = (name => _getintrn {name}) >>
-	define second = (tuple => _pright {tuple}) >>
-	define tail = (list => _ltail {list}) >>
+	define callintrn0 = (name => +callintrn0 {name}) >>
+	define callintrn1 = (name => p0 => +callintrn1 {name} {p0}) >>
+	define callintrn2 = (name => p0 => p1 => +callintrn2 {name} {p0} {p1}) >>
+	define callintrn3 = (name => p0 => p1 => p2 => +callintrn3 {name} {p0} {p1} {p2}) >>
+	define compare = (a => b => +compare {a} {b}) >>
+	define cons = (head => tail => +lcons {head} {tail}) >>
+	define first = (tuple => +pleft {tuple}) >>
+	define head = (list => +lhead {list}) >>
+	define getintrn = (name => +getintrn {name}) >>
+	define second = (tuple => +pright {tuple}) >>
+	define tail = (list => +ltail {list}) >>
 	define _popen = ([string] -> string -> data-of Stream) of
 		atom:CLASS!suite.lp.intrinsic.Intrinsics$Popen | getintrn | callintrn2
 	>>
@@ -372,7 +372,7 @@ fc-add-functions STANDARD .p (
 		define type-of = getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$TypeOf} >>
 		define atom-string = getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >>
 		let dump0 = (prec => n =>
-			let type = _callintrn1 {type-of} {n} >>
+			let type = +callintrn1 {type-of} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then

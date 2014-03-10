@@ -144,7 +144,7 @@ fc-parse-sugar (case || .p) .p :- ! #
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
 fc-parse-sugar (.l || .r) (or {.l} {.r}) :- ! #
 fc-parse-sugar ({.t}) (.var => .var {.t}) :- !, temp .var #
-fc-parse-sugar (.l; .r) (_lcons {.l} {.r}) :- ! #
+fc-parse-sugar (.l; .r) (+lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do # .do) (
@@ -257,8 +257,8 @@ fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VAR .nv .v0 .then)
 fc-bind0 .v0 .v1 .then .else (
 	DEF-VAR .elseVar (WRAP .else) DEF-VAR .v0var .v0 (
 		IF (INVOKE (VAR .v0var) (VAR is-list)) (
-			DEF-VAR .headVar (INVOKE (VAR .v0var) (VAR _lhead))
-			DEF-VAR .tailVar (INVOKE (VAR .v0var) (VAR _ltail))
+			DEF-VAR .headVar (INVOKE (VAR .v0var) (VAR +lhead))
+			DEF-VAR .tailVar (INVOKE (VAR .v0var) (VAR +ltail))
 			.then1
 		) .else1
 	)
@@ -272,8 +272,8 @@ fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
 	DEF-VAR .elseVar (WRAP .else)
 	DEF-VAR .v0var (PRAGMA (CAST UP _) .v0) (
 		IF (INVOKE (VAR .v0var) (VAR is-pair)) (
-			DEF-VAR .leftVar (INVOKE (VAR .v0var) (VAR _pleft))
-			DEF-VAR .rightVar (INVOKE (VAR .v0var) (VAR _pright))
+			DEF-VAR .leftVar (INVOKE (VAR .v0var) (VAR +pleft))
+			DEF-VAR .rightVar (INVOKE (VAR .v0var) (VAR +pright))
 			.then1
 		) .else1
 	)
@@ -290,8 +290,8 @@ fc-bind0 .v0 .v1 .then .else (
 	IF (TREE ' = ' .v0 .v1) .then .else
 ) #
 
-fc-bind-cons (INVOKE .t INVOKE .h VAR _lcons) .h .t #
-fc-bind-cons (INVOKE .t INVOKE .h VAR _pcons) .h .t #
+fc-bind-cons (INVOKE .t INVOKE .h VAR +lcons) .h .t #
+fc-bind-cons (INVOKE .t INVOKE .h VAR +pcons) .h .t #
 
 fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (WRAP .else) .parsed)
 	:- temp .elseVar

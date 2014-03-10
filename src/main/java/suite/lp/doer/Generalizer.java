@@ -19,10 +19,9 @@ import suite.util.Util;
 
 public class Generalizer {
 
+	private static final String wildcardPrefix = "_";
 	public static final String variablePrefix = ".";
-
-	private static final Node WILDCARD = Atom.create("_");
-	private static final Node CUT = Atom.create("!");
+	private static final String cutName = "!";
 
 	private Map<Node, Reference> variables = new HashMap<>();
 	private Node cut;
@@ -37,18 +36,18 @@ public class Generalizer {
 		while (true) {
 			Node right = tree.getRight().finalNode();
 
-			if (isWildcard(right))
-				right = new Reference();
-			else if (isVariable(right)) {
-				Reference reference = variables.get(right);
-
-				if (reference == null)
-					variables.put(right, reference = new Reference());
-
-				right = reference;
-			} else if (isCut(right) && cut != null) // Changes cut symbol to cut
-				right = cut;
-			else if (right instanceof Tree) {
+			if (right instanceof Atom) {
+				String name = ((Atom) right).getName();
+				if (isWildcard(name))
+					right = new Reference();
+				else if (isVariable(name)) {
+					Reference reference = variables.get(right);
+					if (reference == null)
+						variables.put(right, reference = new Reference());
+					right = reference;
+				} else if (isCut(name) && cut != null)
+					right = cut;
+			} else if (right instanceof Tree) {
 				final Tree rightTree = (Tree) right;
 				final Operator rightOp = rightTree.getOperator();
 
@@ -102,19 +101,23 @@ public class Generalizer {
 	 */
 	public boolean isVariant(Node node) {
 		node = node.finalNode();
-		return isWildcard(node) || isVariable(node) || isCut(node);
+		if (node instanceof Atom) {
+			String name = ((Atom) node).getName();
+			return isWildcard(name) || isVariable(name) || isCut(name);
+		} else
+			return false;
 	}
 
-	private static boolean isWildcard(Node node) {
-		return node == WILDCARD;
+	private static boolean isWildcard(String name) {
+		return name.startsWith(wildcardPrefix);
 	}
 
-	private boolean isVariable(Node node) {
-		return node instanceof Atom && ((Atom) node).getName().startsWith(variablePrefix);
+	private boolean isVariable(String name) {
+		return name.startsWith(variablePrefix);
 	}
 
-	private static boolean isCut(Node node) {
-		return node == CUT;
+	private static boolean isCut(String name) {
+		return name.equals(cutName);
 	}
 
 	public Reference getVariable(Node name) {

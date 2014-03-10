@@ -264,17 +264,17 @@ fc-instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 #
 
 fc-default-fun-type () (LIST-OF _) #
-fc-default-fun-type _callintrn0 (FUN-OF (DATA-OF Intrinsic) _) #
-fc-default-fun-type _callintrn1 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ _)) #
-fc-default-fun-type _callintrn2 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type _callintrn3 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
-fc-default-fun-type _compare (FUN-OF .t (FUN-OF .t NUMBER)) #
-fc-default-fun-type _getintrn (FUN-OF (ATOM-OF _) (DATA-OF Intrinsic)) #
-fc-default-fun-type _lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
-fc-default-fun-type _lhead (FUN-OF (LIST-OF .t) .t) #
-fc-default-fun-type _ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
-fc-default-fun-type _pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
-fc-default-fun-type _pleft (FUN-OF (PAIR-OF .t _) .t) #
-fc-default-fun-type _pright (FUN-OF (PAIR-OF _ .t) .t) #
+fc-default-fun-type +callintrn0 (FUN-OF (DATA-OF Intrinsic) _) #
+fc-default-fun-type +callintrn1 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ _)) #
+fc-default-fun-type +callintrn2 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ (FUN-OF _ _))) #
+fc-default-fun-type +callintrn3 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +compare (FUN-OF .t (FUN-OF .t NUMBER)) #
+fc-default-fun-type +getintrn (FUN-OF (ATOM-OF _) (DATA-OF Intrinsic)) #
+fc-default-fun-type +lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
+fc-default-fun-type +lhead (FUN-OF (LIST-OF .t) .t) #
+fc-default-fun-type +ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
+fc-default-fun-type +pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
+fc-default-fun-type +pleft (FUN-OF (PAIR-OF .t _) .t) #
+fc-default-fun-type +pright (FUN-OF (PAIR-OF _ .t) .t) #
 fc-default-fun-type is-list (FUN-OF (LIST-OF _) BOOLEAN) #
 fc-default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
