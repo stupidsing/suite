@@ -38,7 +38,7 @@ public class Assembler {
 		for (String line : input.split("\n")) {
 			String l = null;
 
-			if (line.startsWith(Generalizer.defaultPrefix)) {
+			if (line.startsWith(Generalizer.variablePrefix)) {
 				Pair<String, String> pair = Util.split2(line, " ");
 				l = pair.t0.trim();
 				line = pair.t1.trim();

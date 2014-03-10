@@ -126,7 +126,7 @@ public class Formatter {
 			if (isNeedParentheses)
 				sb.append(')');
 		} else if (node instanceof Reference)
-			sb.append(Generalizer.defaultPrefix + ((Reference) node).getId());
+			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
 		else
 			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
 	}

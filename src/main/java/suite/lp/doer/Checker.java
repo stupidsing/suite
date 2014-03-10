@@ -56,7 +56,7 @@ public class Checker {
 
 				// Check all variables starting with alphabets; ignore
 				// computer-generated code
-				if (name.startsWith(Generalizer.defaultPrefix) //
+				if (name.startsWith(Generalizer.variablePrefix) //
 						&& name.length() >= 2 //
 						&& Character.isAlphabetic(name.charAt(1))) {
 					Boolean value = isSingleton.get(atom);

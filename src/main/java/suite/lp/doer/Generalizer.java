@@ -19,12 +19,11 @@ import suite.util.Util;
 
 public class Generalizer {
 
-	public static final String defaultPrefix = ".";
+	public static final String variablePrefix = ".";
 
 	private static final Node WILDCARD = Atom.create("_");
 	private static final Node CUT = Atom.create("!");
 
-	private String variablePrefix = defaultPrefix;
 	private Map<Node, Reference> variables = new HashMap<>();
 	private Node cut;
 
