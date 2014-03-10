@@ -9,7 +9,7 @@ public class AssemblerTest {
 	@Test
 	public void test() {
 		Bytes bytes = new Assembler().assemble(""//
-				+ "	JMP dword .end \n" //
+				+ "	JMP .end \n" //
 				+ "	MOV EAX,16 \n" //
 				+ ".end \n" //
 		);

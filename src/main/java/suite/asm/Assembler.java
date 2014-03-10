@@ -3,6 +3,7 @@ package suite.asm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,20 +90,24 @@ public class Assembler {
 
 	private Bytes assemble(int address, Node instruction) {
 		final Reference e = new Reference();
-		final Bytes array[] = new Bytes[] { null };
-		Node goal = Suite.substitute("as-insn .0 .1 .2/(), .3", Int.create(address), instruction, e, new Data<>(
-				new Source<Boolean>() {
-					public Boolean source() {
-						array[0] = convertByteStream(e);
-						return true;
-					}
-				}));
+		final List<Bytes> list = new ArrayList<>();
+
+		Node goal = Suite.substitute("asi .0 .1 .2/(), .3", Int.create(address), instruction, e, new Data<>(new Source<Boolean>() {
+			public Boolean source() {
+				list.add(convertByteStream(e));
+				return true;
+			}
+		}));
 		// LogUtil.info(Formatter.dump(goal));
 
 		prover.elaborate(goal);
 
-		if (array[0] != null)
-			return array[0];
+		if (!list.isEmpty())
+			return Collections.min(list, new Comparator<Bytes>() {
+				public int compare(Bytes bytes0, Bytes bytes1) {
+					return bytes0.size() - bytes1.size();
+				}
+			});
 		else
 			throw new RuntimeException("Cannot assemble instruction " + instruction);
 	}
