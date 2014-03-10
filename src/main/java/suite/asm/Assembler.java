@@ -92,12 +92,13 @@ public class Assembler {
 		final Reference e = new Reference();
 		final List<Bytes> list = new ArrayList<>();
 
-		Node goal = Suite.substitute("asi .0 .1 .2/(), .3", Int.create(address), instruction, e, new Data<>(new Source<Boolean>() {
-			public Boolean source() {
-				list.add(convertByteStream(e));
-				return true;
-			}
-		}));
+		Node goal = Suite.substitute("asi:32 .0 .1 .2/(), .3", Int.create(address), instruction, e, new Data<>(
+				new Source<Boolean>() {
+					public Boolean source() {
+						list.add(convertByteStream(e));
+						return true;
+					}
+				}));
 		// LogUtil.info(Formatter.dump(goal));
 
 		prover.elaborate(goal);
