@@ -8,6 +8,7 @@ asis:.s .a0 (ADVANCE .a1) (0, .e1)/.ex
 	:- let .a (.a0 + 1), asis:.s .a (ADVANCE .a1) .e1/.ex, !
 #
 asi:.s .a .i .e0/.ex :- asis:.s .a .i .e0/.ex, ! #
+asi:_s .a .i .e0/.ex :- asis:8 .a .i .e0/.ex, ! #
 asi:16 .a .i (+x66, .e1)/.ex :- asis:32 .a .i .e1/.ex, ! #
 asi:32 .a .i (+x66, .e1)/.ex :- asis:16 .a .i .e1/.ex, ! #
 
@@ -23,6 +24,10 @@ asis:_s _a (D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
 asis:.s _a (DEC .reg) .e0/.ex :- asi-reg:.s +x48 .reg .e0/.ex, .s != 8 #
 asis:.s _a (DEC .rm) .e0/.ex :- asi-rm:.s +xFE .rm 1 .e0/.ex #
 asis:_s _a (HLT ()) (+xF4, .e)/.e #
+asis:_s _a (IN (AL, .imm)) (+xE4, .e1)/.ex :- as-imm:8 .imm, as-emit:8 .e1/.ex #
+asis:.s _a (IN (.acc, .imm)) (+xE5, .e1)/.ex :- as-imm:.s .imm, as-reg:.s .acc 0, as-emit:.s .e1/.ex #
+asis:_s _a (IN (AL, DX)) (+xEC, .e)/.e #
+asis:.s _a (IN (.acc, DX)) (+xED, .e)/.e :- as-reg:.s .acc 0 #
 asis:.s _a (INC .reg) .e0/.ex :- asi-reg:.s +x40 .reg .e0/.ex, .s != 8 #
 asis:.s _a (INC .rm) .e0/.ex :- asi-rm:.s +xFE .rm 0 .e0/.ex #
 asis:_s _a (INT 3) (+x37, .e)/.e #
@@ -38,6 +43,10 @@ asis:.s _a (MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s _a (MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
 asis:_s _a (MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:_s _a (MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:_s _a (OUT (.imm, AL)) (+xE6, .e1)/.ex :- as-imm:8 .imm, as-emit:8 .e1/.ex #
+asis:.s _a (OUT (.imm, .acc)) (+xE7, .e1)/.ex :- as-imm:.s .imm, as-reg:.s .acc 0, as-emit:.s .e1/.ex #
+asis:_s _a (OUT (DX, AL)) (+xEE, .e)/.e #
+asis:.s _a (OUT (DX, .acc)) (+xEF, .e)/.e :- as-reg:.s .acc 0 #
 asis:_s _a (RET ()) (+xC3, .e)/.e #
 asis:_s _a (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:_s _a (STI ()) (+xFB, .e)/.e #
@@ -57,17 +66,17 @@ asi-jump .a .target .b _ _ (.b, .e1)/.ex
 
 asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
 	:- as-mod-num-rm:.size .rm .num .e1/.e2, as-emit:.size .imm .e2/.ex
-	, (.size = 8, .b0 = .b1; let .b1 (.b0 + 1))
+	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
 #
 
 asi-acc-imm:.size .b0 .acc .imm (.b1, .e1)/.ex
 	:- as-reg:.size .acc 0
 	, as-emit:.size .imm .e1/.ex
-	, (.size = 8, .b0 = .b1; let .b1 (.b0 + 8))
+	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 8))
 #
 
 asi-reg-imm:.size .b0 .reg .imm .e0/.ex
-	:- (.size = 8, .b0 = .b1; let .b1 (.b0 + 8))
+	:- (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 8))
 	, asi-reg:.size .b1 .reg .e0/.e1, as-emit:.size .imm .e1/.ex
 #
 
@@ -82,12 +91,12 @@ asi-rm-reg2:.size .b0 .reg .rm .e0/.ex
 asi-rm-reg:.size .b0 .rm .reg (.b1, .e0)/.ex
 	:- as-reg:.size .reg .r
 	, as-mod-num-rm:.size .rm .r .e0/.ex
-	, (.size = 8, .b0 = .b1; let .b1 (.b0 + 1))
+	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
 #
 
 asi-rm:.size .b0 .rm .num (.b1, .e1)/.ex
 	:- as-mod-num-rm:.size .rm .num .e1/.ex
-	, (.size = 8, .b0 = .b1; let .b1 (.b0 + 1))
+	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
 #
 
 asi-reg:.size .b0 .reg (.b1, .e)/.e
@@ -148,20 +157,22 @@ as-sib-scale 4 2 #
 as-sib-scale 8 3 #
 
 as-emit:32 .d32 .e0/.ex
-	:- let .w0 (.d32 % 65536)
+	:- is.int .d32
+	, let .w0 (.d32 % 65536)
 	, let .w1 (.d32 / 65536)
 	, as-emit:16 .w0 .e0/.e1
 	, as-emit:16 .w1 .e1/.ex
 #
 
 as-emit:16 .w16 .e0/.ex
-	:- let .b0 (.w16 % 256)
+	:- is.int .w16
+	, let .b0 (.w16 % 256)
 	, let .b1 (.w16 / 256)
 	, as-emit:8 .b0 .e0/.e1
 	, as-emit:8 .b1 .e1/.ex
 #
 
-as-emit:8 .b8 (.b8, .e)/.e #
+as-emit:8 .b8 (.b8, .e)/.e :- is.int .b8 #
 
 as-imm:8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 as-imm:16 .imm :- is.int .imm, -32768 <= .imm, .imm < 32768 #
@@ -171,10 +182,14 @@ as-reg:8 AL 0 #
 as-reg:8 CL 1 #
 as-reg:8 DL 2 #
 as-reg:8 BL 3 #
-as-reg:8 AH 4 :- as-mode-amd64; as-rex-prefix #
-as-reg:8 CH 5 :- as-mode-amd64; as-rex-prefix #
-as-reg:8 DH 6 :- as-mode-amd64; as-rex-prefix #
-as-reg:8 BH 7 :- as-mode-amd64; as-rex-prefix #
+as-reg:8 AH 4 :- not as-mode-amd64 #
+as-reg:8 CH 5 :- not as-mode-amd64 #
+as-reg:8 DH 6 :- not as-mode-amd64 #
+as-reg:8 BH 7 :- not as-mode-amd64 #
+as-reg:8 R4B 4 :- as-mode-amd64 #
+as-reg:8 R5B 5 :- as-mode-amd64 #
+as-reg:8 R6B 6 :- as-mode-amd64 #
+as-reg:8 R7B 7 :- as-mode-amd64 #
 as-reg:8 R8B 8 :- as-mode-amd64 #
 as-reg:8 R9B 9 :- as-mode-amd64 #
 as-reg:8 R10B 10 :- as-mode-amd64 #
