@@ -12,46 +12,47 @@ asi:16 .a .i (+x66, .e1)/.ex :- asis:32 .a .i .e1/.ex, ! #
 asi:32 .a .i (+x66, .e1)/.ex :- asis:16 .a .i .e1/.ex, ! #
 
 asis:_s _a (() _) .e/.e #
-asis:_s _a (AAA) (+x37, .e)/.e #
-asis:.s _a (ADD .acc .imm) .e0/.ex :- asi-acc-imm:.s +x04 .acc .imm .e0/.ex #
-asis:.s _a (ADD .rm .imm8) (+x83, .e1)/.ex :- as-imm:8 .imm8, as-mod-num-rm:.s .rm 0 .e1/.e2, as-emit:8 .imm8 .e2/.ex #
-asis:.s _a (ADD .rm .imm) .e0/.ex :- asi-rm-imm:.s +x80 .rm 0 .imm .e0/.ex #
-asis:.s _a (ADD .rm0 .rm1) .e0/.ex :- asi-rm-reg2:.s +x00 .rm0 .rm1 .e0/.ex #
-asis:_s _a (CLI) (+xFA, .e)/.e #
+asis:_s _a (AAA ()) (+x37, .e)/.e #
+asis:.s _a (ADD (.acc, .imm)) .e0/.ex :- asi-acc-imm:.s +x04 .acc .imm .e0/.ex #
+asis:.s _a (ADD (.rm, .imm8)) (+x83, .e1)/.ex :- as-imm:8 .imm8, as-mod-num-rm:.s .rm 0 .e1/.e2, as-emit:8 .imm8 .e2/.ex #
+asis:.s _a (ADD (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +x80 .rm 0 .imm .e0/.ex #
+asis:.s _a (ADD (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x00 .rm0 .rm1 .e0/.ex #
+asis:_s _a (CLI ()) (+xFA, .e)/.e #
 asis:_s _a (D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s _a (D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
 asis:.s _a (DEC .reg) .e0/.ex :- asi-reg:.s +x48 .reg .e0/.ex, .s != 8 #
 asis:.s _a (DEC .rm) .e0/.ex :- asi-rm:.s +xFE .rm 1 .e0/.ex #
+asis:_s _a (HLT ()) (+xF4, .e)/.e #
 asis:.s _a (INC .reg) .e0/.ex :- asi-reg:.s +x40 .reg .e0/.ex, .s != 8 #
 asis:.s _a (INC .rm) .e0/.ex :- asi-rm:.s +xFE .rm 0 .e0/.ex #
 asis:_s _a (INT 3) (+x37, .e)/.e #
 asis:_s _a (INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
-asis:_s _a (INTO) (+xCE, .e)/.e #
+asis:_s _a (INTO ()) (+xCE, .e)/.e #
 asis:_s .a (JE .rel) .e0/.ex :- asi-jump .a .rel +x74 +x0F +x84 .e0/.ex #
 asis:_s .a (JMP .rel) .e0/.ex :- asi-jump .a .rel +xEB () +xE9 .e0/.ex #
 asis:_s _a (JMP .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 4 .e0/.ex #
 asis:_s _a (LABEL _) .e/.e #
-asis:_s _a (LEA .reg .rm) .e0/.ex :- asi-rm-reg:_ +x8D .rm .reg .e0/.ex #
-asis:.s _a (MOV .reg .imm) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
-asis:.s _a (MOV .rm .imm) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
-asis:.s _a (MOV .rm0 .rm1) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
-asis:_s _a (MOV .rm .sreg) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
-asis:_s _a (MOV .sreg .rm) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
-asis:_s _a (RET) (+xC3, .e)/.e #
+asis:_s _a (LEA (.reg, .rm)) .e0/.ex :- asi-rm-reg:_ +x8D .rm .reg .e0/.ex #
+asis:.s _a (MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
+asis:.s _a (MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
+asis:.s _a (MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
+asis:_s _a (MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:_s _a (MOV (.sreg, .rm)) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:_s _a (RET ()) (+xC3, .e)/.e #
 asis:_s _a (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
-asis:_s _a (STI) (+xFB, .e)/.e #
+asis:_s _a (STI ()) (+xFB, .e)/.e #
 
-asi-jump .a (byte .rel8) .b _ _ (.b, .e1)/.ex
+asi-jump .a (BYTE .rel8) .b _ _ (.b, .e1)/.ex
 	:- let .rel (.rel8 - .a - 2), as-emit:8 .rel .e1/.ex, !
 #
-asi-jump .a (dword .rel32) _ () .b (.b, .e1)/.ex
+asi-jump .a (DWORD .rel32) _ () .b (.b, .e1)/.ex
 	:- let .rel (.rel32 - .a - 5), as-emit:32 .rel .e1/.ex, !
 #
-asi-jump .a (dword .rel32) _ .b0 .b1 (.b0, .b1, .e1)/.ex
+asi-jump .a (DWORD .rel32) _ .b0 .b1 (.b0, .b1, .e1)/.ex
 	:- let .rel (.rel32 - .a - 6), as-emit:32 .rel .e1/.ex, !
 #
 asi-jump .a .rel8 .b _ _ (.b, .e1)/.ex
-	:- asi-jump .a (byte .rel8) .b _ _ (.b, .e1)/.ex
+	:- asi-jump .a (BYTE .rel8) .b _ _ (.b, .e1)/.ex
 #
 
 asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
@@ -115,10 +116,10 @@ as-mod-rm:_ (`.indexReg * .scale + .baseReg + .disp`) (.mod 4) (.sib, .e1)/.ex
 	:- as-sib (`.indexReg * .scale + .baseReg`) .sib
 	, as-disp-mod .disp .mod .e1/.ex
 #
-as-mod-rm:8 (byte `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
-as-mod-rm:16 (word `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
-as-mod-rm:32 (dword `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
-as-mod-rm:64 (qword `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
+as-mod-rm:8 (BYTE `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
+as-mod-rm:16 (WORD `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
+as-mod-rm:32 (DWORD `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
+as-mod-rm:64 (QWORD `.ptr`) (.mod .rm) .e :- as-mod-rm:_ `.ptr` (.mod .rm) .e #
 as-mod-rm:_ (`.reg`) (.mod .rm) .e
 	:- as-reg:32 .reg _
 	, as-mod-rm:_ (`.reg + 0`) (.mod .rm) .e

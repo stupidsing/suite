@@ -46,10 +46,8 @@ public class Assembler {
 				line = line.trim();
 
 			Pair<String, String> pair = Util.split2(line, " ");
-			Node insn = Atom.create(pair.t0);
-			Node ps = convertOperands(Suite.parse(pair.t1));
 			Node labelName = label != null ? Atom.create(label) : null;
-			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, insn, ps));
+			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, Atom.create(pair.t0), Suite.parse(pair.t1)));
 			lnis.add(Pair.create(labelName, instruction));
 		}
 
@@ -82,14 +80,6 @@ public class Assembler {
 		}
 
 		return out.toBytes();
-	}
-
-	private Node convertOperands(Node node) {
-		Tree tree = Tree.decompose(node, TermOp.AND___);
-		if (tree != null)
-			return Tree.create(TermOp.TUPLE_, tree.getLeft(), convertOperands(tree.getRight()));
-		else
-			return node;
 	}
 
 	private Bytes assemble(int address, Node instruction) {
