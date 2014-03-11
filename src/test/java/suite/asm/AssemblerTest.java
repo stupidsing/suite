@@ -13,6 +13,7 @@ public class AssemblerTest {
 				+ "	MOV AX,16 \n" //
 				+ "	MOV EAX,16 \n" //
 				+ ".end \n" //
+				+ "	ADVANCE 16 \n" //
 		);
 		System.out.println(bytes);
 	}

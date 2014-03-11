@@ -3,6 +3,10 @@
 -- as	= assembler
 -- asi	= assemble instruction
 
+asis:_s .a (ADVANCE .a) .e/.e #
+asis:.s .a0 (ADVANCE .a1) (0, .e1)/.ex
+	:- let .a (.a0 + 1), asis:.s .a (ADVANCE .a1) .e1/.ex, !
+#
 asi:.s .a .i .e0/.ex :- asis:.s .a .i .e0/.ex, ! #
 asi:16 .a .i (+x66, .e1)/.ex :- asis:32 .a .i .e1/.ex, ! #
 asi:32 .a .i (+x66, .e1)/.ex :- asis:16 .a .i .e1/.ex, ! #
