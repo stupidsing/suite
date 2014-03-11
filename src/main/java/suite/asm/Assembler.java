@@ -30,17 +30,17 @@ public class Assembler {
 	private Prover prover = Suite.createProver(Arrays.asList("asm.sl", "auto.sl"));
 
 	public Bytes assemble(String input) {
+		input = new CommentProcessor(Collections.singleton('\n')).apply(input);
+
 		Generalizer generalizer = new Generalizer();
 		List<Pair<Node, Node>> lnis = new ArrayList<>();
 
-		input = new CommentProcessor(Collections.singleton('\n')).apply(input);
-
 		for (String line : input.split("\n")) {
-			String l = null;
+			String label = null;
 
 			if (line.startsWith(Generalizer.variablePrefix)) {
 				Pair<String, String> pair = Util.split2(line, " ");
-				l = pair.t0.trim();
+				label = pair.t0.trim();
 				line = pair.t1.trim();
 			} else
 				line = line.trim();
@@ -48,11 +48,15 @@ public class Assembler {
 			Pair<String, String> pair = Util.split2(line, " ");
 			Node insn = Atom.create(pair.t0);
 			Node ps = convertOperands(Suite.parse(pair.t1));
-			Node labelName = l != null ? Atom.create(l) : null;
+			Node labelName = label != null ? Atom.create(label) : null;
 			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, insn, ps));
 			lnis.add(Pair.create(labelName, instruction));
 		}
 
+		return assemble(generalizer, lnis);
+	}
+
+	private Bytes assemble(Generalizer generalizer, List<Pair<Node, Node>> lnis) {
 		Map<Node, Node> addressesByLabel = new HashMap<>();
 		BytesBuilder out = new BytesBuilder();
 

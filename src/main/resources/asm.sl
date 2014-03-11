@@ -17,6 +17,7 @@ asis:.s _a (ADD .acc .imm) .e0/.ex :- asi-acc-imm:.s +x04 .acc .imm .e0/.ex #
 asis:.s _a (ADD .rm .imm8) (+x83, .e1)/.ex :- as-imm:8 .imm8, as-mod-num-rm:.s .rm 0 .e1/.e2, as-emit:8 .imm8 .e2/.ex #
 asis:.s _a (ADD .rm .imm) .e0/.ex :- asi-rm-imm:.s +x80 .rm 0 .imm .e0/.ex #
 asis:.s _a (ADD .rm0 .rm1) .e0/.ex :- asi-rm-reg2:.s +x00 .rm0 .rm1 .e0/.ex #
+asis:_s _a (CLI) (+xFA, .e)/.e #
 asis:_s _a (D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s _a (D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
 asis:.s _a (DEC .reg) .e0/.ex :- asi-reg:.s +x48 .reg .e0/.ex, .s != 8 #
@@ -38,6 +39,7 @@ asis:_s _a (MOV .rm .sreg) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-n
 asis:_s _a (MOV .sreg .rm) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:_s _a (RET) (+xC3, .e)/.e #
 asis:_s _a (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
+asis:_s _a (STI) (+xFB, .e)/.e #
 
 asi-jump .a (byte .rel8) .b _ _ (.b, .e1)/.ex
 	:- let .rel (.rel8 - .a - 2), as-emit:8 .rel .e1/.ex, !
