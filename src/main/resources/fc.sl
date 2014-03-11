@@ -124,7 +124,7 @@ fc-add-functions STANDARD .p (
 	define getintrn = (name => +getintrn {name}) >>
 	define second = (tuple => +pright {tuple}) >>
 	define tail = (list => +ltail {list}) >>
-	define _popen = ([string] -> string -> data-of Stream) of
+	define +popen = ([string] -> string -> data-of Stream) of
 		atom:CLASS!suite.lp.intrinsic.Intrinsics$Popen | getintrn | callintrn2
 	>>
 	define log = (:t => :t -> :t) of
@@ -283,7 +283,7 @@ fc-add-functions STANDARD .p (
 		fold-right {i => list => fun {i}; list} {}
 	) >>
 	define popen = (command => in =>
-		do # in | _popen {command} | source
+		do # in | +popen {command} | source
 	) >>
 	define reverse =
 		fold-left {cons/} {}
