@@ -43,7 +43,7 @@ asis:_s _a (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:_s _a (STI ()) (+xFB, .e)/.e #
 
 asi-jump .a (BYTE .rel8) .b _ _ (.b, .e1)/.ex
-	:- let .rel (.rel8 - .a - 2), as-emit:8 .rel .e1/.ex, !
+	:- let .rel (.rel8 - .a - 2), as-imm:8 .rel, as-emit:8 .rel .e1/.ex, !
 #
 asi-jump .a (DWORD .rel32) _ () .b (.b, .e1)/.ex
 	:- let .rel (.rel32 - .a - 5), as-emit:32 .rel .e1/.ex, !
@@ -104,8 +104,8 @@ as-mod-num-rm:.size .rm .num (.modregrm, .e1)/.ex
 as-mod-rm:.size .reg (3 .r) .e/.e
 	:- as-reg:.size .reg .r
 #
-as-mod-rm:.size (`.disp`) (0 5) .e0/.ex
-	:- as-emit:.size .disp .e0/.ex
+as-mod-rm:_ (`.disp`) (0 5) .e0/.ex
+	:- as-emit:32 .disp .e0/.ex
 #
 as-mod-rm:_ (`.reg + .disp`) (.mod .r) .e0/.ex
 	:- as-reg:32 .reg .r
@@ -148,22 +148,20 @@ as-sib-scale 4 2 #
 as-sib-scale 8 3 #
 
 as-emit:32 .d32 .e0/.ex
-	:- as-imm:32 .d32
-	, let .w0 (.d32 % 65536)
+	:- let .w0 (.d32 % 65536)
 	, let .w1 (.d32 / 65536)
 	, as-emit:16 .w0 .e0/.e1
 	, as-emit:16 .w1 .e1/.ex
 #
 
 as-emit:16 .w16 .e0/.ex
-	:- as-imm:16 .w16
-	, let .b0 (.w16 % 256)
+	:- let .b0 (.w16 % 256)
 	, let .b1 (.w16 / 256)
 	, as-emit:8 .b0 .e0/.e1
 	, as-emit:8 .b1 .e1/.ex
 #
 
-as-emit:8 .b8 (.b8, .e)/.e :- as-imm:8 .b8 #
+as-emit:8 .b8 (.b8, .e)/.e #
 
 as-imm:8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 as-imm:16 .imm :- is.int .imm, -32768 <= .imm, .imm < 32768 #

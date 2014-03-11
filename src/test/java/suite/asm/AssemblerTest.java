@@ -22,7 +22,7 @@ public class AssemblerTest {
 		System.out.println(bytes);
 	}
 
-	// @Test
+	@Test
 	public void testBootSector() throws IOException {
 		Bytes bytes = new Assembler().assemble(To.string(new File("src/main/asm/bootloader.asm")));
 		System.out.println(bytes);
