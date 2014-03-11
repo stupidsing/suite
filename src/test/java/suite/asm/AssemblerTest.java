@@ -10,6 +10,7 @@ public class AssemblerTest {
 	public void test() {
 		Bytes bytes = new Assembler().assemble(""//
 				+ "	JMP .end \n" //
+				+ "	MOV AX,16 \n" //
 				+ "	MOV EAX,16 \n" //
 				+ ".end \n" //
 		);
