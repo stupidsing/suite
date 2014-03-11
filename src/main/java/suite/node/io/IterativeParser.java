@@ -64,7 +64,7 @@ public class IterativeParser {
 	}
 
 	private enum LexType {
-		CHAR_, ID___, OPER_, PLUS_, SPACE, STR__
+		CHAR__, HEX__, ID___, OPER_, SPACE, STR__, SYM__
 	}
 
 	private class Token {
@@ -100,11 +100,13 @@ public class IterativeParser {
 				if (type == LexType.ID___ || type == LexType.SPACE)
 					while (pos < in.length() && detect().type == type)
 						pos++;
-				else if (type == LexType.CHAR_)
-					pos++;
-				else if (type == LexType.PLUS_)
+				else if (type == LexType.CHAR__)
 					pos += 4;
-				else if (type == LexType.OPER_)
+				else if (type == LexType.HEX__) {
+					pos += 2;
+					while (pos < in.length() && "0123456789ABCDEF".indexOf(in.charAt(pos)) >= 0)
+						pos++;
+				} else if (type == LexType.OPER_)
 					pos += token.operator.getName().length();
 				else if (type == LexType.STR__) {
 					char quote = in.charAt(pos);
@@ -114,7 +116,8 @@ public class IterativeParser {
 							pos++;
 						pos++;
 					}
-				}
+				} else if (type == LexType.SYM__)
+					pos++;
 
 				token.data = in.substring(start, pos);
 
@@ -146,16 +149,18 @@ public class IterativeParser {
 
 				if (operator != null)
 					type = LexType.OPER_;
-				else if (ch == '(' || ch == '[' || ch == '{' //
-						|| ch == ')' || ch == ']' || ch == '}' //
-						|| ch == '`')
-					type = LexType.CHAR_;
-				else if (ch == '+' && pos + 4 < in.length() && "'x".indexOf(in.charAt(pos + 1)) >= 0)
-					type = LexType.PLUS_;
+				else if (ch == '+' && pos + 4 < in.length() && in.charAt(pos + 1) == '\'')
+					type = LexType.CHAR__;
+				else if (ch == '+' && pos + 1 < in.length() && in.charAt(pos + 1) == 'x')
+					type = LexType.HEX__;
 				else if (ch == ' ')
 					type = LexType.SPACE;
 				else if (ch == '\'' || ch == '"')
 					type = LexType.STR__;
+				else if (ch == '(' || ch == '[' || ch == '{' //
+						|| ch == ')' || ch == ']' || ch == '}' //
+						|| ch == '`')
+					type = LexType.SYM__;
 				else
 					type = LexType.ID___;
 			} else
