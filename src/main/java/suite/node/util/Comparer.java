@@ -36,6 +36,8 @@ public class Comparer implements Comparator<Node> {
 				return ((Atom) n0).getName().compareTo(((Atom) n1).getName());
 			else if (clazz0 == Int.class)
 				return ((Int) n0).getNumber() - ((Int) n1).getNumber();
+			else if (clazz0 == Reference.class)
+				return ((Reference) n0).getId() - ((Reference) n1).getId();
 			else if (clazz0 == Str.class)
 				return ((Str) n0).getValue().compareTo(((Str) n1).getValue());
 			else if (clazz0 == Tree.class) {
