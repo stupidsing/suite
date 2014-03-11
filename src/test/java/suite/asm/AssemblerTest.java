@@ -1,5 +1,7 @@
 package suite.asm;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +30,8 @@ public class AssemblerTest {
 	@Test
 	public void testBootSector() throws IOException {
 		Bytes bytes = new Assembler(16).assemble(To.string(new File("src/main/asm/bootloader.asm")));
+		assertEquals(512, bytes.size());
+
 		Path path = Paths.get("target/bootloader.bin");
 		Files.write(path, bytes.getBytes());
 	}

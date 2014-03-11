@@ -28,8 +28,8 @@ asis:.s _a (INC .rm) .e0/.ex :- asi-rm:.s +xFE .rm 0 .e0/.ex #
 asis:_s _a (INT 3) (+x37, .e)/.e #
 asis:_s _a (INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s _a (INTO ()) (+xCE, .e)/.e #
-asis:_s .a (JE .rel) .e0/.ex :- asi-jump .a .rel +x74 +x0F +x84 .e0/.ex #
-asis:_s .a (JMP .rel) .e0/.ex :- asi-jump .a .rel +xEB () +xE9 .e0/.ex #
+asis:_s .a (JE .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
+asis:_s .a (JMP .target) .e0/.ex :- asi-jump .a .target +xEB () +xE9 .e0/.ex #
 asis:_s _a (JMP .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 4 .e0/.ex #
 asis:_s _a (LABEL _) .e/.e #
 asis:_s _a (LEA (.reg, .rm)) .e0/.ex :- asi-rm-reg:_ +x8D .rm .reg .e0/.ex #
@@ -37,22 +37,22 @@ asis:.s _a (MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
 asis:.s _a (MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s _a (MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
 asis:_s _a (MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
-asis:_s _a (MOV (.sreg, .rm)) (+x8D, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:_s _a (MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:_s _a (RET ()) (+xC3, .e)/.e #
 asis:_s _a (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:_s _a (STI ()) (+xFB, .e)/.e #
 
-asi-jump .a (BYTE .rel8) .b _ _ (.b, .e1)/.ex
-	:- let .rel (.rel8 - .a - 2), as-imm:8 .rel, as-emit:8 .rel .e1/.ex, !
+asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
+	:- let .rel (.target - .a - 2), as-imm:8 .rel, as-emit:8 .rel .e1/.ex, !
 #
-asi-jump .a (DWORD .rel32) _ () .b (.b, .e1)/.ex
-	:- let .rel (.rel32 - .a - 5), as-emit:32 .rel .e1/.ex, !
+asi-jump .a (DWORD .target) _ () .b (.b, .e1)/.ex
+	:- let .rel (.target - .a - 5), as-emit:32 .rel .e1/.ex, !
 #
-asi-jump .a (DWORD .rel32) _ .b0 .b1 (.b0, .b1, .e1)/.ex
-	:- let .rel (.rel32 - .a - 6), as-emit:32 .rel .e1/.ex, !
+asi-jump .a (DWORD .target) _ .b0 .b1 (.b0, .b1, .e1)/.ex
+	:- let .rel (.target - .a - 6), as-emit:32 .rel .e1/.ex, !
 #
-asi-jump .a .rel8 .b _ _ (.b, .e1)/.ex
-	:- asi-jump .a (BYTE .rel8) .b _ _ (.b, .e1)/.ex
+asi-jump .a .target .b _ _ (.b, .e1)/.ex
+	:- asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 #
 
 asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
@@ -104,8 +104,8 @@ as-mod-num-rm:.size .rm .num (.modregrm, .e1)/.ex
 as-mod-rm:.size .reg (3 .r) .e/.e
 	:- as-reg:.size .reg .r
 #
-as-mod-rm:_ (`.disp`) (0 5) .e0/.ex
-	:- as-emit:32 .disp .e0/.ex
+as-mod-rm:.size (`.disp`) (0 5) .e0/.ex
+	:- as-emit:.size .disp .e0/.ex
 #
 as-mod-rm:_ (`.reg + .disp`) (.mod .r) .e0/.ex
 	:- as-reg:32 .reg .r

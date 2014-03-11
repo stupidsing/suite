@@ -3,7 +3,8 @@
 	CLI
 	MOV  AX, +xB800
 	MOV  DS, AX
-	MOV  DWORD `0`, +x41704170
+	D8   +x67
+	MOV  DWORD `0`, +x70417041
 .loop
 	HLT
 	JMP  .loop
