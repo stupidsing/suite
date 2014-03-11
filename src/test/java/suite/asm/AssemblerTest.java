@@ -2,6 +2,9 @@ package suite.asm;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 
@@ -12,7 +15,7 @@ public class AssemblerTest {
 
 	@Test
 	public void test() {
-		Bytes bytes = new Assembler().assemble(""//
+		Bytes bytes = new Assembler(32).assemble(""//
 				+ "	JMP .end \n" //
 				+ "	MOV AX,16 \n" //
 				+ "	MOV EAX,16 \n" //
@@ -24,8 +27,9 @@ public class AssemblerTest {
 
 	@Test
 	public void testBootSector() throws IOException {
-		Bytes bytes = new Assembler().assemble(To.string(new File("src/main/asm/bootloader.asm")));
-		System.out.println(bytes);
+		Bytes bytes = new Assembler(16).assemble(To.string(new File("src/main/asm/bootloader.asm")));
+		Path path = Paths.get("target/bootloader.bin");
+		Files.write(path, bytes.getBytes());
 	}
 
 }

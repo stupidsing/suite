@@ -29,6 +29,12 @@ public class Assembler {
 
 	private Prover prover = Suite.createProver(Arrays.asList("asm.sl", "auto.sl"));
 
+	private int bits;
+
+	public Assembler(int bits) {
+		this.bits = bits;
+	}
+
 	public Bytes assemble(String input) {
 		input = new CommentProcessor(Collections.singleton('\n')).apply(input);
 
@@ -86,7 +92,7 @@ public class Assembler {
 		final Reference e = new Reference();
 		final List<Bytes> list = new ArrayList<>();
 
-		Node goal = Suite.substitute("asi:32 .0 .1 .2/(), .3", Int.create(address), instruction, e, new Data<>(
+		Node goal = Suite.substitute("asi:.0 .1 .2 .3/(), .4", Int.create(bits), Int.create(address), instruction, e, new Data<>(
 				new Source<Boolean>() {
 					public Boolean source() {
 						list.add(convertByteStream(e));
