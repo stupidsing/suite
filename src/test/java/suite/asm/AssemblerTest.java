@@ -27,6 +27,8 @@ public class AssemblerTest {
 		System.out.println(bytes);
 	}
 
+	// cat target/bootloader.bin | ~/data/src/udis86-1.7.2/udcli/udcli -16 | less
+	// bochs -f src/main/asm/bochsrc
 	@Test
 	public void testBootSector() throws IOException {
 		Bytes bytes = new Assembler(16).assemble(To.string(new File("src/main/asm/bootloader.asm")));

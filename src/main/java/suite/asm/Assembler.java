@@ -110,7 +110,7 @@ public class Assembler {
 				}
 			});
 		else
-			throw new RuntimeException("Cannot assemble instruction " + instruction);
+			throw new RuntimeException("Cannot assemble " + instruction);
 	}
 
 	private Bytes convertByteStream(Node node) {

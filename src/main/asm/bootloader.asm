@@ -3,11 +3,11 @@
 	CLI
 	
 	-- Enables A20 gate
-	MOV  AX, +x2401
-	INT  +x15
-	-- IN   AL, +x92
-	-- OR   AL, 2
-	-- OUT  +x92, AL
+	--MOV  AX, +x2401
+	--INT  +x15
+	IN   AL, +x92
+	OR   AL, 2
+	OUT  +x92, AL
 	
 	MOV  AX, +xFFFF
 	MOV  DS, AX
