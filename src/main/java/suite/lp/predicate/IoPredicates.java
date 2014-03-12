@@ -126,6 +126,12 @@ public class IoPredicates {
 		}
 	}
 
+	public static class Throw implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			throw new RuntimeException(Formatter.dump(ps.finalNode()));
+		}
+	}
+
 	public static class Write implements SystemPredicate {
 		private PrintStream printStream;
 

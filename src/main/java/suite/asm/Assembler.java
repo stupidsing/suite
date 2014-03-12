@@ -72,7 +72,11 @@ public class Assembler {
 					lni.t0.bound(!isPass2 ? Int.create(0) : addressesByLabel.get(lni.t0));
 
 			for (Pair<Reference, Node> lni : lnis) {
-				out.append(assemble(out.size(), lni.t1));
+				try {
+					out.append(assemble(out.size(), lni.t1));
+				} catch (Exception ex) {
+					throw new RuntimeException("In " + lni.t1, ex);
+				}
 
 				if (!isPass2 && lni.t0 != null)
 					addressesByLabel.put(lni.t0, Int.create(out.size()));
@@ -108,7 +112,7 @@ public class Assembler {
 				}
 			});
 		else
-			throw new RuntimeException("Cannot assemble " + instruction);
+			throw new RuntimeException("Failure");
 	}
 
 	private Bytes convertByteStream(Node node) {

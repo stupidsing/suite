@@ -54,7 +54,7 @@ asis:.s _a (TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 	:- let .rel (.target - .a - 2)
-	, (as-imm:8 .rel >> as-emit:8 .rel .e1/.ex || as-error "Jumping too far")
+	, (as-imm:8 .rel >> as-emit:8 .rel .e1/.ex || throw "Jumping too far")
 	, !
 #
 asi-jump .a (DWORD .target) _ () .b (.b, .e1)/.ex
