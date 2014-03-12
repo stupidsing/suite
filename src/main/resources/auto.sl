@@ -1,4 +1,4 @@
-.if >> .then || .else :- .if, !, .then; .else #
+if .if .then .else :- .if, !, .then; .else #
 
 append () .list .list #
 append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #

@@ -48,13 +48,13 @@ asis:.s (_a PUSH .op) .e0/.ex :- asi-1op:.s .op +x50 +xFF 6 .e0/.ex #
 asis:_s (_a RET ()) (+xC3, .e)/.e #
 asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:_s (_a STI ()) (+xFB, .e)/.e #
-asis:.s (_a TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-emit:.s .imm .e1/.ex, (.s = 8 >> .b = +xA8 || .b = +xA9) #
+asis:.s (_a TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +xA8) (.b = +xA9) #
 asis:.s (_a TEST (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xF6 .rm 0 .imm .e0/.ex #
 asis:.s (_a TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 	:- asi-jump-rel:8 .target .a 1 .rel
-	, (as-imm:8 .rel >> as-emit:8 .rel .e1/.ex || throw "Jumping too far")
+	, if (as-imm:8 .rel) (as-emit:8 .rel .e1/.ex) (throw "Jumping too far")
 	, !
 #
 asi-jump .a (DWORD .target) _ () .b (.b, .e1)/.ex
@@ -68,16 +68,13 @@ asi-jump .a .target .b _ _ (.b, .e1)/.ex
 #
 
 asi-jump-rel:.s .target .a .f .rel
-	:- bound .target >> let .rel (.target - .a - .f - .s / 8) || .rel = 0
+	:- if (bound .target) (let .rel (.target - .a - .f - .s / 8)) (.rel = 0)
 #
 
 asi-in-out:.size .acc .port .b0 (.b2, .e1)/.ex
 	:- as-reg:.size .acc 0
-	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
-	, (.port = DX
-		>> .e1 = .ex, let .b2 (.b1 + 8)
-		|| as-emit:8 .port .e1/.ex, .b1 = .b2
-	)
+	, if (.size = 8) (.b0 = .b1) (let .b1 (.b0 + 1))
+	, if (.port = DX) (.e1 = .ex, let .b2 (.b1 + 8)) (as-emit:8 .port .e1/.ex, .b1 = .b2)
 #
 
 -- Common single-operand instructions, like DEC, NEG
@@ -104,17 +101,17 @@ asi-2op:.s .rm .imm _ .b .n .e0/.ex
 
 asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
 	:- as-mod-num-rm:.size .rm .num .e1/.e2, as-emit:.size .imm .e2/.ex
-	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
+	, if (.size = 8) (.b0 = .b1) (let .b1 (.b0 + 1))
 #
 
 asi-acc-imm:.size .b0 .acc .imm (.b1, .e1)/.ex
 	:- as-reg:.size .acc 0
 	, as-emit:.size .imm .e1/.ex
-	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 8))
+	, if (.size = 8) (.b0 = .b1) (let .b1 (.b0 + 8))
 #
 
 asi-reg-imm:.size .b0 .reg .imm .e0/.ex
-	:- (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 8))
+	:- if (.size = 8) (.b0 = .b1) (let .b1 (.b0 + 8))
 	, asi-reg:.size .b1 .reg .e0/.e1, as-emit:.size .imm .e1/.ex
 #
 
@@ -129,12 +126,12 @@ asi-rm-reg2:.size .b0 .reg .rm .e0/.ex
 asi-rm-reg:.size .b0 .rm .reg (.b1, .e0)/.ex
 	:- as-reg:.size .reg .r
 	, as-mod-num-rm:.size .rm .r .e0/.ex
-	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
+	, if (.size = 8) (.b0 = .b1) (let .b1 (.b0 + 1))
 #
 
 asi-rm:.size .b0 .rm .num (.b1, .e1)/.ex
 	:- as-mod-num-rm:.size .rm .num .e1/.ex
-	, (.size = 8 >> .b0 = .b1 || let .b1 (.b0 + 1))
+	, if (.size = 8) (.b0 = .b1) (let .b1 (.b0 + 1))
 #
 
 asi-reg:.size .b0 .reg (.b1, .e)/.e
