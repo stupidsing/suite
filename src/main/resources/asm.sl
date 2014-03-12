@@ -21,6 +21,7 @@ asis:.s (.a CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, 
 asis:_s (_a CALL .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 2 .e0/.ex #
 asis:_s (_a CLI ()) (+xFA, .e)/.e #
 asis:_s (_a D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
+asis:_s (_a D16 .imm) .e0/.ex :- as-emit:16 .imm .e0/.ex #
 asis:_s (_a D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
 asis:.s (_a DEC .op) .e0/.ex :- asi-1op:.s .op +x48 +xFE 1 .e0/.ex #
 asis:.s (_a DIV .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 6 .e0/.ex #

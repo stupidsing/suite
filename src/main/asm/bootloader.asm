@@ -18,32 +18,22 @@
 	-- Load 128 sectors, i.e. 64K data
 	MOV  AX, +x4000
 	MOV  ES, AX
-	MOV  SI, 128
-	
-	XOR  BX, BX
-	MOV  AX, 1
 .readNextSector
 	PUSHA
-	XOR  DX, DX
-	MOV  SI, +x12 -- nSectorsPerTrack
-	DIV  SI
-	MOV  CL, DL
-	INC  CL
-	XOR  DX, DX
-	MOV  SI, 2 -- nHeads
-	DIV  SI
-	MOV  DH, DL
-	MOV  CH, AL
+	MOV  AH, +x42
+	MOV  SI, .dap
 	AOP
 	MOV  DL, `.bootDrive`
-	MOV  AX, +x0201
 	INT  +x13
 --	JC   .diskError
 	POPA
-	ADD  BX, 512
-	INC  AX
-	DEC  SI
+	AOP
+	ADD  DWORD `.dapLba`, 16
+	AOP
+	ADD  WORD `.dapMemAddress`, 8192
 	JNZ  .readNextSector
+	
+	-- Kernel loaded to ES:[0]
 	
 	-- Show some fancy stuff on screen	
 	MOV  AX, +xB800
@@ -58,7 +48,19 @@
 	
 .bootDrive
 	D8   0
-		
+	
+	ADVANCE +x7DE0
+.dap -- Disk address packet for LBA BIOS
+	D16  16
+.dapNumOfSectors
+	D16  16 -- Number of sectors to transfer
+.dapMemAddress
+	D16  0 -- Memory address
+	D16  +x4000 -- Memory segment
+.dapLba
+	D32  1 -- Starting LBA
+	D32  0
+	
 	ADVANCE +x7DFE
 	D8   +x55
 	D8   +xAA
