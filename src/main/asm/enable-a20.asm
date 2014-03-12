@@ -1,33 +1,15 @@
-	JMP  BYTE .boot
-.boot
-	CLI
-	
-	-- Enables A20 gate
+.method0
 	MOV  AX, +x2401
 	INT  +x15
+	RET
 	
-	MOV  AX, +xFFFF
-	MOV  DS, AX
-	AOP
-	MOV  BL, BYTE `+x7E0E`
+.method1	
+	IN   AL, +x92
+	OR   AL, 2
+	OUT  +x92, AL
+	RET
 	
-	MOV  AX, +xB800
-	MOV  DS, AX
-	AOP
-	MOV  DWORD `0`, +x70417041
-	AOP
-	MOV  BYTE `4`, BL
-.loop
-	HLT
-	JMP  .loop
-	
-.enableA20
-	--IN   AL, +x92
-	--OR   AL, 2
-	--OUT  +x92, AL
-	
-	--CALL .enableA20
-	
+.method2
 	CALL .waitA20a
 	MOV  AL, +xAD
 	OUT  +x64, AL
