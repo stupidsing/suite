@@ -92,7 +92,7 @@ public class Assembler {
 			}
 
 			for (Pair<Reference, Node> lni : lnis)
-				if (lni.t0 != null)
+				if (lni.t0 != null && isPass2)
 					lni.t0.unbound();
 		}
 
