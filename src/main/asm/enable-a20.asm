@@ -49,8 +49,3 @@
 	TEST AL, 1
 	JZ   .waitA202b
 	RET
-	
-	ADVANCE 510
-	D8   +x55
-	D8   +xAA
-

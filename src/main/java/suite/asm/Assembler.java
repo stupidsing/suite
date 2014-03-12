@@ -29,6 +29,7 @@ public class Assembler {
 
 	private Prover prover = Suite.createProver(Arrays.asList("asm.sl", "auto.sl"));
 
+	private int org;
 	private int bits;
 
 	public Assembler(int bits) {
@@ -36,12 +37,20 @@ public class Assembler {
 	}
 
 	public Bytes assemble(String input) {
-		input = new CommentProcessor(Collections.singleton('\n')).apply(input);
+		CommentProcessor commentProcessor = new CommentProcessor(Collections.singleton('\n'));
+		List<String> lines = Arrays.asList(commentProcessor.apply(input).split("\n"));
+		int start = 0;
+		String line0;
+
+		if ((line0 = lines.get(start).trim()).startsWith("ORG")) {
+			org = Integer.parseInt(line0.substring(3).trim(), 16);
+			start++;
+		}
 
 		Generalizer generalizer = new Generalizer();
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
-		for (String line : input.split("\n")) {
+		for (String line : Util.right(lines, start)) {
 			String label = null;
 
 			if (line.startsWith(Generalizer.variablePrefix)) {
@@ -73,13 +82,13 @@ public class Assembler {
 
 			for (Pair<Reference, Node> lni : lnis) {
 				try {
-					out.append(assemble(out.size(), lni.t1));
+					out.append(assemble(org + out.size(), lni.t1));
 				} catch (Exception ex) {
 					throw new RuntimeException("In " + lni.t1, ex);
 				}
 
 				if (!isPass2 && lni.t0 != null)
-					addressesByLabel.put(lni.t0, Int.create(out.size()));
+					addressesByLabel.put(lni.t0, Int.create(org + out.size()));
 			}
 
 			for (Pair<Reference, Node> lni : lnis)
