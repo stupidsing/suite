@@ -40,12 +40,9 @@ public class Generalizer {
 				String name = ((Atom) right).getName();
 				if (isWildcard(name))
 					right = new Reference();
-				else if (isVariable(name)) {
-					Reference reference = variables.get(right);
-					if (reference == null)
-						variables.put(right, reference = new Reference());
-					right = reference;
-				} else if (isCut(name) && cut != null)
+				else if (isVariable(name))
+					right = getVariable(right);
+				else if (isCut(name) && cut != null)
 					right = cut;
 			} else if (right instanceof Tree) {
 				final Tree rightTree = (Tree) right;
@@ -71,6 +68,13 @@ public class Generalizer {
 			Tree.forceSetRight(tree, right);
 			break;
 		}
+	}
+
+	public Reference getVariable(Node variable) {
+		Reference reference = variables.get(variable);
+		if (reference == null)
+			variables.put(variable, reference = new Reference());
+		return reference;
 	}
 
 	public String dumpVariables() {
@@ -118,10 +122,6 @@ public class Generalizer {
 
 	private static boolean isCut(String name) {
 		return name.equals(cutName);
-	}
-
-	public Reference getVariable(Node name) {
-		return variables.get(name);
 	}
 
 	public void setCut(Node cut) {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class Assembler {
 		input = new CommentProcessor(Collections.singleton('\n')).apply(input);
 
 		Generalizer generalizer = new Generalizer();
-		List<Pair<Node, Node>> lnis = new ArrayList<>();
+		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (String line : input.split("\n")) {
 			String label = null;
@@ -52,37 +52,35 @@ public class Assembler {
 				line = line.trim();
 
 			Pair<String, String> pair = Util.split2(line, " ");
-			Node labelName = label != null ? Atom.create(label) : null;
+			Reference reference = label != null ? generalizer.getVariable(Atom.create(label)) : null;
 			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, Atom.create(pair.t0), Suite.parse(pair.t1)));
-			lnis.add(Pair.create(labelName, instruction));
+			lnis.add(Pair.create(reference, instruction));
 		}
 
 		return assemble(generalizer, lnis);
 	}
 
-	private Bytes assemble(Generalizer generalizer, List<Pair<Node, Node>> lnis) {
-		Map<Node, Node> addressesByLabel = new HashMap<>();
+	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
+		Map<Reference, Node> addressesByLabel = new IdentityHashMap<>();
 		BytesBuilder out = new BytesBuilder();
 
 		for (boolean isPass2 : new boolean[] { false, true }) {
 			out.clear();
 
-			for (Pair<Node, Node> lni : lnis)
-				if (lni.t0 != null) {
-					Reference label = generalizer.getVariable(lni.t0);
-					label.bound(!isPass2 ? Int.create(0) : addressesByLabel.get(lni.t0));
-				}
+			for (Pair<Reference, Node> lni : lnis)
+				if (lni.t0 != null)
+					lni.t0.bound(!isPass2 ? Int.create(0) : addressesByLabel.get(lni.t0));
 
-			for (Pair<Node, Node> lni : lnis) {
+			for (Pair<Reference, Node> lni : lnis) {
 				out.append(assemble(out.size(), lni.t1));
 
 				if (!isPass2 && lni.t0 != null)
 					addressesByLabel.put(lni.t0, Int.create(out.size()));
 			}
 
-			for (Pair<Node, Node> lni : lnis)
+			for (Pair<Reference, Node> lni : lnis)
 				if (lni.t0 != null)
-					generalizer.getVariable(lni.t0).unbound();
+					lni.t0.unbound();
 		}
 
 		return out.toBytes();
