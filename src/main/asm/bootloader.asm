@@ -11,65 +11,65 @@
 	
 	MOV  AX, +xFFFF
 	MOV  DS, AX
-	ADP
+	AOP
 	MOV  BX, WORD `+x7E0E`
 	
 	MOV  AX, +xB800
 	MOV  DS, AX
-	ADP
+	AOP
 	MOV  DWORD `0`, +x70417041
-	ADP
+	AOP
 	MOV  BYTE `4`, BL
 .loop
 	HLT
 	JMP  .loop
 	
 .enableA20
-	ADP
-	CALL .waitA20
+	AOP
+	CALL .waitA20a
 	MOV  AL, +xAD
 	OUT  +x64, AL
 	
-	ADP
-	CALL .waitA20
+	AOP
+	CALL .waitA20a
 	MOV  AL, +xD0
 	OUT  +x64, AL
 	
-	ADP
-	CALL .waitA202
+	AOP
+	CALL .waitA202b
 	IN   AL, +x60
 	PUSH EAX
 	
-	ADP
-	CALL .waitA20
+	AOP
+	CALL .waitA20a
 	MOV  AL, +xD1
 	OUT  +x64, AL
 	
-	ADP
-	CALL .waitA20
+	AOP
+	CALL .waitA20a
 	POP  EAX
 	OR   AL, 2
 	OUT  +x60, AL
 	
-	ADP
-	CALL .waitA20
+	AOP
+	CALL .waitA20a
 	MOV  AL, +xAE
 	OUT  +x64, AL
 	
-	ADP
-	CALL .waitA20
+	AOP
+	CALL .waitA20a
 	RET
 	
-.waitA20
+.waitA20a
 	IN   AL, +x64
 	TEST AL, 2
 	JNZ  .waitA20
 	RET
 	
-.waitA202
+.waitA202b
 	IN   AL, +x64
 	TEST AL, 1
-	JZ   .waitA202
+	JZ   .waitA202b
 	RET
 	
 	ADVANCE 510

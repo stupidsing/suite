@@ -15,8 +15,8 @@ asi:32 .a .i (+x66, .e1)/.ex :- asis:16 .a .i .e1/.ex, ! #
 asis:_s _a (() _) .e/.e #
 asis:_s _a (AAA ()) (+x37, .e)/.e #
 asis:.s _a (ADD (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x00 +x80 0 .e0/.ex #
-asis:_s _a (ADP ()) (+x67, .e)/.e #
-asis:_s .a (CALL .target) (+xE8, .e1)/.ex :- let .rel (.target - .a - 5), as-emit:32 .rel .e1/.ex #
+asis:_s _a (AOP ()) (+x67, .e)/.e #
+asis:_s .a (CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel .target .a 5 .rel, as-emit:32 .rel .e1/.ex #
 asis:_s _a (CALL .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 2 .e0/.ex #
 asis:_s _a (CLI ()) (+xFA, .e)/.e #
 asis:_s _a (D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
@@ -52,19 +52,21 @@ asis:.s _a (TEST (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xF6 .rm 0 .imm .e0/.ex #
 asis:.s _a (TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
-	:- let .rel (.target - .a - 2)
+	:- asi-jump-rel .target .a 2 .rel
 	, (as-imm:8 .rel >> as-emit:8 .rel .e1/.ex || throw "Jumping too far")
 	, !
 #
 asi-jump .a (DWORD .target) _ () .b (.b, .e1)/.ex
-	:- let .rel (.target - .a - 5), as-emit:32 .rel .e1/.ex, !
+	:- asi-jump-rel .target .a 5 .rel, as-emit:32 .rel .e1/.ex, !
 #
 asi-jump .a (DWORD .target) _ .b0 .b1 (.b0, .b1, .e1)/.ex
-	:- let .rel (.target - .a - 6), as-emit:32 .rel .e1/.ex, !
+	:- asi-jump-rel .target .a 6 .rel, as-emit:32 .rel .e1/.ex, !
 #
 asi-jump .a .target .b _ _ (.b, .e1)/.ex
 	:- asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 #
+
+asi-jump-rel .target .a .f .rel :- bound .target >> let .rel (.target - .a - .f) || .rel = 0 #
 
 asi-in-out:.size .acc .port .b0 (.b2, .e1)/.ex
 	:- as-reg:.size .acc 0

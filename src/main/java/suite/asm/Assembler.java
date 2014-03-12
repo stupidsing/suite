@@ -68,8 +68,8 @@ public class Assembler {
 			out.clear();
 
 			for (Pair<Reference, Node> lni : lnis)
-				if (lni.t0 != null)
-					lni.t0.bound(!isPass2 ? Int.create(0) : addressesByLabel.get(lni.t0));
+				if (lni.t0 != null && isPass2)
+					lni.t0.bound(addressesByLabel.get(lni.t0));
 
 			for (Pair<Reference, Node> lni : lnis) {
 				try {
