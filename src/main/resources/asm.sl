@@ -53,15 +53,15 @@ asis:.s _a (TEST (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xF6 .rm 0 .imm .e0/.ex #
 asis:.s _a (TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
-	:- asi-jump-rel:1 .target .a 1 .rel
+	:- asi-jump-rel:8 .target .a 1 .rel
 	, (as-imm:8 .rel >> as-emit:8 .rel .e1/.ex || throw "Jumping too far")
 	, !
 #
 asi-jump .a (DWORD .target) _ () .b (.b, .e1)/.ex
-	:- asi-jump-rel:4 .target .a 1 .rel, as-emit:32 .rel .e1/.ex, !
+	:- asi-jump-rel:32 .target .a 1 .rel, as-emit:32 .rel .e1/.ex, !
 #
 asi-jump .a (DWORD .target) _ .b0 .b1 (.b0, .b1, .e1)/.ex
-	:- asi-jump-rel:4 .target .a 2 .rel, as-emit:32 .rel .e1/.ex, !
+	:- asi-jump-rel:32 .target .a 2 .rel, as-emit:32 .rel .e1/.ex, !
 #
 asi-jump .a .target .b _ _ (.b, .e1)/.ex
 	:- asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex

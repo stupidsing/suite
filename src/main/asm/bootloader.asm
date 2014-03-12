@@ -10,7 +10,7 @@
 	--OR   AL, 2
 	--OUT  +x92, AL
 	
-	CALL .enableA20
+	--CALL .enableA20
 	
 	MOV  AX, +xFFFF
 	MOV  DS, AX
