@@ -3,54 +3,54 @@
 -- as	= assembler
 -- asi	= assemble instruction
 
-asis:_s .a (ADVANCE .a) .e/.e #
-asis:.s .a0 (ADVANCE .a1) (0, .e1)/.ex
-	:- let .a (.a0 + 1), asis:.s .a (ADVANCE .a1) .e1/.ex, !
+asis:_s (.a ADVANCE .a) .e/.e #
+asis:.s (.a0 ADVANCE .a1) (0, .e1)/.ex
+	:- let .a (.a0 + 1), asis:.s (.a ADVANCE .a1) .e1/.ex, !
 #
-asi:.s .a .i .e0/.ex :- asis:.s .a .i .e0/.ex, ! #
-asi:_s .a .i .e0/.ex :- asis:8 .a .i .e0/.ex, ! #
-asi:16 .a .i (+x66, .e1)/.ex :- asis:32 .a .i .e1/.ex, ! #
-asi:32 .a .i (+x66, .e1)/.ex :- asis:16 .a .i .e1/.ex, ! #
+asi:.s .ai .e0/.ex :- asis:.s .ai .e0/.ex, ! #
+asi:_s .ai .e0/.ex :- asis:8 .ai .e0/.ex, ! #
+asi:16 .ai (+x66, .e1)/.ex :- asis:32 .ai .e1/.ex, ! #
+asi:32 .ai (+x66, .e1)/.ex :- asis:16 .ai .e1/.ex, ! #
 
-asis:_s _a (() _) .e/.e #
-asis:_s _a (AAA ()) (+x37, .e)/.e #
-asis:.s _a (ADD (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x00 +x80 0 .e0/.ex #
-asis:_s _a (AOP ()) (+x67, .e)/.e #
-asis:.s .a (CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, as-emit:.s .rel .e1/.ex #
-asis:_s _a (CALL .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 2 .e0/.ex #
-asis:_s _a (CLI ()) (+xFA, .e)/.e #
-asis:_s _a (D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
-asis:_s _a (D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
-asis:.s _a (DEC .op) .e0/.ex :- asi-1op:.s .op +x48 +xFE 1 .e0/.ex #
-asis:_s _a (HLT ()) (+xF4, .e)/.e #
-asis:.s _a (IN (.val, .port)) .e0/.ex :- asi-in-out:.s .val .port +xE4 .e0/.ex #
-asis:.s _a (INC .op) .e0/.ex :- asi-1op:.s .op +x40 +xFE 0 .e0/.ex #
-asis:_s _a (INT 3) (+x37, .e)/.e #
-asis:_s _a (INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
-asis:_s _a (INTO ()) (+xCE, .e)/.e #
-asis:_s .a (JE .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
-asis:_s .a (JMP .target) .e0/.ex :- asi-jump .a .target +xEB () +xE9 .e0/.ex #
-asis:_s _a (JMP .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 4 .e0/.ex #
-asis:_s .a (JNE .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
-asis:_s .a (JNZ .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
-asis:_s .a (JZ .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
-asis:_s _a (LEA (.reg, .rm)) .e0/.ex :- asi-rm-reg:_ +x8D .rm .reg .e0/.ex #
-asis:.s _a (MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
-asis:.s _a (MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
-asis:.s _a (MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
-asis:_s _a (MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
-asis:_s _a (MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
-asis:_s _a (OOP ()) (+x66, .e)/.e #
-asis:.s _a (OR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x08 +x80 1 .e0/.ex #
-asis:.s _a (OUT (.port, .val)) .e0/.ex :- asi-in-out:.s .val .port +xE6 .e0/.ex #
-asis:.s _a (POP .op) .e0/.ex :- asi-1op:.s .op +x58 +x8F 0 .e0/.ex #
-asis:.s _a (PUSH .op) .e0/.ex :- asi-1op:.s .op +x50 +xFF 6 .e0/.ex #
-asis:_s _a (RET ()) (+xC3, .e)/.e #
-asis:_s _a (RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
-asis:_s _a (STI ()) (+xFB, .e)/.e #
-asis:.s _a (TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-emit:.s .imm .e1/.ex, (.s = 8 >> .b = +xA8 || .b = +xA9) #
-asis:.s _a (TEST (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xF6 .rm 0 .imm .e0/.ex #
-asis:.s _a (TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
+asis:_s (_a () _) .e/.e #
+asis:_s (_a AAA ()) (+x37, .e)/.e #
+asis:.s (_a ADD (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x00 +x80 0 .e0/.ex #
+asis:_s (_a AOP ()) (+x67, .e)/.e #
+asis:.s (.a CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, as-emit:.s .rel .e1/.ex #
+asis:_s (_a CALL .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 2 .e0/.ex #
+asis:_s (_a CLI ()) (+xFA, .e)/.e #
+asis:_s (_a D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
+asis:_s (_a D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
+asis:.s (_a DEC .op) .e0/.ex :- asi-1op:.s .op +x48 +xFE 1 .e0/.ex #
+asis:_s (_a HLT ()) (+xF4, .e)/.e #
+asis:.s (_a IN (.val, .port)) .e0/.ex :- asi-in-out:.s .val .port +xE4 .e0/.ex #
+asis:.s (_a INC .op) .e0/.ex :- asi-1op:.s .op +x40 +xFE 0 .e0/.ex #
+asis:_s (_a INT 3) (+x37, .e)/.e #
+asis:_s (_a INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
+asis:_s (_a INTO ()) (+xCE, .e)/.e #
+asis:_s (.a JE .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
+asis:_s (.a JMP .target) .e0/.ex :- asi-jump .a .target +xEB () +xE9 .e0/.ex #
+asis:_s (_a JMP .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 4 .e0/.ex #
+asis:_s (.a JNE .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
+asis:_s (.a JNZ .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
+asis:_s (.a JZ .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
+asis:_s (_a LEA (.reg, .rm)) .e0/.ex :- asi-rm-reg:_ +x8D .rm .reg .e0/.ex #
+asis:.s (_a MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
+asis:.s (_a MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
+asis:.s (_a MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
+asis:_s (_a MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:_s (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:_s (_a OOP ()) (+x66, .e)/.e #
+asis:.s (_a OR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x08 +x80 1 .e0/.ex #
+asis:.s (_a OUT (.port, .val)) .e0/.ex :- asi-in-out:.s .val .port +xE6 .e0/.ex #
+asis:.s (_a POP .op) .e0/.ex :- asi-1op:.s .op +x58 +x8F 0 .e0/.ex #
+asis:.s (_a PUSH .op) .e0/.ex :- asi-1op:.s .op +x50 +xFF 6 .e0/.ex #
+asis:_s (_a RET ()) (+xC3, .e)/.e #
+asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
+asis:_s (_a STI ()) (+xFB, .e)/.e #
+asis:.s (_a TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-emit:.s .imm .e1/.ex, (.s = 8 >> .b = +xA8 || .b = +xA9) #
+asis:.s (_a TEST (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xF6 .rm 0 .imm .e0/.ex #
+asis:.s (_a TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 	:- asi-jump-rel:8 .target .a 1 .rel
