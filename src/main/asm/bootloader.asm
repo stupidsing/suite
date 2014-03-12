@@ -5,14 +5,17 @@
 	-- Enables A20 gate
 	--MOV  AX, +x2401
 	--INT  +x15
-	IN   AL, +x92
-	OR   AL, 2
-	OUT  +x92, AL
+	
+	--IN   AL, +x92
+	--OR   AL, 2
+	--OUT  +x92, AL
+	
+	CALL .enableA20
 	
 	MOV  AX, +xFFFF
 	MOV  DS, AX
 	AOP
-	MOV  BX, WORD `+x7E0E`
+	MOV  BL, BYTE `+x7E0E`
 	
 	MOV  AX, +xB800
 	MOV  DS, AX
@@ -25,38 +28,31 @@
 	JMP  .loop
 	
 .enableA20
-	AOP
 	CALL .waitA20a
 	MOV  AL, +xAD
 	OUT  +x64, AL
 	
-	AOP
 	CALL .waitA20a
 	MOV  AL, +xD0
 	OUT  +x64, AL
 	
-	AOP
 	CALL .waitA202b
 	IN   AL, +x60
 	PUSH EAX
 	
-	AOP
 	CALL .waitA20a
 	MOV  AL, +xD1
 	OUT  +x64, AL
 	
-	AOP
 	CALL .waitA20a
 	POP  EAX
 	OR   AL, 2
 	OUT  +x60, AL
 	
-	AOP
 	CALL .waitA20a
 	MOV  AL, +xAE
 	OUT  +x64, AL
 	
-	AOP
 	CALL .waitA20a
 	RET
 	
