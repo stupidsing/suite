@@ -6,7 +6,7 @@
 	-- Enables A20 gate by BIOS
 	MOV  AX, +x2401
 	INT  +x15
-
+	
 	-- Loads kernel
 	AOP	
 	MOV  `.bootDrive`, DL
