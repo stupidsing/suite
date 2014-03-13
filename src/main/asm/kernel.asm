@@ -6,5 +6,3 @@
 	HLT
 	JMP  .loop
 	
-	ADVANCE +x40200
-	

@@ -33,12 +33,17 @@ public class AssemblerTest {
 	@Test
 	public void testBootSector() throws IOException {
 		Bytes bootLoader = new Assembler(16).assemble(To.string(new File("src/main/asm/bootloader.asm")));
-		assertEquals(512, bootLoader.size());
-
 		Bytes kernel = new Assembler(32).assemble(To.string(new File("src/main/asm/kernel.asm")));
 
+		assertEquals(512, bootLoader.size());
+		Bytes disk0 = Bytes.concat(bootLoader, kernel);
+
+		// Align to 512 bytes
+		int size = disk0.size();
+		Bytes disk1 = disk0.pad((size + 511) & 0xFFFFFE00, (byte) 0);
+
 		Path path = Paths.get("target/boot.bin");
-		Files.write(path, Bytes.concat(bootLoader, kernel).getBytes());
+		Files.write(path, disk1.getBytes());
 	}
 
 }

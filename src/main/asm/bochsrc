@@ -1,4 +1,4 @@
 config_interface: wx
 display_library: wx
-ata0-master: type=disk, path="target/bootloader.bin", cylinders=615, heads=6, spt=17
+ata0-master: type=disk, path="target/boot.bin", cylinders=615, heads=6, spt=17
 boot: disk
