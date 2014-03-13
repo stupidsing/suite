@@ -20,8 +20,8 @@ public class FunTypeTest {
 
 	@Test
 	public void testBindList() {
-		assertType("number", "let `$h; $t` = (0; 1;) >> h");
-		getTypeMustFail("let `$h; $t` = (0; true;) >> h");
+		assertType("number", "let `$h; $t` := 0; 1; >> h");
+		getTypeMustFail("let `$h; $t` := 0; true; >> h");
 	}
 
 	@Test
@@ -34,8 +34,8 @@ public class FunTypeTest {
 		assertType("boolean", "" //
 				+ "data t as Nil >> \n" //
 				+ "data t as BTree (t, t) >> \n" //
-				+ "let u = t of Nil >> \n" //
-				+ "let v = t of Nil >> \n" //
+				+ "let u := t of Nil >> \n" //
+				+ "let v := t of Nil >> \n" //
 				+ "v = BTree (BTree (Nil, Nil), Nil)");
 	}
 
@@ -51,7 +51,7 @@ public class FunTypeTest {
 	@Test
 	public void testDefineType() {
 		getType("data weight as Kg number >> \n" //
-				+ "let v = weight of (Kg 1) >> \n" //
+				+ "let v := weight of (Kg 1) >> \n" //
 				+ "v = Kg 99");
 		getType("replicate {23}");
 	}
@@ -102,7 +102,7 @@ public class FunTypeTest {
 		getType(define + "Node2 (1, 2, Node (3, Nil))");
 
 		assertType("boolean", define //
-				+ "let n = Node (true, Nil) >> Node (false, n) = Nil");
+				+ "let n := Node (true, Nil) >> Node (false, n) = Nil");
 
 		getTypeMustFail(define + "Node");
 		getTypeMustFail(define + "Node 1");
@@ -110,7 +110,7 @@ public class FunTypeTest {
 		getTypeMustFail(define + "Node2 (1, true, Nil)");
 		getTypeMustFail(define + "Node2 (1, 2, Node (true, Nil))");
 		getTypeMustFail(define + "Node (1, Nil) = Node (false, Nil)");
-		getTypeMustFail(define + "let n = Node (true, Nil) >> Node (1, n)");
+		getTypeMustFail(define + "let n := Node (true, Nil) >> Node (1, n)");
 	}
 
 	@Test

@@ -63,8 +63,8 @@ public class EagerFunTest {
 				+ "data t as A >> \n" //
 				+ "data t as B >> \n" //
 				+ "data t as C >> \n" //
-				+ "let list1 = [t] of (A; B; C;) >> \n" //
-				+ "let result = ( \n" //
+				+ "let list1 := [t] of (A; B; C;) >> \n" //
+				+ "let result := ( \n" //
 				+ "    (A, 1,; A, 2,;); \n" //
 				+ "    (B, 1,; B, 2,;); \n" //
 				+ "    (C, 1,; C, 2,;); \n" //
@@ -139,25 +139,25 @@ public class EagerFunTest {
 		assertEquals(Int.create(1), eval("if-bind ((1; 2;) = (1; 2;)) then 1 else 0"));
 		assertEquals(Int.create(0), eval("if-bind ((1; 2;) = (2; 2;)) then 1 else 0"));
 
-		assertEquals(Int.create(1), eval("let v = (1; 2;) >> if-bind (v = (1; 2;)) then 1 else 0"));
-		assertEquals(Int.create(0), eval("let v = (1; 2;) >> if-bind (v = (1; 3;)) then 1 else 0"));
+		assertEquals(Int.create(1), eval("let v := 1; 2; >> if-bind (v = (1; 2;)) then 1 else 0"));
+		assertEquals(Int.create(0), eval("let v := 1; 2; >> if-bind (v = (1; 3;)) then 1 else 0"));
 
-		assertEquals(Int.create(0), eval("let v = (true, 1, 2,) >> if-bind (v = (true, $i, 3,)) then i else 0"));
-		assertEquals(Int.create(1), eval("let v = (true, 1, 2,) >> if-bind (v = (true, $i, 2,)) then i else 0"));
+		assertEquals(Int.create(0), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 3,)) then i else 0"));
+		assertEquals(Int.create(1), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 2,)) then i else 0"));
 		assertEquals(Int.create(1), eval("if-bind ((1, 2,) = ($i, 2,)) then i else 0"));
 
 		assertEquals(Int.create(3), eval("" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n" //
-				+ "let e = B 3 >> \n" //
+				+ "let e := B 3 >> \n" //
 				+ "if-bind (e = B $i) then i else 0"));
 		assertEquals(Int.create(0), eval("" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n" //
-				+ "let e = B 3 >> \n" //
-				+ "let f = C false >> \n" //
+				+ "let e := B 3 >> \n" //
+				+ "let f := C false >> \n" //
 				+ "if-bind (e = f) then 1 else 0"));
 	}
 
@@ -222,7 +222,7 @@ public class EagerFunTest {
 		assertEquals(Atom.FALSE, Suite.evaluateFun("" //
 				+ "data t as A >> \n" //
 				+ "data t as B >> \n" //
-				+ "let list1 = [t] of () >> A = B", false));
+				+ "let list1 := [t] of () >> A = B", false));
 	}
 
 	@Test

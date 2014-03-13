@@ -186,7 +186,7 @@ fc-add-functions STANDARD .p (
 			case
 			|| (list = `$elem; $elems`)
 				if (fun {elem}) then
-					let `$listt, $listf` = bisect0 {prevs} {elems} >>
+					let `$listt, $listf` := bisect0 {prevs} {elems} >>
 					(elem; listt), listf
 				else (prevs, list)
 			|| (), prevs
@@ -207,12 +207,12 @@ fc-add-functions STANDARD .p (
 	define scan-right := fun => init =>
 		case
 		|| `$h; $t` =>
-			let r = scan-right {fun} {init} {t} >>
+			let r := scan-right {fun} {init} {t} >>
 			fun {h} {head {r}}; r
 		|| anything => init;
 	>>
 	define str-to-int := s =>
-		let unsigned-str-to-int = fold-left {v => d => v * 10 + d - 48} {0} >>
+		let unsigned-str-to-int := fold-left {v => d => v * 10 + d - 48} {0} >>
 			if (is-list {s} && head {s} = 45)
 			then (`0 -` . unsigned-str-to-int . tail)
 			else unsigned-str-to-int
@@ -225,7 +225,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define take-drop := n => list =>
 		if (n > 0 && is-list {list}) then
-			let `$t1, $d1` = (list | tail | take-drop {n - 1}) >>
+			let `$t1, $d1` := list | tail | take-drop {n - 1} >>
 			cons {list | head} {t1}, d1
 		else (, list)
 	>>
@@ -236,7 +236,7 @@ fc-add-functions STANDARD .p (
 		|| anything => ()
 	>>
 	define unfold-right := fun => init =>
-		let r = fun {init} >>
+		let r := fun {init} >>
 		if (is-list {r})
 		then (r | tail | head | unfold-right {fun} | cons {r | head})
 		else ()
@@ -289,9 +289,9 @@ fc-add-functions STANDARD .p (
 		fold-left {cons/} {}
 	>>
 	define substring := start => end => list =>
-		let len = length {list} >>
-		let s = (if (start >= 0) then start else (len + start)) >>
-		let e = (if (end > 0) then end else (len + end)) >>
+		let len := length {list} >>
+		let s := if (start >= 0) then start else (len + start) >>
+		let e := if (end > 0) then end else (len + end) >>
 		list | take {e} | drop {s}
 	>>
 	define tails :=
@@ -311,7 +311,7 @@ fc-add-functions STANDARD .p (
 		l1 | map {e1 => l2 | map {e1 | fun}}
 	>>
 	define int-to-str := i =>
-		let unsigned-int-to-str =
+		let unsigned-int-to-str :=
 			reverse
 			. map {`+ 48`}
 			. unfold-right {i => if (i != 0) then (i % 10; i / 10;) else ()}
@@ -327,9 +327,9 @@ fc-add-functions STANDARD .p (
 		fold {greater}
 	>>
 	define merge := merger => list =>
-		let len = length {list} >>
+		let len := length {list} >>
 		if (len > 1) then
-			let `$list0, $list1` = take-drop {len / 2} {list} >>
+			let `$list0, $list1` := take-drop {len / 2} {list} >>
 			merger {list0 | merge {merger}} {list1 | merge {merger}}
 		else list
 	>>
@@ -357,11 +357,11 @@ fc-add-functions STANDARD .p (
 		. tails . cons {separator}
 	>>
 	define transpose := m =>
-		let height = length {m} >>
-		let width = if (height > 0) then (m | head | length) else 0 >>
+		let height := length {m} >>
+		let width := if (height > 0) then (m | head | length) else 0 >>
 		if (width > 0) then
-			let w1 = width - 1 >>
-			let gets = (tail | replicate {w1} | tails | reverse) >>
+			let w1 := width - 1 >>
+			let gets := tail | replicate {w1} | tails | reverse >>
 			gets | map {f => map {head . apply {f}} {m}}
 		else ()
 	>>
@@ -371,8 +371,8 @@ fc-add-functions STANDARD .p (
 	define dump := (:t => :t -> string) of skip-type-check (
 		define type-of := getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$TypeOf} >>
 		define atom-string := getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >>
-		let dump0 = (prec => n =>
-			let type = +callintrn1 {type-of} {n} >>
+		let dump0 := prec => n =>
+			let type := +callintrn1 {type-of} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
@@ -382,7 +382,7 @@ fc-add-functions STANDARD .p (
 				callintrn1 {atom-string} {n}
 			else
 				int-to-str {n}
-		) >>
+		>>
 		dump0 {false}
 	) >>
 	define ends-with := end =>
@@ -407,7 +407,7 @@ fc-add-functions STANDARD .p (
 	define quick-sort := cmp =>
 		case
 		|| `$pivot; $t` =>
-			let `$l0, $l1` = partition {cmp/ {pivot}} {quick-sort {cmp} {t}} >>
+			let `$l0, $l1` := partition {cmp/ {pivot}} {quick-sort {cmp} {t}} >>
 			concat {l0; (pivot;); l1;}
 		|| anything => ()
 	>>

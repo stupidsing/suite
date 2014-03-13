@@ -5,7 +5,7 @@ define combinations :=
 	|| anything => ();
 >>
 define permutations :=
-	let shuffles =
+	let shuffles :=
 		define interleaves := e =>
 			case
 			|| `$h; $t` => t | interleaves {e} | map {cons {h}} | cons {e; h; t}

@@ -47,7 +47,7 @@ fc-parse (define .var := .value >> .do) (
 	)
 	, fc-parse .do .do1
 #
-fc-parse (let .var = .value >> .do) (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
+fc-parse (let .var := .value >> .do) (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
 	:- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
@@ -127,7 +127,7 @@ fc-parse-sugar error (throw {}) :- ! #
 fc-parse-sugar (if (`.p` = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
-fc-parse-sugar (let `.binds` = .value >> .do) (if-bind (.binds = .value) then .do else error) :- ! #
+fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.binds = .value) then .do else error) :- ! #
 fc-parse-sugar (case || .bind => .then || .otherwise) .p1
 	:- !, temp .var
 	, .p1 = (.var =>
