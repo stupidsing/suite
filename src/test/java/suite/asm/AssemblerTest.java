@@ -1,6 +1,7 @@
 package suite.asm;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,11 +37,11 @@ public class AssemblerTest {
 		Bytes kernel = new Assembler(32).assemble(To.string(new File("src/main/asm/kernel.asm")));
 
 		assertEquals(512, bootLoader.size());
-		Bytes disk0 = Bytes.concat(bootLoader, kernel);
+		assertTrue(kernel.size() < 65536);
 
-		// Align to 512 bytes
-		int size = disk0.size();
-		Bytes disk1 = disk0.pad((size + 511) & 0xFFFFFE00, (byte) 0);
+		// Combine the images and align to 512 bytes
+		Bytes disk0 = Bytes.concat(bootLoader, kernel);
+		Bytes disk1 = disk0.pad((disk0.size() + 511) & 0xFFFFFE00, (byte) 0);
 
 		Path path = Paths.get("target/boot.bin");
 		Files.write(path, disk1.getBytes());
