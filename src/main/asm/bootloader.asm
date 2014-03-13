@@ -49,7 +49,7 @@
 .bootDrive
 	D8   0
 	
-	ADVANCE +x7DE0
+	ADVANCE +x7D00
 .dap -- Disk address packet for LBA BIOS
 	D16  16
 .dapNumOfSectors
@@ -60,6 +60,14 @@
 .dapLba
 	D32  1 -- Starting LBA
 	D32  0
+	
+.gdt
+	D32  0
+	D32  0
+	D32  +x0000FFFF -- Code descriptor
+	D32  +x00CF9A00
+	D32  +x0000FFFF -- Data descriptor
+	D32  +x00CF9200
 	
 	ADVANCE +x7DFE
 	D8   +x55

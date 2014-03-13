@@ -58,7 +58,11 @@ asis:.s (_a PUSH .op) .e0/.ex :- asi-1op:.s .op +x50 +xFF 6 .e0/.ex #
 asis:_s (_a PUSHA ()) (+x60, .e)/.e #
 asis:_s (_a RET ()) (+xC3, .e)/.e #
 asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
+asis:.s (_a SAL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex
+asis:.s (_a SAR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 7 .e0/.ex
 asis:.s (_a SBB (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x18 +x80 3 .e0/.ex #
+asis:.s (_a SHL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex
+asis:.s (_a SHR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 5 .e0/.ex
 asis:_s (_a STI ()) (+xFB, .e)/.e #
 asis:.s (_a SUB (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x28 +x80 5 .e0/.ex #
 asis:.s (_a TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +xA8) (.b = +xA9) #
@@ -81,8 +85,8 @@ asi-jump .a .target .b _ _ (.b, .e1)/.ex
 	:- asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 #
 
-asi-jump-rel:.s .target .a .f .rel
-	:- if (bound .target) (let .rel (.target - .a - .f - .s / 8)) (.rel = 0)
+asi-jump-rel:.size .target .a .f .rel
+	:- if (bound .target) (let .rel (.target - .a - .f - .size / 8)) (.rel = 0)
 #
 
 asi-in-out:.size .acc .port .b0 (.b2, .e1)/.ex
@@ -91,26 +95,32 @@ asi-in-out:.size .acc .port .b0 (.b2, .e1)/.ex
 	, if (.port = DX) (.e1 = .ex, let .b2 (.b1 + 8)) (as-emit:8 .port .e1/.ex, .b1 = .b2)
 #
 
+asi-shift:.size .rm .op .b0 _ .n .e0/.ex
+	:- (.op = 1, .b0 = .b1; .op = CL, let .b1 (.b0 + 2))
+	, asi-rm:.size .b1 .rm .n .e0/.ex
+#
+asi-shift:.size .rm .imm _ .b .n .e0/.ex :- as-imm:8 .imm, asi-rm-imm:.size .b .rm .n .imm .e0/.ex #
+
 -- Common single-operand instructions, like DEC, NEG
-asi-1op:.s .reg .b _ _ .e0/.ex :- asi-reg:.s .b .reg .e0/.ex, .s != 8 #
-asi-1op:.s .rm _ .b .n .e0/.ex :- asi-rm:.s .b .rm .n .e0/.ex #
+asi-1op:.size .reg .b _ _ .e0/.ex :- asi-reg:.size .b .reg .e0/.ex, .size != 8 #
+asi-1op:.size .rm _ .b .n .e0/.ex :- asi-rm:.size .b .rm .n .e0/.ex #
 
 -- Common two-operand instructions, like ADD, OR, XOR
-asi-2op:.s .acc .imm .b0 _ _ .e0/.ex
-	:- asi-acc-imm:.s .b1 .acc .imm .e0/.ex
+asi-2op:.size .acc .imm .b0 _ _ .e0/.ex
+	:- asi-acc-imm:.size .b1 .acc .imm .e0/.ex
 	, let .b1 (.b0 + 4)
 #
-asi-2op:.s .rm0 .rm1 .b _ _ .e0/.ex
-	:- asi-rm-reg2:.s .b .rm0 .rm1 .e0/.ex
+asi-2op:.size .rm0 .rm1 .b _ _ .e0/.ex
+	:- asi-rm-reg2:.size .b .rm0 .rm1 .e0/.ex
 #
-asi-2op:.s .rm .imm8 _ .b0 .n (.b1, .e1)/.ex
+asi-2op:.size .rm .imm8 _ .b0 .n (.b1, .e1)/.ex
 	:- as-imm:8 .imm8
-	, as-mod-num-rm:.s .rm .n .e1/.e2
+	, as-mod-num-rm:.size .rm .n .e1/.e2
 	, as-emit:8 .imm8 .e2/.ex
 	, let .b1 (.b0 + 3)
 #
-asi-2op:.s .rm .imm _ .b .n .e0/.ex
-	:- asi-rm-imm:.s .b .rm .n .imm .e0/.ex
+asi-2op:.size .rm .imm _ .b .n .e0/.ex
+	:- asi-rm-imm:.size .b .rm .n .imm .e0/.ex
 #
 
 asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
