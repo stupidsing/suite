@@ -43,6 +43,8 @@ asis:_s (.a JNE .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
 asis:_s (.a JNZ .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
 asis:_s (.a JZ .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
 asis:_s (_a LEA (.reg, .rm)) .e0/.ex :- asi-rm-reg:_ +x8D .rm .reg .e0/.ex #
+asis:.s (_a LGDT .rm) (+x0F, +x01, .e1)/.ex :- as-mod-num-rm:.s .rm 2 .e1/.ex #
+asis:.s (_a LIDT .rm) (+x0F, +x01, .e1)/.ex :- as-mod-num-rm:.s .rm 3 .e1/.ex #
 asis:.s (_a MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
 asis:.s (_a MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s (_a MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
