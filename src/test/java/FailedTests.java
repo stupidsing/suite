@@ -18,7 +18,7 @@ public class FailedTests {
 
 	@Test
 	public void testCyclicType() {
-		Suite.evaluateFunType("define f = (v => (v;) = v) >> f");
+		Suite.evaluateFunType("define f := v => (v;) = v >> f");
 	}
 
 	// (Expected) infinite loop.

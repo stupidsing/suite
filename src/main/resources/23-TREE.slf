@@ -2,24 +2,24 @@ using external STANDARD >>
 data (23-tree {:t}) over :t as Empty >>
 data (23-tree {:t}) over :t as (Tree [:t, 23-tree {:t}]) >>
 
-define max-branches = 4 >>
-define min-branches = max-branches / 2 >>
+define max-branches := 4 >>
+define min-branches := max-branches / 2 >>
 
-define snoc = (es => e =>
+define snoc := es => e =>
 	append {es} {e;}
-) >>
-define create-slot = (:t => [:t, 23-tree {:t}] -> :t, 23-tree {:t}) of (
+>>
+define create-slot := (:t => [:t, 23-tree {:t}] -> :t, 23-tree {:t}) of (
 slots =>
 	let `$pivot, $child` = (slots | reverse | head) >> pivot, Tree slots
 ) >>
-define create-root = (:t => [:t, 23-tree {:t}] -> 23-tree {:t}) of (
+define create-root := (:t => [:t, 23-tree {:t}] -> 23-tree {:t}) of (
 slots =>
 	if (length {slots} = 1) then (let `$pivot, $child` = (slots | head) >> child) else Tree slots
 ) >>
-define find-slot = (:t =>
+define find-slot := (:t =>
 	:t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}], (:t, 23-tree {:t}), [:t, 23-tree {:t}]
 ) of
-	define find-slot0 = (:t =>
+	define find-slot0 := (:t =>
 		[:t, 23-tree {:t}] -> :t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}], (:t, 23-tree {:t}), [:t, 23-tree {:t}]
 	) of (
 	left => key => `$slot; $slots` =>
@@ -29,16 +29,16 @@ define find-slot = (:t =>
 	) >>
 	find-slot0 {}
 >>
-define find = (:t => :t -> 23-tree {:t} -> :t) of (
+define find := (:t => :t -> 23-tree {:t} -> :t) of (
 key => `Tree $slots` =>
 	let `$left, $slot, $right` = find-slot {key} {slots} >>
 	let `$pivot, $child` = slot >>
 	let found = if (child != Empty) then (find {key} {child}) else pivot >>
 	if (key = found) then found else error
 ) >>
-define insert = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
+define insert := (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 key =>
-	define add0 = (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
+	define add0 := (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	slots0 =>
 		let `$left, $slot, $right` = find-slot {key} {slots0} >>
 		let `$pivot, $child` = slot >>
@@ -58,16 +58,16 @@ key =>
 	`Tree $slots` =>
 	slots | add0 | create-root
 ) >>
-define remove = (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
+define remove := (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 key =>
-	define lht = (list =>
+	define lht := list =>
 		head {list}, tail {list}
-	) >>
-	define rth = (list =>
+	>>
+	define rth := list =>
 		let rev = reverse {list} >>
 		reverse {tail {rev}}, head {rev}
-	) >>
-	define merge = ([:t, 23-tree {:t}] -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
+	>>
+	define merge := ([:t, 23-tree {:t}] -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	left => right =>
 		if (length {left} + length {right} >= max-branches) then
 			if (length {left} > min-branches) then
@@ -78,7 +78,7 @@ key =>
 				create-slot {snoc {left} {slot}}; create-slot {right1};
 		else (create-slot {append {left} {right}};)
 	) >>
-	define remove0 = (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
+	define remove0 := (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	slots0 =>
 		let `$left, ($pivot, $child), $right` = find-slot {key} {slots0} >>
 		if (child != Empty) then

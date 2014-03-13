@@ -1,16 +1,16 @@
 using external STANDARD >>
-define ar-append = (:t => [:t] -> [:t] -> [:t]) of
+define ar-append := (:t => [:t] -> [:t] -> [:t]) of
 	atom:CLASS!suite.lp.intrinsic.ArrayIntrinsics$Append | getintrn | callintrn2
 >>
-define ar-from-list = (:t => [:t] -> [:t]) of
+define ar-from-list := (:t => [:t] -> [:t]) of
 	atom:CLASS!suite.lp.intrinsic.ArrayIntrinsics$ListArray | getintrn | callintrn1
 >>
-define ar-left = (:t => number -> [:t] -> [:t]) of
+define ar-left := (:t => number -> [:t] -> [:t]) of
 	atom:CLASS!suite.lp.intrinsic.ArrayIntrinsics$Left | getintrn | callintrn2
 >>
-define ar-right = (:t => number -> [:t] -> [:t]) of
+define ar-right := (:t => number -> [:t] -> [:t]) of
 	atom:CLASS!suite.lp.intrinsic.ArrayIntrinsics$Right | getintrn | callintrn2
 >>
-define ar-to-list = (:t => [:t] -> [:t]) of
+define ar-to-list := (:t => [:t] -> [:t]) of
 	atom:CLASS!suite.lp.intrinsic.ArrayIntrinsics$ArrayList | getintrn | callintrn1
 >>

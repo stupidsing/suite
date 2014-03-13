@@ -43,7 +43,7 @@ public class InstructionTranslatorTest {
 	@Test
 	public void testAtomString() throws IOException {
 		String node = executeToString(compileFunctional(Suite.parse("" //
-				+ "define atom-string = +getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >> " //
+				+ "define atom-string := +getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >> " //
 				+ "+callintrn1 {atom-string} {atom:ATOM}"), false));
 		assertEquals("ATOM", node);
 	}

@@ -39,7 +39,7 @@ fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
 fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (define .var = .value >> .do) (
+fc-parse (define .var := .value >> .do) (
 	PRAGMA ALLOW-RECURSIVE (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
 ) :- !
 	, once (fc-parse .value .value1
@@ -148,25 +148,25 @@ fc-parse-sugar (.l; .r) (+lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do # .do) (
-	define fun-to-monad = (:t => (number -> :t) -> do-of :t) of (skip-type-check id) >>
-	define monad-to-fun = (:t => do-of :t -> (number -> :t)) of (skip-type-check id) >>
+	define fun-to-monad := (:t => (number -> :t) -> do-of :t) of (skip-type-check id) >>
+	define monad-to-fun := (:t => do-of :t -> (number -> :t)) of (skip-type-check id) >>
 	fun-to-monad {dummy =>
-		define frame = id {dummy} >>
-		define exec = ({0} . monad-to-fun) >>
+		define frame := id {dummy} >>
+		define exec := ({0} . monad-to-fun) >>
 		.do
 	}
 ) :- ! #
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
-fc-parse-sugar (.var as .type => .do) (.var1 => (define .var =  .type of .var1 >> .do))
+fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 >> .do))
 	:- !, temp .var1
 #
 fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var = .bind) then .do else error))
 	:- !, temp .var
 #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
-fc-parse-sugar (name .var .do) (define .var = .do >> .var) :- ! #
+fc-parse-sugar (name .var .do) (define .var := .do >> .var) :- ! #
 fc-parse-sugar (not .b) (not {.b}) :- ! #
 fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #

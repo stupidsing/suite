@@ -13,32 +13,32 @@ public class LazyFunTest {
 
 	@Test
 	public void testClosure() {
-		assertEquals(Suite.parse("4"), eval("define v = number of 4 >> (i => j => v) {1} {2}"));
+		assertEquals(Suite.parse("4"), eval("define v := number of 4 >> (i => j => v) {1} {2}"));
 	}
 
 	@Test
 	public void testCorecursion() {
 		assertEquals(Atom.TRUE, eval("" //
-				+ "define seq = (n => n; seq {n}) >> \n" //
+				+ "define seq := n => n; seq {n} >> \n" //
 				+ "head {seq {0}} = 0"));
 
 		assertEquals(Int.create(89), eval("" // Real co-recursion!
-				+ "define fib = (i1 => i2 => i2; fib {i2} {i1 + i2}) >> \n" //
+				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} >> \n" //
 				+ "fib {0} {1} | get {10}"));
 	}
 
 	@Test
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
-				+ "define fib = ( \n" //
+				+ "define fib := \n" //
 				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
-				+ ") >> fib | get {10}"));
+				+ ">> fib | get {10}"));
 	}
 
 	@Test
 	public void testFold() {
 		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
-				+ "define inf-series = (n => n; inf-series {n + 1}) >> " //
+				+ "define inf-series := n => n; inf-series {n + 1} >> " //
 				+ "0 | inf-series | fold-right {`;`} {} | take {5}"));
 
 		// On the other hand, same call using fold-left would result in infinite
@@ -60,7 +60,7 @@ public class LazyFunTest {
 
 	@Test
 	public void testSubstitution() {
-		assertEquals(Int.create(8), eval("define v = 4 >> v + v"));
+		assertEquals(Int.create(8), eval("define v := 4 >> v + v"));
 	}
 
 	@Test

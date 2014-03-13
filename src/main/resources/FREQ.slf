@@ -1,6 +1,6 @@
 using external STANDARD >>
-define merge-freqs =
-	define merger =
+define merge-freqs :=
+	define merger :=
 		list0 => list1 =>
 			if (list0 = `$f0, $n0; $t0`) then
 				if (list1 = `$f1, $n1; $t1`) then

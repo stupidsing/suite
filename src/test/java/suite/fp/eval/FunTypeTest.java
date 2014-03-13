@@ -28,7 +28,7 @@ public class FunTypeTest {
 	public void testClass() {
 		assertType("clazz", "" //
 				+ "data clazz as Empty >> \n" //
-				+ "define add = (clazz -> clazz) of (a => a) >> \n" //
+				+ "define add := (clazz -> clazz) of (a => a) >> \n" //
 				+ "add | {Empty}");
 
 		assertType("boolean", "" //
@@ -61,7 +61,7 @@ public class FunTypeTest {
 		String cases[] = { "1 + \"abc\"" //
 				, "2 = true" //
 				, "(f => f {0}) | 1" //
-				, "define fib = (i2 => dummy => 1; fib {i2}) >> ()" //
+				, "define fib := i2 => dummy => 1; fib {i2} >> ()" //
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
@@ -74,7 +74,7 @@ public class FunTypeTest {
 	@Test
 	public void testFun() {
 		assertType("number -> number", "a => a + 1");
-		assertType("number", "define f = (a => a + 1) >> f {3}");
+		assertType("number", "define f := a => a + 1 >> f {3}");
 		assertType("boolean -> boolean -> boolean", "and");
 		assertType("number -> [number]", "v => v; reverse {1;}");
 	}
@@ -83,8 +83,8 @@ public class FunTypeTest {
 	public void testGeneric() {
 		assertType("[rb-tree {number}]", "" //
 				+ "data (rb-tree {:t}) over :t as Empty >> \n" //
-				+ "define map = (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
-				+ "define add = ($t => $t -> rb-tree {$t}) of (v => Empty) >> \n" //
+				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
+				+ "define add := ($t => $t -> rb-tree {$t}) of (v => Empty) >> \n" //
 				+ "1; | map {add} \n" //
 		);
 	}

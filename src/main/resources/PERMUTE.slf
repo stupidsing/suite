@@ -1,16 +1,16 @@
 using external STANDARD >>
-define combinations =
+define combinations :=
 	case
 	|| `$h; $t` => t | combinations | invoke/ | map/ {id; (h | cons | map);} | concat
 	|| anything => ();
 >>
-define permutations =
+define permutations :=
 	let shuffles =
-		define interleaves = (e =>
+		define interleaves := e =>
 			case
 			|| `$h; $t` => t | interleaves {e} | map {cons {h}} | cons {e; h; t}
 			|| anything => (e;);
-		) >>
+		>>
 		case
 		|| `$h; $t` => t | shuffles | map {interleaves {h}} | concat
 		|| anything => ();

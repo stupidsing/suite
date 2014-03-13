@@ -33,10 +33,10 @@ public class EagerFunTest {
 	@Test
 	public void testClosure() {
 		assertEquals(Int.create(7), eval("" //
-				+ "define add = `+` >> add {3} {4}"));
+				+ "define add := `+` >> add {3} {4}"));
 		assertEquals(Int.create(20), eval("" //
-				+ "define p = `+ 1` >> \n" //
-				+ "define q = (n => p {n} * 2) >> \n" //
+				+ "define p := `+ 1` >> \n" //
+				+ "define q := n => p {n} * 2 >> \n" //
 				+ "q {9}"));
 	}
 
@@ -87,11 +87,11 @@ public class EagerFunTest {
 	@Test
 	public void testFibonacci() {
 		assertEquals(Int.create(89), eval("" //
-				+ "define fib = (n => \n" //
+				+ "define fib := n => \n" //
 				+ "    if (n > 1) \n" //
 				+ "    then (fib {n - 1} + fib {n - 2}) \n" //
 				+ "    else 1 \n" //
-				+ ") >> \n" //
+				+ ">> \n" //
 				+ "fib {10}"));
 	}
 
@@ -176,19 +176,19 @@ public class EagerFunTest {
 	@Test
 	public void testJoin() {
 		assertEquals(Int.create(19), eval("" //
-				+ "define p = (`* 2`) >> \n" //
-				+ "define q = (`+ 1`) >> \n" //
-				+ "define r = (q . p) >> \n" //
+				+ "define p := `* 2` >> \n" //
+				+ "define q := `+ 1` >> \n" //
+				+ "define r := q . p >> \n" //
 				+ "r {9}"));
 		assertEquals(Int.create(13), eval("" //
-				+ "define p = (`+ 1`) >> \n" //
-				+ "define q = (`* 2`) >> \n" //
-				+ "define r = (`- 3`) >> \n" //
+				+ "define p := `+ 1` >> \n" //
+				+ "define q := `* 2` >> \n" //
+				+ "define r := `- 3` >> \n" //
 				+ "(p . q . r) {9}"));
 		assertEquals(Int.create(17), eval("" //
-				+ "define p = (`+ 1`) >> \n" //
-				+ "define q = (`* 2`) >> \n" //
-				+ "define r = (`- 3`) >> \n" //
+				+ "define p := `+ 1` >> \n" //
+				+ "define q := `* 2` >> \n" //
+				+ "define r := `- 3` >> \n" //
 				+ "9 | p | q | r"));
 	}
 
@@ -266,13 +266,13 @@ public class EagerFunTest {
 	@Test
 	public void testSwitch() {
 		assertEquals(eval("\"B\""), eval("" //
-				+ "define switch = ( \n" //
+				+ "define switch := \n" //
 				+ "    case \n" //
 				+ "    || 1 => \"A\" \n" //
 				+ "    || 2 => \"B\" \n" //
 				+ "    || 3 => \"C\" \n" //
 				+ "    || anything => \"D\" \n" //
-				+ ") >> \n" //
+				+ ">> \n" //
 				+ "switch {2}"));
 	}
 
@@ -312,7 +312,7 @@ public class EagerFunTest {
 	@Test
 	public void testZip() {
 		assertEquals(Suite.parse("(1; 5;); (2; 6;); (3; 7;);"), eval("" //
-				+ "define zip-up = zip {a => b => a; b;} >> \n" //
+				+ "define zip-up := zip {a => b => a; b;} >> \n" //
 				+ "zip-up {1; 2; 3;} {5; 6; 7;}"));
 	}
 

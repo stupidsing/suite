@@ -5,10 +5,10 @@ using external STANDARD >>
 data (heap {:t}) over :t as Empty >>
 data (heap {:t}) over :t as Heap (:t, [heap {:t}]) >>
 
-define find-min =
+define find-min :=
 	`Heap ($elem, $list)` => elem
 >>
-define meld = (:t => heap {:t} -> heap {:t} -> heap {:t}) of (
+define meld := (:t => heap {:t} -> heap {:t} -> heap {:t}) of (
 heap0 => heap1 =>
 	case
 	|| (heap0 = `Heap ($elem0, $heaps0)`)
@@ -21,15 +21,15 @@ heap0 => heap1 =>
 		|| heap0
 	|| heap1
 ) >>
-define add = (heap => elem =>
+define add := heap => elem =>
 	meld {Heap (elem,)} {heap}
-) >>
-define delete-min = (
-	define merge-pairs =
+>>
+define delete-min :=
+	define merge-pairs :=
 		case
 		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
 		|| `$h;` => h
 		|| anything => error
 	>>
 	`Heap ($elem, $heap)` => merge-pairs {heap}
-) >>
+>>

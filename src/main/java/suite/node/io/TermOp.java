@@ -7,6 +7,7 @@ public enum TermOp implements Operator {
 	NEXT__("#", Assoc.RIGHT), //
 	IS____(" :- ", Assoc.RIGHT), //
 	CONTD_(" >> ", Assoc.RIGHT), //
+	DEFINE(" := ", Assoc.RIGHT), //
 	BIGOR_(" || ", Assoc.RIGHT), //
 	BIGAND(" && ", Assoc.RIGHT), //
 	FUN___(" => ", Assoc.RIGHT), //
