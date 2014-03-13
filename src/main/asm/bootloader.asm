@@ -65,13 +65,18 @@
 	MOV  GS, AX
 	MOV  SS, AX
 	
+	-- Jumps to the kernel
+	D8   +x66
+	D8   +x67
+	D8   +xEA
+	D32  +x40000
+	D16  +x8
+	
 	-- Show some fancy stuff on screen	
-	MOV  AX, +xB800
-	MOV  DS, AX
 	AOP
-	MOV  DWORD `0`, +x70417041
+	MOV  DWORD `+xB8000`, +x70417041
 	AOP
-	MOV  BYTE `4`, BL
+	MOV  BYTE `+xB8004`, BL
 .loop
 	HLT
 	JMP  .loop
