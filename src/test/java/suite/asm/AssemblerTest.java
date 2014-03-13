@@ -27,7 +27,7 @@ public class AssemblerTest {
 		System.out.println(bytes);
 	}
 
-	// cat target/bootloader.bin | ~/data/src/udis86-1.7.2/udcli/udcli -16 |
+	// cat target/boot.bin | ~/data/src/udis86-1.7.2/udcli/udcli -16 |
 	// less
 	// bochs -f src/main/asm/bochsrc
 	@Test
@@ -37,7 +37,7 @@ public class AssemblerTest {
 
 		Bytes kernel = new Assembler(32).assemble(To.string(new File("src/main/asm/kernel.asm")));
 
-		Path path = Paths.get("target/bootloader.bin");
+		Path path = Paths.get("target/boot.bin");
 		Files.write(path, Bytes.concat(bootLoader, kernel).getBytes());
 	}
 
