@@ -71,16 +71,7 @@
 	D8   +xEA
 	D32  +x40000
 	D16  +x8
-	
-	-- Show some fancy stuff on screen	
-	AOP
-	MOV  DWORD `+xB8000`, +x70417041
-	AOP
-	MOV  BYTE `+xB8004`, BL
-.loop
-	HLT
-	JMP  .loop
-	
+		
 .bootDrive
 	D8   0
 	
