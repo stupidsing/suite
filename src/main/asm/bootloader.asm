@@ -35,6 +35,36 @@
 	
 	-- Kernel loaded to ES:[0]
 	
+	-- Enters protected mode
+	XOR  EAX, EAX
+	MOV  AX, CS
+	SHL  EAX, 4
+	XOR  EBX, EBX
+	MOV  BX, .gdt
+	ADD  EAX, EBX
+	AOP
+	MOV  `.gdtrOffset`, EAX
+	AOP
+	LGDT `.gdtr`
+	
+	--MOV  EAX, CR0
+	D8   +x0F
+	D8   +x20
+	D8   +xC0
+	OR   EAX, 1
+	--MOV  CR0, EAX
+	D8   +x0F
+	D8   +x22
+	D8   +xC0
+	JMP  .flush
+.flush
+	MOV  AX, 16
+	MOV  DS, AX
+	MOV  ES, AX
+	MOV  FS, AX
+	MOV  GS, AX
+	MOV  SS, AX
+	
 	-- Show some fancy stuff on screen	
 	MOV  AX, +xB800
 	MOV  DS, AX
@@ -68,6 +98,10 @@
 	D32  +x00CF9A00
 	D32  +x0000FFFF -- Data descriptor
 	D32  +x00CF9200
+.gdtr
+	D16  +xFFFF
+.gdtrOffset
+	D32  0
 	
 	ADVANCE +x7DFE
 	D8   +x55
