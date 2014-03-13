@@ -23,6 +23,7 @@ asis:_s (_a AOP ()) (+x67, .e)/.e #
 asis:.s (.a CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, as-emit:.s .rel .e1/.ex #
 asis:_s (_a CALL .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 2 .e0/.ex #
 asis:_s (_a CLI ()) (+xFA, .e)/.e #
+asis:.s (_a CMP (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x38 +x80 07 .e0/.ex #
 asis:_s (_a D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s (_a D16 .imm) .e0/.ex :- as-emit:16 .imm .e0/.ex #
 asis:_s (_a D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
@@ -39,6 +40,7 @@ asis:.s (_a INC .op) .e0/.ex :- asi-1op:.s .op +x40 +xFE 0 .e0/.ex #
 asis:_s (_a INT 3) (+x37, .e)/.e #
 asis:_s (_a INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s (_a INTO ()) (+xCE, .e)/.e #
+asis:_s (_a IRET ()) (+xCF, .e)/.e #
 asis:_s (.a JE .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
 asis:_s (.a JMP .target) .e0/.ex :- asi-jump .a .target +xEB () +xE9 .e0/.ex #
 asis:_s (_a JMP .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 4 .e0/.ex #

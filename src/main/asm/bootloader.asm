@@ -1,4 +1,4 @@
-	ORG  7C00
+	.org = +x7C00
 	JMP  BYTE .boot
 .boot
 	CLI
@@ -99,12 +99,16 @@
 .gdt
 	D32  0
 	D32  0
-	D32  +x0000FFFF -- Code descriptor
+	D32  +x0000FFFF -- Supervisor code descriptor
 	D32  +x00CF9A00
-	D32  +x0000FFFF -- Data descriptor
+	D32  +x0000FFFF -- Supervisor data descriptor
 	D32  +x00CF9200
+	D32  +x0000FFFF -- User code descriptor
+	D32  +x00CFFA00
+	D32  +x0000FFFF -- User data descriptor
+	D32  +x00CFF200
 .gdtr
-	D16  +xFFFF
+	D16  +x28
 .gdtrOffset
 	D32  0
 	

@@ -38,16 +38,20 @@ public class Assembler {
 
 	public Bytes assemble(String input) {
 		CommentProcessor commentProcessor = new CommentProcessor(Collections.singleton('\n'));
+		Generalizer generalizer = new Generalizer();
 		List<String> lines = Arrays.asList(commentProcessor.apply(input).split("\n"));
+		Pair<String, String> p;
 		int start = 0;
-		String line0;
 
-		if ((line0 = lines.get(start).trim()).startsWith("ORG")) {
-			org = Integer.parseInt(line0.substring(3).trim(), 16);
+		while (!(p = Util.split2(lines.get(start), "=")).t1.isEmpty()) {
+			generalizer.getVariable(Atom.create(p.t0)).bound(Suite.parse(p.t1));
 			start++;
 		}
 
-		Generalizer generalizer = new Generalizer();
+		Node on = generalizer.getVariable(Atom.create(".org")).finalNode();
+		if (on instanceof Int)
+			org = ((Int) on).getNumber();
+
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (String line : Util.right(lines, start)) {
