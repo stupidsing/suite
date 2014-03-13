@@ -39,11 +39,13 @@
 	JMP  .loop
 	
 .generalInterruptHandler
+	PUSHA
 	INC  BYTE `+xB8000`
 	
 	-- Sends end of interrupt signal
 	MOV  AL, +x20
 	OUT  +x20, AL
+	POPA
 	IRET
 	
 .idtr
