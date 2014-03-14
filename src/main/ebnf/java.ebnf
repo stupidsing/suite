@@ -13,7 +13,7 @@ TypeParameters ::= "<" TypeParameter ("," TypeParameter)* ">"
 TypeParameter ::= <IDENTIFIER> (TypeBound)?
 TypeBound ::= "extends" ClassOrInterfaceType ("&" ClassOrInterfaceType)*
 ClassOrInterfaceBody ::= "{" (ClassOrInterfaceBodyDeclaration)* "}"
-ClassOrInterfaceBodyDeclaration ::= (Initializer | Modifiers (ClassOrInterfaceDeclaration | EnumDeclaration | ConstructorDeclaration | FieldDeclaration | MethodDeclaration) | ";") 
+ClassOrInterfaceBodyDeclaration ::= (Initializer | Modifiers (ClassOrInterfaceDeclaration | EnumDeclaration | ConstructorDeclaration | FieldDeclaration | MethodDeclaration) | ";")
 FieldDeclaration ::= Type VariableDeclarator ("," VariableDeclarator)* ";"
 VariableDeclarator ::= VariableDeclaratorId ("=" VariableInitializer)?
 VariableDeclaratorId ::= <IDENTIFIER> ("[" "]")*
