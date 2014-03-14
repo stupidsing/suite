@@ -18,7 +18,7 @@ public class AssemblerTest {
 
 	@Test
 	public void test() {
-		Bytes bytes = new Assembler(32).assemble(""//
+		Bytes bytes = new Assembler(32).assemble(".org = 0\n"//
 				+ "	JMP .end \n" //
 				+ "	MOV AX,16 \n" //
 				+ "	MOV EAX,16 \n" //
@@ -28,8 +28,7 @@ public class AssemblerTest {
 		System.out.println(bytes);
 	}
 
-	// cat target/boot.bin | ~/data/src/udis86-1.7.2/udcli/udcli -16 |
-	// less
+	// cat target/boot.bin | ~/data/src/udis86-1.7.2/udcli/udcli -16 | less
 	// bochs -f src/main/asm/bochsrc
 	@Test
 	public void testBootSector() throws IOException {
