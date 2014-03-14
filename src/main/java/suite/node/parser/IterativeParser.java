@@ -1,4 +1,4 @@
-package suite.node.io;
+package suite.node.parser;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -14,6 +14,8 @@ import java.util.Set;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.Operator;
+import suite.node.io.TermOp;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.Context;
 import suite.node.util.Singleton;

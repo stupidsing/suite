@@ -1,5 +1,6 @@
-package suite.node.io;
+package suite.node.parser;
 
+import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;

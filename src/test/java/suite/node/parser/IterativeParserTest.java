@@ -1,4 +1,4 @@
-package suite.parser;
+package suite.node.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,9 +11,9 @@ import org.junit.Test;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.IterativeParser;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
+import suite.node.parser.IterativeParser;
 import suite.util.To;
 
 public class IterativeParserTest {

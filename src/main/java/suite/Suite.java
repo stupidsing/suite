@@ -26,8 +26,8 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.IterativeParser;
 import suite.node.io.TermOp;
+import suite.node.parser.IterativeParser;
 
 public class Suite {
 
