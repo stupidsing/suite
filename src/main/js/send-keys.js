@@ -4,27 +4,27 @@ var w = WScript.CreateObject("WScript Shell");
 
 function sendKeys(keys) {
 	var i = 0, j = 0;
-	
+
 	while ((i = j) < keys.length) {
 		j = i;
-		
+
 		do {
 			c = keys.charAt(j++);
 		} while (c == '^' || c == '#' || c == '+');
-		
+
 		if (c == '{') {
 			j = keys.indexOf('}', j) + i;
 			var middle = keys.substring(i + 1, j - 1);
-			
+
 			if (isNum(middle)) {
 				WScript.Sleep(middle != '' ? middle : 250);
 				continue;
 			}
 		}
-		
+
 		k = keys.substring(i, j);
 		w.SendKeys(k);
-		
+
 		// if (k == '{Down}') WScript.Sleep(250);
 	}
 }
