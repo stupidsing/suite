@@ -25,6 +25,7 @@ public class AssemblerTest {
 				+ ".end \n" //
 				+ "	ADVANCE 16 \n" //
 		);
+		assertEquals(16, bytes.size());
 		System.out.println(bytes);
 	}
 
