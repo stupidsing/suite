@@ -248,17 +248,6 @@ public class MapifyUtil {
 				|| Number.class.isAssignableFrom(clazz);
 	}
 
-	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		final List<Field> fields = inspectUtil.getFields(clazz);
-		final List<FieldInfo> fieldInfos = new ArrayList<>();
-
-		for (Field field : fields) {
-			Type type = field.getGenericType();
-			fieldInfos.add(new FieldInfo(field, field.getName(), createMapifier0(type), createUnmapifier0(type)));
-		}
-		return fieldInfos;
-	}
-
 	private <T> T create(Class<T> clazz) {
 		try {
 			Object object;
@@ -279,6 +268,17 @@ public class MapifyUtil {
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
+		final List<Field> fields = inspectUtil.getFields(clazz);
+		final List<FieldInfo> fieldInfos = new ArrayList<>();
+
+		for (Field field : fields) {
+			Type type = field.getGenericType();
+			fieldInfos.add(new FieldInfo(field, field.getName(), createMapifier0(type), createUnmapifier0(type)));
+		}
+		return fieldInfos;
 	}
 
 	private Object apply0(Fun<Object, Object> fun, Object object) {
