@@ -36,14 +36,6 @@
 	-- Kernel loaded to ES:[0]
 	
 	-- Enters protected mode
-	XOR  EAX, EAX
-	MOV  AX, CS
-	SHL  EAX, 4
-	XOR  EBX, EBX
-	MOV  BX, .gdt
-	ADD  EAX, EBX
-	AOP
-	MOV  `.gdtrOffset`, EAX
 	AOP
 	LGDT `.gdtr`
 	
@@ -77,11 +69,10 @@
 	
 	ADVANCE +x7D00
 .dap -- Disk address packet for LBA BIOS
-	D16  16
-.dapNumOfSectors
-	D16  16 -- Number of sectors to transfer
+	D16  +x0010 -- Size if this structure
+	D16  +x0010 -- Number of sectors to transfer
 .dapMemAddress
-	D16  0 -- Memory address
+	D16  +x0000 -- Memory address
 	D16  +x4000 -- Memory segment
 .dapLba
 	D32  1 -- Starting LBA
@@ -100,8 +91,7 @@
 	D32  +x00CFF200
 .gdtr
 	D16  +x28
-.gdtrOffset
-	D32  0
+	D32  .gdt
 	
 	ADVANCE +x7DFE
 	D8   +x55
