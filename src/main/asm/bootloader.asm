@@ -75,8 +75,8 @@
 	D16  +x0000 -- Memory address
 	D16  +x4000 -- Memory segment
 .dapLba
-	D32  1 -- Starting LBA
-	D32  0
+	D32  +x00000001 -- Starting LBA, low 32-bits
+	D32  +x00000000 -- Starting LBA, high 32-bits
 	
 .gdt
 	D32  0
