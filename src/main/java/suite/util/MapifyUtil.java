@@ -58,17 +58,19 @@ public class MapifyUtil {
 		this.inspectUtil = inspectUtil;
 	}
 
-	public Object mapify(Object object) {
-		if (object != null)
-			return getMapifier(object.getClass()).apply(object);
+	public <T> Object mapify(Class<T> clazz, T t) {
+		if (t != null)
+			return getMapifier(clazz).apply(t);
 		else
 			return null;
 	}
 
-	public Object unmapify(Object object) {
-		if (object != null)
-			return getUnmapifier(object.getClass()).apply(object);
-		else
+	public <T> T unmapify(Class<T> clazz, Object object) {
+		if (object != null) {
+			@SuppressWarnings("unchecked")
+			T t = (T) getUnmapifier(clazz).apply(object);
+			return t;
+		} else
 			return null;
 	}
 

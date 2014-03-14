@@ -1,7 +1,6 @@
 package suite.util;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -27,13 +26,6 @@ public class InspectUtilTest {
 	@Test
 	public void testHashCode() {
 		assertTrue(inspectUtil.hashCode(pc0) != inspectUtil.hashCode(pc1));
-	}
-
-	@Test
-	public void testMapify() {
-		Object map = new MapifyUtil(inspectUtil).mapify(pc0);
-		assertNotNull(map);
-		System.out.println(map);
 	}
 
 }
