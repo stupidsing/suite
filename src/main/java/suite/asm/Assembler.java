@@ -60,8 +60,6 @@ public class Assembler {
 			Atom insn = Atom.create(pi.t0);
 			Node operands = Suite.parse(pi.t1);
 
-			System.out.println(label + " :: " + insn + " :: " + operands);
-
 			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.create(label)) : null;
 			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, insn, operands));
 			lnis.add(Pair.create(reference, instruction));
