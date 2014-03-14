@@ -273,7 +273,7 @@ public class Util {
 		if (pos >= 0)
 			return Pair.create(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
 		else
-			return Pair.create(s, "");
+			return Pair.create(s.trim(), "");
 	}
 
 	public static <T> List<List<T>> splitn(List<T> list, int n) {

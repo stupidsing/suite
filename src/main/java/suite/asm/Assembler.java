@@ -29,7 +29,6 @@ public class Assembler {
 
 	private Prover prover = Suite.createProver(Arrays.asList("asm.sl", "auto.sl"));
 
-	private int org;
 	private int bits;
 
 	public Assembler(int bits) {
@@ -40,40 +39,38 @@ public class Assembler {
 		CommentProcessor commentProcessor = new CommentProcessor(Collections.singleton('\n'));
 		Generalizer generalizer = new Generalizer();
 		List<String> lines = Arrays.asList(commentProcessor.apply(input).split("\n"));
-		Pair<String, String> p;
+		Pair<String, String> pe;
 		int start = 0;
 
-		while (!(p = Util.split2(lines.get(start), "=")).t1.isEmpty()) {
-			generalizer.getVariable(Atom.create(p.t0)).bound(Suite.parse(p.t1));
+		while (!(pe = Util.split2(lines.get(start), "=")).t1.isEmpty()) {
+			generalizer.getVariable(Atom.create(pe.t0)).bound(Suite.parse(pe.t1));
 			start++;
 		}
 
-		Node on = generalizer.getVariable(Atom.create(".org")).finalNode();
-		if (on instanceof Int)
-			org = ((Int) on).getNumber();
+		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
 
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (String line : Util.right(lines, start)) {
-			String label = null;
+			Pair<String, String> pt = Util.split2(line, "\t");
+			String label = pt.t0;
+			String operation = pt.t1;
 
-			if (line.startsWith(Generalizer.variablePrefix)) {
-				Pair<String, String> pair = Util.split2(line, " ");
-				label = pair.t0.trim();
-				line = pair.t1.trim();
-			} else
-				line = line.trim();
+			Pair<String, String> pi = Util.split2(operation, " ");
+			Atom insn = Atom.create(pi.t0);
+			Node operands = Suite.parse(pi.t1);
 
-			Pair<String, String> pair = Util.split2(line, " ");
-			Reference reference = label != null ? generalizer.getVariable(Atom.create(label)) : null;
-			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, Atom.create(pair.t0), Suite.parse(pair.t1)));
+			System.out.println(label + " :: " + insn + " :: " + operands);
+
+			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.create(label)) : null;
+			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, insn, operands));
 			lnis.add(Pair.create(reference, instruction));
 		}
 
-		return assemble(generalizer, lnis);
+		return assemble(org, generalizer, lnis);
 	}
 
-	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
+	private Bytes assemble(int org, Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
 		Map<Reference, Node> addressesByLabel = new IdentityHashMap<>();
 		BytesBuilder out = new BytesBuilder();
 
