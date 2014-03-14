@@ -64,5 +64,5 @@ chr-test
 	) (
 		A LE B, B LE C, C LE A,
 	) .factsx
-	, dump .factsx, nl	
+	, dump .factsx, nl
 #

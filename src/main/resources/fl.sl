@@ -30,7 +30,7 @@ fl (.a = .b) ($ => .c)
 #
 fl .tree ($ => .c)
 	:- tree .tree .a .oper .b
-	, member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper 
+	, member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper
 	, !
 	, fl (.a {$}) .a1
 	, fl (.b {$}) .b1
