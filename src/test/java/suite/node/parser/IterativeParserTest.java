@@ -13,7 +13,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
-import suite.node.parser.IterativeParser;
 import suite.util.To;
 
 public class IterativeParserTest {
