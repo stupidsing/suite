@@ -10,7 +10,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Converts (supposedly) any Java structures to a recursive map.
+ * Retrieve list of fields of a value object, and provide shallow
+ * equals()/hashCode() methods.
  * 
  * @author ywsing
  */
