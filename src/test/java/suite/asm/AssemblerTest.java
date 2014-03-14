@@ -20,8 +20,8 @@ public class AssemblerTest {
 	public void test() {
 		Bytes bytes = new Assembler(32).assemble(".org = 0\n"//
 				+ "	JMP .end \n" //
-				+ "	MOV AX,16 \n" //
-				+ "	MOV EAX,16 \n" //
+				+ "	MOV AX, 16 \n" //
+				+ "	MOV EAX, 16 \n" //
 				+ ".end \n" //
 				+ "	ADVANCE 16 \n" //
 		);
