@@ -1,4 +1,4 @@
-package suite.node.parser;
+package suite.parser;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;

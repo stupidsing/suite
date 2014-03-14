@@ -12,7 +12,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
-import suite.node.parser.CommentProcessor;
+import suite.parser.CommentProcessor;
 import suite.util.ParseUtil;
 import suite.util.Util;
 

@@ -1,4 +1,4 @@
-package suite.node.parser;
+package suite.parser;
 
 import java.util.Set;
 

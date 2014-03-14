@@ -18,7 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.parser.CommentProcessor;
+import suite.parser.CommentProcessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
