@@ -1,4 +1,6 @@
 	.org = +x7C00
+	.kernelAddress = +x40000
+	
 	JMP  BYTE .boot
 .boot
 	CLI
@@ -16,7 +18,8 @@
 	INT  +x13
 	
 	-- Load 128 sectors, i.e. 64K data
-	MOV  AX, +x4000
+	MOV  EAX, .kernelAddress
+	SHR  EAX, 4
 	MOV  ES, AX
 .readNextSector
 	PUSHA
@@ -61,9 +64,9 @@
 	D8   +x66
 	D8   +x67
 	D8   +xEA
-	D32  +x40000
+	D32  .kernelAddress
 	D16  +x8
-		
+	
 .bootDrive
 	D8   0
 	
