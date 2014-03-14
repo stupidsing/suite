@@ -6,7 +6,7 @@ import java.util.List;
 import suite.Suite;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
-import suite.util.InspectUtil;
+import suite.node.util.Singleton;
 import suite.util.Util;
 
 public class CompositeRuleSet implements RuleSet {
@@ -71,12 +71,12 @@ public class CompositeRuleSet implements RuleSet {
 
 	@Override
 	public boolean equals(Object object) {
-		return InspectUtil.equals(this, object);
+		return Singleton.get().getInspectUtil().equals(this, object);
 	}
 
 	@Override
 	public int hashCode() {
-		return InspectUtil.hashCode(this);
+		return Singleton.get().getInspectUtil().hashCode(this);
 	}
 
 }

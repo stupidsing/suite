@@ -10,6 +10,7 @@ import suite.lp.doer.ProverConfig;
 
 public class InspectUtilTest {
 
+	private InspectUtil inspectUtil = new InspectUtil();
 	private ProverConfig pc0 = new ProverConfig();
 	private ProverConfig pc1 = new ProverConfig();
 
@@ -19,18 +20,18 @@ public class InspectUtilTest {
 
 	@Test
 	public void testEquals() {
-		assertTrue(InspectUtil.equals(pc0, pc0));
-		assertFalse(InspectUtil.equals(pc0, pc1));
+		assertTrue(inspectUtil.equals(pc0, pc0));
+		assertFalse(inspectUtil.equals(pc0, pc1));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertTrue(InspectUtil.hashCode(pc0) != InspectUtil.hashCode(pc1));
+		assertTrue(inspectUtil.hashCode(pc0) != inspectUtil.hashCode(pc1));
 	}
 
 	@Test
 	public void testMapify() {
-		Object map = InspectUtil.mapify(pc0);
+		Object map = new MapifyUtil(inspectUtil).mapify(pc0);
 		assertNotNull(map);
 		System.out.println(map);
 	}

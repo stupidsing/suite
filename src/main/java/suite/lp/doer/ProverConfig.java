@@ -7,9 +7,9 @@ import java.util.Set;
 import suite.Suite;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
+import suite.node.util.Singleton;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.InspectUtil;
 
 public class ProverConfig {
 
@@ -49,12 +49,12 @@ public class ProverConfig {
 
 	@Override
 	public boolean equals(Object object) {
-		return InspectUtil.equals(this, object);
+		return Singleton.get().getInspectUtil().equals(this, object);
 	}
 
 	@Override
 	public int hashCode() {
-		return InspectUtil.hashCode(this);
+		return Singleton.get().getInspectUtil().hashCode(this);
 	}
 
 	public RuleSet ruleSet() {
