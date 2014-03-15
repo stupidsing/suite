@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.util.FunUtil.Fun;
@@ -27,7 +26,7 @@ public class MapifyUtil {
 	private Set<Class<?>> collectionClasses = new HashSet<>(Arrays.<Class<?>> asList( //
 			ArrayList.class, Collection.class, HashSet.class, List.class, Set.class));
 	private Set<Class<?>> mapClasses = new HashSet<>(Arrays.<Class<?>> asList( //
-			HashMap.class, Map.class, TreeMap.class));
+			HashMap.class, Map.class));
 
 	private Fun<Object, Object> id = new Fun<Object, Object>() {
 		public Object apply(Object object) {
@@ -251,14 +250,12 @@ public class MapifyUtil {
 	private <T> T create(Class<T> clazz) {
 		try {
 			Object object;
-			if (clazz == Collection.class)
+			if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
 				object = new ArrayList<>();
-			else if (clazz == List.class)
-				object = new ArrayList<>();
-			else if (clazz == Map.class)
-				object = new HashMap<>();
-			else if (clazz == Set.class)
+			else if (clazz == HashSet.class || clazz == Set.class)
 				object = new HashSet<>();
+			else if (clazz == HashMap.class || clazz == Map.class)
+				object = new HashMap<>();
 			else
 				return clazz.newInstance();
 
