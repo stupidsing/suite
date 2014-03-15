@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import suite.util.FunUtil.Fun;
 
 /**
- * Converts (supposedly) any Java structures to a recursive map.
+ * Convert (supposedly) any Java structures to recursive maps.
  * 
  * @author ywsing
  */
