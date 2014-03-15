@@ -55,6 +55,8 @@ asis:.s (_a MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s (_a MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
 asis:_s (_a MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:_s (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:.s (_a MOVSX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xBE .e0/.ex #
+asis:.s (_a MOVZX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xB6 .e0/.ex #
 asis:.s (_a MUL .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 4 .e0/.ex #
 asis:_s (_a OOP ()) (+x66, .e)/.e #
 asis:.s (_a OR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x08 +x80 1 .e0/.ex #
@@ -68,6 +70,8 @@ asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:.s (_a SAL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #
 asis:.s (_a SAR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 7 .e0/.ex #
 asis:.s (_a SBB (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x18 +x80 3 .e0/.ex #
+asis:_s (_a SETE .rm) (+x0F, +x94, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
+asis:_s (_a SETNE .rm) (+x0F, +x95, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
 asis:.s (_a SHL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #
 asis:.s (_a SHR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 5 .e0/.ex #
 asis:_s (_a STI ()) (+xFB, .e)/.e #
@@ -131,19 +135,25 @@ asi-2op:.size .rm .imm _ .b .n .e0/.ex
 	:- asi-rm-imm:.size .b .rm .n .imm .e0/.ex
 #
 
+asi-reg-rm-extended:.size .reg .rm .b0 (+x0F, .b1, .e1)/.ex
+	:- as-reg:.size .reg .r
+	, as-mod-num-rm:.size1 .rm .r .e1/.ex
+	, if (.size1 = 8) (.b1 = .b0) (.b1 = .b0 + 1)
+#
+
 asi-rm-imm8:.size .rm .imm8 .n .e0/.ex
 	:- as-imm:8 .imm8
 	, as-mod-num-rm:.size .rm .n .e0/.e1
 	, as-emit:8 .imm8 .e1/.ex
 #
 
-asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
+asi-rm-imm:.size .b0 .rm .num .imm (+x0F, .b1, .e1)/.ex
 	:- as-mod-num-rm:.size .rm .num .e1/.e2
 	, as-emit:.size .imm .e2/.ex
 	, if (.size = 8) (.b1 = .b0) (.b1 = .b0 + 1)
 #
 
-asi-acc-imm:.size .b0 .acc .imm (.b1, .e1)/.ex
+asi-acc-imm:.size .b0 .acc .imm (+x0F, .b1, .e1)/.ex
 	:- as-reg:.size .acc 0
 	, as-emit:.size .imm .e1/.ex
 	, if (.size = 8) (.b1 = .b0) (.b1 = .b0 + 1)
