@@ -95,6 +95,16 @@ ic-operator .op (
 	, .e)/.e
 	:- ic-operator-setcc .op .jump
 #
+ic-operator ' / ' (
+	_ MOV (EBX, EAX)
+	, _ XOR (EDX, EDX)
+	, _ POP EAX
+	, _ IDIV EBX
+	, .e)/.e #
+ic-operator ' % ' .e0/.ex
+	:- ic-operator ' / ' .e0/.e1
+	, .e1 = (_ MOV (EAX, EDX), .ex)
+#
 
 ic-operator-insn ' + ' ADD #
 ic-operator-insn ' - ' SUB #
