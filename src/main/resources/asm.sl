@@ -70,6 +70,10 @@ asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:.s (_a SAL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #
 asis:.s (_a SAR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 7 .e0/.ex #
 asis:.s (_a SBB (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x18 +x80 3 .e0/.ex #
+asis:_s (_a SETG .rm) (+x0F, +x9F, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
+asis:_s (_a SETGE .rm) (+x0F, +x9D, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
+asis:_s (_a SETL .rm) (+x0F, +x9C, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
+asis:_s (_a SETLE .rm) (+x0F, +x9E, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
 asis:_s (_a SETE .rm) (+x0F, +x94, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
 asis:_s (_a SETNE .rm) (+x0F, +x95, .e1)/.ex :- as-mod-num-rm:.size .rm 0 .e1/.ex #
 asis:.s (_a SHL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #

@@ -104,3 +104,7 @@ ic-operator-insn or OR #
 
 ic-operator-setcc ' = ' SETE #
 ic-operator-setcc ' != ' SETNE #
+ic-operator-setcc ' <= ' SETLE #
+ic-operator-setcc ' < ' SETL #
+ic-operator-setcc ' >= ' SETGE #
+ic-operator-setcc ' > ' SETG #
