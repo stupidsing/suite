@@ -32,6 +32,29 @@ ic-compile .fs (.fun {.param}) .e0/.ex
 	, ic-compile .fs .fun .e2/.e3
 	, .e3 = (_ CALL `EAX`, .ex)
 #
+ic-compile .fs (while .while do .do) .e0/.ex
+	:- ic-compile .fs .while .e0/.e1
+	, .e1 = (_ OR (EAX, EAX)
+		, _ JZ .endLabel
+		, .nextLabel () ()
+		, .e2)
+	, ic-compile .fs .do .e2/.e3
+	, .e2 = (_ JMP .nextLabel
+		, .endLabel () ()
+		, .ex)
+#
+ic-compile .fs (if .if then .then else .else) .e0/.ex
+	:- ic-compile .fs .if .e0/.e1
+	, .e1 = (_ OR (EAX, EAX)
+		, _ JZ .elseLabel
+		, .e2)
+	, ic-compile .fs .then .e2/.e3
+	, .e2 = (_ JMP .endLabel
+		, .elseLabel () ()
+		, .e3)
+	, ic-compile .fs .else .e2/.e3
+	, .e3 = (.endLabel () (), .ex)
+#
 ic-compile .fs (& `.pointer`) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
 #
@@ -41,13 +64,12 @@ ic-compile .fs (`.pointer` = .value) .e0/.ex
 	, ic-compile .fs .value .e2/.e3
 	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
 #
-ic-compile .fs (.value0 + .value1) .e0/.ex
-	:- ic-compile .fs .value0 .e0/.e1
+ic-compile .fs .expr .e0/.ex
+	:- (tree .expr .value0 .op .value1; .expr = .value0 .op .value1)
+	, ic-operator .op .e3/.ex
+	, ic-compile .fs .value0 .e0/.e1
 	, .e1 = (_ PUSH EAX, .e2)
 	, ic-compile .fs .value1 .e2/.e3
-	, .e3 = (_ POP EBX
-		, _ ADD (EAX, EBX)
-		, .ex)
 #
 ic-compile .fs `.value` .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
@@ -58,3 +80,27 @@ ic-compile _ EBP (_ MOV (EAX, EBP), .e)/.e
 ic-compile _ .imm (_ PUSH .imm, .e)/.e
 	:- is.int .imm
 #
+
+ic-operator .op (
+	_ POP EBX
+	, _ .insn (EAX, EBX)
+	, .e)/.e
+	:- ic-operator-insn .op .insn
+#
+ic-operator .op (
+	_ POP EBX
+	, _ CMP (EAX, EBX)
+	, _ .setcc AL
+	, _ MOVSX (EAX, AL)
+	, .e)/.e
+	:- ic-operator-setcc .op .jump
+#
+
+ic-operator-insn ' + ' ADD #
+ic-operator-insn ' - ' SUB #
+ic-operator-insn ' * ' IMUL #
+ic-operator-insn and AND #
+ic-operator-insn or OR #
+
+ic-operator-setcc ' = ' SETE #
+ic-operator-setcc ' != ' SETNE #
