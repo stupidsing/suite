@@ -1,13 +1,15 @@
 -- Syntactic sugars
-ic-compile .fs (let .var := .value >> .do) .e0/.ex
+ic-compile .fs (declare .var := .value >> .do) .e0/.ex
 	:- ic-compile .fs (declare .var >> .var = .value; .do) .e0/.ex
 #
 
+ic-compile _ () .e/.e
+#
 ic-compile .fs (.do0; .do1) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, ic-compile .fs .do1 .e1/.ex
 #
-ic-compile _ (asm {.e0/.ex}) .e0/.ex
+ic-compile _ (asm/(.e0/.ex)) .e0/.ex
 #
 ic-compile .fs (declare .var >> .do) .e0/.ex
 	:- .e1 = (_ PUSH 0, .e2)
