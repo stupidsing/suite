@@ -111,6 +111,13 @@ ic-operator ' % ' .e0/.ex
 	:- ic-operator ' / ' .e0/.e1
 	, .e1 = (_ MOV (EAX, EDX), .ex)
 #
+ic-operator .shift (
+	_ MOV (ECX, EAX)
+	, _ POP EAX
+	, _ .insn (EAX, CL)
+	, .e)/.e
+	:- ic-operator-shift .shift .insn
+#
 
 ic-operator-insn ' + ' ADD #
 ic-operator-insn ' - ' SUB #
@@ -124,3 +131,6 @@ ic-operator-setcc ' <= ' SETLE #
 ic-operator-setcc ' < ' SETL #
 ic-operator-setcc ' >= ' SETGE #
 ic-operator-setcc ' > ' SETG #
+
+ic-operator-shift shl SAL #
+ic-operator-shift shr SAR #
