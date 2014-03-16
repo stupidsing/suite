@@ -1,10 +1,10 @@
+ic-transform () () .ts/.ts
+#
 ic-transform .var .var .ts/.ts
 	:- is.atom .var
 #
 ic-transform .imm .imm .ts/.ts
 	:- is.int .imm
-#
-ic-transform () () .ts/.ts
 #
 ic-transform (.a0; .b0) (.a1; .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
 #
