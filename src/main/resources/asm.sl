@@ -1,4 +1,4 @@
--- Assembler. Assumes 32-bit mode and 32-bit addressing.
+-- Assembler. Only supports 32-bit addressing.
 --
 -- as	= assembler
 -- asi	= assemble instruction
