@@ -22,7 +22,7 @@ import suite.node.util.Singleton;
 import suite.parser.CommentProcessor;
 import suite.parser.IndentationProcessor;
 import suite.parser.WhitespaceProcessor;
-import suite.util.CommanderUtil;
+import suite.util.CommandUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.Util;
@@ -39,7 +39,7 @@ public class IterativeParser {
 	private Fun<String, String> commentProcessor;
 	private Fun<String, String> indentProcessor;
 	private Fun<String, String> whitespaceProcessor;
-	private CommanderUtil<Operator> commanderUtil;
+	private CommandUtil<Operator> commandUtil;
 	private TerminalParser terminalParser;
 
 	public IterativeParser(Operator operators[]) {
@@ -57,7 +57,7 @@ public class IterativeParser {
 		indentProcessor = new IndentationProcessor(operators);
 		whitespaceProcessor = new WhitespaceProcessor(whitespaces);
 
-		commanderUtil = new CommanderUtil<>(operatorsByName);
+		commandUtil = new CommandUtil<>(operatorsByName);
 		terminalParser = new TerminalParser(context);
 	}
 
@@ -147,7 +147,7 @@ public class IterativeParser {
 
 		private Token detect() {
 			LexType type;
-			Operator operator = Pair.first_(commanderUtil.recognize(in, pos));
+			Operator operator = Pair.first_(commandUtil.recognize(in, pos));
 
 			if (pos < in.length()) {
 				char ch = in.charAt(pos);

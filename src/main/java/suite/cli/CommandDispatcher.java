@@ -21,7 +21,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
-import suite.util.CommanderUtil;
+import suite.util.CommandUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.To;
@@ -84,7 +84,7 @@ public class CommandDispatcher {
 		PrintWriter pw = new PrintWriter(writer);
 		boolean code = true;
 
-		Pair<InputType, String> pair = new CommanderUtil<>(InputType.values()).recognize(input);
+		Pair<InputType, String> pair = new CommandUtil<>(InputType.values()).recognize(input);
 		InputType type = pair.t0;
 		input = pair.t1.trim();
 
