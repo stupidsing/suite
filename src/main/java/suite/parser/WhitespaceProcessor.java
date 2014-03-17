@@ -29,15 +29,9 @@ public class WhitespaceProcessor implements Fun<String, String> {
 
 			if (ch != '`') {
 				quote = ParseUtil.getQuoteChange(quote, ch);
-				if (quote == 0)
-					if (whitespaces.contains(ch))
-						sb.append(" ");
-					else
-						sb.append(ch);
-				else
-					sb.append(ch);
+				sb.append(quote == 0 && whitespaces.contains(ch) ? " " : ch);
 			} else
-				sb.append(" ` ");
+				sb.append(quote == 0 ? " ` " : ch);
 		}
 
 		return sb.toString();
