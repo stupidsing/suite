@@ -1,12 +1,13 @@
 package suite.lp;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
+import suite.classpath.Handler;
 import suite.lp.doer.Checker;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -21,46 +22,35 @@ import suite.util.To;
 
 public class ImportUtil {
 
+	static {
+		Handler.register();
+	}
+
 	// The directory of the file we are now importing
-	private boolean isImportFromClasspath = false;
-	private String importerRoot = "";
+	private URL root;
 
-	public boolean importFrom(RuleSet rs, String name) throws IOException {
-		if (isImportFromClasspath)
-			return importResource(rs, name);
-		else
-			return importFile(rs, name);
-	}
-
-	public boolean importFile(RuleSet rs, String filename) throws IOException {
-		boolean wasFromClasspath = isImportFromClasspath;
-		String oldRoot = importerRoot;
-		String filename1 = setImporterRoot(false, filename, oldRoot);
-
+	public ImportUtil() {
 		try {
-			return importFrom(rs, Suite.parse(To.string(new File(filename1))));
-		} finally {
-			isImportFromClasspath = wasFromClasspath;
-			importerRoot = oldRoot;
+			root = new URL("classpath:");
+		} catch (MalformedURLException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
-	public boolean importResource(RuleSet rs, String classpath) throws IOException {
-		ClassLoader cl = Suite.class.getClassLoader();
+	public boolean importFrom(RuleSet rs, String path) throws IOException {
+		return importPath(rs, path);
+	}
 
-		boolean wasFromClasspath = isImportFromClasspath;
-		String oldRoot = importerRoot;
-		String classpath1 = setImporterRoot(true, classpath, oldRoot);
+	public boolean importFile(RuleSet rs, String path) throws IOException {
+		return importUrl(rs, new URL("file", null, path));
+	}
 
-		try (InputStream is = cl.getResourceAsStream(classpath1)) {
-			if (is != null)
-				return importFrom(rs, Suite.parse(To.string(is)));
-			else
-				throw new RuntimeException("Cannot find resource " + classpath1);
-		} finally {
-			isImportFromClasspath = wasFromClasspath;
-			importerRoot = oldRoot;
-		}
+	public boolean importResource(RuleSet rs, String path) throws IOException {
+		return importUrl(rs, new URL("classpath", null, path));
+	}
+
+	public boolean importPath(RuleSet rs, String path) throws IOException {
+		return importUrl(rs, rebase(root, path));
 	}
 
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
@@ -93,7 +83,7 @@ public class ImportUtil {
 		RuleSet rs = createRuleSet();
 		try {
 			for (String toImport : toImports)
-				importResource(rs, toImport);
+				importFrom(rs, toImport);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -104,15 +94,40 @@ public class ImportUtil {
 		return new DoubleIndexedRuleSet();
 	}
 
-	private String setImporterRoot(boolean isFromClasspath, String name, String oldRoot) {
-		isImportFromClasspath = isFromClasspath;
+	private URL rebase(URL root0, String path) throws MalformedURLException {
+		String protocol0 = root0.getProtocol();
+		String host0 = root0.getHost();
+		String path0 = root0.getPath();
+		URL url;
 
-		if (!name.startsWith(File.separator))
-			name = oldRoot + name;
+		if (!isContainsProtocol(path) && !path.startsWith("/"))
+			url = new URL(protocol0, host0, path0 + path);
+		else
+			url = new URL(path);
+		return url;
+	}
 
-		int pos = name.lastIndexOf(File.separator);
-		importerRoot = pos >= 0 ? name.substring(0, pos + 1) : "";
-		return name;
+	private boolean importUrl(RuleSet rs, URL url1) throws MalformedURLException, IOException {
+		URL root0 = this.root;
+		setRoot(url1);
+		try {
+			return importFrom(rs, Suite.parse(To.string(url1.openStream())));
+		} finally {
+			root = root0;
+		}
+	}
+
+	private void setRoot(URL url) throws MalformedURLException {
+		String path1 = url.getPath();
+		int pos = path1.lastIndexOf("/");
+		root = new URL(url.getProtocol(), url.getHost(), pos >= 0 ? path1.substring(0, pos + 1) : "");
+	}
+
+	private boolean isContainsProtocol(String path) {
+		int pos0 = path.indexOf(":");
+		int pos1 = path.indexOf("/");
+		boolean isContainsProtocol = (pos0 <= 0 ? 0 : pos0) >= (pos1 <= 0 ? Integer.MAX_VALUE : pos1);
+		return isContainsProtocol;
 	}
 
 }

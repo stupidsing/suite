@@ -31,10 +31,6 @@ import suite.node.parser.IterativeParser;
 
 public class Suite {
 
-	static {
-		Handler.register();
-	}
-
 	// Compilation defaults
 	public static final boolean isTrace = false;
 	public static final boolean isDumpCode = false;
