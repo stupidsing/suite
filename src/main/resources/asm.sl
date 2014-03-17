@@ -155,13 +155,13 @@ asi-rm-imm8:.size .rm .imm8 .n .e0/.ex
 	, as-emit:8 .imm8 .e1/.ex
 #
 
-asi-rm-imm:.size .b0 .rm .num .imm (+x0F, .b1, .e1)/.ex
+asi-rm-imm:.size .b0 .rm .num .imm (.b1, .e1)/.ex
 	:- as-mod-num-rm:.size .rm .num .e1/.e2
 	, as-emit:.size .imm .e2/.ex
 	, if (.size = 8) (.b1 = .b0) (.b1 = .b0 + 1)
 #
 
-asi-acc-imm:.size .b0 .acc .imm (+x0F, .b1, .e1)/.ex
+asi-acc-imm:.size .b0 .acc .imm (.b1, .e1)/.ex
 	:- as-reg:.size .acc 0
 	, as-emit:.size .imm .e1/.ex
 	, if (.size = 8) (.b1 = .b0) (.b1 = .b0 + 1)
