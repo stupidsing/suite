@@ -18,7 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.parser.CommentProcessor;
+import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
@@ -36,9 +36,9 @@ public class Assembler {
 	}
 
 	public Bytes assemble(String input) {
-		CommentProcessor commentProcessor = new CommentProcessor(Collections.singleton('\n'));
+		CommentPreprocessor commentPreprocessor = new CommentPreprocessor(Collections.singleton('\n'));
 		Generalizer generalizer = new Generalizer();
-		List<String> lines = Arrays.asList(commentProcessor.apply(input).split("\n"));
+		List<String> lines = Arrays.asList(commentPreprocessor.apply(input).split("\n"));
 		Pair<String, String> pe;
 		int start = 0;
 

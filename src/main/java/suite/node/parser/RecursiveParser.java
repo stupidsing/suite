@@ -12,9 +12,9 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
-import suite.parser.CommentProcessor;
-import suite.parser.IndentationProcessor;
-import suite.parser.WhitespaceProcessor;
+import suite.parser.CommentPreprocessor;
+import suite.parser.IndentationPreprocessor;
+import suite.parser.WhitespacePreprocessor;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -29,9 +29,9 @@ public class RecursiveParser {
 	private Operator operators[];
 	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
 
-	private Fun<String, String> commentProcessor;
-	private Fun<String, String> indentProcessor;
-	private Fun<String, String> whitespaceProcessor;
+	private Fun<String, String> commentPreprocessor;
+	private Fun<String, String> indentPreprocessor;
+	private Fun<String, String> whitespacePreprocessor;
 
 	private TerminalParser terminalParser;
 
@@ -41,16 +41,16 @@ public class RecursiveParser {
 
 	public RecursiveParser(Context context, Operator operators[]) {
 		this.operators = operators;
-		commentProcessor = new CommentProcessor(whitespaces);
-		indentProcessor = new IndentationProcessor(operators);
-		whitespaceProcessor = new WhitespaceProcessor(whitespaces);
+		commentPreprocessor = new CommentPreprocessor(whitespaces);
+		indentPreprocessor = new IndentationPreprocessor(operators);
+		whitespacePreprocessor = new WhitespacePreprocessor(whitespaces);
 		terminalParser = new TerminalParser(context);
 	}
 
 	public Node parse(String in) {
-		in = commentProcessor.apply(in);
-		in = indentProcessor.apply(in);
-		in = whitespaceProcessor.apply(in);
+		in = commentPreprocessor.apply(in);
+		in = indentPreprocessor.apply(in);
+		in = whitespacePreprocessor.apply(in);
 		return parseWithoutComments(in);
 	}
 

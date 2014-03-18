@@ -12,7 +12,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
-import suite.parser.CommentProcessor;
+import suite.parser.CommentPreprocessor;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
@@ -142,10 +142,10 @@ public class Formatter {
 						&& !('A' <= c && c <= 'Z') //
 						&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
 
-			quote |= s.contains(CommentProcessor.closeGroupComment) //
-					|| s.contains(CommentProcessor.openGroupComment) //
-					|| s.contains(CommentProcessor.closeLineComment) //
-					|| s.contains(CommentProcessor.openLineComment);
+			quote |= s.contains(CommentPreprocessor.closeGroupComment) //
+					|| s.contains(CommentPreprocessor.openGroupComment) //
+					|| s.contains(CommentPreprocessor.closeLineComment) //
+					|| s.contains(CommentPreprocessor.openLineComment);
 
 			quote |= ParseUtil.isInteger(s);
 
