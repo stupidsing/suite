@@ -39,7 +39,7 @@ ic-compile .fs (.fun {.param}) .e0/.ex
 	:- , ic-compile .fs .param .e0/.e1
 	, .e1 = (_ PUSH EAX, .e2)
 	, ic-compile .fs .fun .e2/.e3
-	, .e3 = (_ CALL `EAX`, .ex)
+	, .e3 = (_ CALL EAX, .ex)
 #
 ic-compile .fs (while .while do .do) .e0/.ex
 	:- ic-compile .fs .while .e0/.e1
