@@ -37,20 +37,37 @@ public class ImportUtil {
 		}
 	}
 
-	public boolean importFrom(RuleSet rs, String path) throws IOException {
-		return importPath(rs, path);
+	public Prover createProver(List<String> toImports) {
+		return new Prover(createRuleSet(toImports));
 	}
 
-	public boolean importFile(RuleSet rs, String path) throws IOException {
-		return importUrl(rs, new URL("file", null, path));
+	public RuleSet createRuleSet(List<String> toImports) {
+		RuleSet rs = createRuleSet();
+		try {
+			for (String toImport : toImports)
+				importPath(rs, toImport);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		return rs;
 	}
 
-	public boolean importResource(RuleSet rs, String path) throws IOException {
-		return importUrl(rs, new URL("classpath", null, path));
+	public RuleSet createRuleSet() {
+		return new DoubleIndexedRuleSet();
 	}
 
 	public boolean importPath(RuleSet rs, String path) throws IOException {
 		return importUrl(rs, rebase(root, path));
+	}
+
+	public boolean importUrl(RuleSet rs, URL url1) throws MalformedURLException, IOException {
+		URL root0 = this.root;
+		setRoot(url1);
+		try {
+			return importFrom(rs, Suite.parse(To.string(url1.openStream())));
+		} finally {
+			root = root0;
+		}
 	}
 
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
@@ -75,25 +92,6 @@ public class ImportUtil {
 		return result;
 	}
 
-	public Prover createProver(List<String> toImports) {
-		return new Prover(createRuleSet(toImports));
-	}
-
-	public RuleSet createRuleSet(List<String> toImports) {
-		RuleSet rs = createRuleSet();
-		try {
-			for (String toImport : toImports)
-				importFrom(rs, toImport);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-		return rs;
-	}
-
-	public RuleSet createRuleSet() {
-		return new DoubleIndexedRuleSet();
-	}
-
 	private URL rebase(URL root0, String path) throws MalformedURLException {
 		String protocol0 = root0.getProtocol();
 		String host0 = root0.getHost();
@@ -105,16 +103,6 @@ public class ImportUtil {
 		else
 			url = new URL(path);
 		return url;
-	}
-
-	private boolean importUrl(RuleSet rs, URL url1) throws MalformedURLException, IOException {
-		URL root0 = this.root;
-		setRoot(url1);
-		try {
-			return importFrom(rs, Suite.parse(To.string(url1.openStream())));
-		} finally {
-			root = root0;
-		}
 	}
 
 	private void setRoot(URL url) throws MalformedURLException {

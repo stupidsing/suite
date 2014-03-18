@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -127,12 +128,12 @@ public class Suite {
 	// --------------------------------
 	// Compilation utilities
 
-	public static RuleSet logicCompilerRuleSet() {
-		return compileUtil.logicCompilerRuleSet();
-	}
-
 	public static RuleSet funCompilerRuleSet() {
 		return compileUtil.funCompilerRuleSet();
+	}
+
+	public static RuleSet logicCompilerRuleSet() {
+		return compileUtil.logicCompilerRuleSet();
 	}
 
 	public static boolean precompile(String libraryName, ProverConfig pc) {
@@ -141,22 +142,6 @@ public class Suite {
 
 	// --------------------------------
 	// Evaluation utilities
-
-	public static boolean proveLogic(String lps) {
-		return evaluateUtil.proveLogic(parse(lps));
-	}
-
-	public static boolean proveLogic(RuleSet rs, String lps) {
-		return evaluateUtil.proveLogic(rs, parse(lps));
-	}
-
-	public static boolean proveLogic(Builder builder, RuleSet rs, String lps) {
-		return evaluateUtil.proveLogic(builder, rs, parse(lps));
-	}
-
-	public static boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
-		return evaluateUtil.proveLogic(builder, rs, lp);
-	}
 
 	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
 		return evaluateUtil.evaluateLogic(builder, rs, parse(lps));
@@ -201,24 +186,24 @@ public class Suite {
 		return evaluateUtil.evaluateFunType(fcc);
 	}
 
+	public static boolean proveLogic(String lps) {
+		return evaluateUtil.proveLogic(parse(lps));
+	}
+
+	public static boolean proveLogic(RuleSet rs, String lps) {
+		return evaluateUtil.proveLogic(rs, parse(lps));
+	}
+
+	public static boolean proveLogic(Builder builder, RuleSet rs, String lps) {
+		return evaluateUtil.proveLogic(builder, rs, parse(lps));
+	}
+
+	public static boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
+		return evaluateUtil.proveLogic(builder, rs, lp);
+	}
+
 	// --------------------------------
 	// Import utilities
-
-	public static boolean importFrom(RuleSet rs, String name) throws IOException {
-		return importUtil.importFrom(rs, name);
-	}
-
-	public static boolean importFile(RuleSet rs, String filename) throws IOException {
-		return importUtil.importFile(rs, filename);
-	}
-
-	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
-		return importUtil.importResource(rs, classpath);
-	}
-
-	public static boolean importFrom(RuleSet ruleSet, Node node) {
-		return importUtil.importFrom(ruleSet, node);
-	}
 
 	public static Prover createProver(List<String> toImports) {
 		return importUtil.createProver(toImports);
@@ -230,6 +215,22 @@ public class Suite {
 
 	public static RuleSet createRuleSet() {
 		return importUtil.createRuleSet();
+	}
+
+	public static boolean importFile(RuleSet rs, String filename) throws IOException {
+		return importUtil.importUrl(rs, new URL("file", null, filename));
+	}
+
+	public static boolean importFrom(RuleSet ruleSet, Node node) {
+		return importUtil.importFrom(ruleSet, node);
+	}
+
+	public static boolean importPath(RuleSet ruleSet, String path) throws IOException {
+		return importUtil.importPath(ruleSet, path);
+	}
+
+	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
+		return importUtil.importUrl(rs, new URL("classpath", null, classpath));
 	}
 
 	// --------------------------------

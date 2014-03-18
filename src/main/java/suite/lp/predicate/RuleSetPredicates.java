@@ -61,7 +61,7 @@ public class RuleSetPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			String filename = Formatter.display(ps);
 			try {
-				return Suite.importFrom(prover.ruleSet(), filename);
+				return Suite.importPath(prover.ruleSet(), filename);
 			} catch (Exception ex) {
 				throw new RuntimeException("Exception when importing " + filename, ex);
 			}

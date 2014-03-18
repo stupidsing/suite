@@ -19,10 +19,6 @@ public class CompileUtil {
 		}
 	});
 
-	public synchronized RuleSet logicCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc.sl"));
-	}
-
 	/**
 	 * Returns rule set for functional compiler.
 	 * 
@@ -33,6 +29,10 @@ public class CompileUtil {
 	 */
 	public synchronized RuleSet funCompilerRuleSet() {
 		return new CompositeRuleSet(createRuleSetFun.apply(Arrays.asList("auto.sl", "fc.sl")));
+	}
+
+	public synchronized RuleSet logicCompilerRuleSet() {
+		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc.sl"));
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {

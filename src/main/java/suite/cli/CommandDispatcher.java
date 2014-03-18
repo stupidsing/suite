@@ -70,7 +70,7 @@ public class CommandDispatcher {
 
 	public boolean importFiles(List<String> importFilenames) throws IOException {
 		boolean code = true;
-		code &= Suite.importFrom(ruleSet, "auto.sl");
+		code &= Suite.importPath(ruleSet, "auto.sl");
 		for (String importFilename : importFilenames)
 			code &= Suite.importFile(ruleSet, importFilename);
 		return code;
