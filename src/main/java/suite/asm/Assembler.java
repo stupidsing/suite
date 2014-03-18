@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import suite.Suite;
+import suite.lp.Journal;
+import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
-import suite.lp.doer.Prover;
+import suite.lp.kb.RuleSet;
+import suite.lp.search.FindUtil;
+import suite.lp.search.InterpretedProverBuilder;
+import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
-import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -21,15 +25,20 @@ import suite.node.io.TermOp;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.Util;
 
 public class Assembler {
 
-	private Prover prover = Suite.createProver(Arrays.asList("asm.sl", "auto.sl"));
-
 	private int bits;
+
+	private RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
+
+	private Finder finder = new InterpretedProverBuilder().build(ruleSet, Suite.parse("" //
+			+ "source (.bits, .address, .instruction,)" //
+			+ ", asi:.bits (.address .instruction) .code" //
+			+ ", sink .code" //
+	));
 
 	public Assembler(int bits) {
 		this.bits = bits;
@@ -68,6 +77,28 @@ public class Assembler {
 		return assemble(org, generalizer, lnis);
 	}
 
+	public Bytes assemble(Node input) {
+		Generalizer generalizer = new Generalizer();
+		Journal journal = new Journal();
+		List<Pair<Reference, Node>> lnis = new ArrayList<>();
+
+		for (Node node : Tree.iter(generalizer.generalize(input))) {
+			Tree tree;
+
+			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
+				Binder.bind(tree.getLeft(), tree.getRight(), journal);
+			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+				Reference label = new Reference();
+				Binder.bind(label, tree.getLeft(), journal);
+				lnis.add(Pair.create(label, tree.getRight()));
+			} else
+				throw new RuntimeException("Cannot assembl e " + node);
+		}
+
+		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
+		return assemble(org, generalizer, lnis);
+	}
+
 	private Bytes assemble(int org, Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
 		Map<Reference, Node> addressesByLabel = new IdentityHashMap<>();
 		BytesBuilder out = new BytesBuilder();
@@ -99,19 +130,12 @@ public class Assembler {
 	}
 
 	private Bytes assemble(int address, Node instruction) {
-		final Reference e = new Reference();
-		final List<Bytes> list = new ArrayList<>();
+		List<Node> ins = Arrays.asList(Int.create(bits), Int.create(address), instruction);
+		List<Node> nodes = FindUtil.collectList(finder, Tree.list(TermOp.AND___, ins));
 
-		Node goal = Suite.substitute("asi:.0 (.1 .2) .3, .4", Int.create(bits), Int.create(address), instruction, e, new Data<>(
-				new Source<Boolean>() {
-					public Boolean source() {
-						list.add(convertByteStream(e));
-						return true;
-					}
-				}));
-		// LogUtil.info(Formatter.dump(goal));
-
-		prover.elaborate(goal);
+		List<Bytes> list = new ArrayList<>();
+		for (Node node : nodes)
+			list.add(convertByteStream(node));
 
 		if (!list.isEmpty())
 			return Collections.min(list, new Comparator<Bytes>() {
