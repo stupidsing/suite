@@ -92,7 +92,7 @@ public class Assembler {
 				Binder.bind(label, tree.getLeft(), journal);
 				lnis.add(Pair.create(label, tree.getRight()));
 			} else
-				throw new RuntimeException("Cannot assembl e " + node);
+				throw new RuntimeException("Cannot assemble " + node);
 		}
 
 		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();

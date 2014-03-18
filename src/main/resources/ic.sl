@@ -15,11 +15,11 @@ ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
 	:- ic-compile _ asm/.is .e1/.ex
 #
 ic-compile .fs (declare .var >> .do) .e0/.ex
-	:- .e1 = (_ PUSH 0, .e2)
+	:- .e0 = (_ PUSH 0, .e1)
 	, replace .var `EBP - .fs` .do .do1
 	, let .fs1 (.fs + 4)
-	, ic-compile .fs1 .do1 .e2/.e3
-	, .e3 = (_ POP EDI, .ex)
+	, ic-compile .fs1 .do1 .e1/.e2
+	, .e2 = (_ POP EDI, .ex)
 #
 ic-compile _ (.var => .do) .e0/.ex
 	:- .e0 = (_ JMP DWORD .label
@@ -48,7 +48,7 @@ ic-compile .fs (while .while do .do) .e0/.ex
 		, .nextLabel () ()
 		, .e2)
 	, ic-compile .fs .do .e2/.e3
-	, .e2 = (_ JMP .nextLabel
+	, .e3 = (_ JMP .nextLabel
 		, .endLabel () ()
 		, .ex)
 #
@@ -58,11 +58,11 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 		, _ JZ .elseLabel
 		, .e2)
 	, ic-compile .fs .then .e2/.e3
-	, .e2 = (_ JMP .endLabel
+	, .e3 = (_ JMP .endLabel
 		, .elseLabel () ()
-		, .e3)
-	, ic-compile .fs .else .e2/.e3
-	, .e3 = (.endLabel () (), .ex)
+		, .e4)
+	, ic-compile .fs .else .e4/.e5
+	, .e5 = (.endLabel () (), .ex)
 #
 ic-compile .fs (& `.pointer`) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
@@ -102,7 +102,7 @@ ic-operator .op (
 	, _ .setcc AL
 	, _ MOVSX (EAX, AL)
 	, .e)/.e
-	:- ic-operator-setcc .op .jump
+	:- ic-operator-setcc .op .setcc
 #
 ic-operator ' / ' (
 	_ MOV (EBX, EAX)
@@ -110,7 +110,7 @@ ic-operator ' / ' (
 	, _ POP EAX
 	, _ IDIV EBX
 	, .e)/.e #
-ic-operator ' % ' .e0/.ex
+ic-operator ' %% ' .e0/.ex
 	:- ic-operator ' / ' .e0/.e1
 	, .e1 = (_ MOV (EAX, EDX), .ex)
 #
