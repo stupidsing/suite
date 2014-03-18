@@ -39,7 +39,7 @@ public class CommentPreprocessor implements Fun<String, String> {
 			int pos0 = ParseUtil.search(in, start, open);
 			if (pos0 == -1)
 				break;
-			int pos1 = ParseUtil.search(in, pos0 + open.length(), close);
+			int pos1 = in.indexOf(close, pos0 + open.length());
 			if (pos1 == -1)
 				break;
 			sb.append(in.substring(start, pos0));

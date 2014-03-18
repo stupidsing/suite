@@ -48,10 +48,9 @@ public class IndentationPreprocessor implements Fun<String, String> {
 			if (!lastIndent.startsWith(indent) && !lastIndent.startsWith(lastIndent))
 				throw new RuntimeException("Indent mismatch");
 
-			lastIndent = indent;
-
 			if ((length = line.length()) != 0) { // Ignore empty lines
 				int startPos = 0, endPos = length;
+				lastIndent = indent;
 
 				// Find operators at beginning and end of line
 				for (Operator operator : operators) {
@@ -85,9 +84,8 @@ public class IndentationPreprocessor implements Fun<String, String> {
 				decoratedLine += line.substring(endPos);
 
 				sb.append(decoratedLine + "\n");
+				nLastIndents = nIndents;
 			}
-
-			nLastIndents = nIndents;
 		}
 
 		while (nLastIndents-- > 0)

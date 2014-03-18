@@ -31,6 +31,10 @@ public class CompileUtil {
 		return new CompositeRuleSet(createRuleSetFun.apply(Arrays.asList("auto.sl", "fc.sl")));
 	}
 
+	public synchronized RuleSet imperativeCompilerRuleSet() {
+		return createRuleSetFun.apply(Arrays.asList("asm.sl", "auto.sl", "ic.sl"));
+	}
+
 	public synchronized RuleSet logicCompilerRuleSet() {
 		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc.sl"));
 	}

@@ -132,6 +132,10 @@ public class Suite {
 		return compileUtil.funCompilerRuleSet();
 	}
 
+	public static RuleSet imperativeCompilerRuleSet() {
+		return compileUtil.imperativeCompilerRuleSet();
+	}
+
 	public static RuleSet logicCompilerRuleSet() {
 		return compileUtil.logicCompilerRuleSet();
 	}

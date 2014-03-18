@@ -23,8 +23,8 @@ public class TerminalParser {
 
 		if (ParseUtil.isInteger(s))
 			return Int.create(Integer.parseInt(s));
-		if (s.startsWith("+x"))
-			return Int.create(Integer.parseInt(s.substring(2), 16));
+		if (s.startsWith("+x")) // Allows +xFFFFFFFF
+			return Int.create((int) Long.parseLong(s.substring(2), 16));
 		if (s.startsWith("+'") && s.endsWith("'") && s.length() == 4)
 			return Int.create(s.charAt(2));
 

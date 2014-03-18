@@ -1,6 +1,6 @@
 -- Syntactic sugars
 ic-compile .fs (declare .var := .value >> .do) .e0/.ex
-	:- ic-compile .fs (declare .var >> .var = .value; .do) .e0/.ex
+	:- ic-compile .fs (declare .var >> let .var = .value; .do) .e0/.ex
 #
 
 ic-compile _ () .e/.e
@@ -16,8 +16,8 @@ ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
 #
 ic-compile .fs (declare .var >> .do) .e0/.ex
 	:- .e0 = (_ PUSH 0, .e1)
-	, replace .var `EBP - .fs` .do .do1
 	, let .fs1 (.fs + 4)
+	, replace .var `$$FRAME - .fs1` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ POP EDI, .ex)
 #
@@ -26,14 +26,14 @@ ic-compile _ (.var => .do) .e0/.ex
 		, .funLabel PUSH EBP
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace EBP `EBP` .do .do1
-	, replace .var `EBP + 4` .do .do1
-	, ic-compile 0 .do .e1/.e2
+	, replace $$FRAME `$$FRAME` .do .do1
+	, replace .var `$$FRAME + 8` .do1 .do2
+	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
 		, _ POP EBP
-		, _ RET
+		, _ RET ()
 		, .label MOV (EAX, .funLabel)
-	, .ex)
+		, .ex)
 #
 ic-compile .fs (.fun {.param}) .e0/.ex
 	:- , ic-compile .fs .param .e0/.e1
@@ -44,21 +44,21 @@ ic-compile .fs (.fun {.param}) .e0/.ex
 ic-compile .fs (while .while do .do) .e0/.ex
 	:- ic-compile .fs .while .e0/.e1
 	, .e1 = (_ OR (EAX, EAX)
-		, _ JZ .endLabel
+		, _ JZ DWORD .endLabel
 		, .nextLabel () ()
 		, .e2)
 	, ic-compile .fs .do .e2/.e3
-	, .e3 = (_ JMP .nextLabel
+	, .e3 = (_ JMP DWORD .nextLabel
 		, .endLabel () ()
 		, .ex)
 #
 ic-compile .fs (if .if then .then else .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
 	, .e1 = (_ OR (EAX, EAX)
-		, _ JZ .elseLabel
+		, _ JZ DWORD .elseLabel
 		, .e2)
 	, ic-compile .fs .then .e2/.e3
-	, .e3 = (_ JMP .endLabel
+	, .e3 = (_ JMP DWORD .endLabel
 		, .elseLabel () ()
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
@@ -67,8 +67,8 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 ic-compile .fs (& `.pointer`) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
 #
-ic-compile .fs (`.pointer` = .value) .e0/.ex
-	:- ic-compile .fs .pointer .e0/.e1
+ic-compile .fs (let .var = .value) .e0/.ex
+	:- ic-compile .fs (& .var) .e0/.e1
 	, .e1 = (_ PUSH EAX, .e2)
 	, ic-compile .fs .value .e2/.e3
 	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
@@ -84,16 +84,18 @@ ic-compile .fs `.value` .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV (EAX, `EAX`), .ex)
 #
-ic-compile _ EBP (_ MOV (EAX, EBP), .e)/.e
+ic-compile _ $$FRAME (_ MOV (EAX, EBP), .e)/.e
 #
 ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
 #
 
 ic-operator .op (
-	_ POP EBX
+	_ MOV (EBX, EAX)
+	, _ POP EAX
 	, _ .insn (EAX, EBX)
-	, .e)/.e
+	, .e
+)/.e
 	:- ic-operator-insn .op .insn
 #
 ic-operator .op (
@@ -101,7 +103,8 @@ ic-operator .op (
 	, _ CMP (EAX, EBX)
 	, _ .setcc AL
 	, _ MOVSX (EAX, AL)
-	, .e)/.e
+	, .e
+)/.e
 	:- ic-operator-setcc .op .setcc
 #
 ic-operator ' / ' (
@@ -109,7 +112,8 @@ ic-operator ' / ' (
 	, _ XOR (EDX, EDX)
 	, _ POP EAX
 	, _ IDIV EBX
-	, .e)/.e #
+	, .e
+)/.e #
 ic-operator ' %% ' .e0/.ex
 	:- ic-operator ' / ' .e0/.e1
 	, .e1 = (_ MOV (EAX, EDX), .ex)
@@ -118,7 +122,8 @@ ic-operator .shift (
 	_ MOV (ECX, EAX)
 	, _ POP EAX
 	, _ .insn (EAX, CL)
-	, .e)/.e
+	, .e
+)/.e
 	:- ic-operator-shift .shift .insn
 #
 

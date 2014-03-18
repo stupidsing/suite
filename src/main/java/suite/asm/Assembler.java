@@ -56,8 +56,6 @@ public class Assembler {
 			start++;
 		}
 
-		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
-
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (String line : Util.right(lines, start)) {
@@ -74,7 +72,7 @@ public class Assembler {
 			lnis.add(Pair.create(reference, instruction));
 		}
 
-		return assemble(org, generalizer, lnis);
+		return assemble(generalizer, lnis);
 	}
 
 	public Bytes assemble(Node input) {
@@ -87,19 +85,17 @@ public class Assembler {
 
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
 				Binder.bind(tree.getLeft(), tree.getRight(), journal);
-			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-				Reference label = new Reference();
-				Binder.bind(label, tree.getLeft(), journal);
-				lnis.add(Pair.create(label, tree.getRight()));
-			} else
+			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null)
+				lnis.add(Pair.create((Reference) tree.getLeft(), tree.getRight()));
+			else
 				throw new RuntimeException("Cannot assemble " + node);
 		}
 
-		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
-		return assemble(org, generalizer, lnis);
+		return assemble(generalizer, lnis);
 	}
 
-	private Bytes assemble(int org, Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
+	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
+		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
 		Map<Reference, Node> addressesByLabel = new IdentityHashMap<>();
 		BytesBuilder out = new BytesBuilder();
 
@@ -111,14 +107,16 @@ public class Assembler {
 					lni.t0.bound(addressesByLabel.get(lni.t0));
 
 			for (Pair<Reference, Node> lni : lnis) {
+				int address = org + out.size();
+
 				try {
-					out.append(assemble(org + out.size(), lni.t1));
+					out.append(assemble(address, lni.t1));
 				} catch (Exception ex) {
 					throw new RuntimeException("In " + lni.t1, ex);
 				}
 
 				if (!isPass2 && lni.t0 != null)
-					addressesByLabel.put(lni.t0, Int.create(org + out.size()));
+					addressesByLabel.put(lni.t0, Int.create(address));
 			}
 
 			for (Pair<Reference, Node> lni : lnis)

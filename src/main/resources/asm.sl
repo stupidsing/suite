@@ -19,9 +19,10 @@ asis:.s (_a ADC (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x10 +x80 2 .e0/.e
 asis:.s (_a ADD (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x00 +x80 0 .e0/.ex #
 asis:_s (.a ADVANCE .a) .e/.e #
 asis:.s (.a0 ADVANCE .a1) (0, .e1)/.ex :- .a0 < .a1, let .a (.a0 + 1), asis:.s (.a ADVANCE .a1) .e1/.ex #
+asis:.s (_a AND (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x20 +x80 4 .e0/.ex #
 asis:_s (_a AOP ()) (+x67, .e)/.e #
 asis:.s (.a CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, as-emit:.s .rel .e1/.ex #
-asis:_s (_a CALL .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 2 .e0/.ex #
+asis:_s (_a CALL .rm) (+xFF, .e1)/.ex :- as-mod-num-rm:32 .rm 2 .e1/.ex #
 asis:_s (_a CLI ()) (+xFA, .e)/.e #
 asis:.s (_a CMP (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x38 +x80 07 .e0/.ex #
 asis:_s (_a D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
@@ -62,6 +63,7 @@ asis:_s (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mo
 asis:.s (_a MOVSX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xBE .e0/.ex #
 asis:.s (_a MOVZX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xB6 .e0/.ex #
 asis:.s (_a MUL .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 4 .e0/.ex #
+asis:_s (_a NOP ()) (+x90, .e)/.e #
 asis:_s (_a OOP ()) (+x66, .e)/.e #
 asis:.s (_a OR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x08 +x80 1 .e0/.ex #
 asis:.s (_a OUT (.port, .val)) .e0/.ex :- asi-in-out:.s .val .port +xE6 .e0/.ex #
@@ -106,7 +108,7 @@ asi-jump .a .target .b _ _ (.b, .e1)/.ex
 #
 
 asi-jump-rel:.size .target .a .f .rel
-	:- if (bound .target) (let .rel (.target - .a - .f - .size / 8)) (.rel = 0)
+	:- if (bound .target) (is.int .target, let .rel (.target - .a - .f - .size / 8)) (.rel = 0)
 #
 
 asi-in-out:.size .acc .port .b0 (.b2, .e1)/.ex
@@ -236,10 +238,9 @@ as-mod-rm:_ (`.indexReg * .scale + .baseReg`) (.mod .rm) .e
 #
 
 as-disp-mod .disp .mod .e0/.ex
-	:- once (.disp = 0, .mod = 0, .e0 = .ex
-		; as-imm:8 .disp, .mod = 1, as-emit:8 .disp .e0/.ex
-		; .mod = 2, as-emit:32 .disp .e0/.ex
-	)
+	:- .disp = 0, .mod = 0, .e0 = .ex
+	; as-imm:8 .disp, .mod = 1, as-emit:8 .disp .e0/.ex
+	; .mod = 2, as-emit:32 .disp .e0/.ex
 #
 
 as-sib (`.indexReg * .scale + .baseReg`) .sib
