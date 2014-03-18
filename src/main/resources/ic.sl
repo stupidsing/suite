@@ -86,7 +86,7 @@ ic-compile .fs `.value` .e0/.ex
 #
 ic-compile _ EBP (_ MOV (EAX, EBP), .e)/.e
 #
-ic-compile _ .imm (_ PUSH .imm, .e)/.e
+ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
 #
 
