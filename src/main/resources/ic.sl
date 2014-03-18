@@ -39,17 +39,19 @@ ic-compile .fs (.fun {.param}) .e0/.ex
 	:- , ic-compile .fs .param .e0/.e1
 	, .e1 = (_ PUSH EAX, .e2)
 	, ic-compile .fs .fun .e2/.e3
-	, .e3 = (_ CALL EAX, .ex)
+	, .e3 = (_ CALL EAX
+		, _ POP EDI
+		, .ex)
 #
 ic-compile .fs (while .while do .do) .e0/.ex
-	:- ic-compile .fs .while .e0/.e1
-	, .e1 = (_ OR (EAX, EAX)
+	:- .e0 = (.nextLabel (), .e1)
+	, ic-compile .fs .while .e1/.e2
+	, .e2 = (_ OR (EAX, EAX)
 		, _ JZ DWORD .endLabel
-		, .nextLabel () ()
-		, .e2)
-	, ic-compile .fs .do .e2/.e3
-	, .e3 = (_ JMP DWORD .nextLabel
-		, .endLabel () ()
+		, .e3)
+	, ic-compile .fs .do .e3/.e4
+	, .e4 = (_ JMP DWORD .nextLabel
+		, .endLabel ()
 		, .ex)
 #
 ic-compile .fs (if .if then .then else .else) .e0/.ex
@@ -59,10 +61,10 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 		, .e2)
 	, ic-compile .fs .then .e2/.e3
 	, .e3 = (_ JMP DWORD .endLabel
-		, .elseLabel () ()
+		, .elseLabel ()
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
-	, .e5 = (.endLabel () (), .ex)
+	, .e5 = (.endLabel (), .ex)
 #
 ic-compile .fs (& `.pointer`) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
@@ -100,7 +102,7 @@ ic-operator .op (
 #
 ic-operator .op (
 	_ POP EBX
-	, _ CMP (EAX, EBX)
+	, _ CMP (EBX, EAX)
 	, _ .setcc AL
 	, _ MOVSX (EAX, AL)
 	, .e

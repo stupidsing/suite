@@ -21,8 +21,6 @@ public class BootMain extends ExecutableProgram {
 		Util.run(BootMain.class, args);
 	}
 
-	// cat target/boot.bin | ~/data/src/udis86-1.7.2/udcli/udcli -16 | less
-	// bochs -f src/main/asm/bochsrc
 	@Override
 	protected boolean run(String args[]) throws IOException {
 		// Bytes kernel = new Assembler(32).assemble(To.string(new
@@ -40,6 +38,10 @@ public class BootMain extends ExecutableProgram {
 
 		Path path = Paths.get("target/boot.bin");
 		Files.write(path, disk1.getBytes());
+
+		System.out.println("cat target/boot.bin | dd bs=512 count=1 | /opt/udis86-1.7.2/udcli/udcli -16 | less");
+		System.out.println("cat target/boot.bin | dd bs=512 skip=1 | /opt/udis86-1.7.2/udcli/udcli -32 | less");
+		System.out.println("bochs -f src/main/asm/bochsrc");
 		return true;
 	}
 

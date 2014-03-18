@@ -13,7 +13,7 @@ asi0:_s .ai .e0/.ex :- asis:8 .ai .e0/.ex, ! #
 asi0:16 .ai (+x66, .e1)/.ex :- asis:32 .ai .e1/.ex, ! #
 asi0:32 .ai (+x66, .e1)/.ex :- asis:16 .ai .e1/.ex, ! #
 
-asis:_s (_a () _) .e/.e #
+asis:_s (_a ()) .e/.e #
 asis:_s (_a AAA ()) (+x37, .e)/.e #
 asis:.s (_a ADC (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x10 +x80 2 .e0/.ex #
 asis:.s (_a ADD (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x00 +x80 0 .e0/.ex #
@@ -38,7 +38,7 @@ asis:.s (_a IMUL (.reg, .rm, .imm)) (+x6B, .e1)/.ex :- as-imm:8 .imm, as-rm-regw
 asis:.s (_a IMUL (.reg, .rm, .imm)) (+x69, .e1)/.ex :- as-imm:.s .imm, as-rm-regwd:.s .rm .reg .e1/.e2, as-emit:.s .imm .e2/.ex #
 asis:.s (_a IN (.val, .port)) .e0/.ex :- asi-in-out:.s .val .port +xE4 .e0/.ex #
 asis:.s (_a INC .op) .e0/.ex :- asi-1op:.s .op +x40 +xFE 0 .e0/.ex #
-asis:_s (_a INT 3) (+x37, .e)/.e #
+asis:_s (_a INT 3) (+xCC, .e)/.e #
 asis:_s (_a INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s (_a INTO ()) (+xCE, .e)/.e #
 asis:_s (_a IRET ()) (+xCF, .e)/.e #

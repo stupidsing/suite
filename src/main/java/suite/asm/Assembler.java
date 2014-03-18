@@ -61,14 +61,10 @@ public class Assembler {
 		for (String line : Util.right(lines, start)) {
 			Pair<String, String> pt = Util.split2(line, "\t");
 			String label = pt.t0;
-			String operation = pt.t1;
-
-			Pair<String, String> pi = Util.split2(operation, " ");
-			Atom insn = Atom.create(pi.t0);
-			Node operands = Suite.parse(pi.t1);
+			String command = pt.t1;
 
 			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.create(label)) : null;
-			Node instruction = generalizer.generalize(Tree.create(TermOp.TUPLE_, insn, operands));
+			Node instruction = generalizer.generalize(Suite.parse(command));
 			lnis.add(Pair.create(reference, instruction));
 		}
 
