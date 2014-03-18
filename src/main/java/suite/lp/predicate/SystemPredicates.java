@@ -99,7 +99,7 @@ public class SystemPredicates {
 		addPredicate("asserta", new RuleSetPredicates.Asserta());
 		addPredicate("assertz", new RuleSetPredicates.Assertz());
 		addPredicate("import", new RuleSetPredicates.Import());
-		addPredicate("import.file", new RuleSetPredicates.ImportFile());
+		addPredicate("import.path", new RuleSetPredicates.ImportPath());
 		addPredicate("list", new RuleSetPredicates.ListPredicates());
 		addPredicate("retract", new RuleSetPredicates.Retract());
 		addPredicate("retract.all", new RuleSetPredicates.RetractAll());

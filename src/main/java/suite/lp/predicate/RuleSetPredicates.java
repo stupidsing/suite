@@ -57,7 +57,7 @@ public class RuleSetPredicates {
 		}
 	}
 
-	public static class ImportFile implements SystemPredicate {
+	public static class ImportPath implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			String filename = Formatter.display(ps);
 			try {

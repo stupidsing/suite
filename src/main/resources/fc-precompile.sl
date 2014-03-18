@@ -85,4 +85,4 @@ fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 -- Code generation
 fc-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
 
-() :- import.file 'fc.sl' #
+() :- import.path 'fc.sl' #

@@ -3,14 +3,14 @@
 --
 -- .mode can be EAGER or LAZY
 
-() :- import.file 'cg-generate-code.sl'
-	, import.file 'fc-evaluate.sl'
-	, import.file 'fc-infer-type.sl'
-	, import.file 'fc-lazyify.sl'
-	, import.file 'fc-optimize.sl'
-	, import.file 'fc-parse.sl'
-	, import.file 'fc-transform.sl'
-	, import.file 'rbt.sl'
+() :- import.path 'cg-generate-code.sl'
+	, import.path 'fc-evaluate.sl'
+	, import.path 'fc-infer-type.sl'
+	, import.path 'fc-lazyify.sl'
+	, import.path 'fc-optimize.sl'
+	, import.path 'fc-parse.sl'
+	, import.path 'fc-transform.sl'
+	, import.path 'rbt.sl'
 #
 
 compile-function .mode .do0 .c0
