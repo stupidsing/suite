@@ -31,6 +31,10 @@ import suite.util.LogUtil;
 
 public class EvalPredicates {
 
+	private static Atom AND = Atom.create("and");
+	private static Atom OR_ = Atom.create("or");
+	private static Atom SHL = Atom.create("shl");
+	private static Atom SHR = Atom.create("shr");
 	private static Comparer comparer = Comparer.comparer;
 
 	public static class Bound implements SystemPredicate {
@@ -139,29 +143,46 @@ public class EvalPredicates {
 			Tree tree = Tree.decompose(node);
 
 			if (tree != null) {
-				int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
+				TermOp op = (TermOp) tree.getOperator();
 
-				switch ((TermOp) tree.getOperator()) {
-				case PLUS__:
-					result = a + b;
-					break;
-				case MINUS_:
-					result = a - b;
-					break;
-				case MULT__:
-					result = a * b;
-					break;
-				case DIVIDE:
-					result = a / b;
-					break;
-				case MODULO:
-					result = a % b;
-					break;
-				case POWER_:
-					result = (int) Math.pow(a, b);
-					break;
-				default:
-					throw new RuntimeException("Unable to evaluate expression");
+				if (op == TermOp.TUPLE_) {
+					Tree rightTree = Tree.decompose(tree.getRight());
+					Node op1 = rightTree.getLeft();
+					int a = evaluate(tree.getLeft()), b = evaluate(rightTree.getRight());
+					if (op1 == AND)
+						result = a & b;
+					else if (op1 == OR_)
+						result = a | b;
+					else if (op1 == SHL)
+						result = a << b;
+					else if (op1 == SHR)
+						result = a >> b;
+					else
+						throw new RuntimeException("Unable to evaluate expression");
+				} else {
+					int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
+					switch (op) {
+					case PLUS__:
+						result = a + b;
+						break;
+					case MINUS_:
+						result = a - b;
+						break;
+					case MULT__:
+						result = a * b;
+						break;
+					case DIVIDE:
+						result = a / b;
+						break;
+					case MODULO:
+						result = a % b;
+						break;
+					case POWER_:
+						result = (int) Math.pow(a, b);
+						break;
+					default:
+						throw new RuntimeException("Unable to evaluate expression");
+					}
 				}
 			} else if (node instanceof Int)
 				result = ((Int) node).getNumber();

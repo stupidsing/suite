@@ -47,7 +47,6 @@ asm/(
 		declare offset := 0 >>
 		while (offset < 2048) do (
 			let `idtAddress + offset` = 8 shl 16 + generalInterruptHandler and +xFFFF;
-			let `+xB8000` = +x70417041;
 			let offset = offset + 4;
 			let `idtAddress + offset` = generalInterruptHandler and +xFFFF0000 + +x8E00;
 			let offset = offset + 4;
