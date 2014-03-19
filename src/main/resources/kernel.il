@@ -23,7 +23,7 @@ asm/(
 	declare generalInterruptHandler := dummy =>
 		asm/(
 			_ PUSHA (),
-			_ PUSH `+x40000`,
+			_ PUSH (`+x40000`),
 			_ MOV (EBP, ESP),
 		);
 
@@ -34,10 +34,10 @@ asm/(
 
 		asm/(
 			_ MOV (ESP, EBP),
-			_ POP EAX,
+			_ POP (EAX),
 			_ POPA (),
 			_ MOV (ESP, EBP),
-			_ POP EBP,
+			_ POP (EBP),
 			_ IRET (),
 		);
 	>>
@@ -74,6 +74,6 @@ asm/(
 
 	asm/(
 		.loop HLT (),
-		_ JMP .loop,
+		_ JMP (.loop),
 	);
 );
