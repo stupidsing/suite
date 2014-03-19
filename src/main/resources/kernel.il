@@ -27,10 +27,10 @@ asm/(
 			_ MOV (EBP, ESP),
 		);
 
-		let `+xB8000` = `+xB8000` + 1;
-
 		-- Sends end of interrupt signal
 		out {+x20} {+x20};
+
+		let `+xB8000` = `+xB8000` + 1;
 
 		asm/(
 			_ MOV (ESP, EBP),
