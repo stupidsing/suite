@@ -60,7 +60,9 @@ fc-precompiled-library-filename .lib .filename
 	, concat .homeDir "/precompiled/" .lib ".rpn" .filename
 #
 
-fc-frame-difference .frame0 .frame1 0 :- same .frame0 .frame1, ! #
+fc-frame-difference .frame0 .frame1 0
+	:- same .frame0 .frame1, !
+#
 fc-frame-difference .frame0 (.frame1 + 1) .frameDiff
 	:- not is.tree .frame0, !
 	, fc-frame-difference .frame0 .frame1 .frameDiff0
