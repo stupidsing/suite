@@ -100,7 +100,7 @@ asis:.s (_a XCHG (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x86 .rm .reg .e0/.ex #
 asis:.s (_a XOR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x30 +x80 6 .e0/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
-	:- as-jump8 .a .target .e1/.ex, !
+	:- asi-jump8 .a .target .e1/.ex, !
 #
 asi-jump .a (DWORD .target) _ () .b (.b, .e1)/.ex
 	:- asi-jump-rel:32 .target .a 1 .rel, as-emit:32 .rel .e1/.ex, !
