@@ -7,19 +7,19 @@ asm/(
 (
 	declare idtAddress := +x20000 >>
 
-	declare in := port, | asm/(
+	declare in := [port,] asm/(
 		_ MOV (EDX, `EBP + 8`),
 		_ XOR (EAX, EAX),
 		_ IN (AL, DX),
 	) >>
 
-	declare out := port, value, | asm/(
+	declare out := [port, value,] asm/(
 		_ MOV (EDX, `EBP + 8`),
 		_ MOV (EAX, `EBP + 12`),
 		_ OUT (DX, AL),
 	) >>
 
-	declare generalInterruptHandler := dummy, |
+	declare generalInterruptHandler := [dummy,]
 		asm/(
 			_ PUSHA (),
 			_ PUSH (`+x40000`),

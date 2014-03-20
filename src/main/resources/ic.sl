@@ -21,7 +21,7 @@ ic-compile .fs (declare .var >> .do) .e0/.ex
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ POP EDI, .ex)
 #
-ic-compile _ (.vars | .do) .e0/.ex -- Traditional subroutine definition
+ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 	:- .e0 = (_ JMP DWORD .label
 		, .funLabel PUSH EBP
 		, _ MOV (EBP, ESP)
