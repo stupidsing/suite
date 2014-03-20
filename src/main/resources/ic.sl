@@ -21,13 +21,13 @@ ic-compile .fs (declare .var >> .do) .e0/.ex
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ POP EDI, .ex)
 #
-ic-compile _ (.var => .do) .e0/.ex
+ic-compile _ (.vars | .do) .e0/.ex -- Traditional subroutine definition
 	:- .e0 = (_ JMP DWORD .label
 		, .funLabel PUSH EBP
 		, _ MOV (EBP, ESP)
 		, .e1)
 	, replace $$FRAME `$$FRAME` .do .do1
-	, replace .var `$$FRAME + 8` .do1 .do2
+	, ic-replace-parameters .vars _ .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
 		, _ POP EBP
@@ -35,13 +35,10 @@ ic-compile _ (.var => .do) .e0/.ex
 		, .label MOV (EAX, .funLabel)
 		, .ex)
 #
-ic-compile .fs (.fun {.param}) .e0/.ex
-	:- , ic-compile .fs .param .e0/.e1
-	, .e1 = (_ PUSH EAX, .e2)
-	, ic-compile .fs .fun .e2/.e3
-	, .e3 = (_ CALL EAX
-		, _ POP EDI
-		, .ex)
+ic-compile .fs (.sub [.params]) .e0/.ex -- Traditional subroutine invocation
+	:- ic-push-pop-parameters .fs .params .e0/.e1 .e3/.ex
+	, ic-compile .fs .sub .e1/.e2
+	, .e2 = (_ CALL EAX, .e3)
 #
 ic-compile .fs (while .while do .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
@@ -90,6 +87,21 @@ ic-compile _ $$FRAME (_ MOV (EAX, EBP), .e)/.e
 #
 ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
+#
+
+ic-replace-parameters () 4 .do .do #
+ic-replace-parameters (.var, .vars) .s .do0 .dox
+	:- ic-replace-parameters .vars .s0 .do0 .do1
+	, let .s (.s0 + 4)
+	, replace .var `$$FRAME + .s` .do1 .dox
+#
+
+ic-push-pop-parameters _ () .e/.e .f/.f #
+ic-push-pop-parameters .fs (.p, .ps) .e0/.ex .f0/.fx
+	:- ic-push-pop-parameters .fs .ps .e0/.e1 .f1/.fx
+	, ic-compile .fs .p .e1/.e2
+	, .e2 = (_ PUSH EAX, .ex)
+	, .f0 = (_ POP EDI, .f1)
 #
 
 ic-operator .op (

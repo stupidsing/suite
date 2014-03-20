@@ -7,20 +7,19 @@ asm/(
 (
 	declare idtAddress := +x20000 >>
 
-	declare in := port => asm/(
+	declare in := port, | asm/(
 		_ MOV (EDX, `EBP + 8`),
 		_ XOR (EAX, EAX),
 		_ IN (AL, DX),
 	) >>
 
-	declare out := port => value => asm/(
-		_ MOV (EBX, `EBP`),
-		_ MOV (EDX, `EBX + 8`),
-		_ MOV (EAX, `EBP + 8`),
+	declare out := port, value, | asm/(
+		_ MOV (EDX, `EBP + 8`),
+		_ MOV (EAX, `EBP + 12`),
 		_ OUT (DX, AL),
 	) >>
 
-	declare generalInterruptHandler := dummy =>
+	declare generalInterruptHandler := dummy, |
 		asm/(
 			_ PUSHA (),
 			_ PUSH (`+x40000`),
@@ -28,7 +27,7 @@ asm/(
 		);
 
 		-- Sends end of interrupt signal
-		out {+x20} {+x20};
+		out [+x20, +x20,];
 
 		let `+xB8000` = `+xB8000` + 1;
 
@@ -61,10 +60,10 @@ asm/(
 	);
 
 	-- Sets the 8253 to enable 100 timer ticks per second, and enables keyboard
-	out {+x43} {+x36};
-	out {+x40} {11932 % 256};
-	out {+x40} {11932 / 256};
-	out {+x21} {+xFC};
+	out [+x43, +x36,];
+	out [+x40, 11932 % 256,];
+	out [+x40, 11932 / 256,];
+	out [+x21, +xFC,];
 
 	let `+xB8000` = +x704B704F;
 
