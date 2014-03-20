@@ -67,10 +67,10 @@ asm/(
 		out [+xA0, +x11,];
 		out [+x21, +x20,]; -- Remaps IRQ0-7
 		out [+xA1, +x28,]; -- Remaps IRQ8-F
-		out [+x21, 4,];
-		out [+xA1, 2,];
-		out [+x21, 1,];
-		out [+xA1, 1,];
+		out [+x21, +x04,];
+		out [+xA1, +x02,];
+		out [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
+		out [+xA1, +x01,];
 		out [+x21, d0,];
 		out [+xA1, d1,];
 	);
