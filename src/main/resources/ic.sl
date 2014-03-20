@@ -1,8 +1,9 @@
 -- Syntactic sugars
-ic-compile .fs (declare .var := .value >> .do) .e0/.ex
-	:- ic-compile .fs (declare .var >> let .var = .value; .do) .e0/.ex
+ic-compile .fs (declare .var = .value; .do) .e0/.ex
+	:- is.atom .var
+	, ic-compile .fs (declare .var; let .var = .value; .do) .e0/.ex
 #
-
+-- Basic constructs
 ic-compile _ () .e/.e
 #
 ic-compile .fs (.do0; .do1) .e0/.ex
@@ -14,8 +15,9 @@ ic-compile _ asm/ .e/.e
 ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
 	:- ic-compile _ asm/.is .e1/.ex
 #
-ic-compile .fs (declare .var >> .do) .e0/.ex
-	:- .e0 = (_ PUSH 0, .e1)
+ic-compile .fs (declare .var; .do) .e0/.ex
+	:- is.atom .var
+	, .e0 = (_ PUSH 0, .e1)
 	, let .fs1 (.fs + 4)
 	, replace .var `$$FRAME - .fs1` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
