@@ -59,12 +59,6 @@ asm/(
 		_ LIDT `+x7C00`,
 	);
 
-	-- Sets the 8253 to enable 100 timer ticks per second, and enables keyboard
-	out [+x43, +x36,];
-	out [+x40, 11932 % 256,];
-	out [+x40, 11932 / 256,];
-	out [+x21, +xFC,];
-
 	-- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 	(
 		declare d0 := in [+x21,] >>
@@ -81,6 +75,13 @@ asm/(
 		out [+xA1, d1,];
 	);
 
+	-- Sets the 8253 to enable 100 timer ticks per second, and enables keyboard
+	out [+x43, +x36,];
+	out [+x40, 11932 % 256,];
+	out [+x40, 11932 / 256,];
+	out [+x21, +xFC,];
+
+	-- Shows OK
 	let `+xB8000` = +x704B704F;
 
 	asm/(
