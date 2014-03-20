@@ -146,6 +146,7 @@ ic-operator-insn ' - ' SUB #
 ic-operator-insn ' * ' IMUL #
 ic-operator-insn and AND #
 ic-operator-insn or OR #
+ic-operator-insn xor XOR #
 
 ic-operator-setcc ' = ' SETE #
 ic-operator-setcc ' != ' SETNE #

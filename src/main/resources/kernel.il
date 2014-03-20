@@ -88,6 +88,19 @@ asm/(
 		_ STI (),
 	);
 
+	-- Sets up paging
+	(
+		-- Detects memory size
+		declare memorySize := 1048576 >>
+		while (
+			declare t := `memorySize` xor +xFFFFFFFF >>
+			let `memorySize` = t;
+			`memorySize` = t
+		) do ();
+
+		declare nPages := memorySize >> 12 >>
+	);
+
 	asm/(
 		.loop HLT (),
 		_ JMP (.loop),
