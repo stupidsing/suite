@@ -65,6 +65,22 @@ asm/(
 	out [+x40, 11932 / 256,];
 	out [+x21, +xFC,];
 
+	-- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
+	(
+		declare d0 := in [+x21,] >>
+		declare d1 := in [+xA1,] >>
+		out [+x20, +x11,]; -- Initializes and disables ICW4
+		out [+xA0, +x11,];
+		out [+x21, +x20,]; -- Remaps IRQ0-7
+		out [+xA1, +x28,]; -- Remaps IRQ8-F
+		out [+x21, 4,];
+		out [+xA1, 2,];
+		out [+x21, 1,];
+		out [+xA1, 1,];
+		out [+x21, d0,];
+		out [+xA1, d1,];
+	);
+
 	let `+xB8000` = +x704B704F;
 
 	asm/(
