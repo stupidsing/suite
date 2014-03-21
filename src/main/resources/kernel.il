@@ -6,12 +6,6 @@ asm/(
 
 declare idtAddress = +x20000;
 
-declare aaa = +xB8004;
-`aaa =+ 4` = +x70417041;
-`aaa =+ 4` = +x70427042;
-`aaa =+ 4` = +x70437043;
-`aaa =+ 4` = +x70447044;
-
 declare in = [port,] asm/(
 	_ MOV (EDX, `EBP + 8`),
 	_ XOR (EAX, EAX),
