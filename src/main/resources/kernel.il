@@ -6,6 +6,12 @@ asm/(
 
 declare idtAddress = +x20000;
 
+declare aaa = +xB8004;
+`aaa =+ 4` = +x70417041;
+`aaa =+ 4` = +x70427042;
+`aaa =+ 4` = +x70437043;
+`aaa =+ 4` = +x70447044;
+
 declare in = [port,] asm/(
 	_ MOV (EDX, `EBP + 8`),
 	_ XOR (EAX, EAX),
@@ -28,7 +34,7 @@ declare generalInterruptHandler = [dummy,]
 	-- Sends end of interrupt signal
 	out [+x20, +x20,];
 
-	let `+xB8000` = `+xB8000` + 1;
+	`+xB8000` =+ 1;
 
 	asm/(
 		_ MOV (ESP, EBP),
@@ -45,9 +51,9 @@ declare generalInterruptHandler = [dummy,]
 	declare offset = 0;
 	while (offset < 2048) do (
 		let `idtAddress + offset` = 8 shl 16 + generalInterruptHandler and +xFFFF;
-		let offset = offset + 4;
+		offset =+ 4;
 		let `idtAddress + offset` = generalInterruptHandler and +xFFFF0000 + +x8E00;
-		let offset = offset + 4;
+		offset =+ 4;
 	);
 );
 
@@ -90,18 +96,23 @@ asm/(
 -- Sets up paging
 (
 	-- Detects memory size
-	declare memorySize = 1048576;
+	declare page0 = 1048576;
+	declare pagex = page0;
 
 	while (
-		declare t = `memorySize` xor +xFFFFFFFF;
-		let `memorySize` = t;
-		`memorySize` = t
-	) do (
-		let memorySize = memorySize + 4096;
-	);
+		declare t = `pagex` xor +xFFFFFFFF;
+		let `pagex` = t;
+		`pagex =+ 4096` = t
+	) do ();
 
-	declare nPages = memorySize shr 12;
-	;
+	declare stackSize = 4 * (pagex - page0) shr 12;
+	declare page = page0 + (stackSize + 4096) and (+xFFFFF000);
+	declare stack = page0;
+	declare offset = 0;
+
+	while (page < pagex) do (
+		let `stack + (offset =+ 4)` = (page =+ 4096);
+	);
 );
 
 asm/(
