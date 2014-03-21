@@ -1,9 +1,7 @@
--- Syntactic sugars
-ic-compile .fs (declare .var = .value; .do) .e0/.ex
-	:- is.atom .var
-	, ic-compile .fs (declare .var; let .var = .value; .do) .e0/.ex
+ic-compile .fs .do0 .e0/.ex
+	:- ic-compile-sugar .do0 .do1
+	, ic-compile .fs .do1 .e0/.ex
 #
--- Basic constructs
 ic-compile _ () .e/.e
 #
 ic-compile .fs (.do0; .do1) .e0/.ex
@@ -19,7 +17,8 @@ ic-compile .fs (declare .var; .do) .e0/.ex
 	:- is.atom .var
 	, .e0 = (_ PUSH 0, .e1)
 	, let .fs1 (.fs + 4)
-	, replace .var `$$FRAME - .fs1` .do .do1
+	, let .offset (0 - .fs1)
+	, replace .var `$$FRAME + .offset` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ POP EDI, .ex)
 #
@@ -89,6 +88,13 @@ ic-compile _ $$FRAME (_ MOV (EAX, EBP), .e)/.e
 #
 ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
+#
+
+ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
+	:- is.atom .var
+#
+ic-compile-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
+	:- temp .p, temp .o
 #
 
 ic-replace-parameters () 4 .do .do #
