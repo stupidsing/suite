@@ -15,8 +15,7 @@ ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
 #
 ic-compile .fs (declare .var; .do) .e0/.ex
 	:- is.atom .var
-	, .e0 = (_ PUSH 0, .e1)
-	, let .fs1 (.fs + 4)
+	, ic-push 0 .fs/.fs1 .e0/.e1
 	, let .offset (0 - .fs1)
 	, replace .var `$$FRAME + .offset` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
@@ -37,8 +36,8 @@ ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 		, .ex)
 #
 ic-compile .fs (.sub [.params]) .e0/.ex -- Traditional subroutine invocation
-	:- ic-push-pop-parameters .fs .params .e0/.e1 .e3/.ex
-	, ic-compile .fs .sub .e1/.e2
+	:- ic-push-pop-parameters .fs/.fs1 .params .e0/.e1 .e3/.ex
+	, ic-compile .fs1 .sub .e1/.e2
 	, .e2 = (_ CALL EAX, .e3)
 #
 ic-compile .fs (while .while do .do) .e0/.ex
@@ -69,16 +68,16 @@ ic-compile .fs (& `.pointer`) .e0/.ex
 #
 ic-compile .fs (let .var = .value) .e0/.ex
 	:- ic-compile .fs (& .var) .e0/.e1
-	, .e1 = (_ PUSH EAX, .e2)
-	, ic-compile .fs .value .e2/.e3
+	, ic-push EAX .fs/.fs1 .e1/.e2
+	, ic-compile .fs1 .value .e2/.e3
 	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
 #
 ic-compile .fs .expr .e0/.ex
 	:- (tree .expr .value0 .op .value1; .expr = .value0 .op .value1)
 	, ic-operator .op .e3/.ex
 	, ic-compile .fs .value0 .e0/.e1
-	, .e1 = (_ PUSH EAX, .e2)
-	, ic-compile .fs .value1 .e2/.e3
+	, ic-push EAX .fs/.fs1 .e1/.e2
+	, ic-compile .fs1 .value1 .e2/.e3
 #
 ic-compile .fs `.value` .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
@@ -104,12 +103,16 @@ ic-replace-parameters (.var, .vars) .s .do0 .dox
 	, replace .var `$$FRAME + .s` .do1 .dox
 #
 
-ic-push-pop-parameters _ () .e/.e .f/.f #
-ic-push-pop-parameters .fs (.p, .ps) .e0/.ex .f0/.fx
-	:- ic-push-pop-parameters .fs .ps .e0/.e1 .f1/.fx
-	, ic-compile .fs .p .e1/.e2
-	, .e2 = (_ PUSH EAX, .ex)
+ic-push-pop-parameters .fs/.fs () .e/.e .f/.f #
+ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
+	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
+	, ic-compile .fs1 .p .e1/.e2
+	, ic-push EAX .fs1/.fsx .e2/.ex
 	, .f0 = (_ POP EDI, .f1)
+#
+
+ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
+	:- let .fsx (.fs0 + 4)
 #
 
 ic-operator .op (

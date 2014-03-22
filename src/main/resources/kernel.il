@@ -44,10 +44,8 @@ declare generalInterruptHandler = [dummy,]
 (
 	declare offset = 0;
 	while (offset < 2048) do (
-		let `idtAddress + offset` = 8 shl 16 + generalInterruptHandler and +xFFFF;
-		offset =+ 4;
-		let `idtAddress + offset` = generalInterruptHandler and +xFFFF0000 + +x8E00;
-		offset =+ 4;
+		let `idtAddress + offset =+ 4` = 8 shl 16 + generalInterruptHandler and +xFFFF;
+		let `idtAddress + offset =+ 4` = generalInterruptHandler and +xFFFF0000 + +x8E00;
 	);
 );
 
