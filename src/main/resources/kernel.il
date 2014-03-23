@@ -4,7 +4,7 @@ asm/(
 	_ MOV (`+x40000`, EBP),
 );
 
-declare idtAddress = +x20000;
+declare idt-address = +x20000;
 
 declare in = [port,] asm/(
 	_ MOV (EDX, `EBP + 8`),
@@ -18,7 +18,7 @@ declare out = [port, value,] asm/(
 	_ OUT (DX, AL),
 );
 
-declare generalInterruptHandler = [dummy,]
+declare general-interrupt-handler = [dummy,]
 	asm/(
 		_ PUSHA (),
 		_ PUSH (`+x40000`),
@@ -44,13 +44,13 @@ declare generalInterruptHandler = [dummy,]
 (
 	declare offset = 0;
 	while (offset < 2048) do (
-		let `idtAddress + offset =+ 4` = 8 shl 16 + generalInterruptHandler and +xFFFF;
-		let `idtAddress + offset =+ 4` = generalInterruptHandler and +xFFFF0000 + +x8E00;
+		let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
+		let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
 	);
 );
 
 let `+x7C00` = +x7FF;
-let `+x7C02` = idtAddress;
+let `+x7C02` = idt-address;
 
 asm/(
 	_ LIDT `+x7C00`,
