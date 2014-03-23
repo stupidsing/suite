@@ -78,9 +78,6 @@ out [+x40, 11932 % 256,];
 out [+x40, 11932 / 256,];
 out [+x21, +xFC,];
 
--- Shows OK
-let `+xB8000` = +x704B704F;
-
 asm/(
 	_ STI (),
 );
@@ -98,7 +95,7 @@ asm/(
 	) do ();
 
 	declare stackSize = 4 * (pagex - page0) shr 12;
-	declare page = page0 + (stackSize + 4096) and (+xFFFFF000);
+	declare page = page0 + (stackSize + 4096) and +xFFFFF000;
 	declare stack = page0;
 	declare offset = 0;
 
@@ -106,6 +103,9 @@ asm/(
 		let `stack + (offset =+ 4)` = (page =+ 4096);
 	);
 );
+
+-- Shows OK
+let `+xB8000` = +x704B704F;
 
 asm/(
 	.loop HLT (),
