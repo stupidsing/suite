@@ -94,7 +94,7 @@ declare pagex = page0;
 	) do ();
 );
 
--- Sets up paging
+-- Sets up page allocator
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 (
@@ -113,6 +113,8 @@ declare alloc = []
 declare free = [page,]
 	`stack0 += 4` = page
 ;
+
+-- Sets up paging
 
 -- Shows OK
 let `+xB8000` = +x704B704F;
