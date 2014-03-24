@@ -128,7 +128,7 @@ declare fill-zeroes = [page,] (
 
 	declare offset = 0;
 	declare physical = 0;
-	while (physical < memory-region-start) do (
+	while (physical < stackx) do (
 		let `spt + offset =+ 4` = physical =+ 4096 + 261; -- Supervisor, read-only
 	);
 	let `spt` = 0; -- Trap zero pointers
