@@ -8,19 +8,6 @@ ic-compile .fs (.do0; .do1) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, ic-compile .fs .do1 .e1/.ex
 #
-ic-compile _ asm/ .e/.e
-#
-ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
-	:- ic-compile _ asm/.is .e1/.ex
-#
-ic-compile .fs (declare .var; .do) .e0/.ex
-	:- is.atom .var
-	, ic-push 0 .fs/.fs1 .e0/.e1
-	, let .offset (0 - .fs1)
-	, replace .var `$$FRAME + .offset` .do .do1
-	, ic-compile .fs1 .do1 .e1/.e2
-	, .e2 = (_ POP EDI, .ex)
-#
 ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 	:- .e0 = (_ JMP DWORD .label
 		, .funLabel PUSH EBP
@@ -40,16 +27,18 @@ ic-compile .fs (.sub [.params]) .e0/.ex -- Traditional subroutine invocation
 	, ic-compile .fs1 .sub .e1/.e2
 	, .e2 = (_ CALL EAX, .e3)
 #
-ic-compile .fs (while .while do .do) .e0/.ex
-	:- .e0 = (.nextLabel (), .e1)
-	, ic-compile .fs .while .e1/.e2
-	, .e2 = (_ OR (EAX, EAX)
-		, _ JZ DWORD .endLabel
-		, .e3)
-	, ic-compile .fs .do .e3/.e4
-	, .e4 = (_ JMP DWORD .nextLabel
-		, .endLabel ()
-		, .ex)
+ic-compile _ asm/ .e/.e
+#
+ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
+	:- ic-compile _ asm/.is .e1/.ex
+#
+ic-compile .fs (declare .var; .do) .e0/.ex
+	:- is.atom .var
+	, ic-push 0 .fs/.fs1 .e0/.e1
+	, let .offset (0 - .fs1)
+	, replace .var `$$FRAME + .offset` .do .do1
+	, ic-compile .fs1 .do1 .e1/.e2
+	, .e2 = (_ POP EDI, .ex)
 #
 ic-compile .fs (if .if then .then else .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
@@ -63,8 +52,16 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 	, ic-compile .fs .else .e4/.e5
 	, .e5 = (.endLabel (), .ex)
 #
-ic-compile .fs (& `.pointer`) .e0/.ex
-	:- ic-compile .fs .pointer .e0/.ex
+ic-compile .fs (while .while do .do) .e0/.ex
+	:- .e0 = (.nextLabel (), .e1)
+	, ic-compile .fs .while .e1/.e2
+	, .e2 = (_ OR (EAX, EAX)
+		, _ JZ DWORD .endLabel
+		, .e3)
+	, ic-compile .fs .do .e3/.e4
+	, .e4 = (_ JMP DWORD .nextLabel
+		, .endLabel ()
+		, .ex)
 #
 ic-compile .fs (let .var = .value) .e0/.ex
 	:- ic-compile .fs (& .var) .e0/.e1
@@ -72,16 +69,19 @@ ic-compile .fs (let .var = .value) .e0/.ex
 	, ic-compile .fs1 .value .e2/.e3
 	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
 #
+ic-compile .fs (& `.pointer`) .e0/.ex
+	:- ic-compile .fs .pointer .e0/.ex
+#
+ic-compile .fs `.value` .e0/.ex
+	:- ic-compile .fs .value .e0/.e1
+	, .e1 = (_ MOV (EAX, `EAX`), .ex)
+#
 ic-compile .fs .expr .e0/.ex
 	:- (tree .expr .value0 .op .value1; .expr = .value0 .op .value1)
 	, ic-operator .op .e3/.ex
 	, ic-compile .fs .value0 .e0/.e1
 	, ic-push EAX .fs/.fs1 .e1/.e2
 	, ic-compile .fs1 .value1 .e2/.e3
-#
-ic-compile .fs `.value` .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ MOV (EAX, `EAX`), .ex)
 #
 ic-compile _ $$FRAME (_ MOV (EAX, EBP), .e)/.e
 #

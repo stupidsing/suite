@@ -1,5 +1,12 @@
 fc-lazyify-fun .p0 (UNWRAP .p1) :- fc-lazyify .p0 .p1 #
 
+fc-lazyify .do0 .dox
+	:- fc-lazyify-default-fun 0 _ .returnWrap .do0 .do1
+	, !
+	, once (.returnWrap = THUNK, .do1 = .dox
+		; .returnWrap = VALUE, .dox = WRAP .do1
+	)
+#
 fc-lazyify .const (WRAP .const)
 	:- .const = .tag _
 	, member (ATOM, BOOLEAN, NUMBER,) .tag, !
@@ -13,13 +20,6 @@ fc-lazyify (IF .if0 .then0 .else0) (WRAP UNWRAP (IF (UNWRAP .if1) .then1 .else1)
 	, fc-lazyify .if0 .if1
 	, fc-lazyify .then0 .then1
 	, fc-lazyify .else0 .else1
-#
-fc-lazyify .do0 .dox
-	:- fc-lazyify-default-fun 0 _ .returnWrap .do0 .do1
-	, !
-	, once (.returnWrap = THUNK, .do1 = .dox
-		; .returnWrap = VALUE, .dox = WRAP .do1
-	)
 #
 fc-lazyify (INVOKE .value0 .callee0) (WRAP UNWRAP (INVOKE .value1 (UNWRAP .callee1)))
 	:- !
