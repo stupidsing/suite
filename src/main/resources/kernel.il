@@ -54,7 +54,7 @@ let `+x7C00` = +x7FF;
 let `+x7C02` = idt-address;
 
 asm/(
-	_ LIDT `+x7C00`,
+	_ LIDT (`+x7C00`),
 );
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
@@ -102,19 +102,59 @@ declare stackx = stack0;
 	declare page = page0 + (stackSize + 4096) and +xFFFFF000;
 
 	while (page < pagex) do (
-		let `stackx =+ 4` = (page =+ 4096);
+		let `stackx =+ 4` = page =+ 4096;
 	);
 );
 
-declare alloc = []
+declare alloc = [] (
 	if (stack0 != stackx) then `stack0 =+ 4` else 0
-;
+);
 
-declare free = [page,]
+declare free = [page,] (
 	`stack0 += 4` = page
-;
+);
+
+declare fill-zeroes = [page,] (
+	declare offset = 0;
+	while (offset < 4096) do (
+		`offset =+ 4` = 0;
+	)
+);
 
 -- Sets up paging
+(
+	declare spt = alloc [];
+	fill-zeroes [spt,];
+
+	declare offset = 0;
+	declare physical = 0;
+	while (physical < memory-region-start) do (
+		let `spt + offset =+ 4` = physical =+ 4096 + 261; -- Supervisor, read-only
+	);
+	let `spt` = 0; -- Trap zero pointers
+
+	declare rpt = alloc [];
+	fill-zeroes [rpt,];
+
+	let `rpt` = spt + 5; -- Maps kernel memory
+	let `rpt + 4092` = rpt + 1; -- Maps itself
+	rpt;
+
+	asm/(
+		_ D8 (+x0F), -- MOV CR3, EAX
+		_ D8 (+x22),
+		_ D8 (+xD8),
+		_ D8 (+x0F), -- MOV EAX, CR0
+		_ D8 (+x20),
+		_ D8 (+xC0),
+		_ OR (EAX, +x80000000),
+		_ D8 (+x0F), -- MOV CR0, EAX
+		_ D8 (+x22),
+		_ D8 (+xC0),
+		_ D8 (+xEB), -- JMP $ + 2
+		_ D8 (+x00),
+	);
+);
 
 -- Shows OK
 let `+xB8000` = +x704B704F;
