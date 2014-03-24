@@ -95,6 +95,9 @@ ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; 
 ic-compile-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
 #
+ic-compile-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
+	:- temp .p, temp .o
+#
 
 ic-replace-parameters () 4 .do .do #
 ic-replace-parameters (.var, .vars) .s .do0 .dox

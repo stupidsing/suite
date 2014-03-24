@@ -5,6 +5,7 @@ asm/(
 );
 
 declare idt-address = +x20000;
+declare memory-region-start = 1048576;
 
 declare in = [port,] asm/(
 	_ MOV (EDX, `EBP + 8`),
@@ -82,27 +83,36 @@ asm/(
 	_ STI (),
 );
 
--- Sets up paging
+-- Detects memory size
+declare page0 = memory-region-start;
+declare pagex = page0;
 (
-	-- Detects memory size
-	declare page0 = 1048576;
-	declare pagex = page0;
-
 	while (
 		declare t = `pagex` xor +xFFFFFFFF;
 		let `pagex` = t;
 		`pagex =+ 4096` = t
 	) do ();
+);
 
+-- Sets up paging
+declare stack0 = memory-region-start;
+declare stackx = stack0;
+(
 	declare stackSize = 4 * (pagex - page0) shr 12;
 	declare page = page0 + (stackSize + 4096) and +xFFFFF000;
-	declare stack = page0;
-	declare offset = 0;
 
 	while (page < pagex) do (
-		let `stack + (offset =+ 4)` = (page =+ 4096);
+		let `stackx =+ 4` = (page =+ 4096);
 	);
 );
+
+declare alloc = []
+	if (stack0 != stackx) then `stack0 =+ 4` else 0
+;
+
+declare free = [page,]
+	`stack0 += 4` = page
+;
 
 -- Shows OK
 let `+xB8000` = +x704B704F;
