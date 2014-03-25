@@ -96,14 +96,9 @@ declare pagex = page0;
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 (
-<<<<<<< Updated upstream
 	declare stack-size = 4 * (pagex - page0) shr 12;
 	declare first-page = page0 + (stack-size + 4096) and +xFFFFF000;
 	for (declare page = first-page; page < pagex; page =+ 4096)
-=======
-	declare stackSize = 4 * (pagex - page0) shr 12;
-	for (declare page = page0 + (stackSize + 4096) and +xFFFFF000; page < pagex; page =+ 4096)
->>>>>>> Stashed changes
 		let `stackx =+ 4` = page
 	;
 );
