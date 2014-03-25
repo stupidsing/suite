@@ -89,14 +89,16 @@ ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
 #
 
-ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
-	:- is.atom .var
-#
 ic-compile-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
 #
 ic-compile-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
+#
+ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
+	:- is.atom .var
+#
+ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
 
 ic-replace-parameters () 4 .do .do #

@@ -94,7 +94,7 @@ declare pagex = page0;
 	) do ();
 );
 
--- Sets up page allocator
+-- Sets up page allocate-physical-pageator
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 (
@@ -106,11 +106,11 @@ declare stackx = stack0;
 	);
 );
 
-declare alloc = [] (
+declare allocate-physical-page = [] (
 	if (stack0 != stackx) then `stack0 =+ 4` else 0
 );
 
-declare free = [page,] (
+declare free-physical-page = [page,] (
 	`stack0 += 4` = page
 );
 
@@ -123,7 +123,7 @@ declare fill-zeroes = [page,] (
 
 -- Sets up paging
 (
-	declare spt = alloc [];
+	declare spt = allocate-physical-page [];
 	fill-zeroes [spt,];
 
 	declare offset = 0;
@@ -133,7 +133,7 @@ declare fill-zeroes = [page,] (
 	);
 	let `spt` = 0; -- Trap zero pointers
 
-	declare rpt = alloc [];
+	declare rpt = allocate-physical-page [];
 	fill-zeroes [rpt,];
 
 	let `rpt` = spt + 5; -- Maps kernel memory
@@ -156,53 +156,49 @@ declare fill-zeroes = [page,] (
 	);
 );
 
+declare refresh-paging = [] asm/(
+	_ D8 (+x0F), -- MOV EAX, CR3
+	_ D8 (+x20),
+	_ D8 (+xD8),
+	_ D8 (+x0F), -- MOV CR3, EAX
+	_ D8 (+x22),
+	_ D8 (+xD8),
+);
+
 declare map-page = [logical, physical,] (
 	declare i0 = logical shr 22;
 	declare pe0 = +xFFFFF000 + i0 shl 2;
 
 	if (`pe0` = 0) then (
-		let `pe0` = alloc [] + 7;
+		let `pe0` = allocate-physical-page [] + 7;
 		declare p1 = `+xFFC00000 + i0 shl 12`;
 		fill-zeroes [p1,];
 	) else ();
 
 	let `+xFFC00000 + (logical shr 12) shl 2` = physical + 7;
 
-	asm/(
-		_ D8 (+x0F), -- MOV EAX, CR3
-		_ D8 (+x20),
-		_ D8 (+xD8),
-		_ D8 (+x0F), -- MOV CR3, EAX
-		_ D8 (+x22),
-		_ D8 (+xD8),
-	);
+	refresh-paging [];
 );
 
 declare unmap-page = [logical,] (
-	declare i0 = logical shr 22;
 	let `+xFFC00000 + (logical shr 12) shl 2` = 0;
 
-	declare p1 = +xFFC00000 + i0 shl 12;
+	declare i0 = logical shr 22;
+	declare pe0 = +xFFFFF000 + i0 shl 2;
+	declare pe1 = +xFFC00000 + i0 shl 12;
 	declare offset = 0;
 	declare isEmpty = 1;
 
 	while (offset < 4096) do (
-		let isEmpty = isEmpty and (`p1 + offset =+ 4` = 0);
+		let isEmpty = isEmpty and (`pe1 + offset =+ 4` = 0);
 	);
 
 	if (isEmpty) then (
-		free [`+xFFFFF000 + i0 shl 2` and +xFFFFFFFC,];
-		let `+xFFFFF000 + i0 shl 2` = 0;
+		free-physical-page [`pe0` and +xFFFFFFFC,];
+		let `pe0` = 0;
 	) else ();
 
-	asm/(
-		_ D8 (+x0F), -- MOV EAX, CR3
-		_ D8 (+x20),
-		_ D8 (+xD8),
-		_ D8 (+x0F), -- MOV CR3, EAX
-		_ D8 (+x22),
-		_ D8 (+xD8),
-	);
+	refresh-paging [];
 );
 
 -- Shows OK
