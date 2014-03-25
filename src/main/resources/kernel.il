@@ -180,10 +180,9 @@ declare unmap-page = [logical,] (
 	declare pe0 = +xFFFFF000 + (logical shr 22) shl 2;
 	declare pe1 = +xFFC00000 + (logical shr 12) shl 2;
 	declare p1 = pe1 and +xFFFFF000;
+	declare isEmpty = 1;
 
 	let `pe1` = 0;
-
-	declare isEmpty = 1;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4)
 		let isEmpty = isEmpty and (`p1 + offset` = 0)
