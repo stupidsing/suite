@@ -42,13 +42,10 @@ declare general-interrupt-handler = [dummy,]
 ;
 
 -- Sets up and loads IDT
-(
-	declare offset = 0;
-	while (offset < 2048) do (
-		let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
-		let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
-	);
-);
+for (declare offset = 0; offset < 2048;)
+	let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
+	let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
+;
 
 let `+x7C00` = +x7FF;
 let `+x7C02` = idt-address;
@@ -98,12 +95,11 @@ declare pagex = page0;
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 (
-	declare stackSize = 4 * (pagex - page0) shr 12;
-	declare page = page0 + (stackSize + 4096) and +xFFFFF000;
-
-	while (page < pagex) do (
-		let `stackx =+ 4` = page =+ 4096;
-	);
+	declare stack-size = 4 * (pagex - page0) shr 12;
+	declare first-page = page0 + (stack-size + 4096) and +xFFFFF000;
+	for (declare page = first-page; page < pagex; page =+ 4096)
+		let `stackx =+ 4` = page
+	;
 );
 
 declare allocate-physical-page = [] (
@@ -126,10 +122,10 @@ declare fill-zeroes = [page,] (
 	fill-zeroes [spt,];
 
 	declare offset = 0;
-	declare physical = 0;
-	while (physical < stackx) do (
-		let `spt + offset =+ 4` = physical =+ 4096 + 261; -- Supervisor, read-only
-	);
+	for (declare physical = 0; physical < stackx; physical =+ 4096)
+		let `spt + offset =+ 4` = physical + 261 -- Supervisor, read-only
+	;
+
 	let `spt` = 0; -- Trap zero pointers
 
 	declare rpt = allocate-physical-page [];
@@ -185,12 +181,11 @@ declare unmap-page = [logical,] (
 	declare i0 = logical shr 22;
 	declare pe0 = +xFFFFF000 + i0 shl 2;
 	declare pe1 = +xFFC00000 + i0 shl 12;
-	declare offset = 0;
 	declare isEmpty = 1;
 
-	while (offset < 4096) do (
-		let isEmpty = isEmpty and (`pe1 + offset =+ 4` = 0);
-	);
+	for (declare offset = 0; offset < 4096; offset =+ 4)
+		let isEmpty = isEmpty and (`pe1 + offset` = 0)
+	;
 
 	if (isEmpty) then (
 		free-physical-page [`pe0` and +xFFFFFFFC,];
