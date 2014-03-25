@@ -41,6 +41,7 @@ asis:.s (_a INC .op) .e0/.ex :- asi-1op:.s .op +x40 +xFE 0 .e0/.ex #
 asis:_s (_a INT 3) (+xCC, .e)/.e #
 asis:_s (_a INT .imm) (+xCD, .e0)/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s (_a INTO ()) (+xCE, .e)/.e #
+asis:_s (_a INVLPG .m) (+x0F, +x01, .e1)/.ex :- as-mod-num-rm:_ .m 7 .e1/.ex #
 asis:_s (_a IRET ()) (+xCF, .e)/.e #
 asis:_s (.a JE .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
 asis:_s (.a JG .target) .e0/.ex :- asi-jump .a .target +x7F +x0F +x8F .e0/.ex #
