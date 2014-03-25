@@ -162,30 +162,31 @@ declare refresh-paging = [] asm/(
 );
 
 declare map-page = [logical, physical,] (
-	declare i0 = logical shr 22;
-	declare pe0 = +xFFFFF000 + i0 shl 2;
+	declare pe0 = +xFFFFF000 + (logical shr 22) shl 2;
+	declare pe1 = +xFFC00000 + (logical shr 12) shl 2;
+	declare p1 = pe1 and +xFFFFF000;
 
 	if (`pe0` = 0) then (
 		let `pe0` = allocate-physical-page [] + 7;
-		declare p1 = `+xFFC00000 + i0 shl 12`;
 		fill-zeroes [p1,];
 	) else ();
 
-	let `+xFFC00000 + (logical shr 12) shl 2` = physical + 7;
+	let `pe1` = physical + 7;
 
 	refresh-paging [];
 );
 
 declare unmap-page = [logical,] (
-	let `+xFFC00000 + (logical shr 12) shl 2` = 0;
+	declare pe0 = +xFFFFF000 + (logical shr 22) shl 2;
+	declare pe1 = +xFFC00000 + (logical shr 12) shl 2;
+	declare p1 = pe1 and +xFFFFF000;
 
-	declare i0 = logical shr 22;
-	declare pe0 = +xFFFFF000 + i0 shl 2;
-	declare pe1 = +xFFC00000 + i0 shl 12;
+	let `pe1` = 0;
+
 	declare isEmpty = 1;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4)
-		let isEmpty = isEmpty and (`pe1 + offset` = 0)
+		let isEmpty = isEmpty and (`p1 + offset` = 0)
 	;
 
 	if (isEmpty) then (
