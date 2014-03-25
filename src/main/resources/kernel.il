@@ -1,3 +1,4 @@
+
 asm/(
 	_ MOV (ESP, +x2FFF0),
 	_ MOV (EBP, ESP),
@@ -42,19 +43,10 @@ declare general-interrupt-handler = [dummy,]
 ;
 
 -- Sets up and loads IDT
-<<<<<<< Updated upstream
 for (declare offset = 0; offset < 2048;)
 	let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
 	let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
 ;
-=======
-(
-	for (declare offset = 0; offset < 2048;)
-		let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
-		let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
-	;
-);
->>>>>>> Stashed changes
 
 let `+x7C00` = +x7FF;
 let `+x7C02` = idt-address;
