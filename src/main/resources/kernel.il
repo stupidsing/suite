@@ -115,10 +115,9 @@ declare free-physical-page = [page,] (
 );
 
 declare fill-zeroes = [page,] (
-	declare offset = 0;
-	while (offset < 4096) do (
-		`offset =+ 4` = 0;
-	)
+	for (declare offset = 0; offset < 4096; offset =+ 4)
+		let `offset` = 0
+	;
 );
 
 -- Sets up paging
