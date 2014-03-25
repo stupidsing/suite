@@ -5,7 +5,8 @@ ic-compile .fs .do0 .e0/.ex
 ic-compile _ () .e/.e
 #
 ic-compile .fs (.do0; .do1) .e0/.ex
-	:- ic-compile .fs .do0 .e0/.e1
+	:- not (.do0 = declare _ = _)
+	, ic-compile .fs .do0 .e0/.e1
 	, ic-compile .fs .do1 .e1/.ex
 #
 ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
