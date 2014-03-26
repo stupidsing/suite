@@ -53,7 +53,7 @@ public class IncludePreprocessor implements Fun<String, String> {
 			if (included.add(file.getAbsolutePath()))
 				doIncludes(file.getParentFile(), To.string(file), included, sb);
 
-			start = pos1;
+			start = pos1 + close.length();
 		}
 
 		sb.append(in.substring(start));
