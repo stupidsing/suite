@@ -42,10 +42,10 @@ declare general-interrupt-handler = [dummy,]
 ;
 
 -- Sets up and loads IDT
-for (declare offset = 0; offset < 2048;)
+for (declare offset = 0; offset < 2048;) (
 	let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
 	let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
-;
+);
 
 let `+x7C00` = +x7FF;
 let `+x7C02` = idt-address;
@@ -97,9 +97,9 @@ declare stackx = stack0;
 (
 	declare stack-size = 4 * (pagex - page0) shr 12;
 	declare first-page = page0 + (stack-size + 4096) and +xFFFFF000;
-	for (declare page = first-page; page < pagex; page =+ 4096)
-		let `stackx =+ 4` = page
-	;
+	for (declare page = first-page; page < pagex; page =+ 4096) (
+		let `stackx =+ 4` = page;
+	);
 );
 
 declare allocate-physical-page = [] (
@@ -111,9 +111,9 @@ declare free-physical-page = [page,] (
 );
 
 declare fill-zeroes = [page,] (
-	for (declare offset = 0; offset < 4096; offset =+ 4)
-		let `offset` = 0
-	;
+	for (declare offset = 0; offset < 4096; offset =+ 4) (
+		let `offset` = 0;
+	);
 );
 
 -- Sets up paging
@@ -122,9 +122,9 @@ declare fill-zeroes = [page,] (
 	fill-zeroes [spt,];
 
 	declare offset = 0;
-	for (declare physical = 0; physical < stackx; physical =+ 4096)
-		let `spt + offset =+ 4` = physical + 261 -- Supervisor, read-only
-	;
+	for (declare physical = 0; physical < stackx; physical =+ 4096) (
+		let `spt + offset =+ 4` = physical + 261; -- Supervisor, read-only
+	);
 
 	let `spt` = 0; -- Trap zero pointers
 
@@ -183,9 +183,9 @@ declare unmap-page = [logical,] (
 
 	let `pe1` = 0;
 
-	for (declare offset = 0; offset < 4096; offset =+ 4)
-		let isEmpty = isEmpty and (`p1 + offset` = 0)
-	;
+	for (declare offset = 0; offset < 4096; offset =+ 4) (
+		let isEmpty = isEmpty and (`p1 + offset` = 0);
+	);
 
 	if (isEmpty) then (
 		free-physical-page [`pe0` and +xFFFFFFFC,];
