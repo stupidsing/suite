@@ -91,7 +91,7 @@ declare pagex = page0;
 	) do ();
 );
 
--- Sets up page allocate-physical-pageator
+-- Sets up page allocate-physical-page
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 (
@@ -103,11 +103,11 @@ declare stackx = stack0;
 );
 
 declare allocate-physical-page = [] (
-	if (stack0 != stackx) then `stack0 =+ 4` else 0
+	if (stack0 != stackx) then `stack0 =+ 4` else 0;
 );
 
 declare free-physical-page = [page,] (
-	`stack0 += 4` = page
+	`stack0 += 4` = page;
 );
 
 declare fill-zeroes = [page,] (
