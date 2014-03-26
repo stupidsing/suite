@@ -24,7 +24,7 @@ public class BootMain extends ExecutableProgram {
 		// File("src/main/asm/kernel.asm")));
 
 		Bytes bootLoader = new Assembler(16).assemble(To.string(new File("src/main/asm/bootloader.asm")));
-		Bytes kernel = new ImperativeCompiler().compile(0x40000, To.string(new File("src/main/resources/kernel.il")));
+		Bytes kernel = new ImperativeCompiler().compile(0x40000, To.string(new File("src/main/il/kernel.il")));
 
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
 
