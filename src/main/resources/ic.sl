@@ -14,7 +14,7 @@ ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 		, .funLabel PUSH EBP
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace $$FRAME `$$FRAME` .do .do1
+	, replace this `this` .do .do1
 	, ic-replace-parameters .vars _ .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
@@ -37,7 +37,7 @@ ic-compile .fs (declare .var; .do) .e0/.ex
 	:- is.atom .var
 	, ic-push 0 .fs/.fs1 .e0/.e1
 	, let .offset (0 - .fs1)
-	, replace .var `$$FRAME + .offset` .do .do1
+	, replace .var `this + .offset` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ POP EDI, .ex)
 #
@@ -52,6 +52,18 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
 	, .e5 = (.endLabel (), .ex)
+#
+ic-compile .fs (invoke .this .sub [.params]) .e0/.ex
+	:- ic-push EBP .fs/.fs1 .e0/.e1
+	, ic-push-pop-parameters .fs1/.fs2 .params .e1/.e2 .e6/.e7
+	, ic-compile .fs2 .sub .e2/.e3
+	, ic-push EAX .fs2/.fs3 .e3/.e4
+	, ic-compile .fs3 .this .e4/.e5
+	, .e5 = (_ MOV (EBP, EAX)
+		, _ POP EAX
+		, _ CALL EAX
+		, .e6)
+	, .e7 = (_ POP EBP, .ex)
 #
 ic-compile .fs (while .while do .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
@@ -70,6 +82,8 @@ ic-compile .fs (let .var = .value) .e0/.ex
 	, ic-compile .fs1 .value .e2/.e3
 	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
 #
+ic-compile _ this (_ MOV (EAX, EBP), .e)/.e
+#
 ic-compile .fs (& `.pointer`) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
 #
@@ -83,8 +97,6 @@ ic-compile .fs .expr .e0/.ex
 	, ic-compile .fs .value0 .e0/.e1
 	, ic-push EAX .fs/.fs1 .e1/.e2
 	, ic-compile .fs1 .value1 .e2/.e3
-#
-ic-compile _ $$FRAME (_ MOV (EAX, EBP), .e)/.e
 #
 ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
@@ -106,7 +118,7 @@ ic-replace-parameters () 4 .do .do #
 ic-replace-parameters (.var, .vars) .s .do0 .dox
 	:- ic-replace-parameters .vars .s0 .do0 .do1
 	, let .s (.s0 + 4)
-	, replace .var `$$FRAME + .s` .do1 .dox
+	, replace .var `this + .s` .do1 .dox
 #
 
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f #
