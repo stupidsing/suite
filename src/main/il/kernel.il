@@ -7,6 +7,8 @@ asm/(
 declare idt-address = +x20000;
 declare memory-region-start = 1048576;
 
+#include(console.il)
+
 declare in = [port,] asm/(
 	_ MOV (EDX, `EBP + 8`),
 	_ XOR (EAX, EAX),
@@ -42,9 +44,14 @@ declare general-interrupt-handler = [dummy,]
 ;
 
 -- Sets up and loads IDT
-for (declare offset = 0; offset < 2048;) (
-	let `idt-address + offset =+ 4` = 8 shl 16 + general-interrupt-handler and +xFFFF;
-	let `idt-address + offset =+ 4` = general-interrupt-handler and +xFFFF0000 + +x8E00;
+declare set-idt-entry = [interrupt, handler,] (
+	declare p = idt-address + interrupt shl 3;
+	let `p + 0` = handler and +x0000FFFF + +x00080000;
+	let `p + 4` = +x00008E00 + handler and +xFFFF0000;
+);
+
+for (declare i = 0; i < 256; i =+ 1) (
+	set-idt-entry [i, general-interrupt-handler,];
 );
 
 let `+x7C00` = +x7FF;

@@ -15,7 +15,7 @@ ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 		, _ MOV (EBP, ESP)
 		, .e1)
 	, replace this `this` .do .do1
-	, ic-replace-parameters .vars _ .do1 .do2
+	, ic-replace-parameters .vars 4 .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
 		, _ POP EBP
@@ -114,11 +114,11 @@ ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; 
 ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
 
-ic-replace-parameters () 4 .do .do #
-ic-replace-parameters (.var, .vars) .s .do0 .dox
-	:- ic-replace-parameters .vars .s0 .do0 .do1
-	, let .s (.s0 + 4)
-	, replace .var `this + .s` .do1 .dox
+ic-replace-parameters () _ .do .do #
+ic-replace-parameters (.var, .vars) .s0 .do0 .dox
+	:- let .s (.s0 + 4)
+	, replace .var `this + .s` .do0 .do1
+	, ic-replace-parameters .vars .s .do1 .dox
 #
 
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f #
