@@ -41,7 +41,7 @@ fc-lazyify (USING _ .linkOption .lib .do0) (USING LAZY .linkOption .lib .do1)
 	:- !
 	, fc-lazyify .do0 .do1
 #
-fc-lazyify .p0 .p1 :- fc-transform .p0 .p1 .ts/(), fc-lazyify-list .ts #
+fc-lazyify .p0 .p1 :- fc-rewrite .p0 .p1 .ts/(), fc-lazyify-list .ts #
 
 fc-lazyify-list () #
 fc-lazyify-list (.t, .ts) :- fc-lazyify .t, fc-lazyify-list .ts #

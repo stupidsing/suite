@@ -9,7 +9,7 @@
 	, import.path 'fc-lazyify.sl'
 	, import.path 'fc-optimize.sl'
 	, import.path 'fc-parse.sl'
-	, import.path 'fc-transform.sl'
+	, import.path 'fc-rewrite.sl'
 	, import.path 'rbt.sl'
 #
 

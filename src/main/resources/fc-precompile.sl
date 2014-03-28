@@ -80,7 +80,7 @@ fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 fc-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
 -- Lazyifier and optimizer
-fc-transform ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
+fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
 -- Code generation
 fc-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
