@@ -16,6 +16,7 @@ public class FunTypeTest {
 	@Test
 	public void testBasic() {
 		assertType("boolean", "4 = 8");
+		assertType("number -> number -> number", "`*` . `+ 1`");
 	}
 
 	@Test
