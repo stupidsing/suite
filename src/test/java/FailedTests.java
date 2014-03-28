@@ -37,4 +37,9 @@ public class FailedTests {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
 	}
 
+	@Test
+	public void testType() {
+		Suite.evaluateFunType("`+ 1` . `*`");
+	}
+
 }
