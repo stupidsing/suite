@@ -129,11 +129,11 @@ fc-infer-type-rule .do .env .tr .type
 	, fc-infer-type-rule .do1 .env .tr .type
 #
 fc-infer-type-rule (.tag .var) _/.ve/_ .tr0/.trx .type
-	:- once (.tag = NEW-VAR; .tag = VAR)
-	, (fc-dict-get .ve .var/.varType
+	:- once (.tag = NEW-VAR; .tag = VAR), (
+		fc-dict-get .ve .var/.varType
 		, !, .tr0 = (CLONE-TO-FROM-TYPES .type .varType, .trx)
+		; fc-error "Undefined variable" .var
 	)
-	; !, fc-error "Undefined variable" .var
 #
 
 fc-find-simple-type (CONSTANT _) _ _ #
