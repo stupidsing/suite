@@ -26,7 +26,7 @@ public class JsMain extends ExecutableProgram {
 	private final ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 	public static void main(String args[]) {
-		Util.run(JsMain.class, args);
+		Util.run(new JsMain(), args);
 	}
 
 	protected synchronized boolean run(String args[]) throws IOException, ScriptException {

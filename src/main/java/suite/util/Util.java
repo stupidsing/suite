@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 
+import suite.sample.Profiler;
+
 public class Util {
 
 	public static abstract class ExecutableProgram implements AutoCloseable {
@@ -229,23 +231,35 @@ public class Util {
 		return list.subList(Math.min(size, pos), size);
 	}
 
-	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
+	public static void run(ExecutableProgram main_, String args[]) {
+		run(main_, args, false);
+	}
+
+	public static void runProfiled(ExecutableProgram main_, String args[]) {
+		run(main_, args, true);
+	}
+
+	private static void run(final ExecutableProgram main_, final String args[], boolean isProfile) {
 		LogUtil.initLog4j(Level.INFO);
-		int code;
+		final int code[] = new int[1];
 
-		try (ExecutableProgram main_ = clazz.newInstance()) {
-			try {
-				code = main_.run(args) ? 0 : 1;
-			} catch (Throwable ex) {
-				LogUtil.fatal(ex);
-				code = 2;
+		Runnable runnable = new Runnable() {
+			public void run() {
+				try {
+					code[0] = main_.run(args) ? 0 : 1;
+				} catch (Throwable ex) {
+					LogUtil.fatal(ex);
+					code[0] = 2;
+				}
 			}
-		} catch (ReflectiveOperationException ex) {
-			LogUtil.fatal(ex);
-			code = 2;
-		}
+		};
 
-		System.exit(code);
+		if (isProfile)
+			System.out.println(new Profiler().profile(runnable));
+		else
+			runnable.run();
+
+		System.exit(code[0]);
 	}
 
 	public static void sleepQuietly(long time) {

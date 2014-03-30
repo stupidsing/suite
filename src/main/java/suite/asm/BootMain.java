@@ -14,7 +14,7 @@ import suite.util.Util.ExecutableProgram;
 public class BootMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
-		Util.run(BootMain.class, args);
+		Util.run(new BootMain(), args);
 	}
 
 	@Override
