@@ -26,7 +26,7 @@ public class PrecompileMain extends ExecutableProgram {
 	);
 
 	public static void main(String args[]) throws IOException {
-		Util.run(new PrecompileMain(), args);
+		Util.run(PrecompileMain.class, args);
 	}
 
 	protected boolean run(String args[]) {

@@ -231,33 +231,35 @@ public class Util {
 		return list.subList(Math.min(size, pos), size);
 	}
 
-	public static void run(ExecutableProgram main_, String args[]) {
-		run(main_, args, false);
+	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
+		run(clazz, args, false);
 	}
 
-	public static void runProfiled(ExecutableProgram main_, String args[]) {
-		run(main_, args, true);
-	}
-
-	private static void run(final ExecutableProgram main_, final String args[], boolean isProfile) {
+	private static void run(Class<? extends ExecutableProgram> clazz, final String args[], boolean isProfile) {
 		LogUtil.initLog4j(Level.INFO);
+		Runnable runnable;
 		final int code[] = new int[1];
 
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					code[0] = main_.run(args) ? 0 : 1;
-				} catch (Throwable ex) {
-					LogUtil.fatal(ex);
-					code[0] = 2;
+		try (ExecutableProgram main_ = clazz.newInstance()) {
+			runnable = new Runnable() {
+				public void run() {
+					try {
+						code[0] = main_.run(args) ? 0 : 1;
+					} catch (Throwable ex) {
+						LogUtil.fatal(ex);
+						code[0] = 2;
+					}
 				}
-			}
-		};
+			};
 
-		if (isProfile)
-			System.out.println(new Profiler().profile(runnable));
-		else
-			runnable.run();
+			if (!isProfile)
+				runnable.run();
+			else
+				System.out.println(new Profiler().profile(runnable));
+		} catch (ReflectiveOperationException ex) {
+			LogUtil.fatal(ex);
+			code[0] = 2;
+		}
 
 		System.exit(code[0]);
 	}

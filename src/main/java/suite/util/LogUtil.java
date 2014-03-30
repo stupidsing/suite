@@ -64,27 +64,6 @@ public class LogUtil {
 		suiteLog.fatal(isTrimmed ? "(Trimmed)" : "", th);
 	}
 
-	private static boolean trimStackTrace(Throwable th) {
-		boolean isTrimmed = false;
-
-		// Trims stack trace to appropriate length
-		while (th != null) {
-			StackTraceElement st0[] = th.getStackTrace();
-
-			if (st0.length > maxStackTraceLength) {
-				StackTraceElement st1[] = new StackTraceElement[maxStackTraceLength];
-				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
-				th.setStackTrace(st1);
-
-				isTrimmed = true;
-			}
-
-			th = th.getCause();
-		}
-
-		return isTrimmed;
-	}
-
 	public static <I> I proxy(Class<I> interface_, final I object) {
 		@SuppressWarnings("unchecked")
 		final Class<I> clazz = (Class<I>) object.getClass();
@@ -124,6 +103,27 @@ public class LogUtil {
 		@SuppressWarnings("unchecked")
 		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
 		return proxied;
+	}
+
+	private static boolean trimStackTrace(Throwable th) {
+		boolean isTrimmed = false;
+
+		// Trims stack trace to appropriate length
+		while (th != null) {
+			StackTraceElement st0[] = th.getStackTrace();
+
+			if (st0.length > maxStackTraceLength) {
+				StackTraceElement st1[] = new StackTraceElement[maxStackTraceLength];
+				Copy.array(st0, 0, st1, 0, maxStackTraceLength);
+				th.setStackTrace(st1);
+
+				isTrimmed = true;
+			}
+
+			th = th.getCause();
+		}
+
+		return isTrimmed;
 	}
 
 }

@@ -31,7 +31,7 @@ public class Main extends ExecutableProgram {
 	private Writer writer = new OutputStreamWriter(System.out, FileUtil.charset);
 
 	public static void main(String args[]) {
-		Util.run(new Main(), args);
+		Util.run(Main.class, args);
 	}
 
 	protected boolean run(String args[]) throws IOException {
