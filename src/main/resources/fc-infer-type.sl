@@ -35,22 +35,23 @@ fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
 fc-infer-type-rule (DEF-VAR .name .value .do) .ue/.ve/.te .tr0/.trx .type
-	:- !
-	, fc-dict-add .name/.varType .ue/.ue1
+	:- fc-dict-add .name/.varType .ue/.ue1
 	, .env1 = .ue1/.ve/.te
 	, once (fc-infer-type-rule .value .env1 .tr0/.tr1 .varType
 		; fc-error "at variable" .name
 	)
 	, fc-infer-type-rule .do .env1 .tr1/.trx .type
 #
+fc-infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
+	:- fc-dict-add .var/.varType .ue/.ue1
+	, fc-infer-type-rule .do .ue1/.ve/.te .tr .type
+#
 fc-infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
-	:- !
-	, fc-infer-type-rule .if .env .tr0/.tr1 BOOLEAN
+	:- fc-infer-type-rule .if .env .tr0/.tr1 BOOLEAN
 	, fc-infer-compatible-types .then .else .env .tr1/.trx .type
 #
 fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
-	:- !
-	, fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
+	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
 	, fc-infer-type-rule .param .ue/.ve/.te .tr1/.tr2 .actualParamType
 	, .tr2 = (SUB-SUPER-TYPES .te (FUN-OF .signParamType .type) .funType
 		, SUB-SUPER-TYPES .te .actualParamType .signParamType
@@ -58,8 +59,7 @@ fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
 	)
 #
 fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
-	:- !
-	, fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
+	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
 	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
 fc-infer-type-rule (
@@ -105,11 +105,6 @@ fc-infer-type-rule (PRAGMA (VERIFY-TYPE .var .varType) .do) .env .tr0/.trx .type
 	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
 	, fc-infer-type-rule .do .env .tr1/.trx .type
 #
-fc-infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
-	:- !
-	, fc-dict-add .var/.varType .ue/.ue1
-	, fc-infer-type-rule .do .ue1/.ve/.te .tr .type
-#
 fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
 	, fc-infer-compatible-types .left .right .env .tr0/.tr1 .type
@@ -122,8 +117,7 @@ fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	, .type = BOOLEAN
 #
 fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
-	:- !
-	, fc-load-precompiled-library .lib (.pred # _ # _ #)
+	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
 	, generalize .pred (
 		fc-infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail
 	)
@@ -132,7 +126,6 @@ fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
 #
 fc-infer-type-rule .do .env .tr .type
 	:- (.do = PRAGMA _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
-	, !
 	, fc-infer-type-rule .do1 .env .tr .type
 #
 fc-infer-type-rule (.tag .var) _/.ve/_ .tr0/.trx .type
