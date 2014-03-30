@@ -37,7 +37,7 @@ lc-compile-call .call .pls .c0/.cx/.label
 		, _ TOP .provenReg -2
 		, .c1
 	)
-	, .rem = AND ($$BYTECODE _ CALL-CLOSURE .provenReg) FAIL
+	, .rem = AND (BYTECODE _ CALL-CLOSURE .provenReg) FAIL
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .failLabel) .c1/.c2/.c3/.c4
 	, .c2 = (.failLabel LABEL
 		, _ TOP .pitReg -3
@@ -126,111 +126,25 @@ lc-parse-pattern .a (ATOM .a) () :- is.atom .a #
 lc-parse-pattern .i (NUMBER .i) () :- is.int .i #
 lc-parse-pattern .s (STRING .s) () :- is.string .s #
 
+lc-compile (BYTECODE .bytecode) .rem .env .c0/.cx/.d0/.dx
+	:- .c0 = (.bytecode, .c1)
+	, lc-compile .rem YES .env .c1/.cx/.d0/.dx
+#
 lc-compile (
 	DEFINE-NEW-VARS (.var/.reg, .varRegs) .do
 ) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, .c0 = (_ NEW-NODE .reg, .c1)
+	:- .c0 = (_ NEW-NODE .reg, .c1)
 	, lc-compile (DEFINE-NEW-VARS .varRegs .do)
 		.rem .pls/(.var/.reg, .vs)/.cut .c1/.cx/.d0/.dx
 #
 lc-compile (DEFINE-NEW-VARS () .do) .rem .env .c0/.cx/.d0/.dx
-	:- !, lc-compile .do .rem .env .c0/.cx/.d0/.dx
-#
-lc-compile ($$BYTECODE .bytecode) .rem .env .c0/.cx/.d0/.dx
-	:- !, .c0 = (.bytecode, .c1)
-	, lc-compile .rem YES .env .c1/.cx/.d0/.dx
-#
-lc-compile ($$SCOPE .call .pls1) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, once (.rem/.rem1 = YES/YES; .rem1 = $$SCOPE .rem .pls)
-	, lc-compile .call .rem1 .pls1/.vs/.cut .c0/.cx/.d0/.dx
-#
-lc-compile FAIL _ _ .c/.c/.d/.d :- ! #
-lc-compile YES .rem .env .c0/.cx/.d0/.dx
-	:- !, lc-compile .rem YES .env .c0/.cx/.d0/.dx
+	:- lc-compile .do .rem .env .c0/.cx/.d0/.dx
 #
 lc-compile (AND .a .b) .rem .env .c0/.cx/.d0/.dx
-	:- !, lc-compile .a (AND .b .rem) .env .c0/.cx/.d0/.dx
-#
-lc-compile (OR FAIL .do) .ps :- !, lc-compile .do .ps #
-lc-compile (OR .do FAIL) .ps :- !, lc-compile .do .ps #
-lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, .bc = CALL .label
-	, .c0 = (_ BIND-MARK .pitReg, .c1)
-	, lc-compile (AND .a ($$BYTECODE _ .bc)) FAIL .pls/.vs/.cut .c1/.c2/.d0/.d1
-	, .c2 = (_ BIND-UNDO .pitReg, .c3)
-	, lc-compile (AND .b ($$BYTECODE _ .bc)) FAIL .pls/.vs/.cut .c3/.cx/.d1/.d2
-	, .d2 = (.label LABEL, .d3)
-	, lc-compile .rem YES .pls/.vs/.cut .d3/.d4/.d5/.dx
-	, .d4 = (_ RETURN, .d5)
-#
-lc-compile CUT .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, lc-compile (CUT .cut) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-#
-lc-compile (CUT .cspReg .dspReg .failLabel) .rem .env .c0/.cx/.d0/.dx
-	:- !
-	, lc-compile .rem YES .env .c0/.c1/.d0/.dx
-	, .c1 = (_ RESTORE-DSP .dspReg
-		, _ RESTORE-CSP .cspReg
-		, _ JUMP .failLabel
-		, .cx
-	)
-#
-lc-compile (ONCE .do) .rem .env .c0/.cx/.d0/.dx
-	:- !
-	, .c0 = (_ BACKUP-CSP .cspReg
-		, _ BACKUP-DSP .dspReg
-		, .c1
-	)
-	, lc-compile .do (AND (CUT .cspReg .dspReg .failLabel) .rem) .env .c1/.c2/.d0/.dx
-	, .c2 = (.failLabel LABEL, .cx)
-#
-lc-compile (NOT .do) .rem .env .c0/.cx/.d0/.dx
-	:- !
-	, .c0 = (_ BIND-MARK .pit
-		, _ BACKUP-CSP .cspReg
-		, _ BACKUP-DSP .dspReg
-		, .c1
-	)
-	, lc-compile .do (AND (CUT .cspReg .dspReg .failLabel) FAIL) .env .c1/.c2/.d0/.d1
-	, lc-compile .rem YES .env .c2/.c3/.d1/.dx
-	, .c3 = (.failLabel LABEL
-		, _ BIND-UNDO .pit
-		, .cx
-	)
-#
-lc-compile (EQ .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, lc-bind .a .b .vs .c0/.c1/.c2/.cx
-	, lc-compile .rem YES .pls/.vs/.cut .c1/.c2/.d0/.dx
-#
-lc-compile (.oper .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- member (EQ, GE, GT, LE, LT, NE,) .oper
-	, !
-	, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
-	, lc-create-node .a .vs .c0/.c1/.reg0
-	, lc-create-node .b .vs .c1/.c2/.reg1
-	, .c2 = (_ .inst .resultReg .reg0 .reg1
-		, _ IF-FALSE .failLabel .resultReg
-		, .c3
-	)
-	, lc-compile .rem YES .pls/.vs/.cut .c3/.c4/.d0/.dx
-	, .c4 = (.failLabel LABEL, .c5)
-	, .c5 = .cx
-#
-lc-compile (DEFINE-RULES .rules .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, lc-merge-rules .rules .groups
-	, lc-prototype-labels .groups .pls/.pls1
-	, lc-compile-rules .groups .pls1 .d1/.dx
-	, !, lc-compile ($$SCOPE .call .pls1) .rem .pls/.vs/.cut .c0/.cx/.d0/.d1
+	:- lc-compile .a (AND .b .rem) .env .c0/.cx/.d0/.dx
 #
 lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, lc-call-prototype .call .proto
+	:- lc-call-prototype .call .proto
 	, lc-create-node .call .vs .c0/.c1/.reg, (
 		member .pls .proto/.callLabel, !
 		, .c1 = (_ ASSIGN-CLOSURE .provenReg .provenLabel
@@ -252,12 +166,87 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 		, .c3 = (.failLabel LABEL, .cx)
 	)
 #
+lc-compile CUT .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+	:- lc-compile (CUT .cut) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+#
+lc-compile (CUT .cspReg .dspReg .failLabel) .rem .env .c0/.cx/.d0/.dx
+	:- lc-compile .rem YES .env .c0/.c1/.d0/.dx
+	, .c1 = (_ RESTORE-DSP .dspReg
+		, _ RESTORE-CSP .cspReg
+		, _ JUMP .failLabel
+		, .cx
+	)
+#
+lc-compile (DEFINE-RULES .rules .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+	:- lc-merge-rules .rules .groups
+	, lc-prototype-labels .groups .pls/.pls1
+	, lc-compile-rules .groups .pls1 .d1/.dx
+	, !, lc-compile (SCOPE .call .pls1) .rem .pls/.vs/.cut .c0/.cx/.d0/.d1
+#
+lc-compile (EQ .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+	:- lc-bind .a .b .vs .c0/.c1/.c2/.cx
+	, lc-compile .rem YES .pls/.vs/.cut .c1/.c2/.d0/.dx
+#
+lc-compile FAIL _ _ .c/.c/.d/.d #
+lc-compile (ONCE .do) .rem .env .c0/.cx/.d0/.dx
+	:- .c0 = (_ BACKUP-CSP .cspReg
+		, _ BACKUP-DSP .dspReg
+		, .c1
+	)
+	, lc-compile .do (AND (CUT .cspReg .dspReg .failLabel) .rem) .env .c1/.c2/.d0/.dx
+	, .c2 = (.failLabel LABEL, .cx)
+#
+lc-compile (OR FAIL .do) .ps :- lc-compile .do .ps #
+lc-compile (OR .do FAIL) .ps :- lc-compile .do .ps #
+lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+	:- .bc = CALL .label
+	, .c0 = (_ BIND-MARK .pitReg, .c1)
+	, lc-compile (AND .a (BYTECODE _ .bc)) FAIL .pls/.vs/.cut .c1/.c2/.d0/.d1
+	, .c2 = (_ BIND-UNDO .pitReg, .c3)
+	, lc-compile (AND .b (BYTECODE _ .bc)) FAIL .pls/.vs/.cut .c3/.cx/.d1/.d2
+	, .d2 = (.label LABEL, .d3)
+	, lc-compile .rem YES .pls/.vs/.cut .d3/.d4/.d5/.dx
+	, .d4 = (_ RETURN, .d5)
+#
+lc-compile (NOT .do) .rem .env .c0/.cx/.d0/.dx
+	:- .c0 = (_ BIND-MARK .pit
+		, _ BACKUP-CSP .cspReg
+		, _ BACKUP-DSP .dspReg
+		, .c1
+	)
+	, lc-compile .do (AND (CUT .cspReg .dspReg .failLabel) FAIL) .env .c1/.c2/.d0/.d1
+	, lc-compile .rem YES .env .c2/.c3/.d1/.dx
+	, .c3 = (.failLabel LABEL
+		, _ BIND-UNDO .pit
+		, .cx
+	)
+#
+lc-compile (SCOPE .call .pls1) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+	:- once (.rem/.rem1 = YES/YES; .rem1 = SCOPE .rem .pls)
+	, lc-compile .call .rem1 .pls1/.vs/.cut .c0/.cx/.d0/.dx
+#
 lc-compile (SYSTEM-CALL .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
-	:- !
-	, lc-create-node .call .vs .c0/.c1/.reg
+	:- lc-create-node .call .vs .c0/.c1/.reg
 	, .c1 = (_ PROVE-SYS .reg .failLabel, .c2)
 	, lc-compile .rem YES .pls/.vs/.cut .c2/.c3/.d0/.dx
 	, .c3 = (.failLabel LABEL, .cx)
+#
+lc-compile YES .rem .env .c0/.cx/.d0/.dx
+	:- lc-compile .rem YES .env .c0/.cx/.d0/.dx
+#
+lc-compile (.oper .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
+	:- member (EQ, GE, GT, LE, LT, NE,) .oper
+	, !
+	, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
+	, lc-create-node .a .vs .c0/.c1/.reg0
+	, lc-create-node .b .vs .c1/.c2/.reg1
+	, .c2 = (_ .inst .resultReg .reg0 .reg1
+		, _ IF-FALSE .failLabel .resultReg
+		, .c3
+	)
+	, lc-compile .rem YES .pls/.vs/.cut .c3/.c4/.d0/.dx
+	, .c4 = (.failLabel LABEL, .c5)
+	, .c5 = .cx
 #
 
 lc-merge-rules () _ #
@@ -311,7 +300,7 @@ lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
 
 lc-flatten-rules () FAIL :- ! #
 lc-flatten-rules (RULE .nv .head .tail, .remains) (OR .head2 .tail1)
-	:- .head1 = AND ($$BYTECODE _ TOP .reg -1) AND (EQ $$REG:.reg .head) .tail
+	:- .head1 = AND (BYTECODE _ TOP .reg -1) AND (EQ $$REG:.reg .head) .tail
 	, lc-define-new-variables .head1 .nv .head2
 	, lc-flatten-rules .remains .tail1
 #
