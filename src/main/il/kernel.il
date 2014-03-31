@@ -54,11 +54,13 @@ for (declare i = 0; i < 256; i =+ 1) (
 	set-idt-entry [i, general-interrupt-handler,];
 );
 
-let `+x7C00` = +x7FF;
-let `+x7C02` = idt-address;
+allocate idtr/8;
+let `idtr` = +x7FF;
+let `idtr + 2` = idt-address;
+idtr;
 
 asm/(
-	_ LIDT (`+x7C00`),
+	_ LIDT (`EAX`),
 );
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
