@@ -4,6 +4,7 @@ asm/(
 	_ MOV (`+x40000`, EBP),
 );
 
+declare kernel-this = this;
 declare idt-address = +x20000;
 declare memory-region-start = 1048576;
 
@@ -183,7 +184,7 @@ declare map-page = [logical, physical,] (
 
 	let `pe1` = physical + 7;
 
-	refresh-paging [];
+	invoke kernel-this refresh-paging [];
 );
 
 declare unmap-page = [logical,] (
@@ -203,7 +204,7 @@ declare unmap-page = [logical,] (
 		let `pe0` = 0;
 	) else ();
 
-	refresh-paging [];
+	invoke kernel-this refresh-paging [];
 );
 
 -- Shows OK
