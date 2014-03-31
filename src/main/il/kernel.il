@@ -43,7 +43,7 @@ declare general-interrupt-handler = [dummy,]
 	);
 ;
 
--- Sets up and loads IDT
+-- Sets up and loads interrupt descriptor table
 declare set-idt-entry = [interrupt, handler,] (
 	declare p = idt-address + interrupt shl 3;
 	let `p + 0` = handler and +x0000FFFF + +x00080000;
