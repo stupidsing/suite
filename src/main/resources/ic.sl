@@ -5,7 +5,7 @@ ic-compile .fs .do0 .e0/.ex
 ic-compile _ () .e/.e
 #
 ic-compile .fs (.do0; .do1) .e0/.ex
-	:- not (.do0 = declare _; .do0 = declare _ = _)
+	:- not (.do0 = allocate _ = _; .do0 = declare _; .do0 = declare _ = _)
 	, ic-compile .fs .do0 .e0/.e1
 	, ic-compile .fs .do1 .e1/.ex
 #
@@ -33,13 +33,14 @@ ic-compile _ asm/ .e/.e
 ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
 	:- ic-compile _ asm/.is .e1/.ex
 #
-ic-compile .fs (declare .var; .do) .e0/.ex
+ic-compile .fs (allocate .var/.size; .do) .e0/.ex
 	:- is.atom .var
-	, ic-push 0 .fs/.fs1 .e0/.e1
+	, .e0 = (_ SUB (ESP, .size), .e1)
+	, let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
 	, replace .var `this + .offset` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
-	, .e2 = (_ POP EDI, .ex)
+	, .e2 = (_ ADD (ESP, .size), .ex)
 #
 ic-compile .fs (if .if then .then else .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
@@ -65,6 +66,14 @@ ic-compile .fs (invoke .this .sub [.params]) .e0/.ex
 		, .e6)
 	, .e7 = (_ POP EBP, .ex)
 #
+ic-compile .fs (let .var = .value) .e0/.ex
+	:- ic-compile .fs (& .var) .e0/.e1
+	, ic-push EAX .fs/.fs1 .e1/.e2
+	, ic-compile .fs1 .value .e2/.e3
+	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
+#
+ic-compile _ this (_ MOV (EAX, EBP), .e)/.e
+#
 ic-compile .fs (while .while do .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
 	, ic-compile .fs .while .e1/.e2
@@ -75,14 +84,6 @@ ic-compile .fs (while .while do .do) .e0/.ex
 	, .e4 = (_ JMP DWORD .nextLabel
 		, .endLabel ()
 		, .ex)
-#
-ic-compile .fs (let .var = .value) .e0/.ex
-	:- ic-compile .fs (& .var) .e0/.e1
-	, ic-push EAX .fs/.fs1 .e1/.e2
-	, ic-compile .fs1 .value .e2/.e3
-	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
-#
-ic-compile _ this (_ MOV (EAX, EBP), .e)/.e
 #
 ic-compile .fs (& `.pointer`) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
@@ -107,6 +108,9 @@ ic-compile-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p
 #
 ic-compile-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
+#
+ic-compile-sugar (declare .var; .do) (allocate .var/4; .do)
+	:- is.atom .var
 #
 ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
 	:- is.atom .var

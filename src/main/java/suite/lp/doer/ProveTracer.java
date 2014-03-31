@@ -1,6 +1,10 @@
 package suite.lp.doer;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
 
 import suite.lp.doer.ProverConfig.TraceLevel;
@@ -105,7 +109,37 @@ public class ProveTracer {
 		return query;
 	}
 
-	public String getDump() {
+	public String getTrace() {
+		return log(records);
+	}
+
+	public String getStackTrace() {
+		return log(currentRecord);
+	}
+
+	public String getFailTrace() {
+		if (!records.isEmpty() && records.get(0).nOkays == 0)
+			return log(Collections.max(records, new Comparator<Record>() {
+				public int compare(Record record0, Record record1) {
+					int depth0 = record0.nOkays == 0 ? record0.depth : 0;
+					int depth1 = record1.nOkays == 0 ? record1.depth : 0;
+					return depth0 - depth1;
+				}
+			}));
+		else
+			return "-";
+	}
+
+	private String log(Record record) {
+		Deque<Record> deque = new ArrayDeque<>();
+		while (record != null) {
+			deque.addFirst(record);
+			record = record.parent;
+		}
+		return log(new ArrayList<>(deque));
+	}
+
+	private String log(List<Record> records) {
 		int size = records.size();
 
 		// This method could be invoked in shutdown hook and the prover might
@@ -114,22 +148,6 @@ public class ProveTracer {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < size; i++)
 			records.get(i).appendTo(sb);
-		return sb.toString();
-	}
-
-	public String getStackTrace() {
-		List<Node> traces = new ArrayList<>();
-		Record record = currentRecord;
-
-		while (record != null) {
-			traces.add(record.query);
-			record = record.parent;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = traces.size(); i > 0; i--)
-			sb.append(traces.get(i - 1) + "\n");
-
 		return sb.toString();
 	}
 

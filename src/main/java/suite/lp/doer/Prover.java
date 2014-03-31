@@ -72,8 +72,8 @@ public class Prover {
 		Thread hook = new Thread() {
 			public void run() {
 				String d = To.string(new Date());
-				String dump = tracer.getDump();
-				LogUtil.info("-- Prover dump at " + d + " --\n" + dump);
+				LogUtil.info("-- Trace dump at " + d + " --\n" + tracer.getTrace());
+				LogUtil.info("-- Fail dump at " + d + " --\n" + tracer.getFailTrace());
 			}
 		};
 
