@@ -1,8 +1,6 @@
-asm/(
-	_ MOV (ESP, +x2FFF0),
-	_ MOV (EBP, ESP),
-	_ MOV (`+x40000`, EBP),
-);
+asm _ MOV (ESP, +x2FFF0);
+asm _ MOV (EBP, ESP);
+asm _ MOV (`+x40000`, EBP);
 
 declare kernel-this = this;
 declare idt-address = +x20000;
@@ -10,39 +8,35 @@ declare memory-region-start = 1048576;
 
 #include(console.il)
 
-declare in = [port,] asm/(
-	_ MOV (EDX, `EBP + 8`),
-	_ XOR (EAX, EAX),
-	_ IN (AL, DX),
+declare in = [port,] (
+	asm _ MOV (EDX, `EBP + 8`);
+	asm _ XOR (EAX, EAX);
+	asm _ IN (AL, DX);
 );
 
-declare out = [port, value,] asm/(
-	_ MOV (EDX, `EBP + 8`),
-	_ MOV (EAX, `EBP + 12`),
-	_ OUT (DX, AL),
+declare out = [port, value,] (
+	asm _ MOV (EDX, `EBP + 8`);
+	asm _ MOV (EAX, `EBP + 12`);
+	asm _ OUT (DX, AL);
 );
 
-declare general-interrupt-handler = [dummy,]
-	asm/(
-		_ PUSHA (),
-		_ PUSH (`+x40000`),
-		_ MOV (EBP, ESP),
-	);
+declare general-interrupt-handler = [dummy,] (
+	asm _ PUSHA ();
+	asm _ PUSH (`+x40000`);
+	asm _ MOV (EBP, ESP);
 
 	-- Sends end of interrupt signal
 	out [+x20, +x20,];
 
 	`+xB8000` =+ 1;
 
-	asm/(
-		_ MOV (ESP, EBP),
-		_ POP (EAX),
-		_ POPA (),
-		_ MOV (ESP, EBP),
-		_ POP (EBP),
-		_ IRET (),
-	);
-;
+	asm _ MOV (ESP, EBP);
+	asm _ POP (EAX);
+	asm _ POPA ();
+	asm _ MOV (ESP, EBP);
+	asm _ POP (EBP);
+	asm _ IRET ();
+);
 
 -- Sets up and loads interrupt descriptor table
 declare set-idt-entry = [interrupt, handler,] (
@@ -61,9 +55,7 @@ for (declare i = 0; i < 256; i =+ 1) (
 	let `idtr + 2` = idt-address;
 	idtr;
 
-	asm/(
-		_ LIDT (`EAX`),
-	);
+	asm _ LIDT (`EAX`);
 );
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
@@ -88,9 +80,7 @@ out [+x40, 11932 % 256,];
 out [+x40, 11932 / 256,];
 out [+x21, +xFC,];
 
-asm/(
-	_ STI (),
-);
+asm _ STI ();
 
 -- Detects memory size
 declare page0 = memory-region-start;
@@ -147,29 +137,23 @@ declare fill-zeroes = [page,] (
 	let `rpt + 4092` = rpt + 1; -- Maps itself
 	rpt;
 
-	asm/(
-		_ D8 (+x0F), -- MOV CR3, EAX
-		_ D8 (+x22),
-		_ D8 (+xD8),
-		_ D8 (+x0F), -- MOV EAX, CR0
-		_ D8 (+x20),
-		_ D8 (+xC0),
-		_ OR (EAX, +x80000000),
-		_ D8 (+x0F), -- MOV CR0, EAX
-		_ D8 (+x22),
-		_ D8 (+xC0),
-		_ D8 (+xEB), -- JMP $ + 2
-		_ D8 (+x00),
-	);
+	asm _ D8 (+x0F); -- MOV CR3, EAX
+	asm _ D8 (+x22);
+	asm _ D8 (+xD8);
+	asm _ D8 (+x0F); -- MOV EAX, CR0
+	asm _ D8 (+x20);
+	asm _ D8 (+xC0);
+	asm _ OR (EAX, +x80000000);
+	asm _ D8 (+x0F); -- MOV CR0, EAX
+	asm _ D8 (+x22);
+	asm _ D8 (+xC0);
+	asm _ D8 (+xEB); -- JMP $ + 2
+	asm _ D8 (+x00);
 );
 
-declare refresh-paging = [] asm/(
-	_ D8 (+x0F), -- MOV EAX, CR3
-	_ D8 (+x20),
-	_ D8 (+xD8),
-	_ D8 (+x0F), -- MOV CR3, EAX
-	_ D8 (+x22),
-	_ D8 (+xD8),
+declare refresh-paging = [logical,] (
+	logical;
+	asm _ INVLPG `EAX`;
 );
 
 declare map-page = [logical, physical,] (
@@ -184,7 +168,7 @@ declare map-page = [logical, physical,] (
 
 	let `pe1` = physical + 7;
 
-	invoke kernel-this refresh-paging [];
+	invoke kernel-this refresh-paging [logical,];
 );
 
 declare unmap-page = [logical,] (
@@ -204,13 +188,11 @@ declare unmap-page = [logical,] (
 		let `pe0` = 0;
 	) else ();
 
-	invoke kernel-this refresh-paging [];
+	invoke kernel-this refresh-paging [logical,];
 );
 
 -- Shows OK
 let `+xB8000` = +x704B704F;
 
-asm/(
-	.loop HLT (),
-	_ JMP (.loop),
-);
+asm .loop HLT ();
+asm _ JMP (.loop);

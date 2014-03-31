@@ -28,10 +28,7 @@ ic-compile .fs (.sub [.params]) .e0/.ex -- Traditional subroutine invocation
 	, ic-compile .fs1 .sub .e1/.e2
 	, .e2 = (_ CALL EAX, .e3)
 #
-ic-compile _ asm/ .e/.e
-#
-ic-compile _ asm/(.i, .is) (.i, .e1)/.ex
-	:- ic-compile _ asm/.is .e1/.ex
+ic-compile _ (asm .i) (.i, .e)/.e
 #
 ic-compile .fs (allocate .var/.size; .do) .e0/.ex
 	:- is.atom .var
