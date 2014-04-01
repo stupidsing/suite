@@ -137,38 +137,38 @@ ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
 #
 
 ic-operator .op (
-	_ MOV (EBX, EAX)
-	, _ POP (EAX)
-	, _ .insn (EAX, EBX)
-	, .e
+	_ MOV (EBX, EAX),
+	_ POP (EAX),
+	_ .insn (EAX, EBX),
+	.e
 )/.e
 	:- ic-operator-insn .op .insn
 #
 ic-operator .op (
-	_ POP (EBX)
-	, _ CMP (EBX, EAX)
-	, _ .setcc (AL)
-	, _ MOVSX (EAX, AL)
-	, .e
+	_ POP (EBX),
+	_ CMP (EBX, EAX),
+	_ .setcc (AL),
+	_ MOVSX (EAX, AL),
+	.e
 )/.e
 	:- ic-operator-setcc .op .setcc
 #
 ic-operator ' / ' (
-	_ MOV (EBX, EAX)
-	, _ XOR (EDX, EDX)
-	, _ POP (EAX)
-	, _ IDIV (EBX)
-	, .e
+	_ MOV (EBX, EAX),
+	_ XOR (EDX, EDX),
+	_ POP (EAX),
+	_ IDIV (EBX),
+	.e
 )/.e #
 ic-operator ' %% ' .e0/.ex
 	:- ic-operator ' / ' .e0/.e1
 	, .e1 = (_ MOV (EAX, EDX), .ex)
 #
 ic-operator .shift (
-	_ MOV (ECX, EAX)
-	, _ POP (EAX)
-	, _ .insn (EAX, CL)
-	, .e
+	_ MOV (ECX, EAX),
+	_ POP (EAX),
+	_ .insn (EAX, CL),
+	.e
 )/.e
 	:- ic-operator-shift .shift .insn
 #
