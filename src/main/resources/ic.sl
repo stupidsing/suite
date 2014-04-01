@@ -10,15 +10,15 @@ ic-compile .fs (.do0; .do1) .e0/.ex
 	, ic-compile .fs .do1 .e1/.ex
 #
 ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
-	:- .e0 = (_ JMP DWORD .label
-		, .funLabel PUSH EBP
+	:- .e0 = (_ JMP (DWORD .label)
+		, .funLabel PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
 	, replace this `this` .do .do1
 	, ic-replace-parameters .vars 4 .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
-		, _ POP EBP
+		, _ POP (EBP)
 		, _ RET ()
 		, .label MOV (EAX, .funLabel)
 		, .ex)
@@ -26,7 +26,7 @@ ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 ic-compile .fs (.sub [.params]) .e0/.ex -- Traditional subroutine invocation
 	:- ic-push-pop-parameters .fs/.fs1 .params .e0/.e1 .e3/.ex
 	, ic-compile .fs1 .sub .e1/.e2
-	, .e2 = (_ CALL EAX, .e3)
+	, .e2 = (_ CALL (EAX), .e3)
 #
 ic-compile _ (asm .i) (.i, .e)/.e
 #
@@ -42,10 +42,10 @@ ic-compile .fs (allocate .var/.size; .do) .e0/.ex
 ic-compile .fs (if .if then .then else .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
 	, .e1 = (_ OR (EAX, EAX)
-		, _ JZ DWORD .elseLabel
+		, _ JZ (DWORD .elseLabel)
 		, .e2)
 	, ic-compile .fs .then .e2/.e3
-	, .e3 = (_ JMP DWORD .endLabel
+	, .e3 = (_ JMP (DWORD .endLabel)
 		, .elseLabel ()
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
@@ -58,16 +58,18 @@ ic-compile .fs (invoke .this .sub [.params]) .e0/.ex
 	, ic-push EAX .fs2/.fs3 .e3/.e4
 	, ic-compile .fs3 .this .e4/.e5
 	, .e5 = (_ MOV (EBP, EAX)
-		, _ POP EAX
-		, _ CALL EAX
+		, _ POP (EAX)
+		, _ CALL (EAX)
 		, .e6)
-	, .e7 = (_ POP EBP, .ex)
+	, .e7 = (_ POP (EBP), .ex)
 #
 ic-compile .fs (let .var = .value) .e0/.ex
 	:- ic-compile .fs (& .var) .e0/.e1
 	, ic-push EAX .fs/.fs1 .e1/.e2
 	, ic-compile .fs1 .value .e2/.e3
-	, .e3 = (_ POP EDI, _ MOV (`EDI`, EAX), .ex)
+	, .e3 = (_ POP EDI
+		, _ MOV (`EDI`, EAX)
+		, .ex)
 #
 ic-compile _ this (_ MOV (EAX, EBP), .e)/.e
 #
@@ -75,10 +77,10 @@ ic-compile .fs (while .while do .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
 	, ic-compile .fs .while .e1/.e2
 	, .e2 = (_ OR (EAX, EAX)
-		, _ JZ DWORD .endLabel
+		, _ JZ (DWORD .endLabel)
 		, .e3)
 	, ic-compile .fs .do .e3/.e4
-	, .e4 = (_ JMP DWORD .nextLabel
+	, .e4 = (_ JMP (DWORD .nextLabel)
 		, .endLabel ()
 		, .ex)
 #
@@ -136,16 +138,16 @@ ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
 
 ic-operator .op (
 	_ MOV (EBX, EAX)
-	, _ POP EAX
+	, _ POP (EAX)
 	, _ .insn (EAX, EBX)
 	, .e
 )/.e
 	:- ic-operator-insn .op .insn
 #
 ic-operator .op (
-	_ POP EBX
+	_ POP (EBX)
 	, _ CMP (EBX, EAX)
-	, _ .setcc AL
+	, _ .setcc (AL)
 	, _ MOVSX (EAX, AL)
 	, .e
 )/.e
@@ -154,8 +156,8 @@ ic-operator .op (
 ic-operator ' / ' (
 	_ MOV (EBX, EAX)
 	, _ XOR (EDX, EDX)
-	, _ POP EAX
-	, _ IDIV EBX
+	, _ POP (EAX)
+	, _ IDIV (EBX)
 	, .e
 )/.e #
 ic-operator ' %% ' .e0/.ex
@@ -164,7 +166,7 @@ ic-operator ' %% ' .e0/.ex
 #
 ic-operator .shift (
 	_ MOV (ECX, EAX)
-	, _ POP EAX
+	, _ POP (EAX)
 	, _ .insn (EAX, CL)
 	, .e
 )/.e
