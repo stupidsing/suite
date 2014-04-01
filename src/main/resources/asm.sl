@@ -61,6 +61,7 @@ asis:_s (.a LOOPNZ .target) (+xE0, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:_s (.a LOOPZ .target) (+xE1, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:.s (_a LGDT .rm) (+x0F, +x01, .e1)/.ex :- as-mod-num-rm:.s .rm 2 .e1/.ex #
 asis:.s (_a LIDT .rm) (+x0F, +x01, .e1)/.ex :- as-mod-num-rm:.s .rm 3 .e1/.ex #
+asis:.s (_a LTR .rm) (+x0F, +x00, .e1)/.ex :- as-mod-num-rm:.s .rm 3 .e1/.ex #
 asis:.s (_a MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
 asis:.s (_a MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s (_a MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
