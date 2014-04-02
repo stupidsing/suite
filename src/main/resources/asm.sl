@@ -65,8 +65,8 @@ asis:_s (_a LTR .rm) (+x0F, +x00, .e1)/.ex :- as-mod-num-rm:16 .rm 3 .e1/.ex #
 asis:.s (_a MOV (.reg, .imm)) .e0/.ex :- asi-reg-imm:.s +xB0 .reg .imm .e0/.ex #
 asis:.s (_a MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s (_a MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
-asis:_s (_a MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
-asis:_s (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:16 (_a MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:16 (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:.s (_a MOVSX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xBE .e0/.ex #
 asis:.s (_a MOVZX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xB6 .e0/.ex #
 asis:.s (_a MUL .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 4 .e0/.ex #
@@ -92,6 +92,7 @@ asis:_s (_a PUSH GS) (+x0F, +xA8, .e)/.e #
 asis:_s (_a PUSH SS) (+x16, .e)/.e #
 asis:_s (_a PUSHA ()) (+x60, .e)/.e #
 asis:_s (_a PUSHF ()) (+x9C, .e)/.e #
+asis:_s (_a RDMSR ()) (+x0F, +x32, .e)/.e #
 asis:_s (_a RET ()) (+xC3, .e)/.e #
 asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:.s (_a SAL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #
@@ -107,9 +108,12 @@ asis:.s (_a SHL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex 
 asis:.s (_a SHR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 5 .e0/.ex #
 asis:_s (_a STI ()) (+xFB, .e)/.e #
 asis:.s (_a SUB (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x28 +x80 5 .e0/.ex #
+asis:_s (_a SYSENTER ()) (+x0F, +x34, .e)/.e #
+asis:_s (_a SYSEXIT ()) (+x0F, +x35, .e)/.e #
 asis:.s (_a TEST (.acc, .imm)) (.b, .e1)/.ex :- as-reg:.s .acc 0, as-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +xA8) (.b = +xA9) #
 asis:.s (_a TEST (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xF6 .rm 0 .imm .e0/.ex #
 asis:.s (_a TEST (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x84 .rm .reg .e0/.ex #
+asis:_s (_a WRMSR ()) (+x0F, +x30, .e)/.e #
 asis:.s (_a XCHG (.acc, .reg)) (.b, .e)/.e :- as-reg:.s .acc 0, as-reg:.s .reg .r, let .b (+x90 + .r) #
 asis:.s (_a XCHG (.rm, .reg)) .e0/.ex :- asi-rm-reg:.s +x86 .rm .reg .e0/.ex #
 asis:.s (_a XOR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x30 +x80 6 .e0/.ex #

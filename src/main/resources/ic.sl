@@ -23,10 +23,17 @@ ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 		, .label MOV (EAX, .funLabel)
 		, .ex)
 #
-ic-compile .fs (.sub [.params]) .e0/.ex -- Traditional subroutine invocation
-	:- ic-push-pop-parameters .fs/.fs1 .params .e0/.e1 .e3/.ex
-	, ic-compile .fs1 .sub .e1/.e2
-	, .e2 = (_ CALL (EAX), .e3)
+ic-compile .fs (.this:.sub [.params]) .e0/.ex -- Traditional subroutine invocation
+	:- ic-push EBP .fs/.fs1 .e0/.e1
+	, ic-push-pop-parameters .fs1/.fs2 .params .e1/.e2 .e6/.e7
+	, ic-compile .fs2 .sub .e2/.e3
+	, ic-push EAX .fs2/.fs3 .e3/.e4
+	, ic-compile .fs3 .this .e4/.e5
+	, .e5 = (_ MOV (EBP, EAX)
+		, _ POP (EAX)
+		, _ CALL (EAX)
+		, .e6)
+	, .e7 = (_ POP (EBP), .ex)
 #
 ic-compile _ (asm .i) (.i, .e)/.e
 #
@@ -50,18 +57,6 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
 	, .e5 = (.endLabel (), .ex)
-#
-ic-compile .fs (invoke .this .sub [.params]) .e0/.ex
-	:- ic-push EBP .fs/.fs1 .e0/.e1
-	, ic-push-pop-parameters .fs1/.fs2 .params .e1/.e2 .e6/.e7
-	, ic-compile .fs2 .sub .e2/.e3
-	, ic-push EAX .fs2/.fs3 .e3/.e4
-	, ic-compile .fs3 .this .e4/.e5
-	, .e5 = (_ MOV (EBP, EAX)
-		, _ POP (EAX)
-		, _ CALL (EAX)
-		, .e6)
-	, .e7 = (_ POP (EBP), .ex)
 #
 ic-compile .fs (let .var = .value) .e0/.ex
 	:- ic-compile .fs (& .var) .e0/.e1
@@ -189,3 +184,5 @@ ic-operator-setcc ' > ' SETG #
 
 ic-operator-shift shl SAL #
 ic-operator-shift shr SAR #
+ic-operator-shift ushl SHL #
+ic-operator-shift ushr SHR #

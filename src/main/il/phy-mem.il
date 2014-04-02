@@ -1,4 +1,4 @@
-declare pm-this = this;
+declare pm = this;
 
 declare page0 = memory-region-start;
 declare pagex = page0;
@@ -31,6 +31,6 @@ declare pm-free = [page,] (
 
 declare pm-fill-zeroes = [page,] (
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let `offset` = 0;
+		let `page + offset` = 0;
 	);
 );

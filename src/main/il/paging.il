@@ -1,22 +1,22 @@
-declare pg-this = this;
+declare pg = this;
 
 declare pg-setup = [] (
-	declare spt = invoke pg-this pm-allocate [];
-	invoke pg-this pm-fill-zeroes [spt,];
+	declare pt1 = pm:pm-allocate [];
+	pm:pm-fill-zeroes [pt1,];
 
 	declare offset = 0;
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (
-		let `spt + offset =+ 4` = physical + 261; -- Supervisor, read-only
+		let `pt1 + offset =+ 4` = physical + 261; -- Supervisor, read-only
 	);
 
-	let `spt` = 0; -- Trap zero pointers
+	let `pt1` = 0; -- Trap zero pointers
 
-	declare rpt = invoke pg-this pm-allocate [];
-	invoke pg-this pm-fill-zeroes [rpt,];
+	declare pt0 = pm:pm-allocate [];
+	pm:pm-fill-zeroes [pt0,];
 
-	let `rpt` = spt + 5; -- Maps kernel memory
-	let `rpt + 4092` = rpt + 1; -- Maps itself
-	rpt;
+	let `pt0` = pt1 + 5; -- Maps kernel memory
+	let `pt0 + 4092` = pt0 + 1; -- Maps itself
+	pt0;
 
 	asm _ D8 (+x0F); -- MOV CR3, EAX
 	asm _ D8 (+x22);
@@ -32,42 +32,52 @@ declare pg-setup = [] (
 	asm _ D8 (+x00);
 );
 
-declare invalidate-page = [logical,] (
+declare pg-invalidate-all = [] (
+	asm _ D8 (+x0F); -- MOV EAX, CR3
+	asm _ D8 (+x20);
+	asm _ D8 (+xD8);
+	asm _ D8 (+x0F); -- MOV CR3, EAX
+	asm _ D8 (+x22);
+	asm _ D8 (+xD8);
+);
+
+declare pg-invalidate-page = [logical,] (
 	logical;
 	asm _ INVLPG `EAX`;
 );
 
 declare pg-map = [logical, physical,] (
-	declare pe0 = +xFFFFF000 + (logical shr 22) shl 2;
-	declare pe1 = +xFFC00000 + (logical shr 12) shl 2;
-	declare p1 = pe1 and +xFFFFF000;
+	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
+	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
+	declare pt1 = pe1 and +xFFFFF000;
 
 	if (`pe0` = 0) then (
-		let `pe0` = pm-allocate [] + 7;
-		pm-fill-zeroes [p1,];
+		let `pe0` = pm:pm-allocate [] + 7;
+		pg:pg-invalidate-page [pt1,];
+		pm:pm-fill-zeroes [pt1,];
 	) else ();
 
 	let `pe1` = physical + 7;
 
-	invoke pg-this invalidate-page [logical,];
+	pg:pg-invalidate-page [logical,];
 );
 
 declare pg-unmap = [logical,] (
-	declare pe0 = +xFFFFF000 + (logical shr 22) shl 2;
-	declare pe1 = +xFFC00000 + (logical shr 12) shl 2;
-	declare p1 = pe1 and +xFFFFF000;
+	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
+	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
+	declare pt1 = pe1 and +xFFFFF000;
 	declare isEmpty = 1;
 
 	let `pe1` = 0;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let isEmpty = isEmpty and (`p1 + offset` = 0);
+		let isEmpty = isEmpty and (`pt1 + offset` = 0);
 	);
 
 	if (isEmpty) then (
-		pm-free [`pe0` and +xFFFFFFFC,];
+		pm:pm-free [`pe0` and +xFFFFF000,];
 		let `pe0` = 0;
 	) else ();
 
-	invoke pg-this invalidate-page [logical,];
+	pg:pg-invalidate-page [logical,];
 );
