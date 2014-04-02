@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 
 import suite.Suite;
 import suite.lp.Journal;
@@ -92,15 +90,10 @@ public class Assembler {
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
 		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
-		Map<Reference, Node> addressesByLabel = new IdentityHashMap<>();
 		BytesBuilder out = new BytesBuilder();
 
 		for (boolean isPass2 : new boolean[] { false, true }) {
 			out.clear();
-
-			for (Pair<Reference, Node> lni : lnis)
-				if (lni.t0 != null && isPass2)
-					lni.t0.bound(addressesByLabel.get(lni.t0));
 
 			for (Pair<Reference, Node> lni : lnis) {
 				int address = org + out.size();
@@ -111,8 +104,11 @@ public class Assembler {
 					throw new RuntimeException("In " + lni.t1, ex);
 				}
 
-				if (!isPass2 && lni.t0 != null)
-					addressesByLabel.put(lni.t0, Int.create(address));
+				if (lni.t0 != null)
+					if (!isPass2)
+						lni.t0.bound(Int.create(address));
+					else if (((Int) lni.t0.finalNode()).getNumber() != address)
+						throw new RuntimeException("Address varied between passes at " + Integer.toHexString(address));
 			}
 
 			for (Pair<Reference, Node> lni : lnis)
