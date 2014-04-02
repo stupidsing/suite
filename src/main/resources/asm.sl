@@ -81,6 +81,7 @@ asis:_s (_a POP FS) (+x0F, +xA1, .e)/.e #
 asis:_s (_a POP GS) (+x0F, +xA9, .e)/.e #
 asis:_s (_a POP SS) (+x17, .e)/.e #
 asis:_s (_a POPA ()) (+x61, .e)/.e #
+asis:_s (_a POPF ()) (+x9D, .e)/.e #
 asis:.s (_a PUSH .imm) (.b, .e1)/.ex :- as-imm:.s .imm, as-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +x6A) (.b = +x68) #
 asis:.s (_a PUSH .op) .e0/.ex :- asi-1op:.s .op +x50 +xFE 6 .e0/.ex, .s != 8 #
 asis:_s (_a PUSH CS) (+x0E, .e)/.e #
@@ -90,6 +91,7 @@ asis:_s (_a PUSH FS) (+x0F, +xA0, .e)/.e #
 asis:_s (_a PUSH GS) (+x0F, +xA8, .e)/.e #
 asis:_s (_a PUSH SS) (+x16, .e)/.e #
 asis:_s (_a PUSHA ()) (+x60, .e)/.e #
+asis:_s (_a PUSHF ()) (+x9C, .e)/.e #
 asis:_s (_a RET ()) (+xC3, .e)/.e #
 asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:.s (_a SAL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #
