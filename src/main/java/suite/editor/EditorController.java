@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
+import suite.node.io.PrettyPrinter;
 import suite.util.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -76,6 +77,12 @@ public class EditorController {
 				return result;
 			}
 		});
+	}
+
+	public void format(EditorView view) {
+		JEditorPane editor = view.getEditor();
+		Node node = Suite.parse(editor.getText());
+		editor.setText(new PrettyPrinter().prettyPrint(node));
 	}
 
 	public void left(EditorView view) {

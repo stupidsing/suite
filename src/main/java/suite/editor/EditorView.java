@@ -192,6 +192,13 @@ public class EditorView {
 			}
 		});
 
+		JMenuItem formatMenuItem = applyDefaults(new JMenuItem("Format", KeyEvent.VK_F));
+		formatMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				controller.format(EditorView.this);
+			}
+		});
+
 		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_U));
 		unixFilterMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -249,7 +256,7 @@ public class EditorView {
 				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
-				, unixFilterMenuItem);
+				, formatMenuItem, unixFilterMenuItem);
 
 		JMenu viewMenu = createMenu("View", KeyEvent.VK_V //
 				, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
