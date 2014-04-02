@@ -5,7 +5,7 @@ declare handle-service = [r0, r1, r2,] (
 		asm _ STI;
 		asm _ HLT;
 	) else if (r0 = 1) then (
-		cs:cs-put [r1];
+		cs:cs-put [r1,];
 	) else ();
 );
 
@@ -19,7 +19,7 @@ declare handle-sysenter = [] (
 	asm _ PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
 
-	svc:handle-service [`this + 16`, `this + 12`, `this + 8`];
+	svc:handle-service [`this + 16`, `this + 12`, `this + 8`,];
 
 	asm _ D8 (+x68);
 	asm _ D32 (.sysexitPoint);
