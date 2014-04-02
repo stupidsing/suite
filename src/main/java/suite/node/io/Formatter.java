@@ -94,42 +94,52 @@ public class Formatter {
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Operator operator = tree.getOperator();
-			int ourPrec = operator.getPrecedence();
-			Assoc assoc = operator.getAssoc();
-			boolean isNeedParentheses = ourPrec <= parentPrec;
-			int leftPrec = ourPrec - (assoc == Assoc.LEFT ? 1 : 0);
-			int rightPrec = ourPrec - (assoc == Assoc.RIGHT ? 1 : 0);
+			Node left = tree.getLeft();
+			Node right = tree.getRight();
 
-			if (isNeedParentheses)
-				sb.append('(');
-
-			format(tree.getLeft(), leftPrec);
-
-			if (operator != TermOp.BRACES) {
-				if (Arrays.asList(TermOp.NEXT__).contains(operator))
-					sb.append(' ');
-
-				String name = operator.getName();
-				sb.append(name);
-
-				if (!Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator) || tree.getRight() != Atom.NIL) {
-					if (Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator))
-						sb.append(' ');
-
-					format(tree.getRight(), rightPrec);
-				} // a, () suppressed as a,
-			} else {
-				sb.append(" {");
-				format(tree.getRight(), 0);
-				sb.append("}");
-			}
-
-			if (isNeedParentheses)
-				sb.append(')');
+			if (operator == TermOp.TUPLE_ && left == Atom.create("[")) {
+				sb.append("[");
+				format(right);
+				sb.append("]");
+			} else
+				formatTree(operator, left, right, parentPrec);
 		} else if (node instanceof Reference)
 			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
 		else
 			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
+	}
+
+	private void formatTree(Operator operator, Node left, Node right, int parentPrec) {
+		int ourPrec = operator.getPrecedence();
+		Assoc assoc = operator.getAssoc();
+		boolean isParenthesesRequired = ourPrec <= parentPrec;
+
+		if (isParenthesesRequired)
+			sb.append('(');
+
+		format(left, ourPrec - (assoc == Assoc.LEFT ? 1 : 0));
+
+		if (operator != TermOp.BRACES) {
+			if (Arrays.asList(TermOp.NEXT__).contains(operator))
+				sb.append(' ');
+
+			String name = operator.getName();
+			sb.append(name);
+
+			if (!Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator) || right != Atom.NIL) {
+				if (Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator))
+					sb.append(' ');
+
+				format(right, ourPrec - (assoc == Assoc.RIGHT ? 1 : 0));
+			} // a, () suppressed as a,
+		} else {
+			sb.append(" {");
+			format(right, 0);
+			sb.append("}");
+		}
+
+		if (isParenthesesRequired)
+			sb.append(')');
 	}
 
 	public String quoteAtomIfRequired(String s) {
