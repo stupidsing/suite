@@ -75,9 +75,20 @@ asis:_s (_a OOP ()) (+x66, .e)/.e #
 asis:.s (_a OR (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x08 +x80 1 .e0/.ex #
 asis:.s (_a OUT (.port, .val)) .e0/.ex :- asi-in-out:.s .val .port +xE6 .e0/.ex #
 asis:.s (_a POP .op) .e0/.ex :- asi-1op:.s .op +x58 +x8E 0 .e0/.ex, .s != 8 #
+asis:_s (_a POP DS) (+x1F, .e)/.e #
+asis:_s (_a POP ES) (+x07, .e)/.e #
+asis:_s (_a POP FS) (+x0F, +xA1, .e)/.e #
+asis:_s (_a POP GS) (+x0F, +xA9, .e)/.e #
+asis:_s (_a POP SS) (+x17, .e)/.e #
 asis:_s (_a POPA ()) (+x61, .e)/.e #
 asis:.s (_a PUSH .imm) (.b, .e1)/.ex :- as-imm:.s .imm, as-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +x6A) (.b = +x68) #
 asis:.s (_a PUSH .op) .e0/.ex :- asi-1op:.s .op +x50 +xFE 6 .e0/.ex, .s != 8 #
+asis:_s (_a PUSH CS) (+x0E, .e)/.e #
+asis:_s (_a PUSH DS) (+x1E, .e)/.e #
+asis:_s (_a PUSH ES) (+x06, .e)/.e #
+asis:_s (_a PUSH FS) (+x0F, +xA0, .e)/.e #
+asis:_s (_a PUSH GS) (+x0F, +xA8, .e)/.e #
+asis:_s (_a PUSH SS) (+x16, .e)/.e #
 asis:_s (_a PUSHA ()) (+x60, .e)/.e #
 asis:_s (_a RET ()) (+xC3, .e)/.e #
 asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
