@@ -2,8 +2,8 @@ declare svc = this;
 
 declare handle-service = [r0, r1, r2,] (
 	if (r0 = 0) then (
-		asm _ STI;
-		asm _ HLT;
+		asm _ STI ();
+		asm _ HLT ();
 	) else if (r0 = 1) then (
 		cs:cs-put [r1,];
 	) else ();
