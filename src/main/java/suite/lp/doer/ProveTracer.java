@@ -121,13 +121,22 @@ public class ProveTracer {
 		if (!records.isEmpty() && records.get(0).nOkays == 0)
 			return log(Collections.max(records, new Comparator<Record>() {
 				public int compare(Record record0, Record record1) {
-					int depth0 = record0.nOkays == 0 ? record0.depth : 0;
-					int depth1 = record1.nOkays == 0 ? record1.depth : 0;
+					int depth0 = isDecidinglyFail(record0) ? record0.depth : 0;
+					int depth1 = isDecidinglyFail(record1) ? record1.depth : 0;
 					return depth0 - depth1;
 				}
 			}));
 		else
 			return "-";
+	}
+
+	private boolean isDecidinglyFail(Record record) {
+		while (record != null)
+			if (record.nOkays == 0)
+				record = record.parent;
+			else
+				return false;
+		return true;
 	}
 
 	private String log(Record record) {
