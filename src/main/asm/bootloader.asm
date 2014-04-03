@@ -93,7 +93,7 @@
 	D32  (+x0000FFFF) -- User data descriptor
 	D32  (+x00CFF200)
 	D32  (+x08000867) -- Task state segment
-	D32  (+x0000E902)
+	D32  (+x00408902)
 .gdtr
 	D16  (+x2F)
 	D32  (.gdt)

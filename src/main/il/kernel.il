@@ -15,13 +15,9 @@ asm _ MOV (`+x40000`, EBP);
 declare kernel = this;
 declare idt-address = +x20000;
 declare tss-address = +x20800;
-declare syscall-stack-address = +x22000;
-declare interrupt-stack-address = +x24000;
+declare interrupt-stack-address = +x22000;
+declare syscall-stack-address = +x24000;
 declare memory-region-start = 1048576;
-
-#include(console.il);
-#include(phy-mem.il);
-#include(paging.il);
 
 declare in = [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
@@ -41,6 +37,11 @@ declare wrmsr = [msr, value,] (
 	asm _ XOR (EDX, EDX);
 	asm _ WRMSR ();
 );
+
+#include(console.il);
+#include(phy-mem.il);
+#include(paging.il);
+#include(service.il);
 
 declare handle-general-interrupt = [] (
 	asm _ PUSHA ();
@@ -108,6 +109,7 @@ kernel:out [+x21, +xFC,];
 
 pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
+svc:svc-setup [];
 
 -- Enters user mode
 (
@@ -118,29 +120,36 @@ pg:pg-setup []; -- Sets up paging
 	for (declare i = 0; i < 104; i =+ 4) (
 		let `tss-address + i` = 0;
 	);
-	`tss-address + 4` = interrupt-stack-address;
-	`tss-address + 8` = 16;
+	let `tss-address + 4` = interrupt-stack-address;
+	let `tss-address + 8` = +x10;
 
-	user-stack-address + 4096 - 8; -- 4k stack but minus 8 bytes for SS:ESP
-
-	asm _ MOV (EBX, EAX);
 	asm _ MOV (AX, +x2B);
 	asm _ LTR (AX);
-	asm _ MOV (AX, +x23);
-	asm _ MOV (DS, AX);
-	asm _ MOV (ES, AX);
-	asm _ MOV (FS, AX);
-	asm _ MOV (GS, AX);
-	asm _ PUSH (+x23); -- Would be SS
-	asm _ PUSH (EBX); -- Would be ESP
-	asm _ PUSHF ();
-	asm _ PUSH (+x1B); -- Would be CS
-	asm _ D8 (+x68);
-	asm _ D32 (.user); -- Would be IP
-	asm _ STI ();
-	--asm _ IRET ();
-	--asm .user PUSH (`+x40000`);
-	--asm _ MOV (EBP, ESP);
+
+	user-stack-address + 4096;
 );
 
-asm .loop JMP (DWORD .loop);
+asm _ MOV (EBX, EAX);
+asm _ STI ();
+asm _ MOV (AX, +x23);
+asm _ MOV (DS, AX);
+asm _ MOV (ES, AX);
+asm _ MOV (FS, AX);
+asm _ MOV (GS, AX);
+asm _ PUSH (+x23); -- Would be SS
+asm _ PUSH (EBX); -- Would be ESP
+asm _ PUSHF ();
+asm _ PUSH (+x1B); -- Would be CS
+asm _ D8 (+x68);
+asm _ D32 (.user); -- Would be IP
+asm _ IRET ();
+asm .user PUSH (`+x40000`);
+asm _ MOV (EBP, ESP);
+
+-- Shows OK
+--svc:svc-service [1, +x4F, 0,];
+--svc:svc-service [1, +x4B, 0,];
+
+asm .loop ();
+--svc:svc-service [0, 0, 0,];
+asm _ JMP (DWORD .loop);
