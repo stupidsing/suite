@@ -10,7 +10,7 @@
 -- 00050000 -> 000A0000 unused
 -- 000A0000 -> 00100000 BIOS / video memory
 -- 00100000 -> stackx   physical page stack
--- stackx   -> pagex    allocatable pages
+-- stackx   -> pagex    allocatable physical pages
 
 asm _ MOV (ESP, +x30000);
 asm _ MOV (EBP, ESP);
