@@ -30,14 +30,17 @@ declare cs-put-hex = [h,] (
 declare cs-put-hex1 = [h,] (
 	cs:cs-put-hex [h shr 4,];
 	cs:cs-put-hex [h and +xF,];
+	cs:cs-put [32,];
 );
 
 declare cs-put-hex2 = [h,] (
 	cs:cs-put-hex1 [h shr 8,];
 	cs:cs-put-hex1 [h and +xFF,];
+	cs:cs-put [32,];
 );
 
 declare cs-put-hex4 = [h,] (
 	cs:cs-put-hex2 [h shr 16,];
 	cs:cs-put-hex2 [h and +xFFFF,];
+	cs:cs-put [32,];
 );

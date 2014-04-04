@@ -56,5 +56,5 @@ declare svc-service = [r0, r1, r2,] (
 declare svc-setup = [] (
 	kernel:wrmsr [+x174, +x8,];
 	kernel:wrmsr [+x175, syscall-stack-address,];
-	kernel:wrmsr [+x176, svc-service,];
+	kernel:wrmsr [+x176, handle-sysenter,];
 );

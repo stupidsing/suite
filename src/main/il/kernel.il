@@ -1,12 +1,16 @@
 -- Memory layout
--- 07C00 -> 07E00 boot sector
--- 20000 -> 20800 interrupt descriptor table (IDT)
--- 20800 -> 20868 task state segment (TSS)
--- 20868 -> 22000 kernel interrupt stack
--- 22000 -> 24000 kernel system call stack
--- 24000 -> 30000 kernel initialization stack
--- 40000 -> 40004 kernel this frame pointer
--- 40000 -> 50000 kernel code
+-- 00007C00 -> 00007E00 boot sector
+-- 00020000 -> 00020800 interrupt descriptor table (IDT)
+-- 00020800 -> 00020868 task state segment (TSS)
+-- 00020868 -> 00022000 kernel interrupt stack
+-- 00022000 -> 00024000 kernel system call stack
+-- 00024000 -> 00030000 kernel initialization stack
+-- 00040000 -> 00040004 kernel this frame pointer
+-- 00040000 -> 00050000 kernel code
+-- 00050000 -> 000A0000 unused
+-- 000A0000 -> 00100000 BIOS / video memory
+-- 00100000 -> stackx   physical page stack
+-- stackx   -> pagex    allocatable pages
 
 asm _ MOV (ESP, +x30000);
 asm _ MOV (EBP, ESP);
