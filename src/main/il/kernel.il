@@ -94,8 +94,7 @@ svc:svc-setup [];
 );
 
 asm _ MOV (EBX, EAX);
---asm _ STI ();
--=
+asm _ STI ();
 asm _ MOV (EAX, +x23);
 asm _ MOV (DS, AX);
 asm _ MOV (ES, AX);
@@ -110,7 +109,6 @@ asm _ D32 (.user); -- Would be IP
 asm _ IRET ();
 asm .user PUSH (`+x40000`);
 asm _ MOV (EBP, ESP);
-=-
 
 -- Shows OK
 svc:svc-service [1, +x4F, 0,];

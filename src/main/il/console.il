@@ -48,5 +48,4 @@ declare cs-put-hex2 = [h,] (
 declare cs-put-hex4 = [h,] (
 	cs:cs-put-hex2 [h shr 16,];
 	cs:cs-put-hex2 [h,];
-	cs:cs-put [32,];
 );

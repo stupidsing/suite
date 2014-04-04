@@ -41,10 +41,10 @@ ic-compile _ (asm .i) (.i, .e)/.e
 #
 ic-compile _ .string .e0/.ex
 	:- is.string .string
-	, .e0 = (_ JMP (DWORD .contLabel)
-		, .strLabel DS .string
+	, .e0 = (_ JMP (DWORD .label)
+		, .strLabel DS (.string)
 		, _ D8 0
-		, .contLabel PUSH .strLabel
+		, .label PUSH (.strLabel)
 		, _ POP (EAX)
 		, .ex)
 #
@@ -75,6 +75,15 @@ ic-compile .fs (let .var = .value) .e0/.ex
 	, ic-compile .fs1 .value .e2/.e3
 	, .e3 = (_ POP EDI
 		, _ MOV (`EDI`, EAX)
+		, .ex)
+#
+ic-compile _ (snippet .snippet) .e0/.ex
+	:- .e0 = (_ JMP (DWORD .label)
+		, .snippetLabel ()
+		, .e1)
+	, ic-compile 0 .snippet .e1/.e2
+	, .e2 = (.label ()
+		, .label MOV (EAX, .snippetLabel)
 		, .ex)
 #
 ic-compile .fs (while .while do .do) .e0/.ex
