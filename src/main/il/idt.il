@@ -32,14 +32,7 @@ declare handle-gp-fault = [] (
 
 	cs:cs-puts ["GP-FAULT",];
 	cs:cs-nl [];
-
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EAX);
-	asm _ POP (DS);
-	asm _ POPA ();
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EBP);
-	asm _ IRET ();
+	asm _ HLT ();
 );
 
 declare handle-page-fault = [] (
@@ -52,14 +45,7 @@ declare handle-page-fault = [] (
 
 	cs:cs-puts ["PAGE-FAULT",];
 	cs:cs-nl [];
-
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EAX);
-	asm _ POP (DS);
-	asm _ POPA ();
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EBP);
-	asm _ IRET ();
+	asm _ HLT ();
 );
 
 -- Sets up and loads interrupt descriptor table
