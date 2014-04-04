@@ -61,6 +61,7 @@ public class SystemPredicates {
 		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 
+		addPredicate("char.ascii", new FormatPredicates.CharAscii());
 		addPredicate("concat", new FormatPredicates.Concat());
 		addPredicate("is.atom", new FormatPredicates.IsAtom());
 		addPredicate("is.int", new FormatPredicates.IsInt());

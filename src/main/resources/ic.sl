@@ -14,7 +14,7 @@ ic-compile _ ([.vars] .do) .e0/.ex -- Traditional subroutine definition
 		, .funLabel PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace this `this` .do .do1
+	, replace $$EBP `$$EBP` .do .do1
 	, ic-replace-parameters .vars 4 .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
@@ -35,14 +35,25 @@ ic-compile .fs (.this:.sub [.params]) .e0/.ex -- Traditional subroutine invocati
 		, .e6)
 	, .e7 = (_ POP (EBP), .ex)
 #
+ic-compile _ $$EBP (_ MOV (EAX, EBP), .e)/.e
+#
 ic-compile _ (asm .i) (.i, .e)/.e
+#
+ic-compile _ .string .e0/.ex
+	:- is.string .string
+	, .e0 = (_ JMP (DWORD .contLabel)
+		, .strLabel DS .string
+		, _ D8 0
+		, .contLabel PUSH .strLabel
+		, _ POP (EAX)
+		, .ex)
 #
 ic-compile .fs (allocate .var/.size; .do) .e0/.ex
 	:- is.atom .var
 	, .e0 = (_ SUB (ESP, .size), .e1)
 	, let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
-	, replace .var `this + .offset` .do .do1
+	, replace .var `$$EBP + .offset` .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
 #
@@ -65,8 +76,6 @@ ic-compile .fs (let .var = .value) .e0/.ex
 	, .e3 = (_ POP EDI
 		, _ MOV (`EDI`, EAX)
 		, .ex)
-#
-ic-compile _ this (_ MOV (EAX, EBP), .e)/.e
 #
 ic-compile .fs (while .while do .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
@@ -111,11 +120,13 @@ ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; 
 #
 ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
+ic-compile-sugar this $$EBP
+#
 
 ic-replace-parameters () _ .do .do #
 ic-replace-parameters (.var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + 4)
-	, replace .var `this + .s` .do0 .do1
+	, replace .var `$$EBP + .s` .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 

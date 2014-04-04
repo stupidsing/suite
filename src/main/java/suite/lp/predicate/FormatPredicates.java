@@ -15,6 +15,20 @@ import suite.node.io.TermOp;
 
 public class FormatPredicates {
 
+	public static class CharAscii implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Tree.getParameters(ps, 2);
+			Node p0 = params[0].finalNode();
+			Node p1 = params[0].finalNode();
+			if (p0 instanceof Str)
+				return prover.bind(Int.create(((Str) p0).getValue().charAt(0)), params[1]);
+			else if (p1 instanceof Int)
+				return prover.bind(new Str("" + (char) ((Int) p1).getNumber()), params[1]);
+			else
+				return false;
+		}
+	}
+
 	public static class Concat implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node node = ps;

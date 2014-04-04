@@ -1,4 +1,5 @@
-config_interface: wx
-display_library: wx
 ata0-master: type=disk, path="target/boot.bin", cylinders=615, heads=6, spt=17
 boot: disk
+config_interface: wx
+cpuid: sep=1
+display_library: wx

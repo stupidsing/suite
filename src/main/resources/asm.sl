@@ -30,6 +30,8 @@ asis:_s (_a D16 .imm) .e0/.ex :- as-emit:16 .imm .e0/.ex #
 asis:_s (_a D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
 asis:.s (_a DEC .op) .e0/.ex :- asi-1op:.s .op +x48 +xFE 1 .e0/.ex #
 asis:.s (_a DIV .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 6 .e0/.ex #
+asis:_s (_a DS "") .e/.e #
+asis:_s (_a DS .s) (.b, .e1)/.ex :- .s != "", substring .s 0 1 .h, substring .s 1 0 .t, char.ascii .h .b, asis:_ (_ DS .t) .e1/.ex #
 asis:_s (_a HLT ()) (+xF4, .e)/.e #
 asis:.s (_a IDIV .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 7 .e0/.ex #
 asis:.s (_a IMUL .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 5 .e0/.ex #

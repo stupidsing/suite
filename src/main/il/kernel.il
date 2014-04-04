@@ -43,51 +43,10 @@ declare wrmsr = [msr, value,] (
 );
 
 #include(console.il);
+#include(idt.il);
 #include(phy-mem.il);
 #include(paging.il);
 #include(service.il);
-
-declare handle-general-interrupt = [] (
-	asm _ PUSHA ();
-	asm _ PUSH (DS);
-	asm _ MOV (AX, 16);
-	asm _ MOV (DS, AX);
-	asm _ PUSH (`+x40000`);
-	asm _ MOV (EBP, ESP);
-
-	`+xB8000` =+ 1;
-
-	-- Sends end of interrupt signal
-	kernel:out [+x20, +x20,];
-
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EAX);
-	asm _ POP (DS);
-	asm _ POPA ();
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EBP);
-	asm _ IRET ();
-);
-
--- Sets up and loads interrupt descriptor table
-declare set-idt-entry = [interrupt, handler,] (
-	declare p = idt-address + interrupt shl 3;
-	let `p + 0` = handler and +x0000FFFF + +x00080000;
-	let `p + 4` = +x00008E00 + handler and +xFFFF0000;
-);
-
-for (declare i = 0; i < 256; i =+ 1) (
-	kernel:set-idt-entry [i, handle-general-interrupt,];
-);
-
-(
-	allocate idtr/8;
-	let `idtr` = +x7FF;
-	let `idtr + 2` = idt-address;
-	idtr;
-
-	asm _ LIDT (`EAX`);
-);
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
@@ -111,6 +70,7 @@ kernel:out [+x40, 11932 % 256,];
 kernel:out [+x40, 11932 / 256,];
 kernel:out [+x21, +xFC,];
 
+idt:idt-setup [];
 pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
@@ -134,13 +94,14 @@ svc:svc-setup [];
 );
 
 asm _ MOV (EBX, EAX);
-asm _ STI ();
-asm _ MOV (AX, +x23);
+--asm _ STI ();
+-=
+asm _ MOV (EAX, +x23);
 asm _ MOV (DS, AX);
 asm _ MOV (ES, AX);
 asm _ MOV (FS, AX);
 asm _ MOV (GS, AX);
-asm _ PUSH (+x23); -- Would be SS
+asm _ PUSH (EAX); -- Would be SS
 asm _ PUSH (EBX); -- Would be ESP
 asm _ PUSHF ();
 asm _ PUSH (+x1B); -- Would be CS
@@ -149,11 +110,12 @@ asm _ D32 (.user); -- Would be IP
 asm _ IRET ();
 asm .user PUSH (`+x40000`);
 asm _ MOV (EBP, ESP);
+=-
 
 -- Shows OK
---svc:svc-service [1, +x4F, 0,];
---svc:svc-service [1, +x4B, 0,];
+svc:svc-service [1, +x4F, 0,];
+svc:svc-service [1, +x4B, 0,];
 
 asm .loop ();
---svc:svc-service [0, 0, 0,];
+svc:svc-service [0, 0, 0,];
 asm _ JMP (DWORD .loop);

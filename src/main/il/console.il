@@ -23,24 +23,30 @@ declare cs-put = [ch,] (
 	if (cs-column-offset += 2 = 160) then (cs:cs-nl []) else ();
 );
 
+declare cs-puts = [s,] (
+	declare ch;
+	for (declare s1 = s; let ch = `s1` and +xFF; s1 += 1) (
+		cs:cs-put [ch,];
+	);
+);
+
 declare cs-put-hex = [h,] (
+	let h = h and +xF;
 	cs:cs-put [h + if (h < 10) then 48 else 55,];
 );
 
 declare cs-put-hex1 = [h,] (
 	cs:cs-put-hex [h shr 4,];
-	cs:cs-put-hex [h and +xF,];
-	cs:cs-put [32,];
+	cs:cs-put-hex [h,];
 );
 
 declare cs-put-hex2 = [h,] (
 	cs:cs-put-hex1 [h shr 8,];
-	cs:cs-put-hex1 [h and +xFF,];
-	cs:cs-put [32,];
+	cs:cs-put-hex1 [h,];
 );
 
 declare cs-put-hex4 = [h,] (
 	cs:cs-put-hex2 [h shr 16,];
-	cs:cs-put-hex2 [h and +xFFFF,];
+	cs:cs-put-hex2 [h,];
 	cs:cs-put [32,];
 );
