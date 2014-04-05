@@ -38,8 +38,8 @@ declare idt-setup = [] (
 		asm _ POP (EBX); -- Error code
 		asm _ POP (ECX); -- Error EIP
 		asm _ POP (EDX); -- Error CS
-		asm _ MOV (AX, 16);
-		asm _ MOV (DS, AX);
+		asm _ MOV (DI, 16);
+		asm _ MOV (DS, DI);
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
 
