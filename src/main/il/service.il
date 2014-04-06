@@ -1,7 +1,6 @@
 declare svc = this;
 
 declare handle-service = [p0, p1, p2,] (
-	cs:cs-put-hex4 [p0,];
 	if (p0 = 0) then (
 		asm _ STI ();
 		asm _ HLT ();
@@ -30,8 +29,6 @@ declare handle-sysenter = [p0, p1, p2,] (
 	asm _ MOV (DS, AX);
 	asm _ POP (ECX);
 	asm _ POP (EDX);
-
-	asm _ MOV (ESP, EBP);
 	asm _ POP (EBP);
 	asm _ SYSEXIT ();
 );

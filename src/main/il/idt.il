@@ -1,33 +1,33 @@
 declare idt = this;
 
-declare handle-general-interrupt = snippet (
-	asm _ PUSHA ();
-	asm _ PUSH (DS);
-	asm _ MOV (AX, 16);
-	asm _ MOV (DS, AX);
-	asm _ PUSH (`+x40000`);
-	asm _ MOV (EBP, ESP);
-
-	`+xB8000` =+ 1;
-
-	-- Sends end of interrupt signal
-	kernel:out [+x20, +x20,];
-
-	asm _ MOV (ESP, EBP);
-	asm _ POP (EAX);
-	asm _ POP (DS);
-	asm _ POPA ();
-	asm _ IRET ();
-);
-
 -- Sets up and loads interrupt descriptor table
-declare set-idt-entry = [interrupt, handler, is-interrupt-gate,] (
+declare idt-set-entry = [interrupt, handler, is-interrupt-gate,] (
 	declare p = idt-address + interrupt shl 3;
 	let `p + 0` = handler and +x0000FFFF + +x00080000;
 	let `p + 4` = (if is-interrupt-gate then +x00008E00 else +x00008F00) + handler and +xFFFF0000;
 );
 
 declare idt-setup = [] (
+	declare handle-general-interrupt = snippet (
+		asm _ PUSHA ();
+		asm _ PUSH (DS);
+		asm _ MOV (AX, 16);
+		asm _ MOV (DS, AX);
+		asm _ PUSH (`+x40000`);
+		asm _ MOV (EBP, ESP);
+
+		`+xB8000` =+ 1;
+
+		-- Sends end of interrupt signal
+		kernel:out [+x20, +x20,];
+
+		asm _ MOV (ESP, EBP);
+		asm _ POP (EAX);
+		asm _ POP (DS);
+		asm _ POPA ();
+		asm _ IRET ();
+	);
+
 	snippet (
 		asm .fault-handler-0 ();
 		asm _ POP (EAX);
@@ -70,45 +70,46 @@ declare idt-setup = [] (
 			cs:cs-nl [];
 		);
 
+		asm _ CLI ();
 		asm _ HLT ();
 	);
 
 	for (declare i = 0; i < 256; i =+ 1) (
-		idt:set-idt-entry [i, handle-general-interrupt, 1,];
+		idt:idt-set-entry [i, handle-general-interrupt, 1,];
 	);
 
-	idt:set-idt-entry [+x00, snippet ( asm _ PUSH (+x00); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x01, snippet ( asm _ PUSH (+x01); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x02, snippet ( asm _ PUSH (+x02); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x03, snippet ( asm _ PUSH (+x03); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x04, snippet ( asm _ PUSH (+x04); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x05, snippet ( asm _ PUSH (+x05); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x06, snippet ( asm _ PUSH (+x06); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x07, snippet ( asm _ PUSH (+x07); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x08, snippet ( asm _ PUSH (+x08); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x09, snippet ( asm _ PUSH (+x09); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x0A, snippet ( asm _ PUSH (+x0A); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x0B, snippet ( asm _ PUSH (+x0B); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x0C, snippet ( asm _ PUSH (+x0C); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x0D, snippet ( asm _ PUSH (+x0D); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x0E, snippet ( asm _ PUSH (+x0E); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x0F, snippet ( asm _ PUSH (+x0F); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x10, snippet ( asm _ PUSH (+x10); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x11, snippet ( asm _ PUSH (+x11); asm _ JMP (DWORD .fault-handler-e); ), 0,];
-	idt:set-idt-entry [+x12, snippet ( asm _ PUSH (+x12); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x13, snippet ( asm _ PUSH (+x13); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x14, snippet ( asm _ PUSH (+x14); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x15, snippet ( asm _ PUSH (+x15); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x16, snippet ( asm _ PUSH (+x16); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x17, snippet ( asm _ PUSH (+x17); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x18, snippet ( asm _ PUSH (+x18); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x19, snippet ( asm _ PUSH (+x19); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x1A, snippet ( asm _ PUSH (+x1A); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x1B, snippet ( asm _ PUSH (+x1B); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x1C, snippet ( asm _ PUSH (+x1C); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x1D, snippet ( asm _ PUSH (+x1D); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x1E, snippet ( asm _ PUSH (+x1E); asm _ JMP (DWORD .fault-handler-0); ), 0,];
-	idt:set-idt-entry [+x1F, snippet ( asm _ PUSH (+x1F); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x00, snippet ( asm _ PUSH (+x00); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x01, snippet ( asm _ PUSH (+x01); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x02, snippet ( asm _ PUSH (+x02); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x03, snippet ( asm _ PUSH (+x03); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x04, snippet ( asm _ PUSH (+x04); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x05, snippet ( asm _ PUSH (+x05); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x06, snippet ( asm _ PUSH (+x06); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x07, snippet ( asm _ PUSH (+x07); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x08, snippet ( asm _ PUSH (+x08); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x09, snippet ( asm _ PUSH (+x09); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x0A, snippet ( asm _ PUSH (+x0A); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x0B, snippet ( asm _ PUSH (+x0B); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x0C, snippet ( asm _ PUSH (+x0C); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x0D, snippet ( asm _ PUSH (+x0D); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x0E, snippet ( asm _ PUSH (+x0E); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x0F, snippet ( asm _ PUSH (+x0F); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x10, snippet ( asm _ PUSH (+x10); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x11, snippet ( asm _ PUSH (+x11); asm _ JMP (DWORD .fault-handler-e); ), 0,];
+	idt:idt-set-entry [+x12, snippet ( asm _ PUSH (+x12); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x13, snippet ( asm _ PUSH (+x13); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x14, snippet ( asm _ PUSH (+x14); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x15, snippet ( asm _ PUSH (+x15); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x16, snippet ( asm _ PUSH (+x16); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x17, snippet ( asm _ PUSH (+x17); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x18, snippet ( asm _ PUSH (+x18); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x19, snippet ( asm _ PUSH (+x19); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x1A, snippet ( asm _ PUSH (+x1A); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x1B, snippet ( asm _ PUSH (+x1B); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x1C, snippet ( asm _ PUSH (+x1C); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x1D, snippet ( asm _ PUSH (+x1D); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x1E, snippet ( asm _ PUSH (+x1E); asm _ JMP (DWORD .fault-handler-0); ), 0,];
+	idt:idt-set-entry [+x1F, snippet ( asm _ PUSH (+x1F); asm _ JMP (DWORD .fault-handler-0); ), 0,];
 
 	allocate idtr/8;
 	let `idtr` = +x7FF;
