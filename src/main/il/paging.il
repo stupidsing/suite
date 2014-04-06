@@ -18,27 +18,17 @@ declare pg-setup = [] (
 	let `pt0 + 4092` = pt0 + 1; -- Maps itself
 	pt0;
 
-	asm _ D8 (+x0F); -- MOV CR3, EAX
-	asm _ D8 (+x22);
-	asm _ D8 (+xD8);
-	asm _ D8 (+x0F); -- MOV EAX, CR0
-	asm _ D8 (+x20);
-	asm _ D8 (+xC0);
+	asm _ MOV (CR3, EAX);
+	asm _ MOV (EAX, CR0);
 	asm _ OR (EAX, +x80000000);
-	asm _ D8 (+x0F); -- MOV CR0, EAX
-	asm _ D8 (+x22);
-	asm _ D8 (+xC0);
+	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
 );
 
 declare pg-invalidate-all = [] (
-	asm _ D8 (+x0F); -- MOV EAX, CR3
-	asm _ D8 (+x20);
-	asm _ D8 (+xD8);
-	asm _ D8 (+x0F); -- MOV CR3, EAX
-	asm _ D8 (+x22);
-	asm _ D8 (+xD8);
+	asm _ MOV (EAX, CR3);
+	asm _ MOV (CR3, EAX);
 );
 
 declare pg-invalidate-page = [logical,] (

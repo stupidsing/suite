@@ -69,6 +69,8 @@ asis:.s (_a MOV (.rm, .imm)) .e0/.ex :- asi-rm-imm:.s +xC6 .rm 0 .imm .e0/.ex #
 asis:.s (_a MOV (.rm0, .rm1)) .e0/.ex :- asi-rm-reg2:.s +x88 .rm0 .rm1 .e0/.ex #
 asis:16 (_a MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:16 (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
+asis:.s (_a MOV (.reg, .cr)) (+x0F, +x20, .b, .e)/.e :- as-control-reg .cr .n, as-reg:.s .reg .r, let .b (+xC0 + .n * 8 + .r), .s = 32 #
+asis:.s (_a MOV (.cr, .reg)) (+x0F, +x22, .b, .e)/.e :- as-control-reg .cr .n, as-reg:.s .reg .r, let .b (+xC0 + .n * 8 + .r), .s = 32 #
 asis:.s (_a MOVSX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xBE .e0/.ex #
 asis:.s (_a MOVZX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xB6 .e0/.ex #
 asis:.s (_a MUL .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 4 .e0/.ex #

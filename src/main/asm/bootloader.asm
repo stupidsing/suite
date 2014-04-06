@@ -42,15 +42,9 @@
 	AOP  ()
 	LGDT (`.gdtr`)
 
-	--MOV  EAX, CR0
-	D8   (+x0F)
-	D8   (+x20)
-	D8   (+xC0)
+	MOV  (EAX, CR0)
 	OR   (EAX, 1)
-	--MOV  CR0, EAX
-	D8   (+x0F)
-	D8   (+x22)
-	D8   (+xC0)
+	MOV  (CR0, EAX)
 	JMP  (.flush)
 .flush
 	MOV  (AX, 16)

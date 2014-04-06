@@ -48,11 +48,14 @@ declare idt-setup = [] (
 			declare code;
 			declare eip0;
 			declare cs0;
-			asm _ ADD (ESP, 16);
+			declare cr2;
+			asm _ ADD (ESP, 20);
 			asm _ PUSH (EAX);
 			asm _ PUSH (EBX);
 			asm _ PUSH (ECX);
 			asm _ PUSH (EDX);
+			asm _ MOV (EAX, CR2);
+			asm _ PUSH (EAX);
 
 			cs:cs-puts ["FAULT INTERRUPT = ",];
 			cs:cs-put-hex1 [interrupt,];
@@ -62,6 +65,8 @@ declare idt-setup = [] (
 			cs:cs-put-hex2 [cs0,];
 			cs:cs-puts [", EIP = ",];
 			cs:cs-put-hex4 [eip0,];
+			cs:cs-puts [", CR2 = ",];
+			cs:cs-put-hex4 [cr2,];
 			cs:cs-nl [];
 		);
 
