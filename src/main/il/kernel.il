@@ -108,17 +108,19 @@ asm _ D8 (+x68);
 asm _ D32 (.user); -- Would be IP
 asm _ IRET ();
 
-declare user-mode = [] (
-	asm .user PUSH (`+x40000`);
-	asm _ MOV (EBP, ESP);
+(
+	declare user-mode = [] (
+		asm .user PUSH (`+x40000`);
+		asm _ MOV (EBP, ESP);
 
-	-- Shows OK
-	svc:svc-service [1, +x4F, 0,];
-	svc:svc-service [1, +x4B, 0,];
+		-- Shows OK
+		svc:svc-service [1, +x4F, 0,];
+		svc:svc-service [1, +x4B, 0,];
 
-	asm .loop ();
-	svc:svc-service [0, 0, 0,];
-	asm _ JMP (DWORD .loop);
+		asm .loop ();
+		svc:svc-service [0, 0, 0,];
+		asm _ JMP (DWORD .loop);
+	);
+
+	this:user-mode [];
 );
-
-this:user-mode [];
