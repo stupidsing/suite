@@ -128,8 +128,8 @@ ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; 
 	:- is.atom .var
 #
 ic-compile-sugar (expand .var = .value; .do) .do1
-	:- is.atom .var
-	, replace .var .value .do .do1
+	:- generalize (.var .value) (.var1 .value1)
+	, rewrite .var1 .value1 .do .do1
 #
 ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
