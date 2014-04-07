@@ -27,6 +27,7 @@ import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.Replacer;
+import suite.node.util.Rewriter;
 import suite.util.LogUtil;
 
 public class EvalPredicates {
@@ -218,10 +219,17 @@ public class EvalPredicates {
 		}
 	}
 
-	public static class ReplacePredicate implements SystemPredicate {
+	public static class Replace implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			final Node params[] = Tree.getParameters(ps, 4);
 			return prover.bind(Replacer.replace(params[2], params[0], params[1]), params[3]);
+		}
+	}
+
+	public static class Rewrite implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			final Node params[] = Tree.getParameters(ps, 4);
+			return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
 		}
 	}
 

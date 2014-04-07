@@ -55,7 +55,8 @@ public class SystemPredicates {
 		addPredicate("is.cyclic", new EvalPredicates.IsCyclic());
 		addPredicate("let", new EvalPredicates.Let());
 		addPredicate("random", new EvalPredicates.RandomPredicate());
-		addPredicate("replace", new EvalPredicates.ReplacePredicate());
+		addPredicate("replace", new EvalPredicates.Replace());
+		addPredicate("rewrite", new EvalPredicates.Rewrite());
 		addPredicate("same", new EvalPredicates.Same());
 		addPredicate("specialize", new EvalPredicates.Specialize());
 		addPredicate("temp", new EvalPredicates.Temp());
