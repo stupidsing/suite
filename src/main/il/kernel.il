@@ -23,6 +23,7 @@ asm _ MOV (EBP, ESP);
 asm _ MOV (`+x40000`, EBP);
 
 declare kernel = this;
+declare ticks = 0;
 
 declare in = [port,] (
 	asm _ MOV (EDX, `EBP + 8`);

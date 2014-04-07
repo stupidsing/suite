@@ -16,6 +16,25 @@ declare idt-setup = [] (
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
 
+		-- Sends end of interrupt signal
+		kernel:out [+x20, +x20,];
+
+		asm _ MOV (ESP, EBP);
+		asm _ POP (EAX);
+		asm _ POP (DS);
+		asm _ POPA ();
+		asm _ IRET ();
+	);
+
+	declare handle-timer-interrupt = snippet (
+		asm _ PUSHA ();
+		asm _ PUSH (DS);
+		asm _ MOV (AX, 16);
+		asm _ MOV (DS, AX);
+		asm _ PUSH (`+x40000`);
+		asm _ MOV (EBP, ESP);
+
+		ticks =+ 1;
 		`+xB8000` =+ 1;
 
 		-- Sends end of interrupt signal
@@ -77,6 +96,8 @@ declare idt-setup = [] (
 	for (declare i = 0; i < 256; i =+ 1) (
 		idt:idt-set-entry [i, handle-general-interrupt, 1,];
 	);
+
+	idt:idt-set-entry [+x20, handle-timer-interrupt, 1,];
 
 	(
 		expand set-fault-handler .i .h0 = (idt:idt-set-entry [.i, snippet ( asm _ PUSH (.i); asm _ JMP (DWORD .h0); ), 0,]);
