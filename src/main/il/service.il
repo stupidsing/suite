@@ -34,15 +34,23 @@ declare handle-sysenter = [p0, p1, p2,] (
 );
 
 declare svc-service = [p0, p1, p2,] (
-	asm _ MOV (EAX, `EBP + 16`);
-	asm _ MOV (EBX, `EBP + 12`);
-	asm _ MOV (ECX, `EBP + 8`);
-	asm _ MOV (EDX, ESP);
-	asm _ D8 (+x68);
-	asm _ D32 (.sysexitPoint);
-	asm _ POP (EDI);
-	asm _ SYSENTER ();
-	asm .sysexitPoint ();
+	declare cs0;
+	asm _ ADD (ESP, 4);
+	asm _ PUSH (CS);
+
+	if (cs0 and 3 != 0) then (
+		asm _ MOV (EAX, `EBP + 16`);
+		asm _ MOV (EBX, `EBP + 12`);
+		asm _ MOV (ECX, `EBP + 8`);
+		asm _ MOV (EDX, ESP);
+		asm _ D8 (+x68);
+		asm _ D32 (.sysexitPoint);
+		asm _ POP (EDI);
+		asm _ SYSENTER ();
+		asm .sysexitPoint ();
+	) else (
+		svc:handle-service [p0, p1, p2,];
+	);
 );
 
 declare svc-setup = [] (
