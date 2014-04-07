@@ -17,7 +17,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.Replacer;
+import suite.node.util.Rewriter;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -178,7 +178,7 @@ public class Chr {
 				private ISet<Node> replace(ISet<Node> facts) {
 					ISet<Node> facts1 = new ISet<Node>();
 					for (Node node : facts)
-						facts1 = facts1.replace(Replacer.replace(node, from, to));
+						facts1 = facts1.replace(new Rewriter(from, to).replace(node));
 					return facts1;
 				}
 			});
