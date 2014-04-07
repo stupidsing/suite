@@ -1,8 +1,8 @@
 declare idt = this;
 
 -- Sets up and loads interrupt descriptor table
-declare idt-set-entry = [interrupt, handler, is-interrupt-gate,] (
-	declare p = idt-address + interrupt shl 3;
+declare idt-set-entry = [vector, handler, is-interrupt-gate,] (
+	declare p = idt-address + vector shl 3;
 	let `p + 0` = handler and +x0000FFFF + +x00080000;
 	let `p + 4` = (if is-interrupt-gate then +x00008E00 else +x00008F00) + handler and +xFFFF0000;
 );

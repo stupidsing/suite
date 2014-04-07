@@ -112,15 +112,22 @@ asm _ IRET ();
 
 (
 	declare user-mode = [] (
+		declare sleep = [ms,] (
+			declare ticks1 = svc:svc-service [svc-ticks, 0, 0,] + ms / 10;
+			while (svc:svc-service [svc-ticks, 0, 0,] < ticks1) do (
+				svc:svc-service [svc-halt_, 0, 0,];
+			);
+		);
+
 		asm .user PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
 
 		-- Shows OK
-		svc:svc-service [1, +x4F, 0,];
-		svc:svc-service [1, +x4B, 0,];
+		svc:svc-service [svc-putc_, +x4F, 0,];
+		svc:svc-service [svc-putc_, +x4B, 0,];
 
 		asm .loop ();
-		svc:svc-service [0, 0, 0,];
+		svc:svc-service [svc-halt_, 0, 0,];
 		asm _ JMP (DWORD .loop);
 	);
 

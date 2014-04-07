@@ -1,11 +1,20 @@
 declare svc = this;
 
+expand svc-halt_ = 0;
+expand svc-nl___ = 1;
+expand svc-putc_ = 2;
+expand svc-ticks = 3;
+
 declare handle-service = [p0, p1, p2,] (
-	if (p0 = 0) then (
+	if (p0 = svc-halt_) then (
 		asm _ STI ();
 		asm _ HLT ();
-	) else if (p0 = 1) then (
+	) else if (p0 = svc-nl___) then (
+		cs:cs-nl [];
+	) else if (p0 = svc-putc_) then (
 		cs:cs-put [p1,];
+	) else if (p0 = svc-ticks) then (
+		ticks;
 	) else ();
 );
 
@@ -25,8 +34,8 @@ declare handle-sysenter = [p0, p1, p2,] (
 
 	asm _ MOV (ESP, EBP);
 	asm _ ADD (ESP, 20);
-	asm _ MOV (AX, +x23);
-	asm _ MOV (DS, AX);
+	asm _ MOV (DX, +x23);
+	asm _ MOV (DS, DX);
 	asm _ POP (ECX);
 	asm _ POP (EDX);
 	asm _ POP (EBP);
