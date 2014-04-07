@@ -12,16 +12,17 @@
 -- 00100000 -> stackx   physical page stack
 -- stackx   -> pagex    allocatable physical pages
 
+expand idt-address = +x20000;
+expand tss-address = +x20800;
+expand interrupt-stack-address = +x22000;
+expand syscall-stack-address = +x24000;
+expand memory-region-start = 1048576;
+
 asm _ MOV (ESP, +x30000);
 asm _ MOV (EBP, ESP);
 asm _ MOV (`+x40000`, EBP);
 
 declare kernel = this;
-declare idt-address = +x20000;
-declare tss-address = +x20800;
-declare interrupt-stack-address = +x22000;
-declare syscall-stack-address = +x24000;
-declare memory-region-start = 1048576;
 
 declare in = [port,] (
 	asm _ MOV (EDX, `EBP + 8`);

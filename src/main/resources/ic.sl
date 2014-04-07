@@ -5,7 +5,7 @@ ic-compile .fs .do0 .e0/.ex
 ic-compile _ () .e/.e
 #
 ic-compile .fs (.do0; .do1) .e0/.ex
-	:- not (.do0 = allocate _ = _; .do0 = declare _; .do0 = declare _ = _)
+	:- not (.do0 = allocate _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = expand _ = _)
 	, ic-compile .fs .do0 .e0/.e1
 	, ic-compile .fs .do1 .e1/.ex
 #
@@ -126,6 +126,10 @@ ic-compile-sugar (declare .var; .do) (allocate .var/4; .do)
 #
 ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
 	:- is.atom .var
+#
+ic-compile-sugar (expand .var = .value; .do) .do1
+	:- is.atom .var
+	, replace .var .value .do .do1
 #
 ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
