@@ -3,3 +3,4 @@ boot: disk
 config_interface: wx
 cpuid: sep=1
 display_library: wx
+ne2k: ioaddr=0x300, irq=3, mac=fe:fd:00:00:00:01, ethmod=tuntap, ethdev=/dev/net/tun, script=src/main/asm/tunconfig
