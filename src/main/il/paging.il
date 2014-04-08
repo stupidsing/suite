@@ -6,7 +6,7 @@ declare pg-setup = [] (
 
 	declare offset = 0;
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (
-		let `pt1 + offset =+ 4` = physical + 261; -- Supervisor, read-only
+		let `pt1 + offset =+ 4` = physical + 261; -- User, read/write
 	);
 
 	let `pt1` = 0; -- Trap zero pointers

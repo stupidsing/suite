@@ -115,6 +115,10 @@ ic-compile _ .imm (_ MOV (EAX, .imm), .e)/.e
 	:- is.int .imm
 #
 
+ic-compile-sugar (.a && .b) (if .a then .b else 0)
+#
+ic-compile-sugar (.a || .b) (if .a then 1 else .b)
+#
 ic-compile-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
 #
@@ -131,9 +135,15 @@ ic-compile-sugar (expand .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
 #
+ic-compile-sugar false 0
+#
 ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
+ic-compile-sugar (not .b) (if .b then 0 else 1)
+#
 ic-compile-sugar this $$EBP
+#
+ic-compile-sugar true 1
 #
 
 ic-replace-parameters () _ .do .do #

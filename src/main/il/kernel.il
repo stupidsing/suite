@@ -50,6 +50,15 @@ declare wrmsr = [msr, value,] (
 #include(paging.il);
 #include(service.il);
 
+declare sleep = [ms,] (
+	declare ticks1 = svc:svc-service [svc-ticks, 0, 0,] + ms / 10;
+	while (svc:svc-service [svc-ticks, 0, 0,] < ticks1) do (
+		svc:svc-service [svc-halt_, 0, 0,];
+	);
+);
+
+#include(ne2k.il);
+
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
 	declare d0 = kernel:in [+x21,];
@@ -77,6 +86,11 @@ pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
 
+cs:cs-puts [if (1) then "ne2000 detected" else "ne2k not found",];
+cs:cs-nl [];
+
+asm _ STI ();
+
 -- Enters user mode
 (
 	declare user-stack-address = +xF0000000;
@@ -96,7 +110,6 @@ svc:svc-setup [];
 );
 
 asm _ MOV (EBX, EAX);
-asm _ STI ();
 asm _ MOV (EAX, +x23);
 asm _ MOV (DS, AX);
 asm _ MOV (ES, AX);
@@ -110,26 +123,15 @@ asm _ D8 (+x68);
 asm _ D32 (.user); -- Would be IP
 asm _ IRET ();
 
-(
-	declare user-mode = [] (
-		declare sleep = [ms,] (
-			declare ticks1 = svc:svc-service [svc-ticks, 0, 0,] + ms / 10;
-			while (svc:svc-service [svc-ticks, 0, 0,] < ticks1) do (
-				svc:svc-service [svc-halt_, 0, 0,];
-			);
-		);
+declare user-mode = [] (
+	asm .user PUSH (`+x40000`);
+	asm _ MOV (EBP, ESP);
 
-		asm .user PUSH (`+x40000`);
-		asm _ MOV (EBP, ESP);
+	-- Shows OK
+	svc:svc-service [svc-putc_, +x4F, 0,];
+	svc:svc-service [svc-putc_, +x4B, 0,];
 
-		-- Shows OK
-		svc:svc-service [svc-putc_, +x4F, 0,];
-		svc:svc-service [svc-putc_, +x4B, 0,];
-
-		asm .loop ();
-		svc:svc-service [svc-halt_, 0, 0,];
-		asm _ JMP (DWORD .loop);
-	);
-
-	this:user-mode [];
+	asm .loop ();
+	svc:svc-service [svc-halt_, 0, 0,];
+	asm _ JMP (DWORD .loop);
 );
