@@ -33,16 +33,28 @@ declare copy = [dst, src, len,] (
 	asm _ REP MOVSB ();
 );
 
-declare in = [port,] (
+declare inb = [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ XOR (EAX, EAX);
 	asm _ IN (AL, DX);
 );
 
-declare out = [port, value,] (
+declare inw = [port,] (
+	asm _ MOV (EDX, `EBP + 8`);
+	asm _ XOR (EAX, EAX);
+	asm _ IN (AX, DX);
+);
+
+declare outb = [port, value,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ MOV (EAX, `EBP + 12`);
 	asm _ OUT (DX, AL);
+);
+
+declare outw = [port, value,] (
+	asm _ MOV (EDX, `EBP + 8`);
+	asm _ MOV (EAX, `EBP + 12`);
+	asm _ OUT (DX, AX);
 );
 
 declare wrmsr = [msr, value,] (
@@ -69,25 +81,25 @@ declare sleep = [ms,] (
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
-	declare d0 = kernel:in [+x21,];
-	declare d1 = kernel:in [+xA1,];
-	kernel:out [+x20, +x11,]; -- Initializes and disables ICW4
-	kernel:out [+xA0, +x11,];
-	kernel:out [+x21, +x20,]; -- Remaps IRQ0-7
-	kernel:out [+xA1, +x28,]; -- Remaps IRQ8-F
-	kernel:out [+x21, +x04,];
-	kernel:out [+xA1, +x02,];
-	kernel:out [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
-	kernel:out [+xA1, +x01,];
-	kernel:out [+x21, d0,];
-	kernel:out [+xA1, d1,];
+	declare d0 = kernel:inb [+x21,];
+	declare d1 = kernel:inb [+xA1,];
+	kernel:outb [+x20, +x11,]; -- Initializes and disables ICW4
+	kernel:outb [+xA0, +x11,];
+	kernel:outb [+x21, +x20,]; -- Remaps IRQ0-7
+	kernel:outb [+xA1, +x28,]; -- Remaps IRQ8-F
+	kernel:outb [+x21, +x04,];
+	kernel:outb [+xA1, +x02,];
+	kernel:outb [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
+	kernel:outb [+xA1, +x01,];
+	kernel:outb [+x21, d0,];
+	kernel:outb [+xA1, d1,];
 );
 
 -- Sets the 8253 to enable 100 timer ticks per second, and enables keyboard
-kernel:out [+x43, +x36,];
-kernel:out [+x40, 11932 % 256,];
-kernel:out [+x40, 11932 / 256,];
-kernel:out [+x21, +xFC,];
+kernel:outb [+x43, +x36,];
+kernel:outb [+x40, 11932 % 256,];
+kernel:outb [+x40, 11932 / 256,];
+kernel:outb [+x21, +xFC,];
 
 idt:idt-setup [];
 pm:pm-init [];

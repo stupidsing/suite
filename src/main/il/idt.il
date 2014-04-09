@@ -17,7 +17,7 @@ declare idt-setup = [] (
 		asm _ MOV (EBP, ESP);
 
 		-- Sends end of interrupt signal
-		kernel:out [+x20, +x20,];
+		kernel:outb [+x20, +x20,];
 
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
@@ -38,7 +38,7 @@ declare idt-setup = [] (
 		`+xB8000` =+ 1;
 
 		-- Sends end of interrupt signal
-		kernel:out [+x20, +x20,];
+		kernel:outb [+x20, +x20,];
 
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
