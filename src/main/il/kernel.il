@@ -89,6 +89,8 @@ svc:svc-setup [];
 cs:cs-puts [if (ne2k:ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
 cs:cs-nl [];
 
+ne2k:ne2k-setup [];
+
 asm _ STI ();
 
 -- Enters user mode

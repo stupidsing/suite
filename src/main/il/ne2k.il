@@ -24,8 +24,8 @@ declare ne2k-read = [src, dst, len,] (
 	kernel:out [iobase + +x08, src,];
 	kernel:out [iobase + +x09, src shr 8,];
 	kernel:out [iobase + +x00, +x0A,];
-	for (declare p = 0; p < len; p =+ 2) (
-		copy `dst + p`:2 = kernel:in [iobase + +x10,];
+	for (declare p = 0; p < len; p =+ 1) (
+		copy `dst + p`:1 = kernel:in [iobase + +x10,];
 	);
 );
 
@@ -35,6 +35,11 @@ declare ne2k-setup = [] (
 		kernel:out [iobase + +x0E, +x49,];
 
 		allocate romdata/16;
-		ne2k:ne2k-read [0, romdata, 16,];
+		ne2k:ne2k-read [0, & romdata, 16,];
+		for (declare p = 0; p < 16; p =+ 1) (
+			declare c;
+			copy c:1 = `& romdata + p`;
+			cs:cs-put-hex1 [c,];
+		);
 	));
 );
