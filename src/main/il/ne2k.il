@@ -15,3 +15,26 @@ declare ne2k-probe = [] (
 		&& +x80 and kernel:in [iobase + +x07,] = +x80
 	);
 );
+
+declare ne2k-read = [src, dst, len,] (
+	let len = (len + 1) and +xFFFFFFFE;
+	kernel:out [iobase + +x00, +x22,];
+	kernel:out [iobase + +x0A, len,];
+	kernel:out [iobase + +x0B, len shr 8,];
+	kernel:out [iobase + +x08, src,];
+	kernel:out [iobase + +x09, src shr 8,];
+	kernel:out [iobase + +x00, +x0A,];
+	for (declare p = 0; p < len; p =+ 2) (
+		copy `dst + p`:2 = kernel:in [iobase + +x10,];
+	);
+);
+
+declare ne2k-setup = [] (
+	(ne2k:ne2k-probe [] && (
+		kernel:out [iobase + +x00, +x21,];
+		kernel:out [iobase + +x0E, +x49,];
+
+		allocate romdata/16;
+		ne2k:ne2k-read [0, romdata, 16,];
+	));
+);

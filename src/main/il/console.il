@@ -19,13 +19,13 @@ declare cs-nl = [] (
 
 declare cs-put = [ch,] (
 	declare p = +xB8000 + 3840 + cs-column-offset;
-	let `p` = `p` and +xFFFF0000 + +x0700 + ch;
+	copy `p`:2 = +x0700 + ch;
 	if (cs-column-offset += 2 = 160) then (cs:cs-nl []) else ();
 );
 
 declare cs-puts = [s,] (
-	declare ch;
-	for (declare s1 = s; let ch = `s1` and +xFF; s1 += 1) (
+	declare ch = 0;
+	for (declare s1 = s; copy ch:1 = `s1` and +xFF; s1 += 1) (
 		cs:cs-put [ch,];
 	);
 );

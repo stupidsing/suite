@@ -86,7 +86,7 @@ pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
 
-cs:cs-puts [if (1) then "ne2000 detected" else "ne2k not found",];
+cs:cs-puts [if (ne2k:ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
 cs:cs-nl [];
 
 asm _ STI ();
