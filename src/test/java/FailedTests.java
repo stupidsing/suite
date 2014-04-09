@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -35,6 +36,12 @@ public class FailedTests {
 	@Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
+	}
+
+	// Takes forever to type check
+	@Test
+	public void testParse() {
+		assertEquals(Suite.parse("(`a`):b"), Suite.parse("`a`:b"));
 	}
 
 }
