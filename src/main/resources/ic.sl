@@ -57,15 +57,6 @@ ic-compile .fs (allocate .var/.size; .do) .e0/.ex
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
 #
-ic-compile .fs (copy .var:.size = .value) .e0/.ex
-	:- ic-compile .fs (& .var) .e0/.e1
-	, ic-push EAX .fs/.fs1 .e1/.e2
-	, ic-compile .fs1 .value .e2/.e3
-	, .e3 = (_ POP EDI
-		, _ MOV (`EDI`, .reg)
-		, .ex)
-	, (.size/.reg = 1/AL; .size/.reg = 2/AX; .size/.reg = 4/EAX)
-#
 ic-compile .fs (if .if then .then else .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
 	, .e1 = (_ OR (EAX, EAX)
@@ -77,6 +68,14 @@ ic-compile .fs (if .if then .then else .else) .e0/.ex
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
 	, .e5 = (.endLabel (), .ex)
+#
+ic-compile .fs (let .var = .value) .e0/.ex
+	:- ic-compile .fs (& .var) .e0/.e1
+	, ic-push EAX .fs/.fs1 .e1/.e2
+	, ic-compile .fs1 .value .e2/.e3
+	, .e3 = (_ POP EDI
+		, _ MOV (`EDI`, EAX)
+		, .ex)
 #
 ic-compile _ (snippet .snippet) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
@@ -139,8 +138,6 @@ ic-compile-sugar (expand .var = .value; .do) .do1
 ic-compile-sugar false 0
 #
 ic-compile-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
-#
-ic-compile-sugar (let .var = .value) (copy .var:4 = .value)
 #
 ic-compile-sugar (not .b) (if .b then 0 else 1)
 #

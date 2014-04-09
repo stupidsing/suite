@@ -23,6 +23,7 @@ asis:.s (_a AND (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x20 +x80 4 .e0/.e
 asis:_s (_a AOP ()) (+x67, .e)/.e #
 asis:.s (.a CALL .target) (+xE8, .e1)/.ex :- asi-jump-rel:.s .target .a 1 .rel, as-emit:.s .rel .e1/.ex #
 asis:_s (_a CALL .rm) (+xFF, .e1)/.ex :- as-mod-num-rm:32 .rm 2 .e1/.ex #
+asis:_s (_a CLD ()) (+xFC, .e)/.e #
 asis:_s (_a CLI ()) (+xFA, .e)/.e #
 asis:.s (_a CMP (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x38 +x80 07 .e0/.ex #
 asis:_s (_a D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
@@ -71,6 +72,9 @@ asis:16 (_a MOV (.rm, .sreg)) (+x8C, .e1)/.ex :- as-segment-reg .sreg .sr, as-mo
 asis:16 (_a MOV (.sreg, .rm)) (+x8E, .e1)/.ex :- as-segment-reg .sreg .sr, as-mod-num-rm:16 .rm .sr .e1/.ex #
 asis:.s (_a MOV (.reg, .cr)) (+x0F, +x20, .b, .e)/.e :- as-control-reg .cr .n, as-reg:.s .reg .r, let .b (+xC0 + .n * 8 + .r), .s = 32 #
 asis:.s (_a MOV (.cr, .reg)) (+x0F, +x22, .b, .e)/.e :- as-control-reg .cr .n, as-reg:.s .reg .r, let .b (+xC0 + .n * 8 + .r), .s = 32 #
+asis:.s (_a MOVSB ()) (+xA4, .e)/.e :- .s = 8 #
+asis:.s (_a MOVSD ()) (+xA5, .e)/.e :- .s = 32 #
+asis:.s (_a MOVSW ()) (+xA5, .e)/.e :- .s = 16 #
 asis:.s (_a MOVSX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xBE .e0/.ex #
 asis:.s (_a MOVZX (.reg, .rm)) .e0/.ex :- asi-reg-rm-extended:.s .reg .rm +xB6 .e0/.ex #
 asis:.s (_a MUL .rm) .e0/.ex :- asi-rm:.s +xF6 .rm 4 .e0/.ex #
@@ -97,6 +101,9 @@ asis:_s (_a PUSH SS) (+x16, .e)/.e #
 asis:_s (_a PUSHA ()) (+x60, .e)/.e #
 asis:_s (_a PUSHF ()) (+x9C, .e)/.e #
 asis:_s (_a RDMSR ()) (+x0F, +x32, .e)/.e #
+asis:.s (_a REP .a) (+xF3, .e1)/.ex :- asis:.s (_a .a) .e1/.ex #
+asis:.s (_a REPE .a) (+xF3, .e1)/.ex :- asis:.s (_a .a) .e1/.ex #
+asis:.s (_a REPNE .a) (+xF2, .e1)/.ex :- asis:.s (_a .a) .e1/.ex #
 asis:_s (_a RET ()) (+xC3, .e)/.e #
 asis:_s (_a RET .imm) (+xC2, .e1)/.ex :- as-emit:16 .imm .e1/.ex #
 asis:.s (_a SAL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #

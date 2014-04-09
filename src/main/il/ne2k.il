@@ -4,6 +4,8 @@ declare ne2k = this;
 
 expand iobase = +x300;
 
+allocate ne2k-mac-address/8;
+
 declare ne2k-probe = [] (
 	kernel:out [iobase + +x1F, kernel:in [iobase + +x1F,],];
 	kernel:out [iobase + +x00, +x21,];
@@ -25,7 +27,8 @@ declare ne2k-read = [src, dst, len,] (
 	kernel:out [iobase + +x09, src shr 8,];
 	kernel:out [iobase + +x00, +x0A,];
 	for (declare p = 0; p < len; p =+ 1) (
-		copy `dst + p`:1 = kernel:in [iobase + +x10,];
+		declare b = kernel:in [iobase + +x10,];
+		kernel:copy [dst + p, & b, 1,];
 	);
 );
 
@@ -36,10 +39,16 @@ declare ne2k-setup = [] (
 
 		allocate romdata/16;
 		ne2k:ne2k-read [0, & romdata, 16,];
-		for (declare p = 0; p < 16; p =+ 1) (
-			declare c;
-			copy c:1 = `& romdata + p`;
-			cs:cs-put-hex1 [c,];
+		kernel:copy [& ne2k-mac-address, & romdata, 6,];
+
+		cs:cs-puts ["MAC ADDRESS = ",];
+
+		for (declare p = 0; p < 6; p =+ 1) (
+			declare b;
+			kernel:copy [& b, & ne2k-mac-address + p, 1,];
+			cs:cs-put-hex1 [b,];
 		);
+
+		cs:cs-nl [];
 	));
 );

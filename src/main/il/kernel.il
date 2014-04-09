@@ -25,6 +25,14 @@ asm _ MOV (`+x40000`, EBP);
 declare kernel = this;
 declare ticks = 0;
 
+declare copy = [dst, src, len,] (
+	asm _ MOV (EDI, `EBP + 8`);
+	asm _ MOV (ESI, `EBP + 12`);
+	asm _ MOV (ECX, `EBP + 16`);
+	asm _ CLD ();
+	asm _ REP MOVSB ();
+);
+
 declare in = [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ XOR (EAX, EAX);

@@ -18,14 +18,14 @@ declare cs-nl = [] (
 );
 
 declare cs-put = [ch,] (
-	declare p = +xB8000 + 3840 + cs-column-offset;
-	copy `p`:2 = +x0700 + ch;
+	declare w = +x0700 + ch;
+	kernel:copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
 	if (cs-column-offset += 2 = 160) then (cs:cs-nl []) else ();
 );
 
 declare cs-puts = [s,] (
 	declare ch = 0;
-	for (declare s1 = s; copy ch:1 = `s1` and +xFF; s1 += 1) (
+	for (declare s1 = s; (kernel:copy [& ch, s1, 1,]; ch); s1 += 1) (
 		cs:cs-put [ch,];
 	);
 );
