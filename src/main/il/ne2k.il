@@ -6,18 +6,6 @@ expand iobase = +x300;
 
 allocate ne2k-mac-address/8;
 
-declare ne2k-probe = [] (
-	kernel:outb [iobase + +x1F, kernel:inb [iobase + +x1F,],];
-	kernel:outb [iobase + +x00, +x21,];
-
-	kernel:sleep [100,];
-
-	-- Tests for a generic DP8390 NIC
-	(+x27 and kernel:inb [iobase + +x00,] = +x21
-		&& +x80 and kernel:inb [iobase + +x07,] = +x80
-	);
-);
-
 declare ne2k-read = [src, dst, len,] (
 	let len = (len + 1) and +xFFFFFFFE;
 	kernel:outb [iobase + +x00, +x22,];
@@ -29,6 +17,18 @@ declare ne2k-read = [src, dst, len,] (
 	for (declare p = 0; p < len; p =+ 1) (
 		declare b = kernel:inw [iobase + +x10,];
 		kernel:copy [dst + p, & b, 1,];
+	);
+);
+
+declare ne2k-probe = [] (
+	kernel:outb [iobase + +x1F, kernel:inb [iobase + +x1F,],];
+	kernel:outb [iobase + +x00, +x21,];
+
+	kernel:sleep [100,];
+
+	-- Tests for a generic DP8390 NIC
+	(+x27 and kernel:inb [iobase + +x00,] = +x21
+		&& +x80 and kernel:inb [iobase + +x07,] = +x80
 	);
 );
 
