@@ -23,6 +23,7 @@ public class WhitespacePreprocessor implements Fun<String, String> {
 		StringBuilder sb = new StringBuilder();
 		int pos = 0;
 		int quote = 0;
+		boolean backquote = false;
 
 		while (pos < in.length()) {
 			char ch = in.charAt(pos++);
@@ -31,7 +32,7 @@ public class WhitespacePreprocessor implements Fun<String, String> {
 				quote = ParseUtil.getQuoteChange(quote, ch);
 				sb.append(quote == 0 && whitespaces.contains(ch) ? " " : ch);
 			} else
-				sb.append(quote == 0 ? " ` " : ch);
+				sb.append(quote == 0 ? (backquote = !backquote) ? "` " : " `" : ch);
 		}
 
 		return sb.toString();
