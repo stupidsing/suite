@@ -26,6 +26,7 @@ asis:_s (_a CALL .rm) (+xFF, .e1)/.ex :- as-mod-num-rm:32 .rm 2 .e1/.ex #
 asis:_s (_a CLD ()) (+xFC, .e)/.e #
 asis:_s (_a CLI ()) (+xFA, .e)/.e #
 asis:.s (_a CMP (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x38 +x80 07 .e0/.ex #
+asis:.s (_a CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s +xB0 .rm .reg .e1/.ex #
 asis:_s (_a D8 .imm) .e0/.ex :- as-emit:8 .imm .e0/.ex #
 asis:_s (_a D16 .imm) .e0/.ex :- as-emit:16 .imm .e0/.ex #
 asis:_s (_a D32 .imm) .e0/.ex :- as-emit:32 .imm .e0/.ex #
@@ -57,6 +58,7 @@ asis:_s (.a JNE .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
 asis:_s (.a JNZ .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
 asis:_s (.a JZ .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #
 asis:_s (_a LEA (.reg, .rm)) (+x8D, .e1)/.ex :- as-rm-regwd:_ .rm .reg .e1/.ex #
+asis:.s (_a LOCK .a) (+xF0, .e1)/.ex :- asis:.s (_a .a) .e1/.ex #
 asis:_s (.a LOOP .target) (+xE2, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:_s (.a LOOPE .target) (+xE1, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:_s (.a LOOPNE .target) (+xE0, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
