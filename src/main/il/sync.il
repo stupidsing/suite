@@ -10,7 +10,6 @@ declare cmpxchg = [loc, v0, v1,] (
 );
 
 declare sync-yield = [] (
-	--svc:svc-service [svc-halt_, 0, 0,];
 	asm _ PUSHF ();
 	asm _ STI ();
 	asm _ HLT ();
