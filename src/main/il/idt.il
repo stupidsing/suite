@@ -1,5 +1,13 @@
 declare idt = this;
 
+allocate irq-sinks/64;
+
+declare irq-dump-sink = [irq,] (
+		cs:cs-puts ["IRQ = ",];
+		cs:cs-put-hex1 [irq,];
+		cs:cs-nl [];
+);
+
 -- Sets up and loads interrupt descriptor table
 declare idt-set-entry = [vector, handler, is-interrupt-gate,] (
 	declare p = idt-address + vector shl 3;
@@ -7,7 +15,15 @@ declare idt-set-entry = [vector, handler, is-interrupt-gate,] (
 	let `p + 4` = (if is-interrupt-gate then +x00008E00 else +x00008F00) + handler and +xFFFF0000;
 );
 
+declare idt-set-irq-sink = [irq, irq-sink,] (
+	let `& irq-sinks + irq shl 2` = irq-sink;
+);
+
 declare idt-setup = [] (
+	for (declare irq = 0; irq < 16; irq =+ 1) (
+		idt:idt-set-irq-sink [irq, 0,];
+	);
+
 	declare handle-general-interrupt = snippet (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
@@ -117,6 +133,10 @@ declare idt-setup = [] (
 			cs:cs-puts ["IRQ = ",];
 			cs:cs-put-hex1 [vector,];
 			cs:cs-nl [];
+
+			declare irq = vector - +x20;
+			declare irq-sink = `& irq-sinks + irq shl 2`;
+			if irq-sink then (irq:irq-sink [irq,]) else ();
 
 			-- Sends end of interrupt signal
 			kernel:outb [+x20, +x20,];
