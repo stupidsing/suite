@@ -2,6 +2,7 @@ package suite.lp.doer;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import suite.lp.Journal;
 import suite.lp.doer.Configuration.ProverConfig;
@@ -153,11 +154,15 @@ public class Prover {
 				boolean isTrace = config.isTrace();
 
 				if (isTrace) {
+					Set<String> whites = config.getTracePredicates();
+					Set<String> blacks = config.getNoTracePredicates();
+
 					Prototype prototype = Prototype.get(query);
 					Node head = prototype != null ? prototype.getHead() : null;
 					Atom atom = head instanceof Atom ? (Atom) head : null;
 					String name = atom != null ? atom.getName() : null;
-					isTrace &= !config.getNoTracePredicates().contains(name);
+					isTrace &= whites == null || whites.contains(name);
+					isTrace &= blacks == null || !blacks.contains(name);
 				}
 
 				if (!isTrace)

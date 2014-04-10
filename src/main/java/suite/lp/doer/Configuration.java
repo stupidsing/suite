@@ -1,7 +1,5 @@
 package suite.lp.doer;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import suite.Suite;
@@ -21,6 +19,7 @@ public class Configuration {
 		private RuleSet ruleSet;
 		private boolean isTrace;
 		private TraceLevel traceLevel;
+		private Set<String> tracePredicates;
 		private Set<String> noTracePredicates;
 		private Source<Node> source;
 		private Sink<Node> sink;
@@ -30,7 +29,7 @@ public class Configuration {
 		}
 
 		public ProverConfig(RuleSet ruleSet) {
-			this(ruleSet, Suite.isTrace, new HashSet<>(Arrays.asList("member", "replace")));
+			this(ruleSet, Suite.isTrace, Suite.tracePredicates, Suite.noTracePredicates);
 		}
 
 		public ProverConfig(ProverConfig proverConfig) {
@@ -38,13 +37,14 @@ public class Configuration {
 		}
 
 		public ProverConfig(RuleSet ruleSet, ProverConfig proverConfig) {
-			this(ruleSet, proverConfig.isTrace, proverConfig.noTracePredicates);
+			this(ruleSet, proverConfig.isTrace, proverConfig.tracePredicates, proverConfig.noTracePredicates);
 		}
 
-		private ProverConfig(RuleSet ruleSet, boolean isTrace, Set<String> noTracePredicates) {
+		private ProverConfig(RuleSet ruleSet, boolean isTrace, Set<String> tracePredicates, Set<String> noTracePredicates) {
 			this.ruleSet = ruleSet;
 			this.isTrace = isTrace;
 			this.traceLevel = Suite.traceLevel;
+			this.tracePredicates = tracePredicates;
 			this.noTracePredicates = noTracePredicates;
 		}
 
@@ -80,6 +80,14 @@ public class Configuration {
 
 		public void setTraceLevel(TraceLevel traceLevel) {
 			this.traceLevel = traceLevel;
+		}
+
+		public Set<String> getTracePredicates() {
+			return tracePredicates;
+		}
+
+		public void setTracePredicates(Set<String> tracePredicates) {
+			this.tracePredicates = tracePredicates;
 		}
 
 		public Set<String> getNoTracePredicates() {

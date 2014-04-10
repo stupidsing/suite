@@ -8,7 +8,9 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.IndexedReader;
@@ -37,6 +39,9 @@ public class Suite {
 	public static final boolean isDumpCode = false;
 	public static final List<String> libraries = Arrays.asList("STANDARD");
 	public static final TraceLevel traceLevel = TraceLevel.SIMPLE;
+
+	public static final Set<String> tracePredicates = null;
+	public static final Set<String> noTracePredicates = new HashSet<>(Arrays.asList("member", "replace"));
 
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();

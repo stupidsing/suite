@@ -25,15 +25,6 @@ asm _ MOV (`+x40000`, EBP);
 declare kernel = this;
 declare ticks = 0;
 
-declare cmpxchg = [loc, v0, v1,] (
-	asm _ MOV (EDI, `EBP + 8`);
-	asm _ MOV (EAX, `EBP + 12`);
-	asm _ MOV (EBX, `EBP + 16`);
-	asm _ CMPXCHG (`EDI`, EBX);
-	asm _ SETE (AL);
-	asm _ MOVZX (EAX, AL);
-);
-
 declare copy = [dst, src, len,] (
 	asm _ CLD ();
 	asm _ MOV (EDI, `EBP + 8`);
@@ -77,19 +68,13 @@ declare wrmsr = [msr, value,] (
 	asm _ WRMSR ();
 );
 
+#include(sync.il);
 #include(console.il);
 #include(idt.il);
 #include(phy-mem.il);
 #include(paging.il);
 #include(service.il);
-
-declare sleep = [ms,] (
-	declare ticks1 = svc:svc-service [svc-ticks, 0, 0,] + ms / 10;
-	while (svc:svc-service [svc-ticks, 0, 0,] < ticks1) do (
-		svc:svc-service [svc-halt_, 0, 0,];
-	);
-);
-
+#include(time.il);
 #include(ne2k.il);
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
@@ -167,6 +152,6 @@ declare user-mode = [] (
 	svc:svc-service [svc-putc_, +x4B, 0,];
 
 	asm .loop ();
-	svc:svc-service [svc-halt_, 0, 0,];
+	time:time-yield [];
 	asm _ JMP (DWORD .loop);
 );

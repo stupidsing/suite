@@ -7,8 +7,7 @@ expand svc-ticks = 3;
 
 declare handle-service = [p0, p1, p2,] (
 	if (p0 = svc-halt_) then (
-		asm _ STI ();
-		asm _ HLT ();
+		sync:sync-yield [];
 	) else if (p0 = svc-nl___) then (
 		cs:cs-nl [];
 	) else if (p0 = svc-putc_) then (
