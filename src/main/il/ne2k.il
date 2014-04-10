@@ -19,9 +19,9 @@ declare ne2k-read = [src, dst, len,] (
 	kernel:outb [io-base + +x09, src shr 8,];
 	kernel:outb [io-base + +x00, +x0A,];
 
-	for (declare p = 0; p < len; p =+ 1) (
-		declare b = kernel:inw [io-base + +x10,];
-		kernel:copy [dst + p, & b, 1,];
+	for (declare p = 0; p < len; p =+ 2) (
+		declare w = kernel:inw [io-base + +x10,];
+		kernel:copy [dst + p, & w, 2,];
 	);
 );
 
@@ -69,7 +69,9 @@ declare ne2k-setup = [] (
 
 		allocate romdata/16;
 		ne2k:ne2k-read [0, & romdata, 16,];
-		kernel:copy [& ne2k-mac-address, & romdata, 6,];
+		for (declare p = 0; p < 6; p =+ 1) (
+			kernel:copy [& ne2k-mac-address + p, & romdata + p shl 1, 1,];
+		);
 
 		ne2k-rx-page-start = mem-base shr 8;
 		ne2k-rx-page-stop = ne2k-rx-page-start + mem-size shr 8 - 12;
