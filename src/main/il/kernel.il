@@ -25,6 +25,15 @@ asm _ MOV (`+x40000`, EBP);
 declare kernel = this;
 declare ticks = 0;
 
+declare cmpxchg = [loc, v0, v1,] (
+	asm _ MOV (EDI, `EBP + 8`);
+	asm _ MOV (EAX, `EBP + 12`);
+	asm _ MOV (EBX, `EBP + 16`);
+	asm _ CMPXCHG (`EDI`, EBX);
+	asm _ SETE (AL);
+	asm _ MOVZX (EAX, AL);
+);
+
 declare copy = [dst, src, len,] (
 	asm _ MOV (EDI, `EBP + 8`);
 	asm _ MOV (ESI, `EBP + 12`);
