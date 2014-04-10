@@ -120,6 +120,9 @@ asis:.s:_a (SETNE .rm) (+x0F, +x95, .e1)/.ex :- as-mod-num-rm:.s .rm 0 .e1/.ex #
 asis:.s:_a (SHL (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 4 .e0/.ex #
 asis:.s:_a (SHR (.rm, .op)) .e0/.ex :- asi-shift:.s .rm .op +xD0 +xC0 5 .e0/.ex #
 asis:_s:_a (STI ()) (+xFB, .e)/.e #
+asis:.s:_a (STOSB ()) (+xAA, .e)/.e :- .s = 8 #
+asis:.s:_a (STOSD ()) (+xAB, .e)/.e :- .s = 32 #
+asis:.s:_a (STOSW ()) (+xAB, .e)/.e :- .s = 16 #
 asis:.s:_a (SUB (.op0, .op1)) .e0/.ex :- asi-2op:.s .op0 .op1 +x28 +x80 5 .e0/.ex #
 asis:_s:_a (SYSENTER ()) (+x0F, +x34, .e)/.e #
 asis:_s:_a (SYSEXIT ()) (+x0F, +x35, .e)/.e #
