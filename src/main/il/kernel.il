@@ -35,10 +35,14 @@ declare cmpxchg = [loc, v0, v1,] (
 );
 
 declare copy = [dst, src, len,] (
+	asm _ CLD ();
 	asm _ MOV (EDI, `EBP + 8`);
 	asm _ MOV (ESI, `EBP + 12`);
 	asm _ MOV (ECX, `EBP + 16`);
-	asm _ CLD ();
+	asm _ SHR (ECX, 2);
+	asm _ REP MOVSD ();
+	asm _ MOV (ECX, `EBP + 16`);
+	asm _ AND (ECX, 3);
 	asm _ REP MOVSB ();
 );
 
