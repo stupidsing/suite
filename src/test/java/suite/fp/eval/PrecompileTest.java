@@ -3,7 +3,7 @@ package suite.fp.eval;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.sample.Profiler;
 
 public class PrecompileTest {

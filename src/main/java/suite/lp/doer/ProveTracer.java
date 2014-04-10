@@ -7,7 +7,8 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 
-import suite.lp.doer.ProverConfig.TraceLevel;
+import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.doer.Configuration.TraceLevel;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;

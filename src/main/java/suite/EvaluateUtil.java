@@ -7,7 +7,7 @@ import java.util.List;
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;

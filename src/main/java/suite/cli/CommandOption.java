@@ -11,7 +11,7 @@ import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
 import suite.fp.PrecompileMain;
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.FunUtil.Source;

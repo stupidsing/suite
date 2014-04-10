@@ -34,7 +34,7 @@ public class Assembler {
 
 	private Finder finder = new InterpretedProverBuilder().build(ruleSet, Suite.parse("" //
 			+ "source (.bits, .address, .instruction,)" //
-			+ ", asi:.bits (.address .instruction) .code" //
+			+ ", asi:.bits:.address .instruction .code" //
 			+ ", sink .code" //
 	));
 

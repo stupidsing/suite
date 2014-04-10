@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.Suite;
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 

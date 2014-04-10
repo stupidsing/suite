@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 
 public class MapifyUtilTest {
 

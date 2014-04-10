@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.node.Node;
 
 public class FunCompilerConfig {

@@ -3,7 +3,7 @@ package suite;
 import java.util.Arrays;
 import java.util.List;
 
-import suite.lp.doer.ProverConfig;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;

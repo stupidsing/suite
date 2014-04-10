@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import suite.lp.Journal;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
