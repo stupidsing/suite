@@ -117,6 +117,9 @@ declare idt-setup = [] (
 			cs:cs-puts ["IRQ = ",];
 			cs:cs-put-hex1 [vector,];
 			cs:cs-nl [];
+
+			-- Sends end of interrupt signal
+			kernel:outb [+x20, +x20,];
 		);
 
 		asm _ MOV (ESP, EBP);
