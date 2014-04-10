@@ -11,8 +11,10 @@ declare idt-setup = [] (
 	declare handle-general-interrupt = snippet (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
+		asm _ PUSH (ES);
 		asm _ MOV (AX, 16);
 		asm _ MOV (DS, AX);
+		asm _ MOV (ES, AX);
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
 
@@ -21,6 +23,7 @@ declare idt-setup = [] (
 
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
+		asm _ POP (ES);
 		asm _ POP (DS);
 		asm _ POPA ();
 		asm _ IRET ();
@@ -29,8 +32,10 @@ declare idt-setup = [] (
 	declare handle-timer-interrupt = snippet (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
+		asm _ PUSH (ES);
 		asm _ MOV (AX, 16);
 		asm _ MOV (DS, AX);
+		asm _ MOV (ES, AX);
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
 
@@ -42,6 +47,7 @@ declare idt-setup = [] (
 
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
+		asm _ POP (ES);
 		asm _ POP (DS);
 		asm _ POPA ();
 		asm _ IRET ();
@@ -63,7 +69,7 @@ declare idt-setup = [] (
 		asm _ MOV (EBP, ESP);
 
 		(
-			declare interrupt;
+			declare vector;
 			declare code;
 			declare eip0;
 			declare cs0;
@@ -77,7 +83,7 @@ declare idt-setup = [] (
 			asm _ PUSH (EAX);
 
 			cs:cs-puts ["FAULT INTERRUPT = ",];
-			cs:cs-put-hex1 [interrupt,];
+			cs:cs-put-hex1 [vector,];
 			cs:cs-puts [", ERROR CODE = ",];
 			cs:cs-put-hex4 [code,];
 			cs:cs-puts [", CS = ",];
@@ -91,17 +97,49 @@ declare idt-setup = [] (
 
 		asm _ CLI ();
 		asm _ HLT ();
+
+		asm .irq-handler ();
+		asm _ PUSHA ();
+		asm _ PUSH (DS);
+		asm _ PUSH (ES);
+		asm _ MOV (DI, 16);
+		asm _ MOV (DS, DI);
+		asm _ MOV (ES, DI);
+		asm _ PUSH (`+x40000`);
+		asm _ MOV (EBP, ESP);
+		asm _ MOV (EAX, `EBP + 44`);
+
+		(
+			declare vector;
+			asm _ ADD (ESP, 4);
+			asm _ PUSH (EAX);
+
+			cs:cs-puts ["IRQ = ",];
+			cs:cs-put-hex1 [vector,];
+			cs:cs-nl [];
+		);
+
+		asm _ MOV (ESP, EBP);
+		asm _ POP (EAX);
+		asm _ POP (ES);
+		asm _ POP (DS);
+		asm _ POPA ();
+
+		asm _ ADD (ESP, 4);
+		asm _ IRET ();
 	);
 
 	for (declare i = 0; i < 256; i =+ 1) (
 		idt:idt-set-entry [i, handle-general-interrupt, 1,];
 	);
 
-	idt:idt-set-entry [+x20, handle-timer-interrupt, 1,];
-
 	(
-		expand set-fault-handler .i .h0 = (idt:idt-set-entry [.i, snippet ( asm _ PUSH (.i); asm _ JMP (DWORD .h0); ), 0,]);
-
+		expand set-fault-handler .i .h0 = (
+			idt:idt-set-entry [.i, snippet (
+				asm _ PUSH (.i);
+				asm _ JMP (DWORD .h0);
+			), 0,]
+		);
 		set-fault-handler +x00 .fault-handler-0;
 		set-fault-handler +x01 .fault-handler-0;
 		set-fault-handler +x02 .fault-handler-0;
@@ -136,10 +174,39 @@ declare idt-setup = [] (
 		set-fault-handler +x1F .fault-handler-0;
 	);
 
-	allocate idtr/8;
-	let `idtr` = +x7FF;
-	let `idtr + 2` = idt-address;
-	idtr;
+	(
+		expand set-irq-handler .i .h0 = (
+			idt:idt-set-entry [.i, snippet (
+				asm _ PUSH (.i);
+				asm _ JMP (DWORD .h0);
+			), 1,]
+		);
+		set-irq-handler +x20 .irq-handler;
+		set-irq-handler +x21 .irq-handler;
+		set-irq-handler +x22 .irq-handler;
+		set-irq-handler +x23 .irq-handler;
+		set-irq-handler +x24 .irq-handler;
+		set-irq-handler +x25 .irq-handler;
+		set-irq-handler +x26 .irq-handler;
+		set-irq-handler +x27 .irq-handler;
+		set-irq-handler +x28 .irq-handler;
+		set-irq-handler +x29 .irq-handler;
+		set-irq-handler +x2A .irq-handler;
+		set-irq-handler +x2B .irq-handler;
+		set-irq-handler +x2C .irq-handler;
+		set-irq-handler +x2D .irq-handler;
+		set-irq-handler +x2E .irq-handler;
+		set-irq-handler +x2F .irq-handler;
+	);
 
-	asm _ LIDT (`EAX`);
+	idt:idt-set-entry [+x20, handle-timer-interrupt, 1,];
+
+	(
+		allocate idtr/8;
+		let `idtr` = +x7FF;
+		let `idtr + 2` = idt-address;
+		idtr;
+
+		asm _ LIDT (`EAX`);
+	);
 );
