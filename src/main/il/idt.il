@@ -56,12 +56,20 @@ declare idt-setup = [] (
 			asm _ PUSH (EAX);
 
 			declare irq-number = vector - +x20;
-			declare irq-sink = irq:irq-get-sink [irq-number,];
-			(irq-sink && irq:irq-sink [irq-number,]);
+			declare isr = irq:irq-get-isr [];
 
-			-- Sends end of interrupt signal
-			(vector >= 8 && kernel:outb [+xA0, +x20,]);
-			kernel:outb [+x20, +x20,];
+			if (isr and 1 shl irq-number) then (
+				declare irq-sink = irq:irq-get-sink [irq-number,];
+				(irq-sink && irq:irq-sink [irq-number,]);
+
+				-- Sends end of interrupt signal
+				(irq-number >= 8 && kernel:outb [+xA0, +x20,]);
+				kernel:outb [+x20, +x20,];
+			) else (
+				cs:cs-puts ["SPURIOUS INTERRUPT = ",];
+				cs:cs-put-hex1 [irq-number,];
+				cs:cs-nl [];
+			);
 		);
 
 		isr-epilog;

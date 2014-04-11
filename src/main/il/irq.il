@@ -8,6 +8,12 @@ declare dump-sink = [irq-number,] (
 	cs:cs-nl [];
 );
 
+declare irq-get-isr = [] (
+	kernel:outb [+x20, +x0B,];
+	kernel:outb [+xA0, +x0B,];
+	(kernel:inb [+xA0,]) shl 8 + kernel:inb [+x20,];
+);
+
 declare irq-get-sink = [irq-number,] (
 	`& irq-sinks + irq-number shl 2`;
 );
@@ -21,5 +27,5 @@ declare irq-setup = [] (
 		irq:irq-set-sink [irq-number, dump-sink,];
 	);
 
-	irq:irq-set-sink [7, 0,]; -- Ignore spurious interrupts
+	--irq:irq-set-sink [7, 0,]; -- Ignore spurious interrupts
 );

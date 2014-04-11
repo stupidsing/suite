@@ -1,12 +1,14 @@
 declare pm = this;
+declare pm-sync = 0;
 
 declare page0 = memory-region-start;
 declare pagex = page0;
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 
--- Detects memory size
 declare pm-init = [] (
+
+	-- Detects memory size
 	while (
 		declare t = `pagex` xor +xFFFFFFFF;
 		let `pagex` = t;
@@ -22,11 +24,15 @@ declare pm-init = [] (
 );
 
 declare pm-allocate = [] (
-	if (stack0 != stackx) then `stack0 =+ 4` else 0;
+	synchronized (& pm-sync) (
+		if (stack0 != stackx) then `stack0 =+ 4` else 0;
+	);
 );
 
 declare pm-free = [page,] (
-	`stack0 += 4` = page;
+	synchronized (& pm-sync) (
+		`stack0 += 4` = page;
+	);
 );
 
 declare pm-fill-zeroes = [page,] (
