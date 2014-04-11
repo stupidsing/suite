@@ -2,7 +2,7 @@ declare pg = this;
 
 declare pg-setup = [] (
 	declare pt1 = pm:pm-allocate [];
-	pm:pm-fill-zeroes [pt1,];
+	kernel:zero [pt1, 4096,];
 
 	declare offset = 0;
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (
@@ -12,7 +12,7 @@ declare pg-setup = [] (
 	let `pt1` = 0; -- Trap zero pointers
 
 	declare pt0 = pm:pm-allocate [];
-	pm:pm-fill-zeroes [pt0,];
+	kernel:zero [pt0, 4096,];
 
 	let `pt0` = pt1 + 5; -- Maps kernel memory
 	let `pt0 + 4092` = pt0 + 1; -- Maps itself
@@ -44,7 +44,7 @@ declare pg-map = [logical, physical,] (
 	(`pe0` = 0 && (
 		let `pe0` = pm:pm-allocate [] + 7;
 		pg:pg-invalidate-page [pt1,];
-		pm:pm-fill-zeroes [pt1,];
+		kernel:zero [pt1, 4096,];
 	));
 
 	let `pe1` = physical + 7;

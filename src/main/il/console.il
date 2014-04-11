@@ -1,4 +1,5 @@
 declare cs = this;
+declare cs-sync = 0;
 declare cs-column-offset = 0;
 
 declare cs-set-cursor = [row, col,] (
@@ -10,26 +11,30 @@ declare cs-set-cursor = [row, col,] (
 );
 
 declare cs-nl = [] (
-	declare p0 = +xB8000;
-	declare p1 = +xB8000 + 3840;
-	declare px = +xB8000 + 4000;
+	synchronized (& cs-sync) (
+		declare p0 = +xB8000;
+		declare p1 = +xB8000 + 3840;
+		declare px = +xB8000 + 4000;
 
-	for (declare p = p0; p < p1; p =+ 4) ( -- Scrolls up
-		let `p` = `p + 160`;
+		for (declare p = p0; p < p1; p =+ 4) ( -- Scrolls up
+			let `p` = `p + 160`;
+		);
+
+		for (declare p = p1; p < px; p =+ 4) (
+			let `p` = 0;
+		);
+
+		let cs-column-offset = 0;
+		cs:cs-set-cursor [24, cs-column-offset shr 1,];
 	);
-
-	for (declare p = p1; p < px; p =+ 4) (
-		let `p` = 0;
-	);
-
-	let cs-column-offset = 0;
-	cs:cs-set-cursor [24, cs-column-offset shr 1,];
 );
 
 declare cs-put = [ch,] (
-	declare w = +x0700 + ch;
-	kernel:copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
-	(cs-column-offset += 2 = 160 && cs:cs-nl []);
+	synchronized (& cs-sync) (
+		declare w = +x0700 + ch;
+		kernel:copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
+		(cs-column-offset += 2 = 160 && cs:cs-nl []);
+	);
 );
 
 declare cs-puts = [s,] (

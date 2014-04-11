@@ -37,6 +37,18 @@ declare copy = [dst, src, len,] (
 	asm _ REP MOVSB ();
 );
 
+declare zero = [dst, len,] (
+	asm _ XOR (EAX, EAX);
+	asm _ CLD ();
+	asm _ MOV (EDI, `EBP + 8`);
+	asm _ MOV (ECX, `EBP + 12`);
+	asm _ SHR (ECX, 2);
+	asm _ REP STOSD ();
+	asm _ MOV (ECX, `EBP + 12`);
+	asm _ AND (ECX, 3);
+	asm _ REP STOSB ();
+);
+
 declare inb = [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ XOR (EAX, EAX);

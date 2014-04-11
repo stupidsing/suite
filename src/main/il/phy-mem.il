@@ -34,9 +34,3 @@ declare pm-free = [page,] (
 		`stack0 += 4` = page;
 	);
 );
-
-declare pm-fill-zeroes = [page,] (
-	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let `page + offset` = 0;
-	);
-);
