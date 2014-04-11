@@ -8,7 +8,7 @@ declare idt-set-entry = [vector, handler, is-interrupt-gate,] (
 );
 
 declare idt-setup = [] (
-	declare handle-general-interrupt = snippet (
+	expand isr-prolog = (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
 		asm _ PUSH (ES);
@@ -17,43 +17,57 @@ declare idt-setup = [] (
 		asm _ MOV (ES, AX);
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
+	);
 
-		-- Sends end of interrupt signal
-		kernel:outb [+x20, +x20,];
-
+	expand isr-epilog = (
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
 		asm _ POP (ES);
 		asm _ POP (DS);
 		asm _ POPA ();
+	);
+
+	declare handle-general-interrupt = snippet (
+		isr-prolog;
+		();
+		isr-epilog;
 		asm _ IRET ();
 	);
 
 	declare handle-timer-interrupt = snippet (
-		asm _ PUSHA ();
-		asm _ PUSH (DS);
-		asm _ PUSH (ES);
-		asm _ MOV (AX, 16);
-		asm _ MOV (DS, AX);
-		asm _ MOV (ES, AX);
-		asm _ PUSH (`+x40000`);
-		asm _ MOV (EBP, ESP);
-
+		isr-prolog;
 		ticks =+ 1;
 		`+xB8000` =+ 1;
 
 		-- Sends end of interrupt signal
 		kernel:outb [+x20, +x20,];
-
-		asm _ MOV (ESP, EBP);
-		asm _ POP (EAX);
-		asm _ POP (ES);
-		asm _ POP (DS);
-		asm _ POPA ();
+		isr-epilog;
 		asm _ IRET ();
 	);
 
 	snippet (
+		asm .irq-handler ();
+		isr-prolog;
+		asm _ MOV (EAX, `EBP + 44`);
+
+		(
+			declare vector;
+			asm _ ADD (ESP, 4);
+			asm _ PUSH (EAX);
+
+			declare irq-number = vector - +x20;
+			declare irq-sink = irq:irq-get-sink [irq-number,];
+			(irq-sink && irq:irq-sink [irq-number,]);
+
+			-- Sends end of interrupt signal
+			(vector >= 8 && kernel:outb [+xA0, +x20,]);
+			kernel:outb [+x20, +x20,];
+		);
+
+		isr-epilog;
+		asm _ ADD (ESP, 4);
+		asm _ IRET ();
+
 		asm .fault-handler-0 ();
 		asm _ POP (EAX);
 		asm _ PUSH (0);
@@ -97,40 +111,6 @@ declare idt-setup = [] (
 
 		asm _ CLI ();
 		asm _ HLT ();
-
-		asm .irq-handler ();
-		asm _ PUSHA ();
-		asm _ PUSH (DS);
-		asm _ PUSH (ES);
-		asm _ MOV (DI, 16);
-		asm _ MOV (DS, DI);
-		asm _ MOV (ES, DI);
-		asm _ PUSH (`+x40000`);
-		asm _ MOV (EBP, ESP);
-		asm _ MOV (EAX, `EBP + 44`);
-
-		(
-			declare vector;
-			asm _ ADD (ESP, 4);
-			asm _ PUSH (EAX);
-
-			declare irq-number = vector - +x20;
-			declare irq-sink = irq:irq-get-sink [irq-number,];
-			(irq-sink && irq:irq-sink [irq-number,]);
-
-			-- Sends end of interrupt signal
-			(vector >= 8 && kernel:outb [+xA0, +x20,]);
-			kernel:outb [+x20, +x20,];
-		);
-
-		asm _ MOV (ESP, EBP);
-		asm _ POP (EAX);
-		asm _ POP (ES);
-		asm _ POP (DS);
-		asm _ POPA ();
-
-		asm _ ADD (ESP, 4);
-		asm _ IRET ();
 	);
 
 	for (declare i = 0; i < 256; i =+ 1) (
