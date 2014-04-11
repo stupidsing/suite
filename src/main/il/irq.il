@@ -1,5 +1,4 @@
 declare irq = this;
-
 allocate irq-sinks/64;
 
 declare dump-sink = [irq-number,] (
