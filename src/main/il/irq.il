@@ -20,4 +20,6 @@ declare irq-setup = [] (
 	for (declare irq-number = 0; irq-number < 16; irq-number =+ 1) (
 		irq:irq-set-sink [irq-number, dump-sink,];
 	);
+
+	irq:irq-set-sink [7, 0,]; -- Ignore spurious interrupts
 );

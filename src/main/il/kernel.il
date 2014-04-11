@@ -76,6 +76,7 @@ declare wrmsr = [msr, value,] (
 #include(paging.il);
 #include(service.il);
 #include(time.il);
+#include(keyboard.il);
 #include(ne2k.il);
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
@@ -105,6 +106,7 @@ idt:idt-setup [];
 pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
+kb:kb-setup [];
 
 cs:cs-puts [if (ne2k:ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
 cs:cs-nl [];

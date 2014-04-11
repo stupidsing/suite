@@ -10,6 +10,21 @@ allocate ne2k-mac-address/8;
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 
+declare ne2k-irq-sink = [irq-number,] (
+	declare isr;
+	kernel:outb [io-base + +x00, +x22,];
+	while (let isr = kernel:inb [io-base + +x07,]) do (
+		kernel:outb [io-base + +x07, isr,];
+		(isr and +x01 && ( -- Arrived
+		));
+		(isr and +x02 && ( -- Transmitted
+		));
+		(isr and +x40 && ( -- DMA completed
+		));
+	);
+	kernel:outb [io-base + +x00, +x22,];
+);
+
 declare ne2k-read = [src, dst, len,] (
 	let len = (len + 1) and +xFFFFFFFE;
 	kernel:outb [io-base + +x00, +x22,];
@@ -42,6 +57,7 @@ declare ne2k-send = [buffer, len,] (
 	);
 
 	-- TODO wait IRQ for DMA complete
+
 	declare padded-len = if (len >= 64) then len else 64;
 	kernel:outb [io-base + +x05, padded-len,];
 	kernel:outb [io-base + +x06, padded-len shr 8,];
