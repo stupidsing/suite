@@ -70,6 +70,7 @@ declare wrmsr = [msr, value,] (
 
 #include(sync.il);
 #include(console.il);
+#include(irq.il);
 #include(idt.il);
 #include(phy-mem.il);
 #include(paging.il);
@@ -99,6 +100,7 @@ kernel:outb [+x40, 11932 % 256,];
 kernel:outb [+x40, 11932 / 256,];
 kernel:outb [+x21, +xFC,];
 
+irq:irq-setup [];
 idt:idt-setup [];
 pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
@@ -150,6 +152,7 @@ declare user-mode = [] (
 	-- Shows OK
 	svc:svc-service [svc-putc_, +x4F, 0,];
 	svc:svc-service [svc-putc_, +x4B, 0,];
+	svc:svc-service [svc-putc_, +x0A, 0,];
 
 	asm .loop ();
 	time:time-yield [];

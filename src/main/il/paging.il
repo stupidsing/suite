@@ -41,11 +41,11 @@ declare pg-map = [logical, physical,] (
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	declare pt1 = pe1 and +xFFFFF000;
 
-	if (`pe0` = 0) then (
+	(`pe0` = 0 && (
 		let `pe0` = pm:pm-allocate [] + 7;
 		pg:pg-invalidate-page [pt1,];
 		pm:pm-fill-zeroes [pt1,];
-	) else ();
+	));
 
 	let `pe1` = physical + 7;
 
@@ -64,10 +64,10 @@ declare pg-unmap = [logical,] (
 		let isEmpty = isEmpty and (`pt1 + offset` = 0);
 	);
 
-	if (isEmpty) then (
+	(isEmpty && (
 		pm:pm-free [`pe0` and +xFFFFF000,];
 		let `pe0` = 0;
-	) else ();
+	));
 
 	pg:pg-invalidate-page [logical,];
 );

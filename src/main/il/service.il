@@ -11,7 +11,7 @@ declare handle-service = [p0, p1, p2,] (
 	) else if (p0 = svc-nl___) then (
 		cs:cs-nl [];
 	) else if (p0 = svc-putc_) then (
-		cs:cs-put [p1,];
+		if (p1 != 10) then (cs:cs-put [p1,]) else (cs:cs-nl []);
 	) else if (p0 = svc-ticks) then (
 		ticks;
 	) else ();

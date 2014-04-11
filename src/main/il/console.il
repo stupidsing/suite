@@ -1,6 +1,14 @@
 declare cs = this;
 declare cs-column-offset = 0;
 
+declare cs-set-cursor = [row, col,] (
+	declare pos = row * 80 + col;
+	kernel:outb [+x3D4, +x0F,];
+	kernel:outb [+x3D5, pos and +xFF,];
+	kernel:outb [+x3D4, +x0E,];
+	kernel:outb [+x3D5, pos shr 8,];
+);
+
 declare cs-nl = [] (
 	declare p0 = +xB8000;
 	declare p1 = +xB8000 + 3840;
@@ -15,12 +23,13 @@ declare cs-nl = [] (
 	);
 
 	let cs-column-offset = 0;
+	cs:cs-set-cursor [24, cs-column-offset shr 1,];
 );
 
 declare cs-put = [ch,] (
 	declare w = +x0700 + ch;
 	kernel:copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
-	if (cs-column-offset += 2 = 160) then (cs:cs-nl []) else ();
+	(cs-column-offset += 2 = 160 && cs:cs-nl []);
 );
 
 declare cs-puts = [s,] (
