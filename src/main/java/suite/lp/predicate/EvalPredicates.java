@@ -158,7 +158,7 @@ public class EvalPredicates {
 					else if (op1 == SHR)
 						result = a >> b;
 					else
-						throw new RuntimeException("Unable to evaluate expression");
+						throw new RuntimeException("Cannot evaluate expression");
 				} else {
 					int a = evaluate(tree.getLeft()), b = evaluate(tree.getRight());
 					switch (op) {
@@ -181,13 +181,13 @@ public class EvalPredicates {
 						result = (int) Math.pow(a, b);
 						break;
 					default:
-						throw new RuntimeException("Unable to evaluate expression");
+						throw new RuntimeException("Cannot evaluate expression");
 					}
 				}
 			} else if (node instanceof Int)
 				result = ((Int) node).getNumber();
 			else
-				throw new RuntimeException("Unable to evaluate expression");
+				throw new RuntimeException("Cannot evaluate expression");
 
 			return result;
 		}
