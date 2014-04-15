@@ -4,17 +4,17 @@ define seqm :=
 	define seq := (:t => any -> :t -> :t) of
 		atom:CLASS!suite.lp.intrinsic.Intrinsics$Seq | getintrn | callintrn2
 	>>
-	do0 => do1 => (do #
-		seq {exec {do0}} {exec {do1}}
+	do0 => do1 => (return #
+		seq {call {do0}} {call {do1}}
 	)
 >>
 define seqsm :=
-	fold-right {seqm} {do # nothing}
+	fold-right {seqm} {return # nothing}
 >>
 define whilem :=
-	cond => loop => (do #
-		if (exec {cond})
-		then (exec {seqm {loop} {whilem {cond} {loop}}})
+	cond => loop => (return #
+		if (call {cond})
+		then (call {seqm {loop} {whilem {cond} {loop}}})
 		else nothing
 	)
 >>

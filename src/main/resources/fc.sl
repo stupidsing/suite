@@ -285,7 +285,7 @@ fc-add-functions STANDARD .p (
 		fold-right {i => list => fun {i}; list} {}
 	>>
 	define popen := command => in =>
-		do # in | +popen {command} | source
+		return # in | +popen {command} | source
 	>>
 	define reverse :=
 		fold-left {cons/} {}
