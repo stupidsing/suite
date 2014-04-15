@@ -14,7 +14,7 @@ define seqsm :=
 define whilem :=
 	cond => loop => (return #
 		if (call {cond})
-		then (call {seqm {loop} {whilem {cond} {loop}}})
+		then (call {loop # whilem {cond} {loop}})
 		else nothing
 	)
 >>

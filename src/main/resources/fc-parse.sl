@@ -156,6 +156,7 @@ fc-parse-sugar (return # .do) (
 		.do
 	}
 ) :- ! #
+fc-parse-sugar (.monad # .monads) (seqm {.monad} {.monads}) :- .monad != return #
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
