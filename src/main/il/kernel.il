@@ -80,6 +80,7 @@ declare wrmsr = [msr, value,] (
 	asm _ WRMSR ();
 );
 
+#include(doubly-ll.il);
 #include(sync.il);
 #include(console.il);
 #include(buddy-allocator.il);
