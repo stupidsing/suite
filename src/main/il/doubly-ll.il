@@ -5,10 +5,6 @@ declare dl-new = [dl,] (
 	let `dl + 4` = 0;
 );
 
-declare dl-is-empty = [dl,] (
-	`dl + 4` != 0;
-);
-
 declare dl-next = [e,] (
 	`dl + 4`;
 );
