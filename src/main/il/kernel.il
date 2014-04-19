@@ -82,6 +82,7 @@ declare wrmsr = [msr, value,] (
 
 #include(sync.il);
 #include(console.il);
+#include(buddy-allocator.il);
 #include(irq.il);
 #include(idt.il);
 #include(phy-mem.il);

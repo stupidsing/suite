@@ -127,7 +127,7 @@ fc-add-functions STANDARD .p (
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
 	define +popen := ([string] -> string -> data-of Stream) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Popen | getintrn | callintrn2
+		atom:CLASS!suite.lp.intrinsic.MonadIntrinsics$Popen | getintrn | callintrn2
 	>>
 	define log := (:t => :t -> :t) of
 		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log1 | getintrn | callintrn1

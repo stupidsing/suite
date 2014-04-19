@@ -2,7 +2,7 @@ using external STANDARD >>
 define nothing := atom:Nothing >>
 define seqm :=
 	define seq := (:t => any -> :t -> :t) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Seq | getintrn | callintrn2
+		atom:CLASS!suite.lp.intrinsic.MonadIntrinsics$Seq | getintrn | callintrn2
 	>>
 	do0 => do1 => (return #
 		seq {call {do0}} {call {do1}}
