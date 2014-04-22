@@ -96,6 +96,8 @@ public class EditorController {
 		JEditorPane editor = view.getEditor();
 		editor.setText("");
 		editor.requestFocusInWindow();
+
+		view.getFilenameTextField().setText("pad");
 	}
 
 	public void quit(EditorView view) {
@@ -145,6 +147,8 @@ public class EditorController {
 			String filename = view.getLeftList().getSelectedValue();
 			String text = To.string(new File(filename));
 
+			view.getFilenameTextField().setText(filename);
+
 			JEditorPane editor = view.getEditor();
 			editor.setText(text);
 			editor.setCaretPosition(0);
@@ -155,8 +159,9 @@ public class EditorController {
 	}
 
 	public void top(EditorView view) {
-		JComponent top = view.getTopToolbar();
-		top.setVisible(!top.isVisible());
+		JTextField filenameTextField = view.getFilenameTextField();
+		filenameTextField.setVisible(!filenameTextField.isVisible());
+		filenameTextField.setCaretPosition(filenameTextField.getText().length());
 		view.repaint();
 	}
 

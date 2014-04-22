@@ -51,7 +51,7 @@ public class EditorView {
 	private DefaultListModel<String> listModel;
 	private JLabel rightLabel;
 	private JScrollPane messageScrollPane;
-	private JLabel topLabel;
+	private JTextField filenameTextField;
 
 	public JFrame run(String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
@@ -88,8 +88,8 @@ public class EditorView {
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
 
-		JLabel topLabel = this.topLabel = applyDefaults(new JLabel("Top"));
-		topLabel.setVisible(false);
+		JTextField filenameTextField = this.filenameTextField = applyDefaults(new JTextField("pad"));
+		filenameTextField.setVisible(false);
 
 		JTextArea messageTextArea = this.messageTextArea = applyDefaults(new JTextArea("Bottom"));
 		messageTextArea.setEditable(false);
@@ -130,7 +130,7 @@ public class EditorView {
 						, Layout.co(searchList, u, u) //
 				) //
 				, Layout.lay(Orientation.VERTICAL //
-						, Layout.hb(topLabel, u2, 64) //
+						, Layout.hb(filenameTextField, u2, 24) //
 						, Layout.co(editorScrollPane, u2, u2) //
 						, Layout.hb(box, u2, 8) //
 						, Layout.lay(Orientation.HORIZONTAL //
@@ -166,7 +166,7 @@ public class EditorView {
 		JMenuItem newMenuItem = applyDefaults(new JMenuItem("New...", KeyEvent.VK_N));
 		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		newMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.newFile(view);
 			}
 		});
@@ -180,28 +180,28 @@ public class EditorView {
 		JMenuItem searchMenuItem = applyDefaults(new JMenuItem("Search"));
 		searchMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
 		searchMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.searchFor(view);
 			}
 		});
 
 		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Exit", KeyEvent.VK_X));
 		exitMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.quit(EditorView.this);
 			}
 		});
 
 		JMenuItem formatMenuItem = applyDefaults(new JMenuItem("Format", KeyEvent.VK_F));
 		formatMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.format(EditorView.this);
 			}
 		});
 
 		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_U));
 		unixFilterMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.unixFilter(EditorView.this);
 			}
 		});
@@ -209,7 +209,7 @@ public class EditorView {
 		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
 		leftMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.ALT_MASK));
 		leftMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.left(view);
 			}
 		});
@@ -217,7 +217,7 @@ public class EditorView {
 		JMenuItem rightMenuItem = applyDefaults(new JMenuItem("Right", KeyEvent.VK_R));
 		rightMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.ALT_MASK));
 		rightMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.right(view);
 			}
 		});
@@ -225,7 +225,7 @@ public class EditorView {
 		JMenuItem topMenuItem = applyDefaults(new JMenuItem("Top", KeyEvent.VK_T));
 		topMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
 		topMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.top(view);
 			}
 		});
@@ -233,21 +233,21 @@ public class EditorView {
 		JMenuItem bottomMenuItem = applyDefaults(new JMenuItem("Bottom", KeyEvent.VK_B));
 		bottomMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.ALT_MASK));
 		bottomMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.bottom(view);
 			}
 		});
 
 		JMenuItem evalMenuItem = applyDefaults(new JMenuItem("Evaluate", KeyEvent.VK_E));
 		evalMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.evaluate(view);
 			}
 		});
 
 		JMenuItem evalTypeMenuItem = applyDefaults(new JMenuItem("Evaluate Type", KeyEvent.VK_T));
 		evalTypeMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent actionEvent) {
+			public void actionPerformed(ActionEvent event) {
 				controller.evaluateType(view);
 			}
 		});
@@ -327,8 +327,8 @@ public class EditorView {
 		return searchTextField;
 	}
 
-	public JLabel getTopToolbar() {
-		return topLabel;
+	public JTextField getFilenameTextField() {
+		return filenameTextField;
 	}
 
 	public JEditorPane getEditor() {
