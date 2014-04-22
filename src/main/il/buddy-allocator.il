@@ -1,9 +1,9 @@
 declare ba = this;
 allocate lists/256;
 
-declare region0 = +x50000;
-declare regionx = +xA0000;
-declare total = regionx - region0;
+declare ba-region0 = +x50000;
+declare ba-regionx = +xA0000;
+declare total = ba-regionx - ba-region0;
 
 declare exp2rel = [l2,] (
 	16 shl l2;
@@ -22,23 +22,23 @@ declare log2rel = [size,] (
 declare max-l2 = ba:log2rel [total,] + 1;
 
 declare ba-parent-of = [block, l2,] (
-	region0 + (block - region0) and (+xFFFFFFFF xor ba:exp2rel [l2,]);
+	ba-region0 + (block - ba-region0) and (+xFFFFFFFF xor ba:exp2rel [l2,]);
 );
 
 declare ba-buddy-of = [block, l2,] (
-	region0 + (block - region0) xor (ba:exp2rel [l2,]);
+	ba-region0 + (block - ba-region0) xor (ba:exp2rel [l2,]);
 );
 
 declare ba-allocate0 = [l2,] (
 	if (l2 < max-l2) then (
-		declare result = dl:dl-next [`& lists + l2 shl 3` + 4,];
+		declare result = dl:dl-next [`& lists + l2 shl 3`,];
 		if (result = 0) then (
 			declare block0 = ba:ba-allocate0 [l2 + 1,];
 			if (block0 != 0) then (
 				declare block1 = block0 + ba:exp2rel [l2,];
 				let `block0` = -1; -- Allocated
 				let `block1` = l2;
-				dl:dl-add-next [`& lists + l2 shl 3` + 4, block1,];
+				dl:dl-add-next [`& lists + l2 shl 3`, block1,];
 				block0;
 			) else 0;
 		) else (
@@ -51,11 +51,11 @@ declare ba-allocate0 = [l2,] (
 declare ba-deallocate0 = [block, l2,] (
 	declare buddy = ba:ba-buddy-of [block, l2,];
 	if (`buddy` = l2) then (
-		dl:dl-remove [buddy + 4,];
+		dl:dl-remove [buddy,];
 		ba:ba-deallocate0 [ba:ba-parent-of [block, l2,], l2 + 1,];
 	) else (
 		let `block` = l2;
-		dl:dl-remove [block + 4,];
+		dl:dl-remove [block,];
 	);
 );
 
@@ -68,6 +68,6 @@ declare ba-deallocate = [block, size,] (
 );
 
 declare ba-setup = [] (
-	let `region0` = ba:log2rel [total,]; -- Granularity
-	dl:dl-add-prev [& lists + max-l2 shl 3, region0,];
+	let `ba-region0` = ba:log2rel [total,]; -- Granularity
+	dl:dl-add-prev [& lists + max-l2 shl 3, ba-region0,];
 );
