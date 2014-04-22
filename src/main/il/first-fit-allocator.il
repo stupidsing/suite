@@ -31,22 +31,20 @@ declare ffa-allocate0 = [size,] (
 	) else 0;
 );
 
-declare ffa-deallocate0 = [block, size,] (
+declare ffa-deallocate0 = [block,] (
 	declare prev = dl:dl-prev [block,];
 	declare next = dl:dl-next [block,];
 
 	if ((prev != 0) and (`prev` != 0)) then (
-		size =+ `prev` + 12;
 		dl:dl-remove [block,];
 		let block = prev;
 	) else ();
 
 	if ((next != 0) and (`next` != 0)) then (
-		size =+ `next` + 12;
 		dl:dl-remove [next,];
 	) else ();
 
-	let `block` = dl-next [block,] - block - 12;
+	let `block` = dl:dl-next [block,] - block - 12;
 );
 
 declare ffa-allocate = [size,] (
@@ -54,11 +52,11 @@ declare ffa-allocate = [size,] (
 );
 
 declare ffa-deallocate = [p, size,] (
-	ffa:ffa-deallocate0 [p - 12, size,];
+	ffa:ffa-deallocate0 [p - 12,];
 );
 
 declare ffa-setup = [] (
-	let last = ffa-regionx - 12; -- Stopper record
+	declare last = ffa-regionx - 12; -- Stopper record
 
 	let `ffa-region0` = ffa-regionx - ffa-region0 - 24;
 	let `last` = 0;
