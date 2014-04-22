@@ -1,5 +1,6 @@
 package suite.editor;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,8 +31,7 @@ public class EditorController {
 	private Thread runThread;
 
 	public void bottom(EditorView view) {
-		JComponent bottom = view.getBottomToolbar();
-		bottom.setVisible(!bottom.isVisible());
+		toggleVisible(view, view.getBottomToolbar());
 		view.repaint();
 	}
 
@@ -87,8 +87,8 @@ public class EditorController {
 
 	public void left(EditorView view) {
 		JComponent left = view.getLeftToolbar();
-		left.setVisible(!left.isVisible());
-		view.getSearchTextField().requestFocusInWindow();
+		if (toggleVisible(view, left))
+			view.getSearchTextField().requestFocusInWindow();
 		view.repaint();
 	}
 
@@ -106,7 +106,7 @@ public class EditorController {
 
 	public void right(EditorView view) {
 		JComponent right = view.getRightToolbar();
-		right.setVisible(!right.isVisible());
+		toggleVisible(view, right);
 		view.repaint();
 	}
 
@@ -160,8 +160,8 @@ public class EditorController {
 
 	public void top(EditorView view) {
 		JTextField filenameTextField = view.getFilenameTextField();
-		filenameTextField.setVisible(!filenameTextField.isVisible());
-		filenameTextField.setCaretPosition(filenameTextField.getText().length());
+		if (toggleVisible(view, filenameTextField))
+			filenameTextField.setCaretPosition(filenameTextField.getText().length());
 		view.repaint();
 	}
 
@@ -185,6 +185,24 @@ public class EditorController {
 		} catch (IOException | InterruptedException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private boolean toggleVisible(EditorView view, JComponent component) {
+		boolean visible = !component.isVisible();
+		component.setVisible(visible);
+		if (visible)
+			component.requestFocusInWindow();
+		else if (isOwningFocus(component))
+			view.getEditor().requestFocusInWindow();
+		return visible;
+	}
+
+	private boolean isOwningFocus(Component component) {
+		boolean isFocusOwner = component.isFocusOwner();
+		if (component instanceof JComponent)
+			for (Component c : ((JComponent) component).getComponents())
+				isFocusOwner |= isOwningFocus(c);
+		return isFocusOwner;
 	}
 
 	private void run(final EditorView view, final Fun<String, String> fun) {
