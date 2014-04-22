@@ -54,7 +54,7 @@ declare ba-deallocate0 = [block, l2,] (
 		dl:dl-remove [buddy + 4,];
 		ba:ba-deallocate0 [ba:ba-parent-of [block, l2,], l2 + 1,];
 	) else (
-		let `block - 4` = l2;
+		let `block` = l2;
 		dl:dl-remove [block + 4,];
 	);
 );
@@ -64,7 +64,7 @@ declare ba-allocate = [size,] (
 );
 
 declare ba-deallocate = [block, size,] (
-	ba:ba-deallocate0 [block, ba:log2rel [size + 4,],] + 4;
+	ba:ba-deallocate0 [block - 4, ba:log2rel [size + 4,],];
 );
 
 declare ba-setup = [] (
