@@ -21,7 +21,7 @@ public class MapifyUtilTest {
 		assertNotNull(map);
 		System.out.println(map);
 
-		ProverConfig pc1 = (ProverConfig) mapifyUtil.unmapify(ProverConfig.class, map);
+		ProverConfig pc1 = mapifyUtil.unmapify(ProverConfig.class, map);
 		System.out.println(pc1);
 
 		assertEquals(pc0, pc1);
