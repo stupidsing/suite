@@ -1,6 +1,9 @@
 .classpath
+.idea
 .project
 .settings
 bin
 logs
+precompiled
+suite.iml
 target
