@@ -1,4 +1,5 @@
 declare ba = this;
+declare ba-sync = 0;
 allocate lists/256;
 
 declare ba-region0 = +x50000;
@@ -60,11 +61,15 @@ declare ba-deallocate0 = [block, l2,] (
 );
 
 declare ba-allocate = [size,] (
-	ba:ba-allocate0 [ba:log2rel [size + 4,],] + 4;
+	synchronized (& ba-sync) (
+		ba:ba-allocate0 [ba:log2rel [size + 4,],] + 4;
+	);
 );
 
 declare ba-deallocate = [block, size,] (
-	ba:ba-deallocate0 [block - 4, ba:log2rel [size + 4,],];
+	synchronized (& ba-sync) (
+		ba:ba-deallocate0 [block - 4, ba:log2rel [size + 4,],];
+	);
 );
 
 declare ba-setup = [] (

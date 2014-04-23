@@ -1,4 +1,5 @@
 declare ffa = this;
+declare ffa-sync = 0;
 allocate head/8;
 declare current;
 
@@ -48,11 +49,15 @@ declare ffa-deallocate0 = [block,] (
 );
 
 declare ffa-allocate = [size,] (
-	ffa:ffa-allocate0 [size,] + 12;
+	synchronized (& ffa-sync) (
+		ffa:ffa-allocate0 [size,] + 12;
+	);
 );
 
 declare ffa-deallocate = [p, size,] (
-	ffa:ffa-deallocate0 [p - 12,];
+	synchronized (& ffa-sync) (
+		ffa:ffa-deallocate0 [p - 12,];
+	);
 );
 
 declare ffa-setup = [] (
