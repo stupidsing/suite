@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
 
 public class To {
@@ -27,6 +28,17 @@ public class To {
 
 	public static Bytes bytes(String s) {
 		return new Bytes(s.getBytes(FileUtil.charset));
+	}
+
+	public static Bytes bytes(InputStream is) throws IOException {
+		BytesBuilder bb = new BytesBuilder();
+		byte buffer[] = new byte[4096];
+		int nBytesRead;
+
+		while ((nBytesRead = is.read(buffer)) != -1)
+			bb.append(buffer, 0, nBytesRead);
+
+		return bb.toBytes();
 	}
 
 	public static Date date(String s) throws ParseException {

@@ -11,6 +11,13 @@ public class PatchData implements Iterable<PatchDataSegment> {
 		this.patchDataSegments = patchDataSegments;
 	}
 
+	public boolean isChanged() {
+		boolean isChanged = false;
+		for (PatchDataSegment patchDataSegment : patchDataSegments)
+			isChanged |= patchDataSegment.isChanged();
+		return isChanged;
+	}
+
 	@Override
 	public Iterator<PatchDataSegment> iterator() {
 		return patchDataSegments.iterator();
