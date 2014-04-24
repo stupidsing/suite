@@ -37,4 +37,10 @@ public class FailedTests {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
 	}
 
+	// Cannot bind external symbols when using is used in a closure
+	@Test
+	public void testClosureUsing() {
+		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
+	}
+
 }
