@@ -18,6 +18,11 @@
 			<version>LATEST</version>
 		</dependency>
 		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
 			<version>LATEST</version>
