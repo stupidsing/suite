@@ -43,7 +43,7 @@ public class Matcher {
 	public List<String[]> matches(String pattern, String input) {
 		Source<State> source = To.source(new State(input));
 		source = applyPattern(source, pattern);
-		source = FunUtil.filter(state -> state.eof(), source);
+		source = FunUtil.filter(State::eof, source);
 
 		List<String[]> results = new ArrayList<>();
 		State state;

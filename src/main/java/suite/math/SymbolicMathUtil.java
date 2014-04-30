@@ -54,7 +54,7 @@ public class SymbolicMathUtil {
 			freshNodes = freshNodes1;
 		}
 
-		return Collections.min(To.list(FunUtil.map(hashedTerm -> hashedTerm.getNode(), To.source(searchedNodes))), comparator);
+		return Collections.min(To.list(FunUtil.map(HashedTerm::getNode, To.source(searchedNodes))), comparator);
 	}
 
 	private static Collection<HashedTerm> findEqualities(Node node) {

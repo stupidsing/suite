@@ -22,7 +22,7 @@ public class TwoPassIndexerTest {
 	@Test
 	public void test() throws IOException {
 		Source<File> files0 = FileUtil.findFiles(new File("src/test/java"));
-		Source<String> files1 = FunUtil.map(file -> file.getAbsolutePath(), files0);
+		Source<String> files1 = FunUtil.map(File::getAbsolutePath, files0);
 		Source<String> files2 = FunUtil.filter(filename -> filename.endsWith(".java"), files1);
 		List<String> filenames = new ArrayList<>();
 

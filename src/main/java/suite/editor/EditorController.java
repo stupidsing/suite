@@ -116,9 +116,7 @@ public class EditorController {
 
 		if (!text.isEmpty()) {
 			Source<File> files0 = FileUtil.findFiles(new File("."));
-
-			Source<String> files1 = FunUtil.map(file -> file.getPath(), files0);
-
+			Source<String> files1 = FunUtil.map(File::getPath, files0);
 			Source<String> files2 = FunUtil.filter(filename -> filename.contains(text), files1);
 
 			for (String filename : FunUtil.iter(files2))
