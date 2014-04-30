@@ -7,7 +7,6 @@ import java.util.List;
 import suite.immutable.btree.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
@@ -41,18 +40,16 @@ public class FileSystemNameKeySet {
 		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
 		Source<Bytes> source = transaction.keys(minKey.toBytes(), increment(maxKey.toBytes()));
 
-		return FunUtil.concat(FunUtil.map(new Fun<Bytes, Source<Bytes>>() {
-			public Source<Bytes> apply(Bytes bytes) {
-				NameKey key = keyUtil.toNameKey(bytes);
-				List<NameKey> prefix1 = Util.add(prefix, Arrays.asList(key));
+		return FunUtil.concat(FunUtil.map(bytes -> {
+			NameKey key = keyUtil.toNameKey(bytes);
+			List<NameKey> prefix1 = Util.add(prefix, Arrays.asList(key));
 
-				if (key.getSize() == 0) {
-					List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys : null;
-					List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
-					return list(prefix1, tailKeys0, tailKeys1);
-				} else
-					return To.source(Arrays.asList(keyUtil.toName(prefix1)));
-			}
+			if (key.getSize() == 0) {
+				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys : null;
+				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
+				return list(prefix1, tailKeys0, tailKeys1);
+			} else
+				return To.source(Arrays.asList(keyUtil.toName(prefix1)));
 		}, source));
 	}
 

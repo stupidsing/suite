@@ -9,7 +9,6 @@ import java.util.TreeSet;
 
 import suite.util.DefaultFunMap;
 import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -21,11 +20,7 @@ public class TwoPassIndexer {
 
 	private TreeSet<String> keys = new TreeSet<>();
 
-	private DefaultFunMap<String, List<Reference>> referencesByWord = new DefaultFunMap<>(new Fun<String, List<Reference>>() {
-		public List<Reference> apply(String word) {
-			return new ArrayList<>();
-		}
-	});
+	private DefaultFunMap<String, List<Reference>> referencesByWord = new DefaultFunMap<>(word -> new ArrayList<>());
 
 	public static class Reference {
 		private String id;
@@ -92,11 +87,7 @@ public class TwoPassIndexer {
 			}
 		};
 
-		return FunUtil.concat(FunUtil.map(new Fun<String, Source<Reference>>() {
-			public Source<Reference> apply(String key) {
-				return To.source(referencesByWord.get(key));
-			}
-		}, keySource));
+		return FunUtil.concat(FunUtil.map(key -> To.source(referencesByWord.get(key)), keySource));
 	}
 
 	public DefaultFunMap<String, List<Reference>> getKeysByWord() {

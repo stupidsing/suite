@@ -28,11 +28,7 @@ public class MapifyUtil {
 	private Set<Class<?>> mapClasses = new HashSet<>(Arrays.<Class<?>> asList( //
 			HashMap.class, Map.class));
 
-	private Fun<Object, Object> id = new Fun<Object, Object>() {
-		public Object apply(Object object) {
-			return object;
-		}
-	};
+	private Fun<Object, Object> id = object -> object;
 
 	private Map<Class<?>, Fun<Object, Object>> mapifiers = new ConcurrentHashMap<>();
 	private Map<Class<?>, Fun<Object, Object>> unmapifiers = new ConcurrentHashMap<>();
@@ -76,11 +72,7 @@ public class MapifyUtil {
 	private Fun<Object, Object> getMapifier(Class<?> clazz) {
 		Fun<Object, Object> mapifier = mapifiers.get(clazz);
 		if (mapifier == null) {
-			mapifiers.put(clazz, new Fun<Object, Object>() {
-				public Object apply(Object object) {
-					return getMapifier(clazz);
-				}
-			});
+			mapifiers.put(clazz, object -> getMapifier(clazz));
 			mapifiers.put(clazz, mapifier = createMapifier0(clazz));
 		}
 		return mapifier;
@@ -89,11 +81,7 @@ public class MapifyUtil {
 	private Fun<Object, Object> getUnmapifier(Class<?> clazz) {
 		Fun<Object, Object> unmapifier = unmapifiers.get(clazz);
 		if (unmapifier == null) {
-			unmapifiers.put(clazz, new Fun<Object, Object>() {
-				public Object apply(Object object) {
-					return getUnmapifier(clazz);
-				}
-			});
+			unmapifiers.put(clazz, object -> getUnmapifier(clazz));
 			unmapifiers.put(clazz, unmapifier = createUnmapifier0(clazz));
 		}
 		return unmapifier;
@@ -107,28 +95,24 @@ public class MapifyUtil {
 				return id;
 			else if (clazz.isArray()) {
 				Fun<Object, Object> mapifier1 = createMapifier0(clazz.getComponentType());
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<Object, Object> map = newMap();
-						Object objects[] = (Object[]) object;
-						for (int i = 0; i < objects.length; i++)
-							map.put(i, apply0(mapifier1, objects[i]));
-						return map;
-					}
+				return object -> {
+					Map<Object, Object> map = newMap();
+					Object objects[] = (Object[]) object;
+					for (int i = 0; i < objects.length; i++)
+						map.put(i, apply0(mapifier1, objects[i]));
+					return map;
 				};
 			} else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<Object, Object> map = newMap();
-						for (FieldInfo fieldInfo : fieldInfos)
-							try {
-								map.put(fieldInfo.name, apply0(fieldInfo.mapifier, fieldInfo.field.get(object)));
-							} catch (ReflectiveOperationException ex) {
-								throw new RuntimeException(ex);
-							}
-						return map;
-					}
+				return object -> {
+					Map<Object, Object> map = newMap();
+					for (FieldInfo fieldInfo : fieldInfos)
+						try {
+							map.put(fieldInfo.name, apply0(fieldInfo.mapifier, fieldInfo.field.get(object)));
+						} catch (ReflectiveOperationException ex) {
+							throw new RuntimeException(ex);
+						}
+					return map;
 				};
 			}
 		} else if (type instanceof ParameterizedType) {
@@ -139,25 +123,21 @@ public class MapifyUtil {
 
 			if (collectionClasses.contains(clazz)) {
 				Fun<Object, Object> mapifier1 = createMapifier0(typeArguments[0]);
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<Object, Object> map = newMap();
-						int i = 0;
-						for (Object o : (Collection<?>) object)
-							map.put(i++, apply0(mapifier1, o));
-						return map;
-					}
+				return object -> {
+					Map<Object, Object> map = newMap();
+					int i = 0;
+					for (Object o : (Collection<?>) object)
+						map.put(i++, apply0(mapifier1, o));
+					return map;
 				};
 			} else if (mapClasses.contains(clazz)) {
 				Fun<Object, Object> keyMapifier = createMapifier0(typeArguments[0]);
 				Fun<Object, Object> valueMapifier = createMapifier0(typeArguments[1]);
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<Object, Object> map = newMap();
-						for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
-							map.put(apply0(keyMapifier, e.getKey()), apply0(valueMapifier, e.getValue()));
-						return map;
-					}
+				return object -> {
+					Map<Object, Object> map = newMap();
+					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
+						map.put(apply0(keyMapifier, e.getKey()), apply0(valueMapifier, e.getValue()));
+					return map;
 				};
 			} else
 				return createMapifier0(rawType);
@@ -174,29 +154,25 @@ public class MapifyUtil {
 				return id;
 			else if (clazz.isArray()) {
 				Fun<Object, Object> unmapifier1 = createUnmapifier0(clazz.getComponentType());
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<?, ?> map = (Map<?, ?>) object;
-						Object objects[] = new Object[map.size()];
-						int i = 0;
-						while (map.containsKey(i))
-							objects[i] = apply0(unmapifier1, map.get(i++));
-						return objects;
-					}
+				return object -> {
+					Map<?, ?> map = (Map<?, ?>) object;
+					Object objects[] = new Object[map.size()];
+					int i = 0;
+					while (map.containsKey(i))
+						objects[i] = apply0(unmapifier1, map.get(i++));
+					return objects;
 				};
 			} else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<?, ?> map = (Map<?, ?>) object;
-						try {
-							Object object1 = clazz.newInstance();
-							for (FieldInfo fieldInfo : fieldInfos)
-								fieldInfo.field.set(object1, apply0(fieldInfo.unmapifier, map.get(fieldInfo.name)));
-							return object1;
-						} catch (ReflectiveOperationException ex) {
-							throw new RuntimeException(ex);
-						}
+				return object -> {
+					Map<?, ?> map = (Map<?, ?>) object;
+					try {
+						Object object1 = clazz.newInstance();
+						for (FieldInfo fieldInfo : fieldInfos)
+							fieldInfo.field.set(object1, apply0(fieldInfo.unmapifier, map.get(fieldInfo.name)));
+						return object1;
+					} catch (ReflectiveOperationException ex) {
+						throw new RuntimeException(ex);
 					}
 				};
 			}
@@ -208,29 +184,25 @@ public class MapifyUtil {
 
 			if (collectionClasses.contains(clazz)) {
 				Fun<Object, Object> unmapifier1 = createUnmapifier0(typeArguments[0]);
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<?, ?> map = (Map<?, ?>) object;
-						@SuppressWarnings("unchecked")
-						Collection<Object> object1 = (Collection<Object>) create(clazz);
-						int i = 0;
-						while (map.containsKey(i))
-							object1.add(apply0(unmapifier1, map.get(i++)));
-						return object1;
-					}
+				return object -> {
+					Map<?, ?> map = (Map<?, ?>) object;
+					@SuppressWarnings("unchecked")
+					Collection<Object> object1 = (Collection<Object>) create(clazz);
+					int i = 0;
+					while (map.containsKey(i))
+						object1.add(apply0(unmapifier1, map.get(i++)));
+					return object1;
 				};
 			} else if (mapClasses.contains(clazz)) {
 				Fun<Object, Object> keyUnmapifier = createUnmapifier0(typeArguments[0]);
 				Fun<Object, Object> valueUnmapifier = createUnmapifier0(typeArguments[1]);
-				return new Fun<Object, Object>() {
-					public Object apply(Object object) {
-						Map<?, ?> map = (Map<?, ?>) object;
-						@SuppressWarnings("unchecked")
-						Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
-						for (Entry<?, ?> e : map.entrySet())
-							object1.put(apply0(keyUnmapifier, e.getKey()), apply0(valueUnmapifier, e.getValue()));
-						return object1;
-					}
+				return object -> {
+					Map<?, ?> map = (Map<?, ?>) object;
+					@SuppressWarnings("unchecked")
+					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
+					for (Entry<?, ?> e : map.entrySet())
+						object1.put(apply0(keyUnmapifier, e.getKey()), apply0(valueUnmapifier, e.getValue()));
+					return object1;
 				};
 			} else
 				return createMapifier0(rawType);

@@ -25,27 +25,21 @@ import suite.util.Util;
 
 public class EvaluateUtil {
 
-	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = new CacheUtil().proxy(new Fun<Pair<Boolean, Boolean>, Node>() {
-		public Node apply(Pair<Boolean, Boolean> pair) {
-			Atom mode = Atom.create(pair.t0 ? "LAZY" : "EAGER");
+	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = new CacheUtil().proxy(pair -> {
+		Atom mode = Atom.create(pair.t0 ? "LAZY" : "EAGER");
 
-			return new Specializer().specialize(Suite.substitute("" //
-					+ "source .in" //
-					+ ", compile-function .0 .in .out" //
-					+ (pair.t1 ? ", specialize .out .outs, pretty.print .outs" : "") //
-					+ ", sink .out", mode));
-		}
+		return new Specializer().specialize(Suite.substitute("" //
+				+ "source .in" //
+				+ ", compile-function .0 .in .out" //
+				+ (pair.t1 ? ", specialize .out .outs, pretty.print .outs" : "") //
+				+ ", sink .out", mode));
 	});
 
-	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = new CacheUtil().proxy(new Fun<Pair<ProverConfig, Node>, Finder>() {
-		public Finder apply(Pair<ProverConfig, Node> pair) {
-			Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0, false);
-
-			// Using level 1 CompiledProverBuilder would break the test case
-			// FunRbTreeTest. It would by blow up the stack in
-			// InstructionExecutor
-			return builder.build(Suite.funCompilerRuleSet(), pair.t1);
-		}
+	// Using level 1 CompiledProverBuilder would break the test case
+	// FunRbTreeTest. It would by blow up the stack in InstructionExecutor
+	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = new CacheUtil().proxy(pair -> {
+		Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0, false);
+		return builder.build(Suite.funCompilerRuleSet(), pair.t1);
 	});
 
 	public boolean proveLogic(Node lp) {

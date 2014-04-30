@@ -76,12 +76,8 @@ public class NioDispatcherTest {
 	public void testRequestResponse() throws IOException, InterruptedException {
 		RequestResponseMatcher matcher = new RequestResponseMatcher();
 		ThreadPoolExecutor executor = Util.createExecutor();
+		Fun<Bytes, Bytes> handler = request -> request;
 
-		Fun<Bytes, Bytes> handler = new Fun<Bytes, Bytes>() {
-			public Bytes apply(Bytes request) {
-				return request;
-			}
-		};
 		Source<RequestResponseChannel> source = new Source<RequestResponseChannel>() {
 			public RequestResponseChannel source() {
 				return new RequestResponseChannel(matcher, executor, handler);

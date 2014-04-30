@@ -13,7 +13,6 @@ import org.junit.Test;
 import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
 import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
@@ -23,19 +22,8 @@ public class TwoPassIndexerTest {
 	@Test
 	public void test() throws IOException {
 		Source<File> files0 = FileUtil.findFiles(new File("src/test/java"));
-
-		Source<String> files1 = FunUtil.map(new Fun<File, String>() {
-			public String apply(File file) {
-				return file.getAbsolutePath();
-			}
-		}, files0);
-
-		Source<String> files2 = FunUtil.filter(new Fun<String, Boolean>() {
-			public Boolean apply(String filename) {
-				return filename.endsWith(".java");
-			}
-		}, files1);
-
+		Source<String> files1 = FunUtil.map(file -> file.getAbsolutePath(), files0);
+		Source<String> files2 = FunUtil.filter(filename -> filename.endsWith(".java"), files1);
 		List<String> filenames = new ArrayList<>();
 
 		for (String filename : FunUtil.iter(files2))

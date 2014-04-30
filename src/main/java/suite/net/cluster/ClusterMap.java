@@ -51,24 +51,20 @@ public class ClusterMap<K, V> {
 		}
 	};
 
-	private Fun<GetQuery.Request, GetQuery.Response> onGet = new Fun<GetQuery.Request, GetQuery.Response>() {
-		public GetQuery.Response apply(GetQuery.Request request) {
-			GetQuery.Response response = new GetQuery.Response();
-			response.value = localMap.get(request.key);
-			return response;
-		}
+	private Fun<GetQuery.Request, GetQuery.Response> onGet = request -> {
+		GetQuery.Response response = new GetQuery.Response();
+		response.value = localMap.get(request.key);
+		return response;
 	};
 
-	private Fun<PutQuery.Request, PutQuery.Response> onPut = new Fun<PutQuery.Request, PutQuery.Response>() {
-		public PutQuery.Response apply(PutQuery.Request request) {
-			@SuppressWarnings("unchecked")
-			K key = (K) request.key;
-			@SuppressWarnings("unchecked")
-			V value = (V) request.value;
-			PutQuery.Response response = new PutQuery.Response();
-			response.value = localMap.put(key, value);
-			return response;
-		}
+	private Fun<PutQuery.Request, PutQuery.Response> onPut = request -> {
+		@SuppressWarnings("unchecked")
+		K key = (K) request.key;
+		@SuppressWarnings("unchecked")
+		V value = (V) request.value;
+		PutQuery.Response response = new PutQuery.Response();
+		response.value = localMap.put(key, value);
+		return response;
 	};
 
 	public V get(K key) {

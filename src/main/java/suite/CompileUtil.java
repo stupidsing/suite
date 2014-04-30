@@ -13,11 +13,7 @@ import suite.util.FunUtil.Fun;
 
 public class CompileUtil {
 
-	private Fun<List<String>, RuleSet> createRuleSetFun = new CacheUtil().proxy(new Fun<List<String>, RuleSet>() {
-		public RuleSet apply(List<String> filenames) {
-			return Suite.createRuleSet(filenames);
-		}
-	});
+	private Fun<List<String>, RuleSet> createRuleSetFun = new CacheUtil().proxy(filenames -> Suite.createRuleSet(filenames));
 
 	/**
 	 * Returns rule set for functional compiler.

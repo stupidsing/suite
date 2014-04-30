@@ -100,11 +100,7 @@ public class Chr {
 	}
 
 	private State chr(State state) {
-		return FunUtil.concat(map(To.source(rules), new Fun<Rule, Source<State>>() {
-			public Source<State> apply(Rule rule) {
-				return chr(state, rule);
-			}
-		})).source();
+		return FunUtil.concat(map(To.source(rules), rule -> chr(state, rule))).source();
 	}
 
 	private Source<State> chr(State state, Rule rule) {
@@ -129,31 +125,27 @@ public class Chr {
 	private Source<State> chrIf(Source<State> states, Journal journal, Node if_) {
 		Prototype prototype = getPrototype(if_);
 
-		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
-			public Source<State> apply(State state) {
-				ISet<Node> facts = getFacts(state, prototype);
-				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
+		return FunUtil.concat(map(states, state -> {
+			ISet<Node> facts = getFacts(state, prototype);
+			Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 
-				Source<Node> bindedIfs = filter(facts.source(), bindFun);
-				return map(bindedIfs, new Fun<Node, State>() {
-					public State apply(Node node) {
-						return setFacts(state, prototype, facts.remove(node));
-					}
-				});
-			}
+			Source<Node> bindedIfs = filter(facts.source(), bindFun);
+			return map(bindedIfs, new Fun<Node, State>() {
+				public State apply(Node node) {
+					return setFacts(state, prototype, facts.remove(node));
+				}
+			});
 		}));
 	}
 
 	private Source<State> chrGiven(Source<State> states, Journal journal, Node given) {
 		Prototype prototype = getPrototype(given);
 
-		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
-			public Source<State> apply(State state) {
-				ISet<Node> facts = getFacts(state, prototype);
-				Fun<Node, Boolean> bindFun = bindFun(journal, given);
-				boolean isMatch = or(map(facts.source(), bindFun));
-				return isMatch ? To.source(state) : FunUtil.<State> nullSource();
-			}
+		return FunUtil.concat(map(states, state -> {
+			ISet<Node> facts = getFacts(state, prototype);
+			Fun<Node, Boolean> bindFun = bindFun(journal, given);
+			boolean isMatch = or(map(facts.source(), bindFun));
+			return isMatch ? To.source(state) : FunUtil.<State> nullSource();
 		}));
 	}
 
@@ -184,31 +176,23 @@ public class Chr {
 			});
 		}
 
-		return map(states, new Fun<State, State>() {
-			public State apply(State state) {
-				Prototype prototype = getPrototype(then);
-				ISet<Node> facts = getFacts(state, prototype);
-				return setFacts(state, prototype, facts.replace(then));
-			}
+		return map(states, state -> {
+			Prototype prototype = getPrototype(then);
+			ISet<Node> facts = getFacts(state, prototype);
+			return setFacts(state, prototype, facts.replace(then));
 		});
 	}
 
 	private Source<State> chrWhen(Source<State> states, Node when) {
-		return filter(states, new Fun<State, Boolean>() {
-			public Boolean apply(State state) {
-				return prover.prove(when);
-			}
-		});
+		return filter(states, state -> prover.prove(when));
 	}
 
 	private Fun<Node, Boolean> bindFun(Journal journal, Node node0) {
 		int pit = journal.getPointInTime();
 
-		return new Fun<Node, Boolean>() {
-			public Boolean apply(Node node1) {
-				journal.undoBinds(pit);
-				return Binder.bind(node0, node1, journal);
-			}
+		return node1 -> {
+			journal.undoBinds(pit);
+			return Binder.bind(node0, node1, journal);
 		};
 	}
 

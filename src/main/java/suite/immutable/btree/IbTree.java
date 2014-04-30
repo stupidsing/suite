@@ -260,11 +260,7 @@ public class IbTree<Key> implements Closeable {
 		}
 
 		private void update(Key key, Slot slot1) {
-			update(key, new Fun<Slot, Slot>() {
-				public Slot apply(Slot slot) {
-					return slot1;
-				}
-			});
+			update(key, slot -> slot1);
 		}
 
 		private void update(Key key, Fun<Slot, Slot> replacer) {
@@ -460,8 +456,8 @@ public class IbTree<Key> implements Closeable {
 	 *         split to occur. Therefore 1 page should be at its maximum size.
 	 *         This adds in half of branch factor minus 1 of nodes.
 	 * 
-	 *         Fourth, the result needs to be minus by 1 to exclude the
-	 *         guard node at rightmost of the tree.
+	 *         Fourth, the result needs to be minus by 1 to exclude the guard
+	 *         node at rightmost of the tree.
 	 * 
 	 *         Fifth, most transactions would acquire some new pages before old
 	 *         pages could be discarded during commit. We have to reserve 10% of
@@ -497,11 +493,7 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private Source<Key> keys(Integer pointer, Key start, Key end) {
-		return FunUtil.map(new Fun<Slot, Key>() {
-			public Key apply(Slot slot) {
-				return slot.pivot;
-			}
-		}, source0(pointer, start, end));
+		return FunUtil.map(slot -> slot.pivot, source0(pointer, start, end));
 	}
 
 	private Integer get(Integer root, Key key, SlotType slotType) {
@@ -518,13 +510,11 @@ public class IbTree<Key> implements Closeable {
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<Slot>>() {
-				public Source<Slot> apply(Slot slot) {
-					if (slot.type == SlotType.BRANCH)
-						return source0(slot.pointer, start, end);
-					else
-						return slot.pivot != null ? To.source(slot) : FunUtil.<Slot> nullSource();
-				}
+			return FunUtil.concat(FunUtil.map(slot -> {
+				if (slot.type == SlotType.BRANCH)
+					return source0(slot.pointer, start, end);
+				else
+					return slot.pivot != null ? To.source(slot) : FunUtil.<Slot> nullSource();
 			}, To.source(node.subList(i0, i1))));
 		else
 			return FunUtil.nullSource();

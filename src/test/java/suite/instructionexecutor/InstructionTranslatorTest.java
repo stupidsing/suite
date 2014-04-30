@@ -89,19 +89,11 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node execute(Node code) throws IOException {
-		return execute(code, new Fun<Fun<Node, Node>, Node>() {
-			public Node apply(Fun<Node, Node> exec) {
-				return exec.apply(new Closure(null, 0));
-			}
-		});
+		return execute(code, exec -> exec.apply(new Closure(null, 0)));
 	}
 
 	private String executeToString(Node code) throws IOException {
-		return execute(code, new Fun<Fun<Node, Node>, String>() {
-			public String apply(Fun<Node, Node> exec) {
-				return ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0)));
-			}
-		});
+		return execute(code, exec -> ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0))));
 	}
 
 	private <T> T execute(Node code, Fun<Fun<Node, Node>, T> fun) throws IOException, MalformedURLException {
@@ -113,12 +105,10 @@ public class InstructionTranslatorTest {
 		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePathName)) {
 			TranslatedRun translatedRun = instructionTranslator.translate(code);
 
-			Fun<Node, Node> exec = new Fun<Node, Node>() {
-				public Node apply(Node node) {
-					if (node instanceof Closure)
-						node = translatedRun.exec(config, (Closure) node);
-					return node;
-				}
+			Fun<Node, Node> exec = node -> {
+				if (node instanceof Closure)
+					node = translatedRun.exec(config, (Closure) node);
+				return node;
 			};
 
 			return fun.apply(exec);

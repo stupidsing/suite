@@ -46,36 +46,28 @@ public class EditorController {
 	}
 
 	public void evaluate(EditorView view) {
-		run(view, new Fun<String, String>() {
-			public String apply(String text) {
-				String result;
-
-				try {
-					Node node = Suite.evaluateFun(text, true);
-					result = Formatter.dump(node);
-				} catch (Exception ex) {
-					result = To.string(ex);
-				}
-
-				return result;
+		run(view, text -> {
+			String result;
+			try {
+				Node node = Suite.evaluateFun(text, true);
+				result = Formatter.dump(node);
+			} catch (Exception ex) {
+				result = To.string(ex);
 			}
+			return result;
 		});
 	}
 
 	public void evaluateType(EditorView view) {
-		run(view, new Fun<String, String>() {
-			public String apply(String text) {
-				String result;
-
-				try {
-					Node node = Suite.evaluateFunType(text);
-					result = Formatter.dump(node);
-				} catch (Exception ex) {
-					result = To.string(ex);
-				}
-
-				return result;
+		run(view, text -> {
+			String result;
+			try {
+				Node node = Suite.evaluateFunType(text);
+				result = Formatter.dump(node);
+			} catch (Exception ex) {
+				result = To.string(ex);
 			}
+			return result;
 		});
 	}
 
@@ -125,17 +117,9 @@ public class EditorController {
 		if (!text.isEmpty()) {
 			Source<File> files0 = FileUtil.findFiles(new File("."));
 
-			Source<String> files1 = FunUtil.map(new Fun<File, String>() {
-				public String apply(File file) {
-					return file.getPath();
-				}
-			}, files0);
+			Source<String> files1 = FunUtil.map(file -> file.getPath(), files0);
 
-			Source<String> files2 = FunUtil.filter(new Fun<String, Boolean>() {
-				public Boolean apply(String filename) {
-					return filename.contains(text);
-				}
-			}, files1);
+			Source<String> files2 = FunUtil.filter(filename -> filename.contains(text), files1);
 
 			for (String filename : FunUtil.iter(files2))
 				listModel.addElement(filename);

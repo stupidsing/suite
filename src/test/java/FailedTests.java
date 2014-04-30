@@ -32,7 +32,7 @@ public class FailedTests {
 	}
 
 	// Takes forever to type check
-	@Test
+	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
 	}

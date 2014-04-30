@@ -16,7 +16,6 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.To;
@@ -168,11 +167,7 @@ public class Prover {
 				if (!isTrace)
 					query = expand(query);
 				else
-					query = tracer.expandWithTrace(query, this, new Fun<Node, Node>() {
-						public Node apply(Node node) {
-							return expand(node);
-						}
-					});
+					query = tracer.expandWithTrace(query, this, node -> expand(node));
 			}
 		}
 	}

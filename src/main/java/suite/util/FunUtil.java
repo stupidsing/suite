@@ -7,14 +7,17 @@ import java.util.concurrent.SynchronousQueue;
 
 public class FunUtil {
 
+	@FunctionalInterface
 	public interface Source<O> {
 		public O source();
 	}
 
+	@FunctionalInterface
 	public interface Sink<I> {
 		public void sink(I i);
 	}
 
+	@FunctionalInterface
 	public interface Fun<I, O> {
 		public O apply(I i);
 	}

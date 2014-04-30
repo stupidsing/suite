@@ -19,11 +19,7 @@ public class Subst {
 	}
 
 	public String subst(String s, Map<String, String> map) {
-		return subst(s, new Fun<String, String>() {
-			public String apply(String key) {
-				return map.get(key);
-			}
-		});
+		return subst(s, key -> map.get(key));
 	}
 
 	public String subst(String s, Fun<String, String> fun) {

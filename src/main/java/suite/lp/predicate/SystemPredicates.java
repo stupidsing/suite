@@ -173,11 +173,7 @@ public class SystemPredicates {
 			}
 		};
 
-		private Fun<Node, Node> findAll = new CacheUtil().proxy(new Fun<Node, Node>() {
-			public Node apply(Node goal) {
-				return findAll(prover, uniqueReference, goal);
-			}
-		});
+		private Fun<Node, Node> findAll = new CacheUtil().proxy(goal -> findAll(prover, uniqueReference, goal));
 
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);

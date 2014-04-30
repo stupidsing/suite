@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
@@ -69,13 +68,11 @@ public class I23Tree<T> implements ITree<T> {
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(new Fun<Slot, Source<T>>() {
-				public Source<T> apply(Slot slot) {
-					if (slot.slots != null)
-						return source(slot.slots, start, end);
-					else
-						return slot.pivot != null ? To.source(slot.pivot) : FunUtil.<T> nullSource();
-				}
+			return FunUtil.concat(FunUtil.map(slot -> {
+				if (slot.slots != null)
+					return source(slot.slots, start, end);
+				else
+					return slot.pivot != null ? To.source(slot.pivot) : FunUtil.<T> nullSource();
 			}, To.source(node.subList(i0, i1))));
 		else
 			return FunUtil.nullSource();

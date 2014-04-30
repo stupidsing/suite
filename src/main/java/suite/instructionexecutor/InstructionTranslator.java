@@ -21,7 +21,6 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.parser.Subst;
-import suite.util.FunUtil.Fun;
 import suite.util.JdkUtil;
 import suite.util.Util;
 
@@ -472,11 +471,7 @@ public class InstructionTranslator implements Closeable {
 		List<Object> list = Arrays.asList(ps);
 		Iterator<Object> iter = list.iterator();
 
-		subst.subst(fmt, new Fun<String, String>() {
-			public String apply(String key) {
-				return decode(key, iter);
-			}
-		}, section);
+		subst.subst(fmt, key -> decode(key, iter), section);
 
 		char lastChar = section.charAt(section.length() - 1);
 

@@ -3,7 +3,6 @@ package suite.algo;
 import java.util.Map;
 
 import suite.util.DefaultFunMap;
-import suite.util.FunUtil.Fun;
 
 public class UnionFind<T> {
 
@@ -17,11 +16,7 @@ public class UnionFind<T> {
 		}
 	}
 
-	private Map<T, Record> nodes = new DefaultFunMap<>(new Fun<T, Record>() {
-		public Record apply(T t) {
-			return new Record(t, 0);
-		}
-	});
+	private Map<T, Record> nodes = new DefaultFunMap<>(t -> new Record(t, 0));
 
 	public void union(T t0, T t1) {
 		Record pair0 = find0(t0);

@@ -43,11 +43,7 @@ public class Matcher {
 	public List<String[]> matches(String pattern, String input) {
 		Source<State> source = To.source(new State(input));
 		source = applyPattern(source, pattern);
-		source = FunUtil.filter(new Fun<State, Boolean>() {
-			public Boolean apply(State state) {
-				return state.eof();
-			}
-		}, source);
+		source = FunUtil.filter(state -> state.eof(), source);
 
 		List<String[]> results = new ArrayList<>();
 		State state;
@@ -91,18 +87,12 @@ public class Matcher {
 				}, source));
 				break;
 			case '?':
-				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-					public Source<State> apply(State state) {
-						return !state.eof() ? To.source(new State(state, 1)) : noResult;
-					}
-				}, source));
+				source = FunUtil.concat(FunUtil.map(state -> !state.eof() ? To.source(new State(state, 1)) : noResult, source));
 				break;
 			default:
-				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-					public Source<State> apply(State state) {
-						boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-						return isMatch ? To.source(new State(state, 1)) : noResult;
-					}
+				source = FunUtil.concat(FunUtil.map(state -> {
+					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
+					return isMatch ? To.source(new State(state, 1)) : noResult;
 				}, source));
 			}
 		return source;

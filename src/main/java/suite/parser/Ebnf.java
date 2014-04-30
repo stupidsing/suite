@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
@@ -191,11 +190,7 @@ public class Ebnf {
 	}
 
 	private List<Grammar> parseGrammars(List<String> list) {
-		return To.list(FunUtil.iter(FunUtil.map(new Fun<String, Grammar>() {
-			public Grammar apply(String s) {
-				return parseGrammar(s);
-			}
-		}, To.source(list))));
+		return To.list(FunUtil.iter(FunUtil.map(s -> parseGrammar(s), To.source(list))));
 	}
 
 	public Node parse(String s) {
@@ -333,30 +328,18 @@ public class Ebnf {
 			else
 				states = parse(state1, grammars.get(name));
 
-			return FunUtil.map(new Fun<State, State>() {
-				public State apply(State state) {
-					return undeepen(state, depth);
-				}
-			}, states);
+			return FunUtil.map(st -> undeepen(st, depth), states);
 		}
 
 		private Source<State> parseOr(State state, OrGrammar grammar) {
-			return FunUtil.concat(FunUtil.map(new Fun<Grammar, Source<State>>() {
-				public Source<State> apply(Grammar childGrammar) {
-					return parse(state, childGrammar);
-				}
-			}, To.source(children(grammar))));
+			return FunUtil.concat(FunUtil.map(childGrammar -> parse(state, childGrammar), To.source(children(grammar))));
 		}
 
 		private Source<State> parseJoin(State state, JoinGrammar grammar) {
 			Source<State> source = To.source(state);
 
 			for (Grammar childGrammar : children(grammar))
-				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-					public Source<State> apply(State state) {
-						return parse(state, childGrammar);
-					}
-				}, source));
+				source = FunUtil.concat(FunUtil.map(st -> parse(st, childGrammar), source));
 
 			return source;
 		}
