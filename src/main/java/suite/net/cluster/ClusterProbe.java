@@ -32,9 +32,9 @@ import suite.util.Util;
  */
 public class ClusterProbe extends ThreadedService {
 
-	private static final int bufferSize = 65536; // UDP packet size
-	private static final int checkAliveDuration = 1500;
-	private static final int timeoutDuration = 5000;
+	private static int bufferSize = 65536; // UDP packet size
+	private static int checkAliveDuration = 1500;
+	private static int timeoutDuration = 5000;
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
@@ -132,7 +132,7 @@ public class ClusterProbe extends ThreadedService {
 
 		selector = Selector.open();
 
-		final DatagramChannel dc = DatagramChannel.open();
+		DatagramChannel dc = DatagramChannel.open();
 		dc.configureBlocking(false);
 		dc.socket().bind(address);
 		dc.register(selector, SelectionKey.OP_READ);

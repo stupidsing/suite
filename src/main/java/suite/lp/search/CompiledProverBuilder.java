@@ -41,8 +41,8 @@ public class CompiledProverBuilder implements Builder {
 	@Override
 	public Finder build(RuleSet ruleSet, Node goal) {
 		Node goal1 = Suite.substitute(".0 >> .1", Suite.ruleSetToNode(ruleSet), goal);
-		final Node code = compile(goal1);
-		final ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+		Node code = compile(goal1);
+		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
 		return new Finder() {
 			public void find(Source<Node> source, Sink<Node> sink) {

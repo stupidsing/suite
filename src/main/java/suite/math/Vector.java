@@ -4,9 +4,9 @@ import suite.util.Util;
 
 public class Vector {
 
-	public static final Vector origin = new Vector(0f, 0f, 0f);
+	public static Vector origin = new Vector(0f, 0f, 0f);
 
-	private final float x, y, z;
+	private float x, y, z;
 
 	public Vector(float x, float y, float z) {
 		this.x = x;

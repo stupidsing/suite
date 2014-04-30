@@ -27,7 +27,7 @@ public class AlphabetaTest {
 	}
 
 	private static Game<TicTacToe> ticTacToeGame = new Game<TicTacToe>() {
-		private final int lines[][] = new int[][] { //
+		private int lines[][] = new int[][] { //
 		{ 0, 1, 2 }, //
 				{ 3, 4, 5 }, //
 				{ 6, 7, 8 }, //
@@ -37,7 +37,7 @@ public class AlphabetaTest {
 				{ 0, 4, 8 }, //
 				{ 2, 4, 6 }, };
 
-		private final int scores[] = new int[] { 0, 1, 10, 10000 };
+		private int scores[] = new int[] { 0, 1, 10, 10000 };
 
 		public List<TicTacToe> generate(TicTacToe state) {
 			List<TicTacToe> states = new ArrayList<>();

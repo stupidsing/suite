@@ -105,10 +105,10 @@ public class InstructionTranslator implements Closeable {
 				+ "import " + TranslatedRunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "\n" //
 				+ "public class " + className + " implements TranslatedRun { \n" //
-				+ "private static final int stackSize = 4096; \n" //
+				+ "private static int stackSize = 4096; \n" //
 				+ "\n" //
-				+ "private static final Atom FALSE = Atom.FALSE; \n" //
-				+ "private static final Atom TRUE = Atom.TRUE; \n" //
+				+ "private static Atom FALSE = Atom.FALSE; \n" //
+				+ "private static Atom TRUE = Atom.TRUE; \n" //
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
@@ -459,7 +459,7 @@ public class InstructionTranslator implements Closeable {
 	private String defineConstant(Node node) {
 		node = node.finalNode();
 		String result = "const" + counter.getAndIncrement();
-		String decl = "private static final Node #{str} = Suite.parse(\"#{str}\")";
+		String decl = "private static Node #{str} = Suite.parse(\"#{str}\")";
 		app(clazzsec, decl, result, Formatter.dump(node));
 		return result;
 	}
@@ -470,7 +470,7 @@ public class InstructionTranslator implements Closeable {
 
 	private void app(StringBuilder section, String fmt, Object... ps) {
 		List<Object> list = Arrays.asList(ps);
-		final Iterator<Object> iter = list.iterator();
+		Iterator<Object> iter = list.iterator();
 
 		subst.subst(fmt, new Fun<String, String>() {
 			public String apply(String key) {

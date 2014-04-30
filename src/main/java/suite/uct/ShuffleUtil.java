@@ -6,7 +6,7 @@ import suite.math.XorShiftRandom;
 
 public class ShuffleUtil {
 
-	private static final XorShiftRandom random = new XorShiftRandom();
+	private static XorShiftRandom random = new XorShiftRandom();
 
 	public static void setSeed(long seed) {
 		random.setSeed(seed);

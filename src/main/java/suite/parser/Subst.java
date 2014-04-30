@@ -18,7 +18,7 @@ public class Subst {
 		this.closeSubst = closeSubst;
 	}
 
-	public String subst(String s, final Map<String, String> map) {
+	public String subst(String s, Map<String, String> map) {
 		return subst(s, new Fun<String, String>() {
 			public String apply(String key) {
 				return map.get(key);

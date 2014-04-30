@@ -31,10 +31,10 @@ public class NioDispatcherTest {
 
 	@Test
 	public void testTextExchange() throws IOException {
-		final String hello = "HELLO";
-		final Charset charset = FileUtil.charset;
+		String hello = "HELLO";
+		Charset charset = FileUtil.charset;
 
-		final BufferedChannel channel = new BufferedChannel() {
+		BufferedChannel channel = new BufferedChannel() {
 			public void onConnected(Sender sender) {
 				super.onConnected(sender);
 				String s = hello + "\n";
@@ -74,10 +74,10 @@ public class NioDispatcherTest {
 
 	@Test
 	public void testRequestResponse() throws IOException, InterruptedException {
-		final RequestResponseMatcher matcher = new RequestResponseMatcher();
-		final ThreadPoolExecutor executor = Util.createExecutor();
+		RequestResponseMatcher matcher = new RequestResponseMatcher();
+		ThreadPoolExecutor executor = Util.createExecutor();
 
-		final Fun<Bytes, Bytes> handler = new Fun<Bytes, Bytes>() {
+		Fun<Bytes, Bytes> handler = new Fun<Bytes, Bytes>() {
 			public Bytes apply(Bytes request) {
 				return request;
 			}

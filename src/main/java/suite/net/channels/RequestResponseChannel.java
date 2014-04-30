@@ -14,8 +14,8 @@ import suite.util.Util;
  */
 public class RequestResponseChannel extends PacketChannel {
 
-	public static final char RESPONSE = 'P';
-	public static final char REQUEST = 'Q';
+	public static char RESPONSE = 'P';
+	public static char REQUEST = 'Q';
 
 	private RequestResponseMatcher matcher;
 	private ThreadPoolExecutor executor;
@@ -61,8 +61,8 @@ public class RequestResponseChannel extends PacketChannel {
 	public void onReceivePacket(Bytes packet) {
 		if (packet.size() >= 5) {
 			char type = (char) packet.get(0);
-			final int token = NetUtil.intValue(packet.subbytes(1, 5));
-			final Bytes contents = packet.subbytes(5);
+			int token = NetUtil.intValue(packet.subbytes(1, 5));
+			Bytes contents = packet.subbytes(5);
 
 			if (type == RESPONSE)
 				matcher.onRespondReceived(token, contents);

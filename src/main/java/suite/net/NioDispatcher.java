@@ -21,7 +21,7 @@ import suite.util.LogUtil;
 
 public class NioDispatcher<C extends Channel> extends ThreadedService {
 
-	private static final int bufferSize = 4096;
+	private static int bufferSize = 4096;
 
 	private Source<C> channelSource;
 	private Selector selector = Selector.open();
@@ -66,7 +66,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 	 * @return event for switching off the server.
 	 */
 	public Closeable listen(int port) throws IOException {
-		final ServerSocketChannel ssc = ServerSocketChannel.open();
+		ServerSocketChannel ssc = ServerSocketChannel.open();
 		ssc.configureBlocking(false);
 		ssc.socket().bind(new InetSocketAddress(port));
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
@@ -126,10 +126,10 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 		Object attachment = key.attachment();
 
 		if (key.isAcceptable()) {
-			final Channel channel = channelSource.source();
+			Channel channel = channelSource.source();
 			ServerSocketChannel ssc = (ServerSocketChannel) sc0;
 			Socket socket = ssc.accept().socket();
-			final SocketChannel sc = socket.getChannel();
+			SocketChannel sc = socket.getChannel();
 
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
@@ -159,7 +159,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 			}
 	}
 
-	private Sender createSender(final SocketChannel sc) {
+	private Sender createSender(SocketChannel sc) {
 		return new Sender() {
 			public Bytes apply(Bytes in) throws IOException {
 

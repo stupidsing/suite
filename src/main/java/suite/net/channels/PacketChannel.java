@@ -21,7 +21,7 @@ public abstract class PacketChannel extends BufferedChannel {
 	}
 
 	@Override
-	public final void onReceive(Bytes message) {
+	public void onReceive(Bytes message) {
 		received = received.append(message);
 
 		if (received.size() >= 4) {

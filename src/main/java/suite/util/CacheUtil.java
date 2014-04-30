@@ -68,7 +68,7 @@ public class CacheUtil {
 		return proxy(interface_, object, methods);
 	}
 
-	public <I> I proxy(Class<I> interface_, final I object, final Collection<Method> methods) {
+	public <I> I proxy(Class<I> interface_, I object, Collection<Method> methods) {
 		InvocationHandler handler = new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {
 				Key key = methods.contains(method) ? new Key(object, method, ps) : null;
@@ -90,7 +90,7 @@ public class CacheUtil {
 		};
 
 		@SuppressWarnings("unchecked")
-		final Class<I> clazz = (Class<I>) object.getClass();
+		Class<I> clazz = (Class<I>) object.getClass();
 		ClassLoader classLoader = clazz.getClassLoader();
 		Class<?> classes[] = { interface_ };
 

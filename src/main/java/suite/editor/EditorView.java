@@ -34,8 +34,8 @@ import suite.editor.Layout.Orientation;
 
 public class EditorView {
 
-	private static final int windowWidth = 1280;
-	private static final int windowHeight = 768;
+	private static int windowWidth = 1280;
+	private static int windowHeight = 768;
 
 	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
 	private Font narrowFont = new Font("Sans", Font.PLAIN, 12);
@@ -161,7 +161,7 @@ public class EditorView {
 	}
 
 	private JMenuBar createMenuBar() {
-		final EditorView view = this;
+		EditorView view = this;
 
 		JMenuItem newMenuItem = applyDefaults(new JMenuItem("New...", KeyEvent.VK_N));
 		newMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));

@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class HtmlUtil {
 
-	private static final Map<String, String> escapeTokensByChar = new HashMap<>();
-	private static final Map<String, String> charsByEscapeToken = new HashMap<>();
+	private static Map<String, String> escapeTokensByChar = new HashMap<>();
+	private static Map<String, String> charsByEscapeToken = new HashMap<>();
 
 	static {
 		initialize();

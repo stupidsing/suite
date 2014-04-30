@@ -45,7 +45,7 @@ public class ExpandUtil {
 		}
 	}
 
-	public static Source<Node> expandList(final Fun<Node, Node> unwrapper, final Node node) {
+	public static Source<Node> expandList(Fun<Node, Node> unwrapper, Node node) {
 		return new Source<Node>() {
 			private Node node_;
 

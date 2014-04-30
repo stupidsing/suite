@@ -21,9 +21,9 @@ import suite.util.Util.ExecutableProgram;
  */
 public class JsMain extends ExecutableProgram {
 
-	private final List<String> defaultJsFiles = Arrays.asList("conf/loader.js");
+	private List<String> defaultJsFiles = Arrays.asList("conf/loader.js");
 
-	private final ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
+	private ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 	public static void main(String args[]) {
 		Util.run(JsMain.class, args);

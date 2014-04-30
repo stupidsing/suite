@@ -6,7 +6,7 @@ import suite.util.Util;
 
 public class Matrix {
 
-	private final float v[][];
+	private float v[][];
 
 	public Matrix(Matrix m) {
 		this(m.height(), m.width());

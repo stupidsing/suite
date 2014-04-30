@@ -126,8 +126,8 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 	}
 
 	public Iterable<Pair<Key, Value>> range(Key startKey, Key endKey) {
-		final Slots startSlots = traverse(startKey);
-		final Slots endSlots = traverse(endKey);
+		Slots startSlots = traverse(startKey);
+		Slots endSlots = traverse(endKey);
 
 		Iterator<Pair<Key, Value>> iterator = new Iterator<Pair<Key, Value>>() {
 			private Slots currentSlots = startSlots;

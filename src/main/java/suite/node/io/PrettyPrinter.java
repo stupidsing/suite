@@ -20,13 +20,13 @@ public class PrettyPrinter {
 	private int nLines = 0;
 	private int currentLineIndent = 0;
 
-	private static final int lineLength = 96; // Estimated
-	private static final int squeezeLineLength = 8;
-	private static final String indentSpaces = "    ";
+	private static int lineLength = 96; // Estimated
+	private static int squeezeLineLength = 8;
+	private static String indentSpaces = "    ";
 
-	private static final Set<Node> lineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else-if")));
-	private static final Set<Node> preferLineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else")));
-	private static final Set<Operator> lineBreakAfterOperators = new HashSet<Operator>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_,
+	private static Set<Node> lineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else-if")));
+	private static Set<Node> preferLineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else")));
+	private static Set<Operator> lineBreakAfterOperators = new HashSet<Operator>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_,
 			TermOp.FUN___));
 
 	private static class OperatorPosition {

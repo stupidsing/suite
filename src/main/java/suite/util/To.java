@@ -23,8 +23,8 @@ import suite.util.FunUtil.Source;
 
 public class To {
 
-	private static final int bufferSize = 4096;
-	private static final String hexDigits = "0123456789ABCDEF";
+	private static int bufferSize = 4096;
+	private static String hexDigits = "0123456789ABCDEF";
 
 	public static Bytes bytes(String s) {
 		return new Bytes(s.getBytes(FileUtil.charset));
@@ -79,12 +79,12 @@ public class To {
 	}
 
 	@SafeVarargs
-	public static <O> Source<O> source(final O... array) {
+	public static <O> Source<O> source(O... array) {
 		return source(Arrays.asList(array));
 	}
 
 	public static <O> Source<O> source(Iterable<O> iterable) {
-		final Iterator<O> iterator = iterable.iterator();
+		Iterator<O> iterator = iterable.iterator();
 
 		return new Source<O>() {
 			public O source() {

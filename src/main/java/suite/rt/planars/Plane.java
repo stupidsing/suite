@@ -26,7 +26,7 @@ public class Plane implements RtObject {
 	}
 
 	@Override
-	public List<RayHit> hit(final Ray ray) {
+	public List<RayHit> hit(Ray ray) {
 		float denum = Vector.dot(normal, ray.dir);
 		float adv;
 
@@ -35,7 +35,7 @@ public class Plane implements RtObject {
 		else
 			adv = -1f; // Treats as not-hit
 
-		final float advance = adv;
+		float advance = adv;
 
 		if (advance > RayTracer.negligibleAdvance) {
 			RayHit rayHit = new RayHit() {
@@ -44,7 +44,7 @@ public class Plane implements RtObject {
 				}
 
 				public RayIntersection intersection() {
-					final Vector hitPoint = ray.hitPoint(advance);
+					Vector hitPoint = ray.hitPoint(advance);
 
 					return new RayIntersection() {
 						public Vector hitPoint() {

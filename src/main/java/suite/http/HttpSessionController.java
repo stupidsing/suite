@@ -14,7 +14,7 @@ import suite.util.Util;
 
 public class HttpSessionController {
 
-	public static final long TIMEOUTDURATION = 3600 * 1000l;
+	public static long TIMEOUTDURATION = 3600 * 1000l;
 
 	private Authenticator authenticator;
 	private SessionManager sessionManager = new HttpSessionManager();

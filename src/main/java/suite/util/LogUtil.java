@@ -17,8 +17,8 @@ import org.apache.log4j.PatternLayout;
 
 public class LogUtil {
 
-	private static final int maxStackTraceLength = 99;
-	private static final Log suiteLog = LogFactory.getLog("suite");
+	private static int maxStackTraceLength = 99;
+	private static Log suiteLog = LogFactory.getLog("suite");
 
 	static {
 		initLog4j(Level.INFO);
@@ -64,10 +64,10 @@ public class LogUtil {
 		suiteLog.fatal(isTrimmed ? "(Trimmed)" : "", th);
 	}
 
-	public static <I> I proxy(Class<I> interface_, final I object) {
+	public static <I> I proxy(Class<I> interface_, I object) {
 		@SuppressWarnings("unchecked")
-		final Class<I> clazz = (Class<I>) object.getClass();
-		final Log log = LogFactory.getLog(clazz);
+		Class<I> clazz = (Class<I>) object.getClass();
+		Log log = LogFactory.getLog(clazz);
 
 		InvocationHandler handler = new InvocationHandler() {
 			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {

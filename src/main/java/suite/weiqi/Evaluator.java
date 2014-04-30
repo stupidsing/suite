@@ -8,8 +8,8 @@ import suite.weiqi.Weiqi.Occupation;
 
 public class Evaluator {
 
-	private static final int pieceScore = 10;
-	private static final int territoryScore = 100;
+	private static int pieceScore = 10;
+	private static int territoryScore = 100;
 
 	public static int evaluate(Occupation player, Board board) {
 		int score = 0;

@@ -34,7 +34,7 @@ public class PrecompileMain extends ExecutableProgram {
 	}
 
 	public boolean precompile() {
-		final ProverConfig pc = new ProverConfig();
+		ProverConfig pc = new ProverConfig();
 		boolean ok = Suite.precompile("STANDARD", pc);
 		List<Future<Boolean>> futures = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class PrecompileMain extends ExecutableProgram {
 			ThreadPoolExecutor executor = Util.createExecutorByProcessors();
 
 			try {
-				for (final String libraryName : allLibraries)
+				for (String libraryName : allLibraries)
 					futures.add(executor.submit(new Callable<Boolean>() {
 						public Boolean call() {
 							return Suite.precompile(libraryName, pc);

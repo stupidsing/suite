@@ -12,10 +12,10 @@ import suite.util.ParseUtil;
  */
 public class CommentPreprocessor implements Fun<String, String> {
 
-	public final static String openGroupComment = "-=";
-	public final static String closeGroupComment = "=-";
-	public final static String openLineComment = "--";
-	public final static String closeLineComment = "\n";
+	public static String openGroupComment = "-=";
+	public static String closeGroupComment = "=-";
+	public static String openLineComment = "--";
+	public static String closeLineComment = "\n";
 
 	private Set<Character> whitespaces;
 

@@ -43,7 +43,7 @@ public class Util {
 		return s.charAt(pos);
 	}
 
-	public static Iterable<Character> chars(final String s) {
+	public static Iterable<Character> chars(String s) {
 		return iter(new Iterator<Character>() {
 			private int index = 0;
 
@@ -182,7 +182,7 @@ public class Util {
 		return !isBlank(s);
 	}
 
-	public static <T> Iterable<T> iter(final Iterator<T> iter) {
+	public static <T> Iterable<T> iter(Iterator<T> iter) {
 		return new Iterable<T>() {
 			public Iterator<T> iterator() {
 				return iter;
@@ -235,10 +235,10 @@ public class Util {
 		run(clazz, args, false);
 	}
 
-	private static void run(Class<? extends ExecutableProgram> clazz, final String args[], boolean isProfile) {
+	private static void run(Class<? extends ExecutableProgram> clazz, String args[], boolean isProfile) {
 		LogUtil.initLog4j(Level.INFO);
 		Runnable runnable;
-		final int code[] = new int[1];
+		int code[] = new int[1];
 
 		try (ExecutableProgram main_ = clazz.newInstance()) {
 			runnable = new Runnable() {

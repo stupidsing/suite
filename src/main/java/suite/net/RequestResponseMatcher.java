@@ -10,7 +10,7 @@ import suite.util.Util;
 
 public class RequestResponseMatcher {
 
-	private static final AtomicInteger tokenCounter = new AtomicInteger();
+	private static AtomicInteger tokenCounter = new AtomicInteger();
 
 	// TODO clean-up lost requests
 	private Map<Integer, Bytes[]> requests = new HashMap<>();

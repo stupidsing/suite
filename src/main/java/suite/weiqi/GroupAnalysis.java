@@ -17,11 +17,11 @@ public class GroupAnalysis {
 	private Set<Group> groups = new TreeSet<>();
 
 	public static class Group implements Comparable<Group> {
-		public final Occupation color;
-		public final Collection<Coordinate> coords = new ArrayList<>();
-		public final Collection<Group> touches = new TreeSet<>();
-		public final Collection<Coordinate> breathes = new TreeSet<>();
-		private final int id;
+		public Occupation color;
+		public Collection<Coordinate> coords = new ArrayList<>();
+		public Collection<Group> touches = new TreeSet<>();
+		public Collection<Coordinate> breathes = new TreeSet<>();
+		private int id;
 		private Group parent;
 
 		private Group(int id, Occupation color) {

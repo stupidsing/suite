@@ -17,8 +17,8 @@ import suite.node.util.Complexity;
 
 public class SymbolicMathUtil {
 
-	private static final Complexity complexity = new Complexity();
-	private static final Prover prover = Suite.createProver(Arrays.asList("auto.sl", "math.sl"));
+	private static Complexity complexity = new Complexity();
+	private static Prover prover = Suite.createProver(Arrays.asList("auto.sl", "math.sl"));
 
 	private static Comparator<Node> comparator = new Comparator<Node>() {
 		public int compare(Node n0, Node n1) {

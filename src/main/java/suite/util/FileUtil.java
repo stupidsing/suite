@@ -18,8 +18,8 @@ import suite.util.FunUtil.Source;
 
 public class FileUtil {
 
-	public static final String tmp = "/tmp";
-	public static final Charset charset = Charset.forName("UTF-8");
+	public static String tmp = "/tmp";
+	public static Charset charset = Charset.forName("UTF-8");
 
 	public static void copyFile(File from, File to) throws IOException {
 		try (OutputStream fos = out(to)) {
@@ -28,7 +28,7 @@ public class FileUtil {
 		}
 	}
 
-	public static Source<File> findFiles(final File file) {
+	public static Source<File> findFiles(File file) {
 		return new Source<File>() {
 			private Deque<File> stack = new ArrayDeque<>();
 			{

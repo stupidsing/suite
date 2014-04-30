@@ -21,10 +21,10 @@ import suite.weiqi.Weiqi.Occupation;
  */
 public class UctWeiqiMain<Move> {
 
-	private static final Occupation computerPlayer = Occupation.BLACK;
-	private static final Occupation humanPlayer = Occupation.WHITE;
+	private static Occupation computerPlayer = Occupation.BLACK;
+	private static Occupation humanPlayer = Occupation.WHITE;
 
-	private static final Occupation startingPlayer = Occupation.BLACK;
+	private static Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String args[]) throws IOException {
 		InputStreamReader isr = new InputStreamReader(System.in, FileUtil.charset);

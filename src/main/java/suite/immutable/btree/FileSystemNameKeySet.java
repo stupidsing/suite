@@ -35,10 +35,10 @@ public class FileSystemNameKeySet {
 		return list(emptyKeys, keyUtil.toNameKeys(bytes0), keyUtil.toNameKeys(bytes1));
 	}
 
-	private Source<Bytes> list(final List<NameKey> prefix, final List<NameKey> keys0, final List<NameKey> keys1) {
+	private Source<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
-		final NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
-		final NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
+		NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
+		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
 		Source<Bytes> source = transaction.keys(minKey.toBytes(), increment(maxKey.toBytes()));
 
 		return FunUtil.concat(FunUtil.map(new Fun<Bytes, Source<Bytes>>() {

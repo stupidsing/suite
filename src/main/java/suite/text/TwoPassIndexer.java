@@ -15,7 +15,7 @@ import suite.util.To;
 
 public class TwoPassIndexer {
 
-	private static final int minimumWordLength = 3;
+	private static int minimumWordLength = 3;
 
 	private Set<String> dictionary = new HashSet<>();
 
@@ -80,7 +80,7 @@ public class TwoPassIndexer {
 		keys = new TreeSet<>(referencesByWord.keySet());
 	}
 
-	public Source<Reference> search(final String searchKey) {
+	public Source<Reference> search(String searchKey) {
 		dictionary.clear(); // Saves memory
 
 		Source<String> keySource = new Source<String>() {

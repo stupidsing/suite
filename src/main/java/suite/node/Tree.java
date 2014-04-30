@@ -42,11 +42,11 @@ public class Tree extends Node {
 		return result;
 	}
 
-	public static Iterable<Node> iter(final Node node) {
+	public static Iterable<Node> iter(Node node) {
 		return iter(node, TermOp.AND___);
 	}
 
-	public static Iterable<Node> iter(final Node node0, final Operator operator) {
+	public static Iterable<Node> iter(Node node0, Operator operator) {
 		return Util.iter(new Iterator<Node>() {
 			private Tree tree = decompose(node0, operator);
 

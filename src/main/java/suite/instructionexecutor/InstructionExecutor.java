@@ -22,8 +22,8 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionExecutor implements AutoCloseable {
 
-	private static final int stackSize = 16384;
-	private static final boolean debug = false;
+	private static int stackSize = 16384;
+	private static boolean debug = false;
 
 	private Instruction instructions[];
 	private int unwrapEntryPoint;

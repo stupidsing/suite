@@ -36,7 +36,7 @@ public class FunUtil {
 		}
 	}
 
-	public static <T> Source<T> concat(final Source<Source<T>> source) {
+	public static <T> Source<T> concat(Source<Source<T>> source) {
 		return new Source<T>() {
 			private Source<T> source0 = nullSource();
 
@@ -49,7 +49,7 @@ public class FunUtil {
 		};
 	}
 
-	public static <T> Source<T> cons(final T t, final Source<T> source) {
+	public static <T> Source<T> cons(T t, Source<T> source) {
 		return new Source<T>() {
 			private boolean isFirst = true;
 
@@ -64,7 +64,7 @@ public class FunUtil {
 		};
 	}
 
-	public static <T> Source<T> filter(final Fun<T, Boolean> fun, final Source<T> source) {
+	public static <T> Source<T> filter(Fun<T, Boolean> fun, Source<T> source) {
 		return new Source<T>() {
 			public T source() {
 				T t = null;
@@ -82,7 +82,7 @@ public class FunUtil {
 		return init;
 	}
 
-	public static <T> Iterator<T> iterator(final Source<T> source) {
+	public static <T> Iterator<T> iterator(Source<T> source) {
 		return new Iterator<T>() {
 			private T next = null;
 
@@ -108,7 +108,7 @@ public class FunUtil {
 		return Util.iter(iterator(source));
 	}
 
-	public static <T0, T1> Source<T1> map(final Fun<T0, T1> fun, final Source<T0> source) {
+	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun, Source<T0> source) {
 		return new Source<T1>() {
 			public T1 source() {
 				T0 e = source.source();
@@ -131,21 +131,21 @@ public class FunUtil {
 	/**
 	 * Sucks data from a sink and produce into a source.
 	 */
-	public static <T> Source<T> suck(final Sink<Sink<T>> fun) {
+	public static <T> Source<T> suck(Sink<Sink<T>> fun) {
 
 		// Unfortunately the synchronous queue class do not support null, we
 		// have to use a special object to denote end of data. Thus the queue
 		// needs to be of type Object.
-		final Object eod = new Object();
-		final SynchronousQueue<Object> queue = new SynchronousQueue<>();
+		Object eod = new Object();
+		SynchronousQueue<Object> queue = new SynchronousQueue<>();
 
-		final Sink<T> enqueue = new Sink<T>() {
+		Sink<T> enqueue = new Sink<T>() {
 			public void sink(T t) {
 				enqueue(queue, t);
 			}
 		};
 
-		final Thread thread = new Thread() {
+		Thread thread = new Thread() {
 			public void run() {
 				try {
 					fun.sink(enqueue);

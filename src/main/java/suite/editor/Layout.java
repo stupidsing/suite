@@ -21,7 +21,7 @@ public class Layout {
 
 	public static class Vector {
 		public int x, y;
-		public static final Vector ORIGIN = new Vector(0, 0);
+		public static Vector ORIGIN = new Vector(0, 0);
 
 		public Vector(Orientation orientation, int w, int h) {
 			this(orientation == Orientation.HORIZONTAL ? w : h, orientation == Orientation.HORIZONTAL ? h : w);

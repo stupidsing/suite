@@ -35,13 +35,13 @@ import suite.node.parser.IterativeParser;
 public class Suite {
 
 	// Compilation defaults
-	public static final boolean isTrace = false;
-	public static final boolean isDumpCode = false;
-	public static final List<String> libraries = Arrays.asList("STANDARD");
-	public static final TraceLevel traceLevel = TraceLevel.SIMPLE;
+	public static boolean isTrace = false;
+	public static boolean isDumpCode = false;
+	public static List<String> libraries = Arrays.asList("STANDARD");
+	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
-	public static final Set<String> tracePredicates = null;
-	public static final Set<String> noTracePredicates = new HashSet<>(Arrays.asList("member", "replace"));
+	public static Set<String> tracePredicates = null;
+	public static Set<String> noTracePredicates = new HashSet<>(Arrays.asList("member", "replace"));
 
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();

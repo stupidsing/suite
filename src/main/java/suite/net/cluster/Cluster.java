@@ -63,7 +63,7 @@ public class Cluster {
 		}
 	}
 
-	public Cluster(final String me, Map<String, InetSocketAddress> peers) throws IOException {
+	public Cluster(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
 		this.peers = peers;
 		probe = new ClusterProbe(me, peers);

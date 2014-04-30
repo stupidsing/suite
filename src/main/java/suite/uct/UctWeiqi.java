@@ -19,8 +19,8 @@ import suite.weiqi.Weiqi.Occupation;
 public class UctWeiqi {
 
 	public static class Visitor implements UctVisitor<Coordinate> {
-		private final GameSet gameSet;
-		private final Board board;
+		private GameSet gameSet;
+		private Board board;
 
 		private Visitor(GameSet gameSet) {
 			this.gameSet = gameSet;

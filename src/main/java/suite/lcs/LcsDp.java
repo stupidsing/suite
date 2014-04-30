@@ -17,9 +17,9 @@ import suite.util.FunUtil.Source;
  */
 public class LcsDp<T> {
 
-	private final Node emptyNode = new Node(0, FunUtil.<T> nullSource());
+	private Node emptyNode = new Node(0, FunUtil.<T> nullSource());
 
-	private final Comparator<Node> comparator = new Comparator<Node>() {
+	private Comparator<Node> comparator = new Comparator<Node>() {
 		public int compare(Node node0, Node node1) {
 			return node0.length - node1.length;
 		}

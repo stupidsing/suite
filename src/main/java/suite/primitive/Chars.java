@@ -12,12 +12,12 @@ public class Chars implements Iterable<Character> {
 	private char cs[]; // Immutable
 	private int start, end;
 
-	private static final char emptyCharArray[] = new char[0];
-	private static final int reallocSize = 65536;
+	private static char emptyCharArray[] = new char[0];
+	private static int reallocSize = 65536;
 
-	public static final Chars emptyChars = new Chars(emptyCharArray);
+	public static Chars emptyChars = new Chars(emptyCharArray);
 
-	public static final Comparator<Chars> comparator = new Comparator<Chars>() {
+	public static Comparator<Chars> comparator = new Comparator<Chars>() {
 		public int compare(Chars chars0, Chars chars1) {
 			int start0 = chars0.start, start1 = chars1.start;
 			int size0 = chars0.size(), size1 = chars1.size(), minSize = Math.min(size0, size1);

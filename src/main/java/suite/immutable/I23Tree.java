@@ -64,7 +64,7 @@ public class I23Tree<T> implements ITree<T> {
 		return source(root, null, null);
 	}
 
-	private Source<T> source(final List<Slot> node, final T start, final T end) {
+	private Source<T> source(List<Slot> node, T start, T end) {
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 

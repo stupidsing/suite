@@ -21,7 +21,7 @@ import suite.stm.Stm.TransactionStatus;
  */
 public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTransaction> {
 
-	private static final int nullTimestamp = -1;
+	private static int nullTimestamp = -1;
 
 	private AtomicInteger clock = new AtomicInteger();
 

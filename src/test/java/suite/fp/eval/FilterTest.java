@@ -32,7 +32,7 @@ public class FilterTest {
 	// of Closure, Frame, Tree or Node exists.
 	@Test
 	public void testMemoryUsage() {
-		final int size = 524288;
+		int size = 524288;
 
 		Reader reader = new Reader() {
 			private int count = size;

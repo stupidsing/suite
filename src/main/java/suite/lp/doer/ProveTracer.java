@@ -64,11 +64,11 @@ public class ProveTracer {
 		Node query1 = new Cloner().clone(query);
 
 		if (currentDepth < 64) {
-			final Record record0 = currentRecord;
-			final int depth0 = currentDepth;
-			final Record record = new Record(record0, query1, currentDepth + 1);
+			Record record0 = currentRecord;
+			int depth0 = currentDepth;
+			Record record = new Record(record0, query1, currentDepth + 1);
 
-			final Data<Source<Boolean>> enter = new Data<Source<Boolean>>(new Source<Boolean>() {
+			Data<Source<Boolean>> enter = new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
 					currentRecord = record;
 					currentDepth = record.depth;
@@ -78,7 +78,7 @@ public class ProveTracer {
 				}
 			});
 
-			final Data<Source<Boolean>> leaveOk = new Data<Source<Boolean>>(new Source<Boolean>() {
+			Data<Source<Boolean>> leaveOk = new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
 					currentRecord = record0;
 					currentDepth = depth0;
@@ -87,7 +87,7 @@ public class ProveTracer {
 				}
 			});
 
-			final Data<Source<Boolean>> leaveFail = new Data<Source<Boolean>>(new Source<Boolean>() {
+			Data<Source<Boolean>> leaveFail = new Data<Source<Boolean>>(new Source<Boolean>() {
 				public Boolean source() {
 					currentRecord = record0;
 					currentDepth = depth0;

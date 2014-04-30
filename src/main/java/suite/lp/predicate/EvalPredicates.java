@@ -45,21 +45,21 @@ public class EvalPredicates {
 
 	public static class Clone implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return prover.bind(new Cloner().clone(params[0]), params[1]);
 		}
 	}
 
 	public static class ComplexityPredicate implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return prover.bind(Int.create(new Complexity().complexity(params[0])), params[1]);
 		}
 	}
 
 	public static class Contains implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return new Rewriter(params[0]).contains(params[1]);
 		}
 	}
@@ -84,16 +84,16 @@ public class EvalPredicates {
 
 	public static class EvalFun implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return prover.bind(Suite.evaluateFun(Suite.fcc(params[0], true)), params[1]);
 		}
 	}
 
 	public static class EvalJs implements SystemPredicate {
-		private static final ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
+		private static ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			String js = Formatter.display(params[0]);
 			Object result;
 
@@ -111,7 +111,7 @@ public class EvalPredicates {
 
 	public static class Generalize implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Generalizer generalizer = new Generalizer();
 			return prover.bind(generalizer.generalize(params[0]), params[1]);
 		}
@@ -119,7 +119,7 @@ public class EvalPredicates {
 
 	public static class Hash implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return prover.bind(Int.create(params[0].hashCode()), params[1]);
 		}
 	}
@@ -132,7 +132,7 @@ public class EvalPredicates {
 
 	public static class Let implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			int result = evaluate(params[1]);
 			return prover.bind(Int.create(result), params[0]);
 		}
@@ -208,10 +208,10 @@ public class EvalPredicates {
 	}
 
 	public static class RandomPredicate implements SystemPredicate {
-		private static final java.util.Random random = new Random();
+		private static java.util.Random random = new Random();
 
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Int p0 = (Int) params[0].finalNode();
 			int randomNumber = random.nextInt(p0.getNumber());
 			return prover.bind(params[1], Int.create(randomNumber));
@@ -220,28 +220,28 @@ public class EvalPredicates {
 
 	public static class Replace implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 4);
+			Node params[] = Tree.getParameters(ps, 4);
 			return prover.bind(new Rewriter(params[0], params[1]).replace(params[2]), params[3]);
 		}
 	}
 
 	public static class Rewrite implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 4);
+			Node params[] = Tree.getParameters(ps, 4);
 			return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
 		}
 	}
 
 	public static class Same implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return params[0].finalNode() == params[1].finalNode();
 		}
 	}
 
 	public static class Specialize implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			return prover.bind(new Specializer().specialize(params[0]), params[1]);
 		}
 	}
@@ -257,7 +257,7 @@ public class EvalPredicates {
 
 	public static class TreePredicate implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 4);
+			Node params[] = Tree.getParameters(ps, 4);
 			Node p = params[0].finalNode();
 			Node p1 = params[1];
 			Node p2 = params[2].finalNode();

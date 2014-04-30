@@ -215,7 +215,7 @@ public class RayTracerTest {
 		return material(color, true);
 	}
 
-	private Material material(final Vector color, final boolean isTransparent) {
+	private Material material(Vector color, boolean isTransparent) {
 		return new Material() {
 			public Vector surfaceColor() {
 				return color;

@@ -44,9 +44,9 @@ public class LcsBfs<T> {
 		}
 	}
 
-	public List<T> lcs(final List<T> l0, final List<T> l1) {
-		final int size0 = l0.size();
-		final int size1 = l1.size();
+	public List<T> lcs(List<T> l0, List<T> l1) {
+		int size0 = l0.size();
+		int size1 = l1.size();
 
 		Node node = Search.breadthFirst(new Game<Node>() {
 			public List<Node> generate(Node node) {

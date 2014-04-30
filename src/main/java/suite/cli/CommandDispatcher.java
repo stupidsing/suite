@@ -76,7 +76,7 @@ public class CommandDispatcher {
 		return code;
 	}
 
-	public boolean dispatchCommand(final String input, final Writer writer) throws IOException {
+	public boolean dispatchCommand(String input, Writer writer) throws IOException {
 		return !Util.isBlank(input) ? dispatchCommand0(input, writer) : true;
 	}
 
@@ -91,7 +91,7 @@ public class CommandDispatcher {
 		if (input.endsWith("#"))
 			input = Util.substr(input, 0, -1);
 
-		final int count[] = { 0 };
+		int count[] = { 0 };
 		Node node = Suite.parse(input.trim());
 
 		switch (type) {
@@ -137,7 +137,7 @@ public class CommandDispatcher {
 			code = query(builderLevel2, ruleSet, node);
 			break;
 		case QUERYELABORATE:
-			final Generalizer generalizer = new Generalizer();
+			Generalizer generalizer = new Generalizer();
 			node = generalizer.generalize(node);
 			Prover prover = new Prover(opt.pc(ruleSet));
 

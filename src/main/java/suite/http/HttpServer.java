@@ -33,7 +33,7 @@ public class HttpServer {
 		public void handle(HttpRequest request, HttpResponse response) throws IOException;
 	}
 
-	public void run(final Handler handler) throws IOException {
+	public void run(Handler handler) throws IOException {
 		SocketUtil.listen(8051, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				HashMap<String, String> responseHeaders = new HashMap<String, String>();
@@ -106,7 +106,7 @@ public class HttpServer {
 		});
 	}
 
-	private InputStream sizeLimitedInputStream(final InputStream is, final int size) {
+	private InputStream sizeLimitedInputStream(InputStream is, int size) {
 		return new BasicInputStream(is) {
 			private int remaining = size;
 

@@ -120,7 +120,7 @@ public class EditorController {
 		DefaultListModel<String> listModel = view.getListModel();
 		listModel.clear();
 
-		final String text = view.getSearchTextField().getText();
+		String text = view.getSearchTextField().getText();
 
 		if (!text.isEmpty()) {
 			Source<File> files0 = FileUtil.findFiles(new File("."));
@@ -205,10 +205,10 @@ public class EditorController {
 		return isFocusOwner;
 	}
 
-	private void run(final EditorView view, final Fun<String, String> fun) {
+	private void run(EditorView view, Fun<String, String> fun) {
 		JEditorPane editor = view.getEditor();
 		String selectedText = editor.getSelectedText();
-		final String text = selectedText != null ? selectedText : editor.getText();
+		String text = selectedText != null ? selectedText : editor.getText();
 
 		if (runThread == null || !runThread.isAlive()) {
 			runThread = new Thread() {

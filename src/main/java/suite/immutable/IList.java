@@ -14,7 +14,7 @@ import suite.util.FunUtil.Source;
  */
 public class IList<T> implements Iterable<T> {
 
-	private final static IList<?> end = new IList<Object>(null, null);
+	private static IList<?> end = new IList<Object>(null, null);
 
 	private T head;
 	private IList<T> tail;

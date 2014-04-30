@@ -19,9 +19,9 @@ import suite.util.Util;
 
 public class Generalizer {
 
-	private static final String wildcardPrefix = "_";
-	public static final String variablePrefix = ".";
-	private static final String cutName = "!";
+	private static String wildcardPrefix = "_";
+	public static String variablePrefix = ".";
+	private static String cutName = "!";
 
 	private Map<Node, Reference> variables = new HashMap<>();
 	private Node cut;
@@ -45,8 +45,8 @@ public class Generalizer {
 				else if (isCut(name) && cut != null)
 					right = cut;
 			} else if (right instanceof Tree) {
-				final Tree rightTree = (Tree) right;
-				final Operator rightOp = rightTree.getOperator();
+				Tree rightTree = (Tree) right;
+				Operator rightOp = rightTree.getOperator();
 
 				// Delay generalizing for performance
 				if (rightOp == TermOp.OR____)

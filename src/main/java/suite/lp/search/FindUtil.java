@@ -33,9 +33,9 @@ public class FindUtil {
 	/**
 	 * Does find in background.
 	 */
-	private static Source<Node> collect(final Finder finder, final Source<Node> in) {
+	private static Source<Node> collect(Finder finder, Source<Node> in) {
 		Sink<Sink<Node>> fun = new Sink<Sink<Node>>() {
-			public void sink(final Sink<Node> sink0) {
+			public void sink(Sink<Node> sink0) {
 				Sink<Node> sink1 = new Sink<Node>() {
 					public void sink(Node node) {
 						sink0.sink(new Cloner().clone(node));

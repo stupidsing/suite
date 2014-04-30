@@ -6,9 +6,9 @@ public class Int extends Node {
 
 	private int number;
 
-	private static final int poolLo = -256;
-	private static final int poolHi = 256;
-	private static final Int pool[] = new Int[poolHi - poolLo];
+	private static int poolLo = -256;
+	private static int poolHi = 256;
+	private static Int pool[] = new Int[poolHi - poolLo];
 
 	private Int(int number) {
 		this.number = number;

@@ -14,7 +14,7 @@ import suite.util.Util;
 
 public class Matcher {
 
-	private final Source<State> noResult = FunUtil.nullSource();
+	private Source<State> noResult = FunUtil.nullSource();
 
 	private class State {
 		private String input;
@@ -70,11 +70,11 @@ public class Matcher {
 	}
 
 	private Source<State> applyPattern(Source<State> source, String pattern) {
-		for (final char ch : Util.chars(pattern))
+		for (char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-					public Source<State> apply(final State state) {
+					public Source<State> apply(State state) {
 						return new Source<State>() {
 							private int start = state.pos;
 							private int end = state.pos;

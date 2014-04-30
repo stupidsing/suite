@@ -13,7 +13,7 @@ import suite.node.Tree;
 
 public class Comparer implements Comparator<Node> {
 
-	public static final Comparer comparer = new Comparer();
+	public static Comparer comparer = new Comparer();
 
 	private static Map<Class<? extends Node>, Integer> order = new HashMap<>();
 	static {

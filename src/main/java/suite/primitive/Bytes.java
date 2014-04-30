@@ -13,12 +13,12 @@ public class Bytes implements Iterable<Byte> {
 	private byte bs[]; // Immutable
 	private int start, end;
 
-	private static final byte emptyByteArray[] = new byte[0];
-	private static final int reallocSize = 65536;
+	private static byte emptyByteArray[] = new byte[0];
+	private static int reallocSize = 65536;
 
-	public static final Bytes emptyBytes = new Bytes(emptyByteArray);
+	public static Bytes emptyBytes = new Bytes(emptyByteArray);
 
-	public static final Comparator<Bytes> comparator = new Comparator<Bytes>() {
+	public static Comparator<Bytes> comparator = new Comparator<Bytes>() {
 		public int compare(Bytes bytes0, Bytes bytes1) {
 			int start0 = bytes0.start, start1 = bytes1.start;
 			int size0 = bytes0.size(), size1 = bytes1.size(), minSize = Math.min(size0, size1);

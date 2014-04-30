@@ -59,7 +59,7 @@ public class Ssh {
 		}
 	}
 
-	private Session createSession(String host, int port, String user, final String password) throws JSchException {
+	private Session createSession(String host, int port, String user, String password) throws JSchException {
 		JSch jsch = new JSch();
 
 		Properties config = new Properties();

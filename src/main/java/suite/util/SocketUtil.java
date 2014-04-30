@@ -21,7 +21,7 @@ public class SocketUtil {
 		public void serve(Reader reader, PrintWriter writer) throws IOException;
 	}
 
-	public static void listen(int port, final Rw rw) throws IOException {
+	public static void listen(int port, Rw rw) throws IOException {
 		listen(port, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				try (Reader reader = new BufferedReader(new InputStreamReader(is)); PrintWriter writer = new PrintWriter(os)) {
@@ -31,12 +31,12 @@ public class SocketUtil {
 		});
 	}
 
-	public static void listen(int port, final Io io) throws IOException {
+	public static void listen(int port, Io io) throws IOException {
 		ThreadPoolExecutor executor = Util.createExecutor();
 
 		try (ServerSocket server = new ServerSocket(port)) {
 			while (true) {
-				final Socket socket = server.accept();
+				Socket socket = server.accept();
 
 				executor.execute(new Runnable() {
 					public void run() {

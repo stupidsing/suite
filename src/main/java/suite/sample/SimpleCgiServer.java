@@ -28,7 +28,7 @@ public class SimpleCgiServer {
 		});
 	}
 
-	private void run(final Handler handler) throws IOException {
+	private void run(Handler handler) throws IOException {
 		SocketUtil.listen(4000, new Io() {
 			public void serve(InputStream is, OutputStream os) throws IOException {
 				Map<String, String> headers = readHeaders(is);

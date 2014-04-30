@@ -22,7 +22,7 @@ public class MonadIntrinsics {
 
 	public static class Popen implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			final Fun<Node, Node> unwrapper = bridge.getUnwrapper();
+			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			List<String> list = new ArrayList<>();
 
 			Source<Node> source = ExpandUtil.expandList(unwrapper, inputs.get(0));
@@ -31,10 +31,10 @@ public class MonadIntrinsics {
 			while ((node = source.source()) != null)
 				list.add(ExpandUtil.expandString(unwrapper, node));
 
-			final Node in = inputs.get(1);
+			Node in = inputs.get(1);
 
 			try {
-				final Process process = Runtime.getRuntime().exec(list.toArray(new String[0]));
+				Process process = Runtime.getRuntime().exec(list.toArray(new String[0]));
 				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
 				Node result = new Data<>(new IndexedReader(isr));
 

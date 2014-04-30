@@ -234,7 +234,7 @@ public class IbTree<Key> implements Closeable {
 		 * Replaces a value with another without payload. For dictionary cases
 		 * to replace stored value of the same key.
 		 */
-		public void put(final Key key) {
+		public void put(Key key) {
 			update(key, new Slot(SlotType.TERMINAL, key, null));
 		}
 
@@ -259,7 +259,7 @@ public class IbTree<Key> implements Closeable {
 			root = createRootPage(delete(read(root).slots, key));
 		}
 
-		private void update(Key key, final Slot slot1) {
+		private void update(Key key, Slot slot1) {
 			update(key, new Fun<Slot, Slot>() {
 				public Slot apply(Slot slot) {
 					return slot1;
@@ -460,7 +460,7 @@ public class IbTree<Key> implements Closeable {
 	 *         split to occur. Therefore 1 page should be at its maximum size.
 	 *         This adds in half of branch factor minus 1 of nodes.
 	 * 
-	 *         Fourth, the final result needs to be minus by 1 to exclude the
+	 *         Fourth, the result needs to be minus by 1 to exclude the
 	 *         guard node at rightmost of the tree.
 	 * 
 	 *         Fifth, most transactions would acquire some new pages before old
@@ -512,7 +512,7 @@ public class IbTree<Key> implements Closeable {
 			return null;
 	}
 
-	private Source<Slot> source0(Integer pointer, final Key start, final Key end) {
+	private Source<Slot> source0(Integer pointer, Key start, Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
@@ -570,7 +570,7 @@ public class IbTree<Key> implements Closeable {
 	}
 
 	private Serializer<Page> createPageSerializer() {
-		final Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
+		Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
 			public Slot read(ByteBuffer buffer) {
 				SlotType type = SlotType.values()[buffer.get()];
 				Key pivot = serializer.read(buffer);

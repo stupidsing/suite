@@ -15,7 +15,7 @@ import suite.util.SerializeUtil;
 
 public class B_TreeTest {
 
-	private static final int nKeys = 1024;
+	private static int nKeys = 1024;
 	private Integer keys[] = new Integer[nKeys];
 
 	private B_Tree<Integer, String> b_tree;

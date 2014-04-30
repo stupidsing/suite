@@ -72,7 +72,7 @@ public class TelnetServer {
 			// Kills the process if client closes the stream;
 			// closes the stream if process is terminated/ended output.
 			// Therefore we need the interruption mechanism.
-			final Process process = Runtime.getRuntime().exec("bash");
+			Process process = Runtime.getRuntime().exec("bash");
 			InputStream pis = process.getInputStream();
 			InputStream pes = process.getErrorStream();
 			OutputStream pos = process.getOutputStream();

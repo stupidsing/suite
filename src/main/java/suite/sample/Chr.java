@@ -99,7 +99,7 @@ public class Chr {
 		return nodes1;
 	}
 
-	private State chr(final State state) {
+	private State chr(State state) {
 		return FunUtil.concat(map(To.source(rules), new Fun<Rule, Source<State>>() {
 			public Source<State> apply(Rule rule) {
 				return chr(state, rule);
@@ -107,9 +107,9 @@ public class Chr {
 		})).source();
 	}
 
-	private Source<State> chr(final State state, Rule rule) {
+	private Source<State> chr(State state, Rule rule) {
 		Generalizer generalizer = new Generalizer();
-		final Journal journal = new Journal();
+		Journal journal = new Journal();
 		Source<State> states = To.source(state);
 
 		for (Node if_ : rule.ifs)
@@ -126,12 +126,12 @@ public class Chr {
 		return states;
 	}
 
-	private Source<State> chrIf(Source<State> states, final Journal journal, final Node if_) {
-		final Prototype prototype = getPrototype(if_);
+	private Source<State> chrIf(Source<State> states, Journal journal, Node if_) {
+		Prototype prototype = getPrototype(if_);
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
-			public Source<State> apply(final State state) {
-				final ISet<Node> facts = getFacts(state, prototype);
+			public Source<State> apply(State state) {
+				ISet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 
 				Source<Node> bindedIfs = filter(facts.source(), bindFun);
@@ -144,11 +144,11 @@ public class Chr {
 		}));
 	}
 
-	private Source<State> chrGiven(Source<State> states, final Journal journal, final Node given) {
-		final Prototype prototype = getPrototype(given);
+	private Source<State> chrGiven(Source<State> states, Journal journal, Node given) {
+		Prototype prototype = getPrototype(given);
 
 		return FunUtil.concat(map(states, new Fun<State, Source<State>>() {
-			public Source<State> apply(final State state) {
+			public Source<State> apply(State state) {
 				ISet<Node> facts = getFacts(state, prototype);
 				Fun<Node, Boolean> bindFun = bindFun(journal, given);
 				boolean isMatch = or(map(facts.source(), bindFun));
@@ -157,15 +157,15 @@ public class Chr {
 		}));
 	}
 
-	private Source<State> chrThen(Source<State> states, final Node then) {
+	private Source<State> chrThen(Source<State> states, Node then) {
 		Generalizer generalizer = new Generalizer();
 		Node a = atom(".a"), b = atom(".b");
 
 		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {
 
 			// Built-in syntactic equality
-			final Reference from = generalizer.getVariable(a);
-			final Reference to = generalizer.getVariable(b);
+			Reference from = generalizer.getVariable(a);
+			Reference to = generalizer.getVariable(b);
 
 			states = map(states, new Fun<State, State>() {
 				public State apply(State state) {
@@ -193,7 +193,7 @@ public class Chr {
 		});
 	}
 
-	private Source<State> chrWhen(Source<State> states, final Node when) {
+	private Source<State> chrWhen(Source<State> states, Node when) {
 		return filter(states, new Fun<State, Boolean>() {
 			public Boolean apply(State state) {
 				return prover.prove(when);
@@ -201,8 +201,8 @@ public class Chr {
 		});
 	}
 
-	private Fun<Node, Boolean> bindFun(final Journal journal, final Node node0) {
-		final int pit = journal.getPointInTime();
+	private Fun<Node, Boolean> bindFun(Journal journal, Node node0) {
+		int pit = journal.getPointInTime();
 
 		return new Fun<Node, Boolean>() {
 			public Boolean apply(Node node1) {

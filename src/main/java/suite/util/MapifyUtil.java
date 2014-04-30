@@ -73,7 +73,7 @@ public class MapifyUtil {
 			return null;
 	}
 
-	private Fun<Object, Object> getMapifier(final Class<?> clazz) {
+	private Fun<Object, Object> getMapifier(Class<?> clazz) {
 		Fun<Object, Object> mapifier = mapifiers.get(clazz);
 		if (mapifier == null) {
 			mapifiers.put(clazz, new Fun<Object, Object>() {
@@ -86,7 +86,7 @@ public class MapifyUtil {
 		return mapifier;
 	}
 
-	private Fun<Object, Object> getUnmapifier(final Class<?> clazz) {
+	private Fun<Object, Object> getUnmapifier(Class<?> clazz) {
 		Fun<Object, Object> unmapifier = unmapifiers.get(clazz);
 		if (unmapifier == null) {
 			unmapifiers.put(clazz, new Fun<Object, Object>() {
@@ -106,7 +106,7 @@ public class MapifyUtil {
 			if (isDirectlyMapped(clazz))
 				return id;
 			else if (clazz.isArray()) {
-				final Fun<Object, Object> mapifier1 = createMapifier0(clazz.getComponentType());
+				Fun<Object, Object> mapifier1 = createMapifier0(clazz.getComponentType());
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<Object, Object> map = newMap();
@@ -117,7 +117,7 @@ public class MapifyUtil {
 					}
 				};
 			} else {
-				final List<FieldInfo> fieldInfos = getFieldInfos(clazz);
+				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<Object, Object> map = newMap();
@@ -138,7 +138,7 @@ public class MapifyUtil {
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				final Fun<Object, Object> mapifier1 = createMapifier0(typeArguments[0]);
+				Fun<Object, Object> mapifier1 = createMapifier0(typeArguments[0]);
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<Object, Object> map = newMap();
@@ -149,8 +149,8 @@ public class MapifyUtil {
 					}
 				};
 			} else if (mapClasses.contains(clazz)) {
-				final Fun<Object, Object> keyMapifier = createMapifier0(typeArguments[0]);
-				final Fun<Object, Object> valueMapifier = createMapifier0(typeArguments[1]);
+				Fun<Object, Object> keyMapifier = createMapifier0(typeArguments[0]);
+				Fun<Object, Object> valueMapifier = createMapifier0(typeArguments[1]);
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<Object, Object> map = newMap();
@@ -168,12 +168,12 @@ public class MapifyUtil {
 
 	private Fun<Object, Object> createUnmapifier0(Type type) {
 		if (type instanceof Class) {
-			final Class<?> clazz = (Class<?>) type;
+			Class<?> clazz = (Class<?>) type;
 
 			if (isDirectlyMapped(clazz))
 				return id;
 			else if (clazz.isArray()) {
-				final Fun<Object, Object> unmapifier1 = createUnmapifier0(clazz.getComponentType());
+				Fun<Object, Object> unmapifier1 = createUnmapifier0(clazz.getComponentType());
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<?, ?> map = (Map<?, ?>) object;
@@ -185,7 +185,7 @@ public class MapifyUtil {
 					}
 				};
 			} else {
-				final List<FieldInfo> fieldInfos = getFieldInfos(clazz);
+				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<?, ?> map = (Map<?, ?>) object;
@@ -204,10 +204,10 @@ public class MapifyUtil {
 			ParameterizedType pt = (ParameterizedType) type;
 			Type rawType = pt.getRawType();
 			Type typeArguments[] = pt.getActualTypeArguments();
-			final Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				final Fun<Object, Object> unmapifier1 = createUnmapifier0(typeArguments[0]);
+				Fun<Object, Object> unmapifier1 = createUnmapifier0(typeArguments[0]);
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<?, ?> map = (Map<?, ?>) object;
@@ -220,8 +220,8 @@ public class MapifyUtil {
 					}
 				};
 			} else if (mapClasses.contains(clazz)) {
-				final Fun<Object, Object> keyUnmapifier = createUnmapifier0(typeArguments[0]);
-				final Fun<Object, Object> valueUnmapifier = createUnmapifier0(typeArguments[1]);
+				Fun<Object, Object> keyUnmapifier = createUnmapifier0(typeArguments[0]);
+				Fun<Object, Object> valueUnmapifier = createUnmapifier0(typeArguments[1]);
 				return new Fun<Object, Object>() {
 					public Object apply(Object object) {
 						Map<?, ?> map = (Map<?, ?>) object;
@@ -268,8 +268,8 @@ public class MapifyUtil {
 	}
 
 	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		final List<Field> fields = inspectUtil.getFields(clazz);
-		final List<FieldInfo> fieldInfos = new ArrayList<>();
+		List<Field> fields = inspectUtil.getFields(clazz);
+		List<FieldInfo> fieldInfos = new ArrayList<>();
 
 		for (Field field : fields) {
 			Type type = field.getGenericType();

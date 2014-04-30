@@ -17,7 +17,7 @@ public class FormatPredicates {
 
 	public static class CharAscii implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode();
 			Node p1 = params[0].finalNode();
 			if (p0 instanceof Str)
@@ -70,7 +70,7 @@ public class FormatPredicates {
 
 	public static class Parse implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(Suite.parse(Formatter.display(p0)), p1);
 		}
@@ -88,7 +88,7 @@ public class FormatPredicates {
 		private ReversePolish rpn = new ReversePolish();
 
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			if (p1 instanceof Str)
 				return prover.bind(p0, rpn.fromRpn(((Str) p1).getValue()));
@@ -99,7 +99,7 @@ public class FormatPredicates {
 
 	public static class StartsWith implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 
 			return p0 instanceof Atom && p1 instanceof Atom //
@@ -142,7 +142,7 @@ public class FormatPredicates {
 
 	public static class ToAtom implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(p1, Atom.create(Formatter.display(p0)));
 		}
@@ -150,7 +150,7 @@ public class FormatPredicates {
 
 	public static class ToDumpString implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(p1, new Str(Formatter.dump(p0)));
 		}
@@ -158,7 +158,7 @@ public class FormatPredicates {
 
 	public static class ToInt implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(p1, Int.create(Formatter.display(p0).charAt(0)));
 		}
@@ -166,7 +166,7 @@ public class FormatPredicates {
 
 	public static class ToString implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(p1, new Str(Formatter.display(p0)));
 		}
@@ -174,7 +174,7 @@ public class FormatPredicates {
 
 	public static class Treeize implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(p1, new Str(Formatter.treeize(p0)));
 		}
@@ -182,7 +182,7 @@ public class FormatPredicates {
 
 	public static class Trim implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			final Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(p1, new Str(Formatter.display(p0).trim()));
 		}

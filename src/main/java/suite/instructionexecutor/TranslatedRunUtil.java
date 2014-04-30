@@ -37,8 +37,8 @@ public class TranslatedRunUtil {
 		public Node node;
 	}
 
-	public static IntrinsicBridge getIntrinsicBridge(final TranslatedRunConfig config, final TranslatedRun translatedRun) {
-		final Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
+	public static IntrinsicBridge getIntrinsicBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
+		Fun<Node, Node> unwrapper = new Fun<Node, Node>() {
 			public Node apply(Node node) {
 				node = node.finalNode();
 				if (node instanceof Closure) {

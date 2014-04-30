@@ -11,11 +11,11 @@ public class Atom extends Node {
 
 	private String name;
 
-	public static final Atom NIL = create("");
-	public static final Atom TRUE = create("true");
-	public static final Atom FALSE = create("false");
+	public static Atom NIL = create("");
+	public static Atom TRUE = create("true");
+	public static Atom FALSE = create("false");
 
-	private static final AtomicInteger uniqueCounter = new AtomicInteger();
+	private static AtomicInteger uniqueCounter = new AtomicInteger();
 
 	private Atom(String name) {
 		this.name = name;

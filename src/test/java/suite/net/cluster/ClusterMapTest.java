@@ -18,7 +18,7 @@ import suite.util.Util;
 
 public class ClusterMapTest {
 
-	private static final Random random = new Random();
+	private static Random random = new Random();
 
 	@Test
 	public void testClusterMap() throws IOException {

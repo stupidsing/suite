@@ -28,7 +28,7 @@ import suite.util.Util;
  */
 public class SldResolution {
 
-	private static final Atom not = Atom.create("NOT");
+	private static Atom not = Atom.create("NOT");
 
 	public List<Node> resolve(Node node) {
 		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "pt.sl"));
@@ -48,10 +48,10 @@ public class SldResolution {
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
 
 		for (Node n1 : Tree.iter(n0, TermOp.AND___)) {
-			final List<Node> ors = To.list(Tree.iter(n1, TermOp.AND___));
+			List<Node> ors = To.list(Tree.iter(n1, TermOp.AND___));
 
 			for (int i = 0; i < ors.size(); i++) {
-				final int index = i;
+				int index = i;
 
 				orsMap.put(ors.get(index), new Source<List<Node>>() {
 					public List<Node> source() {

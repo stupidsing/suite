@@ -34,8 +34,8 @@ public enum TermOp implements Operator {
 	COLON_(":", Assoc.RIGHT), //
 	;
 
-	public final String name;
-	public final Assoc assoc;
+	public String name;
+	public Assoc assoc;
 	public int precedence;
 
 	static {

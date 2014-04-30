@@ -13,7 +13,7 @@ import java.io.Writer;
 
 public class Copy {
 
-	private static final int bufferSize = 4096;
+	private static int bufferSize = 4096;
 
 	public static <T> void array(T from[], int fromIndex, T to[], int toIndex, int size) {
 		if (size != 0)
@@ -62,7 +62,7 @@ public class Copy {
 		}
 	}
 
-	public static Thread streamByThread(final InputStream is, final OutputStream os) throws IOException {
+	public static Thread streamByThread(InputStream is, OutputStream os) throws IOException {
 		return new Thread() {
 			public void run() {
 				try (InputStream is_ = is; OutputStream os_ = os) {

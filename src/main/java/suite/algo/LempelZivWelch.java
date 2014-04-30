@@ -33,7 +33,7 @@ public class LempelZivWelch<Unit> {
 		this.units = units;
 	}
 
-	public Source<Integer> encode(final Source<Unit> in) {
+	public Source<Integer> encode(Source<Unit> in) {
 		return FunUtil.suck(new Sink<Sink<Integer>>() {
 			public void sink(Sink<Integer> sink) {
 				encode(in, sink);
@@ -41,7 +41,7 @@ public class LempelZivWelch<Unit> {
 		});
 	}
 
-	public Source<Unit> decode(final Source<Integer> in) {
+	public Source<Unit> decode(Source<Integer> in) {
 		return FunUtil.suck(new Sink<Sink<Unit>>() {
 			public void sink(Sink<Unit> sink) {
 				decode(in, sink);

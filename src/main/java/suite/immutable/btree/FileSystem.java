@@ -14,8 +14,8 @@ import suite.util.Util;
 
 public class FileSystem implements Closeable {
 
-	private static final byte DATAID = 64;
-	private static final byte SIZEID = 65;
+	private static byte DATAID = 64;
+	private static byte SIZEID = 65;
 
 	private int pageSize = 4096;
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
@@ -52,7 +52,7 @@ public class FileSystem implements Closeable {
 		txm.commit(ibTree.create());
 	}
 
-	public Bytes read(final Bytes name) {
+	public Bytes read(Bytes name) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		Bytes hash = keyUtil.hash(name);
 		Integer size = transaction.getData(key(hash, SIZEID, 0));
@@ -67,12 +67,12 @@ public class FileSystem implements Closeable {
 			return null;
 	}
 
-	public List<Bytes> list(final Bytes start, final Bytes end) {
+	public List<Bytes> list(Bytes start, Bytes end) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		return To.list(new FileSystemNameKeySet(transaction).list(start, end));
 	}
 
-	public void replace(final Bytes name, final Bytes bytes) {
+	public void replace(Bytes name, Bytes bytes) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(transaction);
 		Bytes hash = keyUtil.hash(name);
@@ -108,13 +108,13 @@ public class FileSystem implements Closeable {
 		txm.commit(transaction);
 	}
 
-	public void replace(final Bytes name, final int seq, final Bytes bytes) {
+	public void replace(Bytes name, int seq, Bytes bytes) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		transaction.put(key(keyUtil.hash(name), DATAID, seq), bytes);
 		txm.commit(transaction);
 	}
 
-	public void resize(final Bytes name, final int size1) {
+	public void resize(Bytes name, int size1) {
 		IbTree<Bytes>.Transaction transaction = txm.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);

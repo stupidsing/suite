@@ -9,12 +9,12 @@ import suite.node.Node;
 
 public class OlderFunTest {
 
-	private static final String concatList0 = "" //
+	private static String concatList0 = "" //
 			+ "define concat-list0 := split {h => t => \n" //
 			+ "    if-list {h} {h1 => t1 => h1; concat-list0 {t1; t}} {concat-list0 {t}} \n" //
 			+ "} >> \n";
 
-	private static final String filter0 = "" //
+	private static String filter0 = "" //
 			+ "define filter0 := fun => \n" //
 			+ "    split {h => t => \n" //
 			+ "        define others := filter0 {fun} {t} >> \n" //
@@ -22,7 +22,7 @@ public class OlderFunTest {
 			+ "    } \n" //
 			+ ">> \n";
 
-	private static final String ifTree = "" //
+	private static String ifTree = "" //
 			+ "define if-list := list => f1 => f2 => \n" //
 			+ "    if (is-list {list}) then ( \n" //
 			+ "        f1 {head {list}} {tail {list}} \n" //
@@ -30,9 +30,9 @@ public class OlderFunTest {
 			+ "    else f2 \n" //
 			+ ">> \n";
 
-	private static final String map0 = "define map0 := fun => split {h => t => fun {h}; map0 {fun} {t}} >> \n";
+	private static String map0 = "define map0 := fun => split {h => t => fun {h}; map0 {fun} {t}} >> \n";
 
-	private static final String split = "define split := fun => list => if-list {list} {fun} {} >> \n";
+	private static String split = "define split := fun => list => if-list {list} {fun} {} >> \n";
 
 	@Test
 	public void testConcat() {

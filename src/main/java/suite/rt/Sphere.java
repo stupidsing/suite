@@ -31,7 +31,7 @@ public class Sphere implements RtObject {
 	}
 
 	@Override
-	public List<RayHit> hit(final Ray ray) {
+	public List<RayHit> hit(Ray ray) {
 		Vector start0 = Vector.sub(ray.startPoint, centre);
 		float a = Vector.normsq(ray.dir);
 		float b = 2 * Vector.dot(start0, ray.dir);
@@ -49,14 +49,14 @@ public class Sphere implements RtObject {
 		return rayHits;
 	}
 
-	private RayHit rayHit(final Ray ray, final float advance) {
+	private RayHit rayHit(Ray ray, float advance) {
 		return new RayHit() {
 			public float advance() {
 				return advance;
 			}
 
 			public RayIntersection intersection() {
-				final Vector hitPoint = ray.hitPoint(advance);
+				Vector hitPoint = ray.hitPoint(advance);
 
 				return new RayIntersection() {
 					public Vector hitPoint() {

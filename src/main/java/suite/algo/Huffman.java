@@ -67,7 +67,7 @@ public class Huffman<Unit> {
 	private Huffman() {
 	}
 
-	private Source<Boolean> encode(final Source<Unit> source) {
+	private Source<Boolean> encode(Source<Unit> source) {
 		return new Source<Boolean>() {
 			private Deque<Boolean> stack = new ArrayDeque<>();
 
@@ -88,7 +88,7 @@ public class Huffman<Unit> {
 		};
 	}
 
-	private Source<Unit> decode(final Source<Boolean> source) {
+	private Source<Unit> decode(Source<Boolean> source) {
 		return new Source<Unit>() {
 			public Unit source() {
 				Boolean b;

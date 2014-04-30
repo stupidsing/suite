@@ -20,11 +20,11 @@ import suite.util.Util;
 
 public class Intrinsics {
 
-	private static final Atom ATOM = Atom.create("ATOM");
-	private static final Atom NUMBER = Atom.create("NUMBER");
-	private static final Atom STRING = Atom.create("STRING");
-	private static final Atom TREE = Atom.create("TREE");
-	private static final Atom UNKNOWN = Atom.create("UNKNOWN");
+	private static Atom ATOM = Atom.create("ATOM");
+	private static Atom NUMBER = Atom.create("NUMBER");
+	private static Atom STRING = Atom.create("STRING");
+	private static Atom TREE = Atom.create("TREE");
+	private static Atom UNKNOWN = Atom.create("UNKNOWN");
 
 	public static class AtomString implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {

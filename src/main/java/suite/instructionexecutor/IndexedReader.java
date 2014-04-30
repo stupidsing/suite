@@ -7,7 +7,7 @@ import suite.util.Util;
 
 public class IndexedReader {
 
-	private static final int bufferLimit = 256;
+	private static int bufferLimit = 256;
 
 	private Reader in;
 	private int offset = 0;

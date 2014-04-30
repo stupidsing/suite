@@ -7,9 +7,9 @@ import java.lang.reflect.Proxy;
 
 public class SynchronizeUtil {
 
-	public static <I> I proxy(Class<I> interface_, final I object) {
+	public static <I> I proxy(Class<I> interface_, I object) {
 		@SuppressWarnings("unchecked")
-		final Class<I> clazz = (Class<I>) object.getClass();
+		Class<I> clazz = (Class<I>) object.getClass();
 		ClassLoader classLoader = clazz.getClassLoader();
 		Class<?> classes[] = { interface_ };
 

@@ -4,7 +4,7 @@ import suite.util.Util;
 
 public class ConwayGameOfLife {
 
-	private static final int size = 16;
+	private static int size = 16;
 	private boolean game[][];
 
 	public ConwayGameOfLife(String s) {

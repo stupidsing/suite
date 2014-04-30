@@ -8,12 +8,12 @@ import suite.util.Util;
 
 public class Coordinate implements Comparable<Coordinate> {
 
-	private final int index;
-	private final List<Coordinate> leftOrUp = new ArrayList<>();
-	private final List<Coordinate> neighbors = new ArrayList<>();
+	private int index;
+	private List<Coordinate> leftOrUp = new ArrayList<>();
+	private List<Coordinate> neighbors = new ArrayList<>();
 
 	private static Coordinate coords[][];
-	private static final List<Coordinate> all = new ArrayList<>();
+	private static List<Coordinate> all = new ArrayList<>();
 
 	static {
 		initialize();

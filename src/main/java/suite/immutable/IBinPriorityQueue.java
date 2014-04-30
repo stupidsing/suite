@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class IBinPriorityQueue<T> {
 
-	private static final int maxRank = 64;
+	private static int maxRank = 64;
 
 	private Comparator<T> comparator;
 

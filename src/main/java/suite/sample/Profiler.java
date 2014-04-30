@@ -19,8 +19,8 @@ import suite.util.Util;
 
 public class Profiler {
 
-	private static final int timerDuration = 50;
-	private static final int stackTraceDepth = 256;
+	private static int timerDuration = 50;
+	private static int stackTraceDepth = 256;
 
 	private Timer timer;
 	private AtomicInteger count = new AtomicInteger();

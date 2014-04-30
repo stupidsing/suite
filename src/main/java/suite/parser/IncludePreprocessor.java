@@ -16,8 +16,8 @@ import suite.util.To;
  */
 public class IncludePreprocessor implements Fun<String, String> {
 
-	private final static String open = "#include(";
-	private final static String close = ")";
+	private static String open = "#include(";
+	private static String close = ")";
 
 	private File dir;
 

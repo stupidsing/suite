@@ -107,11 +107,11 @@ public class InstructionTranslatorTest {
 	private <T> T execute(Node code, Fun<Fun<Node, Node>, T> fun) throws IOException, MalformedURLException {
 		String basePathName = FileUtil.tmp + "/" + InstructionTranslator.class.getName();
 
-		final TranslatedRunConfig config = new TranslatedRunConfig();
+		TranslatedRunConfig config = new TranslatedRunConfig();
 		config.ruleSet = Suite.createRuleSet();
 
 		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePathName)) {
-			final TranslatedRun translatedRun = instructionTranslator.translate(code);
+			TranslatedRun translatedRun = instructionTranslator.translate(code);
 
 			Fun<Node, Node> exec = new Fun<Node, Node>() {
 				public Node apply(Node node) {

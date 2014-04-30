@@ -141,7 +141,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testTuple() {
-		final String variant = "" //
+		String variant = "" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n";

@@ -28,8 +28,8 @@ public class Prover {
 	private ProveTracer tracer;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
-	private static final Node OK = Atom.NIL;
-	private static final Node FAIL = Atom.create("fail");
+	private static Node OK = Atom.NIL;
+	private static Node FAIL = Atom.create("fail");
 
 	private Node rem, alt; // remaining, alternative
 
@@ -106,7 +106,7 @@ public class Prover {
 
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
-					final int pit = journal.getPointInTime();
+					int pit = journal.getPointInTime();
 					Node bt = new Data<>(new Source<Boolean>() {
 						public Boolean source() {
 							journal.undoBinds(pit);
@@ -185,7 +185,7 @@ public class Prover {
 	 * @return The chained node.
 	 */
 	private Node expand(Node query) {
-		final Node alt0 = alt;
+		Node alt0 = alt;
 
 		Data<?> cut = new Data<>(new Source<Boolean>() {
 			public Boolean source() {
@@ -197,7 +197,7 @@ public class Prover {
 		return expandClauses(query, cut, config.ruleSet().searchRule(query));
 	}
 
-	private Node expandClauses(final Node query, final Node cut, final List<Rule> rules) {
+	private Node expandClauses(Node query, Node cut, List<Rule> rules) {
 		return new Suspend(new Source<Node>() {
 			public Node source() {
 				if (!rules.isEmpty()) {

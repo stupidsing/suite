@@ -27,7 +27,7 @@ public class SerializeUtil {
 	 * 
 	 * Size = 4 + number of elements * size of serializer<T>
 	 */
-	public static <T> Serializer<List<T>> list(final Serializer<T> serializer) {
+	public static <T> Serializer<List<T>> list(Serializer<T> serializer) {
 		return new Serializer<List<T>>() {
 			public List<T> read(ByteBuffer buffer) {
 				int size = SerializeUtil.intSerializer.read(buffer);
@@ -50,7 +50,7 @@ public class SerializeUtil {
 	 * 
 	 * Size = 1 + size of serializer<T>
 	 */
-	public static <T> Serializer<T> nullable(final Serializer<T> serializer) {
+	public static <T> Serializer<T> nullable(Serializer<T> serializer) {
 		return new Serializer<T>() {
 			public T read(ByteBuffer buffer) {
 				return booleanSerializer.read(buffer) ? serializer.read(buffer) : null;
@@ -71,7 +71,7 @@ public class SerializeUtil {
 	 * 
 	 * Size = length
 	 */
-	public static Serializer<Bytes> bytes(final int length) {
+	public static Serializer<Bytes> bytes(int length) {
 		return new Serializer<Bytes>() {
 			public Bytes read(ByteBuffer buffer) {
 				byte bs[] = new byte[length];
@@ -93,7 +93,7 @@ public class SerializeUtil {
 	 * 
 	 * Size = length
 	 */
-	public static Serializer<String> string(final int length) {
+	public static Serializer<String> string(int length) {
 		return new Serializer<String>() {
 			public String read(ByteBuffer buffer) {
 				byte bs[] = new byte[length];

@@ -21,7 +21,7 @@ public class Lexer {
 	private Reader reader;
 	private Set<String> operators;
 
-	private static final Set<String> javaOperators = new HashSet<>(Arrays.asList( //
+	private static Set<String> javaOperators = new HashSet<>(Arrays.asList( //
 			"++", "--", "+", "-", "~", "!", //
 			"*", "/", "%", //
 			"+", "-", //

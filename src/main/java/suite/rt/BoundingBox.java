@@ -40,7 +40,7 @@ public class BoundingBox implements RtObject {
 	}
 
 	@Override
-	public List<RayHit> hit(final Ray ray) {
+	public List<RayHit> hit(Ray ray) {
 		float startX = ray.startPoint.getX(), dirX = ray.dir.getX();
 		float startY = ray.startPoint.getY(), dirY = ray.dir.getY();
 		float startZ = ray.startPoint.getZ(), dirZ = ray.dir.getZ();

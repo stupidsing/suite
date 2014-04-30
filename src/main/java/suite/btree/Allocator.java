@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
  */
 public class Allocator implements Closeable {
 
-	private static final int maxPages = 4096;
+	private static int maxPages = 4096;
 
 	private RandomAccessFile allocMapFile;
 	private byte allocMap[];

@@ -12,7 +12,7 @@ import suite.util.LogUtil;
 
 public class RayTracer {
 
-	public static final float negligibleAdvance = 0.0001f;
+	public static float negligibleAdvance = 0.0001f;
 
 	private int nThreads = 4;
 	private int depth = 4;
@@ -100,11 +100,11 @@ public class RayTracer {
 		return traceRay(depth, ray);
 	}
 
-	public void trace(BufferedImage bufferedImage, final int viewDistance) {
-		final int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
-		final int centreX = width / 2, centreY = height / 2;
-		final Vector pixels[][] = new Vector[width][height];
-		final int xs[] = new int[nThreads + 1];
+	public void trace(BufferedImage bufferedImage, int viewDistance) {
+		int width = bufferedImage.getWidth(), height = bufferedImage.getHeight();
+		int centreX = width / 2, centreY = height / 2;
+		Vector pixels[][] = new Vector[width][height];
+		int xs[] = new int[nThreads + 1];
 
 		for (int i = 0; i <= nThreads; i++)
 			xs[i] = width * i / nThreads;
@@ -112,7 +112,7 @@ public class RayTracer {
 		Thread threads[] = new Thread[nThreads];
 
 		for (int i = 0; i < nThreads; i++) {
-			final int i1 = i;
+			int i1 = i;
 
 			threads[i1] = new Thread() {
 				public void run() {

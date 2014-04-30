@@ -16,8 +16,8 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionUtil {
 
-	private static final BiMap<Insn, String> insnNames = HashBiMap.create();
-	private static final Map<Operator, Insn> evalInsns = new HashMap<>();
+	private static BiMap<Insn, String> insnNames = HashBiMap.create();
+	private static Map<Operator, Insn> evalInsns = new HashMap<>();
 
 	static {
 		for (Insn insn : Insn.values())

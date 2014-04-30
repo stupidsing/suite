@@ -18,7 +18,7 @@ import suite.util.SerializeUtil.Serializer;
  */
 public class SerializedPageFile<V> implements Closeable {
 
-	private static final int pageSize = 4096;
+	private static int pageSize = 4096;
 
 	private PageFile pageFile;
 	private Serializer<V> serializer;

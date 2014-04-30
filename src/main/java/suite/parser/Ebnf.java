@@ -32,7 +32,7 @@ public class Ebnf {
 	private String rootGrammarName;
 	private Map<String, Grammar> grammars = new HashMap<>();
 
-	private static final boolean trace = false;
+	private static boolean trace = false;
 
 	private interface Grammar {
 	}
@@ -231,7 +231,7 @@ public class Ebnf {
 			}
 		}
 
-		private final Source<State> noResult = FunUtil.nullSource();
+		private Source<State> noResult = FunUtil.nullSource();
 
 		private Parse(String in) {
 			this.in = in;
@@ -314,7 +314,7 @@ public class Ebnf {
 		private Source<State> parseNamedGrammar(State state, NamedGrammar namedGrammar) {
 			Source<State> states;
 			String name = namedGrammar.name;
-			final int depth = state.depth;
+			int depth = state.depth;
 			int pos = state.pos;
 			State state1 = deepen(state, name);
 
@@ -340,7 +340,7 @@ public class Ebnf {
 			}, states);
 		}
 
-		private Source<State> parseOr(final State state, final OrGrammar grammar) {
+		private Source<State> parseOr(State state, OrGrammar grammar) {
 			return FunUtil.concat(FunUtil.map(new Fun<Grammar, Source<State>>() {
 				public Source<State> apply(Grammar childGrammar) {
 					return parse(state, childGrammar);
@@ -348,10 +348,10 @@ public class Ebnf {
 			}, To.source(children(grammar))));
 		}
 
-		private Source<State> parseJoin(State state, final JoinGrammar grammar) {
+		private Source<State> parseJoin(State state, JoinGrammar grammar) {
 			Source<State> source = To.source(state);
 
-			for (final Grammar childGrammar : children(grammar))
+			for (Grammar childGrammar : children(grammar))
 				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
 					public Source<State> apply(State state) {
 						return parse(state, childGrammar);
@@ -368,7 +368,7 @@ public class Ebnf {
 			return grammar.isAllowNone || states.source() != null ? states : noResult;
 		}
 
-		private Source<State> parseRepeat(final State state, final Grammar grammar) {
+		private Source<State> parseRepeat(State state, Grammar grammar) {
 			return new Source<State>() {
 				private State state_ = state;
 				private Deque<Source<State>> sources = new ArrayDeque<>();
