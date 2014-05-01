@@ -4,8 +4,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -103,10 +104,7 @@ public class Util {
 	}
 
 	public static long createDate(int year, int month, int day, int hour, int minute, int second) {
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
-		cal.set(year, Calendar.JANUARY + month - 1, day, hour, minute, second);
-		return cal.getTimeInMillis();
+		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toEpochSecond() * 1000l;
 	}
 
 	public static ThreadPoolExecutor createExecutor() {
