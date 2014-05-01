@@ -1,6 +1,6 @@
 package suite.lp.doer;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +18,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
-import suite.util.To;
 import suite.util.Util;
 
 public class Prover {
@@ -72,7 +71,7 @@ public class Prover {
 	public boolean prove(Node query) {
 		Thread hook = new Thread() {
 			public void run() {
-				String d = To.string(new Date());
+				String d = LocalDateTime.now().toString();
 				LogUtil.info("-- Trace dump at " + d + " --\n" + tracer.getTrace());
 				LogUtil.info("-- Fail dump at " + d + " --\n" + tracer.getFailTrace());
 			}

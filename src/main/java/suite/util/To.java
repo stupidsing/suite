@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -39,10 +39,6 @@ public class To {
 			bb.append(buffer, 0, nBytesRead);
 
 		return bb.toBytes();
-	}
-
-	public static Date date(String s) throws ParseException {
-		return FormatUtil.dateTimeFormat.parse(s);
 	}
 
 	public static String hex(int i) {
@@ -102,7 +98,7 @@ public class To {
 	}
 
 	public static String string(Date date) {
-		return FormatUtil.dateTimeFormat.format(date);
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
 	}
 
 	public static String string(File file) throws IOException {

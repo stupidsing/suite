@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
@@ -28,7 +28,7 @@ public class IoPredicates {
 
 	public static class DumpStack implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
-			String date = To.string(new Date());
+			String date = LocalDateTime.now().toString();
 			String trace = prover.getTracer().getStackTrace();
 			LogUtil.info("-- Stack trace at " + date + " --\n" + trace);
 			return true;
