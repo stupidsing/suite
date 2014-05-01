@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class ClusterMapTest {
 
 		Util.sleepQuietly(5 * 1000);
 
-		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
+		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 
 		for (int i = 0; i < 100; i++) {
 			String peer = peerNames.get(random.nextInt(nNodes));
@@ -58,7 +58,7 @@ public class ClusterMapTest {
 		for (Cluster cluster : clusters.values())
 			cluster.stop();
 
-		System.out.println("=== CLUSTER STOPPED (" + new Date() + ") ===\n");
+		System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
 	}
 
 }

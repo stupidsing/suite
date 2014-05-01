@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,7 +34,7 @@ public class ClusterProbeTest {
 
 		Util.sleepQuietly(10 * 1000);
 
-		System.out.println("=== CLUSTER FORMED (" + new Date() + ") ===\n");
+		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 		dumpActivePeers(probes);
 		assertActiveNodesSize(nNodes, probes);
 
@@ -43,7 +43,7 @@ public class ClusterProbeTest {
 
 		Util.sleepQuietly(5 * 1000);
 
-		System.out.println("=== CLUSTER STOPPED (" + new Date() + ") ===\n");
+		System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
 		dumpActivePeers(probes);
 		assertActiveNodesSize(0, probes);
 	}
