@@ -7,8 +7,6 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 
 public class InterpretedProverBuilder implements Builder {
 
@@ -27,12 +25,10 @@ public class InterpretedProverBuilder implements Builder {
 		Node goal1 = new Generalizer().generalize(goal);
 		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
-		return new Finder() {
-			public void find(Source<Node> source, Sink<Node> sink) {
-				proverConfig1.setSource(source);
-				proverConfig1.setSink(sink);
-				new Prover(proverConfig1).elaborate(goal1);
-			}
+		return (source, sink) -> {
+			proverConfig1.setSource(source);
+			proverConfig1.setSink(sink);
+			new Prover(proverConfig1).elaborate(goal1);
 		};
 	}
 

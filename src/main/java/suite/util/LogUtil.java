@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.commons.logging.Log;
@@ -69,31 +68,29 @@ public class LogUtil {
 		Class<I> clazz = (Class<I>) object.getClass();
 		Log log = LogFactory.getLog(clazz);
 
-		InvocationHandler handler = new InvocationHandler() {
-			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {
-				String methodName = method.getName();
-				String prefix = methodName + "()\n";
-				StringBuilder sb = new StringBuilder();
+		InvocationHandler handler = (proxy, method, ps) -> {
+			String methodName = method.getName();
+			String prefix = methodName + "()\n";
+			StringBuilder sb = new StringBuilder();
 
-				sb.append(prefix);
+			sb.append(prefix);
 
-				if (ps != null)
-					for (int i = 0; i < ps.length; i++)
-						DumpUtil.dump(sb, "p" + i, ps[i]);
+			if (ps != null)
+				for (int i = 0; i < ps.length; i++)
+					DumpUtil.dump(sb, "p" + i, ps[i]);
 
-				log.info(sb.toString());
+			log.info(sb.toString());
 
-				try {
-					Object value = method.invoke(object, ps);
-					String rd = DumpUtil.dump("return", value);
-					log.info(prefix + rd);
-					return value;
-				} catch (InvocationTargetException ite) {
-					Throwable th = ite.getTargetException();
-					boolean isTrimmed = trimStackTrace(th);
-					log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
-					throw th instanceof Exception ? (Exception) th : ite;
-				}
+			try {
+				Object value = method.invoke(object, ps);
+				String rd = DumpUtil.dump("return", value);
+				log.info(prefix + rd);
+				return value;
+			} catch (InvocationTargetException ite) {
+				Throwable th = ite.getTargetException();
+				boolean isTrimmed = trimStackTrace(th);
+				log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
+				throw th instanceof Exception ? (Exception) th : ite;
 			}
 		};
 

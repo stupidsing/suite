@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import suite.util.CommandUtil;
 import suite.util.Pair;
 import suite.util.SocketUtil;
-import suite.util.SocketUtil.Io;
 import suite.util.Util;
 
 public class NntpServer {
@@ -30,11 +29,7 @@ public class NntpServer {
 	}
 
 	private void run() throws IOException {
-		SocketUtil.listen(119, new Io() {
-			public void serve(InputStream sis, OutputStream sos) throws IOException {
-				new Server().serve(sis, sos);
-			}
-		});
+		SocketUtil.listen(119, (InputStream sis, OutputStream sos) -> new Server().serve(sis, sos));
 	}
 
 	private class Server {

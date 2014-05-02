@@ -51,11 +51,7 @@ public abstract class ThreadedService {
 
 	protected Closeable started() {
 		setStarted(true);
-		return new Closeable() {
-			public void close() {
-				setStarted(false);
-			}
-		};
+		return () -> setStarted(false);
 	}
 
 	private synchronized void setStarted(boolean isStarted) {

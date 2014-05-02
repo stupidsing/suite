@@ -67,11 +67,7 @@ public class RequestResponseChannel extends PacketChannel {
 			if (type == RESPONSE)
 				matcher.onRespondReceived(token, contents);
 			else if (type == REQUEST)
-				executor.execute(new Runnable() {
-					public void run() {
-						send(RESPONSE, token, handler.apply(contents));
-					}
-				});
+				executor.execute(() -> send(RESPONSE, token, handler.apply(contents)));
 		}
 	}
 

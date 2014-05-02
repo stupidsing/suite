@@ -12,7 +12,6 @@ import java.nio.charset.Charset;
 
 import suite.util.FileUtil;
 import suite.util.SocketUtil;
-import suite.util.SocketUtil.Rw;
 
 public class Connector {
 
@@ -31,11 +30,7 @@ public class Connector {
 	}
 
 	public void listen() throws IOException {
-		SocketUtil.listen(5151, new Rw() {
-			public void serve(Reader reader, PrintWriter writer) throws IOException {
-				writer.println("Hello World");
-			}
-		});
+		SocketUtil.listen(5151, (Reader reader, PrintWriter writer) -> writer.println("Hello World"));
 	}
 
 }

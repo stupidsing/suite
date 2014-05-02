@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -43,11 +42,7 @@ public class PrecompileMain extends ExecutableProgram {
 
 			try {
 				for (String libraryName : allLibraries)
-					futures.add(executor.submit(new Callable<Boolean>() {
-						public Boolean call() {
-							return Suite.precompile(libraryName, pc);
-						}
-					}));
+					futures.add(executor.submit(() -> Suite.precompile(libraryName, pc)));
 			} finally {
 				executor.shutdown();
 			}

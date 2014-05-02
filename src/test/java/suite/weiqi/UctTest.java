@@ -133,11 +133,10 @@ public class UctTest {
 
 	@Test
 	public void testUctGame() {
-		System.out.println(new Profiler().profile(new Runnable() {
-			public void run() {
-				DecimalFormat df = new DecimalFormat("0.000");
-				int nThreads = Runtime.getRuntime().availableProcessors();
-				int nSimulations = 5000; // 20000
+		System.out.println(new Profiler().profile(() -> {
+			DecimalFormat df = new DecimalFormat("0.000");
+			int nThreads = Runtime.getRuntime().availableProcessors();
+			int nSimulations = 5000; // 20000
 				int boundedTime = 300000;
 				int seed = new Random().nextInt();
 
@@ -173,8 +172,7 @@ public class UctTest {
 					gameSet.play(move);
 					UserInterface.display(gameSet);
 				}
-			}
-		}));
+			}));
 	}
 
 }

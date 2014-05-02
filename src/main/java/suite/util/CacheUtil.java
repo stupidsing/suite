@@ -69,24 +69,22 @@ public class CacheUtil {
 	}
 
 	public <I> I proxy(Class<I> interface_, I object, Collection<Method> methods) {
-		InvocationHandler handler = new InvocationHandler() {
-			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {
-				Key key = methods.contains(method) ? new Key(object, method, ps) : null;
-				boolean isCached = key != null && results.containsKey(key);
-				Object result;
+		InvocationHandler handler = (proxy, method, ps) -> {
+			Key key = methods.contains(method) ? new Key(object, method, ps) : null;
+			boolean isCached = key != null && results.containsKey(key);
+			Object result;
 
-				if (!isCached)
-					try {
-						results.put(key, result = method.invoke(object, ps));
-					} catch (InvocationTargetException ite) {
-						Throwable th = ite.getTargetException();
-						throw th instanceof Exception ? (Exception) th : ite;
-					}
-				else
-					result = results.get(key);
+			if (!isCached)
+				try {
+					results.put(key, result = method.invoke(object, ps));
+				} catch (InvocationTargetException ite) {
+					Throwable th = ite.getTargetException();
+					throw th instanceof Exception ? (Exception) th : ite;
+				}
+			else
+				result = results.get(key);
 
-				return result;
-			}
+			return result;
 		};
 
 		@SuppressWarnings("unchecked")

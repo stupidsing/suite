@@ -2,7 +2,6 @@ package suite.util;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 public class SynchronizeUtil {
@@ -13,15 +12,13 @@ public class SynchronizeUtil {
 		ClassLoader classLoader = clazz.getClassLoader();
 		Class<?> classes[] = { interface_ };
 
-		InvocationHandler handler = new InvocationHandler() {
-			public Object invoke(Object proxy, Method method, Object ps[]) throws Exception {
-				synchronized (object) {
-					try {
-						return method.invoke(object, ps);
-					} catch (InvocationTargetException ite) {
-						Throwable th = ite.getTargetException();
-						throw th instanceof Exception ? (Exception) th : ite;
-					}
+		InvocationHandler handler = (proxy, method, ps) -> {
+			synchronized (object) {
+				try {
+					return method.invoke(object, ps);
+				} catch (InvocationTargetException ite) {
+					Throwable th = ite.getTargetException();
+					throw th instanceof Exception ? (Exception) th : ite;
 				}
 			}
 		};

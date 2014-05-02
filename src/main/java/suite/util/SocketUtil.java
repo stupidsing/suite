@@ -22,11 +22,9 @@ public class SocketUtil {
 	}
 
 	public static void listen(int port, Rw rw) throws IOException {
-		listen(port, new Io() {
-			public void serve(InputStream is, OutputStream os) throws IOException {
-				try (Reader reader = new BufferedReader(new InputStreamReader(is)); PrintWriter writer = new PrintWriter(os)) {
-					rw.serve(reader, writer);
-				}
+		listen(port, (InputStream is, OutputStream os) -> {
+			try (Reader reader = new BufferedReader(new InputStreamReader(is)); PrintWriter writer = new PrintWriter(os)) {
+				rw.serve(reader, writer);
 			}
 		});
 	}
@@ -38,15 +36,13 @@ public class SocketUtil {
 			while (true) {
 				Socket socket = server.accept();
 
-				executor.execute(new Runnable() {
-					public void run() {
-						try (InputStream is = socket.getInputStream(); OutputStream os = socket.getOutputStream()) {
-							io.serve(is, os);
-						} catch (Exception ex) {
-							LogUtil.error(ex);
-						} finally {
-							Util.closeQuietly(socket);
-						}
+				executor.execute(() -> {
+					try (InputStream is = socket.getInputStream(); OutputStream os = socket.getOutputStream()) {
+						io.serve(is, os);
+					} catch (Exception ex) {
+						LogUtil.error(ex);
+					} finally {
+						Util.closeQuietly(socket);
 					}
 				});
 			}

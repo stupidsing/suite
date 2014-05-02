@@ -10,7 +10,6 @@ import java.util.Map;
 
 import suite.util.FileUtil;
 import suite.util.SocketUtil;
-import suite.util.SocketUtil.Io;
 import suite.util.To;
 
 public class SimpleCgiServer {
@@ -20,25 +19,21 @@ public class SimpleCgiServer {
 	}
 
 	public static void main(String args[]) throws IOException {
-		new SimpleCgiServer().run(new Handler() {
-			public void handle(Map<String, String> headers, OutputStream os) throws IOException {
-				OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
-				writer.write("<html>" + headers + "</html>");
-			}
+		new SimpleCgiServer().run((headers, os) -> {
+			OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
+			writer.write("<html>" + headers + "</html>");
 		});
 	}
 
 	private void run(Handler handler) throws IOException {
-		SocketUtil.listen(4000, new Io() {
-			public void serve(InputStream is, OutputStream os) throws IOException {
-				Map<String, String> headers = readHeaders(is);
+		SocketUtil.listen(4000, (InputStream is, OutputStream os) -> {
+			Map<String, String> headers = readHeaders(is);
 
-				os.write(("Status: 200 OK\r\n" //
-						+ "Content-Type: text/html\r\n" //
-						+ "\r\n").getBytes(FileUtil.charset));
+			os.write(("Status: 200 OK\r\n" //
+					+ "Content-Type: text/html\r\n" //
+					+ "\r\n").getBytes(FileUtil.charset));
 
-				handler.handle(headers, os);
-			}
+			handler.handle(headers, os);
 		});
 	}
 

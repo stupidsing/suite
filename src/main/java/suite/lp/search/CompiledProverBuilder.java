@@ -8,8 +8,6 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 
 public class CompiledProverBuilder implements Builder {
@@ -44,14 +42,12 @@ public class CompiledProverBuilder implements Builder {
 		Node code = compile(goal1);
 		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
-		return new Finder() {
-			public void find(Source<Node> source, Sink<Node> sink) {
-				proverConfig1.setSource(source);
-				proverConfig1.setSink(sink);
+		return (source, sink) -> {
+			proverConfig1.setSource(source);
+			proverConfig1.setSink(sink);
 
-				try (InstructionExecutor executor = new LogicInstructionExecutor(code, proverConfig1)) {
-					executor.execute();
-				}
+			try (InstructionExecutor executor = new LogicInstructionExecutor(code, proverConfig1)) {
+				executor.execute();
 			}
 		};
 	}

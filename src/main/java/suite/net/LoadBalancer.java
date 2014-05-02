@@ -50,26 +50,24 @@ public class LoadBalancer {
 			}
 		};
 
-		Io io = new Io() {
-			public void serve(InputStream is, OutputStream os) throws IOException {
-				int count = counter.getAndIncrement();
-				List<String> alives0 = alives;
+		Io io = (is, os) -> {
+			int count = counter.getAndIncrement();
+			List<String> alives0 = alives;
 
-				String server = alives0.get(count % alives0.size());
+			String server = alives0.get(count % alives0.size());
 
-				try (Socket socket = new Socket(server, port)) {
-					InputStream sis = socket.getInputStream();
-					OutputStream sos = socket.getOutputStream();
+			try (Socket socket = new Socket(server, port)) {
+				InputStream sis = socket.getInputStream();
+				OutputStream sos = socket.getOutputStream();
 
-					List<Thread> threads = Arrays.<Thread> asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
+				List<Thread> threads = Arrays.<Thread> asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
 
-					for (Thread thread : threads)
-						thread.start();
-					for (Thread thread : threads)
-						thread.join();
-				} catch (InterruptedException ex) {
-					throw new RuntimeException(ex);
-				}
+				for (Thread thread : threads)
+					thread.start();
+				for (Thread thread : threads)
+					thread.join();
+			} catch (InterruptedException ex) {
+				throw new RuntimeException(ex);
 			}
 		};
 

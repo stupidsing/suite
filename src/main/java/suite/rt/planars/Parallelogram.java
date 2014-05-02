@@ -10,11 +10,7 @@ import suite.rt.RayTracer.RtObject;
 public class Parallelogram extends Planar implements RtObject {
 
 	public Parallelogram(Vector origin, Vector axis0, Vector axis1, Material material) {
-		super(origin, axis0, axis1, new IsHit() {
-			public boolean isHit(float x, float y) {
-				return 0f <= x && x < 1f && 0f <= y && y < 1f;
-			}
-		}, material);
+		super(origin, axis0, axis1, (x, y) -> 0f <= x && x < 1f && 0f <= y && y < 1f, material);
 	}
 
 	public static RtObject c(Vector origin, Vector axis0, Vector axis1, Material material) {

@@ -10,11 +10,8 @@ import suite.util.Util;
 
 public class HttpServerMain {
 
-	private Authenticator authenticator = new Authenticator() {
-		public boolean authenticate(String username, String password) {
-			return Util.stringEquals(username, "user") && Util.stringEquals(password, "");
-		}
-	};
+	private Authenticator authenticator = (username, password) -> Util.stringEquals(username, "user")
+			&& Util.stringEquals(password, "");
 
 	private Handler handler0 = new HttpHandler() {
 		protected void handle(Reader reader, Writer writer) throws IOException {

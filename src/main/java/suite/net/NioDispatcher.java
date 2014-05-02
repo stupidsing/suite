@@ -73,13 +73,11 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 
 		wakeUpSelector();
 
-		return new Closeable() {
-			public void close() {
-				try {
-					ssc.close();
-				} catch (IOException ex) {
-					LogUtil.error(ex);
-				}
+		return () -> {
+			try {
+				ssc.close();
+			} catch (IOException ex) {
+				LogUtil.error(ex);
 			}
 		};
 	}
@@ -160,29 +158,27 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 	}
 
 	private Sender createSender(SocketChannel sc) {
-		return new Sender() {
-			public Bytes apply(Bytes in) throws IOException {
+		return in -> {
 
-				// Try to send immediately. If cannot sent all, wait for the
-				// writable event (and send again at that moment).
-				byte bytes[] = in.getBytes();
-				int sent = sc.write(ByteBuffer.wrap(bytes));
+			// Try to send immediately. If cannot sent all, wait for the
+			// writable event (and send again at that moment).
+			byte bytes[] = in.getBytes();
+			int sent = sc.write(ByteBuffer.wrap(bytes));
 
-				Bytes out = in.subbytes(sent);
+			Bytes out = in.subbytes(sent);
 
-				int ops;
-				if (!out.isEmpty())
-					ops = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-				else
-					ops = SelectionKey.OP_READ;
+			int ops;
+			if (!out.isEmpty())
+				ops = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+			else
+				ops = SelectionKey.OP_READ;
 
-				SelectionKey key = sc.keyFor(selector);
-				if (key != null && key.interestOps() != ops)
-					key.interestOps(ops);
+			SelectionKey key = sc.keyFor(selector);
+			if (key != null && key.interestOps() != ops)
+				key.interestOps(ops);
 
-				wakeUpSelector();
-				return out;
-			}
+			wakeUpSelector();
+			return out;
 		};
 	}
 

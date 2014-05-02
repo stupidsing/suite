@@ -1,8 +1,6 @@
 package suite.sample;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.BoxLayout;
@@ -51,11 +49,7 @@ public class SwingTable {
 
 		JButton button = new JButton("Click Me!");
 		button.setMnemonic(KeyEvent.VK_C); // Alt-C as hot key
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				System.out.println("GOT " + event);
-			}
-		});
+		button.addActionListener(event -> System.out.println("GOT " + event));
 
 		// Flow layout allows the components to be their preferred size
 		JPanel panel = new JPanel();

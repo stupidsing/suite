@@ -10,11 +10,9 @@ public class PrecompileTest {
 
 	@Test
 	public void test() {
-		System.out.println(new Profiler().profile(new Runnable() {
-			public void run() {
-				ProverConfig pc = new ProverConfig();
-				Suite.precompile("STANDARD", pc);
-			}
+		System.out.println(new Profiler().profile(() -> {
+			ProverConfig pc = new ProverConfig();
+			Suite.precompile("STANDARD", pc);
 		}));
 	}
 

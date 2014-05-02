@@ -10,7 +10,6 @@ import java.util.Set;
 import suite.util.Copy;
 import suite.util.LogUtil;
 import suite.util.SocketUtil;
-import suite.util.SocketUtil.Io;
 
 public class TelnetServer {
 
@@ -19,11 +18,7 @@ public class TelnetServer {
 	}
 
 	private void run() throws IOException {
-		SocketUtil.listen(2323, new Io() {
-			public void serve(InputStream sis, OutputStream sos) throws IOException {
-				new Server().serve(sis, sos);
-			}
-		});
+		SocketUtil.listen(2323, (InputStream sis, OutputStream sos) -> new Server().serve(sis, sos));
 	}
 
 	private class Server {

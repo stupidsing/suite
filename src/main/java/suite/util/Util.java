@@ -177,11 +177,7 @@ public class Util {
 	}
 
 	public static <T> Iterable<T> iter(Iterator<T> iter) {
-		return new Iterable<T>() {
-			public Iterator<T> iterator() {
-				return iter;
-			}
-		};
+		return () -> iter;
 	}
 
 	public static <T> T last(List<T> c) {
@@ -235,14 +231,12 @@ public class Util {
 		int code[] = new int[1];
 
 		try (ExecutableProgram main_ = clazz.newInstance()) {
-			runnable = new Runnable() {
-				public void run() {
-					try {
-						code[0] = main_.run(args) ? 0 : 1;
-					} catch (Throwable ex) {
-						LogUtil.fatal(ex);
-						code[0] = 2;
-					}
+			runnable = () -> {
+				try {
+					code[0] = main_.run(args) ? 0 : 1;
+				} catch (Throwable ex) {
+					LogUtil.fatal(ex);
+					code[0] = 2;
 				}
 			};
 
