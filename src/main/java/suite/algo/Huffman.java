@@ -7,8 +7,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
@@ -85,22 +85,20 @@ public class Huffman<Unit> {
 	}
 
 	private Source<Unit> decode(Source<Boolean> source) {
-		return new Source<Unit>() {
-			public Unit source() {
-				Boolean b;
+		return () -> {
+			Boolean b;
 
-				if ((b = source.source()) != null) {
-					Node node = root;
+			if ((b = source.source()) != null) {
+				Node node = root;
 
-					while (node.unit == null) {
-						node = b ? node.node0 : node.node1;
-						b = source.source();
-					}
+				while (node.unit == null) {
+					node = b ? node.node0 : node.node1;
+					b = source.source();
+				}
 
-					return node.unit;
-				} else
-					return null;
-			}
+				return node.unit;
+			} else
+				return null;
 		};
 	}
 
@@ -137,11 +135,9 @@ public class Huffman<Unit> {
 	}
 
 	private void build(List<Unit> input) {
-		Map<Unit, Integer> histogram = histogram(input);
-		PriorityQueue<Node> priorityQueue = new PriorityQueue<>(0, comparator);
-
-		for (Entry<Unit, Integer> entry : histogram.entrySet())
-			priorityQueue.add(new Node(entry.getValue(), entry.getKey()));
+		PriorityQueue<Node> priorityQueue = histogram(input).entrySet().stream() //
+				.map(entry -> new Node(entry.getValue(), entry.getKey())) //
+				.collect(Collectors.toCollection(() -> new PriorityQueue<>(0, comparator)));
 
 		while (priorityQueue.size() > 1) {
 			Node node0 = priorityQueue.remove();

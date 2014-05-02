@@ -33,21 +33,17 @@ public class ClusterMap<K, V> {
 		}
 	}
 
-	private Sink<String> onJoined = new Sink<String>() {
-		public void sink(String peer) {
-			synchronized (ClusterMap.this) {
-				peers.add(peer);
-				Collections.sort(peers);
-			}
+	private Sink<String> onJoined = peer -> {
+		synchronized (ClusterMap.this) {
+			peers.add(peer);
+			Collections.sort(peers);
 		}
 	};
 
-	private Sink<String> onLeft = new Sink<String>() {
-		public void sink(String peer) {
-			synchronized (ClusterMap.this) {
-				peers.remove(peer);
-				Collections.sort(peers);
-			}
+	private Sink<String> onLeft = peer -> {
+		synchronized (ClusterMap.this) {
+			peers.remove(peer);
+			Collections.sort(peers);
 		}
 	};
 

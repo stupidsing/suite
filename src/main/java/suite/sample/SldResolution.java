@@ -53,11 +53,7 @@ public class SldResolution {
 			for (int i = 0; i < ors.size(); i++) {
 				int index = i;
 
-				orsMap.put(ors.get(index), new Source<List<Node>>() {
-					public List<Node> source() {
-						return Util.add(ors.subList(0, index), ors.subList(index + 1, ors.size()));
-					}
-				});
+				orsMap.put(ors.get(index), () -> Util.add(ors.subList(0, index), ors.subList(index + 1, ors.size())));
 			}
 		}
 

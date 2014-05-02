@@ -51,11 +51,7 @@ public class Lexer {
 	}
 
 	public Source<String> tokens() {
-		return new Source<String>() {
-			public String source() {
-				return !eof ? nextToken() : null;
-			}
-		};
+		return () -> !eof ? nextToken() : null;
 	}
 
 	private String nextToken() {

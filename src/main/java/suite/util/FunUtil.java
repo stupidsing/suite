@@ -68,13 +68,11 @@ public class FunUtil {
 	}
 
 	public static <T> Source<T> filter(Fun<T, Boolean> fun, Source<T> source) {
-		return new Source<T>() {
-			public T source() {
-				T t = null;
-				while ((t = source.source()) != null && !fun.apply(t))
-					;
-				return t;
-			}
+		return () -> {
+			T t = null;
+			while ((t = source.source()) != null && !fun.apply(t))
+				;
+			return t;
 		};
 	}
 
@@ -112,11 +110,9 @@ public class FunUtil {
 	}
 
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun, Source<T0> source) {
-		return new Source<T1>() {
-			public T1 source() {
-				T0 e = source.source();
-				return e != null ? fun.apply(e) : null;
-			}
+		return () -> {
+			T0 e = source.source();
+			return e != null ? fun.apply(e) : null;
 		};
 	}
 
@@ -125,9 +121,7 @@ public class FunUtil {
 	}
 
 	public static <I> Sink<I> nullSink() {
-		return new Sink<I>() {
-			public void sink(I i) {
-			}
+		return i -> {
 		};
 	}
 
@@ -141,12 +135,7 @@ public class FunUtil {
 		// needs to be of type Object.
 		Object eod = new Object();
 		SynchronousQueue<Object> queue = new SynchronousQueue<>();
-
-		Sink<T> enqueue = new Sink<T>() {
-			public void sink(T t) {
-				enqueue(queue, t);
-			}
-		};
+		Sink<T> enqueue = t -> enqueue(queue, t);
 
 		Thread thread = new Thread() {
 			public void run() {
@@ -162,20 +151,18 @@ public class FunUtil {
 
 		thread.start();
 
-		return new Source<T>() {
-			public T source() {
-				try {
-					Object object = queue.take();
-					if (object != eod) {
-						@SuppressWarnings("unchecked")
-						T t = (T) object;
-						return t;
-					} else
-						return null;
-				} catch (InterruptedException ex) {
-					thread.interrupt();
-					throw new RuntimeException(ex);
-				}
+		return () -> {
+			try {
+				Object object = queue.take();
+				if (object != eod) {
+					@SuppressWarnings("unchecked")
+					T t = (T) object;
+					return t;
+				} else
+					return null;
+			} catch (InterruptedException ex) {
+				thread.interrupt();
+				throw new RuntimeException(ex);
 			}
 		};
 	}

@@ -13,7 +13,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class Generalizer {
@@ -49,12 +48,10 @@ public class Generalizer {
 
 				// Delay generalizing for performance
 				if (rightOp == TermOp.OR____)
-					right = new Suspend(new Source<Node>() {
-						public Node source() {
-							Node rl = rightTree.getLeft();
-							Node rr = rightTree.getRight();
-							return Tree.create(rightOp, generalize(rl), generalize(rr));
-						}
+					right = new Suspend(() -> {
+						Node rl = rightTree.getLeft();
+						Node rr = rightTree.getRight();
+						return Tree.create(rightOp, generalize(rl), generalize(rr));
 					});
 				else {
 					Tree rightTree1 = Tree.create(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());

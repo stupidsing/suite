@@ -16,7 +16,6 @@ import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Sinks;
-import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class Cluster {
@@ -25,11 +24,7 @@ public class Cluster {
 	private Map<String, InetSocketAddress> peers;
 	private ClusterProbe probe;
 
-	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(new Source<ClusterChannel>() {
-		public ClusterChannel source() {
-			return new ClusterChannel(me);
-		}
-	});
+	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(() -> new ClusterChannel(me));
 
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor;
@@ -75,21 +70,13 @@ public class Cluster {
 		unlisten = nio.listen(peers.get(me).getPort());
 		nio.start();
 
-		probe.setOnJoined(new Sink<String>() {
-			public void sink(String node) {
-				onJoined.sink(node);
-			}
-		});
+		probe.setOnJoined(node -> onJoined.sink(node));
 
-		probe.setOnLeft(new Sink<String>() {
-			public void sink(String node) {
-				ClusterChannel channel = channels.get(node);
-
-				if (channel != null)
-					channel.stop();
-
-				onLeft.sink(node);
-			}
+		probe.setOnLeft(node -> {
+			ClusterChannel channel = channels.get(node);
+			if (channel != null)
+				channel.stop();
+			onLeft.sink(node);
 		});
 
 		probe.start();

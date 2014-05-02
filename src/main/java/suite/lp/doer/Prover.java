@@ -192,28 +192,26 @@ public class Prover {
 	}
 
 	private Node expandClauses(Node query, Node cut, List<Rule> rules) {
-		return new Suspend(new Source<Node>() {
-			public Node source() {
-				if (!rules.isEmpty()) {
-					Rule rule = rules.get(0);
+		return new Suspend(() -> {
+			if (!rules.isEmpty()) {
+				Rule rule = rules.get(0);
 
-					// Delay generalizing for performance
-					Generalizer generalizer = new Generalizer();
-					generalizer.setCut(cut);
+				// Delay generalizing for performance
+				Generalizer generalizer = new Generalizer();
+				generalizer.setCut(cut);
 
-					Node head = generalizer.generalize(rule.getHead());
-					Node tail = generalizer.generalize(rule.getTail());
+				Node head = generalizer.generalize(rule.getHead());
+				Node tail = generalizer.generalize(rule.getTail());
 
-					Node clause = Tree.create(TermOp.AND___ //
-							, Tree.create(TermOp.EQUAL_ //
-									, query //
-									, head) //
-							, tail);
+				Node clause = Tree.create(TermOp.AND___ //
+						, Tree.create(TermOp.EQUAL_ //
+								, query //
+								, head) //
+						, tail);
 
-					return Tree.create(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
-				} else
-					return FAIL;
-			}
+				return Tree.create(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
+			} else
+				return FAIL;
 		});
 	}
 

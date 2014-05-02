@@ -34,19 +34,11 @@ public class LempelZivWelch<Unit> {
 	}
 
 	public Source<Integer> encode(Source<Unit> in) {
-		return FunUtil.suck(new Sink<Sink<Integer>>() {
-			public void sink(Sink<Integer> sink) {
-				encode(in, sink);
-			}
-		});
+		return FunUtil.suck(sink -> encode(in, sink));
 	}
 
 	public Source<Unit> decode(Source<Integer> in) {
-		return FunUtil.suck(new Sink<Sink<Unit>>() {
-			public void sink(Sink<Unit> sink) {
-				decode(in, sink);
-			}
-		});
+		return FunUtil.suck(sink -> decode(in, sink));
 	}
 
 	private void encode(Source<Unit> source, Sink<Integer> sink) {

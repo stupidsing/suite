@@ -81,12 +81,7 @@ public class To {
 
 	public static <O> Source<O> source(Iterable<O> iterable) {
 		Iterator<O> iterator = iterable.iterator();
-
-		return new Source<O>() {
-			public O source() {
-				return iterator.hasNext() ? iterator.next() : null;
-			}
-		};
+		return () -> iterator.hasNext() ? iterator.next() : null;
 	}
 
 	public static String string(byte bs[]) {

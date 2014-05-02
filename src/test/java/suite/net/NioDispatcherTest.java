@@ -45,11 +45,7 @@ public class NioDispatcherTest {
 				send(request);
 			}
 		};
-		Source<BufferedChannel> source = new Source<BufferedChannel>() {
-			public BufferedChannel source() {
-				return channel;
-			}
-		};
+		Source<BufferedChannel> source = () -> channel;
 		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcher<>(source);
 
 		dispatcher.start();
@@ -78,12 +74,7 @@ public class NioDispatcherTest {
 		ThreadPoolExecutor executor = Util.createExecutor();
 		Fun<Bytes, Bytes> handler = request -> request;
 
-		Source<RequestResponseChannel> source = new Source<RequestResponseChannel>() {
-			public RequestResponseChannel source() {
-				return new RequestResponseChannel(matcher, executor, handler);
-			}
-		};
-
+		Source<RequestResponseChannel> source = () -> new RequestResponseChannel(matcher, executor, handler);
 		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<>(source);
 		dispatcher.start();
 
