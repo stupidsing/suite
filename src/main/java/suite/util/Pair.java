@@ -21,22 +21,16 @@ public class Pair<T0, T1> {
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1 extends Comparable<? super T1>> Comparator<Pair<T0, T1>> comparator() {
-		return new Comparator<Pair<T0, T1>>() {
-			public int compare(Pair<T0, T1> pair0, Pair<T0, T1> pair1) {
-				int c = 0;
-				c = c == 0 ? Util.compare(first_(pair0), first_(pair1)) : c;
-				c = c == 0 ? Util.compare(second(pair0), second(pair1)) : c;
-				return c;
-			}
+		return (pair0, pair1) -> {
+			int c = 0;
+			c = c == 0 ? Util.compare(first_(pair0), first_(pair1)) : c;
+			c = c == 0 ? Util.compare(second(pair0), second(pair1)) : c;
+			return c;
 		};
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1> Comparator<Pair<T0, T1>> comparatorByFirst() {
-		return new Comparator<Pair<T0, T1>>() {
-			public int compare(Pair<T0, T1> pair0, Pair<T0, T1> pair1) {
-				return Util.compare(first_(pair0), first_(pair1));
-			}
-		};
+		return (pair0, pair1) -> Util.compare(first_(pair0), first_(pair1));
 	}
 
 	public static <T0> T0 first_(Pair<T0, ?> pair) {

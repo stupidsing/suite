@@ -17,21 +17,19 @@ public class Chars implements Iterable<Character> {
 
 	public static Chars emptyChars = new Chars(emptyCharArray);
 
-	public static Comparator<Chars> comparator = new Comparator<Chars>() {
-		public int compare(Chars chars0, Chars chars1) {
-			int start0 = chars0.start, start1 = chars1.start;
-			int size0 = chars0.size(), size1 = chars1.size(), minSize = Math.min(size0, size1);
-			int index = 0, c = 0;
+	public static Comparator<Chars> comparator = (chars0, chars1) -> {
+		int start0 = chars0.start, start1 = chars1.start;
+		int size0 = chars0.size(), size1 = chars1.size(), minSize = Math.min(size0, size1);
+		int index = 0, c = 0;
 
-			while (c == 0 && index < minSize) {
-				char b0 = chars0.cs[start0 + index];
-				char b1 = chars1.cs[start1 + index];
-				c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
-				index++;
-			}
-
-			return c != 0 ? c : size0 - size1;
+		while (c == 0 && index < minSize) {
+			char b0 = chars0.cs[start0 + index];
+			char b1 = chars1.cs[start1 + index];
+			c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
+			index++;
 		}
+
+		return c != 0 ? c : size0 - size1;
 	};
 
 	public Chars(Chars chars) {

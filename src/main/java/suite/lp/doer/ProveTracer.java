@@ -3,7 +3,6 @@ package suite.lp.doer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 
@@ -120,12 +119,10 @@ public class ProveTracer {
 
 	public String getFailTrace() {
 		if (!records.isEmpty() && records.get(0).nOkays == 0)
-			return log(Collections.max(records, new Comparator<Record>() {
-				public int compare(Record record0, Record record1) {
-					int depth0 = isDecidinglyFail(record0) ? record0.depth : 0;
-					int depth1 = isDecidinglyFail(record1) ? record1.depth : 0;
-					return depth0 - depth1;
-				}
+			return log(Collections.max(records, (record0, record1) -> {
+				int depth0 = isDecidinglyFail(record0) ? record0.depth : 0;
+				int depth1 = isDecidinglyFail(record1) ? record1.depth : 0;
+				return depth0 - depth1;
 			}));
 		else
 			return "-";

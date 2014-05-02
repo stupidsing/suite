@@ -18,21 +18,19 @@ public class Bytes implements Iterable<Byte> {
 
 	public static Bytes emptyBytes = new Bytes(emptyByteArray);
 
-	public static Comparator<Bytes> comparator = new Comparator<Bytes>() {
-		public int compare(Bytes bytes0, Bytes bytes1) {
-			int start0 = bytes0.start, start1 = bytes1.start;
-			int size0 = bytes0.size(), size1 = bytes1.size(), minSize = Math.min(size0, size1);
-			int index = 0, c = 0;
+	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
+		int start0 = bytes0.start, start1 = bytes1.start;
+		int size0 = bytes0.size(), size1 = bytes1.size(), minSize = Math.min(size0, size1);
+		int index = 0, c = 0;
 
-			while (c == 0 && index < minSize) {
-				byte b0 = bytes0.bs[start0 + index];
-				byte b1 = bytes1.bs[start1 + index];
-				c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
-				index++;
-			}
-
-			return c != 0 ? c : size0 - size1;
+		while (c == 0 && index < minSize) {
+			byte b0 = bytes0.bs[start0 + index];
+			byte b1 = bytes1.bs[start1 + index];
+			c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
+			index++;
 		}
+
+		return c != 0 ? c : size0 - size1;
 	};
 
 	public Bytes(Bytes bytes) {

@@ -22,11 +22,7 @@ public class B_TreeTest {
 
 	private Random random = new Random();
 
-	private Comparator<Integer> comparator = new Comparator<Integer>() {
-		public int compare(Integer i0, Integer i1) {
-			return i0.compareTo(i1);
-		}
-	};
+	private Comparator<Integer> comparator = (i0, i1) -> i0.compareTo(i1);
 
 	@Test
 	public void fileTest() throws IOException {

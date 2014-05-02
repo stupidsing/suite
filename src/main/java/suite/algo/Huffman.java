@@ -24,11 +24,7 @@ public class Huffman<Unit> {
 	private Node root;
 	private Map<Unit, Node> nodesByUnit = new HashMap<>();
 
-	private Comparator<Node> comparator = new Comparator<Node>() {
-		public int compare(Node node0, Node node1) {
-			return node0.count - node1.count;
-		}
-	};
+	private Comparator<Node> comparator = (node0, node1) -> node0.count - node1.count;
 
 	private class Node {
 		private int count;

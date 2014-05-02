@@ -85,11 +85,7 @@ public class Util {
 	}
 
 	public static <T extends Comparable<? super T>> Comparator<T> comparator() {
-		return new Comparator<T>() {
-			public int compare(T t0, T t1) {
-				return Util.compare(t0, t1);
-			}
-		};
+		return (t0, t1) -> Util.compare(t0, t1);
 	}
 
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {

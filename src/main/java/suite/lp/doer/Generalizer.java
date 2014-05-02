@@ -1,6 +1,5 @@
 package suite.lp.doer;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,11 +79,7 @@ public class Generalizer {
 	public String dumpVariables() {
 		boolean first = true;
 		StringBuilder sb = new StringBuilder();
-		List<Entry<Node, Reference>> entries = Util.sort(variables.entrySet(), new Comparator<Entry<Node, Reference>>() {
-			public int compare(Entry<Node, Reference> e0, Entry<Node, Reference> e1) {
-				return e0.getKey().compareTo(e1.getKey());
-			}
-		});
+		List<Entry<Node, Reference>> entries = Util.sort(variables.entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
 
 		for (Entry<Node, Reference> entry : entries) {
 			if (first)

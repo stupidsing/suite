@@ -14,11 +14,7 @@ import suite.util.FunUtil.Source;
 
 public class Astar<Node> {
 
-	private Comparator<NodeInfo> comparator = new Comparator<NodeInfo>() {
-		public int compare(NodeInfo ni0, NodeInfo ni1) {
-			return ni0.estimatedCost - ni1.estimatedCost;
-		}
-	};
+	private Comparator<NodeInfo> comparator = (ni0, ni1) -> ni0.estimatedCost - ni1.estimatedCost;
 
 	private Fun<Node, Source<Node>> generate;
 	private Fun<Node, Integer> estimate;

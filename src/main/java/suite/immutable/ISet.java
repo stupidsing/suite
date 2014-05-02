@@ -1,6 +1,5 @@
 package suite.immutable;
 
-import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.FunUtil;
@@ -9,11 +8,7 @@ import suite.util.Util;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
-	private ITree<V> tree = new I23Tree<V>(new Comparator<V>() {
-		public int compare(V p0, V p1) {
-			return Util.compare(p0, p1);
-		}
-	});
+	private ITree<V> tree = new I23Tree<V>(Util.comparator());
 
 	public ISet() {
 	}

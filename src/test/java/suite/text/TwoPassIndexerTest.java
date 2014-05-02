@@ -2,18 +2,16 @@ package suite.text;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
 import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
 import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
 
@@ -21,13 +19,10 @@ public class TwoPassIndexerTest {
 
 	@Test
 	public void test() throws IOException {
-		Source<File> files0 = FileUtil.findFiles(new File("src/test/java"));
-		Source<String> files1 = FunUtil.map(File::getAbsolutePath, files0);
-		Source<String> files2 = FunUtil.filter(filename -> filename.endsWith(".java"), files1);
-		List<String> filenames = new ArrayList<>();
-
-		for (String filename : FunUtil.iter(files2))
-			filenames.add(filename);
+		List<String> filenames = To.list(FileUtil.findFiles(new File("src/test/java"))).stream() //
+				.map(File::getAbsolutePath) //
+				.filter(filename -> filename.endsWith(".java")) //
+				.collect(Collectors.toList());
 
 		TwoPassIndexer indexer = new TwoPassIndexer();
 
@@ -39,10 +34,8 @@ public class TwoPassIndexerTest {
 
 		Map<String, List<Reference>> map = indexer.getKeysByWord();
 
-		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet(), new Comparator<Entry<String, List<Reference>>>() {
-			public int compare(Entry<String, List<Reference>> entry0, Entry<String, List<Reference>> entry1) {
-				return entry1.getValue().size() - entry0.getValue().size();
-			}
+		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet(), (entry0, entry1) -> {
+			return entry1.getValue().size() - entry0.getValue().size();
 		});
 
 		System.out.println("Most popular key words:");

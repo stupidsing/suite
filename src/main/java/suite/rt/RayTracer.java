@@ -42,11 +42,7 @@ public class RayTracer {
 
 		public RayIntersection intersection();
 
-		public Comparator<RayHit> comparator = new Comparator<RayHit>() {
-			public int compare(RayHit rh0, RayHit rh1) {
-				return rh0.advance() < rh1.advance() ? -1 : 1;
-			}
-		};
+		public Comparator<RayHit> comparator = (rh0, rh1) -> rh0.advance() < rh1.advance() ? -1 : 1;
 	}
 
 	public interface RayIntersection {

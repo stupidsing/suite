@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import suite.net.ThreadedService;
 import suite.util.FileUtil;
@@ -278,10 +279,9 @@ public class ClusterProbe extends ThreadedService {
 	}
 
 	public String dumpActivePeers() {
-		StringBuilder sb = new StringBuilder();
-		for (Entry<String, Long> e : lastActiveTime.entrySet())
-			sb.append(e.getKey() + " (last-active = " + To.string(new Date(e.getValue())) + ")\n");
-		return sb.toString();
+		return lastActiveTime.entrySet().stream() //
+				.map(e -> e.getKey() + " (last-active = " + To.string(new Date(e.getValue())) + ")") //
+				.collect(Collectors.joining("\n"));
 	}
 
 	public Set<String> getActivePeers() {

@@ -3,8 +3,8 @@ package suite.asm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.lp.Journal;
@@ -54,17 +54,15 @@ public class Assembler {
 			start++;
 		}
 
-		List<Pair<Reference, Node>> lnis = new ArrayList<>();
-
-		for (String line : Util.right(lines, start)) {
+		List<Pair<Reference, Node>> lnis = Util.right(lines, start).stream().map(line -> {
 			Pair<String, String> pt = Util.split2(line, "\t");
 			String label = pt.t0;
 			String command = pt.t1;
 
 			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.create(label)) : null;
 			Node instruction = generalizer.generalize(Suite.parse(command));
-			lnis.add(Pair.create(reference, instruction));
-		}
+			return Pair.create(reference, instruction);
+		}).collect(Collectors.toList());
 
 		return assemble(generalizer, lnis);
 	}
@@ -122,19 +120,10 @@ public class Assembler {
 	private Bytes assemble(int address, Node instruction) {
 		List<Node> ins = Arrays.asList(Int.create(bits), Int.create(address), instruction);
 		List<Node> nodes = FindUtil.collectList(finder, Tree.list(TermOp.AND___, ins));
-
-		List<Bytes> list = new ArrayList<>();
-		for (Node node : nodes)
-			list.add(convertByteStream(node));
-
-		if (!list.isEmpty())
-			return Collections.min(list, new Comparator<Bytes>() {
-				public int compare(Bytes bytes0, Bytes bytes1) {
-					return bytes0.size() - bytes1.size();
-				}
-			});
-		else
-			throw new RuntimeException("Failure");
+		return nodes.stream() //
+				.map(this::convertByteStream) //
+				.min((bytes0, bytes1) -> bytes0.size() - bytes1.size()) //
+				.get();
 	}
 
 	private Bytes convertByteStream(Node node) {

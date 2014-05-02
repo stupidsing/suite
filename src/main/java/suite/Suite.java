@@ -6,11 +6,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.IndexedReader;
@@ -92,13 +92,11 @@ public class Suite {
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node getRuleList(RuleSet rs, Prototype proto) {
-		List<Node> list = new ArrayList<>();
-
-		for (Rule rule : rs.getRules())
-			if (proto == null || proto.equals(Prototype.get(rule)))
-				list.add(Rule.formClause(rule));
-
-		return Tree.list(TermOp.NEXT__, list);
+		List<Node> nodes = rs.getRules().stream() //
+				.filter(rule -> proto == null || proto.equals(Prototype.get(rule))) //
+				.map(Rule::formClause) //
+				.collect(Collectors.toList());
+		return Tree.list(TermOp.NEXT__, nodes);
 	}
 
 	/**
