@@ -73,7 +73,7 @@ public class LoadBalancer {
 
 		try {
 			probe.start();
-			SocketUtil.listen(port, io);
+			SocketUtil.listenIo(port, io);
 		} finally {
 			running[0] = false;
 		}

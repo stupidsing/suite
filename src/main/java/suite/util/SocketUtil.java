@@ -21,15 +21,15 @@ public class SocketUtil {
 		public void serve(Reader reader, PrintWriter writer) throws IOException;
 	}
 
-	public static void listen(int port, Rw rw) throws IOException {
-		listen(port, (InputStream is, OutputStream os) -> {
+	public static void listenRw(int port, Rw rw) throws IOException {
+		listenIo(port, (is, os) -> {
 			try (Reader reader = new BufferedReader(new InputStreamReader(is)); PrintWriter writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}
 		});
 	}
 
-	public static void listen(int port, Io io) throws IOException {
+	public static void listenIo(int port, Io io) throws IOException {
 		ThreadPoolExecutor executor = Util.createExecutor();
 
 		try (ServerSocket server = new ServerSocket(port)) {

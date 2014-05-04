@@ -18,7 +18,7 @@ public class TelnetServer {
 	}
 
 	private void run() throws IOException {
-		SocketUtil.listen(2323, (InputStream sis, OutputStream sos) -> new Server().serve(sis, sos));
+		SocketUtil.listenIo(2323, (sis, sos) -> new Server().serve(sis, sos));
 	}
 
 	private class Server {

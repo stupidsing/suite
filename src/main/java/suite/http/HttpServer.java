@@ -3,7 +3,6 @@ package suite.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class HttpServer {
 	}
 
 	public void run(Handler handler) throws IOException {
-		SocketUtil.listen(8051, (InputStream is, OutputStream os) -> {
+		SocketUtil.listenIo(8051, (is, os) -> {
 			HashMap<String, String> responseHeaders = new HashMap<String, String>();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
