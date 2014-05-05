@@ -10,10 +10,11 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -92,8 +93,9 @@ public class To {
 		return string(bytes.getBytes());
 	}
 
-	public static String string(Date date) {
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+	public static String string(long time) {
+		LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+		return dateTime.format(FormatUtil.fmt);
 	}
 
 	public static String string(File file) throws IOException {

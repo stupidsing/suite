@@ -11,7 +11,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -280,7 +279,7 @@ public class ClusterProbe extends ThreadedService {
 
 	public String dumpActivePeers() {
 		return lastActiveTime.entrySet().stream() //
-				.map(e -> e.getKey() + " (last-active = " + To.string(new Date(e.getValue())) + ")") //
+				.map(e -> e.getKey() + " (last-active = " + To.string(e.getValue()) + ")") //
 				.collect(Collectors.joining("\n"));
 	}
 
