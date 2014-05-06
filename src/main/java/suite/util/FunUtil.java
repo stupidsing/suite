@@ -22,10 +22,6 @@ public class FunUtil {
 		public O apply(I i);
 	}
 
-	public interface FunEx<I, O, Ex extends Exception> {
-		public O apply(I i) throws Ex;
-	}
-
 	public static class Sinks<I> implements Sink<I> {
 		private Collection<Sink<I>> sinks = new ArrayList<>();
 
