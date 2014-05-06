@@ -84,12 +84,8 @@ public class Profiler {
 				for (StackTraceElement elem : threadInfo.getStackTrace())
 					elements.add(elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")");
 
-				for (String name : elements) {
-					int counter[] = record.get(name);
-					if (counter == null)
-						record.put(name, counter = new int[] { 0 });
-					counter[0]++;
-				}
+				for (String name : elements)
+					record.computeIfAbsent(name, any -> new int[] { 0 })[0]++;
 			}
 	}
 

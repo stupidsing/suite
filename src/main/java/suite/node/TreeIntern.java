@@ -14,19 +14,16 @@ public class TreeIntern {
 
 	private static Map<Integer, Tree> interns = new HashMap<>();
 
-	public static Tree create(Operator operator, Node left, Node right) {
-		left = left.finalNode();
-		right = right.finalNode();
+	public static Tree create(Operator operator, Node node0, Node node1) {
+		Node left = node0.finalNode();
+		Node right = node1.finalNode();
 
 		int hashCode = 1;
 		hashCode = 31 * hashCode + System.identityHashCode(left);
 		hashCode = 31 * hashCode + System.identityHashCode(operator);
 		hashCode = 31 * hashCode + System.identityHashCode(right);
 
-		Tree tree = interns.get(hashCode);
-		if (tree == null)
-			interns.put(hashCode, tree = Tree.create(operator, left, right));
-		return tree;
+		return interns.computeIfAbsent(hashCode, any -> Tree.create(operator, left, right));
 	}
 
 }

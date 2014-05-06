@@ -67,10 +67,7 @@ public class Generalizer {
 	}
 
 	public Reference getVariable(Node variable) {
-		Reference reference = variables.get(variable);
-		if (reference == null)
-			variables.put(variable, reference = new Reference());
-		return reference;
+		return variables.computeIfAbsent(variable, any -> new Reference());
 	}
 
 	public String dumpVariables() {

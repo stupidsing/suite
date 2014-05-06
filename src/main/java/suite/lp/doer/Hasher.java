@@ -49,10 +49,7 @@ public class Hasher {
 
 		if (node instanceof Reference) {
 			int id = ((Reference) node).getId();
-			Integer alias = aliases.get(id);
-			if (alias == null)
-				aliases.put(id, alias = nAliases++);
-			return alias;
+			return aliases.computeIfAbsent(id, any -> nAliases++);
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			int result = 1;

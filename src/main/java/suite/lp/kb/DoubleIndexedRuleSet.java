@@ -71,11 +71,7 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 	private List<Rule> ruleList(Rule rule) {
 		Prototype p0 = Prototype.get(rule);
 		Prototype p1 = Prototype.get(rule, 1);
-		ListMultimap<Prototype, Rule> index1 = index0.get(p0);
-
-		if (index1 == null)
-			index0.put(p0, index1 = ArrayListMultimap.create());
-
+		ListMultimap<Prototype, Rule> index1 = index0.computeIfAbsent(p0, any -> ArrayListMultimap.create());
 		return index1.get(p1);
 	}
 
