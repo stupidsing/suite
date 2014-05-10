@@ -78,13 +78,10 @@ public class TwoPassIndexer {
 	public Source<Reference> search(String searchKey) {
 		dictionary.clear(); // Saves memory
 
-		Source<String> keySource = new Source<String>() {
-			private Iterator<String> iter = keys.tailSet(searchKey).iterator();
-
-			public String source() {
-				String key = iter.hasNext() ? iter.next() : null;
-				return key != null && key.startsWith(searchKey) ? key : null;
-			}
+		Iterator<String> iter = keys.tailSet(searchKey).iterator();
+		Source<String> keySource = () -> {
+			String key = iter.hasNext() ? iter.next() : null;
+			return key != null && key.startsWith(searchKey) ? key : null;
 		};
 
 		return FunUtil.concat(FunUtil.map(key -> To.source(referencesByWord.get(key)), keySource));

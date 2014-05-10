@@ -105,11 +105,9 @@ public class Prover {
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
 					int pit = journal.getPointInTime();
-					Node bt = new Data<>(new Source<Boolean>() {
-						public Boolean source() {
-							journal.undoBinds(pit);
-							return Boolean.TRUE;
-						}
+					Node bt = new Data<Source<Boolean>>(() -> {
+						journal.undoBinds(pit);
+						return Boolean.TRUE;
 					});
 
 					alt = andTree(bt, orTree(andTree(right, rem), alt));
@@ -181,11 +179,9 @@ public class Prover {
 	private Node expand(Node query) {
 		Node alt0 = alt;
 
-		Data<?> cut = new Data<>(new Source<Boolean>() {
-			public Boolean source() {
-				alt = alt0;
-				return Boolean.TRUE;
-			}
+		Data<Source<Boolean>> cut = new Data<>(() -> {
+			alt = alt0;
+			return Boolean.TRUE;
 		});
 
 		return expandClauses(query, cut, config.ruleSet().searchRule(query));

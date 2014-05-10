@@ -64,23 +64,21 @@ public class Huffman<Unit> {
 	}
 
 	private Source<Boolean> encode(Source<Unit> source) {
-		return new Source<Boolean>() {
-			private Deque<Boolean> stack = new ArrayDeque<>();
+		Deque<Boolean> stack = new ArrayDeque<>();
 
-			public Boolean source() {
-				Unit unit;
+		return () -> {
+			Unit unit;
 
-				while (stack.isEmpty() && (unit = source.source()) != null) {
-					Node node = nodesByUnit.get(unit), parent;
+			while (stack.isEmpty() && (unit = source.source()) != null) {
+				Node node = nodesByUnit.get(unit), parent;
 
-					while ((parent = node.parent) != null) {
-						stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
-						node = parent;
-					}
+				while ((parent = node.parent) != null) {
+					stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
+					node = parent;
 				}
-
-				return !stack.isEmpty() ? stack.pop() : null;
 			}
+
+			return !stack.isEmpty() ? stack.pop() : null;
 		};
 	}
 

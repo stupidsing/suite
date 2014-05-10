@@ -141,15 +141,13 @@ public class CommandDispatcher {
 			node = generalizer.generalize(node);
 			Prover prover = new Prover(opt.pc(ruleSet));
 
-			Node elab = new Data<>(new Source<Boolean>() {
-				public Boolean source() {
-					String dump = generalizer.dumpVariables();
-					if (!dump.isEmpty())
-						opt.prompt().println(dump);
+			Node elab = new Data<Source<Boolean>>(() -> {
+				String dump = generalizer.dumpVariables();
+				if (!dump.isEmpty())
+					opt.prompt().println(dump);
 
-					count[0]++;
-					return Boolean.FALSE;
-				}
+				count[0]++;
+				return Boolean.FALSE;
 			});
 
 			prover.prove(Tree.create(TermOp.AND___, node, elab));
