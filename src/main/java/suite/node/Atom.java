@@ -1,7 +1,5 @@
 package suite.node;
 
-import java.lang.ref.WeakReference;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.node.util.Context;
@@ -31,14 +29,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom create(Context context, String name) {
-		Atom atom;
-		Map<String, WeakReference<Atom>> pool = context.getAtomPool();
-		synchronized (pool) {
-			WeakReference<Atom> ref = pool.get(name);
-			if (ref == null || (atom = ref.get()) == null)
-				pool.put(name, new WeakReference<>(atom = new Atom(name)));
-		}
-		return atom;
+		return context.findAtom(name, () -> new Atom(name));
 	}
 
 	@Override
