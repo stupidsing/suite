@@ -48,7 +48,10 @@ public class InspectUtil {
 	}
 
 	public List<Field> getFields(Class<?> clazz) {
-		return fieldsByClass.computeIfAbsent(clazz, any -> getFields0(clazz));
+		List<Field> ci = fieldsByClass.get(clazz);
+		if (ci == null)
+			fieldsByClass.put(clazz, ci = getFields0(clazz));
+		return ci;
 	}
 
 	private List<Field> getFields0(Class<?> clazz) {
