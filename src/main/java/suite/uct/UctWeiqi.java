@@ -62,9 +62,9 @@ public class UctWeiqi {
 
 		/**
 		 * The "play till both passes" Monte Carlo, with some customizations:
-		 * 
+		 *
 		 * - Consider capture moves first;
-		 * 
+		 *
 		 * - Would not fill a single-eye.
 		 */
 		@Override

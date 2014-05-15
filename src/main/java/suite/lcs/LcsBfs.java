@@ -12,7 +12,7 @@ import suite.util.Util;
 
 /**
  * Longest common subsequence using breadth-first search.
- * 
+ *
  * @author ywsing
  */
 public class LcsBfs<T> {

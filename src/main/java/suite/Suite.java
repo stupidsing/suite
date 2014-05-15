@@ -88,7 +88,7 @@ public class Suite {
 
 	/**
 	 * Convert rules in a rule set back into to #-separated format.
-	 * 
+	 *
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node getRuleList(RuleSet rs, Prototype proto) {

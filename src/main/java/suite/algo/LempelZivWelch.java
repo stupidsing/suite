@@ -13,7 +13,7 @@ import suite.util.Util;
 
 /**
  * Lempel-Ziv-Welch compression.
- * 
+ *
  * @author ywsing
  */
 public class LempelZivWelch<Unit> {

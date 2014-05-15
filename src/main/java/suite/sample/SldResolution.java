@@ -23,7 +23,7 @@ import suite.util.Util;
 
 /**
  * Selective linear definite clause resolution.
- * 
+ *
  * @author ywsing
  */
 public class SldResolution {

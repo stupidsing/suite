@@ -17,7 +17,7 @@ import suite.util.Util.ExecutableProgram;
 
 /**
  * Compare content of two zip files.
- * 
+ *
  * @author ywsing
  */
 public class CompareZip extends ExecutableProgram {

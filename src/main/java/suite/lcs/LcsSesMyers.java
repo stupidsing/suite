@@ -7,11 +7,11 @@ import java.util.List;
 
 /**
  * Myer's algorithm for longest common subsequence/shortest edit script.
- * 
+ *
  * Code copied shamelessly from: http://simplygenius.net/Article/DiffTutorial1
- * 
+ *
  * Not even implemented part 2, linear space refinement...
- * 
+ *
  * @author ywsing
  */
 public class LcsSesMyers<T> {

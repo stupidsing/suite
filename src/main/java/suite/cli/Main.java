@@ -19,7 +19,7 @@ import suite.util.Util.ExecutableProgram;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
- * 
+ *
  * @author ywsing
  */
 public class Main extends ExecutableProgram {

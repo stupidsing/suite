@@ -9,11 +9,11 @@ import suite.util.SerializeUtil.Serializer;
 
 /**
  * Persists B-tree pages to file on disk.
- * 
+ *
  * The following must holds when using this class:
- * 
+ *
  * pageSize >= sizeof(char) + 2 * sizeof(int) + branchFactor * branchPointerSize
- * 
+ *
  * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */
 public class SerializedPageFile<V> implements Closeable {

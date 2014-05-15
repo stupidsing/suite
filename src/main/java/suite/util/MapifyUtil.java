@@ -18,7 +18,7 @@ import suite.util.FunUtil.Fun;
 
 /**
  * Convert (supposedly) any Java structures to recursive maps.
- * 
+ *
  * @author ywsing
  */
 public class MapifyUtil {

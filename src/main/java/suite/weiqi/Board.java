@@ -27,7 +27,7 @@ public class Board extends Array<Occupation> {
 	 * Plays a move on the Weiqi board. Do not check for repeats in game state
 	 * history since Board do not have them. Use GameSet.moveIfPossible() for
 	 * the rule-accordance version.
-	 * 
+	 *
 	 * This method do not take use of GroupAnalysis for performance reasons.
 	 */
 	public MoveType playIfSeemsPossible(Coordinate c, Occupation player) {

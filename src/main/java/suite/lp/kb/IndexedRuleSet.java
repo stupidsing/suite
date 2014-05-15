@@ -10,7 +10,7 @@ import com.google.common.collect.ListMultimap;
 /**
  * Index rules by default prototype, which is the leftest element in the rule
  * head or query.
- * 
+ *
  * @author ywsing
  */
 public class IndexedRuleSet extends LinearRuleSet {

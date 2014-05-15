@@ -40,7 +40,7 @@ public class CompositeRuleSet implements RuleSet {
 
 	/**
 	 * If the override rule set contain rules for specified head, return them.
-	 * 
+	 *
 	 * Otherwise return what we got from parent rule set.
 	 */
 	@Override

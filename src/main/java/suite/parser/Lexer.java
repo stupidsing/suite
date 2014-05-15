@@ -11,7 +11,7 @@ import suite.util.FunUtil.Source;
 
 /**
  * Lexical analyzer.
- * 
+ *
  * @author ywsing
  */
 public class Lexer {

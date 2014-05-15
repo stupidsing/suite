@@ -100,7 +100,7 @@ public class UctSearch<Move> {
 
 	/**
 	 * Plays a simulation UCT.
-	 * 
+	 *
 	 * @return true if the next player will win after UCT selections and
 	 *         evaluation after random moves.
 	 */

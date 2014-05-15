@@ -12,7 +12,7 @@ import suite.util.FunUtil.Source;
 
 /**
  * Longest common subsequence using dynamic programming.
- * 
+ *
  * @author ywsing
  */
 public class LcsDp<T> {

@@ -7,7 +7,7 @@ import suite.node.io.Operator;
 
 /**
  * Tree that only have a single copy. Saves memory footprint.
- * 
+ *
  * @author ywsing
  */
 public class TreeIntern {

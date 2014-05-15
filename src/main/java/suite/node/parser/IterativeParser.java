@@ -29,7 +29,7 @@ import suite.util.Util;
 
 /**
  * Non-recursive, performance-improved parser for operator-based languages.
- * 
+ *
  * @author ywsing
  */
 public class IterativeParser {

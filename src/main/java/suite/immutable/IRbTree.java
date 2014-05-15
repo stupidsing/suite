@@ -9,7 +9,7 @@ import suite.util.FunUtil.Source;
 /**
  * Immutable Red-Black tree implementation. However, node deletion is not
  * implemented.
- * 
+ *
  * @author ywsing
  */
 public class IRbTree<T> implements ITree<T> {
@@ -93,7 +93,7 @@ public class IRbTree<T> implements ITree<T> {
 	/**
 	 * Replaces a value with another. Mainly for dictionary cases to replace
 	 * stored value for the same key.
-	 * 
+	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
 	public IRbTree<T> replace(T t) {

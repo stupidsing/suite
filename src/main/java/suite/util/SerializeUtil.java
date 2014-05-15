@@ -24,7 +24,7 @@ public class SerializeUtil {
 
 	/**
 	 * Serializes a list.
-	 * 
+	 *
 	 * Size = 4 + number of elements * size of serializer<T>
 	 */
 	public static <T> Serializer<List<T>> list(Serializer<T> serializer) {
@@ -47,7 +47,7 @@ public class SerializeUtil {
 
 	/**
 	 * Serializes a nullable value.
-	 * 
+	 *
 	 * Size = 1 + size of serializer<T>
 	 */
 	public static <T> Serializer<T> nullable(Serializer<T> serializer) {
@@ -68,7 +68,7 @@ public class SerializeUtil {
 
 	/**
 	 * Serialize bytes.
-	 * 
+	 *
 	 * Size = length
 	 */
 	public static Serializer<Bytes> bytes(int length) {
@@ -90,7 +90,7 @@ public class SerializeUtil {
 
 	/**
 	 * Serializes a string as default character set (UTF-8).
-	 * 
+	 *
 	 * Size = length
 	 */
 	public static Serializer<String> string(int length) {
@@ -112,7 +112,7 @@ public class SerializeUtil {
 
 	/**
 	 * Serializes a boolean.
-	 * 
+	 *
 	 * Size = 1
 	 */
 	public static Serializer<Boolean> boolean_() {
@@ -129,7 +129,7 @@ public class SerializeUtil {
 
 	/**
 	 * Serializes an integer.
-	 * 
+	 *
 	 * Size = 4
 	 */
 	public static Serializer<Integer> int_() {

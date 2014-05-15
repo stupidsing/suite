@@ -7,7 +7,7 @@ import suite.util.ParseUtil;
 
 /**
  * Unify all whitespaces to the space bar space (ASCII code 32).
- * 
+ *
  * @author ywsing
  */
 public class WhitespacePreprocessor implements Fun<String, String> {

@@ -8,7 +8,7 @@ import suite.util.Util;
 
 /**
  * Turns indent patterns into parentheses, to provide Python-like parsing.
- * 
+ *
  * @author ywsing
  */
 public class IndentationPreprocessor implements Fun<String, String> {

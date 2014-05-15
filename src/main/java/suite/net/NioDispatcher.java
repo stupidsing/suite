@@ -62,7 +62,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 
 	/**
 	 * Waits for incoming connections.
-	 * 
+	 *
 	 * @return event for switching off the server.
 	 */
 	public Closeable listen(int port) throws IOException {

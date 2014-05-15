@@ -551,15 +551,15 @@ public class Ebnf {
 
 	/**
 	 * Transform head-recursion rule as follows:
-	 * 
+	 *
 	 * A = B0 | B1 | ... | Bm | A C0 | A C1 | ... | A Cn
-	 * 
+	 *
 	 * become two rules
-	 * 
+	 *
 	 * A = tempB tempC*
-	 * 
+	 *
 	 * tempB = B0 | B1 | ... | Bm
-	 * 
+	 *
 	 * tempC = C0 | C1 | ... | Cn
 	 */
 	private Grammar reduceHeadRecursion(String name, Grammar grammar0) {

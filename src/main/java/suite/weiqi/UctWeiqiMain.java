@@ -16,7 +16,7 @@ import suite.weiqi.Weiqi.Occupation;
 
 /**
  * How I did profiling:
- * 
+ *
  * java -agentlib:hprof=cpu=times,depth=16,interval=1,thread=y
  */
 public class UctWeiqiMain<Move> {

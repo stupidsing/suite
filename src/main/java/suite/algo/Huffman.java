@@ -16,7 +16,7 @@ import suite.util.To;
 
 /**
  * Huffman compression.
- * 
+ *
  * @author ywsing
  */
 public class Huffman<Unit> {

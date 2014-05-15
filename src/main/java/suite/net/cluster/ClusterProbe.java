@@ -244,7 +244,7 @@ public class ClusterProbe extends ThreadedService {
 
 	/**
 	 * Sends message to all nodes.
-	 * 
+	 *
 	 * TODO this is costly and un-scalable.
 	 */
 	private void broadcast(Command data) {

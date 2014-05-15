@@ -86,8 +86,8 @@ data operator as OPERATOR-MUL >>
 data operator as OPERATOR-NE >>
 data operator as OPERATOR-OR >>
 data operator as OPERATOR-SUB >>
-data fc as ATOM [number] >> 
-data fc as BOOLEAN boolean >> 
+data fc as ATOM [number] >>
+data fc as BOOLEAN boolean >>
 data fc as DEF-VAR (fc, fc) >>
 data fc as FUN [number] fc >>
 data fc as IF (fc, fc, fc) >>

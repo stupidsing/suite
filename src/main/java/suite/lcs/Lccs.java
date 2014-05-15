@@ -13,7 +13,7 @@ import suite.util.Pair;
 
 /**
  * Longest common continuous subsequence, using a simple rolling hash method.
- * 
+ *
  * @author ywsing
  */
 public class Lccs {

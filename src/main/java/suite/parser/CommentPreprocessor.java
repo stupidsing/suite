@@ -7,7 +7,7 @@ import suite.util.ParseUtil;
 
 /**
  * Remove comments.
- * 
+ *
  * @author ywsing
  */
 public class CommentPreprocessor implements Fun<String, String> {

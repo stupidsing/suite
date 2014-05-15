@@ -15,7 +15,7 @@ import suite.util.Util;
 
 /**
  * B+ tree implementation.
- * 
+ *
  * @author ywsing
  */
 public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
@@ -297,7 +297,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 
 	/**
 	 * Merge two successive branches of a page.
-	 * 
+	 *
 	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of
 	 * parent, while p1 is in next.
 	 */

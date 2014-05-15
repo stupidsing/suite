@@ -21,7 +21,7 @@ import suite.util.Util;
 
 /**
  * Recursive-descent parser for operator-based languages.
- * 
+ *
  * @author ywsing
  */
 public class RecursiveParser {

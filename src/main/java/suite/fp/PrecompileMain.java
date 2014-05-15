@@ -15,7 +15,7 @@ import suite.util.Util.ExecutableProgram;
 
 /**
  * Performs precompilation.
- * 
+ *
  * @author ywsing
  */
 public class PrecompileMain extends ExecutableProgram {

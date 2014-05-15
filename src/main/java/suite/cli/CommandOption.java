@@ -19,7 +19,7 @@ import suite.util.Util;
 
 /**
  * Command line interface environment.
- * 
+ *
  * @author ywsing
  */
 public class CommandOption {

@@ -12,7 +12,7 @@ import com.google.common.collect.ListMultimap;
 /**
  * Index rules by two layers of prototype, which is the leftest element and the
  * leftest of the right element in the rule head or query.
- * 
+ *
  * @author ywsing
  */
 public class DoubleIndexedRuleSet extends IndexedRuleSet {

@@ -16,7 +16,7 @@ import suite.util.Util.ExecutableProgram;
 /**
  * Starts program using a JavaScript script. Perhaps you can avoid using Spring
  * XML.
- * 
+ *
  * @author ywsing
  */
 public class JsMain extends ExecutableProgram {

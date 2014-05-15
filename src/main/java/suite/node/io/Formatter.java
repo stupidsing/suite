@@ -62,7 +62,7 @@ public class Formatter {
 
 	/**
 	 * Converts a node to its string representation.
-	 * 
+	 *
 	 * @param node
 	 *            Node to be converted.
 	 * @param parentPrec

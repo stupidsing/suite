@@ -11,7 +11,7 @@ import suite.util.Util;
 
 /**
  * Index rules by the first atom in their heads.
- * 
+ *
  * @author ywsing
  */
 public class Prototype implements Comparable<Prototype> {
