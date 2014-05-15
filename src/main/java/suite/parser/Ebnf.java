@@ -23,7 +23,7 @@ import suite.util.Util;
 
 /**
  * Parser for Backus-Naur form grammars.
- * 
+ *
  * @author ywsing
  */
 public class Ebnf {
@@ -190,7 +190,7 @@ public class Ebnf {
 	}
 
 	private List<Grammar> parseGrammars(List<String> list) {
-		return To.list(FunUtil.iter(FunUtil.map(s -> parseGrammar(s), To.source(list))));
+		return To.list(FunUtil.iter(FunUtil.map(this::parseGrammar, To.source(list))));
 	}
 
 	public Node parse(String s) {
@@ -294,7 +294,7 @@ public class Ebnf {
 			else if (grammar instanceof TokenGrammar)
 				states = parseToken(state1, (TokenGrammar) grammar);
 			else if (grammar instanceof CharRangeGrammar)
-				states = parseCharRange(pos, state1, (CharRangeGrammar) grammar);
+				states = parseCharRange(state1, (CharRangeGrammar) grammar);
 			else
 				states = noResult;
 
@@ -373,7 +373,7 @@ public class Ebnf {
 			return parseExpect(state, expectString(state.pos, grammar.token));
 		}
 
-		private Source<State> parseCharRange(int pos, State state, CharRangeGrammar grammar) {
+		private Source<State> parseCharRange(State state, CharRangeGrammar grammar) {
 			return parseExpect(state, expectCharRange(state.pos, grammar.start, grammar.end));
 		}
 
@@ -518,8 +518,7 @@ public class Ebnf {
 				}
 			}
 
-			Pair<Integer, Integer> pos = Pair.create(row, col);
-			return pos;
+			return Pair.create(row, col);
 		}
 	}
 

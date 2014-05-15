@@ -44,9 +44,6 @@ public class DumpUtil {
 	 *            To be appended before each line.
 	 * @param object
 	 *            The monster.
-	 * @param sb
-	 *            String buffer to hold the dumped content.
-	 * @return
 	 */
 	public static String dump(String prefix, Object object) {
 		DumpUtil dumpUtil = new DumpUtil();

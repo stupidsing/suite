@@ -210,7 +210,7 @@ public class SystemPredicates {
 			ps = ps.finalNode();
 			Atom atom = ps instanceof Atom ? (Atom) ps : null;
 			String name = atom != null ? atom.getName() : null;
-			return name != null ? predicates.containsKey(name) : false;
+			return name != null && predicates.containsKey(name);
 		}
 	}
 

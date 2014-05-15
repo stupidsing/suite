@@ -34,9 +34,8 @@ public class TwoPassIndexerTest {
 
 		Map<String, List<Reference>> map = indexer.getKeysByWord();
 
-		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet(), (entry0, entry1) -> {
-			return entry1.getValue().size() - entry0.getValue().size();
-		});
+		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet() //
+				, (e0, e1) -> e1.getValue().size() - e0.getValue().size());
 
 		System.out.println("Most popular key words:");
 
@@ -50,5 +49,4 @@ public class TwoPassIndexerTest {
 		for (Reference key : FunUtil.iter(indexer.search("IOException")))
 			System.out.println("IOException found in " + key);
 	}
-
 }

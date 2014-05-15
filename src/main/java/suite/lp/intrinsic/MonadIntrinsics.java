@@ -34,7 +34,7 @@ public class MonadIntrinsics {
 			Node in = inputs.get(1);
 
 			try {
-				Process process = Runtime.getRuntime().exec(list.toArray(new String[0]));
+				Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
 				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
 				Node result = new Data<>(new IndexedReader(isr));
 

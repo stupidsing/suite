@@ -29,7 +29,7 @@ import suite.util.Util;
 
 /**
  * Command line interface dispatcher.
- * 
+ *
  * @author ywsing
  */
 public class CommandDispatcher {
@@ -77,7 +77,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchCommand(String input, Writer writer) throws IOException {
-		return !Util.isBlank(input) ? dispatchCommand0(input, writer) : true;
+		return Util.isBlank(input) || dispatchCommand0(input, writer);
 	}
 
 	private boolean dispatchCommand0(String input, Writer writer) throws IOException {

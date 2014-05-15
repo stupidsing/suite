@@ -34,19 +34,22 @@ public class MathUtil {
 	}
 
 	public static int steinGcd0(int n0, int n1) {
-		boolean isEven0 = isEven(n0);
-		boolean isEven1 = isEven(n1);
+		if (n0 != 0 && n1 != 0) {
+			boolean isEven0 = isEven(n0);
+			boolean isEven1 = isEven(n1);
 
-		if (isEven0 && isEven1)
-			return 2 * steinGcd0(n0 / 2, n1 / 2);
-		else if (isEven0)
-			return steinGcd0(n0 / 2, n1);
-		else if (isEven1)
-			return steinGcd0(n0, n1 / 2);
-		else if (n1 > n0)
-			return steinGcd0(n0, (n1 - n0) / 2);
-		else
-			return steinGcd0(n1, (n0 - n1) / 2);
+			if (isEven0 && isEven1)
+				return 2 * steinGcd0(n0 / 2, n1 / 2);
+			else if (isEven0)
+				return steinGcd0(n0 / 2, n1);
+			else if (isEven1)
+				return steinGcd0(n0, n1 / 2);
+			else if (n1 > n0)
+				return steinGcd0(n0, (n1 - n0) / 2);
+			else
+				return steinGcd0(n1, (n0 - n1) / 2);
+		} else
+			return n0 + n1;
 	}
 
 	private static boolean isEven(int n) {

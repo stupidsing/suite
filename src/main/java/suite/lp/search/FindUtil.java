@@ -6,7 +6,6 @@ import suite.lp.doer.Cloner;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
 import suite.util.FunUtil;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -34,11 +33,7 @@ public class FindUtil {
 	 * Does find in background.
 	 */
 	private static Source<Node> collect(Finder finder, Source<Node> in) {
-		Sink<Sink<Node>> fun = sink0 -> {
-			finder.find(in, node -> sink0.sink(new Cloner().clone(node)));
-		};
-
-		return FunUtil.suck(fun);
+		return FunUtil.suck(sink0 -> finder.find(in, node -> sink0.sink(new Cloner().clone(node))));
 	}
 
 }

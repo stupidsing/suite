@@ -11,7 +11,7 @@ import suite.node.Tree;
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with
  * free references.
- * 
+ *
  * This method allows such thing by giving aliases, thus "a + .123" and
  * "a + .456" will have same hashes.
  *
@@ -36,7 +36,7 @@ public class Hasher {
 
 		@Override
 		public boolean equals(Object object) {
-			return object.getClass() == HashedTerm.class ? Objects.equals(node, ((HashedTerm) object).node) : false;
+			return object.getClass() == HashedTerm.class && Objects.equals(node, ((HashedTerm) object).node);
 		}
 
 		public Node getNode() {

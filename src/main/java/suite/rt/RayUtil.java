@@ -46,7 +46,7 @@ public class RayUtil {
 		while ((b0 = index0 < size0) | (b1 = index1 < size1)) {
 			RayHit rayHit0 = b0 ? rayHits0.get(index0) : null;
 			RayHit rayHit1 = b1 ? rayHits1.get(index1) : null;
-			boolean isAdvance0 = b0 ? b1 ? rayHit0.advance() < rayHit1.advance() : true : false;
+			boolean isAdvance0 = b0 && (!b1 || rayHit0.advance() < rayHit1.advance());
 
 			if (isAdvance0)
 				index0++;

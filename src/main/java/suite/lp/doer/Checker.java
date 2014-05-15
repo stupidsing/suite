@@ -62,7 +62,7 @@ public class Checker {
 					Boolean value = isSingleton.get(atom);
 					if (value == null)
 						value = Boolean.TRUE;
-					else if (value == true)
+					else if (value == Boolean.TRUE)
 						value = Boolean.FALSE;
 					isSingleton.put(atom, value);
 				}

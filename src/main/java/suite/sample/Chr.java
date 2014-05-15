@@ -26,7 +26,7 @@ import suite.util.To;
 
 /**
  * Constraint handling rules implementation.
- * 
+ *
  * @author ywsing
  */
 public class Chr {
