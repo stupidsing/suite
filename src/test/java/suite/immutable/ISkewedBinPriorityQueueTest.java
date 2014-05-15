@@ -16,7 +16,7 @@ public class ISkewedBinPriorityQueueTest {
 	public void test() {
 		int size = 4096;
 
-		List<Integer> list = new ArrayList<Integer>();
+		List<Integer> list = new ArrayList<>();
 		for (int i = 0; i < size; i++)
 			list.add(i);
 		Collections.shuffle(list);

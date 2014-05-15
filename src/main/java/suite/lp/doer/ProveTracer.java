@@ -67,7 +67,7 @@ public class ProveTracer {
 			int depth0 = currentDepth;
 			Record record = new Record(record0, query1, currentDepth + 1);
 
-			Data<Source<Boolean>> enter = new Data<Source<Boolean>>(() -> {
+			Data<Source<Boolean>> enter = new Data<>(() -> {
 				currentRecord = record;
 				currentDepth = record.depth;
 				record.start = records.size();
@@ -75,14 +75,14 @@ public class ProveTracer {
 				return Boolean.TRUE;
 			});
 
-			Data<Source<Boolean>> leaveOk = new Data<Source<Boolean>>(() -> {
+			Data<Source<Boolean>> leaveOk = new Data<>(() -> {
 				currentRecord = record0;
 				currentDepth = depth0;
 				record.nOkays++;
 				return Boolean.TRUE;
 			});
 
-			Data<Source<Boolean>> leaveFail = new Data<Source<Boolean>>(() -> {
+			Data<Source<Boolean>> leaveFail = new Data<>(() -> {
 				currentRecord = record0;
 				currentDepth = depth0;
 				record.end = records.size();

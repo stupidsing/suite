@@ -20,7 +20,7 @@ public class I23Tree<T> implements ITree<T> {
 
 	/**
 	 * List<Slot> would be null in leaves. Pivot stores the leaf value.
-	 * 
+	 *
 	 * Pivot would be null at the minimum side of a tree as the guarding key.
 	 */
 	private class Slot {
@@ -95,7 +95,7 @@ public class I23Tree<T> implements ITree<T> {
 	/**
 	 * Replaces a value with another. Mainly for dictionary cases to replace
 	 * stored value for the same key.
-	 * 
+	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
 	public I23Tree<T> replace(T t) {
@@ -103,11 +103,11 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	public I23Tree<T> remove(T t) {
-		return new I23Tree<T>(comparator, createRootNode(remove(root, t)));
+		return new I23Tree<>(comparator, createRootNode(remove(root, t)));
 	}
 
 	private I23Tree<T> add(T t, boolean isReplace) {
-		return new I23Tree<T>(comparator, createRootNode(add(root, t, isReplace)));
+		return new I23Tree<>(comparator, createRootNode(add(root, t, isReplace)));
 	}
 
 	private List<Slot> add(List<Slot> node0, T t, boolean isReplace) {

@@ -55,7 +55,7 @@ public class CacheUtil {
 	}
 
 	public <I> I proxy(Class<I> interface_, I object) {
-		return proxy(interface_, object, new HashSet<Method>(Arrays.asList(interface_.getMethods())));
+		return proxy(interface_, object, new HashSet<>(Arrays.asList(interface_.getMethods())));
 	}
 
 	public <I> I proxyByMethodNames(Class<I> interface_, I object, Set<String> methodNames) {

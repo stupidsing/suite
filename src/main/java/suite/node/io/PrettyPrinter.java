@@ -24,9 +24,9 @@ public class PrettyPrinter {
 	private static int squeezeLineLength = 8;
 	private static String indentSpaces = "    ";
 
-	private static Set<Node> lineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else-if")));
-	private static Set<Node> preferLineBreakBeforeKeywords = new HashSet<Node>(Arrays.asList(Atom.create("else")));
-	private static Set<Operator> lineBreakAfterOperators = new HashSet<Operator>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_,
+	private static Set<Node> lineBreakBeforeKeywords = new HashSet<>(Arrays.asList(Atom.create("else-if")));
+	private static Set<Node> preferLineBreakBeforeKeywords = new HashSet<>(Arrays.asList(Atom.create("else")));
+	private static Set<Operator> lineBreakAfterOperators = new HashSet<>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_,
 			TermOp.FUN___));
 
 	private static class OperatorPosition {

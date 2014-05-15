@@ -11,7 +11,7 @@ import suite.util.To;
 
 /**
  * Process #include tags.
- * 
+ *
  * @author ywsing
  */
 public class IncludePreprocessor implements Fun<String, String> {
@@ -29,7 +29,7 @@ public class IncludePreprocessor implements Fun<String, String> {
 	public String apply(String in) {
 		StringBuilder sb = new StringBuilder();
 		try {
-			doIncludes(dir, in, new HashSet<String>(), sb);
+			doIncludes(dir, in, new HashSet<>(), sb);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

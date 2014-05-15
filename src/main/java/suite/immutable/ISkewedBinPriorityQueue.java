@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * Immutable skewed binomial priority queue, implemented using sparse-list of
  * trees.
- * 
+ *
  * @author ywsing
  */
 public class ISkewedBinPriorityQueue<T> {
@@ -68,7 +68,7 @@ public class ISkewedBinPriorityQueue<T> {
 			for (T value : values0.reverse())
 				trees1 = skewInsert(new Node(value), trees1);
 
-			return new ISkewedBinPriorityQueue<T>(comparator, trees1);
+			return new ISkewedBinPriorityQueue<>(comparator, trees1);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class ISkewedBinPriorityQueue<T> {
 	}
 
 	public ISkewedBinPriorityQueue<T> add(T value) {
-		return new ISkewedBinPriorityQueue<T>(comparator, skewInsert(new Node(value), trees));
+		return new ISkewedBinPriorityQueue<>(comparator, skewInsert(new Node(value), trees));
 	}
 
 	public ISkewedBinPriorityQueue<T> meld(ISkewedBinPriorityQueue<T> pq) {

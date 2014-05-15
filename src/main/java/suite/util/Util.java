@@ -113,7 +113,7 @@ public class Util {
 	}
 
 	private static ThreadPoolExecutor createExecutor(int corePoolSize, int maxPoolSize) {
-		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(256));
+		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
 	}
 
 	public static Class<?> currentClass() {

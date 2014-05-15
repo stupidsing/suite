@@ -26,7 +26,7 @@ public class GameSet {
 	 * will be empty, not suitable for real-play scenario.
 	 */
 	public GameSet(Board board, Occupation nextPlayer) {
-		this(board, nextPlayer, new HashSet<Integer>());
+		this(board, nextPlayer, new HashSet<>());
 		previousStates.add(board.hashCode());
 	}
 

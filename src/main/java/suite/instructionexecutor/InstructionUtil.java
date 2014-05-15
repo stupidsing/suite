@@ -203,7 +203,7 @@ public class InstructionUtil {
 		}
 
 		try {
-			return new Data<Intrinsic>(clazz.newInstance());
+			return new Data<>(clazz.newInstance());
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}

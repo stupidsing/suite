@@ -26,16 +26,16 @@ import suite.util.Util;
 
 /**
  * Immutable, on-disk B-tree implementation.
- * 
+ *
  * To allow efficient page management, a large B-tree has one smaller B-tree for
  * storing unused pages, called allocation B-tree. That smaller one might
  * contain a even smaller allocation B-tree, until it becomes small enough to
  * fit in a single disk page.
- * 
+ *
  * Transaction control is done by a "stamp" consisting of a chain of root page
  * numbers of all B-trees. The holder object persist the stmap into another
  * file.
- * 
+ *
  * @author ywsing
  */
 public class IbTree<Key> implements Closeable {
@@ -68,7 +68,7 @@ public class IbTree<Key> implements Closeable {
 
 	/**
 	 * In leaves, pointer would be null, and pivot stores the leaf value.
-	 * 
+	 *
 	 * Pivot would be null at the minimum side of a tree as the guarding key.
 	 */
 	private class Slot {
@@ -114,7 +114,7 @@ public class IbTree<Key> implements Closeable {
 	 * Protect discarded pages belonging to previous transactions, so that they
 	 * are not being allocated immediately. This supports immutability (i.e.
 	 * copy-on-write) and with this recovery can succeed.
-	 * 
+	 *
 	 * On the other hand, allocated and discarded pages are reused here, since
 	 * they belong to current transaction.
 	 */
@@ -245,7 +245,7 @@ public class IbTree<Key> implements Closeable {
 		/**
 		 * Replaces a value with another, attached with a payload of page data.
 		 * For dictionary cases to replace stored value of the same key.
-		 * 
+		 *
 		 * Asserts comparator.compare(<original-key>, key) == 0.
 		 */
 		public <Payload> void put(Key key, Bytes payload) {
@@ -383,7 +383,7 @@ public class IbTree<Key> implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Txm() {
-			stampFile = new SerializedPageFile<List<Integer>>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
+			stampFile = new SerializedPageFile<>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
 		public Transaction begin() {
@@ -440,29 +440,29 @@ public class IbTree<Key> implements Closeable {
 	 * @return Calculate the maximum number of values that can be stored in this
 	 *         tree before running out of pages, regardless of the branching
 	 *         statuses, in a most conservative manner.
-	 * 
+	 *
 	 *         First, we relate the number of branches in nodes to the size of
 	 *         the tree. For each branch node, it occupy 1 child of its parent,
 	 *         and create children at the number of branch factor. Therefore its
 	 *         "gain" is its branch factor minus 1. The tree root is a single
 	 *         entry, thus the sum of all "gains" plus 1 result in the total
 	 *         number of leave nodes.
-	 * 
+	 *
 	 *         Second, we find the smallest tree for n pages. 1 page is used as
 	 *         the root which has 2 children at minimum. Other pages should have
 	 *         half of branch factor at minimum.
-	 * 
+	 *
 	 *         Third, to cause page exhaustion at next insert, it require a
 	 *         split to occur. Therefore 1 page should be at its maximum size.
 	 *         This adds in half of branch factor minus 1 of nodes.
-	 * 
+	 *
 	 *         Fourth, the result needs to be minus by 1 to exclude the guard
 	 *         node at rightmost of the tree.
-	 * 
+	 *
 	 *         Fifth, most transactions would acquire some new pages before old
 	 *         pages could be discarded during commit. We have to reserve 10% of
 	 *         pages for transaction use.
-	 * 
+	 *
 	 *         In formula, the minimum number of nodes causing split: 1 + (2 -
 	 *         1) + (size - 1) * (minBranchFactor - 1) + (minBranchFactor - 1) -
 	 *         1 = size * (minBranchFactor - 1) + 1

@@ -9,12 +9,12 @@ import suite.util.FunUtil.Source;
 
 /**
  * Immutable linked list.
- * 
+ *
  * @author ywsing
  */
 public class IList<T> implements Iterable<T> {
 
-	private static IList<?> end = new IList<Object>(null, null);
+	private static IList<?> end = new IList<>(null, null);
 
 	private T head;
 	private IList<T> tail;

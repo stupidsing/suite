@@ -16,13 +16,13 @@ import suite.util.Util;
 
 /**
  * A very crude HTTP server.
- * 
+ *
  * Possible improvements:
- * 
+ *
  * TODO persistent connection
- * 
+ *
  * TODO direct output without buffering
- * 
+ *
  * @author yw.sing
  */
 public class HttpServer {
@@ -33,7 +33,7 @@ public class HttpServer {
 
 	public void run(Handler handler) throws IOException {
 		SocketUtil.listenIo(8051, (is, os) -> {
-			HashMap<String, String> responseHeaders = new HashMap<String, String>();
+			HashMap<String, String> responseHeaders = new HashMap<>();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 			String line, ls[];

@@ -14,7 +14,7 @@ public class DefaultFunMap<K, V> implements Map<K, V> {
 	private Fun<K, V> fun;
 
 	public DefaultFunMap(Fun<K, V> fun) {
-		this(new HashMap<K, V>(), fun);
+		this(new HashMap<>(), fun);
 	}
 
 	public DefaultFunMap(Map<K, V> map, Fun<K, V> fun) {

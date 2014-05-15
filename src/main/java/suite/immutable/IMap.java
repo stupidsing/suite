@@ -8,7 +8,7 @@ import suite.util.Pair;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
-	private ITree<Pair<K, V>> tree = new I23Tree<Pair<K, V>>(Pair.<K, V> comparatorByFirst());
+	private ITree<Pair<K, V>> tree = new I23Tree<>(Pair.<K, V> comparatorByFirst());
 
 	public IMap() {
 	}
@@ -31,15 +31,15 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public IMap<K, V> put(K k, V v) {
-		return new IMap<K, V>(tree.add(Pair.create(k, v)));
+		return new IMap<>(tree.add(Pair.create(k, v)));
 	}
 
 	public IMap<K, V> replace(K k, V v) {
-		return new IMap<K, V>(tree.replace(Pair.create(k, v)));
+		return new IMap<>(tree.replace(Pair.create(k, v)));
 	}
 
 	public IMap<K, V> remove(K k) {
-		return new IMap<K, V>(tree.remove(Pair.create(k, (V) null)));
+		return new IMap<>(tree.remove(Pair.create(k, (V) null)));
 	}
 
 	@Override

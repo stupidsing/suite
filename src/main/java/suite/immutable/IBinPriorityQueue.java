@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Immutable binomial priority queue, implemented using dense-list of trees.
- * 
+ *
  * @author ywsing
  */
 public class IBinPriorityQueue<T> {
@@ -18,7 +18,7 @@ public class IBinPriorityQueue<T> {
 
 	/**
 	 * Forest of trees.
-	 * 
+	 *
 	 * Note that trees[rank].nodes.size = rank if trees[rank] is not null.
 	 */
 	private Node trees[];
@@ -29,7 +29,7 @@ public class IBinPriorityQueue<T> {
 		private T value;
 
 		public Node(T value) {
-			this(new ArrayList<Node>(), value);
+			this(new ArrayList<>(), value);
 		}
 
 		public Node(List<Node> nodes, T value) {

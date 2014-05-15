@@ -38,7 +38,7 @@ public class ClusterMapTest {
 			clusters.put(name, cluster);
 			cluster.start();
 
-			clMap.put(name, new ClusterMap<Integer, String>(cluster));
+			clMap.put(name, new ClusterMap<>(cluster));
 		}
 
 		Util.sleepQuietly(5 * 1000);

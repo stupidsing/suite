@@ -31,15 +31,15 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 	}
 
 	public ISet<V> add(V v) {
-		return new ISet<V>(tree.add(v));
+		return new ISet<>(tree.add(v));
 	}
 
 	public ISet<V> replace(V v) {
-		return new ISet<V>(tree.replace(v));
+		return new ISet<>(tree.replace(v));
 	}
 
 	public ISet<V> remove(V v) {
-		return new ISet<V>(tree.remove(v));
+		return new ISet<>(tree.remove(v));
 	}
 
 	@Override
