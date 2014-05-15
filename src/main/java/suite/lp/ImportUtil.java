@@ -60,7 +60,7 @@ public class ImportUtil {
 		return importUrl(rs, rebase(root, path));
 	}
 
-	public boolean importUrl(RuleSet rs, URL url1) throws MalformedURLException, IOException {
+	public boolean importUrl(RuleSet rs, URL url1) throws IOException {
 		URL root0 = this.root;
 		setRoot(url1);
 		try {

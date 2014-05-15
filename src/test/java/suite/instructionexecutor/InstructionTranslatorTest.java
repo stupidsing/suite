@@ -96,7 +96,7 @@ public class InstructionTranslatorTest {
 		return execute(code, exec -> ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0))));
 	}
 
-	private <T> T execute(Node code, Fun<Fun<Node, Node>, T> fun) throws IOException, MalformedURLException {
+	private <T> T execute(Node code, Fun<Fun<Node, Node>, T> fun) throws IOException {
 		String basePathName = FileUtil.tmp + "/" + InstructionTranslator.class.getName();
 
 		TranslatedRunConfig config = new TranslatedRunConfig();
