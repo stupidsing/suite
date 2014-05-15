@@ -3,7 +3,6 @@ package suite.instructionexecutor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import org.junit.Test;
 

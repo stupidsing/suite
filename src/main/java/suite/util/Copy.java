@@ -62,7 +62,7 @@ public class Copy {
 		}
 	}
 
-	public static Thread streamByThread(InputStream is, OutputStream os) throws IOException {
+	public static Thread streamByThread(InputStream is, OutputStream os) {
 		return new Thread() {
 			public void run() {
 				try (InputStream is_ = is; OutputStream os_ = os) {
