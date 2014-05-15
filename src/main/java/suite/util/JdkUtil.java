@@ -43,7 +43,7 @@ public class JdkUtil implements Closeable {
 	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
 			throws IOException {
 		compile(packageName, className, java);
-		return load(interfaceClazz, packageName, className);
+		return load(packageName, className);
 	}
 
 	private void compile(String packageName, String className, String java) throws IOException {
@@ -73,7 +73,7 @@ public class JdkUtil implements Closeable {
 		}
 	}
 
-	private <T> Class<? extends T> load(Class<T> interfaceClazz, String packageName, String className) {
+	private <T> Class<? extends T> load(String packageName, String className) {
 		LogUtil.info("Loading class " + className);
 
 		try {

@@ -34,10 +34,10 @@ public class InstructionExtractor implements AutoCloseable {
 			Binder.bind(Tree.decompose(elem).getLeft(), Int.create(ip++), journal);
 
 		for (Node elem : Tree.iter(node))
-			list.add(extract(list.size(), elem));
+			list.add(extract(elem));
 	}
 
-	private Instruction extract(int ip, Node node) {
+	private Instruction extract(Node node) {
 		List<Node> rs = tupleToList(node);
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;

@@ -165,14 +165,14 @@ public class ClusterProbe extends ThreadedService {
 			keyIter.remove();
 
 			try {
-				processSelectedKey(current, key);
+				processSelectedKey(key);
 			} catch (Exception ex) {
 				LogUtil.error(ex);
 			}
 		}
 	}
 
-	private void processSelectedKey(long current, SelectionKey key) throws IOException {
+	private void processSelectedKey(SelectionKey key) throws IOException {
 		DatagramChannel dc = (DatagramChannel) key.channel();
 
 		if (key.isReadable()) {

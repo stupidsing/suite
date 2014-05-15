@@ -41,7 +41,7 @@ public class Lexer {
 	}
 
 	public Lexer(String in, Set<String> operators) {
-		this(new StringReader(in), javaOperators);
+		this(new StringReader(in), operators);
 
 	}
 
