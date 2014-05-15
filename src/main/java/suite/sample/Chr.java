@@ -79,7 +79,7 @@ public class Chr {
 	}
 
 	public Collection<Node> chr(Collection<Node> facts) {
-		State state = new State(new IMap<Prototype, ISet<Node>>());
+		State state = new State(new IMap<>());
 
 		for (Node fact : facts) {
 			Prototype prototype = getPrototype(fact);
@@ -168,7 +168,7 @@ public class Chr {
 				}
 
 				private ISet<Node> replace(ISet<Node> facts) {
-					ISet<Node> facts1 = new ISet<Node>();
+					ISet<Node> facts1 = new ISet<>();
 					for (Node node : facts)
 						facts1 = facts1.replace(new Rewriter(from, to).replace(node));
 					return facts1;
@@ -218,7 +218,7 @@ public class Chr {
 
 	private ISet<Node> getFacts(State state, Prototype prototype) {
 		ISet<Node> results = state.factsByPrototype.get(prototype);
-		return results != null ? results : new ISet<Node>();
+		return results != null ? results : new ISet<>();
 	}
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
