@@ -47,10 +47,7 @@ public class LinearRuleSet implements RuleSet {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof LinearRuleSet)
-			return Objects.equals(rules, ((LinearRuleSet) object).rules);
-		else
-			return false;
+		return object instanceof LinearRuleSet && Objects.equals(rules, ((LinearRuleSet) object).rules);
 	}
 
 	@Override

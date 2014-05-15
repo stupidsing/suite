@@ -36,10 +36,7 @@ public class Data<T> extends Node {
 	public boolean equals(Object object) {
 		if (object instanceof Node) {
 			Node node = ((Node) object).finalNode();
-			if (Util.clazz(node) == Data.class)
-				return Objects.equals(data, ((Data<?>) node).data);
-			else
-				return false;
+			return Util.clazz(node) == Data.class && Objects.equals(data, ((Data<?>) node).data);
 		} else
 			return false;
 	}

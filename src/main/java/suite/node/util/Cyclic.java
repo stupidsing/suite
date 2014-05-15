@@ -23,10 +23,7 @@ public class Cyclic {
 		}
 
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == IdHashNode.class)
-				return node == ((IdHashNode) object).node;
-			else
-				return false;
+			return Util.clazz(object) == IdHashNode.class && node == ((IdHashNode) object).node;
 		}
 	}
 

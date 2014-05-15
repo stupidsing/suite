@@ -16,7 +16,7 @@ import suite.stm.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
- * 
+ *
  * @author ywsing
  */
 public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTransaction> {
@@ -48,7 +48,7 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 		/**
 		 * Tries to finish a transaction. Make sure all children committed
 		 * before committing the parent.
-		 * 
+		 *
 		 * @throws AbortException
 		 */
 		public void commit() throws AbortException {
@@ -97,10 +97,10 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 		/**
 		 * Read would obtain the value between two checks of the owner.
-		 * 
+		 *
 		 * If the owner or its status is found to be changed, read needs to be
 		 * performed again.
-		 * 
+		 *
 		 * Perform timestamp checking to avoid reading too up-to-date data.
 		 */
 		public T read(Transaction transaction) throws AbortException {
@@ -136,11 +136,11 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 		/**
 		 * Write would obtain the owner right.
-		 * 
+		 *
 		 * If someone else is the owner, the write would block until that owner
 		 * completes. Simple waiting hierarchy is implemented in transaction
 		 * class to detect deadlocks.
-		 * 
+		 *
 		 * Timestamp checking is done to avoid changing post-modified data.
 		 */
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException {
@@ -194,20 +194,16 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 	private boolean isDescendantOf(ObstructionFreeTransaction descendant, Transaction ascendant) {
 		if (descendant != null && ascendant != null)
-			if (ascendant != this)
-				return isDescendantOf(descendant.parent, ascendant);
-			else
-				return true;
+			return ascendant == this || isDescendantOf(descendant.parent, ascendant);
 		else
 			return false;
 	}
 
 	private boolean isWaitingFor(ObstructionFreeTransaction waiter, ObstructionFreeTransaction waitee) {
 		if (waiter != null && waitee != null)
-			if (waiter != waitee)
-				return isWaitingFor(waiter.waitingFor, waitee) || isWaitingFor(waiter, waitee.parent);
-			else
-				return true;
+			return waiter == waitee //
+					|| isWaitingFor(waiter.waitingFor, waitee) //
+					|| isWaitingFor(waiter, waitee.parent);
 		else
 			return false;
 	}

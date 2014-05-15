@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Retrieve list of fields of a value object, and provide shallow
  * equals()/hashCode() methods.
- * 
+ *
  * @author ywsing
  */
 public class InspectUtil {
@@ -20,14 +20,8 @@ public class InspectUtil {
 	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
 
 	public <T> boolean equals(T o0, T o1) {
-		boolean result;
-		if (o0 != o1)
-			result = o0 != null && o1 != null //
-					&& o0.getClass() == o1.getClass() //
-					&& Objects.equals(list(o0), list(o1));
-		else
-			result = true;
-		return result;
+		return o0 == o1 //
+				|| o0 != null && o1 != null && o0.getClass() == o1.getClass() && Objects.equals(list(o0), list(o1));
 	}
 
 	public int hashCode(Object object) {

@@ -30,8 +30,7 @@ public class TelnetServer {
 			public void run() {
 				try {
 					run0();
-				} catch (InterruptedException ex) {
-				} catch (InterruptedIOException ex) {
+				} catch (InterruptedException | InterruptedIOException ex) {
 				} catch (Exception ex) {
 					LogUtil.error(ex);
 				} finally {
