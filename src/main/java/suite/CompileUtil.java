@@ -13,13 +13,13 @@ import suite.util.FunUtil.Fun;
 
 public class CompileUtil {
 
-	private Fun<List<String>, RuleSet> createRuleSetFun = new CacheUtil().proxy(filenames -> Suite.createRuleSet(filenames));
+	private Fun<List<String>, RuleSet> createRuleSetFun = new CacheUtil().proxy(Suite::createRuleSet);
 
 	/**
 	 * Returns rule set for functional compiler.
-	 * 
+	 *
 	 * The functional compiler would perform asserts when libraries are used.
-	 * 
+	 *
 	 * Use composite rule set to store new rules, and avoid original rule set
 	 * being altered.
 	 */

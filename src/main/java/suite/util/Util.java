@@ -85,7 +85,7 @@ public class Util {
 	}
 
 	public static <T extends Comparable<? super T>> Comparator<T> comparator() {
-		return (t0, t1) -> Util.compare(t0, t1);
+		return Util::compare;
 	}
 
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {

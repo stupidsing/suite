@@ -25,7 +25,7 @@ import suite.util.Util;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
-	private Fun<Node, Node> unwrapper = node -> unwrap0(node);
+	private Fun<Node, Node> unwrapper = this::unwrap0;
 
 	private IntrinsicBridge intrinsicBridge = new IntrinsicBridge() {
 		public Fun<Node, Node> getUnwrapper() {

@@ -70,7 +70,7 @@ public class Cluster {
 		unlisten = nio.listen(peers.get(me).getPort());
 		nio.start();
 
-		probe.setOnJoined(node -> onJoined.sink(node));
+		probe.setOnJoined(onJoined::sink);
 
 		probe.setOnLeft(node -> {
 			ClusterChannel channel = channels.get(node);
