@@ -144,7 +144,7 @@ public class ClusterProbe extends ThreadedService {
 				synchronized (this) {
 					long current = System.currentTimeMillis();
 					nodeJoined(me, current);
-					processSelectedKeys(current);
+					processSelectedKeys();
 					keepAlive(current);
 					eliminateOutdatedPeers(current);
 				}
@@ -158,7 +158,7 @@ public class ClusterProbe extends ThreadedService {
 		selector.close();
 	}
 
-	private void processSelectedKeys(long current) {
+	private void processSelectedKeys() {
 		Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
 		while (keyIter.hasNext()) {
 			SelectionKey key = keyIter.next();
