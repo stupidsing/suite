@@ -79,7 +79,14 @@ public class FileUtil {
 		File parentFile = file.getParentFile();
 		if (parentFile != null)
 			parentFile.mkdirs();
-		return new FileOutputStream(file);
+		File file1 = new File(file.getPath() + ".tmp");
+		return new FileOutputStream(file1) {
+			public void close() throws IOException {
+				super.close();
+				file.delete();
+				file1.renameTo(file);
+			}
+		};
 	}
 
 }
