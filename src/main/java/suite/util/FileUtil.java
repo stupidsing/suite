@@ -79,14 +79,22 @@ public class FileUtil {
 		File parentFile = file.getParentFile();
 		if (parentFile != null)
 			parentFile.mkdirs();
-		File file1 = new File(file.getPath() + ".tmp");
-		return new FileOutputStream(file1) {
-			public void close() throws IOException {
-				super.close();
-				file.delete();
-				file1.renameTo(file);
-			}
-		};
+
+		if (file.exists()) {
+			File file0 = new File(file.getPath() + ".old");
+			File file1 = new File(file.getPath() + ".new");
+
+			return new FileOutputStream(file1) {
+				public void close() throws IOException {
+					super.close();
+					if (file0.exists() && !file0.delete())
+						throw new IOException("Failed to delete old file");
+					if (!file.renameTo(file0) || !file1.renameTo(file))
+						throw new IOException("Failed to rename file");
+				}
+			};
+		} else
+			return new FileOutputStream(file);
 	}
 
 }
