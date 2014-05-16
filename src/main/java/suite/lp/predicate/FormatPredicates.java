@@ -19,9 +19,9 @@ public class FormatPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode();
-			Node p1 = params[0].finalNode();
-			return p0 instanceof Str && prover.bind(Int.create(((Str) p0).getValue().charAt(0)), params[1]) //
-					|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).getNumber()), params[1]);
+			Node p1 = params[1].finalNode();
+			return p0 instanceof Str && prover.bind(Int.create(((Str) p0).getValue().charAt(0)), p1) //
+					|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).getNumber()), p0);
 		}
 	}
 
