@@ -63,16 +63,14 @@ public class Copy {
 	}
 
 	public static Thread streamByThread(InputStream is, OutputStream os) {
-		return new Thread() {
-			public void run() {
-				try (InputStream is_ = is; OutputStream os_ = os) {
-					stream(is_, os_);
-				} catch (InterruptedIOException ex) {
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
+		return new Thread(() -> {
+			try (InputStream is_ = is; OutputStream os_ = os) {
+				stream(is_, os_);
+			} catch (InterruptedIOException ex) {
+			} catch (Exception ex) {
+				LogUtil.error(ex);
 			}
-		};
+		});
 	}
 
 }

@@ -133,17 +133,15 @@ public class FunUtil {
 		SynchronousQueue<Object> queue = new SynchronousQueue<>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
-		Thread thread = new Thread() {
-			public void run() {
-				try {
-					fun.sink(enqueue);
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				} finally {
-					enqueue(queue, eod);
-				}
+		Thread thread = new Thread(() -> {
+			try {
+				fun.sink(enqueue);
+			} catch (Exception ex) {
+				LogUtil.error(ex);
+			} finally {
+				enqueue(queue, eod);
 			}
-		};
+		});
 
 		thread.start();
 

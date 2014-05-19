@@ -30,25 +30,23 @@ public class LoadBalancer {
 	public void run() throws IOException {
 		boolean running[] = new boolean[] { true };
 
-		Thread probe = new Thread() {
-			public void run() {
-				while (running[0])
-					try {
-						List<String> alives1 = new ArrayList<>();
+		Thread probe = new Thread(() -> {
+			while (running[0])
+				try {
+					List<String> alives1 = new ArrayList<>();
 
-						for (String server : servers)
-							try (Socket socket = new Socket(server, port)) {
-								alives1.add(server);
-							} catch (SocketException ex) {
-							}
+					for (String server : servers)
+						try (Socket socket = new Socket(server, port)) {
+							alives1.add(server);
+						} catch (SocketException ex) {
+						}
 
-						alives = alives1;
-						Thread.sleep(500l);
-					} catch (Exception ex) {
-						LogUtil.error(ex);
-					}
-			}
-		};
+					alives = alives1;
+					Thread.sleep(500l);
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
+		});
 
 		Io io = (is, os) -> {
 			int count = counter.getAndIncrement();

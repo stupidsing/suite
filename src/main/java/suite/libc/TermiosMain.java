@@ -7,6 +7,8 @@ public class TermiosMain {
 
 	public static void main(String args[]) throws IOException {
 		try (Termios termios = new Termios()) {
+			termios.clear();
+
 			int ch;
 			while ((ch = Libc.instance.getchar()) != -1 && ch != 'q')
 				System.out.println(ch);

@@ -15,15 +15,13 @@ public abstract class ThreadedService {
 
 	public synchronized void start() {
 		running = true;
-		thread = new Thread() {
-			public void run() {
-				try {
-					serve();
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
+		thread = new Thread(() -> {
+			try {
+				serve();
+			} catch (Exception ex) {
+				LogUtil.error(ex);
 			}
-		};
+		});
 
 		thread.start();
 

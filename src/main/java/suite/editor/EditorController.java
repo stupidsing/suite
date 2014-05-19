@@ -193,22 +193,20 @@ public class EditorController {
 		String text = selectedText != null ? selectedText : editor.getText();
 
 		if (runThread == null || !runThread.isAlive()) {
-			runThread = new Thread() {
-				public void run() {
-					JTextArea bottomTextArea = view.getMessageTextArea();
-					bottomTextArea.setEnabled(false);
-					bottomTextArea.setText("RUNNING...");
+			runThread = new Thread(() -> {
+				JTextArea bottomTextArea = view.getMessageTextArea();
+				bottomTextArea.setEnabled(false);
+				bottomTextArea.setText("RUNNING...");
 
-					String result = fun.apply(text);
+				String result = fun.apply(text);
 
-					bottomTextArea.setText(result);
-					bottomTextArea.setEnabled(true);
-					bottomTextArea.setVisible(true);
+				bottomTextArea.setText(result);
+				bottomTextArea.setEnabled(true);
+				bottomTextArea.setVisible(true);
 
-					view.repaint();
-					view.getEditor().requestFocusInWindow();
-				}
-			};
+				view.repaint();
+				view.getEditor().requestFocusInWindow();
+			});
 
 			runThread.start();
 		} else

@@ -42,21 +42,19 @@ public class MonadIntrinsics {
 				// and write occur at the same time and would not block up.
 				// The input stream is also closed by this thread.
 				// Have to make sure the executors are thread-safe!
-				new Thread() {
-					public void run() {
-						try {
-							try (InputStream pes = process.getErrorStream();
-									OutputStream pos = process.getOutputStream();
-									Writer writer = new OutputStreamWriter(pos)) {
-								ExpandUtil.expandToWriter(unwrapper, in, writer);
-							}
-
-							process.waitFor();
-						} catch (Exception ex) {
-							LogUtil.error(ex);
+				new Thread(() -> {
+					try {
+						try (InputStream pes = process.getErrorStream();
+								OutputStream pos = process.getOutputStream();
+								Writer writer = new OutputStreamWriter(pos)) {
+							ExpandUtil.expandToWriter(unwrapper, in, writer);
 						}
+
+						process.waitFor();
+					} catch (Exception ex) {
+						LogUtil.error(ex);
 					}
-				}.start();
+				}).start();
 
 				return result;
 			} catch (IOException ex) {

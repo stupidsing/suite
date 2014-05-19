@@ -110,25 +110,23 @@ public class RayTracer {
 		for (int i = 0; i < nThreads; i++) {
 			int i1 = i;
 
-			threads[i1] = new Thread() {
-				public void run() {
-					for (int x = xs[i1]; x < xs[i1 + 1]; x++)
-						for (int y = 0; y < height; y++) {
-							Vector lit;
+			threads[i1] = new Thread(() -> {
+				for (int x = xs[i1]; x < xs[i1 + 1]; x++)
+					for (int y = 0; y < height; y++) {
+						Vector lit;
 
-							try {
-								Vector startPoint = Vector.origin;
-								Vector dir = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
-								lit = traceRay(depth, new Ray(startPoint, dir));
-							} catch (Exception ex) {
-								LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
-								lit = new Vector(1f, 1f, 1f);
-							}
-
-							pixels[x][y] = lit;
+						try {
+							Vector startPoint = Vector.origin;
+							Vector dir = Vector.norm(new Vector(x - centreX, y - centreY, viewDistance));
+							lit = traceRay(depth, new Ray(startPoint, dir));
+						} catch (Exception ex) {
+							LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
+							lit = new Vector(1f, 1f, 1f);
 						}
-				}
-			};
+
+						pixels[x][y] = lit;
+					}
+			});
 		}
 
 		for (int i = 0; i < nThreads; i++)
