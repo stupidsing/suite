@@ -85,12 +85,18 @@ public class FileUtil {
 			File file1 = new File(file.getPath() + ".new");
 
 			return new FileOutputStream(file1) {
+				private boolean isClosed = false;
+
 				public void close() throws IOException {
-					super.close();
-					if (file0.exists() && !file0.delete())
-						throw new IOException("Failed to delete old file");
-					if (!file.renameTo(file0) || !file1.renameTo(file))
-						throw new IOException("Failed to rename file");
+					if (!isClosed) {
+						super.close();
+						isClosed = true;
+
+						if (file0.exists() && !file0.delete())
+							throw new IOException("Failed to delete old file");
+						if (!file.renameTo(file0) || !file1.renameTo(file))
+							throw new IOException("Failed to rename file");
+					}
 				}
 			};
 		} else
