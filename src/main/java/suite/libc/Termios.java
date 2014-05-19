@@ -3,7 +3,7 @@ package suite.libc;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-class Termios implements Closeable {
+public class Termios implements Closeable {
 
 	private static Libc libc = Libc.instance;
 	private ByteBuffer termios0 = ByteBuffer.allocateDirect(4096);
