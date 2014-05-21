@@ -28,7 +28,7 @@ public class UctScenarioTest {
 				+ ". X X O X O . \n" //
 				+ "X O O X X O . \n" //
 				+ ". X O X O . . \n" //
-				+ ". . . . . . . \n" //
+				+ ". X . . . . . \n" //
 		), Occupation.WHITE);
 		testScenario(gameSet, Coordinate.c(6, 3));
 	}
@@ -39,10 +39,10 @@ public class UctScenarioTest {
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
 				+ ". . . X O . . \n" //
-				+ ". . X . O . . \n" //
-				+ ". . X O . . . \n" //
-				+ ". . O X O . . \n" //
-				+ ". . . X O . . \n" //
+				+ ". . X O O . . \n" //
+				+ ". . X O O . . \n" //
+				+ ". . O X X O . \n" //
+				+ ". . . X O O . \n" //
 				+ ". . . . . . . \n" //
 		), Occupation.BLACK);
 		testScenario(gameSet, Coordinate.c(5, 2));
@@ -68,12 +68,12 @@ public class UctScenarioTest {
 		ShuffleUtil.setSeed(1594738892904866155l);
 		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . X O O O . \n" //
-				+ ". . X O X O . \n" //
+				+ ". . X O . O . \n" //
 				+ ". X X X X X O \n" //
-				+ "X . . X O O . \n" //
-				+ ". X . O X O O \n" //
-				+ ". . O . X O . \n" //
-				+ ". . O . X . . \n" //
+				+ ". X X X O O . \n" //
+				+ "X . O O X O O \n" //
+				+ ". . O X X O O \n" //
+				+ "O O O O X . O \n" //
 		), Occupation.BLACK);
 		testScenario(gameSet, Coordinate.c(1, 6));
 	}
