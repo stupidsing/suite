@@ -130,9 +130,9 @@ public class Matrix {
 		for (int i = 0; i < h1; i++)
 			for (int j = 0; j < w1; j++) {
 				float sum = 0;
-				for (int i0 = 0; i0 < kh; i0++)
-					for (int j0 = 0; j0 < kw; j0++)
-						sum += m.v[i + i0][j + j0] * k.v[i0][j0];
+				for (int di = 0; di < kh; di++)
+					for (int dj = 0; dj < kw; dj++)
+						sum += m.v[i + di][j + dj] * k.v[di][dj];
 				o.v[i][j] = sum;
 			}
 
