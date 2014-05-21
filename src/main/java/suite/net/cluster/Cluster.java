@@ -50,11 +50,7 @@ public class Cluster {
 
 	private class ClusterChannel extends PersistableChannel<ClusterChannel> {
 		private ClusterChannel(String peer) {
-			super(nio, matcher, executor, peers.get(peer), new Fun<Bytes, Bytes>() {
-				public Bytes apply(Bytes request) {
-					return respondToRequest(request);
-				}
-			});
+			super(nio, matcher, executor, peers.get(peer), Cluster.this::respondToRequest);
 		}
 	}
 
