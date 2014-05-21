@@ -4,6 +4,10 @@ import java.util.Calendar;
 
 public class Util {
 
+	public static Class<?> clazz(Object object) {
+		return object != null ? object.getClass() : null;
+	}
+
 	public static long createDate(int year, int month, int day) {
 		return createDate(year, month, day, 0, 0, 0);
 	}

@@ -2,9 +2,7 @@ package suite.util;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,12 +73,10 @@ public class LogUtil {
 	}
 
 	public static <I> I proxy(Class<I> interface_, I object) {
-		@SuppressWarnings("unchecked")
-		Class<I> clazz = (Class<I>) object.getClass();
-		Log log = LogFactory.getLog(clazz);
+		Log log = LogFactory.getLog(object.getClass());
 
-		InvocationHandler handler = (proxy, method, ps) -> {
-			String methodName = method.getName();
+		return ProxyUtil.proxy(interface_, object, invocation -> (m, ps) -> {
+			String methodName = m.getName();
 			String prefix = methodName + "()\n";
 			StringBuilder sb = new StringBuilder();
 
@@ -93,7 +89,7 @@ public class LogUtil {
 			log.info(sb.toString());
 
 			try {
-				Object value = method.invoke(object, ps);
+				Object value = invocation.invoke(m, ps);
 				String rd = DumpUtil.dump("return", value);
 				log.info(prefix + rd);
 				return value;
@@ -103,14 +99,7 @@ public class LogUtil {
 				log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
 				throw th instanceof Exception ? (Exception) th : ite;
 			}
-		};
-
-		ClassLoader classLoader = clazz.getClassLoader();
-		Class<?> classes[] = { interface_ };
-
-		@SuppressWarnings("unchecked")
-		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
-		return proxied;
+		});
 	}
 
 	private static boolean trimStackTrace(Throwable th) {
