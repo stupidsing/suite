@@ -8,12 +8,12 @@ import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
-import suite.util.CacheUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.MemoizeUtil;
 
 public class CompileUtil {
 
-	private Fun<List<String>, RuleSet> createRuleSetFun = new CacheUtil().proxy(Suite::createRuleSet);
+	private Fun<List<String>, RuleSet> createRuleSetFun = MemoizeUtil.memoize(Suite::createRuleSet);
 
 	/**
 	 * Returns rule set for functional compiler.

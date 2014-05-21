@@ -13,9 +13,9 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.CacheUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.MemoizeUtil;
 
 public class SystemPredicates {
 
@@ -173,7 +173,7 @@ public class SystemPredicates {
 			}
 		};
 
-		private Fun<Node, Node> findAll = new CacheUtil().proxy(goal -> findAll(prover, uniqueReference, goal));
+		private Fun<Node, Node> findAll = MemoizeUtil.memoize(goal -> findAll(prover, uniqueReference, goal));
 
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
