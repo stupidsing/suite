@@ -18,6 +18,10 @@ public class RgbImage {
 		this.blue = blue;
 	}
 
+	public RgbImage convolute(Matrix kernel) {
+		return new RgbImage(Matrix.convolute(red, kernel), Matrix.convolute(green, kernel), Matrix.convolute(blue, kernel));
+	}
+
 	public static RgbImage load(File file) throws IOException {
 		BufferedImage bufferedImage = ImageIO.read(file);
 		int w = bufferedImage.getWidth(), h = bufferedImage.getHeight();
