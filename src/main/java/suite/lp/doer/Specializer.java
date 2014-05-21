@@ -12,13 +12,13 @@ public class Specializer {
 
 		if (node instanceof Reference) {
 			Reference ref = (Reference) node;
-			node = Atom.create(Generalizer.variablePrefix + ref.getId());
+			node = Atom.of(Generalizer.variablePrefix + ref.getId());
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Node left = tree.getLeft(), right = tree.getRight();
 			Node left1 = specialize(left), right1 = specialize(right);
 			if (left != left1 || right != right1)
-				node = Tree.create(tree.getOperator(), left1, right1);
+				node = Tree.of(tree.getOperator(), left1, right1);
 		}
 
 		return node;

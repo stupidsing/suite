@@ -9,9 +9,9 @@ public class Atom extends Node {
 
 	private String name;
 
-	public static Atom NIL = create("");
-	public static Atom TRUE = create("true");
-	public static Atom FALSE = create("false");
+	public static Atom NIL = of("");
+	public static Atom TRUE = of("true");
+	public static Atom FALSE = of("false");
 
 	private static AtomicInteger uniqueCounter = new AtomicInteger();
 
@@ -21,14 +21,14 @@ public class Atom extends Node {
 
 	public static Atom unique() {
 		Context context = Singleton.get().getHiddenContext();
-		return create(context, "TEMP" + uniqueCounter.getAndIncrement());
+		return of(context, "TEMP" + uniqueCounter.getAndIncrement());
 	}
 
-	public static Atom create(String name) {
-		return create(Singleton.get().getGrandContext(), name);
+	public static Atom of(String name) {
+		return of(Singleton.get().getGrandContext(), name);
 	}
 
-	public static Atom create(Context context, String name) {
+	public static Atom of(Context context, String name) {
 		return context.findAtom(name, () -> new Atom(name));
 	}
 

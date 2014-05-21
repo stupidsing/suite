@@ -27,19 +27,19 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public V get(K k) {
-		return Pair.second(tree.find(Pair.create(k, (V) null)));
+		return Pair.second(tree.find(Pair.of(k, (V) null)));
 	}
 
 	public IMap<K, V> put(K k, V v) {
-		return new IMap<>(tree.add(Pair.create(k, v)));
+		return new IMap<>(tree.add(Pair.of(k, v)));
 	}
 
 	public IMap<K, V> replace(K k, V v) {
-		return new IMap<>(tree.replace(Pair.create(k, v)));
+		return new IMap<>(tree.replace(Pair.of(k, v)));
 	}
 
 	public IMap<K, V> remove(K k) {
-		return new IMap<>(tree.remove(Pair.create(k, (V) null)));
+		return new IMap<>(tree.remove(Pair.of(k, (V) null)));
 	}
 
 	@Override

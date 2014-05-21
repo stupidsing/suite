@@ -34,9 +34,9 @@ public class RgbImage {
 
 		for (int x = 0; x < w; x++)
 			for (int y = 0; y < h; y++) {
-				cr[x][y] = ((float) ((rgbs[y * w + x] >> 16) & 0xFF)) / 256f;
-				cg[x][y] = ((float) ((rgbs[y * w + x] >> 8) & 0xFF)) / 256f;
-				cb[x][y] = ((float) ((rgbs[y * w + x] >> 0) & 0xFF)) / 256f;
+				cr[x][y] = (rgbs[y * w + x] >> 16 & 0xFF) / 256f;
+				cg[x][y] = (rgbs[y * w + x] >> 8 & 0xFF) / 256f;
+				cb[x][y] = (rgbs[y * w + x] >> 0 & 0xFF) / 256f;
 			}
 
 		return new RgbImage(new Matrix(cr), new Matrix(cg), new Matrix(cb));

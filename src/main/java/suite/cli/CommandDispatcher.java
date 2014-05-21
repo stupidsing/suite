@@ -99,11 +99,11 @@ public class CommandDispatcher {
 			pw.println(Formatter.dump(evaluateFunctional(node)));
 			break;
 		case EVALUATEDO:
-			node = Suite.applyDo(node, Atom.create("any"));
+			node = Suite.applyDo(node, Atom.of("any"));
 			pw.println(Formatter.dump(evaluateFunctional(node)));
 			break;
 		case EVALUATEDOSTR:
-			node = Suite.applyDo(node, Atom.create("string"));
+			node = Suite.applyDo(node, Atom.of("string"));
 			printEvaluatedString(writer, node);
 			break;
 		case EVALUATESTR:
@@ -150,7 +150,7 @@ public class CommandDispatcher {
 				return Boolean.FALSE;
 			});
 
-			prover.prove(Tree.create(TermOp.AND___, node, elab));
+			prover.prove(Tree.of(TermOp.AND___, node, elab));
 
 			if (count[0] == 1)
 				opt.prompt().println(count[0] + " solution\n");

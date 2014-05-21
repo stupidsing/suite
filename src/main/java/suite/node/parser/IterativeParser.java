@@ -177,7 +177,7 @@ public class IterativeParser {
 
 	private class Section {
 		private char kind;
-		private List<Tree> list = new ArrayList<>(Arrays.asList(Tree.create(null, null, Atom.NIL)));
+		private List<Tree> list = new ArrayList<>(Arrays.asList(Tree.of(null, null, Atom.NIL)));
 		private boolean isDanglingRight = true;
 
 		public Section(char kind) {
@@ -230,14 +230,14 @@ public class IterativeParser {
 							|| section.kind == '{' && ch == '}') {
 						Node node = section.first().getRight();
 						if (ch == ']')
-							node = Tree.create(TermOp.TUPLE_, Atom.create("["), node);
+							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
 						add(node);
 					} else
 						throw new RuntimeException("Cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
 						Node node = stack.pop().first().getRight();
-						node = Tree.create(TermOp.TUPLE_, Atom.create("`"), node);
+						node = Tree.of(TermOp.TUPLE_, Atom.of("`"), node);
 						add(node);
 					} else
 						stack.push(new Section(ch));
@@ -275,7 +275,7 @@ public class IterativeParser {
 					break;
 			}
 
-			Tree tree1 = Tree.create(operator, tree.getRight(), Atom.NIL);
+			Tree tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
 			Tree.forceSetRight(tree, tree1);
 			list.subList(listPos + 1, list.size()).clear();
 			section.push(tree1);

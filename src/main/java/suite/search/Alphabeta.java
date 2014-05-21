@@ -51,12 +51,12 @@ public class Alphabeta<State> {
 						break;
 				}
 
-				return Pair.create(alpha, principalVariation);
+				return Pair.of(alpha, principalVariation);
 			}
 		}
 
 		List<State> moves1 = new ArrayList<>(moves);
-		return Pair.create(game.evaluate(state), moves1);
+		return Pair.of(game.evaluate(state), moves1);
 	}
 
 }

@@ -40,16 +40,16 @@ public class ReversePolish {
 			Node n;
 
 			if (type == '\\')
-				n = Atom.create(s);
+				n = Atom.of(s);
 			else if (type == '^')
 				n = Suite.parse(s);
 			else if (type == 'i')
-				n = Int.create(Integer.parseInt(s));
+				n = Int.of(Integer.parseInt(s));
 			else if (type == 't') {
 				TermOp op = TermOp.valueOf(s);
 				Node left = deque.pop();
 				Node right = deque.pop();
-				n = Tree.create(op, left, right);
+				n = Tree.of(op, left, right);
 			} else
 				throw new RuntimeException("RPN conversion error: " + elem);
 

@@ -17,7 +17,7 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
-		Tree tree = Tree.create(null, null, node);
+		Tree tree = Tree.of(null, null, node);
 		cloneRight(tree);
 		return tree.getRight();
 	}
@@ -31,7 +31,7 @@ public class Cloner {
 
 			if (right instanceof Tree) {
 				Tree rightTree = (Tree) right;
-				rightTree = Tree.create(rightTree.getOperator(), clone(rightTree.getLeft()), rightTree.getRight());
+				rightTree = Tree.of(rightTree.getOperator(), clone(rightTree.getLeft()), rightTree.getRight());
 				Tree.forceSetRight(tree, rightTree);
 				tree = rightTree;
 				continue;
@@ -53,7 +53,7 @@ public class Cloner {
 			Node left = tree.getLeft(), right = tree.getRight();
 			Node left1 = clone(left), right1 = clone(right);
 			if (left != left1 || right != right1)
-				node = Tree.create(tree.getOperator(), left1, right1);
+				node = Tree.of(tree.getOperator(), left1, right1);
 		}
 
 		return node;

@@ -28,7 +28,7 @@ public class CommandUtil<Command> {
 			String starts = input.substring(start, end);
 			Command command = commandsByName.get(starts);
 			if (command != null)
-				return Pair.create(command, input.substring(end));
+				return Pair.of(command, input.substring(end));
 		}
 		return null;
 	}

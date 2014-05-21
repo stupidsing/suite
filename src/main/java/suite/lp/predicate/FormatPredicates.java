@@ -20,7 +20,7 @@ public class FormatPredicates {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode();
 			Node p1 = params[1].finalNode();
-			return p0 instanceof Str && prover.bind(Int.create(((Str) p0).getValue().charAt(0)), p1) //
+			return p0 instanceof Str && prover.bind(Int.of(((Str) p0).getValue().charAt(0)), p1) //
 					|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).getNumber()), p0);
 		}
 	}
@@ -108,7 +108,7 @@ public class FormatPredicates {
 			Node params[] = Tree.getParameters(ps, 2);
 			Str str = (Str) params[0].finalNode();
 			int length = str.getValue().length();
-			return prover.bind(params[1], Int.create(length));
+			return prover.bind(params[1], Int.of(length));
 		}
 	}
 
@@ -140,7 +140,7 @@ public class FormatPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, Atom.create(Formatter.display(p0)));
+			return prover.bind(p1, Atom.of(Formatter.display(p0)));
 		}
 	}
 
@@ -156,7 +156,7 @@ public class FormatPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, Int.create(Formatter.display(p0).charAt(0)));
+			return prover.bind(p1, Int.of(Formatter.display(p0).charAt(0)));
 		}
 	}
 

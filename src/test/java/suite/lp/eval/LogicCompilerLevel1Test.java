@@ -33,7 +33,7 @@ public class LogicCompilerLevel1Test {
 				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
 				+ ", sink .out" //
-		, Atom.create("LAZY")));
+		, Atom.of("LAZY")));
 
 		Node input = Suite.parse("1 + 2");
 		RuleSet rs = Suite.createRuleSet(filenames);

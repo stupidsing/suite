@@ -38,7 +38,7 @@ public class Tree extends Node {
 		Node result = Atom.NIL;
 		int i = nodes.size();
 		while (--i >= 0)
-			result = create(operator, nodes.get(i), result);
+			result = of(operator, nodes.get(i), result);
 		return result;
 	}
 
@@ -66,7 +66,7 @@ public class Tree extends Node {
 		});
 	}
 
-	public static Tree create(Operator operator, Node left, Node right) {
+	public static Tree of(Operator operator, Node left, Node right) {
 		return new Tree(operator, left, right);
 	}
 

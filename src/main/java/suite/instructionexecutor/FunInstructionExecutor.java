@@ -76,17 +76,17 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case COMPARE_______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Int.create(comparer.compare(n0, n1));
+			result = Int.of(comparer.compare(n0, n1));
 			break;
 		case CONSLIST______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Tree.create(TermOp.OR____, n0, n1);
+			result = Tree.of(TermOp.OR____, n0, n1);
 			break;
 		case CONSPAIR______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = Tree.create(TermOp.AND___, n0, n1);
+			result = Tree.of(TermOp.AND___, n0, n1);
 			break;
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];

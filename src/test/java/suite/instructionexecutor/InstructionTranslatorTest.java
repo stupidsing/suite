@@ -31,12 +31,12 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testEagerFunctional() throws IOException {
-		assertFunctional("1 + 2 * 3", false, Int.create(7));
+		assertFunctional("1 + 2 * 3", false, Int.of(7));
 	}
 
 	@Test
 	public void testLazyFunctional() throws IOException {
-		assertFunctional("1 + 2 * 3", true, Int.create(7));
+		assertFunctional("1 + 2 * 3", true, Int.of(7));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class InstructionTranslatorTest {
 	@Test
 	public void testStandardLibrary() throws IOException {
 		String program = "using source STANDARD >> 1; 2; 3; | map {`+ 1`} | fold-left {`+`} {0}";
-		assertFunctional(program, false, Int.create(9));
+		assertFunctional(program, false, Int.of(9));
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class InstructionTranslatorTest {
 
 	private Node compileFunctional(Node program, boolean isLazy) {
 		RuleSet ruleSet = Suite.funCompilerRuleSet();
-		Atom mode = Atom.create(isLazy ? "LAZY" : "EAGER");
+		Atom mode = Atom.of(isLazy ? "LAZY" : "EAGER");
 		Node goal = Suite.substitute("source .in, compile-function .0 .in .out, sink .out", mode);
 		return compile(ruleSet, goal, program);
 	}

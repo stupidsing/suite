@@ -163,7 +163,7 @@ public class InstructionExecutor implements AutoCloseable {
 					Node right = regs[insn.op1];
 					insn = instructions[current.ip++];
 					op = TermOp.find(((Atom) constantPool.get(insn.op0)).getName());
-					regs[insn.op1] = Tree.create(op, left, right);
+					regs[insn.op1] = Tree.of(op, left, right);
 					break;
 				case IFFALSE_______:
 					if (regs[insn.op1] != Atom.TRUE)
@@ -260,7 +260,7 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected static Int number(int n) {
-		return Int.create(n);
+		return Int.of(n);
 	}
 
 	protected static Atom atom(boolean b) {

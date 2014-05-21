@@ -246,12 +246,12 @@ public class InstructionTranslator implements Closeable {
 			case CONSLIST______:
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
-				app("#{reg} = Tree.create(TermOp.OR____, n0, n1)", op0);
+				app("#{reg} = Tree.of(TermOp.OR____, n0, n1)", op0);
 				break;
 			case CONSPAIR______:
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
-				app("#{reg} = Tree.create(TermOp.AND___, n0, n1)", op0);
+				app("#{reg} = Tree.of(TermOp.AND___, n0, n1)", op0);
 				break;
 			case DECOMPOSETREE0:
 				app("node = #{reg-node}.finalNode()", op0);
@@ -263,7 +263,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = tree.getRight()", insn.op2);
 				app("} else #{jump}", op1);
 				app("} else if (node instanceof Reference) {");
-				app("Tree tree = Tree.create(op, #{reg} = new Reference(), #{reg} = new Reference())", insn.op1, insn.op2);
+				app("Tree tree = Tree.of(op, #{reg} = new Reference(), #{reg} = new Reference())", insn.op1, insn.op2);
 				app("journal.addBind((Reference) node, tree)");
 				app("} else #{jump}", op1);
 				break;
@@ -313,7 +313,7 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
-				app("#{reg} = Tree.create(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
+				app("#{reg} = Tree.of(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
 						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
 				break;
 			case GETINTRINSIC__:
@@ -371,7 +371,7 @@ public class InstructionTranslator implements Closeable {
 				app("ds[dsp++] = #{reg-node}", op0);
 				break;
 			case PUSHCONST_____:
-				app("ds[dsp++] = Int.create(#{num})", op0);
+				app("ds[dsp++] = Int.of(#{num})", op0);
 				break;
 			case REMARK________:
 				break;
@@ -527,7 +527,7 @@ public class InstructionTranslator implements Closeable {
 			if (sourceClazz == boolean.class)
 				s = "(" + s + " ? TRUE : FALSE)";
 			else if (sourceClazz == int.class)
-				s = "Int.create(" + s + ")";
+				s = "Int.of(" + s + ")";
 			break;
 		case "reg-num":
 			reg = (int) iter.next();

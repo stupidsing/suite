@@ -275,9 +275,9 @@ public class Util {
 	public static Pair<String, String> split2(String s, String delimiter) {
 		int pos = s.indexOf(delimiter);
 		if (pos >= 0)
-			return Pair.create(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
+			return Pair.of(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
 		else
-			return Pair.create(s.trim(), "");
+			return Pair.of(s.trim(), "");
 	}
 
 	public static <T> List<List<T>> splitn(List<T> list, int n) {

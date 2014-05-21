@@ -31,7 +31,7 @@ public class ArrayIntrinsics {
 			if (!array.isEmpty()) {
 				Node left = bridge.wrapIntrinsic(new Id(), array.get(0));
 				Node right = bridge.wrapIntrinsic(this, new Data<>(array.subList(1, array.size())));
-				return Tree.create(TermOp.OR____, left, right);
+				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
 		}

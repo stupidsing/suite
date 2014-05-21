@@ -67,7 +67,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 				} else
 					current.ip = insn.op1;
 			} else if (node instanceof Reference) {
-				Tree tree = Tree.create(op, regs[rl] = new Reference(), regs[rr] = new Reference());
+				Tree tree = Tree.of(op, regs[rl] = new Reference(), regs[rr] = new Reference());
 				journal.addBind((Reference) node, tree);
 			} else
 				current.ip = insn.op1;

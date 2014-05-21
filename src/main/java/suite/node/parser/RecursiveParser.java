@@ -101,15 +101,15 @@ public class RecursiveParser {
 				ri = fromOp + (isLeftAssoc ? 1 : 0);
 			}
 
-			return Tree.create(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
+			return Tree.of(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
 		}
 
 		if (first == '(' && last == ')')
 			return parseRawString(Util.substr(s, 1, -1), 0);
 		if (first == '[' && last == ']')
-			return Tree.create(TermOp.TUPLE_, Atom.create("[]"), parseRawString(Util.substr(s, 1, -1), 0));
+			return Tree.of(TermOp.TUPLE_, Atom.of("[]"), parseRawString(Util.substr(s, 1, -1), 0));
 		if (first == '`' && last == '`')
-			return Tree.create(TermOp.TUPLE_, Atom.create("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
+			return Tree.of(TermOp.TUPLE_, Atom.of("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
 
 		return terminalParser.parseTerminal(s);
 	}

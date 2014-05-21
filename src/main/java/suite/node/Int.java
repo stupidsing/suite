@@ -14,7 +14,7 @@ public class Int extends Node {
 		this.number = number;
 	}
 
-	public static Int create(int i) {
+	public static Int of(int i) {
 		Int ret;
 		if (poolLo <= i && i < poolHi) {
 			int index = i - poolLo;

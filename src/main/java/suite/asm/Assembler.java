@@ -50,7 +50,7 @@ public class Assembler {
 		int start = 0;
 
 		while (!(pe = Util.split2(lines.get(start), "=")).t1.isEmpty()) {
-			generalizer.getVariable(Atom.create(pe.t0)).bound(Suite.parse(pe.t1));
+			generalizer.getVariable(Atom.of(pe.t0)).bound(Suite.parse(pe.t1));
 			start++;
 		}
 
@@ -59,9 +59,9 @@ public class Assembler {
 			String label = pt.t0;
 			String command = pt.t1;
 
-			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.create(label)) : null;
+			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
 			Node instruction = generalizer.generalize(Suite.parse(command));
-			return Pair.create(reference, instruction);
+			return Pair.of(reference, instruction);
 		}).collect(Collectors.toList());
 
 		return assemble(generalizer, lnis);
@@ -78,7 +78,7 @@ public class Assembler {
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
 				Binder.bind(tree.getLeft(), tree.getRight(), journal);
 			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null)
-				lnis.add(Pair.create((Reference) tree.getLeft(), tree.getRight()));
+				lnis.add(Pair.of((Reference) tree.getLeft(), tree.getRight()));
 			else
 				throw new RuntimeException("Cannot assemble " + node);
 		}
@@ -87,7 +87,7 @@ public class Assembler {
 	}
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
-		int org = ((Int) generalizer.getVariable(Atom.create(".org")).finalNode()).getNumber();
+		int org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).getNumber();
 		BytesBuilder out = new BytesBuilder();
 
 		for (boolean isPass2 : new boolean[] { false, true }) {
@@ -104,7 +104,7 @@ public class Assembler {
 
 				if (lni.t0 != null)
 					if (!isPass2)
-						lni.t0.bound(Int.create(address));
+						lni.t0.bound(Int.of(address));
 					else if (((Int) lni.t0.finalNode()).getNumber() != address)
 						throw new RuntimeException("Address varied between passes at " + Integer.toHexString(address));
 			}
@@ -118,7 +118,7 @@ public class Assembler {
 	}
 
 	private Bytes assemble(int address, Node instruction) {
-		List<Node> ins = Arrays.asList(Int.create(bits), Int.create(address), instruction);
+		List<Node> ins = Arrays.asList(Int.of(bits), Int.of(address), instruction);
 		List<Node> nodes = FindUtil.collectList(finder, Tree.list(TermOp.AND___, ins));
 		return nodes.stream() //
 				.map(this::convertByteStream) //

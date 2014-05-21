@@ -23,7 +23,7 @@ public class TreeIntern {
 		hashCode = 31 * hashCode + System.identityHashCode(operator);
 		hashCode = 31 * hashCode + System.identityHashCode(right);
 
-		return interns.computeIfAbsent(hashCode, any -> Tree.create(operator, left, right));
+		return interns.computeIfAbsent(hashCode, any -> Tree.of(operator, left, right));
 	}
 
 }

@@ -31,7 +31,7 @@ public class InstructionExtractor implements AutoCloseable {
 	public void extractInstructions(List<Instruction> list, Node node) {
 		int ip = list.size(); // Assigns instruction pointer
 		for (Node elem : Tree.iter(node))
-			Binder.bind(Tree.decompose(elem).getLeft(), Int.create(ip++), journal);
+			Binder.bind(Tree.decompose(elem).getLeft(), Int.of(ip++), journal);
 
 		for (Node elem : Tree.iter(node))
 			list.add(extract(elem));
@@ -99,7 +99,7 @@ public class InstructionExtractor implements AutoCloseable {
 				Instruction enter = enters.getFirst();
 				int registerNumber = enter.op0++;
 
-				Binder.bind(node, Int.create(registerNumber), journal);
+				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;
 			} else
 				// ASSIGN-BOOL, ASSIGN-STR, PROVE

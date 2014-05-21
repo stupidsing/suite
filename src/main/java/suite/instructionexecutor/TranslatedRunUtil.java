@@ -68,7 +68,7 @@ public class TranslatedRunUtil {
 	}
 
 	public static Node toNode(int i) {
-		return Int.create(i);
+		return Int.of(i);
 	}
 
 	// Generic type signature allows passing in Closure returning Closure

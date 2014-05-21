@@ -31,10 +31,10 @@ import suite.util.LogUtil;
 
 public class EvalPredicates {
 
-	private static Atom AND = Atom.create("and");
-	private static Atom OR_ = Atom.create("or");
-	private static Atom SHL = Atom.create("shl");
-	private static Atom SHR = Atom.create("shr");
+	private static Atom AND = Atom.of("and");
+	private static Atom OR_ = Atom.of("or");
+	private static Atom SHL = Atom.of("shl");
+	private static Atom SHR = Atom.of("shr");
 	private static Comparer comparer = Comparer.comparer;
 
 	public static class Bound implements SystemPredicate {
@@ -53,7 +53,7 @@ public class EvalPredicates {
 	public static class ComplexityPredicate implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(Int.create(new Complexity().complexity(params[0])), params[1]);
+			return prover.bind(Int.of(new Complexity().complexity(params[0])), params[1]);
 		}
 	}
 
@@ -120,7 +120,7 @@ public class EvalPredicates {
 	public static class Hash implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(Int.create(params[0].hashCode()), params[1]);
+			return prover.bind(Int.of(params[0].hashCode()), params[1]);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class EvalPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			int result = evaluate(params[1]);
-			return prover.bind(Int.create(result), params[0]);
+			return prover.bind(Int.of(result), params[0]);
 		}
 
 		public int evaluate(Node node) {
@@ -214,7 +214,7 @@ public class EvalPredicates {
 			Node params[] = Tree.getParameters(ps, 2);
 			Int p0 = (Int) params[0].finalNode();
 			int randomNumber = random.nextInt(p0.getNumber());
-			return prover.bind(params[1], Int.create(randomNumber));
+			return prover.bind(params[1], Int.of(randomNumber));
 		}
 	}
 
@@ -251,7 +251,7 @@ public class EvalPredicates {
 
 		public boolean prove(Prover prover, Node ps) {
 			int n = counter.getAndIncrement();
-			return prover.bind(ps, Atom.create("temp$$" + n));
+			return prover.bind(ps, Atom.of("temp$$" + n));
 		}
 	}
 
@@ -265,13 +265,13 @@ public class EvalPredicates {
 
 			if (p instanceof Tree) {
 				Tree tree = (Tree) p;
-				Atom oper = Atom.create(tree.getOperator().getName());
+				Atom oper = Atom.of(tree.getOperator().getName());
 				return prover.bind(tree.getLeft(), p1) //
 						&& prover.bind(oper, p2) //
 						&& prover.bind(tree.getRight(), p3);
 			} else if (p2 instanceof Atom) {
 				Operator operator = TermOp.find(((Atom) p2).getName());
-				return prover.bind(p, Tree.create(operator, p1, p3));
+				return prover.bind(p, Tree.of(operator, p1, p3));
 			} else
 				return false;
 		}

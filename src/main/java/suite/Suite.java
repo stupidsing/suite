@@ -121,7 +121,7 @@ public class Suite {
 		int i = 0;
 
 		for (Node node : nodes) {
-			Node variable = generalizer.getVariable(Atom.create("." + i++));
+			Node variable = generalizer.getVariable(Atom.of("." + i++));
 			((Reference) variable).bound(node);
 		}
 

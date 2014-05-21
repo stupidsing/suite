@@ -80,7 +80,7 @@ public class ExpandUtil {
 			Tree tree = (Tree) node;
 			Node left = expandFully(unwrapper, tree.getLeft());
 			Node right = expandFully(unwrapper, tree.getRight());
-			node = Tree.create(tree.getOperator(), left, right);
+			node = Tree.of(tree.getOperator(), left, right);
 		}
 
 		return node;

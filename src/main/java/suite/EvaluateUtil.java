@@ -26,7 +26,7 @@ import suite.util.Util;
 public class EvaluateUtil {
 
 	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = MemoizeUtil.memoize(pair -> {
-		Atom mode = Atom.create(pair.t0 ? "LAZY" : "EAGER");
+		Atom mode = Atom.of(pair.t0 ? "LAZY" : "EAGER");
 
 		return new Specializer().specialize(Suite.substitute("" //
 				+ "source .in" //
@@ -74,7 +74,7 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		Node node = fccNodeFun.apply(Pair.create(fcc.isLazy(), fcc.isDumpCode()));
+		Node node = fccNodeFun.apply(Pair.of(fcc.isLazy(), fcc.isDumpCode()));
 		Node code = doFcc(node, fcc);
 
 		if (code != null)
@@ -103,7 +103,7 @@ public class EvaluateUtil {
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
 		return new TimeUtil().logTime("Code compiled", () -> {
 			ProverConfig pc = fcc.getProverConfig();
-			Finder finder = fccFinderFun.apply(Pair.create(pc, compileNode));
+			Finder finder = fccFinderFun.apply(Pair.of(pc, compileNode));
 			return FindUtil.collectSingle(finder, appendLibraries(fcc));
 		});
 	}
@@ -113,7 +113,7 @@ public class EvaluateUtil {
 
 		for (String library : fcc.getLibraries())
 			if (!Util.isBlank(library))
-				node = Suite.substitute("using .0 >> .1", Atom.create(library), node);
+				node = Suite.substitute("using .0 >> .1", Atom.of(library), node);
 
 		return node;
 	}

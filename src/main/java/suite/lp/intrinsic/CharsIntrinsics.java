@@ -27,9 +27,9 @@ public class CharsIntrinsics {
 			Chars chars = Data.get(inputs.get(0));
 
 			if (!chars.isEmpty()) {
-				Node left = bridge.wrapIntrinsic(new Id(), Int.create(chars.get(0)));
+				Node left = bridge.wrapIntrinsic(new Id(), Int.of(chars.get(0)));
 				Node right = bridge.wrapIntrinsic(this, new Data<>(chars.subchars(1)));
-				return Tree.create(TermOp.OR____, left, right);
+				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
 		}

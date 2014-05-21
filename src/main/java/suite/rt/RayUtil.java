@@ -54,7 +54,7 @@ public class RayUtil {
 				index1++;
 
 			boolean isInsideBefore = isInsideNow;
-			isInsideNow = fun.apply(Pair.create(index0 % 2 == 1, index1 % 2 == 1));
+			isInsideNow = fun.apply(Pair.of(index0 % 2 == 1, index1 % 2 == 1));
 
 			if (isInsideBefore != isInsideNow)
 				rayHits2.add(isAdvance0 ? rayHit0 : rayHit1);

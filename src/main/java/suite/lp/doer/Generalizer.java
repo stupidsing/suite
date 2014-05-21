@@ -25,7 +25,7 @@ public class Generalizer {
 	private Node cut;
 
 	public Node generalize(Node node) {
-		Tree tree = Tree.create(null, null, node);
+		Tree tree = Tree.of(null, null, node);
 		generalizeRight(tree);
 		return tree.getRight();
 	}
@@ -51,10 +51,10 @@ public class Generalizer {
 					right = new Suspend(() -> {
 						Node rl = rightTree.getLeft();
 						Node rr = rightTree.getRight();
-						return Tree.create(rightOp, generalize(rl), generalize(rr));
+						return Tree.of(rightOp, generalize(rl), generalize(rr));
 					});
 				else {
-					Tree rightTree1 = Tree.create(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());
+					Tree rightTree1 = Tree.of(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());
 					Tree.forceSetRight(tree, rightTree1);
 					tree = rightTree1;
 					continue;

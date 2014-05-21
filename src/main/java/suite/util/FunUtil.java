@@ -75,7 +75,7 @@ public class FunUtil {
 	public static <T, R> R fold(Fun<Pair<R, T>, R> fun, R init, Source<T> source) {
 		T t;
 		while ((t = source.source()) != null)
-			init = fun.apply(Pair.create(init, t));
+			init = fun.apply(Pair.of(init, t));
 		return init;
 	}
 

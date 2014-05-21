@@ -92,11 +92,11 @@ public class ProveTracer {
 			Node alt = prover.getAlternative();
 			Node rem = prover.getRemaining();
 
-			prover.setAlternative(Tree.create(TermOp.OR____, leaveFail, alt));
-			prover.setRemaining(Tree.create(TermOp.AND___, leaveOk, rem));
+			prover.setAlternative(Tree.of(TermOp.OR____, leaveFail, alt));
+			prover.setRemaining(Tree.of(TermOp.AND___, leaveOk, rem));
 
 			query = expand.apply(query);
-			query = Tree.create(TermOp.AND___, enter, query);
+			query = Tree.of(TermOp.AND___, enter, query);
 		} else
 			query = expand.apply(query);
 

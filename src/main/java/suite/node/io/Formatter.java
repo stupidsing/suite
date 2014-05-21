@@ -97,7 +97,7 @@ public class Formatter {
 			Node left = tree.getLeft();
 			Node right = tree.getRight();
 
-			if (operator == TermOp.TUPLE_ && left == Atom.create("[")) {
+			if (operator == TermOp.TUPLE_ && left == Atom.of("[")) {
 				sb.append("[");
 				format(right);
 				sb.append("]");

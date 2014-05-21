@@ -140,7 +140,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 					if (kp.pointer instanceof B_Tree.Branch)
 						next(); // No result for start, search next
 					else
-						current = Pair.create(kp.key, kp.getLeafValue());
+						current = Pair.of(kp.key, kp.getLeafValue());
 			}
 
 			public boolean hasNext() {
@@ -171,7 +171,7 @@ public class B_Tree<Key, Value> implements B_TreeInterface<Key, Value> {
 							Page page = loadBranch(slot.page, slot.index);
 							currentSlots.push(new Slot(page, 0));
 						} else
-							return Pair.create(kp.key, kp.getLeafValue());
+							return Pair.of(kp.key, kp.getLeafValue());
 					else if (currentSlots.size() != 1) {
 						currentSlots.pop();
 						advance();

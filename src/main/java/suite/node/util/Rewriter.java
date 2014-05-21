@@ -46,7 +46,7 @@ public class Rewriter {
 			Tree tree = Tree.decompose(node0);
 
 			if (tree != null)
-				node1 = Tree.create(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight()));
+				node1 = Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight()));
 			else
 				node1 = node0;
 		} else
@@ -73,7 +73,7 @@ public class Rewriter {
 			Tree tree = Tree.decompose(node0);
 
 			if (tree != null)
-				node1 = Tree.create(tree.getOperator(), rewrite0(tree.getLeft()), rewrite0(tree.getRight()));
+				node1 = Tree.of(tree.getOperator(), rewrite0(tree.getLeft()), rewrite0(tree.getRight()));
 			else
 				node1 = node0;
 		} else {

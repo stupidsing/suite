@@ -21,8 +21,8 @@ public class EagerFunTest {
 
 	@Test
 	public void testApply() {
-		assertEquals(Int.create(2), eval("apply {(a => 2);} {1}"));
-		assertEquals(Int.create(2), eval("apply {`/ 5`; `* 2`; `+ 1`;} {4}"));
+		assertEquals(Int.of(2), eval("apply {(a => 2);} {1}"));
+		assertEquals(Int.of(2), eval("apply {`/ 5`; `* 2`; `+ 1`;} {4}"));
 	}
 
 	@Test
@@ -32,9 +32,9 @@ public class EagerFunTest {
 
 	@Test
 	public void testClosure() {
-		assertEquals(Int.create(7), eval("" //
+		assertEquals(Int.of(7), eval("" //
 				+ "define add := `+` >> add {3} {4}"));
-		assertEquals(Int.create(20), eval("" //
+		assertEquals(Int.of(20), eval("" //
 				+ "define p := `+ 1` >> \n" //
 				+ "define q := n => p {n} * 2 >> \n" //
 				+ "q {9}"));
@@ -86,7 +86,7 @@ public class EagerFunTest {
 
 	@Test
 	public void testFibonacci() {
-		assertEquals(Int.create(89), eval("" //
+		assertEquals(Int.of(89), eval("" //
 				+ "define fib := n => \n" //
 				+ "    if (n > 1) \n" //
 				+ "    then (fib {n - 1} + fib {n - 2}) \n" //
@@ -102,14 +102,14 @@ public class EagerFunTest {
 
 	@Test
 	public void testFlip() {
-		assertEquals(Int.create(2), eval("flip {`-`} {3} {5}"));
+		assertEquals(Int.of(2), eval("flip {`-`} {3} {5}"));
 	}
 
 	@Test
 	public void testFold() {
-		assertEquals(Int.create(324), eval("fold {`*`} {2; 3; 6; 9;}"));
-		assertEquals(Int.create(79), eval("fold-left {`-`} {100} {6; 7; 8;}"));
-		assertEquals(Int.create(-93), eval("fold-right {`-`} {100} {6; 7; 8;}"));
+		assertEquals(Int.of(324), eval("fold {`*`} {2; 3; 6; 9;}"));
+		assertEquals(Int.of(79), eval("fold-left {`-`} {100} {6; 7; 8;}"));
+		assertEquals(Int.of(-93), eval("fold-right {`-`} {100} {6; 7; 8;}"));
 	}
 
 	@Test
@@ -117,7 +117,7 @@ public class EagerFunTest {
 		Node f = Suite.parse("gcd {6} {9}");
 		FunCompilerConfig c = Suite.fcc(f);
 		c.addLibrary("MATH");
-		assertEquals(Int.create(3), Suite.evaluateFun(c));
+		assertEquals(Int.of(3), Suite.evaluateFun(c));
 	}
 
 	@Test
@@ -127,32 +127,32 @@ public class EagerFunTest {
 
 	@Test
 	public void testIf() {
-		assertEquals(Int.create(0), eval("if (3 > 4) then 1 else 0"));
-		assertEquals(Int.create(1), eval("if (3 = 3) then 1 else 0"));
-		assertEquals(Int.create(1), eval("if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
+		assertEquals(Int.of(0), eval("if (3 > 4) then 1 else 0"));
+		assertEquals(Int.of(1), eval("if (3 = 3) then 1 else 0"));
+		assertEquals(Int.of(1), eval("if (1 = 2) then 0 else-if (2 = 2) then 1 else 2"));
 	}
 
 	@Test
 	public void testIfBind() {
-		assertEquals(Int.create(1), eval("if-bind (1 = 1) then 1 else 0"));
+		assertEquals(Int.of(1), eval("if-bind (1 = 1) then 1 else 0"));
 
-		assertEquals(Int.create(1), eval("if-bind ((1; 2;) = (1; 2;)) then 1 else 0"));
-		assertEquals(Int.create(0), eval("if-bind ((1; 2;) = (2; 2;)) then 1 else 0"));
+		assertEquals(Int.of(1), eval("if-bind ((1; 2;) = (1; 2;)) then 1 else 0"));
+		assertEquals(Int.of(0), eval("if-bind ((1; 2;) = (2; 2;)) then 1 else 0"));
 
-		assertEquals(Int.create(1), eval("let v := 1; 2; >> if-bind (v = (1; 2;)) then 1 else 0"));
-		assertEquals(Int.create(0), eval("let v := 1; 2; >> if-bind (v = (1; 3;)) then 1 else 0"));
+		assertEquals(Int.of(1), eval("let v := 1; 2; >> if-bind (v = (1; 2;)) then 1 else 0"));
+		assertEquals(Int.of(0), eval("let v := 1; 2; >> if-bind (v = (1; 3;)) then 1 else 0"));
 
-		assertEquals(Int.create(0), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 3,)) then i else 0"));
-		assertEquals(Int.create(1), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 2,)) then i else 0"));
-		assertEquals(Int.create(1), eval("if-bind ((1, 2,) = ($i, 2,)) then i else 0"));
+		assertEquals(Int.of(0), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 3,)) then i else 0"));
+		assertEquals(Int.of(1), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 2,)) then i else 0"));
+		assertEquals(Int.of(1), eval("if-bind ((1, 2,) = ($i, 2,)) then i else 0"));
 
-		assertEquals(Int.create(3), eval("" //
+		assertEquals(Int.of(3), eval("" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n" //
 				+ "let e := B 3 >> \n" //
 				+ "if-bind (e = B $i) then i else 0"));
-		assertEquals(Int.create(0), eval("" //
+		assertEquals(Int.of(0), eval("" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n" //
@@ -175,17 +175,17 @@ public class EagerFunTest {
 
 	@Test
 	public void testJoin() {
-		assertEquals(Int.create(19), eval("" //
+		assertEquals(Int.of(19), eval("" //
 				+ "define p := `* 2` >> \n" //
 				+ "define q := `+ 1` >> \n" //
 				+ "define r := q . p >> \n" //
 				+ "r {9}"));
-		assertEquals(Int.create(13), eval("" //
+		assertEquals(Int.of(13), eval("" //
 				+ "define p := `+ 1` >> \n" //
 				+ "define q := `* 2` >> \n" //
 				+ "define r := `- 3` >> \n" //
 				+ "(p . q . r) {9}"));
-		assertEquals(Int.create(17), eval("" //
+		assertEquals(Int.of(17), eval("" //
 				+ "define p := `+ 1` >> \n" //
 				+ "define q := `* 2` >> \n" //
 				+ "define r := `- 3` >> \n" //
@@ -194,16 +194,16 @@ public class EagerFunTest {
 
 	@Test
 	public void testLength() {
-		assertEquals(Int.create(5), eval("" //
+		assertEquals(Int.of(5), eval("" //
 				+ "length {3; 3; 3; 3; 3;}"));
 	}
 
 	@Test
 	public void testLog() {
-		assertEquals(Int.create(8), eval("log {4 + 4}"));
-		assertEquals(Int.create(1), eval("if (1 = 1) then 1 else (1 / 0)"));
-		assertEquals(Int.create(1), eval("if true then 1 else (log2 {\"shouldn't appear\"} {1 / 0})"));
-		assertEquals(Int.create(1), eval("if false then 1 else (log2 {\"should appear\"} {1})"));
+		assertEquals(Int.of(8), eval("log {4 + 4}"));
+		assertEquals(Int.of(1), eval("if (1 = 1) then 1 else (1 / 0)"));
+		assertEquals(Int.of(1), eval("if true then 1 else (log2 {\"shouldn't appear\"} {1 / 0})"));
+		assertEquals(Int.of(1), eval("if false then 1 else (log2 {\"should appear\"} {1})"));
 	}
 
 	@Test
@@ -279,7 +279,7 @@ public class EagerFunTest {
 	@Test
 	public void testSys() {
 		assertNotNull(Tree.decompose(eval("cons {1} {2;}")));
-		assertEquals(Int.create(1), eval("head {1; 2; 3;}"));
+		assertEquals(Int.of(1), eval("head {1; 2; 3;}"));
 		assertNotNull(Tree.decompose(eval("tail {1; 2; 3;}")));
 	}
 

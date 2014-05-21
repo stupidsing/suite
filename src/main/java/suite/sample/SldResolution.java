@@ -28,7 +28,7 @@ import suite.util.Util;
  */
 public class SldResolution {
 
-	private static Atom not = Atom.create("NOT");
+	private static Atom not = Atom.of("NOT");
 
 	public List<Node> resolve(Node node) {
 		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "pt.sl"));
@@ -73,7 +73,7 @@ public class SldResolution {
 	private Node negate(Node key) {
 		Tree tree = Tree.decompose(key, TermOp.TUPLE_);
 		boolean isAlreadyNegated = tree != null && tree.getLeft() == not;
-		return isAlreadyNegated ? tree.getRight() : Tree.create(TermOp.TUPLE_, not, key);
+		return isAlreadyNegated ? tree.getRight() : Tree.of(TermOp.TUPLE_, not, key);
 	}
 
 }

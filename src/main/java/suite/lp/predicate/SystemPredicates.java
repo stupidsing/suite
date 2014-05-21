@@ -223,7 +223,7 @@ public class SystemPredicates {
 	private Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();
 
-		Tree subGoal = Tree.create(TermOp.AND___, goal, new Data<Source<Boolean>>(() -> {
+		Tree subGoal = Tree.of(TermOp.AND___, goal, new Data<Source<Boolean>>(() -> {
 			stack.push(new Cloner().clone(var));
 			return Boolean.FALSE;
 		}));
@@ -232,7 +232,7 @@ public class SystemPredicates {
 
 		Node result = Atom.NIL;
 		while (!stack.isEmpty())
-			result = Tree.create(TermOp.AND___, stack.pop(), result);
+			result = Tree.of(TermOp.AND___, stack.pop(), result);
 		return result;
 	}
 

@@ -22,14 +22,14 @@ public class LazyFunTest {
 				+ "define seq := n => n; seq {n} >> \n" //
 				+ "head {seq {0}} = 0"));
 
-		assertEquals(Int.create(89), eval("" // Real co-recursion!
+		assertEquals(Int.of(89), eval("" // Real co-recursion!
 				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} >> \n" //
 				+ "fib {0} {1} | get {10}"));
 	}
 
 	@Test
 	public void testFibonacci() {
-		assertEquals(Int.create(89), eval("" //
+		assertEquals(Int.of(89), eval("" //
 				+ "define fib := \n" //
 				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
 				+ ">> fib | get {10}"));
@@ -54,13 +54,13 @@ public class LazyFunTest {
 
 	@Test
 	public void testString() {
-		assertEquals(Int.create(-34253924), eval("str-to-int {\"-34253924\"}"));
+		assertEquals(Int.of(-34253924), eval("str-to-int {\"-34253924\"}"));
 		assertEquals(Atom.TRUE, eval("\"-34253924\" = int-to-str {-34253924}"));
 	}
 
 	@Test
 	public void testSubstitution() {
-		assertEquals(Int.create(8), eval("define v := 4 >> v + v"));
+		assertEquals(Int.of(8), eval("define v := 4 >> v + v"));
 	}
 
 	@Test

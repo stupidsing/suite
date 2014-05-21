@@ -518,7 +518,7 @@ public class Ebnf {
 				}
 			}
 
-			return Pair.create(row, col);
+			return Pair.of(row, col);
 		}
 	}
 

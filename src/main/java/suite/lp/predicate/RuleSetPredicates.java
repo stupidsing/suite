@@ -45,7 +45,7 @@ public class RuleSetPredicates {
 			List<Node> nodes = new ArrayList<>();
 
 			for (Rule rule : rules)
-				nodes.add(Tree.create(TermOp.IS____, rule.getHead(), rule.getTail()));
+				nodes.add(Tree.of(TermOp.IS____, rule.getHead(), rule.getTail()));
 
 			return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
 		}

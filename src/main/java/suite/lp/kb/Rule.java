@@ -26,7 +26,7 @@ public class Rule {
 	public static Node formClause(Rule rule) {
 		Node head = rule.getHead(), tail = rule.getTail();
 		if (tail != Atom.NIL)
-			return Tree.create(TermOp.IS____, head, tail);
+			return Tree.of(TermOp.IS____, head, tail);
 		else
 			return head;
 	}

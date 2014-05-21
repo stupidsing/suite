@@ -11,7 +11,7 @@ public class SymbolicMathUtilTest {
 
 	@Test
 	public void test() {
-		assertEquals(Int.create(3), SymbolicMathUtil.simplify(Suite.parse("1 + 2")));
+		assertEquals(Int.of(3), SymbolicMathUtil.simplify(Suite.parse("1 + 2")));
 	}
 
 }

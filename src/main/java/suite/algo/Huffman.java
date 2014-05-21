@@ -50,7 +50,7 @@ public class Huffman<Unit> {
 		Huffman<Unit> huffman = new Huffman<>();
 		huffman.build(input);
 
-		return Pair.create(huffman.save(), To.list(huffman.encode(To.source(input))));
+		return Pair.of(huffman.save(), To.list(huffman.encode(To.source(input))));
 	}
 
 	public static <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {

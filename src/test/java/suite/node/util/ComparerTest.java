@@ -14,15 +14,15 @@ public class ComparerTest {
 
 	@Test
 	public void testCompareInt() {
-		assertTrue(comparer.compare(Int.create(2), Int.create(3)) < 0);
-		assertTrue(comparer.compare(Int.create(4), Int.create(4)) == 0);
-		assertTrue(comparer.compare(Int.create(6), Int.create(5)) > 0);
+		assertTrue(comparer.compare(Int.of(2), Int.of(3)) < 0);
+		assertTrue(comparer.compare(Int.of(4), Int.of(4)) == 0);
+		assertTrue(comparer.compare(Int.of(6), Int.of(5)) > 0);
 	}
 
 	@Test
 	public void testOrdinality() {
-		assertTrue(comparer.compare(Suite.parse("1 = 2"), Int.create(3)) > 0);
-		assertTrue(comparer.compare(Suite.parse("a"), Int.create(3)) > 0);
+		assertTrue(comparer.compare(Suite.parse("1 = 2"), Int.of(3)) > 0);
+		assertTrue(comparer.compare(Suite.parse("a"), Int.of(3)) > 0);
 		assertTrue(comparer.compare(Suite.parse("b"), new Reference()) > 0);
 	}
 

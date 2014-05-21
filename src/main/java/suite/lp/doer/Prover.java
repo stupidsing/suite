@@ -27,7 +27,7 @@ public class Prover {
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
 	private static Node OK = Atom.NIL;
-	private static Node FAIL = Atom.create("fail");
+	private static Node FAIL = Atom.of("fail");
 
 	private Node rem, alt; // remaining, alternative
 
@@ -197,13 +197,13 @@ public class Prover {
 				Node head = generalizer.generalize(rule.getHead());
 				Node tail = generalizer.generalize(rule.getTail());
 
-				Node clause = Tree.create(TermOp.AND___ //
-						, Tree.create(TermOp.EQUAL_ //
+				Node clause = Tree.of(TermOp.AND___ //
+						, Tree.of(TermOp.EQUAL_ //
 								, query //
 								, head) //
 						, tail);
 
-				return Tree.create(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
+				return Tree.of(TermOp.OR____, clause, expandClauses(query, cut, Util.right(rules, 1)));
 			} else
 				return FAIL;
 		});
@@ -241,7 +241,7 @@ public class Prover {
 		else if (n0 == done || n1 == done)
 			return done;
 		else
-			return Tree.create(op, n0, n1);
+			return Tree.of(op, n0, n1);
 	}
 
 	private Node isSuccess(boolean b) {

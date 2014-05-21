@@ -16,7 +16,7 @@ public class Pair<T0, T1> {
 		this.t1 = t2;
 	}
 
-	public static <T0, T1> Pair<T0, T1> create(T0 t0, T1 t1) {
+	public static <T0, T1> Pair<T0, T1> of(T0 t0, T1 t1) {
 		return new Pair<>(t0, t1);
 	}
 

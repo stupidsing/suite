@@ -52,7 +52,7 @@ public class Chr {
 	public void addRule(Node node) {
 		Rule rule = new Rule();
 
-		while (node != Atom.create("end")) {
+		while (node != Atom.of("end")) {
 			Tree t0 = Tree.decompose(node, TermOp.TUPLE_);
 			Tree t1 = t0 != null ? Tree.decompose(t0.getRight(), TermOp.TUPLE_) : null;
 
@@ -61,13 +61,13 @@ public class Chr {
 				Node value = t1.getLeft();
 				node = t1.getRight();
 
-				if (key == Atom.create("given"))
+				if (key == Atom.of("given"))
 					rule.givens = To.list(Tree.iter(value));
-				else if (key == Atom.create("if"))
+				else if (key == Atom.of("if"))
 					rule.ifs = To.list(Tree.iter(value));
-				else if (key == Atom.create("then"))
+				else if (key == Atom.of("then"))
 					rule.thens = To.list(Tree.iter(value));
-				else if (key == Atom.create("when"))
+				else if (key == Atom.of("when"))
 					rule.when = value;
 				else
 					throw new RuntimeException("Invalid key " + key);
@@ -213,7 +213,7 @@ public class Chr {
 	}
 
 	private Node atom(String name) {
-		return Atom.create(name);
+		return Atom.of(name);
 	}
 
 	private ISet<Node> getFacts(State state, Prototype prototype) {

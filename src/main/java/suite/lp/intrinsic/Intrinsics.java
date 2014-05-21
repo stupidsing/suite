@@ -20,20 +20,20 @@ import suite.util.Util;
 
 public class Intrinsics {
 
-	private static Atom ATOM = Atom.create("ATOM");
-	private static Atom NUMBER = Atom.create("NUMBER");
-	private static Atom STRING = Atom.create("STRING");
-	private static Atom TREE = Atom.create("TREE");
-	private static Atom UNKNOWN = Atom.create("UNKNOWN");
+	private static Atom ATOM = Atom.of("ATOM");
+	private static Atom NUMBER = Atom.of("NUMBER");
+	private static Atom STRING = Atom.of("STRING");
+	private static Atom TREE = Atom.of("TREE");
+	private static Atom UNKNOWN = Atom.of("UNKNOWN");
 
 	public static class AtomString implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = bridge.wrapIntrinsic(new Id(), Int.create(name.charAt(0)));
-				Node right = bridge.wrapIntrinsic(this, Atom.create(name.substring(1)));
-				return Tree.create(TermOp.OR____, left, right);
+				Node left = bridge.wrapIntrinsic(new Id(), Int.of(name.charAt(0)));
+				Node right = bridge.wrapIntrinsic(this, Atom.of(name.substring(1)));
+				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
 		}
@@ -69,9 +69,9 @@ public class Intrinsics {
 				int ch = intern.head();
 
 				if (ch != -1) {
-					Node left = bridge.wrapIntrinsic(new Id(), Int.create(ch));
+					Node left = bridge.wrapIntrinsic(new Id(), Int.of(ch));
 					Node right = bridge.wrapIntrinsic(this, new Data<>(intern.tail()));
-					return Tree.create(TermOp.OR____, left, right);
+					return Tree.of(TermOp.OR____, left, right);
 				} else
 					return Atom.NIL;
 			}

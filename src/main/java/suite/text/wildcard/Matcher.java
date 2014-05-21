@@ -62,7 +62,7 @@ public class Matcher {
 
 		State state = source.source();
 		Deque<String> deque = state.matches.reverse();
-		return Pair.create(deque.toArray(new String[deque.size()]), input.substring(state.pos));
+		return Pair.of(deque.toArray(new String[deque.size()]), input.substring(state.pos));
 	}
 
 	private Source<State> applyPattern(Source<State> source, String pattern) {

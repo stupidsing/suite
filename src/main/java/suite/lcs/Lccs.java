@@ -37,7 +37,7 @@ public class Lccs {
 					Bytes b0 = bytes0.subbytes(segment0.getStart(), segment0.getEnd());
 					Bytes b1 = bytes1.subbytes(segment1.getStart(), segment1.getEnd());
 					if (Objects.equals(b0, b1))
-						return Pair.create(segment0, segment1);
+						return Pair.of(segment0, segment1);
 				}
 
 				segments0 = reduceSegments(segments0, bytes0, rollingSize);
@@ -45,7 +45,7 @@ public class Lccs {
 				rollingSize--;
 			}
 		} else
-			return Pair.create(new Segment(0, 0), new Segment(0, 0));
+			return Pair.of(new Segment(0, 0), new Segment(0, 0));
 	}
 
 	private Map<Integer, Segment> createInitialHashes(Bytes bytes, int rollingSize) {

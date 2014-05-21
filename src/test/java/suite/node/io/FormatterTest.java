@@ -14,7 +14,7 @@ public class FormatterTest {
 
 	@Test
 	public void testDisplay() {
-		assertEquals("123", Formatter.display(Int.create(123)));
+		assertEquals("123", Formatter.display(Int.of(123)));
 		testDisplay("1 + 2 * 3");
 		testDisplay("1 * 2 - 3");
 		testDisplay("1 - 2 - 3");
