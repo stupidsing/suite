@@ -121,6 +121,24 @@ public class Matrix {
 			throw new RuntimeException("Wrong matrix sizes");
 	}
 
+	public static Matrix convolute(Matrix m, Matrix k) {
+		int kh = k.height(), kw = k.width();
+		int h1 = m.height() - kh + 1;
+		int w1 = m.width() - kw + 1;
+		Matrix o = new Matrix(h1, w1);
+
+		for (int i = 0; i < h1; i++)
+			for (int j = 0; j < w1; j++) {
+				float sum = 0;
+				for (int i0 = 0; i0 < kh; i0++)
+					for (int j0 = 0; j0 < kw; j0++)
+						sum += m.v[i + i0][j + j0] * k.v[i0][j0];
+				o.v[i][j] = sum;
+			}
+
+		return o;
+	}
+
 	/**
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
