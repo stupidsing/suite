@@ -11,6 +11,8 @@ import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.FileUtil;
 import suite.util.Pair;
+import suite.util.TimeUtil;
+import suite.util.TimeUtil.TimedResult;
 import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -52,15 +54,14 @@ public class UctWeiqiMain<Move> {
 			if (auto || gameSet.getNextPlayer() == computerPlayer) {
 				System.out.println("THINKING...");
 
-				long start = System.currentTimeMillis();
-				Coordinate coord = search.search();
-				long end = System.currentTimeMillis();
+				TimedResult<Coordinate> timed = new TimeUtil().time(search::search);
+				Coordinate coord = timed.result;
 
 				if (coord != null) {
 					status = gameSet.getNextPlayer() //
 							+ " " + coord //
 							+ " " + df.format(search.getWinningChance()) //
-							+ " " + (end - start) + "ms";
+							+ " " + timed.duration + "ms";
 
 					gameSet.play(coord);
 

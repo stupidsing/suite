@@ -13,6 +13,8 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
+import suite.util.TimeUtil;
+import suite.util.TimeUtil.TimedResult;
 import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -57,19 +59,17 @@ public class UctTest {
 	public void testRandomEvaluationTime() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 		int i = 0, ss[] = { 1000, 10000 };
-		long start = 0, end = 0;
+		float duration = 0f;
 
-		for (int time = 0; time < 2; time++) {
-			start = System.currentTimeMillis();
-			for (; i < ss[time]; i++) {
-				GameSet gameSet1 = new GameSet(gameSet);
-				UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
-				visitor.evaluateRandomOutcome();
-			}
-			end = System.currentTimeMillis();
-		}
+		for (int time = 0; time < 2; time++)
+			for (; i < ss[time]; i++)
+				duration = new TimeUtil().time(() -> {
+					GameSet gameSet1 = new GameSet(gameSet);
+					UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
+					visitor.evaluateRandomOutcome();
+					return null;
+				}).duration;
 
-		float duration = end - start;
 		float ms = duration / (ss[1] - ss[0]);
 		System.out.println("Random move: " + ms + "ms per evaluation");
 	}
@@ -77,19 +77,17 @@ public class UctTest {
 	@Test
 	public void testUctSearchTime() {
 		int nSimulations = 1000;
-		long start = 0, end = 0;
+		float duration = 0f;
 
 		for (int time = 0; time < 2; time++) {
 			GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 			UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfSimulations(nSimulations);
-			start = System.currentTimeMillis();
-			search.search();
-			end = System.currentTimeMillis();
+
+			duration = new TimeUtil().time(search::search).duration;
 		}
 
-		float duration = end - start;
 		float ms = duration / nSimulations;
 		System.out.println("UCT: " + ms + "ms/simulation");
 	}
@@ -145,7 +143,6 @@ public class UctTest {
 
 				Board board = new Board();
 				GameSet gameSet = new GameSet(board, Occupation.BLACK);
-				long current = System.currentTimeMillis();
 
 				while (true) {
 					GameSet gameSet1 = new GameSet(gameSet);
@@ -155,19 +152,19 @@ public class UctTest {
 					search.setNumberOfSimulations(nSimulations);
 					search.setBoundedTime(boundedTime);
 
-					Coordinate move = search.search();
+					TimedResult<Coordinate> timed = new TimeUtil().time(search::search);
+					Coordinate move = timed.result;
+
 					if (move == null)
 						break;
 
-					long current0 = current;
-					current = System.currentTimeMillis();
 					Occupation player = gameSet.getNextPlayer();
 
 					search.dumpPrincipalVariation();
 					System.out.println(player //
 							+ " " + move //
 							+ " " + df.format(search.getWinningChance()) //
-							+ " " + (current - current0) + "ms");
+							+ " " + timed.duration + "ms");
 
 					gameSet.play(move);
 					UserInterface.display(gameSet);

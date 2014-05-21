@@ -19,8 +19,8 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.util.CacheUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 import suite.util.Pair;
+import suite.util.TimeUtil;
 import suite.util.Util;
 
 public class EvaluateUtil {
@@ -101,15 +101,11 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
-		long start = System.currentTimeMillis();
-
-		try {
+		return new TimeUtil().logTime("Code compiled", () -> {
 			ProverConfig pc = fcc.getProverConfig();
 			Finder finder = fccFinderFun.apply(Pair.create(pc, compileNode));
 			return FindUtil.collectSingle(finder, appendLibraries(fcc));
-		} finally {
-			LogUtil.info("Code compiled in " + (System.currentTimeMillis() - start) + "ms");
-		}
+		});
 	}
 
 	private Node appendLibraries(FunCompilerConfig fcc) {
