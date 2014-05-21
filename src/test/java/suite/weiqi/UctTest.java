@@ -61,7 +61,7 @@ public class UctTest {
 
 		for (int time = 0; time < 2; time++) {
 			start = System.currentTimeMillis();
-			for (; i < ss[1]; i++) {
+			for (; i < ss[time]; i++) {
 				GameSet gameSet1 = new GameSet(gameSet);
 				UctVisitor<Coordinate> visitor = UctWeiqi.createVisitor(gameSet1);
 				visitor.evaluateRandomOutcome();
