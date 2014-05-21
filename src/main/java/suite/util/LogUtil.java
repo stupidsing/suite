@@ -14,6 +14,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import suite.util.FunUtil.Source;
+
 public class LogUtil {
 
 	private static int maxStackTraceLength = 99;
@@ -61,6 +63,15 @@ public class LogUtil {
 	public static void fatal(Throwable th) {
 		boolean isTrimmed = trimStackTrace(th);
 		suiteLog.fatal(isTrimmed ? "(Trimmed)" : "", th);
+	}
+
+	public static <T> T log(String message, Source<T> source) {
+		info("Enter " + message);
+		try {
+			return source.source();
+		} finally {
+			info("Exit " + message);
+		}
 	}
 
 	public static <I> I proxy(Class<I> interface_, I object) {
