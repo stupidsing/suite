@@ -25,12 +25,21 @@ public class Termios implements Closeable {
 	@Override
 	public void close() {
 		Runtime.getRuntime().removeShutdownHook(hook);
+		showCursor();
 		libc.tcsetattr(0, 1, termios0); // TCSADRAIN
 	}
 
 	public void clear() {
 		puts(esc + "[2J");
 		gotoxy(0, 0);
+	}
+
+	public void hideCursor() {
+		puts(esc + "[?25l");
+	}
+
+	public void showCursor() {
+		puts(esc + "[?25h");
 	}
 
 	public void gotoxy(int x, int y) {
