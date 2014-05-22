@@ -11,7 +11,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	private URLClassLoader classLoader;
 
 	public JdkLoadClassUtil(String tmpDir) throws MalformedURLException {
-		super(tmpDir, tmpDir);
+		this(tmpDir, tmpDir);
 	}
 
 	public JdkLoadClassUtil(String srcDir, String binDir) throws MalformedURLException {
