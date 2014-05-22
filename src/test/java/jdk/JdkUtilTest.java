@@ -6,7 +6,8 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.util.FileUtil;
-import suite.util.JdkUtil;
+import suite.util.JdkLoadClassUtil;
+import suite.util.JdkUnsafeLoadClassUtil;
 
 public class JdkUtilTest {
 
@@ -27,9 +28,11 @@ public class JdkUtilTest {
 				+ "  }" //
 				+ "}";
 
-		try (JdkUtil jdkUtil = new JdkUtil(srcDir, binDir)) {
-			jdkUtil.newInstance(Runnable.class, "", className, src).run();
+		try (JdkLoadClassUtil jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
+			jdkLoadClassUtil.newInstance(Runnable.class, "", className, src).run();
 		}
+
+		new JdkUnsafeLoadClassUtil(srcDir, binDir).newInstance(Runnable.class, "", className, src).run();
 	}
 
 }

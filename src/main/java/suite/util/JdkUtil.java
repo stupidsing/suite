@@ -1,23 +1,19 @@
 package suite.util;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-public class JdkUtil implements Closeable {
+public class JdkUtil {
 
 	private String srcDir;
 	private String binDir;
-	private URLClassLoader classLoader;
 
 	public JdkUtil(String tmpDir) throws MalformedURLException {
 		this(tmpDir, tmpDir);
@@ -26,27 +22,9 @@ public class JdkUtil implements Closeable {
 	public JdkUtil(String srcDir, String binDir) throws MalformedURLException {
 		this.srcDir = srcDir;
 		this.binDir = binDir;
-		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });
-
 	}
 
-	@Override
-	public void close() throws IOException {
-		classLoader.close();
-	}
-
-	public <T> T newInstance(Class<T> interfaceClazz, String packageName, String className, String java) throws IOException,
-			ReflectiveOperationException {
-		return compile(interfaceClazz, packageName, className, java).newInstance();
-	}
-
-	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
-			throws IOException {
-		compile(packageName, className, java);
-		return load(packageName, className);
-	}
-
-	private void compile(String packageName, String className, String java) throws IOException {
+	protected void compile(String packageName, String className, String java) throws IOException {
 		String pathName = srcDir + "/" + packageName.replace('.', '/');
 		String filename = pathName + "/" + className + ".java";
 
@@ -73,18 +51,8 @@ public class JdkUtil implements Closeable {
 		}
 	}
 
-	private <T> Class<? extends T> load(String packageName, String className) {
-		LogUtil.info("Loading class " + className);
-
-		try {
-			String fullName = (!packageName.isEmpty() ? packageName + "." : "") + className;
-
-			@SuppressWarnings("unchecked")
-			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(fullName);
-			return clazz;
-		} catch (ClassNotFoundException ex) {
-			throw new RuntimeException(ex);
-		}
+	public String getBinDir() {
+		return binDir;
 	}
 
 }

@@ -20,7 +20,7 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.parser.Subst;
-import suite.util.JdkUtil;
+import suite.util.JdkLoadClassUtil;
 import suite.util.Util;
 
 import com.google.common.collect.BiMap;
@@ -41,7 +41,7 @@ public class InstructionTranslator implements Closeable {
 	private String packageName;
 	private String className;
 
-	private JdkUtil jdkUtil;
+	private JdkLoadClassUtil jdkLoadClassUtil;
 
 	private StringBuilder clazzsec = new StringBuilder();
 	private StringBuilder localsec = new StringBuilder();
@@ -57,12 +57,12 @@ public class InstructionTranslator implements Closeable {
 
 	public InstructionTranslator(String basePathName) throws MalformedURLException {
 		packageName = getClass().getPackage().getName();
-		jdkUtil = new JdkUtil(basePathName);
+		jdkLoadClassUtil = new JdkLoadClassUtil(basePathName);
 	}
 
 	@Override
 	public void close() throws IOException {
-		jdkUtil.close();
+		jdkLoadClassUtil.close();
 	}
 
 	public TranslatedRun translate(Node node) throws IOException {
@@ -558,7 +558,7 @@ public class InstructionTranslator implements Closeable {
 
 	private TranslatedRun getTranslatedRun(String java) throws IOException {
 		try {
-			return jdkUtil.newInstance(TranslatedRun.class, packageName, className, java);
+			return jdkLoadClassUtil.newInstance(TranslatedRun.class, packageName, className, java);
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}
