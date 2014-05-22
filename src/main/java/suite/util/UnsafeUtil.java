@@ -6,6 +6,11 @@ import sun.misc.Unsafe;
 
 public class UnsafeUtil {
 
+	public Class<?> defineClass(byte bytes[]) {
+		Unsafe unsafe = new UnsafeUtil().getUnsafe();
+		return unsafe.defineAnonymousClass(getClass(), bytes, null);
+	}
+
 	public Class<?> defineClass(String className, byte bytes[]) {
 		Unsafe unsafe = new UnsafeUtil().getUnsafe();
 		return unsafe.defineClass(className, bytes, 0, bytes.length, getClass().getClassLoader(), null);

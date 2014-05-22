@@ -1,17 +1,16 @@
 package suite.util;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
-	public JdkUnsafeLoadClassUtil(String tmpDir) throws MalformedURLException {
+	public JdkUnsafeLoadClassUtil(String tmpDir) {
 		super(tmpDir, tmpDir);
 	}
 
-	public JdkUnsafeLoadClassUtil(String srcDir, String binDir) throws MalformedURLException {
+	public JdkUnsafeLoadClassUtil(String srcDir, String binDir) {
 		super(srcDir, binDir);
 	}
 

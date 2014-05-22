@@ -3,7 +3,6 @@ package suite.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.util.Arrays;
 
 import javax.tools.JavaCompiler;
@@ -15,11 +14,11 @@ public class JdkUtil {
 	private String srcDir;
 	private String binDir;
 
-	public JdkUtil(String tmpDir) throws MalformedURLException {
+	public JdkUtil(String tmpDir) {
 		this(tmpDir, tmpDir);
 	}
 
-	public JdkUtil(String srcDir, String binDir) throws MalformedURLException {
+	public JdkUtil(String srcDir, String binDir) {
 		this.srcDir = srcDir;
 		this.binDir = binDir;
 	}
