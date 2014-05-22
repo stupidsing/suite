@@ -5,14 +5,14 @@ import java.util.Map;
 
 public class HtmlUtil {
 
-	private static Map<String, String> escapeTokensByChar = new HashMap<>();
-	private static Map<String, String> charsByEscapeToken = new HashMap<>();
+	private Map<String, String> escapeTokensByChar = new HashMap<>();
+	private Map<String, String> charsByEscapeToken = new HashMap<>();
 
-	static {
+	public HtmlUtil() {
 		initialize();
 	}
 
-	public static String decode(String in) {
+	public String decode(String in) {
 		String decoded;
 
 		if (in != null) {
@@ -50,7 +50,7 @@ public class HtmlUtil {
 		return decoded;
 	}
 
-	public static String encode(String in) {
+	public String encode(String in) {
 		String encoded;
 
 		if (in != null) {
@@ -77,7 +77,7 @@ public class HtmlUtil {
 		return encoded;
 	}
 
-	private static void initialize() {
+	private void initialize() {
 		putEscapeMap("€", "&euro;");
 		putEscapeMap(" ", "&nbsp;");
 		putEscapeMap("\"", "&quot;");
@@ -180,7 +180,7 @@ public class HtmlUtil {
 		putEscapeMap("þ", "&thorn;");
 	}
 
-	private static void putEscapeMap(String ch, String escapeToken) {
+	private void putEscapeMap(String ch, String escapeToken) {
 		escapeTokensByChar.put(ch, escapeToken);
 		charsByEscapeToken.put(escapeToken, ch);
 	}

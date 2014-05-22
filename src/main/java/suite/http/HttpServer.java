@@ -32,7 +32,7 @@ public class HttpServer {
 	}
 
 	public void run(Handler handler) throws IOException {
-		SocketUtil.listenIo(8051, (is, os) -> {
+		new SocketUtil().listenIo(8051, (is, os) -> {
 			HashMap<String, String> responseHeaders = new HashMap<>();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

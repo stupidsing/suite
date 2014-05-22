@@ -84,13 +84,13 @@ public class LogUtil {
 
 			if (ps != null)
 				for (int i = 0; i < ps.length; i++)
-					DumpUtil.dump(sb, "p" + i, ps[i]);
+					Dump.object(sb, "p" + i, ps[i]);
 
 			log.info(sb.toString());
 
 			try {
 				Object value = invocation.invoke(m, ps);
-				String rd = DumpUtil.dump("return", value);
+				String rd = Dump.object("return", value);
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {

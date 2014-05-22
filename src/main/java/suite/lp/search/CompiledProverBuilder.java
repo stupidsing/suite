@@ -53,7 +53,7 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	private Node compile(Node program) {
-		return new TimeUtil().logTime("Code compiled", () -> FindUtil.collectSingle(compiler, program));
+		return new TimeUtil().logDuration("Code compiled", () -> FindUtil.collectSingle(compiler, program));
 	}
 
 	private Finder createCompiler(Builder builder, boolean isDumpCode) {

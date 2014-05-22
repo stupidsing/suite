@@ -19,6 +19,7 @@ public class HttpSessionController {
 	private Authenticator authenticator;
 	private SessionManager sessionManager = new HttpSessionManager();
 	private Random random = new SecureRandom();
+	private HtmlUtil htmlUtil = new HtmlUtil();
 
 	public interface Authenticator {
 		public boolean authenticate(String username, String password);
@@ -123,7 +124,7 @@ public class HttpSessionController {
 					+ "<form name=\"login\" action=\"/login\" method=\"post\">" //
 					+ "Username <input type=\"text\" name=\"username\" /><br/>" //
 					+ "Password <input type=\"password\" name=\"password\" /><br/>" //
-					+ "<input type=\"hidden\" name=\"path\" value=\"" + HtmlUtil.encode(redirectPath) + "\" />" //
+					+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath) + "\" />" //
 					+ "<input type=\"submit\" value=\"Login\">" //
 					+ "</form>" //
 					+ "</font>" //

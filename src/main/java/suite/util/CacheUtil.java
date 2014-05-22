@@ -15,7 +15,7 @@ public class CacheUtil {
 
 	private Map<Key, Object> results = new ConcurrentHashMap<>();
 
-	private static class Key {
+	private class Key {
 		private Object bean;
 		private Method method;
 		private Object arguments[];

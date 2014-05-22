@@ -152,7 +152,7 @@ public class Util {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Dumping ");
 		sb.append(name);
-		new DumpUtil(sb).d("", object);
+		Dump.object(sb, "", object);
 		LogUtil.info(sb.toString());
 	}
 

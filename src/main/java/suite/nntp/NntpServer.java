@@ -29,7 +29,7 @@ public class NntpServer {
 	}
 
 	private void run() throws IOException {
-		SocketUtil.listenIo(119, (sis, sos) -> new Server().serve(sis, sos));
+		new SocketUtil().listenIo(119, (sis, sos) -> new Server().serve(sis, sos));
 	}
 
 	private class Server {

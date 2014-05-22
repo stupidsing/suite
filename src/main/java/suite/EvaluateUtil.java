@@ -101,7 +101,7 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
-		return new TimeUtil().logTime("Code compiled", () -> {
+		return new TimeUtil().logDuration("Code compiled", () -> {
 			ProverConfig pc = fcc.getProverConfig();
 			Finder finder = fccFinderFun.apply(Pair.of(pc, compileNode));
 			return FindUtil.collectSingle(finder, appendLibraries(fcc));

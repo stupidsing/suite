@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import suite.util.Copy;
-import suite.util.DumpUtil;
+import suite.util.Dump;
 
 public class LogUtil {
 
@@ -28,13 +28,13 @@ public class LogUtil {
 
 			if (ps != null)
 				for (int i = 0; i < ps.length; i++)
-					DumpUtil.dump(sb, "p" + i, ps[i]);
+					Dump.object(sb, "p" + i, ps[i]);
 
 			log.info(sb.toString());
 
 			try {
 				Object value = method.invoke(object, ps);
-				String rd = DumpUtil.dump("return", value);
+				String rd = Dump.object("return", value);
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {

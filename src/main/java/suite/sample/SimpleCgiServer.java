@@ -26,7 +26,7 @@ public class SimpleCgiServer {
 	}
 
 	private void run(Handler handler) throws IOException {
-		SocketUtil.listenIo(4000, (is, os) -> {
+		new SocketUtil().listenIo(4000, (is, os) -> {
 			Map<String, String> headers = readHeaders(is);
 
 			os.write(("Status: 200 OK\r\n" //
