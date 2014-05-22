@@ -15,11 +15,13 @@ import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
+import suite.lp.intrinsic.Intrinsics;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.parser.Subst;
+import suite.util.FunUtil;
 import suite.util.JdkLoadClassUtil;
 import suite.util.Util;
 
@@ -89,15 +91,15 @@ public class InstructionTranslator implements Closeable {
 				+ "import suite.lp.*; \n" //
 				+ "import suite.lp.doer.*; \n" //
 				+ "import suite.lp.intrinsic.*; \n" //
-				+ "import suite.lp.intrinsic.Intrinsics.*; \n" //
 				+ "import suite.lp.kb.*; \n" //
 				+ "import suite.lp.predicate.*; \n" //
 				+ "import suite.node.*; \n" //
 				+ "import suite.node.util.*; \n" //
 				+ "import suite.util.*; \n" //
-				+ "import suite.util.FunUtil.*; \n" //
 				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
+				+ "import " + FunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //
+				+ "import " + Intrinsics.class.getCanonicalName() + ".*; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
 				+ "import " + TranslatedRunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "\n" //
