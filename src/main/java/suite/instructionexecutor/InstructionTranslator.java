@@ -99,7 +99,6 @@ public class InstructionTranslator implements Closeable {
 				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
 				+ "import " + IOException.class.getCanonicalName() + "; \n" //
 				+ "import " + TermOp.class.getCanonicalName() + "; \n" //
-				+ "import " + TranslatedRun.class.getCanonicalName() + "; \n" //
 				+ "import " + TranslatedRunUtil.class.getCanonicalName() + ".*; \n" //
 				+ "\n" //
 				+ "public class " + className + " implements TranslatedRun { \n" //
