@@ -14,10 +14,6 @@ public class JdkUtil {
 	private String srcDir;
 	private String binDir;
 
-	public JdkUtil(String tmpDir) {
-		this(tmpDir, tmpDir);
-	}
-
 	public JdkUtil(String srcDir, String binDir) {
 		this.srcDir = srcDir;
 		this.binDir = binDir;
