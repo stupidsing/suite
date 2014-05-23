@@ -41,9 +41,10 @@ public class InstructionTranslatorTest {
 
 	@Test
 	public void testAtomString() throws IOException {
+		boolean isLazy = false;
 		String node = executeToString(compileFunctional(Suite.parse("" //
 				+ "define atom-string := +getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >> " //
-				+ "+callintrn1 {atom-string} {atom:ATOM}"), false));
+				+ "+callintrn1 {atom-string} {atom:ATOM}"), isLazy), isLazy);
 		assertEquals("ATOM", node);
 	}
 
@@ -60,12 +61,12 @@ public class InstructionTranslatorTest {
 
 	private void assertFunctional(String program, boolean isLazy, Int result) throws IOException {
 		Node code = compileFunctional(Suite.parse(program), isLazy);
-		assertEquals(result, execute(code));
+		assertEquals(result, execute(code, isLazy));
 	}
 
 	private void assertLogical(String goal, Atom result) throws IOException {
 		Node code = compileLogical(Suite.parse(goal));
-		assertEquals(result, execute(code));
+		assertEquals(result, execute(code, false));
 	}
 
 	private Node compileFunctional(Node program, boolean isLazy) {
@@ -87,19 +88,17 @@ public class InstructionTranslatorTest {
 		return FindUtil.collectSingle(compiler, program);
 	}
 
-	private Node execute(Node code) throws IOException {
-		return execute(code, exec -> exec.apply(new Closure(null, 0)));
+	private Node execute(Node code, boolean isLazy) throws IOException {
+		return execute(code, isLazy, exec -> exec.apply(new Closure(null, 0)));
 	}
 
-	private String executeToString(Node code) throws IOException {
-		return execute(code, exec -> ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0))));
+	private String executeToString(Node code, boolean isLazy) throws IOException {
+		return execute(code, isLazy, exec -> ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0))));
 	}
 
-	private <T> T execute(Node code, Fun<Fun<Node, Node>, T> fun) throws IOException {
+	private <T> T execute(Node code, boolean isLazy, Fun<Fun<Node, Node>, T> fun) throws IOException {
 		String basePathName = FileUtil.tmp + "/" + InstructionTranslator.class.getName();
-
-		TranslatedRunConfig config = new TranslatedRunConfig();
-		config.ruleSet = Suite.createRuleSet();
+		TranslatedRunConfig config = new TranslatedRunConfig(Suite.createRuleSet(), isLazy);
 
 		try (InstructionTranslator instructionTranslator = new InstructionTranslator(basePathName)) {
 			TranslatedRun translatedRun = instructionTranslator.translate(code);

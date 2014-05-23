@@ -1,5 +1,7 @@
 package suite.instructionexecutor;
 
+import java.util.Arrays;
+
 import suite.lp.intrinsic.Intrinsic;
 import suite.lp.intrinsic.IntrinsicBridge;
 import suite.lp.kb.RuleSet;
@@ -15,6 +17,12 @@ public class TranslatedRunUtil {
 
 	public static class TranslatedRunConfig {
 		public RuleSet ruleSet;
+		public boolean isLazy;
+
+		public TranslatedRunConfig(RuleSet ruleSet, boolean isLazy) {
+			this.ruleSet = ruleSet;
+			this.isLazy = isLazy;
+		}
 	}
 
 	public interface Frame {
@@ -37,25 +45,36 @@ public class TranslatedRunUtil {
 	}
 
 	public static IntrinsicBridge getIntrinsicBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
-		return new IntrinsicBridge() {
-			public Node unwrap(Node node) {
-				node = node.finalNode();
-				if (node instanceof Closure) {
-					Closure closure = (Closure) node;
-					if (closure.result == null)
-						closure.result = translatedRun.exec(config, closure);
-					node = closure.result;
+		if (config.isLazy)
+			return new IntrinsicBridge() {
+				public Node unwrap(Node node) {
+					node = node.finalNode();
+					if (node instanceof Closure) {
+						Closure closure = (Closure) node;
+						if (closure.result == null)
+							closure.result = translatedRun.exec(config, closure);
+						node = closure.result;
+					}
+					return node;
 				}
-				return node;
-			}
 
-			public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
-				IntrinsicFrame frame = new IntrinsicFrame();
-				frame.intrinsic = intrinsic;
-				frame.node = node;
-				return new Closure(frame, InstructionTranslator.invokeJavaEntryPoint);
-			}
-		};
+				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+					IntrinsicFrame frame = new IntrinsicFrame();
+					frame.intrinsic = intrinsic;
+					frame.node = node;
+					return new Closure(frame, InstructionTranslator.invokeJavaEntryPoint);
+				}
+			};
+		else
+			return new IntrinsicBridge() {
+				public Node unwrap(Node node) {
+					return node;
+				}
+
+				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+					return intrinsic.invoke(this, Arrays.asList(node));
+				}
+			};
 	}
 
 	public static Node toNode(boolean b) {
