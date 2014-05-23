@@ -6,10 +6,6 @@ import java.nio.file.Paths;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
-	public JdkUnsafeLoadClassUtil(String tmpDir) {
-		super(tmpDir, tmpDir);
-	}
-
 	public JdkUnsafeLoadClassUtil(String srcDir, String binDir) {
 		super(srcDir, binDir);
 	}

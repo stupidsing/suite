@@ -10,10 +10,6 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
 	private URLClassLoader classLoader;
 
-	public JdkLoadClassUtil(String tmpDir) throws MalformedURLException {
-		this(tmpDir, tmpDir);
-	}
-
 	public JdkLoadClassUtil(String srcDir, String binDir) throws MalformedURLException {
 		super(srcDir, binDir);
 		classLoader = new URLClassLoader(new URL[] { new URL("file://" + binDir + "/") });

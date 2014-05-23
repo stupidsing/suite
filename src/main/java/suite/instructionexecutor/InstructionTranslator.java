@@ -59,7 +59,7 @@ public class InstructionTranslator implements Closeable {
 
 	public InstructionTranslator(String basePathName) throws MalformedURLException {
 		packageName = getClass().getPackage().getName();
-		jdkLoadClassUtil = new JdkLoadClassUtil(basePathName);
+		jdkLoadClassUtil = new JdkLoadClassUtil(basePathName, basePathName);
 	}
 
 	@Override
