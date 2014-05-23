@@ -1,5 +1,6 @@
 package suite.lp.intrinsic;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,7 +37,8 @@ public class MonadIntrinsics {
 			try {
 				Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
 				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
-				Node result = new Data<>(new IndexedReader(isr));
+				BufferedReader br = new BufferedReader(isr);
+				Node result = new Data<>(new IndexedReader(br));
 
 				// Use a separate thread to write to the process, so that read
 				// and write occur at the same time and would not block up.
