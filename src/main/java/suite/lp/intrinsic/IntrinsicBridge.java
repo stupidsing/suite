@@ -6,6 +6,6 @@ public interface IntrinsicBridge {
 
 	public Node unwrap(Node node);
 
-	public Node wrapIntrinsic(Intrinsic intrinsic, Node node);
+	public Node wrap(Intrinsic intrinsic, Node node);
 
 }

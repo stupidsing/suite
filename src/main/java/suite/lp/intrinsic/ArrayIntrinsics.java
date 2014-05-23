@@ -29,8 +29,8 @@ public class ArrayIntrinsics {
 			List<Node> array = Data.get(inputs.get(0));
 
 			if (!array.isEmpty()) {
-				Node left = bridge.wrapIntrinsic(new Id(), array.get(0));
-				Node right = bridge.wrapIntrinsic(this, new Data<>(array.subList(1, array.size())));
+				Node left = bridge.wrap(new Id(), array.get(0));
+				Node right = bridge.wrap(this, new Data<>(array.subList(1, array.size())));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;

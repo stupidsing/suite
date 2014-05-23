@@ -41,7 +41,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 					return node instanceof Closure ? evaluateClosure((Closure) node) : node;
 				}
 
-				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+				public Node wrap(Intrinsic intrinsic, Node node) {
 					Frame frame = new Frame(null, 3);
 					frame.registers[0] = node;
 					frame.registers[1] = new Data<>(intrinsic);
@@ -54,7 +54,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 					return node;
 				}
 
-				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+				public Node wrap(Intrinsic intrinsic, Node node) {
 					return intrinsic.invoke(this, Arrays.asList(node));
 				}
 			};

@@ -30,8 +30,8 @@ public class Intrinsics {
 			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = bridge.wrapIntrinsic(new Id(), Int.of(name.charAt(0)));
-				Node right = bridge.wrapIntrinsic(this, Atom.of(name.substring(1)));
+				Node left = bridge.wrap(new Id(), Int.of(name.charAt(0)));
+				Node right = bridge.wrap(this, Atom.of(name.substring(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -66,8 +66,8 @@ public class Intrinsics {
 				int ch = intern.head();
 
 				if (ch != -1) {
-					Node left = bridge.wrapIntrinsic(new Id(), Int.of(ch));
-					Node right = bridge.wrapIntrinsic(this, new Data<>(intern.tail()));
+					Node left = bridge.wrap(new Id(), Int.of(ch));
+					Node right = bridge.wrap(this, new Data<>(intern.tail()));
 					return Tree.of(TermOp.OR____, left, right);
 				} else
 					return Atom.NIL;

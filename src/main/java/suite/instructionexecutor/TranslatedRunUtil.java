@@ -58,7 +58,7 @@ public class TranslatedRunUtil {
 					return node;
 				}
 
-				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+				public Node wrap(Intrinsic intrinsic, Node node) {
 					IntrinsicFrame frame = new IntrinsicFrame();
 					frame.intrinsic = intrinsic;
 					frame.node = node;
@@ -71,7 +71,7 @@ public class TranslatedRunUtil {
 					return node;
 				}
 
-				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+				public Node wrap(Intrinsic intrinsic, Node node) {
 					return intrinsic.invoke(this, Arrays.asList(node));
 				}
 			};
