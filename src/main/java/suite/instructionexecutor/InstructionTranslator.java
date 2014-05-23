@@ -126,8 +126,7 @@ public class InstructionTranslator implements Closeable {
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "IntrinsicBridge bridge = TranslatedRunUtil.getIntrinsicBridge(config, this); \n" //
-				+ "Fun<Node, Node> unwrapper = bridge.getUnwrapper(); \n" //
-				+ "Comparer comparer = new FunComparer(unwrapper); \n" //
+				+ "Comparer comparer = new FunComparer(bridge::unwrap); \n" //
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
@@ -224,7 +223,7 @@ public class InstructionTranslator implements Closeable {
 			case CALLINTRINSIC2:
 			case CALLINTRINSIC3:
 				app("{");
-				app("Data<?> data = (Data<?>) unwrapper.apply((Node) ds[--dsp])");
+				app("Data<?> data = (Data<?>) bridge.unwrap((Node) ds[--dsp])");
 				app("List<Node> list = new ArrayList<>(3)");
 				for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
 					app("list.add((Node) ds[--dsp])");
@@ -319,7 +318,7 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case GETINTRINSIC__:
 				app("{");
-				app("Atom atom = (Atom) unwrapper.apply((Node) ds[--dsp])");
+				app("Atom atom = (Atom) bridge.unwrap((Node) ds[--dsp])");
 				app("String clazzName = atom.toString().split(\"!\")[1]");
 				app("#{reg} = InstructionUtil.execInvokeJavaClass(clazzName)", op0);
 				app("}");
