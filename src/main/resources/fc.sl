@@ -252,9 +252,7 @@ fc-add-functions STANDARD .p (
 		|| anything => anything => ()
 	>>
 	define append :=
-		case
-		|| `$h; $t` => cons {h} . append {t}
-		|| anything => id
+		fold-right {cons} | flip
 	>>
 	define apply :=
 		fold-right {`.`} {id}
