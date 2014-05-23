@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import suite.instructionexecutor.InstructionUtil.Activation;
@@ -25,28 +26,45 @@ import suite.util.Util;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
-	private Fun<Node, Node> unwrapper = this::unwrap0;
-
-	private IntrinsicBridge intrinsicBridge = new IntrinsicBridge() {
-		public Fun<Node, Node> getUnwrapper() {
-			return unwrapper;
-		}
-
-		public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
-			return wrapIntrinsic0(intrinsic, node);
-		}
-	};
-
-	private Comparer comparer = new FunComparer(unwrapper);
+	private IntrinsicBridge intrinsicBridge;
+	private Comparer comparer;
 
 	private int invokeJavaEntryPoint;
 
-	public FunInstructionExecutor(Node node) {
+	public FunInstructionExecutor(Node node, boolean isLazy) {
 		super(node);
+
+		if (isLazy) {
+			intrinsicBridge = new IntrinsicBridge() {
+				public Node unwrap(Node node) {
+					node = node.finalNode();
+					return node instanceof Closure ? evaluateClosure((Closure) node) : node;
+				}
+
+				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+					Frame frame = new Frame(null, 3);
+					frame.registers[0] = node;
+					frame.registers[1] = new Data<>(intrinsic);
+					return new Closure(frame, FunInstructionExecutor.this.invokeJavaEntryPoint);
+				}
+			};
+		} else {
+			intrinsicBridge = new IntrinsicBridge() {
+				public Node unwrap(Node node) {
+					return node;
+				}
+
+				public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {
+					return intrinsic.invoke(this, Arrays.asList(node));
+				}
+			};
+		}
+
+		comparer = new FunComparer(intrinsicBridge::unwrap);
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
-		ExpandUtil.expandToWriter(unwrapper, execute(), writer);
+		ExpandUtil.expandToWriter(intrinsicBridge::unwrap, execute(), writer);
 	}
 
 	@Override
@@ -129,22 +147,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		return comparer;
 	}
 
-	private Node unwrap0(Node node) {
-		node = node.finalNode();
-		if (node instanceof Closure)
-			node = evaluateClosure((Closure) node);
-		return node;
-	}
-
-	private Node wrapIntrinsic0(Intrinsic intrinsic, Node node) {
-		Frame frame = new Frame(null, 3);
-		frame.registers[0] = node;
-		frame.registers[1] = new Data<>(intrinsic);
-		return new Closure(frame, FunInstructionExecutor.this.invokeJavaEntryPoint);
-	}
-
 	public Fun<Node, Node> getUnwrapper() {
-		return unwrapper;
+		return intrinsicBridge::unwrap;
 	}
 
 	@Override

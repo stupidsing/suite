@@ -23,7 +23,7 @@ public class MonadIntrinsics {
 
 	public static class Popen implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
+			Fun<Node, Node> unwrapper = bridge::unwrap;
 			List<String> list = new ArrayList<>();
 
 			Source<Node> source = ExpandUtil.expandList(unwrapper, inputs.get(0));
@@ -67,7 +67,7 @@ public class MonadIntrinsics {
 
 	public static class Seq implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			ExpandUtil.expandFully(bridge.getUnwrapper(), inputs.get(0));
+			ExpandUtil.expandFully(bridge::unwrap, inputs.get(0));
 			return inputs.get(1);
 		}
 	}

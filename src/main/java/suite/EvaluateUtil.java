@@ -78,7 +78,7 @@ public class EvaluateUtil {
 		Node code = doFcc(node, fcc);
 
 		if (code != null)
-			return new FunInstructionExecutor(code);
+			return new FunInstructionExecutor(code, fcc.isLazy());
 		else
 			throw new RuntimeException("Function compilation failure");
 	}

@@ -6,7 +6,6 @@ import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.util.FunUtil.Fun;
 
 public class TranslatedRunUtil {
 
@@ -38,20 +37,16 @@ public class TranslatedRunUtil {
 	}
 
 	public static IntrinsicBridge getIntrinsicBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
-		Fun<Node, Node> unwrapper = node -> {
-			node = node.finalNode();
-			if (node instanceof Closure) {
-				Closure closure = (Closure) node;
-				if (closure.result == null)
-					closure.result = translatedRun.exec(config, closure);
-				node = closure.result;
-			}
-			return node;
-		};
-
 		return new IntrinsicBridge() {
-			public Fun<Node, Node> getUnwrapper() {
-				return unwrapper;
+			public Node unwrap(Node node) {
+				node = node.finalNode();
+				if (node instanceof Closure) {
+					Closure closure = (Closure) node;
+					if (closure.result == null)
+						closure.result = translatedRun.exec(config, closure);
+					node = closure.result;
+				}
+				return node;
 			}
 
 			public Node wrapIntrinsic(Intrinsic intrinsic, Node node) {

@@ -37,7 +37,7 @@ public class CharsIntrinsics {
 
 	public static class StringChars implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			String value = ExpandUtil.expandString(bridge.getUnwrapper(), inputs.get(0));
+			String value = ExpandUtil.expandString(bridge::unwrap, inputs.get(0));
 			return new Data<>(new Chars(value.toCharArray()));
 		}
 	}

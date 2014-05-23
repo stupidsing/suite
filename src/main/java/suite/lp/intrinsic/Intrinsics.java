@@ -14,7 +14,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.Util;
 
@@ -47,17 +46,15 @@ public class Intrinsics {
 
 	public static class Log1 implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
 			Node node = inputs.get(0);
-			LogUtil.info(Formatter.display(ExpandUtil.expandFully(unwrapper, node)));
+			LogUtil.info(Formatter.display(ExpandUtil.expandFully(bridge::unwrap, node)));
 			return node;
 		}
 	}
 
 	public static class Log2 implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			Fun<Node, Node> unwrapper = bridge.getUnwrapper();
-			LogUtil.info(ExpandUtil.expandString(unwrapper, inputs.get(0)));
+			LogUtil.info(ExpandUtil.expandString(bridge::unwrap, inputs.get(0)));
 			return inputs.get(1);
 		}
 	}
@@ -86,7 +83,7 @@ public class Intrinsics {
 
 	public static class Throw implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			String message = ExpandUtil.expandString(bridge.getUnwrapper(), inputs.get(0));
+			String message = ExpandUtil.expandString(bridge::unwrap, inputs.get(0));
 			throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 		}
 	}

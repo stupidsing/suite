@@ -47,7 +47,7 @@ public class ArrayIntrinsics {
 
 	public static class ListArray implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			Source<Node> value = ExpandUtil.expandList(bridge.getUnwrapper(), inputs.get(0));
+			Source<Node> value = ExpandUtil.expandList(bridge::unwrap, inputs.get(0));
 			return new Data<>(To.list(value));
 		}
 	}
