@@ -22,9 +22,9 @@ public class JdkUtil {
 	protected String compile(String packageName, String className, String java) throws IOException {
 		String srcFilename = srcDir + "/" + packageName.replace('.', '/') + "/" + className + ".java";
 		String binFilename = binDir + "/" + packageName.replace('.', '/') + "/" + className + ".class";
-
-		LogUtil.info("Writing " + srcFilename);
 		File file = new File(srcFilename);
+
+		LogUtil.info("Writing " + file);
 		try (OutputStream os = FileUtil.out(file)) {
 			os.write(java.getBytes(FileUtil.charset));
 		}
