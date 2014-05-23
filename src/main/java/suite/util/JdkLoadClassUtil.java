@@ -29,17 +29,15 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
 			throws IOException {
 		compile(packageName, className, java);
-		return load(packageName, className);
+		return load((!packageName.isEmpty() ? packageName + "." : "") + className);
 	}
 
-	private <T> Class<? extends T> load(String packageName, String className) {
-		LogUtil.info("Loading class " + className);
+	private <T> Class<? extends T> load(String canonicalName) {
+		LogUtil.info("Loading class " + canonicalName);
 
 		try {
-			String fullName = (!packageName.isEmpty() ? packageName + "." : "") + className;
-
 			@SuppressWarnings("unchecked")
-			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(fullName);
+			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
 			return clazz;
 		} catch (ClassNotFoundException ex) {
 			throw new RuntimeException(ex);

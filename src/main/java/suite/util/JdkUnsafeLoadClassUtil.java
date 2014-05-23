@@ -17,17 +17,16 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
 	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
 			throws IOException {
-		compile(packageName, className, java);
-		return load(packageName, className);
+		String canonicalName = (!packageName.isEmpty() ? packageName + "." : "") + className;
+		String classFilename = compile(packageName, className, java);
+		return load(canonicalName, classFilename);
 	}
 
-	private <T> Class<? extends T> load(String packageName, String className) throws IOException {
-		LogUtil.info("Loading class " + className);
-
-		String fullName = (!packageName.isEmpty() ? packageName + "." : "") + className;
-		byte bytes[] = Files.readAllBytes(Paths.get(getBinDir() + "/" + fullName.replace(".", "/") + ".class"));
+	private <T> Class<? extends T> load(String canonicalName, String classFilename) throws IOException {
+		LogUtil.info("Loading class " + canonicalName);
+		byte bytes[] = Files.readAllBytes(Paths.get(classFilename));
 		@SuppressWarnings("unchecked")
-		Class<? extends T> clazz = (Class<? extends T>) new UnsafeUtil().defineClass(fullName, bytes);
+		Class<? extends T> clazz = (Class<? extends T>) new UnsafeUtil().defineClass(canonicalName, bytes);
 		return clazz;
 	}
 

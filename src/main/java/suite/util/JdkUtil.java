@@ -19,15 +19,15 @@ public class JdkUtil {
 		this.binDir = binDir;
 	}
 
-	protected void compile(String packageName, String className, String java) throws IOException {
-		String pathName = srcDir + "/" + packageName.replace('.', '/');
-		String filename = pathName + "/" + className + ".java";
+	protected String compile(String packageName, String className, String java) throws IOException {
+		String srcFilename = srcDir + "/" + packageName.replace('.', '/') + "/" + className + ".java";
+		String binFilename = binDir + "/" + packageName.replace('.', '/') + "/" + className + ".class";
 
-		LogUtil.info("Writing " + filename);
-		try (OutputStream os = FileUtil.out(new File(filename))) {
+		LogUtil.info("Writing " + srcFilename);
+		File file = new File(srcFilename);
+		try (OutputStream os = FileUtil.out(file)) {
 			os.write(java.getBytes(FileUtil.charset));
 		}
-		File file = new File(filename);
 
 		// Compile the Java, load the class, return an instantiated object
 		LogUtil.info("Compiling " + file);
@@ -44,6 +44,8 @@ public class JdkUtil {
 					, sjfm.getJavaFileObjects(file)).call())
 				throw new RuntimeException("Java compilation error");
 		}
+
+		return binFilename;
 	}
 
 	public String getBinDir() {
