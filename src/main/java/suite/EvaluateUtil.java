@@ -18,14 +18,14 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
-import suite.util.MemoizeUtil;
+import suite.util.Memoize;
 import suite.util.Pair;
 import suite.util.TimeUtil;
 import suite.util.Util;
 
 public class EvaluateUtil {
 
-	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = MemoizeUtil.memoize(pair -> {
+	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = Memoize.byInput(pair -> {
 		Atom mode = Atom.of(pair.t0 ? "LAZY" : "EAGER");
 
 		return new Specializer().specialize(Suite.substitute("" //
@@ -37,7 +37,7 @@ public class EvaluateUtil {
 
 	// Using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. It would by blow up the stack in InstructionExecutor
-	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = MemoizeUtil.memoize(pair -> {
+	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.byInput(pair -> {
 		Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0, false);
 		return builder.build(Suite.funCompilerRuleSet(), pair.t1);
 	});

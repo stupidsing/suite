@@ -9,11 +9,11 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.util.FunUtil.Fun;
-import suite.util.MemoizeUtil;
+import suite.util.Memoize;
 
 public class CompileUtil {
 
-	private Fun<List<String>, RuleSet> createRuleSetFun = MemoizeUtil.memoize(Suite::createRuleSet);
+	private Fun<List<String>, RuleSet> createRuleSetFun = Memoize.byInput(Suite::createRuleSet);
 
 	/**
 	 * Returns rule set for functional compiler.

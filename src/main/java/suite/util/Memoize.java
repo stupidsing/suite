@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
-public class MemoizeUtil {
+public class Memoize {
 
-	public static <I, O> Fun<I, O> memoize(Fun<I, O> fun) {
+	public static <I, O> Fun<I, O> byInput(Fun<I, O> fun) {
 		Map<Object, Object> results = new ConcurrentHashMap<>();
 
 		return in -> {
@@ -24,11 +24,11 @@ public class MemoizeUtil {
 		};
 	}
 
-	public static <T> Source<T> memoizeByTime(Source<T> source) {
-		return memoizeByTime(source, 30 * 1000l);
+	public static <T> Source<T> timed(Source<T> source) {
+		return timed(source, 30 * 1000l);
 	}
 
-	public static <T> Source<T> memoizeByTime(Source<T> source, long duration) {
+	public static <T> Source<T> timed(Source<T> source, long duration) {
 		return new Source<T>() {
 			private long timestamp = 0;
 			private T result;

@@ -15,7 +15,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.MemoizeUtil;
+import suite.util.Memoize;
 
 public class SystemPredicates {
 
@@ -33,7 +33,7 @@ public class SystemPredicates {
 		addPredicate("cut.begin", new CutBegin());
 		addPredicate("cut.end", new CutEnd());
 		addPredicate("find.all", new FindAll());
-		addPredicate("memoize", new Memoize());
+		addPredicate("memoize", new MemoizePredicate());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
 		addPredicate("system.predicate", new SystemPredicate_());
@@ -162,7 +162,7 @@ public class SystemPredicates {
 		}
 	}
 
-	private class Memoize implements SystemPredicate {
+	private class MemoizePredicate implements SystemPredicate {
 		private Reference uniqueReference = new Reference() {
 			public int hashCode() { // Makes the reference hash-able
 				return System.identityHashCode(this);
@@ -173,7 +173,7 @@ public class SystemPredicates {
 			}
 		};
 
-		private Fun<Node, Node> findAll = MemoizeUtil.memoize(goal -> findAll(prover, uniqueReference, goal));
+		private Fun<Node, Node> findAll = Memoize.byInput(goal -> findAll(prover, uniqueReference, goal));
 
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
