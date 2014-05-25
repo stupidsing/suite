@@ -8,10 +8,7 @@ public class Pair<T0, T1> {
 	public T0 t0;
 	public T1 t1;
 
-	public Pair() {
-	}
-
-	public Pair(T0 t1, T1 t2) {
+	private Pair(T0 t1, T1 t2) {
 		this.t0 = t1;
 		this.t1 = t2;
 	}
