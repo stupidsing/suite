@@ -67,7 +67,7 @@ public class Intrinsics {
 				int ch = intern.head();
 
 				// Suspend the right node to avoid stack overflow when input
-				// data is very long
+				// data is very long under eager mode
 				if (ch != -1) {
 					Node left = bridge.wrap(new Id(), Int.of(ch));
 					Node right = new Suspend(() -> bridge.wrap(this, new Data<>(intern.tail())));
