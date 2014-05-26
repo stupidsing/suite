@@ -21,15 +21,11 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 		classLoader.close();
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String packageName, String className, String java) throws IOException,
+	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException,
 			ReflectiveOperationException {
-		return compile(interfaceClazz, packageName, className, java).newInstance();
-	}
-
-	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
-			throws IOException {
-		compile(packageName, className, java);
-		return load((!packageName.isEmpty() ? packageName + "." : "") + className);
+		compile(canonicalName, java);
+		Class<? extends T> clazz = load(canonicalName);
+		return clazz.newInstance();
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {

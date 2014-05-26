@@ -10,24 +10,17 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 		super(srcDir, binDir);
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String packageName, String className, String java) throws IOException,
+	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException,
 			ReflectiveOperationException {
-		return compile(interfaceClazz, packageName, className, java).newInstance();
+		String classFilename = compile(canonicalName, java);
+		Class<? extends T> clazz = load(interfaceClazz, canonicalName, classFilename);
+		return clazz.newInstance();
 	}
 
-	private <T> Class<? extends T> compile(Class<T> interfaceClazz, String packageName, String className, String java)
-			throws IOException {
-		String canonicalName = (!packageName.isEmpty() ? packageName + "." : "") + className;
-		String classFilename = compile(packageName, className, java);
-		return load(canonicalName, classFilename);
-	}
-
-	private <T> Class<? extends T> load(String canonicalName, String classFilename) throws IOException {
+	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, String classFilename) throws IOException {
 		LogUtil.info("Loading class " + canonicalName);
 		byte bytes[] = Files.readAllBytes(Paths.get(classFilename));
-		@SuppressWarnings("unchecked")
-		Class<? extends T> clazz = (Class<? extends T>) new UnsafeUtil().defineClass(canonicalName, bytes);
-		return clazz;
+		return (Class<? extends T>) new UnsafeUtil().defineClass(interfaceClazz, canonicalName, bytes);
 	}
 
 }

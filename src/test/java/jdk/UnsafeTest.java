@@ -13,8 +13,8 @@ public class UnsafeTest {
 	public void test() throws Exception {
 		String className = "suite.cli.Main";
 		byte bytes[] = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
-		Class<?> clazz = new UnsafeUtil().defineClass(className, bytes);
-		((AutoCloseable) clazz.newInstance()).close();
+		Class<? extends AutoCloseable> clazz = new UnsafeUtil().defineClass(AutoCloseable.class, className, bytes);
+		clazz.newInstance().close();
 	}
 
 }

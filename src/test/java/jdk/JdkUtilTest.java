@@ -29,10 +29,10 @@ public class JdkUtilTest {
 				+ "}";
 
 		try (JdkLoadClassUtil jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
-			jdkLoadClassUtil.newInstance(Runnable.class, "", className, src).run();
+			jdkLoadClassUtil.newInstance(Runnable.class, className, src).run();
 		}
 
-		new JdkUnsafeLoadClassUtil(srcDir, binDir).newInstance(Runnable.class, "", className, src).run();
+		new JdkUnsafeLoadClassUtil(srcDir, binDir).newInstance(Runnable.class, className, src).run();
 	}
 
 }

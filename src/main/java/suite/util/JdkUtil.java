@@ -19,9 +19,9 @@ public class JdkUtil {
 		this.binDir = binDir;
 	}
 
-	protected String compile(String packageName, String className, String java) throws IOException {
-		String srcFilename = srcDir + "/" + packageName.replace('.', '/') + "/" + className + ".java";
-		String binFilename = binDir + "/" + packageName.replace('.', '/') + "/" + className + ".class";
+	protected String compile(String canonicalName, String java) throws IOException {
+		String srcFilename = srcDir + "/" + canonicalName.replace('.', '/') + ".java";
+		String binFilename = binDir + "/" + canonicalName.replace('.', '/') + ".class";
 		File file = new File(srcFilename);
 
 		LogUtil.info("Writing " + file);

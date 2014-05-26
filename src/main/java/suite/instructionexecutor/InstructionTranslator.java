@@ -558,7 +558,8 @@ public class InstructionTranslator implements Closeable {
 
 	private TranslatedRun getTranslatedRun(String java) throws IOException {
 		try {
-			return jdkLoadClassUtil.newInstance(TranslatedRun.class, packageName, className, java);
+			String canonicalName = (!packageName.isEmpty() ? packageName + "." : "") + className;
+			return jdkLoadClassUtil.newInstance(TranslatedRun.class, canonicalName, java);
 		} catch (ReflectiveOperationException ex) {
 			throw new RuntimeException(ex);
 		}
