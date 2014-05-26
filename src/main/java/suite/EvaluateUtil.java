@@ -18,9 +18,9 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
+import suite.util.LogUtil;
 import suite.util.Memoize;
 import suite.util.Pair;
-import suite.util.TimeUtil;
 import suite.util.Util;
 
 public class EvaluateUtil {
@@ -101,7 +101,7 @@ public class EvaluateUtil {
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
-		return new TimeUtil().logDuration("Code compiled", () -> {
+		return LogUtil.duration("Code compiled", () -> {
 			ProverConfig pc = fcc.getProverConfig();
 			Finder finder = fccFinderFun.apply(Pair.of(pc, compileNode));
 			return FindUtil.collectSingle(finder, appendLibraries(fcc));

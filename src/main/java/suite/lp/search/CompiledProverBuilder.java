@@ -8,7 +8,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
-import suite.util.TimeUtil;
+import suite.util.LogUtil;
 
 public class CompiledProverBuilder implements Builder {
 
@@ -53,7 +53,7 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	private Node compile(Node program) {
-		return new TimeUtil().logDuration("Code compiled", () -> FindUtil.collectSingle(compiler, program));
+		return LogUtil.duration("Code compiled", () -> FindUtil.collectSingle(compiler, program));
 	}
 
 	private Finder createCompiler(Builder builder, boolean isDumpCode) {

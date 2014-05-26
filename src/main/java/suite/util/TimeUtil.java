@@ -14,13 +14,6 @@ public class TimeUtil {
 		}
 	}
 
-	public <T> T logDuration(String m, Source<T> source) {
-		TimedResult<T> timedResult = time(source);
-		LogUtil.info(m + " in " + timedResult.duration + "ms");
-		return timedResult.result;
-
-	}
-
 	public <T> TimedResult<T> time(Source<T> source) {
 		long start = System.currentTimeMillis();
 		T t = source.source();

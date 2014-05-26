@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import suite.util.FunUtil.Source;
+import suite.util.TimeUtil.TimedResult;
 
 public class LogUtil {
 
@@ -43,6 +44,13 @@ public class LogUtil {
 		logger.removeAllAppenders();
 		logger.addAppender(console);
 		logger.addAppender(file);
+	}
+
+	public static <T> T duration(String m, Source<T> source) {
+		TimedResult<T> timedResult = new TimeUtil().time(source);
+		LogUtil.info(m + " in " + timedResult.duration + "ms");
+		return timedResult.result;
+
 	}
 
 	public static void info(String message) {
