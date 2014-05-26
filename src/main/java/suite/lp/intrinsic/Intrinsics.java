@@ -11,6 +11,7 @@ import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
+import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
@@ -65,9 +66,11 @@ public class Intrinsics {
 				IndexedReaderPointer intern = Data.get(inputs.get(0));
 				int ch = intern.head();
 
+				// Suspend the right node to avoid stack overflow when input
+				// data is very long
 				if (ch != -1) {
 					Node left = bridge.wrap(new Id(), Int.of(ch));
-					Node right = bridge.wrap(this, new Data<>(intern.tail()));
+					Node right = new Suspend(() -> bridge.wrap(this, new Data<>(intern.tail())));
 					return Tree.of(TermOp.OR____, left, right);
 				} else
 					return Atom.NIL;

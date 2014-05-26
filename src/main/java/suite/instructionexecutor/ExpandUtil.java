@@ -62,7 +62,7 @@ public class ExpandUtil {
 					// Facilitates garbage collection
 					Tree.forceSetRight(tree, null);
 					return result;
-				} else if (node_ == Atom.NIL)
+				} else if (node_.finalNode() == Atom.NIL)
 					return null;
 				else
 					throw new RuntimeException("Not a list, unable to expand");
