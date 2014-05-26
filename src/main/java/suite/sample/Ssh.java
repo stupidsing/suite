@@ -9,7 +9,6 @@ import java.util.Properties;
 import suite.util.Copy;
 import suite.util.Util;
 
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -20,17 +19,13 @@ import com.jcraft.jsch.UserInfo;
 
 public class Ssh {
 
-	public int execute(String command) throws JSchException, IOException {
-		Session session = null;
-		ChannelExec channel = null;
+	@FunctionalInterface
+	public interface SshFun<I, O> {
+		public O apply(I i) throws IOException, SftpException, JSchException;
+	}
 
-		try {
-			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
-
-			channel = (ChannelExec) session.openChannel("exec");
-			channel.setCommand(command);
-			channel.connect();
-
+	public int execute(String command) throws JSchException, SftpException, IOException {
+		return session("kenchi.no-ip.org", 22, "sing", "abc123", session -> channelExec(session, command, channel -> {
 			while (!channel.isClosed())
 				Util.sleepQuietly(100);
 
@@ -39,27 +34,42 @@ public class Ssh {
 			baos.close();
 
 			return channel.getExitStatus();
-		} finally {
-			close(session, channel);
-		}
+		}));
 	}
 
 	public void putFile(String src, String dest) throws IOException, SftpException, JSchException {
-		Session session = null;
-		ChannelSftp channel = null;
+		session("kenchi.no-ip.org", 22, "sing", "abc123", session -> channelSftp(session, channel -> {
+			try (InputStream fis = new FileInputStream(src)) {
+				channel.put(fis, dest);
+				return true;
+			}
+		}));
+	}
 
-		try (InputStream fis = new FileInputStream(src)) {
-			session = createSession("kenchi.no-ip.org", 22, "sing", "abc123");
-
-			channel = (ChannelSftp) session.openChannel("sftp");
-			channel.connect();
-			channel.put(fis, dest);
+	private <T> T channelExec(Session session, String command, SshFun<ChannelExec, T> fun) throws IOException, SftpException,
+			JSchException {
+		ChannelExec channel = (ChannelExec) session.openChannel("exec");
+		channel.setCommand(command);
+		channel.connect();
+		try {
+			return fun.apply(channel);
 		} finally {
-			close(session, channel);
+			channel.disconnect();
 		}
 	}
 
-	private Session createSession(String host, int port, String user, String password) throws JSchException {
+	private <T> T channelSftp(Session session, SshFun<ChannelSftp, T> fun) throws IOException, SftpException, JSchException {
+		ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
+		channel.connect();
+		try {
+			return fun.apply(channel);
+		} finally {
+			channel.disconnect();
+		}
+	}
+
+	private <T> T session(String host, int port, String user, String password, SshFun<Session, T> fun) throws IOException,
+			SftpException, JSchException {
 		JSch jsch = new JSch();
 
 		Properties config = new Properties();
@@ -92,14 +102,12 @@ public class Ssh {
 		});
 		session.setConfig(config);
 		session.connect();
-		return session;
-	}
 
-	private void close(Session session, Channel channel) {
-		if (channel != null)
-			channel.disconnect();
-		if (session != null)
+		try {
+			return fun.apply(session);
+		} finally {
 			session.disconnect();
+		}
 	}
 
 }
