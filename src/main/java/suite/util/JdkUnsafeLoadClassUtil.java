@@ -20,7 +20,7 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, String classFilename) throws IOException {
 		LogUtil.info("Loading class " + canonicalName);
 		byte bytes[] = Files.readAllBytes(Paths.get(classFilename));
-		return (Class<? extends T>) new UnsafeUtil().defineClass(interfaceClazz, canonicalName, bytes);
+		return new UnsafeUtil().defineClass(interfaceClazz, canonicalName, bytes);
 	}
 
 }
