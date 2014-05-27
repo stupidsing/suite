@@ -215,7 +215,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define str-to-int := s =>
 		let unsigned-str-to-int := fold-left {v => d => v * 10 + d - 48} {0} >>
-			if (is-list {s} && head {s} = 45)
+			if (is-list {s} && head {s} = +'-')
 			then (`0 -` . unsigned-str-to-int . tail)
 			else unsigned-str-to-int
 		{s}
@@ -313,7 +313,7 @@ fc-add-functions STANDARD .p (
 	define int-to-str := i =>
 		let unsigned-int-to-str :=
 			reverse
-			. map {`+ 48`}
+			. map {`+ +'0'`}
 			. unfold-right {i => if (i != 0) then (i % 10; i / 10;) else ()}
 		>> i |
 			if (i > 0) then
