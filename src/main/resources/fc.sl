@@ -184,16 +184,10 @@ fc-add-functions STANDARD .p (
 		if x then true else y
 	>>
 	define bisect := fun =>
-		define bisect0 := prevs => list =>
-			case
-			|| (list = `$elem; $elems`)
-				if (fun {elem}) then
-					let `$listt, $listf` := bisect0 {prevs} {elems} >>
-					(elem; listt), listf
-				else (prevs, list)
-			|| (), prevs
-		>>
-		bisect0 {}
+		fold-right {
+			h => `$t0, $f0` =>
+			if (fun {h}) then ((h; t0), f0) else (t0, (h; f0))
+		} {(), ()}
 	>>
 	define repeat := elem =>
 		elem; repeat {elem}
