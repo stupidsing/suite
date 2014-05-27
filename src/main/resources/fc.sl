@@ -232,10 +232,7 @@ fc-add-functions STANDARD .p (
 		else (, list)
 	>>
 	define take-while := fun =>
-		case
-		|| `$elem; $elems` =>
-			if (fun {elem}) then (elem; take-while {fun} {elems}) else ()
-		|| anything => ()
+		fold-right {h => if (fun {h}) then (cons {h}) else (t => ())} {}
 	>>
 	define unfold-right := fun => init =>
 		let r := fun {init} >>
