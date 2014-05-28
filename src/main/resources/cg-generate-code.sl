@@ -9,7 +9,8 @@ cg-optimize-segment .c/() .co0/.cox
 cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
 	, cg-optimize-jumps .c1 .c2
-	, cg-optimize-tail-calls .c2 .cx
+	, cg-optimize-set-assign-return .c2 .c3
+	, cg-optimize-tail-calls .c3 .cx
 #
 
 cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
@@ -48,6 +49,19 @@ cg-substitute-redirections () () () #
 cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
+
+cg-optimize-set-assign-return (
+	_ SET-RESULT .r0, _ ASSIGN-FRAME-REG .q0 0 .r1, _ RETURN-VALUE .q1, .insns0
+) (
+	_ SET-RESULT .r0, _ RETURN-VALUE .r0, .insns1
+)
+	:- same .r0 .r1, same .q0 .q1
+	, !, cg-optimize-set-assign-return .insns0 .insns1
+#
+cg-optimize-set-assign-return (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-set-assign-return .insns0 .insns1
+#
+cg-optimize-set-assign-return () () #
 
 cg-optimize-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
