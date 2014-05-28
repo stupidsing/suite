@@ -38,11 +38,11 @@ public class Stm {
 		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException;
 	}
 
-	public static <Tx extends Transaction> boolean doTransaction(TransactionManager<Tx> transactionManager, Sink<Tx> fun) {
+	public static <Tx extends Transaction> boolean doTransaction(TransactionManager<Tx> transactionManager, Sink<Tx> sink) {
 		Tx transaction = transactionManager.createTransaction(null);
 
 		try {
-			fun.sink(transaction);
+			sink.sink(transaction);
 			transaction.commit();
 			return true;
 		} catch (Exception ex) {
