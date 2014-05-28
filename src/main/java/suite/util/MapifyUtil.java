@@ -23,9 +23,9 @@ import suite.util.FunUtil.Fun;
  */
 public class MapifyUtil {
 
-	private Set<Class<?>> collectionClasses = new HashSet<>(Arrays.<Class<?>> asList( //
+	private Set<Class<?>> collectionClasses = new HashSet<>(Arrays.asList( //
 			ArrayList.class, Collection.class, HashSet.class, List.class, Set.class));
-	private Set<Class<?>> mapClasses = new HashSet<>(Arrays.<Class<?>> asList( //
+	private Set<Class<?>> mapClasses = new HashSet<>(Arrays.asList( //
 			HashMap.class, Map.class));
 
 	private Fun<Object, Object> id = object -> object;

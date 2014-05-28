@@ -58,7 +58,7 @@ public class LoadBalancer {
 				InputStream sis = socket.getInputStream();
 				OutputStream sos = socket.getOutputStream();
 
-				List<Thread> threads = Arrays.<Thread> asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
+				List<Thread> threads = Arrays.asList(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
 
 				for (Thread thread : threads)
 					thread.start();

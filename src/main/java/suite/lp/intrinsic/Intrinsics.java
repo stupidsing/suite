@@ -80,7 +80,7 @@ public class Intrinsics {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			IndexedReader indexedReader = Data.get(inputs.get(0));
 			Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(indexedReader));
-			return new Source0().invoke(bridge, Arrays.<Node> asList(data));
+			return new Source0().invoke(bridge, Arrays.asList(data));
 		}
 	}
 
