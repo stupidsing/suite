@@ -166,8 +166,12 @@ public class InstructionUtil {
 		protected Node registers[];
 
 		protected Frame(Frame previous, int frameSize) {
+			this(previous, new Node[frameSize]);
+		}
+
+		protected Frame(Frame previous, Node registers[]) {
 			this.previous = previous;
-			registers = new Node[frameSize];
+			this.registers = registers;
 		}
 	}
 

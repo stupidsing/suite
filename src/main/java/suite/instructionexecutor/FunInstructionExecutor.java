@@ -42,9 +42,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 				}
 
 				public Node wrap(Intrinsic intrinsic, Node node) {
-					Frame frame = new Frame(null, 3);
-					frame.registers[0] = node;
-					frame.registers[1] = new Data<>(intrinsic);
+					Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null });
 					return new Closure(frame, invokeJavaEntryPoint);
 				}
 			};
