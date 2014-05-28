@@ -184,12 +184,6 @@ fc-add-functions STANDARD .p (
 	define or := x => y =>
 		if x then true else y
 	>>
-	define bisect := fun =>
-		fold-right {
-			h => `$t0, $f0` =>
-			if (fun {h}) then ((h; t0), f0) else (t0, (h; f0))
-		} {(), ()}
-	>>
 	define repeat := elem =>
 		elem; repeat {elem}
 	>>
@@ -226,9 +220,6 @@ fc-add-functions STANDARD .p (
 			cons {list | head} {t1}, d1
 		else (, list)
 	>>
-	define take-while := fun =>
-		fold-right {h => if (fun {h}) then (cons {h}) else (t => ())} {}
-	>>
 	define unfold-right := fun => init =>
 		let r := fun {init} >>
 		if (is-list {r})
@@ -248,6 +239,12 @@ fc-add-functions STANDARD .p (
 	>>
 	define apply :=
 		fold-right {`.`} {id}
+	>>
+	define bisect := fun =>
+		fold-right {
+			h => `$t0, $f0` =>
+			if (fun {h}) then ((h; t0), f0) else (t0, (h; f0))
+		} {(), ()}
 	>>
 	define partition := fun =>
 		fold-right {
@@ -288,6 +285,9 @@ fc-add-functions STANDARD .p (
 	>>
 	define tails :=
 		scan-right {cons} {}
+	>>
+	define take-while := fun =>
+		fold-right {h => if (fun {h}) then (cons {h}) else (t => ())} {}
 	>>
 	define uniq :=
 		fold-right {item => list =>
