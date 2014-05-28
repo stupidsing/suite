@@ -104,7 +104,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current = new Activation(frame, insn.op0, current);
 					break;
 				case CALLCLOSURE___:
-					closure = (Closure) regs[insn.op0];
+					closure = (Closure) regs[insn.op0].finalNode();
 					if (closure.result == null)
 						current = new Activation(closure, current);
 					else
@@ -216,7 +216,7 @@ public class InstructionExecutor implements AutoCloseable {
 					break;
 				case SETCLOSURERES_:
 					regs[insn.op0] = returnValue;
-					closure = (Closure) regs[insn.op1];
+					closure = (Closure) regs[insn.op1].finalNode();
 					closure.frame = null; // Facilitates garbage collection
 					closure.result = returnValue;
 					break;
