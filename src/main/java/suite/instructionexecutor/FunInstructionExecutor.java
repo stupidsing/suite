@@ -45,7 +45,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 					Frame frame = new Frame(null, 3);
 					frame.registers[0] = node;
 					frame.registers[1] = new Data<>(intrinsic);
-					return new Closure(frame, FunInstructionExecutor.this.invokeJavaEntryPoint);
+					return new Closure(frame, invokeJavaEntryPoint);
 				}
 			};
 		} else {
