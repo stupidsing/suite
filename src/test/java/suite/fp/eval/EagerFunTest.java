@@ -286,6 +286,7 @@ public class EagerFunTest {
 	@Test
 	public void testTailRecursion() {
 		eval("replicate {65536} {10}");
+		eval("fold-left {`+`} {0} {0 until 65536}");
 	}
 
 	@Test
