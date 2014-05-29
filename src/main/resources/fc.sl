@@ -116,8 +116,8 @@ fc-dict-member .v .t :- rbt-member .v .t #
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
-	data (opt {:t}) over :t as None >>
-	data (opt {:t}) over :t as (Value :t) >>
+	data (optional {:t}) over :t as None >>
+	data (optional {:t}) over :t as (Value :t) >>
 	define callintrn0 := name => +callintrn0 {name} >>
 	define callintrn1 := name => p0 => +callintrn1 {name} {p0} >>
 	define callintrn2 := name => p0 => p1 => +callintrn2 {name} {p0} {p1} >>
@@ -189,9 +189,6 @@ fc-add-functions STANDARD .p (
 	define repeat := elem =>
 		elem; repeat {elem}
 	>>
-	define replicate := n => elem =>
-		if (n > 0) then (elem; replicate {n - 1} {elem}) else ()
-	>>
 	define scan-left := fun => init =>
 		case
 		|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
@@ -222,7 +219,7 @@ fc-add-functions STANDARD .p (
 			cons {list | head} {t1}, d1
 		else (, list)
 	>>
-	define unfold-right := (:a => :b => (:a -> opt {:b, :a}) -> :a -> [:b]) of (
+	define unfold-right := (:a => :b => (:a -> optional {:b, :a}) -> :a -> [:b]) of (
 		fun => init =>
 			if (fun {init} = `Value ($h, $t)`)
 			then (t | unfold-right {fun} | cons {h})
@@ -261,9 +258,6 @@ fc-add-functions STANDARD .p (
 			item => list => if (fun {item}) then (item; list) else list
 		} {}
 	>>
-	define get := n =>
-		head . (tail | replicate {n} | apply)
-	>>
 	define heads :=
 		scan-left {cons/} {}
 	>>
@@ -276,6 +270,9 @@ fc-add-functions STANDARD .p (
 	define popen := command => in =>
 		return # in | +popen {command} | source
 	>>
+	define replicate := flip {elem =>
+		unfold-right {i => if (i != 0) then (Value (elem, i - 1)) else None}
+	} >>
 	define reverse :=
 		fold-left {cons/} {}
 	>>
@@ -303,6 +300,9 @@ fc-add-functions STANDARD .p (
 	>>
 	define cross := fun => l1 => l2 =>
 		l1 | map {e1 => l2 | map {e1 | fun}}
+	>>
+	define get := n =>
+		head . (tail | replicate {n} | apply)
 	>>
 	define int-to-str := i =>
 		let unsigned-int-to-str :=
