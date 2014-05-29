@@ -6,7 +6,7 @@ define max-branches := 4 >>
 define min-branches := max-branches / 2 >>
 
 define snoc := es => e =>
-	append {es} {e;}
+	es ++ (e;)
 >>
 define create-slot := (:t => [:t, 23-tree {:t}] -> :t, 23-tree {:t}) of (
 slots =>
@@ -76,7 +76,7 @@ key =>
 			else
 				let `$slot, $right1` := lht {right} >>
 				create-slot {snoc {left} {slot}}; create-slot {right1};
-		else (create-slot {append {left} {right}};)
+		else (create-slot {left ++ right};)
 	) >>
 	define remove0 := (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	slots0 =>
@@ -93,7 +93,7 @@ key =>
 					concat {left; merge {slots1} {borrowSlots}; right1;}
 				else (create-slot {slots1};)
 			else (concat {left; slots1; right;})
-		else-if (key = pivot) then (append {left} {right})
+		else-if (key = pivot) then (left ++ right)
 		else error
 	) >>
 	`Tree $slots` =>
