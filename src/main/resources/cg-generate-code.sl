@@ -10,8 +10,8 @@ cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
 	, cg-optimize-jumps .c1 .c2
 	, cg-optimize-set-assign-return .c2 .c3
-	, cg-optimize-tail-closure-calls .c3 .c4
-	, cg-optimize-tail-calls .c4 .cx
+	, cg-optimize-fp-tail-calls .c3 .c4
+	, cg-optimize-lp-tail-calls .c4 .cx
 #
 
 cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
@@ -64,23 +64,23 @@ cg-optimize-set-assign-return (.insn, .insns0) (.insn, .insns1)
 #
 cg-optimize-set-assign-return () () #
 
-cg-optimize-tail-closure-calls (
+cg-optimize-fp-tail-calls (
 	_ CALL-CLOSURE .closure, _ SET-RESULT .r0, _ RETURN-VALUE .r1, .insns0
 ) (
 	_ JUMP-CLOSURE .closure, .insns1
 )
 	:- same .r0 .r1
-	, !, cg-optimize-tail-closure-calls .insns0 .insns1
+	, !, cg-optimize-fp-tail-calls .insns0 .insns1
 #
-cg-optimize-tail-closure-calls (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-tail-closure-calls .insns0 .insns1
+cg-optimize-fp-tail-calls (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-fp-tail-calls .insns0 .insns1
 #
-cg-optimize-tail-closure-calls () () #
+cg-optimize-fp-tail-calls () () #
 
-cg-optimize-tail-calls .li0 .ri0
+cg-optimize-lp-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
 	, cg-push-pop-pairs .li1/.li2 .li3/.li4 .ri2/.ri3 .ri1/.ri2
-	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
+	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE, CALL-REG/JUMP-REG,) .call/.jump
 	, .li2 = (_ .call .target, .li3)
 	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
 	, cg-is-skip .li6/.li7
@@ -88,12 +88,12 @@ cg-optimize-tail-calls .li0 .ri0
 	, cg-verify-push-pop-bind-pairs .pairs
 	, .ri3 = (_ .jump .target, .ri4)
 	, !
-	, cg-optimize-tail-calls .li6 .ri4
+	, cg-optimize-lp-tail-calls .li6 .ri4
 #
-cg-optimize-tail-calls (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-tail-calls .insns0 .insns1
+cg-optimize-lp-tail-calls (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-lp-tail-calls .insns0 .insns1
 #
-cg-optimize-tail-calls () () #
+cg-optimize-lp-tail-calls () () #
 
 cg-push-pop-bind-pairs
 (_ BIND-MARK .pr0, _ PUSH .pr1, .i)/.i
