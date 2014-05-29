@@ -116,6 +116,8 @@ fc-dict-member .v .t :- rbt-member .v .t #
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
+	data (opt {:t}) over :t as None >>
+	data (opt {:t}) over :t as (Value :t) >>
 	define callintrn0 := name => +callintrn0 {name} >>
 	define callintrn1 := name => p0 => +callintrn1 {name} {p0} >>
 	define callintrn2 := name => p0 => p1 => +callintrn2 {name} {p0} {p1} >>
@@ -220,12 +222,12 @@ fc-add-functions STANDARD .p (
 			cons {list | head} {t1}, d1
 		else (, list)
 	>>
-	define unfold-right := fun => init =>
-		let r := fun {init} >>
-		if (is-list {r})
-		then (r | tail | head | unfold-right {fun} | cons {r | head})
-		else ()
-	>>
+	define unfold-right := (:a => :b => (:a -> opt {:b, :a}) -> :a -> [:b]) of (
+		fun => init =>
+			if (fun {init} = `Value ($h, $t)`)
+			then (t | unfold-right {fun} | cons {h})
+			else ()
+	) >>
 	define zip := fun =>
 		case
 		|| `$h0; $t0` =>
@@ -306,7 +308,7 @@ fc-add-functions STANDARD .p (
 		let unsigned-int-to-str :=
 			reverse
 			. map {`+ +'0'`}
-			. unfold-right {i => if (i != 0) then (i % 10; i / 10;) else ()}
+			. unfold-right {i => if (i != 0) then (Value (i % 10, i / 10)) else None}
 		>> i |
 			if (i > 0) then
 				unsigned-int-to-str
@@ -329,7 +331,7 @@ fc-add-functions STANDARD .p (
 		fold {lesser}
 	>>
 	define range := start => end => inc =>
-		unfold-right {i => if (i < end) then (i; i + inc;) else ()} {start}
+		unfold-right {i => if (i < end) then (Value (i, i + inc)) else None} {start}
 	>>
 	define sh := command =>
 		"sh"; "-c"; command; | popen
