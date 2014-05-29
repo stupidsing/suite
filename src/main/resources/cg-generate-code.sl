@@ -72,6 +72,14 @@ cg-optimize-fp-tail-calls (
 	:- same .r0 .r1
 	, !, cg-optimize-fp-tail-calls .insns0 .insns1
 #
+cg-optimize-fp-tail-calls (
+	_ CALL-CLOSURE .cl0, _ SET-CLOSURE-RESULT .r0 .cl1, _ RETURN-VALUE .r1, .insns0
+) (
+	_ JUMP-CLOSURE .cl0, .insns1
+)
+	:- same .cl0 .cl1, same .r0 .r1
+	, !, cg-optimize-fp-tail-calls .insns0 .insns1
+#
 cg-optimize-fp-tail-calls (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-fp-tail-calls .insns0 .insns1
 #
