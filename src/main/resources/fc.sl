@@ -279,7 +279,7 @@ fc-add-functions STANDARD .p (
 		return # in | +popen {command} | source
 	>>
 	define replicate := flip {e =>
-		unfold-right {i => if (i != 0) then (Value (e, i - 1)) else None}
+		unfold-left {i => if (i != 0) then (Value (i - 1, e)) else None}
 	} >>
 	define reverse :=
 		fold-left {cons/} {}
