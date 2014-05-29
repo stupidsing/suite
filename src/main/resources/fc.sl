@@ -219,6 +219,15 @@ fc-add-functions STANDARD .p (
 			cons {list | head} {t1}, d1
 		else (, list)
 	>>
+	define unfold-left := (:a => :b => (:a -> optional {:a, :b}) -> :a -> [:b]) of (
+		define unfold-left0 := (:a => :b => [:b] -> (:a -> optional {:a, :b}) -> :a -> [:b]) of (
+			list => fun => init =>
+				if (fun {init} = `Value ($init1, $elem)`)
+				then (unfold-left0 {elem; list} {fun} {init1})
+				else list
+		) >>
+		unfold-left0 {}
+	) >>
 	define unfold-right := (:a => :b => (:a -> optional {:b, :a}) -> :a -> [:b]) of (
 		fun => init =>
 			if (fun {init} = `Value ($e, $init1)`)
