@@ -186,8 +186,8 @@ fc-add-functions STANDARD .p (
 	define or := x => y =>
 		if x then true else y
 	>>
-	define repeat := elem =>
-		elem; repeat {elem}
+	define repeat := e =>
+		e; repeat {e}
 	>>
 	define scan-left := fun => init =>
 		case
@@ -269,8 +269,8 @@ fc-add-functions STANDARD .p (
 	define popen := command => in =>
 		return # in | +popen {command} | source
 	>>
-	define replicate := flip {elem =>
-		unfold-right {i => if (i != 0) then (Value (elem, i - 1)) else None}
+	define replicate := flip {e =>
+		unfold-right {i => if (i != 0) then (Value (e, i - 1)) else None}
 	} >>
 	define reverse :=
 		fold-left {cons/} {}
