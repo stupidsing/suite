@@ -219,14 +219,14 @@ public class InstructionExecutor implements AutoCloseable {
 					returnValue = regs[insn.op0];
 					current = current.previous;
 					break;
-				case SETRESULT_____:
-					regs[insn.op0] = returnValue;
-					break;
 				case SETCLOSURERES_:
 					regs[insn.op0] = returnValue;
 					closure = (Closure) regs[insn.op1].finalNode();
 					closure.frame = null; // Facilitates garbage collection
 					closure.result = returnValue;
+					break;
+				case SETRESULT_____:
+					regs[insn.op0] = returnValue;
 					break;
 				case TOP___________:
 					regs[insn.op0] = stack[sp + insn.op1];
