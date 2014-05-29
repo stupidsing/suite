@@ -222,8 +222,8 @@ fc-add-functions STANDARD .p (
 	>>
 	define unfold-right := (:a => :b => (:a -> optional {:b, :a}) -> :a -> [:b]) of (
 		fun => init =>
-			if (fun {init} = `Value ($h, $t)`)
-			then (t | unfold-right {fun} | cons {h})
+			if (fun {init} = `init ($e, $init1)`)
+			then (init1 | unfold-right {fun} | cons {e})
 			else ()
 	) >>
 	define zip := fun => list0 => list1 =>
