@@ -84,6 +84,7 @@ public class InstructionUtil {
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		ISCONS________("IS-CONS"), //
 		JUMP__________("JUMP"), //
+		JUMPCLOSURE___("JUMP-CLOSURE"), //
 		JUMPREG_______("JUMP-REG"), //
 		LABEL_________("LABEL"), //
 		LOGCONST______("LOG-CONSTANT"), //
@@ -133,6 +134,7 @@ public class InstructionUtil {
 
 	protected static class Activation extends Closure {
 		protected Activation previous;
+		protected int depth;
 
 		protected Activation(Closure closure, Activation previous) {
 			this(closure.frame, closure.ip, previous);
@@ -141,6 +143,9 @@ public class InstructionUtil {
 		protected Activation(Frame frame, int ip, Activation previous) {
 			super(frame, ip);
 			this.previous = previous;
+			depth = previous != null ? 1 + previous.depth : 0;
+			if (depth > 16384)
+				throw new RuntimeException("Activation stack overflow");
 		}
 	}
 

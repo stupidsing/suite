@@ -176,6 +176,14 @@ public class InstructionExecutor implements AutoCloseable {
 				case JUMP__________:
 					current.ip = insn.op0;
 					break;
+				case JUMPCLOSURE___:
+					closure = (Closure) regs[insn.op0].finalNode();
+					current = current.previous;
+					if (closure.result == null)
+						current = new Activation(closure, current);
+					else
+						returnValue = closure.result;
+					break;
 				case JUMPREG_______:
 					current.ip = i(regs[insn.op0]);
 					break;
