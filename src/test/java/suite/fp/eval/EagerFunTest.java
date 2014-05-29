@@ -283,6 +283,9 @@ public class EagerFunTest {
 		assertNotNull(Tree.decompose(eval("tail {1; 2; 3;}")));
 	}
 
+	// Lazy programs are prone to stack overflow; even a summing program for a
+	// long list of numbers produces long enough wraps/unwraps to blow up. Eager
+	// programs with tail code optimization are more resistant.
 	@Test
 	public void testTailRecursion() {
 		eval("replicate {65536} {10}");
