@@ -221,7 +221,7 @@ fc-add-functions STANDARD .p (
 	>>
 	define unfold-right := (:a => :b => (:a -> optional {:b, :a}) -> :a -> [:b]) of (
 		fun => init =>
-			if (fun {init} = `optional ($e, $init1)`)
+			if (fun {init} = `Value ($e, $init1)`)
 			then (init1 | unfold-right {fun} | cons {e})
 			else ()
 	) >>
