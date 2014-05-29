@@ -226,13 +226,12 @@ fc-add-functions STANDARD .p (
 			then (t | unfold-right {fun} | cons {h})
 			else ()
 	) >>
-	define zip := fun =>
-		case
-		|| `$h0; $t0` =>
+	define zip := fun => list0 => list1 =>
+		unfold-right {
 			case
-			|| `$h1; $t1` => fun {h0} {h1}; zip {fun} {t0} {t1}
-			|| anything => ()
-		|| anything => anything => ()
+			|| `($h0; $t0), ($h1; $t1)` => Value (fun {h0} {h1}, (t0, t1))
+			|| anything => None
+		} {list0, list1}
 	>>
 	define append :=
 		fold-right {cons} | flip
