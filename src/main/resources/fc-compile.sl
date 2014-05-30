@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- functional program compiler with eager evaluation
+-- eager evaluated functional program compiler
 
 fc-compile .do .env .cdr
 	:- fc-default-fun .do .env .cdr, !

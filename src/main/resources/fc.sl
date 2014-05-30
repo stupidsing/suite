@@ -4,7 +4,7 @@
 -- .mode can be EAGER or LAZY
 
 () :- import.path 'cg-generate-code.sl'
-	, import.path 'fc-evaluate.sl'
+	, import.path 'fc-compile.sl'
 	, import.path 'fc-infer-type.sl'
 	, import.path 'fc-lazyify.sl'
 	, import.path 'fc-optimize.sl'
