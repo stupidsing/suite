@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -10,10 +11,10 @@ import suite.lp.kb.RuleSet;
 
 public class FailedTests {
 
-	// Takes 11 seconds to type check
+	// Cannot bind external symbols when using is used in a closure
 	@Test
-	public void testTypeCheck() throws IOException {
-		new FunRbTreeTest().test();
+	public void testClosureUsing() {
+		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
 	}
 
 	@Test
@@ -31,16 +32,22 @@ public class FailedTests {
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
+	@Test
+	public void testRecursiveCall() {
+		assertNotNull(Suite.evaluateFun("define f := f >> f", false));
+		assertNotNull(Suite.evaluateFun("define f := f >> f", true));
+	}
+
 	// Takes forever to type check
 	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
 	}
 
-	// Cannot bind external symbols when using is used in a closure
+	// Takes 11 seconds to type check
 	@Test
-	public void testClosureUsing() {
-		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
+	public void testTypeCheck() throws IOException {
+		new FunRbTreeTest().test();
 	}
 
 }
