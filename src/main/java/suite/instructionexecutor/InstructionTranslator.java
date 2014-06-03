@@ -79,6 +79,7 @@ public class InstructionTranslator implements Closeable {
 		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
 		analyzer.analyze(instructions);
+		analyzer.transform(instructions);
 		translateInstructions(instructions);
 
 		className = "TranslatedRun" + counter.getAndIncrement();

@@ -41,6 +41,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 		postprocessInstructions(list);
 		analyzer.analyze(list);
+		analyzer.transform(list);
 		instructions = list.toArray(new Instruction[list.size()]);
 	}
 

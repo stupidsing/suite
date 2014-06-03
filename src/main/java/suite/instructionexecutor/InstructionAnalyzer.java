@@ -3,7 +3,9 @@ package suite.instructionexecutor;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -14,6 +16,7 @@ import suite.node.Tree;
 public class InstructionAnalyzer {
 
 	private List<AnalyzedFrame> framesByIp = new ArrayList<>();
+	private Set<Integer> tailCalls = new HashSet<>();
 
 	public static class AnalyzedFrame {
 		private int id;
@@ -76,6 +79,9 @@ public class InstructionAnalyzer {
 
 		// Find out register types in each frame
 		analyzeFrameRegisters(instructions);
+
+		// Find out tail call sites possible for optimization
+		analyzeTailCalls(instructions);
 	}
 
 	private void analyzeFrames(List<Instruction> instructions) {
@@ -192,6 +198,48 @@ public class InstructionAnalyzer {
 			default:
 			}
 		}
+	}
+
+	private void analyzeTailCalls(List<Instruction> instructions) {
+		for (int ip = 0; ip < instructions.size() - 1; ip++) {
+			Instruction instruction0 = instructions.get(ip);
+			Instruction instruction1 = instructions.get(ip + 1);
+
+			if (instruction0.insn == Insn.CALLCLOSURE___ //
+					&& instruction1.insn == Insn.SETRESULT_____ //
+					&& isReturning(instructions, ip + 2, instruction1.op0))
+				tailCalls.add(ip);
+		}
+	}
+
+	private boolean isReturning(List<Instruction> instructions, int ip, int returnReg) {
+		while (ip < instructions.size()) {
+			Instruction instruction = instructions.get(ip++);
+			switch (instruction.insn) {
+			case ASSIGNFRAMEREG:
+				if (instruction.op1 == 0 && instruction.op2 == returnReg) {
+					returnReg = instruction.op0;
+					break;
+				} else
+					return false;
+			case JUMP__________:
+				ip = instruction.op0;
+				break;
+			case LABEL_________:
+				break;
+			case RETURNVALUE___:
+				return instruction.op0 == returnReg;
+			default:
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	public void transform(List<Instruction> instructions) {
+		for (int ip : tailCalls)
+			instructions.get(ip).insn = Insn.JUMPCLOSURE___;
 	}
 
 	public AnalyzedFrame getFrame(Integer ip) {
