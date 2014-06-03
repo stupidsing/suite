@@ -17,11 +17,6 @@ public class FailedTests {
 		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
 	}
 
-	@Test
-	public void testCyclicType() {
-		Suite.evaluateFunType("define f := v => (v;) = v >> f");
-	}
-
 	// (Expected) infinite loop.
 	// (Actual) short boolean evaluation in Prover skipped the loop:
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));
@@ -48,11 +43,6 @@ public class FailedTests {
 	@Test
 	public void testTypeCheck() throws IOException {
 		new FunRbTreeTest().test();
-	}
-
-	@Test
-	public void testWtf() throws IOException {
-		Suite.evaluateFun("using MATH >> 1", false);
 	}
 
 }

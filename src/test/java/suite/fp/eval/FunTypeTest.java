@@ -63,6 +63,7 @@ public class FunTypeTest {
 				, "2 = true" //
 				, "(f => f {0}) | 1" //
 				, "define fib := i2 => dummy => 1; fib {i2} >> ()" //
+				, "define f := v => (v;) = v >> f" // Cyclic type
 		};
 
 		// There is a problem in deriving type of 1:(fib {i2})...
