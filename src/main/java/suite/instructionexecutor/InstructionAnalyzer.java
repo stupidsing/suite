@@ -207,12 +207,12 @@ public class InstructionAnalyzer {
 
 			if (instruction0.insn == Insn.CALLCLOSURE___ //
 					&& instruction1.insn == Insn.SETRESULT_____ //
-					&& isReturning(instructions, ip + 2, instruction1.op0))
+					&& isReturningValue(instructions, ip + 2, instruction1.op0))
 				tailCalls.add(ip);
 		}
 	}
 
-	private boolean isReturning(List<Instruction> instructions, int ip, int returnReg) {
+	private boolean isReturningValue(List<Instruction> instructions, int ip, int returnReg) {
 		while (ip < instructions.size()) {
 			Instruction instruction = instructions.get(ip++);
 			switch (instruction.insn) {
