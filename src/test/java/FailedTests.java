@@ -50,4 +50,9 @@ public class FailedTests {
 		new FunRbTreeTest().test();
 	}
 
+	@Test
+	public void testWtf() throws IOException {
+		Suite.evaluateFun("using MATH >> 1", false);
+	}
+
 }
