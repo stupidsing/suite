@@ -273,7 +273,7 @@ fc-add-functions STANDARD .p (
 		fold-left {v => e => v + 1} {0}
 	>>
 	define map := fun =>
-		fold-right {i => list => fun {i}; list} {}
+		fold-right {cons . fun} {}
 	>>
 	define popen := command => in =>
 		return # in | +popen {command} | source
