@@ -9,7 +9,7 @@ cg-optimize-segment .c/() .co0/.cox
 cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
 	, cg-optimize-jumps .c1 .c2
-	, cg-optimize-set-assign-return .c2 .c3
+	, cg-optimize-assign-return .c2 .c3
 	, cg-optimize-fp-tail-calls .c3 .c4
 	, cg-optimize-lp-tail-calls .c4 .cx
 #
@@ -51,18 +51,18 @@ cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
-cg-optimize-set-assign-return (
-	_ SET-RESULT .r0, _ ASSIGN-FRAME-REG .q0 0 .r1, _ RETURN-VALUE .q1, .insns0
+cg-optimize-assign-return (
+	_ ASSIGN-FRAME-REG .r0 0 .r, _ RETURN-VALUE .r1, .insns0
 ) (
-	_ SET-RESULT .r0, _ RETURN-VALUE .r0, .insns1
+	_ RETURN-VALUE .r, .insns1
 )
-	:- same .r0 .r1, same .q0 .q1
-	, !, cg-optimize-set-assign-return .insns0 .insns1
+	:- same .r0 .r1
+	, !, cg-optimize-assign-return .insns0 .insns1
 #
-cg-optimize-set-assign-return (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-set-assign-return .insns0 .insns1
+cg-optimize-assign-return (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-assign-return .insns0 .insns1
 #
-cg-optimize-set-assign-return () () #
+cg-optimize-assign-return () () #
 
 cg-optimize-fp-tail-calls (
 	_ CALL-CLOSURE .closure, _ SET-RESULT .r0, _ RETURN-VALUE .r1, .insns0
