@@ -8,10 +8,9 @@ cg-optimize-segment .c/() .co0/.cox
 
 cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
-	, cg-optimize-jumps .c1 .c2
-	, cg-optimize-assign-return .c2 .c3
-	, cg-optimize-fp-tail-calls .c3 .c4
-	, cg-optimize-lp-tail-calls .c4 .cx
+	, cg-optimize-jump-returns .c1 .c2
+	, cg-optimize-fp-tail-calls .c2 .c3
+	, cg-optimize-lp-tail-calls .c3 .cx
 #
 
 cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
@@ -21,6 +20,11 @@ cg-optimize-dup-labels (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-dup-labels .insns0 .insns1
 #
 cg-optimize-dup-labels () () #
+
+cg-optimize-jump-returns .c0 .cx
+	:- cg-optimize-jumps .c0 .c1
+	, cg-optimize-assign-return .c1 .cx
+#
 
 cg-optimize-jumps .c .d
 	:- clone .c .cc
