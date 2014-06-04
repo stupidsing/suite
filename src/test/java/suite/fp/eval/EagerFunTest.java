@@ -288,8 +288,11 @@ public class EagerFunTest {
 	// programs with tail code optimization are more resistant.
 	@Test
 	public void testTailRecursion() {
-		eval("replicate {65536} {10}");
-		eval("fold-left {`+`} {0} {0 until 65536}");
+		assertEquals(Int.of(65536) //
+				, eval("10 | replicate {65536} | reverse | length"));
+
+		assertEquals(Int.of((1 + 16384) * 16384 / 2) //
+				, eval("define sum := n => s => if (n > 0) then (sum {n - 1} {s + n}) else s >> sum {16384} {0}"));
 	}
 
 	@Test

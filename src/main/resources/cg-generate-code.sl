@@ -9,8 +9,7 @@ cg-optimize-segment .c/() .co0/.cox
 cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
 	, cg-optimize-jump-returns .c1 .c2
-	, cg-optimize-fp-tail-calls .c2 .c3
-	, cg-optimize-lp-tail-calls .c3 .cx
+	, cg-optimize-lp-tail-calls .c2 .cx
 #
 
 cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
@@ -67,27 +66,6 @@ cg-optimize-assign-return (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-assign-return .insns0 .insns1
 #
 cg-optimize-assign-return () () #
-
-cg-optimize-fp-tail-calls (
-	_ CALL-CLOSURE .closure, _ SET-RESULT .r0, _ RETURN-VALUE .r1, .insns0
-) (
-	_ JUMP-CLOSURE .closure, .insns1
-)
-	:- same .r0 .r1
-	, !, cg-optimize-fp-tail-calls .insns0 .insns1
-#
-cg-optimize-fp-tail-calls (
-	_ CALL-CLOSURE .cl0, _ SET-CLOSURE-RESULT .r0 .cl1, _ RETURN-VALUE .r1, .insns0
-) (
-	_ JUMP-CLOSURE .cl0, .insns1
-)
-	:- same .cl0 .cl1, same .r0 .r1
-	, !, cg-optimize-fp-tail-calls .insns0 .insns1
-#
-cg-optimize-fp-tail-calls (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-fp-tail-calls .insns0 .insns1
-#
-cg-optimize-fp-tail-calls () () #
 
 cg-optimize-lp-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs

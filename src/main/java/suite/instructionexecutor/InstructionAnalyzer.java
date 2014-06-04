@@ -215,6 +215,7 @@ public class InstructionAnalyzer {
 	private boolean isReturningValue(List<Instruction> instructions, int ip, int returnReg) {
 		while (ip < instructions.size()) {
 			Instruction instruction = instructions.get(ip++);
+
 			switch (instruction.insn) {
 			case ASSIGNFRAMEREG:
 				if (instruction.op1 == 0 && instruction.op2 == returnReg) {

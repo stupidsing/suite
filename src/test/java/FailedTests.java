@@ -27,6 +27,7 @@ public class FailedTests {
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
+	// Why returning null pointer?
 	@Test
 	public void testRecursiveCall() {
 		assertNotNull(Suite.evaluateFun("define f := f >> f", false));
