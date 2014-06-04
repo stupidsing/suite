@@ -27,6 +27,9 @@ public class UctTest {
 
 	@Test
 	public void testRandomEvaluation() {
+		int seed = 214636368;
+		System.out.println("RANDOM SEED = " + seed);
+		ShuffleUtil.setSeed(seed);
 		int mid = Weiqi.size / 2;
 
 		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
