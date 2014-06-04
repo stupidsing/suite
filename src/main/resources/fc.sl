@@ -208,11 +208,6 @@ fc-add-functions STANDARD .p (
 			else unsigned-str-to-int
 		{s}
 	>>
-	define take := n => list =>
-		if (n > 0 && is-list {list})
-		then (list | tail | take {n - 1} | cons {list | head})
-		else ()
-	>>
 	define take-drop := n => list =>
 		if (n > 0 && is-list {list}) then
 			let `$t1, $d1` := list | tail | take-drop {n - 1} >>
@@ -284,14 +279,11 @@ fc-add-functions STANDARD .p (
 	define reverse :=
 		fold-left {cons/} {}
 	>>
-	define substring := start => end => list =>
-		let len := length {list} >>
-		let s := if (start >= 0) then start else (len + start) >>
-		let e := if (end > 0) then end else (len + end) >>
-		list | take {e} | drop {s}
-	>>
 	define tails :=
 		scan-right {cons} {}
+	>>
+	define take := n => list =>
+		unfold-right {`$i, ($h; $t)` => if (i > 0) then (Value (h, (i - 1, t))) else None} {n, list}
 	>>
 	define take-while := fun =>
 		fold-right {h => if (fun {h}) then (cons {h}) else (t => ())} {}
@@ -357,6 +349,12 @@ fc-add-functions STANDARD .p (
 		. filter {`= separator` . head}
 		. filter {not . `=` {}}
 		. tails . cons {separator}
+	>>
+	define substring := start => end => list =>
+		let len := length {list} >>
+		let s := if (start >= 0) then start else (len + start) >>
+		let e := if (end > 0) then end else (len + end) >>
+		list | take {e} | drop {s}
 	>>
 	define transpose := m =>
 		let height := length {m} >>
