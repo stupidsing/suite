@@ -336,6 +336,15 @@ public class InstructionTranslator implements Closeable {
 				app("#{jump}", op0);
 				isGenerateLabel = true;
 				break;
+			case JUMPCLOSURE___:
+				app("if (#{reg-clos}.result == null) {", op0);
+				pushCallee(ip);
+				app("frame = #{reg-clos}.frame", op0);
+				app("ip = #{reg-clos}.ip", op0);
+				app("continue");
+				app("} else returnValue = #{reg-clos}.result", op0);
+				isGenerateLabel = true;
+				break;
 			case JUMPREG_______:
 				app("{ ip = #{reg-num}; continue; }", op0);
 				isGenerateLabel = true;
