@@ -70,7 +70,7 @@ cg-optimize-assign-return () () #
 cg-optimize-lp-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
 	, cg-push-pop-pairs .li1/.li2 .li3/.li4 .ri2/.ri3 .ri1/.ri2
-	, member (CALL/JUMP, CALL-REG/JUMP-REG,) .call/.jump
+	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE, CALL-REG/JUMP-REG,) .call/.jump
 	, .li2 = (_ .call .target, .li3)
 	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
 	, cg-is-skip .li6/.li7
@@ -91,7 +91,7 @@ cg-push-pop-bind-pairs
 (_ TOP .pr2 -3, _ BIND-UNDO .pr3, .k)/.k
 .pr0/.pr1/.pr2/.pr3
 #
-cg-push-pop-bind-pairs .i/.i .j/.j ()/()/()/() #
+cg-push-pop-bind-pairs .i/.i .j/.j .k/.k ()/()/()/() #
 
 cg-verify-push-pop-bind-pairs .pr0/.pr1/.pr2/.pr3
 	:- same .pr0 .pr1, same .pr2 .pr3
