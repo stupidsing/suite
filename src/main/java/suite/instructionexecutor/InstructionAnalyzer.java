@@ -150,10 +150,7 @@ public class InstructionAnalyzer {
 				registers.get(op0).clazz = int.class;
 				break;
 			case ASSIGNCONST___:
-			case CALLINTRINSIC0:
-			case CALLINTRINSIC1:
-			case CALLINTRINSIC2:
-			case CALLINTRINSIC3:
+			case CALLINTRINSIC_:
 			case CONSPAIR______:
 			case CONSLIST______:
 			case GETINTRINSIC__:

@@ -22,7 +22,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
@@ -78,13 +77,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		Data<?> data;
 
 		switch (insn.insn) {
-		case CALLINTRINSIC0:
-		case CALLINTRINSIC1:
-		case CALLINTRINSIC2:
-		case CALLINTRINSIC3:
+		case CALLINTRINSIC_:
 			data = (Data<?>) ds[--dsp];
 			List<Node> ps = new ArrayList<>(3);
-			for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
+			for (int i = 1; i < insn.op1; i++)
 				ps.add((Node) ds[--dsp]);
 			Intrinsic intrinsic = Data.get(data);
 			result = intrinsic.invoke(intrinsicBridge, ps);
@@ -133,7 +129,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		invokeJavaEntryPoint = list.size();
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
-		list.add(new Instruction(Insn.CALLINTRINSIC1, 2, 2, 0));
+		list.add(new Instruction(Insn.CALLINTRINSIC_, 2, 2, 0));
 		list.add(new Instruction(Insn.RETURNVALUE___, 2, 0, 0));
 		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 

@@ -23,7 +23,6 @@ import suite.node.io.TermOp;
 import suite.parser.Subst;
 import suite.util.FunUtil;
 import suite.util.JdkLoadClassUtil;
-import suite.util.Util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -219,14 +218,11 @@ public class InstructionTranslator implements Closeable {
 				app("} else returnValue = #{reg-clos}.result", op0);
 				isGenerateLabel = true;
 				break;
-			case CALLINTRINSIC0:
-			case CALLINTRINSIC1:
-			case CALLINTRINSIC2:
-			case CALLINTRINSIC3:
+			case CALLINTRINSIC_:
 				app("{");
 				app("Data<?> data = (Data<?>) bridge.unwrap((Node) ds[--dsp])");
 				app("List<Node> list = new ArrayList<>(3)");
-				for (int i = 0; i < Util.charAt(insn.insn.name, -1) - '0'; i++)
+				for (int i = 1; i < insn.op1; i++)
 					app("list.add((Node) ds[--dsp])");
 				app("Intrinsic intrinsic = Data.get(data)");
 				app("#{reg} = intrinsic.invoke(bridge, list)", op0);

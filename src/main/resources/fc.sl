@@ -73,10 +73,10 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 	:- !, fc-frame-difference .frame0 .frame1 .frameDiff
 #
 
-fc-define-default-fun 1 +callintrn0 CALL-INTRINSIC0 #
-fc-define-default-fun 2 +callintrn1 CALL-INTRINSIC1 #
-fc-define-default-fun 3 +callintrn2 CALL-INTRINSIC2 #
-fc-define-default-fun 4 +callintrn3 CALL-INTRINSIC3 #
+fc-define-default-fun 1 +callintrn0 CALL-INTRINSIC #
+fc-define-default-fun 2 +callintrn1 CALL-INTRINSIC #
+fc-define-default-fun 3 +callintrn2 CALL-INTRINSIC #
+fc-define-default-fun 4 +callintrn3 CALL-INTRINSIC #
 fc-define-default-fun 2 +compare COMPARE #
 fc-define-default-fun 1 +getintrn GET-INTRINSIC #
 fc-define-default-fun 2 +lcons CONS-LIST #
