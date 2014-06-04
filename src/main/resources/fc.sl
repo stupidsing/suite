@@ -155,12 +155,12 @@ fc-add-functions STANDARD .p (
 	define flip := f => x => y =>
 		f {y} {x}
 	>>
-	define fold-left := fun => init => -- possible for tail recursion optimization
+	define fold-left := fun => init => -- possible for tail call optimization in eager mode
 		case
 		|| `$h; $t` => fold-left {fun} {fun {init} {h}} {t}
 		|| anything => init
 	>>
-	define fold-right := fun => init => -- possible for short-circuit evaluation
+	define fold-right := fun => init => -- possible for short-circuit evaluation in lazy mode
 		case
 		|| `$h; $t` => fun {h} {fold-right {fun} {init} {t}}
 		|| anything => init
