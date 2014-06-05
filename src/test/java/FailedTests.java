@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
-import suite.lp.eval.LogicCompilerLevel1Test;
 import suite.lp.kb.RuleSet;
 
 public class FailedTests {
@@ -19,8 +18,8 @@ public class FailedTests {
 	}
 
 	@Test
-	public void testMemberOfMember() {
-		new LogicCompilerLevel1Test().testMemberOfMember();
+	public void testCutTailRecursion() {
+		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 65536"));
 	}
 
 	// (Expected) infinite loop.

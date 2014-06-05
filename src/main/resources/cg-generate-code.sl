@@ -97,6 +97,8 @@ cg-verify-push-pop-bind-pairs .pr0/.pr1/.pr2/.pr3
 	:- same .pr0 .pr1, same .pr2 .pr3
 #
 
+-- Limits the number of push/pop pair rearrangement to 2 to avoid changing the
+-- bind journal pointer stored at the third location
 cg-push-pop-pairs
 (_ PUSH .r0, _ PUSH .r1, .i)/.i (_ POP-ANY, _ POP-ANY, .j)/.j
 (_ PUSH .r0, _ PUSH .r1, .k)/.k (_ POP-ANY, _ POP-ANY, .l)/.l

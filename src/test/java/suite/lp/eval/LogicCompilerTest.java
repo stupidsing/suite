@@ -92,6 +92,7 @@ public class LogicCompilerTest {
 	@Test
 	public void testTailRecursion() {
 		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1 #) >> dec 65536"));
+		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 65536"));
 	}
 
 	@Test
