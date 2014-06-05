@@ -98,9 +98,9 @@ cg-verify-push-pop-bind-pairs .pr0/.pr1/.pr2/.pr3
 #
 
 cg-push-pop-pairs
-(_ PUSH .reg, .i0)/.ix (_ POP-ANY, .j0)/.jx
-(_ PUSH .reg, .k0)/.kx (_ POP-ANY, .l0)/.lx
-	:- !, cg-push-pop-pairs .i0/.ix .j0/.jx .k0/.kx .l0/.lx
+(_ PUSH .r0, _ PUSH .r1, .i)/.i (_ POP-ANY, _ POP-ANY, .j)/.j
+(_ PUSH .r0, _ PUSH .r1, .k)/.k (_ POP-ANY, _ POP-ANY, .l)/.l
+	:- !
 #
 cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 
