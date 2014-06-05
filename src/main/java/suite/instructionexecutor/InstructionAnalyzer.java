@@ -12,6 +12,7 @@ import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.util.FunUtil.Source;
 
 public class InstructionAnalyzer {
 
@@ -81,7 +82,7 @@ public class InstructionAnalyzer {
 		analyzeFrameRegisters(instructions);
 
 		// Find out tail call sites possible for optimization
-		analyzeTailCalls(instructions);
+		analyzeFpTailCalls(instructions);
 	}
 
 	private void analyzeFrames(List<Instruction> instructions) {
@@ -197,22 +198,23 @@ public class InstructionAnalyzer {
 		}
 	}
 
-	private void analyzeTailCalls(List<Instruction> instructions) {
+	private void analyzeFpTailCalls(List<Instruction> instructions) {
 		for (int ip = 0; ip < instructions.size() - 1; ip++) {
-			Instruction instruction0 = instructions.get(ip);
-			Instruction instruction1 = instructions.get(ip + 1);
+			Source<Instruction> source = flow(instructions, ip);
+			Instruction instruction0 = source.source();
+			Instruction instruction1 = source.source();
 
-			if (instruction0.insn == Insn.CALLCLOSURE___ //
-					&& instruction1.insn == Insn.SETRESULT_____ //
-					&& isReturningValue(instructions, ip + 2, instruction1.op0))
+			if (instruction0 != null && instruction0.insn == Insn.CALLCLOSURE___ //
+					&& instruction1 != null && instruction1.insn == Insn.SETRESULT_____ //
+					&& isReturningValue(instruction1.op0, source))
 				tailCalls.add(ip);
 		}
 	}
 
-	private boolean isReturningValue(List<Instruction> instructions, int ip, int returnReg) {
-		while (ip < instructions.size()) {
-			Instruction instruction = instructions.get(ip++);
+	private boolean isReturningValue(int returnReg, Source<Instruction> source) {
+		Instruction instruction;
 
+		while ((instruction = source.source()) != null)
 			switch (instruction.insn) {
 			case ASSIGNFRAMEREG:
 				if (instruction.op1 == 0 && instruction.op2 == returnReg) {
@@ -220,9 +222,6 @@ public class InstructionAnalyzer {
 					break;
 				} else
 					return false;
-			case JUMP__________:
-				ip = instruction.op0;
-				break;
 			case LABEL_________:
 				break;
 			case RETURNVALUE___:
@@ -230,9 +229,41 @@ public class InstructionAnalyzer {
 			default:
 				return false;
 			}
-		}
 
 		return false;
+	}
+
+	private Source<Instruction> flow(List<Instruction> instructions, int ip) {
+		return new Source<Instruction>() {
+			private boolean end = false;
+			private int ip_ = ip;
+
+			public Instruction source() {
+				if (!end && ip_ < instructions.size()) {
+					Instruction instruction = instructions.get(ip_++);
+
+					switch (instruction.insn) {
+					case ASSIGNFRAMEREG:
+					case CALL__________:
+					case CALLCLOSURE___:
+					case CALLINTRINSIC_:
+					case CALLREG_______:
+					case LABEL_________:
+					case REMARK________:
+					case SETCLOSURERES_:
+					case SETRESULT_____:
+						return instruction;
+					case JUMP__________:
+						ip_ = instruction.op0;
+						return source();
+					default:
+						end = true;
+						return instruction;
+					}
+				} else
+					return null;
+			}
+		};
 	}
 
 	public void transform(List<Instruction> instructions) {
