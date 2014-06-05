@@ -248,13 +248,13 @@ public class InstructionAnalyzer {
 					case CALLCLOSURE___:
 					case CALLINTRINSIC_:
 					case CALLREG_______:
-					case LABEL_________:
-					case REMARK________:
 					case SETCLOSURERES_:
 					case SETRESULT_____:
 						return instruction;
 					case JUMP__________:
 						ip_ = instruction.op0;
+					case LABEL_________:
+					case REMARK________:
 						return source();
 					default:
 						end = true;
