@@ -140,7 +140,7 @@ public class InstructionUtil {
 			super(frame, ip);
 			this.previous = previous;
 			depth = previous != null ? 1 + previous.depth : 0;
-			if (depth > 4096)
+			if (depth > 16384)
 				throw new RuntimeException("Activation overflow");
 		}
 	}
