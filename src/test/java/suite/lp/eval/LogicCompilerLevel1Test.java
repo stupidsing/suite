@@ -27,7 +27,7 @@ public class LogicCompilerLevel1Test {
 	 */
 	@Test
 	public void testCompileFunProgram() {
-		List<String> filenames = Arrays.asList("auto.sl", "fc.sl");
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
 
 		Node goal = new Specializer().specialize(Suite.substitute("" //
 				+ "source .in" //
@@ -36,27 +36,36 @@ public class LogicCompilerLevel1Test {
 		, Atom.of("LAZY")));
 
 		Node input = Suite.parse("1 + 2");
-		RuleSet rs = Suite.createRuleSet(filenames);
 		Node result = FindUtil.collectSingle(finder(rs, goal), input);
 
 		System.out.println(result);
 		assertNotNull(result);
 	}
 
-	/**
-	 * Call member two times. This test might fail in some poor tail recursion
-	 * optimization implementations, as some variables are not unbounded when
-	 * backtracking.
-	 */
 	@Test
 	public void testMemberOfMember() {
-		RuleSet rs = Suite.createRuleSet();
-		Suite.addRule(rs, "member (.e, _) .e");
-		Suite.addRule(rs, "member (_, .tail) .e :- member .tail .e");
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl"));
 
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
-		Node program = Suite.parse("((1, 2,), (3, 4,),)");
-		List<Node> results = FindUtil.collectList(finder(rs, goal), program);
+		Node input = Suite.parse("((1, 2,), (3, 4,),)");
+		List<Node> results = FindUtil.collectList(finder(rs, goal), input);
+
+		System.out.println(results);
+		assertTrue(results.size() == 4);
+	}
+
+	/**
+	 * This test might fail in some poor tail recursion optimization
+	 * implementations, as some variables are not unbounded when backtracking.
+	 */
+	@Test
+	public void testTailCalls() {
+		RuleSet rs = Suite.createRuleSet();
+		Suite.addRule(rs, "ab a");
+		Suite.addRule(rs, "ab b");
+
+		Node goal = Suite.parse("ab .a, ab .b, sink (.a, .b,)");
+		List<Node> results = FindUtil.collectList(finder(rs, goal), Atom.NIL);
 
 		System.out.println(results);
 		assertTrue(results.size() == 4);
