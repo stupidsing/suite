@@ -3,7 +3,7 @@ if .if .then .else :- .if, !, .then; .else #
 append () .list .list #
 append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 
-clear :- retract.all (_ :- _) #
+clear :- retract.all (_ :- _), ! #
 
 length () 0 #
 length (_, .r) .l1 :- length .r .l0, sum .l1 .l0 1 #
