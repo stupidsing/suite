@@ -9,7 +9,8 @@ import suite.util.Util;
 
 public class Cyclic {
 
-	private Set<IdHashNode> nodes = new HashSet<>();
+	private Set<IdHashNode> checkedNodes = new HashSet<>();
+	private Set<IdHashNode> traversedNodes = new HashSet<>();
 
 	private static class IdHashNode {
 		private Node node;
@@ -31,19 +32,22 @@ public class Cyclic {
 		node = node.finalNode();
 		IdHashNode idHashNode = new IdHashNode(node);
 
-		if (nodes.add(idHashNode))
-			try {
-				Tree tree = Tree.decompose(node);
+		if (checkedNodes.add(idHashNode)) {
+			if (traversedNodes.add(idHashNode))
+				try {
+					Tree tree = Tree.decompose(node);
 
-				if (tree != null)
-					return isCyclic(tree.getLeft()) || isCyclic(tree.getRight());
-				else
-					return false;
-			} finally {
-				nodes.remove(idHashNode);
-			}
-		else
-			return true;
+					if (tree != null)
+						return isCyclic(tree.getLeft()) || isCyclic(tree.getRight());
+					else
+						return false;
+				} finally {
+					traversedNodes.remove(idHashNode);
+				}
+			else
+				return true;
+		} else
+			return false;
 	}
 
 }
