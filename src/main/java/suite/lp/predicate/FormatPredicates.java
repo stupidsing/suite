@@ -1,5 +1,11 @@
 package suite.lp.predicate;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import suite.Suite;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
@@ -9,6 +15,8 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.Persister.Loader;
+import suite.node.io.Persister.Saver;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.ReversePolish;
 import suite.node.io.TermOp;
@@ -69,6 +77,29 @@ public class FormatPredicates {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
 			return prover.bind(Suite.parse(Formatter.display(p0)), p1);
+		}
+	}
+
+	public static class PersistLoad implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Tree.getParameters(ps, 2);
+			try (InputStream is = new FileInputStream(((Str) params[1].finalNode()).getValue())) {
+				return prover.bind(params[0], new Loader().load(is));
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+	}
+
+	public static class PersistSave implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Tree.getParameters(ps, 2);
+			try (OutputStream os = new FileOutputStream(((Str) params[1].finalNode()).getValue())) {
+				new Saver().save(os, params[0]);
+				return true;
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 	}
 
