@@ -51,14 +51,13 @@ fc-load-precompiled-library .lib .node
 #
 
 fc-load-precompiled-library0 .lib .precompiled
-	:- fc-precompiled-library-filename .lib .rpnFilename
-	, file.read .rpnFilename .rpn
-	, rpn .precompiled .rpn
+	:- fc-precompiled-library-filename .lib .filename
+	, persist.load .precompiled .filename
 #
 
 fc-precompiled-library-filename .lib .filename
 	:- home.dir .homeDir
-	, concat .homeDir "/precompiled/" .lib ".rpn" .filename
+	, concat .homeDir "/precompiled/" .lib ".node.gz" .filename
 #
 
 fc-frame-difference .frame0 .frame1 0

@@ -11,8 +11,7 @@ fc-precompile-lib .lib
 	, fc-load-library .lib .do0 .do1
 	, fc-precompile .lib .do1/.do0 .preds
 	, !, write 'Saving file' .filename, nl
-	, rpn .preds .rpn
-	, file.write .filename .rpn
+	, persist.save .preds .filename
 #
 
 fc-precompile .lib .do1/($$PRECOMPILE .pc) .preds
