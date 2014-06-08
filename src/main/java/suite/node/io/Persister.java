@@ -5,7 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -21,8 +23,7 @@ import suite.node.Tree;
 public class Persister {
 
 	public static class Loader {
-		private int counter;
-		private Map<Integer, IdHashNode> nodes = new HashMap<>();
+		private List<Node> nodes = new ArrayList<>();
 
 		public Node load(InputStream is) throws IOException {
 			try (GZIPInputStream gis = new GZIPInputStream(is); DataInputStream dis = new DataInputStream(gis)) {
@@ -35,7 +36,7 @@ public class Persister {
 						node = Atom.of(dis.readUTF());
 						break;
 					case 'f':
-						return nodes.get(dis.readInt()).getNode();
+						return nodes.get(dis.readInt());
 					case 'i':
 						node = Int.of(dis.readInt());
 						break;
@@ -47,15 +48,15 @@ public class Persister {
 						break;
 					case 't':
 						TermOp oper = TermOp.find(dis.readUTF());
-						Node node0 = nodes.get(dis.readInt()).getNode();
-						Node node1 = nodes.get(dis.readInt()).getNode();
+						Node node0 = nodes.get(dis.readInt());
+						Node node1 = nodes.get(dis.readInt());
 						node = Tree.of(oper, node0, node1);
 						break;
 					default:
 						throw new RuntimeException("Unknown type " + type);
 					}
 
-					nodes.put(counter++, new IdHashNode(node));
+					nodes.add(node);
 				}
 			}
 		}
