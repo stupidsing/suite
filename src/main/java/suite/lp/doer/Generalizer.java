@@ -11,7 +11,6 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.Util;
 
@@ -44,18 +43,13 @@ public class Generalizer {
 				else if (isCut(name) && cut != null)
 					right = cut;
 			} else if (right instanceof Tree) {
-				Tree rightTree = (Tree) right;
-				Operator rightOp = rightTree.getOperator();
+				Tree rt = (Tree) right;
 
-				// Delay generalizing for performance
-				if (rightOp == TermOp.OR____)
-					right = new Suspend(() -> {
-						Node rl = rightTree.getLeft();
-						Node rr = rightTree.getRight();
-						return Tree.of(rightOp, generalize(rl), generalize(rr));
-					});
+				if (tree.getOperator() != TermOp.OR____)
+					right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
 				else
-					right = nextTree = Tree.of(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());
+					// Delay generalizing for performance
+					right = new Suspend(() -> generalize(rt));
 			}
 
 			Tree.forceSetRight(tree, right);
