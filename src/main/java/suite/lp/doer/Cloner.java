@@ -18,54 +18,58 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
-		Tree tree = Tree.of(null, null, node);
-		cloneRight(tree);
-		return tree.getRight();
+		return clonedNodes.computeIfAbsent(new IdHashNode(node), key -> {
+			Tree tree = Tree.of(null, null, node);
+			cloneRight(tree);
+			return tree.getRight();
+		});
 	}
 
 	private void cloneRight(Tree tree) {
-		while (true) {
+		while (tree != null) {
+			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
+			IdHashNode key = new IdHashNode(right);
+			Node right1 = clonedNodes.get(key);
 
-			if (right instanceof Reference)
-				right = getNewReference((Reference) right);
+			if (right1 == null) {
+				if (right instanceof Reference)
+					right1 = new Reference();
+				else if (right instanceof Tree) {
+					nextTree = (Tree) right;
+					right1 = nextTree = Tree.of(nextTree.getOperator(), clone(nextTree.getLeft()), nextTree.getRight());
+				} else
+					right1 = right;
 
-			if (right instanceof Tree) {
-				Tree rightTree = (Tree) right;
-				rightTree = Tree.of(rightTree.getOperator(), clone(rightTree.getLeft()), rightTree.getRight());
-				Tree.forceSetRight(tree, rightTree);
-				tree = rightTree;
-				continue;
+				clonedNodes.put(key, right1);
 			}
 
-			Tree.forceSetRight(tree, right);
-			break;
+			Tree.forceSetRight(tree, right1);
+			tree = nextTree;
 		}
 	}
 
 	public Node cloneOld(Node node) {
 		node = node.finalNode();
+		IdHashNode key = new IdHashNode(node);
+		Node node1 = clonedNodes.get(key);
 
-		if (node instanceof Reference)
-			node = getNewReference((Reference) node);
+		if (node1 == null) {
+			if (node instanceof Reference)
+				clonedNodes.put(key, node1 = new Reference());
 
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			Node left = tree.getLeft(), right = tree.getRight();
-			Node left1 = clone(left), right1 = clone(right);
-			if (left != left1 || right != right1)
-				node = Tree.of(tree.getOperator(), left1, right1);
+			if (node instanceof Tree) {
+				Tree tree = (Tree) node;
+				Node left = tree.getLeft(), right = tree.getRight();
+				Node left1 = clone(left), right1 = clone(right);
+				if (left != left1 || right != right1)
+					node1 = Tree.of(tree.getOperator(), left1, right1);
+				else
+					node1 = node;
+			}
 		}
 
-		return node;
-	}
-
-	private Node getNewReference(Reference oldRef) {
-		IdHashNode key = new IdHashNode(oldRef);
-		Node node = clonedNodes.get(key);
-		if (node == null)
-			clonedNodes.put(key, node = new Reference());
-		return node;
+		return node1;
 	}
 
 }
