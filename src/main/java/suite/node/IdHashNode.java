@@ -10,10 +10,12 @@ public class IdHashNode {
 		this.node = node;
 	}
 
+	@Override
 	public int hashCode() {
 		return System.identityHashCode(node);
 	}
 
+	@Override
 	public boolean equals(Object object) {
 		return Util.clazz(object) == IdHashNode.class && node == ((IdHashNode) object).node;
 	}
