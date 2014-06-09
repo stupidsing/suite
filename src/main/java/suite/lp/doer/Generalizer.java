@@ -31,7 +31,8 @@ public class Generalizer {
 	}
 
 	private void generalizeRight(Tree tree) {
-		while (true) {
+		while (tree != null) {
+			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
 
 			if (right instanceof Atom) {
@@ -53,16 +54,12 @@ public class Generalizer {
 						Node rr = rightTree.getRight();
 						return Tree.of(rightOp, generalize(rl), generalize(rr));
 					});
-				else {
-					Tree rightTree1 = Tree.of(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());
-					Tree.forceSetRight(tree, rightTree1);
-					tree = rightTree1;
-					continue;
-				}
+				else
+					right = nextTree = Tree.of(rightOp, generalize(rightTree.getLeft()), rightTree.getRight());
 			}
 
 			Tree.forceSetRight(tree, right);
-			break;
+			tree = nextTree;
 		}
 	}
 
