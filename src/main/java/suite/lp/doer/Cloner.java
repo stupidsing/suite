@@ -56,9 +56,8 @@ public class Cloner {
 
 		if (node1 == null) {
 			if (node instanceof Reference)
-				clonedNodes.put(key, node1 = new Reference());
-
-			if (node instanceof Tree) {
+				node1 = new Reference();
+			else if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				Node left = tree.getLeft(), right = tree.getRight();
 				Node left1 = clone(left), right1 = clone(right);
@@ -66,7 +65,10 @@ public class Cloner {
 					node1 = Tree.of(tree.getOperator(), left1, right1);
 				else
 					node1 = node;
-			}
+			} else
+				node1 = node;
+
+			clonedNodes.put(key, node1);
 		}
 
 		return node1;
