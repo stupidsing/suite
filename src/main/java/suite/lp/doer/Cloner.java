@@ -1,16 +1,17 @@
 package suite.lp.doer;
 
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import suite.lp.kb.Rule;
+import suite.node.IdHashNode;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 
 public class Cloner {
 
-	private Map<Reference, Reference> references = new IdentityHashMap<>();
+	private Map<IdHashNode, Node> clonedNodes = new HashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.getHead()), clone(rule.getTail()));
@@ -59,15 +60,11 @@ public class Cloner {
 		return node;
 	}
 
-	private Node getNewReference(Reference oldReference) {
-		Node node = references.get(oldReference);
-
-		if (node == null) {
-			Reference newReference = new Reference();
-			node = newReference;
-			references.put(oldReference, newReference);
-		}
-
+	private Node getNewReference(Reference oldRef) {
+		IdHashNode key = new IdHashNode(oldRef);
+		Node node = clonedNodes.get(key);
+		if (node == null)
+			clonedNodes.put(key, node = new Reference());
 		return node;
 	}
 
