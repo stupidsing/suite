@@ -2,8 +2,6 @@ fc-rewrite (ATOM .a) (ATOM .a) .ts/.ts
 #
 fc-rewrite (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
 #
-fc-rewrite (CONSTANT .c) (CONSTANT .c) .ts/.ts
-#
 fc-rewrite (DEF-VAR .var .value0 .do0) (DEF-VAR .var .value1 .do1) .ts0/.tsx
 	:- .ts0 = (.value0 .value1, .do0 .do1, .tsx)
 #

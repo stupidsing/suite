@@ -190,9 +190,6 @@ public class InstructionExecutor implements AutoCloseable {
 					break;
 				case LABEL_________:
 					break;
-				case LOGCONST______:
-					LogUtil.info(constantPool.get(insn.op0).toString());
-					break;
 				case LOGREG________:
 					LogUtil.info(regs[insn.op0].toString());
 					break;
@@ -201,9 +198,6 @@ public class InstructionExecutor implements AutoCloseable {
 					break;
 				case PUSH__________:
 					stack[sp++] = regs[insn.op0];
-					break;
-				case PUSHCONST_____:
-					stack[sp++] = number(insn.op0);
 					break;
 				case POP___________:
 					regs[insn.op0] = stack[--sp];

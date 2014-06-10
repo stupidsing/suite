@@ -136,7 +136,6 @@ fc-infer-type-rule (.tag .var) _/.ve/_ .tr0/.trx .type
 	)
 #
 
-fc-find-simple-type (CONSTANT _) _ _ #
 fc-find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #

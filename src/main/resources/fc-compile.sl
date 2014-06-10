@@ -5,13 +5,10 @@ fc-compile .do .env .cdr
 	:- fc-default-fun .do .env .cdr, !
 #
 fc-compile (ATOM .a) _ .c0/.cx/.d/.d/.reg
-	:- .c0 = (_ ASSIGN-CONSTANT .reg .a, .cx)
+	:- .c0 = (_ ASSIGN-CONSTANT .reg c:.a, .cx)
 #
 fc-compile (BOOLEAN .b) _ .c0/.cx/.d/.d/.reg
-	:- .c0 = (_ ASSIGN-BOOL .reg .b, .cx)
-#
-fc-compile (CONSTANT .c) _ .c0/.cx/.d/.d/.reg
-	:- .c0 = (_ ASSIGN-CONSTANT .reg .c, .cx)
+	:- .c0 = (_ ASSIGN-CONSTANT .reg c:.b, .cx)
 #
 fc-compile (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	:- fc-dict-add .var/(%REG/.r1/.frame) .ve/.ve1

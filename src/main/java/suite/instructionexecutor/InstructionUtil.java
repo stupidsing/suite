@@ -40,7 +40,6 @@ public class InstructionUtil {
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
-		ASSIGNGLOBAL__("ASSIGN-GLOBAL"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
 		BACKUPCSP_____("BACKUP-CSP"), //
 		BACKUPDSP_____("BACKUP-DSP"), //
@@ -84,7 +83,6 @@ public class InstructionUtil {
 		JUMPCLOSURE___("JUMP-CLOSURE"), //
 		JUMPREG_______("JUMP-REG"), //
 		LABEL_________("LABEL"), //
-		LOGCONST______("LOG-CONSTANT"), //
 		LOGREG________("LOG-REG"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
@@ -93,7 +91,6 @@ public class InstructionUtil {
 		PROVEINTERPRET("PROVE-INTERPRET"), //
 		PROVESYS______("PROVE-SYS"), //
 		PUSH__________("PUSH"), //
-		PUSHCONST_____("PUSH-CONSTANT"), //
 		REMARK________("REMARK"), //
 		RESTORECSP____("RESTORE-CSP"), //
 		RESTOREDSP____("RESTORE-DSP"), //

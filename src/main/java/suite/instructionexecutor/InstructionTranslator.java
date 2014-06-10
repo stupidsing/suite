@@ -354,10 +354,6 @@ public class InstructionTranslator implements Closeable {
 			case LEAVE_________:
 				generateFrame();
 				break;
-			case LOGCONST______:
-				constant = constantPool.get(op0);
-				app("LogUtil.info(#{str}.toString())", defineConstant(constant));
-				break;
 			case LOGREG________:
 				app("LogUtil.info(#{reg}.toString())", op0);
 				break;
@@ -375,9 +371,6 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case PUSH__________:
 				app("ds[dsp++] = #{reg-node}", op0);
-				break;
-			case PUSHCONST_____:
-				app("ds[dsp++] = Int.of(#{num})", op0);
 				break;
 			case REMARK________:
 				break;
