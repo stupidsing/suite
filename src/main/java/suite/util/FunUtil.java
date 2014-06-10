@@ -3,6 +3,7 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 public class FunUtil {
@@ -161,7 +162,7 @@ public class FunUtil {
 		};
 	}
 
-	private static <T> void enqueue(SynchronousQueue<T> queue, T t) {
+	private static <T> void enqueue(BlockingQueue<T> queue, T t) {
 		try {
 			queue.put(t);
 		} catch (InterruptedException ex) {
