@@ -20,12 +20,10 @@ public class Cyclic {
 		if (!checkedNodes.contains(idHashNode)) {
 			if (checkingNodes.add(idHashNode)) {
 				Tree tree = Tree.decompose(node);
-
 				if (tree != null)
 					isCyclic = isCyclic(tree.getLeft()) || isCyclic(tree.getRight());
 				else
 					isCyclic = false;
-
 				checkingNodes.remove(idHashNode);
 			} else
 				isCyclic = true;
