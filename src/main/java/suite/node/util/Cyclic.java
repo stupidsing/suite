@@ -10,28 +10,31 @@ import suite.node.Tree;
 public class Cyclic {
 
 	private Set<IdHashNode> checkedNodes = new HashSet<>();
-	private Set<IdHashNode> traversedNodes = new HashSet<>();
+	private Set<IdHashNode> checkingNodes = new HashSet<>();
 
 	public boolean isCyclic(Node node) {
 		node = node.finalNode();
 		IdHashNode idHashNode = new IdHashNode(node);
+		boolean isCyclic;
 
-		if (checkedNodes.add(idHashNode)) {
-			if (traversedNodes.add(idHashNode))
-				try {
-					Tree tree = Tree.decompose(node);
+		if (!checkedNodes.contains(idHashNode)) {
+			if (checkingNodes.add(idHashNode)) {
+				Tree tree = Tree.decompose(node);
 
-					if (tree != null)
-						return isCyclic(tree.getLeft()) || isCyclic(tree.getRight());
-					else
-						return false;
-				} finally {
-					traversedNodes.remove(idHashNode);
-				}
-			else
-				return true;
+				if (tree != null)
+					isCyclic = isCyclic(tree.getLeft()) || isCyclic(tree.getRight());
+				else
+					isCyclic = false;
+
+				checkingNodes.remove(idHashNode);
+			} else
+				isCyclic = true;
+
+			checkedNodes.add(idHashNode);
 		} else
-			return false;
+			isCyclic = false;
+
+		return isCyclic;
 	}
 
 }
