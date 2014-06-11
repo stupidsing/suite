@@ -110,7 +110,8 @@ public class InstructionExtractor implements AutoCloseable {
 				case "r":
 					return 0;
 				}
-			}
+			} else
+				return allocateInPool(node);
 
 			throw new RuntimeException("Cannot parse instruction " + rs + " operand " + index);
 		} else
