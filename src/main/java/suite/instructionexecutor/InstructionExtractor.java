@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
@@ -42,24 +43,16 @@ public class InstructionExtractor implements AutoCloseable {
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;
 
-		switch (insnName) {
-		case "ASSIGN-BOOL":
-			insn = Insn.ASSIGNCONST___;
-			break;
-		case "ASSIGN-STR":
-			insn = Insn.ASSIGNCONST___;
-			break;
-		case "EVALUATE":
+		if (Objects.equals(insnName, "EVALUATE")) {
 			Atom atom = (Atom) rs.remove(4).finalNode();
 			TermOp operator = TermOp.find(atom.getName());
 			insn = InstructionUtil.getEvalInsn(operator);
-			break;
-		default:
+		} else
 			insn = InstructionUtil.getInsn(insnName);
-		}
 
 		if (insn != null) {
-			Instruction instruction = new Instruction(insn //
+			Instruction instruction;
+			instruction = new Instruction(insn //
 					, getRegisterNumber(rs, 2) //
 					, getRegisterNumber(rs, 3) //
 					, getRegisterNumber(rs, 4));
@@ -90,6 +83,7 @@ public class InstructionExtractor implements AutoCloseable {
 	private int getRegisterNumber(List<Node> rs, int index) {
 		if (rs.size() > index) {
 			Node node = rs.get(index).finalNode();
+			Tree tree;
 
 			if (node instanceof Int)
 				return ((Int) node).getNumber();
@@ -101,9 +95,24 @@ public class InstructionExtractor implements AutoCloseable {
 
 				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;
-			} else
-				// ASSIGN-BOOL, ASSIGN-STR, PROVE
-				return allocateInPool(node);
+			} else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null) {
+				Node left = tree.getLeft(), right = tree.getRight();
+
+				switch (((Atom) left).getName()) {
+				case "c":
+					return allocateInPool(right);
+				case "i":
+					return ((Int) right).getNumber();
+				case "l":
+					Node n1 = Tree.decompose(right, TermOp.AND___).getLeft();
+					Node n2 = Tree.decompose(n1, TermOp.TUPLE_).getLeft();
+					return ((Int) n2.finalNode()).getNumber();
+				case "r":
+					return 0;
+				}
+			}
+
+			throw new RuntimeException("Cannot parse instruction " + rs + " operand " + index);
 		} else
 			return 0;
 	}
