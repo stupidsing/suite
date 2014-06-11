@@ -96,15 +96,15 @@ public class InstructionExtractor implements AutoCloseable {
 				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;
 			} else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null) {
-				Node left = tree.getLeft(), right = tree.getRight();
+				Node n0 = tree.getRight().finalNode();
 
-				switch (((Atom) left).getName()) {
+				switch (((Atom) tree.getLeft()).getName()) {
 				case "c":
-					return allocateInPool(right);
+					return allocateInPool(n0);
 				case "i":
-					return ((Int) right).getNumber();
+					return ((Int) n0).getNumber();
 				case "l":
-					Node n1 = Tree.decompose(right, TermOp.AND___).getLeft();
+					Node n1 = Tree.decompose(n0, TermOp.AND___).getLeft();
 					Node n2 = Tree.decompose(n1, TermOp.TUPLE_).getLeft();
 					return ((Int) n2.finalNode()).getNumber();
 				case "r":
