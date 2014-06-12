@@ -15,6 +15,9 @@ public class Binder {
 		n0 = n0.finalNode();
 		n1 = n1.finalNode();
 
+		if (n0 == n1)
+			return true;
+
 		if (n0 instanceof Reference) {
 			journal.addBind((Reference) n0, n1);
 			return true;
@@ -22,9 +25,6 @@ public class Binder {
 			journal.addBind((Reference) n1, n0);
 			return true;
 		}
-
-		if (n0 == n1)
-			return true;
 
 		Class<? extends Node> clazz0 = n0.getClass();
 		Class<? extends Node> clazz1 = n1.getClass();
