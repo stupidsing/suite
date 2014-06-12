@@ -33,6 +33,7 @@ public class Generalizer {
 		while (tree != null) {
 			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
+			Tree rt;
 
 			if (right instanceof Atom) {
 				String name = ((Atom) right).getName();
@@ -42,15 +43,12 @@ public class Generalizer {
 					right = getVariable(right);
 				else if (isCut(name) && cut != null)
 					right = cut;
-			} else if (right instanceof Tree) {
-				Tree rt = (Tree) right;
-
+			} else if ((rt = Tree.decompose(right)) != null)
 				if (tree.getOperator() != TermOp.OR____)
 					right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
 				else
 					// Delay generalizing for performance
 					right = new Suspend(() -> generalize(rt));
-			}
 
 			Tree.forceSetRight(tree, right);
 			tree = nextTree;

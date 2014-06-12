@@ -19,7 +19,7 @@ public class Cloner {
 
 	public Node clone(Node node) {
 		return clonedNodes.computeIfAbsent(new IdHashKey(node), key -> {
-			Tree tree = Tree.of(null, null, node);
+			Tree tree = Tree.of(null, null, key.getNode());
 			cloneRight(tree);
 			return tree.getRight();
 		});
@@ -31,14 +31,14 @@ public class Cloner {
 			Node right = tree.getRight().finalNode();
 			IdHashKey key = new IdHashKey(right);
 			Node right1 = clonedNodes.get(key);
+			Tree rt;
 
 			if (right1 == null) {
 				if (right instanceof Reference)
 					right1 = new Reference();
-				else if (right instanceof Tree) {
-					nextTree = (Tree) right;
-					right1 = nextTree = Tree.of(nextTree.getOperator(), clone(nextTree.getLeft()), nextTree.getRight());
-				} else
+				else if ((rt = Tree.decompose(right)) != null)
+					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
+				else
 					right1 = right;
 
 				clonedNodes.put(key, right1);
