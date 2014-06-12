@@ -4,21 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.lp.kb.Rule;
-import suite.node.IdHashNode;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.util.IdHashKey;
 
 public class Cloner {
 
-	private Map<IdHashNode, Node> clonedNodes = new HashMap<>();
+	private Map<IdHashKey, Node> clonedNodes = new HashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.getHead()), clone(rule.getTail()));
 	}
 
 	public Node clone(Node node) {
-		return clonedNodes.computeIfAbsent(new IdHashNode(node), key -> {
+		return clonedNodes.computeIfAbsent(new IdHashKey(node), key -> {
 			Tree tree = Tree.of(null, null, node);
 			cloneRight(tree);
 			return tree.getRight();
@@ -29,7 +29,7 @@ public class Cloner {
 		while (tree != null) {
 			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
-			IdHashNode key = new IdHashNode(right);
+			IdHashKey key = new IdHashKey(right);
 			Node right1 = clonedNodes.get(key);
 
 			if (right1 == null) {
@@ -51,7 +51,7 @@ public class Cloner {
 
 	public Node cloneOld(Node node) {
 		node = node.finalNode();
-		IdHashNode key = new IdHashNode(node);
+		IdHashKey key = new IdHashKey(node);
 		Node node1 = clonedNodes.get(key);
 
 		if (node1 == null) {

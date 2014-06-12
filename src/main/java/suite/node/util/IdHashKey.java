@@ -1,12 +1,13 @@
-package suite.node;
+package suite.node.util;
 
+import suite.node.Node;
 import suite.util.Util;
 
-public class IdHashNode {
+public class IdHashKey {
 
 	private Node node;
 
-	public IdHashNode(Node node) {
+	public IdHashKey(Node node) {
 		this.node = node;
 	}
 
@@ -17,7 +18,7 @@ public class IdHashNode {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == IdHashNode.class && node == ((IdHashNode) object).node;
+		return Util.clazz(object) == IdHashKey.class && node == ((IdHashKey) object).node;
 	}
 
 	public Node getNode() {
