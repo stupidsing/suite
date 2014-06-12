@@ -118,7 +118,7 @@ fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 #
 fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)
-	, generalize .pred (
+	, clone .pred (
 		fc-infer-type-rule-using-lib .lib .do .env .tr1/() .type :- .tail
 	)
 	, once .tail

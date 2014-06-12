@@ -61,7 +61,7 @@ fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d
 	:- !, write 'Loading pre-compiled library' .lib, nl
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
-	, generalize .pred (
+	, clone .pred (
 		fc-compile-using-lib .mode .lib ($$PRECOMPILE _ _ .frame/.ve1 _) _/() _ :- .tail
 	)
 	, once .tail

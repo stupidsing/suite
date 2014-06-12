@@ -7,7 +7,9 @@ import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import suite.Suite;
 import suite.node.Atom;
@@ -28,6 +30,7 @@ public class ReversePolish {
 
 	public Node fromRpn(Reader reader) throws IOException {
 		BufferedReader br = new BufferedReader(reader);
+		Map<String, Reference> references = new HashMap<>();
 		Deque<Node> deque = new ArrayDeque<>();
 		String elem;
 
@@ -45,6 +48,8 @@ public class ReversePolish {
 				n = Suite.parse(s);
 			else if (type == 'i')
 				n = Int.of(Integer.parseInt(s));
+			else if (type == 'r')
+				n = references.computeIfAbsent(s, key -> new Reference());
 			else if (type == 't') {
 				TermOp op = TermOp.valueOf(s);
 				Node left = deque.pop();
@@ -74,7 +79,8 @@ public class ReversePolish {
 			else if (n instanceof Int)
 				s = "i" + ((Int) n).getNumber();
 			else if (n instanceof Reference)
-				s = "\\." + ((Reference) n).getId();
+				s = "r" + ((Reference) n).getId();
+			// s = "\\." + ((Reference) n).getId();
 			else if (n instanceof Tree) {
 				Tree tree = (Tree) n;
 				s = "t" + tree.getOperator();
