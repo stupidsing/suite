@@ -36,7 +36,7 @@ public class EvaluateUtil {
 	});
 
 	// Using level 1 CompiledProverBuilder would break the test case
-	// FunRbTreeTest. It would by blow up the stack in InstructionExecutor
+	// FunRbTreeTest. It would blow up the stack in InstructionExecutor
 	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.byInput(pair -> {
 		Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0, false);
 		return builder.build(Suite.funCompilerRuleSet(), pair.t1);
