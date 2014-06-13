@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Deprecated
 public class FormatUtil {
 
 	private static String ymd = "yyyy-MM-dd";

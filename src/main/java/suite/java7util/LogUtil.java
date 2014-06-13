@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import suite.util.Copy;
 import suite.util.Dump;
 
+@Deprecated
 public class LogUtil {
 
 	private static int maxStackTraceLength = 99;

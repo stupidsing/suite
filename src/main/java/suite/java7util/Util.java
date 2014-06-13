@@ -2,6 +2,7 @@ package suite.java7util;
 
 import java.util.Calendar;
 
+@Deprecated
 public class Util {
 
 	public static Class<?> clazz(Object object) {

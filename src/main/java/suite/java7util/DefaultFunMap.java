@@ -1,4 +1,4 @@
-package suite.util;
+package suite.java7util;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 
+@Deprecated
 public class DefaultFunMap<K, V> implements Map<K, V> {
 
 	private Map<K, V> map;
