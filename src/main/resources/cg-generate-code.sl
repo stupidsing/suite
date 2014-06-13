@@ -10,7 +10,7 @@ cg-optimize .c0 .cx
 	:- cg-optimize-dup-labels .c0 .c1
 	, cg-optimize-jump-returns .c1 .c2
 	, cg-optimize-lp-tail-calls .c2 .c3
-	, cg-interprete-labels .c3 .cx
+	, cg-interpret-labels .c3 .cx
 #
 
 cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
@@ -104,13 +104,13 @@ cg-is-skip .i/.i #
 
 cg-is-returning (_ RETURN, _) #
 
-cg-interprete-labels (.insn0, .insns0) (.insn1, .insns1)
-	:- !, cg-interprete-label .insn0 .insn1
-	, cg-interprete-labels .insns0 .insns1
+cg-interpret-labels (.insn0, .insns0) (.insn1, .insns1)
+	:- !, cg-interpret-label .insn0 .insn1
+	, cg-interpret-labels .insns0 .insns1
 #
-cg-interprete-labels () () #
+cg-interpret-labels () () #
 
-cg-interprete-label (.label .insn .op0 .op1 l:(.refLabel .id, _)) (.label .insn .op0 .op1 i:.refLabel) :- same .id LABEL, ! #
-cg-interprete-label (.label .insn .op0 l:(.refLabel .id, _)) (.label .insn .op0 i:.refLabel) :- same .id LABEL, ! #
-cg-interprete-label (.label .insn l:(.refLabel .id, _)) (.label .insn i:.refLabel) :- same .id LABEL, ! #
-cg-interprete-label .insn .insn #
+cg-interpret-label (.label .insn .op0 .op1 l:(.refLabel .id, _)) (.label .insn .op0 .op1 i:.refLabel) :- same .id LABEL, ! #
+cg-interpret-label (.label .insn .op0 l:(.refLabel .id, _)) (.label .insn .op0 i:.refLabel) :- same .id LABEL, ! #
+cg-interpret-label (.label .insn l:(.refLabel .id, _)) (.label .insn i:.refLabel) :- same .id LABEL, ! #
+cg-interpret-label .insn .insn #

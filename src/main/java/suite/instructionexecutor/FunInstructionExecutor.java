@@ -33,7 +33,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	public FunInstructionExecutor(Node node, boolean isLazy) {
 		super(node);
 
-		if (isLazy) {
+		if (isLazy)
 			intrinsicBridge = new IntrinsicBridge() {
 				public Node unwrap(Node node) {
 					node = node.finalNode();
@@ -45,7 +45,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 					return new Closure(frame, invokeJavaEntryPoint);
 				}
 			};
-		} else {
+		else
 			intrinsicBridge = new IntrinsicBridge() {
 				public Node unwrap(Node node) {
 					return node;
@@ -55,7 +55,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 					return intrinsic.invoke(this, Arrays.asList(node));
 				}
 			};
-		}
 
 		comparer = new FunComparer(intrinsicBridge::unwrap);
 	}
