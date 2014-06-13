@@ -18,6 +18,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 
+@Deprecated
 public class Ssh {
 
 	public int execute(String command) throws JSchException, IOException {

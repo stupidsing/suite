@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.util.FunUtil.Fun;
 
+@Deprecated
 public class CacheUtil {
 
 	private Map<Key, Object> results = new ConcurrentHashMap<>();

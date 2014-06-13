@@ -1,13 +1,14 @@
 package suite.text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import suite.util.DefaultFunMap;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.To;
@@ -20,7 +21,7 @@ public class TwoPassIndexer {
 
 	private TreeSet<String> keys = new TreeSet<>();
 
-	private DefaultFunMap<String, List<Reference>> referencesByWord = new DefaultFunMap<>(word -> new ArrayList<>());
+	private Map<String, List<Reference>> referencesByWord = new HashMap<>();
 
 	public static class Reference {
 		private String id;
@@ -69,7 +70,7 @@ public class TwoPassIndexer {
 				end++;
 
 			if (end <= length)
-				referencesByWord.get(text.substring(start, end - 1)).add(key);
+				getKeysByWord(text.substring(start, end - 1)).add(key);
 		}
 
 		keys = new TreeSet<>(referencesByWord.keySet());
@@ -84,10 +85,14 @@ public class TwoPassIndexer {
 			return key != null && key.startsWith(searchKey) ? key : null;
 		};
 
-		return FunUtil.concat(FunUtil.map(key -> To.source(referencesByWord.get(key)), keySource));
+		return FunUtil.concat(FunUtil.map(key -> To.source(getKeysByWord(key)), keySource));
 	}
 
-	public DefaultFunMap<String, List<Reference>> getKeysByWord() {
+	public List<Reference> getKeysByWord(String word) {
+		return referencesByWord.computeIfAbsent(word, key -> new ArrayList<>());
+	}
+
+	public Map<String, List<Reference>> getKeysByWord() {
 		return referencesByWord;
 	}
 

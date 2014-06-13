@@ -1,8 +1,7 @@
 package suite.algo;
 
+import java.util.HashMap;
 import java.util.Map;
-
-import suite.util.DefaultFunMap;
 
 public class UnionFind<T> {
 
@@ -10,13 +9,12 @@ public class UnionFind<T> {
 		private T parent;
 		private int rank;
 
-		public Record(T parent, int rank) {
+		public Record(T parent) {
 			this.parent = parent;
-			this.rank = rank;
 		}
 	}
 
-	private Map<T, Record> nodes = new DefaultFunMap<>(t -> new Record(t, 0));
+	private Map<T, Record> nodes = new HashMap<>();
 
 	public void union(T t0, T t1) {
 		Record pair0 = find0(t0);
@@ -37,16 +35,20 @@ public class UnionFind<T> {
 	}
 
 	private Record find0(T t) {
-		return find0(nodes.get(t));
+		return find0(getRecord(t));
 	}
 
 	private Record find0(Record pair) {
-		Record parent = nodes.get(pair.parent);
+		Record parent = getRecord(pair.parent);
 		if (parent.parent != pair.parent) {
 			parent.parent = find0(parent.parent).parent;
 			return parent;
 		} else
 			return pair;
+	}
+
+	private Record getRecord(T t) {
+		return nodes.computeIfAbsent(t, Record::new);
 	}
 
 }

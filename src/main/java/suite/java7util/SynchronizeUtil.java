@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
+@Deprecated
 public class SynchronizeUtil {
 
 	public static <I> I proxy(Class<I> interface_, I object) {
