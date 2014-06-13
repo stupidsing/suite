@@ -20,7 +20,7 @@ import suite.node.Tree;
 public class TermHashKey {
 
 	public static class TermHasher {
-		int nAliases = 0;
+		private int nAliases = 0;
 		private Map<Integer, Integer> aliases = new HashMap<>();
 
 		public Integer hash(Node node) {
