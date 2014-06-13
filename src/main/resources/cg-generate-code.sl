@@ -25,30 +25,14 @@ cg-optimize-jump-returns .c0 .cx
 	, cg-optimize-assign-return .c1 .cx
 #
 
-cg-optimize-jumps .c .d
-	:- clone .c .cc
-	, cg-label-next-instruction .c .cc
-	, cg-substitute-redirections .c .cc .d -- Perform several passes?
-#
-
-cg-label-next-instruction .c0 .cc0
-	:- .c0 = (_ LABEL, _ .nextInsn, .cs)
-	, .cc0 = (.nextInsn LABEL, _, .ccs)
-	, !, cg-label-next-instruction .cs .ccs
-#
-cg-label-next-instruction (_, .cs) (() _, .ccs)
-	:- !, cg-label-next-instruction .cs .ccs
-#
-cg-label-next-instruction () () #
-
-cg-substitute-redirections (.label _, .cs) (_ JUMP .redirInsn, .ccs) (.label .redirInsn, .ds)
+cg-optimize-jumps (_ JUMP l:(_ LABEL, _ .redirInsn, _), .insns) .cx
 	:- cg-redirect-instruction .redirInsn
-	, !, cg-substitute-redirections .cs .ccs .ds
+	, !, cg-optimize-jumps (_ .redirInsn, .insns) .cx
 #
-cg-substitute-redirections (.insn, .cs) (_, .ccs) (.insn, .ds)
-	:- !, cg-substitute-redirections .cs .ccs .ds
+cg-optimize-jumps (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-jumps .insns0 .insns1
 #
-cg-substitute-redirections () () () #
+cg-optimize-jumps () () #
 
 cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
