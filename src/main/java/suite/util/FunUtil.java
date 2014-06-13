@@ -114,7 +114,7 @@ public class FunUtil {
 	}
 
 	public static <O> Source<O> nullSource() {
-		return To.source((O) null);
+		return () -> null;
 	}
 
 	public static <I> Sink<I> nullSink() {
