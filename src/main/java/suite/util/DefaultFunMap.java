@@ -73,7 +73,7 @@ public class DefaultFunMap<K, V> implements Map<K, V> {
 
 	@Override
 	public void putAll(Map<? extends K, ? extends V> anotherMap) {
-		map.putAll(anotherMap);
+		anotherMap.entrySet().stream().forEach(entry -> put(entry.getKey(), entry.getValue()));
 	}
 
 	@Override
