@@ -18,11 +18,15 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
-		return clonedNodes.computeIfAbsent(new IdHashKey(node), key -> {
+		IdHashKey key = new IdHashKey(node);
+		Node node1 = clonedNodes.get(key);
+		if (node1 == null) {
 			Tree tree = Tree.of(null, null, key.getNode());
 			cloneRight(tree);
-			return tree.getRight();
-		});
+			node1 = tree.getRight();
+			clonedNodes.put(key, node1);
+		}
+		return node1;
 	}
 
 	private void cloneRight(Tree tree) {
