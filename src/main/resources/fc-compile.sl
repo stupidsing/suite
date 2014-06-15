@@ -16,8 +16,8 @@ fc-compile (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 	, fc-compile .do .frame/.ve1 .c1/.cx/.d1/.dx/.reg
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
-	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
-	, .d0 = (.funcLabel LABEL, _ ENTER, .d1)
+	:- .c0 = (_ ASSIGN-CLOSURE .closureReg l:.d0, .cx)
+	, .d0 = (_ LABEL, _ ENTER, .d1)
 	, .d1 = (_ POP .varReg, .d2)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
@@ -26,18 +26,13 @@ fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 #
 fc-compile (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .if .env .c0/.c1/.d0/.d1/.ifReg
-	, .c1 = (_ IF-FALSE .label1 .ifReg, .c2)
+	, .c1 = (_ IF-FALSE l:.c4 .ifReg, .c2)
 	, fc-compile .then .env .c2/.c3/.d1/.d2/.thenReg
-	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg
-		, _ JUMP .label2
-		, .label1 LABEL
-		, .c4
-	)
-	, fc-compile .else .env .c4/.c5/.d2/.dx/.elseReg
-	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg
-		, .label2 LABEL
-		, .cx
-	)
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, _ JUMP l:.c7, .c4)
+	, .c4 = (_ LABEL, .c5)
+	, fc-compile .else .env .c5/.c6/.d2/.dx/.elseReg
+	, .c6 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .c7)
+	, .c7 = (_ LABEL, .cx)
 #
 fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .callee .env .c0/.c1/.d0/.d1/.r0
@@ -65,7 +60,7 @@ fc-compile (UNWRAP .callee) .env .c0/.cx/.d0/.dx/.reg
 fc-compile (USING .mode BUILTIN .lib .do) .fve .cdr
 	:- fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
-	, generalize .pred (fc-compile-using-lib .mode .lib .do .fve .cdr :- .tail)
+	, clone .pred (fc-compile-using-lib .mode .lib .do .fve .cdr :- .tail)
 	, once .tail
 #
 fc-compile (USING _ EXTERNAL _ .do) .env .cdr
@@ -79,8 +74,8 @@ fc-compile (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 	)
 #
 fc-compile (WRAP .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
-	:- .c0 = (_ ASSIGN-CLOSURE .closureReg .funcLabel, .cx)
-	, .d0 = (.funcLabel LABEL, _ ENTER, .d1)
+	:- .c0 = (_ ASSIGN-CLOSURE .closureReg l:.d0, .cx)
+	, .d0 = (_ LABEL, _ ENTER, .d1)
 	, fc-compile .do (.frame + 1)/.ve .d1/.d2/.d3/.dx/.returnReg
 	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
 #
