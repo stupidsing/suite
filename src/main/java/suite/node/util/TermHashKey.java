@@ -54,7 +54,11 @@ public class TermHashKey {
 
 	@Override
 	public boolean equals(Object object) {
-		return object.getClass() == TermHashKey.class && Objects.equals(node, ((TermHashKey) object).node);
+		if (object.getClass() == TermHashKey.class) {
+			Node node1 = ((TermHashKey) object).node;
+			return Objects.equals(new TermHasher().hash(node), new TermHasher().hash(node1));
+		} else
+			return false;
 	}
 
 	public Node getNode() {

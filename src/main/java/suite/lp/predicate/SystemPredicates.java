@@ -13,9 +13,8 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Fun;
+import suite.node.util.TermHashKey;
 import suite.util.FunUtil.Source;
-import suite.util.Memoize;
 
 public class SystemPredicates {
 
@@ -164,30 +163,17 @@ public class SystemPredicates {
 		}
 	}
 
+	private static Map<TermHashKey, Node> results = new HashMap<>();
+
+	// memoize is not re-entrant due to using computeIfAbsent()
 	private class MemoizePredicate implements SystemPredicate {
-		private Reference uniqueReference = new Reference() {
-			public int hashCode() { // Makes the reference hash-able
-				return System.identityHashCode(this);
-			}
-
-			public boolean equals(Object object) {
-				return object == uniqueReference;
-			}
-		};
-
-		private Fun<Node, Node> findAll = Memoize.byInput(goal -> findAll(prover, uniqueReference, goal));
-
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
 			Reference var = (Reference) params[0];
 
-			// Avoids changing hash-code - but making memoize not re-entrant
-			var.bound(uniqueReference);
-			try {
-				return prover.bind(params[2], findAll.apply(params[1]));
-			} finally {
-				var.unbound();
-			}
+			Node goal = params[1];
+			TermHashKey key = new TermHashKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
+			return prover.bind(params[2], results.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 		}
 	}
 
