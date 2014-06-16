@@ -27,6 +27,11 @@ public class InstructionExtractor implements AutoCloseable {
 	private BiMap<Integer, Node> constantPool;
 	private Journal journal = new Journal();
 
+	private static final Atom KEYC = Atom.of("c");
+	private static final Atom KEYI = Atom.of("i");
+	private static final Atom KEYL = Atom.of("l");
+	private static final Atom KEYR = Atom.of("r");
+
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
 		this.constantPool = constantPool;
 	}
@@ -50,7 +55,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 					for (int i = 2; i < rs.size(); i++)
 						if ((tree1 = Tree.decompose(rs.get(i), TermOp.COLON_)) != null)
-							if (tree1.getLeft() == Atom.of("l"))
+							if (tree1.getLeft() == KEYL)
 								deque.push(tree1.getRight());
 
 					deque.push(tree.getRight());
@@ -118,19 +123,18 @@ public class InstructionExtractor implements AutoCloseable {
 				return registerNumber;
 			} else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null) {
 				Node n0 = tree.getRight().finalNode();
+				Node left = tree.getLeft();
 
-				switch (((Atom) tree.getLeft()).getName()) {
-				case "c":
+				if (left == KEYC)
 					return allocateInPool(n0);
-				case "i":
+				else if (left == KEYI)
 					return ((Int) n0).getNumber();
-				case "l":
+				else if (left == KEYL) {
 					Node n1 = Tree.decompose(n0, TermOp.AND___).getLeft();
 					Node n2 = Tree.decompose(n1, TermOp.TUPLE_).getLeft();
 					return ((Int) n2.finalNode()).getNumber();
-				case "r":
+				} else if (left == KEYR)
 					return 0;
-				}
 			} else
 				return allocateInPool(node);
 
