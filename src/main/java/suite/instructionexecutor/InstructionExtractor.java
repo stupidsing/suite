@@ -18,6 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.util.Util;
 
 import com.google.common.collect.BiMap;
 
@@ -30,6 +31,7 @@ public class InstructionExtractor implements AutoCloseable {
 	private static final Atom KEYC = Atom.of("c");
 	private static final Atom KEYL = Atom.of("l");
 	private static final Atom KEYR = Atom.of("r");
+	private static final Atom PROC = Atom.of("PROC");
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
 		this.constantPool = constantPool;
@@ -37,6 +39,11 @@ public class InstructionExtractor implements AutoCloseable {
 
 	public List<Instruction> extractInstructions(Node node) {
 		List<List<Node>> insnNodes = new ArrayList<>();
+		extractInstructions(node, insnNodes);
+		return insnNodes.stream().map(this::extract).collect(Collectors.toList());
+	}
+
+	private void extractInstructions(Node node, List<List<Node>> insnNodes) {
 		Deque<Node> deque = new ArrayDeque<>();
 		deque.add(node);
 
@@ -49,29 +56,30 @@ public class InstructionExtractor implements AutoCloseable {
 				Node label = rs.get(0).finalNode();
 
 				if (label instanceof Reference) {
-					((Reference) label).bound(Int.of(insnNodes.size()));
-					insnNodes.add(rs);
+					Binder.bind(label, Int.of(insnNodes.size()), journal);
 
-					for (int i = 2; i < rs.size(); i++)
-						if ((tree1 = Tree.decompose(rs.get(i), TermOp.COLON_)) != null)
-							if (tree1.getLeft() == KEYL)
-								deque.push(tree1.getRight());
-
-					deque.push(tree.getRight());
+					if (rs.get(1) == PROC) {
+						insnNodes.add(Arrays.asList(Atom.of("ENTER")));
+						extractInstructions(rs.get(2), insnNodes);
+						insnNodes.add(Arrays.asList(Atom.of("LEAVE")));
+					} else {
+						insnNodes.add(Util.right(rs, 1));
+						if ((tree1 = Tree.decompose(Util.last(rs), TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
+							deque.push(tree1.getRight());
+						deque.push(tree.getRight());
+					}
 				} else
-					insnNodes.add(Arrays.asList(Int.of(insnNodes.size()), Atom.of("JUMP"), label));
+					insnNodes.add(Arrays.asList(Atom.of("JUMP"), label));
 			}
 		}
-
-		return insnNodes.stream().map(this::extract).collect(Collectors.toList());
 	}
 
 	private Instruction extract(List<Node> rs) {
-		String insnName = ((Atom) rs.get(1).finalNode()).getName();
+		String insnName = ((Atom) rs.get(0).finalNode()).getName();
 		Insn insn;
 
 		if (Objects.equals(insnName, "EVALUATE")) {
-			Atom atom = (Atom) rs.remove(4).finalNode();
+			Atom atom = (Atom) rs.remove(3).finalNode();
 			TermOp operator = TermOp.find(atom.getName());
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else
@@ -80,9 +88,9 @@ public class InstructionExtractor implements AutoCloseable {
 		if (insn != null) {
 			Instruction instruction;
 			instruction = new Instruction(insn //
+					, getRegisterNumber(rs, 1) //
 					, getRegisterNumber(rs, 2) //
-					, getRegisterNumber(rs, 3) //
-					, getRegisterNumber(rs, 4));
+					, getRegisterNumber(rs, 3));
 
 			if (insn == Insn.ENTER_________)
 				enters.push(instruction);

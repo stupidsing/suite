@@ -5,9 +5,8 @@
 	, import.path 'rbt.sl'
 #
 
-compile-logic .call .code
-	:- .c0 = (_ ENTER
-		, _ ASSIGN-CONSTANT .returnReg c:true
+compile-logic .call (_ PROC .code,)
+	:- .c0 = (_ ASSIGN-CONSTANT .returnReg c:true
 		, _ ASSIGN-CLOSURE .provenReg l:.c1
 		, _ BIND-MARK .pitReg
 		, _ PUSH .pitReg
@@ -20,7 +19,6 @@ compile-logic .call .code
 		, _ ASSIGN-CONSTANT .returnReg c:false, .c1)
 	, .c1 = (_ LABEL
 		, _ EXIT .returnReg
-		, _ LEAVE
 		, .c2
 	)
 	, lc-parse .call .call1 .nv
@@ -29,23 +27,20 @@ compile-logic .call .code
 	, !, cg-optimize .c0 .code
 #
 
-lc-compile-call .call .pls .c0/.cx
-	:- .c0 = (_ LABEL
-		, _ ENTER
-		, _ BACKUP-CSP .cspReg
+lc-compile-call .call .pls (_ LABEL, _ PROC .c0, .c)/.c
+	:- .c0 = (_ BACKUP-CSP .cspReg
 		, _ BACKUP-DSP .dspReg
 		, _ TOP .provenReg -2
 		, .c1
 	)
 	, .rem = AND (BYTECODE _ CALL-CLOSURE .provenReg) FAIL
-	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2/.c3/.c4
+	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2/.c3/()
 	, .c2 = (_ LABEL
 		, _ TOP .pitReg -3
 		, _ BIND-UNDO .pitReg
 		, _ RETURN
 		, .c3
 	)
-	, .c4 = (_ LEAVE, .cx)
 #
 
 lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
