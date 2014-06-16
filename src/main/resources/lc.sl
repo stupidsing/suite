@@ -330,7 +330,7 @@ lc-create-node (ATOM .a) _ .c0/.cx/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg c:.a, .cx)
 #
 lc-create-node (NUMBER .i) _ .c0/.cx/.reg
-	:- !, .c0 = (_ ASSIGN-INT .reg i:.i, .cx)
+	:- !, .c0 = (_ ASSIGN-INT .reg .i, .cx)
 #
 lc-create-node (STRING .s) _ .c0/.cx/.reg
 	:- !, .c0 = (_ ASSIGN-CONSTANT .reg c:.s, .cx)

@@ -39,7 +39,7 @@ fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	, .c2 = (_ PUSH .r1, _ CALL-CLOSURE .r0, _ SET-RESULT .reg, .cx)
 #
 fc-compile (NUMBER .i) _ .c0/.cx/.d/.d/.reg
-	:- .c0 = (_ ASSIGN-INT .reg i:.i, .cx)
+	:- .c0 = (_ ASSIGN-INT .reg .i, .cx)
 #
 fc-compile (PAIR .left .right) .env .cdr
 	:- fc-compile (INVOKE .right (INVOKE .left (VAR +pcons))) .env .cdr

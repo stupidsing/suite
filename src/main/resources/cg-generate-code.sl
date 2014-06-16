@@ -110,7 +110,7 @@ cg-interpret-labels (.insn0, .insns0) (.insn1, .insns1)
 #
 cg-interpret-labels () () #
 
-cg-interpret-label (.label .insn .op0 .op1 l:(.refLabel .id, _)) (.label .insn .op0 .op1 i:.refLabel) :- same .id LABEL, ! #
-cg-interpret-label (.label .insn .op0 l:(.refLabel .id, _)) (.label .insn .op0 i:.refLabel) :- same .id LABEL, ! #
-cg-interpret-label (.label .insn l:(.refLabel .id, _)) (.label .insn i:.refLabel) :- same .id LABEL, ! #
+cg-interpret-label (.label .insn .op0 .op1 l:(.refLabel .id, _)) (.label .insn .op0 .op1 .refLabel) :- same .id LABEL, ! #
+cg-interpret-label (.label .insn .op0 l:(.refLabel .id, _)) (.label .insn .op0 .refLabel) :- same .id LABEL, ! #
+cg-interpret-label (.label .insn l:(.refLabel .id, _)) (.label .insn .refLabel) :- same .id LABEL, ! #
 cg-interpret-label .insn .insn #

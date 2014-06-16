@@ -28,7 +28,6 @@ public class InstructionExtractor implements AutoCloseable {
 	private Journal journal = new Journal();
 
 	private static final Atom KEYC = Atom.of("c");
-	private static final Atom KEYI = Atom.of("i");
 	private static final Atom KEYL = Atom.of("l");
 	private static final Atom KEYR = Atom.of("r");
 
@@ -127,8 +126,6 @@ public class InstructionExtractor implements AutoCloseable {
 
 				if (left == KEYC)
 					return allocateInPool(n0);
-				else if (left == KEYI)
-					return ((Int) n0).getNumber();
 				else if (left == KEYL) {
 					Node n1 = Tree.decompose(n0, TermOp.AND___).getLeft();
 					Node n2 = Tree.decompose(n1, TermOp.TUPLE_).getLeft();
