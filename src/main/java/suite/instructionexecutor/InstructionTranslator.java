@@ -70,7 +70,7 @@ public class InstructionTranslator implements Closeable {
 		List<Instruction> instructions = new ArrayList<>();
 
 		try (InstructionExtractor extractor = new InstructionExtractor(constantPool)) {
-			extractor.extractInstructions(instructions, node);
+			instructions.addAll(extractor.extractInstructions(node));
 		}
 
 		int exitPoint = instructions.size();

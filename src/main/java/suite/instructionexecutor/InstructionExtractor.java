@@ -2,9 +2,11 @@ package suite.instructionexecutor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
@@ -29,17 +31,38 @@ public class InstructionExtractor implements AutoCloseable {
 		this.constantPool = constantPool;
 	}
 
-	public void extractInstructions(List<Instruction> list, Node node) {
-		int ip = list.size(); // Assigns instruction pointer
-		for (Node elem : Tree.iter(node))
-			Binder.bind(Tree.decompose(elem).getLeft(), Int.of(ip++), journal);
+	public List<Instruction> extractInstructions(Node node) {
+		List<List<Node>> insnNodes = new ArrayList<>();
+		Deque<Node> deque = new ArrayDeque<>();
+		deque.add(node);
 
-		for (Node elem : Tree.iter(node))
-			list.add(extract(elem));
+		while (!deque.isEmpty()) {
+			Tree tree = Tree.decompose(deque.pop(), TermOp.AND___);
+			Tree tree1;
+
+			if (tree != null) {
+				List<Node> rs = tupleToList(tree.getLeft());
+				Node label = rs.get(0).finalNode();
+
+				if (label instanceof Reference) {
+					((Reference) label).bound(Int.of(insnNodes.size()));
+					insnNodes.add(rs);
+
+					for (int i = 2; i < rs.size(); i++)
+						if ((tree1 = Tree.decompose(rs.get(i), TermOp.COLON_)) != null)
+							if (tree1.getLeft() == Atom.of("l"))
+								deque.push(node);
+
+					deque.push(tree.getRight());
+				} else
+					insnNodes.add(Arrays.asList(Int.of(insnNodes.size()), Atom.of("JUMP"), label));
+			}
+		}
+
+		return insnNodes.stream().map(this::extract).collect(Collectors.toList());
 	}
 
-	private Instruction extract(Node node) {
-		List<Node> rs = tupleToList(node);
+	private Instruction extract(List<Node> rs) {
 		String insnName = ((Atom) rs.get(1).finalNode()).getName();
 		Insn insn;
 
@@ -70,12 +93,10 @@ public class InstructionExtractor implements AutoCloseable {
 	private List<Node> tupleToList(Node node) {
 		List<Node> results = new ArrayList<>();
 		Tree tree;
-
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 			results.add(tree.getLeft());
 			node = tree.getRight();
 		}
-
 		results.add(node);
 		return results;
 	}
