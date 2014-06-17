@@ -8,7 +8,7 @@ cg-optimize .c0 .cx
 
 cg-optimize-jump-returns .c0 .cx
 	:- cg-optimize-jumps .c0 .c1
-	, cg-optimize-assign-return .c1 .cx
+	, cg-optimize-assign-returns .c1 .cx
 #
 
 cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
@@ -23,31 +23,30 @@ cg-optimize-jumps () () #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
-cg-optimize-assign-return (
+cg-optimize-assign-returns (
 	ASSIGN-FRAME-REG .r0 0 .r, RETURN-VALUE .r1, .insns0
 ) (
 	RETURN-VALUE .r, .insns1
 )
 	:- same .r0 .r1
-	, !, cg-optimize-assign-return .insns0 .insns1
+	, !, cg-optimize-assign-returns .insns0 .insns1
 #
-cg-optimize-assign-return (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-assign-return .insns0 .insns1
+cg-optimize-assign-returns (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-assign-returns .insns0 .insns1
 #
-cg-optimize-assign-return () () #
+cg-optimize-assign-returns () () #
 
 cg-optimize-lp-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
 	, cg-push-pop-pairs .li1/.li2 .li3/.li4 .ri2/.ri3 .ri1/.ri2
 	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE, CALL-REG/JUMP-REG,) .call/.jump
-	, .li2 = (.call .target, .li3)
+	, .li2 = (.call .op, .li3)
 	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
 	, cg-is-skip .li6/.li7
 	, cg-is-returning .li8
 	, cg-verify-push-pop-bind-pairs .pairs
-	, .ri3 = (.jump .target, .ri4)
+	, (.jump = JUMP, .op = l:.target, .ri3 = .target; .ri3 = (.jump .op,))
 	, !
-	, cg-optimize-lp-tail-calls .li6 .ri4
 #
 cg-optimize-lp-tail-calls (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-lp-tail-calls .insns0 .insns1
