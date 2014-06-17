@@ -4,7 +4,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -18,12 +20,14 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.IdHashKey;
 import suite.util.Util;
 
 import com.google.common.collect.BiMap;
 
 public class InstructionExtractor implements AutoCloseable {
 
+	private Map<IdHashKey, Integer> ipsByLabelId = new HashMap<>();
 	private Deque<Instruction> enters = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 	private Journal journal = new Journal();
@@ -37,40 +41,47 @@ public class InstructionExtractor implements AutoCloseable {
 		this.constantPool = constantPool;
 	}
 
-	public List<Instruction> extractInstructions(Node node) {
-		List<List<Node>> insnNodes = new ArrayList<>();
-		extractInstructions(node, insnNodes);
-		return insnNodes.stream().map(this::extract).collect(Collectors.toList());
+	@Override
+	public void close() {
+		journal.undoAllBinds();
 	}
 
-	private void extractInstructions(Node node, List<List<Node>> insnNodes) {
+	public List<Instruction> extractInstructions(Node node) {
+		List<List<Node>> rsList = new ArrayList<>();
+		extractInstructions(node, rsList);
+		return rsList.stream().map(this::extract).collect(Collectors.toList());
+	}
+
+	private void extractInstructions(Node snippet, List<List<Node>> rsList) {
 		Deque<Node> deque = new ArrayDeque<>();
-		deque.add(node);
+		deque.add(snippet);
 
 		while (!deque.isEmpty()) {
 			Tree tree = Tree.decompose(deque.pop(), TermOp.AND___);
 			Tree tree1;
 
 			if (tree != null) {
-				List<Node> rs = tupleToList(tree.getLeft());
-				Node label = rs.get(0).finalNode();
+				IdHashKey key = new IdHashKey(tree);
+				Integer ip = ipsByLabelId.get(key);
+				Node instructionNode = tree.getLeft();
 
-				if (label instanceof Reference) {
-					Binder.bind(label, Int.of(insnNodes.size()), journal);
+				if (ip == null) {
+					ipsByLabelId.put(key, ip = rsList.size());
+					List<Node> rs = tupleToList(instructionNode);
 
-					if (rs.get(1) == PROC) {
-						insnNodes.add(Arrays.asList(Atom.of("ENTER")));
-						extractInstructions(rs.get(2), insnNodes);
-						insnNodes.add(Arrays.asList(Atom.of("LEAVE")));
+					if (rs.get(0) == PROC) {
+						rsList.add(Arrays.asList(Atom.of("ENTER")));
+						extractInstructions(rs.get(1), rsList);
+						rsList.add(Arrays.asList(Atom.of("LEAVE")));
 					} else {
-						insnNodes.add(Util.right(rs, 1));
-						for (Node op : Util.right(rs, 2))
+						rsList.add(rs);
+						for (Node op : Util.right(rs, 1))
 							if ((tree1 = Tree.decompose(op, TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
 								deque.push(tree1.getRight());
 						deque.push(tree.getRight());
 					}
 				} else
-					insnNodes.add(Arrays.asList(Atom.of("JUMP"), label));
+					rsList.add(Arrays.asList(Atom.of("JUMP"), Int.of(ip)));
 			}
 		}
 	}
@@ -87,8 +98,7 @@ public class InstructionExtractor implements AutoCloseable {
 			insn = InstructionUtil.getInsn(insnName);
 
 		if (insn != null) {
-			Instruction instruction;
-			instruction = new Instruction(insn //
+			Instruction instruction = new Instruction(insn //
 					, getRegisterNumber(rs, 1) //
 					, getRegisterNumber(rs, 2) //
 					, getRegisterNumber(rs, 3));
@@ -101,17 +111,6 @@ public class InstructionExtractor implements AutoCloseable {
 			return instruction;
 		} else
 			throw new RuntimeException("Unknown opcode " + insnName);
-	}
-
-	private List<Node> tupleToList(Node node) {
-		List<Node> results = new ArrayList<>();
-		Tree tree;
-		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			results.add(tree.getLeft());
-			node = tree.getRight();
-		}
-		results.add(node);
-		return results;
 	}
 
 	private int getRegisterNumber(List<Node> rs, int index) {
@@ -130,21 +129,17 @@ public class InstructionExtractor implements AutoCloseable {
 				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;
 			} else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null) {
-				Node n0 = tree.getRight().finalNode();
-				Node left = tree.getLeft();
+				Node key = tree.getLeft(), value = tree.getRight().finalNode();
 
-				if (left == KEYC)
-					return allocateInPool(n0);
-				else if (left == KEYL) {
-					Node n1 = Tree.decompose(n0, TermOp.AND___).getLeft();
-					Node n2 = Tree.decompose(n1, TermOp.TUPLE_).getLeft();
-					return ((Int) n2.finalNode()).getNumber();
-				} else if (left == KEYR)
+				if (key == KEYC)
+					return allocateInPool(value);
+				else if (key == KEYL)
+					return ipsByLabelId.get(new IdHashKey(value));
+				else if (key == KEYR)
 					return 0;
-			} else
-				return allocateInPool(node);
+			}
 
-			throw new RuntimeException("Cannot parse instruction " + rs + " operand " + index);
+			throw new RuntimeException("Cannot parse instruction " + rs.get(0) + " operand " + node);
 		} else
 			return 0;
 	}
@@ -160,9 +155,15 @@ public class InstructionExtractor implements AutoCloseable {
 			return pointer;
 	}
 
-	@Override
-	public void close() {
-		journal.undoAllBinds();
+	private List<Node> tupleToList(Node node) {
+		List<Node> results = new ArrayList<>();
+		Tree tree;
+		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+			results.add(tree.getLeft());
+			node = tree.getRight();
+		}
+		results.add(node);
+		return results;
 	}
 
 }

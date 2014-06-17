@@ -14,7 +14,7 @@
 #
 
 -- TODO perform cg-optimize but not in imported, precompiled code
-compile-function .mode .do0 (_ PROC .c0,)
+compile-function .mode .do0 (PROC .c0,)
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
 	, !, fc-resolve-type-rules .tr
@@ -24,7 +24,7 @@ compile-function .mode .do0 (_ PROC .c0,)
 	)
 	, !, fc-optimize .do2 .do3
 	, !, fc-compile .do3 0/() .c0/.c1/.c2/()/.reg
-	, .c1 = (_ RETURN-VALUE .reg, .c2)
+	, .c1 = (RETURN-VALUE .reg, .c2)
 #
 
 fc-load-library .lib .do0 .dox
