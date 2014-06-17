@@ -12,17 +12,16 @@ compile-logic .call (PROC .code,)
 		, PUSH .pitReg
 		, PUSH .provenReg
 		, PUSH .provenReg
-		, CALL l:.c2
+		, CALL l:.cc
 		, POP-ANY
 		, POP-ANY
 		, POP-ANY
 		, ASSIGN-CONSTANT .returnReg c:false
 		, .c1)
-	, .c1 = (EXIT .returnReg
-		, .c2)
+	, .c1 = (EXIT .returnReg,)
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
-	, !, lc-compile-call .call2 () .c2/()
+	, !, lc-compile-call .call2 () .cc/()
 	, !, cg-optimize .c0 .code
 #
 
