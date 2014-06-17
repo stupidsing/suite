@@ -189,9 +189,9 @@ lc-compile (OR .do FAIL) .ps :- lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 	:- .bc = CALL l:.d2
 	, .c0 = (BIND-MARK .pitReg, .c1)
-	, lc-compile (AND .a (BYTECODE _ .bc)) FAIL .pls/.vs/.cut .c1/.c2/.d0/.d1
+	, lc-compile (AND .a (BYTECODE .bc)) FAIL .pls/.vs/.cut .c1/.c2/.d0/.d1
 	, .c2 = (BIND-UNDO .pitReg, .c3)
-	, lc-compile (AND .b (BYTECODE _ .bc)) FAIL .pls/.vs/.cut .c3/.cx/.d1/.d2
+	, lc-compile (AND .b (BYTECODE .bc)) FAIL .pls/.vs/.cut .c3/.cx/.d1/.d2
 	, lc-compile .rem YES .pls/.vs/.cut .d2/.d3/.d4/.dx
 	, .d3 = (RETURN, .d4)
 #

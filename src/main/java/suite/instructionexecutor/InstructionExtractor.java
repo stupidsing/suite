@@ -63,11 +63,10 @@ public class InstructionExtractor implements AutoCloseable {
 			if (tree != null) {
 				IdHashKey key = new IdHashKey(tree);
 				Integer ip = ipsByLabelId.get(key);
-				Node instructionNode = tree.getLeft();
 
 				if (ip == null) {
 					ipsByLabelId.put(key, ip = rsList.size());
-					List<Node> rs = tupleToList(instructionNode);
+					List<Node> rs = tupleToList(tree.getLeft());
 
 					if (rs.get(0) == PROC) {
 						rsList.add(Arrays.asList(Atom.of("ENTER")));
