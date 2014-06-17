@@ -23,8 +23,8 @@ compile-function .mode .do0 (PROC .c0,)
 		; .mode = EAGER, .do1 = .do2
 	)
 	, !, fc-optimize .do2 .do3
-	, !, fc-compile .do3 0/() .c0/.c1/.c2/()/.reg
-	, .c1 = (RETURN-VALUE .reg, .c2)
+	, !, fc-compile .do3 0/() .c0/.c1/.reg
+	, .c1 = (RETURN-VALUE .reg,)
 #
 
 fc-load-library .lib .do0 .dox
