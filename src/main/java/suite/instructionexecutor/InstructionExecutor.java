@@ -188,8 +188,6 @@ public class InstructionExecutor implements AutoCloseable {
 				case JUMPREG_______:
 					current.ip = i(regs[insn.op0]);
 					break;
-				case LABEL_________:
-					break;
 				case LOGREG________:
 					LogUtil.info(regs[insn.op0].toString());
 					break;

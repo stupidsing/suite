@@ -7,25 +7,16 @@ cg-optimize-segment .c/() .co0/.cox
 #
 
 cg-optimize .c0 .cx
-	:- cg-optimize-dup-labels .c0 .c1
-	, cg-optimize-jump-returns .c1 .c2
-	, cg-optimize-lp-tail-calls .c2 .cx
+	:- cg-optimize-jump-returns .c0 .c1
+	, cg-optimize-lp-tail-calls .c1 .cx
 #
-
-cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
-	:- !, cg-optimize-dup-labels (.label LABEL, .insns0) .insns1
-#
-cg-optimize-dup-labels (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-dup-labels .insns0 .insns1
-#
-cg-optimize-dup-labels () () #
 
 cg-optimize-jump-returns .c0 .cx
 	:- cg-optimize-jumps .c0 .c1
 	, cg-optimize-assign-return .c1 .cx
 #
 
-cg-optimize-jumps (_ JUMP l:(_ LABEL, _ .redirInsn, _), .insns) .cx
+cg-optimize-jumps (_ JUMP l:(_ .redirInsn, _), .insns) .cx
 	:- cg-redirect-instruction .redirInsn
 	, !, cg-optimize-jumps (_ .redirInsn, .insns) .cx
 #
@@ -34,7 +25,6 @@ cg-optimize-jumps (.insn, .insns0) (.insn, .insns1)
 #
 cg-optimize-jumps () () #
 
-cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
@@ -97,7 +87,6 @@ cg-is-restore-csp-dsp
 #
 cg-is-restore-csp-dsp .i/.i .j/.j #
 
-cg-is-skip (_ LABEL, .i0)/.ix :- cg-is-skip .i0/.ix #
 cg-is-skip (_ REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
 cg-is-skip .i/.i #
 

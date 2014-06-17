@@ -17,7 +17,7 @@ fc-compile (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg l:.d0, .cx)
-	, .d0 = (_ LABEL, _ PROC .f0, .dx)
+	, .d0 = (_ PROC .f0, .dx)
 	, .f0 = (_ POP .varReg, .f1)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
@@ -28,11 +28,9 @@ fc-compile (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .if .env .c0/.c1/.d0/.d1/.ifReg
 	, .c1 = (_ IF-FALSE l:.c4 .ifReg, .c2)
 	, fc-compile .then .env .c2/.c3/.d1/.d2/.thenReg
-	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, .c7)
-	, .c4 = (_ LABEL, .c5)
-	, fc-compile .else .env .c5/.c6/.d2/.dx/.elseReg
-	, .c6 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .c7)
-	, .c7 = (_ LABEL, .cx)
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, .cx)
+	, fc-compile .else .env .c4/.c5/.d2/.dx/.elseReg
+	, .c5 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .cx)
 #
 fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .callee .env .c0/.c1/.d0/.d1/.r0
@@ -75,7 +73,7 @@ fc-compile (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 #
 fc-compile (WRAP .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg l:.d0, .cx)
-	, .d0 = (_ LABEL, _ PROC .f0, .dx)
+	, .d0 = (_ PROC .f0, .dx)
 	, fc-compile .do (.frame + 1)/.ve .f0/.f1/.f2/()/.returnReg
 	, .f1 = (_ RETURN-VALUE .returnReg, .f2)
 #

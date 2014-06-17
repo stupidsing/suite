@@ -82,7 +82,6 @@ public class InstructionUtil {
 		JUMP__________("JUMP"), //
 		JUMPCLOSURE___("JUMP-CLOSURE"), //
 		JUMPREG_______("JUMP-REG"), //
-		LABEL_________("LABEL"), //
 		LOGREG________("LOG-REG"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //

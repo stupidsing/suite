@@ -109,9 +109,9 @@ public class InstructionAnalyzer {
 			Instruction insn = instructions.get(ip);
 
 			// Recognize frames and their parents.
-			// Assumes ENTER instruction should be after LABEL.
+			// Assumes ASSIGN-CLOSURE directly points to the ENTER instruction.
 			if (insn.insn == Insn.ASSIGNCLOSURE_)
-				framesByIp.get(insn.op1 + 1).parent = framesByIp.get(ip);
+				framesByIp.get(insn.op1).parent = framesByIp.get(ip);
 		}
 	}
 
@@ -222,8 +222,6 @@ public class InstructionAnalyzer {
 					break;
 				} else
 					return false;
-			case LABEL_________:
-				break;
 			case RETURNVALUE___:
 				return instruction.op0 == returnReg;
 			default:
@@ -253,7 +251,6 @@ public class InstructionAnalyzer {
 						return instruction;
 					case JUMP__________:
 						ip_ = instruction.op0;
-					case LABEL_________:
 					case REMARK________:
 						return source();
 					default:
