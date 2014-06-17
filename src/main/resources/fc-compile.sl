@@ -17,11 +17,12 @@ fc-compile (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg l:.d0, .cx)
-	, .d0 = (_ LABEL, _ ENTER, _ POP .varReg, .d1)
+	, .d0 = (_ LABEL, _ PROC .f0, .dx)
+	, .f0 = (_ POP .varReg, .f1)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
-	, fc-compile .do .frame1/.ve1 .d1/.d2/.d3/.dx/.returnReg
-	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
+	, fc-compile .do .frame1/.ve1 .f1/.f2/.f3/()/.returnReg
+	, .f2 = (_ RETURN-VALUE .returnReg, .f3)
 #
 fc-compile (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .if .env .c0/.c1/.d0/.d1/.ifReg
@@ -74,9 +75,9 @@ fc-compile (VAR .var) .frame/.ve .c0/.cx/.d/.d/.reg1
 #
 fc-compile (WRAP .do) .frame/.ve .c0/.cx/.d0/.dx/.closureReg
 	:- .c0 = (_ ASSIGN-CLOSURE .closureReg l:.d0, .cx)
-	, .d0 = (_ LABEL, _ ENTER, .d1)
-	, fc-compile .do (.frame + 1)/.ve .d1/.d2/.d3/.dx/.returnReg
-	, .d2 = (_ RETURN-VALUE .returnReg, _ LEAVE, .d3)
+	, .d0 = (_ LABEL, _ PROC .f0, .dx)
+	, fc-compile .do (.frame + 1)/.ve .f0/.f1/.f2/()/.returnReg
+	, .f1 = (_ RETURN-VALUE .returnReg, .f2)
 #
 
 fc-default-fun .call .frame .result :- fc-default-fun0 .call .frame .result 0 #
