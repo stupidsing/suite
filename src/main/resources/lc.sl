@@ -168,8 +168,8 @@ lc-compile (CUT .cspReg .dspReg .fl) .rem .env .c0/_/.d0/.dx
 lc-compile (DEFINE-RULES .rules .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 	:- lc-merge-rules .rules .groups
 	, lc-prototype-labels .groups .pls/.pls1
-	, lc-compile-rules .groups .pls1 .d1/.dx
-	, !, lc-compile (SCOPE .call .pls1) .rem .pls/.vs/.cut .c0/.cx/.d0/.d1
+	, lc-compile-rules .groups .pls1
+	, !, lc-compile (SCOPE .call .pls1) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 #
 lc-compile (EQ .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 	:- lc-bind .a .b .vs .c0/.c1/.cx
@@ -263,14 +263,14 @@ lc-bind-register .reg0 .node1 .vs .c0/.cx/.f
 	, .c1 = (BIND .reg0 .reg1 l:.f, .cx)
 #
 
-lc-compile-rules () _ .c/.c :- ! #
-lc-compile-rules (.proto/.rules, .remains) .pls .c0/.cx
+lc-compile-rules () _ :- ! #
+lc-compile-rules (.proto/.rules, .remains) .pls
 	:- lc-flatten-rules .rules .call
-	, member .pls .proto/.c1
+	, member .pls .proto/.c0
 	, .l = '-----'
 	, .c0 = (REMARK r:(.l .proto .l), .c1) -- debug purpose
-	, lc-compile-call .call .pls .c1/.c2
-	, lc-compile-rules .remains .pls .c2/.cx
+	, lc-compile-call .call .pls .c1/()
+	, lc-compile-rules .remains .pls
 #
 
 lc-flatten-rules () FAIL :- ! #
