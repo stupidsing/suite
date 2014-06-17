@@ -1,11 +1,6 @@
 -------------------------------------------------------------------------------
 -- code generator and peep hole optimizer
 
-cg-optimize-segment .c/() .co0/.cox
-	:- cg-optimize .c .co
-	, append .co .cox .co0
-#
-
 cg-optimize .c0 .cx
 	:- cg-optimize-jump-returns .c0 .c1
 	, cg-optimize-lp-tail-calls .c1 .cx

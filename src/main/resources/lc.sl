@@ -25,7 +25,7 @@ compile-logic .call (PROC .code,)
 	, !, cg-optimize .c0 .code
 #
 
-lc-compile-call .call .pls (PROC .c0, .c)/.c
+lc-compile-call .call .pls (PROC .code, .c)/.c
 	:- .c0 = (BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
 		, TOP .provenReg -2
@@ -37,6 +37,7 @@ lc-compile-call .call .pls (PROC .c0, .c)/.c
 		, BIND-UNDO .pitReg
 		, RETURN
 		,)
+	, cg-optimize .c0 .code
 #
 
 lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
