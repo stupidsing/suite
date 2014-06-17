@@ -14,9 +14,8 @@
 #
 
 -- TODO perform cg-optimize but not in imported, precompiled code
-compile-function .mode .do0 .c0
-	:- .c0 = (_ ENTER, .c1)
-	, !, fc-parse .do0 .do1
+compile-function .mode .do0 (_ PROC .c0,)
+	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
 	, !, fc-resolve-type-rules .tr
 	, once (not is.cyclic .do1; fc-error "Cyclic data detected")
@@ -24,8 +23,8 @@ compile-function .mode .do0 .c0
 		; .mode = EAGER, .do1 = .do2
 	)
 	, !, fc-optimize .do2 .do3
-	, !, fc-compile .do3 0/() .c1/.c2/.d0/()/.reg
-	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
+	, !, fc-compile .do3 0/() .c0/.c1/.c2/()/.reg
+	, .c1 = (_ RETURN-VALUE .reg, .c2)
 #
 
 fc-load-library .lib .do0 .dox

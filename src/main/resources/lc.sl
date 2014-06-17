@@ -164,12 +164,11 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 lc-compile CUT .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 	:- lc-compile (CUT .cut) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 #
-lc-compile (CUT .cspReg .dspReg .fl) .rem .env .c0/.cx/.d0/.dx
+lc-compile (CUT .cspReg .dspReg .fl) .rem .env .c0/_/.d0/.dx
 	:- lc-compile .rem YES .env .c0/.c1/.d0/.dx
 	, .c1 = (_ RESTORE-DSP .dspReg
 		, _ RESTORE-CSP .cspReg
-		, _ JUMP l:.fl
-		, .cx
+		, .fl
 	)
 #
 lc-compile (DEFINE-RULES .rules .call) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx

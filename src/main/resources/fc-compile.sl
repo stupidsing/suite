@@ -28,7 +28,7 @@ fc-compile (IF .if .then .else) .env .c0/.cx/.d0/.dx/.reg
 	:- fc-compile .if .env .c0/.c1/.d0/.d1/.ifReg
 	, .c1 = (_ IF-FALSE l:.c4 .ifReg, .c2)
 	, fc-compile .then .env .c2/.c3/.d1/.d2/.thenReg
-	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, _ JUMP l:.c7, .c4)
+	, .c3 = (_ ASSIGN-FRAME-REG .reg 0 .thenReg, .c7)
 	, .c4 = (_ LABEL, .c5)
 	, fc-compile .else .env .c5/.c6/.d2/.dx/.elseReg
 	, .c6 = (_ ASSIGN-FRAME-REG .reg 0 .elseReg, .c7)

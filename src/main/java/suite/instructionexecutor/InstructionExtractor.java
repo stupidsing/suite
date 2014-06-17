@@ -64,8 +64,9 @@ public class InstructionExtractor implements AutoCloseable {
 						insnNodes.add(Arrays.asList(Atom.of("LEAVE")));
 					} else {
 						insnNodes.add(Util.right(rs, 1));
-						if ((tree1 = Tree.decompose(Util.last(rs), TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
-							deque.push(tree1.getRight());
+						for (Node op : Util.right(rs, 2))
+							if ((tree1 = Tree.decompose(op, TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
+								deque.push(tree1.getRight());
 						deque.push(tree.getRight());
 					}
 				} else
