@@ -16,10 +16,10 @@ compile-logic .call (PROC .code,)
 		, POP-ANY
 		, POP-ANY
 		, POP-ANY
-		, ASSIGN-CONSTANT .returnReg c:false, .c1)
+		, ASSIGN-CONSTANT .returnReg c:false
+		, .c1)
 	, .c1 = (EXIT .returnReg
-		, .c2
-	)
+		, .c2)
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
 	, !, lc-compile-call .call2 () .c2/()
@@ -37,8 +37,7 @@ lc-compile-call .call .pls (PROC .c0, .c)/.c
 	, .c2 = (TOP .pitReg -3
 		, BIND-UNDO .pitReg
 		, RETURN
-		, .c3
-	)
+		, .c3)
 #
 
 lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
@@ -199,8 +198,7 @@ lc-compile (NOT .do) .rem .env .c0/.cx/.d0/.dx
 	:- .c0 = (BIND-MARK .pit
 		, BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
-		, .c1
-	)
+		, .c1)
 	, lc-compile .do (AND (CUT .cspReg .dspReg .c3) FAIL) .env .c1/.c2/.d0/.d1
 	, lc-compile .rem YES .env .c2/.c3/.d1/.dx
 	, .c3 = (BIND-UNDO .pit
@@ -226,8 +224,7 @@ lc-compile (.oper .a .b) .rem .pls/.vs/.cut .c0/.cx/.d0/.dx
 	, lc-create-node .b .vs .c1/.c2/.reg1
 	, .c2 = (.inst .resultReg .reg0 .reg1
 		, IF-FALSE l:.cx .resultReg
-		, .c3
-	)
+		, .c3)
 	, lc-compile .rem YES .pls/.vs/.cut .c3/.cx/.d0/.dx
 #
 
@@ -258,8 +255,7 @@ lc-bind0 .node0 .node1 .vs .c0/.cx/.f
 lc-bind-register .reg (TREE .oper .nl .nr) .vs .c0/.cx/.f
 	:- .c0 = (DECOMPOSE-TREE0 .reg l:.f
 		, DECOMPOSE-TREE1 c:.oper .reg0 .reg1
-		, .c1
-	)
+		, .c1)
 	, lc-bind-register .reg0 .nl .vs .c1/.c2/.f
 	, lc-bind-register .reg1 .nr .vs .c2/.cx/.f
 #
@@ -322,8 +318,7 @@ lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
 	, lc-create-node .right .vs .c1/.c2/.regr
 	, .c2 = (FORM-TREE0 .regl .regr
 		, FORM-TREE1 c:.operator .reg
-		, .cx
-	)
+		, .cx)
 #
 
 lc-system-call-prototype (ATOM .systemPredicate) :- system.predicate .systemPredicate #

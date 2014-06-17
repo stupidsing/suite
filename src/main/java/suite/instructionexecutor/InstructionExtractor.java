@@ -55,12 +55,10 @@ public class InstructionExtractor implements AutoCloseable {
 	private void extractInstructions(Node snippet, List<List<Node>> rsList) {
 		Deque<Node> deque = new ArrayDeque<>();
 		deque.add(snippet);
+		Tree tree, tree1;
 
 		while (!deque.isEmpty()) {
-			Tree tree = Tree.decompose(deque.pop(), TermOp.AND___);
-			Tree tree1;
-
-			if (tree != null) {
+			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
 				IdHashKey key = new IdHashKey(tree);
 				Integer ip = ipsByLabelId.get(key);
 
