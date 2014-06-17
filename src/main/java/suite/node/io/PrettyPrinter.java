@@ -24,8 +24,8 @@ public class PrettyPrinter {
 	private static int squeezeLineLength = 8;
 	private static String indentSpaces = "    ";
 
-	private static Set<Node> lineBreakBeforeKeywords = new HashSet<>(Arrays.asList(Atom.of("else-if")));
-	private static Set<Node> preferLineBreakBeforeKeywords = new HashSet<>(Arrays.asList(Atom.of("else")));
+	private static Node lineBreakBeforeKeyword = Atom.of("else-if");
+	private static Node preferLineBreakBeforeKeyword = Atom.of("else");
 	private static Set<Operator> lineBreakAfterOperators = new HashSet<>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___));
 
 	private static class OperatorPosition {
@@ -88,7 +88,7 @@ public class PrettyPrinter {
 					// Breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
 							&& x + es0 + es1 + opLength < lineLength //
-							&& !preferLineBreakBeforeKeywords.contains(r0)) {
+							&& r0 != preferLineBreakBeforeKeyword) {
 						prettyPrint0(left, op, leftPrec);
 						OperatorPosition opPos = appendOperator(op);
 						prettyPrint0(right, op, rightPrec);
@@ -125,7 +125,7 @@ public class PrettyPrinter {
 				revertIndent(parsIndent0);
 			}
 		} else {
-			if (lineBreakBeforeKeywords.contains(node) && !isLineBegin())
+			if (node != lineBreakBeforeKeyword && !isLineBegin())
 				nl();
 
 			append(Formatter.dump(node)); // Space sufficient
