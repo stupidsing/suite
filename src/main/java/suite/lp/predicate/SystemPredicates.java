@@ -33,6 +33,7 @@ public class SystemPredicates {
 		addPredicate("cut.end", new CutEnd());
 		addPredicate("find.all", new FindAll());
 		addPredicate("memoize", new MemoizePredicate());
+		addPredicate("memoize.clear", new MemoizeClear());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
 		addPredicate("system.predicate", new SystemPredicate_());
@@ -163,7 +164,14 @@ public class SystemPredicates {
 		}
 	}
 
-	private static Map<TermHashKey, Node> results = new HashMap<>();
+	private static Map<TermHashKey, Node> memoizedPredicates = new HashMap<>();
+
+	private class MemoizeClear implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			memoizedPredicates.clear();
+			return true;
+		}
+	}
 
 	// memoize is not re-entrant due to using computeIfAbsent()
 	private class MemoizePredicate implements SystemPredicate {
@@ -173,7 +181,7 @@ public class SystemPredicates {
 
 			Node goal = params[1];
 			TermHashKey key = new TermHashKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
-			return prover.bind(params[2], results.computeIfAbsent(key, k -> findAll(prover, var, goal)));
+			return prover.bind(params[2], memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 		}
 	}
 
