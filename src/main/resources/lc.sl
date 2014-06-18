@@ -29,8 +29,7 @@ lc-compile-call .call .pls (PROC .code, .c)/.c
 	:- .c0 = (BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
 		, TOP .provenReg -2
-		, .c1
-	)
+		, .c1)
 	, .rem = AND (BYTECODE CALL-CLOSURE .provenReg) FAIL
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2
 	, .c2 = (TOP .pitReg -3
