@@ -20,6 +20,7 @@ cg-optimize-jumps (.insn, .insns0) (.insn, .insns1)
 #
 cg-optimize-jumps () () #
 
+cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
