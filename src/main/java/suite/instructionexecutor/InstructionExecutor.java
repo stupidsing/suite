@@ -23,6 +23,7 @@ import com.google.common.collect.HashBiMap;
 public class InstructionExecutor implements AutoCloseable {
 
 	private static int stackSize = 16384;
+	private static boolean dump = false;
 	private static boolean trace = false;
 
 	private Instruction instructions[];
@@ -44,7 +45,7 @@ public class InstructionExecutor implements AutoCloseable {
 		analyzer.transform(list);
 		instructions = list.toArray(new Instruction[list.size()]);
 
-		if (trace)
+		if (dump)
 			for (int i = 0; i < instructions.length; i++)
 				System.err.println(i + ": " + instructions[i]);
 	}

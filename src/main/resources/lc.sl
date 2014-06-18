@@ -138,7 +138,7 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx
 	:- lc-call-prototype .call .proto
 	, lc-create-node .call .vs .c0/.c1/.reg, (
 		member .pls .proto/.cl, !
-		, .c1 = (ASSIGN-CLOSURE .provenReg l:.d0
+		, .c1 = (ASSIGN-CLOSURE .provenReg l:.d
 			, BIND-MARK .pitReg
 			, PUSH .pitReg
 			, PUSH .provenReg
@@ -149,6 +149,7 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx
 			, POP-ANY
 			, .cx)
 		, lc-compile .rem YES .pls/.vs/.cut .d0/(RETURN,)
+		, cg-optimize .d0 .d
 		; .c1 = (PROVE-INTERPRET .reg l:.cx, .c2)
 		, lc-compile .rem YES .pls/.vs/.cut .c2/.cx
 	)
@@ -182,11 +183,18 @@ lc-compile (ONCE .do) .rem .env .c0/.cx
 lc-compile (OR FAIL .do) .ps :- lc-compile .do .ps #
 lc-compile (OR .do FAIL) .ps :- lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx
+<<<<<<< Updated upstream
 	:- .c0 = (BIND-MARK .pitReg, .c1)
 	, lc-compile (AND .a (BYTECODE CALL l:.d0)) FAIL .pls/.vs/.cut .c1/.c2
+=======
+	:- .bc = CALL l:.d
+	, .c0 = (BIND-MARK .pitReg, .c1)
+	, lc-compile (AND .a (BYTECODE .bc)) FAIL .pls/.vs/.cut .c1/.c2
+>>>>>>> Stashed changes
 	, .c2 = (BIND-UNDO .pitReg, .c3)
 	, lc-compile (AND .b (BYTECODE CALL l:.d0)) FAIL .pls/.vs/.cut .c3/.cx
 	, lc-compile .rem YES .pls/.vs/.cut .d0/(RETURN,)
+	, cg-optimize .d0 .d
 #
 lc-compile (NOT .do) .rem .env .c0/.cx
 	:- .c0 = (BIND-MARK .pit
