@@ -12,18 +12,40 @@ import suite.node.io.Operator;
  */
 public class TreeIntern {
 
-	private static Map<Integer, Tree> interns = new HashMap<>();
+	private static Map<Key, Tree> interns = new HashMap<>();
 
-	public static Tree create(Operator operator, Node node0, Node node1) {
-		Node left = node0.finalNode();
-		Node right = node1.finalNode();
+	private static class Key {
+		private int hashCode;
+		private Operator operator;
+		private Node left, right;
 
-		int hashCode = 1;
-		hashCode = 31 * hashCode + System.identityHashCode(left);
-		hashCode = 31 * hashCode + System.identityHashCode(operator);
-		hashCode = 31 * hashCode + System.identityHashCode(right);
+		public Key(Operator operator, Node left, Node right) {
+			hashCode = 1;
+			hashCode = 31 * hashCode + System.identityHashCode(left);
+			hashCode = 31 * hashCode + System.identityHashCode(operator);
+			hashCode = 31 * hashCode + System.identityHashCode(right);
 
-		return interns.computeIfAbsent(hashCode, any -> Tree.of(operator, left, right));
+			this.operator = operator;
+			this.left = left;
+			this.right = right;
+		}
+
+		public int hashCode() {
+			return hashCode;
+		}
+
+		public boolean equals(Object object) {
+			if (object.getClass() == Key.class) {
+				Key key = (Key) object;
+				return hashCode == key.hashCode && operator == key.operator && left == key.left && right == key.right;
+			} else
+				return false;
+		}
 	}
 
+	public static Tree of(Operator operator, Node node0, Node node1) {
+		Node left = node0.finalNode();
+		Node right = node1.finalNode();
+		return interns.computeIfAbsent(new Key(operator, left, right), any -> Tree.of(operator, left, right));
+	}
 }
