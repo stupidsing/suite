@@ -183,14 +183,8 @@ lc-compile (ONCE .do) .rem .env .c0/.cx
 lc-compile (OR FAIL .do) .ps :- lc-compile .do .ps #
 lc-compile (OR .do FAIL) .ps :- lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx
-<<<<<<< Updated upstream
 	:- .c0 = (BIND-MARK .pitReg, .c1)
 	, lc-compile (AND .a (BYTECODE CALL l:.d0)) FAIL .pls/.vs/.cut .c1/.c2
-=======
-	:- .bc = CALL l:.d
-	, .c0 = (BIND-MARK .pitReg, .c1)
-	, lc-compile (AND .a (BYTECODE .bc)) FAIL .pls/.vs/.cut .c1/.c2
->>>>>>> Stashed changes
 	, .c2 = (BIND-UNDO .pitReg, .c3)
 	, lc-compile (AND .b (BYTECODE CALL l:.d0)) FAIL .pls/.vs/.cut .c3/.cx
 	, lc-compile .rem YES .pls/.vs/.cut .d0/(RETURN,)
