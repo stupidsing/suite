@@ -1,8 +1,8 @@
 package suite.lp.predicate;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
@@ -17,7 +17,7 @@ import suite.util.FunUtil.Source;
 
 public class FindPredicates {
 
-	private static Map<TermHashKey, Node> memoizedPredicates = new HashMap<>();
+	private static Map<TermHashKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
 	public static class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
