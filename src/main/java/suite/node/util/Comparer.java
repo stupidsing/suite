@@ -2,6 +2,7 @@ package suite.node.util;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import suite.node.Atom;
@@ -10,6 +11,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.Tuple;
 
 public class Comparer implements Comparator<Node> {
 
@@ -41,12 +43,22 @@ public class Comparer implements Comparator<Node> {
 			else if (clazz0 == Str.class)
 				return ((Str) n0).getValue().compareTo(((Str) n1).getValue());
 			else if (clazz0 == Tree.class) {
-				Tree t1 = (Tree) n0;
-				Tree t2 = (Tree) n1;
-				int c = t1.getOperator().getPrecedence() - t2.getOperator().getPrecedence();
-				c = c != 0 ? c : compare(t1.getLeft(), t2.getLeft());
-				c = c != 0 ? c : compare(t1.getRight(), t2.getRight());
+				Tree t0 = (Tree) n0;
+				Tree t1 = (Tree) n1;
+				int c = t0.getOperator().getPrecedence() - t1.getOperator().getPrecedence();
+				c = c != 0 ? c : compare(t0.getLeft(), t1.getLeft());
+				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;
+			} else if (clazz0 == Tuple.class) {
+				Iterator<Node> iter0 = ((Tuple) n0).getNodes().iterator();
+				Iterator<Node> iter1 = ((Tuple) n1).getNodes().iterator();
+				int c = 0;
+				while (c == 0 && iter0.hasNext() && iter1.hasNext())
+					c = compare(iter0.next(), iter1.next());
+				if (c == 0)
+					c = iter0.hasNext() ? 1 : -1;
+				return c;
+
 			} else
 				return n0.hashCode() - n1.hashCode();
 		else

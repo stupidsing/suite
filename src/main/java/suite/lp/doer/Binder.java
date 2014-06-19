@@ -1,5 +1,7 @@
 package suite.lp.doer;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import suite.lp.Journal;
@@ -8,6 +10,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.Tuple;
 
 public class Binder {
 
@@ -41,6 +44,17 @@ public class Binder {
 			return t0.getOperator() == t1.getOperator() //
 					&& bind(t0.getLeft(), t1.getLeft(), journal) //
 					&& bind(t0.getRight(), t1.getRight(), journal);
+		} else if (clazz0 == Tuple.class) {
+			List<Node> nodes0 = ((Tuple) n0).getNodes();
+			List<Node> nodes1 = ((Tuple) n1).getNodes();
+			boolean result = nodes0.size() == nodes1.size();
+			if (result) {
+				Iterator<Node> iter0 = nodes0.iterator();
+				Iterator<Node> iter1 = nodes1.iterator();
+				while (result && iter0.hasNext())
+					result &= bind(iter0.next(), iter1.next(), journal);
+			}
+			return result;
 		} else
 			return false;
 	}
