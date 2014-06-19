@@ -11,7 +11,6 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TermHashKey;
 import suite.util.FunUtil.Source;
@@ -19,7 +18,6 @@ import suite.util.FunUtil.Source;
 public class FindPredicates {
 
 	private static Map<TermHashKey, Node> memoizedPredicates = new HashMap<>();
-	private static Map<Tuple, Node> memoizedByIdPredicates = new HashMap<>();
 
 	public static class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
