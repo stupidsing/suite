@@ -1,12 +1,15 @@
 package suite.lp.doer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.util.IdHashKey;
 
 public class Cloner {
@@ -34,7 +37,10 @@ public class Cloner {
 			if (right1 == null) {
 				if (right instanceof Reference)
 					right1 = new Reference();
-				else if ((rt = Tree.decompose(right)) != null)
+				else if (right1 instanceof Tuple) {
+					List<Node> nodes = ((Tuple) right1).getNodes();
+					right1 = new Tuple(nodes.stream().map(this::clone).collect(Collectors.toList()));
+				} else if ((rt = Tree.decompose(right)) != null)
 					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
 				else
 					right1 = right;

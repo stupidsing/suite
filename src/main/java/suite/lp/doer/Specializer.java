@@ -1,9 +1,13 @@
 package suite.lp.doer;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
 
 public class Specializer {
 
@@ -19,6 +23,9 @@ public class Specializer {
 			Node left1 = specialize(left), right1 = specialize(right);
 			if (left != left1 || right != right1)
 				node = Tree.of(tree.getOperator(), left1, right1);
+		} else if (node instanceof Tuple) {
+			List<Node> nodes = ((Tuple) node).getNodes();
+			node = new Tuple(nodes.stream().map(this::specialize).collect(Collectors.toList()));
 		}
 
 		return node;
