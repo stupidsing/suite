@@ -10,8 +10,8 @@ import suite.lp.predicate.SystemPredicates.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.node.util.TermHashKey;
 import suite.util.FunUtil.Source;
@@ -19,27 +19,27 @@ import suite.util.FunUtil.Source;
 public class FindPredicates {
 
 	private static Map<TermHashKey, Node> memoizedPredicates = new HashMap<>();
+	private static Map<Tuple, Node> memoizedByIdPredicates = new HashMap<>();
 
 	public static class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
-			return prover.bind(params[2], findAll(prover, params[0], params[1]));
+			Node var = params[0], goal = params[1], results = params[2];
+			return prover.bind(results, findAll(prover, var, goal));
 		}
 	}
 
 	// memoize is not re-entrant due to using computeIfAbsent()
-	public static class Memoize implements SystemPredicate {
+	public static class FindAllMemoized implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
-			Reference var = (Reference) params[0];
-
-			Node goal = params[1];
+			Node var = params[0], goal = params[1], results = params[2];
 			TermHashKey key = new TermHashKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
-			return prover.bind(params[2], memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
+			return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 		}
 	}
 
-	public static class MemoizeClear implements SystemPredicate {
+	public static class FindAllMemoizedClear implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			memoizedPredicates.clear();
 			return true;

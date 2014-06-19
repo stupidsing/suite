@@ -54,8 +54,8 @@ public class SystemPredicates {
 		addPredicate("tree", new EvalPredicates.TreePredicate());
 
 		addPredicate("find.all", new FindPredicates.FindAll());
-		addPredicate("memoize", new FindPredicates.Memoize());
-		addPredicate("memoize.clear", new FindPredicates.MemoizeClear());
+		addPredicate("find.all.memoized", new FindPredicates.FindAllMemoized());
+		addPredicate("find.all.memoized.clear", new FindPredicates.FindAllMemoizedClear());
 
 		addPredicate("char.ascii", new FormatPredicates.CharAscii());
 		addPredicate("concat", new FormatPredicates.Concat());

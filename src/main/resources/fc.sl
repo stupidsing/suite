@@ -28,7 +28,7 @@ compile-function .mode .do0 (PROC .c0,)
 #
 
 fc-load-library .lib .do0 .dox
-	:- memoize .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
+	:- find.all.memoized .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
 #
 
 fc-load-library0 .lib .slfx
@@ -46,7 +46,7 @@ fc-load-library0 .lib .slfx
 #
 
 fc-load-precompiled-library .lib .node
-	:- memoize .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
+	:- find.all.memoized .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
 #
 
 fc-load-precompiled-library0 .lib .precompiled
