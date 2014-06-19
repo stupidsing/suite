@@ -102,9 +102,15 @@ public class ProverTest {
 	}
 
 	@Test
+	public void testTree() {
+		RuleSet rs = Suite.createRuleSet();
+		assertFalse(Suite.proveLogic(rs, "tree .t0 a ':' b, tree .t1 a ':' b, same .t0 .t1"));
+		assertTrue(Suite.proveLogic(rs, "tree.intern .t0 a ':' b, tree.intern .t1 a ':' b, same .t0 .t1"));
+	}
+
+	@Test
 	public void testWrite() {
 		RuleSet rs = Suite.createRuleSet();
-
 		assertTrue(Suite.proveLogic(rs, "write (1 + 2 * 3), nl"));
 		assertTrue(Suite.proveLogic(rs, "write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
 	}

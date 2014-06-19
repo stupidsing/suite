@@ -52,6 +52,7 @@ public class SystemPredicates {
 		addPredicate("specialize", new EvalPredicates.Specialize());
 		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
+		addPredicate("tree.intern", new EvalPredicates.TreeInternPredicate());
 
 		addPredicate("find.all", new FindPredicates.FindAll());
 		addPredicate("find.all.memoized", new FindPredicates.FindAllMemoized());
@@ -77,6 +78,10 @@ public class SystemPredicates {
 		addPredicate("to.string", new FormatPredicates.ToString());
 		addPredicate("treeize", new FormatPredicates.Treeize());
 		addPredicate("trim", new FormatPredicates.Trim());
+
+		addPredicate("intern.map.clear", new InternMapPredicates.InternMapClear());
+		addPredicate("intern.map.get", new InternMapPredicates.InternMapGet());
+		addPredicate("intern.map.put", new InternMapPredicates.InternMapPut());
 
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());

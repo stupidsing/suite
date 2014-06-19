@@ -2,6 +2,14 @@
 -- code generator and peep hole optimizer
 
 cg-optimize .c0 .cx
+	:- tree.intern .key CG-OPTIMIZE ':' .c0
+	, once (intern.map.get .key .cx
+		; cg-optimize0 .c0 .cx
+		, intern.map.put .key .cx
+	)
+#
+
+cg-optimize0 .c0 .cx
 	:- cg-optimize-jump-returns .c0 .c1
 	, cg-optimize-lp-tail-calls .c1 .cx
 #
