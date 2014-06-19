@@ -14,7 +14,6 @@ import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.FindUtil;
-import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
@@ -71,8 +70,7 @@ public class LogicCompilerLevel1Test {
 	}
 
 	private Finder finder(RuleSet rs, Node goal) {
-		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
-		return builder.build(rs, goal);
+		return CompiledProverBuilder.level1(new ProverConfig()).build(rs, goal);
 	}
 
 }

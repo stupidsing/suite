@@ -19,20 +19,20 @@ public class CompiledProverBuilder implements Builder {
 	 * Creates a builder that interpretes the logic compiler to compile the
 	 * given code, then execute.
 	 */
-	public static CompiledProverBuilder level1(ProverConfig proverConfig, boolean isDumpCode) {
-		return new CompiledProverBuilder(new InterpretedProverBuilder(proverConfig), proverConfig, isDumpCode);
+	public static CompiledProverBuilder level1(ProverConfig proverConfig) {
+		return new CompiledProverBuilder(new InterpretedProverBuilder(proverConfig), proverConfig);
 	}
 
 	/**
 	 * Creates a builder that compiles the logic compiler, execute it to compile
 	 * the given code, then execute.
 	 */
-	public static CompiledProverBuilder level2(ProverConfig proverConfig, boolean isDumpCode) {
-		return new CompiledProverBuilder(level1(proverConfig, false), proverConfig, isDumpCode);
+	public static CompiledProverBuilder level2(ProverConfig proverConfig) {
+		return new CompiledProverBuilder(level1(proverConfig), proverConfig);
 	}
 
-	private CompiledProverBuilder(Builder builder, ProverConfig proverConfig, boolean isDumpCode) {
-		this.compiler = createCompiler(builder, isDumpCode);
+	private CompiledProverBuilder(Builder builder, ProverConfig proverConfig) {
+		this.compiler = createCompiler(builder);
 		this.proverConfig = proverConfig;
 	}
 
@@ -56,10 +56,8 @@ public class CompiledProverBuilder implements Builder {
 		return LogUtil.duration("Code compiled", () -> FindUtil.collectSingle(compiler, program));
 	}
 
-	private Finder createCompiler(Builder builder, boolean isDumpCode) {
-		String compile = "source .in, compile-logic .in .out";
-		compile += isDumpCode ? ", pretty.print .out" : "";
-		compile += ", sink .out";
+	private Finder createCompiler(Builder builder) {
+		String compile = "source .in, compile-logic .in .out, sink .out";
 		return builder.build(Suite.logicCompilerRuleSet(), Suite.parse(compile));
 	}
 

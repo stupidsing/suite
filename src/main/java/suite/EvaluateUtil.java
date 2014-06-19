@@ -25,25 +25,22 @@ import suite.util.Util;
 
 public class EvaluateUtil {
 
-	private Fun<Pair<Boolean, Boolean>, Node> fccNodeFun = Memoize.byInput(pair -> {
-		Atom mode = Atom.of(pair.t0 ? "LAZY" : "EAGER");
+	private Fun<Boolean, Node> fccNodeFun = Memoize.byInput(isLazy -> {
+		Atom mode = Atom.of(isLazy ? "LAZY" : "EAGER");
 
 		return new Specializer().specialize(Suite.substitute("" //
-				+ "source .in" //
-				+ ", compile-function .0 .in .out" //
-				+ (pair.t1 ? ", specialize .out .outs, pretty.print .outs" : "") //
-				+ ", sink .out", mode));
+				+ "source .in, compile-function .0 .in .out, sink .out", mode));
 	});
 
 	// Using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. It would blow up the stack in InstructionExecutor
 	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.byInput(pair -> {
-		Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0, false);
+		Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0);
 		return builder.build(Suite.funCompilerRuleSet(), pair.t1);
 	});
 
 	public boolean proveLogic(Node lp) {
-		Builder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
+		Builder builder = CompiledProverBuilder.level1(new ProverConfig());
 		return proveLogic(builder, Suite.createRuleSet(), lp);
 	}
 
@@ -74,7 +71,7 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		Node node = fccNodeFun.apply(Pair.of(fcc.isLazy(), fcc.isDumpCode()));
+		Node node = fccNodeFun.apply(fcc.isLazy());
 		Node code = doFcc(node, fcc);
 
 		if (code != null)
