@@ -8,6 +8,7 @@ import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.TreeIntern;
 import suite.node.util.IdHashKey;
 
 public class InternMapPredicates {
@@ -17,6 +18,7 @@ public class InternMapPredicates {
 	public static class InternMapClear implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			internMap.clear();
+			TreeIntern.clear();
 			return true;
 		}
 	}

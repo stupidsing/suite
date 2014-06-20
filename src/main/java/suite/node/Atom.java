@@ -29,7 +29,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom of(Context context, String name) {
-		return context.findAtom(name, () -> new Atom(name));
+		return context.findAtom(name, Atom::new);
 	}
 
 	@Override
