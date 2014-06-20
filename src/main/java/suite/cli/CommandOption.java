@@ -31,7 +31,6 @@ public class CommandOption {
 	private boolean isLogical = false;
 
 	// Program evaluation options
-	private boolean isDumpCode = false;
 	private boolean isLazy = true;
 	private List<String> libraries = new ArrayList<>(Suite.libraries);
 	private boolean isTrace = false;
@@ -44,9 +43,7 @@ public class CommandOption {
 		boolean result = true;
 		String arg1;
 
-		if (Util.stringEquals(arg, "-dump-code"))
-			isDumpCode = on;
-		else if (Util.stringEquals(arg, "-eager"))
+		if (Util.stringEquals(arg, "-eager"))
 			isLazy = !on;
 		else if (Util.stringEquals(arg, "-editor"))
 			new Editor().open();
@@ -83,7 +80,6 @@ public class CommandOption {
 		ProverConfig pc = pc(Suite.createRuleSet());
 
 		FunCompilerConfig fcc = new FunCompilerConfig(pc, libraries);
-		fcc.setDumpCode(isDumpCode);
 		fcc.setLazy(isLazy);
 		fcc.setNode(node);
 
@@ -105,10 +101,6 @@ public class CommandOption {
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	public boolean isDumpCode() {
-		return isDumpCode;
 	}
 
 	public boolean isQuiet() {

@@ -23,7 +23,7 @@ public class LogicCompilerLevel2Test {
 				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #" //
 		));
 
-		Builder builder = CompiledProverBuilder.level2(new ProverConfig(), false);
+		Builder builder = CompiledProverBuilder.level2(new ProverConfig());
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 
@@ -32,7 +32,7 @@ public class LogicCompilerLevel2Test {
 		RuleSet rs = Suite.createRuleSet();
 		Suite.importResource(rs, "auto.sl");
 
-		Builder builder = CompiledProverBuilder.level2(new ProverConfig(), false);
+		Builder builder = CompiledProverBuilder.level2(new ProverConfig());
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 

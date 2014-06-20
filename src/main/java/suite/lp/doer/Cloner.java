@@ -1,12 +1,15 @@
 package suite.lp.doer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.util.IdHashKey;
 
 public class Cloner {
@@ -18,11 +21,9 @@ public class Cloner {
 	}
 
 	public Node clone(Node node) {
-		return clonedNodes.computeIfAbsent(new IdHashKey(node), key -> {
-			Tree tree = Tree.of(null, null, key.getNode());
-			cloneRight(tree);
-			return tree.getRight();
-		});
+		Tree tree = Tree.of(null, null, node);
+		cloneRight(tree);
+		return tree.getRight();
 	}
 
 	private void cloneRight(Tree tree) {
@@ -36,7 +37,10 @@ public class Cloner {
 			if (right1 == null) {
 				if (right instanceof Reference)
 					right1 = new Reference();
-				else if ((rt = Tree.decompose(right)) != null)
+				else if (right1 instanceof Tuple) {
+					List<Node> nodes = ((Tuple) right1).getNodes();
+					right1 = new Tuple(nodes.stream().map(this::clone).collect(Collectors.toList()));
+				} else if ((rt = Tree.decompose(right)) != null)
 					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
 				else
 					right1 = right;
@@ -50,28 +54,21 @@ public class Cloner {
 	}
 
 	public Node cloneOld(Node node) {
-		node = node.finalNode();
-		IdHashKey key = new IdHashKey(node);
-		Node node1 = clonedNodes.get(key);
+		return clonedNodes.computeIfAbsent(new IdHashKey(node.finalNode()), key -> {
+			Node node_ = key.getNode();
 
-		if (node1 == null) {
-			if (node instanceof Reference)
-				node1 = new Reference();
-			else if (node instanceof Tree) {
-				Tree tree = (Tree) node;
+			if (node_ instanceof Reference)
+				node_ = new Reference();
+			else if (node_ instanceof Tree) {
+				Tree tree = (Tree) node_;
 				Node left = tree.getLeft(), right = tree.getRight();
 				Node left1 = clone(left), right1 = clone(right);
 				if (left != left1 || right != right1)
-					node1 = Tree.of(tree.getOperator(), left1, right1);
-				else
-					node1 = node;
-			} else
-				node1 = node;
+					node_ = Tree.of(tree.getOperator(), left1, right1);
+			}
 
-			clonedNodes.put(key, node1);
-		}
-
-		return node1;
+			return node_;
+		});
 	}
 
 }

@@ -17,6 +17,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
 
 public class ReversePolish {
 
@@ -55,6 +56,12 @@ public class ReversePolish {
 				Node left = deque.pop();
 				Node right = deque.pop();
 				n = Tree.of(op, left, right);
+			} else if (type == 'u') {
+				int size = Integer.valueOf(s);
+				List<Node> nodes = new ArrayList<>();
+				for (int i = 0; i < size; i++)
+					nodes.add(deque.pop());
+				return new Tuple(nodes);
 			} else
 				throw new RuntimeException("RPN conversion error: " + elem);
 
@@ -86,6 +93,12 @@ public class ReversePolish {
 				s = "t" + tree.getOperator();
 				deque.push(tree.getRight());
 				deque.push(tree.getLeft());
+			} else if (n instanceof Tuple) {
+				List<Node> nodes = ((Tuple) n).getNodes();
+				int size = nodes.size();
+				s = "u" + size;
+				for (int i = size - 1; i >= 0; i++)
+					deque.push(nodes.get(i));
 			} else
 				s = "^" + Formatter.dump(n);
 

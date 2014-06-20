@@ -23,7 +23,8 @@ import com.google.common.collect.HashBiMap;
 public class InstructionExecutor implements AutoCloseable {
 
 	private static int stackSize = 16384;
-	private static boolean debug = false;
+	private static boolean dump = false;
+	private static boolean trace = false;
 
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
@@ -36,13 +37,17 @@ public class InstructionExecutor implements AutoCloseable {
 		List<Instruction> list = new ArrayList<>();
 
 		try (InstructionExtractor extractor = new InstructionExtractor(constantPool)) {
-			extractor.extractInstructions(list, node);
+			list.addAll(extractor.extractInstructions(node));
 		}
 
 		postprocessInstructions(list);
 		analyzer.analyze(list);
 		analyzer.transform(list);
 		instructions = list.toArray(new Instruction[list.size()]);
+
+		if (dump)
+			for (int i = 0; i < instructions.length; i++)
+				System.err.println(i + ": " + instructions[i]);
 	}
 
 	public Node execute() {
@@ -82,7 +87,7 @@ public class InstructionExecutor implements AutoCloseable {
 				TermOp op;
 				int i;
 
-				if (debug)
+				if (trace)
 					StatisticsCollector.getInstance().collect(ip, insn);
 
 				switch (insn.insn) {
@@ -187,8 +192,6 @@ public class InstructionExecutor implements AutoCloseable {
 					break;
 				case JUMPREG_______:
 					current.ip = i(regs[insn.op0]);
-					break;
-				case LABEL_________:
 					break;
 				case LOGREG________:
 					LogUtil.info(regs[insn.op0].toString());

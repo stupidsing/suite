@@ -1,34 +1,27 @@
 -------------------------------------------------------------------------------
 -- code generator and peep hole optimizer
 
-cg-optimize-segment .c/() .co0/.cox
-	:- cg-optimize .c .co
-	, append .co .cox .co0
-#
-
 cg-optimize .c0 .cx
-	:- cg-optimize-dup-labels .c0 .c1
-	, cg-optimize-jump-returns .c1 .c2
-	, cg-optimize-lp-tail-calls .c2 .c3
-	, cg-interpret-labels .c3 .cx
+	:- tree.intern .key CG-OPTIMIZE ':' .c0
+	, once (intern.map.get .key .cx
+		; cg-optimize0 .c0 .cx
+		, intern.map.put .key .cx
+	)
 #
 
-cg-optimize-dup-labels (.label LABEL, .label LABEL, .insns0) .insns1
-	:- !, cg-optimize-dup-labels (.label LABEL, .insns0) .insns1
+cg-optimize0 .c0 .cx
+	:- cg-optimize-jump-returns .c0 .c1
+	, cg-optimize-lp-tail-calls .c1 .cx
 #
-cg-optimize-dup-labels (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-dup-labels .insns0 .insns1
-#
-cg-optimize-dup-labels () () #
 
 cg-optimize-jump-returns .c0 .cx
 	:- cg-optimize-jumps .c0 .c1
-	, cg-optimize-assign-return .c1 .cx
+	, cg-optimize-assign-returns .c1 .cx
 #
 
-cg-optimize-jumps (_ JUMP l:(_ LABEL, _ .redirInsn, _), .insns) .cx
+cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
 	:- cg-redirect-instruction .redirInsn
-	, !, cg-optimize-jumps (_ .redirInsn, .insns) .cx
+	, !, cg-optimize-jumps (.redirInsn, .insns) .cx
 #
 cg-optimize-jumps (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-jumps .insns0 .insns1
@@ -39,31 +32,30 @@ cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
 cg-redirect-instruction (RETURN-VALUE _) #
 
-cg-optimize-assign-return (
-	_ ASSIGN-FRAME-REG .r0 0 .r, _ RETURN-VALUE .r1, .insns0
+cg-optimize-assign-returns (
+	ASSIGN-FRAME-REG .r0 0 .r, RETURN-VALUE .r1, .insns0
 ) (
-	_ RETURN-VALUE .r, .insns1
+	RETURN-VALUE .r, .insns1
 )
 	:- same .r0 .r1
-	, !, cg-optimize-assign-return .insns0 .insns1
+	, !, cg-optimize-assign-returns .insns0 .insns1
 #
-cg-optimize-assign-return (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-assign-return .insns0 .insns1
+cg-optimize-assign-returns (.insn, .insns0) (.insn, .insns1)
+	:- !, cg-optimize-assign-returns .insns0 .insns1
 #
-cg-optimize-assign-return () () #
+cg-optimize-assign-returns () () #
 
 cg-optimize-lp-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
 	, cg-push-pop-pairs .li1/.li2 .li3/.li4 .ri2/.ri3 .ri1/.ri2
 	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE, CALL-REG/JUMP-REG,) .call/.jump
-	, .li2 = (_ .call .target, .li3)
+	, .li2 = (.call .op, .li3)
 	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
 	, cg-is-skip .li6/.li7
 	, cg-is-returning .li8
 	, cg-verify-push-pop-bind-pairs .pairs
-	, .ri3 = (_ .jump .target, .ri4)
+	, (.jump = JUMP, .op = l:.target, .ri3 = .target; .ri3 = (.jump .op,))
 	, !
-	, cg-optimize-lp-tail-calls .li6 .ri4
 #
 cg-optimize-lp-tail-calls (.insn, .insns0) (.insn, .insns1)
 	:- !, cg-optimize-lp-tail-calls .insns0 .insns1
@@ -71,9 +63,9 @@ cg-optimize-lp-tail-calls (.insn, .insns0) (.insn, .insns1)
 cg-optimize-lp-tail-calls () () #
 
 cg-push-pop-bind-pairs
-(_ BIND-MARK .pr0, _ PUSH .pr1, .i)/.i
-(_ POP-ANY, .j)/.j
-(_ TOP .pr2 -3, _ BIND-UNDO .pr3, .k)/.k
+(BIND-MARK .pr0, PUSH .pr1, .i)/.i
+(POP-ANY, .j)/.j
+(TOP .pr2 -3, BIND-UNDO .pr3, .k)/.k
 .pr0/.pr1/.pr2/.pr3
 #
 cg-push-pop-bind-pairs .i/.i .j/.j .k/.k ()/()/()/() #
@@ -85,32 +77,20 @@ cg-verify-push-pop-bind-pairs .pr0/.pr1/.pr2/.pr3
 -- Limits the number of push/pop pair rearrangement to 2 to avoid changing the
 -- bind journal pointer stored at the third location
 cg-push-pop-pairs
-(_ PUSH .r0, _ PUSH .r1, .i)/.i (_ POP-ANY, _ POP-ANY, .j)/.j
-(_ PUSH .r0, _ PUSH .r1, .k)/.k (_ POP-ANY, _ POP-ANY, .l)/.l
+(PUSH .r0, PUSH .r1, .i)/.i (POP-ANY, POP-ANY, .j)/.j
+(PUSH .r0, PUSH .r1, .k)/.k (POP-ANY, POP-ANY, .l)/.l
 	:- !
 #
 cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
 
 cg-is-restore-csp-dsp
-(_ RESTORE-DSP .dspReg, _ RESTORE-CSP .cspReg, .i)/.i
-(_ RESTORE-DSP .dspReg, _ RESTORE-CSP .cspReg, .j)/.j
+(RESTORE-DSP .dspReg, RESTORE-CSP .cspReg, .i)/.i
+(RESTORE-DSP .dspReg, RESTORE-CSP .cspReg, .j)/.j
 	:- !
 #
 cg-is-restore-csp-dsp .i/.i .j/.j #
 
-cg-is-skip (_ LABEL, .i0)/.ix :- cg-is-skip .i0/.ix #
-cg-is-skip (_ REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
+cg-is-skip (REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
 cg-is-skip .i/.i #
 
-cg-is-returning (_ RETURN, _) #
-
-cg-interpret-labels (.insn0, .insns0) (.insn1, .insns1)
-	:- !, cg-interpret-label .insn0 .insn1
-	, cg-interpret-labels .insns0 .insns1
-#
-cg-interpret-labels () () #
-
-cg-interpret-label (.label .insn .op0 .op1 l:(.refLabel .id, _)) (.label .insn .op0 .op1 i:.refLabel) :- same .id LABEL, ! #
-cg-interpret-label (.label .insn .op0 l:(.refLabel .id, _)) (.label .insn .op0 i:.refLabel) :- same .id LABEL, ! #
-cg-interpret-label (.label .insn l:(.refLabel .id, _)) (.label .insn i:.refLabel) :- same .id LABEL, ! #
-cg-interpret-label .insn .insn #
+cg-is-returning (RETURN, _) #

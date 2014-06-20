@@ -20,6 +20,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.TreeIntern;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -274,6 +275,19 @@ public class EvalPredicates {
 				return prover.bind(p, Tree.of(operator, p1, p3));
 			} else
 				return false;
+		}
+	}
+
+	public static class TreeInternPredicate implements SystemPredicate {
+		public boolean prove(Prover prover, Node ps) {
+			Node params[] = Tree.getParameters(ps, 4);
+			Node p = params[0].finalNode();
+			Node p1 = params[1].finalNode();
+			Node p2 = params[2].finalNode();
+			Node p3 = params[3].finalNode();
+
+			Operator operator = TermOp.find(((Atom) p2).getName());
+			return prover.bind(p, TreeIntern.of(operator, p1, p3));
 		}
 	}
 

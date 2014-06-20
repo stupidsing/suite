@@ -14,9 +14,8 @@
 #
 
 -- TODO perform cg-optimize but not in imported, precompiled code
-compile-function .mode .do0 .c0
-	:- .c0 = (_ ENTER, .c1)
-	, !, fc-parse .do0 .do1
+compile-function .mode .do0 (PROC .c0,)
+	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
 	, !, fc-resolve-type-rules .tr
 	, once (not is.cyclic .do1; fc-error "Cyclic data detected")
@@ -24,12 +23,12 @@ compile-function .mode .do0 .c0
 		; .mode = EAGER, .do1 = .do2
 	)
 	, !, fc-optimize .do2 .do3
-	, !, fc-compile .do3 0/() .c1/.c2/.d0/()/.reg
-	, .c2 = (_ RETURN-VALUE .reg, _ LEAVE, .d0)
+	, !, fc-compile .do3 0/() .c0/.c1/.reg
+	, .c1 = (RETURN-VALUE .reg,)
 #
 
 fc-load-library .lib .do0 .dox
-	:- memoize .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
+	:- find.all.memoized .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
 #
 
 fc-load-library0 .lib .slfx
@@ -47,7 +46,7 @@ fc-load-library0 .lib .slfx
 #
 
 fc-load-precompiled-library .lib .node
-	:- memoize .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
+	:- find.all.memoized .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
 #
 
 fc-load-precompiled-library0 .lib .precompiled

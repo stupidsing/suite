@@ -1,8 +1,10 @@
 package suite.util;
 
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,6 +13,9 @@ import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -22,7 +27,7 @@ public class FileUtil {
 	public static Charset charset = Charset.forName("UTF-8");
 
 	public static void copyFile(File from, File to) throws IOException {
-		try (OutputStream fos = out(to)) {
+		try (OutputStream fos = new FileOutputStream(to)) {
 			// new FileOutputStream(f2, true); // Append
 			Copy.stream(new FileInputStream(from), fos);
 		}
@@ -75,32 +80,24 @@ public class FileUtil {
 		}
 	}
 
-	public static OutputStream out(File file) throws FileNotFoundException {
-		File parentFile = file.getParentFile();
+	public static OutputStream out(String filename) throws IOException {
+		Path parentFile = Paths.get(filename).getParent();
 		if (parentFile != null)
-			parentFile.mkdirs();
+			Files.createDirectories(parentFile);
 
-		if (file.exists()) {
-			File file0 = new File(file.getPath() + ".old");
-			File file1 = new File(file.getPath() + ".new");
+		String filename1 = filename + ".new";
 
-			return new FileOutputStream(file1) {
-				private boolean isClosed = false;
+		return new FileOutputStream(filename1) {
+			private boolean isClosed = false;
 
-				public void close() throws IOException {
-					if (!isClosed) {
-						super.close();
-						isClosed = true;
-
-						if (file0.exists() && !file0.delete())
-							throw new IOException("Failed to delete old file");
-						if (!file.renameTo(file0) || !file1.renameTo(file))
-							throw new IOException("Failed to rename file");
-					}
+			public void close() throws IOException {
+				if (!isClosed) {
+					super.close();
+					isClosed = true;
+					Files.move(Paths.get(filename1), Paths.get(filename), ATOMIC_MOVE, REPLACE_EXISTING);
 				}
-			};
-		} else
-			return new FileOutputStream(file);
+			}
+		};
 	}
 
 }

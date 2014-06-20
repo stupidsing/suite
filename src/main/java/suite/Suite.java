@@ -36,7 +36,6 @@ public class Suite {
 
 	// Compilation defaults
 	public static boolean isTrace = false;
-	public static boolean isDumpCode = false;
 	public static List<String> libraries = Arrays.asList("STANDARD");
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 

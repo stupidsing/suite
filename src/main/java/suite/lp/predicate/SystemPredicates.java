@@ -2,20 +2,13 @@ package suite.lp.predicate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
-import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
-import suite.node.Data;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.Memoize;
 
 public class SystemPredicates {
 
@@ -32,8 +25,6 @@ public class SystemPredicates {
 
 		addPredicate("cut.begin", new CutBegin());
 		addPredicate("cut.end", new CutEnd());
-		addPredicate("find.all", new FindAll());
-		addPredicate("memoize", new MemoizePredicate());
 		addPredicate("not", new Not());
 		addPredicate("once", new Once());
 		addPredicate("system.predicate", new SystemPredicate_());
@@ -61,6 +52,11 @@ public class SystemPredicates {
 		addPredicate("specialize", new EvalPredicates.Specialize());
 		addPredicate("temp", new EvalPredicates.Temp());
 		addPredicate("tree", new EvalPredicates.TreePredicate());
+		addPredicate("tree.intern", new EvalPredicates.TreeInternPredicate());
+
+		addPredicate("find.all", new FindPredicates.FindAll());
+		addPredicate("find.all.memoized", new FindPredicates.FindAllMemoized());
+		addPredicate("find.all.memoized.clear", new FindPredicates.FindAllMemoizedClear());
 
 		addPredicate("char.ascii", new FormatPredicates.CharAscii());
 		addPredicate("concat", new FormatPredicates.Concat());
@@ -82,6 +78,10 @@ public class SystemPredicates {
 		addPredicate("to.string", new FormatPredicates.ToString());
 		addPredicate("treeize", new FormatPredicates.Treeize());
 		addPredicate("trim", new FormatPredicates.Trim());
+
+		addPredicate("intern.map.clear", new InternMapPredicates.InternMapClear());
+		addPredicate("intern.map.get", new InternMapPredicates.InternMapGet());
+		addPredicate("intern.map.put", new InternMapPredicates.InternMapPut());
 
 		addPredicate("dump", new IoPredicates.Dump());
 		addPredicate("dump.stack", new IoPredicates.DumpStack());
@@ -157,40 +157,6 @@ public class SystemPredicates {
 		}
 	}
 
-	private class FindAll implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 3);
-			return prover.bind(params[2], findAll(prover, params[0], params[1]));
-		}
-	}
-
-	private class MemoizePredicate implements SystemPredicate {
-		private Reference uniqueReference = new Reference() {
-			public int hashCode() { // Makes the reference hash-able
-				return System.identityHashCode(this);
-			}
-
-			public boolean equals(Object object) {
-				return object == uniqueReference;
-			}
-		};
-
-		private Fun<Node, Node> findAll = Memoize.byInput(goal -> findAll(prover, uniqueReference, goal));
-
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 3);
-			Reference var = (Reference) params[0];
-
-			// Avoids changing hash-code - but making memoize not re-entrant
-			var.bound(uniqueReference);
-			try {
-				return prover.bind(params[2], findAll.apply(params[1]));
-			} finally {
-				var.unbound();
-			}
-		}
-	}
-
 	private class Not implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Prover prover1 = new Prover(prover);
@@ -220,22 +186,6 @@ public class SystemPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			return prover.bind(ps, Atom.unique());
 		}
-	}
-
-	private Node findAll(Prover prover, Node var, Node goal) {
-		Stack<Node> stack = new Stack<>();
-
-		Tree subGoal = Tree.of(TermOp.AND___, goal, new Data<Source<Boolean>>(() -> {
-			stack.push(new Cloner().clone(var));
-			return Boolean.FALSE;
-		}));
-
-		new Prover(prover).elaborate(subGoal);
-
-		Node result = Atom.NIL;
-		while (!stack.isEmpty())
-			result = Tree.of(TermOp.AND___, stack.pop(), result);
-		return result;
 	}
 
 }

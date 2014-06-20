@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Suspend;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.util.LogUtil;
@@ -24,6 +25,7 @@ public class Intrinsics {
 	private static Atom NUMBER = Atom.of("NUMBER");
 	private static Atom STRING = Atom.of("STRING");
 	private static Atom TREE = Atom.of("TREE");
+	private static Atom TUPLE = Atom.of("TUPLE");
 	private static Atom UNKNOWN = Atom.of("UNKNOWN");
 
 	public static class AtomString implements Intrinsic {
@@ -104,6 +106,8 @@ public class Intrinsics {
 				type = STRING;
 			else if (node instanceof Tree)
 				type = TREE;
+			else if (node instanceof Tuple)
+				type = TUPLE;
 			else
 				type = UNKNOWN;
 

@@ -32,7 +32,7 @@ public class SldResolution {
 
 	public List<Node> resolve(Node node) {
 		RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("auto.sl", "pt.sl"));
-		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig(), false);
+		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig());
 		Finder finder = builder.build(ruleSet //
 				, Suite.parse("source .n0" //
 						+ ", pt-prove0 .n0 .n1" //

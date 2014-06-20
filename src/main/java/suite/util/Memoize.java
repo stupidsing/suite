@@ -9,17 +9,14 @@ import suite.util.FunUtil.Source;
 public class Memoize {
 
 	public static <I, O> Fun<I, O> byInput(Fun<I, O> fun) {
-		Map<Object, Object> results = new ConcurrentHashMap<>();
+		Map<I, O> results = new ConcurrentHashMap<>();
 
 		return in -> {
 			O result;
 			if (!results.containsKey(in))
 				results.put(in, result = fun.apply(in));
-			else {
-				@SuppressWarnings("unchecked")
-				O o = (O) results.get(in);
-				result = o;
-			}
+			else
+				result = results.get(in);
 			return result;
 		};
 	}

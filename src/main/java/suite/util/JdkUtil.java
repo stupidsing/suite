@@ -22,15 +22,14 @@ public class JdkUtil {
 	protected String compile(String canonicalName, String java) throws IOException {
 		String srcFilename = srcDir + "/" + canonicalName.replace('.', '/') + ".java";
 		String binFilename = binDir + "/" + canonicalName.replace('.', '/') + ".class";
-		File file = new File(srcFilename);
 
-		LogUtil.info("Writing " + file);
-		try (OutputStream os = FileUtil.out(file)) {
+		LogUtil.info("Writing " + srcFilename);
+		try (OutputStream os = FileUtil.out(srcFilename)) {
 			os.write(java.getBytes(FileUtil.charset));
 		}
 
 		// Compile the Java, load the class, return an instantiated object
-		LogUtil.info("Compiling " + file);
+		LogUtil.info("Compiling " + srcFilename);
 		new File(binDir).mkdirs();
 
 		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
@@ -41,7 +40,7 @@ public class JdkUtil {
 					, null //
 					, Arrays.asList("-d", binDir) //
 					, null //
-					, sjfm.getJavaFileObjects(file)).call())
+					, sjfm.getJavaFileObjects(new File(srcFilename))).call())
 				throw new RuntimeException("Java compilation error");
 		}
 

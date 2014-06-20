@@ -7,6 +7,7 @@ import java.util.Objects;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.Tuple;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with
@@ -36,6 +37,12 @@ public class TermHashKey {
 				result = 31 * result + Objects.hashCode(tree.getOperator());
 				result = 31 * result + hash(tree.getRight());
 				return result;
+			} else if (node instanceof Tuple) {
+				Tuple tuple = (Tuple) node;
+				int result = 1;
+				for (Node n : tuple.getNodes())
+					result = 31 * result + hash(n);
+				return result;
 			} else
 				return node.hashCode();
 		}
@@ -54,7 +61,11 @@ public class TermHashKey {
 
 	@Override
 	public boolean equals(Object object) {
-		return object.getClass() == TermHashKey.class && Objects.equals(node, ((TermHashKey) object).node);
+		if (object.getClass() == TermHashKey.class) {
+			Node node1 = ((TermHashKey) object).node;
+			return Objects.equals(new TermHasher().hash(node), new TermHasher().hash(node1));
+		} else
+			return false;
 	}
 
 	public Node getNode() {

@@ -129,11 +129,11 @@ public class CommandDispatcher {
 			code = query(new InterpretedProverBuilder(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYCOMPILED:
-			code = query(CompiledProverBuilder.level1(opt.pc(ruleSet), opt.isDumpCode()), ruleSet, node);
+			code = query(CompiledProverBuilder.level1(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYCOMPILED2:
 			if (builderLevel2 == null)
-				builderLevel2 = CompiledProverBuilder.level2(opt.pc(ruleSet), opt.isDumpCode());
+				builderLevel2 = CompiledProverBuilder.level2(opt.pc(ruleSet));
 			code = query(builderLevel2, ruleSet, node);
 			break;
 		case QUERYELABORATE:

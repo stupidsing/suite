@@ -70,11 +70,10 @@ public class InstructionTranslator implements Closeable {
 		List<Instruction> instructions = new ArrayList<>();
 
 		try (InstructionExtractor extractor = new InstructionExtractor(constantPool)) {
-			extractor.extractInstructions(instructions, node);
+			instructions.addAll(extractor.extractInstructions(node));
 		}
 
 		int exitPoint = instructions.size();
-		instructions.add(new Instruction(Insn.LABEL_________, 0, 0, 0));
 		instructions.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 
 		analyzer.analyze(instructions);
@@ -154,7 +153,6 @@ public class InstructionTranslator implements Closeable {
 	private void translateInstructions(List<Instruction> instructions) {
 		Node constant;
 		int ip = 0;
-		boolean isGenerateLabel = true;
 
 		while (ip < instructions.size()) {
 			Instruction insn = instructions.get(currentIp = ip++);
@@ -162,10 +160,7 @@ public class InstructionTranslator implements Closeable {
 
 			app("// (#{num}) #{str}", currentIp, insn);
 
-			if (isGenerateLabel || insn.insn == Insn.LABEL_________) {
-				app("case #{num}:", currentIp);
-				isGenerateLabel = false;
-			}
+			app("case #{num}:", currentIp);
 
 			switch (insn.insn) {
 			case ASSIGNCLOSURE_:
@@ -206,7 +201,6 @@ public class InstructionTranslator implements Closeable {
 				backupFrame();
 				pushCallee(ip);
 				app("#{jump}", op0);
-				isGenerateLabel = true;
 				break;
 			case CALLCLOSURE___:
 				app("if (#{reg-clos}.result == null) {", op0);
@@ -216,7 +210,6 @@ public class InstructionTranslator implements Closeable {
 				app("ip = #{reg-clos}.ip", op0);
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
-				isGenerateLabel = true;
 				break;
 			case CALLINTRINSIC_:
 				app("{");
@@ -233,7 +226,6 @@ public class InstructionTranslator implements Closeable {
 				pushCallee(ip);
 				app("ip = #{reg-num}", op0);
 				app("continue");
-				isGenerateLabel = true;
 				break;
 			case COMPARE_______:
 				app("n0 = (Node) ds[--dsp]");
@@ -334,7 +326,6 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case JUMP__________:
 				app("#{jump}", op0);
-				isGenerateLabel = true;
 				break;
 			case JUMPCLOSURE___:
 				app("if (#{reg-clos}.result == null) {", op0);
@@ -343,13 +334,9 @@ public class InstructionTranslator implements Closeable {
 				app("ip = #{reg-clos}.ip", op0);
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
-				isGenerateLabel = true;
 				break;
 			case JUMPREG_______:
 				app("{ ip = #{reg-num}; continue; }", op0);
-				isGenerateLabel = true;
-				break;
-			case LABEL_________:
 				break;
 			case LEAVE_________:
 				generateFrame();
@@ -382,12 +369,10 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case RETURN________:
 				popCaller();
-				isGenerateLabel = true;
 				break;
 			case RETURNVALUE___:
 				app("returnValue = #{reg-node}", op0);
 				popCaller();
-				isGenerateLabel = true;
 				break;
 			case SETRESULT_____:
 				restoreFrame();

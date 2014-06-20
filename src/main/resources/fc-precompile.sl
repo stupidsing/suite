@@ -44,20 +44,16 @@ fc-precompile .lib .do1/($$PRECOMPILE .pc) .preds
 
 fc-precompile-compile .mode .lib .fcs .parsed .pred
 	:- !, write 'Pre-compiling in' .mode 'mode', nl
-	, fc-precompile-compile-node .parsed .frame0/() .c0/.cx/.d0/.dx/.reg
-	, .fcs = .frame1/.ves .cs0/.csx/.ds0/.dsx/.regs
-	, cg-optimize-segment .c0/.cs0 .co0/.cso0
-	, cg-optimize-segment .csx/.cx .csox/.cox
-	, cg-optimize-segment .d0/.ds0 .do0/.dso0
-	, cg-optimize-segment .dsx/.dx .dsox/.dox
+	, fc-precompile-compile-node .parsed .frame0/() .c0/.cx/.reg
+	, .fcs = .frame1/.ves .cs0/.csx/.regs
 	, .pred = (
-		fc-compile-using-lib .mode .lib .do .frame0/.ve .co0/.cox/.do0/.dox/.reg
+		fc-compile-using-lib .mode .lib .do .frame0/.ve .c0/.cx/.reg
 			:- fc-dict-union-bind .ve .ves .ve1 -- Import and export symbols
-			, fc-compile .do .frame1/.ve1 .cso0/.csox/.dso0/.dsox/.regs
+			, fc-compile .do .frame1/.ve1 .cs0/.csx/.regs
 	)
 #
 
-fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d0/.dx/.reg
+fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.reg
 	:- !, write 'Loading pre-compiled library' .lib, nl
 	, fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
 	, once (.mode = EAGER, .pred = .eagerPred; .pred = .lazyPred)
@@ -66,10 +62,10 @@ fc-precompile-compile-node (USING .mode EXTERNAL .lib .do) .frame/.ve .c0/.cx/.d
 	)
 	, once .tail
 	, fc-dict-union-bind .ve .ve1 .ve2
-	, fc-precompile-compile-node .do .frame/.ve2 .c0/.cx/.d0/.dx/.reg
+	, fc-precompile-compile-node .do .frame/.ve2 .c0/.cx/.reg
 #
-fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg
-	:- fc-compile .parsed .frame/.ve .c0/.cx/.d0/.dx/.reg
+fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.reg
+	:- fc-compile .parsed .frame/.ve .c0/.cx/.reg
 #
 
 -- Parser
@@ -82,6 +78,6 @@ fc-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
 -- Code generation
-fc-compile ($$PRECOMPILE _ _ .fve .cdr) .fve .cdr :- ! #
+fc-compile ($$PRECOMPILE _ _ .fve .cr) .fve .cr :- ! #
 
 () :- import.path 'fc.sl' #

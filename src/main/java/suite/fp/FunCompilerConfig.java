@@ -13,7 +13,6 @@ public class FunCompilerConfig {
 	private boolean isLazy = true;
 	private List<String> libraries = new ArrayList<>();
 	private ProverConfig proverConfig = new ProverConfig();
-	private boolean isDumpCode = Suite.isDumpCode;
 
 	public FunCompilerConfig() {
 		this(new ProverConfig(), new ArrayList<>(Suite.libraries));
@@ -62,14 +61,6 @@ public class FunCompilerConfig {
 
 	public void setProverConfig(ProverConfig proverConfig) {
 		this.proverConfig = proverConfig;
-	}
-
-	public boolean isDumpCode() {
-		return isDumpCode;
-	}
-
-	public void setDumpCode(boolean isDumpCode) {
-		this.isDumpCode = isDumpCode;
 	}
 
 }
