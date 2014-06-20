@@ -80,7 +80,7 @@ public class IoPredicates {
 			String filename = Formatter.display(params[0]);
 			String content = Formatter.display(params[1]);
 
-			try (OutputStream fos = FileUtil.out(new File(filename))) {
+			try (OutputStream fos = FileUtil.out(filename)) {
 				fos.write(content.getBytes(FileUtil.charset));
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
