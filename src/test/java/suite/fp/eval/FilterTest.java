@@ -28,7 +28,7 @@ public class FilterTest {
 		assertEquals("abc\ndef\nghi", eval("tail . concat . map {cons {10}} . split {32}", "abc def ghi"));
 	}
 
-	// Detects memory usage. Memory leak if there are more than 10000 instances
+	// Detects memory usage. Memory leak if there are more than 20000 instances
 	// of Closure, Frame, Tree or Node exists.
 	@Test
 	public void testMemoryUsage() {
@@ -58,7 +58,7 @@ public class FilterTest {
 			public void write(char buffer[], int pos, int len) {
 				count += len;
 				if (count == size - 1) {
-					Suite.proveLogic("find.all.memoized.clear");
+					Suite.proveLogic("find.all.memoized.clear, intern.map.clear");
 					System.gc();
 					System.gc();
 					System.gc();

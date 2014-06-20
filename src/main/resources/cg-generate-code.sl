@@ -10,13 +10,9 @@ cg-optimize .c0 .cx
 #
 
 cg-optimize0 .c0 .cx
-	:- cg-optimize-jump-returns .c0 .c1
-	, cg-optimize-lp-tail-calls .c1 .cx
-#
-
-cg-optimize-jump-returns .c0 .cx
 	:- cg-optimize-jumps .c0 .c1
-	, cg-optimize-assign-returns .c1 .cx
+	, cg-optimize-assign-returns .c1 .c2
+	, cg-optimize-lp-tail-calls .c2 .cx
 #
 
 cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
