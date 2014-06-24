@@ -116,9 +116,6 @@ public class InstructionExecutor implements AutoCloseable {
 					else
 						returnValue = closure.result;
 					break;
-				case CALLREG_______:
-					current = new Activation(frame, i(regs[insn.op0]), current);
-					break;
 				case ENTER_________:
 					Frame parent = analyzer.getFrame(ip).isRequireParent() ? frame : null;
 					current.frame = new Frame(parent, insn.op0);
@@ -189,9 +186,6 @@ public class InstructionExecutor implements AutoCloseable {
 						current = new Activation(closure, current);
 					else
 						returnValue = closure.result;
-					break;
-				case JUMPREG_______:
-					current.ip = i(regs[insn.op0]);
 					break;
 				case LOGREG________:
 					LogUtil.info(regs[insn.op0].toString());

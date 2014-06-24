@@ -49,7 +49,6 @@ public class InstructionUtil {
 		CALL__________("CALL"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CALLINTRINSIC_("CALL-INTRINSIC"), //
-		CALLREG_______("CALL-REG"), //
 		COMPARE_______("COMPARE"), //
 		CONSLIST______("CONS-LIST"), //
 		CONSPAIR______("CONS-PAIR"), //
@@ -81,7 +80,6 @@ public class InstructionUtil {
 		ISCONS________("IS-CONS"), //
 		JUMP__________("JUMP"), //
 		JUMPCLOSURE___("JUMP-CLOSURE"), //
-		JUMPREG_______("JUMP-REG"), //
 		LOGREG________("LOG-REG"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //

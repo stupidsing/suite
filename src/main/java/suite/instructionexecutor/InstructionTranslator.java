@@ -221,12 +221,6 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = intrinsic.invoke(bridge, list)", op0);
 				app("}");
 				break;
-			case CALLREG_______:
-				backupFrame();
-				pushCallee(ip);
-				app("ip = #{reg-num}", op0);
-				app("continue");
-				break;
 			case COMPARE_______:
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
@@ -334,9 +328,6 @@ public class InstructionTranslator implements Closeable {
 				app("ip = #{reg-clos}.ip", op0);
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
-				break;
-			case JUMPREG_______:
-				app("{ ip = #{reg-num}; continue; }", op0);
 				break;
 			case LEAVE_________:
 				generateFrame();

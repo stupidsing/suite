@@ -245,7 +245,6 @@ public class InstructionAnalyzer {
 					case CALL__________:
 					case CALLCLOSURE___:
 					case CALLINTRINSIC_:
-					case CALLREG_______:
 					case SETCLOSURERES_:
 					case SETRESULT_____:
 						return instruction;
