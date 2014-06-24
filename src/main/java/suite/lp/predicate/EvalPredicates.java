@@ -274,7 +274,7 @@ public class EvalPredicates {
 				Operator operator = TermOp.find(((Atom) p2).getName());
 				return prover.bind(p, Tree.of(operator, p1, p3));
 			} else
-				throw new RuntimeException("Unknown input pattern");
+				return false;
 		}
 	}
 
