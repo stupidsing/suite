@@ -5,7 +5,7 @@
 	, import.path 'rbt.sl'
 #
 
-compile-logic .call (PROC .code,)
+compile-logic .call .code
 	:- .c0 = (ASSIGN-CONSTANT .returnReg c:true
 		, ASSIGN-CLOSURE .provenReg l:.c1
 		, BIND-MARK .pitReg
@@ -22,10 +22,10 @@ compile-logic .call (PROC .code,)
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
 	, !, lc-compile-call .call2 () .cc/()
-	, !, cg-optimize .c0 .code
+	, !, cg-optimize (PROC l:.c0,) .code
 #
 
-lc-compile-call .call .pls (PROC .code, .c)/.c
+lc-compile-call .call .pls (PROC l:.c0, .c)/.c
 	:- .c0 = (BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
 		, TOP .provenReg -2
@@ -36,7 +36,6 @@ lc-compile-call .call .pls (PROC .code, .c)/.c
 		, BIND-UNDO .pitReg
 		, RETURN
 		,)
-	, cg-optimize .c0 .code
 #
 
 lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)

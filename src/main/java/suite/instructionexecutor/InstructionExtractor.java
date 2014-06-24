@@ -55,7 +55,8 @@ public class InstructionExtractor implements AutoCloseable {
 	private void extractInstructions(Node snippet, List<List<Node>> rsList) {
 		Deque<Node> deque = new ArrayDeque<>();
 		deque.add(snippet);
-		Tree tree, tree1;
+		Tree tree;
+		Node value;
 
 		while (!deque.isEmpty()) {
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
@@ -66,15 +67,18 @@ public class InstructionExtractor implements AutoCloseable {
 					ipsByLabelId.put(key, ip = rsList.size());
 					List<Node> rs = tupleToList(tree.getLeft());
 
-					if (rs.get(0) == PROC) {
-						rsList.add(Arrays.asList(Atom.of("ENTER")));
-						extractInstructions(rs.get(1), rsList);
-						rsList.add(Arrays.asList(Atom.of("LEAVE")));
-					} else {
+					if (rs.get(0) == PROC)
+						if ((value = label(rs.get(1))) != null) {
+							rsList.add(Arrays.asList(Atom.of("ENTER")));
+							extractInstructions(value, rsList);
+							rsList.add(Arrays.asList(Atom.of("LEAVE")));
+						} else
+							throw new RuntimeException("Bad PROC definition");
+					else {
 						rsList.add(rs);
 						for (Node op : Util.right(rs, 1))
-							if ((tree1 = Tree.decompose(op, TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
-								deque.push(tree1.getRight());
+							if ((value = label(op)) != null)
+								deque.push(value);
 						deque.push(tree.getRight());
 					}
 				} else
@@ -139,6 +143,14 @@ public class InstructionExtractor implements AutoCloseable {
 			throw new RuntimeException("Cannot parse instruction " + rs.get(0) + " operand " + node);
 		} else
 			return 0;
+	}
+
+	private Node label(Node node) {
+		Tree tree1;
+		if ((tree1 = Tree.decompose(node, TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
+			return tree1.getRight();
+		else
+			return null;
 	}
 
 	private int allocateInPool(Node node) {

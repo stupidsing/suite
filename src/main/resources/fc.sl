@@ -14,7 +14,7 @@
 #
 
 -- TODO perform cg-optimize but not in imported, precompiled code
-compile-function .mode .do0 (PROC .c0,)
+compile-function .mode .do0 (PROC l:.c0,)
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
 	, !, fc-resolve-type-rules .tr

@@ -7,20 +7,21 @@ cg-optimize .c0 .cx
 	, once (bound .cx; cg-optimize0 .c0 .cx)
 #
 
-cg-optimize0 .c0 .cx
-	:- cg-optimize-jumps .c0 .c1
+cg-optimize0 (.insn0, .insns0) .cx
+	:- cg-optimize .insns0 .insns1
+	, .c0 = (.insn0, .insns1)
+	, cg-optimize-jumps .c0 .c1
 	, cg-optimize-assign-returns .c1 .c2
-	, cg-optimize-lp-tail-calls .c2 .cx
+	, cg-optimize-lp-tail-calls .c2 .c3
+	, cg-optimize-branches .c3 .cx
 #
+cg-optimize0 () () #
 
 cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
 	:- cg-redirect-instruction .redirInsn
 	, !, cg-optimize-jumps (.redirInsn, .insns) .cx
 #
-cg-optimize-jumps (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-jumps .insns0 .insns1
-#
-cg-optimize-jumps () () #
+cg-optimize-jumps .insns .insns #
 
 cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
@@ -34,10 +35,7 @@ cg-optimize-assign-returns (
 	:- same .r0 .r1
 	, !, cg-optimize-assign-returns .insns0 .insns1
 #
-cg-optimize-assign-returns (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-assign-returns .insns0 .insns1
-#
-cg-optimize-assign-returns () () #
+cg-optimize-assign-returns .insns .insns #
 
 cg-optimize-lp-tail-calls .li0 .ri0
 	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
@@ -51,10 +49,7 @@ cg-optimize-lp-tail-calls .li0 .ri0
 	, (.jump = JUMP, .op = l:.target, .ri3 = .target; .ri3 = (.jump .op,))
 	, !
 #
-cg-optimize-lp-tail-calls (.insn, .insns0) (.insn, .insns1)
-	:- !, cg-optimize-lp-tail-calls .insns0 .insns1
-#
-cg-optimize-lp-tail-calls () () #
+cg-optimize-lp-tail-calls .insns .insns #
 
 cg-push-pop-bind-pairs
 (BIND-MARK .pr0, PUSH .pr1, .i)/.i
@@ -88,3 +83,15 @@ cg-is-skip (REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
 cg-is-skip .i/.i #
 
 cg-is-returning (RETURN, _) #
+
+cg-optimize-branches (PROC l:.b, .insns) (PROC l:.b, .insns) #
+cg-optimize-branches (.insn l:.b0, .insns) (.insn l:.bx, .insns)
+	:- bound .b0, !, cg-optimize .b0 .bx
+#
+cg-optimize-branches (.insn .op0 l:.b0, .insns) (.insn .op0 l:.bx, .insns)
+	:- bound .b0, !, cg-optimize .b0 .bx
+#
+cg-optimize-branches (.insn .op0 .op1 l:.b0, .insns) (.insn .op0 .op1 l:.bx, .insns)
+	:- bound .b0, !, cg-optimize .b0 .bx
+#
+cg-optimize-branches .insns .insns #
