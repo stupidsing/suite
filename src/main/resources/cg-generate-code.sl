@@ -84,7 +84,9 @@ cg-is-skip .i/.i #
 
 cg-is-returning (RETURN, _) #
 
-cg-optimize-branches (PROC l:.b, .insns) (PROC l:.b, .insns) #
+cg-optimize-branches (PROC l:.b, .insns) (PROC l:.b, .insns)
+	:- !
+#
 cg-optimize-branches (.insn l:.b0, .insns) (.insn l:.bx, .insns)
 	:- bound .b0, !, cg-optimize .b0 .bx
 #
