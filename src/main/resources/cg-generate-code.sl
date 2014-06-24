@@ -3,10 +3,8 @@
 
 cg-optimize .c0 .cx
 	:- tree.intern .key CG-OPTIMIZE ':' .c0
-	, once (intern.map.get .key .cx
-		; cg-optimize0 .c0 .cx
-		, intern.map.put .key .cx
-	)
+	, intern.map.put .key .cx
+	, once (bound .cx; cg-optimize0 .c0 .cx)
 #
 
 cg-optimize0 .c0 .cx
