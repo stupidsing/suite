@@ -1,7 +1,6 @@
 package suite.lp.predicate;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,6 +19,7 @@ import suite.node.io.Persister.Saver;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.ReversePolish;
 import suite.node.io.TermOp;
+import suite.util.FileUtil;
 
 public class FormatPredicates {
 
@@ -94,7 +94,7 @@ public class FormatPredicates {
 	public static class PersistSave implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
-			try (OutputStream os = new FileOutputStream(((Str) params[1].finalNode()).getValue())) {
+			try (OutputStream os = FileUtil.out(((Str) params[1].finalNode()).getValue())) {
 				new Saver().save(os, params[0]);
 				return true;
 			} catch (IOException ex) {
