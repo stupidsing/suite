@@ -263,9 +263,9 @@ public class EvalPredicates {
 			Node p1 = params[1];
 			Node p2 = params[2].finalNode();
 			Node p3 = params[3];
+			Tree tree;
 
-			if (p instanceof Tree) {
-				Tree tree = (Tree) p;
+			if ((tree = Tree.decompose(p)) != null) {
 				Atom oper = Atom.of(tree.getOperator().getName());
 				return prover.bind(tree.getLeft(), p1) //
 						&& prover.bind(oper, p2) //
@@ -274,17 +274,17 @@ public class EvalPredicates {
 				Operator operator = TermOp.find(((Atom) p2).getName());
 				return prover.bind(p, Tree.of(operator, p1, p3));
 			} else
-				return false;
+				throw new RuntimeException("Unknown input pattern");
 		}
 	}
 
 	public static class TreeInternPredicate implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 4);
-			Node p = params[0].finalNode();
-			Node p1 = params[1].finalNode();
+			Node p = params[0];
+			Node p1 = params[1];
 			Node p2 = params[2].finalNode();
-			Node p3 = params[3].finalNode();
+			Node p3 = params[3];
 
 			Operator operator = TermOp.find(((Atom) p2).getName());
 			return prover.bind(p, TreeIntern.of(operator, p1, p3));
