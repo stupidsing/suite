@@ -80,7 +80,6 @@ public class SystemPredicates {
 		addPredicate("trim", new FormatPredicates.Trim());
 
 		addPredicate("intern.map.clear", new InternMapPredicates.InternMapClear());
-		addPredicate("intern.map.get", new InternMapPredicates.InternMapGet());
 		addPredicate("intern.map.put", new InternMapPredicates.InternMapPut());
 
 		addPredicate("dump", new IoPredicates.Dump());

@@ -23,14 +23,6 @@ public class InternMapPredicates {
 		}
 	}
 
-	public static class InternMapGet implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			IdHashKey key = new IdHashKey(params[0].finalNode());
-			return internMap.containsKey(key) && prover.bind(params[1], internMap.get(key));
-		}
-	}
-
 	public static class InternMapPut implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
