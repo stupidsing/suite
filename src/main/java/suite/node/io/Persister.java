@@ -18,7 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.node.util.IdHashKey;
+import suite.node.util.IdentityKey;
 
 public class Persister {
 
@@ -64,7 +64,7 @@ public class Persister {
 
 	public static class Saver {
 		private int counter;
-		private Map<IdHashKey, Integer> nodes = new HashMap<>();
+		private Map<IdentityKey, Integer> nodes = new HashMap<>();
 
 		public void save(OutputStream os, Node node) throws IOException {
 			try (GZIPOutputStream gzos = new GZIPOutputStream(os); DataOutputStream dos = new DataOutputStream(gzos)) {
@@ -79,7 +79,7 @@ public class Persister {
 			Tree tree;
 			Integer id;
 
-			if ((id = nodes.get(new IdHashKey(node))) == null) {
+			if ((id = nodes.get(new IdentityKey(node))) == null) {
 				if (node instanceof Atom) {
 					dos.writeChar('a');
 					dos.writeUTF(((Atom) node).getName());
@@ -102,7 +102,7 @@ public class Persister {
 					throw new RuntimeException("Cannot persist " + node);
 
 				id = counter++;
-				nodes.put(new IdHashKey(node), id);
+				nodes.put(new IdentityKey(node), id);
 			}
 
 			return id;

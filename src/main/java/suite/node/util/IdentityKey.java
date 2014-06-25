@@ -1,13 +1,14 @@
 package suite.node.util;
 
 import suite.node.Node;
+import suite.util.HashCodeComparable;
 import suite.util.Util;
 
-public class IdHashKey {
+public class IdentityKey extends HashCodeComparable<IdentityKey> {
 
 	private Node node;
 
-	public IdHashKey(Node node) {
+	public IdentityKey(Node node) {
 		this.node = node;
 	}
 
@@ -18,7 +19,7 @@ public class IdHashKey {
 
 	@Override
 	public boolean equals(Object object) {
-		return Util.clazz(object) == IdHashKey.class && node == ((IdHashKey) object).node;
+		return Util.clazz(object) == IdentityKey.class && node == ((IdentityKey) object).node;
 	}
 
 	public Node getNode() {

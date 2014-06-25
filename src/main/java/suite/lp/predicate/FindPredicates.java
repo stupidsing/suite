@@ -12,12 +12,12 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.TermHashKey;
+import suite.node.util.TermKey;
 import suite.util.FunUtil.Source;
 
 public class FindPredicates {
 
-	private static Map<TermHashKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
+	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
 	public static class FindAll implements SystemPredicate {
 		public boolean prove(Prover prover, Node ps) {
@@ -32,7 +32,7 @@ public class FindPredicates {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 3);
 			Node var = params[0], goal = params[1], results = params[2];
-			TermHashKey key = new TermHashKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
+			TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
 			return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 		}
 	}

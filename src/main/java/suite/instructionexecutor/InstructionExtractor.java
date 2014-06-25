@@ -20,14 +20,14 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.IdHashKey;
+import suite.node.util.IdentityKey;
 import suite.util.Util;
 
 import com.google.common.collect.BiMap;
 
 public class InstructionExtractor implements AutoCloseable {
 
-	private Map<IdHashKey, Integer> ipsByLabelId = new HashMap<>();
+	private Map<IdentityKey, Integer> ipsByLabelId = new HashMap<>();
 	private Deque<Instruction> enters = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 	private Journal journal = new Journal();
@@ -60,7 +60,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 		while (!deque.isEmpty()) {
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
-				IdHashKey key = new IdHashKey(tree);
+				IdentityKey key = new IdentityKey(tree);
 				Integer ip = ipsByLabelId.get(key);
 
 				if (ip == null) {
@@ -135,7 +135,7 @@ public class InstructionExtractor implements AutoCloseable {
 				if (key == KEYC)
 					return allocateInPool(value);
 				else if (key == KEYL)
-					return ipsByLabelId.get(new IdHashKey(value));
+					return ipsByLabelId.get(new IdentityKey(value));
 				else if (key == KEYR)
 					return 0;
 			}
