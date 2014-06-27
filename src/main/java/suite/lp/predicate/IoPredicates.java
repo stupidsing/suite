@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 
-import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates.SystemPredicate;
 import suite.node.Int;
 import suite.node.Node;
@@ -14,7 +13,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.util.FileUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.To;
 
@@ -107,11 +105,11 @@ public class IoPredicates {
 		throw new RuntimeException(Formatter.dump(ps.finalNode()));
 	};
 
-	public static Fun<PrintStream, SystemPredicate> write = printStream -> new SystemPredicate() {
-		public boolean prove(Prover prover, Node ps) {
+	public static SystemPredicate write(PrintStream printStream) {
+		return (prover, ps) -> {
 			printStream.print(Formatter.display(ps));
 			return true;
-		}
-	};
+		};
+	}
 
 }

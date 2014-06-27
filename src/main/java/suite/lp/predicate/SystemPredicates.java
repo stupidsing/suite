@@ -95,8 +95,8 @@ public class SystemPredicates {
 		addPredicate("sink", IoPredicates.sink);
 		addPredicate("source", IoPredicates.source);
 		addPredicate("throw", IoPredicates.throwPredicate);
-		addPredicate("write", IoPredicates.write.apply(System.out));
-		addPredicate("write.error", IoPredicates.write.apply(System.err));
+		addPredicate("write", IoPredicates.write(System.out));
+		addPredicate("write.error", IoPredicates.write(System.err));
 
 		addPredicate("assert", RuleSetPredicates.assertz);
 		addPredicate("asserta", RuleSetPredicates.asserta);
