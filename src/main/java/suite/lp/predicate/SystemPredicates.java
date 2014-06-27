@@ -13,7 +13,7 @@ import suite.node.io.TermOp;
 public class SystemPredicates {
 
 	public interface SystemPredicate {
-		public boolean prove(Prover prover, Node parameter);
+		public boolean prove(Prover prover, Node ps);
 	}
 
 	private Map<String, SystemPredicate> predicates = new HashMap<>();
@@ -23,91 +23,91 @@ public class SystemPredicates {
 	public SystemPredicates(Prover prover) {
 		this.prover = prover;
 
-		addPredicate("cut.begin", new CutBegin());
-		addPredicate("cut.end", new CutEnd());
-		addPredicate("not", new Not());
-		addPredicate("once", new Once());
-		addPredicate("system.predicate", new SystemPredicate_());
-		addPredicate("temporary", new Temporary());
+		addPredicate("cut.begin", cutBegin);
+		addPredicate("cut.end", cutEnd);
+		addPredicate("not", not);
+		addPredicate("once", once);
+		addPredicate("system.predicate", systemPredicate);
 
-		addPredicate("bound", new EvalPredicates.Bound());
-		addPredicate("clone", new EvalPredicates.Clone());
-		addPredicate("complexity", new EvalPredicates.ComplexityPredicate());
-		addPredicate("contains", new EvalPredicates.Contains());
-		addPredicate("eval.fun", new EvalPredicates.EvalFun());
-		addPredicate("eval.js", new EvalPredicates.EvalJs());
-		addPredicate(TermOp.LE____, new EvalPredicates.Compare());
-		addPredicate(TermOp.LT____, new EvalPredicates.Compare());
-		addPredicate(TermOp.NOTEQ_, new EvalPredicates.NotEquals());
-		addPredicate(TermOp.GE____, new EvalPredicates.Compare());
-		addPredicate(TermOp.GT____, new EvalPredicates.Compare());
-		addPredicate("generalize", new EvalPredicates.Generalize());
-		addPredicate("hash", new EvalPredicates.Hash());
-		addPredicate("is.cyclic", new EvalPredicates.IsCyclic());
-		addPredicate("let", new EvalPredicates.Let());
-		addPredicate("random", new EvalPredicates.RandomPredicate());
-		addPredicate("replace", new EvalPredicates.Replace());
-		addPredicate("rewrite", new EvalPredicates.Rewrite());
-		addPredicate("same", new EvalPredicates.Same());
-		addPredicate("specialize", new EvalPredicates.Specialize());
-		addPredicate("temp", new EvalPredicates.Temp());
-		addPredicate("tree", new EvalPredicates.TreePredicate());
-		addPredicate("tree.intern", new EvalPredicates.TreeInternPredicate());
+		addPredicate("bound", EvalPredicates.bound);
+		addPredicate("clone", EvalPredicates.clone);
+		addPredicate("complexity", EvalPredicates.complexity);
+		addPredicate("contains", EvalPredicates.contains);
+		addPredicate("eval.fun", EvalPredicates.evalFun);
+		addPredicate("eval.js", EvalPredicates.evalJs);
+		addPredicate(TermOp.LE____, EvalPredicates.compare);
+		addPredicate(TermOp.LT____, EvalPredicates.compare);
+		addPredicate(TermOp.NOTEQ_, EvalPredicates.notEquals);
+		addPredicate(TermOp.GE____, EvalPredicates.compare);
+		addPredicate(TermOp.GT____, EvalPredicates.compare);
+		addPredicate("generalize", EvalPredicates.generalize);
+		addPredicate("hash", EvalPredicates.hash);
+		addPredicate("is.cyclic", EvalPredicates.isCyclic);
+		addPredicate("let", EvalPredicates.let);
+		addPredicate("random", EvalPredicates.randomPredicate);
+		addPredicate("replace", EvalPredicates.replace);
+		addPredicate("rewrite", EvalPredicates.rewrite);
+		addPredicate("same", EvalPredicates.same);
+		addPredicate("specialize", EvalPredicates.specialize);
+		addPredicate("temp", EvalPredicates.temp);
+		addPredicate("tree", EvalPredicates.tree);
+		addPredicate("tree.intern", EvalPredicates.treeIntern);
 
-		addPredicate("find.all", new FindPredicates.FindAll());
-		addPredicate("find.all.memoized", new FindPredicates.FindAllMemoized());
-		addPredicate("find.all.memoized.clear", new FindPredicates.FindAllMemoizedClear());
+		addPredicate("find.all", FindPredicates.findAll);
+		addPredicate("find.all.memoized", FindPredicates.findAllMemoized);
+		addPredicate("find.all.memoized.clear", FindPredicates.findAllMemoizedClear);
 
-		addPredicate("char.ascii", new FormatPredicates.CharAscii());
-		addPredicate("concat", new FormatPredicates.Concat());
-		addPredicate("is.atom", new FormatPredicates.IsAtom());
-		addPredicate("is.int", new FormatPredicates.IsInt());
-		addPredicate("is.string", new FormatPredicates.IsString());
-		addPredicate("is.tree", new FormatPredicates.IsTree());
-		addPredicate("parse", new FormatPredicates.Parse());
-		addPredicate("persist.load", new FormatPredicates.PersistLoad());
-		addPredicate("persist.save", new FormatPredicates.PersistSave());
-		addPredicate("pretty.print", new FormatPredicates.PrettyPrint());
-		addPredicate("rpn", new FormatPredicates.Rpn());
-		addPredicate("starts.with", new FormatPredicates.StartsWith());
-		addPredicate("string.length", new FormatPredicates.StringLength());
-		addPredicate("substring", new FormatPredicates.Substring());
-		addPredicate("to.atom", new FormatPredicates.ToAtom());
-		addPredicate("to.dump.string", new FormatPredicates.ToDumpString());
-		addPredicate("to.int", new FormatPredicates.ToInt());
-		addPredicate("to.string", new FormatPredicates.ToString());
-		addPredicate("treeize", new FormatPredicates.Treeize());
-		addPredicate("trim", new FormatPredicates.Trim());
+		addPredicate("char.ascii", FormatPredicates.charAscii);
+		addPredicate("concat", FormatPredicates.concat);
+		addPredicate("graphize", FormatPredicates.graphize);
+		addPredicate("is.atom", FormatPredicates.isAtom);
+		addPredicate("is.int", FormatPredicates.isInt);
+		addPredicate("is.string", FormatPredicates.isString);
+		addPredicate("is.tree", FormatPredicates.isTree);
+		addPredicate("parse", FormatPredicates.parse);
+		addPredicate("persist.load", FormatPredicates.persistLoad);
+		addPredicate("persist.save", FormatPredicates.persistSave);
+		addPredicate("pretty.print", FormatPredicates.prettyPrint);
+		addPredicate("rpn", FormatPredicates.rpnPredicate);
+		addPredicate("starts.with", FormatPredicates.startsWith);
+		addPredicate("string.length", FormatPredicates.stringLength);
+		addPredicate("substring", FormatPredicates.substring);
+		addPredicate("to.atom", FormatPredicates.toAtom);
+		addPredicate("to.dump.string", FormatPredicates.toDumpString);
+		addPredicate("to.int", FormatPredicates.toInt);
+		addPredicate("to.string", FormatPredicates.toString);
+		addPredicate("treeize", FormatPredicates.treeize);
+		addPredicate("trim", FormatPredicates.trim);
 
-		addPredicate("intern.map.clear", new InternMapPredicates.InternMapClear());
-		addPredicate("intern.map.put", new InternMapPredicates.InternMapPut());
+		addPredicate("intern.map.clear", InternMapPredicates.internMapClear);
+		addPredicate("intern.map.put", InternMapPredicates.internMapPut);
 
-		addPredicate("dump", new IoPredicates.Dump());
-		addPredicate("dump.stack", new IoPredicates.DumpStack());
-		addPredicate("exec", new IoPredicates.Exec());
-		addPredicate("exit", new IoPredicates.Exit());
-		addPredicate("file.exists", new IoPredicates.FileExists());
-		addPredicate("file.read", new IoPredicates.FileRead());
-		addPredicate("file.write", new IoPredicates.FileWrite());
-		addPredicate("home.dir", new IoPredicates.HomeDir());
-		addPredicate("log", new IoPredicates.Log());
-		addPredicate("nl", new IoPredicates.Nl());
-		addPredicate("sink", new IoPredicates.Sink());
-		addPredicate("source", new IoPredicates.Source());
-		addPredicate("throw", new IoPredicates.Throw());
-		addPredicate("write", new IoPredicates.Write(System.out));
-		addPredicate("write.error", new IoPredicates.Write(System.err));
+		addPredicate("dump", IoPredicates.dump);
+		addPredicate("dump.stack", IoPredicates.dumpStack);
+		addPredicate("exec", IoPredicates.exec);
+		addPredicate("exit", IoPredicates.exit);
+		addPredicate("file.exists", IoPredicates.fileExists);
+		addPredicate("file.read", IoPredicates.fileRead);
+		addPredicate("file.write", IoPredicates.fileWrite);
+		addPredicate("home.dir", IoPredicates.homeDir);
+		addPredicate("log", IoPredicates.log);
+		addPredicate("nl", IoPredicates.nl);
+		addPredicate("sink", IoPredicates.sink);
+		addPredicate("source", IoPredicates.source);
+		addPredicate("throw", IoPredicates.throwPredicate);
+		addPredicate("write", IoPredicates.write.apply(System.out));
+		addPredicate("write.error", IoPredicates.write.apply(System.err));
 
-		addPredicate("assert", new RuleSetPredicates.Assertz());
-		addPredicate("asserta", new RuleSetPredicates.Asserta());
-		addPredicate("assertz", new RuleSetPredicates.Assertz());
-		addPredicate("import", new RuleSetPredicates.Import());
-		addPredicate("import.path", new RuleSetPredicates.ImportPath());
-		addPredicate("list", new RuleSetPredicates.ListPredicates());
-		addPredicate("retract", new RuleSetPredicates.Retract());
-		addPredicate("retract.all", new RuleSetPredicates.RetractAll());
-		addPredicate("rules", new RuleSetPredicates.GetAllRules());
-		addPredicate("with", new RuleSetPredicates.With());
+		addPredicate("assert", RuleSetPredicates.assertz);
+		addPredicate("asserta", RuleSetPredicates.asserta);
+		addPredicate("assertz", RuleSetPredicates.assertz);
+		addPredicate("import", RuleSetPredicates.importPredicate);
+		addPredicate("import.path", RuleSetPredicates.importPath);
+		addPredicate("list", RuleSetPredicates.list);
+		addPredicate("retract", RuleSetPredicates.retract);
+		addPredicate("retract.all", RuleSetPredicates.retractAll);
+		addPredicate("rules", RuleSetPredicates.getAllRules);
+		addPredicate("with", RuleSetPredicates.with);
 	}
 
 	public Boolean call(Node query) {
@@ -143,48 +143,32 @@ public class SystemPredicates {
 		predicates.put(name, pred);
 	}
 
-	private class CutBegin implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return prover.bind(ps, prover.getAlternative());
-		}
-	}
+	private SystemPredicate cutBegin = (prover, ps) -> {
+		return prover.bind(ps, prover.getAlternative());
+	};
 
-	private class CutEnd implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			prover.setAlternative(ps.finalNode());
-			return true;
-		}
-	}
+	private SystemPredicate cutEnd = (prover, ps) -> {
+		prover.setAlternative(ps.finalNode());
+		return true;
+	};
 
-	private class Not implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Prover prover1 = new Prover(prover);
-			boolean result = !prover1.prove0(ps);
-			if (!result) // Roll back bindings if overall goal is failed
-				prover1.undoAllBinds();
-			return result;
-		}
-	}
+	private SystemPredicate not = (prover, ps) -> {
+		Prover prover1 = new Prover(prover);
+		boolean result = !prover1.prove0(ps);
+		if (!result) // Roll back bindings if overall goal is failed
+			prover1.undoAllBinds();
+		return result;
+	};
 
-	private class Once implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return new Prover(prover).prove0(ps);
-		}
-	}
+	private SystemPredicate once = (prover, ps) -> {
+		return new Prover(prover).prove0(ps);
+	};
 
-	private class SystemPredicate_ implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			ps = ps.finalNode();
-			Atom atom = ps instanceof Atom ? (Atom) ps : null;
-			String name = atom != null ? atom.getName() : null;
-			return name != null && predicates.containsKey(name);
-		}
-	}
-
-	private class Temporary implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return prover.bind(ps, Atom.unique());
-		}
-	}
+	private SystemPredicate systemPredicate = (prover, ps) -> {
+		ps = ps.finalNode();
+		Atom atom = ps instanceof Atom ? (Atom) ps : null;
+		String name = atom != null ? atom.getName() : null;
+		return name != null && predicates.containsKey(name);
+	};
 
 }

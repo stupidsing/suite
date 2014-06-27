@@ -21,107 +21,89 @@ import suite.node.io.TermOp;
 
 public class RuleSetPredicates {
 
-	public static class Asserta implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 1);
-			RuleSet ruleSet = prover.ruleSet();
-			ruleSet.addRuleToFront(Rule.formRule(params[0]));
-			return true;
+	public static SystemPredicate asserta = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 1);
+		RuleSet ruleSet = prover.ruleSet();
+		ruleSet.addRuleToFront(Rule.formRule(params[0]));
+		return true;
+	};
+
+	public static SystemPredicate assertz = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 1);
+		Suite.addRule(prover.ruleSet(), params[0]);
+		return true;
+	};
+
+	public static SystemPredicate getAllRules = (prover, ps) -> {
+		RuleSet ruleSet = prover.ruleSet();
+		List<Rule> rules = ruleSet.getRules();
+		List<Node> nodes = new ArrayList<>();
+
+		for (Rule rule : rules)
+			nodes.add(Tree.of(TermOp.IS____, rule.getHead(), rule.getTail()));
+
+		return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
+	};
+
+	public static SystemPredicate importPredicate = (prover, ps) -> {
+		return Suite.importFrom(prover.ruleSet(), ps);
+	};
+
+	public static SystemPredicate importPath = (prover, ps) -> {
+		String filename = Formatter.display(ps);
+		try {
+			return Suite.importPath(prover.ruleSet(), filename);
+		} catch (Exception ex) {
+			throw new RuntimeException("Exception when importing " + filename, ex);
 		}
-	}
+	};
 
-	public static class Assertz implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 1);
-			Suite.addRule(prover.ruleSet(), params[0]);
-			return true;
+	public static SystemPredicate list = (prover, ps) -> {
+		Prototype proto = null;
+		if (ps != Atom.NIL)
+			proto = Prototype.get(ps);
+
+		Node node = Suite.getRuleList(prover.ruleSet(), proto);
+		PrettyPrinter printer = new PrettyPrinter();
+		System.out.println(printer.prettyPrint(node));
+		return true;
+	};
+
+	public static SystemPredicate retract = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 1);
+		prover.ruleSet().removeRule(Rule.formRule(params[0]));
+		return true;
+	};
+
+	public static SystemPredicate retractAll = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 1);
+		Rule rule0 = Rule.formRule(params[0]);
+
+		RuleSet ruleSet = prover.ruleSet();
+		Journal journal = prover.getJournal();
+		int pit = journal.getPointInTime();
+		List<Rule> targets = new ArrayList<>();
+
+		for (Rule rule : ruleSet.getRules()) {
+			if (Binder.bind(rule0.getHead(), rule.getHead(), journal) //
+					&& Binder.bind(rule0.getTail(), rule.getTail(), journal))
+				targets.add(rule);
+
+			journal.undoBinds(pit);
 		}
-	}
 
-	public static class GetAllRules implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			RuleSet ruleSet = prover.ruleSet();
-			List<Rule> rules = ruleSet.getRules();
-			List<Node> nodes = new ArrayList<>();
+		for (Rule rule : targets)
+			ruleSet.removeRule(rule);
 
-			for (Rule rule : rules)
-				nodes.add(Tree.of(TermOp.IS____, rule.getHead(), rule.getTail()));
+		return true;
+	};
 
-			return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
-		}
-	}
-
-	public static class Import implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return Suite.importFrom(prover.ruleSet(), ps);
-		}
-	}
-
-	public static class ImportPath implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			String filename = Formatter.display(ps);
-			try {
-				return Suite.importPath(prover.ruleSet(), filename);
-			} catch (Exception ex) {
-				throw new RuntimeException("Exception when importing " + filename, ex);
-			}
-		}
-	}
-
-	public static class ListPredicates implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Prototype proto = null;
-			if (ps != Atom.NIL)
-				proto = Prototype.get(ps);
-
-			Node node = Suite.getRuleList(prover.ruleSet(), proto);
-			PrettyPrinter printer = new PrettyPrinter();
-			System.out.println(printer.prettyPrint(node));
-			return true;
-		}
-	}
-
-	public static class Retract implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 1);
-			prover.ruleSet().removeRule(Rule.formRule(params[0]));
-			return true;
-		}
-	}
-
-	public static class RetractAll implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 1);
-			Rule rule0 = Rule.formRule(params[0]);
-
-			RuleSet ruleSet = prover.ruleSet();
-			Journal journal = prover.getJournal();
-			int pit = journal.getPointInTime();
-			List<Rule> targets = new ArrayList<>();
-
-			for (Rule rule : ruleSet.getRules()) {
-				if (Binder.bind(rule0.getHead(), rule.getHead(), journal) //
-						&& Binder.bind(rule0.getTail(), rule.getTail(), journal))
-					targets.add(rule);
-
-				journal.undoBinds(pit);
-			}
-
-			for (Rule rule : targets)
-				ruleSet.removeRule(rule);
-
-			return true;
-		}
-	}
-
-	public static class With implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			RuleSet ruleSet = prover.ruleSet();
-			RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
-			CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
-			return new Prover(ruleSet2).prove(params[1]);
-		}
-	}
+	public static SystemPredicate with = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		RuleSet ruleSet = prover.ruleSet();
+		RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
+		CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
+		return new Prover(ruleSet2).prove(params[1]);
+	};
 
 }

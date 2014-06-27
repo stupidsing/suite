@@ -19,30 +19,24 @@ public class FindPredicates {
 
 	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
-	public static class FindAll implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 3);
-			Node var = params[0], goal = params[1], results = params[2];
-			return prover.bind(results, findAll(prover, var, goal));
-		}
-	}
+	public static SystemPredicate findAll = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 3);
+		Node var = params[0], goal = params[1], results = params[2];
+		return prover.bind(results, findAll(prover, var, goal));
+	};
 
 	// memoize is not re-entrant due to using computeIfAbsent()
-	public static class FindAllMemoized implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 3);
-			Node var = params[0], goal = params[1], results = params[2];
-			TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
-			return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
-		}
-	}
+	public static SystemPredicate findAllMemoized = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 3);
+		Node var = params[0], goal = params[1], results = params[2];
+		TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
+		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
+	};
 
-	public static class FindAllMemoizedClear implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			memoizedPredicates.clear();
-			return true;
-		}
-	}
+	public static SystemPredicate findAllMemoizedClear = (prover, ps) -> {
+		memoizedPredicates.clear();
+		return true;
+	};
 
 	private static Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();
