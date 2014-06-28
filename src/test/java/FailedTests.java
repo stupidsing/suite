@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
+import suite.lp.eval.LogicCompilerLevel1Test;
 import suite.lp.kb.RuleSet;
 
 public class FailedTests {
@@ -15,6 +16,11 @@ public class FailedTests {
 	@Test
 	public void testClosureUsing() {
 		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
+	}
+
+	@Test
+	public void testCompileFunProgram() {
+		new LogicCompilerLevel1Test().testCompileFunProgram();
 	}
 
 	@Test
