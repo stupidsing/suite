@@ -25,7 +25,7 @@ fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.closureReg
 #
 fc-compile (IF .if .then .else) .env .c0/.cx/.reg
 	:- fc-compile .if .env .c0/.c1/.ifReg
-	, .c1 = (IF-FALSE l:.c4 .ifReg, .c2)
+	, .c1 = (IF-FALSE .ifReg l:.c4, .c2)
 	, fc-compile .then .env .c2/.c3/.thenReg
 	, .c3 = (ASSIGN-FRAME-REG .reg 0 .thenReg, .cx)
 	, fc-compile .else .env .c4/.c5/.elseReg

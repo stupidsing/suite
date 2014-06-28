@@ -23,7 +23,6 @@ public class InternMapPredicates {
 	public static SystemPredicate internMapPut = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		IdentityKey key = new IdentityKey(params[0].finalNode());
-		System.out.println("IMP " + key.hashCode() + "::" + params[0]);
 		return prover.bind(internMap.computeIfAbsent(key, any -> new Reference()), params[1]);
 	};
 

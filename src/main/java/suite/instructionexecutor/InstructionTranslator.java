@@ -310,7 +310,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getLeft()", op0);
 				break;
 			case IFFALSE_______:
-				app("if (!#{reg-bool}) #{jump}", op1, op0);
+				app("if (!#{reg-bool}) #{jump}", op0, op1);
 				break;
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);

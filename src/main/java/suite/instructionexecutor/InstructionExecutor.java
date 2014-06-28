@@ -169,8 +169,8 @@ public class InstructionExecutor implements AutoCloseable {
 					regs[insn.op1] = Tree.of(op, left, right);
 					break;
 				case IFFALSE_______:
-					if (regs[insn.op1] != Atom.TRUE)
-						current.ip = insn.op0;
+					if (regs[insn.op0] != Atom.TRUE)
+						current.ip = insn.op1;
 					break;
 				case IFNOTEQUALS___:
 					if (regs[insn.op1] != regs[insn.op2])

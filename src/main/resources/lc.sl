@@ -215,7 +215,7 @@ lc-compile (.oper .a .b) .rem .pls/.vs/.cut .c0/.cx
 	, lc-create-node .a .vs .c0/.c1/.reg0
 	, lc-create-node .b .vs .c1/.c2/.reg1
 	, .c2 = (.inst .resultReg .reg0 .reg1
-		, IF-FALSE l:.cx .resultReg
+		, IF-FALSE .resultReg l:.cx
 		, .c3)
 	, lc-compile .rem YES .pls/.vs/.cut .c3/.cx
 #
