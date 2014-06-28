@@ -21,6 +21,9 @@ cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
 	:- cg-redirect-instruction .redirInsn
 	, !, cg-optimize-jumps (.redirInsn, .insns) .cx
 #
+cg-optimize-jumps (CALL l:(RETURN, _), .insns) .cx
+	:- !, cg-optimize-jumps .insns .cx
+#
 cg-optimize-jumps .insns .insns #
 
 cg-redirect-instruction (JUMP _) #
