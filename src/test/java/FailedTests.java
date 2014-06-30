@@ -27,7 +27,7 @@ public class FailedTests {
 	@Test
 	public void testCompileFunProgram() throws IOException {
 		RuleSet rs = Suite.createRuleSet();
-		rs.addRule(Rule.formRule(Suite.parse("test p :- (test (); nl), test ()")));
+		rs.addRule(Rule.formRule(Suite.parse("test :- (test; nl), test")));
 
 		Node goal = new Specializer().specialize(Suite.substitute("sink (); test ()"));
 		FindUtil.collectSingle(CompiledProverBuilder.level1(new ProverConfig()).build(rs, goal), Int.of(1));
