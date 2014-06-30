@@ -29,7 +29,7 @@ public class FailedTests {
 		RuleSet rs = Suite.createRuleSet();
 		rs.addRule(Rule.formRule(Suite.parse("test p :- (test (); nl), test ()")));
 
-		Node goal = new Specializer().specialize(Suite.substitute("test () .out"));
+		Node goal = new Specializer().specialize(Suite.substitute("sink (); test ()"));
 		FindUtil.collectSingle(CompiledProverBuilder.level1(new ProverConfig()).build(rs, goal), Int.of(1));
 	}
 
