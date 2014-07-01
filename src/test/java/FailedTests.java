@@ -7,14 +7,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
-import suite.lp.doer.Configuration.ProverConfig;
-import suite.lp.doer.Specializer;
-import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.search.CompiledProverBuilder;
-import suite.lp.search.FindUtil;
-import suite.node.Int;
-import suite.node.Node;
 
 public class FailedTests {
 
@@ -22,15 +15,6 @@ public class FailedTests {
 	@Test
 	public void testClosureUsing() {
 		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
-	}
-
-	@Test
-	public void testCompileFunProgram() throws IOException {
-		RuleSet rs = Suite.createRuleSet();
-		rs.addRule(Rule.formRule(Suite.parse("test :- (test; nl), test")));
-
-		Node goal = new Specializer().specialize(Suite.substitute("sink (); test ()"));
-		FindUtil.collectSingle(CompiledProverBuilder.level1(new ProverConfig()).build(rs, goal), Int.of(1));
 	}
 
 	@Test

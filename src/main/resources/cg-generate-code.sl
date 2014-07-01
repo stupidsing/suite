@@ -49,7 +49,7 @@ cg-optimize-lp-tail-calls .li0 .ri0
 	, cg-is-skip .li6/.li7
 	, cg-is-returning .li8
 	, cg-verify-push-pop-bind-pairs .pairs
-	, (.jump = JUMP, .op = l:.target, .ri3 = .target; .ri3 = (.jump .op,))
+	, .ri3 = (.jump .op,)
 	, !
 #
 cg-optimize-lp-tail-calls .insns .insns #
