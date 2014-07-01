@@ -213,6 +213,7 @@ public class InstructionAnalyzer {
 
 	private boolean isReturningValue(Source<Instruction> source, int returnReg) {
 		Instruction instruction;
+		boolean isReturningValue = false;
 
 		while ((instruction = source.source()) != null)
 			switch (instruction.insn) {
@@ -222,8 +223,11 @@ public class InstructionAnalyzer {
 					break;
 				} else
 					return false;
-			case RETURNVALUE___:
-				return instruction.op0 == returnReg;
+			case SETRESULT_____:
+				isReturningValue = instruction.op0 == returnReg;
+				break;
+			case RETURN________:
+				return isReturningValue;
 			default:
 				return false;
 			}

@@ -21,7 +21,7 @@ fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.closureReg
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
 	, fc-compile .do .frame1/.ve1 .f1/.f2/.returnReg
-	, .f2 = (RETURN-VALUE .returnReg,)
+	, .f2 = (SET-RESULT .returnReg, RETURN,)
 #
 fc-compile (IF .if .then .else) .env .c0/.cx/.reg
 	:- fc-compile .if .env .c0/.c1/.ifReg
@@ -73,7 +73,7 @@ fc-compile (VAR .var) .frame/.ve .c0/.cx/.reg1
 fc-compile (WRAP .do) .frame/.ve .c0/.cx/.closureReg
 	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(PROC l:.f0,), .cx)
 	, fc-compile .do (.frame + 1)/.ve .f0/.f1/.returnReg
-	, .f1 = (RETURN-VALUE .returnReg,)
+	, .f1 = (SET-RESULT .returnReg, RETURN,)
 #
 
 fc-default-fun .call .frame .result :- fc-default-fun0 .call .frame .result 0 #

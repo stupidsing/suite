@@ -370,9 +370,8 @@ public class InstructionTranslator implements Closeable {
 			case RETURN________:
 				popCaller();
 				break;
-			case RETURNVALUE___:
+			case SETRESULT_____:
 				app("returnValue = #{reg-node}", op0);
-				popCaller();
 				break;
 			case TAIL__________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);

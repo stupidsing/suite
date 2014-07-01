@@ -129,7 +129,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
 		list.add(new Instruction(Insn.CALLINTRINSIC_, 2, 2, 0));
-		list.add(new Instruction(Insn.RETURNVALUE___, 2, 0, 0));
+		list.add(new Instruction(Insn.SETRESULT_____, 2, 0, 0));
+		list.add(new Instruction(Insn.RETURN________, 0, 0, 0));
 		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 
 		super.postprocessInstructions(list);

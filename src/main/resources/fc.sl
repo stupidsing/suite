@@ -24,7 +24,7 @@ compile-function .mode .do0 (PROC l:.c,)
 	)
 	, !, fc-optimize .do2 .do3
 	, !, fc-compile .do3 0/() .c0/.c1/.reg
-	, .c1 = (RETURN-VALUE .reg,)
+	, .c1 = (SET-RESULT .reg, RETURN,)
 	, cg-optimize .c0 .c
 #
 

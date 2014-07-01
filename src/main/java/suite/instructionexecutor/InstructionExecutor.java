@@ -216,9 +216,8 @@ public class InstructionExecutor implements AutoCloseable {
 				case RETURN________:
 					current = current.previous;
 					break;
-				case RETURNVALUE___:
+				case SETRESULT_____:
 					returnValue = regs[insn.op0];
-					current = current.previous;
 					break;
 				case TOP___________:
 					regs[insn.op0] = stack[sp + insn.op1];

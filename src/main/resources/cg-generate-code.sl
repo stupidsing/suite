@@ -28,12 +28,11 @@ cg-optimize-jumps .insns .insns #
 
 cg-redirect-instruction (JUMP _) #
 cg-redirect-instruction (RETURN) #
-cg-redirect-instruction (RETURN-VALUE _) #
 
 cg-optimize-assign-returns (
-	ASSIGN-FRAME-REG .r0 0 .r, RETURN-VALUE .r1, .insns0
+	ASSIGN-FRAME-REG .r0 0 .r, SET-RESULT .r1, RETURN, .insns0
 ) (
-	RETURN-VALUE .r, .insns1
+	SET-RESULT .r, RETURN, .insns1
 )
 	:- same .r0 .r1
 	, !, cg-optimize-assign-returns .insns0 .insns1

@@ -94,7 +94,7 @@ public class InstructionUtil {
 		RESTORECSP____("RESTORE-CSP"), //
 		RESTOREDSP____("RESTORE-DSP"), //
 		RETURN________("RETURN"), //
-		RETURNVALUE___("RETURN-VALUE"), //
+		SETRESULT_____("SET-RESULT"), //
 		TAIL__________("TAIL"), //
 		TOP___________("TOP"), //
 		;
