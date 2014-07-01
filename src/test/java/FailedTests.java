@@ -19,7 +19,7 @@ public class FailedTests {
 
 	@Test
 	public void testCutTailRecursion() {
-		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 16"));
+		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 16384"));
 	}
 
 	// (Expected) infinite loop.
