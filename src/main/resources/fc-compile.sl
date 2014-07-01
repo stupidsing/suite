@@ -34,7 +34,7 @@ fc-compile (IF .if .then .else) .env .c0/.cx/.reg
 fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.reg
 	:- fc-compile .callee .env .c0/.c1/.r0
 	, fc-compile .parameter .env .c1/.c2/.r1
-	, .c2 = (PUSH .r1, CALL-CLOSURE .r0, SET-RESULT .reg, .cx)
+	, .c2 = (PUSH .r1, CALL-CLOSURE .r0, ASSIGN-RESULT .reg, .cx)
 #
 fc-compile (NUMBER .i) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-INT .reg .i, .cx)
@@ -52,7 +52,7 @@ fc-compile (TREE .oper .left .right) .env .c0/.cx/.reg
 #
 fc-compile (UNWRAP .callee) .env .c0/.cx/.reg
 	:- fc-compile .callee .env .c0/.c1/.closureReg
-	, .c1 = (CALL-CLOSURE .closureReg, SET-CLOSURE-RESULT .reg .closureReg, .cx)
+	, .c1 = (CALL-CLOSURE .closureReg, ASSIGN-CLOSURE-RESULT .reg .closureReg, .cx)
 #
 fc-compile (USING .mode BUILTIN .lib .do) .fve .cr
 	:- fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)

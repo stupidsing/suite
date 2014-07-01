@@ -37,10 +37,12 @@ public class InstructionUtil {
 	}
 
 	public enum Insn {
+		ASSIGNCLOSRES_("ASSIGN-CLOSURE-RESULT"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
+		ASSIGNRESULT__("ASSIGN-RESULT"), //
 		BACKUPCSP_____("BACKUP-CSP"), //
 		BACKUPDSP_____("BACKUP-DSP"), //
 		BIND__________("BIND"), //
@@ -93,8 +95,6 @@ public class InstructionUtil {
 		RESTOREDSP____("RESTORE-DSP"), //
 		RETURN________("RETURN"), //
 		RETURNVALUE___("RETURN-VALUE"), //
-		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
-		SETRESULT_____("SET-RESULT"), //
 		TAIL__________("TAIL"), //
 		TOP___________("TOP"), //
 		;

@@ -163,8 +163,17 @@ public class InstructionTranslator implements Closeable {
 			app("case #{num}:", currentIp);
 
 			switch (insn.insn) {
+			case ASSIGNCLOSRES_:
+				restoreFrame();
+				app("#{reg} = returnValue", op0);
+				app("#{reg-clos}.result = #{reg}", op1, op0);
+				break;
 			case ASSIGNCLOSURE_:
 				app("#{reg} = new Closure(#{fr}, #{num})", op0, op1);
+				break;
+			case ASSIGNCONST___:
+				constant = constantPool.get(op1);
+				app("#{reg} = #{str}", op0, defineConstant(constant));
 				break;
 			case ASSIGNFRAMEREG:
 				if (op1 != 0) {
@@ -175,12 +184,12 @@ public class InstructionTranslator implements Closeable {
 				} else
 					app("#{reg} = TranslatedRunUtil.toNode(#{reg})", op0, op2);
 				break;
-			case ASSIGNCONST___:
-				constant = constantPool.get(op1);
-				app("#{reg} = #{str}", op0, defineConstant(constant));
-				break;
 			case ASSIGNINT_____:
 				app("#{reg} = #{num}", op0, op1);
+				break;
+			case ASSIGNRESULT__:
+				restoreFrame();
+				app("#{reg} = returnValue", op0);
 				break;
 			case BACKUPCSP_____:
 				app("#{reg} = csp", op0);
@@ -364,15 +373,6 @@ public class InstructionTranslator implements Closeable {
 			case RETURNVALUE___:
 				app("returnValue = #{reg-node}", op0);
 				popCaller();
-				break;
-			case SETRESULT_____:
-				restoreFrame();
-				app("#{reg} = returnValue", op0);
-				break;
-			case SETCLOSURERES_:
-				restoreFrame();
-				app("#{reg} = returnValue", op0);
-				app("#{reg-clos}.result = #{reg}", op1, op0);
 				break;
 			case TAIL__________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);

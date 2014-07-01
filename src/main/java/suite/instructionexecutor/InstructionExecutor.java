@@ -91,8 +91,17 @@ public class InstructionExecutor implements AutoCloseable {
 					StatisticsCollector.getInstance().collect(ip, insn);
 
 				switch (insn.insn) {
+				case ASSIGNCLOSRES_:
+					regs[insn.op0] = returnValue;
+					closure = (Closure) regs[insn.op1].finalNode();
+					closure.frame = null; // Facilitates garbage collection
+					closure.result = returnValue;
+					break;
 				case ASSIGNCLOSURE_:
 					regs[insn.op0] = new Closure(frame, insn.op1);
+					break;
+				case ASSIGNCONST___:
+					regs[insn.op0] = constantPool.get(insn.op1);
 					break;
 				case ASSIGNFRAMEREG:
 					i = insn.op1;
@@ -100,11 +109,11 @@ public class InstructionExecutor implements AutoCloseable {
 						frame = frame.previous;
 					regs[insn.op0] = frame.registers[insn.op2];
 					break;
-				case ASSIGNCONST___:
-					regs[insn.op0] = constantPool.get(insn.op1);
-					break;
 				case ASSIGNINT_____:
 					regs[insn.op0] = number(insn.op1);
+					break;
+				case ASSIGNRESULT__:
+					regs[insn.op0] = returnValue;
 					break;
 				case CALL__________:
 					current = new Activation(frame, insn.op0, current);
@@ -211,15 +220,6 @@ public class InstructionExecutor implements AutoCloseable {
 					returnValue = regs[insn.op0];
 					current = current.previous;
 					break;
-				case SETCLOSURERES_:
-					regs[insn.op0] = returnValue;
-					closure = (Closure) regs[insn.op1].finalNode();
-					closure.frame = null; // Facilitates garbage collection
-					closure.result = returnValue;
-					break;
-				case SETRESULT_____:
-					regs[insn.op0] = returnValue;
-					break;
 				case TOP___________:
 					regs[insn.op0] = stack[sp + insn.op1];
 					break;
@@ -250,7 +250,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 		unwrapEntryPoint = list.size();
 		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
-		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
+		list.add(new Instruction(Insn.ASSIGNRESULT__, 1, 0, 0));
 		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
 		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
 	}

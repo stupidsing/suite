@@ -150,7 +150,9 @@ public class InstructionAnalyzer {
 			case EVALSUB_______:
 				registers.get(op0).clazz = int.class;
 				break;
+			case ASSIGNCLOSRES_:
 			case ASSIGNCONST___:
+			case ASSIGNRESULT__:
 			case CALLINTRINSIC_:
 			case CONSPAIR______:
 			case CONSLIST______:
@@ -159,8 +161,6 @@ public class InstructionAnalyzer {
 			case LOGREG________:
 			case NEWNODE_______:
 			case POP___________:
-			case SETRESULT_____:
-			case SETCLOSURERES_:
 			case TAIL__________:
 			case TOP___________:
 				registers.get(op0).clazz = Node.class;
@@ -205,7 +205,7 @@ public class InstructionAnalyzer {
 			Instruction instruction1 = source.source();
 
 			if (instruction0 != null && instruction0.insn == Insn.CALLCLOSURE___ //
-					&& instruction1 != null && instruction1.insn == Insn.SETRESULT_____ //
+					&& instruction1 != null && instruction1.insn == Insn.ASSIGNRESULT__ //
 					&& isReturningValue(source, instruction1.op0))
 				tailCalls.add(ip);
 		}
@@ -241,12 +241,12 @@ public class InstructionAnalyzer {
 					Instruction instruction = instructions.get(ip_++);
 
 					switch (instruction.insn) {
+					case ASSIGNCLOSRES_:
 					case ASSIGNFRAMEREG:
+					case ASSIGNRESULT__:
 					case CALL__________:
 					case CALLCLOSURE___:
 					case CALLINTRINSIC_:
-					case SETCLOSURERES_:
-					case SETRESULT_____:
 						return instruction;
 					case JUMP__________:
 						ip_ = instruction.op0;
