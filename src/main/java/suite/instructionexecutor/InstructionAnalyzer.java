@@ -29,6 +29,10 @@ public class InstructionAnalyzer {
 			this.id = id;
 		}
 
+		public boolean isAccessedByChildFrames() {
+			return registers.stream().anyMatch(AnalyzedRegister::isAccessedByChildFrames);
+		}
+
 		public int getId() {
 			return id;
 		}
@@ -48,7 +52,7 @@ public class InstructionAnalyzer {
 
 	public static class AnalyzedRegister {
 		private Class<?> clazz;
-		private boolean isUsedExternally = true;
+		private boolean isAccessedByChildFrames = false;
 
 		public Class<?> getClazz() {
 			return clazz;
@@ -57,8 +61,8 @@ public class InstructionAnalyzer {
 		/**
 		 * Analyzes whether code of other frames would access this variable.
 		 */
-		public boolean isUsedExternally() {
-			return isUsedExternally;
+		public boolean isAccessedByChildFrames() {
+			return isAccessedByChildFrames;
 		}
 
 		/**
@@ -179,7 +183,7 @@ public class InstructionAnalyzer {
 				AnalyzedRegister op2Register = frame1.registers.get(op2);
 
 				if (frame != frame1)
-					op2Register.isUsedExternally = true;
+					op2Register.isAccessedByChildFrames = true;
 
 				// Merge into Node if clashed
 				if (op0register.clazz != op2Register.clazz)
