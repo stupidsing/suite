@@ -71,6 +71,8 @@ public class InstructionUtil {
 		EXIT__________("EXIT"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
+		FRAMEBEGIN____("FRAME-BEGIN"), //
+		FRAMEEND______("FRAME-END"), //
 		GETINTRINSIC__("GET-INTRINSIC"), //
 		HEAD__________("HEAD"), //
 		IFFALSE_______("IF-FALSE"), //

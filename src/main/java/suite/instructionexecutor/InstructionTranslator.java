@@ -298,15 +298,15 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				if (currentFrame() != null)
-					app("return #{reg}", op0);
-				else
-					app("return returnValue"); // Grand exit point
+				app("return returnValue"); // Grand exit point
 				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
 				app("#{reg} = Tree.of(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
 						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
+				break;
+			case FRAMEBEGIN____:
+			case FRAMEEND______:
 				break;
 			case GETINTRINSIC__:
 				app("{");
@@ -404,7 +404,7 @@ public class InstructionTranslator implements Closeable {
 				app(clazzsec, "private #{str} r#{num}", typeName, r);
 			else {
 				String init = clazz == boolean.class ? "false" : clazz == int.class ? "0" : "null";
-				app(localsec, "#{str} f#{num}_r#{num} = #{str}", typeName, frame.getId(), r, init);
+				app(localsec, "#{str} f#{num}_r#{num} = #{str}", typeName, frame.getFrameBeginIp(), r, init);
 			}
 		}
 
@@ -462,10 +462,10 @@ public class InstructionTranslator implements Closeable {
 
 		switch (s) {
 		case "fr":
-			s = String.format("f%d", frame.getId());
+			s = String.format("f%d", frame.getFrameBeginIp());
 			break;
 		case "fr-class":
-			s = String.format("Frame%d", frame.getId());
+			s = String.format("Frame%d", frame.getFrameBeginIp());
 			break;
 		case "jump":
 			s = String.format("{ ip = %d; continue; }", iter.next());
@@ -474,10 +474,10 @@ public class InstructionTranslator implements Closeable {
 			s = String.format("%d", iter.next());
 			break;
 		case "prev-fr":
-			s = parentFrame != null ? String.format("f%d", parentFrame.getId()) : "frame";
+			s = parentFrame != null ? String.format("f%d", parentFrame.getFrameBeginIp()) : "frame";
 			break;
 		case "prev-fr-class":
-			s = parentFrame != null ? String.format("Frame%d", parentFrame.getId()) : "Frame";
+			s = parentFrame != null ? String.format("Frame%d", parentFrame.getFrameBeginIp()) : "Frame";
 			break;
 		case "reg":
 			s = reg((int) iter.next());
@@ -518,7 +518,7 @@ public class InstructionTranslator implements Closeable {
 
 	private String reg(int reg) {
 		AnalyzedFrame frame = currentFrame();
-		int frameNo = frame.getId();
+		int frameNo = frame.getFrameBeginIp();
 
 		if (!frame.getRegisters().get(reg).isTemporal())
 			return String.format("f%d.r%d", frameNo, reg);

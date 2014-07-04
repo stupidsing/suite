@@ -28,14 +28,14 @@ import com.google.common.collect.BiMap;
 public class InstructionExtractor implements AutoCloseable {
 
 	private Map<IdentityKey, Integer> ipsByLabelId = new HashMap<>();
-	private Deque<Instruction> enters = new ArrayDeque<>();
+	private Deque<Instruction> frameBegins = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 	private Journal journal = new Journal();
 
 	private static final Atom KEYC = Atom.of("c");
 	private static final Atom KEYL = Atom.of("l");
 	private static final Atom KEYR = Atom.of("r");
-	private static final Atom PROC = Atom.of("PROC");
+	private static final Atom FRAME = Atom.of("FRAME");
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
 		this.constantPool = constantPool;
@@ -67,13 +67,13 @@ public class InstructionExtractor implements AutoCloseable {
 					ipsByLabelId.put(key, ip = rsList.size());
 					List<Node> rs = tupleToList(tree.getLeft());
 
-					if (rs.get(0) == PROC)
+					if (rs.get(0) == FRAME)
 						if ((value = label(rs.get(1))) != null) {
-							rsList.add(Arrays.asList(Atom.of("ENTER")));
+							rsList.add(Arrays.asList(Atom.of("FRAME-BEGIN")));
 							extractInstructions(value, rsList);
-							rsList.add(Arrays.asList(Atom.of("LEAVE")));
+							rsList.add(Arrays.asList(Atom.of("FRAME-END")));
 						} else
-							throw new RuntimeException("Bad PROC definition");
+							throw new RuntimeException("Bad frame definition");
 					else {
 						rsList.add(rs);
 						for (Node op : Util.right(rs, 1))
@@ -104,10 +104,10 @@ public class InstructionExtractor implements AutoCloseable {
 					, getRegisterNumber(rs, 2) //
 					, getRegisterNumber(rs, 3));
 
-			if (insn == Insn.ENTER_________)
-				enters.push(instruction);
-			else if (insn == Insn.LEAVE_________)
-				enters.pop();
+			if (insn == Insn.FRAMEBEGIN____)
+				frameBegins.push(instruction);
+			else if (insn == Insn.FRAMEEND______)
+				frameBegins.pop();
 
 			return instruction;
 		} else
@@ -124,8 +124,8 @@ public class InstructionExtractor implements AutoCloseable {
 			else if (node instanceof Reference) { // Transient register
 
 				// Allocates new register in current local frame
-				Instruction enter = enters.getFirst();
-				int registerNumber = enter.op0++;
+				Instruction frameBegin = frameBegins.getFirst();
+				int registerNumber = frameBegin.op0++;
 
 				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;

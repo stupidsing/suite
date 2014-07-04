@@ -46,9 +46,10 @@ cg-optimize-lp-tail-calls .li0 .ri0
 	, .li2 = (.call .op, .li3)
 	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
 	, cg-is-skip .li6/.li7
-	, cg-is-returning .li8
+	, cg-is-leaving .li8/.li9 .ri3/.ri4
+	, cg-is-returning .li9
 	, cg-verify-push-pop-bind-pairs .pairs
-	, .ri3 = (.jump .op,)
+	, .ri4 = (.jump .op,)
 	, !
 #
 cg-optimize-lp-tail-calls .insns .insns #
@@ -83,6 +84,9 @@ cg-is-restore-csp-dsp .i/.i .j/.j #
 
 cg-is-skip (REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
 cg-is-skip .i/.i #
+
+cg-is-leaving (LEAVE, .i)/.i (LEAVE, .j)/.j :- ! #
+cg-is-leaving .i/.i .j/.j #
 
 cg-is-returning (RETURN, _) #
 

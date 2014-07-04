@@ -6,7 +6,8 @@
 #
 
 compile-logic .call .code
-	:- .c0 = (ASSIGN-CONSTANT .returnReg c:true
+	:- .c0 = (ENTER
+		, ASSIGN-CONSTANT .returnReg c:true
 		, ASSIGN-CLOSURE .provenReg l:.c1
 		, BIND-MARK .pitReg
 		, PUSH .pitReg
@@ -18,15 +19,19 @@ compile-logic .call .code
 		, POP-ANY
 		, ASSIGN-CONSTANT .returnReg c:false
 		, .c1)
-	, .c1 = (EXIT .returnReg,)
+	, .c1 = (SET-RESULT .returnReg
+		, LEAVE
+		, EXIT
+		,)
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
 	, !, lc-compile-call .call2 () .cc/()
-	, !, cg-optimize (PROC l:.c0,) .code
+	, !, cg-optimize (FRAME l:.c0,) .code
 #
 
-lc-compile-call .call .pls (PROC l:.c0, .c)/.c
-	:- .c0 = (BACKUP-CSP .cspReg
+lc-compile-call .call .pls (FRAME l:.c0, .c)/.c
+	:- .c0 = (ENTER
+		, BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
 		, TOP .provenReg -2
 		, .c1)
@@ -34,6 +39,7 @@ lc-compile-call .call .pls (PROC l:.c0, .c)/.c
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2
 	, .c2 = (TOP .pitReg -3
 		, BIND-UNDO .pitReg
+		, LEAVE
 		, RETURN
 		,)
 #
@@ -259,10 +265,9 @@ lc-bind-register .reg0 .node1 .vs .c0/.cx/.f
 lc-compile-rules () _ :- ! #
 lc-compile-rules (.proto/.rules, .remains) .pls
 	:- lc-flatten-rules .rules .call
-	, member .pls .proto/.c0
-	, .l = '-----'
-	, .c0 = (REMARK r:(.l .proto .l), .c1) -- debug purpose
-	, lc-compile-call .call .pls .c1/()
+	, member .pls .proto/.c
+	, .remark = REMARK r:('-----' .proto '-----')
+	, lc-compile-call (AND (BYTECODE .remark) .call) .pls .c/()
 	, lc-compile-rules .remains .pls
 #
 

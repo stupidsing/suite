@@ -14,7 +14,7 @@
 #
 
 -- TODO perform cg-optimize but not in imported, precompiled code
-compile-function .mode .do0 (PROC l:.c,)
+compile-function .mode .do0 (FRAME l:.c,)
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
 	, !, fc-resolve-type-rules .tr
@@ -23,8 +23,12 @@ compile-function .mode .do0 (PROC l:.c,)
 		; .mode = EAGER, .do1 = .do2
 	)
 	, !, fc-optimize .do2 .do3
-	, !, fc-compile .do3 0/() .c0/.c1/.reg
-	, .c1 = (SET-RESULT .reg, RETURN,)
+	, .c0 = (ENTER, .c1)
+	, !, fc-compile .do3 0/() .c1/.c2/.reg
+	, .c2 = (SET-RESULT .reg
+		, LEAVE
+		, RETURN
+		,)
 	, cg-optimize .c0 .c
 #
 

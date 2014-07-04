@@ -16,12 +16,15 @@ fc-compile (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.reg
 	, fc-compile .do .frame/.ve1 .c1/.cx/.reg
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.closureReg
-	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(PROC l:.f0,), .cx)
-	, .f0 = (POP .varReg, .f1)
+	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(FRAME l:.f0,), .cx)
+	, .f0 = (ENTER, POP .varReg, .f1)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
 	, fc-compile .do .frame1/.ve1 .f1/.f2/.returnReg
-	, .f2 = (SET-RESULT .returnReg, RETURN,)
+	, .f2 = (SET-RESULT .returnReg
+		, LEAVE
+		, RETURN
+		,)
 #
 fc-compile (IF .if .then .else) .env .c0/.cx/.reg
 	:- fc-compile .if .env .c0/.c1/.ifReg
@@ -34,7 +37,10 @@ fc-compile (IF .if .then .else) .env .c0/.cx/.reg
 fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.reg
 	:- fc-compile .callee .env .c0/.c1/.r0
 	, fc-compile .parameter .env .c1/.c2/.r1
-	, .c2 = (PUSH .r1, CALL-CLOSURE .r0, ASSIGN-RESULT .reg, .cx)
+	, .c2 = (PUSH .r1
+		, CALL-CLOSURE .r0
+		, ASSIGN-RESULT .reg
+		, .cx)
 #
 fc-compile (NUMBER .i) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-INT .reg .i, .cx)
@@ -52,7 +58,9 @@ fc-compile (TREE .oper .left .right) .env .c0/.cx/.reg
 #
 fc-compile (UNWRAP .callee) .env .c0/.cx/.reg
 	:- fc-compile .callee .env .c0/.c1/.closureReg
-	, .c1 = (CALL-CLOSURE .closureReg, ASSIGN-CLOSURE-RESULT .reg .closureReg, .cx)
+	, .c1 = (CALL-CLOSURE .closureReg
+		, ASSIGN-CLOSURE-RESULT .reg .closureReg
+		, .cx)
 #
 fc-compile (USING .mode BUILTIN .lib .do) .fve .cr
 	:- fc-load-precompiled-library .lib (_ # .eagerPred # .lazyPred #)
@@ -71,9 +79,12 @@ fc-compile (VAR .var) .frame/.ve .c0/.cx/.reg1
 	)
 #
 fc-compile (WRAP .do) .frame/.ve .c0/.cx/.closureReg
-	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(PROC l:.f0,), .cx)
+	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(FRAME l:(ENTER, .f0),), .cx)
 	, fc-compile .do (.frame + 1)/.ve .f0/.f1/.returnReg
-	, .f1 = (SET-RESULT .returnReg, RETURN,)
+	, .f1 = (SET-RESULT .returnReg
+		, LEAVE
+		, RETURN
+		,)
 #
 
 fc-default-fun .call .frame .result :- fc-default-fun0 .call .frame .result 0 #

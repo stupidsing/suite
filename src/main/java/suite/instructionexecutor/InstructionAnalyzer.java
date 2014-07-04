@@ -20,21 +20,21 @@ public class InstructionAnalyzer {
 	private Set<Integer> tailCalls = new HashSet<>();
 
 	public static class AnalyzedFrame {
-		private int id;
+		private int frameBeginIp;
 		private boolean isRequireParent = false;
 		private AnalyzedFrame parent;
 		private List<AnalyzedRegister> registers;
 
-		public AnalyzedFrame(int id) {
-			this.id = id;
+		public AnalyzedFrame(int ip) {
+			this.frameBeginIp = ip;
 		}
 
 		public boolean isAccessedByChildFrames() {
 			return registers.stream().anyMatch(AnalyzedRegister::isAccessedByChildFrames);
 		}
 
-		public int getId() {
-			return id;
+		public int getFrameBeginIp() {
+			return frameBeginIp;
 		}
 
 		public boolean isRequireParent() {
@@ -93,17 +93,17 @@ public class InstructionAnalyzer {
 		Deque<AnalyzedFrame> analyzedFrames = new ArrayDeque<>();
 
 		// Find out the parent of closures.
-		// Assumes every ENTER has a ASSIGN-CLOSURE referencing it.
+		// Assumes every FRAME-BEGIN has a ASSIGN-CLOSURE referencing it.
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
-			if (insn.insn == Insn.ENTER_________)
+			if (insn.insn == Insn.FRAMEBEGIN____)
 				analyzedFrames.push(new AnalyzedFrame(ip));
 
 			AnalyzedFrame frame = !analyzedFrames.isEmpty() ? analyzedFrames.peek() : null;
 			framesByIp.add(frame);
 
-			if (insn.insn == Insn.LEAVE_________)
+			if (insn.insn == Insn.FRAMEEND______)
 				analyzedFrames.pop();
 		}
 	}
@@ -113,7 +113,7 @@ public class InstructionAnalyzer {
 			Instruction insn = instructions.get(ip);
 
 			// Recognize frames and their parents.
-			// Assumes ASSIGN-CLOSURE directly points to the ENTER instruction.
+			// Assume ASSIGN-CLOSURE points to the FRAME-BEGIN instruction.
 			if (insn.insn == Insn.ASSIGNCLOSURE_)
 				framesByIp.get(insn.op1).parent = framesByIp.get(ip);
 		}
@@ -192,7 +192,7 @@ public class InstructionAnalyzer {
 			case DECOMPOSETREE1:
 				registers.get(op1).clazz = registers.get(op2).clazz = Node.class;
 				break;
-			case ENTER_________:
+			case FRAMEBEGIN____:
 				registers = frame.registers = new ArrayList<>();
 				for (int i = 0; i < op0; i++)
 					registers.add(new AnalyzedRegister());
@@ -217,7 +217,7 @@ public class InstructionAnalyzer {
 
 	private boolean isReturningValue(Source<Instruction> source, int returnReg) {
 		Instruction instruction;
-		boolean isReturningValue = false;
+		boolean isLeft = false, isReturningValue = false;
 
 		while ((instruction = source.source()) != null)
 			switch (instruction.insn) {
@@ -227,11 +227,14 @@ public class InstructionAnalyzer {
 					break;
 				} else
 					return false;
+			case LEAVE_________:
+				isLeft = true;
+				break;
+			case RETURN________:
+				return isLeft && isReturningValue;
 			case SETRESULT_____:
 				isReturningValue = instruction.op0 == returnReg;
 				break;
-			case RETURN________:
-				return isReturningValue;
 			default:
 				return false;
 			}
@@ -255,6 +258,7 @@ public class InstructionAnalyzer {
 					case CALL__________:
 					case CALLCLOSURE___:
 					case CALLINTRINSIC_:
+					case LEAVE_________:
 					case SETRESULT_____:
 						return instruction;
 					case JUMP__________:

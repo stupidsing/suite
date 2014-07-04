@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -126,8 +127,10 @@ public class InstructionExecutor implements AutoCloseable {
 						returnValue = closure.result;
 					break;
 				case ENTER_________:
-					Frame parent = analyzer.getFrame(ip).isRequireParent() ? frame : null;
-					current.frame = new Frame(parent, insn.op0);
+					AnalyzedFrame af = analyzer.getFrame(ip);
+					Frame parent = af.isRequireParent() ? frame : null;
+					Instruction frameBegin = instructions[af.getFrameBeginIp()];
+					current.frame = new Frame(parent, frameBegin.op0);
 					break;
 				case EVALADD_______:
 					regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
@@ -169,13 +172,16 @@ public class InstructionExecutor implements AutoCloseable {
 					regs[insn.op0] = number(i(regs[insn.op1]) - i(regs[insn.op2]));
 					break;
 				case EXIT__________:
-					return regs[insn.op0];
+					return returnValue;
 				case FORMTREE0_____:
 					Node left = regs[insn.op0];
 					Node right = regs[insn.op1];
 					insn = instructions[current.ip++];
 					op = TermOp.find(((Atom) constantPool.get(insn.op0)).getName());
 					regs[insn.op1] = Tree.of(op, left, right);
+					break;
+				case FRAMEBEGIN____:
+				case FRAMEEND______:
 					break;
 				case IFFALSE_______:
 					if (regs[insn.op0] != Atom.TRUE)
@@ -195,6 +201,9 @@ public class InstructionExecutor implements AutoCloseable {
 						current = new Activation(closure, current);
 					else
 						returnValue = closure.result;
+					break;
+				case LEAVE_________:
+					current.frame = current.frame.previous;
 					break;
 				case LOGREG________:
 					LogUtil.info(regs[insn.op0].toString());
@@ -245,13 +254,12 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected void postprocessInstructions(List<Instruction> list) {
-		list.add(new Instruction(Insn.ENTER_________, 2, 0, 0));
-
 		unwrapEntryPoint = list.size();
+		list.add(new Instruction(Insn.FRAMEBEGIN____, 2, 0, 0));
 		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
 		list.add(new Instruction(Insn.ASSIGNRESULT__, 1, 0, 0));
-		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
-		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
+		list.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
+		list.add(new Instruction(Insn.FRAMEEND______, 0, 0, 0));
 	}
 
 	protected Comparer comparer() {
