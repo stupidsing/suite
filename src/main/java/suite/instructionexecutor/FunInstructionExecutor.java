@@ -124,6 +124,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	@Override
 	protected void postprocessInstructions(List<Instruction> list) {
 		invokeJavaEntryPoint = list.size();
+
 		list.add(new Instruction(Insn.FRAMEBEGIN____, 3, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
 		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
@@ -131,6 +132,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		list.add(new Instruction(Insn.SETRESULT_____, 2, 0, 0));
 		list.add(new Instruction(Insn.RETURN________, 0, 0, 0));
 		list.add(new Instruction(Insn.FRAMEEND______, 0, 0, 0));
+
 		super.postprocessInstructions(list);
 	}
 

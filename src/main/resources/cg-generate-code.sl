@@ -82,7 +82,7 @@ cg-is-restore-csp-dsp
 #
 cg-is-restore-csp-dsp .i/.i .j/.j #
 
-cg-is-skip (REMARK _, .i0)/.ix :- cg-is-skip .i0/.ix #
+cg-is-skip (REMARK _, .i0)/.ix :- !, cg-is-skip .i0/.ix #
 cg-is-skip .i/.i #
 
 cg-is-leaving (LEAVE, .i)/.i (LEAVE, .j)/.j :- ! #
