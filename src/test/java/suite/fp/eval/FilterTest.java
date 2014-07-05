@@ -58,7 +58,7 @@ public class FilterTest {
 			public void write(char buffer[], int pos, int len) {
 				count += len;
 				if (count == size - 1) {
-					Suite.proveLogic("find.all.memoized.clear");
+					Suite.proveLogic("find.all.memoized.clear, intern.map.clear");
 					System.gc();
 					System.gc();
 					System.gc();

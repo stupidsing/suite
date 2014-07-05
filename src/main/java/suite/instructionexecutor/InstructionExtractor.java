@@ -20,22 +20,22 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.IdHashKey;
+import suite.node.util.IdentityKey;
 import suite.util.Util;
 
 import com.google.common.collect.BiMap;
 
 public class InstructionExtractor implements AutoCloseable {
 
-	private Map<IdHashKey, Integer> ipsByLabelId = new HashMap<>();
-	private Deque<Instruction> enters = new ArrayDeque<>();
+	private Map<IdentityKey, Integer> ipsByLabelId = new HashMap<>();
+	private Deque<Instruction> frameBegins = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 	private Journal journal = new Journal();
 
 	private static final Atom KEYC = Atom.of("c");
 	private static final Atom KEYL = Atom.of("l");
 	private static final Atom KEYR = Atom.of("r");
-	private static final Atom PROC = Atom.of("PROC");
+	private static final Atom FRAME = Atom.of("FRAME");
 
 	public InstructionExtractor(BiMap<Integer, Node> constantPool) {
 		this.constantPool = constantPool;
@@ -55,26 +55,30 @@ public class InstructionExtractor implements AutoCloseable {
 	private void extractInstructions(Node snippet, List<List<Node>> rsList) {
 		Deque<Node> deque = new ArrayDeque<>();
 		deque.add(snippet);
-		Tree tree, tree1;
+		Tree tree;
+		Node value;
 
 		while (!deque.isEmpty()) {
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
-				IdHashKey key = new IdHashKey(tree);
+				IdentityKey key = new IdentityKey(tree);
 				Integer ip = ipsByLabelId.get(key);
 
 				if (ip == null) {
 					ipsByLabelId.put(key, ip = rsList.size());
 					List<Node> rs = tupleToList(tree.getLeft());
 
-					if (rs.get(0) == PROC) {
-						rsList.add(Arrays.asList(Atom.of("ENTER")));
-						extractInstructions(rs.get(1), rsList);
-						rsList.add(Arrays.asList(Atom.of("LEAVE")));
-					} else {
+					if (rs.get(0) == FRAME)
+						if ((value = label(rs.get(1))) != null) {
+							rsList.add(Arrays.asList(Atom.of("FRAME-BEGIN")));
+							extractInstructions(value, rsList);
+							rsList.add(Arrays.asList(Atom.of("FRAME-END")));
+						} else
+							throw new RuntimeException("Bad frame definition");
+					else {
 						rsList.add(rs);
 						for (Node op : Util.right(rs, 1))
-							if ((tree1 = Tree.decompose(op, TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
-								deque.push(tree1.getRight());
+							if ((value = label(op)) != null)
+								deque.push(value);
 						deque.push(tree.getRight());
 					}
 				} else
@@ -100,10 +104,10 @@ public class InstructionExtractor implements AutoCloseable {
 					, getRegisterNumber(rs, 2) //
 					, getRegisterNumber(rs, 3));
 
-			if (insn == Insn.ENTER_________)
-				enters.push(instruction);
-			else if (insn == Insn.LEAVE_________)
-				enters.pop();
+			if (insn == Insn.FRAMEBEGIN____)
+				frameBegins.push(instruction);
+			else if (insn == Insn.FRAMEEND______)
+				frameBegins.pop();
 
 			return instruction;
 		} else
@@ -120,8 +124,8 @@ public class InstructionExtractor implements AutoCloseable {
 			else if (node instanceof Reference) { // Transient register
 
 				// Allocates new register in current local frame
-				Instruction enter = enters.getFirst();
-				int registerNumber = enter.op0++;
+				Instruction frameBegin = frameBegins.getFirst();
+				int registerNumber = frameBegin.op0++;
 
 				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;
@@ -131,7 +135,7 @@ public class InstructionExtractor implements AutoCloseable {
 				if (key == KEYC)
 					return allocateInPool(value);
 				else if (key == KEYL)
-					return ipsByLabelId.get(new IdHashKey(value));
+					return ipsByLabelId.get(new IdentityKey(value));
 				else if (key == KEYR)
 					return 0;
 			}
@@ -139,6 +143,14 @@ public class InstructionExtractor implements AutoCloseable {
 			throw new RuntimeException("Cannot parse instruction " + rs.get(0) + " operand " + node);
 		} else
 			return 0;
+	}
+
+	private Node label(Node node) {
+		Tree tree1;
+		if ((tree1 = Tree.decompose(node, TermOp.COLON_)) != null && tree1.getLeft() == KEYL)
+			return tree1.getRight();
+		else
+			return null;
 	}
 
 	private int allocateInPool(Node node) {

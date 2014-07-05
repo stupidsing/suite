@@ -10,11 +10,11 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.util.IdHashKey;
+import suite.node.util.IdentityKey;
 
 public class Cloner {
 
-	private Map<IdHashKey, Node> clonedNodes = new HashMap<>();
+	private Map<IdentityKey, Node> clonedNodes = new HashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.getHead()), clone(rule.getTail()));
@@ -30,7 +30,7 @@ public class Cloner {
 		while (tree != null) {
 			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
-			IdHashKey key = new IdHashKey(right);
+			IdentityKey key = new IdentityKey(right);
 			Node right1 = clonedNodes.get(key);
 			Tree rt;
 
@@ -54,7 +54,7 @@ public class Cloner {
 	}
 
 	public Node cloneOld(Node node) {
-		return clonedNodes.computeIfAbsent(new IdHashKey(node.finalNode()), key -> {
+		return clonedNodes.computeIfAbsent(new IdentityKey(node.finalNode()), key -> {
 			Node node_ = key.getNode();
 
 			if (node_ instanceof Reference)

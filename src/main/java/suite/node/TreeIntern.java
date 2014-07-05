@@ -49,4 +49,8 @@ public class TreeIntern {
 		return interns.computeIfAbsent(new Key(operator, left, right), any -> Tree.of(operator, left, right));
 	}
 
+	public static void clear() {
+		interns.clear();
+	}
+
 }

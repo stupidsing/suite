@@ -37,10 +37,12 @@ public class InstructionUtil {
 	}
 
 	public enum Insn {
+		ASSIGNCLOSRES_("ASSIGN-CLOSURE-RESULT"), //
 		ASSIGNCLOSURE_("ASSIGN-CLOSURE"), //
 		ASSIGNCONST___("ASSIGN-CONSTANT"), //
 		ASSIGNFRAMEREG("ASSIGN-FRAME-REG"), //
 		ASSIGNINT_____("ASSIGN-INT"), //
+		ASSIGNRESULT__("ASSIGN-RESULT"), //
 		BACKUPCSP_____("BACKUP-CSP"), //
 		BACKUPDSP_____("BACKUP-DSP"), //
 		BIND__________("BIND"), //
@@ -49,7 +51,6 @@ public class InstructionUtil {
 		CALL__________("CALL"), //
 		CALLCLOSURE___("CALL-CLOSURE"), //
 		CALLINTRINSIC_("CALL-INTRINSIC"), //
-		CALLREG_______("CALL-REG"), //
 		COMPARE_______("COMPARE"), //
 		CONSLIST______("CONS-LIST"), //
 		CONSPAIR______("CONS-PAIR"), //
@@ -70,6 +71,8 @@ public class InstructionUtil {
 		EXIT__________("EXIT"), //
 		FORMTREE0_____("FORM-TREE0"), //
 		FORMTREE1_____("FORM-TREE1"), //
+		FRAMEBEGIN____("FRAME-BEGIN"), //
+		FRAMEEND______("FRAME-END"), //
 		GETINTRINSIC__("GET-INTRINSIC"), //
 		HEAD__________("HEAD"), //
 		IFFALSE_______("IF-FALSE"), //
@@ -81,7 +84,6 @@ public class InstructionUtil {
 		ISCONS________("IS-CONS"), //
 		JUMP__________("JUMP"), //
 		JUMPCLOSURE___("JUMP-CLOSURE"), //
-		JUMPREG_______("JUMP-REG"), //
 		LOGREG________("LOG-REG"), //
 		LEAVE_________("LEAVE"), //
 		NEWNODE_______("NEW-NODE"), //
@@ -94,8 +96,6 @@ public class InstructionUtil {
 		RESTORECSP____("RESTORE-CSP"), //
 		RESTOREDSP____("RESTORE-DSP"), //
 		RETURN________("RETURN"), //
-		RETURNVALUE___("RETURN-VALUE"), //
-		SETCLOSURERES_("SET-CLOSURE-RESULT"), //
 		SETRESULT_____("SET-RESULT"), //
 		TAIL__________("TAIL"), //
 		TOP___________("TOP"), //

@@ -163,8 +163,17 @@ public class InstructionTranslator implements Closeable {
 			app("case #{num}:", currentIp);
 
 			switch (insn.insn) {
+			case ASSIGNCLOSRES_:
+				restoreFrame();
+				app("#{reg} = returnValue", op0);
+				app("#{reg-clos}.result = #{reg}", op1, op0);
+				break;
 			case ASSIGNCLOSURE_:
 				app("#{reg} = new Closure(#{fr}, #{num})", op0, op1);
+				break;
+			case ASSIGNCONST___:
+				constant = constantPool.get(op1);
+				app("#{reg} = #{str}", op0, defineConstant(constant));
 				break;
 			case ASSIGNFRAMEREG:
 				if (op1 != 0) {
@@ -175,12 +184,12 @@ public class InstructionTranslator implements Closeable {
 				} else
 					app("#{reg} = TranslatedRunUtil.toNode(#{reg})", op0, op2);
 				break;
-			case ASSIGNCONST___:
-				constant = constantPool.get(op1);
-				app("#{reg} = #{str}", op0, defineConstant(constant));
-				break;
 			case ASSIGNINT_____:
 				app("#{reg} = #{num}", op0, op1);
+				break;
+			case ASSIGNRESULT__:
+				restoreFrame();
+				app("#{reg} = returnValue", op0);
 				break;
 			case BACKUPCSP_____:
 				app("#{reg} = csp", op0);
@@ -220,12 +229,6 @@ public class InstructionTranslator implements Closeable {
 				app("Intrinsic intrinsic = Data.get(data)");
 				app("#{reg} = intrinsic.invoke(bridge, list)", op0);
 				app("}");
-				break;
-			case CALLREG_______:
-				backupFrame();
-				pushCallee(ip);
-				app("ip = #{reg-num}", op0);
-				app("continue");
 				break;
 			case COMPARE_______:
 				app("n0 = (Node) ds[--dsp]");
@@ -295,15 +298,15 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = #{reg-num} - #{reg-num}", op0, op1, op2);
 				break;
 			case EXIT__________:
-				if (currentFrame() != null)
-					app("return #{reg}", op0);
-				else
-					app("return returnValue"); // Grand exit point
+				app("return returnValue"); // Grand exit point
 				break;
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
 				app("#{reg} = Tree.of(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
 						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
+				break;
+			case FRAMEBEGIN____:
+			case FRAMEEND______:
 				break;
 			case GETINTRINSIC__:
 				app("{");
@@ -316,7 +319,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getLeft()", op0);
 				break;
 			case IFFALSE_______:
-				app("if (!#{reg-bool}) #{jump}", op1, op0);
+				app("if (!#{reg-bool}) #{jump}", op0, op1);
 				break;
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
@@ -334,9 +337,6 @@ public class InstructionTranslator implements Closeable {
 				app("ip = #{reg-clos}.ip", op0);
 				app("continue");
 				app("} else returnValue = #{reg-clos}.result", op0);
-				break;
-			case JUMPREG_______:
-				app("{ ip = #{reg-num}; continue; }", op0);
 				break;
 			case LEAVE_________:
 				generateFrame();
@@ -370,18 +370,8 @@ public class InstructionTranslator implements Closeable {
 			case RETURN________:
 				popCaller();
 				break;
-			case RETURNVALUE___:
-				app("returnValue = #{reg-node}", op0);
-				popCaller();
-				break;
 			case SETRESULT_____:
-				restoreFrame();
-				app("#{reg} = returnValue", op0);
-				break;
-			case SETCLOSURERES_:
-				restoreFrame();
-				app("#{reg} = returnValue", op0);
-				app("#{reg-clos}.result = #{reg}", op1, op0);
+				app("returnValue = #{reg-node}", op0);
 				break;
 			case TAIL__________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]).getRight()", op0);
@@ -414,7 +404,7 @@ public class InstructionTranslator implements Closeable {
 				app(clazzsec, "private #{str} r#{num}", typeName, r);
 			else {
 				String init = clazz == boolean.class ? "false" : clazz == int.class ? "0" : "null";
-				app(localsec, "#{str} f#{num}_r#{num} = #{str}", typeName, frame.getId(), r, init);
+				app(localsec, "#{str} f#{num}_r#{num} = #{str}", typeName, frame.getFrameBeginIp(), r, init);
 			}
 		}
 
@@ -472,10 +462,10 @@ public class InstructionTranslator implements Closeable {
 
 		switch (s) {
 		case "fr":
-			s = String.format("f%d", frame.getId());
+			s = String.format("f%d", frame.getFrameBeginIp());
 			break;
 		case "fr-class":
-			s = String.format("Frame%d", frame.getId());
+			s = String.format("Frame%d", frame.getFrameBeginIp());
 			break;
 		case "jump":
 			s = String.format("{ ip = %d; continue; }", iter.next());
@@ -484,10 +474,10 @@ public class InstructionTranslator implements Closeable {
 			s = String.format("%d", iter.next());
 			break;
 		case "prev-fr":
-			s = parentFrame != null ? String.format("f%d", parentFrame.getId()) : "frame";
+			s = parentFrame != null ? String.format("f%d", parentFrame.getFrameBeginIp()) : "frame";
 			break;
 		case "prev-fr-class":
-			s = parentFrame != null ? String.format("Frame%d", parentFrame.getId()) : "Frame";
+			s = parentFrame != null ? String.format("Frame%d", parentFrame.getFrameBeginIp()) : "Frame";
 			break;
 		case "reg":
 			s = reg((int) iter.next());
@@ -528,7 +518,7 @@ public class InstructionTranslator implements Closeable {
 
 	private String reg(int reg) {
 		AnalyzedFrame frame = currentFrame();
-		int frameNo = frame.getId();
+		int frameNo = frame.getFrameBeginIp();
 
 		if (!frame.getRegisters().get(reg).isTemporal())
 			return String.format("f%d.r%d", frameNo, reg);

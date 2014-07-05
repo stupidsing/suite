@@ -8,6 +8,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.util.HashCodeComparable;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with
@@ -18,7 +19,7 @@ import suite.node.Tuple;
  *
  * @author ywsing
  */
-public class TermHashKey {
+public class TermKey extends HashCodeComparable<TermKey> {
 
 	public static class TermHasher {
 		private int nAliases = 0;
@@ -50,7 +51,7 @@ public class TermHashKey {
 
 	private Node node;
 
-	public TermHashKey(Node node) {
+	public TermKey(Node node) {
 		this.node = node;
 	}
 
@@ -61,8 +62,8 @@ public class TermHashKey {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object.getClass() == TermHashKey.class) {
-			Node node1 = ((TermHashKey) object).node;
+		if (object.getClass() == TermKey.class) {
+			Node node1 = ((TermKey) object).node;
 			return Objects.equals(new TermHasher().hash(node), new TermHasher().hash(node1));
 		} else
 			return false;

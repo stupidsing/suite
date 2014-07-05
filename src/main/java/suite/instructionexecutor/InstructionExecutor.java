@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -22,9 +23,9 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionExecutor implements AutoCloseable {
 
-	private static int stackSize = 16384;
-	private static boolean dump = false;
-	private static boolean trace = false;
+	public static int stackSize = 16384;
+	public static boolean dump = false;
+	public static boolean trace = false;
 
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
@@ -91,8 +92,17 @@ public class InstructionExecutor implements AutoCloseable {
 					StatisticsCollector.getInstance().collect(ip, insn);
 
 				switch (insn.insn) {
+				case ASSIGNCLOSRES_:
+					regs[insn.op0] = returnValue;
+					closure = (Closure) regs[insn.op1].finalNode();
+					closure.frame = null; // Facilitates garbage collection
+					closure.result = returnValue;
+					break;
 				case ASSIGNCLOSURE_:
 					regs[insn.op0] = new Closure(frame, insn.op1);
+					break;
+				case ASSIGNCONST___:
+					regs[insn.op0] = constantPool.get(insn.op1);
 					break;
 				case ASSIGNFRAMEREG:
 					i = insn.op1;
@@ -100,11 +110,11 @@ public class InstructionExecutor implements AutoCloseable {
 						frame = frame.previous;
 					regs[insn.op0] = frame.registers[insn.op2];
 					break;
-				case ASSIGNCONST___:
-					regs[insn.op0] = constantPool.get(insn.op1);
-					break;
 				case ASSIGNINT_____:
 					regs[insn.op0] = number(insn.op1);
+					break;
+				case ASSIGNRESULT__:
+					regs[insn.op0] = returnValue;
 					break;
 				case CALL__________:
 					current = new Activation(frame, insn.op0, current);
@@ -116,12 +126,11 @@ public class InstructionExecutor implements AutoCloseable {
 					else
 						returnValue = closure.result;
 					break;
-				case CALLREG_______:
-					current = new Activation(frame, i(regs[insn.op0]), current);
-					break;
 				case ENTER_________:
-					Frame parent = analyzer.getFrame(ip).isRequireParent() ? frame : null;
-					current.frame = new Frame(parent, insn.op0);
+					AnalyzedFrame af = analyzer.getFrame(ip);
+					Frame parent = af.isRequireParent() ? frame : null;
+					Instruction frameBegin = instructions[af.getFrameBeginIp()];
+					current.frame = new Frame(parent, frameBegin.op0);
 					break;
 				case EVALADD_______:
 					regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
@@ -163,7 +172,7 @@ public class InstructionExecutor implements AutoCloseable {
 					regs[insn.op0] = number(i(regs[insn.op1]) - i(regs[insn.op2]));
 					break;
 				case EXIT__________:
-					return regs[insn.op0];
+					return returnValue;
 				case FORMTREE0_____:
 					Node left = regs[insn.op0];
 					Node right = regs[insn.op1];
@@ -171,9 +180,12 @@ public class InstructionExecutor implements AutoCloseable {
 					op = TermOp.find(((Atom) constantPool.get(insn.op0)).getName());
 					regs[insn.op1] = Tree.of(op, left, right);
 					break;
+				case FRAMEBEGIN____:
+				case FRAMEEND______:
+					break;
 				case IFFALSE_______:
-					if (regs[insn.op1] != Atom.TRUE)
-						current.ip = insn.op0;
+					if (regs[insn.op0] != Atom.TRUE)
+						current.ip = insn.op1;
 					break;
 				case IFNOTEQUALS___:
 					if (regs[insn.op1] != regs[insn.op2])
@@ -190,8 +202,8 @@ public class InstructionExecutor implements AutoCloseable {
 					else
 						returnValue = closure.result;
 					break;
-				case JUMPREG_______:
-					current.ip = i(regs[insn.op0]);
+				case LEAVE_________:
+					current.frame = current.frame.previous;
 					break;
 				case LOGREG________:
 					LogUtil.info(regs[insn.op0].toString());
@@ -213,18 +225,8 @@ public class InstructionExecutor implements AutoCloseable {
 				case RETURN________:
 					current = current.previous;
 					break;
-				case RETURNVALUE___:
-					returnValue = regs[insn.op0];
-					current = current.previous;
-					break;
-				case SETCLOSURERES_:
-					regs[insn.op0] = returnValue;
-					closure = (Closure) regs[insn.op1].finalNode();
-					closure.frame = null; // Facilitates garbage collection
-					closure.result = returnValue;
-					break;
 				case SETRESULT_____:
-					regs[insn.op0] = returnValue;
+					returnValue = regs[insn.op0];
 					break;
 				case TOP___________:
 					regs[insn.op0] = stack[sp + insn.op1];
@@ -252,13 +254,12 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected void postprocessInstructions(List<Instruction> list) {
-		list.add(new Instruction(Insn.ENTER_________, 2, 0, 0));
-
 		unwrapEntryPoint = list.size();
+		list.add(new Instruction(Insn.FRAMEBEGIN____, 2, 0, 0));
 		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
-		list.add(new Instruction(Insn.SETRESULT_____, 1, 0, 0));
-		list.add(new Instruction(Insn.EXIT__________, 1, 0, 0));
-		list.add(new Instruction(Insn.LEAVE_________, 0, 0, 0));
+		list.add(new Instruction(Insn.ASSIGNRESULT__, 1, 0, 0));
+		list.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
+		list.add(new Instruction(Insn.FRAMEEND______, 0, 0, 0));
 	}
 
 	protected Comparer comparer() {

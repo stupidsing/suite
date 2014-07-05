@@ -37,101 +37,82 @@ public class EvalPredicates {
 	private static Atom SHL = Atom.of("shl");
 	private static Atom SHR = Atom.of("shr");
 	private static Comparer comparer = Comparer.comparer;
+	private static ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
+	private static java.util.Random random = new Random();
+	private static AtomicInteger counter = new AtomicInteger();
 
-	public static class Bound implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return !(ps.finalNode() instanceof Reference);
+	public static SystemPredicate bound = (prover, ps) -> {
+		return !(ps.finalNode() instanceof Reference);
+	};
+
+	public static SystemPredicate clone = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return prover.bind(new Cloner().clone(params[0]), params[1]);
+	};
+
+	public static SystemPredicate complexity = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return prover.bind(Int.of(new Complexity().complexity(params[0])), params[1]);
+	};
+
+	public static SystemPredicate contains = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return new Rewriter(params[0]).contains(params[1]);
+	};
+
+	public static SystemPredicate compare = (prover, ps) -> {
+		Tree tree = (Tree) ps.finalNode();
+		switch ((TermOp) tree.getOperator()) {
+		case LE____:
+			return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
+		case LT____:
+			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
+		case GE____:
+			return comparer.compare(tree.getLeft(), tree.getRight()) >= 0;
+		case GT____:
+			return comparer.compare(tree.getLeft(), tree.getRight()) > 0;
+		default:
+			throw new RuntimeException("Unknown comparison");
 		}
-	}
+	};
 
-	public static class Clone implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(new Cloner().clone(params[0]), params[1]);
+	public static SystemPredicate evalFun = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return prover.bind(Suite.evaluateFun(Suite.fcc(params[0], true)), params[1]);
+	};
+
+	public static SystemPredicate evalJs = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		String js = Formatter.display(params[0]);
+		Object result;
+
+		try {
+			result = engine.eval(js);
+		} catch (ScriptException ex) {
+			LogUtil.error(ex);
+			return false;
 		}
-	}
 
-	public static class ComplexityPredicate implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(Int.of(new Complexity().complexity(params[0])), params[1]);
-		}
-	}
+		String str = Objects.toString(result, "");
+		return prover.bind(new Str(str), params[1]);
+	};
 
-	public static class Contains implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return new Rewriter(params[0]).contains(params[1]);
-		}
-	}
+	public static SystemPredicate generalize = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		Generalizer generalizer = new Generalizer();
+		return prover.bind(generalizer.generalize(params[0]), params[1]);
+	};
 
-	public static class Compare implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Tree tree = (Tree) ps.finalNode();
-			switch ((TermOp) tree.getOperator()) {
-			case LE____:
-				return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
-			case LT____:
-				return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
-			case GE____:
-				return comparer.compare(tree.getLeft(), tree.getRight()) >= 0;
-			case GT____:
-				return comparer.compare(tree.getLeft(), tree.getRight()) > 0;
-			default:
-				throw new RuntimeException("Unknown comparison");
-			}
-		}
-	}
+	public static SystemPredicate hash = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return prover.bind(Int.of(params[0].hashCode()), params[1]);
+	};
 
-	public static class EvalFun implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(Suite.evaluateFun(Suite.fcc(params[0], true)), params[1]);
-		}
-	}
+	public static SystemPredicate isCyclic = (prover, ps) -> {
+		return new Cyclic().isCyclic(ps);
+	};
 
-	public static class EvalJs implements SystemPredicate {
-		private static ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
-
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			String js = Formatter.display(params[0]);
-			Object result;
-
-			try {
-				result = engine.eval(js);
-			} catch (ScriptException ex) {
-				LogUtil.error(ex);
-				return false;
-			}
-
-			String str = Objects.toString(result, "");
-			return prover.bind(new Str(str), params[1]);
-		}
-	}
-
-	public static class Generalize implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			Generalizer generalizer = new Generalizer();
-			return prover.bind(generalizer.generalize(params[0]), params[1]);
-		}
-	}
-
-	public static class Hash implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(Int.of(params[0].hashCode()), params[1]);
-		}
-	}
-
-	public static class IsCyclic implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			return new Cyclic().isCyclic(ps);
-		}
-	}
-
-	public static class Let implements SystemPredicate {
+	public static SystemPredicate let = new SystemPredicate() {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			int result = evaluate(params[1]);
@@ -192,103 +173,81 @@ public class EvalPredicates {
 
 			return result;
 		}
-	}
+	};
 
-	public static class NotEquals implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Tree tree = (Tree) ps;
-			Prover prover1 = new Prover(prover);
-			boolean result = prover1.bind(tree.getLeft(), tree.getRight());
+	public static SystemPredicate notEquals = (prover, ps) -> {
+		Tree tree = (Tree) ps;
+		Prover prover1 = new Prover(prover);
+		boolean result = prover1.bind(tree.getLeft(), tree.getRight());
 
-			if (result) {
-				prover1.undoAllBinds();
-				return false;
-			} else
-				return true;
-		}
-	}
+		if (result) {
+			prover1.undoAllBinds();
+			return false;
+		} else
+			return true;
+	};
 
-	public static class RandomPredicate implements SystemPredicate {
-		private static java.util.Random random = new Random();
+	public static SystemPredicate randomPredicate = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		Int p0 = (Int) params[0].finalNode();
+		int randomNumber = random.nextInt(p0.getNumber());
+		return prover.bind(params[1], Int.of(randomNumber));
+	};
 
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			Int p0 = (Int) params[0].finalNode();
-			int randomNumber = random.nextInt(p0.getNumber());
-			return prover.bind(params[1], Int.of(randomNumber));
-		}
-	}
+	public static SystemPredicate replace = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 4);
+		return prover.bind(new Rewriter(params[0], params[1]).replace(params[2]), params[3]);
+	};
 
-	public static class Replace implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 4);
-			return prover.bind(new Rewriter(params[0], params[1]).replace(params[2]), params[3]);
-		}
-	}
+	public static SystemPredicate rewrite = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 4);
+		return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
+	};
 
-	public static class Rewrite implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 4);
-			return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
-		}
-	}
+	public static SystemPredicate same = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return params[0].finalNode() == params[1].finalNode();
+	};
 
-	public static class Same implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return params[0].finalNode() == params[1].finalNode();
-		}
-	}
+	public static SystemPredicate specialize = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return prover.bind(new Specializer().specialize(params[0]), params[1]);
+	};
 
-	public static class Specialize implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			return prover.bind(new Specializer().specialize(params[0]), params[1]);
-		}
-	}
+	public static SystemPredicate temp = (prover, ps) -> {
+		int n = counter.getAndIncrement();
+		return prover.bind(ps, Atom.of("temp$$" + n));
+	};
 
-	public static class Temp implements SystemPredicate {
-		private static AtomicInteger counter = new AtomicInteger();
+	public static SystemPredicate tree = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 4);
+		Node p = params[0].finalNode();
+		Node p1 = params[1];
+		Node p2 = params[2].finalNode();
+		Node p3 = params[3];
+		Tree tree;
 
-		public boolean prove(Prover prover, Node ps) {
-			int n = counter.getAndIncrement();
-			return prover.bind(ps, Atom.of("temp$$" + n));
-		}
-	}
-
-	public static class TreePredicate implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 4);
-			Node p = params[0].finalNode();
-			Node p1 = params[1];
-			Node p2 = params[2].finalNode();
-			Node p3 = params[3];
-
-			if (p instanceof Tree) {
-				Tree tree = (Tree) p;
-				Atom oper = Atom.of(tree.getOperator().getName());
-				return prover.bind(tree.getLeft(), p1) //
-						&& prover.bind(oper, p2) //
-						&& prover.bind(tree.getRight(), p3);
-			} else if (p2 instanceof Atom) {
-				Operator operator = TermOp.find(((Atom) p2).getName());
-				return prover.bind(p, Tree.of(operator, p1, p3));
-			} else
-				return false;
-		}
-	}
-
-	public static class TreeInternPredicate implements SystemPredicate {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 4);
-			Node p = params[0].finalNode();
-			Node p1 = params[1].finalNode();
-			Node p2 = params[2].finalNode();
-			Node p3 = params[3].finalNode();
-
+		if ((tree = Tree.decompose(p)) != null) {
+			Atom oper = Atom.of(tree.getOperator().getName());
+			return prover.bind(tree.getLeft(), p1) //
+					&& prover.bind(oper, p2) //
+					&& prover.bind(tree.getRight(), p3);
+		} else if (p2 instanceof Atom) {
 			Operator operator = TermOp.find(((Atom) p2).getName());
-			return prover.bind(p, TreeIntern.of(operator, p1, p3));
-		}
-	}
+			return prover.bind(p, Tree.of(operator, p1, p3));
+		} else
+			return false;
+	};
+
+	public static SystemPredicate treeIntern = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 4);
+		Node p = params[0];
+		Node p1 = params[1];
+		Node p2 = params[2].finalNode();
+		Node p3 = params[3];
+
+		Operator operator = TermOp.find(((Atom) p2).getName());
+		return prover.bind(p, TreeIntern.of(operator, p1, p3));
+	};
 
 }

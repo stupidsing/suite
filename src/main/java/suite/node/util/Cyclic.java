@@ -8,12 +8,12 @@ import suite.node.Tree;
 
 public class Cyclic {
 
-	private Set<IdHashKey> checkedNodes = new HashSet<>();
-	private Set<IdHashKey> checkingNodes = new HashSet<>();
+	private Set<IdentityKey> checkedNodes = new HashSet<>();
+	private Set<IdentityKey> checkingNodes = new HashSet<>();
 
 	public boolean isCyclic(Node node) {
 		node = node.finalNode();
-		IdHashKey idHashNode = new IdHashKey(node);
+		IdentityKey idHashNode = new IdentityKey(node);
 		boolean isCyclic;
 
 		if (!checkedNodes.contains(idHashNode)) {

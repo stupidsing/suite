@@ -1,8 +1,11 @@
 package suite.node.io;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import suite.lp.doer.Generalizer;
 import suite.node.Atom;
@@ -11,7 +14,9 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.Operator.Assoc;
+import suite.node.util.IdentityKey;
 import suite.parser.CommentPreprocessor;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -21,6 +26,56 @@ public class Formatter {
 	private boolean isDump;
 	private Set<Integer> set = new HashSet<>();
 	private StringBuilder sb = new StringBuilder();
+
+	private static class Graphizer {
+		private int count;
+		private Map<IdentityKey, Integer> ids = new HashMap<>();
+		private StringBuilder sb = new StringBuilder();
+
+		private int graphize(Node node) {
+			IdentityKey key = new IdentityKey(node.finalNode());
+			Integer id = ids.get(key);
+			Tree tree;
+
+			if (id == null) {
+				ids.put(key, id = count++);
+				String content;
+
+				if ((tree = Tree.decompose(node)) != null) {
+					int id0 = graphize(tree.getLeft());
+					int id1 = graphize(tree.getRight());
+					content = "tree(" + id0 + tree.getOperator().getName() + id1 + ")";
+				} else if (node instanceof Tuple)
+					content = ((Tuple) node).getNodes().stream() //
+							.map(n -> graphize(n) + ", ").collect(Collectors.joining(", ", "tuple(", ")"));
+				else
+					content = dump(node);
+
+				sb.append(id + " = " + content + "\n");
+			}
+
+			return id;
+		}
+	}
+
+	private static class Treeizer {
+		private StringBuilder sb = new StringBuilder();
+
+		private void treeize(Node node, String indent) {
+			Tree tree = Tree.decompose(node);
+
+			if (tree != null) {
+				String op = tree.getOperator().getName();
+				op = Util.stringEquals(op, " ") ? "<>" : op.trim();
+				String indent1 = indent + "  ";
+
+				treeize(tree.getLeft(), indent1);
+				sb.append(indent + op + "\n");
+				treeize(tree.getRight(), indent1);
+			} else
+				sb.append(indent + dump(node) + "\n");
+		}
+	}
 
 	public Formatter(boolean isDump) {
 		this.isDump = isDump;
@@ -34,25 +89,16 @@ public class Formatter {
 		return new Formatter(true).format(node);
 	}
 
-	public static String treeize(Node node) {
-		StringBuilder sb = new StringBuilder();
-		treeize(node, sb, "");
-		return sb.toString();
+	public static String graphize(Node node) {
+		Graphizer graphizer = new Graphizer();
+		int fn = graphizer.graphize(node);
+		return graphizer.sb.toString() + "return(" + fn + ")\n";
 	}
 
-	private static void treeize(Node node, StringBuilder sb, String indent) {
-		Tree tree = Tree.decompose(node);
-
-		if (tree != null) {
-			String op = tree.getOperator().getName();
-			op = Util.stringEquals(op, " ") ? "<>" : op.trim();
-			String indent1 = indent + "  ";
-
-			treeize(tree.getLeft(), sb, indent1);
-			sb.append(indent + op + "\n");
-			treeize(tree.getRight(), sb, indent1);
-		} else
-			sb.append(indent + dump(node) + "\n");
+	public static String treeize(Node node) {
+		Treeizer treeize = new Treeizer();
+		treeize.treeize(node, "");
+		return treeize.sb.toString();
 	}
 
 	private String format(Node node) {

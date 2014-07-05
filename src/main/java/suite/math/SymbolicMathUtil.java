@@ -15,7 +15,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.util.Complexity;
-import suite.node.util.TermHashKey;
+import suite.node.util.TermKey;
 import suite.util.FunUtil;
 import suite.util.To;
 
@@ -29,9 +29,9 @@ public class SymbolicMathUtil {
 	public static Node simplify(Node node0) {
 		int space = 100;
 		int complexity0 = complexity.complexity(node0);
-		Set<TermHashKey> searchedNodes = new HashSet<>();
+		Set<TermKey> searchedNodes = new HashSet<>();
 		List<Node> freshNodes = new ArrayList<>();
-		searchedNodes.add(new TermHashKey(node0));
+		searchedNodes.add(new TermKey(node0));
 		freshNodes.add(node0);
 
 		for (int times = 0; times < 20; times++) {
@@ -42,7 +42,7 @@ public class SymbolicMathUtil {
 			List<Node> freshNodes1 = new ArrayList<>();
 
 			for (Node freshNode : freshNodes)
-				for (TermHashKey term : findEqualities(freshNode)) {
+				for (TermKey term : findEqualities(freshNode)) {
 					Node node = term.getNode();
 
 					if (!searchedNodes.contains(term) && complexity.complexity(node) < complexity0 + 1) {
@@ -54,23 +54,23 @@ public class SymbolicMathUtil {
 			freshNodes = freshNodes1;
 		}
 
-		return Collections.min(To.list(FunUtil.map(TermHashKey::getNode, To.source(searchedNodes))), comparator);
+		return Collections.min(To.list(FunUtil.map(TermKey::getNode, To.source(searchedNodes))), comparator);
 	}
 
-	private static Collection<TermHashKey> findEqualities(Node node) {
+	private static Collection<TermKey> findEqualities(Node node) {
 		Node v = new Reference(), r = new Reference();
 
 		Node equate = Suite.substitute("equate1 (.0 = .1)", node, v);
 		Node goal = Suite.substitute("find.all .0 .1 .2", v, equate, r);
 
 		if (prover.prove(goal)) {
-			Set<TermHashKey> results = new HashSet<>();
+			Set<TermKey> results = new HashSet<>();
 			r = r.finalNode();
 
 			while (r instanceof Tree) {
 				Tree tree = (Tree) r;
 				Node left = tree.getLeft();
-				results.add(new TermHashKey(left));
+				results.add(new TermKey(left));
 				r = tree.getRight().finalNode();
 			}
 
