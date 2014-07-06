@@ -41,14 +41,14 @@ public class InstructionExecutor implements AutoCloseable {
 			list.addAll(extractor.extractInstructions(node));
 		}
 
+		if (isDump)
+			for (int i = 0; i < list.size(); i++)
+				System.err.println(i + ": " + list.get(i));
+
 		postprocessInstructions(list);
 		analyzer.analyze(list);
 		analyzer.transform(list);
 		instructions = list.toArray(new Instruction[list.size()]);
-
-		if (isDump)
-			for (int i = 0; i < instructions.length; i++)
-				System.err.println(i + ": " + instructions[i]);
 	}
 
 	public Node execute() {
