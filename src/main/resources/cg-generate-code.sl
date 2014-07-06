@@ -1,10 +1,14 @@
 -------------------------------------------------------------------------------
 -- code generator and peep hole optimizer
 
+cg-optimize .c0 _
+	:- not bound .c0, !
+#
 cg-optimize .c0 .cx
 	:- tree.intern .key CG-OPTIMIZE ':' .c0
+	, once (intern.map.contains .key, .cached = true; .cached = false)
 	, intern.map.put .key .cx
-	, once (bound .cx; cg-optimize0 .c0 .cx)
+	, once (.cached = true; cg-optimize0 .c0 .cx)
 #
 
 cg-optimize0 (.insn0, .insns0) .cx
@@ -71,7 +75,8 @@ cg-optimize-tail-calls .li0 .ri0
 	, (.li1/.ri0 = .li2/.ri1; append2 .li1/.li2 .ri0/.ri1 (RESTORE-DSP _, RESTORE-CSP _,))
 	, (.li2 = .li3; .li2 = (LEAVE, .li3))
 	, .ri1 = (.jump .op, .ri2)
-	, append2 .li3/.insns .ri2/.insns (RETURN,)
+	, append2 .li3/.li4 .ri2/.ri3 (RETURN,)
+	, cg-optimize .li4 .ri3
 	, !
 #
 cg-optimize-tail-calls .insns .insns #

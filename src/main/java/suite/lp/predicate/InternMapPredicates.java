@@ -20,6 +20,11 @@ public class InternMapPredicates {
 		return true;
 	};
 
+	public static SystemPredicate internMapContains = (prover, ps) -> {
+		IdentityKey key = new IdentityKey(ps.finalNode());
+		return internMap.containsKey(key);
+	};
+
 	public static SystemPredicate internMapPut = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		IdentityKey key = new IdentityKey(params[0].finalNode());

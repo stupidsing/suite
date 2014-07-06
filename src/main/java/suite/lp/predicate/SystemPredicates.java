@@ -80,6 +80,7 @@ public class SystemPredicates {
 		addPredicate("trim", FormatPredicates.trim);
 
 		addPredicate("intern.map.clear", InternMapPredicates.internMapClear);
+		addPredicate("intern.map.contains", InternMapPredicates.internMapContains);
 		addPredicate("intern.map.put", InternMapPredicates.internMapPut);
 
 		addPredicate("dump", IoPredicates.dump);
