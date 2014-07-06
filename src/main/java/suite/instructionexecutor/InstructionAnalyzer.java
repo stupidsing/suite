@@ -111,7 +111,6 @@ public class InstructionAnalyzer {
 	private void analyzeParentFrames(List<Instruction> instructions) {
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
-			System.out.println(ip + "++" + insn);
 
 			// Recognize frames and their parents.
 			// Assume ASSIGN-CLOSURE points to the FRAME-BEGIN instruction.
