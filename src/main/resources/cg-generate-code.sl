@@ -72,11 +72,11 @@ cg-optimize-stack-usage .insns .insns #
 cg-optimize-tail-calls .li0 .ri0
 	:- .li0 = (.call .op, .li1)
 	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE,) .call/.jump
-	, (.li1/.ri0 = .li2/.ri1; append2 .li1/.li2 .ri0/.ri1 (RESTORE-DSP _, RESTORE-CSP _,))
+	, (.li1/.mi0 = .li2/.mi1; append2 .li1/.li2 .mi0/.mi1 (RESTORE-DSP _, RESTORE-CSP _,))
 	, (.li2 = .li3; .li2 = (LEAVE, .li3))
-	, .ri1 = (.jump .op, .ri2)
-	, append2 .li3/.li4 .ri2/.ri3 (RETURN,)
-	, cg-optimize .li4 .ri3
+	, .mi1 = (.jump .op, .mi2)
+	, append2 .li3/.insns .mi2/.insns (RETURN,)
+	, cg-optimize .mi0 .ri0
 	, !
 #
 cg-optimize-tail-calls .insns .insns #
