@@ -18,8 +18,13 @@ public class FailedTests {
 	}
 
 	@Test
+	public void testTailRecursion() {
+		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1 #) >> dec 16"));
+	}
+
+	@Test
 	public void testCutTailRecursion() {
-		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 16384"));
+		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 16"));
 	}
 
 	// (Expected) infinite loop.

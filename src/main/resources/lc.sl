@@ -10,13 +10,12 @@ compile-logic .call .code
 		, ASSIGN-CONSTANT .returnReg c:true
 		, ASSIGN-CLOSURE .provenReg l:.c1
 		, BIND-MARK .pitReg
-		, PUSH .pitReg
 		, PUSH .provenReg
 		, PUSH .provenReg
 		, CALL l:.cc
 		, POP-ANY
 		, POP-ANY
-		, POP-ANY
+		, BIND-UNDO .pitReg
 		, ASSIGN-CONSTANT .returnReg c:false
 		, .c1)
 	, .c1 = (SET-RESULT .returnReg
@@ -37,9 +36,7 @@ lc-compile-call .call .pls (FRAME l:.c0, .c)/.c
 		, .c1)
 	, .rem = AND (BYTECODE CALL-CLOSURE .provenReg) FAIL
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2
-	, .c2 = (TOP .pitReg -3
-		, BIND-UNDO .pitReg
-		, LEAVE
+	, .c2 = (LEAVE
 		, RETURN
 		,)
 #
@@ -144,12 +141,9 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx
 	, lc-create-node .call .vs .c0/.c1/.reg, (
 		member .pls .proto/.cl, !
 		, .c1 = (ASSIGN-CLOSURE .provenReg l:.d0
-			, BIND-MARK .pitReg
-			, PUSH .pitReg
 			, PUSH .provenReg
 			, PUSH .reg
 			, CALL l:.cl
-			, POP-ANY
 			, POP-ANY
 			, POP-ANY
 			, .cx)
