@@ -19,16 +19,13 @@ cg-optimize0 (.insn0, .insns0) .cx
 cg-optimize0 () () #
 
 cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
-	:- cg-redirect-instruction .redirInsn
+	:- member (JUMP _, RETURN,) .redirInsn
 	, !, cg-optimize (.redirInsn, .insns) .cx
 #
 cg-optimize-jumps (CALL l:(RETURN, _), .insns) .cx
 	:- !, cg-optimize .insns .cx
 #
 cg-optimize-jumps .insns .insns #
-
-cg-redirect-instruction (JUMP _) #
-cg-redirect-instruction (RETURN) #
 
 cg-optimize-assign-returns .li0 .ri0
 	:- .li0 = (
@@ -45,7 +42,7 @@ cg-optimize-assign-returns .li0 .ri0
 #
 cg-optimize-assign-returns .insns .insns #
 
-cg-optimize-stack-usage- .li0 .ri0
+cg-optimize-stack-usage .li0 .ri0
 	:- .li0 = (PUSH .r0
 		, PUSH .r1
 		, .call .op
@@ -59,20 +56,22 @@ cg-optimize-stack-usage- .li0 .ri0
 		, .call .op
 		, .mi1)
 	, member (CALL, CALL-CLOSURE,) .call
-	, (.li1/.mi1 = .li2/.mi2; append2 .li1/.li2 .mi1/.mi2 (RESTORE-DSP, RESTORE-CSP,))
-	, (.li2/.mi2 = .li3/.mi3; append2 .li2/.li3 .mi2/.mi3 (LEAVE,))
-	, append2 .li3/.insns .mi3/.insns (RETURN,)
+	, (.li1/.mi1 = .li2/.mi2; append2 .li1/.li2 .mi1/.mi2 (LEAVE,))
+	, append2 .li2/.insns .mi2/.insns (RETURN,)
 	, cg-optimize .mi0 .ri0
 	, !
 #
 cg-optimize-stack-usage .insns .insns #
 
+-- Return instruction would actually perform leave (i.e. frame restoration).
+-- We can skip the LEAVE instruction if it obstruct optimizations.
 cg-optimize-tail-calls .li0 .ri0
-	:- .li0 = (CALL .l, .li1)
-	, (.li1/.mi0 = .li2/.mi1)
-	, .mi1 = (JUMP .l, .mi2)
-	, append2 .li2/.insns .mi2/.insns (RETURN,)
-	, cg-optimize .mi0 .ri0
+	:- .li0 = (.call .op, .li1)
+	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE,) .call/.jump
+	, (.li1/.ri0 = .li2/.ri1; append2 .li1/.li2 .ri0/.ri1 (RESTORE-DSP _, RESTORE-CSP _,))
+	, (.li2 = .li3; .li2 = (LEAVE, .li3))
+	, .ri1 = (.jump .op, .ri2)
+	, append2 .li3/.insns .ri2/.insns (RETURN,)
 	, !
 #
 cg-optimize-tail-calls .insns .insns #
