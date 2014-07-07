@@ -42,6 +42,7 @@ public class SystemPredicates {
 		addPredicate(TermOp.GT____, EvalPredicates.compare);
 		addPredicate("generalize", EvalPredicates.generalize);
 		addPredicate("hash", EvalPredicates.hash);
+		addPredicate("hash.id", EvalPredicates.hashId);
 		addPredicate("is.cyclic", EvalPredicates.isCyclic);
 		addPredicate("let", EvalPredicates.let);
 		addPredicate("random", EvalPredicates.randomPredicate);

@@ -27,6 +27,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
+import suite.node.util.IdentityKey;
 import suite.node.util.Rewriter;
 import suite.util.LogUtil;
 
@@ -106,6 +107,11 @@ public class EvalPredicates {
 	public static SystemPredicate hash = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		return prover.bind(Int.of(params[0].hashCode()), params[1]);
+	};
+
+	public static SystemPredicate hashId = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		return prover.bind(Int.of(new IdentityKey(params[0]).hashCode()), params[1]);
 	};
 
 	public static SystemPredicate isCyclic = (prover, ps) -> {
