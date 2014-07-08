@@ -5,10 +5,12 @@ cg-optimize .c0 _
 	:- not bound .c0, !
 #
 cg-optimize .c0 .cx
-	:- tree.intern .key CG-OPTIMIZE ':' .c0
-	, once (intern.map.contains .key, .cached = true; .cached = false)
-	, intern.map.put .key .cx
-	, once (.cached = true; cg-optimize0 .c0 .cx)
+	:- tree.intern .key0 CG-OPTIMIZE ':' .c0
+	, once (intern.map.contains .key0, .cached = true; .cached = false)
+	, intern.map.put .key0 .cx
+	, once (.cached = true
+		; cg-optimize0 .c0 .cx, tree.intern .keyx CG-OPTIMIZE ':' .cx, intern.map.put .keyx .cx
+	)
 #
 
 cg-optimize0 (.insn0, .insns0) .cx
