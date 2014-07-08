@@ -111,7 +111,7 @@ public class EvalPredicates {
 
 	public static SystemPredicate hashId = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		return prover.bind(Int.of(new IdentityKey(params[0]).hashCode()), params[1]);
+		return prover.bind(Int.of(new IdentityKey(params[0].finalNode()).hashCode()), params[1]);
 	};
 
 	public static SystemPredicate isCyclic = (prover, ps) -> {
