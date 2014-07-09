@@ -2,18 +2,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
-import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.search.CompiledProverBuilder;
-import suite.lp.search.FindUtil;
-import suite.node.Atom;
-import suite.node.Node;
 
 public class FailedTests {
 
@@ -21,22 +15,6 @@ public class FailedTests {
 	@Test
 	public void testClosureUsing() {
 		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
-	}
-
-	@Test
-	public void testTailRecursion() {
-		Suite.isInstructionDump = true;
-		Suite.isInstructionTrace = true;
-
-		RuleSet rs = Suite.createRuleSet();
-		Suite.addRule(rs, "ab a");
-		Suite.addRule(rs, "ab b");
-
-		Node goal = Suite.parse("ab .a, ab .b, sink (.a, .b,)");
-		List<Node> results = FindUtil.collectList(CompiledProverBuilder.level1(new ProverConfig()).build(rs, goal), Atom.NIL);
-
-		System.out.println(results);
-		assertTrue(results.size() == 4);
 	}
 
 	// (Expected) infinite loop.

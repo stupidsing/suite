@@ -258,18 +258,19 @@ lc-bind-register .reg0 .node1 .vs .c0/.cx/.f
 
 lc-compile-rules () _ :- ! #
 lc-compile-rules (.proto/.rules, .remains) .pls
-	:- lc-flatten-rules .rules .call
+	:- lc-flatten-rules .rules .call .headReg
 	, member .pls .proto/.c
 	, .remark = REMARK r:('-----' .proto '-----')
-	, lc-compile-call (AND (BYTECODE .remark) .call) .pls .c/()
+	, .call1 = AND (BYTECODE .remark) AND (BYTECODE TOP .headReg -1) .call
+	, lc-compile-call .call1 .pls .c/()
 	, lc-compile-rules .remains .pls
 #
 
-lc-flatten-rules () FAIL :- ! #
-lc-flatten-rules (RULE .nv .head .tail, .remains) (OR .head2 .tail1)
-	:- .head1 = AND (BYTECODE TOP .reg -1) AND (EQ $$REG:.reg .head) .tail
+lc-flatten-rules () FAIL _ :- ! #
+lc-flatten-rules (RULE .nv .head .tail, .remains) (OR .head2 .tail1) .headReg
+	:- .head1 = AND (EQ $$REG:.headReg .head) .tail
 	, lc-define-new-variables .head1 .nv .head2
-	, lc-flatten-rules .remains .tail1
+	, lc-flatten-rules .remains .tail1 .headReg
 #
 
 lc-call-prototype (TREE _ .left _) .name :- lc-call-prototype .left .name #
