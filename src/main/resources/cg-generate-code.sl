@@ -11,10 +11,14 @@ cg-opt .c0 _
 #
 cg-opt .c0 .cx
 	:- tree.intern .key0 cg-opt ':' .c0
-	, once (intern.map.contains .key0, .cached = true; .cached = false)
+	, once (intern.map.contains .key0, .cached = true
+		; .cached = false
+	)
 	, intern.map.put .key0 .cx
 	, once (.cached = true
-		; cg-opt0 .c0 .cx, tree.intern .keyx cg-opt ':' .cx, intern.map.put .keyx .cx
+		; cg-opt0 .c0 .cx
+		, tree.intern .keyx cg-opt ':' .cx
+		, intern.map.put .keyx .cx
 	)
 #
 
