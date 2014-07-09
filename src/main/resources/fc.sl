@@ -29,7 +29,8 @@ compile-function .mode .do0 (FRAME l:.c,)
 		, LEAVE
 		, RETURN
 		,)
-	, cg-optimize .c0 .c
+	, !, cg-optimize .c0 .c
+	, !, find.all.memoized.clear
 #
 
 fc-load-library .lib .do0 .dox
