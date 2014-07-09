@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.eval.FunRbTreeTest;
-import suite.instructionexecutor.InstructionExecutor;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
@@ -26,8 +25,8 @@ public class FailedTests {
 
 	@Test
 	public void testTailRecursion() {
-		InstructionExecutor.isDump = true;
-		InstructionExecutor.isTrace = true;
+		Suite.isInstructionDump = true;
+		Suite.isInstructionTrace = true;
 
 		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "ab a");

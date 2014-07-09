@@ -29,7 +29,7 @@ public class Configuration {
 		}
 
 		public ProverConfig(RuleSet ruleSet) {
-			this(ruleSet, Suite.isTrace, Suite.tracePredicates, Suite.noTracePredicates);
+			this(ruleSet, Suite.isTraceProver, Suite.tracePredicates, Suite.noTracePredicates);
 		}
 
 		public ProverConfig(ProverConfig proverConfig) {

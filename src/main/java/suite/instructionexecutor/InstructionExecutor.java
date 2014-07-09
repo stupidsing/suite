@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.Suite;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Closure;
@@ -23,10 +24,6 @@ import com.google.common.collect.HashBiMap;
 
 public class InstructionExecutor implements AutoCloseable {
 
-	public static int stackSize = 16384;
-	public static boolean isDump = false;
-	public static boolean isTrace = false;
-
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
 
@@ -41,7 +38,7 @@ public class InstructionExecutor implements AutoCloseable {
 			list.addAll(extractor.extractInstructions(node));
 		}
 
-		if (isDump)
+		if (Suite.isInstructionDump)
 			for (int i = 0; i < list.size(); i++)
 				System.err.println(i + ": " + list.get(i));
 
@@ -69,7 +66,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
-		Node stack[] = new Node[stackSize];
+		Node stack[] = new Node[Suite.stackSize];
 		int ip = 0, sp = 0;
 		Node returnValue = null;
 
@@ -88,7 +85,7 @@ public class InstructionExecutor implements AutoCloseable {
 				TermOp op;
 				int i;
 
-				if (isTrace)
+				if (Suite.isInstructionTrace)
 					StatisticsCollector.getInstance().collect(ip, insn);
 
 				switch (insn.insn) {

@@ -35,7 +35,11 @@ import suite.node.parser.IterativeParser;
 public class Suite {
 
 	// Compilation defaults
-	public static boolean isTrace = false;
+	public static boolean isTraceProver = false;
+	public static boolean isInstructionDump = false;
+	public static boolean isInstructionTrace = false;
+	public static int stackSize = 16384;
+
 	public static List<String> libraries = Arrays.asList("STANDARD");
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
