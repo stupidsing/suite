@@ -10,14 +10,14 @@ cg-opt .c0 _
 	:- not bound .c0, !
 #
 cg-opt .c0 .cx
-	:- tree.intern .key0 cg-opt ':' .c0
+	:- tree.intern .key0 CG-OPTIMIZE ':' .c0
 	, once (intern.map.contains .key0, .cached = true
 		; .cached = false
 	)
 	, intern.map.put .key0 .cx
 	, once (.cached = true
 		; cg-opt0 .c0 .cx
-		, tree.intern .keyx cg-opt ':' .cx
+		, tree.intern .keyx CG-OPTIMIZE ':' .cx
 		, intern.map.put .keyx .cx
 	)
 #
