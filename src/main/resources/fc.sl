@@ -13,7 +13,6 @@
 	, import.path 'rbt.sl'
 #
 
--- TODO perform cg-optimize but not in imported, precompiled code
 compile-function .mode .do0 (FRAME l:.c,)
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _

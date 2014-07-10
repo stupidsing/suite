@@ -3,7 +3,7 @@
 
 cg-optimize .c0 .cx
 	:- cg-opt .c0 .cx
-	, !, intern.map.clear
+	, intern.map.clear
 #
 
 cg-opt .c0 _
@@ -15,7 +15,7 @@ cg-opt .c0 .cx
 		; .cached = false
 	)
 	, intern.map.put .key0 .cx
-	, once (.cached = true
+	, (.cached = true, !
 		; cg-opt0 .c0 .cx
 		, tree.intern .keyx CG-OPTIMIZE ':' .cx
 		, intern.map.put .keyx .cx
@@ -24,13 +24,24 @@ cg-opt .c0 .cx
 
 cg-opt0 (.insn0, .insns0) .cx
 	:- cg-opt .insns0 .insns1
-	, .c0 = (.insn0, .insns1)
+	, cg-opt-branches .insn0 .insn1
+	, .c0 = (.insn1, .insns1)
 	, cg-opt-assign-returns .c0 .c1
 	, cg-opt-stack-usage .c1 .c2
-	, cg-opt-tail-calls .c2 .c3
-	, cg-opt-branches .c3 .cx
+	, cg-opt-tail-calls .c2 .cx
 #
 cg-opt0 () () #
+
+cg-opt-branches (.insn l:.b0) (.insn l:.bx)
+	:- bound .b0, not (.insn = FRAME), !, cg-opt .b0 .bx
+#
+cg-opt-branches (.insn .op0 l:.b0) (.insn .op0 l:.bx)
+	:- bound .b0, !, cg-opt .b0 .bx
+#
+cg-opt-branches (.insn .op0 .op1 l:.b0) (.insn .op0 .op1 l:.bx)
+	:- bound .b0, !, cg-opt .b0 .bx
+#
+cg-opt-branches .insn .insn #
 
 cg-opt-assign-returns .li0 .ri0
 	:- .li0 = (
@@ -81,17 +92,6 @@ cg-opt-tail-calls .li0 .ri0
 	, !
 #
 cg-opt-tail-calls .insns .insns #
-
-cg-opt-branches (.insn l:.b0, .insns) (.insn l:.bx, .insns)
-	:- bound .b0, !, cg-opt .b0 .bx
-#
-cg-opt-branches (.insn .op0 l:.b0, .insns) (.insn .op0 l:.bx, .insns)
-	:- bound .b0, !, cg-opt .b0 .bx
-#
-cg-opt-branches (.insn .op0 .op1 l:.b0, .insns) (.insn .op0 .op1 l:.bx, .insns)
-	:- bound .b0, !, cg-opt .b0 .bx
-#
-cg-opt-branches .insns .insns #
 
 append2 .li0/.lix .ri0/.rix .insns
 	:- append .insns .lix .li0

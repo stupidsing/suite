@@ -5,7 +5,7 @@
 	, import.path 'rbt.sl'
 #
 
-compile-logic .call .code
+compile-logic .call (FRAME l:.code,)
 	:- .c0 = (ENTER
 		, ASSIGN-CONSTANT .returnReg c:true
 		, ASSIGN-CLOSURE .provenReg l:.c1
@@ -25,10 +25,10 @@ compile-logic .call .code
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
 	, !, lc-compile-call .call2 () .cc/()
-	, !, cg-optimize (FRAME l:.c0,) .code
+	, cg-optimize .c0 .code
 #
 
-lc-compile-call .call .pls (FRAME l:.c0, .c)/.c
+lc-compile-call .call .pls (FRAME l:.code, .c)/.c
 	:- .c0 = (ENTER
 		, BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
@@ -39,6 +39,7 @@ lc-compile-call .call .pls (FRAME l:.c0, .c)/.c
 	, .c2 = (LEAVE
 		, RETURN
 		,)
+	, cg-optimize .c0 .code
 #
 
 lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
