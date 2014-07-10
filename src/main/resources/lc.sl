@@ -178,8 +178,8 @@ lc-compile (ONCE .do) .rem .env .c0/.cx
 		, .c1)
 	, lc-compile .do (AND (CUT .cspReg .dspReg .cx) .rem) .env .c1/.cx
 #
-lc-compile (OR FAIL .do) .ps :- lc-compile .do .ps #
-lc-compile (OR .do FAIL) .ps :- lc-compile .do .ps #
+lc-compile (OR FAIL .do) .ps :- !, lc-compile .do .ps #
+lc-compile (OR .do FAIL) .ps :- !, lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx
 	:- .c0 = (BIND-MARK .pitReg, .c1)
 	, lc-compile (AND .a (BYTECODE CALL l:.d0)) FAIL .pls/.vs/.cut .c1/.c2
