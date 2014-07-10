@@ -25,22 +25,12 @@ cg-opt .c0 .cx
 cg-opt0 (.insn0, .insns0) .cx
 	:- cg-opt .insns0 .insns1
 	, .c0 = (.insn0, .insns1)
-	, cg-opt-jumps .c0 .c1
-	, cg-opt-assign-returns .c1 .c2
-	, cg-opt-stack-usage .c2 .c3
-	, cg-opt-tail-calls .c3 .c4
-	, cg-opt-branches .c4 .cx
+	, cg-opt-assign-returns .c0 .c1
+	, cg-opt-stack-usage .c1 .c2
+	, cg-opt-tail-calls .c2 .c3
+	, cg-opt-branches .c3 .cx
 #
 cg-opt0 () () #
-
-cg-opt-jumps (JUMP l:(.redirInsn, _), .insns) .cx
-	:- member (JUMP _, RETURN,) .redirInsn
-	, !, cg-opt (.redirInsn, .insns) .cx
-#
-cg-opt-jumps (CALL l:(RETURN, _), .insns) .cx
-	:- !, cg-opt .insns .cx
-#
-cg-opt-jumps .insns .insns #
 
 cg-opt-assign-returns .li0 .ri0
 	:- .li0 = (
