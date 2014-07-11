@@ -91,15 +91,6 @@ fc-define-default-fun 1 +pright TAIL #
 fc-define-default-fun 1 is-list IS-CONS #
 fc-define-default-fun 1 is-pair IS-CONS #
 
-fc-operator .oper
-	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
-		' = ', ' != ',
-		' > ', ' < ', ' >= ', ' <= ',
-		',', ';',
-		' . ',
-	) .oper
-#
-
 fc-error .m :- !, write.error .m, nl, fail #
 
 fc-dict-get .v .t :- rbt-get .v .t, ! #
