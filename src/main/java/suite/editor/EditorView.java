@@ -205,6 +205,9 @@ public class EditorView {
 		JMenuItem evalTypeMenuItem = applyDefaults(new JMenuItem("Evaluate Type", KeyEvent.VK_T));
 		evalTypeMenuItem.addActionListener(event -> controller.evaluateType(view));
 
+		JMenuItem newWindowMenuItem = applyDefaults(new JMenuItem("New Window", KeyEvent.VK_N));
+		newWindowMenuItem.addActionListener(event -> controller.newWindow(view));
+
 		JMenu fileMenu = createMenu("File", KeyEvent.VK_F //
 				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
@@ -217,11 +220,15 @@ public class EditorView {
 		JMenu projectMenu = createMenu("Project", KeyEvent.VK_P //
 				, evalMenuItem, evalTypeMenuItem);
 
+		JMenu windowMenu = createMenu("Window", KeyEvent.VK_W //
+				, newWindowMenuItem, newWindowMenuItem);
+
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
 		menuBar.add(viewMenu);
 		menuBar.add(projectMenu);
+		menuBar.add(windowMenu);
 
 		return menuBar;
 	}

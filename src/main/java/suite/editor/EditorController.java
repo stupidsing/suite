@@ -92,6 +92,14 @@ public class EditorController {
 		view.getFilenameTextField().setText("pad");
 	}
 
+	public void newWindow(EditorView view) {
+		EditorController controller = new EditorController();
+
+		EditorView view1 = new EditorView();
+		view1.setController(controller);
+		view1.run(Editor.class.getSimpleName());
+	}
+
 	public void quit(EditorView view) {
 		System.exit(0);
 	}
