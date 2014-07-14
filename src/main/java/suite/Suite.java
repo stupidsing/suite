@@ -102,20 +102,6 @@ public class Suite {
 		return Tree.list(TermOp.NEXT__, nodes);
 	}
 
-	/**
-	 * Forms a string using ASCII codes in a list of number.
-	 */
-	public static String stringize(Node node) {
-		StringBuilder sb = new StringBuilder();
-
-		for (Node elem : Tree.iter(node)) {
-			Int i = (Int) elem;
-			sb.append((char) i.getNumber());
-		}
-
-		return sb.toString();
-	}
-
 	public static Node substitute(String s, Node... nodes) {
 		Node result = parse(s);
 
