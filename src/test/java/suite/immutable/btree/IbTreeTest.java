@@ -24,11 +24,10 @@ public class IbTreeTest {
 	@Test
 	public void testSingleLevel() throws FileNotFoundException {
 		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree" //
-		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null); //
-				IbTree<Integer>.Txm txm = ibTree.txm()) {
-			txm.commit(ibTree.create());
+		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null)) {
+			ibTree.create().commit();
 
-			IbTree<Integer>.Transaction transaction = txm.begin();
+			IbTree<Integer>.Transaction transaction = ibTree.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				transaction.put(i);
@@ -50,9 +49,8 @@ public class IbTreeTest {
 
 		try (IbTree<Integer> ibTree0 = builder.buildPointerTree(f0);
 				IbTree<Integer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
-				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1);
-				IbTree<String>.Txm txm = ibTree2.txm()) {
-			txm.commit(ibTree2.create());
+				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1)) {
+			ibTree2.create().commit();
 
 			int size = ibTree2.guaranteedCapacity();
 
@@ -68,24 +66,24 @@ public class IbTreeTest {
 			// updating 25 keys each.
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTree<String>.Transaction transaction0 = txm.begin();
+				IbTree<String>.Transaction transaction0 = ibTree2.begin();
 				for (String s : subset)
 					transaction0.put(s);
-				txm.commit(transaction0);
+				transaction0.commit();
 			}
 
-			assertEquals(size, dumpAndCount(txm.begin()));
+			assertEquals(size, dumpAndCount(ibTree2.begin()));
 
 			Collections.shuffle(list);
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTree<String>.Transaction transaction1 = txm.begin();
+				IbTree<String>.Transaction transaction1 = ibTree2.begin();
 				for (String s : subset)
 					transaction1.remove(s);
-				txm.commit(transaction1);
+				transaction1.commit();
 			}
 
-			assertEquals(0, dumpAndCount(txm.begin()));
+			assertEquals(0, dumpAndCount(ibTree2.begin()));
 		}
 	}
 

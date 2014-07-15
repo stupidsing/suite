@@ -43,6 +43,7 @@ public class IbTree<Key> implements Closeable {
 	private String filename;
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
+	private Txm txm = new Txm();
 
 	private PageFile pageFile;
 	private SerializedPageFile<Page> serializedPageFile;
@@ -213,6 +214,10 @@ public class IbTree<Key> implements Closeable {
 			this.root = root;
 		}
 
+		public void commit() {
+			txm.commit(this);
+		}
+
 		public Source<Key> keys() {
 			return keys(null, null);
 		}
@@ -379,18 +384,18 @@ public class IbTree<Key> implements Closeable {
 		}
 	}
 
-	public class Txm implements Closeable {
+	private class Txm implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Txm() {
 			stampFile = new SerializedPageFile<>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
-		public Transaction begin() {
+		private Transaction begin() {
 			return transaction(stampFile.load(0));
 		}
 
-		public void commit(Transaction transaction) {
+		private void commit(Transaction transaction) {
 			List<Integer> stamp = transaction.flush();
 			sync();
 			stampFile.save(0, stamp);
@@ -426,14 +431,15 @@ public class IbTree<Key> implements Closeable {
 
 	@Override
 	public void close() {
+		txm.close();
 		serializedPageFile.close();
 	}
 
 	/**
-	 * @return Transaction manager for this immutable B-tree.
+	 * @return A new transaction object.
 	 */
-	public Txm txm() {
-		return new Txm();
+	public Transaction begin() {
+		return txm.begin();
 	}
 
 	/**
