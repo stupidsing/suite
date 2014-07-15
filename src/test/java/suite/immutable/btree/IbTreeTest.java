@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.immutable.btree.impl.IbTreeBuilder;
+import suite.immutable.btree.impl.IbTreeImpl;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
@@ -27,7 +29,7 @@ public class IbTreeTest {
 		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null)) {
 			ibTree.create().commit();
 
-			IbTree<Integer>.Transaction transaction = ibTree.begin();
+			IbTreeTransaction<Integer> transaction = ibTree.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				transaction.put(i);
@@ -47,8 +49,8 @@ public class IbTreeTest {
 		String f1 = FileUtil.tmp + "/ibTree" + i++;
 		String f2 = FileUtil.tmp + "/ibTree" + i++;
 
-		try (IbTree<Integer> ibTree0 = builder.buildPointerTree(f0);
-				IbTree<Integer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
+		try (IbTreeImpl<Integer> ibTree0 = builder.buildPointerTree(f0);
+				IbTreeImpl<Integer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
 				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1)) {
 			ibTree2.create().commit();
 
@@ -66,7 +68,7 @@ public class IbTreeTest {
 			// updating 25 keys each.
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTree<String>.Transaction transaction0 = ibTree2.begin();
+				IbTreeTransaction<String> transaction0 = ibTree2.begin();
 				for (String s : subset)
 					transaction0.put(s);
 				transaction0.commit();
@@ -77,7 +79,7 @@ public class IbTreeTest {
 			Collections.shuffle(list);
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTree<String>.Transaction transaction1 = ibTree2.begin();
+				IbTreeTransaction<String> transaction1 = ibTree2.begin();
 				for (String s : subset)
 					transaction1.remove(s);
 				transaction1.commit();
@@ -87,7 +89,7 @@ public class IbTreeTest {
 		}
 	}
 
-	private int dumpAndCount(IbTree<?>.Transaction transaction) {
+	private int dumpAndCount(IbTreeTransaction<?> transaction) {
 		Source<?> source = transaction.keys();
 		Object object;
 		int count = 0;

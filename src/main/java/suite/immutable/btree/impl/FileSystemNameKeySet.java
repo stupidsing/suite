@@ -1,10 +1,10 @@
-package suite.immutable.btree;
+package suite.immutable.btree.impl;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import suite.immutable.btree.FileSystemKeyUtil.NameKey;
+import suite.immutable.btree.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
@@ -24,9 +24,9 @@ public class FileSystemNameKeySet {
 	private List<NameKey> emptyKeys = Collections.<NameKey> emptyList();
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
-	private IbTree<Bytes>.Transaction transaction;
+	private IbTreeImpl<Bytes>.Transaction transaction;
 
-	public FileSystemNameKeySet(IbTree<Bytes>.Transaction transaction) {
+	public FileSystemNameKeySet(IbTreeImpl<Bytes>.Transaction transaction) {
 		this.transaction = transaction;
 	}
 
