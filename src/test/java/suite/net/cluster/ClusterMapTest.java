@@ -14,6 +14,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import suite.net.cluster.impl.ClusterImpl;
+import suite.net.cluster.impl.ClusterMapImpl;
 import suite.util.Util;
 
 public class ClusterMapTest {
@@ -34,11 +36,11 @@ public class ClusterMapTest {
 		Map<String, ClusterMap<Integer, String>> clMap = new HashMap<>();
 
 		for (String name : peers.keySet()) {
-			Cluster cluster = new Cluster(name, peers);
+			Cluster cluster = new ClusterImpl(name, peers);
 			clusters.put(name, cluster);
 			cluster.start();
 
-			clMap.put(name, new ClusterMap<>(cluster));
+			clMap.put(name, new ClusterMapImpl<>(cluster));
 		}
 
 		Util.sleepQuietly(5 * 1000);

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import suite.net.cluster.impl.ClusterImpl;
 import suite.util.Util;
 
 public class ClusterTest {
@@ -23,8 +24,8 @@ public class ClusterTest {
 		peers.put("NODE0", new InetSocketAddress(localHost, 3000));
 		peers.put("NODE1", new InetSocketAddress(localHost, 3001));
 
-		Cluster cluster0 = new Cluster("NODE0", peers);
-		Cluster cluster1 = new Cluster("NODE1", peers);
+		Cluster cluster0 = new ClusterImpl("NODE0", peers);
+		Cluster cluster1 = new ClusterImpl("NODE1", peers);
 
 		cluster1.setOnReceive(Integer.class, i -> i + 1);
 
