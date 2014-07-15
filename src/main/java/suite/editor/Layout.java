@@ -78,18 +78,30 @@ public class Layout {
 		HORIZONTAL, VERTICAL
 	}
 
+	/**
+	 * Generic sized area.
+	 */
 	public static Leaf co(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w << 8, h << 8));
 	}
 
+	/**
+	 * Horizontal box.
+	 */
 	public static Leaf hb(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w << 8, h));
 	}
 
+	/**
+	 * Vertical box.
+	 */
 	public static Leaf vb(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w, h << 8));
 	}
 
+	/**
+	 * Fixed-size box.
+	 */
 	public static Leaf fx(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w, h));
 	}

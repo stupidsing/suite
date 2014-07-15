@@ -11,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.DefaultListModel;
@@ -29,14 +30,16 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import suite.editor.Layout.Node;
 import suite.editor.Layout.Orientation;
 
 public class EditorView {
 
-	private static int windowWidth = 1280;
-	private static int windowHeight = 768;
+	private int windowWidth = 1280;
+	private int windowHeight = 768;
 
 	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
 	private Font narrowFont = new Font("Sans", Font.PLAIN, 12);
@@ -53,6 +56,8 @@ public class EditorView {
 	private JLabel rightLabel;
 	private JScrollPane messageScrollPane;
 	private JTextField filenameTextField;
+
+	private boolean isModified = false;
 
 	public JFrame run(String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
@@ -96,6 +101,22 @@ public class EditorView {
 		JScrollPane messageScrollPane = this.messageScrollPane = createScrollPane(messageTextArea);
 
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
+		editor.getDocument().addDocumentListener(new DocumentListener() {
+			public void removeUpdate(DocumentEvent event) {
+				changed();
+			}
+
+			public void insertUpdate(DocumentEvent event) {
+				changed();
+			}
+
+			public void changedUpdate(DocumentEvent event) {
+			}
+
+			private void changed() {
+				setModified(true);
+			}
+		});
 
 		JScrollPane editorScrollPane = createScrollPane(editor);
 
@@ -143,18 +164,28 @@ public class EditorView {
 				);
 
 		controller.newFile(this);
-		repaint();
+		refresh();
 
 		return frame;
 	}
 
-	public void repaint() {
+	public void setModified(boolean isModified) {
+		this.isModified = isModified;
+		repaint();
+	}
+
+	public void refresh() {
 		calculateLayout();
-		frame.repaint();
+		repaint();
 	}
 
 	private void calculateLayout() {
 		new LayoutCalculator().arrange(frame.getContentPane(), layout);
+	}
+
+	private void repaint() {
+		frame.setTitle((isModified ? "* " : "") + filenameTextField.getText().replace(File.separatorChar, '/'));
+		frame.repaint();
 	}
 
 	private JMenuBar createMenuBar() {
@@ -166,9 +197,11 @@ public class EditorView {
 
 		JMenuItem openMenuItem = applyDefaults(new JMenuItem("Open...", KeyEvent.VK_O));
 		openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		openMenuItem.addActionListener(event -> controller.open(view));
 
 		JMenuItem saveMenuItem = applyDefaults(new JMenuItem("Save", KeyEvent.VK_S));
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		saveMenuItem.addActionListener(event -> controller.save(view));
 
 		JMenuItem searchMenuItem = applyDefaults(new JMenuItem("Search"));
 		searchMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));

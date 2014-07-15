@@ -10,6 +10,7 @@ import java.io.Writer;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ public class EditorController {
 
 	public void bottom(EditorView view) {
 		toggleVisible(view, view.getBottomToolbar());
-		view.repaint();
+		view.refresh();
 	}
 
 	public void downToSearchList(EditorView view) {
@@ -81,7 +82,7 @@ public class EditorController {
 		JComponent left = view.getLeftToolbar();
 		if (toggleVisible(view, left))
 			view.getSearchTextField().requestFocusInWindow();
-		view.repaint();
+		view.refresh();
 	}
 
 	public void newFile(EditorView view) {
@@ -90,6 +91,7 @@ public class EditorController {
 		editor.requestFocusInWindow();
 
 		view.getFilenameTextField().setText("pad");
+		view.setModified(false);
 	}
 
 	public void newWindow(EditorView view) {
@@ -100,6 +102,22 @@ public class EditorController {
 		view1.run(Editor.class.getSimpleName());
 	}
 
+	public void open(EditorView view) {
+		File dir = new File(view.getFilenameTextField().getText()).getParentFile();
+		JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
+		if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
+			load(view, fileChooser.getSelectedFile().getName());
+	}
+
+	public void save(EditorView view) {
+		try (OutputStream os = FileUtil.out(view.getFilenameTextField().getText())) {
+			os.write(view.getEditor().getText().getBytes(FileUtil.charset));
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		view.setModified(false);
+	}
+
 	public void quit(EditorView view) {
 		System.exit(0);
 	}
@@ -107,7 +125,7 @@ public class EditorController {
 	public void right(EditorView view) {
 		JComponent right = view.getRightToolbar();
 		toggleVisible(view, right);
-		view.repaint();
+		view.refresh();
 	}
 
 	public void searchFor(EditorView view) {
@@ -133,26 +151,14 @@ public class EditorController {
 	}
 
 	public void selectList(EditorView view) {
-		try {
-			String filename = view.getLeftList().getSelectedValue();
-			String text = To.string(new File(filename));
-
-			view.getFilenameTextField().setText(filename);
-
-			JEditorPane editor = view.getEditor();
-			editor.setText(text);
-			editor.setCaretPosition(0);
-			editor.requestFocusInWindow();
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		load(view, view.getLeftList().getSelectedValue());
 	}
 
 	public void top(EditorView view) {
 		JTextField filenameTextField = view.getFilenameTextField();
 		if (toggleVisible(view, filenameTextField))
 			filenameTextField.setCaretPosition(filenameTextField.getText().length());
-		view.repaint();
+		view.refresh();
 	}
 
 	public void unixFilter(EditorView view) {
@@ -175,6 +181,21 @@ public class EditorController {
 		} catch (IOException | InterruptedException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private void load(EditorView view, String filename) {
+		try {
+			String text = To.string(new File(filename));
+			view.getFilenameTextField().setText(filename);
+
+			JEditorPane editor = view.getEditor();
+			editor.setText(text);
+			editor.setCaretPosition(0);
+			editor.requestFocusInWindow();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		view.setModified(false);
 	}
 
 	private boolean toggleVisible(EditorView view, JComponent component) {
@@ -212,7 +233,7 @@ public class EditorController {
 				bottomTextArea.setEnabled(true);
 				bottomTextArea.setVisible(true);
 
-				view.repaint();
+				view.refresh();
 				view.getEditor().requestFocusInWindow();
 			});
 
