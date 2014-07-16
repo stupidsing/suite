@@ -67,7 +67,7 @@ public class IoPredicates {
 
 	public static SystemPredicate homeDir = (prover, ps) -> {
 		String homeDir = System.getProperty("home.dir");
-		return prover.bind(new Str(homeDir), ps);
+		return prover.bind(new Str(homeDir != null ? homeDir : "."), ps);
 	};
 
 	public static SystemPredicate nl = PredicateUtil.predicate(n -> System.out.println());
