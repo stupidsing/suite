@@ -1,4 +1,4 @@
-package suite.net.cluster;
+package suite.net.cluster.impl;
 
 import java.io.Serializable;
 

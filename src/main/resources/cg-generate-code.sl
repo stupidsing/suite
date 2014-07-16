@@ -2,101 +2,98 @@
 -- code generator and peep hole optimizer
 
 cg-optimize .c0 .cx
-	:- tree.intern .key CG-OPTIMIZE ':' .c0
-	, intern.map.put .key .cx
-	, once (bound .cx; cg-optimize0 .c0 .cx)
+	:- cg-opt .c0 .cx
+	, intern.map.clear
 #
 
-cg-optimize0 (.insn0, .insns0) .cx
-	:- cg-optimize .insns0 .insns1
-	, .c0 = (.insn0, .insns1)
-	, cg-optimize-jumps .c0 .c1
-	, cg-optimize-assign-returns .c1 .c2
-	, cg-optimize-lp-tail-calls .c2 .c3
-	, cg-optimize-branches .c3 .cx
+cg-opt .c0 _
+	:- not bound .c0, !
 #
-cg-optimize0 () () #
-
-cg-optimize-jumps (JUMP l:(.redirInsn, _), .insns) .cx
-	:- cg-redirect-instruction .redirInsn
-	, !, cg-optimize-jumps (.redirInsn, .insns) .cx
+cg-opt .c0 .cx
+	:- tree.intern .key0 CG-OPTIMIZE ':' .c0
+	, once (intern.map.contains .key0, .cached = true
+		; .cached = false
+	)
+	, intern.map.put .key0 .cx
+	, (.cached = true, !
+		; cg-opt0 .c0 .cx
+		, tree.intern .keyx CG-OPTIMIZE ':' .cx
+		, intern.map.put .keyx .cx
+	)
 #
-cg-optimize-jumps (CALL l:(RETURN, _), .insns) .cx
-	:- !, cg-optimize-jumps .insns .cx
+
+cg-opt0 (.insn0, .insns0) .cx
+	:- cg-opt .insns0 .insns1
+	, cg-opt-branches .insn0 .insn1
+	, .c0 = (.insn1, .insns1)
+	, cg-opt-assign-returns .c0 .c1
+	, cg-opt-stack-usage .c1 .c2
+	, cg-opt-tail-calls .c2 .cx
 #
-cg-optimize-jumps .insns .insns #
+cg-opt0 () () #
 
-cg-redirect-instruction (JUMP _) #
-cg-redirect-instruction (RETURN) #
-
-cg-optimize-assign-returns (
-	ASSIGN-FRAME-REG .r0 0 .r, SET-RESULT .r1, RETURN, .insns0
-) (
-	SET-RESULT .r, RETURN, .insns1
-)
-	:- same .r0 .r1
-	, !, cg-optimize-assign-returns .insns0 .insns1
+cg-opt-branches (.insn l:.b0) (.insn l:.bx)
+	:- bound .b0, not (.insn = FRAME), !, cg-opt .b0 .bx
 #
-cg-optimize-assign-returns .insns .insns #
+cg-opt-branches (.insn .op0 l:.b0) (.insn .op0 l:.bx)
+	:- bound .b0, !, cg-opt .b0 .bx
+#
+cg-opt-branches (.insn .op0 .op1 l:.b0) (.insn .op0 .op1 l:.bx)
+	:- bound .b0, !, cg-opt .b0 .bx
+#
+cg-opt-branches .insn .insn #
 
-cg-optimize-lp-tail-calls .li0 .ri0
-	:- cg-push-pop-bind-pairs .li0/.li1 .li4/.li5 .li7/.li8 .pairs
-	, cg-push-pop-pairs .li1/.li2 .li3/.li4 .ri2/.ri3 .ri1/.ri2
-	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE,) .call/.jump
-	, .li2 = (.call .op, .li3)
-	, cg-is-restore-csp-dsp .li5/.li6 .ri0/.ri1
-	, cg-is-skip .li6/.li7
-	, cg-is-leaving .li8/.li9 .ri3/.ri4
-	, cg-is-returning .li9
-	, cg-verify-push-pop-bind-pairs .pairs
-	, .ri4 = (.jump .op,)
+cg-opt-assign-returns .li0 .ri0
+	:- .li0 = (
+		ASSIGN-FRAME-REG .r0 0 .r
+		, SET-RESULT .r1
+		, RETURN
+		, .insns)
+	, .mi0 = (SET-RESULT .r
+		, RETURN
+		, .insns)
+	same .r0 .r1
+	, !
+	, cg-opt .mi0 .ri0
+#
+cg-opt-assign-returns .insns .insns #
+
+cg-opt-stack-usage .li0 .ri0
+	:- .li0 = (PUSH .r0
+		, PUSH .r1
+		, .call .op
+		, POP-ANY
+		, POP-ANY
+		, .li1)
+	, .mi0 = (POP-ANY
+		, POP-ANY
+		, PUSH .r0
+		, PUSH .r1
+		, .call .op
+		, .mi1)
+	, member (CALL, CALL-CLOSURE,) .call
+	, (.li1/.mi1 = .li2/.mi2; append2 .li1/.li2 .mi1/.mi2 (LEAVE,))
+	, append2 .li2/.insns .mi2/.insns (RETURN,)
+	, cg-opt .mi0 .ri0
 	, !
 #
-cg-optimize-lp-tail-calls .insns .insns #
+cg-opt-stack-usage .insns .insns #
 
-cg-push-pop-bind-pairs
-(BIND-MARK .pr0, PUSH .pr1, .i)/.i
-(POP-ANY, .j)/.j
-(TOP .pr2 -3, BIND-UNDO .pr3, .k)/.k
-.pr0/.pr1/.pr2/.pr3
+-- Return instruction would actually perform leave (i.e. frame restoration).
+-- We can skip the LEAVE instruction if it obstruct optimizations.
+cg-opt-tail-calls .li0 .ri0
+	:- .li0 = (.call .op, .li1)
+	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE,) .call/.jump
+	, (.li1/.mi0 = .li2/.mi1; append2 .li1/.li2 .mi0/.mi1 (RESTORE-DSP _, RESTORE-CSP _,))
+	, (.li2 = .li3; .li2 = (LEAVE, .li3))
+	, .mi1 = (.jump .op, .mi2)
+	, append2 .li3/.insns .mi2/.insns (RETURN,)
+	, cg-opt .mi0 .ri0
+	, !
 #
-cg-push-pop-bind-pairs .i/.i .j/.j .k/.k ()/()/()/() #
+cg-opt-tail-calls .insns .insns #
 
-cg-verify-push-pop-bind-pairs .pr0/.pr1/.pr2/.pr3
-	:- same .pr0 .pr1, same .pr2 .pr3
+append2 .li0/.lix .ri0/.rix .insns
+	:- append .insns .lix .li0
+	, append .insns .rix .ri0
 #
-
--- Limits the number of push/pop pair rearrangement to 2 to avoid changing the
--- bind journal pointer stored at the third location
-cg-push-pop-pairs
-(PUSH .r0, PUSH .r1, .i)/.i (POP-ANY, POP-ANY, .j)/.j
-(PUSH .r0, PUSH .r1, .k)/.k (POP-ANY, POP-ANY, .l)/.l
-	:- !
-#
-cg-push-pop-pairs .i/.i .j/.j .k/.k .l/.l #
-
-cg-is-restore-csp-dsp
-(RESTORE-DSP .dspReg, RESTORE-CSP .cspReg, .i)/.i
-(RESTORE-DSP .dspReg, RESTORE-CSP .cspReg, .j)/.j
-	:- !
-#
-cg-is-restore-csp-dsp .i/.i .j/.j #
-
-cg-is-skip (REMARK _, .i0)/.ix :- !, cg-is-skip .i0/.ix #
-cg-is-skip .i/.i #
-
-cg-is-leaving (LEAVE, .i)/.i (LEAVE, .j)/.j :- ! #
-cg-is-leaving .i/.i .j/.j #
-
-cg-is-returning (RETURN, _) #
-
-cg-optimize-branches (.insn l:.b0, .insns) (.insn l:.bx, .insns)
-	:- bound .b0, !, cg-optimize .b0 .bx
-#
-cg-optimize-branches (.insn .op0 l:.b0, .insns) (.insn .op0 l:.bx, .insns)
-	:- bound .b0, !, cg-optimize .b0 .bx
-#
-cg-optimize-branches (.insn .op0 .op1 l:.b0, .insns) (.insn .op0 .op1 l:.bx, .insns)
-	:- bound .b0, !, cg-optimize .b0 .bx
-#
-cg-optimize-branches .insns .insns #

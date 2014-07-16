@@ -11,10 +11,7 @@ public class Editor {
 
 	public void open() {
 		EditorController controller = new EditorController();
-
-		EditorView view = new EditorView();
-		view.setController(controller);
-		view.run(Editor.class.getSimpleName());
+		controller.newWindow(null);
 	}
 
 }

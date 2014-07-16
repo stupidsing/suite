@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.lp.doer.Prover;
+import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -11,10 +12,6 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 
 public class SystemPredicates {
-
-	public interface SystemPredicate {
-		public boolean prove(Prover prover, Node ps);
-	}
 
 	private Map<String, SystemPredicate> predicates = new HashMap<>();
 
@@ -42,6 +39,7 @@ public class SystemPredicates {
 		addPredicate(TermOp.GT____, EvalPredicates.compare);
 		addPredicate("generalize", EvalPredicates.generalize);
 		addPredicate("hash", EvalPredicates.hash);
+		addPredicate("hash.id", EvalPredicates.hashId);
 		addPredicate("is.cyclic", EvalPredicates.isCyclic);
 		addPredicate("let", EvalPredicates.let);
 		addPredicate("random", EvalPredicates.randomPredicate);
@@ -80,6 +78,7 @@ public class SystemPredicates {
 		addPredicate("trim", FormatPredicates.trim);
 
 		addPredicate("intern.map.clear", InternMapPredicates.internMapClear);
+		addPredicate("intern.map.contains", InternMapPredicates.internMapContains);
 		addPredicate("intern.map.put", InternMapPredicates.internMapPut);
 
 		addPredicate("dump", IoPredicates.dump);

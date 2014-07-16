@@ -127,13 +127,15 @@ public class Formatter {
 	}
 
 	private void format0(Node node, int parentPrec) {
-		if (node instanceof Int)
-			sb.append(((Int) node).getNumber());
-		else if (node instanceof Atom) {
+		if (node instanceof Atom) {
 			String s = ((Atom) node).getName();
 			s = isDump ? quoteAtomIfRequired(s) : s;
 			sb.append(s);
-		} else if (node instanceof Str) {
+		} else if (node instanceof Int)
+			sb.append(((Int) node).getNumber());
+		else if (node instanceof Reference)
+			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
+		else if (node instanceof Str) {
 			String s = ((Str) node).getValue();
 			s = isDump ? Escaper.escape(s, '"') : s;
 			sb.append(s);
@@ -149,9 +151,7 @@ public class Formatter {
 				sb.append("]");
 			} else
 				formatTree(operator, left, right, parentPrec);
-		} else if (node instanceof Reference)
-			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
-		else
+		} else
 			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
 	}
 

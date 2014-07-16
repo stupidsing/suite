@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import suite.net.cluster.impl.ClusterProbeImpl;
 import suite.util.Util;
 
 public class ClusterProbeTest {
@@ -27,7 +28,7 @@ public class ClusterProbeTest {
 
 		Map<String, ClusterProbe> probes = new HashMap<>();
 		for (String name : peers.keySet()) {
-			ClusterProbe probe = new ClusterProbe(name, peers);
+			ClusterProbe probe = new ClusterProbeImpl(name, peers);
 			probes.put(name, probe);
 			probe.start();
 		}

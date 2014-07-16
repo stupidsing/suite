@@ -25,7 +25,6 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.node.Atom;
 import suite.node.Data;
-import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
@@ -35,7 +34,11 @@ import suite.node.parser.IterativeParser;
 public class Suite {
 
 	// Compilation defaults
-	public static boolean isTrace = false;
+	public static boolean isProverTrace = false;
+	public static boolean isInstructionDump = false;
+	public static boolean isInstructionTrace = false;
+	public static int stackSize = 16384;
+
 	public static List<String> libraries = Arrays.asList("STANDARD");
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
@@ -96,20 +99,6 @@ public class Suite {
 				.map(Rule::formClause) //
 				.collect(Collectors.toList());
 		return Tree.list(TermOp.NEXT__, nodes);
-	}
-
-	/**
-	 * Forms a string using ASCII codes in a list of number.
-	 */
-	public static String stringize(Node node) {
-		StringBuilder sb = new StringBuilder();
-
-		for (Node elem : Tree.iter(node)) {
-			Int i = (Int) elem;
-			sb.append((char) i.getNumber());
-		}
-
-		return sb.toString();
 	}
 
 	public static Node substitute(String s, Node... nodes) {

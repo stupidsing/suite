@@ -1,6 +1,5 @@
 package suite.node;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,10 +8,6 @@ import suite.util.Util;
 public class Tuple extends Node {
 
 	private List<Node> nodes;
-
-	public Tuple(Node... nodes) {
-		this.nodes = Arrays.asList(nodes);
-	}
 
 	public Tuple(List<Node> nodes) {
 		this.nodes = nodes;

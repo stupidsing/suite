@@ -13,7 +13,6 @@
 	, import.path 'rbt.sl'
 #
 
--- TODO perform cg-optimize but not in imported, precompiled code
 compile-function .mode .do0 (FRAME l:.c,)
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
@@ -29,7 +28,8 @@ compile-function .mode .do0 (FRAME l:.c,)
 		, LEAVE
 		, RETURN
 		,)
-	, cg-optimize .c0 .c
+	, !, cg-optimize .c0 .c
+	, !, find.all.memoized.clear
 #
 
 fc-load-library .lib .do0 .dox
@@ -90,15 +90,6 @@ fc-define-default-fun 1 +pleft HEAD #
 fc-define-default-fun 1 +pright TAIL #
 fc-define-default-fun 1 is-list IS-CONS #
 fc-define-default-fun 1 is-pair IS-CONS #
-
-fc-operator .oper
-	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
-		' = ', ' != ',
-		' > ', ' < ', ' >= ', ' <= ',
-		',', ';',
-		' . ',
-	) .oper
-#
 
 fc-error .m :- !, write.error .m, nl, fail #
 

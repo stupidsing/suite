@@ -5,18 +5,17 @@
 	, import.path 'rbt.sl'
 #
 
-compile-logic .call .code
+compile-logic .call (FRAME l:.code,)
 	:- .c0 = (ENTER
 		, ASSIGN-CONSTANT .returnReg c:true
 		, ASSIGN-CLOSURE .provenReg l:.c1
 		, BIND-MARK .pitReg
-		, PUSH .pitReg
 		, PUSH .provenReg
 		, PUSH .provenReg
 		, CALL l:.cc
 		, POP-ANY
 		, POP-ANY
-		, POP-ANY
+		, BIND-UNDO .pitReg
 		, ASSIGN-CONSTANT .returnReg c:false
 		, .c1)
 	, .c1 = (SET-RESULT .returnReg
@@ -26,10 +25,10 @@ compile-logic .call .code
 	, lc-parse .call .call1 .nv
 	, lc-define-new-variables .call1 .nv .call2
 	, !, lc-compile-call .call2 () .cc/()
-	, !, cg-optimize (FRAME l:.c0,) .code
+	, cg-optimize .c0 .code
 #
 
-lc-compile-call .call .pls (FRAME l:.c0, .c)/.c
+lc-compile-call .call .pls (FRAME l:.code, .c)/.c
 	:- .c0 = (ENTER
 		, BACKUP-CSP .cspReg
 		, BACKUP-DSP .dspReg
@@ -37,11 +36,10 @@ lc-compile-call .call .pls (FRAME l:.c0, .c)/.c
 		, .c1)
 	, .rem = AND (BYTECODE CALL-CLOSURE .provenReg) FAIL
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2
-	, .c2 = (TOP .pitReg -3
-		, BIND-UNDO .pitReg
-		, LEAVE
+	, .c2 = (LEAVE
 		, RETURN
 		,)
+	, cg-optimize .c0 .code
 #
 
 lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
@@ -144,12 +142,9 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx
 	, lc-create-node .call .vs .c0/.c1/.reg, (
 		member .pls .proto/.cl, !
 		, .c1 = (ASSIGN-CLOSURE .provenReg l:.d0
-			, BIND-MARK .pitReg
-			, PUSH .pitReg
 			, PUSH .provenReg
 			, PUSH .reg
 			, CALL l:.cl
-			, POP-ANY
 			, POP-ANY
 			, POP-ANY
 			, .cx)
@@ -184,8 +179,8 @@ lc-compile (ONCE .do) .rem .env .c0/.cx
 		, .c1)
 	, lc-compile .do (AND (CUT .cspReg .dspReg .cx) .rem) .env .c1/.cx
 #
-lc-compile (OR FAIL .do) .ps :- lc-compile .do .ps #
-lc-compile (OR .do FAIL) .ps :- lc-compile .do .ps #
+lc-compile (OR FAIL .do) .ps :- !, lc-compile .do .ps #
+lc-compile (OR .do FAIL) .ps :- !, lc-compile .do .ps #
 lc-compile (OR .a .b) .rem .pls/.vs/.cut .c0/.cx
 	:- .c0 = (BIND-MARK .pitReg, .c1)
 	, lc-compile (AND .a (BYTECODE CALL l:.d0)) FAIL .pls/.vs/.cut .c1/.c2
@@ -215,7 +210,7 @@ lc-compile YES .rem .env .c0/.cx
 	:- lc-compile .rem YES .env .c0/.cx
 #
 lc-compile (.oper .a .b) .rem .pls/.vs/.cut .c0/.cx
-	:- member (EQ, GE, GT, LE, LT, NE,) .oper
+	:- member (GE, GT, LE, LT, NE,) .oper
 	, !
 	, to.string .oper .os, concat "EVAL-" .os .is, to.atom .is .inst
 	, lc-create-node .a .vs .c0/.c1/.reg0
@@ -264,18 +259,19 @@ lc-bind-register .reg0 .node1 .vs .c0/.cx/.f
 
 lc-compile-rules () _ :- ! #
 lc-compile-rules (.proto/.rules, .remains) .pls
-	:- lc-flatten-rules .rules .call
+	:- lc-flatten-rules .rules .call .headReg
 	, member .pls .proto/.c
 	, .remark = REMARK r:('-----' .proto '-----')
-	, lc-compile-call (AND (BYTECODE .remark) .call) .pls .c/()
+	, .call1 = AND (BYTECODE .remark) AND (BYTECODE TOP .headReg -1) .call
+	, lc-compile-call .call1 .pls .c/()
 	, lc-compile-rules .remains .pls
 #
 
-lc-flatten-rules () FAIL :- ! #
-lc-flatten-rules (RULE .nv .head .tail, .remains) (OR .head2 .tail1)
-	:- .head1 = AND (BYTECODE TOP .reg -1) AND (EQ $$REG:.reg .head) .tail
+lc-flatten-rules () FAIL _ :- ! #
+lc-flatten-rules (RULE .nv .head .tail, .remains) (OR .head2 .tail1) .headReg
+	:- .head1 = AND (EQ $$REG:.headReg .head) .tail
 	, lc-define-new-variables .head1 .nv .head2
-	, lc-flatten-rules .remains .tail1
+	, lc-flatten-rules .remains .tail1 .headReg
 #
 
 lc-call-prototype (TREE _ .left _) .name :- lc-call-prototype .left .name #

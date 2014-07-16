@@ -1,4 +1,4 @@
-package suite.immutable.btree;
+package suite.immutable.btree.impl;
 
 import java.io.FileNotFoundException;
 import java.util.Comparator;
@@ -20,7 +20,7 @@ public class IbTreeBuilder {
 	 * Builds a small tree that would not span more than 1 page, i.e. no extra
 	 * "page allocation tree" is required.
 	 */
-	public IbTree<Integer> buildPointerTree(String filename) throws FileNotFoundException {
+	public IbTreeImpl<Integer> buildPointerTree(String filename) throws FileNotFoundException {
 		return buildPointerTree(filename, null);
 	}
 
@@ -28,15 +28,15 @@ public class IbTreeBuilder {
 	 * Builds an intermediate tree that is supported by a separate page
 	 * allocation tree.
 	 */
-	public IbTree<Integer> buildPointerTree(String filename, IbTree<Integer> allocationIbTree) throws FileNotFoundException {
-		return buildTree(filename, Util.<Integer> comparator(), IbTree.pointerSerializer, allocationIbTree);
+	public IbTreeImpl<Integer> buildPointerTree(String filename, IbTreeImpl<Integer> allocationIbTree) throws FileNotFoundException {
+		return buildTree(filename, Util.<Integer> comparator(), IbTreeImpl.pointerSerializer, allocationIbTree);
 	}
 
-	public <Key> IbTree<Key> buildTree(String filename //
+	public <Key> IbTreeImpl<Key> buildTree(String filename //
 			, Comparator<Key> comparator //
 			, Serializer<Key> serializer //
-			, IbTree<Integer> allocationIbTree) throws FileNotFoundException {
-		return new IbTree<>(filename, maxBranchFactor, pageSize, comparator, serializer, allocationIbTree);
+			, IbTreeImpl<Integer> allocationIbTree) throws FileNotFoundException {
+		return new IbTreeImpl<>(filename, maxBranchFactor, pageSize, comparator, serializer, allocationIbTree);
 	}
 
 }

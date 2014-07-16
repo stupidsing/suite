@@ -17,11 +17,6 @@ public class FailedTests {
 		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
 	}
 
-	@Test
-	public void testCutTailRecursion() {
-		assertTrue(Suite.proveLogic("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 16384"));
-	}
-
 	// (Expected) infinite loop.
 	// (Actual) short boolean evaluation in Prover skipped the loop:
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));

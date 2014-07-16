@@ -3,6 +3,7 @@ package suite.instructionexecutor;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.Suite;
 import suite.lp.intrinsic.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
@@ -136,7 +137,7 @@ public class InstructionUtil {
 			super(frame, ip);
 			this.previous = previous;
 			depth = previous != null ? 1 + previous.depth : 0;
-			if (depth > 16384)
+			if (depth > Suite.stackSize)
 				throw new RuntimeException("Activation overflow");
 		}
 	}
@@ -192,12 +193,12 @@ public class InstructionUtil {
 		return InstructionUtil.insnNames.inverse().get(insnName);
 	}
 
-	public static Data<Intrinsic> execInvokeJavaClass(String clazzName) {
+	public static Data<Intrinsic> execGetIntrinsic(String intrinsicName) {
 		Class<? extends Intrinsic> clazz;
 
 		try {
 			@SuppressWarnings("unchecked")
-			Class<? extends Intrinsic> clazz0 = (Class<? extends Intrinsic>) Class.forName(clazzName);
+			Class<? extends Intrinsic> clazz0 = (Class<? extends Intrinsic>) Class.forName(intrinsicName);
 			clazz = clazz0;
 		} catch (ClassNotFoundException ex1) {
 			throw new RuntimeException(ex1);
