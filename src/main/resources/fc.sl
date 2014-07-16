@@ -124,19 +124,19 @@ fc-add-functions STANDARD .p (
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
 	define +popen := ([string] -> string -> data-of Stream) of
-		atom:CLASS!suite.lp.intrinsic.MonadIntrinsics$Popen | getintrn | callintrn2
+		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn2
 	>>
 	define log := (:t => :t -> :t) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log1 | getintrn | callintrn1
+		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn1
 	>>
 	define log2 := (:t => string -> :t -> :t) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Log2 | getintrn | callintrn2
+		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn2
 	>>
 	define source := (data-of Stream -> string) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Source_ | getintrn | callintrn1
+		atom:INTRN!BasicIntrinsics.source | getintrn | callintrn1
 	>>
 	define throw := (any -> any) of
-		atom:CLASS!suite.lp.intrinsic.Intrinsics$Throw | getintrn | callintrn1
+		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn1
 	>>
 	define and := x => y =>
 		if x then y else false
@@ -365,8 +365,8 @@ fc-add-functions STANDARD .p (
 		fold-left {or} {false} . map {m | starts-with} . tails
 	>>
 	define dump := (:t => :t -> string) of skip-type-check (
-		define type-of := getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$TypeOf} >>
-		define atom-string := getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >>
+		define type-of := getintrn {atom:INTRN!BasicIntrinsics.typeOf} >>
+		define atom-string := getintrn {atom:INTRN!BasicIntrinsics.atomString} >>
 		let dump0 := prec => n =>
 			let type := +callintrn1 {type-of} {n} >>
 			if (n = ()) then

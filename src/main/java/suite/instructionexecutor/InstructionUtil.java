@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Suite;
+import suite.lp.intrinsic.Intrinsics;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
@@ -194,21 +195,7 @@ public class InstructionUtil {
 	}
 
 	public static Data<Intrinsic> execGetIntrinsic(String intrinsicName) {
-		Class<? extends Intrinsic> clazz;
-
-		try {
-			@SuppressWarnings("unchecked")
-			Class<? extends Intrinsic> clazz0 = (Class<? extends Intrinsic>) Class.forName(intrinsicName);
-			clazz = clazz0;
-		} catch (ClassNotFoundException ex1) {
-			throw new RuntimeException(ex1);
-		}
-
-		try {
-			return new Data<>(clazz.newInstance());
-		} catch (ReflectiveOperationException ex) {
-			throw new RuntimeException(ex);
-		}
+		return new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 	}
 
 }

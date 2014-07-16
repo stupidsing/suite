@@ -33,7 +33,7 @@ public class Intrinsics {
 			for (Field field : clazz.getFields())
 				if (Modifier.isStatic(field.getModifiers()) && Intrinsic.class.isAssignableFrom(field.getType()))
 					try {
-						intrinsics.put(clazz.getName() + field.getName(), (Intrinsic) field.get(null));
+						intrinsics.put(clazz.getSimpleName() + "." + field.getName(), (Intrinsic) field.get(null));
 					} catch (Exception ex) {
 						LogUtil.error(ex);
 					}
