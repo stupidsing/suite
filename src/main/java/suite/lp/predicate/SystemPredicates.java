@@ -154,8 +154,8 @@ public class SystemPredicates {
 	public static SystemPredicate funPredicate(Fun<Node, Node> fun) {
 		return (prover, ps) -> {
 			Node params[] = Tree.getParameters(ps, 2);
-			Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
-			return prover.bind(p1, fun.apply(p0));
+			Node p0 = params[0], p1 = params[1];
+			return prover.bind(p1, fun.apply(p0.finalNode()));
 		};
 	}
 
