@@ -101,8 +101,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];
-			String clazzName = atom.getName().split("!")[1];
-			result = InstructionUtil.execInvokeJavaClass(clazzName);
+			String intrinsicName = atom.getName().split("!")[1];
+			result = InstructionUtil.execGetIntrinsic(intrinsicName);
 			break;
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();

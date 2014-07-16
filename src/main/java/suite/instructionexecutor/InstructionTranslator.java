@@ -311,8 +311,8 @@ public class InstructionTranslator implements Closeable {
 			case GETINTRINSIC__:
 				app("{");
 				app("Atom atom = (Atom) bridge.unwrap((Node) ds[--dsp])");
-				app("String clazzName = atom.toString().split(\"!\")[1]");
-				app("#{reg} = InstructionUtil.execInvokeJavaClass(clazzName)", op0);
+				app("String intrinsicName = atom.toString().split(\"!\")[1]");
+				app("#{reg} = InstructionUtil.execGetIntrinsic(intrinsicName)", op0);
 				app("}");
 				break;
 			case HEAD__________:
