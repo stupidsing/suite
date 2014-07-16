@@ -11,7 +11,7 @@ import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.predicate.SystemPredicates.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;

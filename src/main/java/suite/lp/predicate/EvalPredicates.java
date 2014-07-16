@@ -13,7 +13,7 @@ import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.Specializer;
-import suite.lp.predicate.SystemPredicates.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -42,11 +42,11 @@ public class EvalPredicates {
 	private static Random random = new Random();
 	private static AtomicInteger counter = new AtomicInteger();
 
-	public static SystemPredicate bound = SystemPredicates.boolPredicate(n -> !(n instanceof Reference));
+	public static SystemPredicate bound = PredicateUtil.boolPredicate(n -> !(n instanceof Reference));
 
-	public static SystemPredicate clone = SystemPredicates.funPredicate(n -> new Cloner().clone(n));
+	public static SystemPredicate clone = PredicateUtil.funPredicate(n -> new Cloner().clone(n));
 
-	public static SystemPredicate complexity = SystemPredicates.funPredicate(n -> Int.of(new Complexity().complexity(n)));
+	public static SystemPredicate complexity = PredicateUtil.funPredicate(n -> Int.of(new Complexity().complexity(n)));
 
 	public static SystemPredicate contains = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
@@ -69,7 +69,7 @@ public class EvalPredicates {
 		}
 	};
 
-	public static SystemPredicate evalFun = SystemPredicates.funPredicate(n -> Suite.evaluateFun(Suite.fcc(n, true)));
+	public static SystemPredicate evalFun = PredicateUtil.funPredicate(n -> Suite.evaluateFun(Suite.fcc(n, true)));
 
 	public static SystemPredicate evalJs = new SystemPredicate() {
 		public boolean prove(Prover prover, Node ps) {
@@ -89,13 +89,13 @@ public class EvalPredicates {
 		}
 	};
 
-	public static SystemPredicate generalize = SystemPredicates.funPredicate(n -> new Generalizer().generalize(n));
+	public static SystemPredicate generalize = PredicateUtil.funPredicate(n -> new Generalizer().generalize(n));
 
-	public static SystemPredicate hash = SystemPredicates.funPredicate(n -> Int.of(n.hashCode()));
+	public static SystemPredicate hash = PredicateUtil.funPredicate(n -> Int.of(n.hashCode()));
 
-	public static SystemPredicate hashId = SystemPredicates.funPredicate(n -> Int.of(new IdentityKey(n).hashCode()));
+	public static SystemPredicate hashId = PredicateUtil.funPredicate(n -> Int.of(new IdentityKey(n).hashCode()));
 
-	public static SystemPredicate isCyclic = SystemPredicates.boolPredicate(n -> new Cyclic().isCyclic(n));
+	public static SystemPredicate isCyclic = PredicateUtil.boolPredicate(n -> new Cyclic().isCyclic(n));
 
 	public static SystemPredicate let = new SystemPredicate() {
 		public boolean prove(Prover prover, Node ps) {
@@ -172,8 +172,7 @@ public class EvalPredicates {
 			return true;
 	};
 
-	public static SystemPredicate randomPredicate = SystemPredicates
-			.funPredicate(n -> Int.of(random.nextInt(((Int) n).getNumber())));
+	public static SystemPredicate randomPredicate = PredicateUtil.funPredicate(n -> Int.of(random.nextInt(((Int) n).getNumber())));
 
 	public static SystemPredicate replace = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
@@ -190,7 +189,7 @@ public class EvalPredicates {
 		return params[0].finalNode() == params[1].finalNode();
 	};
 
-	public static SystemPredicate specialize = SystemPredicates.funPredicate(n -> new Specializer().specialize(n));
+	public static SystemPredicate specialize = PredicateUtil.funPredicate(n -> new Specializer().specialize(n));
 
 	public static SystemPredicate temp = (prover, ps) -> {
 		int n = counter.getAndIncrement();

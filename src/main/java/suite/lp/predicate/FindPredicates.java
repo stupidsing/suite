@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
-import suite.lp.predicate.SystemPredicates.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -33,7 +33,7 @@ public class FindPredicates {
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 	};
 
-	public static SystemPredicate findAllMemoizedClear = SystemPredicates.predicate(n -> memoizedPredicates.clear());
+	public static SystemPredicate findAllMemoizedClear = PredicateUtil.predicate(n -> memoizedPredicates.clear());
 
 	private static Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();
