@@ -12,6 +12,7 @@ import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.IndexedReader;
+import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
 import suite.util.FileUtil;
@@ -21,55 +22,51 @@ import suite.util.LogUtil;
 
 public class MonadIntrinsics {
 
-	public static class Popen implements Intrinsic {
-		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			Fun<Node, Node> unwrapper = bridge::unwrap;
-			List<String> list = new ArrayList<>();
+	public static Intrinsic popen = (bridge, inputs) -> {
+		Fun<Node, Node> unwrapper = bridge::unwrap;
+		List<String> list = new ArrayList<>();
 
-			Source<Node> source = ExpandUtil.expandList(unwrapper, inputs.get(0));
-			Node node;
+		Source<Node> source = ExpandUtil.expandList(unwrapper, inputs.get(0));
+		Node node;
 
-			while ((node = source.source()) != null)
-				list.add(ExpandUtil.expandString(unwrapper, node));
+		while ((node = source.source()) != null)
+			list.add(ExpandUtil.expandString(unwrapper, node));
 
-			Node in = inputs.get(1);
+		Node in = inputs.get(1);
 
-			try {
-				Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
-				InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
-				BufferedReader br = new BufferedReader(isr);
-				Node result = new Data<>(new IndexedReader(br));
+		try {
+			Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
+			InputStreamReader isr = new InputStreamReader(process.getInputStream(), FileUtil.charset);
+			BufferedReader br = new BufferedReader(isr);
+			Node result = new Data<>(new IndexedReader(br));
 
-				// Use a separate thread to write to the process, so that read
-				// and write occur at the same time and would not block up.
-				// The input stream is also closed by this thread.
-				// Have to make sure the executors are thread-safe!
-				new Thread(() -> {
-					try {
-						try (InputStream pes = process.getErrorStream();
-								OutputStream pos = process.getOutputStream();
-								Writer writer = new OutputStreamWriter(pos)) {
-							ExpandUtil.expandToWriter(unwrapper, in, writer);
-						}
-
-						process.waitFor();
-					} catch (Exception ex) {
-						LogUtil.error(ex);
+			// Use a separate thread to write to the process, so that read
+			// and write occur at the same time and would not block up.
+			// The input stream is also closed by this thread.
+			// Have to make sure the executors are thread-safe!
+			new Thread(() -> {
+				try {
+					try (InputStream pes = process.getErrorStream();
+							OutputStream pos = process.getOutputStream();
+							Writer writer = new OutputStreamWriter(pos)) {
+						ExpandUtil.expandToWriter(unwrapper, in, writer);
 					}
-				}).start();
 
-				return result;
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-	}
+					process.waitFor();
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
+			}).start();
 
-	public static class Seq implements Intrinsic {
-		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			ExpandUtil.expandFully(bridge::unwrap, inputs.get(0));
-			return inputs.get(1);
+			return result;
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
-	}
+	};
+
+	public static Intrinsic seq = (bridge, inputs) -> {
+		ExpandUtil.expandFully(bridge::unwrap, inputs.get(0));
+		return inputs.get(1);
+	};
 
 }

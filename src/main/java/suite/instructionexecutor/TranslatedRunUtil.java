@@ -2,8 +2,8 @@ package suite.instructionexecutor;
 
 import java.util.Arrays;
 
-import suite.lp.intrinsic.Intrinsic;
-import suite.lp.intrinsic.IntrinsicBridge;
+import suite.lp.intrinsic.Intrinsics.Intrinsic;
+import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Suite;
-import suite.lp.intrinsic.Intrinsic;
+import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;
