@@ -39,7 +39,7 @@ public class EvalPredicates {
 	private static Atom SHR = Atom.of("shr");
 	private static Comparer comparer = Comparer.comparer;
 	private static ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
-	private static java.util.Random random = new Random();
+	private static Random random = new Random();
 	private static AtomicInteger counter = new AtomicInteger();
 
 	public static SystemPredicate bound = (prover, ps) -> {
