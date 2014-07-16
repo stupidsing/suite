@@ -20,7 +20,7 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 	private SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbp;
 	private SerializedPageFile<B_TreeImpl<Key, Value>.Page> pp;
 
-	private B_TreeImpl<Key, Value> b_tree;
+	private B_Tree<Key, Value> b_tree;
 
 	private class B_TreeSuperblockSerializer implements Serializer<B_TreeImpl<Key, Value>.Superblock> {
 		private B_TreeImpl<Key, Value> b_tree;
@@ -117,8 +117,7 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			for (String filename : new String[] { sbf, amf, pf })
 				new File(filename).delete();
 
-		b_tree = new B_TreeImpl<>(comparator);
-
+		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(comparator);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
@@ -133,6 +132,8 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 		if (isNew)
 			b_tree.create();
+
+		this.b_tree = b_tree;
 	}
 
 	@Override
