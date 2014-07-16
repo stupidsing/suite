@@ -18,10 +18,7 @@ import suite.util.To;
 
 public class IoPredicates {
 
-	public static SystemPredicate dump = (prover, ps) -> {
-		System.out.print(Formatter.dump(ps));
-		return true;
-	};
+	public static SystemPredicate dump = SystemPredicates.predicate(n -> System.out.print(Formatter.dump(n)));
 
 	public static SystemPredicate dumpStack = (prover, ps) -> {
 		String date = LocalDateTime.now().toString();
@@ -41,25 +38,18 @@ public class IoPredicates {
 		return false;
 	};
 
-	public static SystemPredicate exit = (prover, ps) -> {
-		System.exit(ps instanceof Int ? ((Int) ps).getNumber() : 0);
-		return true;
-	};
+	public static SystemPredicate exit = SystemPredicates.predicate(n -> System.exit(n instanceof Int ? ((Int) n).getNumber() : 0));
 
-	public static SystemPredicate fileExists = (prover, ps) -> {
-		return new File(Formatter.display(ps)).exists();
-	};
+	public static SystemPredicate fileExists = SystemPredicates.boolPredicate(n -> new File(Formatter.display(n)).exists());
 
-	public static SystemPredicate fileRead = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
-		String filename = Formatter.display(params[0]);
+	public static SystemPredicate fileRead = SystemPredicates.funPredicate(n -> {
+		String filename = Formatter.display(n);
 		try {
-			String content = To.string(new File(filename));
-			return prover.bind(new Str(content), params[1]);
+			return new Str(To.string(new File(filename)));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	};
+	});
 
 	public static SystemPredicate fileWrite = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
@@ -75,21 +65,14 @@ public class IoPredicates {
 		return true;
 	};
 
-	public static SystemPredicate homeDir = (prover, ps) -> {
+	public static SystemPredicate homeDir = SystemPredicates.funPredicate(n -> {
 		String homeDir = System.getProperty("home.dir");
-		homeDir = homeDir != null ? homeDir : ".";
-		return prover.bind(new Str(homeDir), ps);
-	};
+		return new Str(homeDir != null ? homeDir : ".");
+	});
 
-	public static SystemPredicate nl = (prover, ps) -> {
-		System.out.println();
-		return true;
-	};
+	public static SystemPredicate nl = SystemPredicates.predicate(n -> System.out.println());
 
-	public static SystemPredicate log = (prover, ps) -> {
-		LogUtil.info(Formatter.dump(ps));
-		return true;
-	};
+	public static SystemPredicate log = SystemPredicates.predicate(n -> LogUtil.info(Formatter.dump(n)));
 
 	public static SystemPredicate sink = (prover, ps) -> {
 		prover.config().getSink().sink(ps);
@@ -101,15 +84,12 @@ public class IoPredicates {
 		return prover.bind(ps, source);
 	};
 
-	public static SystemPredicate throwPredicate = (prover, ps) -> {
-		throw new RuntimeException(Formatter.dump(ps.finalNode()));
-	};
+	public static SystemPredicate throwPredicate = SystemPredicates.predicate(n -> {
+		throw new RuntimeException(Formatter.dump(n.finalNode()));
+	});
 
 	public static SystemPredicate write(PrintStream printStream) {
-		return (prover, ps) -> {
-			printStream.print(Formatter.display(ps));
-			return true;
-		};
+		return SystemPredicates.predicate(n -> printStream.print(Formatter.display(n)));
 	}
 
 }
