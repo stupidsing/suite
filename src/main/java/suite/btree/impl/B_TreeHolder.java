@@ -1,4 +1,4 @@
-package suite.btree;
+package suite.btree.impl;
 
 import java.io.Closeable;
 import java.io.File;
@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.util.Comparator;
 import java.util.List;
 
+import suite.btree.Allocator;
+import suite.btree.B_Tree;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.util.SerializeUtil;
@@ -15,48 +17,48 @@ import suite.util.SerializeUtil.Serializer;
 public class B_TreeHolder<Key, Value> implements Closeable {
 
 	private Allocator al;
-	private SerializedPageFile<B_Tree<Key, Value>.Superblock> sbp;
-	private SerializedPageFile<B_Tree<Key, Value>.Page> pp;
+	private SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbp;
+	private SerializedPageFile<B_TreeImpl<Key, Value>.Page> pp;
 
-	private B_Tree<Key, Value> b_tree;
+	private B_TreeImpl<Key, Value> b_tree;
 
-	private class B_TreeSuperblockSerializer implements Serializer<B_Tree<Key, Value>.Superblock> {
-		private B_Tree<Key, Value> b_tree;
+	private class B_TreeSuperblockSerializer implements Serializer<B_TreeImpl<Key, Value>.Superblock> {
+		private B_TreeImpl<Key, Value> b_tree;
 
-		public B_TreeSuperblockSerializer(B_Tree<Key, Value> b_tree) {
+		public B_TreeSuperblockSerializer(B_TreeImpl<Key, Value> b_tree) {
 			this.b_tree = b_tree;
 		}
 
-		public B_Tree<Key, Value>.Superblock read(ByteBuffer buffer) {
-			B_Tree<Key, Value>.Superblock superblock = b_tree.new Superblock();
+		public B_TreeImpl<Key, Value>.Superblock read(ByteBuffer buffer) {
+			B_TreeImpl<Key, Value>.Superblock superblock = b_tree.new Superblock();
 			superblock.root = SerializeUtil.intSerializer.read(buffer);
 			return superblock;
 		}
 
-		public void write(ByteBuffer buffer, B_Tree<Key, Value>.Superblock value) {
+		public void write(ByteBuffer buffer, B_TreeImpl<Key, Value>.Superblock value) {
 			SerializeUtil.intSerializer.write(buffer, value.root);
 		}
 	}
 
-	private class B_TreePageSerializer implements Serializer<B_Tree<Key, Value>.Page> {
-		private B_Tree<Key, Value> b_tree;
+	private class B_TreePageSerializer implements Serializer<B_TreeImpl<Key, Value>.Page> {
+		private B_TreeImpl<Key, Value> b_tree;
 		private Serializer<Key> keySerializer;
 		private Serializer<Value> valueSerializer;
 
 		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
 
-		public B_TreePageSerializer(B_Tree<Key, Value> b_tree, Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
+		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree, Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
 			this.b_tree = b_tree;
 			this.keySerializer = keySerializer;
 			this.valueSerializer = valueSerializer;
 		}
 
-		public B_Tree<Key, Value>.Page read(ByteBuffer buffer) {
+		public B_TreeImpl<Key, Value>.Page read(ByteBuffer buffer) {
 			int pageNo = buffer.getInt();
 			int size = buffer.getInt();
 
-			B_Tree<Key, Value>.Page page = b_tree.new Page(pageNo);
+			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pageNo);
 
 			for (int i = 0; i < size; i++) {
 				char nodeType = buffer.getChar();
@@ -74,27 +76,27 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			return page;
 		}
 
-		public void write(ByteBuffer buffer, B_Tree<Key, Value>.Page page) {
+		public void write(ByteBuffer buffer, B_TreeImpl<Key, Value>.Page page) {
 			buffer.putInt(page.pageNo);
 			buffer.putInt(page.size());
 
-			for (B_Tree<Key, Value>.KeyPointer kp : page)
-				if (kp.pointer instanceof B_Tree.Branch) {
+			for (B_TreeImpl<Key, Value>.KeyPointer kp : page)
+				if (kp.pointer instanceof B_TreeImpl.Branch) {
 					buffer.putChar(BRANCH);
 					keySerializer.write(buffer, kp.key);
 					buffer.putInt(kp.getBranchPageNo());
-				} else if (kp.pointer instanceof B_Tree.Leaf) {
+				} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
 					buffer.putChar(LEAF);
 					keySerializer.write(buffer, kp.key);
 					valueSerializer.write(buffer, kp.getLeafValue());
 				}
 		}
 
-		private void addLeaf(List<B_Tree<Key, Value>.KeyPointer> kps, Key k, Value v) {
+		private void addLeaf(List<B_TreeImpl<Key, Value>.KeyPointer> kps, Key k, Value v) {
 			kps.add(b_tree.new KeyPointer(k, b_tree.new Leaf(v)));
 		}
 
-		private void addBranch(List<B_Tree<Key, Value>.KeyPointer> kps, Key k, int branch) {
+		private void addBranch(List<B_TreeImpl<Key, Value>.KeyPointer> kps, Key k, int branch) {
 			kps.add(b_tree.new KeyPointer(k, b_tree.new Branch(branch)));
 		}
 
@@ -115,12 +117,12 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			for (String filename : new String[] { sbf, amf, pf })
 				new File(filename).delete();
 
-		b_tree = new B_Tree<>(comparator);
+		b_tree = new B_TreeImpl<>(comparator);
 
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
-		al = new Allocator(amf);
+		al = new AllocatorImpl(amf);
 		sbp = new SerializedPageFile<>(new PageFile(sbf, 4096), sbs);
 		pp = new SerializedPageFile<>(new PageFile(pf, 4096), ps);
 
