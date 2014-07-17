@@ -1,12 +1,6 @@
 package suite.editor;
 
 import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +25,6 @@ import suite.util.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
 import suite.util.To;
 
 public class EditorController {
@@ -44,13 +37,10 @@ public class EditorController {
 	}
 
 	public void copy(EditorView view, boolean isAppend) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		ClipboardUtil clipboardUtil = new ClipboardUtil();
 		String selectedText = view.getEditor().getSelectedText();
-
-		if (selectedText != null) {
-			String text = isAppend ? getClipboardText() : "";
-			clipboard.setContents(new StringSelection(text + selectedText), null);
-		}
+		if (selectedText != null)
+			clipboardUtil.setClipboardText((isAppend ? clipboardUtil.getClipboardText() : "") + selectedText);
 	}
 
 	public void downToSearchList(EditorView view) {
@@ -129,7 +119,7 @@ public class EditorController {
 	public void paste(EditorView view) {
 		JEditorPane editor = view.getEditor();
 		String orig = editor.getText();
-		String pasteText = getClipboardText();
+		String pasteText = new ClipboardUtil().getClipboardText();
 
 		if (pasteText != null) {
 			int s = editor.getSelectionStart();
@@ -244,27 +234,6 @@ public class EditorController {
 			for (Component c : ((JComponent) component).getComponents())
 				isFocusOwner |= isOwningFocus(c);
 		return isFocusOwner;
-	}
-
-	private String getClipboardText() {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable contents = clipboard.getContents(null);
-		String text;
-
-		if (contents != null && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
-			try {
-				text = contents.getTransferData(DataFlavor.stringFlavor).toString();
-			} catch (UnsupportedFlavorException ex) {
-				LogUtil.error(ex);
-				text = "";
-			} catch (IOException ex) {
-				LogUtil.error(ex);
-				text = "";
-			}
-		else
-			text = "";
-
-		return text;
 	}
 
 	private void run(EditorView view, Fun<String, String> fun) {
