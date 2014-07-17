@@ -1,4 +1,4 @@
-package suite.text.wildcard;
+package suite.wildcard;
 
 import java.util.ArrayList;
 import java.util.Deque;
