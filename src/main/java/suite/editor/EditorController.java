@@ -251,7 +251,7 @@ public class EditorController {
 		Transferable contents = clipboard.getContents(null);
 		String text;
 
-		if (contents.isDataFlavorSupported(DataFlavor.stringFlavor))
+		if (contents != null && contents.isDataFlavorSupported(DataFlavor.stringFlavor))
 			try {
 				text = contents.getTransferData(DataFlavor.stringFlavor).toString();
 			} catch (UnsupportedFlavorException ex) {
