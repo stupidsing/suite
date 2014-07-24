@@ -51,7 +51,9 @@ public class Main extends ExecutableProgram {
 				inputs.add(arg);
 
 		if (result)
-			if (opt.isFilter()) // Inputs as program
+			if (opt.isDoFilter()) // Inputs as monadic program
+				result &= dispatcher.dispatchDoFilter(inputs, reader, writer);
+			else if (opt.isFilter()) // Inputs as program
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
 			else if (opt.isFunctional()) // Inputs as files
 				result &= dispatcher.dispatchFunctional(inputs);

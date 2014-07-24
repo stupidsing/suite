@@ -175,6 +175,17 @@ public class CommandDispatcher {
 		return result;
 	}
 
+	public boolean dispatchDoFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		for (String input : inputs)
+			sb.append(input + " ");
+
+		Node node = Suite.applyReader(reader, Suite.parse(sb.toString()));
+		node = Suite.applyDo(node, Atom.of("string"));
+		evaluateFunctionalToWriter(node, writer);
+		return true;
+	}
+
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		for (String input : inputs)
