@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
@@ -42,25 +43,30 @@ public class Main extends ExecutableProgram {
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
 		Source<String> source = To.source(args);
+		String verb = null;
 		String arg;
 
 		while ((arg = source.source()) != null)
 			if (arg.startsWith("-"))
 				result &= opt.processOption(arg, source);
+			else if (verb == null)
+				verb = arg;
 			else
 				inputs.add(arg);
 
 		if (result)
-			if (opt.isDoFilter()) // Inputs as monadic program
+			if (Objects.equals(verb, "do-filter")) // Inputs as monadic program
 				result &= dispatcher.dispatchDoFilter(inputs, reader, writer);
-			else if (opt.isFilter()) // Inputs as program
+			else if (Objects.equals(verb, "filter")) // Inputs as program
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
-			else if (opt.isFunctional()) // Inputs as files
+			else if (Objects.equals(verb, "evaluate")) // Inputs as files
 				result &= dispatcher.dispatchFunctional(inputs);
-			else if (opt.isLogical())
-				result &= dispatcher.dispatchLogical(inputs); // Inputs as files
-			else
+			else if (Objects.equals(verb, "prove")) // Inputs as files
+				result &= dispatcher.dispatchLogical(inputs);
+			else if (verb == null)
 				result &= runInteractive(inputs);
+			else
+				throw new RuntimeException("Unknown action " + verb);
 
 		return result;
 	}

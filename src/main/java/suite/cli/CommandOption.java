@@ -26,10 +26,6 @@ public class CommandOption {
 
 	// Program type options
 	private boolean isQuiet = false;
-	private boolean isDoFilter = false;
-	private boolean isFilter = false;
-	private boolean isFunctional = false;
-	private boolean isLogical = false;
 
 	// Program evaluation options
 	private boolean isLazy = true;
@@ -46,20 +42,12 @@ public class CommandOption {
 
 		if (Util.stringEquals(arg, "-eager"))
 			isLazy = !on;
-		else if (Util.stringEquals(arg, "-do-filter"))
-			isDoFilter = on;
 		else if (Util.stringEquals(arg, "-editor"))
 			new Editor().open();
-		else if (Util.stringEquals(arg, "-filter"))
-			isFilter = on;
-		else if (Util.stringEquals(arg, "-functional"))
-			isFunctional = on;
 		else if (Util.stringEquals(arg, "-lazy"))
 			isLazy = on;
 		else if (Util.stringEquals(arg, "-libraries") && (arg1 = source.source()) != null)
 			libraries = Arrays.asList(arg1.split(","));
-		else if (Util.stringEquals(arg, "-logical"))
-			isLogical = on;
 		else if (arg.startsWith("-no-"))
 			result &= processOption("-" + arg.substring(4), source, false);
 		else if (Util.stringEquals(arg, "-precompile") && (arg1 = source.source()) != null)
@@ -108,22 +96,6 @@ public class CommandOption {
 
 	public boolean isQuiet() {
 		return isQuiet;
-	}
-
-	public boolean isDoFilter() {
-		return isDoFilter;
-	}
-
-	public boolean isFilter() {
-		return isFilter;
-	}
-
-	public boolean isFunctional() {
-		return isFunctional;
-	}
-
-	public boolean isLogical() {
-		return isLogical;
 	}
 
 }
