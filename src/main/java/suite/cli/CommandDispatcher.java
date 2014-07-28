@@ -1,6 +1,5 @@
 package suite.cli;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -173,12 +172,10 @@ public class CommandDispatcher {
 		return true;
 	}
 
-	public boolean dispatchEvaluate(List<String> files) throws IOException {
-		if (files.size() == 1) {
-			Node node = Suite.parse(To.string(new File(files.get(0))));
-			return evaluateFunctional(node) == Atom.TRUE;
-		} else
-			throw new RuntimeException("Only one evaluation is allowed");
+	public boolean dispatchEvaluate(List<String> inputs) {
+		String in = inputs.stream().collect(Collectors.joining(" "));
+		Node node = Suite.parse(in);
+		return evaluateFunctional(node) == Atom.TRUE;
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
@@ -204,11 +201,11 @@ public class CommandDispatcher {
 			throw new RuntimeException("No parameter is allowed");
 	}
 
-	public boolean dispatchProve(List<String> files) throws IOException {
+	public boolean dispatchProve(List<String> inputs) throws IOException {
+		String in = inputs.stream().collect(Collectors.joining(" "));
 		RuleSet ruleSet = Suite.createRuleSet();
 		boolean result = Suite.importResource(ruleSet, "auto.sl");
-		for (String file : files)
-			result &= Suite.importFile(ruleSet, file);
+		result &= Suite.proveLogic(ruleSet, in);
 		return result;
 	}
 

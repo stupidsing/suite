@@ -54,18 +54,17 @@ public class Main extends ExecutableProgram {
 				inputs.add(arg);
 
 		if (result)
-			if (Util.stringEquals(verb, "do-filter")) // Inputs as monadic
-														// program
+			if (Util.stringEquals(verb, "do-filter"))
 				result &= dispatcher.dispatchDoFilter(inputs, reader, writer);
-			else if (Util.stringEquals(verb, "evaluate")) // Inputs as files
+			else if (Util.stringEquals(verb, "evaluate"))
 				result &= dispatcher.dispatchEvaluate(inputs);
-			else if (Util.stringEquals(verb, "filter")) // Inputs as program
+			else if (Util.stringEquals(verb, "filter"))
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
 			else if (Util.stringEquals(verb, "precompile"))
 				result &= dispatcher.dispatchPrecompile(inputs);
 			else if (Util.stringEquals(verb, "precompile-all"))
 				result &= dispatcher.dispatchPrecompileAll(inputs);
-			else if (Util.stringEquals(verb, "prove")) // Inputs as files
+			else if (Util.stringEquals(verb, "prove"))
 				result &= dispatcher.dispatchProve(inputs);
 			else if (verb == null)
 				result &= runInteractive(inputs);
