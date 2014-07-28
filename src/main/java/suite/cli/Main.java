@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.fp.PrecompileMain;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
@@ -65,9 +64,7 @@ public class Main extends ExecutableProgram {
 			else if (Util.stringEquals(verb, "precompile"))
 				result &= dispatcher.dispatchPrecompile(inputs);
 			else if (Util.stringEquals(verb, "precompile-all"))
-				try (PrecompileMain precompileMain = new PrecompileMain()) {
-					result &= precompileMain.precompile();
-				}
+				result &= dispatcher.dispatchPrecompileAll(inputs);
 			else if (Util.stringEquals(verb, "prove")) // Inputs as files
 				result &= dispatcher.dispatchProve(inputs);
 			else if (verb == null)

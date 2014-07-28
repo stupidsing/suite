@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import suite.Suite;
+import suite.fp.PrecompileMain;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
@@ -187,11 +188,20 @@ public class CommandDispatcher {
 		return true;
 	}
 
-	public boolean dispatchPrecompile(List<String> files) throws IOException {
+	public boolean dispatchPrecompile(List<String> files) {
 		boolean result = true;
 		for (String file : files)
 			result &= Suite.precompile(file, opt.pc(null));
 		return result;
+	}
+
+	public boolean dispatchPrecompileAll(List<String> files) {
+		if (files.size() == 0)
+			try (PrecompileMain precompileMain = new PrecompileMain()) {
+				return precompileMain.precompile();
+			}
+		else
+			throw new RuntimeException("No parameter is allowed");
 	}
 
 	public boolean dispatchProve(List<String> files) throws IOException {
