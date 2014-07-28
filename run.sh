@@ -12,7 +12,7 @@ TARGETTIME=$(echo "${JAR}" "${BASE}/precompiled/STANDARD.node.gz" | xargs -I {} 
 	[ ${SRCTIME} -le ${TARGETTIME} ] ||
 	(
 		mvn -Dmaven.test.skip=true install assembly:single &&
-		(echo | java ${OPTS} -jar "${JAR}" -precompile-all || (rm -f ${BASE}/precompiled/STANDARD.node.gz && false))
+		(echo | java ${OPTS} -jar "${JAR}" precompile-all || (rm -f ${BASE}/precompiled/STANDARD.node.gz && false))
 	)
 ) &&
 
