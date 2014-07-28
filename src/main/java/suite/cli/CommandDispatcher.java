@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.lp.doer.Generalizer;
@@ -163,45 +164,42 @@ public class CommandDispatcher {
 		return code;
 	}
 
-	public boolean dispatchLogical(List<String> files) throws IOException {
-		boolean result = true;
-
-		RuleSet ruleSet = Suite.createRuleSet();
-		result &= Suite.importResource(ruleSet, "auto.sl");
-
-		for (String file : files)
-			result &= Suite.importFile(ruleSet, file);
-
-		return result;
-	}
-
 	public boolean dispatchDoFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		for (String input : inputs)
-			sb.append(input + " ");
-
-		Node node = Suite.applyReader(reader, Suite.parse(sb.toString()));
+		String in = inputs.stream().collect(Collectors.joining(" "));
+		Node node = Suite.applyReader(reader, Suite.parse(in));
 		node = Suite.applyDo(node, Atom.of("string"));
 		evaluateFunctionalToWriter(node, writer);
 		return true;
 	}
 
-	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		for (String input : inputs)
-			sb.append(input + " ");
-
-		Node node = Suite.applyReader(reader, Suite.parse(sb.toString()));
-		evaluateFunctionalToWriter(node, writer);
-		return true;
-	}
-
-	public boolean dispatchFunctional(List<String> files) throws IOException {
+	public boolean dispatchEvaluate(List<String> files) throws IOException {
 		if (files.size() == 1) {
 			Node node = Suite.parse(To.string(new File(files.get(0))));
 			return evaluateFunctional(node) == Atom.TRUE;
 		} else
 			throw new RuntimeException("Only one evaluation is allowed");
+	}
+
+	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
+		String in = inputs.stream().collect(Collectors.joining(" "));
+		Node node = Suite.applyReader(reader, Suite.parse(in));
+		evaluateFunctionalToWriter(node, writer);
+		return true;
+	}
+
+	public boolean dispatchPrecompile(List<String> files) throws IOException {
+		boolean result = true;
+		for (String file : files)
+			result &= Suite.precompile(file, opt.pc(null));
+		return result;
+	}
+
+	public boolean dispatchProve(List<String> files) throws IOException {
+		RuleSet ruleSet = Suite.createRuleSet();
+		boolean result = Suite.importResource(ruleSet, "auto.sl");
+		for (String file : files)
+			result &= Suite.importFile(ruleSet, file);
+		return result;
 	}
 
 	private void printEvaluatedString(Writer writer, Node node) throws IOException {
