@@ -48,7 +48,7 @@ public class CommandOption {
 		else if (Util.stringEquals(arg, "--libraries") && (arg1 = source.source()) != null)
 			libraries = Arrays.asList(arg1.split(","));
 		else if (arg.startsWith("--no-"))
-			result &= processOption("--" + arg.substring(4), source, false);
+			result &= processOption("--" + arg.substring(5), source, false);
 		else if (Util.stringEquals(arg, "--quiet"))
 			isQuiet = on;
 		else if (Util.stringEquals(arg, "--trace"))
