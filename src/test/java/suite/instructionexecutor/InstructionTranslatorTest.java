@@ -43,7 +43,7 @@ public class InstructionTranslatorTest {
 	public void testAtomString() throws IOException {
 		boolean isLazy = false;
 		String node = executeToString(compileFunctional(Suite.parse("" //
-				+ "define atom-string := +getintrn {atom:CLASS!suite.lp.intrinsic.Intrinsics$AtomString} >> " //
+				+ "define atom-string := +getintrn {atom:INTRN!BasicIntrinsics.atomString} >> " //
 				+ "+callintrn1 {atom-string} {atom:ATOM}"), isLazy), isLazy);
 		assertEquals("ATOM", node);
 	}

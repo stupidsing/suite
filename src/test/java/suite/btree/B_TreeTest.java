@@ -9,6 +9,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import suite.btree.impl.B_TreeHolder;
 import suite.util.FileUtil;
 import suite.util.Pair;
 import suite.util.SerializeUtil;

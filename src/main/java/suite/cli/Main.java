@@ -42,23 +42,34 @@ public class Main extends ExecutableProgram {
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
 		Source<String> source = To.source(args);
+		String verb = null;
 		String arg;
 
 		while ((arg = source.source()) != null)
 			if (arg.startsWith("-"))
 				result &= opt.processOption(arg, source);
+			else if (verb == null)
+				verb = arg;
 			else
 				inputs.add(arg);
 
 		if (result)
-			if (opt.isFilter()) // Inputs as program
+			if (Util.stringEquals(verb, "do-filter"))
+				result &= dispatcher.dispatchDoFilter(inputs, reader, writer);
+			else if (Util.stringEquals(verb, "evaluate"))
+				result &= dispatcher.dispatchEvaluate(inputs);
+			else if (Util.stringEquals(verb, "filter"))
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
-			else if (opt.isFunctional()) // Inputs as files
-				result &= dispatcher.dispatchFunctional(inputs);
-			else if (opt.isLogical())
-				result &= dispatcher.dispatchLogical(inputs); // Inputs as files
-			else
+			else if (Util.stringEquals(verb, "precompile"))
+				result &= dispatcher.dispatchPrecompile(inputs);
+			else if (Util.stringEquals(verb, "precompile-all"))
+				result &= dispatcher.dispatchPrecompileAll(inputs);
+			else if (Util.stringEquals(verb, "prove"))
+				result &= dispatcher.dispatchProve(inputs);
+			else if (verb == null)
 				result &= runInteractive(inputs);
+			else
+				throw new RuntimeException("Unknown action " + verb);
 
 		return result;
 	}

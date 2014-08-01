@@ -10,7 +10,6 @@ import java.util.List;
 import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
-import suite.fp.PrecompileMain;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
@@ -26,9 +25,6 @@ public class CommandOption {
 
 	// Program type options
 	private boolean isQuiet = false;
-	private boolean isFilter = false;
-	private boolean isFunctional = false;
-	private boolean isLogical = false;
 
 	// Program evaluation options
 	private boolean isLazy = true;
@@ -43,32 +39,19 @@ public class CommandOption {
 		boolean result = true;
 		String arg1;
 
-		if (Util.stringEquals(arg, "-eager"))
+		if (Util.stringEquals(arg, "--eager"))
 			isLazy = !on;
-		else if (Util.stringEquals(arg, "-editor"))
+		else if (Util.stringEquals(arg, "--editor"))
 			new Editor().open();
-		else if (Util.stringEquals(arg, "-filter"))
-			isFilter = on;
-		else if (Util.stringEquals(arg, "-functional"))
-			isFunctional = on;
-		else if (Util.stringEquals(arg, "-lazy"))
+		else if (Util.stringEquals(arg, "--lazy"))
 			isLazy = on;
-		else if (Util.stringEquals(arg, "-libraries") && (arg1 = source.source()) != null)
+		else if (Util.stringEquals(arg, "--libraries") && (arg1 = source.source()) != null)
 			libraries = Arrays.asList(arg1.split(","));
-		else if (Util.stringEquals(arg, "-logical"))
-			isLogical = on;
-		else if (arg.startsWith("-no-"))
-			result &= processOption("-" + arg.substring(4), source, false);
-		else if (Util.stringEquals(arg, "-precompile") && (arg1 = source.source()) != null)
-			for (String lib : arg1.split(","))
-				result &= Suite.precompile(lib, pc(null));
-		else if (Util.stringEquals(arg, "-precompile-all"))
-			try (PrecompileMain precompileMain = new PrecompileMain()) {
-				result &= precompileMain.precompile();
-			}
-		else if (Util.stringEquals(arg, "-quiet"))
+		else if (arg.startsWith("--no-"))
+			result &= processOption("--" + arg.substring(5), source, false);
+		else if (Util.stringEquals(arg, "--quiet"))
 			isQuiet = on;
-		else if (Util.stringEquals(arg, "-trace"))
+		else if (Util.stringEquals(arg, "--trace"))
 			isTrace = on;
 		else
 			throw new RuntimeException("Unknown option " + arg);
@@ -105,18 +88,6 @@ public class CommandOption {
 
 	public boolean isQuiet() {
 		return isQuiet;
-	}
-
-	public boolean isFilter() {
-		return isFilter;
-	}
-
-	public boolean isFunctional() {
-		return isFunctional;
-	}
-
-	public boolean isLogical() {
-		return isLogical;
 	}
 
 }

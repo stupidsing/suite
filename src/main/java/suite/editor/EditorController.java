@@ -36,6 +36,13 @@ public class EditorController {
 		view.refresh();
 	}
 
+	public void copy(EditorView view, boolean isAppend) {
+		ClipboardUtil clipboardUtil = new ClipboardUtil();
+		String selectedText = view.getEditor().getSelectedText();
+		if (selectedText != null)
+			clipboardUtil.setClipboardText((isAppend ? clipboardUtil.getClipboardText() : "") + selectedText);
+	}
+
 	public void downToSearchList(EditorView view) {
 		JList<String> leftList = view.getLeftList();
 		DefaultListModel<String> listModel = view.getListModel();
@@ -107,6 +114,19 @@ public class EditorController {
 		JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
 		if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
 			load(view, fileChooser.getSelectedFile().getName());
+	}
+
+	public void paste(EditorView view) {
+		JEditorPane editor = view.getEditor();
+		String orig = editor.getText();
+		String pasteText = new ClipboardUtil().getClipboardText();
+
+		if (pasteText != null) {
+			int s = editor.getSelectionStart();
+			int e = editor.getSelectionEnd();
+			editor.setText(orig.substring(0, s) + pasteText + orig.substring(e, orig.length()));
+			editor.setCaretPosition(s + pasteText.length());
+		}
 	}
 
 	public void save(EditorView view) {

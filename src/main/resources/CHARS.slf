@@ -1,13 +1,13 @@
 using external STANDARD >>
 define cs-append := (data-of Chars -> data-of Chars -> data-of Chars) of
-	atom:CLASS!suite.lp.intrinsic.CharsIntrinsics$Append | getintrn | callintrn2
+	atom:INTRN!CharsIntrinsics.append | getintrn | callintrn2
 >>
 define cs-from-string := (string -> data-of Chars) of
-	atom:CLASS!suite.lp.intrinsic.CharsIntrinsics$StringChars | getintrn | callintrn1
+	atom:INTRN!CharsIntrinsics.stringChars | getintrn | callintrn1
 >>
 define cs-subchars := (number -> number -> data-of Chars -> data-of Chars) of
-	atom:CLASS!suite.lp.intrinsic.CharsIntrinsics$Subchars | getintrn | callintrn3
+	atom:INTRN!CharsIntrinsics.subchars | getintrn | callintrn3
 >>
 define cs-to-string := (data-of Chars -> string) of
-	atom:CLASS!suite.lp.intrinsic.CharsIntrinsics$CharsString | getintrn | callintrn1
+	atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn1
 >>

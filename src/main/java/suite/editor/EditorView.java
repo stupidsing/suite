@@ -210,6 +210,18 @@ public class EditorView {
 		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Exit", KeyEvent.VK_X));
 		exitMenuItem.addActionListener(event -> controller.quit(EditorView.this));
 
+		JMenuItem copyMenuItem = applyDefaults(new JMenuItem("Copy"));
+		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+		copyMenuItem.addActionListener(event -> controller.copy(view, false));
+
+		JMenuItem copyAppendMenuItem = applyDefaults(new JMenuItem("Copy Append"));
+		copyAppendMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+		copyAppendMenuItem.addActionListener(event -> controller.copy(view, true));
+
+		JMenuItem pasteMenuItem = applyDefaults(new JMenuItem("Paste"));
+		pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+		pasteMenuItem.addActionListener(event -> controller.paste(view));
+
 		JMenuItem formatMenuItem = applyDefaults(new JMenuItem("Format", KeyEvent.VK_F));
 		formatMenuItem.addActionListener(event -> controller.format(EditorView.this));
 
@@ -245,7 +257,7 @@ public class EditorView {
 				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
-				, formatMenuItem, unixFilterMenuItem);
+				, copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, unixFilterMenuItem);
 
 		JMenu viewMenu = createMenu("View", KeyEvent.VK_V //
 				, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
