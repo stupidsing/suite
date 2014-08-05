@@ -29,7 +29,9 @@ import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.IdentityKey;
 import suite.node.util.Rewriter;
+import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
+import suite.util.Memoize;
 
 public class EvalPredicates {
 
@@ -38,7 +40,7 @@ public class EvalPredicates {
 	private static Atom SHL = Atom.of("shl");
 	private static Atom SHR = Atom.of("shr");
 	private static Comparer comparer = Comparer.comparer;
-	private static ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
+	private static Fun<String, ScriptEngine> engines = Memoize.byInput(new ScriptEngineManager()::getEngineByExtension);
 	private static Random random = new Random();
 	private static AtomicInteger counter = new AtomicInteger();
 
@@ -78,7 +80,7 @@ public class EvalPredicates {
 			Object result;
 
 			try {
-				result = engine.eval(js);
+				result = engines.apply("js").eval(js);
 			} catch (ScriptException ex) {
 				LogUtil.error(ex);
 				return false;

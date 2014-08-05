@@ -8,7 +8,8 @@ replace-file() {
   F0="${1}"
   F1=$(echo "${F0}" | replace)
   mkdir -p $(dirname "${F1}")
-  cat "${F0}" | replace > "${F1}"
+  cat "${F0}" | replace > /tmp/replaced
+  mv /tmp/replaced "${F1}"
   echo ${F1}
 }
 

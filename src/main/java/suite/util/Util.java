@@ -225,7 +225,7 @@ public class Util {
 		run(clazz, args, false);
 	}
 
-	private static void run(Class<? extends ExecutableProgram> clazz, String args[], boolean isProfile) {
+	public static void run(Class<? extends ExecutableProgram> clazz, String args[], boolean isProfile) {
 		LogUtil.initLog4j(Level.INFO);
 		Runnable runnable;
 		int code[] = new int[1];
