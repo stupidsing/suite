@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
+
 #define info(m) msg("INFO", __LINE__, (m))
 #define err(m) msg("ERROR", __LINE__, (m))
 #define fatal(m) fmsg("FATAL", __LINE__, (m));

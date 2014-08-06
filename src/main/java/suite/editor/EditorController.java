@@ -113,7 +113,7 @@ public class EditorController {
 		File dir = new File(view.getFilenameTextField().getText()).getParentFile();
 		JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
 		if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
-			load(view, fileChooser.getSelectedFile().getName());
+			load(view, fileChooser.getSelectedFile().getPath());
 	}
 
 	public void paste(EditorView view) {
