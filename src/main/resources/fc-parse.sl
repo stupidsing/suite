@@ -9,6 +9,10 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
+fc-parse (.type of .value) (PRAGMA (CAST DOWN .type1) .value1)
+	:- fc-parse-type .type .type1
+	, !, fc-parse .value .value1
+#
 fc-parse (data .class over some .typeVars as .type >> .do) (
 	PRAGMA (DEF-TYPE .type1 .class1 .typeVars1) .do1
 ) :- fc-parse-type .type .type1
@@ -21,23 +25,6 @@ fc-parse (data .class over .typeVar as .type >> .do) .do1
 #
 fc-parse (data .class as .type >> .do) .do1
 	:- !, fc-parse (data .class over some () as .type >> .do) .do1
-#
-fc-parse (.type of .value) (PRAGMA (CAST DOWN .type1) .value1)
-	:- fc-parse-type .type .type1
-	, !, fc-parse .value .value1
-#
-fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
-	:- !, fc-parse .do .do1
-#
-fc-parse (using source .lib >> .do) .dox
-	:- !, fc-load-library .lib .do .do1
-	, fc-parse .do1 .dox
-#
-fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
-	:- !, fc-parse .do .do1
-#
-fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
-	:- !, fc-parse .do .do1
 #
 fc-parse (define .var := .value >> .do) (
 	PRAGMA ALLOW-RECURSIVE (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
@@ -74,6 +61,19 @@ fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .then .thenp
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
+#
+fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
+	:- !, fc-parse .do .do1
+#
+fc-parse (using source .lib >> .do) .dox
+	:- !, fc-load-library .lib .do .do1
+	, fc-parse .do1 .dox
+#
+fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
+	:- !, fc-parse .do .do1
+#
+fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
+	:- !, fc-parse .do .do1
 #
 fc-parse (.p0 .p1) (PRAGMA CAST-TO-CLASS (PAIR .parsed0 .parsed1))
 	:- !
