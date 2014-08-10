@@ -27,14 +27,25 @@ fc-parse (data .class as .type >> .do) .do1
 	:- !, fc-parse (data .class over some () as .type >> .do) .do1
 #
 fc-parse (define .var := .value >> .do) (
-	PRAGMA ALLOW-RECURSIVE (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
+	PRAGMA ALLOW-RECURSIVE (DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1),) .do1)
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
 	)
 	, fc-parse .do .do1
 #
-fc-parse (let .var := .value >> .do) (DEF-VAR .var (PRAGMA RESOLVE-TYPE .value1) .do1)
+fc-parse (defines ((.var := .value), .list) >> .do) (
+	DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1), .list1) .do1
+) :- !
+	, once (fc-parse .value .value1
+		; fc-error "at variable" .var
+	)
+	, fc-parse (defines .list >> .do) (DEF-VARS .list1 .do1)
+#
+fc-parse (defines () >> .do) (DEF-VARS () .do1)
+	:- !, fc-parse .do .do1
+#
+fc-parse (let .var := .value >> .do) (DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1),) .do1)
 	:- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
@@ -261,14 +272,16 @@ fc-bind0 .v0 .v1 .then .else .parsed
 fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
 	:- !, fc-bind-pair .p0 .q0 .p1 .q1 .then .else .parsed
 #
-fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VAR .nv .v0 .then)
+fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VARS (.nv .v0,) .then)
 	:- !
 #
 fc-bind0 .v0 .v1 .then .else (
-	DEF-VAR .elseVar (WRAP .else) DEF-VAR .v0var .v0 (
+	DEF-VARS (.elseVar (WRAP .else), .v0var .v0,) (
 		IF (INVOKE (VAR .v0var) (VAR is-list)) (
-			DEF-VAR .headVar (INVOKE (VAR .v0var) (VAR +lhead))
-			DEF-VAR .tailVar (INVOKE (VAR .v0var) (VAR +ltail))
+			DEF-VARS (
+				.headVar (INVOKE (VAR .v0var) (VAR +lhead)),
+				.tailVar (INVOKE (VAR .v0var) (VAR +ltail)),
+			)
 			.then1
 		) .else1
 	)
@@ -279,12 +292,12 @@ fc-bind0 .v0 .v1 .then .else (
 	, fc-bind-pair (VAR .headVar) (VAR .tailVar) .h1 .t1 .then .else1 .then1
 #
 fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
-	DEF-VAR .elseVar (WRAP .else)
-	DEF-VAR .v0var (PRAGMA (CAST UP _) .v0) (
+	DEF-VARS (.elseVar (WRAP .else), .v0var (PRAGMA (CAST UP _) .v0),) (
 		IF (INVOKE (VAR .v0var) (VAR is-pair)) (
-			DEF-VAR .leftVar (INVOKE (VAR .v0var) (VAR +pleft))
-			DEF-VAR .rightVar (INVOKE (VAR .v0var) (VAR +pright))
-			.then1
+			DEF-VARS (
+				.leftVar (INVOKE (VAR .v0var) (VAR +pleft)),
+				.rightVar (INVOKE (VAR .v0var) (VAR +pright)),
+			) .then1
 		) .else1
 	)
 ) :- !
@@ -303,7 +316,7 @@ fc-bind0 .v0 .v1 .then .else (
 fc-bind-cons (INVOKE .t INVOKE .h VAR +lcons) .h .t #
 fc-bind-cons (INVOKE .t INVOKE .h VAR +pcons) .h .t #
 
-fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VAR .elseVar (WRAP .else) .parsed)
+fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VARS (.elseVar (WRAP .else),) .parsed)
 	:- temp .elseVar
 	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind .h0 .h1 .then1 .else1 .parsed
