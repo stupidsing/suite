@@ -10,10 +10,13 @@ fc-compile (ATOM .a) _ .c0/.cx/.reg
 fc-compile (BOOLEAN .b) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.b, .cx)
 #
-fc-compile (DEF-VAR .var .value .do) .frame/.ve .c0/.cx/.reg
+fc-compile (DEF-VARS (.var .value, .list) .do) .frame/.ve .c0/.cx/.reg
 	:- fc-dict-add .var/(%REG/.r1/.frame) .ve/.ve1
 	, fc-compile .value .frame/.ve1 .c0/.c1/.r1
-	, fc-compile .do .frame/.ve1 .c1/.cx/.reg
+	, fc-compile (DEF-VARS .list .do) .frame/.ve1 .c1/.cx/.reg
+#
+fc-compile (DEF-VARS () .do) .env .cr
+	:- fc-compile .do .env .cr
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.closureReg
 	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(FRAME l:.f,), .cx)
