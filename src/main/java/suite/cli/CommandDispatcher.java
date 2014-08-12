@@ -165,22 +165,18 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchDoFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		String in = inputs.stream().collect(Collectors.joining(" "));
-		Node node = Suite.applyReader(reader, Suite.parse(in));
+		Node node = Suite.applyReader(reader, parseNode(inputs));
 		node = Suite.applyDo(node, Atom.of("string"));
 		evaluateFunctionalToWriter(node, writer);
 		return true;
 	}
 
 	public boolean dispatchEvaluate(List<String> inputs) {
-		String in = inputs.stream().collect(Collectors.joining(" "));
-		Node node = Suite.parse(in);
-		return evaluateFunctional(node) == Atom.TRUE;
+		return evaluateFunctional(parseNode(inputs)) == Atom.TRUE;
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		String in = inputs.stream().collect(Collectors.joining(" "));
-		Node node = Suite.applyReader(reader, Suite.parse(in));
+		Node node = Suite.applyReader(reader, parseNode(inputs));
 		evaluateFunctionalToWriter(node, writer);
 		return true;
 	}
@@ -207,6 +203,10 @@ public class CommandDispatcher {
 		boolean result = Suite.importResource(ruleSet, "auto.sl");
 		result &= Suite.proveLogic(ruleSet, in);
 		return result;
+	}
+
+	private Node parseNode(List<String> inputs) {
+		return Suite.parse(inputs.stream().collect(Collectors.joining(" ")));
 	}
 
 	private void printEvaluatedString(Writer writer, Node node) throws IOException {
