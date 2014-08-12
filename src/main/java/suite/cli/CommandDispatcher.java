@@ -35,7 +35,7 @@ import suite.util.Util;
  */
 public class CommandDispatcher {
 
-	private CommandOption opt;
+	private CommandOptions opt;
 	private RuleSet ruleSet = Suite.createRuleSet();
 	private Builder builderLevel2 = null;
 
@@ -65,7 +65,7 @@ public class CommandDispatcher {
 		}
 	}
 
-	public CommandDispatcher(CommandOption opt) {
+	public CommandDispatcher(CommandOptions opt) {
 		this.opt = opt;
 	}
 

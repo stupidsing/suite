@@ -21,7 +21,7 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class CommandOption {
+public class CommandOptions {
 
 	// Program type options
 	private boolean isQuiet = false;

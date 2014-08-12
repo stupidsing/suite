@@ -25,7 +25,7 @@ import suite.util.Util.ExecutableProgram;
  */
 public class Main extends ExecutableProgram {
 
-	private CommandOption opt;
+	private CommandOptions opt;
 	private CommandDispatcher dispatcher;
 
 	private Reader reader = new BufferedReader(new InputStreamReader(System.in, FileUtil.charset));
@@ -36,7 +36,7 @@ public class Main extends ExecutableProgram {
 	}
 
 	protected boolean run(String args[]) throws IOException {
-		opt = new CommandOption();
+		opt = new CommandOptions();
 		dispatcher = new CommandDispatcher(opt);
 
 		boolean result = true;
