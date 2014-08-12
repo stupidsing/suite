@@ -1,7 +1,13 @@
 ### What is suite?
 
-Library with all sorts of tools or useful code pieces. In particular it has a logic interpreter and a functional code compiler.
+Library with all sorts of useful code pieces for myself. In particular it has a logic interpreter and a functional code compiler.
 
+### Any pre-requisite?
+
+- Linux, unix, or cygwin
+- JDK 1.8
+- Apache Maven
+- rlwrap if you want to use the interactive prompt conveniently
 
 ### How to build and set up the project?
 
