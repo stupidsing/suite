@@ -200,9 +200,7 @@ public class CommandDispatcher {
 	public boolean dispatchProve(List<String> inputs) throws IOException {
 		String in = inputs.stream().collect(Collectors.joining(" "));
 		RuleSet ruleSet = Suite.createRuleSet();
-		boolean result = Suite.importResource(ruleSet, "auto.sl");
-		result &= Suite.proveLogic(ruleSet, in);
-		return result;
+		return Suite.importResource(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 
 	private Node parseNode(List<String> inputs) {
