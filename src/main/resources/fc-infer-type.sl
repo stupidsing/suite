@@ -79,7 +79,7 @@ fc-infer-type-rule (
 	, fc-infer-type-rule (PRAGMA ALLOW-RECURSIVE (DEF-VARS .list .do)) .outsideEnv .tr1/.trx .type
 #
 fc-infer-type-rule (PRAGMA ALLOW-RECURSIVE (DEF-VARS () .do)) .env .tr .type
-	:- fc-infer-type-rule .do .env .tr .type
+	:- !, fc-infer-type-rule .do .env .tr .type
 #
 fc-infer-type-rule (PRAGMA (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
