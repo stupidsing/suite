@@ -33,3 +33,8 @@ printf '? dump something, nl' | ./run.sh --quiet
 ### How to evaluate functional filters?
 
 printf 'inputs...\ninputs...\n' | ./run.sh filter id
+
+
+### How to evaluate monadic functional filters?
+
+./run.sh --libraries STANDARD,MONAD do-filter 'concatm . map {cmd => sh {cmd} {}} . split {10}'

@@ -1,5 +1,11 @@
 using external STANDARD >>
 define nothing := atom:Nothing >>
+define appendm :=
+	m0 => m1 => (return # append {call {m0}} {call {m1}})
+>>
+define concatm :=
+	fold-right {appendm} {return # ()}
+>>
 define seqm :=
 	define seq := (:t => any -> :t -> :t) of
 		atom:INTRN!MonadIntrinsics.seq | getintrn | callintrn2
