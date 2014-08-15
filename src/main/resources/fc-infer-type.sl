@@ -34,16 +34,11 @@ fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
-fc-infer-type-rule (DEF-VARS (.name .value, .list) .do) .ue/.ve/.te .tr0/.trx .type
-	:- fc-dict-add .name/.varType .ue/.ue1
+fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
+	:- fc-define-var-types .vvs .vvts .ue/.ue1
 	, .env1 = .ue1/.ve/.te
-	, once (fc-infer-type-rule .value .env1 .tr0/.tr1 .varType
-		; fc-error "at variable" .name
-	)
-	, fc-infer-type-rule (DEF-VARS .list .do) .env1 .tr1/.trx .type
-#
-fc-infer-type-rule (DEF-VARS () .do) .env .tr .type
-	:- fc-infer-type-rule .do .env .tr .type
+	, fc-infer-var-types .vvts .env1 .tr0/.tr1
+	, fc-infer-type-rule .do .env1 .tr1/.trx .type
 #
 fc-infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
 	:- fc-dict-add .var/.varType .ue/.ue1
@@ -66,15 +61,15 @@ fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
 fc-infer-type-rule (
-	PRAGMA ALLOW-RECURSIVE (DEF-VARS (.name .value, .list) .do)
+	PRAGMA ALLOW-RECURSIVE (DEF-VARS (.var .value, .list) .do)
 ) .ue/.ve/.te .tr0/.trx .type
 	:- !
-	, fc-dict-add .name/.varType .ue/.ue1
-	, fc-dict-add .name/.varType .ve/.ve1
+	, fc-dict-add .var/.varType .ue/.ue1
+	, fc-dict-add .var/.varType .ve/.ve1
 	, .insideEnv = .ue1/.ve/.te
 	, .outsideEnv = .ue/.ve1/.te
 	, once (fc-infer-type-rule .value .insideEnv .tr0/.tr1 .varType
-		; fc-error "at variable" .name
+		; fc-error "at variable" .var
 	)
 	, fc-infer-type-rule (PRAGMA ALLOW-RECURSIVE (DEF-VARS .list .do)) .outsideEnv .tr1/.trx .type
 #
@@ -141,6 +136,20 @@ fc-infer-type-rule (.tag .var) _/.ve/_ .tr0/.trx .type
 		; fc-error "Undefined variable" .var
 	)
 #
+
+fc-define-var-types (.var .value, .vvs) (.var .value .varType, .vvts) .ue0/.uex
+	:- fc-dict-add .var/.varType .ue0/.ue1
+	, fc-define-var-types .vvs .vvts .ue1/.uex
+#
+fc-define-var-types () () .ue/.ue #
+
+fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
+	:- 	, once (fc-infer-type-rule .value .env .tr0/.tr1 .varType
+		; fc-error "at variable" .var
+	)
+	, fc-infer-var-types .vvts .env .tr1/.trx
+#
+fc-infer-var-types () _ .tr/.tr #
 
 fc-find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #

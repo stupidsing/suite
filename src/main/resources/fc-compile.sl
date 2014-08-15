@@ -10,13 +10,10 @@ fc-compile (ATOM .a) _ .c0/.cx/.reg
 fc-compile (BOOLEAN .b) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.b, .cx)
 #
-fc-compile (DEF-VARS (.var .value, .list) .do) .frame/.ve .c0/.cx/.reg
-	:- fc-dict-add .var/(%REG/.r1/.frame) .ve/.ve1
-	, fc-compile .value .frame/.ve1 .c0/.c1/.r1
-	, fc-compile (DEF-VARS .list .do) .frame/.ve1 .c1/.cx/.reg
-#
-fc-compile (DEF-VARS () .do) .env .cr
-	:- fc-compile .do .env .cr
+fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
+	:- fc-define-vars .vvs .vrs .frame .ve/.ve1
+	, fc-compile-vars .vrs .frame/.ve1 .c0/.c1
+	, fc-compile .do .frame/.ve1 .c1/.cx/.reg
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.closureReg
 	:- .c0 = (ASSIGN-CLOSURE .closureReg l:(FRAME l:.f,), .cx)
@@ -91,6 +88,18 @@ fc-compile (WRAP .do) .frame/.ve .c0/.cx/.closureReg
 		,)
 	, cg-optimize .f0 .f
 #
+
+fc-define-vars (.var .value, .vvs) (.value .varReg, .vrs) .frame .ve0/.vex
+	:- fc-dict-add .var/(%REG/.varReg/.frame) .ve0/.ve1
+	, fc-define-vars .vvs .vrs .frame .ve1/.vex
+#
+fc-define-vars () () _ .ve/.ve #
+
+fc-compile-vars (.value .varReg, .vrs) .env .c0/.cx
+	:- fc-compile .value .env .c0/.c1/.varReg
+	, fc-compile-vars .vrs .env .c1/.cx
+#
+fc-compile-vars () _ .c/.c #
 
 fc-default-fun .call .frame .result :- fc-default-fun0 .call .frame .result 0 #
 
