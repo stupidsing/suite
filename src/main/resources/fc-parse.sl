@@ -34,7 +34,7 @@ fc-parse (define .var := .value >> .do) (
 	)
 	, fc-parse .do .do1
 #
-fc-parse (defines ((.var := .value), .list) >> .do) (
+fc-parse (defines (.var := .value # .list) >> .do) (
 	DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1), .list1) .do1
 ) :- !
 	, once (fc-parse .value .value1
