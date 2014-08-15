@@ -58,11 +58,11 @@ public class Suite {
 		rs.addRule(Rule.formRule(node));
 	}
 
-	public static Node applyDo(Node node, Atom returnType) {
-		return substitute("(do-of .1 -> number -> .1) of (skip-type-check id) {.0} {0}", node, returnType);
+	public static Node applyDo(Node func, Atom returnType) {
+		return substitute("(do-of .1 -> number -> .1) of (skip-type-check id) {.0} {0}", func, returnType);
 	}
 
-	public static Node applyReader(Reader reader, Node func) {
+	public static Node applyReader(Node func, Reader reader) {
 		Data<IndexedReader> data = new Data<>(new IndexedReader(reader));
 		return substitute("source {skip-type-check atom:.0} | .1", data, func);
 	}
@@ -153,7 +153,7 @@ public class Suite {
 
 	public static void evaluateFilterFun(String program, boolean isLazy, Reader reader, Writer writer) {
 		try {
-			Node node = applyReader(reader, parse(program));
+			Node node = applyReader(parse(program), reader);
 			FunCompilerConfig fcc = fcc(node, isLazy);
 			evaluateUtil.evaluateFunToWriter(fcc, writer);
 		} catch (IOException ex) {

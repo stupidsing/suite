@@ -165,7 +165,8 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchDoFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		Node node = Suite.applyReader(reader, parseNode(inputs));
+		Node node = parseNode(inputs);
+		node = Suite.applyReader(node, reader);
 		node = Suite.applyDo(node, Atom.of("string"));
 		evaluateFunctionalToWriter(node, writer);
 		return true;
@@ -176,7 +177,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		Node node = Suite.applyReader(reader, parseNode(inputs));
+		Node node = Suite.applyReader(parseNode(inputs), reader);
 		evaluateFunctionalToWriter(node, writer);
 		return true;
 	}
