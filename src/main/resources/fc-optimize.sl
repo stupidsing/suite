@@ -55,10 +55,10 @@ fc-replace-var-by-value .v0 .value (VAR .v0) .value
 	:- !
 #
 fc-replace-var-by-value .v0 _ (PRAGMA ALLOW-RECURSIVE (DEF-VARS (.v0 .value,) .do)) (DEF-VARS (.v0 .value,) .do)
-	:- ! -- Variable scope overrided by another one
+	:- ! -- Variable scope overrode by another one
 #
 fc-replace-var-by-value .v0 .v1 (DEF-VARS (.v0 .value0,) .do) (DEF-VARS (.v0 .value1,) .do)
-	:- ! -- Variable scope overrided in value field only
+	:- ! -- Variable scope overrode in value field only
 	, fc-replace-var-by-value .v0 .v1 .value0 .value1
 #
 fc-replace-var-by-value .v0 .v1 .p0 .p1
