@@ -60,22 +60,6 @@ fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
 	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
-fc-infer-type-rule (
-	PRAGMA ALLOW-RECURSIVE (DEF-VARS (.var .value, .list) .do)
-) .ue/.ve/.te .tr0/.trx .type
-	:- !
-	, fc-dict-add .var/.varType .ue/.ue1
-	, fc-dict-add .var/.varType .ve/.ve1
-	, .insideEnv = .ue1/.ve/.te
-	, .outsideEnv = .ue/.ve1/.te
-	, once (fc-infer-type-rule .value .insideEnv .tr0/.tr1 .varType
-		; fc-error "at variable" .var
-	)
-	, fc-infer-type-rule (PRAGMA ALLOW-RECURSIVE (DEF-VARS .list .do)) .outsideEnv .tr1/.trx .type
-#
-fc-infer-type-rule (PRAGMA ALLOW-RECURSIVE (DEF-VARS () .do)) .env .tr .type
-	:- !, fc-infer-type-rule .do .env .tr .type
-#
 fc-infer-type-rule (PRAGMA (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
 	, once (
@@ -88,6 +72,15 @@ fc-infer-type-rule (PRAGMA CAST-TO-CLASS .pair) .env .tr .classType
 	:- !
 	, .classType = CLASS _
 	, fc-infer-type-rule (PRAGMA (CAST DOWN .classType) .pair) .env .tr .classType
+#
+fc-infer-type-rule (
+	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
+) .ue/.ve/.te .tr0/.trx .type
+	:- !
+	, fc-define-var-types .vvs .vvts .ue/.ue1
+	, fc-define-var-types .vvs .vvts .ve/.ve1
+	, fc-infer-var-types .vvts .ue1/.ve/.te .tr0/.tr1
+	, fc-infer-type-rule .do .ue/.ve1/.te .tr1/.trx .type
 #
 fc-infer-type-rule (
 	PRAGMA (DEF-TYPE .definedType .class .typeVars) .do
@@ -144,7 +137,7 @@ fc-define-var-types (.var .value, .vvs) (.var .value .varType, .vvts) .ue0/.uex
 fc-define-var-types () () .ue/.ue #
 
 fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
-	:- 	, once (fc-infer-type-rule .value .env .tr0/.tr1 .varType
+	:- once (fc-infer-type-rule .value .env .tr0/.tr1 .varType
 		; fc-error "at variable" .var
 	)
 	, fc-infer-var-types .vvts .env .tr1/.trx

@@ -44,8 +44,6 @@ fc-rewrite (WRAP .do0) (WRAP .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
 
-fc-rewrite-pragma ALLOW-RECURSIVE ALLOW-RECURSIVE .ts/.ts
-#
 fc-rewrite-pragma (CAST DOWN .type0) (CAST DOWN .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 #
@@ -53,6 +51,8 @@ fc-rewrite-pragma (CAST UP .type0) (CAST UP .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 #
 fc-rewrite-pragma CAST-TO-CLASS CAST-TO-CLASS .ts/.ts
+#
+fc-rewrite-pragma DEF-OUTSIDE DEF-OUTSIDE .ts/.ts
 #
 fc-rewrite-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 .typeVars1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1

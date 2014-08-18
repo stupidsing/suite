@@ -47,14 +47,14 @@ fc-define-var
 (DEF-VARS (.var1 .value1,) .do1) .var1 .value1 .do1
 #
 fc-define-var
-(PRAGMA ALLOW-RECURSIVE DEF-VARS (.var0 .value0,) .do0) .var0 .value0 .do0
-(PRAGMA ALLOW-RECURSIVE DEF-VARS (.var1 .value1,) .do1) .var1 .value1 .do1
+(PRAGMA DEF-OUTSIDE DEF-VARS (.var0 .value0,) .do0) .var0 .value0 .do0
+(PRAGMA DEF-OUTSIDE DEF-VARS (.var1 .value1,) .do1) .var1 .value1 .do1
 #
 
 fc-replace-var-by-value .v0 .value (VAR .v0) .value
 	:- !
 #
-fc-replace-var-by-value .v0 _ (PRAGMA ALLOW-RECURSIVE (DEF-VARS (.v0 .value,) .do)) (DEF-VARS (.v0 .value,) .do)
+fc-replace-var-by-value .v0 _ (PRAGMA DEF-OUTSIDE (DEF-VARS (.v0 .value,) .do)) (DEF-VARS (.v0 .value,) .do)
 	:- ! -- Variable scope overrode by another one
 #
 fc-replace-var-by-value .v0 .v1 (DEF-VARS (.v0 .value0,) .do) (DEF-VARS (.v0 .value1,) .do)

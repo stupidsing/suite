@@ -27,30 +27,23 @@ fc-parse (data .class as .type >> .do) .do1
 	:- !, fc-parse (data .class over some () as .type >> .do) .do1
 #
 fc-parse (define .var := .value >> .do) (
-	PRAGMA ALLOW-RECURSIVE (DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1),) .do1)
+	PRAGMA DEF-OUTSIDE (DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1),) .do1)
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
 	)
 	, fc-parse .do .do1
 #
-fc-parse (defines (.var := .value # .list) >> .do) (
+fc-parse (lets (.var := .value # .list) >> .do) (
 	DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1), .list1) .do1
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
 	)
-	, fc-parse (defines .list >> .do) (DEF-VARS .list1 .do1)
+	, fc-parse (lets .list >> .do) (DEF-VARS .list1 .do1)
 #
-fc-parse (defines () >> .do) (DEF-VARS () .do1)
+fc-parse (lets () >> .do) (DEF-VARS () .do1)
 	:- !, fc-parse .do .do1
-#
-fc-parse (let .var := .value >> .do) (DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1),) .do1)
-	:- !
-	, once (fc-parse .value .value1
-		; fc-error "at variable" .var
-	)
-	, fc-parse .do .do1
 #
 fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
@@ -139,6 +132,7 @@ fc-parse-sugar (if (`.p` = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
 fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.binds = .value) then .do else error) :- ! #
+fc-parse-sugar (let .var := .value >> .do) (lets (.var := .value #) >> .do) :- ! #
 fc-parse-sugar (case || .bind => .then || .otherwise) .p1
 	:- !, temp .var
 	, .p1 = (.var =>

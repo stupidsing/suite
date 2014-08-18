@@ -30,7 +30,7 @@ public class LazyFunTest {
 	@Test
 	public void testDefines() {
 		assertEquals(Int.of(62), eval("" //
-				+ "defines ( \n" //
+				+ "lets ( \n" //
 				+ "    a := n => if (n > 0) then (b {n - 1} * 2) else 0 # \n" //
 				+ "    b := n => if (n > 0) then (a {n - 1} + 1) else 0 # \n" //
 				+ ") >> a {10}"));
