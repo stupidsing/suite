@@ -129,8 +129,8 @@ public class Chr {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 
-			Source<Node> bindedIfs = filter(facts.source(), bindFun);
-			return map(bindedIfs, new Fun<Node, State>() {
+			Source<Node> boundIfs = filter(facts.source(), bindFun);
+			return map(boundIfs, new Fun<Node, State>() {
 				public State apply(Node node) {
 					return setFacts(state, prototype, facts.remove(node));
 				}

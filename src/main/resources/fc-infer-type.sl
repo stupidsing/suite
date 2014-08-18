@@ -21,7 +21,7 @@
 --   Represented internally as (GENERIC-OF (VAR t) FUN-OF (VAR t) (VAR t)).
 --   Resolved by SUB-SUPER-TYPES.
 -- - Generic type caused by not enough variable information during type inference.
---   Any variable usage, in case having unbinded variables, will also be cloned.
+--   Any variable usage, in case having unbound variables, will also be cloned.
 --   Resolved by CLONE-TO-FROM-TYPES.
 --
 
@@ -205,7 +205,7 @@ fc-resolve-easy-type-rule (TYPE-IN-TYPES _) #
 --   - Try reduce to type classes to resolve;
 --   - Try morph children types to resolve;
 --   - Generalize generic types to resolve;
---   - Try delay resolve if both types are unbinded;
+--   - Try delay resolve if both types are unbound;
 -- - Try bind generic-type and specialized-type relation;
 -- - Try bind type choice relation.
 fc-resolve-type-rules1 () :- ! #
