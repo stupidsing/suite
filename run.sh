@@ -7,19 +7,20 @@ OPTS="-Xss2m -Xmx256m ${DEBUGOPTS} -Dhome.dir=${BASE}"
 CMD="java ${OPTS} -jar ${JAR} $@"
 
 getLatestTimestamp() {
-	xargs -I {} sh -c 'stat -c %Y "{}" 2> /dev/null || echo 0' | sort -g | tail -1
+	TS=$(find "$@" -type f 2> /dev/null | xargs -I {} sh -c 'stat -c %Y "{}" 2> /dev/null' | sort -g | tail -1)
+	[ ${TS} ] && echo ${TS} || echo 0
 }
 
 (
-	SRCTIME=$(find "${BASE}/pom.xml" "${BASE}/src/main/java/" "${BASE}/src/main/resources/" -type f 2> /dev/null | getLatestTimestamp)
-	TARGETTIME=$(echo "${JAR}" | getLatestTimestamp)
-	[ ${SRCTIME} -le ${TARGETTIME} ] || mvn -Dmaven.test.skip=true install assembly:single
+	SOURCETIME=$(getLatestTimestamp "${BASE}/pom.xml" "${BASE}/src/main/java/" "${BASE}/src/main/resources/")
+	TARGETTIME=$(getLatestTimestamp "${JAR}")
+	[ ${SOURCETIME} -le ${TARGETTIME} ] || mvn -Dmaven.test.skip=true install assembly:single
 ) &&
 
 (
-	SRCTIME=$(echo "${JAR}" | getLatestTimestamp)
-	TARGETTIME=$(echo "${BASE}/precompiled/STANDARD.node.gz" | getLatestTimestamp)
-	[ ${SRCTIME} -le ${TARGETTIME} ] ||
+	SOURCETIME=$(getLatestTimestamp "${JAR}")
+	TARGETTIME=$(getLatestTimestamp "${BASE}/precompiled/STANDARD.node.gz")
+	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
 	(echo | java ${OPTS} -jar "${JAR}" precompile-all || (rm -f ${BASE}/precompiled/STANDARD.node.gz && false))
 ) &&
 
