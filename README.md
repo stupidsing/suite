@@ -32,7 +32,7 @@ printf '? dump something, nl' | ./run.sh --quiet
 
 ### How to evaluate functional filters?
 
-printf 'inputs...\ninputs...\n' | ./run.sh filter id
+printf 'inputs...\ninputs...\n' | ./run.sh filter reverse
 
 
 ### How to evaluate monadic functional filters?
