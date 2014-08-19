@@ -178,9 +178,9 @@ fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
 fc-parse-sugar (.f/) (flip {.f}) :- ! #
 fc-parse-sugar "" () :- ! #
-fc-parse-sugar .s (.ascii; .cs)
+fc-parse-sugar .s (.ascii; .asciis)
 	:- is.string .s
-	, !, substring .s 0 1 .c, substring .s 1 0 .cs
+	, !, substring .s 0 1 .c, substring .s 1 0 .asciis
 	, to.int .c .ascii
 #
 
