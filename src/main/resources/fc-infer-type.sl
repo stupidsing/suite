@@ -60,19 +60,6 @@ fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
 	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
-fc-infer-type-rule (PRAGMA (CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
-	:- !, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
-	, once (
-		.dir = DOWN, .subType = .type0, .superType = .type
-		; .dir = UP, .subType = .type, .superType = .type0
-	)
-	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
-#
-fc-infer-type-rule (PRAGMA CAST-TO-CLASS .pair) .env .tr .classType
-	:- !
-	, .classType = CLASS _
-	, fc-infer-type-rule (PRAGMA (CAST DOWN .classType) .pair) .env .tr .classType
-#
 fc-infer-type-rule (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
 ) .ue/.ve/.te .tr0/.trx .type
@@ -89,12 +76,25 @@ fc-infer-type-rule (
 	, .te1 = (.definedType/.class/.typeVars, .te)
 	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
 #
-fc-infer-type-rule (PRAGMA RESOLVE-TYPE .do) .env .tr/.tr .type
+fc-infer-type-rule (PRAGMA (TYPE-CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
+	:- !, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
+	, once (
+		.dir = DOWN, .subType = .type0, .superType = .type
+		; .dir = UP, .subType = .type, .superType = .type0
+	)
+	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
+#
+fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
+	:- !
+	, .classType = CLASS _
+	, fc-infer-type-rule (PRAGMA (TYPE-CAST DOWN .classType) .pair) .env .tr .classType
+#
+fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 	:- !
 	, fc-infer-type-rule .do .env .tr1/() .type
 	, fc-resolve-type-rules .tr1
 #
-fc-infer-type-rule (PRAGMA (VERIFY-TYPE .var .varType) .do) .env .tr0/.trx .type
+fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	:- !
 	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
 	, fc-infer-type-rule .do .env .tr1/.trx .type
@@ -149,7 +149,7 @@ fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
 fc-find-simple-type (DO _) _ (DO-OF _) #
 fc-find-simple-type (NUMBER _) _ NUMBER #
-fc-find-simple-type (PRAGMA SKIP-TYPE-CHECK _) _ _ #
+fc-find-simple-type (PRAGMA TYPE-SKIP-CHECK _) _ _ #
 fc-find-simple-type (.tag .var) .ue/_/_ .type
 	:- once (.tag = NEW-VAR; .tag = VAR)
 	, (fc-dict-get .ue .var/.type

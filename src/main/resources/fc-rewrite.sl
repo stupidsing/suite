@@ -44,14 +44,6 @@ fc-rewrite (WRAP .do0) (WRAP .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
 
-fc-rewrite-pragma (CAST DOWN .type0) (CAST DOWN .type1) .ts/.ts
-	:- fc-rewrite-type .type0 .type1
-#
-fc-rewrite-pragma (CAST UP .type0) (CAST UP .type1) .ts/.ts
-	:- fc-rewrite-type .type0 .type1
-#
-fc-rewrite-pragma CAST-TO-CLASS CAST-TO-CLASS .ts/.ts
-#
 fc-rewrite-pragma DEF-OUTSIDE DEF-OUTSIDE .ts/.ts
 #
 fc-rewrite-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 .typeVars1) .ts/.ts
@@ -59,11 +51,19 @@ fc-rewrite-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 
 	, fc-rewrite-type .class0 .class1
 	, fc-rewrite-type-list .typeVars0 .typeVars1
 #
-fc-rewrite-pragma RESOLVE-TYPE RESOLVE-TYPE .ts/.ts
+fc-rewrite-pragma (TYPE-CAST DOWN .type0) (TYPE-CAST DOWN .type1) .ts/.ts
+	:- fc-rewrite-type .type0 .type1
 #
-fc-rewrite-pragma SKIP-TYPE-CHECK SKIP-TYPE-CHECK .ts/.ts
+fc-rewrite-pragma (TYPE-CAST UP .type0) (TYPE-CAST UP .type1) .ts/.ts
+	:- fc-rewrite-type .type0 .type1
 #
-fc-rewrite-pragma (VERIFY-TYPE .v0 .type0) (VERIFY-TYPE .v1 .type1) .ts0/.tsx
+fc-rewrite-pragma TYPE-CAST-TO-CLASS TYPE-CAST-TO-CLASS .ts/.ts
+#
+fc-rewrite-pragma TYPE-RESOLVE TYPE-RESOLVE .ts/.ts
+#
+fc-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts
+#
+fc-rewrite-pragma (TYPE-VERIFY .v0 .type0) (TYPE-VERIFY .v1 .type1) .ts0/.tsx
 	:- fc-rewrite .v0 .v1 .ts0/.tsx
 	, fc-rewrite-type .type0 .type1
 	, !

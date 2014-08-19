@@ -9,7 +9,7 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (.type of .value) (PRAGMA (CAST DOWN .type1) .value1)
+fc-parse (.type of .value) (PRAGMA (TYPE-CAST DOWN .type1) .value1)
 	:- fc-parse-type .type .type1
 	, !, fc-parse .value .value1
 #
@@ -27,7 +27,7 @@ fc-parse (data .class as .type >> .do) .do1
 	:- !, fc-parse (data .class over some () as .type >> .do) .do1
 #
 fc-parse (define .var := .value >> .do) (
-	PRAGMA DEF-OUTSIDE (DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1),) .do1)
+	PRAGMA DEF-OUTSIDE (DEF-VARS (.var (PRAGMA TYPE-RESOLVE .value1),) .do1)
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
@@ -35,7 +35,7 @@ fc-parse (define .var := .value >> .do) (
 	, fc-parse .do .do1
 #
 fc-parse (lets (.var := .value # .list) >> .do) (
-	DEF-VARS (.var (PRAGMA RESOLVE-TYPE .value1), .list1) .do1
+	DEF-VARS (.var (PRAGMA TYPE-RESOLVE .value1), .list1) .do1
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
@@ -66,7 +66,7 @@ fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
-fc-parse (skip-type-check .do) (PRAGMA SKIP-TYPE-CHECK .do1)
+fc-parse (skip-type-check .do) (PRAGMA TYPE-SKIP-CHECK .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (using source .lib >> .do) .dox
@@ -79,9 +79,9 @@ fc-parse (using external .lib >> .do) (USING EAGER EXTERNAL .lib .do1)
 fc-parse (using .lib >> .do) (USING EAGER BUILTIN .lib .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (.p0 .p1) (PRAGMA CAST-TO-CLASS (PAIR .parsed0 .parsed1))
+fc-parse (.p0 .p1) (PRAGMA TYPE-CAST-TO-CLASS (PAIR .parsed0 .parsed1))
 	:- !
-	, fc-parse .p0 (PRAGMA CAST-TO-CLASS .parsed0)
+	, fc-parse .p0 (PRAGMA TYPE-CAST-TO-CLASS .parsed0)
 	, fc-parse .p1 .parsed1
 #
 fc-parse (.p0, .p1) (PAIR .parsed0 .parsed1)
@@ -102,7 +102,7 @@ fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (NEW-VAR .nv) :- to.string .v "_", temp .nv, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
-fc-parse .a (PRAGMA CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
+fc-parse .a (PRAGMA TYPE-CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
@@ -259,7 +259,7 @@ fc-bind0 .v0 .v1 .then .else .parsed
 	:- fc-bind-cons .v0 .h0 .t0
 	, fc-bind-cons .v1 .h1 .t1
 	, !, .then1 = PRAGMA ( -- Handle type fails like .v0 = (1; true;)
-		VERIFY-TYPE (TREE ' = ' .v0 .v1) BOOLEAN
+		TYPE-VERIFY (TREE ' = ' .v0 .v1) BOOLEAN
 	) .then
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then1 .else .parsed
 #
@@ -286,7 +286,7 @@ fc-bind0 .v0 .v1 .then .else (
 	, fc-bind-pair (VAR .headVar) (VAR .tailVar) .h1 .t1 .then .else1 .then1
 #
 fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
-	DEF-VARS (.elseVar (WRAP .else), .v0var (PRAGMA (CAST UP _) .v0),) (
+	DEF-VARS (.elseVar (WRAP .else), .v0var (PRAGMA (TYPE-CAST UP _) .v0),) (
 		IF (INVOKE (VAR .v0var) (VAR is-pair)) (
 			DEF-VARS (
 				.leftVar (INVOKE (VAR .v0var) (VAR +pleft)),
