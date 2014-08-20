@@ -115,8 +115,7 @@ public class FormatPredicates {
 
 			n = Math.min(n, length);
 
-			return prover.bind(params[3] //
-					, new Str(name.substring(m, n)));
+			return prover.bind(params[3], new Str(name.substring(m, n)));
 		} else
 			throw new RuntimeException("Invalid call pattern");
 	};
