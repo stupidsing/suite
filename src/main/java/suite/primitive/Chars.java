@@ -152,7 +152,7 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public String toString() {
-		return new String(cs);
+		return new String(cs, start, end - start);
 	}
 
 	private Chars subchars0(int start, int end) {
