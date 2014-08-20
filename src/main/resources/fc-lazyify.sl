@@ -9,7 +9,7 @@ fc-lazyify .do0 .dox
 #
 fc-lazyify .const (WRAP .const)
 	:- .const = .tag _
-	, member (ATOM, BOOLEAN, NUMBER,) .tag, !
+	, member (ATOM, BOOLEAN, NUMBER, STRING,) .tag, !
 #
 fc-lazyify (FUN .var .do0) (WRAP (FUN .var .do1))
 	:- !

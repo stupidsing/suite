@@ -160,6 +160,7 @@ public class InstructionAnalyzer {
 			case CALLINTRINSIC_:
 			case CONSPAIR______:
 			case CONSLIST______:
+			case DATASTRING____:
 			case GETINTRINSIC__:
 			case HEAD__________:
 			case LOGREG________:

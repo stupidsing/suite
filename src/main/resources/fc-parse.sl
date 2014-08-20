@@ -103,6 +103,7 @@ fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (NEW-VAR .nv) :- to.string .v "_", temp .nv, ! #
 fc-parse .v (NEW-VAR .nv) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .a (PRAGMA TYPE-CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
+fc-parse string:.s (STRING .s) :- ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
@@ -177,6 +178,11 @@ fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
 fc-parse-sugar (.f/) (flip {.f}) :- ! #
 fc-parse-sugar "" () :- ! #
+fc-parse-sugar .s (string of (
+	skip-type-check (string:.s | (atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn1))
+))
+	:- is.string .s, string.length .s .l, .l > 2, !
+#
 fc-parse-sugar .s (.ascii; .cs)
 	:- is.string .s
 	, !, substring .s 0 1 .c, substring .s 1 0 .cs

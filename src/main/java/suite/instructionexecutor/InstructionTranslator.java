@@ -94,6 +94,7 @@ public class InstructionTranslator implements Closeable {
 				+ "import suite.lp.predicate.*; \n" //
 				+ "import suite.node.*; \n" //
 				+ "import suite.node.util.*; \n" //
+				+ "import suite.primitive.*; \n" //
 				+ "import suite.util.*; \n" //
 				+ "import " + FunComparer.class.getCanonicalName() + "; \n" //
 				+ "import " + FunUtil.class.getCanonicalName() + ".*; \n" //
@@ -244,6 +245,9 @@ public class InstructionTranslator implements Closeable {
 				app("n0 = (Node) ds[--dsp]");
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = Tree.of(TermOp.AND___, n0, n1)", op0);
+				break;
+			case DATASTRING____:
+				app("#{reg} = new Data<Chars>(new Chars(((Str) #{reg}).getValue().toCharArray()))", op0, op1);
 				break;
 			case DECOMPOSETREE0:
 				app("node = #{reg-node}.finalNode()", op0);

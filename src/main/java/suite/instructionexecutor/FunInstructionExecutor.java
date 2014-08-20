@@ -18,9 +18,11 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 
 public class FunInstructionExecutor extends InstructionExecutor {
@@ -98,6 +100,9 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
 			result = Tree.of(TermOp.AND___, n0, n1);
+			break;
+		case DATASTRING____:
+			result = new Data<Chars>(new Chars(((Str) regs[insn.op1]).getValue().toCharArray()));
 			break;
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];

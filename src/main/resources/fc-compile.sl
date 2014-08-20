@@ -52,6 +52,9 @@ fc-compile (PAIR .left .right) .env .cr
 fc-compile (PRAGMA _ .do) .env .cr
 	:- fc-compile .do .env .cr
 #
+fc-compile (STRING .s) _ .c0/.cx/.reg
+	:- .c0 = (ASSIGN-CONSTANT .stringReg c:.s, DATA-STRING .reg .stringReg, .cx)
+#
 fc-compile (TREE .oper .left .right) .env .c0/.cx/.reg
 	:- fc-compile .left .env .c0/.c1/.r0
 	, fc-compile .right .env .c1/.c2/.r1
