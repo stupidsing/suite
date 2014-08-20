@@ -172,7 +172,6 @@ fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var = .bind) then .do else e
 	:- !, temp .var
 #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
-fc-parse-sugar (name .var .do) (define .var := .do >> .var) :- ! #
 fc-parse-sugar (not .b) (not {.b}) :- ! #
 fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
