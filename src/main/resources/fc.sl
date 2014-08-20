@@ -112,10 +112,10 @@ fc-dict-member .v .t :- rbt-member .v .t #
 fc-add-functions STANDARD .p (
 	data (optional {:t}) over :t as None >>
 	data (optional {:t}) over :t as (Value :t) >>
-	define callintrn0 := name => +callintrn0 {name} >>
-	define callintrn1 := name => p0 => +callintrn1 {name} {p0} >>
-	define callintrn2 := name => p0 => p1 => +callintrn2 {name} {p0} {p1} >>
-	define callintrn3 := name => p0 => p1 => p2 => +callintrn3 {name} {p0} {p1} {p2} >>
+	define callintrn0 := i => +callintrn0 {i} >>
+	define callintrn1 := i => p0 => +callintrn1 {i} {p0} >>
+	define callintrn2 := i => p0 => p1 => +callintrn2 {i} {p0} {p1} >>
+	define callintrn3 := i => p0 => p1 => p2 => +callintrn3 {i} {p0} {p1} {p2} >>
 	define compare := a => b => +compare {a} {b} >>
 	define cons := head => tail => +lcons {head} {tail} >>
 	define first := tuple => +pleft {tuple} >>
