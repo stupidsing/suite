@@ -138,13 +138,15 @@ public class Bytes implements Iterable<Byte> {
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Bytes.class) {
 			Bytes other = (Bytes) object;
-			int diff = other.start - start;
 
-			for (int i = start; i < end; i++)
-				if (bs[i] != other.bs[i + diff])
-					return false;
-
-			return true;
+			if (end - start == other.end - other.start) {
+				int diff = other.start - start;
+				for (int i = start; i < end; i++)
+					if (bs[i] != other.bs[i + diff])
+						return false;
+				return true;
+			} else
+				return false;
 		} else
 			return false;
 	}

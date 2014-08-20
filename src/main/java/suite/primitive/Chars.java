@@ -23,9 +23,9 @@ public class Chars implements Iterable<Character> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			char b0 = chars0.cs[start0 + index];
-			char b1 = chars1.cs[start1 + index];
-			c = b0 == b1 ? 0 : b0 > b1 ? 1 : -1;
+			char c0 = chars0.cs[start0 + index];
+			char c1 = chars1.cs[start1 + index];
+			c = c0 == c1 ? 0 : c0 > c1 ? 1 : -1;
 			index++;
 		}
 
@@ -137,13 +137,15 @@ public class Chars implements Iterable<Character> {
 	public boolean equals(Object object) {
 		if (Util.clazz(object) == Chars.class) {
 			Chars other = (Chars) object;
-			int diff = other.start - start;
 
-			for (int i = start; i < end; i++)
-				if (cs[i] != other.cs[i + diff])
-					return false;
-
-			return true;
+			if (end - start == other.end - other.start) {
+				int diff = other.start - start;
+				for (int i = start; i < end; i++)
+					if (cs[i] != other.cs[i + diff])
+						return false;
+				return true;
+			} else
+				return false;
 		} else
 			return false;
 	}
