@@ -1,7 +1,13 @@
 using external STANDARD >>
 define nothing := atom:Nothing >>
+define liftm :=
+	fun => m0 => (return # fun {call {m0}})
+>>
+define liftm2 :=
+	fun => m0 => m1 => (return # fun {call {m0}} {call {m1}})
+>>
 define appendm :=
-	m0 => m1 => (return # append {call {m0}} {call {m1}})
+	liftm2 {append}
 >>
 define concatm :=
 	fold-right {appendm} {return # ()}
