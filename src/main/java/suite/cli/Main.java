@@ -54,9 +54,7 @@ public class Main extends ExecutableProgram {
 				inputs.add(arg);
 
 		if (result)
-			if (Util.stringEquals(verb, "do-filter"))
-				result &= dispatcher.dispatchDoFilter(inputs, reader, writer);
-			else if (Util.stringEquals(verb, "evaluate"))
+			if (Util.stringEquals(verb, "evaluate"))
 				result &= dispatcher.dispatchEvaluate(inputs);
 			else if (Util.stringEquals(verb, "filter"))
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);

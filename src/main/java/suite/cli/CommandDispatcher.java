@@ -164,20 +164,15 @@ public class CommandDispatcher {
 		return code;
 	}
 
-	public boolean dispatchDoFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		Node node = parseNode(inputs);
-		node = Suite.applyReader(node, reader);
-		node = Suite.applyDo(node, Atom.of("string"));
-		evaluateFunctionalToWriter(node, writer);
-		return true;
-	}
-
 	public boolean dispatchEvaluate(List<String> inputs) {
 		return evaluateFunctional(parseNode(inputs)) == Atom.TRUE;
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		Node node = Suite.applyReader(parseNode(inputs), reader);
+		Node node = parseNode(inputs);
+		node = Suite.applyReader(node, reader);
+		if (opt.isDo())
+			node = Suite.applyDo(node, Atom.of("string"));
 		evaluateFunctionalToWriter(node, writer);
 		return true;
 	}

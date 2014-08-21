@@ -25,6 +25,7 @@ public class CommandOptions {
 
 	// Program type options
 	private boolean isQuiet = false;
+	private boolean isDo = false;
 
 	// Program evaluation options
 	private boolean isLazy = true;
@@ -39,7 +40,9 @@ public class CommandOptions {
 		boolean result = true;
 		String arg1;
 
-		if (Util.stringEquals(arg, "--eager"))
+		if (Util.stringEquals(arg, "--do"))
+			isDo = on;
+		else if (Util.stringEquals(arg, "--eager"))
 			isLazy = !on;
 		else if (Util.stringEquals(arg, "--editor"))
 			new Editor().open();
@@ -88,6 +91,10 @@ public class CommandOptions {
 
 	public boolean isQuiet() {
 		return isQuiet;
+	}
+
+	public boolean isDo() {
+		return isDo;
 	}
 
 }
