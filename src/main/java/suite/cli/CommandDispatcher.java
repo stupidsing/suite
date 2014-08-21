@@ -194,13 +194,17 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
-		String in = inputs.stream().collect(Collectors.joining(" "));
+		String in = parseInput(inputs);
 		RuleSet ruleSet = Suite.createRuleSet();
 		return Suite.importResource(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 
 	private Node parseNode(List<String> inputs) {
-		return Suite.parse(inputs.stream().collect(Collectors.joining(" ")));
+		return Suite.parse(parseInput(inputs));
+	}
+
+	private String parseInput(List<String> inputs) {
+		return inputs.stream().collect(Collectors.joining(" "));
 	}
 
 	private void printEvaluatedString(Writer writer, Node node) throws IOException {

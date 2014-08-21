@@ -2,6 +2,7 @@ package suite.cli;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -47,7 +48,10 @@ public class Main extends ExecutableProgram {
 
 		while ((arg = source.source()) != null)
 			if (arg.startsWith("-"))
-				result &= opt.processOption(arg, source);
+				if (Util.stringEquals(arg, "--file"))
+					inputs.add(readScript(source.source()));
+				else
+					result &= opt.processOption(arg, source);
 			else if (verb == null)
 				verb = arg;
 			else
@@ -72,6 +76,13 @@ public class Main extends ExecutableProgram {
 				throw new RuntimeException("Unknown action " + verb);
 
 		return result;
+	}
+
+	private String readScript(String filename) throws IOException {
+		String contents = To.string(new File(filename));
+		if (contents.startsWith("#")) // Skips first line comment
+			contents = contents.substring(contents.indexOf('\n') + 1);
+		return contents;
 	}
 
 	private boolean runInteractive(List<String> importFilenames) throws IOException {
