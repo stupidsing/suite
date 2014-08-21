@@ -15,7 +15,7 @@ getLatestTimestamp() {
 (
 	SOURCETIME=$(getLatestTimestamp "${BASE}/pom.xml" "${BASE}/src/main/java/" "${BASE}/src/main/resources/")
 	TARGETTIME=$(getLatestTimestamp "${JAR}")
-	[ ${SOURCETIME} -le ${TARGETTIME} ] || mvn -Dmaven.test.skip=true install assembly:single
+	[ ${SOURCETIME} -le ${TARGETTIME} ] || (cd ${BASE} && mvn -Dmaven.test.skip=true install assembly:single)
 ) &&
 
 (
