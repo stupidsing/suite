@@ -29,7 +29,7 @@ fc-rewrite (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
 	:- fc-rewrite-pragma .pragma0 .pragma1 .ts0/.ts1
 	, .ts1 = (.do0 .do1, .tsx)
 #
-fc-rewrite (STRING .d) (STRING .d) .ts/.ts
+fc-rewrite (STRING .s) (STRING .s) .ts/.ts
 #
 fc-rewrite (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
