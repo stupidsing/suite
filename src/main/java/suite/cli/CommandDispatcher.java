@@ -177,15 +177,15 @@ public class CommandDispatcher {
 		return true;
 	}
 
-	public boolean dispatchPrecompile(List<String> files) {
+	public boolean dispatchPrecompile(List<String> filenames) {
 		boolean result = true;
-		for (String file : files)
-			result &= Suite.precompile(file, opt.pc(null));
+		for (String filename : filenames)
+			result &= Suite.precompile(filename, opt.pc(null));
 		return result;
 	}
 
-	public boolean dispatchPrecompileAll(List<String> files) {
-		if (files.size() == 0)
+	public boolean dispatchPrecompileAll(List<String> filenames) {
+		if (filenames.size() == 0)
 			try (PrecompileMain precompileMain = new PrecompileMain()) {
 				return precompileMain.precompile();
 			}
