@@ -3,6 +3,7 @@ package suite.wildcard;
 import java.util.List;
 
 import suite.util.Pair;
+import suite.util.Util;
 
 public class WildcardUtil {
 
@@ -29,9 +30,9 @@ public class WildcardUtil {
 					|| h0 == h1 && isMatch2(t0, t1);
 		} else {
 			boolean isWildcardPatterns = true;
-			for (char c0 : p0.toCharArray())
+			for (char c0 : Util.chars(p0))
 				isWildcardPatterns &= c0 == '*';
-			for (char c1 : p1.toCharArray())
+			for (char c1 : Util.chars(p1))
 				isWildcardPatterns &= c1 == '*';
 			return isWildcardPatterns;
 		}

@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,12 +21,24 @@ import java.util.List;
 
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.Chars;
 import suite.util.FunUtil.Source;
 
 public class To {
 
 	private static int bufferSize = 4096;
 	private static String hexDigits = "0123456789ABCDEF";
+
+	private static final Field field;
+
+	static {
+		try {
+			field = String.class.getDeclaredField("value");
+			field.setAccessible(true);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
 	public static Bytes bytes(String s) {
 		return new Bytes(s.getBytes(FileUtil.charset));
@@ -40,6 +53,22 @@ public class To {
 			bb.append(buffer, 0, nBytesRead);
 
 		return bb.toBytes();
+	}
+
+	/**
+	 * Get characters in a string without copying overhead. Do not modify the
+	 * returned array!
+	 */
+	public static char[] charArray(String s) {
+		try {
+			return (char[]) field.get(s); // s.toCharArray()
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public static Chars chars(String s) {
+		return new Chars(charArray(s));
 	}
 
 	public static String hex(int i) {

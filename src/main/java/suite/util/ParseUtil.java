@@ -32,7 +32,7 @@ public class ParseUtil {
 				s = s.substring(1);
 
 			result = !s.isEmpty();
-			for (char c : s.toCharArray())
+			for (char c : Util.chars(s))
 				result &= Character.isDigit(c);
 		} else
 			result = false;
@@ -56,7 +56,7 @@ public class ParseUtil {
 		int quote = 0, depth = 0;
 
 		// Shows warning if the atom has mismatched quotes or brackets
-		for (char c : s.toCharArray()) {
+		for (char c : Util.chars(s)) {
 			quote = getQuoteChange(quote, c);
 			if (quote == 0)
 				depth = checkDepth(depth, c);

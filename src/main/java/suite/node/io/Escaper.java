@@ -1,6 +1,7 @@
 package suite.node.io;
 
 import suite.util.LogUtil;
+import suite.util.Util;
 
 public class Escaper {
 
@@ -8,7 +9,7 @@ public class Escaper {
 		StringBuilder sb = new StringBuilder();
 		sb.append(quote);
 
-		for (char ch : s.toCharArray())
+		for (char ch : Util.chars(s))
 			if (Character.isWhitespace(ch) && ch != ' ') {
 				if (ch >= 256)
 					sb.append(encodeHex(ch >> 8));

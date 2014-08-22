@@ -167,7 +167,7 @@ public class Util {
 	public static boolean isBlank(String s) {
 		boolean isBlank = true;
 		if (s != null)
-			for (char c : s.toCharArray())
+			for (char c : chars(s))
 				isBlank &= Character.isWhitespace(c);
 		return isBlank;
 	}

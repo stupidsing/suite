@@ -4,6 +4,7 @@ import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
+import suite.util.Util;
 
 /**
  * Remove comments.
@@ -52,7 +53,7 @@ public class CommentPreprocessor implements Fun<String, String> {
 
 	private boolean isWhitespaces(String in) {
 		boolean result = true;
-		for (char ch : in.toCharArray())
+		for (char ch : Util.chars(in))
 			result &= whitespaces.contains(ch);
 		return result;
 	}

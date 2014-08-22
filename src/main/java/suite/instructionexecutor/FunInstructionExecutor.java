@@ -24,6 +24,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
@@ -102,7 +103,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = Tree.of(TermOp.AND___, n0, n1);
 			break;
 		case DATASTRING____:
-			result = new Data<Chars>(new Chars(((Str) regs[insn.op1]).getValue().toCharArray()));
+			result = new Data<Chars>(To.chars(((Str) regs[insn.op1]).getValue()));
 			break;
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];

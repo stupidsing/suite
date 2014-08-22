@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.Copy;
+import suite.util.To;
 import suite.util.Util;
 
 public class Chars implements Iterable<Character> {
@@ -31,6 +32,10 @@ public class Chars implements Iterable<Character> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public Chars(String s) {
+		this(To.charArray(s));
+	}
 
 	public Chars(Chars chars) {
 		this(chars.cs, chars.start, chars.end);

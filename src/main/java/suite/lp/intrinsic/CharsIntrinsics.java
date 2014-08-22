@@ -12,6 +12,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Chars;
+import suite.util.To;
 
 public class CharsIntrinsics {
 
@@ -36,7 +37,7 @@ public class CharsIntrinsics {
 
 	public static Intrinsic stringChars = (bridge, inputs) -> {
 		String value = ExpandUtil.expandString(bridge::unwrap, inputs.get(0));
-		return new Data<>(new Chars(value.toCharArray()));
+		return new Data<>(To.chars(value));
 	};
 
 	public static Intrinsic subchars = (bridge, inputs) -> {

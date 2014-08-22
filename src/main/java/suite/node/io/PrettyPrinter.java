@@ -11,6 +11,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator.Assoc;
 import suite.util.FormatUtil;
+import suite.util.Util;
 
 public class PrettyPrinter {
 
@@ -255,7 +256,7 @@ public class PrettyPrinter {
 	private boolean isLineBegin() {
 		boolean result = true;
 		String l = sb.substring(getLineBeginPosition(), getCurrentPosition());
-		for (char c : l.toCharArray())
+		for (char c : Util.chars(l))
 			result &= Character.isWhitespace(c);
 		return result;
 	}

@@ -192,7 +192,7 @@ public class Formatter {
 		if (!s.isEmpty()) {
 			boolean quote = false;
 
-			for (char c : s.toCharArray())
+			for (char c : Util.chars(s))
 				quote |= !('0' <= c && c <= '9') //
 						&& !('a' <= c && c <= 'z') //
 						&& !('A' <= c && c <= 'Z') //
