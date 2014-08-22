@@ -85,11 +85,11 @@ public class Main extends ExecutableProgram {
 		return contents;
 	}
 
-	private boolean runInteractive(List<String> importFilenames) throws IOException {
+	private boolean runInteractive(List<String> filenames) throws IOException {
 		BufferedReader br = new BufferedReader(reader);
 		boolean code = true;
 
-		code &= dispatcher.importFiles(importFilenames);
+		code &= dispatcher.importFiles(filenames);
 		opt.prompt().println("READY");
 
 		while (true)
