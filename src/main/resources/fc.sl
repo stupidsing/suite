@@ -123,7 +123,7 @@ fc-add-functions STANDARD .p (
 	define getintrn := name => +getintrn {name} >>
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
-	define +popen := ([string] -> string -> data-of Stream) of
+	define +popen := ([string] -> string -> (number, string, string)) of
 		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn2
 	>>
 	define log := (:t => :t -> :t) of
@@ -131,9 +131,6 @@ fc-add-functions STANDARD .p (
 	>>
 	define log2 := (:t => string -> :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn2
-	>>
-	define source := (data-of Stream -> string) of
-		atom:INTRN!BasicIntrinsics.source | getintrn | callintrn1
 	>>
 	define throw := (any -> any) of
 		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn1
@@ -270,7 +267,7 @@ fc-add-functions STANDARD .p (
 		} {(), ()}
 	>>
 	define popen := command => in =>
-		return # in | +popen {command} | source
+		return # in | +popen {command} | second | first
 	>>
 	define replicate := flip {e =>
 		unfold-left {i => if (i != 0) then (Value (i - 1, e)) else None}
