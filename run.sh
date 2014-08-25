@@ -8,7 +8,7 @@ CMD="java ${OPTS} -jar ${JAR}"
 FULLCMD="${CMD} $@"
 
 getLatestTimestamp() {
-	TS=$(find "$@" -type f 2> /dev/null | xargs -I {} sh -c 'stat -c %Y "{}" 2> /dev/null' | sort -g | tail -1)
+	TS=$(find "$@" -type f 2> /dev/null | xargs stat -c %Y 2> /dev/null | sort -g | tail -1)
 	[ ${TS} ] && echo ${TS} || echo 0
 }
 
