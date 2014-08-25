@@ -19,23 +19,23 @@ public class FindPredicates {
 
 	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
-	public static SystemPredicate findAll = (prover, ps) -> {
+	public SystemPredicate findAll = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
 		Node var = params[0], goal = params[1], results = params[2];
 		return prover.bind(results, findAll(prover, var, goal));
 	};
 
 	// memoize is not re-entrant due to using computeIfAbsent()
-	public static SystemPredicate findAllMemoized = (prover, ps) -> {
+	public SystemPredicate findAllMemoized = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
 		Node var = params[0], goal = params[1], results = params[2];
 		TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 	};
 
-	public static SystemPredicate findAllMemoizedClear = PredicateUtil.predicate(n -> memoizedPredicates.clear());
+	public SystemPredicate findAllMemoizedClear = PredicateUtil.predicate(n -> memoizedPredicates.clear());
 
-	private static Node findAll(Prover prover, Node var, Node goal) {
+	private Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();
 
 		Tree subGoal = Tree.of(TermOp.AND___, goal, new Data<Source<Boolean>>(() -> {

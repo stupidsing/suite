@@ -21,20 +21,20 @@ import suite.node.io.TermOp;
 
 public class RuleSetPredicates {
 
-	public static SystemPredicate asserta = (prover, ps) -> {
+	public SystemPredicate asserta = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 1);
 		RuleSet ruleSet = prover.ruleSet();
 		ruleSet.addRuleToFront(Rule.formRule(params[0]));
 		return true;
 	};
 
-	public static SystemPredicate assertz = (prover, ps) -> {
+	public SystemPredicate assertz = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 1);
 		Suite.addRule(prover.ruleSet(), params[0]);
 		return true;
 	};
 
-	public static SystemPredicate getAllRules = (prover, ps) -> {
+	public SystemPredicate getAllRules = (prover, ps) -> {
 		RuleSet ruleSet = prover.ruleSet();
 		List<Rule> rules = ruleSet.getRules();
 		List<Node> nodes = new ArrayList<>();
@@ -45,11 +45,11 @@ public class RuleSetPredicates {
 		return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
 	};
 
-	public static SystemPredicate importPredicate = (prover, ps) -> {
+	public SystemPredicate importPredicate = (prover, ps) -> {
 		return Suite.importFrom(prover.ruleSet(), ps);
 	};
 
-	public static SystemPredicate importPath = (prover, ps) -> {
+	public SystemPredicate importPath = (prover, ps) -> {
 		String filename = Formatter.display(ps);
 		try {
 			return Suite.importPath(prover.ruleSet(), filename);
@@ -58,7 +58,7 @@ public class RuleSetPredicates {
 		}
 	};
 
-	public static SystemPredicate list = (prover, ps) -> {
+	public SystemPredicate list = (prover, ps) -> {
 		Prototype proto = null;
 		if (ps != Atom.NIL)
 			proto = Prototype.get(ps);
@@ -69,13 +69,13 @@ public class RuleSetPredicates {
 		return true;
 	};
 
-	public static SystemPredicate retract = (prover, ps) -> {
+	public SystemPredicate retract = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 1);
 		prover.ruleSet().removeRule(Rule.formRule(params[0]));
 		return true;
 	};
 
-	public static SystemPredicate retractAll = (prover, ps) -> {
+	public SystemPredicate retractAll = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 1);
 		Rule rule0 = Rule.formRule(params[0]);
 
@@ -98,7 +98,7 @@ public class RuleSetPredicates {
 		return true;
 	};
 
-	public static SystemPredicate with = (prover, ps) -> {
+	public SystemPredicate with = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		RuleSet ruleSet = prover.ruleSet();
 		RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);

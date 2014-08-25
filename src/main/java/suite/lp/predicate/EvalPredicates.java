@@ -35,27 +35,28 @@ import suite.util.Memoize;
 
 public class EvalPredicates {
 
-	private static Atom AND = Atom.of("and");
-	private static Atom OR_ = Atom.of("or");
-	private static Atom SHL = Atom.of("shl");
-	private static Atom SHR = Atom.of("shr");
-	private static Comparer comparer = Comparer.comparer;
-	private static Fun<String, ScriptEngine> engines = Memoize.byInput(new ScriptEngineManager()::getEngineByExtension);
+	private Atom AND = Atom.of("and");
+	private Atom OR_ = Atom.of("or");
+	private Atom SHL = Atom.of("shl");
+	private Atom SHR = Atom.of("shr");
+	private Comparer comparer = Comparer.comparer;
+	private Fun<String, ScriptEngine> engines = Memoize.byInput(new ScriptEngineManager()::getEngineByExtension);
+
 	private static Random random = new Random();
 	private static AtomicInteger counter = new AtomicInteger();
 
-	public static SystemPredicate bound = PredicateUtil.boolPredicate(n -> !(n instanceof Reference));
+	public SystemPredicate bound = PredicateUtil.boolPredicate(n -> !(n instanceof Reference));
 
-	public static SystemPredicate clone = PredicateUtil.funPredicate(n -> new Cloner().clone(n));
+	public SystemPredicate clone = PredicateUtil.funPredicate(n -> new Cloner().clone(n));
 
-	public static SystemPredicate complexity = PredicateUtil.funPredicate(n -> Int.of(new Complexity().complexity(n)));
+	public SystemPredicate complexity = PredicateUtil.funPredicate(n -> Int.of(new Complexity().complexity(n)));
 
-	public static SystemPredicate contains = (prover, ps) -> {
+	public SystemPredicate contains = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		return new Rewriter(params[0]).contains(params[1]);
 	};
 
-	public static SystemPredicate compare = (prover, ps) -> {
+	public SystemPredicate compare = (prover, ps) -> {
 		Tree tree = (Tree) ps.finalNode();
 		switch ((TermOp) tree.getOperator()) {
 		case LE____:
@@ -71,9 +72,9 @@ public class EvalPredicates {
 		}
 	};
 
-	public static SystemPredicate evalFun = PredicateUtil.funPredicate(n -> Suite.evaluateFun(Suite.fcc(n, true)));
+	public SystemPredicate evalFun = PredicateUtil.funPredicate(n -> Suite.evaluateFun(Suite.fcc(n, true)));
 
-	public static SystemPredicate evalJs = new SystemPredicate() {
+	public SystemPredicate evalJs = new SystemPredicate() {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			String js = Formatter.display(params[0]);
@@ -91,15 +92,15 @@ public class EvalPredicates {
 		}
 	};
 
-	public static SystemPredicate generalize = PredicateUtil.funPredicate(n -> new Generalizer().generalize(n));
+	public SystemPredicate generalize = PredicateUtil.funPredicate(n -> new Generalizer().generalize(n));
 
-	public static SystemPredicate hash = PredicateUtil.funPredicate(n -> Int.of(n.hashCode()));
+	public SystemPredicate hash = PredicateUtil.funPredicate(n -> Int.of(n.hashCode()));
 
-	public static SystemPredicate hashId = PredicateUtil.funPredicate(n -> Int.of(new IdentityKey(n).hashCode()));
+	public SystemPredicate hashId = PredicateUtil.funPredicate(n -> Int.of(new IdentityKey(n).hashCode()));
 
-	public static SystemPredicate isCyclic = PredicateUtil.boolPredicate(n -> new Cyclic().isCyclic(n));
+	public SystemPredicate isCyclic = PredicateUtil.boolPredicate(n -> new Cyclic().isCyclic(n));
 
-	public static SystemPredicate let = new SystemPredicate() {
+	public SystemPredicate let = new SystemPredicate() {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			int result = evaluate(params[1]);
@@ -162,7 +163,7 @@ public class EvalPredicates {
 		}
 	};
 
-	public static SystemPredicate notEquals = (prover, ps) -> {
+	public SystemPredicate notEquals = (prover, ps) -> {
 		Tree tree = (Tree) ps;
 		Prover prover1 = new Prover(prover);
 		boolean result = prover1.bind(tree.getLeft(), tree.getRight());
@@ -174,31 +175,31 @@ public class EvalPredicates {
 			return true;
 	};
 
-	public static SystemPredicate randomPredicate = PredicateUtil.funPredicate(n -> Int.of(random.nextInt(((Int) n).getNumber())));
+	public SystemPredicate randomPredicate = PredicateUtil.funPredicate(n -> Int.of(random.nextInt(((Int) n).getNumber())));
 
-	public static SystemPredicate replace = (prover, ps) -> {
+	public SystemPredicate replace = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		return prover.bind(new Rewriter(params[0], params[1]).replace(params[2]), params[3]);
 	};
 
-	public static SystemPredicate rewrite = (prover, ps) -> {
+	public SystemPredicate rewrite = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
 	};
 
-	public static SystemPredicate same = (prover, ps) -> {
+	public SystemPredicate same = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		return params[0].finalNode() == params[1].finalNode();
 	};
 
-	public static SystemPredicate specialize = PredicateUtil.funPredicate(n -> new Specializer().specialize(n));
+	public SystemPredicate specialize = PredicateUtil.funPredicate(n -> new Specializer().specialize(n));
 
-	public static SystemPredicate temp = (prover, ps) -> {
+	public SystemPredicate temp = (prover, ps) -> {
 		int n = counter.getAndIncrement();
 		return prover.bind(ps, Atom.of("temp$$" + n));
 	};
 
-	public static SystemPredicate tree = (prover, ps) -> {
+	public SystemPredicate tree = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		Node p = params[0].finalNode();
 		Node p1 = params[1];
@@ -218,7 +219,7 @@ public class EvalPredicates {
 			return false;
 	};
 
-	public static SystemPredicate treeIntern = (prover, ps) -> {
+	public SystemPredicate treeIntern = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		Node p = params[0];
 		Node p1 = params[1];
