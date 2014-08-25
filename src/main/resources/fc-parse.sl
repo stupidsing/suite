@@ -157,8 +157,7 @@ fc-parse-sugar (do >> .do) (
 	define fun-to-monad := (:t => (number -> :t) -> do-of :t) of (skip-type-check id) >>
 	define monad-to-fun := (:t => do-of :t -> (number -> :t)) of (skip-type-check id) >>
 	fun-to-monad {dummy =>
-		define frame := id {dummy} >>
-		define call := ({0} . monad-to-fun) >>
+		define call := ({dummy} . monad-to-fun) >>
 		.do
 	}
 ) :- ! #
