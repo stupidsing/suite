@@ -1,16 +1,16 @@
 using external STANDARD >>
 define nothing := atom:Nothing >>
 define liftm :=
-	fun => m0 => (return >> fun {call {m0}})
+	fun => m0 => (do >> fun {call {m0}})
 >>
 define liftm2 :=
-	fun => m0 => m1 => (return >> fun {call {m0}} {call {m1}})
+	fun => m0 => m1 => (do >> fun {call {m0}} {call {m1}})
 >>
 define appendm :=
 	liftm2 {append}
 >>
 define concatm :=
-	fold-right {appendm} {return >> ()}
+	fold-right {appendm} {do >> ()}
 >>
 define seqm :=
 	liftm2 {(:t => any -> :t -> :t) of
@@ -18,10 +18,10 @@ define seqm :=
 	}
 >>
 define seqsm :=
-	fold-right {seqm} {return >> nothing}
+	fold-right {seqm} {do >> nothing}
 >>
 define whilem :=
-	cond => loop => (return >>
+	cond => loop => (do >>
 		if (call {cond})
 		then (call {loop # whilem {cond} {loop}})
 		else nothing

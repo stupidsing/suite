@@ -270,7 +270,7 @@ fc-add-functions STANDARD .p (
 		} {(), ()}
 	>>
 	define popen := command => in =>
-		return >> in | +popen {command} | second | first
+		do >> in | +popen {command} | second | first
 	>>
 	define replicate := flip {e =>
 		unfold-left {i => if (i != 0) then (Value (i - 1, e)) else None}
