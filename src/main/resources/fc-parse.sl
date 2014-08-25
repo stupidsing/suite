@@ -153,7 +153,7 @@ fc-parse-sugar ({.t}) (.var => .var {.t}) :- !, temp .var #
 fc-parse-sugar (.l; .r) (+lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
-fc-parse-sugar (return # .do) (
+fc-parse-sugar (return >> .do) (
 	define fun-to-monad := (:t => (number -> :t) -> do-of :t) of (skip-type-check id) >>
 	define monad-to-fun := (:t => do-of :t -> (number -> :t)) of (skip-type-check id) >>
 	fun-to-monad {dummy =>
@@ -162,7 +162,7 @@ fc-parse-sugar (return # .do) (
 		.do
 	}
 ) :- ! #
-fc-parse-sugar (.monad # .monads) (seqm {.monad} {.monads}) :- .monad != return, ! #
+fc-parse-sugar (.monad # .monads) (seqm {.monad} {.monads}) :- ! #
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
