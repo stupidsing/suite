@@ -36,16 +36,16 @@ public class CompileUtil {
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {
-		System.out.println("Pre-compiling " + libraryName + "...");
+		System.out.println("Pre-compiling [" + libraryName + "]...");
 
 		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc-precompile.sl"));
 		Builder builder = new InterpretedProverBuilder(pc);
 		boolean result = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
 		if (result)
-			System.out.println("Pre-compilation success\n");
+			System.out.println("Pre-compilation success [" + libraryName + "]");
 		else
-			System.out.println("Pre-compilation failed\n");
+			System.out.println("Pre-compilation failed [" + libraryName + "]");
 
 		return result;
 	}
