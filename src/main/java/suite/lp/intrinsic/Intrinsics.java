@@ -1,7 +1,6 @@
 package suite.lp.intrinsic;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,19 +23,36 @@ public class Intrinsics {
 
 	public static Map<String, Intrinsic> intrinsics = new HashMap<>();
 
+	public static Intrinsic id_ = (bridge, inputs) -> {
+		return inputs.get(0).finalNode(); // Forces suspended node evaluation
+	};
+
+	public static Node wrap(IntrinsicBridge bridge, Node node) {
+		return bridge.wrap(id_, node);
+	}
+
 	static {
 		for (Class<?> clazz : Arrays.asList( //
 				ArrayIntrinsics.class //
 				, BasicIntrinsics.class //
 				, CharsIntrinsics.class //
-				, MonadIntrinsics.class))
+				, MonadIntrinsics.class)) {
+			Object instance;
+
+			try {
+				instance = clazz.newInstance();
+			} catch (ReflectiveOperationException ex) {
+				throw new RuntimeException(ex);
+			}
+
 			for (Field field : clazz.getFields())
-				if (Modifier.isStatic(field.getModifiers()) && Intrinsic.class.isAssignableFrom(field.getType()))
+				if (Intrinsic.class.isAssignableFrom(field.getType()))
 					try {
-						intrinsics.put(clazz.getSimpleName() + "." + field.getName(), (Intrinsic) field.get(null));
+						intrinsics.put(clazz.getSimpleName() + "." + field.getName(), (Intrinsic) field.get(instance));
 					} catch (Exception ex) {
 						LogUtil.error(ex);
 					}
+		}
 	}
 
 }

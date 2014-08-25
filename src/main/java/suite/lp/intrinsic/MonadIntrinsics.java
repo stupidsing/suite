@@ -30,7 +30,7 @@ import suite.util.LogUtil;
 
 public class MonadIntrinsics {
 
-	public static Intrinsic popen = (bridge, inputs) -> {
+	public Intrinsic popen = (bridge, inputs) -> {
 		Fun<Node, Node> unwrapper = bridge::unwrap;
 		List<String> list = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class MonadIntrinsics {
 		try {
 			Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
 
-			Node n0 = bridge.wrap(BasicIntrinsics.id, new Suspend(() -> {
+			Node n0 = Intrinsics.wrap(bridge, new Suspend(() -> {
 				try {
 					return Int.of(process.waitFor());
 				} catch (Exception ex) {
@@ -75,18 +75,18 @@ public class MonadIntrinsics {
 			}).start();
 
 			return Tree.of(TermOp.AND___, n0 //
-					, bridge.wrap(BasicIntrinsics.id, Tree.of(TermOp.AND___, n1, n2)));
+					, Intrinsics.wrap(bridge, Tree.of(TermOp.AND___, n1, n2)));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	};
 
-	public static Intrinsic seq = (bridge, inputs) -> {
+	public Intrinsic seq = (bridge, inputs) -> {
 		ExpandUtil.expandFully(bridge::unwrap, inputs.get(0));
 		return inputs.get(1);
 	};
 
-	public static Intrinsic source = new Intrinsic() {
+	public Intrinsic source = new Intrinsic() {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			IndexedReader indexedReader = Data.get(inputs.get(0));
 			Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(indexedReader));
@@ -94,7 +94,7 @@ public class MonadIntrinsics {
 		}
 	};
 
-	private static Node createReader(IntrinsicBridge bridge, InputStream is) {
+	private Node createReader(IntrinsicBridge bridge, InputStream is) {
 		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
 		BufferedReader br = new BufferedReader(isr);
 		IndexedReader ir = new IndexedReader(br);
@@ -102,7 +102,7 @@ public class MonadIntrinsics {
 		return bridge.wrap(source, data);
 	}
 
-	private static class Source0 implements Intrinsic {
+	private class Source0 implements Intrinsic {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			IndexedReaderPointer intern = Data.get(inputs.get(0));
 			int ch = intern.head();
@@ -110,7 +110,7 @@ public class MonadIntrinsics {
 			// Suspend the right node to avoid stack overflow when input
 			// data is very long under eager mode
 			if (ch != -1) {
-				Node left = bridge.wrap(BasicIntrinsics.id, Int.of(ch));
+				Node left = Intrinsics.wrap(bridge, Int.of(ch));
 				Node right = new Suspend(() -> bridge.wrap(this, new Data<>(intern.tail())));
 				return Tree.of(TermOp.OR____, left, right);
 			} else

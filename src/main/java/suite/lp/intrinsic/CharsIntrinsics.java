@@ -27,7 +27,7 @@ public class CharsIntrinsics {
 			Chars chars = Data.get(inputs.get(0));
 
 			if (!chars.isEmpty()) {
-				Node left = bridge.wrap(BasicIntrinsics.id, Int.of(chars.get(0)));
+				Node left = Intrinsics.wrap(bridge, Int.of(chars.get(0)));
 				Node right = bridge.wrap(this, new Data<>(chars.subchars(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else

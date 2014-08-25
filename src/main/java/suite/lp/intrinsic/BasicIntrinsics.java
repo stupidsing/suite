@@ -18,14 +18,14 @@ import suite.util.Util;
 
 public class BasicIntrinsics {
 
-	private static Atom ATOM = Atom.of("ATOM");
-	private static Atom NUMBER = Atom.of("NUMBER");
-	private static Atom STRING = Atom.of("STRING");
-	private static Atom TREE = Atom.of("TREE");
-	private static Atom TUPLE = Atom.of("TUPLE");
-	private static Atom UNKNOWN = Atom.of("UNKNOWN");
+	private Atom ATOM = Atom.of("ATOM");
+	private Atom NUMBER = Atom.of("NUMBER");
+	private Atom STRING = Atom.of("STRING");
+	private Atom TREE = Atom.of("TREE");
+	private Atom TUPLE = Atom.of("TUPLE");
+	private Atom UNKNOWN = Atom.of("UNKNOWN");
 
-	public static Intrinsic atomString = new Intrinsic() {
+	public Intrinsic atomString = new Intrinsic() {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			String name = ((Atom) inputs.get(0)).getName();
 
@@ -38,27 +38,25 @@ public class BasicIntrinsics {
 		}
 	};
 
-	public static Intrinsic id = (bridge, inputs) -> {
-		return inputs.get(0).finalNode(); // Forces suspended node evaluation
-	};
+	public Intrinsic id = Intrinsics.id_;
 
-	public static Intrinsic log1 = (bridge, inputs) -> {
+	public Intrinsic log1 = (bridge, inputs) -> {
 		Node node = inputs.get(0);
 		LogUtil.info(Formatter.display(ExpandUtil.expandFully(bridge::unwrap, node)));
 		return node;
 	};
 
-	public static Intrinsic log2 = (bridge, inputs) -> {
+	public Intrinsic log2 = (bridge, inputs) -> {
 		LogUtil.info(ExpandUtil.expandString(bridge::unwrap, inputs.get(0)));
 		return inputs.get(1);
 	};
 
-	public static Intrinsic throw_ = (bridge, inputs) -> {
+	public Intrinsic throw_ = (bridge, inputs) -> {
 		String message = ExpandUtil.expandString(bridge::unwrap, inputs.get(0));
 		throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 	};
 
-	public static Intrinsic typeOf = (bridge, inputs) -> {
+	public Intrinsic typeOf = (bridge, inputs) -> {
 		Node node = inputs.get(0);
 		Atom type;
 
