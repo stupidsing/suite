@@ -86,19 +86,20 @@ public class MonadIntrinsics {
 		return inputs.get(1);
 	};
 
+	public static Intrinsic source = new Intrinsic() {
+		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
+			IndexedReader indexedReader = Data.get(inputs.get(0));
+			Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(indexedReader));
+			return new Source0().invoke(bridge, Arrays.asList(data));
+		}
+	};
+
 	private static Node createReader(IntrinsicBridge bridge, InputStream is) {
 		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
 		BufferedReader br = new BufferedReader(isr);
 		IndexedReader ir = new IndexedReader(br);
 		Data<IndexedReader> data = new Data<>(ir);
-
-		return bridge.wrap(new Intrinsic() {
-			public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-				IndexedReader indexedReader = Data.get(inputs.get(0));
-				Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(indexedReader));
-				return new Source0().invoke(bridge, Arrays.asList(data));
-			}
-		}, data);
+		return bridge.wrap(source, data);
 	}
 
 	private static class Source0 implements Intrinsic {
