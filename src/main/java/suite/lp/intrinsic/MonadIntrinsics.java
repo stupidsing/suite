@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
-import suite.instructionexecutor.IndexedReaderPointer;
+import suite.instructionexecutor.IndexedReader;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
 import suite.node.Atom;
@@ -84,7 +84,7 @@ public class MonadIntrinsics {
 
 	public Intrinsic source = new Intrinsic() {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			IndexedReaderPointer intern = Data.get(inputs.get(0));
+			IndexedReader.Pointer intern = Data.get(inputs.get(0));
 			int ch = intern.head();
 
 			// Suspend the right node to avoid stack overflow when input
@@ -101,7 +101,7 @@ public class MonadIntrinsics {
 	private Node createReader(IntrinsicBridge bridge, InputStream is) {
 		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
 		BufferedReader br = new BufferedReader(isr);
-		IndexedReaderPointer irp = new IndexedReaderPointer(br);
+		IndexedReader.Pointer irp = new IndexedReader(br).pointer();
 		return bridge.wrap(source, new Data<>(irp));
 	}
 

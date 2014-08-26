@@ -14,8 +14,28 @@ public class IndexedReader {
 	private char buffer[] = new char[bufferLimit / 2];
 	private StringBuilder sb = new StringBuilder();
 
+	public class Pointer {
+		private int position;
+
+		private Pointer(int position) {
+			this.position = position;
+		}
+
+		public int head() {
+			return read(position);
+		}
+
+		public Pointer tail() {
+			return new Pointer(position + 1);
+		}
+	}
+
 	public IndexedReader(Reader in) {
 		this.in = in;
+	}
+
+	public Pointer pointer() {
+		return new Pointer(0);
 	}
 
 	public synchronized int read(int p) {

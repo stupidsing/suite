@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
-import suite.instructionexecutor.IndexedReaderPointer;
+import suite.instructionexecutor.IndexedReader;
 import suite.lp.ImportUtil;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Configuration.TraceLevel;
@@ -63,7 +63,7 @@ public class Suite {
 	}
 
 	public static Node applyReader(Node func, Reader reader) {
-		Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(reader));
+		Data<IndexedReader.Pointer> data = new Data<>(new IndexedReader(reader).pointer());
 		return substitute("source {skip-type-check atom:.0} | .1", data, func);
 	}
 
