@@ -270,7 +270,7 @@ fc-add-functions STANDARD .p (
 		} {(), ()}
 	>>
 	define popen := command => in =>
-		do >> in | +popen {command} | second | first
+		do >> in | +popen {command}
 	>>
 	define replicate := flip {e =>
 		unfold-left {i => if (i != 0) then (Value (i - 1, e)) else None}
@@ -335,8 +335,8 @@ fc-add-functions STANDARD .p (
 	define range := start => end => inc =>
 		unfold-right {i => if (i < end) then (Value (i, i + inc)) else None} {start}
 	>>
-	define sh := command =>
-		"sh"; "-c"; command; | popen
+	define sh := command => in =>
+		do >> in | popen {"sh"; "-c"; command;} | call | second | first
 	>>
 	define starts-with :=
 		case
