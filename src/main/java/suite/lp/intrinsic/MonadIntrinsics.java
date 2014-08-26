@@ -62,9 +62,7 @@ public class MonadIntrinsics {
 			// Have to make sure the executors are thread-safe!
 			new Thread(() -> {
 				try {
-					try (InputStream pes = process.getErrorStream();
-							OutputStream pos = process.getOutputStream();
-							Writer writer = new OutputStreamWriter(pos)) {
+					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
 						ExpandUtil.expandToWriter(unwrapper, in, writer);
 					}
 
