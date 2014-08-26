@@ -8,11 +8,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.instructionexecutor.ExpandUtil;
-import suite.instructionexecutor.IndexedReader;
 import suite.instructionexecutor.IndexedReaderPointer;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
@@ -86,22 +84,6 @@ public class MonadIntrinsics {
 
 	public Intrinsic source = new Intrinsic() {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
-			IndexedReader indexedReader = Data.get(inputs.get(0));
-			Data<IndexedReaderPointer> data = new Data<>(new IndexedReaderPointer(indexedReader));
-			return new Source0().invoke(bridge, Arrays.asList(data));
-		}
-	};
-
-	private Node createReader(IntrinsicBridge bridge, InputStream is) {
-		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
-		BufferedReader br = new BufferedReader(isr);
-		IndexedReader ir = new IndexedReader(br);
-		Data<IndexedReader> data = new Data<>(ir);
-		return bridge.wrap(source, data);
-	}
-
-	private class Source0 implements Intrinsic {
-		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			IndexedReaderPointer intern = Data.get(inputs.get(0));
 			int ch = intern.head();
 
@@ -114,6 +96,13 @@ public class MonadIntrinsics {
 			} else
 				return Atom.NIL;
 		}
+	};
+
+	private Node createReader(IntrinsicBridge bridge, InputStream is) {
+		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
+		BufferedReader br = new BufferedReader(isr);
+		IndexedReaderPointer irp = new IndexedReaderPointer(br);
+		return bridge.wrap(source, new Data<>(irp));
 	}
 
 }

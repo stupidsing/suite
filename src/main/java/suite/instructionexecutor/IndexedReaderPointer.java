@@ -1,12 +1,14 @@
 package suite.instructionexecutor;
 
+import java.io.Reader;
+
 public class IndexedReaderPointer {
 
 	private int position;
 	private IndexedReader reader;
 
-	public IndexedReaderPointer(IndexedReader reader) {
-		this(0, reader);
+	public IndexedReaderPointer(Reader reader) {
+		this(0, new IndexedReader(reader));
 	}
 
 	private IndexedReaderPointer(int position, IndexedReader reader) {
