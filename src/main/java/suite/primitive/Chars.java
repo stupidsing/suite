@@ -190,27 +190,27 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public static class CharsBuilder {
-		private char chars[] = emptyCharArray;
+		private char cs[] = emptyCharArray;
 		private int size;
 
-		public CharsBuilder append(Chars b) {
-			return append(b.cs, b.start, b.end);
+		public CharsBuilder append(Chars chars) {
+			return append(chars.cs, chars.start, chars.end);
 		}
 
-		public CharsBuilder append(char b) {
+		public CharsBuilder append(char c) {
 			extendBuffer(size + 1);
-			chars[size++] = b;
+			cs[size++] = c;
 			return this;
 		}
 
-		public CharsBuilder append(char b[]) {
-			return append(b, 0, b.length);
+		public CharsBuilder append(char cs_[]) {
+			return append(cs, 0, cs.length);
 		}
 
-		public CharsBuilder append(char b[], int start, int end) {
+		public CharsBuilder append(char cs_[], int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.primitiveArray(b, start, chars, size, inc);
+			Copy.primitiveArray(cs_, start, cs, size, inc);
 			size += inc;
 			return this;
 		}
@@ -229,11 +229,11 @@ public class Chars implements Iterable<Character> {
 		}
 
 		public Chars toChars() {
-			return new Chars(chars, 0, size);
+			return new Chars(cs, 0, size);
 		}
 
 		private void extendBuffer(int capacity1) {
-			int capacity0 = chars.length;
+			int capacity0 = cs.length;
 
 			if (capacity0 < capacity1) {
 				int capacity = Math.max(capacity0, 4);
@@ -241,8 +241,8 @@ public class Chars implements Iterable<Character> {
 					capacity = capacity < 4096 ? capacity << 1 : capacity * 3 / 2;
 
 				char chars1[] = new char[capacity];
-				Copy.primitiveArray(chars, 0, chars1, 0, size);
-				chars = chars1;
+				Copy.primitiveArray(cs, 0, chars1, 0, size);
+				cs = chars1;
 			}
 		}
 	}

@@ -51,4 +51,19 @@ public class WildcardUtil {
 		return new Matcher().matchStart(pattern, input);
 	}
 
+	public static String apply(String pattern, String input[]) {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+		for (char ch : Util.chars(pattern))
+			switch (ch) {
+			case '*':
+			case '?':
+				sb.append(input[i++]);
+				break;
+			default:
+				sb.append(ch);
+			}
+		return sb.toString();
+	}
+
 }

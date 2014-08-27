@@ -189,27 +189,27 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public static class BytesBuilder {
-		private byte bytes[] = emptyByteArray;
+		private byte bs[] = emptyByteArray;
 		private int size;
 
-		public BytesBuilder append(Bytes b) {
-			return append(b.bs, b.start, b.end);
+		public BytesBuilder append(Bytes bytes) {
+			return append(bytes.bs, bytes.start, bytes.end);
 		}
 
 		public BytesBuilder append(byte b) {
 			extendBuffer(size + 1);
-			bytes[size++] = b;
+			bs[size++] = b;
 			return this;
 		}
 
-		public BytesBuilder append(byte b[]) {
-			return append(b, 0, b.length);
+		public BytesBuilder append(byte bs_[]) {
+			return append(bs_, 0, bs_.length);
 		}
 
-		public BytesBuilder append(byte b[], int start, int end) {
+		public BytesBuilder append(byte bs_[], int start, int end) {
 			int inc = end - start;
 			extendBuffer(size + inc);
-			Copy.primitiveArray(b, start, bytes, size, inc);
+			Copy.primitiveArray(bs_, start, bs, size, inc);
 			size += inc;
 			return this;
 		}
@@ -228,11 +228,11 @@ public class Bytes implements Iterable<Byte> {
 		}
 
 		public Bytes toBytes() {
-			return new Bytes(bytes, 0, size);
+			return new Bytes(bs, 0, size);
 		}
 
 		private void extendBuffer(int capacity1) {
-			int capacity0 = bytes.length;
+			int capacity0 = bs.length;
 
 			if (capacity0 < capacity1) {
 				int capacity = Math.max(capacity0, 4);
@@ -240,8 +240,8 @@ public class Bytes implements Iterable<Byte> {
 					capacity = capacity < 4096 ? capacity << 1 : capacity * 3 / 2;
 
 				byte bytes1[] = new byte[capacity];
-				Copy.primitiveArray(bytes, 0, bytes1, 0, size);
-				bytes = bytes1;
+				Copy.primitiveArray(bs, 0, bytes1, 0, size);
+				bs = bytes1;
 			}
 		}
 	}
