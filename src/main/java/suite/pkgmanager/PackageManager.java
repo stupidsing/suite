@@ -12,6 +12,8 @@ import java.util.zip.ZipFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import suite.pkgmanager.PackageManifest.Command;
+import suite.pkgmanager.actions.ExecCommandAction;
 import suite.pkgmanager.actions.ExtractFileAction;
 import suite.pkgmanager.actions.InstallAction;
 import suite.util.Pair;
@@ -55,6 +57,9 @@ public class PackageManager {
 			}
 		}
 
+		for (Command command : packageManifest.getCommands())
+			installActions.add(new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand()));
+
 		int i = 0;
 		boolean isSuccess = true;
 
@@ -73,6 +78,8 @@ public class PackageManager {
 				} catch (Exception ex) {
 					log.error("Error during un-installation", ex);
 				}
+
+		// TODO saves memento
 
 		return isSuccess;
 	}
