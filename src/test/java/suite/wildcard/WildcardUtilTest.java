@@ -8,7 +8,6 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import suite.util.Pair;
-import suite.wildcard.WildcardUtil;
 
 public class WildcardUtilTest {
 
@@ -17,6 +16,7 @@ public class WildcardUtilTest {
 		String match[] = WildcardUtil.match("*def*jkl*", "abcdefghijklmno");
 		System.out.println(Arrays.toString(match));
 		assertTrue(Arrays.equals(match, new String[] { "abc", "ghi", "mno" }));
+		assertEquals("abcpqrghixyzmno", WildcardUtil.apply("*pqr*xyz*", match));
 	}
 
 	@Test
