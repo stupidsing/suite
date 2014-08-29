@@ -61,7 +61,7 @@ public class FileSystemImpl implements FileSystem {
 			BytesBuilder bb = new BytesBuilder();
 			for (int s = 0; s < size; s += pageSize)
 				bb.append(mutator.getPayload(key(hash, DATAID, seq++)));
-			return bb.toBytes();
+			return bb.toBytes().subbytes(0, size);
 		} else
 			return null;
 	}
