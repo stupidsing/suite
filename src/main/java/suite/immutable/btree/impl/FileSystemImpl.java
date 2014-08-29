@@ -52,15 +52,15 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public Bytes read(Bytes name) {
-		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
 		Bytes hash = keyUtil.hash(name);
-		Integer size = transaction.getData(key(hash, SIZEID, 0));
+		Integer size = mutator.getData(key(hash, SIZEID, 0));
 
 		if (size != null) {
 			int seq = 0;
 			BytesBuilder bb = new BytesBuilder();
 			for (int s = 0; s < size; s += pageSize)
-				bb.append(transaction.getPayload(key(hash, DATAID, seq++)));
+				bb.append(mutator.getPayload(key(hash, DATAID, seq++)));
 			return bb.toBytes();
 		} else
 			return null;
@@ -68,14 +68,14 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public List<Bytes> list(Bytes start, Bytes end) {
-		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
-		return To.list(new FileSystemNameKeySet(transaction).list(start, end));
+		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		return To.list(new FileSystemNameKeySet(mutator).list(start, end));
 	}
 
 	@Override
 	public void replace(Bytes name, Bytes bytes) {
-		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
-		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(transaction);
+		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(mutator);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 
@@ -84,13 +84,13 @@ public class FileSystemImpl implements FileSystem {
 		boolean isCreate = bytes != null;
 
 		if (isRemove) {
-			int seq = 0, size = transaction.getData(sizeKey);
+			int seq = 0, size = mutator.getData(sizeKey);
 
 			if (!isCreate)
 				fsNameKeySet.remove(name);
-			transaction.remove(sizeKey);
+			mutator.remove(sizeKey);
 			for (int s = 0; s < size; s += pageSize)
-				transaction.remove(key(hash, DATAID, seq++));
+				mutator.remove(key(hash, DATAID, seq++));
 		}
 
 		if (isCreate) {
@@ -98,40 +98,40 @@ public class FileSystemImpl implements FileSystem {
 
 			while (pos < size) {
 				int pos1 = Math.min(pos + pageSize, size);
-				transaction.put(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
+				mutator.put(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
 				pos = pos1;
 			}
-			transaction.put(sizeKey, size);
+			mutator.put(sizeKey, size);
 			if (!isRemove)
 				fsNameKeySet.add(name);
 		}
 
-		transaction.commit();
+		mutator.commit();
 	}
 
 	@Override
 	public void replace(Bytes name, int seq, Bytes bytes) {
-		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
-		transaction.put(key(keyUtil.hash(name), DATAID, seq), bytes);
-		transaction.commit();
+		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		mutator.put(key(keyUtil.hash(name), DATAID, seq), bytes);
+		mutator.commit();
 	}
 
 	@Override
 	public void resize(Bytes name, int size1) {
-		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
-		int size0 = transaction.getData(sizeKey);
+		int size0 = mutator.getData(sizeKey);
 		int nPages0 = (size0 + pageSize - 1) / pageSize;
 		int nPages1 = (size1 + pageSize - 1) / pageSize;
 
 		for (int page = nPages1; page < nPages0; page++)
-			transaction.remove(key(hash, DATAID, page));
+			mutator.remove(key(hash, DATAID, page));
 		for (int page = nPages0; page < nPages1; page++)
-			transaction.put(key(hash, DATAID, page), Bytes.emptyBytes);
+			mutator.put(key(hash, DATAID, page), Bytes.emptyBytes);
 
-		transaction.put(sizeKey, size1);
-		transaction.commit();
+		mutator.put(sizeKey, size1);
+		mutator.commit();
 	}
 
 	private Bytes key(Bytes hash, int id, int seq) {
