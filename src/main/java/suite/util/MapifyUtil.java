@@ -102,7 +102,15 @@ public class MapifyUtil {
 						map.put(i, apply0(mapifier1, objects[i]));
 					return map;
 				};
-			} else {
+			} else if (clazz.isInterface()) // Polymorphism
+				return object -> {
+					Class<? extends Object> clazz1 = object.getClass();
+					@SuppressWarnings("unchecked")
+					Map<String, String> map = (Map<String, String>) getMapifier(clazz1).apply(object);
+					map.put("@class", clazz1.getName());
+					return map;
+				};
+			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
 				return object -> {
 					Map<Object, Object> map = newMap();
@@ -162,7 +170,18 @@ public class MapifyUtil {
 						objects[i] = apply0(unmapifier1, map.get(i++));
 					return objects;
 				};
-			} else {
+			} else if (clazz.isInterface()) // Polymorphism
+				return object -> {
+					Map<?, ?> map = (Map<?, ?>) object;
+					Class<?> clazz1;
+					try {
+						clazz1 = Class.forName(map.get("@class").toString());
+					} catch (ClassNotFoundException ex) {
+						throw new RuntimeException(ex);
+					}
+					return getUnmapifier(clazz1).apply(object);
+				};
+			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
 				return object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
