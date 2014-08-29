@@ -2,7 +2,6 @@ package suite.lp.predicate;
 
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -43,7 +42,6 @@ public class EvalPredicates {
 	private Fun<String, ScriptEngine> engines = Memoize.byInput(new ScriptEngineManager()::getEngineByExtension);
 
 	private static Random random = new Random();
-	private static AtomicInteger counter = new AtomicInteger();
 
 	public SystemPredicate bound = PredicateUtil.boolPredicate(n -> !(n instanceof Reference));
 
@@ -194,10 +192,7 @@ public class EvalPredicates {
 
 	public SystemPredicate specialize = PredicateUtil.funPredicate(n -> new Specializer().specialize(n));
 
-	public SystemPredicate temp = (prover, ps) -> {
-		int n = counter.getAndIncrement();
-		return prover.bind(ps, Atom.of("temp$$" + n));
-	};
+	public SystemPredicate temp = (prover, ps) -> prover.bind(ps, Atom.temp());
 
 	public SystemPredicate tree = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);

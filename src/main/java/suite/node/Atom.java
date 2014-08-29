@@ -1,5 +1,7 @@
 package suite.node;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 
@@ -11,6 +13,8 @@ public class Atom extends Node {
 	public static Atom TRUE = of("true");
 	public static Atom FALSE = of("false");
 
+	private static AtomicInteger counter = new AtomicInteger();
+
 	private Atom(String name) {
 		this.name = name;
 	}
@@ -21,6 +25,10 @@ public class Atom extends Node {
 
 	public static Atom of(Context context, String name) {
 		return context.findAtom(name, Atom::new);
+	}
+
+	public static Atom temp() {
+		return Atom.of("temp$$" + counter.getAndIncrement());
 	}
 
 	@Override
