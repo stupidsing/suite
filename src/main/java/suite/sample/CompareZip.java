@@ -1,9 +1,6 @@
 package suite.sample;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
@@ -11,6 +8,7 @@ import java.util.zip.ZipFile;
 
 import suite.primitive.Bytes;
 import suite.text.TextUtil;
+import suite.util.FileUtil;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -34,8 +32,8 @@ public class CompareZip extends ExecutableProgram {
 		ZipFile zf1 = new ZipFile(filename1);
 
 		Set<String> names = new TreeSet<>();
-		names.addAll(getNames(zf0));
-		names.addAll(getNames(zf1));
+		names.addAll(FileUtil.listZip(zf0));
+		names.addAll(FileUtil.listZip(zf1));
 
 		boolean isChanged = false;
 
@@ -59,14 +57,6 @@ public class CompareZip extends ExecutableProgram {
 		}
 
 		return !isChanged;
-	}
-
-	private List<String> getNames(ZipFile zipFile) {
-		List<String> names = new ArrayList<>();
-		Enumeration<? extends ZipEntry> e = zipFile.entries();
-		while (e.hasMoreElements())
-			names.add(e.nextElement().getName());
-		return names;
 	}
 
 }

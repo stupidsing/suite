@@ -1,5 +1,6 @@
 package suite.parser;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -36,7 +37,7 @@ public class EbnfTest {
 	@Test
 	public void testJava() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		System.out.println(ebnf.parse(To.string(new FileReader("src/test/java/suite/parser/EbnfTest.java"))));
+		System.out.println(ebnf.parse(To.string(new File("src/test/java/suite/parser/EbnfTest.java"))));
 	}
 
 	@Test

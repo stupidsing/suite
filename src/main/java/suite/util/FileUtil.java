@@ -17,7 +17,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import suite.util.FunUtil.Source;
 
@@ -68,6 +73,14 @@ public class FileUtil {
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	public static List<String> listZip(ZipFile zipFile) {
+		List<String> names = new ArrayList<>();
+		Enumeration<? extends ZipEntry> e = zipFile.entries();
+		while (e.hasMoreElements())
+			names.add(e.nextElement().getName());
+		return names;
 	}
 
 	public static void moveFile(File from, File to) throws IOException {
