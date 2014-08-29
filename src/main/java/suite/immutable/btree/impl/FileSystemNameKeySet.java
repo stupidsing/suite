@@ -24,9 +24,9 @@ public class FileSystemNameKeySet {
 	private List<NameKey> emptyKeys = Collections.<NameKey> emptyList();
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
-	private IbTreeImpl<Bytes>.Transaction transaction;
+	private IbTreeImpl<Bytes>.Mutator transaction;
 
-	public FileSystemNameKeySet(IbTreeImpl<Bytes>.Transaction transaction) {
+	public FileSystemNameKeySet(IbTreeImpl<Bytes>.Mutator transaction) {
 		this.transaction = transaction;
 	}
 

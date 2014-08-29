@@ -29,16 +29,16 @@ public class IbTreeTest {
 		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null)) {
 			ibTree.create().commit();
 
-			IbTreeTransaction<Integer> transaction = ibTree.begin();
+			IbTreeMutator<Integer> mutator = ibTree.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
-				transaction.put(i);
+				mutator.put(i);
 			for (int i = size - 1; i >= 0; i--)
-				transaction.remove(i);
+				mutator.remove(i);
 			for (int i = 0; i < size; i++)
-				transaction.put(i);
+				mutator.put(i);
 
-			assertEquals(size, dumpAndCount(transaction));
+			assertEquals(size, dumpAndCount(mutator));
 		}
 	}
 
@@ -62,16 +62,16 @@ public class IbTreeTest {
 
 			Collections.shuffle(list);
 
-			// During each transaction, some new pages are required before old
+			// During each mutation, some new pages are required before old
 			// pages can be discarded during commit. If we update too much data,
 			// we would run out of allocatable pages. Here we limit ourselves to
 			// updating 25 keys each.
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTreeTransaction<String> transaction0 = ibTree2.begin();
+				IbTreeMutator<String> mutator0 = ibTree2.begin();
 				for (String s : subset)
-					transaction0.put(s);
-				transaction0.commit();
+					mutator0.put(s);
+				mutator0.commit();
 			}
 
 			assertEquals(size, dumpAndCount(ibTree2.begin()));
@@ -79,18 +79,18 @@ public class IbTreeTest {
 			Collections.shuffle(list);
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTreeTransaction<String> transaction1 = ibTree2.begin();
+				IbTreeMutator<String> mutator1 = ibTree2.begin();
 				for (String s : subset)
-					transaction1.remove(s);
-				transaction1.commit();
+					mutator1.remove(s);
+				mutator1.commit();
 			}
 
 			assertEquals(0, dumpAndCount(ibTree2.begin()));
 		}
 	}
 
-	private int dumpAndCount(IbTreeTransaction<?> transaction) {
-		Source<?> source = transaction.keys();
+	private int dumpAndCount(IbTreeMutator<?> mutator) {
+		Source<?> source = mutator.keys();
 		Object object;
 		int count = 0;
 

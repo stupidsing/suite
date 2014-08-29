@@ -16,7 +16,7 @@ import java.util.Set;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.immutable.btree.IbTree;
-import suite.immutable.btree.IbTreeTransaction;
+import suite.immutable.btree.IbTreeMutator;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -34,7 +34,7 @@ import suite.util.Util;
  * contain a even smaller allocation B-tree, until it becomes small enough to
  * fit in a single disk page.
  *
- * Transaction control is done by a "stamp" consisting of a chain of root page
+ * Mutator control is done by a "stamp" consisting of a chain of root page
  * numbers of all B-trees. The holder object persist the stmap into another
  * file.
  *
@@ -45,7 +45,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private String filename;
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
-	private Txm txm;
+	private Mutate mutate;
 
 	private PageFile pageFile;
 	private SerializedPageFile<Page> serializedPageFile;
@@ -114,12 +114,12 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	/**
-	 * Protect discarded pages belonging to previous transactions, so that they
-	 * are not being allocated immediately. This supports immutability (i.e.
+	 * Protect discarded pages belonging to previous mutations, so that they are
+	 * not being allocated immediately. This supports immutability (i.e.
 	 * copy-on-write) and with this recovery can succeed.
 	 *
 	 * On the other hand, allocated and discarded pages are reused here, since
-	 * they belong to current transaction.
+	 * they belong to current mutation.
 	 */
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
@@ -178,47 +178,47 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private class SubIbTreeAllocator implements Allocator {
-		private IbTreeImpl<Integer>.Transaction transaction;
+		private IbTreeImpl<Integer>.Mutator mutator;
 
-		private SubIbTreeAllocator(IbTreeImpl<Integer>.Transaction transaction) {
-			this.transaction = transaction;
+		private SubIbTreeAllocator(IbTreeImpl<Integer>.Mutator mutator) {
+			this.mutator = mutator;
 		}
 
 		public Integer allocate() {
-			Integer pointer = transaction.keys().source();
+			Integer pointer = mutator.keys().source();
 			if (pointer != null) {
-				transaction.remove(pointer);
+				mutator.remove(pointer);
 				return pointer;
 			} else
 				throw new RuntimeException("Pages exhausted");
 		}
 
 		public void discard(Integer pointer) {
-			transaction.put(pointer);
+			mutator.put(pointer);
 		}
 
 		public List<Integer> flush() {
-			return transaction.flush();
+			return mutator.flush();
 		}
 	}
 
-	public class Transaction implements IbTreeTransaction<Key> {
+	public class Mutator implements IbTreeMutator<Key> {
 		private Allocator allocator;
 		private Integer root;
 
-		private Transaction(Allocator allocator) {
+		private Mutator(Allocator allocator) {
 			this.allocator = allocator;
 			root = persist(Arrays.asList(new Slot(SlotType.TERMINAL, null, null)));
 		}
 
-		private Transaction(Allocator allocator, Integer root) {
+		private Mutator(Allocator allocator, Integer root) {
 			this.allocator = allocator;
 			this.root = root;
 		}
 
 		@Override
 		public void commit() {
-			txm.commit(this);
+			mutate.commit(this);
 		}
 
 		@Override
@@ -385,19 +385,19 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 	}
 
-	private class Txm implements Closeable {
+	private class Mutate implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
-		private Txm() {
+		private Mutate() {
 			stampFile = new SerializedPageFile<>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
-		private Transaction begin() {
-			return transaction(stampFile.load(0));
+		private Mutator begin() {
+			return mutator(stampFile.load(0));
 		}
 
-		private void commit(Transaction transaction) {
-			List<Integer> stamp = transaction.flush();
+		private void commit(Mutator mutator) {
+			List<Integer> stamp = mutator.flush();
 			sync();
 			stampFile.save(0, stamp);
 		}
@@ -420,7 +420,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		this.filename = filename;
 		this.comparator = comparator;
 		this.serializer = SerializeUtil.nullable(serializer);
-		txm = new Txm();
+		mutate = new Mutate();
 
 		pageFile = new PageFile(filename, pageSize);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
@@ -433,13 +433,13 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	@Override
 	public void close() {
-		txm.close();
+		mutate.close();
 		serializedPageFile.close();
 	}
 
 	@Override
-	public Transaction begin() {
-		return txm.begin();
+	public Mutator begin() {
+		return mutate.begin();
 	}
 
 	@Override
@@ -454,19 +454,19 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	@Override
-	public Transaction create() {
+	public Mutator create() {
 		List<Integer> stamp0;
 
 		if (allocationIbTree != null) {
-			IbTreeImpl<Integer>.Transaction transaction0 = allocationIbTree.create();
+			IbTreeImpl<Integer>.Mutator mutator0 = allocationIbTree.create();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				transaction0.put(p);
-			stamp0 = transaction0.flush();
+				mutator0.put(p);
+			stamp0 = mutator0.flush();
 		} else
 			stamp0 = Arrays.asList(0);
 
-		return new Transaction(allocator(stamp0));
+		return new Mutator(allocator(stamp0));
 	}
 
 	private Source<Key> keys(Integer pointer, Key start, Key end) {
@@ -497,14 +497,14 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			return FunUtil.nullSource();
 	}
 
-	private Transaction transaction(List<Integer> stamp) {
-		return new Transaction(allocator(Util.right(stamp, 1)), stamp.get(0));
+	private Mutator mutator(List<Integer> stamp) {
+		return new Mutator(allocator(Util.right(stamp, 1)), stamp.get(0));
 	}
 
 	private Allocator allocator(List<Integer> stamp0) {
 		Allocator allocator;
 		if (allocationIbTree != null)
-			allocator = new SubIbTreeAllocator(allocationIbTree.transaction(stamp0));
+			allocator = new SubIbTreeAllocator(allocationIbTree.mutator(stamp0));
 		else
 			allocator = new SwappingAllocator(stamp0.get(0));
 		return new DelayedDiscardAllocator(allocator);

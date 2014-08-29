@@ -7,9 +7,9 @@ public interface IbTree<Key> extends Closeable {
 	public void close();
 
 	/**
-	 * @return A new transaction object.
+	 * @return A new mutator object.
 	 */
-	public IbTreeTransaction<Key> begin();
+	public IbTreeMutator<Key> begin();
 
 	/**
 	 * @return Calculate the maximum number of values that can be stored in this
@@ -34,9 +34,9 @@ public interface IbTree<Key> extends Closeable {
 	 *         Fourth, the result needs to be minus by 1 to exclude the guard
 	 *         node at rightmost of the tree.
 	 *
-	 *         Fifth, most transactions would acquire some new pages before old
+	 *         Fifth, most mutators would acquire some new pages before old
 	 *         pages could be discarded during commit. We have to reserve 10% of
-	 *         pages for transaction use.
+	 *         pages for mutation use.
 	 *
 	 *         In formula, the minimum number of nodes causing split: 1 + (2 -
 	 *         1) + (size - 1) * (minBranchFactor - 1) + (minBranchFactor - 1) -
@@ -44,6 +44,6 @@ public interface IbTree<Key> extends Closeable {
 	 */
 	public int guaranteedCapacity();
 
-	public IbTreeTransaction<Key> create();
+	public IbTreeMutator<Key> create();
 
 }

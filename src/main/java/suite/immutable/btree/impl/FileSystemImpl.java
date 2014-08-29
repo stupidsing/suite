@@ -52,7 +52,7 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public Bytes read(Bytes name) {
-		IbTreeImpl<Bytes>.Transaction transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
 		Bytes hash = keyUtil.hash(name);
 		Integer size = transaction.getData(key(hash, SIZEID, 0));
 
@@ -68,13 +68,13 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public List<Bytes> list(Bytes start, Bytes end) {
-		IbTreeImpl<Bytes>.Transaction transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
 		return To.list(new FileSystemNameKeySet(transaction).list(start, end));
 	}
 
 	@Override
 	public void replace(Bytes name, Bytes bytes) {
-		IbTreeImpl<Bytes>.Transaction transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
 		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(transaction);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
@@ -111,14 +111,14 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public void replace(Bytes name, int seq, Bytes bytes) {
-		IbTreeImpl<Bytes>.Transaction transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
 		transaction.put(key(keyUtil.hash(name), DATAID, seq), bytes);
 		transaction.commit();
 	}
 
 	@Override
 	public void resize(Bytes name, int size1) {
-		IbTreeImpl<Bytes>.Transaction transaction = ibTree.begin();
+		IbTreeImpl<Bytes>.Mutator transaction = ibTree.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		int size0 = transaction.getData(sizeKey);
