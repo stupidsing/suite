@@ -8,7 +8,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import suite.instructionexecutor.ExpandUtil;
 import suite.instructionexecutor.IndexedReader;
@@ -27,6 +30,13 @@ import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 
 public class MonadIntrinsics {
+
+	private Map<Node, Map<Node, Node>> mutables = new WeakHashMap<>();
+
+	public Intrinsic get = (bridge, inputs) -> {
+		Map<Node, Node> map = getFrame(inputs);
+		return Intrinsics.wrap(bridge, map.get(inputs.get(1)));
+	};
 
 	public Intrinsic popen = (bridge, inputs) -> {
 		Fun<Node, Node> unwrapper = bridge::unwrap;
@@ -77,6 +87,12 @@ public class MonadIntrinsics {
 		}
 	};
 
+	public Intrinsic put = (bridge, inputs) -> {
+		Map<Node, Node> map = getFrame(inputs);
+		map.put(inputs.get(1), inputs.get(2));
+		return Intrinsics.wrap(bridge, Atom.NIL);
+	};
+
 	public Intrinsic seq = (bridge, inputs) -> {
 		ExpandUtil.expandFully(bridge::unwrap, inputs.get(0));
 		return inputs.get(1);
@@ -97,6 +113,11 @@ public class MonadIntrinsics {
 				return Atom.NIL;
 		}
 	};
+
+	private Map<Node, Node> getFrame(List<Node> inputs) {
+		Node frame = inputs.get(0);
+		return mutables.computeIfAbsent(frame, f -> new HashMap<>());
+	}
 
 	private Node createReader(IntrinsicBridge bridge, InputStream is) {
 		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);

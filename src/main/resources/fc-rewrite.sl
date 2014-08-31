@@ -89,6 +89,9 @@ fc-rewrite-type (FUN-OF .paramType0 .returnType0) (FUN-OF .paramType1 .returnTyp
 	:- fc-rewrite-type .paramType0 .paramType1
 	, fc-rewrite-type .returnType0 .returnType1
 #
+fc-rewrite-type (FUNCTOR-OF .functor .type0) (FUNCTOR-OF .functor .type1)
+	:- fc-rewrite-type .type0 .type1
+#
 fc-rewrite-type (GENERIC-OF .typeVar0 .type0) (GENERIC-OF .typeVar1 .type1)
 	:- fc-rewrite-type .typeVar0 .typeVar1
 	, fc-rewrite-type .type0 .type1

@@ -201,6 +201,7 @@ fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
 fc-parse-type atom:.a (ATOM-OF .a) :- ! #
 fc-parse-type (data-of .d) (DATA-OF .d) :- ! #
 fc-parse-type (do-of .do) (DO-OF .do1) :- !, fc-parse-type .do .do1 #
+fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1) :- !, fc-parse-type .type0 .type1 #
 fc-parse-type .do (PAIR-OF .type0 .type1)
 	:- (.do = (.t0, .t1); .do = (.t0 .t1)), !
 	, fc-parse-type .t0 .type0
