@@ -53,12 +53,12 @@ public class PackageManager {
 		for (Command command : packageManifest.getCommands())
 			installActions.add(new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand()));
 
-		int i = 0;
+		int progress = 0;
 		boolean isSuccess = true;
 
-		for (; i < installActions.size(); i++)
+		for (; progress < installActions.size(); progress++)
 			try {
-				installActions.get(i).act();
+				installActions.get(progress).act();
 			} catch (Exception ex) {
 				log.error("Error during installation", ex);
 				isSuccess = false;
@@ -66,7 +66,7 @@ public class PackageManager {
 			}
 
 		if (!isSuccess)
-			i = unact(installActions, i);
+			progress = unact(installActions, progress);
 
 		PackageMemento packageMemento = new PackageMemento(packageManifest, installActions);
 
