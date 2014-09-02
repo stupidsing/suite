@@ -1,16 +1,16 @@
 using external STANDARD >>
 define ar-append := (:t => [:t] -> [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.append | getintrn | callintrn2
+	atom:INTRN!ArrayIntrinsics.append | getintrn | callintrn-v2
 >>
 define ar-from-list := (:t => [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.listArray | getintrn | callintrn1
+	atom:INTRN!ArrayIntrinsics.listArray | getintrn | callintrn-v1
 >>
 define ar-left := (:t => number -> [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.left | getintrn | callintrn2
+	atom:INTRN!ArrayIntrinsics.left | getintrn | callintrn-v2
 >>
 define ar-right := (:t => number -> [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.right | getintrn | callintrn2
+	atom:INTRN!ArrayIntrinsics.right | getintrn | callintrn-v2
 >>
 define ar-to-list := (:t => [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.arrayList | getintrn | callintrn1
+	atom:INTRN!ArrayIntrinsics.arrayList | getintrn | callintrn-v1
 >>

@@ -92,7 +92,7 @@ public class MonadIntrinsics {
 	};
 
 	public Intrinsic seq = (bridge, inputs) -> {
-		ExpandUtil.expandFully(bridge::unwrap, inputs.get(0));
+		ExpandUtil.expandFully(bridge::unwrap, bridge.unwrap(inputs.get(0)));
 		return inputs.get(1);
 	};
 

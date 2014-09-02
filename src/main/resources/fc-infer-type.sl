@@ -264,10 +264,12 @@ fc-instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 #
 
 fc-default-fun-type () (LIST-OF _) #
-fc-default-fun-type +callintrn0 (FUN-OF (DATA-OF Intrinsic) _) #
-fc-default-fun-type +callintrn1 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ _)) #
-fc-default-fun-type +callintrn2 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +callintrn3 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +callintrn-t1 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ _)) #
+fc-default-fun-type +callintrn-t2 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ (FUN-OF _ _))) #
+fc-default-fun-type +callintrn-t3 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +callintrn-v1 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ _)) #
+fc-default-fun-type +callintrn-v2 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _ (FUN-OF _ _))) #
+fc-default-fun-type +callintrn-v3 (FUN-OF (DATA-OF Intrinsic) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type +compare (FUN-OF .t (FUN-OF .t NUMBER)) #
 fc-default-fun-type +getintrn (FUN-OF (ATOM-OF _) (DATA-OF Intrinsic)) #
 fc-default-fun-type +lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #

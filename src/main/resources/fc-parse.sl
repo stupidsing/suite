@@ -178,7 +178,7 @@ fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
 fc-parse-sugar (.f/) (flip {.f}) :- ! #
 fc-parse-sugar "" () :- ! #
 fc-parse-sugar .s (string of (
-	skip-type-check (string:.s | (atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn1))
+	skip-type-check (string:.s | (atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn-v1))
 ))
 	:- is.string .s, string.length .s .l, .l > 2, !
 #

@@ -76,10 +76,12 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 	:- !, fc-frame-difference .frame0 .frame1 .frameDiff
 #
 
-fc-define-default-fun 1 +callintrn0 CALL-INTRINSIC #
-fc-define-default-fun 2 +callintrn1 CALL-INTRINSIC #
-fc-define-default-fun 3 +callintrn2 CALL-INTRINSIC #
-fc-define-default-fun 4 +callintrn3 CALL-INTRINSIC #
+fc-define-default-fun 2 +callintrn-t1 CALL-INTRINSIC #
+fc-define-default-fun 3 +callintrn-t2 CALL-INTRINSIC #
+fc-define-default-fun 4 +callintrn-t3 CALL-INTRINSIC #
+fc-define-default-fun 2 +callintrn-v1 CALL-INTRINSIC #
+fc-define-default-fun 3 +callintrn-v2 CALL-INTRINSIC #
+fc-define-default-fun 4 +callintrn-v3 CALL-INTRINSIC #
 fc-define-default-fun 2 +compare COMPARE #
 fc-define-default-fun 1 +getintrn GET-INTRINSIC #
 fc-define-default-fun 2 +lcons CONS-LIST #
@@ -112,10 +114,12 @@ fc-dict-member .v .t :- rbt-member .v .t #
 fc-add-functions STANDARD .p (
 	data (optional {:t}) over :t as None >>
 	data (optional {:t}) over :t as (Value :t) >>
-	define callintrn0 := i => +callintrn0 {i} >>
-	define callintrn1 := i => p0 => +callintrn1 {i} {p0} >>
-	define callintrn2 := i => p0 => p1 => +callintrn2 {i} {p0} {p1} >>
-	define callintrn3 := i => p0 => p1 => p2 => +callintrn3 {i} {p0} {p1} {p2} >>
+	define callintrn-t1 := i => p0 => +callintrn-t1 {i} {p0} >>
+	define callintrn-t2 := i => p0 => p1 => +callintrn-t2 {i} {p0} {p1} >>
+	define callintrn-t3 := i => p0 => p1 => p2 => +callintrn-t3 {i} {p0} {p1} {p2} >>
+	define callintrn-v1 := i => p0 => +callintrn-v1 {i} {p0} >>
+	define callintrn-v2 := i => p0 => p1 => +callintrn-v2 {i} {p0} {p1} >>
+	define callintrn-v3 := i => p0 => p1 => p2 => +callintrn-v3 {i} {p0} {p1} {p2} >>
 	define compare := a => b => +compare {a} {b} >>
 	define cons := head => tail => +lcons {head} {tail} >>
 	define first := tuple => +pleft {tuple} >>
@@ -124,19 +128,19 @@ fc-add-functions STANDARD .p (
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
 	define +popen := ([string] -> string -> (number, string, string)) of
-		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn2
+		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn-v2
 	>>
 	define log := (:t => :t -> :t) of
-		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn1
+		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn-v1
 	>>
 	define log2 := (:t => string -> :t -> :t) of
-		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn2
+		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn-v2
 	>>
 	define source := (data-of Stream -> string) of
-		atom:INTRN!MonadIntrinsics.source | getintrn | callintrn1
+		atom:INTRN!MonadIntrinsics.source | getintrn | callintrn-v1
 	>>
 	define throw := (any -> any) of
-		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn1
+		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn-v1
 	>>
 	define and := x => y =>
 		if x then y else false
@@ -368,14 +372,14 @@ fc-add-functions STANDARD .p (
 		define type-of := getintrn {atom:INTRN!BasicIntrinsics.typeOf} >>
 		define atom-string := getintrn {atom:INTRN!BasicIntrinsics.atomString} >>
 		let dump0 := prec => n =>
-			let type := +callintrn1 {type-of} {n} >>
+			let type := +callintrn-v1 {type-of} {n} >>
 			if (n = ()) then
 				"()"
 			else-if (type = TREE) then
 				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 				| if prec then (s => concat {"("; s; ")";}) else id
 			else-if (type = ATOM) then
-				callintrn1 {atom-string} {n}
+				callintrn-v1 {atom-string} {n}
 			else
 				int-to-str {n}
 		>>

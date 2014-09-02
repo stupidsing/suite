@@ -44,7 +44,7 @@ public class InstructionTranslatorTest {
 		boolean isLazy = false;
 		String node = executeToString(compileFunctional(Suite.parse("" //
 				+ "define atom-string := +getintrn {atom:INTRN!BasicIntrinsics.atomString} >> " //
-				+ "+callintrn1 {atom-string} {atom:ATOM}"), isLazy), isLazy);
+				+ "+callintrn-v1 {atom-string} {atom:ATOM}"), isLazy), isLazy);
 		assertEquals("ATOM", node);
 	}
 
