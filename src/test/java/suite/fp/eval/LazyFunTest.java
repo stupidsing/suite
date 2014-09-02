@@ -58,7 +58,7 @@ public class LazyFunTest {
 
 	@Test
 	public void testIterate() {
-		assertEquals(eval("65536"), eval("iterate {`* 2`} {1} | get {16}"));
+		assertEquals(Int.of(65536), eval("iterate {`* 2`} {1} | get {16}"));
 	}
 
 	@Test
