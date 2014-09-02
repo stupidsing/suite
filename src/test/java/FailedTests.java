@@ -2,6 +2,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.junit.Test;
 
@@ -11,10 +12,11 @@ import suite.lp.kb.RuleSet;
 
 public class FailedTests {
 
-	// Cannot bind external symbols when using is used in a closure
+	// Cannot bind external symbols again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
-		Suite.evaluateFun("using STANDARD >> id {using MONAD >> 1}", true);
+		Suite.libraries = new ArrayList<>();
+		Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true);
 	}
 
 	// (Expected) infinite loop.
