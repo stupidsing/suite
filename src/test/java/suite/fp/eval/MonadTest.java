@@ -8,19 +8,19 @@ import java.io.StringWriter;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.node.Node;
 
 public class MonadTest {
 
 	@Test
 	public void testMonad() throws IOException {
 		StringWriter sw = new StringWriter();
-		Suite.evaluateFunToWriter(Suite.fcc(Suite.applyDo(Suite.parse("" //
-				+ "using MONAD >> ( \n" //
-				+ "    define v := (mutable^string) of (skip-type-check 1) >> ( \n" //
-				+ "        putm {atom:scope} {v} {\"abc\"} # getm {atom:scope} {v} \n" //
-				+ "    ) \n" //
-				+ ") \n" //
-				+ ""), Suite.parse("string"))), sw);
+		Node node = Suite.applyDo(Suite.parse("" //
+				+ "define string v # \n" //
+				+ "putm {atom:scope} {v} {\"abc\"} # \n" //
+				+ "getm {atom:scope} {v} \n" //
+				+ ""), Suite.parse("string"));
+		Suite.evaluateFunToWriter(Suite.fcc(Suite.substitute("using MONAD >> .0", node), true), sw);
 		assertEquals("abc", sw.toString());
 	}
 

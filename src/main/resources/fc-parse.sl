@@ -158,9 +158,16 @@ fc-parse-sugar (do >> .do) (
 	define monad-to-fun := (:t => do-of :t -> (number -> :t)) of (skip-type-check id) >>
 	fun-to-monad {scope =>
 		define call := ({scope} . monad-to-fun) >>
+		define mget := getm {scope} >>
+		define mput := putm {scope} >>
 		.do
 	}
 ) :- ! #
+fc-parse-sugar (define .type .mv # .monad) (
+	define .mv := (mutable^.type) of (skip-type-check atom:.atom) >> .monad
+)
+	:- !, temp .atom
+#
 fc-parse-sugar (.monad # .monads) (seqm {.monad} {.monads}) :- ! #
 fc-parse-sugar (expand .var = .value >> .do) .do1
 	:- !, replace .var .value .do .do1
