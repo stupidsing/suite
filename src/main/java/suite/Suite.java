@@ -58,7 +58,7 @@ public class Suite {
 		rs.addRule(Rule.formRule(node));
 	}
 
-	public static Node applyDo(Node func, Atom returnType) {
+	public static Node applyDo(Node func, Node returnType) {
 		return substitute("(do-of .1 -> any -> .1) of (skip-type-check id) {.0} {atom:.2}", func, returnType, Atom.temp());
 	}
 
