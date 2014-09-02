@@ -34,8 +34,7 @@ public class MonadIntrinsics {
 	private Map<Node, Map<Node, Node>> mutables = new WeakHashMap<>();
 
 	public Intrinsic get = (bridge, inputs) -> {
-		Map<Node, Node> map = getFrame(inputs);
-		return Intrinsics.wrap(bridge, map.get(inputs.get(1)));
+		return getFrame(inputs).get(inputs.get(1));
 	};
 
 	public Intrinsic popen = (bridge, inputs) -> {
@@ -88,9 +87,8 @@ public class MonadIntrinsics {
 	};
 
 	public Intrinsic put = (bridge, inputs) -> {
-		Map<Node, Node> map = getFrame(inputs);
-		map.put(inputs.get(1), inputs.get(2));
-		return Intrinsics.wrap(bridge, Atom.NIL);
+		getFrame(inputs).put(inputs.get(1), inputs.get(2));
+		return Atom.NIL;
 	};
 
 	public Intrinsic seq = (bridge, inputs) -> {
