@@ -13,7 +13,7 @@ import suite.lp.kb.RuleSet;
 
 public class FailedTests {
 
-	// Cannot bind external symbols again when using is used in a closure
+	// Duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
 		Suite.libraries = new ArrayList<>();

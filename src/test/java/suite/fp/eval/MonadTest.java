@@ -13,7 +13,13 @@ import suite.node.Node;
 public class MonadTest {
 
 	@Test
-	public void testMonad() throws IOException {
+	public void testShell() throws IOException {
+		assertEquals("hello\n", eval(Suite.applyDo(Suite.parse("" //
+				+ "sh {\"echo hello\"} {}"), Suite.parse("string"))));
+	}
+
+	@Test
+	public void testMutable() throws IOException {
 		assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
 				+ "do >> \n" //
 				+ "    definem string v # \n" //
@@ -23,7 +29,7 @@ public class MonadTest {
 	}
 
 	@Test
-	public void testMonadFail() throws IOException {
+	public void testMutableFail() throws IOException {
 		try {
 			assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
 					+ "do >> \n" //
