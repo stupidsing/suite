@@ -7,10 +7,10 @@ define +putm := (:t => any -> mutable^:t -> :t -> do-of any) of (scope => var =>
 	do >> callintrn-v3 {atom:INTRN!MonadIntrinsics.put | getintrn} {scope} {var} {value}
 ) >>
 define liftm :=
-	fun => m0 => (do >> fun {callm {m0}})
+	fun => m0 => (do >> fun {m0 #})
 >>
 define liftm2 :=
-	fun => m0 => m1 => (do >> fun {callm {m0}} {callm {m1}})
+	fun => m0 => m1 => (do >> fun {m0 #} {m1 #})
 >>
 define appendm :=
 	liftm2 {append}
@@ -28,8 +28,8 @@ define seqsm :=
 >>
 define whilem :=
 	cond => loop => (do >>
-		if (callm {cond})
-		then (callm {loop # whilem {cond} {loop}})
+		if (cond #)
+		then (loop # whilem {cond} {loop} #)
 		else nothing
 	)
 >>

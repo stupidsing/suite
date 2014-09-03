@@ -16,11 +16,10 @@ public class MonadTest {
 	public void testMonad() throws IOException {
 		StringWriter sw = new StringWriter();
 		Node node = Suite.applyDo(Suite.parse("" //
-				+ "do >> callm { \n" //
+				+ "do >> \n" //
 				+ "    definem string v # \n" //
 				+ "    putm {v} {\"abc\"} # \n" //
-				+ "    getm {v} \n" //
-				+ "} \n" //
+				+ "    getm {v} # \n" //
 				+ ""), Suite.parse("string"));
 		Suite.evaluateFunToWriter(Suite.fcc(Suite.substitute("using MONAD >> .0", node), true), sw);
 		assertEquals("abc", sw.toString());

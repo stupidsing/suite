@@ -168,7 +168,10 @@ fc-parse-sugar (definem .type .mv # .monad) (
 )
 	:- !, temp .atom
 #
-fc-parse-sugar (.monad # .monads) (seqm {.monad} {.monads}) :- ! #
+fc-parse-sugar (.monad #) (callm {.monad}) :- ! #
+fc-parse-sugar (.monad # .monads0) (callm {seqm {.monad} {.monads1}})
+	:- fc-parse-sugar .monads0 (callm {.monads1}), !
+#
 fc-parse-sugar (expand .var := .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #
