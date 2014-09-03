@@ -35,7 +35,7 @@ public class Bytes implements Iterable<Byte> {
 	};
 
 	public Bytes(ByteBuffer bb) {
-		this(bb.array(), bb.arrayOffset(), bb.arrayOffset() + bb.limit());
+		this(bb.array(), bb.arrayOffset() + bb.position(), bb.arrayOffset() + bb.limit());
 	}
 
 	public Bytes(Bytes bytes) {
@@ -93,6 +93,10 @@ public class Bytes implements Iterable<Byte> {
 		while (bb.size() < size)
 			bb.append(pad);
 		return bb.toBytes();
+	}
+
+	public void putByteBuffer(ByteBuffer bb) {
+		bb.put(bs, start, end - start);
 	}
 
 	public int size() {

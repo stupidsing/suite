@@ -54,6 +54,10 @@ public class SerializedPageFile<V> implements Closeable {
 		}
 	}
 
+	public void sync() throws IOException {
+		pageFile.sync();
+	}
+
 	public V load(int pageNo) {
 		try {
 			return serializer.read(pageFile.load(pageNo));

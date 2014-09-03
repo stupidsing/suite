@@ -95,6 +95,10 @@ public class Chars implements Iterable<Character> {
 		return cb.toChars();
 	}
 
+	public void putCharBuffer(CharBuffer cb) {
+		cb.put(cs, start, end - start);
+	}
+
 	public int size() {
 		return end - start;
 	}
@@ -169,7 +173,10 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public String toString() {
-		return new String(cs, start, end - start);
+		StringBuilder sb = new StringBuilder();
+		for (int i = start; i < end; i++)
+			sb.append(cs[i]);
+		return sb.toString();
 	}
 
 	private Chars subchars0(int start, int end) {
