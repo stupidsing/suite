@@ -10,7 +10,7 @@ import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
-public class JournalledPageFile implements Closeable {
+public class JournalledPageFile implements Closeable, PageFile {
 
 	private PageFile pageFile;
 	private SerializedPageFile<JournalEntry> journalPageFile;
@@ -65,6 +65,7 @@ public class JournalledPageFile implements Closeable {
 		pointerPageFile.close();
 	}
 
+	@Override
 	public void sync() throws IOException {
 		journalPageFile.sync();
 		pointerPageFile.save(0, nCommittedJournalEntries);
@@ -91,6 +92,7 @@ public class JournalledPageFile implements Closeable {
 			journalPageFile.save(jp, journalEntries.get(jp));
 	}
 
+	@Override
 	public ByteBuffer load(int pageNo) throws IOException {
 		int jp = findPageInJournal(pageNo);
 		if (jp >= 0)
@@ -99,6 +101,7 @@ public class JournalledPageFile implements Closeable {
 			return journalEntries.get(jp).bytes.toByteBuffer();
 	}
 
+	@Override
 	public void save(int pageNo, ByteBuffer bb) throws IOException {
 		int jp = findDirtyPageInJournal(pageNo);
 
