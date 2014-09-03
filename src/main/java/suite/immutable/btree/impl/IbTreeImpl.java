@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.file.PageFile;
+import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
 import suite.immutable.btree.IbTree;
 import suite.immutable.btree.IbTreeMutator;
@@ -422,9 +423,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		this.serializer = SerializeUtil.nullable(serializer);
 		mutate = new Mutate();
 
-		pageFile = new PageFile(filename, pageSize);
+		pageFile = new PageFileImpl(filename, pageSize);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
-		serializedPayloadPageFile = new SerializedPageFile<>(pageFile, SerializeUtil.bytes(pageFile.getPageSize()));
+		serializedPayloadPageFile = new SerializedPageFile<>(pageFile, SerializeUtil.bytes(pageSize));
 		this.allocationIbTree = allocationIbTree;
 
 		this.maxBranchFactor = maxBranchFactor;

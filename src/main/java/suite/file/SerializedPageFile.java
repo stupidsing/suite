@@ -33,7 +33,7 @@ public class SerializedPageFile<V> implements Closeable {
 
 	public SerializedPageFile(String filename, Serializer<V> serializer) {
 		try {
-			this.pageFile = new PageFile(filename, pageSize);
+			this.pageFile = new PageFileImpl(filename, pageSize);
 		} catch (FileNotFoundException ex) {
 			throw new SerializedPagingException(ex);
 		}
