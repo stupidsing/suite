@@ -14,15 +14,31 @@ public class MonadTest {
 
 	@Test
 	public void testMonad() throws IOException {
-		StringWriter sw = new StringWriter();
-		Node node = Suite.applyDo(Suite.parse("" //
+		assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
 				+ "do >> \n" //
 				+ "    definem string v # \n" //
 				+ "    putm {v} {\"abc\"} # \n" //
 				+ "    getm {v} # \n" //
-				+ ""), Suite.parse("string"));
+				+ ""), Suite.parse("string"))));
+	}
+
+	@Test
+	public void testMonadFail() throws IOException {
+		try {
+			assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
+					+ "do >> \n" //
+					+ "    definem int v # \n" //
+					+ "    putm {v} {\"abc\"} # \n" //
+					+ ""), Suite.parse("any"))));
+		} catch (RuntimeException ex) {
+			// Unmatched types
+		}
+	}
+
+	private String eval(Node node) throws IOException {
+		StringWriter sw = new StringWriter();
 		Suite.evaluateFunToWriter(Suite.fcc(Suite.substitute("using MONAD >> .0", node), true), sw);
-		assertEquals("abc", sw.toString());
+		return sw.toString();
 	}
 
 }
