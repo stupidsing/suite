@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -38,19 +39,22 @@ public class FileUtil {
 		}
 	}
 
-	public static Source<File> findFiles(File file) {
-		Deque<File> stack = new ArrayDeque<>();
-		stack.push(file);
+	public static Source<Path> findPaths(Path path) {
+		Deque<Path> stack = new ArrayDeque<>();
+		stack.push(path);
 
 		return () -> {
 			while (!stack.isEmpty()) {
-				File f = stack.pop();
+				Path p = stack.pop();
 
-				if (f.isDirectory())
-					for (File child : f.listFiles())
-						stack.push(child);
+				if (Files.isDirectory(p))
+					try (Stream<Path> list = Files.list(p)) {
+						list.forEach(stack::push);
+					} catch (IOException ex) {
+						throw new RuntimeException(ex);
+					}
 				else
-					return f;
+					return p;
 			}
 
 			return null;
@@ -111,6 +115,14 @@ public class FileUtil {
 				}
 			}
 		};
+	}
+
+	public static String read(Path path) throws IOException {
+		return new String(Files.readAllBytes(path), FileUtil.charset);
+	}
+
+	public static String read(String filename) throws IOException {
+		return read(Paths.get(filename));
 	}
 
 }

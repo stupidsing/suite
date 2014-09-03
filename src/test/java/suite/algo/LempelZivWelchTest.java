@@ -36,7 +36,7 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test3() throws IOException {
-		String s = Util.read("src/main/java/suite/algo/LempelZivWelch.java");
+		String s = FileUtil.read("src/main/java/suite/algo/LempelZivWelch.java");
 		assertEquals(s, doTest(s));
 	}
 

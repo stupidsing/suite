@@ -12,7 +12,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
-import suite.util.Util;
+import suite.util.FileUtil;
 
 public class IterativeParserTest {
 
@@ -76,7 +76,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseAuto() throws IOException {
-		String in = Util.read("src/main/resources/auto.sl");
+		String in = FileUtil.read("src/main/resources/auto.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -84,7 +84,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseFile() throws IOException {
-		String in = Util.read("src/main/resources/fc.sl");
+		String in = FileUtil.read("src/main/resources/fc.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));

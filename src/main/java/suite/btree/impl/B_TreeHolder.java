@@ -1,9 +1,10 @@
 package suite.btree.impl;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			, Comparator<Key> comparator //
 			, Serializer<Key> ks //
 			, Serializer<Value> vs) throws IOException {
-		new File(pathName).getParentFile().mkdirs();
+		Files.createDirectories(Paths.get(pathName).getParent());
 
 		String sbf = pathName + ".superblock";
 		String amf = pathName + ".alloc";
@@ -115,7 +116,7 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 		if (isNew)
 			for (String filename : new String[] { sbf, amf, pf })
-				new File(filename).delete();
+				Files.deleteIfExists(Paths.get(filename));
 
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(comparator);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);

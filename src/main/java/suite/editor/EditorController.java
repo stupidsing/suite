@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -26,7 +28,6 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
-import suite.util.Util;
 
 public class EditorController {
 
@@ -162,8 +163,8 @@ public class EditorController {
 		String text = view.getSearchTextField().getText();
 
 		if (!text.isEmpty()) {
-			Source<File> files0 = FileUtil.findFiles(new File("."));
-			Source<String> files1 = FunUtil.map(File::getPath, files0);
+			Source<Path> paths0 = FileUtil.findPaths(Paths.get("."));
+			Source<String> files1 = FunUtil.map(Path::toString, paths0);
 			Source<String> files2 = FunUtil.filter(filename -> filename.contains(text), files1);
 
 			for (String filename : FunUtil.iter(files2))
@@ -206,7 +207,7 @@ public class EditorController {
 
 	private void load(EditorView view, String filename) {
 		try {
-			String text = Util.read(filename);
+			String text = FileUtil.read(filename);
 			view.getFilenameTextField().setText(filename);
 
 			JEditorPane editor = view.getEditor();

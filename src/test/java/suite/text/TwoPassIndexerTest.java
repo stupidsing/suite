@@ -1,7 +1,8 @@
 package suite.text;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,18 +20,19 @@ public class TwoPassIndexerTest {
 
 	@Test
 	public void test() throws IOException {
-		List<String> filenames = To.list(FileUtil.findFiles(new File("src/test/java"))).stream() //
-				.map(File::getAbsolutePath) //
+		List<String> filenames = To.list(FileUtil.findPaths(Paths.get("src/test/java"))).stream() //
+				.map(Path::toAbsolutePath) //
+				.map(Path::toString) //
 				.filter(filename -> filename.endsWith(".java")) //
 				.collect(Collectors.toList());
 
 		TwoPassIndexer indexer = new TwoPassIndexer();
 
 		for (String filename : filenames)
-			indexer.pass0(filename, Util.read(filename));
+			indexer.pass0(filename, FileUtil.read(filename));
 
 		for (String filename : filenames)
-			indexer.pass1(filename, Util.read(filename));
+			indexer.pass1(filename, FileUtil.read(filename));
 
 		Map<String, List<Reference>> map = indexer.getKeysByWord();
 

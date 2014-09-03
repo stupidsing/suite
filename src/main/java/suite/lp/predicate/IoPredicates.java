@@ -1,9 +1,10 @@
 package suite.lp.predicate;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 import suite.lp.predicate.PredicateUtil.SystemPredicate;
@@ -14,7 +15,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.util.FileUtil;
 import suite.util.LogUtil;
-import suite.util.Util;
 
 public class IoPredicates {
 
@@ -40,12 +40,12 @@ public class IoPredicates {
 
 	public SystemPredicate exit = PredicateUtil.predicate(n -> System.exit(n instanceof Int ? ((Int) n).getNumber() : 0));
 
-	public SystemPredicate fileExists = PredicateUtil.boolPredicate(n -> new File(Formatter.display(n)).exists());
+	public SystemPredicate fileExists = PredicateUtil.boolPredicate(n -> Files.exists(Paths.get(Formatter.display(n))));
 
 	public SystemPredicate fileRead = PredicateUtil.funPredicate(n -> {
 		String filename = Formatter.display(n);
 		try {
-			return new Str(Util.read(filename));
+			return new Str(FileUtil.read(filename));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

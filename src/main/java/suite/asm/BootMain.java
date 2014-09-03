@@ -1,6 +1,5 @@
 package suite.asm;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,8 +18,8 @@ public class BootMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String args[]) throws IOException {
-		Bytes bootLoader = new Assembler(16).assemble(Util.read("src/main/asm/bootloader.asm"));
-		Bytes kernel = new ImperativeCompiler().compile(0x40000, new File("src/main/il/kernel.il"));
+		Bytes bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
+		Bytes kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
 
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
 
