@@ -117,7 +117,7 @@ public class To {
 	}
 
 	public static String string(Bytes bytes) {
-		return string(bytes.getBytes());
+		return string(bytes.toBytes());
 	}
 
 	public static String string(long time) {

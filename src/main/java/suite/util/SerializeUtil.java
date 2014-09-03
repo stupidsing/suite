@@ -80,7 +80,7 @@ public class SerializeUtil {
 			}
 
 			public void write(ByteBuffer buffer, Bytes bytes) {
-				byte[] bs = bytes.getBytes();
+				byte[] bs = bytes.toBytes();
 				buffer.put(bs);
 				for (int i = bs.length; i < length; i++)
 					buffer.put((byte) 0);

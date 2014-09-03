@@ -162,7 +162,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 
 			// Try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
-			byte bytes[] = in.getBytes();
+			byte bytes[] = in.toBytes();
 			int sent = sc.write(ByteBuffer.wrap(bytes));
 
 			Bytes out = in.subbytes(sent);

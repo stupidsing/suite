@@ -1,5 +1,6 @@
 package suite.primitive;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -32,6 +33,10 @@ public class Bytes implements Iterable<Byte> {
 
 		return c != 0 ? c : size0 - size1;
 	};
+
+	public Bytes(ByteBuffer bb) {
+		this(bb.array(), bb.arrayOffset(), bb.arrayOffset() + bb.limit());
+	}
 
 	public Bytes(Bytes bytes) {
 		this(bytes.bs, bytes.start, bytes.end);
@@ -107,6 +112,17 @@ public class Bytes implements Iterable<Byte> {
 		return subbytes0(start + s, start + e);
 	}
 
+	public ByteBuffer toByteBuffer() {
+		return ByteBuffer.wrap(bs, start, end - start);
+	}
+
+	public byte[] toBytes() {
+		if (start != 0 || end != bs.length)
+			return Arrays.copyOfRange(bs, start, end);
+		else
+			return bs;
+	}
+
 	@Override
 	public Iterator<Byte> iterator() {
 		return new Iterator<Byte>() {
@@ -179,13 +195,6 @@ public class Bytes implements Iterable<Byte> {
 	private void checkClosedBounds(int index) {
 		if (index < start || index >= end)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
-	}
-
-	public byte[] getBytes() {
-		if (start != 0 || end != bs.length)
-			return Arrays.copyOfRange(bs, start, end);
-		else
-			return bs;
 	}
 
 	public static class BytesBuilder {

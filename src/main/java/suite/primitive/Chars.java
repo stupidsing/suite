@@ -1,5 +1,6 @@
 package suite.primitive;
 
+import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -111,6 +112,17 @@ public class Chars implements Iterable<Character> {
 		return subchars0(start + s, start + e);
 	}
 
+	public CharBuffer toCharBuffer() {
+		return CharBuffer.wrap(cs, start, end - start);
+	}
+
+	public char[] toChars() {
+		if (start != 0 || end != cs.length)
+			return Arrays.copyOfRange(cs, start, end);
+		else
+			return cs;
+	}
+
 	@Override
 	public Iterator<Character> iterator() {
 		return new Iterator<Character>() {
@@ -180,13 +192,6 @@ public class Chars implements Iterable<Character> {
 	private void checkClosedBounds(int index) {
 		if (index < start || index >= end)
 			throw new IndexOutOfBoundsException("Index " + (index - start) + " is not within [0-" + (end - start) + "]");
-	}
-
-	public char[] getChars() {
-		if (start != 0 || end != cs.length)
-			return Arrays.copyOfRange(cs, start, end);
-		else
-			return cs;
 	}
 
 	public static class CharsBuilder {
