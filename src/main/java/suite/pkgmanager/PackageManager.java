@@ -2,6 +2,7 @@ package suite.pkgmanager;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
@@ -9,7 +10,6 @@ import java.util.zip.ZipFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import suite.pkgmanager.PackageManifest.Command;
 import suite.pkgmanager.actions.ExecCommandAction;
 import suite.pkgmanager.actions.ExtractFileAction;
 import suite.pkgmanager.actions.InstallAction;
@@ -32,10 +32,10 @@ public class PackageManager {
 				.sorted((p0, p1) -> p1.t0.length() - p0.t0.length()) //
 				.collect(Collectors.toList());
 
-		List<InstallAction> installActions;
+		List<InstallAction> installActions = new ArrayList<>();
 
 		try (ZipFile zipFile = new ZipFile(packageFilename)) {
-			installActions = FileUtil.listZip(zipFile).stream() //
+			installActions.addAll(FileUtil.listZip(zipFile).stream() //
 					.map(filename0 -> {
 						String filename1 = filename0;
 						for (Pair<String, String> filenameMapping : filenameMappings) {
@@ -47,11 +47,12 @@ public class PackageManager {
 						}
 						return new ExtractFileAction(packageFilename, filename0, filename1);
 					}) //
-					.collect(Collectors.toList());
+					.collect(Collectors.toList()));
 		}
 
-		for (Command command : packageManifest.getCommands())
-			installActions.add(new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand()));
+		installActions.addAll(packageManifest.getCommands().stream() //
+				.map(command -> new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand())) //
+				.collect(Collectors.toList()));
 
 		int progress = 0;
 		boolean isSuccess = true;

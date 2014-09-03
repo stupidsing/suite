@@ -11,21 +11,19 @@ public class BytesUtil {
 	private static final int bufferSize = 65536;
 
 	public static Source<Bytes> source(InputStream is) {
-		return new Source<Bytes>() {
-			public Bytes source() {
-				byte bs[] = new byte[bufferSize];
-				int nBytesRead;
-				try {
-					nBytesRead = is.read(bs);
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-
-				if (nBytesRead >= 0)
-					return new Bytes(bs, 0, nBytesRead);
-				else
-					return null;
+		return () -> {
+			byte bs[] = new byte[bufferSize];
+			int nBytesRead;
+			try {
+				nBytesRead = is.read(bs);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
 			}
+
+			if (nBytesRead >= 0)
+				return new Bytes(bs, 0, nBytesRead);
+			else
+				return null;
 		};
 	}
 

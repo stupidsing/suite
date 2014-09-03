@@ -117,7 +117,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 		pageFile.save(pageNo, bb);
 	}
 
-	public void commit() throws IOException {
+	public void commit() {
 		nCommittedJournalEntries = journalEntries.size();
 	}
 

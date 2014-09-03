@@ -33,9 +33,7 @@ public class MonadIntrinsics {
 
 	private Map<Node, Map<Node, Node>> mutables = new WeakHashMap<>();
 
-	public Intrinsic get = (bridge, inputs) -> {
-		return getFrame(inputs).get(inputs.get(1));
-	};
+	public Intrinsic get = (bridge, inputs) -> getFrame(inputs).get(inputs.get(1));
 
 	public Intrinsic popen = (bridge, inputs) -> {
 		Fun<Node, Node> unwrapper = bridge::unwrap;

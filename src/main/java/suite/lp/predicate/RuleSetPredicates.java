@@ -45,9 +45,7 @@ public class RuleSetPredicates {
 		return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
 	};
 
-	public SystemPredicate importPredicate = (prover, ps) -> {
-		return Suite.importFrom(prover.ruleSet(), ps);
-	};
+	public SystemPredicate importPredicate = (prover, ps) -> Suite.importFrom(prover.ruleSet(), ps);
 
 	public SystemPredicate importPath = (prover, ps) -> {
 		String filename = Formatter.display(ps);

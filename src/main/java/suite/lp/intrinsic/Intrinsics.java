@@ -23,9 +23,8 @@ public class Intrinsics {
 
 	public static Map<String, Intrinsic> intrinsics = new HashMap<>();
 
-	public static Intrinsic id_ = (bridge, inputs) -> {
-		return inputs.get(0).finalNode(); // Forces suspended node evaluation
-	};
+	// Forces suspended node evaluation
+	public static Intrinsic id_ = (bridge, inputs) -> inputs.get(0).finalNode();
 
 	public static Node wrap(IntrinsicBridge bridge, Node node) {
 		return bridge.wrap(id_, node);

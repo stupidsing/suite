@@ -76,9 +76,7 @@ public class FormatPredicates {
 		}
 	};
 
-	public SystemPredicate prettyPrint = PredicateUtil.predicate(ps -> {
-		System.out.println(new PrettyPrinter().prettyPrint(ps));
-	});
+	public SystemPredicate prettyPrint = PredicateUtil.predicate(ps -> System.out.println(new PrettyPrinter().prettyPrint(ps)));
 
 	public SystemPredicate rpnPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);

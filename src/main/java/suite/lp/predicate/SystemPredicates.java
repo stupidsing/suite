@@ -149,9 +149,7 @@ public class SystemPredicates {
 		predicates.put(name, pred);
 	}
 
-	private SystemPredicate cutBegin = (prover, ps) -> {
-		return prover.bind(ps, prover.getAlternative());
-	};
+	private SystemPredicate cutBegin = (prover, ps) -> prover.bind(ps, prover.getAlternative());
 
 	private SystemPredicate cutEnd = (prover, ps) -> {
 		prover.setAlternative(ps.finalNode());
@@ -166,9 +164,7 @@ public class SystemPredicates {
 		return result;
 	};
 
-	private SystemPredicate once = (prover, ps) -> {
-		return new Prover(prover).prove0(ps);
-	};
+	private SystemPredicate once = (prover, ps) -> new Prover(prover).prove0(ps);
 
 	private SystemPredicate systemPredicate = (prover, ps) -> {
 		ps = ps.finalNode();

@@ -104,7 +104,7 @@ public class MapifyUtil {
 				};
 			} else if (clazz.isInterface()) // Polymorphism
 				return object -> {
-					Class<? extends Object> clazz1 = object.getClass();
+					Class<?> clazz1 = object.getClass();
 					@SuppressWarnings("unchecked")
 					Map<String, String> map = (Map<String, String>) getMapifier(clazz1).apply(object);
 					map.put("@class", clazz1.getName());

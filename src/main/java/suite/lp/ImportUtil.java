@@ -114,8 +114,7 @@ public class ImportUtil {
 	private boolean isContainsProtocol(String path) {
 		int pos0 = path.indexOf(":");
 		int pos1 = path.indexOf("/");
-		boolean isContainsProtocol = (pos0 <= 0 ? 0 : pos0) >= (pos1 <= 0 ? Integer.MAX_VALUE : pos1);
-		return isContainsProtocol;
+		return (pos0 <= 0 ? 0 : pos0) >= (pos1 <= 0 ? Integer.MAX_VALUE : pos1);
 	}
 
 }

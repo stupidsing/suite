@@ -72,22 +72,20 @@ public class EvalPredicates {
 
 	public SystemPredicate evalFun = PredicateUtil.funPredicate(n -> Suite.evaluateFun(Suite.fcc(n, true)));
 
-	public SystemPredicate evalJs = new SystemPredicate() {
-		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
-			String js = Formatter.display(params[0]);
-			Object result;
+	public SystemPredicate evalJs = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		String js = Formatter.display(params[0]);
+		Object result;
 
-			try {
-				result = engines.apply("js").eval(js);
-			} catch (ScriptException ex) {
-				LogUtil.error(ex);
-				return false;
-			}
-
-			String str = Objects.toString(result, "");
-			return prover.bind(new Str(str), params[1]);
+		try {
+			result = engines.apply("js").eval(js);
+		} catch (ScriptException ex) {
+			LogUtil.error(ex);
+			return false;
 		}
+
+		String str = Objects.toString(result, "");
+		return prover.bind(new Str(str), params[1]);
 	};
 
 	public SystemPredicate generalize = PredicateUtil.funPredicate(n -> new Generalizer().generalize(n));
