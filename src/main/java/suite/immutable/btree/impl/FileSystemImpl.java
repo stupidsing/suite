@@ -23,8 +23,7 @@ public class FileSystemImpl implements FileSystem {
 	private IbTree<Bytes> ibTree;
 
 	public FileSystemImpl(String filename, long capacity) throws FileNotFoundException {
-		ibTreeStack = new IbTreeStack<Bytes>( //
-				filename, capacity, pageSize, Bytes.comparator, keyUtil.serializer());
+		ibTreeStack = new IbTreeStack<Bytes>(filename, capacity, pageSize, Bytes.comparator, keyUtil.serializer());
 		ibTree = ibTreeStack.getIbTree();
 	}
 
