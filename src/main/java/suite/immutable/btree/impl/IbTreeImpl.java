@@ -50,7 +50,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private PageFile pageFile;
 	private SerializedPageFile<Page> serializedPageFile;
-	private SerializedPageFile<Bytes> serializedPayloadPageFile;
+	private SerializedPageFile<Bytes> serializedPayloadFile;
 	private IbTreeImpl<Integer> allocationIbTree;
 
 	private int maxBranchFactor; // Exclusive
@@ -240,7 +240,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		@Override
 		public Bytes getPayload(Key key) {
 			Integer pointer = get(root, key, SlotType.DATA);
-			return pointer != null ? serializedPayloadPageFile.load(pointer) : null;
+			return pointer != null ? serializedPayloadFile.load(pointer) : null;
 		}
 
 		@Override
@@ -256,7 +256,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		@Override
 		public <Payload> void put(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
-			serializedPayloadPageFile.save(pointer, payload);
+			serializedPayloadFile.save(pointer, payload);
 			update(key, new Slot(SlotType.DATA, key, pointer));
 		}
 
@@ -425,7 +425,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		pageFile = new PageFileImpl(filename, pageSize);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
-		serializedPayloadPageFile = new SerializedPageFile<>(pageFile, SerializeUtil.bytes(pageSize));
+		serializedPayloadFile = new SerializedPageFile<>(pageFile, SerializeUtil.bytes(pageSize));
 		this.allocationIbTree = allocationIbTree;
 
 		this.maxBranchFactor = maxBranchFactor;
