@@ -87,6 +87,10 @@ public class Chars implements Iterable<Character> {
 		return start >= end;
 	}
 
+	public Chars pad(int size) {
+		return pad(size, ' ');
+	}
+
 	public Chars pad(int size, char pad) {
 		CharsBuilder cb = new CharsBuilder();
 		cb.append(this);

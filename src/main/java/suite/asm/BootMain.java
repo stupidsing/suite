@@ -25,7 +25,7 @@ public class BootMain extends ExecutableProgram {
 
 			// Combine the images and align to 512 bytes
 			Bytes disk0 = Bytes.concat(bootLoader, kernel);
-			Bytes disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00, (byte) 0);
+			Bytes disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
 
 			String image = "target/boot.bin";
 			Files.write(Paths.get(image), disk1.toBytes());

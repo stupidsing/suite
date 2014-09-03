@@ -39,7 +39,7 @@ public class FileSystemNameKeySet {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
 		NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
 		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
-		Source<Bytes> source = transaction.keys(minKey.toBytes(), increment(maxKey.toBytes()));
+		Source<Bytes> source = transaction.keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return FunUtil.concat(FunUtil.map(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
@@ -56,7 +56,7 @@ public class FileSystemNameKeySet {
 
 	public void add(Bytes name) {
 		for (NameKey key : keyUtil.toNameKeys(name))
-			transaction.put(key.toBytes());
+			transaction.put(keyUtil.toBytes(key));
 	}
 
 	public void remove(Bytes name) {
@@ -69,10 +69,10 @@ public class FileSystemNameKeySet {
 				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
 				NameKey minKey = boundingKey(hash, 0);
 				NameKey maxKey = boundingKey(hash, 1);
-				if (transaction.keys(minKey.toBytes(), maxKey.toBytes()) == null)
-					transaction.remove(key.toBytes());
+				if (transaction.keys(keyUtil.toBytes(minKey), keyUtil.toBytes(maxKey)) == null)
+					transaction.remove(keyUtil.toBytes(key));
 			} else
-				transaction.remove(key.toBytes());
+				transaction.remove(keyUtil.toBytes(key));
 		}
 	}
 

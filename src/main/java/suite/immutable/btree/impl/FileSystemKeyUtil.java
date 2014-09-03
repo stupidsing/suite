@@ -30,10 +30,6 @@ public class FileSystemKeyUtil {
 			this.size = size;
 		}
 
-		public Bytes toBytes() {
-			return Bytes.concat(super.toBytes(), path, Bytes.asList((byte) size)).pad(keyLength, (byte) 0);
-		}
-
 		public Bytes getPath() {
 			return path;
 		}
@@ -51,11 +47,6 @@ public class FileSystemKeyUtil {
 			this.seq = seq;
 		}
 
-		public Bytes toBytes() {
-			byte bs[] = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(seq)).array();
-			return Bytes.concat(super.toBytes(), new Bytes(bs)).pad(keyLength, (byte) 0);
-		}
-
 		public int getSeq() {
 			return seq;
 		}
@@ -70,10 +61,6 @@ public class FileSystemKeyUtil {
 			this.id = id;
 		}
 
-		public Bytes toBytes() {
-			return Bytes.concat(hash, Bytes.asList((byte) id));
-		}
-
 		public Bytes getHash() {
 			return hash;
 		}
@@ -81,6 +68,19 @@ public class FileSystemKeyUtil {
 		public int getId() {
 			return id;
 		}
+	}
+
+	public Bytes toBytes(NameKey key) {
+		return Bytes.concat(toBytes0(key), key.path, Bytes.asList((byte) key.size)).pad(keyLength);
+	}
+
+	public Bytes toBytes(DataKey key) {
+		byte bs[] = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(key.seq)).array();
+		return Bytes.concat(toBytes0(key), new Bytes(bs)).pad(keyLength);
+	}
+
+	private Bytes toBytes0(Key key) {
+		return Bytes.concat(key.hash, Bytes.asList((byte) key.id));
 	}
 
 	public Bytes toName(List<NameKey> keys) {
@@ -103,7 +103,7 @@ public class FileSystemKeyUtil {
 				int pos1 = Math.min(pos + pathLength, size);
 				keys.add(toNameKey(hash(name.subbytes(0, pos)) //
 						, 0 //
-						, name.subbytes(pos, pos1).pad(pathLength, (byte) 0) //
+						, name.subbytes(pos, pos1).pad(pathLength) //
 						, pos1 == size ? pos1 - pos : 0));
 				pos = pos1;
 			}

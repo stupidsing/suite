@@ -87,6 +87,10 @@ public class Bytes implements Iterable<Byte> {
 		return start >= end;
 	}
 
+	public Bytes pad(int size) {
+		return pad(size, (byte) 0);
+	}
+
 	public Bytes pad(int size, byte pad) {
 		BytesBuilder bb = new BytesBuilder();
 		bb.append(this);

@@ -122,7 +122,7 @@ public class FileSystemImpl implements FileSystem {
 	}
 
 	private Bytes key(Bytes hash, int id, int seq) {
-		return keyUtil.toDataKey(hash, id, seq).toBytes();
+		return keyUtil.toBytes(keyUtil.toDataKey(hash, id, seq));
 	}
 
 }
