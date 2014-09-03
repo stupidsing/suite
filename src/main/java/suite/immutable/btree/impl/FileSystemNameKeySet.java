@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import suite.immutable.btree.IbTreeMutator;
 import suite.immutable.btree.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
@@ -24,9 +25,9 @@ public class FileSystemNameKeySet {
 	private List<NameKey> emptyKeys = Collections.<NameKey> emptyList();
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
-	private IbTreeImpl<Bytes>.Mutator transaction;
+	private IbTreeMutator<Bytes> transaction;
 
-	public FileSystemNameKeySet(IbTreeImpl<Bytes>.Mutator transaction) {
+	public FileSystemNameKeySet(IbTreeMutator<Bytes> transaction) {
 		this.transaction = transaction;
 	}
 
