@@ -168,6 +168,7 @@ fc-parse-sugar (definem .type .mv # .monad) (
 )
 	:- !, temp .atom
 #
+fc-parse-sugar (setm .mv := .value # .monad) (+putm {scope} {.mv} {.value} # .monad) :- ! #
 fc-parse-sugar (.monad #) (callm {.monad}) :- ! #
 fc-parse-sugar (.monad # .monads0) (callm {seqm {.monad} {.monads1}})
 	:- fc-parse-sugar .monads0 (callm {.monads1}), !

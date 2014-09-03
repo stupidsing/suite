@@ -17,7 +17,7 @@ public class MonadTest {
 		assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
 				+ "do >> \n" //
 				+ "    definem string v # \n" //
-				+ "    putm {v} {\"abc\"} # \n" //
+				+ "    setm v := \"abc\" # \n" //
 				+ "    getm {v} # \n" //
 				+ ""), Suite.parse("string"))));
 	}
@@ -28,7 +28,7 @@ public class MonadTest {
 			assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
 					+ "do >> \n" //
 					+ "    definem int v # \n" //
-					+ "    putm {v} {\"abc\"} # \n" //
+					+ "    setm v := \"abc\" # \n" //
 					+ ""), Suite.parse("any"))));
 		} catch (RuntimeException ex) {
 			// Unmatched types
