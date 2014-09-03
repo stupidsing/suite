@@ -27,10 +27,10 @@ public class TwoPassIndexerTest {
 		TwoPassIndexer indexer = new TwoPassIndexer();
 
 		for (String filename : filenames)
-			indexer.pass0(filename, To.string(new File(filename)));
+			indexer.pass0(filename, Util.read(filename));
 
 		for (String filename : filenames)
-			indexer.pass1(filename, To.string(new File(filename)));
+			indexer.pass1(filename, Util.read(filename));
 
 		Map<String, List<Reference>> map = indexer.getKeysByWord();
 

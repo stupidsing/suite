@@ -3,7 +3,6 @@ package suite.node.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -13,7 +12,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
-import suite.util.To;
+import suite.util.Util;
 
 public class IterativeParserTest {
 
@@ -77,7 +76,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseAuto() throws IOException {
-		String in = To.string(new File("src/main/resources/auto.sl"));
+		String in = Util.read("src/main/resources/auto.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -85,7 +84,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseFile() throws IOException {
-		String in = To.string(new File("src/main/resources/fc.sl"));
+		String in = Util.read("src/main/resources/fc.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));

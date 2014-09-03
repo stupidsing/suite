@@ -14,7 +14,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.util.FileUtil;
 import suite.util.LogUtil;
-import suite.util.To;
+import suite.util.Util;
 
 public class IoPredicates {
 
@@ -45,7 +45,7 @@ public class IoPredicates {
 	public SystemPredicate fileRead = PredicateUtil.funPredicate(n -> {
 		String filename = Formatter.display(n);
 		try {
-			return new Str(To.string(new File(filename)));
+			return new Str(Util.read(filename));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

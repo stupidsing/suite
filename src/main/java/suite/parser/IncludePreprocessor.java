@@ -7,7 +7,7 @@ import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
-import suite.util.To;
+import suite.util.Util;
 
 /**
  * Process #include tags.
@@ -51,7 +51,7 @@ public class IncludePreprocessor implements Fun<String, String> {
 			File file = new File(dir, in.substring(pos0 + open.length(), pos1));
 
 			if (included.add(file.getAbsolutePath()))
-				doIncludes(file.getParentFile(), To.string(file), included, sb);
+				doIncludes(file.getParentFile(), Util.read(file), included, sb);
 
 			start = pos1 + close.length();
 		}

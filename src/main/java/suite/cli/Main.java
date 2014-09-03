@@ -2,7 +2,6 @@ package suite.cli;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -79,7 +78,7 @@ public class Main extends ExecutableProgram {
 	}
 
 	private String readScript(String filename) throws IOException {
-		String contents = To.string(new File(filename));
+		String contents = Util.read(filename);
 		if (contents.startsWith("#")) // Skips first line comment
 			contents = contents.substring(contents.indexOf('\n') + 1);
 		return contents;

@@ -26,6 +26,7 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.To;
+import suite.util.Util;
 
 public class EditorController {
 
@@ -205,7 +206,7 @@ public class EditorController {
 
 	private void load(EditorView view, String filename) {
 		try {
-			String text = To.string(new File(filename));
+			String text = Util.read(filename);
 			view.getFilenameTextField().setText(filename);
 
 			JEditorPane editor = view.getEditor();

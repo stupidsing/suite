@@ -1,8 +1,6 @@
 package suite.util;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -125,12 +123,6 @@ public class To {
 	public static String string(long time) {
 		LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
 		return dateTime.format(FormatUtil.fmt);
-	}
-
-	public static String string(File file) throws IOException {
-		try (InputStream fis = new FileInputStream(file)) {
-			return string(fis);
-		}
 	}
 
 	public static String string(InputStream in) throws IOException {

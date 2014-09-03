@@ -1,6 +1,8 @@
 package suite.util;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -189,6 +191,16 @@ public class Util {
 		if (pos < 0)
 			pos += size;
 		return list.subList(0, Math.min(size, pos));
+	}
+
+	public static String read(File file) throws IOException {
+		try (InputStream fis = new FileInputStream(file)) {
+			return To.string(fis);
+		}
+	}
+
+	public static String read(String filename) throws IOException {
+		return read(new File(filename));
 	}
 
 	/**

@@ -12,7 +12,7 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
 import suite.parser.IncludePreprocessor;
 import suite.primitive.Bytes;
-import suite.util.To;
+import suite.util.Util;
 
 public class ImperativeCompiler {
 
@@ -23,7 +23,7 @@ public class ImperativeCompiler {
 			+ ", sink .code"));
 
 	public Bytes compile(int org, File file) throws IOException {
-		String s0 = To.string(file);
+		String s0 = Util.read(file);
 		String s1 = new IncludePreprocessor(file.getParentFile()).apply(s0);
 		return compile(org, s1);
 	}

@@ -2,7 +2,6 @@ package suite.algo;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,7 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.To;
+import suite.util.Util;
 
 public class LempelZivWelchTest {
 
@@ -36,7 +36,7 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test3() throws IOException {
-		String s = To.string(new File("src/main/java/suite/algo/LempelZivWelch.java"));
+		String s = Util.read("src/main/java/suite/algo/LempelZivWelch.java");
 		assertEquals(s, doTest(s));
 	}
 

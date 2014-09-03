@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import suite.ip.ImperativeCompiler;
 import suite.primitive.Bytes;
 import suite.util.FileUtil;
-import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
@@ -20,7 +19,7 @@ public class BootMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String args[]) throws IOException {
-		Bytes bootLoader = new Assembler(16).assemble(To.string(new File("src/main/asm/bootloader.asm")));
+		Bytes bootLoader = new Assembler(16).assemble(Util.read("src/main/asm/bootloader.asm"));
 		Bytes kernel = new ImperativeCompiler().compile(0x40000, new File("src/main/il/kernel.il"));
 
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
