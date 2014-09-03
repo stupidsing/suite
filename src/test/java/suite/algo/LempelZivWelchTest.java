@@ -12,7 +12,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.To;
-import suite.util.Util;
 
 public class LempelZivWelchTest {
 

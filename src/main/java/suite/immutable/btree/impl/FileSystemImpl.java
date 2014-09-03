@@ -7,6 +7,8 @@ import java.util.ListIterator;
 import java.util.Objects;
 
 import suite.immutable.btree.FileSystem;
+import suite.immutable.btree.IbTree;
+import suite.immutable.btree.IbTreeMutator;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
@@ -21,7 +23,7 @@ public class FileSystemImpl implements FileSystem {
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
 	private List<IbTreeImpl<Integer>> pointerIbTrees = new ArrayList<>();
-	private IbTreeImpl<Bytes> ibTree;
+	private IbTree<Bytes> ibTree;
 
 	public FileSystemImpl(String filename, long capacity) throws FileNotFoundException {
 		long nPages = capacity / pageSize;
@@ -52,7 +54,7 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public Bytes read(Bytes name) {
-		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		IbTreeMutator<Bytes> mutator = ibTree.begin();
 		Bytes hash = keyUtil.hash(name);
 		Integer size = mutator.getData(key(hash, SIZEID, 0));
 
@@ -68,13 +70,13 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public List<Bytes> list(Bytes start, Bytes end) {
-		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		IbTreeMutator<Bytes> mutator = ibTree.begin();
 		return To.list(new FileSystemNameKeySet(mutator).list(start, end));
 	}
 
 	@Override
 	public void replace(Bytes name, Bytes bytes) {
-		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		IbTreeMutator<Bytes> mutator = ibTree.begin();
 		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(mutator);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
@@ -111,14 +113,14 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public void replace(Bytes name, int seq, Bytes bytes) {
-		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		IbTreeMutator<Bytes> mutator = ibTree.begin();
 		mutator.put(key(keyUtil.hash(name), DATAID, seq), bytes);
 		mutator.commit();
 	}
 
 	@Override
 	public void resize(Bytes name, int size1) {
-		IbTreeImpl<Bytes>.Mutator mutator = ibTree.begin();
+		IbTreeMutator<Bytes> mutator = ibTree.begin();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		int size0 = mutator.getData(sizeKey);
