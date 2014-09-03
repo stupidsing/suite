@@ -1,9 +1,7 @@
 package suite.immutable.btree.impl;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 
 import suite.immutable.btree.FileSystem;
@@ -12,7 +10,6 @@ import suite.immutable.btree.IbTreeMutator;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
-import suite.util.Util;
 
 public class FileSystemImpl implements FileSystem {
 
@@ -22,29 +19,18 @@ public class FileSystemImpl implements FileSystem {
 	private int pageSize = 4096;
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
-	private List<IbTreeImpl<Integer>> pointerIbTrees = new ArrayList<>();
+	private IbTreeStack<Bytes> ibTreeStack;
 	private IbTree<Bytes> ibTree;
 
 	public FileSystemImpl(String filename, long capacity) throws FileNotFoundException {
-		long nPages = capacity / pageSize;
-		IbTreeBuilder builder = new IbTreeBuilder(pageSize / 64, pageSize);
-
-		int i = 0;
-		IbTreeImpl<Integer> pointerIbTree;
-		pointerIbTrees.add(builder.buildPointerTree(filename + i++));
-
-		while ((pointerIbTree = Util.last(pointerIbTrees)).guaranteedCapacity() < nPages)
-			pointerIbTrees.add(builder.buildPointerTree(filename + i++, pointerIbTree));
-
-		ibTree = builder.buildTree(filename + i++, Bytes.comparator, keyUtil.serializer(), pointerIbTree);
+		ibTreeStack = new IbTreeStack<Bytes>( //
+				filename, capacity, pageSize, Bytes.comparator, keyUtil.serializer());
+		ibTree = ibTreeStack.getIbTree();
 	}
 
 	@Override
 	public void close() {
-		ibTree.close();
-		ListIterator<IbTreeImpl<Integer>> li = pointerIbTrees.listIterator();
-		while (li.hasPrevious())
-			li.previous().close();
+		ibTreeStack.close();
 	}
 
 	@Override
