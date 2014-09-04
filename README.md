@@ -7,11 +7,18 @@ Library with all sorts of useful code pieces for myself. In particular it has a 
 - Linux, unix, or cygwin
 - JDK 1.8
 - Apache Maven
-- rlwrap if you want to use the interactive prompt conveniently
+- rlwrap if you want to use the convenient interactive prompt
 
-### How to build and set up the project?
+### How to build and run the project?
 
 Execute run.sh. It executes maven to build the java code, and performs pre-compilation as well.
+
+
+### How to in set up in eclipse?
+
+Execute command
+mvn eclipse:clean eclipse:eclipse
+and imports the project into any workspace.
 
 
 ### I get stack overflow error when running org.instructionexecutor test cases. What can I do?
