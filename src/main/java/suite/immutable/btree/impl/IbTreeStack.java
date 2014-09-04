@@ -16,7 +16,7 @@ public class IbTreeStack<Key> implements Closeable {
 	private List<IbTreeImpl<Integer>> pointerIbTrees = new ArrayList<>();
 	private IbTree<Key> ibTree;
 
-	public IbTreeStack(String filename, long capacity, int pageSize, Comparator<Key> comparator, Serializer<Key> serializer)
+	public IbTreeStack(String filename, int pageSize, long capacity, Comparator<Key> comparator, Serializer<Key> serializer)
 			throws FileNotFoundException {
 		long nPages = capacity / pageSize;
 		IbTreeBuilder builder = new IbTreeBuilder(pageSize / 64, pageSize);
