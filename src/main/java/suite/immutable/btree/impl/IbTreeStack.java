@@ -3,38 +3,39 @@ package suite.immutable.btree.impl;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
 import suite.immutable.btree.IbTree;
-import suite.util.SerializeUtil.Serializer;
 import suite.util.Util;
 
 public class IbTreeStack<Key> implements Closeable {
 
-	private List<IbTreeImpl<Integer>> pointerIbTrees = new ArrayList<>();
+	private List<IbTreeImpl<Integer>> allocationIbTrees = new ArrayList<>();
 	private IbTree<Key> ibTree;
 
-	public IbTreeStack(String filename, int pageSize, long capacity, Comparator<Key> comparator, Serializer<Key> serializer)
-			throws FileNotFoundException {
+	public IbTreeStack(IbTreeConfiguration<Key> config) throws FileNotFoundException {
+		String filenamePrefix = config.getFilenamePrefix();
+		int pageSize = config.getPageSize();
+		long capacity = config.getCapacity();
 		long nPages = capacity / pageSize;
-		IbTreeBuilder builder = new IbTreeBuilder(pageSize / 64, pageSize);
+
+		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
-		IbTreeImpl<Integer> pointerIbTree;
-		pointerIbTrees.add(builder.buildPointerTree(filename + i++));
+		IbTreeImpl<Integer> allocationIbTree;
+		allocationIbTrees.add(builder.buildAllocationIbTree(filenamePrefix + i++));
 
-		while ((pointerIbTree = Util.last(pointerIbTrees)).guaranteedCapacity() < nPages)
-			pointerIbTrees.add(builder.buildPointerTree(filename + i++, pointerIbTree));
+		while ((allocationIbTree = Util.last(allocationIbTrees)).guaranteedCapacity() < nPages)
+			allocationIbTrees.add(builder.buildAllocationIbTree(filenamePrefix + i++, allocationIbTree));
 
-		ibTree = builder.buildTree(filename + i++, comparator, serializer, pointerIbTree);
+		ibTree = builder.buildTree(filenamePrefix + i++, config, allocationIbTree);
 	}
 
 	@Override
 	public void close() {
 		ibTree.close();
-		ListIterator<IbTreeImpl<Integer>> li = pointerIbTrees.listIterator();
+		ListIterator<IbTreeImpl<Integer>> li = allocationIbTrees.listIterator();
 		while (li.hasPrevious())
 			li.previous().close();
 	}

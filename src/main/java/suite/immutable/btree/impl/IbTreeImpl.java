@@ -412,24 +412,21 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTreeImpl(String filename //
-			, int maxBranchFactor //
-			, int pageSize //
-			, Comparator<Key> comparator //
-			, Serializer<Key> serializer //
-			, IbTreeImpl<Integer> allocationIbTree) throws FileNotFoundException {
+	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree)
+			throws FileNotFoundException {
 		this.filename = filename;
-		this.comparator = comparator;
-		this.serializer = SerializeUtil.nullable(serializer);
-		mutate = new Mutate();
+		this.comparator = config.getComparator();
+		this.serializer = SerializeUtil.nullable(config.getSerializer());
+		this.maxBranchFactor = config.getMaxBranchFactor();
+		this.allocationIbTree = allocationIbTree;
 
+		int pageSize = config.getPageSize();
+
+		mutate = new Mutate();
+		minBranchFactor = maxBranchFactor / 2;
 		pageFile = new PageFileImpl(filename, pageSize);
 		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
 		serializedPayloadFile = new SerializedPageFile<>(pageFile, SerializeUtil.bytes(pageSize));
-		this.allocationIbTree = allocationIbTree;
-
-		this.maxBranchFactor = maxBranchFactor;
-		minBranchFactor = maxBranchFactor / 2;
 	}
 
 	@Override

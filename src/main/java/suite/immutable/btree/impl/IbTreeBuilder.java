@@ -1,42 +1,41 @@
 package suite.immutable.btree.impl;
 
 import java.io.FileNotFoundException;
-import java.util.Comparator;
 
-import suite.util.SerializeUtil.Serializer;
 import suite.util.Util;
 
 public class IbTreeBuilder {
 
-	private int maxBranchFactor;
-	private int pageSize;
+	private IbTreeConfiguration<Integer> allocationIbTreeConfig;
 
-	public IbTreeBuilder(int maxBranchFactor, int pageSize) {
-		this.maxBranchFactor = maxBranchFactor;
-		this.pageSize = pageSize;
+	public IbTreeBuilder(IbTreeConfiguration<?> config) {
+		allocationIbTreeConfig = new IbTreeConfiguration<Integer>();
+		allocationIbTreeConfig.setPageSize(config.getPageSize());
+		allocationIbTreeConfig.setMaxBranchFactor(config.getMaxBranchFactor());
+		allocationIbTreeConfig.setComparator(Util.<Integer> comparator());
+		allocationIbTreeConfig.setSerializer(IbTreeImpl.pointerSerializer);
 	}
 
 	/**
 	 * Builds a small tree that would not span more than 1 page, i.e. no extra
 	 * "page allocation tree" is required.
 	 */
-	public IbTreeImpl<Integer> buildPointerTree(String filename) throws FileNotFoundException {
-		return buildPointerTree(filename, null);
+	public IbTreeImpl<Integer> buildAllocationIbTree(String filename) throws FileNotFoundException {
+		return buildAllocationIbTree(filename, null);
 	}
 
 	/**
 	 * Builds an intermediate tree that is supported by a separate page
 	 * allocation tree.
 	 */
-	public IbTreeImpl<Integer> buildPointerTree(String filename, IbTreeImpl<Integer> allocationIbTree) throws FileNotFoundException {
-		return buildTree(filename, Util.<Integer> comparator(), IbTreeImpl.pointerSerializer, allocationIbTree);
+	public IbTreeImpl<Integer> buildAllocationIbTree(String filename, IbTreeImpl<Integer> allocationIbTree)
+			throws FileNotFoundException {
+		return buildTree(filename, allocationIbTreeConfig, allocationIbTree);
 	}
 
-	public <Key> IbTreeImpl<Key> buildTree(String filename //
-			, Comparator<Key> comparator //
-			, Serializer<Key> serializer //
-			, IbTreeImpl<Integer> allocationIbTree) throws FileNotFoundException {
-		return new IbTreeImpl<>(filename, maxBranchFactor, pageSize, comparator, serializer, allocationIbTree);
+	public <Key> IbTreeImpl<Key> buildTree(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree)
+			throws FileNotFoundException {
+		return new IbTreeImpl<Key>(filename, config, allocationIbTree);
 	}
 
 }

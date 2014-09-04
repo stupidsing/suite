@@ -21,8 +21,10 @@ public class FileSystemImpl implements FileSystem {
 
 	private IbTreeStack<Bytes> ibTreeStack;
 
-	public FileSystemImpl(String filename, long capacity) throws FileNotFoundException {
-		ibTreeStack = new IbTreeStack<>(filename, pageSize, capacity, Bytes.comparator, keyUtil.serializer());
+	public FileSystemImpl(IbTreeConfiguration<Bytes> config) throws FileNotFoundException {
+		config.setComparator(Bytes.comparator);
+		config.setSerializer(keyUtil.serializer());
+		ibTreeStack = new IbTreeStack<>(config);
 	}
 
 	@Override

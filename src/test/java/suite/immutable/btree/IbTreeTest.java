@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.file.PageFile;
 import suite.immutable.btree.impl.IbTreeBuilder;
+import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
@@ -20,14 +20,21 @@ import suite.util.Util;
 
 public class IbTreeTest {
 
+	private int pageSize = 4096;
 	private int maxBranchFactor = 16;
-	private int pageSize = PageFile.pageSize;
-	private IbTreeBuilder builder = new IbTreeBuilder(maxBranchFactor, pageSize);
 
 	@Test
 	public void testSingleLevel() throws FileNotFoundException {
-		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree" //
-		, Util.<Integer> comparator(), SerializeUtil.intSerializer, null)) {
+		IbTreeConfiguration<Integer> config = new IbTreeConfiguration<>();
+		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
+		config.setPageSize(pageSize);
+		config.setMaxBranchFactor(maxBranchFactor);
+		config.setComparator(Util.<Integer> comparator());
+		config.setSerializer(SerializeUtil.intSerializer);
+
+		IbTreeBuilder builder = new IbTreeBuilder(config);
+
+		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree", config, null)) {
 			ibTree.create().commit();
 
 			IbTreeMutator<Integer> mutator = ibTree.begin();
@@ -45,14 +52,23 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws FileNotFoundException {
+		IbTreeConfiguration<String> config = new IbTreeConfiguration<>();
+		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
+		config.setPageSize(pageSize);
+		config.setMaxBranchFactor(maxBranchFactor);
+		config.setComparator(Util.<String> comparator());
+		config.setSerializer(SerializeUtil.string(16));
+
+		IbTreeBuilder builder = new IbTreeBuilder(config);
+
 		int i = 0;
 		String f0 = FileUtil.tmp + "/ibTree" + i++;
 		String f1 = FileUtil.tmp + "/ibTree" + i++;
 		String f2 = FileUtil.tmp + "/ibTree" + i++;
 
-		try (IbTreeImpl<Integer> ibTree0 = builder.buildPointerTree(f0);
-				IbTreeImpl<Integer> ibTree1 = builder.buildPointerTree(f1, ibTree0);
-				IbTree<String> ibTree2 = builder.buildTree(f2, Util.<String> comparator(), SerializeUtil.string(16), ibTree1)) {
+		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(f0);
+				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(f1, ibTree0);
+				IbTree<String> ibTree2 = builder.buildTree(f2, config, ibTree1)) {
 			ibTree2.create().commit();
 
 			int size = ibTree2.guaranteedCapacity();
