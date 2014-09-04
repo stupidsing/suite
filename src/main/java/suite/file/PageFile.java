@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 
 public interface PageFile extends Closeable {
 
+	public static int pageSize = 4096;
+
 	public void sync() throws IOException;
 
 	public ByteBuffer load(int pageNo) throws IOException;

@@ -10,6 +10,7 @@ import java.util.List;
 
 import suite.btree.Allocator;
 import suite.btree.B_Tree;
+import suite.file.PageFile;
 import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
 import suite.util.SerializeUtil;
@@ -17,6 +18,7 @@ import suite.util.SerializeUtil.Serializer;
 
 public class B_TreeHolder<Key, Value> implements Closeable {
 
+	private int pageSize = PageFile.pageSize;
 	private Allocator al;
 	private SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbp;
 	private SerializedPageFile<B_TreeImpl<Key, Value>.Page> pp;
@@ -123,8 +125,8 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
 		al = new AllocatorImpl(amf);
-		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, 4096), sbs);
-		pp = new SerializedPageFile<>(new PageFileImpl(pf, 4096), ps);
+		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
+		pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), ps);
 
 		b_tree.setAllocator(al);
 		b_tree.setSuperblockPageFile(sbp);

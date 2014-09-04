@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
+import suite.file.PageFile;
 import suite.immutable.btree.FileSystem;
 import suite.immutable.btree.IbTreeMutator;
 import suite.primitive.Bytes;
@@ -15,7 +16,7 @@ public class FileSystemImpl implements FileSystem {
 	private static byte DATAID = 64;
 	private static byte SIZEID = 65;
 
-	private int pageSize = 4096;
+	private int pageSize = PageFile.pageSize;
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
 	private IbTreeStack<Bytes> ibTreeStack;

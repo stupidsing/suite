@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.file.PageFile;
 import suite.immutable.btree.impl.IbTreeBuilder;
 import suite.immutable.btree.impl.IbTreeImpl;
 import suite.util.FileUtil;
@@ -20,7 +21,7 @@ import suite.util.Util;
 public class IbTreeTest {
 
 	private int maxBranchFactor = 16;
-	private int pageSize = 4096;
+	private int pageSize = PageFile.pageSize;
 	private IbTreeBuilder builder = new IbTreeBuilder(maxBranchFactor, pageSize);
 
 	@Test

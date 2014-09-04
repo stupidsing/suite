@@ -1,27 +1,38 @@
 package suite.btree.impl;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
 import suite.btree.Allocator;
+import suite.file.PageFile;
+import suite.file.PageFileImpl;
+import suite.file.SerializedPageFile;
+import suite.primitive.Bytes;
+import suite.util.SerializeUtil;
 
 /**
  * Manages B-tree pages on disk.
  */
 public class AllocatorImpl implements Allocator {
 
-	private static int maxPages = 4096;
+	private int size = 4096;
+	private int pageSize = PageFile.pageSize;
 
-	private RandomAccessFile allocMapFile;
+	private SerializedPageFile<Bytes> allocMapFile;
 	private byte allocMap[];
 
-	public AllocatorImpl(String filename) throws IOException {
-		allocMap = new byte[maxPages];
+	private int lastAllocatedPageNo;
 
-		allocMapFile = new RandomAccessFile(filename, "rw");
-		int allocMapSize = Math.max(maxPages, (int) allocMapFile.length());
-		allocMap = new byte[allocMapSize];
-		allocMapFile.read(allocMap);
+	public AllocatorImpl(String filename) throws IOException {
+		allocMapFile = new SerializedPageFile<>(new PageFileImpl(filename, pageSize), SerializeUtil.bytes(pageSize));
+		allocMap = new byte[size];
+
+		int i = 0, p = 0;
+
+		while (i < size) {
+			int i1 = Math.min(size, i + pageSize);
+			System.arraycopy(allocMapFile.load(p++).toBytes(), 0, allocMap, i, i1 - i);
+			i = i1;
+		}
 	}
 
 	@Override
@@ -31,35 +42,36 @@ public class AllocatorImpl implements Allocator {
 
 	@Override
 	public int allocate() {
-		int pageNo;
-		for (pageNo = 0; pageNo < allocMap.length; pageNo++)
-			if (allocMap[pageNo] == 0) {
-				allocMap[pageNo] = 1;
-				break;
-			}
+		int pageNo = findFreePage();
 
 		// TODO extends allocation map if all pages are used
 
-		saveAllocMap();
-		return pageNo;
+		allocMap[pageNo] = 1;
+		savePageNo(pageNo);
+		return lastAllocatedPageNo = pageNo;
 	}
 
 	@Override
 	public void deallocate(int pageNo) {
 		allocMap[pageNo] = 0;
-		saveAllocMap();
+		savePageNo(pageNo);
 	}
 
-	private void saveAllocMap() {
-		try {
-			allocMapFile.seek(0);
-			allocMapFile.write(allocMap);
+	private int findFreePage() {
+		int start = lastAllocatedPageNo + 1;
+		for (int pageNo = start; pageNo < allocMap.length; pageNo++)
+			if (allocMap[pageNo] == 0)
+				return pageNo;
+		for (int pageNo = 0; pageNo < start; pageNo++)
+			if (allocMap[pageNo] == 0)
+				return pageNo;
+		return -1;
+	}
 
-			// TODO optimize by only saving that byte
-
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+	private void savePageNo(int pageNo) {
+		int p = pageNo / pageSize;
+		int start = p * pageSize, end = start + pageSize;
+		allocMapFile.save(p, new Bytes(allocMap, start, end));
 	}
 
 }
