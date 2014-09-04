@@ -16,7 +16,7 @@ public class FileSystemImpl implements FileSystem {
 	private static byte DATAID = 64;
 	private static byte SIZEID = 65;
 
-	private int pageSize = PageFile.pageSize;
+	private int pageSize = PageFile.defaultPageSize;
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
 	private IbTreeStack<Bytes> ibTreeStack;

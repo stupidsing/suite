@@ -44,13 +44,14 @@ import suite.util.Util;
 public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private String filename;
+	private int pageSize;
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
 	private Mutate mutate;
 
-	private PageFile pageFile;
-	private SerializedPageFile<Page> serializedPageFile;
-	private SerializedPageFile<Bytes> serializedPayloadFile;
+	private PageFile pageFile0;
+	private SerializedPageFile<Page> pageFile;
+	private SerializedPageFile<Bytes> payloadFile;
 	private IbTreeImpl<Integer> allocationIbTree;
 
 	private int maxBranchFactor; // Exclusive
@@ -240,7 +241,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		@Override
 		public Bytes getPayload(Key key) {
 			Integer pointer = get(root, key, SlotType.DATA);
-			return pointer != null ? serializedPayloadFile.load(pointer) : null;
+			return pointer != null ? payloadFile.load(pointer) : null;
 		}
 
 		@Override
@@ -256,7 +257,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		@Override
 		public <Payload> void put(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
-			serializedPayloadFile.save(pointer, payload);
+			payloadFile.save(pointer, payload);
 			update(key, new Slot(SlotType.DATA, key, pointer));
 		}
 
@@ -389,8 +390,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private class Mutate implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
-		private Mutate() {
-			stampFile = new SerializedPageFile<>(filename + ".stamp", SerializeUtil.list(SerializeUtil.intSerializer));
+		private Mutate() throws FileNotFoundException {
+			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
+			stampFile = new SerializedPageFile<>(stampPageFile, pageSize, SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
 		private Mutator begin() {
@@ -415,6 +417,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree)
 			throws FileNotFoundException {
 		this.filename = filename;
+		this.pageSize = config.getPageSize();
 		this.comparator = config.getComparator();
 		this.serializer = SerializeUtil.nullable(config.getSerializer());
 		this.maxBranchFactor = config.getMaxBranchFactor();
@@ -424,15 +427,15 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
-		pageFile = new PageFileImpl(filename, pageSize);
-		serializedPageFile = new SerializedPageFile<>(pageFile, createPageSerializer());
-		serializedPayloadFile = new SerializedPageFile<>(pageFile, SerializeUtil.bytes(pageSize));
+		pageFile0 = new PageFileImpl(filename, pageSize);
+		pageFile = new SerializedPageFile<>(pageFile0, pageSize, createPageSerializer());
+		payloadFile = new SerializedPageFile<>(pageFile0, pageSize, SerializeUtil.bytes(pageSize));
 	}
 
 	@Override
 	public void close() {
 		mutate.close();
-		serializedPageFile.close();
+		pageFile.close();
 	}
 
 	@Override
@@ -519,16 +522,16 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Page read(Integer pointer) {
-		return serializedPageFile.load(pointer);
+		return pageFile.load(pointer);
 	}
 
 	private void write(Integer pointer, Page page) {
-		serializedPageFile.save(pointer, page);
+		pageFile.save(pointer, page);
 	}
 
 	private void sync() {
 		try {
-			pageFile.sync();
+			pageFile0.sync();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

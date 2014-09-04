@@ -42,9 +42,11 @@ public class JournalledPageFile implements Closeable, PageFile {
 	}
 
 	public JournalledPageFile(String filename, int pageSize) throws IOException {
-		pageFile = new PageFileImpl(filename, pageSize);
-		journalPageFile = new SerializedPageFile<>(filename + ".journal", jes);
-		pointerPageFile = new SerializedPageFile<>(new PageFileImpl(filename, 4), SerializeUtil.intSerializer);
+		int journalPageSize = pageSize + 4;
+		PageFileImpl journalPageFile0 = new PageFileImpl(filename + ".journal", journalPageSize);
+		PageFileImpl pointerPageFile0 = new PageFileImpl(filename, 4);
+		journalPageFile = new SerializedPageFile<>(journalPageFile0, journalPageSize, jes);
+		pointerPageFile = new SerializedPageFile<>(pointerPageFile0, 4, SerializeUtil.intSerializer);
 
 		nCommittedJournalEntries = pointerPageFile.load(0);
 

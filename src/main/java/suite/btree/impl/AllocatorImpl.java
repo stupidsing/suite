@@ -15,7 +15,7 @@ import suite.util.SerializeUtil;
 public class AllocatorImpl implements Allocator {
 
 	private int size = 4096;
-	private int pageSize = PageFile.pageSize;
+	private int pageSize = PageFile.defaultPageSize;
 
 	private SerializedPageFile<Bytes> allocMapFile;
 	private byte allocMap[];
@@ -23,7 +23,7 @@ public class AllocatorImpl implements Allocator {
 	private int lastAllocatedPageNo;
 
 	public AllocatorImpl(String filename) throws IOException {
-		allocMapFile = new SerializedPageFile<>(new PageFileImpl(filename, pageSize), SerializeUtil.bytes(pageSize));
+		allocMapFile = new SerializedPageFile<>(new PageFileImpl(filename, pageSize), pageSize, SerializeUtil.bytes(pageSize));
 		allocMap = new byte[size];
 
 		int i = 0, p = 0;

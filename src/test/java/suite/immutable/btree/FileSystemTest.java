@@ -22,8 +22,8 @@ public class FileSystemTest {
 
 		IbTreeConfiguration<Bytes> config = new IbTreeConfiguration<>();
 		config.setFilenamePrefix(FileUtil.tmp + "/fs");
-		config.setPageSize(PageFile.pageSize);
-		config.setMaxBranchFactor(PageFile.pageSize / 64);
+		config.setPageSize(PageFile.defaultPageSize);
+		config.setMaxBranchFactor(PageFile.defaultPageSize / 64);
 		config.setCapacity(64 * 1024);
 
 		try (FileSystem fs = new FileSystemImpl(config)) {
