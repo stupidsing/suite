@@ -24,21 +24,11 @@ public class AllocatorImpl implements Allocator {
 		allocMapFile.read(allocMap);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see suite.btree.AllocatorInterface#close()
-	 */
 	@Override
 	public void close() throws IOException {
 		allocMapFile.close();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see suite.btree.AllocatorInterface#allocate()
-	 */
 	@Override
 	public int allocate() {
 		int pageNo;
@@ -54,11 +44,6 @@ public class AllocatorImpl implements Allocator {
 		return pageNo;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see suite.btree.AllocatorInterface#deallocate(int)
-	 */
 	@Override
 	public void deallocate(int pageNo) {
 		allocMap[pageNo] = 0;
