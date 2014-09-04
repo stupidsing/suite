@@ -54,7 +54,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 			journalEntries.add(journalPageFile.load(jp));
 	}
 
-	public void create() {
+	public synchronized void create() {
 		nCommittedJournalEntries = 0;
 		journalEntries.clear();
 		pointerPageFile.save(0, nCommittedJournalEntries);
@@ -76,7 +76,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 			flushJournal();
 	}
 
-	public void flushJournal() throws IOException {
+	public synchronized void flushJournal() throws IOException {
 
 		// Make sure all changes are written to main file
 		pageFile.sync();
@@ -95,16 +95,16 @@ public class JournalledPageFile implements Closeable, PageFile {
 	}
 
 	@Override
-	public ByteBuffer load(int pageNo) throws IOException {
+	public synchronized ByteBuffer load(int pageNo) throws IOException {
 		int jp = findPageInJournal(pageNo);
-		if (jp >= 0)
+		if (jp < 0)
 			return pageFile.load(pageNo);
 		else
 			return journalEntries.get(jp).bytes.toByteBuffer();
 	}
 
 	@Override
-	public void save(int pageNo, ByteBuffer bb) throws IOException {
+	public synchronized void save(int pageNo, ByteBuffer bb) throws IOException {
 		int jp = findDirtyPageInJournal(pageNo);
 
 		if (jp < 0) {
@@ -119,7 +119,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 		pageFile.save(pageNo, bb);
 	}
 
-	public void commit() {
+	public synchronized void commit() {
 		nCommittedJournalEntries = journalEntries.size();
 	}
 
