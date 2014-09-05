@@ -21,7 +21,7 @@ public class StmTest {
 
 	private Random random = new Random();
 
-	private int nMemories = 2;
+	private int nMemories = 5;
 	private int nTransactions = 1;
 
 	private class Worker {
@@ -59,7 +59,9 @@ public class StmTest {
 		}
 
 		private void work(List<Memory<Integer>> memories) throws InterruptedException, TransactionException {
-			if (step >= nMemories * 2) { // Commit or rollback
+			int order = orders.get(step++);
+
+			if (order >= nMemories * 2) { // Commit or rollback
 				System.out.println(this + " COMMIT");
 				boolean isCommitted = false;
 				try {
@@ -69,8 +71,8 @@ public class StmTest {
 					if (!isCommitted)
 						transaction.rollback();
 				}
-			} else if (step >= nMemories) { // Write a memory
-				int mi = orders.get(step) - nMemories;
+			} else if (order >= nMemories) { // Write a memory
+				int mi = order - nMemories;
 				System.out.println(this + " WRITE " + mi);
 
 				Memory<Integer> memory = memories.get(mi);
@@ -81,15 +83,13 @@ public class StmTest {
 				else
 					throw new RuntimeException("Value changed between reads");
 			} else { // Read a memory
-				int mi = orders.get(step);
+				int mi = order;
 				System.out.println(this + " READ " + mi);
 
 				Memory<Integer> memory = memories.get(mi);
 				Integer read = memory.read(transaction);
 				readValues.set(mi, read);
 			}
-
-			step++;
 		}
 	}
 
