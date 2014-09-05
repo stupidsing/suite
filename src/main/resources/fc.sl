@@ -340,7 +340,7 @@ fc-add-functions STANDARD .p (
 		unfold-right {i => if (i < end) then (Value (i, i + inc)) else None} {start}
 	>>
 	define sh := command => in =>
-		do >> in | popen {"sh"; "-c"; command;} | unliftm | second | first
+		do >> in | popen {"sh"; "-c"; command;} | perform | second | first
 	>>
 	define starts-with :=
 		case
