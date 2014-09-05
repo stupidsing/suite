@@ -77,7 +77,7 @@ public class IbTreeTest {
 
 			// During each mutation, some new pages are required before old
 			// pages can be discarded during commit. If we update too much data,
-			// we would run out of allocatable pages. Here we limit ourselves to
+			// we would run out of allocatable pages. Here we limit ourself to
 			// updating 25 keys each.
 
 			for (List<String> subset : Util.splitn(list, 25)) {
