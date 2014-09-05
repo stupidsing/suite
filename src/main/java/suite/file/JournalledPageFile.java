@@ -11,6 +11,11 @@ import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
+/**
+ * Protect data against power loss or similar failures by recording journals.
+ * 
+ * @author ywsing
+ */
 public class JournalledPageFile implements Closeable, PageFile {
 
 	private PageFile pageFile;
@@ -83,8 +88,8 @@ public class JournalledPageFile implements Closeable, PageFile {
 	}
 
 	/**
-	 * Makes sure the current snapshot of data is recoverable, upon the return
-	 * of method call.
+	 * Makes sure the current snapshot of data is saved and recoverable on
+	 * failure, upon the return of method call.
 	 */
 	@Override
 	public synchronized void sync() throws IOException {
@@ -101,7 +106,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 	}
 
 	/**
-	 * Shortens the journal file by applying them to page file.
+	 * Shortens the journal by applying them to page file.
 	 */
 	public synchronized void applyJournal() throws IOException {
 
