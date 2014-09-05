@@ -60,6 +60,7 @@ public class StmTest {
 
 		private void work(List<Memory<Integer>> memories) throws InterruptedException, TransactionException {
 			if (step >= nMemories * 2) { // Commit or rollback
+				System.out.println(this + " COMMIT");
 				boolean isCommitted = false;
 				try {
 					transaction.commit();
@@ -70,6 +71,8 @@ public class StmTest {
 				}
 			} else if (step >= nMemories) { // Write a memory
 				int mi = orders.get(step) - nMemories;
+				System.out.println(this + " WRITE " + mi);
+
 				Memory<Integer> memory = memories.get(mi);
 				int read = memory.read(transaction);
 
@@ -79,6 +82,8 @@ public class StmTest {
 					throw new RuntimeException("Value changed between reads");
 			} else { // Read a memory
 				int mi = orders.get(step);
+				System.out.println(this + " READ " + mi);
+
 				Memory<Integer> memory = memories.get(mi);
 				Integer read = memory.read(transaction);
 				readValues.set(mi, read);
