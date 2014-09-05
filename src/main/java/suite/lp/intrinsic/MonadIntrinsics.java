@@ -89,11 +89,6 @@ public class MonadIntrinsics {
 		return Atom.NIL;
 	};
 
-	public Intrinsic seq = (bridge, inputs) -> {
-		ExpandUtil.expandFully(bridge::unwrap, bridge.unwrap(inputs.get(0)));
-		return inputs.get(1);
-	};
-
 	public Intrinsic source = new Intrinsic() {
 		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
 			IndexedReader.Pointer intern = Data.get(inputs.get(0));

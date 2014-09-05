@@ -159,7 +159,7 @@ fc-parse-sugar (do >> .do) (
 	fun-to-monad {scope =>
 		define perform := ({scope} . monad-to-fun) >>
 		expand getm := +getm {scope} >>
-		expand setm := +putm {scope} >>
+		expand setm := +setm {scope} >>
 		.do
 	}
 ) :- ! #
@@ -168,7 +168,7 @@ fc-parse-sugar (definem .type .mv # .monad) (
 )
 	:- !, temp .atom
 #
-fc-parse-sugar (setm .mv := .value # .monad) (+setm {scope} {.mv} {.value} # .monad) :- ! #
+fc-parse-sugar (.mv := .value # .monad) (+setm {scope} {.mv} {.value} # .monad) :- ! #
 fc-parse-sugar (.monad #) (perform {.monad}) :- ! #
 fc-parse-sugar (.monad # .monads0) (perform {seqm {.monad} {.monads1}})
 	:- fc-parse-sugar .monads0 (perform {.monads1}), !

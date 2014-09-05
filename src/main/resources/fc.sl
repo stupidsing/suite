@@ -130,6 +130,9 @@ fc-add-functions STANDARD .p (
 	define +popen := ([string] -> string -> (number, string, string)) of
 		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn-v2
 	>>
+	define deep-seq := (:t => :t -> :t) of
+		atom:INTRN!SeqIntrinsics.deepSeq | getintrn | callintrn-v1
+	>>
 	define log := (:t => :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn-v1
 	>>

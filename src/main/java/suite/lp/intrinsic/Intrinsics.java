@@ -35,7 +35,8 @@ public class Intrinsics {
 				ArrayIntrinsics.class //
 				, BasicIntrinsics.class //
 				, CharsIntrinsics.class //
-				, MonadIntrinsics.class)) {
+				, MonadIntrinsics.class //
+				, SeqIntrinsics.class)) {
 			Object instance;
 
 			try {

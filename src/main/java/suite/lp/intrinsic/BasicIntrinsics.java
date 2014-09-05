@@ -30,7 +30,7 @@ public class BasicIntrinsics {
 			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = bridge.wrap(id, Int.of(name.charAt(0)));
+				Node left = bridge.wrap(Intrinsics.id_, Int.of(name.charAt(0)));
 				Node right = bridge.wrap(this, Atom.of(name.substring(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else

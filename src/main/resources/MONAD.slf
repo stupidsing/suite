@@ -20,7 +20,7 @@ define concatm :=
 >>
 define seqm :=
 	liftm2 {(:t => any -> :t -> :t) of
-		atom:INTRN!MonadIntrinsics.seq | getintrn | callintrn-t2
+		atom:INTRN!SeqIntrinsics.seq | getintrn | callintrn-t2
 	}
 >>
 define seqsm :=
