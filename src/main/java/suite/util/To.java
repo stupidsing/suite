@@ -39,7 +39,7 @@ public class To {
 	}
 
 	public static Bytes bytes(String s) {
-		return new Bytes(s.getBytes(FileUtil.charset));
+		return Bytes.of(s.getBytes(FileUtil.charset));
 	}
 
 	public static Bytes bytes(InputStream is) throws IOException {
@@ -66,7 +66,7 @@ public class To {
 	}
 
 	public static Chars chars(String s) {
-		return new Chars(charArray(s));
+		return Chars.of(charArray(s));
 	}
 
 	public static String hex(int i) {

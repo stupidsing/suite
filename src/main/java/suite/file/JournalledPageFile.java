@@ -22,7 +22,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 	private Serializer<JournalEntry> jes = new Serializer<JournalEntry>() {
 		public JournalEntry read(ByteBuffer buffer) {
 			int pageNo = buffer.getInt();
-			return new JournalEntry(pageNo, new Bytes(buffer));
+			return new JournalEntry(pageNo, Bytes.of(buffer));
 		}
 
 		public void write(ByteBuffer buffer, JournalEntry journalEntry) {
@@ -113,7 +113,7 @@ public class JournalledPageFile implements Closeable, PageFile {
 		}
 
 		JournalEntry journalEntry = journalEntries.get(jp);
-		journalEntry.bytes = new Bytes(bb);
+		journalEntry.bytes = Bytes.of(bb);
 		journalPageFile.save(jp, journalEntry);
 
 		pageFile.save(pageNo, bb);

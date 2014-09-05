@@ -76,7 +76,7 @@ public class SerializeUtil {
 			public Bytes read(ByteBuffer buffer) {
 				byte bs[] = new byte[length];
 				buffer.get(bs);
-				return new Bytes(bs);
+				return Bytes.of(bs);
 			}
 
 			public void write(ByteBuffer buffer, Bytes bytes) {

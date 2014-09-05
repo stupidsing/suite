@@ -30,7 +30,7 @@ public class BytesPageFile implements Closeable {
 		int start = pageNo * pageSize, end = start + pageSize;
 		ByteBuffer bb = file.load(start, end);
 		int offset = bb.arrayOffset();
-		return new Bytes(bb.array(), offset, offset + bb.limit());
+		return Bytes.of(bb.array(), offset, offset + bb.limit());
 	}
 
 	public void save(int pageNo, Bytes buffer) throws IOException {

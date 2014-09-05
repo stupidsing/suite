@@ -71,7 +71,7 @@ public class AllocatorImpl implements Allocator {
 	private void savePageNo(int pageNo) {
 		int p = pageNo / pageSize;
 		int start = p * pageSize, end = start + pageSize;
-		allocMapFile.save(p, new Bytes(allocMap, start, end));
+		allocMapFile.save(p, Bytes.of(allocMap, start, end));
 	}
 
 }

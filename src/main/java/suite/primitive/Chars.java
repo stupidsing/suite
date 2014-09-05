@@ -1,11 +1,16 @@
 package suite.primitive;
 
+import java.io.CharArrayReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.Copy;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
@@ -17,7 +22,7 @@ public class Chars implements Iterable<Character> {
 	private static char emptyCharArray[] = new char[0];
 	private static int reallocSize = 65536;
 
-	public static Chars emptyChars = new Chars(emptyCharArray);
+	public static Chars emptyChars = Chars.of(emptyCharArray);
 
 	public static Comparator<Chars> comparator = (chars0, chars1) -> {
 		int start0 = chars0.start, start1 = chars1.start;
@@ -34,22 +39,6 @@ public class Chars implements Iterable<Character> {
 		return c != 0 ? c : size0 - size1;
 	};
 
-	public Chars(String s) {
-		this(To.charArray(s));
-	}
-
-	public Chars(Chars chars) {
-		this(chars.cs, chars.start, chars.end);
-	}
-
-	public Chars(char chars[]) {
-		this(chars, 0);
-	}
-
-	public Chars(char chars[], int start) {
-		this(chars, start, chars.length);
-	}
-
 	public Chars(char chars[], int start, int end) {
 		this.cs = chars;
 		this.start = start;
@@ -61,11 +50,11 @@ public class Chars implements Iterable<Character> {
 		char nb[] = new char[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
-		return new Chars(nb);
+		return Chars.of(nb);
 	}
 
 	public static Chars asList(char... in) {
-		return new Chars(in);
+		return Chars.of(in);
 	}
 
 	public static Chars concat(Chars... array) {
@@ -73,6 +62,10 @@ public class Chars implements Iterable<Character> {
 		for (Chars chars : array)
 			bb.append(chars);
 		return bb.toChars();
+	}
+
+	public Reader reader() {
+		return new CharArrayReader(cs, start, end - start);
 	}
 
 	public char get(int index) {
@@ -85,6 +78,32 @@ public class Chars implements Iterable<Character> {
 
 	public boolean isEmpty() {
 		return start >= end;
+	}
+
+	public static Chars of(Sink<Writer> sink) {
+		Writer writer = new StringWriter();
+		sink.sink(writer);
+		return Chars.of(writer.toString());
+	}
+
+	public static Chars of(String s) {
+		return Chars.of(To.charArray(s));
+	}
+
+	public static Chars of(Chars chars) {
+		return Chars.of(chars.cs, chars.start, chars.end);
+	}
+
+	public static Chars of(char chars[]) {
+		return Chars.of(chars, 0);
+	}
+
+	public static Chars of(char chars[], int start) {
+		return Chars.of(chars, start, chars.length);
+	}
+
+	public static Chars of(char chars[], int start, int end) {
+		return new Chars(chars, start, end);
 	}
 
 	public Chars pad(int size) {

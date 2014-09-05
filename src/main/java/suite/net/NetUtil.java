@@ -24,7 +24,7 @@ public class NetUtil {
 			bytes[i] = (byte) (value & 0xFF);
 			value >>>= 8;
 		}
-		return new Bytes(bytes);
+		return Bytes.of(bytes);
 	}
 
 	public static Bytes serialize(Object o) {
@@ -34,7 +34,7 @@ public class NetUtil {
 			out.writeObject(o);
 			out.flush();
 			out.close();
-			return new Bytes(baos.toByteArray());
+			return Bytes.of(baos.toByteArray());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

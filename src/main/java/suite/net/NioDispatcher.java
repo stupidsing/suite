@@ -147,7 +147,7 @@ public class NioDispatcher<C extends Channel> extends ThreadedService {
 					int n = sc1.read(ByteBuffer.wrap(buffer));
 
 					if (n >= 0)
-						channel.onReceive(new Bytes(buffer, 0, n));
+						channel.onReceive(Bytes.of(buffer, 0, n));
 					else {
 						channel.onClose();
 						sc1.close();

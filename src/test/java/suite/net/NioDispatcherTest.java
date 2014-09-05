@@ -85,7 +85,7 @@ public class NioDispatcherTest {
 
 			for (String s : new String[] { "ABC", "WXYZ", "" }) {
 				byte bs[] = s.getBytes(FileUtil.charset);
-				Bytes request = new Bytes(bs);
+				Bytes request = Bytes.of(bs);
 				Bytes response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);
 				System.out.println("Request '" + s + "' is okay");

@@ -76,7 +76,7 @@ public class FileSystemKeyUtil {
 
 	public Bytes toBytes(DataKey key) {
 		byte bs[] = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(key.seq)).array();
-		return Bytes.concat(toBytes0(key), new Bytes(bs)).pad(keyLength);
+		return Bytes.concat(toBytes0(key), Bytes.of(bs)).pad(keyLength);
 	}
 
 	private Bytes toBytes0(Key key) {
@@ -137,7 +137,7 @@ public class FileSystemKeyUtil {
 		}
 
 		md.update(bytes.toBytes());
-		return new Bytes(md.digest());
+		return Bytes.of(md.digest());
 	}
 
 	public Serializer<Bytes> serializer() {

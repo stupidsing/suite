@@ -21,7 +21,7 @@ public class BytesUtil {
 			}
 
 			if (nBytesRead >= 0)
-				return new Bytes(bs, 0, nBytesRead);
+				return Bytes.of(bs, 0, nBytesRead);
 			else
 				return null;
 		};

@@ -1,11 +1,18 @@
 package suite.primitive;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.Copy;
+import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
@@ -17,7 +24,7 @@ public class Bytes implements Iterable<Byte> {
 	private static byte emptyByteArray[] = new byte[0];
 	private static int reallocSize = 65536;
 
-	public static Bytes emptyBytes = new Bytes(emptyByteArray);
+	public static Bytes emptyBytes = Bytes.of(emptyByteArray);
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
 		int start0 = bytes0.start, start1 = bytes1.start;
@@ -34,23 +41,7 @@ public class Bytes implements Iterable<Byte> {
 		return c != 0 ? c : size0 - size1;
 	};
 
-	public Bytes(ByteBuffer bb) {
-		this(bb.array(), bb.arrayOffset() + bb.position(), bb.arrayOffset() + bb.limit());
-	}
-
-	public Bytes(Bytes bytes) {
-		this(bytes.bs, bytes.start, bytes.end);
-	}
-
-	public Bytes(byte bytes[]) {
-		this(bytes, 0);
-	}
-
-	public Bytes(byte bytes[], int start) {
-		this(bytes, start, bytes.length);
-	}
-
-	public Bytes(byte bytes[], int start, int end) {
+	private Bytes(byte bytes[], int start, int end) {
 		this.bs = bytes;
 		this.start = start;
 		this.end = end;
@@ -61,11 +52,11 @@ public class Bytes implements Iterable<Byte> {
 		byte nb[] = new byte[newSize];
 		System.arraycopy(bs, start, nb, 0, size0);
 		System.arraycopy(a.bs, a.start, nb, size0, size1);
-		return new Bytes(nb);
+		return Bytes.of(nb);
 	}
 
 	public static Bytes asList(byte... in) {
-		return new Bytes(in);
+		return Bytes.of(in);
 	}
 
 	public static Bytes concat(Bytes... array) {
@@ -73,6 +64,10 @@ public class Bytes implements Iterable<Byte> {
 		for (Bytes bytes : array)
 			bb.append(bytes);
 		return bb.toBytes();
+	}
+
+	public DataInput dataInput() {
+		return new DataInputStream(new ByteArrayInputStream(bs, start, end - start));
 	}
 
 	public byte get(int index) {
@@ -85,6 +80,32 @@ public class Bytes implements Iterable<Byte> {
 
 	public boolean isEmpty() {
 		return start >= end;
+	}
+
+	public static Bytes of(Sink<DataOutput> sink) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		sink.sink(new DataOutputStream(baos));
+		return Bytes.of(baos.toByteArray());
+	}
+
+	public static Bytes of(ByteBuffer bb) {
+		return Bytes.of(bb.array(), bb.arrayOffset() + bb.position(), bb.arrayOffset() + bb.limit());
+	}
+
+	public static Bytes of(Bytes bytes) {
+		return Bytes.of(bytes.bs, bytes.start, bytes.end);
+	}
+
+	public static Bytes of(byte bytes[]) {
+		return Bytes.of(bytes, 0);
+	}
+
+	public static Bytes of(byte bytes[], int start) {
+		return Bytes.of(bytes, start, bytes.length);
+	}
+
+	public static Bytes of(byte bytes[], int start, int end) {
+		return Bytes.of(bytes, start, end);
 	}
 
 	public Bytes pad(int size) {
@@ -186,7 +207,7 @@ public class Bytes implements Iterable<Byte> {
 	private Bytes subbytes0(int start, int end) {
 		checkOpenBounds(start);
 		checkOpenBounds(end);
-		Bytes result = new Bytes(bs, start, end);
+		Bytes result = Bytes.of(bs, start, end);
 
 		// Avoid small pack of bytes object keeping a large buffer
 		if (bs.length >= reallocSize && end - start < reallocSize / 4)
@@ -245,7 +266,7 @@ public class Bytes implements Iterable<Byte> {
 		}
 
 		public Bytes toBytes() {
-			return new Bytes(bs, 0, size);
+			return Bytes.of(bs, 0, size);
 		}
 
 		private void extendBuffer(int capacity1) {
