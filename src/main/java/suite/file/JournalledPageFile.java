@@ -69,16 +69,41 @@ public class JournalledPageFile implements Closeable, PageFile {
 		pointerPageFile.close();
 	}
 
-	@Override
-	public void sync() throws IOException {
-		journalPageFile.sync();
-		pointerPageFile.save(0, nCommittedJournalEntries);
+	/**
+	 * Marks a snapshot that data can be recovered to.
+	 */
+	public synchronized void commit() throws IOException {
+		while (nCommittedJournalEntries < journalEntries.size()) {
+			JournalEntry journalEntry = journalEntries.get(nCommittedJournalEntries++);
+			pageFile.save(journalEntry.pageNo, journalEntry.bytes);
+		}
 
-		if (nCommittedJournalEntries > 64)
-			flushJournal();
+		if (nCommittedJournalEntries > 8)
+			saveJournal();
 	}
 
-	public synchronized void flushJournal() throws IOException {
+	/**
+	 * Makes sure the current snapshot of data is recoverable, upon the return
+	 * of method call.
+	 */
+	@Override
+	public synchronized void sync() throws IOException {
+		journalPageFile.sync();
+		saveJournal();
+		pointerPageFile.sync();
+	}
+
+	private void saveJournal() throws IOException {
+		pointerPageFile.save(0, nCommittedJournalEntries);
+
+		if (nCommittedJournalEntries > 128)
+			applyJournal();
+	}
+
+	/**
+	 * Shortens the journal file by applying them to page file.
+	 */
+	public synchronized void applyJournal() throws IOException {
 
 		// Make sure all changes are written to main file
 		pageFile.sync();
@@ -117,12 +142,6 @@ public class JournalledPageFile implements Closeable, PageFile {
 		JournalEntry journalEntry = journalEntries.get(jp);
 		journalEntry.bytes = bytes;
 		journalPageFile.save(jp, journalEntry);
-
-		pageFile.save(pageNo, bytes);
-	}
-
-	public synchronized void commit() {
-		nCommittedJournalEntries = journalEntries.size();
 	}
 
 	private int findPageInJournal(int pageNo) {

@@ -33,8 +33,10 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 	}
 
 	@Override
-	public <T> Memory<T> createMemory(Class<T> clazz) {
-		return new ObstructionFreeMemory<>();
+	public <T> Memory<T> createMemory(Class<T> clazz, T value) {
+		ObstructionFreeMemory<T> memory = new ObstructionFreeMemory<>();
+		memory.value0 = value;
+		return memory;
 	}
 
 	protected class ObstructionFreeTransaction implements Transaction {
@@ -143,7 +145,7 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 		 *
 		 * Timestamp checking is done to avoid changing post-modified data.
 		 */
-		public void write(Transaction transaction, T t) throws InterruptedException, TransactionException {
+		public void write(Transaction transaction, T value) throws InterruptedException, TransactionException {
 			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
 			ObstructionFreeTransaction theirTransaction;
 
@@ -166,7 +168,7 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 					break;
 
 			if (timestamp0 <= ourTransaction.readTimestamp)
-				value1 = t;
+				value1 = value;
 			else
 				throw new AbortException();
 		}
@@ -194,7 +196,7 @@ public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTra
 
 	private boolean isDescendantOf(ObstructionFreeTransaction descendant, Transaction ascendant) {
 		if (descendant != null && ascendant != null)
-			return ascendant == this || isDescendantOf(descendant.parent, ascendant);
+			return ascendant == descendant || isDescendantOf(descendant.parent, ascendant);
 		else
 			return false;
 	}
