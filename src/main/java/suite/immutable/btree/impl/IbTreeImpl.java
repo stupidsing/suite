@@ -1,9 +1,10 @@
 package suite.immutable.btree.impl;
 
 import java.io.Closeable;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -392,7 +393,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private Mutate() throws FileNotFoundException {
 			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
-			stampFile = new SerializedPageFile<>(stampPageFile, pageSize, SerializeUtil.list(SerializeUtil.intSerializer));
+			stampFile = new SerializedPageFile<>(stampPageFile, SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
 		private Mutator begin() {
@@ -417,10 +418,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree)
 			throws FileNotFoundException {
 		this.filename = filename;
-		this.pageSize = config.getPageSize();
-		this.comparator = config.getComparator();
-		this.serializer = SerializeUtil.nullable(config.getSerializer());
-		this.maxBranchFactor = config.getMaxBranchFactor();
+		pageSize = config.getPageSize();
+		comparator = config.getComparator();
+		serializer = SerializeUtil.nullable(config.getSerializer());
+		maxBranchFactor = config.getMaxBranchFactor();
 		this.allocationIbTree = allocationIbTree;
 
 		int pageSize = config.getPageSize();
@@ -428,8 +429,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
 		pageFile0 = new PageFileImpl(filename, pageSize);
-		pageFile = new SerializedPageFile<>(pageFile0, pageSize, createPageSerializer());
-		payloadFile = new SerializedPageFile<>(pageFile0, pageSize, SerializeUtil.bytes(pageSize));
+		pageFile = new SerializedPageFile<>(pageFile0, createPageSerializer());
+		payloadFile = new SerializedPageFile<>(pageFile0, SerializeUtil.bytes(pageSize));
 	}
 
 	@Override
@@ -539,27 +540,27 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private Serializer<Page> createPageSerializer() {
 		Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
-			public Slot read(ByteBuffer buffer) {
-				SlotType type = SlotType.values()[buffer.get()];
-				Key pivot = serializer.read(buffer);
-				Integer pointer = pointerSerializer.read(buffer);
+			public Slot read(DataInput dataInput) throws IOException {
+				SlotType type = SlotType.values()[dataInput.readByte()];
+				Key pivot = serializer.read(dataInput);
+				Integer pointer = pointerSerializer.read(dataInput);
 				return new Slot(type, pivot, pointer);
 			}
 
-			public void write(ByteBuffer buffer, Slot slot) {
-				buffer.put((byte) slot.type.ordinal());
-				serializer.write(buffer, slot.pivot);
-				pointerSerializer.write(buffer, slot.pointer);
+			public void write(DataOutput dataOutput, Slot slot) throws IOException {
+				dataOutput.writeByte(slot.type.ordinal());
+				serializer.write(dataOutput, slot.pivot);
+				pointerSerializer.write(dataOutput, slot.pointer);
 			}
 		});
 
 		return new Serializer<Page>() {
-			public Page read(ByteBuffer buffer) {
-				return new Page(slotsSerializer.read(buffer));
+			public Page read(DataInput dataInput) throws IOException {
+				return new Page(slotsSerializer.read(dataInput));
 			}
 
-			public void write(ByteBuffer buffer, Page page) {
-				slotsSerializer.write(buffer, page.slots);
+			public void write(DataOutput dataOutput, Page page) throws IOException {
+				slotsSerializer.write(dataOutput, page.slots);
 			}
 		};
 	}

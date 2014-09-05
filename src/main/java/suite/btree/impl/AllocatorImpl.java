@@ -23,7 +23,7 @@ public class AllocatorImpl implements Allocator {
 	private int lastAllocatedPageNo;
 
 	public AllocatorImpl(String filename) throws IOException {
-		allocMapFile = new SerializedPageFile<>(new PageFileImpl(filename, pageSize), pageSize, SerializeUtil.bytes(pageSize));
+		allocMapFile = new SerializedPageFile<>(new PageFileImpl(filename, pageSize), SerializeUtil.bytes(pageSize));
 		allocMap = new byte[size];
 
 		int i = 0, p = 0;

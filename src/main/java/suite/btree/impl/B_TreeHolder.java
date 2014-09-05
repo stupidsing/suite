@@ -1,8 +1,9 @@
 package suite.btree.impl;
 
 import java.io.Closeable;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -32,14 +33,14 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			this.b_tree = b_tree;
 		}
 
-		public B_TreeImpl<Key, Value>.Superblock read(ByteBuffer buffer) {
+		public B_TreeImpl<Key, Value>.Superblock read(DataInput dataInput) throws IOException {
 			B_TreeImpl<Key, Value>.Superblock superblock = b_tree.new Superblock();
-			superblock.root = SerializeUtil.intSerializer.read(buffer);
+			superblock.root = SerializeUtil.intSerializer.read(dataInput);
 			return superblock;
 		}
 
-		public void write(ByteBuffer buffer, B_TreeImpl<Key, Value>.Superblock value) {
-			SerializeUtil.intSerializer.write(buffer, value.root);
+		public void write(DataOutput dataOutput, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
+			SerializeUtil.intSerializer.write(dataOutput, value.root);
 		}
 	}
 
@@ -57,21 +58,21 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			this.valueSerializer = valueSerializer;
 		}
 
-		public B_TreeImpl<Key, Value>.Page read(ByteBuffer buffer) {
-			int pageNo = buffer.getInt();
-			int size = buffer.getInt();
+		public B_TreeImpl<Key, Value>.Page read(DataInput dataInput) throws IOException {
+			int pageNo = dataInput.readInt();
+			int size = dataInput.readInt();
 
 			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pageNo);
 
 			for (int i = 0; i < size; i++) {
-				char nodeType = buffer.getChar();
-				Key key = keySerializer.read(buffer);
+				char nodeType = dataInput.readChar();
+				Key key = keySerializer.read(dataInput);
 
 				if (nodeType == BRANCH) {
-					int branch = buffer.getInt();
+					int branch = dataInput.readInt();
 					addBranch(page, key, branch);
 				} else if (nodeType == LEAF) {
-					Value value = valueSerializer.read(buffer);
+					Value value = valueSerializer.read(dataInput);
 					addLeaf(page, key, value);
 				}
 			}
@@ -79,19 +80,19 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			return page;
 		}
 
-		public void write(ByteBuffer buffer, B_TreeImpl<Key, Value>.Page page) {
-			buffer.putInt(page.pageNo);
-			buffer.putInt(page.size());
+		public void write(DataOutput dataOutput, B_TreeImpl<Key, Value>.Page page) throws IOException {
+			dataOutput.writeInt(page.pageNo);
+			dataOutput.writeInt(page.size());
 
 			for (B_TreeImpl<Key, Value>.KeyPointer kp : page)
 				if (kp.pointer instanceof B_TreeImpl.Branch) {
-					buffer.putChar(BRANCH);
-					keySerializer.write(buffer, kp.key);
-					buffer.putInt(kp.getBranchPageNo());
+					dataOutput.writeChar(BRANCH);
+					keySerializer.write(dataOutput, kp.key);
+					dataOutput.writeInt(kp.getBranchPageNo());
 				} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
-					buffer.putChar(LEAF);
-					keySerializer.write(buffer, kp.key);
-					valueSerializer.write(buffer, kp.getLeafValue());
+					dataOutput.writeChar(LEAF);
+					keySerializer.write(dataOutput, kp.key);
+					valueSerializer.write(dataOutput, kp.getLeafValue());
 				}
 		}
 
@@ -125,8 +126,8 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
 		al = new AllocatorImpl(amf);
-		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), pageSize, sbs);
-		pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), pageSize, ps);
+		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
+		pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), ps);
 
 		b_tree.setAllocator(al);
 		b_tree.setSuperblockPageFile(sbp);

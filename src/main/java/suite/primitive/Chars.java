@@ -1,6 +1,7 @@
 package suite.primitive;
 
 import java.io.CharArrayReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -10,7 +11,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.Copy;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
@@ -80,14 +80,15 @@ public class Chars implements Iterable<Character> {
 		return start >= end;
 	}
 
-	public static Chars of(Sink<Writer> sink) {
+	public static Chars of(IoSink<Writer> ioSink) throws IOException {
 		Writer writer = new StringWriter();
-		sink.sink(writer);
+		ioSink.sink(writer);
 		return Chars.of(writer.toString());
 	}
 
 	public static Chars of(String s) {
-		return Chars.of(To.charArray(s));
+		char[] a = To.charArray(s);
+		return Chars.of(a);
 	}
 
 	public static Chars of(Chars chars) {
@@ -107,19 +108,11 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars pad(int size) {
-		return pad(size, ' ');
-	}
-
-	public Chars pad(int size, char pad) {
 		CharsBuilder cb = new CharsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
-			cb.append(pad);
+			cb.append(' ');
 		return cb.toChars();
-	}
-
-	public void putCharBuffer(CharBuffer cb) {
-		cb.put(cs, start, end - start);
 	}
 
 	public int size() {
@@ -148,6 +141,10 @@ public class Chars implements Iterable<Character> {
 			return Arrays.copyOfRange(cs, start, end);
 		else
 			return cs;
+	}
+
+	public void write(Writer writer) throws IOException {
+		writer.write(cs, start, end - start);
 	}
 
 	@Override

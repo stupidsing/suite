@@ -6,13 +6,13 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.util.Copy;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
 
@@ -82,14 +82,15 @@ public class Bytes implements Iterable<Byte> {
 		return start >= end;
 	}
 
-	public static Bytes of(Sink<DataOutput> sink) {
+	public static Bytes of(IoSink<DataOutput> ioSink) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		sink.sink(new DataOutputStream(baos));
+		ioSink.sink(new DataOutputStream(baos));
 		return Bytes.of(baos.toByteArray());
 	}
 
 	public static Bytes of(ByteBuffer bb) {
-		return Bytes.of(bb.array(), bb.arrayOffset() + bb.position(), bb.arrayOffset() + bb.limit());
+		int offset = bb.arrayOffset();
+		return Bytes.of(bb.array(), offset, offset + bb.limit());
 	}
 
 	public static Bytes of(Bytes bytes) {
@@ -105,23 +106,15 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public static Bytes of(byte bytes[], int start, int end) {
-		return Bytes.of(bytes, start, end);
+		return new Bytes(bytes, start, end);
 	}
 
 	public Bytes pad(int size) {
-		return pad(size, (byte) 0);
-	}
-
-	public Bytes pad(int size, byte pad) {
 		BytesBuilder bb = new BytesBuilder();
 		bb.append(this);
 		while (bb.size() < size)
-			bb.append(pad);
+			bb.append((byte) 0);
 		return bb.toBytes();
-	}
-
-	public void putByteBuffer(ByteBuffer bb) {
-		bb.put(bs, start, end - start);
 	}
 
 	public int size() {
@@ -150,6 +143,10 @@ public class Bytes implements Iterable<Byte> {
 			return Arrays.copyOfRange(bs, start, end);
 		else
 			return bs;
+	}
+
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.write(bs, start, end - start);
 	}
 
 	@Override

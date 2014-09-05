@@ -1,8 +1,9 @@
 package suite.file;
 
 import java.io.Closeable;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,15 +20,17 @@ public class JournalledPageFile implements Closeable, PageFile {
 	private int nCommittedJournalEntries;
 	private List<JournalEntry> journalEntries = new ArrayList<>();
 
+	private Serializer<Bytes> bytesSerializer;
+
 	private Serializer<JournalEntry> jes = new Serializer<JournalEntry>() {
-		public JournalEntry read(ByteBuffer buffer) {
-			int pageNo = buffer.getInt();
-			return new JournalEntry(pageNo, Bytes.of(buffer));
+		public JournalEntry read(DataInput dataInput) throws IOException {
+			int pageNo = dataInput.readInt();
+			return new JournalEntry(pageNo, bytesSerializer.read(dataInput));
 		}
 
-		public void write(ByteBuffer buffer, JournalEntry journalEntry) {
-			buffer.putInt(journalEntry.pageNo);
-			journalEntry.bytes.putByteBuffer(buffer);
+		public void write(DataOutput dataOutput, JournalEntry journalEntry) throws IOException {
+			dataOutput.writeInt(journalEntry.pageNo);
+			bytesSerializer.write(dataOutput, journalEntry.bytes);
 		}
 	};
 
@@ -43,10 +46,9 @@ public class JournalledPageFile implements Closeable, PageFile {
 
 	public JournalledPageFile(String filename, int pageSize) throws IOException {
 		int journalPageSize = pageSize + 4;
-		PageFileImpl journalPageFile0 = new PageFileImpl(filename + ".journal", journalPageSize);
-		PageFileImpl pointerPageFile0 = new PageFileImpl(filename, 4);
-		journalPageFile = new SerializedPageFile<>(journalPageFile0, journalPageSize, jes);
-		pointerPageFile = new SerializedPageFile<>(pointerPageFile0, 4, SerializeUtil.intSerializer);
+		journalPageFile = new SerializedPageFile<>(new PageFileImpl(filename + ".journal", journalPageSize), jes);
+		pointerPageFile = new SerializedPageFile<>(new PageFileImpl(filename, 4), SerializeUtil.intSerializer);
+		bytesSerializer = SerializeUtil.bytes(pageSize);
 
 		nCommittedJournalEntries = pointerPageFile.load(0);
 
@@ -95,16 +97,16 @@ public class JournalledPageFile implements Closeable, PageFile {
 	}
 
 	@Override
-	public synchronized ByteBuffer load(int pageNo) throws IOException {
+	public synchronized Bytes load(int pageNo) throws IOException {
 		int jp = findPageInJournal(pageNo);
 		if (jp < 0)
 			return pageFile.load(pageNo);
 		else
-			return journalEntries.get(jp).bytes.toByteBuffer();
+			return journalEntries.get(jp).bytes;
 	}
 
 	@Override
-	public synchronized void save(int pageNo, ByteBuffer bb) throws IOException {
+	public synchronized void save(int pageNo, Bytes bytes) throws IOException {
 		int jp = findDirtyPageInJournal(pageNo);
 
 		if (jp < 0) {
@@ -113,10 +115,10 @@ public class JournalledPageFile implements Closeable, PageFile {
 		}
 
 		JournalEntry journalEntry = journalEntries.get(jp);
-		journalEntry.bytes = Bytes.of(bb);
+		journalEntry.bytes = bytes;
 		journalPageFile.save(jp, journalEntry);
 
-		pageFile.save(pageNo, bb);
+		pageFile.save(pageNo, bytes);
 	}
 
 	public synchronized void commit() {

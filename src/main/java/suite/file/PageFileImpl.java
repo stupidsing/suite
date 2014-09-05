@@ -3,7 +3,8 @@ package suite.file;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+
+import suite.primitive.Bytes;
 
 public class PageFileImpl implements Closeable, PageFile {
 
@@ -26,14 +27,14 @@ public class PageFileImpl implements Closeable, PageFile {
 	}
 
 	@Override
-	public ByteBuffer load(int pageNo) throws IOException {
+	public Bytes load(int pageNo) throws IOException {
 		int start = pageNo * pageSize, end = start + pageSize;
 		return file.load(start, end);
 	}
 
 	@Override
-	public void save(int pageNo, ByteBuffer buffer) throws IOException {
-		file.save(pageNo * pageSize, buffer);
+	public void save(int pageNo, Bytes bytes) throws IOException {
+		file.save(pageNo * pageSize, bytes);
 	}
 
 	public int getPageSize() {

@@ -1,6 +1,8 @@
 package suite.util;
 
-import java.nio.ByteBuffer;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,9 +19,9 @@ public class SerializeUtil {
 	public static Serializer<Integer> intSerializer = int_();
 
 	public interface Serializer<V> {
-		public V read(ByteBuffer buffer);
+		public V read(DataInput dataInput) throws IOException;
 
-		public void write(ByteBuffer buffer, V value);
+		public void write(DataOutput dataOutput, V value) throws IOException;
 	}
 
 	/**
@@ -29,18 +31,18 @@ public class SerializeUtil {
 	 */
 	public static <T> Serializer<List<T>> list(Serializer<T> serializer) {
 		return new Serializer<List<T>>() {
-			public List<T> read(ByteBuffer buffer) {
-				int size = SerializeUtil.intSerializer.read(buffer);
+			public List<T> read(DataInput dataInput) throws IOException {
+				int size = SerializeUtil.intSerializer.read(dataInput);
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < size; i++)
-					list.add(serializer.read(buffer));
+					list.add(serializer.read(dataInput));
 				return list;
 			}
 
-			public void write(ByteBuffer buffer, List<T> list) {
-				SerializeUtil.intSerializer.write(buffer, list.size());
+			public void write(DataOutput dataOutput, List<T> list) throws IOException {
+				SerializeUtil.intSerializer.write(dataOutput, list.size());
 				for (T t : list)
-					serializer.write(buffer, t);
+					serializer.write(dataOutput, t);
 			}
 		};
 	}
@@ -52,16 +54,16 @@ public class SerializeUtil {
 	 */
 	public static <T> Serializer<T> nullable(Serializer<T> serializer) {
 		return new Serializer<T>() {
-			public T read(ByteBuffer buffer) {
-				return booleanSerializer.read(buffer) ? serializer.read(buffer) : null;
+			public T read(DataInput dataInput) throws IOException {
+				return booleanSerializer.read(dataInput) ? serializer.read(dataInput) : null;
 			}
 
 			@Override
-			public void write(ByteBuffer buffer, T value) {
+			public void write(DataOutput dataOutput, T value) throws IOException {
 				boolean isNotNull = value != null;
-				booleanSerializer.write(buffer, isNotNull);
+				booleanSerializer.write(dataOutput, isNotNull);
 				if (isNotNull)
-					serializer.write(buffer, value);
+					serializer.write(dataOutput, value);
 			}
 		};
 	}
@@ -73,17 +75,16 @@ public class SerializeUtil {
 	 */
 	public static Serializer<Bytes> bytes(int length) {
 		return new Serializer<Bytes>() {
-			public Bytes read(ByteBuffer buffer) {
+			public Bytes read(DataInput dataInput) throws IOException {
 				byte bs[] = new byte[length];
-				buffer.get(bs);
+				dataInput.readFully(bs);
 				return Bytes.of(bs);
 			}
 
-			public void write(ByteBuffer buffer, Bytes bytes) {
-				byte[] bs = bytes.toBytes();
-				buffer.put(bs);
-				for (int i = bs.length; i < length; i++)
-					buffer.put((byte) 0);
+			public void write(DataOutput dataOutput, Bytes bytes) throws IOException {
+				bytes.write(dataOutput);
+				for (int i = bytes.size(); i < length; i++)
+					dataOutput.write(0);
 			}
 		};
 	}
@@ -95,17 +96,17 @@ public class SerializeUtil {
 	 */
 	public static Serializer<String> string(int length) {
 		return new Serializer<String>() {
-			public String read(ByteBuffer buffer) {
+			public String read(DataInput dataInput) throws IOException {
 				byte bs[] = new byte[length];
-				int l = buffer.getInt();
-				buffer.get(bs);
+				int l = dataInput.readInt();
+				dataInput.readFully(bs);
 				return new String(bs, FileUtil.charset).substring(0, l);
 			}
 
-			public void write(ByteBuffer buffer, String value) {
+			public void write(DataOutput dataOutput, String value) throws IOException {
 				byte bs[] = Arrays.copyOf(value.getBytes(FileUtil.charset), length);
-				buffer.putInt(value.length());
-				buffer.put(bs);
+				dataOutput.writeInt(value.length());
+				dataOutput.write(bs);
 			}
 		};
 	}
@@ -117,12 +118,12 @@ public class SerializeUtil {
 	 */
 	public static Serializer<Boolean> boolean_() {
 		return new Serializer<Boolean>() {
-			public Boolean read(ByteBuffer buffer) {
-				return buffer.get() == -1;
+			public Boolean read(DataInput dataInput) throws IOException {
+				return dataInput.readByte() == -1;
 			}
 
-			public void write(ByteBuffer buffer, Boolean value) {
-				buffer.put((byte) (value ? -1 : 0));
+			public void write(DataOutput dataOutput, Boolean value) throws IOException {
+				dataOutput.writeByte(value ? -1 : 0);
 			}
 		};
 	}
@@ -134,12 +135,12 @@ public class SerializeUtil {
 	 */
 	public static Serializer<Integer> int_() {
 		return new Serializer<Integer>() {
-			public Integer read(ByteBuffer buffer) {
-				return buffer.getInt();
+			public Integer read(DataInput dataInput) throws IOException {
+				return dataInput.readInt();
 			}
 
-			public void write(ByteBuffer buffer, Integer value) {
-				buffer.putInt(value);
+			public void write(DataOutput dataOutput, Integer value) throws IOException {
+				dataOutput.writeInt(value);
 			}
 		};
 	}

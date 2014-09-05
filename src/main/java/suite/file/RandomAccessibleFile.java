@@ -7,6 +7,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import suite.primitive.Bytes;
+
 public class RandomAccessibleFile implements Closeable {
 
 	private RandomAccessFile file;
@@ -27,16 +29,17 @@ public class RandomAccessibleFile implements Closeable {
 		channel.force(true);
 	}
 
-	public ByteBuffer load(int start, int end) throws IOException {
-		ByteBuffer buffer = ByteBuffer.allocate(end - start);
-		channel.read(buffer, start);
-		buffer.rewind();
-		return buffer;
+	public Bytes load(int start, int end) throws IOException {
+		int size = end - start;
+
+		ByteBuffer bb = ByteBuffer.allocate(size);
+		channel.read(bb, start);
+		bb.limit(size);
+		return Bytes.of(bb);
 	}
 
-	public void save(int start, ByteBuffer buffer) throws IOException {
-		buffer.flip();
-		channel.write(buffer, start);
+	public void save(int start, Bytes bytes) throws IOException {
+		channel.write(bytes.toByteBuffer(), start);
 	}
 
 }

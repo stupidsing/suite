@@ -1,9 +1,11 @@
 package suite.file;
 
 import java.io.Closeable;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
+import suite.primitive.Bytes;
+import suite.primitive.IoSink;
 import suite.util.SerializeUtil.Serializer;
 
 /**
@@ -17,7 +19,6 @@ import suite.util.SerializeUtil.Serializer;
  */
 public class SerializedPageFile<V> implements Closeable {
 
-	private int pageSize;
 	private PageFile pageFile;
 	private Serializer<V> serializer;
 
@@ -29,8 +30,7 @@ public class SerializedPageFile<V> implements Closeable {
 		}
 	}
 
-	public SerializedPageFile(PageFile pageFile, int pageSize, Serializer<V> serializer) {
-		this.pageSize = pageSize;
+	public SerializedPageFile(PageFile pageFile, Serializer<V> serializer) {
 		this.pageFile = pageFile;
 		this.serializer = serializer;
 	}
@@ -50,7 +50,7 @@ public class SerializedPageFile<V> implements Closeable {
 
 	public V load(int pageNo) {
 		try {
-			return serializer.read(pageFile.load(pageNo));
+			return serializer.read(pageFile.load(pageNo).dataInput());
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}
@@ -58,12 +58,13 @@ public class SerializedPageFile<V> implements Closeable {
 
 	public void save(int pageNo, V page) {
 		try {
-			ByteBuffer buffer = ByteBuffer.allocate(pageSize);
-			serializer.write(buffer, page);
-			pageFile.save(pageNo, buffer);
+			pageFile.save(pageNo, Bytes.of(new IoSink<DataOutput>() {
+				public void sink(DataOutput dataOutput) throws IOException {
+					serializer.write(dataOutput, page);
+				}
+			}));
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}
 	}
-
 }

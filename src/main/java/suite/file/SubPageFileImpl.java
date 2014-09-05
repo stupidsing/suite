@@ -2,7 +2,8 @@ package suite.file;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+
+import suite.primitive.Bytes;
 
 public class SubPageFileImpl implements Closeable, PageFile {
 
@@ -21,13 +22,13 @@ public class SubPageFileImpl implements Closeable, PageFile {
 	}
 
 	@Override
-	public ByteBuffer load(int pageNo) throws IOException {
+	public Bytes load(int pageNo) throws IOException {
 		return parent.load(validate(pageNo - startPage));
 	}
 
 	@Override
-	public void save(int pageNo, ByteBuffer buffer) throws IOException {
-		parent.save(validate(pageNo - startPage), buffer);
+	public void save(int pageNo, Bytes bytes) throws IOException {
+		parent.save(validate(pageNo - startPage), bytes);
 	}
 
 	@Override

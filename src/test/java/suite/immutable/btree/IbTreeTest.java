@@ -21,14 +21,13 @@ import suite.util.Util;
 public class IbTreeTest {
 
 	private int pageSize = 4096;
-	private int maxBranchFactor = 16;
 
 	@Test
 	public void testSingleLevel() throws FileNotFoundException {
 		IbTreeConfiguration<Integer> config = new IbTreeConfiguration<>();
 		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
 		config.setPageSize(pageSize);
-		config.setMaxBranchFactor(maxBranchFactor);
+		config.setMaxBranchFactor(16);
 		config.setComparator(Util.<Integer> comparator());
 		config.setSerializer(SerializeUtil.intSerializer);
 
@@ -52,10 +51,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws FileNotFoundException {
-		IbTreeConfiguration<String> config = new IbTreeConfiguration<>();
-		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
-		config.setPageSize(pageSize);
-		config.setMaxBranchFactor(maxBranchFactor);
+		IbTreeConfiguration<String> config = createIbTreeConfiguration();
 		config.setComparator(Util.<String> comparator());
 		config.setSerializer(SerializeUtil.string(16));
 
@@ -117,6 +113,14 @@ public class IbTreeTest {
 		}
 
 		return count;
+	}
+
+	private IbTreeConfiguration<String> createIbTreeConfiguration() {
+		IbTreeConfiguration<String> config = new IbTreeConfiguration<>();
+		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
+		config.setPageSize(pageSize);
+		config.setMaxBranchFactor(16);
+		return config;
 	}
 
 }
