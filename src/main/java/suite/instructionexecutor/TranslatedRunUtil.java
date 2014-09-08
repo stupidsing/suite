@@ -3,7 +3,7 @@ package suite.instructionexecutor;
 import java.util.Arrays;
 
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
+import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;
@@ -44,9 +44,9 @@ public class TranslatedRunUtil {
 		public Node node;
 	}
 
-	public static IntrinsicBridge getIntrinsicBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
+	public static IntrinsicCallback getIntrinsicBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
 		if (config.isLazy)
-			return new IntrinsicBridge() {
+			return new IntrinsicCallback() {
 				public Node unwrap(Node node) {
 					node = node.finalNode();
 					if (node instanceof Thunk) {
@@ -66,7 +66,7 @@ public class TranslatedRunUtil {
 				}
 			};
 		else
-			return new IntrinsicBridge() {
+			return new IntrinsicCallback() {
 				public Node unwrap(Node node) {
 					return node;
 				}

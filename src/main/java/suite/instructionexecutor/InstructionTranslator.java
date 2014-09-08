@@ -125,8 +125,8 @@ public class InstructionTranslator implements Closeable {
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
-				+ "IntrinsicBridge bridge = TranslatedRunUtil.getIntrinsicBridge(config, this); \n" //
-				+ "Comparer comparer = new FunComparer(bridge::unwrap); \n" //
+				+ "IntrinsicCallback callback = TranslatedRunUtil.getIntrinsicBridge(config, this); \n" //
+				+ "Comparer comparer = new FunComparer(callback::unwrap); \n" //
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
@@ -138,7 +138,7 @@ public class InstructionTranslator implements Closeable {
 				+ "%s \n" //
 				+ "case " + invokeJavaEntryPoint + ": \n" //
 				+ "IntrinsicFrame iframe = (IntrinsicFrame) frame; \n" //
-				+ "returnValue = iframe.intrinsic.invoke(bridge, Arrays.asList(iframe.node)); \n" //
+				+ "returnValue = iframe.intrinsic.invoke(callback, Arrays.asList(iframe.node)); \n" //
 				+ "ip = cs[--csp]; \n" //
 				+ "continue; \n" //
 				+ "default: \n" //
@@ -214,12 +214,12 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case CALLINTRINSIC_:
 				app("{");
-				app("Data<?> data = (Data<?>) bridge.unwrap((Node) ds[--dsp])");
+				app("Data<?> data = (Data<?>) callback.unwrap((Node) ds[--dsp])");
 				app("List<Node> list = new ArrayList<>(3)");
 				for (int i = 1; i < insn.op1; i++)
 					app("list.add((Node) ds[--dsp])");
 				app("Intrinsic intrinsic = Data.get(data)");
-				app("#{reg} = intrinsic.invoke(bridge, list)", op0);
+				app("#{reg} = intrinsic.invoke(callback, list)", op0);
 				app("}");
 				break;
 			case CALLTHUNK_____:
@@ -314,7 +314,7 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case GETINTRINSIC__:
 				app("{");
-				app("Atom atom = (Atom) bridge.unwrap((Node) ds[--dsp])");
+				app("Atom atom = (Atom) callback.unwrap((Node) ds[--dsp])");
 				app("String intrinsicName = atom.toString().split(\"!\")[1]");
 				app("#{reg} = InstructionUtil.execGetIntrinsic(intrinsicName)", op0);
 				app("}");

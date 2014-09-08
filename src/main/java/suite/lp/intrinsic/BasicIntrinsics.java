@@ -4,7 +4,7 @@ import java.util.List;
 
 import suite.instructionexecutor.ThunkUtil;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
+import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -26,12 +26,12 @@ public class BasicIntrinsics {
 	private Atom UNKNOWN = Atom.of("UNKNOWN");
 
 	public Intrinsic atomString = new Intrinsic() {
-		public Node invoke(IntrinsicBridge bridge, List<Node> inputs) {
+		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
 			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = bridge.wrap(Intrinsics.id_, Int.of(name.charAt(0)));
-				Node right = bridge.wrap(this, Atom.of(name.substring(1)));
+				Node left = callback.wrap(Intrinsics.id_, Int.of(name.charAt(0)));
+				Node right = callback.wrap(this, Atom.of(name.substring(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -40,23 +40,23 @@ public class BasicIntrinsics {
 
 	public Intrinsic id = Intrinsics.id_;
 
-	public Intrinsic log1 = (bridge, inputs) -> {
+	public Intrinsic log1 = (callback, inputs) -> {
 		Node node = inputs.get(0);
-		LogUtil.info(Formatter.display(ThunkUtil.evaluateFully(bridge::unwrap, node)));
+		LogUtil.info(Formatter.display(ThunkUtil.evaluateFully(callback::unwrap, node)));
 		return node;
 	};
 
-	public Intrinsic log2 = (bridge, inputs) -> {
-		LogUtil.info(ThunkUtil.evaluateToString(bridge::unwrap, inputs.get(0)));
+	public Intrinsic log2 = (callback, inputs) -> {
+		LogUtil.info(ThunkUtil.evaluateToString(callback::unwrap, inputs.get(0)));
 		return inputs.get(1);
 	};
 
-	public Intrinsic throw_ = (bridge, inputs) -> {
-		String message = ThunkUtil.evaluateToString(bridge::unwrap, inputs.get(0));
+	public Intrinsic throw_ = (callback, inputs) -> {
+		String message = ThunkUtil.evaluateToString(callback::unwrap, inputs.get(0));
 		throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 	};
 
-	public Intrinsic typeOf = (bridge, inputs) -> {
+	public Intrinsic typeOf = (callback, inputs) -> {
 		Node node = inputs.get(0);
 		Atom type;
 

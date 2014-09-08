@@ -13,7 +13,7 @@ import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
+import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -27,7 +27,7 @@ import suite.util.To;
 
 public class FunInstructionExecutor extends InstructionExecutor {
 
-	private IntrinsicBridge intrinsicBridge;
+	private IntrinsicCallback intrinsicCallback;
 	private Comparer comparer;
 
 	private int invokeJavaEntryPoint;
@@ -36,7 +36,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		super(node);
 
 		if (isLazy)
-			intrinsicBridge = new IntrinsicBridge() {
+			intrinsicCallback = new IntrinsicCallback() {
 				public Node unwrap(Node node) {
 					node = node.finalNode();
 					return node instanceof Thunk ? evaluateThunk((Thunk) node) : node;
@@ -48,7 +48,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 				}
 			};
 		else
-			intrinsicBridge = new IntrinsicBridge() {
+			intrinsicCallback = new IntrinsicCallback() {
 				public Node unwrap(Node node) {
 					return node;
 				}
@@ -58,11 +58,11 @@ public class FunInstructionExecutor extends InstructionExecutor {
 				}
 			};
 
-		comparer = new FunComparer(intrinsicBridge::unwrap);
+		comparer = new FunComparer(intrinsicCallback::unwrap);
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
-		ThunkUtil.evaluateToWriter(intrinsicBridge::unwrap, execute(), writer);
+		ThunkUtil.evaluateToWriter(intrinsicCallback::unwrap, execute(), writer);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			for (int i = 1; i < insn.op1; i++)
 				ps.add((Node) ds[--dsp]);
 			Intrinsic intrinsic = Data.get(data);
-			result = intrinsic.invoke(intrinsicBridge, ps);
+			result = intrinsic.invoke(intrinsicCallback, ps);
 			break;
 		case COMPARE_______:
 			n0 = (Node) ds[--dsp];
@@ -147,7 +147,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public Fun<Node, Node> getUnwrapper() {
-		return intrinsicBridge::unwrap;
+		return intrinsicCallback::unwrap;
 	}
 
 	@Override

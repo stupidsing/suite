@@ -12,10 +12,10 @@ import suite.util.LogUtil;
 public class Intrinsics {
 
 	public interface Intrinsic {
-		public Node invoke(IntrinsicBridge bridge, List<Node> inputs);
+		public Node invoke(IntrinsicCallback callback, List<Node> inputs);
 	}
 
-	public interface IntrinsicBridge {
+	public interface IntrinsicCallback {
 		public Node unwrap(Node node);
 
 		public Node wrap(Intrinsic intrinsic, Node node);
@@ -24,10 +24,10 @@ public class Intrinsics {
 	public static Map<String, Intrinsic> intrinsics = new HashMap<>();
 
 	// Forces suspended node evaluation
-	public static Intrinsic id_ = (bridge, inputs) -> inputs.get(0).finalNode();
+	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
-	public static Node wrap(IntrinsicBridge bridge, Node node) {
-		return bridge.wrap(id_, node);
+	public static Node wrap(IntrinsicCallback callback, Node node) {
+		return callback.wrap(id_, node);
 	}
 
 	static {
