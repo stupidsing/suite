@@ -15,8 +15,8 @@ fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
 	, fc-compile-vars .vrs .frame/.ve1 .c0/.c1
 	, fc-compile .do .frame/.ve1 .c1/.cx/.reg
 #
-fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.closureReg
-	:- .c0 = (ASSIGN-THUNK .closureReg l:(FRAME l:.f,), .cx)
+fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.thunkReg
+	:- .c0 = (ASSIGN-THUNK .thunkReg l:(FRAME l:.f,), .cx)
 	, .f0 = (ENTER, POP .varReg, .f1)
 	, .frame1 = .frame + 1
 	, fc-dict-add .var/(%REG/.varReg/.frame1) .ve/.ve1
@@ -61,9 +61,9 @@ fc-compile (TREE .oper .left .right) .env .c0/.cx/.reg
 	, .c2 = (EVALUATE .reg .r0 .oper .r1, .cx)
 #
 fc-compile (UNWRAP .callee) .env .c0/.cx/.reg
-	:- fc-compile .callee .env .c0/.c1/.closureReg
-	, .c1 = (CALL-THUNK .closureReg
-		, ASSIGN-THUNK-RESULT .reg .closureReg
+	:- fc-compile .callee .env .c0/.c1/.thunkReg
+	, .c1 = (CALL-THUNK .thunkReg
+		, ASSIGN-THUNK-RESULT .reg .thunkReg
 		, .cx)
 #
 fc-compile (USING .mode BUILTIN .lib .do) .fve .cr
@@ -82,8 +82,8 @@ fc-compile (VAR .var) .frame/.ve .c0/.cx/.reg1
 		; .c0 = (ASSIGN-FRAME-REG .reg1 .frameDiff .reg, .cx)
 	)
 #
-fc-compile (WRAP .do) .frame/.ve .c0/.cx/.closureReg
-	:- .c0 = (ASSIGN-THUNK .closureReg l:(FRAME l:(ENTER, .f),), .cx)
+fc-compile (WRAP .do) .frame/.ve .c0/.cx/.thunkReg
+	:- .c0 = (ASSIGN-THUNK .thunkReg l:(FRAME l:(ENTER, .f),), .cx)
 	, fc-compile .do (.frame + 1)/.ve .f0/.f1/.returnReg
 	, .f1 = (SET-RESULT .returnReg
 		, LEAVE
