@@ -6,10 +6,10 @@ import java.util.List;
 import suite.Suite;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
-import suite.instructionexecutor.InstructionUtil.Closure;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
+import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -49,20 +49,20 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	public Node execute() {
-		return evaluateClosure(new Closure(null, 0));
+		return evaluateThunk(new Thunk(null, 0));
 	}
 
-	public Node evaluateClosure(Closure closure) {
-		if (closure.result == null) {
-			closure.result = evaluateClosure0(closure);
-			closure.frame = null; // Facilitates garbage collection
+	public Node evaluateThunk(Thunk thunk) {
+		if (thunk.result == null) {
+			thunk.result = evaluateThunk0(thunk);
+			thunk.frame = null; // Facilitates garbage collection
 		}
-		return closure.result;
+		return thunk.result;
 	}
 
-	private Node evaluateClosure0(Closure c0) {
+	private Node evaluateThunk0(Thunk thunk0) {
 		Frame f0 = new Frame(null, 2);
-		f0.registers[0] = c0;
+		f0.registers[0] = thunk0;
 
 		Activation current = new Activation(f0, unwrapEntryPoint, null);
 
@@ -81,7 +81,7 @@ public class InstructionExecutor implements AutoCloseable {
 				Node regs[] = frame != null ? frame.registers : null;
 				Instruction insn = instructions[ip = current.ip++];
 
-				Closure closure;
+				Thunk thunk;
 				TermOp op;
 				int i;
 
@@ -91,12 +91,12 @@ public class InstructionExecutor implements AutoCloseable {
 				switch (insn.insn) {
 				case ASSIGNCLOSRES_:
 					regs[insn.op0] = returnValue;
-					closure = (Closure) regs[insn.op1].finalNode();
-					closure.frame = null; // Facilitates garbage collection
-					closure.result = returnValue;
+					thunk = (Thunk) regs[insn.op1].finalNode();
+					thunk.frame = null; // Facilitates garbage collection
+					thunk.result = returnValue;
 					break;
 				case ASSIGNCLOSURE_:
-					regs[insn.op0] = new Closure(frame, insn.op1);
+					regs[insn.op0] = new Thunk(frame, insn.op1);
 					break;
 				case ASSIGNCONST___:
 					regs[insn.op0] = constantPool.get(insn.op1);
@@ -117,11 +117,11 @@ public class InstructionExecutor implements AutoCloseable {
 					current = new Activation(frame, insn.op0, current);
 					break;
 				case CALLCLOSURE___:
-					closure = (Closure) regs[insn.op0].finalNode();
-					if (closure.result == null)
-						current = new Activation(closure, current);
+					thunk = (Thunk) regs[insn.op0].finalNode();
+					if (thunk.result == null)
+						current = new Activation(thunk, current);
 					else
-						returnValue = closure.result;
+						returnValue = thunk.result;
 					break;
 				case ENTER_________:
 					AnalyzedFrame af = analyzer.getFrame(ip);
@@ -192,12 +192,12 @@ public class InstructionExecutor implements AutoCloseable {
 					current.ip = insn.op0;
 					break;
 				case JUMPCLOSURE___:
-					closure = (Closure) regs[insn.op0].finalNode();
+					thunk = (Thunk) regs[insn.op0].finalNode();
 					current = current.previous;
-					if (closure.result == null)
-						current = new Activation(closure, current);
+					if (thunk.result == null)
+						current = new Activation(thunk, current);
 					else
-						returnValue = closure.result;
+						returnValue = thunk.result;
 					break;
 				case LEAVE_________:
 					current.frame = current.frame.previous;

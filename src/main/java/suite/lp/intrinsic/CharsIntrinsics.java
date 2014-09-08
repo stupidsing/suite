@@ -2,7 +2,7 @@ package suite.lp.intrinsic;
 
 import java.util.List;
 
-import suite.instructionexecutor.ExpandUtil;
+import suite.instructionexecutor.ThunkUtil;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
 import suite.node.Atom;
@@ -36,7 +36,7 @@ public class CharsIntrinsics {
 	};
 
 	public static Intrinsic stringChars = (bridge, inputs) -> {
-		String value = ExpandUtil.expandString(bridge::unwrap, inputs.get(0));
+		String value = ThunkUtil.evaluateToString(bridge::unwrap, inputs.get(0));
 		return new Data<>(To.chars(value));
 	};
 

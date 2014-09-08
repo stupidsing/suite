@@ -28,7 +28,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Possible register types: boolean, closure, int, node
+ * Possible register types: boolean, thunk, int, node
  * (atom/number/reference/tree)
  */
 public class InstructionTranslator implements Closeable {
@@ -111,9 +111,9 @@ public class InstructionTranslator implements Closeable {
 				+ "\n" //
 				+ "%s" //
 				+ "\n" //
-				+ "public Node exec(TranslatedRunConfig config, Closure closure) { \n" //
-				+ "Frame frame = closure.frame; \n" //
-				+ "int ip = closure.ip; \n" //
+				+ "public Node exec(TranslatedRunConfig config, Thunk thunk) { \n" //
+				+ "Frame frame = thunk.frame; \n" //
+				+ "int ip = thunk.ip; \n" //
 				+ "Node returnValue = null; \n" //
 				+ "int cs[] = new int[stackSize]; \n" //
 				+ "Node ds[] = new Node[stackSize]; \n" //
@@ -170,7 +170,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg-clos}.result = #{reg}", op1, op0);
 				break;
 			case ASSIGNCLOSURE_:
-				app("#{reg} = new Closure(#{fr}, #{num})", op0, op1);
+				app("#{reg} = new Thunk(#{fr}, #{num})", op0, op1);
 				break;
 			case ASSIGNCONST___:
 				constant = constantPool.get(op1);
@@ -496,7 +496,7 @@ public class InstructionTranslator implements Closeable {
 			reg = (int) iter.next();
 			s = reg(reg);
 			if (Node.class.isAssignableFrom(registers.get(reg).getClazz()))
-				s = "((Closure) " + s + ")";
+				s = "((Thunk) " + s + ")";
 			break;
 		case "reg-node":
 			reg = (int) iter.next();

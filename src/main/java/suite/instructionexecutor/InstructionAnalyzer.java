@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.instructionexecutor.InstructionUtil.Closure;
+import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.node.Node;
@@ -140,7 +140,7 @@ public class InstructionAnalyzer {
 				registers.get(op0).clazz = boolean.class;
 				break;
 			case ASSIGNCLOSURE_:
-				registers.get(op0).clazz = Closure.class;
+				registers.get(op0).clazz = Thunk.class;
 				break;
 			case ASSIGNINT_____:
 			case BACKUPCSP_____:

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import suite.instructionexecutor.ExpandUtil;
+import suite.instructionexecutor.ThunkUtil;
 import suite.instructionexecutor.IndexedReader;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
@@ -39,11 +39,11 @@ public class MonadIntrinsics {
 		Fun<Node, Node> unwrapper = bridge::unwrap;
 		List<String> list = new ArrayList<>();
 
-		Source<Node> source = ExpandUtil.expandList(unwrapper, inputs.get(0));
+		Source<Node> source = ThunkUtil.evaluateToList(unwrapper, inputs.get(0));
 		Node node;
 
 		while ((node = source.source()) != null)
-			list.add(ExpandUtil.expandString(unwrapper, node));
+			list.add(ThunkUtil.evaluateToString(unwrapper, node));
 
 		Node in = inputs.get(1);
 
@@ -68,7 +68,7 @@ public class MonadIntrinsics {
 			new Thread(() -> {
 				try {
 					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ExpandUtil.expandToWriter(unwrapper, in, writer);
+						ThunkUtil.evaluateToWriter(unwrapper, in, writer);
 					}
 
 					process.waitFor();

@@ -29,7 +29,7 @@ public class FilterTest {
 	}
 
 	// Detects memory usage. Memory leak if there are more than 10000 instances
-	// of Closure, Frame, Tree or Node exists.
+	// of Thunk, Frame, Tree or Node exists.
 	@Test
 	public void testMemoryUsage() {
 		int size = 524288;

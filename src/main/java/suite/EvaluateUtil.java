@@ -5,7 +5,7 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
-import suite.instructionexecutor.ExpandUtil;
+import suite.instructionexecutor.ThunkUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
@@ -60,7 +60,7 @@ public class EvaluateUtil {
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
 			Node result = executor.execute();
-			return fcc.isLazy() ? ExpandUtil.expandFully(executor.getUnwrapper(), result) : result;
+			return fcc.isLazy() ? ThunkUtil.evaluateFully(executor.getUnwrapper(), result) : result;
 		}
 	}
 

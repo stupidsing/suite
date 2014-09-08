@@ -12,7 +12,7 @@ import suite.node.Node;
 public class TranslatedRunUtil {
 
 	public interface TranslatedRun {
-		public Node exec(TranslatedRunConfig config, Closure closure);
+		public Node exec(TranslatedRunConfig config, Thunk thunk);
 	}
 
 	public static class TranslatedRunConfig {
@@ -28,12 +28,12 @@ public class TranslatedRunUtil {
 	public interface Frame {
 	}
 
-	public static class Closure extends Node {
+	public static class Thunk extends Node {
 		public Frame frame;
 		public int ip;
 		public Node result;
 
-		public Closure(Frame frame, int ip) {
+		public Thunk(Frame frame, int ip) {
 			this.frame = frame;
 			this.ip = ip;
 		}
@@ -49,11 +49,11 @@ public class TranslatedRunUtil {
 			return new IntrinsicBridge() {
 				public Node unwrap(Node node) {
 					node = node.finalNode();
-					if (node instanceof Closure) {
-						Closure closure = (Closure) node;
-						if (closure.result == null)
-							closure.result = translatedRun.exec(config, closure);
-						node = closure.result;
+					if (node instanceof Thunk) {
+						Thunk thunk = (Thunk) node;
+						if (thunk.result == null)
+							thunk.result = translatedRun.exec(config, thunk);
+						node = thunk.result;
 					}
 					return node;
 				}
@@ -62,7 +62,7 @@ public class TranslatedRunUtil {
 					IntrinsicFrame frame = new IntrinsicFrame();
 					frame.intrinsic = intrinsic;
 					frame.node = node;
-					return new Closure(frame, InstructionTranslator.invokeJavaEntryPoint);
+					return new Thunk(frame, InstructionTranslator.invokeJavaEntryPoint);
 				}
 			};
 		else
@@ -85,7 +85,7 @@ public class TranslatedRunUtil {
 		return Int.of(i);
 	}
 
-	// Generic type signature allows passing in Closure returning Closure
+	// Generic type signature allows passing in Thunk returning Thunk
 	public static <T extends Node> T toNode(T t) {
 		return t;
 	}

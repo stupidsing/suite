@@ -2,7 +2,7 @@ package suite.lp.intrinsic;
 
 import java.util.List;
 
-import suite.instructionexecutor.ExpandUtil;
+import suite.instructionexecutor.ThunkUtil;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
 import suite.node.Atom;
@@ -43,7 +43,7 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic listArray = (bridge, inputs) -> {
-		Source<Node> value = ExpandUtil.expandList(bridge::unwrap, inputs.get(0));
+		Source<Node> value = ThunkUtil.evaluateToList(bridge::unwrap, inputs.get(0));
 		return new Tuple(To.list(value));
 	};
 

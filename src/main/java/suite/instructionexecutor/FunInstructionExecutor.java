@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.instructionexecutor.InstructionUtil.Activation;
-import suite.instructionexecutor.InstructionUtil.Closure;
+import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -39,12 +39,12 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			intrinsicBridge = new IntrinsicBridge() {
 				public Node unwrap(Node node) {
 					node = node.finalNode();
-					return node instanceof Closure ? evaluateClosure((Closure) node) : node;
+					return node instanceof Thunk ? evaluateThunk((Thunk) node) : node;
 				}
 
 				public Node wrap(Intrinsic intrinsic, Node node) {
 					Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null });
-					return new Closure(frame, invokeJavaEntryPoint);
+					return new Thunk(frame, invokeJavaEntryPoint);
 				}
 			};
 		else
@@ -62,7 +62,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
-		ExpandUtil.expandToWriter(intrinsicBridge::unwrap, execute(), writer);
+		ThunkUtil.evaluateToWriter(intrinsicBridge::unwrap, execute(), writer);
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package suite.lp.intrinsic;
 
 import java.util.List;
 
-import suite.instructionexecutor.ExpandUtil;
+import suite.instructionexecutor.ThunkUtil;
 import suite.lp.intrinsic.Intrinsics.Intrinsic;
 import suite.lp.intrinsic.Intrinsics.IntrinsicBridge;
 import suite.node.Atom;
@@ -42,17 +42,17 @@ public class BasicIntrinsics {
 
 	public Intrinsic log1 = (bridge, inputs) -> {
 		Node node = inputs.get(0);
-		LogUtil.info(Formatter.display(ExpandUtil.expandFully(bridge::unwrap, node)));
+		LogUtil.info(Formatter.display(ThunkUtil.evaluateFully(bridge::unwrap, node)));
 		return node;
 	};
 
 	public Intrinsic log2 = (bridge, inputs) -> {
-		LogUtil.info(ExpandUtil.expandString(bridge::unwrap, inputs.get(0)));
+		LogUtil.info(ThunkUtil.evaluateToString(bridge::unwrap, inputs.get(0)));
 		return inputs.get(1);
 	};
 
 	public Intrinsic throw_ = (bridge, inputs) -> {
-		String message = ExpandUtil.expandString(bridge::unwrap, inputs.get(0));
+		String message = ThunkUtil.evaluateToString(bridge::unwrap, inputs.get(0));
 		throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 	};
 

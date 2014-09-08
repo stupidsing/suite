@@ -7,7 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.instructionexecutor.TranslatedRunUtil.Closure;
+import suite.instructionexecutor.TranslatedRunUtil.Thunk;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRunConfig;
 import suite.lp.kb.RuleSet;
@@ -89,11 +89,11 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node execute(Node code, boolean isLazy) throws IOException {
-		return execute(code, isLazy, exec -> exec.apply(new Closure(null, 0)));
+		return execute(code, isLazy, exec -> exec.apply(new Thunk(null, 0)));
 	}
 
 	private String executeToString(Node code, boolean isLazy) throws IOException {
-		return execute(code, isLazy, exec -> ExpandUtil.expandString(exec, exec.apply(new Closure(null, 0))));
+		return execute(code, isLazy, exec -> ThunkUtil.evaluateToString(exec, exec.apply(new Thunk(null, 0))));
 	}
 
 	private <T> T execute(Node code, boolean isLazy, Fun<Fun<Node, Node>, T> fun) throws IOException {
@@ -104,8 +104,8 @@ public class InstructionTranslatorTest {
 			TranslatedRun translatedRun = instructionTranslator.translate(code);
 
 			Fun<Node, Node> exec = node -> {
-				if (node instanceof Closure)
-					node = translatedRun.exec(config, (Closure) node);
+				if (node instanceof Thunk)
+					node = translatedRun.exec(config, (Thunk) node);
 				return node;
 			};
 

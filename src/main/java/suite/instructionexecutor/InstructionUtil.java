@@ -127,12 +127,12 @@ public class InstructionUtil {
 		}
 	}
 
-	protected static class Activation extends Closure {
+	protected static class Activation extends Thunk {
 		protected Activation previous;
 		protected int depth;
 
-		protected Activation(Closure closure, Activation previous) {
-			this(closure.frame, closure.ip, previous);
+		protected Activation(Thunk thunk, Activation previous) {
+			this(thunk.frame, thunk.ip, previous);
 		}
 
 		protected Activation(Frame frame, int ip, Activation previous) {
@@ -145,13 +145,13 @@ public class InstructionUtil {
 	}
 
 	// Indicates a function call with a specified set of framed environment.
-	// Closure must extend Node in order to be put in a list (being cons-ed).
-	protected static class Closure extends Node {
+	// Thunk must extend Node in order to be put in a register.
+	protected static class Thunk extends Node {
 		protected Frame frame;
 		protected int ip;
 		protected Node result;
 
-		protected Closure(Frame frame, int ip) {
+		protected Thunk(Frame frame, int ip) {
 			this.frame = frame;
 			this.ip = ip;
 		}
