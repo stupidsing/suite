@@ -44,7 +44,7 @@ public class TranslatedRunUtil {
 		public Node node;
 	}
 
-	public static IntrinsicCallback getIntrinsicBridge(TranslatedRunConfig config, TranslatedRun translatedRun) {
+	public static IntrinsicCallback getIntrinsicCallback(TranslatedRunConfig config, TranslatedRun translatedRun) {
 		if (config.isLazy)
 			return new IntrinsicCallback() {
 				public Node unwrap(Node node) {

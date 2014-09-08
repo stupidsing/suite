@@ -125,7 +125,7 @@ public class InstructionTranslator implements Closeable {
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
-				+ "IntrinsicCallback callback = TranslatedRunUtil.getIntrinsicBridge(config, this); \n" //
+				+ "IntrinsicCallback callback = TranslatedRunUtil.getIntrinsicCallback(config, this); \n" //
 				+ "Comparer comparer = new FunComparer(callback::unwrap); \n" //
 				+ "\n" //
 				+ "%s \n" //
