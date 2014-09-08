@@ -164,14 +164,6 @@ public class InstructionTranslator implements Closeable {
 			app("case #{num}:", currentIp);
 
 			switch (insn.insn) {
-			case ASSIGNCLOSRES_:
-				restoreFrame();
-				app("#{reg} = returnValue", op0);
-				app("#{reg-clos}.result = #{reg}", op1, op0);
-				break;
-			case ASSIGNCLOSURE_:
-				app("#{reg} = new Thunk(#{fr}, #{num})", op0, op1);
-				break;
 			case ASSIGNCONST___:
 				constant = constantPool.get(op1);
 				app("#{reg} = #{str}", op0, defineConstant(constant));
@@ -191,6 +183,14 @@ public class InstructionTranslator implements Closeable {
 			case ASSIGNRESULT__:
 				restoreFrame();
 				app("#{reg} = returnValue", op0);
+				break;
+			case ASSIGNTHUNK___:
+				app("#{reg} = new Thunk(#{fr}, #{num})", op0, op1);
+				break;
+			case ASSIGNTHUNKRES:
+				restoreFrame();
+				app("#{reg} = returnValue", op0);
+				app("#{reg-clos}.result = #{reg}", op1, op0);
 				break;
 			case BACKUPCSP_____:
 				app("#{reg} = csp", op0);
@@ -212,15 +212,6 @@ public class InstructionTranslator implements Closeable {
 				pushCallee(ip);
 				app("#{jump}", op0);
 				break;
-			case CALLCLOSURE___:
-				app("if (#{reg-clos}.result == null) {", op0);
-				backupFrame();
-				pushCallee(ip);
-				app("frame = #{reg-clos}.frame", op0);
-				app("ip = #{reg-clos}.ip", op0);
-				app("continue");
-				app("} else returnValue = #{reg-clos}.result", op0);
-				break;
 			case CALLINTRINSIC_:
 				app("{");
 				app("Data<?> data = (Data<?>) bridge.unwrap((Node) ds[--dsp])");
@@ -230,6 +221,15 @@ public class InstructionTranslator implements Closeable {
 				app("Intrinsic intrinsic = Data.get(data)");
 				app("#{reg} = intrinsic.invoke(bridge, list)", op0);
 				app("}");
+				break;
+			case CALLTHUNK_____:
+				app("if (#{reg-clos}.result == null) {", op0);
+				backupFrame();
+				pushCallee(ip);
+				app("frame = #{reg-clos}.frame", op0);
+				app("ip = #{reg-clos}.ip", op0);
+				app("continue");
+				app("} else returnValue = #{reg-clos}.result", op0);
 				break;
 			case COMPARE_______:
 				app("n0 = (Node) ds[--dsp]");

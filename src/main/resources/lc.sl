@@ -8,7 +8,7 @@
 compile-logic .call (FRAME l:.code,)
 	:- .c0 = (ENTER
 		, ASSIGN-CONSTANT .returnReg c:true
-		, ASSIGN-CLOSURE .provenReg l:.c1
+		, ASSIGN-THUNK .provenReg l:.c1
 		, BIND-MARK .pitReg
 		, PUSH .provenReg
 		, PUSH .provenReg
@@ -34,7 +34,7 @@ lc-compile-call .call .pls (FRAME l:.code, .c)/.c
 		, BACKUP-DSP .dspReg
 		, TOP .provenReg -2
 		, .c1)
-	, .rem = AND (BYTECODE CALL-CLOSURE .provenReg) FAIL
+	, .rem = AND (BYTECODE CALL-THUNK .provenReg) FAIL
 	, lc-compile .call .rem .pls/()/(.cspReg .dspReg .c2) .c1/.c2
 	, .c2 = (LEAVE
 		, RETURN
@@ -141,7 +141,7 @@ lc-compile (CALL .call) .rem .pls/.vs/.cut .c0/.cx
 	:- lc-call-prototype .call .proto
 	, lc-create-node .call .vs .c0/.c1/.reg, (
 		member .pls .proto/.cl, !
-		, .c1 = (ASSIGN-CLOSURE .provenReg l:.d0
+		, .c1 = (ASSIGN-THUNK .provenReg l:.d0
 			, PUSH .provenReg
 			, PUSH .reg
 			, CALL l:.cl

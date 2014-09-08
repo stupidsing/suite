@@ -71,7 +71,7 @@ cg-opt-stack-usage .li0 .ri0
 		, PUSH .r1
 		, .call .op
 		, .mi1)
-	, member (CALL, CALL-CLOSURE,) .call
+	, member (CALL, CALL-THUNK,) .call
 	, (.li1/.mi1 = .li2/.mi2; append2 .li1/.li2 .mi1/.mi2 (LEAVE,))
 	, append2 .li2/.insns .mi2/.insns (RETURN,)
 	, cg-opt .mi0 .ri0
@@ -83,7 +83,7 @@ cg-opt-stack-usage .insns .insns #
 -- We can skip the LEAVE instruction if it obstruct optimizations.
 cg-opt-tail-calls .li0 .ri0
 	:- .li0 = (.call .op, .li1)
-	, member (CALL/JUMP, CALL-CLOSURE/JUMP-CLOSURE,) .call/.jump
+	, member (CALL/JUMP, CALL-THUNK/JUMP-CLOSURE,) .call/.jump
 	, (.li1/.mi0 = .li2/.mi1; append2 .li1/.li2 .mi0/.mi1 (RESTORE-DSP _, RESTORE-CSP _,))
 	, (.li2 = .li3; .li2 = (LEAVE, .li3))
 	, .mi1 = (.jump .op, .mi2)

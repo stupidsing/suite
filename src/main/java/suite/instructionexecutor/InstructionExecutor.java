@@ -89,15 +89,6 @@ public class InstructionExecutor implements AutoCloseable {
 					StatisticsCollector.getInstance().collect(ip, insn);
 
 				switch (insn.insn) {
-				case ASSIGNCLOSRES_:
-					regs[insn.op0] = returnValue;
-					thunk = (Thunk) regs[insn.op1].finalNode();
-					thunk.frame = null; // Facilitates garbage collection
-					thunk.result = returnValue;
-					break;
-				case ASSIGNCLOSURE_:
-					regs[insn.op0] = new Thunk(frame, insn.op1);
-					break;
 				case ASSIGNCONST___:
 					regs[insn.op0] = constantPool.get(insn.op1);
 					break;
@@ -113,10 +104,19 @@ public class InstructionExecutor implements AutoCloseable {
 				case ASSIGNRESULT__:
 					regs[insn.op0] = returnValue;
 					break;
+				case ASSIGNTHUNK___:
+					regs[insn.op0] = new Thunk(frame, insn.op1);
+					break;
+				case ASSIGNTHUNKRES:
+					regs[insn.op0] = returnValue;
+					thunk = (Thunk) regs[insn.op1].finalNode();
+					thunk.frame = null; // Facilitates garbage collection
+					thunk.result = returnValue;
+					break;
 				case CALL__________:
 					current = new Activation(frame, insn.op0, current);
 					break;
-				case CALLCLOSURE___:
+				case CALLTHUNK_____:
 					thunk = (Thunk) regs[insn.op0].finalNode();
 					if (thunk.result == null)
 						current = new Activation(thunk, current);
@@ -253,7 +253,7 @@ public class InstructionExecutor implements AutoCloseable {
 	protected void postprocessInstructions(List<Instruction> list) {
 		unwrapEntryPoint = list.size();
 		list.add(new Instruction(Insn.FRAMEBEGIN____, 2, 0, 0));
-		list.add(new Instruction(Insn.CALLCLOSURE___, 0, 0, 0));
+		list.add(new Instruction(Insn.CALLTHUNK_____, 0, 0, 0));
 		list.add(new Instruction(Insn.ASSIGNRESULT__, 1, 0, 0));
 		list.add(new Instruction(Insn.EXIT__________, 0, 0, 0));
 		list.add(new Instruction(Insn.FRAMEEND______, 0, 0, 0));

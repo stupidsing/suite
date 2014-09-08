@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
+import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.util.FunUtil.Source;
@@ -93,7 +93,7 @@ public class InstructionAnalyzer {
 		Deque<AnalyzedFrame> analyzedFrames = new ArrayDeque<>();
 
 		// Find out the parent of closures.
-		// Assumes every FRAME-BEGIN has a ASSIGN-CLOSURE referencing it.
+		// Assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.
 		for (int ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
@@ -113,8 +113,8 @@ public class InstructionAnalyzer {
 			Instruction insn = instructions.get(ip);
 
 			// Recognize frames and their parents.
-			// Assume ASSIGN-CLOSURE points to the FRAME-BEGIN instruction.
-			if (insn.insn == Insn.ASSIGNCLOSURE_)
+			// Assume ASSIGN-THUNK points to the FRAME-BEGIN instruction.
+			if (insn.insn == Insn.ASSIGNTHUNK___)
 				framesByIp.get(insn.op1).parent = framesByIp.get(ip);
 		}
 	}
@@ -139,7 +139,7 @@ public class InstructionAnalyzer {
 			case ISCONS________:
 				registers.get(op0).clazz = boolean.class;
 				break;
-			case ASSIGNCLOSURE_:
+			case ASSIGNTHUNK___:
 				registers.get(op0).clazz = Thunk.class;
 				break;
 			case ASSIGNINT_____:
@@ -154,9 +154,9 @@ public class InstructionAnalyzer {
 			case EVALSUB_______:
 				registers.get(op0).clazz = int.class;
 				break;
-			case ASSIGNCLOSRES_:
 			case ASSIGNCONST___:
 			case ASSIGNRESULT__:
+			case ASSIGNTHUNKRES:
 			case CALLINTRINSIC_:
 			case CONSPAIR______:
 			case CONSLIST______:
@@ -209,7 +209,7 @@ public class InstructionAnalyzer {
 			Instruction instruction0 = source.source();
 			Instruction instruction1 = source.source();
 
-			if (instruction0 != null && instruction0.insn == Insn.CALLCLOSURE___ //
+			if (instruction0 != null && instruction0.insn == Insn.CALLTHUNK_____ //
 					&& instruction1 != null && instruction1.insn == Insn.ASSIGNRESULT__ //
 					&& isReturningValue(source, instruction1.op0))
 				tailCalls.add(ip);
@@ -253,12 +253,12 @@ public class InstructionAnalyzer {
 					Instruction instruction = instructions.get(ip_++);
 
 					switch (instruction.insn) {
-					case ASSIGNCLOSRES_:
 					case ASSIGNFRAMEREG:
 					case ASSIGNRESULT__:
+					case ASSIGNTHUNKRES:
 					case CALL__________:
-					case CALLCLOSURE___:
 					case CALLINTRINSIC_:
+					case CALLTHUNK_____:
 					case LEAVE_________:
 					case SETRESULT_____:
 						return instruction;
