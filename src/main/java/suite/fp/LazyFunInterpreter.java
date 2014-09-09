@@ -51,6 +51,7 @@ public class LazyFunInterpreter {
 		env = env.put(TermOp.MINUS_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) - i(b)))));
 		env = env.put(TermOp.MULT__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));
 		env = env.put(TermOp.DIVIDE.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) / i(b)))));
+		env = env.put(TermOp.AND___.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
 
 		env = env.put(ERROR.getName(), error);
 		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).first));
@@ -67,9 +68,7 @@ public class LazyFunInterpreter {
 			Node lhs = tree.getLeft();
 			Node rhs = tree.getRight();
 
-			if (operator == TermOp.AND___) // a, b
-				result = memoize(() -> new Pair_(lazy(lhs, env), lazy(rhs, env)));
-			else if (operator == TermOp.BRACES) // a {b}
+			if (operator == TermOp.BRACES) // a {b}
 				result = ((Fun_) lazy(lhs, env).source()).fun.apply(lazy(rhs, env));
 			else if (operator == TermOp.CONTD_) { // a := b >> c
 				@SuppressWarnings("unchecked")
