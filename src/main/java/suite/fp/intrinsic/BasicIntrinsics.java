@@ -1,10 +1,10 @@
-package suite.lp.intrinsic;
+package suite.fp.intrinsic;
 
 import java.util.List;
 
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.ThunkUtil;
-import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;

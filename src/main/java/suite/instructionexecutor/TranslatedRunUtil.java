@@ -2,8 +2,8 @@ package suite.instructionexecutor;
 
 import java.util.Arrays;
 
-import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Int;

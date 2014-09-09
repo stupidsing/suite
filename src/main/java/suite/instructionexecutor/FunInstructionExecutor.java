@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;

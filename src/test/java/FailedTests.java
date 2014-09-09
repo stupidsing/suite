@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.fp.eval.FunRbTreeTest;
+import suite.fp.FunRbTreeTest;
 import suite.lp.kb.RuleSet;
 
 public class FailedTests {

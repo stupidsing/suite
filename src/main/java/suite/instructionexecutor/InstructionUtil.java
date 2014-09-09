@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Suite;
-import suite.lp.intrinsic.Intrinsics;
-import suite.lp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics;
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;

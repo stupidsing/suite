@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import suite.Suite;
+import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
+import suite.immutable.IMap;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
@@ -43,6 +45,7 @@ public class CommandDispatcher {
 		EVALUATE("\\"), //
 		EVALUATEDO("\\d"), //
 		EVALUATEDOSTR("\\ds"), //
+		EVALUATEINTERPRET("\\i"), //
 		EVALUATESTR("\\s"), //
 		EVALUATETYPE("\\t"), //
 		FACT(""), //
@@ -106,6 +109,9 @@ public class CommandDispatcher {
 		case EVALUATEDOSTR:
 			node = Suite.applyDo(node, Atom.of("string"));
 			printEvaluatedString(writer, node);
+			break;
+		case EVALUATEINTERPRET:
+			System.out.println(new LazyFunInterpreter().lazy(node, new IMap<>()).source());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);

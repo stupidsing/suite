@@ -9,13 +9,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.fp.intrinsic.Intrinsics;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedRegister;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
-import suite.lp.intrinsic.Intrinsics;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Formatter;

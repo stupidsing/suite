@@ -1,4 +1,4 @@
-package suite.lp.intrinsic;
+package suite.fp.intrinsic;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

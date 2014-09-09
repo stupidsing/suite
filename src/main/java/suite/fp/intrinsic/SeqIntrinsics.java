@@ -1,7 +1,7 @@
-package suite.lp.intrinsic;
+package suite.fp.intrinsic;
 
-import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.node.Node;
 import suite.node.Tree;
 

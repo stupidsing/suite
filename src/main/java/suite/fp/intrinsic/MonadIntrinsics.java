@@ -1,4 +1,4 @@
-package suite.lp.intrinsic;
+package suite.fp.intrinsic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.ThunkUtil;
 import suite.instructionexecutor.IndexedReader;
-import suite.lp.intrinsic.Intrinsics.Intrinsic;
-import suite.lp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;

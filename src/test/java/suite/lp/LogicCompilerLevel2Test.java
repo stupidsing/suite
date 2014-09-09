@@ -1,4 +1,4 @@
-package suite.lp.eval;
+package suite.lp;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package suite.fp.eval;
+package suite.fp;
 
 import org.junit.Test;
 
