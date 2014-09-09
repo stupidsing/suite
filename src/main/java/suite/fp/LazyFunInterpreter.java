@@ -8,7 +8,6 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 public class LazyFunInterpreter {
 
@@ -16,32 +15,36 @@ public class LazyFunInterpreter {
 	private Atom FST__ = Atom.of("fst");
 	private Atom SND__ = Atom.of("snd");
 
-	private static class Fun_ extends Node {
-		private Fun<Source<Node>, Source<Node>> fun;
+	public interface Thunk_ {
+		public Node source();
+	}
 
-		public Fun_(Fun<Source<Node>, Source<Node>> fun) {
+	private static class Fun_ extends Node {
+		private Fun<Thunk_, Thunk_> fun;
+
+		private Fun_(Fun<Thunk_, Thunk_> fun) {
 			this.fun = fun;
 		}
 	}
 
 	private static class Pair_ extends Node {
-		private Source<Node> first;
-		private Source<Node> second;
+		private Thunk_ first;
+		private Thunk_ second;
 
-		public Pair_(Source<Node> left, Source<Node> right) {
+		private Pair_(Thunk_ left, Thunk_ right) {
 			this.first = left;
 			this.second = right;
 		}
 	}
 
-	public Source<Node> lazy(Node node) {
-		Source<Node> equal = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) == i(b) ? Atom.TRUE : Atom.FALSE));
-		Source<Node> noteq = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) != i(b) ? Atom.TRUE : Atom.FALSE));
-		Source<Node> error = () -> {
+	public Thunk_ lazy(Node node) {
+		Thunk_ equal = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) == i(b) ? Atom.TRUE : Atom.FALSE));
+		Thunk_ noteq = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) != i(b) ? Atom.TRUE : Atom.FALSE));
+		Thunk_ error = () -> {
 			throw new RuntimeException("Error termination");
 		};
 
-		IMap<String, Source<Node>> env = new IMap<>();
+		IMap<String, Thunk_> env = new IMap<>();
 		env = env.put(Atom.TRUE.getName(), () -> Atom.TRUE);
 		env = env.put(Atom.FALSE.getName(), () -> Atom.FALSE);
 
@@ -56,11 +59,12 @@ public class LazyFunInterpreter {
 		env = env.put(ERROR.getName(), error);
 		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).first));
 		env = env.put(SND__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).second));
-		return lazy(node, env);
+
+		return lazy0(node).apply(env);
 	}
 
-	private Source<Node> lazy(Node node, IMap<String, Source<Node>> env) {
-		Source<Node> result;
+	private Fun<IMap<String, Thunk_>, Thunk_> lazy0(Node node) {
+		Fun<IMap<String, Thunk_>, Thunk_> result;
 		Tree tree = Tree.decompose(node);
 
 		if (tree != null) {
@@ -68,55 +72,50 @@ public class LazyFunInterpreter {
 			Node lhs = tree.getLeft();
 			Node rhs = tree.getRight();
 
-			if (operator == TermOp.BRACES) // a {b}
-				result = ((Fun_) lazy(lhs, env).source()).fun.apply(lazy(rhs, env));
-			else if (operator == TermOp.CONTD_) { // a := b >> c
-				@SuppressWarnings("unchecked")
-				Source<Node> val[] = (Source<Node>[]) new Source<?>[] { null };
-				IMap<String, Source<Node>> env1 = env.put(v(l(lhs)), () -> val[0].source());
-				val[0] = lazy(r(lhs), env1)::source;
-				result = lazy(rhs, env1);
-			} else if (operator == TermOp.FUN___) // a => b
-				result = memoize(() -> new Fun_(in -> lazy(rhs, env.put(v(lhs), in))));
-			else if (operator == TermOp.TUPLE_) // if a then b else c
-				result = lazy(b(lazy(l(rhs), env)) ? l(r(r(rhs))) : r(r(r(r(rhs)))), env);
-			else {
-				Source<Node> r0 = env.get(operator.getName());
-				Source<Node> r1 = ((Fun_) r0.source()).fun.apply(lazy(lhs, env));
-				Source<Node> r2 = ((Fun_) r1.source()).fun.apply(lazy(rhs, env));
-				result = r2;
+			if (operator == TermOp.BRACES) { // fun {param}
+				Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(lhs);
+				Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(rhs);
+				result = env -> ((Fun_) fun.apply(env).source()).fun.apply(param.apply(env));
+			} else if (operator == TermOp.CONTD_) { // key := value >> expr
+				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(r(lhs));
+				Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(rhs);
+				result = env -> {
+					Thunk_ val[] = new Thunk_[] { null };
+					IMap<String, Thunk_> env1 = env.put(v(l(lhs)), () -> val[0].source());
+					val[0] = value.apply(env1)::source;
+					return expr.apply(env1);
+				};
+			} else if (operator == TermOp.FUN___) { // var => value
+				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(rhs);
+				result = env -> () -> new Fun_(in -> value.apply(env.put(v(lhs), in)));
+			} else if (operator == TermOp.TUPLE_) { // if a then b else c
+				Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(l(rhs));
+				Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(l(r(r(rhs))));
+				Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy0(r(r(r(r(rhs)))));
+				result = env -> (b(if_.apply(env)) ? then_ : else_).apply(env);
+			} else {
+				Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(lhs);
+				Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(rhs);
+				result = env -> {
+					Thunk_ r0 = env.get(operator.getName());
+					Thunk_ r1 = ((Fun_) r0.source()).fun.apply(p0.apply(env));
+					Thunk_ r2 = ((Fun_) r1.source()).fun.apply(p1.apply(env));
+					return r2;
+				};
 			}
 		} else if (node instanceof Atom)
-			if ((result = env.get(v(node))) == null)
-				throw new RuntimeException("Cannot resolve " + node);
-			else
-				;
+			result = env -> env.get(v(node));
 		else
-			result = () -> node;
+			result = env -> () -> node;
 
 		return result;
 	}
 
-	private Source<Node> memoize(Source<Node> source) {
-		return new Source<Node>() {
-			private Source<Node> source_ = source;
-			private Node node;
-
-			public Node source() {
-				if (node == null) {
-					node = source_.source();
-					source_ = null;
-				}
-				return node;
-			}
-		};
-	}
-
-	private boolean b(Source<Node> node) {
+	private boolean b(Thunk_ node) {
 		return node.source() == Atom.TRUE;
 	}
 
-	private int i(Source<Node> source) {
+	private int i(Thunk_ source) {
 		return ((Int) source.source()).getNumber();
 	}
 
