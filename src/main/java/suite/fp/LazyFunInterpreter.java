@@ -16,7 +16,7 @@ public class LazyFunInterpreter {
 	private Atom SND__ = Atom.of("snd");
 
 	public interface Thunk_ {
-		public Node source();
+		public Node get();
 	}
 
 	private static class Fun_ extends Node {
@@ -57,8 +57,8 @@ public class LazyFunInterpreter {
 		env = env.put(TermOp.AND___.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
 
 		env = env.put(ERROR.getName(), error);
-		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).first));
-		env = env.put(SND__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).second));
+		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.get()).first));
+		env = env.put(SND__.getName(), () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		return lazy0(node).apply(env);
 	}
@@ -75,14 +75,14 @@ public class LazyFunInterpreter {
 			if (operator == TermOp.BRACES) { // fun {param}
 				Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(lhs);
 				Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(rhs);
-				result = env -> ((Fun_) fun.apply(env).source()).fun.apply(param.apply(env));
+				result = env -> ((Fun_) fun.apply(env).get()).fun.apply(param.apply(env));
 			} else if (operator == TermOp.CONTD_) { // key := value >> expr
 				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(r(lhs));
 				Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(rhs);
 				result = env -> {
 					Thunk_ val[] = new Thunk_[] { null };
-					IMap<String, Thunk_> env1 = env.put(v(l(lhs)), () -> val[0].source());
-					val[0] = value.apply(env1)::source;
+					IMap<String, Thunk_> env1 = env.put(v(l(lhs)), () -> val[0].get());
+					val[0] = value.apply(env1)::get;
 					return expr.apply(env1);
 				};
 			} else if (operator == TermOp.FUN___) { // var => value
@@ -92,14 +92,14 @@ public class LazyFunInterpreter {
 				Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(l(rhs));
 				Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(l(r(r(rhs))));
 				Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy0(r(r(r(r(rhs)))));
-				result = env -> (b(if_.apply(env)) ? then_ : else_).apply(env);
+				result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
 			} else {
 				Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(lhs);
 				Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(rhs);
 				result = env -> {
 					Thunk_ r0 = env.get(operator.getName());
-					Thunk_ r1 = ((Fun_) r0.source()).fun.apply(p0.apply(env));
-					Thunk_ r2 = ((Fun_) r1.source()).fun.apply(p1.apply(env));
+					Thunk_ r1 = ((Fun_) r0.get()).fun.apply(p0.apply(env));
+					Thunk_ r2 = ((Fun_) r1.get()).fun.apply(p1.apply(env));
 					return r2;
 				};
 			}
@@ -111,12 +111,8 @@ public class LazyFunInterpreter {
 		return result;
 	}
 
-	private boolean b(Thunk_ node) {
-		return node.source() == Atom.TRUE;
-	}
-
-	private int i(Thunk_ source) {
-		return ((Int) source.source()).getNumber();
+	private int i(Thunk_ thunk) {
+		return ((Int) thunk.get()).getNumber();
 	}
 
 	private String v(Node node) {

@@ -110,7 +110,7 @@ public class CommandDispatcher {
 			printEvaluatedString(writer, node);
 			break;
 		case EVALUATEINTERPRET:
-			System.out.println(new LazyFunInterpreter().lazy(node).source());
+			System.out.println(new LazyFunInterpreter().lazy(node).get());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);

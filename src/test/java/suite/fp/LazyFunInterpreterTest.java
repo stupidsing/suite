@@ -12,7 +12,7 @@ public class LazyFunInterpreterTest {
 	@Test
 	public void test() {
 		String expr = "sum := (n => if (n != 0) then (n + sum {n - 1}) else 0) >> sum {10}";
-		assertEquals(Int.of(55), new LazyFunInterpreter().lazy(Suite.parse(expr)).source());
+		assertEquals(Int.of(55), new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
 	}
 
 }
