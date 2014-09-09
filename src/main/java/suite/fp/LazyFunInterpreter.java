@@ -35,6 +35,8 @@ public class LazyFunInterpreter {
 	}
 
 	public Source<Node> lazy(Node node) {
+		Source<Node> equal = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) == i(b) ? Atom.TRUE : Atom.FALSE));
+		Source<Node> noteq = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) != i(b) ? Atom.TRUE : Atom.FALSE));
 		Source<Node> error = () -> {
 			throw new RuntimeException("Error termination");
 		};
@@ -42,6 +44,14 @@ public class LazyFunInterpreter {
 		IMap<String, Source<Node>> env = new IMap<>();
 		env = env.put(Atom.TRUE.getName(), () -> Atom.TRUE);
 		env = env.put(Atom.FALSE.getName(), () -> Atom.FALSE);
+
+		env = env.put(TermOp.EQUAL_.getName(), equal);
+		env = env.put(TermOp.NOTEQ_.getName(), noteq);
+		env = env.put(TermOp.PLUS__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) + i(b)))));
+		env = env.put(TermOp.MINUS_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) - i(b)))));
+		env = env.put(TermOp.MULT__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));
+		env = env.put(TermOp.DIVIDE.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) / i(b)))));
+
 		env = env.put(ERROR.getName(), error);
 		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).first));
 		env = env.put(SND__.getName(), () -> new Fun_(in -> ((Pair_) in.source()).second));
@@ -67,25 +77,16 @@ public class LazyFunInterpreter {
 				IMap<String, Source<Node>> env1 = env.put(v(l(lhs)), () -> val[0].source());
 				val[0] = lazy(r(lhs), env1)::source;
 				result = lazy(rhs, env1);
-			} else if (operator == TermOp.DIVIDE) // a / b
-				result = memoize(() -> Int.of(i(lhs, env) / i(rhs, env)));
-			else if (operator == TermOp.FUN___) // a => b
+			} else if (operator == TermOp.FUN___) // a => b
 				result = memoize(() -> new Fun_(in -> lazy(rhs, env.put(v(lhs), in))));
-			else if (operator == TermOp.EQUAL_) // a = b
-				result = memoize(() -> i(lhs, env) == i(rhs, env) ? Atom.TRUE : Atom.FALSE);
-			else if (operator == TermOp.MINUS_) // a - b
-				result = memoize(() -> Int.of(i(lhs, env) - i(rhs, env)));
-			else if (operator == TermOp.MULT__) // a * b
-				result = memoize(() -> Int.of(i(lhs, env) * i(rhs, env)));
-			else if (operator == TermOp.NOTEQ_) // a != b
-				result = memoize(() -> i(lhs, env) != i(rhs, env) ? Atom.TRUE : Atom.FALSE);
-			else if (operator == TermOp.PLUS__) // a + b
-				result = memoize(() -> Int.of(i(lhs, env) + i(rhs, env)));
-			else if (operator == TermOp.TUPLE_) { // if a then b else c
-				Node clause = b(lazy(l(rhs), env)) ? l(r(r(rhs))) : r(r(r(r(rhs))));
-				result = lazy(clause, env);
-			} else
-				result = () -> node;
+			else if (operator == TermOp.TUPLE_) // if a then b else c
+				result = lazy(b(lazy(l(rhs), env)) ? l(r(r(rhs))) : r(r(r(r(rhs)))), env);
+			else {
+				Source<Node> r0 = env.get(operator.getName());
+				Source<Node> r1 = ((Fun_) r0.source()).fun.apply(lazy(lhs, env));
+				Source<Node> r2 = ((Fun_) r1.source()).fun.apply(lazy(rhs, env));
+				result = r2;
+			}
 		} else if (node instanceof Atom)
 			if ((result = env.get(v(node))) == null)
 				throw new RuntimeException("Cannot resolve " + node);
@@ -116,8 +117,8 @@ public class LazyFunInterpreter {
 		return node.source() == Atom.TRUE;
 	}
 
-	private int i(Node node, IMap<String, Source<Node>> env) {
-		return ((Int) lazy(node, env).source()).getNumber();
+	private int i(Source<Node> source) {
+		return ((Int) source.source()).getNumber();
 	}
 
 	private String v(Node node) {
