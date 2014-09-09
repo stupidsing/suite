@@ -10,9 +10,9 @@ import suite.node.Int;
 public class LazyFunInterpreterTest {
 
 	@Test
-	public void test() {
-		String expr = "sum := (n => if (n != 0) then (n + sum {n - 1}) else 0) >> sum {10}";
-		assertEquals(Int.of(55), new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
+	public void testFibonacci() {
+		String expr = "fib := (n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}";
+		assertEquals(Int.of(144), new LazyFunInterpreter().lazy(Suite.parse(expr)).get());
 	}
 
 }

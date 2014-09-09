@@ -38,8 +38,6 @@ public class LazyFunInterpreter {
 	}
 
 	public Thunk_ lazy(Node node) {
-		Thunk_ equal = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) == i(b) ? Atom.TRUE : Atom.FALSE));
-		Thunk_ noteq = () -> new Fun_(a -> () -> new Fun_(b -> () -> i(a) != i(b) ? Atom.TRUE : Atom.FALSE));
 		Thunk_ error = () -> {
 			throw new RuntimeException("Error termination");
 		};
@@ -48,13 +46,17 @@ public class LazyFunInterpreter {
 		env = env.put(Atom.TRUE.getName(), () -> Atom.TRUE);
 		env = env.put(Atom.FALSE.getName(), () -> Atom.FALSE);
 
-		env = env.put(TermOp.EQUAL_.getName(), equal);
-		env = env.put(TermOp.NOTEQ_.getName(), noteq);
+		env = env.put(TermOp.AND___.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
+		env = env.put(TermOp.EQUAL_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) == i(b)))));
+		env = env.put(TermOp.NOTEQ_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) != i(b)))));
+		env = env.put(TermOp.LE____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) <= i(b)))));
+		env = env.put(TermOp.LT____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) < i(b)))));
+		env = env.put(TermOp.GE____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) >= i(b)))));
+		env = env.put(TermOp.GT____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) > i(b)))));
 		env = env.put(TermOp.PLUS__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) + i(b)))));
 		env = env.put(TermOp.MINUS_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) - i(b)))));
 		env = env.put(TermOp.MULT__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));
 		env = env.put(TermOp.DIVIDE.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) / i(b)))));
-		env = env.put(TermOp.AND___.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
 
 		env = env.put(ERROR.getName(), error);
 		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.get()).first));
@@ -109,6 +111,10 @@ public class LazyFunInterpreter {
 			result = env -> () -> node;
 
 		return result;
+	}
+
+	private Atom b(boolean b) {
+		return b ? Atom.TRUE : Atom.FALSE;
 	}
 
 	private int i(Thunk_ thunk) {
