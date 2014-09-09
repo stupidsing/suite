@@ -11,8 +11,9 @@ import suite.util.FunUtil.Source;
 
 public class LazyFunInterpreter {
 
-	private Atom HEAD = Atom.of("head");
-	private Atom TAIL = Atom.of("tail");
+	private Atom ERROR = Atom.of("error");
+	private Atom FST__ = Atom.of("fst");
+	private Atom SND__ = Atom.of("snd");
 
 	private static class Pair extends Node {
 		private Source<Node> first;
@@ -26,8 +27,13 @@ public class LazyFunInterpreter {
 
 	public Source<Node> lazy(Node node) {
 		IMap<String, Source<Node>> env = new IMap<>();
-		env.put(HEAD.getName(), () -> HEAD);
-		env.put(TAIL.getName(), () -> TAIL);
+		env = env.put(Atom.TRUE.getName(), () -> Atom.TRUE);
+		env = env.put(Atom.FALSE.getName(), () -> Atom.FALSE);
+		env = env.put(ERROR.getName(), () -> {
+			throw new RuntimeException("Error termination");
+		});
+		env = env.put(FST__.getName(), () -> FST__);
+		env = env.put(SND__.getName(), () -> SND__);
 		return lazy(node, env);
 	}
 
@@ -44,9 +50,9 @@ public class LazyFunInterpreter {
 				result = memoize(() -> new Pair(lazy(lhs, env), lazy(rhs, env)));
 			else if (operator == TermOp.BRACES) { // (a => b) {c}
 				Node fun = lazy(lhs, env).source();
-				if (fun == HEAD)
+				if (fun == FST__)
 					result = ((Pair) lazy(rhs, env)).first;
-				else if (fun == TAIL)
+				else if (fun == SND__)
 					result = ((Pair) lazy(rhs, env)).second;
 				else
 					result = lazy(r(fun), env.replace(v(l(fun)), lazy(rhs, env)));
