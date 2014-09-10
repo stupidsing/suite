@@ -23,12 +23,12 @@ public class SubPageFileImpl implements Closeable, PageFile {
 
 	@Override
 	public Bytes load(int pageNo) throws IOException {
-		return parent.load(validate(pageNo - startPage));
+		return parent.load(validate(pageNo + startPage));
 	}
 
 	@Override
 	public void save(int pageNo, Bytes bytes) throws IOException {
-		parent.save(validate(pageNo - startPage), bytes);
+		parent.save(validate(pageNo + startPage), bytes);
 	}
 
 	@Override
