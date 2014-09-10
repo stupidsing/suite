@@ -130,7 +130,7 @@ public class EditorView {
 		});
 
 		JFrame frame = this.frame = new JFrame(title);
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
