@@ -13,7 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
-import javax.swing.Box;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -33,8 +32,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import suite.editor.Layout.Node;
-import suite.editor.Layout.Orientation;
+import suite.editor.LayoutCalculator.Orientation;
 
 public class EditorView {
 
@@ -48,7 +46,8 @@ public class EditorView {
 
 	private JEditorPane editor;
 	private JFrame frame;
-	private Node layout;
+	private LayoutCalculator lay;
+	private LayoutCalculator.Node layout;
 	private JList<String> searchList;
 	private JTextField searchTextField;
 	private JTextArea messageTextArea;
@@ -139,8 +138,6 @@ public class EditorView {
 
 		JScrollPane editorScrollPane = createScrollPane(editor);
 
-		Component box = Box.createRigidArea(new Dimension(8, 8));
-
 		JButton okButton = applyDefaults(new JButton("OK"));
 		okButton.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent event) {
@@ -155,31 +152,30 @@ public class EditorView {
 		frame.setVisible(true);
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
-				calculateLayout();
+				refresh();
 			}
 		});
 
-		int u = 64, u2 = u * 2;
+		int u = 64, u3 = u * 3;
 
-		layout = Layout.lay(Orientation.HORIZONTAL //
-				, Layout.lay(Orientation.VERTICAL //
-						, Layout.hb(searchTextField, u, 24) //
-						, Layout.co(searchList, u, u) //
-				) //
-				, Layout.lay(Orientation.VERTICAL //
-						, Layout.hb(filenameTextField, u2, 24) //
-						, Layout.co(editorScrollPane, u2, u2) //
-						, Layout.hb(box, u2, 8) //
-						, Layout.lay(Orientation.HORIZONTAL //
-								, Layout.hb(null, u2, 24) //
-								, Layout.fx(okButton, 64, 24) //
-								, Layout.hb(null, u2, 24) //
-						) //
-						, Layout.lay(Orientation.VERTICAL //
-								, Layout.co(messageScrollPane, u2, u) //
-						) //
-				) //
-				, Layout.co(rightLabel, u, u) //
+		lay = new LayoutCalculator(frame.getContentPane());
+		layout = lay.box(Orientation.HORIZONTAL //
+				, lay.ex(u, lay.box(Orientation.VERTICAL //
+						, lay.fx(24, lay.c(searchTextField)) //
+						, lay.ex(u, lay.c(searchList)) //
+						)) //
+				, lay.ex(u3, lay.box(Orientation.VERTICAL //
+						, lay.fx(24, lay.c(filenameTextField)) //
+						, lay.ex(u3, lay.c(editorScrollPane)) //
+						, lay.fx(8, lay.b()) //
+						, lay.fx(24, lay.box(Orientation.HORIZONTAL //
+								, lay.ex(u3, lay.b()) //
+								, lay.fx(64, lay.c(okButton)) //
+								, lay.ex(u3, lay.b()) //
+								)) //
+						, lay.ex(u3, lay.c(messageScrollPane)) //
+						)) //
+				, lay.ex(u, lay.c(rightLabel)) //
 				);
 
 		controller.newFile(this);
@@ -194,12 +190,9 @@ public class EditorView {
 	}
 
 	public void refresh() {
-		calculateLayout();
+		if (lay != null && layout != null)
+			lay.arrange(layout);
 		repaint();
-	}
-
-	private void calculateLayout() {
-		new LayoutCalculator().arrange(frame.getContentPane(), layout);
 	}
 
 	private void repaint() {

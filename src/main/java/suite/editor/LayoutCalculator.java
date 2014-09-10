@@ -4,116 +4,211 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-
-import suite.editor.Layout.Box;
-import suite.editor.Layout.Leaf;
-import suite.editor.Layout.Node;
-import suite.editor.Layout.Orientation;
-import suite.editor.Layout.Rect;
-import suite.editor.Layout.Vector;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class LayoutCalculator {
 
-	public void arrange(Container container, Node node) {
+	private Container container;
+
+	private Space space = new Space();
+
+	public class HBox extends Group implements Node {
+		private HBox(List<Portion> portions) {
+			super(portions);
+		}
+
+		public void assign(Rect rect) {
+			arrange(this, rect.v0.x, rect.v1.x, (portion, start, end) -> {
+				portion.node.assign(new Rect(new Vector(start, rect.v0.y), new Vector(end, rect.v1.y)));
+			});
+		}
+	}
+
+	public class VBox extends Group implements Node {
+		private VBox(List<Portion> portions) {
+			super(portions);
+		}
+
+		public void assign(Rect rect) {
+			arrange(this, rect.v0.y, rect.v1.y, (portion, start, end) -> {
+				portion.node.assign(new Rect(new Vector(rect.v0.x, start), new Vector(rect.v1.x, end)));
+			});
+		}
+	}
+
+	private abstract class Group implements Node {
+		private List<Portion> portions = new ArrayList<>();
+
+		private Group(List<Portion> portions) {
+			this.portions = portions;
+		}
+
+		public boolean isVisible() {
+			return portions.stream() //
+					.filter(portion -> !(portion.node instanceof Space)) //
+					.anyMatch(portion -> portion.node.isVisible());
+		}
+	}
+
+	public class Leaf implements Node {
+		private Component component;
+
+		private Leaf(Component component) {
+			this.component = component;
+		}
+
+		public boolean isVisible() {
+			return component == null || component.isVisible();
+		}
+
+		public void assign(Rect r) {
+			Rectangle awtRect = new Rectangle(r.v0.x, r.v0.y, r.v1.x - r.v0.x, r.v1.y - r.v0.y);
+			component.setBounds(awtRect);
+			container.add(component);
+		}
+	}
+
+	public class Space implements Node {
+		public boolean isVisible() {
+			return true;
+		}
+
+		public void assign(Rect r) {
+		}
+	}
+
+	public interface Node {
+		public boolean isVisible();
+
+		public void assign(Rect rect);
+	}
+
+	public class Portion {
+		private int minUnit;
+		private int maxUnit;
+		private Node node;
+
+		private Portion(int minUnit, int maxUnit, Node node) {
+			this.minUnit = minUnit;
+			this.maxUnit = maxUnit;
+			this.node = node;
+		}
+	}
+
+	public enum Orientation {
+		HORIZONTAL, VERTICAL
+	};
+
+	public class Rect {
+		private Vector v0, v1;
+
+		public Rect(Vector v0, Vector v1) {
+			this.v0 = v0;
+			this.v1 = v1;
+		}
+	}
+
+	public class Vector {
+		private int x, y;
+
+		public Vector(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	private interface AssignToPortion {
+		public void assign(Portion portion, int start, int end);
+	}
+
+	public LayoutCalculator(Container container) {
+		this.container = container;
+	}
+
+	public Node box(Orientation ori, Portion... portions) {
+		if (ori == Orientation.HORIZONTAL)
+			return new HBox(Arrays.asList(portions));
+		else
+			return new VBox(Arrays.asList(portions));
+	}
+
+	/**
+	 * Fixed-size portion.
+	 */
+	public Portion fx(int unit, Node node) {
+		return p(unit, unit, node);
+	}
+
+	/**
+	 * Expandable portion.
+	 */
+	public Portion ex(int unit, Node node) {
+		return p(unit, unit << 8, node);
+	}
+
+	public Portion p(int minUnit, int maxUnit, Node node) {
+		return new Portion(minUnit, maxUnit, node);
+	}
+
+	public Node c(Component component) {
+		return new Leaf(component);
+	}
+
+	/**
+	 * Blank space.
+	 */
+	public Node b() {
+		return space;
+	}
+
+	public void arrange(Node node) {
 		container.setLayout(null);
-
-		Rect rect = new Rect(Vector.ORIGIN, toVector(container.getSize()));
-		arrange(container, rect, node);
+		Dimension size = container.getSize();
+		Rect rect = new Rect(new Vector(0, 0), new Vector(size.width, size.height));
+		node.assign(rect);
 	}
 
-	private void arrange(Container container, Rect rect, Node node) {
-		if (node instanceof Box) {
-			Box box = (Box) node;
-			Orientation ori = box.orientation;
-			Vector minimum = minimum(box);
-			Vector maximum = maximum(box);
+	private void arrange(Group group, int startPos, int endPos, AssignToPortion assignToPortion) {
+		int totalAssigned = endPos - startPos;
+		List<Portion> portions = group.portions.stream() //
+				.filter(portion -> portion.node.isVisible()) //
+				.collect(Collectors.toList());
 
-			int extra = rect.width(ori) - minimum.width(ori);
-			int buffer = maximum.width(ori) - minimum.width(ori);
-			int w = rect.v0.width(ori);
+		int totalMin = portions.stream().mapToInt(p -> p.minUnit).sum();
+		int totalMax = portions.stream().mapToInt(p -> p.maxUnit).sum();
 
-			if (buffer == 0) // Avoids division by zero
-				buffer = Integer.MAX_VALUE;
+		if (totalAssigned > totalMin) {
+			int nom = totalAssigned - totalMin;
+			int denom = totalMax - totalMin;
+			float ratio = ((float) nom) / denom;
+			int accumulatedBase = 0;
+			int accumulatedExpand = 0;
+			int assignedPos = 0;
 
-			for (Node childNode : box.nodes) {
-				Vector max = maximum(childNode);
-				Vector min = minimum(childNode);
-				int w0 = min.width(ori) + extra * (max.width(ori) - min.width(ori)) / buffer;
-
-				Vector v0 = new Vector(ori, w, rect.v0.height(ori));
-				Vector v1 = new Vector(ori, w + w0, rect.v1.height(ori));
-				arrange(container, new Rect(v0, v1), childNode);
-
-				w += w0;
+			for (Portion portion : portions) {
+				int assignedPos0 = assignedPos;
+				accumulatedBase += portion.minUnit;
+				accumulatedExpand += portion.maxUnit - portion.minUnit;
+				assignedPos = startPos + accumulatedBase + (int) (accumulatedExpand * ratio);
+				assignToPortion.assign(portion, assignedPos0, assignedPos);
 			}
-		} else if (node instanceof Leaf) {
-			Component component = ((Leaf) node).component;
-
-			if (component != null) {
-				component.setBounds(toRectangle(rect));
-				container.add(component);
-			}
-		}
-	}
-
-	private Vector maximum(Node node) {
-		Vector maximum;
-
-		if (node instanceof Box) {
-			Box box = (Box) node;
-			Orientation ori = box.orientation;
-			int maxWidth = 0, maxHeight = 0;
-
-			for (Node childNode : box.nodes) {
-				Vector max = maximum(childNode);
-				maxWidth += max.width(ori);
-				maxHeight = Math.max(maxHeight, max.height(ori));
-			}
-
-			maximum = new Vector(ori, maxWidth, maxHeight);
 		} else {
-			Leaf leaf = (Leaf) node;
-			Vector size = isVisible(leaf) ? leaf.max : Vector.ORIGIN;
-			maximum = size != null ? size : new Vector(65536, 65536);
-		}
+			int nom = totalAssigned;
+			int denom = totalMin;
+			float ratio = (float) (nom / denom);
+			int accumulated = 0;
+			int assignedPos = 0;
 
-		return maximum;
-	}
-
-	private Vector minimum(Node node) {
-		Vector minimum;
-
-		if (node instanceof Box) {
-			Box box = (Box) node;
-			Orientation ori = box.orientation;
-			int minWidth = 0, minHeight = 0;
-
-			for (Node childNode : box.nodes) {
-				Vector min = minimum(childNode);
-				minWidth += min.width(ori);
-				minHeight = Math.max(minHeight, min.height(ori));
+			for (Portion portion : portions) {
+				int assignedPos0 = assignedPos;
+				accumulated += portion.minUnit;
+				assignedPos = startPos + (int) (accumulated * ratio);
+				assignToPortion.assign(portion, assignedPos0, assignedPos);
 			}
-
-			minimum = new Vector(ori, minWidth, minHeight);
-		} else {
-			Leaf leaf = (Leaf) node;
-			Vector size = isVisible(leaf) ? leaf.min : null;
-			minimum = size != null ? size : Vector.ORIGIN;
 		}
-
-		return minimum;
-	}
-
-	private boolean isVisible(Leaf leaf) {
-		return leaf.component == null || leaf.component.isVisible();
-	}
-
-	private Rectangle toRectangle(Rect rect) {
-		return new Rectangle(rect.v0.x, rect.v0.y, rect.xdiff(), rect.ydiff());
-	}
-
-	private static Vector toVector(Dimension dim) {
-		return dim != null ? new Vector(dim.width, dim.height) : null;
 	}
 
 }
