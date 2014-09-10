@@ -35,6 +35,17 @@ public class CharsIntrinsics {
 		}
 	};
 
+	public static Intrinsic split = (callback, inputs) -> {
+		Chars chars = Data.get(inputs.get(0));
+		int sep = ((Int) inputs.get(1)).getNumber();
+		int pos = 0;
+		while (pos < chars.size() && chars.get(pos) != sep)
+			pos++;
+		return Tree.of(TermOp.AND___ //
+				, callback.wrap(Intrinsics.id_, new Data<>(chars.subchars(0, pos))) //
+				, callback.wrap(Intrinsics.id_, new Data<>(chars.subchars(pos))));
+	};
+
 	public static Intrinsic stringChars = (callback, inputs) -> {
 		String value = ThunkUtil.evaluateToString(callback::unwrap, inputs.get(0));
 		return new Data<>(To.chars(value));
