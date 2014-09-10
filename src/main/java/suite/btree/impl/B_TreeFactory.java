@@ -8,8 +8,6 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.btree.Allocator;
-import suite.btree.B_Tree;
 import suite.file.PageFile;
 import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
@@ -20,11 +18,9 @@ import suite.util.SerializeUtil.Serializer;
 public class B_TreeFactory<Key, Value> {
 
 	private int pageSize = PageFile.defaultPageSize;
-	private Allocator al;
-	private SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbp;
-	private SerializedPageFile<B_TreeImpl<Key, Value>.Page> pp;
 
-	private B_Tree<Key, Value> b_tree;
+	private Serializer<Key> ks;
+	private Serializer<Value> vs;
 
 	private class B_TreeSuperblockSerializer implements Serializer<B_TreeImpl<Key, Value>.Superblock> {
 		private B_TreeImpl<Key, Value> b_tree;
@@ -106,11 +102,12 @@ public class B_TreeFactory<Key, Value> {
 
 	}
 
-	public B_TreeFactory(String pathName //
-			, boolean isNew //
-			, Comparator<Key> comparator //
-			, Serializer<Key> ks //
-			, Serializer<Value> vs) throws IOException {
+	public B_TreeFactory(Serializer<Key> ks, Serializer<Value> vs) {
+		this.ks = ks;
+		this.vs = vs;
+	}
+
+	public B_TreeImpl<Key, Value> produce(String pathName, boolean isNew, Comparator<Key> comparator) throws IOException {
 		Files.createDirectories(Paths.get(pathName).getParent());
 
 		String sbf = pathName + ".superblock";
@@ -128,12 +125,10 @@ public class B_TreeFactory<Key, Value> {
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
 		SerializedPageFile<Bytes> alp = new SerializedPageFile<>(new PageFileImpl(amf, pageSize), als);
-		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
-		pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), ps);
+		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
+		SerializedPageFile<B_TreeImpl<Key, Value>.Page> pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), ps);
 
-		al = new AllocatorImpl(alp);
-
-		b_tree.setAllocator(al);
+		b_tree.setAllocator(new AllocatorImpl(alp));
 		b_tree.setSuperblockPageFile(sbp);
 		b_tree.setPageFile(pp);
 		b_tree.setBranchFactor(16);
@@ -141,10 +136,6 @@ public class B_TreeFactory<Key, Value> {
 		if (isNew)
 			b_tree.create();
 
-		this.b_tree = b_tree;
-	}
-
-	public B_Tree<Key, Value> get() {
 		return b_tree;
 	}
 

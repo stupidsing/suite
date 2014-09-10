@@ -28,14 +28,9 @@ public class B_TreeTest {
 		String pathName = FileUtil.tmp + "/test-btree";
 		boolean isNew = true;
 
-		B_TreeFactory<Integer, String> holder = new B_TreeFactory<>( //
-				pathName //
-				, isNew //
-				, comparator //
-				, SerializeUtil.intSerializer //
-				, SerializeUtil.string(16));
+		B_TreeFactory<Integer, String> factory = new B_TreeFactory<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
 
-		try (B_Tree<Integer, String> b_tree = holder.get()) {
+		try (B_Tree<Integer, String> b_tree = factory.produce(pathName, isNew, comparator)) {
 			shuffleAndTest(b_tree);
 		}
 	}
