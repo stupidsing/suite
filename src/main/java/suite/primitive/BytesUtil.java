@@ -72,10 +72,13 @@ public class BytesUtil {
 
 				while (buffer != null) {
 					int i = 0, bufferSize = buffer.size();
-					while (i < bufferSize && buffer.get(i) != delim)
-						i++;
+					byte b;
 
-					bb.append(buffer);
+					while (i < bufferSize && (b = buffer.get(i)) != delim) {
+						bb.append(b);
+						i++;
+					}
+
 					pos += i;
 
 					if (i < bufferSize)
