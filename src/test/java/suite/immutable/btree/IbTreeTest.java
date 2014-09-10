@@ -2,7 +2,7 @@ package suite.immutable.btree;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +23,7 @@ public class IbTreeTest {
 	private int pageSize = 4096;
 
 	@Test
-	public void testSingleLevel() throws FileNotFoundException {
+	public void testSingleLevel() throws IOException {
 		IbTreeConfiguration<Integer> config = new IbTreeConfiguration<>();
 		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
 		config.setPageSize(pageSize);
@@ -50,7 +50,7 @@ public class IbTreeTest {
 	}
 
 	@Test
-	public void testMultipleLevels() throws FileNotFoundException {
+	public void testMultipleLevels() throws IOException {
 		IbTreeConfiguration<String> config = createIbTreeConfiguration();
 		config.setComparator(Util.<String> comparator());
 		config.setSerializer(SerializeUtil.string(16));

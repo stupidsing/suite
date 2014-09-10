@@ -1,7 +1,6 @@
 package suite.file;
 
 import java.io.Closeable;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import suite.primitive.Bytes;
@@ -11,7 +10,7 @@ public class PageFileImpl implements Closeable, PageFile {
 	private RandomAccessibleFile file;
 	private int pageSize;
 
-	public PageFileImpl(String filename, int pageSize) throws FileNotFoundException {
+	public PageFileImpl(String filename, int pageSize) throws IOException {
 		file = new RandomAccessibleFile(filename);
 		this.pageSize = pageSize;
 	}

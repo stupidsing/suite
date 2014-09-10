@@ -1,6 +1,6 @@
 package suite.immutable.btree.impl;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +21,7 @@ public class FileSystemImpl implements FileSystem {
 
 	private IbTreeStack<Bytes> ibTreeStack;
 
-	public FileSystemImpl(IbTreeConfiguration<Bytes> config) throws FileNotFoundException {
+	public FileSystemImpl(IbTreeConfiguration<Bytes> config) throws IOException {
 		config.setComparator(Bytes.comparator);
 		config.setSerializer(keyUtil.serializer());
 		ibTreeStack = new IbTreeStack<>(config);

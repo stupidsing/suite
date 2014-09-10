@@ -16,7 +16,7 @@ import suite.util.SerializeUtil.Serializer;
  * 
  * @author ywsing
  */
-public class JournalledPageFile implements Closeable, PageFile {
+public class JournalledPageFileImpl implements Closeable, PageFile {
 
 	private PageFile pageFile;
 	private SerializedPageFile<JournalEntry> journalPageFile;
@@ -49,10 +49,11 @@ public class JournalledPageFile implements Closeable, PageFile {
 		}
 	}
 
-	public JournalledPageFile(String filename, int pageSize) throws IOException {
+	public JournalledPageFileImpl(String filename, int pageSize) throws IOException {
 		int journalPageSize = pageSize + 4;
+		pageFile = new PageFileImpl(filename, pageSize);
 		journalPageFile = new SerializedPageFile<>(new PageFileImpl(filename + ".journal", journalPageSize), jes);
-		pointerPageFile = new SerializedPageFile<>(new PageFileImpl(filename, 4), SerializeUtil.intSerializer);
+		pointerPageFile = new SerializedPageFile<>(new PageFileImpl(filename + ".pointer", 4), SerializeUtil.intSerializer);
 		bytesSerializer = SerializeUtil.bytes(pageSize);
 
 		nCommittedJournalEntries = pointerPageFile.load(0);

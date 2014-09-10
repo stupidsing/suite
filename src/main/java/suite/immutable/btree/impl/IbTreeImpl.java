@@ -3,7 +3,6 @@ package suite.immutable.btree.impl;
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -391,7 +390,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private class Mutate implements Closeable {
 		private SerializedPageFile<List<Integer>> stampFile;
 
-		private Mutate() throws FileNotFoundException {
+		private Mutate() throws IOException {
 			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
 			stampFile = new SerializedPageFile<>(stampPageFile, SerializeUtil.list(SerializeUtil.intSerializer));
 		}
@@ -415,8 +414,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree)
-			throws FileNotFoundException {
+	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) throws IOException {
 		this.filename = filename;
 		pageSize = config.getPageSize();
 		comparator = config.getComparator();

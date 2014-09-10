@@ -1,7 +1,7 @@
 package suite.immutable.btree.impl;
 
 import java.io.Closeable;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -14,7 +14,7 @@ public class IbTreeStack<Key> implements Closeable {
 	private List<IbTreeImpl<Integer>> allocationIbTrees = new ArrayList<>();
 	private IbTree<Key> ibTree;
 
-	public IbTreeStack(IbTreeConfiguration<Key> config) throws FileNotFoundException {
+	public IbTreeStack(IbTreeConfiguration<Key> config) throws IOException {
 		String filenamePrefix = config.getFilenamePrefix();
 		int pageSize = config.getPageSize();
 		long capacity = config.getCapacity();

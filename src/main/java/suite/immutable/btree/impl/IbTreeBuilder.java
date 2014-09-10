@@ -1,6 +1,6 @@
 package suite.immutable.btree.impl;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import suite.util.Util;
 
@@ -20,7 +20,7 @@ public class IbTreeBuilder {
 	 * Builds a small tree that would not span more than 1 page, i.e. no extra
 	 * "page allocation tree" is required.
 	 */
-	public IbTreeImpl<Integer> buildAllocationIbTree(String filename) throws FileNotFoundException {
+	public IbTreeImpl<Integer> buildAllocationIbTree(String filename) throws IOException {
 		return buildAllocationIbTree(filename, null);
 	}
 
@@ -28,13 +28,12 @@ public class IbTreeBuilder {
 	 * Builds an intermediate tree that is supported by a separate page
 	 * allocation tree.
 	 */
-	public IbTreeImpl<Integer> buildAllocationIbTree(String filename, IbTreeImpl<Integer> allocationIbTree)
-			throws FileNotFoundException {
+	public IbTreeImpl<Integer> buildAllocationIbTree(String filename, IbTreeImpl<Integer> allocationIbTree) throws IOException {
 		return buildTree(filename, allocationIbTreeConfig, allocationIbTree);
 	}
 
 	public <Key> IbTreeImpl<Key> buildTree(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree)
-			throws FileNotFoundException {
+			throws IOException {
 		return new IbTreeImpl<Key>(filename, config, allocationIbTree);
 	}
 
