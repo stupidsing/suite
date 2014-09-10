@@ -4,10 +4,8 @@ import java.io.IOException;
 
 import suite.btree.Allocator;
 import suite.file.PageFile;
-import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
-import suite.util.SerializeUtil;
 
 /**
  * Manages B-tree pages on disk.
@@ -22,8 +20,8 @@ public class AllocatorImpl implements Allocator {
 
 	private int lastAllocatedPageNo;
 
-	public AllocatorImpl(String filename) throws IOException {
-		allocMapFile = new SerializedPageFile<>(new PageFileImpl(filename, pageSize), SerializeUtil.bytes(pageSize));
+	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
+		allocMapFile = pageFile;
 		allocMap = new byte[size];
 
 		int i = 0, p = 0;

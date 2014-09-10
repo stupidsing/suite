@@ -14,6 +14,7 @@ import suite.btree.B_Tree;
 import suite.file.PageFile;
 import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
+import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
@@ -122,10 +123,12 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 				Files.deleteIfExists(Paths.get(filename));
 
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(comparator);
+
+		Serializer<Bytes> als = SerializeUtil.bytes(pageSize);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
-		al = new AllocatorImpl(amf);
+		al = new AllocatorImpl(new SerializedPageFile<>(new PageFileImpl(amf, pageSize), als));
 		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
 		pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), ps);
 
