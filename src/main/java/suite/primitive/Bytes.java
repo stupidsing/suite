@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -147,6 +148,10 @@ public class Bytes implements Iterable<Byte> {
 
 	public void write(DataOutput dataOutput) throws IOException {
 		dataOutput.write(bs, start, end - start);
+	}
+
+	public void write(OutputStream os) throws IOException {
+		os.write(bs, start, end - start);
 	}
 
 	@Override

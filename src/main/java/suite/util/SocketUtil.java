@@ -23,7 +23,8 @@ public class SocketUtil {
 
 	public void listenRw(int port, Rw rw) throws IOException {
 		listenIo(port, (is, os) -> {
-			try (Reader reader = new BufferedReader(new InputStreamReader(is)); PrintWriter writer = new PrintWriter(os)) {
+			try (Reader reader = new BufferedReader(new InputStreamReader(is, FileUtil.charset));
+					PrintWriter writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}
 		});

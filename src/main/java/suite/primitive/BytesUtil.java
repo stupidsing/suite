@@ -2,30 +2,15 @@ package suite.primitive;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
+import suite.util.LogUtil;
 
 public class BytesUtil {
 
 	private static final int bufferSize = 65536;
-
-	public static Source<Bytes> source(InputStream is) {
-		return () -> {
-			byte bs[] = new byte[bufferSize];
-			int nBytesRead;
-			try {
-				nBytesRead = is.read(bs);
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-
-			if (nBytesRead >= 0)
-				return Bytes.of(bs, 0, nBytesRead);
-			else
-				return null;
-		};
-	}
 
 	public static Source<Bytes> buffer(Source<Bytes> source) {
 		return new Source<Bytes>() {
@@ -44,6 +29,35 @@ public class BytesUtil {
 					return head;
 				} else
 					return null;
+			}
+		};
+	}
+
+	public static void sink(Source<Bytes> source, OutputStream os) throws IOException {
+		Bytes bytes;
+		while ((bytes = source.source()) != null)
+			bytes.write(os);
+	}
+
+	public static Source<Bytes> source(InputStream is) {
+		return () -> {
+			byte bs[] = new byte[bufferSize];
+			int nBytesRead;
+			try {
+				nBytesRead = is.read(bs);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+
+			if (nBytesRead >= 0)
+				return Bytes.of(bs, 0, nBytesRead);
+			else {
+				try {
+					is.close();
+				} catch (IOException ex) {
+					LogUtil.error(ex);
+				}
+				return null;
 			}
 		};
 	}

@@ -1,6 +1,7 @@
 package suite.primitive;
 
 import java.io.CharArrayReader;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -141,6 +142,10 @@ public class Chars implements Iterable<Character> {
 			return Arrays.copyOfRange(cs, start, end);
 		else
 			return cs;
+	}
+
+	public void write(DataOutput dataOutput) throws IOException {
+		dataOutput.writeChars(new String(toChars()));
 	}
 
 	public void write(Writer writer) throws IOException {
