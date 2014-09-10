@@ -79,7 +79,7 @@ public class Layout {
 	}
 
 	/**
-	 * Generic sized area.
+	 * Generically-sized area.
 	 */
 	public static Leaf co(Component component, int w, int h) {
 		return leaf(component, new Vector(w, h), new Vector(w << 8, h << 8));

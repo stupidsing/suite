@@ -41,8 +41,8 @@ public class EditorView {
 	private int windowWidth = 1280;
 	private int windowHeight = 768;
 
-	private Font font = new Font("Akkurat-Mono", Font.PLAIN, 12);
-	private Font narrowFont = new Font("Sans", Font.PLAIN, 12);
+	private Font font;
+	private Font narrowFont;
 
 	private EditorController controller;
 
@@ -58,6 +58,25 @@ public class EditorView {
 	private JTextField filenameTextField;
 
 	private boolean isModified = false;
+
+	public EditorView() {
+		String os = System.getenv("OS");
+		String monoFont;
+		String sansFont;
+
+		if (os != null && os.startsWith("Windows")) {
+			System.setProperty("awt.useSystemAAFontSettings", "off");
+			System.setProperty("swing.aatext", "false");
+			monoFont = "Courier";
+			sansFont = "Arial";
+		} else {
+			monoFont = "Akkurat-Mono";
+			sansFont = "Sans";
+		}
+
+		font = new Font(monoFont, Font.PLAIN, 12);
+		narrowFont = new Font(sansFont, Font.PLAIN, 12);
+	}
 
 	public JFrame run(String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
