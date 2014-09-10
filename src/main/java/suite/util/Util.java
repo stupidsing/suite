@@ -55,10 +55,6 @@ public class Util {
 			public Character next() {
 				return s.charAt(index++);
 			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		});
 	}
 

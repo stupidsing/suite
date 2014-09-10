@@ -159,10 +159,6 @@ public class Chars implements Iterable<Character> {
 			public Character next() {
 				return cs[pos++];
 			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		};
 	}
 

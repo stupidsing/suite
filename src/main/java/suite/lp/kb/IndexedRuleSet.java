@@ -2,10 +2,8 @@ package suite.lp.kb;
 
 import java.util.List;
 
+import suite.adt.ListMultimap;
 import suite.node.Node;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 
 /**
  * Index rules by default prototype, which is the leftest element in the rule
@@ -16,7 +14,7 @@ import com.google.common.collect.ListMultimap;
 public class IndexedRuleSet extends LinearRuleSet {
 
 	// Have to use a multi-map implementation that allow null keys
-	private ListMultimap<Prototype, Rule> index = ArrayListMultimap.create();
+	private ListMultimap<Prototype, Rule> index = new ListMultimap<>();
 
 	@Override
 	public void addRule(Rule rule) {

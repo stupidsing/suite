@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import suite.adt.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Journal;
@@ -22,8 +23,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.IdentityKey;
 import suite.util.Util;
-
-import com.google.common.collect.BiMap;
 
 public class InstructionExtractor implements AutoCloseable {
 

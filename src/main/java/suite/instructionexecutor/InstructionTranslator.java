@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.adt.BiMap;
+import suite.adt.HashBiMap;
 import suite.fp.intrinsic.Intrinsics;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedRegister;
@@ -24,9 +26,6 @@ import suite.parser.Subst;
 import suite.util.FunUtil;
 import suite.util.JdkLoadClassUtil;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 /**
  * Possible register types: boolean, thunk, int, node
  * (atom/number/reference/tree)
@@ -37,7 +36,7 @@ public class InstructionTranslator implements Closeable {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
-	private BiMap<Integer, Node> constantPool = HashBiMap.create();
+	private BiMap<Integer, Node> constantPool = new HashBiMap<>();
 
 	private String packageName;
 	private String className;

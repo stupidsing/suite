@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.ListMultimap;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Atom;
@@ -12,9 +13,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.util.LogUtil;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 
 /**
  * Check logic rules for typical errors.
@@ -24,7 +22,7 @@ public class Checker {
 	private Map<Atom, Boolean> isSingleton = new HashMap<>();
 
 	public void check(List<Rule> rules) {
-		ListMultimap<Prototype, Rule> rulesByPrototype = ArrayListMultimap.create();
+		ListMultimap<Prototype, Rule> rulesByPrototype = new ListMultimap<>();
 
 		for (Rule rule : rules)
 			rulesByPrototype.put(Prototype.get(rule), rule);

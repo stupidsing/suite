@@ -95,10 +95,6 @@ public class FunUtil {
 				next = null;
 				return next0;
 			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		};
 	}
 

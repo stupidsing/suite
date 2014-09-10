@@ -59,10 +59,6 @@ public class Tree extends Node {
 				tree = Tree.decompose(tree.getRight(), operator);
 				return next;
 			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		});
 	}
 

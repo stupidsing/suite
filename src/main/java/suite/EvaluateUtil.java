@@ -5,8 +5,8 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
-import suite.instructionexecutor.ThunkUtil;
 import suite.instructionexecutor.FunInstructionExecutor;
+import suite.instructionexecutor.ThunkUtil;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;

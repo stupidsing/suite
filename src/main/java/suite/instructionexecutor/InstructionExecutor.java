@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
+import suite.adt.BiMap;
+import suite.adt.HashBiMap;
 import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
@@ -19,15 +21,12 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.util.LogUtil;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 public class InstructionExecutor implements AutoCloseable {
 
 	private Instruction instructions[];
 	private int unwrapEntryPoint;
 
-	protected BiMap<Integer, Node> constantPool = HashBiMap.create();
+	protected BiMap<Integer, Node> constantPool = new HashBiMap<>();
 
 	private InstructionAnalyzer analyzer = new InstructionAnalyzer();
 

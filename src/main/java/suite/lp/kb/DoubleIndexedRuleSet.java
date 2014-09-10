@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.ListMultimap;
 import suite.node.Node;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
 
 /**
  * Index rules by two layers of prototype, which is the leftest element and the
@@ -71,7 +69,7 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 	private List<Rule> ruleList(Rule rule) {
 		Prototype p0 = Prototype.get(rule);
 		Prototype p1 = Prototype.get(rule, 1);
-		ListMultimap<Prototype, Rule> index1 = index0.computeIfAbsent(p0, any -> ArrayListMultimap.create());
+		ListMultimap<Prototype, Rule> index1 = index0.computeIfAbsent(p0, any -> new ListMultimap<>());
 		return index1.get(p1);
 	}
 

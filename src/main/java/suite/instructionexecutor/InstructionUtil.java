@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Suite;
+import suite.adt.BiMap;
+import suite.adt.HashBiMap;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.node.Data;
@@ -13,12 +15,9 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.util.FunUtil.Fun;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-
 public class InstructionUtil {
 
-	private static BiMap<Insn, String> insnNames = HashBiMap.create();
+	private static BiMap<Insn, String> insnNames = new HashBiMap<>();
 	private static Map<Operator, Insn> evalInsns = new HashMap<>();
 
 	static {

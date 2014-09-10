@@ -161,10 +161,6 @@ public class Bytes implements Iterable<Byte> {
 			public Byte next() {
 				return bs[pos++];
 			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
 		};
 	}
 

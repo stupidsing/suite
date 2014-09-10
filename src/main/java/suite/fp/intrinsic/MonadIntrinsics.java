@@ -15,8 +15,8 @@ import java.util.WeakHashMap;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.instructionexecutor.ThunkUtil;
 import suite.instructionexecutor.IndexedReader;
+import suite.instructionexecutor.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;

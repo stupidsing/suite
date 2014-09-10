@@ -5,14 +5,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
 import suite.util.FunUtil;
 import suite.util.Util;
-
-import com.google.common.collect.Iterators;
 
 public class I23TreeTest {
 
@@ -28,13 +27,13 @@ public class I23TreeTest {
 			tree23 = tree23.add(i);
 
 		System.out.println(tree23.toString());
-		assertEquals(max, Iterators.size(FunUtil.iterator(tree23.source())));
+		assertEquals(max, size(FunUtil.iterator(tree23.source())));
 
 		for (int i = 0; i < max; i++)
 			tree23 = tree23.remove(i);
 
 		System.out.println(tree23.toString());
-		assertEquals(0, Iterators.size(FunUtil.iterator(tree23.source())));
+		assertEquals(0, size(FunUtil.iterator(tree23.source())));
 	}
 
 	@Test
@@ -45,13 +44,13 @@ public class I23TreeTest {
 			tree23 = tree23.add(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.add(i);
-		assertEquals(max, Iterators.size(FunUtil.iterator(tree23.source())));
+		assertEquals(max, size(FunUtil.iterator(tree23.source())));
 
 		for (int i = 0; i < max; i += 2)
 			tree23 = tree23.remove(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.remove(i);
-		assertEquals(0, Iterators.size(FunUtil.iterator(tree23.source())));
+		assertEquals(0, size(FunUtil.iterator(tree23.source())));
 	}
 
 	@Test
@@ -67,14 +66,23 @@ public class I23TreeTest {
 			tree23 = tree23.add(i);
 
 		System.out.println(tree23.toString());
-		assertEquals(max, Iterators.size(FunUtil.iterator(tree23.source())));
+		assertEquals(max, size(FunUtil.iterator(tree23.source())));
 
 		Collections.shuffle(list);
 		for (int i : list)
 			tree23 = tree23.remove(i);
 
 		System.out.println(tree23.toString());
-		assertEquals(0, Iterators.size(FunUtil.iterator(tree23.source())));
+		assertEquals(0, size(FunUtil.iterator(tree23.source())));
+	}
+
+	private <T> int size(Iterator<T> iter) {
+		int size = 0;
+		while (iter.hasNext()) {
+			iter.next();
+			size++;
+		}
+		return size;
 	}
 
 }

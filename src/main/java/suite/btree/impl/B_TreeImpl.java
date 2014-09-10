@@ -157,10 +157,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				return current0;
 			}
 
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-
 			private Pair<Key, Value> advance() {
 				currentSlots.peek().index++;
 
