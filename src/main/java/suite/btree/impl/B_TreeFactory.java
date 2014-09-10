@@ -1,6 +1,5 @@
 package suite.btree.impl;
 
-import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -18,7 +17,7 @@ import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
-public class B_TreeHolder<Key, Value> implements Closeable {
+public class B_TreeFactory<Key, Value> {
 
 	private int pageSize = PageFile.defaultPageSize;
 	private Allocator al;
@@ -107,7 +106,7 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 
 	}
 
-	public B_TreeHolder(String pathName //
+	public B_TreeFactory(String pathName //
 			, boolean isNew //
 			, Comparator<Key> comparator //
 			, Serializer<Key> ks //
@@ -143,13 +142,6 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 			b_tree.create();
 
 		this.b_tree = b_tree;
-	}
-
-	@Override
-	public void close() throws IOException {
-		pp.close();
-		sbp.close();
-		al.close();
 	}
 
 	public B_Tree<Key, Value> get() {

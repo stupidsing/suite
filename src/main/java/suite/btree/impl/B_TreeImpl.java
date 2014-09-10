@@ -1,5 +1,6 @@
 package suite.btree.impl;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,7 +112,15 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		this.comparator = comparator;
 	}
 
+	@Override
+	public void close() throws IOException {
+		pageFile.close();
+		superblockPageFile.close();
+		allocator.close();
+	}
+
 	public void create() {
+		allocator.create();
 		int root = allocator.allocate();
 		setRoot(root);
 		savePage(new Page(root));

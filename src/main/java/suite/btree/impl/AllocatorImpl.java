@@ -1,6 +1,7 @@
 package suite.btree.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import suite.btree.Allocator;
 import suite.file.PageFile;
@@ -8,7 +9,7 @@ import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 
 /**
- * Manages B-tree pages on disk.
+ * Manage B-tree pages on disk.
  */
 public class AllocatorImpl implements Allocator {
 
@@ -24,18 +25,26 @@ public class AllocatorImpl implements Allocator {
 		allocMapFile = pageFile;
 		allocMap = new byte[size];
 
-		int i = 0, p = 0;
+		int pageNo = 0, p = 0;
 
-		while (i < size) {
-			int i1 = Math.min(size, i + pageSize);
-			System.arraycopy(allocMapFile.load(p++).toBytes(), 0, allocMap, i, i1 - i);
-			i = i1;
+		while (pageNo < size) {
+			int pageNo1 = Math.min(size, pageNo + pageSize);
+			System.arraycopy(allocMapFile.load(p++).toBytes(), 0, allocMap, pageNo, pageNo1 - pageNo);
+			pageNo = pageNo1;
 		}
 	}
 
 	@Override
 	public void close() throws IOException {
 		allocMapFile.close();
+	}
+
+	@Override
+	public void create() {
+		Arrays.fill(allocMap, (byte) 0);
+
+		for (int pageNo = 0; pageNo < size; pageNo = Math.min(size, pageNo + pageSize))
+			savePageNo(pageNo);
 	}
 
 	@Override
@@ -68,7 +77,7 @@ public class AllocatorImpl implements Allocator {
 
 	private void savePageNo(int pageNo) {
 		int p = pageNo / pageSize;
-		int start = p * pageSize, end = start + pageSize;
+		int start = p * pageSize, end = Math.min(size, start + pageSize);
 		allocMapFile.save(p, Bytes.of(allocMap, start, end));
 	}
 

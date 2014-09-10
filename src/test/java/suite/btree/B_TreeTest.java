@@ -9,7 +9,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.btree.impl.B_TreeHolder;
+import suite.btree.impl.B_TreeFactory;
 import suite.util.FileUtil;
 import suite.util.Pair;
 import suite.util.SerializeUtil;
@@ -18,8 +18,6 @@ public class B_TreeTest {
 
 	private static int nKeys = 1024;
 	private Integer keys[] = new Integer[nKeys];
-
-	private B_Tree<Integer, String> b_tree;
 
 	private Random random = new Random();
 
@@ -30,34 +28,22 @@ public class B_TreeTest {
 		String pathName = FileUtil.tmp + "/test-btree";
 		boolean isNew = true;
 
-		try (B_TreeHolder<Integer, String> holder = new B_TreeHolder<>( //
+		B_TreeFactory<Integer, String> holder = new B_TreeFactory<>( //
 				pathName //
 				, isNew //
 				, comparator //
 				, SerializeUtil.intSerializer //
-				, SerializeUtil.string(16))) {
-			b_tree = holder.get();
-			shuffleAndTest();
+				, SerializeUtil.string(16));
+
+		try (B_Tree<Integer, String> b_tree = holder.get()) {
+			shuffleAndTest(b_tree);
 		}
 	}
 
-	private void shuffleAndTest() {
+	private void shuffleAndTest(B_Tree<Integer, String> b_tree) {
 		for (int i = 0; i < nKeys; i++)
 			keys[i] = i;
 
-		addAndRemove();
-	}
-
-	private void shuffleNumbers() {
-		for (int i = 0; i < nKeys; i++) {
-			int j = random.nextInt(nKeys);
-			Integer temp = keys[i];
-			keys[i] = keys[j];
-			keys[j] = temp;
-		}
-	}
-
-	private void addAndRemove() {
 		shuffleNumbers();
 
 		for (int i = 0; i < nKeys; i++)
@@ -94,6 +80,15 @@ public class B_TreeTest {
 
 		for (Pair<Integer, String> entry : b_tree.range(0, nKeys))
 			assertNull(entry);
+	}
+
+	private void shuffleNumbers() {
+		for (int i = 0; i < nKeys; i++) {
+			int j = random.nextInt(nKeys);
+			Integer temp = keys[i];
+			keys[i] = keys[j];
+			keys[j] = temp;
+		}
 	}
 
 }

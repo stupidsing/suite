@@ -1,10 +1,11 @@
 package suite.btree;
 
+import java.io.Closeable;
 import java.io.PrintStream;
 
 import suite.util.Pair;
 
-public interface B_Tree<Key, Value> {
+public interface B_Tree<Key, Value> extends Closeable {
 
 	public void create();
 
