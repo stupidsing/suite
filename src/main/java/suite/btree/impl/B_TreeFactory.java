@@ -19,8 +19,8 @@ public class B_TreeFactory<Key, Value> {
 
 	private int pageSize = PageFile.defaultPageSize;
 
-	private Serializer<Key> ks;
-	private Serializer<Value> vs;
+	private Serializer<Key> keySerializer;
+	private Serializer<Value> valueSerializer;
 
 	private class B_TreeSuperblockSerializer implements Serializer<B_TreeImpl<Key, Value>.Superblock> {
 		private B_TreeImpl<Key, Value> b_tree;
@@ -42,16 +42,12 @@ public class B_TreeFactory<Key, Value> {
 
 	private class B_TreePageSerializer implements Serializer<B_TreeImpl<Key, Value>.Page> {
 		private B_TreeImpl<Key, Value> b_tree;
-		private Serializer<Key> keySerializer;
-		private Serializer<Value> valueSerializer;
 
 		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
 
-		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree, Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
+		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree) {
 			this.b_tree = b_tree;
-			this.keySerializer = keySerializer;
-			this.valueSerializer = valueSerializer;
 		}
 
 		public B_TreeImpl<Key, Value>.Page read(DataInput dataInput) throws IOException {
@@ -102,9 +98,9 @@ public class B_TreeFactory<Key, Value> {
 
 	}
 
-	public B_TreeFactory(Serializer<Key> ks, Serializer<Value> vs) {
-		this.ks = ks;
-		this.vs = vs;
+	public B_TreeFactory(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
+		this.keySerializer = keySerializer;
+		this.valueSerializer = valueSerializer;
 	}
 
 	public B_TreeImpl<Key, Value> produce(String pathName, boolean isNew, Comparator<Key> comparator) throws IOException {
@@ -122,7 +118,7 @@ public class B_TreeFactory<Key, Value> {
 
 		Serializer<Bytes> als = SerializeUtil.bytes(pageSize);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
-		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
+		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree);
 
 		SerializedPageFile<Bytes> alp = new SerializedPageFile<>(new PageFileImpl(amf, pageSize), als);
 		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
