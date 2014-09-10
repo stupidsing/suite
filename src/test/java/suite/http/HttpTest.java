@@ -3,7 +3,6 @@ package suite.http;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -36,7 +35,7 @@ public class HttpTest {
 		BytesUtil.sink(result.out, System.out);
 	}
 
-	private HttpResult http(String method, URL url, Source<Bytes> in) throws IOException, ProtocolException {
+	private HttpResult http(String method, URL url, Source<Bytes> in) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod(method);
