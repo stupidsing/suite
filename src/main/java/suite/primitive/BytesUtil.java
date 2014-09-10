@@ -3,10 +3,13 @@ package suite.primitive;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
+import suite.util.To;
 
 public class BytesUtil {
 
@@ -60,6 +63,10 @@ public class BytesUtil {
 				return null;
 			}
 		};
+	}
+
+	public static Source<Bytes> source(String data) {
+		return To.source(Arrays.asList(Bytes.of(data.getBytes(FileUtil.charset))));
 	}
 
 	public static Source<Bytes> split(Source<Bytes> source, byte delim) {
