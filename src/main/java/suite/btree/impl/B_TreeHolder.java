@@ -128,9 +128,11 @@ public class B_TreeHolder<Key, Value> implements Closeable {
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree, ks, vs);
 
-		al = new AllocatorImpl(new SerializedPageFile<>(new PageFileImpl(amf, pageSize), als));
+		SerializedPageFile<Bytes> alp = new SerializedPageFile<>(new PageFileImpl(amf, pageSize), als);
 		sbp = new SerializedPageFile<>(new PageFileImpl(sbf, pageSize), sbs);
 		pp = new SerializedPageFile<>(new PageFileImpl(pf, pageSize), ps);
+
+		al = new AllocatorImpl(alp);
 
 		b_tree.setAllocator(al);
 		b_tree.setSuperblockPageFile(sbp);
