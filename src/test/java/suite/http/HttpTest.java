@@ -1,6 +1,5 @@
 package suite.http;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -42,8 +41,8 @@ public class HttpTest {
 		conn.setDoOutput(true);
 		conn.setRequestMethod(method);
 
-		try (OutputStream os = conn.getOutputStream(); DataOutputStream dos = new DataOutputStream(os)) {
-			BytesUtil.sink(in, dos);
+		try (OutputStream os = conn.getOutputStream()) {
+			BytesUtil.sink(in, os);
 		}
 
 		return new HttpResult(conn.getResponseCode(), BytesUtil.source(conn.getInputStream()));
