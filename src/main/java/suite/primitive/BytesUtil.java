@@ -68,19 +68,26 @@ public class BytesUtil {
 
 			public Bytes source() {
 				BytesBuilder bb = new BytesBuilder();
-				bb.append(buffer);
-				fill(bb, source);
+				int pos = 0;
 
-				if (bb.size() > 0) {
+				while (buffer != null) {
+					int i = 0, bufferSize = buffer.size();
+					while (i < bufferSize && buffer.get(i) != delim)
+						i++;
+
+					bb.append(buffer);
+					pos += i;
+
+					if (i < bufferSize)
+						buffer = source.source();
+					else
+						break;
+				}
+
+				if (pos > 0) {
 					Bytes bytes = bb.toBytes();
-
-					int n = 0;
-					for (; n < bytes.size(); n++)
-						if (bytes.get(n) == delim)
-							break;
-
-					Bytes head = bytes.subbytes(0, n);
-					buffer = bytes.subbytes(n);
+					Bytes head = bytes.subbytes(0, pos);
+					buffer = bytes.subbytes(pos);
 					return head;
 				} else
 					return null;
