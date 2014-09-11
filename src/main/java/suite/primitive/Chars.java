@@ -92,7 +92,7 @@ public class Chars implements Iterable<Character> {
 		return bb.toChars();
 	}
 
-	public Reader reader() {
+	public Reader asReader() {
 		return new CharArrayReader(cs, start, end - start);
 	}
 

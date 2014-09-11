@@ -8,6 +8,7 @@ import java.net.URL;
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
 import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class WebUtil {
 
@@ -27,12 +28,12 @@ public class WebUtil {
 		conn.setRequestMethod(method);
 
 		try (OutputStream os = conn.getOutputStream()) {
-			BytesUtil.sink(in, os);
+			BytesUtil.copy(in, os);
 		}
 
 		int responseCode = conn.getResponseCode();
 		if (responseCode == 200)
-			return new HttpResult(responseCode, BytesUtil.source(conn.getInputStream()));
+			return new HttpResult(responseCode, To.source(conn.getInputStream()));
 		else
 			throw new IOException("HTTP returned " + responseCode + ":" + url);
 	}

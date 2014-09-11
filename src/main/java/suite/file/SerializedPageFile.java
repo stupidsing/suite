@@ -1,6 +1,7 @@
 package suite.file;
 
 import java.io.Closeable;
+import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.IOException;
 
@@ -50,7 +51,7 @@ public class SerializedPageFile<V> implements Closeable {
 
 	public V load(int pageNo) {
 		try {
-			return serializer.read(pageFile.load(pageNo).dataInput());
+			return serializer.read(new DataInputStream(pageFile.load(pageNo).asInputStream()));
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}

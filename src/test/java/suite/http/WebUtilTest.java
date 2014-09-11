@@ -7,14 +7,15 @@ import org.junit.Test;
 
 import suite.http.WebUtil.HttpResult;
 import suite.primitive.BytesUtil;
+import suite.util.To;
 
 public class WebUtilTest {
 
 	@Test
 	public void test() throws IOException {
-		HttpResult result = WebUtil.http("GET", new URL("http://stupidsing.no-ip.org/"), BytesUtil.source("{\"key\": \"value\"}"));
+		HttpResult result = WebUtil.http("GET", new URL("http://stupidsing.no-ip.org/"), To.source("{\"key\": \"value\"}"));
 		System.out.println(result.responseCode);
-		BytesUtil.sink(result.out, System.out);
+		BytesUtil.copy(result.out, System.out);
 	}
 
 }

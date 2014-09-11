@@ -13,6 +13,7 @@ import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,7 +31,7 @@ import suite.util.FunUtil.Source;
 public class FileUtil {
 
 	public static String tmp = "/tmp";
-	public static Charset charset = Charset.forName("UTF-8");
+	public static Charset charset = StandardCharsets.UTF_8;
 
 	public static void copyFile(File from, File to) throws IOException {
 		try (OutputStream fos = new FileOutputStream(to)) {

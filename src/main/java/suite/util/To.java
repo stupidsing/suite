@@ -83,6 +83,30 @@ public class To {
 		return hex2(i >>> 8 & 0xFF) + hex2(i & 0xFF);
 	}
 
+	public static InputStream inputStream(Source<Bytes> source) {
+		return new InputStream() {
+			private InputStream is;
+
+			public int read() throws IOException {
+				byte b[] = new byte[1];
+				int nBytesRead = read(b, 0, 1);
+				return nBytesRead > 0 ? b[0] : nBytesRead;
+			}
+
+			public int read(byte bs[], int offset, int length) throws IOException {
+				int nBytesRead = -1;
+				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
+					Bytes bytes = source.source();
+					if (bytes != null)
+						is = bytes.asInputStream();
+					else
+						break;
+				}
+				return nBytesRead;
+			}
+		};
+	}
+
 	public static <T> List<T> list(Iterable<T> iter) {
 		return list(iter.iterator());
 	}
@@ -110,6 +134,33 @@ public class To {
 	public static <O> Source<O> source(Iterable<O> iterable) {
 		Iterator<O> iterator = iterable.iterator();
 		return () -> iterator.hasNext() ? iterator.next() : null;
+	}
+
+	public static Source<Bytes> source(InputStream is) {
+		return () -> {
+			byte bs[] = new byte[bufferSize];
+			int nBytesRead;
+			try {
+				nBytesRead = is.read(bs);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+
+			if (nBytesRead >= 0)
+				return Bytes.of(bs, 0, nBytesRead);
+			else {
+				try {
+					is.close();
+				} catch (IOException ex) {
+					LogUtil.error(ex);
+				}
+				return null;
+			}
+		};
+	}
+
+	public static Source<Bytes> source(String data) {
+		return To.source(Arrays.asList(Bytes.of(data.getBytes(FileUtil.charset))));
 	}
 
 	public static String string(byte bs[]) {

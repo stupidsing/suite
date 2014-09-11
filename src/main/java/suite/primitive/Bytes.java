@@ -2,11 +2,10 @@ package suite.primitive;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -94,8 +93,8 @@ public class Bytes implements Iterable<Byte> {
 		return bb.toBytes();
 	}
 
-	public DataInput dataInput() {
-		return new DataInputStream(new ByteArrayInputStream(bs, start, end - start));
+	public InputStream asInputStream() {
+		return new ByteArrayInputStream(bs, start, end - start);
 	}
 
 	public byte get(int index) {
