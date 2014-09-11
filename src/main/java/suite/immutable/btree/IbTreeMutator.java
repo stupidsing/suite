@@ -29,7 +29,7 @@ public interface IbTreeMutator<Key> {
 	 *
 	 * Asserts comparator.compare(<original-key>, key) == 0.
 	 */
-	public <Payload> void put(Key key, Bytes payload);
+	public void put(Key key, Bytes payload);
 
 	public void remove(Key key);
 

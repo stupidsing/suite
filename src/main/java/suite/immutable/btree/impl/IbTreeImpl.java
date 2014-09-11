@@ -255,7 +255,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public <Payload> void put(Key key, Bytes payload) {
+		public void put(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
 			payloadFile.save(pointer, payload);
 			update(key, new Slot(SlotType.DATA, key, pointer));
