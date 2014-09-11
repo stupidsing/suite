@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.net.NetUtil;
 import suite.net.NioDispatcher;
+import suite.net.NioDispatcherImpl;
 import suite.net.RequestResponseMatcher;
 import suite.net.channels.PersistableChannel;
 import suite.net.cluster.Cluster;
@@ -26,7 +27,7 @@ public class ClusterImpl implements Cluster {
 	private Map<String, InetSocketAddress> peers;
 	private ClusterProbe probe;
 
-	private NioDispatcher<ClusterChannel> nio = new NioDispatcher<>(() -> new ClusterChannel(me));
+	private NioDispatcher<ClusterChannel> nio = new NioDispatcherImpl<>(() -> new ClusterChannel(me));
 
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 	private ThreadPoolExecutor executor;

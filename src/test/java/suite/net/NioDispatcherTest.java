@@ -46,7 +46,7 @@ public class NioDispatcherTest {
 			}
 		};
 		Source<BufferedChannel> source = () -> channel;
-		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcher<>(source);
+		NioDispatcher<BufferedChannel> dispatcher = new NioDispatcherImpl<>(source);
 
 		dispatcher.start();
 
@@ -75,7 +75,7 @@ public class NioDispatcherTest {
 		Fun<Bytes, Bytes> handler = request -> request;
 
 		Source<RequestResponseChannel> source = () -> new RequestResponseChannel(matcher, executor, handler);
-		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcher<>(source);
+		NioDispatcher<RequestResponseChannel> dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151)) {
