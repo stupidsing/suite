@@ -26,10 +26,6 @@ public class Generalizer {
 	private Map<Node, Integer> variableIndices = new HashMap<>();
 	private int nVariables;
 
-	public interface Producer {
-		public Node produce(Env env);
-	}
-
 	public class Generalization {
 		private Node node;
 		private Env env;
@@ -85,61 +81,58 @@ public class Generalizer {
 	}
 
 	public Fun<Env, Node> compile(Node node) {
-		return compileRight(Tree.of(null, null, node))::produce;
-	}
+		List<Fun<Env, Node>> funs = new ArrayList<>();
+		Fun<Env, Node> fun;
 
-	private Producer compileRight(Tree tree) {
-		List<Producer> gens = new ArrayList<>();
-		Producer gen;
+		while (true) {
+			Node node0 = node;
+			Tree tree;
 
-		while (tree != null) {
-			Tree nextTree = null;
-			Node right = tree.getRight().finalNode();
-			Tree rt;
-
-			if (right instanceof Atom) {
-				String name = ((Atom) right).getName();
+			if (node0 instanceof Atom) {
+				String name = ((Atom) node0).getName();
 
 				if (isWildcard(name))
-					gen = env -> new Reference();
+					fun = env -> new Reference();
 				else if (isVariable(name)) {
-					int index = getVariableIndex(right);
-					gen = env -> env.refs[index];
+					int index = getVariableIndex(node0);
+					fun = env -> env.refs[index];
 				} else if (isCut(name))
-					gen = env -> env.cut;
+					fun = env -> env.cut;
 				else
-					gen = env -> right;
-			} else if ((rt = Tree.decompose(right)) != null) {
+					fun = env -> node0;
+			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 
 				if (operator != TermOp.OR____) {
-					Fun<Env, Node> fun = compile(rt.getLeft());
-					gen = env -> Tree.of(rt.getOperator(), fun.apply(env), null);
-					nextTree = rt;
+					Fun<Env, Node> f = compile(tree.getLeft());
+					funs.add(env -> Tree.of(operator, f.apply(env), null));
+					node = tree.getRight().finalNode();
+					continue;
 				} else { // Delay generalizing for performance
-					Fun<Env, Node> fun = compile(rt);
-					gen = env -> new Suspend(() -> fun.apply(env));
+					Fun<Env, Node> lf = compile(tree.getLeft());
+					Fun<Env, Node> rf = compile(tree.getRight());
+					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else
-				gen = env -> right;
+				fun = env -> node0;
 
-			gens.add(gen);
-			tree = nextTree;
+			funs.add(fun);
+			break;
 		}
 
-		if (gens.size() > 1)
+		if (funs.size() > 1)
 			return env -> {
 				Tree t = Tree.of(null, null, null);
-				Node node = t;
-				for (Producer gen_ : gens) {
-					Tree t_ = Tree.decompose(node);
-					Tree.forceSetRight(t_, gen_.produce(env));
-					node = t_.getRight();
+				Node node_ = t;
+				for (Fun<Env, Node> gen_ : funs) {
+					Tree t_ = Tree.decompose(node_);
+					Tree.forceSetRight(t_, gen_.apply(env));
+					node_ = t_.getRight();
 				}
 				return t.getRight();
 			};
 		else
-			return gens.get(0);
+			return funs.get(0);
 	}
 
 	/**
