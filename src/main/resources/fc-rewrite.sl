@@ -76,8 +76,6 @@ fc-rewrite-type .unbound .unbound
 #
 fc-rewrite-type (ATOM-OF .atom) (ATOM-OF .atom)
 #
-fc-rewrite-type (DATA-OF .data) (DATA-OF .data)
-#
 fc-rewrite-type BOOLEAN BOOLEAN
 #
 fc-rewrite-type (CLASS .t) (CLASS .t)
