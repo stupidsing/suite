@@ -59,22 +59,8 @@ public class EditorView {
 	private boolean isModified = false;
 
 	public EditorView() {
-		String os = System.getenv("OS");
-		String monoFont;
-		String sansFont;
-
-		if (os != null && os.startsWith("Windows")) {
-			System.setProperty("awt.useSystemAAFontSettings", "off");
-			System.setProperty("swing.aatext", "false");
-			monoFont = "Courier";
-			sansFont = "Arial";
-		} else {
-			monoFont = "Akkurat-Mono";
-			sansFont = "Sans";
-		}
-
-		font = new Font(monoFont, Font.PLAIN, 12);
-		narrowFont = new Font(sansFont, Font.PLAIN, 12);
+		font = new Font(Editor.monoFont, Font.PLAIN, 12);
+		narrowFont = new Font(Editor.sansFont, Font.PLAIN, 12);
 	}
 
 	public JFrame run(String title) {
