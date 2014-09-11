@@ -26,7 +26,7 @@ public class LogicCompilerLevel1Test {
 	 */
 	@Test
 	public void testCompileFunProgram() {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
 
 		Node goal = new Specializer().specialize(Suite.substitute("" //
 				+ "source .in" //

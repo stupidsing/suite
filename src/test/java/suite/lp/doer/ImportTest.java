@@ -21,7 +21,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportFunCompiler() throws IOException {
-		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc.sl"));
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
 		System.out.println(rs.getRules().size());
 	}
 

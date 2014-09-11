@@ -76,7 +76,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseAuto() throws IOException {
-		String in = FileUtil.read("src/main/resources/auto.sl");
+		String in = FileUtil.read("src/main/ll/auto.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -84,7 +84,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseFile() throws IOException {
-		String in = FileUtil.read("src/main/resources/fc.sl");
+		String in = FileUtil.read("src/main/ll/fc/fc.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));

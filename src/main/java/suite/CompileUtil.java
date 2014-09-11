@@ -24,21 +24,21 @@ public class CompileUtil {
 	 * being altered.
 	 */
 	public synchronized RuleSet funCompilerRuleSet() {
-		return new CompositeRuleSet(createRuleSetFun.apply(Arrays.asList("auto.sl", "fc.sl")));
+		return new CompositeRuleSet(createRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc.sl")));
 	}
 
 	public synchronized RuleSet imperativeCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("asm.sl", "auto.sl", "ic.sl"));
+		return createRuleSetFun.apply(Arrays.asList("asm.sl", "auto.sl", "ic/ic.sl"));
 	}
 
 	public synchronized RuleSet logicCompilerRuleSet() {
-		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc.sl"));
+		return createRuleSetFun.apply(Arrays.asList("auto.sl", "lc/lc.sl"));
 	}
 
 	public boolean precompile(String libraryName, ProverConfig pc) {
 		System.out.println("Pre-compiling [" + libraryName + "]...");
 
-		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc-precompile.sl"));
+		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc-precompile.sl"));
 		Builder builder = new InterpretedProverBuilder(pc);
 		boolean result = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
