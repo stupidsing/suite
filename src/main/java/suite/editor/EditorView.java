@@ -109,7 +109,7 @@ public class EditorView {
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 		editor.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent event) {
-				changed();	
+				changed();
 			}
 
 			public void insertUpdate(DocumentEvent event) {
@@ -212,8 +212,8 @@ public class EditorView {
 		searchMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 		searchMenuItem.addActionListener(event -> controller.searchFor(view));
 
-		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Exit", KeyEvent.VK_X));
-		exitMenuItem.addActionListener(event -> controller.quit(EditorView.this));
+		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Close", KeyEvent.VK_C));
+		exitMenuItem.addActionListener(event -> controller.close(EditorView.this));
 
 		JMenuItem copyMenuItem = applyDefaults(new JMenuItem("Copy"));
 		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));

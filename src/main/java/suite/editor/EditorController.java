@@ -39,16 +39,7 @@ public class EditorController {
 	}
 
 	public void close(EditorView view) {
-		JFrame frame = view.getFrame();
-		if (view.isModified())
-			switch (JOptionPane.showConfirmDialog(frame, "Would you like to save your changes?")) {
-			case JOptionPane.YES_OPTION:
-				save(view);
-			case JOptionPane.NO_OPTION:
-				frame.dispose();
-				break;
-			default:
-			}
+		confirmSave(view, view.getFrame()::dispose);
 	}
 
 	public void copy(EditorView view, boolean isAppend) {
@@ -125,10 +116,12 @@ public class EditorController {
 	}
 
 	public void open(EditorView view) {
-		File dir = new File(view.getFilenameTextField().getText()).getParentFile();
-		JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
-		if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
-			load(view, fileChooser.getSelectedFile().getPath());
+		confirmSave(view, () -> {
+			File dir = new File(view.getFilenameTextField().getText()).getParentFile();
+			JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
+			if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
+				load(view, fileChooser.getSelectedFile().getPath());
+		});
 	}
 
 	public void paste(EditorView view) {
@@ -151,10 +144,6 @@ public class EditorController {
 			throw new RuntimeException(ex);
 		}
 		view.setModified(false);
-	}
-
-	public void quit(EditorView view) {
-		System.exit(0);
 	}
 
 	public void right(EditorView view) {
@@ -249,6 +238,21 @@ public class EditorController {
 			for (Component c : ((JComponent) component).getComponents())
 				isFocusOwner |= isOwningFocus(c);
 		return isFocusOwner;
+	}
+
+	private void confirmSave(EditorView view, Runnable action) {
+		JFrame frame = view.getFrame();
+		if (view.isModified())
+			switch (JOptionPane.showConfirmDialog(frame //
+					, "Would you like to save your changes?", "Close" //
+					, JOptionPane.YES_NO_CANCEL_OPTION)) {
+			case JOptionPane.YES_OPTION:
+				save(view);
+			case JOptionPane.NO_OPTION:
+				action.run();
+				break;
+			default:
+			}
 	}
 
 	private void run(EditorView view, Fun<String, String> fun) {
