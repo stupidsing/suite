@@ -33,7 +33,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	public class Leaf implements Pointer {
-		public Value value;
+		private Value value;
 
 		public Leaf(Value value) {
 			this.value = value;
@@ -41,7 +41,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	public class Branch implements Pointer {
-		public int pageNo;
+		private int pageNo;
 
 		public Branch(int pageNo) {
 			this.pageNo = pageNo;
@@ -52,7 +52,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		public Key key;
 		public Pointer pointer;
 
-		KeyPointer(Key key, Pointer pointer) {
+		public KeyPointer(Key key, Pointer pointer) {
 			this.key = key;
 			this.pointer = pointer;
 		}
@@ -85,11 +85,11 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		}
 	}
 
-	public class Slot {
-		public Page page;
-		public Integer index;
+	private class Slot {
+		private Page page;
+		private Integer index;
 
-		public Slot(Page page, Integer index) {
+		private Slot(Page page, Integer index) {
 			this.page = page;
 			this.index = index;
 		}
@@ -99,7 +99,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		}
 	}
 
-	public class Slots extends Stack<Slot> {
+	private class Slots extends Stack<Slot> {
 		private static final long serialVersionUID = 1l;
 	}
 
