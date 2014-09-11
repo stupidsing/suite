@@ -164,11 +164,10 @@ public class FunTypeTest {
 	}
 
 	private void checkType(String fps, String bindTo, String ts) {
-		Generalizer generalizer = new Generalizer();
 		Journal journal = new Journal();
 		Node type = getType(fps);
 
-		assertTrue(Binder.bind(type, generalizer.generalize(Suite.parse(bindTo)), journal));
+		assertTrue(Binder.bind(type, Generalizer.generalize(Suite.parse(bindTo)), journal));
 		assertEquals(Suite.parse(ts), type);
 	}
 

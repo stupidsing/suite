@@ -42,6 +42,33 @@ public class Bytes implements Iterable<Byte> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Bytes of(IoSink<DataOutput> ioSink) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ioSink.sink(new DataOutputStream(baos));
+		return Bytes.of(baos.toByteArray());
+	}
+
+	public static Bytes of(ByteBuffer bb) {
+		int offset = bb.arrayOffset();
+		return Bytes.of(bb.array(), offset, offset + bb.limit());
+	}
+
+	public static Bytes of(Bytes bytes) {
+		return Bytes.of(bytes.bs, bytes.start, bytes.end);
+	}
+
+	public static Bytes of(byte bytes[]) {
+		return Bytes.of(bytes, 0);
+	}
+
+	public static Bytes of(byte bytes[], int start) {
+		return Bytes.of(bytes, start, bytes.length);
+	}
+
+	public static Bytes of(byte bytes[], int start, int end) {
+		return new Bytes(bytes, start, end);
+	}
+
 	private Bytes(byte bytes[], int start, int end) {
 		this.bs = bytes;
 		this.start = start;
@@ -81,33 +108,6 @@ public class Bytes implements Iterable<Byte> {
 
 	public boolean isEmpty() {
 		return start >= end;
-	}
-
-	public static Bytes of(IoSink<DataOutput> ioSink) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ioSink.sink(new DataOutputStream(baos));
-		return Bytes.of(baos.toByteArray());
-	}
-
-	public static Bytes of(ByteBuffer bb) {
-		int offset = bb.arrayOffset();
-		return Bytes.of(bb.array(), offset, offset + bb.limit());
-	}
-
-	public static Bytes of(Bytes bytes) {
-		return Bytes.of(bytes.bs, bytes.start, bytes.end);
-	}
-
-	public static Bytes of(byte bytes[]) {
-		return Bytes.of(bytes, 0);
-	}
-
-	public static Bytes of(byte bytes[], int start) {
-		return Bytes.of(bytes, start, bytes.length);
-	}
-
-	public static Bytes of(byte bytes[], int start, int end) {
-		return new Bytes(bytes, start, end);
 	}
 
 	public Bytes pad(int size) {

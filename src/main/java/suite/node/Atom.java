@@ -15,16 +15,16 @@ public class Atom extends Node {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
-	private Atom(String name) {
-		this.name = name;
-	}
-
 	public static Atom of(String name) {
 		return of(Singleton.get().getGrandContext(), name);
 	}
 
 	public static Atom of(Context context, String name) {
 		return context.findAtom(name, Atom::new);
+	}
+
+	private Atom(String name) {
+		this.name = name;
 	}
 
 	public static Atom temp() {

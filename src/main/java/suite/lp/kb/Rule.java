@@ -1,14 +1,19 @@
 package suite.lp.kb;
 
+import suite.lp.doer.Generalizer;
+import suite.lp.doer.Generalizer.Env;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 public class Rule {
 
 	private Node head, tail;
+	private Generalizer generalizer;
+	private Fun<Env, Node> headFun, tailFun;
 
 	public Rule(Node head, Node tail) {
 		this.head = head;
@@ -29,6 +34,23 @@ public class Rule {
 			return Tree.of(TermOp.IS____, head, tail);
 		else
 			return head;
+	}
+
+	public synchronized Node createClause(Node query, Node cut) {
+		if (generalizer == null) {
+			generalizer = new Generalizer();
+			headFun = generalizer.compile(head);
+			tailFun = generalizer.compile(tail);
+		}
+
+		Env env = generalizer.env(cut);
+
+		return Tree.of(TermOp.AND___ //
+				, Tree.of(TermOp.EQUAL_ //
+						, query //
+						, headFun.apply(env)) //
+				, tailFun.apply(env));
+
 	}
 
 	@Override

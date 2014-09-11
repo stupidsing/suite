@@ -1,5 +1,6 @@
 package suite.lp.doer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,9 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 public class Generalizer {
@@ -20,16 +23,75 @@ public class Generalizer {
 	public static String variablePrefix = ".";
 	private static String cutName = "!";
 
-	private Map<Node, Reference> variables = new HashMap<>();
-	private Node cut;
+	private Map<Node, Integer> variableIndices = new HashMap<>();
+	private int nVariables;
 
-	public Node generalize(Node node) {
-		Tree tree = Tree.of(null, null, node);
-		generalizeRight(tree);
-		return tree.getRight();
+	public interface Producer {
+		public Node produce(Env env);
 	}
 
-	private void generalizeRight(Tree tree) {
+	public class Generalization {
+		private Node node;
+		private Env env;
+
+		private Generalization(Node node, Env env) {
+			this.node = node;
+			this.env = env;
+		}
+
+		public Node getVariable(Node variable) {
+			return env.refs[variableIndices.get(variable)];
+		}
+
+		public String dumpVariables() {
+			return Generalizer.this.dumpVariables(env);
+		}
+
+		public Node node() {
+			return node;
+		}
+	}
+
+	public static class Env {
+		private Reference refs[];
+		private Node cut;
+
+		private Env(Reference refs[], Node cut) {
+			this.refs = refs;
+			this.cut = cut;
+		}
+	}
+
+	public static Node generalize(Node node) {
+		return process(node).node;
+	}
+
+	public static Generalization process(Node node) {
+		Generalizer generalizer = new Generalizer();
+		Fun<Env, Node> fun = generalizer.compile(node);
+		Env env = generalizer.env();
+		return generalizer.new Generalization(fun.apply(env), env);
+	}
+
+	public Env env() {
+		return env(null);
+	}
+
+	public Env env(Node cut) {
+		Reference refs[] = new Reference[nVariables];
+		for (int i = 0; i < nVariables; i++)
+			refs[i] = new Reference();
+		return new Env(refs, cut);
+	}
+
+	public Fun<Env, Node> compile(Node node) {
+		return compileRight(Tree.of(null, null, node))::produce;
+	}
+
+	private Producer compileRight(Tree tree) {
+		List<Producer> gens = new ArrayList<>();
+		Producer gen;
+
 		while (tree != null) {
 			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
@@ -37,51 +99,53 @@ public class Generalizer {
 
 			if (right instanceof Atom) {
 				String name = ((Atom) right).getName();
-				if (isWildcard(name))
-					right = new Reference();
-				else if (isVariable(name))
-					right = getVariable(right);
-				else if (isCut(name) && cut != null)
-					right = cut;
-			} else if ((rt = Tree.decompose(right)) != null)
-				if (tree.getOperator() != TermOp.OR____)
-					right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
-				else
-					// Delay generalizing for performance
-					right = new Suspend(() -> generalize(rt));
 
-			Tree.forceSetRight(tree, right);
+				if (isWildcard(name))
+					gen = env -> new Reference();
+				else if (isVariable(name)) {
+					int index = getVariableIndex(right);
+					gen = env -> env.refs[index];
+				} else if (isCut(name))
+					gen = env -> env.cut;
+				else
+					gen = env -> right;
+			} else if ((rt = Tree.decompose(right)) != null) {
+				Operator operator = tree.getOperator();
+
+				if (operator != TermOp.OR____) {
+					Fun<Env, Node> fun = compile(rt.getLeft());
+					gen = env -> Tree.of(rt.getOperator(), fun.apply(env), null);
+					nextTree = rt;
+				} else { // Delay generalizing for performance
+					Fun<Env, Node> fun = compile(rt);
+					gen = env -> new Suspend(() -> fun.apply(env));
+				}
+			} else
+				gen = env -> right;
+
+			gens.add(gen);
 			tree = nextTree;
 		}
-	}
 
-	public Reference getVariable(Node variable) {
-		return variables.computeIfAbsent(variable, any -> new Reference());
-	}
-
-	public String dumpVariables() {
-		boolean first = true;
-		StringBuilder sb = new StringBuilder();
-		List<Entry<Node, Reference>> entries = Util.sort(variables.entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
-
-		for (Entry<Node, Reference> entry : entries) {
-			if (first)
-				first = false;
-			else
-				sb.append(", ");
-
-			sb.append(Formatter.dump(entry.getKey()));
-			sb.append(" = ");
-			sb.append(Formatter.dump(entry.getValue()));
-		}
-
-		return sb.toString();
+		if (gens.size() > 1)
+			return env -> {
+				Tree t = Tree.of(null, null, null);
+				Node node = t;
+				for (Producer gen_ : gens) {
+					Tree t_ = Tree.decompose(node);
+					Tree.forceSetRight(t_, gen_.produce(env));
+					node = t_.getRight();
+				}
+				return t.getRight();
+			};
+		else
+			return gens.get(0);
 	}
 
 	/**
 	 * Would a certain end-node be generalized?
 	 */
-	public boolean isVariant(Node node) {
+	public static boolean isVariant(Node node) {
 		node = node.finalNode();
 		if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
@@ -90,20 +154,39 @@ public class Generalizer {
 			return false;
 	}
 
+	private Integer getVariableIndex(Node variable) {
+		return variableIndices.computeIfAbsent(variable, any -> nVariables++);
+	}
+
+	private String dumpVariables(Env env) {
+		boolean first = true;
+		StringBuilder sb = new StringBuilder();
+		List<Entry<Node, Integer>> entries = Util.sort(variableIndices.entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
+
+		for (Entry<Node, Integer> entry : entries) {
+			if (first)
+				first = false;
+			else
+				sb.append(", ");
+
+			sb.append(Formatter.dump(entry.getKey()));
+			sb.append(" = ");
+			sb.append(Formatter.dump(env.refs[entry.getValue()]));
+		}
+
+		return sb.toString();
+	}
+
 	private static boolean isWildcard(String name) {
 		return name.startsWith(wildcardPrefix);
 	}
 
-	private boolean isVariable(String name) {
+	private static boolean isVariable(String name) {
 		return name.startsWith(variablePrefix);
 	}
 
 	private static boolean isCut(String name) {
 		return name.equals(cutName);
-	}
-
-	public void setCut(Node cut) {
-		this.cut = cut;
 	}
 
 }

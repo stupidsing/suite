@@ -86,7 +86,7 @@ public class ImportUtil {
 			if (rule.getHead() != Atom.NIL)
 				ruleSet.addRule(rule);
 			else {
-				Node goal = new Generalizer().generalize(rule.getTail());
+				Node goal = Generalizer.generalize(rule.getTail());
 				result &= prover.prove(goal);
 			}
 

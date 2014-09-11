@@ -18,6 +18,7 @@ import suite.lp.ImportUtil;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Configuration.TraceLevel;
 import suite.lp.doer.Generalizer;
+import suite.lp.doer.Generalizer.Generalization;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -102,18 +103,15 @@ public class Suite {
 	}
 
 	public static Node substitute(String s, Node... nodes) {
-		Node result = parse(s);
-
-		Generalizer generalizer = new Generalizer();
-		result = generalizer.generalize(result);
+		Generalization generalization = Generalizer.process(parse(s));
 		int i = 0;
 
 		for (Node node : nodes) {
-			Node variable = generalizer.getVariable(Atom.of("." + i++));
+			Node variable = generalization.getVariable(Atom.of("." + i++));
 			((Reference) variable).bound(node);
 		}
 
-		return result;
+		return generalization.node();
 	}
 
 	// --------------------------------

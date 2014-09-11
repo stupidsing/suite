@@ -11,6 +11,7 @@ import suite.Suite;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
 import suite.lp.doer.Generalizer;
+import suite.lp.doer.Generalizer.Generalization;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
@@ -143,12 +144,12 @@ public class CommandDispatcher {
 			code = query(builderLevel2, ruleSet, node);
 			break;
 		case QUERYELABORATE:
-			Generalizer generalizer = new Generalizer();
-			node = generalizer.generalize(node);
+			Generalization generalization = Generalizer.process(node);
+			node = generalization.node();
 			Prover prover = new Prover(opt.pc(ruleSet));
 
 			Node elab = new Data<Source<Boolean>>(() -> {
-				String dump = generalizer.dumpVariables();
+				String dump = generalization.dumpVariables();
 				if (!dump.isEmpty())
 					opt.prompt().println(dump);
 

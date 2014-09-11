@@ -17,15 +17,15 @@ public class SystemPredicates {
 
 	private Prover prover;
 
+	private static EvalPredicates evalPredicates = new EvalPredicates();
+	private static FindPredicates findPredicates = new FindPredicates();
+	private static FormatPredicates formatPredicates = new FormatPredicates();
+	private static InternMapPredicates internMapPredicates = new InternMapPredicates();
+	private static IoPredicates ioPredicates = new IoPredicates();
+	private static RuleSetPredicates ruleSetPredicates = new RuleSetPredicates();
+
 	public SystemPredicates(Prover prover) {
 		this.prover = prover;
-
-		EvalPredicates evalPredicates = new EvalPredicates();
-		FindPredicates findPredicates = new FindPredicates();
-		FormatPredicates formatPredicates = new FormatPredicates();
-		InternMapPredicates internMapPredicates = new InternMapPredicates();
-		IoPredicates ioPredicates = new IoPredicates();
-		RuleSetPredicates ruleSetPredicates = new RuleSetPredicates();
 
 		addPredicate("cut.begin", cutBegin);
 		addPredicate("cut.end", cutEnd);

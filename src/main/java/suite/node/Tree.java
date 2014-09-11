@@ -13,12 +13,6 @@ public class Tree extends Node {
 	private Operator operator;
 	private Node left, right;
 
-	private Tree(Operator operator, Node left, Node right) {
-		this.operator = operator;
-		this.left = left;
-		this.right = right;
-	}
-
 	public static Node[] getParameters(Node node, int n) {
 		Node params[] = new Node[n];
 		Tree tree;
@@ -64,6 +58,12 @@ public class Tree extends Node {
 
 	public static Tree of(Operator operator, Node left, Node right) {
 		return new Tree(operator, left, right);
+	}
+
+	private Tree(Operator operator, Node left, Node right) {
+		this.operator = operator;
+		this.left = left;
+		this.right = right;
 	}
 
 	public static Tree decompose(Node node) {

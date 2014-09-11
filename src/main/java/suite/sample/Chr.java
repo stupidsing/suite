@@ -9,7 +9,7 @@ import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
-import suite.lp.doer.Generalizer;
+import suite.lp.doer.SimpleGeneralizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.node.Atom;
@@ -104,7 +104,7 @@ public class Chr {
 	}
 
 	private Source<State> chr(State state, Rule rule) {
-		Generalizer generalizer = new Generalizer();
+		SimpleGeneralizer generalizer = new SimpleGeneralizer();
 		Journal journal = new Journal();
 		Source<State> states = To.source(state);
 
@@ -150,7 +150,7 @@ public class Chr {
 	}
 
 	private Source<State> chrThen(Source<State> states, Node then) {
-		Generalizer generalizer = new Generalizer();
+		SimpleGeneralizer generalizer = new SimpleGeneralizer();
 		Node a = atom(".a"), b = atom(".b");
 
 		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {

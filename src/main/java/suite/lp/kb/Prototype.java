@@ -18,12 +18,6 @@ public class Prototype implements Comparable<Prototype> {
 
 	private Node head;
 
-	private static Generalizer generalizer = new Generalizer();
-
-	public Prototype(Node head) {
-		this.head = head;
-	}
-
 	public static Prototype get(Rule rule) {
 		return get(rule, 0);
 	}
@@ -51,8 +45,12 @@ public class Prototype implements Comparable<Prototype> {
 			}
 		}
 
-		boolean indexable = node != null && !generalizer.isVariant(node) && !(node instanceof Reference);
+		boolean indexable = node != null && !Generalizer.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
+	}
+
+	public Prototype(Node head) {
+		this.head = head;
 	}
 
 	@Override

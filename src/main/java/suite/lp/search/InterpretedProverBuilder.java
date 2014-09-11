@@ -22,7 +22,7 @@ public class InterpretedProverBuilder implements Builder {
 
 	@Override
 	public Finder build(RuleSet ruleSet, Node goal) {
-		Node goal1 = new Generalizer().generalize(goal);
+		Node goal1 = Generalizer.generalize(goal);
 		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
 		return (source, sink) -> {

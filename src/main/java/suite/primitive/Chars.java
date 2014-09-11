@@ -40,6 +40,33 @@ public class Chars implements Iterable<Character> {
 		return c != 0 ? c : size0 - size1;
 	};
 
+	public static Chars of(IoSink<Writer> ioSink) throws IOException {
+		Writer writer = new StringWriter();
+		ioSink.sink(writer);
+		return Chars.of(writer.toString());
+	}
+
+	public static Chars of(String s) {
+		char[] a = To.charArray(s);
+		return Chars.of(a);
+	}
+
+	public static Chars of(Chars chars) {
+		return Chars.of(chars.cs, chars.start, chars.end);
+	}
+
+	public static Chars of(char chars[]) {
+		return Chars.of(chars, 0);
+	}
+
+	public static Chars of(char chars[], int start) {
+		return Chars.of(chars, start, chars.length);
+	}
+
+	public static Chars of(char chars[], int start, int end) {
+		return new Chars(chars, start, end);
+	}
+
 	public Chars(char chars[], int start, int end) {
 		this.cs = chars;
 		this.start = start;
@@ -79,33 +106,6 @@ public class Chars implements Iterable<Character> {
 
 	public boolean isEmpty() {
 		return start >= end;
-	}
-
-	public static Chars of(IoSink<Writer> ioSink) throws IOException {
-		Writer writer = new StringWriter();
-		ioSink.sink(writer);
-		return Chars.of(writer.toString());
-	}
-
-	public static Chars of(String s) {
-		char[] a = To.charArray(s);
-		return Chars.of(a);
-	}
-
-	public static Chars of(Chars chars) {
-		return Chars.of(chars.cs, chars.start, chars.end);
-	}
-
-	public static Chars of(char chars[]) {
-		return Chars.of(chars, 0);
-	}
-
-	public static Chars of(char chars[], int start) {
-		return Chars.of(chars, start, chars.length);
-	}
-
-	public static Chars of(char chars[], int start, int end) {
-		return new Chars(chars, start, end);
 	}
 
 	public Chars pad(int size) {

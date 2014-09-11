@@ -88,7 +88,7 @@ public class EvalPredicates {
 		return prover.bind(new Str(str), params[1]);
 	};
 
-	public SystemPredicate generalize = PredicateUtil.funPredicate(n -> new Generalizer().generalize(n));
+	public SystemPredicate generalize = PredicateUtil.funPredicate(Generalizer::generalize);
 
 	public SystemPredicate hash = PredicateUtil.funPredicate(n -> Int.of(n.hashCode()));
 
