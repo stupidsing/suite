@@ -39,7 +39,7 @@ fc-load-library .lib .do0 .dox
 fc-load-library0 .lib .slfx
 	:- fc-add-functions .lib .slfx, !
 	; once (home.dir .homeDir
-		, concat .homeDir "/src/main/resources/" .lib ".slf" .slfFilename
+		, concat .homeDir "/src/main/fl/" .lib ".slf" .slfFilename
 		, file.exists .slfFilename
 		, file.read .slfFilename .slf
 		, to.atom ".p" .var
