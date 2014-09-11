@@ -79,6 +79,11 @@ public class FileUtil {
 		}
 	}
 
+	public static String homeDir() {
+		String homeDir = System.getProperty("home.dir");
+		return homeDir != null ? homeDir : ".";
+	}
+
 	public static List<String> listZip(ZipFile zipFile) {
 		List<String> names = new ArrayList<>();
 		Enumeration<? extends ZipEntry> e = zipFile.entries();

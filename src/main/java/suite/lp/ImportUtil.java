@@ -18,6 +18,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.util.FileUtil;
 import suite.util.To;
 
 public class ImportUtil {
@@ -31,7 +32,7 @@ public class ImportUtil {
 
 	public ImportUtil() {
 		try {
-			root = new URL("classpath:");
+			setRoot(new URL("file:" + FileUtil.homeDir() + "/src/main/ll/"));
 		} catch (MalformedURLException ex) {
 			throw new RuntimeException(ex);
 		}
