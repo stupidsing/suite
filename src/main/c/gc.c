@@ -29,20 +29,22 @@ int compareaddresses(void *p0, void *p1) {
 }
 
 struct Object *markAndSweep() {
-	struct Object *object;
+	struct Object *object = first;
 
-	object = first;
+	// mark all as fresh
 	while(object) {
 		object->flag = FRESH__;
 		object = object->next;
 	}
 
+	// initialize heap and add root into it
 	struct Heap heap;
 	heapnew(&heap, &compareaddresses);
 
 	if(root) heapadd(&heap, root);
 	if(lastAllocated) heapadd(&heap, lastAllocated);
 
+	// add child objects into heap
 	while(object = (struct Object*) heapremove(&heap)) {
 		object->flag = QUEUED_;
 		int *refoffsets = object->class->refoffsets(object);
@@ -58,6 +60,7 @@ struct Object *markAndSweep() {
 
 	heapdelete(&heap);
 
+	// evict orphan objects
 	struct Object **prev = &first;
 	while(object) {
 		struct Object *next = object->next;
