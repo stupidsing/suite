@@ -11,6 +11,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.DefaultListModel;
@@ -107,7 +109,7 @@ public class EditorView {
 		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
 		editor.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent event) {
-				changed();
+				changed();	
 			}
 
 			public void insertUpdate(DocumentEvent event) {
@@ -132,13 +134,18 @@ public class EditorView {
 		});
 
 		JFrame frame = this.frame = new JFrame(title);
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
 				refresh();
+			}
+		});
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent event) {
+				controller.close(EditorView.this);
 			}
 		});
 
@@ -300,6 +307,10 @@ public class EditorView {
 
 	public void setController(EditorController controller) {
 		this.controller = controller;
+	}
+
+	public boolean isModified() {
+		return isModified;
 	}
 
 	public JComponent getBottomToolbar() {

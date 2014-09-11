@@ -38,6 +38,19 @@ public class EditorController {
 		view.refresh();
 	}
 
+	public void close(EditorView view) {
+		JFrame frame = view.getFrame();
+		if (view.isModified())
+			switch (JOptionPane.showConfirmDialog(frame, "Would you like to save your changes?")) {
+			case JOptionPane.YES_OPTION:
+				save(view);
+			case JOptionPane.NO_OPTION:
+				frame.dispose();
+				break;
+			default:
+			}
+	}
+
 	public void copy(EditorView view, boolean isAppend) {
 		ClipboardUtil clipboardUtil = new ClipboardUtil();
 		String selectedText = view.getEditor().getSelectedText();
