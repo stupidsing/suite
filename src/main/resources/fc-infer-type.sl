@@ -147,7 +147,7 @@ fc-infer-var-types () _ .tr/.tr #
 fc-find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
-fc-find-simple-type (DO _) _ (DO-OF _) #
+fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
 fc-find-simple-type (NUMBER _) _ NUMBER #
 fc-find-simple-type (PRAGMA TYPE-SKIP-CHECK _) _ _ #
 fc-find-simple-type (.tag .var) .ue/_/_ .type

@@ -80,9 +80,6 @@ fc-rewrite-type BOOLEAN BOOLEAN
 #
 fc-rewrite-type (CLASS .t) (CLASS .t)
 #
-fc-rewrite-type (DO-OF .type0) (DO-OF .type1)
-	:- fc-rewrite-type .type0 .type1
-#
 fc-rewrite-type (FUN-OF .paramType0 .returnType0) (FUN-OF .paramType1 .returnType1)
 	:- fc-rewrite-type .paramType0 .paramType1
 	, fc-rewrite-type .returnType0 .returnType1
