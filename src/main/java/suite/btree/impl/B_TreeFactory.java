@@ -47,6 +47,7 @@ public class B_TreeFactory<Key, Value> {
 
 		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
+		private static final char PAYLOAD = 'P';
 
 		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree) {
 			this.b_tree = b_tree;
@@ -68,6 +69,9 @@ public class B_TreeFactory<Key, Value> {
 				} else if (nodeType == LEAF) {
 					Value value = valueSerializer.read(dataInput);
 					addLeaf(page, key, value);
+				} else if (nodeType == PAYLOAD) {
+					int pageNo1 = dataInput.readInt();
+					addPayload(page, key, pageNo1);
 				}
 			}
 
@@ -87,6 +91,10 @@ public class B_TreeFactory<Key, Value> {
 					dataOutput.writeChar(LEAF);
 					keySerializer.write(dataOutput, kp.key);
 					valueSerializer.write(dataOutput, kp.getLeafValue());
+				} else if (kp.pointer instanceof B_TreeImpl.Payload) {
+					dataOutput.writeChar(PAYLOAD);
+					keySerializer.write(dataOutput, kp.key);
+					dataOutput.writeInt(kp.getPayloadPageNo());
 				}
 		}
 
@@ -98,6 +106,9 @@ public class B_TreeFactory<Key, Value> {
 			kps.add(b_tree.new KeyPointer(k, b_tree.new Branch(branch)));
 		}
 
+		private void addPayload(List<B_TreeImpl<Key, Value>.KeyPointer> kps, Key k, int pageNo) {
+			kps.add(b_tree.new KeyPointer(k, b_tree.new Payload(pageNo)));
+		}
 	}
 
 	public B_TreeFactory(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
@@ -140,19 +151,19 @@ public class B_TreeFactory<Key, Value> {
 	}
 
 	private B_TreeImpl<Key, Value> produce(boolean isNew, Comparator<Key> comparator //
-			, PageFile alpf0, PageFile sbpf0, PageFile pf0) throws IOException {
+			, PageFile alf0, PageFile sbf0, PageFile pf0) throws IOException {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(comparator);
 
 		Serializer<Bytes> als = SerializeUtil.bytes(pageSize);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree);
 
-		SerializedPageFile<Bytes> alpf = new SerializedPageFile<>(alpf0, als);
-		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbpf = new SerializedPageFile<>(sbpf0, sbs);
+		SerializedPageFile<Bytes> alf = new SerializedPageFile<>(alf0, als);
+		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbf = new SerializedPageFile<>(sbf0, sbs);
 		SerializedPageFile<B_TreeImpl<Key, Value>.Page> pf = new SerializedPageFile<>(pf0, ps);
 
-		b_tree.setAllocator(new AllocatorImpl(alpf));
-		b_tree.setSuperblockPageFile(sbpf);
+		b_tree.setAllocator(new AllocatorImpl(alf));
+		b_tree.setSuperblockPageFile(sbf);
 		b_tree.setPageFile(pf);
 		b_tree.setBranchFactor(16);
 
