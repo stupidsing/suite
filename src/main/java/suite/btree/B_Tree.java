@@ -18,6 +18,8 @@ public interface B_Tree<Key, Value> extends Closeable {
 
 	public Iterable<Pair<Key, Value>> range(Key startKey, Key endKey);
 
+	public void put(Key key);
+
 	public void put(Key key, Value value);
 
 	public void putPayload(Key key, Bytes payload);

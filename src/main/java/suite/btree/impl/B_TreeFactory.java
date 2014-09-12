@@ -45,8 +45,9 @@ public class B_TreeFactory<Key, Value> {
 	private class B_TreePageSerializer implements Serializer<B_TreeImpl<Key, Value>.Page> {
 		private B_TreeImpl<Key, Value> b_tree;
 
-		private static final char LEAF = 'L';
 		private static final char BRANCH = 'I';
+		private static final char TERMINAL = 'T';
+		private static final char LEAF = 'L';
 		private static final char PAYLOAD = 'P';
 
 		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree) {
@@ -66,7 +67,9 @@ public class B_TreeFactory<Key, Value> {
 				if (nodeType == BRANCH) {
 					int branch = dataInput.readInt();
 					addBranch(page, key, branch);
-				} else if (nodeType == LEAF) {
+				} else if (nodeType == TERMINAL)
+					;
+				else if (nodeType == LEAF) {
 					Value value = valueSerializer.read(dataInput);
 					addLeaf(page, key, value);
 				} else if (nodeType == PAYLOAD) {
@@ -87,6 +90,9 @@ public class B_TreeFactory<Key, Value> {
 					dataOutput.writeChar(BRANCH);
 					keySerializer.write(dataOutput, kp.key);
 					dataOutput.writeInt(kp.getBranchPageNo());
+				} else if (kp.pointer instanceof B_TreeImpl.Terminal) {
+					dataOutput.writeChar(TERMINAL);
+					keySerializer.write(dataOutput, kp.key);
 				} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
 					dataOutput.writeChar(LEAF);
 					keySerializer.write(dataOutput, kp.key);

@@ -187,7 +187,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		public Integer allocate() {
-			Integer pointer = mutator.keys().source();
+			Integer pointer = mutator.keys(0, Integer.MAX_VALUE).source();
 			if (pointer != null) {
 				mutator.remove(pointer);
 				return pointer;

@@ -78,19 +78,22 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		}
 	}
 
-	public class Leaf implements Pointer {
-		private Value value;
-
-		public Leaf(Value value) {
-			this.value = value;
-		}
-	}
-
 	public class Branch implements Pointer {
 		private int pageNo;
 
 		public Branch(int pageNo) {
 			this.pageNo = pageNo;
+		}
+	}
+
+	public class Terminal implements Pointer {
+	}
+
+	public class Leaf implements Pointer {
+		private Value value;
+
+		public Leaf(Value value) {
+			this.value = value;
 		}
 	}
 
@@ -237,6 +240,11 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		};
 
 		return Util.iter(iterator);
+	}
+
+	@Override
+	public void put(Key key) {
+		put(key, new Terminal());
 	}
 
 	@Override
