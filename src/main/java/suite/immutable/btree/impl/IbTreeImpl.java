@@ -17,7 +17,7 @@ import suite.file.PageFile;
 import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
 import suite.immutable.btree.IbTree;
-import suite.immutable.btree.KeyDataStoreMutator;
+import suite.immutable.btree.IbTreeMutator;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -204,7 +204,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 	}
 
-	public class Mutator implements KeyDataStoreMutator<Key> {
+	public class Mutator implements IbTreeMutator<Key> {
 		private Allocator allocator;
 		private Integer root;
 
