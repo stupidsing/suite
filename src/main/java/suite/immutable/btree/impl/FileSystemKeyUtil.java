@@ -13,12 +13,12 @@ import suite.util.SerializeUtil.Serializer;
 
 public class FileSystemKeyUtil {
 
-	private int hashPosition = 0;
-	private int idPosition = hashPosition + 256 / 8;
-	private int pathPosition = idPosition + 1;
-	private int sizePosition = pathPosition + 24;
+	private int hashOffset = 0;
+	private int idOffset = hashOffset + 256 / 8;
+	private int pathOffset = idOffset + 1;
+	private int sizeOffset = pathOffset + 24;
 
-	private int keyLength = sizePosition + 1;
+	private int keyLength = sizeOffset + 1;
 
 	public class NameKey extends Key {
 		private Bytes path; // Path characters
@@ -99,7 +99,7 @@ public class FileSystemKeyUtil {
 			int pos = 0, size = name.size();
 
 			while (pos < size) {
-				int pathLength = sizePosition - pathPosition;
+				int pathLength = sizeOffset - pathOffset;
 				int pos1 = Math.min(pos + pathLength, size);
 				keys.add(toNameKey(hash(name.subbytes(0, pos)) //
 						, 0 //
@@ -114,10 +114,10 @@ public class FileSystemKeyUtil {
 	}
 
 	public NameKey toNameKey(Bytes bytes) {
-		return new NameKey(bytes.subbytes(hashPosition, idPosition) //
-				, bytes.get(idPosition) //
-				, bytes.subbytes(pathPosition, sizePosition) //
-				, bytes.get(sizePosition));
+		return new NameKey(bytes.subbytes(hashOffset, idOffset) //
+				, bytes.get(idOffset) //
+				, bytes.subbytes(pathOffset, sizeOffset) //
+				, bytes.get(sizeOffset));
 	}
 
 	public NameKey toNameKey(Bytes hash, int id, Bytes path, int size) {
