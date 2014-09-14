@@ -12,9 +12,9 @@ public class Pair<T0, T1> {
 		return new Pair<>(t0, t1);
 	}
 
-	private Pair(T0 t1, T1 t2) {
-		this.t0 = t1;
-		this.t1 = t2;
+	private Pair(T0 t0, T1 t1) {
+		this.t0 = t0;
+		this.t1 = t1;
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1 extends Comparable<? super T1>> Comparator<Pair<T0, T1>> comparator() {

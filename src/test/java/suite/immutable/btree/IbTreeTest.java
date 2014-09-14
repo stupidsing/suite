@@ -36,7 +36,7 @@ public class IbTreeTest {
 		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree", config, null)) {
 			ibTree.create().commit();
 
-			IbTreeMutator<Integer> mutator = ibTree.begin();
+			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
 				mutator.put(i);
@@ -81,7 +81,7 @@ public class IbTreeTest {
 			// updating 25 keys each.
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTreeMutator<String> mutator0 = ibTree2.begin();
+				KeyDataStoreMutator<String> mutator0 = ibTree2.begin();
 				for (String s : subset)
 					mutator0.put(s);
 				mutator0.commit();
@@ -92,7 +92,7 @@ public class IbTreeTest {
 			Collections.shuffle(list);
 
 			for (List<String> subset : Util.splitn(list, 25)) {
-				IbTreeMutator<String> mutator1 = ibTree2.begin();
+				KeyDataStoreMutator<String> mutator1 = ibTree2.begin();
 				for (String s : subset)
 					mutator1.remove(s);
 				mutator1.commit();
@@ -102,7 +102,7 @@ public class IbTreeTest {
 		}
 	}
 
-	private int dumpAndCount(IbTreeMutator<?> mutator) {
+	private int dumpAndCount(KeyDataStoreMutator<?> mutator) {
 		Source<?> source = mutator.keys();
 		Object object;
 		int count = 0;

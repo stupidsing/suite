@@ -3,7 +3,7 @@ package suite.immutable.btree;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
 
-public interface IbTreeMutator<Key> {
+public interface KeyDataStoreMutator<Key> {
 
 	public void commit();
 

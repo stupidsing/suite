@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import suite.file.PageFile;
 import suite.immutable.btree.FileSystem;
-import suite.immutable.btree.IbTreeMutator;
+import suite.immutable.btree.KeyDataStoreMutator;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
@@ -39,7 +39,7 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public Bytes read(Bytes name) {
-		IbTreeMutator<Bytes> mutator = mutator();
+		KeyDataStoreMutator<Bytes> mutator = mutator();
 		Bytes hash = keyUtil.hash(name);
 		Integer size = mutator.getData(key(hash, SIZEID, 0));
 
@@ -55,14 +55,14 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public List<Bytes> list(Bytes start, Bytes end) {
-		IbTreeMutator<Bytes> mutator = mutator();
-		return To.list(new FileSystemNameKeySet(mutator).list(start, end));
+		KeyDataStoreMutator<Bytes> mutator = mutator();
+		return To.list(new FileSystemKeySet(mutator).list(start, end));
 	}
 
 	@Override
 	public void replace(Bytes name, Bytes bytes) {
-		IbTreeMutator<Bytes> mutator = mutator();
-		FileSystemNameKeySet fsNameKeySet = new FileSystemNameKeySet(mutator);
+		KeyDataStoreMutator<Bytes> mutator = mutator();
+		FileSystemKeySet fsNameKeySet = new FileSystemKeySet(mutator);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 
@@ -98,14 +98,14 @@ public class FileSystemImpl implements FileSystem {
 
 	@Override
 	public void replace(Bytes name, int seq, Bytes bytes) {
-		IbTreeMutator<Bytes> mutator = mutator();
+		KeyDataStoreMutator<Bytes> mutator = mutator();
 		mutator.put(key(keyUtil.hash(name), DATAID, seq), bytes);
 		mutator.commit();
 	}
 
 	@Override
 	public void resize(Bytes name, int size1) {
-		IbTreeMutator<Bytes> mutator = mutator();
+		KeyDataStoreMutator<Bytes> mutator = mutator();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		int size0 = mutator.getData(sizeKey);
@@ -121,7 +121,7 @@ public class FileSystemImpl implements FileSystem {
 		mutator.commit();
 	}
 
-	private IbTreeMutator<Bytes> mutator() {
+	private KeyDataStoreMutator<Bytes> mutator() {
 		return ibTreeStack.getIbTree().begin();
 	}
 
