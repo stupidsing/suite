@@ -16,8 +16,8 @@ import java.util.Set;
 import suite.file.PageFile;
 import suite.file.PageFileImpl;
 import suite.file.SerializedPageFile;
+import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.IbTree;
-import suite.immutable.btree.IbTreeMutator;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -204,7 +204,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 	}
 
-	public class Mutator implements IbTreeMutator<Key> {
+	public class Mutator implements KeyDataStoreMutator<Key> {
 		private Allocator allocator;
 		private Integer root;
 

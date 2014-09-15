@@ -2,6 +2,8 @@ package suite.immutable.btree;
 
 import java.io.Closeable;
 
+import suite.fs.KeyDataStoreMutator;
+
 public interface IbTree<Key> extends Closeable {
 
 	public void close();
@@ -9,7 +11,7 @@ public interface IbTree<Key> extends Closeable {
 	/**
 	 * @return A new mutator object.
 	 */
-	public IbTreeMutator<Key> begin();
+	public KeyDataStoreMutator<Key> begin();
 
 	/**
 	 * @return Calculate the maximum number of values that can be stored in this
@@ -44,6 +46,6 @@ public interface IbTree<Key> extends Closeable {
 	 */
 	public int guaranteedCapacity();
 
-	public IbTreeMutator<Key> create();
+	public KeyDataStoreMutator<Key> create();
 
 }

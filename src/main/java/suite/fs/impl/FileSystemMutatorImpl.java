@@ -1,25 +1,27 @@
-package suite.immutable.btree.impl;
+package suite.fs.impl;
 
 import java.util.List;
 import java.util.Objects;
 
 import suite.file.PageFile;
-import suite.immutable.btree.KeyDataStoreMutator;
+import suite.fs.FileSystemMutator;
+import suite.fs.KeyDataStoreMutator;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
-public class FileSystemMutator {
+public class FileSystemMutatorImpl implements FileSystemMutator {
 
 	private byte DATAID = 64;
 	private byte SIZEID = 65;
 	private int pageSize = PageFile.defaultPageSize;
 
-	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
+	private FileSystemKeyUtil keyUtil;
 	private Source<KeyDataStoreMutator<Bytes>> mutate;
 
-	public FileSystemMutator(Source<KeyDataStoreMutator<Bytes>> mutate) {
+	public FileSystemMutatorImpl(FileSystemKeyUtil keyUtil, Source<KeyDataStoreMutator<Bytes>> mutate) {
+		this.keyUtil = keyUtil;
 		this.mutate = mutate;
 	}
 
@@ -40,12 +42,12 @@ public class FileSystemMutator {
 
 	public List<Bytes> list(Bytes start, Bytes end) {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
-		return To.list(new FileSystemKeySet(mutator).list(start, end));
+		return To.list(new FileSystemKeySet(keyUtil, mutator).list(start, end));
 	}
 
 	public void replace(Bytes name, Bytes bytes) {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
-		FileSystemKeySet fsNameKeySet = new FileSystemKeySet(mutator);
+		FileSystemKeySet fsNameKeySet = new FileSystemKeySet(keyUtil, mutator);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 

@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.impl.IbTreeBuilder;
 import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;

@@ -1,11 +1,11 @@
-package suite.immutable.btree.impl;
+package suite.fs.impl;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import suite.immutable.btree.KeyDataStoreMutator;
-import suite.immutable.btree.impl.FileSystemKeyUtil.NameKey;
+import suite.fs.KeyDataStoreMutator;
+import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
@@ -23,11 +23,11 @@ import suite.util.Util;
 public class FileSystemKeySet {
 
 	private List<NameKey> emptyKeys = Collections.<NameKey> emptyList();
-	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
-
+	private FileSystemKeyUtil keyUtil;
 	private KeyDataStoreMutator<Bytes> transaction;
 
-	public FileSystemKeySet(KeyDataStoreMutator<Bytes> transaction) {
+	public FileSystemKeySet(FileSystemKeyUtil keyUtil, KeyDataStoreMutator<Bytes> transaction) {
+		this.keyUtil = keyUtil;
 		this.transaction = transaction;
 	}
 

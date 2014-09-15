@@ -7,7 +7,9 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.file.PageFile;
-import suite.immutable.btree.impl.FileSystemImpl;
+import suite.fs.FileSystem;
+import suite.fs.FileSystemMutator;
+import suite.fs.impl.IbTreeFileSystemImpl;
 import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.primitive.Bytes;
 import suite.util.FileUtil;
@@ -26,14 +28,16 @@ public class FileSystemTest {
 		config.setMaxBranchFactor(PageFile.defaultPageSize / 64);
 		config.setCapacity(64 * 1024);
 
-		try (FileSystem fs = new FileSystemImpl(config)) {
+		try (FileSystem fs = new IbTreeFileSystemImpl(config)) {
 			fs.create();
-			fs.replace(filename, data);
-			assertEquals(1, fs.list(filename, null).size());
-			assertEquals(data, fs.read(filename));
+			FileSystemMutator fsm = fs.mutate();
 
-			fs.replace(filename, null);
-			assertEquals(0, fs.list(filename, null).size());
+			fsm.replace(filename, data);
+			assertEquals(1, fsm.list(filename, null).size());
+			assertEquals(data, fsm.read(filename));
+
+			fsm.replace(filename, null);
+			assertEquals(0, fsm.list(filename, null).size());
 		}
 	}
 

@@ -1,4 +1,4 @@
-package suite.immutable.btree.impl;
+package suite.fs.impl;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;

@@ -36,26 +36,26 @@ public class B_TreeTest {
 	@Test
 	public void fileTest() throws IOException {
 		int pageSize = 4096;
-		String pathName = FileUtil.tmp + "/test-btree";
+		String filename = FileUtil.tmp + "/test-btree";
 
-		Files.deleteIfExists(Paths.get(pathName));
+		Files.deleteIfExists(Paths.get(filename));
 		B_TreeFactory<Integer, String> factory = new B_TreeFactory<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
 
 		shuffleNumbers();
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(pathName, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
 				B_Tree<Integer, String> b_tree = factory.produce(jpf, true, comparator, pageSize)) {
 			testStep0(jpf, b_tree);
 		}
 
 		shuffleNumbers();
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(pathName, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
 				B_Tree<Integer, String> b_tree = factory.produce(jpf, false, comparator, pageSize)) {
 			testStep1(jpf, b_tree);
 		}
 
-		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(pathName, pageSize);
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
 				B_Tree<Integer, String> b_tree = factory.produce(jpf, false, comparator, pageSize)) {
 			testStep2(jpf, b_tree);
 		}
