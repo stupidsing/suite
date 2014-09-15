@@ -7,6 +7,7 @@ import suite.file.PageFile;
 import suite.immutable.btree.KeyDataStoreMutator;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class FileSystemMutator {
@@ -16,13 +17,14 @@ public class FileSystemMutator {
 	private int pageSize = PageFile.defaultPageSize;
 
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
-	private KeyDataStoreMutator<Bytes> mutator;
+	private Source<KeyDataStoreMutator<Bytes>> mutate;
 
-	public FileSystemMutator(KeyDataStoreMutator<Bytes> mutator) {
-		this.mutator = mutator;
+	public FileSystemMutator(Source<KeyDataStoreMutator<Bytes>> mutate) {
+		this.mutate = mutate;
 	}
 
 	public Bytes read(Bytes name) {
+		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		Bytes hash = keyUtil.hash(name);
 		Integer size = mutator.getData(key(hash, SIZEID, 0));
 
@@ -37,10 +39,12 @@ public class FileSystemMutator {
 	}
 
 	public List<Bytes> list(Bytes start, Bytes end) {
+		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		return To.list(new FileSystemKeySet(mutator).list(start, end));
 	}
 
 	public void replace(Bytes name, Bytes bytes) {
+		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		FileSystemKeySet fsNameKeySet = new FileSystemKeySet(mutator);
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
@@ -76,11 +80,13 @@ public class FileSystemMutator {
 	}
 
 	public void replace(Bytes name, int seq, Bytes bytes) {
+		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		mutator.put(key(keyUtil.hash(name), DATAID, seq), bytes);
 		mutator.commit();
 	}
 
 	public void resize(Bytes name, int size1) {
+		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		int size0 = mutator.getData(sizeKey);
