@@ -1,27 +1,15 @@
 package suite.fs;
 
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Source;
 
-public interface KeyDataStoreMutator<Key> {
-
-	public void commit();
-
-	public Source<Key> keys();
-
-	public Source<Key> keys(Key start, Key end);
-
-	public Integer getData(Key key);
+public interface KeyDataStoreMutator<Key> extends KeyValueStoreMutator<Key, Integer> {
 
 	public Bytes getPayload(Key key);
 
 	/**
-	 * Replaces a value with another without payload. For dictionary cases to
-	 * replace stored value of the same key.
+	 * Puts a key only, without any value or payload.
 	 */
-	public void put(Key key);
-
-	public void put(Key key, Integer data);
+	public void putTerminal(Key key);
 
 	/**
 	 * Replaces a value with another, attached with a payload of page data. For
@@ -29,8 +17,6 @@ public interface KeyDataStoreMutator<Key> {
 	 *
 	 * Asserts comparator.compare(<original-key>, key) == 0.
 	 */
-	public void put(Key key, Bytes payload);
-
-	public void remove(Key key);
+	public void putPayload(Key key, Bytes payload);
 
 }

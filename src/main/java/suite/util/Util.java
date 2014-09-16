@@ -45,7 +45,7 @@ public class Util {
 	}
 
 	public static Iterable<Character> chars(String s) {
-		return iter(new Iterator<Character>() {
+		return () -> new Iterator<Character>() {
 			private int index = 0;
 
 			public boolean hasNext() {
@@ -55,7 +55,7 @@ public class Util {
 			public Character next() {
 				return s.charAt(index++);
 			}
-		});
+		};
 	}
 
 	public static Class<?> clazz(Object object) {
@@ -172,10 +172,6 @@ public class Util {
 		return !isBlank(s);
 	}
 
-	public static <T> Iterable<T> iter(Iterator<T> iter) {
-		return () -> iter;
-	}
-
 	public static <T> T last(List<T> c) {
 		return !c.isEmpty() ? c.get(c.size() - 1) : null;
 	}
@@ -185,6 +181,18 @@ public class Util {
 		if (pos < 0)
 			pos += size;
 		return list.subList(0, Math.min(size, pos));
+	}
+
+	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {
+		return (key0, key1) -> {
+			boolean b0 = key0 != null;
+			boolean b1 = key1 != null;
+
+			if (b0 && b1)
+				return cmp0.compare(key0, key1);
+			else
+				return b0 ? 1 : b1 ? -1 : 0;
+		};
 	}
 
 	/**

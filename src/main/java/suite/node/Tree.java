@@ -41,7 +41,7 @@ public class Tree extends Node {
 	}
 
 	public static Iterable<Node> iter(Node node0, Operator operator) {
-		return Util.iter(new Iterator<Node>() {
+		return () -> new Iterator<Node>() {
 			private Tree tree = decompose(node0, operator);
 
 			public boolean hasNext() {
@@ -53,7 +53,7 @@ public class Tree extends Node {
 				tree = Tree.decompose(tree.getRight(), operator);
 				return next;
 			}
-		});
+		};
 	}
 
 	public static Tree of(Operator operator, Node left, Node right) {

@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.PrintStream;
 
 import suite.primitive.Bytes;
+import suite.util.FunUtil.Source;
 import suite.util.Pair;
 
 public interface B_Tree<Key, Value> extends Closeable {
@@ -16,7 +17,9 @@ public interface B_Tree<Key, Value> extends Closeable {
 
 	public Bytes getPayload(Key key);
 
-	public Iterable<Pair<Key, Value>> range(Key startKey, Key endKey);
+	public Source<Key> keys(Key key0, Key key1);
+
+	public Source<Pair<Key, Value>> range(Key key0, Key key1);
 
 	public void put(Key key);
 

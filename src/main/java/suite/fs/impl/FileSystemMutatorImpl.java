@@ -70,7 +70,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 
 			while (pos < size) {
 				int pos1 = Math.min(pos + pageSize, size);
-				mutator.put(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
+				mutator.putPayload(key(hash, DATAID, seq++), bytes.subbytes(pos, pos1));
 				pos = pos1;
 			}
 			mutator.put(sizeKey, size);
@@ -83,7 +83,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 
 	public void replace(Bytes name, int seq, Bytes bytes) {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
-		mutator.put(key(keyUtil.hash(name), DATAID, seq), bytes);
+		mutator.putPayload(key(keyUtil.hash(name), DATAID, seq), bytes);
 		mutator.commit();
 	}
 
@@ -98,7 +98,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		for (int page = nPages1; page < nPages0; page++)
 			mutator.remove(key(hash, DATAID, page));
 		for (int page = nPages0; page < nPages1; page++)
-			mutator.put(key(hash, DATAID, page), Bytes.emptyBytes);
+			mutator.putPayload(key(hash, DATAID, page), Bytes.emptyBytes);
 
 		mutator.put(sizeKey, size1);
 		mutator.commit();

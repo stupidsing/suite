@@ -13,9 +13,11 @@ import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.impl.IbTreeBuilder;
 import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;
+import suite.immutable.btree.impl.IbTreeStack;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
+import suite.util.SerializeUtil.Serializer;
 import suite.util.To;
 import suite.util.Util;
 
@@ -24,27 +26,41 @@ public class IbTreeTest {
 	private int pageSize = 4096;
 
 	@Test
+	public void testSimple() throws IOException {
+		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTreeStack", SerializeUtil.intSerializer);
+		config.setCapacity(65536);
+
+		try (IbTreeStack<Integer> ibTreeStack = new IbTreeStack<>(config)) {
+			IbTree<Integer> ibTree = ibTreeStack.getIbTree();
+			ibTree.create().commit();
+			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
+
+			for (int i = 0; i < 32; i++)
+				mutator.put(i, i);
+
+			// mutator.dump(System.out);
+
+			System.out.println(To.list(mutator.keys(3, 10)));
+		}
+	}
+
+	@Test
 	public void testSingleLevel() throws IOException {
-		IbTreeConfiguration<Integer> config = new IbTreeConfiguration<>();
-		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
-		config.setPageSize(pageSize);
-		config.setMaxBranchFactor(16);
-		config.setComparator(Util.<Integer> comparator());
-		config.setSerializer(SerializeUtil.intSerializer);
+		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTreeSingle", SerializeUtil.intSerializer);
 
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
-		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree", config, null)) {
+		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTreeSingle", config, null)) {
 			ibTree.create().commit();
 
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
 			int size = ibTree.guaranteedCapacity();
 			for (int i = 0; i < size; i++)
-				mutator.put(i);
+				mutator.putTerminal(i);
 			for (int i = size - 1; i >= 0; i--)
 				mutator.remove(i);
 			for (int i = 0; i < size; i++)
-				mutator.put(i);
+				mutator.putTerminal(i);
 
 			assertEquals(size, dumpAndCount(mutator));
 		}
@@ -52,54 +68,29 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		IbTreeConfiguration<String> config = createIbTreeConfiguration();
-		config.setComparator(Util.<String> comparator());
-		config.setSerializer(SerializeUtil.string(16));
+		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTreeMulti", SerializeUtil.string(16));
 
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
-		String f0 = FileUtil.tmp + "/ibTree" + i++;
-		String f1 = FileUtil.tmp + "/ibTree" + i++;
-		String f2 = FileUtil.tmp + "/ibTree" + i++;
+		String f0 = FileUtil.tmp + "/ibTreeMulti" + i++;
+		String f1 = FileUtil.tmp + "/ibTreeMulti" + i++;
+		String f2 = FileUtil.tmp + "/ibTreeMulti" + i++;
 
 		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(f0);
 				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(f1, ibTree0);
 				IbTree<String> ibTree2 = builder.buildTree(f2, config, ibTree1)) {
-			ibTree2.create().commit();
+			test(ibTree2);
+		}
+	}
 
-			int size = ibTree2.guaranteedCapacity();
+	@Test
+	public void testStack() throws IOException {
+		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTreeStack", SerializeUtil.string(16));
+		config.setCapacity(65536);
 
-			List<String> list = new ArrayList<>();
-			for (int k = 0; k < size; k++)
-				list.add("KEY-" + To.hex4(k));
-
-			Collections.shuffle(list);
-
-			// During each mutation, some new pages are required before old
-			// pages can be discarded during commit. If we update too much data,
-			// we would run out of allocatable pages. Here we limit ourself to
-			// updating 25 keys each.
-
-			for (List<String> subset : Util.splitn(list, 25)) {
-				KeyDataStoreMutator<String> mutator0 = ibTree2.begin();
-				for (String s : subset)
-					mutator0.put(s);
-				mutator0.commit();
-			}
-
-			assertEquals(size, dumpAndCount(ibTree2.begin()));
-
-			Collections.shuffle(list);
-
-			for (List<String> subset : Util.splitn(list, 25)) {
-				KeyDataStoreMutator<String> mutator1 = ibTree2.begin();
-				for (String s : subset)
-					mutator1.remove(s);
-				mutator1.commit();
-			}
-
-			assertEquals(0, dumpAndCount(ibTree2.begin()));
+		try (IbTreeStack<String> ibTreeStack = new IbTreeStack<>(config)) {
+			test(ibTreeStack.getIbTree());
 		}
 	}
 
@@ -116,12 +107,52 @@ public class IbTreeTest {
 		return count;
 	}
 
-	private IbTreeConfiguration<String> createIbTreeConfiguration() {
-		IbTreeConfiguration<String> config = new IbTreeConfiguration<>();
-		config.setFilenamePrefix(FileUtil.tmp + "/ibTree");
+	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> createIbTreeConfiguration( //
+			String name, Serializer<Key> serializer) {
+		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
+		config.setComparator(Util.<Key> comparator());
+		config.setFilenamePrefix(FileUtil.tmp + "/" + name);
 		config.setPageSize(pageSize);
+		config.setSerializer(serializer);
 		config.setMaxBranchFactor(16);
 		return config;
+	}
+
+	private void test(IbTree<String> ibTree) {
+		ibTree.create().commit();
+
+		int size = ibTree.guaranteedCapacity();
+
+		List<String> list = new ArrayList<>();
+		for (int k = 0; k < size; k++)
+			list.add("KEY-" + To.hex4(k));
+
+		Collections.shuffle(list);
+
+		// During each mutation, some new pages are required before old
+		// pages can be discarded during commit. If we update too much data,
+		// we would run out of allocatable pages. Here we limit ourself to
+		// updating 25 keys each.
+
+		for (List<String> subset : Util.splitn(list, 25)) {
+			KeyDataStoreMutator<String> mutator0 = ibTree.begin();
+			for (String s : subset)
+				mutator0.putTerminal(s);
+			mutator0.commit();
+		}
+
+		assertEquals(size, dumpAndCount(ibTree.begin()));
+
+		Collections.shuffle(list);
+
+		for (List<String> subset : Util.splitn(list, 25)) {
+			KeyDataStoreMutator<String> mutator1 = ibTree.begin();
+			for (String s : subset)
+				mutator1.remove(s);
+			mutator1.commit();
+		}
+
+		assertEquals(0, dumpAndCount(ibTree.begin()));
 	}
 
 }

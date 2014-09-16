@@ -12,11 +12,14 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.btree.impl.B_TreeFactory;
+import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFileImpl;
 import suite.util.FileUtil;
+import suite.util.FunUtil;
 import suite.util.Pair;
 import suite.util.SerializeUtil;
+import suite.util.To;
+import suite.util.Util;
 
 public class B_TreeTest {
 
@@ -25,7 +28,7 @@ public class B_TreeTest {
 
 	private Random random = new Random();
 
-	private Comparator<Integer> comparator = (i0, i1) -> i0.compareTo(i1);
+	private Comparator<Integer> comparator = Util.comparator();
 
 	@Before
 	public void before() {
@@ -34,29 +37,48 @@ public class B_TreeTest {
 	}
 
 	@Test
+	public void dumpTest() throws IOException {
+		int pageSize = 4096;
+		String filename = FileUtil.tmp + "/test-btree-dump";
+
+		Files.deleteIfExists(Paths.get(filename));
+		B_TreeBuilder<Integer, String> factory = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
+
+		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
+				B_Tree<Integer, String> b_tree = factory.build(jpf, true, comparator, pageSize)) {
+			for (int i = 0; i < 32; i++)
+				b_tree.put(i, Integer.toString(i));
+
+			b_tree.dump(System.out);
+
+			System.out.println(To.list(b_tree.keys(3, 10)));
+		}
+	}
+
+	@Test
 	public void fileTest() throws IOException {
 		int pageSize = 4096;
 		String filename = FileUtil.tmp + "/test-btree";
 
 		Files.deleteIfExists(Paths.get(filename));
-		B_TreeFactory<Integer, String> factory = new B_TreeFactory<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
+		B_TreeBuilder<Integer, String> factory = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
 
 		shuffleNumbers();
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.produce(jpf, true, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = factory.build(jpf, true, comparator, pageSize)) {
 			testStep0(jpf, b_tree);
 		}
 
 		shuffleNumbers();
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.produce(jpf, false, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = factory.build(jpf, false, comparator, pageSize)) {
 			testStep1(jpf, b_tree);
 		}
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.produce(jpf, false, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = factory.build(jpf, false, comparator, pageSize)) {
 			testStep2(jpf, b_tree);
 		}
 	}
@@ -71,9 +93,11 @@ public class B_TreeTest {
 		for (int i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
+		assertEquals(nKeys / 2, To.list(b_tree.keys(0, nKeys / 2)).size());
+
 		int count = 0;
 
-		for (Pair<Integer, String> entry : b_tree.range(0, nKeys)) {
+		for (Pair<Integer, String> entry : FunUtil.iter(b_tree.range(0, nKeys))) {
 			Integer key = count++;
 			assertEquals(key, entry.t0);
 			assertEquals(Integer.toString(key), entry.t1);

@@ -1,12 +1,9 @@
 package suite.btree.impl;
 
-import java.util.Iterator;
-
 import suite.btree.B_Tree;
 import suite.fs.KeyDataStoreMutator;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 
 public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 
@@ -30,8 +27,7 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 
 	@Override
 	public Source<Key> keys(Key start, Key end) {
-		Iterator<Pair<Key, Integer>> iter = b_tree.range(start, end).iterator();
-		return () -> iter.hasNext() ? iter.next().t0 : null;
+		return b_tree.keys(start, end);
 	}
 
 	@Override
@@ -45,7 +41,7 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public void put(Key key) {
+	public void putTerminal(Key key) {
 		b_tree.put(key);
 	}
 
@@ -55,7 +51,7 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public void put(Key key, Bytes payload) {
+	public void putPayload(Key key, Bytes payload) {
 		b_tree.putPayload(key, payload);
 
 	}

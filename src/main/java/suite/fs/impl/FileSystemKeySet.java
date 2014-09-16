@@ -24,11 +24,11 @@ public class FileSystemKeySet {
 
 	private List<NameKey> emptyKeys = Collections.<NameKey> emptyList();
 	private FileSystemKeyUtil keyUtil;
-	private KeyDataStoreMutator<Bytes> transaction;
+	private KeyDataStoreMutator<Bytes> mutator;
 
 	public FileSystemKeySet(FileSystemKeyUtil keyUtil, KeyDataStoreMutator<Bytes> transaction) {
 		this.keyUtil = keyUtil;
-		this.transaction = transaction;
+		this.mutator = transaction;
 	}
 
 	public Source<Bytes> list(Bytes bytes0, Bytes bytes1) {
@@ -39,7 +39,7 @@ public class FileSystemKeySet {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
 		NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
 		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
-		Source<Bytes> source = transaction.keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
+		Source<Bytes> source = mutator.keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return FunUtil.concat(FunUtil.map(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
@@ -56,7 +56,7 @@ public class FileSystemKeySet {
 
 	public void add(Bytes name) {
 		for (NameKey key : keyUtil.toNameKeys(name))
-			transaction.put(keyUtil.toBytes(key));
+			mutator.putTerminal(keyUtil.toBytes(key));
 	}
 
 	public void remove(Bytes name) {
@@ -69,10 +69,10 @@ public class FileSystemKeySet {
 				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
 				NameKey minKey = boundingKey(hash, 0);
 				NameKey maxKey = boundingKey(hash, 1);
-				if (transaction.keys(keyUtil.toBytes(minKey), keyUtil.toBytes(maxKey)) == null)
-					transaction.remove(keyUtil.toBytes(key));
+				if (mutator.keys(keyUtil.toBytes(minKey), keyUtil.toBytes(maxKey)) == null)
+					mutator.remove(keyUtil.toBytes(key));
 			} else
-				transaction.remove(keyUtil.toBytes(key));
+				mutator.remove(keyUtil.toBytes(key));
 		}
 	}
 

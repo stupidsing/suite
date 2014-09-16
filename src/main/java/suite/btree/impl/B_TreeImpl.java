@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
@@ -14,8 +13,10 @@ import suite.btree.Allocator;
 import suite.btree.B_Tree;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
+import suite.util.FunUtil;
+import suite.util.FunUtil.Source;
 import suite.util.Pair;
-import suite.util.Util;
+import suite.util.To;
 
 /**
  * B+ tree implementation.
@@ -86,9 +87,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		}
 	}
 
-	public class Terminal implements Pointer {
-	}
-
 	public class Leaf implements Pointer {
 		private Value value;
 
@@ -103,6 +101,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		public Payload(int pageNo) {
 			this.pageNo = pageNo;
 		}
+	}
+
+	public class Terminal implements Pointer {
 	}
 
 	public interface Pointer {
@@ -128,7 +129,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private class Traverse {
 		private Slots traverse = new Slots();
-		private Slot slot;
 		private Page page;
 		private int index;
 		private KeyPointer kp;
@@ -138,9 +138,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 			while (pageNo != null) {
 				page = pageFile.load(pageNo);
-				index = findPosition(page, key);
+				index = findPosition(page, key, true);
 				kp = getKeyPointer(page, index);
-				traverse.push(slot = new Slot(page, index));
+				traverse.push(new Slot(page, index));
 
 				if (kp != null && kp.pointer instanceof B_TreeImpl.Branch)
 					pageNo = kp.getBranchPageNo();
@@ -166,8 +166,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	public void create() {
 		allocator.create();
 		int root = allocator.allocate();
+
 		setRoot(root);
-		savePage(new Page(root));
+		savePage(new Page(root, Arrays.asList(new KeyPointer(null, new Terminal()))));
 	}
 
 	@Override
@@ -188,58 +189,29 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	@Override
-	public Iterable<Pair<Key, Value>> range(Key startKey, Key endKey) {
-		Traverse t0 = new Traverse(startKey);
-		Traverse t1 = new Traverse(endKey);
+	public Source<Key> keys(Key key0, Key key1) {
+		return FunUtil.map(kp -> kp != null ? kp.key : null, source(getRoot(), key0, key1));
+	}
 
-		Iterator<Pair<Key, Value>> iterator = new Iterator<Pair<Key, Value>>() {
-			private Slots currentSlots = t0.traverse;
-			private Pair<Key, Value> current;
+	@Override
+	public Source<Pair<Key, Value>> range(Key key0, Key key1) {
+		return FunUtil.map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null, source(getRoot(), key0, key1));
+	}
 
-			{
-				KeyPointer kp = t0.kp;
-				if (kp != null)
-					if (kp.pointer instanceof B_TreeImpl.Branch)
-						next(); // No result for start, search next
-					else
-						current = Pair.of(kp.key, kp.getLeafValue());
-			}
+	private Source<KeyPointer> source(Integer pointer, Key start, Key end) {
+		Page page = pageFile.load(pointer);
+		int i0 = start != null ? findPosition(page, start, true) : 0;
+		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
 
-			public boolean hasNext() {
-				Slot currentSlot = currentSlots.peek();
-				B_TreeImpl<Key, Value>.Slot endSlot = t1.slot;
-				return currentSlot.page.pageNo != endSlot.page.pageNo || !Objects.equals(currentSlot.index, endSlot.index);
-			}
-
-			public Pair<Key, Value> next() {
-				Pair<Key, Value> current0 = current;
-				current = advance();
-				return current0;
-			}
-
-			private Pair<Key, Value> advance() {
-				currentSlots.peek().index++;
-
-				while (true) {
-					Slot slot = currentSlots.peek();
-					KeyPointer kp = slot.getKeyPointer();
-
-					if (kp != null)
-						if (kp.pointer instanceof B_TreeImpl.Branch) {
-							Page page = loadBranch(slot.page, slot.index);
-							currentSlots.push(new Slot(page, 0));
-						} else
-							return Pair.of(kp.key, kp.getLeafValue());
-					else if (currentSlots.size() != 1) {
-						currentSlots.pop();
-						advance();
-					} else
-						return null;
-				}
-			}
-		};
-
-		return Util.iter(iterator);
+		if (i0 < i1)
+			return FunUtil.concat(FunUtil.map(kp -> {
+				if (kp.pointer instanceof B_TreeImpl.Branch)
+					return source(kp.getBranchPageNo(), start, end);
+				else
+					return kp.key != null ? To.source(kp) : FunUtil.<KeyPointer> nullSource();
+			}, To.source(page.subList(Math.max(0, i0), i1))));
+		else
+			return FunUtil.nullSource();
 	}
 
 	@Override
@@ -278,26 +250,26 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		do {
 			Slot slot = slots.pop();
 			Page page = slot.page;
-			page.add(slot.index, toInsert);
+			page.add(slot.index + 1, toInsert);
 
 			int size = page.size();
 			done = size <= branchFactor;
 
 			if (!done) { // Splits list into two pages
 				int half = branchFactor / 2;
-				int pageNo0 = allocator.allocate(), pageNo1 = page.pageNo;
+				int pageNo0 = page.pageNo, pageNo1 = allocator.allocate();
 				Page p0 = new Page(pageNo0, page.subList(0, half));
 				Page p1 = new Page(pageNo1, page.subList(half, size));
 				savePage(p0);
 				savePage(p1);
 
-				toInsert = pointerTo(p0); // Propagates to parent
+				toInsert = pointerTo(p1); // Propagates to parent
 
 				if (slots.empty()) { // Have to create a new root
-					KeyPointer kp = pointerTo(p1);
+					KeyPointer kp = pointerTo(p0);
 
 					create();
-					page = new Page(getRoot(), Arrays.asList(toInsert, kp));
+					page = new Page(getRoot(), Arrays.asList(kp, toInsert));
 					savePage(page);
 					done = true;
 				}
@@ -347,7 +319,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					mp.add(0, out);
 					savePage(mp);
 					savePage(lp);
-					page.set(index - 1, pointerTo(lp));
+					page.set(index, pointerTo(mp));
 				} else
 					merge(page, lp, mp, index - 1);
 			else if (rsize >= lsize && rsize != 0)
@@ -356,41 +328,34 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					mp.add(out);
 					savePage(mp);
 					savePage(rp);
-					page.set(index, pointerTo(mp));
+					page.set(index + 1, pointerTo(rp));
 				} else
 					merge(page, mp, rp, index);
-			else {
+			else if (slots.size() == 0) {
 
-				// Left/right node empty, should not happen if re-balanced well
+				// Left/right node empty, should only happen at root node
 				page.clear();
 				page.addAll(mp);
 				savePage(page);
 				allocator.deallocate(mp.pageNo);
-			}
+			} else
+				throw new RuntimeException("Unbalanced B-tree");
 		}
 
 		savePage(page);
 	}
 
 	/**
-	 * Merge two successive branches of a page.
+	 * Merge two consecutive branches in a page.
 	 *
 	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of
 	 * parent, while p1 is in next.
 	 */
 	private void merge(Page parent, Page p0, Page p1, int index) {
-		p1.addAll(0, p0);
-		savePage(p1);
-		allocator.deallocate(p0.pageNo);
-		parent.remove(index);
-	}
-
-	private int findPosition(Page page, Key key) {
-		int i, size = page.size();
-		for (i = 0; i < size; i++)
-			if (comparator.compare(page.get(i).key, key) >= 0)
-				break;
-		return i;
+		p0.addAll(p1);
+		savePage(p0);
+		allocator.deallocate(p1.pageNo);
+		parent.remove(index + 1);
 	}
 
 	private void dump(PrintStream w, String pfx, int pageNo) {
@@ -398,14 +363,19 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 		for (KeyPointer kp : page) {
 			Pointer ptr = kp.pointer;
+			w.print(pfx + (kp.key != null ? kp.key : "MIN-KEY"));
 
 			if (ptr instanceof B_TreeImpl.Branch) {
+				w.println();
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) ptr;
 				dump(w, pfx + "\t", branch.pageNo);
-				w.println(pfx + kp.key);
-			} else
-				w.println(pfx + kp.key + " = " + kp.getLeafValue());
+			} else if (ptr instanceof B_TreeImpl.Leaf)
+				w.println(" = " + kp.getLeafValue());
+			else if (ptr instanceof B_TreeImpl.Payload)
+				w.println(" <Payload>");
+			else if (ptr instanceof B_TreeImpl.Terminal)
+				w.println(" <>");
 		}
 	}
 
@@ -428,8 +398,17 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private KeyPointer pointerTo(Page page) {
-		Key largest = page.get(page.size() - 1).key;
-		return new KeyPointer(largest, new Branch(page.pageNo));
+		Key smallest = page.get(0).key;
+		return new KeyPointer(smallest, new Branch(page.pageNo));
+	}
+
+	private int findPosition(Page page, Key key, boolean isInclusive) {
+		int i, c;
+		for (i = page.size() - 1; i >= 0; i--)
+			if ((c = comparator.compare(page.get(i).key, key)) <= 0)
+				if (isInclusive || c < 0)
+					break;
+		return i;
 	}
 
 	private KeyPointer getKeyPointer(Page page, Integer index) {
@@ -466,6 +445,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	public void setSuperblockPageFile(SerializedPageFile<Superblock> superblockFile) {
 		this.superblockFile = superblockFile;
+	}
+
+	public void setPayloadFile(SerializedPageFile<Bytes> payloadFile) {
+		this.payloadFile = payloadFile;
 	}
 
 	public void setPageFile(SerializedPageFile<Page> pageFile) {

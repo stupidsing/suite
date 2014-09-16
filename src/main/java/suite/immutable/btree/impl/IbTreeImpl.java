@@ -97,13 +97,14 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		private int i, c;
 
 		private FindSlot(List<Slot> slots, Key key) {
-			this(slots, key, false);
+			this(slots, key, true);
 		}
 
-		private FindSlot(List<Slot> slots, Key key, boolean isExclusive) {
-			i = slots.size() - 1;
-			while ((c = compare((slot = slots.get(i)).pivot, key)) > 0 || isExclusive && c == 0)
-				i--;
+		private FindSlot(List<Slot> slots, Key key, boolean isInclusive) {
+			for (i = slots.size() - 1; i >= 0; i--)
+				if ((c = comparator.compare((slot = slots.get(i)).pivot, key)) <= 0)
+					if (isInclusive || c < 0)
+						break;
 		}
 	}
 
@@ -196,7 +197,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		public void discard(Integer pointer) {
-			mutator.put(pointer);
+			mutator.putTerminal(pointer);
 		}
 
 		public List<Integer> flush() {
@@ -245,7 +246,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public void put(Key key) {
+		public void putTerminal(Key key) {
 			update(key, new Slot(SlotType.TERMINAL, key, null));
 		}
 
@@ -255,7 +256,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public void put(Key key, Bytes payload) {
+		public void putPayload(Key key, Bytes payload) {
 			Integer pointer = allocator.allocate();
 			payloadFile.save(pointer, payload);
 			update(key, new Slot(SlotType.DATA, key, pointer));
@@ -307,7 +308,6 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private List<Slot> delete(List<Slot> slots0, Key key) {
 			FindSlot fs = new FindSlot(slots0, key);
-
 			int size = slots0.size();
 
 			// Removes the node from it
@@ -417,7 +417,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) throws IOException {
 		this.filename = filename;
 		pageSize = config.getPageSize();
-		comparator = config.getComparator();
+		comparator = Util.nullsFirst(config.getComparator());
 		serializer = SerializeUtil.nullable(config.getSerializer());
 		maxBranchFactor = config.getMaxBranchFactor();
 		this.allocationIbTree = allocationIbTree;
@@ -461,7 +461,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			IbTreeImpl<Integer>.Mutator mutator0 = allocationIbTree.create();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				mutator0.put(p);
+				mutator0.putTerminal(p);
 			stamp0 = mutator0.flush();
 		} else
 			stamp0 = Arrays.asList(0);
@@ -470,29 +470,29 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Source<Key> keys(Integer pointer, Key start, Key end) {
-		return FunUtil.map(slot -> slot.pivot, source0(pointer, start, end));
+		return FunUtil.map(slot -> slot.pivot, source(pointer, start, end));
 	}
 
 	private Integer get(Integer root, Key key, SlotType slotType) {
-		Slot slot = source0(root, key, null).source();
-		if (slot != null && slot.type == slotType && compare(slot.pivot, key) == 0)
+		Slot slot = source(root, key, null).source();
+		if (slot != null && slot.type == slotType && comparator.compare(slot.pivot, key) == 0)
 			return slot.pointer;
 		else
 			return null;
 	}
 
-	private Source<Slot> source0(Integer pointer, Key start, Key end) {
+	private Source<Slot> source(Integer pointer, Key start, Key end) {
 		List<Slot> node = read(pointer).slots;
-		int i0 = start != null ? new FindSlot(node, start).i : 0;
-		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
+		int i0 = start != null ? new FindSlot(node, start, false).i + 1 : 0;
+		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
 		if (i0 < i1)
 			return FunUtil.concat(FunUtil.map(slot -> {
 				if (slot.type == SlotType.BRANCH)
-					return source0(slot.pointer, start, end);
+					return source(slot.pointer, start, end);
 				else
 					return slot.pivot != null ? To.source(slot) : FunUtil.<Slot> nullSource();
-			}, To.source(node.subList(i0, i1))));
+			}, To.source(node.subList(Math.max(0, i0), i1))));
 		else
 			return FunUtil.nullSource();
 	}
@@ -508,16 +508,6 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		else
 			allocator = new SwappingAllocator(stamp0.get(0));
 		return new DelayedDiscardAllocator(allocator);
-	}
-
-	private int compare(Key key0, Key key1) {
-		boolean b0 = key0 != null;
-		boolean b1 = key1 != null;
-
-		if (b0 && b1)
-			return comparator.compare(key0, key1);
-		else
-			return b0 ? 1 : b1 ? -1 : 0;
 	}
 
 	private Page read(Integer pointer) {

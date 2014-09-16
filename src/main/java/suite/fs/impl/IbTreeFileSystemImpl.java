@@ -13,7 +13,7 @@ public class IbTreeFileSystemImpl implements FileSystem {
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
 	private IbTreeStack<Bytes> ibTreeStack;
-	private FileSystemMutatorImpl mutator;
+	private FileSystemMutator mutator;
 
 	public IbTreeFileSystemImpl(IbTreeConfiguration<Bytes> config) throws IOException {
 		config.setComparator(Bytes.comparator);

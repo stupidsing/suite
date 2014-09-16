@@ -99,7 +99,7 @@ public class FunUtil {
 	}
 
 	public static <T> Iterable<T> iter(Source<T> source) {
-		return Util.iter(iterator(source));
+		return () -> iterator(source);
 	}
 
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun, Source<T0> source) {

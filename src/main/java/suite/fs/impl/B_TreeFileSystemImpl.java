@@ -3,7 +3,7 @@ package suite.fs.impl;
 import java.io.IOException;
 
 import suite.btree.B_Tree;
-import suite.btree.impl.B_TreeFactory;
+import suite.btree.impl.B_TreeBuilder;
 import suite.btree.impl.B_TreeMutator;
 import suite.file.JournalledPageFileImpl;
 import suite.fs.FileSystem;
@@ -21,8 +21,8 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	public B_TreeFileSystemImpl(String filename, int pageSize) throws IOException {
 		jpf = new JournalledPageFileImpl(filename, pageSize);
 
-		b_tree = new B_TreeFactory<>(keyUtil.serializer(), SerializeUtil.intSerializer) //
-				.produce(jpf, true, Bytes.comparator, pageSize);
+		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), SerializeUtil.intSerializer) //
+				.build(jpf, true, Bytes.comparator, pageSize);
 
 		B_TreeMutator<Bytes> b_treeMutator = new B_TreeMutator<Bytes>(b_tree, () -> {
 			try {
