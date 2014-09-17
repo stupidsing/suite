@@ -14,9 +14,9 @@ struct Class {
 };
 
 struct Object {
-	struct Class *class;
 	int flag;
 	struct Object *next;
+	struct Class *class;
 };
 
 int watermark;
@@ -26,6 +26,10 @@ struct Object *lastAllocated;
 
 int compareaddresses(void *p0, void *p1) {
 	return p0 != p1 ? (p0 < p1 ? -1 : 1) : 0;
+}
+
+int *getrefoffsets(struct Object *object) {
+	return object->class->refoffsets(object);
 }
 
 struct Object *markAndSweep() {
@@ -45,15 +49,16 @@ struct Object *markAndSweep() {
 	if(lastAllocated) heapadd(&heap, lastAllocated);
 
 	// add child objects into heap
-	while(object = (struct Object*) heapremove(&heap)) {
+	while(object = heapremove(&heap)) {
 		object->flag = QUEUED_;
-		int *refoffsets = object->class->refoffsets(object);
-		for (int i = 0; refoffsets[i]; i++) {
-			struct Object *child = (struct Object*) (refoffsets[i] + (char*) object);
+		int *refoffsets = getrefoffsets(object);
+		while(*refoffsets) {
+			struct Object *child = *refoffsets + (void*) object;
 			if(child && child->flag == FRESH__) {
 				child->flag = QUEUED_;
 				heapadd(&heap, child);
 			}
+			refoffsets++;
 		}
 		object->flag = SCANNED;
 	}
@@ -70,22 +75,28 @@ struct Object *markAndSweep() {
 		} else prev = &object->next;
 		object = next;
 	}
+
+	watermark = 32 + nAllocs * 3 / 2;
+	nAllocs = 0;
 	return first;
 }
 
 void *gcalloc(struct Class *class, int size) {
-	if(nAllocs > watermark) {
+	if(nAllocs++ > watermark) // Pre-cautionary garbage collection
 		markAndSweep();
-		watermark = nAllocs * 3 / 2;
-	}
 
-	struct Object *object = lastAllocated = memalloc(size);
+	int n = 0;
+	lastAllocated = 0;
+	while(n++ < 3)
+		if(!(lastAllocated = memalloc(size))) markAndSweep(); // Space-hunger garbage collection
+		else break;
+
+	struct Object *object = lastAllocated;
 	object->class = class;
 	object->flag = SCANNED;
 	object->next = first;
 
-	first = object;
-	return object;
+	return first = object;
 }
 
 void gcsetroot(struct Object *r) {
