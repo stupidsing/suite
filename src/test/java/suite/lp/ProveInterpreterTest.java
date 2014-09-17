@@ -11,8 +11,9 @@ public class ProveInterpreterTest {
 
 	@Test
 	public void test() {
-		assertTrue(new ProveInterpreter(Suite.createRuleSet()).compile(Suite.parse("yes; fail")).source());
-		assertFalse(new ProveInterpreter(Suite.createRuleSet()).compile(Suite.parse("yes, fail")).source());
+		ProveInterpreter pi = new ProveInterpreter(Suite.createRuleSet());
+		assertTrue(pi.compile(Suite.parse("yes; fail")).source());
+		assertFalse(pi.compile(Suite.parse("yes, fail")).source());
 	}
 
 }
