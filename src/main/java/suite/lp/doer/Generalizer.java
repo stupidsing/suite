@@ -19,9 +19,9 @@ import suite.util.Util;
 
 public class Generalizer {
 
-	private static String wildcardPrefix = "_";
+	public static String wildcardPrefix = "_";
 	public static String variablePrefix = ".";
-	private static String cutName = "!";
+	public static String cutName = "!";
 
 	private Map<Node, Integer> variableIndices = new HashMap<>();
 	private int nVariables;

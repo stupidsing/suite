@@ -1,6 +1,7 @@
 package suite.adt;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,20 +10,18 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.util.Pair;
+
 public class ListMultimap<K, V> {
 
-	private Map<K, List<V>> map;
-
-	public ListMultimap() {
-		this.map = new HashMap<>();
-	}
+	private Map<K, List<V>> map = new HashMap<>();
 
 	public boolean containsKey(K key) {
 		return map.containsKey(key);
 	}
 
-	public Iterable<Entry<K, V>> entries() {
-		return () -> new Iterator<Entry<K, V>>() {
+	public Iterable<Pair<K, V>> entries() {
+		return () -> new Iterator<Pair<K, V>>() {
 			private Iterator<Entry<K, List<V>>> iter = map.entrySet().iterator();
 			private ListIterator<V> listIter = Collections.emptyListIterator();
 			private K k;
@@ -37,26 +36,8 @@ public class ListMultimap<K, V> {
 				return result;
 			}
 
-			public Entry<K, V> next() {
-				V v = listIter.next();
-
-				return new Entry<K, V>() {
-					private V v_ = v;
-
-					public K getKey() {
-						return k;
-					}
-
-					public V getValue() {
-						return v_;
-					}
-
-					public V setValue(V value) {
-						V v0 = v_;
-						listIter.set(v_ = value);
-						return v0;
-					}
-				};
+			public Pair<K, V> next() {
+				return Pair.of(k, listIter.next());
 			}
 		};
 	}
@@ -67,6 +48,13 @@ public class ListMultimap<K, V> {
 
 	public boolean isEmpty() {
 		return map.isEmpty();
+	}
+
+	public Iterable<Pair<K, Collection<V>>> listEntries() {
+		return () -> map.entrySet().stream().map(e -> {
+			Collection<V> col = e.getValue();
+			return Pair.of(e.getKey(), col);
+		}).iterator();
 	}
 
 	public void put(K k, V v) {

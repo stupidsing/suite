@@ -19,24 +19,24 @@ public class IndexedRuleSet extends LinearRuleSet {
 	@Override
 	public void addRule(Rule rule) {
 		super.addRule(rule);
-		index.get(Prototype.get(rule)).add(rule);
+		index.get(Prototype.of(rule)).add(rule);
 	}
 
 	@Override
 	public void addRuleToFront(Rule rule) {
 		super.addRuleToFront(rule);
-		index.get(Prototype.get(rule)).add(0, rule);
+		index.get(Prototype.of(rule)).add(0, rule);
 	}
 
 	@Override
 	public void removeRule(Rule rule) {
 		super.removeRule(rule);
-		index.remove(Prototype.get(rule), rule);
+		index.remove(Prototype.of(rule), rule);
 	}
 
 	@Override
 	public List<Rule> searchRule(Node node) {
-		Prototype proto = Prototype.get(node);
+		Prototype proto = Prototype.of(node);
 
 		// If the query is "un-prototype-able," or the rule set contains
 		// "un-prototype-able" entries, full traversal is required

@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.util.LogUtil;
+import suite.util.Pair;
 
 /**
  * Check logic rules for typical errors.
@@ -25,12 +26,12 @@ public class Checker {
 		ListMultimap<Prototype, Rule> rulesByPrototype = new ListMultimap<>();
 
 		for (Rule rule : rules)
-			rulesByPrototype.put(Prototype.get(rule), rule);
+			rulesByPrototype.put(Prototype.of(rule), rule);
 
 		// Check for singleton variables
-		for (Entry<Prototype, Rule> entry : rulesByPrototype.entries()) {
-			Prototype prototype = entry.getKey();
-			Rule rule = entry.getValue();
+		for (Pair<Prototype, Rule> pair : rulesByPrototype.entries()) {
+			Prototype prototype = pair.t0;
+			Rule rule = pair.t1;
 
 			scan(rule.getHead());
 			scan(rule.getTail());

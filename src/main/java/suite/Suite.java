@@ -96,7 +96,7 @@ public class Suite {
 	 */
 	public static Node getRuleList(RuleSet rs, Prototype proto) {
 		List<Node> nodes = rs.getRules().stream() //
-				.filter(rule -> proto == null || proto.equals(Prototype.get(rule))) //
+				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::formClause) //
 				.collect(Collectors.toList());
 		return Tree.list(TermOp.NEXT__, nodes);

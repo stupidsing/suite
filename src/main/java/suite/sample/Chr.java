@@ -9,8 +9,8 @@ import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
-import suite.lp.doer.SimpleGeneralizer;
 import suite.lp.doer.Prover;
+import suite.lp.doer.SimpleGeneralizer;
 import suite.lp.kb.Prototype;
 import suite.node.Atom;
 import suite.node.Node;
@@ -82,7 +82,7 @@ public class Chr {
 		State state = new State(new IMap<>());
 
 		for (Node fact : facts) {
-			Prototype prototype = getPrototype(fact);
+			Prototype prototype = Prototype.of(fact);
 			state = setFacts(state, prototype, getFacts(state, prototype).replace(fact));
 		}
 
@@ -123,7 +123,7 @@ public class Chr {
 	}
 
 	private Source<State> chrIf(Source<State> states, Journal journal, Node if_) {
-		Prototype prototype = getPrototype(if_);
+		Prototype prototype = Prototype.of(if_);
 
 		return FunUtil.concat(map(states, state -> {
 			ISet<Node> facts = getFacts(state, prototype);
@@ -139,7 +139,7 @@ public class Chr {
 	}
 
 	private Source<State> chrGiven(Source<State> states, Journal journal, Node given) {
-		Prototype prototype = getPrototype(given);
+		Prototype prototype = Prototype.of(given);
 
 		return FunUtil.concat(map(states, state -> {
 			ISet<Node> facts = getFacts(state, prototype);
@@ -177,7 +177,7 @@ public class Chr {
 		}
 
 		return map(states, state -> {
-			Prototype prototype = getPrototype(then);
+			Prototype prototype = Prototype.of(then);
 			ISet<Node> facts = getFacts(state, prototype);
 			return setFacts(state, prototype, facts.replace(then));
 		});
@@ -224,10 +224,6 @@ public class Chr {
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
 		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
 		return new State(nodes.source().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
-	}
-
-	private Prototype getPrototype(Node node) {
-		return Prototype.get(node);
 	}
 
 }

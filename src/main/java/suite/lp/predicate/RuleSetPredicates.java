@@ -59,7 +59,7 @@ public class RuleSetPredicates {
 	public SystemPredicate list = (prover, ps) -> {
 		Prototype proto = null;
 		if (ps != Atom.NIL)
-			proto = Prototype.get(ps);
+			proto = Prototype.of(ps);
 
 		Node node = Suite.getRuleList(prover.ruleSet(), proto);
 		PrettyPrinter printer = new PrettyPrinter();

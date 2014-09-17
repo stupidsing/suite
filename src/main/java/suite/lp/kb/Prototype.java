@@ -18,19 +18,19 @@ public class Prototype implements Comparable<Prototype> {
 
 	private Node head;
 
-	public static Prototype get(Rule rule) {
-		return get(rule, 0);
+	public static Prototype of(Rule rule) {
+		return of(rule, 0);
 	}
 
-	public static Prototype get(Rule rule, int n) {
-		return get(rule.getHead(), n);
+	public static Prototype of(Rule rule, int n) {
+		return of(rule.getHead(), n);
 	}
 
-	public static Prototype get(Node node) {
-		return get(node, 0);
+	public static Prototype of(Node node) {
+		return of(node, 0);
 	}
 
-	public static Prototype get(Node node, int n) {
+	public static Prototype of(Node node, int n) {
 		for (int i = 0; i < n; i++) {
 			Tree tree = Tree.decompose(node);
 			node = tree != null ? tree.getRight() : Atom.NIL;
@@ -49,7 +49,7 @@ public class Prototype implements Comparable<Prototype> {
 		return indexable ? new Prototype(node) : null;
 	}
 
-	public Prototype(Node head) {
+	private Prototype(Node head) {
 		this.head = head;
 	}
 

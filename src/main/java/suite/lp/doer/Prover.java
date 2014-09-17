@@ -151,7 +151,7 @@ public class Prover {
 					Set<String> whites = config.getTracePredicates();
 					Set<String> blacks = config.getNoTracePredicates();
 
-					Prototype prototype = Prototype.get(query);
+					Prototype prototype = Prototype.of(query);
 					Node head = prototype != null ? prototype.getHead() : null;
 					Atom atom = head instanceof Atom ? (Atom) head : null;
 					String name = atom != null ? atom.getName() : null;
