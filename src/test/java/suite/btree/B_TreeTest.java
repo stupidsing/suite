@@ -42,10 +42,10 @@ public class B_TreeTest {
 		String filename = FileUtil.tmp + "/test-btree-dump";
 
 		Files.deleteIfExists(Paths.get(filename));
-		B_TreeBuilder<Integer, String> factory = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
+		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.build(jpf, true, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
 			for (int i = 0; i < 32; i++)
 				b_tree.put(i, Integer.toString(i));
 
@@ -61,24 +61,24 @@ public class B_TreeTest {
 		String filename = FileUtil.tmp + "/test-btree";
 
 		Files.deleteIfExists(Paths.get(filename));
-		B_TreeBuilder<Integer, String> factory = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
+		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
 
 		shuffleNumbers();
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.build(jpf, true, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
 			testStep0(jpf, b_tree);
 		}
 
 		shuffleNumbers();
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.build(jpf, false, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
 			testStep1(jpf, b_tree);
 		}
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
-				B_Tree<Integer, String> b_tree = factory.build(jpf, false, comparator, pageSize)) {
+				B_Tree<Integer, String> b_tree = builder.build(jpf, false, comparator, pageSize)) {
 			testStep2(jpf, b_tree);
 		}
 	}
