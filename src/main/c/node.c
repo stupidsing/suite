@@ -87,14 +87,10 @@ void assignref(struct Node **pto, struct Node *from) {
 	*pto = from;
 }
 
-struct Node *newRefTo(struct Node *target) {
-	struct Node *node = newNode(REF_);
-	node->u.target = target;
-	return node;
-}
-
 struct Node *newRef() {
-	return newRefTo(0);
+	struct Node *node = newNode(REF_);
+	node->u.target = 0;
+	return node;
 }
 
 struct Node *newAtom(char *start, char *end) {
