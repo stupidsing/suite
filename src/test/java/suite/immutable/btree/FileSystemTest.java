@@ -21,7 +21,7 @@ public class FileSystemTest {
 	@Test
 	public void testIbTreeFileSystem() throws IOException {
 		IbTreeConfiguration<Bytes> config = new IbTreeConfiguration<>();
-		config.setFilenamePrefix(FileUtil.tmp + "/ibtree-fs");
+		config.setFilenamePrefix(FileUtil.tmp + "/ibTree-fs");
 		config.setPageSize(PageFile.defaultPageSize);
 		config.setMaxBranchFactor(PageFile.defaultPageSize / 64);
 		config.setCapacity(64 * 1024);

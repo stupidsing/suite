@@ -61,8 +61,8 @@ public class B_TreeBuilder<Key, Value> {
 			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pageNo);
 
 			for (int i = 0; i < size; i++) {
-				char nodeType = dataInput.readChar();
 				Key key = keySerializer.read(dataInput);
+				char nodeType = dataInput.readChar();
 
 				if (nodeType == BRANCH) {
 					int branch = dataInput.readInt();
@@ -84,23 +84,22 @@ public class B_TreeBuilder<Key, Value> {
 			dataOutput.writeInt(page.pageNo);
 			dataOutput.writeInt(page.size());
 
-			for (B_TreeImpl<Key, Value>.KeyPointer kp : page)
+			for (B_TreeImpl<Key, Value>.KeyPointer kp : page) {
+				keySerializer.write(dataOutput, kp.key);
+
 				if (kp.pointer instanceof B_TreeImpl.Branch) {
 					dataOutput.writeChar(BRANCH);
-					keySerializer.write(dataOutput, kp.key);
 					dataOutput.writeInt(kp.getBranchPageNo());
 				} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
 					dataOutput.writeChar(LEAF);
-					keySerializer.write(dataOutput, kp.key);
 					valueSerializer.write(dataOutput, kp.getLeafValue());
 				} else if (kp.pointer instanceof B_TreeImpl.Payload) {
 					dataOutput.writeChar(PAYLOAD);
-					keySerializer.write(dataOutput, kp.key);
 					dataOutput.writeInt(kp.getPayloadPageNo());
 				} else if (kp.pointer instanceof B_TreeImpl.Terminal) {
 					dataOutput.writeChar(TERMINAL);
-					keySerializer.write(dataOutput, kp.key);
 				}
+			}
 		}
 	}
 

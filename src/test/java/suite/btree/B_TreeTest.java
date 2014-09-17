@@ -37,9 +37,9 @@ public class B_TreeTest {
 	}
 
 	@Test
-	public void dumpTest() throws IOException {
+	public void testDump() throws IOException {
 		int pageSize = 4096;
-		String filename = FileUtil.tmp + "/test-btree-dump";
+		String filename = FileUtil.tmp + "/b_tree-dump";
 
 		Files.deleteIfExists(Paths.get(filename));
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
@@ -56,9 +56,9 @@ public class B_TreeTest {
 	}
 
 	@Test
-	public void fileTest() throws IOException {
+	public void testAccess() throws IOException {
 		int pageSize = 4096;
-		String filename = FileUtil.tmp + "/test-btree";
+		String filename = FileUtil.tmp + "/b_tree-file";
 
 		Files.deleteIfExists(Paths.get(filename));
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
