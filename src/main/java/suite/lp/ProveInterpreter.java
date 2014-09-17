@@ -40,17 +40,23 @@ public class ProveInterpreter {
 		public void prove(Runtime rt, Runnable continuation);
 	}
 
+	private class CompileTime {
+		private Generalizer generalizer;
+
+		public CompileTime(Generalizer generalizer) {
+			this.generalizer = generalizer;
+		}
+	}
+
 	private class Runtime {
-		private int cutLevel;
 		private Generalizer.Env ge;
 		private Journal journal;
 
 		private Runtime(Runtime rt, Generalizer.Env ge1) {
-			this(rt.cutLevel, ge1, rt.journal);
+			this(ge1, rt.journal);
 		}
 
-		public Runtime(int cutLevel, Env ge, Journal journal) {
-			this.cutLevel = cutLevel;
+		public Runtime(Env ge, Journal journal) {
 			this.ge = ge;
 			this.journal = journal;
 		}
@@ -84,7 +90,8 @@ public class ProveInterpreter {
 						, rule.getTail());
 
 				Generalizer g = new Generalizer();
-				Cps cps0 = compile0(g, rn);
+
+				Cps cps0 = compile0(new CompileTime(g), rn);
 				Cps cps1 = (rt, cont) -> cps0.prove(new Runtime(rt, g.env()), cont);
 				cps = or(cps1, cps);
 			}
@@ -93,18 +100,19 @@ public class ProveInterpreter {
 		}
 
 		Generalizer g1 = new Generalizer();
-		Cps cps_ = compile0(g1, node);
+		Cps cps_ = compile0(new CompileTime(g1), node);
 
 		return () -> {
 			boolean result[] = new boolean[] { false };
-			cps_.prove(new Runtime(0, g1.env(), new Journal()), () -> {
+			cps_.prove(new Runtime(g1.env(), new Journal()), () -> {
 				result[0] = true;
 			});
+
 			return result[0];
 		};
 	}
 
-	private Cps compile0(Generalizer g, Node node) {
+	private Cps compile0(CompileTime ct, Node node) {
 		Cps result = null;
 		Tree tree = Tree.decompose(node);
 
@@ -114,30 +122,28 @@ public class ProveInterpreter {
 			Node rhs = tree.getRight();
 
 			if (operator == TermOp.AND___) { // a, b
-				Cps cps0 = compile0(g, lhs);
-				Cps cps1 = compile0(g, rhs);
+				Cps cps0 = compile0(ct, lhs);
+				Cps cps1 = compile0(ct, rhs);
 				result = (rt, cont) -> cps0.prove(rt, () -> cps1.prove(rt, cont));
 			} else if (operator == TermOp.EQUAL_) { // a = b
-				Fun<Generalizer.Env, Node> f0 = g.compile(lhs);
-				Fun<Generalizer.Env, Node> f1 = g.compile(rhs);
+				Fun<Generalizer.Env, Node> f0 = ct.generalizer.compile(lhs);
+				Fun<Generalizer.Env, Node> f1 = ct.generalizer.compile(rhs);
 				result = (rt, cont) -> {
 					if (Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal))
 						cont.run();
 				};
 			} else if (operator == TermOp.OR____) { // a; b
-				Cps cps0 = compile0(g, lhs);
-				Cps cps1 = compile0(g, rhs);
+				Cps cps0 = compile0(ct, lhs);
+				Cps cps1 = compile0(ct, rhs);
 				result = or(cps0, cps1);
 			} else if (operator == TermOp.TUPLE_ && lhs instanceof Atom) // a b
-				result = callSystemPredicate(g, ((Atom) lhs).getName(), rhs);
+				result = callSystemPredicate(ct, ((Atom) lhs).getName(), rhs);
 			else
-				result = callSystemPredicate(g, operator.getName(), node);
+				result = callSystemPredicate(ct, operator.getName(), node);
 		} else if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
 
-			if (Util.stringEquals(name, Generalizer.cutName)) {
-				// TODO
-			} else if (Util.stringEquals(name, "fail"))
+			if (Util.stringEquals(name, "fail"))
 				result = (rt, cont) -> {
 				};
 			else if (Util.stringEquals(name, "") || Util.stringEquals(name, "yes"))
@@ -145,7 +151,7 @@ public class ProveInterpreter {
 					cont.run();
 				};
 			else
-				result = callSystemPredicate(g, name, Atom.NIL);
+				result = callSystemPredicate(ct, name, Atom.NIL);
 		}
 
 		if (result == null) {
@@ -166,10 +172,10 @@ public class ProveInterpreter {
 		};
 	}
 
-	private Cps callSystemPredicate(Generalizer g, String name, Node pass) {
+	private Cps callSystemPredicate(CompileTime ct, String name, Node pass) {
 		SystemPredicate systemPredicate = systemPredicates.get(name);
 		if (systemPredicate != null) {
-			Fun<Generalizer.Env, Node> f = g.compile(pass);
+			Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
 			return (rt, cont) -> {
 				if (systemPredicate.prove(prover, f.apply(rt.ge)))
 					cont.run();
