@@ -64,10 +64,6 @@ public class ProveInterpreter {
 			rules.put(Prototype.of(rule), rule);
 	}
 
-	public void addRule(Rule rule) {
-		rules.put(Prototype.of(rule), rule);
-	}
-
 	public Source<Boolean> compile(Node node) {
 		cpsByPrototype = new HashMap<>();
 
