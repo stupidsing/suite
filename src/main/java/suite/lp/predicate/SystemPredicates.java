@@ -137,8 +137,12 @@ public class SystemPredicates {
 				}
 			}
 
-		predicate = name != null ? predicates.get(name) : null;
+		predicate = name != null ? get(name) : null;
 		return predicate != null ? predicate.prove(prover, pass) : null;
+	}
+
+	public SystemPredicate get(String name) {
+		return predicates.get(name);
 	}
 
 	private void addPredicate(Operator operator, SystemPredicate pred) {
