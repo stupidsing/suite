@@ -9,6 +9,7 @@ import java.util.Map;
 import suite.adt.ListMultimap;
 import suite.immutable.IList;
 import suite.lp.doer.Binder;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Generalizer.Env;
 import suite.lp.doer.Prover;
@@ -31,11 +32,10 @@ import suite.util.Util;
 
 public class ProveInterpreter {
 
-	private Prover prover;
 	private SystemPredicates systemPredicates;
 
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
-	private Map<Prototype, Trampoline> trampolinesByPrototype;
+	private Map<Prototype, Trampoline[]> trampolinesByPrototype = new HashMap<>();
 
 	private int nCutPoints;
 
@@ -61,30 +61,22 @@ public class ProveInterpreter {
 	}
 
 	private class Runtime {
-		private IList<Trampoline> rems; // Continuations
-		private IList<Trampoline> alts; // Alternative
 		private Env ge;
-		private Journal journal;
+		private IList<Trampoline> rems = IList.end(); // Continuations
+		private IList<Trampoline> alts = IList.end(); // Alternative
+		private Journal journal = new Journal();
 		private IList<Trampoline> cutPoints[];
 		private Node query;
+		private Prover prover;
 
-		private Runtime(Runtime rt, Env ge) {
-			this(ge, rt.journal, rt.rems, rt.alts, rt.cutPoints);
-		}
+		private Runtime(ProverConfig pc, Env ge, Trampoline tr) {
+			this.ge = ge;
+			pushAlt(tr);
+			prover = new Prover(pc, null, journal);
 
-		private Runtime(Env ge, Trampoline tr) {
-			this(ge, new Journal(), IList.end(), IList.cons(tr, IList.end()), null);
 			@SuppressWarnings("unchecked")
 			IList<Trampoline>[] trampolineStacks = (IList<Trampoline>[]) new IList<?>[nCutPoints];
 			cutPoints = trampolineStacks;
-		}
-
-		private Runtime(Env ge, Journal journal, IList<Trampoline> rems, IList<Trampoline> alts, IList<Trampoline> cutPoints[]) {
-			this.ge = ge;
-			this.journal = journal;
-			this.rems = rems;
-			this.alts = alts;
-			this.cutPoints = cutPoints;
 		}
 
 		private void pushRem(Trampoline tr) {
@@ -97,39 +89,40 @@ public class ProveInterpreter {
 	}
 
 	public ProveInterpreter(RuleSet rs) {
-		prover = new Prover(rs);
-		systemPredicates = new SystemPredicates(prover);
+		systemPredicates = new SystemPredicates(null);
 
 		for (Rule rule : rs.getRules())
 			rules.put(Prototype.of(rule), rule);
 
-		if (rules.containsKey(null))
+		if (!rules.containsKey(null))
+			compileAll();
+		else
 			throw new RuntimeException("Must not contain wild rules");
 	}
 
-	public Source<Boolean> compile(Node node) {
-		return () -> {
+	public Fun<ProverConfig, Boolean> compile(Node node) {
+		return pc -> {
 			boolean result[] = new boolean[] { false };
-			run(node, env -> result[0] = true);
+			run(pc, node, env -> result[0] = true);
 			return result[0];
 		};
 	}
 
-	private void run(Node node, Sink<Env> sink) {
-		compileAll();
-
+	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
 		Generalizer g1 = new Generalizer();
 		CompileTime ct = new CompileTime(g1, nCutPoints++);
-		Trampoline tr = cutBegin(ct.cutIndex, newEnv(g1, compile0(ct, node)));
-		trampoline(g1.env(), tr, sink);
-	}
+		Env env = g1.env();
 
-	private void trampoline(Env env, Trampoline tr, Sink<Env> sink) {
-		Runtime rt = new Runtime(env, and(tr, (rt_ -> {
+		Trampoline sinker = rt_ -> {
 			sink.sink(env);
 			return fail;
-		})));
+		};
 
+		Trampoline t = and(cutBegin(ct.cutIndex, newEnv(g1, compile0(ct, node))), sinker);
+		trampoline(new Runtime(pc, env, t));
+	}
+
+	private void trampoline(Runtime rt) {
 		while (!rt.alts.isEmpty()) {
 			rt.pushRem(rt.alts.getHead());
 			rt.alts = rt.alts.getTail();
@@ -146,8 +139,6 @@ public class ProveInterpreter {
 	}
 
 	private void compileAll() {
-		trampolinesByPrototype = new HashMap<>();
-
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
 			List<Rule> rs = new ArrayList<>(entry.t1);
 			int cutIndex = nCutPoints++;
@@ -166,7 +157,7 @@ public class ProveInterpreter {
 				tr = or(newEnv(g, and(tr0, tr1)), tr);
 			}
 
-			trampolinesByPrototype.put(entry.t0, cutBegin(cutIndex, tr));
+			getTrampolineByPrototype(entry.t0)[0] = cutBegin(cutIndex, tr);
 		}
 	}
 
@@ -220,9 +211,10 @@ public class ProveInterpreter {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
 				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
+				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				result = rt -> {
 					rt.query = f.apply(rt.ge);
-					return trampolinesByPrototype.get(prototype)::prove;
+					return trs[0]::prove;
 				};
 			}
 		}
@@ -311,10 +303,14 @@ public class ProveInterpreter {
 			SystemPredicate systemPredicate = systemPredicates.get(name);
 			if (systemPredicate != null) {
 				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
-				return rt -> systemPredicate.prove(prover, f.apply(rt.ge)) ? okay : fail;
+				return rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
 			} else
 				return null;
 		}
+	}
+
+	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {
+		return trampolinesByPrototype.computeIfAbsent(prototype, k -> new Trampoline[1]);
 	}
 
 }
