@@ -81,15 +81,17 @@ public class LazyFunInterpreter {
 			} else if (operator == TermOp.CONTD_) { // key := value >> expr
 				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(r(lhs));
 				Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(rhs);
+				String vk = v(l(lhs));
 				result = env -> {
 					Thunk_ val[] = new Thunk_[] { null };
-					IMap<String, Thunk_> env1 = env.put(v(l(lhs)), () -> val[0].get());
+					IMap<String, Thunk_> env1 = env.put(vk, () -> val[0].get());
 					val[0] = value.apply(env1)::get;
 					return expr.apply(env1);
 				};
 			} else if (operator == TermOp.FUN___) { // var => value
 				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(rhs);
-				result = env -> () -> new Fun_(in -> value.apply(env.put(v(lhs), in)));
+				String vk = v(lhs);
+				result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
 			} else if (operator == TermOp.TUPLE_) { // if a then b else c
 				Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(l(rhs));
 				Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(l(r(r(rhs))));
@@ -105,9 +107,10 @@ public class LazyFunInterpreter {
 					return r2;
 				};
 			}
-		} else if (node instanceof Atom)
-			result = env -> env.get(v(node));
-		else
+		} else if (node instanceof Atom) {
+			String vk = v(node);
+			result = env -> env.get(vk);
+		} else
 			result = env -> () -> node;
 
 		return result;
