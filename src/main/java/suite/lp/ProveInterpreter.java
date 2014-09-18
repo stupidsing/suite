@@ -68,8 +68,8 @@ public class ProveInterpreter {
 		private IList<Trampoline> cutPoints[];
 		private Node query;
 
-		private Runtime(Runtime rt, Env ge1) {
-			this(ge1, rt.journal, rt.rems, rt.alts, rt.cutPoints);
+		private Runtime(Runtime rt, Env ge) {
+			this(ge, rt.journal, rt.rems, rt.alts, rt.cutPoints);
 		}
 
 		private Runtime(Env ge, Trampoline tr) {
@@ -116,6 +116,36 @@ public class ProveInterpreter {
 	}
 
 	private void run(Node node, Sink<Env> sink) {
+		compileAll();
+
+		Generalizer g1 = new Generalizer();
+		CompileTime ct = new CompileTime(g1, nCutPoints++);
+		Trampoline tr = cutBegin(ct.cutIndex, newEnv(g1, compile0(ct, node)));
+		trampoline(g1.env(), tr, sink);
+	}
+
+	private void trampoline(Env env, Trampoline tr, Sink<Env> sink) {
+		Runtime rt = new Runtime(env, and(tr, (rt_ -> {
+			sink.sink(env);
+			return fail;
+		})));
+
+		while (!rt.alts.isEmpty()) {
+			rt.pushRem(rt.alts.getHead());
+			rt.alts = rt.alts.getTail();
+
+			Trampoline rem;
+			while ((rem = rt.rems.getHead()) != fail) {
+				rt.rems = rt.rems.getTail();
+				if (rem != okay)
+					rt.pushRem(rem.prove(rt));
+			}
+		}
+
+		rt.journal.undoAllBinds();
+	}
+
+	private void compileAll() {
 		trampolinesByPrototype = new HashMap<>();
 
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
@@ -138,30 +168,6 @@ public class ProveInterpreter {
 
 			trampolinesByPrototype.put(entry.t0, cutBegin(cutIndex, tr));
 		}
-
-		Generalizer g1 = new Generalizer();
-		CompileTime ct = new CompileTime(g1, nCutPoints++);
-
-		Env env = g1.env();
-		Trampoline tr0 = cutBegin(ct.cutIndex, newEnv(g1, compile0(ct, node)));
-		Runtime rt = new Runtime(env, and(tr0, (rt_ -> {
-			sink.sink(env);
-			return fail;
-		})));
-
-		while (!rt.alts.isEmpty()) {
-			rt.pushRem(rt.alts.getHead());
-			rt.alts = rt.alts.getTail();
-
-			Trampoline rem;
-			while ((rem = rt.rems.getHead()) != fail) {
-				rt.rems = rt.rems.getTail();
-				if (rem != okay)
-					rt.pushRem(rem.prove(rt));
-			}
-		}
-
-		rt.journal.undoAllBinds();
 	}
 
 	private Trampoline compile0(CompileTime ct, Node node) {
