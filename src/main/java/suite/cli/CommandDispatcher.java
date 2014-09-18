@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
+import suite.lp.ProveInterpreter;
+import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Generalizer.Generalization;
 import suite.lp.doer.Prover;
@@ -17,6 +19,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
+import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -25,6 +28,7 @@ import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
 import suite.util.CommandUtil;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.To;
@@ -55,6 +59,8 @@ public class CommandDispatcher {
 		QUERYCOMPILED("/l"), //
 		QUERYCOMPILED2("/ll"), //
 		QUERYELABORATE("/"), //
+		QUERYSEWING("?s"), //
+		QUERYSEWINGELAB("/s"), //
 		;
 
 		private String prefix;
@@ -95,7 +101,6 @@ public class CommandDispatcher {
 		if (input.endsWith("#"))
 			input = Util.substr(input, 0, -1);
 
-		int count[] = { 0 };
 		Node node = Suite.parse(input.trim());
 
 		switch (type) {
@@ -144,30 +149,40 @@ public class CommandDispatcher {
 			code = query(builderLevel2, ruleSet, node);
 			break;
 		case QUERYELABORATE:
-			Generalization generalization = Generalizer.process(node);
-			node = generalization.node();
-			Prover prover = new Prover(opt.pc(ruleSet));
-
-			Node elab = new Data<Source<Boolean>>(() -> {
-				String dump = generalization.dumpVariables();
-				if (!dump.isEmpty())
-					opt.prompt().println(dump);
-
-				count[0]++;
-				return Boolean.FALSE;
-			});
-
-			prover.prove(Tree.of(TermOp.AND___, node, elab));
-
-			if (count[0] == 1)
-				opt.prompt().println(count[0] + " solution\n");
-			else
-				opt.prompt().println(count[0] + " solutions\n");
+			elaborate(node, new Prover(opt.pc(ruleSet))::prove);
+			break;
+		case QUERYSEWING:
+			code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
+			break;
+		case QUERYSEWINGELAB:
+			elaborate(node, n -> new ProveInterpreter(ruleSet).compile(n).apply(new ProverConfig(ruleSet)));
 		}
 
 		pw.flush();
 
 		return code;
+	}
+
+	private void elaborate(Node node, Sink<Node> sink) {
+		int count[] = { 0 };
+		Generalization generalization = Generalizer.process(node);
+		node = generalization.node();
+
+		Node elab = new Data<Source<Boolean>>(() -> {
+			String dump = generalization.dumpVariables();
+			if (!dump.isEmpty())
+				opt.prompt().println(dump);
+
+			count[0]++;
+			return Boolean.FALSE;
+		});
+
+		sink.sink(Tree.of(TermOp.AND___, node, elab));
+
+		if (count[0] == 1)
+			opt.prompt().println(count[0] + " solution\n");
+		else
+			opt.prompt().println(count[0] + " solutions\n");
 	}
 
 	public boolean dispatchEvaluate(List<String> inputs) {
