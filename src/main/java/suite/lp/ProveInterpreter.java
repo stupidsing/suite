@@ -162,7 +162,7 @@ public class ProveInterpreter {
 	}
 
 	private Trampoline compile0(CompileTime ct, Node node) {
-		Trampoline result = null;
+		Trampoline tr = null;
 		Tree tree = Tree.decompose(node);
 
 		if (tree != null) {
@@ -173,54 +173,54 @@ public class ProveInterpreter {
 			if (operator == TermOp.AND___) { // a, b
 				Trampoline tr0 = compile0(ct, lhs);
 				Trampoline tr1 = compile0(ct, rhs);
-				result = and(tr0, tr1);
+				tr = and(tr0, tr1);
 			} else if (operator == TermOp.EQUAL_) { // a = b
 				Fun<Generalizer.Env, Node> f0 = ct.generalizer.compile(lhs);
 				Fun<Generalizer.Env, Node> f1 = ct.generalizer.compile(rhs);
-				result = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
+				tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
 			} else if (operator == TermOp.OR____) { // a; b
 				Trampoline tr0 = compile0(ct, lhs);
 				Trampoline tr1 = compile0(ct, rhs);
-				result = or(tr0, tr1);
+				tr = or(tr0, tr1);
 			} else if (operator == TermOp.TUPLE_ && lhs instanceof Atom) // a b
-				result = callSystemPredicate(ct, ((Atom) lhs).getName(), rhs);
+				tr = callSystemPredicate(ct, ((Atom) lhs).getName(), rhs);
 			else
-				result = callSystemPredicate(ct, operator.getName(), node);
+				tr = callSystemPredicate(ct, operator.getName(), node);
 		} else if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
 
 			if (Util.stringEquals(name, Generalizer.cutName)) {
 				int cutIndex = ct.cutIndex;
-				result = rt -> {
+				tr = rt -> {
 					rt.alts = rt.cutPoints[cutIndex];
 					return okay;
 				};
 			} else if (Util.stringEquals(name, "fail"))
-				result = fail;
+				tr = fail;
 			else if (Util.stringEquals(name, "") || Util.stringEquals(name, "yes"))
-				result = okay;
+				tr = okay;
 			else
-				result = callSystemPredicate(ct, name, Atom.NIL);
+				tr = callSystemPredicate(ct, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).getData();
 			if (data instanceof Source<?>)
-				result = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
+				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
 		}
 
-		if (result == null) {
+		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
 				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
-				result = rt -> {
+				tr = rt -> {
 					rt.query = f.apply(rt.ge);
 					return trs[0]::prove;
 				};
 			}
 		}
 
-		if (result != null)
-			return result;
+		if (tr != null)
+			return tr;
 		else
 			throw new RuntimeException("Cannot understand " + node);
 	}
@@ -272,19 +272,24 @@ public class ProveInterpreter {
 	}
 
 	private Trampoline callSystemPredicate(CompileTime ct, String name, Node pass) {
-		if (Util.stringEquals(name, "once")) {
-			Trampoline tr = compile0(ct, pass);
-			return rt -> {
+		Trampoline tr;
+
+		if (Util.stringEquals(name, "call")) {
+			Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
+			tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
+		} else if (Util.stringEquals(name, "once")) {
+			Trampoline tr1 = compile0(ct, pass);
+			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return okay;
 				});
-				return tr;
+				return tr1;
 			};
 		} else if (Util.stringEquals(name, "not")) {
-			Trampoline tr = compile0(ct, pass);
-			return rt -> {
+			Trampoline tr1 = compile0(ct, pass);
+			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
 				int pit = rt.journal.getPointInTime();
@@ -297,16 +302,18 @@ public class ProveInterpreter {
 					rt_.rems = rems0;
 					return okay;
 				});
-				return tr;
+				return tr1;
 			};
 		} else {
 			SystemPredicate systemPredicate = systemPredicates.get(name);
 			if (systemPredicate != null) {
 				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
-				return rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
+				tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
 			} else
-				return null;
+				tr = null;
 		}
+
+		return tr;
 	}
 
 	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {
