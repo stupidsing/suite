@@ -163,6 +163,7 @@ public class ProveInterpreter {
 
 	private Trampoline compile0(CompileTime ct, Node node) {
 		Trampoline tr = null;
+		node = node.finalNode();
 		Tree tree = Tree.decompose(node);
 
 		if (tree != null) {
@@ -195,11 +196,14 @@ public class ProveInterpreter {
 					rt.alts = rt.cutPoints[cutIndex];
 					return okay;
 				};
-			} else if (Util.stringEquals(name, "fail"))
-				tr = fail;
-			else if (Util.stringEquals(name, "") || Util.stringEquals(name, "yes"))
+			} else if (Util.stringEquals(name, ""))
 				tr = okay;
-			else
+			else if (Util.stringEquals(name, "fail"))
+				tr = fail;
+			else if (name.startsWith(".")) {
+				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
+				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
+			} else
 				tr = callSystemPredicate(ct, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).getData();
@@ -274,10 +278,7 @@ public class ProveInterpreter {
 	private Trampoline callSystemPredicate(CompileTime ct, String name, Node pass) {
 		Trampoline tr;
 
-		if (Util.stringEquals(name, "call")) {
-			Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
-			tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
-		} else if (Util.stringEquals(name, "once")) {
+		if (Util.stringEquals(name, "once")) {
 			Trampoline tr1 = compile0(ct, pass);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;

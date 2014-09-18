@@ -14,6 +14,8 @@ public class ProveInterpreterTest {
 	@Test
 	public void test() {
 		RuleSet rs = Suite.createRuleSet();
+		Suite.addRule(rs, "yes");
+
 		ProveInterpreter pi = new ProveInterpreter(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(pi.compile(Suite.parse("yes")).apply(pc));
@@ -28,6 +30,8 @@ public class ProveInterpreterTest {
 
 		assertFalse(pi.compile(Suite.parse("not yes")).apply(pc));
 		assertTrue(pi.compile(Suite.parse("not fail")).apply(pc));
+
+		assertTrue(pi.compile(Suite.parse(".p = yes, .p")).apply(pc));
 	}
 
 }
