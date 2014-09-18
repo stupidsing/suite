@@ -150,8 +150,8 @@ public class ProveInterpreter {
 				Node ruleTail = rule.getTail();
 				Generalizer g = new Generalizer();
 				CompileTime ct = new CompileTime(g, cutIndex);
+				Fun<Generalizer.Env, Node> f = g.compile(ruleHead);
 
-				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(ruleHead);
 				Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
 				Trampoline tr1 = compile0(ct, ruleTail);
 				tr = or(newEnv(g, and(tr0, tr1)), tr);
