@@ -266,7 +266,7 @@ public class ProveInterpreter {
 			int pit = rt.journal.getPointInTime();
 			rt.pushAlt(rt_ -> {
 				rt_.journal.undoBinds(pit);
-				rt.rems = rems0;
+				rt_.rems = rems0;
 				return tr1;
 			});
 			return tr0;
@@ -280,6 +280,23 @@ public class ProveInterpreter {
 				IList<Trampoline> alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
+					return okay;
+				});
+				return tr;
+			};
+		} else if (Util.stringEquals(name, "not")) {
+			Trampoline tr = compile0(ct, pass);
+			return rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				IList<Trampoline> rems0 = rt.rems;
+				int pit = rt.journal.getPointInTime();
+				rt.pushRem(rt_ -> {
+					rt_.journal.undoBinds(pit);
+					rt_.alts = alts0;
+					return fail;
+				});
+				rt.pushAlt(rt_ -> {
+					rt_.rems = rems0;
 					return okay;
 				});
 				return tr;

@@ -15,10 +15,15 @@ public class ProveInterpreterTest {
 		assertTrue(pi.compile(Suite.parse("yes")).source());
 		assertTrue(pi.compile(Suite.parse("fail; yes")).source());
 		assertTrue(pi.compile(Suite.parse("yes; yes")).source());
-		assertFalse(pi.compile(Suite.parse("!, fail; yes")).source());
 		assertFalse(pi.compile(Suite.parse("yes, fail")).source());
+
+		assertFalse(pi.compile(Suite.parse("!, fail; yes")).source());
+
 		assertTrue(pi.compile(Suite.parse("(.v = 1; .v = 2), .v = 2")).source());
 		assertFalse(pi.compile(Suite.parse("once (.v = 1; .v = 2), .v = 2")).source());
+
+		assertFalse(pi.compile(Suite.parse("not yes")).source());
+		assertTrue(pi.compile(Suite.parse("not fail")).source());
 	}
 
 }
