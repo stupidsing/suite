@@ -17,6 +17,8 @@ public class ProveInterpreterTest {
 		assertTrue(pi.compile(Suite.parse("yes; yes")).source());
 		assertFalse(pi.compile(Suite.parse("!, fail; yes")).source());
 		assertFalse(pi.compile(Suite.parse("yes, fail")).source());
+		assertTrue(pi.compile(Suite.parse("(.v = 1; .v = 2), .v = 2")).source());
+		assertFalse(pi.compile(Suite.parse("once (.v = 1; .v = 2), .v = 2")).source());
 	}
 
 }

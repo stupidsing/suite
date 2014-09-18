@@ -20,7 +20,6 @@ import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -67,6 +66,7 @@ public class ProveInterpreter {
 		private Env ge;
 		private Journal journal;
 		private IList<Trampoline> cutPoints[];
+		private Node query;
 
 		private Runtime(Runtime rt, Env ge1) {
 			this(ge1, rt.journal, rt.rems, rt.alts, rt.cutPoints);
@@ -121,21 +121,19 @@ public class ProveInterpreter {
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
 			List<Rule> rs = new ArrayList<>(entry.t1);
 			int cutIndex = nCutPoints++;
-			Node query = new Reference();
 			Trampoline tr = fail;
 
 			for (int i = rs.size() - 1; i >= 0; i--) {
 				Rule rule = rs.get(i);
-
-				Node rn = Tree.of(TermOp.AND___ //
-						, Tree.of(TermOp.EQUAL_ //
-								, query //
-								, rule.getHead()) //
-						, rule.getTail());
-
+				Node ruleHead = rule.getHead();
+				Node ruleTail = rule.getTail();
 				Generalizer g = new Generalizer();
 				CompileTime ct = new CompileTime(g, cutIndex);
-				tr = or(newEnv(g, compile0(ct, rn)), tr);
+
+				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(ruleHead);
+				Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
+				Trampoline tr1 = compile0(ct, ruleTail);
+				tr = or(newEnv(g, and(tr0, tr1)), tr);
 			}
 
 			trampolinesByPrototype.put(entry.t0, cutBegin(cutIndex, tr));
@@ -214,8 +212,13 @@ public class ProveInterpreter {
 
 		if (result == null) {
 			Prototype prototype = Prototype.of(node);
-			if (rules.containsKey(prototype))
-				result = rt -> trampolinesByPrototype.get(prototype)::prove;
+			if (rules.containsKey(prototype)) {
+				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
+				result = rt -> {
+					rt.query = f.apply(rt.ge);
+					return trampolinesByPrototype.get(prototype)::prove;
+				};
+			}
 		}
 
 		if (result != null)
@@ -271,12 +274,24 @@ public class ProveInterpreter {
 	}
 
 	private Trampoline callSystemPredicate(CompileTime ct, String name, Node pass) {
-		SystemPredicate systemPredicate = systemPredicates.get(name);
-		if (systemPredicate != null) {
-			Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
-			return rt -> systemPredicate.prove(prover, f.apply(rt.ge)) ? okay : fail;
-		} else
-			return null;
+		if (Util.stringEquals(name, "once")) {
+			Trampoline tr = compile0(ct, pass);
+			return rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				rt.pushRem(rt_ -> {
+					rt_.alts = alts0;
+					return okay;
+				});
+				return tr;
+			};
+		} else {
+			SystemPredicate systemPredicate = systemPredicates.get(name);
+			if (systemPredicate != null) {
+				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
+				return rt -> systemPredicate.prove(prover, f.apply(rt.ge)) ? okay : fail;
+			} else
+				return null;
+		}
 	}
 
 }
