@@ -17,12 +17,14 @@ import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.Util;
@@ -35,6 +37,11 @@ public class ProveInterpreter {
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
 	private Map<Prototype, Cps> cpsByPrototype;
 
+	private int nCutPoints;
+
+	private Runnable runVoid = () -> {
+	};
+
 	// Continuation passing style invocation
 	public interface Cps {
 		public void prove(Runtime rt, Runnable continuation);
@@ -42,23 +49,33 @@ public class ProveInterpreter {
 
 	private class CompileTime {
 		private Generalizer generalizer;
+		private int cutIndex;
 
-		public CompileTime(Generalizer generalizer) {
+		public CompileTime(Generalizer generalizer, int cutIndex) {
 			this.generalizer = generalizer;
+			this.cutIndex = cutIndex;
 		}
 	}
 
 	private class Runtime {
-		private Generalizer.Env ge;
+		private Env ge;
 		private Journal journal;
+		private Runnable alternative;
+		private Runnable cutPoints[];
 
-		private Runtime(Runtime rt, Generalizer.Env ge1) {
-			this(ge1, rt.journal);
+		private Runtime(Runtime rt, Env ge1) {
+			this(ge1, rt.journal, rt.alternative, rt.cutPoints);
 		}
 
-		public Runtime(Env ge, Journal journal) {
+		private Runtime(Env ge) {
+			this(ge, new Journal(), runVoid, new Runnable[nCutPoints]);
+		}
+
+		private Runtime(Env ge, Journal journal, Runnable alternative, Runnable cutPoints[]) {
 			this.ge = ge;
 			this.journal = journal;
+			this.alternative = alternative;
+			this.cutPoints = cutPoints;
 		}
 	}
 
@@ -71,6 +88,14 @@ public class ProveInterpreter {
 	}
 
 	public Source<Boolean> compile(Node node) {
+		return () -> {
+			boolean result[] = new boolean[] { false };
+			run(node, env -> result[0] = true);
+			return result[0];
+		};
+	}
+
+	private void run(Node node, Sink<Env> sink) {
 		cpsByPrototype = new HashMap<>();
 
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
@@ -91,8 +116,8 @@ public class ProveInterpreter {
 
 				Generalizer g = new Generalizer();
 
-				Cps cps0 = compile0(new CompileTime(g), rn);
-				Cps cps1 = (rt, cont) -> cps0.prove(new Runtime(rt, g.env()), cont);
+				CompileTime ct = new CompileTime(g, nCutPoints++);
+				Cps cps1 = cutBegin(ct, compile0(ct, rn));
 				cps = or(cps1, cps);
 			}
 
@@ -100,16 +125,19 @@ public class ProveInterpreter {
 		}
 
 		Generalizer g1 = new Generalizer();
-		Cps cps_ = compile0(new CompileTime(g1), node);
+		CompileTime ct = new CompileTime(g1, nCutPoints++);
+		Cps cps_ = cutBegin(ct, compile0(ct, node));
 
-		return () -> {
-			boolean result[] = new boolean[] { false };
-			cps_.prove(new Runtime(g1.env(), new Journal()), () -> {
-				result[0] = true;
-			});
+		Env env = g1.env();
+		Runtime rt = new Runtime(env);
+		Runnable runnable = () -> cps_.prove(rt, () -> sink.sink(env));
 
-			return result[0];
-		};
+		while (runnable != runVoid) {
+			runnable.run();
+			runnable = rt.alternative;
+		}
+
+		rt.journal.undoAllBinds();
 	}
 
 	private Cps compile0(CompileTime ct, Node node) {
@@ -143,15 +171,23 @@ public class ProveInterpreter {
 		} else if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
 
-			if (Util.stringEquals(name, "fail"))
+			if (Util.stringEquals(name, Generalizer.cutName)) {
+				int cutIndex = ct.cutIndex;
+				result = (rt, cont) -> rt.alternative = rt.cutPoints[cutIndex];
+			} else if (Util.stringEquals(name, "fail"))
 				result = (rt, cont) -> {
 				};
 			else if (Util.stringEquals(name, "") || Util.stringEquals(name, "yes"))
-				result = (rt, cont) -> {
-					cont.run();
-				};
+				result = (rt, cont) -> cont.run();
 			else
 				result = callSystemPredicate(ct, name, Atom.NIL);
+		} else if (node instanceof Data<?>) {
+			Object data = ((Data<?>) node).getData();
+			if (data instanceof Source<?>)
+				result = (rt, cont) -> {
+					if (((Source<?>) data).source() == Boolean.TRUE)
+						cont.run();
+				};
 		}
 
 		if (result == null) {
@@ -160,15 +196,46 @@ public class ProveInterpreter {
 				result = cps::prove;
 		}
 
-		return result;
+		if (result != null)
+			return result;
+		else
+			throw new RuntimeException("Cannot understand " + node);
+	}
+
+	private Cps cutBegin(CompileTime ct, Cps cps0) {
+		Generalizer g = ct.generalizer;
+		Cps cps1 = newEnvironment(g, cps0);
+
+		int cutIndex = ct.cutIndex;
+		return (rt, cont) -> {
+			Runnable alt0 = rt.cutPoints[cutIndex];
+			rt.cutPoints[cutIndex] = rt.alternative;
+			cps1.prove(rt, cont);
+			rt.cutPoints[cutIndex] = alt0;
+		};
+	}
+
+	private Cps newEnvironment(Generalizer g, Cps cps) {
+		return (rt, cont) -> {
+			Env ge0 = rt.ge;
+			rt.ge = g.env();
+			cps.prove(rt, cont);
+			rt.ge = ge0;
+		};
 	}
 
 	private Cps or(Cps cps0, Cps cps1) {
 		return (rt, cont) -> {
+			Runnable alternative0 = rt.alternative;
 			int pit = rt.journal.getPointInTime();
+
+			rt.alternative = () -> {
+				rt.journal.undoBinds(pit);
+				rt.alternative = alternative0;
+				cps1.prove(rt, cont);
+			};
+
 			cps0.prove(rt, cont);
-			rt.journal.undoBinds(pit);
-			cps1.prove(rt, cont);
 		};
 	}
 
