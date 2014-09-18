@@ -20,6 +20,4 @@ sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 
 trace .pred :- asserta (.pred .ps :- dump .pred .ps, nl, fail) #
 
-whatever .g :- once (.g; yes) #
-
 yes #
