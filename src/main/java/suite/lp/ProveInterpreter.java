@@ -117,7 +117,7 @@ public class ProveInterpreter {
 				Generalizer g = new Generalizer();
 
 				CompileTime ct = new CompileTime(g, nCutPoints++);
-				Cps cps1 = cutBegin(ct, compile0(ct, rn));
+				Cps cps1 = cutBegin(ct, newEnvironment(g, compile0(ct, rn)));
 				cps = or(cps1, cps);
 			}
 
@@ -126,7 +126,7 @@ public class ProveInterpreter {
 
 		Generalizer g1 = new Generalizer();
 		CompileTime ct = new CompileTime(g1, nCutPoints++);
-		Cps cps_ = cutBegin(ct, compile0(ct, node));
+		Cps cps_ = cutBegin(ct, newEnvironment(g1, compile0(ct, node)));
 
 		Env env = g1.env();
 		Runtime rt = new Runtime(env);
@@ -202,15 +202,12 @@ public class ProveInterpreter {
 			throw new RuntimeException("Cannot understand " + node);
 	}
 
-	private Cps cutBegin(CompileTime ct, Cps cps0) {
-		Generalizer g = ct.generalizer;
-		Cps cps1 = newEnvironment(g, cps0);
-
+	private Cps cutBegin(CompileTime ct, Cps cps) {
 		int cutIndex = ct.cutIndex;
 		return (rt, cont) -> {
 			Runnable alt0 = rt.cutPoints[cutIndex];
 			rt.cutPoints[cutIndex] = rt.alternative;
-			cps1.prove(rt, cont);
+			cps.prove(rt, cont);
 			rt.cutPoints[cutIndex] = alt0;
 		};
 	}
