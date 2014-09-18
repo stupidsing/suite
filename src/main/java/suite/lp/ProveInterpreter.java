@@ -109,16 +109,16 @@ public class ProveInterpreter {
 	}
 
 	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
-		Generalizer g1 = new Generalizer();
-		CompileTime ct = new CompileTime(g1, nCutPoints++);
-		Env env = g1.env();
+		Generalizer g = new Generalizer();
+		CompileTime ct = new CompileTime(g, nCutPoints++);
+		Env env = g.env();
 
 		Trampoline sinker = rt_ -> {
 			sink.sink(env);
 			return fail;
 		};
 
-		Trampoline t = and(cutBegin(ct.cutIndex, newEnv(g1, compile0(ct, node))), sinker);
+		Trampoline t = and(cutBegin(ct.cutIndex, newEnv(g, compile0(ct, node))), sinker);
 		trampoline(new Runtime(pc, env, t));
 	}
 
