@@ -12,7 +12,7 @@ import suite.net.NetUtil;
 import suite.net.NioDispatcher;
 import suite.net.NioDispatcherImpl;
 import suite.net.RequestResponseMatcher;
-import suite.net.channels.PersistableChannel;
+import suite.net.channels.PersistentChannel;
 import suite.net.cluster.Cluster;
 import suite.net.cluster.ClusterProbe;
 import suite.primitive.Bytes;
@@ -43,7 +43,7 @@ public class ClusterImpl implements Cluster {
 	private Sinks<String> onLeft = new Sinks<>();
 	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
 
-	private class ClusterChannel extends PersistableChannel<ClusterChannel> {
+	private class ClusterChannel extends PersistentChannel<ClusterChannel> {
 		private ClusterChannel(String peer) {
 			super(nio, matcher, executor, peers.get(peer), ClusterImpl.this::respondToRequest);
 		}
