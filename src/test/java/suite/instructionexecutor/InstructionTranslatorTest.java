@@ -12,9 +12,9 @@ import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRunConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
-import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -83,7 +83,7 @@ public class InstructionTranslatorTest {
 	}
 
 	private Node compile(RuleSet ruleSet, Node goal, Node program) {
-		Builder builder = new InterpretedProverBuilder();
+		Builder builder = new SewingProverBuilder();
 		Finder compiler = builder.build(ruleSet, goal);
 		return FindUtil.collectSingle(compiler, program);
 	}

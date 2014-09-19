@@ -12,8 +12,8 @@ import suite.lp.doer.Binder;
 import suite.lp.doer.SimpleGeneralizer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
-import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -32,7 +32,7 @@ public class Assembler {
 
 	private RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
 
-	private Finder finder = new InterpretedProverBuilder().build(ruleSet, Suite.parse("" //
+	private Finder finder = new SewingProverBuilder().build(ruleSet, Suite.parse("" //
 			+ "source (.bits, .address, .instruction,)" //
 			+ ", asi:.bits:.address .instruction .code" //
 			+ ", sink .code" //

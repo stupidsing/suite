@@ -15,6 +15,7 @@ import suite.lp.search.FindUtil;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
@@ -35,9 +36,11 @@ public class EvaluateUtil {
 	// Using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. It would blow up the stack in InstructionExecutor
 	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.byInput(pair -> {
-		Builder builder = Boolean.TRUE ? new InterpretedProverBuilder(pair.t0) : CompiledProverBuilder.level1(pair.t0);
-		return builder.build(Suite.funCompilerRuleSet(), pair.t1);
-	});
+		Builder builder = new SewingProverBuilder(pair.t0);
+		// Builder builder = new InterpretedProverBuilder(pair.t0);
+		// Builder builder = new CompiledProverBuilder.level1(pair.t0);
+			return builder.build(Suite.funCompilerRuleSet(), pair.t1);
+		});
 
 	public boolean proveLogic(Node lp) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig());

@@ -2,6 +2,7 @@ package suite.fp;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -16,7 +17,7 @@ public class FunRbTreeTest {
 	// Type check take 11 seconds
 	@Test
 	public void test() throws IOException {
-		String s = To.string(getClass().getResourceAsStream("/RB-TREE.slf"));
+		String s = To.string(new FileInputStream("src/main/fl/RB-TREE.slf"));
 		String fp = s + "0 until 10 | map {rbt-insert} | apply | {Empty}\n";
 		Node result = Suite.evaluateFun(fp, false);
 		assertNotNull(result);

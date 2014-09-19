@@ -406,4 +406,6 @@ as-control-reg CR2 2 #
 as-control-reg CR3 3 #
 as-control-reg CR4 4 #
 
+as-mode-amd64 :- fail #
+
 as-error .m :- !, write.error .m, nl, fail #
