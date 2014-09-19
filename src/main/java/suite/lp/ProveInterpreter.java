@@ -65,21 +65,17 @@ public class ProveInterpreter {
 
 	private class Runtime {
 		private Env ge;
+		private IList<Trampoline> cutPoint;
+		private Node query;
+		private Journal journal = new Journal();
 		private IList<Trampoline> rems = IList.end(); // Continuations
 		private IList<Trampoline> alts = IList.end(); // Alternative
-		private Journal journal = new Journal();
-		private IList<Trampoline> cutPoints[];
-		private Node query;
 		private Prover prover;
 
 		private Runtime(ProverConfig pc, Env ge, Trampoline tr) {
 			this.ge = ge;
 			pushAlt(tr);
 			prover = new Prover(pc, null, journal);
-
-			@SuppressWarnings("unchecked")
-			IList<Trampoline>[] trampolineStacks = (IList<Trampoline>[]) new IList<?>[nCutPoints];
-			cutPoints = trampolineStacks;
 		}
 
 		private void post(Runnable r) {
@@ -230,7 +226,9 @@ public class ProveInterpreter {
 				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
+					Node query0 = rt.query;
 					rt.query = f.apply(rt.ge);
+					rt.post(() -> rt.query = query0);
 					return trs[0]::prove;
 				};
 			}
@@ -286,16 +284,16 @@ public class ProveInterpreter {
 
 	private Trampoline cutBegin(int cutIndex, Trampoline tr) {
 		return rt -> {
-			IList<Trampoline> alts0 = rt.cutPoints[cutIndex];
-			rt.post(() -> rt.cutPoints[cutIndex] = alts0);
-			rt.cutPoints[cutIndex] = rt.alts;
+			IList<Trampoline> cutPoint0 = rt.cutPoint;
+			rt.post(() -> rt.cutPoint = cutPoint0);
+			rt.cutPoint = rt.alts;
 			return tr;
 		};
 	}
 
 	private Trampoline cutEnd(int cutIndex) {
 		return rt -> {
-			rt.alts = rt.cutPoints[cutIndex];
+			rt.alts = rt.cutPoint;
 			return okay;
 		};
 	}
