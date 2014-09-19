@@ -203,7 +203,7 @@ public class SewingProver {
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
-			else if (name.startsWith(".")) {
+			else if (name.startsWith(Generalizer.variablePrefix)) {
 				Fun<Env, Node> f = ct.generalizer.compile(node);
 				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
 			} else
