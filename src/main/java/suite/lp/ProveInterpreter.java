@@ -123,8 +123,9 @@ public class ProveInterpreter {
 	}
 
 	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
+		int cutIndex = nCutPoints++;
 		Generalizer g = new Generalizer();
-		CompileTime ct = new CompileTime(g, nCutPoints++);
+		CompileTime ct = new CompileTime(g, cutIndex);
 		Env env = g.env();
 
 		Trampoline sinker = rt_ -> {
@@ -132,7 +133,7 @@ public class ProveInterpreter {
 			return fail;
 		};
 
-		Trampoline t = and(cutBegin(ct.cutIndex, newEnv(g, compile0(ct, node))), sinker);
+		Trampoline t = and(cutBegin(cutIndex, newEnv(g, compile0(ct, node))), sinker);
 		trampoline(new Runtime(pc, env, t));
 	}
 
@@ -286,8 +287,8 @@ public class ProveInterpreter {
 	private Trampoline cutBegin(int cutIndex, Trampoline tr) {
 		return rt -> {
 			IList<Trampoline> alts0 = rt.cutPoints[cutIndex];
-			rt.cutPoints[cutIndex] = rt.alts;
 			rt.post(() -> rt.cutPoints[cutIndex] = alts0);
+			rt.cutPoints[cutIndex] = rt.alts;
 			return tr;
 		};
 	}
