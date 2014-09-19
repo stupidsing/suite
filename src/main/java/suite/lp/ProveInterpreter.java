@@ -161,7 +161,7 @@ public class ProveInterpreter {
 				Node ruleTail = rule.getTail();
 				Generalizer g = new Generalizer();
 				CompileTime ct = new CompileTime(g, cutIndex);
-				Fun<Generalizer.Env, Node> f = g.compile(ruleHead);
+				Fun<Env, Node> f = g.compile(ruleHead);
 
 				Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
 				Trampoline tr1 = compile0(ct, ruleTail);
@@ -189,8 +189,8 @@ public class ProveInterpreter {
 				Trampoline tr1 = compile0(ct, rhs);
 				tr = and(tr0, tr1);
 			} else if (operator == TermOp.EQUAL_) { // a = b
-				Fun<Generalizer.Env, Node> f0 = ct.generalizer.compile(lhs);
-				Fun<Generalizer.Env, Node> f1 = ct.generalizer.compile(rhs);
+				Fun<Env, Node> f0 = ct.generalizer.compile(lhs);
+				Fun<Env, Node> f1 = ct.generalizer.compile(rhs);
 				tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
 			} else if (operator == TermOp.OR____) { // a; b
 				Trampoline tr0 = compile0(ct, lhs);
@@ -210,7 +210,7 @@ public class ProveInterpreter {
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
 			else if (name.startsWith(".")) {
-				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
+				Fun<Env, Node> f = ct.generalizer.compile(node);
 				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
 			} else
 				tr = callSystemPredicate(ct, name, Atom.NIL);
@@ -223,7 +223,7 @@ public class ProveInterpreter {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(node);
+				Fun<Env, Node> f = ct.generalizer.compile(node);
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;
@@ -273,7 +273,7 @@ public class ProveInterpreter {
 		} else {
 			SystemPredicate systemPredicate = systemPredicates.get(name);
 			if (systemPredicate != null) {
-				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
+				Fun<Env, Node> f = ct.generalizer.compile(pass);
 				tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
 			} else
 				tr = null;
