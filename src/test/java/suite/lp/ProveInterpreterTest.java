@@ -34,4 +34,27 @@ public class ProveInterpreterTest {
 		assertTrue(pi.compile(Suite.parse(".p = yes, .p")).apply(pc));
 	}
 
+	@Test
+	public void testCut() {
+		RuleSet rs = Suite.createRuleSet();
+		Suite.addRule(rs, "a :- b");
+		Suite.addRule(rs, "a");
+		Suite.addRule(rs, "b :- !, fail");
+
+		ProveInterpreter pi = new ProveInterpreter(rs);
+		ProverConfig pc = new ProverConfig(rs);
+		assertTrue(pi.compile(Suite.parse("a")).apply(pc));
+	}
+
+	@Test
+	public void testEnv() {
+		RuleSet rs = Suite.createRuleSet();
+		Suite.addRule(rs, "a :- b .a, b .b");
+		Suite.addRule(rs, "b 1");
+
+		ProveInterpreter pi = new ProveInterpreter(rs);
+		ProverConfig pc = new ProverConfig(rs);
+		assertTrue(pi.compile(Suite.parse("a")).apply(pc));
+	}
+
 }
