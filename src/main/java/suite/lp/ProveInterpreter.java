@@ -82,6 +82,17 @@ public class ProveInterpreter {
 			cutPoints = trampolineStacks;
 		}
 
+		private void post(Runnable r) {
+			pushRem(rt -> {
+				r.run();
+				return okay;
+			});
+			pushAlt(rt -> {
+				r.run();
+				return fail;
+			});
+		}
+
 		private void pushRem(Trampoline tr) {
 			rems = IList.cons(tr, rems);
 		}
@@ -233,12 +244,8 @@ public class ProveInterpreter {
 	private Trampoline cutBegin(int cutIndex, Trampoline tr) {
 		return rt -> {
 			IList<Trampoline> alts0 = rt.cutPoints[cutIndex];
-			rt.pushAlt(rt_ -> {
-				rt_.cutPoints[cutIndex] = alts0;
-				return fail;
-			});
-
 			rt.cutPoints[cutIndex] = rt.alts;
+			rt.post(() -> rt.cutPoints[cutIndex] = alts0);
 			return tr;
 		};
 	}
@@ -271,14 +278,7 @@ public class ProveInterpreter {
 	private Trampoline saveEnv(Trampoline tr) {
 		return rt -> {
 			Env ge0 = rt.ge;
-			rt.pushRem(rt_ -> {
-				rt_.ge = ge0;
-				return okay;
-			});
-			rt.pushAlt(rt_ -> {
-				rt_.ge = ge0;
-				return fail;
-			});
+			rt.post(() -> rt.ge = ge0);
 			return tr;
 		};
 	}
