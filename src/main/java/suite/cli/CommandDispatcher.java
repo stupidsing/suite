@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
-import suite.lp.ProveInterpreter;
+import suite.lp.SewingProver;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Generalizer.Generalization;
@@ -155,7 +155,7 @@ public class CommandDispatcher {
 			code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYSEWINGELAB:
-			elaborate(node, n -> new ProveInterpreter(ruleSet).compile(n).apply(new ProverConfig(ruleSet)));
+			elaborate(node, n -> new SewingProver(ruleSet).compile(n).apply(new ProverConfig(ruleSet)));
 		}
 
 		pw.flush();

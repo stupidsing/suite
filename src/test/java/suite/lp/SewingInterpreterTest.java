@@ -9,14 +9,14 @@ import suite.Suite;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 
-public class ProveInterpreterTest {
+public class SewingInterpreterTest {
 
 	@Test
 	public void test() {
 		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "yes");
 
-		ProveInterpreter pi = new ProveInterpreter(rs);
+		SewingProver pi = new SewingProver(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(pi.compile(Suite.parse("yes")).apply(pc));
 		assertTrue(pi.compile(Suite.parse("fail; yes")).apply(pc));
@@ -41,7 +41,7 @@ public class ProveInterpreterTest {
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "b :- !, fail");
 
-		ProveInterpreter pi = new ProveInterpreter(rs);
+		SewingProver pi = new SewingProver(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(pi.compile(Suite.parse("a")).apply(pc));
 	}
@@ -52,7 +52,7 @@ public class ProveInterpreterTest {
 		Suite.addRule(rs, "a :- b .a, b .b");
 		Suite.addRule(rs, "b 1");
 
-		ProveInterpreter pi = new ProveInterpreter(rs);
+		SewingProver pi = new SewingProver(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(pi.compile(Suite.parse("a")).apply(pc));
 	}

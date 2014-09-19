@@ -33,7 +33,7 @@ import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
-public class ProveInterpreter {
+public class SewingProver {
 
 	private SystemPredicates systemPredicates;
 
@@ -98,7 +98,7 @@ public class ProveInterpreter {
 		}
 	}
 
-	public ProveInterpreter(RuleSet rs) {
+	public SewingProver(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
 
 		for (Rule rule : rs.getRules())

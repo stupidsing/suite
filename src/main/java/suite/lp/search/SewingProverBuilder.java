@@ -1,6 +1,6 @@
 package suite.lp.search;
 
-import suite.lp.ProveInterpreter;
+import suite.lp.SewingProver;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
@@ -22,7 +22,7 @@ public class SewingProverBuilder implements Builder {
 
 	@Override
 	public Finder build(RuleSet ruleSet, Node goal) {
-		Fun<ProverConfig, Boolean> fun = new ProveInterpreter(ruleSet).compile(goal);
+		Fun<ProverConfig, Boolean> fun = new SewingProver(ruleSet).compile(goal);
 		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
 		return (source, sink) -> {
