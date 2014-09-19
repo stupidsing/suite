@@ -251,12 +251,10 @@ public class ProveInterpreter {
 	}
 
 	private Trampoline cutEnd(int cutIndex) {
-		Trampoline tr;
-		tr = rt -> {
+		return rt -> {
 			rt.alts = rt.cutPoints[cutIndex];
 			return okay;
 		};
-		return tr;
 	}
 
 	private Trampoline log(Trampoline tr) {
