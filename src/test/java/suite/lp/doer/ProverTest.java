@@ -8,9 +8,10 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.SewingProver;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
+import suite.lp.search.InterpretedProverBuilder;
+import suite.lp.search.SewingProverBuilder;
 
 public class ProverTest {
 
@@ -118,8 +119,9 @@ public class ProverTest {
 	}
 
 	private boolean test(RuleSet rs, String lp) {
-		boolean b0 = Suite.proveLogic(rs, lp);
-		boolean b1 = new SewingProver(rs).compile(Suite.parse(lp)).apply(new ProverConfig(rs));
+		ProverConfig pc = new ProverConfig();
+		boolean b0 = Suite.proveLogic(new InterpretedProverBuilder(pc), rs, lp);
+		boolean b1 = Suite.proveLogic(new SewingProverBuilder(pc), rs, lp);
 		if (b0 == b1)
 			return b0;
 		else
