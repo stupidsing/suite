@@ -85,10 +85,10 @@ public class InstructionTranslator implements Closeable {
 				+ "package " + packageName + "; \n" //
 				+ "import java.util.*; \n" //
 				+ "import suite.*; \n" //
+				+ "import suite.fp.intrinsic.*; \n" //
 				+ "import suite.instructionexecutor.*; \n" //
 				+ "import suite.lp.*; \n" //
 				+ "import suite.lp.doer.*; \n" //
-				+ "import suite.lp.intrinsic.*; \n" //
 				+ "import suite.lp.kb.*; \n" //
 				+ "import suite.lp.predicate.*; \n" //
 				+ "import suite.node.*; \n" //
