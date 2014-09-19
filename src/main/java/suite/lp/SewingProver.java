@@ -40,8 +40,6 @@ public class SewingProver {
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
 	private Map<Prototype, Trampoline[]> trampolinesByPrototype = new HashMap<>();
 
-	private int nCutPoints;
-
 	private Trampoline okay = rt -> {
 		throw new RuntimeException("Impossibly okay");
 	};
@@ -55,11 +53,9 @@ public class SewingProver {
 
 	private class CompileTime {
 		private Generalizer generalizer;
-		private int cutIndex;
 
-		public CompileTime(Generalizer generalizer, int cutIndex) {
+		public CompileTime(Generalizer generalizer) {
 			this.generalizer = generalizer;
-			this.cutIndex = cutIndex;
 		}
 	}
 
@@ -119,9 +115,8 @@ public class SewingProver {
 	}
 
 	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
-		int cutIndex = nCutPoints++;
 		Generalizer g = new Generalizer();
-		CompileTime ct = new CompileTime(g, cutIndex);
+		CompileTime ct = new CompileTime(g);
 		Env env = g.env();
 
 		Trampoline sinker = rt_ -> {
@@ -129,7 +124,7 @@ public class SewingProver {
 			return fail;
 		};
 
-		Trampoline t = and(cutBegin(cutIndex, newEnv(g, compile0(ct, node))), sinker);
+		Trampoline t = and(cutBegin(newEnv(g, compile0(ct, node))), sinker);
 		trampoline(new Runtime(pc, env, t));
 	}
 
@@ -152,7 +147,6 @@ public class SewingProver {
 	private void compileAll() {
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
 			List<Rule> rules = new ArrayList<>(entry.t1);
-			int cutIndex = nCutPoints++;
 			Trampoline tr = fail;
 
 			for (int i = rules.size() - 1; i >= 0; i--) {
@@ -160,7 +154,7 @@ public class SewingProver {
 				Node ruleHead = rule.getHead();
 				Node ruleTail = rule.getTail();
 				Generalizer g = new Generalizer();
-				CompileTime ct = new CompileTime(g, cutIndex);
+				CompileTime ct = new CompileTime(g);
 				Fun<Env, Node> f = g.compile(ruleHead);
 
 				Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
@@ -168,7 +162,7 @@ public class SewingProver {
 				tr = or(newEnv(g, and(tr0, tr1)), tr);
 			}
 
-			tr = saveEnv(cutBegin(cutIndex, tr));
+			tr = saveEnv(cutBegin(tr));
 			tr = Suite.isProverTrace ? log(tr) : tr;
 			getTrampolineByPrototype(entry.t0)[0] = tr;
 		}
@@ -204,7 +198,7 @@ public class SewingProver {
 			String name = ((Atom) node).getName();
 
 			if (Util.stringEquals(name, Generalizer.cutName))
-				tr = cutEnd(ct.cutIndex);
+				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
@@ -285,7 +279,7 @@ public class SewingProver {
 		return tr;
 	}
 
-	private Trampoline cutBegin(int cutIndex, Trampoline tr) {
+	private Trampoline cutBegin(Trampoline tr) {
 		return rt -> {
 			IList<Trampoline> cutPoint0 = rt.cutPoint;
 			rt.post(() -> rt.cutPoint = cutPoint0);
@@ -294,7 +288,7 @@ public class SewingProver {
 		};
 	}
 
-	private Trampoline cutEnd(int cutIndex) {
+	private Trampoline cutEnd() {
 		return rt -> {
 			rt.alts = rt.cutPoint;
 			return okay;
