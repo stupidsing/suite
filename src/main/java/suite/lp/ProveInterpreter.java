@@ -151,12 +151,12 @@ public class ProveInterpreter {
 
 	private void compileAll() {
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
-			List<Rule> rs = new ArrayList<>(entry.t1);
+			List<Rule> rules = new ArrayList<>(entry.t1);
 			int cutIndex = nCutPoints++;
 			Trampoline tr = fail;
 
-			for (int i = rs.size() - 1; i >= 0; i--) {
-				Rule rule = rs.get(i);
+			for (int i = rules.size() - 1; i >= 0; i--) {
+				Rule rule = rules.get(i);
 				Node ruleHead = rule.getHead();
 				Node ruleTail = rule.getTail();
 				Generalizer g = new Generalizer();
@@ -228,7 +228,10 @@ public class ProveInterpreter {
 				tr = rt -> {
 					Node query0 = rt.query;
 					rt.query = f.apply(rt.ge);
-					rt.post(() -> rt.query = query0);
+					rt.pushAlt(rt_ -> {
+						rt_.query = query0;
+						return fail;
+					});
 					return trs[0]::prove;
 				};
 			}
