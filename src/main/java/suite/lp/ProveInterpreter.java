@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.Suite;
 import suite.adt.ListMultimap;
 import suite.immutable.IList;
 import suite.lp.doer.Binder;
@@ -22,11 +23,13 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -157,7 +160,9 @@ public class ProveInterpreter {
 				tr = or(newEnv(g, and(tr0, tr1)), tr);
 			}
 
-			getTrampolineByPrototype(entry.t0)[0] = cutBegin(cutIndex, tr);
+			tr = saveEnv(cutBegin(cutIndex, tr));
+			tr = Suite.isProverTrace ? log(tr) : tr;
+			getTrampolineByPrototype(entry.t0)[0] = tr;
 		}
 	}
 
@@ -190,13 +195,9 @@ public class ProveInterpreter {
 		} else if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
 
-			if (Util.stringEquals(name, Generalizer.cutName)) {
-				int cutIndex = ct.cutIndex;
-				tr = rt -> {
-					rt.alts = rt.cutPoints[cutIndex];
-					return okay;
-				};
-			} else if (Util.stringEquals(name, ""))
+			if (Util.stringEquals(name, Generalizer.cutName))
+				tr = cutEnd(ct.cutIndex);
+			else if (Util.stringEquals(name, ""))
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
@@ -242,14 +243,48 @@ public class ProveInterpreter {
 		};
 	}
 
-	private Trampoline newEnv(Generalizer g, Trampoline tr) {
+	private Trampoline cutEnd(int cutIndex) {
+		Trampoline tr;
+		tr = rt -> {
+			rt.alts = rt.cutPoints[cutIndex];
+			return okay;
+		};
+		return tr;
+	}
+
+	private Trampoline log(Trampoline tr) {
+		return rt -> {
+			String m = Formatter.dump(rt.query);
+			LogUtil.info("QUERY " + m);
+			rt.pushRem(rt_ -> {
+				LogUtil.info("OK___ " + m);
+				return okay;
+			});
+			rt.pushAlt(rt_ -> {
+				LogUtil.info("FAIL_ " + m);
+				return fail;
+			});
+			return tr;
+		};
+	}
+
+	private Trampoline saveEnv(Trampoline tr) {
 		return rt -> {
 			Env ge0 = rt.ge;
+			rt.pushRem(rt_ -> {
+				rt_.ge = ge0;
+				return okay;
+			});
 			rt.pushAlt(rt_ -> {
 				rt_.ge = ge0;
 				return fail;
 			});
+			return tr;
+		};
+	}
 
+	private Trampoline newEnv(Generalizer g, Trampoline tr) {
+		return rt -> {
 			rt.ge = g.env();
 			return tr;
 		};
