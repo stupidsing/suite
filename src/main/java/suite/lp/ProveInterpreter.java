@@ -241,6 +241,48 @@ public class ProveInterpreter {
 			throw new RuntimeException("Cannot understand " + node);
 	}
 
+	private Trampoline callSystemPredicate(CompileTime ct, String name, Node pass) {
+		Trampoline tr;
+
+		if (Util.stringEquals(name, "once")) {
+			Trampoline tr1 = compile0(ct, pass);
+			tr = rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				rt.pushRem(rt_ -> {
+					rt_.alts = alts0;
+					return okay;
+				});
+				return tr1;
+			};
+		} else if (Util.stringEquals(name, "not")) {
+			Trampoline tr1 = compile0(ct, pass);
+			tr = rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				IList<Trampoline> rems0 = rt.rems;
+				int pit = rt.journal.getPointInTime();
+				rt.pushRem(rt_ -> {
+					rt_.journal.undoBinds(pit);
+					rt_.alts = alts0;
+					return fail;
+				});
+				rt.pushAlt(rt_ -> {
+					rt_.rems = rems0;
+					return okay;
+				});
+				return tr1;
+			};
+		} else {
+			SystemPredicate systemPredicate = systemPredicates.get(name);
+			if (systemPredicate != null) {
+				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
+				tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
+			} else
+				tr = null;
+		}
+
+		return tr;
+	}
+
 	private Trampoline cutBegin(int cutIndex, Trampoline tr) {
 		return rt -> {
 			IList<Trampoline> alts0 = rt.cutPoints[cutIndex];
@@ -306,48 +348,6 @@ public class ProveInterpreter {
 			});
 			return tr0;
 		};
-	}
-
-	private Trampoline callSystemPredicate(CompileTime ct, String name, Node pass) {
-		Trampoline tr;
-
-		if (Util.stringEquals(name, "once")) {
-			Trampoline tr1 = compile0(ct, pass);
-			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
-				rt.pushRem(rt_ -> {
-					rt_.alts = alts0;
-					return okay;
-				});
-				return tr1;
-			};
-		} else if (Util.stringEquals(name, "not")) {
-			Trampoline tr1 = compile0(ct, pass);
-			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
-				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
-				rt.pushRem(rt_ -> {
-					rt_.journal.undoBinds(pit);
-					rt_.alts = alts0;
-					return fail;
-				});
-				rt.pushAlt(rt_ -> {
-					rt_.rems = rems0;
-					return okay;
-				});
-				return tr1;
-			};
-		} else {
-			SystemPredicate systemPredicate = systemPredicates.get(name);
-			if (systemPredicate != null) {
-				Fun<Generalizer.Env, Node> f = ct.generalizer.compile(pass);
-				tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
-			} else
-				tr = null;
-		}
-
-		return tr;
 	}
 
 	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {
