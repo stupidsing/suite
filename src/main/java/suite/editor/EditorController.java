@@ -253,6 +253,8 @@ public class EditorController {
 				break;
 			default:
 			}
+		else
+			action.run();
 	}
 
 	private void run(EditorView view, Fun<String, String> fun) {
