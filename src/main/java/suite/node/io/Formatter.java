@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import suite.lp.doer.Generalizer;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -134,7 +134,7 @@ public class Formatter {
 		} else if (node instanceof Int)
 			sb.append(((Int) node).getNumber());
 		else if (node instanceof Reference)
-			sb.append(Generalizer.variablePrefix + ((Reference) node).getId());
+			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
 		else if (node instanceof Str) {
 			String s = ((Str) node).getValue();
 			s = isDump ? Escaper.escape(s, '"') : s;

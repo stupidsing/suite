@@ -8,7 +8,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
-import suite.lp.doer.Generalizer;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Node;
 
 public class FunTypeTest {
@@ -167,7 +167,7 @@ public class FunTypeTest {
 		Journal journal = new Journal();
 		Node type = getType(fps);
 
-		assertTrue(Binder.bind(type, Generalizer.generalize(Suite.parse(bindTo)), journal));
+		assertTrue(Binder.bind(type, SewingGeneralizer.generalize(Suite.parse(bindTo)), journal));
 		assertEquals(Suite.parse(ts), type);
 	}
 

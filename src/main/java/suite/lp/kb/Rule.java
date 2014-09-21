@@ -1,7 +1,7 @@
 package suite.lp.kb;
 
-import suite.lp.doer.Generalizer;
-import suite.lp.doer.Generalizer.Env;
+import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.SewingGeneralizer.Env;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -12,7 +12,7 @@ import suite.util.Util;
 public class Rule {
 
 	private Node head, tail;
-	private Generalizer generalizer;
+	private SewingGeneralizer sewingGeneralizer;
 	private Fun<Env, Node> headFun, tailFun;
 
 	public Rule(Node head, Node tail) {
@@ -37,13 +37,13 @@ public class Rule {
 	}
 
 	public synchronized Node createClause(Node query, Node cut) {
-		if (generalizer == null) {
-			generalizer = new Generalizer();
-			headFun = generalizer.compile(head);
-			tailFun = generalizer.compile(tail);
+		if (sewingGeneralizer == null) {
+			sewingGeneralizer = new SewingGeneralizer();
+			headFun = sewingGeneralizer.compile(head);
+			tailFun = sewingGeneralizer.compile(tail);
 		}
 
-		Env env = generalizer.env(cut);
+		Env env = sewingGeneralizer.env(cut);
 
 		return Tree.of(TermOp.AND___ //
 				, Tree.of(TermOp.EQUAL_ //

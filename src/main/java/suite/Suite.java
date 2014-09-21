@@ -17,13 +17,13 @@ import suite.instructionexecutor.IndexedReader;
 import suite.lp.ImportUtil;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Configuration.TraceLevel;
-import suite.lp.doer.Generalizer;
-import suite.lp.doer.Generalizer.Generalization;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
+import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.SewingGeneralizer.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -103,7 +103,7 @@ public class Suite {
 	}
 
 	public static Node substitute(String s, Node... nodes) {
-		Generalization generalization = Generalizer.process(parse(s));
+		Generalization generalization = SewingGeneralizer.process(parse(s));
 		int i = 0;
 
 		for (Node node : nodes) {

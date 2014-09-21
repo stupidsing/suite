@@ -2,7 +2,7 @@ package suite.lp.kb;
 
 import java.util.Objects;
 
-import suite.lp.doer.Generalizer;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -45,7 +45,7 @@ public class Prototype implements Comparable<Prototype> {
 			}
 		}
 
-		boolean indexable = node != null && !Generalizer.isVariant(node) && !(node instanceof Reference);
+		boolean indexable = node != null && !SewingGeneralizer.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
 	}
 

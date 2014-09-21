@@ -1,11 +1,11 @@
 package suite.lp.search;
 
 import suite.lp.doer.Configuration.ProverConfig;
-import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Node;
 
 public class InterpretedProverBuilder implements Builder {
@@ -22,7 +22,7 @@ public class InterpretedProverBuilder implements Builder {
 
 	@Override
 	public Finder build(RuleSet ruleSet, Node goal) {
-		Node goal1 = Generalizer.generalize(goal);
+		Node goal1 = SewingGeneralizer.generalize(goal);
 		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 
 		return (source, sink) -> {

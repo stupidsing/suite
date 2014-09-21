@@ -1,4 +1,4 @@
-package suite.lp;
+package suite.lp.sewing;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,16 +9,16 @@ import java.util.Map;
 import suite.Suite;
 import suite.adt.ListMultimap;
 import suite.immutable.IList;
+import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Configuration.ProverConfig;
-import suite.lp.doer.Generalizer;
-import suite.lp.doer.Generalizer.Env;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.lp.predicate.SystemPredicates;
+import suite.lp.sewing.SewingGeneralizer.Env;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -52,10 +52,10 @@ public class SewingProver {
 	}
 
 	private class CompileTime {
-		private Generalizer generalizer;
+		private SewingGeneralizer sewingGeneralizer;
 
-		public CompileTime(Generalizer generalizer) {
-			this.generalizer = generalizer;
+		public CompileTime(SewingGeneralizer sewingGeneralizer) {
+			this.sewingGeneralizer = sewingGeneralizer;
 		}
 	}
 
@@ -115,16 +115,16 @@ public class SewingProver {
 	}
 
 	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
-		Generalizer g = new Generalizer();
-		CompileTime ct = new CompileTime(g);
-		Env env = g.env();
+		SewingGeneralizer sg = new SewingGeneralizer();
+		CompileTime ct = new CompileTime(sg);
+		Env env = sg.env();
 
 		Trampoline sinker = rt_ -> {
 			sink.sink(env);
 			return fail;
 		};
 
-		Trampoline t = and(cutBegin(newEnv(g, compile0(ct, node))), sinker);
+		Trampoline t = and(cutBegin(newEnv(sg, compile0(ct, node))), sinker);
 		trampoline(new Runtime(pc, env, t));
 	}
 
@@ -153,13 +153,13 @@ public class SewingProver {
 				Rule rule = rules.get(i);
 				Node ruleHead = rule.getHead();
 				Node ruleTail = rule.getTail();
-				Generalizer g = new Generalizer();
-				CompileTime ct = new CompileTime(g);
-				Fun<Env, Node> f = g.compile(ruleHead);
+				SewingGeneralizer sg = new SewingGeneralizer();
+				CompileTime ct = new CompileTime(sg);
+				Fun<Env, Node> f = sg.compile(ruleHead);
 
 				Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
 				Trampoline tr1 = compile0(ct, ruleTail);
-				tr = or(newEnv(g, and(tr0, tr1)), tr);
+				tr = or(newEnv(sg, and(tr0, tr1)), tr);
 			}
 
 			tr = saveEnv(cutBegin(tr));
@@ -183,8 +183,8 @@ public class SewingProver {
 				Trampoline tr1 = compile0(ct, rhs);
 				tr = and(tr0, tr1);
 			} else if (operator == TermOp.EQUAL_) { // a = b
-				Fun<Env, Node> f0 = ct.generalizer.compile(lhs);
-				Fun<Env, Node> f1 = ct.generalizer.compile(rhs);
+				Fun<Env, Node> f0 = ct.sewingGeneralizer.compile(lhs);
+				Fun<Env, Node> f1 = ct.sewingGeneralizer.compile(rhs);
 				tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
 			} else if (operator == TermOp.OR____) { // a; b
 				Trampoline tr0 = compile0(ct, lhs);
@@ -197,14 +197,14 @@ public class SewingProver {
 		} else if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
 
-			if (Util.stringEquals(name, Generalizer.cutName))
+			if (Util.stringEquals(name, SewingGeneralizer.cutName))
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
-			else if (name.startsWith(Generalizer.variablePrefix)) {
-				Fun<Env, Node> f = ct.generalizer.compile(node);
+			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
+				Fun<Env, Node> f = ct.sewingGeneralizer.compile(node);
 				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
 			} else
 				tr = callSystemPredicate(ct, name, Atom.NIL);
@@ -217,7 +217,7 @@ public class SewingProver {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Env, Node> f = ct.generalizer.compile(node);
+				Fun<Env, Node> f = ct.sewingGeneralizer.compile(node);
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;
@@ -270,7 +270,7 @@ public class SewingProver {
 		} else {
 			SystemPredicate systemPredicate = systemPredicates.get(name);
 			if (systemPredicate != null) {
-				Fun<Env, Node> f = ct.generalizer.compile(pass);
+				Fun<Env, Node> f = ct.sewingGeneralizer.compile(pass);
 				tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
 			} else
 				tr = null;
@@ -319,9 +319,9 @@ public class SewingProver {
 		};
 	}
 
-	private Trampoline newEnv(Generalizer g, Trampoline tr) {
+	private Trampoline newEnv(SewingGeneralizer sg, Trampoline tr) {
 		return rt -> {
-			rt.ge = g.env();
+			rt.ge = sg.env();
 			return tr;
 		};
 	}

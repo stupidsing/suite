@@ -10,16 +10,16 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
-import suite.lp.SewingProver;
 import suite.lp.doer.Configuration.ProverConfig;
-import suite.lp.doer.Generalizer;
-import suite.lp.doer.Generalizer.Generalization;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder;
+import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.SewingProver;
+import suite.lp.sewing.SewingGeneralizer.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -165,7 +165,7 @@ public class CommandDispatcher {
 
 	private void elaborate(Node node, Sink<Node> sink) {
 		int count[] = { 0 };
-		Generalization generalization = Generalizer.process(node);
+		Generalization generalization = SewingGeneralizer.process(node);
 		node = generalization.node();
 
 		Node elab = new Data<Source<Boolean>>(() -> {

@@ -9,10 +9,10 @@ import javax.script.ScriptException;
 
 import suite.Suite;
 import suite.lp.doer.Cloner;
-import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.Specializer;
 import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -88,7 +88,7 @@ public class EvalPredicates {
 		return prover.bind(new Str(str), params[1]);
 	};
 
-	public SystemPredicate generalize = PredicateUtil.funPredicate(Generalizer::generalize);
+	public SystemPredicate generalize = PredicateUtil.funPredicate(SewingGeneralizer::generalize);
 
 	public SystemPredicate hash = PredicateUtil.funPredicate(n -> Int.of(n.hashCode()));
 

@@ -8,6 +8,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
+import suite.lp.sewing.SewingProver;
 
 public class SewingInterpreterTest {
 

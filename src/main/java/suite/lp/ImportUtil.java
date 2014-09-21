@@ -9,11 +9,11 @@ import java.util.List;
 import suite.Suite;
 import suite.classpath.Handler;
 import suite.lp.doer.Checker;
-import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -86,7 +86,7 @@ public class ImportUtil {
 			if (rule.getHead() != Atom.NIL)
 				ruleSet.addRule(rule);
 			else {
-				Node goal = Generalizer.generalize(rule.getTail());
+				Node goal = SewingGeneralizer.generalize(rule.getTail());
 				result &= prover.prove(goal);
 			}
 

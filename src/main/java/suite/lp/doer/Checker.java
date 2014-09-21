@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import suite.adt.ListMultimap;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -52,7 +53,7 @@ public class Checker {
 
 				// Check all variables starting with alphabets; ignore
 				// computer-generated code
-				if (name.startsWith(Generalizer.variablePrefix) //
+				if (name.startsWith(SewingGeneralizer.variablePrefix) //
 						&& name.length() >= 2 //
 						&& Character.isAlphabetic(name.charAt(1))) {
 					Boolean value = isSingleton.get(atom);

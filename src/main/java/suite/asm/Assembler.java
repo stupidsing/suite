@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
-import suite.lp.doer.SimpleGeneralizer;
+import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
@@ -44,7 +44,7 @@ public class Assembler {
 
 	public Bytes assemble(String input) {
 		CommentPreprocessor commentPreprocessor = new CommentPreprocessor(Collections.singleton('\n'));
-		SimpleGeneralizer generalizer = new SimpleGeneralizer();
+		Generalizer generalizer = new Generalizer();
 		List<String> lines = Arrays.asList(commentPreprocessor.apply(input).split("\n"));
 		Pair<String, String> pe;
 		int start = 0;
@@ -68,7 +68,7 @@ public class Assembler {
 	}
 
 	public Bytes assemble(Node input) {
-		SimpleGeneralizer generalizer = new SimpleGeneralizer();
+		Generalizer generalizer = new Generalizer();
 		Journal journal = new Journal();
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class Assembler {
 		return assemble(generalizer, lnis);
 	}
 
-	private Bytes assemble(SimpleGeneralizer generalizer, List<Pair<Reference, Node>> lnis) {
+	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
 		int org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).getNumber();
 		BytesBuilder out = new BytesBuilder();
 
