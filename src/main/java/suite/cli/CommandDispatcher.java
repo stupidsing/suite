@@ -18,8 +18,8 @@ import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder;
 import suite.lp.sewing.SewingGeneralizer;
-import suite.lp.sewing.SewingProver;
 import suite.lp.sewing.SewingGeneralizer.Generalization;
+import suite.lp.sewing.SewingProver;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -217,7 +217,7 @@ public class CommandDispatcher {
 	public boolean dispatchProve(List<String> inputs) throws IOException {
 		String in = parseInput(inputs);
 		RuleSet ruleSet = Suite.createRuleSet();
-		return Suite.importResource(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
+		return Suite.importPath(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 
 	private Node parseNode(List<String> inputs) {

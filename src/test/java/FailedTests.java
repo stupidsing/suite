@@ -26,7 +26,7 @@ public class FailedTests {
 	@Test
 	public void testRepeat() throws IOException {
 		RuleSet rs = Suite.createRuleSet();
-		Suite.importResource(rs, "auto.sl");
+		Suite.importPath(rs, "auto.sl");
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
