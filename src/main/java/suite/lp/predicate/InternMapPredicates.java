@@ -13,7 +13,7 @@ public class InternMapPredicates {
 
 	private static Map<IdentityKey, Node> internMap = new ConcurrentHashMap<>();
 
-	public SystemPredicate internMapClear = PredicateUtil.predicate(n -> {
+	public SystemPredicate internMapClear = PredicateUtil.run(n -> {
 		internMap.clear();
 		TreeIntern.clear();
 	});
@@ -23,7 +23,7 @@ public class InternMapPredicates {
 		return internMap.containsKey(key);
 	};
 
-	public SystemPredicate internMapPut = PredicateUtil.funPredicate(n -> //
+	public SystemPredicate internMapPut = PredicateUtil.fun(n -> //
 			internMap.computeIfAbsent(new IdentityKey(n), any -> new Reference()));
 
 }

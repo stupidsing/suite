@@ -45,17 +45,17 @@ public class FormatPredicates {
 		return prover.bind(new Str(sb.toString()), node);
 	};
 
-	public SystemPredicate graphize = PredicateUtil.funPredicate(n -> new Str(Formatter.graphize(n)));
+	public SystemPredicate graphize = PredicateUtil.fun(n -> new Str(Formatter.graphize(n)));
 
-	public SystemPredicate isAtom = PredicateUtil.boolPredicate(n -> n instanceof Atom);
+	public SystemPredicate isAtom = PredicateUtil.bool(n -> n instanceof Atom);
 
-	public SystemPredicate isInt = PredicateUtil.boolPredicate(n -> n instanceof Int);
+	public SystemPredicate isInt = PredicateUtil.bool(n -> n instanceof Int);
 
-	public SystemPredicate isString = PredicateUtil.boolPredicate(n -> n instanceof Str);
+	public SystemPredicate isString = PredicateUtil.bool(n -> n instanceof Str);
 
-	public SystemPredicate isTree = PredicateUtil.boolPredicate(n -> n instanceof Tree);
+	public SystemPredicate isTree = PredicateUtil.bool(n -> n instanceof Tree);
 
-	public SystemPredicate parse = PredicateUtil.funPredicate(n -> Suite.parse(Formatter.display(n)));
+	public SystemPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
 	public SystemPredicate persistLoad = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
@@ -76,7 +76,7 @@ public class FormatPredicates {
 		}
 	};
 
-	public SystemPredicate prettyPrint = PredicateUtil.predicate(ps -> System.out.println(new PrettyPrinter().prettyPrint(ps)));
+	public SystemPredicate prettyPrint = PredicateUtil.run(n -> System.out.println(new PrettyPrinter().prettyPrint(n)));
 
 	public SystemPredicate rpnPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
@@ -95,7 +95,7 @@ public class FormatPredicates {
 				&& ((Atom) p0).getName().startsWith(((Atom) p1).getName());
 	};
 
-	public SystemPredicate stringLength = PredicateUtil.funPredicate(n -> Int.of(((Str) n).getValue().length()));
+	public SystemPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).getValue().length()));
 
 	public SystemPredicate substring = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
@@ -118,16 +118,16 @@ public class FormatPredicates {
 			throw new RuntimeException("Invalid call pattern");
 	};
 
-	public SystemPredicate toAtom = PredicateUtil.funPredicate(n -> Atom.of(Formatter.display(n)));
+	public SystemPredicate toAtom = PredicateUtil.fun(n -> Atom.of(Formatter.display(n)));
 
-	public SystemPredicate toDumpString = PredicateUtil.funPredicate(n -> new Str(Formatter.dump(n)));
+	public SystemPredicate toDumpString = PredicateUtil.fun(n -> new Str(Formatter.dump(n)));
 
-	public SystemPredicate toInt = PredicateUtil.funPredicate(n -> Int.of(Formatter.display(n).charAt(0)));
+	public SystemPredicate toInt = PredicateUtil.fun(n -> Int.of(Formatter.display(n).charAt(0)));
 
-	public SystemPredicate toString = PredicateUtil.funPredicate(n -> new Str(Formatter.display(n)));
+	public SystemPredicate toString = PredicateUtil.fun(n -> new Str(Formatter.display(n)));
 
-	public SystemPredicate treeize = PredicateUtil.funPredicate(n -> new Str(Formatter.treeize(n)));
+	public SystemPredicate treeize = PredicateUtil.fun(n -> new Str(Formatter.treeize(n)));
 
-	public SystemPredicate trim = PredicateUtil.funPredicate(n -> new Str(Formatter.display(n).trim()));
+	public SystemPredicate trim = PredicateUtil.fun(n -> new Str(Formatter.display(n).trim()));
 
 }

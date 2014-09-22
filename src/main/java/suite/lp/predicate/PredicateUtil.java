@@ -14,18 +14,18 @@ public class PredicateUtil {
 		public boolean prove(Prover prover, Node ps);
 	}
 
-	public static SystemPredicate predicate(Sink<Node> fun) {
+	public static SystemPredicate run(Sink<Node> fun) {
 		return (prover, ps) -> {
 			fun.sink(ps.finalNode());
 			return true;
 		};
 	}
 
-	public static SystemPredicate boolPredicate(Predicate<Node> fun) {
+	public static SystemPredicate bool(Predicate<Node> fun) {
 		return (prover, ps) -> fun.test(ps.finalNode());
 	}
 
-	public static SystemPredicate funPredicate(Fun<Node, Node> fun) {
+	public static SystemPredicate fun(Fun<Node, Node> fun) {
 		return (prover, ps) -> {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0], p1 = params[1];

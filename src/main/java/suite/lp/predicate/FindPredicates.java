@@ -33,7 +33,7 @@ public class FindPredicates {
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 	};
 
-	public SystemPredicate findAllMemoizedClear = PredicateUtil.predicate(n -> memoizedPredicates.clear());
+	public SystemPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
 
 	private Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();

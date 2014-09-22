@@ -18,7 +18,7 @@ import suite.util.LogUtil;
 
 public class IoPredicates {
 
-	public SystemPredicate dump = PredicateUtil.predicate(n -> System.out.print(Formatter.dump(n)));
+	public SystemPredicate dump = PredicateUtil.run(n -> System.out.print(Formatter.dump(n)));
 
 	public SystemPredicate dumpStack = (prover, ps) -> {
 		String date = LocalDateTime.now().toString();
@@ -38,11 +38,11 @@ public class IoPredicates {
 		return false;
 	};
 
-	public SystemPredicate exit = PredicateUtil.predicate(n -> System.exit(n instanceof Int ? ((Int) n).getNumber() : 0));
+	public SystemPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).getNumber() : 0));
 
-	public SystemPredicate fileExists = PredicateUtil.boolPredicate(n -> Files.exists(Paths.get(Formatter.display(n))));
+	public SystemPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 
-	public SystemPredicate fileRead = PredicateUtil.funPredicate(n -> {
+	public SystemPredicate fileRead = PredicateUtil.fun(n -> {
 		String filename = Formatter.display(n);
 		try {
 			return new Str(FileUtil.read(filename));
@@ -69,9 +69,9 @@ public class IoPredicates {
 		return prover.bind(new Str(FileUtil.homeDir()), ps);
 	};
 
-	public SystemPredicate nl = PredicateUtil.predicate(n -> System.out.println());
+	public SystemPredicate nl = PredicateUtil.run(n -> System.out.println());
 
-	public SystemPredicate log = PredicateUtil.predicate(n -> LogUtil.info(Formatter.dump(n)));
+	public SystemPredicate log = PredicateUtil.run(n -> LogUtil.info(Formatter.dump(n)));
 
 	public SystemPredicate sink = (prover, ps) -> {
 		prover.config().getSink().sink(ps);
@@ -83,12 +83,12 @@ public class IoPredicates {
 		return prover.bind(ps, source);
 	};
 
-	public SystemPredicate throwPredicate = PredicateUtil.predicate(n -> {
+	public SystemPredicate throwPredicate = PredicateUtil.run(n -> {
 		throw new RuntimeException(Formatter.dump(n.finalNode()));
 	});
 
 	public SystemPredicate write(PrintStream printStream) {
-		return PredicateUtil.predicate(n -> printStream.print(Formatter.display(n)));
+		return PredicateUtil.run(n -> printStream.print(Formatter.display(n)));
 	}
 
 }
