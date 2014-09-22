@@ -2,7 +2,6 @@ package suite.fp;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.util.stream.LongStream;
 
 import org.junit.Test;
 
@@ -23,9 +22,10 @@ public class PrecompileTest {
 
 		long end = System.nanoTime();
 
-		LongStream gcDuration = ManagementFactory.getGarbageCollectorMXBeans().stream()
-				.mapToLong(GarbageCollectorMXBean::getCollectionTime);
-		System.out.println("GC took " + gcDuration.sum() + "ms");
+		long gcDuration = ManagementFactory.getGarbageCollectorMXBeans().stream()
+				.mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
+
+		System.out.println("GC took " + gcDuration + "ms");
 		System.out.println("Program took " + (end - start) / 1000000l + "ms");
 	}
 
