@@ -98,7 +98,8 @@ public class SewingProver {
 		}
 
 		private void pushRem(Trampoline tr) {
-			rems = IList.cons(tr, rems);
+			if (tr != okay)
+				rems = IList.cons(tr, rems);
 		}
 
 		private void pushAlt(Trampoline tr) {
@@ -148,8 +149,7 @@ public class SewingProver {
 			Trampoline rem;
 			while ((rem = rt.rems.getHead()) != fail) {
 				rt.rems = rt.rems.getTail();
-				if (rem != okay)
-					rt.pushRem(rem.prove(rt));
+				rt.pushRem(rem.prove(rt));
 			}
 		}
 

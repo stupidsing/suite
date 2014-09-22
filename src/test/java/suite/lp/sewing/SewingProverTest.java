@@ -1,4 +1,4 @@
-package suite.lp;
+package suite.lp.sewing;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -8,9 +8,8 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
-import suite.lp.sewing.SewingProver;
 
-public class SewingInterpreterTest {
+public class SewingProverTest {
 
 	@Test
 	public void test() {
