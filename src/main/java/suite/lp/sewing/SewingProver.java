@@ -33,6 +33,18 @@ import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.Util;
 
+/**
+ * Compile logical rules into lambda-sews and run them. Supposed to be faster
+ * but no improvement generally. No actual measurement was conducted.
+ *
+ * Would break under following conditions:
+ * 
+ * - rules containing wild searches that are unable to derive prototype from;
+ * 
+ * - asserts or retracts.
+ *
+ * @author ywsing
+ */
 public class SewingProver {
 
 	private SystemPredicates systemPredicates;
