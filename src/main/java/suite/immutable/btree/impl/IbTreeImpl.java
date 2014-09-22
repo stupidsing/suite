@@ -235,13 +235,13 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public Integer getData(Key key) {
-			return get(root, key, SlotType.TERMINAL);
+		public Integer get(Key key) {
+			return get0(root, key, SlotType.TERMINAL);
 		}
 
 		@Override
 		public Bytes getPayload(Key key) {
-			Integer pointer = get(root, key, SlotType.DATA);
+			Integer pointer = get0(root, key, SlotType.DATA);
 			return pointer != null ? payloadFile.load(pointer) : null;
 		}
 
@@ -473,7 +473,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		return FunUtil.map(slot -> slot.pivot, source(pointer, start, end));
 	}
 
-	private Integer get(Integer root, Key key, SlotType slotType) {
+	private Integer get0(Integer root, Key key, SlotType slotType) {
 		Slot slot = source(root, key, null).source();
 		if (slot != null && slot.type == slotType && comparator.compare(slot.pivot, key) == 0)
 			return slot.pointer;

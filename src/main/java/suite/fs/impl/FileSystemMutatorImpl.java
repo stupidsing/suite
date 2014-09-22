@@ -28,7 +28,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 	public Bytes read(Bytes name) {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		Bytes hash = keyUtil.hash(name);
-		Integer size = mutator.getData(key(hash, SIZEID, 0));
+		Integer size = mutator.get(key(hash, SIZEID, 0));
 
 		if (size != null) {
 			int seq = 0;
@@ -56,7 +56,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		boolean isCreate = bytes != null;
 
 		if (isRemove) {
-			int seq = 0, size = mutator.getData(sizeKey);
+			int seq = 0, size = mutator.get(sizeKey);
 
 			if (!isCreate)
 				fsNameKeySet.remove(name);
@@ -91,7 +91,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
-		int size0 = mutator.getData(sizeKey);
+		int size0 = mutator.get(sizeKey);
 		int nPages0 = (size0 + pageSize - 1) / pageSize;
 		int nPages1 = (size1 + pageSize - 1) / pageSize;
 

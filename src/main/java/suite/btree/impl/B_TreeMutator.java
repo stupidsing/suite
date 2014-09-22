@@ -31,7 +31,7 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public Integer getData(Key key) {
+	public Integer get(Key key) {
 		return b_tree.get(key);
 	}
 

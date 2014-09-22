@@ -10,7 +10,7 @@ public interface KeyValueStoreMutator<Key, Value> {
 
 	public Source<Key> keys(Key start, Key end);
 
-	public Value getData(Key key);
+	public Value get(Key key);
 
 	/**
 	 * Replaces a value with another without payload. For dictionary cases to
