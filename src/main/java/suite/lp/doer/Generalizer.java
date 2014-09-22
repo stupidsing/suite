@@ -3,6 +3,7 @@ package suite.lp.doer;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -26,7 +27,9 @@ public class Generalizer {
 
 			if (right instanceof Atom) {
 				String name = ((Atom) right).getName();
-				if (name.startsWith("."))
+				if (name.startsWith(SewingGeneralizer.wildcardPrefix))
+					right = new Reference();
+				if (name.startsWith(SewingGeneralizer.variablePrefix))
 					right = getVariable(right);
 			} else if ((rt = Tree.decompose(right)) != null)
 				right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
