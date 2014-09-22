@@ -21,12 +21,10 @@ public class Template {
 
 			sb.append(fun.apply(in.substring(start, pos0)));
 			sb.append(in.substring(start, pos1));
-
 			start = pos1 + close.length();
 		}
 
 		sb.append(fun.apply(in.substring(start)));
-
 		return sb.toString();
 	}
 
