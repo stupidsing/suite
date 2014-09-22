@@ -45,7 +45,7 @@ public class EvalPredicates {
 
 	public SystemPredicate bound = PredicateUtil.bool(n -> !(n instanceof Reference));
 
-	public SystemPredicate clone = PredicateUtil.fun(new Cloner()::clone);
+	public SystemPredicate clone = PredicateUtil.fun(n -> new Cloner().clone(n));
 
 	public SystemPredicate complexity = PredicateUtil.fun(n -> Int.of(new Complexity().complexity(n)));
 
@@ -94,7 +94,7 @@ public class EvalPredicates {
 
 	public SystemPredicate hashId = PredicateUtil.fun(n -> Int.of(new IdentityKey(n).hashCode()));
 
-	public SystemPredicate isCyclic = PredicateUtil.bool(new Cyclic()::isCyclic);
+	public SystemPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
 
 	public SystemPredicate let = new SystemPredicate() {
 		public boolean prove(Prover prover, Node ps) {
