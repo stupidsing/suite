@@ -1,7 +1,6 @@
 package suite.lp;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +26,7 @@ public class ImportUtil {
 		Handler.register();
 	}
 
-	// The directory of the file we are now importing
-	private URL root;
-
-	public ImportUtil() {
-		try {
-			setRoot(new URL("file:" + FileUtil.homeDir() + "/src/main/ll/"));
-		} catch (MalformedURLException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+	private String root = "file:" + FileUtil.homeDir() + "/src/main/ll/";
 
 	public Prover createProver(List<String> toImports) {
 		return new Prover(createRuleSet(toImports));
@@ -58,17 +48,11 @@ public class ImportUtil {
 	}
 
 	public boolean importPath(RuleSet rs, String path) throws IOException {
-		return importUrl(rs, rebase(root, path));
+		return importUrl(rs, new URL(root + path));
 	}
 
 	public boolean importUrl(RuleSet rs, URL url1) throws IOException {
-		URL root0 = this.root;
-		setRoot(url1);
-		try {
-			return importFrom(rs, Suite.parse(To.string(url1.openStream())));
-		} finally {
-			root = root0;
-		}
+		return importFrom(rs, Suite.parse(To.string(url1.openStream())));
 	}
 
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
@@ -91,31 +75,6 @@ public class ImportUtil {
 			}
 
 		return result;
-	}
-
-	private URL rebase(URL root0, String path) throws MalformedURLException {
-		String protocol0 = root0.getProtocol();
-		String host0 = root0.getHost();
-		String path0 = root0.getPath();
-		URL url;
-
-		if (!isContainsProtocol(path) && !path.startsWith("/"))
-			url = new URL(protocol0, host0, path0 + path);
-		else
-			url = new URL(path);
-		return url;
-	}
-
-	private void setRoot(URL url) throws MalformedURLException {
-		String path1 = url.getPath();
-		int pos = path1.lastIndexOf("/");
-		root = new URL(url.getProtocol(), url.getHost(), pos >= 0 ? path1.substring(0, pos + 1) : "");
-	}
-
-	private boolean isContainsProtocol(String path) {
-		int pos0 = path.indexOf(":");
-		int pos1 = path.indexOf("/");
-		return (pos0 <= 0 ? 0 : pos0) >= (pos1 <= 0 ? Integer.MAX_VALUE : pos1);
 	}
 
 }

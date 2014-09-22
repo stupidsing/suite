@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 -- logical program compiler
 
-() :- import.path "../cg-generate-code.sl"
-	, import.path "../rbt.sl"
+() :- import.path "cg-generate-code.sl"
+	, import.path "rbt.sl"
 #
 
 compile-logic .call (FRAME l:.code,)

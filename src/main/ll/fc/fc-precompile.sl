@@ -80,4 +80,4 @@ fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 -- Code generation
 fc-compile ($$PRECOMPILE _ _ .fve .cr) .fve .cr :- ! #
 
-() :- import.path "fc.sl" #
+() :- import.path "fc/fc.sl" #
