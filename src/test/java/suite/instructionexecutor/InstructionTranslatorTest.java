@@ -93,7 +93,7 @@ public class InstructionTranslatorTest {
 	}
 
 	private String executeToString(Node code, boolean isLazy) throws IOException {
-		return execute(code, isLazy, exec -> ThunkUtil.evaluateToString(exec, exec.apply(new Thunk(null, 0))));
+		return execute(code, isLazy, exec -> ThunkUtil.yawnString(exec, exec.apply(new Thunk(null, 0))));
 	}
 
 	private <T> T execute(Node code, boolean isLazy, Fun<Fun<Node, Node>, T> fun) throws IOException {

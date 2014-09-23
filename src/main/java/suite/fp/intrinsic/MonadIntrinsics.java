@@ -39,11 +39,11 @@ public class MonadIntrinsics {
 		Fun<Node, Node> yawn = callback::yawn;
 		List<String> list = new ArrayList<>();
 
-		Source<Node> source = ThunkUtil.evaluateToSource(yawn, inputs.get(0));
+		Source<Node> source = ThunkUtil.yawnSource(yawn, inputs.get(0));
 		Node node;
 
 		while ((node = source.source()) != null)
-			list.add(ThunkUtil.evaluateToString(yawn, node));
+			list.add(ThunkUtil.yawnString(yawn, node));
 
 		Node in = inputs.get(1);
 
@@ -68,7 +68,7 @@ public class MonadIntrinsics {
 			new Thread(() -> {
 				try {
 					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ThunkUtil.evaluateToWriter(yawn, in, writer);
+						ThunkUtil.yawnWriter(yawn, in, writer);
 					}
 
 					process.waitFor();

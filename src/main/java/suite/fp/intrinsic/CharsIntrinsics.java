@@ -47,7 +47,7 @@ public class CharsIntrinsics {
 	};
 
 	public static Intrinsic stringChars = (callback, inputs) -> {
-		String value = ThunkUtil.evaluateToString(callback::yawn, inputs.get(0));
+		String value = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
 		return new Data<>(To.chars(value));
 	};
 

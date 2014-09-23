@@ -62,7 +62,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
-		ThunkUtil.evaluateToWriter(intrinsicCallback::yawn, execute(), writer);
+		ThunkUtil.yawnWriter(intrinsicCallback::yawn, execute(), writer);
 	}
 
 	@Override

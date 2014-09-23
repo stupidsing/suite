@@ -42,17 +42,17 @@ public class BasicIntrinsics {
 
 	public Intrinsic log1 = (callback, inputs) -> {
 		Node node = inputs.get(0);
-		LogUtil.info(Formatter.display(ThunkUtil.evaluateFully(callback::yawn, node)));
+		LogUtil.info(Formatter.display(ThunkUtil.yawnFully(callback::yawn, node)));
 		return node;
 	};
 
 	public Intrinsic log2 = (callback, inputs) -> {
-		LogUtil.info(ThunkUtil.evaluateToString(callback::yawn, inputs.get(0)));
+		LogUtil.info(ThunkUtil.yawnString(callback::yawn, inputs.get(0)));
 		return inputs.get(1);
 	};
 
 	public Intrinsic throw_ = (callback, inputs) -> {
-		String message = ThunkUtil.evaluateToString(callback::yawn, inputs.get(0));
+		String message = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
 		throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 	};
 
