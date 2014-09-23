@@ -48,18 +48,18 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	public Node execute() {
-		return evaluateThunk(new Thunk(null, 0));
+		return yawnThunk(new Thunk(null, 0));
 	}
 
-	public Node evaluateThunk(Thunk thunk) {
+	public Node yawnThunk(Thunk thunk) {
 		if (thunk.result == null) {
-			thunk.result = evaluateThunk0(thunk);
+			thunk.result = yawnThunk0(thunk);
 			thunk.frame = null; // Facilitates garbage collection
 		}
 		return thunk.result;
 	}
 
-	private Node evaluateThunk0(Thunk thunk0) {
+	private Node yawnThunk0(Thunk thunk0) {
 		Frame f0 = new Frame(null, 2);
 		f0.registers[0] = thunk0;
 

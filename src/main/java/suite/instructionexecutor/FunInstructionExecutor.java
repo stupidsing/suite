@@ -39,7 +39,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			intrinsicCallback = new IntrinsicCallback() {
 				public Node yawn(Node node) {
 					node = node.finalNode();
-					return node instanceof Thunk ? evaluateThunk((Thunk) node) : node;
+					return node instanceof Thunk ? yawnThunk((Thunk) node) : node;
 				}
 
 				public Node enclose(Intrinsic intrinsic, Node node) {
