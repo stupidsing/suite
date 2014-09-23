@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -16,13 +14,7 @@ public class MonadTest {
 
 	@Test
 	public void testConcatm() throws IOException {
-		List<String> libraries0 = Suite.libraries;
-		Suite.libraries = Arrays.asList("STANDARD", "MONAD");
-		try {
-			assertEquals("abc\n", evalMonad("\"abc%0A\" | split {10} | map {sh {\"cat\"}} | concatm"));
-		} finally {
-			Suite.libraries = libraries0;
-		}
+		assertEquals("abc", evalMonad("\"abc%0A\" | split {10} | map {sh {\"cat\"}} | concatm"));
 	}
 
 	@Test
@@ -43,18 +35,22 @@ public class MonadTest {
 	@Test
 	public void testMutableFail() throws IOException {
 		try {
-			assertEquals("abc", eval(Suite.applyDo(Suite.parse("" //
+			assertEquals("abc", evalMonad("" //
 					+ "do >> \n" //
 					+ "    definem int v # \n" //
 					+ "    v := \"abc\" # \n" //
-					+ ""), Suite.parse("any"))));
+					+ "", "any"));
 		} catch (RuntimeException ex) {
 			// Unmatched types
 		}
 	}
 
 	private String evalMonad(String m) throws IOException {
-		return eval(Suite.applyDo(Suite.parse(m), Suite.parse("string")));
+		return evalMonad(m, "string");
+	}
+
+	private String evalMonad(String m, String type) throws IOException {
+		return eval(Suite.applyDo(Suite.parse(m), Suite.parse(type)));
 	}
 
 	private String eval(Node node) throws IOException {

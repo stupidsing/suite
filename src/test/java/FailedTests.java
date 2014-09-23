@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -25,6 +27,15 @@ public class FailedTests {
 	@Test
 	public void testConcatm() throws IOException {
 		new MonadTest().testConcatm();
+	}
+
+	// NPE
+	@Test
+	public void testEager() {
+		List<String> libraries0 = Suite.libraries;
+		Suite.libraries = Collections.emptyList();
+		Suite.evaluateFun("using MONAD >> 0", false);
+		Suite.libraries = libraries0;
 	}
 
 	// (Expected) infinite loop.
