@@ -2,6 +2,7 @@ package suite.fp;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -22,10 +23,11 @@ public class PrecompileTest {
 
 		long end = System.nanoTime();
 
-		long gcDuration = ManagementFactory.getGarbageCollectorMXBeans().stream()
-				.mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
+		List<GarbageCollectorMXBean> gcBeans = ManagementFactory.getGarbageCollectorMXBeans();
+		int nGcs = gcBeans.size();
+		long gcDuration = gcBeans.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
 
-		System.out.println("GC took " + gcDuration + "ms");
+		System.out.println(nGcs + " GC took " + gcDuration + "ms");
 		System.out.println("Program took " + (end - start) / 1000000l + "ms");
 	}
 
