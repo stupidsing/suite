@@ -26,7 +26,7 @@ getLatestTimestamp() {
 ) &&
 
 if which rlwrap > /dev/null; then
-	rlwrap -D2 -H "${HOME}/.suite_history" -i ${FULLCMD}
+	rlwrap -D2 -H "${HOME}/.suite_history" --history-no-dupes 2 -i ${FULLCMD}
 else
 	${FULLCMD}
 fi
