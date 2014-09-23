@@ -23,13 +23,13 @@ public class FailedTests {
 		Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true);
 	}
 
-	// Out of memory
+	// Out of memory. MonadIntrinsics.popen is invoked several times
 	@Test
 	public void testConcatm() throws IOException {
 		new MonadTest().testConcatm();
 	}
 
-	// NPE, seems related to concatm
+	// NPE, concatm may not be correctly linked with standard library
 	@Test
 	public void testEager() {
 		List<String> libraries0 = Suite.libraries;
