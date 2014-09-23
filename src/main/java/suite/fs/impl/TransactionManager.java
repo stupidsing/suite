@@ -45,11 +45,11 @@ public class TransactionManager<Key, Value> {
 		}
 
 		public Source<Key> keys() {
-			return mutator.keys();
+			return acquireOwnerships(mutator.keys());
 		}
 
 		public Source<Key> keys(Key start, Key end) {
-			return mutator.keys(start, end);
+			return acquireOwnerships(mutator.keys(start, end));
 		}
 
 		public Value get(Key key) {
@@ -65,6 +65,15 @@ public class TransactionManager<Key, Value> {
 		public void remove(Key key) {
 			acquireOwnership(key);
 			mutator.remove(key);
+		}
+
+		private Source<Key> acquireOwnerships(Source<Key> source) {
+			return () -> {
+				Key key = source.source();
+				if (key != null)
+					acquireOwnership(key);
+				return key;
+			};
 		}
 
 		private Ownership acquireOwnership(Key key) {
