@@ -29,7 +29,7 @@ public class FailedTests {
 		new MonadTest().testConcatm();
 	}
 
-	// NPE
+	// NPE, seems related to concatm
 	@Test
 	public void testEager() {
 		List<String> libraries0 = Suite.libraries;
