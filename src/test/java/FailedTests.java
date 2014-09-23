@@ -34,8 +34,11 @@ public class FailedTests {
 	public void testEager() {
 		List<String> libraries0 = Suite.libraries;
 		Suite.libraries = Collections.emptyList();
-		Suite.evaluateFun("using MONAD >> 0", false);
-		Suite.libraries = libraries0;
+		try {
+			Suite.evaluateFun("using MONAD >> 0", false);
+		} finally {
+			Suite.libraries = libraries0;
+		}
 	}
 
 	// (Expected) infinite loop.
