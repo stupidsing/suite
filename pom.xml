@@ -8,23 +8,28 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
+			<groupId>com.nativelibs4java</groupId>
+			<artifactId>bridj</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nativelibs4java</groupId>
+			<artifactId>javacl</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		<dependency>
