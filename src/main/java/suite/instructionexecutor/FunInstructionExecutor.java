@@ -37,32 +37,32 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 		if (isLazy)
 			intrinsicCallback = new IntrinsicCallback() {
-				public Node unwrap(Node node) {
+				public Node yawn(Node node) {
 					node = node.finalNode();
 					return node instanceof Thunk ? evaluateThunk((Thunk) node) : node;
 				}
 
-				public Node wrap(Intrinsic intrinsic, Node node) {
+				public Node enclose(Intrinsic intrinsic, Node node) {
 					Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null });
 					return new Thunk(frame, invokeJavaEntryPoint);
 				}
 			};
 		else
 			intrinsicCallback = new IntrinsicCallback() {
-				public Node unwrap(Node node) {
+				public Node yawn(Node node) {
 					return node;
 				}
 
-				public Node wrap(Intrinsic intrinsic, Node node) {
+				public Node enclose(Intrinsic intrinsic, Node node) {
 					return intrinsic.invoke(this, Arrays.asList(node));
 				}
 			};
 
-		comparer = new FunComparer(intrinsicCallback::unwrap);
+		comparer = new FunComparer(intrinsicCallback::yawn);
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
-		ThunkUtil.evaluateToWriter(intrinsicCallback::unwrap, execute(), writer);
+		ThunkUtil.evaluateToWriter(intrinsicCallback::yawn, execute(), writer);
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public Fun<Node, Node> getUnwrapper() {
-		return intrinsicCallback::unwrap;
+		return intrinsicCallback::yawn;
 	}
 
 	@Override

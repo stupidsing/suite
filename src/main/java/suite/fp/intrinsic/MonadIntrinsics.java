@@ -36,14 +36,14 @@ public class MonadIntrinsics {
 	public Intrinsic get = (callback, inputs) -> getFrame(inputs).get(inputs.get(1));
 
 	public Intrinsic popen = (callback, inputs) -> {
-		Fun<Node, Node> unwrapper = callback::unwrap;
+		Fun<Node, Node> yawn = callback::yawn;
 		List<String> list = new ArrayList<>();
 
-		Source<Node> source = ThunkUtil.evaluateToList(unwrapper, inputs.get(0));
+		Source<Node> source = ThunkUtil.evaluateToSource(yawn, inputs.get(0));
 		Node node;
 
 		while ((node = source.source()) != null)
-			list.add(ThunkUtil.evaluateToString(unwrapper, node));
+			list.add(ThunkUtil.evaluateToString(yawn, node));
 
 		Node in = inputs.get(1);
 
@@ -68,7 +68,7 @@ public class MonadIntrinsics {
 			new Thread(() -> {
 				try {
 					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ThunkUtil.evaluateToWriter(unwrapper, in, writer);
+						ThunkUtil.evaluateToWriter(yawn, in, writer);
 					}
 
 					process.waitFor();
@@ -98,7 +98,7 @@ public class MonadIntrinsics {
 			// data is very long under eager mode
 			if (ch != -1) {
 				Node left = Intrinsics.wrap(callback, Int.of(ch));
-				Node right = new Suspend(() -> callback.wrap(this, new Data<>(intern.tail())));
+				Node right = new Suspend(() -> callback.enclose(this, new Data<>(intern.tail())));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -114,7 +114,7 @@ public class MonadIntrinsics {
 		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
 		BufferedReader br = new BufferedReader(isr);
 		IndexedReader.Pointer irp = new IndexedReader(br).pointer();
-		return callback.wrap(source, new Data<>(irp));
+		return callback.enclose(source, new Data<>(irp));
 	}
 
 }

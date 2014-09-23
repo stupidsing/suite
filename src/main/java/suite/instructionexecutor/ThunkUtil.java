@@ -17,11 +17,11 @@ public class ThunkUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and converts to a
 	 * string.
 	 */
-	public static String evaluateToString(Fun<Node, Node> unwrapper, Node node) {
+	public static String evaluateToString(Fun<Node, Node> yawn, Node node) {
 		StringWriter writer = new StringWriter();
 
 		try {
-			evaluateToWriter(unwrapper, node, writer);
+			evaluateToWriter(yawn, node, writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -33,8 +33,8 @@ public class ThunkUtil {
 	 * Evaluates the whole (lazy) term to a list of numbers, and write
 	 * corresponding characters into the writer.
 	 */
-	public static void evaluateToWriter(Fun<Node, Node> unwrapper, Node node, Writer writer) throws IOException {
-		Source<Node> source = evaluateToList(unwrapper, node);
+	public static void evaluateToWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
+		Source<Node> source = evaluateToSource(yawn, node);
 		Node n;
 
 		while ((n = source.source()) != null) {
@@ -45,18 +45,18 @@ public class ThunkUtil {
 		}
 	}
 
-	public static Source<Node> evaluateToList(Fun<Node, Node> unwrapper, Node node) {
+	public static Source<Node> evaluateToSource(Fun<Node, Node> yawn, Node node) {
 		return new Source<Node>() {
 			private Node node_;
 
 			public Node source() {
 
 				// First node is not wrapped, remainings are
-				node_ = node_ != null ? unwrapper.apply(node_) : node;
+				node_ = node_ != null ? yawn.apply(node_) : node;
 				Tree tree;
 
 				if ((tree = Tree.decompose(node_)) != null) {
-					Node result = unwrapper.apply(tree.getLeft());
+					Node result = yawn.apply(tree.getLeft());
 					node_ = tree.getRight();
 
 					// Facilitates garbage collection
@@ -73,13 +73,13 @@ public class ThunkUtil {
 	/**
 	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
-	public static Node evaluateFully(Fun<Node, Node> unwrapper, Node node) {
-		node = unwrapper.apply(node);
+	public static Node evaluateFully(Fun<Node, Node> yawn, Node node) {
+		node = yawn.apply(node);
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = evaluateFully(unwrapper, tree.getLeft());
-			Node right = evaluateFully(unwrapper, tree.getRight());
+			Node left = evaluateFully(yawn, tree.getLeft());
+			Node right = evaluateFully(yawn, tree.getRight());
 			node = Tree.of(tree.getOperator(), left, right);
 		}
 

@@ -125,7 +125,7 @@ public class InstructionTranslator implements Closeable {
 				+ "Journal journal = prover.getJournal(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "IntrinsicCallback callback = TranslatedRunUtil.getIntrinsicCallback(config, this); \n" //
-				+ "Comparer comparer = new FunComparer(callback::unwrap); \n" //
+				+ "Comparer comparer = new FunComparer(callback::yawn); \n" //
 				+ "\n" //
 				+ "%s \n" //
 				+ "\n" //
@@ -213,7 +213,7 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case CALLINTRINSIC_:
 				app("{");
-				app("Data<?> data = (Data<?>) callback.unwrap((Node) ds[--dsp])");
+				app("Data<?> data = (Data<?>) callback.yawn((Node) ds[--dsp])");
 				app("List<Node> list = new ArrayList<>(3)");
 				for (int i = 1; i < insn.op1; i++)
 					app("list.add((Node) ds[--dsp])");
@@ -313,7 +313,7 @@ public class InstructionTranslator implements Closeable {
 				break;
 			case GETINTRINSIC__:
 				app("{");
-				app("Atom atom = (Atom) callback.unwrap((Node) ds[--dsp])");
+				app("Atom atom = (Atom) callback.yawn((Node) ds[--dsp])");
 				app("String intrinsicName = atom.toString().split(\"!\")[1]");
 				app("#{reg} = InstructionUtil.execGetIntrinsic(intrinsicName)", op0);
 				app("}");

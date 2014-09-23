@@ -175,14 +175,14 @@ public class InstructionUtil {
 	}
 
 	public static class FunComparer extends Comparer {
-		private Fun<Node, Node> unwrapper;
+		private Fun<Node, Node> yawn;
 
-		public FunComparer(Fun<Node, Node> unwrapper) {
-			this.unwrapper = unwrapper;
+		public FunComparer(Fun<Node, Node> yawn) {
+			this.yawn = yawn;
 		}
 
 		public int compare(Node n0, Node n1) {
-			return super.compare(unwrapper.apply(n0), unwrapper.apply(n1));
+			return super.compare(yawn.apply(n0), yawn.apply(n1));
 		}
 	}
 

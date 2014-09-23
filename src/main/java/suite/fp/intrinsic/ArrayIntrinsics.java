@@ -29,7 +29,7 @@ public class ArrayIntrinsics {
 
 			if (!array.isEmpty()) {
 				Node left = Intrinsics.wrap(callback, array.get(0));
-				Node right = callback.wrap(this, new Tuple(array.subList(1, array.size())));
+				Node right = callback.enclose(this, new Tuple(array.subList(1, array.size())));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -43,7 +43,7 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
-		Source<Node> value = ThunkUtil.evaluateToList(callback::unwrap, inputs.get(0));
+		Source<Node> value = ThunkUtil.evaluateToSource(callback::yawn, inputs.get(0));
 		return new Tuple(To.list(value));
 	};
 

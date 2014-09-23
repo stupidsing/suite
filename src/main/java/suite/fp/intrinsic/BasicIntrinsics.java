@@ -30,8 +30,8 @@ public class BasicIntrinsics {
 			String name = ((Atom) inputs.get(0)).getName();
 
 			if (!name.isEmpty()) {
-				Node left = callback.wrap(Intrinsics.id_, Int.of(name.charAt(0)));
-				Node right = callback.wrap(this, Atom.of(name.substring(1)));
+				Node left = callback.enclose(Intrinsics.id_, Int.of(name.charAt(0)));
+				Node right = callback.enclose(this, Atom.of(name.substring(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -42,17 +42,17 @@ public class BasicIntrinsics {
 
 	public Intrinsic log1 = (callback, inputs) -> {
 		Node node = inputs.get(0);
-		LogUtil.info(Formatter.display(ThunkUtil.evaluateFully(callback::unwrap, node)));
+		LogUtil.info(Formatter.display(ThunkUtil.evaluateFully(callback::yawn, node)));
 		return node;
 	};
 
 	public Intrinsic log2 = (callback, inputs) -> {
-		LogUtil.info(ThunkUtil.evaluateToString(callback::unwrap, inputs.get(0)));
+		LogUtil.info(ThunkUtil.evaluateToString(callback::yawn, inputs.get(0)));
 		return inputs.get(1);
 	};
 
 	public Intrinsic throw_ = (callback, inputs) -> {
-		String message = ThunkUtil.evaluateToString(callback::unwrap, inputs.get(0));
+		String message = ThunkUtil.evaluateToString(callback::yawn, inputs.get(0));
 		throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 	};
 

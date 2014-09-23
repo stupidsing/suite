@@ -24,7 +24,7 @@ import suite.util.LogUtil;
 public class InstructionExecutor implements AutoCloseable {
 
 	private Instruction instructions[];
-	private int unwrapEntryPoint;
+	private int yawnEntryPoint;
 
 	protected BiMap<Integer, Node> constantPool = new HashBiMap<>();
 
@@ -63,7 +63,7 @@ public class InstructionExecutor implements AutoCloseable {
 		Frame f0 = new Frame(null, 2);
 		f0.registers[0] = thunk0;
 
-		Activation current = new Activation(f0, unwrapEntryPoint, null);
+		Activation current = new Activation(f0, yawnEntryPoint, null);
 
 		Node stack[] = new Node[Suite.stackSize];
 		int ip = 0, sp = 0;
@@ -250,7 +250,7 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected void postprocessInstructions(List<Instruction> list) {
-		unwrapEntryPoint = list.size();
+		yawnEntryPoint = list.size();
 		list.add(new Instruction(Insn.FRAMEBEGIN____, 2, 0, 0));
 		list.add(new Instruction(Insn.CALLTHUNK_____, 0, 0, 0));
 		list.add(new Instruction(Insn.ASSIGNRESULT__, 1, 0, 0));

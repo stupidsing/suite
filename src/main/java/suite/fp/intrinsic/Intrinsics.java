@@ -16,9 +16,9 @@ public class Intrinsics {
 	}
 
 	public interface IntrinsicCallback {
-		public Node unwrap(Node node);
+		public Node yawn(Node node);
 
-		public Node wrap(Intrinsic intrinsic, Node node);
+		public Node enclose(Intrinsic intrinsic, Node node);
 	}
 
 	public static Map<String, Intrinsic> intrinsics = new HashMap<>();
@@ -27,7 +27,7 @@ public class Intrinsics {
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
 	public static Node wrap(IntrinsicCallback callback, Node node) {
-		return callback.wrap(id_, node);
+		return callback.enclose(id_, node);
 	}
 
 	static {

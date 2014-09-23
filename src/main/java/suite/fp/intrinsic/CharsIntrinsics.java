@@ -28,7 +28,7 @@ public class CharsIntrinsics {
 
 			if (!chars.isEmpty()) {
 				Node left = Intrinsics.wrap(callback, Int.of(chars.get(0)));
-				Node right = callback.wrap(this, new Data<>(chars.subchars(1)));
+				Node right = callback.enclose(this, new Data<>(chars.subchars(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
 				return Atom.NIL;
@@ -42,12 +42,12 @@ public class CharsIntrinsics {
 		while (pos < chars.size() && chars.get(pos) != sep)
 			pos++;
 		return Tree.of(TermOp.AND___ //
-				, callback.wrap(Intrinsics.id_, new Data<>(chars.subchars(0, pos))) //
-				, callback.wrap(Intrinsics.id_, new Data<>(chars.subchars(pos))));
+				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(0, pos))) //
+				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(pos))));
 	};
 
 	public static Intrinsic stringChars = (callback, inputs) -> {
-		String value = ThunkUtil.evaluateToString(callback::unwrap, inputs.get(0));
+		String value = ThunkUtil.evaluateToString(callback::yawn, inputs.get(0));
 		return new Data<>(To.chars(value));
 	};
 

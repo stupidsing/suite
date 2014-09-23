@@ -283,8 +283,8 @@ public class EagerFunTest {
 	}
 
 	// Lazy programs are prone to stack overflow; even a summing program for a
-	// long list of numbers produces long enough wraps/unwraps to blow up. Eager
-	// programs with tail code optimization are more resistant.
+	// long list of numbers produces long enough thunks/de-thunks to blow up.
+	// Eager programs with tail code optimization are more resistant.
 	@Test
 	public void testTailRecursion() {
 		assertEquals(Int.of(65536) //
