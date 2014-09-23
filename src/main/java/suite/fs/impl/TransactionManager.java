@@ -45,35 +45,43 @@ public class TransactionManager<Key, Value> {
 		}
 
 		public Source<Key> keys() {
-			return acquireOwnerships(mutator.keys());
+			return acquireReads(mutator.keys());
 		}
 
 		public Source<Key> keys(Key start, Key end) {
-			return acquireOwnerships(mutator.keys(start, end));
+			return acquireReads(mutator.keys(start, end));
 		}
 
 		public Value get(Key key) {
-			acquireOwnership(key);
+			acquireRead(key);
 			return mutator.get(key);
 		}
 
 		public void put(Key key, Value data) {
-			acquireOwnership(key);
+			acquireWrite(key);
 			mutator.put(key, data);
 		}
 
 		public void remove(Key key) {
-			acquireOwnership(key);
+			acquireWrite(key);
 			mutator.remove(key);
 		}
 
-		private Source<Key> acquireOwnerships(Source<Key> source) {
+		private Source<Key> acquireReads(Source<Key> source) {
 			return () -> {
 				Key key = source.source();
 				if (key != null)
-					acquireOwnership(key);
+					acquireRead(key);
 				return key;
 			};
+		}
+
+		private void acquireRead(Key key) {
+			acquireOwnership(key);
+		}
+
+		private void acquireWrite(Key key) {
+			acquireOwnership(key);
 		}
 
 		private Ownership acquireOwnership(Key key) {
