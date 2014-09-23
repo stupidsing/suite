@@ -11,7 +11,7 @@ public class TermiosMain {
 			termios.hideCursor();
 
 			int ch;
-			while ((ch = Libc.instance.getchar()) != -1 && ch != 'q')
+			while ((ch = Libc.getchar()) != -1 && ch != 'q')
 				System.out.println(ch);
 		}
 	}

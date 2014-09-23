@@ -1,24 +1,24 @@
 package suite.libc;
 
 import java.io.Closeable;
-import java.nio.ByteBuffer;
+
+import org.bridj.Pointer;
 
 import suite.util.Util;
 
 public class Termios implements Closeable {
 
 	private char esc = (char) 27;
-	private Libc libc = Libc.instance;
-	private ByteBuffer termios0 = ByteBuffer.allocateDirect(4096);
+	private Pointer<Byte> termios0 = Pointer.allocateBytes(4096);
 
 	private Thread hook = new Thread(this::close);
 
 	public Termios() {
-		ByteBuffer termios1 = ByteBuffer.allocateDirect(4096);
-		libc.tcgetattr(0, termios0);
-		libc.tcgetattr(0, termios1);
-		libc.cfmakeraw(termios1);
-		libc.tcsetattr(0, 0, termios1);
+		Pointer<Byte> termios1 = Pointer.allocateBytes(4096);
+		Libc.tcgetattr(0, termios0);
+		Libc.tcgetattr(0, termios1);
+		Libc.cfmakeraw(termios1);
+		Libc.tcsetattr(0, 0, termios1);
 		Runtime.getRuntime().addShutdownHook(hook);
 	}
 
@@ -26,7 +26,7 @@ public class Termios implements Closeable {
 	public void close() {
 		Runtime.getRuntime().removeShutdownHook(hook);
 		showCursor();
-		libc.tcsetattr(0, 1, termios0); // TCSADRAIN
+		Libc.tcsetattr(0, 1, termios0); // TCSADRAIN
 	}
 
 	public void clear() {
@@ -48,7 +48,7 @@ public class Termios implements Closeable {
 
 	public void puts(String s) {
 		for (char ch : Util.chars(s))
-			libc.putchar(ch);
+			Libc.putchar(ch);
 	}
 
 }

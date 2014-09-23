@@ -1,24 +1,26 @@
 package suite.libc;
 
-import java.nio.ByteBuffer;
+import org.bridj.BridJ;
+import org.bridj.Pointer;
+import org.bridj.ann.Library;
 
-import com.sun.jna.Library;
-import com.sun.jna.Native;
+@Library("c")
+public class Libc {
 
-public interface Libc extends Library {
+	static {
+		BridJ.register();
+	}
 
-	public static Libc instance = (Libc) Native.loadLibrary("c", Libc.class);
+	public static native int cfmakeraw(Pointer<Byte> termios_p);
 
-	public int cfmakeraw(ByteBuffer termios_p);
+	public static native int getchar();
 
-	public int getchar();
+	public static native int ioctl(int d, int request, Pointer<Byte> data);
 
-	public int ioctl(int d, int request, ByteBuffer data);
+	public static native int putchar(int ch);
 
-	public int putchar(int ch);
+	public static native int tcgetattr(int fd, Pointer<Byte> termios_p);
 
-	public int tcgetattr(int fd, ByteBuffer termios_p);
-
-	public int tcsetattr(int fd, int optional_actions, ByteBuffer termios_p);
+	public static native int tcsetattr(int fd, int optional_actions, Pointer<Byte> termios_p);
 
 }
