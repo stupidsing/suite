@@ -2,7 +2,7 @@ package suite.libc;
 
 import java.io.IOException;
 
-// java -cp target/suite-1.0-jar-with-dependencies.jar suite.sample.Termios
+// java -cp target/suite-1.0-jar-with-dependencies.jar suite.libc.TermiosMain
 public class TermiosMain {
 
 	public static void main(String args[]) throws IOException {
