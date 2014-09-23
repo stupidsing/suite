@@ -11,8 +11,8 @@ public class FunCompilerConfig {
 
 	private Node node;
 	private boolean isLazy = true;
-	private List<String> libraries = new ArrayList<>();
-	private ProverConfig proverConfig = new ProverConfig();
+	private List<String> libraries;
+	private ProverConfig proverConfig;
 
 	public FunCompilerConfig() {
 		this(new ProverConfig(), new ArrayList<>(Suite.libraries));

@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
+import suite.fp.MonadTest;
 import suite.lp.kb.RuleSet;
 
 public class FailedTests {
@@ -18,6 +19,12 @@ public class FailedTests {
 	public void testClosureUsing() {
 		Suite.libraries = new ArrayList<>();
 		Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true);
+	}
+
+	// Out of memory
+	@Test
+	public void testConcatm() throws IOException {
+		new MonadTest().testConcatm();
 	}
 
 	// (Expected) infinite loop.
