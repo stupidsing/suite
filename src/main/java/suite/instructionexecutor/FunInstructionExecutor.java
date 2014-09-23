@@ -146,7 +146,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		return comparer;
 	}
 
-	public Fun<Node, Node> getUnwrapper() {
+	public Fun<Node, Node> getYawnFun() {
 		return intrinsicCallback::yawn;
 	}
 

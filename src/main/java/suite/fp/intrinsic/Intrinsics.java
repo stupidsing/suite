@@ -26,7 +26,7 @@ public class Intrinsics {
 	// Forces suspended node evaluation
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
-	public static Node wrap(IntrinsicCallback callback, Node node) {
+	public static Node enclose(IntrinsicCallback callback, Node node) {
 		return callback.enclose(id_, node);
 	}
 

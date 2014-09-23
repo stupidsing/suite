@@ -50,7 +50,7 @@ public class MonadIntrinsics {
 		try {
 			Process process = Runtime.getRuntime().exec(list.toArray(new String[list.size()]));
 
-			Node n0 = Intrinsics.wrap(callback, new Suspend(() -> {
+			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> {
 				try {
 					return Int.of(process.waitFor());
 				} catch (Exception ex) {
@@ -78,7 +78,7 @@ public class MonadIntrinsics {
 			}).start();
 
 			return Tree.of(TermOp.AND___, n0 //
-					, Intrinsics.wrap(callback, Tree.of(TermOp.AND___, n1, n2)));
+					, Intrinsics.enclose(callback, Tree.of(TermOp.AND___, n1, n2)));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -97,7 +97,7 @@ public class MonadIntrinsics {
 			// Suspend the right node to avoid stack overflow when input
 			// data is very long under eager mode
 			if (ch != -1) {
-				Node left = Intrinsics.wrap(callback, Int.of(ch));
+				Node left = Intrinsics.enclose(callback, Int.of(ch));
 				Node right = new Suspend(() -> callback.enclose(this, new Data<>(intern.tail())));
 				return Tree.of(TermOp.OR____, left, right);
 			} else

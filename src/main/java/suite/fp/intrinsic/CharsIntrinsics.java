@@ -27,7 +27,7 @@ public class CharsIntrinsics {
 			Chars chars = Data.get(inputs.get(0));
 
 			if (!chars.isEmpty()) {
-				Node left = Intrinsics.wrap(callback, Int.of(chars.get(0)));
+				Node left = Intrinsics.enclose(callback, Int.of(chars.get(0)));
 				Node right = callback.enclose(this, new Data<>(chars.subchars(1)));
 				return Tree.of(TermOp.OR____, left, right);
 			} else

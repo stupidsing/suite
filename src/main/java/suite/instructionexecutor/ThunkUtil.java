@@ -51,7 +51,7 @@ public class ThunkUtil {
 
 			public Node source() {
 
-				// First node is not wrapped, remainings are
+				// First node is not a thunk, remainings are
 				node_ = node_ != null ? yawn.apply(node_) : node;
 				Tree tree;
 

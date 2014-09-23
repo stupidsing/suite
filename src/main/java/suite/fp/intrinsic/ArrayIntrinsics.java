@@ -28,7 +28,7 @@ public class ArrayIntrinsics {
 			List<Node> array = ((Tuple) inputs.get(0)).getNodes();
 
 			if (!array.isEmpty()) {
-				Node left = Intrinsics.wrap(callback, array.get(0));
+				Node left = Intrinsics.enclose(callback, array.get(0));
 				Node right = callback.enclose(this, new Tuple(array.subList(1, array.size())));
 				return Tree.of(TermOp.OR____, left, right);
 			} else
