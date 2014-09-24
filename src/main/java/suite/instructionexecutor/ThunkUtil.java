@@ -47,13 +47,17 @@ public class ThunkUtil {
 
 	public static Source<Node> yawnSource(Fun<Node, Node> yawn, Node node) {
 		return new Source<Node>() {
-			private Node node_;
+			private Node node_ = node;
+			private boolean first = true;
 
 			public Node source() {
+				Tree tree;
 
 				// First node is not a thunk, remainings are
-				node_ = node_ != null ? yawn.apply(node_) : node;
-				Tree tree;
+				if (!first)
+					node_ = yawn.apply(node_);
+				else
+					first = false;
 
 				if ((tree = Tree.decompose(node_)) != null) {
 					Node result = yawn.apply(tree.getLeft());
