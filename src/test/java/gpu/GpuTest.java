@@ -6,6 +6,7 @@ import org.bridj.Pointer;
 
 import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLContext;
+import com.nativelibs4java.opencl.CLDevice;
 import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLMem.Usage;
 import com.nativelibs4java.opencl.CLQueue;
@@ -42,6 +43,9 @@ public class GpuTest {
 				, out, n);
 
 		Pointer<Float> outp = out.read(queue, kernel.enqueueNDRange(queue, new int[] { n }));
+
+		for (CLDevice device : context.getDevices())
+			System.out.println(device);
 
 		for (int i = 0; i < Math.min(10, n); i++)
 			System.out.println("out[" + i + "] = " + outp.get(i));
