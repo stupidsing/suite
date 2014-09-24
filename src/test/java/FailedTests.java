@@ -3,7 +3,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,9 +39,9 @@ public class FailedTests {
 	@Test
 	public void testEager() {
 		List<String> libraries0 = Suite.libraries;
-		Suite.libraries = Arrays.asList("STANDARD", "MONAD"); // Collections.emptyList();
+		Suite.libraries = Collections.emptyList();
 		try {
-			Suite.evaluateFun("0", false);
+			Suite.evaluateFun("using MONAD >> 0", false);
 		} finally {
 			Suite.libraries = libraries0;
 		}
