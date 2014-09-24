@@ -33,7 +33,7 @@ public class FailedTests {
 		new MonadTest().testConcatm();
 	}
 
-	// NPE, concatm may not be correctly linked with standard library
+	// NPE. concatm may not be correctly linked with standard library
 	@Test
 	public void testEager() {
 		List<String> libraries0 = Suite.libraries;
