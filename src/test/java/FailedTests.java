@@ -34,7 +34,7 @@ public class FailedTests {
 		new MonadTest().testConcatm();
 	}
 
-	// NPE. concatm may not be correctly linked with standard library.
+	// NPE. Method not found in concatm due to not importing standard library.
 	// Module dependency checks are necessary
 	@Test
 	public void testEager() {
