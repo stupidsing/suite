@@ -3,7 +3,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,8 +18,13 @@ public class FailedTests {
 	// Duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
-		Suite.libraries = new ArrayList<>();
-		Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true);
+		List<String> libraries0 = Suite.libraries;
+		Suite.libraries = Collections.emptyList();
+		try {
+			Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true);
+		} finally {
+			Suite.libraries = libraries0;
+		}
 	}
 
 	// Out of memory. MonadIntrinsics.popen is invoked several times
