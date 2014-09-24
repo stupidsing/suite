@@ -51,10 +51,6 @@ public class FunCompilerConfig {
 		return libraries;
 	}
 
-	public void setLibraries(List<String> libraries) {
-		this.libraries = libraries;
-	}
-
 	public ProverConfig getProverConfig() {
 		return proverConfig;
 	}

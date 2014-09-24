@@ -3,6 +3,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,13 +35,14 @@ public class FailedTests {
 		new MonadTest().testConcatm();
 	}
 
-	// NPE. concatm may not be correctly linked with standard library
+	// NPE. concatm may not be correctly linked with standard library.
+	// Module dependency checks are necessary
 	@Test
 	public void testEager() {
 		List<String> libraries0 = Suite.libraries;
-		Suite.libraries = Collections.emptyList();
+		Suite.libraries = Arrays.asList("STANDARD", "MONAD"); // Collections.emptyList();
 		try {
-			Suite.evaluateFun("using MONAD >> 0", false);
+			Suite.evaluateFun("0", false);
 		} finally {
 			Suite.libraries = libraries0;
 		}
