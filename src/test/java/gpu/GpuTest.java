@@ -43,7 +43,6 @@ public class GpuTest {
 
 		Pointer<Float> outp = out.read(queue, kernel.enqueueNDRange(queue, new int[] { n }));
 
-		// Print the first 10 output values
 		for (int i = 0; i < Math.min(10, n); i++)
 			System.out.println("out[" + i + "] = " + outp.get(i));
 	}
