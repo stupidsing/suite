@@ -13,8 +13,13 @@ import suite.node.Node;
 public class MonadTest {
 
 	@Test
-	public void testConcatm() throws IOException {
+	public void testConcatm0() throws IOException {
 		assertEquals("abc", evalMonad("\"abc%0A\" | split {10} | map {sh {\"cat\"}} | concatm"));
+	}
+
+	@Test
+	public void testConcatm1() throws IOException {
+		assertEquals("abc\nabc\n", evalMonad("\"echo abc\" | iterate {id} | take {2} | map {sh/ {}} | concatm"));
 	}
 
 	@Test

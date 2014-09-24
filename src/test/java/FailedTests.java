@@ -31,7 +31,8 @@ public class FailedTests {
 	// ThunkUtil.yawnSource()
 	@Test
 	public void testConcatm() throws IOException {
-		new MonadTest().testConcatm();
+		new MonadTest().testConcatm0();
+		new MonadTest().testConcatm1();
 	}
 
 	// NPE. Method not found in concatm due to not importing standard library.
