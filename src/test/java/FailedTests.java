@@ -27,8 +27,7 @@ public class FailedTests {
 		}
 	}
 
-	// Out of memory. Caused by Tree.forceSetRight(tree, null) in
-	// ThunkUtil.yawnSource()
+	// NPE. Caused by Tree.forceSetRight(tree, null) in ThunkUtil.yawnSource()
 	@Test
 	public void testConcatm() throws IOException {
 		new MonadTest().testConcatm0();

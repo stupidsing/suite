@@ -34,7 +34,7 @@ public class ThunkUtil {
 	 * corresponding characters into the writer.
 	 */
 	public static void yawnWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
-		Source<Node> source = yawnSource(yawn, node);
+		Source<Node> source = yawnList(yawn, node);
 		Node n;
 
 		while ((n = source.source()) != null) {
@@ -45,7 +45,7 @@ public class ThunkUtil {
 		}
 	}
 
-	public static Source<Node> yawnSource(Fun<Node, Node> yawn, Node node) {
+	public static Source<Node> yawnList(Fun<Node, Node> yawn, Node node) {
 		return new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;

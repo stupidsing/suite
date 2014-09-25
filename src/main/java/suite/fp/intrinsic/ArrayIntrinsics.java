@@ -43,7 +43,7 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
-		Source<Node> value = ThunkUtil.yawnSource(callback::yawn, inputs.get(0));
+		Source<Node> value = ThunkUtil.yawnList(callback::yawn, inputs.get(0));
 		return new Tuple(To.list(value));
 	};
 
