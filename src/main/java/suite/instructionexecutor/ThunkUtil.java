@@ -1,7 +1,6 @@
 package suite.instructionexecutor;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import suite.node.Atom;
@@ -18,15 +17,14 @@ public class ThunkUtil {
 	 * string.
 	 */
 	public static String yawnString(Fun<Node, Node> yawn, Node node) {
-		StringWriter writer = new StringWriter();
+		Source<Node> source = yawnList(yawn, node, false);
+		StringBuilder sb = new StringBuilder();
+		Node n;
 
-		try {
-			yawnWriter(yawn, node, writer);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+		while ((n = source.source()) != null)
+			sb.append((char) ((Int) n).getNumber());
 
-		return writer.toString();
+		return sb.toString();
 	}
 
 	/**
@@ -34,7 +32,7 @@ public class ThunkUtil {
 	 * corresponding characters into the writer.
 	 */
 	public static void yawnWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
-		Source<Node> source = yawnList(yawn, node);
+		Source<Node> source = yawnList(yawn, node, true);
 		Node n;
 
 		while ((n = source.source()) != null) {
@@ -45,7 +43,7 @@ public class ThunkUtil {
 		}
 	}
 
-	public static Source<Node> yawnList(Fun<Node, Node> yawn, Node node) {
+	public static Source<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
 		return new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;
@@ -63,8 +61,8 @@ public class ThunkUtil {
 					Node result = yawn.apply(tree.getLeft());
 					node_ = tree.getRight();
 
-					// Facilitates garbage collection
-					Tree.forceSetRight(tree, null);
+					if (isFacilitateGc)
+						Tree.forceSetRight(tree, null);
 					return result;
 				} else if (node_.finalNode() == Atom.NIL)
 					return null;

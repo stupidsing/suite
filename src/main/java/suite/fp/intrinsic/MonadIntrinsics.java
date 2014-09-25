@@ -39,7 +39,7 @@ public class MonadIntrinsics {
 		Fun<Node, Node> yawn = callback::yawn;
 		List<String> list = new ArrayList<>();
 
-		Source<Node> source = ThunkUtil.yawnList(yawn, inputs.get(0));
+		Source<Node> source = ThunkUtil.yawnList(yawn, inputs.get(0), false);
 		Node node;
 
 		while ((node = source.source()) != null)
