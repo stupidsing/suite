@@ -70,7 +70,7 @@ struct Object *markAndSweep() {
 	while(object) {
 		struct Object *next = object->next;
 		if(object->flag == FRESH__) {
-			(*prev) = next;
+			*prev = next;
 			memfree(object);
 		} else prev = &object->next;
 		object = next;
