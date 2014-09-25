@@ -81,11 +81,8 @@ public class Profiler {
 					&& !Util.stringEquals(threadInfo.getThreadName(), "ReaderThread")) {
 				Set<String> elements = new HashSet<>();
 
-				for (StackTraceElement elem : threadInfo.getStackTrace()) {
-					String m = elem.getClassName() + "." + elem.getMethodName();
-					String l = elem.getFileName() + ":" + elem.getLineNumber();
-					elements.add(m + " (" + l + ")");
-				}
+				for (StackTraceElement elem : threadInfo.getStackTrace())
+					elements.add(elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")");
 
 				for (String name : elements)
 					record.computeIfAbsent(name, any -> new int[] { 0 })[0]++;
