@@ -5,7 +5,9 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
+import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
+import suite.instructionexecutor.LazyFunInstructionExecutor;
 import suite.instructionexecutor.ThunkUtil;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
@@ -78,7 +80,10 @@ public class EvaluateUtil {
 		Node code = doFcc(node, fcc);
 
 		if (code != null)
-			return new FunInstructionExecutor(code, fcc.isLazy());
+			if (fcc.isLazy())
+				return new LazyFunInstructionExecutor(code);
+			else
+				return new EagerFunInstructionExecutor(code);
 		else
 			throw new RuntimeException("Function compilation failure");
 	}

@@ -3,7 +3,6 @@ package suite.instructionexecutor;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
@@ -11,9 +10,7 @@ import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
-import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -30,35 +27,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	private IntrinsicCallback intrinsicCallback;
 	private Comparer comparer;
 
-	private int invokeJavaEntryPoint;
-
-	public FunInstructionExecutor(Node node, boolean isLazy) {
+	public FunInstructionExecutor(Node node) {
 		super(node);
-
-		if (isLazy)
-			intrinsicCallback = new IntrinsicCallback() {
-				public Node yawn(Node node) {
-					node = node.finalNode();
-					return node instanceof Thunk ? yawnThunk((Thunk) node) : node;
-				}
-
-				public Node enclose(Intrinsic intrinsic, Node node) {
-					Frame frame = new Frame(null, new Node[] { node, new Data<>(intrinsic), null });
-					return new Thunk(frame, invokeJavaEntryPoint);
-				}
-			};
-		else
-			intrinsicCallback = new IntrinsicCallback() {
-				public Node yawn(Node node) {
-					return node;
-				}
-
-				public Node enclose(Intrinsic intrinsic, Node node) {
-					return intrinsic.invoke(this, Arrays.asList(node));
-				}
-			};
-
-		comparer = new FunComparer(intrinsicCallback::yawn);
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
@@ -127,21 +97,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	@Override
-	protected void postprocessInstructions(List<Instruction> list) {
-		invokeJavaEntryPoint = list.size();
-
-		list.add(new Instruction(Insn.FRAMEBEGIN____, 3, 0, 0));
-		list.add(new Instruction(Insn.PUSH__________, 0, 0, 0));
-		list.add(new Instruction(Insn.PUSH__________, 1, 0, 0));
-		list.add(new Instruction(Insn.CALLINTRINSIC_, 2, 2, 0));
-		list.add(new Instruction(Insn.SETRESULT_____, 2, 0, 0));
-		list.add(new Instruction(Insn.RETURN________, 0, 0, 0));
-		list.add(new Instruction(Insn.FRAMEEND______, 0, 0, 0));
-
-		super.postprocessInstructions(list);
-	}
-
-	@Override
 	protected Comparer comparer() {
 		return comparer;
 	}
@@ -152,6 +107,11 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	@Override
 	public void close() {
+	}
+
+	protected void setIntrinsicCallback(IntrinsicCallback intrinsicCallback) {
+		this.intrinsicCallback = intrinsicCallback;
+		comparer = new FunComparer(intrinsicCallback::yawn);
 	}
 
 }
