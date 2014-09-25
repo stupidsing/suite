@@ -50,7 +50,6 @@ public class LogUtil {
 		TimedResult<T> timedResult = new TimeUtil().time(source);
 		LogUtil.info(m + " in " + timedResult.duration + "ms");
 		return timedResult.result;
-
 	}
 
 	public static void info(String message) {

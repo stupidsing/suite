@@ -9,6 +9,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.sample.Profiler;
+import suite.util.LogUtil;
 
 public class PrecompileTest {
 
@@ -17,8 +18,8 @@ public class PrecompileTest {
 		long start = System.nanoTime();
 
 		System.out.println(new Profiler().profile(() -> {
-			ProverConfig pc = new ProverConfig();
-			Suite.precompile("STANDARD", pc);
+			for (int i = 0; i < 3; i++)
+				LogUtil.duration("", () -> Suite.precompile("STANDARD", new ProverConfig()));
 		}));
 
 		long end = System.nanoTime();

@@ -1,7 +1,7 @@
 package suite.node;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import suite.node.io.Operator;
 
@@ -12,7 +12,7 @@ import suite.node.io.Operator;
  */
 public class TreeIntern {
 
-	private static Map<Key, Tree> interns = new HashMap<>();
+	private static Map<Key, Tree> interns = new ConcurrentHashMap<>();
 
 	private static class Key {
 		private int hashCode;
