@@ -6,12 +6,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 
 import suite.net.cluster.impl.ClusterImpl;
+import suite.util.Pair;
+import suite.util.To;
 import suite.util.Util;
 
 public class ClusterTest {
@@ -20,9 +21,9 @@ public class ClusterTest {
 	public void testCluster() throws IOException {
 		InetAddress localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = new HashMap<>();
-		peers.put("NODE0", new InetSocketAddress(localHost, 3000));
-		peers.put("NODE1", new InetSocketAddress(localHost, 3001));
+		Map<String, InetSocketAddress> peers = To.map(null //
+				, Pair.of("NODE0", new InetSocketAddress(localHost, 3000)) //
+				, Pair.of("NODE1", new InetSocketAddress(localHost, 3001)));
 
 		Cluster cluster0 = new ClusterImpl("NODE0", peers);
 		Cluster cluster1 = new ClusterImpl("NODE1", peers);

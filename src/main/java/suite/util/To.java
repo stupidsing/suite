@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -124,6 +126,15 @@ public class To {
 		while ((t = source.source()) != null)
 			list.add(t);
 		return list;
+	}
+
+	@SafeVarargs
+	public static <K, V> Map<K, V> map(Pair<K, V>... pairs) {
+		Map<K, V> map = new HashMap<>();
+		for (Pair<K, V> pair : pairs)
+			if (pair != null)
+				map.put(pair.t0, pair.t1);
+		return map;
 	}
 
 	@SafeVarargs
