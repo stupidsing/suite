@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
-import suite.fp.MonadTest;
 import suite.lp.kb.RuleSet;
 
 public class FailedTests {
@@ -25,13 +24,6 @@ public class FailedTests {
 		} finally {
 			Suite.libraries = libraries0;
 		}
-	}
-
-	// NPE. Caused by Tree.forceSetRight(tree, null) in ThunkUtil.yawnSource()
-	@Test
-	public void testConcatm() throws IOException {
-		new MonadTest().testConcatm0();
-		new MonadTest().testConcatm1();
 	}
 
 	// NPE. Method not found in concatm due to not importing standard library.
