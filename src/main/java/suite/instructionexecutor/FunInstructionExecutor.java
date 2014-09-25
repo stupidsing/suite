@@ -53,8 +53,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			List<Node> ps = new ArrayList<>(3);
 			for (int i = 1; i < insn.op1; i++)
 				ps.add((Node) ds[--dsp]);
-			Intrinsic intrinsic = Data.get(data);
-			result = intrinsic.invoke(intrinsicCallback, ps);
+			result = Data.<Intrinsic> get(data).invoke(intrinsicCallback, ps);
 			break;
 		case COMPARE_______:
 			n0 = (Node) ds[--dsp];
