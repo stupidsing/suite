@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -35,12 +36,23 @@ public class SewingGeneralizer {
 			this.env = env;
 		}
 
-		public Node getVariable(Node variable) {
-			return env.refs[variableIndices.get(variable)];
+		public String dumpVariables() {
+			List<Entry<Node, Node>> entries = Util.sort(getVariables().entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
+			StringBuilder sb = new StringBuilder();
+			for (Entry<Node, Node> entry : entries) {
+				if (sb.length() > 0)
+					sb.append(", ");
+				sb.append(Formatter.dump(entry.getKey()) + " = " + Formatter.dump(entry.getValue()));
+			}
+			return sb.toString();
 		}
 
-		public String dumpVariables() {
-			return SewingGeneralizer.this.dumpVariables(env);
+		public Map<Node, Node> getVariables() {
+			return variableIndices.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> env.refs[e.getValue()]));
+		}
+
+		public Node getVariable(Node variable) {
+			return env.refs[variableIndices.get(variable)];
 		}
 
 		public Node node() {
@@ -149,25 +161,6 @@ public class SewingGeneralizer {
 
 	private Integer getVariableIndex(Node variable) {
 		return variableIndices.computeIfAbsent(variable, any -> nVariables++);
-	}
-
-	private String dumpVariables(Env env) {
-		boolean first = true;
-		StringBuilder sb = new StringBuilder();
-		List<Entry<Node, Integer>> entries = Util.sort(variableIndices.entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
-
-		for (Entry<Node, Integer> entry : entries) {
-			if (first)
-				first = false;
-			else
-				sb.append(", ");
-
-			sb.append(Formatter.dump(entry.getKey()));
-			sb.append(" = ");
-			sb.append(Formatter.dump(env.refs[entry.getValue()]));
-		}
-
-		return sb.toString();
 	}
 
 	private static boolean isWildcard(String name) {
