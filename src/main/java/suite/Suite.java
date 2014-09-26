@@ -6,15 +6,19 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.IndexedReader;
 import suite.lp.ImportUtil;
+import suite.lp.Journal;
+import suite.lp.doer.Binder;
 import suite.lp.doer.Configuration.ProverConfig;
 import suite.lp.doer.Configuration.TraceLevel;
 import suite.lp.doer.Prover;
@@ -100,6 +104,21 @@ public class Suite {
 				.map(Rule::formClause) //
 				.collect(Collectors.toList());
 		return Tree.list(TermOp.NEXT__, nodes);
+	}
+
+	public static Node[] match(String s, Node node) {
+		Generalization generalization = SewingGeneralizer.process(parse(s));
+
+		if (Binder.bind(generalization.node(), node, new Journal())) {
+			Map<Node, Node> variables = generalization.getVariables();
+			List<Node> results = new ArrayList<>();
+			int i = 0;
+			Node value;
+			while ((value = variables.get(Atom.of("." + i++))) != null)
+				results.add(value.finalNode());
+			return results.toArray(new Node[results.size()]);
+		} else
+			return null;
 	}
 
 	public static Node substitute(String s, Node... nodes) {

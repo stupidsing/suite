@@ -1,5 +1,6 @@
 package suite.fp;
 
+import suite.Suite;
 import suite.immutable.IMap;
 import suite.node.Atom;
 import suite.node.Int;
@@ -67,46 +68,44 @@ public class LazyFunInterpreter {
 
 	private Fun<IMap<String, Thunk_>, Thunk_> lazy0(Node node) {
 		Fun<IMap<String, Thunk_>, Thunk_> result;
-		Tree tree = Tree.decompose(node);
+		Node m[];
+		Tree tree;
 
-		if (tree != null) {
+		if ((m = Suite.match(".0 {.1}", node)) != null) {
+			Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(m[0]);
+			Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(m[1]);
+			result = env -> ((Fun_) fun.apply(env).get()).fun.apply(param.apply(env));
+		} else if ((m = Suite.match(".0 := .1 >> .2", node)) != null) {
+			String vk = v(m[0]);
+			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
+			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(m[2]);
+			result = env -> {
+				Thunk_ val[] = new Thunk_[] { null };
+				IMap<String, Thunk_> env1 = env.put(vk, () -> val[0].get());
+				val[0] = value.apply(env1)::get;
+				return expr.apply(env1);
+			};
+		} else if ((m = Suite.match(".0 => .1", node)) != null) {
+			String vk = v(m[0]);
+			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
+			result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
+		} else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
+			Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(m[0]);
+			Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(m[1]);
+			Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy0(m[2]);
+			result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
+		} else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Node lhs = tree.getLeft();
 			Node rhs = tree.getRight();
-
-			if (operator == TermOp.BRACES) { // fun {param}
-				Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(lhs);
-				Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(rhs);
-				result = env -> ((Fun_) fun.apply(env).get()).fun.apply(param.apply(env));
-			} else if (operator == TermOp.CONTD_) { // key := value >> expr
-				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(r(lhs));
-				Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(rhs);
-				String vk = v(l(lhs));
-				result = env -> {
-					Thunk_ val[] = new Thunk_[] { null };
-					IMap<String, Thunk_> env1 = env.put(vk, () -> val[0].get());
-					val[0] = value.apply(env1)::get;
-					return expr.apply(env1);
-				};
-			} else if (operator == TermOp.FUN___) { // var => value
-				Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(rhs);
-				String vk = v(lhs);
-				result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
-			} else if (operator == TermOp.TUPLE_) { // if a then b else c
-				Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(l(rhs));
-				Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(l(r(r(rhs))));
-				Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy0(r(r(r(r(rhs)))));
-				result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
-			} else {
-				Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(lhs);
-				Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(rhs);
-				result = env -> {
-					Thunk_ r0 = env.get(operator.getName());
-					Thunk_ r1 = ((Fun_) r0.get()).fun.apply(p0.apply(env));
-					Thunk_ r2 = ((Fun_) r1.get()).fun.apply(p1.apply(env));
-					return r2;
-				};
-			}
+			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(lhs);
+			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(rhs);
+			result = env -> {
+				Thunk_ r0 = env.get(operator.getName());
+				Thunk_ r1 = ((Fun_) r0.get()).fun.apply(p0.apply(env));
+				Thunk_ r2 = ((Fun_) r1.get()).fun.apply(p1.apply(env));
+				return r2;
+			};
 		} else if (node instanceof Atom) {
 			String vk = v(node);
 			result = env -> env.get(vk);
@@ -126,16 +125,6 @@ public class LazyFunInterpreter {
 
 	private String v(Node node) {
 		return ((Atom) node).getName();
-	}
-
-	private Node l(Node node) {
-		Tree tree = Tree.decompose(node);
-		return tree != null ? tree.getLeft() : null;
-	}
-
-	private Node r(Node node) {
-		Tree tree = Tree.decompose(node);
-		return tree != null ? tree.getRight() : null;
 	}
 
 }
