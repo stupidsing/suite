@@ -141,7 +141,7 @@ public class SewingProver {
 
 	private void trampoline(Runtime rt) {
 		while (!rt.alts.isEmpty()) {
-			rt.pushRem(rt.alts.getHead());
+			rt.rems = IList.cons(rt.alts.getHead(), IList.end());
 			rt.alts = rt.alts.getTail();
 
 			Trampoline rem;
