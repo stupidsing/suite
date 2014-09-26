@@ -96,10 +96,8 @@ public class LazyFunInterpreter {
 			result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
 		} else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			Node lhs = tree.getLeft();
-			Node rhs = tree.getRight();
-			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(lhs);
-			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(rhs);
+			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy0(tree.getLeft());
+			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy0(tree.getRight());
 			result = env -> {
 				Thunk_ r0 = env.get(operator.getName());
 				Thunk_ r1 = ((Fun_) r0.get()).fun.apply(p0.apply(env));
