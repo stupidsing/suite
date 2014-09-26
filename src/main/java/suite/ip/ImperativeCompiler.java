@@ -17,7 +17,7 @@ import suite.util.FileUtil;
 public class ImperativeCompiler {
 
 	private RuleSet ruleSet = Suite.imperativeCompilerRuleSet();
-	private Finder finder = new SewingProverBuilder().build(ruleSet, Suite.parse("" //
+	private Finder finder = new SewingProverBuilder().build(ruleSet).apply(Suite.parse("" //
 			+ "source .ip" //
 			+ ", ic-compile 0 .ip .code/()" //
 			+ ", sink .code"));

@@ -41,7 +41,7 @@ public class EvaluateUtil {
 		Builder builder = new SewingProverBuilder(pair.t0);
 		// Builder builder = new InterpretedProverBuilder(pair.t0);
 		// Builder builder = new CompiledProverBuilder.level1(pair.t0);
-			return builder.build(Suite.funCompilerRuleSet(), pair.t1);
+			return builder.build(Suite.funCompilerRuleSet()).apply(pair.t1);
 		});
 
 	public boolean proveLogic(Node lp) {
@@ -59,7 +59,7 @@ public class EvaluateUtil {
 	}
 
 	public List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
-		return FindUtil.collectList(builder.build(rs, lp), Atom.NIL);
+		return FindUtil.collectList(builder.build(rs).apply(lp), Atom.NIL);
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {

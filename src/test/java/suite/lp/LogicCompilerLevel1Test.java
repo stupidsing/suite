@@ -70,7 +70,7 @@ public class LogicCompilerLevel1Test {
 	}
 
 	private Finder finder(RuleSet rs, Node goal) {
-		return CompiledProverBuilder.level1(new ProverConfig()).build(rs, goal);
+		return CompiledProverBuilder.level1(new ProverConfig()).build(rs).apply(goal);
 	}
 
 }

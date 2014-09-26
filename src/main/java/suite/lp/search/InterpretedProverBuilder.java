@@ -7,6 +7,7 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Node;
+import suite.util.FunUtil.Fun;
 
 public class InterpretedProverBuilder implements Builder {
 
@@ -21,14 +22,16 @@ public class InterpretedProverBuilder implements Builder {
 	}
 
 	@Override
-	public Finder build(RuleSet ruleSet, Node goal) {
-		Node goal1 = SewingGeneralizer.generalize(goal);
-		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+	public Fun<Node, Finder> build(RuleSet ruleSet) {
+		return goal -> {
+			Node goal1 = SewingGeneralizer.generalize(goal);
 
-		return (source, sink) -> {
-			proverConfig1.setSource(source);
-			proverConfig1.setSink(sink);
-			new Prover(proverConfig1).elaborate(goal1);
+			return (source, sink) -> {
+				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+				proverConfig1.setSource(source);
+				proverConfig1.setSink(sink);
+				new Prover(proverConfig1).elaborate(goal1);
+			};
 		};
 	}
 

@@ -84,7 +84,7 @@ public class InstructionTranslatorTest {
 
 	private Node compile(RuleSet ruleSet, Node goal, Node program) {
 		Builder builder = new SewingProverBuilder();
-		Finder compiler = builder.build(ruleSet, goal);
+		Finder compiler = builder.build(ruleSet).apply(goal);
 		return FindUtil.collectSingle(compiler, program);
 	}
 

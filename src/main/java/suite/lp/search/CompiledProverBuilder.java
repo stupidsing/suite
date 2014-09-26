@@ -8,6 +8,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
+import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 
 public class CompiledProverBuilder implements Builder {
@@ -37,18 +38,21 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	@Override
-	public Finder build(RuleSet ruleSet, Node goal) {
-		Node goal1 = Suite.substitute(".0 >> .1", Suite.ruleSetToNode(ruleSet), goal);
-		Node code = compile(goal1);
-		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+	public Fun<Node, Finder> build(RuleSet ruleSet) {
+		Node rules = Suite.ruleSetToNode(ruleSet);
 
-		return (source, sink) -> {
-			proverConfig1.setSource(source);
-			proverConfig1.setSink(sink);
+		return goal -> {
+			Node code = compile(Suite.substitute(".0 >> .1", rules, goal));
 
-			try (InstructionExecutor executor = new LogicInstructionExecutor(code, proverConfig1)) {
-				executor.execute();
-			}
+			return (source, sink) -> {
+				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+				proverConfig1.setSource(source);
+				proverConfig1.setSink(sink);
+
+				try (InstructionExecutor executor = new LogicInstructionExecutor(code, proverConfig1)) {
+					executor.execute();
+				}
+			};
 		};
 	}
 
@@ -58,7 +62,7 @@ public class CompiledProverBuilder implements Builder {
 
 	private Finder createCompiler(Builder builder) {
 		String compile = "source .in, compile-logic .in .out, sink .out";
-		return builder.build(Suite.logicCompilerRuleSet(), Suite.parse(compile));
+		return builder.build(Suite.logicCompilerRuleSet()).apply(Suite.parse(compile));
 	}
 
 }

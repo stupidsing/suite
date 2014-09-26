@@ -21,14 +21,18 @@ public class SewingProverBuilder implements Builder {
 	}
 
 	@Override
-	public Finder build(RuleSet ruleSet, Node goal) {
-		Fun<ProverConfig, Boolean> fun = new SewingProver(ruleSet).compile(goal);
-		ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+	public Fun<Node, Finder> build(RuleSet ruleSet) {
+		SewingProver sewingProver = new SewingProver(ruleSet);
 
-		return (source, sink) -> {
-			proverConfig1.setSource(source);
-			proverConfig1.setSink(sink);
-			fun.apply(proverConfig1);
+		return goal -> {
+			Fun<ProverConfig, Boolean> fun = sewingProver.compile(goal);
+
+			return (source, sink) -> {
+				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+				proverConfig1.setSource(source);
+				proverConfig1.setSink(sink);
+				fun.apply(proverConfig1);
+			};
 		};
 	}
 

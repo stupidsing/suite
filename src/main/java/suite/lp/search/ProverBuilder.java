@@ -2,13 +2,14 @@ package suite.lp.search;
 
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
 public class ProverBuilder {
 
 	public interface Builder {
-		public Finder build(RuleSet ruleSet, Node goal);
+		public Fun<Node, Finder> build(RuleSet ruleSet);
 	}
 
 	public interface Finder {

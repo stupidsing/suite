@@ -32,7 +32,7 @@ public class Assembler {
 
 	private RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
 
-	private Finder finder = new SewingProverBuilder().build(ruleSet, Suite.parse("" //
+	private Finder finder = new SewingProverBuilder().build(ruleSet).apply(Suite.parse("" //
 			+ "source (.bits, .address, .instruction,)" //
 			+ ", asi:.bits:.address .instruction .code" //
 			+ ", sink .code" //
