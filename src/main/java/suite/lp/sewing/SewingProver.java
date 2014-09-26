@@ -24,8 +24,6 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
-import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -183,32 +181,27 @@ public class SewingProver {
 	private Trampoline compile0(CompileTime ct, Node node) {
 		Trampoline tr = null;
 		node = node.finalNode();
-		Tree tree = Tree.decompose(node);
+		Tree tree;
+		Node m[];
 
-		if (tree != null) {
-			Operator operator = tree.getOperator();
-			Node lhs = tree.getLeft();
-			Node rhs = tree.getRight();
-
-			if (operator == TermOp.AND___) { // a, b
-				Trampoline tr0 = compile0(ct, lhs);
-				Trampoline tr1 = compile0(ct, rhs);
-				tr = and(tr0, tr1);
-			} else if (operator == TermOp.EQUAL_) { // a = b
-				Fun<Env, Node> f0 = ct.sewingGeneralizer.compile(lhs);
-				Fun<Env, Node> f1 = ct.sewingGeneralizer.compile(rhs);
-				tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
-			} else if (operator == TermOp.OR____) { // a; b
-				Trampoline tr0 = compile0(ct, lhs);
-				Trampoline tr1 = compile0(ct, rhs);
-				tr = or(tr0, tr1);
-			} else if (operator == TermOp.TUPLE_ && lhs instanceof Atom) // a b
-				tr = callSystemPredicate(ct, ((Atom) lhs).getName(), rhs);
-			else
-				tr = callSystemPredicate(ct, operator.getName(), node);
-		} else if (node instanceof Atom) {
+		if ((m = Suite.match(".0, .1", node)) != null) {
+			Trampoline tr0 = compile0(ct, m[0]);
+			Trampoline tr1 = compile0(ct, m[1]);
+			tr = and(tr0, tr1);
+		} else if ((m = Suite.match(".0; .1", node)) != null) {
+			Trampoline tr0 = compile0(ct, m[0]);
+			Trampoline tr1 = compile0(ct, m[1]);
+			tr = or(tr0, tr1);
+		} else if ((m = Suite.match(".0 = .1", node)) != null) {
+			Fun<Env, Node> f0 = ct.sewingGeneralizer.compile(m[0]);
+			Fun<Env, Node> f1 = ct.sewingGeneralizer.compile(m[1]);
+			tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
+		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
+			tr = callSystemPredicate(ct, ((Atom) m[0]).getName(), m[1]);
+		else if ((tree = Tree.decompose(node)) != null)
+			tr = callSystemPredicate(ct, tree.getOperator().getName(), node);
+		else if (node instanceof Atom) {
 			String name = ((Atom) node).getName();
-
 			if (Util.stringEquals(name, SewingGeneralizer.cutName))
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
