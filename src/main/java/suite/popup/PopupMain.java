@@ -42,6 +42,8 @@ public class PopupMain extends ExecutableProgram {
 
 		frame.repaint();
 
+		System.in.read();
+
 		return true;
 	}
 

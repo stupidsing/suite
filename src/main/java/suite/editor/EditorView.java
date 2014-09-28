@@ -41,8 +41,9 @@ public class EditorView {
 	private int windowWidth = 1280;
 	private int windowHeight = 768;
 
-	private Font font;
-	private Font narrowFont;
+	private FontUtil fontUtil = new FontUtil();
+	private Font monoFont = fontUtil.monoFont;
+	private Font sansFont = fontUtil.sansFont;
 
 	private EditorController controller;
 
@@ -60,11 +61,6 @@ public class EditorView {
 
 	private boolean isModified = false;
 
-	public EditorView() {
-		font = new Font(Editor.monoFont, Font.PLAIN, 12);
-		narrowFont = new Font(Editor.sansFont, Font.PLAIN, 12);
-	}
-
 	public JFrame run(String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
 		searchTextField.addActionListener(event -> controller.searchFiles(EditorView.this));
@@ -79,7 +75,7 @@ public class EditorView {
 		listModel.addElement("<Empty>");
 
 		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
-		searchList.setFont(narrowFont);
+		searchList.setFont(sansFont);
 		searchList.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.VK_ENTER)
@@ -300,7 +296,7 @@ public class EditorView {
 	}
 
 	private <T extends JComponent> T applyDefaults(T t) {
-		t.setFont(font);
+		t.setFont(monoFont);
 		t.setAlignmentX(Component.CENTER_ALIGNMENT);
 		return t;
 	}
