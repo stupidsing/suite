@@ -7,6 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import suite.Suite;
+import suite.editor.ClipboardUtil;
+import suite.editor.FontUtil;
 import suite.editor.LayoutCalculator;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.util.Util;
@@ -25,6 +28,12 @@ public class PopupMain extends ExecutableProgram {
 		int width = screenSize.width / 2, height = screenSize.height / 8;
 
 		JTextField inTextField = new JTextField();
+		inTextField.setFont(new FontUtil().monoFont);
+		inTextField.addActionListener(event -> {
+			execute(inTextField.getText());
+			System.exit(0);
+		});
+
 		JLabel outLabel = new JLabel();
 
 		JFrame frame = new JFrame("Pop-up");
@@ -45,6 +54,13 @@ public class PopupMain extends ExecutableProgram {
 		System.in.read();
 
 		return true;
+	}
+
+	public void execute(String cmd) {
+		ClipboardUtil clipboardUtil = new ClipboardUtil();
+		String text0 = clipboardUtil.getClipboardText();
+		String text1 = Suite.evaluateFilterFun(cmd, true, text0);
+		clipboardUtil.setClipboardText(text1);
 	}
 
 }
