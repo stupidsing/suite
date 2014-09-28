@@ -36,8 +36,4 @@ public class Journal {
 			boundReferences.remove(--i).unbound();
 	}
 
-	public List<Reference> getBoundReferences() {
-		return boundReferences;
-	}
-
 }
