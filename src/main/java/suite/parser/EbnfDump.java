@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.parser.Ebnf.Node;
+import suite.util.Util;
 
 public class EbnfDump {
 
@@ -26,18 +27,30 @@ public class EbnfDump {
 	}
 
 	private void prettyPrint(Node node, String indent) throws IOException {
-		String indent1 = indent + "  ";
-		int start = node.getStart();
-		int end = node.getEnd();
-		List<Node> nodes = node.getNodes();
+		String entity0 = node.getEntity();
+		List<Node> nodes;
 
-		w.write(indent + node.getEntity() + "@" + start + "-" + end);
-		if (nodes.isEmpty())
-			w.write("[" + in.substring(start, end) + "]");
-		w.write("\n");
+		while ((nodes = node.getNodes()).size() == 1)
+			node = nodes.get(0);
 
-		for (Node childNode : nodes)
-			prettyPrint(childNode, indent1);
+		if (nodes.size() != 1) {
+			String indent1 = indent + "  ";
+			String entity1 = node.getEntity();
+			int start = node.getStart();
+			int end = node.getEnd();
+
+			w.write(indent + entity0);
+			if (!Util.stringEquals(entity0, entity1))
+				w.write(".." + entity1);
+			w.write("@" + start + "-" + end);
+			if (nodes.isEmpty())
+				w.write("[" + in.substring(start, end) + "]");
+			w.write("\n");
+
+			for (Node childNode : nodes)
+				prettyPrint(childNode, indent1);
+		} else
+			prettyPrint(nodes.get(0), indent);
 	}
 
 }
