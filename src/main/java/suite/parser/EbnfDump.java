@@ -32,10 +32,8 @@ public class EbnfDump {
 		List<Node> nodes = node.getNodes();
 
 		w.write(indent + node.getEntity() + "@" + start + "-" + end);
-
 		if (nodes.isEmpty())
 			w.write("[" + in.substring(start, end) + "]");
-
 		w.write("\n");
 
 		for (Node childNode : nodes)
