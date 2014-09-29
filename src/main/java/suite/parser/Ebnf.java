@@ -115,28 +115,9 @@ public class Ebnf {
 		}
 
 		public Source<State> p(Parse parse, State state) {
-			Source<State> states;
-			String entity = this.entity;
-			int depth = state.depth;
-			int pos = state.pos;
 			State state1 = parse.deepen(state, entity);
-
-			if (Util.stringEquals(entity, "<EOF>"))
-				states = state1.pos == parse.length ? To.source(state1) : noResult;
-			else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
-				states = parse.expect(state1, parse.expectCharLiteral(pos));
-			else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
-				states = parse.expect(state1, parse.expectFloatLiteral(pos));
-			else if (Util.stringEquals(entity, "<IDENTIFIER>"))
-				states = parse.expect(state1, parse.expectIdentifier(pos));
-			else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
-				states = parse.expect(state1, parse.expectIntegerLiteral(pos));
-			else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
-				states = parse.expect(state1, parse.expectStringLiteral(pos));
-			else
-				states = parse.parse(state1, grammarsByEntity.get(entity));
-
-			return FunUtil.map(st -> parse.undeepen(st, depth), states);
+			Source<State> states = parse.parse(state1, grammarsByEntity.get(entity));
+			return FunUtil.map(st -> parse.undeepen(st, state.depth), states);
 		}
 	}
 
@@ -174,66 +155,6 @@ public class Ebnf {
 		public List<Node> getNodes() {
 			return nodes;
 		}
-	}
-
-	public Ebnf(Reader reader) throws IOException {
-		BufferedReader br = new BufferedReader(reader);
-		String line;
-		Pair<String, String> lr;
-
-		while ((line = br.readLine()) != null)
-			if (!line.isEmpty() && line.charAt(0) != '#' && (lr = Util.split2(line, " ::= ")) != null) {
-				grammarsByEntity.put(lr.t0, parseGrammar(lr.t1));
-
-				if (rootGrammarEntity == null)
-					rootGrammarEntity = lr.t0;
-			}
-
-		verify();
-		reduceHeadRecursion();
-	}
-
-	private Grammar parseGrammar(String s) {
-		Grammar grammar;
-		List<String> list;
-		s = s.trim();
-
-		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
-			grammar = new OrGrammar(parseGrammars(list));
-		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
-			grammar = new JoinGrammar(parseGrammars(list));
-		else if (s.endsWith("*"))
-			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), true);
-		else if (s.endsWith("+"))
-			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
-		else if (s.endsWith("?")) {
-			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
-			grammar = (parse, st) -> FunUtil.cons(st, parse.parse(st, grammar1));
-		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
-			char start = s.charAt(1);
-			char end = s.charAt(3);
-			grammar = (parse, st) -> parse.expect(st, parse.expectCharRange(st.pos, start, end));
-		} else if (s.startsWith("(") && s.endsWith(")"))
-			grammar = parseGrammar(Util.substr(s, 1, -1));
-		else if (s.startsWith("\"") && s.endsWith("\"")) {
-			String token = Util.substr(s, 1, -1);
-			grammar = (parse, st) -> parse.expect(st, parse.expectString(st.pos, token));
-		} else
-			grammar = new EntityGrammar(s);
-
-		return grammar;
-	}
-
-	private List<Grammar> parseGrammars(List<String> list) {
-		return To.list(FunUtil.iter(FunUtil.map(this::parseGrammar, To.source(list))));
-	}
-
-	public Node parse(String s) {
-		return parse(s, 0, rootGrammarEntity);
-	}
-
-	public Node parse(String s, int end, String entity) {
-		return new Parse(s).parse(end, parseGrammar(entity));
 	}
 
 	private class Parse {
@@ -465,22 +386,97 @@ public class Ebnf {
 		}
 	}
 
-	private void verify() {
-		for (Grammar grammar : grammarsByEntity.values())
-			verify(grammar);
+	public Ebnf(Reader reader) throws IOException {
+		BufferedReader br = new BufferedReader(reader);
+		String line;
+		Pair<String, String> lr;
+
+		while ((line = br.readLine()) != null)
+			if (!line.isEmpty() && line.charAt(0) != '#' && (lr = Util.split2(line, " ::= ")) != null) {
+				grammarsByEntity.put(lr.t0, parseGrammar(lr.t1));
+
+				if (rootGrammarEntity == null)
+					rootGrammarEntity = lr.t0;
+			}
+
+		reduceHeadRecursion();
 	}
 
-	private void verify(Grammar grammar) {
-		if (grammar instanceof EntityGrammar) {
-			String entity = ((EntityGrammar) grammar).entity;
-			boolean isEntityExists = entity.startsWith("<") && entity.endsWith(">") || grammarsByEntity.containsKey(entity);
+	private Grammar parseGrammar(String s) {
+		Grammar grammar;
+		List<String> list;
+		s = s.trim();
 
-			if (!isEntityExists)
-				throw new RuntimeException("Grammar " + entity + " does not exist");
-		} else if (grammar instanceof WrappingGrammar)
-			verify(child((WrappingGrammar) grammar));
-		else if (grammar instanceof CompositeGrammar)
-			((CompositeGrammar) grammar).grammars.forEach(this::verify);
+		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
+			grammar = new OrGrammar(parseGrammars(list));
+		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
+			grammar = new JoinGrammar(parseGrammars(list));
+		else if (s.endsWith("*"))
+			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), true);
+		else if (s.endsWith("+"))
+			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
+		else if (s.endsWith("?")) {
+			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
+			grammar = (parse, st) -> FunUtil.cons(st, parse.parse(st, grammar1));
+		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
+			char start = s.charAt(1);
+			char end = s.charAt(3);
+			grammar = (parse, st) -> parse.expect(st, parse.expectCharRange(st.pos, start, end));
+		} else if (s.startsWith("(") && s.endsWith(")"))
+			grammar = parseGrammar(Util.substr(s, 1, -1));
+		else if (s.startsWith("\"") && s.endsWith("\"")) {
+			String token = Util.substr(s, 1, -1);
+			grammar = (parse, st) -> parse.expect(st, parse.expectString(st.pos, token));
+		} else
+			grammar = parseGrammarEntity(s);
+
+		return grammar;
+	}
+
+	private List<Grammar> parseGrammars(List<String> list) {
+		return To.list(FunUtil.iter(FunUtil.map(this::parseGrammar, To.source(list))));
+	}
+
+	private Grammar parseGrammarEntity(String entity) {
+		Grammar grammar;
+		if ((grammar = parseGrammarLiterals(entity)) == null)
+			grammar = new EntityGrammar(entity);
+		return grammar;
+	}
+
+	private Grammar parseGrammarLiterals(String entity) {
+		Grammar grammar;
+
+		if (Util.stringEquals(entity, "<EOF>"))
+			grammar = (parse, st) -> st.pos == parse.length ? To.source(st) : noResult;
+		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
+			grammar = (parse, st) -> parse.expect(st, parse.expectCharLiteral(st.pos));
+		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
+			grammar = (parse, st) -> parse.expect(st, parse.expectFloatLiteral(st.pos));
+		else if (Util.stringEquals(entity, "<IDENTIFIER>"))
+			grammar = (parse, st) -> parse.expect(st, parse.expectIdentifier(st.pos));
+		else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
+			grammar = (parse, st) -> parse.expect(st, parse.expectIntegerLiteral(st.pos));
+		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
+			grammar = (parse, st) -> parse.expect(st, parse.expectStringLiteral(st.pos));
+		else
+			grammar = null;
+
+		if (grammar != null)
+			return (parse, st) -> {
+				State st1 = parse.deepen(st, entity);
+				return FunUtil.map(st_ -> parse.undeepen(st_, st.depth), grammar.p(parse, st1));
+			};
+		else
+			return null;
+	}
+
+	public Node parse(String s) {
+		return parse(s, 0, rootGrammarEntity);
+	}
+
+	public Node parse(String s, int end, String entity) {
+		return new Parse(s).parse(end, parseGrammar(entity));
 	}
 
 	private void reduceHeadRecursion() {
@@ -531,8 +527,8 @@ public class Ebnf {
 				String tempc = entity + "-Tail";
 				grammarsByEntity.put(tempb, new OrGrammar(listb));
 				grammarsByEntity.put(tempc, new OrGrammar(listc));
-				EntityGrammar tempbGrammar = new EntityGrammar(tempb);
-				EntityGrammar tempcGrammar = new EntityGrammar(tempc);
+				Grammar tempbGrammar = parseGrammarEntity(tempb);
+				Grammar tempcGrammar = parseGrammarEntity(tempc);
 				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar, true)));
 			} else
 				grammar1 = grammar;
@@ -546,10 +542,6 @@ public class Ebnf {
 		String entity = grammar instanceof EntityGrammar ? ((EntityGrammar) grammar).entity : null;
 		Grammar grammar1 = entity != null ? grammarsByEntity.get(entity) : null;
 		return grammar1 != null ? grammar1 : grammar;
-	}
-
-	private Grammar child(WrappingGrammar grammar) {
-		return grammar.grammar;
 	}
 
 	private List<Grammar> children(CompositeGrammar grammar) {
