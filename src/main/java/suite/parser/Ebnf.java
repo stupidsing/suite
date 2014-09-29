@@ -28,7 +28,7 @@ import suite.util.Util;
  */
 public class Ebnf {
 
-	private String rootGrammarName;
+	private String rootGrammarEntity;
 	private Map<String, Grammar> grammars = new HashMap<>();
 
 	private static boolean trace = false;
@@ -79,11 +79,11 @@ public class Ebnf {
 		}
 	}
 
-	private class NamedGrammar implements Grammar {
-		private String name;
+	private class EntityGrammar implements Grammar {
+		private String entity;
 
-		private NamedGrammar(String name) {
-			this.name = name;
+		private EntityGrammar(String entity) {
+			this.entity = entity;
 		}
 	}
 
@@ -105,43 +105,38 @@ public class Ebnf {
 	}
 
 	public class Node {
-		private String name;
+		private String entity;
 		private int start, end;
 		private List<Node> nodes = new ArrayList<>();
 
-		public Node(String name, int start) {
-			this(name, start, 0);
+		public Node(String entity, int start) {
+			this(entity, start, 0);
 		}
 
-		public Node(String name, int start, int end) {
-			this.name = name;
+		public Node(String entity, int start, int end) {
+			this.entity = entity;
 			this.start = start;
 			this.end = end;
 		}
 
 		public String toString() {
-			return name + "@" + start + "-" + end + nodes;
-		}
-
-		public String toPrettyPrint() {
-			StringBuilder sb = new StringBuilder();
-			prettyPrint("", sb);
-			return sb.toString();
-		}
-
-		private void prettyPrint(String indent, StringBuilder sb) {
-			String indent1 = indent + "  ";
-			sb.append(indent + name + "@" + start + "-" + end + "\n");
-			for (Node node : nodes)
-				node.prettyPrint(indent1, sb);
+			return entity + "@" + start + "-" + end + nodes;
 		}
 
 		public String getEntity() {
-			return name;
+			return entity;
+		}
+
+		public int getStart() {
+			return start;
 		}
 
 		public int getEnd() {
-			return start;
+			return end;
+		}
+
+		public List<Node> getNodes() {
+			return nodes;
 		}
 	}
 
@@ -154,8 +149,8 @@ public class Ebnf {
 			if (!line.isEmpty() && line.charAt(0) != '#' && (lr = Util.split2(line, " ::= ")) != null) {
 				grammars.put(lr.t0, parseGrammar(lr.t1));
 
-				if (rootGrammarName == null)
-					rootGrammarName = lr.t0;
+				if (rootGrammarEntity == null)
+					rootGrammarEntity = lr.t0;
 			}
 
 		verify();
@@ -184,7 +179,7 @@ public class Ebnf {
 		else if (s.startsWith("\"") && s.endsWith("\""))
 			grammar = new TokenGrammar(Util.substr(s, 1, -1));
 		else
-			grammar = new NamedGrammar(s);
+			grammar = new EntityGrammar(s);
 
 		return grammar;
 	}
@@ -194,34 +189,34 @@ public class Ebnf {
 	}
 
 	public Node parse(String s) {
-		return parse(s, 0, rootGrammarName);
+		return parse(s, 0, rootGrammarEntity);
 	}
 
-	public Node parse(String s, int end, String name) {
-		return new Parse(s).parse(end, parseGrammar(name));
+	public Node parse(String s, int end, String entity) {
+		return new Parse(s).parse(end, parseGrammar(entity));
 	}
 
 	private class Parse {
 		private String in;
 		private int length;
 		private int errorPosition = 0;
-		private String errorName;
+		private String errorEntity;
 
 		private class State {
 			private State previous;
 			private int pos;
 
-			private String name;
+			private String entity;
 			private int depth;
 
 			private State(State previous, int pos) {
-				this(previous, pos, previous.name, previous.depth);
+				this(previous, pos, previous.entity, previous.depth);
 			}
 
-			private State(State previous, int pos, String name, int depth) {
+			private State(State previous, int pos, String entity, int depth) {
 				this.previous = previous;
 				this.pos = pos;
-				this.name = name;
+				this.entity = entity;
 				this.depth = depth;
 			}
 		}
@@ -257,9 +252,9 @@ public class Ebnf {
 							stack.pop().end = state_.pos;
 
 						if (state_.depth > stack.size()) {
-							Node node = new Node(state_.name, state_.pos);
+							Node node = new Node(state_.entity, state_.pos);
 
-							if (state_.name != null)
+							if (state_.entity != null)
 								stack.peek().nodes.add(node);
 
 							stack.push(node);
@@ -269,7 +264,7 @@ public class Ebnf {
 					return root.nodes.get(0);
 				}
 
-			throw new RuntimeException("Syntax error for entity " + errorName + " at " + findPosition(errorPosition));
+			throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
 		}
 
 		private Source<State> parse(State state, Grammar grammar) {
@@ -281,8 +276,8 @@ public class Ebnf {
 			State state1 = new State(state, pos);
 			Source<State> states;
 
-			if (grammar instanceof NamedGrammar)
-				states = parseNamedGrammar(state1, (NamedGrammar) grammar);
+			if (grammar instanceof EntityGrammar)
+				states = parseEntityGrammar(state1, (EntityGrammar) grammar);
 			else if (grammar instanceof OrGrammar)
 				states = parseOr(state1, (OrGrammar) grammar);
 			else if (grammar instanceof JoinGrammar)
@@ -298,35 +293,35 @@ public class Ebnf {
 			else
 				states = noResult;
 
-			if (states == noResult && state1.name != null && pos >= errorPosition) {
+			if (states == noResult && state1.entity != null && pos >= errorPosition) {
 				errorPosition = pos;
-				errorName = state1.name;
+				errorEntity = state1.entity;
 			}
 
 			return states;
 		}
 
-		private Source<State> parseNamedGrammar(State state, NamedGrammar namedGrammar) {
+		private Source<State> parseEntityGrammar(State state, EntityGrammar entityGrammar) {
 			Source<State> states;
-			String name = namedGrammar.name;
+			String entity = entityGrammar.entity;
 			int depth = state.depth;
 			int pos = state.pos;
-			State state1 = deepen(state, name);
+			State state1 = deepen(state, entity);
 
-			if (Util.stringEquals(name, "<EOF>"))
+			if (Util.stringEquals(entity, "<EOF>"))
 				states = state1.pos == length ? To.source(state1) : noResult;
-			else if (Util.stringEquals(name, "<CHARACTER_LITERAL>"))
+			else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
 				states = parseExpect(state1, expectCharLiteral(pos));
-			else if (Util.stringEquals(name, "<FLOATING_POINT_LITERAL>"))
+			else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
 				states = parseExpect(state1, expectFloatLiteral(pos));
-			else if (Util.stringEquals(name, "<IDENTIFIER>"))
+			else if (Util.stringEquals(entity, "<IDENTIFIER>"))
 				states = parseExpect(state1, expectIdentifier(pos));
-			else if (Util.stringEquals(name, "<INTEGER_LITERAL>"))
+			else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
 				states = parseExpect(state1, expectIntegerLiteral(pos));
-			else if (Util.stringEquals(name, "<STRING_LITERAL>"))
+			else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
 				states = parseExpect(state1, expectStringLiteral(pos));
 			else
-				states = parse(state1, grammars.get(name));
+				states = parse(state1, grammars.get(entity));
 
 			return FunUtil.map(st -> undeepen(st, depth), states);
 		}
@@ -381,8 +376,8 @@ public class Ebnf {
 			return state.pos < end ? To.source(new State(state, end)) : noResult;
 		}
 
-		private State deepen(State state, String name) {
-			return new State(state, state.pos, name, state.depth + 1);
+		private State deepen(State state, String entity) {
+			return new State(state, state.pos, entity, state.depth + 1);
 		}
 
 		private State undeepen(State state, int depth) {
@@ -528,12 +523,12 @@ public class Ebnf {
 	}
 
 	private void verify(Grammar grammar) {
-		if (grammar instanceof NamedGrammar) {
-			String name = ((NamedGrammar) grammar).name;
-			boolean isNameExists = name.startsWith("<") && name.endsWith(">") || grammars.containsKey(name);
+		if (grammar instanceof EntityGrammar) {
+			String entity = ((EntityGrammar) grammar).entity;
+			boolean isEntityExists = entity.startsWith("<") && entity.endsWith(">") || grammars.containsKey(entity);
 
-			if (!isNameExists)
-				throw new RuntimeException("Grammar " + name + " not exist");
+			if (!isEntityExists)
+				throw new RuntimeException("Grammar " + entity + " not exist");
 		} else if (grammar instanceof WrappingGrammar)
 			verify(child((WrappingGrammar) grammar));
 		else if (grammar instanceof CompositeGrammar)
@@ -543,9 +538,9 @@ public class Ebnf {
 
 	private void reduceHeadRecursion() {
 		for (Entry<String, Grammar> entry : new ArrayList<>(grammars.entrySet())) {
-			String name = entry.getKey();
+			String entity = entry.getKey();
 			Grammar grammar = entry.getValue();
-			grammars.put(name, reduceHeadRecursion(name, grammar));
+			grammars.put(entity, reduceHeadRecursion(entity, grammar));
 		}
 	}
 
@@ -562,7 +557,7 @@ public class Ebnf {
 	 *
 	 * tempC = C0 | C1 | ... | Cn
 	 */
-	private Grammar reduceHeadRecursion(String name, Grammar grammar0) {
+	private Grammar reduceHeadRecursion(String entity, Grammar grammar0) {
 		Grammar grammar = lookup(grammar0);
 		OrGrammar orGrammar = grammar instanceof OrGrammar ? (OrGrammar) grammar : null;
 		Grammar grammar1;
@@ -585,12 +580,12 @@ public class Ebnf {
 			}
 
 			if (!listc.isEmpty()) {
-				String tempb = name + "-Head";
-				String tempc = name + "-Tail";
+				String tempb = entity + "-Head";
+				String tempc = entity + "-Tail";
 				grammars.put(tempb, new OrGrammar(listb));
 				grammars.put(tempc, new OrGrammar(listc));
-				NamedGrammar tempbGrammar = new NamedGrammar(tempb);
-				NamedGrammar tempcGrammar = new NamedGrammar(tempc);
+				EntityGrammar tempbGrammar = new EntityGrammar(tempb);
+				EntityGrammar tempcGrammar = new EntityGrammar(tempc);
 				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar, true)));
 			} else
 				grammar1 = grammar;
@@ -601,8 +596,8 @@ public class Ebnf {
 	}
 
 	private Grammar lookup(Grammar grammar) {
-		String name = grammar instanceof NamedGrammar ? ((NamedGrammar) grammar).name : null;
-		Grammar grammar1 = name != null ? grammars.get(name) : null;
+		String entity = grammar instanceof EntityGrammar ? ((EntityGrammar) grammar).entity : null;
+		Grammar grammar1 = entity != null ? grammars.get(entity) : null;
 		return grammar1 != null ? grammar1 : grammar;
 	}
 
