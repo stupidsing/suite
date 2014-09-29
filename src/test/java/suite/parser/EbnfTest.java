@@ -22,6 +22,12 @@ public class EbnfTest {
 	}
 
 	@Test
+	public void testJava() throws IOException {
+		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
+		System.out.println(ebnf.parse(FileUtil.read("src/test/java/suite/parser/EbnfTest.java")));
+	}
+
+	@Test
 	public void testJavaExpression() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("\"1\" + \"2\"", 0, "Expression"));
@@ -31,12 +37,6 @@ public class EbnfTest {
 	public void testJavaSimple() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("public class C { public void f() { int a; } }"));
-	}
-
-	@Test
-	public void testJava() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		System.out.println(ebnf.parse(FileUtil.read("src/test/java/suite/parser/EbnfTest.java")));
 	}
 
 	@Test

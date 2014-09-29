@@ -29,15 +29,18 @@ import suite.util.Util;
 public class Ebnf {
 
 	private String rootGrammarEntity;
-	private Map<String, Grammar> grammars = new HashMap<>();
+	private Map<String, Grammar> grammarsByEntity = new HashMap<>();
+
+	private Source<State> noResult = FunUtil.nullSource();
 
 	private static boolean trace = false;
 
 	private interface Grammar {
+		public Source<State> p(Parse parse, State state);
 	}
 
 	private abstract class WrappingGrammar implements Grammar {
-		private Grammar grammar;
+		public Grammar grammar;
 
 		private WrappingGrammar(Grammar grammar) {
 			this.grammar = grammar;
@@ -45,7 +48,7 @@ public class Ebnf {
 	}
 
 	private abstract class CompositeGrammar implements Grammar {
-		private List<Grammar> grammars;
+		public List<Grammar> grammars;
 
 		public CompositeGrammar(List<Grammar> grammars) {
 			this.grammars = grammars;
@@ -56,17 +59,22 @@ public class Ebnf {
 		public OrGrammar(List<Grammar> grammars) {
 			super(grammars);
 		}
+
+		public Source<State> p(Parse parse, State state) {
+			return FunUtil.concat(FunUtil.map(childGrammar -> parse.parse(state, childGrammar), To.source(grammars)));
+		}
 	}
 
 	private class JoinGrammar extends CompositeGrammar {
 		public JoinGrammar(List<Grammar> grammars) {
 			super(grammars);
 		}
-	}
 
-	private class OptionalGrammar extends WrappingGrammar {
-		private OptionalGrammar(Grammar grammar) {
-			super(grammar);
+		public Source<State> p(Parse parse, State state) {
+			Source<State> source = To.source(state);
+			for (Grammar childGrammar : grammars)
+				source = FunUtil.concat(FunUtil.map(st -> parse.parse(st, childGrammar), source));
+			return source;
 		}
 	}
 
@@ -77,6 +85,26 @@ public class Ebnf {
 			super(grammar);
 			this.isAllowNone = isAllowNone;
 		}
+
+		public Source<State> p(Parse parse, State state) {
+			Source<State> states = new Source<State>() {
+				private State state_ = state;
+				private Deque<Source<State>> sources = new ArrayDeque<>();
+
+				public State source() {
+					State state0 = state_;
+					if (state0 != null) {
+						sources.push(parse.parse(state0, grammar));
+						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
+							sources.pop();
+					}
+					return state0;
+				}
+			};
+
+			// Skips first if it is a '+'
+			return isAllowNone || states.source() != null ? states : noResult;
+		}
 	}
 
 	private class EntityGrammar implements Grammar {
@@ -85,22 +113,30 @@ public class Ebnf {
 		private EntityGrammar(String entity) {
 			this.entity = entity;
 		}
-	}
 
-	private class TokenGrammar implements Grammar {
-		private String token;
+		public Source<State> p(Parse parse, State state) {
+			Source<State> states;
+			String entity = this.entity;
+			int depth = state.depth;
+			int pos = state.pos;
+			State state1 = parse.deepen(state, entity);
 
-		private TokenGrammar(String token) {
-			this.token = token;
-		}
-	}
+			if (Util.stringEquals(entity, "<EOF>"))
+				states = state1.pos == parse.length ? To.source(state1) : noResult;
+			else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
+				states = parse.expect(state1, parse.expectCharLiteral(pos));
+			else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
+				states = parse.expect(state1, parse.expectFloatLiteral(pos));
+			else if (Util.stringEquals(entity, "<IDENTIFIER>"))
+				states = parse.expect(state1, parse.expectIdentifier(pos));
+			else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
+				states = parse.expect(state1, parse.expectIntegerLiteral(pos));
+			else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
+				states = parse.expect(state1, parse.expectStringLiteral(pos));
+			else
+				states = parse.parse(state1, grammarsByEntity.get(entity));
 
-	private class CharRangeGrammar implements Grammar {
-		private char start, end;
-
-		public CharRangeGrammar(char start, char end) {
-			this.start = start;
-			this.end = end;
+			return FunUtil.map(st -> parse.undeepen(st, depth), states);
 		}
 	}
 
@@ -147,7 +183,7 @@ public class Ebnf {
 
 		while ((line = br.readLine()) != null)
 			if (!line.isEmpty() && line.charAt(0) != '#' && (lr = Util.split2(line, " ::= ")) != null) {
-				grammars.put(lr.t0, parseGrammar(lr.t1));
+				grammarsByEntity.put(lr.t0, parseGrammar(lr.t1));
 
 				if (rootGrammarEntity == null)
 					rootGrammarEntity = lr.t0;
@@ -170,15 +206,19 @@ public class Ebnf {
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), true);
 		else if (s.endsWith("+"))
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
-		else if (s.endsWith("?"))
-			grammar = new OptionalGrammar(parseGrammar(Util.substr(s, 0, -1)));
-		else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']')
-			grammar = new CharRangeGrammar(s.charAt(1), s.charAt(3));
-		else if (s.startsWith("(") && s.endsWith(")"))
+		else if (s.endsWith("?")) {
+			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
+			grammar = (parse, st) -> FunUtil.cons(st, parse.parse(st, grammar1));
+		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
+			char start = s.charAt(1);
+			char end = s.charAt(3);
+			grammar = (parse, st) -> parse.expect(st, parse.expectCharRange(st.pos, start, end));
+		} else if (s.startsWith("(") && s.endsWith(")"))
 			grammar = parseGrammar(Util.substr(s, 1, -1));
-		else if (s.startsWith("\"") && s.endsWith("\""))
-			grammar = new TokenGrammar(Util.substr(s, 1, -1));
-		else
+		else if (s.startsWith("\"") && s.endsWith("\"")) {
+			String token = Util.substr(s, 1, -1);
+			grammar = (parse, st) -> parse.expect(st, parse.expectString(st.pos, token));
+		} else
 			grammar = new EntityGrammar(s);
 
 		return grammar;
@@ -201,27 +241,6 @@ public class Ebnf {
 		private int length;
 		private int errorPosition = 0;
 		private String errorEntity;
-
-		private class State {
-			private State previous;
-			private int pos;
-
-			private String entity;
-			private int depth;
-
-			private State(State previous, int pos) {
-				this(previous, pos, previous.entity, previous.depth);
-			}
-
-			private State(State previous, int pos, String entity, int depth) {
-				this.previous = previous;
-				this.pos = pos;
-				this.entity = entity;
-				this.depth = depth;
-			}
-		}
-
-		private Source<State> noResult = FunUtil.nullSource();
 
 		private Parse(String in) {
 			this.in = in;
@@ -253,10 +272,8 @@ public class Ebnf {
 
 						if (state_.depth > stack.size()) {
 							Node node = new Node(state_.entity, state_.pos);
-
 							if (state_.entity != null)
 								stack.peek().nodes.add(node);
-
 							stack.push(node);
 						}
 					}
@@ -274,24 +291,7 @@ public class Ebnf {
 				LogUtil.info("parse(" + grammar + "): " + in.substring(pos));
 
 			State state1 = new State(state, pos);
-			Source<State> states;
-
-			if (grammar instanceof EntityGrammar)
-				states = parseEntityGrammar(state1, (EntityGrammar) grammar);
-			else if (grammar instanceof OrGrammar)
-				states = parseOr(state1, (OrGrammar) grammar);
-			else if (grammar instanceof JoinGrammar)
-				states = parseJoin(state1, (JoinGrammar) grammar);
-			else if (grammar instanceof OptionalGrammar)
-				states = FunUtil.cons(state1, parse(state1, child((OptionalGrammar) grammar)));
-			else if (grammar instanceof RepeatGrammar)
-				states = parseRepeat(state1, (RepeatGrammar) grammar);
-			else if (grammar instanceof TokenGrammar)
-				states = parseToken(state1, (TokenGrammar) grammar);
-			else if (grammar instanceof CharRangeGrammar)
-				states = parseCharRange(state1, (CharRangeGrammar) grammar);
-			else
-				states = noResult;
+			Source<State> states = grammar.p(this, state1);
 
 			if (states == noResult && state1.entity != null && pos >= errorPosition) {
 				errorPosition = pos;
@@ -301,78 +301,7 @@ public class Ebnf {
 			return states;
 		}
 
-		private Source<State> parseEntityGrammar(State state, EntityGrammar entityGrammar) {
-			Source<State> states;
-			String entity = entityGrammar.entity;
-			int depth = state.depth;
-			int pos = state.pos;
-			State state1 = deepen(state, entity);
-
-			if (Util.stringEquals(entity, "<EOF>"))
-				states = state1.pos == length ? To.source(state1) : noResult;
-			else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
-				states = parseExpect(state1, expectCharLiteral(pos));
-			else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
-				states = parseExpect(state1, expectFloatLiteral(pos));
-			else if (Util.stringEquals(entity, "<IDENTIFIER>"))
-				states = parseExpect(state1, expectIdentifier(pos));
-			else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
-				states = parseExpect(state1, expectIntegerLiteral(pos));
-			else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
-				states = parseExpect(state1, expectStringLiteral(pos));
-			else
-				states = parse(state1, grammars.get(entity));
-
-			return FunUtil.map(st -> undeepen(st, depth), states);
-		}
-
-		private Source<State> parseOr(State state, OrGrammar grammar) {
-			return FunUtil.concat(FunUtil.map(childGrammar -> parse(state, childGrammar), To.source(children(grammar))));
-		}
-
-		private Source<State> parseJoin(State state, JoinGrammar grammar) {
-			Source<State> source = To.source(state);
-
-			for (Grammar childGrammar : children(grammar))
-				source = FunUtil.concat(FunUtil.map(st -> parse(st, childGrammar), source));
-
-			return source;
-		}
-
-		private Source<State> parseRepeat(State state, RepeatGrammar grammar) {
-			Source<State> states = parseRepeat(state, child(grammar));
-
-			// Skips first if it is a '+'
-			return grammar.isAllowNone || states.source() != null ? states : noResult;
-		}
-
-		private Source<State> parseRepeat(State state, Grammar grammar) {
-			return new Source<State>() {
-				private State state_ = state;
-				private Deque<Source<State>> sources = new ArrayDeque<>();
-
-				public State source() {
-					State state0 = state_;
-					if (state0 != null) {
-						sources.push(parse(state0, grammar));
-
-						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
-							sources.pop();
-					}
-					return state0;
-				}
-			};
-		}
-
-		private Source<State> parseToken(State state, TokenGrammar grammar) {
-			return parseExpect(state, expectString(state.pos, grammar.token));
-		}
-
-		private Source<State> parseCharRange(State state, CharRangeGrammar grammar) {
-			return parseExpect(state, expectCharRange(state.pos, grammar.start, grammar.end));
-		}
-
-		private Source<State> parseExpect(State state, int end) {
+		private Source<State> expect(State state, int end) {
 			return state.pos < end ? To.source(new State(state, end)) : noResult;
 		}
 
@@ -517,30 +446,48 @@ public class Ebnf {
 		}
 	}
 
+	private class State {
+		private State previous;
+		private int pos;
+
+		private String entity;
+		private int depth;
+
+		private State(State previous, int pos) {
+			this(previous, pos, previous.entity, previous.depth);
+		}
+
+		private State(State previous, int pos, String entity, int depth) {
+			this.previous = previous;
+			this.pos = pos;
+			this.entity = entity;
+			this.depth = depth;
+		}
+	}
+
 	private void verify() {
-		for (Grammar grammar : grammars.values())
+		for (Grammar grammar : grammarsByEntity.values())
 			verify(grammar);
 	}
 
 	private void verify(Grammar grammar) {
 		if (grammar instanceof EntityGrammar) {
 			String entity = ((EntityGrammar) grammar).entity;
-			boolean isEntityExists = entity.startsWith("<") && entity.endsWith(">") || grammars.containsKey(entity);
+			boolean isEntityExists = entity.startsWith("<") && entity.endsWith(">") || grammarsByEntity.containsKey(entity);
 
 			if (!isEntityExists)
-				throw new RuntimeException("Grammar " + entity + " not exist");
+				throw new RuntimeException("Grammar " + entity + " does not exist");
 		} else if (grammar instanceof WrappingGrammar)
 			verify(child((WrappingGrammar) grammar));
 		else if (grammar instanceof CompositeGrammar)
-			for (Grammar child : children((CompositeGrammar) grammar))
-				verify(child);
+			((CompositeGrammar) grammar).grammars.forEach(this::verify);
 	}
 
 	private void reduceHeadRecursion() {
-		for (Entry<String, Grammar> entry : new ArrayList<>(grammars.entrySet())) {
+		for (Entry<String, Grammar> entry : new ArrayList<>(grammarsByEntity.entrySet())) {
 			String entity = entry.getKey();
 			Grammar grammar = entry.getValue();
-			grammars.put(entity, reduceHeadRecursion(entity, grammar));
+			grammarsByEntity.put(entity, reduceHeadRecursion(entity, grammar));
 		}
 	}
 
@@ -582,8 +529,8 @@ public class Ebnf {
 			if (!listc.isEmpty()) {
 				String tempb = entity + "-Head";
 				String tempc = entity + "-Tail";
-				grammars.put(tempb, new OrGrammar(listb));
-				grammars.put(tempc, new OrGrammar(listc));
+				grammarsByEntity.put(tempb, new OrGrammar(listb));
+				grammarsByEntity.put(tempc, new OrGrammar(listc));
 				EntityGrammar tempbGrammar = new EntityGrammar(tempb);
 				EntityGrammar tempcGrammar = new EntityGrammar(tempc);
 				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar, true)));
@@ -597,7 +544,7 @@ public class Ebnf {
 
 	private Grammar lookup(Grammar grammar) {
 		String entity = grammar instanceof EntityGrammar ? ((EntityGrammar) grammar).entity : null;
-		Grammar grammar1 = entity != null ? grammars.get(entity) : null;
+		Grammar grammar1 = entity != null ? grammarsByEntity.get(entity) : null;
 		return grammar1 != null ? grammar1 : grammar;
 	}
 
