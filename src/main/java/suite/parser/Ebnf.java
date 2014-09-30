@@ -115,9 +115,9 @@ public class Ebnf {
 		}
 
 		public Source<State> p(Parse parse, State state) {
-			State state1 = parse.deepen(state, entity);
+			State state1 = deepen(state, entity);
 			Source<State> states = parse.parse(state1, grammarsByEntity.get(entity));
-			return FunUtil.map(st -> parse.undeepen(st, state.depth), states);
+			return FunUtil.map(st -> undeepen(st, state.depth), states);
 		}
 	}
 
@@ -224,14 +224,6 @@ public class Ebnf {
 
 		private Source<State> expect(State state, int end) {
 			return state.pos < end ? To.source(new State(state, end)) : noResult;
-		}
-
-		private State deepen(State state, String entity) {
-			return new State(state, state.pos, entity, state.depth + 1);
-		}
-
-		private State undeepen(State state, int depth) {
-			return new State(state, state.pos, null, depth);
 		}
 
 		private int expectCharLiteral(int start) {
@@ -464,8 +456,8 @@ public class Ebnf {
 
 		if (grammar != null)
 			return (parse, st) -> {
-				State st1 = parse.deepen(st, entity);
-				return FunUtil.map(st_ -> parse.undeepen(st_, st.depth), grammar.p(parse, st1));
+				State st1 = deepen(st, entity);
+				return FunUtil.map(st_ -> undeepen(st_, st.depth), grammar.p(parse, st1));
 			};
 		else
 			return null;
@@ -542,6 +534,14 @@ public class Ebnf {
 		String entity = grammar instanceof EntityGrammar ? ((EntityGrammar) grammar).entity : null;
 		Grammar grammar1 = entity != null ? grammarsByEntity.get(entity) : null;
 		return grammar1 != null ? grammar1 : grammar;
+	}
+
+	private State deepen(State state, String entity) {
+		return new State(state, state.pos, entity, state.depth + 1);
+	}
+
+	private State undeepen(State state, int depth) {
+		return new State(state, state.pos, null, depth);
 	}
 
 	private List<Grammar> children(CompositeGrammar grammar) {
