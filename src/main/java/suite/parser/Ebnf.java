@@ -345,16 +345,13 @@ public class Ebnf {
 
 		private Pair<Integer, Integer> findPosition(int position) {
 			int row = 1, col = 1;
-
 			for (int i = 0; i < position; i++) {
 				col++;
-
 				if (in.charAt(i) == 10) {
 					row++;
 					col = 1;
 				}
 			}
-
 			return Pair.of(row, col);
 		}
 	}
