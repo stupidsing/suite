@@ -108,7 +108,7 @@ public class ISparseBinPriorityQueue<T> {
 			if (!trees1.isEmpty()) {
 				IList<Tree> ts0, ts1;
 
-				if (trees0.getHead().rank < trees1.getHead().rank) {
+				if (trees0.head.rank < trees1.head.rank) {
 					ts0 = trees0;
 					ts1 = trees1;
 				} else {
@@ -116,10 +116,10 @@ public class ISparseBinPriorityQueue<T> {
 					ts1 = trees0;
 				}
 
-				Tree head0 = ts0.getHead();
-				Tree head1 = ts1.getHead();
-				IList<Tree> tail0 = ts0.getTail();
-				IList<Tree> tail1 = ts1.getTail();
+				Tree head0 = ts0.head;
+				Tree head1 = ts1.head;
+				IList<Tree> tail0 = ts0.tail;
+				IList<Tree> tail1 = ts1.tail;
 
 				if (head0.rank != head1.rank)
 					return IList.cons(head0, meld(tail0, IList.cons(head1, tail1)));
@@ -133,10 +133,10 @@ public class ISparseBinPriorityQueue<T> {
 
 	private IList<Tree> insert(Tree tree, IList<Tree> trees) {
 		Tree tree0;
-		if (trees.isEmpty() || tree.rank < (tree0 = trees.getHead()).rank)
+		if (trees.isEmpty() || tree.rank < (tree0 = trees.head).rank)
 			return IList.cons(tree, trees);
 		else
-			return insert(link(tree, tree0), trees.getTail());
+			return insert(link(tree, tree0), trees.tail);
 	}
 
 	private Tree link(Tree tree0, Tree tree1) {

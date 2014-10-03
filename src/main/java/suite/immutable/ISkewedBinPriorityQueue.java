@@ -113,7 +113,7 @@ public class ISkewedBinPriorityQueue<T> {
 			if (!trees1.isEmpty()) {
 				IList<Node> ts0, ts1;
 
-				if (trees0.getHead().rank < trees1.getHead().rank) {
+				if (trees0.head.rank < trees1.head.rank) {
 					ts0 = trees0;
 					ts1 = trees1;
 				} else {
@@ -121,10 +121,10 @@ public class ISkewedBinPriorityQueue<T> {
 					ts1 = trees0;
 				}
 
-				Node head0 = ts0.getHead();
-				Node head1 = ts1.getHead();
-				IList<Node> tail0 = ts0.getTail();
-				IList<Node> tail1 = ts1.getTail();
+				Node head0 = ts0.head;
+				Node head1 = ts1.head;
+				IList<Node> tail0 = ts0.tail;
+				IList<Node> tail1 = ts1.tail;
 
 				if (head0.rank != head1.rank)
 					return IList.cons(head0, meld(tail0, IList.cons(head1, tail1)));
@@ -137,14 +137,14 @@ public class ISkewedBinPriorityQueue<T> {
 	}
 
 	private IList<Node> unskew(IList<Node> trees) {
-		return !trees.isEmpty() ? insert(trees.getHead(), trees.getTail()) : trees;
+		return !trees.isEmpty() ? insert(trees.head, trees.tail) : trees;
 	}
 
 	private IList<Node> skewInsert(Node node, IList<Node> trees) {
 		IList<Node> tt, trees1;
 		Node n0, n1;
-		if (!trees.isEmpty() && !(tt = trees.getTail()).isEmpty() && (n0 = trees.getHead()).rank == (n1 = tt.getHead()).rank)
-			trees1 = IList.cons(skewLink(node, n0, n1), tt.getTail());
+		if (!trees.isEmpty() && !(tt = trees.tail).isEmpty() && (n0 = trees.head).rank == (n1 = tt.head).rank)
+			trees1 = IList.cons(skewLink(node, n0, n1), tt.tail);
 		else
 			trees1 = IList.cons(node, trees);
 		return trees1;
@@ -152,10 +152,10 @@ public class ISkewedBinPriorityQueue<T> {
 
 	private IList<Node> insert(Node tree, IList<Node> trees) {
 		Node tree0;
-		if (trees.isEmpty() || tree.rank < (tree0 = trees.getHead()).rank)
+		if (trees.isEmpty() || tree.rank < (tree0 = trees.head).rank)
 			return IList.cons(tree, trees);
 		else
-			return insert(link(tree, tree0), trees.getTail());
+			return insert(link(tree, tree0), trees.tail);
 	}
 
 	/**

@@ -141,12 +141,12 @@ public class SewingProver {
 
 	private void trampoline(Runtime rt) {
 		while (!rt.alts.isEmpty()) {
-			rt.rems = IList.cons(rt.alts.getHead(), IList.end());
-			rt.alts = rt.alts.getTail();
+			rt.rems = IList.cons(rt.alts.head, IList.end());
+			rt.alts = rt.alts.tail;
 
 			Trampoline rem;
-			while ((rem = rt.rems.getHead()) != fail) {
-				rt.rems = rt.rems.getTail();
+			while ((rem = rt.rems.head) != fail) {
+				rt.rems = rt.rems.tail;
 				rt.pushRem(rem.prove(rt));
 			}
 		}
