@@ -21,52 +21,32 @@ public class FileSystemKeyUtil {
 	private int keyLength = sizeOffset + 1;
 
 	public class NameKey extends Key {
-		private Bytes path; // Path characters
-		private int size; // 0 if this key has children keys
+		public final Bytes path; // Path characters
+		public final int size; // 0 if this key has children keys
 
 		private NameKey(Bytes hash, int id, Bytes path, int size) {
 			super(hash, id);
 			this.path = path;
 			this.size = size;
 		}
-
-		public Bytes getPath() {
-			return path;
-		}
-
-		public int getSize() {
-			return size;
-		}
 	}
 
 	public class DataKey extends Key {
-		private int seq;
+		public final int seq;
 
 		private DataKey(Bytes hash, int id, int seq) {
 			super(hash, id);
 			this.seq = seq;
 		}
-
-		public int getSeq() {
-			return seq;
-		}
 	}
 
 	private class Key {
-		private Bytes hash; // Path prefix hashed using SHA-256
-		private int id; // 0 - Name key, 1 - comparer, 64 - data, 65 - size
+		public final Bytes hash; // Path prefix hashed using SHA-256
+		public final int id; // 0 - Name key, 1 - comparer, 64 - data, 65 - size
 
 		private Key(Bytes hash, int id) {
 			this.hash = hash;
 			this.id = id;
-		}
-
-		public Bytes getHash() {
-			return hash;
-		}
-
-		public int getId() {
-			return id;
 		}
 	}
 

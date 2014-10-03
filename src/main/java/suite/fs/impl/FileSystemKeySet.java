@@ -45,7 +45,7 @@ public class FileSystemKeySet {
 			NameKey key = keyUtil.toNameKey(bytes);
 			List<NameKey> prefix1 = Util.add(prefix, Arrays.asList(key));
 
-			if (key.getSize() == 0) {
+			if (key.size == 0) {
 				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? Util.right(keys0, 1) : emptyKeys : null;
 				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
@@ -65,7 +65,7 @@ public class FileSystemKeySet {
 		for (int i = keys.size() - 1; i >= 0; i--) {
 			NameKey key = keys.get(i);
 
-			if (key.getSize() == 0) {
+			if (key.size == 0) {
 				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
 				NameKey minKey = boundingKey(hash, 0);
 				NameKey maxKey = boundingKey(hash, 1);
