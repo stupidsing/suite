@@ -47,8 +47,4 @@ public class JdkUtil {
 		return binFilename;
 	}
 
-	public String getBinDir() {
-		return binDir;
-	}
-
 }
