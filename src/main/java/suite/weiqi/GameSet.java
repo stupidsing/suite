@@ -83,7 +83,7 @@ public class GameSet {
 		Occupation opponent = nextPlayer.opponent();
 		int i = 0;
 
-		for (Coordinate c1 : move.position.neighbors())
+		for (Coordinate c1 : move.position.neighbors)
 			move.neighborColors[i++] = board.get(c1);
 
 		move.type = board.playIfSeemsPossible(move.position, nextPlayer);
@@ -121,7 +121,7 @@ public class GameSet {
 		if (move.type == MoveType.CAPTURE) {
 			int i = 0;
 
-			for (Coordinate c1 : move.position.neighbors())
+			for (Coordinate c1 : move.position.neighbors)
 				if (move.neighborColors[i++] != board.get(c1))
 					for (Coordinate c2 : board.findGroup(c1))
 						board.set(c2, opponent);

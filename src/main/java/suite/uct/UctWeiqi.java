@@ -85,7 +85,7 @@ public class UctWeiqi {
 					Coordinate c = iter.next();
 					boolean isFillEye = true;
 
-					for (Coordinate c1 : c.neighbors())
+					for (Coordinate c1 : c.neighbors)
 						isFillEye &= board.get(c1) == gameSet.getNextPlayer();
 
 					if (!isFillEye && gameSet.playIfValid(move = new Move(c))) {
@@ -100,7 +100,7 @@ public class UctWeiqi {
 						capturedPositions.clear();
 
 						// Add captured positions back to empty group
-						for (Coordinate c1 : chosenMove.position.neighbors()) {
+						for (Coordinate c1 : chosenMove.position.neighbors) {
 							Occupation neighborColor = chosenMove.neighborColors[i++];
 							if (neighborColor != board.get(c1))
 								capturedPositions.addAll(board.findGroup(c1));
@@ -148,7 +148,7 @@ public class UctWeiqi {
 				if (move != null) { // Add empty positions back to empty group
 					int j = 0;
 
-					for (Coordinate c1 : move.position.neighbors())
+					for (Coordinate c1 : move.position.neighbors)
 						if (move.neighborColors[j++] != board.get(c1))
 							for (Coordinate c2 : board.findGroup(c1))
 								ShuffleUtil.add(empties, c2);

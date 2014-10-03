@@ -34,8 +34,8 @@ public class Checker {
 			Prototype prototype = pair.t0;
 			Rule rule = pair.t1;
 
-			scan(rule.getHead());
-			scan(rule.getTail());
+			scan(rule.head);
+			scan(rule.tail);
 
 			for (Entry<Atom, Boolean> entry1 : isSingleton.entrySet())
 				if (entry1.getValue() == Boolean.TRUE)

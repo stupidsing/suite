@@ -11,7 +11,7 @@ import suite.util.Util;
 
 public class Rule {
 
-	private Node head, tail;
+	public final Node head, tail;
 	private SewingGeneralizer sewingGeneralizer;
 	private Fun<Env, Node> headFun, tailFun;
 
@@ -29,7 +29,7 @@ public class Rule {
 	}
 
 	public static Node formClause(Rule rule) {
-		Node head = rule.getHead(), tail = rule.getTail();
+		Node head = rule.head, tail = rule.tail;
 		if (tail != Atom.NIL)
 			return Tree.of(TermOp.IS____, head, tail);
 		else
@@ -68,14 +68,6 @@ public class Rule {
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else
 			return false;
-	}
-
-	public Node getHead() {
-		return head;
-	}
-
-	public Node getTail() {
-		return tail;
 	}
 
 }

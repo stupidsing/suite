@@ -9,8 +9,8 @@ import java.util.Map;
 import suite.Suite;
 import suite.adt.ListMultimap;
 import suite.immutable.IList;
-import suite.lp.Journal;
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
@@ -161,8 +161,8 @@ public class SewingProver {
 
 			for (int i = rules.size() - 1; i >= 0; i--) {
 				Rule rule = rules.get(i);
-				Node ruleHead = rule.getHead();
-				Node ruleTail = rule.getTail();
+				Node ruleHead = rule.head;
+				Node ruleTail = rule.tail;
 				SewingGeneralizer sg = new SewingGeneralizer();
 				CompileTime ct = new CompileTime(sg);
 				Fun<Env, Node> f = sg.compile(ruleHead);

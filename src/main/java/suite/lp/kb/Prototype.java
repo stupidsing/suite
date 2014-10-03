@@ -23,7 +23,7 @@ public class Prototype implements Comparable<Prototype> {
 	}
 
 	public static Prototype of(Rule rule, int n) {
-		return of(rule.getHead(), n);
+		return of(rule.head, n);
 	}
 
 	public static Prototype of(Node node) {

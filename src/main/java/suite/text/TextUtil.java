@@ -53,9 +53,9 @@ public class TextUtil {
 					, bytesNew.subbytes(n2));
 
 			List<PatchDataSegment> pdsList = new ArrayList<>();
-			pdsList.addAll(diff(pds0).getPatchDataSegments());
+			pdsList.addAll(diff(pds0).patchDataSegments);
 			pdsList.add(pds1);
-			pdsList.addAll(diff(pds2).getPatchDataSegments());
+			pdsList.addAll(diff(pds2).patchDataSegments);
 
 			return new PatchData(pdsList);
 		} else
@@ -69,7 +69,7 @@ public class TextUtil {
 		PatchData subPatchData = diff(dsOrg.bytes, dsNew.bytes);
 		List<PatchDataSegment> pdsList = new ArrayList<>();
 
-		for (PatchDataSegment pds : subPatchData.getPatchDataSegments())
+		for (PatchDataSegment pds : subPatchData.patchDataSegments)
 			pdsList.add(pds.adjust(dsOrg.start, dsNew.start));
 
 		return new PatchData(pdsList);
@@ -90,8 +90,8 @@ public class TextUtil {
 
 	public PatchData merge(PatchData patchDataX, PatchData patchDataY) throws ConflictException {
 		List<PatchDataSegment> merged = new ArrayList<>();
-		MergeData mdx = new MergeData(patchDataX.getPatchDataSegments());
-		MergeData mdy = new MergeData(patchDataY.getPatchDataSegments());
+		MergeData mdx = new MergeData(patchDataX.patchDataSegments);
+		MergeData mdy = new MergeData(patchDataY.patchDataSegments);
 		boolean isAvailX, isAvailY;
 		int start = 0;
 

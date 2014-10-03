@@ -17,7 +17,7 @@ public class Cloner {
 	private Map<IdentityKey, Node> clonedNodes = new HashMap<>();
 
 	public Rule clone(Rule rule) {
-		return new Rule(clone(rule.getHead()), clone(rule.getTail()));
+		return new Rule(clone(rule.head), clone(rule.tail));
 	}
 
 	public Node clone(Node node) {

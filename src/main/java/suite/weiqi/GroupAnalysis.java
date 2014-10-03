@@ -55,7 +55,7 @@ public class GroupAnalysis {
 			Occupation color = board.get(c);
 			Group group = null; // Must be root
 
-			for (Coordinate c1 : c.leftOrUp())
+			for (Coordinate c1 : c.leftOrUp)
 				if (board.get(c1) == color) {
 					Group group1 = groupByCoord.get(c1).root();
 
@@ -84,7 +84,7 @@ public class GroupAnalysis {
 		for (Coordinate c : Coordinate.all()) {
 			Group group = groupByCoord.get(c);
 
-			for (Coordinate c1 : c.leftOrUp()) {
+			for (Coordinate c1 : c.leftOrUp) {
 				Group group1 = groupByCoord.get(c1);
 
 				if (group != group1) {
@@ -94,7 +94,7 @@ public class GroupAnalysis {
 			}
 
 			if (board.get(c) == Occupation.EMPTY)
-				for (Coordinate c1 : c.neighbors())
+				for (Coordinate c1 : c.neighbors)
 					groupByCoord.get(c1).breathes.add(c);
 		}
 	}

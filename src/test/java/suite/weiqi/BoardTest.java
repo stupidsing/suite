@@ -25,7 +25,7 @@ public class BoardTest {
 		Coordinate c = Coordinate.c(10, 10);
 		Set<Coordinate> neighbors = new HashSet<>();
 
-		for (Coordinate c1 : c.neighbors())
+		for (Coordinate c1 : c.neighbors)
 			neighbors.add(c1);
 
 		assertEquals(new HashSet<>(Arrays.asList( //
