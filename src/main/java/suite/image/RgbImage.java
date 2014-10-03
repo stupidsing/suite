@@ -10,7 +10,7 @@ import suite.math.Matrix;
 
 public class RgbImage {
 
-	private Matrix red, green, blue;
+	public final Matrix red, green, blue;
 
 	public RgbImage(Matrix red, Matrix green, Matrix blue) {
 		this.red = red;
@@ -48,9 +48,9 @@ public class RgbImage {
 
 		for (int x = 0; x < w; x++)
 			for (int y = 0; y < h; y++) {
-				int r = (int) (rgbImage.getRed().get()[x][y] * 256f);
-				int g = (int) (rgbImage.getGreen().get()[x][y] * 256f);
-				int b = (int) (rgbImage.getBlue().get()[x][y] * 256f);
+				int r = (int) (rgbImage.red.get()[x][y] * 256f);
+				int g = (int) (rgbImage.green.get()[x][y] * 256f);
+				int b = (int) (rgbImage.blue.get()[x][y] * 256f);
 				bufferedImage.setRGB(x, y, r << 16 + g << 8 + b);
 			}
 
@@ -63,18 +63,6 @@ public class RgbImage {
 
 	public int getHeight() {
 		return red.height();
-	}
-
-	public Matrix getRed() {
-		return red;
-	}
-
-	public Matrix getGreen() {
-		return green;
-	}
-
-	public Matrix getBlue() {
-		return blue;
 	}
 
 }
