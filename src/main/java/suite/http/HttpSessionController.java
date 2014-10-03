@@ -64,12 +64,12 @@ public class HttpSessionController {
 
 		public void handle(HttpRequest request, HttpResponse response) throws IOException {
 			long current = System.currentTimeMillis();
-			String cookie = request.getHeaders().get("Cookie");
+			String cookie = request.headers.get("Cookie");
 			String sessionId = cookie != null ? HttpUtil.getCookieAttrs(cookie).get("session") : null;
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 
-			if (Util.stringEquals(request.getPath(), "/login")) {
-				Map<String, String> attrs = HttpUtil.getPostedAttrs(request.getInputStream());
+			if (Util.stringEquals(request.path, "/login")) {
+				Map<String, String> attrs = HttpUtil.getPostedAttrs(request.inputStream);
 				String username = attrs.get("username");
 				String password = attrs.get("password");
 				String path = attrs.get("path");
@@ -83,30 +83,30 @@ public class HttpSessionController {
 
 					sessionManager.put(sessionId, session);
 
-					HttpRequest request1 = new HttpRequest(request.getMethod() //
-							, request.getServer() //
+					HttpRequest request1 = new HttpRequest(request.method //
+							, request.server //
 							, path //
-							, request.getQuery() //
-							, request.getHeaders() //
-							, request.getInputStream());
+							, request.query //
+							, request.headers //
+							, request.inputStream);
 
 					showProtectedPage(sessionId, request1, response);
 				} else
-					showLoginPage(response.getOutputStream(), path, true);
-			} else if (Util.stringEquals(request.getPath(), "/logout")) {
+					showLoginPage(response.outputStream, path, true);
+			} else if (Util.stringEquals(request.path, "/logout")) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 
-				showLoginPage(response.getOutputStream(), "/", false);
+				showLoginPage(response.outputStream, "/", false);
 			} else if (session != null && current < session.lastRequestDt + TIMEOUTDURATION) {
 				session.lastRequestDt = current;
 				showProtectedPage(sessionId, request, response);
 			} else
-				showLoginPage(response.getOutputStream(), request.getPath(), false);
+				showLoginPage(response.outputStream, request.path, false);
 		}
 
 		private void showProtectedPage(String sessionId, HttpRequest request, HttpResponse response) throws IOException {
-			response.getHeaders().put("Set-Cookie", "session=" + sessionId + "; Path=/");
+			response.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/");
 
 			protectedHandler.handle(request, response);
 		}

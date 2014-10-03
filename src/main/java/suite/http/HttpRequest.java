@@ -5,12 +5,12 @@ import java.util.Map;
 
 public class HttpRequest {
 
-	private String method;
-	private String server;
-	private String path;
-	private String query;
-	private Map<String, String> headers;
-	private InputStream inputStream;
+	public final String method;
+	public final String server;
+	public final String path;
+	public final String query;
+	public final Map<String, String> headers;
+	public final InputStream inputStream;
 
 	public HttpRequest(String method, String server, String path, String query, Map<String, String> headers, InputStream inputStream) {
 		this.method = method;
@@ -23,30 +23,6 @@ public class HttpRequest {
 
 	public String getLogString() {
 		return method + " " + path;
-	}
-
-	public String getMethod() {
-		return method;
-	}
-
-	public String getServer() {
-		return server;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public String getQuery() {
-		return query;
-	}
-
-	public Map<String, String> getHeaders() {
-		return headers;
-	}
-
-	public InputStream getInputStream() {
-		return inputStream;
 	}
 
 }

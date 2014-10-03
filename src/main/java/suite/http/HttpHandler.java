@@ -21,8 +21,8 @@ public abstract class HttpHandler implements Handler {
 		this.request = request;
 		this.response = response;
 
-		Reader reader = new InputStreamReader(request.getInputStream(), FileUtil.charset);
-		Writer writer = new OutputStreamWriter(response.getOutputStream(), FileUtil.charset);
+		Reader reader = new InputStreamReader(request.inputStream, FileUtil.charset);
+		Writer writer = new OutputStreamWriter(response.outputStream, FileUtil.charset);
 
 		handle(reader, writer);
 

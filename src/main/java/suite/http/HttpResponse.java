@@ -6,8 +6,8 @@ import java.util.Map;
 public class HttpResponse {
 
 	private String status;
-	private Map<String, String> headers;
-	private OutputStream outputStream;
+	public final Map<String, String> headers;
+	public final OutputStream outputStream;
 
 	public HttpResponse(String status, Map<String, String> headers, OutputStream outputStream) {
 		this.status = status;
@@ -25,14 +25,6 @@ public class HttpResponse {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}
-
-	public Map<String, String> getHeaders() {
-		return headers;
-	}
-
-	public OutputStream getOutputStream() {
-		return outputStream;
 	}
 
 }

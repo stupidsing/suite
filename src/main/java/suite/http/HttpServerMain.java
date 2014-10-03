@@ -16,11 +16,11 @@ public class HttpServerMain {
 	private Handler handler0 = new HttpHandler() {
 		protected void handle(Reader reader, Writer writer) throws IOException {
 			writer.write("<html>" //
-					+ "<br/>method = " + request.getMethod() //
-					+ "<br/>server = " + request.getServer() //
-					+ "<br/>path = " + request.getPath() //
-					+ "<br/>attrs = " + HttpUtil.getAttrs(request.getQuery()) //
-					+ "<br/>headers = " + request.getHeaders() //
+					+ "<br/>method = " + request.method //
+					+ "<br/>server = " + request.server //
+					+ "<br/>path = " + request.path //
+					+ "<br/>attrs = " + HttpUtil.getAttrs(request.query) //
+					+ "<br/>headers = " + request.headers //
 					+ "</html>");
 		}
 	};
