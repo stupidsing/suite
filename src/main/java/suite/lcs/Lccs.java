@@ -34,8 +34,8 @@ public class Lccs {
 				for (int key : keys) {
 					Segment segment0 = segments0.get(key);
 					Segment segment1 = segments1.get(key);
-					Bytes b0 = bytes0.subbytes(segment0.getStart(), segment0.getEnd());
-					Bytes b1 = bytes1.subbytes(segment1.getStart(), segment1.getEnd());
+					Bytes b0 = bytes0.subbytes(segment0.start, segment0.end);
+					Bytes b1 = bytes1.subbytes(segment1.start, segment1.end);
 					if (Objects.equals(b0, b1))
 						return Pair.of(segment0, segment1);
 				}
@@ -68,7 +68,7 @@ public class Lccs {
 		for (Entry<Integer, Segment> entry : segments.entrySet()) {
 			int hash = entry.getKey();
 			Segment segment = entry.getValue();
-			int start = segment.getStart(), end = segment.getEnd();
+			int start = segment.start, end = segment.end;
 
 			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), new Segment(start + 1, end));
 

@@ -2,7 +2,7 @@ package suite.text;
 
 public class Segment {
 
-	private int start, end;
+	public final int start, end;
 
 	public Segment(Segment segment) {
 		this(segment.start, segment.end);
@@ -24,14 +24,6 @@ public class Segment {
 	@Override
 	public String toString() {
 		return start + "-" + end;
-	}
-
-	public int getStart() {
-		return start;
-	}
-
-	public int getEnd() {
-		return end;
 	}
 
 }

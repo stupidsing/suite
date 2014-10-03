@@ -15,10 +15,10 @@ public class LccsTest {
 		Lccs lccs = new Lccs();
 		Pair<Segment, Segment> result = lccs.lccs(To.bytes("abczzzzz"), To.bytes("zzzzzabc"));
 
-		assertEquals(3, result.t0.getStart());
-		assertEquals(8, result.t0.getEnd());
-		assertEquals(0, result.t1.getStart());
-		assertEquals(5, result.t1.getEnd());
+		assertEquals(3, result.t0.start);
+		assertEquals(8, result.t0.end);
+		assertEquals(0, result.t1.start);
+		assertEquals(5, result.t1.end);
 	}
 
 }

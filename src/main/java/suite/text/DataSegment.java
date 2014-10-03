@@ -4,7 +4,7 @@ import suite.primitive.Bytes;
 
 public class DataSegment extends Segment {
 
-	private Bytes bytes;
+	public final Bytes bytes;
 
 	public DataSegment(int start, int end, Bytes bytes) {
 		super(start, end);
@@ -12,19 +12,15 @@ public class DataSegment extends Segment {
 	}
 
 	public DataSegment left(int pos) {
-		return new DataSegment(getStart(), pos, bytes.subbytes(0, pos - getStart()));
+		return new DataSegment(start, pos, bytes.subbytes(0, pos - start));
 	}
 
 	public DataSegment right(int pos) {
-		return new DataSegment(pos, getEnd(), bytes.subbytes(pos - getStart()));
+		return new DataSegment(pos, end, bytes.subbytes(pos - start));
 	}
 
 	public DataSegment adjust(int offset) {
-		return new DataSegment(getStart() + offset, getEnd() + offset, bytes);
-	}
-
-	public Bytes getBytes() {
-		return bytes;
+		return new DataSegment(start + offset, end + offset, bytes);
 	}
 
 }

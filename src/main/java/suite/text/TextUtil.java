@@ -27,7 +27,7 @@ public class TextUtil {
 
 		public void next() {
 			PatchDataSegment pds = patchDataSegments.get(pos);
-			offset += pds.getDataSegmentNew().length() - pds.getDataSegmentOrg().length();
+			offset += pds.dataSegmentNew.length() - pds.dataSegmentOrg.length();
 			pos++;
 		}
 	}
@@ -36,8 +36,8 @@ public class TextUtil {
 		Lccs lccs = new Lccs();
 		Pair<Segment, Segment> diff = lccs.lccs(bytesOrg, bytesNew);
 		Segment so = diff.t0, sn = diff.t1;
-		int o0 = 0, o1 = so.getStart(), o2 = so.getEnd();
-		int n0 = 0, n1 = sn.getStart(), n2 = sn.getEnd();
+		int o0 = 0, o1 = so.start, o2 = so.end;
+		int n0 = 0, n1 = sn.start, n2 = sn.end;
 
 		if (!so.isEmpty() && !sn.isEmpty()) {
 			PatchDataSegment pds0 = new PatchDataSegment(o0, n0 //
@@ -64,13 +64,13 @@ public class TextUtil {
 	}
 
 	private PatchData diff(PatchDataSegment patchDataSegment) {
-		DataSegment dsOrg = patchDataSegment.getDataSegmentOrg();
-		DataSegment dsNew = patchDataSegment.getDataSegmentNew();
-		PatchData subPatchData = diff(dsOrg.getBytes(), dsNew.getBytes());
+		DataSegment dsOrg = patchDataSegment.dataSegmentOrg;
+		DataSegment dsNew = patchDataSegment.dataSegmentNew;
+		PatchData subPatchData = diff(dsOrg.bytes, dsNew.bytes);
 		List<PatchDataSegment> pdsList = new ArrayList<>();
 
 		for (PatchDataSegment pds : subPatchData.getPatchDataSegments())
-			pdsList.add(pds.adjust(dsOrg.getStart(), dsNew.getStart()));
+			pdsList.add(pds.adjust(dsOrg.start, dsNew.start));
 
 		return new PatchData(pdsList);
 	}
@@ -80,10 +80,10 @@ public class TextUtil {
 
 		for (PatchDataSegment pds : patchData)
 			if (!pds.isChanged()) {
-				DataSegment dso = pds.getDataSegmentOrg();
-				bytesBuilder.append(bytes.subbytes(dso.getStart(), dso.getEnd()));
+				DataSegment dso = pds.dataSegmentOrg;
+				bytesBuilder.append(bytes.subbytes(dso.start, dso.end));
 			} else
-				bytesBuilder.append(pds.getDataSegmentNew().getBytes());
+				bytesBuilder.append(pds.dataSegmentNew.bytes);
 
 		return bytesBuilder.toBytes();
 	}
@@ -101,8 +101,8 @@ public class TextUtil {
 			if (isAvailX && isAvailY) {
 				PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
 				PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
-				int endx = pdsx.getDataSegmentOrg().getEnd();
-				int endy = pdsy.getDataSegmentOrg().getEnd();
+				int endx = pdsx.dataSegmentOrg.end;
+				int endy = pdsy.dataSegmentOrg.end;
 
 				if (endx == endy)
 					isAdvanceX = !pdsy.isChanged();
@@ -120,12 +120,12 @@ public class TextUtil {
 	private int advance(MergeData mdx, MergeData mdy, int start, List<PatchDataSegment> pdsList) throws ConflictException {
 		PatchDataSegment pdsx = mdx.patchDataSegments.get(mdx.pos);
 		PatchDataSegment pdsy = mdy.patchDataSegments.get(mdy.pos);
-		DataSegment dsxOrg = pdsx.getDataSegmentOrg(), dsxNew = pdsx.getDataSegmentNew();
-		DataSegment dsyOrg = pdsy.getDataSegmentOrg(), dsyNew = pdsy.getDataSegmentNew();
+		DataSegment dsxOrg = pdsx.dataSegmentOrg, dsxNew = pdsx.dataSegmentNew;
+		DataSegment dsyOrg = pdsy.dataSegmentOrg, dsyNew = pdsy.dataSegmentNew;
 
 		// If both patches do not overlap in original sections,
 		// they can be merged
-		boolean isSeparate = dsxOrg.getEnd() <= dsyOrg.getStart();
+		boolean isSeparate = dsxOrg.end <= dsyOrg.start;
 
 		// If the longer patch segment is not changing anything,
 		// they can be merged
@@ -135,11 +135,11 @@ public class TextUtil {
 		// target sections, the head parts can be merged
 		int dsxOrgLength = dsxOrg.length(), dsxNewLength = dsxNew.length();
 		int dsyOrgLength = dsyOrg.length(), dsyNewLength = dsyNew.length();
-		boolean isMappingsAgree = dsxOrg.getStart() == dsyOrg.getStart()
+		boolean isMappingsAgree = dsxOrg.start == dsyOrg.start
 				&& dsxOrgLength <= dsyOrgLength //
 				&& dsxNewLength <= dsyNewLength //
-				&& Objects.equals(dsxOrg.getBytes(), dsyOrg.getBytes().subbytes(0, dsxOrgLength))
-				&& Objects.equals(dsxNew.getBytes(), dsyNew.getBytes().subbytes(0, dsyOrgLength));
+				&& Objects.equals(dsxOrg.bytes, dsyOrg.bytes.subbytes(0, dsxOrgLength))
+				&& Objects.equals(dsxNew.bytes, dsyNew.bytes.subbytes(0, dsyOrgLength));
 
 		if (isSeparate || isUnchanged || isMappingsAgree) {
 			DataSegment dsOrg1 = dsxOrg.right(start);
@@ -148,17 +148,17 @@ public class TextUtil {
 
 			// If only the head part can merge, add back tail parts to the lists
 			if (isMappingsAgree) {
-				DataSegment dsyOrg0 = dsyOrg.left(dsxOrg.getEnd());
-				DataSegment dsyNew0 = dsyNew.left(dsyNew.getStart() + dsxNewLength);
-				DataSegment dsyOrg1 = dsyOrg.right(dsxOrg.getEnd());
-				DataSegment dsyNew1 = dsyNew.right(dsyNew.getStart() + dsxNewLength);
+				DataSegment dsyOrg0 = dsyOrg.left(dsxOrg.end);
+				DataSegment dsyNew0 = dsyNew.left(dsyNew.start + dsxNewLength);
+				DataSegment dsyOrg1 = dsyOrg.right(dsxOrg.end);
+				DataSegment dsyNew1 = dsyNew.right(dsyNew.start + dsxNewLength);
 				mdy.patchDataSegments.set(mdy.pos, new PatchDataSegment(dsyOrg0, dsyNew0));
 				mdy.next();
 				mdy.patchDataSegments.add(mdy.pos, new PatchDataSegment(dsyOrg1, dsyNew1));
 			}
 
 			mdx.next();
-			return dsxOrg.getEnd();
+			return dsxOrg.end;
 		} else
 			throw new ConflictException();
 	}

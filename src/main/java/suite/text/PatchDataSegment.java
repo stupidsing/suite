@@ -9,8 +9,8 @@ public class PatchDataSegment {
 
 	// Original data and new data
 	// dataSegmentOrg.bytes == dataSegmentNew.bytes for common segment
-	private DataSegment dataSegmentOrg;
-	private DataSegment dataSegmentNew;
+	public final DataSegment dataSegmentOrg;
+	public final DataSegment dataSegmentNew;
 
 	public PatchDataSegment(int startOrg, int startNew, Bytes bytes) {
 		this(startOrg, startNew, bytes, bytes);
@@ -31,7 +31,7 @@ public class PatchDataSegment {
 	}
 
 	public boolean isChanged() {
-		return !Objects.equals(dataSegmentOrg.getBytes(), dataSegmentNew.getBytes());
+		return !Objects.equals(dataSegmentOrg.bytes, dataSegmentNew.bytes);
 	}
 
 	public PatchDataSegment adjust(int offsetOrg, int offsetNew) {
@@ -47,25 +47,15 @@ public class PatchDataSegment {
 	@Override
 	public String toString() {
 		boolean isChanged = isChanged();
-		DataSegment dsOrg = getDataSegmentOrg();
-		DataSegment dsNew = getDataSegmentNew();
-		String s0 = dsOrg + (isChanged ? "!" : "=") + dsNew;
+		String s0 = dataSegmentOrg + (isChanged ? "!" : "=") + dataSegmentNew;
 		String s;
 
 		if (isChanged)
-			s = s0 + "[" + To.string(dsOrg.getBytes()) + "|" + To.string(dsNew.getBytes()) + "],";
+			s = s0 + "[" + To.string(dataSegmentOrg.bytes) + "|" + To.string(dataSegmentNew.bytes) + "],";
 		else
-			s = s0 + "[" + To.string(dsOrg.getBytes()) + "],";
+			s = s0 + "[" + To.string(dataSegmentOrg.bytes) + "],";
 
 		return s;
-	}
-
-	public DataSegment getDataSegmentOrg() {
-		return dataSegmentOrg;
-	}
-
-	public DataSegment getDataSegmentNew() {
-		return dataSegmentNew;
 	}
 
 }

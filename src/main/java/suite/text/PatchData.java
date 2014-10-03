@@ -5,7 +5,7 @@ import java.util.List;
 
 public class PatchData implements Iterable<PatchDataSegment> {
 
-	private List<PatchDataSegment> patchDataSegments;
+	public final List<PatchDataSegment> patchDataSegments;
 
 	public PatchData(List<PatchDataSegment> patchDataSegments) {
 		this.patchDataSegments = patchDataSegments;
@@ -32,10 +32,6 @@ public class PatchData implements Iterable<PatchDataSegment> {
 				sb.append(pds.toString());
 
 		return sb.toString();
-	}
-
-	public List<PatchDataSegment> getPatchDataSegments() {
-		return patchDataSegments;
 	}
 
 }
