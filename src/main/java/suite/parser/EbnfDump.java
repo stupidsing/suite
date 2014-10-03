@@ -27,15 +27,15 @@ public class EbnfDump {
 	}
 
 	private void prettyPrint(Node node, String indent) throws IOException {
-		String entity0 = node.getEntity();
+		String entity0 = node.entity;
 		List<Node> nodes;
 
-		while ((nodes = node.getNodes()).size() == 1)
+		while ((nodes = node.nodes).size() == 1)
 			node = nodes.get(0);
 
 		if (nodes.size() != 1) {
 			String indent1 = indent + "  ";
-			String entity1 = node.getEntity();
+			String entity1 = node.entity;
 			int start = node.getStart();
 			int end = node.getEnd();
 

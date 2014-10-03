@@ -27,7 +27,7 @@ public class BoundingBox implements RtObject {
 		float maxX = min, maxY = min, maxZ = min;
 
 		for (Vector point : points) {
-			float x = point.getX(), y = point.getY(), z = point.getZ();
+			float x = point.x, y = point.y, z = point.z;
 			minX = Math.min(minX, x);
 			minY = Math.min(minY, y);
 			minZ = Math.min(minZ, z);
@@ -41,12 +41,12 @@ public class BoundingBox implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		float startX = ray.startPoint.getX(), dirX = ray.dir.getX();
-		float startY = ray.startPoint.getY(), dirY = ray.dir.getY();
-		float startZ = ray.startPoint.getZ(), dirZ = ray.dir.getZ();
-		float minX = min.getX(), maxX = max.getX();
-		float minY = min.getY(), maxY = max.getY();
-		float minZ = min.getZ(), maxZ = max.getZ();
+		float startX = ray.startPoint.x, dirX = ray.dir.x;
+		float startY = ray.startPoint.y, dirY = ray.dir.y;
+		float startZ = ray.startPoint.z, dirZ = ray.dir.z;
+		float minX = min.x, maxX = max.x;
+		float minY = min.y, maxY = max.y;
+		float minZ = min.z, maxZ = max.z;
 
 		boolean isIntersect = true //
 				&& isIntersect(startX, dirX, minX, maxX, startY, dirY, minY, maxY) //

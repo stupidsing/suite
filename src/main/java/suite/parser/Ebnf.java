@@ -122,9 +122,9 @@ public class Ebnf {
 	}
 
 	public class Node {
-		private String entity;
 		private int start, end;
-		private List<Node> nodes = new ArrayList<>();
+		public final String entity;
+		public final List<Node> nodes = new ArrayList<>();
 
 		public Node(String entity, int start) {
 			this(entity, start, 0);
@@ -140,20 +140,12 @@ public class Ebnf {
 			return entity + "@" + start + "-" + end + nodes;
 		}
 
-		public String getEntity() {
-			return entity;
-		}
-
 		public int getStart() {
 			return start;
 		}
 
 		public int getEnd() {
 			return end;
-		}
-
-		public List<Node> getNodes() {
-			return nodes;
 		}
 	}
 

@@ -97,9 +97,9 @@ public class Matrix {
 
 	public static Vector mul(Matrix m, Vector v) {
 		if (m.height() == 3 && m.width() == 3) {
-			float x1 = m.v[0][0] * v.getX() + m.v[0][1] * v.getY() + m.v[0][2] * v.getZ();
-			float y1 = m.v[1][0] * v.getX() + m.v[1][1] * v.getY() + m.v[1][2] * v.getZ();
-			float z1 = m.v[2][0] * v.getX() + m.v[2][1] * v.getY() + m.v[2][2] * v.getZ();
+			float x1 = m.v[0][0] * v.x + m.v[0][1] * v.y + m.v[0][2] * v.z;
+			float y1 = m.v[1][0] * v.x + m.v[1][1] * v.y + m.v[1][2] * v.z;
+			float z1 = m.v[2][0] * v.x + m.v[2][1] * v.y + m.v[2][2] * v.z;
 			return new Vector(x1, y1, z1);
 		} else
 			throw new RuntimeException("Wrong matrix size");

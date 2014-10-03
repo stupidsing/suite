@@ -6,7 +6,7 @@ public class Vector {
 
 	public static Vector origin = new Vector(0f, 0f, 0f);
 
-	private float x, y, z;
+	public final float x, y, z;
 
 	public Vector(float x, float y, float z) {
 		this.x = x;
@@ -67,18 +67,6 @@ public class Vector {
 			return x == vector.x && y == vector.y && z == vector.z;
 		} else
 			return false;
-	}
-
-	public float getX() {
-		return x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public float getZ() {
-		return z;
 	}
 
 }

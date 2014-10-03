@@ -142,7 +142,7 @@ public class RayTracer {
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
 				Vector pixel = limit(pixels[x][y]);
-				bufferedImage.setRGB(x, y, new Color(pixel.getX(), pixel.getY(), pixel.getZ()).getRGB());
+				bufferedImage.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
 			}
 	}
 
@@ -241,7 +241,7 @@ public class RayTracer {
 	 * Multiply vector components.
 	 */
 	private static Vector mc(Vector u, Vector v) {
-		return new Vector(u.getX() * v.getX(), u.getY() * v.getY(), u.getZ() * v.getZ());
+		return new Vector(u.x * v.x, u.y * v.y, u.z * v.z);
 
 	}
 
@@ -249,7 +249,7 @@ public class RayTracer {
 	 * Limit vector components between 0 and 1.
 	 */
 	private static Vector limit(Vector u) {
-		return new Vector(limit(u.getX()), limit(u.getY()), limit(u.getZ()));
+		return new Vector(limit(u.x), limit(u.y), limit(u.z));
 	}
 
 	private static float limit(float f) {
