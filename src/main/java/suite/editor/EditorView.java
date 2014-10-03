@@ -46,11 +46,11 @@ public class EditorView {
 	private Font sansFont = fontUtil.sansFont;
 
 	private EditorController controller;
+	private LayoutCalculator lay;
+	private LayoutCalculator.Node layout;
 
 	private JEditorPane editor;
 	private JFrame frame;
-	private LayoutCalculator lay;
-	private LayoutCalculator.Node layout;
 	private JList<String> searchList;
 	private JTextField searchTextField;
 	private JTextArea messageTextArea;
