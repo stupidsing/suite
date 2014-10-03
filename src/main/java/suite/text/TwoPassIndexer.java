@@ -18,14 +18,12 @@ public class TwoPassIndexer {
 	private static int minimumWordLength = 3;
 
 	private Set<String> dictionary = new HashSet<>();
-
 	private TreeSet<String> keys = new TreeSet<>();
-
 	private Map<String, List<Reference>> referencesByWord = new HashMap<>();
 
 	public static class Reference {
-		private String id;
-		private int offset;
+		public final String id;
+		public final int offset;
 
 		public Reference(String id, int offset) {
 			this.id = id;
@@ -34,14 +32,6 @@ public class TwoPassIndexer {
 
 		public String toString() {
 			return id + "(" + offset + ")";
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public int getOffset() {
-			return offset;
 		}
 	}
 

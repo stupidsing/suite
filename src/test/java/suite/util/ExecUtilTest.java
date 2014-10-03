@@ -14,9 +14,9 @@ public class ExecUtilTest {
 		ExecUtil exec = new ExecUtil(new String[] { "git", "status" }, "");
 		System.out.println(exec);
 
-		assertEquals(0, exec.getCode());
-		assertTrue(!exec.getOut().isEmpty());
-		assertTrue(exec.getErr().isEmpty());
+		assertEquals(0, exec.code);
+		assertTrue(!exec.out.isEmpty());
+		assertTrue(exec.err.isEmpty());
 	}
 
 	@Test
@@ -28,9 +28,9 @@ public class ExecUtilTest {
 
 		ExecUtil exec = new ExecUtil(new String[] { "cat" }, in);
 
-		assertEquals(0, exec.getCode());
-		assertEquals(in, exec.getOut());
-		assertTrue(exec.getErr().isEmpty());
+		assertEquals(0, exec.code);
+		assertEquals(in, exec.out);
+		assertTrue(exec.err.isEmpty());
 	}
 
 }

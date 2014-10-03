@@ -8,9 +8,9 @@ import java.io.OutputStream;
 
 public class ExecUtil {
 
-	private int code;
-	private String out;
-	private String err;
+	public final int code;
+	public final String out;
+	public final String err;
 	private Thread threads[];
 
 	public ExecUtil(String command[], String in) throws IOException {
@@ -48,18 +48,6 @@ public class ExecUtil {
 		return "code = " + code //
 				+ "\nout = " + out //
 				+ "\nerr = " + err;
-	}
-
-	public int getCode() {
-		return code;
-	}
-
-	public String getOut() {
-		return out;
-	}
-
-	public String getErr() {
-		return err;
 	}
 
 }

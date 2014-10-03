@@ -24,8 +24,8 @@ public class ExecCommandAction implements InstallAction {
 
 	private void exec(String command[]) throws IOException {
 		ExecUtil exec = new ExecUtil(command, "");
-		if (exec.getCode() != 0)
-			throw new IOException("Command return code = " + exec.getCode() + ": " + exec.getErr());
+		if (exec.code != 0)
+			throw new IOException("Command return code = " + exec.code + ": " + exec.err);
 	}
 
 }

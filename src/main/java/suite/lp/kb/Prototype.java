@@ -16,7 +16,7 @@ import suite.util.Util;
  */
 public class Prototype implements Comparable<Prototype> {
 
-	private Node head;
+	public final Node head;
 
 	public static Prototype of(Rule rule) {
 		return of(rule, 0);
@@ -70,10 +70,6 @@ public class Prototype implements Comparable<Prototype> {
 	@Override
 	public String toString() {
 		return head.toString();
-	}
-
-	public Node getHead() {
-		return head;
 	}
 
 	@Override
