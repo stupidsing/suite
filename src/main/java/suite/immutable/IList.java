@@ -14,10 +14,10 @@ import suite.util.FunUtil.Source;
  */
 public class IList<T> implements Iterable<T> {
 
-	private static IList<?> end = new IList<>(null, null);
+	public final T head;
+	public final IList<T> tail;
 
-	private T head;
-	private IList<T> tail;
+	private static IList<?> end = new IList<>(null, null);
 
 	public IList(T head, IList<T> tail) {
 		this.head = head;
@@ -68,8 +68,8 @@ public class IList<T> implements Iterable<T> {
 		StringBuilder sb = new StringBuilder();
 		IList<T> node = this;
 		while (!node.isEmpty()) {
-			sb.append(node.getHead() + ", ");
-			node = node.getTail();
+			sb.append(node.head + ", ");
+			node = node.tail;
 		}
 		return sb.toString();
 	}
@@ -79,14 +79,6 @@ public class IList<T> implements Iterable<T> {
 		for (T t : this)
 			deque.addFirst(t);
 		return deque;
-	}
-
-	public T getHead() {
-		return head;
-	}
-
-	public IList<T> getTail() {
-		return tail;
 	}
 
 }
