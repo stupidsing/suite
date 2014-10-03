@@ -22,7 +22,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 		jpf = new JournalledPageFileImpl(filename, pageSize);
 
 		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), SerializeUtil.intSerializer) //
-				.build(jpf, true, Bytes.comparator, pageSize);
+				.build(jpf, false, Bytes.comparator, pageSize);
 
 		B_TreeMutator<Bytes> b_treeMutator = new B_TreeMutator<Bytes>(b_tree, () -> {
 			try {
@@ -31,6 +31,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 				throw new RuntimeException(ex);
 			}
 		});
+
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> b_treeMutator);
 	}
 
