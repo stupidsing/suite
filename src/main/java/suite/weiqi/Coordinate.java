@@ -8,9 +8,10 @@ import suite.util.Util;
 
 public class Coordinate implements Comparable<Coordinate> {
 
+	public final List<Coordinate> leftOrUp = new ArrayList<>();
+	public final List<Coordinate> neighbors = new ArrayList<>();
+
 	private int index;
-	private List<Coordinate> leftOrUp = new ArrayList<>();
-	private List<Coordinate> neighbors = new ArrayList<>();
 
 	private static Coordinate coords[][];
 	private static List<Coordinate> all = new ArrayList<>();
@@ -50,12 +51,16 @@ public class Coordinate implements Comparable<Coordinate> {
 			}
 	}
 
-	private Coordinate(int x, int y) {
-		index = (x << Weiqi.shift) + y;
+	public static Iterable<Coordinate> all() {
+		return all;
 	}
 
 	public static Coordinate c(int x, int y) {
 		return coords[x][y];
+	}
+
+	private Coordinate(int x, int y) {
+		index = (x << Weiqi.shift) + y;
 	}
 
 	public int getX() {
@@ -99,18 +104,6 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	public int index() {
 		return index;
-	}
-
-	public Iterable<Coordinate> leftOrUp() {
-		return leftOrUp;
-	}
-
-	public Iterable<Coordinate> neighbors() {
-		return neighbors;
-	}
-
-	public static Iterable<Coordinate> all() {
-		return all;
 	}
 
 }
