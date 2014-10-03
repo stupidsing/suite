@@ -1,4 +1,4 @@
-package suite.lp.doer;
+package suite.lp;
 
 import java.util.Set;
 

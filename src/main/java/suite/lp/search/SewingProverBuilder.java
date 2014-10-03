@@ -1,6 +1,6 @@
 package suite.lp.search;
 
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;

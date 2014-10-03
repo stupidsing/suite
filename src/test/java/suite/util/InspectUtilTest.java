@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 
 public class InspectUtilTest {
 

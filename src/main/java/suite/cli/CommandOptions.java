@@ -10,7 +10,7 @@ import java.util.List;
 import suite.Suite;
 import suite.editor.Editor;
 import suite.fp.FunCompilerConfig;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.FunUtil.Source;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.lp.Journal;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;

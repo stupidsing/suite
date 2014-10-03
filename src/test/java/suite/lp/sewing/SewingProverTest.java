@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 
 public class SewingProverTest {

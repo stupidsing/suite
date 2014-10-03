@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;

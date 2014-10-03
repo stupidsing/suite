@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;

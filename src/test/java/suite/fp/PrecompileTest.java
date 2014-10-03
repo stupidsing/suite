@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.sample.Profiler;
 import suite.util.LogUtil;
 

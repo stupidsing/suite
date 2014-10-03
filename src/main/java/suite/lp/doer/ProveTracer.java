@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import suite.lp.doer.Configuration.ProverConfig;
-import suite.lp.doer.Configuration.TraceLevel;
+import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.TraceLevel;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;

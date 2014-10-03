@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 
 public class MapifyUtilTest {
 

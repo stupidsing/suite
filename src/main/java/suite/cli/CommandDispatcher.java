@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;

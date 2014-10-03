@@ -9,7 +9,7 @@ import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.instructionexecutor.LazyFunInstructionExecutor;
 import suite.instructionexecutor.ThunkUtil;
-import suite.lp.doer.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
