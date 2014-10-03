@@ -24,7 +24,7 @@ public class UctWeiqi {
 
 		private Visitor(GameSet gameSet) {
 			this.gameSet = gameSet;
-			board = gameSet.getBoard();
+			board = gameSet.board;
 		}
 
 		@Override

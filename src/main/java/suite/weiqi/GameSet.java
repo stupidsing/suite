@@ -8,7 +8,8 @@ import suite.weiqi.Weiqi.Occupation;
 
 public class GameSet {
 
-	private Board board;
+	public final Board board;
+
 	private Occupation nextPlayer;
 	private HashSet<Integer> previousStates = new HashSet<>();
 
@@ -143,10 +144,6 @@ public class GameSet {
 
 		} else
 			return false;
-	}
-
-	public Board getBoard() {
-		return board;
 	}
 
 	public Occupation getNextPlayer() {

@@ -6,7 +6,7 @@ import suite.weiqi.Weiqi.Occupation;
 public class UserInterface {
 
 	public static void display(GameSet gameSet) {
-		display(gameSet.getBoard());
+		display(gameSet.board);
 	}
 
 	public static void display(Board board) {

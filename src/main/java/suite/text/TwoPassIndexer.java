@@ -60,7 +60,7 @@ public class TwoPassIndexer {
 				end++;
 
 			if (end <= length)
-				getKeysByWord(text.substring(start, end - 1)).add(key);
+				getReferencesByWord(text.substring(start, end - 1)).add(key);
 		}
 
 		keys = new TreeSet<>(referencesByWord.keySet());
@@ -75,14 +75,14 @@ public class TwoPassIndexer {
 			return key != null && key.startsWith(searchKey) ? key : null;
 		};
 
-		return FunUtil.concat(FunUtil.map(key -> To.source(getKeysByWord(key)), keySource));
+		return FunUtil.concat(FunUtil.map(key -> To.source(getReferencesByWord(key)), keySource));
 	}
 
-	public List<Reference> getKeysByWord(String word) {
+	public List<Reference> getReferencesByWord(String word) {
 		return referencesByWord.computeIfAbsent(word, key -> new ArrayList<>());
 	}
 
-	public Map<String, List<Reference>> getKeysByWord() {
+	public Map<String, List<Reference>> getReferencesByWord() {
 		return referencesByWord;
 	}
 

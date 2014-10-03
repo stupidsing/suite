@@ -166,7 +166,7 @@ public class CommandDispatcher {
 	private void elaborate(Node node, Sink<Node> sink) {
 		int count[] = { 0 };
 		Generalization generalization = SewingGeneralizer.process(node);
-		node = generalization.node();
+		node = generalization.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {
 			String dump = generalization.dumpVariables();

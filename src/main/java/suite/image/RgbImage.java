@@ -48,9 +48,9 @@ public class RgbImage {
 
 		for (int x = 0; x < w; x++)
 			for (int y = 0; y < h; y++) {
-				int r = (int) (rgbImage.red.get()[x][y] * 256f);
-				int g = (int) (rgbImage.green.get()[x][y] * 256f);
-				int b = (int) (rgbImage.blue.get()[x][y] * 256f);
+				int r = (int) (rgbImage.red.v[x][y] * 256f);
+				int g = (int) (rgbImage.green.v[x][y] * 256f);
+				int b = (int) (rgbImage.blue.v[x][y] * 256f);
 				bufferedImage.setRGB(x, y, r << 16 + g << 8 + b);
 			}
 

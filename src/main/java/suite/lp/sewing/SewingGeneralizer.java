@@ -28,7 +28,7 @@ public class SewingGeneralizer {
 	private int nVariables;
 
 	public class Generalization {
-		private Node node;
+		public final Node node;
 		private Env env;
 
 		private Generalization(Node node, Env env) {
@@ -53,10 +53,6 @@ public class SewingGeneralizer {
 
 		public Node getVariable(Node variable) {
 			return env.refs[variableIndices.get(variable)];
-		}
-
-		public Node node() {
-			return node;
 		}
 	}
 

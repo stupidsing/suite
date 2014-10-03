@@ -34,7 +34,7 @@ public class TwoPassIndexerTest {
 		for (String filename : filenames)
 			indexer.pass1(filename, FileUtil.read(filename));
 
-		Map<String, List<Reference>> map = indexer.getKeysByWord();
+		Map<String, List<Reference>> map = indexer.getReferencesByWord();
 
 		List<Entry<String, List<Reference>>> entries = Util.sort(map.entrySet() //
 				, (e0, e1) -> e1.getValue().size() - e0.getValue().size());

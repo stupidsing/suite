@@ -6,7 +6,7 @@ import suite.util.Util;
 
 public class Matrix {
 
-	private float v[][];
+	public final float v[][];
 
 	public Matrix(Matrix m) {
 		this(m.height(), m.width());
@@ -211,10 +211,6 @@ public class Matrix {
 
 	public int width() {
 		return v[0].length;
-	}
-
-	public float[][] get() {
-		return v;
 	}
 
 	@Override

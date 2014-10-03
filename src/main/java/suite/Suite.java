@@ -109,7 +109,7 @@ public class Suite {
 	public static Node[] match(String s, Node node) {
 		Generalization generalization = SewingGeneralizer.process(parse(s));
 
-		if (Binder.bind(generalization.node(), node, new Journal())) {
+		if (Binder.bind(generalization.node, node, new Journal())) {
 			Map<Node, Node> variables = generalization.getVariables();
 			List<Node> results = new ArrayList<>();
 			int i = 0;
@@ -130,7 +130,7 @@ public class Suite {
 			((Reference) variable).bound(node);
 		}
 
-		return generalization.node();
+		return generalization.node;
 	}
 
 	// --------------------------------
