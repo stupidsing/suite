@@ -7,7 +7,7 @@ import suite.util.Util;
 
 public class Tuple extends Node {
 
-	private List<Node> nodes;
+	public final List<Node> nodes;
 
 	public Tuple(List<Node> nodes) {
 		this.nodes = nodes;
@@ -28,10 +28,6 @@ public class Tuple extends Node {
 			return Util.clazz(node) == Tuple.class && Objects.equals(nodes, ((Tuple) node).nodes);
 		} else
 			return false;
-	}
-
-	public List<Node> getNodes() {
-		return nodes;
 	}
 
 }

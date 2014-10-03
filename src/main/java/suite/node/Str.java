@@ -4,7 +4,7 @@ import suite.util.Util;
 
 public class Str extends Node {
 
-	private String value;
+	public final String value;
 
 	public Str(String name) {
 		value = name;
@@ -26,10 +26,6 @@ public class Str extends Node {
 				return false;
 		} else
 			return false;
-	}
-
-	public String getValue() {
-		return value;
 	}
 
 }

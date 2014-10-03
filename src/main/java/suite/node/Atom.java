@@ -7,7 +7,7 @@ import suite.node.util.Singleton;
 
 public class Atom extends Node {
 
-	private String name;
+	public final String name;
 
 	public static Atom NIL = of("");
 	public static Atom TRUE = of("true");
@@ -40,10 +40,6 @@ public class Atom extends Node {
 	public boolean equals(Object object) {
 		return this == object //
 				|| object instanceof Node && this == ((Node) object).finalNode();
-	}
-
-	public String getName() {
-		return name;
 	}
 
 }

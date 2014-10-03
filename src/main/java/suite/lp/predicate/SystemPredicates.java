@@ -123,7 +123,7 @@ public class SystemPredicates {
 		Node pass = query;
 
 		if (query instanceof Atom) {
-			name = ((Atom) query).getName();
+			name = ((Atom) query).name;
 			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
 			if (tree.getOperator() != TermOp.TUPLE_)
@@ -132,7 +132,7 @@ public class SystemPredicates {
 				Node left = tree.getLeft();
 
 				if (left instanceof Atom) {
-					name = ((Atom) left).getName();
+					name = ((Atom) left).name;
 					pass = tree.getRight();
 				}
 			}
@@ -173,7 +173,7 @@ public class SystemPredicates {
 	private SystemPredicate systemPredicate = (prover, ps) -> {
 		ps = ps.finalNode();
 		Atom atom = ps instanceof Atom ? (Atom) ps : null;
-		String name = atom != null ? atom.getName() : null;
+		String name = atom != null ? atom.name : null;
 		return name != null && predicates.containsKey(name);
 	};
 

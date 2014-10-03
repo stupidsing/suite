@@ -3,8 +3,8 @@ package suite.instructionexecutor;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.lp.Journal;
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates;
@@ -54,7 +54,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			Node node = regs[insn.op0].finalNode();
 
 			insn1 = getInstructions()[current.ip++];
-			TermOp op = TermOp.find(((Atom) constantPool.get(insn1.op0)).getName());
+			TermOp op = TermOp.find(((Atom) constantPool.get(insn1.op0)).name);
 			int rl = insn1.op1;
 			int rr = insn1.op2;
 

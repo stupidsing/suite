@@ -151,7 +151,7 @@ public class EvalPredicates {
 					}
 				}
 			} else if (node instanceof Int)
-				result = ((Int) node).getNumber();
+				result = ((Int) node).number;
 			else
 				throw new RuntimeException("Cannot evaluate expression");
 
@@ -171,7 +171,7 @@ public class EvalPredicates {
 			return true;
 	};
 
-	public SystemPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).getNumber())));
+	public SystemPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
 
 	public SystemPredicate replace = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
@@ -206,7 +206,7 @@ public class EvalPredicates {
 					&& prover.bind(oper, p2) //
 					&& prover.bind(tree.getRight(), p3);
 		} else if (p2 instanceof Atom) {
-			Operator operator = TermOp.find(((Atom) p2).getName());
+			Operator operator = TermOp.find(((Atom) p2).name);
 			return prover.bind(p, Tree.of(operator, p1, p3));
 		} else
 			return false;
@@ -219,7 +219,7 @@ public class EvalPredicates {
 		Node p2 = params[2].finalNode();
 		Node p3 = params[3];
 
-		Operator operator = TermOp.find(((Atom) p2).getName());
+		Operator operator = TermOp.find(((Atom) p2).name);
 		return prover.bind(p, TreeIntern.of(operator, p1, p3));
 	};
 

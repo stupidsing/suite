@@ -25,7 +25,7 @@ public class Specializer {
 			if (left != left1 || right != right1)
 				node = Tree.of(tree.getOperator(), left1, right1);
 		} else if (node instanceof Tuple) {
-			List<Node> nodes = ((Tuple) node).getNodes();
+			List<Node> nodes = ((Tuple) node).nodes;
 			node = new Tuple(nodes.stream().map(this::specialize).collect(Collectors.toList()));
 		}
 

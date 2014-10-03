@@ -82,15 +82,15 @@ public class Persister {
 			if ((id = nodes.get(new IdentityKey(node))) == null) {
 				if (node instanceof Atom) {
 					dos.writeChar('a');
-					dos.writeUTF(((Atom) node).getName());
+					dos.writeUTF(((Atom) node).name);
 				} else if (node instanceof Int) {
 					dos.writeChar('i');
-					dos.writeInt(((Int) node).getNumber());
+					dos.writeInt(((Int) node).number);
 				} else if (node instanceof Reference)
 					dos.writeChar('r');
 				else if (node instanceof Str) {
 					dos.writeChar('s');
-					dos.writeUTF(((Str) node).getValue());
+					dos.writeUTF(((Str) node).value);
 				} else if ((tree = Tree.decompose(node)) != null) {
 					int key0 = save0(dos, tree.getLeft());
 					int key1 = save0(dos, tree.getRight());

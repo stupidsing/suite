@@ -30,7 +30,7 @@ public class IoPredicates {
 	public SystemPredicate exec = (prover, ps) -> {
 		if (ps instanceof Str)
 			try {
-				String cmd = ((Str) ps).getValue();
+				String cmd = ((Str) ps).value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 			} catch (Exception ex) { // IOException or InterruptedException
 				LogUtil.error(ex);
@@ -38,7 +38,7 @@ public class IoPredicates {
 		return false;
 	};
 
-	public SystemPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).getNumber() : 0));
+	public SystemPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
 
 	public SystemPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 

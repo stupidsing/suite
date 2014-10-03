@@ -27,7 +27,7 @@ public class BasicIntrinsics {
 
 	public Intrinsic atomString = new Intrinsic() {
 		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			String name = ((Atom) inputs.get(0)).getName();
+			String name = ((Atom) inputs.get(0)).name;
 
 			if (!name.isEmpty()) {
 				Node left = callback.enclose(Intrinsics.id_, Int.of(name.charAt(0)));

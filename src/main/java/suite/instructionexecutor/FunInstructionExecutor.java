@@ -71,11 +71,11 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = Tree.of(TermOp.AND___, n0, n1);
 			break;
 		case DATASTRING____:
-			result = new Data<>(To.chars(((Str) regs[insn.op1]).getValue()));
+			result = new Data<>(To.chars(((Str) regs[insn.op1]).value));
 			break;
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];
-			String intrinsicName = atom.getName().split("!")[1];
+			String intrinsicName = atom.name.split("!")[1];
 			result = InstructionUtil.execGetIntrinsic(intrinsicName);
 			break;
 		case HEAD__________:

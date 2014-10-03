@@ -6,7 +6,7 @@ import suite.util.Util;
 
 public class IdentityKey extends HashCodeComparable<IdentityKey> {
 
-	private Node node;
+	public final Node node;
 
 	public IdentityKey(Node node) {
 		this.node = node;
@@ -20,10 +20,6 @@ public class IdentityKey extends HashCodeComparable<IdentityKey> {
 	@Override
 	public boolean equals(Object object) {
 		return Util.clazz(object) == IdentityKey.class && node == ((IdentityKey) object).node;
-	}
-
-	public Node getNode() {
-		return node;
 	}
 
 }

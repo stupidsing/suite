@@ -82,9 +82,9 @@ public class ReversePolish {
 			String s;
 
 			if (n instanceof Atom)
-				s = "\\" + ((Atom) n).getName();
+				s = "\\" + ((Atom) n).name;
 			else if (n instanceof Int)
-				s = "i" + ((Int) n).getNumber();
+				s = "i" + ((Int) n).number;
 			else if (n instanceof Reference)
 				s = "r" + ((Reference) n).getId();
 			// s = "\\." + ((Reference) n).getId();
@@ -94,7 +94,7 @@ public class ReversePolish {
 				deque.push(tree.getRight());
 				deque.push(tree.getLeft());
 			} else if (n instanceof Tuple) {
-				List<Node> nodes = ((Tuple) n).getNodes();
+				List<Node> nodes = ((Tuple) n).nodes;
 				int size = nodes.size();
 				s = "u" + size;
 				for (int i = size - 1; i >= 0; i++)

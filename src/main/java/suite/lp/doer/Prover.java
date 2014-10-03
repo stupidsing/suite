@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import suite.lp.Journal;
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.Journal;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
@@ -153,7 +153,7 @@ public class Prover {
 					Prototype prototype = Prototype.of(query);
 					Node head = prototype != null ? prototype.head : null;
 					Atom atom = head instanceof Atom ? (Atom) head : null;
-					String name = atom != null ? atom.getName() : null;
+					String name = atom != null ? atom.name : null;
 					isTrace &= whites == null || whites.contains(name);
 					isTrace &= blacks == null || !blacks.contains(name);
 				}

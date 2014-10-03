@@ -35,9 +35,9 @@ public class Binder {
 		if (clazz0 != clazz1)
 			return false;
 		else if (clazz0 == Int.class)
-			return ((Int) n0).getNumber() == ((Int) n1).getNumber();
+			return ((Int) n0).number == ((Int) n1).number;
 		else if (clazz0 == Str.class)
-			return Objects.equals(((Str) n0).getValue(), ((Str) n1).getValue());
+			return Objects.equals(((Str) n0).value, ((Str) n1).value);
 		else if (clazz0 == Tree.class) {
 			Tree t0 = (Tree) n0;
 			Tree t1 = (Tree) n1;
@@ -45,8 +45,8 @@ public class Binder {
 					&& bind(t0.getLeft(), t1.getLeft(), journal) //
 					&& bind(t0.getRight(), t1.getRight(), journal);
 		} else if (clazz0 == Tuple.class) {
-			List<Node> nodes0 = ((Tuple) n0).getNodes();
-			List<Node> nodes1 = ((Tuple) n1).getNodes();
+			List<Node> nodes0 = ((Tuple) n0).nodes;
+			List<Node> nodes1 = ((Tuple) n1).nodes;
 			boolean result = nodes0.size() == nodes1.size();
 			if (result) {
 				Iterator<Node> iter0 = nodes0.iterator();

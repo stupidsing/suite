@@ -6,7 +6,7 @@ import suite.util.Util;
 
 public class Data<T> extends Node {
 
-	private T data;
+	public final T data;
 
 	public Data(T data) {
 		this.data = data;
@@ -14,12 +14,8 @@ public class Data<T> extends Node {
 
 	public static <T> T get(Node node) {
 		@SuppressWarnings("unchecked")
-		T t = (T) ((Data<?>) node).getData();
+		T t = (T) ((Data<?>) node).data;
 		return t;
-	}
-
-	public T getData() {
-		return data;
 	}
 
 	@Override

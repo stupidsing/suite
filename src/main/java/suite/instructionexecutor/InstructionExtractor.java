@@ -87,12 +87,12 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private Instruction extract(List<Node> rs) {
-		String insnName = ((Atom) rs.get(0).finalNode()).getName();
+		String insnName = ((Atom) rs.get(0).finalNode()).name;
 		Insn insn;
 
 		if (Objects.equals(insnName, "EVALUATE")) {
 			Atom atom = (Atom) rs.remove(3).finalNode();
-			TermOp operator = TermOp.find(atom.getName());
+			TermOp operator = TermOp.find(atom.name);
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else
 			insn = InstructionUtil.getInsn(insnName);
@@ -119,7 +119,7 @@ public class InstructionExtractor implements AutoCloseable {
 			Tree tree;
 
 			if (node instanceof Int)
-				return ((Int) node).getNumber();
+				return ((Int) node).number;
 			else if (node instanceof Reference) { // Transient register
 
 				// Allocates new register in current local frame

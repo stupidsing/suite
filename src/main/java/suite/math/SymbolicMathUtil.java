@@ -43,7 +43,7 @@ public class SymbolicMathUtil {
 
 			for (Node freshNode : freshNodes)
 				for (TermKey term : findEqualities(freshNode)) {
-					Node node = term.getNode();
+					Node node = term.node;
 
 					if (!searchedNodes.contains(term) && complexity.complexity(node) < complexity0 + 1) {
 						searchedNodes.add(term);
@@ -54,7 +54,7 @@ public class SymbolicMathUtil {
 			freshNodes = freshNodes1;
 		}
 
-		return Collections.min(To.list(FunUtil.map(TermKey::getNode, To.source(searchedNodes))), comparator);
+		return Collections.min(To.list(FunUtil.map(k -> k.node, To.source(searchedNodes))), comparator);
 	}
 
 	private static Collection<TermKey> findEqualities(Node node) {

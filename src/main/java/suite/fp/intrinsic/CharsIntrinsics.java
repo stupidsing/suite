@@ -37,7 +37,7 @@ public class CharsIntrinsics {
 
 	public static Intrinsic split = (callback, inputs) -> {
 		Chars chars = Data.get(inputs.get(0));
-		int sep = ((Int) inputs.get(1)).getNumber();
+		int sep = ((Int) inputs.get(1)).number;
 		int pos = 0;
 		while (pos < chars.size() && chars.get(pos) != sep)
 			pos++;
@@ -52,8 +52,8 @@ public class CharsIntrinsics {
 	};
 
 	public static Intrinsic subchars = (callback, inputs) -> {
-		int start = ((Int) inputs.get(0)).getNumber();
-		int end = ((Int) inputs.get(1)).getNumber();
+		int start = ((Int) inputs.get(0)).number;
+		int end = ((Int) inputs.get(1)).number;
 		Chars chars = Data.get(inputs.get(2));
 		return new Data<>(chars.subchars(start, end));
 	};

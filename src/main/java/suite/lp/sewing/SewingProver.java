@@ -197,11 +197,11 @@ public class SewingProver {
 			Fun<Env, Node> f1 = ct.sewingGeneralizer.compile(m[1]);
 			tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
 		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
-			tr = callSystemPredicate(ct, ((Atom) m[0]).getName(), m[1]);
+			tr = callSystemPredicate(ct, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
 			tr = callSystemPredicate(ct, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
-			String name = ((Atom) node).getName();
+			String name = ((Atom) node).name;
 			if (Util.stringEquals(name, SewingGeneralizer.cutName))
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
@@ -214,7 +214,7 @@ public class SewingProver {
 			} else
 				tr = callSystemPredicate(ct, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
-			Object data = ((Data<?>) node).getData();
+			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
 		}

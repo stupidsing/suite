@@ -22,7 +22,7 @@ public class ThunkUtil {
 		Node n;
 
 		while ((n = source.source()) != null)
-			sb.append((char) ((Int) n).getNumber());
+			sb.append((char) ((Int) n).number);
 
 		return sb.toString();
 	}
@@ -36,7 +36,7 @@ public class ThunkUtil {
 		Node n;
 
 		while ((n = source.source()) != null) {
-			int c = ((Int) n).getNumber();
+			int c = ((Int) n).number;
 			writer.write(c);
 			if (c == 10)
 				writer.flush();

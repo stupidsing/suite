@@ -38,7 +38,7 @@ public class Cloner {
 				if (right instanceof Reference)
 					right1 = new Reference();
 				else if (right1 instanceof Tuple) {
-					List<Node> nodes = ((Tuple) right1).getNodes();
+					List<Node> nodes = ((Tuple) right1).nodes;
 					right1 = new Tuple(nodes.stream().map(this::clone).collect(Collectors.toList()));
 				} else if ((rt = Tree.decompose(right)) != null)
 					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
@@ -55,7 +55,7 @@ public class Cloner {
 
 	public Node cloneOld(Node node) {
 		return clonedNodes.computeIfAbsent(new IdentityKey(node.finalNode()), key -> {
-			Node node_ = key.getNode();
+			Node node_ = key.node;
 
 			if (node_ instanceof Reference)
 				node_ = new Reference();

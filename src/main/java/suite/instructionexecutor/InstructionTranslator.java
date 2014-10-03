@@ -306,7 +306,7 @@ public class InstructionTranslator implements Closeable {
 			case FORMTREE0_____:
 				insn = instructions.get(ip++);
 				app("#{reg} = Tree.of(TermOp.#{str}, #{reg-node}, #{reg-node})", insn.op1,
-						TermOp.find(((Atom) constantPool.get(insn.op0)).getName()), op0, op1);
+						TermOp.find(((Atom) constantPool.get(insn.op0)).name), op0, op1);
 				break;
 			case FRAMEBEGIN____:
 			case FRAMEEND______:

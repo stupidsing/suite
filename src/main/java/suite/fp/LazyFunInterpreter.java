@@ -44,8 +44,8 @@ public class LazyFunInterpreter {
 		};
 
 		IMap<String, Thunk_> env = new IMap<>();
-		env = env.put(Atom.TRUE.getName(), () -> Atom.TRUE);
-		env = env.put(Atom.FALSE.getName(), () -> Atom.FALSE);
+		env = env.put(Atom.TRUE.name, () -> Atom.TRUE);
+		env = env.put(Atom.FALSE.name, () -> Atom.FALSE);
 
 		env = env.put(TermOp.AND___.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
 		env = env.put(TermOp.EQUAL_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) == i(b)))));
@@ -59,9 +59,9 @@ public class LazyFunInterpreter {
 		env = env.put(TermOp.MULT__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));
 		env = env.put(TermOp.DIVIDE.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) / i(b)))));
 
-		env = env.put(ERROR.getName(), error);
-		env = env.put(FST__.getName(), () -> new Fun_(in -> ((Pair_) in.get()).first));
-		env = env.put(SND__.getName(), () -> new Fun_(in -> ((Pair_) in.get()).second));
+		env = env.put(ERROR.name, error);
+		env = env.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first));
+		env = env.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		return lazy0(node).apply(env);
 	}
@@ -118,11 +118,11 @@ public class LazyFunInterpreter {
 	}
 
 	private int i(Thunk_ thunk) {
-		return ((Int) thunk.get()).getNumber();
+		return ((Int) thunk.get()).number;
 	}
 
 	private String v(Node node) {
-		return ((Atom) node).getName();
+		return ((Atom) node).name;
 	}
 
 }

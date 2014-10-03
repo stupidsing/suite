@@ -35,13 +35,13 @@ public class Comparer implements Comparator<Node> {
 
 		if (clazz0 == clazz1)
 			if (clazz0 == Atom.class)
-				return ((Atom) n0).getName().compareTo(((Atom) n1).getName());
+				return ((Atom) n0).name.compareTo(((Atom) n1).name);
 			else if (clazz0 == Int.class)
-				return ((Int) n0).getNumber() - ((Int) n1).getNumber();
+				return ((Int) n0).number - ((Int) n1).number;
 			else if (clazz0 == Reference.class)
 				return ((Reference) n0).getId() - ((Reference) n1).getId();
 			else if (clazz0 == Str.class)
-				return ((Str) n0).getValue().compareTo(((Str) n1).getValue());
+				return ((Str) n0).value.compareTo(((Str) n1).value);
 			else if (clazz0 == Tree.class) {
 				Tree t0 = (Tree) n0;
 				Tree t1 = (Tree) n1;
@@ -50,8 +50,8 @@ public class Comparer implements Comparator<Node> {
 				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;
 			} else if (clazz0 == Tuple.class) {
-				Iterator<Node> iter0 = ((Tuple) n0).getNodes().iterator();
-				Iterator<Node> iter1 = ((Tuple) n1).getNodes().iterator();
+				Iterator<Node> iter0 = ((Tuple) n0).nodes.iterator();
+				Iterator<Node> iter1 = ((Tuple) n1).nodes.iterator();
 				int c = 0;
 				while (c == 0 && iter0.hasNext() && iter1.hasNext())
 					c = compare(iter0.next(), iter1.next());

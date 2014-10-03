@@ -26,7 +26,7 @@ public class Generalizer {
 			Tree rt;
 
 			if (right instanceof Atom) {
-				String name = ((Atom) right).getName();
+				String name = ((Atom) right).name;
 				if (name.startsWith(SewingGeneralizer.wildcardPrefix))
 					right = new Reference();
 				if (name.startsWith(SewingGeneralizer.variablePrefix))

@@ -4,7 +4,7 @@ import suite.util.Util;
 
 public class Int extends Node {
 
-	private int number;
+	public final int number;
 
 	private static int poolLo = -256;
 	private static int poolHi = 256;
@@ -42,10 +42,6 @@ public class Int extends Node {
 				return false;
 		} else
 			return false;
-	}
-
-	public int getNumber() {
-		return number;
 	}
 
 }

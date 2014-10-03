@@ -56,14 +56,17 @@ public enum TermOp implements Operator {
 		return null;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public Assoc getAssoc() {
 		return assoc;
 	}
 
+	@Override
 	public int getPrecedence() {
 		return precedence;
 	}

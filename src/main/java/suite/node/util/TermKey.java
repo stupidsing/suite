@@ -41,7 +41,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 			} else if (node instanceof Tuple) {
 				Tuple tuple = (Tuple) node;
 				int result = 1;
-				for (Node n : tuple.getNodes())
+				for (Node n : tuple.nodes)
 					result = 31 * result + hash(n);
 				return result;
 			} else
@@ -49,7 +49,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		}
 	}
 
-	private Node node;
+	public final Node node;
 
 	public TermKey(Node node) {
 		this.node = node;
@@ -67,10 +67,6 @@ public class TermKey extends HashCodeComparable<TermKey> {
 			return Objects.equals(new TermHasher().hash(node), new TermHasher().hash(node1));
 		} else
 			return false;
-	}
-
-	public Node getNode() {
-		return node;
 	}
 
 }

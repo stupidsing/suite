@@ -46,7 +46,7 @@ public class Formatter {
 					int id1 = graphize(tree.getRight());
 					content = "tree(" + id0 + tree.getOperator().getName() + id1 + ")";
 				} else if (node instanceof Tuple)
-					content = ((Tuple) node).getNodes().stream() //
+					content = ((Tuple) node).nodes.stream() //
 							.map(n -> graphize(n) + ", ").collect(Collectors.joining(", ", "tuple(", ")"));
 				else
 					content = dump(node);
@@ -128,15 +128,15 @@ public class Formatter {
 
 	private void format0(Node node, int parentPrec) {
 		if (node instanceof Atom) {
-			String s = ((Atom) node).getName();
+			String s = ((Atom) node).name;
 			s = isDump ? quoteAtomIfRequired(s) : s;
 			sb.append(s);
 		} else if (node instanceof Int)
-			sb.append(((Int) node).getNumber());
+			sb.append(((Int) node).number);
 		else if (node instanceof Reference)
 			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
 		else if (node instanceof Str) {
-			String s = ((Str) node).getValue();
+			String s = ((Str) node).value;
 			s = isDump ? Escaper.escape(s, '"') : s;
 			sb.append(s);
 		} else if (node instanceof Tree) {

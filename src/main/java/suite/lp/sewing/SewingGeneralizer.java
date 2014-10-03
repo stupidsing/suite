@@ -101,7 +101,7 @@ public class SewingGeneralizer {
 			Tree tree;
 
 			if (node0 instanceof Atom) {
-				String name = ((Atom) node0).getName();
+				String name = ((Atom) node0).name;
 
 				if (isWildcard(name))
 					fun = env -> new Reference();
@@ -153,7 +153,7 @@ public class SewingGeneralizer {
 	public static boolean isVariant(Node node) {
 		node = node.finalNode();
 		if (node instanceof Atom) {
-			String name = ((Atom) node).getName();
+			String name = ((Atom) node).name;
 			return isWildcard(name) || isVariable(name) || isCut(name);
 		} else
 			return false;

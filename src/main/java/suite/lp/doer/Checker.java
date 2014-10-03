@@ -49,7 +49,7 @@ public class Checker {
 
 			if (node instanceof Atom) {
 				Atom atom = (Atom) node;
-				String name = atom.getName();
+				String name = atom.name;
 
 				// Check all variables starting with alphabets; ignore
 				// computer-generated code
@@ -69,7 +69,7 @@ public class Checker {
 				node = tree.getRight();
 				continue;
 			} else if (node instanceof Tuple) {
-				List<Node> nodes = ((Tuple) node).getNodes();
+				List<Node> nodes = ((Tuple) node).nodes;
 				nodes.forEach(this::scan);
 			}
 
