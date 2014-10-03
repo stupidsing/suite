@@ -36,7 +36,7 @@ import suite.util.Util;
  * fit in a single disk page.
  *
  * Mutator control is done by a "stamp" consisting of a chain of root page
- * numbers of all B-trees. The holder object persist the stmap into another
+ * numbers of all B-trees. The holder object persist the stamp into another
  * file.
  *
  * @author ywsing
