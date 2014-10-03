@@ -39,15 +39,17 @@ public class FileSystemTest {
 		testB_Tree(FileUtil.tmp + "/b_tree-fs", this::testWriteOneFile);
 	}
 
-	// @Test
-	// Not enough size
+	// Writing too many files (testWriteFiles1) would fail this test case. Do
+	// not know why.
+	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testWriteFiles);
+		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testWriteFiles0);
+		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testReadFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testWriteFiles);
+		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testWriteFiles1);
 		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testReadFile);
 	}
 
@@ -84,8 +86,16 @@ public class FileSystemTest {
 		assertEquals(0, fsm.list(filename, null).size());
 	}
 
-	private void testWriteFiles(FileSystem fs) throws IOException {
-		Source<Path> paths = FileUtil.findPaths(Paths.get("src"));
+	private void testWriteFiles0(FileSystem fs) throws IOException {
+		testWriteFile(fs, "src/test/java/suite/immutable/");
+	}
+
+	private void testWriteFiles1(FileSystem fs) throws IOException {
+		testWriteFile(fs, "src/test/java/");
+	}
+
+	private void testWriteFile(FileSystem fs, String pathName) throws IOException {
+		Source<Path> paths = FileUtil.findPaths(Paths.get(pathName));
 
 		fs.create();
 		FileSystemMutator fsm = fs.mutate();
