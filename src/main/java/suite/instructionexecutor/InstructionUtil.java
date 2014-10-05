@@ -6,9 +6,6 @@ import java.util.Map;
 import suite.Suite;
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
-import suite.fp.intrinsic.Intrinsics;
-import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.node.Data;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -192,10 +189,6 @@ public class InstructionUtil {
 
 	public static Insn getInsn(String insnName) {
 		return InstructionUtil.insnNames.inverse().get(insnName);
-	}
-
-	public static Data<Intrinsic> execGetIntrinsic(String intrinsicName) {
-		return new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 	}
 
 }

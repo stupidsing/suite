@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.InstructionUtil.Activation;
@@ -76,7 +77,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];
 			String intrinsicName = atom.name.split("!")[1];
-			result = InstructionUtil.execGetIntrinsic(intrinsicName);
+			result = new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 			break;
 		case HEAD__________:
 			result = Tree.decompose((Node) ds[--dsp]).getLeft();
