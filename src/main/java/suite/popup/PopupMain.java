@@ -21,7 +21,6 @@ import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.util.ExecUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 import suite.util.LogUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
@@ -41,15 +40,6 @@ public class PopupMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String args[]) throws Exception {
-		Fun<String, ExecUtil> volumeControl = (String c) -> {
-			try {
-				return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c }, "");
-			} catch (IOException ex) {
-				LogUtil.error(ex);
-				return null;
-			}
-		};
-
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int centreX = screenSize.width / 2, centreY = screenSize.height / 2;
 		int width = screenSize.width / 2, height = screenSize.height / 8;
@@ -68,6 +58,16 @@ public class PopupMain extends ExecutableProgram {
 		frame.setLocation(centreX - width / 2, centreY - height / 2);
 		frame.setSize(new Dimension(width, height));
 		frame.setVisible(true);
+
+		Fun<String, ExecUtil> volumeControl = (String c) -> {
+			inTextField.requestFocusInWindow();
+			try {
+				return new ExecUtil(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c }, "");
+			} catch (IOException ex) {
+				LogUtil.error(ex);
+				return null;
+			}
+		};
 
 		JLabel volLabel = new JLabel("Volume");
 
@@ -92,8 +92,8 @@ public class PopupMain extends ExecutableProgram {
 				, lay.ex(32, lay.c(outLabel)) //
 				);
 
-		Sink<Void> refresh = new Sink<Void>() {
-			public void sink(Void i) {
+		Runnable refresh = new Runnable() {
+			public void run() {
 				lay.arrange(layout);
 				frame.repaint();
 			}
@@ -101,20 +101,22 @@ public class PopupMain extends ExecutableProgram {
 
 		frame.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
-				refresh.sink(null);
+				refresh.run();
 			}
 		});
 
-		refresh.sink(null);
+		refresh.run();
 		System.in.read();
 		return true;
 	}
 
 	public void execute(String cmd) {
-		ClipboardUtil clipboardUtil = new ClipboardUtil();
-		String text0 = clipboardUtil.getClipboardText();
-		String text1 = Suite.evaluateFilterFun(cmd, true, text0);
-		clipboardUtil.setClipboardText(text1);
+		if (!Util.isBlank(cmd)) {
+			ClipboardUtil clipboardUtil = new ClipboardUtil();
+			String text0 = clipboardUtil.getClipboardText();
+			String text1 = Suite.evaluateFilterFun(cmd, true, text0);
+			clipboardUtil.setClipboardText(text1);
+		}
 	}
 
 }
