@@ -63,7 +63,6 @@ public class Weiqi {
 	 */
 	public static class Array<T> {
 		@SuppressWarnings("unchecked")
-		// JDK bug
 		private T positions[] = (T[]) new Object[size << shift];
 
 		public Array() {

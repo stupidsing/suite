@@ -1,5 +1,6 @@
 package suite.immutable;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -80,7 +81,7 @@ public class IBinPriorityQueue<T> {
 
 	@SuppressWarnings("unchecked")
 	public IBinPriorityQueue(Comparator<T> comparator) {
-		this(comparator, (IBinPriorityQueue<T>.Node[]) new IBinPriorityQueue<?>.Node[maxRank]);
+		this(comparator, (Node[]) Array.newInstance(Node.class, maxRank));
 	}
 
 	public IBinPriorityQueue(Comparator<T> comparator, Node trees[]) {
@@ -147,7 +148,7 @@ public class IBinPriorityQueue<T> {
 
 	private Node[] createForest() {
 		@SuppressWarnings("unchecked")
-		Node forest[] = (IBinPriorityQueue<T>.Node[]) new IBinPriorityQueue<?>.Node[maxRank];
+		Node forest[] = (Node[]) Array.newInstance(Node.class, maxRank);
 		return forest;
 	}
 
