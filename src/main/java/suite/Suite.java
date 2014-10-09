@@ -69,7 +69,7 @@ public class Suite {
 
 	public static Node applyReader(Node func, Reader reader) {
 		Data<IndexedReader.Pointer> data = new Data<>(new IndexedReader(reader).pointer());
-		return substitute("source {skip-type-check atom:.0} | .1", data, func);
+		return substitute("skip-type-check atom:.0 | source | .1", data, func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {

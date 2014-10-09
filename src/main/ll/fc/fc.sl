@@ -139,7 +139,7 @@ fc-add-functions STANDARD .p (
 	define log2 := (:t => string -> :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn-v2
 	>>
-	define source := (data^Stream -> string) of
+	define source := (data^NumberStream -> string) of
 		atom:INTRN!MonadIntrinsics.source | getintrn | callintrn-v1
 	>>
 	define throw := (any -> any) of
