@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
-import suite.instructionexecutor.IndexedReader;
-import suite.lp.ImportUtil;
-import suite.lp.Journal;
+import suite.instructionexecutor.IndexedCharsReader;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
+import suite.lp.ImportUtil;
+import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
@@ -44,7 +44,7 @@ public class Suite {
 	public static boolean isInstructionTrace = false;
 	public static int stackSize = 16384;
 
-	public static List<String> libraries = Arrays.asList("STANDARD");
+	public static List<String> libraries = Arrays.asList("STANDARD", "CHARS");
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
 	public static Set<String> tracePredicates = null;
@@ -68,8 +68,12 @@ public class Suite {
 	}
 
 	public static Node applyReader(Node func, Reader reader) {
-		Data<IndexedReader.Pointer> data = new Data<>(new IndexedReader(reader).pointer());
-		return substitute("skip-type-check atom:.0 | source | .1", data, func);
+		return applyCharsReader(substitute(".0 . concat . map {cs-to-string}", func), reader);
+	}
+
+	public static Node applyCharsReader(Node func, Reader reader) {
+		Data<IndexedCharsReader.Pointer> data = new Data<>(new IndexedCharsReader(reader).pointer());
+		return substitute("skip-type-check atom:.0 | .1 . cs-source", data, func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {

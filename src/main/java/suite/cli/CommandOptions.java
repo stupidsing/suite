@@ -24,8 +24,9 @@ import suite.util.Util;
 public class CommandOptions {
 
 	// Program type options
-	private boolean isQuiet = false;
+	private boolean isChars = false;
 	private boolean isDo = false;
+	private boolean isQuiet = false;
 
 	// Program evaluation options
 	private boolean isLazy = true;
@@ -42,6 +43,8 @@ public class CommandOptions {
 
 		if (Util.stringEquals(arg, "--do"))
 			isDo = on;
+		else if (Util.stringEquals(arg, "--chars"))
+			isChars = !on;
 		else if (Util.stringEquals(arg, "--eager"))
 			isLazy = !on;
 		else if (Util.stringEquals(arg, "--editor"))
@@ -89,12 +92,16 @@ public class CommandOptions {
 		}
 	}
 
-	public boolean isQuiet() {
-		return isQuiet;
+	public boolean isChars() {
+		return isChars;
 	}
 
 	public boolean isDo() {
 		return isDo;
+	}
+
+	public boolean isQuiet() {
+		return isQuiet;
 	}
 
 }

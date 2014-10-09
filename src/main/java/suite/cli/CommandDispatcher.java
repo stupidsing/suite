@@ -191,7 +191,7 @@ public class CommandDispatcher {
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
 		Node node = parseNode(inputs);
-		node = Suite.applyReader(node, reader);
+		node = opt.isChars() ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
 		if (opt.isDo())
 			node = Suite.applyDo(node, Atom.of("string"));
 		evaluateFunctionalToWriter(node, writer);
