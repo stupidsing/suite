@@ -44,4 +44,4 @@ printf 'inputs...\ninputs...\n' | ./run.sh filter reverse
 
 ### How to evaluate monadic functional filters?
 
-./run.sh --libraries STANDARD,MONAD filter --do 'concatm . map {sh/ {}} . split {10}'
+./run.sh --libraries STANDARD,CHARS,MONAD filter --do 'concatm . map {sh/ {}} . split {10}'
