@@ -18,13 +18,13 @@ import suite.util.To;
 
 public class CharsIntrinsics {
 
-	public static Intrinsic append = (callback, inputs) -> {
+	public Intrinsic append = (callback, inputs) -> {
 		Chars chars0 = Data.get(inputs.get(0));
 		Chars chars1 = Data.get(inputs.get(1));
 		return new Data<>(chars0.append(chars1));
 	};
 
-	public static Intrinsic charsString = new Intrinsic() {
+	public Intrinsic charsString = new Intrinsic() {
 		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
 			Chars chars = Data.get(inputs.get(0));
 
@@ -53,7 +53,7 @@ public class CharsIntrinsics {
 		}
 	};
 
-	public static Intrinsic split = (callback, inputs) -> {
+	public Intrinsic split = (callback, inputs) -> {
 		Chars chars = Data.get(inputs.get(0));
 		int sep = ((Int) inputs.get(1)).number;
 		int pos = 0;
@@ -64,12 +64,12 @@ public class CharsIntrinsics {
 				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(pos))));
 	};
 
-	public static Intrinsic stringChars = (callback, inputs) -> {
+	public Intrinsic stringChars = (callback, inputs) -> {
 		String value = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
 		return new Data<>(To.chars(value));
 	};
 
-	public static Intrinsic subchars = (callback, inputs) -> {
+	public Intrinsic subchars = (callback, inputs) -> {
 		int start = ((Int) inputs.get(0)).number;
 		int end = ((Int) inputs.get(1)).number;
 		Chars chars = Data.get(inputs.get(2));
