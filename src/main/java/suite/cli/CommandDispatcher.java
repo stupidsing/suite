@@ -48,6 +48,7 @@ public class CommandDispatcher {
 	private enum InputType {
 		EVALUATE("\\"), //
 		EVALUATEDO("\\d"), //
+		EVALUATEDOCHARS("\\dc"), //
 		EVALUATEDOSTR("\\ds"), //
 		EVALUATEINTERPRET("\\i"), //
 		EVALUATESTR("\\s"), //
@@ -110,6 +111,10 @@ public class CommandDispatcher {
 		case EVALUATEDO:
 			node = Suite.applyDo(node, Atom.of("any"));
 			pw.println(Formatter.dump(evaluateFunctional(node)));
+			break;
+		case EVALUATEDOCHARS:
+			node = Suite.applyDo(node, Suite.parse("[data^Chars]"));
+			printEvaluatedChars(writer, node);
 			break;
 		case EVALUATEDOSTR:
 			node = Suite.applyDo(node, Atom.of("string"));
@@ -234,6 +239,11 @@ public class CommandDispatcher {
 		return inputs.stream().collect(Collectors.joining(" "));
 	}
 
+	private void printEvaluatedChars(Writer writer, Node node) throws IOException {
+		evaluateFunctionalToCharsWriter(node, writer);
+		writer.flush();
+	}
+
 	private void printEvaluatedString(Writer writer, Node node) throws IOException {
 		evaluateFunctionalToWriter(node, writer);
 		writer.flush();
@@ -247,6 +257,10 @@ public class CommandDispatcher {
 
 	private Node evaluateFunctional(Node node) {
 		return Suite.evaluateFun(opt.fcc(node));
+	}
+
+	private void evaluateFunctionalToCharsWriter(Node node, Writer writer) throws IOException {
+		Suite.evaluateFunToCharsWriter(opt.fcc(node), writer);
 	}
 
 	private void evaluateFunctionalToWriter(Node node, Writer writer) throws IOException {

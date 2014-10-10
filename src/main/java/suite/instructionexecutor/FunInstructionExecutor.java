@@ -32,6 +32,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		super(node);
 	}
 
+	public void executeToCharsWriter(Writer writer) throws IOException {
+		ThunkUtil.yawnCharsWriter(intrinsicCallback::yawn, execute(), writer);
+	}
+
 	public void executeToWriter(Writer writer) throws IOException {
 		ThunkUtil.yawnWriter(intrinsicCallback::yawn, execute(), writer);
 	}

@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.io.Writer;
 
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -25,6 +27,16 @@ public class ThunkUtil {
 			sb.append((char) ((Int) n).number);
 
 		return sb.toString();
+	}
+
+	public static void yawnCharsWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
+		Source<Node> source = yawnList(yawn, node, true);
+		Node n;
+
+		while ((n = source.source()) != null) {
+			Chars chars = Data.get((Data<?>) n);
+			chars.write(writer);
+		}
 	}
 
 	/**

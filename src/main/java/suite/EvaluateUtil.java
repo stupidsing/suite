@@ -69,6 +69,12 @@ public class EvaluateUtil {
 		}
 	}
 
+	public void evaluateFunToCharsWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
+		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
+			executor.executeToCharsWriter(writer);
+		}
+	}
+
 	public void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
 			executor.executeToWriter(writer);

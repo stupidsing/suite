@@ -190,6 +190,10 @@ public class Suite {
 		return evaluateUtil.evaluateFun(fcc);
 	}
 
+	public static void evaluateFunToCharsWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
+		evaluateUtil.evaluateFunToCharsWriter(fcc, writer);
+	}
+
 	public static void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
 		evaluateUtil.evaluateFunToWriter(fcc, writer);
 	}
