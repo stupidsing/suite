@@ -220,6 +220,12 @@ public class CommandDispatcher {
 		return Suite.importPath(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 
+	public boolean dispatchType(List<String> inputs) throws IOException {
+		Node node = parseNode(inputs);
+		System.out.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
+		return true;
+	}
+
 	private Node parseNode(List<String> inputs) {
 		return Suite.parse(parseInput(inputs));
 	}

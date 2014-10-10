@@ -69,6 +69,8 @@ public class Main extends ExecutableProgram {
 				result &= dispatcher.dispatchProve(inputs);
 			else if (Util.stringEquals(verb, "query"))
 				result &= runInteractive(inputs);
+			else if (Util.stringEquals(verb, "type"))
+				result &= dispatcher.dispatchType(inputs);
 			else if (verb == null)
 				result &= runInteractive(inputs);
 			else
