@@ -73,7 +73,7 @@ public class Suite {
 
 	public static Node applyCharsReader(Node func, Reader reader) {
 		Data<IndexedCharsReader.Pointer> data = new Data<>(new IndexedCharsReader(reader).pointer());
-		return substitute("skip-type-check atom:.0 | .1 . cs-source", data, func);
+		return substitute("skip-type-check atom:.0 | .1 . cs-drain", data, func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {

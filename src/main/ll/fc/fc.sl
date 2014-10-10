@@ -133,14 +133,14 @@ fc-add-functions STANDARD .p (
 	define deep-seq := (:t => :t -> :t) of
 		atom:INTRN!SeqIntrinsics.deepSeq | getintrn | callintrn-v1
 	>>
+	define drain := (data^NumberStream -> string) of
+		atom:INTRN!MonadIntrinsics.drain | getintrn | callintrn-v1
+	>>
 	define log := (:t => :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn-v1
 	>>
 	define log2 := (:t => string -> :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn-v2
-	>>
-	define source := (data^NumberStream -> string) of
-		atom:INTRN!MonadIntrinsics.source | getintrn | callintrn-v1
 	>>
 	define throw := (any -> any) of
 		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn-v1

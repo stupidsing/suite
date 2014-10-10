@@ -36,7 +36,8 @@ public class CharsIntrinsics {
 				return Atom.NIL;
 		}
 	};
-	public Intrinsic source = new Intrinsic() {
+
+	public Intrinsic drain = new Intrinsic() {
 		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
 			IndexedCharsReader.Pointer intern = Data.get(inputs.get(0));
 			Chars chars = intern.head();

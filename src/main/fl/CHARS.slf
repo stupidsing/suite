@@ -2,11 +2,11 @@ using external STANDARD >>
 define cs-append := (data^Chars -> data^Chars -> data^Chars) of
 	atom:INTRN!CharsIntrinsics.append | getintrn | callintrn-v2
 >>
+define cs-drain := (data^CharsStream -> [data^Chars]) of
+	atom:INTRN!CharsIntrinsics.drain | getintrn | callintrn-v1
+>>
 define cs-from-string := (string -> data^Chars) of
 	atom:INTRN!CharsIntrinsics.stringChars | getintrn | callintrn-v1
->>
-define cs-source := (data^CharsStream -> [data^Chars]) of
-	atom:INTRN!CharsIntrinsics.source | getintrn | callintrn-v1
 >>
 define cs-split := (data^Chars -> number -> (data^Chars, data^Chars)) of
 	atom:INTRN!CharsIntrinsics.split | getintrn | callintrn-v2

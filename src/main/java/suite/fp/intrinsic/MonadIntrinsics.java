@@ -33,6 +33,22 @@ public class MonadIntrinsics {
 
 	private Map<Node, Map<Node, Node>> mutables = new WeakHashMap<>();
 
+	public Intrinsic drain = new Intrinsic() {
+		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
+			IndexedReader.Pointer intern = Data.get(inputs.get(0));
+			int ch = intern.head();
+
+			// Suspend the right node to avoid stack overflow when input
+			// data is very long under eager mode
+			if (ch != -1) {
+				Node left = Intrinsics.enclose(callback, Int.of(ch));
+				Node right = new Suspend(() -> callback.enclose(this, new Data<>(intern.tail())));
+				return Tree.of(TermOp.OR____, left, right);
+			} else
+				return Atom.NIL;
+		}
+	};
+
 	public Intrinsic get = (callback, inputs) -> getFrame(inputs).get(inputs.get(1));
 
 	public Intrinsic popen = (callback, inputs) -> {
@@ -89,22 +105,6 @@ public class MonadIntrinsics {
 		return Atom.NIL;
 	};
 
-	public Intrinsic source = new Intrinsic() {
-		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			IndexedReader.Pointer intern = Data.get(inputs.get(0));
-			int ch = intern.head();
-
-			// Suspend the right node to avoid stack overflow when input
-			// data is very long under eager mode
-			if (ch != -1) {
-				Node left = Intrinsics.enclose(callback, Int.of(ch));
-				Node right = new Suspend(() -> callback.enclose(this, new Data<>(intern.tail())));
-				return Tree.of(TermOp.OR____, left, right);
-			} else
-				return Atom.NIL;
-		}
-	};
-
 	private Map<Node, Node> getFrame(List<Node> inputs) {
 		Node frame = inputs.get(0);
 		return mutables.computeIfAbsent(frame, f -> new HashMap<>());
@@ -114,7 +114,7 @@ public class MonadIntrinsics {
 		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
 		BufferedReader br = new BufferedReader(isr);
 		IndexedReader.Pointer irp = new IndexedReader(br).pointer();
-		return callback.enclose(source, new Data<>(irp));
+		return callback.enclose(drain, new Data<>(irp));
 	}
 
 }
