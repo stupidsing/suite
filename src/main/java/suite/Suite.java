@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
+import suite.instructionexecutor.FunInstructionExecutor;
 import suite.instructionexecutor.IndexedCharsReader;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
@@ -35,6 +36,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
+import suite.primitive.IoSink;
 
 public class Suite {
 
@@ -176,7 +178,7 @@ public class Suite {
 		try {
 			Node node = applyReader(parse(program), reader);
 			FunCompilerConfig fcc = fcc(node, isLazy);
-			evaluateUtil.evaluateFunToWriter(fcc, writer);
+			evaluateUtil.evaluateCallback(fcc, executor -> executor.executeToWriter(writer));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -190,12 +192,12 @@ public class Suite {
 		return evaluateUtil.evaluateFun(fcc);
 	}
 
-	public static void evaluateFunToCharsWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
-		evaluateUtil.evaluateFunToCharsWriter(fcc, writer);
+	public static void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
+		evaluateUtil.evaluateCallback(fcc, executor -> executor.executeToWriter(writer));
 	}
 
-	public static void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
-		evaluateUtil.evaluateFunToWriter(fcc, writer);
+	public static void evaluateCallback(FunCompilerConfig fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
+		evaluateUtil.evaluateCallback(fcc, sink);
 	}
 
 	public static Node evaluateFunType(String fps) {

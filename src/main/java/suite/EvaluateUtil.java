@@ -1,7 +1,6 @@
 package suite;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 import suite.fp.FunCompilerConfig;
@@ -20,6 +19,7 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Node;
+import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.Memoize;
@@ -69,15 +69,9 @@ public class EvaluateUtil {
 		}
 	}
 
-	public void evaluateFunToCharsWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
+	public void evaluateCallback(FunCompilerConfig fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
-			executor.executeToCharsWriter(writer);
-		}
-	}
-
-	public void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
-		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
-			executor.executeToWriter(writer);
+			sink.sink(executor);
 		}
 	}
 

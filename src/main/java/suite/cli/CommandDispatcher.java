@@ -260,7 +260,7 @@ public class CommandDispatcher {
 	}
 
 	private void evaluateFunctionalToCharsWriter(Node node, Writer writer) throws IOException {
-		Suite.evaluateFunToCharsWriter(opt.fcc(node), writer);
+		Suite.evaluateCallback(opt.fcc(node), executor -> executor.executeToWriter(writer));
 	}
 
 	private void evaluateFunctionalToWriter(Node node, Writer writer) throws IOException {
