@@ -20,6 +20,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -33,11 +34,16 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void executeToCharsWriter(Writer writer) throws IOException {
-		ThunkUtil.yawnCharsWriter(intrinsicCallback::yawn, execute(), writer);
+		ThunkUtil.yawnSink(intrinsicCallback::yawn, execute(), n -> Data.<Chars> get((Data<?>) n).write(writer));
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {
-		ThunkUtil.yawnWriter(intrinsicCallback::yawn, execute(), writer);
+		ThunkUtil.yawnSink(intrinsicCallback::yawn, execute(), n -> {
+			int c = ((Int) n).number;
+			writer.write(c);
+			if (c == 10)
+				writer.flush();
+		});
 	}
 
 	@Override

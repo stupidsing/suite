@@ -1,14 +1,12 @@
 package suite.instructionexecutor;
 
 import java.io.IOException;
-import java.io.Writer;
 
 import suite.node.Atom;
-import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.primitive.Chars;
+import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -29,30 +27,15 @@ public class ThunkUtil {
 		return sb.toString();
 	}
 
-	public static void yawnCharsWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
-		Source<Node> source = yawnList(yawn, node, true);
-		Node n;
-
-		while ((n = source.source()) != null) {
-			Chars chars = Data.get((Data<?>) n);
-			chars.write(writer);
-		}
-	}
-
 	/**
-	 * Evaluates the whole (lazy) term to a list of numbers, and write
-	 * corresponding characters into the writer.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a
+	 * sink.
 	 */
-	public static void yawnWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
+	public static void yawnSink(Fun<Node, Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		Source<Node> source = yawnList(yawn, node, true);
 		Node n;
-
-		while ((n = source.source()) != null) {
-			int c = ((Int) n).number;
-			writer.write(c);
-			if (c == 10)
-				writer.flush();
-		}
+		while ((n = source.source()) != null)
+			sink.sink(n);
 	}
 
 	public static Source<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
