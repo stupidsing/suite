@@ -114,18 +114,18 @@ public class CommandDispatcher {
 			break;
 		case EVALUATEDOCHARS:
 			node = Suite.applyDo(node, Suite.parse("[data^Chars]"));
-			printEvaluatedChars(writer, node);
+			printEvaluated(writer, node, true);
 			break;
 		case EVALUATEDOSTR:
 			node = Suite.applyDo(node, Atom.of("string"));
-			printEvaluatedString(writer, node);
+			printEvaluated(writer, node, false);
 			break;
 		case EVALUATEINTERPRET:
 			System.out.println(new LazyFunInterpreter().lazy(node).get());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);
-			printEvaluatedString(writer, node);
+			printEvaluated(writer, node, false);
 			break;
 		case EVALUATETYPE:
 			pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
@@ -195,11 +195,12 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
+		boolean chars = opt.isChars();
 		Node node = parseNode(inputs);
-		node = opt.isChars() ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
+		node = chars ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
 		if (opt.isDo())
-			node = Suite.applyDo(node, Atom.of("string"));
-		printEvaluatedString(writer, node);
+			node = Suite.applyDo(node, chars ? Suite.parse("[data^Chars]") : Atom.of("string"));
+		printEvaluated(writer, node, chars);
 		return true;
 	}
 
@@ -239,13 +240,11 @@ public class CommandDispatcher {
 		return inputs.stream().collect(Collectors.joining(" "));
 	}
 
-	private void printEvaluatedChars(Writer writer, Node node) throws IOException {
-		Suite.evaluateCallback(opt.fcc(node), executor -> executor.executeToWriter(writer));
-		writer.flush();
-	}
-
-	private void printEvaluatedString(Writer writer, Node node) throws IOException {
-		Suite.evaluateFunToWriter(opt.fcc(node), writer);
+	private void printEvaluated(Writer writer, Node node, boolean isChars) throws IOException {
+		if (isChars)
+			Suite.evaluateCallback(opt.fcc(node), executor -> executor.executeToWriter(writer));
+		else
+			Suite.evaluateFunToWriter(opt.fcc(node), writer);
 		writer.flush();
 	}
 
