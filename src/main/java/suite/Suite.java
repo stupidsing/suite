@@ -46,7 +46,7 @@ public class Suite {
 	public static boolean isInstructionTrace = false;
 	public static int stackSize = 16384;
 
-	public static List<String> libraries = Arrays.asList("STANDARD");
+	public static List<String> libraries = Arrays.asList("STANDARD", "CHARS");
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
 	public static Set<String> tracePredicates = null;
