@@ -1,6 +1,7 @@
 package suite.instructionexecutor;
 
 import java.io.IOException;
+import java.io.Writer;
 
 import suite.node.Atom;
 import suite.node.Int;
@@ -25,6 +26,15 @@ public class ThunkUtil {
 			sb.append((char) ((Int) n).number);
 
 		return sb.toString();
+	}
+
+	public static void yawnWriter(Fun<Node, Node> yawn, Node node, Writer writer) throws IOException {
+		ThunkUtil.yawnSink(yawn, node, n -> {
+			int c = ((Int) n).number;
+			writer.write(c);
+			if (c == 10)
+				writer.flush();
+		});
 	}
 
 	/**
