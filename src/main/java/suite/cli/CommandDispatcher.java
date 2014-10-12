@@ -199,7 +199,7 @@ public class CommandDispatcher {
 		node = opt.isChars() ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
 		if (opt.isDo())
 			node = Suite.applyDo(node, Atom.of("string"));
-		evaluateFunctionalToWriter(node, writer);
+		printEvaluatedString(writer, node);
 		return true;
 	}
 
@@ -240,12 +240,12 @@ public class CommandDispatcher {
 	}
 
 	private void printEvaluatedChars(Writer writer, Node node) throws IOException {
-		evaluateFunctionalToCharsWriter(node, writer);
+		Suite.evaluateCallback(opt.fcc(node), executor -> executor.executeToWriter(writer));
 		writer.flush();
 	}
 
 	private void printEvaluatedString(Writer writer, Node node) throws IOException {
-		evaluateFunctionalToWriter(node, writer);
+		Suite.evaluateFunToWriter(opt.fcc(node), writer);
 		writer.flush();
 	}
 
@@ -257,14 +257,6 @@ public class CommandDispatcher {
 
 	private Node evaluateFunctional(Node node) {
 		return Suite.evaluateFun(opt.fcc(node));
-	}
-
-	private void evaluateFunctionalToCharsWriter(Node node, Writer writer) throws IOException {
-		Suite.evaluateCallback(opt.fcc(node), executor -> executor.executeToWriter(writer));
-	}
-
-	private void evaluateFunctionalToWriter(Node node, Writer writer) throws IOException {
-		Suite.evaluateFunToWriter(opt.fcc(node), writer);
 	}
 
 	private String yesNo(boolean b) {
