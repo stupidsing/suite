@@ -12,6 +12,12 @@ import suite.node.Node;
 public class LazyFunTest {
 
 	@Test
+	public void testChunk() {
+		assertEquals(Suite.parse("(0; 1; 2;); (3; 4; 5;); (6; 7; 8;); (9; 10; 11;); (12; 13; 14;); (15;);"),
+				eval("range {0} {16} {1} | chunk {3}"));
+	}
+
+	@Test
 	public void testClosure() {
 		assertEquals(Suite.parse("4"), eval("define v := number of 4 >> (i => j => v) {1} {2}"));
 	}

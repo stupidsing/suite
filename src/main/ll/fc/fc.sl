@@ -184,6 +184,9 @@ fc-add-functions STANDARD .p (
 	define not := x =>
 		if x then false else true
 	>>
+	define optional := cond => value =>
+		if cond then (Value value) else None
+	>>
 	define or := x => y =>
 		if x then true else y
 	>>
@@ -254,6 +257,9 @@ fc-add-functions STANDARD .p (
 			if (fun {h}) then ((h; t0), f0) else (t0, (h; f0))
 		} {(), ()}
 	>>
+	define chunk := n =>
+		unfold-right {l => optional {l != ()} {take-drop {n} {l}}}
+	>>
 	define fold := fun => list =>
 		fold-left {fun} {list | head} {list | tail}
 	>>
@@ -280,7 +286,7 @@ fc-add-functions STANDARD .p (
 		do >> in | +popen {command}
 	>>
 	define replicate := flip {e =>
-		unfold-left {i => if (i != 0) then (Value (i - 1, e)) else None}
+		unfold-left {i => optional {i != 0} {i - 1, e}}
 	} >>
 	define reverse :=
 		fold-left {cons/} {}
@@ -317,7 +323,7 @@ fc-add-functions STANDARD .p (
 		let unsigned-int-to-str :=
 			reverse
 			. map {`+ +'0'`}
-			. unfold-right {i => if (i != 0) then (Value (i % 10, i / 10)) else None}
+			. unfold-right {i => optional {i != 0} {i % 10, i / 10}}
 		>> i |
 			if (i > 0) then
 				unsigned-int-to-str
@@ -340,7 +346,7 @@ fc-add-functions STANDARD .p (
 		fold {lesser}
 	>>
 	define range := start => end => inc =>
-		unfold-right {i => if (i < end) then (Value (i, i + inc)) else None} {start}
+		unfold-right {i => optional {i < end} {i, i + inc}} {start}
 	>>
 	define sh := command => in =>
 		do >> in | popen {"sh"; "-c"; command;} | perform | second | first
