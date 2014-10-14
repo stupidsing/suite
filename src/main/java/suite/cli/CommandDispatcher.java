@@ -195,12 +195,12 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		boolean chars = opt.isChars();
+		boolean isChars = opt.isChars();
 		Node node = parseNode(inputs);
-		node = chars ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
+		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
 		if (opt.isDo())
-			node = Suite.applyDo(node, chars ? Suite.parse("[data^Chars]") : Atom.of("string"));
-		printEvaluated(writer, node, chars);
+			node = Suite.applyDo(node, isChars ? Suite.parse("[data^Chars]") : Atom.of("string"));
+		printEvaluated(writer, node, isChars);
 		return true;
 	}
 
