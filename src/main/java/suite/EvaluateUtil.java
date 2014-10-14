@@ -75,19 +75,6 @@ public class EvaluateUtil {
 		}
 	}
 
-	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		Node node = fccNodeFun.apply(fcc.isLazy());
-		Node code = doFcc(node, fcc);
-
-		if (code != null)
-			if (fcc.isLazy())
-				return new LazyFunInstructionExecutor(code);
-			else
-				return new EagerFunInstructionExecutor(code);
-		else
-			throw new RuntimeException("Function compilation failure");
-	}
-
 	public Node evaluateFunType(FunCompilerConfig fcc) {
 		Node node = Suite.parse("" //
 				+ "source .in" //
@@ -103,6 +90,19 @@ public class EvaluateUtil {
 			return type;
 		else
 			throw new RuntimeException("Type inference failure");
+	}
+
+	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
+		Node node = fccNodeFun.apply(fcc.isLazy());
+		Node code = doFcc(node, fcc);
+
+		if (code != null)
+			if (fcc.isLazy())
+				return new LazyFunInstructionExecutor(code);
+			else
+				return new EagerFunInstructionExecutor(code);
+		else
+			throw new RuntimeException("Function compilation failure");
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
