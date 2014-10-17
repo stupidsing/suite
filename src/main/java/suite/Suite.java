@@ -58,24 +58,20 @@ public class Suite {
 	private static IterativeParser parser = new IterativeParser(TermOp.values());
 
 	public static void addRule(RuleSet rs, String rule) {
-		addRule(rs, parse(rule));
+		rs.addRule(Rule.formRule(parse(rule)));
 	}
 
-	public static void addRule(RuleSet rs, Node node) {
-		rs.addRule(Rule.formRule(node));
-	}
-
-	public static Node applyDo(Node func, Node returnType) {
-		return substitute("(Do^.1 -> any -> .1) of (skip-type-check id) {.0} {atom:.2}", func, returnType, Atom.temp());
-	}
-
-	public static Node applyReader(Node func, Reader reader) {
+	public static Node applyStringReader(Node func, Reader reader) {
 		return applyCharsReader(substitute(".0 . concat . map {cs-to-string}", func), reader);
 	}
 
 	public static Node applyCharsReader(Node func, Reader reader) {
 		Data<IndexedCharsReader.Pointer> data = new Data<>(new IndexedCharsReader(reader).pointer());
 		return substitute("skip-type-check atom:.0 | .1 . cs-drain", data, func);
+	}
+
+	public static Node applyPerform(Node func, Node returnType) {
+		return substitute("(Do^.1 -> any -> .1) of (skip-type-check id) {.0} {atom:.2}", func, returnType, Atom.temp());
 	}
 
 	public static Node applyWriter(Node func) {
@@ -180,7 +176,7 @@ public class Suite {
 
 	public static void evaluateFilterFun(String program, boolean isLazy, Reader reader, Writer writer) {
 		try {
-			Node node = applyWriter(applyReader(parse(program), reader));
+			Node node = applyWriter(applyStringReader(parse(program), reader));
 			evaluateFunToWriter(fcc(node, isLazy), writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

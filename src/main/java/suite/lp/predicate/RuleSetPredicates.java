@@ -23,14 +23,13 @@ public class RuleSetPredicates {
 
 	public SystemPredicate asserta = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 1);
-		RuleSet ruleSet = prover.ruleSet();
-		ruleSet.addRuleToFront(Rule.formRule(params[0]));
+		prover.ruleSet().addRuleToFront(Rule.formRule(params[0]));
 		return true;
 	};
 
 	public SystemPredicate assertz = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 1);
-		Suite.addRule(prover.ruleSet(), params[0]);
+		prover.ruleSet().addRule(Rule.formRule(params[0]));
 		return true;
 	};
 

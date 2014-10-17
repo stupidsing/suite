@@ -55,7 +55,7 @@ public class MonadTest {
 	}
 
 	private String evalMonad(String m, String type) throws IOException {
-		return eval(Suite.applyDo(Suite.parse(m), Suite.parse(type)));
+		return eval(Suite.applyPerform(Suite.parse(m), Suite.parse(type)));
 	}
 
 	private String eval(Node node) throws IOException {

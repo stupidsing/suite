@@ -12,6 +12,7 @@ import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Prover;
+import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
@@ -109,15 +110,15 @@ public class CommandDispatcher {
 			pw.println(Formatter.dump(evaluateFunctional(node)));
 			break;
 		case EVALUATEDO:
-			node = Suite.applyDo(node, Atom.of("any"));
+			node = Suite.applyPerform(node, Atom.of("any"));
 			pw.println(Formatter.dump(evaluateFunctional(node)));
 			break;
 		case EVALUATEDOCHARS:
-			node = Suite.applyDo(node, Suite.parse("[data^Chars]"));
+			node = Suite.applyPerform(node, Suite.parse("[data^Chars]"));
 			printEvaluated(writer, node);
 			break;
 		case EVALUATEDOSTR:
-			node = Suite.applyDo(node, Atom.of("string"));
+			node = Suite.applyPerform(node, Atom.of("string"));
 			printEvaluated(writer, Suite.applyWriter(node));
 			break;
 		case EVALUATEINTERPRET:
@@ -131,7 +132,7 @@ public class CommandDispatcher {
 			pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
 			break;
 		case FACT:
-			Suite.addRule(ruleSet, node);
+			ruleSet.addRule(Rule.formRule(node));
 			break;
 		case OPTION:
 			Source<String> source = To.source(("-" + input).split(" "));
@@ -197,9 +198,9 @@ public class CommandDispatcher {
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
 		boolean isChars = opt.isChars();
 		Node node = parseNode(inputs);
-		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyReader(node, reader);
+		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyStringReader(node, reader);
 		if (opt.isDo())
-			node = Suite.applyDo(node, isChars ? Suite.parse("[data^Chars]") : Atom.of("string"));
+			node = Suite.applyPerform(node, isChars ? Suite.parse("[data^Chars]") : Atom.of("string"));
 		if (isChars)
 			printEvaluated(writer, node);
 		else
