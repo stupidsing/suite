@@ -129,14 +129,11 @@ fc-add-functions STANDARD .p (
 	define is-pair := n => +is-pair {n} >>
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
-	define +popen := ([string] -> string -> (number, string, string)) of
+	define +popen := ([string] -> string -> (number, [data^Chars], [data^Chars])) of
 		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn-v2
 	>>
 	define deep-seq := (:t => :t -> :t) of
 		atom:INTRN!SeqIntrinsics.deepSeq | getintrn | callintrn-v1
-	>>
-	define drain := (data^NumberStream -> string) of
-		atom:INTRN!MonadIntrinsics.drain | getintrn | callintrn-v1
 	>>
 	define log := (:t => :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn-v1
@@ -360,7 +357,11 @@ fc-add-functions STANDARD .p (
 		unfold-right {i => optional {i < end} {i, i + inc}} {start}
 	>>
 	define sh := command => in =>
-		do >> in | popen {"sh"; "-c"; command;} | perform | second | first
+		do >>
+		define cs-to-string := (data^Chars -> string) of
+			atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn-v1
+		>>
+		in | popen {"sh"; "-c"; command;} | perform | second | first | map {cs-to-string} | concat
 	>>
 	define starts-with :=
 		case

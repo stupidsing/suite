@@ -114,18 +114,18 @@ public class CommandDispatcher {
 			break;
 		case EVALUATEDOCHARS:
 			node = Suite.applyDo(node, Suite.parse("[data^Chars]"));
-			printEvaluatedChars(writer, node);
+			printEvaluated(writer, node);
 			break;
 		case EVALUATEDOSTR:
 			node = Suite.applyDo(node, Atom.of("string"));
-			printEvaluated(writer, node);
+			printEvaluated(writer, Suite.applyWriter(node));
 			break;
 		case EVALUATEINTERPRET:
 			System.out.println(new LazyFunInterpreter().lazy(node).get());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);
-			printEvaluated(writer, node);
+			printEvaluated(writer, Suite.applyWriter(node));
 			break;
 		case EVALUATETYPE:
 			pw.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
@@ -201,9 +201,9 @@ public class CommandDispatcher {
 		if (opt.isDo())
 			node = Suite.applyDo(node, isChars ? Suite.parse("[data^Chars]") : Atom.of("string"));
 		if (isChars)
-			printEvaluatedChars(writer, node);
-		else
 			printEvaluated(writer, node);
+		else
+			printEvaluated(writer, Suite.applyWriter(node));
 		return true;
 	}
 
@@ -244,11 +244,7 @@ public class CommandDispatcher {
 	}
 
 	private void printEvaluated(Writer writer, Node node) throws IOException {
-		printEvaluatedChars(writer, Suite.substitute(".0 | lines | map {cs-from-string}", node));
-	}
-
-	private void printEvaluatedChars(Writer writer, Node node) throws IOException {
-		Suite.evaluateCallback(opt.fcc(node), executor -> executor.executeToCharsWriter(writer));
+		Suite.evaluateFunToWriter(opt.fcc(node), writer);
 		writer.flush();
 	}
 

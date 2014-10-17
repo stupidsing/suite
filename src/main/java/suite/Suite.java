@@ -78,6 +78,10 @@ public class Suite {
 		return substitute("skip-type-check atom:.0 | .1 . cs-drain", data, func);
 	}
 
+	public static Node applyWriter(Node func) {
+		return Suite.substitute(".0 | lines | map {cs-from-string}", func);
+	}
+
 	public static FunCompilerConfig fcc(Node fp) {
 		return fcc(fp, false);
 	}
@@ -176,9 +180,8 @@ public class Suite {
 
 	public static void evaluateFilterFun(String program, boolean isLazy, Reader reader, Writer writer) {
 		try {
-			Node node = applyReader(parse(program), reader);
-			FunCompilerConfig fcc = fcc(node, isLazy);
-			evaluateUtil.evaluateCallback(fcc, executor -> executor.executeToWriter(writer));
+			Node node = applyWriter(applyReader(parse(program), reader));
+			evaluateFunToWriter(fcc(node, isLazy), writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

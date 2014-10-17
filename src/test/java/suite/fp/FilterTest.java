@@ -42,10 +42,13 @@ public class FilterTest {
 
 			public int read(char buffer[], int pos, int len) {
 				int nBytesRead = Math.min(count, len);
+
+				// Makes sure there are new line characters, otherwise lines
+				// function would blow off the stack
 				if (nBytesRead > 0) {
-					count -= nBytesRead;
 					for (int i = 0; i < nBytesRead; i++)
-						buffer[pos + i] = 32;
+						buffer[pos + i] = (char) ((count - i) % 64);
+					count -= nBytesRead;
 					return nBytesRead;
 				} else
 					return -1;
@@ -57,7 +60,7 @@ public class FilterTest {
 
 			public void write(char buffer[], int pos, int len) {
 				count += len;
-				if (count == size - 1) {
+				if (count == size) {
 					Suite.proveLogic("find.all.memoized.clear, intern.map.clear");
 					System.gc();
 					System.gc();
