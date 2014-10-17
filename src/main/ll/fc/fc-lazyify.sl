@@ -56,14 +56,14 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 		+callintrn-v1/2/VALUE:VALUE:/VALUE,
 		+callintrn-v2/3/VALUE:VALUE:VALUE:/VALUE,
 		+callintrn-v3/4/VALUE:VALUE:VALUE:VALUE:/VALUE,
+		+is-list/1/VALUE:/VALUE,
+		+is-pair/1/VALUE:/VALUE,
 		+lcons/2/THUNK:THUNK:/VALUE,
 		+lhead/1/VALUE:/THUNK,
 		+ltail/1/VALUE:/THUNK,
 		+pcons/2/THUNK:THUNK:/VALUE,
 		+pleft/1/VALUE:/THUNK,
 		+pright/1/VALUE:/THUNK,
-		is-list/1/VALUE:/VALUE,
-		is-pair/1/VALUE:/VALUE,
 	) .var/.n/.paramWraps/.returnWrap
 	, fc-define-default-fun .n .var _
 	, !

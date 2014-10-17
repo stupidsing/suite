@@ -286,7 +286,7 @@ fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VARS (.nv .v0,) .then)
 #
 fc-bind0 .v0 .v1 .then .else (
 	DEF-VARS (.elseVar (WRAP .else), .v0var .v0,) (
-		IF (INVOKE (VAR .v0var) (VAR is-list)) (
+		IF (INVOKE (VAR .v0var) (VAR +is-list)) (
 			DEF-VARS (
 				.headVar (INVOKE (VAR .v0var) (VAR +lhead)),
 				.tailVar (INVOKE (VAR .v0var) (VAR +ltail)),
@@ -302,7 +302,7 @@ fc-bind0 .v0 .v1 .then .else (
 #
 fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
 	DEF-VARS (.elseVar (WRAP .else), .v0var (PRAGMA (TYPE-CAST UP _) .v0),) (
-		IF (INVOKE (VAR .v0var) (VAR is-pair)) (
+		IF (INVOKE (VAR .v0var) (VAR +is-pair)) (
 			DEF-VARS (
 				.leftVar (INVOKE (VAR .v0var) (VAR +pleft)),
 				.rightVar (INVOKE (VAR .v0var) (VAR +pright)),

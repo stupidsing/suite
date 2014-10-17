@@ -272,11 +272,11 @@ fc-default-fun-type +callintrn-v2 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) 
 fc-default-fun-type +callintrn-v3 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type +compare (FUN-OF .t (FUN-OF .t NUMBER)) #
 fc-default-fun-type +getintrn (FUN-OF (ATOM-OF _) (FUNCTOR-OF data (ATOM-OF Intrinsic))) #
+fc-default-fun-type +is-list (FUN-OF (LIST-OF _) BOOLEAN) #
+fc-default-fun-type +is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
 fc-default-fun-type +lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #
 fc-default-fun-type +lhead (FUN-OF (LIST-OF .t) .t) #
 fc-default-fun-type +ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
 fc-default-fun-type +pcons (FUN-OF .t0 (FUN-OF .t1 (PAIR-OF .t0 .t1))) #
 fc-default-fun-type +pleft (FUN-OF (PAIR-OF .t _) .t) #
 fc-default-fun-type +pright (FUN-OF (PAIR-OF _ .t) .t) #
-fc-default-fun-type is-list (FUN-OF (LIST-OF _) BOOLEAN) #
-fc-default-fun-type is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #

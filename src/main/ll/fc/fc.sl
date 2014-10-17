@@ -84,14 +84,14 @@ fc-define-default-fun 3 +callintrn-v2 CALL-INTRINSIC #
 fc-define-default-fun 4 +callintrn-v3 CALL-INTRINSIC #
 fc-define-default-fun 2 +compare COMPARE #
 fc-define-default-fun 1 +getintrn GET-INTRINSIC #
+fc-define-default-fun 1 +is-list IS-CONS #
+fc-define-default-fun 1 +is-pair IS-CONS #
 fc-define-default-fun 2 +lcons CONS-LIST #
 fc-define-default-fun 1 +lhead HEAD #
 fc-define-default-fun 1 +ltail TAIL #
 fc-define-default-fun 2 +pcons CONS-PAIR #
 fc-define-default-fun 1 +pleft HEAD #
 fc-define-default-fun 1 +pright TAIL #
-fc-define-default-fun 1 is-list IS-CONS #
-fc-define-default-fun 1 is-pair IS-CONS #
 
 fc-error .m :- !, write.error .m, nl, fail #
 
@@ -125,6 +125,8 @@ fc-add-functions STANDARD .p (
 	define first := tuple => +pleft {tuple} >>
 	define head := list => +lhead {list} >>
 	define getintrn := name => +getintrn {name} >>
+	define is-list := n => +is-list {n} >>
+	define is-pair := n => +is-pair {n} >>
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
 	define +popen := ([string] -> string -> (number, string, string)) of
