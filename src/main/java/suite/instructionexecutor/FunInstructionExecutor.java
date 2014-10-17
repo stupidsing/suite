@@ -34,7 +34,10 @@ public class FunInstructionExecutor extends InstructionExecutor {
 	}
 
 	public void executeToCharsWriter(Writer writer) throws IOException {
-		ThunkUtil.yawnSink(intrinsicCallback::yawn, execute(), n -> Data.<Chars> get((Data<?>) n).write(writer));
+		ThunkUtil.yawnSink(intrinsicCallback::yawn, execute(), n -> {
+			Data.<Chars> get((Data<?>) n).write(writer);
+			writer.flush();
+		});
 	}
 
 	public void executeToWriter(Writer writer) throws IOException {

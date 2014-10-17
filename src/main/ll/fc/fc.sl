@@ -183,6 +183,15 @@ fc-add-functions STANDARD .p (
 	define lesser := a => b =>
 		if (a > b) then b else a
 	>>
+	define lines :=
+		case
+		|| `$h; $t` =>
+			let l1 := lines {t} >>
+			if (h != 10 && is-list {l1})
+			then (let `$p; $q` := l1 >> (h; p); q)
+			else ((h;); l1)
+		|| anything => ()
+	>>
 	define not := x =>
 		if x then false else true
 	>>

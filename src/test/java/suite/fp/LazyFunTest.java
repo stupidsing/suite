@@ -68,6 +68,12 @@ public class LazyFunTest {
 	}
 
 	@Test
+	public void testLines() {
+		assertEquals(Suite.parse("(0; 1; 2; 3; 4; 5; 10;); (6; 7; 8; 9; 10;); (2; 3; 4;);"),
+				eval("lines {0; 1; 2; 3; 4; 5; 10; 6; 7; 8; 9; 10; 2; 3; 4;}"));
+	}
+
+	@Test
 	public void testString() {
 		assertEquals(Int.of(-34253924), eval("str-to-int {\"-34253924\"}"));
 		assertEquals(Atom.TRUE, eval("\"-34253924\" = int-to-str {-34253924}"));
