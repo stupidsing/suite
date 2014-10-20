@@ -157,7 +157,7 @@ fc-parse-sugar (do >> .do) (
 	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of (skip-type-check id) >>
 	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of (skip-type-check id) >>
 	fun-to-monad {scope =>
-		define perform := ({scope} . monad-to-fun) >>
+		define perform := {scope} . monad-to-fun >>
 		expand getm := +getm {scope} >>
 		expand setm := +setm {scope} >>
 		.do
