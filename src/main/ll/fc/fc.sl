@@ -213,13 +213,6 @@ fc-add-functions STANDARD .p (
 			fun {h} {head {r}}; r
 		|| anything => init;
 	>>
-	define str-to-int := s =>
-		let unsigned-str-to-int := fold-left {v => d => v * 10 + d - 48} {0} >>
-			if (is-list {s} && head {s} = +'-')
-			then (`0 -` . unsigned-str-to-int . tail)
-			else unsigned-str-to-int
-		{s}
-	>>
 	define take := n => list =>
 		if (n > 0 && is-list {list})
 		then (list | tail | take {n - 1} | cons {list | head})
@@ -327,19 +320,6 @@ fc-add-functions STANDARD .p (
 	define get := n =>
 		head . (tail | replicate {n} | apply)
 	>>
-	define int-to-str := i =>
-		let unsigned-int-to-str :=
-			reverse
-			. map {`+ +'0'`}
-			. unfold-right {i => optional {i != 0} {i % 10, i / 10}}
-		>> i |
-			if (i > 0) then
-				unsigned-int-to-str
-			else-if (i < 0) then
-				append {"-"} . unsigned-int-to-str . `0 -`
-			else
-				anything => "0"
-	>>
 	define maximum :=
 		fold {greater}
 	>>
@@ -355,13 +335,6 @@ fc-add-functions STANDARD .p (
 	>>
 	define range := start => end => inc =>
 		unfold-right {i => optional {i < end} {i, i + inc}} {start}
-	>>
-	define sh := command => in =>
-		do >>
-		define cs-to-string := (data^Chars -> string) of
-			atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn-v1
-		>>
-		in | popen {"sh"; "-c"; command;} | perform | second | first | map {cs-to-string} | concat
 	>>
 	define starts-with :=
 		case
@@ -389,23 +362,6 @@ fc-add-functions STANDARD .p (
 	define contains := m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	>>
-	define dump := (:t => :t -> string) of skip-type-check (
-		define type-of := getintrn {atom:INTRN!BasicIntrinsics.typeOf} >>
-		define atom-string := getintrn {atom:INTRN!BasicIntrinsics.atomString} >>
-		let dump0 := prec => n =>
-			let type := +callintrn-v1 {type-of} {n} >>
-			if (n = ()) then
-				"()"
-			else-if (type = TREE) then
-				concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
-				| if prec then (s => concat {"("; s; ")";}) else id
-			else-if (type = ATOM) then
-				callintrn-v1 {atom-string} {n}
-			else
-				int-to-str {n}
-		>>
-		dump0 {false}
-	) >>
 	define ends-with := end =>
 		starts-with {end | reverse} . reverse
 	>>

@@ -89,6 +89,7 @@ fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
 	, .classType = CLASS _
 	, fc-infer-type-rule (PRAGMA (TYPE-CAST DOWN .classType) .pair) .env .tr .classType
 #
+#
 fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 	:- !
 	, fc-infer-type-rule .do .env .tr1/() .type
