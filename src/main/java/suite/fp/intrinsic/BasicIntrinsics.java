@@ -8,7 +8,6 @@ import suite.instructionexecutor.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
@@ -20,7 +19,6 @@ public class BasicIntrinsics {
 
 	private Atom ATOM = Atom.of("ATOM");
 	private Atom NUMBER = Atom.of("NUMBER");
-	private Atom STRING = Atom.of("STRING");
 	private Atom TREE = Atom.of("TREE");
 	private Atom TUPLE = Atom.of("TUPLE");
 	private Atom UNKNOWN = Atom.of("UNKNOWN");
@@ -64,8 +62,6 @@ public class BasicIntrinsics {
 			type = ATOM;
 		else if (node instanceof Int)
 			type = NUMBER;
-		else if (node instanceof Str)
-			type = STRING;
 		else if (node instanceof Tree)
 			type = TREE;
 		else if (node instanceof Tuple)

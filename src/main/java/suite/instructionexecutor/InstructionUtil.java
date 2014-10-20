@@ -52,7 +52,7 @@ public class InstructionUtil {
 		COMPARE_______("COMPARE"), //
 		CONSLIST______("CONS-LIST"), //
 		CONSPAIR______("CONS-PAIR"), //
-		DATASTRING____("DATA-STRING"), //
+		DATACHARS_____("DATA-CHARS"), //
 		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
 		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //

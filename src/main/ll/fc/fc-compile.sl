@@ -10,6 +10,9 @@ fc-compile (ATOM .a) _ .c0/.cx/.reg
 fc-compile (BOOLEAN .b) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.b, .cx)
 #
+fc-compile (CHARS .s) _ .c0/.cx/.reg
+	:- .c0 = (ASSIGN-CONSTANT .stringReg c:.s, DATA-CHARS .reg .stringReg, .cx)
+#
 fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
 	:- fc-define-vars .vvs .vrs .frame .ve/.ve1
 	, fc-compile-vars .vrs .frame/.ve1 .c0/.c1
@@ -51,9 +54,6 @@ fc-compile (PAIR .left .right) .env .cr
 #
 fc-compile (PRAGMA _ .do) .env .cr
 	:- fc-compile .do .env .cr
-#
-fc-compile (STRING .s) _ .c0/.cx/.reg
-	:- .c0 = (ASSIGN-CONSTANT .stringReg c:.s, DATA-STRING .reg .stringReg, .cx)
 #
 fc-compile (TREE .oper .left .right) .env .c0/.cx/.reg
 	:- fc-compile .left .env .c0/.c1/.r0

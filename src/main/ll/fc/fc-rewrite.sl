@@ -2,6 +2,8 @@ fc-rewrite (ATOM .a) (ATOM .a) .ts/.ts
 #
 fc-rewrite (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
 #
+fc-rewrite (CHARS .cs) (CHARS .cs) .ts/.ts
+#
 fc-rewrite (DEF-VARS (.var .value0, .list0) .do0) (DEF-VARS (.var .value1, .list1) .do1) .ts0/.tsx
 	:- .ts0 = (.value0 .value1, .ts1)
 	, fc-rewrite (DEF-VARS .list0 .do0) (DEF-VARS .list1 .do1) .ts1/.tsx
@@ -28,8 +30,6 @@ fc-rewrite (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
 fc-rewrite (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
 	:- fc-rewrite-pragma .pragma0 .pragma1 .ts0/.ts1
 	, .ts1 = (.do0 .do1, .tsx)
-#
-fc-rewrite (STRING .s) (STRING .s) .ts/.ts
 #
 fc-rewrite (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)

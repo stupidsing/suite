@@ -245,7 +245,7 @@ public class InstructionTranslator implements Closeable {
 				app("n1 = (Node) ds[--dsp]");
 				app("#{reg} = Tree.of(TermOp.AND___, n0, n1)", op0);
 				break;
-			case DATASTRING____:
+			case DATACHARS_____:
 				app("#{reg} = new Data<Chars>(To.chars(((Str) #{reg}).getValue()))", op0, op1);
 				break;
 			case DECOMPOSETREE0:
