@@ -154,8 +154,8 @@ fc-parse-sugar (.l; .r) (+lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (do >> .do) (
-	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of (skip-type-check id) >>
-	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of (skip-type-check id) >>
+	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of erase-type >>
+	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of erase-type >>
 	fun-to-monad {scope =>
 		define perform := {scope} . monad-to-fun >>
 		expand getm := +getm {scope} >>
@@ -164,7 +164,7 @@ fc-parse-sugar (do >> .do) (
 	}
 ) :- ! #
 fc-parse-sugar (definem .type .mv # .monad) (
-	define .mv := (mutable^.type) of (skip-type-check atom:.atom) >> .monad
+	define .mv := (mutable^.type) of (erase-type {atom:.atom}) >> .monad
 )
 	:- !, temp .atom
 #

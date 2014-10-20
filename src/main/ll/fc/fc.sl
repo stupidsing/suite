@@ -261,6 +261,9 @@ fc-add-functions STANDARD .p (
 	define chunk := n =>
 		unfold-right {l => optional {l != ()} {take-drop {n} {l}}}
 	>>
+	define erase-type := (any -> any) of
+		skip-type-check id
+	>>
 	define fold := fun => list =>
 		fold-left {fun} {list | head} {list | tail}
 	>>
