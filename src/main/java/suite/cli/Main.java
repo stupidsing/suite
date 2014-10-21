@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.Suite;
+import suite.node.Node;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
@@ -89,9 +92,17 @@ public class Main extends ExecutableProgram {
 	private boolean runInteractive(List<String> filenames) throws IOException {
 		BufferedReader br = new BufferedReader(reader);
 		boolean code = true;
+		String ready;
 
 		code &= dispatcher.importFiles(filenames);
-		opt.prompt().println("READY");
+
+		try (Writer sw = new StringWriter()) {
+			Node node = Suite.applyWriter(Suite.parse("\"READY\""));
+			Suite.evaluateFunToWriter(opt.fcc(node), sw);
+			ready = sw.toString();
+		}
+
+		opt.prompt().println(ready);
 
 		while (true)
 			try {
