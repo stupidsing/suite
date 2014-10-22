@@ -1,11 +1,13 @@
 using external STANDARD >>
 using external CHARS >>
+-------------------------------------------------------------------------------
 define lower := ch =>
   if (65 <= ch && ch <= 90) then (ch + 32) else ch
 >>
 define upper := ch =>
   if (97 <= ch && ch <= 122) then (ch - 32) else ch
 >>
+-------------------------------------------------------------------------------
 define camel-case := s =>
   if (s != "") then (upper {head {s}}; map {lower} {tail {s}}) else s
 >>
@@ -29,6 +31,7 @@ define str-to-int := s =>
 		else unsigned-str-to-int
 	{s}
 >>
+-------------------------------------------------------------------------------
 define dump := (:t => :t -> string) of skip-type-check (
 	define type-of := getintrn {atom:INTRN!BasicIntrinsics.typeOf} >>
 	define atom-string := getintrn {atom:INTRN!BasicIntrinsics.atomString} >>
