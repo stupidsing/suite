@@ -21,7 +21,7 @@ import suite.util.Util.ExecutableProgram;
 public class PrecompileMain extends ExecutableProgram {
 
 	private List<String> allLibraries = Arrays.asList( //
-			"23-TREE", "ARRAY", "CHARS", "FREQ", "HEAP", "MATCH", "MATH", "MONAD", "PERMUTE", "RB-TREE", "STRING" //
+			"23-TREE", "ARRAY", "CHARS", "FREQ", "HEAP", "MATCH", "MATH", "MONAD", "PERMUTE", "RB-TREE", "TEXT" //
 	);
 
 	public static void main(String args[]) throws IOException {

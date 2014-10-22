@@ -129,6 +129,7 @@ fc-add-functions STANDARD .p (
 	define is-pair := n => +is-pair {n} >>
 	define second := tuple => +pright {tuple} >>
 	define tail := list => +ltail {list} >>
+	---------------------------------------------------------------------------
 	define +popen := ([string] -> string -> (number, [data^Chars], [data^Chars])) of
 		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn-v2
 	>>
@@ -144,6 +145,7 @@ fc-add-functions STANDARD .p (
 	define throw := (any -> any) of
 		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn-v1
 	>>
+	---------------------------------------------------------------------------
 	define and := x => y =>
 		if x then y else false
 	>>
@@ -246,6 +248,7 @@ fc-add-functions STANDARD .p (
 			|| anything => None
 		} {list0, list1}
 	>>
+	---------------------------------------------------------------------------
 	define append :=
 		fold-right {cons} | flip
 	>>
@@ -314,6 +317,7 @@ fc-add-functions STANDARD .p (
 			|| item; list
 		} {}
 	>>
+	---------------------------------------------------------------------------
 	define concat :=
 		fold-right {append} {}
 	>>
@@ -362,6 +366,7 @@ fc-add-functions STANDARD .p (
 			gets | map {f => map {head . apply {f}} {m}}
 		else ()
 	>>
+	---------------------------------------------------------------------------
 	define contains := m =>
 		fold-left {or} {false} . map {m | starts-with} . tails
 	>>
@@ -391,6 +396,7 @@ fc-add-functions STANDARD .p (
 			concat {l0; (pivot;); l1;}
 		|| anything => ()
 	>>
+	---------------------------------------------------------------------------
 	define merge-sort :=
 		concat . map {second} . group . map {v => v, v}
 	>>

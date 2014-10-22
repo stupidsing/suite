@@ -17,7 +17,7 @@ public class DoTest {
 
 	@Before
 	public void before() {
-		Suite.libraries = Arrays.asList("STANDARD", "CHARS", "STRING");
+		Suite.libraries = Arrays.asList("STANDARD", "CHARS", "TEXT");
 	}
 
 	@Test
