@@ -397,6 +397,16 @@ fc-add-functions STANDARD .p (
 			concat {l0; (pivot;); l1;}
 		|| anything => ()
 	>>
+	define replace := s0 => s1 =>
+		define l := length {s0} >>
+		define replace0 := s =>
+			case
+			|| (starts-with {s0} {s}) (s1 ++ (s | drop {l} | replace0))
+			|| (is-list {s}) (head {s}; (s | tail | replace0))
+			|| ()
+		>>
+		replace0
+	>>
 	---------------------------------------------------------------------------
 	define merge-sort :=
 		concat . map {second} . group . map {v => v, v}

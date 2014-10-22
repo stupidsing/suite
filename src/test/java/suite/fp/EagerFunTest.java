@@ -240,6 +240,12 @@ public class EagerFunTest {
 	}
 
 	@Test
+	public void testReplace() {
+		assertEquals(eval("\"abcghighijklmnopqrstuvwxyzabcghighi\""),
+				eval("replace {\"def\"} {\"ghi\"} {\"abcdefghijklmnopqrstuvwxyzabcdefghi\"}"));
+	}
+
+	@Test
 	public void testReplicate() {
 		assertEquals(Suite.parse("3; 3; 3; 3;"), eval("replicate {4} {3}"));
 	}
