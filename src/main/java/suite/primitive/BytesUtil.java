@@ -5,28 +5,47 @@ import java.io.OutputStream;
 
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
+import suite.util.Pair;
 
 public class BytesUtil {
 
 	private static final int bufferSize = 65536;
 
+	private static abstract class FillingSource implements Source<Bytes> {
+		private Source<Bytes> source;
+		private int bufferSize;
+		private Bytes buffer = Bytes.emptyBytes;
+		private boolean isEof = false;
+
+		public FillingSource(Source<Bytes> source, int bufferSize) {
+			this.source = source;
+			this.bufferSize = bufferSize;
+		}
+
+		public Bytes source() {
+			BytesBuilder bb = new BytesBuilder();
+			bb.append(buffer);
+
+			Bytes bytes;
+			while (!isEof && bb.size() < bufferSize)
+				if ((bytes = source.source()) != null)
+					bb.append(bytes);
+				else
+					isEof = true;
+
+			Pair<Bytes, Bytes> pair = split(bb.toBytes(), isEof);
+			buffer = pair.t1;
+			return pair.t0;
+		}
+
+		protected abstract Pair<Bytes, Bytes> split(Bytes bytes, boolean isEof);
+	}
+
 	public static Source<Bytes> buffer(Source<Bytes> source) {
-		return new Source<Bytes>() {
-			private Bytes buffer = Bytes.emptyBytes;
-
-			public Bytes source() {
-				BytesBuilder bb = new BytesBuilder();
-				bb.append(buffer);
-				fill(bb, source);
-
-				if (bb.size() > 0) {
-					Bytes bytes = bb.toBytes();
-					int n = Math.min(bytes.size(), bufferSize);
-					Bytes head = bytes.subbytes(0, n);
-					buffer = bytes.subbytes(n);
-					return head;
-				} else
-					return null;
+		return new FillingSource(source, bufferSize) {
+			protected Pair<Bytes, Bytes> split(Bytes bytes, boolean isEof) {
+				int n = Math.min(bytes.size(), bufferSize);
+				return Pair.of(bytes.subbytes(0, n), bytes.subbytes(n));
 			}
 		};
 	}
@@ -37,46 +56,35 @@ public class BytesUtil {
 			bytes.write(os);
 	}
 
-	public static Source<Bytes> split(Source<Bytes> source, byte delim) {
-		return new Source<Bytes>() {
-			private Bytes buffer = Bytes.emptyBytes;
+	public static Source<Bytes> split(Source<Bytes> source, Bytes delim) {
+		int ds = delim.size();
 
-			public Bytes source() {
-				BytesBuilder bb = new BytesBuilder();
-				int pos = 0;
+		return new FillingSource(source, bufferSize + ds) {
+			protected Pair<Bytes, Bytes> split(Bytes bytes, boolean isEof) {
+				if (!isEof || bytes.size() >= ds) {
+					boolean isMatched = false;
+					int p = 0;
 
-				while (buffer != null) {
-					int i = 0, bufferSize = buffer.size();
-					byte b;
-
-					while (i < bufferSize && (b = buffer.get(i)) != delim) {
-						bb.append(b);
-						i++;
+					while (!isMatched && p + ds < bytes.size()) {
+						boolean isMatched_ = true;
+						for (int i = 0; i < ds; i++)
+							if (bytes.get(p + i) != delim.get(i)) {
+								isMatched_ = false;
+								break;
+							}
+						if (isMatched_)
+							isMatched = true;
+						else
+							p++;
 					}
 
-					pos += i;
-
-					if (i < bufferSize)
-						buffer = source.source();
-					else
-						break;
-				}
-
-				if (pos > 0) {
-					Bytes bytes = bb.toBytes();
-					Bytes head = bytes.subbytes(0, pos);
-					buffer = bytes.subbytes(pos);
-					return head;
+					Bytes head = bytes.subbytes(0, p);
+					Bytes tail = bytes.subbytes(p + (isMatched ? ds : 0));
+					return Pair.of(head, tail);
 				} else
-					return null;
+					return Pair.of(bytes, Bytes.emptyBytes);
 			}
 		};
-	}
-
-	private static void fill(BytesBuilder bb, Source<Bytes> source) {
-		Bytes bytes;
-		while (bb.size() < bufferSize && (bytes = source.source()) != null)
-			bb.append(bytes);
 	}
 
 }
