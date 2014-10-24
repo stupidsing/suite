@@ -1,6 +1,6 @@
 replace() {
-  sed s/Board/Noun/g |
-  sed s/board/noun/g |
+  sed 's/Board/Noun/g' |
+  sed 's/board/noun/g' |
   cat
 }
 
