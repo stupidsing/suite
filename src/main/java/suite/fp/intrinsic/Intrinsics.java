@@ -1,21 +1,28 @@
 package suite.fp.intrinsic;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.immutable.IPointer;
+import suite.instructionexecutor.IndexedSourceReader;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.Util;
 
 public class Intrinsics {
+
+	private static int bufferSize = 4096;
 
 	public interface Intrinsic {
 		public Node invoke(IntrinsicCallback callback, List<Node> inputs);
@@ -51,6 +58,23 @@ public class Intrinsics {
 
 	public static Node enclose(IntrinsicCallback callback, Node node) {
 		return callback.enclose(id_, node);
+	}
+
+	public static IPointer<Chars> read(Reader reader) {
+		return new IndexedSourceReader<Chars>(() -> {
+			try {
+				char buffer[] = new char[bufferSize];
+				int nCharsRead = reader.read(buffer);
+				if (nCharsRead >= 0)
+					return Chars.of(buffer, 0, nCharsRead);
+				else {
+					Util.closeQuietly(reader);
+					return null;
+				}
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}).pointer();
 	}
 
 	static {

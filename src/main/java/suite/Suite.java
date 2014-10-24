@@ -15,9 +15,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
+import suite.fp.intrinsic.Intrinsics;
 import suite.immutable.IPointer;
 import suite.instructionexecutor.FunInstructionExecutor;
-import suite.instructionexecutor.IndexedCharsReader;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.ImportUtil;
@@ -68,7 +68,7 @@ public class Suite {
 	}
 
 	public static Node applyCharsReader(Node func, Reader reader) {
-		Data<IPointer<Chars>> data = new Data<>(IndexedCharsReader.read(reader));
+		Data<IPointer<Chars>> data = new Data<>(Intrinsics.read(reader));
 		return substitute("atom:.0 | erase-type | cs-drain | .1", data, func);
 	}
 
