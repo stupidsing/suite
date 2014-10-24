@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.immutable.IPointer;
+import suite.instructionexecutor.IndexedListReader;
 import suite.instructionexecutor.IndexedSourceReader;
 import suite.node.Atom;
 import suite.node.Data;
@@ -16,7 +17,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Chars;
-import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.Util;
 
@@ -39,21 +39,25 @@ public class Intrinsics {
 	// Forces suspended node evaluation
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
-	public static <T> Intrinsic drain(List<T> list, Fun<T, Node> fun) {
+	private static Node drain(IntrinsicCallback callback, List<Node> list) {
+		return drain(callback, new IndexedListReader<>(list).pointer());
+	}
+
+	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
 		Intrinsic drains[] = new Intrinsic[1];
 		drains[0] = new Intrinsic() {
 			public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-				List<T> list = Data.get(inputs.get(0));
+				IPointer<Node> pointer = Data.get(inputs.get(0));
 
-				if (!list.isEmpty()) {
-					Node left = callback.enclose(Intrinsics.id_, fun.apply(list.get(0)));
-					Node right = callback.enclose(drains[0], new Data<>(Util.right(list, 1)));
+				if (pointer != null) {
+					Node left = callback.enclose(Intrinsics.id_, pointer.head());
+					Node right = callback.enclose(drains[0], new Data<>(pointer.tail()));
 					return Tree.of(TermOp.OR____, left, right);
 				} else
 					return Atom.NIL;
 			}
 		};
-		return (callback, inputs) -> callback.enclose(drains[0], new Data<>(list));
+		return callback.enclose(drains[0], new Data<>(pointer));
 	}
 
 	public static Node enclose(IntrinsicCallback callback, Node node) {

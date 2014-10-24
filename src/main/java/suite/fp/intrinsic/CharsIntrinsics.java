@@ -73,7 +73,8 @@ public class CharsIntrinsics {
 		Source<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
 		Source<Chars> s1 = CharsUtil.split(FunUtil.map(n -> Data.get(n), s0), delim);
 		Source<Node> s2 = FunUtil.map(node -> new Data<>(node), s1);
-		return new Data<>(new IndexedSourceReader<>(s2).pointer());
+		IPointer<Node> p = new IndexedSourceReader<>(s2).pointer();
+		return Intrinsics.drain(callback, p);
 	};
 
 	public Intrinsic stringChars = (callback, inputs) -> {
