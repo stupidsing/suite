@@ -4,7 +4,8 @@ import java.util.List;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.instructionexecutor.IndexedCharsReader;
+import suite.immutable.IPointer;
+import suite.instructionexecutor.IndexedSourceReader;
 import suite.instructionexecutor.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Data;
@@ -14,6 +15,9 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Chars;
+import suite.primitive.CharsUtil;
+import suite.util.FunUtil;
+import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class CharsIntrinsics {
@@ -39,7 +43,7 @@ public class CharsIntrinsics {
 
 	public Intrinsic drain = new Intrinsic() {
 		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			IndexedCharsReader.Pointer intern = Data.get(inputs.get(0));
+			IPointer<Chars> intern = Data.get(inputs.get(0));
 			Chars chars = intern.head();
 
 			// Suspend the right node to avoid stack overflow when input
@@ -62,6 +66,14 @@ public class CharsIntrinsics {
 		return Tree.of(TermOp.AND___ //
 				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(0, pos))) //
 				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(pos))));
+	};
+
+	public Intrinsic splits = (callback, inputs) -> {
+		Chars delim = Data.get(inputs.get(0));
+		Source<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
+		Source<Chars> s1 = CharsUtil.split(FunUtil.map(n -> Data.get(n), s0), delim);
+		Source<Node> s2 = FunUtil.map(node -> new Data<>(node), s1);
+		return new Data<>(new IndexedSourceReader<>(s2).pointer());
 	};
 
 	public Intrinsic stringChars = (callback, inputs) -> {

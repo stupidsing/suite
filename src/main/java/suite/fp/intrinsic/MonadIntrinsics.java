@@ -15,6 +15,7 @@ import java.util.WeakHashMap;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
+import suite.immutable.IPointer;
 import suite.instructionexecutor.IndexedCharsReader;
 import suite.instructionexecutor.ThunkUtil;
 import suite.node.Atom;
@@ -24,6 +25,7 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.primitive.Chars;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -95,9 +97,8 @@ public class MonadIntrinsics {
 	}
 
 	private Node createReader(IntrinsicCallback callback, InputStream is) {
-		InputStreamReader isr = new InputStreamReader(is, FileUtil.charset);
-		BufferedReader br = new BufferedReader(isr);
-		IndexedCharsReader.Pointer icrp = new IndexedCharsReader(br).pointer();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is, FileUtil.charset));
+		IPointer<Chars> icrp = IndexedCharsReader.read(br);
 		return callback.enclose(new CharsIntrinsics().drain, new Data<>(icrp));
 	}
 

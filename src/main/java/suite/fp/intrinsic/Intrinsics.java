@@ -6,8 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Node;
+import suite.node.Tree;
+import suite.node.io.TermOp;
+import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
+import suite.util.Util;
 
 public class Intrinsics {
 
@@ -25,6 +31,23 @@ public class Intrinsics {
 
 	// Forces suspended node evaluation
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
+
+	public static <T> Intrinsic drain(List<T> list, Fun<T, Node> fun) {
+		Intrinsic drains[] = new Intrinsic[1];
+		drains[0] = new Intrinsic() {
+			public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
+				List<T> list = Data.get(inputs.get(0));
+
+				if (!list.isEmpty()) {
+					Node left = callback.enclose(Intrinsics.id_, fun.apply(list.get(0)));
+					Node right = callback.enclose(drains[0], new Data<>(Util.right(list, 1)));
+					return Tree.of(TermOp.OR____, left, right);
+				} else
+					return Atom.NIL;
+			}
+		};
+		return (callback, inputs) -> callback.enclose(drains[0], new Data<>(list));
+	}
 
 	public static Node enclose(IntrinsicCallback callback, Node node) {
 		return callback.enclose(id_, node);
