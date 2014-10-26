@@ -50,8 +50,8 @@ public class CharsIntrinsics {
 	};
 
 	public Intrinsic split = (callback, inputs) -> {
-		Chars chars = Data.get(inputs.get(0));
-		int sep = ((Int) inputs.get(1)).number;
+		int sep = ((Int) inputs.get(0)).number;
+		Chars chars = Data.get(inputs.get(1));
 		int pos = 0;
 		while (pos < chars.size() && chars.get(pos) != sep)
 			pos++;

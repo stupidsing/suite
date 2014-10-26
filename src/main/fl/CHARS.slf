@@ -8,8 +8,11 @@ define cs-drain := (data^CharsStream -> [data^Chars]) of
 define cs-from-string := (string -> data^Chars) of
 	atom:INTRN!CharsIntrinsics.stringChars | getintrn | callintrn-v1
 >>
-define cs-split := (data^Chars -> number -> (data^Chars, data^Chars)) of
+define cs-split := (number -> data^Chars -> (data^Chars, data^Chars)) of
 	atom:INTRN!CharsIntrinsics.split | getintrn | callintrn-v2
+>>
+define cs-splits := (number -> [data^Chars] -> [data^Chars]) of
+	atom:INTRN!CharsIntrinsics.splits | getintrn | callintrn-v2
 >>
 define cs-subchars := (number -> number -> data^Chars -> data^Chars) of
 	atom:INTRN!CharsIntrinsics.subchars | getintrn | callintrn-v3
