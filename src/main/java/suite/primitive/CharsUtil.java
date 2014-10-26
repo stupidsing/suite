@@ -5,47 +5,85 @@ import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 
 public class CharsUtil {
 
 	private static final int bufferSize = 65536;
 
-	private static abstract class FillingSource implements Source<Chars> {
-		private Source<Chars> source;
-		private int bufferSize;
-		private Chars buffer = Chars.emptyChars;
-		private boolean isEof = false;
+	public static Source<Chars> buffer(Source<Chars> source) {
+		return new Source<Chars>() {
+			private Source<Chars> source_ = source;
+			protected Chars buffer = Chars.emptyChars;
+			protected boolean isEof = false;
 
-		public FillingSource(Source<Chars> source, int bufferSize) {
-			this.source = source;
-			this.bufferSize = bufferSize;
-		}
+			public Chars source() {
+				fill();
+				int n = Math.min(buffer.size(), bufferSize);
+				Chars head = buffer.subchars(0, n);
+				buffer = buffer.subchars(n);
+				return head;
+			}
 
-		public Chars source() {
-			CharsBuilder cb = new CharsBuilder();
-			cb.append(buffer);
+			protected void fill() {
+				CharsBuilder cb = new CharsBuilder();
+				cb.append(buffer);
 
-			Chars chars;
-			while (!isEof && cb.size() < bufferSize)
-				if ((chars = source.source()) != null)
-					cb.append(chars);
-				else
-					isEof = true;
-
-			Pair<Chars, Chars> pair = split(cb.toChars(), isEof);
-			buffer = pair.t1;
-			return pair.t0;
-		}
-
-		protected abstract Pair<Chars, Chars> split(Chars chars, boolean isEof);
+				Chars chars;
+				while (!isEof && cb.size() < bufferSize)
+					if ((chars = source_.source()) != null)
+						cb.append(chars);
+					else
+						isEof = true;
+				buffer = cb.toChars();
+			}
+		};
 	}
 
-	public static Source<Chars> buffer(Source<Chars> source) {
-		return new FillingSource(source, bufferSize) {
-			protected Pair<Chars, Chars> split(Chars chars, boolean isEof) {
-				int n = Math.min(chars.size(), bufferSize);
-				return Pair.of(chars.subchars(0, n), chars.subchars(n));
+	public static Source<Chars> concatSplit(Source<Chars> source, Chars delim) {
+		int ds = delim.size();
+
+		return new Source<Chars>() {
+			private Chars buffer = Chars.emptyChars;
+			private boolean isArriving;
+			private int p;
+
+			public Chars source() {
+				Chars chars;
+				CharsBuilder cb = new CharsBuilder();
+				cb.append(buffer);
+
+				p = 0;
+
+				while (!search(delim) && (isArriving = (chars = source.source()) != null)) {
+					cb.append(chars);
+					buffer = cb.toChars();
+				}
+
+				if (isArriving) {
+					Chars head = buffer.subchars(0, p);
+					buffer = buffer.subchars(p + ds);
+					return head;
+				} else
+					return !buffer.isEmpty() ? buffer : null;
+			}
+
+			private boolean search(Chars delim) {
+				boolean isMatched = false;
+
+				while (!isMatched && p + ds < buffer.size()) {
+					boolean isMatched_ = true;
+					for (int i = 0; i < ds; i++)
+						if (buffer.get(p + i) != delim.get(i)) {
+							isMatched_ = false;
+							break;
+						}
+					if (isMatched_)
+						isMatched = true;
+					else
+						p++;
+				}
+
+				return isMatched;
 			}
 		};
 	}
@@ -54,37 +92,6 @@ public class CharsUtil {
 		Chars chars;
 		while ((chars = source.source()) != null)
 			chars.write(writer);
-	}
-
-	public static Source<Chars> split(Source<Chars> source, Chars delim) {
-		int ds = delim.size();
-
-		return new FillingSource(source, bufferSize + ds) {
-			protected Pair<Chars, Chars> split(Chars chars, boolean isEof) {
-				if (!isEof || chars.size() >= ds) {
-					boolean isMatched = false;
-					int p = 0;
-
-					while (!isMatched && p + ds < chars.size()) {
-						boolean isMatched_ = true;
-						for (int i = 0; i < ds; i++)
-							if (chars.get(p + i) != delim.get(i)) {
-								isMatched_ = false;
-								break;
-							}
-						if (isMatched_)
-							isMatched = true;
-						else
-							p++;
-					}
-
-					Chars head = chars.subchars(0, p);
-					Chars tail = chars.subchars(p + (isMatched ? ds : 0));
-					return Pair.of(head, tail);
-				} else
-					return Pair.of(chars, Chars.emptyChars);
-			}
-		};
 	}
 
 }

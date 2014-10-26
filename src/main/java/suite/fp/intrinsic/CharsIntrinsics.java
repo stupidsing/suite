@@ -49,23 +49,13 @@ public class CharsIntrinsics {
 		}
 	};
 
-	public Intrinsic split = (callback, inputs) -> {
-		int sep = ((Int) inputs.get(0)).number;
-		Chars chars = Data.get(inputs.get(1));
-		int pos = 0;
-		while (pos < chars.size() && chars.get(pos) != sep)
-			pos++;
-		return Tree.of(TermOp.AND___ //
-				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(0, pos))) //
-				, callback.enclose(Intrinsics.id_, new Data<>(chars.subchars(pos))));
-	};
-
-	public Intrinsic splits = (callback, inputs) -> {
+	public Intrinsic concatSplit = (callback, inputs) -> {
 		Chars delim = Data.get(inputs.get(0));
 		Source<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
-		Source<Chars> s1 = CharsUtil.split(FunUtil.map(n -> Data.get(n), s0), delim);
-		Source<Node> s2 = FunUtil.map(node -> new Data<>(node), s1);
-		IPointer<Node> p = new IndexedSourceReader<>(s2).pointer();
+		Source<Chars> s1 = FunUtil.map(n -> Data.<Chars> get(callback.yawn(n)), s0);
+		Source<Chars> s2 = CharsUtil.concatSplit(s1, delim);
+		Source<Node> s3 = FunUtil.map(Data<Chars>::new, s2);
+		IPointer<Node> p = new IndexedSourceReader<>(s3).pointer();
 		return Intrinsics.drain(callback, p);
 	};
 
