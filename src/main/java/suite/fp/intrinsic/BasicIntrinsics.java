@@ -1,7 +1,7 @@
 package suite.fp.intrinsic;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.instructionexecutor.ThunkUtil;
+import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;

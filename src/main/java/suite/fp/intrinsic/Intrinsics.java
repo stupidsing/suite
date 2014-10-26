@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import suite.immutable.IPointer;
-import suite.instructionexecutor.IndexedReader;
-import suite.instructionexecutor.IndexedReader.Read;
-import suite.instructionexecutor.IndexedSourceReader;
+import suite.instructionexecutor.thunk.IndexedReader;
+import suite.instructionexecutor.thunk.IndexedSourceReader;
+import suite.instructionexecutor.thunk.IndexedReader.Read;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;

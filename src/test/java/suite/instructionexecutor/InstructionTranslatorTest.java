@@ -10,6 +10,7 @@ import suite.Suite;
 import suite.instructionexecutor.TranslatedRunUtil.Thunk;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRunConfig;
+import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Builder;

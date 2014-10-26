@@ -12,6 +12,7 @@ import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Instruction;
+import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;

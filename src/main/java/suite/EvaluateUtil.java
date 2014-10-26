@@ -7,7 +7,7 @@ import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.instructionexecutor.LazyFunInstructionExecutor;
-import suite.instructionexecutor.ThunkUtil;
+import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;

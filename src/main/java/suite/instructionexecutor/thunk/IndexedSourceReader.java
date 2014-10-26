@@ -1,4 +1,4 @@
-package suite.instructionexecutor;
+package suite.instructionexecutor.thunk;
 
 import java.util.ArrayList;
 import java.util.List;
