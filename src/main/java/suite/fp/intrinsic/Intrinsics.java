@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import suite.immutable.IPointer;
-import suite.instructionexecutor.IndexedListReader;
+import suite.instructionexecutor.IndexedReader;
+import suite.instructionexecutor.IndexedReader.Read;
 import suite.instructionexecutor.IndexedSourceReader;
 import suite.node.Atom;
 import suite.node.Data;
@@ -39,8 +40,8 @@ public class Intrinsics {
 	// Forces suspended node evaluation
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
-	private static Node drain(IntrinsicCallback callback, List<Node> list) {
-		return drain(callback, new IndexedListReader<>(list).pointer());
+	public static <T> Node drain(IntrinsicCallback callback, Read<Node> read, int size) {
+		return drain(callback, new IndexedReader<Node>(read, size).pointer());
 	}
 
 	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
@@ -57,7 +58,7 @@ public class Intrinsics {
 					return Atom.NIL;
 			}
 		};
-		return callback.enclose(drains[0], new Data<>(pointer));
+		return callback.yawn(callback.enclose(drains[0], new Data<>(pointer)));
 	}
 
 	public static Node enclose(IntrinsicCallback callback, Node node) {

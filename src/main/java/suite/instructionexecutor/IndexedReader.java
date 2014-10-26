@@ -1,13 +1,15 @@
 package suite.instructionexecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import suite.immutable.IPointer;
 
-public class IndexedListReader<T> {
+public class IndexedReader<T> {
 
-	private List<T> list = new ArrayList<>();
+	private Read<T> read;
+	private int size;
+
+	public interface Read<T> {
+		public T read(int position);
+	}
 
 	public class Pointer implements IPointer<T> {
 		private int position;
@@ -17,17 +19,18 @@ public class IndexedListReader<T> {
 		}
 
 		public T head() {
-			return list.get(position);
+			return read.read(position);
 		}
 
 		public Pointer tail() {
 			int position1 = position + 1;
-			return position1 < list.size() ? new Pointer(position1) : null;
+			return position1 < size ? new Pointer(position1) : null;
 		}
 	}
 
-	public IndexedListReader(List<T> list) {
-		this.list = list;
+	public IndexedReader(Read<T> read, int size) {
+		this.read = read;
+		this.size = size;
 	}
 
 	public IPointer<T> pointer() {

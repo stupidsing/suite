@@ -3,14 +3,10 @@ package suite.fp.intrinsic;
 import java.util.List;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.ThunkUtil;
-import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 import suite.util.Util;
@@ -23,17 +19,9 @@ public class ArrayIntrinsics {
 		return new Tuple(Util.add(array0, array1));
 	};
 
-	public Intrinsic arrayList = new Intrinsic() {
-		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			List<Node> array = ((Tuple) inputs.get(0)).nodes;
-
-			if (!array.isEmpty()) {
-				Node left = Intrinsics.enclose(callback, array.get(0));
-				Node right = callback.enclose(this, new Tuple(array.subList(1, array.size())));
-				return Tree.of(TermOp.OR____, left, right);
-			} else
-				return Atom.NIL;
-		}
+	public Intrinsic arrayList = (callback, inputs) -> {
+		List<Node> array = ((Tuple) inputs.get(0)).nodes;
+		return Intrinsics.drain(callback, array::get, array.size());
 	};
 
 	public Intrinsic left = (callback, inputs) -> {

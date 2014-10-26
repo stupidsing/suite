@@ -1,9 +1,6 @@
 package suite.fp.intrinsic;
 
-import java.util.List;
-
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Int;
@@ -11,7 +8,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
-import suite.node.io.TermOp;
 import suite.util.LogUtil;
 import suite.util.Util;
 
@@ -23,17 +19,9 @@ public class BasicIntrinsics {
 	private Atom TUPLE = Atom.of("TUPLE");
 	private Atom UNKNOWN = Atom.of("UNKNOWN");
 
-	public Intrinsic atomString = new Intrinsic() {
-		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			String name = ((Atom) inputs.get(0)).name;
-
-			if (!name.isEmpty()) {
-				Node left = callback.enclose(Intrinsics.id_, Int.of(name.charAt(0)));
-				Node right = callback.enclose(this, Atom.of(name.substring(1)));
-				return Tree.of(TermOp.OR____, left, right);
-			} else
-				return Atom.NIL;
-		}
+	public Intrinsic atomString = (callback, inputs) -> {
+		String name = ((Atom) inputs.get(0)).name;
+		return Intrinsics.drain(callback, p -> Int.of(name.charAt(p)), name.length());
 	};
 
 	public Intrinsic id = Intrinsics.id_;

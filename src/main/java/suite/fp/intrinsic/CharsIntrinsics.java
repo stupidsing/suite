@@ -28,17 +28,9 @@ public class CharsIntrinsics {
 		return new Data<>(chars0.append(chars1));
 	};
 
-	public Intrinsic charsString = new Intrinsic() {
-		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			Chars chars = Data.get(inputs.get(0));
-
-			if (!chars.isEmpty()) {
-				Node left = Intrinsics.enclose(callback, Int.of(chars.get(0)));
-				Node right = callback.enclose(this, new Data<>(chars.subchars(1)));
-				return Tree.of(TermOp.OR____, left, right);
-			} else
-				return Atom.NIL;
-		}
+	public Intrinsic charsString = (callback, inputs) -> {
+		Chars chars = Data.get(inputs.get(0));
+		return Intrinsics.drain(callback, p -> Int.of(chars.get(p)), chars.size());
 	};
 
 	public Intrinsic drain = new Intrinsic() {
