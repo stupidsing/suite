@@ -7,11 +7,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntFunction;
 
 import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
-import suite.instructionexecutor.thunk.IndexedReader.Read;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -40,7 +40,7 @@ public class Intrinsics {
 	// Forces suspended node evaluation
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
-	public static <T> Node drain(IntrinsicCallback callback, Read<Node> read, int size) {
+	public static <T> Node drain(IntrinsicCallback callback, IntFunction<Node> read, int size) {
 		return drain(callback, new IndexedReader<Node>(read, size).pointer());
 	}
 

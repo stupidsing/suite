@@ -24,7 +24,7 @@ public class CharsUtil {
 				return head;
 			}
 
-			protected void fill() {
+			private void fill() {
 				CharsBuilder cb = new CharsBuilder();
 				cb.append(buffer);
 

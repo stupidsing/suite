@@ -1,40 +1,35 @@
 package suite.instructionexecutor.thunk;
 
+import java.util.function.IntFunction;
+
 import suite.immutable.IPointer;
 
 public class IndexedReader<T> {
 
-	private Read<T> read;
+	private IntFunction<T> read;
 	private int size;
 
-	public interface Read<T> {
-		public T read(int position);
-	}
-
-	public class Pointer implements IPointer<T> {
-		private int position;
-
-		private Pointer(int position) {
-			this.position = position;
-		}
-
-		public T head() {
-			return read.read(position);
-		}
-
-		public Pointer tail() {
-			int position1 = position + 1;
-			return position1 < size ? new Pointer(position1) : null;
-		}
-	}
-
-	public IndexedReader(Read<T> read, int size) {
+	public IndexedReader(IntFunction<T> read, int size) {
 		this.read = read;
 		this.size = size;
 	}
 
 	public IPointer<T> pointer() {
-		return new Pointer(0);
+		return pointer(0);
+	}
+
+	private IPointer<T> pointer(int position) {
+		return new IPointer<T>() {
+			public T head() {
+				return read.apply(position);
+			}
+
+			@Override
+			public IPointer<T> tail() {
+				int position1 = position + 1;
+				return position1 < size ? pointer(position1) : null;
+			}
+		};
 	}
 
 }
