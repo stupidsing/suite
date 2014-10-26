@@ -201,10 +201,7 @@ public class CommandDispatcher {
 		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyStringReader(node, reader);
 		if (opt.isDo())
 			node = Suite.applyPerform(node, isChars ? Suite.parse("[data^Chars]") : Atom.of("string"));
-		if (isChars)
-			printEvaluated(writer, node);
-		else
-			printEvaluated(writer, Suite.applyWriter(node));
+		printEvaluated(writer, isChars ? node : Suite.applyWriter(node));
 		return true;
 	}
 
