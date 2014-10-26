@@ -70,7 +70,7 @@ public class CharsUtil {
 			private boolean search(Chars delim) {
 				boolean isMatched = false;
 
-				while (!isMatched && p + ds < buffer.size()) {
+				while (!isMatched && p + ds <= buffer.size()) {
 					boolean isMatched_ = true;
 					for (int i = 0; i < ds; i++)
 						if (buffer.get(p + i) != delim.get(i)) {
