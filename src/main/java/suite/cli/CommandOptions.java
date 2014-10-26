@@ -44,7 +44,7 @@ public class CommandOptions {
 		if (Util.stringEquals(arg, "--do"))
 			isDo = on;
 		else if (Util.stringEquals(arg, "--chars"))
-			isChars = !on;
+			isChars = on;
 		else if (Util.stringEquals(arg, "--eager"))
 			isLazy = !on;
 		else if (Util.stringEquals(arg, "--editor"))
