@@ -21,13 +21,12 @@ public class IndexedReader<T> {
 	private IPointer<T> pointer(int position) {
 		return new IPointer<T>() {
 			public T head() {
-				return read.apply(position);
+				return position < size ? read.apply(position) : null;
 			}
 
 			@Override
 			public IPointer<T> tail() {
-				int position1 = position + 1;
-				return position1 < size ? pointer(position1) : null;
+				return pointer(position + 1);
 			}
 		};
 	}

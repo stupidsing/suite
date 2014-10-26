@@ -49,9 +49,10 @@ public class Intrinsics {
 		drains[0] = new Intrinsic() {
 			public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
 				IPointer<Node> pointer = Data.get(inputs.get(0));
+				Node head;
 
-				if (pointer != null) {
-					Node left = callback.enclose(Intrinsics.id_, pointer.head());
+				if ((head = pointer.head()) != null) {
+					Node left = callback.enclose(Intrinsics.id_, head);
 					Node right = callback.enclose(drains[0], new Data<>(pointer.tail()));
 					return Tree.of(TermOp.OR____, left, right);
 				} else

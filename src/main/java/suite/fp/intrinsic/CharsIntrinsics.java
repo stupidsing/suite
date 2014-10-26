@@ -1,19 +1,13 @@
 package suite.fp.intrinsic;
 
-import java.util.List;
-
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.immutable.IPointer;
+import suite.instructionexecutor.thunk.IPointerMapper;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
 import suite.instructionexecutor.thunk.ThunkUtil;
-import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
-import suite.node.Suspend;
-import suite.node.Tree;
-import suite.node.io.TermOp;
 import suite.primitive.Chars;
 import suite.primitive.CharsUtil;
 import suite.util.FunUtil;
@@ -33,20 +27,9 @@ public class CharsIntrinsics {
 		return Intrinsics.drain(callback, p -> Int.of(chars.get(p)), chars.size());
 	};
 
-	public Intrinsic drain = new Intrinsic() {
-		public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-			IPointer<Chars> intern = Data.get(inputs.get(0));
-			Chars chars = intern.head();
-
-			// Suspend the right node to avoid stack overflow when input
-			// data is very long under eager mode
-			if (chars != null) {
-				Node left = Intrinsics.enclose(callback, new Data<>(chars));
-				Node right = new Suspend(() -> callback.enclose(this, new Data<>(intern.tail())));
-				return Tree.of(TermOp.OR____, left, right);
-			} else
-				return Atom.NIL;
-		}
+	public Intrinsic drain = (callback, inputs) -> {
+		IPointer<Chars> pointer = Data.get(inputs.get(0));
+		return Intrinsics.drain(callback, new IPointerMapper<Chars, Node>(Data<Chars>::new).map(pointer));
 	};
 
 	public Intrinsic concatSplit = (callback, inputs) -> {
