@@ -15,12 +15,12 @@ public class IndexedSourceReader<T> {
 	private int offset = 0;
 	private List<T> queue = new ArrayList<>();
 
-	public IndexedSourceReader(Source<T> source) {
-		this.source = source;
+	public static <T> IPointer<T> of(Source<T> source) {
+		return new IndexedSourceReader<>(source).pointer(0);
 	}
 
-	public IPointer<T> pointer() {
-		return pointer(0);
+	private IndexedSourceReader(Source<T> source) {
+		this.source = source;
 	}
 
 	private IPointer<T> pointer(int position) {

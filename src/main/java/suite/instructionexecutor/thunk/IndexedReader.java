@@ -9,13 +9,13 @@ public class IndexedReader<T> {
 	private IntFunction<T> read;
 	private int size;
 
-	public IndexedReader(IntFunction<T> read, int size) {
-		this.read = read;
-		this.size = size;
+	public static <T> IPointer<T> of(IntFunction<T> read, int size) {
+		return new IndexedReader<>(read, size).pointer(0);
 	}
 
-	public IPointer<T> pointer() {
-		return pointer(0);
+	private IndexedReader(IntFunction<T> read, int size) {
+		this.read = read;
+		this.size = size;
 	}
 
 	private IPointer<T> pointer(int position) {

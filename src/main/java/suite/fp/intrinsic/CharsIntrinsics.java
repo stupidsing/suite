@@ -29,7 +29,7 @@ public class CharsIntrinsics {
 
 	public Intrinsic drain = (callback, inputs) -> {
 		IPointer<Chars> pointer = Data.get(inputs.get(0));
-		return Intrinsics.drain(callback, new IPointerMapper<Chars, Node>(Data<Chars>::new).map(pointer));
+		return Intrinsics.drain(callback, IPointerMapper.map(Data<Chars>::new, pointer));
 	};
 
 	public Intrinsic concatSplit = (callback, inputs) -> {
@@ -38,7 +38,7 @@ public class CharsIntrinsics {
 		Source<Chars> s1 = FunUtil.map(n -> Data.<Chars> get(callback.yawn(n)), s0);
 		Source<Chars> s2 = CharsUtil.concatSplit(s1, delim);
 		Source<Node> s3 = FunUtil.map(Data<Chars>::new, s2);
-		IPointer<Node> p = new IndexedSourceReader<>(s3).pointer();
+		IPointer<Node> p = IndexedSourceReader.of(s3);
 		return Intrinsics.drain(callback, p);
 	};
 

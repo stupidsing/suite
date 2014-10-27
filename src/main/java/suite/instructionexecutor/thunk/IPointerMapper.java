@@ -7,8 +7,12 @@ public class IPointerMapper<T0, T1> {
 
 	private Fun<T0, T1> fun;
 
-	public IPointerMapper(Fun<T0, T1> fun) {
+	private IPointerMapper(Fun<T0, T1> fun) {
 		this.fun = fun;
+	}
+
+	public static <T0, T1> IPointer<T1> map(Fun<T0, T1> fun, IPointer<T0> pointer) {
+		return new IPointerMapper<>(fun).map(pointer);
 	}
 
 	public IPointer<T1> map(IPointer<T0> pointer) {

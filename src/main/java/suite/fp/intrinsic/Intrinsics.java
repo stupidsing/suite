@@ -41,7 +41,7 @@ public class Intrinsics {
 	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
 
 	public static <T> Node drain(IntrinsicCallback callback, IntFunction<Node> read, int size) {
-		return drain(callback, new IndexedReader<Node>(read, size).pointer());
+		return drain(callback, IndexedReader.of(read, size));
 	}
 
 	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
@@ -67,7 +67,7 @@ public class Intrinsics {
 	}
 
 	public static IPointer<Chars> read(Reader reader) {
-		return new IndexedSourceReader<Chars>(() -> {
+		return IndexedSourceReader.of(() -> {
 			try {
 				char buffer[] = new char[bufferSize];
 				int nCharsRead = reader.read(buffer);
@@ -80,7 +80,7 @@ public class Intrinsics {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-		}).pointer();
+		});
 	}
 
 	static {
