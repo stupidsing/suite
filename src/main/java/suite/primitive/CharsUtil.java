@@ -54,7 +54,7 @@ public class CharsUtil {
 
 				p = 0;
 
-				while (!search(delim) && (isArriving = (chars = source.source()) != null)) {
+				while (isArriving && !search(delim) && (isArriving = (chars = source.source()) != null)) {
 					cb.append(chars);
 					buffer = cb.toChars();
 				}
