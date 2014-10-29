@@ -9,7 +9,7 @@ define upper := ch =>
 >>
 -------------------------------------------------------------------------------
 define camel-case := s =>
-  if (s != "") then (upper {head {s}}; map {lower} {tail {s}}) else s
+  if (s != "") then (let `$h; $t` := s >> upper {h}; map {lower} {t}) else s
 >>
 define int-to-str := i =>
 	let unsigned-int-to-str :=

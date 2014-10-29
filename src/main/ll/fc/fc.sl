@@ -218,13 +218,14 @@ fc-add-functions STANDARD .p (
 	>>
 	define take := n => list =>
 		if (n > 0 && is-list {list})
-		then (list | tail | take {n - 1} | cons {list | head})
+		then (let `$h; $t` := list >> t | take {n - 1} | cons {h})
 		else ()
 	>>
 	define take-drop := n => list =>
 		if (n > 0 && is-list {list}) then
-			let `$t1, $d1` := list | tail | take-drop {n - 1} >>
-			cons {list | head} {t1}, d1
+			let `$h; $t` := list >>
+			let `$t1, $d1` := t | take-drop {n - 1} >>
+			(h; t1), d1
 		else (, list)
 	>>
 	define unfold-left := (:a => :b => (:a -> optional {:a, :b}) -> :a -> [:b]) of (
@@ -268,8 +269,8 @@ fc-add-functions STANDARD .p (
 	define erase-type := (any -> any) of
 		skip-type-check id
 	>>
-	define fold := fun => list =>
-		fold-left {fun} {list | head} {list | tail}
+	define fold := fun => `$h; $t` =>
+		fold-left {fun} {h} {t}
 	>>
 	define filter := fun =>
 		fold-right {
@@ -402,7 +403,7 @@ fc-add-functions STANDARD .p (
 		define replace0 := s =>
 			case
 			|| (starts-with {s0} {s}) (s1 ++ (s | drop {l} | replace0))
-			|| (is-list {s}) (head {s}; (s | tail | replace0))
+			|| (`$h; $t` = s) (h; replace0 {t})
 			|| ()
 		>>
 		replace0
