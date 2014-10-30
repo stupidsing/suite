@@ -5,9 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import suite.Suite;
@@ -15,11 +13,6 @@ import suite.node.Atom;
 import suite.node.Node;
 
 public class TextTest {
-
-	@Before
-	public void before() {
-		Suite.libraries = Arrays.asList("STANDARD", "CHARS", "TEXT");
-	}
 
 	@Test
 	public void testCamelCase() {
