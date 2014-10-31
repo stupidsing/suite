@@ -28,23 +28,16 @@ public class Escaper {
 		s = s.replace(quote + quote, quote);
 
 		try {
-			int pos = 0;
-			while ((pos = s.indexOf('%', pos)) != -1) {
-				int pos1 = pos + 1;
-
-				if (pos1 < s.length() && s.charAt(pos1) == 'U') {
-					String hex = s.substring(pos1 + 1, pos + 6);
-					char c = (char) Integer.parseInt(hex, 16);
+			for (int pos = 0; pos < s.length(); pos++)
+				if (s.startsWith("%U", pos)) {
+					char c = (char) Integer.parseInt(s.substring(pos + 2, pos + 6), 16);
 					s = s.substring(0, pos) + c + s.substring(pos + 6);
-				} else if (pos1 < s.length() && s.charAt(pos1) != '%') {
-					String hex = s.substring(pos1, pos + 3);
-					char c = (char) Integer.parseInt(hex, 16);
+				} else if (s.startsWith("%%", pos))
+					s = s.substring(0, pos) + "%" + s.substring(pos + 2);
+				else if (s.startsWith("%", pos)) {
+					char c = (char) Integer.parseInt(s.substring(pos + 1, pos + 3), 16);
 					s = s.substring(0, pos) + c + s.substring(pos + 3);
-				} else
-					s = s.substring(0, pos) + s.substring(pos1);
-
-				pos++;
-			}
+				}
 		} catch (StringIndexOutOfBoundsException | NumberFormatException ex) {
 			LogUtil.error(ex);
 		}
