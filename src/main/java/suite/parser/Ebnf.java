@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
@@ -406,7 +407,7 @@ public class Ebnf {
 		} else if (s.startsWith("(") && s.endsWith(")"))
 			grammar = parseGrammar(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\"")) {
-			String token = Util.substr(s, 1, -1);
+			String token = Escaper.unescape(Util.substr(s, 1, -1), "\"");
 			grammar = (parse, st) -> parse.expect(st, parse.expectString(st.pos, token));
 		} else
 			grammar = parseGrammarEntity(s);
