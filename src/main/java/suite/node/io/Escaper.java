@@ -10,11 +10,12 @@ public class Escaper {
 		sb.append(quote);
 
 		for (char ch : Util.chars(s))
-			if (Character.isWhitespace(ch) && ch != ' ') {
+			if (Character.isWhitespace(ch) && ch != ' ')
 				if (ch >= 256)
-					sb.append(encodeHex(ch >> 8));
-				sb.append(encodeHex(ch & 0xff));
-			} else if (ch == quote || ch == '%')
+					sb.append(encodeHex16(ch >> 8));
+				else
+					sb.append(encodeHex8(ch & 0xff));
+			else if (ch == quote || ch == '%')
 				sb.append(ch + "" + ch);
 			else
 				sb.append(ch);
@@ -31,7 +32,11 @@ public class Escaper {
 			while ((pos = s.indexOf('%', pos)) != -1) {
 				int pos1 = pos + 1;
 
-				if (pos1 < s.length() && s.charAt(pos1) != '%') {
+				if (pos1 < s.length() && s.charAt(pos1) == 'U') {
+					String hex = s.substring(pos1 + 1, pos + 6);
+					char c = (char) Integer.parseInt(hex, 16);
+					s = s.substring(0, pos) + c + s.substring(pos + 6);
+				} else if (pos1 < s.length() && s.charAt(pos1) != '%') {
 					String hex = s.substring(pos1, pos + 3);
 					char c = (char) Integer.parseInt(hex, 16);
 					s = s.substring(0, pos) + c + s.substring(pos + 3);
@@ -47,7 +52,11 @@ public class Escaper {
 		return s;
 	}
 
-	private static String encodeHex(int i) {
+	private static String encodeHex16(int i) {
+		return "%U" + String.format("%04x", i).toUpperCase();
+	}
+
+	private static String encodeHex8(int i) {
 		return "%" + String.format("%02x", i).toUpperCase();
 	}
 
