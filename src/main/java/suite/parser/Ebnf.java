@@ -219,6 +219,16 @@ public class Ebnf {
 			return state.pos < end ? To.source(new State(state, end)) : noResult;
 		}
 
+		private int expectChar(int start, char from, char to) {
+			int pos = start;
+			if (pos < length) {
+				char ch = in.charAt(pos);
+				if (pos < length && from <= ch && ch <= to)
+					pos++;
+			}
+			return pos;
+		}
+
 		private int expectCharLiteral(int start) {
 			int pos = start, end;
 			if (pos < length && in.charAt(pos) == '\'') {
@@ -441,6 +451,8 @@ public class Ebnf {
 			grammar = (parse, st) -> parse.expect(st, parse.expectIntegerLiteral(st.pos));
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, parse.expectStringLiteral(st.pos));
+		else if (entity.length() == 5 && entity.startsWith("[") && entity.endsWith("]"))
+			grammar = (parse, st) -> parse.expect(st, parse.expectChar(st.pos, entity.charAt(1), entity.charAt(3)));
 		else
 			grammar = null;
 
