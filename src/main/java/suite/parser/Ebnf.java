@@ -441,8 +441,8 @@ public class Ebnf {
 			grammar = (parse, st) -> parse.expect(st, parse.expectIntegerLiteral(st.pos));
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, parse.expectStringLiteral(st.pos));
-		// else
-		grammar = null;
+		else
+			grammar = null;
 
 		if (grammar != null)
 			return (parse, st) -> {
