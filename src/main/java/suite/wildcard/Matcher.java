@@ -9,12 +9,13 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
+import suite.util.Streamlet;
 import suite.util.To;
 import suite.util.Util;
 
 public class Matcher {
 
-	private Source<State> noResult = FunUtil.nullSource();
+	private Streamlet<State> noResult = Streamlet.empty();
 
 	private class State {
 		private String input;
@@ -69,9 +70,9 @@ public class Matcher {
 		for (char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
-				source = FunUtil.concat(FunUtil.map(new Fun<State, Source<State>>() {
-					public Source<State> apply(State state) {
-						return new Source<State>() {
+				source = Streamlet.of(source).concatMap(new Fun<State, Streamlet<State>>() {
+					public Streamlet<State> apply(State state) {
+						return Streamlet.of(new Source<State>() {
 							private int start = state.pos;
 							private int end = state.pos;
 
@@ -82,20 +83,19 @@ public class Matcher {
 								} else
 									return null;
 							}
-						};
+						});
 					}
-				}, source));
+				}).source;
 				break;
 			case '?':
-				source = FunUtil.concat(FunUtil.map(state -> !state.eof() ? To.source(new State(state, 1)) : noResult, source));
+				source = Streamlet.of(source).concatMap(state -> !state.eof() ? Streamlet.of(new State(state, 1)) : noResult).source;
 				break;
 			default:
-				source = FunUtil.concat(FunUtil.map(state -> {
+				source = Streamlet.of(source).concatMap(state -> {
 					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-					return isMatch ? To.source(new State(state, 1)) : noResult;
-				}, source));
+					return isMatch ? Streamlet.of(new State(state, 1)) : noResult;
+				}).source;
 			}
 		return source;
 	}
-
 }

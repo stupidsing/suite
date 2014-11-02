@@ -57,23 +57,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return FunUtil.iterator(source);
 	}
 
-	public static <T> Streamlet<T> append(Streamlet<T> s0, Streamlet<T> s1) {
-		return Streamlet.of(new Source<T>() {
-			private boolean flag;
-
-			public T source() {
-				if (!flag) {
-					T t = s0.source.source();
-					if (t != null)
-						return t;
-					else
-						flag = true;
-				}
-				return s1.source.source();
-			}
-		});
-	}
-
 	public List<T> asList() {
 		List<T> list = new ArrayList<>();
 		T t;
@@ -106,8 +89,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return map;
 	}
 
-	public static <T> Streamlet<T> cons(T t, Streamlet<T> streamlet) {
-		return new Streamlet<>(FunUtil.cons(t, streamlet.source));
+	public Streamlet<T> concatMap(Fun<T, Streamlet<T>> fun) {
+		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public <R> R fold(BiFunction<T, R, R> fun, R init) {

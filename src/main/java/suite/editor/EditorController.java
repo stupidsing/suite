@@ -24,9 +24,8 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.util.FileUtil;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 import suite.util.To;
 
 public class EditorController {
@@ -165,11 +164,11 @@ public class EditorController {
 		String text = view.getSearchTextField().getText();
 
 		if (!text.isEmpty()) {
-			Source<Path> paths0 = FileUtil.findPaths(Paths.get("."));
-			Source<String> files1 = FunUtil.map(Path::toString, paths0);
-			Source<String> files2 = FunUtil.filter(filename -> filename.contains(text), files1);
+			Streamlet<String> files = Streamlet.of(FileUtil.findPaths(Paths.get("."))) //
+					.map(Path::toString) //
+					.filter(filename -> filename.contains(text));
 
-			for (String filename : FunUtil.iter(files2))
+			for (String filename : files)
 				listModel.addElement(filename);
 		}
 	}
