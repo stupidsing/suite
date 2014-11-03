@@ -10,6 +10,7 @@ import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Read;
 import suite.util.Streamlet;
 
 public class ThunkUtil {
@@ -50,7 +51,7 @@ public class ThunkUtil {
 	}
 
 	public static Streamlet<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
-		return Streamlet.of(new Source<Node>() {
+		return Read.from(new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;
 

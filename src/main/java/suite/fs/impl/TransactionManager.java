@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import suite.fs.KeyValueStoreMutator;
 import suite.util.FunUtil.Source;
+import suite.util.Read;
 import suite.util.Streamlet;
 
 /**
@@ -69,7 +70,7 @@ public class TransactionManager<Key, Value> {
 		}
 
 		private Streamlet<Key> acquireReads(Streamlet<Key> st) {
-			return Streamlet.of(() -> {
+			return Read.from(() -> {
 				Key key = st.next();
 				if (key != null)
 					acquireRead(key);

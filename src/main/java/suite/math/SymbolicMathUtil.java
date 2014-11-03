@@ -16,7 +16,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.util.Complexity;
 import suite.node.util.TermKey;
-import suite.util.Streamlet;
+import suite.util.Read;
 
 public class SymbolicMathUtil {
 
@@ -53,7 +53,7 @@ public class SymbolicMathUtil {
 			freshNodes = freshNodes1;
 		}
 
-		return Streamlet.of(searchedNodes).map(k -> k.node).min(comparator);
+		return Read.from(searchedNodes).map(k -> k.node).min(comparator);
 	}
 
 	private static Collection<TermKey> findEqualities(Node node) {

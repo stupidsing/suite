@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Deque;
 
 import suite.util.FunUtil.Source;
+import suite.util.Read;
 import suite.util.Streamlet;
 
 /**
@@ -42,7 +43,7 @@ public class IRbTree<T> implements ITree<T> {
 
 	@Override
 	public Streamlet<T> stream() {
-		return Streamlet.of(new Source<T>() {
+		return Read.from(new Source<T>() {
 			private Deque<Node> nodes = new ArrayDeque<>();
 
 			{

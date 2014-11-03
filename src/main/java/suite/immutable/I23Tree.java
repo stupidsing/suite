@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import suite.util.Read;
 import suite.util.Streamlet;
 import suite.util.Util;
 
@@ -66,11 +67,11 @@ public class I23Tree<T> implements ITree<T> {
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
-			return Streamlet.of(node.subList(i0, i1)).concatMap(slot -> {
+			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
 				if (slot.slots != null)
 					return stream(slot.slots, start, end);
 				else
-					return slot.pivot != null ? Streamlet.of(slot.pivot) : Streamlet.empty();
+					return slot.pivot != null ? Read.from(slot.pivot) : Streamlet.empty();
 			});
 		else
 			return Streamlet.empty();

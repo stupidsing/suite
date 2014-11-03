@@ -14,6 +14,7 @@ import suite.btree.B_Tree;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.util.Pair;
+import suite.util.Read;
 import suite.util.Streamlet;
 
 /**
@@ -202,11 +203,11 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
 
 		if (i0 < i1)
-			return Streamlet.of(page.subList(Math.max(0, i0), i1)).concatMap(kp -> {
+			return Read.from(page.subList(Math.max(0, i0), i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
 					return stream(kp.getBranchPageNo(), start, end);
 				else
-					return kp.key != null ? Streamlet.of(kp) : Streamlet.empty();
+					return kp.key != null ? Read.from(kp) : Streamlet.empty();
 			});
 		else
 			return Streamlet.empty();

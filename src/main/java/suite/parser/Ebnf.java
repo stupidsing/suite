@@ -18,6 +18,7 @@ import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.ParseUtil;
+import suite.util.Read;
 import suite.util.Streamlet;
 import suite.util.Util;
 
@@ -61,7 +62,7 @@ public class Ebnf {
 		}
 
 		public Streamlet<State> p(Parse parse, State state) {
-			return Streamlet.of(grammars).concatMap(childGrammar -> parse.parse(state, childGrammar));
+			return Read.from(grammars).concatMap(childGrammar -> parse.parse(state, childGrammar));
 		}
 	}
 
@@ -71,7 +72,7 @@ public class Ebnf {
 		}
 
 		public Streamlet<State> p(Parse parse, State state) {
-			Streamlet<State> st = Streamlet.of(state);
+			Streamlet<State> st = Read.from(state);
 			for (Grammar childGrammar : grammars)
 				st = st.concatMap(st_ -> parse.parse(st_, childGrammar));
 			return st;
@@ -87,7 +88,7 @@ public class Ebnf {
 		}
 
 		public Streamlet<State> p(Parse parse, State state) {
-			Streamlet<State> states = Streamlet.of(new Source<State>() {
+			Streamlet<State> states = Read.from(new Source<State>() {
 				private State state_ = state;
 				private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
 
@@ -215,7 +216,7 @@ public class Ebnf {
 		}
 
 		private Streamlet<State> expect(State state, int end) {
-			return state.pos < end ? Streamlet.of(new State(state, end)) : noResult;
+			return state.pos < end ? Read.from(new State(state, end)) : noResult;
 		}
 
 		private int expectCharLiteral(int start) {
@@ -415,7 +416,7 @@ public class Ebnf {
 	}
 
 	private List<Grammar> parseGrammars(List<String> list) {
-		return Streamlet.of(list).map(this::parseGrammar).asList();
+		return Read.from(list).map(this::parseGrammar).asList();
 	}
 
 	private Grammar parseGrammarEntity(String entity) {
@@ -429,7 +430,7 @@ public class Ebnf {
 		Grammar grammar;
 
 		if (Util.stringEquals(entity, "<EOF>"))
-			grammar = (parse, st) -> st.pos == parse.length ? Streamlet.of(st) : noResult;
+			grammar = (parse, st) -> st.pos == parse.length ? Read.from(st) : noResult;
 		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, parse.expectCharLiteral(st.pos));
 		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))

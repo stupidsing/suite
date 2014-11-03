@@ -7,6 +7,7 @@ import java.util.List;
 import suite.fs.KeyDataStoreMutator;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
+import suite.util.Read;
 import suite.util.Streamlet;
 import suite.util.Util;
 
@@ -48,7 +49,7 @@ public class FileSystemKeySet {
 				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
 			} else
-				return Streamlet.of(Arrays.asList(keyUtil.toName(prefix1)));
+				return Read.from(Arrays.asList(keyUtil.toName(prefix1)));
 		});
 	}
 

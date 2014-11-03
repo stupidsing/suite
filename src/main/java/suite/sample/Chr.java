@@ -20,6 +20,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Rewriter;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
+import suite.util.Read;
 import suite.util.Streamlet;
 import suite.util.To;
 
@@ -99,13 +100,13 @@ public class Chr {
 	}
 
 	private State chr(State state) {
-		return Streamlet.of(rules).concatMap(rule -> chr(state, rule)).first();
+		return Read.from(rules).concatMap(rule -> chr(state, rule)).first();
 	}
 
 	private Streamlet<State> chr(State state, Rule rule) {
 		Generalizer generalizer = new Generalizer();
 		Journal journal = new Journal();
-		Streamlet<State> states = Streamlet.of(state);
+		Streamlet<State> states = Read.from(state);
 
 		for (Node if_ : rule.ifs)
 			states = chrIf(states, journal, generalizer.generalize(if_));
@@ -138,7 +139,7 @@ public class Chr {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, given);
 			boolean isMatch = or(facts.stream().map(bindFun));
-			return isMatch ? Streamlet.of(state) : Streamlet.empty();
+			return isMatch ? Read.from(state) : Streamlet.empty();
 		});
 	}
 

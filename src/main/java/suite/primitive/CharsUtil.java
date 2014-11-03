@@ -5,6 +5,7 @@ import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Source;
+import suite.util.Read;
 import suite.util.Streamlet;
 
 public class CharsUtil {
@@ -12,7 +13,7 @@ public class CharsUtil {
 	private static final int bufferSize = 65536;
 
 	public static Streamlet<Chars> buffer(Streamlet<Chars> st) {
-		return Streamlet.of(new Source<Chars>() {
+		return Read.from(new Source<Chars>() {
 			private Streamlet<Chars> st_ = st;
 			protected Chars buffer = Chars.emptyChars;
 			protected boolean isEof = false;
@@ -43,7 +44,7 @@ public class CharsUtil {
 	public static Streamlet<Chars> concatSplit(Streamlet<Chars> st, Chars delim) {
 		int ds = delim.size();
 
-		return Streamlet.of(new Source<Chars>() {
+		return Read.from(new Source<Chars>() {
 			private Chars buffer = Chars.emptyChars;
 			private boolean isArriving;
 			private int p;

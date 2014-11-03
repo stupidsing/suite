@@ -20,6 +20,7 @@ import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.IbTree;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
+import suite.util.Read;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 import suite.util.Streamlet;
@@ -485,11 +486,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
 		if (i0 < i1)
-			return Streamlet.of(node.subList(Math.max(0, i0), i1)).concatMap(slot -> {
+			return Read.from(node.subList(Math.max(0, i0), i1)).concatMap(slot -> {
 				if (slot.type == SlotType.BRANCH)
 					return stream(slot.pointer, start, end);
 				else
-					return slot.pivot != null ? Streamlet.of(slot) : Streamlet.empty();
+					return slot.pivot != null ? Read.from(slot) : Streamlet.empty();
 			});
 		else
 			return Streamlet.empty();

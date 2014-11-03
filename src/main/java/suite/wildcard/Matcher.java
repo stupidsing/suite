@@ -7,6 +7,7 @@ import suite.immutable.IList;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
+import suite.util.Read;
 import suite.util.Streamlet;
 import suite.util.Util;
 
@@ -53,14 +54,14 @@ public class Matcher {
 	}
 
 	private Streamlet<State> applyPattern(String pattern, String input) {
-		Streamlet<State> st = Streamlet.of(new State(input));
+		Streamlet<State> st = Read.from(new State(input));
 
 		for (char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
 				st = st.concatMap(new Fun<State, Streamlet<State>>() {
 					public Streamlet<State> apply(State state) {
-						return Streamlet.of(new Source<State>() {
+						return Read.from(new Source<State>() {
 							private int start = state.pos;
 							private int end = state.pos;
 
@@ -76,12 +77,12 @@ public class Matcher {
 				});
 				break;
 			case '?':
-				st = st.concatMap(state -> !state.eof() ? Streamlet.of(new State(state, 1)) : noResult);
+				st = st.concatMap(state -> !state.eof() ? Read.from(new State(state, 1)) : noResult);
 				break;
 			default:
 				st = st.concatMap(state -> {
 					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
-					return isMatch ? Streamlet.of(new State(state, 1)) : noResult;
+					return isMatch ? Read.from(new State(state, 1)) : noResult;
 				});
 			}
 

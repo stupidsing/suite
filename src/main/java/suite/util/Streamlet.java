@@ -1,8 +1,6 @@
 package suite.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,23 +22,10 @@ public class Streamlet<T> implements Iterable<T> {
 	private Source<T> source;
 
 	public static <T> Streamlet<T> empty() {
-		return Streamlet.of(() -> null);
+		return new Streamlet<>(() -> null);
 	}
 
-	@SafeVarargs
-	public static <T> Streamlet<T> of(T... array) {
-		return Streamlet.of(Arrays.asList(array));
-	}
-
-	public static <T> Streamlet<T> of(Collection<T> col) {
-		return Streamlet.of(To.source(col));
-	}
-
-	public static <T> Streamlet<T> of(Source<T> source) {
-		return new Streamlet<>(source);
-	}
-
-	private Streamlet(Source<T> source) {
+	public Streamlet(Source<T> source) {
 		this.source = source;
 	}
 
@@ -82,11 +67,11 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
-		return Streamlet.of(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public Streamlet<T> cons(T t) {
-		return Streamlet.of(FunUtil.cons(t, source));
+		return new Streamlet<>(FunUtil.cons(t, source));
 	}
 
 	public int count() {
@@ -108,7 +93,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
-		return Streamlet.of(FunUtil.map(fun, source));
+		return new Streamlet<>(FunUtil.map(fun, source));
 	}
 
 	public T min(Comparator<T> comparator) {
@@ -123,7 +108,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {
-		return Streamlet.of(FunUtil.filter(fun, source));
+		return new Streamlet<>(FunUtil.filter(fun, source));
 	}
 
 	public T next() {
