@@ -23,15 +23,6 @@ public class Streamlet<T> implements Iterable<T> {
 
 	private Source<T> source;
 
-	@SafeVarargs
-	public Streamlet(T... array) {
-		this(Arrays.asList(array));
-	}
-
-	public Streamlet(Collection<T> col) {
-		this(To.source(col));
-	}
-
 	public static <T> Streamlet<T> empty() {
 		return Streamlet.of(() -> null);
 	}
@@ -91,7 +82,11 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
-		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+		return Streamlet.of(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+	}
+
+	public Streamlet<T> cons(T t) {
+		return Streamlet.of(FunUtil.cons(t, source));
 	}
 
 	public int count() {
@@ -113,7 +108,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
-		return new Streamlet<>(FunUtil.map(fun, source));
+		return Streamlet.of(FunUtil.map(fun, source));
 	}
 
 	public T min(Comparator<T> comparator) {
@@ -128,10 +123,10 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {
-		return new Streamlet<>(FunUtil.filter(fun, source));
+		return Streamlet.of(FunUtil.filter(fun, source));
 	}
 
-	public T source() {
+	public T next() {
 		return source.source();
 	}
 

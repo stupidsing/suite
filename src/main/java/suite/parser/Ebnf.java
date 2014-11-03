@@ -14,12 +14,11 @@ import java.util.Map.Entry;
 
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.ParseUtil;
-import suite.util.To;
+import suite.util.Streamlet;
 import suite.util.Util;
 
 /**
@@ -32,12 +31,12 @@ public class Ebnf {
 	private String rootGrammarEntity;
 	private Map<String, Grammar> grammarsByEntity = new HashMap<>();
 
-	private Source<State> noResult = FunUtil.nullSource();
+	private Streamlet<State> noResult = Streamlet.empty();
 
 	private static boolean trace = false;
 
 	private interface Grammar {
-		public Source<State> p(Parse parse, State state);
+		public Streamlet<State> p(Parse parse, State state);
 	}
 
 	private abstract class WrappingGrammar implements Grammar {
@@ -61,8 +60,8 @@ public class Ebnf {
 			super(grammars);
 		}
 
-		public Source<State> p(Parse parse, State state) {
-			return FunUtil.concat(FunUtil.map(childGrammar -> parse.parse(state, childGrammar), To.source(grammars)));
+		public Streamlet<State> p(Parse parse, State state) {
+			return Streamlet.of(grammars).concatMap(childGrammar -> parse.parse(state, childGrammar));
 		}
 	}
 
@@ -71,10 +70,10 @@ public class Ebnf {
 			super(grammars);
 		}
 
-		public Source<State> p(Parse parse, State state) {
-			Source<State> source = To.source(state);
+		public Streamlet<State> p(Parse parse, State state) {
+			Streamlet<State> source = Streamlet.of(state);
 			for (Grammar childGrammar : grammars)
-				source = FunUtil.concat(FunUtil.map(st -> parse.parse(st, childGrammar), source));
+				source = source.concatMap(st -> parse.parse(st, childGrammar));
 			return source;
 		}
 	}
@@ -87,24 +86,24 @@ public class Ebnf {
 			this.isAllowNone = isAllowNone;
 		}
 
-		public Source<State> p(Parse parse, State state) {
-			Source<State> states = new Source<State>() {
+		public Streamlet<State> p(Parse parse, State state) {
+			Streamlet<State> states = Streamlet.of(new Source<State>() {
 				private State state_ = state;
-				private Deque<Source<State>> sources = new ArrayDeque<>();
+				private Deque<Streamlet<State>> sources = new ArrayDeque<>();
 
 				public State source() {
 					State state0 = state_;
 					if (state0 != null) {
 						sources.push(parse.parse(state0, grammar));
-						while (!sources.isEmpty() && (state_ = sources.peek().source()) == null)
+						while (!sources.isEmpty() && (state_ = sources.peek().next()) == null)
 							sources.pop();
 					}
 					return state0;
 				}
-			};
+			});
 
 			// Skips first if it is a '+'
-			return isAllowNone || states.source() != null ? states : noResult;
+			return isAllowNone || states.next() != null ? states : noResult;
 		}
 	}
 
@@ -115,10 +114,10 @@ public class Ebnf {
 			this.entity = entity;
 		}
 
-		public Source<State> p(Parse parse, State state) {
+		public Streamlet<State> p(Parse parse, State state) {
 			State state1 = deepen(state, entity);
-			Source<State> states = parse.parse(state1, grammarsByEntity.get(entity));
-			return FunUtil.map(st -> undeepen(st, state.depth), states);
+			Streamlet<State> states = parse.parse(state1, grammarsByEntity.get(entity));
+			return states.map(st -> undeepen(st, state.depth));
 		}
 	}
 
@@ -163,10 +162,10 @@ public class Ebnf {
 
 		private Node parse(int pos, Grammar grammar) {
 			State initialState = new State(null, pos, null, 1);
-			Source<State> source = parse(initialState, grammar);
+			Streamlet<State> source = parse(initialState, grammar);
 			State state;
 
-			while ((state = source.source()) != null)
+			while ((state = source.next()) != null)
 				if (state.pos == length) {
 					Deque<State> states = new ArrayDeque<>();
 
@@ -198,14 +197,14 @@ public class Ebnf {
 			throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
 		}
 
-		private Source<State> parse(State state, Grammar grammar) {
+		private Streamlet<State> parse(State state, Grammar grammar) {
 			int pos = expectWhitespaces(state.pos);
 
 			if (trace)
 				LogUtil.info("parse(" + grammar + "): " + in.substring(pos));
 
 			State state1 = new State(state, pos);
-			Source<State> states = grammar.p(this, state1);
+			Streamlet<State> states = grammar.p(this, state1);
 
 			if (states == noResult && state1.entity != null && pos >= errorPosition) {
 				errorPosition = pos;
@@ -215,8 +214,8 @@ public class Ebnf {
 			return states;
 		}
 
-		private Source<State> expect(State state, int end) {
-			return state.pos < end ? To.source(new State(state, end)) : noResult;
+		private Streamlet<State> expect(State state, int end) {
+			return state.pos < end ? Streamlet.of(new State(state, end)) : noResult;
 		}
 
 		private int expectCharLiteral(int start) {
@@ -399,7 +398,7 @@ public class Ebnf {
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
 		else if (s.endsWith("?")) {
 			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
-			grammar = (parse, st) -> FunUtil.cons(st, parse.parse(st, grammar1));
+			grammar = (parse, st) -> parse.parse(st, grammar1).cons(st);
 		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
 			char start = s.charAt(1);
 			char end = s.charAt(3);
@@ -416,7 +415,7 @@ public class Ebnf {
 	}
 
 	private List<Grammar> parseGrammars(List<String> list) {
-		return To.list(FunUtil.iter(FunUtil.map(this::parseGrammar, To.source(list))));
+		return Streamlet.of(list).map(this::parseGrammar).asList();
 	}
 
 	private Grammar parseGrammarEntity(String entity) {
@@ -430,7 +429,7 @@ public class Ebnf {
 		Grammar grammar;
 
 		if (Util.stringEquals(entity, "<EOF>"))
-			grammar = (parse, st) -> st.pos == parse.length ? To.source(st) : noResult;
+			grammar = (parse, st) -> st.pos == parse.length ? Streamlet.of(st) : noResult;
 		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, parse.expectCharLiteral(st.pos));
 		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
@@ -449,7 +448,7 @@ public class Ebnf {
 		if (grammar != null)
 			return (parse, st) -> {
 				State st1 = deepen(st, entity);
-				return FunUtil.map(st_ -> undeepen(st_, st.depth), grammar.p(parse, st1));
+				return grammar.p(parse, st1).map(st_ -> undeepen(st_, st.depth));
 			};
 		else
 			return null;

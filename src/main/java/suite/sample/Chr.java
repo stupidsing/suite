@@ -191,7 +191,7 @@ public class Chr {
 
 	private boolean or(Streamlet<Boolean> st) {
 		Boolean b;
-		while ((b = st.source()) != null)
+		while ((b = st.next()) != null)
 			if (b == Boolean.TRUE)
 				return true;
 		return false;
@@ -208,7 +208,7 @@ public class Chr {
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
 		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
-		return new State(nodes.stream().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
+		return new State(nodes.stream().next() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
 }

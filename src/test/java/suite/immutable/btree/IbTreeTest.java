@@ -99,7 +99,7 @@ public class IbTreeTest {
 		Object object;
 		int count = 0;
 
-		while ((object = st.source()) != null) {
+		while ((object = st.next()) != null) {
 			System.out.println(object.toString());
 			count++;
 		}
