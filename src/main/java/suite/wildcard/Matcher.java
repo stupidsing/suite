@@ -1,16 +1,13 @@
 package suite.wildcard;
 
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
 import suite.immutable.IList;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.Streamlet;
-import suite.util.To;
 import suite.util.Util;
 
 public class Matcher {
@@ -42,35 +39,26 @@ public class Matcher {
 	}
 
 	public List<String[]> matches(String pattern, String input) {
-		Source<State> source = To.source(new State(input));
-		source = applyPattern(source, pattern);
-		source = FunUtil.filter(State::eof, source);
-
-		List<String[]> results = new ArrayList<>();
-		State state;
-
-		while ((state = source.source()) != null) {
+		return applyPattern(pattern, input).filter(State::eof).map(state -> {
 			Deque<String> deque = state.matches.reverse();
-			results.add(deque.toArray(new String[deque.size()]));
-		}
-
-		return results;
+			return deque.toArray(new String[deque.size()]);
+		}).asList();
 	}
 
 	public Pair<String[], String> matchStart(String pattern, String input) {
-		Source<State> source = To.source(new State(input));
-		source = applyPattern(source, pattern);
+		State state = applyPattern(pattern, input).first();
 
-		State state = source.source();
 		Deque<String> deque = state.matches.reverse();
 		return Pair.of(deque.toArray(new String[deque.size()]), input.substring(state.pos));
 	}
 
-	private Source<State> applyPattern(Source<State> source, String pattern) {
+	private Streamlet<State> applyPattern(String pattern, String input) {
+		Streamlet<State> st = Streamlet.of(new State(input));
+
 		for (char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
-				source = Streamlet.of(source).concatMap(new Fun<State, Streamlet<State>>() {
+				st = st.concatMap(new Fun<State, Streamlet<State>>() {
 					public Streamlet<State> apply(State state) {
 						return Streamlet.of(new Source<State>() {
 							private int start = state.pos;
@@ -85,17 +73,19 @@ public class Matcher {
 							}
 						});
 					}
-				}).source;
+				});
 				break;
 			case '?':
-				source = Streamlet.of(source).concatMap(state -> !state.eof() ? Streamlet.of(new State(state, 1)) : noResult).source;
+				st = st.concatMap(state -> !state.eof() ? Streamlet.of(new State(state, 1)) : noResult);
 				break;
 			default:
-				source = Streamlet.of(source).concatMap(state -> {
+				st = st.concatMap(state -> {
 					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
 					return isMatch ? Streamlet.of(new State(state, 1)) : noResult;
-				}).source;
+				});
 			}
-		return source;
+
+		return st;
 	}
+
 }

@@ -20,7 +20,7 @@ import suite.util.FunUtil.Source;
  */
 public class Streamlet<T> implements Iterable<T> {
 
-	public final Source<T> source;
+	private Source<T> source;
 
 	@SafeVarargs
 	public Streamlet(T... array) {
@@ -89,8 +89,12 @@ public class Streamlet<T> implements Iterable<T> {
 		return map;
 	}
 
-	public Streamlet<T> concatMap(Fun<T, Streamlet<T>> fun) {
+	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
 		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+	}
+
+	public T first() {
+		return source.source();
 	}
 
 	public <R> R fold(BiFunction<T, R, R> fun, R init) {
@@ -106,6 +110,17 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {
 		return new Streamlet<>(FunUtil.filter(fun, source));
+	}
+
+	public T uniqueResult() {
+		T t = source.source();
+		if (t != null)
+			if (source.source() == null)
+				return t;
+			else
+				throw new RuntimeException("More than one result");
+		else
+			throw new RuntimeException("No result");
 	}
 
 }
