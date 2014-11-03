@@ -5,9 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
-import suite.util.To;
+import suite.util.Streamlet;
 import suite.util.Util;
 
 public class I23Tree<T> implements ITree<T> {
@@ -59,23 +57,23 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	@Override
-	public Source<T> source() {
-		return source(root, null, null);
+	public Streamlet<T> stream() {
+		return stream(root, null, null);
 	}
 
-	private Source<T> source(List<Slot> node, T start, T end) {
+	private Streamlet<T> stream(List<Slot> node, T start, T end) {
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(slot -> {
+			return Streamlet.of(node.subList(i0, i1)).concatMap(slot -> {
 				if (slot.slots != null)
-					return source(slot.slots, start, end);
+					return stream(slot.slots, start, end);
 				else
-					return slot.pivot != null ? To.source(slot.pivot) : FunUtil.<T> nullSource();
-			}, To.source(node.subList(i0, i1))));
+					return slot.pivot != null ? Streamlet.of(slot.pivot) : Streamlet.empty();
+			});
 		else
-			return FunUtil.nullSource();
+			return Streamlet.empty();
 	}
 
 	public T find(T t) {

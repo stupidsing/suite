@@ -18,10 +18,9 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewriter;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.Pair;
+import suite.util.Streamlet;
 import suite.util.To;
 
 /**
@@ -100,13 +99,13 @@ public class Chr {
 	}
 
 	private State chr(State state) {
-		return FunUtil.concat(map(To.source(rules), rule -> chr(state, rule))).source();
+		return Streamlet.of(rules).concatMap(rule -> chr(state, rule)).first();
 	}
 
-	private Source<State> chr(State state, Rule rule) {
+	private Streamlet<State> chr(State state, Rule rule) {
 		Generalizer generalizer = new Generalizer();
 		Journal journal = new Journal();
-		Source<State> states = To.source(state);
+		Streamlet<State> states = Streamlet.of(state);
 
 		for (Node if_ : rule.ifs)
 			states = chrIf(states, journal, generalizer.generalize(if_));
@@ -122,34 +121,28 @@ public class Chr {
 		return states;
 	}
 
-	private Source<State> chrIf(Source<State> states, Journal journal, Node if_) {
+	private Streamlet<State> chrIf(Streamlet<State> states, Journal journal, Node if_) {
 		Prototype prototype = Prototype.of(if_);
 
-		return FunUtil.concat(map(states, state -> {
+		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, if_);
-
-			Source<Node> boundIfs = filter(facts.source(), bindFun);
-			return map(boundIfs, new Fun<Node, State>() {
-				public State apply(Node node) {
-					return setFacts(state, prototype, facts.remove(node));
-				}
-			});
-		}));
+			return facts.stream().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
+		});
 	}
 
-	private Source<State> chrGiven(Source<State> states, Journal journal, Node given) {
+	private Streamlet<State> chrGiven(Streamlet<State> states, Journal journal, Node given) {
 		Prototype prototype = Prototype.of(given);
 
-		return FunUtil.concat(map(states, state -> {
+		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, given);
-			boolean isMatch = or(map(facts.source(), bindFun));
-			return isMatch ? To.source(state) : FunUtil.<State> nullSource();
-		}));
+			boolean isMatch = or(facts.stream().map(bindFun));
+			return isMatch ? Streamlet.of(state) : Streamlet.empty();
+		});
 	}
 
-	private Source<State> chrThen(Source<State> states, Node then) {
+	private Streamlet<State> chrThen(Streamlet<State> states, Node then) {
 		Generalizer generalizer = new Generalizer();
 		Node a = atom(".a"), b = atom(".b");
 
@@ -159,7 +152,7 @@ public class Chr {
 			Reference from = generalizer.getVariable(a);
 			Reference to = generalizer.getVariable(b);
 
-			states = map(states, new Fun<State, State>() {
+			states = states.map(new Fun<State, State>() {
 				public State apply(State state) {
 					IMap<Prototype, ISet<Node>> factsByPrototype1 = new IMap<>();
 					for (Pair<Prototype, ISet<Node>> pair : state.factsByPrototype)
@@ -176,15 +169,15 @@ public class Chr {
 			});
 		}
 
-		return map(states, state -> {
+		return states.map(state -> {
 			Prototype prototype = Prototype.of(then);
 			ISet<Node> facts = getFacts(state, prototype);
 			return setFacts(state, prototype, facts.replace(then));
 		});
 	}
 
-	private Source<State> chrWhen(Source<State> states, Node when) {
-		return filter(states, state -> prover.prove(when));
+	private Streamlet<State> chrWhen(Streamlet<State> states, Node when) {
+		return states.filter(state -> prover.prove(when));
 	}
 
 	private Fun<Node, Boolean> bindFun(Journal journal, Node node0) {
@@ -196,20 +189,12 @@ public class Chr {
 		};
 	}
 
-	private boolean or(Source<Boolean> source) {
+	private boolean or(Streamlet<Boolean> st) {
 		Boolean b;
-		while ((b = source.source()) != null)
+		while ((b = st.source()) != null)
 			if (b == Boolean.TRUE)
 				return true;
 		return false;
-	}
-
-	private <T> Source<T> filter(Source<T> source, Fun<T, Boolean> fun) {
-		return FunUtil.filter(fun, source);
-	}
-
-	private <T0, T1> Source<T1> map(Source<T0> source, Fun<T0, T1> fun) {
-		return FunUtil.map(fun, source);
 	}
 
 	private Node atom(String name) {
@@ -223,7 +208,7 @@ public class Chr {
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
 		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
-		return new State(nodes.source().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
+		return new State(nodes.stream().source() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
 }

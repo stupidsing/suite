@@ -188,15 +188,15 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public Streamlet<Key> keys(Key key0, Key key1) {
-		return source(getRoot(), key0, key1).map(kp -> kp != null ? kp.key : null);
+		return stream(getRoot(), key0, key1).map(kp -> kp != null ? kp.key : null);
 	}
 
 	@Override
 	public Streamlet<Pair<Key, Value>> range(Key key0, Key key1) {
-		return source(getRoot(), key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null);
+		return stream(getRoot(), key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null);
 	}
 
-	private Streamlet<KeyPointer> source(Integer pointer, Key start, Key end) {
+	private Streamlet<KeyPointer> stream(Integer pointer, Key start, Key end) {
 		Page page = pageFile.load(pointer);
 		int i0 = start != null ? findPosition(page, start, true) : 0;
 		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
@@ -204,7 +204,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		if (i0 < i1)
 			return Streamlet.of(page.subList(Math.max(0, i0), i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
-					return source(kp.getBranchPageNo(), start, end);
+					return stream(kp.getBranchPageNo(), start, end);
 				else
 					return kp.key != null ? Streamlet.of(kp) : Streamlet.empty();
 			});

@@ -468,18 +468,18 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Streamlet<Key> keys(Integer pointer, Key start, Key end) {
-		return source(pointer, start, end).map(slot -> slot.pivot);
+		return stream(pointer, start, end).map(slot -> slot.pivot);
 	}
 
 	private Integer get0(Integer root, Key key, SlotType slotType) {
-		Slot slot = source(root, key, null).source();
+		Slot slot = stream(root, key, null).source();
 		if (slot != null && slot.type == slotType && comparator.compare(slot.pivot, key) == 0)
 			return slot.pointer;
 		else
 			return null;
 	}
 
-	private Streamlet<Slot> source(Integer pointer, Key start, Key end) {
+	private Streamlet<Slot> stream(Integer pointer, Key start, Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start, false).i + 1 : 0;
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
@@ -487,7 +487,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		if (i0 < i1)
 			return Streamlet.of(node.subList(Math.max(0, i0), i1)).concatMap(slot -> {
 				if (slot.type == SlotType.BRANCH)
-					return source(slot.pointer, start, end);
+					return stream(slot.pointer, start, end);
 				else
 					return slot.pivot != null ? Streamlet.of(slot) : Streamlet.empty();
 			});

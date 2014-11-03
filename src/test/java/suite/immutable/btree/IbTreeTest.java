@@ -95,11 +95,11 @@ public class IbTreeTest {
 	}
 
 	private int dumpAndCount(KeyDataStoreMutator<?> mutator) {
-		Streamlet<?> source = mutator.keys();
+		Streamlet<?> st = mutator.keys();
 		Object object;
 		int count = 0;
 
-		while ((object = source.source()) != null) {
+		while ((object = st.source()) != null) {
 			System.out.println(object.toString());
 			count++;
 		}

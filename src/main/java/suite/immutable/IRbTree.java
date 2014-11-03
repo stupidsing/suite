@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Deque;
 
 import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 /**
  * Immutable Red-Black tree implementation. However, node deletion is not
@@ -40,8 +41,8 @@ public class IRbTree<T> implements ITree<T> {
 	}
 
 	@Override
-	public Source<T> source() {
-		return new Source<T>() {
+	public Streamlet<T> stream() {
+		return Streamlet.of(new Source<T>() {
 			private Deque<Node> nodes = new ArrayDeque<>();
 
 			{
@@ -67,7 +68,7 @@ public class IRbTree<T> implements ITree<T> {
 					node = node.left;
 				}
 			}
-		};
+		});
 	}
 
 	public T find(T t) {

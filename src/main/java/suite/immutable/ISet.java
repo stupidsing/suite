@@ -2,8 +2,7 @@ package suite.immutable;
 
 import java.util.Iterator;
 
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 import suite.util.Util;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
@@ -19,11 +18,11 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 	@Override
 	public Iterator<V> iterator() {
-		return FunUtil.iterator(source());
+		return stream().iterator();
 	}
 
-	public Source<V> source() {
-		return tree.source();
+	public Streamlet<V> stream() {
+		return tree.stream();
 	}
 
 	public V get(V k) {

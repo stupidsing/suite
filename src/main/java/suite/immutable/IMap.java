@@ -2,9 +2,8 @@ package suite.immutable;
 
 import java.util.Iterator;
 
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
 import suite.util.Pair;
+import suite.util.Streamlet;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
@@ -19,11 +18,11 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public Iterator<Pair<K, V>> iterator() {
-		return FunUtil.iterator(source());
+		return stream().iterator();
 	}
 
-	public Source<Pair<K, V>> source() {
-		return tree.source();
+	public Streamlet<Pair<K, V>> stream() {
+		return tree.stream();
 	}
 
 	public V get(K k) {

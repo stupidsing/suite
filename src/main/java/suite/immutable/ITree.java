@@ -1,10 +1,10 @@
 package suite.immutable;
 
-import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 public interface ITree<T> {
 
-	public Source<T> source();
+	public Streamlet<T> stream();
 
 	public T find(T t);
 

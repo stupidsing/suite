@@ -94,6 +94,13 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
+	public int count() {
+		int i = 0;
+		while (source.source() != null)
+			i++;
+		return i;
+	}
+
 	public T first() {
 		return source.source();
 	}
