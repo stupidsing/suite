@@ -7,8 +7,6 @@ import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tuple;
-import suite.util.FunUtil.Source;
-import suite.util.To;
 import suite.util.Util;
 
 public class ArrayIntrinsics {
@@ -31,8 +29,7 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
-		Source<Node> value = ThunkUtil.yawnList(callback::yawn, inputs.get(0), true);
-		return new Tuple(To.list(value));
+		return new Tuple(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).asList());
 	};
 
 	public Intrinsic right = (callback, inputs) -> {

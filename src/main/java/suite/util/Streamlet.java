@@ -130,6 +130,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return source.source();
 	}
 
+	public Source<T> source() {
+		return source;
+	}
+
 	public T uniqueResult() {
 		T t = source.source();
 		if (t != null)

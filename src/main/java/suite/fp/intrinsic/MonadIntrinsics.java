@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ import suite.node.io.TermOp;
 import suite.primitive.Chars;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 
 public class MonadIntrinsics {
@@ -38,13 +36,7 @@ public class MonadIntrinsics {
 
 	public Intrinsic popen = (callback, inputs) -> {
 		Fun<Node, Node> yawn = callback::yawn;
-		List<String> list = new ArrayList<>();
-
-		Source<Node> source = ThunkUtil.yawnList(yawn, inputs.get(0), false);
-		Node node;
-
-		while ((node = source.source()) != null)
-			list.add(ThunkUtil.yawnString(yawn, node));
+		List<String> list = ThunkUtil.yawnList(yawn, inputs.get(0), false).map(node -> ThunkUtil.yawnString(yawn, node)).asList();
 
 		Node in = inputs.get(1);
 

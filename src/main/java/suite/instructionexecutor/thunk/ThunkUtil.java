@@ -10,6 +10,7 @@ import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 public class ThunkUtil {
 
@@ -18,11 +19,11 @@ public class ThunkUtil {
 	 * string.
 	 */
 	public static String yawnString(Fun<Node, Node> yawn, Node node) {
-		Source<Node> source = yawnList(yawn, node, false);
+		Streamlet<Node> st = yawnList(yawn, node, false);
 		StringBuilder sb = new StringBuilder();
 		Node n;
 
-		while ((n = source.source()) != null)
+		while ((n = st.next()) != null)
 			sb.append((char) ((Int) n).number);
 
 		return sb.toString();
@@ -42,14 +43,14 @@ public class ThunkUtil {
 	 * sink.
 	 */
 	public static void yawnSink(Fun<Node, Node> yawn, Node node, IoSink<Node> sink) throws IOException {
-		Source<Node> source = yawnList(yawn, node, true);
+		Streamlet<Node> st = yawnList(yawn, node, true);
 		Node n;
-		while ((n = source.source()) != null)
+		while ((n = st.next()) != null)
 			sink.sink(n);
 	}
 
-	public static Source<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
-		return new Source<Node>() {
+	public static Streamlet<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
+		return Streamlet.of(new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;
 
@@ -74,7 +75,7 @@ public class ThunkUtil {
 				else
 					throw new RuntimeException("Not a list, unable to expand");
 			}
-		};
+		});
 	}
 
 	/**

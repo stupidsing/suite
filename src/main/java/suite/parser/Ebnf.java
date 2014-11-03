@@ -71,10 +71,10 @@ public class Ebnf {
 		}
 
 		public Streamlet<State> p(Parse parse, State state) {
-			Streamlet<State> source = Streamlet.of(state);
+			Streamlet<State> st = Streamlet.of(state);
 			for (Grammar childGrammar : grammars)
-				source = source.concatMap(st -> parse.parse(st, childGrammar));
-			return source;
+				st = st.concatMap(st_ -> parse.parse(st_, childGrammar));
+			return st;
 		}
 	}
 
@@ -89,14 +89,14 @@ public class Ebnf {
 		public Streamlet<State> p(Parse parse, State state) {
 			Streamlet<State> states = Streamlet.of(new Source<State>() {
 				private State state_ = state;
-				private Deque<Streamlet<State>> sources = new ArrayDeque<>();
+				private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
 
 				public State source() {
 					State state0 = state_;
 					if (state0 != null) {
-						sources.push(parse.parse(state0, grammar));
-						while (!sources.isEmpty() && (state_ = sources.peek().next()) == null)
-							sources.pop();
+						streamlets.push(parse.parse(state0, grammar));
+						while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
+							streamlets.pop();
 					}
 					return state0;
 				}
@@ -162,10 +162,10 @@ public class Ebnf {
 
 		private Node parse(int pos, Grammar grammar) {
 			State initialState = new State(null, pos, null, 1);
-			Streamlet<State> source = parse(initialState, grammar);
+			Streamlet<State> st = parse(initialState, grammar);
 			State state;
 
-			while ((state = source.next()) != null)
+			while ((state = st.next()) != null)
 				if (state.pos == length) {
 					Deque<State> states = new ArrayDeque<>();
 

@@ -5,14 +5,15 @@ import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 public class CharsUtil {
 
 	private static final int bufferSize = 65536;
 
-	public static Source<Chars> buffer(Source<Chars> source) {
-		return new Source<Chars>() {
-			private Source<Chars> source_ = source;
+	public static Streamlet<Chars> buffer(Streamlet<Chars> st) {
+		return Streamlet.of(new Source<Chars>() {
+			private Streamlet<Chars> st_ = st;
 			protected Chars buffer = Chars.emptyChars;
 			protected boolean isEof = false;
 
@@ -30,19 +31,19 @@ public class CharsUtil {
 
 				Chars chars;
 				while (!isEof && cb.size() < bufferSize)
-					if ((chars = source_.source()) != null)
+					if ((chars = st_.next()) != null)
 						cb.append(chars);
 					else
 						isEof = true;
 				buffer = cb.toChars();
 			}
-		};
+		});
 	}
 
-	public static Source<Chars> concatSplit(Source<Chars> source, Chars delim) {
+	public static Streamlet<Chars> concatSplit(Streamlet<Chars> st, Chars delim) {
 		int ds = delim.size();
 
-		return new Source<Chars>() {
+		return Streamlet.of(new Source<Chars>() {
 			private Chars buffer = Chars.emptyChars;
 			private boolean isArriving;
 			private int p;
@@ -54,7 +55,7 @@ public class CharsUtil {
 
 				p = 0;
 
-				while (isArriving && !search(delim) && (isArriving = (chars = source.source()) != null)) {
+				while (isArriving && !search(delim) && (isArriving = (chars = st.next()) != null)) {
 					cb.append(chars);
 					buffer = cb.toChars();
 				}
@@ -85,12 +86,12 @@ public class CharsUtil {
 
 				return isMatched;
 			}
-		};
+		});
 	}
 
-	public static void copy(Source<Chars> source, Writer writer) throws IOException {
+	public static void copy(Streamlet<Chars> st, Writer writer) throws IOException {
 		Chars chars;
-		while ((chars = source.source()) != null)
+		while ((chars = st.next()) != null)
 			chars.write(writer);
 	}
 
