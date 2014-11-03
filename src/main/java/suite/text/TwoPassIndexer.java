@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
-import suite.util.To;
+import suite.util.Streamlet;
 
 public class TwoPassIndexer {
 
@@ -66,16 +64,16 @@ public class TwoPassIndexer {
 		keys = new TreeSet<>(referencesByWord.keySet());
 	}
 
-	public Source<Reference> search(String searchKey) {
+	public Streamlet<Reference> search(String searchKey) {
 		dictionary.clear(); // Saves memory
 
 		Iterator<String> iter = keys.tailSet(searchKey).iterator();
-		Source<String> keySource = () -> {
+		Streamlet<String> keySource = Streamlet.of(() -> {
 			String key = iter.hasNext() ? iter.next() : null;
 			return key != null && key.startsWith(searchKey) ? key : null;
-		};
+		});
 
-		return FunUtil.concat(FunUtil.map(key -> To.source(getReferencesByWord(key)), keySource));
+		return keySource.concatMap(key -> Streamlet.of(getReferencesByWord(key)));
 	}
 
 	public List<Reference> getReferencesByWord(String word) {

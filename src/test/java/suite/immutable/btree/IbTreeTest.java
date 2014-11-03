@@ -15,9 +15,9 @@ import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;
 import suite.immutable.btree.impl.IbTreeStack;
 import suite.util.FileUtil;
-import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
+import suite.util.Streamlet;
 import suite.util.To;
 import suite.util.Util;
 
@@ -95,7 +95,7 @@ public class IbTreeTest {
 	}
 
 	private int dumpAndCount(KeyDataStoreMutator<?> mutator) {
-		Source<?> source = mutator.keys();
+		Streamlet<?> source = mutator.keys();
 		Object object;
 		int count = 0;
 

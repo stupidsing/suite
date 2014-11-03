@@ -3,6 +3,7 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -108,8 +109,23 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet<>(FunUtil.map(fun, source));
 	}
 
+	public T min(Comparator<T> comparator) {
+		T t = source.source(), t1;
+		if (t != null) {
+			while ((t1 = source.source()) != null)
+				if (comparator.compare(t, t1) > 0)
+					t = t1;
+			return t;
+		} else
+			throw new RuntimeException("No result");
+	}
+
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {
 		return new Streamlet<>(FunUtil.filter(fun, source));
+	}
+
+	public T source() {
+		return source.source();
 	}
 
 	public T uniqueResult() {

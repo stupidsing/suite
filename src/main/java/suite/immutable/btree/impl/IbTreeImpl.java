@@ -19,12 +19,10 @@ import suite.file.SerializedPageFile;
 import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.IbTree;
 import suite.primitive.Bytes;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
-import suite.util.To;
+import suite.util.Streamlet;
 import suite.util.Util;
 
 /**
@@ -225,12 +223,12 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public Source<Key> keys() {
+		public Streamlet<Key> keys() {
 			return keys(null, null);
 		}
 
 		@Override
-		public Source<Key> keys(Key start, Key end) {
+		public Streamlet<Key> keys(Key start, Key end) {
 			return IbTreeImpl.this.keys(root, start, end);
 		}
 
@@ -469,8 +467,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		return new Mutator(allocator(stamp0));
 	}
 
-	private Source<Key> keys(Integer pointer, Key start, Key end) {
-		return FunUtil.map(slot -> slot.pivot, source(pointer, start, end));
+	private Streamlet<Key> keys(Integer pointer, Key start, Key end) {
+		return source(pointer, start, end).map(slot -> slot.pivot);
 	}
 
 	private Integer get0(Integer root, Key key, SlotType slotType) {
@@ -481,20 +479,20 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			return null;
 	}
 
-	private Source<Slot> source(Integer pointer, Key start, Key end) {
+	private Streamlet<Slot> source(Integer pointer, Key start, Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start, false).i + 1 : 0;
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(slot -> {
+			return Streamlet.of(node.subList(Math.max(0, i0), i1)).concatMap(slot -> {
 				if (slot.type == SlotType.BRANCH)
 					return source(slot.pointer, start, end);
 				else
-					return slot.pivot != null ? To.source(slot) : FunUtil.<Slot> nullSource();
-			}, To.source(node.subList(Math.max(0, i0), i1))));
+					return slot.pivot != null ? Streamlet.of(slot) : Streamlet.empty();
+			});
 		else
-			return FunUtil.nullSource();
+			return Streamlet.empty();
 	}
 
 	private Mutator mutator(List<Integer> stamp) {

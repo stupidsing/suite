@@ -3,7 +3,7 @@ package suite.btree.impl;
 import suite.btree.B_Tree;
 import suite.fs.KeyDataStoreMutator;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 
@@ -21,12 +21,12 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public Source<Key> keys() {
+	public Streamlet<Key> keys() {
 		throw new UnsupportedOperationException("No full traversal");
 	}
 
 	@Override
-	public Source<Key> keys(Key start, Key end) {
+	public Streamlet<Key> keys(Key start, Key end) {
 		return b_tree.keys(start, end);
 	}
 

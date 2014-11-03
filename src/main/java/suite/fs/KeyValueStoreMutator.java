@@ -1,14 +1,14 @@
 package suite.fs;
 
-import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 public interface KeyValueStoreMutator<Key, Value> {
 
 	public void commit();
 
-	public Source<Key> keys();
+	public Streamlet<Key> keys();
 
-	public Source<Key> keys(Key start, Key end);
+	public Streamlet<Key> keys(Key start, Key end);
 
 	public Value get(Key key);
 

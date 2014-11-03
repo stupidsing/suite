@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
-import suite.util.FunUtil;
 import suite.util.To;
 import suite.util.Util;
 
@@ -48,7 +47,8 @@ public class TwoPassIndexerTest {
 
 		System.out.println();
 
-		for (Reference key : FunUtil.iter(indexer.search("IOException")))
+		for (Reference key : indexer.search("IOException"))
 			System.out.println("IOException found in " + key);
 	}
+
 }

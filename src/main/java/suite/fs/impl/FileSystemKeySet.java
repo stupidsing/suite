@@ -7,9 +7,7 @@ import java.util.List;
 import suite.fs.KeyDataStoreMutator;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
-import suite.util.To;
+import suite.util.Streamlet;
 import suite.util.Util;
 
 /**
@@ -31,17 +29,17 @@ public class FileSystemKeySet {
 		this.mutator = transaction;
 	}
 
-	public Source<Bytes> list(Bytes bytes0, Bytes bytes1) {
+	public Streamlet<Bytes> list(Bytes bytes0, Bytes bytes1) {
 		return list(emptyKeys, keyUtil.toNameKeys(bytes0), keyUtil.toNameKeys(bytes1));
 	}
 
-	private Source<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
+	private Streamlet<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
 		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
 		NameKey minKey = keys0 != null && !keys0.isEmpty() ? Util.first(keys0) : boundingKey(hash, 0);
 		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? Util.first(keys1) : boundingKey(hash, 1);
-		Source<Bytes> source = mutator.keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
+		Streamlet<Bytes> st = mutator.keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
-		return FunUtil.concat(FunUtil.map(bytes -> {
+		return st.concatMap(bytes -> {
 			NameKey key = keyUtil.toNameKey(bytes);
 			List<NameKey> prefix1 = Util.add(prefix, Arrays.asList(key));
 
@@ -50,8 +48,8 @@ public class FileSystemKeySet {
 				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? Util.right(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
 			} else
-				return To.source(Arrays.asList(keyUtil.toName(prefix1)));
-		}, source));
+				return Streamlet.of(Arrays.asList(keyUtil.toName(prefix1)));
+		});
 	}
 
 	public void add(Bytes name) {

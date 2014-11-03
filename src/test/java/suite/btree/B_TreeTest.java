@@ -15,7 +15,6 @@ import org.junit.Test;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFileImpl;
 import suite.util.FileUtil;
-import suite.util.FunUtil;
 import suite.util.Pair;
 import suite.util.SerializeUtil;
 import suite.util.To;
@@ -97,7 +96,7 @@ public class B_TreeTest {
 
 		int count = 0;
 
-		for (Pair<Integer, String> entry : FunUtil.iter(b_tree.range(0, nKeys))) {
+		for (Pair<Integer, String> entry : b_tree.range(0, nKeys)) {
 			Integer key = count++;
 			assertEquals(key, entry.t0);
 			assertEquals(Integer.toString(key), entry.t1);

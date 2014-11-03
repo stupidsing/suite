@@ -13,10 +13,8 @@ import suite.btree.Allocator;
 import suite.btree.B_Tree;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
 import suite.util.Pair;
-import suite.util.To;
+import suite.util.Streamlet;
 
 /**
  * B+ tree implementation.
@@ -189,29 +187,29 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	@Override
-	public Source<Key> keys(Key key0, Key key1) {
-		return FunUtil.map(kp -> kp != null ? kp.key : null, source(getRoot(), key0, key1));
+	public Streamlet<Key> keys(Key key0, Key key1) {
+		return source(getRoot(), key0, key1).map(kp -> kp != null ? kp.key : null);
 	}
 
 	@Override
-	public Source<Pair<Key, Value>> range(Key key0, Key key1) {
-		return FunUtil.map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null, source(getRoot(), key0, key1));
+	public Streamlet<Pair<Key, Value>> range(Key key0, Key key1) {
+		return source(getRoot(), key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null);
 	}
 
-	private Source<KeyPointer> source(Integer pointer, Key start, Key end) {
+	private Streamlet<KeyPointer> source(Integer pointer, Key start, Key end) {
 		Page page = pageFile.load(pointer);
 		int i0 = start != null ? findPosition(page, start, true) : 0;
 		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
 
 		if (i0 < i1)
-			return FunUtil.concat(FunUtil.map(kp -> {
+			return Streamlet.of(page.subList(Math.max(0, i0), i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
 					return source(kp.getBranchPageNo(), start, end);
 				else
-					return kp.key != null ? To.source(kp) : FunUtil.<KeyPointer> nullSource();
-			}, To.source(page.subList(Math.max(0, i0), i1))));
+					return kp.key != null ? Streamlet.of(kp) : Streamlet.empty();
+			});
 		else
-			return FunUtil.nullSource();
+			return Streamlet.empty();
 	}
 
 	@Override

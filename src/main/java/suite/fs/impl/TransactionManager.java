@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import suite.fs.KeyValueStoreMutator;
 import suite.util.FunUtil.Source;
+import suite.util.Streamlet;
 
 /**
  * Implements software transaction memory in a key-value storage.
@@ -44,11 +45,11 @@ public class TransactionManager<Key, Value> {
 			keys.forEach(ownershipsByKey::remove);
 		}
 
-		public Source<Key> keys() {
+		public Streamlet<Key> keys() {
 			return acquireReads(mutator.keys());
 		}
 
-		public Source<Key> keys(Key start, Key end) {
+		public Streamlet<Key> keys(Key start, Key end) {
 			return acquireReads(mutator.keys(start, end));
 		}
 
@@ -67,13 +68,13 @@ public class TransactionManager<Key, Value> {
 			mutator.remove(key);
 		}
 
-		private Source<Key> acquireReads(Source<Key> source) {
-			return () -> {
-				Key key = source.source();
+		private Streamlet<Key> acquireReads(Streamlet<Key> st) {
+			return Streamlet.of(() -> {
+				Key key = st.source();
 				if (key != null)
 					acquireRead(key);
 				return key;
-			};
+			});
 		}
 
 		private void acquireRead(Key key) {
