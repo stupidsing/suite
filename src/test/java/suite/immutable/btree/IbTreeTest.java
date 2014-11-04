@@ -14,10 +14,10 @@ import suite.immutable.btree.impl.IbTreeBuilder;
 import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;
 import suite.immutable.btree.impl.IbTreeStack;
+import suite.streamlet.Streamlet;
 import suite.util.FileUtil;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
-import suite.util.Streamlet;
 import suite.util.To;
 import suite.util.Util;
 

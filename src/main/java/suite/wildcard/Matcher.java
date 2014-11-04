@@ -4,11 +4,11 @@ import java.util.Deque;
 import java.util.List;
 
 import suite.immutable.IList;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
-import suite.util.Read;
-import suite.util.Streamlet;
 import suite.util.Util;
 
 public class Matcher {

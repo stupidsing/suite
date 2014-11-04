@@ -3,7 +3,7 @@ package suite.btree.impl;
 import suite.btree.B_Tree;
 import suite.fs.KeyDataStoreMutator;
 import suite.primitive.Bytes;
-import suite.util.Streamlet;
+import suite.streamlet.Streamlet;
 
 public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 

@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.util.Read;
-import suite.util.Streamlet;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Util;
 
 public class I23Tree<T> implements ITree<T> {

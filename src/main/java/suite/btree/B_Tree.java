@@ -4,8 +4,8 @@ import java.io.Closeable;
 import java.io.PrintStream;
 
 import suite.primitive.Bytes;
+import suite.streamlet.Streamlet;
 import suite.util.Pair;
-import suite.util.Streamlet;
 
 public interface B_Tree<Key, Value> extends Closeable {
 

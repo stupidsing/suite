@@ -1,6 +1,6 @@
 package suite.immutable;
 
-import suite.util.Streamlet;
+import suite.streamlet.Streamlet;
 
 public interface ITree<T> {
 

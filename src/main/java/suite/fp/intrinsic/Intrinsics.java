@@ -18,8 +18,8 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Chars;
+import suite.streamlet.Read;
 import suite.util.LogUtil;
-import suite.util.Read;
 import suite.util.Util;
 
 public class Intrinsics {

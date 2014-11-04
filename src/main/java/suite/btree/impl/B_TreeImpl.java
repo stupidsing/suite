@@ -13,9 +13,9 @@ import suite.btree.Allocator;
 import suite.btree.B_Tree;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Pair;
-import suite.util.Read;
-import suite.util.Streamlet;
 
 /**
  * B+ tree implementation.

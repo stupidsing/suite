@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 import suite.fs.KeyValueStoreMutator;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Read;
-import suite.util.Streamlet;
 
 /**
  * Implements software transaction memory in a key-value storage.

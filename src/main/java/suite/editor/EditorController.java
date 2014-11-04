@@ -23,10 +23,10 @@ import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.Read;
-import suite.util.Streamlet;
 import suite.util.To;
 
 public class EditorController {

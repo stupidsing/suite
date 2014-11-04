@@ -4,9 +4,9 @@ import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
 
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Read;
-import suite.util.Streamlet;
 
 /**
  * Immutable Red-Black tree implementation. However, node deletion is not

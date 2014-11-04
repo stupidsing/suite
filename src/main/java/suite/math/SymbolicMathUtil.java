@@ -16,7 +16,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.util.Complexity;
 import suite.node.util.TermKey;
-import suite.util.Read;
+import suite.streamlet.Read;
 
 public class SymbolicMathUtil {
 

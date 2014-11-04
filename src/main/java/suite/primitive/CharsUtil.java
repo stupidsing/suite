@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Read;
-import suite.util.Streamlet;
 
 public class CharsUtil {
 

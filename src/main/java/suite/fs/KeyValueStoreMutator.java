@@ -1,6 +1,6 @@
 package suite.fs;
 
-import suite.util.Streamlet;
+import suite.streamlet.Streamlet;
 
 public interface KeyValueStoreMutator<Key, Value> {
 

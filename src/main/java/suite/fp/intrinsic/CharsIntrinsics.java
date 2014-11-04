@@ -10,7 +10,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.primitive.Chars;
 import suite.primitive.CharsUtil;
-import suite.util.Streamlet;
+import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class CharsIntrinsics {

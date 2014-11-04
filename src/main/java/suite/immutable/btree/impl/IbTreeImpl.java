@@ -19,11 +19,11 @@ import suite.file.SerializedPageFile;
 import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.IbTree;
 import suite.primitive.Bytes;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Read;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
-import suite.util.Streamlet;
 import suite.util.Util;
 
 /**

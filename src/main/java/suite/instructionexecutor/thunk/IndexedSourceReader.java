@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.immutable.IPointer;
-import suite.util.Streamlet;
+import suite.streamlet.Streamlet;
 import suite.util.Util;
 
 public class IndexedSourceReader<T> {

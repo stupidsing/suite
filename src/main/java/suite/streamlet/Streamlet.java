@@ -1,4 +1,4 @@
-package suite.util;
+package suite.streamlet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
 /**
@@ -32,6 +34,12 @@ public class Streamlet<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return FunUtil.iterator(source);
+	}
+
+	public void as(Sink<T> sink) {
+		T t;
+		while ((t = source.source()) != null)
+			sink.sink(t);
 	}
 
 	public List<T> asList() {

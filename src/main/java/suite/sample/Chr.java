@@ -18,10 +18,10 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewriter;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
-import suite.util.Read;
-import suite.util.Streamlet;
 import suite.util.To;
 
 /**
@@ -125,11 +125,13 @@ public class Chr {
 	private Streamlet<State> chrIf(Streamlet<State> states, Journal journal, Node if_) {
 		Prototype prototype = Prototype.of(if_);
 
-		return states.concatMap(state -> {
+		Fun<State, Streamlet<State>> fun = state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, if_);
 			return facts.stream().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
-		});
+		};
+
+		return states.concatMap(fun);
 	}
 
 	private Streamlet<State> chrGiven(Streamlet<State> states, Journal journal, Node given) {

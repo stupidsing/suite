@@ -2,8 +2,8 @@ package suite.immutable;
 
 import java.util.Iterator;
 
+import suite.streamlet.Streamlet;
 import suite.util.Pair;
-import suite.util.Streamlet;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 

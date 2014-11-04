@@ -2,7 +2,7 @@ package suite.immutable;
 
 import java.util.Iterator;
 
-import suite.util.Streamlet;
+import suite.streamlet.Streamlet;
 import suite.util.Util;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {

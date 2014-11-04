@@ -7,8 +7,8 @@ import java.util.List;
 import suite.fs.KeyDataStoreMutator;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
-import suite.util.Read;
-import suite.util.Streamlet;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Util;
 
 /**

@@ -14,12 +14,12 @@ import java.util.Map.Entry;
 
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
 import suite.util.ParseUtil;
-import suite.util.Read;
-import suite.util.Streamlet;
 import suite.util.Util;
 
 /**
