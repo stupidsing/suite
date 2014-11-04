@@ -29,7 +29,7 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
-		return new Tuple(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).asList());
+		return new Tuple(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).toList());
 	};
 
 	public Intrinsic right = (callback, inputs) -> {

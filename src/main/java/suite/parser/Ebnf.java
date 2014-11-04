@@ -416,7 +416,7 @@ public class Ebnf {
 	}
 
 	private List<Grammar> parseGrammars(List<String> list) {
-		return Read.from(list).map(this::parseGrammar).asList();
+		return Read.from(list).map(this::parseGrammar).toList();
 	}
 
 	private Grammar parseGrammarEntity(String entity) {

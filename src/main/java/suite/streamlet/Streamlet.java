@@ -7,11 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
+import suite.util.Pair;
 
 /**
  * Implement functional structures using class methods (instead of static
@@ -36,42 +38,11 @@ public class Streamlet<T> implements Iterable<T> {
 		return FunUtil.iterator(source);
 	}
 
-	public void as(Sink<T> sink) {
+	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
 		T t;
 		while ((t = source.source()) != null)
-			sink.sink(t);
-	}
-
-	public List<T> asList() {
-		List<T> list = new ArrayList<>();
-		T t;
-		while ((t = source.source()) != null)
-			list.add(t);
-		return list;
-	}
-
-	public <K> Map<K, List<T>> asListMap(Fun<T, K> keyFun) {
-		return asListMap(keyFun, t -> t);
-	}
-
-	public <K, V> Map<K, List<V>> asListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = new HashMap<>();
-		T t;
-		while ((t = source.source()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
-		return map;
-	}
-
-	public <K> Map<K, T> asMap(Fun<T, K> keyFun) {
-		return asMap(keyFun, t -> t);
-	}
-
-	public <K, V> Map<K, V> asMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, V> map = new HashMap<>();
-		T t;
-		while ((t = source.source()) != null)
-			map.put(keyFun.apply(t), valueFun.apply(t));
-		return map;
+			pair.t0.sink(t);
+		return pair.t1.source();
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
@@ -89,15 +60,17 @@ public class Streamlet<T> implements Iterable<T> {
 		return i;
 	}
 
-	public T first() {
-		return source.source();
-	}
-
 	public <R> R fold(BiFunction<T, R, R> fun, R init) {
 		T t;
 		while ((t = source.source()) != null)
 			init = fun.apply(t, init);
 		return init;
+	}
+
+	public void foreach(Sink<T> sink) {
+		T t;
+		while ((t = source.source()) != null)
+			sink.sink(t);
 	}
 
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
@@ -123,8 +96,37 @@ public class Streamlet<T> implements Iterable<T> {
 		return source.source();
 	}
 
-	public Source<T> source() {
-		return source;
+	public Streamlet<Streamlet<T>> split(Predicate<T> pred) {
+		return new Streamlet<Streamlet<T>>(new Source<Streamlet<T>>() {
+			private boolean isEnd = false;
+
+			public Streamlet<T> source() {
+				return !isEnd ? new Streamlet<T>(() -> {
+					T t = source.source();
+					return !(isEnd |= t == null) && !pred.test(t) ? t : null;
+				}) : null;
+			}
+		});
+	}
+
+	public List<T> toList() {
+		return collect(As.list());
+	}
+
+	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		Map<K, List<V>> map = new HashMap<>();
+		T t;
+		while ((t = source.source()) != null)
+			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
+		return map;
+	}
+
+	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		Map<K, V> map = new HashMap<>();
+		T t;
+		while ((t = source.source()) != null)
+			map.put(keyFun.apply(t), valueFun.apply(t));
+		return map;
 	}
 
 	public T uniqueResult() {

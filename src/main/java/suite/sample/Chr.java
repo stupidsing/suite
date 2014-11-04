@@ -100,7 +100,7 @@ public class Chr {
 	}
 
 	private State chr(State state) {
-		return Read.from(rules).concatMap(rule -> chr(state, rule)).first();
+		return Read.from(rules).concatMap(rule -> chr(state, rule)).next();
 	}
 
 	private Streamlet<State> chr(State state, Rule rule) {
