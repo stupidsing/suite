@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -127,6 +128,10 @@ public class Streamlet<T> implements Iterable<T> {
 		while ((t = source.source()) != null)
 			map.put(keyFun.apply(t), valueFun.apply(t));
 		return map;
+	}
+
+	public Set<T> toSet() {
+		return collect(As.set());
 	}
 
 	public T uniqueResult() {
