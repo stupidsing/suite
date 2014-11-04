@@ -20,7 +20,15 @@ public class DependencyTest {
 	private DebianUtil debianUtil = new DebianUtil();
 
 	@Test
-	public void testFindRootPackages() {
+	public void testListManualInstalled() {
+		debianUtil.readDpkgConfiguration(new File("/var/lib/apt/extended_states")) //
+				.filter(pm -> Objects.equals(pm.get("Auto-Installed"), "0")) //
+				.map(pm -> pm.get("Package")) //
+				.forEach(System.out::println);
+	}
+
+	@Test
+	public void testListRootPackages() {
 		List<Map<String, String>> packages = debianUtil.readDpkgConfiguration(new File("/var/lib/dpkg/status")).toList();
 
 		Map<String, List<String>> dependBy = Read.from(packages) //
