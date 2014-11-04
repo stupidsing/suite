@@ -15,6 +15,8 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
+import suite.util.To;
+import suite.util.Util;
 
 /**
  * Implement functional structures using class methods (instead of static
@@ -95,6 +97,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public T next() {
 		return source.source();
+	}
+
+	public Streamlet<T> sort(Comparator<T> comparator) {
+		return new Streamlet<>(To.source(Util.sort(toList(), comparator)));
 	}
 
 	public Streamlet<Streamlet<T>> split(Predicate<T> pred) {

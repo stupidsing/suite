@@ -1,16 +1,11 @@
 package suite.debian;
 
-import java.io.BufferedReader;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.junit.Test;
 
@@ -18,12 +13,15 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Pair;
+import suite.util.Util;
 
 public class DependencyTest {
 
+	private DebianUtil debianUtil = new DebianUtil();
+
 	@Test
-	public void test() {
-		List<Map<String, String>> packages = readPackagesFile(new File("/var/lib/dpkg/status")).toList();
+	public void testFindRootPackages() {
+		List<Map<String, String>> packages = debianUtil.readDpkgConfiguration(new File("/var/lib/dpkg/status")).toList();
 
 		Map<String, List<String>> dependBy = Read.from(packages) //
 				.concatMap(pm -> {
@@ -37,52 +35,25 @@ public class DependencyTest {
 				.collect(As.listMap());
 
 		List<String> rootPackageNames = Read.from(packages) //
+				.filter(pm -> !Objects.equals(pm.get("Essential"), "yes")) //
 				.map(pm -> pm.get("Package")) //
 				.filter(packageName -> dependBy.get(packageName) == null) //
+				.sort(Util.comparator()) //
 				.toList();
 
-		System.out.println(rootPackageNames);
+		assertNotNull(rootPackageNames);
+		rootPackageNames.forEach(System.out::println);
 	}
 
-	@SuppressWarnings("unused")
-	private List<Map<String, String>> readAllRepositoryIndices() {
+	@Test
+	public void testReadRepositoryIndices() {
 		File files[] = new File("/var/lib/apt/lists").listFiles();
 
-		return Read.from(files) //
+		assertNotNull(Read.from(files) //
 				.filter(File::isFile) //
-				.concatMap(this::readPackagesFile) //
-				.toList();
-	}
-
-	private Streamlet<Map<String, String>> readPackagesFile(File file) {
-		try (InputStream is = new FileInputStream(file);
-				Reader isr = new InputStreamReader(is);
-				BufferedReader br = new BufferedReader(isr)) {
-			List<Map<String, String>> pms = new ArrayList<>();
-			Map<String, String> pm = new HashMap<>();
-			StringBuilder sb = new StringBuilder();
-			String line;
-
-			while ((line = br.readLine()) != null) {
-				if (!line.startsWith(" ") && sb.length() > 0) {
-					String kv = sb.toString();
-					int pos = kv.indexOf(':');
-					pm.put(kv.substring(0, pos).trim(), kv.substring(pos + 1).trim());
-					sb.setLength(0);
-				}
-
-				if (!line.isEmpty())
-					sb.append(line.trim() + "\n");
-				else {
-					pms.add(pm);
-					pm = new HashMap<>();
-				}
-			}
-
-			return Read.from(pms);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+				.filter(file -> file.getName().endsWith("_Packages")) //
+				.concatMap(debianUtil::readDpkgConfiguration) //
+				.toList());
 	}
 
 }
