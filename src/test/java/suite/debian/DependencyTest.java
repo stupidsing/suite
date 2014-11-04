@@ -23,20 +23,14 @@ public class DependencyTest {
 
 	@Test
 	public void test() {
-		File files[] = new File("/var/lib/apt/lists").listFiles();
-
-		List<Map<String, String>> packages = Read.from(files) //
-				.filter(File::isFile) //
-				.concatMap(this::readPackagesFile) //
-				.toList();
-
-		// TODO get installed packages only
+		List<Map<String, String>> packages = readPackagesFile(new File("/var/lib/dpkg/status")).toList();
 
 		Map<String, List<String>> dependBy = Read.from(packages) //
 				.concatMap(pm -> {
 					String depender = pm.get("Package");
-					Streamlet<Pair<String, String>> t = Read.from(pm.get("Depends").split(",")) //
-							.map(s -> s.split("(")[0].trim()) //
+					String line = pm.getOrDefault("Depends", "");
+					Streamlet<Pair<String, String>> t = Read.from(line.split(",")) //
+							.map(s -> s.trim().split(" ")[0]) //
 							.map(dependee -> Pair.of(dependee, depender));
 					return t;
 				}) //
@@ -50,22 +44,40 @@ public class DependencyTest {
 		System.out.println(rootPackageNames);
 	}
 
+	@SuppressWarnings("unused")
+	private List<Map<String, String>> readAllRepositoryIndices() {
+		File files[] = new File("/var/lib/apt/lists").listFiles();
+
+		return Read.from(files) //
+				.filter(File::isFile) //
+				.concatMap(this::readPackagesFile) //
+				.toList();
+	}
+
 	private Streamlet<Map<String, String>> readPackagesFile(File file) {
 		try (InputStream is = new FileInputStream(file);
 				Reader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr)) {
-			String line;
 			List<Map<String, String>> pms = new ArrayList<>();
 			Map<String, String> pm = new HashMap<>();
+			StringBuilder sb = new StringBuilder();
+			String line;
 
-			while ((line = br.readLine()) != null)
-				if (!line.isEmpty()) {
-					int pos = line.indexOf(':');
-					pm.put(line.substring(0, pos).trim(), line.substring(pos + 1).trim());
-				} else {
+			while ((line = br.readLine()) != null) {
+				if (!line.startsWith(" ") && sb.length() > 0) {
+					String kv = sb.toString();
+					int pos = kv.indexOf(':');
+					pm.put(kv.substring(0, pos).trim(), kv.substring(pos + 1).trim());
+					sb.setLength(0);
+				}
+
+				if (!line.isEmpty())
+					sb.append(line.trim() + "\n");
+				else {
 					pms.add(pm);
 					pm = new HashMap<>();
 				}
+			}
 
 			return Read.from(pms);
 		} catch (IOException ex) {
