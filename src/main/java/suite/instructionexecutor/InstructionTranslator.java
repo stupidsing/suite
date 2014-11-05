@@ -315,7 +315,7 @@ public class InstructionTranslator implements Closeable {
 				app("{");
 				app("Atom atom = (Atom) callback.yawn((Node) ds[--dsp])");
 				app("String intrinsicName = atom.toString().split(\"!\")[1]");
-				app("#{reg} = InstructionUtil.execGetIntrinsic(intrinsicName)", op0);
+				app("#{reg} = new Data<>(Intrinsics.intrinsics.get(intrinsicName))", op0);
 				app("}");
 				break;
 			case HEAD__________:
@@ -510,7 +510,7 @@ public class InstructionTranslator implements Closeable {
 			reg = (int) iter.next();
 			s = reg(reg);
 			if (Node.class.isAssignableFrom(registers.get(reg).getClazz()))
-				s = "((Int) " + s + ").getNumber()";
+				s = "((Int) " + s + ").number";
 			break;
 		case "str":
 			s = String.format("%s", iter.next());
