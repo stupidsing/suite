@@ -43,7 +43,7 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = next()) != null)
 			pair.t0.sink(t);
 		return pair.t1.source();
 	}
@@ -58,21 +58,28 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public int count() {
 		int i = 0;
-		while (source.source() != null)
+		while (next() != null)
 			i++;
 		return i;
 	}
 
+	public Streamlet<T> drop(int n) {
+		boolean readable = true;
+		while (n > 0 && (readable &= next() != null))
+			n--;
+		return readable ? this : empty();
+	}
+
 	public <R> R fold(BiFunction<T, R, R> fun, R init) {
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = next()) != null)
 			init = fun.apply(t, init);
 		return init;
 	}
 
 	public void foreach(Sink<T> sink) {
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = next()) != null)
 			sink.sink(t);
 	}
 
@@ -81,9 +88,9 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public T min(Comparator<T> comparator) {
-		T t = source.source(), t1;
+		T t = next(), t1;
 		if (t != null) {
-			while ((t1 = source.source()) != null)
+			while ((t1 = next()) != null)
 				if (comparator.compare(t, t1) > 0)
 					t = t1;
 			return t;
@@ -109,9 +116,19 @@ public class Streamlet<T> implements Iterable<T> {
 
 			public Streamlet<T> source() {
 				return !isEnd ? new Streamlet<T>(() -> {
-					T t = source.source();
+					T t = next();
 					return !(isEnd |= t == null) && !pred.test(t) ? t : null;
 				}) : null;
+			}
+		});
+	}
+
+	public Streamlet<T> take(int n) {
+		return new Streamlet<T>(new Source<T>() {
+			private int count = n;
+
+			public T source() {
+				return count-- > 0 ? next() : null;
 			}
 		});
 	}
@@ -123,7 +140,7 @@ public class Streamlet<T> implements Iterable<T> {
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		Map<K, List<V>> map = new HashMap<>();
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = next()) != null)
 			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
 		return map;
 	}
@@ -131,7 +148,7 @@ public class Streamlet<T> implements Iterable<T> {
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		Map<K, V> map = new HashMap<>();
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = next()) != null)
 			map.put(keyFun.apply(t), valueFun.apply(t));
 		return map;
 	}
@@ -141,9 +158,9 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public T uniqueResult() {
-		T t = source.source();
+		T t = next();
 		if (t != null)
-			if (source.source() == null)
+			if (next() == null)
 				return t;
 			else
 				throw new RuntimeException("More than one result");
