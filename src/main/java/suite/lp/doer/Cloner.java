@@ -3,7 +3,6 @@ package suite.lp.doer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import suite.lp.kb.Rule;
 import suite.node.Node;
@@ -11,6 +10,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.IdentityKey;
+import suite.streamlet.Read;
 
 public class Cloner {
 
@@ -39,7 +39,7 @@ public class Cloner {
 					right1 = new Reference();
 				else if (right1 instanceof Tuple) {
 					List<Node> nodes = ((Tuple) right1).nodes;
-					right1 = new Tuple(nodes.stream().map(this::clone).collect(Collectors.toList()));
+					right1 = new Tuple(Read.from(nodes).map(this::clone).toList());
 				} else if ((rt = Tree.decompose(right)) != null)
 					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
 				else

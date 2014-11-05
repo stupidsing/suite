@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import suite.adt.BiMap;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -22,6 +21,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.IdentityKey;
+import suite.streamlet.Read;
 import suite.util.Util;
 
 public class InstructionExtractor implements AutoCloseable {
@@ -48,7 +48,7 @@ public class InstructionExtractor implements AutoCloseable {
 	public List<Instruction> extractInstructions(Node node) {
 		List<List<Node>> rsList = new ArrayList<>();
 		extractInstructions(node, rsList);
-		return rsList.stream().map(this::extract).collect(Collectors.toList());
+		return Read.from(rsList).map(this::extract).toList();
 	}
 
 	private void extractInstructions(Node snippet, List<List<Node>> rsList) {

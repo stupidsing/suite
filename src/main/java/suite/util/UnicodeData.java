@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import suite.streamlet.As;
+import suite.streamlet.Read;
 
 public class UnicodeData {
 
@@ -17,10 +19,10 @@ public class UnicodeData {
 		try (InputStream is = getClass().getResourceAsStream("UnicodeData.txt");
 				Reader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr)) {
-			classByChars = br.lines() //
+			classByChars = Read.lines(is) //
 					.map(line -> line.split(";")) //
 					.map(a -> Pair.of(a[2], (Character) (char) Integer.parseInt(a[0], 16))) //
-					.collect(Collectors.groupingBy(p -> p.t0, Collectors.mapping(p -> p.t1, Collectors.toSet())));
+					.collect(As.setMap());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

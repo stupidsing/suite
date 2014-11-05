@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.logging.Log;
@@ -13,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import suite.pkgmanager.actions.ExecCommandAction;
 import suite.pkgmanager.actions.ExtractFileAction;
 import suite.pkgmanager.actions.InstallAction;
+import suite.streamlet.Read;
 import suite.util.FileUtil;
 import suite.util.Pair;
 import suite.wildcard.WildcardUtil;
@@ -27,15 +27,14 @@ public class PackageManager {
 	public boolean install(String packageFilename) throws IOException {
 		PackageManifest packageManifest = getPackageManifest(packageFilename);
 
-		List<Pair<String, String>> filenameMappings = packageManifest.getFilenameMappings().entrySet().stream() //
-				.map(entry -> Pair.of(entry.getKey(), entry.getValue())) //
-				.sorted((p0, p1) -> p1.t0.length() - p0.t0.length()) //
-				.collect(Collectors.toList());
+		List<Pair<String, String>> filenameMappings = Read.from(packageManifest.getFilenameMappings()) //
+				.sort((p0, p1) -> p1.t0.length() - p0.t0.length()) //
+				.toList();
 
 		List<InstallAction> installActions = new ArrayList<>();
 
 		try (ZipFile zipFile = new ZipFile(packageFilename)) {
-			installActions.addAll(FileUtil.listZip(zipFile).stream() //
+			installActions.addAll(Read.from(FileUtil.listZip(zipFile)) //
 					.map(filename0 -> {
 						String filename1 = filename0;
 						for (Pair<String, String> filenameMapping : filenameMappings) {
@@ -47,12 +46,12 @@ public class PackageManager {
 						}
 						return new ExtractFileAction(packageFilename, filename0, filename1);
 					}) //
-					.collect(Collectors.toList()));
+					.toList());
 		}
 
-		installActions.addAll(packageManifest.getCommands().stream() //
+		installActions.addAll(Read.from(packageManifest.getCommands()) //
 				.map(command -> new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand())) //
-				.collect(Collectors.toList()));
+				.toList());
 
 		int progress = 0;
 		boolean isSuccess = true;

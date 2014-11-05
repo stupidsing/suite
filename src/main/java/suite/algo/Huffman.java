@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.stream.Collectors;
 
+import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.To;
@@ -133,9 +133,9 @@ public class Huffman<Unit> {
 	}
 
 	private void build(List<Unit> input) {
-		PriorityQueue<Node> priorityQueue = histogram(input).entrySet().stream() //
-				.map(entry -> new Node(entry.getValue(), entry.getKey())) //
-				.collect(Collectors.toCollection(() -> new PriorityQueue<>(0, comparator)));
+		PriorityQueue<Node> priorityQueue = Read.from(histogram(input)) //
+				.map(pair -> new Node(pair.t1, pair.t0)) //
+				.collect(() -> new PriorityQueue<>(0, comparator));
 
 		while (priorityQueue.size() > 1) {
 			Node node0 = priorityQueue.remove();
@@ -148,12 +148,8 @@ public class Huffman<Unit> {
 
 	private Map<Unit, Integer> histogram(List<Unit> input) {
 		Map<Unit, Integer> histogram = new HashMap<>();
-
-		for (Unit unit : input) {
-			Integer count = histogram.get(unit);
-			histogram.put(unit, (count != null ? count : 0) + 1);
-		}
-
+		for (Unit unit : input)
+			histogram.put(unit, histogram.getOrDefault(unit, 0) + 1);
 		return histogram;
 	}
 

@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+import suite.streamlet.Read;
 
 public class CacheUtil {
 
@@ -50,9 +51,9 @@ public class CacheUtil {
 	}
 
 	public <I> I proxyByMethodNames(Class<I> interface_, I object, Set<String> methodNames) {
-		Set<Method> methods = Arrays.stream(interface_.getMethods()) //
+		Set<Method> methods = Read.from(interface_.getMethods()) //
 				.filter(m -> methodNames.contains(m.getName())) //
-				.collect(Collectors.toSet());
+				.toSet();
 		return proxy(interface_, object, methods);
 	}
 

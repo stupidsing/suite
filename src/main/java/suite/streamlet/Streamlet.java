@@ -1,8 +1,10 @@
 package suite.streamlet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,14 @@ public class Streamlet<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return FunUtil.iterator(source);
+	}
+
+	public <R extends Collection<? super T>> R collect(Source<R> source) {
+		R r = source.source();
+		T t;
+		while ((t = next()) != null)
+			r.add(t);
+		return r;
 	}
 
 	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
@@ -130,7 +140,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public List<T> toList() {
-		return collect(As.list());
+		return collect(() -> new ArrayList<>());
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
@@ -149,8 +159,16 @@ public class Streamlet<T> implements Iterable<T> {
 		return map;
 	}
 
+	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		Map<K, Set<V>> map = new HashMap<>();
+		T t;
+		while ((t = next()) != null)
+			map.computeIfAbsent(keyFun.apply(t), k_ -> new HashSet<>()).add(valueFun.apply(t));
+		return map;
+	}
+
 	public Set<T> toSet() {
-		return collect(As.set());
+		return collect(() -> new HashSet<>());
 	}
 
 	public T uniqueResult() {

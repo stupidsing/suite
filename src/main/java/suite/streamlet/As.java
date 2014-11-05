@@ -13,9 +13,27 @@ import suite.util.Pair;
 
 public class As {
 
-	public static <T> Pair<Sink<T>, Source<List<T>>> list() {
-		List<T> list = new ArrayList<>();
-		return Pair.of(list::add, () -> list);
+	public static Pair<Sink<String>, Source<String>> joined(String delimiter) {
+		return joined("", delimiter, "");
+	}
+
+	public static Pair<Sink<String>, Source<String>> joined(String before, String delimiter, String after) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(before);
+		return Pair.of(new Sink<String>() {
+			private boolean first = true;
+
+			public void sink(String s) {
+				if (first)
+					first = false;
+				else
+					sb.append(delimiter);
+				sb.append(s);
+			}
+		}, () -> {
+			sb.append(after);
+			return sb.toString();
+		});
 	}
 
 	public static <K, V> Pair<Sink<Pair<K, V>>, Source<Map<K, List<V>>>> listMap() {
@@ -28,9 +46,9 @@ public class As {
 		return Pair.of(pair -> map.put(pair.t0, pair.t1), () -> map);
 	}
 
-	public static <T> Pair<Sink<T>, Source<Set<T>>> set() {
-		Set<T> set = new HashSet<>();
-		return Pair.of(set::add, () -> set);
+	public static <K, V> Pair<Sink<Pair<K, V>>, Source<Map<K, Set<V>>>> setMap() {
+		Map<K, Set<V>> map = new HashMap<>();
+		return Pair.of(pair -> map.computeIfAbsent(pair.t0, k_ -> new HashSet<>()).add(pair.t1), () -> map);
 	}
 
 }

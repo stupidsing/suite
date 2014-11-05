@@ -6,24 +6,23 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import suite.streamlet.Read;
 import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
-import suite.util.To;
 import suite.util.Util;
 
 public class TwoPassIndexerTest {
 
 	@Test
 	public void test() throws IOException {
-		List<String> filenames = To.list(FileUtil.findPaths(Paths.get("src/test/java"))).stream() //
+		List<String> filenames = Read.from(FileUtil.findPaths(Paths.get("src/test/java"))) //
 				.map(Path::toAbsolutePath) //
 				.map(Path::toString) //
 				.filter(filename -> filename.endsWith(".java")) //
-				.collect(Collectors.toList());
+				.toList();
 
 		TwoPassIndexer indexer = new TwoPassIndexer();
 

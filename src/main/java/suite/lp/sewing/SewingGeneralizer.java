@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -15,7 +14,9 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.Pair;
 import suite.util.Util;
 
 public class SewingGeneralizer {
@@ -48,7 +49,7 @@ public class SewingGeneralizer {
 		}
 
 		public Map<Node, Node> getVariables() {
-			return variableIndices.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> env.refs[e.getValue()]));
+			return Read.from(variableIndices).toMap(Pair::first_, pair -> env.refs[pair.t1]);
 		}
 
 		public Node getVariable(Node variable) {

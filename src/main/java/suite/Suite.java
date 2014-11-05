@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import suite.fp.FunCompilerConfig;
 import suite.fp.intrinsic.Intrinsics;
@@ -39,6 +38,7 @@ import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
 import suite.primitive.Chars;
 import suite.primitive.IoSink;
+import suite.streamlet.Read;
 
 public class Suite {
 
@@ -107,10 +107,10 @@ public class Suite {
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node getRuleList(RuleSet rs, Prototype proto) {
-		List<Node> nodes = rs.getRules().stream() //
+		List<Node> nodes = Read.from(rs.getRules()) //
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::formClause) //
-				.collect(Collectors.toList());
+				.toList();
 		return Tree.list(TermOp.NEXT__, nodes);
 	}
 

@@ -1,7 +1,6 @@
 package suite.lp.doer;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
@@ -9,6 +8,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.streamlet.Read;
 
 public class Specializer {
 
@@ -26,7 +26,7 @@ public class Specializer {
 				node = Tree.of(tree.getOperator(), left1, right1);
 		} else if (node instanceof Tuple) {
 			List<Node> nodes = ((Tuple) node).nodes;
-			node = new Tuple(nodes.stream().map(this::specialize).collect(Collectors.toList()));
+			node = new Tuple(Read.from(nodes).map(this::specialize).toList());
 		}
 
 		return node;

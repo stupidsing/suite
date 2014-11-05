@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.lp.Journal;
@@ -23,6 +22,7 @@ import suite.node.io.TermOp;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.streamlet.Read;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -54,15 +54,16 @@ public class Assembler {
 			start++;
 		}
 
-		List<Pair<Reference, Node>> lnis = Util.right(lines, start).stream().map(line -> {
-			Pair<String, String> pt = Util.split2(line, "\t");
-			String label = pt.t0;
-			String command = pt.t1;
+		List<Pair<Reference, Node>> lnis = Read.from(Util.right(lines, start)) //
+				.map(line -> {
+					Pair<String, String> pt = Util.split2(line, "\t");
+					String label = pt.t0;
+					String command = pt.t1;
 
-			Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
-			Node instruction = generalizer.generalize(Suite.parse(command));
-			return Pair.of(reference, instruction);
-		}).collect(Collectors.toList());
+					Reference reference = Util.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
+					Node instruction = generalizer.generalize(Suite.parse(command));
+					return Pair.of(reference, instruction);
+				}).toList();
 
 		return assemble(generalizer, lnis);
 	}
@@ -120,10 +121,9 @@ public class Assembler {
 	private Bytes assemble(int address, Node instruction) {
 		List<Node> ins = Arrays.asList(Int.of(bits), Int.of(address), instruction);
 		List<Node> nodes = FindUtil.collectList(finder, Tree.list(TermOp.AND___, ins));
-		return nodes.stream() //
+		return Read.from(nodes) //
 				.map(this::convertByteStream) //
-				.min((bytes0, bytes1) -> bytes0.size() - bytes1.size()) //
-				.get();
+				.min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 	}
 
 	private Bytes convertByteStream(Node node) {

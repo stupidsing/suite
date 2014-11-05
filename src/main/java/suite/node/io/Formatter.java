@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
@@ -18,6 +17,8 @@ import suite.node.Tuple;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.IdentityKey;
 import suite.parser.CommentPreprocessor;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
@@ -46,8 +47,9 @@ public class Formatter {
 					int id1 = graphize(tree.getRight());
 					content = "tree(" + id0 + tree.getOperator().getName() + id1 + ")";
 				} else if (node instanceof Tuple)
-					content = ((Tuple) node).nodes.stream() //
-							.map(n -> graphize(n) + ", ").collect(Collectors.joining(", ", "tuple(", ")"));
+					content = Read.from(((Tuple) node).nodes) //
+							.map(n -> graphize(n) + ", ") //
+							.collect(As.joined("tuple(", ", ", ")"));
 				else
 					content = dump(node);
 

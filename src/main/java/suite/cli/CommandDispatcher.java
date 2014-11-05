@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.fp.LazyFunInterpreter;
@@ -28,6 +27,8 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.CommandUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -238,7 +239,7 @@ public class CommandDispatcher {
 	}
 
 	private String parseInput(List<String> inputs) {
-		return inputs.stream().collect(Collectors.joining(" "));
+		return Read.from(inputs).collect(As.joined(" "));
 	}
 
 	private void printEvaluated(Writer writer, Node node) throws IOException {

@@ -7,7 +7,8 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import suite.streamlet.Read;
 
 public class LayoutCalculator {
 
@@ -173,9 +174,9 @@ public class LayoutCalculator {
 
 	private void arrange(Group group, int startPos, int endPos, AssignToPortion assignToPortion) {
 		int totalAssigned = endPos - startPos;
-		List<Portion> portions = group.portions.stream() //
+		List<Portion> portions = Read.from(group.portions) //
 				.filter(portion -> portion.node.isVisible()) //
-				.collect(Collectors.toList());
+				.toList();
 
 		int totalMin = portions.stream().mapToInt(p -> p.minUnit).sum();
 		int totalMax = portions.stream().mapToInt(p -> p.maxUnit).sum();

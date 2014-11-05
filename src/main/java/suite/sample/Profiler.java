@@ -6,15 +6,14 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.Util;
 
 public class Profiler {
@@ -51,18 +50,17 @@ public class Profiler {
 	}
 
 	public String dump() {
-		List<Entry<String, int[]>> entries = Util.sort(record.entrySet(), (e0, e1) -> e1.getValue()[0] - e0.getValue()[0]);
-
 		StringBuilder sb = new StringBuilder();
 		sb.append("PROFILING RESULT\n");
 		sb.append("TOTAL SAMPLES = " + count.get() + "\n\n");
-
-		sb.append(entries.stream().map(entry -> {
-			String name = entry.getKey();
-			int count = entry.getValue()[0];
-			return String.format("%d\t%s\n", count, name);
-		}).collect(Collectors.joining()));
-
+		sb.append(Read.from(record) //
+				.sort((p0, p1) -> p1.t1[0] - p0.t1[0]) //
+				.map(pair -> {
+					String name = pair.t0;
+					int count = pair.t1[0];
+					return String.format("%d\t%s\n", count, name);
+				}) //
+				.collect(As.joined("")));
 		return sb.toString();
 	}
 

@@ -16,10 +16,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import suite.net.ThreadedService;
 import suite.net.cluster.ClusterProbe;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.FileUtil;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
@@ -281,9 +282,9 @@ public class ClusterProbeImpl extends ThreadedService implements ClusterProbe {
 
 	@Override
 	public String dumpActivePeers() {
-		return lastActiveTime.entrySet().stream() //
-				.map(e -> e.getKey() + " (last-active = " + To.string(e.getValue()) + ")") //
-				.collect(Collectors.joining("\n"));
+		return Read.from(lastActiveTime) //
+				.map(p -> p.t0 + " (last-active = " + To.string(p.t1) + ")") //
+				.collect(As.joined("\n"));
 	}
 
 	@Override
