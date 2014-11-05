@@ -141,7 +141,7 @@ public class Chr {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, given);
 			boolean isMatch = or(facts.stream().map(bindFun));
-			return isMatch ? Read.from(state) : Streamlet.empty();
+			return isMatch ? Read.from(state) : Read.empty();
 		});
 	}
 

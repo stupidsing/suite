@@ -207,10 +207,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
 					return stream(kp.getBranchPageNo(), start, end);
 				else
-					return kp.key != null ? Read.from(kp) : Streamlet.empty();
+					return kp.key != null ? Read.from(kp) : Read.empty();
 			});
 		else
-			return Streamlet.empty();
+			return Read.empty();
 	}
 
 	@Override

@@ -21,6 +21,10 @@ import suite.util.Util;
 
 public class Read {
 
+	public static <T> Streamlet<T> empty() {
+		return new Streamlet<>(() -> null);
+	}
+
 	public static Streamlet<String> lines(Path path) throws IOException {
 		return lines(path.toFile());
 	}

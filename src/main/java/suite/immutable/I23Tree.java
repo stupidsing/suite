@@ -71,10 +71,10 @@ public class I23Tree<T> implements ITree<T> {
 				if (slot.slots != null)
 					return stream(slot.slots, start, end);
 				else
-					return slot.pivot != null ? Read.from(slot.pivot) : Streamlet.empty();
+					return slot.pivot != null ? Read.from(slot.pivot) : Read.empty();
 			});
 		else
-			return Streamlet.empty();
+			return Read.empty();
 	}
 
 	public T find(T t) {

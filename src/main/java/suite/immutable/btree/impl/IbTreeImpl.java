@@ -490,10 +490,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 				if (slot.type == SlotType.BRANCH)
 					return stream(slot.pointer, start, end);
 				else
-					return slot.pivot != null ? Read.from(slot) : Streamlet.empty();
+					return slot.pivot != null ? Read.from(slot) : Read.empty();
 			});
 		else
-			return Streamlet.empty();
+			return Read.empty();
 	}
 
 	private Mutator mutator(List<Integer> stamp) {

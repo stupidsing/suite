@@ -13,7 +13,7 @@ import suite.util.Util;
 
 public class Matcher {
 
-	private Streamlet<State> noResult = Streamlet.empty();
+	private Streamlet<State> noResult = Read.empty();
 
 	private class State {
 		private String input;

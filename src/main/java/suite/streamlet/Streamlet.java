@@ -28,10 +28,6 @@ public class Streamlet<T> implements Iterable<T> {
 
 	private Source<T> source;
 
-	public static <T> Streamlet<T> empty() {
-		return new Streamlet<>(() -> null);
-	}
-
 	public Streamlet(Source<T> source) {
 		this.source = source;
 	}
@@ -67,7 +63,7 @@ public class Streamlet<T> implements Iterable<T> {
 		boolean readable = true;
 		while (n > 0 && (readable &= next() != null))
 			n--;
-		return readable ? this : empty();
+		return readable ? this : Read.empty();
 	}
 
 	public <R> R fold(BiFunction<T, R, R> fun, R init) {

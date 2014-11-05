@@ -32,7 +32,7 @@ public class Ebnf {
 	private String rootGrammarEntity;
 	private Map<String, Grammar> grammarsByEntity = new HashMap<>();
 
-	private Streamlet<State> noResult = Streamlet.empty();
+	private Streamlet<State> noResult = Read.empty();
 
 	private static boolean trace = false;
 
