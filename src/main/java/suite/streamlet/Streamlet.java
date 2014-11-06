@@ -69,6 +69,16 @@ public class Streamlet<T> implements Iterable<T> {
 		return i;
 	}
 
+	public Streamlet<T> distinct() {
+		Set<T> set = new HashSet<>();
+		return new Streamlet<T>(() -> {
+			T t;
+			while ((t = next()) != null && !set.add(t))
+				;
+			return t;
+		});
+	}
+
 	public Streamlet<T> drop(int n) {
 		boolean readable = true;
 		while (n > 0 && (readable &= next() != null))
