@@ -29,8 +29,8 @@ public class FunctionalTemplatePreprocessorTest {
 				+ "    </head> \n" //
 				+ "    </body> \n" //
 				+ "        Fruits: \n" //
-				+ "<# . (list | map {fruit => id#>        <li><#= fruit #></li> \n" //
-				+ "<#} | apply) #>    <body> \n" //
+				+ "<# . (list | apply . map {fruit => id#>        <li><#= fruit #></li> \n" //
+				+ "<#}) #>    <body> \n" //
 				+ "</html> \n" //
 		, map));
 	}
