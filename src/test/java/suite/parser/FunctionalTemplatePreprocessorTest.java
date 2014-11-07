@@ -1,7 +1,6 @@
 package suite.parser;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,9 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.streamlet.As;
+import suite.streamlet.Read;
+import suite.util.Pair;
 
 public class FunctionalTemplatePreprocessorTest {
 
@@ -18,9 +20,11 @@ public class FunctionalTemplatePreprocessorTest {
 	public void test() {
 		List<Node> fruits = Arrays.<Node> asList(new Str("orange"), new Str("apple"), new Str("pear"));
 
-		Map<String, Node> map = new HashMap<>();
-		map.put("list", Tree.list(TermOp.OR____, fruits));
-		map.put("title", new Str("My favourite things"));
+		List<Pair<String, Node>> ps = Arrays.asList( //
+				Pair.of("list", Tree.list(TermOp.OR____, fruits)) //
+				, Pair.of("title", new Str("My favourite things")));
+
+		Map<String, Node> map = Read.from(ps).collect(As.map());
 
 		System.out.println(new FunctionalTemplatePreprocessor().render("" //
 				+ "<html> \n" //
