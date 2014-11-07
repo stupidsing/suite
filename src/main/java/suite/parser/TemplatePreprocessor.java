@@ -9,8 +9,8 @@ import suite.util.FunUtil.Fun;
  */
 public class TemplatePreprocessor implements Fun<String, String> {
 
-	public static String openTemplate = "<<";
-	public static String closeTemplate = ">>";
+	public static String openTemplate = "<#";
+	public static String closeTemplate = "#>";
 
 	private Fun<String, String> wrapText;
 	private Fun<String, String> wrapExpression;

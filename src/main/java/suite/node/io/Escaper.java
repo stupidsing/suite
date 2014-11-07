@@ -29,12 +29,12 @@ public class Escaper {
 
 		try {
 			for (int pos = 0; pos < s.length(); pos++)
-				if (s.startsWith("%U", pos) && pos + 6 < s.length()) {
+				if (s.startsWith("%U", pos) && pos + 6 <= s.length()) {
 					char c = (char) Integer.parseInt(s.substring(pos + 2, pos + 6), 16);
 					s = s.substring(0, pos) + c + s.substring(pos + 6);
 				} else if (s.startsWith("%%", pos))
 					s = s.substring(0, pos) + "%" + s.substring(pos + 2);
-				else if (s.startsWith("%", pos) && pos + 3 < s.length()) {
+				else if (s.startsWith("%", pos) && pos + 3 <= s.length()) {
 					char c = (char) Integer.parseInt(s.substring(pos + 1, pos + 3), 16);
 					s = s.substring(0, pos) + c + s.substring(pos + 3);
 				}
