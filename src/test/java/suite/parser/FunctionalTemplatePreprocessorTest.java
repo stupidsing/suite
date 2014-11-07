@@ -38,4 +38,5 @@ public class FunctionalTemplatePreprocessorTest {
 				+ "</html> \n" //
 		, map));
 	}
+
 }
