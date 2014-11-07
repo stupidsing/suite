@@ -20,11 +20,11 @@ public class FunctionalTemplatePreprocessorTest {
 	public void test() {
 		List<Node> fruits = Arrays.<Node> asList(new Str("orange"), new Str("apple"), new Str("pear"));
 
-		List<Pair<String, Node>> ps = Arrays.asList( //
+		Map<String, Node> map = Read.from(Arrays.<Pair<String, Node>> asList( //
 				Pair.of("list", Tree.list(TermOp.OR____, fruits)) //
-				, Pair.of("title", new Str("My favourite things")));
-
-		Map<String, Node> map = Read.from(ps).collect(As.map());
+				, Pair.of("title", new Str("My favourite things")) //
+				)) //
+				.collect(As.map());
 
 		System.out.println(new FunctionalTemplatePreprocessor().render("" //
 				+ "<html> \n" //
@@ -38,5 +38,4 @@ public class FunctionalTemplatePreprocessorTest {
 				+ "</html> \n" //
 		, map));
 	}
-
 }
