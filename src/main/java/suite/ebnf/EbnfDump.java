@@ -1,11 +1,11 @@
-package suite.parser;
+package suite.ebnf;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import suite.parser.Ebnf.Node;
+import suite.ebnf.Ebnf.Node;
 import suite.util.Util;
 
 public class EbnfDump {

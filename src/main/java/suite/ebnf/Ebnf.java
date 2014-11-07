@@ -1,4 +1,4 @@
-package suite.parser;
+package suite.ebnf;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.ebnf.EbnfExpect.Expect;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
@@ -32,6 +33,7 @@ public class Ebnf {
 	private String rootGrammarEntity;
 	private Map<String, Grammar> grammarsByEntity = new HashMap<>();
 
+	private EbnfExpect expect = new EbnfExpect();
 	private Streamlet<State> noResult = Read.empty();
 
 	private static boolean trace = false;
@@ -199,7 +201,7 @@ public class Ebnf {
 		}
 
 		private Streamlet<State> parse(State state, Grammar grammar) {
-			int pos = expectWhitespaces(state.pos);
+			int pos = expect.expectWhitespaces(in, length, state.pos);
 
 			if (trace)
 				LogUtil.info("parse(" + grammar + "): " + in.substring(pos));
@@ -215,125 +217,9 @@ public class Ebnf {
 			return states;
 		}
 
-		private Streamlet<State> expect(State state, int end) {
+		private Streamlet<State> expect(State state, Expect expect, int pos) {
+			int end = expect.expect(in, length, pos);
 			return state.pos < end ? Read.from(new State(state, end)) : noResult;
-		}
-
-		private int expectCharLiteral(int start) {
-			int pos = start, end;
-			if (pos < length && in.charAt(pos) == '\'') {
-				pos++;
-				if (pos < length && in.charAt(pos) == '\\')
-					pos++;
-				if (pos < length)
-					pos++;
-				if (pos < length && in.charAt(pos) == '\'') {
-					pos++;
-					end = pos;
-				} else
-					end = start;
-			} else
-				end = start;
-			return end;
-		}
-
-		private int expectFloatLiteral(int start) {
-			int pos = start;
-			pos = expectIntegerLiteral(pos);
-			if (pos < length && in.charAt(pos) == '.') {
-				pos++;
-				pos = expectIntegerLiteral(pos);
-			}
-			if (pos < length && "fd".indexOf(in.charAt(pos)) >= 0)
-				pos++;
-			return pos;
-		}
-
-		private int expectIdentifier(int start) {
-			int pos = start;
-			if (pos < length && Character.isJavaIdentifierStart(in.charAt(pos))) {
-				pos++;
-				while (pos < length && Character.isJavaIdentifierPart(in.charAt(pos)))
-					pos++;
-			}
-			return pos;
-		}
-
-		private int expectIntegerLiteral(int start) {
-			int pos = start;
-			while (pos < length && Character.isDigit(in.charAt(pos)))
-				pos++;
-			if (pos < length && in.charAt(pos) == 'l')
-				pos++;
-			return pos;
-		}
-
-		private int expectStringLiteral(int start) {
-			int pos = start, end;
-			if (pos < length && in.charAt(pos) == '"') {
-				pos++;
-				char c;
-
-				while (pos < length && (c = in.charAt(pos)) != '"') {
-					pos++;
-					if (pos < length && c == '\\')
-						pos++;
-				}
-
-				if (pos < length && in.charAt(pos) == '"') {
-					pos++;
-					end = pos;
-				} else
-					end = start;
-			} else
-				end = start;
-			return end;
-		}
-
-		private int expectString(int start, String s) {
-			return start + (in.startsWith(s, start) ? s.length() : 0);
-		}
-
-		private int expectCharRange(int start, char s, char e) {
-			int end;
-			if (start < length) {
-				char ch = in.charAt(start);
-				end = start + (s <= ch && ch <= e ? 1 : 0);
-			} else
-				end = start;
-			return end;
-		}
-
-		private int expectWhitespaces(int start) {
-			int pos = start, pos1;
-			while ((pos1 = expectWhitespace(pos)) > pos)
-				pos = pos1;
-			return pos;
-		}
-
-		private int expectWhitespace(int pos) {
-			while (pos < length && Character.isWhitespace(in.charAt(pos)))
-				pos++;
-			pos = expectComment(pos, "/*", "*/");
-			pos = expectComment(pos, "//", "\n");
-			return pos;
-		}
-
-		private int expectComment(int start, String sm, String em) {
-			int sl = sm.length(), el = em.length();
-			int pos = start, end;
-			if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + sl), sm)) {
-				pos += 2;
-				while (pos < length && !Util.stringEquals(Util.substr(in, pos, pos + el), em))
-					pos++;
-				if (pos < length && Util.stringEquals(Util.substr(in, pos, pos + el), em)) {
-					pos += 2;
-					end = pos;
-				} else
-					end = start;
-			} else
-				end = start;
-			return end;
 		}
 
 		private Pair<Integer, Integer> findPosition(int position) {
@@ -403,12 +289,12 @@ public class Ebnf {
 		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
 			char start = s.charAt(1);
 			char end = s.charAt(3);
-			grammar = (parse, st) -> parse.expect(st, parse.expectCharRange(st.pos, start, end));
+			grammar = (parse, st) -> parse.expect(st, expect.expectCharRange(start, end), st.pos);
 		} else if (s.startsWith("(") && s.endsWith(")"))
 			grammar = parseGrammar(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\"")) {
 			String token = Escaper.unescape(Util.substr(s, 1, -1), "\"");
-			grammar = (parse, st) -> parse.expect(st, parse.expectString(st.pos, token));
+			grammar = (parse, st) -> parse.expect(st, expect.expectString(token), st.pos);
 		} else
 			grammar = parseGrammarEntity(s);
 
@@ -432,15 +318,15 @@ public class Ebnf {
 		if (Util.stringEquals(entity, "<EOF>"))
 			grammar = (parse, st) -> st.pos == parse.length ? Read.from(st) : noResult;
 		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, parse.expectCharLiteral(st.pos));
+			grammar = (parse, st) -> parse.expect(st, expect.expectCharLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, parse.expectFloatLiteral(st.pos));
+			grammar = (parse, st) -> parse.expect(st, expect.expectRealLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<IDENTIFIER>"))
-			grammar = (parse, st) -> parse.expect(st, parse.expectIdentifier(st.pos));
+			grammar = (parse, st) -> parse.expect(st, expect.expectIdentifier, st.pos);
 		else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, parse.expectIntegerLiteral(st.pos));
+			grammar = (parse, st) -> parse.expect(st, expect.expectIntegerLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, parse.expectStringLiteral(st.pos));
+			grammar = (parse, st) -> parse.expect(st, expect.expectStringLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<FAIL>"))
 			grammar = (parse, st) -> noResult;
 		else

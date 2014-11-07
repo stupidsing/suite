@@ -1,4 +1,4 @@
-package suite.parser;
+package suite.ebnf;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class EbnfTest {
 	@Test
 	public void testJava() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		String s = FileUtil.read("src/test/java/suite/parser/EbnfTest.java");
+		String s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
 		System.out.println(new EbnfDump(ebnf.parse(s), s));
 	}
 
