@@ -3,12 +3,12 @@ package suite.parser;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.Suite;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Escaper;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class FunctionalTemplatePreprocessor {
@@ -19,13 +19,12 @@ public class FunctionalTemplatePreprocessor {
 
 		String fps = "id " + new TemplatePreprocessor(wrapText, wrapExpression).apply(template);
 
-		Node fp = Suite.substitute("() | .0", Suite.parse(fps));
-		for (Entry<String, Node> e : inputs.entrySet())
-			fp = Suite.substitute("let .1 := .2 >> .0", fp, Atom.of(e.getKey()), e.getValue());
-		fp = Suite.applyWriter(fp);
+		Node fp0 = Suite.substitute("() | .0", Suite.parse(fps));
+		Node fp1 = Read.from(inputs).fold(fp0, (p, fp_) -> Suite.substitute("let .1 := .2 >> .0", fp_, Atom.of(p.t0), p.t1));
+		Node fp2 = Suite.applyWriter(fp1);
 
 		try (StringWriter sw = new StringWriter()) {
-			Suite.evaluateFunToWriter(Suite.fcc(fp), sw);
+			Suite.evaluateFunToWriter(Suite.fcc(fp2), sw);
 			return sw.toString();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

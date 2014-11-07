@@ -86,7 +86,7 @@ public class Streamlet<T> implements Iterable<T> {
 		return readable ? this : Read.empty();
 	}
 
-	public <R> R fold(BiFunction<T, R, R> fun, R init) {
+	public <R> R fold(R init, BiFunction<T, R, R> fun) {
 		T t;
 		while ((t = next()) != null)
 			init = fun.apply(t, init);
