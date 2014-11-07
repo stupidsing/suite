@@ -18,7 +18,6 @@ public class FunctionalTemplatePreprocessor {
 		Fun<String, String> wrapExpression = s -> !s.startsWith("=") ? s : " . append {" + s.substring(1) + "}";
 
 		String fps = "id " + new TemplatePreprocessor(wrapText, wrapExpression).apply(template);
-
 		Node fp0 = Suite.substitute("() | .0", Suite.parse(fps));
 		Node fp1 = Read.from(inputs).fold(fp0, (p, fp_) -> Suite.substitute("let .1 := .2 >> .0", fp_, Atom.of(p.t0), p.t1));
 		Node fp2 = Suite.applyWriter(fp1);
