@@ -2,7 +2,6 @@ package suite.debian;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -12,19 +11,21 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Pair;
 import suite.util.Util;
 
 public class DependencyTest {
 
 	private DebianUtil debianUtil = new DebianUtil();
+	private DpkgUtil dpkgUtil = new DpkgUtil(debianUtil);
+	private AptUtil aptUtil = new AptUtil(debianUtil);
 
 	private Set<String> requiredList = new HashSet<>(Arrays.asList( //
 			"abiword" //
 			, "asunder" //
+			, "bochs" //
+			, "build-essential" //
 			, "cifs-utils" //
 			, "compizconfig-settings-manager" //
 			, "compiz-plugins" //
@@ -56,8 +57,10 @@ public class DependencyTest {
 			, "libreadline-dev" //
 			, "libreoffice" //
 			, "mpg321" //
+			, "netcat-traditional" //
+			, "obconf" //
 			, "openbox" //
-			, "openjdk-7-jdk" //
+			, "openjdk-8-jdk" //
 			, "pcmanfm" //
 			, "pidgin" //
 			, "pidgin-hotkeys" //
@@ -74,48 +77,47 @@ public class DependencyTest {
 			, "tilda" //
 			, "tint2" //
 			, "torcs" //
+			, "ttf-dejavu" //
 			, "ttf-wqy-zenhei" //
 			, "unetbootin" //
 			, "unzip" //
+			, "usbutils" // lsusb
 			, "vim" //
 			, "virtualbox" //
+			, "virtualbox-dkms" //
 			, "w3m" //
 			, "wine" //
+			, "wine32" //
 			, "xchm" //
 			, "xpdf" //
 			, "xscavenger" //
+			, "xserver-xorg" //
 			, "yeahconsole" //
 			, "zip" //
 	));
 
 	@Test
-	public void testListManualInstalled() {
-		debianUtil.readDpkgConfiguration(new File("/var/lib/apt/extended_states")) //
-				.filter(pm -> Objects.equals(pm.get("Auto-Installed"), "0")) //
-				.map(pm -> pm.get("Package")) //
+	public void testListManuallyInstalled() {
+		Streamlet<String> readManuallyInstalled = aptUtil.readManuallyInstalled();
+		readManuallyInstalled //
 				.forEach(System.out::println);
 	}
 
 	@Test
-	public void testListRootPackages() {
-		List<Map<String, String>> packages = debianUtil.readDpkgConfiguration(new File("/var/lib/dpkg/status")).toList();
+	public void testListUnusedPackages() {
+		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
+		Set<String> required = new HashSet<>(requiredList);
 
-		Map<String, List<String>> dependBy = Read.from(packages) //
-				.concatMap(pm -> {
-					String depender = pm.get("Package");
-					String line = pm.getOrDefault("Depends", "");
-					Streamlet<Pair<String, String>> t = Read.from(line.split(",")) //
-							.map(s -> s.trim().split(" ")[0]) //
-							.map(dependee -> Pair.of(dependee, depender));
-					return t;
-				}) //
-				.collect(As.listMap());
+		required.addAll(Read.from(packages) //
+				.filter(pm -> Objects.equals(pm.get("Essential"), "yes") || Objects.equals(pm.get("Priority"), "important")) //
+				.map(pm -> pm.get("Package")) //
+				.toList());
+
+		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
 
 		List<String> unnecessaryPackageNames = Read.from(packages) //
-				.filter(pm -> !Objects.equals(pm.get("Essential"), "yes")) //
 				.map(pm -> pm.get("Package")) //
-				.filter(packageName -> !requiredList.contains(packageName)) //
-				.filter(packageName -> dependBy.get(packageName) == null) //
+				.filter(packageName -> !required1.contains(packageName)) //
 				.sort(Util.comparator()) //
 				.toList();
 
@@ -125,13 +127,7 @@ public class DependencyTest {
 
 	@Test
 	public void testReadRepositoryIndices() {
-		File files[] = new File("/var/lib/apt/lists").listFiles();
-
-		assertNotNull(Read.from(files) //
-				.filter(File::isFile) //
-				.filter(file -> file.getName().endsWith("_Packages")) //
-				.concatMap(debianUtil::readDpkgConfiguration) //
-				.toList());
+		assertNotNull(aptUtil.readRepositoryPackages());
 	}
 
 }
