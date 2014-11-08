@@ -1,8 +1,13 @@
 package suite.ebnf;
 
+import java.util.Set;
+
+import suite.util.UnicodeData;
 import suite.util.Util;
 
 public class EbnfExpect {
+
+	private UnicodeData unicodeData = new UnicodeData();
 
 	public interface Expect {
 		public int expect(String in, int length, int start);
@@ -78,10 +83,6 @@ public class EbnfExpect {
 		return end;
 	};
 
-	public Expect expectString(String s) {
-		return (in, length, start) -> start + (in.startsWith(s, start) ? s.length() : 0);
-	};
-
 	public Expect expectCharRange(char s, char e) {
 		return (in, length, start) -> {
 			int end;
@@ -92,6 +93,24 @@ public class EbnfExpect {
 				end = start;
 			return end;
 		};
+	}
+
+	public Expect expectString(String s) {
+		return (in, length, start) -> start + (in.startsWith(s, start) ? s.length() : 0);
+	};
+
+	public Expect expectUnicodeClass(String uc) {
+		Set<Character> chars = unicodeData.getCharsOfClass(uc);
+		return (in, length, start) -> {
+			int end;
+			if (start < length) {
+				char ch = in.charAt(start);
+				end = start + (chars.contains(ch) ? 1 : 0);
+			} else
+				end = start;
+			return end;
+		};
+
 	}
 
 	public int expectWhitespaces(String in, int length, int start) {

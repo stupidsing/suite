@@ -287,14 +287,17 @@ public class Ebnf {
 			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
 			grammar = (parse, st) -> parse.parse(st, grammar1).cons(st);
 		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
-			char start = s.charAt(1);
-			char end = s.charAt(3);
-			grammar = (parse, st) -> parse.expect(st, expect.expectCharRange(start, end), st.pos);
+			Expect e = expect.expectCharRange(s.charAt(1), s.charAt(3));
+			grammar = (parse, st) -> parse.expect(st, e, st.pos);
+		} else if (s.startsWith("[uc:") && s.endsWith("]")) {
+			Expect e = expect.expectUnicodeClass(s.substring(4, s.length() - 1));
+			grammar = (parse, st) -> parse.expect(st, e, st.pos);
 		} else if (s.startsWith("(") && s.endsWith(")"))
 			grammar = parseGrammar(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\"")) {
 			String token = Escaper.unescape(Util.substr(s, 1, -1), "\"");
-			grammar = (parse, st) -> parse.expect(st, expect.expectString(token), st.pos);
+			Expect e = expect.expectString(token);
+			grammar = (parse, st) -> parse.expect(st, e, st.pos);
 		} else
 			grammar = parseGrammarEntity(s);
 
