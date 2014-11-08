@@ -213,7 +213,7 @@ keyword ::= "abstract" | "as" | "base" | "bool" | "break" | "byte" | "case" | "c
 labeled-statement ::= identifier ":" statement
 lambda-expression ::= anonymous-function-signature "=>" anonymous-function-body
 let-clause ::= "let" identifier "=" expression
-letter-character ::= <A-Unicode-character-of-classes-Lu,-Ll,-Lt,-Lm,-Lo,-or-Nl> | <A-unicode-escape-sequence-representing-a-character-of-classes-Lu,-Ll,-Lt,-Lm,-Lo,-or-Nl>
+letter-character ::= [uc:Lu] | [uc:Ll] | [uc:Lt] | [uc:Lm] | [uc:Lo] | [uc:Nl] | <A-unicode-escape-sequence-representing-a-character-of-classes-Lu,-Ll,-Lt,-Lm,-Lo,-or-Nl>
 line-indicator ::= decimal-digits whitespace file-name | decimal-digits | "default" | "hidden"
 literal ::= boolean-literal | integer-literal | real-literal | character-literal | string-literal | null-literal
 local-constant-declaration ::= "const" type constant-declarators
