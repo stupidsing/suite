@@ -99,6 +99,21 @@ public class Streamlet<T> implements Iterable<T> {
 			sink.sink(t);
 	}
 
+	public <U, R> Streamlet<R> join(List<U> list, BiFunction<T, U, R> fun) {
+		return new Streamlet<R>(new Source<R>() {
+			private T t;
+			private int index = list.size();
+
+			public R source() {
+				if (index == list.size()) {
+					index = 0;
+					t = next();
+				}
+				return fun.apply(t, list.get(index++));
+			}
+		});
+	}
+
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
 		return new Streamlet<>(FunUtil.map(fun, source));
 	}
