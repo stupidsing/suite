@@ -69,12 +69,11 @@ public class TwoPassIndexer {
 		dictionary.clear(); // Saves memory
 
 		Iterator<String> iter = keys.tailSet(searchKey).iterator();
-		Streamlet<String> keySource = Read.from(() -> {
+
+		return Read.from(() -> {
 			String key = iter.hasNext() ? iter.next() : null;
 			return key != null && key.startsWith(searchKey) ? key : null;
-		});
-
-		return keySource.concatMap(key -> Read.from(getReferencesByWord(key)));
+		}).concatMap(key -> Read.from(getReferencesByWord(key)));
 	}
 
 	public List<Reference> getReferencesByWord(String word) {
