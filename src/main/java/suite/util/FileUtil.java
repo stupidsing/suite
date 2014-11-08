@@ -26,7 +26,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import suite.util.FunUtil.Source;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 public class FileUtil {
 
@@ -40,11 +41,11 @@ public class FileUtil {
 		}
 	}
 
-	public static Source<Path> findPaths(Path path) {
+	public static Streamlet<Path> findPaths(Path path) {
 		Deque<Path> stack = new ArrayDeque<>();
 		stack.push(path);
 
-		return () -> {
+		return Read.from(() -> {
 			while (!stack.isEmpty()) {
 				Path p = stack.pop();
 
@@ -59,7 +60,7 @@ public class FileUtil {
 			}
 
 			return null;
-		};
+		});
 	}
 
 	public static int getPid() {

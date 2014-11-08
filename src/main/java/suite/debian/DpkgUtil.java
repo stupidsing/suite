@@ -27,8 +27,25 @@ public class DpkgUtil {
 		return debianUtil.readDpkgConfiguration(new File(dpkgDir + "/status")).toList();
 	}
 
-	public Streamlet<String> readFileList(String packageName) throws FileNotFoundException {
-		return Read.lines(new File(dpkgDir + "/info/" + packageName + ".list"));
+	public Streamlet<String> readFileList(Map<String, String> pm) {
+		String packageName = pm.get("Package");
+		String arch = pm.get("Architecture");
+		String dir = dpkgDir + "/info/";
+
+		List<File> files = new ArrayList<>();
+		files.add(new File(dir + packageName + ".list"));
+		if (arch != null)
+			files.add(new File(dir + packageName + ":" + arch + ".list"));
+
+		for (File file : files)
+			if (file.exists())
+				try {
+					return Read.lines(file);
+				} catch (FileNotFoundException ex) {
+					throw new RuntimeException(ex);
+				}
+
+		return null;
 	}
 
 	public Set<String> getDependingSet(List<Map<String, String>> packages, Set<String> set0) {

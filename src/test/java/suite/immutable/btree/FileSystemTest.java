@@ -17,10 +17,9 @@ import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.IbTreeFileSystemImpl;
 import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.primitive.Bytes;
+import suite.streamlet.Streamlet;
 import suite.util.Copy;
 import suite.util.FileUtil;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class FileSystemTest {
@@ -95,12 +94,12 @@ public class FileSystemTest {
 	}
 
 	private void testWriteFile(FileSystem fs, String pathName) throws IOException {
-		Source<Path> paths = FileUtil.findPaths(Paths.get(pathName));
+		Streamlet<Path> paths = FileUtil.findPaths(Paths.get(pathName));
 
 		fs.create();
 		FileSystemMutator fsm = fs.mutate();
 
-		for (Path path : FunUtil.iter(paths)) {
+		for (Path path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
 			Bytes name = Bytes.of(filename.getBytes(FileUtil.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));

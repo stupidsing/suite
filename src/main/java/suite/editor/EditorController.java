@@ -23,7 +23,6 @@ import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.PrettyPrinter;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
@@ -165,7 +164,7 @@ public class EditorController {
 		String text = view.getSearchTextField().getText();
 
 		if (!text.isEmpty()) {
-			Streamlet<String> files = Read.from(FileUtil.findPaths(Paths.get("."))) //
+			Streamlet<String> files = FileUtil.findPaths(Paths.get(".")) //
 					.map(Path::toString) //
 					.filter(filename -> filename.contains(text));
 

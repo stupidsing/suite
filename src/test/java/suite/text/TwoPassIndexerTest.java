@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
-import suite.streamlet.Read;
 import suite.text.TwoPassIndexer.Reference;
 import suite.util.FileUtil;
 import suite.util.Util;
@@ -18,7 +17,7 @@ public class TwoPassIndexerTest {
 
 	@Test
 	public void test() throws IOException {
-		List<String> filenames = Read.from(FileUtil.findPaths(Paths.get("src/test/java"))) //
+		List<String> filenames = FileUtil.findPaths(Paths.get("src/test/java")) //
 				.map(Path::toAbsolutePath) //
 				.map(Path::toString) //
 				.filter(filename -> filename.endsWith(".java")) //

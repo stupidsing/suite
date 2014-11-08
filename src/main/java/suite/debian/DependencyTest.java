@@ -1,7 +1,8 @@
 package suite.debian;
 
-import static org.junit.Assert.assertNotNull;
-
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -9,13 +10,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.junit.Test;
-
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FileUtil;
 import suite.util.Util;
+import suite.util.Util.ExecutableProgram;
 
-public class DependencyTest {
+public class DependencyTest extends ExecutableProgram {
 
 	private DebianUtil debianUtil = new DebianUtil();
 	private DpkgUtil dpkgUtil = new DpkgUtil(debianUtil);
@@ -96,15 +97,24 @@ public class DependencyTest {
 			, "zip" //
 	));
 
-	@Test
-	public void testListManuallyInstalled() {
+	public static void main(String args[]) {
+		Util.run(DependencyTest.class, args);
+	}
+
+	protected boolean run(String args[]) throws IOException {
+		listManuallyInstalled();
+		listUnusedPackages();
+		listUnusedFiles();
+		return true;
+	}
+
+	private void listManuallyInstalled() {
 		Streamlet<String> readManuallyInstalled = aptUtil.readManuallyInstalled();
 		readManuallyInstalled //
 				.forEach(System.out::println);
 	}
 
-	@Test
-	public void testListUnusedPackages() {
+	private void listUnusedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		Set<String> required = new HashSet<>(requiredList);
 
@@ -115,19 +125,27 @@ public class DependencyTest {
 
 		Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
 
-		List<String> unnecessaryPackageNames = Read.from(packages) //
+		List<String> unusedPackageNames = Read.from(packages) //
 				.map(pm -> pm.get("Package")) //
 				.filter(packageName -> !required1.contains(packageName)) //
 				.sort(Util.comparator()) //
 				.toList();
 
-		assertNotNull(unnecessaryPackageNames);
-		unnecessaryPackageNames.forEach(System.out::println);
+		unusedPackageNames.forEach(System.out::println);
 	}
 
-	@Test
-	public void testReadRepositoryIndices() {
-		assertNotNull(aptUtil.readRepositoryPackages());
+	private void listUnusedFiles() {
+		Set<String> files = Read.from(dpkgUtil.readInstalledPackages()) //
+				.concatMap(dpkgUtil::readFileList) //
+				.toSet();
+
+		List<String> unusedFiles = Read.from("/etc", "/usr") //
+				.concatMap(p -> FileUtil.findPaths(Paths.get(p))) //
+				.map(Path::toString) //
+				.filter(p -> !files.contains(p)) //
+				.toList();
+
+		unusedFiles.forEach(System.out::println);
 	}
 
 }
