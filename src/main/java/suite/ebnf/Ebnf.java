@@ -330,7 +330,7 @@ public class Ebnf {
 			grammar = (parse, st) -> parse.expect(st, expect.expectIntegerLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, expect.expectStringLiteral, st.pos);
-		else if (Util.stringEquals(entity, "<FAIL>"))
+		else if (entity.startsWith("<IGNORE") && entity.endsWith(">"))
 			grammar = (parse, st) -> noResult;
 		else
 			grammar = null;
