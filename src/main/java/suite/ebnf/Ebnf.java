@@ -279,7 +279,12 @@ public class Ebnf {
 			grammar = new OrGrammar(parseGrammars(list));
 		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
 			grammar = new JoinGrammar(parseGrammars(list));
-		else if (s.endsWith("*"))
+		else if ((list = ParseUtil.searchn(s, " /except/ ", Assoc.RIGHT)).size() > 1) {
+			Grammar grammar0 = parseGrammar(list.get(0));
+			Grammar grammar1 = parseGrammar(list.get(1));
+			return (parse, st) -> grammar0.p(parse, st) //
+					.filter(st1 -> grammar1.p(new Parse(parse.in.substring(st.pos, st1.pos)), new State(null, 0)).count() == 0);
+		} else if (s.endsWith("*"))
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), true);
 		else if (s.endsWith("+"))
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
@@ -320,6 +325,8 @@ public class Ebnf {
 
 		if (Util.stringEquals(entity, "<EOF>"))
 			grammar = (parse, st) -> st.pos == parse.length ? Read.from(st) : noResult;
+		else if (Util.stringEquals(entity, "<CHARACTER>"))
+			grammar = (parse, st) -> parse.expect(st, (in, length, start) -> Math.min(start + 1, length), st.pos);
 		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, expect.expectCharLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
