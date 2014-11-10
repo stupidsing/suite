@@ -1,13 +1,30 @@
 package suite.ebnf;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 import org.junit.Test;
 
 import suite.util.FileUtil;
 
 public class EbnfTest {
+
+	@Test
+	public void testExcept() throws IOException {
+		Ebnf ebnf = new Ebnf(new StringReader("" //
+				+ "non-alphas ::= (non-alpha)* \n" //
+				+ "non-alpha ::= <CHARACTER> /except/ ([a-z] | [A-Z]) \n" //
+				+ "non-boolean ::= <IDENTIFIER> /except/ (\"true\" | \"false\") \n" //
+		));
+		assertNotNull(ebnf.check("123!@#", "non-alphas"));
+		assertNotNull(ebnf.check("beatles", "non-boolean"));
+		assertNull(ebnf.check("456q$%^", "non-alphas"));
+		assertNull(ebnf.check("false", "non-boolean"));
+	}
 
 	@Test
 	public void testExpression() throws IOException {
