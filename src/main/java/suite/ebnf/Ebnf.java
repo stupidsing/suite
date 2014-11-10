@@ -64,7 +64,7 @@ public class Ebnf {
 		}
 
 		public Streamlet<State> p(Parse parse, State state) {
-			return Read.from(grammars).concatMap(childGrammar -> parse.parse0(state, childGrammar));
+			return Read.from(grammars).concatMap(childGrammar -> parse.parse(state, childGrammar));
 		}
 	}
 
@@ -76,7 +76,7 @@ public class Ebnf {
 		public Streamlet<State> p(Parse parse, State state) {
 			Streamlet<State> st = Read.from(state);
 			for (Grammar childGrammar : grammars)
-				st = st.concatMap(st_ -> parse.parse0(st_, childGrammar));
+				st = st.concatMap(st_ -> parse.parse(st_, childGrammar));
 			return st;
 		}
 	}
@@ -97,7 +97,7 @@ public class Ebnf {
 				public State source() {
 					State state0 = state_;
 					if (state0 != null) {
-						streamlets.push(parse.parse0(state0, grammar));
+						streamlets.push(parse.parse(state0, grammar));
 						while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
 							streamlets.pop();
 					}
@@ -121,7 +121,7 @@ public class Ebnf {
 			Grammar grammar = grammarsByEntity.get(entity);
 			if (grammar != null) {
 				State state1 = deepen(state, entity);
-				Streamlet<State> states = parse.parse0(state1, grammar);
+				Streamlet<State> states = parse.parse(state1, grammar);
 				return states.map(st -> undeepen(st, state.depth));
 			} else
 				throw new RuntimeException("Entity " + entity + " not found");
@@ -168,16 +168,8 @@ public class Ebnf {
 		}
 
 		private Node parse(int pos, Grammar grammar) {
-			Node node = parse0(pos, grammar);
-			if (node != null)
-				return node;
-			else
-				throw new RuntimeException("Syntax error for entity " + errorEntity + " at " + findPosition(errorPosition));
-		}
-
-		private Node parse0(int pos, Grammar grammar) {
 			State initialState = new State(null, pos, null, 1);
-			Streamlet<State> st = parse0(initialState, grammar);
+			Streamlet<State> st = parse(initialState, grammar);
 			State state;
 
 			while ((state = st.next()) != null)
@@ -212,7 +204,7 @@ public class Ebnf {
 			return null;
 		}
 
-		private Streamlet<State> parse0(State state, Grammar grammar) {
+		private Streamlet<State> parse(State state, Grammar grammar) {
 			int pos = expect.expectWhitespaces(in, length, state.pos);
 
 			if (trace)
@@ -304,7 +296,7 @@ public class Ebnf {
 			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
 		else if (s.endsWith("?")) {
 			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
-			grammar = (parse, st) -> parse.parse0(st, grammar1).cons(st);
+			grammar = (parse, st) -> parse.parse(st, grammar1).cons(st);
 		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
 			Expect e = expect.expectCharRange(s.charAt(1), s.charAt(3));
 			grammar = (parse, st) -> parse.expect(st, e, st.pos);
@@ -366,15 +358,23 @@ public class Ebnf {
 	}
 
 	public Node parse(String s) {
-		return parse(s, 0, rootGrammarEntity);
+		return parse(s, rootGrammarEntity);
 	}
 
-	public Node parse(String s, int end, String entity) {
-		return new Parse(s).parse(end, parseGrammar(entity));
+	public Node parse(String s, String entity) {
+		Parse parse = new Parse(s);
+		Node node = parse.parse(0, parseGrammar(entity));
+		if (node != null)
+			return node;
+		else {
+			Pair<Integer, Integer> pos = parse.findPosition(parse.errorPosition);
+			throw new RuntimeException("Syntax error for entity " + parse.errorEntity + " at " + pos);
+		}
+
 	}
 
 	public Node check(String s, String entity) {
-		return new Parse(s).parse0(0, parseGrammar(entity));
+		return new Parse(s).parse(0, parseGrammar(entity));
 	}
 
 	private void reduceHeadRecursion() {
