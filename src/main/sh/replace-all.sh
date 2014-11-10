@@ -13,8 +13,10 @@ replace-file() {
   echo ${F1}
 }
 
-while [ "${1}" ]; do
-  F0="${1}"
-  replace-file "${F0}"
-  shift
-done
+replace-files() {
+  while [ "${1}" ]; do
+    F0="${1}"
+    replace-file "${F0}"
+    shift
+  done
+}
