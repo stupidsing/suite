@@ -61,7 +61,7 @@ conditional-and-expression ::= inclusive-or-expression | conditional-and-express
 conditional-expression ::= null-coalescing-expression | null-coalescing-expression "?" expression ":" expression
 conditional-or-expression ::= conditional-and-expression | conditional-or-expression "||" conditional-and-expression
 conditional-section ::= input-section | skipped-section
-conditional-symbol ::= identifier-or-keyword /except/ (true | false)
+conditional-symbol ::= identifier-or-keyword /except/ ("true" | "false")
 connecting-character ::= [uc:Pc] | <IGNORE:A-unicode-escape-sequence-representing-a-character-of-the-class-Pc>
 constant-declaration ::= (attributes)* (constant-modifiers)* "const" type constant-declarators ";"
 constant-declarator ::= identifier "=" constant-expression | identifier "=" constant-expression
@@ -349,7 +349,7 @@ simple-type ::= numeric-type | "bool"
 single-character ::= <CHARACTER> /except/ ("%U0027" | "%U005C" | "%0A")
 single-line-comment ::= "//" (input-characters)*
 single-regular-string-literal-character ::= <CHARACTER> /except/ ("%U0027" | "%U005C" | "%0A")
-single-verbatim-string-literal-character ::= <Any-character-except-">
+single-verbatim-string-literal-character ::= <CHARACTER> /except/ ("%22")
 sizeof-expression ::= "sizeof" "(" unmanaged-type ")"
 skipped-characters ::= (whitespace)* not-number-sign (input-characters)*
 skipped-section ::= skipped-section-part | skipped-section skipped-section-part
