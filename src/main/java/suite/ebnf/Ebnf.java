@@ -1,6 +1,5 @@
 package suite.ebnf;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
@@ -259,17 +258,18 @@ public class Ebnf {
 	}
 
 	public Ebnf(Reader reader) throws IOException {
-		BufferedReader br = new BufferedReader(reader);
-		String line;
-		Pair<String, String> lr;
-
-		while ((line = br.readLine()) != null)
-			if (!line.isEmpty() && line.charAt(0) != '#' && (lr = Util.split2(line, " ::= ")) != null) {
-				grammarsByEntity.put(lr.t0, parseGrammar(lr.t1));
-
-				if (rootGrammarEntity == null)
-					rootGrammarEntity = lr.t0;
-			}
+		Read.lines(reader) //
+				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
+				.split(line -> !line.startsWith(" ") && !line.startsWith("\t")) //
+				.map(st -> st.fold("", String::concat)) //
+				.map(line -> line.replace('\t', ' ')) //
+				.map(line -> Util.split2(line, " ::= ")) //
+				.filter(lr -> lr != null) //
+				.foreach(lr -> {
+					grammarsByEntity.put(lr.t0, parseGrammar(lr.t1));
+					if (rootGrammarEntity == null)
+						rootGrammarEntity = lr.t0;
+				});
 
 		reduceHeadRecursion();
 	}

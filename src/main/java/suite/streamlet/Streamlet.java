@@ -96,10 +96,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return readable ? this : Read.empty();
 	}
 
-	public <R> R fold(R init, BiFunction<T, R, R> fun) {
+	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		T t;
 		while ((t = next()) != null)
-			init = fun.apply(t, init);
+			init = fun.apply(init, t);
 		return init;
 	}
 
@@ -153,13 +153,17 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Streamlet<Streamlet<T>> split(Predicate<T> pred) {
 		return new Streamlet<Streamlet<T>>(new Source<Streamlet<T>>() {
-			private boolean isEnd = false;
+			private T t = next();
+			private boolean isStreaming = true;
+			private Streamlet<T> st = new Streamlet<>(() -> {
+				if (isStreaming &= (t = next()) != null)
+					return !pred.test(t) ? t : null;
+				else
+					return null;
+			});
 
 			public Streamlet<T> source() {
-				return !isEnd ? new Streamlet<>(() -> {
-					T t = next();
-					return !(isEnd |= t == null) && !pred.test(t) ? t : null;
-				}) : null;
+				return isStreaming ? st.cons(t) : null;
 			}
 		});
 	}
