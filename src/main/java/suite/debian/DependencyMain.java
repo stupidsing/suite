@@ -16,7 +16,7 @@ import suite.util.FileUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
-public class DependencyTest extends ExecutableProgram {
+public class DependencyMain extends ExecutableProgram {
 
 	private DebianUtil debianUtil = new DebianUtil();
 	private DpkgUtil dpkgUtil = new DpkgUtil(debianUtil);
@@ -98,7 +98,7 @@ public class DependencyTest extends ExecutableProgram {
 	));
 
 	public static void main(String args[]) {
-		Util.run(DependencyTest.class, args);
+		Util.run(DependencyMain.class, args);
 	}
 
 	protected boolean run(String args[]) throws IOException {
