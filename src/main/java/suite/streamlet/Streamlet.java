@@ -154,12 +154,9 @@ public class Streamlet<T> implements Iterable<T> {
 	public Streamlet<Streamlet<T>> split(Predicate<T> pred) {
 		return new Streamlet<Streamlet<T>>(new Source<Streamlet<T>>() {
 			private T t = next();
-			private boolean isStreaming = true;
+			private boolean isStreaming = t != null;
 			private Streamlet<T> st = new Streamlet<>(() -> {
-				if (isStreaming &= (t = next()) != null)
-					return !pred.test(t) ? t : null;
-				else
-					return null;
+				return (isStreaming &= (t = next()) != null) && !pred.test(t) ? t : null;
 			});
 
 			public Streamlet<T> source() {
