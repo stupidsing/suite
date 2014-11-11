@@ -118,6 +118,18 @@ public class FunUtil {
 		};
 	}
 
+	public static <T> Source<Source<T>> split(Source<T> source, Fun<T, Boolean> fun) {
+		return new Source<Source<T>>() {
+			private T t = source.source();
+			private boolean isAvailable = t != null;
+			private Source<T> source_ = () -> (isAvailable &= (t = source.source()) != null) && !fun.apply(t) ? t : null;
+
+			public Source<T> source() {
+				return isAvailable ? FunUtil.cons(t, source_) : null;
+			}
+		};
+	}
+
 	/**
 	 * Sucks data from a sink and produce into a source.
 	 */

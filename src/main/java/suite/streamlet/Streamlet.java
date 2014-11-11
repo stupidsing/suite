@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -90,10 +89,10 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> drop(int n) {
-		boolean readable = true;
-		while (n > 0 && (readable &= next() != null))
+		boolean isAvailable = true;
+		while (n > 0 && (isAvailable &= next() != null))
 			n--;
-		return readable ? this : Read.empty();
+		return isAvailable ? this : Read.empty();
 	}
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
@@ -151,17 +150,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet<>(To.source(Util.sort(toList(), comparator)));
 	}
 
-	public Streamlet<Streamlet<T>> split(Predicate<T> pred) {
-		return new Streamlet<Streamlet<T>>(new Source<Streamlet<T>>() {
-			private T t = next();
-			private boolean isStreaming = t != null;
-			private Streamlet<T> st = new Streamlet<>(() -> //
-					(isStreaming &= (t = next()) != null) && !pred.test(t) ? t : null);
-
-			public Streamlet<T> source() {
-				return isStreaming ? st.cons(t) : null;
-			}
-		});
+	public Streamlet<Streamlet<T>> split(Fun<T, Boolean> fun) {
+		return new Streamlet<>(FunUtil.map(Streamlet<T>::new, FunUtil.split(source, fun)));
 	}
 
 	public Streamlet<T> take(int n) {
