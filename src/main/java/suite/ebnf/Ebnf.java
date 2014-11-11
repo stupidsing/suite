@@ -117,13 +117,24 @@ public class Ebnf {
 		}
 
 		public Streamlet<State> p(Parse parse, State state) {
-			Grammar grammar = grammarsByEntity.get(entity);
-			if (grammar != null) {
-				State state1 = deepen(state, entity);
-				Streamlet<State> states = parse.parse(state1, grammar);
-				return states.map(st -> undeepen(st, state.depth));
+			boolean isRecurse = false;
+			State backState = state;
+
+			while (!isRecurse && backState != null && backState.pos == state.pos) {
+				isRecurse |= Util.stringEquals(backState.entity, entity);
+				backState = backState.previous;
+			}
+
+			if (!isRecurse) {
+				Grammar grammar = grammarsByEntity.get(entity);
+				if (grammar != null) {
+					State state1 = deepen(state, entity);
+					Streamlet<State> states = parse.parse(state1, grammar);
+					return states.map(st -> undeepen(st, state.depth));
+				} else
+					throw new RuntimeException("Entity " + entity + " not found");
 			} else
-				throw new RuntimeException("Entity " + entity + " not found");
+				return noResult;
 		}
 	}
 
