@@ -17,7 +17,6 @@ import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
 import suite.util.To;
-import suite.util.Util;
 
 public class Read {
 
@@ -30,30 +29,24 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) throws FileNotFoundException {
-		return lines(new FileInputStream(file));
+		InputStream is = new FileInputStream(file);
+		return lines(is).closeAtEnd(is);
 	}
 
 	public static Streamlet<String> lines(InputStream is) {
-		Reader isr = new InputStreamReader(is, FileUtil.charset);
-		BufferedReader br = new BufferedReader(isr);
+		Reader reader = new InputStreamReader(is, FileUtil.charset);
+		return lines(reader).closeAtEnd(reader);
+	}
 
+	public static Streamlet<String> lines(Reader reader) {
+		BufferedReader br = new BufferedReader(reader);
 		return from(() -> {
-			String line;
 			try {
-				line = br.readLine();
+				return br.readLine();
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-
-			if (line != null)
-				return line;
-			else {
-				Util.closeQuietly(br);
-				Util.closeQuietly(isr);
-				Util.closeQuietly(is);
-				return null;
-			}
-		});
+		}).closeAtEnd(br);
 	}
 
 	@SafeVarargs

@@ -1,5 +1,6 @@
 package suite.streamlet;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -56,6 +57,15 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
 		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+	}
+
+	public Streamlet<T> closeAtEnd(Closeable c) {
+		return new Streamlet<>(() -> {
+			T next = next();
+			if (next == null)
+				Util.closeQuietly(c);
+			return next;
+		});
 	}
 
 	public Streamlet<T> cons(T t) {
@@ -146,7 +156,7 @@ public class Streamlet<T> implements Iterable<T> {
 			private boolean isEnd = false;
 
 			public Streamlet<T> source() {
-				return !isEnd ? new Streamlet<T>(() -> {
+				return !isEnd ? new Streamlet<>(() -> {
 					T t = next();
 					return !(isEnd |= t == null) && !pred.test(t) ? t : null;
 				}) : null;
