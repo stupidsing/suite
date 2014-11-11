@@ -155,9 +155,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return new Streamlet<Streamlet<T>>(new Source<Streamlet<T>>() {
 			private T t = next();
 			private boolean isStreaming = t != null;
-			private Streamlet<T> st = new Streamlet<>(() -> {
-				return (isStreaming &= (t = next()) != null) && !pred.test(t) ? t : null;
-			});
+			private Streamlet<T> st = new Streamlet<>(() -> //
+					(isStreaming &= (t = next()) != null) && !pred.test(t) ? t : null);
 
 			public Streamlet<T> source() {
 				return isStreaming ? st.cons(t) : null;
