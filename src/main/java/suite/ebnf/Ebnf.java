@@ -118,11 +118,11 @@ public class Ebnf {
 
 		public Streamlet<State> p(Parse parse, State state) {
 			boolean isRecurse = false;
-			State backState = state;
+			State prevState = state;
 
-			while (!isRecurse && backState != null && backState.pos == state.pos) {
-				isRecurse |= Util.stringEquals(backState.entity, entity);
-				backState = backState.previous;
+			while (!isRecurse && prevState != null && prevState.pos == state.pos) {
+				isRecurse |= Util.stringEquals(prevState.entity, entity);
+				prevState = prevState.previous;
 			}
 
 			if (!isRecurse) {
