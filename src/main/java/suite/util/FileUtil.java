@@ -125,7 +125,16 @@ public class FileUtil {
 	}
 
 	public static String read(Path path) throws IOException {
-		return new String(Files.readAllBytes(path), FileUtil.charset);
+		byte bytes[] = Files.readAllBytes(path);
+		boolean isBomExist = bytes.length >= 3 //
+				&& bytes[0] == (byte) 0xEF //
+				&& bytes[1] == (byte) 0xBB //
+				&& bytes[2] == (byte) 0xBF;
+
+		if (!isBomExist)
+			return new String(bytes, FileUtil.charset);
+		else
+			return new String(bytes, 3, bytes.length - 3, FileUtil.charset);
 	}
 
 	public static String read(String filename) throws IOException {
