@@ -271,9 +271,9 @@ public class Ebnf {
 	public Ebnf(Reader reader) throws IOException {
 		Read.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
-				.split(line -> !line.startsWith(" ") && !line.startsWith("\t")) //
-				.map(st -> st.fold("", String::concat)) //
 				.map(line -> line.replace('\t', ' ')) //
+				.split(line -> !line.startsWith(" ")) //
+				.map(st -> st.fold("", String::concat)) //
 				.map(line -> Util.split2(line, " ::= ")) //
 				.filter(lr -> lr != null) //
 				.foreach(lr -> {

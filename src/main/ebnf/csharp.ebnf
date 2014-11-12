@@ -18,7 +18,7 @@ array-creation-expression ::= "new" non-array-type "[" expression-list "]" (rank
 array-initializer ::= "{" (variable-initializer-list)? "}" | "{" variable-initializer-list "," "}"
 array-type ::= non-array-type rank-specifiers
 assignment ::= unary-expression assignment-operator expression
-assignment-operator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | right-shift-assignment | expression: | non-assignment-expression | assignment
+assignment-operator ::= "=" | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^=" | "<<=" | right-shift-assignment
 asterisks ::= "*" | asterisks "*"
 attribute ::= attribute-name (attribute-arguments)?
 attribute-argument-expression ::= expression
@@ -120,6 +120,7 @@ explicit-anonymous-function-parameter ::= (anonymous-function-parameter-modifier
 explicit-anonymous-function-parameter-list ::= explicit-anonymous-function-parameter | explicit-anonymous-function-parameter-list "," explicit-anonymous-function-parameter
 explicit-anonymous-function-signature ::= "(" (explicit-anonymous-function-parameter-list)? ")"
 exponent-part ::= "e" (sign)? decimal-digits | "E" (sign)? decimal-digits
+expression ::= non-assignment-expression | assignment
 expression-list ::= expression | expression-list "," expression
 expression-statement ::= statement-expression ";"
 extern-alias-directive ::= "extern" "alias" identifier ";"
@@ -412,7 +413,7 @@ using-statement ::= "using" "(" resource-acquisition ")" embedded-statement
 value-type ::= struct-type | enum-type
 variable-declarator ::= identifier | identifier "=" variable-initializer
 variable-declarators ::= variable-declarator | variable-declarators "," variable-declarator
-variable-initializer ::= expression | array-initializer | expression | array-initializer
+variable-initializer ::= expression | array-initializer
 variable-initializer-list ::= variable-initializer | variable-initializer-list "," variable-initializer
 variable-reference ::= expression
 variance-annotation ::= "in" | "out"
