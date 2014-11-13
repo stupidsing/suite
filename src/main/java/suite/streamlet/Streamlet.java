@@ -30,6 +30,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	private Source<T> source;
 
+	private static <T> Streamlet<T> st(Source<T> source) {
+		return new Streamlet<>(source);
+	}
+
 	public Streamlet(Source<T> source) {
 		this.source = source;
 	}
@@ -55,11 +59,11 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
-		return new Streamlet<>(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+		return st(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public Streamlet<T> closeAtEnd(Closeable c) {
-		return new Streamlet<>(() -> {
+		return st(() -> {
 			T next = next();
 			if (next == null)
 				Util.closeQuietly(c);
@@ -68,7 +72,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> cons(T t) {
-		return new Streamlet<>(FunUtil.cons(t, source));
+		return st(FunUtil.cons(t, source));
 	}
 
 	public int count() {
@@ -80,7 +84,7 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Streamlet<T> distinct() {
 		Set<T> set = new HashSet<>();
-		return new Streamlet<T>(() -> {
+		return st(() -> {
 			T t;
 			while ((t = next()) != null && !set.add(t))
 				;
@@ -109,7 +113,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <U, R> Streamlet<R> join(List<U> list, BiFunction<T, U, R> fun) {
-		return new Streamlet<R>(new Source<R>() {
+		return st(new Source<R>() {
 			private T t;
 			private int index = list.size();
 
@@ -124,7 +128,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
-		return new Streamlet<>(FunUtil.map(fun, source));
+		return st(FunUtil.map(fun, source));
 	}
 
 	public T min(Comparator<T> comparator) {
@@ -139,7 +143,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {
-		return new Streamlet<>(FunUtil.filter(fun, source));
+		return st(FunUtil.filter(fun, source));
 	}
 
 	public T next() {
@@ -147,15 +151,15 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> sort(Comparator<T> comparator) {
-		return new Streamlet<>(To.source(Util.sort(toList(), comparator)));
+		return st(To.source(Util.sort(toList(), comparator)));
 	}
 
 	public Streamlet<Streamlet<T>> split(Fun<T, Boolean> fun) {
-		return new Streamlet<>(FunUtil.map(Streamlet<T>::new, FunUtil.split(source, fun)));
+		return st(FunUtil.map(Streamlet<T>::new, FunUtil.split(source, fun)));
 	}
 
 	public Streamlet<T> take(int n) {
-		return new Streamlet<T>(new Source<T>() {
+		return st(new Source<T>() {
 			private int count = n;
 
 			public T source() {

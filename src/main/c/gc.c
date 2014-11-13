@@ -7,38 +7,40 @@
 #define QUEUED_ 1
 #define SCANNED 2
 
-struct Object;
+struct GcObject;
 
 struct Class {
-	int *(*refoffsets) (struct Object*);
+	int *(*refoffsets) (struct GcObject*);
 };
 
-struct Object {
+struct GcObject {
 	int flag;
-	struct Object *next;
+	struct GcObject *next;
 	struct Class *class;
 };
 
+int gcosize = sizeof(struct GcObject);
+
 int watermark;
-struct Object *first;
-struct Object *root;
-struct Object *lastAllocated;
+struct GcObject *first;
+struct GcObject *root;
+struct GcObject *lastAllocated;
 
 int compareaddresses(void *p0, void *p1) {
 	return p0 != p1 ? (p0 < p1 ? -1 : 1) : 0;
 }
 
-int *getrefoffsets(struct Object *object) {
+int *getrefoffsets(struct GcObject *object) {
 	return object->class->refoffsets(object);
 }
 
-struct Object *markAndSweep() {
-	struct Object *object = first;
+struct GcObject *markAndSweep() {
+	struct GcObject *gco = first;
 
 	// mark all as fresh
-	while(object) {
-		object->flag = FRESH__;
-		object = object->next;
+	while(gco) {
+		gco->flag = FRESH__;
+		gco = gco->next;
 	}
 
 	// initialize heap and add root into it
@@ -49,31 +51,31 @@ struct Object *markAndSweep() {
 	if(lastAllocated) heapadd(&heap, lastAllocated);
 
 	// add child objects into heap
-	while(object = heapremove(&heap)) {
-		object->flag = QUEUED_;
-		int *refoffsets = getrefoffsets(object);
+	while(gco = heapremove(&heap)) {
+		gco->flag = QUEUED_;
+		int *refoffsets = getrefoffsets(gco);
 		while(*refoffsets) {
-			struct Object *child = *refoffsets + (void*) object;
+			struct GcObject *child = *(void**) (gcosize + *refoffsets + (void*) gco) - gcosize;
 			if(child && child->flag == FRESH__) {
 				child->flag = QUEUED_;
 				heapadd(&heap, child);
 			}
 			refoffsets++;
 		}
-		object->flag = SCANNED;
+		gco->flag = SCANNED;
 	}
 
 	heapdelete(&heap);
 
 	// evict orphan objects
-	struct Object **prev = &first;
-	while(object) {
-		struct Object *next = object->next;
-		if(object->flag == FRESH__) {
+	struct GcObject **prev = &first;
+	while(gco) {
+		struct GcObject *next = gco->next;
+		if(gco->flag == FRESH__) {
 			*prev = next;
-			memfree(object);
-		} else prev = &object->next;
-		object = next;
+			memfree(gco);
+		} else prev = &gco->next;
+		gco = next;
 	}
 
 	watermark = 32 + nAllocs * 3 / 2;
@@ -86,20 +88,21 @@ void *gcalloc(struct Class *class, int size) {
 		markAndSweep();
 
 	int n = 0;
+	int size1 = gcosize + size;
 	lastAllocated = 0;
 	while(n++ < 3)
-		if(!(lastAllocated = memalloc(size))) markAndSweep(); // Space-hunger garbage collection
+		if(!(lastAllocated = memalloc(size1))) markAndSweep(); // Space-hunger garbage collection
 		else break;
 
-	struct Object *object = lastAllocated;
-	object->class = class;
-	object->flag = SCANNED;
-	object->next = first;
+	struct GcObject *gco = lastAllocated;
+	gco->class = class;
+	gco->flag = SCANNED;
+	gco->next = first;
 
-	return first = object;
+	return gcosize + (void*) (first = gco);
 }
 
-void gcsetroot(struct Object *r) {
+void gcsetroot(struct GcObject *r) {
 	root = r;
 }
 

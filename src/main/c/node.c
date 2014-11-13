@@ -1,4 +1,4 @@
-#include "util.c"
+#include "gc.c"
 
 #define REF_ (0)
 #define ATOM (1)
