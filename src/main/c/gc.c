@@ -26,12 +26,15 @@ struct GcObject *first;
 struct GcObject *root;
 struct GcObject *lastAllocated;
 
+int norefoffsets[] = { 0 };
+
 int compareaddresses(void *p0, void *p1) {
 	return p0 != p1 ? (p0 < p1 ? -1 : 1) : 0;
 }
 
 int *getrefoffsets(struct GcObject *object) {
-	return object->class->refoffsets(object);
+	struct Class *class = object->class;
+	return class ? class->refoffsets(object) : norefoffsets;
 }
 
 struct GcObject *markAndSweep() {
@@ -100,6 +103,10 @@ void *gcalloc(struct Class *class, int size) {
 	gco->next = first;
 
 	return gcosize + (void*) (first = gco);
+}
+
+void *gcallocleaf(int size) {
+	return gcalloc(0, size);
 }
 
 void gcsetroot(struct GcObject *r) {
