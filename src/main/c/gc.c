@@ -114,6 +114,7 @@ void gcsetroot(struct GcObject *r) {
 }
 
 void gcinit() {
+	meminit();
 	watermark = 256;
 	first = 0;
 	lastAllocated = 0;
@@ -124,6 +125,7 @@ void gcdeinit() {
 	root = 0;
 	markAndSweep();
 	!first || err("some memory not garbage collected");
+	memdeinit();
 }
 
 #endif

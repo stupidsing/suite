@@ -763,7 +763,7 @@ int handlewrite(struct Node *query, struct Node ***ptrail, struct Node **prem, s
 void init() {
 	int i;
 
-	meminit();
+	gcinit();
 	nAtomHashes = 0;
 	atomHashSize = 256;
 	atomHashes = memalloczeroed(atomHashSize * sizeof(struct Node*));
@@ -856,7 +856,7 @@ void deinit() {
 
 	memfree(atomHashes);
 	nAtomHashes = 0;
-	memdeinit();
+	gcdeinit();
 }
 
 #define test(t) (t) || err("test case failed");
