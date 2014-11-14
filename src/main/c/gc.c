@@ -9,14 +9,14 @@
 
 struct GcObject;
 
-struct Class {
+struct GcClass {
 	int *(*refoffsets) (struct GcObject*);
 };
 
 struct GcObject {
 	int flag;
 	struct GcObject *next;
-	struct Class *class;
+	struct GcClass *class;
 };
 
 int gcosize = sizeof(struct GcObject);
@@ -32,9 +32,9 @@ int compareaddresses(void *p0, void *p1) {
 	return p0 != p1 ? (p0 < p1 ? -1 : 1) : 0;
 }
 
-int *getrefoffsets(struct GcObject *object) {
-	struct Class *class = object->class;
-	return class ? class->refoffsets(object) : norefoffsets;
+int *getrefoffsets(struct GcObject *gco) {
+	struct GcClass *gcc = gco->class;
+	return gcc ? gcc->refoffsets(gco) : norefoffsets;
 }
 
 struct GcObject *markAndSweep() {
@@ -86,7 +86,7 @@ struct GcObject *markAndSweep() {
 	return first;
 }
 
-void *gcalloc(struct Class *class, int size) {
+void *gcalloc(struct GcClass *gcc, int size) {
 	if(nAllocs++ > watermark) // Pre-cautionary garbage collection
 		markAndSweep();
 
@@ -98,11 +98,15 @@ void *gcalloc(struct Class *class, int size) {
 		else break;
 
 	struct GcObject *gco = lastAllocated;
-	gco->class = class;
+	void *p = gcosize + (void*) gco;
+	int *refoffsets = gcc->refoffsets(gco);
+	while(*refoffsets) *(void**) (p + *refoffsets++) = 0;
+
+	gco->class = gcc;
 	gco->flag = SCANNED;
 	gco->next = first;
 
-	return gcosize + (void*) (first = gco);
+	return first = p;
 }
 
 void *gcallocleaf(int size) {
