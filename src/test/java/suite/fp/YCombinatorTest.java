@@ -5,26 +5,27 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.node.Node;
 
 public class YCombinatorTest {
 
 	private String y = "(f => (x => f {n => x {x} {n}}) {x => f {n => x {x} {n}}})";
 
+	private String lazyy = "(f => (x => f {x {x}}) {x => f {x {x}}})";
+
 	@Test
 	public void testFactorial() {
-		assertEquals(Suite.parse("3628800"), eval("" //
-				+ "10 | " + y + " {fac => n => if (n > 1) then (n * fac {n - 1}) else 1}"));
+		assertEquals(Suite.parse("3628800"), Suite.evaluateFun("" //
+				+ "10 | " + y + " {fac => n => if (n > 1) then (n * fac {n - 1}) else 1}", false));
+		assertEquals(Suite.parse("3628800"), Suite.evaluateFun("" //
+				+ "10 | " + lazyy + " {fac => n => if (n > 1) then (n * fac {n - 1}) else 1}", true));
 	}
 
 	@Test
 	public void testFibonacci() {
-		assertEquals(Suite.parse("55"), eval("" //
-				+ "10 | " + y + " {fib => n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n}"));
-	}
-
-	private static Node eval(String f) {
-		return Suite.evaluateFun(f, false);
+		assertEquals(Suite.parse("55"), Suite.evaluateFun("" //
+				+ "10 | " + y + " {fib => n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n}", false));
+		assertEquals(Suite.parse("55"), Suite.evaluateFun("" //
+				+ "10 | " + lazyy + " {fib => n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n}", true));
 	}
 
 }
