@@ -196,17 +196,15 @@ public class Ebnf {
 					Deque<Node> stack = new ArrayDeque<>();
 					stack.push(root);
 
-					for (State state_ : states) {
+					for (State state_ : states)
 						if (state_.depth < stack.size())
 							stack.pop().end = state_.pos;
-
-						if (state_.depth > stack.size()) {
+						else if (state_.depth > stack.size()) {
 							Node node = new Node(state_.entity, state_.pos);
 							if (state_.entity != null)
 								stack.peek().nodes.add(node);
 							stack.push(node);
 						}
-					}
 
 					return root.nodes.get(0);
 				}
