@@ -57,6 +57,7 @@ public class DependencyMain extends ExecutableProgram {
 			, "less" //
 			, "libreadline-dev" //
 			, "libreoffice" //
+			, "lightdm" //
 			, "mpg321" //
 			, "netcat-traditional" //
 			, "obconf" //
@@ -102,24 +103,47 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String args[]) throws IOException {
-		listManuallyInstalled();
-		listUnusedPackages();
-		listUnusedFiles();
+		Read.from(getClass().getMethods()) //
+				.filter(m -> m.getName().startsWith("list")) //
+				.foreach(m -> {
+					System.out.println(m.getName() + "()");
+					try {
+						m.invoke(this, new Object[] {});
+					} catch (Exception ex) {
+						throw new RuntimeException(ex);
+					}
+					System.out.println();
+					System.out.println();
+				});
 		return true;
 	}
 
-	private void listManuallyInstalled() {
+	public void listManuallyInstalled() {
 		Streamlet<String> readManuallyInstalled = aptUtil.readManuallyInstalled();
 		readManuallyInstalled //
 				.forEach(System.out::println);
 	}
 
-	private void listUnusedPackages() {
+	public void listUndependedPackages() {
+		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
+		Map<String, List<String>> dependees = dpkgUtil.getDependers(packages);
+
+		Read.from(packages) //
+				.filter(pm -> !isEssential(pm)) //
+				.map(pm -> pm.get("Package")) //
+				.filter(packageName -> !dependees.containsKey(packageName)) //
+				.filter(packageName -> !requiredList.contains(packageName)) //
+				.sort(Util.comparator()) //
+				.toList() //
+				.forEach(System.out::println);
+	}
+
+	public void listUnusedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		Set<String> required = new HashSet<>(requiredList);
 
 		required.addAll(Read.from(packages) //
-				.filter(pm -> Objects.equals(pm.get("Essential"), "yes") || Objects.equals(pm.get("Priority"), "important")) //
+				.filter(pm -> isEssential(pm)) //
 				.map(pm -> pm.get("Package")) //
 				.toList());
 
@@ -134,7 +158,7 @@ public class DependencyMain extends ExecutableProgram {
 		unusedPackageNames.forEach(System.out::println);
 	}
 
-	private void listUnusedFiles() {
+	public void listUnusedFiles() {
 		Set<String> files = Read.from(dpkgUtil.readInstalledPackages()) //
 				.concatMap(dpkgUtil::readFileList) //
 				.toSet();
@@ -146,6 +170,11 @@ public class DependencyMain extends ExecutableProgram {
 				.toList();
 
 		unusedFiles.forEach(System.out::println);
+	}
+
+	private boolean isEssential(Map<String, String> pm) {
+		return Objects.equals(pm.get("Essential"), "yes") //
+				|| Arrays.asList("important", "required").contains(pm.get("Priority"));
 	}
 
 }
