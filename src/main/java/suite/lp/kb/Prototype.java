@@ -26,26 +26,24 @@ public class Prototype implements Comparable<Prototype> {
 		return of(rule.head, n);
 	}
 
-	public static Prototype of(Node node) {
-		return of(node, 0);
-	}
-
 	public static Prototype of(Node node, int n) {
 		for (int i = 0; i < n; i++) {
 			Tree tree = Tree.decompose(node);
 			node = tree != null ? tree.getRight() : Atom.NIL;
 		}
 
-		if (node != null) {
-			Tree t0, t1;
+		return node != null ? Prototype.of(node) : null;
+	}
 
-			while ((t1 = Tree.decompose(node)) != null) {
-				t0 = t1;
-				node = t0.getLeft();
-			}
+	public static Prototype of(Node node) {
+		Tree t0, t1;
+
+		while ((t1 = Tree.decompose(node)) != null) {
+			t0 = t1;
+			node = t0.getLeft();
 		}
 
-		boolean indexable = node != null && !SewingGeneralizer.isVariant(node) && !(node instanceof Reference);
+		boolean indexable = !SewingGeneralizer.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
 	}
 
