@@ -24,6 +24,8 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -157,25 +159,55 @@ public class SewingProver {
 	private void compileAll() {
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
 			List<Rule> rules = new ArrayList<>(entry.t1);
-			Trampoline tr = fail;
+			Trampoline tr0 = compileRules(rules);
+			Trampoline tr;
 
-			for (int i = rules.size() - 1; i >= 0; i--) {
-				Rule rule = rules.get(i);
-				Node ruleHead = rule.head;
-				Node ruleTail = rule.tail;
-				SewingGeneralizer sg = new SewingGeneralizer();
-				CompileTime ct = new CompileTime(sg);
-				Fun<Env, Node> f = sg.compile(ruleHead);
+			if (rules.size() >= 6) {
+				Map<Prototype, List<Rule>> rulesByProto1 = Read.from(rules) //
+						.groupBy(rule -> Prototype.of(rule, 1)) //
+						.collect(As.map());
 
-				Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
-				Trampoline tr1 = compile0(ct, ruleTail);
-				tr = or(newEnv(sg, and(tr0, tr1)), tr);
-			}
+				if (!rulesByProto1.containsKey(null)) {
+					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
+							.map(kv -> Pair.of(kv.t0, compileRules(kv.t1))) //
+							.collect(As.map());
 
-			tr = saveEnv(cutBegin(tr));
-			tr = Suite.isProverTrace ? log(tr) : tr;
+					tr = rt -> {
+						Prototype proto = Prototype.of(rt.query, 1);
+						if (proto != null) {
+							Trampoline tr_ = trByProto1.get(proto);
+							return tr_ != null ? tr_ : fail;
+						} else
+							return tr0;
+					};
+				} else
+					tr = tr0;
+			} else
+				tr = tr0;
+
 			getTrampolineByPrototype(entry.t0)[0] = tr;
 		}
+	}
+
+	private Trampoline compileRules(List<Rule> rules) {
+		Trampoline tr = fail;
+
+		for (int i = rules.size() - 1; i >= 0; i--) {
+			Rule rule = rules.get(i);
+			Node ruleHead = rule.head;
+			Node ruleTail = rule.tail;
+			SewingGeneralizer sg = new SewingGeneralizer();
+			CompileTime ct = new CompileTime(sg);
+			Fun<Env, Node> f = sg.compile(ruleHead);
+
+			Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
+			Trampoline tr1 = compile0(ct, ruleTail);
+			tr = or(newEnv(sg, and(tr0, tr1)), tr);
+		}
+
+		tr = saveEnv(cutBegin(tr));
+		tr = Suite.isProverTrace ? log(tr) : tr;
+		return tr;
 	}
 
 	private Trampoline compile0(CompileTime ct, Node node) {
