@@ -19,7 +19,7 @@ public class Prototype implements Comparable<Prototype> {
 	public final Node head;
 
 	public static Prototype of(Rule rule) {
-		return of(rule, 0);
+		return of(rule.head);
 	}
 
 	public static Prototype of(Rule rule, int n) {
