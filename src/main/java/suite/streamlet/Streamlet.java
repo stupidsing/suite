@@ -146,6 +146,14 @@ public class Streamlet<T> implements Iterable<T> {
 		return st(FunUtil.filter(fun, source));
 	}
 
+	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
+		Map<K, List<T>> map = new HashMap<>();
+		T t;
+		while ((t = next()) != null)
+			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(t);
+		return Read.from(map);
+	}
+
 	public T next() {
 		return source.source();
 	}
