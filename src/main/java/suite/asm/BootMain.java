@@ -9,11 +9,12 @@ import suite.primitive.Bytes;
 import suite.util.FileUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.util.Util.RunOption;
 
 public class BootMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
-		Util.run(BootMain.class, args);
+		Util.run(BootMain.class, args, RunOption.TIME___);
 	}
 
 	@Override

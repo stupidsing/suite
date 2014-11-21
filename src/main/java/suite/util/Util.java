@@ -23,6 +23,10 @@ import suite.sample.Profiler;
 
 public class Util {
 
+	public enum RunOption {
+		RUN____, PROFILE, TIME___,
+	};
+
 	public static abstract class ExecutableProgram implements AutoCloseable {
 		protected abstract boolean run(String args[]) throws Exception;
 
@@ -226,10 +230,10 @@ public class Util {
 	}
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
-		run(clazz, args, false);
+		run(clazz, args, RunOption.RUN____);
 	}
 
-	public static void run(Class<? extends ExecutableProgram> clazz, String args[], boolean isProfile) {
+	public static void run(Class<? extends ExecutableProgram> clazz, String args[], RunOption runOption) {
 		LogUtil.initLog4j(Level.INFO);
 		Runnable runnable;
 		int code[] = new int[1];
@@ -244,10 +248,19 @@ public class Util {
 				}
 			};
 
-			if (!isProfile)
-				runnable.run();
-			else
+			switch (runOption) {
+			case PROFILE:
 				System.out.println(new Profiler().profile(runnable));
+				break;
+			case RUN____:
+				runnable.run();
+				break;
+			case TIME___:
+				long start = System.currentTimeMillis();
+				runnable.run();
+				long end = System.currentTimeMillis();
+				System.out.println("DURATION = " + (end - start) + "ms");
+			}
 		} catch (ReflectiveOperationException ex) {
 			LogUtil.fatal(ex);
 			code[0] = 2;
