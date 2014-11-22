@@ -153,6 +153,7 @@ public class SewingProver {
 			Trampoline tr0 = compileRules(rules);
 			Trampoline tr;
 
+			// Second-level indexing optimization
 			if (rules.size() >= 6) {
 				Map<Prototype, List<Rule>> rulesByProto1 = Read.from(rules) //
 						.groupBy(rule -> Prototype.of(rule, 1)) //
@@ -198,28 +199,28 @@ public class SewingProver {
 		return tr;
 	}
 
-	private Trampoline compile0(SewingGeneralizer ct, Node node) {
+	private Trampoline compile0(SewingGeneralizer sg, Node node) {
 		Trampoline tr = null;
 		node = node.finalNode();
 		Tree tree;
 		Node m[];
 
 		if ((m = Suite.match(".0, .1", node)) != null) {
-			Trampoline tr0 = compile0(ct, m[0]);
-			Trampoline tr1 = compile0(ct, m[1]);
+			Trampoline tr0 = compile0(sg, m[0]);
+			Trampoline tr1 = compile0(sg, m[1]);
 			tr = and(tr0, tr1);
 		} else if ((m = Suite.match(".0; .1", node)) != null) {
-			Trampoline tr0 = compile0(ct, m[0]);
-			Trampoline tr1 = compile0(ct, m[1]);
+			Trampoline tr0 = compile0(sg, m[0]);
+			Trampoline tr1 = compile0(sg, m[1]);
 			tr = or(tr0, tr1);
 		} else if ((m = Suite.match(".0 = .1", node)) != null) {
-			Fun<Env, Node> f0 = ct.compile(m[0]);
-			Fun<Env, Node> f1 = ct.compile(m[1]);
+			Fun<Env, Node> f0 = sg.compile(m[0]);
+			Fun<Env, Node> f1 = sg.compile(m[1]);
 			tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
 		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
-			tr = callSystemPredicate(ct, ((Atom) m[0]).name, m[1]);
+			tr = callSystemPredicate(sg, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
-			tr = callSystemPredicate(ct, tree.getOperator().getName(), node);
+			tr = callSystemPredicate(sg, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
 			if (Util.stringEquals(name, SewingGeneralizer.cutName))
@@ -229,10 +230,10 @@ public class SewingProver {
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
 			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
-				Fun<Env, Node> f = ct.compile(node);
+				Fun<Env, Node> f = sg.compile(node);
 				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
 			} else
-				tr = callSystemPredicate(ct, name, Atom.NIL);
+				tr = callSystemPredicate(sg, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
@@ -242,7 +243,7 @@ public class SewingProver {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Env, Node> f = ct.compile(node);
+				Fun<Env, Node> f = sg.compile(node);
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;
