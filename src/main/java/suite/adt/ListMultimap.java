@@ -14,7 +14,15 @@ import suite.util.Pair;
 
 public class ListMultimap<K, V> {
 
-	private Map<K, List<V>> map = new HashMap<>();
+	private Map<K, List<V>> map;
+
+	public ListMultimap() {
+		this(new HashMap<>());
+	}
+
+	public ListMultimap(Map<K, List<V>> map) {
+		this.map = map;
+	}
 
 	public boolean containsKey(K key) {
 		return map.containsKey(key);

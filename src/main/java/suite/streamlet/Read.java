@@ -24,6 +24,23 @@ public class Read {
 		return new Streamlet<>(() -> null);
 	}
 
+	public static <T> Streamlet<T> from(Collection<T> col) {
+		return from(To.source(col));
+	}
+
+	public static <K, V> Streamlet<Pair<K, V>> from(Map<K, V> map) {
+		return Read.from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
+	}
+
+	public static <T> Streamlet<T> from(Source<T> source) {
+		return new Streamlet<>(source);
+	}
+
+	@SafeVarargs
+	public static <T> Streamlet<T> from(T... col) {
+		return from(Arrays.asList(col));
+	}
+
 	public static Streamlet<String> lines(Path path) throws IOException {
 		return lines(path.toFile());
 	}
@@ -49,21 +66,8 @@ public class Read {
 		}).closeAtEnd(br);
 	}
 
-	@SafeVarargs
-	public static <T> Streamlet<T> from(T... col) {
-		return from(Arrays.asList(col));
-	}
-
-	public static <K, V> Streamlet<Pair<K, V>> from(Map<K, V> map) {
-		return Read.from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
-	}
-
-	public static <T> Streamlet<T> from(Collection<T> col) {
-		return from(To.source(col));
-	}
-
-	public static <T> Streamlet<T> from(Source<T> source) {
-		return new Streamlet<>(source);
+	public static <K, V, C extends Collection<V>> Streamlet<Pair<K, V>> multimap(Map<K, C> map) {
+		return Read.from(map).concatMap(p -> Read.from(p.t1).map(v -> Pair.of(p.t0, v)));
 	}
 
 }

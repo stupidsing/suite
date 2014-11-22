@@ -80,8 +80,8 @@ public class DpkgUtil {
 	}
 
 	public Map<String, List<String>> getDependers(List<Map<String, String>> packages) {
-		return Read.from(getDependees(packages)) //
-				.concatMap(p -> Read.from(p.t1).<Pair<String, String>> map(dependee -> Pair.of(dependee, p.t0))) //
+		return Read.multimap(getDependees(packages)) //
+				.map(p -> Pair.of(p.t1, p.t0)) //
 				.collect(As.listMap());
 	}
 
