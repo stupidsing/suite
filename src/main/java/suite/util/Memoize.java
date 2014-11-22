@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,16 +9,57 @@ import suite.util.FunUtil.Source;
 
 public class Memoize {
 
+	private enum State {
+		EMPTY__, INUSE_, FLAGGED
+	}
+
 	public static <I, O> Fun<I, O> byInput(Fun<I, O> fun) {
 		Map<I, O> results = new ConcurrentHashMap<>();
+		return in -> results.computeIfAbsent(in, in_ -> fun.apply(in_));
+	}
 
-		return in -> {
-			O result;
-			if (!results.containsKey(in))
-				results.put(in, result = fun.apply(in));
-			else
-				result = results.get(in);
-			return result;
+	public static <I, O> Fun<I, O> byInput(Class<O> clazz, Fun<I, O> fun, int size) {
+		return new Fun<I, O>() {
+			class R {
+				State state = State.EMPTY__;
+				I input;
+				O output;
+			}
+
+			private Map<I, R> map = new HashMap<>();
+			private R array[] = new R[size];
+			private int p = 0;
+
+			{
+				for (int i = 0; i < size; i++)
+					array[i] = new R();
+			}
+
+			public synchronized O apply(I in) {
+				O result;
+				R r = map.get(in);
+
+				if (r == null) {
+					while ((r = array[p]).state != State.FLAGGED) {
+						r.state = State.INUSE_;
+						p = ++p > size ? p - size : p;
+					}
+
+					if (r.state == State.INUSE_)
+						map.remove(r.input);
+					else
+						r.state = State.INUSE_;
+
+					r.input = in;
+					r.output = result = fun.apply(in);
+					map.put(in, r);
+				} else {
+					r.state = State.FLAGGED;
+					result = r.output;
+				}
+
+				return result;
+			}
 		};
 	}
 
