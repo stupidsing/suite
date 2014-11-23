@@ -120,7 +120,7 @@ public class Assembler {
 
 	private Bytes assemble(int address, Node instruction) {
 		List<Node> ins = Arrays.asList(Int.of(bits), Int.of(address), instruction);
-		List<Node> nodes = FindUtil.collectList(finder, Tree.list(TermOp.AND___, ins));
+		List<Node> nodes = FindUtil.collectList(finder, Tree.of(TermOp.AND___, ins));
 		return Read.from(nodes) //
 				.map(this::convertByteStream) //
 				.min((bytes0, bytes1) -> bytes0.size() - bytes1.size());

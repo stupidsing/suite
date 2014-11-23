@@ -63,7 +63,7 @@ public class SldResolution {
 			Source<List<Node>> value1 = orsMap.get(negate(entry.getKey()));
 
 			if (value1 != null)
-				results.add(Tree.list(TermOp.AND___, Util.add(value0.source(), value1.source())));
+				results.add(Tree.of(TermOp.AND___, Util.add(value0.source(), value1.source())));
 		}
 
 		return results;

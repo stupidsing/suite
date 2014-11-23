@@ -21,7 +21,7 @@ public class FunctionalTemplatePreprocessorTest {
 		List<Node> fruits = Arrays.<Node> asList(new Str("orange"), new Str("apple"), new Str("pear"));
 
 		Map<String, Node> map = Read.from(Arrays.<Pair<String, Node>> asList( //
-				Pair.of("list", Tree.list(TermOp.OR____, fruits)) //
+				Pair.of("list", Tree.of(TermOp.OR____, fruits)) //
 				, Pair.of("title", new Str("My favourite things")) //
 				)) //
 				.collect(As.map());

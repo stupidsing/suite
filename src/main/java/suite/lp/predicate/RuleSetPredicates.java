@@ -41,7 +41,7 @@ public class RuleSetPredicates {
 		for (Rule rule : rules)
 			nodes.add(Tree.of(TermOp.IS____, rule.head, rule.tail));
 
-		return prover.bind(Tree.list(TermOp.NEXT__, nodes), ps);
+		return prover.bind(Tree.of(TermOp.NEXT__, nodes), ps);
 	};
 
 	public SystemPredicate importPredicate = (prover, ps) -> Suite.importFrom(prover.ruleSet(), ps);

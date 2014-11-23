@@ -28,14 +28,6 @@ public class Tree extends Node {
 		return params;
 	}
 
-	public static Node list(Operator operator, List<Node> nodes) {
-		Node result = Atom.NIL;
-		int i = nodes.size();
-		while (--i >= 0)
-			result = of(operator, nodes.get(i), result);
-		return result;
-	}
-
 	public static Iterable<Node> iter(Node node) {
 		return iter(node, TermOp.AND___);
 	}
@@ -54,6 +46,14 @@ public class Tree extends Node {
 				return next;
 			}
 		};
+	}
+
+	public static Node of(Operator operator, List<Node> nodes) {
+		Node result = Atom.NIL;
+		int i = nodes.size();
+		while (--i >= 0)
+			result = of(operator, nodes.get(i), result);
+		return result;
 	}
 
 	public static Tree of(Operator operator, Node left, Node right) {

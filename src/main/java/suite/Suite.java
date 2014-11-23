@@ -111,7 +111,7 @@ public class Suite {
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::formClause) //
 				.toList();
-		return Tree.list(TermOp.NEXT__, nodes);
+		return Tree.of(TermOp.NEXT__, nodes);
 	}
 
 	public static Node[] match(String s, Node node) {
