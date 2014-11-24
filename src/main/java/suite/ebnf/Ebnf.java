@@ -294,13 +294,14 @@ public class Ebnf {
 	private Grammar parseGrammar(String s) {
 		Grammar grammar;
 		List<String> list;
+		Pair<String, String> pair;
 		s = s.trim();
 
 		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
 			grammar = new OrGrammar(parseGrammars(list));
-		else if ((list = ParseUtil.searchn(s, " /except/ ", Assoc.RIGHT)).size() > 1) {
-			Grammar grammar0 = parseGrammar(list.get(0));
-			Grammar grammar1 = parseGrammar(list.get(1));
+		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null) {
+			Grammar grammar0 = parseGrammar(pair.t0);
+			Grammar grammar1 = parseGrammar(pair.t1);
 			return (parse, st) -> grammar0.p(parse, st).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
 				return grammar1.p(new Parse(in1), new State(null, 0, null, 1)).count() == 0;

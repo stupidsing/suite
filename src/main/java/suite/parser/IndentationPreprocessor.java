@@ -3,6 +3,7 @@ package suite.parser;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.util.FunUtil.Fun;
+import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
@@ -27,12 +28,12 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 		while (!in.isEmpty()) {
 			String line;
-			String lr[];
+			Pair<String, String> pair;
 
-			lr = ParseUtil.search(in, "\n", Assoc.RIGHT, false);
-			if (lr != null) {
-				line = lr[0];
-				in = lr[1];
+			pair = ParseUtil.search(in, "\n", Assoc.RIGHT, false);
+			if (pair != null) {
+				line = pair.t0;
+				in = pair.t1;
 			} else {
 				line = in;
 				in = "";

@@ -16,6 +16,7 @@ import suite.parser.CommentPreprocessor;
 import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
 import suite.util.FunUtil.Fun;
+import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
@@ -74,34 +75,34 @@ public class RecursiveParser {
 
 		for (int i = fromOp; i < operators.length; i++) {
 			Operator operator = operators[i];
-			String lr[] = ParseUtil.search(s, operator);
+			Pair<String, String> pair = ParseUtil.search(s, operator);
 			int li, ri;
 
-			if (lr == null)
+			if (pair == null)
 				continue;
 
 			if (operator == TermOp.BRACES) {
-				String right = lr[1].trim();
+				String right = pair.t1.trim();
 
 				if (Util.charAt(right, -1) != '}')
 					continue;
 
-				lr[1] = Util.substr(right, 0, -1);
+				pair.t1 = Util.substr(right, 0, -1);
 				li = 0;
 				ri = 0;
 			} else {
 				if (operator == TermOp.TUPLE_)
-					if (Util.isBlank(lr[0]))
-						return parseRawString(lr[1], fromOp);
-					else if (Util.isBlank(lr[1]))
-						return parseRawString(lr[0], fromOp);
+					if (Util.isBlank(pair.t0))
+						return parseRawString(pair.t1, fromOp);
+					else if (Util.isBlank(pair.t1))
+						return parseRawString(pair.t0, fromOp);
 
 				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 				li = fromOp + (isLeftAssoc ? 0 : 1);
 				ri = fromOp + (isLeftAssoc ? 1 : 0);
 			}
 
-			return Tree.of(operator, parseWithoutComments(lr[0], li), parseWithoutComments(lr[1], ri));
+			return Tree.of(operator, parseWithoutComments(pair.t0, li), parseWithoutComments(pair.t1, ri));
 		}
 
 		if (first == '(' && last == ')')

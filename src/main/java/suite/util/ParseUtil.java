@@ -86,26 +86,26 @@ public class ParseUtil {
 
 	public static List<String> searchn(String s, String name, Assoc assoc) {
 		List<String> list = new ArrayList<>();
-		String lr[];
+		Pair<String, String> pair;
 
-		while ((lr = search(s, name, assoc)) != null) {
-			list.add(lr[0]);
-			s = lr[1];
+		while ((pair = search(s, name, assoc)) != null) {
+			list.add(pair.t0);
+			s = pair.t1;
 		}
 
 		list.add(s);
 		return list;
 	}
 
-	public static String[] search(String s, Operator operator) {
+	public static Pair<String, String> search(String s, Operator operator) {
 		return search(s, operator.getName(), operator.getAssoc());
 	}
 
-	public static String[] search(String s, String name, Assoc assoc) {
+	public static Pair<String, String> search(String s, String name, Assoc assoc) {
 		return search(s, name, assoc, true);
 	}
 
-	public static String[] search(String s, String name, Assoc assoc, boolean isCheckDepth) {
+	public static Pair<String, String> search(String s, String name, Assoc assoc, boolean isCheckDepth) {
 		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
@@ -123,7 +123,7 @@ public class ParseUtil {
 				if (depth == 0 && s.startsWith(name, pos)) {
 					String left = s.substring(0, pos);
 					String right = s.substring(pos + nameLength);
-					return new String[] { left, right };
+					return Pair.of(left, right);
 				}
 			}
 		}
