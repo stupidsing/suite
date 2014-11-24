@@ -10,9 +10,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
+import suite.util.LogUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
-import suite.util.Util.RunOption;
 
 /**
  * Performs precompilation.
@@ -26,7 +26,7 @@ public class PrecompileMain extends ExecutableProgram {
 	);
 
 	public static void main(String args[]) throws IOException {
-		Util.run(PrecompileMain.class, args, RunOption.TIME___);
+		Util.run(PrecompileMain.class, args);
 	}
 
 	protected boolean run(String args[]) {
@@ -34,35 +34,37 @@ public class PrecompileMain extends ExecutableProgram {
 	}
 
 	public boolean precompile() {
-		ProverConfig pc = new ProverConfig();
-		boolean ok = Suite.precompile("STANDARD", pc);
-		List<Future<Boolean>> futures = new ArrayList<>();
+		return LogUtil.duration(getClass().getSimpleName(), () -> {
+			ProverConfig pc = new ProverConfig();
+			boolean ok = Suite.precompile("STANDARD", pc);
+			List<Future<Boolean>> futures = new ArrayList<>();
 
-		if (ok) {
-			ThreadPoolExecutor executor = Util.createExecutorByProcessors();
+			if (ok) {
+				ThreadPoolExecutor executor = Util.createExecutorByProcessors();
 
-			try {
-				for (String libraryName : allLibraries)
-					futures.add(executor.submit(() -> Suite.precompile(libraryName, pc)));
-			} finally {
-				executor.shutdown();
+				try {
+					for (String libraryName : allLibraries)
+						futures.add(executor.submit(() -> Suite.precompile(libraryName, pc)));
+				} finally {
+					executor.shutdown();
+				}
+
+				for (Future<Boolean> future : futures)
+					try {
+						ok &= future.get();
+					} catch (InterruptedException | ExecutionException ex) {
+						ex.printStackTrace();
+						ok = false;
+					}
 			}
 
-			for (Future<Boolean> future : futures)
-				try {
-					ok &= future.get();
-				} catch (InterruptedException | ExecutionException ex) {
-					ex.printStackTrace();
-					ok = false;
-				}
-		}
+			if (ok)
+				System.out.println("Please refresh eclipse workspace");
+			else
+				System.err.println("COMPILATION FAILURE");
 
-		if (ok)
-			System.out.println("Please refresh eclipse workspace");
-		else
-			System.err.println("COMPILATION FAILURE");
-
-		return ok;
+			return ok;
+		});
 	}
 
 }
