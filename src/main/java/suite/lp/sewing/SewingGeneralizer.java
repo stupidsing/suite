@@ -133,9 +133,9 @@ public class SewingGeneralizer {
 			return env -> {
 				Tree t = Tree.of(null, null, null);
 				Node node_ = t;
-				for (Fun<Env, Node> gen_ : funs) {
+				for (Fun<Env, Node> fun_ : funs) {
 					Tree t_ = Tree.decompose(node_);
-					Tree.forceSetRight(t_, gen_.apply(env));
+					Tree.forceSetRight(t_, fun_.apply(env));
 					node_ = t_.getRight();
 				}
 				return t.getRight();
