@@ -24,6 +24,8 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.Operator;
+import suite.node.io.TermOp;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -202,13 +204,17 @@ public class SewingProver {
 	private Trampoline compile0(SewingGeneralizer sg, Node node) {
 		Trampoline tr = null;
 		node = node.finalNode();
+		List<Node> list;
 		Tree tree;
 		Node m[];
 
-		if ((m = Suite.match(".0, .1", node)) != null) {
-			Trampoline tr0 = compile0(sg, m[0]);
-			Trampoline tr1 = compile0(sg, m[1]);
-			tr = and(tr0, tr1);
+		if ((list = breakdown(TermOp.AND___, node)).size() > 1) {
+			List<Trampoline> trs = Read.from(list).map(n -> compile0(sg, n)).reverse().toList();
+			tr = rt -> {
+				for (Trampoline tr_ : trs)
+					rt.pushRem(tr_);
+				return okay;
+			};
 		} else if ((m = Suite.match(".0; .1", node)) != null) {
 			Trampoline tr0 = compile0(sg, m[0]);
 			Trampoline tr1 = compile0(sg, m[1]);
@@ -370,6 +376,17 @@ public class SewingProver {
 			});
 			return tr0;
 		};
+	}
+
+	private List<Node> breakdown(Operator operator, Node node) {
+		ArrayList<Node> list = new ArrayList<>();
+		Tree tree;
+		while ((tree = Tree.decompose(node, operator)) != null) {
+			list.add(tree.getLeft());
+			node = tree.getRight();
+		}
+		list.add(node);
+		return list;
 	}
 
 	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {

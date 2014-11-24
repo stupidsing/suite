@@ -256,10 +256,10 @@ public class Util {
 				runnable.run();
 				break;
 			case TIME___:
-				long start = System.currentTimeMillis();
-				runnable.run();
-				long end = System.currentTimeMillis();
-				System.out.println("DURATION = " + (end - start) + "ms");
+				LogUtil.duration(clazz.getSimpleName(), () -> {
+					runnable.run();
+					return Boolean.TRUE;
+				});
 			}
 		} catch (ReflectiveOperationException ex) {
 			LogUtil.fatal(ex);

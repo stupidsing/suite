@@ -12,6 +12,7 @@ import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.util.Util.RunOption;
 
 /**
  * Performs precompilation.
@@ -25,7 +26,7 @@ public class PrecompileMain extends ExecutableProgram {
 	);
 
 	public static void main(String args[]) throws IOException {
-		Util.run(PrecompileMain.class, args);
+		Util.run(PrecompileMain.class, args, RunOption.TIME___);
 	}
 
 	protected boolean run(String args[]) {

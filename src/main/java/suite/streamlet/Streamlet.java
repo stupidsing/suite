@@ -158,6 +158,14 @@ public class Streamlet<T> implements Iterable<T> {
 		return source.source();
 	}
 
+	public Streamlet<T> reverse() {
+		List<T> list0 = toList();
+		List<T> list1 = new ArrayList<>();
+		for (int i = list0.size() - 1; i >= 0; i--)
+			list1.add(list0.get(i));
+		return Read.from(list1);
+	}
+
 	public Streamlet<T> sort(Comparator<T> comparator) {
 		return st(To.source(Util.sort(toList(), comparator)));
 	}
