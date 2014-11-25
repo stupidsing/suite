@@ -225,7 +225,24 @@ public class SewingProver {
 			tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
 		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sg, ((Atom) m[0]).name, m[1]);
-		else if ((tree = Tree.decompose(node)) != null)
+		else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
+			Trampoline tr0 = compile0(sg, m[0]);
+			Trampoline tr1 = compile0(sg, m[1]);
+			Trampoline tr2 = compile0(sg, m[2]);
+			tr = rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				int pit = rt.journal.getPointInTime();
+				rt.pushRem(rt_ -> {
+					rt_.alts = alts0;
+					return tr1;
+				});
+				rt.pushAlt(rt_ -> {
+					rt_.journal.undoBinds(pit);
+					return tr2;
+				});
+				return tr0;
+			};
+		} else if ((tree = Tree.decompose(node)) != null)
 			tr = callSystemPredicate(sg, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
@@ -272,17 +289,7 @@ public class SewingProver {
 	private Trampoline callSystemPredicate(SewingGeneralizer sg, String name, Node pass) {
 		Trampoline tr;
 
-		if (Util.stringEquals(name, "once")) {
-			Trampoline tr1 = compile0(sg, pass);
-			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
-				rt.pushRem(rt_ -> {
-					rt_.alts = alts0;
-					return okay;
-				});
-				return tr1;
-			};
-		} else if (Util.stringEquals(name, "not")) {
+		if (Util.stringEquals(name, "not")) {
 			Trampoline tr1 = compile0(sg, pass);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
@@ -295,6 +302,16 @@ public class SewingProver {
 				});
 				rt.pushAlt(rt_ -> {
 					rt_.rems = rems0;
+					return okay;
+				});
+				return tr1;
+			};
+		} else if (Util.stringEquals(name, "once")) {
+			Trampoline tr1 = compile0(sg, pass);
+			tr = rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				rt.pushRem(rt_ -> {
+					rt_.alts = alts0;
 					return okay;
 				});
 				return tr1;
