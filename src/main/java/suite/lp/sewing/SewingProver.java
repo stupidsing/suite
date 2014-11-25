@@ -242,6 +242,33 @@ public class SewingProver {
 				});
 				return tr0;
 			};
+		} else if ((m = Suite.match("not .0", node)) != null) {
+			Trampoline tr0 = compile0(sg, m[0]);
+			tr = rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				IList<Trampoline> rems0 = rt.rems;
+				int pit = rt.journal.getPointInTime();
+				rt.pushRem(rt_ -> {
+					rt_.journal.undoBinds(pit);
+					rt_.alts = alts0;
+					return fail;
+				});
+				rt.pushAlt(rt_ -> {
+					rt_.rems = rems0;
+					return okay;
+				});
+				return tr0;
+			};
+		} else if ((m = Suite.match("once .0", node)) != null) {
+			Trampoline tr0 = compile0(sg, m[0]);
+			tr = rt -> {
+				IList<Trampoline> alts0 = rt.alts;
+				rt.pushRem(rt_ -> {
+					rt_.alts = alts0;
+					return okay;
+				});
+				return tr0;
+			};
 		} else if ((tree = Tree.decompose(node)) != null)
 			tr = callSystemPredicate(sg, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
@@ -288,43 +315,12 @@ public class SewingProver {
 
 	private Trampoline callSystemPredicate(SewingGeneralizer sg, String name, Node pass) {
 		Trampoline tr;
-
-		if (Util.stringEquals(name, "not")) {
-			Trampoline tr1 = compile0(sg, pass);
-			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
-				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
-				rt.pushRem(rt_ -> {
-					rt_.journal.undoBinds(pit);
-					rt_.alts = alts0;
-					return fail;
-				});
-				rt.pushAlt(rt_ -> {
-					rt_.rems = rems0;
-					return okay;
-				});
-				return tr1;
-			};
-		} else if (Util.stringEquals(name, "once")) {
-			Trampoline tr1 = compile0(sg, pass);
-			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
-				rt.pushRem(rt_ -> {
-					rt_.alts = alts0;
-					return okay;
-				});
-				return tr1;
-			};
-		} else {
-			SystemPredicate systemPredicate = systemPredicates.get(name);
-			if (systemPredicate != null) {
-				Fun<Env, Node> f = sg.compile(pass);
-				tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
-			} else
-				tr = null;
-		}
-
+		SystemPredicate systemPredicate = systemPredicates.get(name);
+		if (systemPredicate != null) {
+			Fun<Env, Node> f = sg.compile(pass);
+			tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
+		} else
+			tr = null;
 		return tr;
 	}
 
