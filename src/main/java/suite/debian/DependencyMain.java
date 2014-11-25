@@ -66,6 +66,7 @@ public class DependencyMain extends ExecutableProgram {
 			, "pcmanfm" //
 			, "pidgin" //
 			, "pidgin-hotkeys" //
+			, "rdesktop" //
 			, "rlwrap" //
 			, "rsync" //
 			, "rxvt-unicode" //
