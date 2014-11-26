@@ -18,7 +18,7 @@ import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.lp.predicate.SystemPredicates;
-import suite.lp.sewing.SewingGeneralizer.Env;
+import suite.lp.sewing.VariableMapping.Env;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -122,15 +122,15 @@ public class SewingProver {
 	}
 
 	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
-		SewingGeneralizer sg = new SewingGeneralizer();
-		Env env = sg.env();
+		SewingBinder sb = new SewingBinder();
+		Env env = sb.env();
 
 		Trampoline sinker = rt_ -> {
 			sink.sink(env);
 			return fail;
 		};
 
-		Trampoline t = and(cutBegin(newEnv(sg, compile0(sg, node))), sinker);
+		Trampoline t = and(cutBegin(newEnv(sb, compile0(sb, node))), sinker);
 		trampoline(new Runtime(pc, env, t));
 	}
 
@@ -188,12 +188,11 @@ public class SewingProver {
 
 		for (int i = rules.size() - 1; i >= 0; i--) {
 			Rule rule = rules.get(i);
-			SewingGeneralizer sg = new SewingGeneralizer();
-			Fun<Env, Node> f = sg.compile(rule.head);
-
+			SewingBinder sb = new SewingBinder();
+			Fun<Env, Node> f = sb.compile(rule.head);
 			Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
-			Trampoline tr1 = compile0(sg, rule.tail);
-			tr = or(newEnv(sg, and(tr0, tr1)), tr);
+			Trampoline tr1 = compile0(sb, rule.tail);
+			tr = or(newEnv(sb, and(tr0, tr1)), tr);
 		}
 
 		tr = saveEnv(cutBegin(tr));
@@ -201,7 +200,7 @@ public class SewingProver {
 		return tr;
 	}
 
-	private Trampoline compile0(SewingGeneralizer sg, Node node) {
+	private Trampoline compile0(SewingBinder sb, Node node) {
 		Trampoline tr = null;
 		node = node.finalNode();
 		List<Node> list;
@@ -209,26 +208,24 @@ public class SewingProver {
 		Node m[];
 
 		if ((list = breakdown(TermOp.AND___, node)).size() > 1) {
-			List<Trampoline> trs = Read.from(list).map(n -> compile0(sg, n)).reverse().toList();
+			List<Trampoline> trs = Read.from(list).map(n -> compile0(sb, n)).reverse().toList();
 			tr = rt -> {
 				for (Trampoline tr_ : trs)
 					rt.pushRem(tr_);
 				return okay;
 			};
 		} else if ((m = Suite.match(".0; .1", node)) != null) {
-			Trampoline tr0 = compile0(sg, m[0]);
-			Trampoline tr1 = compile0(sg, m[1]);
+			Trampoline tr0 = compile0(sb, m[0]);
+			Trampoline tr1 = compile0(sb, m[1]);
 			tr = or(tr0, tr1);
 		} else if ((m = Suite.match(".0 = .1", node)) != null) {
-			Fun<Env, Node> f0 = sg.compile(m[0]);
-			Fun<Env, Node> f1 = sg.compile(m[1]);
+			Fun<Env, Node> f0 = sb.compile(m[0]);
+			Fun<Env, Node> f1 = sb.compile(m[1]);
 			tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
-		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
-			tr = callSystemPredicate(sg, ((Atom) m[0]).name, m[1]);
-		else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
-			Trampoline tr0 = compile0(sg, m[0]);
-			Trampoline tr1 = compile0(sg, m[1]);
-			Trampoline tr2 = compile0(sg, m[2]);
+		} else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
+			Trampoline tr0 = compile0(sb, m[0]);
+			Trampoline tr1 = compile0(sb, m[1]);
+			Trampoline tr2 = compile0(sb, m[2]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				int pit = rt.journal.getPointInTime();
@@ -243,7 +240,7 @@ public class SewingProver {
 				return tr0;
 			};
 		} else if ((m = Suite.match("not .0", node)) != null) {
-			Trampoline tr0 = compile0(sg, m[0]);
+			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
@@ -260,7 +257,7 @@ public class SewingProver {
 				return tr0;
 			};
 		} else if ((m = Suite.match("once .0", node)) != null) {
-			Trampoline tr0 = compile0(sg, m[0]);
+			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
@@ -269,21 +266,23 @@ public class SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((tree = Tree.decompose(node)) != null)
-			tr = callSystemPredicate(sg, tree.getOperator().getName(), node);
+		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
+			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
+		else if ((tree = Tree.decompose(node)) != null)
+			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
-			if (Util.stringEquals(name, SewingGeneralizer.cutName))
+			if (Util.stringEquals(name, SewingBinder.cutName))
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
-			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
-				Fun<Env, Node> f = sg.compile(node);
+			else if (name.startsWith(SewingBinder.variablePrefix)) {
+				Fun<Env, Node> f = sb.compile(node);
 				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
 			} else
-				tr = callSystemPredicate(sg, name, Atom.NIL);
+				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
@@ -293,7 +292,7 @@ public class SewingProver {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Env, Node> f = sg.compile(node);
+				Fun<Env, Node> f = sb.compile(node);
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;
@@ -313,7 +312,7 @@ public class SewingProver {
 			throw new RuntimeException("Cannot understand " + node);
 	}
 
-	private Trampoline callSystemPredicate(SewingGeneralizer sg, String name, Node pass) {
+	private Trampoline callSystemPredicate(SewingBinder sg, String name, Node pass) {
 		Trampoline tr;
 		SystemPredicate systemPredicate = systemPredicates.get(name);
 		if (systemPredicate != null) {
@@ -364,9 +363,9 @@ public class SewingProver {
 		};
 	}
 
-	private Trampoline newEnv(SewingGeneralizer sg, Trampoline tr) {
+	private Trampoline newEnv(SewingBinder sb, Trampoline tr) {
 		return rt -> {
-			rt.ge = sg.env();
+			rt.ge = sb.env();
 			return tr;
 		};
 	}

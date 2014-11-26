@@ -1,10 +1,7 @@
 package suite.lp.kb;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import suite.Suite;
-import suite.lp.doer.Cloner;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.util.Util;
@@ -13,10 +10,6 @@ public class CompositeRuleSet implements RuleSet {
 
 	private RuleSet first;
 	private RuleSet second;
-
-	public CompositeRuleSet(RuleSet first) {
-		this(first, Suite.createRuleSet());
-	}
 
 	public CompositeRuleSet(RuleSet first, RuleSet second) {
 		this.first = first;
@@ -46,18 +39,8 @@ public class CompositeRuleSet implements RuleSet {
 	@Override
 	public List<Rule> searchRule(Node head) {
 		List<Rule> rules = second.searchRule(head);
-
-		if (rules.isEmpty()) {
+		if (rules.isEmpty())
 			rules = first.searchRule(head);
-
-			// Clone all the rules once to clear local variable references
-			List<Rule> newRules = new ArrayList<>(rules.size());
-			Cloner cloner = new Cloner();
-			for (Rule rule : rules)
-				newRules.add(cloner.clone(rule));
-			rules = newRules;
-		}
-
 		return rules;
 	}
 

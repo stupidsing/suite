@@ -28,7 +28,7 @@ import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.sewing.SewingGeneralizer;
-import suite.lp.sewing.SewingGeneralizer.Generalization;
+import suite.lp.sewing.VariableMapping.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;

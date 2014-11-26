@@ -1,71 +1,22 @@
 package suite.lp.sewing;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
-import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
-import suite.util.Pair;
-import suite.util.Util;
 
-public class SewingGeneralizer {
+public class SewingGeneralizer extends VariableMapping {
 
 	public static String wildcardPrefix = "_";
 	public static String variablePrefix = ".";
 	public static String cutName = "!";
-
-	private Map<Node, Integer> variableIndices = new HashMap<>();
-	private int nVariables;
-
-	public class Generalization {
-		public final Node node;
-		private Env env;
-
-		private Generalization(Node node, Env env) {
-			this.node = node;
-			this.env = env;
-		}
-
-		public String dumpVariables() {
-			List<Entry<Node, Node>> entries = Util.sort(getVariables().entrySet(), (e0, e1) -> e0.getKey().compareTo(e1.getKey()));
-			StringBuilder sb = new StringBuilder();
-			for (Entry<Node, Node> entry : entries) {
-				if (sb.length() > 0)
-					sb.append(", ");
-				sb.append(Formatter.dump(entry.getKey()) + " = " + Formatter.dump(entry.getValue()));
-			}
-			return sb.toString();
-		}
-
-		public Map<Node, Node> getVariables() {
-			return Read.from(variableIndices).toMap(Pair::first_, pair -> env.refs[pair.t1]);
-		}
-
-		public Node getVariable(Node variable) {
-			return env.refs[variableIndices.get(variable)];
-		}
-	}
-
-	public static class Env {
-		private Reference refs[];
-		private Node cut;
-
-		private Env(Reference refs[], Node cut) {
-			this.refs = refs;
-			this.cut = cut;
-		}
-	}
 
 	public static Node generalize(Node node) {
 		return process(node).node;
@@ -78,17 +29,6 @@ public class SewingGeneralizer {
 		return sg.new Generalization(fun.apply(env), env);
 	}
 
-	public Env env() {
-		return env(null);
-	}
-
-	public Env env(Node cut) {
-		Reference refs[] = new Reference[nVariables];
-		for (int i = 0; i < nVariables; i++)
-			refs[i] = new Reference();
-		return new Env(refs, cut);
-	}
-
 	public Fun<Env, Node> compile(Node node) {
 		List<Fun<Env, Node>> funs = new ArrayList<>();
 		Fun<Env, Node> fun;
@@ -99,7 +39,6 @@ public class SewingGeneralizer {
 
 			if (node0 instanceof Atom) {
 				String name = ((Atom) node0).name;
-
 				if (isWildcard(name))
 					fun = env -> new Reference();
 				else if (isVariable(name)) {
@@ -111,7 +50,6 @@ public class SewingGeneralizer {
 					fun = env -> node0;
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
-
 				if (operator != TermOp.OR____) {
 					Fun<Env, Node> f = compile(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
@@ -156,19 +94,15 @@ public class SewingGeneralizer {
 			return false;
 	}
 
-	private Integer getVariableIndex(Node variable) {
-		return variableIndices.computeIfAbsent(variable, any -> nVariables++);
-	}
-
-	private static boolean isWildcard(String name) {
+	public static boolean isWildcard(String name) {
 		return name.startsWith(wildcardPrefix);
 	}
 
-	private static boolean isVariable(String name) {
+	public static boolean isVariable(String name) {
 		return name.startsWith(variablePrefix);
 	}
 
-	private static boolean isCut(String name) {
+	public static boolean isCut(String name) {
 		return name.equals(cutName);
 	}
 

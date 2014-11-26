@@ -9,6 +9,11 @@ public class Reference extends Node {
 
 	private static AtomicInteger counter = new AtomicInteger();
 
+	public boolean isFree() {
+		Node node = finalNode();
+		return node instanceof Reference && ((Reference) node).node == node;
+	}
+
 	public void bound(Node node) {
 		this.node = node;
 	}

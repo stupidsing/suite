@@ -1,7 +1,7 @@
 package suite.lp.kb;
 
 import suite.lp.sewing.SewingGeneralizer;
-import suite.lp.sewing.SewingGeneralizer.Env;
+import suite.lp.sewing.VariableMapping.Env;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
