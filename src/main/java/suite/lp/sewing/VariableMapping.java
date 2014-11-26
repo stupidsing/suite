@@ -67,10 +67,6 @@ public class VariableMapping {
 		return new Env(refs, cut);
 	}
 
-	public boolean isVariableDefined(Node variable) {
-		return variableIndices.containsKey(variable);
-	}
-
 	public Integer getVariableIndex(Node variable) {
 		return variableIndices.computeIfAbsent(variable, any -> nVariables++);
 	}

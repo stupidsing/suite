@@ -36,15 +36,8 @@ public class SewingBinder extends SewingGeneralizer {
 			if (isWildcard(name))
 				return (be, n) -> true;
 			else if (isVariable(name)) {
-				boolean isVariableDefined = isVariableDefined(node);
 				int index = getVariableIndex(node);
-				if (!isVariableDefined)
-					return (be, n) -> {
-						be.journal.addBind(be.env.refs[index], n);
-						return true;
-					};
-				else
-					return (be, n) -> Binder.bind(n, be.env.refs[index], be.journal);
+				return (be, n) -> Binder.bind(n, be.env.refs[index], be.journal);
 			} else
 				return boundIfPossible(node, n -> n == node);
 		} else if (node instanceof Int) {
