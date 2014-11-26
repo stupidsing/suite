@@ -5,19 +5,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 import suite.Suite;
 import suite.adt.ListMultimap;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Journal;
-import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.SystemPredicate;
 import suite.lp.predicate.SystemPredicates;
+import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.VariableMapping.Env;
 import suite.node.Atom;
 import suite.node.Data;
@@ -26,6 +27,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.Complexity;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -78,6 +80,10 @@ public class SewingProver {
 			this.ge = ge;
 			pushAlt(tr);
 			prover = new Prover(pc, null, journal);
+		}
+
+		private BindEnv bindEnv() {
+			return new BindEnv(journal, ge);
 		}
 
 		private void post(Runnable r) {
@@ -189,8 +195,8 @@ public class SewingProver {
 		for (int i = rules.size() - 1; i >= 0; i--) {
 			Rule rule = rules.get(i);
 			SewingBinder sb = new SewingBinder();
-			Fun<Env, Node> f = sb.compile(rule.head);
-			Trampoline tr0 = rt -> Binder.bind(rt.query, f.apply(rt.ge), rt.journal) ? okay : fail;
+			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
+			Trampoline tr0 = rt -> p.test(rt.bindEnv(), rt.query) ? okay : fail;
 			Trampoline tr1 = compile0(sb, rule.tail);
 			tr = or(newEnv(sb, and(tr0, tr1)), tr);
 		}
@@ -219,9 +225,13 @@ public class SewingProver {
 			Trampoline tr1 = compile0(sb, m[1]);
 			tr = or(tr0, tr1);
 		} else if ((m = Suite.match(".0 = .1", node)) != null) {
-			Fun<Env, Node> f0 = sb.compile(m[0]);
-			Fun<Env, Node> f1 = sb.compile(m[1]);
-			tr = rt -> Binder.bind(f0.apply(rt.ge), f1.apply(rt.ge), rt.journal) ? okay : fail;
+			Complexity complexity = new Complexity();
+			boolean b = complexity.complexity(m[0]) > complexity.complexity(m[1]);
+			Node n0 = b ? m[0] : m[1];
+			Node n1 = b ? m[1] : m[0];
+			BiPredicate<BindEnv, Node> p = sb.compileBind(n0);
+			Fun<Env, Node> f = sb.compile(n1);
+			tr = rt -> p.test(rt.bindEnv(), f.apply(rt.ge)) ? okay : fail;
 		} else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);

@@ -32,19 +32,19 @@ public class SewingBinder extends SewingGeneralizer {
 		Tree tree;
 
 		if (node instanceof Atom) {
-			String name = ((Atom) node0).name;
+			String name = ((Atom) node).name;
 			if (isWildcard(name))
 				return (be, n) -> true;
 			else if (isVariable(name)) {
-				int index = getVariableIndex(node0);
-				return (be, n) -> {
-					Reference ref = be.env.refs[index];
-					if (ref.isFree()) {
-						ref.bound(n);
+				boolean isVariableDefined = isVariableDefined(node);
+				int index = getVariableIndex(node);
+				if (!isVariableDefined)
+					return (be, n) -> {
+						be.journal.addBind(be.env.refs[index], n);
 						return true;
-					} else
-						return Binder.bind(n, ref, be.journal);
-				};
+					};
+				else
+					return (be, n) -> Binder.bind(n, be.env.refs[index], be.journal);
 			} else
 				return boundIfPossible(node, n -> n == node);
 		} else if (node instanceof Int) {
@@ -66,12 +66,8 @@ public class SewingBinder extends SewingGeneralizer {
 							&& c0.test(be, t.getLeft()) //
 							&& c1.test(be, t.getRight());
 				else {
-					Reference reference = (Reference) n_;
-					if (reference.isFree()) {
-						be.journal.addBind(reference, f.apply(be.env));
-						return true;
-					} else
-						return Binder.bind(n, f.apply(be.env), be.journal);
+					be.journal.addBind((Reference) n_, f.apply(be.env));
+					return true;
 				}
 			};
 		} else {
