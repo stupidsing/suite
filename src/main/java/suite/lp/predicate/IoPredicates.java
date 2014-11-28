@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
-import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
@@ -18,16 +18,16 @@ import suite.util.LogUtil;
 
 public class IoPredicates {
 
-	public SystemPredicate dump = PredicateUtil.run(n -> System.out.print(Formatter.dump(n)));
+	public BuiltinPredicate dump = PredicateUtil.run(n -> System.out.print(Formatter.dump(n)));
 
-	public SystemPredicate dumpStack = (prover, ps) -> {
+	public BuiltinPredicate dumpStack = (prover, ps) -> {
 		String date = LocalDateTime.now().toString();
 		String trace = prover.getTracer().getStackTrace();
 		LogUtil.info("-- Stack trace at " + date + " --\n" + trace);
 		return true;
 	};
 
-	public SystemPredicate exec = (prover, ps) -> {
+	public BuiltinPredicate exec = (prover, ps) -> {
 		if (ps instanceof Str)
 			try {
 				String cmd = ((Str) ps).value;
@@ -38,11 +38,11 @@ public class IoPredicates {
 		return false;
 	};
 
-	public SystemPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
+	public BuiltinPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
 
-	public SystemPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
+	public BuiltinPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 
-	public SystemPredicate fileRead = PredicateUtil.fun(n -> {
+	public BuiltinPredicate fileRead = PredicateUtil.fun(n -> {
 		String filename = Formatter.display(n);
 		try {
 			return new Str(FileUtil.read(filename));
@@ -51,7 +51,7 @@ public class IoPredicates {
 		}
 	});
 
-	public SystemPredicate fileWrite = (prover, ps) -> {
+	public BuiltinPredicate fileWrite = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		String filename = Formatter.display(params[0]);
 		String content = Formatter.display(params[1]);
@@ -65,29 +65,29 @@ public class IoPredicates {
 		return true;
 	};
 
-	public SystemPredicate homeDir = (prover, ps) -> {
+	public BuiltinPredicate homeDir = (prover, ps) -> {
 		return prover.bind(new Str(FileUtil.homeDir()), ps);
 	};
 
-	public SystemPredicate nl = PredicateUtil.run(n -> System.out.println());
+	public BuiltinPredicate nl = PredicateUtil.run(n -> System.out.println());
 
-	public SystemPredicate log = PredicateUtil.run(n -> LogUtil.info(Formatter.dump(n)));
+	public BuiltinPredicate log = PredicateUtil.run(n -> LogUtil.info(Formatter.dump(n)));
 
-	public SystemPredicate sink = (prover, ps) -> {
+	public BuiltinPredicate sink = (prover, ps) -> {
 		prover.config().getSink().sink(ps);
 		return false;
 	};
 
-	public SystemPredicate source = (prover, ps) -> {
+	public BuiltinPredicate source = (prover, ps) -> {
 		Node source = prover.config().getSource().source();
 		return prover.bind(ps, source);
 	};
 
-	public SystemPredicate throwPredicate = PredicateUtil.run(n -> {
+	public BuiltinPredicate throwPredicate = PredicateUtil.run(n -> {
 		throw new RuntimeException(Formatter.dump(n.finalNode()));
 	});
 
-	public SystemPredicate write(PrintStream printStream) {
+	public BuiltinPredicate write(PrintStream printStream) {
 		return PredicateUtil.run(n -> printStream.print(Formatter.display(n)));
 	}
 

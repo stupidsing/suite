@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
-import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -19,21 +19,21 @@ public class FindPredicates {
 
 	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
-	public SystemPredicate findAll = (prover, ps) -> {
+	public BuiltinPredicate findAll = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
 		Node var = params[0], goal = params[1], results = params[2];
 		return prover.bind(results, findAll(prover, var, goal));
 	};
 
 	// memoize is not re-entrant due to using computeIfAbsent()
-	public SystemPredicate findAllMemoized = (prover, ps) -> {
+	public BuiltinPredicate findAllMemoized = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
 		Node var = params[0], goal = params[1], results = params[2];
 		TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 	};
 
-	public SystemPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
+	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
 
 	private Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();

@@ -11,7 +11,7 @@ import suite.Suite;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.doer.Specializer;
-import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Int;
@@ -43,18 +43,18 @@ public class EvalPredicates {
 
 	private static Random random = new Random();
 
-	public SystemPredicate bound = PredicateUtil.bool(n -> !(n instanceof Reference));
+	public BuiltinPredicate bound = PredicateUtil.bool(n -> !(n instanceof Reference));
 
-	public SystemPredicate clone = PredicateUtil.fun(n -> new Cloner().clone(n));
+	public BuiltinPredicate clone = PredicateUtil.fun(n -> new Cloner().clone(n));
 
-	public SystemPredicate complexity = PredicateUtil.fun(n -> Int.of(new Complexity().complexity(n)));
+	public BuiltinPredicate complexity = PredicateUtil.fun(n -> Int.of(new Complexity().complexity(n)));
 
-	public SystemPredicate contains = (prover, ps) -> {
+	public BuiltinPredicate contains = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		return new Rewriter(params[0]).contains(params[1]);
 	};
 
-	public SystemPredicate compare = (prover, ps) -> {
+	public BuiltinPredicate compare = (prover, ps) -> {
 		Tree tree = (Tree) ps.finalNode();
 		switch ((TermOp) tree.getOperator()) {
 		case LE____:
@@ -70,9 +70,9 @@ public class EvalPredicates {
 		}
 	};
 
-	public SystemPredicate evalFun = PredicateUtil.fun(n -> Suite.evaluateFun(Suite.fcc(n, true)));
+	public BuiltinPredicate evalFun = PredicateUtil.fun(n -> Suite.evaluateFun(Suite.fcc(n, true)));
 
-	public SystemPredicate evalJs = (prover, ps) -> {
+	public BuiltinPredicate evalJs = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		String js = Formatter.display(params[0]);
 		Object result;
@@ -88,15 +88,15 @@ public class EvalPredicates {
 		return prover.bind(new Str(str), params[1]);
 	};
 
-	public SystemPredicate generalize = PredicateUtil.fun(SewingGeneralizer::generalize);
+	public BuiltinPredicate generalize = PredicateUtil.fun(SewingGeneralizer::generalize);
 
-	public SystemPredicate hash = PredicateUtil.fun(n -> Int.of(n.hashCode()));
+	public BuiltinPredicate hash = PredicateUtil.fun(n -> Int.of(n.hashCode()));
 
-	public SystemPredicate hashId = PredicateUtil.fun(n -> Int.of(new IdentityKey(n).hashCode()));
+	public BuiltinPredicate hashId = PredicateUtil.fun(n -> Int.of(new IdentityKey(n).hashCode()));
 
-	public SystemPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
+	public BuiltinPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
 
-	public SystemPredicate let = new SystemPredicate() {
+	public BuiltinPredicate let = new BuiltinPredicate() {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);
 			int result = evaluate(params[1]);
@@ -159,7 +159,7 @@ public class EvalPredicates {
 		}
 	};
 
-	public SystemPredicate notEquals = (prover, ps) -> {
+	public BuiltinPredicate notEquals = (prover, ps) -> {
 		Tree tree = (Tree) ps;
 		Prover prover1 = new Prover(prover);
 		boolean result = prover1.bind(tree.getLeft(), tree.getRight());
@@ -171,28 +171,28 @@ public class EvalPredicates {
 			return true;
 	};
 
-	public SystemPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
+	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
 
-	public SystemPredicate replace = (prover, ps) -> {
+	public BuiltinPredicate replace = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		return prover.bind(new Rewriter(params[0], params[1]).replace(params[2]), params[3]);
 	};
 
-	public SystemPredicate rewrite = (prover, ps) -> {
+	public BuiltinPredicate rewrite = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
 	};
 
-	public SystemPredicate same = (prover, ps) -> {
+	public BuiltinPredicate same = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
 		return params[0].finalNode() == params[1].finalNode();
 	};
 
-	public SystemPredicate specialize = PredicateUtil.fun(new Specializer()::specialize);
+	public BuiltinPredicate specialize = PredicateUtil.fun(new Specializer()::specialize);
 
-	public SystemPredicate temp = (prover, ps) -> prover.bind(ps, Atom.temp());
+	public BuiltinPredicate temp = (prover, ps) -> prover.bind(ps, Atom.temp());
 
-	public SystemPredicate tree = (prover, ps) -> {
+	public BuiltinPredicate tree = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		Node p = params[0].finalNode();
 		Node p1 = params[1];
@@ -212,7 +212,7 @@ public class EvalPredicates {
 			return false;
 	};
 
-	public SystemPredicate treeIntern = (prover, ps) -> {
+	public BuiltinPredicate treeIntern = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
 		Node p = params[0];
 		Node p1 = params[1];

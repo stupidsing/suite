@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.lp.doer.Prover;
-import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -13,7 +13,7 @@ import suite.node.io.TermOp;
 
 public class SystemPredicates {
 
-	private Map<String, SystemPredicate> predicates = new HashMap<>();
+	private Map<String, BuiltinPredicate> predicates = new HashMap<>();
 
 	private Prover prover;
 
@@ -117,7 +117,7 @@ public class SystemPredicates {
 	}
 
 	public Boolean call(Node query) {
-		SystemPredicate predicate;
+		BuiltinPredicate predicate;
 		Tree tree;
 		String name = null;
 		Node pass = query;
@@ -141,26 +141,26 @@ public class SystemPredicates {
 		return predicate != null ? predicate.prove(prover, pass) : null;
 	}
 
-	public SystemPredicate get(String name) {
+	public BuiltinPredicate get(String name) {
 		return predicates.get(name);
 	}
 
-	private void addPredicate(Operator operator, SystemPredicate pred) {
+	private void addPredicate(Operator operator, BuiltinPredicate pred) {
 		predicates.put(operator.getName(), pred);
 	}
 
-	private void addPredicate(String name, SystemPredicate pred) {
+	private void addPredicate(String name, BuiltinPredicate pred) {
 		predicates.put(name, pred);
 	}
 
-	private SystemPredicate cutBegin = (prover, ps) -> prover.bind(ps, prover.getAlternative());
+	private BuiltinPredicate cutBegin = (prover, ps) -> prover.bind(ps, prover.getAlternative());
 
-	private SystemPredicate cutEnd = (prover, ps) -> {
+	private BuiltinPredicate cutEnd = (prover, ps) -> {
 		prover.setAlternative(ps.finalNode());
 		return true;
 	};
 
-	private SystemPredicate not = (prover, ps) -> {
+	private BuiltinPredicate not = (prover, ps) -> {
 		Prover prover1 = new Prover(prover);
 		boolean result = !prover1.prove0(ps);
 		if (!result) // Roll back bindings if overall goal is failed
@@ -168,9 +168,9 @@ public class SystemPredicates {
 		return result;
 	};
 
-	private SystemPredicate once = (prover, ps) -> new Prover(prover).prove0(ps);
+	private BuiltinPredicate once = (prover, ps) -> new Prover(prover).prove0(ps);
 
-	private SystemPredicate systemPredicate = (prover, ps) -> {
+	private BuiltinPredicate systemPredicate = (prover, ps) -> {
 		ps = ps.finalNode();
 		Atom atom = ps instanceof Atom ? (Atom) ps : null;
 		String name = atom != null ? atom.name : null;

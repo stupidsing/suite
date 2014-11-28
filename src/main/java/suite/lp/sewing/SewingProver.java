@@ -16,7 +16,7 @@ import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.VariableMapping.Env;
@@ -276,18 +276,18 @@ public class SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.match("intrinsic:.0:.1 .2", node)) != null) {
+		} else if ((m = Suite.match("builtin:.0:.1 .2", node)) != null) {
 			String className = ((Atom) m[0]).name;
 			String fieldName = ((Atom) m[1]).name;
-			SystemPredicate systemPredicate;
+			BuiltinPredicate predicate;
 			try {
 				Class<?> clazz = Class.forName(className);
-				systemPredicate = (SystemPredicate) clazz.getField(fieldName).get(clazz.newInstance());
+				predicate = (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
 				clazz.newInstance();
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
-			tr = callSystemPredicate(sb, systemPredicate, m[2]);
+			tr = callPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
@@ -335,18 +335,13 @@ public class SewingProver {
 	}
 
 	private Trampoline callSystemPredicate(SewingBinder sb, String name, Node pass) {
-		Trampoline tr;
-		SystemPredicate systemPredicate = systemPredicates.get(name);
-		if (systemPredicate != null) {
-			tr = callSystemPredicate(sb, systemPredicate, pass);
-		} else
-			tr = null;
-		return tr;
+		BuiltinPredicate predicate = systemPredicates.get(name);
+		return predicate != null ? callPredicate(sb, predicate, pass) : null;
 	}
 
-	private Trampoline callSystemPredicate(SewingBinder sb, SystemPredicate systemPredicate, Node pass) {
+	private Trampoline callPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
 		Fun<Env, Node> f = sb.compile(pass);
-		return rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
+		return rt -> predicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
 	}
 
 	private Trampoline cutBegin(Trampoline tr) {

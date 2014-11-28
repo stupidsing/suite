@@ -3,7 +3,7 @@ package suite.lp.predicate;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.lp.predicate.PredicateUtil.SystemPredicate;
+import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.TreeIntern;
@@ -13,17 +13,17 @@ public class InternMapPredicates {
 
 	private static Map<IdentityKey, Node> internMap = new ConcurrentHashMap<>();
 
-	public SystemPredicate internMapClear = PredicateUtil.run(n -> {
+	public BuiltinPredicate internMapClear = PredicateUtil.run(n -> {
 		internMap.clear();
 		TreeIntern.clear();
 	});
 
-	public SystemPredicate internMapContains = (prover, ps) -> {
+	public BuiltinPredicate internMapContains = (prover, ps) -> {
 		IdentityKey key = new IdentityKey(ps.finalNode());
 		return internMap.containsKey(key);
 	};
 
-	public SystemPredicate internMapPut = PredicateUtil.fun(n -> //
+	public BuiltinPredicate internMapPut = PredicateUtil.fun(n -> //
 			internMap.computeIfAbsent(new IdentityKey(n), any -> new Reference()));
 
 }

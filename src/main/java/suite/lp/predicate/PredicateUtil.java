@@ -10,22 +10,22 @@ import suite.util.FunUtil.Sink;
 
 public class PredicateUtil {
 
-	public interface SystemPredicate {
+	public interface BuiltinPredicate {
 		public boolean prove(Prover prover, Node ps);
 	}
 
-	public static SystemPredicate run(Sink<Node> fun) {
+	public static BuiltinPredicate run(Sink<Node> fun) {
 		return (prover, ps) -> {
 			fun.sink(ps.finalNode());
 			return true;
 		};
 	}
 
-	public static SystemPredicate bool(Predicate<Node> fun) {
+	public static BuiltinPredicate bool(Predicate<Node> fun) {
 		return (prover, ps) -> fun.test(ps.finalNode());
 	}
 
-	public static SystemPredicate fun(Fun<Node, Node> fun) {
+	public static BuiltinPredicate fun(Fun<Node, Node> fun) {
 		return (prover, ps) -> {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0], p1 = params[1];
