@@ -232,12 +232,24 @@ public class SewingProver {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(n0);
 			Fun<Env, Node> f = sb.compile(n1);
 			tr = rt -> p.test(rt.bindEnv(), f.apply(rt.ge)) ? okay : fail;
-		} else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
+		} else if ((m = Suite.match("builtin:.0:.1 .2", node)) != null) {
+			String className = ((Atom) m[0]).name;
+			String fieldName = ((Atom) m[1]).name;
+			BuiltinPredicate predicate;
+			try {
+				Class<?> clazz = Class.forName(className);
+				predicate = (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			tr = callPredicate(sb, predicate, m[2]);
+		} else if ((m = Suite.match("if .0 .1 .2", node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);
 			Trampoline tr2 = compile0(sb, m[2]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
+				IList<Trampoline> rems0 = rt.rems;
 				int pit = rt.journal.getPointInTime();
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
@@ -245,6 +257,7 @@ public class SewingProver {
 				});
 				rt.pushAlt(rt_ -> {
 					rt_.journal.undoBinds(pit);
+					rt_.rems = rems0;
 					return tr2;
 				});
 				return tr0;
@@ -276,18 +289,6 @@ public class SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.match("builtin:.0:.1 .2", node)) != null) {
-			String className = ((Atom) m[0]).name;
-			String fieldName = ((Atom) m[1]).name;
-			BuiltinPredicate predicate;
-			try {
-				Class<?> clazz = Class.forName(className);
-				predicate = (BuiltinPredicate) clazz.getField(fieldName).get(clazz.newInstance());
-				clazz.newInstance();
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-			tr = callPredicate(sb, predicate, m[2]);
 		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)

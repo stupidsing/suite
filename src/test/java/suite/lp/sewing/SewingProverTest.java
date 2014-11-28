@@ -57,4 +57,15 @@ public class SewingProverTest {
 		assertTrue(pi.compile(Suite.parse("a")).apply(pc));
 	}
 
+	@Test
+	public void testIf() {
+		RuleSet rs = Suite.createRuleSet();
+		SewingProver pi = new SewingProver(rs);
+		ProverConfig pc = new ProverConfig(rs);
+		assertTrue(pi.compile(Suite.parse("if () () fail")).apply(pc));
+		assertFalse(pi.compile(Suite.parse("if () fail ()")).apply(pc));
+		assertTrue(pi.compile(Suite.parse("if fail fail ()")).apply(pc));
+		assertFalse(pi.compile(Suite.parse("if fail () fail")).apply(pc));
+	}
+
 }
