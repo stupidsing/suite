@@ -8,7 +8,7 @@ declare idt-set-entry = [vector, handler, is-interrupt-gate,] (
 );
 
 declare idt-setup = [] (
-	expand isr-prolog = (
+	constant isr-prolog = (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
 		asm _ PUSH (ES);
@@ -19,7 +19,7 @@ declare idt-setup = [] (
 		asm _ MOV (EBP, ESP);
 	);
 
-	expand isr-epilog = (
+	constant isr-epilog = (
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
 		asm _ POP (ES);
@@ -126,7 +126,7 @@ declare idt-setup = [] (
 	);
 
 	(
-		expand set-fault-handler .i .h0 = (
+		constant set-fault-handler .i .h0 = (
 			idt:idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
@@ -167,7 +167,7 @@ declare idt-setup = [] (
 	);
 
 	(
-		expand set-irq-handler .i .h0 = (
+		constant set-irq-handler .i .h0 = (
 			idt:idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);

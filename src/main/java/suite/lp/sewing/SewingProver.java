@@ -276,6 +276,18 @@ public class SewingProver {
 				});
 				return tr0;
 			};
+		} else if ((m = Suite.match("intrinsic:.0:.1 .2", node)) != null) {
+			String className = ((Atom) m[0]).name;
+			String fieldName = ((Atom) m[1]).name;
+			SystemPredicate systemPredicate;
+			try {
+				Class<?> clazz = Class.forName(className);
+				systemPredicate = (SystemPredicate) clazz.getField(fieldName).get(clazz.newInstance());
+				clazz.newInstance();
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			tr = callSystemPredicate(sb, systemPredicate, m[2]);
 		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
@@ -322,15 +334,19 @@ public class SewingProver {
 			throw new RuntimeException("Cannot understand " + node);
 	}
 
-	private Trampoline callSystemPredicate(SewingBinder sg, String name, Node pass) {
+	private Trampoline callSystemPredicate(SewingBinder sb, String name, Node pass) {
 		Trampoline tr;
 		SystemPredicate systemPredicate = systemPredicates.get(name);
 		if (systemPredicate != null) {
-			Fun<Env, Node> f = sg.compile(pass);
-			tr = rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
+			tr = callSystemPredicate(sb, systemPredicate, pass);
 		} else
 			tr = null;
 		return tr;
+	}
+
+	private Trampoline callSystemPredicate(SewingBinder sb, SystemPredicate systemPredicate, Node pass) {
+		Fun<Env, Node> f = sb.compile(pass);
+		return rt -> systemPredicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
 	}
 
 	private Trampoline cutBegin(Trampoline tr) {

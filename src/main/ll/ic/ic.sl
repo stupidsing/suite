@@ -5,7 +5,7 @@ ic-compile .fs .do0 .e0/.ex
 ic-compile _ () .e/.e
 #
 ic-compile .fs (.do0; .do1) .e0/.ex
-	:- not (.do0 = allocate _ ; .do0 = declare _; .do0 = declare _ = _; .do0 = expand _ = _)
+	:- not (.do0 = allocate _; .do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _)
 	, ic-compile .fs .do0 .e0/.e1
 	, ic-compile .fs .do1 .e1/.ex
 #
@@ -125,15 +125,15 @@ ic-compile-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p
 ic-compile-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
 #
+ic-compile-sugar (constant .var = .value; .do) .do1
+	:- generalize (.var .value) (.var1 .value1)
+	, rewrite .var1 .value1 .do .do1
+#
 ic-compile-sugar (declare .var; .do) (allocate .var/4; .do)
 	:- is.atom .var
 #
 ic-compile-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
 	:- is.atom .var
-#
-ic-compile-sugar (expand .var = .value; .do) .do1
-	:- generalize (.var .value) (.var1 .value1)
-	, rewrite .var1 .value1 .do .do1
 #
 ic-compile-sugar false 0
 #

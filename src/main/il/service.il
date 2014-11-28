@@ -1,9 +1,9 @@
 declare svc = this;
 
-expand svc-halt_ = 0;
-expand svc-nl___ = 1;
-expand svc-putc_ = 2;
-expand svc-ticks = 3;
+constant svc-halt_ = 0;
+constant svc-nl___ = 1;
+constant svc-putc_ = 2;
+constant svc-ticks = 3;
 
 declare handle-service = [p0, p1, p2,] (
 	if (p0 = svc-halt_) then (

@@ -40,7 +40,7 @@ declare sync-leave = [p,] (
 	let `p` = 0;
 );
 
-expand synchronized .p .block = (
+constant synchronized .p .block = (
 	sync:sync-enter [.p,];
 	declare result = .block;
 	sync:sync-leave [.p,];

@@ -73,7 +73,8 @@ public class Assembler {
 		Journal journal = new Journal();
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
-		for (Node node : Tree.iter(generalizer.generalize(input))) {
+		for (Node node0 : Tree.iter(input)) {
+			Node node = generalizer.generalize(node0);
 			Tree tree;
 
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)

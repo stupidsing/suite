@@ -2,9 +2,9 @@
 
 declare ne2k = this;
 
-expand io-base = +x300;
-expand mem-base = 16384;
-expand mem-size = 16384;
+constant io-base = +x300;
+constant mem-base = 16384;
+constant mem-size = 16384;
 
 allocate ne2k-mac-address/8;
 declare ne2k-rx-page-start;
