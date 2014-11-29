@@ -220,10 +220,19 @@ public class SewingProver {
 					rt.pushRem(tr_);
 				return okay;
 			};
-		} else if ((m = Suite.match(".0; .1", node)) != null) {
-			Trampoline tr0 = compile0(sb, m[0]);
-			Trampoline tr1 = compile0(sb, m[1]);
-			tr = or(tr0, tr1);
+		} else if ((list = breakdown(TermOp.OR____, node)).size() > 1) {
+			List<Trampoline> trs = Read.from(list).map(n -> compile0(sb, n)).reverse().toList();
+			return rt -> {
+				IList<Trampoline> rems0 = rt.rems;
+				int pit = rt.journal.getPointInTime();
+				for (Trampoline tr_ : trs)
+					rt.pushAlt(rt_ -> {
+						rt_.journal.undoBinds(pit);
+						rt_.rems = rems0;
+						return tr_;
+					});
+				return fail;
+			};
 		} else if ((m = Suite.match(".0 = .1", node)) != null) {
 			Complexity complexity = new Complexity();
 			boolean b = complexity.complexity(m[0]) > complexity.complexity(m[1]);
