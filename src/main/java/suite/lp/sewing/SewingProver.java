@@ -137,8 +137,12 @@ public class SewingProver {
 			return fail;
 		};
 
-		Trampoline t = and(cutBegin(newEnv(sb, compile0(sb, node))), sinker);
-		trampoline(new Runtime(pc, env, t));
+		Trampoline tr = cutBegin(newEnv(sb, compile0(sb, node)));
+
+		trampoline(new Runtime(pc, env, rt -> {
+			rt.pushRem(sinker);
+			return tr;
+		}));
 	}
 
 	private void trampoline(Runtime rt) {
@@ -194,9 +198,8 @@ public class SewingProver {
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
-			Trampoline tr0 = rt -> p.test(rt.bindEnv(), rt.query) ? okay : fail;
 			Trampoline tr1 = compile0(sb, rule.tail);
-			return newEnv(sb, and(tr0, tr1));
+			return newEnv(sb, rt -> p.test(rt.bindEnv(), rt.query) ? tr1 : fail);
 		});
 
 		Trampoline tr = saveEnv(cutBegin(or(trs)));
@@ -440,13 +443,6 @@ public class SewingProver {
 				return trh;
 			};
 		}
-	}
-
-	private Trampoline and(Trampoline tr0, Trampoline tr1) {
-		return rt -> {
-			rt.pushRem(tr1);
-			return tr0;
-		};
 	}
 
 	private List<Node> breakdown(Operator operator, Node node) {
