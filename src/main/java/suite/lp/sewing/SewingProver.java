@@ -210,14 +210,10 @@ public class SewingProver {
 		Tree tree;
 		Node m[];
 
-		if ((list = breakdown(TermOp.AND___, node)).size() > 2)
+		if ((list = breakdown(TermOp.AND___, node)).size() > 1)
 			tr = and(Read.from(list).map(n -> compile0(sb, n)));
-		else if ((list = breakdown(TermOp.OR____, node)).size() > 2)
+		else if ((list = breakdown(TermOp.OR____, node)).size() > 1)
 			tr = or(Read.from(list).map(n -> compile0(sb, n)));
-		else if ((m = Suite.match(".0, .1", node)) != null)
-			tr = and(compile0(sb, m[0]), compile0(sb, m[1]));
-		else if ((m = Suite.match(".0; .1", node)) != null)
-			tr = or(compile0(sb, m[0]), compile0(sb, m[1]));
 		else if ((m = Suite.match(".0 = .1", node)) != null) {
 			Complexity complexity = new Complexity();
 			boolean b = complexity.complexity(m[0]) > complexity.complexity(m[1]);
@@ -387,45 +383,68 @@ public class SewingProver {
 	}
 
 	private Trampoline and(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.reverse().toList();
-		return rt -> {
-			for (Trampoline tr_ : trs_)
-				rt.pushRem(tr_);
+		List<Trampoline> trs_ = trs.toList();
+		if (trs_.size() == 0)
 			return okay;
-		};
+		else if (trs_.size() == 1)
+			return trs_.get(0);
+		else if (trs_.size() == 2) {
+			Trampoline tr0 = trs_.get(0);
+			Trampoline tr1 = trs_.get(1);
+			return rt -> {
+				rt.pushRem(tr1);
+				return tr0;
+			};
+		} else {
+			Trampoline trh = trs_.get(0);
+			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
+			return rt -> {
+				for (Trampoline tr_ : trt)
+					rt.pushRem(tr_);
+				return trh;
+			};
+		}
 	}
 
 	private Trampoline or(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.reverse().toList();
-		return rt -> {
-			IList<Trampoline> rems0 = rt.rems;
-			int pit = rt.journal.getPointInTime();
-			for (Trampoline tr_ : trs_)
+		List<Trampoline> trs_ = trs.toList();
+		if (trs_.size() == 0)
+			return fail;
+		else if (trs_.size() == 1)
+			return trs_.get(0);
+		else if (trs_.size() == 2) {
+			Trampoline tr0 = trs_.get(0);
+			Trampoline tr1 = trs_.get(1);
+			return rt -> {
+				IList<Trampoline> rems0 = rt.rems;
+				int pit = rt.journal.getPointInTime();
 				rt.pushAlt(rt_ -> {
 					rt_.journal.undoBinds(pit);
 					rt_.rems = rems0;
-					return tr_;
+					return tr1;
 				});
-			return fail;
-		};
+				return tr0;
+			};
+		} else {
+			Trampoline trh = trs_.get(0);
+			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
+			return rt -> {
+				IList<Trampoline> rems0 = rt.rems;
+				int pit = rt.journal.getPointInTime();
+				for (Trampoline tr_ : trt)
+					rt.pushAlt(rt_ -> {
+						rt_.journal.undoBinds(pit);
+						rt_.rems = rems0;
+						return tr_;
+					});
+				return trh;
+			};
+		}
 	}
 
 	private Trampoline and(Trampoline tr0, Trampoline tr1) {
 		return rt -> {
 			rt.pushRem(tr1);
-			return tr0;
-		};
-	}
-
-	private Trampoline or(Trampoline tr0, Trampoline tr1) {
-		return rt -> {
-			IList<Trampoline> rems0 = rt.rems;
-			int pit = rt.journal.getPointInTime();
-			rt.pushAlt(rt_ -> {
-				rt_.journal.undoBinds(pit);
-				rt_.rems = rems0;
-				return tr1;
-			});
 			return tr0;
 		};
 	}

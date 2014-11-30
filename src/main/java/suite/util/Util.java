@@ -222,6 +222,13 @@ public class Util {
 		return sb.toString();
 	}
 
+	public static <T> List<T> reverse(List<T> list0) {
+		List<T> list1 = new ArrayList<>();
+		for (int i = list0.size() - 1; i >= 0; i--)
+			list1.add(list0.get(i));
+		return list1;
+	}
+
 	public static <T> List<T> right(List<T> list, int pos) {
 		int size = list.size();
 		if (pos < 0)
