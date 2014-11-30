@@ -33,7 +33,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
@@ -122,28 +121,23 @@ public class SewingProver {
 	}
 
 	public Fun<ProverConfig, Boolean> compile(Node node) {
-		return pc -> {
-			boolean result[] = new boolean[] { false };
-			run(pc, node, env -> result[0] = true);
-			return result[0];
-		};
-	}
-
-	private void run(ProverConfig pc, Node node, Sink<Env> sink) {
 		SewingBinder sb = new SewingBinder();
-		Env env = sb.env();
-
-		Trampoline sinker = rt_ -> {
-			sink.sink(env);
-			return fail;
-		};
-
 		Trampoline tr = cutBegin(newEnv(sb, compile0(sb, node)));
 
-		trampoline(new Runtime(pc, env, rt -> {
-			rt.pushRem(sinker);
-			return tr;
-		}));
+		return pc -> {
+			Env env = sb.env();
+			boolean result[] = new boolean[] { false };
+
+			trampoline(new Runtime(pc, env, rt -> {
+				rt.pushRem(rt_ -> {
+					result[0] = true;
+					return fail;
+				});
+				return tr;
+			}));
+
+			return result[0];
+		};
 	}
 
 	private void trampoline(Runtime rt) {
