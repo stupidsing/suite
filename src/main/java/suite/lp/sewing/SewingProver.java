@@ -195,6 +195,7 @@ public class SewingProver {
 	}
 
 	private Trampoline compileRules(List<Rule> rules) {
+		Node cut = Atom.of(SewingGeneralizer.cutName);
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
@@ -202,8 +203,9 @@ public class SewingProver {
 			return newEnv(sb, rt -> p.test(rt.bindEnv(), rt.query) ? tr1 : fail);
 		});
 
-		Trampoline tr = saveEnv(cutBegin(or(trs)));
-		return Suite.isProverTrace ? log(tr) : tr;
+		Trampoline tr0 = or(trs);
+		Trampoline tr1 = saveEnv(cutBegin(tr0));
+		return Suite.isProverTrace ? log(tr1) : tr1;
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -288,13 +290,13 @@ public class SewingProver {
 			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
-			if (Util.stringEquals(name, SewingBinder.cutName))
+			if (Util.stringEquals(name, SewingGeneralizer.cutName))
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
-			else if (name.startsWith(SewingBinder.variablePrefix)) {
+			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
 				Fun<Env, Node> f = sb.compile(node);
 				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
 			} else
