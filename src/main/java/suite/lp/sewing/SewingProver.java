@@ -30,6 +30,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Complexity;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -190,20 +191,16 @@ public class SewingProver {
 	}
 
 	private Trampoline compileRules(List<Rule> rules) {
-		Trampoline tr = fail;
-
-		for (int i = rules.size() - 1; i >= 0; i--) {
-			Rule rule = rules.get(i);
+		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
 			Trampoline tr0 = rt -> p.test(rt.bindEnv(), rt.query) ? okay : fail;
 			Trampoline tr1 = compile0(sb, rule.tail);
-			tr = or(newEnv(sb, and(tr0, tr1)), tr);
-		}
+			return newEnv(sb, and(tr0, tr1));
+		});
 
-		tr = saveEnv(cutBegin(tr));
-		tr = Suite.isProverTrace ? log(tr) : tr;
-		return tr;
+		Trampoline tr = saveEnv(cutBegin(or(trs)));
+		return Suite.isProverTrace ? log(tr) : tr;
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -213,27 +210,15 @@ public class SewingProver {
 		Tree tree;
 		Node m[];
 
-		if ((list = breakdown(TermOp.AND___, node)).size() > 1) {
-			List<Trampoline> trs = Read.from(list).map(n -> compile0(sb, n)).reverse().toList();
-			tr = rt -> {
-				for (Trampoline tr_ : trs)
-					rt.pushRem(tr_);
-				return okay;
-			};
-		} else if ((list = breakdown(TermOp.OR____, node)).size() > 1) {
-			List<Trampoline> trs = Read.from(list).map(n -> compile0(sb, n)).reverse().toList();
-			return rt -> {
-				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
-				for (Trampoline tr_ : trs)
-					rt.pushAlt(rt_ -> {
-						rt_.journal.undoBinds(pit);
-						rt_.rems = rems0;
-						return tr_;
-					});
-				return fail;
-			};
-		} else if ((m = Suite.match(".0 = .1", node)) != null) {
+		if ((list = breakdown(TermOp.AND___, node)).size() > 2)
+			tr = and(Read.from(list).map(n -> compile0(sb, n)));
+		else if ((list = breakdown(TermOp.OR____, node)).size() > 2)
+			tr = or(Read.from(list).map(n -> compile0(sb, n)));
+		else if ((m = Suite.match(".0, .1", node)) != null)
+			tr = and(compile0(sb, m[0]), compile0(sb, m[1]));
+		else if ((m = Suite.match(".0; .1", node)) != null)
+			tr = or(compile0(sb, m[0]), compile0(sb, m[1]));
+		else if ((m = Suite.match(".0 = .1", node)) != null) {
 			Complexity complexity = new Complexity();
 			boolean b = complexity.complexity(m[0]) > complexity.complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
@@ -398,6 +383,30 @@ public class SewingProver {
 		return rt -> {
 			rt.ge = sb.env();
 			return tr;
+		};
+	}
+
+	private Trampoline and(Streamlet<Trampoline> trs) {
+		List<Trampoline> trs_ = trs.reverse().toList();
+		return rt -> {
+			for (Trampoline tr_ : trs_)
+				rt.pushRem(tr_);
+			return okay;
+		};
+	}
+
+	private Trampoline or(Streamlet<Trampoline> trs) {
+		List<Trampoline> trs_ = trs.reverse().toList();
+		return rt -> {
+			IList<Trampoline> rems0 = rt.rems;
+			int pit = rt.journal.getPointInTime();
+			for (Trampoline tr_ : trs_)
+				rt.pushAlt(rt_ -> {
+					rt_.journal.undoBinds(pit);
+					rt_.rems = rems0;
+					return tr_;
+				});
+			return fail;
 		};
 	}
 
