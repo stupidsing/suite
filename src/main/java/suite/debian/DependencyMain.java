@@ -22,8 +22,10 @@ public class DependencyMain extends ExecutableProgram {
 	private DpkgUtil dpkgUtil = new DpkgUtil(debianUtil);
 	private AptUtil aptUtil = new AptUtil(debianUtil);
 
-	private Set<String> requiredList = new HashSet<>(Arrays.asList( //
+	// Tools
+	private List<String> mainList = Arrays.asList( //
 			"abiword" //
+			, "alsa-utils" //
 			, "asunder" //
 			, "bochs" //
 			, "build-essential" //
@@ -50,9 +52,6 @@ public class DependencyMain extends ExecutableProgram {
 			, "gparted" //
 			, "gpicview" //
 			, "grub-pc" //
-			, "icedove" //
-			, "icedtea-7-plugin" //
-			, "iceweasel" //
 			, "leafpad" //
 			, "less" //
 			, "libreadline-dev" //
@@ -97,7 +96,39 @@ public class DependencyMain extends ExecutableProgram {
 			, "xserver-xorg" //
 			, "yeahconsole" //
 			, "zip" //
-	));
+	);
+
+	private List<String> debianList = Arrays.asList( //
+			"icedove" //
+			, "iceweasel" //
+	);
+
+	@SuppressWarnings("unused")
+	private List<String> ubuntuList = Arrays.asList( //
+			"firefox" //
+			, "thunderbird" //
+	);
+
+	// Not a must, but good to have
+	private List<String> supplementaryList = Arrays.asList( //
+			"btrfs-tools" //
+			, "eject" //
+			, "gnupg2" //
+			, "gstreamer1.0-plugins-good" //
+			, "python-imaging" // for bitmap2ttf
+	);
+
+	private List<String> operatingSystemList = Arrays.asList( //
+			"iamerican" //
+			, "ibritish" //
+	);
+
+	private Set<String> requiredList = new HashSet<>(Util.add( //
+			mainList //
+			, debianList //
+			, supplementaryList //
+			, operatingSystemList //
+			));
 
 	public static void main(String args[]) {
 		Util.run(DependencyMain.class, args);
