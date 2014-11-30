@@ -197,6 +197,9 @@ public class SewingProver {
 
 	private Trampoline compileRules(List<Rule> rules) {
 		Node cut = Atom.of(SewingGeneralizer.cutName);
+		boolean hasCut = Read.from(rules) //
+				.map(rule -> new Rewriter(cut).contains(rule.tail)) //
+				.fold(false, (b0, b1) -> b0 || b1);
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
@@ -205,8 +208,9 @@ public class SewingProver {
 		});
 
 		Trampoline tr0 = or(trs);
-		Trampoline tr1 = saveEnv(cutBegin(tr0));
-		return Suite.isProverTrace ? log(tr1) : tr1;
+		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
+		Trampoline tr2 = saveEnv(tr1);
+		return Suite.isProverTrace ? log(tr2) : tr2;
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
