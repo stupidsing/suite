@@ -28,6 +28,7 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Complexity;
+import suite.node.util.Rewriter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -69,22 +70,22 @@ public class SewingProver {
 	}
 
 	private class Runtime {
-		private Env ge;
+		private Env env;
 		private IList<Trampoline> cutPoint;
 		private Node query;
 		private Journal journal = new Journal();
 		private IList<Trampoline> rems = IList.end(); // Continuations
-		private IList<Trampoline> alts = IList.end(); // Alternative
+		private IList<Trampoline> alts = IList.end(); // Alternatives
 		private Prover prover;
 
-		private Runtime(ProverConfig pc, Env ge, Trampoline tr) {
-			this.ge = ge;
+		private Runtime(ProverConfig pc, Env env, Trampoline tr) {
+			this.env = env;
 			pushAlt(tr);
 			prover = new Prover(pc, null, journal);
 		}
 
 		private BindEnv bindEnv() {
-			return new BindEnv(journal, ge);
+			return new BindEnv(journal, env);
 		}
 
 		private void post(Runnable r) {
@@ -226,7 +227,7 @@ public class SewingProver {
 			Node n1 = b ? m[1] : m[0];
 			BiPredicate<BindEnv, Node> p = sb.compileBind(n0);
 			Fun<Env, Node> f = sb.compile(n1);
-			tr = rt -> p.test(rt.bindEnv(), f.apply(rt.ge)) ? okay : fail;
+			tr = rt -> p.test(rt.bindEnv(), f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.match("builtin:.0:.1 .2", node)) != null) {
 			String className = ((Atom) m[0]).name;
 			String fieldName = ((Atom) m[1]).name;
@@ -298,7 +299,7 @@ public class SewingProver {
 				tr = fail;
 			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
 				Fun<Env, Node> f = sb.compile(node);
-				tr = rt -> rt.prover.prove(f.apply(rt.ge)) ? okay : fail;
+				tr = rt -> rt.prover.prove(f.apply(rt.env)) ? okay : fail;
 			} else
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
@@ -314,7 +315,7 @@ public class SewingProver {
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;
-					rt.query = f.apply(rt.ge);
+					rt.query = f.apply(rt.env);
 					rt.pushAlt(rt_ -> {
 						rt_.query = query0;
 						return fail;
@@ -337,7 +338,7 @@ public class SewingProver {
 
 	private Trampoline callPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
 		Fun<Env, Node> f = sb.compile(pass);
-		return rt -> predicate.prove(rt.prover, f.apply(rt.ge)) ? okay : fail;
+		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
 	}
 
 	private Trampoline cutBegin(Trampoline tr) {
@@ -374,15 +375,15 @@ public class SewingProver {
 
 	private Trampoline saveEnv(Trampoline tr) {
 		return rt -> {
-			Env ge0 = rt.ge;
-			rt.post(() -> rt.ge = ge0);
+			Env env0 = rt.env;
+			rt.post(() -> rt.env = env0);
 			return tr;
 		};
 	}
 
 	private Trampoline newEnv(SewingBinder sb, Trampoline tr) {
 		return rt -> {
-			rt.ge = sb.env();
+			rt.env = sb.env();
 			return tr;
 		};
 	}
