@@ -38,11 +38,11 @@ public class SewingBinder extends SewingGeneralizer {
 				int index = getVariableIndex(node);
 				return (be, n) -> Binder.bind(n, be.env.refs[index], be.journal);
 			} else
-				return boundAtom(atom);
+				return compileBindAtom(atom);
 		} else if (node instanceof Int)
-			return boundInt((Int) node);
+			return compileBindInt((Int) node);
 		else if (node instanceof Str)
-			return boundStr((Str) node);
+			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Fun<Env, Node> f = compile(node);
@@ -66,7 +66,7 @@ public class SewingBinder extends SewingGeneralizer {
 		}
 	}
 
-	private BiPredicate<BindEnv, Node> boundAtom(Atom a) {
+	private BiPredicate<BindEnv, Node> compileBindAtom(Atom a) {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {
@@ -77,7 +77,7 @@ public class SewingBinder extends SewingGeneralizer {
 		};
 	}
 
-	private BiPredicate<BindEnv, Node> boundInt(Int i_) {
+	private BiPredicate<BindEnv, Node> compileBindInt(Int i_) {
 		int i = i_.number;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
@@ -89,7 +89,7 @@ public class SewingBinder extends SewingGeneralizer {
 		};
 	}
 
-	private BiPredicate<BindEnv, Node> boundStr(Str str) {
+	private BiPredicate<BindEnv, Node> compileBindStr(Str str) {
 		String s = str.value;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
