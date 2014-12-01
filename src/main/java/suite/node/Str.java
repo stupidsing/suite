@@ -6,8 +6,8 @@ public class Str extends Node {
 
 	public final String value;
 
-	public Str(String name) {
-		value = name;
+	public Str(String value) {
+		this.value = value;
 	}
 
 	@Override
