@@ -27,7 +27,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.util.Complexity;
 import suite.node.util.Rewriter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -217,8 +216,7 @@ public class SewingProver {
 		else if ((list = breakdown(TermOp.OR____, node)).size() > 1)
 			tr = or(Read.from(list).map(n -> compile0(sb, n)));
 		else if ((m = Suite.match(".0 = .1", node)) != null) {
-			Complexity complexity = new Complexity();
-			boolean b = complexity.complexity(m[0]) > complexity.complexity(m[1]);
+			boolean b = complexity(m[0]) > complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
 			Node n1 = b ? m[1] : m[0];
 			BiPredicate<BindEnv, Node> p = sb.compileBind(n0);
@@ -442,6 +440,15 @@ public class SewingProver {
 				return trh;
 			};
 		}
+	}
+
+	private int complexity(Node node) {
+		node = node.finalNode();
+		Tree tree = Tree.decompose(node);
+		if (tree != null)
+			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));
+		else
+			return node instanceof Atom && SewingGeneralizer.isVariable(((Atom) node).name) ? 0 : 1;
 	}
 
 	private List<Node> breakdown(Operator operator, Node node) {

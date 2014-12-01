@@ -1,7 +1,6 @@
 package suite.lp.sewing;
 
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
@@ -13,7 +12,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.util.FunUtil.Fun;
-import suite.util.Util;
 
 public class SewingBinder extends SewingGeneralizer {
 
@@ -32,21 +30,20 @@ public class SewingBinder extends SewingGeneralizer {
 		Tree tree;
 
 		if (node instanceof Atom) {
-			String name = ((Atom) node).name;
+			Atom atom = (Atom) node;
+			String name = atom.name;
 			if (isWildcard(name))
 				return (be, n) -> true;
 			else if (isVariable(name)) {
 				int index = getVariableIndex(node);
 				return (be, n) -> Binder.bind(n, be.env.refs[index], be.journal);
 			} else
-				return boundIfPossible(node, n -> n == node);
-		} else if (node instanceof Int) {
-			int number = ((Int) node).number;
-			return boundIfPossible(node, n -> n instanceof Int && ((Int) n).number == number);
-		} else if (node instanceof Str) {
-			String value = ((Str) node).value;
-			return boundIfPossible(node, n -> n instanceof Str && Util.stringEquals(((Str) n).value, value));
-		} else if ((tree = Tree.decompose(node)) != null) {
+				return boundAtom(atom);
+		} else if (node instanceof Int)
+			return boundInt((Int) node);
+		else if (node instanceof Str)
+			return boundStr((Str) node);
+		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
 			Fun<Env, Node> f = compile(node);
 			BiPredicate<BindEnv, Node> c0 = compileBind(tree.getLeft());
@@ -69,15 +66,38 @@ public class SewingBinder extends SewingGeneralizer {
 		}
 	}
 
-	private BiPredicate<BindEnv, Node> boundIfPossible(Node node, Predicate<Node> isEqual) {
+	private BiPredicate<BindEnv, Node> boundAtom(Atom a) {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
-			if (!(n_ instanceof Reference))
-				return isEqual.test(n_);
-			else {
-				be.journal.addBind((Reference) n_, node);
+			if (n_ instanceof Reference) {
+				be.journal.addBind((Reference) n_, a);
 				return true;
-			}
+			} else
+				return n_ == a;
+		};
+	}
+
+	private BiPredicate<BindEnv, Node> boundInt(Int i_) {
+		int i = i_.number;
+		return (be, n) -> {
+			Node n_ = n.finalNode();
+			if (n_ instanceof Reference) {
+				be.journal.addBind((Reference) n_, i_);
+				return true;
+			} else
+				return n_ instanceof Int && ((Int) n_).number == i;
+		};
+	}
+
+	private BiPredicate<BindEnv, Node> boundStr(Str str) {
+		String s = str.value;
+		return (be, n) -> {
+			Node n_ = n.finalNode();
+			if (n_ instanceof Reference) {
+				be.journal.addBind((Reference) n_, str);
+				return true;
+			} else
+				return n_ instanceof Str && s.equals(((Str) n_).value);
 		};
 	}
 
