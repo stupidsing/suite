@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import suite.adt.ListMultimap;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Pair;
@@ -44,6 +45,11 @@ public class As {
 	public static <K, V> Pair<Sink<Pair<K, V>>, Source<Map<K, V>>> map() {
 		Map<K, V> map = new HashMap<>();
 		return Pair.of(pair -> map.put(pair.t0, pair.t1), () -> map);
+	}
+
+	public static <K, V> Pair<Sink<Pair<K, List<V>>>, Source<ListMultimap<K, V>>> multimap() {
+		Pair<Sink<Pair<K, List<V>>>, Source<Map<K, List<V>>>> p = map();
+		return Pair.of(p.t0, () -> new ListMultimap<>(p.t1.source()));
 	}
 
 	public static <K, V> Pair<Sink<Pair<K, V>>, Source<Map<K, Set<V>>>> setMap() {
