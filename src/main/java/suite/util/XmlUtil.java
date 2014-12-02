@@ -1,62 +1,47 @@
 package suite.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
-
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class XmlUtil {
 
-	public String format(String xml) throws ParserConfigurationException, SAXException {
-		Document document;
+	private DocumentBuilder documentBuilder;
+	private DOMImplementationLS di;
+	private LSSerializer lss;
 
+	public XmlUtil() throws IOException {
 		try {
-			document = parse(xml);
-		} catch (IOException ex) {
+			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			di = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS");
+			lss = di.createLSSerializer();
+			lss.getDomConfig().setParameter("format-pretty-print", true);
+		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
-
-		return format(document);
 	}
 
-	public String format(Document document) {
-		OutputFormat format = new OutputFormat(document);
-		format.setLineWidth(132);
-		format.setIndenting(true);
-		format.setIndent(2);
+	public String format(String xml) throws SAXException {
+		try (InputStream is = new ByteArrayInputStream(xml.getBytes(FileUtil.charset)); Writer writer = new StringWriter()) {
+			LSOutput lso = di.createLSOutput();
+			lso.setEncoding(FileUtil.charset.name());
+			lso.setCharacterStream(writer);
 
-		Writer out = new StringWriter();
-
-		try {
-			new XMLSerializer(out, format).serialize(document);
+			lss.write(documentBuilder.parse(is), lso);
+			return writer.toString();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
-		}
-
-		return out.toString();
-	}
-
-	public Document parse(String in) throws IOException, SAXException {
-		return parse(new StringReader(in));
-	}
-
-	public Document parse(Reader reader) throws IOException, SAXException {
-		InputSource is = new InputSource(reader);
-		try {
-			return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
-		} catch (ParserConfigurationException ex) {
-			throw new IOException(ex);
 		}
 	}
 
