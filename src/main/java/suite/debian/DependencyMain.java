@@ -85,8 +85,8 @@ public class DependencyMain extends ExecutableProgram {
 			, "unzip" //
 			, "usbutils" // lsusb
 			, "vim" //
-			, "virtualbox" //
 			, "virtualbox-dkms" //
+			, "virtualbox-qt" //
 			, "w3m" //
 			, "wine" //
 			, "wine32" //
