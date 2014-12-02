@@ -29,6 +29,7 @@ public class SystemPredicates {
 
 		addPredicate("cut.begin", cutBegin);
 		addPredicate("cut.end", cutEnd);
+		addPredicate("if", ifPredicate);
 		addPredicate("not", not);
 		addPredicate("once", once);
 		addPredicate("system.predicate", systemPredicate);
@@ -157,6 +158,19 @@ public class SystemPredicates {
 
 	private BuiltinPredicate cutEnd = (prover, ps) -> {
 		prover.setAlternative(ps.finalNode());
+		return true;
+	};
+
+	private BuiltinPredicate ifPredicate = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 3);
+		Prover prover1 = new Prover(prover);
+		boolean result = prover1.prove0(params[0]);
+		Node n = result ? params[1] : params[2];
+
+		if (!result)
+			prover1.undoAllBinds();
+
+		prover.setRemaining(Tree.of(TermOp.AND___, n, prover.getRemaining()));
 		return true;
 	};
 
