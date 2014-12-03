@@ -87,7 +87,10 @@ public class Profiler {
 				// Save line numbers as it is important to trace lambdas and
 				// anonymous classes
 				for (StackTraceElement elem : threadInfo.getStackTrace()) {
-					String name = elem.getClassName() + "." + elem.getMethodName() + " " + elem.getFileName();
+					String fileName = elem.getFileName();
+					String name = elem.getClassName() //
+							+ "." + elem.getMethodName() //
+							+ " " + (fileName != null ? fileName : "<unknown>");
 					if (elements.add(name)) {
 						Record record = records.computeIfAbsent(name, any -> new Record());
 						record.count++;
