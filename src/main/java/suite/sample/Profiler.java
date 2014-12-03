@@ -23,7 +23,12 @@ public class Profiler {
 
 	private Timer timer;
 	private AtomicInteger count = new AtomicInteger();
-	private Map<String, int[]> record = new HashMap<>();
+	private Map<String, Record> records = new HashMap<>();
+
+	private static class Record {
+		private int count;
+		private int minLineNumber = Integer.MAX_VALUE;
+	}
 
 	public String profile(Runnable runnable) {
 		try {
@@ -53,12 +58,12 @@ public class Profiler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("PROFILING RESULT\n");
 		sb.append("TOTAL SAMPLES = " + count.get() + "\n\n");
-		sb.append(Read.from(record) //
-				.sort((p0, p1) -> p1.t1[0] - p0.t1[0]) //
+		sb.append(Read.from(records) //
+				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
 				.map(pair -> {
 					String name = pair.t0;
-					int count = pair.t1[0];
-					return String.format("%d\t%s\n", count, name);
+					Record record = pair.t1;
+					return String.format("%d\t%s:%d\n", record.count, name, record.minLineNumber);
 				}) //
 				.collect(As.joined("")));
 		return sb.toString();
@@ -79,11 +84,16 @@ public class Profiler {
 					&& !Util.stringEquals(threadInfo.getThreadName(), "ReaderThread")) {
 				Set<String> elements = new HashSet<>();
 
-				for (StackTraceElement elem : threadInfo.getStackTrace())
-					elements.add(elem.getClassName() + "." + elem.getMethodName() + " (" + elem.getFileName() + ")");
-
-				for (String name : elements)
-					record.computeIfAbsent(name, any -> new int[] { 0 })[0]++;
+				// Save line numbers as it is important to trace lambdas and
+				// anonymous classes
+				for (StackTraceElement elem : threadInfo.getStackTrace()) {
+					String name = elem.getClassName() + "." + elem.getMethodName() + " " + elem.getFileName();
+					if (elements.add(name)) {
+						Record record = records.computeIfAbsent(name, any -> new Record());
+						record.count++;
+						record.minLineNumber = Math.min(record.minLineNumber, elem.getLineNumber());
+					}
+				}
 			}
 	}
 
