@@ -8,6 +8,7 @@ import java.util.Set;
 
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
+import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -17,6 +18,7 @@ import suite.node.Tuple;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.IdentityKey;
 import suite.parser.CommentPreprocessor;
+import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.ParseUtil;
@@ -129,19 +131,21 @@ public class Formatter {
 	}
 
 	private void format0(Node node, int parentPrec) {
-		if (node instanceof Atom) {
-			String s = ((Atom) node).name;
-			s = isDump ? quoteAtomIfRequired(s) : s;
-			sb.append(s);
+		if (node instanceof Atom)
+			sb.append(quoteAtomIfRequired(((Atom) node).name));
+		else if (node instanceof Data) {
+			Object data = Data.get(node);
+			if (data instanceof Chars)
+				sb.append("Chars<" + quoteStringIfRequired(((Chars) data).toString()) + ">");
+			else
+				sb.append("Data<" + data.getClass().getSimpleName() + ">");
 		} else if (node instanceof Int)
 			sb.append(((Int) node).number);
 		else if (node instanceof Reference)
 			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
-		else if (node instanceof Str) {
-			String s = ((Str) node).value;
-			s = isDump ? Escaper.escape(s, '"') : s;
-			sb.append(s);
-		} else if (node instanceof Tree) {
+		else if (node instanceof Str)
+			sb.append(quoteStringIfRequired(((Str) node).value));
+		else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Operator operator = tree.getOperator();
 			Node left = tree.getLeft();
@@ -190,28 +194,35 @@ public class Formatter {
 			sb.append(')');
 	}
 
-	public String quoteAtomIfRequired(String s) {
-		if (!s.isEmpty()) {
-			boolean quote = false;
+	public String quoteAtomIfRequired(String s0) {
+		String s1;
+		if (isDump)
+			if (!s0.isEmpty()) {
+				boolean quote = false;
 
-			for (char c : Util.chars(s))
-				quote |= !('0' <= c && c <= '9') //
-						&& !('a' <= c && c <= 'z') //
-						&& !('A' <= c && c <= 'Z') //
-						&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
+				for (char c : Util.chars(s0))
+					quote |= !('0' <= c && c <= '9') //
+							&& !('a' <= c && c <= 'z') //
+							&& !('A' <= c && c <= 'Z') //
+							&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
 
-			quote |= s.contains(CommentPreprocessor.closeGroupComment) //
-					|| s.contains(CommentPreprocessor.openGroupComment) //
-					|| s.contains(CommentPreprocessor.closeLineComment) //
-					|| s.contains(CommentPreprocessor.openLineComment);
+				quote |= s0.contains(CommentPreprocessor.closeGroupComment) //
+						|| s0.contains(CommentPreprocessor.openGroupComment) //
+						|| s0.contains(CommentPreprocessor.closeLineComment) //
+						|| s0.contains(CommentPreprocessor.openLineComment);
 
-			quote |= ParseUtil.isInteger(s);
+				quote |= ParseUtil.isInteger(s0);
 
-			if (quote)
-				s = Escaper.escape(s, '\'');
-		} else
-			s = "()";
-		return s;
+				s1 = quote ? Escaper.escape(s0, '\'') : s0;
+			} else
+				s1 = "()";
+		else
+			s1 = s0;
+		return s1;
+	}
+
+	private String quoteStringIfRequired(String s) {
+		return isDump ? Escaper.escape(s, '"') : s;
 	}
 
 }
