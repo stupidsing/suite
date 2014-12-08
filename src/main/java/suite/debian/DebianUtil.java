@@ -18,9 +18,15 @@ import suite.streamlet.Streamlet;
 public class DebianUtil {
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(File file) {
-		try (InputStream is = new FileInputStream(file);
-				Reader isr = new InputStreamReader(is);
-				BufferedReader br = new BufferedReader(isr)) {
+		try (InputStream is = new FileInputStream(file)) {
+			return readDpkgConfiguration(is);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public Streamlet<Map<String, String>> readDpkgConfiguration(InputStream is) throws IOException {
+		try (Reader isr = new InputStreamReader(is); BufferedReader br = new BufferedReader(isr)) {
 			List<Map<String, String>> pms = new ArrayList<>();
 			Map<String, String> pm = new HashMap<>();
 			StringBuilder sb = new StringBuilder();
@@ -43,8 +49,6 @@ public class DebianUtil {
 			}
 
 			return Read.from(pms);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
 		}
 	}
 

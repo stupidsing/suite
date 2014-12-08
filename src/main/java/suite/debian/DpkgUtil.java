@@ -72,6 +72,7 @@ public class DpkgUtil {
 				.map(pm -> {
 					String line = pm.getOrDefault("Depends", "");
 					List<String> list = Read.from(line.split(",")) //
+							.filter(s -> !s.isEmpty()) //
 							.map(s -> s.trim().split(" ")[0]) //
 							.toList();
 					return Pair.of(pm.get("Package"), list);

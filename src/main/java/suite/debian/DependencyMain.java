@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import suite.debian.AptUtil.Repo;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FileUtil;
@@ -136,7 +137,7 @@ public class DependencyMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		Read.from(getClass().getMethods()) //
-				.filter(m -> m.getName().startsWith("list")) //
+				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.foreach(m -> {
 					System.out.println(m.getName() + "()");
 					try {
@@ -148,6 +149,30 @@ public class DependencyMain extends ExecutableProgram {
 					System.out.println();
 				});
 		return true;
+	}
+
+	public void listDependeesOfDkms() {
+		Repo repo = new Repo("http://mirrors.kernel.org/ubuntu" //
+				, "utopic" //
+				, "main" //
+				, "amd64");
+		String packageName = "dkms";
+
+		List<Map<String, String>> packages;
+		try {
+			packages = aptUtil.readRepoPackages( //
+					repo //
+					);
+
+			Set<String> required = new HashSet<>(Arrays.asList(packageName));
+			Set<String> required1 = dpkgUtil.getDependingSet(packages, required);
+			Read.from(required1) //
+					.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
+					.sort(Util.comparator()) //
+					.forEach(System.out::println);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public void listManuallyInstalled() {
