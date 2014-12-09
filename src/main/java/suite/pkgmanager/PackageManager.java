@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PackageManager {
 
 	private ObjectMapper objectMapper = new ObjectMapper();
+	private Keeper keeper = new Keeper(objectMapper);
 	private Log log = LogFactory.getLog(getClass());
 
 	public boolean install(String packageFilename) throws IOException {
@@ -65,25 +66,22 @@ public class PackageManager {
 				break;
 			}
 
-		if (!isSuccess)
+		if (isSuccess)
+			keeper.savePackageMemento(new PackageMemento(packageManifest, installActions));
+		else
 			progress = unact(installActions, progress);
-
-		PackageMemento packageMemento = new PackageMemento(packageManifest, installActions);
-
-		// TODO saves memento
-		packageMemento.getClass();
 
 		return isSuccess;
 	}
 
-	private int unact(List<InstallAction> installActions, int i) {
-		for (; i > 0; i--)
+	private int unact(List<InstallAction> installActions, int progress) {
+		for (; progress > 0; progress--)
 			try {
-				installActions.get(i - 1).unact();
+				installActions.get(progress - 1).unact();
 			} catch (Exception ex) {
 				log.error("Error during un-installation", ex);
 			}
-		return i;
+		return progress;
 	}
 
 	private PackageManifest getPackageManifest(String packageFilename) throws IOException {
