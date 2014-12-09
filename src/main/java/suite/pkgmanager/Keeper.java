@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
+import java.util.Map;
 
 import suite.util.FileUtil;
 import suite.util.InspectUtil;
@@ -30,7 +30,7 @@ public class Keeper {
 
 	public PackageMemento loadPackageMemento(String packageName) throws IOException {
 		try (InputStream is = new FileInputStream(keeperDirectory + "/" + packageName)) {
-			return mapifyUtil.unmapify(PackageMemento.class, objectMapper.readValue(is, HashMap.class));
+			return mapifyUtil.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
 		}
 	}
 
