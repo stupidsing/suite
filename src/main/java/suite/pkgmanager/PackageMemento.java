@@ -9,6 +9,9 @@ public class PackageMemento {
 	private PackageManifest packageManifest;
 	private List<InstallAction> installActions;
 
+	public PackageMemento() { // For de-serialization
+	}
+
 	public PackageMemento(PackageManifest packageManifest, List<InstallAction> installActions) {
 		this.packageManifest = packageManifest;
 		this.installActions = installActions;
