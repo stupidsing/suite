@@ -419,11 +419,8 @@ public class Ebnf {
 	}
 
 	private void reduceHeadRecursion() {
-		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet()) {
-			String entity = entry.getKey();
-			EbnfNode en = entry.getValue();
-			nodesByEntity.put(entity, reduceHeadRecursion(en));
-		}
+		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet())
+			entry.setValue(reduceHeadRecursion(entry.getValue()));
 	}
 
 	/**
