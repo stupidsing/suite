@@ -12,15 +12,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
-import suite.ebnf.EbnfNode.EbnfType;
 import suite.node.io.Escaper;
-import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.Pair;
-import suite.util.ParseUtil;
 import suite.util.Util;
 
 /**
@@ -41,6 +38,7 @@ public class Ebnf {
 	private String rootGrammarEntity;
 	private Map<String, Grammar> grammarsByEntity = new HashMap<>();
 
+	private EbnfBreakdown breakdown = new EbnfBreakdown();
 	private EbnfExpect expect = new EbnfExpect();
 	private Streamlet<State> noResult = Read.empty();
 
@@ -293,42 +291,7 @@ public class Ebnf {
 	}
 
 	private Grammar parseGrammar(String s) {
-		return build(breakdown(s));
-	}
-
-	private EbnfNode breakdown(String s) {
-		EbnfNode en;
-		List<String> list;
-		Pair<String, String> pair;
-		s = s.trim();
-
-		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
-			en = new EbnfNode(EbnfType.OR____, breakdown(list));
-		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null) {
-			EbnfNode grammar0 = breakdown(pair.t0);
-			EbnfNode grammar1 = breakdown(pair.t1);
-			en = new EbnfNode(EbnfType.EXCEPT, Arrays.asList(grammar0, grammar1));
-		} else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
-			en = new EbnfNode(EbnfType.AND___, breakdown(list));
-		else if (s.endsWith("*"))
-			en = new EbnfNode(EbnfType.REPT0_, breakdown(Util.substr(s, 0, -1)));
-		else if (s.endsWith("+"))
-			en = new EbnfNode(EbnfType.REPT1_, breakdown(Util.substr(s, 0, -1)));
-		else if (s.endsWith("?"))
-			en = new EbnfNode(EbnfType.OPTION, breakdown(Util.substr(s, 0, -1)));
-		else if (s.startsWith("(") && s.endsWith(")"))
-			en = breakdown(Util.substr(s, 1, -1));
-		else if (s.startsWith("\"") && s.endsWith("\"")) {
-			String token = Escaper.unescape(Util.substr(s, 1, -1), "\"");
-			en = new EbnfNode(EbnfType.STRING, token);
-		} else
-			en = new EbnfNode(EbnfType.ENTITY, s);
-
-		return en;
-	}
-
-	private List<EbnfNode> breakdown(List<String> list) {
-		return Read.from(list).map(this::breakdown).toList();
+		return build(breakdown.breakdown(s));
 	}
 
 	private Grammar build(EbnfNode en) {
