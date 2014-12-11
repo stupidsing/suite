@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
+import suite.ebnf.EbnfNode.EbnfType;
 import suite.node.io.Escaper;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -288,9 +289,8 @@ public class Ebnf {
 			rootGrammarEntity = pairs.get(0).t0;
 
 		nodesByEntity = Read.from(pairs).map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t1))).collect(As.map());
-		grammarsByEntity = Read.from(nodesByEntity).map(lr -> Pair.of(lr.t0, build(lr.t1))).collect(As.map());
-
 		reduceHeadRecursion();
+		grammarsByEntity = Read.from(nodesByEntity).map(lr -> Pair.of(lr.t0, build(lr.t1))).collect(As.map());
 	}
 
 	private Grammar parseGrammar(String s) {
@@ -410,11 +410,19 @@ public class Ebnf {
 		return new Parse(s).parse(0, parseGrammar(entity));
 	}
 
+	private State deepen(State state, String entity) {
+		return new State(state, state.pos, entity, state.depth + 1);
+	}
+
+	private State undeepen(State state, int depth) {
+		return new State(state, state.pos, null, depth);
+	}
+
 	private void reduceHeadRecursion() {
-		for (Entry<String, Grammar> entry : grammarsByEntity.entrySet()) {
+		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet()) {
 			String entity = entry.getKey();
-			Grammar grammar = entry.getValue();
-			grammarsByEntity.put(entity, reduceHeadRecursion(entity, grammar));
+			EbnfNode en = entry.getValue();
+			nodesByEntity.put(entity, reduceHeadRecursion(entity, en));
 		}
 	}
 
@@ -425,66 +433,45 @@ public class Ebnf {
 	 *
 	 * become two rules
 	 *
-	 * A = tempB tempC*
-	 *
-	 * tempB = B0 | B1 | ... | Bm
-	 *
-	 * tempC = C0 | C1 | ... | Cn
+	 * A = (B0 | B1 | ... | Bm) (C0 | C1 | ... | Cn)*
 	 */
-	private Grammar reduceHeadRecursion(String entity, Grammar grammar0) {
-		Grammar grammar = lookup(grammar0);
-		OrGrammar orGrammar = grammar instanceof OrGrammar ? (OrGrammar) grammar : null;
-		Grammar grammar1;
+	private EbnfNode reduceHeadRecursion(String entity, EbnfNode en0) {
+		EbnfNode en = lookup(en0);
+		EbnfNode en1;
 
-		if (orGrammar != null) {
-			List<Grammar> listb = new ArrayList<>();
-			List<Grammar> listc = new ArrayList<>();
+		if (en.type == EbnfType.OR____) {
+			List<EbnfNode> listb = new ArrayList<>();
+			List<EbnfNode> listc = new ArrayList<>();
 
-			for (Grammar childGrammar : children(orGrammar)) {
-				if (childGrammar instanceof JoinGrammar) {
-					List<Grammar> grammars = children((JoinGrammar) childGrammar);
+			for (EbnfNode childEn : en.children) {
+				if (childEn.type == EbnfType.AND___) {
+					List<EbnfNode> ens = childEn.children;
 
-					if (lookup(grammars.get(0)) == grammar) {
-						listc.add(new JoinGrammar(Util.right(grammars, 1)));
+					if (lookup(ens.get(0)) == en) {
+						listc.add(new EbnfNode(EbnfType.AND___, Util.right(ens, 1)));
 						continue;
 					}
 				}
 
-				listb.add(childGrammar);
+				listb.add(childEn);
 			}
 
 			if (!listc.isEmpty()) {
-				String tempb = entity + "-Head";
-				String tempc = entity + "-Tail";
-				grammarsByEntity.put(tempb, new OrGrammar(listb));
-				grammarsByEntity.put(tempc, new OrGrammar(listc));
-				Grammar tempbGrammar = buildEntity(tempb);
-				Grammar tempcGrammar = buildEntity(tempc);
-				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar, true)));
+				EbnfNode enb = new EbnfNode(EbnfType.OR____, listb);
+				EbnfNode enc = new EbnfNode(EbnfType.OR____, listc);
+				en1 = new EbnfNode(EbnfType.AND___, Arrays.asList(enb, new EbnfNode(EbnfType.REPT0_, enc)));
 			} else
-				grammar1 = grammar;
+				en1 = en;
 		} else
-			grammar1 = grammar;
+			en1 = en;
 
-		return grammar1;
+		return en1;
 	}
 
-	private Grammar lookup(Grammar grammar) {
-		String entity = grammar instanceof EntityGrammar ? ((EntityGrammar) grammar).entity : null;
-		Grammar grammar1 = entity != null ? grammarsByEntity.get(entity) : null;
-		return grammar1 != null ? grammar1 : grammar;
-	}
-
-	private State deepen(State state, String entity) {
-		return new State(state, state.pos, entity, state.depth + 1);
-	}
-
-	private State undeepen(State state, int depth) {
-		return new State(state, state.pos, null, depth);
-	}
-
-	private List<Grammar> children(CompositeGrammar grammar) {
-		return grammar.grammars;
+	private EbnfNode lookup(EbnfNode en) {
+		String entity = en.type == EbnfType.ENTITY ? en.content : null;
+		EbnfNode en1 = entity != null ? nodesByEntity.get(entity) : null;
+		return en1 != null ? en1 : en;
 	}
 
 }
