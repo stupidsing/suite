@@ -411,7 +411,7 @@ public class Ebnf {
 	}
 
 	private void reduceHeadRecursion() {
-		for (Entry<String, Grammar> entry : new ArrayList<>(grammarsByEntity.entrySet())) {
+		for (Entry<String, Grammar> entry : grammarsByEntity.entrySet()) {
 			String entity = entry.getKey();
 			Grammar grammar = entry.getValue();
 			grammarsByEntity.put(entity, reduceHeadRecursion(entity, grammar));
