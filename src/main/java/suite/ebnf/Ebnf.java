@@ -6,13 +6,13 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
 import suite.node.io.Escaper;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
@@ -36,7 +36,8 @@ import suite.util.Util;
 public class Ebnf {
 
 	private String rootGrammarEntity;
-	private Map<String, Grammar> grammarsByEntity = new HashMap<>();
+	private Map<String, EbnfNode> nodesByEntity;
+	private Map<String, Grammar> grammarsByEntity;
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
 	private EbnfExpect expect = new EbnfExpect();
@@ -274,18 +275,20 @@ public class Ebnf {
 	}
 
 	public Ebnf(Reader reader) throws IOException {
-		Read.lines(reader) //
+		List<Pair<String, String>> pairs = Read.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
 				.split(line -> !line.startsWith(" ")) //
 				.map(st -> st.fold("", String::concat)) //
 				.map(line -> Util.split2(line, " ::= ")) //
 				.filter(lr -> lr != null) //
-				.foreach(lr -> {
-					grammarsByEntity.put(lr.t0, parseGrammar(lr.t1));
-					if (rootGrammarEntity == null)
-						rootGrammarEntity = lr.t0;
-				});
+				.toList();
+
+		if (!pairs.isEmpty())
+			rootGrammarEntity = pairs.get(0).t0;
+
+		nodesByEntity = Read.from(pairs).map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t1))).collect(As.map());
+		grammarsByEntity = Read.from(nodesByEntity).map(lr -> Pair.of(lr.t0, build(lr.t1))).collect(As.map());
 
 		reduceHeadRecursion();
 	}
