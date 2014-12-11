@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
+import suite.ebnf.EbnfNode.EbnfType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
@@ -292,79 +293,127 @@ public class Ebnf {
 	}
 
 	private Grammar parseGrammar(String s) {
-		Grammar grammar;
+		return build(breakdown(s));
+	}
+
+	private EbnfNode breakdown(String s) {
+		EbnfNode en;
 		List<String> list;
 		Pair<String, String> pair;
 		s = s.trim();
 
 		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
-			grammar = new OrGrammar(parseGrammars(list));
+			en = new EbnfNode(EbnfType.OR____, breakdown(list));
 		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null) {
-			Grammar grammar0 = parseGrammar(pair.t0);
-			Grammar grammar1 = parseGrammar(pair.t1);
+			EbnfNode grammar0 = breakdown(pair.t0);
+			EbnfNode grammar1 = breakdown(pair.t1);
+			en = new EbnfNode(EbnfType.EXCEPT, Arrays.asList(grammar0, grammar1));
+		} else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
+			en = new EbnfNode(EbnfType.AND___, breakdown(list));
+		else if (s.endsWith("*"))
+			en = new EbnfNode(EbnfType.REPT0_, breakdown(Util.substr(s, 0, -1)));
+		else if (s.endsWith("+"))
+			en = new EbnfNode(EbnfType.REPT1_, breakdown(Util.substr(s, 0, -1)));
+		else if (s.endsWith("?"))
+			en = new EbnfNode(EbnfType.OPTION, breakdown(Util.substr(s, 0, -1)));
+		else if (s.startsWith("(") && s.endsWith(")"))
+			en = breakdown(Util.substr(s, 1, -1));
+		else if (s.startsWith("\"") && s.endsWith("\"")) {
+			String token = Escaper.unescape(Util.substr(s, 1, -1), "\"");
+			en = new EbnfNode(EbnfType.STRING, token);
+		} else
+			en = new EbnfNode(EbnfType.ENTITY, s);
+
+		return en;
+	}
+
+	private List<EbnfNode> breakdown(List<String> list) {
+		return Read.from(list).map(this::breakdown).toList();
+	}
+
+	private Grammar build(EbnfNode en) {
+		Grammar grammar;
+
+		switch (en.type) {
+		case AND___:
+			grammar = new JoinGrammar(buildChildren(en));
+			break;
+		case ENTITY:
+			if (Util.stringEquals(en.content, "<EOF>"))
+				grammar = (parse, st) -> st.pos == parse.length ? Read.from(st) : noResult;
+			else
+				grammar = buildEntity(en.content);
+			break;
+		case EXCEPT:
+			Grammar grammar0 = build(en.children.get(0));
+			Grammar grammar1 = build(en.children.get(1));
 			grammar = (parse, st) -> grammar0.p(parse, st).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
 				return grammar1.p(new Parse(in1), new State(null, 0, null, 1)).count() == 0;
 			});
-		} else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
-			grammar = new JoinGrammar(parseGrammars(list));
-		else if (s.endsWith("*"))
-			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), true);
-		else if (s.endsWith("+"))
-			grammar = new RepeatGrammar(parseGrammar(Util.substr(s, 0, -1)), false);
-		else if (s.endsWith("?")) {
-			Grammar grammar1 = parseGrammar(Util.substr(s, 0, -1));
-			grammar = (parse, st) -> parse.parse(st, grammar1).cons(st);
-		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
-			Expect e = expect.expectCharRange(s.charAt(1), s.charAt(3));
+			break;
+		case OPTION:
+			Grammar childGrammar = build(en.children.get(0));
+			grammar = (parse, st) -> parse.parse(st, childGrammar).cons(st);
+			break;
+		case OR____:
+			grammar = new OrGrammar(buildChildren(en));
+			break;
+		case REPT0_:
+			grammar = new RepeatGrammar(build(en.children.get(0)), true);
+			break;
+		case REPT1_:
+			grammar = new RepeatGrammar(build(en.children.get(0)), false);
+			break;
+		case STRING:
+			Expect e = expect.expectString(en.content);
 			grammar = (parse, st) -> parse.expect(st, e, st.pos);
-		} else if (s.startsWith("(") && s.endsWith(")"))
-			grammar = parseGrammar(Util.substr(s, 1, -1));
-		else if (s.startsWith("\"") && s.endsWith("\"")) {
-			String token = Escaper.unescape(Util.substr(s, 1, -1), "\"");
-			Expect e = expect.expectString(token);
-			grammar = (parse, st) -> parse.expect(st, e, st.pos);
-		} else
-			grammar = parseGrammarEntity(s);
+			break;
+		default:
+			grammar = null;
+		}
 
 		return grammar;
 	}
 
-	private List<Grammar> parseGrammars(List<String> list) {
-		return Read.from(list).map(this::parseGrammar).toList();
+	private List<Grammar> buildChildren(EbnfNode en) {
+		return Read.from(en.children).map(this::build).toList();
 	}
 
-	private Grammar parseGrammarEntity(String entity) {
+	private Grammar buildEntity(String entity) {
 		Grammar grammar;
-		if ((grammar = parseGrammarLiterals(entity)) == null)
+		if ((grammar = buildLiteral(entity)) == null)
 			grammar = new EntityGrammar(entity);
 		return grammar;
 	}
 
-	private Grammar parseGrammarLiterals(String entity) {
-		Grammar grammar;
+	private Grammar buildLiteral(String entity) {
+		Expect e;
 
-		if (Util.stringEquals(entity, "<EOF>"))
-			grammar = (parse, st) -> st.pos == parse.length ? Read.from(st) : noResult;
-		else if (Util.stringEquals(entity, "<CHARACTER>"))
-			grammar = (parse, st) -> parse.expect(st, (in, length, start) -> Math.min(start + 1, length), st.pos);
+		if (Util.stringEquals(entity, "<CHARACTER>"))
+			e = (in, length, start) -> Math.min(start + 1, length);
 		else if (Util.stringEquals(entity, "<CHARACTER_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, expect.expectCharLiteral, st.pos);
+			e = expect.expectCharLiteral;
 		else if (Util.stringEquals(entity, "<FLOATING_POINT_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, expect.expectRealLiteral, st.pos);
+			e = expect.expectRealLiteral;
 		else if (Util.stringEquals(entity, "<IDENTIFIER>"))
-			grammar = (parse, st) -> parse.expect(st, expect.expectIdentifier, st.pos);
+			e = expect.expectIdentifier;
 		else if (entity.startsWith("<IGNORE:") && entity.endsWith(">"))
-			grammar = (parse, st) -> noResult;
+			e = expect.expectFail;
 		else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, expect.expectIntegerLiteral, st.pos);
+			e = expect.expectIntegerLiteral;
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
-			grammar = (parse, st) -> parse.expect(st, expect.expectStringLiteral, st.pos);
-		else if (entity.startsWith("<UNICODE_CLASS:") && entity.endsWith(">")) {
-			Expect e = expect.expectUnicodeClass(entity.substring(4, entity.length() - 1));
-			grammar = (parse, st) -> parse.expect(st, e, st.pos);
-		} else
-			grammar = null;
+			e = expect.expectStringLiteral;
+		else if (entity.startsWith("<UNICODE_CLASS:") && entity.endsWith(">"))
+			e = expect.expectUnicodeClass(entity.substring(4, entity.length() - 1));
+		else if (entity.length() == 5 && entity.charAt(0) == '[' && entity.charAt(2) == '-' && entity.charAt(4) == ']')
+			e = expect.expectCharRange(entity.charAt(1), entity.charAt(3));
+		else if (entity.startsWith("\"") && entity.endsWith("\""))
+			e = expect.expectString(Escaper.unescape(Util.substr(entity, 1, -1), "\""));
+		else
+			e = null;
+
+		Grammar grammar = e != null ? grammar = (parse, st) -> parse.expect(st, e, st.pos) : null;
 
 		if (grammar != null)
 			return (parse, st) -> {
@@ -443,8 +492,8 @@ public class Ebnf {
 				String tempc = entity + "-Tail";
 				grammarsByEntity.put(tempb, new OrGrammar(listb));
 				grammarsByEntity.put(tempc, new OrGrammar(listc));
-				Grammar tempbGrammar = parseGrammarEntity(tempb);
-				Grammar tempcGrammar = parseGrammarEntity(tempc);
+				Grammar tempbGrammar = buildEntity(tempb);
+				Grammar tempcGrammar = buildEntity(tempc);
 				grammar1 = new JoinGrammar(Arrays.asList(tempbGrammar, new RepeatGrammar(tempcGrammar, true)));
 			} else
 				grammar1 = grammar;

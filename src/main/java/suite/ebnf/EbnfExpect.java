@@ -31,6 +31,8 @@ public class EbnfExpect {
 		return end;
 	};
 
+	public Expect expectFail = (in, length, start) -> start;
+
 	public Expect expectIdentifier = (in, length, start) -> {
 		int pos = start;
 		if (pos < length && Character.isJavaIdentifierStart(in.charAt(pos))) {
