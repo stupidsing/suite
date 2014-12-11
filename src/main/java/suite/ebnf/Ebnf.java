@@ -318,9 +318,6 @@ public class Ebnf {
 		} else if (s.length() == 5 && s.charAt(0) == '[' && s.charAt(2) == '-' && s.charAt(4) == ']') {
 			Expect e = expect.expectCharRange(s.charAt(1), s.charAt(3));
 			grammar = (parse, st) -> parse.expect(st, e, st.pos);
-		} else if (s.startsWith("[uc:") && s.endsWith("]")) {
-			Expect e = expect.expectUnicodeClass(s.substring(4, s.length() - 1));
-			grammar = (parse, st) -> parse.expect(st, e, st.pos);
 		} else if (s.startsWith("(") && s.endsWith(")"))
 			grammar = parseGrammar(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\"")) {
@@ -357,13 +354,16 @@ public class Ebnf {
 			grammar = (parse, st) -> parse.expect(st, expect.expectRealLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<IDENTIFIER>"))
 			grammar = (parse, st) -> parse.expect(st, expect.expectIdentifier, st.pos);
+		else if (entity.startsWith("<IGNORE:") && entity.endsWith(">"))
+			grammar = (parse, st) -> noResult;
 		else if (Util.stringEquals(entity, "<INTEGER_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, expect.expectIntegerLiteral, st.pos);
 		else if (Util.stringEquals(entity, "<STRING_LITERAL>"))
 			grammar = (parse, st) -> parse.expect(st, expect.expectStringLiteral, st.pos);
-		else if (entity.startsWith("<IGNORE") && entity.endsWith(">"))
-			grammar = (parse, st) -> noResult;
-		else
+		else if (entity.startsWith("<UNICODE_CLASS:") && entity.endsWith(">")) {
+			Expect e = expect.expectUnicodeClass(entity.substring(4, entity.length() - 1));
+			grammar = (parse, st) -> parse.expect(st, e, st.pos);
+		} else
 			grammar = null;
 
 		if (grammar != null)
