@@ -422,7 +422,7 @@ public class Ebnf {
 		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet()) {
 			String entity = entry.getKey();
 			EbnfNode en = entry.getValue();
-			nodesByEntity.put(entity, reduceHeadRecursion(entity, en));
+			nodesByEntity.put(entity, reduceHeadRecursion(en));
 		}
 	}
 
@@ -435,7 +435,7 @@ public class Ebnf {
 	 *
 	 * A = (B0 | B1 | ... | Bm) (C0 | C1 | ... | Cn)*
 	 */
-	private EbnfNode reduceHeadRecursion(String entity, EbnfNode en0) {
+	private EbnfNode reduceHeadRecursion(EbnfNode en0) {
 		EbnfNode en = lookup(en0);
 		EbnfNode en1;
 
