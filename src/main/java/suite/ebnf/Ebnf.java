@@ -428,7 +428,7 @@ public class Ebnf {
 	 *
 	 * A = B0 | B1 | ... | Bm | A C0 | A C1 | ... | A Cn
 	 *
-	 * become two rules
+	 * becomes
 	 *
 	 * A = (B0 | B1 | ... | Bm) (C0 | C1 | ... | Cn)*
 	 */
