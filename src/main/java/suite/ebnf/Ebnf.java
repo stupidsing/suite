@@ -385,7 +385,7 @@ public class Ebnf {
 		else
 			e = null;
 
-		Grammar grammar = e != null ? grammar = (parse, st) -> parse.expect(st, e, st.pos) : null;
+		Grammar grammar = e != null ? (parse, st) -> parse.expect(st, e, st.pos) : null;
 
 		if (grammar != null)
 			return (parse, st) -> {
