@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
-import suite.ebnf.EbnfNode.EbnfType;
 import suite.node.io.Escaper;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -37,7 +35,6 @@ import suite.util.Util;
 public class Ebnf {
 
 	private String rootGrammarEntity;
-	private Map<String, EbnfNode> nodesByEntity;
 	private Map<String, Grammar> grammarsByEntity;
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
@@ -288,9 +285,18 @@ public class Ebnf {
 		if (!pairs.isEmpty())
 			rootGrammarEntity = pairs.get(0).t0;
 
-		nodesByEntity = Read.from(pairs).map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t1))).collect(As.map());
-		reduceHeadRecursion();
-		grammarsByEntity = Read.from(nodesByEntity).map(lr -> Pair.of(lr.t0, build(lr.t1))).collect(As.map());
+		Map<String, EbnfNode> nodesByEntity = Read.from(pairs) //
+				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t1))) //
+				.collect(As.map());
+
+		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(nodesByEntity);
+
+		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet())
+			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
+
+		grammarsByEntity = Read.from(nodesByEntity) //
+				.map(lr -> Pair.of(lr.t0, build(lr.t1))) //
+				.collect(As.map());
 	}
 
 	private Grammar parseGrammar(String s) {
@@ -416,59 +422,6 @@ public class Ebnf {
 
 	private State undeepen(State state, int depth) {
 		return new State(state, state.pos, null, depth);
-	}
-
-	private void reduceHeadRecursion() {
-		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet())
-			entry.setValue(reduceHeadRecursion(entry.getValue()));
-	}
-
-	/**
-	 * Transform head-recursion rule as follows:
-	 *
-	 * A = B0 | B1 | ... | Bm | A C0 | A C1 | ... | A Cn
-	 *
-	 * becomes
-	 *
-	 * A = (B0 | B1 | ... | Bm) (C0 | C1 | ... | Cn)*
-	 */
-	private EbnfNode reduceHeadRecursion(EbnfNode en0) {
-		EbnfNode en = lookup(en0);
-		EbnfNode en1;
-
-		if (en.type == EbnfType.OR____) {
-			List<EbnfNode> listb = new ArrayList<>();
-			List<EbnfNode> listc = new ArrayList<>();
-
-			for (EbnfNode childEn : en.children) {
-				if (childEn.type == EbnfType.AND___) {
-					List<EbnfNode> ens = childEn.children;
-
-					if (lookup(ens.get(0)) == en) {
-						listc.add(new EbnfNode(EbnfType.AND___, Util.right(ens, 1)));
-						continue;
-					}
-				}
-
-				listb.add(childEn);
-			}
-
-			if (!listc.isEmpty()) {
-				EbnfNode enb = new EbnfNode(EbnfType.OR____, listb);
-				EbnfNode enc = new EbnfNode(EbnfType.OR____, listc);
-				en1 = new EbnfNode(EbnfType.AND___, Arrays.asList(enb, new EbnfNode(EbnfType.REPT0_, enc)));
-			} else
-				en1 = en;
-		} else
-			en1 = en;
-
-		return en1;
-	}
-
-	private EbnfNode lookup(EbnfNode en) {
-		String entity = en.type == EbnfType.ENTITY ? en.content : null;
-		EbnfNode en1 = entity != null ? nodesByEntity.get(entity) : null;
-		return en1 != null ? en1 : en;
 	}
 
 }
