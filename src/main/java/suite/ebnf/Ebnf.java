@@ -55,37 +55,6 @@ public class Ebnf {
 		}
 	}
 
-	private abstract class CompositeGrammar implements Grammar {
-		public List<Grammar> grammars;
-
-		public CompositeGrammar(List<Grammar> grammars) {
-			this.grammars = grammars;
-		}
-	}
-
-	private class OrGrammar extends CompositeGrammar {
-		public OrGrammar(List<Grammar> grammars) {
-			super(grammars);
-		}
-
-		public Streamlet<State> p(Parse parse, State state) {
-			return Read.from(grammars).concatMap(childGrammar -> parse.parse(state, childGrammar));
-		}
-	}
-
-	private class JoinGrammar extends CompositeGrammar {
-		public JoinGrammar(List<Grammar> grammars) {
-			super(grammars);
-		}
-
-		public Streamlet<State> p(Parse parse, State state) {
-			Streamlet<State> st = Read.from(state);
-			for (Grammar childGrammar : grammars)
-				st = st.concatMap(st_ -> parse.parse(st_, childGrammar));
-			return st;
-		}
-	}
-
 	private class RepeatGrammar extends WrappingGrammar {
 		private boolean isAllowNone;
 
@@ -305,10 +274,17 @@ public class Ebnf {
 
 	private Grammar build(EbnfNode en) {
 		Grammar grammar;
+		List<Grammar> grammars;
 
 		switch (en.type) {
 		case AND___:
-			grammar = new JoinGrammar(buildChildren(en));
+			grammars = buildChildren(en);
+			grammar = (parse, st) -> {
+				Streamlet<State> streamlets = Read.from(st);
+				for (Grammar g : grammars)
+					streamlets = streamlets.concatMap(st_ -> parse.parse(st_, g));
+				return streamlets;
+			};
 			break;
 		case ENTITY:
 			if (Util.stringEquals(en.content, "<EOF>"))
@@ -325,11 +301,12 @@ public class Ebnf {
 			});
 			break;
 		case OPTION:
-			Grammar childGrammar = build(en.children.get(0));
-			grammar = (parse, st) -> parse.parse(st, childGrammar).cons(st);
+			Grammar g = build(en.children.get(0));
+			grammar = (parse, st) -> parse.parse(st, g).cons(st);
 			break;
 		case OR____:
-			grammar = new OrGrammar(buildChildren(en));
+			grammars = buildChildren(en);
+			grammar = (parse, st) -> Read.from(grammars).concatMap(g_ -> parse.parse(st, g_));
 			break;
 		case REPT0_:
 			grammar = new RepeatGrammar(build(en.children.get(0)), true);
