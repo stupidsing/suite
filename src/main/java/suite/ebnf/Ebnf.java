@@ -47,72 +47,6 @@ public class Ebnf {
 		public Streamlet<State> p(Parse parse, State state);
 	}
 
-	private abstract class WrappingGrammar implements Grammar {
-		public Grammar grammar;
-
-		private WrappingGrammar(Grammar grammar) {
-			this.grammar = grammar;
-		}
-	}
-
-	private class RepeatGrammar extends WrappingGrammar {
-		private boolean isAllowNone;
-
-		private RepeatGrammar(Grammar grammar, boolean isAllowNone) {
-			super(grammar);
-			this.isAllowNone = isAllowNone;
-		}
-
-		public Streamlet<State> p(Parse parse, State state) {
-			Streamlet<State> states = Read.from(new Source<State>() {
-				private State state_ = state;
-				private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
-
-				public State source() {
-					State state0 = state_;
-					if (state0 != null) {
-						streamlets.push(parse.parse(state0, grammar));
-						while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
-							streamlets.pop();
-					}
-					return state0;
-				}
-			});
-
-			// Skips first if it is a '+'
-			return isAllowNone || states.next() != null ? states : noResult;
-		}
-	}
-
-	private class EntityGrammar implements Grammar {
-		private String entity;
-
-		private EntityGrammar(String entity) {
-			this.entity = entity;
-		}
-
-		public Streamlet<State> p(Parse parse, State state) {
-			boolean isRecurse = false;
-			State prevState = state;
-
-			while (!isRecurse && prevState != null && prevState.pos == state.pos) {
-				isRecurse |= Util.stringEquals(prevState.entity, entity);
-				prevState = prevState.previous;
-			}
-
-			if (!isRecurse) {
-				Grammar grammar = grammarsByEntity.get(entity);
-				if (grammar != null) {
-					State state1 = deepen(state, entity);
-					Streamlet<State> states = parse.parse(state1, grammar);
-					return states.map(st -> undeepen(st, state.depth));
-				} else
-					throw new RuntimeException("Entity " + entity + " not found");
-			} else
-				return noResult;
-		}
-	}
-
 	public class Node {
 		private int start, end;
 		public final String entity;
@@ -309,10 +243,10 @@ public class Ebnf {
 			grammar = (parse, st) -> Read.from(grammars).concatMap(g_ -> parse.parse(st, g_));
 			break;
 		case REPT0_:
-			grammar = new RepeatGrammar(build(en.children.get(0)), true);
+			grammar = buildRepeat(en, true);
 			break;
 		case REPT1_:
-			grammar = new RepeatGrammar(build(en.children.get(0)), false);
+			grammar = buildRepeat(en, false);
 			break;
 		case STRING:
 			Expect e = expect.expectString(en.content);
@@ -329,11 +263,55 @@ public class Ebnf {
 		return Read.from(en.children).map(this::build).toList();
 	}
 
+	private Grammar buildRepeat(EbnfNode en, boolean isAllowNone) {
+		Grammar g = build(en.children.get(0));
+
+		return (parse, st) -> {
+			Streamlet<State> states = Read.from(new Source<State>() {
+				private State state_ = st;
+				private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
+
+				public State source() {
+					State state0 = state_;
+					if (state0 != null) {
+						streamlets.push(parse.parse(state0, g));
+						while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
+							streamlets.pop();
+					}
+					return state0;
+				}
+			});
+
+			// Skips first if it is a '+'
+			return isAllowNone || states.next() != null ? states : noResult;
+		};
+	}
+
 	private Grammar buildEntity(String entity) {
-		Grammar grammar;
-		if ((grammar = buildLiteral(entity)) == null)
-			grammar = new EntityGrammar(entity);
-		return grammar;
+		Grammar grammar1;
+		if ((grammar1 = buildLiteral(entity)) == null)
+			grammar1 = (parse, st) -> {
+				boolean isRecurse = false;
+				State prevState = st;
+
+				while (!isRecurse && prevState != null && prevState.pos == st.pos) {
+					isRecurse |= Util.stringEquals(prevState.entity, entity);
+					prevState = prevState.previous;
+				}
+
+				if (!isRecurse) {
+					Grammar grammar = grammarsByEntity.get(entity);
+					if (grammar != null) {
+						State state1 = deepen(st, entity);
+						Streamlet<State> states = parse.parse(state1, grammar);
+						return states.map(st_ -> undeepen(st_, st_.depth));
+					} else
+						throw new RuntimeException("Entity " + entity + " not found");
+				} else
+					return noResult;
+			};
+
+		return grammar1;
 	}
 
 	private Grammar buildLiteral(String entity) {
