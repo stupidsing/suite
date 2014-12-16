@@ -34,7 +34,7 @@ import suite.util.Util;
  */
 public class Ebnf {
 
-	private String rootGrammarEntity;
+	private String rootEntity;
 	private Map<String, Grammar> grammarsByEntity;
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
@@ -186,7 +186,7 @@ public class Ebnf {
 				.toList();
 
 		if (!pairs.isEmpty())
-			rootGrammarEntity = pairs.get(0).t0;
+			rootEntity = pairs.get(0).t0;
 
 		Map<String, EbnfNode> nodesByEntity = Read.from(pairs) //
 				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t1))) //
@@ -352,7 +352,7 @@ public class Ebnf {
 	}
 
 	public Node parse(String s) {
-		return parse(s, rootGrammarEntity);
+		return parse(s, rootEntity);
 	}
 
 	public Node parse(String s, String entity) {
