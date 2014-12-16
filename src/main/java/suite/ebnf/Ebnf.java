@@ -301,11 +301,9 @@ public class Ebnf {
 
 				if (!isRecurse) {
 					Grammar grammar = grammarsByEntity.get(entity);
-					if (grammar != null) {
-						State state1 = deepen(st, entity);
-						Streamlet<State> states = parse.parse(state1, grammar);
-						return states.map(st_ -> undeepen(st_, st.depth));
-					} else
+					if (grammar != null)
+						return parse.parse(st, deepen(grammar, entity));
+					else
 						throw new RuntimeException("Entity " + entity + " not found");
 				} else
 					return noResult;
@@ -340,15 +338,7 @@ public class Ebnf {
 		else
 			e = null;
 
-		Grammar grammar = e != null ? (parse, st) -> parse.expect(st, e, st.pos) : null;
-
-		if (grammar != null)
-			return (parse, st) -> {
-				State st1 = deepen(st, entity);
-				return grammar.p(parse, st1).map(st_ -> undeepen(st_, st.depth));
-			};
-		else
-			return null;
+		return e != null ? deepen((parse, st) -> parse.expect(st, e, st.pos), entity) : null;
 	}
 
 	public Node parse(String s) {
@@ -369,6 +359,13 @@ public class Ebnf {
 
 	public Node check(String s, String entity) {
 		return new Parse(s).parse(0, parseGrammar(entity));
+	}
+
+	private Grammar deepen(Grammar grammar, String entity) {
+		return (parse, st) -> {
+			State st1 = deepen(st, entity);
+			return grammar.p(parse, st1).map(st_ -> undeepen(st_, st.depth));
+		};
 	}
 
 	private State deepen(State state, String entity) {
