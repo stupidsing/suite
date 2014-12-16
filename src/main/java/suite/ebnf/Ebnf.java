@@ -304,7 +304,7 @@ public class Ebnf {
 					if (grammar != null) {
 						State state1 = deepen(st, entity);
 						Streamlet<State> states = parse.parse(state1, grammar);
-						return states.map(st_ -> undeepen(st_, st_.depth));
+						return states.map(st_ -> undeepen(st_, st.depth));
 					} else
 						throw new RuntimeException("Entity " + entity + " not found");
 				} else
