@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
-import suite.node.io.Escaper;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -92,7 +91,7 @@ public class Ebnf {
 			State state;
 
 			while ((state = st.next()) != null)
-				if (state.pos == length) {
+				if (expect.expectWhitespaces(in, length, state.pos) == length) {
 					Deque<State> states = new ArrayDeque<>();
 
 					while (state != null) {
@@ -122,17 +121,14 @@ public class Ebnf {
 		}
 
 		private Streamlet<State> parse(State state, Grammar grammar) {
-			int pos = expect.expectWhitespaces(in, length, state.pos);
-
 			if (trace)
-				LogUtil.info("parse(" + grammar + "): " + in.substring(pos));
+				LogUtil.info("parse(" + grammar + "): " + in.substring(state.pos));
 
-			State state1 = new State(state, pos);
-			Streamlet<State> states = grammar.p(this, state1);
+			Streamlet<State> states = grammar.p(this, state);
 
-			if (states == noResult && state1.entity != null && pos >= errorPosition) {
-				errorPosition = pos;
-				errorEntity = state1.entity;
+			if (states == noResult && state.entity != null && state.pos >= errorPosition) {
+				errorPosition = state.pos;
+				errorEntity = state.entity;
 			}
 
 			return states;
@@ -221,10 +217,7 @@ public class Ebnf {
 			};
 			break;
 		case ENTITY:
-			if (Util.stringEquals(en.content, "<EOF>"))
-				grammar = (parse, st) -> st.pos == parse.length ? Read.from(st) : noResult;
-			else
-				grammar = buildEntity(en.content);
+			grammar = buildEntity(en.content);
 			break;
 		case EXCEPT:
 			Grammar grammar0 = build(en.children.get(0));
@@ -250,7 +243,7 @@ public class Ebnf {
 			break;
 		case STRING:
 			Expect e = expect.expectString(en.content);
-			grammar = (parse, st) -> parse.expect(st, e, st.pos);
+			grammar = skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
 			break;
 		default:
 			grammar = null;
@@ -300,9 +293,9 @@ public class Ebnf {
 				}
 
 				if (!isRecurse) {
-					Grammar grammar = grammarsByEntity.get(entity);
-					if (grammar != null)
-						return parse.parse(st, deepen(grammar, entity));
+					Grammar g = grammarsByEntity.get(entity);
+					if (g != null)
+						return deepen(g, entity).p(parse, st);
 					else
 						throw new RuntimeException("Entity " + entity + " not found");
 				} else
@@ -333,12 +326,10 @@ public class Ebnf {
 			e = expect.expectUnicodeClass(entity.substring(4, entity.length() - 1));
 		else if (entity.length() == 5 && entity.charAt(0) == '[' && entity.charAt(2) == '-' && entity.charAt(4) == ']')
 			e = expect.expectCharRange(entity.charAt(1), entity.charAt(3));
-		else if (entity.startsWith("\"") && entity.endsWith("\""))
-			e = expect.expectString(Escaper.unescape(Util.substr(entity, 1, -1), "\""));
 		else
 			e = null;
 
-		return e != null ? deepen((parse, st) -> parse.expect(st, e, st.pos), entity) : null;
+		return e != null ? skipWhitespaces(deepen((parse, st) -> parse.expect(st, e, st.pos), entity)) : null;
 	}
 
 	public Node parse(String s) {
@@ -359,6 +350,13 @@ public class Ebnf {
 
 	public Node check(String s, String entity) {
 		return new Parse(s).parse(0, parseGrammar(entity));
+	}
+
+	private Grammar skipWhitespaces(Grammar grammar) {
+		return (parse, st) -> {
+			int pos1 = expect.expectWhitespaces(parse.in, parse.length, st.pos);
+			return grammar.p(parse, new State(st, pos1));
+		};
 	}
 
 	private Grammar deepen(Grammar grammar, String entity) {

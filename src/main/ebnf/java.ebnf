@@ -1,4 +1,4 @@
-CompilationUnit ::= (PackageDeclaration)? (ImportDeclaration)* (TypeDeclaration)* <EOF>
+CompilationUnit ::= (PackageDeclaration)? (ImportDeclaration)* (TypeDeclaration)*
 PackageDeclaration ::= "package" Name ";"
 ImportDeclaration ::= "import" ("static")? Name ("." "*")? ";"
 Modifiers ::= (("public" | "static" | "protected" | "private" | "final" | "abstract" | "synchronized" | "native" | "transient" | "volatile" | "strictfp" | Annotation))*

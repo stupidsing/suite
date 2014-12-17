@@ -51,6 +51,7 @@ public class EbnfExpect {
 			pos++;
 		return pos;
 	};
+
 	public Expect expectRealLiteral = (in, length, start) -> {
 		int pos = start;
 		pos = expectIntegerLiteral.expect(in, length, pos);
