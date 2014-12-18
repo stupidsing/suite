@@ -13,6 +13,10 @@ import suite.util.Util;
 
 public class EbnfBreakdown {
 
+	public EbnfNode breakdown(String name, String s) {
+		return new EbnfNode(EbnfType.NAMED_, name, breakdown(s));
+	}
+
 	public EbnfNode breakdown(String s) {
 		EbnfNode en;
 		List<String> list;

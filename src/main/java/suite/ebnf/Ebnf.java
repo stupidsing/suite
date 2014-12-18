@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
-import suite.ebnf.EbnfNode.EbnfType;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -186,7 +185,7 @@ public class Ebnf {
 			rootEntity = pairs.get(0).t0;
 
 		Map<String, EbnfNode> nodesByEntity = Read.from(pairs) //
-				.map(lr -> Pair.of(lr.t0, new EbnfNode(EbnfType.NAMED_, lr.t0, breakdown.breakdown(lr.t1)))) //
+				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
 				.collect(As.map());
 
 		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(nodesByEntity);
