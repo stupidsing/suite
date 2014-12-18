@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.ebnf.EbnfExpect.Expect;
+import suite.ebnf.EbnfNode.EbnfType;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -185,7 +186,7 @@ public class Ebnf {
 			rootEntity = pairs.get(0).t0;
 
 		Map<String, EbnfNode> nodesByEntity = Read.from(pairs) //
-				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t1))) //
+				.map(lr -> Pair.of(lr.t0, new EbnfNode(EbnfType.NAMED_, lr.t0, breakdown.breakdown(lr.t1)))) //
 				.collect(As.map());
 
 		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(nodesByEntity);
@@ -226,6 +227,9 @@ public class Ebnf {
 				String in1 = parse.in.substring(st.pos, st1.pos);
 				return grammar1.p(new Parse(in1), new State(null, 0, null, 1)).count() == 0;
 			});
+			break;
+		case NAMED_:
+			grammar = deepen(build(en.children.get(0)), en.content);
 			break;
 		case OPTION:
 			Grammar g = build(en.children.get(0));
@@ -293,9 +297,9 @@ public class Ebnf {
 				}
 
 				if (!isRecurse) {
-					Grammar g = grammarsByEntity.get(entity);
-					if (g != null)
-						return deepen(g, entity).p(parse, st);
+					Grammar grammar = grammarsByEntity.get(entity);
+					if (grammar != null)
+						return grammar.p(parse, st);
 					else
 						throw new RuntimeException("Entity " + entity + " not found");
 				} else
