@@ -1,6 +1,7 @@
 package suite.weiqi;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import suite.weiqi.Weiqi.Occupation;
@@ -78,6 +79,16 @@ public class Board1 {
 			for (Group neighbourGroup : neighbourGroups)
 				neighbourGroup.nBreaths++;
 		}
+	}
+
+	public int hashCode() {
+		int i = 0;
+		for (Coordinate c : Coordinate.all()) {
+			Group g = get(c);
+			Occupation o = g != null ? g.occupation : null;
+			i = i * 31 + Objects.hashCode(o);
+		}
+		return i;
 	}
 
 	private Group get(Coordinate c) {
