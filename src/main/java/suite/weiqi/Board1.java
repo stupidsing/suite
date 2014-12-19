@@ -85,7 +85,7 @@ public class Board1 {
 		int i = 0;
 		for (Coordinate c : Coordinate.all()) {
 			Group g = get(c);
-			Occupation o = g != null ? g.occupation : null;
+			Occupation o = g != null ? g.occupation : Occupation.EMPTY;
 			i = i * 31 + Objects.hashCode(o);
 		}
 		return i;
