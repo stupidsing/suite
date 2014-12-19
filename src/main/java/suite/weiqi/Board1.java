@@ -92,8 +92,11 @@ public class Board1 {
 	}
 
 	private Group get(Coordinate c) {
-		Group group = board[c.index()];
-		return group != null ? group.root() : null;
+		int index = c.index();
+		Group group = board[index];
+		if (group != null)
+			group = board[index] = group.root();
+		return group;
 	}
 
 }
