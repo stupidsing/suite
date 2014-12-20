@@ -85,7 +85,11 @@ public class Assembler {
 				throw new RuntimeException("Cannot assemble " + node);
 		}
 
-		return assemble(generalizer, lnis);
+		return assemble(generalizer, preassemble(lnis));
+	}
+
+	public List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis) {
+		return lnis;
 	}
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
