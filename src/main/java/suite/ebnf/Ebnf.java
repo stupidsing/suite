@@ -363,18 +363,11 @@ public class Ebnf {
 	}
 
 	private Grammar deepen(Grammar grammar, String entity) {
-		return (parse, st) -> {
-			State st1 = deepen(st, entity);
-			return grammar.p(parse, st1).map(st_ -> undeepen(st_, st.depth));
+		return (parse, st0) -> {
+			State st1 = new State(st0, st0.pos, entity, st0.depth + 1);
+			Streamlet<State> states = grammar.p(parse, st1);
+			return states.map(st2 -> new State(st2, st2.pos, null, st0.depth));
 		};
-	}
-
-	private State deepen(State state, String entity) {
-		return new State(state, state.pos, entity, state.depth + 1);
-	}
-
-	private State undeepen(State state, int depth) {
-		return new State(state, state.pos, null, depth);
 	}
 
 }
