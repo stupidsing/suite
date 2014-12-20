@@ -12,8 +12,8 @@ import suite.util.Pair;
 
 public class StackAssembler extends Assembler {
 
-	private Atom stackOperand = Atom.of("$");
-	private Atom registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ECX"), Atom.of("EDX") };
+	private Node stackOperand = Atom.of("$");
+	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ECX"), Atom.of("EDX") };
 
 	public StackAssembler(int bits) {
 		super(bits);
