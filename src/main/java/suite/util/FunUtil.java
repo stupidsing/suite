@@ -135,9 +135,9 @@ public class FunUtil {
 	 */
 	public static <T> Source<T> suck(Sink<Sink<T>> fun) {
 
-		// Unfortunately the synchronous queue class do not support null; we
-		// have to use a special object to denote end of data. Thus the queue
-		// needs to be of type Object.
+		// The synchronous queue class do not support nulls; we have to use a
+		// special object to denote end of data. Thus the queue needs to be of
+		// type Object.
 		Object eod = new Object();
 		SynchronousQueue<Object> queue = new SynchronousQueue<>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
