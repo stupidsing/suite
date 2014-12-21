@@ -19,9 +19,11 @@ import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.SewingBinder.BindEnv;
+import suite.lp.sewing.SewingExpression.Evaluate;
 import suite.lp.sewing.VariableMapping.Env;
 import suite.node.Atom;
 import suite.node.Data;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
@@ -252,6 +254,10 @@ public class SewingProver {
 				});
 				return tr0;
 			};
+		} else if ((m = Suite.match("let .0 .1", node)) != null) {
+			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
+			Evaluate eval = new SewingExpression().compile(sb, m[1]);
+			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.match("not .0", node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
