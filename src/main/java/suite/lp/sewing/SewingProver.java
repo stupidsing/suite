@@ -256,7 +256,7 @@ public class SewingProver {
 			};
 		} else if ((m = Suite.match("let .0 .1", node)) != null) {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
-			Evaluate eval = new SewingExpression().compile(sb, m[1]);
+			Evaluate eval = new SewingExpression(sb).compile(m[1]);
 			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.match("not .0", node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
