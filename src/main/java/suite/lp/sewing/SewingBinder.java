@@ -35,7 +35,7 @@ public class SewingBinder extends SewingGeneralizer {
 			if (isWildcard(name))
 				return (be, n) -> true;
 			else if (isVariable(name)) {
-				int index = getVariableIndex(node);
+				int index = findVariableIndex(node);
 				return (be, n) -> Binder.bind(n, be.env.refs[index], be.journal);
 			} else
 				return compileBindAtom(atom);
