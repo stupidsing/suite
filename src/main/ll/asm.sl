@@ -6,7 +6,7 @@
 asi:.s:.a .i .e1 :- asi0:.s:.a .i .e0/(), as-lets .e0 .e1 #
 
 as-lets () () #
-as-lets (.e0, .es0) (.e1, .es1) :- let .e1 .e0, as-lets .es0 .es1 #
+as-lets (.e0, .es0) (.e1, .es1) :- .let = let .e1 .e0, .let, as-lets .es0 .es1 #
 
 asi0:.s:.a .i .e0/.ex :- asis:.s:.a .i .e0/.ex, ! #
 asi0:_s:.a .i .e0/.ex :- asis:8:.a .i .e0/.ex, ! #
