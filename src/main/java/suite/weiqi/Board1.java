@@ -6,6 +6,11 @@ import java.util.Set;
 
 import suite.weiqi.Weiqi.Occupation;
 
+/**
+ * A (better) Weiqi board implementation using groups and union-find algorithm.
+ *
+ * @author ywsing
+ */
 public class Board1 {
 
 	private Group board[] = new Group[Weiqi.size << Weiqi.shift];
