@@ -13,7 +13,7 @@ import suite.util.Pair;
 public class StackAssembler extends Assembler {
 
 	private Node stackOperand = Atom.of("$");
-	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ECX"), Atom.of("EDX") };
+	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI"), Atom.of("EDI") };
 
 	public StackAssembler(int bits) {
 		super(bits);
@@ -28,14 +28,14 @@ public class StackAssembler extends Assembler {
 			Node node0 = lni0.t1;
 			Node node1;
 			Node m[];
-			if ((m = Suite.match("R+ # .0", node0)) != null)
+			if ((m = Suite.matcher("R+: .0").apply(node0)) != null)
 				node1 = new Rewriter(stackOperand, getRegister(sp++)).replace(m[0]);
-			else if ((m = Suite.match("R- # .0", node0)) != null)
+			else if ((m = Suite.matcher("R-: .0").apply(node0)) != null)
 				node1 = new Rewriter(stackOperand, getRegister(--sp)).replace(m[0]);
-			else if ((m = Suite.match("RR # .0", node0)) != null) {
+			else if ((m = Suite.matcher("RR: .0").apply(node0)) != null) {
 				sp--;
-				node1 = Suite.substitute(".0 .1 .2", m[0], getRegister(sp - 1), getRegister(sp));
-			} else if ((m = Suite.match("TOP # .0", node0)) != null)
+				node1 = Suite.substitute(".0 (.1, .2)", m[0], getRegister(sp - 1), getRegister(sp));
+			} else if ((m = Suite.matcher("TOP: .0").apply(node0)) != null)
 				node1 = new Rewriter(stackOperand, getRegister(sp - 1)).replace(m[0]);
 			else
 				node1 = node0;
