@@ -41,6 +41,7 @@ import suite.node.parser.IterativeParser;
 import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 
 public class Suite {
 
@@ -116,26 +117,30 @@ public class Suite {
 		return Tree.of(TermOp.NEXT__, nodes);
 	}
 
-	public static Node[] match(String s, Node node) {
+	public static Fun<Node, Node[]> matcher(String s) {
 		SewingBinder sb = new SewingBinder();
 		BiPredicate<BindEnv, Node> pred = sb.compileBind(parse(s));
-		List<Integer> indices = new ArrayList<>();
+		List<Integer> indexList = new ArrayList<>();
 		Integer index;
 		int n = 0;
-		while ((index = sb.getVariableIndex(Atom.of("." + n))) != null) {
-			indices.add(index);
-			n++;
-		}
+		while ((index = sb.getVariableIndex(Atom.of("." + n++))) != null)
+			indexList.add(index);
 
-		Env env = sb.env();
+		int size = indexList.size();
+		int indices[] = new int[size];
+		for (int i = 0; i < size; i++)
+			indices[i] = indexList.get(i);
 
-		if (pred.test(new BindEnv(new Journal(), env), node)) {
-			List<Node> results = new ArrayList<>();
-			for (int i = 0; i < n; i++)
-				results.add(env.refs[indices.get(i)].finalNode());
-			return results.toArray(new Node[n]);
-		} else
-			return null;
+		return node -> {
+			Env env = sb.env();
+			if (pred.test(new BindEnv(new Journal(), env), node)) {
+				List<Node> results = new ArrayList<>();
+				for (int i = 0; i < size; i++)
+					results.add(env.refs[indices[i]].finalNode());
+				return results.toArray(new Node[size]);
+			} else
+				return null;
+		};
 	}
 
 	public static Node substitute(String s, Node... nodes) {

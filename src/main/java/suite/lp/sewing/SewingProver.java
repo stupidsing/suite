@@ -217,14 +217,14 @@ public class SewingProver {
 			tr = and(Read.from(list).map(n -> compile0(sb, n)));
 		else if ((list = breakdown(TermOp.OR____, node)).size() > 1)
 			tr = or(Read.from(list).map(n -> compile0(sb, n)));
-		else if ((m = Suite.match(".0 = .1", node)) != null) {
+		else if ((m = Suite.matcher(".0 = .1").apply(node)) != null) {
 			boolean b = complexity(m[0]) > complexity(m[1]);
 			Node n0 = b ? m[0] : m[1];
 			Node n1 = b ? m[1] : m[0];
 			BiPredicate<BindEnv, Node> p = sb.compileBind(n0);
 			Fun<Env, Node> f = sb.compile(n1);
 			tr = rt -> p.test(rt.bindEnv(), f.apply(rt.env)) ? okay : fail;
-		} else if ((m = Suite.match("builtin:.0:.1 .2", node)) != null) {
+		} else if ((m = Suite.matcher("builtin:.0:.1 .2").apply(node)) != null) {
 			String className = ((Atom) m[0]).name;
 			String fieldName = ((Atom) m[1]).name;
 			BuiltinPredicate predicate;
@@ -235,7 +235,7 @@ public class SewingProver {
 				throw new RuntimeException(ex);
 			}
 			tr = callPredicate(sb, predicate, m[2]);
-		} else if ((m = Suite.match("if .0 .1 .2", node)) != null) {
+		} else if ((m = Suite.matcher("if .0 .1 .2").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);
 			Trampoline tr2 = compile0(sb, m[2]);
@@ -254,11 +254,11 @@ public class SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.match("let .0 .1", node)) != null) {
+		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpression(sb).compile(m[1]);
 			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
-		} else if ((m = Suite.match("not .0", node)) != null) {
+		} else if ((m = Suite.matcher("not .0").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
@@ -275,7 +275,7 @@ public class SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.match("once .0", node)) != null) {
+		} else if ((m = Suite.matcher("once .0").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
@@ -285,7 +285,7 @@ public class SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.match(".0 .1", node)) != null && m[0] instanceof Atom)
+		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
 			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);

@@ -71,11 +71,11 @@ public class LazyFunInterpreter {
 		Tree tree;
 		Node m[];
 
-		if ((m = Suite.match(".0 {.1}", node)) != null) {
+		if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
 			Fun<IMap<String, Thunk_>, Thunk_> fun = lazy0(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> param = lazy0(m[1]);
 			result = env -> ((Fun_) fun.apply(env).get()).fun.apply(param.apply(env));
-		} else if ((m = Suite.match(".0 := .1 >> .2", node)) != null) {
+		} else if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null) {
 			String vk = v(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
 			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy0(m[2]);
@@ -85,11 +85,11 @@ public class LazyFunInterpreter {
 				val[0] = value.apply(env1)::get;
 				return expr.apply(env1);
 			};
-		} else if ((m = Suite.match(".0 => .1", node)) != null) {
+		} else if ((m = Suite.matcher(".0 => .1").apply(node)) != null) {
 			String vk = v(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> value = lazy0(m[1]);
 			result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
-		} else if ((m = Suite.match("if .0 then .1 else .2", node)) != null) {
+		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null) {
 			Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy0(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy0(m[1]);
 			Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy0(m[2]);
