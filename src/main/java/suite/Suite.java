@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import suite.fp.FunCompilerConfig;
 import suite.fp.intrinsic.Intrinsics;
@@ -21,13 +21,15 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.ImportUtil;
 import suite.lp.Journal;
-import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
+import suite.lp.sewing.SewingBinder;
+import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.VariableMapping.Env;
 import suite.lp.sewing.VariableMapping.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
@@ -115,16 +117,23 @@ public class Suite {
 	}
 
 	public static Node[] match(String s, Node node) {
-		Generalization generalization = SewingGeneralizer.process(parse(s));
+		SewingBinder sb = new SewingBinder();
+		BiPredicate<BindEnv, Node> pred = sb.compileBind(parse(s));
+		List<Integer> indices = new ArrayList<>();
+		Integer index;
+		int n = 0;
+		while ((index = sb.getVariableIndex(Atom.of("." + n))) != null) {
+			indices.add(index);
+			n++;
+		}
 
-		if (Binder.bind(generalization.node, node, new Journal())) {
-			Map<Node, Node> variables = generalization.getVariables();
+		Env env = sb.env();
+
+		if (pred.test(new BindEnv(new Journal(), env), node)) {
 			List<Node> results = new ArrayList<>();
-			int i = 0;
-			Node value;
-			while ((value = variables.get(Atom.of("." + i++))) != null)
-				results.add(value.finalNode());
-			return results.toArray(new Node[results.size()]);
+			for (int i = 0; i < n; i++)
+				results.add(env.refs[indices.get(i)].finalNode());
+			return results.toArray(new Node[n]);
 		} else
 			return null;
 	}
