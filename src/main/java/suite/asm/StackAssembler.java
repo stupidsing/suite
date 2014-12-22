@@ -8,12 +8,18 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.Rewriter;
+import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 
 public class StackAssembler extends Assembler {
 
 	private Node stackOperand = Atom.of("$");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI"), Atom.of("EDI") };
+
+	private Fun<Node, Node[]> matchPush = Suite.matcher("R+: .0");
+	private Fun<Node, Node[]> matchPop = Suite.matcher("R-: .0");
+	private Fun<Node, Node[]> matchRr = Suite.matcher("RR: .0");
+	private Fun<Node, Node[]> matchTop = Suite.matcher("TOP: .0");
 
 	public StackAssembler(int bits) {
 		super(bits);
@@ -28,14 +34,14 @@ public class StackAssembler extends Assembler {
 			Node node0 = lni0.t1;
 			Node node1;
 			Node m[];
-			if ((m = Suite.matcher("R+: .0").apply(node0)) != null)
-				node1 = new Rewriter(stackOperand, getRegister(sp++)).replace(m[0]);
-			else if ((m = Suite.matcher("R-: .0").apply(node0)) != null)
+			if ((m = matchPop.apply(node0)) != null)
 				node1 = new Rewriter(stackOperand, getRegister(--sp)).replace(m[0]);
-			else if ((m = Suite.matcher("RR: .0").apply(node0)) != null) {
+			else if ((m = matchPush.apply(node0)) != null)
+				node1 = new Rewriter(stackOperand, getRegister(sp++)).replace(m[0]);
+			else if ((m = matchRr.apply(node0)) != null) {
 				sp--;
 				node1 = Suite.substitute(".0 (.1, .2)", m[0], getRegister(sp - 1), getRegister(sp));
-			} else if ((m = Suite.matcher("TOP: .0").apply(node0)) != null)
+			} else if ((m = matchTop.apply(node0)) != null)
 				node1 = new Rewriter(stackOperand, getRegister(sp - 1)).replace(m[0]);
 			else
 				node1 = node0;
