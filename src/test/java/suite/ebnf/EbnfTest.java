@@ -33,6 +33,15 @@ public class EbnfTest {
 	}
 
 	@Test
+	public void testHeadRecursion() throws IOException {
+		Ebnf ebnf = new Ebnf(new StringReader("" //
+				+ "number ::= number \"x\" digit | digit \n" //
+				+ "digit ::= [0-9] \n" //
+		));
+		assertNotNull(ebnf.check("1x2x3x4", "number"));
+	}
+
+	@Test
 	public void testId() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("abc", "<IDENTIFIER>"));
@@ -62,15 +71,6 @@ public class EbnfTest {
 		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		System.out.println(ebnf.parse(sql, "sql"));
-	}
-
-	@Test
-	public void testHeadRecursion() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader("" //
-				+ "number ::= number \"x\" digit | digit \n" //
-				+ "digit ::= [0-9] \n" //
-		));
-		assertNotNull(ebnf.check("1x2x3x4", "number"));
 	}
 
 }
