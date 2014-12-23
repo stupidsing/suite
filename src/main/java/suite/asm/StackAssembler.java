@@ -21,8 +21,8 @@ public class StackAssembler extends Assembler {
 	private Fun<Node, Node[]> matchRr = Suite.matcher("RR: .0");
 	private Fun<Node, Node[]> matchTop = Suite.matcher("TOP: .0");
 
-	private Fun<Node, Node[]> matchRest = Suite.matcher("RRESTORE:");
-	private Fun<Node, Node[]> matchSave = Suite.matcher("RSAVE:");
+	private Fun<Node, Node[]> matchRest = Suite.matcher("RRESTORE: ()");
+	private Fun<Node, Node[]> matchSave = Suite.matcher("RSAVE: ()");
 
 	public StackAssembler(int bits) {
 		super(bits);
