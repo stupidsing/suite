@@ -74,6 +74,25 @@ public class Ebnf {
 		}
 	}
 
+	private class State {
+		private State previous;
+		private int pos;
+
+		private String entity;
+		private int depthChange;
+
+		private State(State previous, int pos) {
+			this(previous, pos, previous.entity, 0);
+		}
+
+		private State(State previous, int pos, String entity, int depthChange) {
+			this.previous = previous;
+			this.pos = pos;
+			this.entity = entity;
+			this.depthChange = depthChange;
+		}
+	}
+
 	private class Parse {
 		private String in;
 		private int length;
@@ -86,7 +105,7 @@ public class Ebnf {
 		}
 
 		private Node parse(int pos, Grammar grammar) {
-			State initialState = new State(null, pos, null, 1);
+			State initialState = new State(null, pos, null, 0);
 			Streamlet<State> st = parse(initialState, grammar);
 			State state;
 
@@ -104,15 +123,20 @@ public class Ebnf {
 					Deque<Node> stack = new ArrayDeque<>();
 					stack.push(root);
 
-					for (State state_ : states)
-						if (state_.depth < stack.size())
+					for (State state_ : states) {
+						int d = state_.depthChange;
+						while (d < 0) {
+							d++;
 							stack.pop().end = state_.pos;
-						else if (state_.depth > stack.size()) {
+						}
+						while (d > 0) {
+							d--;
 							Node node = new Node(state_.entity, state_.pos);
 							if (state_.entity != null)
 								stack.peek().nodes.add(node);
 							stack.push(node);
 						}
+					}
 
 					return root.nodes.get(0);
 				}
@@ -149,25 +173,6 @@ public class Ebnf {
 				}
 			}
 			return Pair.of(row, col);
-		}
-	}
-
-	private class State {
-		private State previous;
-		private int pos;
-
-		private String entity;
-		private int depth;
-
-		private State(State previous, int pos) {
-			this(previous, pos, previous.entity, previous.depth);
-		}
-
-		private State(State previous, int pos, String entity, int depth) {
-			this.previous = previous;
-			this.pos = pos;
-			this.entity = entity;
-			this.depth = depth;
 		}
 	}
 
@@ -224,7 +229,7 @@ public class Ebnf {
 			Grammar grammar1 = build(en.children.get(1));
 			grammar = (parse, st) -> grammar0.p(parse, st).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
-				return grammar1.p(new Parse(in1), new State(null, 0, null, 1)).count() == 0;
+				return grammar1.p(new Parse(in1), new State(null, 0, null, 0)).count() == 0;
 			});
 			break;
 		case NAMED_:
@@ -364,9 +369,9 @@ public class Ebnf {
 
 	private Grammar deepen(Grammar grammar, String entity) {
 		return (parse, st0) -> {
-			State st1 = new State(st0, st0.pos, entity, st0.depth + 1);
+			State st1 = new State(st0, st0.pos, entity, 1);
 			Streamlet<State> states = grammar.p(parse, st1);
-			return states.map(st2 -> new State(st2, st2.pos, null, st0.depth));
+			return states.map(st2 -> new State(st2, st2.pos, null, -1));
 		};
 	}
 
