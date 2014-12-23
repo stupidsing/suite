@@ -64,4 +64,13 @@ public class EbnfTest {
 		System.out.println(ebnf.parse(sql, "sql"));
 	}
 
+	@Test
+	public void testHeadRecursion() throws IOException {
+		Ebnf ebnf = new Ebnf(new StringReader("" //
+				+ "number ::= number \"x\" digit | digit \n" //
+				+ "digit ::= [0-9] \n" //
+		));
+		assertNotNull(ebnf.check("1x2x3x4", "number"));
+	}
+
 }

@@ -29,7 +29,9 @@ public class EbnfHeadRecursion {
 		EbnfNode en = lookup(en0);
 		EbnfNode en1;
 
-		if (en.type == EbnfType.OR____) {
+		if (en.type == EbnfType.NAMED_)
+			return new EbnfNode(EbnfType.NAMED_, en.content, reduceHeadRecursion(en.children.get(0)));
+		else if (en.type == EbnfType.OR____) {
 			List<EbnfNode> listb = new ArrayList<>();
 			List<EbnfNode> listc = new ArrayList<>();
 
@@ -59,9 +61,13 @@ public class EbnfHeadRecursion {
 	}
 
 	private EbnfNode lookup(EbnfNode en) {
-		String entity = en.type == EbnfType.ENTITY ? en.content : null;
-		EbnfNode en1 = entity != null ? nodesByEntity.get(entity) : null;
-		return en1 != null ? en1 : en;
+		if (en.type == EbnfType.ENTITY) {
+			EbnfNode en1 = nodesByEntity.get(en.content);
+			return en1 != null ? lookup(en1) : en;
+		} else if (en.type == EbnfType.NAMED_)
+			return lookup(en.children.get(0));
+		else
+			return en;
 	}
 
 }
