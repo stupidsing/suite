@@ -50,6 +50,13 @@ public class ProverTest {
 	}
 
 	@Test
+	public void testLet() {
+		RuleSet rs = Suite.createRuleSet();
+		assertTrue(test(rs, "let 7 (2 * 3 + 1)"));
+		assertFalse(test(rs, "let 7 (2 * 3 - 1)"));
+	}
+
+	@Test
 	public void testMember() {
 		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "mem ((.e, _), .e)");
