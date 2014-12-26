@@ -43,7 +43,7 @@ public class SewingGeneralizer extends VariableMapping {
 					fun = env -> new Reference();
 				else if (isVariable(name)) {
 					int index = findVariableIndex(node0);
-					fun = env -> env.refs[index];
+					fun = env -> env.get(index);
 				} else if (isCut(name))
 					fun = env -> env.cut;
 				else

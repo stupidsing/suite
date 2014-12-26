@@ -58,7 +58,7 @@ public class SewingExpression {
 			return env -> i;
 		} else {
 			int index = sg.findVariableIndex(node);
-			return env -> ((Int) env.refs[index].finalNode()).number;
+			return env -> ((Int) env.get(index).finalNode()).number;
 		}
 	}
 

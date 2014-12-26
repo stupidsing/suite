@@ -47,12 +47,16 @@ public class VariableMapping {
 	}
 
 	public static class Env {
-		public final Reference refs[];
+		private Reference refs[];
 		public final Node cut;
 
 		private Env(Reference refs[], Node cut) {
 			this.refs = refs;
 			this.cut = cut;
+		}
+
+		public Node get(int index) {
+			return refs[index];
 		}
 	}
 
