@@ -134,7 +134,7 @@ public class Suite {
 		return node -> {
 			Env env = sb.env();
 			if (pred.test(new BindEnv(new Journal(), env), node)) {
-				List<Node> results = new ArrayList<>();
+				List<Node> results = new ArrayList<>(size);
 				for (int i = 0; i < size; i++)
 					results.add(env.get(indices[i]).finalNode());
 				return results.toArray(new Node[size]);
