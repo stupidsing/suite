@@ -13,6 +13,7 @@ public class Rule {
 
 	public final Node head, tail;
 	private SewingGeneralizer sewingGeneralizer;
+	private int cutIndex;
 	private Fun<Env, Node> headFun, tailFun;
 
 	public Rule(Node head, Node tail) {
@@ -41,9 +42,11 @@ public class Rule {
 			sewingGeneralizer = new SewingGeneralizer();
 			headFun = sewingGeneralizer.compile(head);
 			tailFun = sewingGeneralizer.compile(tail);
+			cutIndex = sewingGeneralizer.findVariableIndex(SewingGeneralizer.cut);
 		}
 
-		Env env = sewingGeneralizer.env(cut);
+		Env env = sewingGeneralizer.env();
+		env.get(cutIndex).bound(cut);
 
 		return Tree.of(TermOp.AND___ //
 				, Tree.of(TermOp.EQUAL_ //

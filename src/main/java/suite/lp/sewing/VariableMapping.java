@@ -48,27 +48,21 @@ public class VariableMapping {
 
 	public static class Env {
 		private Reference refs[];
-		public final Node cut;
 
-		private Env(Reference refs[], Node cut) {
+		private Env(Reference refs[]) {
 			this.refs = refs;
-			this.cut = cut;
 		}
 
-		public Node get(int index) {
+		public Reference get(int index) {
 			return refs[index];
 		}
 	}
 
 	public Env env() {
-		return env(null);
-	}
-
-	public Env env(Node cut) {
 		Reference refs[] = new Reference[nVariables];
 		for (int i = 0; i < nVariables; i++)
 			refs[i] = new Reference();
-		return new Env(refs, cut);
+		return new Env(refs);
 	}
 
 	public int findVariableIndex(Node variable) {

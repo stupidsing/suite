@@ -189,9 +189,8 @@ public class SewingProver {
 	}
 
 	private Trampoline compileRules(List<Rule> rules) {
-		Node cut = Atom.of(SewingGeneralizer.cutName);
 		boolean hasCut = Read.from(rules) //
-				.map(rule -> new Rewriter(cut).contains(rule.tail)) //
+				.map(rule -> new Rewriter(SewingGeneralizer.cut).contains(rule.tail)) //
 				.fold(false, (b0, b1) -> b0 || b1);
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();
@@ -291,7 +290,7 @@ public class SewingProver {
 			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
-			if (Util.stringEquals(name, SewingGeneralizer.cutName))
+			if (node == SewingGeneralizer.cut)
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
 				tr = okay;

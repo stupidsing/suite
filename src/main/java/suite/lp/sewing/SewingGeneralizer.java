@@ -16,7 +16,7 @@ public class SewingGeneralizer extends VariableMapping {
 
 	public static String wildcardPrefix = "_";
 	public static String variablePrefix = ".";
-	public static String cutName = "!";
+	public static Atom cut = Atom.of("!");
 
 	public static Node generalize(Node node) {
 		return process(node).node;
@@ -41,12 +41,10 @@ public class SewingGeneralizer extends VariableMapping {
 				String name = ((Atom) node0).name;
 				if (isWildcard(name))
 					fun = env -> new Reference();
-				else if (isVariable(name)) {
+				else if (isVariable(name) || isCut(node0)) {
 					int index = findVariableIndex(node0);
 					fun = env -> env.get(index);
-				} else if (isCut(name))
-					fun = env -> env.cut;
-				else
+				} else
 					fun = env -> node0;
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
@@ -89,7 +87,7 @@ public class SewingGeneralizer extends VariableMapping {
 		node = node.finalNode();
 		if (node instanceof Atom) {
 			String name = ((Atom) node).name;
-			return isWildcard(name) || isVariable(name) || isCut(name);
+			return isWildcard(name) || isVariable(name) || isCut(node);
 		} else
 			return false;
 	}
@@ -102,8 +100,8 @@ public class SewingGeneralizer extends VariableMapping {
 		return name.startsWith(variablePrefix);
 	}
 
-	public static boolean isCut(String name) {
-		return name.equals(cutName);
+	public static boolean isCut(Node node) {
+		return node == cut;
 	}
 
 }
