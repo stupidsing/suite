@@ -39,7 +39,6 @@ public class StackAssembler extends Assembler {
 		int sp = 0;
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
-			System.out.println(sp + " " + lni0.t1);
 			Node node0 = lni0.t1;
 			Node m[];
 
