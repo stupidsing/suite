@@ -1,6 +1,8 @@
 package suite.asm;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import suite.Suite;
@@ -21,6 +23,8 @@ public class StackAssembler extends Assembler {
 	private Fun<Node, Node[]> matchRr = Suite.matcher("RR: .0");
 	private Fun<Node, Node[]> matchTop = Suite.matcher("TOP: .0");
 
+	private Fun<Node, Node[]> matchBegin = Suite.matcher("RBEGIN: ()");
+	private Fun<Node, Node[]> matchEnd = Suite.matcher("REND: ()");
 	private Fun<Node, Node[]> matchRest = Suite.matcher("RRESTORE: ()");
 	private Fun<Node, Node[]> matchSave = Suite.matcher("RSAVE: ()");
 
@@ -31,13 +35,23 @@ public class StackAssembler extends Assembler {
 	@Override
 	public List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
+		Deque<Integer> deque = new ArrayDeque<>();
 		int sp = 0;
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
+			System.out.println(sp + " " + lni0.t1);
 			Node node0 = lni0.t1;
 			Node m[];
 
-			if ((m = matchRest.apply(node0)) != null)
+			if ((m = matchBegin.apply(node0)) != null) {
+				deque.push(sp);
+				sp = 0;
+			} else if ((m = matchEnd.apply(node0)) != null)
+				if (sp == 0)
+					sp = deque.pop();
+				else
+					throw new RuntimeException("Unbalanced register stack in subroutine definition");
+			else if ((m = matchRest.apply(node0)) != null)
 				for (int r = sp - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 			else if ((m = matchSave.apply(node0)) != null)
