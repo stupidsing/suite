@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import suite.Suite;
-import suite.asm.Assembler;
+import suite.asm.StackAssembler;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
@@ -30,7 +30,7 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, String ip) {
 		Node code = FindUtil.collectSingle(finder, Suite.parse(ip));
-		return new Assembler(32).assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
+		return new StackAssembler(32).assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
 	}
 
 }
