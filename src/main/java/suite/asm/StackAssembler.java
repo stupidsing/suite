@@ -56,7 +56,9 @@ public class StackAssembler extends Assembler {
 					node1 = new Rewriter(stackOperand, getRegister(sp - 1)).replace(m[0]);
 				else
 					node1 = node0;
-				lnis1.add(Pair.of(lni0.t0, node1));
+
+				if (node1 != Atom.NIL)
+					lnis1.add(Pair.of(lni0.t0, node1));
 			}
 		}
 
