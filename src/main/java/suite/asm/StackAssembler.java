@@ -21,6 +21,7 @@ public class StackAssembler extends Assembler {
 	private Fun<Node, Node[]> matchPush = Suite.matcher("R+: .0");
 	private Fun<Node, Node[]> matchPop = Suite.matcher("R-: .0");
 	private Fun<Node, Node[]> matchRr = Suite.matcher("RR: .0");
+	private Fun<Node, Node[]> matchStore = Suite.matcher("STORE: ()");
 	private Fun<Node, Node[]> matchTop = Suite.matcher("TOP: .0");
 
 	private Fun<Node, Node[]> matchBegin = Suite.matcher("RBEGIN: ()");
@@ -65,6 +66,9 @@ public class StackAssembler extends Assembler {
 				else if ((m = matchRr.apply(node0)) != null) {
 					sp--;
 					node1 = Suite.substitute(".0 (.1, .2)", m[0], getRegister(sp - 1), getRegister(sp));
+				} else if ((m = matchStore.apply(node0)) != null) {
+					sp--;
+					node1 = Suite.substitute("MOV (`.0`, .1)", getRegister(sp), getRegister(sp - 1));
 				} else if ((m = matchTop.apply(node0)) != null)
 					node1 = new Rewriter(stackOperand, getRegister(sp - 1)).replace(m[0]);
 				else
