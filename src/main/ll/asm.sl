@@ -261,6 +261,10 @@ as-mod-rm:.size .reg (3 .r) .e/.e
 as-mod-rm:_ (`.disp`) (0 5) .e0/.ex
 	:- as-emit:32 .disp .e0/.ex
 #
+as-mod-rm:_ .op (1 5) .e0/.ex
+	:- (.op = `EBP`; .op = `EBP + 0`)
+	, as-emit:8 0 .e0/.ex, !
+#
 as-mod-rm:_ (`.reg + .disp`) (.mod .r) .e0/.ex
 	:- as-reg:32 .reg .r
 	, as-disp-mod .disp .mod .e0/.ex
