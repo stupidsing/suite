@@ -16,7 +16,7 @@ import suite.util.Pair;
 public class StackAssembler extends Assembler {
 
 	private Node stackOperand = Atom.of("$");
-	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI"), Atom.of("EDI") };
+	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
 	private Fun<Node, Node[]> matchPush = Suite.matcher("R+: .0");
 	private Fun<Node, Node[]> matchPop = Suite.matcher("R-: .0");
