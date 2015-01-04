@@ -15,13 +15,12 @@ import suite.util.Pair;
 
 public class StackAssembler extends Assembler {
 
-	private Node stackOperand = Atom.of("$");
+	private Node stackOperand0 = Atom.of("$0");
+	private Node stackOperand1 = Atom.of("$1");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
 	private Fun<Node, Node[]> matchPush = Suite.matcher("R+: .0");
 	private Fun<Node, Node[]> matchPop = Suite.matcher("R-: .0");
-	private Fun<Node, Node[]> matchRr = Suite.matcher("RR: .0");
-	private Fun<Node, Node[]> matchStore = Suite.matcher("STORE: ()");
 	private Fun<Node, Node[]> matchTop = Suite.matcher("TOP: .0");
 
 	private Fun<Node, Node[]> matchBegin = Suite.matcher("RBEGIN: ()");
@@ -63,17 +62,11 @@ public class StackAssembler extends Assembler {
 						throw new RuntimeException("Unbalanced register stack in subroutine definition");
 					node1 = Atom.NIL;
 				} else if ((m = matchPop.apply(node0)) != null)
-					node1 = new Rewriter(stackOperand, getRegister(--sp)).replace(m[0]);
+					node1 = rewrite(sp--, m[0]);
 				else if ((m = matchPush.apply(node0)) != null)
-					node1 = new Rewriter(stackOperand, getRegister(sp++)).replace(m[0]);
-				else if ((m = matchRr.apply(node0)) != null) {
-					sp--;
-					node1 = Suite.substitute(".0 (.1, .2)", m[0], getRegister(sp - 1), getRegister(sp));
-				} else if ((m = matchStore.apply(node0)) != null) {
-					sp--;
-					node1 = Suite.substitute("MOV (`.0`, .1)", getRegister(sp), getRegister(sp - 1));
-				} else if ((m = matchTop.apply(node0)) != null)
-					node1 = new Rewriter(stackOperand, getRegister(sp - 1)).replace(m[0]);
+					node1 = rewrite(++sp, m[0]);
+				else if ((m = matchTop.apply(node0)) != null)
+					node1 = rewrite(sp, m[0]);
 				else
 					node1 = node0;
 
@@ -82,6 +75,14 @@ public class StackAssembler extends Assembler {
 		}
 
 		return lnis1;
+	}
+
+	private Node rewrite(int sp, Node n) {
+		if (sp - 1 >= 0)
+			n = new Rewriter(stackOperand0, getRegister(sp - 1)).replace(n);
+		if (sp - 2 >= 0)
+			n = new Rewriter(stackOperand1, getRegister(sp - 2)).replace(n);
+		return n;
 	}
 
 	private Node getRegister(int p) {
