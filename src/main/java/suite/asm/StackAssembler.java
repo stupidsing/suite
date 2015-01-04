@@ -43,15 +43,7 @@ public class StackAssembler extends Assembler {
 			Node node0 = lni0.t1;
 			Node m[];
 
-			if ((m = matchBegin.apply(node0)) != null) {
-				deque.push(sp);
-				sp = 0;
-			} else if ((m = matchEnd.apply(node0)) != null)
-				if (sp == 0)
-					sp = deque.pop();
-				else
-					throw new RuntimeException("Unbalanced register stack in subroutine definition");
-			else if ((m = matchRest.apply(node0)) != null)
+			if ((m = matchRest.apply(node0)) != null)
 				for (int r = sp - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 			else if ((m = matchSave.apply(node0)) != null)
@@ -59,7 +51,18 @@ public class StackAssembler extends Assembler {
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 			else {
 				Node node1;
-				if ((m = matchPop.apply(node0)) != null)
+
+				if ((m = matchBegin.apply(node0)) != null) {
+					deque.push(sp);
+					sp = 0;
+					node1 = Atom.NIL;
+				} else if ((m = matchEnd.apply(node0)) != null) {
+					if (sp == 0)
+						sp = deque.pop();
+					else
+						throw new RuntimeException("Unbalanced register stack in subroutine definition");
+					node1 = Atom.NIL;
+				} else if ((m = matchPop.apply(node0)) != null)
 					node1 = new Rewriter(stackOperand, getRegister(--sp)).replace(m[0]);
 				else if ((m = matchPush.apply(node0)) != null)
 					node1 = new Rewriter(stackOperand, getRegister(sp++)).replace(m[0]);
@@ -74,8 +77,7 @@ public class StackAssembler extends Assembler {
 				else
 					node1 = node0;
 
-				if (node1 != Atom.NIL)
-					lnis1.add(Pair.of(lni0.t0, node1));
+				lnis1.add(Pair.of(lni0.t0, node1));
 			}
 		}
 
