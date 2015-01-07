@@ -1,6 +1,8 @@
 package suite.weiqi;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,7 +32,7 @@ public class Board1 {
 		}
 	}
 
-	public void move(Coordinate c, Occupation o) {
+	public Runnable move(Coordinate c, Occupation o) {
 		Group group = new Group(o);
 		board[c.index()] = group;
 
@@ -44,14 +46,26 @@ public class Board1 {
 				group.nBreaths++;
 		}
 
+		List<Coordinate> list = new ArrayList<>();
+
 		for (Coordinate c1 : c.neighbors) {
 			Group group1 = get(c1);
-			if (group1 != null && group1.nBreaths == 0)
+			if (group1 != null && group1.nBreaths == 0) {
 				removeGroup(group1, c1);
+				list.add(c1);
+			}
 		}
 
-		if (group.nBreaths == 0)
+		if (group.nBreaths == 0) {
 			removeGroup(group, c);
+			return () -> {
+			};
+		} else
+			return () -> {
+				removeGroup(get(c), c);
+				for (Coordinate c1 : list)
+					fillGroup(new Group(o.opponent()), c1);
+			};
 	}
 
 	private Group merge(Group g0, Group g1) {
@@ -68,21 +82,29 @@ public class Board1 {
 		return g1.parent = g0;
 	}
 
-	private void removeGroup(Group group, Coordinate c) {
-		int index = c.index();
+	private void fillGroup(Group group, Coordinate c) {
+		Set<Group> neighbourGroups = new HashSet<>();
+		board[c.index()] = group;
 
-		if (board[index] == group) {
-			board[index] = null;
-			Set<Group> neighbourGroups = new HashSet<>();
-			for (Coordinate c1 : c.neighbors) {
-				Group g = get(c1);
-				if (g == group)
-					removeGroup(g, c1);
-				else if (g != null && g != group)
-					neighbourGroups.add(g);
-			}
-			for (Group neighbourGroup : neighbourGroups)
-				neighbourGroup.nBreaths++;
+		for (Coordinate c1 : c.neighbors) {
+			Group g = get(c1);
+			if (g == null)
+				fillGroup(group, c1);
+			else if (g != group && neighbourGroups.add(g))
+				g.nBreaths--;
+		}
+	}
+
+	private void removeGroup(Group group, Coordinate c) {
+		Set<Group> neighbourGroups = new HashSet<>();
+		board[c.index()] = null;
+
+		for (Coordinate c1 : c.neighbors) {
+			Group g = get(c1);
+			if (g == group)
+				removeGroup(g, c1);
+			else if (g != null && neighbourGroups.add(g))
+				g.nBreaths++;
 		}
 	}
 
