@@ -3,6 +3,12 @@ package suite.http;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Implements an input stream using a given input stream. Extends this class to
+ * provide additional functionality.
+ *
+ * @author ywsing
+ */
 public abstract class BasicInputStream extends InputStream {
 
 	private InputStream is;
