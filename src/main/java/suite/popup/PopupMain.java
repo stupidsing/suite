@@ -92,11 +92,9 @@ public class PopupMain extends ExecutableProgram {
 				, lay.ex(32, lay.c(outLabel)) //
 				);
 
-		Runnable refresh = new Runnable() {
-			public void run() {
-				lay.arrange(layout);
-				frame.repaint();
-			}
+		Runnable refresh = () -> {
+			lay.arrange(layout);
+			frame.repaint();
 		};
 
 		frame.addComponentListener(new ComponentAdapter() {
