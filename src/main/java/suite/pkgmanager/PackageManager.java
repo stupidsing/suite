@@ -74,6 +74,14 @@ public class PackageManager {
 		return isSuccess;
 	}
 
+	public boolean uninstall(String packageName) throws IOException {
+		PackageMemento packageMemento = keeper.loadPackageMemento(packageName);
+		List<InstallAction> installActions = packageMemento.getInstallActions();
+		unact(installActions, installActions.size());
+		keeper.removePackageMemento(packageName);
+		return true;
+	}
+
 	private int unact(List<InstallAction> installActions, int progress) {
 		for (; progress > 0; progress--)
 			try {

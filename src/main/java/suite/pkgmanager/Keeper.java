@@ -1,5 +1,6 @@
 package suite.pkgmanager;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,10 @@ public class Keeper {
 		try (OutputStream os = FileUtil.out(keeperDirectory + "/" + packageName)) {
 			objectMapper.writeValue(os, mapifyUtil.mapify(PackageMemento.class, packageMemento));
 		}
+	}
+
+	public boolean removePackageMemento(String packageName) {
+		return new File(keeperDirectory + "/" + packageName).delete();
 	}
 
 }
