@@ -84,14 +84,6 @@ public class Termios implements Closeable {
 		puts(esc + "[38;5;" + (16 + b + g * 6 + r * 36) + "m");
 	}
 
-	// public void background(int r, int g, int b) {
-	// puts(esc + "[48;2;" + r + ";" + g + ";" + b + "m");
-	// }
-	//
-	// public void foreground(int r, int g, int b) {
-	// puts(esc + "[38;2;" + r + ";" + g + ";" + b + "m");
-	// }
-
 	public void puts(String s) {
 		for (char ch : Util.chars(s))
 			Libc.putchar(ch);
