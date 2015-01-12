@@ -13,6 +13,24 @@ public class Termios implements Closeable {
 
 	private Thread hook = new Thread(this::close);
 
+	public enum AnsiColor {
+		BLACK_(0), //
+		RED___(1), //
+		GREEN_(2), //
+		YELLOW(3), //
+		BLUE__(4), //
+		MAGENT(5), //
+		CYAN__(6), //
+		WHITE_(7), //
+		;
+
+		public int value;
+
+		private AnsiColor(int value) {
+			this.value = value;
+		}
+	}
+
 	public Termios() {
 		Pointer<Byte> termios1 = Pointer.allocateBytes(4096);
 		Libc.tcgetattr(0, termios0);
@@ -45,6 +63,34 @@ public class Termios implements Closeable {
 	public void gotoxy(int x, int y) {
 		puts(esc + "[" + (y + 1) + ";" + (x + 1) + "H");
 	}
+
+	public void reset() {
+		puts(esc + "[0m");
+	}
+
+	public void background(AnsiColor ac) {
+		puts(esc + "[" + (ac.value + 40) + "m");
+	}
+
+	public void foreground(AnsiColor ac) {
+		puts(esc + "[" + (ac.value + 30) + "m");
+	}
+
+	public void background(int r, int g, int b) {
+		puts(esc + "[48;5;" + (16 + b + g * 6 + r * 36) + "m");
+	}
+
+	public void foreground(int r, int g, int b) {
+		puts(esc + "[38;5;" + (16 + b + g * 6 + r * 36) + "m");
+	}
+
+	// public void background(int r, int g, int b) {
+	// puts(esc + "[48;2;" + r + ";" + g + ";" + b + "m");
+	// }
+	//
+	// public void foreground(int r, int g, int b) {
+	// puts(esc + "[38;2;" + r + ";" + g + ";" + b + "m");
+	// }
 
 	public void puts(String s) {
 		for (char ch : Util.chars(s))
