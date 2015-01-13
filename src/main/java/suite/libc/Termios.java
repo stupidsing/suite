@@ -64,7 +64,7 @@ public class Termios implements Closeable {
 		puts(esc + "[" + (y + 1) + ";" + (x + 1) + "H");
 	}
 
-	public void reset() {
+	public void resetColors() {
 		puts(esc + "[0m");
 	}
 

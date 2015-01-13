@@ -15,7 +15,7 @@ public class TermiosMain {
 			termios.background(AnsiColor.GREEN_);
 			termios.foreground(AnsiColor.RED___);
 			termios.puts("test red on green");
-			termios.reset();
+			termios.resetColors();
 
 			for (int r = 0; r < 6; r++)
 				for (int g = 0; g < 6; g++)
@@ -24,6 +24,8 @@ public class TermiosMain {
 						termios.background(r, g, b);
 						termios.puts(" ");
 					}
+
+			termios.resetColors();
 
 			int ch;
 			while ((ch = Libc.getchar()) != -1 && ch != 'q')
