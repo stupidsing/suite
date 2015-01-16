@@ -1,10 +1,10 @@
-package suite.libc;
+package suite.ansi;
 
 import java.io.IOException;
 
-import suite.libc.Termios.AnsiColor;
+import suite.ansi.Termios.AnsiColor;
 
-// java -cp target/suite-1.0-jar-with-dependencies.jar suite.libc.TermiosMain
+// java -cp target/suite-1.0-jar-with-dependencies.jar suite.ansi.TermiosMain
 public class TermiosMain {
 
 	public static void main(String args[]) throws IOException {

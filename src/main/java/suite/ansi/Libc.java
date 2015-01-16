@@ -1,4 +1,4 @@
-package suite.libc;
+package suite.ansi;
 
 import org.bridj.BridJ;
 import org.bridj.Pointer;
