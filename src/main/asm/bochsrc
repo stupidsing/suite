@@ -1,7 +1,7 @@
 ata0-master: type=disk, path="target/boot.bin", cylinders=615, heads=6, spt=17
 boot: disk
 cpuid: sep=1
-#ne2k: ioaddr=0x300, irq=3, mac=fe:fd:00:00:00:01, ethmod=tuntap, ethdev=/dev/net/tun, script=src/main/asm/tunconfig
+ne2k: ioaddr=0x300, irq=3, mac=fe:fd:00:00:00:01, ethmod=tuntap, ethdev=/dev/net/tun, script=src/main/asm/tunconfig
 
 #config_interface: wx
 #display_library: wx
