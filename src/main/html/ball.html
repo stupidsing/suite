@@ -21,7 +21,7 @@
 		var canvas = document.getElementById("canvas");
 
 		var ball = function(width, height) {
-			var ballx = width / 2, bally = height / 2;
+			var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());
 			var dx = 2, dy = 2;
 
 			return {
