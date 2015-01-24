@@ -14,6 +14,10 @@ public class Hex {
 		}
 	}
 
+	public XY diff(XY from, XY to) {
+		return XY.of(to.x - from.x, to.y - from.y);
+	}
+
 	public XY toScreenCoord(XY coord) {
 		return XY.of(coord.x * 2 + coord.y, coord.y);
 	}
