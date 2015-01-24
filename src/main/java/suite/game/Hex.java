@@ -1,5 +1,8 @@
 package suite.game;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Hex {
 
 	public static class XY {
@@ -13,6 +16,12 @@ public class Hex {
 			return xy;
 		}
 	}
+
+	public List<XY> directions = Arrays.asList( //
+			XY.of(0, -1), XY.of(0, 1) //
+			, XY.of(-1, 0), XY.of(1, 0) //
+			, XY.of(-1, 1), XY.of(1, -1) //
+			);
 
 	public XY diff(XY from, XY to) {
 		return XY.of(to.x - from.x, to.y - from.y);
