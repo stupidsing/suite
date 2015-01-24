@@ -21,8 +21,9 @@ public class Hex {
 	public int distance(XY diff) {
 		int dx = diff.x;
 		int dy = diff.y;
-		XY xy0 = XY.of(-dy, 2 * dy + dx);
-		XY xy1 = XY.of(2 * dx + dy, -dx);
+		int sum = dx + dy;
+		XY xy0 = XY.of(dx - sum, dy + sum);
+		XY xy1 = XY.of(dx + sum, dy - sum);
 		return Math.min(Math.abs(xy0.x) + Math.abs(xy0.y), Math.abs(xy1.x) + Math.abs(xy1.y));
 	}
 
