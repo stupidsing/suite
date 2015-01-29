@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.lp.kb.Rule;
+import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
@@ -35,7 +36,11 @@ public class Cloner {
 			Tree rt;
 
 			if (right1 == null) {
-				if (right instanceof Reference)
+				if (right instanceof Dict) {
+					Map<Node, Node> map = new HashMap<>();
+					((Dict) right).map.entrySet().forEach(e -> map.put(clone(e.getKey()), clone(e.getValue())));
+					right1 = new Dict(map);
+				} else if (right instanceof Reference)
 					right1 = new Reference();
 				else if (right1 instanceof Tuple) {
 					List<Node> nodes = ((Tuple) right1).nodes;

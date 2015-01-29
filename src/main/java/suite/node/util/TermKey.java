@@ -2,8 +2,10 @@ package suite.node.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
+import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
@@ -28,7 +30,13 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		public Integer hash(Node node) {
 			node = node.finalNode();
 
-			if (node instanceof Reference) {
+			if (node instanceof Dict) {
+				Map<Node, Node> map = ((Dict) node).map;
+				int result = 0;
+				for (Entry<Node, Node> e : map.entrySet())
+					result = 31 * hash(e.getKey()) + hash(e.getValue());
+				return result;
+			} else if (node instanceof Reference) {
 				int id = ((Reference) node).getId();
 				return aliases.computeIfAbsent(id, any -> nAliases++);
 			} else if (node instanceof Tree) {

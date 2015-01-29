@@ -13,6 +13,7 @@ import java.util.Map;
 
 import suite.Suite;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -47,7 +48,16 @@ public class ReversePolish {
 				n = Atom.of(s);
 			else if (type == '^')
 				n = Suite.parse(s);
-			else if (type == 'i')
+			else if (type == 'd') {
+				int size = Integer.valueOf(s);
+				Map<Node, Node> map = new HashMap<>();
+				for (int i = 0; i < size; i++) {
+					Node key = deque.pop();
+					Node value = deque.pop();
+					map.put(key, value);
+				}
+				return new Dict(map);
+			} else if (type == 'i')
 				n = Int.of(Integer.parseInt(s));
 			else if (type == 'r')
 				n = references.computeIfAbsent(s, key -> new Reference());
@@ -83,7 +93,14 @@ public class ReversePolish {
 
 			if (n instanceof Atom)
 				s = "\\" + ((Atom) n).name;
-			else if (n instanceof Int)
+			else if (n instanceof Dict) {
+				Map<Node, Node> map = ((Dict) n).map;
+				s = "d" + map.size();
+				map.entrySet().forEach(e -> {
+					deque.push(e.getValue());
+					deque.push(e.getKey());
+				});
+			} else if (n instanceof Int)
 				s = "i" + ((Int) n).number;
 			else if (n instanceof Reference)
 				s = "r" + ((Reference) n).getId();

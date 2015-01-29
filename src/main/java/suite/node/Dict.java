@@ -8,7 +8,15 @@ import suite.util.Util;
 
 public class Dict extends Node {
 
-	public final Map<Node, Node> map = new HashMap<>();
+	public final Map<Node, Node> map;
+
+	public Dict() {
+		this(new HashMap<>());
+	}
+
+	public Dict(Map<Node, Node> map) {
+		this.map = map;
+	}
 
 	@Override
 	public int hashCode() {

@@ -1,9 +1,12 @@
 package suite.lp.doer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
@@ -15,7 +18,11 @@ public class Specializer {
 	public Node specialize(Node node) {
 		node = node.finalNode();
 
-		if (node instanceof Reference) {
+		if (node instanceof Dict) {
+			Map<Node, Node> map = new HashMap<>();
+			((Dict) node).map.entrySet().forEach(e -> map.put(specialize(e.getKey()), specialize(e.getValue())));
+			node = new Dict(map);
+		} else if (node instanceof Reference) {
 			Reference ref = (Reference) node;
 			node = Atom.of(SewingGeneralizer.variablePrefix + ref.getId());
 		} else if (node instanceof Tree) {

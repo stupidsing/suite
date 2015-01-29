@@ -10,6 +10,7 @@ import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
@@ -63,7 +64,12 @@ public class Checker {
 						value = Boolean.FALSE;
 					isSingleton.put(atom, value);
 				}
-			} else if (node instanceof Tree) {
+			} else if (node instanceof Dict)
+				((Dict) node).map.entrySet().forEach(e -> {
+					scan(e.getKey());
+					scan(e.getValue());
+				});
+			else if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				scan(tree.getLeft());
 				node = tree.getRight();
@@ -76,5 +82,4 @@ public class Checker {
 			break;
 		}
 	}
-
 }

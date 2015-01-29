@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -24,6 +25,8 @@ public class Comparer implements Comparator<Node> {
 		order.put(Atom.class, 20);
 		order.put(Str.class, 30);
 		order.put(Tree.class, 40);
+		order.put(Tuple.class, 50);
+		order.put(Dict.class, 60);
 	}
 
 	@Override
@@ -36,6 +39,8 @@ public class Comparer implements Comparator<Node> {
 		if (clazz0 == clazz1)
 			if (clazz0 == Atom.class)
 				return ((Atom) n0).name.compareTo(((Atom) n1).name);
+			else if (clazz0 == Dict.class)
+				throw new RuntimeException("Cannot compare dictionaries");
 			else if (clazz0 == Int.class)
 				return ((Int) n0).number - ((Int) n1).number;
 			else if (clazz0 == Reference.class)

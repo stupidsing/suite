@@ -9,6 +9,7 @@ import java.util.Set;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Data;
+import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -44,7 +45,11 @@ public class Formatter {
 				ids.put(key, id = count++);
 				String content;
 
-				if ((tree = Tree.decompose(node)) != null) {
+				if (node instanceof Dict)
+					content = Read.from(((Dict) node).map.entrySet()) //
+							.map(e -> graphize(e.getKey()) + ":" + graphize(e.getValue()) + ", ") //
+							.collect(As.joined("dict{", ", ", "}"));
+				else if ((tree = Tree.decompose(node)) != null) {
 					int id0 = graphize(tree.getLeft());
 					int id1 = graphize(tree.getRight());
 					content = "tree(" + id0 + tree.getOperator().getName() + id1 + ")";
