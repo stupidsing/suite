@@ -189,7 +189,7 @@ public class RayTracer {
 					float f1 = (cos - eta * cos1) / (cos + eta * cos1);
 					float fresnel = (f0 * f0 + f1 * f1) / 2f;
 
-					// Schick approximation
+					// Schlick approximation
 					// private float mix = (float) Math.pow(
 					// (refractiveIndex0 - refractiveIndex1)
 					// / (refractiveIndex0 + refractiveIndex1), 2f);
