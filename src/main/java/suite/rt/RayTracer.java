@@ -186,7 +186,7 @@ public class RayTracer {
 
 				// Account reflection
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
-				Vector reflectPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
+				Vector reflectPoint = Vector.add(hitPoint, negligible(normal));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// Account refraction
@@ -196,7 +196,7 @@ public class RayTracer {
 
 				if (k >= 0) {
 					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta), Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
-					Vector refractPoint = Vector.add(hitPoint, Vector.mul(normal, -negligibleAdvance));
+					Vector refractPoint = Vector.sub(hitPoint, negligible(normal));
 					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 				} else
 					refractColor = Vector.origin;
@@ -234,7 +234,7 @@ public class RayTracer {
 					float lightDot = Vector.dot(lightDir, normal);
 
 					if (lightDot > 0) { // Facing the light
-						Vector lightPoint = Vector.add(hitPoint, Vector.mul(normal, negligibleAdvance));
+						Vector lightPoint = Vector.add(hitPoint, negligible(normal));
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
@@ -263,6 +263,19 @@ public class RayTracer {
 	private static Vector mc(Vector u, Vector v) {
 		return new Vector(u.x * v.x, u.y * v.y, u.z * v.z);
 
+	}
+
+	private static Vector negligible(Vector v) {
+		return new Vector(negligible(v.x), negligible(v.y), negligible(v.z));
+	}
+
+	private static float negligible(float f) {
+		if (f > 0f)
+			return negligibleAdvance;
+		else if (f < 0f)
+			return -negligibleAdvance;
+		else
+			return 0f;
 	}
 
 	/**
