@@ -8,6 +8,8 @@ import java.util.List;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 
@@ -16,23 +18,15 @@ public class RayUtil {
 	/**
 	 * Remove hits that are shooting backwards.
 	 */
-	public static List<RayHit> filterRayHits(List<RayHit> rayHits) {
-		List<RayHit> rayHits1 = new ArrayList<>();
-
-		for (RayHit rayHit : rayHits)
-			if (rayHit.advance() > 0)
-				rayHits1.add(rayHit);
-
-		return rayHits1;
+	public static Streamlet<RayHit> filterRayHits(List<RayHit> rayHits) {
+		return Read.from(rayHits).filter(rh -> rh.advance() > 0);
 	}
 
 	public static List<RayHit> joinRayHits(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<List<RayHit>> rayHitsList = getRayHitsList(ray, objects);
 		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.<RayHit> emptyList();
-
 		for (int i = 1; i < rayHitsList.size(); i++)
 			rayHits = joinRayHits(rayHits, rayHitsList.get(i), fun);
-
 		return rayHits;
 	}
 
@@ -65,15 +59,9 @@ public class RayUtil {
 	}
 
 	private static List<List<RayHit>> getRayHitsList(Ray ray, Collection<RtObject> objects) {
-		List<List<RayHit>> rayHitsList = new ArrayList<>();
-
-		for (RtObject object : objects) {
-			List<RayHit> rayHits = RayUtil.filterRayHits(object.hit(new Ray(ray.startPoint, ray.dir)));
-			Collections.sort(rayHits, RayHit.comparator);
-			rayHitsList.add(rayHits);
-		}
-
-		return rayHitsList;
+		return Read.from(objects) //
+				.map(object -> RayUtil.filterRayHits(object.hit(ray)).sort(RayHit.comparator).toList()) //
+				.toList();
 	}
 
 	private static List<RayHit> eliminateRayHitDuplicates(List<RayHit> rayHits0) {

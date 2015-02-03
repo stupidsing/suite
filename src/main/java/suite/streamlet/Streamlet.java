@@ -132,6 +132,14 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public T min(Comparator<T> comparator) {
+		T t = minOrNull(comparator);
+		if (t != null)
+			return t;
+		else
+			throw new RuntimeException("No result");
+	}
+
+	public T minOrNull(Comparator<T> comparator) {
 		T t = next(), t1;
 		if (t != null) {
 			while ((t1 = next()) != null)
@@ -139,7 +147,7 @@ public class Streamlet<T> implements Iterable<T> {
 					t = t1;
 			return t;
 		} else
-			throw new RuntimeException("No result");
+			return null;
 	}
 
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {

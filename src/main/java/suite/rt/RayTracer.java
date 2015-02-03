@@ -3,7 +3,6 @@ package suite.rt;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -174,7 +173,7 @@ public class RayTracer {
 			Vector color;
 
 			if (depth > 0) {
-				float cos = -dot / (float) Math.sqrt(Vector.normsq(ray.dir));
+				float cos = -dot / (float) Math.sqrt(Vector.abs2(ray.dir));
 
 				// Account reflection
 				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
@@ -231,7 +230,7 @@ public class RayTracer {
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
-							float cos = lightDot / (float) (Math.sqrt(Vector.normsq(lightDir) * Vector.normsq(normal)));
+							float cos = lightDot / (float) (Math.sqrt(Vector.abs2(lightDir) * Vector.abs2(normal)));
 							color = Vector.add(color, Vector.mul(lightColor, cos));
 						}
 					}
@@ -246,8 +245,7 @@ public class RayTracer {
 	}
 
 	private RayHit nearestHit(List<RayHit> rayHits) {
-		List<RayHit> rayHits1 = RayUtil.filterRayHits(rayHits);
-		return !rayHits1.isEmpty() ? Collections.min(rayHits1, RayHit.comparator) : null;
+		return RayUtil.filterRayHits(rayHits).minOrNull(RayHit.comparator);
 	}
 
 	/**

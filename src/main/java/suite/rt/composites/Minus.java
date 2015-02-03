@@ -1,6 +1,5 @@
 package suite.rt.composites;
 
-import java.util.Collections;
 import java.util.List;
 
 import suite.rt.RayTracer.Ray;
@@ -20,10 +19,8 @@ public class Minus implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		List<RayHit> subjectRayHits = RayUtil.filterRayHits(subject.hit(new Ray(ray.startPoint, ray.dir)));
-		List<RayHit> objectRayHits = RayUtil.filterRayHits(object.hit(new Ray(ray.startPoint, ray.dir)));
-		Collections.sort(subjectRayHits, RayHit.comparator);
-		Collections.sort(objectRayHits, RayHit.comparator);
+		List<RayHit> subjectRayHits = RayUtil.filterRayHits(subject.hit(ray)).sort(RayHit.comparator).toList();
+		List<RayHit> objectRayHits = RayUtil.filterRayHits(object.hit(ray)).sort(RayHit.comparator).toList();
 		return RayUtil.joinRayHits(subjectRayHits, objectRayHits, pair -> pair.t0 && !pair.t1);
 	}
 

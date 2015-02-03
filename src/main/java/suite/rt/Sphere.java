@@ -33,9 +33,9 @@ public class Sphere implements RtObject {
 	@Override
 	public List<RayHit> hit(Ray ray) {
 		Vector start0 = Vector.sub(ray.startPoint, centre);
-		float a = Vector.normsq(ray.dir);
+		float a = Vector.abs2(ray.dir);
 		float b = 2 * Vector.dot(start0, ray.dir);
-		float c = Vector.normsq(start0) - radius * radius;
+		float c = Vector.abs2(start0) - radius * radius;
 		float discriminant = b * b - 4 * a * c;
 		List<RayHit> rayHits;
 

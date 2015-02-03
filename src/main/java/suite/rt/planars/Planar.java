@@ -29,8 +29,8 @@ public abstract class Planar implements RtObject {
 
 		Vector normal = Vector.cross(axis0, axis1);
 		plane = new Plane(normal, Vector.dot(origin, normal), material);
-		invAxis0 = 1f / Vector.normsq(axis0);
-		invAxis1 = 1f / Vector.normsq(axis1);
+		invAxis0 = 1f / Vector.abs2(axis0);
+		invAxis1 = 1f / Vector.abs2(axis1);
 	}
 
 	@Override
