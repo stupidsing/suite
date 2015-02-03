@@ -9,6 +9,15 @@ import java.util.List;
 import suite.math.Vector;
 import suite.util.LogUtil;
 
+/**
+ * TODO remove Vector.norm() at Ray constructor and fix maths
+ * 
+ * TODO fix RayTracerTest.testLight() etc cases black-out issues
+ * 
+ * TODO test accurate Fresnel (and Schlick's approximation?)
+ * 
+ * @author ywsing
+ */
 public class RayTracer {
 
 	public static float negligibleAdvance = 0.0001f;
