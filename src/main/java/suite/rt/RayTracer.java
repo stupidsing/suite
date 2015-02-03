@@ -179,9 +179,11 @@ public class RayTracer {
 			}
 
 			Material material = i.material();
+			boolean reflective = material.isReflective();
+			float transparency = material.transparency();
 			Vector color;
 
-			if (depth > 0) {
+			if ((reflective || transparency > 0f) && depth > 0) {
 				float cos = -dot / (float) Math.sqrt(Vector.abs2(ray.dir));
 
 				// Account reflection
@@ -223,8 +225,7 @@ public class RayTracer {
 				// Fresnel is often too low. Mark it up for visual effect.
 				float fresnel1 = adjustFresnel + fresnel * (1 - adjustFresnel);
 
-				color = Vector.add(Vector.mul(reflectColor, fresnel1),
-						Vector.mul(refractColor, (1f - fresnel1) * material.transparency()));
+				color = Vector.add(Vector.mul(reflectColor, fresnel1), Vector.mul(refractColor, (1f - fresnel1) * transparency));
 			} else {
 				color = Vector.origin;
 

@@ -225,7 +225,7 @@ public class RayTracerTest {
 			}
 
 			public boolean isReflective() {
-				return true;
+				return isReflective;
 			}
 
 			public float transparency() {
