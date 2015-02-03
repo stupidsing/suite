@@ -75,7 +75,7 @@ public class RayTracer {
 
 		public Ray(Vector startPoint, Vector dir) {
 			this.startPoint = startPoint;
-			this.dir = Vector.norm(dir);
+			this.dir = dir;
 		}
 
 		public Vector hitPoint(float advance) {
