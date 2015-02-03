@@ -239,7 +239,7 @@ public class RayTracer {
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
-							float cos = lightDot / (float) (Math.sqrt(Vector.abs2(lightDir) * Vector.abs2(normal)));
+							float cos = lightDot / (float) (Math.sqrt(Vector.abs2(lightDir)));
 							color = Vector.add(color, Vector.mul(lightColor, cos));
 						}
 					}
