@@ -85,9 +85,9 @@ public class RayTracerTest {
 	public void testCopyCat() throws IOException {
 		RtObject sphere0 = Sphere.c(v(0f, 1004f, 20f), 1000f, solid(v(0.2f, 0.2f, 0.2f)));
 		RtObject sphere1 = Sphere.c(v(0f, 0f, 20f), 4f, glassy(v(1f, 0.32f, 0.36f)));
-		RtObject sphere2 = Sphere.c(v(5f, 1f, 15f), 2f, glassy(v(0.9f, 0.76f, 0.46f)));
-		RtObject sphere3 = Sphere.c(v(5f, 0f, 25f), 3f, glassy(v(0.65f, 0.77f, 0.97f)));
-		RtObject sphere4 = Sphere.c(v(-5.5f, 0f, 15f), 3f, glassy(gray(0.9f)));
+		RtObject sphere2 = Sphere.c(v(5f, 1f, 15f), 2f, reflective(v(0.9f, 0.76f, 0.46f)));
+		RtObject sphere3 = Sphere.c(v(5f, 0f, 25f), 3f, reflective(v(0.65f, 0.77f, 0.97f)));
+		RtObject sphere4 = Sphere.c(v(-5.5f, 0f, 15f), 3f, reflective(gray(0.9f)));
 		// RtObject sphere5 =
 		// Sphere.c(v(0f, -20f, 30f), 3f, solid(v(0f, 0f, 0f)));
 
@@ -97,8 +97,7 @@ public class RayTracerTest {
 		List<LightSource> lights = Arrays.asList(light0);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		rayTracer.setAdjustFresnel(0.1f);
-		rayTracer.setAmbient(gray(0.8f));
+		rayTracer.setAmbient(gray(2f));
 
 		rasterize(rayTracer);
 	}
@@ -208,21 +207,29 @@ public class RayTracerTest {
 	}
 
 	private Material solid(Vector color) {
-		return material(color, false);
+		return material(color, false, false);
 	}
 
 	private Material glassy(Vector color) {
-		return material(color, true);
+		return material(color, true, true);
 	}
 
-	private Material material(Vector color, boolean isTransparent) {
+	private Material reflective(Vector color) {
+		return material(color, true, false);
+	}
+
+	private Material material(Vector color, boolean isReflective, boolean isTransparent) {
 		return new Material() {
 			public Vector surfaceColor() {
 				return color;
 			}
 
-			public boolean isTransparent() {
-				return isTransparent;
+			public boolean isReflective() {
+				return true;
+			}
+
+			public float transparency() {
+				return isTransparent ? 0.5f : 0f;
 			}
 		};
 	}
