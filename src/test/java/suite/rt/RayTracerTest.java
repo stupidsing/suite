@@ -125,7 +125,7 @@ public class RayTracerTest {
 		Scene scene = new Scene(Arrays.asList(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
 		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);
-		LightSource light1 = new PointLightSource(v(-10f, 10f, -10f), cw);
+		LightSource light1 = new PointLightSource(v(-10f, 10f, -10f), gray(2f));
 		List<LightSource> lights = Arrays.asList(light0, light1);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
