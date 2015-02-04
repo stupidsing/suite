@@ -2,8 +2,10 @@ package suite.node.util;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import suite.node.Atom;
 import suite.node.Dict;
@@ -13,6 +15,8 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.streamlet.Read;
+import suite.util.Util;
 
 public class Comparer implements Comparator<Node> {
 
@@ -39,9 +43,22 @@ public class Comparer implements Comparator<Node> {
 		if (clazz0 == clazz1)
 			if (clazz0 == Atom.class)
 				return ((Atom) n0).name.compareTo(((Atom) n1).name);
-			else if (clazz0 == Dict.class)
-				throw new RuntimeException("Cannot compare dictionaries");
-			else if (clazz0 == Int.class)
+			else if (clazz0 == Dict.class) {
+				Map<Node, Node> m0 = ((Dict) n0).map;
+				Map<Node, Node> m1 = ((Dict) n1).map;
+				Set<Node> keys = new HashSet<>();
+				keys.addAll(m0.keySet());
+				keys.addAll(m1.keySet());
+				int c = 0;
+				for (Node key : Read.from(keys).sort(this::compare).toList()) {
+					Node v0 = m0.get(key);
+					Node v1 = m1.get(key);
+					if ((c = Util.compare(v0, v1)) != 0)
+						break;
+				}
+				return c;
+
+			} else if (clazz0 == Int.class)
 				return ((Int) n0).number - ((Int) n1).number;
 			else if (clazz0 == Reference.class)
 				return ((Reference) n0).getId() - ((Reference) n1).getId();
