@@ -57,7 +57,6 @@ public class Comparer implements Comparator<Node> {
 						break;
 				}
 				return c;
-
 			} else if (clazz0 == Int.class)
 				return ((Int) n0).number - ((Int) n1).number;
 			else if (clazz0 == Reference.class)
