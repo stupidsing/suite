@@ -207,12 +207,12 @@ public class RayTracer {
 				// float cos1 = (float) Math.sqrt(k);
 				// float f0 = (eta * cos - cos1) / (eta * cos + cos1);
 				// float f1 = (cos - eta * cos1) / (cos + eta * cos1);
-				// float accurateFresnel = (f0 * f0 + f1 * f1) / 2f;
+				// float fresnel = (f0 * f0 + f1 * f1) / 2f;
 
 				// Schlick approximation
 				// float mix = (float) Math.pow((refractiveIndex0 -
-				// refractiveIndex1) / (refractiveIndex0 +
-				// refractiveIndex1), 2f);
+				// refractiveIndex1) / (refractiveIndex0 + refractiveIndex1),
+				// 2f);
 				// float cos1 = 1 - cos;
 				// float cos2 = cos1 * cos1;
 				// float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
@@ -263,7 +263,6 @@ public class RayTracer {
 	 */
 	private static Vector mc(Vector u, Vector v) {
 		return new Vector(u.x * v.x, u.y * v.y, u.z * v.z);
-
 	}
 
 	private static Vector negligible(Vector v) {
