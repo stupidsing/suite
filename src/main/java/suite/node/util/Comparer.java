@@ -50,11 +50,8 @@ public class Comparer implements Comparator<Node> {
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
 				int c = 0;
-				for (Node key : Read.from(keys).sort(this::compare).toList()) {
-					Node v0 = m0.get(key);
-					Node v1 = m1.get(key);
-					c = c != 0 ? c : Util.compare(v0, v1);
-				}
+				for (Node key : Read.from(keys).sort(this::compare))
+					c = c != 0 ? c : Util.compare(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)
 				return ((Int) n0).number - ((Int) n1).number;
