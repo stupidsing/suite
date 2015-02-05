@@ -31,7 +31,15 @@ public class I23Rope {
 			return new I23Rope(nodes);
 	}
 
-	public static List<I23Rope> merge0(I23Rope rope0, I23Rope rope1) {
+	public I23Rope left(int w) {
+		return left0(weight - w);
+	}
+
+	public I23Rope right(int w) {
+		return right0(w);
+	}
+
+	private static List<I23Rope> merge0(I23Rope rope0, I23Rope rope1) {
 		List<I23Rope> nodes;
 
 		if (rope0.depth == rope1.depth)
@@ -53,14 +61,6 @@ public class I23Rope {
 			list = Arrays.asList(new I23Rope(nodes));
 
 		return list;
-	}
-
-	public I23Rope left(int w) {
-		return left0(weight - w);
-	}
-
-	public I23Rope right(int w) {
-		return right0(w);
 	}
 
 	private I23Rope left0(int weight) {
