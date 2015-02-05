@@ -42,12 +42,12 @@ public class I23Rope {
 	private static List<I23Rope> merge0(I23Rope rope0, I23Rope rope1) {
 		List<I23Rope> nodes;
 
-		if (rope0.depth == rope1.depth)
-			nodes = Util.add(rope0.nodes, rope1.nodes);
-		else if (rope0.depth > rope1.depth)
+		if (rope0.depth > rope1.depth)
 			nodes = Util.add(Util.left(rope0.nodes, -1), merge0(Util.last(rope0.nodes), rope1));
-		else
+		else if (rope0.depth < rope1.depth)
 			nodes = Util.add(merge0(rope0, Util.first(rope1.nodes)), Util.right(rope1.nodes, 1));
+		else
+			nodes = Util.add(rope0.nodes, rope1.nodes);
 
 		List<I23Rope> list;
 		int size1 = nodes.size();
