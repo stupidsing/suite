@@ -1,14 +1,14 @@
 package suite.immutable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import suite.util.Util;
 
 public class I23Rope {
 
-	private static I23Rope empty = new I23Rope(new ArrayList<I23Rope>());
+	private static I23Rope empty = new I23Rope(Collections.emptyList());
 
 	private int depth;
 	private int weight;
