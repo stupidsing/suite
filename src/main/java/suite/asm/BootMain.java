@@ -33,10 +33,19 @@ public class BootMain extends ExecutableProgram {
 
 			System.out.println("cat " + image + " | dd bs=512 count=1 | /opt/udis86-1.7.2/udcli/udcli -16 | less");
 			System.out.println("cat " + image + " | dd bs=512 skip=1 | /opt/udis86-1.7.2/udcli/udcli -32 | less");
-			System.out.println("sudo bochs -f src/main/asm/bochsrc > " + FileUtil.tmp + "/bochs 2>&1");
+			System.out.println("" //
+					+ "${HOME}/bochs/bochs.exe \\\n" //
+					+ "config_interface:textconfig \\\n" //
+					+ "display_library:win32 \\\n" //
+					+ "ata0-master:type=disk,path=\"target/boot.bin\",cylinders=615,heads=6,spt=17 \\\n" //
+					+ "boot:disk \\\n" //
+					+ "cpuid:sep=1 \\\n" //
+					+ "romimage:file=${HOME}/bochs/bios/BIOS-bochs-latest,address=0xfffe0000 \\\n" //
+					+ "vgaromimage:file=${HOME}/bochs/bios/VGABIOS-lgpl-latest\n" //
+			);
+
 			return true;
 		} else
 			throw new RuntimeException("Size not match");
 	}
-
 }
