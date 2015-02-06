@@ -210,17 +210,10 @@ public class RayTracer {
 				// float fresnel = (f0 * f0 + f1 * f1) / 2f;
 
 				// Schlick approximation
-				// float mix = (float) Math.pow((refractiveIndex0 -
-				// refractiveIndex1) / (refractiveIndex0 + refractiveIndex1),
-				// 2f);
-				// float cos1 = 1 - cos;
-				// float cos2 = cos1 * cos1;
-				// float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
-
-				// Not even Schlick - copied code
+				float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
 				float cos1 = 1 - cos;
 				float cos2 = cos1 * cos1;
-				float fresnel = 0.1f + 0.9f * cos1 * cos2; // * cos2;
+				float fresnel = mix + (1 - mix) * cos1 * cos2; // * cos2;
 
 				// Fresnel is often too low. Mark it up for visual effect.
 				float fresnel1 = adjustFresnel + fresnel * (1 - adjustFresnel);
