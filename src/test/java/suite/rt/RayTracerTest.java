@@ -148,7 +148,7 @@ public class RayTracerTest {
 	@Test
 	public void testSphereReflection() throws IOException {
 		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
+		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
 		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
@@ -177,7 +177,7 @@ public class RayTracerTest {
 		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
 		Scene scene = new Scene(Arrays.asList(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0f, 0f, 1.5f), cw);
+		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
 		List<LightSource> lights = Arrays.asList(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
