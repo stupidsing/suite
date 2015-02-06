@@ -110,7 +110,7 @@ declare wrmsr = [msr, value,] (
 	kernel:outb [+xA1, d1,];
 );
 
--- Sets the 8253 to enable 100 timer ticks per second, and enables keyboard
+-- Sets the 8253 to 100 timer ticks per second, and enables keyboard
 kernel:outb [+x43, +x36,];
 kernel:outb [+x40, 11932 % 256,];
 kernel:outb [+x40, 11932 / 256,];
