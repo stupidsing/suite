@@ -4,15 +4,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.DefaultListModel;
@@ -31,8 +24,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import suite.editor.LayoutCalculator.Orientation;
 
@@ -49,7 +40,7 @@ public class EditorView {
 	private LayoutCalculator lay;
 	private LayoutCalculator.Node layout;
 
-	private JEditorPane editor;
+	private EditorPane editor;
 	private JFrame frame;
 	private JList<String> searchList;
 	private JTextField searchTextField;
@@ -59,35 +50,27 @@ public class EditorView {
 	private JScrollPane messageScrollPane;
 	private JTextField filenameTextField;
 
-	private boolean isModified = false;
-
 	public JFrame run(String title) {
 		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
 		searchTextField.addActionListener(event -> controller.searchFiles(EditorView.this));
-		searchTextField.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_DOWN)
-					controller.downToSearchList(EditorView.this);
-			}
-		});
+		searchTextField.addKeyListener(Listen.keyPressed(event -> {
+			if (event.getKeyCode() == KeyEvent.VK_DOWN)
+				controller.downToSearchList(EditorView.this);
+		}));
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("<Empty>");
 
 		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
 		searchList.setFont(sansFont);
-		searchList.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER)
-					controller.selectList(EditorView.this);
-			}
-		});
-		searchList.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent event) {
-				if (event.getClickCount() == 2)
-					controller.selectList(EditorView.this);
-			}
-		});
+		searchList.addKeyListener(Listen.keyPressed(event -> {
+			if (event.getKeyCode() == KeyEvent.VK_ENTER)
+				controller.selectList(EditorView.this);
+		}));
+		searchList.addMouseListener(Listen.mouseClicked(event -> {
+			if (event.getClickCount() == 2)
+				controller.selectList(EditorView.this);
+		}));
 
 		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
@@ -102,48 +85,20 @@ public class EditorView {
 
 		JScrollPane messageScrollPane = this.messageScrollPane = createScrollPane(messageTextArea);
 
-		JEditorPane editor = this.editor = applyDefaults(new JEditorPane());
-		editor.getDocument().addDocumentListener(new DocumentListener() {
-			public void removeUpdate(DocumentEvent event) {
-				changed();
-			}
-
-			public void insertUpdate(DocumentEvent event) {
-				changed();
-			}
-
-			public void changedUpdate(DocumentEvent event) {
-			}
-
-			private void changed() {
-				setModified(true);
-			}
-		});
+		JEditorPane editor = this.editor = applyDefaults(new EditorPane());
 
 		JScrollPane editorScrollPane = createScrollPane(editor);
 
 		JButton okButton = applyDefaults(new JButton("OK"));
-		okButton.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent event) {
-				controller.evaluate(EditorView.this);
-			}
-		});
+		okButton.addMouseListener(Listen.mouseClicked(event -> controller.evaluate(EditorView.this)));
 
 		JFrame frame = this.frame = new JFrame(title);
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.setJMenuBar(createMenuBar());
 		frame.setSize(new Dimension(windowWidth, windowHeight));
 		frame.setVisible(true);
-		frame.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent event) {
-				refresh();
-			}
-		});
-		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent event) {
-				controller.close(EditorView.this);
-			}
-		});
+		frame.addComponentListener(Listen.componentResized(event -> refresh()));
+		frame.addWindowListener(Listen.windowClosing(event -> controller.close(EditorView.this)));
 
 		int u = 64, u3 = u * 3;
 
@@ -174,7 +129,7 @@ public class EditorView {
 	}
 
 	public void setModified(boolean isModified) {
-		this.isModified = isModified;
+		editor.setModified(isModified);
 		repaint();
 	}
 
@@ -185,7 +140,7 @@ public class EditorView {
 	}
 
 	private void repaint() {
-		frame.setTitle((isModified ? "* " : "") + filenameTextField.getText().replace(File.separatorChar, '/'));
+		frame.setTitle((editor.isModified() ? "* " : "") + filenameTextField.getText().replace(File.separatorChar, '/'));
 		frame.repaint();
 	}
 
@@ -306,7 +261,7 @@ public class EditorView {
 	}
 
 	public boolean isModified() {
-		return isModified;
+		return editor.isModified();
 	}
 
 	public JComponent getBottomToolbar() {
