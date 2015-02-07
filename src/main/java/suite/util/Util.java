@@ -48,7 +48,7 @@ public class Util {
 		return s.charAt(pos);
 	}
 
-	public static Iterable<Character> chars(String s) {
+	public static Iterable<Character> chars(CharSequence s) {
 		return () -> new Iterator<Character>() {
 			private int index = 0;
 

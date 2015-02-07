@@ -20,12 +20,28 @@ import suite.util.FunUtil.Sink;
 
 public class Listen {
 
+	public interface SinkEx<T, Ex extends Exception> {
+		public void sink(T t) throws Ex;
+	}
+
 	public static AbstractAction actionPerformed(Sink<ActionEvent> sink) {
 		return new AbstractAction() {
 			private static final long serialVersionUID = 1l;
 
 			public void actionPerformed(ActionEvent event) {
 				sink.sink(event);
+			}
+		};
+	}
+
+	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
+		return new Sink<T>() {
+			public void sink(T t) {
+				try {
+					sink.sink(t);
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		};
 	}
