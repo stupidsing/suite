@@ -33,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	ShowWindow(hwnd, iCmdShow);
 	UpdateWindow(hwnd);
 
-	while ( GetMessage(&msg, NULL, 0, 0) ) {
+	while (GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg); /* for certain keyboard messages */
 		DispatchMessage(&msg); /* send message to WndProc */
 	}
