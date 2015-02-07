@@ -32,7 +32,7 @@ public class EditorPane extends JEditorPane {
 		SinkEx<ActionEvent, BadLocationException> tabize = event -> {
 			if (isSelectedText())
 				replaceLines(segment -> {
-					StringBuilder sb = new StringBuilder("");
+					StringBuilder sb = new StringBuilder("\t");
 					for (char ch : Util.chars(segment)) {
 						sb.append(ch);
 						sb.append(ch == 10 ? "\t" : "");
@@ -88,9 +88,9 @@ public class EditorPane extends JEditorPane {
 		while (se < length && document.getText(se, 1).charAt(0) != 10)
 			se++;
 
-		// Do not include previous LF; include next LF
+		// Do not include first and last LFs
 		int start = document.getText(ss, 1).charAt(0) == 10 ? ss + 1 : ss;
-		int end = se < length ? se + 1 : se;
+		int end = se;
 
 		replace(document, start, end, fun);
 	}
