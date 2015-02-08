@@ -79,5 +79,5 @@ declare ba-deallocate = [block, size,] (
 declare ba-setup = [] (
 	kernel:zero [& lists, 256,];
 	let `ba-region0` = ba:log2rel [total,]; -- Granularity
-	dl:dl-add-prev [ba:ba-list-entry [max-l2,], ba-region0,];
+	dl:dl-add-next [ba:ba-list-entry [max-l2,], ba-region0,];
 );
