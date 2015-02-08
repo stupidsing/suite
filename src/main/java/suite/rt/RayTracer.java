@@ -208,11 +208,12 @@ public class RayTracer {
 				// float fresnel = (f0 * f0 + f1 * f1) / 2f;
 
 				// Schlick approximation
+				boolean isDramaticMix = true;
 				float r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
-				float mix = r * r; // 0.1f for dramatic effect
+				float mix = isDramaticMix ? 0.1f : r * r;
 				float cos1 = 1 - cos;
 				float cos2 = cos1 * cos1;
-				float fresnel = mix + (1 - mix) * cos1 * cos2; // * cos2;
+				float fresnel = mix + (1 - mix) * cos1 * cos2 * cos2;
 
 				// Fresnel is often too low. Mark it up for visual effect.
 				float fresnel1 = adjustFresnel + fresnel * (1 - adjustFresnel);
