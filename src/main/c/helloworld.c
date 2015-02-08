@@ -33,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	ShowWindow(hwnd, iCmdShow);
 	UpdateWindow(hwnd);
 
-	while (GetMessage(&msg, NULL, 0, 0)) {
+	while(GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg); /* for certain keyboard messages */
 		DispatchMessage(&msg); /* send message to WndProc */
 	}
@@ -45,7 +45,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hdc;
 
-	switch (iMsg) {
+	switch(iMsg) {
 		case WM_PAINT:
 		hdc = BeginPaint(hwnd, &ps);
 		TextOut(hdc, 100, 100, "Hello, world!", 13);
