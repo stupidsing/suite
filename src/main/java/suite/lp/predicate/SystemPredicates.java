@@ -38,6 +38,7 @@ public class SystemPredicates {
 		addPredicate("clone", evalPredicates.clone);
 		addPredicate("complexity", evalPredicates.complexity);
 		addPredicate("contains", evalPredicates.contains);
+		addPredicate("dkv", evalPredicates.dictKeyValue);
 		addPredicate("eval.fun", evalPredicates.evalFun);
 		addPredicate("eval.js", evalPredicates.evalJs);
 		addPredicate(TermOp.LE____, evalPredicates.compare);

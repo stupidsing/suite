@@ -14,6 +14,7 @@ import suite.lp.doer.Specializer;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -68,6 +69,13 @@ public class EvalPredicates {
 		default:
 			throw new RuntimeException("Unknown comparison");
 		}
+	};
+
+	public BuiltinPredicate dictKeyValue = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 3);
+		Dict dict = new Dict();
+		dict.map.put(params[1], params[2]);
+		return prover.bind(params[0], dict);
 	};
 
 	public BuiltinPredicate evalFun = PredicateUtil.fun(n -> Suite.evaluateFun(Suite.fcc(n, true)));

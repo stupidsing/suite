@@ -47,14 +47,9 @@ public class Binder {
 
 			boolean result = true;
 			for (Node key : keys) {
-				Node v0 = map0.get(key);
-				Node v1 = map1.get(key);
-				if (v0 == null)
-					map0.put(key, v1);
-				else if (v1 == null)
-					map1.put(key, v0);
-				else
-					result &= bind(v0, v1, journal);
+				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
+				Node v1 = map1.computeIfAbsent(key, k -> new Reference());
+				result &= bind(v0, v1, journal);
 			}
 			return result;
 		} else if (clazz0 == Int.class)
