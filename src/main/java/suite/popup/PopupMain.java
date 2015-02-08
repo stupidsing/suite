@@ -2,8 +2,6 @@ package suite.popup;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
@@ -19,6 +17,7 @@ import suite.editor.FontUtil;
 import suite.editor.LayoutCalculator;
 import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
+import suite.editor.Listen;
 import suite.util.ExecUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
@@ -97,11 +96,7 @@ public class PopupMain extends ExecutableProgram {
 			frame.repaint();
 		};
 
-		frame.addComponentListener(new ComponentAdapter() {
-			public void componentResized(ComponentEvent event) {
-				refresh.run();
-			}
-		});
+		frame.addComponentListener(Listen.componentResized(event -> refresh.run()));
 
 		refresh.run();
 		System.in.read();
