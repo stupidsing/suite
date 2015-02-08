@@ -1,37 +1,45 @@
 declare dl = this;
 
-declare dl-new = [dl,] (
-	let `dl + 4` = 0;
-	let `dl + 8` = 0;
-);
-
 declare dl-prev = [e,] (
-	`dl + 4`;
+	`e + 4`;
 );
 
 declare dl-next = [e,] (
-	`dl + 8`;
+	`e + 8`;
+);
+
+declare dl-set-prev = [e, p,] (
+	let `e + 4` = p;
+);
+
+declare dl-set-next = [e, p,] (
+	let `e + 8` = p;
+);
+
+declare dl-new = [e,] (
+	dl:dl-set-prev [e, 0,];
+	dl:dl-set-next [e, 0,];
 );
 
 declare dl-add-prev = [e, ne,] (
-	declare prev = `e + 4`;
-	let `ne + 4` = prev;
-	let `ne + 8` = e;
-	let `e + 4` = ne;
-	let `prev + 8` = ne;
+	declare prev = dl:dl-prev [e,];
+	dl:dl-set-prev [ne, prev,];
+	dl:dl-set-next [ne, e,];
+	dl:dl-set-prev [e, ne,];
+	dl:dl-set-next [prev, ne,];
 );
 
 declare dl-add-next = [e, ne,] (
-	declare next = `e + 8`;
-	let `ne + 4` = e;
-	let `ne + 8` = next;
-	let `e + 8` = ne;
-	let `next + 4` = ne;
+	declare next = dl:dl-next [e,];
+	dl:dl-set-prev [ne, e,];
+	dl:dl-set-next [ne, next,];
+	dl:dl-set-prev [next, ne,];
+	dl:dl-set-next [e, ne,];
 );
 
 declare dl-remove = [e,] (
-	declare prev = `e + 4`;
-	declare next = `e + 8`;
-	let `prev + 8` = next;
-	let `next + 4` = prev;
+	declare prev = dl:dl-prev [e,];
+	declare next = dl:dl-next [e,];
+	dl:dl-set-next [prev, next,];
+	dl:dl-set-prev [next, prev,];
 );
