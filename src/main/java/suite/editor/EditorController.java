@@ -90,6 +90,17 @@ public class EditorController {
 		editor.setText(new PrettyPrinter().prettyPrint(node));
 	}
 
+	public void funFilter(EditorView view) {
+		boolean isDo = false;
+		JFrame frame = view.getFrame();
+		JEditorPane editor = view.getEditor();
+
+		String fun = JOptionPane.showInputDialog(frame //
+				, "Enter " + (isDo ? "do " : "") + "function:", "Functional Filter", JOptionPane.PLAIN_MESSAGE);
+
+		editor.setText(Suite.evaluateFilterFun(fun, editor.getText(), false, false));
+	}
+
 	public void left(EditorView view) {
 		JComponent left = view.getLeftToolbar();
 		if (toggleVisible(view, left))
@@ -154,6 +165,8 @@ public class EditorController {
 	public void searchFor(EditorView view) {
 		JTextField searchTextField = view.getSearchTextField();
 		searchTextField.setCaretPosition(0);
+		searchTextField.setSelectionStart(0);
+		searchTextField.setSelectionEnd(searchTextField.getText().length());
 		searchTextField.requestFocusInWindow();
 	}
 

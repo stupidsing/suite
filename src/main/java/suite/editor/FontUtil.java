@@ -15,7 +15,7 @@ public class FontUtil {
 		if (os != null && os.startsWith("Windows")) {
 			System.setProperty("awt.useSystemAAFontSettings", "off");
 			System.setProperty("swing.aatext", "false");
-			monoFontName = "Courier";
+			monoFontName = "Courier New";
 			sansFontName = "Arial";
 		} else {
 			monoFontName = "Akkurat-Mono";

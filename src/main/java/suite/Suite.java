@@ -181,19 +181,22 @@ public class Suite {
 		return evaluateUtil.evaluateLogic(builder, rs, parse(lps));
 	}
 
-	public static String evaluateFilterFun(String program, boolean isLazy, String in) {
+	public static String evaluateFilterFun(String program, String in, boolean isLazy, boolean isDo) {
 		try (Reader reader = new StringReader(in); Writer writer = new StringWriter()) {
-			evaluateFilterFun(program, isLazy, reader, writer);
+			evaluateFilterFun(program, reader, writer, isLazy, isDo);
 			return writer.toString();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public static void evaluateFilterFun(String program, boolean isLazy, Reader reader, Writer writer) {
+	public static void evaluateFilterFun(String program, Reader reader, Writer writer, boolean isLazy, boolean isDo) {
 		try {
-			Node node = applyWriter(applyStringReader(parse(program), reader));
-			evaluateFunToWriter(fcc(node, isLazy), writer);
+			Node node0 = parse(program);
+			Node node1 = applyStringReader(node0, reader);
+			Node node2 = isDo ? Suite.applyPerform(node1, Atom.of("string")) : node1;
+			Node node3 = applyWriter(node2);
+			evaluateFunToWriter(fcc(node3, isLazy), writer);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

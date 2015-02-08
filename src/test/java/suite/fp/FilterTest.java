@@ -81,11 +81,11 @@ public class FilterTest {
 			}
 		};
 
-		Suite.evaluateFilterFun("id", true, reader, writer);
+		Suite.evaluateFilterFun("id", reader, writer, true, false);
 	}
 
 	private static String eval(String program, String in) {
-		return Suite.evaluateFilterFun(program, true, in);
+		return Suite.evaluateFilterFun(program, in, true, false);
 	}
 
 }

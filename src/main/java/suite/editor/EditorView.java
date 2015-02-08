@@ -117,7 +117,7 @@ public class EditorView {
 								, lay.fx(64, lay.c(okButton)) //
 								, lay.ex(u3, lay.b()) //
 								)) //
-						, lay.ex(u3, lay.c(messageScrollPane)) //
+						, lay.ex(u, lay.c(messageScrollPane)) //
 						)) //
 				, lay.ex(u, lay.c(rightLabel)) //
 				);
@@ -182,7 +182,10 @@ public class EditorView {
 		JMenuItem formatMenuItem = applyDefaults(new JMenuItem("Format", KeyEvent.VK_F));
 		formatMenuItem.addActionListener(event -> controller.format(EditorView.this));
 
-		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_U));
+		JMenuItem funFilterMenuItem = applyDefaults(new JMenuItem("Functional Filter...", KeyEvent.VK_U));
+		funFilterMenuItem.addActionListener(event -> controller.funFilter(EditorView.this));
+
+		JMenuItem unixFilterMenuItem = applyDefaults(new JMenuItem("Unix Filter...", KeyEvent.VK_X));
 		unixFilterMenuItem.addActionListener(event -> controller.unixFilter(EditorView.this));
 
 		JMenuItem leftMenuItem = applyDefaults(new JMenuItem("Left", KeyEvent.VK_L));
@@ -214,7 +217,7 @@ public class EditorView {
 				, newMenuItem, openMenuItem, saveMenuItem, searchMenuItem, exitMenuItem);
 
 		JMenu editMenu = createMenu("Edit", KeyEvent.VK_E //
-				, copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, unixFilterMenuItem);
+				, copyMenuItem, copyAppendMenuItem, pasteMenuItem, formatMenuItem, funFilterMenuItem, unixFilterMenuItem);
 
 		JMenu viewMenu = createMenu("View", KeyEvent.VK_V //
 				, leftMenuItem, rightMenuItem, topMenuItem, bottomMenuItem);
