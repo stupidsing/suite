@@ -54,9 +54,9 @@ declare ba-allocate0 = [l2,] (
 );
 
 declare ba-deallocate0 = [block, l2,] (
-	declare buddy = ba:ba-buddy-of [block, l2,];
-	if (`buddy` = l2) then (
-		dl:dl-remove [buddy,];
+	declare buddy-block = ba:ba-buddy-of [block, l2,];
+	if (`buddy-block` = l2) then (
+		dl:dl-remove [buddy-block,];
 		ba:ba-deallocate0 [ba:ba-parent-of [block, l2,], l2 + 1,];
 	) else (
 		let `block` = l2;
