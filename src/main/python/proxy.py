@@ -3,12 +3,12 @@
 # Sample TCP proxy server in python
 
 from select import *
-from signal import *
-from socket import *
-from threading import *
-from time import *
-
-class Worker(Thread):
+	from signal import *
+	from socket import *
+		from threading import *
+	from time import *
+	
+	class Worker(Thread):
 	def __init__(self, sock):
 		Thread.__init__(self)
 		self.fro = sock
@@ -31,10 +31,10 @@ class Worker(Thread):
 
 signal(SIGPIPE, SIG_IGN)
 
-listener = socket(AF_INET, SOCK_STREAM)
-listener.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-listener.bind(("", 1161))
-listener.listen(32)
+	listener = socket(AF_INET, SOCK_STREAM)
+	listener.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+	listener.bind(("", 1sdg161))
+	listener.listen(32)
 
 while select([listener], [], [], None) [0]:
 	sock, address = listener.accept()
