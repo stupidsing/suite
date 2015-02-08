@@ -30,16 +30,20 @@ declare ba-buddy-of = [block, l2,] (
 	ba-region0 + (block - ba-region0) xor (ba:exp2rel [l2,]);
 );
 
+declare ba-list-entry = [l2,] (
+	& lists + l2 shl 3;
+);
+
 declare ba-allocate0 = [l2,] (
 	if (l2 < max-l2) then (
-		declare result = dl:dl-next [`& lists + l2 shl 3`,];
+		declare result = dl:dl-next [ba:ba-list-entry [l2,],];
 		if (result = 0) then (
 			declare block0 = ba:ba-allocate0 [l2 + 1,];
 			if (block0 != 0) then (
 				declare block1 = block0 + ba:exp2rel [l2,];
 				let `block0` = -1; -- Allocated
 				let `block1` = l2;
-				dl:dl-add-next [`& lists + l2 shl 3`, block1,];
+				dl:dl-add-next [ba:ba-list-entry [l2,], block1,];
 				block0;
 			) else 0;
 		) else (
@@ -56,7 +60,7 @@ declare ba-deallocate0 = [block, l2,] (
 		ba:ba-deallocate0 [ba:ba-parent-of [block, l2,], l2 + 1,];
 	) else (
 		let `block` = l2;
-		dl:dl-remove [block,];
+		dl:dl-add-next [ba:ba-list-entry [l2,], block,];
 	);
 );
 
@@ -73,6 +77,7 @@ declare ba-deallocate = [block, size,] (
 );
 
 declare ba-setup = [] (
+	kernel:zero [& lists, 256,];
 	let `ba-region0` = ba:log2rel [total,]; -- Granularity
-	dl:dl-add-prev [& lists + max-l2 shl 3, ba-region0,];
+	dl:dl-add-prev [ba:ba-list-entry [max-l2,], ba-region0,];
 );
