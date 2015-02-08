@@ -141,6 +141,7 @@ public class EditorView {
 
 	private void repaint() {
 		frame.setTitle((editor.isModified() ? "* " : "") + filenameTextField.getText().replace(File.separatorChar, '/'));
+		frame.revalidate();
 		frame.repaint();
 	}
 
