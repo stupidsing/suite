@@ -194,7 +194,8 @@ public class RayTracer {
 				Vector refractColor;
 
 				if (k >= 0) {
-					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta), Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
+					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta / (float) Math.sqrt(Vector.abs2(ray.dir))),
+							Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
 					Vector refractPoint = Vector.sub(hitPoint, negligible(normal));
 					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 				} else
