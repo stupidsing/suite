@@ -26,7 +26,6 @@ public class IBinPriorityQueue<T> {
 
 	private class Node {
 		private List<Node> nodes; // Note that rank(nodes.get(i)) = i
-
 		private T value;
 
 		public Node(T value) {

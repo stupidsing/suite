@@ -3,6 +3,7 @@ package suite.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -185,6 +186,12 @@ public class Util {
 		if (pos < 0)
 			pos += size;
 		return list.subList(0, Math.min(size, pos));
+	}
+
+	public static <T> T[] newArray(Class<T> clazz, int dim) {
+		@SuppressWarnings("unchecked")
+		T[] ts = (T[]) Array.newInstance(clazz, dim);
+		return ts;
 	}
 
 	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {
