@@ -25,11 +25,8 @@ public class RayTracer {
 	private int nThreads = 4;
 	private int depth = 4;
 
-	private float refractiveIndex0 = 1f;
-	private float refractiveIndex1 = 1.1f;
-	private float enterRefractiveRatio = refractiveIndex0 / refractiveIndex1;
-	private float exitRefractiveRatio = refractiveIndex1 / refractiveIndex0;
-
+	private float airRefractiveIndex = 1f;
+	private float glassRefractiveIndex = 1.1f;
 	private float adjustFresnel = 0f;
 
 	private Vector ambient = Vector.origin;
@@ -192,7 +189,7 @@ public class RayTracer {
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// Account refraction
-				float eta = isInside ? exitRefractiveRatio : enterRefractiveRatio;
+				float eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
 				float k = 1 - eta * eta * (1 - cos * cos);
 				Vector refractColor;
 
@@ -210,7 +207,8 @@ public class RayTracer {
 				// float fresnel = (f0 * f0 + f1 * f1) / 2f;
 
 				// Schlick approximation
-				float mix = (float) Math.pow((refractiveIndex0 - refractiveIndex1) / (refractiveIndex0 + refractiveIndex1), 2f);
+				float mix = (float) Math.pow((airRefractiveIndex - glassRefractiveIndex)
+						/ (airRefractiveIndex + glassRefractiveIndex), 2f);
 				float cos1 = 1 - cos;
 				float cos2 = cos1 * cos1;
 				float fresnel = mix + (1 - mix) * cos1 * cos2; // * cos2;
