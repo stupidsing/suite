@@ -73,9 +73,16 @@ public class EvalPredicates {
 
 	public BuiltinPredicate dictKeyValue = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
-		Dict dict = new Dict();
-		dict.map.put(params[1], params[2]);
-		return prover.bind(params[0], dict);
+		Node node = params[0].finalNode();
+		Node key = params[1];
+		Node value = params[2];
+		if (node instanceof Dict)
+			return prover.bind(((Dict) node).map.computeIfAbsent(key, k -> new Reference()), value);
+		else {
+			Dict dict = new Dict();
+			dict.map.put(key, value);
+			return prover.bind(node, dict);
+		}
 	};
 
 	public BuiltinPredicate evalFun = PredicateUtil.fun(n -> Suite.evaluateFun(Suite.fcc(n, true)));

@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,14 @@ public class Util {
 		for (List<T> list : lists)
 			resultList.addAll(list);
 		return resultList;
+	}
+
+	@SafeVarargs
+	public static <T> Set<T> add(Set<T>... sets) {
+		Set<T> resultSet = new HashSet<>();
+		for (Set<T> set : sets)
+			resultSet.addAll(set);
+		return resultSet;
 	}
 
 	public static char charAt(String s, int pos) {

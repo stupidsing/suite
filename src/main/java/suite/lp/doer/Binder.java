@@ -1,11 +1,9 @@
 package suite.lp.doer;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import suite.lp.Journal;
 import suite.node.Dict;
@@ -15,6 +13,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.util.Util;
 
 public class Binder {
 
@@ -41,12 +40,8 @@ public class Binder {
 		else if (clazz0 == Dict.class) {
 			Map<Node, Node> map0 = ((Dict) n0).map;
 			Map<Node, Node> map1 = ((Dict) n1).map;
-			Set<Node> keys = new HashSet<>();
-			keys.addAll(map0.keySet());
-			keys.addAll(map1.keySet());
-
 			boolean result = true;
-			for (Node key : keys) {
+			for (Node key : Util.add(map0.keySet(), map1.keySet())) {
 				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
 				Node v1 = map1.computeIfAbsent(key, k -> new Reference());
 				result &= bind(v0, v1, journal);
