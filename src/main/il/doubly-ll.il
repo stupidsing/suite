@@ -26,20 +26,20 @@ declare dl-add-prev = [e, ne,] (
 	dl:dl-set-prev [ne, prev,];
 	dl:dl-set-next [ne, e,];
 	dl:dl-set-prev [e, ne,];
-	dl:dl-set-next [prev, ne,];
+	(prev && dl:dl-set-next [prev, ne,]);
 );
 
 declare dl-add-next = [e, ne,] (
 	declare next = dl:dl-next [e,];
 	dl:dl-set-prev [ne, e,];
 	dl:dl-set-next [ne, next,];
-	dl:dl-set-prev [next, ne,];
+	(next && dl:dl-set-prev [next, ne,]);
 	dl:dl-set-next [e, ne,];
 );
 
 declare dl-remove = [e,] (
 	declare prev = dl:dl-prev [e,];
 	declare next = dl:dl-next [e,];
-	dl:dl-set-next [prev, next,];
-	dl:dl-set-prev [next, prev,];
+	(prev && dl:dl-set-next [prev, next,]);
+	(next && dl:dl-set-prev [next, prev,]);
 );

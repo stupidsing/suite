@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FileUtil;
 import suite.util.LogUtil;
 
@@ -70,6 +71,19 @@ public class IoPredicates {
 	};
 
 	public BuiltinPredicate nl = PredicateUtil.run(n -> System.out.println());
+
+	public BuiltinPredicate readLine = (prover, ps) -> {
+		try {
+			BytesBuilder bb = new BytesBuilder();
+			byte b;
+			while ((b = (byte) System.in.read()) >= 0 && b != 10)
+				bb.append(b);
+			String s = new String(bb.toBytes().toBytes(), FileUtil.charset);
+			return prover.bind(new Str(s), ps);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	};
 
 	public BuiltinPredicate log = PredicateUtil.run(n -> LogUtil.info(Formatter.dump(n)));
 

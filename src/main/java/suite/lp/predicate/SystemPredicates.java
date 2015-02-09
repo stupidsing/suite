@@ -100,6 +100,7 @@ public class SystemPredicates {
 		addPredicate("home.dir", ioPredicates.homeDir);
 		addPredicate("log", ioPredicates.log);
 		addPredicate("nl", ioPredicates.nl);
+		addPredicate("read.line", ioPredicates.readLine);
 		addPredicate("sink", ioPredicates.sink);
 		addPredicate("source", ioPredicates.source);
 		addPredicate("throw", ioPredicates.throwPredicate);

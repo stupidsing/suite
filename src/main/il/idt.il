@@ -48,6 +48,7 @@ declare idt-setup = [] (
 	snippet (
 		asm .irq-handler ();
 		isr-prolog;
+
 		asm _ MOV (EAX, `EBP + 44`);
 
 		(
