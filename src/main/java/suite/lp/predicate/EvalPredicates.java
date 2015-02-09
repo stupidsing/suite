@@ -76,7 +76,7 @@ public class EvalPredicates {
 		Node node = params[0].finalNode();
 		Node key = params[1];
 		Node value = params[2];
-		if (node instanceof Dict)
+		if (node instanceof Dict) // No need to create new dictionary
 			return prover.bind(((Dict) node).map.computeIfAbsent(key, k -> new Reference()), value);
 		else {
 			Dict dict = new Dict();
