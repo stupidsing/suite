@@ -3,7 +3,7 @@ declare current-process = 0;
 allocate processes/8;
 
 declare sch-setup = [] (
-	let current-process = ba:ba-allocate [4,];
+	let current-process = ba:ba-allocate [12,];
 	dl:dl-new [& processes,];
 	dl:dl-insert-next [& processes, current-process,];
 );
