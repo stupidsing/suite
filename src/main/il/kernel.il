@@ -86,6 +86,7 @@ declare wrmsr = [msr, value,] (
 #include(buddy-allocator.il);
 #include(first-fit-allocator.il);
 #include(irq.il);
+#include(scheduler.il);
 #include(idt.il);
 #include(phy-mem.il);
 #include(paging.il);
@@ -116,7 +117,9 @@ kernel:outb [+x40, 11932 % 256,];
 kernel:outb [+x40, 11932 / 256,];
 kernel:outb [+x21, +xFC,];
 
+ba:ba-setup [];
 irq:irq-setup [];
+sch:sch-setup [];
 idt:idt-setup [];
 pm:pm-init [];
 pg:pg-setup []; -- Sets up paging
@@ -175,3 +178,5 @@ declare user-mode = [] (
 	time:time-yield [];
 	asm _ JMP (DWORD .loop);
 );
+
+sch:sch-teardown [];
