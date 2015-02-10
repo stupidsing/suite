@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import suite.Suite;
 import suite.node.Node;
@@ -34,7 +34,6 @@ public class EditorController {
 
 	public void bottom(EditorView view) {
 		toggleVisible(view, view.getBottomToolbar());
-		view.refresh();
 	}
 
 	public void close(EditorView view) {
@@ -102,10 +101,7 @@ public class EditorController {
 	}
 
 	public void left(EditorView view) {
-		JComponent left = view.getLeftToolbar();
-		if (toggleVisible(view, left))
-			view.getSearchTextField().requestFocusInWindow();
-		view.refresh();
+		toggleVisible(view, view.getLeftToolbar(), view.getSearchTextField());
 	}
 
 	public void newFile(EditorView view) {
@@ -157,17 +153,11 @@ public class EditorController {
 	}
 
 	public void right(EditorView view) {
-		JComponent right = view.getRightToolbar();
-		toggleVisible(view, right);
-		view.refresh();
+		toggleVisible(view, view.getRightToolbar());
 	}
 
 	public void searchFor(EditorView view) {
-		JTextField searchTextField = view.getSearchTextField();
-		searchTextField.setCaretPosition(0);
-		searchTextField.setSelectionStart(0);
-		searchTextField.setSelectionEnd(searchTextField.getText().length());
-		searchTextField.requestFocusInWindow();
+		focus(view.getSearchTextField());
 	}
 
 	public void searchFiles(EditorView view) {
@@ -191,10 +181,7 @@ public class EditorController {
 	}
 
 	public void top(EditorView view) {
-		JTextField filenameTextField = view.getFilenameTextField();
-		if (toggleVisible(view, filenameTextField))
-			filenameTextField.setCaretPosition(filenameTextField.getText().length());
-		view.refresh();
+		toggleVisible(view, view.getFilenameTextField());
 	}
 
 	public void unixFilter(EditorView view) {
@@ -235,13 +222,26 @@ public class EditorController {
 	}
 
 	private boolean toggleVisible(EditorView view, JComponent component) {
+		return toggleVisible(view, component, component);
+	}
+
+	private boolean toggleVisible(EditorView view, JComponent component, JComponent focusOn) {
 		boolean visible = !component.isVisible();
 		component.setVisible(visible);
-		if (visible)
-			component.requestFocusInWindow();
-		else if (isOwningFocus(component))
+		view.refresh();
+		if (visible) {
+			if (focusOn instanceof JTextComponent)
+				focus((JTextComponent) focusOn);
+			else
+				focusOn.requestFocusInWindow();
+		} else if (isOwningFocus(component))
 			view.getEditor().requestFocusInWindow();
 		return visible;
+	}
+
+	private void focus(JTextComponent component) {
+		component.selectAll();
+		component.requestFocusInWindow();
 	}
 
 	private boolean isOwningFocus(Component component) {

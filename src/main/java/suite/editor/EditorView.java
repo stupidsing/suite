@@ -124,6 +124,7 @@ public class EditorView {
 
 		controller.newFile(this);
 		refresh();
+		editor.requestFocusInWindow();
 
 		return frame;
 	}
