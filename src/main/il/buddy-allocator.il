@@ -11,16 +11,15 @@ declare exp2rel = [l2,] (
 );
 
 declare log2rel = [size,] (
-	size =+ -1;
 	declare result = 0;
-	while (size > 16) do (
+	while (size >= 16) do (
 		let size = size shr 1;
 		result =+ 1;
 	);
 	result;
 );
 
-declare max-l2 = ba:log2rel [total,] + 1;
+declare max-l2 = ba:log2rel [total,];
 
 declare ba-parent-of = [block, l2,] (
 	ba-region0 + (block - ba-region0) and (+xFFFFFFFF xor ba:exp2rel [l2,]);
@@ -66,7 +65,7 @@ declare ba-deallocate0 = [block, l2,] (
 
 declare ba-allocate = [size,] (
 	synchronized (& ba-sync) (
-		ba:ba-allocate0 [ba:log2rel [size + 4,],] + 4;
+		ba:ba-allocate0 [ba:log2rel [size + 4 - 1,],] + 4;
 	);
 );
 
@@ -78,6 +77,7 @@ declare ba-deallocate = [block, size,] (
 
 declare ba-setup = [] (
 	kernel:zero [& lists, 256,];
-	let `ba-region0` = ba:log2rel [total,]; -- Granularity
-	dl:dl-add-next [ba:ba-list-entry [max-l2,], ba-region0,];
+	declare largest-l2 = max-l2 - 1;
+	let `ba-region0` = largest-l2; -- Granularity
+	dl:dl-add-next [ba:ba-list-entry [largest-l2,], ba-region0,];
 );
