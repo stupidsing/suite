@@ -22,7 +22,7 @@ declare ffa-allocate0 = [size,] (
 
 	if (diff >= 0) then (
 		if (diff >= 16) then (
-			dl:dl-add-next [current, current + size + 12,];
+			dl:dl-insert-next [current, current + size + 12,];
 			let next = dl:dl-next [current,];
 			let `next` = diff - 12;
 		) else ();
@@ -67,7 +67,7 @@ declare ffa-setup = [] (
 	let `last` = 0;
 
 	dl:dl-new [head,];
-	dl:dl-add-next [head, ffa-region0,];
-	dl:dl-add-next [ffa-region0, last,];
+	dl:dl-insert-next [head, ffa-region0,];
+	dl:dl-insert-next [ffa-region0, last,];
 	let current = `head`;
 );

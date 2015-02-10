@@ -41,6 +41,10 @@ declare idt-setup = [] (
 
 		-- Sends end of interrupt signal
 		kernel:outb [+x20, +x20,];
+
+		-- Switch processes
+		--sch:sch-switch [];
+
 		isr-epilog;
 		asm _ IRET ();
 	);
@@ -196,9 +200,9 @@ declare idt-setup = [] (
 
 	(
 		allocate idtr/8;
-		let `idtr` = +x7FF;
-		let `idtr + 2` = idt-address;
-		idtr;
+		let `& idtr` = +x7FF;
+		let `& idtr + 2` = idt-address;
+		& idtr;
 
 		asm _ LIDT (`EAX`);
 	);

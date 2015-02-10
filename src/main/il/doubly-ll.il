@@ -21,7 +21,7 @@ declare dl-new = [e,] (
 	dl:dl-set-next [e, 0,];
 );
 
-declare dl-add-prev = [e, ne,] (
+declare dl-insert-prev = [e, ne,] (
 	declare prev = dl:dl-prev [e,];
 	dl:dl-set-prev [ne, prev,];
 	dl:dl-set-next [ne, e,];
@@ -29,7 +29,7 @@ declare dl-add-prev = [e, ne,] (
 	(prev && dl:dl-set-next [prev, ne,]);
 );
 
-declare dl-add-next = [e, ne,] (
+declare dl-insert-next = [e, ne,] (
 	declare next = dl:dl-next [e,];
 	dl:dl-set-prev [ne, e,];
 	dl:dl-set-next [ne, next,];

@@ -42,7 +42,7 @@ declare ba-allocate0 = [l2,] (
 				declare block1 = block0 + ba:exp2rel [l2,];
 				let `block0` = -1; -- Allocated
 				let `block1` = l2;
-				dl:dl-add-next [ba:ba-list-entry [l2,], block1,];
+				dl:dl-insert-next [ba:ba-list-entry [l2,], block1,];
 				block0;
 			) else 0;
 		) else (
@@ -59,7 +59,7 @@ declare ba-deallocate0 = [block, l2,] (
 		ba:ba-deallocate0 [ba:ba-parent-of [block, l2,], l2 + 1,];
 	) else (
 		let `block` = l2;
-		dl:dl-add-next [ba:ba-list-entry [l2,], block,];
+		dl:dl-insert-next [ba:ba-list-entry [l2,], block,];
 	);
 );
 
@@ -79,5 +79,5 @@ declare ba-setup = [] (
 	kernel:zero [& lists, 256,];
 	declare largest-l2 = max-l2 - 1;
 	let `ba-region0` = largest-l2; -- Granularity
-	dl:dl-add-next [ba:ba-list-entry [largest-l2,], ba-region0,];
+	dl:dl-insert-next [ba:ba-list-entry [largest-l2,], ba-region0,];
 );

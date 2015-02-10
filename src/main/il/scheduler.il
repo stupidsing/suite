@@ -5,7 +5,7 @@ allocate processes/8;
 declare sch-setup = [] (
 	let current-process = ba:ba-allocate [4,];
 	dl:dl-new [& processes,];
-	dl:dl-add-next [& processes, current-process,];
+	dl:dl-insert-next [& processes, current-process,];
 );
 
 declare sch-teardown = [] (
