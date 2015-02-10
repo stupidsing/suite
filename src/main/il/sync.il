@@ -16,20 +16,6 @@ declare sync-yield = [] (
 	asm _ POPF ();
 );
 
-declare sync-unwait = [p,] (
-	let `p` = 0;
-);
-
-declare sync-wait = [p,] (
-	while (`p` = 0) do (
-		sync:sync-yield [];
-	);
-);
-
-declare sync-notify = [p,] (
-	let `p` = 1;
-);
-
 declare sync-enter = [p,] (
 	while (sync:cmpxchg [p, 0, 1,] = 0) do (
 		sync:sync-yield [];
@@ -38,6 +24,19 @@ declare sync-enter = [p,] (
 
 declare sync-leave = [p,] (
 	let `p` = 0;
+);
+
+declare sync-wait = [p, w,] (
+	let `w` = 0;
+	while (`w` = 0) do (
+		sync:sync-leave [p,];
+		sync:sync-yield [];
+		sync:sync-enter [p,];
+	);
+);
+
+declare sync-notify = [p, w,] (
+	let `w` = 1;
 );
 
 constant synchronized .p .block = (
