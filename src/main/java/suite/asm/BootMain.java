@@ -11,7 +11,7 @@ import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.util.Util.RunOption;
 
-// java -cp target/suite-1.0-jar-with-dependencies.jar suite.asm.BootMain
+// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.asm.BootMain
 public class BootMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
