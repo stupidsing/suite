@@ -52,11 +52,7 @@ public class RecursiveParser {
 		in = commentPreprocessor.apply(in);
 		in = indentPreprocessor.apply(in);
 		in = whitespacePreprocessor.apply(in);
-		return parseWithoutComments(in);
-	}
-
-	private Node parseWithoutComments(String s) {
-		return parseWithoutComments(s, 0);
+		return parseWithoutComments(in, 0);
 	}
 
 	private Node parseWithoutComments(String s, int fromOp) {
