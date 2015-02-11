@@ -7,7 +7,7 @@ import java.util.List;
 
 import suite.Suite;
 import suite.classpath.Handler;
-import suite.lp.doer.Checker;
+import suite.lp.checker.Checker;
 import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
 import suite.lp.kb.Rule;

@@ -1,4 +1,4 @@
-package suite.lp.doer;
+package suite.lp.checker;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +17,7 @@ import suite.node.Tuple;
 import suite.util.LogUtil;
 import suite.util.Pair;
 
-/**
- * Check logic rules for typical errors.
- */
-public class Checker {
+public class SingletonVariableChecker {
 
 	private Map<Atom, Boolean> isSingleton = new HashMap<>();
 
@@ -30,7 +27,6 @@ public class Checker {
 		for (Rule rule : rules)
 			rulesByPrototype.put(Prototype.of(rule), rule);
 
-		// Check for singleton variables
 		for (Pair<Prototype, Rule> pair : rulesByPrototype.entries()) {
 			Prototype prototype = pair.t0;
 			Rule rule = pair.t1;
@@ -55,7 +51,7 @@ public class Checker {
 				// Check all variables starting with alphabets; ignore
 				// computer-generated code
 				if (name.startsWith(SewingGeneralizer.variablePrefix) //
-						&& name.length() >= 2 //
+						&& name.length() > 1 //
 						&& Character.isAlphabetic(name.charAt(1))) {
 					Boolean value = isSingleton.get(atom);
 					if (value == null)
@@ -82,4 +78,5 @@ public class Checker {
 			break;
 		}
 	}
+
 }
