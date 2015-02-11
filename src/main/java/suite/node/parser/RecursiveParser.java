@@ -55,9 +55,6 @@ public class RecursiveParser {
 		return parseWithoutComments(in);
 	}
 
-	/**
-	 * Parse without comments.
-	 */
 	private Node parseWithoutComments(String s) {
 		return parseWithoutComments(s, 0);
 	}
