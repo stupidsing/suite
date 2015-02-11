@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.util.SuiteException;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FileUtil;
 import suite.util.LogUtil;
@@ -98,7 +99,7 @@ public class IoPredicates {
 	};
 
 	public BuiltinPredicate throwPredicate = PredicateUtil.run(n -> {
-		throw new RuntimeException(Formatter.dump(n.finalNode()));
+		throw new SuiteException(n.finalNode());
 	});
 
 	public BuiltinPredicate write(PrintStream printStream) {

@@ -1,3 +1,11 @@
+-- TODO better compiler type checking
+-- TODO better compiler structure handling
+-- TODO better compiler method reference (with this pointer embedded)
+-- TODO compiler declare should return pointers
+-- TODO fork
+-- TODO garbage collection
+-- TODO exit
+
 -- Memory layout
 -- 00007C00 -> 00007E00 boot sector
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)

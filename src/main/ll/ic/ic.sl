@@ -129,7 +129,7 @@ ic-compile0 _ .imm (_ R+: MOV ($0, .imm), .e)/.e
 	:- is.int .imm
 #
 ic-compile0 _ .do _
-	:- write.error (Unknown expression .do), nl, exit 1
+	:- ic-error "Unknown expression" .do
 #
 
 -- Generates faster code
@@ -304,3 +304,5 @@ ic-operator-shift shl SAL #
 ic-operator-shift shr SAR #
 ic-operator-shift ushl SHL #
 ic-operator-shift ushr SHR #
+
+ic-error .m :- !, throw .m #
