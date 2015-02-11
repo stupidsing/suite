@@ -16,8 +16,12 @@ declare sync-yield = [] (
 	asm _ POPF ();
 );
 
+declare sync-try-enter = [p,] (
+	sync:cmpxchg [p, 0, 1,];
+);
+
 declare sync-enter = [p,] (
-	while (sync:cmpxchg [p, 0, 1,] = 0) do (
+	while (sync:sync-try-enter [p,] = 0) do (
 		sync:sync-yield [];
 	);
 );
