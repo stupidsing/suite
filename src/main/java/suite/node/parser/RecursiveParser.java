@@ -52,18 +52,18 @@ public class RecursiveParser {
 		in = commentPreprocessor.apply(in);
 		in = indentPreprocessor.apply(in);
 		in = whitespacePreprocessor.apply(in);
-		return parseWithoutComments(in, 0);
+		return parse(in, 0);
 	}
 
-	private Node parseWithoutComments(String s, int fromOp) {
-		return parseRawString(s.trim(), fromOp);
+	private Node parse(String s, int fromOp) {
+		return parseRaw(s.trim(), fromOp);
 	}
 
-	private Node parseRawString(String s, int fromOp) {
-		return !s.isEmpty() ? parseRawString0(s, fromOp) : Atom.NIL;
+	private Node parseRaw(String s, int fromOp) {
+		return !s.isEmpty() ? parseRaw0(s, fromOp) : Atom.NIL;
 	}
 
-	private Node parseRawString0(String s, int fromOp) {
+	private Node parseRaw0(String s, int fromOp) {
 		char first = Util.charAt(s, 0), last = Util.charAt(s, -1);
 
 		for (int i = fromOp; i < operators.length; i++) {
@@ -86,24 +86,24 @@ public class RecursiveParser {
 			} else {
 				if (operator == TermOp.TUPLE_)
 					if (Util.isBlank(pair.t0))
-						return parseRawString(pair.t1, fromOp);
+						return parseRaw(pair.t1, fromOp);
 					else if (Util.isBlank(pair.t1))
-						return parseRawString(pair.t0, fromOp);
+						return parseRaw(pair.t0, fromOp);
 
 				boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 				li = fromOp + (isLeftAssoc ? 0 : 1);
 				ri = fromOp + (isLeftAssoc ? 1 : 0);
 			}
 
-			return Tree.of(operator, parseWithoutComments(pair.t0, li), parseWithoutComments(pair.t1, ri));
+			return Tree.of(operator, parse(pair.t0, li), parse(pair.t1, ri));
 		}
 
 		if (first == '(' && last == ')')
-			return parseRawString(Util.substr(s, 1, -1), 0);
+			return parseRaw(Util.substr(s, 1, -1), 0);
 		if (first == '[' && last == ']')
-			return Tree.of(TermOp.TUPLE_, Atom.of("[]"), parseRawString(Util.substr(s, 1, -1), 0));
+			return Tree.of(TermOp.TUPLE_, Atom.of("[]"), parseRaw(Util.substr(s, 1, -1), 0));
 		if (first == '`' && last == '`')
-			return Tree.of(TermOp.TUPLE_, Atom.of("`"), parseRawString(" " + Util.substr(s, 1, -1) + " ", 0));
+			return Tree.of(TermOp.TUPLE_, Atom.of("`"), parseRaw(" " + Util.substr(s, 1, -1) + " ", 0));
 
 		return terminalParser.parseTerminal(s);
 	}
