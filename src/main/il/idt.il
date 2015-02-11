@@ -39,11 +39,11 @@ declare idt-setup = [] (
 		ticks =+ 1;
 		`+xB8000` =+ 1;
 
+		-- Switch processes
+		sch:sch-switch [];
+
 		-- Sends end of interrupt signal
 		kernel:outb [+x20, +x20,];
-
-		-- Switch processes
-		--sch:sch-switch [];
 
 		isr-epilog;
 		asm _ IRET ();

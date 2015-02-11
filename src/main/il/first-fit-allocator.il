@@ -1,6 +1,6 @@
 declare ffa = this;
 declare ffa-sync = 0;
-allocate head/8;
+allocate head/12;
 declare current;
 
 declare ffa-region0 = +x50000;

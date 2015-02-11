@@ -1,6 +1,6 @@
 declare sch = this;
 declare current-process = 0;
-allocate processes/8;
+allocate processes/12;
 
 declare sch-setup = [] (
 	let current-process = ba:ba-allocate [12,];
