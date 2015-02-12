@@ -30,10 +30,9 @@ public class PredicateCallChecker {
 	private Map<Prototype, Integer> nParametersByPrototype = new HashMap<>();
 
 	public void check(List<Rule> rules) {
-		for (Rule rule : rules) {
-			put(rule.head);
+		for (Rule rule : rules)
 			scan(rule.tail);
-		}
+		// put(rule.head);
 	}
 
 	private Streamlet<Node> scan(Node node) {
