@@ -199,7 +199,7 @@ public class Formatter {
 			sb.append(')');
 	}
 
-	public String quoteAtomIfRequired(String s0) {
+	private String quoteAtomIfRequired(String s0) {
 		String s1;
 		if (isDump)
 			if (!s0.isEmpty()) {
