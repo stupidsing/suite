@@ -10,8 +10,8 @@ import org.junit.Test;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.PrettyPrinter;
 import suite.node.io.TermOp;
+import suite.node.pp.PrettyPrinter;
 import suite.util.FileUtil;
 
 public class IterativeParserTest {

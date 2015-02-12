@@ -22,7 +22,7 @@ import javax.swing.text.JTextComponent;
 import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
-import suite.node.io.PrettyPrinter;
+import suite.node.pp.PrettyPrinter;
 import suite.streamlet.Streamlet;
 import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;

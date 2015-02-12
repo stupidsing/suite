@@ -1,22 +1,22 @@
-package suite.node.io;
+package suite.node.pp;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.Formatter;
+import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.node.io.TermOp;
 import suite.util.FormatUtil;
 import suite.util.Util;
 
 public class PrettyPrinter {
 
 	private int indent;
-	private Map<Integer, Integer> lengthByIds = new HashMap<>();
 	private StringBuilder sb = new StringBuilder();
 	private int nLines = 0;
 	private int currentLineIndent = 0;
@@ -29,6 +29,8 @@ public class PrettyPrinter {
 	private static Node preferLineBreakBeforeKeyword = Atom.of("else");
 	private static Set<Operator> lineBreakAfterOperators = new HashSet<>(Arrays.asList(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___));
 
+	private LengthEstimator lengthEstimator = new LengthEstimator(lineLength);
+
 	private static class OperatorPosition {
 		private int indent;
 		private int y;
@@ -40,7 +42,7 @@ public class PrettyPrinter {
 	}
 
 	public String prettyPrint(Node node) {
-		estimateLengths(node);
+		lengthEstimator.estimateLengths(node);
 		prettyPrint0(node, null, 0);
 		return sb.toString();
 	}
@@ -51,7 +53,7 @@ public class PrettyPrinter {
 	) {
 		node = node.finalNode();
 		int x = getX(), y = getY();
-		int length = getEstimatedLength(node);
+		int length = lengthEstimator.getEstimatedLength(node);
 
 		// Line too long?
 		if (node instanceof Tree) {
@@ -82,8 +84,8 @@ public class PrettyPrinter {
 
 					Tree tree1 = Tree.decompose(right, op);
 					Node r0 = tree1 != null ? tree1.getLeft() : null;
-					int es0 = getEstimatedLength(left);
-					int es1 = r0 != null ? getEstimatedLength(r0) : lineLength;
+					int es0 = lengthEstimator.getEstimatedLength(left);
+					int es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;
 					int opLength = op.getName().length();
 
 					// Breaks "a + b + xxx" in the second operator
@@ -104,7 +106,7 @@ public class PrettyPrinter {
 							indent0 = incrementIndent();
 
 						OperatorPosition opPos;
-						if (getLineSize() + getEstimatedLength(right) < squeezeLineLength)
+						if (getLineSize() + lengthEstimator.getEstimatedLength(right) < squeezeLineLength)
 							opPos = appendOperator(op);
 						else
 							opPos = appendOperatorLineFeed(op);
@@ -188,39 +190,6 @@ public class PrettyPrinter {
 		}
 
 		return op != TermOp.TUPLE_ && (op == TermOp.AND___ || op == TermOp.OR____ || node == Atom.NIL);
-	}
-
-	private int estimateLengths(Node node) {
-		node = node.finalNode();
-		int key = getKey(node);
-		Integer length = lengthByIds.get(key);
-
-		if (length == null) {
-			int len;
-
-			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-
-				Operator op = tree.getOperator();
-				int len0 = estimateLengths(tree.getLeft());
-				int len1 = estimateLengths(tree.getRight());
-				int opLength = op.getName().length();
-
-				// Rough estimation
-				len = len0 + len1 + opLength + 2;
-			} else
-				len = Formatter.dump(node).length();
-
-			length = len;
-			lengthByIds.put(key, length);
-		}
-
-		return length;
-	}
-
-	private int getEstimatedLength(Node node) {
-		Integer length = lengthByIds.get(getKey(node));
-		return length != null ? length : lineLength; // Maximum if not found
 	}
 
 	private OperatorPosition appendOperatorLineFeed(Operator op) {
@@ -308,10 +277,6 @@ public class PrettyPrinter {
 
 	private void append(String s) {
 		sb.append(s);
-	}
-
-	private int getKey(Node node) {
-		return System.identityHashCode(node.finalNode());
 	}
 
 }
