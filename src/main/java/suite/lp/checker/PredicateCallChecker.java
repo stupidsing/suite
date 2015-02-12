@@ -14,19 +14,18 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 
 public class PredicateCallChecker {
 
-	private Fun<Node, Node[]> m0 = Suite.matcher(".0, .1");
-	private Fun<Node, Node[]> m1 = Suite.matcher(".0; .1");
-	private Fun<Node, Node[]> m2 = Suite.matcher("find.all _ .0 _");
-	private Fun<Node, Node[]> m3 = Suite.matcher("if .0 then .1 else .2");
-	private Fun<Node, Node[]> m4 = Suite.matcher("not .0");
-	private Fun<Node, Node[]> m5 = Suite.matcher("once .0");
-	private List<Fun<Node, Node[]>> matchers = Arrays.asList(m0, m1, m2, m3, m4, m5);
+	private List<Fun<Node, Node[]>> matchers = Arrays.asList( //
+			Suite.matcher(".0, .1"), //
+			Suite.matcher(".0; .1"), //
+			Suite.matcher("find.all _ .0 _"), //
+			Suite.matcher("if .0 then .1 else .2"), //
+			Suite.matcher("not .0"), //
+			Suite.matcher("once .0"));
 
 	private Map<Prototype, Integer> nParametersByPrototype = new HashMap<>();
 
@@ -50,7 +49,7 @@ public class PredicateCallChecker {
 		else {
 			if (Tree.decompose(node, TermOp.TUPLE_) != null || node instanceof Atom)
 				put(node);
-			return new Streamlet<Node>(FunUtil.nullSource());
+			return Read.empty();
 		}
 	}
 
@@ -69,7 +68,7 @@ public class PredicateCallChecker {
 		int n = 0;
 		Tree tree;
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			tree.getRight();
+			node = tree.getRight();
 			n++;
 		}
 		return n;
