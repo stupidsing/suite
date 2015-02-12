@@ -10,6 +10,7 @@ import suite.lp.kb.Rule;
 public class Checker {
 
 	public void check(List<Rule> rules) {
+		new PredicateCallChecker().check(rules);
 		new SingletonVariableChecker().check(rules);
 	}
 
