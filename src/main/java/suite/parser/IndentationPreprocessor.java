@@ -71,20 +71,19 @@ public class IndentationPreprocessor implements Fun<String, String> {
 					startPos = 0;
 
 				// Insert parentheses by line indentation
-				String decoratedLine = "";
 				while (nLastIndents > nIndents) {
-					decoratedLine += ") ";
+					sb.append(") ");
 					nLastIndents--;
 				}
-				decoratedLine += line.substring(0, startPos);
+				sb.append(line.substring(0, startPos));
 				while (nLastIndents < nIndents) {
-					decoratedLine += " (";
+					sb.append(" (");
 					nLastIndents++;
 				}
-				decoratedLine += line.substring(startPos, endPos);
-				decoratedLine += line.substring(endPos);
+				sb.append(line.substring(startPos, endPos));
+				sb.append(line.substring(endPos));
+				sb.append("\n");
 
-				sb.append(decoratedLine + "\n");
 				nLastIndents = nIndents;
 			}
 		}
