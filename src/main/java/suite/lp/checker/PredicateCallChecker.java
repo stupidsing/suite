@@ -57,11 +57,10 @@ public class PredicateCallChecker {
 		Prototype prototype = Prototype.of(node);
 		Integer np0;
 		int np1 = getParameters(node);
-		if ((np0 = nParametersByPrototype.get(prototype)) != null)
-			if (np0 == np1)
-				nParametersByPrototype.put(prototype, np1);
-			else
-				LogUtil.warn("Wrong number of parameters: " + prototype);
+		if ((np0 = nParametersByPrototype.get(prototype)) == null)
+			nParametersByPrototype.put(prototype, np1);
+		else if (np0 != np1)
+			LogUtil.warn("Wrong number of parameters: " + prototype);
 	}
 
 	private int getParameters(Node node) {
