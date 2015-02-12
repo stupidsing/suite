@@ -33,8 +33,7 @@ public class LengthEstimator {
 				int len1 = estimateLengths(tree.getRight());
 				int opLength = op.getName().length();
 
-				// Rough estimation
-				len = len0 + len1 + opLength + 2;
+				len = len0 + len1 + opLength + 2; // Rough estimation
 			} else
 				len = Formatter.dump(node).length();
 
