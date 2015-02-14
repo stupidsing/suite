@@ -1,9 +1,12 @@
 package suite.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.text.Segment;
 import suite.util.FunUtil.Fun;
-import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
@@ -16,40 +19,47 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 	private Operator operators[];
 
+	private class Run {
+		private Segment segment;
+		private String text;
+
+		private Run(int start, int end) {
+			this.segment = new Segment(start, end);
+		}
+
+		private Run(String text) {
+			this.text = text;
+		}
+	}
+
 	public IndentationPreprocessor(Operator[] operators) {
 		this.operators = operators;
 	}
 
 	@Override
 	public String apply(String in) {
-		StringBuilder sb = new StringBuilder();
+		List<Run> parts = new ArrayList<>();
 		int nLastIndents = 0;
 		String lastIndent = "";
+		int pos = 0;
 
-		while (!in.isEmpty()) {
-			String line;
-			Pair<String, String> pair;
+		while (pos < in.length()) {
+			int pos0 = pos;
+			char ch;
+			while (pos0 < in.length() && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
+				pos0++;
 
-			pair = ParseUtil.search(in, "\n", Assoc.RIGHT, false);
-			if (pair != null) {
-				line = pair.t0;
-				in = pair.t1;
-			} else {
-				line = in;
-				in = "";
-			}
+			int pos1 = ParseUtil.searchPosition(in, pos0, "\n", Assoc.RIGHT, false);
+			int pos2 = Math.min(pos1 + 1, in.length()); // Includes line-feed
 
-			int length = line.length(), nIndents = 0;
-			while (nIndents < length && Character.isWhitespace(line.charAt(nIndents)))
-				nIndents++;
-
-			String indent = line.substring(0, nIndents);
-			line = line.substring(nIndents).trim();
+			String indent = in.substring(pos, pos0);
+			String line = in.substring(pos0, pos1);
+			int nIndents = pos0 - pos, length = pos1 - pos0;
 
 			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
 				throw new RuntimeException("Indent mismatch");
 
-			if ((length = line.length()) != 0) { // Ignore empty lines
+			if (length != 0) { // Ignore empty lines
 				int startPos = 0, endPos = length;
 				lastIndent = indent;
 
@@ -59,7 +69,7 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))
-							startPos = Math.max(startPos, 1 + name.length());
+							startPos = Math.max(startPos, name.length() + 1);
 						if (Util.stringEquals(line, name))
 							startPos = Math.max(startPos, name.length());
 						if (line.endsWith(name))
@@ -72,25 +82,35 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 				// Insert parentheses by line indentation
 				while (nLastIndents > nIndents) {
-					sb.append(") ");
+					parts.add(new Run(") "));
 					nLastIndents--;
 				}
-				sb.append(line.substring(0, startPos));
+				parts.add(new Run(pos0, pos0 + startPos));
 				while (nLastIndents < nIndents) {
-					sb.append(" (");
+					parts.add(new Run(" ("));
 					nLastIndents++;
 				}
-				sb.append(line.substring(startPos, endPos));
-				sb.append(line.substring(endPos));
-				sb.append("\n");
+				parts.add(new Run(pos0 + startPos, pos2));
 
 				nLastIndents = nIndents;
 			}
+
+			pos = pos2;
 		}
 
 		while (nLastIndents-- > 0)
-			sb.append(") ");
+			parts.add(new Run(") "));
 
+		return combineRuns(in, parts);
+	}
+
+	private String combineRuns(String in, List<Run> parts) {
+		StringBuilder sb = new StringBuilder();
+		for (Run part : parts)
+			if (part.segment != null)
+				sb.append(in.substring(part.segment.start, part.segment.end));
+			else
+				sb.append(part.text);
 		return sb.toString();
 	}
 

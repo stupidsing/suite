@@ -106,9 +106,9 @@ public class ParseUtil {
 	}
 
 	public static Pair<String, String> search(String s, String name, Assoc assoc, boolean isCheckDepth) {
-		int position = searchPosition(s, name, assoc, isCheckDepth);
+		int position = searchPosition(s, 0, name, assoc, isCheckDepth);
 
-		if (position >= 0) {
+		if (position < s.length()) {
 			String left = s.substring(0, position);
 			String right = s.substring(position + name.length());
 			return Pair.of(left, right);
@@ -116,15 +116,23 @@ public class ParseUtil {
 			return null;
 	}
 
-	private static int searchPosition(String s, String name, Assoc assoc, boolean isCheckDepth) {
-		boolean isLeftAssoc = assoc == Assoc.LEFT;
-		int nameLength = name.length();
-		int end = s.length() - nameLength;
-		int quote = 0, depth = 0;
+	public static int searchPosition(String s, int start, String name, Assoc assoc, boolean isCheckDepth) {
+		int length = s.length(), nameLength = name.length();
+		int end = length - nameLength, quote = 0, depth = 0;
+		int pos0, posx, step;
 
-		for (int i = 0; i <= end; i++) {
-			int pos = isLeftAssoc ? end - i : i;
-			char c = s.charAt(pos + (isLeftAssoc ? nameLength - 1 : 0));
+		if (assoc == Assoc.RIGHT) {
+			pos0 = start;
+			posx = end;
+			step = 1;
+		} else {
+			pos0 = end;
+			posx = start;
+			step = -1;
+		}
+
+		for (int pos = pos0; pos != posx; pos += step) {
+			char c = s.charAt(pos);
 			quote = getQuoteChange(quote, c);
 
 			if (quote == 0) {
@@ -135,7 +143,8 @@ public class ParseUtil {
 					return pos;
 			}
 		}
-		return -1;
+
+		return length;
 	}
 
 }
