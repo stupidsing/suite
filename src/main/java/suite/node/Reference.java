@@ -10,14 +10,9 @@ public class Reference extends Node {
 	private static AtomicInteger counter = new AtomicInteger();
 
 	public static Reference of(Node node) {
-		node = node.finalNode();
-		if (node instanceof Reference)
-			return (Reference) node;
-		else {
-			Reference reference = new Reference();
-			reference.bound(node);
-			return reference;
-		}
+		Reference reference = new Reference();
+		reference.bound(node.finalNode());
+		return reference;
 	}
 
 	public boolean isFree() {
