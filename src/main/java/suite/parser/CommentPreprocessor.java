@@ -1,7 +1,11 @@
 package suite.parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import suite.text.Transformer;
+import suite.text.Transformer.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -34,7 +38,7 @@ public class CommentPreprocessor implements Fun<String, String> {
 	private String removeComments(String in, String open, String close) {
 		int closeLength = !isWhitespaces(close) ? close.length() : 0;
 		int start = 0;
-		StringBuilder sb = new StringBuilder();
+		List<Run> runs = new ArrayList<>();
 
 		while (true) {
 			int pos0 = ParseUtil.search(in, start, open);
@@ -43,12 +47,12 @@ public class CommentPreprocessor implements Fun<String, String> {
 			int pos1 = in.indexOf(close, pos0 + open.length());
 			if (pos1 == -1)
 				break;
-			sb.append(in.substring(start, pos0));
+			runs.add(new Run(start, pos0));
 			start = pos1 + closeLength;
 		}
 
-		sb.append(in.substring(start));
-		return sb.toString();
+		runs.add(new Run(start, in.length()));
+		return new Transformer().combineRuns(in, runs);
 	}
 
 	private boolean isWhitespaces(String in) {

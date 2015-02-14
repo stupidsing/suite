@@ -1,7 +1,11 @@
 package suite.parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import suite.text.Transformer;
+import suite.text.Transformer.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 
@@ -20,22 +24,31 @@ public class WhitespacePreprocessor implements Fun<String, String> {
 
 	@Override
 	public String apply(String in) {
-		StringBuilder sb = new StringBuilder();
-		int pos = 0;
+		List<Run> runs = new ArrayList<>();
+		int length = in.length();
+		int pos0 = 0, pos = 0;
 		int quote = 0;
 		boolean backquote = false;
 
-		while (pos < in.length()) {
+		while (pos < length) {
 			char ch = in.charAt(pos++);
 
 			if (ch != '`') {
-				quote = ParseUtil.getQuoteChange(quote, ch);
-				sb.append(quote == 0 && whitespaces.contains(ch) ? " " : ch);
-			} else
-				sb.append(quote == 0 ? (backquote = !backquote) ? "` " : " `" : ch);
+				if ((quote = ParseUtil.getQuoteChange(quote, ch)) == 0 && whitespaces.contains(ch)) {
+					runs.add(new Run(pos0, pos - 1));
+					runs.add(new Run(" "));
+					pos0 = pos;
+				}
+			} else if (quote == 0) {
+				int split = (backquote = !backquote) ? pos : pos - 1;
+				runs.add(new Run(pos0, split));
+				runs.add(new Run(" "));
+				pos0 = split;
+			}
 		}
 
-		return sb.toString();
+		runs.add(new Run(pos0, length));
+		return new Transformer().combineRuns(in, runs);
 	}
 
 }
