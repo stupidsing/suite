@@ -6,8 +6,12 @@
 -- TODO garbage collection
 -- TODO exit
 
--- Memory layout
--- 00001000 -> 00002000 logical memory bitmap, for the current address space
+-- Physical memory layout
+-- 00000000 -> 00100000 refer logical memory layout below
+-- 00100000 -> stackx   physical page stack
+-- stackx   -> pagex    allocatable physical pages
+
+-- Logical memory layout
 -- 00007C00 -> 00007E00 boot sector
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)
 -- 00020800 -> 00020868 task state segment (TSS)
@@ -18,8 +22,9 @@
 -- 00040000 -> 00050000 kernel code
 -- 00050000 -> 000A0000 kernel buddy allocation pool
 -- 000A0000 -> 00100000 BIOS / video memory
--- 00100000 -> stackx   physical page stack
--- stackx   -> pagex    allocatable physical pages
+-- 00800000 -> FFC00000 allocatable logical pages
+-- FFC00000 -> FFFFEFFF second level page tables, for the current address space
+-- FFFFF000 -> end      first level page table, for the current address space
 
 constant idt-address = +x20000;
 constant tss-address = +x20800;
@@ -144,9 +149,7 @@ asm _ STI ();
 
 -- Enters user mode
 (
-	declare user-stack-address = +xF0000000;
-	declare physical = pm:pm-allocate [];
-	pg:pg-map [user-stack-address, physical,];
+	declare user-stack-address = pg:pg-allocate [1,];
 
 	for (declare i = 0; i < 104; i =+ 4) (
 		let `tss-address + i` = 0;

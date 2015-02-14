@@ -1,34 +1,35 @@
 declare ffa = this;
 declare ffa-sync = 0;
-allocate head/12;
-declare current;
 
 declare ffa-region0 = +x50000;
 declare ffa-regionx = +xA0000;
+declare ffa-current;
+
+allocate head/12;
 
 declare ffa-allocate0 = [size,] (
 	declare next-block = [block,] (
 		declare n = dl:dl-next [block,];
-		if (n = 0) then head else n;
+		if (n != 0) then n else head;
 	);
 
-	declare start = current;
+	declare start = ffa-current;
 	declare next;
-	while (((let next = this:next-block [current,]) != start) and (`current` < size)) do (
-		let current = next;
+	while (((let next = this:next-block [ffa-current,]) != start) and (`ffa-current` < size)) do (
+		let ffa-current = next;
 	);
 
-	declare diff = `current` - size;
+	declare diff = `ffa-current` - size;
 
 	if (diff >= 0) then (
 		if (diff >= 16) then (
-			dl:dl-insert-next [current, current + size + 12,];
-			let next = dl:dl-next [current,];
+			dl:dl-insert-next [ffa-current, ffa-current + size + 12,];
+			let next = dl:dl-next [ffa-current,];
 			let `next` = diff - 12;
 		) else ();
 
-		let `current` = 0;
-		current + 8;
+		let `ffa-current` = 0;
+		ffa-current + 8;
 	) else 0;
 );
 
@@ -69,5 +70,5 @@ declare ffa-setup = [] (
 	dl:dl-new [head,];
 	dl:dl-insert-next [head, ffa-region0,];
 	dl:dl-insert-next [ffa-region0, last,];
-	let current = `head`;
+	let ffa-current = `head`;
 );

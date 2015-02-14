@@ -13,8 +13,8 @@ declare cs-set-cursor = [row, col,] (
 declare cs-nl = [] (
 	synchronized (& cs-sync) (
 		declare p0 = +xB8000;
-		declare p1 = +xB8000 + 3840;
-		declare px = +xB8000 + 4000;
+		declare p1 = p0 + 3840;
+		declare px = p0 + 4000;
 
 		for (declare p = p0; p < p1; p =+ 4) ( -- Scrolls up
 			let `p` = `p + 160`;

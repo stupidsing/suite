@@ -1,4 +1,9 @@
 declare pg = this;
+declare pg-sync = 0;
+
+declare pg-region0 = +x00800000;
+declare pg-regionx = +xFFC00000;
+declare pg-current = pg-region0;
 
 declare pg-invalidate-all = [] (
 	asm _ MOV (EAX, CR3);
@@ -8,6 +13,17 @@ declare pg-invalidate-all = [] (
 declare pg-invalidate-page = [logical,] (
 	logical;
 	asm _ INVLPG `EAX`;
+);
+
+declare pg-is-mapped = [logical,] (
+	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
+	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
+	(`pe0` && `pe1`);
+);
+
+declare pg-get-physical = [logical,] (
+	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
+	`pe1` and +xFFFFF000;
 );
 
 declare pg-map = [logical, physical,] (
@@ -46,25 +62,42 @@ declare pg-unmap = [logical,] (
 	pg:pg-invalidate-page [logical,];
 );
 
-declare pg-allocate = [n,] ( -- Allocate 4MB logical addresses
-	declare r0 = 0;
-	for (declare p = 4; (r0 = 0 && p < 4096); p =+ 4) (
-		declare r1 = 1;
-		for (declare i = 0; (r1 = 1 && i < n); i =+ 1) (
-			let r1 = (r1 && `+x1000 + p + i` = 0);
+declare pg-allocate = [nPages,] (
+	declare next-page = [page,] (
+		declare n = page + 4096;
+		if (n != pg-regionx) then n else pg-region0;
+	);
+
+	synchronized (& pg-sync) (
+		declare initial = pg-current;
+		declare r0 = 0;
+
+		while (r0 = 0 && ((let pg-current = this:next-page [pg-current,]) != initial)) do (
+			declare r1 = 1;
+			for (declare i = 0; (r1 && i < nPages); i =+ 1) (
+				let r1 = (r1 && not pg:pg-is-mapped [pg-current + i shl 12,]);
+			);
+			(r1 && let r0 = pg-current);
 		);
-		(r1 && let r0 = p);
-	);
 
-	for (declare i = 0; i < n; i =+ 1) (
-		let `+x1000 + r0 + i` = -1;
+		if r0 then (
+			for (declare i = 0; i < nPages; i =+ 1) (
+				pg:pg-map [r0 + i shl 12, pm:pm-allocate [],];
+			);
+	
+			r0;
+		) else 0;
 	);
-
-	r0 shl 20;
 );
 
-declare pg-deallocate = [p,] (
-	let `+x1000 + p` = 0;
+declare pg-deallocate = [p, nPages,] (
+	synchronized (& pg-sync) (
+		for (declare i = 0; i < nPages; i =+ 1) (
+			declare logical = p + i shl 12;
+			pm:pm-deallocate [pg:pg-get-physical [logical,],];
+			pg:pg-unmap [logical,];
+		);
+	);
 );
 
 declare pg-setup = [] (
@@ -92,9 +125,4 @@ declare pg-setup = [] (
 	asm _ MOV (CR0, EAX);
 	asm _ D8 (+xEB); -- JMP $ + 2
 	asm _ D8 (+x00);
-
-	declare lm-bitmap = pm:pm-allocate [];
-	pg:pg-map [+x1000, lm-bitmap,];
-	kernel:zero [+x1000, 4096,];
-	let `+x1000` = -1; -- No allocation on 0-400000 logical address
 );
