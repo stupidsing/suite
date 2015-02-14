@@ -46,7 +46,7 @@ public class IndentationPreprocessor implements Fun<String, String> {
 			String indent = line.substring(0, nIndents);
 			line = line.substring(nIndents).trim();
 
-			if (!lastIndent.startsWith(indent) && !lastIndent.startsWith(lastIndent))
+			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
 				throw new RuntimeException("Indent mismatch");
 
 			if ((length = line.length()) != 0) { // Ignore empty lines
