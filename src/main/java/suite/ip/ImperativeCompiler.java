@@ -10,8 +10,9 @@ import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder;
 import suite.node.Node;
-import suite.parser.IncludePreprocessor;
+import suite.parser.IncludeTransformer;
 import suite.primitive.Bytes;
+import suite.text.Transformer;
 import suite.util.FileUtil;
 
 public class ImperativeCompiler {
@@ -24,7 +25,7 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, Path path) throws IOException {
 		String s0 = FileUtil.read(path);
-		String s1 = new IncludePreprocessor(path.getParent()).apply(s0);
+		String s1 = Transformer.preprocessor(new IncludeTransformer(path.getParent())).apply(s0);
 		return compile(org, s1);
 	}
 
