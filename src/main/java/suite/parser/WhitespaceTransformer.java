@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import suite.text.Transformer;
 import suite.text.Transformer.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
@@ -14,16 +13,16 @@ import suite.util.ParseUtil;
  *
  * @author ywsing
  */
-public class WhitespacePreprocessor implements Fun<String, String> {
+public class WhitespaceTransformer implements Fun<String, List<Run>> {
 
 	private Set<Character> whitespaces;
 
-	public WhitespacePreprocessor(Set<Character> whitespaces) {
+	public WhitespaceTransformer(Set<Character> whitespaces) {
 		this.whitespaces = whitespaces;
 	}
 
 	@Override
-	public String apply(String in) {
+	public List<Run> apply(String in) {
 		List<Run> runs = new ArrayList<>();
 		int length = in.length();
 		int pos0 = 0, pos = 0;
@@ -48,7 +47,7 @@ public class WhitespacePreprocessor implements Fun<String, String> {
 		}
 
 		runs.add(new Run(pos0, length));
-		return new Transformer().combineRuns(in, runs);
+		return runs;
 	}
 
 }

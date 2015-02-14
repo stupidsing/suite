@@ -13,8 +13,9 @@ import suite.node.io.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.parser.CommentPreprocessor;
-import suite.parser.IndentationPreprocessor;
-import suite.parser.WhitespacePreprocessor;
+import suite.parser.IndentationTransformer;
+import suite.parser.WhitespaceTransformer;
+import suite.text.Transformer;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.ParseUtil;
@@ -43,8 +44,8 @@ public class RecursiveParser {
 	public RecursiveParser(Context context, Operator operators[]) {
 		this.operators = operators;
 		commentPreprocessor = new CommentPreprocessor(whitespaces);
-		indentPreprocessor = new IndentationPreprocessor(operators);
-		whitespacePreprocessor = new WhitespacePreprocessor(whitespaces);
+		indentPreprocessor = Transformer.preprocessor(new IndentationTransformer(operators));
+		whitespacePreprocessor = Transformer.preprocessor(new WhitespaceTransformer(whitespaces));
 		terminalParser = new TerminalParser(context);
 	}
 

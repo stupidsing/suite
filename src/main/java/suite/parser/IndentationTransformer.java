@@ -5,7 +5,6 @@ import java.util.List;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
-import suite.text.Transformer;
 import suite.text.Transformer.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
@@ -16,16 +15,16 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class IndentationPreprocessor implements Fun<String, String> {
+public class IndentationTransformer implements Fun<String, List<Run>> {
 
 	private Operator operators[];
 
-	public IndentationPreprocessor(Operator[] operators) {
+	public IndentationTransformer(Operator[] operators) {
 		this.operators = operators;
 	}
 
 	@Override
-	public String apply(String in) {
+	public List<Run> apply(String in) {
 		List<Run> runs = new ArrayList<>();
 		int nLastIndents = 0;
 		String lastIndent = "";
@@ -88,8 +87,7 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 		while (nLastIndents-- > 0)
 			runs.add(new Run(") "));
-
-		return new Transformer().combineRuns(in, runs);
+		return runs;
 	}
 
 }

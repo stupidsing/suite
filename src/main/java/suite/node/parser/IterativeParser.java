@@ -20,8 +20,9 @@ import suite.node.io.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.parser.CommentPreprocessor;
-import suite.parser.IndentationPreprocessor;
-import suite.parser.WhitespacePreprocessor;
+import suite.parser.IndentationTransformer;
+import suite.parser.WhitespaceTransformer;
+import suite.text.Transformer;
 import suite.util.CommandUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
@@ -54,8 +55,8 @@ public class IterativeParser {
 				operatorsByName.put(operator.getName(), operator);
 
 		commentPreprocessor = new CommentPreprocessor(whitespaces);
-		indentPreprocessor = new IndentationPreprocessor(operators);
-		whitespacePreprocessor = new WhitespacePreprocessor(whitespaces);
+		indentPreprocessor = Transformer.preprocessor(new IndentationTransformer(operators));
+		whitespacePreprocessor = Transformer.preprocessor(new WhitespaceTransformer(whitespaces));
 
 		commandUtil = new CommandUtil<>(operatorsByName);
 		terminalParser = new TerminalParser(context);

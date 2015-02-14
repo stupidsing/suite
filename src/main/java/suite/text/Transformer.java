@@ -2,6 +2,8 @@ package suite.text;
 
 import java.util.List;
 
+import suite.util.FunUtil.Fun;
+
 public class Transformer {
 
 	public static class Run {
@@ -19,14 +21,16 @@ public class Transformer {
 		}
 	}
 
-	public String combineRuns(String in, List<Run> runs) {
-		StringBuilder sb = new StringBuilder();
-		for (Run run : runs)
-			if (run.segment != null)
-				sb.append(in.substring(run.segment.start, run.segment.end));
-			else
-				sb.append(run.text);
-		return sb.toString();
+	public static Fun<String, String> preprocessor(Fun<String, List<Run>> fun) {
+		return s -> {
+			StringBuilder sb = new StringBuilder();
+			for (Run run : fun.apply(s))
+				if (run.segment != null)
+					sb.append(s.substring(run.segment.start, run.segment.end));
+				else
+					sb.append(run.text);
+			return sb.toString();
+		};
 	}
 
 }

@@ -24,35 +24,46 @@ public class CommentPreprocessor implements Fun<String, String> {
 
 	private Set<Character> whitespaces;
 
+	private class CommentTransformer implements Fun<String, List<Run>> {
+		private String openComment = "-=";
+		private String closeComment = "=-";
+
+		private CommentTransformer(String openComment, String closeComment) {
+			this.openComment = openComment;
+			this.closeComment = closeComment;
+		}
+
+		@Override
+		public List<Run> apply(String in) {
+			int closeLength = !isWhitespaces(closeComment) ? closeComment.length() : 0;
+			int start = 0;
+			List<Run> runs = new ArrayList<>();
+
+			while (true) {
+				int pos0 = ParseUtil.search(in, start, openComment);
+				if (pos0 == -1)
+					break;
+				int pos1 = in.indexOf(closeComment, pos0 + openComment.length());
+				if (pos1 == -1)
+					break;
+				runs.add(new Run(start, pos0));
+				start = pos1 + closeLength;
+			}
+
+			runs.add(new Run(start, in.length()));
+			return runs;
+		}
+	}
+
 	public CommentPreprocessor(Set<Character> whitespaces) {
 		this.whitespaces = whitespaces;
 	}
 
 	@Override
 	public String apply(String in) {
-		in = removeComments(in, openGroupComment, closeGroupComment);
-		in = removeComments(in, openLineComment, closeLineComment);
+		in = Transformer.preprocessor(new CommentTransformer(openGroupComment, closeGroupComment)).apply(in);
+		in = Transformer.preprocessor(new CommentTransformer(openLineComment, closeLineComment)).apply(in);
 		return in;
-	}
-
-	private String removeComments(String in, String open, String close) {
-		int closeLength = !isWhitespaces(close) ? close.length() : 0;
-		int start = 0;
-		List<Run> runs = new ArrayList<>();
-
-		while (true) {
-			int pos0 = ParseUtil.search(in, start, open);
-			if (pos0 == -1)
-				break;
-			int pos1 = in.indexOf(close, pos0 + open.length());
-			if (pos1 == -1)
-				break;
-			runs.add(new Run(start, pos0));
-			start = pos1 + closeLength;
-		}
-
-		runs.add(new Run(start, in.length()));
-		return new Transformer().combineRuns(in, runs);
 	}
 
 	private boolean isWhitespaces(String in) {
