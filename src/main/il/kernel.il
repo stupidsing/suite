@@ -1,3 +1,4 @@
+-- TODO use constant to encapsulate code fragments
 -- TODO better compiler type checking
 -- TODO better compiler structure handling
 -- TODO better compiler method reference (with this pointer embedded)
