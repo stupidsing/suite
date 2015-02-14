@@ -5,7 +5,8 @@ import java.util.List;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
-import suite.text.Segment;
+import suite.text.Transformer;
+import suite.text.Transformer.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Util;
@@ -19,26 +20,13 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 	private Operator operators[];
 
-	private class Run {
-		private Segment segment;
-		private String text;
-
-		private Run(int start, int end) {
-			this.segment = new Segment(start, end);
-		}
-
-		private Run(String text) {
-			this.text = text;
-		}
-	}
-
 	public IndentationPreprocessor(Operator[] operators) {
 		this.operators = operators;
 	}
 
 	@Override
 	public String apply(String in) {
-		List<Run> parts = new ArrayList<>();
+		List<Run> runs = new ArrayList<>();
 		int nLastIndents = 0;
 		String lastIndent = "";
 		int pos = 0;
@@ -82,15 +70,15 @@ public class IndentationPreprocessor implements Fun<String, String> {
 
 				// Insert parentheses by line indentation
 				while (nLastIndents > nIndents) {
-					parts.add(new Run(") "));
+					runs.add(new Run(") "));
 					nLastIndents--;
 				}
-				parts.add(new Run(pos0, pos0 + startPos));
+				runs.add(new Run(pos0, pos0 + startPos));
 				while (nLastIndents < nIndents) {
-					parts.add(new Run(" ("));
+					runs.add(new Run(" ("));
 					nLastIndents++;
 				}
-				parts.add(new Run(pos0 + startPos, pos2));
+				runs.add(new Run(pos0 + startPos, pos2));
 
 				nLastIndents = nIndents;
 			}
@@ -99,19 +87,9 @@ public class IndentationPreprocessor implements Fun<String, String> {
 		}
 
 		while (nLastIndents-- > 0)
-			parts.add(new Run(") "));
+			runs.add(new Run(") "));
 
-		return combineRuns(in, parts);
-	}
-
-	private String combineRuns(String in, List<Run> parts) {
-		StringBuilder sb = new StringBuilder();
-		for (Run part : parts)
-			if (part.segment != null)
-				sb.append(in.substring(part.segment.start, part.segment.end));
-			else
-				sb.append(part.text);
-		return sb.toString();
+		return new Transformer().combineRuns(in, runs);
 	}
 
 }
