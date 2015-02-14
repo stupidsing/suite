@@ -80,7 +80,7 @@ public class EvalPredicates {
 			return prover.bind(((Dict) node).map.computeIfAbsent(key, k -> new Reference()), value);
 		else {
 			Dict dict = new Dict();
-			dict.map.put(key, value);
+			dict.map.put(key, Reference.of(value));
 			return prover.bind(node, dict);
 		}
 	};

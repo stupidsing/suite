@@ -8,20 +8,20 @@ import suite.util.Util;
 
 public class Dict extends Node {
 
-	public final Map<Node, Node> map;
+	public final Map<Node, Reference> map;
 
 	public Dict() {
 		this(new HashMap<>());
 	}
 
-	public Dict(Map<Node, Node> map) {
+	public Dict(Map<Node, Reference> map) {
 		this.map = map;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 0;
-		for (Entry<Node, Node> e : map.entrySet())
+		for (Entry<Node, Reference> e : map.entrySet())
 			result ^= 31 * e.getKey().hashCode() + e.getValue().hashCode();
 		return result;
 	}

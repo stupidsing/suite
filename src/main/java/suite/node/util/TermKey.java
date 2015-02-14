@@ -31,9 +31,9 @@ public class TermKey extends HashCodeComparable<TermKey> {
 			node = node.finalNode();
 
 			if (node instanceof Dict) {
-				Map<Node, Node> map = ((Dict) node).map;
+				Map<Node, Reference> map = ((Dict) node).map;
 				int result = 0;
-				for (Entry<Node, Node> e : map.entrySet())
+				for (Entry<Node, Reference> e : map.entrySet())
 					result = 31 * hash(e.getKey()) + hash(e.getValue());
 				return result;
 			} else if (node instanceof Reference) {

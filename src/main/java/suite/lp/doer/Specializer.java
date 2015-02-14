@@ -19,8 +19,8 @@ public class Specializer {
 		node = node.finalNode();
 
 		if (node instanceof Dict) {
-			Map<Node, Node> map = new HashMap<>();
-			((Dict) node).map.entrySet().forEach(e -> map.put(specialize(e.getKey()), specialize(e.getValue())));
+			Map<Node, Reference> map = new HashMap<>();
+			((Dict) node).map.entrySet().forEach(e -> map.put(specialize(e.getKey()), Reference.of(specialize(e.getValue()))));
 			node = new Dict(map);
 		} else if (node instanceof Reference) {
 			Reference ref = (Reference) node;

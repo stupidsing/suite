@@ -37,8 +37,8 @@ public class Cloner {
 
 			if (right1 == null) {
 				if (right instanceof Dict) {
-					Map<Node, Node> map = new HashMap<>();
-					((Dict) right).map.entrySet().forEach(e -> map.put(clone(e.getKey()), clone(e.getValue())));
+					Map<Node, Reference> map = new HashMap<>();
+					((Dict) right).map.entrySet().forEach(e -> map.put(clone(e.getKey()), Reference.of(clone(e.getValue()))));
 					right1 = new Dict(map);
 				} else if (right instanceof Reference)
 					right1 = new Reference();

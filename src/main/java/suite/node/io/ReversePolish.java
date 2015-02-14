@@ -50,11 +50,11 @@ public class ReversePolish {
 				n = Suite.parse(s);
 			else if (type == 'd') {
 				int size = Integer.valueOf(s);
-				Map<Node, Node> map = new HashMap<>();
+				Map<Node, Reference> map = new HashMap<>();
 				for (int i = 0; i < size; i++) {
 					Node key = deque.pop();
 					Node value = deque.pop();
-					map.put(key, value);
+					map.put(key, Reference.of(value));
 				}
 				return new Dict(map);
 			} else if (type == 'i')
@@ -94,7 +94,7 @@ public class ReversePolish {
 			if (n instanceof Atom)
 				s = "\\" + ((Atom) n).name;
 			else if (n instanceof Dict) {
-				Map<Node, Node> map = ((Dict) n).map;
+				Map<Node, Reference> map = ((Dict) n).map;
 				s = "d" + map.size();
 				map.entrySet().forEach(e -> {
 					deque.push(e.getValue());

@@ -38,8 +38,8 @@ public class Binder {
 		if (clazz0 != clazz1)
 			return false;
 		else if (clazz0 == Dict.class) {
-			Map<Node, Node> map0 = ((Dict) n0).map;
-			Map<Node, Node> map1 = ((Dict) n1).map;
+			Map<Node, Reference> map0 = ((Dict) n0).map;
+			Map<Node, Reference> map1 = ((Dict) n1).map;
 			boolean result = true;
 			for (Node key : Util.add(map0.keySet(), map1.keySet())) {
 				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
