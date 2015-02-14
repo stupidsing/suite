@@ -13,3 +13,7 @@ declare keyboard-sink = [irq-number,] (
 declare kb-setup = [] (
 	irq:irq-set-sink [1, keyboard-sink,];
 );
+
+declare kb-teardown = [] (
+	irq:irq-set-sink [1, 0,];
+);

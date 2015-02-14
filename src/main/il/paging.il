@@ -39,7 +39,7 @@ declare pg-unmap = [logical,] (
 	);
 
 	(isEmpty && (
-		pm:pm-free [`pe0` and +xFFFFF000,];
+		pm:pm-deallocate [`pe0` and +xFFFFF000,];
 		let `pe0` = 0;
 	));
 

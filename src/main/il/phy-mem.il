@@ -6,7 +6,7 @@ declare pagex = page0;
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 
-declare pm-init = [] (
+declare pm-setup = [] (
 
 	-- Detects memory size
 	while (
@@ -29,7 +29,7 @@ declare pm-allocate = [] (
 	);
 );
 
-declare pm-free = [page,] (
+declare pm-deallocate = [page,] (
 	synchronized (& pm-sync) (
 		`stack0 += 4` = page;
 	);

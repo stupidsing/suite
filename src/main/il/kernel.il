@@ -130,7 +130,7 @@ ba:ba-setup [];
 irq:irq-setup [];
 sch:sch-setup [];
 idt:idt-setup [];
-pm:pm-init [];
+pm:pm-setup [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
 kb:kb-setup [];
@@ -188,4 +188,5 @@ declare user-mode = [] (
 	asm _ JMP (DWORD .loop);
 );
 
+kb:kb-teardown [];
 sch:sch-teardown [];
