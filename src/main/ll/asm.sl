@@ -53,7 +53,7 @@ asis:_s:.a (JGE .target) .e0/.ex :- asi-jump .a .target +x7D +x0F +x8D .e0/.ex #
 asis:_s:.a (JL .target) .e0/.ex :- asi-jump .a .target +x7C +x0F +x8C .e0/.ex #
 asis:_s:.a (JLE .target) .e0/.ex :- asi-jump .a .target +x7E +x0F +x8E .e0/.ex #
 asis:_s:.a (JMP .target) .e0/.ex :- asi-jump .a .target +xEB () +xE9 .e0/.ex #
-asis:_s:_a (JMP .rm) .e0/.ex :- as-mod-num-rm:32 +xFF .rm 4 .e0/.ex #
+asis:_s:_a (JMP .rm) (+xFF, .e1)/.ex :- as-mod-num-rm:32 .rm 4 .e1/.ex #
 asis:_s:.a (JNE .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
 asis:_s:.a (JNZ .target) .e0/.ex :- asi-jump .a .target +x75 +x0F +x85 .e0/.ex #
 asis:_s:.a (JZ .target) .e0/.ex :- asi-jump .a .target +x74 +x0F +x84 .e0/.ex #

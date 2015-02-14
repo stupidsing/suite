@@ -40,6 +40,7 @@ declare sch-fork = [] (
 		declare process1 = ba:ba-allocate [12,];
 		dl:dl-insert-next [& processes, process1,];
 
+		-- TODO allocate stack
 		-- TODO how to put in ESP? mark fork flag?
 	);
 );

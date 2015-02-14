@@ -7,15 +7,16 @@
 -- TODO exit
 
 -- Memory layout
+-- 00001000 -> 00002000 logical memory bitmap, for the current address space
 -- 00007C00 -> 00007E00 boot sector
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)
 -- 00020800 -> 00020868 task state segment (TSS)
 -- 00020868 -> 00022000 kernel interrupt stack
 -- 00022000 -> 00024000 kernel system call stack
--- 00024000 -> 00030000 kernel initialization stack
+-- 00024000 -> 00026000 kernel initialization stack
 -- 00040000 -> 00040004 kernel this frame pointer
 -- 00040000 -> 00050000 kernel code
--- 00050000 -> 000A0000 unused
+-- 00050000 -> 000A0000 kernel buddy allocation pool
 -- 000A0000 -> 00100000 BIOS / video memory
 -- 00100000 -> stackx   physical page stack
 -- stackx   -> pagex    allocatable physical pages
@@ -26,7 +27,7 @@ constant interrupt-stack-address = +x22000;
 constant syscall-stack-address = +x24000;
 constant memory-region-start = 1048576;
 
-asm _ MOV (ESP, +x30000);
+asm _ MOV (ESP, +x26000);
 asm _ MOV (EBP, ESP);
 asm _ MOV (`+x40000`, EBP);
 
