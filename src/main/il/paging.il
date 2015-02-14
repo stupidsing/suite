@@ -80,13 +80,13 @@ declare pg-allocate = [nPages,] (
 			(r1 && let r0 = pg-current);
 		);
 
-		if r0 then (
+		(r0 && (
 			for (declare i = 0; i < nPages; i =+ 1) (
 				pg:pg-map [r0 + i shl 12, pm:pm-allocate [],];
 			);
-	
-			r0;
-		) else 0;
+		));
+
+		r0;
 	);
 );
 
