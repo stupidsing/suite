@@ -106,6 +106,17 @@ public class ParseUtil {
 	}
 
 	public static Pair<String, String> search(String s, String name, Assoc assoc, boolean isCheckDepth) {
+		int position = searchPosition(s, name, assoc, isCheckDepth);
+
+		if (position >= 0) {
+			String left = s.substring(0, position);
+			String right = s.substring(position + name.length());
+			return Pair.of(left, right);
+		} else
+			return null;
+	}
+
+	private static int searchPosition(String s, String name, Assoc assoc, boolean isCheckDepth) {
 		boolean isLeftAssoc = assoc == Assoc.LEFT;
 		int nameLength = name.length();
 		int end = s.length() - nameLength;
@@ -120,15 +131,11 @@ public class ParseUtil {
 				if (isCheckDepth)
 					depth = checkDepth(depth, c);
 
-				if (depth == 0 && s.startsWith(name, pos)) {
-					String left = s.substring(0, pos);
-					String right = s.substring(pos + nameLength);
-					return Pair.of(left, right);
-				}
+				if (depth == 0 && s.startsWith(name, pos))
+					return pos;
 			}
 		}
-
-		return null;
+		return -1;
 	}
 
 }
