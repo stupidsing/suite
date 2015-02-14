@@ -14,12 +14,12 @@ declare sch-interrupt-switch = [] (
 	current-process;
 	asm _ MOV (EBX, CR3);
 	asm _ PUSH (EBX);
-	asm _ MOV (`EAX`, ESP);
+	asm _ MOV (`EAX + 8`, ESP);
 
 	sch:sch-switch [];
 
 	current-process;
-	asm _ MOV (ESP, `EAX`);
+	asm _ MOV (ESP, `EAX + 8`);
 	asm _ POP (EBX);
 	asm _ MOV (CR3, EBX);
 );

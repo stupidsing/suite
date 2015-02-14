@@ -40,8 +40,8 @@ declare ba-allocate0 = [l2,] (
 			declare block0 = ba:ba-allocate0 [l2 + 1,];
 			if (block0 != 0) then (
 				declare block1 = block0 + ba:exp2rel [l2,];
-				let `block0` = -1; -- Allocated
-				let `block1` = l2;
+				let `block0 + 8` = -1; -- Allocated
+				let `block1 + 8` = l2;
 				dl:dl-insert-next [ba:ba-list-entry [l2,], block1,];
 				block0;
 			) else 0;
@@ -54,30 +54,30 @@ declare ba-allocate0 = [l2,] (
 
 declare ba-deallocate0 = [block, l2,] (
 	declare buddy-block = ba:ba-buddy-of [block, l2,];
-	if (`buddy-block` = l2) then (
+	if (`buddy-block + 8` = l2) then (
 		dl:dl-remove [buddy-block,];
 		ba:ba-deallocate0 [ba:ba-parent-of [block, l2,], l2 + 1,];
 	) else (
-		let `block` = l2;
+		let `block + 8` = l2;
 		dl:dl-insert-next [ba:ba-list-entry [l2,], block,];
 	);
 );
 
 declare ba-allocate = [size,] (
 	synchronized (& ba-sync) (
-		ba:ba-allocate0 [ba:log2rel [size + 4 - 1,],] + 4;
+		ba:ba-allocate0 [ba:log2rel [size + 12 - 1,],] + 12;
 	);
 );
 
 declare ba-deallocate = [block, size,] (
 	synchronized (& ba-sync) (
-		ba:ba-deallocate0 [block - 4, ba:log2rel [size + 4,],];
+		ba:ba-deallocate0 [block - 12, ba:log2rel [size + 12,],];
 	);
 );
 
 declare ba-setup = [] (
 	kernel:zero [& lists, 256,];
 	declare largest-l2 = max-l2 - 1;
-	let `ba-region0` = largest-l2; -- Granularity
+	let `ba-region0 + 8` = largest-l2; -- Granularity
 	dl:dl-insert-next [ba:ba-list-entry [largest-l2,], ba-region0,];
 );
