@@ -103,7 +103,7 @@ public class RecursiveParser {
 		if (first == '[' && last == ']')
 			return Tree.of(TermOp.TUPLE_, Atom.of("[]"), parseRaw(Util.substr(s, 1, -1), 0));
 		if (first == '`' && last == '`')
-			return Tree.of(TermOp.TUPLE_, Atom.of("`"), parseRaw(" " + Util.substr(s, 1, -1) + " ", 0));
+			return Tree.of(TermOp.TUPLE_, Atom.of("`"), parseRaw(Util.substr(s, 1, -1), 0));
 
 		return terminalParser.parseTerminal(s);
 	}
