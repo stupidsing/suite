@@ -25,8 +25,8 @@ public class CommentPreprocessor implements Fun<String, String> {
 	private Set<Character> whitespaces;
 
 	private class CommentTransformer implements Fun<String, List<Run>> {
-		private String openComment = "-=";
-		private String closeComment = "=-";
+		private String openComment;
+		private String closeComment;
 
 		private CommentTransformer(String openComment, String closeComment) {
 			this.openComment = openComment;
