@@ -22,11 +22,11 @@ public class Transformer {
 	}
 
 	public static Fun<String, String> preprocessor(Fun<String, List<Run>> fun) {
-		return s -> {
+		return in -> {
 			StringBuilder sb = new StringBuilder();
-			for (Run run : fun.apply(s))
+			for (Run run : fun.apply(in))
 				if (run.segment != null)
-					sb.append(s.substring(run.segment.start, run.segment.end));
+					sb.append(in.substring(run.segment.start, run.segment.end));
 				else
 					sb.append(run.text);
 			return sb.toString();
