@@ -5,6 +5,7 @@ import java.util.List;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.text.Segment;
 import suite.text.Transform.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
@@ -29,25 +30,27 @@ public class IndentationTransformer implements Fun<String, List<Run>> {
 		int nLastIndents = 0;
 		String lastIndent = "";
 		int pos = 0;
+		int length = in.length();
 
-		while (pos < in.length()) {
+		while (pos < length) {
 			int pos0 = pos;
 			char ch;
-			while (pos0 < in.length() && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
+			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
 				pos0++;
 
-			int pos1 = ParseUtil.searchPosition(in, pos0, "\n", Assoc.RIGHT, false);
-			int pos2 = Math.min(pos1 + 1, in.length()); // Includes line-feed
+			Segment segment = ParseUtil.searchPosition(in, new Segment(pos0, length), "\n", Assoc.RIGHT, false);
+			int pos1 = segment != null ? segment.start : length;
+			int pos2 = segment != null ? segment.end : length; // Includes LF
 
 			String indent = in.substring(pos, pos0);
 			String line = in.substring(pos0, pos1);
-			int nIndents = pos0 - pos, length = pos1 - pos0;
+			int nIndents = pos0 - pos, lineLength = pos1 - pos0;
 
 			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
 				throw new RuntimeException("Indent mismatch");
 
-			if (length != 0) { // Ignore empty lines
-				int startPos = 0, endPos = length;
+			if (lineLength != 0) { // Ignore empty lines
+				int startPos = 0, endPos = lineLength;
 				lastIndent = indent;
 
 				// Find operators at beginning and end of line
@@ -60,7 +63,7 @@ public class IndentationTransformer implements Fun<String, List<Run>> {
 						if (Util.stringEquals(line, name))
 							startPos = Math.max(startPos, name.length());
 						if (line.endsWith(name))
-							endPos = Math.min(endPos, length - name.length());
+							endPos = Math.min(endPos, lineLength - name.length());
 					}
 				}
 

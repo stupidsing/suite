@@ -5,6 +5,7 @@ import java.util.List;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.text.Segment;
 
 public class ParseUtil {
 
@@ -97,37 +98,38 @@ public class ParseUtil {
 		return list;
 	}
 
-	public static Pair<String, String> search(String s, Operator operator) {
-		return search(s, operator.getName(), operator.getAssoc());
-	}
-
 	public static Pair<String, String> search(String s, String name, Assoc assoc) {
-		return search(s, name, assoc, true);
+		return search(s, new Segment(0, s.length()), name, assoc, true);
 	}
 
-	public static Pair<String, String> search(String s, String name, Assoc assoc, boolean isCheckDepth) {
-		int position = searchPosition(s, 0, name, assoc, isCheckDepth);
+	private static Pair<String, String> search(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
+		Segment ops = searchPosition(s, segment, name, assoc, isCheckDepth);
 
-		if (position < s.length()) {
-			String left = s.substring(0, position);
-			String right = s.substring(position + name.length());
+		if (ops != null) {
+			String left = s.substring(segment.start, ops.start);
+			String right = s.substring(ops.end, segment.end);
 			return Pair.of(left, right);
 		} else
 			return null;
 	}
 
-	public static int searchPosition(String s, int start, String name, Assoc assoc, boolean isCheckDepth) {
-		int length = s.length(), nameLength = name.length();
-		int end = length - nameLength, quote = 0, depth = 0;
+	public static Segment searchPosition(String s, Segment segment, Operator operator) {
+		return searchPosition(s, segment, operator.getName(), operator.getAssoc(), true);
+	}
+
+	public static Segment searchPosition(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
+		int nameLength = name.length();
+		int start1 = segment.start, end1 = segment.end - nameLength;
+		int quote = 0, depth = 0;
 		int pos0, posx, step;
 
 		if (assoc == Assoc.RIGHT) {
-			pos0 = start;
-			posx = end;
+			pos0 = start1;
+			posx = end1;
 			step = 1;
 		} else {
-			pos0 = end;
-			posx = start;
+			pos0 = end1;
+			posx = start1;
 			step = -1;
 		}
 
@@ -140,11 +142,11 @@ public class ParseUtil {
 					depth = checkDepth(depth, c);
 
 				if (depth == 0 && s.startsWith(name, pos))
-					return pos;
+					return new Segment(pos, pos + nameLength);
 			}
 		}
 
-		return length;
+		return null;
 	}
 
 }
