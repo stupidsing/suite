@@ -2,6 +2,7 @@ package suite.node.parser;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import suite.node.Atom;
@@ -12,10 +13,11 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
-import suite.parser.CommentPreprocessor;
+import suite.parser.CommentTransformer;
 import suite.parser.IndentationTransformer;
 import suite.parser.WhitespaceTransformer;
-import suite.text.Transformer;
+import suite.text.Transform;
+import suite.text.Transform.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.ParseUtil;
@@ -31,10 +33,6 @@ public class RecursiveParser {
 	private Operator operators[];
 	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
 
-	private Fun<String, String> commentPreprocessor;
-	private Fun<String, String> indentPreprocessor;
-	private Fun<String, String> whitespacePreprocessor;
-
 	private TerminalParser terminalParser;
 
 	public RecursiveParser(Operator operators[]) {
@@ -43,17 +41,16 @@ public class RecursiveParser {
 
 	public RecursiveParser(Context context, Operator operators[]) {
 		this.operators = operators;
-		commentPreprocessor = new CommentPreprocessor(whitespaces);
-		indentPreprocessor = Transformer.preprocessor(new IndentationTransformer(operators));
-		whitespacePreprocessor = Transformer.preprocessor(new WhitespaceTransformer(whitespaces));
 		terminalParser = new TerminalParser(context);
 	}
 
-	public Node parse(String in) {
-		in = commentPreprocessor.apply(in);
-		in = indentPreprocessor.apply(in);
-		in = whitespacePreprocessor.apply(in);
-		return parse(in, 0);
+	public Node parse(String in0) {
+		Fun<String, List<Run>> gct = CommentTransformer.groupCommentTransformer(whitespaces);
+		Fun<String, List<Run>> lct = CommentTransformer.lineCommentTransformer(whitespaces);
+		Fun<String, List<Run>> it = new IndentationTransformer(operators);
+		Fun<String, List<Run>> wt = new WhitespaceTransformer(whitespaces);
+		String in1 = Transform.transform(Arrays.asList(gct, lct, it, wt), in0).t0;
+		return parse(in1, 0);
 	}
 
 	private Node parse(String s, int fromOp) {

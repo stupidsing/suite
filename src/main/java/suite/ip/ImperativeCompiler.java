@@ -2,6 +2,7 @@ package suite.ip;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import suite.Suite;
 import suite.asm.StackAssembler;
@@ -12,7 +13,7 @@ import suite.lp.search.SewingProverBuilder;
 import suite.node.Node;
 import suite.parser.IncludeTransformer;
 import suite.primitive.Bytes;
-import suite.text.Transformer;
+import suite.text.Transform;
 import suite.util.FileUtil;
 
 public class ImperativeCompiler {
@@ -25,7 +26,7 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, Path path) throws IOException {
 		String s0 = FileUtil.read(path);
-		String s1 = Transformer.preprocessor(new IncludeTransformer(path.getParent())).apply(s0);
+		String s1 = Transform.transform(Arrays.asList(new IncludeTransformer(path.getParent())), s0).t0;
 		return compile(org, s1);
 	}
 

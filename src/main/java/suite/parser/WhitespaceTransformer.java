@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import suite.text.Transformer.Run;
+import suite.text.Transform.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 

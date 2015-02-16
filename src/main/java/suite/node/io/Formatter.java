@@ -18,7 +18,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Operator.Assoc;
 import suite.node.util.IdentityKey;
-import suite.parser.CommentPreprocessor;
+import suite.parser.CommentTransformer;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -211,10 +211,10 @@ public class Formatter {
 							&& !('A' <= c && c <= 'Z') //
 							&& c != '.' && c != '-' && c != '_' && c != '$' && c != '!';
 
-				quote |= s0.contains(CommentPreprocessor.closeGroupComment) //
-						|| s0.contains(CommentPreprocessor.openGroupComment) //
-						|| s0.contains(CommentPreprocessor.closeLineComment) //
-						|| s0.contains(CommentPreprocessor.openLineComment);
+				quote |= s0.contains(CommentTransformer.openGroupComment) //
+						|| s0.contains(CommentTransformer.closeGroupComment) //
+						|| s0.contains(CommentTransformer.openLineComment) //
+						|| s0.contains(CommentTransformer.closeLineComment);
 
 				quote |= ParseUtil.isInteger(s0);
 

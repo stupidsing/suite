@@ -5,7 +5,7 @@ import java.util.List;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
-import suite.text.Transformer.Run;
+import suite.text.Transform.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Util;

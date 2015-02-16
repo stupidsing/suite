@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import suite.Suite;
 import suite.lp.Journal;
@@ -19,10 +20,13 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.parser.CommentPreprocessor;
+import suite.parser.CommentTransformer;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
+import suite.text.Transform;
+import suite.text.Transform.Run;
+import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -42,10 +46,14 @@ public class Assembler {
 		this.bits = bits;
 	}
 
-	public Bytes assemble(String input) {
-		CommentPreprocessor commentPreprocessor = new CommentPreprocessor(Collections.singleton('\n'));
+	public Bytes assemble(String in0) {
+		Set<Character> whitespaces = Collections.singleton('\n');
+		Fun<String, List<Run>> gct = CommentTransformer.groupCommentTransformer(whitespaces);
+		Fun<String, List<Run>> lct = CommentTransformer.lineCommentTransformer(whitespaces);
+		String in1 = Transform.transform(Arrays.asList(gct, lct), in0).t0;
+
 		Generalizer generalizer = new Generalizer();
-		List<String> lines = Arrays.asList(commentPreprocessor.apply(input).split("\n"));
+		List<String> lines = Arrays.asList(in1.split("\n"));
 		Pair<String, String> pe;
 		int start = 0;
 
