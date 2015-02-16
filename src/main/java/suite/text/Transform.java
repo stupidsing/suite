@@ -23,18 +23,18 @@ public class Transform {
 	}
 
 	public static Pair<String, Fun<Integer, Integer>> transform(List<Fun<String, List<Run>>> funs, String in) {
-		if (!funs.isEmpty()) {
-			Fun<String, List<Run>> head = funs.get(0);
-			List<Fun<String, List<Run>>> tail = funs.subList(1, funs.size());
-			List<Run> runs = head.apply(in);
-			String in1 = combineRuns(in, runs);
-			Pair<String, Fun<Integer, Integer>> transform0 = transform(tail, in1);
-			return Pair.of(transform0.t0, pos -> transform0.t1.apply(reverseLookup(runs, pos)));
-		} else
-			return Pair.of(in, pos -> pos);
+		String s = in;
+		Fun<Integer, Integer> rl = pos -> pos;
+		for (Fun<String, List<Run>> fun : funs) {
+			Fun<Integer, Integer> rl0 = rl;
+			List<Run> runs = fun.apply(s);
+			s = forward(s, runs);
+			rl = pos -> rl0.apply(reverse(runs, pos));
+		}
+		return Pair.of(s, rl);
 	}
 
-	private static String combineRuns(String in, List<Run> runs) {
+	private static String forward(String in, List<Run> runs) {
 		StringBuilder sb = new StringBuilder();
 		for (Run run : runs)
 			if (run.segment != null)
@@ -44,7 +44,7 @@ public class Transform {
 		return sb.toString();
 	}
 
-	private static int reverseLookup(List<Run> runs, int targetPosition) {
+	private static int reverse(List<Run> runs, int targetPosition) {
 		int sourcePosition = 0;
 		for (Run run : runs) {
 			Segment segment = run.segment;
