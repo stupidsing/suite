@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.lp.sewing.SewingGeneralizer;
@@ -48,7 +49,7 @@ public class Formatter {
 				if (node instanceof Dict)
 					content = Read.from(((Dict) node).map.entrySet()) //
 							.map(e -> graphize(e.getKey()) + ":" + graphize(e.getValue()) + ", ") //
-							.collect(As.joined("dict{", ", ", "}"));
+							.collect(As.joined("dict(", ", ", ")"));
 				else if ((tree = Tree.decompose(node)) != null) {
 					int id0 = graphize(tree.getLeft());
 					int id1 = graphize(tree.getRight());
@@ -144,6 +145,15 @@ public class Formatter {
 				sb.append("Chars<" + quoteStringIfRequired(((Chars) data).toString()) + ">");
 			else
 				sb.append("Data<" + data.getClass().getSimpleName() + ">");
+		} else if (node instanceof Dict) {
+			sb.append("dict<");
+			for (Entry<Node, Reference> entry : ((Dict) node).map.entrySet()) {
+				format(entry.getKey(), 0);
+				sb.append(":");
+				format(entry.getValue(), 0);
+				sb.append(",");
+			}
+			sb.append(">");
 		} else if (node instanceof Int)
 			sb.append(((Int) node).number);
 		else if (node instanceof Reference)
@@ -162,6 +172,13 @@ public class Formatter {
 				sb.append("]");
 			} else
 				formatTree(operator, left, right, parentPrec);
+		} else if (node instanceof Tuple) {
+			sb.append("tuple<");
+			for (Node n : ((Tuple) node).nodes) {
+				format(n, 0);
+				sb.append(", ");
+			}
+			sb.append(">");
 		} else
 			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
 	}
