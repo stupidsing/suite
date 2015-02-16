@@ -23,15 +23,15 @@ public class Transform {
 	}
 
 	public static Pair<String, Fun<Integer, Integer>> transform(List<Fun<String, List<Run>>> funs, String in) {
-		String s = in;
-		Fun<Integer, Integer> rl = pos -> pos;
+		String fwd = in;
+		Fun<Integer, Integer> rev = pos -> pos;
 		for (Fun<String, List<Run>> fun : funs) {
-			Fun<Integer, Integer> rl0 = rl;
-			List<Run> runs = fun.apply(s);
-			s = forward(s, runs);
-			rl = pos -> rl0.apply(reverse(runs, pos));
+			Fun<Integer, Integer> rev0 = rev;
+			List<Run> runs = fun.apply(fwd);
+			fwd = forward(fwd, runs);
+			rev = pos -> rev0.apply(reverse(runs, pos));
 		}
-		return Pair.of(s, rl);
+		return Pair.of(fwd, rev);
 	}
 
 	private static String forward(String in, List<Run> runs) {
