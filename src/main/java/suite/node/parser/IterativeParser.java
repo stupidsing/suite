@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -19,13 +17,8 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
-import suite.parser.CommentTransformer;
-import suite.parser.IndentationTransformer;
-import suite.parser.WhitespaceTransformer;
 import suite.text.Transform;
-import suite.text.Transform.Run;
 import suite.util.CommandUtil;
-import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.Util;
 
@@ -35,8 +28,6 @@ import suite.util.Util;
  * @author ywsing
  */
 public class IterativeParser {
-
-	private Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n', ' '));
 
 	private CommandUtil<Operator> commandUtil;
 	private TerminalParser terminalParser;
@@ -59,11 +50,7 @@ public class IterativeParser {
 	}
 
 	public Node parse(String in0) {
-		Fun<String, List<Run>> gct = CommentTransformer.groupCommentTransformer(whitespaces);
-		Fun<String, List<Run>> lct = CommentTransformer.lineCommentTransformer(whitespaces);
-		Fun<String, List<Run>> it = new IndentationTransformer(operators);
-		Fun<String, List<Run>> wt = new WhitespaceTransformer(whitespaces);
-		String in1 = Transform.transform(Arrays.asList(gct, lct, it, wt), in0).t0;
+		String in1 = Transform.transform(SuiteParser.createTransformer(operators), in0).t0;
 		return new Parse(in1).parse();
 	}
 
