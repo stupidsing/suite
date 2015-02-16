@@ -12,11 +12,11 @@ import suite.parser.WhitespaceTransformer;
 import suite.text.Transform.Run;
 import suite.util.FunUtil.Fun;
 
-public class SuiteParser {
+public class TransformerFactory {
 
 	private static Set<Character> whitespaces = new HashSet<>(Arrays.asList('\t', '\r', '\n'));
 
-	public static List<Fun<String, List<Run>>> createTransformer(Operator operators[]) {
+	public static List<Fun<String, List<Run>>> create(Operator operators[]) {
 		Fun<String, List<Run>> gct = CommentTransformer.groupCommentTransformer(whitespaces);
 		Fun<String, List<Run>> lct = CommentTransformer.lineCommentTransformer(whitespaces);
 		Fun<String, List<Run>> it = new IndentationTransformer(operators);

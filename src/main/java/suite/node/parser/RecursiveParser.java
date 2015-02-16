@@ -33,7 +33,7 @@ public class RecursiveParser {
 	}
 
 	public Node parse(String in0) {
-		String in1 = Transform.transform(SuiteParser.createTransformer(operators), in0).t0;
+		String in1 = Transform.transform(TransformerFactory.create(operators), in0).t0;
 		return parse(in1, 0);
 	}
 
