@@ -119,30 +119,32 @@ public class ParseUtil {
 
 	public static Segment searchPosition(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
 		int nameLength = name.length();
-		int start1 = segment.start, end1 = segment.end - nameLength;
+		int start1 = segment.start, end1 = segment.end - 1;
 		int quote = 0, depth = 0;
 		int pos0, posx, step;
 
-		if (assoc == Assoc.RIGHT) {
-			pos0 = start1;
-			posx = end1;
-			step = 1;
-		} else {
-			pos0 = end1;
-			posx = start1;
-			step = -1;
-		}
+		if (start1 <= end1) {
+			if (assoc == Assoc.RIGHT) {
+				pos0 = start1;
+				posx = end1;
+				step = 1;
+			} else {
+				pos0 = end1;
+				posx = start1;
+				step = -1;
+			}
 
-		for (int pos = pos0; pos != posx; pos += step) {
-			char c = s.charAt(pos);
-			quote = getQuoteChange(quote, c);
+			for (int pos = pos0; pos != posx + step; pos += step) {
+				char c = s.charAt(pos);
+				quote = getQuoteChange(quote, c);
 
-			if (quote == 0) {
-				if (isCheckDepth)
-					depth = checkDepth(depth, c);
+				if (quote == 0) {
+					if (isCheckDepth)
+						depth = checkDepth(depth, c);
 
-				if (depth == 0 && s.startsWith(name, pos))
-					return new Segment(pos, pos + nameLength);
+					if (depth == 0 && s.startsWith(name, pos))
+						return new Segment(pos, pos + nameLength);
+				}
 			}
 		}
 
