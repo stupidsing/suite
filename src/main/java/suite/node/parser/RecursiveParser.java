@@ -1,12 +1,17 @@
 package suite.node.parser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.Context;
+import suite.node.util.IdentityKey;
 import suite.node.util.Singleton;
 import suite.primitive.Chars;
 import suite.primitive.CharsUtil;
@@ -24,6 +29,7 @@ public class RecursiveParser {
 
 	private Operator operators[];
 	private TerminalParser terminalParser;
+	private Map<IdentityKey, Chars> textByKey = new HashMap<>();
 
 	public RecursiveParser(Operator operators[]) {
 		this(Singleton.get().getGrandContext(), operators);
@@ -42,7 +48,22 @@ public class RecursiveParser {
 		return parse(To.chars(in1), 0);
 	}
 
+	public String unparse(Node node) {
+		Chars unparse = textByKey.get(new IdentityKey(node));
+		if (unparse != null)
+			return unparse.toString();
+		else
+			return Formatter.dump(node);
+	}
+
 	private Node parse(Chars chars, int fromOp) {
+		Node node = parse0(chars, fromOp);
+		if (node instanceof Tree)
+			textByKey.put(new IdentityKey(node), chars);
+		return node;
+	}
+
+	private Node parse0(Chars chars, int fromOp) {
 		Chars chars1 = CharsUtil.trim(chars);
 
 		if (chars1.size() > 0) {
