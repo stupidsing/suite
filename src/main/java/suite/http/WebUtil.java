@@ -9,6 +9,7 @@ import java.util.Map;
 
 import suite.primitive.Bytes;
 import suite.primitive.BytesUtil;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -44,7 +45,7 @@ public class WebUtil {
 		headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
 
 		try (OutputStream os = conn.getOutputStream()) {
-			BytesUtil.copy(in, os);
+			BytesUtil.copy(new Streamlet<Bytes>(in), os);
 		}
 
 		int responseCode = conn.getResponseCode();

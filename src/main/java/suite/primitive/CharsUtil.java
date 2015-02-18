@@ -96,4 +96,22 @@ public class CharsUtil {
 			chars.write(writer);
 	}
 
+	public static boolean isWhiespaces(Chars chars) {
+		boolean result = true;
+		for (int i = chars.start; result && i < chars.end; i++)
+			result &= Character.isWhitespace(chars.cs[i]);
+		return result;
+	}
+
+	public static Chars trim(Chars chars) {
+		char cs[] = chars.cs;
+		int start = chars.start;
+		int end = chars.end;
+		while (start < end && Character.isWhitespace(cs[start]))
+			start++;
+		while (start < end && Character.isWhitespace(cs[end - 1]))
+			end--;
+		return Chars.of(cs, start, end);
+	}
+
 }

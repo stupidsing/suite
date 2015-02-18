@@ -38,7 +38,7 @@ public class IndentationTransformer implements Fun<String, List<Run>> {
 			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
 				pos0++;
 
-			Segment segment = ParseUtil.searchPosition(in, new Segment(pos0, length), "\n", Assoc.RIGHT, false);
+			Segment segment = ParseUtil.searchPosition(in.toCharArray(), new Segment(pos0, length), "\n", Assoc.RIGHT, false);
 			int pos1 = segment != null ? segment.start : length;
 			int pos2 = segment != null ? segment.end : length; // Includes LF
 

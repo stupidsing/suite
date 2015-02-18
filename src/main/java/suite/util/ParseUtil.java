@@ -103,7 +103,7 @@ public class ParseUtil {
 	}
 
 	private static Pair<String, String> search(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
-		Segment ops = searchPosition(s, segment, name, assoc, isCheckDepth);
+		Segment ops = searchPosition(To.charArray(s), segment, name, assoc, isCheckDepth);
 
 		if (ops != null) {
 			String left = s.substring(segment.start, ops.start);
@@ -113,11 +113,11 @@ public class ParseUtil {
 			return null;
 	}
 
-	public static Segment searchPosition(String s, Segment segment, Operator operator) {
-		return searchPosition(s, segment, operator.getName(), operator.getAssoc(), true);
+	public static Segment searchPosition(char cs[], Segment segment, Operator operator) {
+		return searchPosition(cs, segment, operator.getName(), operator.getAssoc(), true);
 	}
 
-	public static Segment searchPosition(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
+	public static Segment searchPosition(char cs[], Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
 		int nameLength = name.length();
 		int start1 = segment.start, end1 = segment.end - 1;
 		int quote = 0, depth = 0;
@@ -135,20 +135,24 @@ public class ParseUtil {
 			}
 
 			for (int pos = pos0; pos != posx + step; pos += step) {
-				char c = s.charAt(pos);
+				char c = cs[pos];
 				quote = getQuoteChange(quote, c);
 
 				if (quote == 0) {
 					if (isCheckDepth)
 						depth = checkDepth(depth, c);
 
-					if (depth == 0 && s.startsWith(name, pos))
-						return new Segment(pos, pos + nameLength);
+					if (depth == 0 && pos + nameLength <= cs.length) {
+						boolean result = true; // cs.startsWith(name, pos)
+						for (int i = 0; result && i < nameLength; i++)
+							result &= cs[pos + i] == name.charAt(i);
+						if (result)
+							return new Segment(pos, pos + nameLength);
+					}
 				}
 			}
 		}
 
 		return null;
 	}
-
 }

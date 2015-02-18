@@ -18,13 +18,13 @@ import suite.util.Util;
 
 public class Bytes implements Iterable<Byte> {
 
-	private byte bs[]; // Immutable
-	private int start, end;
-
 	private static byte emptyByteArray[] = new byte[0];
 	private static int reallocSize = 65536;
 
 	public static Bytes emptyBytes = Bytes.of(emptyByteArray);
+
+	public final byte bs[]; // Immutable
+	public final int start, end;
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
 		int start0 = bytes0.start, start1 = bytes1.start;
@@ -119,6 +119,20 @@ public class Bytes implements Iterable<Byte> {
 
 	public int size() {
 		return end - start;
+	}
+
+	public boolean startsWith(Bytes bytes) {
+		return startsWith(bytes, 0);
+	}
+
+	public boolean startsWith(Bytes bytes, int s) {
+		if (s + bytes.size() <= size()) {
+			boolean result = true;
+			for (int i = 0; result && i < bytes.size(); i++)
+				result &= get(s + i) == bytes.get(i);
+			return result;
+		} else
+			return false;
 	}
 
 	public Bytes subbytes(int s) {

@@ -17,13 +17,13 @@ import suite.util.Util;
 
 public class Chars implements Iterable<Character> {
 
-	private char cs[]; // Immutable
-	private int start, end;
-
 	private static char emptyCharArray[] = new char[0];
 	private static int reallocSize = 65536;
 
 	public static Chars emptyChars = Chars.of(emptyCharArray);
+
+	public final char cs[]; // Immutable
+	public final int start, end;
 
 	public static Comparator<Chars> comparator = (chars0, chars1) -> {
 		int start0 = chars0.start, start1 = chars1.start;
@@ -118,6 +118,20 @@ public class Chars implements Iterable<Character> {
 
 	public int size() {
 		return end - start;
+	}
+
+	public boolean startsWith(Chars chars) {
+		return startsWith(chars, 0);
+	}
+
+	public boolean startsWith(Chars chars, int s) {
+		if (s + chars.size() <= size()) {
+			boolean result = true;
+			for (int i = 0; result && i < chars.size(); i++)
+				result &= get(s + i) == chars.get(i);
+			return result;
+		} else
+			return false;
 	}
 
 	public Chars subchars(int s) {
