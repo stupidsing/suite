@@ -197,8 +197,7 @@ public class Formatter {
 			if (Arrays.asList(TermOp.NEXT__).contains(operator))
 				sb.append(' ');
 
-			String name = operator.getName();
-			sb.append(name);
+			sb.append(operator.getName());
 
 			if (!Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator) || right != Atom.NIL) {
 				if (Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator))
