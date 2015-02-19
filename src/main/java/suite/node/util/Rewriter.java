@@ -68,9 +68,16 @@ public class Rewriter {
 		if (node0 instanceof Reference || !Binder.bind(node0, from1, journal)) {
 			Tree tree = Tree.decompose(node0);
 
-			if (tree != null)
-				node1 = Tree.of(tree.getOperator(), rewrite0(tree.getLeft()), rewrite0(tree.getRight()));
-			else
+			if (tree != null) {
+				Node left = tree.getLeft();
+				Node right = tree.getRight();
+				Node left1 = rewrite0(left);
+				Node right1 = rewrite0(right);
+				if (left != left1 || right != right1)
+					node1 = Tree.of(tree.getOperator(), left1, right1);
+				else
+					node1 = node0;
+			} else
 				node1 = node0;
 		} else {
 			node1 = to1;
