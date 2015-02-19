@@ -151,7 +151,13 @@ public class RecursiveParser {
 				if (unparse != null) {
 					int start = reverse.apply(unparse.start);
 					int end = reverse.apply(unparse.end);
-					sb.append(in.substring(start, end));
+					String s0 = in.substring(start, end);
+					String s1 = s0.trim();
+					boolean hasParentheses = s1.startsWith("(") && s1.endsWith(")");
+					if (!isParenthesesRequired || hasParentheses)
+						sb.append(s0);
+					else
+						sb.append("(" + s1 + ")");
 				} else {
 					if (operator == TermOp.TUPLE_ && tree.getLeft() == Atom.of("[")) {
 						sb.append("[");
