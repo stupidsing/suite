@@ -51,14 +51,14 @@ public class Transform {
 			if (segment != null) {
 				int runLength = segment.end - segment.start;
 				if (targetPosition >= runLength) {
-					sourcePosition += runLength;
+					sourcePosition = segment.start + runLength;
 					targetPosition -= runLength;
 				} else
-					return sourcePosition + targetPosition;
+					return segment.start + targetPosition;
 			} else {
 				int runLength = run.text.length();
 				if (targetPosition >= runLength)
-					sourcePosition += runLength;
+					targetPosition -= runLength;
 				else
 					return sourcePosition;
 			}

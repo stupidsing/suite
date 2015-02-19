@@ -184,8 +184,8 @@ public class Formatter {
 	}
 
 	private void formatTree(Operator operator, Node left, Node right, int parentPrec) {
-		boolean isPreSpace = Arrays.asList(TermOp.NEXT__).contains(operator);
-		boolean isPostSpace = Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
+		boolean isSpaceBefore = Arrays.asList(TermOp.NEXT__).contains(operator);
+		boolean isSpaceAfter = Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
 		int ourPrec = operator.getPrecedence();
 		Assoc assoc = operator.getAssoc();
 		boolean isParenthesesRequired = ourPrec <= parentPrec;
@@ -196,12 +196,12 @@ public class Formatter {
 		format(left, ourPrec - (assoc == Assoc.LEFT ? 1 : 0));
 
 		if (operator != TermOp.BRACES) {
-			if (isPreSpace)
+			if (isSpaceBefore)
 				sb.append(' ');
 			sb.append(operator.getName());
-			if (isPostSpace && right != Atom.NIL)
+			if (isSpaceAfter && right != Atom.NIL)
 				sb.append(' ');
-			if (!isPostSpace || right != Atom.NIL)
+			if (!isSpaceAfter || right != Atom.NIL)
 				format(right, ourPrec - (assoc == Assoc.RIGHT ? 1 : 0));
 		} else {
 			sb.append(" {");
