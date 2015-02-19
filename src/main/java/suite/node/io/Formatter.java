@@ -1,6 +1,5 @@
 package suite.node.io;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -184,8 +183,8 @@ public class Formatter {
 	}
 
 	private void formatTree(Operator operator, Node left, Node right, int parentPrec) {
-		boolean isSpaceBefore = Arrays.asList(TermOp.NEXT__).contains(operator);
-		boolean isSpaceAfter = Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
+		boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
+		boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
 		int ourPrec = operator.getPrecedence();
 		Assoc assoc = operator.getAssoc();
 		boolean isParenthesesRequired = ourPrec <= parentPrec;

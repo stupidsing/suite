@@ -1,6 +1,5 @@
 package suite.node.parser;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -141,8 +140,8 @@ public class RecursiveParser {
 				Operator operator = tree.getOperator();
 				Node left = tree.getLeft();
 				Node right = tree.getRight();
-				boolean isSpaceBefore = Arrays.asList(TermOp.NEXT__).contains(operator);
-				boolean isSpaceAfter = Arrays.asList(TermOp.NEXT__, TermOp.AND___, TermOp.OR____).contains(operator);
+				boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
+				boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
 				int ourPrec = operator.getPrecedence();
 				Assoc assoc = operator.getAssoc();
 				boolean isParenthesesRequired = ourPrec <= parentPrec;
