@@ -6,8 +6,10 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.node.Atom;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveParser.RecursiveParse;
+import suite.node.util.Rewriter;
 import suite.util.FileUtil;
 
 public class RecursiveParserTest {
@@ -17,17 +19,17 @@ public class RecursiveParserTest {
 	@Test
 	public void testParseAuto() throws IOException {
 		String in = FileUtil.read("src/main/ll/auto.sl");
-		test(in);
-	}
-
-	private void test(String s) {
-		test(s, s);
-	}
-
-	private void test(String sx, String s0) {
-		RecursiveParse rp = recursiveParser.analyze(s0);
+		RecursiveParse rp = recursiveParser.analyze(in);
 		String s1 = rp.unparse(rp.parsed);
-		assertEquals(sx, s1);
+		assertEquals(in, s1);
+	}
+
+	@Test
+	public void testRefactor() throws IOException {
+		Rewriter rewriter = new Rewriter(Atom.of("ic-compile0"), Atom.of("ic-compile1"));
+		String in = FileUtil.read("src/main/ll/ic/ic.sl");
+		String out = recursiveParser.refactor(in, rewriter::rewrite);
+		System.out.println(out);
 	}
 
 }
