@@ -96,7 +96,7 @@ public class CharsUtil {
 			chars.write(writer);
 	}
 
-	public static boolean isWhiespaces(Chars chars) {
+	public static boolean isWhitespaces(Chars chars) {
 		boolean result = true;
 		for (int i = chars.start; result && i < chars.end; i++)
 			result &= Character.isWhitespace(chars.cs[i]);

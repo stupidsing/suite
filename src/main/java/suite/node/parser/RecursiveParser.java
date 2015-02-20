@@ -109,9 +109,9 @@ public class RecursiveParser {
 						ri = 0;
 					} else {
 						if (operator == TermOp.TUPLE_)
-							if (CharsUtil.isWhiespaces(left))
+							if (CharsUtil.isWhitespaces(left))
 								return parse(right, fromOp);
-							else if (CharsUtil.isWhiespaces(right))
+							else if (CharsUtil.isWhitespaces(right))
 								return parse(left, fromOp);
 
 						boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
