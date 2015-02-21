@@ -22,15 +22,40 @@ public class Transform {
 		}
 	}
 
-	public static Pair<String, Fun<Integer, Integer>> transform(List<Fun<String, List<Run>>> funs, String in) {
+	public interface Reverser {
+		public int reverseBegin(int position);
+
+		public int reverseEnd(int position);
+	}
+
+	public static Pair<String, Reverser> transform(List<Fun<String, List<Run>>> funs, String in) {
 		String fwd = in;
-		Fun<Integer, Integer> rev = pos -> pos;
+
+		Reverser rev = new Reverser() {
+			public int reverseBegin(int position) {
+				return position;
+			}
+
+			public int reverseEnd(int position) {
+				return position;
+			}
+		};
+
 		for (Fun<String, List<Run>> fun : funs) {
-			Fun<Integer, Integer> rev0 = rev;
+			Reverser rev0 = rev;
 			List<Run> runs = fun.apply(fwd);
 			fwd = forward(fwd, runs);
-			rev = pos -> rev0.apply(reverse(runs, pos));
+			rev = new Reverser() {
+				public int reverseBegin(int position) {
+					return rev0.reverseBegin(reverse(runs, position, false));
+				}
+
+				public int reverseEnd(int position) {
+					return rev0.reverseEnd(reverse(runs, position, true));
+				}
+			};
 		}
+
 		return Pair.of(fwd, rev);
 	}
 
@@ -44,20 +69,20 @@ public class Transform {
 		return sb.toString();
 	}
 
-	private static int reverse(List<Run> runs, int targetPosition) {
+	private static int reverse(List<Run> runs, int targetPosition, boolean towardsEnd) {
 		int sourcePosition = 0;
 		for (Run run : runs) {
 			Segment segment = run.segment;
 			if (segment != null) {
 				int runLength = segment.end - segment.start;
-				if (targetPosition >= runLength) {
+				if (towardsEnd && targetPosition == runLength || targetPosition > runLength) {
 					sourcePosition = segment.start + runLength;
 					targetPosition -= runLength;
 				} else
 					return segment.start + targetPosition;
 			} else {
 				int runLength = run.text.length();
-				if (targetPosition >= runLength)
+				if (towardsEnd && targetPosition == runLength || targetPosition > runLength)
 					targetPosition -= runLength;
 				else
 					return sourcePosition;

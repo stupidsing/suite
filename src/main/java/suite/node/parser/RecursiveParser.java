@@ -17,6 +17,7 @@ import suite.primitive.Chars;
 import suite.primitive.CharsUtil;
 import suite.text.Segment;
 import suite.text.Transform;
+import suite.text.Transform.Reverser;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.ParseUtil;
@@ -57,14 +58,14 @@ public class RecursiveParser {
 	public class RecursiveParse {
 		public final Node parsed;
 		private String in;
-		private Fun<Integer, Integer> reverse;
+		private Reverser reverser;
 		private Map<IdentityKey, Chars> textByKey = new HashMap<>();
 
 		private RecursiveParse(String in0) {
 			this.in = in0;
-			Pair<String, Fun<Integer, Integer>> pair = Transform.transform(TransformerFactory.create(operators), in0);
+			Pair<String, Reverser> pair = Transform.transform(TransformerFactory.create(operators), in0);
 			String in1 = pair.t0;
-			reverse = pair.t1;
+			reverser = pair.t1;
 
 			parsed = parse(To.chars(in1), 0);
 		}
@@ -77,8 +78,7 @@ public class RecursiveParser {
 
 		private Node parse(Chars chars, int fromOp) {
 			Node node = parse0(chars, fromOp);
-			if (node instanceof Tree)
-				textByKey.put(new IdentityKey(node), chars);
+			textByKey.put(new IdentityKey(node), chars);
 			return node;
 		}
 
@@ -135,22 +135,26 @@ public class RecursiveParser {
 		}
 
 		private void unparse0(StringBuilder sb, Node node, int parentPrec) {
+			Chars unparse = textByKey.get(new IdentityKey(node));
+			String s0;
+
+			if (unparse != null) {
+				int start = reverser.reverseBegin(unparse.start);
+				int end = reverser.reverseEnd(unparse.end);
+				s0 = in.substring(start, end);
+			} else
+				s0 = null;
+
 			if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				Operator operator = tree.getOperator();
 				Node left = tree.getLeft();
 				Node right = tree.getRight();
-				boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
-				boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
 				int ourPrec = operator.getPrecedence();
 				Assoc assoc = operator.getAssoc();
 				boolean isParenthesesRequired = ourPrec <= parentPrec;
-				Chars unparse = textByKey.get(new IdentityKey(node));
 
-				if (unparse != null) {
-					int start = reverse.apply(unparse.start);
-					int end = reverse.apply(unparse.end);
-					String s0 = in.substring(start, end);
+				if (s0 != null) {
 					String s1 = s0.trim();
 					boolean hasParentheses = s1.startsWith("(") && s1.endsWith(")");
 					if (!isParenthesesRequired || hasParentheses)
@@ -169,13 +173,8 @@ public class RecursiveParser {
 						unparse0(sb, left, ourPrec - (assoc == Assoc.LEFT ? 1 : 0));
 
 						if (operator != TermOp.BRACES) {
-							if (isSpaceBefore)
-								sb.append(' ');
 							sb.append(operator.getName());
-							if (isSpaceAfter && right != Atom.NIL)
-								sb.append(' ');
-							if (!isSpaceAfter || right != Atom.NIL)
-								unparse0(sb, right, ourPrec - (assoc == Assoc.RIGHT ? 1 : 0));
+							unparse0(sb, right, ourPrec - (assoc == Assoc.RIGHT ? 1 : 0));
 						} else {
 							sb.append(" {");
 							unparse0(sb, right, 0);
@@ -186,7 +185,9 @@ public class RecursiveParser {
 							sb.append(')');
 					}
 				}
-			} else
+			} else if (s0 != null)
+				sb.append(s0);
+			else
 				sb.append(Formatter.dump(node));
 		}
 
