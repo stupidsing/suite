@@ -147,7 +147,7 @@ public class Formatter {
 		Node m[];
 		if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
 			sb.append("[");
-			format(m[0]);
+			format(m[0], 0);
 			sb.append("]");
 		} else if (node instanceof Atom)
 			sb.append(quoteAtomIfRequired(((Atom) node).name));
@@ -194,7 +194,7 @@ public class Formatter {
 		} else if ((m = CustomStyles.braceMatcher.apply(tree)) != null) {
 			format(m[0], TermOp.getLeftPrec(TermOp.BRACES));
 			sb.append(" {");
-			format(m[1]);
+			format(m[1], 0);
 			sb.append("}");
 		} else
 			formatTree(tree);
