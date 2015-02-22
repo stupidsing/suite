@@ -23,8 +23,8 @@ public class Mutex {
 	public static class DeadlockException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
 
-		public DeadlockException() {
-			super("Lock resulted in deadlock");
+		public DeadlockException(String message) {
+			super(message);
 		}
 	}
 
@@ -54,7 +54,7 @@ public class Mutex {
 						Thread ownerThread = mutex.owner.get();
 						mutex = ownerThread != null ? waitees.get(ownerThread) : null;
 						if (mutex == this)
-							throw new DeadlockException();
+							throw new DeadlockException("Lock resulted in deadlock");
 					}
 
 					Util.wait(bigLock);
