@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -97,18 +98,23 @@ public class MapifyUtil {
 				Fun<Object, Object> mapifier1 = createMapifier0(clazz.getComponentType());
 				return object -> {
 					Map<Object, Object> map = newMap();
-					Object objects[] = (Object[]) object;
-					for (int i = 0; i < objects.length; i++)
-						map.put(i, apply0(mapifier1, objects[i]));
+					int length = Array.getLength(object);
+					for (int i = 0; i < length; i++)
+						map.put(i, apply0(mapifier1, Array.get(object, i)));
 					return map;
 				};
 			} else if (clazz.isInterface()) // Polymorphism
 				return object -> {
 					Class<?> clazz1 = object.getClass();
-					@SuppressWarnings("unchecked")
-					Map<String, String> map = (Map<String, String>) getMapifier(clazz1).apply(object);
-					map.put("@class", clazz1.getName());
-					return map;
+					Object m = getMapifier(clazz1).apply(object);
+					if (m instanceof Map) {
+						@SuppressWarnings("unchecked")
+						Map<String, String> map = (Map<String, String>) m;
+						map.put("@class", clazz1.getName());
+						return map;
+					} else
+						// Happens when an enum implements an interface
+						return m;
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
@@ -161,25 +167,32 @@ public class MapifyUtil {
 			if (isDirectlyMapped(clazz))
 				return id;
 			else if (clazz.isArray()) {
-				Fun<Object, Object> unmapifier1 = createUnmapifier0(clazz.getComponentType());
+				Class<?> componentType = clazz.getComponentType();
+				Fun<Object, Object> unmapifier1 = createUnmapifier0(componentType);
 				return object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Object objects[] = new Object[map.size()];
+					Object objects = Array.newInstance(componentType, map.size());
 					int i = 0;
-					while (map.containsKey(i))
-						objects[i] = apply0(unmapifier1, map.get(i++));
+					while (map.containsKey(i)) {
+						Array.set(objects, i, apply0(unmapifier1, map.get(i)));
+						i++;
+					}
 					return objects;
 				};
 			} else if (clazz.isInterface()) // Polymorphism
 				return object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
-					Class<?> clazz1;
-					try {
-						clazz1 = Class.forName(map.get("@class").toString());
-					} catch (ClassNotFoundException ex) {
-						throw new RuntimeException(ex);
-					}
-					return getUnmapifier(clazz1).apply(object);
+					if (object instanceof Map) {
+						Map<?, ?> map = (Map<?, ?>) object;
+						Class<?> clazz1;
+						try {
+							clazz1 = Class.forName(map.get("@class").toString());
+						} catch (ClassNotFoundException ex) {
+							throw new RuntimeException(ex);
+						}
+						return getUnmapifier(clazz1).apply(object);
+					} else
+						// Happens when an enum implements an interface
+						return object;
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
