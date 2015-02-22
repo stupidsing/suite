@@ -28,8 +28,8 @@ import suite.util.Util;
  * Formats a node for human-readable purpose (display), or for
  * computer-parseable purpose (dump).
  * 
- * Dict and Tuple, even if they are dumped, cannot be parsed back into their
- * corresponding nodes.
+ * Data, Dict and Tuple, even if they are dumped, cannot be parsed back into
+ * their corresponding nodes.
  *
  * @author ywsing
  */
