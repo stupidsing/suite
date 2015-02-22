@@ -16,7 +16,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.Operator.Assoc;
 import suite.node.util.IdentityKey;
 import suite.parser.CommentTransformer;
 import suite.primitive.Chars;
@@ -136,7 +135,20 @@ public class Formatter {
 	}
 
 	private void format0(Node node, int parentPrec) {
-		if (node instanceof Atom)
+		Node m[];
+		if ((m = CustomStyles.braceMatcher.apply(node)) != null) {
+			Node m_[] = m;
+			formatTree((Tree) node, parentPrec, () -> {
+				format(m_[0], TermOp.getLeftPrec(TermOp.BRACES));
+				sb.append(" {");
+				format(m_[1]);
+				sb.append("}");
+			});
+		} else if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
+			sb.append("[");
+			format(m[0]);
+			sb.append("]");
+		} else if (node instanceof Atom)
 			sb.append(quoteAtomIfRequired(((Atom) node).name));
 		else if (node instanceof Data) {
 			Object data = Data.get(node);
@@ -159,19 +171,9 @@ public class Formatter {
 			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
 		else if (node instanceof Str)
 			sb.append(quoteStringIfRequired(((Str) node).value));
-		else if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			Operator operator = tree.getOperator();
-			Node left = tree.getLeft();
-			Node right = tree.getRight();
-
-			if (operator == TermOp.TUPLE_ && left == Atom.of("[")) {
-				sb.append("[");
-				format(right);
-				sb.append("]");
-			} else
-				formatTree(operator, left, right, parentPrec);
-		} else if (node instanceof Tuple) {
+		else if (node instanceof Tree)
+			formatTree((Tree) node, parentPrec);
+		else if (node instanceof Tuple) {
 			sb.append("tuple<");
 			for (Node n : ((Tuple) node).nodes) {
 				format(n, 0);
@@ -182,37 +184,35 @@ public class Formatter {
 			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
 	}
 
-	private void formatTree(Operator operator, Node left, Node right, int parentPrec) {
-		boolean isParenthesesRequired = operator.getPrecedence() <= parentPrec;
-		if (isParenthesesRequired)
-			sb.append('(');
-		formatTree(operator, left, right);
-		if (isParenthesesRequired)
-			sb.append(')');
+	private void formatTree(Tree tree, int parentPrec) {
+		formatTree(tree, parentPrec, () -> formatTree(tree));
 	}
 
-	private void formatTree(Operator operator, Node left, Node right) {
-		int ourPrec = operator.getPrecedence();
-		Assoc assoc = operator.getAssoc();
+	private void formatTree(Tree tree, int parentPrec, Runnable runnable) {
+		boolean isParenthesesRequired = tree.getOperator().getPrecedence() <= parentPrec;
+		if (isParenthesesRequired)
+			sb.append("(");
+		runnable.run();
+		if (isParenthesesRequired)
+			sb.append(")");
+	}
 
-		format(left, ourPrec - (assoc == Assoc.LEFT ? 1 : 0));
+	private void formatTree(Tree tree) {
+		Operator operator = tree.getOperator();
+		Node left = tree.getLeft();
+		Node right = tree.getRight();
+		boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
+		boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
 
-		if (operator != TermOp.BRACES) {
-			boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
-			boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
-
-			if (isSpaceBefore)
-				sb.append(' ');
-			sb.append(operator.getName());
-			if (isSpaceAfter && right != Atom.NIL)
-				sb.append(' ');
-			if (!isSpaceAfter || right != Atom.NIL)
-				format(right, ourPrec - (assoc == Assoc.RIGHT ? 1 : 0));
-		} else {
-			sb.append(" {");
-			format(right, 0);
-			sb.append("}");
-		}
+		format(left, TermOp.getLeftPrec(operator));
+		if (isSpaceBefore)
+			sb.append(' ');
+		sb.append(operator.getName());
+		if (isSpaceAfter && right != Atom.NIL)
+			sb.append(' ');
+		if (!isSpaceAfter || right != Atom.NIL)
+			format(right, TermOp.getRightPrec(operator));
+		// a, () suppressed as a,
 	}
 
 	private String quoteAtomIfRequired(String s0) {
