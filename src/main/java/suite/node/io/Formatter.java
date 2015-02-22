@@ -145,15 +145,7 @@ public class Formatter {
 
 	private void format0(Node node, int parentPrec) {
 		Node m[];
-		if ((m = CustomStyles.braceMatcher.apply(node)) != null) {
-			Node m_[] = m;
-			formatTree((Tree) node, parentPrec, () -> {
-				format(m_[0], TermOp.getLeftPrec(TermOp.BRACES));
-				sb.append(" {");
-				format(m_[1]);
-				sb.append("}");
-			});
-		} else if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
+		if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
 			sb.append("[");
 			format(m[0]);
 			sb.append("]");
@@ -194,16 +186,18 @@ public class Formatter {
 	}
 
 	private void formatTree(Tree tree, int parentPrec) {
-		formatTree(tree, parentPrec, () -> formatTree(tree));
-	}
-
-	private void formatTree(Tree tree, int parentPrec, Runnable runnable) {
-		boolean isParenthesesRequired = tree.getOperator().getPrecedence() <= parentPrec;
-		if (isParenthesesRequired)
+		Node[] m;
+		if (tree != null && tree.getOperator().getPrecedence() <= parentPrec) {
 			sb.append("(");
-		runnable.run();
-		if (isParenthesesRequired)
+			formatTree(tree, 0);
 			sb.append(")");
+		} else if ((m = CustomStyles.braceMatcher.apply(tree)) != null) {
+			format(m[0], TermOp.getLeftPrec(TermOp.BRACES));
+			sb.append(" {");
+			format(m[1]);
+			sb.append("}");
+		} else
+			formatTree(tree);
 	}
 
 	private void formatTree(Tree tree) {
