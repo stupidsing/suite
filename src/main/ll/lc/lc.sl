@@ -278,11 +278,11 @@ lc-call-prototype (TREE _ .left _) .name :- lc-call-prototype .left .name #
 lc-call-prototype .name .name #
 
 lc-params-length .ps .n
-	:- if (bound .ps, .ps = _ .ps1) then (
+	:- if (bound .ps, .ps = _ .ps1) (
 		lc-params-length .ps1 .n1, sum .n 1 .n1
-	) else-if (.n > 1, .ps = _ .ps1) then (
+	) if (.n > 1, .ps = _ .ps1) (
 		sum .n 1 .n1, lc-params-length .ps1 .n1
-	) else (
+	) (
 		(not bound .ps; .ps != _ _), .n = 1
 	)
 #
