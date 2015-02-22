@@ -6,6 +6,7 @@ import java.util.Map;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.CustomStyles;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
@@ -135,60 +136,77 @@ public class RecursiveParser {
 		}
 
 		private void unparse0(StringBuilder sb, Node node, int parentPrec) {
+			String text;
+			if (node instanceof Tree)
+				formatTree(sb, (Tree) node, parentPrec);
+			else if ((text = getTextByKey(node)) != null)
+				sb.append(text);
+			else
+				sb.append(Formatter.dump(node));
+		}
+
+		private void formatTree(StringBuilder sb, Tree tree, int parentPrec) {
+			Node m[];
+			if ((m = CustomStyles.bracketMatcher.apply(tree)) != null) {
+				sb.append("[");
+				unparse0(sb, m[0], 0);
+				sb.append("]");
+			} else
+				formatTree0(sb, tree, parentPrec);
+		}
+
+		private void formatTree0(StringBuilder sb, Tree tree, int parentPrec) {
+			if (tree != null && tree.getOperator().getPrecedence() <= parentPrec) {
+				sb.append("(");
+				formatTree(sb, tree);
+				sb.append(")");
+			} else
+				formatTree(sb, tree);
+		}
+
+		private void formatTree(StringBuilder sb, Tree tree) {
+			String text = getTextByKey(tree);
+			Node[] m;
+			if (text != null)
+				sb.append(text);
+			else if ((m = CustomStyles.braceMatcher.apply(tree)) != null) {
+				unparse0(sb, m[0], TermOp.getLeftPrec(TermOp.BRACES));
+				sb.append(" {");
+				unparse0(sb, m[1], 0);
+				sb.append("}");
+			} else
+				formatTree0(sb, tree);
+		}
+
+		private void formatTree0(StringBuilder sb, Tree tree) {
+			Operator operator = tree.getOperator();
+			Node left = tree.getLeft();
+			Node right = tree.getRight();
+			boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
+			boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
+
+			unparse0(sb, left, TermOp.getLeftPrec(operator));
+			if (isSpaceBefore)
+				sb.append(' ');
+			sb.append(operator.getName());
+			if (isSpaceAfter && right != Atom.NIL)
+				sb.append(' ');
+			if (!isSpaceAfter || right != Atom.NIL)
+				unparse0(sb, right, TermOp.getRightPrec(operator));
+			// a, () suppressed as a,
+		}
+
+		private String getTextByKey(Node node) {
 			Chars unparse = textByKey.get(new IdentityKey(node));
-			String s0;
+			String text;
 
 			if (unparse != null) {
 				int start = reverser.reverseBegin(unparse.start);
 				int end = reverser.reverseEnd(unparse.end);
-				s0 = in.substring(start, end);
+				text = in.substring(start, end);
 			} else
-				s0 = null;
-
-			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				Operator operator = tree.getOperator();
-				Node left = tree.getLeft();
-				Node right = tree.getRight();
-				int ourPrec = operator.getPrecedence();
-				Assoc assoc = operator.getAssoc();
-				boolean isParenthesesRequired = ourPrec <= parentPrec;
-
-				if (s0 != null) {
-					String s1 = s0.trim();
-					boolean hasParentheses = s1.startsWith("(") && s1.endsWith(")");
-					if (!isParenthesesRequired || hasParentheses)
-						sb.append(s0);
-					else
-						sb.append("(" + s1 + ")");
-				} else {
-					if (operator == TermOp.TUPLE_ && tree.getLeft() == Atom.of("[")) {
-						sb.append("[");
-						unparse0(sb, right, 0);
-						sb.append("]");
-					} else {
-						if (isParenthesesRequired)
-							sb.append('(');
-
-						unparse0(sb, left, ourPrec - (assoc == Assoc.LEFT ? 1 : 0));
-
-						if (operator != TermOp.BRACES) {
-							sb.append(operator.getName());
-							unparse0(sb, right, ourPrec - (assoc == Assoc.RIGHT ? 1 : 0));
-						} else {
-							sb.append(" {");
-							unparse0(sb, right, 0);
-							sb.append("}");
-						}
-
-						if (isParenthesesRequired)
-							sb.append(')');
-					}
-				}
-			} else if (s0 != null)
-				sb.append(s0);
-			else
-				sb.append(Formatter.dump(node));
+				text = null;
+			return text;
 		}
 
 		private Chars inner(Chars chars) {
