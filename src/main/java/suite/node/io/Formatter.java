@@ -183,12 +183,17 @@ public class Formatter {
 	}
 
 	private void formatTree(Operator operator, Node left, Node right, int parentPrec) {
-		int ourPrec = operator.getPrecedence();
-		Assoc assoc = operator.getAssoc();
-		boolean isParenthesesRequired = ourPrec <= parentPrec;
-
+		boolean isParenthesesRequired = operator.getPrecedence() <= parentPrec;
 		if (isParenthesesRequired)
 			sb.append('(');
+		formatTree(operator, left, right);
+		if (isParenthesesRequired)
+			sb.append(')');
+	}
+
+	private void formatTree(Operator operator, Node left, Node right) {
+		int ourPrec = operator.getPrecedence();
+		Assoc assoc = operator.getAssoc();
 
 		format(left, ourPrec - (assoc == Assoc.LEFT ? 1 : 0));
 
@@ -208,9 +213,6 @@ public class Formatter {
 			format(right, 0);
 			sb.append("}");
 		}
-
-		if (isParenthesesRequired)
-			sb.append(')');
 	}
 
 	private String quoteAtomIfRequired(String s0) {
