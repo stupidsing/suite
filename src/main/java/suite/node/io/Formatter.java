@@ -144,12 +144,7 @@ public class Formatter {
 	}
 
 	private void format0(Node node, int parentPrec) {
-		Node m[];
-		if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
-			sb.append("[");
-			format(m[0], 0);
-			sb.append("]");
-		} else if (node instanceof Atom)
+		if (node instanceof Atom)
 			sb.append(quoteAtomIfRequired(((Atom) node).name));
 		else if (node instanceof Data) {
 			Object data = Data.get(node);
@@ -172,9 +167,15 @@ public class Formatter {
 			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
 		else if (node instanceof Str)
 			sb.append(quoteStringIfRequired(((Str) node).value));
-		else if (node instanceof Tree)
-			formatTree((Tree) node, parentPrec);
-		else if (node instanceof Tuple) {
+		else if (node instanceof Tree) {
+			Node m[];
+			if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
+				sb.append("[");
+				format(m[0], 0);
+				sb.append("]");
+			} else
+				formatTree((Tree) node, parentPrec);
+		} else if (node instanceof Tuple) {
 			sb.append("tuple<");
 			for (Node n : ((Tuple) node).nodes) {
 				format(n, 0);
