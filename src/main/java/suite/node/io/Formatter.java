@@ -167,10 +167,9 @@ public class Formatter {
 			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
 		else if (node instanceof Str)
 			sb.append(quoteStringIfRequired(((Str) node).value));
-		else if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			formatTree(parentPrec, tree);
-		} else if (node instanceof Tuple) {
+		else if (node instanceof Tree)
+			formatTree(parentPrec, (Tree) node);
+		else if (node instanceof Tuple) {
 			sb.append("tuple<");
 			for (Node n : ((Tuple) node).nodes) {
 				format(n, 0);
