@@ -25,7 +25,19 @@ public class RecursiveParserTest {
 	}
 
 	@Test
-	public void testRefactor() throws IOException {
+	public void testRefactor0() throws IOException {
+		Rewriter rewriter = new Rewriter(Atom.of("aa"), Atom.of("bb"));
+		String in = "" //
+				+ "p\n" //
+				+ "	:- aa 1\n" //
+				+ "#\n" //
+		;
+		String out = recursiveParser.refactor(in, rewriter::rewrite);
+		System.out.println(out);
+	}
+
+	@Test
+	public void testRefactorFile() throws IOException {
 		Rewriter rewriter = new Rewriter(Atom.of("ic-compile0"), Atom.of("ic-compile1"));
 		String in = FileUtil.read("src/main/ll/ic/ic.sl");
 		String out = recursiveParser.refactor(in, rewriter::rewrite);
