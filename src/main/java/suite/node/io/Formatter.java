@@ -168,13 +168,8 @@ public class Formatter {
 		else if (node instanceof Str)
 			sb.append(quoteStringIfRequired(((Str) node).value));
 		else if (node instanceof Tree) {
-			Node m[];
-			if ((m = CustomStyles.bracketMatcher.apply(node)) != null) {
-				sb.append("[");
-				format(m[0], 0);
-				sb.append("]");
-			} else
-				formatTree((Tree) node, parentPrec);
+			Tree tree = (Tree) node;
+			formatTree(parentPrec, tree);
 		} else if (node instanceof Tuple) {
 			sb.append("tuple<");
 			for (Node n : ((Tuple) node).nodes) {
@@ -186,22 +181,37 @@ public class Formatter {
 			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
 	}
 
-	private void formatTree(Tree tree, int parentPrec) {
-		Node[] m;
+	private void formatTree(int parentPrec, Tree tree) {
+		Node m[];
+		if ((m = CustomStyles.bracketMatcher.apply(tree)) != null) {
+			sb.append("[");
+			format(m[0], 0);
+			sb.append("]");
+		} else
+			formatTree0(tree, parentPrec);
+	}
+
+	private void formatTree0(Tree tree, int parentPrec) {
 		if (tree != null && tree.getOperator().getPrecedence() <= parentPrec) {
 			sb.append("(");
-			formatTree(tree, 0);
+			formatTree(tree);
 			sb.append(")");
-		} else if ((m = CustomStyles.braceMatcher.apply(tree)) != null) {
-			format(m[0], TermOp.getLeftPrec(TermOp.BRACES));
-			sb.append(" {");
-			format(m[1], 0);
-			sb.append("}");
 		} else
 			formatTree(tree);
 	}
 
 	private void formatTree(Tree tree) {
+		Node[] m;
+		if ((m = CustomStyles.braceMatcher.apply(tree)) != null) {
+			format(m[0], TermOp.getLeftPrec(TermOp.BRACES));
+			sb.append(" {");
+			format(m[1], 0);
+			sb.append("}");
+		} else
+			formatTree0(tree);
+	}
+
+	private void formatTree0(Tree tree) {
 		Operator operator = tree.getOperator();
 		Node left = tree.getLeft();
 		Node right = tree.getRight();
