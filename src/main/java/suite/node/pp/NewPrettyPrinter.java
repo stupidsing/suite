@@ -78,12 +78,12 @@ public class NewPrettyPrinter {
 				format0(m[1], prec, indent, "then");
 				format0(m[2], prec, indent, "else");
 			} else if ((m = Suite.matcher("not .0").apply(node)) != null //
-					&& lengthEstimator.getEstimatedLength(node) > lineLength) 
+					&& lengthEstimator.getEstimatedLength(node) > lineLength)
 				format0(m[0], prec, indent, concatWithSpace(prefix, "not"));
-		} else if ((m = Suite.matcher("once .0").apply(node)) != null //
-				&& lengthEstimator.getEstimatedLength(node) > lineLength) 
-			format0(m[0], prec, indent, concatWithSpace(prefix, "once"));
-			 else
+			else if ((m = Suite.matcher("once .0").apply(node)) != null //
+					&& lengthEstimator.getEstimatedLength(node) > lineLength)
+				format0(m[0], prec, indent, concatWithSpace(prefix, "once"));
+			else
 				format0(node, indent, prefix);
 		} else
 			format0(node, indent, prefix);
