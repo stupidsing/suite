@@ -95,14 +95,24 @@ public class MapifyUtil {
 			if (isDirectlyMapped(clazz))
 				return id;
 			else if (clazz.isArray()) {
-				Fun<Object, Object> mapifier1 = createMapifier0(clazz.getComponentType());
-				return object -> {
-					Map<Object, Object> map = newMap();
-					int length = Array.getLength(object);
-					for (int i = 0; i < length; i++)
-						map.put(i, apply0(mapifier1, Array.get(object, i)));
-					return map;
-				};
+				Class<?> componentType = clazz.getComponentType();
+				Fun<Object, Object> mapifier1 = createMapifier0(componentType);
+				if (componentType.isPrimitive())
+					return object -> {
+						Map<Object, Object> map = newMap();
+						int length = Array.getLength(object);
+						for (int i = 0; i < length; i++)
+							map.put(i, apply0(mapifier1, Array.get(object, i)));
+						return map;
+					};
+				else
+					return object -> {
+						Map<Object, Object> map = newMap();
+						Object objects[] = (Object[]) object;
+						for (int i = 0; i < objects.length; i++)
+							map.put(i, apply0(mapifier1, objects[i]));
+						return map;
+					};
 			} else if (clazz.isInterface()) // Polymorphism
 				return object -> {
 					Class<?> clazz1 = object.getClass();
@@ -169,16 +179,26 @@ public class MapifyUtil {
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Fun<Object, Object> unmapifier1 = createUnmapifier0(componentType);
-				return object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
-					Object objects = Array.newInstance(componentType, map.size());
-					int i = 0;
-					while (map.containsKey(i)) {
-						Array.set(objects, i, apply0(unmapifier1, map.get(i)));
-						i++;
-					}
-					return objects;
-				};
+				if (componentType.isPrimitive())
+					return object -> {
+						Map<?, ?> map = (Map<?, ?>) object;
+						Object objects = Array.newInstance(componentType, map.size());
+						int i = 0;
+						while (map.containsKey(i)) {
+							Array.set(objects, i, apply0(unmapifier1, map.get(i)));
+							i++;
+						}
+						return objects;
+					};
+				else
+					return object -> {
+						Map<?, ?> map = (Map<?, ?>) object;
+						Object objects[] = new Object[map.size()];
+						int i = 0;
+						while (map.containsKey(i))
+							objects[i] = apply0(unmapifier1, map.get(i++));
+						return objects;
+					};
 			} else if (clazz.isInterface()) // Polymorphism
 				return object -> {
 					if (object instanceof Map) {

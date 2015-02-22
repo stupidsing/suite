@@ -1,7 +1,8 @@
 package suite.node.io;
 
 import java.util.Arrays;
-import java.util.Objects;
+
+import suite.util.Util;
 
 public enum TermOp implements Operator {
 
@@ -52,7 +53,7 @@ public enum TermOp implements Operator {
 
 	public static TermOp find(String name) {
 		for (TermOp operator : values())
-			if (Objects.equals(operator.name, name))
+			if (Util.stringEquals(operator.name, name))
 				return operator;
 		return null;
 	}

@@ -19,15 +19,15 @@ public class ParserCompareTest {
 
 	@Test
 	public void testParseExpressionCompare() {
-		String in = "1 : 2 * (3 - 4)";
-		Node n0 = iterativeParser.parse(in);
-		Node n1 = recursiveParser.parse(in);
-		assertEquals(n0, n1);
+		test("1 : 2 * (3 - 4)");
 	}
 
 	@Test
 	public void testParseFileCompare() throws IOException {
-		String in = FileUtil.read("src/main/ll/auto.sl");
+		test(FileUtil.read("src/main/ll/auto.sl"));
+	}
+
+	private void test(String in) {
 		Node n0 = iterativeParser.parse(in);
 		Node n1 = recursiveParser.parse(in);
 		assertEquals(n0, n1);

@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -46,9 +47,9 @@ public class Dump {
 	 *            The monster.
 	 */
 	public static String object(String prefix, Object object) {
-		Dump dumpUtil = new Dump();
-		dumpUtil.d(prefix, object);
-		return dumpUtil.sb.toString();
+		Dump dump = new Dump();
+		dump.d(prefix, object);
+		return dump.sb.toString();
 	}
 
 	public static void object(StringBuilder sb, String prefix, Object object) {
@@ -116,7 +117,7 @@ public class Dump {
 							&& !displayedMethod.contains(name)) {
 						Object o = method.invoke(object);
 						if (!(o instanceof Class<?>))
-							object(prefix + "." + name + "()", o);
+							d(prefix + "." + name + "()", o);
 
 						// Do not display same method of different base
 						// classes
@@ -130,22 +131,24 @@ public class Dump {
 
 			int count = 0;
 
-			if (clazz.isArray())
-				if (clazz.getComponentType() == int.class)
-					for (int i : (int[]) object)
-						object(prefix + "[" + count++ + "]", i);
-				else if (Object.class.isAssignableFrom(clazz.getComponentType()))
+			if (clazz.isArray()) {
+				Class<?> componentType = clazz.getComponentType();
+				if (componentType.isPrimitive())
+					for (int i = 0; i < Array.getLength(object); i++)
+						d(prefix + "[" + count++ + "]", Array.get(object, i));
+				else if (Object.class.isAssignableFrom(componentType))
 					for (Object o1 : (Object[]) object)
-						object(prefix + "[" + count++ + "]", o1);
+						d(prefix + "[" + count++ + "]", o1);
+			}
 
 			if (Collection.class.isAssignableFrom(clazz))
 				for (Object o1 : (Collection<?>) object)
-					object(prefix + "[" + count++ + "]", o1);
+					d(prefix + "[" + count++ + "]", o1);
 			else if (Map.class.isAssignableFrom(clazz))
 				for (Entry<?, ?> entry : ((Map<?, ?>) object).entrySet()) {
 					Object key = entry.getKey(), value = entry.getValue();
-					object(prefix + "[" + count + "].getKey()", key);
-					object(prefix + "[" + count + "].getValue()", value);
+					d(prefix + "[" + count + "].getKey()", key);
+					d(prefix + "[" + count + "].getValue()", value);
 					count++;
 				}
 		} finally {
