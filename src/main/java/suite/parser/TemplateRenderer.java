@@ -7,7 +7,7 @@ import suite.util.FunUtil.Fun;
  *
  * @author ywsing
  */
-public class TemplatePreprocessor implements Fun<String, String> {
+public class TemplateRenderer implements Fun<String, String> {
 
 	public static String openTemplate = "<#";
 	public static String closeTemplate = "#>";
@@ -15,7 +15,7 @@ public class TemplatePreprocessor implements Fun<String, String> {
 	private Fun<String, String> wrapText;
 	private Fun<String, String> wrapExpression;
 
-	public TemplatePreprocessor(Fun<String, String> wrapText, Fun<String, String> wrapExpression) {
+	public TemplateRenderer(Fun<String, String> wrapText, Fun<String, String> wrapExpression) {
 		this.wrapText = wrapText;
 		this.wrapExpression = wrapExpression;
 	}

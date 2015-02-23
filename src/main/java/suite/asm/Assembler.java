@@ -20,7 +20,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.parser.CommentTransformer;
+import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
@@ -48,8 +48,8 @@ public class Assembler {
 
 	public Bytes assemble(String in0) {
 		Set<Character> whitespaces = Collections.singleton('\n');
-		Fun<String, List<Run>> gct = CommentTransformer.groupCommentTransformer(whitespaces);
-		Fun<String, List<Run>> lct = CommentTransformer.lineCommentTransformer(whitespaces);
+		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
+		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
 		String in1 = Transform.transform(Arrays.asList(gct, lct), in0).t0;
 
 		Generalizer generalizer = new Generalizer();

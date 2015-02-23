@@ -14,7 +14,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Pair;
 
-public class FunctionalTemplatePreprocessorTest {
+public class FunctionalTemplateRendererTest {
 
 	@Test
 	public void test() {
@@ -26,7 +26,7 @@ public class FunctionalTemplatePreprocessorTest {
 				)) //
 				.collect(As.map());
 
-		System.out.println(new FunctionalTemplatePreprocessor().render("" //
+		System.out.println(new FunctionalTemplateRenderer().render("" //
 				+ "<html> \n" //
 				+ "    <head> \n" //
 				+ "        <#= title #> \n" //

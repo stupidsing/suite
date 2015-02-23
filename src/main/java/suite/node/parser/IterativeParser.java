@@ -50,7 +50,7 @@ public class IterativeParser {
 	}
 
 	public Node parse(String in0) {
-		String in1 = Transform.transform(TransformerFactory.create(operators), in0).t0;
+		String in1 = Transform.transform(PreprocessorFactory.create(operators), in0).t0;
 		return new Parse(in1).parse();
 	}
 

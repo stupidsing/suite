@@ -14,7 +14,7 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class CommentTransformer implements Fun<String, List<Run>> {
+public class CommentPreprocessor implements Fun<String, List<Run>> {
 
 	public static String openGroupComment = "-=";
 	public static String closeGroupComment = "=-";
@@ -25,15 +25,15 @@ public class CommentTransformer implements Fun<String, List<Run>> {
 	private String openComment;
 	private String closeComment;
 
-	public static CommentTransformer groupCommentTransformer(Set<Character> whitespaces) {
-		return new CommentTransformer(whitespaces, openGroupComment, closeGroupComment);
+	public static CommentPreprocessor groupCommentPreprocessor(Set<Character> whitespaces) {
+		return new CommentPreprocessor(whitespaces, openGroupComment, closeGroupComment);
 	}
 
-	public static CommentTransformer lineCommentTransformer(Set<Character> whitespaces) {
-		return new CommentTransformer(whitespaces, openLineComment, closeLineComment);
+	public static CommentPreprocessor lineCommentPreprocessor(Set<Character> whitespaces) {
+		return new CommentPreprocessor(whitespaces, openLineComment, closeLineComment);
 	}
 
-	private CommentTransformer(Set<Character> whitespaces, String openComment, String closeComment) {
+	private CommentPreprocessor(Set<Character> whitespaces, String openComment, String closeComment) {
 		this.whitespaces = whitespaces;
 		this.openComment = openComment;
 		this.closeComment = closeComment;

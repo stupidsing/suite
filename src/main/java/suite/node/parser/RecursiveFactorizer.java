@@ -55,7 +55,7 @@ public class RecursiveFactorizer {
 
 	public FNode parse(String s) {
 		this.in = To.chars(s);
-		Pair<String, Reverser> pair = Transform.transform(TransformerFactory.create(operators), s);
+		Pair<String, Reverser> pair = Transform.transform(PreprocessorFactory.create(operators), s);
 		String in1 = pair.t0;
 		reverser = pair.t1;
 

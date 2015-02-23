@@ -17,7 +17,7 @@ import suite.util.ParseUtil;
  *
  * @author ywsing
  */
-public class IncludeTransformer implements Fun<String, List<Run>> {
+public class IncludePreprocessor implements Fun<String, List<Run>> {
 
 	private static String open = "#include(";
 	private static String close = ")";
@@ -25,7 +25,7 @@ public class IncludeTransformer implements Fun<String, List<Run>> {
 	private Set<Path> included = new HashSet<>();
 	private Path dir;
 
-	public IncludeTransformer(Path dir) {
+	public IncludePreprocessor(Path dir) {
 		this.dir = dir;
 	}
 

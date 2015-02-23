@@ -16,11 +16,11 @@ import suite.util.Util;
  *
  * @author ywsing
  */
-public class IndentationTransformer implements Fun<String, List<Run>> {
+public class IndentationPreprocessor implements Fun<String, List<Run>> {
 
 	private Operator operators[];
 
-	public IndentationTransformer(Operator[] operators) {
+	public IndentationPreprocessor(Operator[] operators) {
 		this.operators = operators;
 	}
 

@@ -13,11 +13,11 @@ import suite.util.ParseUtil;
  *
  * @author ywsing
  */
-public class WhitespaceTransformer implements Fun<String, List<Run>> {
+public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 
 	private Set<Character> whitespaces;
 
-	public WhitespaceTransformer(Set<Character> whitespaces) {
+	public WhitespacePreprocessor(Set<Character> whitespaces) {
 		this.whitespaces = whitespaces;
 	}
 
