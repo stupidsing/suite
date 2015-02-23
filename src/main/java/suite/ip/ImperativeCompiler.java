@@ -13,7 +13,7 @@ import suite.lp.search.SewingProverBuilder;
 import suite.node.Node;
 import suite.parser.IncludePreprocessor;
 import suite.primitive.Bytes;
-import suite.text.Transform;
+import suite.text.Preprocess;
 import suite.util.FileUtil;
 
 public class ImperativeCompiler {
@@ -26,7 +26,7 @@ public class ImperativeCompiler {
 
 	public Bytes compile(int org, Path path) throws IOException {
 		String s0 = FileUtil.read(path);
-		String s1 = Transform.transform(Arrays.asList(new IncludePreprocessor(path.getParent())), s0).t0;
+		String s1 = Preprocess.transform(Arrays.asList(new IncludePreprocessor(path.getParent())), s0).t0;
 		return compile(org, s1);
 	}
 

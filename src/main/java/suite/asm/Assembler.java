@@ -24,8 +24,8 @@ import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
-import suite.text.Transform;
-import suite.text.Transform.Run;
+import suite.text.Preprocess;
+import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 import suite.util.Util;
@@ -50,7 +50,7 @@ public class Assembler {
 		Set<Character> whitespaces = Collections.singleton('\n');
 		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
 		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
-		String in1 = Transform.transform(Arrays.asList(gct, lct), in0).t0;
+		String in1 = Preprocess.transform(Arrays.asList(gct, lct), in0).t0;
 
 		Generalizer generalizer = new Generalizer();
 		List<String> lines = Arrays.asList(in1.split("\n"));

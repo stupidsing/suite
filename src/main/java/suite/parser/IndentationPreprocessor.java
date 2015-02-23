@@ -6,7 +6,7 @@ import java.util.List;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Segment;
-import suite.text.Transform.Run;
+import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Util;

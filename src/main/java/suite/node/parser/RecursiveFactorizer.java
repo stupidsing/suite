@@ -13,8 +13,8 @@ import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.CharsUtil;
 import suite.text.Segment;
-import suite.text.Transform;
-import suite.text.Transform.Reverser;
+import suite.text.Preprocess;
+import suite.text.Preprocess.Reverser;
 import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.To;
@@ -55,7 +55,7 @@ public class RecursiveFactorizer {
 
 	public FNode parse(String s) {
 		this.in = To.chars(s);
-		Pair<String, Reverser> pair = Transform.transform(PreprocessorFactory.create(operators), s);
+		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
 		String in1 = pair.t0;
 		reverser = pair.t1;
 

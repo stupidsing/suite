@@ -5,7 +5,7 @@ import java.util.List;
 import suite.util.FunUtil.Fun;
 import suite.util.Pair;
 
-public class Transform {
+public class Preprocess {
 
 	public static class Run {
 		public final Segment segment;

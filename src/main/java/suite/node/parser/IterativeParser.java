@@ -17,7 +17,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
-import suite.text.Transform;
+import suite.text.Preprocess;
 import suite.util.CommandUtil;
 import suite.util.Pair;
 import suite.util.Util;
@@ -50,7 +50,7 @@ public class IterativeParser {
 	}
 
 	public Node parse(String in0) {
-		String in1 = Transform.transform(PreprocessorFactory.create(operators), in0).t0;
+		String in1 = Preprocess.transform(PreprocessorFactory.create(operators), in0).t0;
 		return new Parse(in1).parse();
 	}
 

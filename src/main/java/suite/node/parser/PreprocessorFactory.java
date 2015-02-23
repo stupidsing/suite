@@ -9,7 +9,7 @@ import suite.node.io.Operator;
 import suite.parser.CommentPreprocessor;
 import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
-import suite.text.Transform.Run;
+import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
 
 public class PreprocessorFactory {
