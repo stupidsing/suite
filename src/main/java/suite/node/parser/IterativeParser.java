@@ -55,7 +55,7 @@ public class IterativeParser {
 	}
 
 	private enum LexType {
-		CHAR__, HEX__, ID___, OPER_, SPACE, STR__, SYM__
+		CHAR__, HEX__, ID___, OPER_, SPACE, STR__, SYM__,
 	}
 
 	private class Token {
@@ -140,9 +140,9 @@ public class IterativeParser {
 
 				if (operator != null)
 					type = LexType.OPER_;
-				else if (ch == '+' && pos + 4 < in.length() && in.charAt(pos + 1) == '\'')
+				else if (ch == '+' && pos + 4 <= in.length() && in.charAt(pos + 1) == '\'')
 					type = LexType.CHAR__;
-				else if (ch == '+' && pos + 1 < in.length() && in.charAt(pos + 1) == 'x')
+				else if (ch == '+' && pos + 2 <= in.length() && in.charAt(pos + 1) == 'x')
 					type = LexType.HEX__;
 				else if (ch == ' ')
 					type = LexType.SPACE;
