@@ -50,13 +50,16 @@ public class RecursiveFactorizerTest {
 				List<FNode> fns1 = new ArrayList<>();
 				for (FNode child : ft.fns)
 					fns1.add(transform(child));
-				Chars chars = cb.toChars().subchars(p0, cb.size());
-				return new FTree(chars, ft.type, ft.name, fns1);
+				return new FTree(after(p0), ft.type, ft.name, fns1);
 			} else {
 				cb.append(fn.chars.replace(from, to));
-				Chars chars = cb.toChars().subchars(p0, cb.size());
-				return new FNode(chars);
+				return new FNode(after(p0));
 			}
+		}
+
+		private Chars after(int p0) {
+			Chars chars = cb.toChars().subchars(p0, cb.size());
+			return chars;
 		}
 	}
 
