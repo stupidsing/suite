@@ -12,9 +12,9 @@ import suite.node.io.TermOp;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.CharsUtil;
-import suite.text.Segment;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
+import suite.text.Segment;
 import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.To;
@@ -26,24 +26,26 @@ public class RecursiveFactorizer {
 	private Chars in;
 	private Reverser reverser;
 
-	public interface FNode {
+	public enum FNodeType {
+		ENCLOSE, OPER___, SPACE__, TERMINAL,
 	}
 
-	public static class FTerminal implements FNode {
-		public final Chars pre, chars, post;
+	public static class FNode {
+		public final Chars chars;
 
-		public FTerminal(Chars pre, Chars chars, Chars post) {
-			this.pre = pre;
+		public FNode(Chars chars) {
 			this.chars = chars;
-			this.post = post;
 		}
 	}
 
-	public static class FTree implements FNode {
+	public static class FTree extends FNode {
+		public final FNodeType type;
 		public final String name;
 		public final List<FNode> fns;
 
-		public FTree(String name, List<FNode> fns) {
+		public FTree(Chars range, FNodeType type, String name, List<FNode> fns) {
+			super(range);
+			this.type = type;
 			this.name = name;
 			this.fns = fns;
 		}
@@ -68,16 +70,12 @@ public class RecursiveFactorizer {
 		deque.push(fn);
 
 		while (!deque.isEmpty()) {
-			FNode n = deque.pop();
-			if (n instanceof FTree)
-				for (FNode child : Util.reverse(((FTree) n).fns))
+			FNode fn_ = deque.pop();
+			if (fn_ instanceof FTree)
+				for (FNode child : Util.reverse(((FTree) fn_).fns))
 					deque.push(child);
-			else {
-				FTerminal ft = (FTerminal) n;
-				cb.append(ft.pre);
-				cb.append(ft.chars);
-				cb.append(ft.post);
-			}
+			else
+				cb.append(fn_.chars);
 		}
 		return cb.toChars().toString();
 	}
@@ -123,12 +121,12 @@ public class RecursiveFactorizer {
 
 				List<FNode> list = new ArrayList<>(4);
 				list.add(parse0(left, li));
-				list.add(terminal(middle));
+				list.add(term(middle));
 				list.add(parse0(right, ri));
 				if (post != null)
-					list.add(terminal(post));
+					list.add(term(post));
 
-				return new FTree(operator.getName(), list);
+				return new FTree(chars, FNodeType.OPER___, operator.getName(), list);
 			}
 
 			if (first == '(' && last == ')' //
@@ -137,23 +135,25 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return new FTree("" + first, Arrays.asList(terminal(left), parse0(middle, 0), terminal(right)));
+				return new FTree(chars, FNodeType.ENCLOSE, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
 			}
 		}
 
-		return terminal(chars);
+		return term(chars);
 	}
 
-	private FTerminal terminal(Chars chars) {
+	private FNode term(Chars chars) {
 		Chars chars1 = CharsUtil.trim(chars);
 		int p0 = reverser.reverseBegin(chars.start);
 		int p1 = reverser.reverseBegin(chars1.start);
 		int p2 = reverser.reverseBegin(chars1.end);
 		int px = reverser.reverseBegin(chars.end);
 
-		return new FTerminal(new Chars(in.cs, p0, p1) //
-				, new Chars(in.cs, p1, p2) //
-				, new Chars(in.cs, p2, px));
+		List<FNode> list = Arrays.asList(new FNode(new Chars(in.cs, p0, p1)) //
+				, new FNode(new Chars(in.cs, p1, p2)) //
+				, new FNode(new Chars(in.cs, p2, px)));
+
+		return new FTree(chars, FNodeType.TERMINAL, null, list);
 	}
 
 }

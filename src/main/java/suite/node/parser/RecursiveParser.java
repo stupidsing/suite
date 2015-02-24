@@ -8,7 +8,6 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
-import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
@@ -39,22 +38,28 @@ public class RecursiveParser {
 			FNode fn1 = fns.get(1);
 			FNode fn2 = fns.get(2);
 
-			if (ft.name.equals("("))
-				return node(fn1);
-			else if (ft.name.equals("["))
-				return Tree.of(TermOp.TUPLE_, Atom.of("[]"), node(fn1));
-			if (ft.name.equals("`"))
-				return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
-			else {
+			switch (ft.type) {
+			case ENCLOSE:
+				if (ft.name.equals("("))
+					return node(fn1);
+				else if (ft.name.equals("["))
+					return Tree.of(TermOp.TUPLE_, Atom.of("[]"), node(fn1));
+				else if (ft.name.equals("`"))
+					return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
+				else
+					throw new RuntimeException();
+			case OPER___:
 				Operator operator = Read.from(operators).filter(op -> op.getName() == ft.name).uniqueResult();
 				return Tree.of(operator, node(fn0), node(fn2));
+			case SPACE__:
+				return null;
+			case TERMINAL:
+				return node(fn1);
+			default:
+				throw new RuntimeException();
 			}
 		} else
-			return terminalParser.parseTerminal(str(fn));
-	}
-
-	private String str(FNode fn) {
-		return fn instanceof FTerminal ? ((FTerminal) fn).chars.toString() : null;
+			return terminalParser.parseTerminal(fn.chars.toString());
 	}
 
 }
