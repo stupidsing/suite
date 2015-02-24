@@ -3,8 +3,6 @@ package suite.node.parser;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -13,6 +11,7 @@ import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.primitive.Chars;
+import suite.streamlet.Read;
 import suite.util.FileUtil;
 import suite.util.To;
 
@@ -43,10 +42,7 @@ public class RecursiveFactorizerTest {
 
 		if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
-			List<FNode> fns1 = new ArrayList<>();
-			for (FNode child : ft.fns)
-				fns1.add(transform(child));
-			return new FTree(ft.type, ft.name, fns1);
+			return new FTree(ft.type, ft.name, Read.from(ft.fns).map(this::transform).toList());
 		} else
 			return new FTerminal(((FTerminal) fn).chars.replace(from, to));
 	}
