@@ -33,6 +33,7 @@ public class RecursiveParser {
 	private Node node(FNode fn) {
 		if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
+			String name = ft.name;
 			List<FNode> fns = ft.fns;
 			FNode fn0 = fns.get(0);
 			FNode fn1 = fns.get(1);
@@ -40,16 +41,16 @@ public class RecursiveParser {
 
 			switch (ft.type) {
 			case ENCLOSE:
-				if (ft.name.equals("("))
+				if (name.equals("("))
 					return node(fn1);
-				else if (ft.name.equals("["))
+				else if (name.equals("["))
 					return Tree.of(TermOp.TUPLE_, Atom.of("[]"), node(fn1));
-				else if (ft.name.equals("`"))
+				else if (name.equals("`"))
 					return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
 				else
 					throw new RuntimeException();
 			case OPER___:
-				Operator operator = Read.from(operators).filter(op -> op.getName() == ft.name).uniqueResult();
+				Operator operator = Read.from(operators).filter(op -> op.getName() == name).uniqueResult();
 				return Tree.of(operator, node(fn0), node(fn2));
 			case SPACE__:
 				return null;
