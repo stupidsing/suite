@@ -8,6 +8,7 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
+import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
@@ -60,7 +61,7 @@ public class RecursiveParser {
 				throw new RuntimeException();
 			}
 		} else
-			return terminalParser.parseTerminal(fn.chars.toString());
+			return terminalParser.parseTerminal(((FTerminal) fn).chars.toString());
 	}
 
 }

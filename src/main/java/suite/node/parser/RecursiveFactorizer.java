@@ -30,21 +30,23 @@ public class RecursiveFactorizer {
 		ENCLOSE, OPER___, SPACE__, TERMINAL,
 	}
 
-	public static class FNode {
+	public interface FNode {
+	}
+
+	public static class FTerminal implements FNode {
 		public final Chars chars;
 
-		public FNode(Chars chars) {
+		public FTerminal(Chars chars) {
 			this.chars = chars;
 		}
 	}
 
-	public static class FTree extends FNode {
+	public static class FTree implements FNode {
 		public final FNodeType type;
 		public final String name;
 		public final List<FNode> fns;
 
-		public FTree(Chars range, FNodeType type, String name, List<FNode> fns) {
-			super(range);
+		public FTree(FNodeType type, String name, List<FNode> fns) {
 			this.type = type;
 			this.name = name;
 			this.fns = fns;
@@ -75,7 +77,7 @@ public class RecursiveFactorizer {
 				for (FNode child : Util.reverse(((FTree) fn_).fns))
 					deque.push(child);
 			else
-				cb.append(fn_.chars);
+				cb.append(((FTerminal) fn_).chars);
 		}
 		return cb.toChars().toString();
 	}
@@ -126,7 +128,7 @@ public class RecursiveFactorizer {
 				if (post != null)
 					list.add(term(post));
 
-				return new FTree(chars, FNodeType.OPER___, operator.getName(), list);
+				return new FTree(FNodeType.OPER___, operator.getName(), list);
 			}
 
 			if (first == '(' && last == ')' //
@@ -135,7 +137,7 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return new FTree(chars, FNodeType.ENCLOSE, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
+				return new FTree(FNodeType.ENCLOSE, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
 			}
 		}
 
@@ -149,11 +151,11 @@ public class RecursiveFactorizer {
 		int p2 = reverser.reverseBegin(chars1.end);
 		int px = reverser.reverseBegin(chars.end);
 
-		List<FNode> list = Arrays.asList(new FNode(new Chars(in.cs, p0, p1)) //
-				, new FNode(new Chars(in.cs, p1, p2)) //
-				, new FNode(new Chars(in.cs, p2, px)));
+		List<FNode> list = Arrays.asList(new FTerminal(new Chars(in.cs, p0, p1)) //
+				, new FTerminal(new Chars(in.cs, p1, p2)) //
+				, new FTerminal(new Chars(in.cs, p2, px)));
 
-		return new FTree(chars, FNodeType.TERMINAL, null, list);
+		return new FTree(FNodeType.TERMINAL, null, list);
 	}
 
 }
