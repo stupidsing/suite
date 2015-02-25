@@ -73,7 +73,7 @@ public class MapifyUtil {
 	private Fun<Object, Object> getMapifier(Class<?> clazz) {
 		Fun<Object, Object> mapifier = mapifiers.get(clazz);
 		if (mapifier == null) {
-			mapifiers.put(clazz, object -> getMapifier(clazz));
+			mapifiers.put(clazz, object -> getMapifier(clazz).apply(object));
 			mapifiers.put(clazz, mapifier = createMapifier0(clazz));
 		}
 		return mapifier;
@@ -82,7 +82,7 @@ public class MapifyUtil {
 	private Fun<Object, Object> getUnmapifier(Class<?> clazz) {
 		Fun<Object, Object> unmapifier = unmapifiers.get(clazz);
 		if (unmapifier == null) {
-			unmapifiers.put(clazz, object -> getUnmapifier(clazz));
+			unmapifiers.put(clazz, object -> getUnmapifier(clazz).apply(object));
 			unmapifiers.put(clazz, unmapifier = createUnmapifier0(clazz));
 		}
 		return unmapifier;
