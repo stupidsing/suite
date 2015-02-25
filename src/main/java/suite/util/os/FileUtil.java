@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.os;
 
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -28,6 +28,7 @@ import java.util.zip.ZipFile;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Copy;
 
 public class FileUtil {
 

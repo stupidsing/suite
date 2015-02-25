@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.ListMultimap;
+import suite.adt.Pair;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 
 public class As {
 

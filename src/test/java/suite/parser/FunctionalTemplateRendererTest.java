@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import suite.adt.Pair;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.Pair;
 
 public class FunctionalTemplateRendererTest {
 

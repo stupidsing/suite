@@ -11,8 +11,8 @@ import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.streamlet.Read;
-import suite.util.FileUtil;
 import suite.util.To;
+import suite.util.os.FileUtil;
 
 public class RecursiveFactorizerTest {
 

@@ -9,6 +9,7 @@ import java.util.function.BiPredicate;
 
 import suite.Suite;
 import suite.adt.ListMultimap;
+import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Journal;
@@ -36,7 +37,6 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
-import suite.util.Pair;
 import suite.util.Util;
 
 /**

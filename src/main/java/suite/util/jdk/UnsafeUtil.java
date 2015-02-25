@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.jdk;
 
 import java.lang.reflect.Field;
 

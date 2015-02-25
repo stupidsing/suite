@@ -24,7 +24,7 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.parser.Subst;
 import suite.util.FunUtil;
-import suite.util.JdkLoadClassUtil;
+import suite.util.jdk.JdkLoadClassUtil;
 
 /**
  * Possible register types: boolean, thunk, int, node

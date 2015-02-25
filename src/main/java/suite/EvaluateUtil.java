@@ -3,6 +3,7 @@ package suite;
 import java.io.IOException;
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.fp.FunCompilerConfig;
 import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
@@ -23,7 +24,6 @@ import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.Memoize;
-import suite.util.Pair;
 import suite.util.Util;
 
 public class EvaluateUtil {

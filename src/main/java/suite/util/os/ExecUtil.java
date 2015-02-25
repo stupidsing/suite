@@ -1,10 +1,12 @@
-package suite.util;
+package suite.util.os;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import suite.util.Copy;
 
 public class ExecUtil {
 

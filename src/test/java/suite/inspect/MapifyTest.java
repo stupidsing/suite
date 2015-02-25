@@ -1,4 +1,4 @@
-package suite.util;
+package suite.inspect;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,11 +9,13 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.inspect.Inspect;
+import suite.inspect.Mapify;
 import suite.lp.Configuration.ProverConfig;
 
-public class MapifyUtilTest {
+public class MapifyTest {
 
-	private MapifyUtil mapifyUtil = new MapifyUtil(new InspectUtil());
+	private Mapify mapify = new Mapify(new Inspect());
 
 	public interface I {
 	}
@@ -35,11 +37,11 @@ public class MapifyUtilTest {
 		ProverConfig pc0 = new ProverConfig();
 		pc0.setRuleSet(null);
 
-		Object map = mapifyUtil.mapify(ProverConfig.class, pc0);
+		Object map = mapify.mapify(ProverConfig.class, pc0);
 		assertNotNull(map);
 		System.out.println(map);
 
-		ProverConfig pc1 = mapifyUtil.unmapify(ProverConfig.class, map);
+		ProverConfig pc1 = mapify.unmapify(ProverConfig.class, map);
 		System.out.println(pc1);
 
 		assertEquals(pc0, pc1);
@@ -55,11 +57,11 @@ public class MapifyUtilTest {
 		Container object0 = new Container();
 		object0.is = Arrays.asList(a, b);
 
-		Object map = mapifyUtil.mapify(Container.class, object0);
+		Object map = mapify.mapify(Container.class, object0);
 		assertNotNull(map);
 		System.out.println(map);
 
-		Container object1 = mapifyUtil.unmapify(Container.class, map);
+		Container object1 = mapify.unmapify(Container.class, map);
 		assertEquals(A.class, object1.is.get(0).getClass());
 		assertEquals(B.class, object1.is.get(1).getClass());
 		assertEquals(123, ((A) object1.is.get(0)).i);

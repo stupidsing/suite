@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
+import suite.adt.Pair;
+import suite.inspect.Inspect;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -15,15 +17,13 @@ import suite.primitive.CharsUtil;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
-import suite.util.InspectUtil;
-import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.To;
 import suite.util.Util;
 
 public class RecursiveFactorizer {
 
-	private static InspectUtil inspectUtil = new InspectUtil();
+	private static Inspect inspect = new Inspect();
 
 	private Operator operators[];
 	private Chars in;
@@ -35,11 +35,11 @@ public class RecursiveFactorizer {
 
 	public static class FNode {
 		public int hashCode() {
-			return inspectUtil.hashCode(this);
+			return inspect.hashCode(this);
 		}
 
 		public boolean equals(Object object) {
-			return inspectUtil.equals(this, object);
+			return inspect.equals(this, object);
 		}
 	}
 

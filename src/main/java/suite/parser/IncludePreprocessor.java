@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import suite.text.Preprocess.Run;
-import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
+import suite.util.os.FileUtil;
 import suite.util.ParseUtil;
 
 /**

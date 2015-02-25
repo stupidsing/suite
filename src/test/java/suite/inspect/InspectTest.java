@@ -1,4 +1,4 @@
-package suite.util;
+package suite.inspect;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import suite.lp.Configuration.ProverConfig;
 
-public class InspectUtilTest {
+public class InspectTest {
 
-	private InspectUtil inspectUtil = new InspectUtil();
+	private Inspect inspect = new Inspect();
 	private ProverConfig pc0 = new ProverConfig();
 	private ProverConfig pc1 = new ProverConfig();
 
@@ -19,13 +19,13 @@ public class InspectUtilTest {
 
 	@Test
 	public void testEquals() {
-		assertTrue(inspectUtil.equals(pc0, pc0));
-		assertFalse(inspectUtil.equals(pc0, pc1));
+		assertTrue(inspect.equals(pc0, pc0));
+		assertFalse(inspect.equals(pc0, pc1));
 	}
 
 	@Test
 	public void testHashCode() {
-		assertTrue(inspectUtil.hashCode(pc0) != inspectUtil.hashCode(pc1));
+		assertTrue(inspect.hashCode(pc0) != inspect.hashCode(pc1));
 	}
 
 }

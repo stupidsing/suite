@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.jdk;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,9 @@ import java.util.Arrays;
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import suite.util.LogUtil;
+import suite.util.os.FileUtil;
 
 public class JdkUtil {
 

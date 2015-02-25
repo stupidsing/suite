@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.os;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,9 @@ import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import suite.util.LogUtil;
+import suite.util.Util;
 
 public class SocketUtil {
 

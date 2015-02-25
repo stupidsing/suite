@@ -19,8 +19,8 @@ import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
-import suite.util.FileUtil;
 import suite.util.To;
+import suite.util.os.FileUtil;
 
 public class FileSystemTest {
 

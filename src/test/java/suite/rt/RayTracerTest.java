@@ -20,8 +20,8 @@ import suite.rt.composites.Minus;
 import suite.rt.composites.Union;
 import suite.rt.planars.Plane;
 import suite.rt.planars.Triangle;
-import suite.util.FileUtil;
 import suite.util.Util;
+import suite.util.os.FileUtil;
 
 public class RayTracerTest {
 

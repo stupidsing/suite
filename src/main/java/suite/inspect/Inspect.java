@@ -1,4 +1,4 @@
-package suite.util;
+package suite.inspect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.streamlet.Read;
+import suite.util.Util;
 
 /**
  * Retrieve list of fields of a value object, and provide shallow
@@ -16,7 +17,7 @@ import suite.streamlet.Read;
  *
  * @author ywsing
  */
-public class InspectUtil {
+public class Inspect {
 
 	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
 
@@ -30,7 +31,7 @@ public class InspectUtil {
 	}
 
 	private List<Object> list(Object object) {
-		return Read.from(getFields(object.getClass())) //
+		return Read.from(fields(object.getClass())) //
 				.map(field -> {
 					try {
 						return field.get(object);
@@ -41,7 +42,7 @@ public class InspectUtil {
 				.toList();
 	}
 
-	public List<Field> getFields(Class<?> clazz) {
+	public List<Field> fields(Class<?> clazz) {
 		List<Field> ci = fieldsByClass.get(clazz);
 		if (ci == null)
 			fieldsByClass.put(clazz, ci = getFields0(clazz));
@@ -50,7 +51,7 @@ public class InspectUtil {
 
 	private List<Field> getFields0(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
-		List<Field> parentFields = superClass != null ? getFields(superClass) : Collections.<Field> emptyList();
+		List<Field> parentFields = superClass != null ? fields(superClass) : Collections.<Field> emptyList();
 		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();

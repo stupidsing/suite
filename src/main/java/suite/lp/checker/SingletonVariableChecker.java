@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.adt.ListMultimap;
+import suite.adt.Pair;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.sewing.SewingGeneralizer;
@@ -15,7 +16,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.util.LogUtil;
-import suite.util.Pair;
 
 public class SingletonVariableChecker {
 

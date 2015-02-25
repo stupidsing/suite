@@ -1,7 +1,9 @@
-package suite.util;
+package suite.adt;
 
 import java.util.Comparator;
 import java.util.Objects;
+
+import suite.util.Util;
 
 public class Pair<T0, T1> {
 

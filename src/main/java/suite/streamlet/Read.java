@@ -13,9 +13,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
-import suite.util.FileUtil;
+import suite.adt.Pair;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
+import suite.util.os.FileUtil;
 import suite.util.To;
 
 public class Read {

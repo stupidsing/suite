@@ -8,9 +8,9 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.util.FileUtil;
-import suite.util.SocketUtil;
 import suite.util.To;
+import suite.util.os.FileUtil;
+import suite.util.os.SocketUtil;
 
 public class SimpleCgiServer {
 

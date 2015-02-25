@@ -9,12 +9,12 @@ import java.util.zip.ZipFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import suite.adt.Pair;
 import suite.pkgmanager.actions.ExecCommandAction;
 import suite.pkgmanager.actions.ExtractFileAction;
 import suite.pkgmanager.actions.InstallAction;
 import suite.streamlet.Read;
-import suite.util.FileUtil;
-import suite.util.Pair;
+import suite.util.os.FileUtil;
 import suite.wildcard.WildcardUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

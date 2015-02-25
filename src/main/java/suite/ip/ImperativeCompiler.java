@@ -14,7 +14,7 @@ import suite.node.Node;
 import suite.parser.IncludePreprocessor;
 import suite.primitive.Bytes;
 import suite.text.Preprocess;
-import suite.util.FileUtil;
+import suite.util.os.FileUtil;
 
 public class ImperativeCompiler {
 

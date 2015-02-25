@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.primitive.Bytes;
+import suite.util.os.FileUtil;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the

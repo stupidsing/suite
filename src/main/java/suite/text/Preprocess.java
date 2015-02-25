@@ -2,8 +2,8 @@ package suite.text;
 
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.util.FunUtil.Fun;
-import suite.util.Pair;
 
 public class Preprocess {
 

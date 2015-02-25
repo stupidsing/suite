@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import suite.adt.Pair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 import suite.util.To;
 import suite.util.Util;
 

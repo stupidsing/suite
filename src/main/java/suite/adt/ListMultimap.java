@@ -10,8 +10,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.util.Pair;
-
 public class ListMultimap<K, V> {
 
 	private Map<K, List<V>> map;

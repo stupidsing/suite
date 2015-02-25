@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.os;
 
 import org.junit.Test;
 

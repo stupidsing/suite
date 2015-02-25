@@ -55,20 +55,20 @@ public class Chars implements Iterable<Character> {
 		return Chars.of(chars.cs, chars.start, chars.end);
 	}
 
-	public static Chars of(char chars[]) {
-		return Chars.of(chars, 0);
+	public static Chars of(char cs[]) {
+		return Chars.of(cs, 0);
 	}
 
-	public static Chars of(char chars[], int start) {
-		return Chars.of(chars, start, chars.length);
+	public static Chars of(char cs[], int start) {
+		return Chars.of(cs, start, cs.length);
 	}
 
-	public static Chars of(char chars[], int start, int end) {
-		return new Chars(chars, start, end);
+	public static Chars of(char cs[], int start, int end) {
+		return new Chars(cs, start, end);
 	}
 
-	public Chars(char chars[], int start, int end) {
-		this.cs = chars;
+	public Chars(char cs[], int start, int end) {
+		this.cs = cs;
 		this.start = start;
 		this.end = end;
 	}

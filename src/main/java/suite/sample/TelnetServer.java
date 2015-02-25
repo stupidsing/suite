@@ -9,7 +9,7 @@ import java.util.Set;
 
 import suite.util.Copy;
 import suite.util.LogUtil;
-import suite.util.SocketUtil;
+import suite.util.os.SocketUtil;
 
 public class TelnetServer {
 

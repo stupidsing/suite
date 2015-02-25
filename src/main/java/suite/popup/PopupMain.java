@@ -18,11 +18,11 @@ import suite.editor.LayoutCalculator;
 import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
-import suite.util.ExecUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.LogUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.util.os.ExecUtil;
 
 /**
  * Volume up: Alt-A

@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
+import suite.util.os.FileUtil;
 import suite.util.To;
 
 public class LempelZivWelchTest {

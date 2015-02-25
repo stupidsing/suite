@@ -1,4 +1,4 @@
-package suite.util;
+package suite.inspect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

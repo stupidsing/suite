@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.Suite;
+import suite.adt.Pair;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -27,7 +28,6 @@ import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
-import suite.util.Pair;
 import suite.util.Util;
 
 public class Assembler {

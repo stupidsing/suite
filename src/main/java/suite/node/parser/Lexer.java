@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.util.CommandUtil;
-import suite.util.Pair;
 
 /**
  * Non-recursive, performance-improved parser for operator-based languages.

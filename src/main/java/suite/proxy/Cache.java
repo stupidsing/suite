@@ -1,4 +1,4 @@
-package suite.util;
+package suite.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,8 +11,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.streamlet.Read;
+import suite.util.Util;
 
-public class CacheUtil {
+public class Cache {
 
 	private Map<Key, Object> results = new ConcurrentHashMap<>();
 

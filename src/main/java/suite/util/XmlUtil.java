@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
+import suite.util.os.FileUtil;
 
 public class XmlUtil {
 

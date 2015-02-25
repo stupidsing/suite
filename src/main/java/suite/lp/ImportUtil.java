@@ -17,8 +17,8 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.util.FileUtil;
 import suite.util.To;
+import suite.util.os.FileUtil;
 
 public class ImportUtil {
 

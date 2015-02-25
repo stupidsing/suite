@@ -56,20 +56,20 @@ public class Bytes implements Iterable<Byte> {
 		return Bytes.of(bytes.bs, bytes.start, bytes.end);
 	}
 
-	public static Bytes of(byte bytes[]) {
-		return Bytes.of(bytes, 0);
+	public static Bytes of(byte bs[]) {
+		return Bytes.of(bs, 0);
 	}
 
-	public static Bytes of(byte bytes[], int start) {
-		return Bytes.of(bytes, start, bytes.length);
+	public static Bytes of(byte bs[], int start) {
+		return Bytes.of(bs, start, bs.length);
 	}
 
-	public static Bytes of(byte bytes[], int start, int end) {
-		return new Bytes(bytes, start, end);
+	public static Bytes of(byte bs[], int start, int end) {
+		return new Bytes(bs, start, end);
 	}
 
-	private Bytes(byte bytes[], int start, int end) {
-		this.bs = bytes;
+	private Bytes(byte bs[], int start, int end) {
+		this.bs = bs;
 		this.start = start;
 		this.end = end;
 	}

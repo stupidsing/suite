@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.util.Copy;
 import suite.util.LogUtil;
-import suite.util.SocketUtil;
-import suite.util.SocketUtil.Io;
+import suite.util.os.SocketUtil;
+import suite.util.os.SocketUtil.Io;
 
 public class LoadBalancer {
 

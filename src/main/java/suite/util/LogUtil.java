@@ -12,8 +12,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import suite.inspect.Dump;
+import suite.proxy.ProxyUtil;
 import suite.util.FunUtil.Source;
 import suite.util.TimeUtil.TimedResult;
+import suite.util.os.FileUtil;
 
 public class LogUtil {
 

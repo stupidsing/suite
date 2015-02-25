@@ -8,10 +8,10 @@ import java.util.zip.ZipFile;
 
 import suite.primitive.Bytes;
 import suite.text.TextUtil;
-import suite.util.FileUtil;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.util.os.FileUtil;
 
 /**
  * Compare content of two zip files.

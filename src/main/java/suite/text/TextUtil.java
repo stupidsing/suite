@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import suite.adt.Pair;
 import suite.lcs.Lccs;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.Pair;
 
 public class TextUtil {
 

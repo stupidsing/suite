@@ -8,8 +8,8 @@ import java.io.Writer;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.util.FileUtil;
 import suite.util.Util;
+import suite.util.os.FileUtil;
 
 public class FilterTest {
 

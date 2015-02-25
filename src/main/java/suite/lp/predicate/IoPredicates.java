@@ -15,8 +15,8 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.util.SuiteException;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.FileUtil;
 import suite.util.LogUtil;
+import suite.util.os.FileUtil;
 
 public class IoPredicates {
 

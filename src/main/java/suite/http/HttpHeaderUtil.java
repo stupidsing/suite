@@ -9,9 +9,9 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.util.FileUtil;
-import suite.util.Pair;
+import suite.adt.Pair;
 import suite.util.Util;
+import suite.util.os.FileUtil;
 
 public class HttpHeaderUtil {
 

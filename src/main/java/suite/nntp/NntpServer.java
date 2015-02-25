@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.Pair;
 import suite.util.CommandUtil;
-import suite.util.Pair;
-import suite.util.SocketUtil;
 import suite.util.Util;
+import suite.util.os.SocketUtil;
 
 public class NntpServer {
 

@@ -1,4 +1,4 @@
-package suite.util;
+package suite.inspect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -22,7 +22,7 @@ import suite.util.FunUtil.Fun;
  *
  * @author ywsing
  */
-public class MapifyUtil {
+public class Mapify {
 
 	private Set<Class<?>> collectionClasses = new HashSet<>(Arrays.asList( //
 			ArrayList.class, Collection.class, HashSet.class, List.class, Set.class));
@@ -34,7 +34,7 @@ public class MapifyUtil {
 	private Map<Class<?>, Fun<Object, Object>> mapifiers = new ConcurrentHashMap<>();
 	private Map<Class<?>, Fun<Object, Object>> unmapifiers = new ConcurrentHashMap<>();
 
-	private InspectUtil inspectUtil;
+	private Inspect inspectUtil;
 
 	private class FieldInfo {
 		private Field field;
@@ -50,7 +50,7 @@ public class MapifyUtil {
 		}
 	}
 
-	public MapifyUtil(InspectUtil inspectUtil) {
+	public Mapify(Inspect inspectUtil) {
 		this.inspectUtil = inspectUtil;
 	}
 
@@ -292,7 +292,7 @@ public class MapifyUtil {
 	}
 
 	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		List<Field> fields = inspectUtil.getFields(clazz);
+		List<Field> fields = inspectUtil.fields(clazz);
 		List<FieldInfo> fieldInfos = new ArrayList<>();
 
 		for (Field field : fields) {

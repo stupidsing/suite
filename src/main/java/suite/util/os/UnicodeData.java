@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.os;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.util.Map;
 import java.util.Set;
 
+import suite.adt.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 

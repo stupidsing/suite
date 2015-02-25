@@ -13,13 +13,13 @@ import java.util.List;
 
 import suite.Suite;
 import suite.node.Node;
-import suite.util.FileUtil;
 import suite.util.FunUtil.Source;
 import suite.util.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.util.os.FileUtil;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.

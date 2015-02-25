@@ -12,13 +12,13 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFileImpl;
-import suite.util.FileUtil;
-import suite.util.Pair;
 import suite.util.SerializeUtil;
 import suite.util.To;
 import suite.util.Util;
+import suite.util.os.FileUtil;
 
 public class B_TreeTest {
 
