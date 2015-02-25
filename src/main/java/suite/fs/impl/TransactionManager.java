@@ -13,9 +13,9 @@ import suite.util.FunUtil.Source;
 
 /**
  * Implements software transaction memory in a key-value storage.
- * 
+ *
  * Now this is implemented using exclusive locking for both read and write.
- * 
+ *
  * @author ywsing
  */
 public class TransactionManager<Key, Value> {

@@ -22,7 +22,7 @@ public class UnicodeData {
 				BufferedReader br = new BufferedReader(isr)) {
 			classByChars = Read.lines(is) //
 					.map(line -> line.split(";")) //
-					.map(a -> Pair.of(a[2], (Character) (char) Integer.parseInt(a[0], 16))) //
+					.map(a -> Pair.of(a[2], (char) Integer.parseInt(a[0], 16))) //
 					.collect(As.setMap());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

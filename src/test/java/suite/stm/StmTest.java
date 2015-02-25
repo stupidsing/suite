@@ -15,7 +15,6 @@ import org.junit.Test;
 import suite.stm.Stm.Memory;
 import suite.stm.Stm.Transaction;
 import suite.stm.Stm.TransactionException;
-import suite.stm.Stm.TransactionSink;
 
 public class StmTest {
 
@@ -114,19 +113,17 @@ public class StmTest {
 		for (int workingOrder : workingOrders)
 			workers.get(workingOrder).work(memories);
 
-		Stm.doTransaction(stm, new TransactionSink() {
-			public void sink(Transaction transaction) throws InterruptedException, TransactionException {
-				int sum = 0;
+		Stm.doTransaction(stm, transaction -> {
+			int sum = 0;
 
-				for (Memory<Integer> memory : memories) {
-					int read = memory.read(transaction);
-					System.out.println("FINAL MEMORY VALUE = " + read);
-					sum += read;
-				}
-
-				if (sum != 0)
-					throw new RuntimeException("Final sum is not zero, but is " + sum);
+			for (Memory<Integer> memory : memories) {
+				int read = memory.read(transaction);
+				System.out.println("FINAL MEMORY VALUE = " + read);
+				sum += read;
 			}
+
+			if (sum != 0)
+				throw new RuntimeException("Final sum is not zero, but is " + sum);
 		});
 	}
 

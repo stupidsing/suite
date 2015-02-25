@@ -12,12 +12,12 @@ public class Preprocess {
 		public final String text;
 
 		public Run(int start, int end) {
-			this.segment = new Segment(start, end);
-			this.text = null;
+			segment = new Segment(start, end);
+			text = null;
 		}
 
 		public Run(String text) {
-			this.segment = null;
+			segment = null;
 			this.text = text;
 		}
 	}

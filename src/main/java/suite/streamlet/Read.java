@@ -15,8 +15,8 @@ import java.util.Map;
 
 import suite.adt.Pair;
 import suite.util.FunUtil.Source;
-import suite.util.os.FileUtil;
 import suite.util.To;
+import suite.util.os.FileUtil;
 
 public class Read {
 

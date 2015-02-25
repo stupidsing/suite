@@ -12,8 +12,8 @@ import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.TimeUtil;
 import suite.util.TimeUtil.TimedResult;
-import suite.util.os.FileUtil;
 import suite.util.Util;
+import suite.util.os.FileUtil;
 import suite.weiqi.Weiqi.Occupation;
 
 /**

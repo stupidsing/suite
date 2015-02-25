@@ -16,7 +16,7 @@ import suite.stm.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
- * 
+ *
  * @author ywsing
  */
 public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTransaction> {

@@ -17,9 +17,9 @@ import suite.immutable.btree.impl.IbTreeStack;
 import suite.streamlet.Streamlet;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
-import suite.util.os.FileUtil;
 import suite.util.To;
 import suite.util.Util;
+import suite.util.os.FileUtil;
 
 public class IbTreeTest {
 

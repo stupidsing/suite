@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Keeps track of the package installed in local machine.
- * 
+ *
  * @author ywsing
  */
 public class Keeper {

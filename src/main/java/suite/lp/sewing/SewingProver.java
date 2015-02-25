@@ -44,9 +44,9 @@ import suite.util.Util;
  * but no improvement generally. No actual measurement was conducted.
  *
  * Would break under following conditions:
- * 
+ *
  * - rules containing wild searches that are unable to derive prototype from;
- * 
+ *
  * - asserts or retracts.
  *
  * @author ywsing

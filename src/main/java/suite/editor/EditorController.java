@@ -25,8 +25,8 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.os.FileUtil;
 import suite.util.To;
+import suite.util.os.FileUtil;
 
 public class EditorController {
 

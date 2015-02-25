@@ -13,7 +13,7 @@ import suite.util.SerializeUtil.Serializer;
 
 /**
  * Protect data against power loss or similar failures by recording journals.
- * 
+ *
  * @author ywsing
  */
 public class JournalledPageFileImpl implements Closeable, PageFile {

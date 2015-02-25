@@ -22,13 +22,13 @@ import suite.util.Util;
  * Parser for Backus-Naur form grammars.
  *
  * TODO cyclic problem:
- * 
+ *
  * primary-no-array-creation-expression ::= simple-name | member-access
- * 
+ *
  * member-access ::= primary-expression "." identifier (type-argument-list)?
- * 
+ *
  * primary-expression ::= primary-no-array-creation-expression
- * 
+ *
  * @author ywsing
  */
 public class Ebnf {

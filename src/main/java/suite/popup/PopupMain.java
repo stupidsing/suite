@@ -26,9 +26,9 @@ import suite.util.os.ExecUtil;
 
 /**
  * Volume up: Alt-A
- * 
+ *
  * Volume down: Alt-Z
- * 
+ *
  * @author ywsing
  */
 public class PopupMain extends ExecutableProgram {

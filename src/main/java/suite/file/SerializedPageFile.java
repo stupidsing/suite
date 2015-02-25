@@ -2,11 +2,9 @@ package suite.file;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.IOException;
 
 import suite.primitive.Bytes;
-import suite.primitive.IoSink;
 import suite.util.SerializeUtil.Serializer;
 
 /**
@@ -59,11 +57,7 @@ public class SerializedPageFile<V> implements Closeable {
 
 	public void save(int pageNo, V page) {
 		try {
-			pageFile.save(pageNo, Bytes.of(new IoSink<DataOutput>() {
-				public void sink(DataOutput dataOutput) throws IOException {
-					serializer.write(dataOutput, page);
-				}
-			}));
+			pageFile.save(pageNo, Bytes.of(dataOutput -> serializer.write(dataOutput, page)));
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}

@@ -9,8 +9,8 @@ import java.util.Set;
 
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
-import suite.util.os.FileUtil;
 import suite.util.ParseUtil;
+import suite.util.os.FileUtil;
 
 /**
  * Process #include tags.

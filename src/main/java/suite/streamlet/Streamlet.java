@@ -23,7 +23,7 @@ import suite.util.Util;
 /**
  * Implement functional structures using class methods (instead of static
  * methods in class FunUtil), just for easier code completion in source editor.
- * 
+ *
  * @author ywsing
  */
 public class Streamlet<T> implements Iterable<T> {

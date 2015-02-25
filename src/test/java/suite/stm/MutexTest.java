@@ -24,21 +24,17 @@ public class MutexTest {
 		Mutex a = new Mutex();
 		Mutex b = new Mutex();
 
-		MutexTestRunnable ra = new MutexTestRunnable() {
-			public void run() {
-				try (MutexLock mla = new MutexLock(a)) {
-					Util.sleepQuietly(500);
-					try (MutexLock mlb = new MutexLock(b)) {
-					}
+		MutexTestRunnable ra = () -> {
+			try (MutexLock mla = new MutexLock(a)) {
+				Util.sleepQuietly(500);
+				try (MutexLock mlb = new MutexLock(b)) {
 				}
 			}
 		};
-		MutexTestRunnable rb = new MutexTestRunnable() {
-			public void run() {
-				try (MutexLock mlb = new MutexLock(b)) {
-					Util.sleepQuietly(500);
-					try (MutexLock mla = new MutexLock(a)) {
-					}
+		MutexTestRunnable rb = () -> {
+			try (MutexLock mlb = new MutexLock(b)) {
+				Util.sleepQuietly(500);
+				try (MutexLock mla = new MutexLock(a)) {
 				}
 			}
 		};
@@ -51,21 +47,17 @@ public class MutexTest {
 		Mutex a = new Mutex();
 		Mutex b = new Mutex();
 
-		MutexTestRunnable ra = new MutexTestRunnable() {
-			public void run() {
-				try (MutexLock mla = new MutexLock(a)) {
-					Util.sleepQuietly(500);
-					try (MutexLock mlb = new MutexLock(b)) {
-					}
+		MutexTestRunnable ra = () -> {
+			try (MutexLock mla = new MutexLock(a)) {
+				Util.sleepQuietly(500);
+				try (MutexLock mlb = new MutexLock(b)) {
 				}
 			}
 		};
-		MutexTestRunnable rb = new MutexTestRunnable() {
-			public void run() {
-				try (MutexLock mla = new MutexLock(a)) {
-					Util.sleepQuietly(500);
-					try (MutexLock mlb = new MutexLock(b)) {
-					}
+		MutexTestRunnable rb = () -> {
+			try (MutexLock mla = new MutexLock(a)) {
+				Util.sleepQuietly(500);
+				try (MutexLock mlb = new MutexLock(b)) {
 				}
 			}
 		};
@@ -76,15 +68,13 @@ public class MutexTest {
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
 		boolean result[] = new boolean[] { false };
 		List<Thread> threads = Read.from(mtrs) //
-				.map(mtr -> new Thread(new Runnable() {
-					public void run() {
-						try {
-							mtr.run();
-						} catch (DeadlockException ex) {
-							result[0] = true;
-						} catch (Exception ex) {
-							LogUtil.error(ex);
-						}
+				.map(mtr -> new Thread(() -> {
+					try {
+						mtr.run();
+					} catch (DeadlockException ex1) {
+						result[0] = true;
+					} catch (Exception ex2) {
+						LogUtil.error(ex2);
 					}
 				})) //
 				.toList();

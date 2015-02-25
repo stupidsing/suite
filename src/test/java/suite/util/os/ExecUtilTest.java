@@ -7,8 +7,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.util.os.ExecUtil;
-
 public class ExecUtilTest {
 
 	@Test

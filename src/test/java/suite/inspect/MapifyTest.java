@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.inspect.Inspect;
-import suite.inspect.Mapify;
 import suite.lp.Configuration.ProverConfig;
 
 public class MapifyTest {

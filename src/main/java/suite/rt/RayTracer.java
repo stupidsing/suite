@@ -11,11 +11,11 @@ import suite.util.LogUtil;
 
 /**
  * TODO remove Vector.norm() at Ray constructor and fix maths
- * 
+ *
  * TODO fix RayTracerTest.testLight() etc cases black-out issues
- * 
+ *
  * TODO test accurate Fresnel (and Schlick's approximation?)
- * 
+ *
  * @author ywsing
  */
 public class RayTracer {
@@ -233,7 +233,7 @@ public class RayTracer {
 
 						if (lightRayHit == null || lightRayHit.advance() > 1f) {
 							Vector lightColor = lightSource.lit(hitPoint);
-							float cos = lightDot / (float) (Math.sqrt(Vector.abs2(lightDir)));
+							float cos = lightDot / (float) Math.sqrt(Vector.abs2(lightDir));
 							color = Vector.add(color, Vector.mul(lightColor, cos));
 						}
 					}

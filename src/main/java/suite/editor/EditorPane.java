@@ -113,8 +113,8 @@ public class EditorPane extends JEditorPane {
 		String s = f.apply(segment_);
 		document.remove(start, end - start);
 		document.insertString(start, s, null);
-		this.setSelectionStart(start);
-		this.setSelectionEnd(start + s.length());
+		setSelectionStart(start);
+		setSelectionEnd(start + s.length());
 	}
 
 	public boolean isModified() {
