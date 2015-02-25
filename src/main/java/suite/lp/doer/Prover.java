@@ -17,8 +17,8 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
 import suite.util.Util;
+import suite.util.os.LogUtil;
 
 public class Prover {
 

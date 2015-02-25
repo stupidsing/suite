@@ -11,7 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import suite.util.LogUtil;
 import suite.util.Util;
 
 public class SocketUtil {

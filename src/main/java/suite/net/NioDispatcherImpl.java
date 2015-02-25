@@ -17,7 +17,7 @@ import suite.net.channels.Channel;
 import suite.net.channels.Channel.Sender;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 
 public class NioDispatcherImpl<C extends Channel> extends ThreadedService implements NioDispatcher<C> {
 

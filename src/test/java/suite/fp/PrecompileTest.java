@@ -9,7 +9,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.sample.Profiler;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 
 public class PrecompileTest {
 

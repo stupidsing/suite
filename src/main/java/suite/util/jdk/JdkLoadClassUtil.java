@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 

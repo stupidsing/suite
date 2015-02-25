@@ -15,8 +15,8 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
 import suite.util.Util;
+import suite.util.os.LogUtil;
 
 /**
  * Parser for Backus-Naur form grammars.

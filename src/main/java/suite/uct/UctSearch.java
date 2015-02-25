@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 import suite.weiqi.Weiqi;
 
 /**

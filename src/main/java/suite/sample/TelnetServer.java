@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import suite.util.Copy;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 import suite.util.os.SocketUtil;
 
 public class TelnetServer {

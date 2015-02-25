@@ -9,8 +9,8 @@ import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
-import suite.util.LogUtil;
 import suite.util.os.FileUtil;
+import suite.util.os.LogUtil;
 
 public class JdkUtil {
 

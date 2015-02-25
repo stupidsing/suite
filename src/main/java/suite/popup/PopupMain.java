@@ -19,10 +19,10 @@ import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.util.os.ExecUtil;
+import suite.util.os.LogUtil;
 
 /**
  * Volume up: Alt-A

@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.os;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -14,9 +14,9 @@ import org.apache.log4j.PatternLayout;
 
 import suite.inspect.Dump;
 import suite.proxy.ProxyUtil;
+import suite.util.Copy;
 import suite.util.FunUtil.Source;
-import suite.util.TimeUtil.TimedResult;
-import suite.util.os.FileUtil;
+import suite.util.os.TimeUtil.TimedResult;
 
 public class LogUtil {
 

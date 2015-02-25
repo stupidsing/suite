@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 import suite.adt.Pair;
+import suite.util.os.LogUtil;
 
 public class FunUtil {
 

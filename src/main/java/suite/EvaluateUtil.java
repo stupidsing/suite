@@ -22,9 +22,9 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 import suite.util.Memoize;
 import suite.util.Util;
+import suite.util.os.LogUtil;
 
 public class EvaluateUtil {
 

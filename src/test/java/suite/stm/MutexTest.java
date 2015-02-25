@@ -10,8 +10,8 @@ import org.junit.Test;
 import suite.stm.Mutex.DeadlockException;
 import suite.stm.Mutex.MutexLock;
 import suite.streamlet.Read;
-import suite.util.LogUtil;
 import suite.util.Util;
+import suite.util.os.LogUtil;
 
 public class MutexTest {
 

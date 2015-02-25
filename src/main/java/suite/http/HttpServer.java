@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.adt.Pair;
-import suite.util.LogUtil;
 import suite.util.Util;
 import suite.util.os.FileUtil;
+import suite.util.os.LogUtil;
 import suite.util.os.SocketUtil;
 
 /**

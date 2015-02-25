@@ -15,7 +15,7 @@ import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 
 public class SingletonVariableChecker {
 

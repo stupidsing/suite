@@ -2,7 +2,7 @@ package suite.instructionexecutor;
 
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 
 public class StatisticsCollector {
 

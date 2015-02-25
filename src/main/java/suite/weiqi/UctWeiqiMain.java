@@ -10,10 +10,10 @@ import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
-import suite.util.TimeUtil;
-import suite.util.TimeUtil.TimedResult;
 import suite.util.Util;
 import suite.util.os.FileUtil;
+import suite.util.os.TimeUtil;
+import suite.util.os.TimeUtil.TimedResult;
 import suite.weiqi.Weiqi.Occupation;
 
 /**

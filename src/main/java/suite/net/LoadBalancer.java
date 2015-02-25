@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.util.Copy;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 import suite.util.os.SocketUtil;
 import suite.util.os.SocketUtil.Io;
 

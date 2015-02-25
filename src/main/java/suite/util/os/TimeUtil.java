@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util.os;
 
 import suite.util.FunUtil.Source;
 

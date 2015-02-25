@@ -15,7 +15,7 @@ import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
+import suite.util.os.LogUtil;
 
 public class PredicateCallChecker {
 
