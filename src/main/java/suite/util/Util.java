@@ -24,8 +24,8 @@ import org.apache.log4j.Level;
 
 import suite.adt.Pair;
 import suite.inspect.Dump;
+import suite.os.LogUtil;
 import suite.sample.Profiler;
-import suite.util.os.LogUtil;
 
 public class Util {
 

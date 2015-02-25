@@ -9,7 +9,7 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
-import suite.util.os.FileUtil;
+import suite.os.FileUtil;
 
 public class EbnfTest {
 

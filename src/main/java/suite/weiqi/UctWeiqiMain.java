@@ -6,14 +6,14 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 import suite.adt.Pair;
+import suite.os.FileUtil;
+import suite.os.TimeUtil;
+import suite.os.TimeUtil.TimedResult;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.Util;
-import suite.util.os.FileUtil;
-import suite.util.os.TimeUtil;
-import suite.util.os.TimeUtil.TimedResult;
 import suite.weiqi.Weiqi.Occupation;
 
 /**

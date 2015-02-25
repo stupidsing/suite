@@ -8,14 +8,14 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.os.TimeUtil;
+import suite.os.TimeUtil.TimedResult;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.Util;
-import suite.util.os.TimeUtil;
-import suite.util.os.TimeUtil.TimedResult;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UctTest {

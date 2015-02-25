@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.adt.Pair;
+import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.Util;
-import suite.util.os.SocketUtil;
 
 public class NntpServer {
 

@@ -2,8 +2,8 @@ package suite.net.channels;
 
 import java.io.IOException;
 
+import suite.os.LogUtil;
 import suite.primitive.Bytes;
-import suite.util.os.LogUtil;
 
 /**
  * Channel with a send buffer.

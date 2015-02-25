@@ -10,11 +10,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import suite.adt.Pair;
+import suite.os.FileUtil;
 import suite.pkgmanager.actions.ExecCommandAction;
 import suite.pkgmanager.actions.ExtractFileAction;
 import suite.pkgmanager.actions.InstallAction;
 import suite.streamlet.Read;
-import suite.util.os.FileUtil;
 import suite.wildcard.WildcardUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

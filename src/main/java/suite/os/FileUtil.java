@@ -1,4 +1,4 @@
-package suite.util.os;
+package suite.os;
 
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;

@@ -1,4 +1,4 @@
-package suite.util.os;
+package suite.os;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

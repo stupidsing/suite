@@ -1,4 +1,4 @@
-package suite.util.os;
+package suite.os;
 
 import java.io.BufferedReader;
 import java.io.IOException;

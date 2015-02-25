@@ -10,9 +10,9 @@ import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
+import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.To;
-import suite.util.os.FileUtil;
 
 public class RecursiveFactorizerTest {
 

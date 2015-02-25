@@ -14,12 +14,12 @@ import suite.immutable.btree.impl.IbTreeBuilder;
 import suite.immutable.btree.impl.IbTreeConfiguration;
 import suite.immutable.btree.impl.IbTreeImpl;
 import suite.immutable.btree.impl.IbTreeStack;
+import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 import suite.util.To;
 import suite.util.Util;
-import suite.util.os.FileUtil;
 
 public class IbTreeTest {
 

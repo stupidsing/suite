@@ -19,10 +19,10 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.os.FileUtil;
 
 public class XmlUtil {
 

@@ -9,7 +9,7 @@ import org.junit.Test;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.os.FileUtil;
+import suite.os.FileUtil;
 
 public class ParserCompareTest {
 

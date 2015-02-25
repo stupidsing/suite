@@ -2,7 +2,7 @@ package suite.pkgmanager.actions;
 
 import java.io.IOException;
 
-import suite.util.os.ExecUtil;
+import suite.os.ExecUtil;
 
 public class ExecCommandAction implements InstallAction {
 

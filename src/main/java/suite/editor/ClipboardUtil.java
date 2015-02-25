@@ -8,7 +8,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import suite.util.os.LogUtil;
+import suite.os.LogUtil;
 
 public class ClipboardUtil {
 

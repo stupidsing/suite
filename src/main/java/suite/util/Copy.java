@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
-import suite.util.os.LogUtil;
+import suite.os.LogUtil;
 
 public class Copy {
 

@@ -17,10 +17,10 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.os.LogUtil;
 import suite.primitive.Chars;
 import suite.streamlet.Read;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 public class Intrinsics {
 

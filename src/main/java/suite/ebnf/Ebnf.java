@@ -11,12 +11,12 @@ import java.util.Map.Entry;
 
 import suite.adt.Pair;
 import suite.ebnf.EbnfExpect.Expect;
+import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 /**
  * Parser for Backus-Naur form grammars.

@@ -12,7 +12,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
-import suite.util.os.FileUtil;
+import suite.os.FileUtil;
 
 public class IterativeParserTest {
 

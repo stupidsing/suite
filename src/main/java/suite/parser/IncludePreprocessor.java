@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import suite.os.FileUtil;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
-import suite.util.os.FileUtil;
 
 /**
  * Process #include tags.

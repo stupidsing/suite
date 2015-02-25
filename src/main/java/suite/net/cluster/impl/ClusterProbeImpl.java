@@ -19,14 +19,14 @@ import java.util.Set;
 
 import suite.net.ThreadedService;
 import suite.net.cluster.ClusterProbe;
+import suite.os.FileUtil;
+import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 import suite.util.Util;
-import suite.util.os.FileUtil;
-import suite.util.os.LogUtil;
 
 /**
  * Probes existence of other nodes in a cluster, using the un-reliable UDP

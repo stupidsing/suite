@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.adt.Pair;
+import suite.os.FileUtil;
+import suite.os.LogUtil;
+import suite.os.SocketUtil;
 import suite.util.Util;
-import suite.util.os.FileUtil;
-import suite.util.os.LogUtil;
-import suite.util.os.SocketUtil;
 
 /**
  * A very crude HTTP server.

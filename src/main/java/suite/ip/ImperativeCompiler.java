@@ -11,10 +11,10 @@ import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder;
 import suite.node.Node;
+import suite.os.FileUtil;
 import suite.parser.IncludePreprocessor;
 import suite.primitive.Bytes;
 import suite.text.Preprocess;
-import suite.util.os.FileUtil;
 
 public class ImperativeCompiler {
 

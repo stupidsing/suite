@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.adt.Pair;
+import suite.os.FileUtil;
 import suite.util.Util;
-import suite.util.os.FileUtil;
 
 public class HttpHeaderUtil {
 

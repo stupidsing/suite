@@ -31,13 +31,13 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Rewriter;
+import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 /**
  * Compile logical rules into lambda-sews and run them. Supposed to be faster

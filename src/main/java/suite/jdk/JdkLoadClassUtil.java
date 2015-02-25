@@ -1,4 +1,4 @@
-package suite.util.jdk;
+package suite.jdk;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import suite.util.os.LogUtil;
+import suite.os.LogUtil;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 

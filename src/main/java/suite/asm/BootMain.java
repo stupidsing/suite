@@ -5,11 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import suite.ip.ImperativeCompiler;
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.util.Util.RunOption;
-import suite.util.os.FileUtil;
 
 // mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.asm.BootMain
 public class BootMain extends ExecutableProgram {

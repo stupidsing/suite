@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import suite.math.Vector;
-import suite.util.os.LogUtil;
+import suite.os.LogUtil;
 
 /**
  * TODO remove Vector.norm() at Ray constructor and fix maths

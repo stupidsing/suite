@@ -10,8 +10,8 @@ import java.io.Reader;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-import suite.util.os.FileUtil;
-import suite.util.os.SocketUtil;
+import suite.os.FileUtil;
+import suite.os.SocketUtil;
 
 public class Connector {
 

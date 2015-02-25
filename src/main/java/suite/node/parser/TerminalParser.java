@@ -6,9 +6,9 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.Escaper;
 import suite.node.util.Context;
+import suite.os.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 public class TerminalParser {
 

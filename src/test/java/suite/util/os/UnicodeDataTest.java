@@ -2,6 +2,8 @@ package suite.util.os;
 
 import org.junit.Test;
 
+import suite.os.UnicodeData;
+
 public class UnicodeDataTest {
 
 	@Test

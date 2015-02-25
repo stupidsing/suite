@@ -8,8 +8,8 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
+import suite.os.LogUtil;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 public class BasicIntrinsics {
 

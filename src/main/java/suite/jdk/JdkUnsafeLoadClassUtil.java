@@ -1,10 +1,10 @@
-package suite.util.jdk;
+package suite.jdk;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import suite.util.os.LogUtil;
+import suite.os.LogUtil;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import suite.inspect.Inspect;
 import suite.inspect.Mapify;
-import suite.util.os.FileUtil;
+import suite.os.FileUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

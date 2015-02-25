@@ -8,8 +8,8 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
+import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.os.LogUtil;
 
 public class CompiledProverBuilder implements Builder {
 

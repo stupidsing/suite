@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.os.LogUtil;
 import suite.stm.Mutex.DeadlockException;
 import suite.stm.Mutex.MutexLock;
 import suite.streamlet.Read;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 public class MutexTest {
 

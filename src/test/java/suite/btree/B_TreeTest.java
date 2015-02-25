@@ -15,10 +15,10 @@ import org.junit.Test;
 import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFileImpl;
+import suite.os.FileUtil;
 import suite.util.SerializeUtil;
 import suite.util.To;
 import suite.util.Util;
-import suite.util.os.FileUtil;
 
 public class B_TreeTest {
 

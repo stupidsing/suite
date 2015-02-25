@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Random;
 
 import suite.http.HttpServer.Handler;
+import suite.os.FileUtil;
 import suite.util.HtmlUtil;
 import suite.util.Util;
-import suite.util.os.FileUtil;
 
 public class HttpSessionController {
 

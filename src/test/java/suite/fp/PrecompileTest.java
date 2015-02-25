@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
+import suite.os.LogUtil;
 import suite.sample.Profiler;
-import suite.util.os.LogUtil;
 
 public class PrecompileTest {
 

@@ -20,11 +20,11 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Node;
+import suite.os.LogUtil;
 import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 public class EvaluateUtil {
 

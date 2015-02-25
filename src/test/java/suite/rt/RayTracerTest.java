@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 
 import suite.math.Vector;
+import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.RtObject;
@@ -21,7 +22,6 @@ import suite.rt.composites.Union;
 import suite.rt.planars.Plane;
 import suite.rt.planars.Triangle;
 import suite.util.Util;
-import suite.util.os.FileUtil;
 
 public class RayTracerTest {
 

@@ -1,7 +1,7 @@
 package suite.node.io;
 
+import suite.os.LogUtil;
 import suite.util.Util;
-import suite.util.os.LogUtil;
 
 public class Escaper {
 
