@@ -10,7 +10,6 @@ import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
-import suite.primitive.Chars;
 import suite.streamlet.Read;
 import suite.util.FileUtil;
 import suite.util.To;
@@ -37,14 +36,16 @@ public class RecursiveFactorizerTest {
 	}
 
 	private FNode transform(FNode fn) {
-		Chars from = To.chars("ic-compile0");
-		Chars to = To.chars("ic-compile1");
+		FTerminal from = new FTerminal(To.chars("ic-compile0"));
+		FTerminal to = new FTerminal(To.chars("ic-compile1"));
 
-		if (fn instanceof FTree) {
+		if (fn.equals(from))
+			return to;
+		else if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
 			return new FTree(ft.type, ft.name, Read.from(ft.fns).map(this::transform).toList());
 		} else
-			return new FTerminal(((FTerminal) fn).chars.replace(from, to));
+			return fn;
 	}
 
 }

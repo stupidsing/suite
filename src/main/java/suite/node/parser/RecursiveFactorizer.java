@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
+import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
@@ -39,6 +40,14 @@ public class RecursiveFactorizer {
 		public FTerminal(Chars chars) {
 			this.chars = chars;
 		}
+
+		public int hashCode() {
+			return chars.hashCode();
+		}
+
+		public boolean equals(Object object) {
+			return object.getClass() == FTerminal.class && Objects.equals(chars, ((FTerminal) object).chars);
+		}
 	}
 
 	public static class FTree implements FNode {
@@ -50,6 +59,18 @@ public class RecursiveFactorizer {
 			this.type = type;
 			this.name = name;
 			this.fns = fns;
+		}
+
+		public int hashCode() {
+			return type.hashCode() ^ name.hashCode() ^ fns.hashCode();
+		}
+
+		public boolean equals(Object object) {
+			if (object.getClass() == FTree.class) {
+				FTree ft = (FTree) object;
+				return type == ft.type && Util.stringEquals(name, ft.name) && Objects.equals(fns, ft.fns);
+			} else
+				return false;
 		}
 	}
 
@@ -146,10 +167,10 @@ public class RecursiveFactorizer {
 
 	private FNode term(Chars chars) {
 		Chars chars1 = CharsUtil.trim(chars);
-		int p0 = reverser.reverseBegin(chars.start);
-		int p1 = reverser.reverseBegin(chars1.start);
-		int p2 = reverser.reverseBegin(chars1.end);
-		int px = reverser.reverseBegin(chars.end);
+		int p0 = reverser.reverseEnd(chars.start);
+		int p1 = reverser.reverseEnd(chars1.start);
+		int p2 = reverser.reverseEnd(chars1.end);
+		int px = reverser.reverseEnd(chars.end);
 
 		List<FNode> list = Arrays.asList(new FTerminal(new Chars(in.cs, p0, p1)) //
 				, new FTerminal(new Chars(in.cs, p1, p2)) //
