@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.streamlet.Read;
+
 /**
  * Retrieve list of fields of a value object, and provide shallow
  * equals()/hashCode() methods.
@@ -29,16 +31,15 @@ public class InspectUtil {
 	}
 
 	private List<Object> list(Object object) {
-		List<Object> list = new ArrayList<>();
-
-		for (Field field : getFields(object.getClass()))
-			try {
-				list.add(field.get(object));
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-
-		return list;
+		return Read.from(getFields(object.getClass())) //
+				.map(field -> {
+					try {
+						return field.get(object);
+					} catch (IllegalAccessException ex) {
+						throw new RuntimeException(ex);
+					}
+				}) //
+				.toList();
 	}
 
 	public List<Field> getFields(Class<?> clazz) {
@@ -53,14 +54,13 @@ public class InspectUtil {
 		List<Field> parentFields = superClass != null ? getFields(superClass) : Collections.<Field> emptyList();
 		List<Field> fields = new ArrayList<>(parentFields);
 
-		for (Field field : clazz.getDeclaredFields()) {
-			int modifiers = field.getModifiers();
+		Read.from(clazz.getDeclaredFields()) //
+				.filter(field -> {
+					int modifiers = field.getModifiers();
+					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers);
+				}).toList();
 
-			if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
-				field.setAccessible(true);
-				fields.add(field);
-			}
-		}
+		Read.from(fields).forEach(field -> field.setAccessible(true));
 
 		return fields;
 	}

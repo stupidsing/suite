@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
-import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
@@ -16,12 +15,15 @@ import suite.primitive.CharsUtil;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
+import suite.util.InspectUtil;
 import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.To;
 import suite.util.Util;
 
 public class RecursiveFactorizer {
+
+	private static InspectUtil inspectUtil = new InspectUtil();
 
 	private Operator operators[];
 	private Chars in;
@@ -31,26 +33,25 @@ public class RecursiveFactorizer {
 		ENCLOSE, OPER___, SPACE__, TERMINAL,
 	}
 
-	public interface FNode {
+	public static class FNode {
+		public int hashCode() {
+			return inspectUtil.hashCode(this);
+		}
+
+		public boolean equals(Object object) {
+			return inspectUtil.equals(this, object);
+		}
 	}
 
-	public static class FTerminal implements FNode {
+	public static class FTerminal extends FNode {
 		public final Chars chars;
 
 		public FTerminal(Chars chars) {
 			this.chars = chars;
 		}
-
-		public int hashCode() {
-			return chars.hashCode();
-		}
-
-		public boolean equals(Object object) {
-			return object.getClass() == FTerminal.class && Objects.equals(chars, ((FTerminal) object).chars);
-		}
 	}
 
-	public static class FTree implements FNode {
+	public static class FTree extends FNode {
 		public final FNodeType type;
 		public final String name;
 		public final List<FNode> fns;
@@ -59,18 +60,6 @@ public class RecursiveFactorizer {
 			this.type = type;
 			this.name = name;
 			this.fns = fns;
-		}
-
-		public int hashCode() {
-			return type.hashCode() ^ name.hashCode() ^ fns.hashCode();
-		}
-
-		public boolean equals(Object object) {
-			if (object.getClass() == FTree.class) {
-				FTree ft = (FTree) object;
-				return type == ft.type && Util.stringEquals(name, ft.name) && Objects.equals(fns, ft.fns);
-			} else
-				return false;
 		}
 	}
 

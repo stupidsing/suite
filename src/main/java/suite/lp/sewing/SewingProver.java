@@ -111,7 +111,7 @@ public class SewingProver {
 
 	public SewingProver(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
-		rules = Read.from(rs.getRules()).groupBy(rule -> Prototype.of(rule)).collect(As.multimap());
+		rules = Read.from(rs.getRules()).groupBy(Prototype::of).collect(As.multimap());
 
 		if (!rules.containsKey(null))
 			compileAll();
