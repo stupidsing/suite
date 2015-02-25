@@ -2,7 +2,6 @@ package suite.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -52,16 +51,14 @@ public class InspectUtil {
 	private List<Field> getFields0(Class<?> clazz) {
 		Class<?> superClass = clazz.getSuperclass();
 		List<Field> parentFields = superClass != null ? getFields(superClass) : Collections.<Field> emptyList();
-		List<Field> fields = new ArrayList<>(parentFields);
-
-		Read.from(clazz.getDeclaredFields()) //
+		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();
 					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers);
 				}).toList();
 
+		List<Field> fields = Util.add(parentFields, childFields);
 		Read.from(fields).forEach(field -> field.setAccessible(true));
-
 		return fields;
 	}
 
