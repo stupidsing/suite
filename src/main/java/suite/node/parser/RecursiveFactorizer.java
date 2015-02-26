@@ -33,7 +33,10 @@ public class RecursiveFactorizer {
 		ENCLOSE, OPER___, SPACE__, TERMINAL,
 	}
 
-	public static class FNode {
+	public interface FNode {
+	}
+
+	public static class FNodeImpl implements FNode {
 		public int hashCode() {
 			return inspect.hashCode(this);
 		}
@@ -43,7 +46,7 @@ public class RecursiveFactorizer {
 		}
 	}
 
-	public static class FTerminal extends FNode {
+	public static class FTerminal extends FNodeImpl {
 		public final Chars chars;
 
 		public FTerminal(Chars chars) {
@@ -51,7 +54,7 @@ public class RecursiveFactorizer {
 		}
 	}
 
-	public static class FTree extends FNode {
+	public static class FTree extends FNodeImpl {
 		public final FNodeType type;
 		public final String name;
 		public final List<FNode> fns;

@@ -25,6 +25,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.primitive.Chars;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
@@ -109,7 +110,7 @@ public class Nodify {
 				return object -> Atom.of(object.toString());
 			else if (clazz == int.class)
 				return object -> Int.of((Integer) object);
-			else if (clazz == String.class)
+			else if (clazz == Chars.class || clazz == String.class)
 				return object -> new Str(object.toString());
 			else if (clazz.isEnum())
 				return object -> Atom.of(object.toString());
@@ -135,13 +136,9 @@ public class Nodify {
 				return object -> {
 					Class<?> clazz1 = object.getClass();
 					Node d = getNodifier(clazz1).apply(object);
-					if (d instanceof Dict) {
-						Dict dict = new Dict();
+					if (d instanceof Dict)
 						((Dict) d).map.put(CLASS, Reference.of(new Str(clazz1.getName())));
-						return dict;
-					} else
-						// Happens when an enum implements an interface
-						return d;
+					return d;
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
@@ -198,7 +195,7 @@ public class Nodify {
 				return node -> node == TRUE;
 			else if (clazz == int.class)
 				return node -> ((Int) node).number;
-			else if (clazz == String.class)
+			else if (clazz == Chars.class || clazz == String.class)
 				return node -> ((Str) node).value;
 			else if (clazz.isEnum())
 				return Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()), e -> e)::get;
@@ -301,14 +298,12 @@ public class Nodify {
 	}
 
 	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		List<Field> fields = inspect.fields(clazz);
-		List<FieldInfo> fieldInfos = new ArrayList<>();
-
-		for (Field field : fields) {
-			Type type = field.getGenericType();
-			fieldInfos.add(new FieldInfo(field, field.getName(), createNodifier0(type), createUnnodifier0(type)));
-		}
-		return fieldInfos;
+		return Read.from(inspect.fields(clazz)) //
+				.map(field -> {
+					Type type = field.getGenericType();
+					return new FieldInfo(field, field.getName(), createNodifier0(type), createUnnodifier0(type));
+				}) //
+				.toList();
 	}
 
 	private Node apply0(Fun<Object, Node> fun, Object object) {

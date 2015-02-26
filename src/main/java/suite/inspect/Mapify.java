@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -34,7 +35,7 @@ public class Mapify {
 	private Map<Class<?>, Fun<Object, Object>> mapifiers = new ConcurrentHashMap<>();
 	private Map<Class<?>, Fun<Object, Object>> unmapifiers = new ConcurrentHashMap<>();
 
-	private Inspect inspectUtil;
+	private Inspect inspect;
 
 	private class FieldInfo {
 		private Field field;
@@ -50,8 +51,8 @@ public class Mapify {
 		}
 	}
 
-	public Mapify(Inspect inspectUtil) {
-		this.inspectUtil = inspectUtil;
+	public Mapify(Inspect inspect) {
+		this.inspect = inspect;
 	}
 
 	public <T> Object mapify(Class<T> clazz, T t) {
@@ -292,14 +293,12 @@ public class Mapify {
 	}
 
 	private List<FieldInfo> getFieldInfos(Class<?> clazz) {
-		List<Field> fields = inspectUtil.fields(clazz);
-		List<FieldInfo> fieldInfos = new ArrayList<>();
-
-		for (Field field : fields) {
-			Type type = field.getGenericType();
-			fieldInfos.add(new FieldInfo(field, field.getName(), createMapifier0(type), createUnmapifier0(type)));
-		}
-		return fieldInfos;
+		return Read.from(inspect.fields(clazz)) //
+				.map(field -> {
+					Type type = field.getGenericType();
+					return new FieldInfo(field, field.getName(), createMapifier0(type), createUnmapifier0(type));
+				}) //
+				.toList();
 	}
 
 	private Object apply0(Fun<Object, Object> fun, Object object) {

@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
+import suite.util.Nodify;
 import suite.util.To;
 
 public class RecursiveFactorizerTest {
@@ -33,6 +35,13 @@ public class RecursiveFactorizerTest {
 		FNode fnx = transform(fn0);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);
+	}
+
+	@Test
+	public void testRefactorNodify() throws IOException {
+		String s0 = "1 + 2 * 3";
+		FNode fn0 = recursiveFactorizer.parse(s0);
+		System.out.println(new Nodify(new Inspect()).nodify(FNode.class, fn0));
 	}
 
 	private FNode transform(FNode fn) {
