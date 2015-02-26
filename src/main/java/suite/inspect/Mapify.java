@@ -257,7 +257,7 @@ public class Mapify {
 					return object1;
 				};
 			} else
-				return createMapifier0(rawType);
+				return createUnmapifier0(rawType);
 		}
 
 		throw new RuntimeException("Unrecognized type " + type);
