@@ -1,4 +1,4 @@
-package suite.util.os;
+package suite.os;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
