@@ -3,12 +3,11 @@ package suite.wildcard;
 import java.util.Deque;
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 import suite.util.Util;
 
 public class Matcher {
@@ -30,7 +29,7 @@ public class Matcher {
 
 		private State(String input, int position, IList<String> matches) {
 			this.input = input;
-			this.pos = position;
+			pos = position;
 			this.matches = matches;
 		}
 
@@ -59,22 +58,18 @@ public class Matcher {
 		for (char ch : Util.chars(pattern))
 			switch (ch) {
 			case '*':
-				st = st.concatMap(new Fun<State, Streamlet<State>>() {
-					public Streamlet<State> apply(State state) {
-						return Read.from(new Source<State>() {
-							private int start = state.pos;
-							private int end = state.pos;
+				st = st.concatMap(state -> Read.from(new Source<State>() {
+					private int start = state.pos;
+					private int end = state.pos;
 
-							public State source() {
-								if (end <= state.input.length()) {
-									String m = state.input.substring(start, end);
-									return new State(state.input, end++, IList.cons(m, state.matches));
-								} else
-									return null;
-							}
-						});
+					public State source() {
+						if (end <= state.input.length()) {
+							String m = state.input.substring(start, end);
+							return new State(state.input, end++, IList.cons(m, state.matches));
+						} else
+							return null;
 					}
-				});
+				}));
 				break;
 			case '?':
 				st = st.concatMap(state -> !state.eof() ? Read.from(new State(state, 1)) : noResult);

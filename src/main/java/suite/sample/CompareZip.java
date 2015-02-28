@@ -6,9 +6,9 @@ import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.text.TextUtil;
-import suite.util.FileUtil;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;

@@ -3,11 +3,8 @@ package suite.node.parser;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -15,11 +12,10 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
+import suite.node.parser.Lexer.Token;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
-import suite.text.Transform;
-import suite.util.CommandUtil;
-import suite.util.Pair;
+import suite.text.Preprocess;
 import suite.util.Util;
 
 /**
@@ -29,7 +25,6 @@ import suite.util.Util;
  */
 public class IterativeParser {
 
-	private CommandUtil<Operator> commandUtil;
 	private TerminalParser terminalParser;
 	private Operator operators[];
 
@@ -39,126 +34,12 @@ public class IterativeParser {
 
 	private IterativeParser(Context context, Operator operators[]) {
 		this.operators = operators;
-		Map<String, Operator> operatorsByName = new HashMap<>();
-
-		for (Operator operator : operators)
-			if (operator != TermOp.TUPLE_)
-				operatorsByName.put(operator.getName(), operator);
-
-		commandUtil = new CommandUtil<>(operatorsByName);
 		terminalParser = new TerminalParser(context);
 	}
 
 	public Node parse(String in0) {
-		String in1 = Transform.transform(TransformerFactory.create(operators), in0).t0;
+		String in1 = Preprocess.transform(PreprocessorFactory.create(operators), in0).t0;
 		return new Parse(in1).parse();
-	}
-
-	private enum LexType {
-		CHAR__, HEX__, ID___, OPER_, SPACE, STR__, SYM__
-	}
-
-	private class Token {
-		private LexType type;
-		private Operator operator;
-		private String data;
-
-		private Token(LexType type, Operator operator) {
-			this.type = type;
-			this.operator = operator;
-		}
-	}
-
-	private class Lex {
-		private String in;
-		private int pos = 0;
-		private Token token0;
-
-		private Lex(String in) {
-			this.in = in;
-		}
-
-		private Token lex() {
-			return token0 = lex0();
-		}
-
-		private Token lex0() {
-			if (pos < in.length()) {
-				int start = pos;
-				Token token = detect();
-				LexType type = token.type;
-
-				if (type == LexType.ID___ || type == LexType.SPACE)
-					while (pos < in.length() && detect().type == type)
-						pos++;
-				else if (type == LexType.CHAR__)
-					pos += 4;
-				else if (type == LexType.HEX__) {
-					pos += 2;
-					while (pos < in.length() && "0123456789ABCDEF".indexOf(in.charAt(pos)) >= 0)
-						pos++;
-				} else if (type == LexType.OPER_)
-					pos += token.operator.getName().length();
-				else if (type == LexType.STR__) {
-					char quote = in.charAt(pos);
-					while (pos < in.length() && in.charAt(pos) == quote) {
-						pos++;
-						while (pos < in.length() && in.charAt(pos) != quote)
-							pos++;
-						pos++;
-					}
-				} else if (type == LexType.SYM__)
-					pos++;
-
-				token.data = in.substring(start, pos);
-
-				if (type == LexType.SPACE) {
-					List<Integer> precs = new ArrayList<>();
-
-					for (Token t : Arrays.asList(token0, detect()))
-						if (t != null && t.operator != null)
-							precs.add(t.operator.getPrecedence());
-
-					if (!precs.isEmpty() && Collections.min(precs) > TermOp.TUPLE_.getPrecedence()) {
-						token.type = LexType.OPER_;
-						token.operator = TermOp.TUPLE_;
-					} else
-						token = lex0();
-				}
-
-				return token;
-			} else
-				return null;
-		}
-
-		private Token detect() {
-			LexType type;
-			Operator operator = Pair.first_(commandUtil.recognize(in, pos));
-
-			if (pos < in.length()) {
-				char ch = in.charAt(pos);
-
-				if (operator != null)
-					type = LexType.OPER_;
-				else if (ch == '+' && pos + 4 < in.length() && in.charAt(pos + 1) == '\'')
-					type = LexType.CHAR__;
-				else if (ch == '+' && pos + 1 < in.length() && in.charAt(pos + 1) == 'x')
-					type = LexType.HEX__;
-				else if (ch == ' ')
-					type = LexType.SPACE;
-				else if (ch == '\'' || ch == '"')
-					type = LexType.STR__;
-				else if (ch == '(' || ch == '[' || ch == '{' //
-						|| ch == ')' || ch == ']' || ch == '}' //
-						|| ch == '`')
-					type = LexType.SYM__;
-				else
-					type = LexType.ID___;
-			} else
-				type = null;
-
-			return new Token(type, operator);
-		}
 	}
 
 	private class Section {
@@ -193,13 +74,13 @@ public class IterativeParser {
 		}
 
 		private Node parse() {
-			Lex lex = new Lex(in);
+			Lexer lex = new Lexer(operators, in);
 			stack.push(new Section(' '));
 			Token token;
 
 			while ((token = lex.lex()) != null) {
 				Operator operator = token.operator;
-				String data = token.data;
+				String data = token.getData();
 				char ch = data.charAt(0);
 
 				if (operator != null) {

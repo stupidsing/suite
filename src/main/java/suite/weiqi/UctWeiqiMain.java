@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
+import suite.adt.Pair;
+import suite.os.FileUtil;
+import suite.os.TimeUtil;
+import suite.os.TimeUtil.TimedResult;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
-import suite.util.FileUtil;
-import suite.util.Pair;
-import suite.util.TimeUtil;
-import suite.util.TimeUtil.TimedResult;
 import suite.util.Util;
 import suite.weiqi.Weiqi.Occupation;
 

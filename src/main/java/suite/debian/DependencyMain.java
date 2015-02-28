@@ -11,9 +11,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.debian.AptUtil.Repo;
+import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FileUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 

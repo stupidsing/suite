@@ -26,7 +26,7 @@ public class InstructionAnalyzer {
 		private List<AnalyzedRegister> registers;
 
 		public AnalyzedFrame(int ip) {
-			this.frameBeginIp = ip;
+			frameBeginIp = ip;
 		}
 
 		public boolean isAccessedByChildFrames() {

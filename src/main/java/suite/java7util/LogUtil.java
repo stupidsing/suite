@@ -7,8 +7,8 @@ import java.lang.reflect.Proxy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import suite.inspect.Dump;
 import suite.util.Copy;
-import suite.util.Dump;
 
 @Deprecated
 public class LogUtil {

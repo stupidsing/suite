@@ -57,7 +57,7 @@ public class InstructionExtractor implements AutoCloseable {
 		Tree tree;
 		Node value;
 
-		while (!deque.isEmpty()) {
+		while (!deque.isEmpty())
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
 				IdentityKey key = new IdentityKey(tree);
 				Integer ip = ipsByLabelId.get(key);
@@ -83,7 +83,6 @@ public class InstructionExtractor implements AutoCloseable {
 				} else
 					rsList.add(Arrays.asList(Atom.of("JUMP"), Int.of(ip)));
 			}
-		}
 	}
 
 	private Instruction extract(List<Node> rs) {

@@ -7,15 +7,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import suite.util.FileUtil;
-import suite.util.InspectUtil;
-import suite.util.MapifyUtil;
+import suite.inspect.Inspect;
+import suite.inspect.Mapify;
+import suite.os.FileUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Keeps track of the package installed in local machine.
- * 
+ *
  * @author ywsing
  */
 public class Keeper {
@@ -23,7 +23,7 @@ public class Keeper {
 	private String keeperDirectory = FileUtil.tmp + "/keeper";
 
 	private ObjectMapper objectMapper;
-	private MapifyUtil mapifyUtil = new MapifyUtil(new InspectUtil());
+	private Mapify mapify = new Mapify(new Inspect());
 
 	public Keeper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
@@ -31,7 +31,7 @@ public class Keeper {
 
 	public PackageMemento loadPackageMemento(String packageName) throws IOException {
 		try (InputStream is = new FileInputStream(keeperDirectory + "/" + packageName)) {
-			return mapifyUtil.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
+			return mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
 		}
 	}
 
@@ -39,7 +39,7 @@ public class Keeper {
 		String packageName = packageMemento.getPackageManifest().getName();
 
 		try (OutputStream os = FileUtil.out(keeperDirectory + "/" + packageName)) {
-			objectMapper.writeValue(os, mapifyUtil.mapify(PackageMemento.class, packageMemento));
+			objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento));
 		}
 	}
 

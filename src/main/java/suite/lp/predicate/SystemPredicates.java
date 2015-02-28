@@ -75,6 +75,7 @@ public class SystemPredicates {
 		addPredicate("persist.load", formatPredicates.persistLoad);
 		addPredicate("persist.save", formatPredicates.persistSave);
 		addPredicate("pretty.print", formatPredicates.prettyPrint);
+		addPredicate("pretty.print.new", formatPredicates.prettyPrintNew);
 		addPredicate("rpn", formatPredicates.rpnPredicate);
 		addPredicate("starts.with", formatPredicates.startsWith);
 		addPredicate("string.length", formatPredicates.stringLength);

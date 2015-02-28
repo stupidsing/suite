@@ -2,7 +2,7 @@ package suite.ebnf;
 
 import java.util.Set;
 
-import suite.util.UnicodeData;
+import suite.os.UnicodeData;
 import suite.util.Util;
 
 public class EbnfExpect {

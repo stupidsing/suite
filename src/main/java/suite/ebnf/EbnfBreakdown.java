@@ -3,11 +3,11 @@ package suite.ebnf;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.ebnf.EbnfNode.EbnfType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
-import suite.util.Pair;
 import suite.util.ParseUtil;
 import suite.util.Util;
 

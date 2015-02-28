@@ -17,8 +17,9 @@ import suite.node.io.Persister.Loader;
 import suite.node.io.Persister.Saver;
 import suite.node.io.ReversePolish;
 import suite.node.io.TermOp;
+import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
-import suite.util.FileUtil;
+import suite.os.FileUtil;
 
 public class FormatPredicates {
 
@@ -77,6 +78,8 @@ public class FormatPredicates {
 	};
 
 	public BuiltinPredicate prettyPrint = PredicateUtil.run(n -> System.out.println(new PrettyPrinter().prettyPrint(n)));
+
+	public BuiltinPredicate prettyPrintNew = PredicateUtil.run(n -> System.out.println(new NewPrettyPrinter().prettyPrint(n)));
 
 	public BuiltinPredicate rpnPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);

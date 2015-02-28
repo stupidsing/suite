@@ -17,9 +17,9 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.os.LogUtil;
 import suite.primitive.Chars;
 import suite.streamlet.Read;
-import suite.util.LogUtil;
 import suite.util.Util;
 
 public class Intrinsics {
@@ -47,18 +47,16 @@ public class Intrinsics {
 
 	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
 		Intrinsic drains[] = new Intrinsic[1];
-		drains[0] = new Intrinsic() {
-			public Node invoke(IntrinsicCallback callback, List<Node> inputs) {
-				IPointer<Node> pointer = Data.get(inputs.get(0));
-				Node head;
+		drains[0] = (callback1, inputs) -> {
+			IPointer<Node> pointer1 = Data.get(inputs.get(0));
+			Node head;
 
-				if ((head = pointer.head()) != null) {
-					Node left = callback.enclose(Intrinsics.id_, head);
-					Node right = callback.enclose(drains[0], new Data<>(pointer.tail()));
-					return Tree.of(TermOp.OR____, left, right);
-				} else
-					return Atom.NIL;
-			}
+			if ((head = pointer1.head()) != null) {
+				Node left = callback1.enclose(Intrinsics.id_, head);
+				Node right = callback1.enclose(drains[0], new Data<>(pointer1.tail()));
+				return Tree.of(TermOp.OR____, left, right);
+			} else
+				return Atom.NIL;
 		};
 		return callback.yawn(callback.enclose(drains[0], new Data<>(pointer)));
 	}

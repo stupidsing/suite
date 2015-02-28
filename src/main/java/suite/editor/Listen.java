@@ -35,13 +35,11 @@ public class Listen {
 	}
 
 	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
-		return new Sink<T>() {
-			public void sink(T t) {
-				try {
-					sink.sink(t);
-				} catch (Exception ex) {
-					throw new RuntimeException(ex);
-				}
+		return t -> {
+			try {
+				sink.sink(t);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
 			}
 		};
 	}

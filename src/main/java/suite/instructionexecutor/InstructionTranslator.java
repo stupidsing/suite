@@ -18,13 +18,13 @@ import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.TranslatedRunUtil.TranslatedRun;
+import suite.jdk.JdkLoadClassUtil;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.parser.Subst;
 import suite.util.FunUtil;
-import suite.util.JdkLoadClassUtil;
 
 /**
  * Possible register types: boolean, thunk, int, node

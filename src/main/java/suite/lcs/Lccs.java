@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;
-import suite.util.Pair;
 
 /**
  * Longest common continuous subsequence, using a simple rolling hash method.

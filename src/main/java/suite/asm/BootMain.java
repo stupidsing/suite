@@ -5,8 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import suite.ip.ImperativeCompiler;
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
-import suite.util.FileUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.util.Util.RunOption;

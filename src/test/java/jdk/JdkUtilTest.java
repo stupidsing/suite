@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.util.FileUtil;
-import suite.util.JdkLoadClassUtil;
-import suite.util.JdkUnsafeLoadClassUtil;
+import suite.jdk.JdkLoadClassUtil;
+import suite.jdk.JdkUnsafeLoadClassUtil;
+import suite.os.FileUtil;
 
 public class JdkUtilTest {
 

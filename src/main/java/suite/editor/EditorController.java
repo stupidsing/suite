@@ -23,8 +23,8 @@ import suite.Suite;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
+import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
-import suite.util.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 

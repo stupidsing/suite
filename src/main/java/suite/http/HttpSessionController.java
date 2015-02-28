@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import suite.http.HttpServer.Handler;
-import suite.util.FileUtil;
+import suite.os.FileUtil;
 import suite.util.HtmlUtil;
 import suite.util.Util;
 
@@ -65,11 +65,11 @@ public class HttpSessionController {
 		public void handle(HttpRequest request, HttpResponse response) throws IOException {
 			long current = System.currentTimeMillis();
 			String cookie = request.headers.get("Cookie");
-			String sessionId = cookie != null ? HttpUtil.getCookieAttrs(cookie).get("session") : null;
+			String sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 
 			if (Util.stringEquals(request.path, "/login")) {
-				Map<String, String> attrs = HttpUtil.getPostedAttrs(request.inputStream);
+				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				String username = attrs.get("username");
 				String password = attrs.get("password");
 				String path = attrs.get("path");

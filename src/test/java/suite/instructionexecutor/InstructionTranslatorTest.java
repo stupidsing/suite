@@ -19,7 +19,7 @@ import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.util.FileUtil;
+import suite.os.FileUtil;
 import suite.util.FunUtil.Fun;
 
 public class InstructionTranslatorTest {

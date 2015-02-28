@@ -13,9 +13,9 @@ import java.util.List;
 
 import suite.Suite;
 import suite.node.Node;
-import suite.util.FileUtil;
+import suite.os.FileUtil;
+import suite.os.LogUtil;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.To;
 import suite.util.Util;

@@ -2,7 +2,7 @@ package suite.net;
 
 import java.io.Closeable;
 
-import suite.util.LogUtil;
+import suite.os.LogUtil;
 import suite.util.Util;
 
 public abstract class ThreadedService {

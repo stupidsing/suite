@@ -35,7 +35,7 @@ public class GpuTest {
 			inp1.set(i, (float) Math.sin(i));
 		}
 
-		CLBuffer<Float> out = context.createBuffer(Usage.Output, Float.class, (long) n);
+		CLBuffer<Float> out = context.createBuffer(Usage.Output, Float.class, n);
 
 		CLKernel kernel = context.createProgram(openCl).createKernel("add_floats");
 		kernel.setArgs(context.createBuffer(Usage.Input, inp0) //

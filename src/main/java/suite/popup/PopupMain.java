@@ -18,17 +18,17 @@ import suite.editor.LayoutCalculator;
 import suite.editor.LayoutCalculator.Node;
 import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
-import suite.util.ExecUtil;
+import suite.os.ExecUtil;
+import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 
 /**
  * Volume up: Alt-A
- * 
+ *
  * Volume down: Alt-Z
- * 
+ *
  * @author ywsing
  */
 public class PopupMain extends ExecutableProgram {

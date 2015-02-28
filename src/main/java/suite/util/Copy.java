@@ -11,18 +11,24 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 
+import suite.os.LogUtil;
+
 public class Copy {
 
 	private static int bufferSize = 4096;
 
 	public static <T> void array(T from[], int fromIndex, T to[], int toIndex, int size) {
-		if (size != 0)
+		if (size > 0)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
 	}
 
 	public static void primitiveArray(Object from, int fromIndex, Object to, int toIndex, int size) {
-		if (size != 0)
+		if (size > 0)
 			System.arraycopy(from, fromIndex, to, toIndex, size);
+		else if (size < 0)
+			throw new IndexOutOfBoundsException();
 	}
 
 	public static void readerToWriter(Reader in, Writer out) throws IOException {

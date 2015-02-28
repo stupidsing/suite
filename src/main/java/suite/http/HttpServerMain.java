@@ -19,7 +19,7 @@ public class HttpServerMain {
 					+ "<br/>method = " + request.method //
 					+ "<br/>server = " + request.server //
 					+ "<br/>path = " + request.path //
-					+ "<br/>attrs = " + HttpUtil.getAttrs(request.query) //
+					+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 					+ "<br/>headers = " + request.headers //
 					+ "</html>");
 		}

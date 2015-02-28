@@ -6,12 +6,12 @@ import java.util.Deque;
 import java.util.List;
 
 import suite.Suite;
+import suite.adt.Pair;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.Rewriter;
 import suite.util.FunUtil.Fun;
-import suite.util.Pair;
 
 public class StackAssembler extends Assembler {
 

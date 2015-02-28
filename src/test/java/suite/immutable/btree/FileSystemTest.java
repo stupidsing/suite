@@ -16,10 +16,10 @@ import suite.fs.FileSystemMutator;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.IbTreeFileSystemImpl;
 import suite.immutable.btree.impl.IbTreeConfiguration;
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
-import suite.util.FileUtil;
 import suite.util.To;
 
 public class FileSystemTest {

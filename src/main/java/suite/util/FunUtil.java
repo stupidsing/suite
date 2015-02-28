@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
+import suite.adt.Pair;
+import suite.os.LogUtil;
+
 public class FunUtil {
 
 	@FunctionalInterface

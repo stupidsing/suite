@@ -56,20 +56,20 @@ public class Bytes implements Iterable<Byte> {
 		return Bytes.of(bytes.bs, bytes.start, bytes.end);
 	}
 
-	public static Bytes of(byte bytes[]) {
-		return Bytes.of(bytes, 0);
+	public static Bytes of(byte bs[]) {
+		return Bytes.of(bs, 0);
 	}
 
-	public static Bytes of(byte bytes[], int start) {
-		return Bytes.of(bytes, start, bytes.length);
+	public static Bytes of(byte bs[], int start) {
+		return Bytes.of(bs, start, bs.length);
 	}
 
-	public static Bytes of(byte bytes[], int start, int end) {
-		return new Bytes(bytes, start, end);
+	public static Bytes of(byte bs[], int start, int end) {
+		return new Bytes(bs, start, end);
 	}
 
-	private Bytes(byte bytes[], int start, int end) {
-		this.bs = bytes;
+	private Bytes(byte bs[], int start, int end) {
+		this.bs = bs;
 		this.start = start;
 		this.end = end;
 	}
@@ -105,6 +105,13 @@ public class Bytes implements Iterable<Byte> {
 		return bs[i1];
 	}
 
+	public int indexOf(Bytes bytes, int start) {
+		for (int i = start; i <= size() - bytes.size(); i++)
+			if (startsWith(bytes, i))
+				return i;
+		return -1;
+	}
+
 	public boolean isEmpty() {
 		return start >= end;
 	}
@@ -114,6 +121,18 @@ public class Bytes implements Iterable<Byte> {
 		bb.append(this);
 		while (bb.size() < size)
 			bb.append((byte) 0);
+		return bb.toBytes();
+	}
+
+	public Bytes replace(Bytes from, Bytes to) {
+		BytesBuilder bb = new BytesBuilder();
+		int i0 = 0, i;
+		while ((i = indexOf(from, i0)) >= 0) {
+			bb.append(subbytes(i0, i));
+			bb.append(to);
+			i0 = i + from.size();
+		}
+		bb.append(subbytes(i0));
 		return bb.toBytes();
 	}
 
@@ -221,7 +240,7 @@ public class Bytes implements Iterable<Byte> {
 		Bytes result = Bytes.of(bs, start, end);
 
 		// Avoid small pack of bytes object keeping a large buffer
-		if (bs.length >= reallocSize && end - start < reallocSize / 4)
+		if (Boolean.FALSE && bs.length >= reallocSize && end - start < reallocSize / 4)
 			result = emptyBytes.append(result); // Do not share reference
 
 		return result;

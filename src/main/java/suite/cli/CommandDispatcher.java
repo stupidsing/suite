@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.Suite;
+import suite.adt.Pair;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.PrecompileMain;
 import suite.lp.Configuration.ProverConfig;
@@ -32,7 +33,6 @@ import suite.streamlet.Read;
 import suite.util.CommandUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 import suite.util.To;
 import suite.util.Util;
 

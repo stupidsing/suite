@@ -3,6 +3,7 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Segment;

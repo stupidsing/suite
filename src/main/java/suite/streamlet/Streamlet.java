@@ -12,18 +12,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import suite.adt.Pair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.Pair;
 import suite.util.To;
 import suite.util.Util;
 
 /**
  * Implement functional structures using class methods (instead of static
  * methods in class FunUtil), just for easier code completion in source editor.
- * 
+ *
  * @author ywsing
  */
 public class Streamlet<T> implements Iterable<T> {

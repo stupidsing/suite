@@ -19,7 +19,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.util.LogUtil;
+import suite.os.LogUtil;
 
 public class InstructionExecutor implements AutoCloseable {
 

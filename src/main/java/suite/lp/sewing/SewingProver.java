@@ -9,6 +9,7 @@ import java.util.function.BiPredicate;
 
 import suite.Suite;
 import suite.adt.ListMultimap;
+import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Journal;
@@ -30,13 +31,12 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Rewriter;
+import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
-import suite.util.Pair;
 import suite.util.Util;
 
 /**
@@ -44,9 +44,9 @@ import suite.util.Util;
  * but no improvement generally. No actual measurement was conducted.
  *
  * Would break under following conditions:
- * 
+ *
  * - rules containing wild searches that are unable to derive prototype from;
- * 
+ *
  * - asserts or retracts.
  *
  * @author ywsing
@@ -111,7 +111,7 @@ public class SewingProver {
 
 	public SewingProver(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
-		rules = Read.from(rs.getRules()).groupBy(rule -> Prototype.of(rule)).collect(As.multimap());
+		rules = Read.from(rs.getRules()).groupBy(Prototype::of).collect(As.multimap());
 
 		if (!rules.containsKey(null))
 			compileAll();

@@ -3,9 +3,9 @@ package suite.btree;
 import java.io.Closeable;
 import java.io.PrintStream;
 
+import suite.adt.Pair;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
-import suite.util.Pair;
 
 public interface B_Tree<Key, Value> extends Closeable {
 

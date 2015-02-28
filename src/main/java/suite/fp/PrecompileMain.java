@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
-import suite.util.LogUtil;
+import suite.os.LogUtil;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 

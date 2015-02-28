@@ -184,7 +184,7 @@ public class LayoutCalculator {
 		if (totalAssigned > totalMin) {
 			int nom = totalAssigned - totalMin;
 			int denom = totalMax - totalMin;
-			float ratio = ((float) nom) / denom;
+			float ratio = (float) nom / denom;
 			int accumulatedBase = 0;
 			int accumulatedExpand = 0;
 			int assignedPos = 0;
@@ -199,7 +199,7 @@ public class LayoutCalculator {
 		} else {
 			int nom = totalAssigned;
 			int denom = totalMin;
-			float ratio = (float) (nom / denom);
+			float ratio = nom / denom;
 			int accumulated = 0;
 			int assignedPos = 0;
 

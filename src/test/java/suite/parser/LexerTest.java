@@ -1,5 +1,7 @@
 package suite.parser;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -22,8 +24,14 @@ public class LexerTest {
 				sb.append(buffer, 0, nCharsRead);
 		}
 
-		for (String token : FunUtil.iter(new Lexer(sb.toString()).tokens()))
-			System.out.println(token);
+		int nTokens = 0;
+
+		for (String token : FunUtil.iter(new Lexer(sb.toString()).tokens())) {
+			assertNotNull(token);
+			nTokens++;
+		}
+
+		System.out.println("Number of tokens = " + nTokens);
 	}
 
 }

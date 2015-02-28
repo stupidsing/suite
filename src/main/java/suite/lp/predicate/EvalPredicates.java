@@ -29,8 +29,8 @@ import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.IdentityKey;
 import suite.node.util.Rewriter;
+import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.LogUtil;
 import suite.util.Memoize;
 
 public class EvalPredicates {

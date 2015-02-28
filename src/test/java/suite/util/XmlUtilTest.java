@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import suite.os.FileUtil;
+
 public class XmlUtilTest {
 
 	@Test

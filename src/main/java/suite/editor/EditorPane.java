@@ -13,10 +13,10 @@ import javax.swing.text.Document;
 import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 
+import suite.adt.Pair;
 import suite.editor.Listen.SinkEx;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
-import suite.util.Pair;
 import suite.util.Util;
 
 public class EditorPane extends JEditorPane {
@@ -113,8 +113,8 @@ public class EditorPane extends JEditorPane {
 		String s = f.apply(segment_);
 		document.remove(start, end - start);
 		document.insertString(start, s, null);
-		this.setSelectionStart(start);
-		this.setSelectionEnd(start + s.length());
+		setSelectionStart(start);
+		setSelectionEnd(start + s.length());
 	}
 
 	public boolean isModified() {

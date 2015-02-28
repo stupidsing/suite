@@ -69,12 +69,11 @@ public class Mutex {
 
 	public void unlock() {
 		synchronized (bigLock) {
-			if (--depth == 0) {
+			if (--depth == 0)
 				if (owner.compareAndSet(Thread.currentThread(), null))
 					bigLock.notifyAll();
 				else
 					throw new RuntimeException("Lock unlocked by wrong thread");
-			}
 		}
 	}
 

@@ -55,20 +55,20 @@ public class Chars implements Iterable<Character> {
 		return Chars.of(chars.cs, chars.start, chars.end);
 	}
 
-	public static Chars of(char chars[]) {
-		return Chars.of(chars, 0);
+	public static Chars of(char cs[]) {
+		return Chars.of(cs, 0);
 	}
 
-	public static Chars of(char chars[], int start) {
-		return Chars.of(chars, start, chars.length);
+	public static Chars of(char cs[], int start) {
+		return Chars.of(cs, start, cs.length);
 	}
 
-	public static Chars of(char chars[], int start, int end) {
-		return new Chars(chars, start, end);
+	public static Chars of(char cs[], int start, int end) {
+		return new Chars(cs, start, end);
 	}
 
-	public Chars(char chars[], int start, int end) {
-		this.cs = chars;
+	public Chars(char cs[], int start, int end) {
+		this.cs = cs;
 		this.start = start;
 		this.end = end;
 	}
@@ -104,6 +104,13 @@ public class Chars implements Iterable<Character> {
 		return cs[i1];
 	}
 
+	public int indexOf(Chars chars, int start) {
+		for (int i = start; i <= size() - chars.size(); i++)
+			if (startsWith(chars, i))
+				return i;
+		return -1;
+	}
+
 	public boolean isEmpty() {
 		return start >= end;
 	}
@@ -113,6 +120,18 @@ public class Chars implements Iterable<Character> {
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append(' ');
+		return cb.toChars();
+	}
+
+	public Chars replace(Chars from, Chars to) {
+		CharsBuilder cb = new CharsBuilder();
+		int i0 = 0, i;
+		while ((i = indexOf(from, i0)) >= 0) {
+			cb.append(subchars(i0, i));
+			cb.append(to);
+			i0 = i + from.size();
+		}
+		cb.append(subchars(i0));
 		return cb.toChars();
 	}
 
@@ -194,7 +213,7 @@ public class Chars implements Iterable<Character> {
 		if (Util.clazz(object) == Chars.class) {
 			Chars other = (Chars) object;
 
-			if (end - start == other.end - other.start) {
+			if (size() == other.size()) {
 				int diff = other.start - start;
 				for (int i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
@@ -220,7 +239,7 @@ public class Chars implements Iterable<Character> {
 		Chars result = new Chars(cs, start, end);
 
 		// Avoid small pack of chars object keeping a large buffer
-		if (cs.length >= reallocSize && end - start < reallocSize / 4)
+		if (Boolean.FALSE && cs.length >= reallocSize && end - start < reallocSize / 4)
 			result = emptyChars.append(result); // Do not share reference
 
 		return result;

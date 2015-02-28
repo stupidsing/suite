@@ -6,7 +6,7 @@ import suite.util.Util;
 
 /**
  * Priority queue implementation from Programming Pearls.
- * 
+ *
  * @author ywsing
  */
 public class PriorityQueue<T> {

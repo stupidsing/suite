@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.Read;
-import suite.util.Pair;
 import suite.util.Util;
 
 public class VariableMapping {

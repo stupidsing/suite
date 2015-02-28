@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import suite.adt.Pair;
 import suite.text.Segment;
-import suite.util.Pair;
 import suite.util.To;
 
 public class LccsTest {

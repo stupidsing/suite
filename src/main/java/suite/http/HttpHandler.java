@@ -7,7 +7,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 import suite.http.HttpServer.Handler;
-import suite.util.FileUtil;
+import suite.os.FileUtil;
 
 public abstract class HttpHandler implements Handler {
 

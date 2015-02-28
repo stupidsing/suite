@@ -96,9 +96,8 @@ public class B_TreeBuilder<Key, Value> {
 				} else if (kp.pointer instanceof B_TreeImpl.Payload) {
 					dataOutput.writeChar(PAYLOAD);
 					dataOutput.writeInt(kp.getPayloadPageNo());
-				} else if (kp.pointer instanceof B_TreeImpl.Terminal) {
+				} else if (kp.pointer instanceof B_TreeImpl.Terminal)
 					dataOutput.writeChar(TERMINAL);
-				}
 			}
 		}
 	}

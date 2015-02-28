@@ -50,12 +50,12 @@ public class Configuration {
 
 		@Override
 		public boolean equals(Object object) {
-			return Singleton.get().getInspectUtil().equals(this, object);
+			return Singleton.get().getInspect().equals(this, object);
 		}
 
 		@Override
 		public int hashCode() {
-			return Singleton.get().getInspectUtil().hashCode(this);
+			return Singleton.get().getInspect().hashCode(this);
 		}
 
 		public RuleSet ruleSet() {

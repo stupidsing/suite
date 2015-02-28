@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import suite.os.FileUtil;
 import suite.text.TwoPassIndexer.Reference;
-import suite.util.FileUtil;
 import suite.util.Util;
 
 public class TwoPassIndexerTest {

@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import suite.lp.doer.ProverTest;
-import suite.util.LogUtil;
+import suite.os.LogUtil;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ ProverTest.class })

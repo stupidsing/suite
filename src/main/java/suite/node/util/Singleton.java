@@ -1,7 +1,7 @@
 package suite.node.util;
 
-import suite.util.InspectUtil;
-import suite.util.MapifyUtil;
+import suite.inspect.Inspect;
+import suite.inspect.Mapify;
 
 public class Singleton {
 
@@ -10,8 +10,8 @@ public class Singleton {
 	private Context grandContext = new Context();
 	private Context hiddenContext = new Context(); // For hidden symbols
 
-	private InspectUtil inspectUtil = new InspectUtil();
-	private MapifyUtil mapifyUtil = new MapifyUtil(inspectUtil);
+	private Inspect inspect = new Inspect();
+	private Mapify mapify = new Mapify(inspect);
 
 	public static Singleton get() {
 		return instance;
@@ -28,12 +28,12 @@ public class Singleton {
 		return hiddenContext;
 	}
 
-	public InspectUtil getInspectUtil() {
-		return inspectUtil;
+	public Inspect getInspect() {
+		return inspect;
 	}
 
-	public MapifyUtil getMapifyUtil() {
-		return mapifyUtil;
+	public Mapify getMapify() {
+		return mapify;
 	}
 
 }

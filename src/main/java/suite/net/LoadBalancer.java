@@ -10,10 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import suite.os.LogUtil;
+import suite.os.SocketUtil;
+import suite.os.SocketUtil.Io;
 import suite.util.Copy;
-import suite.util.LogUtil;
-import suite.util.SocketUtil;
-import suite.util.SocketUtil.Io;
 
 public class LoadBalancer {
 

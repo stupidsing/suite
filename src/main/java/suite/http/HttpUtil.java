@@ -1,55 +1,58 @@
 package suite.http;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Collections;
 import java.util.Map;
 
-import suite.util.FileUtil;
-import suite.util.Pair;
-import suite.util.Util;
+import suite.primitive.Bytes;
+import suite.primitive.BytesUtil;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Source;
+import suite.util.To;
 
 public class HttpUtil {
 
-	public static Map<String, String> getCookieAttrs(String query) throws UnsupportedEncodingException {
-		String qs[] = query != null ? query.split(";") : new String[0];
-		Map<String, String> attrs = new HashMap<>();
+	public static class HttpResult {
+		public int responseCode;
+		public Source<Bytes> out;
 
-		for (String q : qs) {
-			Pair<String, String> pair = Util.split2(q, "=");
-			attrs.put(pair.t0, URLDecoder.decode(pair.t1, "UTF-8"));
+		private HttpResult(int responseCode, Source<Bytes> out) {
+			this.responseCode = responseCode;
+			this.out = out;
 		}
-
-		return attrs;
 	}
 
-	public static Map<String, String> getPostedAttrs(InputStream is) throws IOException {
-		int size = 4096;
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, FileUtil.charset));
-		StringBuilder sb = new StringBuilder();
-		char buffer[] = new char[size];
-		int nCharsRead;
-
-		while ((nCharsRead = br.read(buffer)) >= 0)
-			sb.append(buffer, 0, nCharsRead);
-
-		return HttpUtil.getAttrs(sb.toString());
+	public static HttpResult http(URL url) throws IOException {
+		return http("GET", url);
 	}
 
-	public static Map<String, String> getAttrs(String query) throws UnsupportedEncodingException {
-		String qs[] = query != null ? query.split("&") : new String[0];
-		Map<String, String> attrs = new HashMap<>();
+	public static HttpResult http(String method, URL url) throws IOException {
+		return http(method, url, () -> null);
+	}
 
-		for (String q : qs) {
-			Pair<String, String> pair = Util.split2(q, "=");
-			attrs.put(pair.t0, URLDecoder.decode(pair.t1, "UTF-8"));
+	public static HttpResult http(String method, URL url, Source<Bytes> in) throws IOException {
+		return http(method, url, in, Collections.emptyMap());
+	}
+
+	public static HttpResult http(String method, URL url, Source<Bytes> in, Map<String, String> headers) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setDoOutput(true);
+		conn.setRequestMethod(method);
+
+		headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
+
+		try (OutputStream os = conn.getOutputStream()) {
+			BytesUtil.copy(new Streamlet<Bytes>(in), os);
 		}
 
-		return attrs;
+		int responseCode = conn.getResponseCode();
+		if (responseCode == 200)
+			return new HttpResult(responseCode, To.source(conn.getInputStream()));
+		else
+			throw new IOException("HTTP returned " + responseCode + ":" + url);
 	}
 
 }

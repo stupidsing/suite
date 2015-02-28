@@ -3,6 +3,8 @@ package suite.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.adt.Pair;
+
 public class CommandUtil<Command> {
 
 	private Map<String, Command> commandsByName;

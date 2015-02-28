@@ -9,26 +9,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import suite.adt.Pair;
 import suite.ebnf.EbnfExpect.Expect;
+import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.LogUtil;
-import suite.util.Pair;
 import suite.util.Util;
 
 /**
  * Parser for Backus-Naur form grammars.
  *
  * TODO cyclic problem:
- * 
+ *
  * primary-no-array-creation-expression ::= simple-name | member-access
- * 
+ *
  * member-access ::= primary-expression "." identifier (type-argument-list)?
- * 
+ *
  * primary-expression ::= primary-no-array-creation-expression
- * 
+ *
  * @author ywsing
  */
 public class Ebnf {

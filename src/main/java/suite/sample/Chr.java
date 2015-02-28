@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import suite.Suite;
+import suite.adt.Pair;
 import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.lp.Journal;
@@ -21,7 +22,6 @@ import suite.node.util.Rewriter;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Pair;
 import suite.util.To;
 
 /**

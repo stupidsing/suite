@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import suite.util.Pair;
+import suite.adt.Pair;
 
 public class Alphabeta<State> {
 
