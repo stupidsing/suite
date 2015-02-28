@@ -68,6 +68,16 @@ public class Board1 {
 			};
 	}
 
+	public int hashCode() {
+		int i = 0;
+		for (Coordinate c : Coordinate.all()) {
+			Group g = get(c);
+			Occupation o = g != null ? g.occupation : Occupation.EMPTY;
+			i = i * 31 + Objects.hashCode(o);
+		}
+		return i;
+	}
+
 	private Group merge(Group g0, Group g1) {
 		if (g0.rank < g1.rank) {
 			Group tmp = g0;
@@ -106,16 +116,6 @@ public class Board1 {
 			else if (g != null && neighbourGroups.add(g))
 				g.nBreaths++;
 		}
-	}
-
-	public int hashCode() {
-		int i = 0;
-		for (Coordinate c : Coordinate.all()) {
-			Group g = get(c);
-			Occupation o = g != null ? g.occupation : Occupation.EMPTY;
-			i = i * 31 + Objects.hashCode(o);
-		}
-		return i;
 	}
 
 	private Group get(Coordinate c) {
