@@ -50,7 +50,7 @@ public class RecursiveParser {
 					return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
 				else
 					throw new RuntimeException();
-			case OPER____:
+			case OPERATOR:
 				Operator operator = Read.from(operators).filter(op -> op.getName() == name).uniqueResult();
 				return Tree.of(operator, node(fn0), node(fn2));
 			case SPACE___:
