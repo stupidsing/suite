@@ -30,7 +30,7 @@ public class RecursiveFactorizer {
 	private Reverser reverser;
 
 	public enum FNodeType {
-		ENCLOSE, OPER___, SPACE__, TERMINAL,
+		ENCLOSE_, OPER____, SPACE___, TERMINAL,
 	}
 
 	public interface FNode {
@@ -141,7 +141,7 @@ public class RecursiveFactorizer {
 				if (post != null)
 					list.add(term(post));
 
-				return new FTree(FNodeType.OPER___, operator.getName(), list);
+				return new FTree(FNodeType.OPER____, operator.getName(), list);
 			}
 
 			if (first == '(' && last == ')' //
@@ -150,7 +150,7 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return new FTree(FNodeType.ENCLOSE, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
+				return new FTree(FNodeType.ENCLOSE_, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
 			}
 		}
 

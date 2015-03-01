@@ -118,7 +118,7 @@ public class Streamlet<T> implements Iterable<T> {
 
 			public R source() {
 				T t = next();
-				return t != null ? fun.apply(i, t) : null;
+				return t != null ? fun.apply(i++, t) : null;
 			}
 		});
 	}

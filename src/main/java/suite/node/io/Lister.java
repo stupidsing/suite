@@ -34,15 +34,18 @@ public class Lister {
 				Map<Node, Reference> map = ((Dict) node).map;
 				type = "dict";
 				children = Read.from(map).map(p -> Pair.of(p.t0.toString(), (Node) p.t1)).toList();
-			} else if (Tree.decompose(node, TermOp.AND___) != null) {
-				Streamlet<Node> st = Read.from(To.source(Tree.iter(node, TermOp.AND___)));
-				type = TermOp.AND___.toString();
-				children = st.index((i, n) -> Pair.of(i.toString(), n)).toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
-				Pair<String, Node> p0 = Pair.of("l", tree.getLeft());
-				Pair<String, Node> p1 = Pair.of("r", tree.getRight());
-				type = tree.getOperator().toString();
-				children = Arrays.asList(p0, p1);
+				Operator operator = tree.getOperator();
+				if (Arrays.asList(TermOp.AND___, TermOp.OR____).contains(operator)) {
+					Streamlet<Node> st = Read.from(To.source(Tree.iter(node, operator)));
+					type = operator.toString();
+					children = st.index((i, n) -> Pair.of(i.toString(), n)).toList();
+				} else {
+					Pair<String, Node> p0 = Pair.of("l", tree.getLeft());
+					Pair<String, Node> p1 = Pair.of("r", tree.getRight());
+					type = operator.toString();
+					children = Arrays.asList(p0, p1);
+				}
 			} else {
 				type = "";
 				children = Collections.emptyList();
@@ -51,9 +54,11 @@ public class Lister {
 	}
 
 	public String list(Node node) {
-		return leaves(node) //
-				.map(path -> Read.from(To.source(path)).map(Node::toString).reverse().collect(As.joined("."))) //
-				.collect(As.joined("\n"));
+		return leaves(node).map(this::path).collect(As.joined("\n"));
+	}
+
+	private String path(IList<Node> path) {
+		return Read.from(To.source(path)).map(Node::toString).reverse().collect(As.joined("."));
 	}
 
 	public Streamlet<IList<Node>> leaves(Node node) {
@@ -62,9 +67,9 @@ public class Lister {
 
 	private Streamlet<IList<Node>> leaves(Node node, IList<Node> prefix) {
 		NodeReader nr = new NodeReader(node);
-		if (!nr.children.isEmpty()) {
+		if (!nr.children.isEmpty())
 			return Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(new Str(p.t0), prefix)));
-		} else
+		else
 			return Read.from(Arrays.asList(IList.cons(node, prefix)));
 	}
 
