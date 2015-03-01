@@ -203,7 +203,7 @@ public class Nodify {
 				Class<?> componentType = clazz.getComponentType();
 				Fun<Node, Object> unnodifier1 = createUnnodifier0(componentType);
 				return node -> {
-					List<Object> list = Read.from(To.source(Tree.iter(node, TermOp.OR____))).map(unnodifier1::apply).toList();
+					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(unnodifier1::apply).toList();
 					if (componentType.isPrimitive()) {
 						int size = list.size();
 						Object objects = Array.newInstance(componentType, size);
@@ -253,7 +253,7 @@ public class Nodify {
 			if (collectionClasses.contains(clazz)) {
 				Fun<Node, Object> unnodifier1 = createUnnodifier0(typeArguments[0]);
 				return node -> {
-					List<Object> list = Read.from(To.source(Tree.iter(node, TermOp.OR____))).map(unnodifier1::apply).toList();
+					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(unnodifier1::apply).toList();
 					@SuppressWarnings("unchecked")
 					Collection<Object> object1 = (Collection<Object>) create(clazz);
 					object1.addAll(list);

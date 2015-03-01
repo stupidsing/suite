@@ -15,7 +15,6 @@ import suite.node.Tree;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.To;
 
 /**
  * Lists node contents line-by-line for human-readable purpose.
@@ -37,7 +36,7 @@ public class Lister {
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Operator operator = tree.getOperator();
 				if (Arrays.asList(TermOp.AND___, TermOp.OR____).contains(operator)) {
-					Streamlet<Node> st = Read.from(To.source(Tree.iter(node, operator)));
+					Streamlet<Node> st = Read.from(Tree.iter(node, operator));
 					type = operator.toString();
 					children = st.index((i, n) -> Pair.of(i.toString(), n)).toList();
 				} else {
@@ -58,7 +57,7 @@ public class Lister {
 	}
 
 	private String path(IList<Node> path) {
-		return Read.from(To.source(path)).map(Node::toString).reverse().collect(As.joined("."));
+		return Read.from(path).map(Node::toString).reverse().collect(As.joined("."));
 	}
 
 	public Streamlet<IList<Node>> leaves(Node node) {

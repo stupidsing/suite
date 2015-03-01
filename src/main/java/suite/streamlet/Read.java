@@ -24,7 +24,7 @@ public class Read {
 		return new Streamlet<>(() -> null);
 	}
 
-	public static <T> Streamlet<T> from(Collection<T> col) {
+	public static <T> Streamlet<T> from(Iterable<T> col) {
 		return from(To.source(col));
 	}
 
