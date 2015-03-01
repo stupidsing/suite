@@ -82,6 +82,21 @@ public class Streamlet<T> implements Iterable<T> {
 		return i;
 	}
 
+	public <U, R> Streamlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
+		return st(new Source<R>() {
+			private T t;
+			private int index = list.size();
+
+			public R source() {
+				if (index == list.size()) {
+					index = 0;
+					t = next();
+				}
+				return fun.apply(t, list.get(index++));
+			}
+		});
+	}
+
 	public Streamlet<T> distinct() {
 		Set<T> set = new HashSet<>();
 		return st(() -> {
@@ -119,21 +134,6 @@ public class Streamlet<T> implements Iterable<T> {
 			public R source() {
 				T t = next();
 				return t != null ? fun.apply(i++, t) : null;
-			}
-		});
-	}
-
-	public <U, R> Streamlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
-		return st(new Source<R>() {
-			private T t;
-			private int index = list.size();
-
-			public R source() {
-				if (index == list.size()) {
-					index = 0;
-					t = next();
-				}
-				return fun.apply(t, list.get(index++));
 			}
 		});
 	}
