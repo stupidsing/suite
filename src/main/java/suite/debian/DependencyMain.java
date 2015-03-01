@@ -138,7 +138,7 @@ public class DependencyMain extends ExecutableProgram {
 	protected boolean run(String args[]) throws IOException {
 		Read.from(getClass().getMethods()) //
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
-				.foreach(m -> {
+				.sink(m -> {
 					System.out.println(m.getName() + "()");
 					try {
 						m.invoke(this, new Object[] {});

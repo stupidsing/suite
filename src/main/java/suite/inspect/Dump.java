@@ -31,15 +31,9 @@ public class Dump {
 
 	/**
 	 * Dumps object content (public data and getters) through Reflection to a
-	 * string buffer, line-by-line. Probably you want to use the easier 1 or
-	 * 2-parameter(s) version to output to log4j.
+	 * string, line-by-line.
 	 *
-	 * Beware that if you pass in a recursive structure, this would gone crazily
-	 * stack overflow. And this could slow your program down by the heavy use of
-	 * reflections.
-	 *
-	 * No private fields dump yet, since it requires some setting in Java
-	 * security manager.
+	 * Private fields are not dumped.
 	 *
 	 * @param prefix
 	 *            To be appended before each line.

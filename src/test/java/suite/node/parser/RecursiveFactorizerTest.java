@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.inspect.Inspect;
+import suite.node.io.Lister;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
@@ -41,7 +42,9 @@ public class RecursiveFactorizerTest {
 	public void testRefactorNodify() throws IOException {
 		String s0 = "1 + 2 * 3";
 		FNode fn0 = recursiveFactorizer.parse(s0);
-		System.out.println(new Nodify(new Inspect()).nodify(FNode.class, fn0));
+		// System.out.println(new Nodify(new Inspect()).nodify(FNode.class,
+		// fn0));
+		System.out.println(new Lister().list(new Nodify(new Inspect()).nodify(FNode.class, fn0)));
 	}
 
 	private FNode transform(FNode fn) {

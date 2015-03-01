@@ -68,7 +68,7 @@ public class Nodify {
 		this.inspect = inspect;
 	}
 
-	public <T> Object nodify(Class<T> clazz, T t) {
+	public <T> Node nodify(Class<T> clazz, T t) {
 		if (t != null)
 			return getNodifier(clazz).apply(t);
 		else

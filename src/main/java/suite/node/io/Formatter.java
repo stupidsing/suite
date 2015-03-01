@@ -39,6 +39,10 @@ public class Formatter {
 	private Set<Integer> set = new HashSet<>();
 	private StringBuilder sb = new StringBuilder();
 
+	/**
+	 * Converts a node into graph representation. The nodes link to other nodes
+	 * via an integer key.
+	 */
 	private static class Graphizer {
 		private int count;
 		private Map<IdentityKey, Integer> ids = new HashMap<>();
@@ -75,6 +79,10 @@ public class Formatter {
 		}
 	}
 
+	/**
+	 * Converts a node into an ugly tree representation. Children are dumped
+	 * line-by-line with indentation.
+	 */
 	private static class Treeizer {
 		private StringBuilder sb = new StringBuilder();
 

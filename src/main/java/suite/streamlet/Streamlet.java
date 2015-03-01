@@ -106,13 +106,24 @@ public class Streamlet<T> implements Iterable<T> {
 		return init;
 	}
 
-	public void foreach(Sink<T> sink) {
+	public void sink(Sink<T> sink) {
 		T t;
 		while ((t = next()) != null)
 			sink.sink(t);
 	}
 
-	public <U, R> Streamlet<R> join(List<U> list, BiFunction<T, U, R> fun) {
+	public <R> Streamlet<R> index(BiFunction<Integer, T, R> fun) {
+		return st(new Source<R>() {
+			private int i = 0;
+
+			public R source() {
+				T t = next();
+				return t != null ? fun.apply(i, t) : null;
+			}
+		});
+	}
+
+	public <U, R> Streamlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
 		return st(new Source<R>() {
 			private T t;
 			private int index = list.size();
