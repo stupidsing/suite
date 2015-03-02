@@ -214,8 +214,11 @@ public class Streamlet<T> implements Iterable<T> {
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		Map<K, V> map = new HashMap<>();
 		T t;
-		while ((t = next()) != null)
-			map.put(keyFun.apply(t), valueFun.apply(t));
+		while ((t = next()) != null) {
+			K key = keyFun.apply(t);
+			if (map.put(key, valueFun.apply(t)) != null)
+				throw new RuntimeException("Duplicate value for key " + key);
+		}
 		return map;
 	}
 

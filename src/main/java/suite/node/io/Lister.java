@@ -12,9 +12,11 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Util;
 
 /**
  * Lists node contents line-by-line for human-readable purpose.
@@ -25,6 +27,7 @@ public class Lister {
 
 	public static class NodeReader {
 		public final String type;
+		public final Node terminal;
 		public final List<Pair<String, Node>> children;
 
 		public NodeReader(Node node) {
@@ -32,21 +35,30 @@ public class Lister {
 			if (node instanceof Dict) {
 				Map<Node, Reference> map = ((Dict) node).map;
 				type = "dict";
+				terminal = null;
 				children = Read.from(map).map(p -> Pair.of(p.t0.toString(), (Node) p.t1)).toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Operator operator = tree.getOperator();
 				if (Arrays.asList(TermOp.AND___, TermOp.OR____).contains(operator)) {
 					Streamlet<Node> st = Read.from(Tree.iter(node, operator));
 					type = operator.toString();
+					terminal = null;
 					children = st.index((i, n) -> Pair.of(i.toString(), n)).toList();
 				} else {
 					Pair<String, Node> p0 = Pair.of("l", tree.getLeft());
 					Pair<String, Node> p1 = Pair.of("r", tree.getRight());
 					type = operator.toString();
+					terminal = null;
 					children = Arrays.asList(p0, p1);
 				}
+			} else if (node instanceof Tuple) {
+				List<Node> nodes = ((Tuple) node).nodes;
+				type = "tuple";
+				terminal = null;
+				children = Read.from(nodes).index((i, n) -> Pair.of(i.toString(), n)).toList();
 			} else {
-				type = "";
+				type = "term";
+				terminal = node;
 				children = Collections.emptyList();
 			}
 		}
@@ -66,10 +78,10 @@ public class Lister {
 
 	private Streamlet<IList<Node>> leaves(Node node, IList<Node> prefix) {
 		NodeReader nr = new NodeReader(node);
-		if (!nr.children.isEmpty())
+		if (!Util.stringEquals(nr.type, "term"))
 			return Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(new Str(p.t0), prefix)));
 		else
-			return Read.from(Arrays.asList(IList.cons(node, prefix)));
+			return Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));
 	}
 
 }

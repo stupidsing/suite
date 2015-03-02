@@ -188,14 +188,24 @@ public class Nodify {
 	}
 
 	private Fun<Node, Object> createUnnodifier0(Type type) {
+		Fun<Node, Object> unnodifier = createUnnodifier_(type);
+		return node -> {
+			Node node1 = node.finalNode();
+			return node1 != NULL ? unnodifier.apply(node1) : null;
+		};
+	}
+
+	private Fun<Node, Object> createUnnodifier_(Type type) {
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
 
 			if (clazz == boolean.class)
 				return node -> node == TRUE;
+			else if (clazz == Chars.class)
+				return node -> Chars.of(((Str) node).value);
 			else if (clazz == int.class)
 				return node -> ((Int) node).number;
-			else if (clazz == Chars.class || clazz == String.class)
+			else if (clazz == String.class)
 				return node -> ((Str) node).value;
 			else if (clazz.isEnum())
 				return Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()), e -> e)::get;
@@ -216,10 +226,10 @@ public class Nodify {
 			} else if (clazz.isInterface()) // Polymorphism
 				return node -> {
 					if (node instanceof Dict) {
-						Map<?, ?> map = (Map<?, ?>) node;
+						Map<Node, Reference> map = ((Dict) node).map;
 						Class<?> clazz1;
 						try {
-							clazz1 = Class.forName(map.get("@class").toString());
+							clazz1 = Class.forName(((Str) map.get(CLASS).finalNode()).value);
 						} catch (ClassNotFoundException ex) {
 							throw new RuntimeException(ex);
 						}

@@ -49,6 +49,10 @@ public class RecursiveFactorizer {
 	public static class FTerminal extends FNodeImpl {
 		public final Chars chars;
 
+		public FTerminal() {
+			this(null);
+		}
+
 		public FTerminal(Chars chars) {
 			this.chars = chars;
 		}
@@ -58,6 +62,10 @@ public class RecursiveFactorizer {
 		public final FNodeType type;
 		public final String name;
 		public final List<FNode> fns;
+
+		public FTree() {
+			this(null, null, null);
+		}
 
 		public FTree(FNodeType type, String name, List<FNode> fns) {
 			this.type = type;
