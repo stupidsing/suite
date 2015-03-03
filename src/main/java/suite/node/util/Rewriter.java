@@ -1,5 +1,8 @@
 package suite.node.util;
 
+import java.util.List;
+
+import suite.adt.Pair;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
@@ -7,6 +10,9 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.Lister.NodeReader;
+import suite.node.io.Lister.NodeWriter;
+import suite.streamlet.Read;
 
 public class Rewriter {
 
@@ -41,11 +47,12 @@ public class Rewriter {
 		node0 = node0.finalNode();
 		Node node1;
 		if (!node0.equals(from)) {
-			Tree tree = Tree.decompose(node0);
-			if (tree != null)
-				node1 = Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight()));
-			else
-				node1 = node0;
+			NodeReader nr = new NodeReader(node0);
+			List<Pair<Node, Node>> children1 = Read.from(nr.children) //
+					.map(p -> Pair.of(p.t0, replace(p.t1))) //
+					.toList();
+			NodeWriter nw = new NodeWriter(nr.type, nr.terminal, nr.op, children1);
+			node1 = nw.node;
 		} else
 			node1 = to;
 		return node1;

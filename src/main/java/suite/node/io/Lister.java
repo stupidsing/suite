@@ -9,9 +9,9 @@ import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.node.Atom;
 import suite.node.Dict;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.streamlet.As;
@@ -30,7 +30,7 @@ public class Lister {
 		public final String type;
 		public final Node terminal;
 		public final Operator op;
-		public final List<Pair<String, Node>> children;
+		public final List<Pair<Node, Node>> children;
 
 		public NodeReader(Node node) {
 			Tree tree;
@@ -39,7 +39,7 @@ public class Lister {
 				type = "dict";
 				terminal = null;
 				op = null;
-				children = Read.from(map).map(p -> Pair.of(p.t0.toString(), (Node) p.t1)).toList();
+				children = Read.from(map).map(p -> Pair.<Node, Node> of(p.t0, p.t1)).toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Operator operator = tree.getOperator();
 				if (Arrays.asList(TermOp.AND___, TermOp.OR____).contains(operator)) {
@@ -47,10 +47,10 @@ public class Lister {
 					type = "list";
 					terminal = null;
 					op = operator;
-					children = st.index((i, n) -> Pair.of(i.toString(), n)).toList();
+					children = st.index((i, n) -> Pair.<Node, Node> of(Int.of(i), n)).toList();
 				} else {
-					Pair<String, Node> p0 = Pair.of("l", tree.getLeft());
-					Pair<String, Node> p1 = Pair.of("r", tree.getRight());
+					Pair<Node, Node> p0 = Pair.of(Atom.of("l"), tree.getLeft());
+					Pair<Node, Node> p1 = Pair.of(Atom.of("r"), tree.getRight());
 					type = "tree";
 					terminal = null;
 					op = operator;
@@ -61,7 +61,7 @@ public class Lister {
 				type = "tuple";
 				terminal = null;
 				op = null;
-				children = Read.from(nodes).index((i, n) -> Pair.of(i.toString(), n)).toList();
+				children = Read.from(nodes).index((i, n) -> Pair.<Node, Node> of(Int.of(i), n)).toList();
 			} else {
 				type = "term";
 				terminal = node;
@@ -74,10 +74,10 @@ public class Lister {
 	public static class NodeWriter {
 		public final Node node;
 
-		public NodeWriter(String type, Node terminal, Operator op, List<Pair<String, Node>> children) {
+		public NodeWriter(String type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
 			switch (type) {
 			case "dict":
-				node = new Dict(Read.from(children).toMap(p -> new Str(p.t0), p -> Reference.of(p.t1)));
+				node = new Dict(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
 				break;
 			case "list":
 				List<Node> list = Read.from(children).map(p -> p.t1).toList();
@@ -116,7 +116,7 @@ public class Lister {
 	private Streamlet<IList<Node>> leaves(Node node, IList<Node> prefix) {
 		NodeReader nr = new NodeReader(node);
 		if (!Util.stringEquals(nr.type, "term"))
-			return Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(new Str(p.t0), prefix)));
+			return Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
 		else
 			return Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));
 	}
