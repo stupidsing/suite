@@ -13,6 +13,21 @@ public class Tree extends Node {
 	private Operator operator;
 	private Node left, right;
 
+	public static Tree decompose(Node node) {
+		node = node.finalNode();
+		return node instanceof Tree ? (Tree) node : null;
+	}
+
+	public static Tree decompose(Node node, Operator operator) {
+		node = node.finalNode();
+		if (node instanceof Tree) {
+			Tree tree = (Tree) node;
+			if (tree.operator == operator)
+				return tree;
+		}
+		return null;
+	}
+
 	public static Node[] getParameters(Node node, int n) {
 		Node params[] = new Node[n];
 		Tree tree;
@@ -26,6 +41,11 @@ public class Tree extends Node {
 
 		params[n - 1] = node;
 		return params;
+	}
+
+	public static boolean isList(Node node, Operator operator) {
+		Tree tree;
+		return node == Atom.NIL || (tree = Tree.decompose(node, operator)) != null && isList(tree.getRight(), operator);
 	}
 
 	public static Iterable<Node> iter(Node node) {
@@ -64,21 +84,6 @@ public class Tree extends Node {
 		this.operator = operator;
 		this.left = left;
 		this.right = right;
-	}
-
-	public static Tree decompose(Node node) {
-		node = node.finalNode();
-		return node instanceof Tree ? (Tree) node : null;
-	}
-
-	public static Tree decompose(Node node, Operator operator) {
-		node = node.finalNode();
-		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			if (tree.operator == operator)
-				return tree;
-		}
-		return null;
 	}
 
 	@Override

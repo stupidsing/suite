@@ -33,6 +33,7 @@ public class Lister {
 		public final List<Pair<Node, Node>> children;
 
 		public NodeReader(Node node) {
+			Operator op0;
 			Tree tree;
 			if (node instanceof Dict) {
 				Map<Node, Reference> map = ((Dict) node).map;
@@ -40,22 +41,19 @@ public class Lister {
 				terminal = null;
 				op = null;
 				children = Read.from(map).map(p -> Pair.<Node, Node> of(p.t0, p.t1)).toList();
+			} else if (Tree.isList(node, op0 = TermOp.AND___) || Tree.isList(node, op0 = TermOp.OR____)) {
+				Streamlet<Node> st = Read.from(Tree.iter(node, op0));
+				type = "list";
+				terminal = null;
+				op = op0;
+				children = st.index((i, n) -> Pair.<Node, Node> of(Int.of(i), n)).toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
-				Operator operator = tree.getOperator();
-				if (Arrays.asList(TermOp.AND___, TermOp.OR____).contains(operator)) {
-					Streamlet<Node> st = Read.from(Tree.iter(node, operator));
-					type = "list";
-					terminal = null;
-					op = operator;
-					children = st.index((i, n) -> Pair.<Node, Node> of(Int.of(i), n)).toList();
-				} else {
-					Pair<Node, Node> p0 = Pair.of(Atom.of("l"), tree.getLeft());
-					Pair<Node, Node> p1 = Pair.of(Atom.of("r"), tree.getRight());
-					type = "tree";
-					terminal = null;
-					op = operator;
-					children = Arrays.asList(p0, p1);
-				}
+				Pair<Node, Node> p0 = Pair.of(Atom.of("l"), tree.getLeft());
+				Pair<Node, Node> p1 = Pair.of(Atom.of("r"), tree.getRight());
+				type = "tree";
+				terminal = null;
+				op = tree.getOperator();
+				children = Arrays.asList(p0, p1);
 			} else if (node instanceof Tuple) {
 				List<Node> nodes = ((Tuple) node).nodes;
 				type = "tuple";
