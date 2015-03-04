@@ -104,7 +104,6 @@ public class ReversePolish {
 				s = "i" + ((Int) n).number;
 			else if (n instanceof Reference)
 				s = "r" + ((Reference) n).getId();
-			// s = "\\." + ((Reference) n).getId();
 			else if (n instanceof Tree) {
 				Tree tree = (Tree) n;
 				s = "t" + tree.getOperator();
