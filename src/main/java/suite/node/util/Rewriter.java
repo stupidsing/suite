@@ -10,8 +10,8 @@ import suite.lp.doer.Cloner;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.io.Lister.NodeReader;
-import suite.node.io.Lister.NodeWriter;
+import suite.node.io.ReadWrite.NodeRead;
+import suite.node.io.ReadWrite.NodeWrite;
 import suite.streamlet.Read;
 
 public class Rewriter {
@@ -33,7 +33,7 @@ public class Rewriter {
 		node = node.finalNode();
 		boolean result;
 		if (!node.equals(from)) {
-			NodeReader nr = new NodeReader(node);
+			NodeRead nr = new NodeRead(node);
 			result = Read.from(nr.children).fold(false, (r, p) -> r && contains(p.t1));
 		} else
 			result = true;
@@ -44,11 +44,11 @@ public class Rewriter {
 		node0 = node0.finalNode();
 		Node node1;
 		if (!node0.equals(from)) {
-			NodeReader nr = new NodeReader(node0);
+			NodeRead nr = new NodeRead(node0);
 			List<Pair<Node, Node>> children1 = Read.from(nr.children) //
 					.map(p -> Pair.of(p.t0, replace(p.t1))) //
 					.toList();
-			NodeWriter nw = new NodeWriter(nr.type, nr.terminal, nr.op, children1);
+			NodeWrite nw = new NodeWrite(nr.type, nr.terminal, nr.op, children1);
 			node1 = nw.node;
 		} else
 			node1 = to;
@@ -69,13 +69,13 @@ public class Rewriter {
 		Node node1;
 
 		if (node0 instanceof Reference || !bind(node0)) {
-			NodeReader nr = new NodeReader(node0);
+			NodeRead nr = new NodeRead(node0);
 			List<Pair<Node, Node>> children1 = Read.from(nr.children) //
 					.map(p -> Pair.of(p.t0, rewrite0(p.t1))) //
 					.toList();
 
 			if (!Objects.equals(nr.children, children1))
-				node1 = new NodeWriter(nr.type, nr.terminal, nr.op, children1).node;
+				node1 = new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
 			else
 				node1 = node0;
 		} else
