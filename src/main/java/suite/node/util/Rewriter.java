@@ -34,7 +34,7 @@ public class Rewriter {
 		boolean result;
 		if (!node.equals(from)) {
 			NodeRead nr = new NodeRead(node);
-			result = Read.from(nr.children).fold(false, (r, p) -> r && contains(p.t1));
+			result = Read.from(nr.children).fold(false, (r, p) -> r || contains(p.t1));
 		} else
 			result = true;
 		return result;
