@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import suite.immutable.IList;
 import suite.node.Node;
-import suite.node.io.ReadWrite.NodeRead;
+import suite.node.io.Rewriter.NodeRead;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;

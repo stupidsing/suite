@@ -1,30 +1,26 @@
 package suite.node.util;
 
-import java.util.List;
-import java.util.Objects;
-
-import suite.adt.Pair;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.io.ReadWrite.NodeRead;
-import suite.node.io.ReadWrite.NodeWrite;
+import suite.node.io.Rewriter;
+import suite.node.io.Rewriter.NodeRead;
 import suite.streamlet.Read;
 
-public class Rewriter {
+public class TreeRewriter {
 
 	private Node from, to;
 	private Node from1, to1;
 	private Journal journal;
 
-	public Rewriter(Node from) {
+	public TreeRewriter(Node from) {
 		this(from, Atom.NIL);
 	}
 
-	public Rewriter(Node from, Node to) {
+	public TreeRewriter(Node from, Node to) {
 		this.from = from;
 		this.to = to;
 	}
@@ -42,16 +38,7 @@ public class Rewriter {
 
 	public Node replace(Node node0) {
 		node0 = node0.finalNode();
-		Node node1;
-		if (!node0.equals(from)) {
-			NodeRead nr = new NodeRead(node0);
-			List<Pair<Node, Node>> children1 = Read.from(nr.children) //
-					.map(p -> Pair.of(p.t0, replace(p.t1))) //
-					.toList();
-			NodeWrite nw = new NodeWrite(nr.type, nr.terminal, nr.op, children1);
-			node1 = nw.node;
-		} else
-			node1 = to;
+		Node node1 = !node0.equals(from) ? Rewriter.transform(node0, this::replace) : to;
 		return node1;
 	}
 
@@ -67,20 +54,10 @@ public class Rewriter {
 	private Node rewrite0(Node node0) {
 		node0 = node0.finalNode();
 		Node node1;
-
-		if (node0 instanceof Reference || !bind(node0)) {
-			NodeRead nr = new NodeRead(node0);
-			List<Pair<Node, Node>> children1 = Read.from(nr.children) //
-					.map(p -> Pair.of(p.t0, rewrite0(p.t1))) //
-					.toList();
-
-			if (!Objects.equals(nr.children, children1))
-				node1 = new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
-			else
-				node1 = node0;
-		} else
+		if (node0 instanceof Reference || !bind(node0))
+			node1 = Rewriter.transform(node0, this::rewrite0);
+		else
 			node1 = to1;
-
 		return node1;
 	}
 

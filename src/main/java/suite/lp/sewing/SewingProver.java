@@ -30,7 +30,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.util.Rewriter;
+import suite.node.util.TreeRewriter;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -190,7 +190,7 @@ public class SewingProver {
 
 	private Trampoline compileRules(List<Rule> rules) {
 		boolean hasCut = Read.from(rules) //
-				.map(rule -> new Rewriter(SewingGeneralizer.cut).contains(rule.tail)) //
+				.map(rule -> new TreeRewriter(SewingGeneralizer.cut).contains(rule.tail)) //
 				.fold(false, (b0, b1) -> b0 || b1);
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();

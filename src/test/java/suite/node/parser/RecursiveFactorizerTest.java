@@ -13,7 +13,7 @@ import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
-import suite.node.util.Rewriter;
+import suite.node.util.TreeRewriter;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.Nodify;
@@ -43,7 +43,7 @@ public class RecursiveFactorizerTest {
 	@Test
 	public void testRefactorRewrite() throws IOException {
 		Nodify nodify = new Nodify(new Inspect());
-		Rewriter rewriter = new Rewriter(new Str("ic-compile0"), new Str("ic-compile1"));
+		TreeRewriter rewriter = new TreeRewriter(new Str("ic-compile0"), new Str("ic-compile1"));
 
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);

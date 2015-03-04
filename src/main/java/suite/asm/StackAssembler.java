@@ -10,7 +10,7 @@ import suite.adt.Pair;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.util.Rewriter;
+import suite.node.util.TreeRewriter;
 import suite.util.FunUtil.Fun;
 
 public class StackAssembler extends Assembler {
@@ -79,9 +79,9 @@ public class StackAssembler extends Assembler {
 
 	private Node rewrite(int sp, Node n) {
 		if (sp - 1 >= 0)
-			n = new Rewriter(stackOperand0, getRegister(sp - 1)).replace(n);
+			n = new TreeRewriter(stackOperand0, getRegister(sp - 1)).replace(n);
 		if (sp - 2 >= 0)
-			n = new Rewriter(stackOperand1, getRegister(sp - 2)).replace(n);
+			n = new TreeRewriter(stackOperand1, getRegister(sp - 2)).replace(n);
 		return n;
 	}
 

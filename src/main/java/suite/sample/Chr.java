@@ -18,7 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.Rewriter;
+import suite.node.util.TreeRewriter;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -166,7 +166,7 @@ public class Chr {
 				private ISet<Node> replace(ISet<Node> facts) {
 					ISet<Node> facts1 = new ISet<>();
 					for (Node node : facts)
-						facts1 = facts1.replace(new Rewriter(from, to).replace(node));
+						facts1 = facts1.replace(new TreeRewriter(from, to).replace(node));
 					return facts1;
 				}
 			});

@@ -2,14 +2,13 @@ package suite.node.util;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
-import suite.node.Dict;
+import suite.adt.Pair;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.io.Rewriter.NodeRead;
 import suite.util.HashCodeComparable;
 
 /**
@@ -27,16 +26,10 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		private int nAliases = 0;
 		private Map<Integer, Integer> aliases = new HashMap<>();
 
-		public Integer hash(Node node) {
+		public int hash(Node node) {
 			node = node.finalNode();
 
-			if (node instanceof Dict) {
-				Map<Node, Reference> map = ((Dict) node).map;
-				int result = 0;
-				for (Entry<Node, Reference> e : map.entrySet())
-					result = 31 * hash(e.getKey()) + hash(e.getValue());
-				return result;
-			} else if (node instanceof Reference) {
+			if (node instanceof Reference) {
 				int id = ((Reference) node).getId();
 				return aliases.computeIfAbsent(id, any -> nAliases++);
 			} else if (node instanceof Tree) {
@@ -46,14 +39,13 @@ public class TermKey extends HashCodeComparable<TermKey> {
 				result = 31 * result + Objects.hashCode(tree.getOperator());
 				result = 31 * result + hash(tree.getRight());
 				return result;
-			} else if (node instanceof Tuple) {
-				Tuple tuple = (Tuple) node;
-				int result = 1;
-				for (Node n : tuple.nodes)
-					result = 31 * result + hash(n);
+			} else {
+				NodeRead nr = new NodeRead(node);
+				int result = Objects.hash(nr.type, nr.terminal, nr.op);
+				for (Pair<Node, Node> p : nr.children)
+					result = 31 * result + hash(p.t0) ^ hash(p.t1);
 				return result;
-			} else
-				return node.hashCode();
+			}
 		}
 	}
 

@@ -11,10 +11,9 @@ import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
-import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.io.Rewriter.NodeRead;
 import suite.os.LogUtil;
 
 public class SingletonVariableChecker {
@@ -60,20 +59,16 @@ public class SingletonVariableChecker {
 						value = Boolean.FALSE;
 					isSingleton.put(atom, value);
 				}
-			} else if (node instanceof Dict)
-				((Dict) node).map.entrySet().forEach(e -> {
-					scan(e.getKey());
-					scan(e.getValue());
-				});
-			else if (node instanceof Tree) {
+			} else if (node instanceof Tree) {
 				Tree tree = (Tree) node;
 				scan(tree.getLeft());
 				node = tree.getRight();
 				continue;
-			} else if (node instanceof Tuple) {
-				List<Node> nodes = ((Tuple) node).nodes;
-				nodes.forEach(this::scan);
-			}
+			} else
+				new NodeRead(node).children.forEach(p -> {
+					scan(p.t0);
+					scan(p.t1);
+				});
 
 			break;
 		}

@@ -12,13 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 import suite.Suite;
+import suite.adt.Pair;
 import suite.node.Atom;
-import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.io.Rewriter.NodeRead;
+import suite.node.io.Rewriter.NodeWrite;
+import suite.util.Util;
 
 public class ReversePolish {
 
@@ -46,17 +48,20 @@ public class ReversePolish {
 
 			if (type == '\\')
 				n = Atom.of(s);
-			else if (type == '^')
-				n = Suite.parse(s);
-			else if (type == 'd') {
-				int size = Integer.valueOf(s);
-				Map<Node, Reference> map = new HashMap<>();
+			else if (type == '^') {
+				String a[] = s.split(":");
+				int size = Integer.valueOf(a[3]);
+				List<Pair<Node, Node>> children = new ArrayList<>();
 				for (int i = 0; i < size; i++) {
 					Node key = deque.pop();
 					Node value = deque.pop();
-					map.put(key, Reference.of(value));
+					children.add(Pair.of(key, value));
 				}
-				return new Dict(map);
+				n = new NodeWrite(a[0] //
+						, !Util.stringEquals(a[1], "null") ? Suite.parse(a[1]) : null //
+						, TermOp.valueOf(a[2]) //
+						, children).node;
+				// n = Suite.parse(s);
 			} else if (type == 'i')
 				n = Int.of(Integer.parseInt(s));
 			else if (type == 'r')
@@ -66,12 +71,6 @@ public class ReversePolish {
 				Node left = deque.pop();
 				Node right = deque.pop();
 				n = Tree.of(op, left, right);
-			} else if (type == 'u') {
-				int size = Integer.valueOf(s);
-				List<Node> nodes = new ArrayList<>();
-				for (int i = 0; i < size; i++)
-					nodes.add(deque.pop());
-				return new Tuple(nodes);
 			} else
 				throw new RuntimeException("RPN conversion error: " + elem);
 
@@ -93,14 +92,7 @@ public class ReversePolish {
 
 			if (n instanceof Atom)
 				s = "\\" + ((Atom) n).name;
-			else if (n instanceof Dict) {
-				Map<Node, Reference> map = ((Dict) n).map;
-				s = "d" + map.size();
-				map.entrySet().forEach(e -> {
-					deque.push(e.getValue());
-					deque.push(e.getKey());
-				});
-			} else if (n instanceof Int)
+			else if (n instanceof Int)
 				s = "i" + ((Int) n).number;
 			else if (n instanceof Reference)
 				s = "r" + ((Reference) n).getId();
@@ -109,14 +101,15 @@ public class ReversePolish {
 				s = "t" + tree.getOperator();
 				deque.push(tree.getRight());
 				deque.push(tree.getLeft());
-			} else if (n instanceof Tuple) {
-				List<Node> nodes = ((Tuple) n).nodes;
-				int size = nodes.size();
-				s = "u" + size;
-				for (int i = size - 1; i >= 0; i++)
-					deque.push(nodes.get(i));
-			} else
-				s = "^" + Formatter.dump(n);
+			} else {
+				NodeRead nr = new NodeRead(n);
+				for (Pair<Node, Node> pair : nr.children) {
+					deque.push(pair.t1);
+					deque.push(pair.t0);
+				}
+				s = "^" + nr.type + ":" + nr.terminal + ":" + nr.op + ":" + nr.children.size();
+				// s = "^" + Formatter.dump(n);
+			}
 
 			list.add(s);
 		}

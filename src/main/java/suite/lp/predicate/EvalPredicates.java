@@ -28,7 +28,7 @@ import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.IdentityKey;
-import suite.node.util.Rewriter;
+import suite.node.util.TreeRewriter;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
@@ -52,7 +52,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate contains = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		return new Rewriter(params[0]).contains(params[1]);
+		return new TreeRewriter(params[0]).contains(params[1]);
 	};
 
 	public BuiltinPredicate compare = (prover, ps) -> {
@@ -188,12 +188,12 @@ public class EvalPredicates {
 
 	public BuiltinPredicate replace = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
-		return prover.bind(new Rewriter(params[0], params[1]).replace(params[2]), params[3]);
+		return prover.bind(new TreeRewriter(params[0], params[1]).replace(params[2]), params[3]);
 	};
 
 	public BuiltinPredicate rewrite = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
-		return prover.bind(new Rewriter(params[0], params[1]).rewrite(params[2]), params[3]);
+		return prover.bind(new TreeRewriter(params[0], params[1]).rewrite(params[2]), params[3]);
 	};
 
 	public BuiltinPredicate same = (prover, ps) -> {

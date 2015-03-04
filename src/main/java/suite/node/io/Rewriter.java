@@ -1,5 +1,6 @@
 package suite.node.io;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,14 +13,18 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.node.util.Comparer;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 
-public class ReadWrite {
+public class Rewriter {
 
 	public static class NodeRead {
 		private Node LEFT_ = Atom.of("l");
 		private Node RIGHT = Atom.of("r");
+
+		private Comparer comparer = new Comparer();
 
 		public final String type;
 		public final Node terminal;
@@ -34,7 +39,10 @@ public class ReadWrite {
 				type = "dict";
 				terminal = null;
 				op = null;
-				children = Read.from(map).map(p -> Pair.<Node, Node> of(p.t0, p.t1)).toList();
+				children = Read.from(map) //
+						.sort((p0, p1) -> comparer.compare(p0.t0, p1.t0)) //
+						.map(p -> Pair.<Node, Node> of(p.t0, p.t1)) //
+						.toList();
 			} else if (Tree.isList(node, op0 = TermOp.AND___) || Tree.isList(node, op0 = TermOp.OR____)) {
 				Streamlet<Node> st = Read.from(Tree.iter(node, op0));
 				type = "list";
@@ -72,10 +80,9 @@ public class ReadWrite {
 				node = new Dict(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
 				break;
 			case "list":
-				List<Node> list = Read.from(children).map(p -> p.t1).toList();
 				Node n = Atom.NIL;
-				for (int i = list.size() - 1; i >= 0; i--)
-					n = Tree.of(op, list.get(i), n);
+				for (int i = children.size() - 1; i >= 0; i--)
+					n = Tree.of(op, children.get(i).t1, n);
 				node = n;
 				break;
 			case "term":
@@ -91,6 +98,27 @@ public class ReadWrite {
 				throw new RuntimeException();
 			}
 		}
+	}
+
+	public static Node transform(Node node, Fun<Node, Node> fun) {
+		NodeRead nr = new NodeRead(node);
+		List<Pair<Node, Node>> children1 = new ArrayList<>();
+		boolean isSame = true;
+
+		for (Pair<Node, Node> pair : nr.children) {
+			Node child0 = pair.t1;
+			Node childx = fun.apply(child0);
+			if (child0 != childx) {
+				isSame = false;
+				children1.add(Pair.of(pair.t0, childx));
+			} else
+				children1.add(pair);
+		}
+
+		if (isSame)
+			return node;
+		else
+			return new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
 	}
 
 }

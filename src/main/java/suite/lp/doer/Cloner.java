@@ -1,17 +1,14 @@
 package suite.lp.doer;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.lp.kb.Rule;
-import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.Tuple;
+import suite.node.io.Rewriter;
 import suite.node.util.IdentityKey;
-import suite.streamlet.Read;
 
 public class Cloner {
 
@@ -36,19 +33,12 @@ public class Cloner {
 			Tree rt;
 
 			if (right1 == null) {
-				if (right instanceof Dict) {
-					Map<Node, Reference> map = new HashMap<>();
-					((Dict) right).map.entrySet().forEach(e -> map.put(clone(e.getKey()), Reference.of(clone(e.getValue()))));
-					right1 = new Dict(map);
-				} else if (right instanceof Reference)
+				if (right instanceof Reference)
 					right1 = new Reference();
-				else if (right1 instanceof Tuple) {
-					List<Node> nodes = ((Tuple) right1).nodes;
-					right1 = new Tuple(Read.from(nodes).map(this::clone).toList());
-				} else if ((rt = Tree.decompose(right)) != null)
+				else if ((rt = Tree.decompose(right)) != null)
 					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
 				else
-					right1 = right;
+					right1 = Rewriter.transform(right, this::clone);
 
 				clonedNodes.put(key, right1);
 			}
@@ -67,10 +57,11 @@ public class Cloner {
 			else if (node_ instanceof Tree) {
 				Tree tree = (Tree) node_;
 				Node left = tree.getLeft(), right = tree.getRight();
-				Node left1 = clone(left), right1 = clone(right);
+				Node left1 = cloneOld(left), right1 = cloneOld(right);
 				if (left != left1 || right != right1)
 					node_ = Tree.of(tree.getOperator(), left1, right1);
-			}
+			} else
+				node_ = Rewriter.transform(node, this::cloneOld);
 
 			return node_;
 		});
