@@ -3,6 +3,7 @@ package suite.node.parser;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.node.util.TreeRewriter;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.Nodify;
 import suite.util.To;
 
@@ -33,9 +35,13 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testRefactorReplace() throws IOException {
+		FTerminal from = new FTerminal(To.chars("ic-compile0"));
+		FTerminal to = new FTerminal(To.chars("ic-compile1"));
+		Fun<FNode, FNode> fun = fn_ -> fn_.equals(from) ? to : null;
+
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);
-		FNode fnx = transform(fn0);
+		FNode fnx = transform(fn0, fun);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);
 	}
@@ -43,28 +49,27 @@ public class RecursiveFactorizerTest {
 	@Test
 	public void testRefactorRewrite() throws IOException {
 		Nodify nodify = new Nodify(new Inspect());
-		TreeRewriter rewriter = new TreeRewriter(new Str("ic-compile0"), new Str("ic-compile1"));
+		TreeRewriter tr = new TreeRewriter(new Str("ic-compile0"), new Str("ic-compile1"));
 
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);
 		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = rewriter.replace(node0);
+		Node nodex = tr.replace(node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);
 	}
 
-	private FNode transform(FNode fn) {
-		FTerminal from = new FTerminal(To.chars("ic-compile0"));
-		FTerminal to = new FTerminal(To.chars("ic-compile1"));
-
-		if (fn.equals(from))
-			return to;
-		else if (fn instanceof FTree) {
-			FTree ft = (FTree) fn;
-			return new FTree(ft.type, ft.name, Read.from(ft.fns).map(this::transform).toList());
-		} else
-			return fn;
+	private FNode transform(FNode fn0, Fun<FNode, FNode> fun) {
+		FNode fnx = fun.apply(fn0);
+		if (fnx == null)
+			if (fn0 instanceof FTree) {
+				FTree ft = (FTree) fn0;
+				List<FNode> fns = Read.from(ft.fns).map(fn_ -> transform(fn_, fun)).toList();
+				fnx = new FTree(ft.type, ft.name, fns);
+			} else
+				fnx = fn0;
+		return fnx;
 	}
 
 }
