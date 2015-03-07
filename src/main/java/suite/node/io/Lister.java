@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import suite.immutable.IList;
 import suite.node.Atom;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.Rewriter.NodeRead;
 import suite.streamlet.As;
@@ -32,14 +33,21 @@ public class Lister {
 
 	private Streamlet<IList<Node>> leaves(Node node, IList<Node> prefix) {
 		NodeRead nr = new NodeRead(node);
-		if (!Util.stringEquals(nr.type, "term")) {
-			Streamlet<IList<Node>> st = Read.from(nr.children) //
-					.concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
-			if (nr.op != null)
-				st = st.cons(IList.cons(Atom.of(nr.op.toString()), prefix));
-			return st;
-		} else
-			return Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));
+		Streamlet<IList<Node>> st;
+
+		if (Util.stringEquals(nr.type, "list") || Util.stringEquals(nr.type, "tuple"))
+			st = Read.from(nr.children) //
+					.index((i, p) -> leaves(p.t1, IList.cons(Int.of(i), prefix))) //
+					.collect(As.concat());
+		else if (!Util.stringEquals(nr.type, "term"))
+			st = Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
+		else
+			st = Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));
+
+		if (nr.op != null)
+			st = st.cons(IList.cons(Atom.of(nr.op.toString()), prefix));
+
+		return st;
 	}
 
 }

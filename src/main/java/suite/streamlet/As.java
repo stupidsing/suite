@@ -14,6 +14,11 @@ import suite.util.FunUtil.Source;
 
 public class As {
 
+	public static <T> Pair<Sink<Streamlet<T>>, Source<Streamlet<T>>> concat() {
+		List<T> list = new ArrayList<>();
+		return Pair.of(st -> st.sink(t -> list.add(t)), () -> Read.from(list));
+	}
+
 	public static Pair<Sink<String>, Source<String>> joined(String delimiter) {
 		return joined("", delimiter, "");
 	}
