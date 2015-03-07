@@ -3,13 +3,17 @@ package suite.lp.sewing;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Operator;
+import suite.node.io.Rewriter.NodeRead;
+import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class SewingGeneralizer extends VariableMapping {
@@ -32,6 +36,7 @@ public class SewingGeneralizer extends VariableMapping {
 	public Fun<Env, Node> compile(Node node) {
 		List<Fun<Env, Node>> funs = new ArrayList<>();
 		Fun<Env, Node> fun;
+		NodeRead nr;
 
 		while (true) {
 			Node node0 = node;
@@ -58,6 +63,16 @@ public class SewingGeneralizer extends VariableMapping {
 					Fun<Env, Node> rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
+			} else if ((nr = new NodeRead(node)).children.size() > 0) {
+				List<Pair<Node, Fun<Env, Node>>> ps = Read.from(nr.children) //
+						.map(p -> Pair.of(p.t0, compile(p.t1))) //
+						.toList();
+				fun = env -> {
+					List<Pair<Node, Node>> children1 = new ArrayList<>();
+					for (Pair<Node, Fun<Env, Node>> child : ps)
+						children1.add(Pair.of(child.t0, child.t1.apply(env)));
+					return new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
+				};
 			} else
 				fun = env -> node0;
 
