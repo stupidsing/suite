@@ -3,6 +3,7 @@ package suite.node.io;
 import java.util.Arrays;
 
 import suite.immutable.IList;
+import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Rewriter.NodeRead;
 import suite.streamlet.As;
@@ -31,9 +32,13 @@ public class Lister {
 
 	private Streamlet<IList<Node>> leaves(Node node, IList<Node> prefix) {
 		NodeRead nr = new NodeRead(node);
-		if (!Util.stringEquals(nr.type, "term"))
-			return Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
-		else
+		if (!Util.stringEquals(nr.type, "term")) {
+			Streamlet<IList<Node>> st = Read.from(nr.children) //
+					.concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
+			if (nr.op != null)
+				st = st.cons(IList.cons(Atom.of(nr.op.toString()), prefix));
+			return st;
+		} else
 			return Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));
 	}
 

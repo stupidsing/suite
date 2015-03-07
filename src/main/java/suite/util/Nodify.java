@@ -46,7 +46,6 @@ public class Nodify {
 
 	private Inspect inspect;
 
-	private Atom CLASS = Atom.of("@class");
 	private Atom NULL = Atom.of("null");
 	private Atom TRUE = Atom.of("true");
 
@@ -135,10 +134,8 @@ public class Nodify {
 			} else if (clazz.isInterface()) // Polymorphism
 				return object -> {
 					Class<?> clazz1 = object.getClass();
-					Node d = getNodifier(clazz1).apply(object);
-					if (d instanceof Dict)
-						((Dict) d).map.put(CLASS, Reference.of(new Str(clazz1.getName())));
-					return d;
+					Node n = getNodifier(clazz1).apply(object);
+					return Tree.of(TermOp.COLON_, new Str(clazz1.getName()), n);
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
@@ -225,15 +222,15 @@ public class Nodify {
 				};
 			} else if (clazz.isInterface()) // Polymorphism
 				return node -> {
-					if (node instanceof Dict) {
-						Map<Node, Reference> map = ((Dict) node).map;
+					Tree tree = Tree.decompose(node, TermOp.COLON_);
+					if (tree != null) {
 						Class<?> clazz1;
 						try {
-							clazz1 = Class.forName(((Str) map.get(CLASS).finalNode()).value);
+							clazz1 = Class.forName(((Str) tree.getLeft()).value);
 						} catch (ClassNotFoundException ex) {
 							throw new RuntimeException(ex);
 						}
-						return getUnnodifier(clazz1).apply(node);
+						return getUnnodifier(clazz1).apply(tree.getRight());
 					} else
 						// Happens when an enum implements an interface
 						throw new RuntimeException("Cannot instantiate enum from interfaces");
