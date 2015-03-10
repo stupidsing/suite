@@ -102,29 +102,31 @@ public class Nodify {
 	}
 
 	private Fun<Object, Node> createNodifier0(Type type) {
+		Fun<Object, Node> fun;
+
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
 
 			if (clazz == boolean.class)
-				return object -> Atom.of(object.toString());
+				fun = object -> Atom.of(object.toString());
 			else if (clazz == int.class)
-				return object -> Int.of((Integer) object);
+				fun = object -> Int.of((Integer) object);
 			else if (clazz == Chars.class || clazz == String.class)
-				return object -> new Str(object.toString());
+				fun = object -> new Str(object.toString());
 			else if (clazz.isEnum())
-				return object -> Atom.of(object.toString());
+				fun = object -> Atom.of(object.toString());
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Fun<Object, Node> nodifier1 = createNodifier0(componentType);
 				if (componentType.isPrimitive())
-					return object -> {
+					fun = object -> {
 						Node node = Atom.NIL;
 						for (int i = Array.getLength(object) - 1; i >= 0; i--)
 							node = Tree.of(TermOp.OR____, apply0(nodifier1, Array.get(object, i)), node);
 						return node;
 					};
 				else
-					return object -> {
+					fun = object -> {
 						Node node = Atom.NIL;
 						Object objects[] = (Object[]) object;
 						for (int i = objects.length - 1; i >= 0; i--)
@@ -132,14 +134,14 @@ public class Nodify {
 						return node;
 					};
 			} else if (clazz.isInterface()) // Polymorphism
-				return object -> {
+				fun = object -> {
 					Class<?> clazz1 = object.getClass();
 					Node n = getNodifier(clazz1).apply(object);
 					return Tree.of(TermOp.COLON_, new Str(clazz1.getName()), n);
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
-				return object -> {
+				fun = object -> {
 					Dict dict = new Dict();
 					for (FieldInfo fieldInfo : fieldInfos)
 						try {
@@ -159,7 +161,7 @@ public class Nodify {
 
 			if (collectionClasses.contains(clazz)) {
 				Fun<Object, Node> nodifier1 = createNodifier0(typeArguments[0]);
-				return object -> {
+				fun = object -> {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (Object o : (Collection<?>) object) {
 						Tree tree0 = tree;
@@ -171,7 +173,7 @@ public class Nodify {
 			} else if (mapClasses.contains(clazz)) {
 				Fun<Object, Node> keyNodifier = createNodifier0(typeArguments[0]);
 				Fun<Object, Node> valueNodifier = createNodifier0(typeArguments[1]);
-				return object -> {
+				fun = object -> {
 					Dict dict = new Dict();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						dict.map.put(apply0(keyNodifier, e.getKey()), Reference.of(apply0(valueNodifier, e.getValue())));
@@ -179,9 +181,10 @@ public class Nodify {
 				};
 			} else
 				return createNodifier0(rawType);
-		}
+		} else
+			throw new RuntimeException("Unrecognized type " + type);
 
-		throw new RuntimeException("Unrecognized type " + type);
+		return fun;
 	}
 
 	private Fun<Node, Object> createUnnodifier0(Type type) {
@@ -193,23 +196,25 @@ public class Nodify {
 	}
 
 	private Fun<Node, Object> createUnnodifier_(Type type) {
+		Fun<Node, Object> fun;
+
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
 
 			if (clazz == boolean.class)
-				return node -> node == TRUE;
+				fun = node -> node == TRUE;
 			else if (clazz == Chars.class)
-				return node -> Chars.of(((Str) node).value);
+				fun = node -> Chars.of(((Str) node).value);
 			else if (clazz == int.class)
-				return node -> ((Int) node).number;
+				fun = node -> ((Int) node).number;
 			else if (clazz == String.class)
-				return node -> ((Str) node).value;
+				fun = node -> ((Str) node).value;
 			else if (clazz.isEnum())
-				return Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()), e -> e)::get;
+				fun = Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()), e -> e)::get;
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Fun<Node, Object> unnodifier1 = createUnnodifier0(componentType);
-				return node -> {
+				fun = node -> {
 					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(unnodifier1::apply).toList();
 					if (componentType.isPrimitive()) {
 						int size = list.size();
@@ -221,7 +226,7 @@ public class Nodify {
 						return list.toArray();
 				};
 			} else if (clazz.isInterface()) // Polymorphism
-				return node -> {
+				fun = node -> {
 					Tree tree = Tree.decompose(node, TermOp.COLON_);
 					if (tree != null) {
 						Class<?> clazz1;
@@ -237,7 +242,7 @@ public class Nodify {
 				};
 			else {
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(getFieldInfos(clazz)).map(f -> Pair.of(Atom.of(f.name), f)).toList();
-				return node -> {
+				fun = node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					try {
 						Object object1 = clazz.newInstance();
@@ -259,7 +264,7 @@ public class Nodify {
 
 			if (collectionClasses.contains(clazz)) {
 				Fun<Node, Object> unnodifier1 = createUnnodifier0(typeArguments[0]);
-				return node -> {
+				fun = node -> {
 					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)).map(unnodifier1::apply).toList();
 					@SuppressWarnings("unchecked")
 					Collection<Object> object1 = (Collection<Object>) create(clazz);
@@ -269,7 +274,7 @@ public class Nodify {
 			} else if (mapClasses.contains(clazz)) {
 				Fun<Node, Object> keyUnnodifier = createUnnodifier0(typeArguments[0]);
 				Fun<Node, Object> valueUnnodifier = createUnnodifier0(typeArguments[1]);
-				return node -> {
+				fun = node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					@SuppressWarnings("unchecked")
 					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
@@ -279,9 +284,10 @@ public class Nodify {
 				};
 			} else
 				return createUnnodifier0(rawType);
-		}
+		} else
+			throw new RuntimeException("Unrecognized type " + type);
 
-		throw new RuntimeException("Unrecognized type " + type);
+		return fun;
 	}
 
 	private <T> T create(Class<T> clazz) {

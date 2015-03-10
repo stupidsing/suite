@@ -90,16 +90,18 @@ public class Mapify {
 	}
 
 	private Fun<Object, Object> createMapifier0(Type type) {
+		Fun<Object, Object> fun;
+
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
 
 			if (isDirectlyMapped(clazz))
-				return id;
+				fun = id;
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Fun<Object, Object> mapifier1 = createMapifier0(componentType);
 				if (componentType.isPrimitive())
-					return object -> {
+					fun = object -> {
 						Map<Object, Object> map = newMap();
 						int length = Array.getLength(object);
 						for (int i = 0; i < length; i++)
@@ -107,7 +109,7 @@ public class Mapify {
 						return map;
 					};
 				else
-					return object -> {
+					fun = object -> {
 						Map<Object, Object> map = newMap();
 						Object objects[] = (Object[]) object;
 						for (int i = 0; i < objects.length; i++)
@@ -115,7 +117,7 @@ public class Mapify {
 						return map;
 					};
 			} else if (clazz.isInterface()) // Polymorphism
-				return object -> {
+				fun = object -> {
 					Class<?> clazz1 = object.getClass();
 					Object m = getMapifier(clazz1).apply(object);
 					if (m instanceof Map) {
@@ -129,7 +131,7 @@ public class Mapify {
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
-				return object -> {
+				fun = object -> {
 					Map<Object, Object> map = newMap();
 					for (FieldInfo fieldInfo : fieldInfos)
 						try {
@@ -148,7 +150,7 @@ public class Mapify {
 
 			if (collectionClasses.contains(clazz)) {
 				Fun<Object, Object> mapifier1 = createMapifier0(typeArguments[0]);
-				return object -> {
+				fun = object -> {
 					Map<Object, Object> map = newMap();
 					int i = 0;
 					for (Object o : (Collection<?>) object)
@@ -158,7 +160,7 @@ public class Mapify {
 			} else if (mapClasses.contains(clazz)) {
 				Fun<Object, Object> keyMapifier = createMapifier0(typeArguments[0]);
 				Fun<Object, Object> valueMapifier = createMapifier0(typeArguments[1]);
-				return object -> {
+				fun = object -> {
 					Map<Object, Object> map = newMap();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						map.put(apply0(keyMapifier, e.getKey()), apply0(valueMapifier, e.getValue()));
@@ -166,22 +168,25 @@ public class Mapify {
 				};
 			} else
 				return createMapifier0(rawType);
-		}
+		} else
+			throw new RuntimeException("Unrecognized type " + type);
 
-		throw new RuntimeException("Unrecognized type " + type);
+		return fun;
 	}
 
 	private Fun<Object, Object> createUnmapifier0(Type type) {
+		Fun<Object, Object> fun;
+
 		if (type instanceof Class) {
 			Class<?> clazz = (Class<?>) type;
 
 			if (isDirectlyMapped(clazz))
-				return id;
+				fun = id;
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
 				Fun<Object, Object> unmapifier1 = createUnmapifier0(componentType);
 				if (componentType.isPrimitive())
-					return object -> {
+					fun = object -> {
 						Map<?, ?> map = (Map<?, ?>) object;
 						Object objects = Array.newInstance(componentType, map.size());
 						int i = 0;
@@ -192,7 +197,7 @@ public class Mapify {
 						return objects;
 					};
 				else
-					return object -> {
+					fun = object -> {
 						Map<?, ?> map = (Map<?, ?>) object;
 						Object objects[] = new Object[map.size()];
 						int i = 0;
@@ -201,7 +206,7 @@ public class Mapify {
 						return objects;
 					};
 			} else if (clazz.isInterface()) // Polymorphism
-				return object -> {
+				fun = object -> {
 					if (object instanceof Map) {
 						Map<?, ?> map = (Map<?, ?>) object;
 						Class<?> clazz1;
@@ -217,7 +222,7 @@ public class Mapify {
 				};
 			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
-				return object -> {
+				fun = object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					try {
 						Object object1 = clazz.newInstance();
@@ -237,7 +242,7 @@ public class Mapify {
 
 			if (collectionClasses.contains(clazz)) {
 				Fun<Object, Object> unmapifier1 = createUnmapifier0(typeArguments[0]);
-				return object -> {
+				fun = object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					@SuppressWarnings("unchecked")
 					Collection<Object> object1 = (Collection<Object>) create(clazz);
@@ -249,7 +254,7 @@ public class Mapify {
 			} else if (mapClasses.contains(clazz)) {
 				Fun<Object, Object> keyUnmapifier = createUnmapifier0(typeArguments[0]);
 				Fun<Object, Object> valueUnmapifier = createUnmapifier0(typeArguments[1]);
-				return object -> {
+				fun = object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					@SuppressWarnings("unchecked")
 					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
@@ -258,10 +263,11 @@ public class Mapify {
 					return object1;
 				};
 			} else
-				return createUnmapifier0(rawType);
-		}
+				fun = createUnmapifier0(rawType);
+		} else
+			throw new RuntimeException("Unrecognized type " + type);
 
-		throw new RuntimeException("Unrecognized type " + type);
+		return fun;
 	}
 
 	private boolean isDirectlyMapped(Class<?> clazz) {
