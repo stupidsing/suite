@@ -87,8 +87,7 @@ public class Nodify {
 	private Nodifier getNodifier(Type type) {
 		Nodifier nodifier = nodifiers.get(type);
 		if (nodifier == null) {
-			nodifiers.put(type,
-					new Nodifier(object -> getNodifier(type).nodify.apply(object), node -> getNodifier(type).unnodify.apply(node)));
+			nodifiers.put(type, new Nodifier(object -> apply0(getNodifier(type), object), node -> apply0(getNodifier(type), node)));
 			nodifiers.put(type, nodifier = createNodifier(type));
 		}
 		return nodifier;

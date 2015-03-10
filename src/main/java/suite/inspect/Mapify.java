@@ -129,7 +129,7 @@ public class Mapify {
 			} else if (clazz.isInterface()) // Polymorphism
 				mapifier = new Mapifier(object -> {
 					Class<?> clazz1 = object.getClass();
-					Object m = getMapifier(clazz1).mapify.apply(object);
+					Object m = apply0(getMapifier(clazz1).mapify, object);
 					if (m instanceof Map) {
 						Map<String, String> map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
@@ -146,7 +146,7 @@ public class Mapify {
 						} catch (ClassNotFoundException ex) {
 							throw new RuntimeException(ex);
 						}
-						return getMapifier(clazz1).unmapify.apply(object);
+						return apply0(getMapifier(clazz1).unmapify, object);
 					} else
 						// Happens when an enum implements an interface
 						return object;
