@@ -25,14 +25,14 @@ import suite.util.FunUtil.Fun;
  */
 public class Mapify {
 
-	private Set<Class<?>> collectionClasses = new HashSet<>(Arrays.asList( //
+	private Set<Type> collectionClasses = new HashSet<>(Arrays.asList( //
 			ArrayList.class, Collection.class, HashSet.class, List.class, Set.class));
-	private Set<Class<?>> mapClasses = new HashSet<>(Arrays.asList( //
+	private Set<Type> mapClasses = new HashSet<>(Arrays.asList( //
 			HashMap.class, Map.class));
 
 	private Fun<Object, Object> id = object -> object;
 
-	private Map<Class<?>, Mapifier> mapifiers = new ConcurrentHashMap<>();
+	private Map<Type, Mapifier> mapifiers = new ConcurrentHashMap<>();
 
 	private Inspect inspect;
 
@@ -63,27 +63,21 @@ public class Mapify {
 	}
 
 	public <T> Object mapify(Class<T> clazz, T t) {
-		if (t != null)
-			return getMapifier(clazz).mapify.apply(t);
-		else
-			return null;
+		return apply0(getMapifier(clazz).mapify, t);
 	}
 
 	public <T> T unmapify(Class<T> clazz, Object object) {
-		if (object != null) {
-			@SuppressWarnings("unchecked")
-			T t = (T) getMapifier(clazz).unmapify.apply(object);
-			return t;
-		} else
-			return null;
+		@SuppressWarnings("unchecked")
+		T t = (T) apply0(getMapifier(clazz).unmapify, object);
+		return t;
 	}
 
-	private Mapifier getMapifier(Class<?> clazz) {
-		Mapifier mapifier = mapifiers.get(clazz);
+	private Mapifier getMapifier(Type type) {
+		Mapifier mapifier = mapifiers.get(type);
 		if (mapifier == null) {
-			mapifiers.put(clazz, new Mapifier(object -> getMapifier(clazz).mapify.apply(object),
-					object -> getMapifier(clazz).unmapify.apply(object)));
-			mapifiers.put(clazz, mapifier = createMapifier(clazz));
+			mapifiers.put(type, new Mapifier(object -> apply0(getMapifier(type).mapify, object) //
+					, object -> apply0(getMapifier(type).unmapify, object)));
+			mapifiers.put(type, mapifier = createMapifier(type));
 		}
 		return mapifier;
 	}
