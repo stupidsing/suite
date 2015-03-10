@@ -180,7 +180,7 @@ public class Nodify {
 					return dict;
 				};
 			} else
-				return createNodifier0(rawType);
+				fun = createNodifier0(rawType);
 		} else
 			throw new RuntimeException("Unrecognized type " + type);
 
@@ -283,7 +283,7 @@ public class Nodify {
 					return object1;
 				};
 			} else
-				return createUnnodifier0(rawType);
+				fun = createUnnodifier0(rawType);
 		} else
 			throw new RuntimeException("Unrecognized type " + type);
 

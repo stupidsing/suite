@@ -167,7 +167,7 @@ public class Mapify {
 					return map;
 				};
 			} else
-				return createMapifier0(rawType);
+				fun = createMapifier0(rawType);
 		} else
 			throw new RuntimeException("Unrecognized type " + type);
 
