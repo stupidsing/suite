@@ -43,7 +43,7 @@ public class Termios implements Closeable {
 	@Override
 	public void close() {
 		Runtime.getRuntime().removeShutdownHook(hook);
-		showCursor();
+		cursor(true);
 		Libc.tcsetattr(0, 1, termios0); // TCSADRAIN
 	}
 
@@ -52,12 +52,24 @@ public class Termios implements Closeable {
 		gotoxy(0, 0);
 	}
 
-	public void hideCursor() {
-		puts(esc + "[?25l");
+	public void background(AnsiColor ac) {
+		puts(esc + "[" + (ac.value + 40) + "m");
 	}
 
-	public void showCursor() {
-		puts(esc + "[?25h");
+	public void background(int r, int g, int b) {
+		puts(esc + "[48;5;" + (16 + b + g * 6 + r * 36) + "m");
+	}
+
+	public void cursor(boolean isShow) {
+		puts(esc + "[?25" + (isShow ? "h" : "l"));
+	}
+
+	public void foreground(AnsiColor ac) {
+		puts(esc + "[" + (ac.value + 30) + "m");
+	}
+
+	public void foreground(int r, int g, int b) {
+		puts(esc + "[38;5;" + (16 + b + g * 6 + r * 36) + "m");
 	}
 
 	public void gotoxy(int x, int y) {
@@ -66,22 +78,6 @@ public class Termios implements Closeable {
 
 	public void resetColors() {
 		puts(esc + "[0m");
-	}
-
-	public void background(AnsiColor ac) {
-		puts(esc + "[" + (ac.value + 40) + "m");
-	}
-
-	public void foreground(AnsiColor ac) {
-		puts(esc + "[" + (ac.value + 30) + "m");
-	}
-
-	public void background(int r, int g, int b) {
-		puts(esc + "[48;5;" + (16 + b + g * 6 + r * 36) + "m");
-	}
-
-	public void foreground(int r, int g, int b) {
-		puts(esc + "[38;5;" + (16 + b + g * 6 + r * 36) + "m");
 	}
 
 	public void scroll(int dir) {

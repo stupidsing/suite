@@ -11,7 +11,7 @@ public class TermiosMain {
 	public static void main(String args[]) throws IOException {
 		try (Termios termios = new Termios()) {
 			termios.clear();
-			termios.hideCursor();
+			termios.cursor(false);
 
 			termios.background(AnsiColor.GREEN_);
 			termios.foreground(AnsiColor.RED___);
