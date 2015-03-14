@@ -38,13 +38,9 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testRefactorReplace() throws IOException {
-		FTerminal from = new FTerminal(To.chars("ic-compile0"));
-		FTerminal to = new FTerminal(To.chars("ic-compile1"));
-		Fun<FNode, FNode> fun = fn_ -> fn_.equals(from) ? to : null;
-
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);
-		FNode fnx = transform(fn0, fun);
+		FNode fnx = transform(fn0);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);
 	}
