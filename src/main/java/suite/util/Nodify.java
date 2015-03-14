@@ -42,7 +42,7 @@ public class Nodify {
 			HashMap.class, Map.class));
 
 	private Map<Type, Nodifier> nodifiers = new ConcurrentHashMap<>();
-	private boolean isMapClassToDict = false;
+	private boolean isMapClassToDict = true;
 	private Inspect inspect;
 
 	private Atom NULL = Atom.of("null");
@@ -141,13 +141,13 @@ public class Nodify {
 				nodifier = new Nodifier(object -> {
 					Class<?> clazz1 = object.getClass();
 					Node n = apply0(getNodifier(clazz1), object);
-					return Tree.of(TermOp.COLON_, new Str(clazz1.getName()), n);
+					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
 				}, node -> {
 					Tree tree = Tree.decompose(node, TermOp.COLON_);
 					if (tree != null) {
 						Class<?> clazz1;
 						try {
-							clazz1 = Class.forName(((Str) tree.getLeft()).value);
+							clazz1 = Class.forName(((Atom) tree.getLeft()).name);
 						} catch (ClassNotFoundException ex) {
 							throw new RuntimeException(ex);
 						}
