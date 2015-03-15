@@ -149,7 +149,7 @@ public class RecursiveFactorizer {
 				if (post != null)
 					list.add(term(post));
 
-				return new FTree(FNodeType.OPERATOR, operator.getName(), list);
+				return new FTree(FNodeType.OPERATOR, operator.toString(), list);
 			}
 
 			if (first == '(' && last == ')' //
