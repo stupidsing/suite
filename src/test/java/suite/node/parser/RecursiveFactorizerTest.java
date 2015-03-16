@@ -9,8 +9,14 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.inspect.Inspect;
+import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Str;
+import suite.node.Tree;
 import suite.node.io.Lister;
+import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FNodeType;
@@ -20,16 +26,16 @@ import suite.node.util.TreeRewriter;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.Nodify;
 import suite.util.To;
-import suite.util.Util;
 
 public class RecursiveFactorizerTest {
 
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 	@Test
-	public void testParseAuto() throws IOException {
+	public void testParseUnparse() throws IOException {
 		String s0 = FileUtil.read("src/main/ll/auto.sl").trim();
 		FNode fn = recursiveFactorizer.parse(s0);
 		String sx = recursiveFactorizer.unparse(fn);
@@ -37,7 +43,7 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testRefactorReplace() throws IOException {
+	public void testDirectReplace() throws IOException {
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);
 		FNode fnx = transform(fn0);
@@ -46,23 +52,7 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testRefactorReplace1() throws IOException {
-		Fun<FNode, FNode> fun = fn_ -> {
-			FNode fn01 = gets(fn_, 0, 1);
-			boolean b = true //
-			&& isTerm(fn01, "ic-compile0");
-			return b ? new FTree(FNodeType.OPERATOR, TermOp.TUPLE_.name, Arrays.asList(gets(fn_, 0, 0))) : null;
-		};
-
-		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
-		FNode fn0 = recursiveFactorizer.parse(s0);
-		FNode fnx = transform(fn0, fun);
-		String sx = recursiveFactorizer.unparse(fnx);
-		System.out.println(sx);
-	}
-
-	@Test
-	public void testRefactorRewrite() throws IOException {
+	public void testDirectRewrite() throws IOException {
 		Nodify nodify = new Nodify(new Inspect());
 		Node nodefr = nodify.nodify(FNode.class, recursiveFactorizer.parse("ic-compile0"));
 		Node nodeto = nodify.nodify(FNode.class, recursiveFactorizer.parse("ic-compile1"));
@@ -98,22 +88,61 @@ public class RecursiveFactorizerTest {
 		return fnx;
 	}
 
-	private boolean isTerm(FNode fn, String s) {
-		return fn instanceof FTerminal && Util.stringEquals(((FTerminal) fn).chars.toString(), s);
+	@Test
+	public void testRefactorRewrite() throws IOException {
+		Reference r[] = new Reference[5];
+
+		for (int i = 0; i < r.length; i++)
+			r[i] = new Reference();
+
+		Fun<String, Node> fun = s -> {
+			Source<Node> source = To.source(r);
+			Node n0 = terminalNode(s, source);
+			Node n1 = terminalNode("", source);
+			return operatorNode(TermOp.TUPLE_, Arrays.asList(n0, n1, source.source()));
+		};
+
+		Node nodefr = fun.apply("ic-compile0");
+		Node nodeto = fun.apply("ic-compile1");
+		TreeRewriter tr = new TreeRewriter(nodefr, nodeto);
+
+		Nodify nodify = new Nodify(new Inspect());
+
+		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
+		FNode fn0 = recursiveFactorizer.parse(s0);
+		Node node0 = nodify.nodify(FNode.class, fn0);
+		Node nodex = tr.rewrite(node0);
+		FNode fnx = nodify.unnodify(FNode.class, nodex);
+		String sx = recursiveFactorizer.unparse(fnx);
+		System.out.println(sx);
 	}
 
-	private FNode gets(FNode fn, int... ns) {
-		for (int n : ns)
-			fn = get(fn, n);
-		return fn;
+	private Node terminalNode(String s, Source<Node> source) {
+		Node r0 = source.source();
+		Node r1 = source.source();
+		return terminalNode(Arrays.asList(r0, termNode(s), r1));
 	}
 
-	private FNode get(FNode fn, int n) {
-		if (fn instanceof FTree) {
-			List<FNode> fns = ((FTree) fn).fns;
-			return n < fns.size() ? fns.get(n) : null;
-		} else
-			return null;
+	private Node terminalNode(List<Node> nodes) {
+		return treeNode(FNodeType.TERMINAL, Atom.of("null"), nodes);
+	}
+
+	private Node operatorNode(Operator operator, List<Node> nodes) {
+		return treeNode(FNodeType.OPERATOR, new Str(operator.toString()), nodes);
+	}
+
+	private Node treeNode(FNodeType type, Node name, List<Node> nodes) {
+		Dict dict = new Dict();
+		dict.map.put(Atom.of("type"), Reference.of(Atom.of(type.toString())));
+		dict.map.put(Atom.of("name"), Reference.of(name));
+		dict.map.put(Atom.of("fns"), Reference.of(Tree.of(TermOp.OR____, nodes)));
+		return Tree.of(TermOp.COLON_, Atom.of("suite.node.parser.RecursiveFactorizer$FTree"), dict);
+	}
+
+	private Node termNode(String s) {
+		Dict dict = new Dict();
+		dict.map.put(Atom.of("chars"), Reference.of(new Str(s)));
+		return Tree.of(TermOp.COLON_, Atom.of("suite.node.parser.RecursiveFactorizer$FTerminal"), dict);
 	}
 
 }
