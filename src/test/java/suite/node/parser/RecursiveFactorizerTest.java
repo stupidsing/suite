@@ -1,6 +1,7 @@
 package suite.node.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,7 +16,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.node.io.Lister;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
@@ -51,24 +51,6 @@ public class RecursiveFactorizerTest {
 		System.out.println(sx);
 	}
 
-	@Test
-	public void testDirectRewrite() throws IOException {
-		Nodify nodify = new Nodify(new Inspect());
-		Node nodefr = nodify.nodify(FNode.class, recursiveFactorizer.parse("ic-compile0"));
-		Node nodeto = nodify.nodify(FNode.class, recursiveFactorizer.parse("ic-compile1"));
-		System.out.println("FROM " + new Lister().list(nodefr));
-		System.out.println("TO__ " + new Lister().list(nodeto));
-		TreeRewriter tr = new TreeRewriter(nodefr, nodeto);
-
-		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
-		FNode fn0 = recursiveFactorizer.parse(s0);
-		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = tr.replace(node0);
-		FNode fnx = nodify.unnodify(FNode.class, nodex);
-		String sx = recursiveFactorizer.unparse(fnx);
-		System.out.println(sx);
-	}
-
 	private FNode transform(FNode fn0) {
 		FTerminal from = new FTerminal(To.chars("ic-compile0"));
 		FTerminal to = new FTerminal(To.chars("ic-compile1"));
@@ -90,7 +72,7 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testRefactorRewrite() throws IOException {
-		Reference r[] = new Reference[5];
+		Reference r[] = new Reference[64];
 
 		for (int i = 0; i < r.length; i++)
 			r[i] = new Reference();
@@ -115,6 +97,7 @@ public class RecursiveFactorizerTest {
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);
+		assertFalse(sx.contains("ic-compile0"));
 	}
 
 	private Node terminalNode(String s, Source<Node> source) {
