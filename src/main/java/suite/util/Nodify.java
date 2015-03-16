@@ -42,7 +42,6 @@ public class Nodify {
 			HashMap.class, Map.class));
 
 	private Map<Type, Nodifier> nodifiers = new ConcurrentHashMap<>();
-	private boolean isMapClassToDict = true;
 	private Inspect inspect;
 
 	private Atom NULL = Atom.of("null");
@@ -156,7 +155,7 @@ public class Nodify {
 						// Happens when an enum implements an interface
 						throw new RuntimeException("Cannot instantiate enum from interfaces");
 				});
-			else if (isMapClassToDict) {
+			else {
 				List<FieldInfo> fieldInfos = getFieldInfos(clazz);
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
 				nodifier = new Nodifier(object -> {
@@ -180,33 +179,6 @@ public class Nodify {
 							Node value = map.get(pair.t0);
 							fieldInfo.field.set(object1, apply0(fieldInfo.nodifier, value));
 						}
-						return object1;
-					} catch (ReflectiveOperationException ex) {
-						throw new RuntimeException(ex);
-					}
-				});
-			} else {
-				List<FieldInfo> fis = getFieldInfos(clazz);
-				nodifier = new Nodifier(object -> {
-					Tree start = Tree.of(null, null, null), tree = start;
-					try {
-						for (FieldInfo fi : fis) {
-							Tree tree0 = tree;
-							Node node = apply0(fi.nodifier, fi.field.get(object));
-							Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, node, null));
-						}
-					} catch (ReflectiveOperationException ex) {
-						throw new RuntimeException(ex);
-					}
-					Tree.forceSetRight(tree, Atom.NIL);
-					return start.getRight();
-				}, node -> {
-					try {
-						Object object1 = clazz.newInstance();
-						List<Node> list = To.list(Tree.iter(node, TermOp.OR____));
-						int i = 0;
-						for (FieldInfo fi : fis)
-							fi.field.set(object1, apply0(fi.nodifier, list.get(i)));
 						return object1;
 					} catch (ReflectiveOperationException ex) {
 						throw new RuntimeException(ex);
