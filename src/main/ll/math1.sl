@@ -38,7 +38,8 @@ equate (.f ^ (.g * .h) = (.f ^ .g) ^ .h) #
 equate (.tree = .value)
 	:- tree .tree .f .op .g
 	, member (' + ', ' * ',) .op -- Only perform exact calculations
-	, is.int .f, is.int .g
+	, is.int .f
+	, is.int .g
 	, let .value .tree
 #
 
