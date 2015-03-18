@@ -77,15 +77,17 @@ public class RecursiveFactorizerTest {
 		for (int i = 0; i < r.length; i++)
 			r[i] = new Reference();
 
-		Fun<String, Node> fun = s -> {
-			Source<Node> source = To.source(r);
-			Node n0 = source.source();
-			Node n1 = tupleNode(source.source(), n0, source);
-			return tupleNode(terminalNode(s, source), n1, source);
+		Fun<Boolean, Node> fun = b -> {
+			Source<Node> g = To.source(r);
+			Node head = terminalNode(g, b ? "ic-compile1" : "ic-compile0");
+			Node n0 = g.source();
+			Node n1 = tupleNode(g, g.source(), n0);
+			Node n2 = tupleNode(g, g.source(), n1);
+			return tupleNode(g, head, n2);
 		};
 
-		Node nodefr = fun.apply("ic-compile0");
-		Node nodeto = fun.apply("ic-compile1");
+		Node nodefr = fun.apply(false);
+		Node nodeto = fun.apply(true);
 		TreeRewriter tr = new TreeRewriter(nodefr, nodeto);
 
 		Nodify nodify = new Nodify(new Inspect());
@@ -100,17 +102,17 @@ public class RecursiveFactorizerTest {
 		assertFalse(sx.contains("ic-compile0"));
 	}
 
-	private Node tupleNode(Node n0, Node n1, Source<Node> source) {
-		return operatorNode(TermOp.TUPLE_, Arrays.asList(n0, terminalNode("", source), n1));
+	private Node tupleNode(Source<Node> g, Node n0, Node n1) {
+		return operatorNode(TermOp.TUPLE_, Arrays.asList(n0, terminalNode(g, ""), n1));
 	}
 
 	private Node operatorNode(Operator operator, List<Node> nodes) {
 		return treeNode(FNodeType.OPERATOR, new Str(operator.toString()), nodes);
 	}
 
-	private Node terminalNode(String s, Source<Node> source) {
-		Node r0 = source.source();
-		Node r1 = source.source();
+	private Node terminalNode(Source<Node> g, String s) {
+		Node r0 = g.source();
+		Node r1 = g.source();
 		return terminalNode(Arrays.asList(r0, termNode(s), r1));
 	}
 
