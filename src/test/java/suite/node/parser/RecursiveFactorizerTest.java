@@ -80,7 +80,11 @@ public class RecursiveFactorizerTest {
 		Fun<Boolean, Node> fun = b -> {
 			Source<Node> g = To.source(r);
 			Node head = terminalNode(g, b ? "ic-compile1" : "ic-compile0");
-			Node n0 = g.source();
+			Node n0;
+			if (!b)
+				n0 = g.source();
+			else
+				n0 = operatorNode(TermOp.TUPLE_, Arrays.asList(g.source(), newTerminalNode(" "), newTerminalNode(".type")));
 			Node n1 = tupleNode(g, g.source(), n0);
 			Node n2 = tupleNode(g, g.source(), n1);
 			return tupleNode(g, head, n2);
@@ -113,11 +117,15 @@ public class RecursiveFactorizerTest {
 	private Node terminalNode(Source<Node> g, String s) {
 		Node r0 = g.source();
 		Node r1 = g.source();
-		return terminalNode(Arrays.asList(r0, termNode(s), r1));
+		return terminalNode(r0, termNode(s), r1);
 	}
 
-	private Node terminalNode(List<Node> nodes) {
-		return treeNode(FNodeType.TERMINAL, Atom.of("null"), nodes);
+	private Node newTerminalNode(String s) {
+		return terminalNode(termNode(""), termNode(s), termNode(""));
+	}
+
+	private Node terminalNode(Node n0, Node n1, Node n2) {
+		return treeNode(FNodeType.TERMINAL, Atom.of("null"), Arrays.asList(n0, n1, n2));
 	}
 
 	private Node treeNode(FNodeType type, Node name, List<Node> nodes) {
