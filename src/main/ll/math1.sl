@@ -20,7 +20,6 @@ reduce .e .e1 :- rewrite .e .e1 .es/(), reduce-list .es #
 reduce-list () #
 reduce-list (.e .e1, .es) :- reduce .e .e1, reduce-list .es #
 
-equate (.f = .f) #
 equate (.f + .g = .g + .f) #
 equate (.f * .g = .g * .f) #
 equate (.f + (.g + .h) = (.f + .g) + .h) #
@@ -66,7 +65,4 @@ equate (DV (SIN .x) .x = COS .x) #
 equate (DV (COS .x) .x = -1 * SIN .x) #
 equate (DV .y .x0 = DV .y .x1) :- equate1 (.x0 = .x1) #
 equate (DV .y0 .x = DV .y1 .x) :- equate1 (.y0 = .y1) #
-equate (.e = .e1) :- rewrite .e .e1 .es/(), equate-list .es #
-
-equate-list () #
-equate-list (.e .e1, .es) :- equate (.e = .e1), equate-list .es #
+equate (.e = .e1) :- rewrite .e .e1 .es/(), member .es (.c .c1), equate (.c = .c1) #
