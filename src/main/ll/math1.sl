@@ -48,10 +48,17 @@ equate (LN (.f * .g) = LN .f + LN .g) #
 equate (LN (.f ^ .g) = .g * LN .f) #
 equate (ASIN SIN .f = .f) #
 equate (ACOS COS .f = .f) #
+equate (SIN 0 = 0) #
+equate (SIN (PI * 0.5) = 1) #
+equate (COS 0 = 1) #
+equate (COS (PI * 0.5) = 0) #
 equate (SIN (-1 * .f) = -1 * SIN .f) #
 equate (COS (-1 * .f) = COS .f) #
 equate (SIN (.f + .g) = SIN .f * COS .g + COS .f * SIN .g) #
 equate (COS (.f + .g) = COS .f * COS .g + SIN .f * SIN .g * -1) #
+equate (2 * SIN .f * SIN .g = COS (.f + -1 * .g) + -1 * COS (.f + .g)) #
+equate (2 * SIN .f * COS .g = SIN (.f + .g) + SIN (.f + -1 * .g)) #
+equate (2 * COS .f * COS .g = COS (.f + -1 * .g) + COS (.f + .g)) #
 
 equate (DV .y .x = DV .y .z * DV .z .x) #
 equate (DV (.f + .g) .x = DV .f .x + DV .g .x) #

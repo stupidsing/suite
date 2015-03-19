@@ -37,6 +37,7 @@ public class TermiosMain {
 			}
 
 			termios.resetColors();
+			termios.reportMouse();
 
 			int ch;
 			while ((ch = Libc.getchar()) != -1 && ch != 'q')

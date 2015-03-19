@@ -76,6 +76,10 @@ public class Termios implements Closeable {
 		puts(esc + "[" + (y + 1) + ";" + (x + 1) + "H");
 	}
 
+	public void reportMouse() {
+		puts(esc + "[?9h");
+	}
+
 	public void resetColors() {
 		puts(esc + "[0m");
 	}
