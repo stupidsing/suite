@@ -1,21 +1,21 @@
 -------------------------------------------------------------------------------
 -- symbolic mathematics
 
-rewrite .e .e .es/.es :- is.int .e; is.atom .e #
-rewrite (.x0 + .y0) (.x1 + .y1) (.x0 .x1, .y0 .y1, .es)/.es #
-rewrite (.x0 * .y0) (.x1 * .y1) (.x0 .x1, .y0 .y1, .es)/.es #
-rewrite (.x0 ^ .y0) (.x1 ^ .y1) (.x0 .x1, .y0 .y1, .es)/.es #
-rewrite E E .es/.es #
-rewrite PI PI .es/.es #
-rewrite (LN .x0) (LN .x1) (.x0 .x1, .es)/.es #
-rewrite (SIN .x0) (SIN .x1) (.x0 .x1, .es)/.es #
-rewrite (COS .x0) (COS .x1) (.x0 .x1, .es)/.es #
-rewrite (DV .x0 .y0) (DV .x1 .y1) (.x0 .x1, .y0 .y1, .es)/.es #
+sm-rewrite .e .e .es/.es :- is.int .e; is.atom .e #
+sm-rewrite (.x0 + .y0) (.x1 + .y1) (.x0 .x1, .y0 .y1, .es)/.es #
+sm-rewrite (.x0 * .y0) (.x1 * .y1) (.x0 .x1, .y0 .y1, .es)/.es #
+sm-rewrite (.x0 ^ .y0) (.x1 ^ .y1) (.x0 .x1, .y0 .y1, .es)/.es #
+sm-rewrite E E .es/.es #
+sm-rewrite PI PI .es/.es #
+sm-rewrite (LN .x0) (LN .x1) (.x0 .x1, .es)/.es #
+sm-rewrite (SIN .x0) (SIN .x1) (.x0 .x1, .es)/.es #
+sm-rewrite (COS .x0) (COS .x1) (.x0 .x1, .es)/.es #
+sm-rewrite (DV .x0 .y0) (DV .x1 .y1) (.x0 .x1, .y0 .y1, .es)/.es #
 
 reduce (.x - .y) (.x + -1 * .y) #
 reduce (.x / .y) (.x * .y ^ -1) #
 reduce (TAN .x) (SIN .x / COS .x) #
-reduce .e .e1 :- rewrite .e .e1 .es/(), reduce-list .es #
+reduce .e .e1 :- sm-rewrite .e .e1 .es/(), reduce-list .es #
 
 reduce-list () #
 reduce-list (.e .e1, .es) :- reduce .e .e1, reduce-list .es #
@@ -63,6 +63,4 @@ equate (DV (E ^ .x) .x = E ^ .x) #
 equate (DV (LN .x) .x = .x ^ -1) #
 equate (DV (SIN .x) .x = COS .x) #
 equate (DV (COS .x) .x = -1 * SIN .x) #
-equate (DV .y .x0 = DV .y .x1) :- equate1 (.x0 = .x1) #
-equate (DV .y0 .x = DV .y1 .x) :- equate1 (.y0 = .y1) #
-equate (.e = .e1) :- rewrite .e .e1 .es/(), member .es (.c .c1), equate (.c = .c1) #
+equate (.e = .e1) :- sm-rewrite .e .e1 .es/(), member .es (.c .c1), equate (.c = .c1) #
