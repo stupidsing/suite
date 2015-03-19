@@ -189,10 +189,9 @@ public class Formatter {
 	}
 
 	private void formatTree(int parentPrec, Tree tree) {
-		Node m[];
-		if ((m = CustomStyles.bracketMatcher.apply(tree)) != null) {
+		if (tree.getOperator() == TermOp.TUPLE_ && tree.getLeft().finalNode() == Atom.of("[")) {
 			sb.append("[");
-			format(m[0], 0);
+			format(tree.getRight(), 0);
 			sb.append("]");
 		} else
 			formatTree0(tree, parentPrec);
