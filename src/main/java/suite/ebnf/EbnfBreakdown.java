@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.adt.Pair;
-import suite.ebnf.EbnfNode.EbnfType;
+import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.Read;
@@ -13,39 +13,39 @@ import suite.util.Util;
 
 public class EbnfBreakdown {
 
-	public EbnfNode breakdown(String name, String s) {
-		return new EbnfNode(EbnfType.NAMED_, name, breakdown(s));
+	public EbnfGrammar breakdown(String name, String s) {
+		return new EbnfGrammar(EbnfGrammarType.NAMED_, name, breakdown(s));
 	}
 
-	public EbnfNode breakdown(String s) {
-		EbnfNode en;
+	public EbnfGrammar breakdown(String s) {
+		EbnfGrammar en;
 		List<String> list;
 		Pair<String, String> pair;
 		s = s.trim();
 
 		if ((list = ParseUtil.searchn(s, " | ", Assoc.RIGHT)).size() > 1)
-			en = new EbnfNode(EbnfType.OR____, breakdown(list));
+			en = new EbnfGrammar(EbnfGrammarType.OR____, breakdown(list));
 		else if ((pair = ParseUtil.search(s, " /except/ ", Assoc.RIGHT)) != null)
-			en = new EbnfNode(EbnfType.EXCEPT, Arrays.asList(breakdown(pair.t0), breakdown(pair.t1)));
+			en = new EbnfGrammar(EbnfGrammarType.EXCEPT, Arrays.asList(breakdown(pair.t0), breakdown(pair.t1)));
 		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
-			en = new EbnfNode(EbnfType.AND___, breakdown(list));
+			en = new EbnfGrammar(EbnfGrammarType.AND___, breakdown(list));
 		else if (s.endsWith("*"))
-			en = new EbnfNode(EbnfType.REPT0_, breakdown(Util.substr(s, 0, -1)));
+			en = new EbnfGrammar(EbnfGrammarType.REPT0_, breakdown(Util.substr(s, 0, -1)));
 		else if (s.endsWith("+"))
-			en = new EbnfNode(EbnfType.REPT1_, breakdown(Util.substr(s, 0, -1)));
+			en = new EbnfGrammar(EbnfGrammarType.REPT1_, breakdown(Util.substr(s, 0, -1)));
 		else if (s.endsWith("?"))
-			en = new EbnfNode(EbnfType.OPTION, breakdown(Util.substr(s, 0, -1)));
+			en = new EbnfGrammar(EbnfGrammarType.OPTION, breakdown(Util.substr(s, 0, -1)));
 		else if (s.startsWith("(") && s.endsWith(")"))
 			en = breakdown(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\""))
-			en = new EbnfNode(EbnfType.STRING, Escaper.unescape(Util.substr(s, 1, -1), "\""));
+			en = new EbnfGrammar(EbnfGrammarType.STRING, Escaper.unescape(Util.substr(s, 1, -1), "\""));
 		else
-			en = new EbnfNode(EbnfType.ENTITY, s);
+			en = new EbnfGrammar(EbnfGrammarType.ENTITY, s);
 
 		return en;
 	}
 
-	private List<EbnfNode> breakdown(List<String> list) {
+	private List<EbnfGrammar> breakdown(List<String> list) {
 		return Read.from(list).map(this::breakdown).toList();
 	}
 

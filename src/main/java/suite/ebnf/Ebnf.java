@@ -34,7 +34,7 @@ import suite.util.Util;
 public class Ebnf {
 
 	private String rootEntity;
-	private Map<String, Grammar> grammarsByEntity;
+	private Map<String, Parser> parsersByEntity;
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
 	private EbnfExpect expect = new EbnfExpect();
@@ -42,7 +42,7 @@ public class Ebnf {
 
 	private static boolean trace = false;
 
-	private interface Grammar {
+	private interface Parser {
 		public Streamlet<State> p(Parse parse, State state);
 	}
 
@@ -104,9 +104,9 @@ public class Ebnf {
 			length = in.length();
 		}
 
-		private Node parse(int pos, Grammar grammar) {
+		private Node parse(int pos, Parser parser) {
 			State initialState = new State(null, pos, null, 0);
-			Streamlet<State> st = parse(initialState, grammar);
+			Streamlet<State> st = parse(initialState, parser);
 			State state;
 
 			while ((state = st.next()) != null)
@@ -144,11 +144,11 @@ public class Ebnf {
 			return null;
 		}
 
-		private Streamlet<State> parse(State state, Grammar grammar) {
+		private Streamlet<State> parse(State state, Parser parser) {
 			if (trace)
-				LogUtil.info("parse(" + grammar + "): " + in.substring(state.pos));
+				LogUtil.info("parse(" + parser + "): " + in.substring(state.pos));
 
-			Streamlet<State> states = grammar.p(this, state);
+			Streamlet<State> states = parser.p(this, state);
 
 			if (states == noResult && state.entity != null && state.pos >= errorPosition) {
 				errorPosition = state.pos;
@@ -189,83 +189,83 @@ public class Ebnf {
 		if (!pairs.isEmpty())
 			rootEntity = pairs.get(0).t0;
 
-		Map<String, EbnfNode> nodesByEntity = Read.from(pairs) //
+		Map<String, EbnfGrammar> grammarsByEntity = Read.from(pairs) //
 				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
 				.collect(As.map());
 
-		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(nodesByEntity);
+		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(grammarsByEntity);
 
-		for (Entry<String, EbnfNode> entry : nodesByEntity.entrySet())
+		for (Entry<String, EbnfGrammar> entry : grammarsByEntity.entrySet())
 			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
 
-		grammarsByEntity = Read.from(nodesByEntity) //
+		parsersByEntity = Read.from(grammarsByEntity) //
 				.map(lr -> Pair.of(lr.t0, build(lr.t1))) //
 				.collect(As.map());
 	}
 
-	private Grammar parseGrammar(String s) {
+	private Parser parseGrammar(String s) {
 		return build(breakdown.breakdown(s));
 	}
 
-	private Grammar build(EbnfNode en) {
-		Grammar grammar;
-		List<Grammar> grammars;
+	private Parser build(EbnfGrammar eg) {
+		Parser parser;
+		List<Parser> parsers;
 
-		switch (en.type) {
+		switch (eg.type) {
 		case AND___:
-			grammars = buildChildren(en);
-			grammar = (parse, st) -> {
+			parsers = buildChildren(eg);
+			parser = (parse, st) -> {
 				Streamlet<State> streamlets = Read.from(st);
-				for (Grammar g : grammars)
+				for (Parser g : parsers)
 					streamlets = streamlets.concatMap(st_ -> parse.parse(st_, g));
 				return streamlets;
 			};
 			break;
 		case ENTITY:
-			grammar = buildEntity(en.content);
+			parser = buildEntity(eg.content);
 			break;
 		case EXCEPT:
-			Grammar grammar0 = build(en.children.get(0));
-			Grammar grammar1 = build(en.children.get(1));
-			grammar = (parse, st) -> grammar0.p(parse, st).filter(st1 -> {
+			Parser parser0 = build(eg.children.get(0));
+			Parser parser1 = build(eg.children.get(1));
+			parser = (parse, st) -> parser0.p(parse, st).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
-				return grammar1.p(new Parse(in1), new State(null, 0, null, 0)).count() == 0;
+				return parser1.p(new Parse(in1), new State(null, 0, null, 0)).count() == 0;
 			});
 			break;
 		case NAMED_:
-			grammar = deepen(build(en.children.get(0)), en.content);
+			parser = deepen(build(eg.children.get(0)), eg.content);
 			break;
 		case OPTION:
-			Grammar g = build(en.children.get(0));
-			grammar = (parse, st) -> parse.parse(st, g).cons(st);
+			Parser g = build(eg.children.get(0));
+			parser = (parse, st) -> parse.parse(st, g).cons(st);
 			break;
 		case OR____:
-			grammars = buildChildren(en);
-			grammar = (parse, st) -> Read.from(grammars).concatMap(g_ -> parse.parse(st, g_));
+			parsers = buildChildren(eg);
+			parser = (parse, st) -> Read.from(parsers).concatMap(g_ -> parse.parse(st, g_));
 			break;
 		case REPT0_:
-			grammar = buildRepeat(en, true);
+			parser = buildRepeat(eg, true);
 			break;
 		case REPT1_:
-			grammar = buildRepeat(en, false);
+			parser = buildRepeat(eg, false);
 			break;
 		case STRING:
-			Expect e = expect.expectString(en.content);
-			grammar = skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
+			Expect e = expect.expectString(eg.content);
+			parser = skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
 			break;
 		default:
-			grammar = null;
+			parser = null;
 		}
 
-		return grammar;
+		return parser;
 	}
 
-	private List<Grammar> buildChildren(EbnfNode en) {
-		return Read.from(en.children).map(this::build).toList();
+	private List<Parser> buildChildren(EbnfGrammar eg) {
+		return Read.from(eg.children).map(this::build).toList();
 	}
 
-	private Grammar buildRepeat(EbnfNode en, boolean isAllowNone) {
-		Grammar g = build(en.children.get(0));
+	private Parser buildRepeat(EbnfGrammar eg, boolean isAllowNone) {
+		Parser g = build(eg.children.get(0));
 
 		return (parse, st) -> {
 			Streamlet<State> states = Read.from(new Source<State>() {
@@ -288,10 +288,10 @@ public class Ebnf {
 		};
 	}
 
-	private Grammar buildEntity(String entity) {
-		Grammar grammar1;
-		if ((grammar1 = buildLiteral(entity)) == null)
-			grammar1 = (parse, st) -> {
+	private Parser buildEntity(String entity) {
+		Parser parser1;
+		if ((parser1 = buildLiteral(entity)) == null)
+			parser1 = (parse, st) -> {
 				boolean isRecurse = false;
 				State prevState = st;
 
@@ -301,19 +301,19 @@ public class Ebnf {
 				}
 
 				if (!isRecurse) {
-					Grammar grammar = grammarsByEntity.get(entity);
-					if (grammar != null)
-						return grammar.p(parse, st);
+					Parser parser = parsersByEntity.get(entity);
+					if (parser != null)
+						return parser.p(parse, st);
 					else
 						throw new RuntimeException("Entity " + entity + " not found");
 				} else
 					return noResult;
 			};
 
-		return grammar1;
+		return parser1;
 	}
 
-	private Grammar buildLiteral(String entity) {
+	private Parser buildLiteral(String entity) {
 		Expect e;
 
 		if (Util.stringEquals(entity, "<CHARACTER>"))
@@ -360,17 +360,17 @@ public class Ebnf {
 		return new Parse(s).parse(0, parseGrammar(entity));
 	}
 
-	private Grammar skipWhitespaces(Grammar grammar) {
+	private Parser skipWhitespaces(Parser parser) {
 		return (parse, st) -> {
 			int pos1 = expect.expectWhitespaces(parse.in, parse.length, st.pos);
-			return grammar.p(parse, new State(st, pos1));
+			return parser.p(parse, new State(st, pos1));
 		};
 	}
 
-	private Grammar deepen(Grammar grammar, String entity) {
+	private Parser deepen(Parser parser, String entity) {
 		return (parse, st0) -> {
 			State st1 = new State(st0, st0.pos, entity, 1);
-			Streamlet<State> states = grammar.p(parse, st1);
+			Streamlet<State> states = parser.p(parse, st1);
 			return states.map(st2 -> new State(st2, st2.pos, null, -1));
 		};
 	}

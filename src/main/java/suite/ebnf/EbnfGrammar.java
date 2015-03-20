@@ -1,0 +1,47 @@
+package suite.ebnf;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class EbnfGrammar {
+
+	public enum EbnfGrammarType {
+		AND___, //
+		ENTITY, //
+		EXCEPT, //
+		NAMED_, //
+		OPTION, //
+		OR____, //
+		REPT0_, //
+		REPT1_, //
+		STRING, //
+	}
+
+	public final EbnfGrammarType type;
+	public final String content;
+	public final List<EbnfGrammar> children;
+
+	public EbnfGrammar(EbnfGrammarType type, String content) {
+		this(type, content, new ArrayList<>());
+	}
+
+	public EbnfGrammar(EbnfGrammarType type, EbnfGrammar child) {
+		this(type, null, child);
+	}
+
+	public EbnfGrammar(EbnfGrammarType type, String content, EbnfGrammar child) {
+		this(type, content, Arrays.asList(child));
+	}
+
+	public EbnfGrammar(EbnfGrammarType type, List<EbnfGrammar> children) {
+		this(type, null, children);
+	}
+
+	private EbnfGrammar(EbnfGrammarType type, String content, List<EbnfGrammar> children) {
+		this.type = type;
+		this.content = content;
+		this.children = children;
+	}
+
+}
