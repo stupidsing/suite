@@ -70,4 +70,5 @@ sm-equate (DV (E ^ .x) .x = E ^ .x) #
 sm-equate (DV (LN .x) .x = .x ^ -1) #
 sm-equate (DV (SIN .x) .x = COS .x) #
 sm-equate (DV (COS .x) .x = -1 * SIN .x) #
+
 sm-equate (.e = .e1) :- sm-rewrite .e .e1 .es/(), member .es (.c .c1), sm-equate (.c = .c1) #

@@ -26,6 +26,7 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
+//mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.cli.Main
 public class Main extends ExecutableProgram {
 
 	private CommandOptions opt;
