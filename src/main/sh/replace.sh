@@ -1,4 +1,4 @@
-replace() {
+replace_() {
   REPLACER="${1}"
   F0="${2}"
   F1=$(echo "${F0}" | sh -c "${REPLACER}")
@@ -9,19 +9,19 @@ replace() {
   echo ${F1}
 }
 
-replace-file() {
+replace() {
   REPLACER="${1}"
   shift
   while [ "${1}" ]; do
     F0="${1}"
     shift
-    replace "${REPLACER}" "${F0}"
+    replace_ "${REPLACER}" "${F0}"
   done
 }
 
 replace-files() {
   while read F; do
-    replace "${1}" "${F}"
+    replace_ "${1}" "${F}"
   done
 }
 
