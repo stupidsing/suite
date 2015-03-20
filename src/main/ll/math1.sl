@@ -28,10 +28,11 @@ sm-reduce-list () #
 sm-reduce-list (.e .e1, .es) :- sm-reduce .e .e1, sm-reduce-list .es #
 
 sm-equate (.f = .g)
-	:- sm-equate0 .f0 .g0
+	:- sm-equate0 (.f0 = .g0)
 	, sm-reduce .f0 .f
 	, sm-reduce .g0 .g
 #
+sm-equate (.e = .e1) :- sm-rewrite .e .e1 .es/(), member .es (.c .c1), sm-equate (.c = .c1) #
 
 sm-equate0 (.f + .g = .g + .f) #
 sm-equate0 (.f * .g = .g * .f) #
@@ -75,5 +76,3 @@ sm-equate0 (DV (E ^ .x) .x = E ^ .x) #
 sm-equate0 (DV (LN .x) .x = .x ^ -1) #
 sm-equate0 (DV (SIN .x) .x = COS .x) #
 sm-equate0 (DV (COS .x) .x = -1 * SIN .x) #
-
-sm-equate0 (.e = .e1) :- sm-rewrite .e .e1 .es/(), member .es (.c .c1), sm-equate0 (.c = .c1) #
