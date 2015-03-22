@@ -32,7 +32,11 @@ sm-equate (.f = .g)
 	, sm-reduce .f0 .f
 	, sm-reduce .g0 .g
 #
-sm-equate (.e = .e1) :- sm-rewrite .e .e1 .es/(), member .es (.c .c1), sm-equate (.c = .c1) #
+sm-equate (.e = .e1)
+	:- sm-rewrite .e .e1 .es/()
+	, member .es (.c .c1)
+	, sm-equate (.c = .c1)
+#
 
 sm-equate0 (.f + .g = .g + .f) #
 sm-equate0 (.f * .g = .g * .f) #
