@@ -13,7 +13,6 @@ import suite.streamlet.Read;
 public class TreeRewriter {
 
 	private Node from, to;
-	private Node from1, to1;
 	private Journal journal;
 
 	public TreeRewriter(Node from) {
@@ -54,23 +53,24 @@ public class TreeRewriter {
 	private Node rewrite0(Node node0) {
 		node0 = node0.finalNode();
 		Node node1;
-		if (node0 instanceof Reference || !bind(node0))
+		if (node0 instanceof Reference || (node1 = bind(node0)) == null)
 			node1 = Rewriter.transform(node0, this::rewrite0);
-		else
-			node1 = to1;
 		return node1;
 	}
 
-	private boolean bind(Node node0) {
+	private Node bind(Node node0) {
 		Cloner cloner = new Cloner();
-		from1 = cloner.clone(from);
-		to1 = cloner.clone(to);
+		Node from1 = cloner.clone(from);
+		Node to1 = cloner.clone(to);
 
 		int pit = journal.getPointInTime();
-		boolean result = Binder.bind(node0, from1, journal);
-		if (!result)
+
+		if (Binder.bind(node0, from1, journal))
+			return to1;
+		else {
 			journal.undoBinds(pit);
-		return result;
+			return null;
+		}
 	}
 
 }
