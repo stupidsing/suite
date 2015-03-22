@@ -112,7 +112,7 @@ public class Nodify {
 						e -> Atom.of(e.toString()), e -> e)::get);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
-				Nodifier nodifier1 = createNodifier(componentType);
+				Nodifier nodifier1 = getNodifier(componentType);
 				Fun<Object, Node> forward = object -> {
 					Node node = Atom.NIL;
 					for (int i = Array.getLength(object) - 1; i >= 0; i--)
@@ -192,7 +192,7 @@ public class Nodify {
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				Nodifier nodifier1 = createNodifier(typeArguments[0]);
+				Nodifier nodifier1 = getNodifier(typeArguments[0]);
 				nodifier = new Nodifier(object -> {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (Object o : (Collection<?>) object) {
@@ -208,8 +208,8 @@ public class Nodify {
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
-				Nodifier kn = createNodifier(typeArguments[0]);
-				Nodifier vn = createNodifier(typeArguments[1]);
+				Nodifier kn = getNodifier(typeArguments[0]);
+				Nodifier vn = getNodifier(typeArguments[1]);
 				nodifier = new Nodifier(object -> {
 					Dict dict = new Dict();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
@@ -223,7 +223,7 @@ public class Nodify {
 					return object1;
 				});
 			} else
-				nodifier = createNodifier(rawType);
+				nodifier = getNodifier(rawType);
 		} else
 			throw new RuntimeException("Unrecognized type " + type);
 

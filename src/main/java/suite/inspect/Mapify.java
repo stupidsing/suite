@@ -93,7 +93,7 @@ public class Mapify {
 				mapifier = new Mapifier(id, id);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
-				Mapifier mapifier1 = createMapifier(componentType);
+				Mapifier mapifier1 = getMapifier(componentType);
 				if (componentType.isPrimitive())
 					mapifier = new Mapifier(object -> {
 						Map<Object, Object> map = newMap();
@@ -181,7 +181,7 @@ public class Mapify {
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				Mapifier mapifier1 = createMapifier(typeArguments[0]);
+				Mapifier mapifier1 = getMapifier(typeArguments[0]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					int i = 0;
@@ -197,8 +197,8 @@ public class Mapify {
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
-				Mapifier km = createMapifier(typeArguments[0]);
-				Mapifier vm = createMapifier(typeArguments[1]);
+				Mapifier km = getMapifier(typeArguments[0]);
+				Mapifier vm = getMapifier(typeArguments[1]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
@@ -212,7 +212,7 @@ public class Mapify {
 					return object1;
 				});
 			} else
-				mapifier = createMapifier(rawType);
+				mapifier = getMapifier(rawType);
 		} else
 			throw new RuntimeException("Unrecognized type " + type);
 
@@ -251,7 +251,7 @@ public class Mapify {
 		return Read.from(inspect.fields(clazz)) //
 				.map(field -> {
 					Type type = field.getGenericType();
-					return new FieldInfo(field, field.getName(), createMapifier(type));
+					return new FieldInfo(field, field.getName(), getMapifier(type));
 				}) //
 				.toList();
 	}
