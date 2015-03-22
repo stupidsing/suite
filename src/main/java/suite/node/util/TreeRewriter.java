@@ -37,8 +37,7 @@ public class TreeRewriter {
 
 	public Node replace(Node node0) {
 		node0 = node0.finalNode();
-		Node node1 = !node0.equals(from) ? Rewriter.transform(node0, this::replace) : to;
-		return node1;
+		return !node0.equals(from) ? Rewriter.transform(node0, this::replace) : to;
 	}
 
 	public Node rewrite(Node node0) {
