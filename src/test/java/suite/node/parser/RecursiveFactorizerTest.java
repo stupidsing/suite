@@ -72,33 +72,51 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testRefactorRewrite() throws IOException {
-		Reference r[] = new Reference[64];
+		Source<Node[]> source = new Source<Node[]>() {
+			public Node[] source() {
+				Reference r[] = new Reference[64];
 
-		for (int i = 0; i < r.length; i++)
-			r[i] = new Reference();
+				for (int i = 0; i < r.length; i++)
+					r[i] = new Reference();
 
-		Fun<Boolean, Node> fun = b -> {
-			Source<Node> g = To.source(r);
-			Node head = terminalNode(g, b ? "ic-compile1" : "ic-compile0");
-			Node n0;
-			if (!b)
-				n0 = g.source();
-			else
-				n0 = operatorNode(TermOp.TUPLE_, Arrays.asList(g.source(), terminalNode(" "), terminalNode(".type")));
-			Node n1 = tupleNode(g, g.source(), n0);
-			Node n2 = tupleNode(g, g.source(), n1);
-			return tupleNode(g, head, n2);
+				Reference refto = new Reference();
+
+				Reference reffr = new Reference() {
+					public void bound(Node node) {
+						super.bound(node);
+						refto.bound(node);
+					}
+
+					public void unbound() {
+						refto.unbound();
+						super.unbound();
+					}
+				};
+
+				Fun<String, Fun<Boolean, Node>> fun = hs -> b -> {
+					Source<Node> g = To.source(r);
+					Node head = terminalNode(g, hs);
+					Node n0;
+					if (!b)
+						n0 = reffr;
+					else
+						n0 = operatorNode(TermOp.TUPLE_, Arrays.asList(refto, terminalNode(" "), terminalNode(".type")));
+					Node n1 = tupleNode(g, g.source(), n0);
+					Node n2 = tupleNode(g, g.source(), n1);
+					return tupleNode(g, head, n2);
+				};
+
+				return new Node[] { fun.apply("ic-compile0").apply(false), fun.apply("ic-compile1").apply(true) };
+			}
 		};
 
 		TreeRewriter tr = new TreeRewriter();
 		Nodify nodify = new Nodify(new Inspect());
-		Node nodefr = fun.apply(false);
-		Node nodeto = fun.apply(true);
 
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);
 		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = tr.rewrite(nodefr, nodeto, node0);
+		Node nodex = tr.rewrite(source, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);

@@ -61,7 +61,7 @@ public class TreeRewriter {
 			}
 
 			private Node bind(Node node0) {
-				Node[] ft = source.source();
+				Node ft[] = source.source();
 				int pit = journal.getPointInTime();
 
 				if (Binder.bind(node0, ft[0], journal))
