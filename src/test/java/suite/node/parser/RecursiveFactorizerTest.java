@@ -90,16 +90,15 @@ public class RecursiveFactorizerTest {
 			return tupleNode(g, head, n2);
 		};
 
+		TreeRewriter tr = new TreeRewriter();
+		Nodify nodify = new Nodify(new Inspect());
 		Node nodefr = fun.apply(false);
 		Node nodeto = fun.apply(true);
-		TreeRewriter tr = new TreeRewriter(nodefr, nodeto);
-
-		Nodify nodify = new Nodify(new Inspect());
 
 		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FNode fn0 = recursiveFactorizer.parse(s0);
 		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = tr.rewrite(node0);
+		Node nodex = tr.rewrite(nodefr, nodeto, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		String sx = recursiveFactorizer.unparse(fnx);
 		System.out.println(sx);

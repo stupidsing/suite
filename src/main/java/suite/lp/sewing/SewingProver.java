@@ -190,7 +190,7 @@ public class SewingProver {
 
 	private Trampoline compileRules(List<Rule> rules) {
 		boolean hasCut = Read.from(rules) //
-				.map(rule -> new TreeRewriter(SewingGeneralizer.cut).contains(rule.tail)) //
+				.map(rule -> new TreeRewriter().contains(SewingGeneralizer.cut,	rule.tail)) //
 				.fold(false, (b0, b1) -> b0 || b1);
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();

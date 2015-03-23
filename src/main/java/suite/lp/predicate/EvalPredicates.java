@@ -52,7 +52,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate contains = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		return new TreeRewriter(params[0]).contains(params[1]);
+		return new TreeRewriter().contains(params[0], params[1]);
 	};
 
 	public BuiltinPredicate compare = (prover, ps) -> {
@@ -188,12 +188,12 @@ public class EvalPredicates {
 
 	public BuiltinPredicate replace = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
-		return prover.bind(new TreeRewriter(params[0], params[1]).replace(params[2]), params[3]);
+		return prover.bind(new TreeRewriter().replace(params[0], params[1], params[2]), params[3]);
 	};
 
 	public BuiltinPredicate rewrite = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
-		return prover.bind(new TreeRewriter(params[0], params[1]).rewrite(params[2]), params[3]);
+		return prover.bind(new TreeRewriter().rewrite(params[0], params[1], params[2]), params[3]);
 	};
 
 	public BuiltinPredicate same = (prover, ps) -> {

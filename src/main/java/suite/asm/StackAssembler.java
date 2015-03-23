@@ -79,9 +79,9 @@ public class StackAssembler extends Assembler {
 
 	private Node rewrite(int sp, Node n) {
 		if (sp - 1 >= 0)
-			n = new TreeRewriter(stackOperand0, getRegister(sp - 1)).replace(n);
+			n = new TreeRewriter().replace(stackOperand0, getRegister(sp - 1), n);
 		if (sp - 2 >= 0)
-			n = new TreeRewriter(stackOperand1, getRegister(sp - 2)).replace(n);
+			n = new TreeRewriter().replace(stackOperand1, getRegister(sp - 2), n);
 		return n;
 	}
 
