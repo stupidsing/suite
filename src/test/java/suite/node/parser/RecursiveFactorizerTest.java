@@ -95,11 +95,7 @@ public class RecursiveFactorizerTest {
 			Fun<String, Fun<Boolean, Node>> fun = hs -> b -> {
 				Source<Node> g = To.source(r);
 				Node head = terminalNode(g, hs);
-				Node n0;
-				if (!b)
-					n0 = reffr;
-				else
-					n0 = operatorNode(TermOp.TUPLE_, Arrays.asList(refto, terminalNode(" "), terminalNode(".type")));
+				Node n0 = !b ? reffr : operatorNode(TermOp.TUPLE_, Arrays.asList(refto, terminalNode(" "), terminalNode(".type")));
 				Node n1 = tupleNode(g, g.source(), n0);
 				Node n2 = tupleNode(g, g.source(), n1);
 				return tupleNode(g, head, n2);
