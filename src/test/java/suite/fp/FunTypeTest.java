@@ -20,6 +20,36 @@ public class FunTypeTest {
 	}
 
 	@Test
+	public void testBind() {
+		assertType("number", "" //
+				+ "data clazz as Link clazz >> \n" //
+				+ "data clazz as Leaf number >> \n" //
+				+ "define f := v as clazz => \n" //
+				+ "  if (v = `Leaf $i`) then i \n" //
+				+ "  else if (v = `Link Leaf $i`) then i \n" //
+				+ "  else 0 \n" //
+				+ ">> \n" //
+				+ "f {Link Leaf 3} \n");
+
+		assertType("number", "" //
+				+ "data clazz as Link >> \n" //
+				+ "data clazz as Leaf number >> \n" //
+				+ "define f := v => if-bind (v = Leaf 1) then 1 else 3 >> \n" //
+				+ "f {Link} \n");
+
+		assertType("number", "" //
+				+ "data clazz as Link clazz >> \n" //
+				+ "data clazz as Leaf number >> \n" //
+				+ "define f := v => \n" //
+				+ "  if (v = `Leaf $i`) then i \n" //
+				+ "  else if (v = `Link Leaf $i`) then i \n" //
+				+ "  else 0 \n" //
+				+ ">> \n" //
+				+ "f {Link Leaf 3} \n");
+
+	}
+
+	@Test
 	public void testBindList() {
 		assertType("number", "let `$h; $t` := 0; 1; >> h");
 		getTypeMustFail("let `$h; $t` := 0; true; >> h");
