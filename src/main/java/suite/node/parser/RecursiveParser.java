@@ -11,7 +11,6 @@ import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 
 /**
  * Recursive-descent parser for operator-based languages.
@@ -51,8 +50,7 @@ public class RecursiveParser {
 				else
 					throw new RuntimeException();
 			case OPERATOR:
-				Operator operator = Read.from(operators).filter(op -> op.getName() == name).uniqueResult();
-				return Tree.of(operator, node(fn0), node(fn2));
+				return Tree.of(TermOp.valueOf(name), node(fn0), node(fn2));
 			case SPACE___:
 				return null;
 			case TERMINAL:
