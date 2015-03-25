@@ -25,9 +25,9 @@ public class FunTypeTest {
 				+ "data clazz as Link clazz >> \n" //
 				+ "data clazz as Leaf number >> \n" //
 				+ "define f := v as clazz => \n" //
-				+ "  if (v = `Leaf $i`) then i \n" //
-				+ "  else if (v = `Link Leaf $i`) then i \n" //
-				+ "  else 0 \n" //
+				+ "    if (v = `Leaf $i`) then i \n" //
+				+ "    else if (v = `Link Leaf $i`) then i \n" //
+				+ "    else 0 \n" //
 				+ ">> \n" //
 				+ "f {Link Leaf 3} \n");
 
@@ -40,9 +40,9 @@ public class FunTypeTest {
 				+ "data clazz as Link clazz >> \n" //
 				+ "data clazz as Leaf number >> \n" //
 				+ "define f := v => \n" //
-				+ "  if (v = `Leaf $i`) then i \n" //
-				+ "  else if (v = `Link Leaf $i`) then i \n" //
-				+ "  else 0 \n" //
+				+ "    if (v = `Leaf $i`) then i \n" //
+				+ "    else if (v = `Link Leaf $i`) then i \n" //
+				+ "    else 0 \n" //
 				+ ">> \n" //
 				+ "f {Link Leaf 3} \n");
 
