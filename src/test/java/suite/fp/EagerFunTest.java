@@ -133,31 +133,31 @@ public class EagerFunTest {
 
 	@Test
 	public void testIfBind() {
-		assertEquals(Int.of(1), eval("if-bind (1 = 1) then 1 else 0"));
+		assertEquals(Int.of(1), eval("if-bind (1 := 1) then 1 else 0"));
 
-		assertEquals(Int.of(1), eval("if-bind ((1; 2;) = (1; 2;)) then 1 else 0"));
-		assertEquals(Int.of(0), eval("if-bind ((1; 2;) = (2; 2;)) then 1 else 0"));
+		assertEquals(Int.of(1), eval("if-bind (1; 2; := 1; 2;) then 1 else 0"));
+		assertEquals(Int.of(0), eval("if-bind (1; 2; := 2; 2;) then 1 else 0"));
 
-		assertEquals(Int.of(1), eval("let v := 1; 2; >> if-bind (v = (1; 2;)) then 1 else 0"));
-		assertEquals(Int.of(0), eval("let v := 1; 2; >> if-bind (v = (1; 3;)) then 1 else 0"));
+		assertEquals(Int.of(1), eval("let v := 1; 2; >> if-bind (v := 1; 2;) then 1 else 0"));
+		assertEquals(Int.of(0), eval("let v := 1; 2; >> if-bind (v := 1; 3;) then 1 else 0"));
 
-		assertEquals(Int.of(0), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 3,)) then i else 0"));
-		assertEquals(Int.of(1), eval("let v := true, 1, 2, >> if-bind (v = (true, $i, 2,)) then i else 0"));
-		assertEquals(Int.of(1), eval("if-bind ((1, 2,) = ($i, 2,)) then i else 0"));
+		assertEquals(Int.of(0), eval("let v := true, 1, 2, >> if-bind (v := true, $i, 3,) then i else 0"));
+		assertEquals(Int.of(1), eval("let v := true, 1, 2, >> if-bind (v := true, $i, 2,) then i else 0"));
+		assertEquals(Int.of(1), eval("if-bind (1, 2, := $i, 2,) then i else 0"));
 
 		assertEquals(Int.of(3), eval("" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n" //
 				+ "let e := B 3 >> \n" //
-				+ "if-bind (e = B $i) then i else 0"));
+				+ "if-bind (e := B $i) then i else 0"));
 		assertEquals(Int.of(0), eval("" //
 				+ "data t as A >> \n" //
 				+ "data t as B number >> \n" //
 				+ "data t as C boolean >> \n" //
 				+ "let e := B 3 >> \n" //
 				+ "let f := C false >> \n" //
-				+ "if-bind (e = f) then 1 else 0"));
+				+ "if-bind (e := f) then 1 else 0"));
 	}
 
 	// After replacing call stack with activation chain, this test would not

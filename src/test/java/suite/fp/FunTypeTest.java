@@ -32,9 +32,10 @@ public class FunTypeTest {
 				+ "f {Link Leaf 3} \n");
 
 		assertType("number", "" //
+				+ "data clazz as Link clazz >> \n" //
 				+ "data clazz as Leaf number >> \n" //
-				+ "define f := v => if-bind (v = Leaf 1) then 1 else 3 >> \n" //
-				+ "f {Leaf 1} \n");
+				+ "define f := v => if-bind (v = Leaf 1) then 1 else if-bind (v = Link 2) then 2 else 3 >> \n" //
+				+ "1 \n");
 
 		assertType("number", "" //
 				+ "data clazz as Link clazz >> \n" //
@@ -45,7 +46,6 @@ public class FunTypeTest {
 				+ "  else 0 \n" //
 				+ ">> \n" //
 				+ "f {Link Leaf 3} \n");
-
 	}
 
 	@Test

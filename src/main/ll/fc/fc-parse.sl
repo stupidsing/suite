@@ -58,7 +58,7 @@ fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 		; fc-error "Unknown else clause" .otherwise
 	)
 #
-fc-parse (if-bind (.v0 = .v1) then .then else .else) .parsed
+fc-parse (if-bind (.v0 := .v1) then .then else .else) .parsed
 	:- !
 	, fc-parse .v0 .vp0
 	, fc-parse .v1 .vp1
@@ -129,10 +129,9 @@ fc-parse-op-sugar1 .op .left () (.var => .t1)
 #
 
 fc-parse-sugar error (throw {}) :- ! #
-fc-parse-sugar (if (`.p` = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
-fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
-fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.p = .q) .thenElse) :- ! #
-fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.binds = .value) then .do else error) :- ! #
+fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p := .q) .thenElse) :- ! #
+fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.q := .p) .thenElse) :- ! #
+fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.value := .binds) then .do else error) :- ! #
 fc-parse-sugar (let .var := .value >> .do) (lets (.var := .value #) >> .do) :- ! #
 fc-parse-sugar (case || .bind => .then || .otherwise) .p1
 	:- !, temp .var
@@ -179,7 +178,7 @@ fc-parse-sugar (expand .var := .value >> .do) .do1
 fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 >> .do))
 	:- !, temp .var1
 #
-fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var = .bind) then .do else error))
+fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else error))
 	:- !, temp .var
 #
 fc-parse-sugar (anything => .do) (.var => .do) :- !, temp .var #
@@ -259,18 +258,7 @@ fc-is-atom .a :- is.atom .a, to.string .a .s, substring .s 0 1 .ch
 fc-is-boolean true #
 fc-is-boolean false #
 
-fc-bind .v0 .v1 .tep :- .v0 = NEW-VAR _, !, fc-bind0 .v1 .v0 .tep #
-fc-bind .v0 .v1 .tep :- .v1 = NEW-VAR _, !, fc-bind0 .v0 .v1 .tep #
-fc-bind .v0 .v1 .tep
-	:- once (fc-bind-cons .v0 _ _
-		; .v0 = PAIR _ _
-		; .v0 = PRAGMA _
-	)
-	, !, fc-bind0 .v1 .v0 .tep
-#
-fc-bind .v0 .v1 .tep :- fc-bind0 .v0 .v1 .tep #
-
-fc-bind0 .v0 .v1 .then .else .parsed
+fc-bind .v0 .v1 .then .else .parsed
 	:- fc-bind-cons .v0 .h0 .t0
 	, fc-bind-cons .v1 .h1 .t1
 	, !, .then1 = PRAGMA ( -- Handle type fails like .v0 = (1; true;)
@@ -278,13 +266,13 @@ fc-bind0 .v0 .v1 .then .else .parsed
 	) .then
 	, fc-bind-pair .h0 .t0 .h1 .t1 .then1 .else .parsed
 #
-fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
+fc-bind (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
 	:- !, fc-bind-pair .p0 .q0 .p1 .q1 .then .else .parsed
 #
-fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VARS (.nv .v0,) .then)
+fc-bind .v0 (NEW-VAR .nv) .then _ (DEF-VARS (.nv .v0,) .then)
 	:- !
 #
-fc-bind0 .v0 .v1 .then .else (
+fc-bind .v0 .v1 .then .else (
 	DEF-VARS (.elseVar (WRAP .else), .v0var .v0,) (
 		IF (INVOKE (VAR .v0var) (VAR +is-list)) (
 			DEF-VARS (
@@ -300,7 +288,7 @@ fc-bind0 .v0 .v1 .then .else (
 	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind-pair (VAR .headVar) (VAR .tailVar) .h1 .t1 .then .else1 .then1
 #
-fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
+fc-bind .v0 (PAIR .p1 .q1) .then .else (
 	DEF-VARS (.elseVar (WRAP .else), .v0var (PRAGMA (TYPE-CAST UP _) .v0),) (
 		IF (INVOKE (VAR .v0var) (VAR +is-pair)) (
 			DEF-VARS (
@@ -314,11 +302,11 @@ fc-bind0 .v0 (PAIR .p1 .q1) .then .else (
 	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind-pair (VAR .leftVar) (VAR .rightVar) .p1 .q1 .then .else1 .then1
 #
-fc-bind0 .v0 (PRAGMA _ .v1) .then .else .parsed
+fc-bind .v0 (PRAGMA _ .v1) .then .else .parsed
 	:- !
 	, fc-bind .v0 .v1 .then .else .parsed
 #
-fc-bind0 .v0 .v1 .then .else (
+fc-bind .v0 .v1 .then .else (
 	IF (TREE ' = ' .v0 .v1) .then .else
 ) #
 
