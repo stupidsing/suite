@@ -21,26 +21,16 @@ public class FunTypeTest {
 
 	@Test
 	public void testBind() {
-		assertType("number", "" //
+		String data = "" //
 				+ "data clazz as Link clazz >> \n" //
-				+ "data clazz as Leaf number >> \n" //
-				+ "define f := v as clazz => \n" //
-				+ "    if (v = `Leaf $i`) then i \n" //
-				+ "    else if (v = `Link Leaf $i`) then i \n" //
-				+ "    else 0 \n" //
-				+ ">> \n" //
-				+ "f {Link Leaf 3} \n");
+				+ "data clazz as Leaf number >> \n";
 
-		assertType("number", "" //
-				+ "data clazz as Link clazz >> \n" //
-				+ "data clazz as Leaf number >> \n" //
-				+ "define f := v => if-bind (v = Leaf 1) then 1 else if-bind (v = Link 2) then 2 else 3 >> \n" //
-				+ "1 \n");
+		assertType("number", data //
+				+ "var f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 >> \n" //
+				+ "f {Leaf 1} \n");
 
-		assertType("number", "" //
-				+ "data clazz as Link clazz >> \n" //
-				+ "data clazz as Leaf number >> \n" //
-				+ "define f := v => \n" //
+		assertType("number", data //
+				+ "var f := v => \n" //
 				+ "    if (v = `Leaf $i`) then i \n" //
 				+ "    else if (v = `Link Leaf $i`) then i \n" //
 				+ "    else 0 \n" //
