@@ -135,10 +135,6 @@ public class FunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <T> Source<T> suck(Sink<Sink<T>> fun) {
-
-		// The synchronous queue class do not support nulls; we have to use a
-		// special object to denote end of data. Thus the queue needs to be of
-		// type Object.
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
