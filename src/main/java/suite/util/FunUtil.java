@@ -3,8 +3,6 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
@@ -141,8 +139,7 @@ public class FunUtil {
 		// The synchronous queue class do not support nulls; we have to use a
 		// special object to denote end of data. Thus the queue needs to be of
 		// type Object.
-		Object eod = new Object();
-		SynchronousQueue<Object> queue = new SynchronousQueue<>();
+		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
 		Thread thread = new Thread(() -> {
@@ -151,7 +148,7 @@ public class FunUtil {
 			} catch (Exception ex) {
 				LogUtil.error(ex);
 			} finally {
-				enqueue(queue, eod);
+				enqueue(queue, null);
 			}
 		});
 
@@ -159,13 +156,7 @@ public class FunUtil {
 
 		return () -> {
 			try {
-				Object object = queue.take();
-				if (object != eod) {
-					@SuppressWarnings("unchecked")
-					T t = (T) object;
-					return t;
-				} else
-					return null;
+				return queue.take();
 			} catch (InterruptedException ex) {
 				thread.interrupt();
 				throw new RuntimeException(ex);
@@ -173,9 +164,9 @@ public class FunUtil {
 		};
 	}
 
-	private static <T> void enqueue(BlockingQueue<T> queue, T t) {
+	private static <T> void enqueue(NullableSynchronousQueue<T> queue, T t) {
 		try {
-			queue.put(t);
+			queue.offer(t);
 		} catch (InterruptedException ex) {
 			LogUtil.error(ex);
 		}
