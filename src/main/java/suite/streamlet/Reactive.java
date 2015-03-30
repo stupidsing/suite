@@ -50,17 +50,16 @@ public class Reactive<T> {
 		return from(sinks);
 	}
 
-	public Source<T> source() {
+	public Streamlet<T> streamlet() {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		sink.sink(t -> queue.offerQuietly(t));
-
-		return () -> {
+		return Read.from(() -> {
 			try {
 				return queue.take();
 			} catch (InterruptedException ex) {
 				throw new RuntimeException(ex);
 			}
-		};
+		});
 	}
 
 	private static <T> void sinkAll(Bag<Sink<T>> bag, T t) {
