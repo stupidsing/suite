@@ -1,8 +1,8 @@
 package suite.streamlet;
 
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import suite.concurrent.Bag;
 import suite.util.FunUtil.Fun;
@@ -12,8 +12,7 @@ import suite.util.NullableSynchronousQueue;
 
 public class Reactive<T> {
 
-	// TODO when to start/stop the timer?
-	private static Timer timer = new Timer();
+	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
 	private Sink<Sink<T>> sink;
 
@@ -49,7 +48,7 @@ public class Reactive<T> {
 
 	public Reactive<T> delay(int milliseconds) {
 		SinkBag<T> sinks = new SinkBag<>();
-		sink.sink(t -> schedule(System.currentTimeMillis() + milliseconds, () -> sinks.sinkAll(t)));
+		sink.sink(t -> executor.schedule(() -> sinks.sinkAll(t), milliseconds, TimeUnit.MILLISECONDS));
 		return from(sinks);
 	}
 
@@ -70,14 +69,6 @@ public class Reactive<T> {
 				throw new RuntimeException(ex);
 			}
 		};
-	}
-
-	private void schedule(long t1, Runnable runnable) {
-		timer.schedule(new TimerTask() {
-			public void run() {
-				runnable.run();
-			}
-		}, new Date(t1));
 	}
 
 }
