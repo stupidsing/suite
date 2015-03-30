@@ -1,4 +1,4 @@
-package suite.stm;
+package suite.concurrent;
 
 import java.io.Closeable;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package suite.stm;
+package suite.concurrent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +12,9 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.stm.Stm.Memory;
-import suite.stm.Stm.Transaction;
-import suite.stm.Stm.TransactionException;
+import suite.concurrent.Stm.Memory;
+import suite.concurrent.Stm.Transaction;
+import suite.concurrent.Stm.TransactionException;
 
 public class StmTest {
 

@@ -1,12 +1,10 @@
 package suite.streamlet;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicReference;
 
-import suite.immutable.IList;
+import suite.concurrent.Bag;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -24,23 +22,6 @@ public class Reactive<T> {
 			for (Sink<T> sink : this)
 				sink.sink(t);
 			;
-		}
-	}
-
-	private static class Bag<S> implements Iterable<S> {
-		private AtomicReference<IList<S>> ar = new AtomicReference<>(IList.end());
-
-		public void add(S s) {
-			while (true) {
-				IList<S> list0 = ar.get();
-				IList<S> list1 = IList.cons(s, list0);
-				if (ar.compareAndSet(list0, list1))
-					break;
-			}
-		}
-
-		public Iterator<S> iterator() {
-			return ar.get().iterator();
 		}
 	}
 

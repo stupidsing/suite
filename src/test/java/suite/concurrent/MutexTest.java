@@ -1,4 +1,4 @@
-package suite.stm;
+package suite.concurrent;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.concurrent.Mutex.DeadlockException;
+import suite.concurrent.Mutex.MutexLock;
 import suite.os.LogUtil;
-import suite.stm.Mutex.DeadlockException;
-import suite.stm.Mutex.MutexLock;
 import suite.streamlet.Read;
 import suite.util.Util;
 

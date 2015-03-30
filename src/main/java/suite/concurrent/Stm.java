@@ -1,4 +1,4 @@
-package suite.stm;
+package suite.concurrent;
 
 public class Stm {
 

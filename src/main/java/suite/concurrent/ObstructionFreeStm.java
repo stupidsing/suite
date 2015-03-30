@@ -1,18 +1,18 @@
-package suite.stm;
+package suite.concurrent;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import suite.stm.ObstructionFreeStm.ObstructionFreeTransaction;
-import suite.stm.Stm.AbortException;
-import suite.stm.Stm.DeadlockException;
-import suite.stm.Stm.Memory;
-import suite.stm.Stm.Transaction;
-import suite.stm.Stm.TransactionException;
-import suite.stm.Stm.TransactionManager;
-import suite.stm.Stm.TransactionStatus;
+import suite.concurrent.ObstructionFreeStm.ObstructionFreeTransaction;
+import suite.concurrent.Stm.AbortException;
+import suite.concurrent.Stm.DeadlockException;
+import suite.concurrent.Stm.Memory;
+import suite.concurrent.Stm.Transaction;
+import suite.concurrent.Stm.TransactionException;
+import suite.concurrent.Stm.TransactionManager;
+import suite.concurrent.Stm.TransactionStatus;
 
 /**
  * Implements software transactional memory by locking.
