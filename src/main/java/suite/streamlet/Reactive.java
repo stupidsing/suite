@@ -28,13 +28,11 @@ public class Reactive<T> {
 
 	public static <T> Reactive<T> from(Source<T> source) {
 		SinkBag<T> sinks = new SinkBag<>();
-		new Thread() {
-			public void run() {
-				T t;
-				while ((t = source.source()) != null)
-					sinks.sinkAll(t);
-			}
-		}.start();
+		executor.submit(() -> {
+			T t;
+			while ((t = source.source()) != null)
+				sinks.sinkAll(t);
+		});
 		return from(sinks);
 	}
 
