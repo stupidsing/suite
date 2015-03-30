@@ -16,7 +16,7 @@ public class Bag<S> implements Iterable<S> {
 			IList<S> list1 = IList.cons(s, list0);
 			int stamp = a[0];
 			if (!ar.compareAndSet(list0, list1, stamp, stamp + 1))
-				Thread.yield(); // back-off
+				Thread.yield(); // Back-off
 			else
 				break;
 		}
