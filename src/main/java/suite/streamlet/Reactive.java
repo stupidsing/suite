@@ -16,22 +16,16 @@ public class Reactive<T> {
 
 	private Sink<Sink<T>> sink;
 
-	private static class SinkBag<T> extends Bag<Sink<T>> {
-		public void sinkAll(T t) {
-			forEach(sink -> sink.sink(t));
-		}
-	}
-
 	private Reactive(Sink<Sink<T>> sink) {
 		this.sink = sink;
 	}
 
 	public static <T> Reactive<T> from(Source<T> source) {
-		SinkBag<T> sinks = new SinkBag<>();
+		Bag<Sink<T>> sinks = new Bag<>();
 		executor.submit(() -> {
 			T t;
 			while ((t = source.source()) != null)
-				sinks.sinkAll(t);
+				sinkAll(sinks, t);
 		});
 		return from(sinks);
 	}
@@ -45,14 +39,14 @@ public class Reactive<T> {
 	}
 
 	public Reactive<T> delay(int milliseconds) {
-		SinkBag<T> sinks = new SinkBag<>();
-		sink.sink(t -> executor.schedule(() -> sinks.sinkAll(t), milliseconds, TimeUnit.MILLISECONDS));
+		Bag<Sink<T>> sinks = new Bag<>();
+		sink.sink(t -> executor.schedule(() -> sinkAll(sinks, t), milliseconds, TimeUnit.MILLISECONDS));
 		return from(sinks);
 	}
 
 	public <U> Reactive<U> map(Fun<T, U> fun) {
-		SinkBag<U> sinks = new SinkBag<>();
-		sink.sink(t -> sinks.sinkAll(t != null ? fun.apply(t) : null));
+		Bag<Sink<U>> sinks = new Bag<>();
+		sink.sink(t -> sinkAll(sinks, t != null ? fun.apply(t) : null));
 		return from(sinks);
 	}
 
@@ -67,6 +61,10 @@ public class Reactive<T> {
 				throw new RuntimeException(ex);
 			}
 		};
+	}
+
+	private static <T> void sinkAll(Bag<Sink<T>> bag, T t) {
+		bag.forEach(sink -> sink.sink(t));
 	}
 
 }
