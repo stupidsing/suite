@@ -19,9 +19,7 @@ public class Reactive<T> {
 
 	private static class SinkBag<T> extends Bag<Sink<T>> {
 		public void sinkAll(T t) {
-			for (Sink<T> sink : this)
-				sink.sink(t);
-			;
+			forEach(sink -> sink.sink(t));
 		}
 	}
 
