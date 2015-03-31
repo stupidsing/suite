@@ -1,7 +1,5 @@
 package suite.streamlet;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -103,12 +101,6 @@ public class Reactive<T> {
 
 	private static <T> void sinkAll(Bag<Sink<T>> bag, T t) {
 		bag.forEach(sink -> sink.sink(t));
-	}
-
-	private static <T> List<T> ref(T t) {
-		List<T> list = new ArrayList<>();
-		list.add(t);
-		return list;
 	}
 
 }
