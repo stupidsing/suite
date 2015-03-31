@@ -61,9 +61,9 @@ public class Reactive<T> {
 		return from(sinks);
 	}
 
-	public Reactive<T> fold(T init, BiFunction<T, T, T> fun) {
-		Bag<Sink<T>> sinks = new Bag<>();
-		CasReference<T> cr = new CasReference<>(init);
+	public <U> Reactive<U> fold(U init, BiFunction<U, T, U> fun) {
+		Bag<Sink<U>> sinks = new Bag<>();
+		CasReference<U> cr = new CasReference<>(init);
 		sink.sink(t1 -> sinkAll(sinks, cr.apply(t0 -> fun.apply(t0, t1))));
 		return from(sinks);
 	}
