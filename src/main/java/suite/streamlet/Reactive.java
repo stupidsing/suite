@@ -14,7 +14,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.NullableSynchronousQueue;
 
-
 /**
  * A pull-based functional reactive programming class.
  * 
