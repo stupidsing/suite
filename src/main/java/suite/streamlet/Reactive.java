@@ -4,6 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.concurrent.Bag;
@@ -12,6 +13,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.NullableSynchronousQueue;
+
 
 /**
  * A pull-based functional reactive programming class.
@@ -58,6 +60,15 @@ public class Reactive<T> {
 	public Reactive<T> delay(int milliseconds) {
 		Bag<Sink<T>> sinks = new Bag<>();
 		sink.sink(t -> executor.schedule(() -> sinkAll(sinks, t), milliseconds, TimeUnit.MILLISECONDS));
+		return from(sinks);
+	}
+
+	public Reactive<T> filter(Predicate<T> pred) {
+		Bag<Sink<T>> sinks = new Bag<>();
+		sink.sink(t -> {
+			if (pred.test(t))
+				sinkAll(sinks, t);
+		});
 		return from(sinks);
 	}
 
