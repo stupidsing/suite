@@ -105,10 +105,6 @@ public class Reactive<T> {
 		bag.forEach(sink -> sink.sink(t));
 	}
 
-	private static <T> List<T> ref() {
-		return ref(null);
-	}
-
 	private static <T> List<T> ref(T t) {
 		List<T> list = new ArrayList<>();
 		list.add(t);
