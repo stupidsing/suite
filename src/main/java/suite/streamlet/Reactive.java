@@ -84,6 +84,10 @@ public class Reactive<T> {
 		return from(sinks);
 	}
 
+	public void sink(Sink<T> sink_) {
+		sink.sink(sink_);
+	}
+
 	public Streamlet<T> streamlet() {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		sink.sink(t -> queue.offerQuietly(t));
