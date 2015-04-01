@@ -229,12 +229,12 @@ public class EditorController {
 		boolean visible = !component.isVisible();
 		component.setVisible(visible);
 		view.refresh();
-		if (visible) {
+		if (visible)
 			if (focusOn instanceof JTextComponent)
 				focus((JTextComponent) focusOn);
 			else
 				focusOn.requestFocusInWindow();
-		} else if (isOwningFocus(component))
+		else if (isOwningFocus(component))
 			view.getEditor().requestFocusInWindow();
 		return visible;
 	}
