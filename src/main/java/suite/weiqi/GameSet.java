@@ -131,6 +131,10 @@ public class GameSet {
 		board.set(move.position, Occupation.EMPTY);
 	}
 
+	public Occupation getNextPlayer() {
+		return nextPlayer;
+	}
+
 	@Override
 	public int hashCode() {
 		return board.hashCode() ^ nextPlayer.hashCode() ^ previousStates.hashCode();
@@ -141,13 +145,8 @@ public class GameSet {
 		if (Util.clazz(object) == GameSet.class) {
 			GameSet other = (GameSet) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
-
 		} else
 			return false;
-	}
-
-	public Occupation getNextPlayer() {
-		return nextPlayer;
 	}
 
 }
