@@ -2,10 +2,13 @@ package suite.weiqi;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import suite.util.FunUtil.Fun;
 import suite.weiqi.Weiqi.Occupation;
 
 /**
@@ -32,12 +35,36 @@ public class Board1 {
 		}
 	}
 
+	public Board1() {
+	}
+
+	public Board1(Board1 board1) {
+		Map<Group, Group> map = new IdentityHashMap<>();
+		List<Fun<Group, Group>> clone = new ArrayList<>();
+		clone.add(group0 -> {
+			Group group1;
+			if (group0 != null) {
+				if ((group1 = map.get(group0)) == null) {
+					map.put(group0, group1 = new Group(group0.occupation));
+					group1.rank = group0.rank;
+					group1.nBreaths = group0.nBreaths;
+					group1.parent = clone.get(0).apply(group0.parent);
+				}
+			} else
+				group1 = null;
+			return group1;
+		});
+
+		for (int i = 0; i < board1.board.length; i++)
+			setGroup(i, clone.get(0).apply(board1.board[i]));
+	}
+
 	public Runnable move(Coordinate c, Occupation o) {
 		Group group = new Group(o);
-		board[c.index()] = group;
+		setGroup(c, group);
 
 		for (Coordinate c1 : c.neighbors) {
-			Group group1 = get(c1);
+			Group group1 = getGroup(c1);
 			if (group1 != null) {
 				group1.nBreaths--;
 				if (group1.occupation == o)
@@ -49,7 +76,7 @@ public class Board1 {
 		List<Coordinate> list = new ArrayList<>();
 
 		for (Coordinate c1 : c.neighbors) {
-			Group group1 = get(c1);
+			Group group1 = getGroup(c1);
 			if (group1 != null && group1.nBreaths == 0) {
 				removeGroup(group1, c1);
 				list.add(c1);
@@ -62,16 +89,20 @@ public class Board1 {
 			};
 		} else
 			return () -> {
-				removeGroup(get(c), c);
+				removeGroup(getGroup(c), c);
 				for (Coordinate c1 : list)
 					fillGroup(new Group(o.opponent()), c1);
 			};
 	}
 
+	public Occupation get(Coordinate c) {
+		return getGroup(c).occupation;
+	}
+
 	public int hashCode() {
 		int i = 0;
 		for (Coordinate c : Coordinate.all()) {
-			Group g = get(c);
+			Group g = getGroup(c);
 			Occupation o = g != null ? g.occupation : Occupation.EMPTY;
 			i = i * 31 + Objects.hashCode(o);
 		}
@@ -94,10 +125,10 @@ public class Board1 {
 
 	private void fillGroup(Group group, Coordinate c) {
 		Set<Group> neighbourGroups = new HashSet<>();
-		board[c.index()] = group;
+		setGroup(c, group);
 
 		for (Coordinate c1 : c.neighbors) {
-			Group g = get(c1);
+			Group g = getGroup(c1);
 			if (g == null)
 				fillGroup(group, c1);
 			else if (g != group && neighbourGroups.add(g))
@@ -107,10 +138,10 @@ public class Board1 {
 
 	private void removeGroup(Group group, Coordinate c) {
 		Set<Group> neighbourGroups = new HashSet<>();
-		board[c.index()] = null;
+		setGroup(c, null);
 
 		for (Coordinate c1 : c.neighbors) {
-			Group g = get(c1);
+			Group g = getGroup(c1);
 			if (g == group)
 				removeGroup(g, c1);
 			else if (g != null && neighbourGroups.add(g))
@@ -118,7 +149,15 @@ public class Board1 {
 		}
 	}
 
-	private Group get(Coordinate c) {
+	private void setGroup(Coordinate c, Group group) {
+		setGroup(c.index(), group);
+	}
+
+	private void setGroup(int i, Group group) {
+		board[i] = group;
+	}
+
+	private Group getGroup(Coordinate c) {
 		int index = c.index();
 		Group group = board[index];
 		if (group != null)
