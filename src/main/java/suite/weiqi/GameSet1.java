@@ -43,12 +43,10 @@ public class GameSet1 {
 		undos.push(board.move(c, nextPlayer));
 		nextPlayer = nextPlayer.opponent();
 
-		if (previousStates.contains(board.hashCode()))
-			return true;
-		else {
+		boolean isSuccess = previousStates.contains(board.hashCode());
+		if (!isSuccess)
 			undo();
-			return false;
-		}
+		return isSuccess;
 	}
 
 	public void undo() {
