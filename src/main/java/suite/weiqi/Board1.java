@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import suite.util.FunUtil.Fun;
@@ -19,6 +18,7 @@ import suite.weiqi.Weiqi.Occupation;
 public class Board1 {
 
 	private Group board[] = new Group[Weiqi.size << Weiqi.shift];
+	private int hashCode;
 
 	private class Group {
 		private Occupation occupation;
@@ -100,13 +100,7 @@ public class Board1 {
 	}
 
 	public int hashCode() {
-		int i = 0;
-		for (Coordinate c : Coordinate.all()) {
-			Group g = getGroup(c);
-			Occupation o = g != null ? g.occupation : Occupation.EMPTY;
-			i = i * 31 + Objects.hashCode(o);
-		}
-		return i;
+		return hashCode;
 	}
 
 	private Group merge(Group g0, Group g1) {
@@ -153,8 +147,13 @@ public class Board1 {
 		setGroup(c.index(), group);
 	}
 
-	private void setGroup(int i, Group group) {
-		board[i] = group;
+	private void setGroup(int i, Group group1) {
+		Group group0 = board[i];
+		board[i] = group1;
+		if (group0 != null)
+			hashCode ^= group0.occupation == Occupation.BLACK ? i : Integer.rotateLeft(i, 16);
+		if (group1 != null)
+			hashCode ^= group1.occupation == Occupation.BLACK ? i : Integer.rotateLeft(i, 16);
 	}
 
 	private Group getGroup(Coordinate c) {
