@@ -10,7 +10,8 @@ import suite.util.FunUtil.Fun;
  *
  * The reference would die after ~4 billion generations. After that all updates
  * would fail with exceptions. If your updates are really intensive, you need to
- * replace the reference manually or consider other types of concurrency.
+ * replace the reference after some time, or consider other types of
+ * concurrency.
  * 
  * @author ywsing
  */
