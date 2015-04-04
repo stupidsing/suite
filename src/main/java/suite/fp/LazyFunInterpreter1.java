@@ -139,11 +139,7 @@ public class LazyFunInterpreter1 {
 		Tree tree;
 		Node m[];
 
-		if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
-			Fun<Frame, Thunk_> fun = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> param = lazy0(mapping, m[1]);
-			result = frame -> ((Fun_) fun.apply(frame).get()).fun.apply(param.apply(frame));
-		} else if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null) {
+		if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null) {
 			Mapping mapping1 = mapping.extend(m[0]);
 			BiConsumer<Frame, Thunk_> setter = mapping1.setter(m[0]);
 			Fun<Frame, Thunk_> value = lazy0(mapping1, m[1]);
@@ -163,6 +159,10 @@ public class LazyFunInterpreter1 {
 				setter.accept(frame1, in);
 				return value.apply(frame1);
 			});
+		} else if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
+			Fun<Frame, Thunk_> fun = lazy0(mapping, m[0]);
+			Fun<Frame, Thunk_> param = lazy0(mapping, m[1]);
+			result = frame -> ((Fun_) fun.apply(frame).get()).fun.apply(param.apply(frame));
 		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null) {
 			Fun<Frame, Thunk_> if_ = lazy0(mapping, m[0]);
 			Fun<Frame, Thunk_> then_ = lazy0(mapping, m[1]);
