@@ -9,6 +9,7 @@ import java.util.List;
 import suite.Suite;
 import suite.adt.Pair;
 import suite.fp.LazyFunInterpreter;
+import suite.fp.LazyFunInterpreter1;
 import suite.fp.PrecompileMain;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Prover;
@@ -53,6 +54,7 @@ public class CommandDispatcher {
 		EVALUATEDOCHARS("\\dc"), //
 		EVALUATEDOSTR("\\ds"), //
 		EVALUATEINTERPRET("\\i"), //
+		EVALUATEINTERPRET1("\\j"), //
 		EVALUATESTR("\\s"), //
 		EVALUATETYPE("\\t"), //
 		FACT(""), //
@@ -124,6 +126,9 @@ public class CommandDispatcher {
 			break;
 		case EVALUATEINTERPRET:
 			System.out.println(new LazyFunInterpreter().lazy(node).get());
+			break;
+		case EVALUATEINTERPRET1:
+			System.out.println(new LazyFunInterpreter1().lazy(node).get());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);
