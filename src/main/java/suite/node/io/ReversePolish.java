@@ -36,12 +36,8 @@ public class ReversePolish {
 		BufferedReader br = new BufferedReader(reader);
 		Map<String, Reference> references = new HashMap<>();
 		Deque<Node> deque = new ArrayDeque<>();
-		String elem;
 
-		while ((elem = br.readLine()) != null) {
-			if (elem.isEmpty())
-				continue;
-
+		br.lines().filter(elem -> !elem.isEmpty()).forEach(elem -> {
 			char type = elem.charAt(0);
 			String s = elem.substring(1);
 			Node n;
@@ -75,7 +71,7 @@ public class ReversePolish {
 				throw new RuntimeException("RPN conversion error: " + elem);
 
 			deque.push(n);
-		}
+		});
 
 		return deque.pop();
 	}

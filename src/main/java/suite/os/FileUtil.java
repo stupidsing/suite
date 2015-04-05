@@ -17,12 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -43,24 +40,12 @@ public class FileUtil {
 	}
 
 	public static Streamlet<Path> findPaths(Path path) {
-		Deque<Path> stack = new ArrayDeque<>();
-		stack.push(path);
-
 		return Read.from(() -> {
-			while (!stack.isEmpty()) {
-				Path p = stack.pop();
-
-				if (Files.isDirectory(p))
-					try (Stream<Path> list = Files.list(p)) {
-						list.forEach(stack::push);
-					} catch (IOException ex) {
-						throw new RuntimeException(ex);
-					}
-				else
-					return p;
+			try {
+				return Files.walk(path).filter(p -> Files.isRegularFile(p)).iterator();
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
 			}
-
-			return null;
 		});
 	}
 
