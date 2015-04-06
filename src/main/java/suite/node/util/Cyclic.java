@@ -3,17 +3,18 @@ package suite.node.util;
 import java.util.HashSet;
 import java.util.Set;
 
+import suite.adt.IdentityKey;
 import suite.node.Node;
 import suite.node.Tree;
 
 public class Cyclic {
 
-	private Set<IdentityKey> checkedNodes = new HashSet<>();
-	private Set<IdentityKey> checkingNodes = new HashSet<>();
+	private Set<IdentityKey<Node>> checkedNodes = new HashSet<>();
+	private Set<IdentityKey<Node>> checkingNodes = new HashSet<>();
 
 	public boolean isCyclic(Node node) {
 		node = node.finalNode();
-		IdentityKey idHashNode = new IdentityKey(node);
+		IdentityKey<Node> idHashNode = IdentityKey.of(node);
 		boolean isCyclic;
 
 		if (!checkedNodes.contains(idHashNode)) {

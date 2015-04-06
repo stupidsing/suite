@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import suite.adt.Pair;
 import suite.util.FunUtil;
@@ -138,6 +139,22 @@ public class Streamlet<T> implements Iterable<T> {
 		});
 	}
 
+	public boolean isAll(Predicate<T> pred) {
+		T t;
+		while ((t = source.source()) != null)
+			if (!pred.test(t))
+				return false;
+		return true;
+	}
+
+	public boolean isAny(Predicate<T> pred) {
+		T t;
+		while ((t = source.source()) != null)
+			if (pred.test(t))
+				return true;
+		return false;
+	}
+
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
 		return st(FunUtil.map(fun, source));
 	}
@@ -166,10 +183,14 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
-		Map<K, List<T>> map = new HashMap<>();
+		return groupBy(keyFun, value -> value);
+	}
+
+	public <K, V> Streamlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		Map<K, List<V>> map = new HashMap<>();
 		T t;
 		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(t);
+			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
 		return Read.from(map);
 	}
 

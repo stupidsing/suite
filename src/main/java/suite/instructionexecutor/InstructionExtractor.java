@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import suite.adt.BiMap;
+import suite.adt.IdentityKey;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Journal;
@@ -20,13 +21,12 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.IdentityKey;
 import suite.streamlet.Read;
 import suite.util.Util;
 
 public class InstructionExtractor implements AutoCloseable {
 
-	private Map<IdentityKey, Integer> ipsByLabelId = new HashMap<>();
+	private Map<IdentityKey<Node>, Integer> ipsByLabelId = new HashMap<>();
 	private Deque<Instruction> frameBegins = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
 	private Journal journal = new Journal();
@@ -59,7 +59,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 		while (!deque.isEmpty())
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
-				IdentityKey key = new IdentityKey(tree);
+				IdentityKey<Node> key = IdentityKey.of(tree);
 				Integer ip = ipsByLabelId.get(key);
 
 				if (ip == null) {
@@ -133,7 +133,7 @@ public class InstructionExtractor implements AutoCloseable {
 				if (key == KEYC)
 					return allocateInPool(value);
 				else if (key == KEYL)
-					return ipsByLabelId.get(new IdentityKey(value));
+					return ipsByLabelId.get(IdentityKey.of(value));
 				else if (key == KEYR)
 					return 0;
 			}
