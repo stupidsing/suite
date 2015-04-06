@@ -125,10 +125,10 @@ public class LazyFunInterpreter1 {
 		Mapping mapping = new Mapping(null);
 		Frame frame = mapping.frame(null);
 
-		for (String k : keys) {
-			Atom var = Atom.of(k);
+		for (String key : keys) {
+			Atom var = Atom.of(key);
 			mapping = mapping.extend(var);
-			mapping.setter(var).accept(frame, df.get(k));
+			mapping.setter(var).accept(frame, df.get(key));
 		}
 
 		return lazy0(mapping, node).apply(frame);
