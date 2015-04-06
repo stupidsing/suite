@@ -8,6 +8,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import suite.Suite;
+import suite.adt.IdentityKey;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.doer.Specializer;
@@ -27,7 +28,6 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
-import suite.node.util.IdentityKey;
 import suite.node.util.TreeRewriter;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
@@ -105,7 +105,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate hash = PredicateUtil.fun(n -> Int.of(n.hashCode()));
 
-	public BuiltinPredicate hashId = PredicateUtil.fun(n -> Int.of(new IdentityKey(n).hashCode()));
+	public BuiltinPredicate hashId = PredicateUtil.fun(n -> Int.of(IdentityKey.of(n).hashCode()));
 
 	public BuiltinPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
 

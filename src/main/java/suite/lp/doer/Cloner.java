@@ -3,16 +3,16 @@ package suite.lp.doer;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.adt.IdentityKey;
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Rewriter;
-import suite.node.util.IdentityKey;
 
 public class Cloner {
 
-	private Map<IdentityKey, Node> clonedNodes = new HashMap<>();
+	private Map<IdentityKey<Node>, Node> clonedNodes = new HashMap<>();
 
 	public Rule clone(Rule rule) {
 		return new Rule(clone(rule.head), clone(rule.tail));
@@ -28,7 +28,7 @@ public class Cloner {
 		while (tree != null) {
 			Tree nextTree = null;
 			Node right = tree.getRight().finalNode();
-			IdentityKey key = new IdentityKey(right);
+			IdentityKey<Node> key = IdentityKey.of(right);
 			Node right1 = clonedNodes.get(key);
 			Tree rt;
 
@@ -49,8 +49,8 @@ public class Cloner {
 	}
 
 	public Node cloneOld(Node node) {
-		return clonedNodes.computeIfAbsent(new IdentityKey(node.finalNode()), key -> {
-			Node node_ = key.node;
+		return clonedNodes.computeIfAbsent(IdentityKey.of(node.finalNode()), key -> {
+			Node node_ = key.key;
 
 			if (node_ instanceof Reference)
 				node_ = new Reference();

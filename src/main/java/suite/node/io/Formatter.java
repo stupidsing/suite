@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import suite.adt.IdentityKey;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Data;
@@ -16,7 +17,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.util.IdentityKey;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Chars;
 import suite.streamlet.As;
@@ -45,11 +45,11 @@ public class Formatter {
 	 */
 	private static class Graphizer {
 		private int count;
-		private Map<IdentityKey, Integer> ids = new HashMap<>();
+		private Map<IdentityKey<Node>, Integer> ids = new HashMap<>();
 		private StringBuilder sb = new StringBuilder();
 
 		private int graphize(Node node) {
-			IdentityKey key = new IdentityKey(node.finalNode());
+			IdentityKey<Node> key = IdentityKey.of(node.finalNode());
 			Integer id = ids.get(key);
 			Tree tree;
 
