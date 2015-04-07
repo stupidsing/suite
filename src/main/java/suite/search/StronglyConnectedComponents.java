@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.adt.IdentityKey;
 import suite.streamlet.Read;
@@ -22,7 +23,7 @@ public class StronglyConnectedComponents<V> {
 	private int index = 0;
 	private Deque<V> stack = new ArrayDeque<>();
 	private Map<V, Scc> sccs = new HashMap<>();
-	public final List<IdentityKey<List<V>>> components = new ArrayList<>();
+	public final List<IdentityKey<Set<V>>> components = new ArrayList<>();
 
 	private static class Scc {
 		private boolean isVisited;
@@ -62,7 +63,7 @@ public class StronglyConnectedComponents<V> {
 		}
 
 		if (vscc.index == vscc.lowestLink) {
-			List<V> component = Read.from(stack).toList();
+			Set<V> component = Read.from(stack).toSet();
 			component.forEach(v_ -> sccs.get(v_).isStacked = false);
 			components.add(IdentityKey.of(component));
 		}
