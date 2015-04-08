@@ -1,0 +1,24 @@
+apply plugin: 'java' 
+apply plugin: 'application'
+compileJava.options.encoding = 'UTF-8'
+mainClassName = 'suite.cli.Main'
+
+dependencies {
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.2'
+	compile group: 'com.jcraft', name: 'jsch', version: '0.1.52'
+	compile group: 'com.nativelibs4java', name: 'bridj', version: '0.7.0'
+	compile group: 'com.nativelibs4java', name: 'javacl', version: '1.0.0-RC4'
+	compile group: 'commons-logging', name: 'commons-logging', version: '1.2'
+	compile group: 'log4j', name: 'log4j', version: '1.2.17'
+	compile group: 'junit', name: 'junit', version: '4.12'
+}
+
+repositories {
+	mavenCentral()
+}
+
+run {
+	if (project.hasProperty('args')) {
+		args project.args.split('\\s+')
+	}
+}
