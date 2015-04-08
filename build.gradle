@@ -18,7 +18,6 @@ repositories {
 }
 
 run {
-	if (project.hasProperty('args')) {
+	if (project.hasProperty('args'))
 		args project.args.split('\\s+')
-	}
 }
