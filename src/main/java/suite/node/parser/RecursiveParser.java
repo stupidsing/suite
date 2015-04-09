@@ -51,8 +51,6 @@ public class RecursiveParser {
 					throw new RuntimeException();
 			case OPERATOR:
 				return Tree.of(TermOp.valueOf(name), node(fn0), node(fn2));
-			case SPACE___:
-				return null;
 			case TERMINAL:
 				return node(fn1);
 			default:

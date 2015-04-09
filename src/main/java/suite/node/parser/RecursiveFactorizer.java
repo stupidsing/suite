@@ -30,7 +30,7 @@ public class RecursiveFactorizer {
 	private Reverser reverser;
 
 	public enum FNodeType {
-		ENCLOSE_, OPERATOR, SPACE___, TERMINAL,
+		ENCLOSE_, OPERATOR, TERMINAL,
 	}
 
 	public interface FNode {
