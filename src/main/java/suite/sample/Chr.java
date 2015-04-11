@@ -140,7 +140,7 @@ public class Chr {
 		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, given);
-			boolean isMatch = or(facts.stream().map(bindFun));
+			boolean isMatch = facts.stream().map(bindFun).isAny(b -> b);
 			return isMatch ? Read.from(state) : Read.empty();
 		});
 	}
@@ -190,14 +190,6 @@ public class Chr {
 			journal.undoBinds(pit);
 			return Binder.bind(node0, node1, journal);
 		};
-	}
-
-	private boolean or(Streamlet<Boolean> st) {
-		Boolean b;
-		while ((b = st.next()) != null)
-			if (b == Boolean.TRUE)
-				return true;
-		return false;
 	}
 
 	private Node atom(String name) {
