@@ -172,9 +172,9 @@ public class RecursiveFactorizer {
 		int p2 = reverser.reverseEnd(chars1.end);
 		int px = reverser.reverseEnd(chars.end);
 
-		List<FNode> list = Arrays.asList(new FTerminal(new Chars(in.cs, p0, p1)) //
-				, new FTerminal(new Chars(in.cs, p1, p2)) //
-				, new FTerminal(new Chars(in.cs, p2, px)));
+		List<FNode> list = Arrays.asList(new FTerminal(Chars.of(in.cs, p0, p1)) //
+				, new FTerminal(Chars.of(in.cs, p1, p2)) //
+				, new FTerminal(Chars.of(in.cs, p2, px)));
 
 		return new FTree(FNodeType.TERMINAL, null, list);
 	}
