@@ -15,6 +15,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class LazyFunInterpreter1 {
@@ -139,15 +140,30 @@ public class LazyFunInterpreter1 {
 		Tree tree;
 		Node m[];
 
-		if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null) {
-			Mapping mapping1 = mapping.extend(m[0]);
-			BiConsumer<Frame, Thunk_> setter = mapping1.setter(m[0]);
-			Fun<Frame, Thunk_> value = lazy0(mapping1, m[1]);
-			Fun<Frame, Thunk_> expr = lazy0(mapping1, m[2]);
+		if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null)
+			result = lazy0(mapping, Suite.substitute("(.0 := .1), >> .2", m));
+		else if ((m = Suite.matcher(".0 >> .1").apply(node)) != null) {
+			List<Node[]> arrays = Read.from(Tree.iter(m[0])) //
+					.map(Suite.matcher(".0 := .1")::apply) //
+					.toList();
+			List<Node> vars = Read.from(arrays) //
+					.map(m1 -> m1[0]) //
+					.toList();
+			int size = vars.size();
+
+			Mapping mapping1 = Read.from(vars).fold(mapping, Mapping::extend);
+			List<BiConsumer<Frame, Thunk_>> setters = Read.from(vars).map(mapping1::setter).toList();
+			List<Fun<Frame, Thunk_>> values = Read.from(arrays).map(m1 -> lazy0(mapping1, m1[1])).toList();
+			Fun<Frame, Thunk_> expr = lazy0(mapping1, m[1]);
+
 			result = frame -> {
-				Thunk_ val[] = new Thunk_[] { null };
-				setter.accept(frame, () -> val[0].get());
-				val[0] = value.apply(frame)::get;
+				Thunk_ val[] = new Thunk_[size];
+				for (int i = 0; i < size; i++) {
+					int i1 = i;
+					setters.get(i).accept(frame, () -> val[i1].get());
+				}
+				for (int i = 0; i < size; i++)
+					val[i] = values.get(i).apply(frame)::get;
 				return expr.apply(frame);
 			};
 		} else if ((m = Suite.matcher(".0 => .1").apply(node)) != null) {
