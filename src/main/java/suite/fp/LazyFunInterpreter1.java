@@ -13,7 +13,6 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -143,12 +142,8 @@ public class LazyFunInterpreter1 {
 		if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null)
 			result = lazy0(mapping, Suite.substitute("(.0 := .1), >> .2", m));
 		else if ((m = Suite.matcher(".0 >> .1").apply(node)) != null) {
-			List<Node[]> arrays = Read.from(Tree.iter(m[0])) //
-					.map(Suite.matcher(".0 := .1")::apply) //
-					.toList();
-			List<Node> vars = Read.from(arrays) //
-					.map(m1 -> m1[0]) //
-					.toList();
+			List<Node[]> arrays = Read.from(Tree.iter(m[0])).map(Suite.matcher(".0 := .1")::apply).toList();
+			List<Node> vars = Read.from(arrays).map(m1 -> m1[0]).toList();
 			int size = vars.size();
 
 			Mapping mapping1 = Read.from(vars).fold(mapping, Mapping::extend);
