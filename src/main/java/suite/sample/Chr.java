@@ -140,8 +140,7 @@ public class Chr {
 		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
 			Fun<Node, Boolean> bindFun = bindFun(journal, given);
-			boolean isMatch = facts.stream().map(bindFun).isAny(b -> b);
-			return isMatch ? Read.from(state) : Read.empty();
+			return facts.stream().map(bindFun).isAny(b -> b) ? Read.from(state) : Read.empty();
 		});
 	}
 
