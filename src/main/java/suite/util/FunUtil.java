@@ -119,6 +119,10 @@ public class FunUtil {
 		};
 	}
 
+	/**
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
+	 */
 	public static <T> Source<Source<T>> split(Source<T> source, Fun<T, Boolean> fun) {
 		return new Source<Source<T>>() {
 			private T t = source.source();
