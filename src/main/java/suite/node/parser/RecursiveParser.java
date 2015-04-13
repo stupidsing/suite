@@ -27,7 +27,7 @@ public class RecursiveParser {
 	}
 
 	public Node parse(String in) {
-		return node(new RecursiveFactorizer(operators).parse(in));
+		return node(new RecursiveFactorizer(operators).parse(in).node);
 	}
 
 	private Node node(FNode fn) {

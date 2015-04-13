@@ -1,9 +1,7 @@
 package suite.node.parser;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Deque;
 import java.util.List;
 
 import suite.adt.Pair;
@@ -14,6 +12,7 @@ import suite.node.io.TermOp;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.CharsUtil;
+import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
@@ -62,15 +61,29 @@ public class RecursiveFactorizer {
 		public final FNodeType type;
 		public final String name;
 		public final List<FNode> fns;
+		public final List<Chars> spaces;
 
 		public FTree() {
-			this(null, null, null);
+			this(null, null, null, null);
 		}
 
-		public FTree(FNodeType type, String name, List<FNode> fns) {
+		public FTree(FNodeType type, String name, List<FNode> fns, List<Chars> spaces) {
 			this.type = type;
 			this.name = name;
 			this.fns = fns;
+			this.spaces = spaces;
+		}
+	}
+
+	public static class FR {
+		public final Chars pre;
+		public final FNode node;
+		public final Chars post;
+
+		public FR(Chars pre, FNode node, Chars post) {
+			this.pre = pre;
+			this.node = node;
+			this.post = post;
 		}
 	}
 
@@ -78,32 +91,36 @@ public class RecursiveFactorizer {
 		this.operators = operators;
 	}
 
-	public FNode parse(String s) {
+	public FR parse(String s) {
 		in = To.chars(s);
 		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
 		String in1 = pair.t0;
 		reverser = pair.t1;
-
 		return parse0(To.chars(in1), 0);
 	}
 
-	public String unparse(FNode fn) {
+	public String unparse(FR fr) {
 		CharsBuilder cb = new CharsBuilder();
-		Deque<FNode> deque = new ArrayDeque<>();
-		deque.push(fn);
-
-		while (!deque.isEmpty()) {
-			FNode fn_ = deque.pop();
-			if (fn_ instanceof FTree)
-				for (FNode child : Util.reverse(((FTree) fn_).fns))
-					deque.push(child);
-			else
-				cb.append(((FTerminal) fn_).chars);
-		}
+		cb.append(fr.pre);
+		unparse(cb, fr.node);
+		cb.append(fr.post);
 		return cb.toChars().toString();
 	}
 
-	private FNode parse0(Chars chars, int fromOp) {
+	private void unparse(CharsBuilder cb, FNode fn) {
+		if (fn instanceof FTree) {
+			FTree ft = (FTree) fn;
+			List<FNode> fns = ft.fns;
+			int size = fns.size();
+			for (int i = 0; i < size; i++) {
+				unparse(cb, fns.get(i));
+				cb.append(ft.spaces.get(i));
+			}
+		} else
+			cb.append(((FTerminal) fn).chars);
+	}
+
+	private FR parse0(Chars chars, int fromOp) {
 		Chars chars1 = CharsUtil.trim(chars);
 
 		if (chars1.size() > 0) {
@@ -142,14 +159,14 @@ public class RecursiveFactorizer {
 					ri = fromOp + (isLeftAssoc ? 1 : 0);
 				}
 
-				List<FNode> list = new ArrayList<>(4);
+				List<FR> list = new ArrayList<>(4);
 				list.add(parse0(left, li));
 				list.add(term(middle));
 				list.add(parse0(right, ri));
 				if (post != null)
 					list.add(term(post));
 
-				return new FTree(FNodeType.OPERATOR, operator.toString(), list);
+				return merge(FNodeType.OPERATOR, operator.toString(), list);
 			}
 
 			if (first == '(' && last == ')' //
@@ -158,25 +175,34 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return new FTree(FNodeType.ENCLOSE_, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
+				return merge(FNodeType.ENCLOSE_, "" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
 			}
 		}
 
 		return term(chars);
 	}
 
-	private FNode term(Chars chars) {
+	private FR term(Chars chars) {
 		Chars chars1 = CharsUtil.trim(chars);
 		int p0 = reverser.reverseEnd(chars.start);
 		int p1 = reverser.reverseEnd(chars1.start);
 		int p2 = reverser.reverseEnd(chars1.end);
 		int px = reverser.reverseEnd(chars.end);
+		return new FR(Chars.of(in.cs, p0, p1), new FTerminal(Chars.of(in.cs, p1, p2)), Chars.of(in.cs, p2, px));
+	}
 
-		List<FNode> list = Arrays.asList(new FTerminal(Chars.of(in.cs, p0, p1)) //
-				, new FTerminal(Chars.of(in.cs, p1, p2)) //
-				, new FTerminal(Chars.of(in.cs, p2, px)));
+	private FR merge(FNodeType type, String name, List<FR> list) {
+		Chars pre = Util.first(list).pre;
+		Chars post = Util.last(list).post;
+		List<FNode> nodes = Read.from(list).map(p -> p.node).toList();
+		List<Chars> spaces = new ArrayList<>();
 
-		return new FTree(FNodeType.TERMINAL, null, list);
+		for (int i = 0; i < list.size() - 1; i++)
+			spaces.add(Chars.of(pre.cs, list.get(i).post.start, list.get(i + 1).pre.end));
+		spaces.add(Chars.of(""));
+
+		FNode fn = new FTree(type, name, nodes, spaces);
+		return new FR(pre, fn, post);
 	}
 
 }

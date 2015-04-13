@@ -88,16 +88,24 @@ public class Formatter {
 
 		private void treeize(Node node, String indent) {
 			Tree tree = Tree.decompose(node);
+			String indent1 = indent + "  ";
 
 			if (tree != null) {
 				String op = tree.getOperator().getName();
 				op = Util.stringEquals(op, " ") ? "<>" : op.trim();
-				String indent1 = indent + "  ";
 
 				treeize(tree.getLeft(), indent1);
 				sb.append(indent + op + "\n");
 				treeize(tree.getRight(), indent1);
-			} else
+			} else if (node instanceof Dict)
+				for (Entry<Node, Reference> entry : ((Dict) node).map.entrySet()) {
+					sb.append(indent + "d:" + dump(entry.getKey()) + "\n");
+					treeize(entry.getValue().finalNode(), indent1);
+				}
+			else if (node instanceof Tuple)
+				for (Node child : ((Tuple) node).nodes)
+					sb.append(indent + "t:" + dump(child) + "\n");
+			else
 				sb.append(indent + dump(node) + "\n");
 		}
 	}
