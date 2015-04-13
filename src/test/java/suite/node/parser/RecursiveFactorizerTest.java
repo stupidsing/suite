@@ -86,24 +86,11 @@ public class RecursiveFactorizerTest {
 			for (int i = 0; i < r.length; i++)
 				r[i] = new Reference();
 
-			Reference refto = new Reference();
-
-			Reference reffr = new Reference() {
-				public void bound(Node node) {
-					super.bound(node);
-					refto.bound(node);
-				}
-
-				public void unbound() {
-					refto.unbound();
-					super.unbound();
-				}
-			};
-
 			Fun<String, Fun<Boolean, Node>> fun = hs -> b -> {
 				Source<Node> g = To.source(r);
 				Node head = terminalNode(hs);
-				Node n0 = !b ? reffr : operatorNode(TermOp.TUPLE_, Arrays.asList(refto, terminalNode(" "), terminalNode(".type")));
+				Node n0 = !b ? g.source() : operatorNode(TermOp.TUPLE_,
+						Arrays.asList(g.source(), terminalNode(" "), terminalNode(".type")));
 				Node n1 = tupleNode(g, g.source(), n0);
 				Node n2 = tupleNode(g, g.source(), n1);
 				return tupleNode(g, head, n2);
