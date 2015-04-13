@@ -8,6 +8,7 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
+import suite.node.parser.RecursiveFactorizer.FPair;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
 import suite.node.util.Singleton;
@@ -34,10 +35,10 @@ public class RecursiveParser {
 		if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
 			String name = ft.name;
-			List<FNode> fns = ft.fns;
-			FNode fn0 = fns.get(0);
-			FNode fn1 = fns.get(1);
-			FNode fn2 = fns.get(2);
+			List<FPair> pairs = ft.pairs;
+			FNode fn0 = pairs.get(0).node;
+			FNode fn1 = pairs.get(1).node;
+			FNode fn2 = pairs.get(2).node;
 
 			switch (ft.type) {
 			case ENCLOSE_:

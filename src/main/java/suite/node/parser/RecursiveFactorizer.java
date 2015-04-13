@@ -12,7 +12,6 @@ import suite.node.io.TermOp;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.CharsUtil;
-import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Reverser;
 import suite.text.Segment;
@@ -60,18 +59,30 @@ public class RecursiveFactorizer {
 	public static class FTree extends FNodeImpl {
 		public final FNodeType type;
 		public final String name;
-		public final List<FNode> fns;
-		public final List<Chars> spaces;
+		public final List<FPair> pairs;
 
 		public FTree() {
-			this(null, null, null, null);
+			this(null, null, null);
 		}
 
-		public FTree(FNodeType type, String name, List<FNode> fns, List<Chars> spaces) {
+		public FTree(FNodeType type, String name, List<FPair> pairs) {
 			this.type = type;
 			this.name = name;
-			this.fns = fns;
-			this.spaces = spaces;
+			this.pairs = pairs;
+		}
+	}
+
+	public static class FPair {
+		public final FNode node;
+		public final Chars chars;
+
+		public FPair() {
+			this(null, null);
+		}
+
+		public FPair(FNode node, Chars chars) {
+			this.node = node;
+			this.chars = chars;
 		}
 	}
 
@@ -110,11 +121,10 @@ public class RecursiveFactorizer {
 	private void unparse(CharsBuilder cb, FNode fn) {
 		if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
-			List<FNode> fns = ft.fns;
-			int size = fns.size();
-			for (int i = 0; i < size; i++) {
-				unparse(cb, fns.get(i));
-				cb.append(ft.spaces.get(i));
+			List<FPair> pairs = ft.pairs;
+			for (FPair pair : pairs) {
+				unparse(cb, pair.node);
+				cb.append(pair.chars);
 			}
 		} else
 			cb.append(((FTerminal) fn).chars);
@@ -194,14 +204,18 @@ public class RecursiveFactorizer {
 	private FR merge(FNodeType type, String name, List<FR> list) {
 		Chars pre = Util.first(list).pre;
 		Chars post = Util.last(list).post;
-		List<FNode> nodes = Read.from(list).map(p -> p.node).toList();
-		List<Chars> spaces = new ArrayList<>();
+		List<FPair> pairs = new ArrayList<>();
 
-		for (int i = 0; i < list.size() - 1; i++)
-			spaces.add(Chars.of(pre.cs, list.get(i).post.start, list.get(i + 1).pre.end));
-		spaces.add(Chars.of(""));
+		for (int i = 0; i < list.size(); i++) {
+			Chars space;
+			if (i != list.size() - 1)
+				space = Chars.of(pre.cs, list.get(i).post.start, list.get(i + 1).pre.end);
+			else
+				space = Chars.of("");
+			pairs.add(new FPair(list.get(i).node, space));
+		}
 
-		FNode fn = new FTree(type, name, nodes, spaces);
+		FNode fn = new FTree(type, name, pairs);
 		return new FR(pre, fn, post);
 	}
 

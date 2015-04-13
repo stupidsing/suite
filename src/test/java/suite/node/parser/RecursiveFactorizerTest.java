@@ -20,6 +20,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.RecursiveFactorizer.FNode;
 import suite.node.parser.RecursiveFactorizer.FNodeType;
+import suite.node.parser.RecursiveFactorizer.FPair;
 import suite.node.parser.RecursiveFactorizer.FR;
 import suite.node.parser.RecursiveFactorizer.FTerminal;
 import suite.node.parser.RecursiveFactorizer.FTree;
@@ -68,8 +69,10 @@ public class RecursiveFactorizerTest {
 		if (fnx == null)
 			if (fn0 instanceof FTree) {
 				FTree ft = (FTree) fn0;
-				List<FNode> fns = Read.from(ft.fns).map(fn_ -> transform(fn_, fun)).toList();
-				fnx = new FTree(ft.type, ft.name, fns, ft.spaces);
+				List<FPair> pairs = Read.from(ft.pairs) //
+						.map(pair -> new FPair(transform(pair.node, fun), pair.chars)) //
+						.toList();
+				fnx = new FTree(ft.type, ft.name, pairs);
 			} else
 				fnx = fn0;
 		return fnx;
@@ -138,20 +141,23 @@ public class RecursiveFactorizerTest {
 
 	private Node treeNode(FNodeType type, Node name, List<Node> nodes) {
 		Str s = new Str("");
-		return treeNode(type, name, nodes, Tree.of(TermOp.OR____, Arrays.asList(s, s, s, s)));
+		return treeNode(() -> s, type, name, nodes);
 	}
 
 	private Node treeNode(Source<Node> g, FNodeType type, Node name, List<Node> nodes) {
-		return treeNode(type, name, nodes, Reference.of(g.source()));
-	}
-
-	private Node treeNode(FNodeType type, Node name, List<Node> nodes, Node spaces) {
+		List<Node> pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
 		Dict dict = new Dict();
 		dict.map.put(Atom.of("type"), Reference.of(Atom.of(type.toString())));
 		dict.map.put(Atom.of("name"), Reference.of(name));
-		dict.map.put(Atom.of("fns"), Reference.of(Tree.of(TermOp.OR____, nodes)));
-		dict.map.put(Atom.of("spaces"), Reference.of(spaces));
+		dict.map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
 		return Tree.of(TermOp.COLON_, Atom.of("suite.node.parser.RecursiveFactorizer$FTree"), dict);
+	}
+
+	private Node pairNode(Node n0, Node n1) {
+		Dict dict = new Dict();
+		dict.map.put(Atom.of("node"), Reference.of(n0));
+		dict.map.put(Atom.of("chars"), Reference.of(n1));
+		return dict;
 	}
 
 	private Node terminalNode(String s) {
