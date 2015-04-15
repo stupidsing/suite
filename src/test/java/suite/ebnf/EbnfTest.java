@@ -93,8 +93,9 @@ public class EbnfTest {
 		String vx = v(i);
 		sb.append(vx + " ::= [0-9] | \"(\" " + v(0) + " \")\"\n");
 
-		System.out.println(sb.toString());
-		Ebnf ebnf = new Ebnf(new StringReader(sb.toString()));
+		String s = sb.toString();
+		System.out.println(s);
+		Ebnf ebnf = new Ebnf(new StringReader(s));
 		System.out.println(ebnf.parse("1 * 2 + 3"));
 	}
 
