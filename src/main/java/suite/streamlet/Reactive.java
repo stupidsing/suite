@@ -58,6 +58,12 @@ public class Reactive<T> {
 		return from(sinks);
 	}
 
+	public <U> Reactive<U> concatMap(Fun<T, Reactive<U>> fun) {
+		Bag<Sink<U>> sinks = new Bag<>();
+		sink.sink(t -> fun.apply(t).sink(u -> sinkAll(sinks, u)));
+		return from(sinks);
+	}
+
 	public Reactive<T> delay(int milliseconds) {
 		Bag<Sink<T>> sinks = new Bag<>();
 		sink.sink(t -> executor.schedule(() -> sinkAll(sinks, t), milliseconds, TimeUnit.MILLISECONDS));
@@ -82,7 +88,7 @@ public class Reactive<T> {
 
 	public <U> Reactive<U> map(Fun<T, U> fun) {
 		Bag<Sink<U>> sinks = new Bag<>();
-		sink.sink(t -> sinkAll(sinks, t != null ? fun.apply(t) : null));
+		sink.sink(t -> sinkAll(sinks, fun.apply(t)));
 		return from(sinks);
 	}
 
