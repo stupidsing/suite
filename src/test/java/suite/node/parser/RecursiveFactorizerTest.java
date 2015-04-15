@@ -91,9 +91,9 @@ public class RecursiveFactorizerTest {
 				Node head = terminalNode(hs);
 				Node n0 = !b ? g.source() : operatorNode(TermOp.TUPLE_,
 						Arrays.asList(g.source(), terminalNode(" "), terminalNode(".type")));
-				Node n1 = tupleNode(g, g.source(), n0);
-				Node n2 = tupleNode(g, g.source(), n1);
-				return tupleNode(g, head, n2);
+				Node n1 = operatorNode(g, TermOp.TUPLE_, g.source(), n0);
+				Node n2 = operatorNode(g, TermOp.TUPLE_, g.source(), n1);
+				return operatorNode(g, TermOp.TUPLE_, head, n2);
 			};
 
 			return new Node[] { fun.apply("ic-compile0").apply(false), fun.apply("ic-compile1").apply(true) };
@@ -112,10 +112,6 @@ public class RecursiveFactorizerTest {
 		String sx = recursiveFactorizer.unparse(frx);
 		System.out.println(sx);
 		assertFalse(sx.contains("ic-compile0"));
-	}
-
-	private Node tupleNode(Source<Node> g, Node n0, Node n1) {
-		return operatorNode(g, TermOp.TUPLE_, n0, n1);
 	}
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
