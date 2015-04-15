@@ -1,5 +1,7 @@
 package suite.streamlet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -81,6 +83,16 @@ public class Reactive<T> {
 	public <U> Reactive<U> map(Fun<T, U> fun) {
 		Bag<Sink<U>> sinks = new Bag<>();
 		sink.sink(t -> sinkAll(sinks, t != null ? fun.apply(t) : null));
+		return from(sinks);
+	}
+
+	public Reactive<T> resample(Reactive<?> event) {
+		List<T> ts = new ArrayList<>();
+		ts.add(null);
+		sink.sink(t -> ts.set(0, t));
+
+		Bag<Sink<T>> sinks = new Bag<>();
+		event.sink(e -> sinkAll(sinks, ts.get(0)));
 		return from(sinks);
 	}
 
