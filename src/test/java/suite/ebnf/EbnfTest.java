@@ -9,6 +9,8 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
+import suite.node.io.Operator.Assoc;
+import suite.node.io.TermOp;
 import suite.os.FileUtil;
 
 public class EbnfTest {
@@ -71,6 +73,34 @@ public class EbnfTest {
 		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		System.out.println(ebnf.parse(sql, "sql"));
+	}
+
+	@Test
+	public void testTermOp() throws IOException {
+		StringBuilder sb = new StringBuilder();
+		int i = 0;
+
+		for (TermOp operator : TermOp.values()) {
+			String op = "\"" + operator.getName().trim() + "\"";
+			String v = v(i++);
+			String v1 = v(i);
+			if (operator.getAssoc() == Assoc.LEFT)
+				sb.append(v + " ::= " + v1 + " | " + v + " " + op + " " + v1 + "\n");
+			else
+				sb.append(v + " ::= " + v1 + " | " + v1 + " " + op + " " + v + "\n");
+		}
+
+		String vx = v(i);
+		sb.append(vx + " ::= [0-9] | \"(\" " + v(0) + " \")\"\n");
+
+		System.out.println(sb.toString());
+		Ebnf ebnf = new Ebnf(new StringReader(sb.toString()));
+		System.out.println(ebnf.parse("1 * 2 + 3"));
+	}
+
+	private String v(int i) {
+		String v = "e" + i;
+		return v;
 	}
 
 }
