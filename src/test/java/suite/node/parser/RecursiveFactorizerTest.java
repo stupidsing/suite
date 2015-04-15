@@ -115,11 +115,13 @@ public class RecursiveFactorizerTest {
 	}
 
 	private Node tupleNode(Source<Node> g, Node n0, Node n1) {
-		return operatorNode(g, TermOp.TUPLE_, Arrays.asList(n0, terminalNode(""), n1));
+		return operatorNode(g, TermOp.TUPLE_, n0, n1);
 	}
 
-	private Node operatorNode(Source<Node> g, Operator operator, List<Node> nodes) {
-		return treeNode(g, FNodeType.OPERATOR, new Str(operator.toString()), nodes);
+	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
+		Str name = new Str(op.toString());
+		List<Node> nodes = Arrays.asList(n0, terminalNode(op.getName().trim()), n1);
+		return treeNode(g, FNodeType.OPERATOR, name, nodes);
 	}
 
 	private Node operatorNode(Operator operator, List<Node> nodes) {
