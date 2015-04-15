@@ -31,6 +31,14 @@ public class Reactive<T> {
 		this.sink = sink;
 	}
 
+	public static <T> Reactive<T> append(Reactive<T> r0, Reactive<T> r1) {
+		Bag<Sink<T>> sinks = new Bag<>();
+		Sink<T> sink = t -> sinkAll(sinks, t);
+		r0.sink(sink);
+		r1.sink(sink);
+		return from(sinks);
+	}
+
 	public static <T> Reactive<T> from(Source<T> source) {
 		Bag<Sink<T>> sinks = new Bag<>();
 		executor.submit(() -> {
