@@ -104,7 +104,7 @@ public class Ebnf {
 			length = in.length();
 		}
 
-		private Node parse(int pos, Parser parser) {
+		private Node parse(int pos, String entity, Parser parser) {
 			State initialState = new State(null, pos, null, 0);
 			Streamlet<State> st = parse(initialState, parser);
 			State state;
@@ -118,7 +118,7 @@ public class Ebnf {
 						state = state.previous;
 					}
 
-					Node root = new Node(null, 0);
+					Node root = new Node(entity, 0);
 
 					Deque<Node> stack = new ArrayDeque<>();
 					stack.push(root);
@@ -138,7 +138,7 @@ public class Ebnf {
 						}
 					}
 
-					return root.nodes.get(0);
+					return root;
 				}
 
 			return null;
@@ -346,7 +346,7 @@ public class Ebnf {
 
 	public Node parse(String s, String entity) {
 		Parse parse = new Parse(s);
-		Node node = parse.parse(0, parseGrammar(entity));
+		Node node = parse.parse(0, entity, parseGrammar(entity));
 		if (node != null)
 			return node;
 		else {
@@ -357,7 +357,7 @@ public class Ebnf {
 	}
 
 	public Node check(String s, String entity) {
-		return new Parse(s).parse(0, parseGrammar(entity));
+		return new Parse(s).parse(0, entity, parseGrammar(entity));
 	}
 
 	private Parser skipWhitespaces(Parser parser) {
