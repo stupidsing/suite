@@ -29,16 +29,18 @@ public class EbnfBreakdown {
 			en = new EbnfGrammar(EbnfGrammarType.EXCEPT, Arrays.asList(breakdown(pair.t0), breakdown(pair.t1)));
 		else if ((list = ParseUtil.searchn(s, " ", Assoc.RIGHT)).size() > 1)
 			en = new EbnfGrammar(EbnfGrammarType.AND___, breakdown(list));
+		else if (s.equals(""))
+			en = new EbnfGrammar(EbnfGrammarType.NIL___, "");
+		else if (s.endsWith("?"))
+			en = new EbnfGrammar(EbnfGrammarType.OPTION, breakdown(Util.substr(s, 0, -1)));
 		else if (s.endsWith("*"))
 			en = new EbnfGrammar(EbnfGrammarType.REPT0_, breakdown(Util.substr(s, 0, -1)));
 		else if (s.endsWith("+"))
 			en = new EbnfGrammar(EbnfGrammarType.REPT1_, breakdown(Util.substr(s, 0, -1)));
-		else if (s.endsWith("?"))
-			en = new EbnfGrammar(EbnfGrammarType.OPTION, breakdown(Util.substr(s, 0, -1)));
-		else if (s.startsWith("(") && s.endsWith(")"))
-			en = breakdown(Util.substr(s, 1, -1));
 		else if (s.startsWith("\"") && s.endsWith("\""))
 			en = new EbnfGrammar(EbnfGrammarType.STRING, Escaper.unescape(Util.substr(s, 1, -1), "\""));
+		else if (s.startsWith("(") && s.endsWith(")"))
+			en = breakdown(Util.substr(s, 1, -1));
 		else
 			en = new EbnfGrammar(EbnfGrammarType.ENTITY, s);
 

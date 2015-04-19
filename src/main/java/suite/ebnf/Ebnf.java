@@ -77,12 +77,11 @@ public class Ebnf {
 	private class State {
 		private State previous;
 		private int pos;
-
 		private String entity;
 		private int depthChange;
 
 		private State(State previous, int pos) {
-			this(previous, pos, previous.entity, 0);
+			this(previous, pos, null, 0);
 		}
 
 		private State(State previous, int pos, String entity, int depthChange) {
@@ -104,8 +103,8 @@ public class Ebnf {
 			length = in.length();
 		}
 
-		private Node parse(int pos, String entity, Parser parser) {
-			State initialState = new State(null, pos, null, 0);
+		private Node parse(int pos, Parser parser) {
+			State initialState = new State(null, pos);
 			Streamlet<State> st = parse(initialState, parser);
 			State state;
 
@@ -118,7 +117,7 @@ public class Ebnf {
 						state = state.previous;
 					}
 
-					Node root = new Node(entity, 0);
+					Node root = new Node(null, 0);
 
 					Deque<Node> stack = new ArrayDeque<>();
 					stack.push(root);
@@ -138,7 +137,7 @@ public class Ebnf {
 						}
 					}
 
-					return root;
+					return root.nodes.get(0);
 				}
 
 			return null;
@@ -229,11 +228,14 @@ public class Ebnf {
 			Parser parser1 = build(eg.children.get(1));
 			parser = (parse, st) -> parser0.p(parse, st).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
-				return parser1.p(new Parse(in1), new State(null, 0, null, 0)).count() == 0;
+				return parser1.p(new Parse(in1), new State(null, 0)).count() == 0;
 			});
 			break;
 		case NAMED_:
 			parser = deepen(build(eg.children.get(0)), eg.content);
+			break;
+		case NIL___:
+			parser = (parse, st) -> Read.from(st);
 			break;
 		case OPTION:
 			Parser g = build(eg.children.get(0));
@@ -292,22 +294,11 @@ public class Ebnf {
 		Parser parser1;
 		if ((parser1 = buildLiteral(entity)) == null)
 			parser1 = (parse, st) -> {
-				boolean isRecurse = false;
-				State prevState = st;
-
-				while (!isRecurse && prevState != null && prevState.pos == st.pos) {
-					isRecurse |= Util.stringEquals(prevState.entity, entity);
-					prevState = prevState.previous;
-				}
-
-				if (!isRecurse) {
-					Parser parser = parsersByEntity.get(entity);
-					if (parser != null)
-						return parser.p(parse, st);
-					else
-						throw new RuntimeException("Entity " + entity + " not found");
-				} else
-					return noResult;
+				Parser parser = parsersByEntity.get(entity);
+				if (parser != null)
+					return parser.p(parse, st);
+				else
+					throw new RuntimeException("Entity " + entity + " not found");
 			};
 
 		return parser1;
@@ -346,7 +337,7 @@ public class Ebnf {
 
 	public Node parse(String s, String entity) {
 		Parse parse = new Parse(s);
-		Node node = parse.parse(0, entity, parseGrammar(entity));
+		Node node = parse.parse(0, parseGrammar(entity));
 		if (node != null)
 			return node;
 		else {
@@ -357,7 +348,7 @@ public class Ebnf {
 	}
 
 	public Node check(String s, String entity) {
-		return new Parse(s).parse(0, entity, parseGrammar(entity));
+		return new Parse(s).parse(0, parseGrammar(entity));
 	}
 
 	private Parser skipWhitespaces(Parser parser) {
@@ -369,9 +360,20 @@ public class Ebnf {
 
 	private Parser deepen(Parser parser, String entity) {
 		return (parse, st0) -> {
-			State st1 = new State(st0, st0.pos, entity, 1);
-			Streamlet<State> states = parser.p(parse, st1);
-			return states.map(st2 -> new State(st2, st2.pos, null, -1));
+			boolean isRecurse = false;
+			State prevState = st0;
+
+			while (!isRecurse && prevState != null && prevState.pos == st0.pos) {
+				isRecurse |= Util.stringEquals(prevState.entity, entity);
+				prevState = prevState.previous;
+			}
+
+			if (!isRecurse) {
+				State st1 = new State(st0, st0.pos, entity, 1);
+				Streamlet<State> states = parser.p(parse, st1);
+				return states.map(st2 -> new State(st2, st2.pos, null, -1));
+			} else
+				return noResult;
 		};
 	}
 
