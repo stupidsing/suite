@@ -39,7 +39,7 @@ public class EbnfHeadRecursion {
 				if (childEn.type == EbnfGrammarType.AND___) {
 					List<EbnfGrammar> ens = childEn.children;
 
-					if (combos(ens.get(0)) == en) {
+					if (resolve(ens.get(0)) == en) {
 						listc.add(new EbnfGrammar(EbnfGrammarType.AND___, Util.right(ens, 1)));
 						continue;
 					}
@@ -60,7 +60,7 @@ public class EbnfHeadRecursion {
 		return en1;
 	}
 
-	private EbnfGrammar combos(EbnfGrammar en0) {
+	private EbnfGrammar resolve(EbnfGrammar en0) {
 		EbnfGrammar en = lookup(en0);
 		if (en.type == EbnfGrammarType.NAMED_)
 			return en.children.get(0);
