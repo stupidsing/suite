@@ -131,8 +131,7 @@ public class Ebnf {
 						while (d > 0) {
 							d--;
 							Node node = new Node(state_.entity, state_.pos);
-							if (state_.entity != null)
-								stack.peek().nodes.add(node);
+							stack.peek().nodes.add(node);
 							stack.push(node);
 						}
 					}
