@@ -10,6 +10,11 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 
+/**
+ * Pretty printer with language context.
+ * 
+ * @author ywsing
+ */
 public class NewPrettyPrinter {
 
 	private int lineLength = 80;
