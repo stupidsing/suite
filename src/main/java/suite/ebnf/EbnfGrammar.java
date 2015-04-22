@@ -15,6 +15,7 @@ public class EbnfGrammar {
 		OPTION, //
 		OR____, //
 		REPT0_, //
+		REPT0H, //
 		REPT1_, //
 		STRING, //
 	}
@@ -39,7 +40,7 @@ public class EbnfGrammar {
 		this(type, null, children);
 	}
 
-	private EbnfGrammar(EbnfGrammarType type, String content, List<EbnfGrammar> children) {
+	public EbnfGrammar(EbnfGrammarType type, String content, List<EbnfGrammar> children) {
 		this.type = type;
 		this.content = content;
 		this.children = children;

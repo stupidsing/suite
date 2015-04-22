@@ -40,7 +40,7 @@ public class EbnfTest {
 				+ "number ::= number \"x\" digit | digit \n" //
 				+ "digit ::= [0-9] \n" //
 		));
-		assertNotNull(ebnf.check("1x2x3x4", "number"));
+		System.out.println(ebnf.parse("1x2x3x4", "number"));
 	}
 
 	@Test
@@ -100,8 +100,7 @@ public class EbnfTest {
 	}
 
 	private String v(int i) {
-		String v = "e" + i;
-		return v;
+		return "e" + i;
 	}
 
 }

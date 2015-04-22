@@ -77,18 +77,31 @@ public class Ebnf {
 	private class State {
 		private State previous;
 		private int pos;
-		private String entity;
-		private int depthChange;
+		private int sign;
+		private Frame frame;
 
-		private State(State previous, int pos) {
-			this(previous, pos, null, 0);
+		private State pos(int pos) {
+			return new State(this, pos, 0, null);
 		}
 
-		private State(State previous, int pos, String entity, int depthChange) {
+		private State hr(Frame frame, int sign) {
+			return new State(this, this.pos, sign, frame);
+		}
+
+		private State(State previous, int pos, int sign, Frame frame) {
 			this.previous = previous;
 			this.pos = pos;
+			this.sign = sign;
+			this.frame = frame;
+		}
+	}
+
+	private class Frame {
+		private int depth;
+		private String entity;
+
+		private Frame(String entity) {
 			this.entity = entity;
-			this.depthChange = depthChange;
 		}
 	}
 
@@ -104,7 +117,7 @@ public class Ebnf {
 		}
 
 		private Node parse(int pos, Parser parser) {
-			State initialState = new State(null, pos);
+			State initialState = new State(null, pos, 0, null);
 			Streamlet<State> st = parse(initialState, parser);
 			State state;
 
@@ -113,6 +126,9 @@ public class Ebnf {
 					Deque<State> states = new ArrayDeque<>();
 
 					while (state != null) {
+						if (state.sign < 0)
+							state.frame.depth++;
+
 						states.addFirst(state);
 						state = state.previous;
 					}
@@ -123,17 +139,15 @@ public class Ebnf {
 					stack.push(root);
 
 					for (State state_ : states) {
-						int d = state_.depthChange;
-						while (d < 0) {
-							d++;
+						int d = state_.sign;
+						if (d < 0)
 							stack.pop().end = state_.pos;
-						}
-						while (d > 0) {
-							d--;
-							Node node = new Node(state_.entity, state_.pos);
-							stack.peek().nodes.add(node);
-							stack.push(node);
-						}
+						else if (d > 0)
+							for (int i = 0; i < state_.frame.depth; i++) {
+								Node node = new Node(state_.frame.entity, state_.pos);
+								stack.peek().nodes.add(node);
+								stack.push(node);
+							}
 					}
 
 					return root.nodes.get(0);
@@ -148,9 +162,9 @@ public class Ebnf {
 
 			Streamlet<State> states = parser.p(this, state);
 
-			if (states == noResult && state.entity != null && state.pos >= errorPosition) {
+			if (states == noResult && state.sign > 0 && state.frame.entity != null && state.pos >= errorPosition) {
 				errorPosition = state.pos;
-				errorEntity = state.entity;
+				errorEntity = state.frame.entity;
 			}
 
 			return states;
@@ -158,7 +172,7 @@ public class Ebnf {
 
 		private Streamlet<State> expect(State state, Expect expect, int pos) {
 			int end = expect.expect(in, length, pos);
-			return state.pos < end ? Read.from(new State(state, end)) : noResult;
+			return state.pos < end ? Read.from(state.pos(end)) : noResult;
 		}
 
 		private Pair<Integer, Integer> findPosition(int position) {
@@ -201,6 +215,26 @@ public class Ebnf {
 				.collect(As.map());
 	}
 
+	public Node parse(String s) {
+		return parse(s, rootEntity);
+	}
+
+	public Node parse(String s, String entity) {
+		Parse parse = new Parse(s);
+		Node node = parse.parse(0, parseGrammar(entity));
+		if (node != null)
+			return node;
+		else {
+			Pair<Integer, Integer> pos = parse.findPosition(parse.errorPosition);
+			throw new RuntimeException("Syntax error for entity " + parse.errorEntity + " at " + pos);
+		}
+
+	}
+
+	public Node check(String s, String entity) {
+		return new Parse(s).parse(0, parseGrammar(entity));
+	}
+
 	private Parser parseGrammar(String s) {
 		return build(breakdown.breakdown(s));
 	}
@@ -227,7 +261,7 @@ public class Ebnf {
 			Parser parser1 = build(eg.children.get(1));
 			parser = (parse, st) -> parser0.p(parse, st).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
-				return parser1.p(new Parse(in1), new State(null, 0)).count() == 0;
+				return parser1.p(new Parse(in1), new State(null, 0, 0, null)).count() == 0;
 			});
 			break;
 		case NAMED_:
@@ -247,6 +281,9 @@ public class Ebnf {
 		case REPT0_:
 			parser = buildRepeat(eg, true);
 			break;
+		case REPT0H:
+			parser = buildRepeatHeadRecursion(eg);
+			break;
 		case REPT1_:
 			parser = buildRepeat(eg, false);
 			break;
@@ -263,6 +300,37 @@ public class Ebnf {
 
 	private List<Parser> buildChildren(EbnfGrammar eg) {
 		return Read.from(eg.children).map(this::build).toList();
+	}
+
+	private Parser buildRepeatHeadRecursion(EbnfGrammar eg) {
+		Parser gb = build(eg.children.get(0));
+		Parser gc = build(eg.children.get(1));
+
+		return (parse, st0) -> {
+			Frame frame = new Frame(eg.content);
+			State st1 = st0.hr(frame, 1);
+
+			Streamlet<State> states = gb.p(parse, st1) //
+					.map(st2 -> st2.hr(frame, -1)) //
+					.concatMap(st3 -> {
+						return Read.from(new Source<State>() {
+							private State state_ = st3;
+							private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
+
+							public State source() {
+								State state0 = state_;
+								if (state0 != null) {
+									streamlets.push(parse.parse(state0.hr(frame, -1), gc));
+									while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
+										streamlets.pop();
+								}
+								return state0;
+							}
+						});
+					});
+
+			return states.next() != null ? states : noResult;
+		};
 	}
 
 	private Parser buildRepeat(EbnfGrammar eg, boolean isAllowNone) {
@@ -330,30 +398,10 @@ public class Ebnf {
 		return e != null ? skipWhitespaces(deepen((parse, st) -> parse.expect(st, e, st.pos), entity)) : null;
 	}
 
-	public Node parse(String s) {
-		return parse(s, rootEntity);
-	}
-
-	public Node parse(String s, String entity) {
-		Parse parse = new Parse(s);
-		Node node = parse.parse(0, parseGrammar(entity));
-		if (node != null)
-			return node;
-		else {
-			Pair<Integer, Integer> pos = parse.findPosition(parse.errorPosition);
-			throw new RuntimeException("Syntax error for entity " + parse.errorEntity + " at " + pos);
-		}
-
-	}
-
-	public Node check(String s, String entity) {
-		return new Parse(s).parse(0, parseGrammar(entity));
-	}
-
 	private Parser skipWhitespaces(Parser parser) {
 		return (parse, st) -> {
 			int pos1 = expect.expectWhitespaces(parse.in, parse.length, st.pos);
-			return parser.p(parse, new State(st, pos1));
+			return parser.p(parse, st.pos(pos1));
 		};
 	}
 
@@ -363,14 +411,15 @@ public class Ebnf {
 			State prevState = st0;
 
 			while (!isRecurse && prevState != null && prevState.pos == st0.pos) {
-				isRecurse |= Util.stringEquals(prevState.entity, entity);
+				isRecurse |= prevState.frame != null && Util.stringEquals(prevState.frame.entity, entity);
 				prevState = prevState.previous;
 			}
 
 			if (!isRecurse) {
-				State st1 = new State(st0, st0.pos, entity, 1);
+				Frame frame = new Frame(entity);
+				State st1 = st0.hr(frame, 1);
 				Streamlet<State> states = parser.p(parse, st1);
-				return states.map(st2 -> new State(st2, st2.pos, null, -1));
+				return states.map(st2 -> st2.hr(frame, -1));
 			} else
 				return noResult;
 		};
