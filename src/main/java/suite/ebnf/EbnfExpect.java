@@ -13,6 +13,8 @@ public class EbnfExpect {
 		public int expect(String in, int length, int start);
 	}
 
+	public Expect expectChar = (in, length, start) -> Math.min(start + 1, length);
+
 	public Expect expectCharLiteral = (in, length, start) -> {
 		int pos = start, end;
 		if (pos < length && in.charAt(pos) == '\'') {

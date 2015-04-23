@@ -28,7 +28,7 @@ public class EbnfHeadRecursion {
 	public EbnfGrammar reduceHeadRecursion(EbnfGrammar en0) {
 		EbnfGrammar en = lookup(en0);
 		if (en.type == EbnfGrammarType.NAMED_)
-			return new EbnfGrammar(EbnfGrammarType.NAMED_, en.content, reduceHeadRecursion(en.children.get(0), en.content));
+			return reduceHeadRecursion(en.children.get(0), en.content);
 		else
 			return en0;
 	}
@@ -59,9 +59,9 @@ public class EbnfHeadRecursion {
 				EbnfGrammar enc = new EbnfGrammar(EbnfGrammarType.OR____, listc);
 				en1 = new EbnfGrammar(EbnfGrammarType.REPT0H, entity, Arrays.asList(enb, enc));
 			} else
-				en1 = en;
+				en1 = new EbnfGrammar(EbnfGrammarType.NAMED_, entity, Arrays.asList(en));
 		} else
-			en1 = en;
+			en1 = new EbnfGrammar(EbnfGrammarType.NAMED_, entity, Arrays.asList(en));
 
 		return en1;
 	}
