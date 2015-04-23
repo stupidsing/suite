@@ -40,6 +40,8 @@ public class EbnfTest {
 				+ "number ::= number \"x\" digit | digit \n" //
 				+ "digit ::= [0-9] \n" //
 		));
+		System.out.println(ebnf.parse("1", "number"));
+		System.out.println(ebnf.parse("1x2", "number"));
 		System.out.println(ebnf.parse("1x2x3x4", "number"));
 	}
 
