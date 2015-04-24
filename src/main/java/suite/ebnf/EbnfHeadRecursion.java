@@ -38,25 +38,24 @@ public class EbnfHeadRecursion {
 	}
 
 	public EbnfGrammar reduceHeadRecursion(EbnfGrammar en0) {
-		EbnfGrammar en = expand(en0);
-		if (en.type == EbnfGrammarType.NAMED_)
-			return reduceHeadRecursion(en.children.get(0), en.content);
-		else
-			return en0;
-	}
+		EbnfGrammar en1 = expand(en0);
 
-	public EbnfGrammar reduceHeadRecursion(EbnfGrammar en0, String entity) {
-		HeadRecursionForm hrf = getHeadRecursionForm(en0, entity);
-		EbnfGrammar en1;
+		if (en1.type == EbnfGrammarType.NAMED_) {
+			EbnfGrammar en2 = en1.children.get(0);
+			String entity = en1.content;
+			HeadRecursionForm hrf = getHeadRecursionForm(en2, entity);
+			EbnfGrammar en3;
 
-		if (!hrf.listc.isEmpty()) {
-			EbnfGrammar enb = new EbnfGrammar(EbnfGrammarType.OR____, hrf.listb);
-			EbnfGrammar enc = new EbnfGrammar(EbnfGrammarType.OR____, hrf.listc);
-			en1 = new EbnfGrammar(EbnfGrammarType.REPT0H, entity, Arrays.asList(enb, enc));
+			if (!hrf.listc.isEmpty()) {
+				EbnfGrammar enb = new EbnfGrammar(EbnfGrammarType.OR____, hrf.listb);
+				EbnfGrammar enc = new EbnfGrammar(EbnfGrammarType.OR____, hrf.listc);
+				en3 = new EbnfGrammar(EbnfGrammarType.REPT0H, entity, Arrays.asList(enb, enc));
+			} else
+				en3 = new EbnfGrammar(EbnfGrammarType.NAMED_, entity, Arrays.asList(en2));
+
+			return en3;
 		} else
-			en1 = new EbnfGrammar(EbnfGrammarType.NAMED_, entity, Arrays.asList(en0));
-
-		return en1;
+			return en0;
 	}
 
 	public HeadRecursionForm getHeadRecursionForm(EbnfGrammar en0, String entity) {
