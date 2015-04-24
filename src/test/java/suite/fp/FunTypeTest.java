@@ -107,8 +107,10 @@ public class FunTypeTest {
 				+ "data (rb-tree {:t}) over :t as Empty >> \n" //
 				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
 				+ "define add := ($t => $t -> rb-tree {$t}) of (v => Empty) >> \n" //
-				+ "1; | map {add} \n" //
-		);
+				+ "1; | map {add} \n");
+
+		assertType("number", "" //
+				+ "define id := (:t => :t -> :t) of (a => a) >> (id {3} + (id {4;} | head))");
 	}
 
 	@Test
