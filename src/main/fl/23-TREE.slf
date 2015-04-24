@@ -14,7 +14,10 @@ slots =>
 ) >>
 define create-root := (:t => [:t, 23-tree {:t}] -> 23-tree {:t}) of (
 slots =>
-	if (length {slots} = 1) then (let `$pivot, $child` := slots | head >> child) else Tree slots
+	if (length {slots} = 1) then
+		let `$pivot, $child` := slots | head >> child
+	else
+		Tree slots
 ) >>
 define find-slot := (:t =>
 	:t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}], (:t, 23-tree {:t}), [:t, 23-tree {:t}]
@@ -24,8 +27,10 @@ define find-slot := (:t =>
 	) of (
 	left => key => `$slot; $slots` =>
 		let `$pivot, $child` := slot >>
-		if (pivot < key) then (find-slot0 {snoc {left} {slot}} {key} {slots})
-		else (left, slot, slots)
+		if (pivot < key) then
+			find-slot0 {snoc {left} {slot}} {key} {slots}
+		else
+			left, slot, slots
 	) >>
 	find-slot0 {}
 >>
@@ -47,13 +52,15 @@ key =>
 				let `Tree $childSlots` := child >> pivot, Tree (add0 {childSlots});
 			else-if (key != pivot) then
 				key, Empty; slot;
-			else error
+			else
+				error
 		>>
 		let slots1 := concat {left; replaceSlots; right;} >>
 		if (length {slots1} >= max-branches) then
 			let `$ls, $rs` := take-drop {min-branches} {slots1} >>
 			create-slot {ls}; create-slot {rs};
-		else slots1
+		else
+			slots1
 	) >>
 	`Tree $slots` =>
 	slots | add0 | create-root
@@ -76,7 +83,8 @@ key =>
 			else
 				let `$slot, $right1` := lht {right} >>
 				create-slot {snoc {left} {slot}}; create-slot {right1};
-		else (create-slot {left ++ right};)
+		else
+			create-slot {left ++ right};
 	) >>
 	define remove0 := (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	slots0 =>
@@ -91,10 +99,14 @@ key =>
 				else-if (right != ()) then
 					let `($pivot, Tree $borrowSlots), $right1` := lht {right} >>
 					concat {left; merge {slots1} {borrowSlots}; right1;}
-				else (create-slot {slots1};)
-			else (concat {left; slots1; right;})
-		else-if (key = pivot) then (left ++ right)
-		else error
+				else
+					create-slot {slots1};
+			else
+				concat {left; slots1; right;}
+		else-if (key = pivot) then
+			left ++ right
+		else
+			error
 	) >>
 	`Tree $slots` =>
 	slots | remove0 | create-root
