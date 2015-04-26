@@ -60,10 +60,12 @@ public class EbnfHeadRecursion {
 
 	public HeadRecursionForm getHeadRecursionForm(EbnfGrammar en0, String entity) {
 		EbnfGrammar en = expand(en0);
-		List<EbnfGrammar> ens;
+		List<EbnfGrammar> ens = breakAnds(en);
 		HeadRecursionForm hrf;
 
-		if (en.type == EbnfGrammarType.OR____) {
+		if (Util.stringEquals(name(ens.get(0)), entity))
+			hrf = new HeadRecursionForm(Collections.emptyList(), Util.right(ens, 1));
+		else if (en.type == EbnfGrammarType.OR____) {
 			List<EbnfGrammar> listb = new ArrayList<>();
 			List<EbnfGrammar> listc = new ArrayList<>();
 
@@ -73,12 +75,17 @@ public class EbnfHeadRecursion {
 			}
 
 			hrf = new HeadRecursionForm(listb, listc);
-		} else if (en.type == EbnfGrammarType.AND___ && Util.stringEquals(name((ens = en.children).get(0)), entity))
-			hrf = new HeadRecursionForm(Collections.emptyList(), Util.right(ens, 1));
-		else
+		} else
 			hrf = new HeadRecursionForm(Arrays.asList(en), Collections.emptyList());
 
 		return hrf;
+	}
+
+	private List<EbnfGrammar> breakAnds(EbnfGrammar en) {
+		if (en.type == EbnfGrammarType.AND___)
+			return en.children;
+		else
+			return Arrays.asList(en);
 	}
 
 	private String name(EbnfGrammar en0) {
