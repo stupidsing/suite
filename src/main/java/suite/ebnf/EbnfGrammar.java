@@ -1,7 +1,7 @@
 package suite.ebnf;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class EbnfGrammar {
@@ -24,8 +24,12 @@ public class EbnfGrammar {
 	public final String content;
 	public final List<EbnfGrammar> children;
 
+	public EbnfGrammar(EbnfGrammarType type) {
+		this(type, null, Collections.emptyList());
+	}
+
 	public EbnfGrammar(EbnfGrammarType type, String content) {
-		this(type, content, new ArrayList<>());
+		this(type, content, Collections.emptyList());
 	}
 
 	public EbnfGrammar(EbnfGrammarType type, EbnfGrammar child) {

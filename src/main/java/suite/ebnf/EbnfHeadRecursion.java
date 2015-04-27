@@ -8,6 +8,7 @@ import java.util.Map;
 
 import suite.ebnf.EbnfGrammar.EbnfGrammarType;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 /**
@@ -59,13 +60,25 @@ public class EbnfHeadRecursion {
 	}
 
 	public HeadRecursionForm getHeadRecursionForm(EbnfGrammar en0, String entity) {
+		List<EbnfGrammar> empty = Collections.emptyList();
 		EbnfGrammar en = expand(en0);
-		List<EbnfGrammar> ens = breakAnds(en);
 		HeadRecursionForm hrf;
 
-		if (Util.stringEquals(name(ens.get(0)), entity))
-			hrf = new HeadRecursionForm(Collections.emptyList(), Util.right(ens, 1));
-		else if (en.type == EbnfGrammarType.OR____) {
+		if (Util.stringEquals(name(en), entity))
+			hrf = new HeadRecursionForm(empty, Arrays.asList(new EbnfGrammar(EbnfGrammarType.NIL___)));
+		else if (en.type == EbnfGrammarType.AND___) {
+			HeadRecursionForm hrf0 = getHeadRecursionForm(en.children.get(0), entity);
+			List<EbnfGrammar> tail = Util.right(en.children, 1);
+
+			Fun<List<EbnfGrammar>, List<EbnfGrammar>> fun = list -> Read.from(list).map(en_ -> {
+				List<EbnfGrammar> ens1 = new ArrayList<>();
+				ens1.add(en_);
+				ens1.addAll(tail);
+				return new EbnfGrammar(EbnfGrammarType.AND___, ens1);
+			}).toList();
+
+			hrf = new HeadRecursionForm(fun.apply(hrf0.listb), fun.apply(hrf0.listc));
+		} else if (en.type == EbnfGrammarType.OR____) {
 			List<EbnfGrammar> listb = new ArrayList<>();
 			List<EbnfGrammar> listc = new ArrayList<>();
 
@@ -76,16 +89,9 @@ public class EbnfHeadRecursion {
 
 			hrf = new HeadRecursionForm(listb, listc);
 		} else
-			hrf = new HeadRecursionForm(Arrays.asList(en), Collections.emptyList());
+			hrf = new HeadRecursionForm(Arrays.asList(en), empty);
 
 		return hrf;
-	}
-
-	private List<EbnfGrammar> breakAnds(EbnfGrammar en) {
-		if (en.type == EbnfGrammarType.AND___)
-			return en.children;
-		else
-			return Arrays.asList(en);
 	}
 
 	private String name(EbnfGrammar en0) {
