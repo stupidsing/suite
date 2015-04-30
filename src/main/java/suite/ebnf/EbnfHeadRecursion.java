@@ -82,10 +82,10 @@ public class EbnfHeadRecursion {
 			List<EbnfGrammar> listb = new ArrayList<>();
 			List<EbnfGrammar> listc = new ArrayList<>();
 
-			for (HeadRecursionForm hrf1 : Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity))) {
+			Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).sink(hrf1 -> {
 				listb.addAll(hrf1.listb);
 				listc.addAll(hrf1.listc);
-			}
+			});
 
 			hrf = new HeadRecursionForm(listb, listc);
 		} else
