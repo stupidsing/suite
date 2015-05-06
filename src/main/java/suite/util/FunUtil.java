@@ -3,6 +3,7 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import suite.adt.Pair;
 import suite.os.LogUtil;
@@ -20,8 +21,7 @@ public class FunUtil {
 	}
 
 	@FunctionalInterface
-	public interface Fun<I, O> {
-		public O apply(I i);
+	public interface Fun<I, O> extends Function<I, O> {
 	}
 
 	public static class Sinks<I> implements Sink<I> {
