@@ -115,7 +115,7 @@ public class ProverTest {
 	public void testTree() {
 		RuleSet rs = Suite.createRuleSet();
 		assertFalse(test(rs, "tree .t0 a ':' b, tree .t1 a ':' b, same .t0 .t1"));
-		assertTrue(test(rs, "tree.intern .t0 a ':' b, tree.intern .t1 a ':' b, same .t0 .t1"));
+		assertTrue(test(rs, "intern.tree .t0 a ':' b, intern.tree .t1 a ':' b, same .t0 .t1"));
 	}
 
 	@Test

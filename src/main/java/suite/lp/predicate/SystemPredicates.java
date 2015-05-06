@@ -20,7 +20,7 @@ public class SystemPredicates {
 	private static EvalPredicates evalPredicates = new EvalPredicates();
 	private static FindPredicates findPredicates = new FindPredicates();
 	private static FormatPredicates formatPredicates = new FormatPredicates();
-	private static InternMapPredicates internMapPredicates = new InternMapPredicates();
+	private static InternPredicates internPredicates = new InternPredicates();
 	private static IoPredicates ioPredicates = new IoPredicates();
 	private static RuleSetPredicates ruleSetPredicates = new RuleSetPredicates();
 
@@ -58,7 +58,6 @@ public class SystemPredicates {
 		addPredicate("specialize", evalPredicates.specialize);
 		addPredicate("temp", evalPredicates.temp);
 		addPredicate("tree", evalPredicates.tree);
-		addPredicate("tree.intern", evalPredicates.treeIntern);
 
 		addPredicate("find.all", findPredicates.findAll);
 		addPredicate("find.all.memoized", findPredicates.findAllMemoized);
@@ -87,9 +86,10 @@ public class SystemPredicates {
 		addPredicate("treeize", formatPredicates.treeize);
 		addPredicate("trim", formatPredicates.trim);
 
-		addPredicate("intern.map.clear", internMapPredicates.internMapClear);
-		addPredicate("intern.map.contains", internMapPredicates.internMapContains);
-		addPredicate("intern.map.put", internMapPredicates.internMapPut);
+		addPredicate("intern.map.clear", internPredicates.internMapClear);
+		addPredicate("intern.map.contains", internPredicates.internMapContains);
+		addPredicate("intern.map.put", internPredicates.internMapPut);
+		addPredicate("intern.tree", internPredicates.internTree);
 
 		addPredicate("dump", ioPredicates.dump);
 		addPredicate("dump.stack", ioPredicates.dumpStack);
