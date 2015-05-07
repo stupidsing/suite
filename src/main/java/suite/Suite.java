@@ -122,33 +122,31 @@ public class Suite {
 	}
 
 	public static Fun<Node, Node[]> matcher(String s) {
-		return matchers.computeIfAbsent(s, Suite::matcher0);
-	}
+		return matchers.computeIfAbsent(s, s_ -> {
+			SewingBinder sb = new SewingBinder();
+			BiPredicate<BindEnv, Node> pred = sb.compileBind(parse(s_));
+			List<Integer> indexList = new ArrayList<>();
+			Integer index;
+			int n = 0;
+			while ((index = sb.getVariableIndex(Atom.of("." + n++))) != null)
+				indexList.add(index);
 
-	private static Fun<Node, Node[]> matcher0(String s) {
-		SewingBinder sb = new SewingBinder();
-		BiPredicate<BindEnv, Node> pred = sb.compileBind(parse(s));
-		List<Integer> indexList = new ArrayList<>();
-		Integer index;
-		int n = 0;
-		while ((index = sb.getVariableIndex(Atom.of("." + n++))) != null)
-			indexList.add(index);
+			int size = indexList.size();
+			int indices[] = new int[size];
+			for (int i = 0; i < size; i++)
+				indices[i] = indexList.get(i);
 
-		int size = indexList.size();
-		int indices[] = new int[size];
-		for (int i = 0; i < size; i++)
-			indices[i] = indexList.get(i);
-
-		return node -> {
-			Env env = sb.env();
-			if (pred.test(new BindEnv(new Journal(), env), node)) {
-				List<Node> results = new ArrayList<>(size);
-				for (int i = 0; i < size; i++)
-					results.add(env.get(indices[i]).finalNode());
-				return results.toArray(new Node[size]);
-			} else
-				return null;
-		};
+			return node -> {
+				Env env = sb.env();
+				if (pred.test(new BindEnv(new Journal(), env), node)) {
+					List<Node> results = new ArrayList<>(size);
+					for (int i = 0; i < size; i++)
+						results.add(env.get(indices[i]).finalNode());
+					return results.toArray(new Node[size]);
+				} else
+					return null;
+			};
+		});
 	}
 
 	public static Node substitute(String s, Node... nodes) {
