@@ -3,6 +3,10 @@ apply plugin: 'application'
 compileJava.options.encoding = 'UTF-8'
 mainClassName = 'suite.cli.Main'
 
+compileJava {
+	options.compilerArgs << '-XDignore.symbol.file'
+}
+
 dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.2'
 	compile group: 'com.jcraft', name: 'jsch', version: '0.1.52'
