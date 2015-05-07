@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 
 import suite.fp.FunCompilerConfig;
@@ -61,6 +63,8 @@ public class Suite {
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
 	private static ImportUtil importUtil = new ImportUtil();
 	private static IterativeParser parser = new IterativeParser(TermOp.values());
+
+	private static Map<String, Fun<Node, Node[]>> matchers = new ConcurrentHashMap<>();
 
 	public static void addRule(RuleSet rs, String rule) {
 		rs.addRule(Rule.formRule(parse(rule)));
@@ -118,6 +122,10 @@ public class Suite {
 	}
 
 	public static Fun<Node, Node[]> matcher(String s) {
+		return matchers.computeIfAbsent(s, Suite::matcher0);
+	}
+
+	private static Fun<Node, Node[]> matcher0(String s) {
 		SewingBinder sb = new SewingBinder();
 		BiPredicate<BindEnv, Node> pred = sb.compileBind(parse(s));
 		List<Integer> indexList = new ArrayList<>();
