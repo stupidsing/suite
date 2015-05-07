@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import suite.Suite;
@@ -15,6 +16,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.Comparer;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
@@ -37,12 +39,12 @@ public class LazyFunInterpreter1 {
 	}
 
 	private static class Pair_ extends Node {
-		private Thunk_ first;
+		private Thunk_ first_;
 		private Thunk_ second;
 
-		private Pair_(Thunk_ left, Thunk_ right) {
-			this.first = left;
-			this.second = right;
+		private Pair_(Thunk_ first_, Thunk_ second) {
+			this.first_ = first_;
+			this.second = second;
 		}
 	}
 
@@ -105,20 +107,20 @@ public class LazyFunInterpreter1 {
 		df.put(Atom.TRUE.name, () -> Atom.TRUE);
 		df.put(Atom.FALSE.name, () -> Atom.FALSE);
 
-		df.put(TermOp.AND___.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
-		df.put(TermOp.EQUAL_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) == i(b)))));
-		df.put(TermOp.NOTEQ_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) != i(b)))));
-		df.put(TermOp.LE____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) <= i(b)))));
-		df.put(TermOp.LT____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) < i(b)))));
-		df.put(TermOp.GE____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) >= i(b)))));
-		df.put(TermOp.GT____.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(i(a) > i(b)))));
-		df.put(TermOp.PLUS__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) + i(b)))));
-		df.put(TermOp.MINUS_.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) - i(b)))));
-		df.put(TermOp.MULT__.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) * i(b)))));
-		df.put(TermOp.DIVIDE.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(i(a) / i(b)))));
+		df.put(TermOp.AND___.getName(), binary((a, b) -> new Pair_(a, b)));
+		df.put(TermOp.EQUAL_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) == 0)));
+		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) != 0)));
+		df.put(TermOp.LE____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) <= 0)));
+		df.put(TermOp.LT____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) < 0)));
+		df.put(TermOp.GE____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) >= 0)));
+		df.put(TermOp.GT____.getName(), binary((a, b) -> b(compare(a.get(), b.get()) > 0)));
+		df.put(TermOp.PLUS__.getName(), binary((a, b) -> Int.of(i(a) + i(b))));
+		df.put(TermOp.MINUS_.getName(), binary((a, b) -> Int.of(i(a) - i(b))));
+		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
+		df.put(TermOp.DIVIDE.getName(), binary((a, b) -> Int.of(i(a) / i(b))));
 
 		df.put(ERROR.name, error);
-		df.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first));
+		df.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first_));
 		df.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
@@ -197,6 +199,31 @@ public class LazyFunInterpreter1 {
 			result = frame -> () -> node;
 
 		return result;
+	}
+
+	private int compare(Node n0, Node n1) {
+		int t0 = n0 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
+		int t1 = n1 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
+		int c = t0 - t1;
+		if (c == 0)
+			switch (t0) {
+			case 0:
+				c = Comparer.comparer.compare(n0, n1);
+				break;
+			case 1:
+				Pair_ p0 = (Pair_) n0;
+				Pair_ p1 = (Pair_) n1;
+				c = c == 0 ? compare(p0.first_.get(), p1.first_.get()) : c;
+				c = c == 0 ? compare(p0.second.get(), p1.second.get()) : c;
+				break;
+			case 2:
+				c = System.identityHashCode(t0) - System.identityHashCode(t1);
+			}
+		return c;
+	}
+
+	private Thunk_ binary(BiFunction<Thunk_, Thunk_, Node> fun) {
+		return () -> new Fun_(a -> () -> new Fun_(b -> () -> fun.apply(a, b)));
 	}
 
 	private Atom b(boolean b) {
