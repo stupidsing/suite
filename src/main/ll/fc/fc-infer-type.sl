@@ -35,7 +35,7 @@ fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
 fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
-	:- fc-define-var-types .vvs .vvts .ue/.ue1
+	:- fc-define-var-types () .vvs .vvts .ue/.ue1
 	, .env1 = .ue1/.ve/.te
 	, fc-infer-var-types .vvts .env1 .tr0/.tr1
 	, fc-infer-type-rule .do .env1 .tr1/.trx .type
@@ -64,9 +64,9 @@ fc-infer-type-rule (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)
 ) .ue/.ve/.te .tr0/.trx .type
 	:- !
-	, fc-define-var-types .vvs .vvts .ue/.ue1
-	, fc-define-var-types .vvs .vvts .ve/.ve1
+	, fc-define-var-types () .vvs .vvts .ue/.ue1
 	, fc-infer-var-types .vvts .ue1/.ve/.te .tr0/.tr1
+	, fc-define-var-types SP .vvs .vvts .ve/.ve1
 	, fc-infer-type-rule .do .ue/.ve1/.te .tr1/.trx .type
 #
 fc-infer-type-rule (
@@ -123,19 +123,20 @@ fc-infer-type-rule .do .env .tr .type
 	:- (.do = PRAGMA _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
 	, fc-infer-type-rule .do1 .env .tr .type
 #
-fc-infer-type-rule (.tag .var) _/.ve/_ .tr0/.trx .type
+fc-infer-type-rule (.tag .var) _/.ve/_ .tr/.tr .type
 	:- once (.tag = NEW-VAR; .tag = VAR), (
 		fc-dict-get .ve .var/.varType
-		, !, .tr0 = (CLONE-TO-FROM-TYPES .type .varType, .trx)
+		, !, generalize .varType .type
 		; fc-error "Undefined variable" .var
 	)
 #
 
-fc-define-var-types (.var .value, .vvs) (.var .value .varType, .vvts) .ue0/.uex
-	:- fc-dict-add .var/.varType .ue0/.ue1
-	, fc-define-var-types .vvs .vvts .ue1/.uex
+fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
+	:- once (.sp = SP, specialize .varType0 .varType1; .varType0 = .varType1)
+	, fc-dict-add .var/.varType1 .ue0/.ue1
+	, fc-define-var-types .sp .vvs .vvts .ue1/.uex
 #
-fc-define-var-types () () .ue/.ue #
+fc-define-var-types _ () () .ue/.ue #
 
 fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
 	:- once (fc-infer-type-rule .value .env .tr0/.tr1 .varType
@@ -190,7 +191,6 @@ fc-sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
 #
 
 fc-resolve-easy-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
-fc-resolve-easy-type-rule (CLONE-TO-FROM-TYPES _ .t) :- bound .t #
 fc-resolve-easy-type-rule (TYPE-IN-TYPES _) #
 
 -- When resolving types:
@@ -208,9 +208,6 @@ fc-resolve-type-rules1 (DUMP .d, .tr1)
 #
 fc-resolve-type-rules1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
 	:- !, fc-resolve-sub-super-types .te .t0 .t1, fc-resolve-type-rules1 .tr1
-#
-fc-resolve-type-rules1 (CLONE-TO-FROM-TYPES .t0 .t1, .tr1)
-	:- !, clone .t1 .t0, fc-resolve-type-rules1 .tr1
 #
 fc-resolve-type-rules1 (TYPE-IN-TYPES .t .ts, .tr1)
 	:- !, member .ts .t, fc-resolve-type-rules1 .tr1
