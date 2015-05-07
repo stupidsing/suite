@@ -3,7 +3,7 @@
 --
 -- Environment consists of:
 -- .ue - dictionary of inside variables / their corresponding types
--- .ve - dictionary of outside variables / their corresponding types
+-- .ve - dictionary of outside variables / their corresponding types, specialized
 -- .te - list of types / their corresponding belonging classes
 -- .tr - type deduction rule to be assembled
 --
@@ -21,8 +21,8 @@
 --   Represented internally as (GENERIC-OF (VAR t) FUN-OF (VAR t) (VAR t)).
 --   Resolved by SUB-SUPER-TYPES.
 -- - Generic type caused by not enough variable information during type inference.
---   Any variable usage, in case having unbound variables, will also be cloned.
---   Resolved by CLONE-TO-FROM-TYPES.
+--   They are specialized to bounded type node and put into the outside variable
+--   list, and generalized back when being used.
 --
 
 fc-infer-type-rules () _ .tr/.tr () :- ! #
