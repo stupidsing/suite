@@ -74,7 +74,7 @@ key =>
 		let rev := reverse {list} >>
 		reverse {tail {rev}}, head {rev}
 	>>
-	define merge := ([:t, 23-tree {:t}] -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
+	define merge := (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
 	left => right =>
 		if (length {left} + length {right} >= max-branches) then
 			if (length {left} > min-branches) then
