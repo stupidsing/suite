@@ -14,17 +14,12 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class LazyFunInterpreter1 {
-
-	private Atom ERROR = Atom.of("error");
-	private Atom FST__ = Atom.of("fst");
-	private Atom SND__ = Atom.of("snd");
 
 	public interface Thunk_ {
 		public Node get();
@@ -119,9 +114,9 @@ public class LazyFunInterpreter1 {
 		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
 		df.put(TermOp.DIVIDE.getName(), binary((a, b) -> Int.of(i(a) / i(b))));
 
-		df.put(ERROR.name, error);
-		df.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first_));
-		df.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
+		df.put("error", error);
+		df.put("fst", () -> new Fun_(in -> ((Pair_) in.get()).first_));
+		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 
@@ -182,18 +177,12 @@ public class LazyFunInterpreter1 {
 			Fun<Frame, Thunk_> then_ = lazy0(mapping, m[1]);
 			Fun<Frame, Thunk_> else_ = lazy0(mapping, m[2]);
 			result = frame -> (if_.apply(frame).get() == Atom.TRUE ? then_ : else_).apply(frame);
-		} else if ((tree = Tree.decompose(node)) != null) {
-			Operator operator = tree.getOperator();
-			Fun<Frame, Thunk_> getter = mapping.getter(Atom.of(operator.getName()));
-			Fun<Frame, Thunk_> p0 = lazy0(mapping, tree.getLeft());
-			Fun<Frame, Thunk_> p1 = lazy0(mapping, tree.getRight());
-			result = frame -> {
-				Thunk_ r0 = getter.apply(frame);
-				Thunk_ r1 = ((Fun_) r0.get()).fun.apply(p0.apply(frame));
-				Thunk_ r2 = ((Fun_) r1.get()).fun.apply(p1.apply(frame));
-				return r2;
-			};
-		} else if (node instanceof Atom)
+		} else if ((tree = Tree.decompose(node)) != null)
+			return lazy0(mapping, Suite.substitute(".0 {.1} {.2}" //
+					, Atom.of(tree.getOperator().getName()) //
+					, tree.getLeft() //
+					, tree.getRight()));
+		else if (node instanceof Atom)
 			result = mapping.getter(node);
 		else
 			result = frame -> () -> node;
