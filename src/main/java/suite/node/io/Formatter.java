@@ -1,12 +1,9 @@
 package suite.node.io;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import suite.adt.IdentityKey;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Data;
@@ -19,8 +16,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Chars;
-import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.ParseUtil;
 import suite.util.Util;
 
@@ -38,46 +33,6 @@ public class Formatter {
 	private boolean isDump;
 	private Set<Integer> set = new HashSet<>();
 	private StringBuilder sb = new StringBuilder();
-
-	/**
-	 * Converts a node into graph representation. The nodes link to other nodes
-	 * via an integer key.
-	 */
-	private static class Graphizer {
-		private int count;
-		private Map<IdentityKey<Node>, Integer> ids = new HashMap<>();
-		private StringBuilder sb = new StringBuilder();
-
-		private int graphize(Node node) {
-			IdentityKey<Node> key = IdentityKey.of(node.finalNode());
-			Integer id = ids.get(key);
-			Tree tree;
-
-			if (id == null) {
-				ids.put(key, id = count++);
-				String content;
-
-				if (node instanceof Dict)
-					content = Read.from(((Dict) node).map.entrySet()) //
-							.map(e -> graphize(e.getKey()) + ":" + graphize(e.getValue()) + ", ") //
-							.collect(As.joined("dict(", ", ", ")"));
-				else if ((tree = Tree.decompose(node)) != null) {
-					int id0 = graphize(tree.getLeft());
-					int id1 = graphize(tree.getRight());
-					content = "tree(" + id0 + tree.getOperator().getName() + id1 + ")";
-				} else if (node instanceof Tuple)
-					content = Read.from(((Tuple) node).nodes) //
-							.map(n -> graphize(n) + ", ") //
-							.collect(As.joined("tuple(", ", ", ")"));
-				else
-					content = dump(node);
-
-				sb.append(id + " = " + content + "\n");
-			}
-
-			return id;
-		}
-	}
 
 	/**
 	 * Converts a node into an ugly tree representation. Children are dumped
@@ -123,9 +78,9 @@ public class Formatter {
 	}
 
 	public static String graphize(Node node) {
-		Graphizer graphizer = new Graphizer();
-		int fn = graphizer.graphize(node);
-		return graphizer.sb.toString() + "return(" + fn + ")\n";
+		Grapher grapher = new Grapher();
+		int fn = grapher.graph(node);
+		return grapher.toString() + "return(" + fn + ")\n";
 	}
 
 	public static String treeize(Node node) {

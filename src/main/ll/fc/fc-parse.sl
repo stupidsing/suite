@@ -226,10 +226,12 @@ fc-parse-type .do (PAIR-OF .type0 .type1)
 	, fc-parse-type .t0 .type0
 	, fc-parse-type .t1 .type1
 #
-fc-parse-type (.typeVar => .type) (GENERIC-OF .typeVar1 .type1)
-	:- !
+fc-parse-type (.typeVar => .type) .type2
+	:- bound .typeVar
+	, !
 	, fc-parse-type .type .type1
 	, fc-parse-type .typeVar .typeVar1
+	, replace .typeVar1 _ .type1 .type2
 #
 -- Keeps contained in class definition for tuple matching.
 fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))

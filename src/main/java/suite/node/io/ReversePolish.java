@@ -20,6 +20,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
+import suite.node.io.Rewriter.ReadType;
 import suite.util.Util;
 
 public class ReversePolish {
@@ -53,7 +54,7 @@ public class ReversePolish {
 					Node value = deque.pop();
 					children.add(Pair.of(key, value));
 				}
-				n = new NodeWrite(a[0] //
+				n = new NodeWrite(ReadType.valueOf(a[0]) //
 						, !Util.stringEquals(a[1], "null") ? Suite.parse(a[1]) : null //
 						, TermOp.valueOf(a[2]) //
 						, children).node;

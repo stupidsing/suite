@@ -11,15 +11,11 @@
 -- that do not need type specialization.
 -- Outside variables are local variables that require type specialization.
 --
--- Kinds of generic types:
+-- Notes about generic types:
 -- - Generic type class, usually used in abstract data structures.
 --   Written like B-TREE {:t}.
 --   Represented internally as (CLASS (PARAMETERIZED (VAR t) B-TREE)).
 --   Resolved by binding the type structures.
--- - Generic type, usually used in method signatures.
---   Written like :t => :t -> :t.
---   Represented internally as (GENERIC-OF (VAR t) FUN-OF (VAR t) (VAR t)).
---   Resolved by SUB-SUPER-TYPES.
 -- - Generic type caused by not enough variable information during type inference.
 --   They are specialized to bounded type node and put into the outside variable
 --   list, and generalized back when being used.
@@ -126,13 +122,13 @@ fc-infer-type-rule .do .env .tr .type
 fc-infer-type-rule (.tag .var) _/.ve/_ .tr/.tr .type
 	:- once (.tag = NEW-VAR; .tag = VAR), (
 		fc-dict-get .ve .var/.varType
-		, !, generalize .varType .type
+		, !, graph.generalize .varType .type
 		; fc-error "Undefined variable" .var
 	)
 #
 
 fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
-	:- once (.sp = SP, specialize .varType0 .varType1; .varType0 = .varType1)
+	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
 	, fc-dict-add .var/.varType1 .ue0/.ue1
 	, fc-define-var-types .sp .vvs .vvts .ue1/.uex
 #
@@ -230,8 +226,6 @@ fc-sub-super-type-pair .te .type1 .class1 -- reduce to type classes
 	, fc-instantiate-type .typeVars .type/.class .type1/.class1
 #
 fc-sub-super-type-pair .te .t0 .t1 :- bound .t0, fc-sub-super-type-pair0 .te .t0 .t1 #
-fc-sub-super-type-pair _ .t0 .t1 :- fc-generic-specific-pair .t0 .t1 #
-fc-sub-super-type-pair _ .t0 .t1 :- fc-generic-specific-pair .t1 .t0 #
 
 -- Morph children types to their supers
 fc-sub-super-type-pair0 .te (FUN-OF .it0 .ot) (FUN-OF .it1 .ot)
@@ -248,11 +242,6 @@ fc-sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .st0 .t1)
 #
 fc-sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .t0 .st1)
 	:- fc-sub-super-type-pair .te .t1 .st1
-#
-
-fc-generic-specific-pair (GENERIC-OF .typeVar .type) .t1
-	:- bound .typeVar
-	, replace .typeVar _ .type .t1
 #
 
 fc-instantiate-type () .tc .tc #

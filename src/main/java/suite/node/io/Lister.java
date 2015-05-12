@@ -7,10 +7,10 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.Rewriter.NodeRead;
+import suite.node.io.Rewriter.ReadType;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Util;
 
 /**
  * Lists node contents line-by-line for human-readable purpose.
@@ -35,11 +35,11 @@ public class Lister {
 		NodeRead nr = new NodeRead(node);
 		Streamlet<IList<Node>> st;
 
-		if (Util.stringEquals(nr.type, "list") || Util.stringEquals(nr.type, "tuple"))
+		if (nr.type == ReadType.LIST || nr.type == ReadType.TUPLE)
 			st = Read.from(nr.children) //
 					.index((i, p) -> leaves(p.t1, IList.cons(Int.of(i), prefix))) //
 					.collect(As.concat());
-		else if (!Util.stringEquals(nr.type, "term"))
+		else if (nr.type != ReadType.TERM)
 			st = Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
 		else
 			st = Read.from(Arrays.asList(IList.cons(nr.terminal, prefix)));

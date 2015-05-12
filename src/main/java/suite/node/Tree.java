@@ -108,8 +108,12 @@ public class Tree extends Node {
 			return false;
 	}
 
-	// This method violates the immutable property of the tree.
-	// Only used by cloner for performance purpose.
+	// These methods violate the immutable property of the tree. Should only
+	// used by cloner for performance purpose.
+	public static void forceSetLeft(Tree tree, Node left) {
+		tree.left = left;
+	}
+
 	public static void forceSetRight(Tree tree, Node right) {
 		tree.right = right;
 	}

@@ -20,13 +20,17 @@ import suite.util.FunUtil.Fun;
 
 public class Rewriter {
 
+	public enum ReadType {
+		DICT, LIST, TERM, TREE, TUPLE
+	};
+
 	public static class NodeRead {
 		private Node LEFT_ = Atom.of("l");
 		private Node RIGHT = Atom.of("r");
 
 		private Comparer comparer = new Comparer();
 
-		public final String type;
+		public final ReadType type;
 		public final Node terminal;
 		public final Operator op;
 		public final List<Pair<Node, Node>> children;
@@ -36,7 +40,7 @@ public class Rewriter {
 			Tree tree;
 			if (node instanceof Dict) {
 				Map<Node, Reference> map = ((Dict) node).map;
-				type = "dict";
+				type = ReadType.DICT;
 				terminal = null;
 				op = null;
 				children = Read.from(map) //
@@ -45,25 +49,25 @@ public class Rewriter {
 						.toList();
 			} else if (Tree.isList(node, op0 = TermOp.AND___) || Tree.isList(node, op0 = TermOp.OR____)) {
 				Streamlet<Node> st = Read.from(Tree.iter(node, op0));
-				type = "list";
+				type = ReadType.LIST;
 				terminal = null;
 				op = op0;
 				children = st.map(n -> Pair.<Node, Node> of(Atom.NIL, n)).toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Pair<Node, Node> p0 = Pair.of(LEFT_, tree.getLeft());
 				Pair<Node, Node> p1 = Pair.of(RIGHT, tree.getRight());
-				type = "tree";
+				type = ReadType.TREE;
 				terminal = null;
 				op = tree.getOperator();
 				children = Arrays.asList(p0, p1);
 			} else if (node instanceof Tuple) {
 				List<Node> nodes = ((Tuple) node).nodes;
-				type = "tuple";
+				type = ReadType.TUPLE;
 				terminal = null;
 				op = null;
 				children = Read.from(nodes).map(n -> Pair.<Node, Node> of(Atom.NIL, n)).toList();
 			} else {
-				type = "term";
+				type = ReadType.TERM;
 				terminal = node;
 				op = null;
 				children = Collections.emptyList();
@@ -74,24 +78,24 @@ public class Rewriter {
 	public static class NodeWrite {
 		public final Node node;
 
-		public NodeWrite(String type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
+		public NodeWrite(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
 			switch (type) {
-			case "dict":
+			case DICT:
 				node = new Dict(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
 				break;
-			case "list":
+			case LIST:
 				Node n = Atom.NIL;
 				for (int i = children.size() - 1; i >= 0; i--)
 					n = Tree.of(op, children.get(i).t1, n);
 				node = n;
 				break;
-			case "term":
+			case TERM:
 				node = terminal;
 				break;
-			case "tree":
+			case TREE:
 				node = Tree.of(op, children.get(0).t1, children.get(1).t1);
 				break;
-			case "tuple":
+			case TUPLE:
 				node = new Tuple(Read.from(children).map(p -> p.t1).toList());
 				break;
 			default:

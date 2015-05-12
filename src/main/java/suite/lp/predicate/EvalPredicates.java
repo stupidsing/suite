@@ -22,6 +22,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.Grapher;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
@@ -101,6 +102,20 @@ public class EvalPredicates {
 	};
 
 	public BuiltinPredicate generalize = PredicateUtil.fun(SewingGeneralizer::generalize);
+
+	public BuiltinPredicate graphGeneralize = PredicateUtil.fun(n -> {
+		Grapher grapher = new Grapher();
+		int id = grapher.graph(n);
+		grapher.generalize();
+		return grapher.ungraph(id);
+	});
+
+	public BuiltinPredicate graphSpecialize = PredicateUtil.fun(n -> {
+		Grapher grapher = new Grapher();
+		int id = grapher.graph(n);
+		grapher.specialize();
+		return grapher.ungraph(id);
+	});
 
 	public BuiltinPredicate hash = PredicateUtil.fun(n -> Int.of(n.hashCode()));
 
