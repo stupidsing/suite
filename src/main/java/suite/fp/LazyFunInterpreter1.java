@@ -146,32 +146,36 @@ public class LazyFunInterpreter1 {
 
 			Mapping mapping1 = Read.from(vars).fold(mapping, Mapping::extend);
 			List<BiConsumer<Frame, Thunk_>> setters = Read.from(vars).map(mapping1::setter).toList();
-			List<Fun<Frame, Thunk_>> values = Read.from(arrays).map(m1 -> lazy0(mapping1, m1[1])).toList();
+			List<Fun<Frame, Thunk_>> values_ = Read.from(arrays).map(m1 -> lazy0(mapping1, m1[1])).toList();
 			Fun<Frame, Thunk_> expr = lazy0(mapping1, m[1]);
 
 			result = frame -> {
-				Thunk_ val[] = new Thunk_[size];
+				List<Thunk_> values = new ArrayList<Thunk_>(size);
 				for (int i = 0; i < size; i++) {
 					int i1 = i;
-					setters.get(i).accept(frame, () -> val[i1].get());
+					setters.get(i).accept(frame, () -> values.get(i1).get());
 				}
 				for (int i = 0; i < size; i++)
-					val[i] = values.get(i).apply(frame)::get;
+					values.add(values_.get(i).apply(frame)::get);
 				return expr.apply(frame);
 			};
 		} else if ((m = Suite.matcher(".0 => .1").apply(node)) != null) {
 			Mapping mapping1 = new Mapping(mapping).extend(m[0]);
 			BiConsumer<Frame, Thunk_> setter = mapping1.setter(m[0]);
-			Fun<Frame, Thunk_> value = lazy0(mapping1, m[1]);
+			Fun<Frame, Thunk_> v0 = lazy0(mapping1, m[1]);
 			result = frame -> () -> new Fun_(in -> {
 				Frame frame1 = mapping1.frame(frame);
 				setter.accept(frame1, in);
-				return value.apply(frame1);
+				return v0.apply(frame1);
 			});
 		} else if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
-			Fun<Frame, Thunk_> fun = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> param = lazy0(mapping, m[1]);
-			result = frame -> ((Fun_) fun.apply(frame).get()).fun.apply(param.apply(frame));
+			Fun<Frame, Thunk_> fun_ = lazy0(mapping, m[0]);
+			Fun<Frame, Thunk_> param_ = lazy0(mapping, m[1]);
+			result = frame -> {
+				Thunk_ fun = fun_.apply(frame);
+				Thunk_ param = param_.apply(frame);
+				return ((Fun_) fun.get()).fun.apply(param);
+			};
 		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null) {
 			Fun<Frame, Thunk_> if_ = lazy0(mapping, m[0]);
 			Fun<Frame, Thunk_> then_ = lazy0(mapping, m[1]);
