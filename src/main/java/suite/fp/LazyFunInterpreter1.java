@@ -162,11 +162,11 @@ public class LazyFunInterpreter1 {
 		} else if ((m = Suite.matcher(".0 => .1").apply(node)) != null) {
 			Mapping mapping1 = new Mapping(mapping).extend(m[0]);
 			BiConsumer<Frame, Thunk_> setter = mapping1.setter(m[0]);
-			Fun<Frame, Thunk_> v0 = lazy0(mapping1, m[1]);
+			Fun<Frame, Thunk_> value_ = lazy0(mapping1, m[1]);
 			result = frame -> () -> new Fun_(in -> {
 				Frame frame1 = mapping1.frame(frame);
 				setter.accept(frame1, in);
-				return v0.apply(frame1);
+				return value_.apply(frame1);
 			});
 		} else if ((m = Suite.matcher(".0 {.1}").apply(node)) != null) {
 			Fun<Frame, Thunk_> fun_ = lazy0(mapping, m[0]);
