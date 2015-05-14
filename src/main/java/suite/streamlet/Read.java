@@ -47,17 +47,17 @@ public class Read {
 
 	public static Streamlet<String> lines(File file) throws FileNotFoundException {
 		InputStream is = new FileInputStream(file);
-		return lines(is).closeAtEnd(is);
+		return new Streamlet<>(() -> lines(is).closeAtEnd(is));
 	}
 
-	public static Streamlet<String> lines(InputStream is) {
+	public static Outlet<String> lines(InputStream is) {
 		Reader reader = new InputStreamReader(is, FileUtil.charset);
 		return lines(reader).closeAtEnd(reader);
 	}
 
-	public static Streamlet<String> lines(Reader reader) {
+	public static Outlet<String> lines(Reader reader) {
 		BufferedReader br = new BufferedReader(reader);
-		return from(() -> {
+		return new Outlet<>(() -> {
 			try {
 				return br.readLine();
 			} catch (IOException ex) {
