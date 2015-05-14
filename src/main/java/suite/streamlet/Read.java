@@ -21,7 +21,7 @@ import suite.util.To;
 public class Read {
 
 	public static <T> Streamlet<T> empty() {
-		return new Streamlet<>(() -> null);
+		return Streamlet.from(() -> null);
 	}
 
 	public static <T> Streamlet<T> from(Iterable<T> col) {
@@ -29,11 +29,11 @@ public class Read {
 	}
 
 	public static <K, V> Streamlet<Pair<K, V>> from(Map<K, V> map) {
-		return Read.from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
+		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
 	}
 
 	public static <T> Streamlet<T> from(Source<T> source) {
-		return new Streamlet<>(source);
+		return Streamlet.from(source);
 	}
 
 	@SafeVarargs

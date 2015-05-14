@@ -1,11 +1,8 @@
 package suite.streamlet;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,172 +11,105 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import suite.adt.Pair;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
-import suite.util.To;
-import suite.util.Util;
 
-/**
- * Implement functional structures using class methods (instead of static
- * methods in class FunUtil), just for easier code completion in source editor.
- *
- * @author ywsing
- */
 public class Streamlet<T> implements Iterable<T> {
 
-	private Source<T> source;
+	private Source<Outlet<T>> in;
 
-	private static <T> Streamlet<T> st(Source<T> source) {
-		return new Streamlet<>(source);
+	public static <T> Streamlet<T> from(Source<T> source) {
+		return streamlet(() -> new Outlet<>(source));
 	}
 
-	public Streamlet(Source<T> source) {
-		this.source = source;
+	private static <T> Streamlet<T> streamlet(Source<Outlet<T>> in) {
+		return new Streamlet<>(in);
+	}
+
+	public Streamlet(Source<Outlet<T>> in) {
+		this.in = in;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return FunUtil.iterator(source);
+		return spawn().iterator();
 	}
 
 	public <R extends Collection<? super T>> R collect(Source<R> source) {
-		R r = source.source();
-		T t;
-		while ((t = next()) != null)
-			r.add(t);
-		return r;
+		return spawn().collect(source);
 	}
 
 	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
-		T t;
-		while ((t = next()) != null)
-			pair.t0.sink(t);
-		return pair.t1.source();
+		return spawn().collect(pair);
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
-		return st(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+		return streamlet(() -> spawn().concatMap(t -> fun.apply(t).spawn()));
 	}
 
 	public Streamlet<T> closeAtEnd(Closeable c) {
-		return st(() -> {
-			T next = next();
-			if (next == null)
-				Util.closeQuietly(c);
-			return next;
+		return streamlet(() -> {
+			Outlet<T> in = spawn();
+			in.closeAtEnd(c);
+			return in;
 		});
 	}
 
 	public Streamlet<T> cons(T t) {
-		return st(FunUtil.cons(t, source));
+		return streamlet(() -> spawn().cons(t));
 	}
 
 	public int count() {
-		int i = 0;
-		while (next() != null)
-			i++;
-		return i;
+		return spawn().count();
 	}
 
-	public <U, R> Streamlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
-		return st(new Source<R>() {
-			private T t;
-			private int index = list.size();
-
-			public R source() {
-				if (index == list.size()) {
-					index = 0;
-					t = next();
-				}
-				return fun.apply(t, list.get(index++));
-			}
-		});
+	public <U, R> Streamlet<R> cross(Streamlet<U> st1, BiFunction<T, U, R> fun) {
+		return streamlet(() -> spawn().concatMap(t -> st1.spawn().map(t1 -> fun.apply(t, t1))));
 	}
 
 	public Streamlet<T> distinct() {
-		Set<T> set = new HashSet<>();
-		return st(() -> {
-			T t;
-			while ((t = next()) != null && !set.add(t))
-				;
-			return t;
-		});
+		return streamlet(() -> spawn().distinct());
 	}
 
 	public Streamlet<T> drop(int n) {
-		boolean isAvailable = true;
-		while (n > 0 && (isAvailable &= next() != null))
-			n--;
-		return isAvailable ? this : Read.empty();
+		return streamlet(() -> spawn().drop(n));
 	}
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
-		T t;
-		while ((t = next()) != null)
-			init = fun.apply(init, t);
-		return init;
+		return spawn().fold(init, fun);
 	}
 
 	public void sink(Sink<T> sink) {
-		T t;
-		while ((t = next()) != null)
-			sink.sink(t);
+		spawn().sink(sink);
 	}
 
 	public <R> Streamlet<R> index(BiFunction<Integer, T, R> fun) {
-		return st(new Source<R>() {
-			private int i = 0;
-
-			public R source() {
-				T t = next();
-				return t != null ? fun.apply(i++, t) : null;
-			}
-		});
+		return streamlet(() -> spawn().index(fun));
 	}
 
 	public boolean isAll(Predicate<T> pred) {
-		T t;
-		while ((t = source.source()) != null)
-			if (!pred.test(t))
-				return false;
-		return true;
+		return spawn().isAll(pred);
 	}
 
 	public boolean isAny(Predicate<T> pred) {
-		T t;
-		while ((t = source.source()) != null)
-			if (pred.test(t))
-				return true;
-		return false;
+		return spawn().isAny(pred);
 	}
 
 	public <O> Streamlet<O> map(Fun<T, O> fun) {
-		return st(FunUtil.map(fun, source));
+		return streamlet(() -> spawn().map(fun));
 	}
 
 	public T min(Comparator<T> comparator) {
-		T t = minOrNull(comparator);
-		if (t != null)
-			return t;
-		else
-			throw new RuntimeException("No result");
+		return spawn().min(comparator);
 	}
 
 	public T minOrNull(Comparator<T> comparator) {
-		T t = next(), t1;
-		if (t != null) {
-			while ((t1 = next()) != null)
-				if (comparator.compare(t, t1) > 0)
-					t = t1;
-			return t;
-		} else
-			return null;
+		return spawn().minOrNull(comparator);
 	}
 
 	public Streamlet<T> filter(Fun<T, Boolean> fun) {
-		return st(FunUtil.filter(fun, source));
+		return streamlet(() -> spawn().filter(fun));
 	}
 
 	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
@@ -187,83 +117,55 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Streamlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
-		return Read.from(map);
+		return streamlet(() -> spawn().groupBy(keyFun, valueFun));
 	}
 
 	public T next() {
-		return source.source();
+		return spawn().next();
+	}
+
+	public Outlet<T> outlet() {
+		return spawn();
 	}
 
 	public Streamlet<T> reverse() {
-		return Read.from(Util.reverse(toList()));
+		return streamlet(() -> spawn().reverse());
 	}
 
 	public Streamlet<T> sort(Comparator<T> comparator) {
-		return st(To.source(Util.sort(toList(), comparator)));
-	}
-
-	public Streamlet<Streamlet<T>> split(Fun<T, Boolean> fun) {
-		return st(FunUtil.map(Streamlet<T>::new, FunUtil.split(source, fun)));
+		return streamlet(() -> spawn().sort(comparator));
 	}
 
 	public Streamlet<T> take(int n) {
-		return st(new Source<T>() {
-			private int count = n;
-
-			public T source() {
-				return count-- > 0 ? next() : null;
-			}
-		});
+		return streamlet(() -> spawn().take(n));
 	}
 
 	public List<T> toList() {
-		return collect(() -> new ArrayList<>());
+		return spawn().toList();
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
-		return map;
+		return spawn().toListMap(keyFun, valueFun);
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, V> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null) {
-			K key = keyFun.apply(t);
-			if (map.put(key, valueFun.apply(t)) != null)
-				throw new RuntimeException("Duplicate value for key " + key);
-		}
-		return map;
+		return spawn().toMap(keyFun, valueFun);
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, Set<V>> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new HashSet<>()).add(valueFun.apply(t));
-		return map;
+		return spawn().toSetMap(keyFun, valueFun);
 	}
 
 	public Set<T> toSet() {
-		return collect(() -> new HashSet<>());
+		return spawn().toSet();
 	}
 
 	public T uniqueResult() {
-		T t = next();
-		if (t != null)
-			if (next() == null)
-				return t;
-			else
-				throw new RuntimeException("More than one result");
-		else
-			throw new RuntimeException("No result");
+		return spawn().uniqueResult();
+	}
+
+	private Outlet<T> spawn() {
+		return in.source();
 	}
 
 }

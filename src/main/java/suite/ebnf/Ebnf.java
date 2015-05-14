@@ -198,6 +198,7 @@ public class Ebnf {
 		List<Pair<String, String>> pairs = Read.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
+				.outlet() //
 				.split(line -> !line.startsWith(" ")) //
 				.map(st -> st.fold("", String::concat)) //
 				.map(line -> Util.split2(line, " ::= ")) //
