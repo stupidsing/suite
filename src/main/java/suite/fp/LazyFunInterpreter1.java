@@ -116,6 +116,7 @@ public class LazyFunInterpreter1 {
 
 		df.put("error", error);
 		df.put("fst", () -> new Fun_(in -> ((Pair_) in.get()).first_));
+		df.put("if", () -> new Fun_(a -> () -> new Fun_(b -> () -> new Fun_(c -> a.get() == Atom.TRUE ? b : c))));
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
@@ -174,14 +175,11 @@ public class LazyFunInterpreter1 {
 			result = frame -> {
 				Thunk_ fun = fun_.apply(frame);
 				Thunk_ param = param_.apply(frame);
-				return ((Fun_) fun.get()).fun.apply(param);
+				return () -> ((Fun_) fun.get()).fun.apply(param).get();
 			};
-		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null) {
-			Fun<Frame, Thunk_> if_ = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> then_ = lazy0(mapping, m[1]);
-			Fun<Frame, Thunk_> else_ = lazy0(mapping, m[2]);
-			result = frame -> (if_.apply(frame).get() == Atom.TRUE ? then_ : else_).apply(frame);
-		} else if ((tree = Tree.decompose(node)) != null)
+		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null)
+			return lazy0(mapping, Suite.substitute("if {.0} {.1} {.2}", m[0], m[1], m[2]));
+		else if ((tree = Tree.decompose(node)) != null)
 			return lazy0(mapping, Suite.substitute(".0 {.1} {.2}" //
 					, Atom.of(tree.getOperator().getName()) //
 					, tree.getLeft() //
