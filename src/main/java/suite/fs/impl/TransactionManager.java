@@ -71,7 +71,7 @@ public class TransactionManager<Key, Value> {
 
 		private Streamlet<Key> acquireReads(Streamlet<Key> st) {
 			return Read.from(() -> {
-				Key key = st.next();
+				Key key = st.first();
 				if (key != null)
 					acquireRead(key);
 				return key;

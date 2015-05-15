@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.immutable.IPointer;
-import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class IndexedSourceReader<T> {
 
 	private static int maxBuffers = 32;
 
-	private Streamlet<T> streamlet;
+	private Source<T> source;
 	private int offset = 0;
 	private List<T> queue = new ArrayList<>();
 
-	public static <T> IPointer<T> of(Streamlet<T> st) {
+	public static <T> IPointer<T> of(Source<T> st) {
 		return new IndexedSourceReader<>(st).pointer(0);
 	}
 
-	private IndexedSourceReader(Streamlet<T> streamlet) {
-		this.streamlet = streamlet;
+	private IndexedSourceReader(Source<T> Source) {
+		this.source = Source;
 	}
 
 	private IPointer<T> pointer(int position) {
@@ -28,7 +28,7 @@ public class IndexedSourceReader<T> {
 			public T head() {
 				synchronized (IndexedSourceReader.this) {
 					while (position - offset >= queue.size()) {
-						T t = streamlet != null ? streamlet.next() : null;
+						T t = source != null ? source.source() : null;
 
 						if (t != null) {
 							int size1 = queue.size() + 1;
@@ -41,7 +41,7 @@ public class IndexedSourceReader<T> {
 
 							queue.add(t);
 						} else {
-							streamlet = null;
+							source = null;
 							break;
 						}
 					}

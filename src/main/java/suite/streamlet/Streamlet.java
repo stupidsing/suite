@@ -112,6 +112,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
+	public T first() {
+		return spawn().next();
+	}
+
 	public <K, V> Streamlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
 		return groupBy(keyFun, value -> value);
 	}
@@ -120,16 +124,16 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().groupBy(keyFun, valueFun));
 	}
 
-	public T next() {
-		return spawn().next();
-	}
-
 	public Outlet<T> outlet() {
 		return spawn();
 	}
 
 	public Streamlet<T> reverse() {
 		return streamlet(() -> spawn().reverse());
+	}
+
+	public Source<T> source() {
+		return spawn().source();
 	}
 
 	public Streamlet<T> sort(Comparator<T> comparator) {

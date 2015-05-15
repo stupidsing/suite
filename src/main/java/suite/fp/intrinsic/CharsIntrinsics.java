@@ -10,7 +10,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.primitive.Chars;
 import suite.primitive.CharsUtil;
-import suite.streamlet.Streamlet;
+import suite.streamlet.Outlet;
 import suite.util.To;
 
 public class CharsIntrinsics {
@@ -33,11 +33,11 @@ public class CharsIntrinsics {
 
 	public Intrinsic concatSplit = (callback, inputs) -> {
 		Chars delim = Data.get(inputs.get(0));
-		Streamlet<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
-		Streamlet<Chars> s1 = s0.map(n -> Data.<Chars> get(callback.yawn(n)));
-		Streamlet<Chars> s2 = CharsUtil.concatSplit(s1, delim);
-		Streamlet<Node> s3 = s2.map(Data<Chars>::new);
-		IPointer<Node> p = IndexedSourceReader.of(s3);
+		Outlet<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
+		Outlet<Chars> s1 = s0.map(n -> Data.<Chars> get(callback.yawn(n)));
+		Outlet<Chars> s2 = CharsUtil.concatSplit(s1, delim);
+		Outlet<Node> s3 = s2.map(Data<Chars>::new);
+		IPointer<Node> p = IndexedSourceReader.of(s3.source());
 		return Intrinsics.drain(callback, p);
 	};
 

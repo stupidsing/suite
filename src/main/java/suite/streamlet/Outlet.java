@@ -2,6 +2,7 @@ package suite.streamlet;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,15 +32,20 @@ public class Outlet<T> implements Iterable<T> {
 
 	private Source<T> source;
 
-	private static <T> Outlet<T> empty() {
-		return outlet(() -> null);
+	public static <T> Outlet<T> empty() {
+		return from(FunUtil.nullSource());
 	}
 
-	private static <T> Outlet<T> outlet(Iterable<T> iter) {
-		return outlet(To.source(iter));
+	@SafeVarargs
+	public static <T> Outlet<T> from(T... col) {
+		return from(Arrays.asList(col));
 	}
 
-	private static <T> Outlet<T> outlet(Source<T> source) {
+	public static <T> Outlet<T> from(Iterable<T> col) {
+		return from(To.source(col));
+	}
+
+	public static <T> Outlet<T> from(Source<T> source) {
 		return new Outlet<>(source);
 	}
 
@@ -68,11 +74,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <O> Outlet<O> concatMap(Fun<T, Outlet<O>> fun) {
-		return outlet(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
+		return from(FunUtil.concat(FunUtil.map(t -> fun.apply(t).source, source)));
 	}
 
 	public Outlet<T> closeAtEnd(Closeable c) {
-		return outlet(() -> {
+		return from(() -> {
 			T next = next();
 			if (next == null)
 				Util.closeQuietly(c);
@@ -81,7 +87,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> cons(T t) {
-		return outlet(FunUtil.cons(t, source));
+		return from(FunUtil.cons(t, source));
 	}
 
 	public int count() {
@@ -92,7 +98,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <U, R> Outlet<R> cross(List<U> list, BiFunction<T, U, R> fun) {
-		return outlet(new Source<R>() {
+		return from(new Source<R>() {
 			private T t;
 			private int index = list.size();
 
@@ -108,7 +114,7 @@ public class Outlet<T> implements Iterable<T> {
 
 	public Outlet<T> distinct() {
 		Set<T> set = new HashSet<>();
-		return outlet(() -> {
+		return from(() -> {
 			T t;
 			while ((t = next()) != null && !set.add(t))
 				;
@@ -137,7 +143,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <R> Outlet<R> index(BiFunction<Integer, T, R> fun) {
-		return outlet(new Source<R>() {
+		return from(new Source<R>() {
 			private int i = 0;
 
 			public R source() {
@@ -164,7 +170,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <O> Outlet<O> map(Fun<T, O> fun) {
-		return outlet(FunUtil.map(fun, source));
+		return from(FunUtil.map(fun, source));
 	}
 
 	public T min(Comparator<T> comparator) {
@@ -187,7 +193,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> filter(Fun<T, Boolean> fun) {
-		return outlet(FunUtil.filter(fun, source));
+		return from(FunUtil.filter(fun, source));
 	}
 
 	public <K, V> Outlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
@@ -199,7 +205,7 @@ public class Outlet<T> implements Iterable<T> {
 		T t;
 		while ((t = next()) != null)
 			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
-		return outlet(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
+		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
 	}
 
 	public T next() {
@@ -207,19 +213,23 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Outlet<T> reverse() {
-		return outlet(Util.reverse(toList()));
+		return from(Util.reverse(toList()));
+	}
+
+	public Source<T> source() {
+		return source;
 	}
 
 	public Outlet<T> sort(Comparator<T> comparator) {
-		return outlet(Util.sort(toList(), comparator));
+		return from(Util.sort(toList(), comparator));
 	}
 
 	public Outlet<Outlet<T>> split(Fun<T, Boolean> fun) {
-		return outlet(FunUtil.map(Outlet<T>::new, FunUtil.split(source, fun)));
+		return from(FunUtil.map(Outlet<T>::new, FunUtil.split(source, fun)));
 	}
 
 	public Outlet<T> take(int n) {
-		return outlet(new Source<T>() {
+		return from(new Source<T>() {
 			private int count = n;
 
 			public T source() {

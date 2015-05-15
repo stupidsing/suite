@@ -24,21 +24,21 @@ public class Read {
 		return Streamlet.from(() -> null);
 	}
 
-	public static <T> Streamlet<T> from(Iterable<T> col) {
-		return from(To.source(col));
-	}
-
 	public static <K, V> Streamlet<Pair<K, V>> from(Map<K, V> map) {
 		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
-	}
-
-	public static <T> Streamlet<T> from(Source<T> source) {
-		return Streamlet.from(source);
 	}
 
 	@SafeVarargs
 	public static <T> Streamlet<T> from(T... col) {
 		return from(Arrays.asList(col));
+	}
+
+	public static <T> Streamlet<T> from(Iterable<T> col) {
+		return from(To.source(col));
+	}
+
+	public static <T> Streamlet<T> from(Source<T> source) {
+		return Streamlet.from(source);
 	}
 
 	public static Streamlet<String> lines(Path path) throws IOException {

@@ -46,7 +46,7 @@ public class Matcher {
 	}
 
 	public Pair<String[], String> matchStart(String pattern, String input) {
-		State state = applyPattern(pattern, input).next();
+		State state = applyPattern(pattern, input).first();
 
 		Deque<String> deque = state.matches.reverse();
 		return Pair.of(deque.toArray(new String[deque.size()]), input.substring(state.pos));

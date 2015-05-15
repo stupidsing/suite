@@ -13,8 +13,8 @@ import suite.adt.Pair;
 import suite.ebnf.EbnfExpect.Expect;
 import suite.os.LogUtil;
 import suite.streamlet.As;
+import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -38,12 +38,12 @@ public class Ebnf {
 
 	private EbnfBreakdown breakdown = new EbnfBreakdown();
 	private EbnfExpect expect = new EbnfExpect();
-	private Streamlet<State> noResult = Read.empty();
+	private Outlet<State> noResult = Outlet.empty();
 
 	private static boolean trace = false;
 
 	private interface Parser {
-		public Streamlet<State> p(Parse parse, State state);
+		public Outlet<State> p(Parse parse, State state);
 	}
 
 	public class Node {
@@ -95,11 +95,11 @@ public class Ebnf {
 			this.frame = frame;
 		}
 
-		private Streamlet<State> pr(Parse g, Parser p) {
+		private Outlet<State> pr(Parse g, Parser p) {
 			return g.parse(this, p);
 		}
 
-		private Streamlet<State> p(Parse g, Parser p) {
+		private Outlet<State> p(Parse g, Parser p) {
 			return p.p(g, this);
 		}
 	}
@@ -126,10 +126,10 @@ public class Ebnf {
 
 		private Node parse(int pos, Parser parser) {
 			State initialState = new State(null, pos, null, 0);
-			Streamlet<State> st = initialState.pr(this, parser);
+			Outlet<State> o = initialState.pr(this, parser);
 			State state;
 
-			while ((state = st.next()) != null)
+			while ((state = o.next()) != null)
 				if (expect.expectWhitespaces(in, length, state.pos) == length) {
 					Deque<State> states = new ArrayDeque<>();
 
@@ -164,11 +164,11 @@ public class Ebnf {
 			return null;
 		}
 
-		private Streamlet<State> parse(State state, Parser parser) {
+		private Outlet<State> parse(State state, Parser parser) {
 			if (trace)
 				LogUtil.info("parse(" + parser + "): " + in.substring(state.pos));
 
-			Streamlet<State> states = state.p(this, parser);
+			Outlet<State> states = state.p(this, parser);
 			if (states == noResult && state.sign > 0 && state.frame.entity != null && state.pos >= errorPosition) {
 				errorPosition = state.pos;
 				errorEntity = state.frame.entity;
@@ -176,9 +176,9 @@ public class Ebnf {
 			return states;
 		}
 
-		private Streamlet<State> expect(State state, Expect expect, int pos) {
+		private Outlet<State> expect(State state, Expect expect, int pos) {
 			int end = expect.expect(in, length, pos);
-			return state.pos < end ? Read.from(state.pos(end)) : noResult;
+			return state.pos < end ? Outlet.from(state.pos(end)) : noResult;
 		}
 
 		private Pair<Integer, Integer> findPosition(int position) {
@@ -199,7 +199,7 @@ public class Ebnf {
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
 				.split(line -> !line.startsWith(" ")) //
-				.map(st -> st.fold("", String::concat)) //
+				.map(o -> o.fold("", String::concat)) //
 				.map(line -> Util.split2(line, " ::= ")) //
 				.filter(lr -> lr != null) //
 				.toList();
@@ -253,10 +253,10 @@ public class Ebnf {
 		case AND___:
 			parsers = buildChildren(eg);
 			parser = (parse, st) -> {
-				Streamlet<State> streamlet = Read.from(st);
+				Outlet<State> o = Outlet.from(st);
 				for (Parser g : parsers)
-					streamlet = streamlet.concatMap(st_ -> st_.pr(parse, g));
-				return streamlet;
+					o = o.concatMap(st_ -> st_.pr(parse, g));
+				return o;
 			};
 			break;
 		case ENTITY:
@@ -274,7 +274,7 @@ public class Ebnf {
 			parser = deepen(build(eg.children.get(0)), eg.content);
 			break;
 		case NIL___:
-			parser = (parse, st) -> Read.from(st);
+			parser = (parse, st) -> Outlet.from(st);
 			break;
 		case OPTION:
 			Parser g = build(eg.children.get(0));
@@ -282,7 +282,7 @@ public class Ebnf {
 			break;
 		case OR____:
 			parsers = buildChildren(eg);
-			parser = (parse, st) -> Read.from(parsers).concatMap(g_ -> st.pr(parse, g_));
+			parser = (parse, st) -> Outlet.from(parsers).concatMap(g_ -> st.pr(parse, g_));
 			break;
 		case REPT0_:
 			parser = buildRepeat(eg, true);
@@ -316,16 +316,16 @@ public class Ebnf {
 			Frame frame = new Frame(eg.content);
 			return st0.deepen(frame, 1) //
 					.p(parse, gb) //
-					.concatMap(st1 -> Read.from(new Source<State>() {
+					.concatMap(st1 -> Outlet.from(new Source<State>() {
 						private State state_ = st1;
-						private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
+						private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
 						public State source() {
 							if (state_ != null) {
 								State state0 = state_.deepen(frame, -1);
-								streamlets.push(state0.pr(parse, gc));
-								while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
-									streamlets.pop();
+								outlets.push(state0.pr(parse, gc));
+								while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
+									outlets.pop();
 								return state0;
 							} else
 								return null;
@@ -338,16 +338,16 @@ public class Ebnf {
 		Parser g = build(eg.children.get(0));
 
 		return (parse, st) -> {
-			Streamlet<State> states = Read.from(new Source<State>() {
+			Outlet<State> states = Outlet.from(new Source<State>() {
 				private State state_ = st;
-				private Deque<Streamlet<State>> streamlets = new ArrayDeque<>();
+				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
 				public State source() {
 					State state0 = state_;
 					if (state0 != null) {
-						streamlets.push(state0.pr(parse, g));
-						while (!streamlets.isEmpty() && (state_ = streamlets.peek().next()) == null)
-							streamlets.pop();
+						outlets.push(state0.pr(parse, g));
+						while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
+							outlets.pop();
 					}
 					return state0;
 				}

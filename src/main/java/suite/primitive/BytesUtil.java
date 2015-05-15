@@ -4,17 +4,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
+import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 
 public class BytesUtil {
 
 	private static final int bufferSize = 65536;
 
-	public static Streamlet<Bytes> buffer(Streamlet<Bytes> st) {
-		return Read.from(new Source<Bytes>() {
-			private Streamlet<Bytes> st_ = st;
+	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
+		return new Outlet<>(new Source<Bytes>() {
+			private Outlet<Bytes> o_ = o;
 			protected Bytes buffer = Bytes.emptyBytes;
 			protected boolean isEof = false;
 
@@ -32,7 +31,7 @@ public class BytesUtil {
 
 				Bytes Bytes;
 				while (!isEof && cb.size() < bufferSize)
-					if ((Bytes = st_.next()) != null)
+					if ((Bytes = o_.next()) != null)
 						cb.append(Bytes);
 					else
 						isEof = true;
@@ -41,10 +40,10 @@ public class BytesUtil {
 		});
 	}
 
-	public static Streamlet<Bytes> concatSplit(Streamlet<Bytes> st, Bytes delim) {
+	public static Outlet<Bytes> concatSplit(Outlet<Bytes> o, Bytes delim) {
 		int ds = delim.size();
 
-		return Read.from(new Source<Bytes>() {
+		return new Outlet<>(new Source<Bytes>() {
 			private Bytes buffer = Bytes.emptyBytes;
 			private boolean isArriving;
 			private int p;
@@ -56,7 +55,7 @@ public class BytesUtil {
 
 				p = 0;
 
-				while (isArriving && !search(delim) && (isArriving = (bytes = st.next()) != null)) {
+				while (isArriving && !search(delim) && (isArriving = (bytes = o.next()) != null)) {
 					bb.append(bytes);
 					buffer = bb.toBytes();
 				}
@@ -90,9 +89,9 @@ public class BytesUtil {
 		});
 	}
 
-	public static void copy(Streamlet<Bytes> source, OutputStream os) throws IOException {
+	public static void copy(Outlet<Bytes> o, OutputStream os) throws IOException {
 		Bytes bytes;
-		while ((bytes = source.next()) != null)
+		while ((bytes = o.next()) != null)
 			bytes.write(os);
 	}
 

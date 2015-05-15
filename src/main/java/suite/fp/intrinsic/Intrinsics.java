@@ -19,7 +19,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.LogUtil;
 import suite.primitive.Chars;
-import suite.streamlet.Read;
 import suite.util.Util;
 
 public class Intrinsics {
@@ -66,7 +65,7 @@ public class Intrinsics {
 	}
 
 	public static IPointer<Chars> read(Reader reader) {
-		return IndexedSourceReader.of(Read.from(() -> {
+		return IndexedSourceReader.of(() -> {
 			try {
 				char buffer[] = new char[bufferSize];
 				int nCharsRead = reader.read(buffer);
@@ -79,7 +78,7 @@ public class Intrinsics {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-		}));
+		});
 	}
 
 	static {

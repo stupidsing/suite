@@ -4,17 +4,16 @@ import java.io.IOException;
 import java.io.Writer;
 
 import suite.primitive.Chars.CharsBuilder;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
+import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 
 public class CharsUtil {
 
 	private static final int bufferSize = 65536;
 
-	public static Streamlet<Chars> buffer(Streamlet<Chars> st) {
-		return Read.from(new Source<Chars>() {
-			private Streamlet<Chars> st_ = st;
+	public static Outlet<Chars> buffer(Outlet<Chars> o) {
+		return new Outlet<>(new Source<Chars>() {
+			private Outlet<Chars> o_ = o;
 			protected Chars buffer = Chars.emptyChars;
 			protected boolean isEof = false;
 
@@ -32,7 +31,7 @@ public class CharsUtil {
 
 				Chars chars;
 				while (!isEof && cb.size() < bufferSize)
-					if ((chars = st_.next()) != null)
+					if ((chars = o_.next()) != null)
 						cb.append(chars);
 					else
 						isEof = true;
@@ -41,10 +40,10 @@ public class CharsUtil {
 		});
 	}
 
-	public static Streamlet<Chars> concatSplit(Streamlet<Chars> st, Chars delim) {
+	public static Outlet<Chars> concatSplit(Outlet<Chars> o, Chars delim) {
 		int ds = delim.size();
 
-		return Read.from(new Source<Chars>() {
+		return new Outlet<>(new Source<Chars>() {
 			private Chars buffer = Chars.emptyChars;
 			private boolean isArriving;
 			private int p;
@@ -56,7 +55,7 @@ public class CharsUtil {
 
 				p = 0;
 
-				while (isArriving && !search(delim) && (isArriving = (chars = st.next()) != null)) {
+				while (isArriving && !search(delim) && (isArriving = (chars = o.next()) != null)) {
 					cb.append(chars);
 					buffer = cb.toChars();
 				}
@@ -90,9 +89,9 @@ public class CharsUtil {
 		});
 	}
 
-	public static void copy(Streamlet<Chars> st, Writer writer) throws IOException {
+	public static void copy(Outlet<Chars> o, Writer writer) throws IOException {
 		Chars chars;
-		while ((chars = st.next()) != null)
+		while ((chars = o.next()) != null)
 			chars.write(writer);
 	}
 

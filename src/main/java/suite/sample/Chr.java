@@ -100,7 +100,7 @@ public class Chr {
 	}
 
 	private State chr(State state) {
-		return Read.from(rules).concatMap(rule -> chr(state, rule)).next();
+		return Read.from(rules).concatMap(rule -> chr(state, rule)).first();
 	}
 
 	private Streamlet<State> chr(State state, Rule rule) {
@@ -202,7 +202,7 @@ public class Chr {
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
 		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
-		return new State(nodes.stream().next() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
+		return new State(nodes.stream().first() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 
 }

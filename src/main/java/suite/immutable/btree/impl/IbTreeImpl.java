@@ -187,7 +187,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		public Integer allocate() {
-			Integer pointer = mutator.keys(0, Integer.MAX_VALUE).next();
+			Integer pointer = mutator.keys(0, Integer.MAX_VALUE).first();
 			if (pointer != null) {
 				mutator.remove(pointer);
 				return pointer;
@@ -473,7 +473,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Integer get0(Integer root, Key key, SlotType slotType) {
-		Slot slot = stream(root, key, null).next();
+		Slot slot = stream(root, key, null).first();
 		if (slot != null && slot.type == slotType && comparator.compare(slot.pivot, key) == 0)
 			return slot.pointer;
 		else

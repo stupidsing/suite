@@ -8,8 +8,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
-import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
+import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -20,7 +19,7 @@ public class ThunkUtil {
 	 * string.
 	 */
 	public static String yawnString(Fun<Node, Node> yawn, Node node) {
-		Streamlet<Node> st = yawnList(yawn, node, false);
+		Outlet<Node> st = yawnList(yawn, node, false);
 		StringBuilder sb = new StringBuilder();
 		Node n;
 
@@ -44,14 +43,14 @@ public class ThunkUtil {
 	 * sink.
 	 */
 	public static void yawnSink(Fun<Node, Node> yawn, Node node, IoSink<Node> sink) throws IOException {
-		Streamlet<Node> st = yawnList(yawn, node, true);
+		Outlet<Node> st = yawnList(yawn, node, true);
 		Node n;
 		while ((n = st.next()) != null)
 			sink.sink(n);
 	}
 
-	public static Streamlet<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
-		return Read.from(new Source<Node>() {
+	public static Outlet<Node> yawnList(Fun<Node, Node> yawn, Node node, boolean isFacilitateGc) {
+		return new Outlet<>(new Source<Node>() {
 			private Node node_ = node;
 			private boolean first = true;
 
