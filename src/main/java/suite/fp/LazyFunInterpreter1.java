@@ -138,10 +138,10 @@ public class LazyFunInterpreter1 {
 		Tree tree;
 		Node m[];
 
-		if ((m = Suite.matcher(".0 := .1 >> .2").apply(node)) != null)
-			result = lazy0(mapping, Suite.substitute("(.0 := .1), >> .2", m));
-		else if ((m = Suite.matcher(".0 >> .1").apply(node)) != null) {
-			List<Node[]> arrays = Read.from(Tree.iter(m[0])).map(Suite.matcher(".0 := .1")::apply).toList();
+		if ((m = Suite.matcher("define .0 := .1 >> .2").apply(node)) != null)
+			result = lazy0(mapping, Suite.substitute("vars (.0 := .1 #) >> .2", m));
+		else if ((m = Suite.matcher("vars .0 >> .1").apply(node)) != null) {
+			List<Node[]> arrays = Read.from(Tree.iter(m[0], TermOp.NEXT__)).map(Suite.matcher(".0 := .1")::apply).toList();
 			List<Node> vars = Read.from(arrays).map(m1 -> m1[0]).toList();
 			int size = vars.size();
 
