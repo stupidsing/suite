@@ -140,6 +140,8 @@ public class LazyFunInterpreter1 {
 
 		if ((m = Suite.matcher("define .0 := .1 >> .2").apply(node)) != null)
 			result = lazy0(mapping, Suite.substitute("vars (.0 := .1 #) >> .2", m));
+		else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null)
+			return lazy0(mapping, Suite.substitute("if {.0} {.1} {.2}", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("vars .0 >> .1").apply(node)) != null) {
 			List<Node[]> arrays = Read.from(Tree.iter(m[0], TermOp.NEXT__)).map(Suite.matcher(".0 := .1")::apply).toList();
 			List<Node> vars = Read.from(arrays).map(m1 -> m1[0]).toList();
@@ -177,9 +179,7 @@ public class LazyFunInterpreter1 {
 				Thunk_ param = param_.apply(frame);
 				return () -> ((Fun_) fun.get()).fun.apply(param).get();
 			};
-		} else if ((m = Suite.matcher("if .0 then .1 else .2").apply(node)) != null)
-			return lazy0(mapping, Suite.substitute("if {.0} {.1} {.2}", m[0], m[1], m[2]));
-		else if ((tree = Tree.decompose(node)) != null)
+		} else if ((tree = Tree.decompose(node)) != null)
 			return lazy0(mapping, Suite.substitute(".0 {.1} {.2}" //
 					, Atom.of(tree.getOperator().getName()) //
 					, tree.getLeft() //
