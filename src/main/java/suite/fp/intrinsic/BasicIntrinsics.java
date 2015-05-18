@@ -9,7 +9,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.os.LogUtil;
-import suite.util.Util;
 
 public class BasicIntrinsics {
 
@@ -35,11 +34,6 @@ public class BasicIntrinsics {
 	public Intrinsic log2 = (callback, inputs) -> {
 		LogUtil.info(ThunkUtil.yawnString(callback::yawn, inputs.get(0)));
 		return inputs.get(1);
-	};
-
-	public Intrinsic throw_ = (callback, inputs) -> {
-		String message = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
-		throw new RuntimeException(Util.isNotBlank(message) ? message : "Error termination");
 	};
 
 	public Intrinsic typeOf = (callback, inputs) -> {

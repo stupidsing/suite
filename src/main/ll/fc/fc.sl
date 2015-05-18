@@ -10,6 +10,7 @@
 	, import.path "fc/fc-lazyify.sl"
 	, import.path "fc/fc-optimize.sl"
 	, import.path "fc/fc-parse.sl"
+	, import.path "fc/fc-reduce-tail-call.sl"
 	, import.path "fc/fc-rewrite.sl"
 	, import.path "rbt.sl"
 #
@@ -22,9 +23,12 @@ compile-function .mode .do0 (FRAME l:.c,)
 	, !, once (.mode = LAZY, fc-lazyify-fun .do1 .do2
 		; .mode = EAGER, .do1 = .do2
 	)
-	, !, fc-optimize .do2 .do3
+	, !, once (.mode = LAZY, .do2 = .do3
+		; .mode = EAGER, fc-reduce-tail-call .do2 .do3
+	)
+	, !, fc-optimize .do3 .do4
 	, .c0 = (ENTER, .c1)
-	, !, fc-compile .do3 0/() .c1/.c2/.reg
+	, !, fc-compile .do4 0/() .c1/.c2/.reg
 	, .c2 = (SET-RESULT .reg
 		, LEAVE
 		, RETURN
@@ -145,9 +149,6 @@ fc-add-functions STANDARD .p (
 	>>
 	define log2 := (:t => string -> :t -> :t) of
 		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn-v2
-	>>
-	define throw := (any -> any) of
-		atom:INTRN!BasicIntrinsics.throw_ | getintrn | callintrn-v1
 	>>
 	---------------------------------------------------------------------------
 	define and := x => y =>

@@ -36,6 +36,8 @@ fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
 	, fc-infer-var-types .vvts .env1 .tr0/.tr1
 	, fc-infer-type-rule .do .env1 .tr1/.trx .type
 #
+fc-infer-type-rule ERROR _ .tr/.tr _
+#
 fc-infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
 	:- fc-dict-add .var/.varType .ue/.ue1
 	, fc-infer-type-rule .do .ue1/.ve/.te .tr .type
@@ -72,18 +74,15 @@ fc-infer-type-rule (
 	, .te1 = (.definedType/.class/.typeVars, .te)
 	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
 #
-fc-infer-type-rule (PRAGMA (TYPE-CAST .dir .type) .do) .ue/.ve/.te .tr0/.trx .type
+fc-infer-type-rule (PRAGMA (TYPE-CAST .type) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
-	, once (
-		.dir = DOWN, .subType = .type0, .superType = .type
-		; .dir = UP, .subType = .type, .superType = .type0
-	)
+	, .subType = .type0, .superType = .type
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
 	:- !
 	, .classType = CLASS _
-	, fc-infer-type-rule (PRAGMA (TYPE-CAST DOWN .classType) .pair) .env .tr .classType
+	, fc-infer-type-rule (PRAGMA (TYPE-CAST .classType) .pair) .env .tr .classType
 #
 #
 fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
@@ -95,6 +94,12 @@ fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	:- !
 	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
 	, fc-infer-type-rule .do .env .tr1/.trx .type
+#
+fc-infer-type-rule (TCO .iter .in) .env .tr0/.trx (FUN-OF .paramType .type)
+	:- !
+	, .tupleType = (PAIR-OF BOOLEAN (PAIR-OF .paramType .type))
+	, fc-infer-type-rule .in .env .tr0/.tr1 .paramType
+	, fc-infer-type-rule .iter .env .tr1/.trx (FUN-OF .paramType .tupleType)
 #
 fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !

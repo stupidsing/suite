@@ -11,6 +11,8 @@ fc-rewrite (DEF-VARS (.var .value0, .list0) .do0) (DEF-VARS (.var .value1, .list
 fc-rewrite (DEF-VARS () .do0) (DEF-VARS () .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
+fc-rewrite ERROR ERROR .ts/.ts
+#
 fc-rewrite (FUN .var .do0) (FUN .var .do1) .ts0/.tsx
 	:- .ts0 = (.do0 .do1, .tsx)
 #
@@ -30,6 +32,9 @@ fc-rewrite (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
 fc-rewrite (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
 	:- fc-rewrite-pragma .pragma0 .pragma1 .ts0/.ts1
 	, .ts1 = (.do0 .do1, .tsx)
+#
+fc-rewrite (TCO .iter0 .in0) (TCO .iter1 .in1) .ts0/.tsx
+	:- .ts0 = (.iter0 .iter1, .in0 .in1, .tsx)
 #
 fc-rewrite (TREE .oper .left0 .right0) (TREE .oper .left1 .right1) .ts0/.tsx
 	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
@@ -53,10 +58,7 @@ fc-rewrite-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 
 	, fc-rewrite-type .class0 .class1
 	, fc-rewrite-type-list .typeVars0 .typeVars1
 #
-fc-rewrite-pragma (TYPE-CAST DOWN .type0) (TYPE-CAST DOWN .type1) .ts/.ts
-	:- fc-rewrite-type .type0 .type1
-#
-fc-rewrite-pragma (TYPE-CAST UP .type0) (TYPE-CAST UP .type1) .ts/.ts
+fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 #
 fc-rewrite-pragma TYPE-CAST-TO-CLASS TYPE-CAST-TO-CLASS .ts/.ts

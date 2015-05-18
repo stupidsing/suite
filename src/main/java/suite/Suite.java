@@ -57,7 +57,7 @@ public class Suite {
 	public static TraceLevel traceLevel = TraceLevel.SIMPLE;
 
 	public static Set<String> tracePredicates = null;
-	public static Set<String> noTracePredicates = new HashSet<>(Arrays.asList("member", "replace"));
+	public static Set<String> noTracePredicates = new HashSet<>(Arrays.asList("member", "rbt-compare", "rbt-get", "replace"));
 
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();

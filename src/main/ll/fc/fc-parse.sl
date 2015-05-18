@@ -13,7 +13,7 @@ fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #
-fc-parse (.type of .value) (PRAGMA (TYPE-CAST DOWN .type1) .value1)
+fc-parse (.type of .value) (PRAGMA (TYPE-CAST .type1) .value1)
 	:- fc-parse-type .type .type1
 	, !, fc-parse .value .value1
 #
@@ -37,6 +37,8 @@ fc-parse (define .var := .value >> .do) (
 		; fc-error "at variable" .var
 	)
 	, fc-parse .do .do1
+#
+fc-parse error ERROR
 #
 fc-parse (if .if then .then .otherwise) (IF .if1 .then1 .else1)
 	:- !
@@ -68,6 +70,11 @@ fc-parse (lets () >> .do) (DEF-VARS () .do1)
 #
 fc-parse (skip-type-check .do) (PRAGMA TYPE-SKIP-CHECK .do1)
 	:- !, fc-parse .do .do1
+#
+fc-parse (tco .iter .in) (TCO .iter1 .in1)
+	:- !
+	, fc-parse .iter .iter1
+	, fc-parse .in .in1
 #
 fc-parse (using source .lib >> .do) .dox
 	:- !, fc-load-library .lib .do .do1
@@ -168,7 +175,6 @@ fc-parse-sugar (do >> .do) (
 		.do
 	}
 ) :- ! #
-fc-parse-sugar error (throw {}) :- ! #
 fc-parse-sugar (expand .var := .value >> .do) .do1
 	:- !, replace .var .value .do .do1
 #

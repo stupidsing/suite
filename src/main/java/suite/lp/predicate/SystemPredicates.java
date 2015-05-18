@@ -52,6 +52,7 @@ public class SystemPredicates {
 		addPredicate("hash", evalPredicates.hash);
 		addPredicate("hash.id", evalPredicates.hashId);
 		addPredicate("is.cyclic", evalPredicates.isCyclic);
+		addPredicate("length", evalPredicates.length);
 		addPredicate("let", evalPredicates.let);
 		addPredicate("random", evalPredicates.randomPredicate);
 		addPredicate("replace", evalPredicates.replace);

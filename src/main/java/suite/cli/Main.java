@@ -26,7 +26,8 @@ import suite.util.Util.ExecutableProgram;
  *
  * @author ywsing
  */
-//mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.cli.Main
+// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar
+// suite.cli.Main
 public class Main extends ExecutableProgram {
 
 	private CommandOptions opt;
@@ -101,6 +102,9 @@ public class Main extends ExecutableProgram {
 			Node node = Suite.applyWriter(Suite.parse("\"READY\""));
 			Suite.evaluateFunToWriter(opt.fcc(node), sw);
 			ready = sw.toString();
+		} catch (Exception ex) {
+			LogUtil.error(ex);
+			ready = "ERROR";
 		}
 
 		opt.prompt().println(ready);

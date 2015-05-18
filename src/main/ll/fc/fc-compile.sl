@@ -18,6 +18,9 @@ fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
 	, fc-compile-vars .vrs .frame/.ve1 .c0/.c1
 	, fc-compile .do .frame/.ve1 .c1/.cx/.reg
 #
+fc-compile ERROR _ .c0/.cx/_
+	:- .c0 = (ERROR, .cx)
+#
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.thunkReg
 	:- .c0 = (ASSIGN-THUNK .thunkReg l:(FRAME l:.f,), .cx)
 	, .f0 = (ENTER, POP .varReg, .f1)
@@ -54,6 +57,23 @@ fc-compile (PAIR .left .right) .env .cr
 #
 fc-compile (PRAGMA _ .do) .env .cr
 	:- fc-compile .do .env .cr
+#
+fc-compile (TCO .iter .in) .env .c0/.cx/.reg
+	:- fc-compile .iter .env .c0/.c1/.riter
+	, fc-compile .in .env .c1/.c2/.rin
+	, .c2 = (PUSH .rin
+		, CALL-THUNK .riter
+		, ASSIGN-RESULT .rpair0
+		, PUSH .rpair0
+		, HEAD .rhead 1
+		, PUSH .rpair0
+		, TAIL .rpair1 1
+		, PUSH .rpair1
+		, HEAD .rin 1
+		, IF-FALSE .rhead l:.c2
+		, PUSH .rpair1
+		, TAIL .reg 1
+		, .cx)
 #
 fc-compile (TREE .oper .left .right) .env .c0/.cx/.reg
 	:- fc-compile .left .env .c0/.c1/.r0

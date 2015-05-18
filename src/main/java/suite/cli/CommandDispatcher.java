@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.List;
 
 import suite.Suite;
@@ -66,6 +67,7 @@ public class CommandDispatcher {
 		QUERYELABORATE("/"), //
 		QUERYSEWING("?s"), //
 		QUERYSEWINGELAB("/s"), //
+		RESET("\\reset"), //
 		;
 
 		private String prefix;
@@ -168,6 +170,10 @@ public class CommandDispatcher {
 			break;
 		case QUERYSEWINGELAB:
 			elaborate(node, n -> new SewingProver(ruleSet).compile(n).apply(new ProverConfig(ruleSet)));
+			break;
+		case RESET:
+			ruleSet = Suite.createRuleSet();
+			importFiles(Collections.emptyList());
 		}
 
 		pw.flush();

@@ -17,7 +17,8 @@ fc-optimize-flow (UNWRAP WRAP .do0) .dox
 fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
 	:- !, fc-optimize-flow (DEF-VARS (.var .value,) .do0) .dox
 #
-fc-optimize-flow .p0 .p1 :- fc-rewrite .p0 .p1 .ts/(), fc-optimize-flow-list .ts #
+fc-optimize-flow .p0 .p1 :- fc-rewrite .p0 .p1 .ts/(), fc-optimize-flow-list .ts
+#
 
 fc-optimize-flow-list () #
 fc-optimize-flow-list (.t, .ts) :- fc-optimize-flow .t, fc-optimize-flow-list .ts #

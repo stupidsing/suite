@@ -123,6 +123,27 @@ public class EvalPredicates {
 
 	public BuiltinPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
 
+	public BuiltinPredicate length = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 2);
+		Node list = params[0];
+		int size = 0;
+		Tree tree;
+
+		while ((tree = Tree.decompose(list)) != null) {
+			size++;
+			list = tree.getRight();
+		}
+
+		if (list.finalNode() == Atom.NIL)
+			return prover.bind(params[1], Int.of(size));
+
+		int size1 = ((Int) params[1].finalNode()).number;
+		Node list1 = Atom.NIL;
+		while (size1-- > 0)
+			list1 = Tree.of(TermOp.AND___, new Reference(), list1);
+		return prover.bind(list, list1);
+	};
+
 	public BuiltinPredicate let = new BuiltinPredicate() {
 		public boolean prove(Prover prover, Node ps) {
 			Node params[] = Tree.getParameters(ps, 2);

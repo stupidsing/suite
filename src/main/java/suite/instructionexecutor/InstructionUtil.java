@@ -56,6 +56,7 @@ public class InstructionUtil {
 		DECOMPOSETREE0("DECOMPOSE-TREE0"), //
 		DECOMPOSETREE1("DECOMPOSE-TREE1"), //
 		ENTER_________("ENTER"), //
+		ERROR_________("ERROR"), //
 		EVALADD_______("EVAL-ADD"), //
 		EVALDIV_______("EVAL-DIV"), //
 		EVALEQ________("EVAL-EQ"), //
