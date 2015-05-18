@@ -14,13 +14,17 @@ fc-precompile-lib .lib
 	, persist.save .preds .filename
 #
 
-fc-precompile .lib .do1/($$PRECOMPILE .pc) .preds
+fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	:- .pc = .ues/.ves/.tes .trs/.trs .fcs
 	, !, write "Parsing program", nl
-	, !, fc-parse .do1 .do2
+	, !, fc-parse .do0 .do1
 	, !, write "Inferencing types", nl
-	, !, fc-infer-type-rule .do2 ()/()/() .tr/() NUMBER
+	, !, fc-infer-type-rule .do1 ()/()/() .tr/() NUMBER
 	, !, fc-resolve-type-rules .tr
+	, !, write "Reducing tail recursions", nl
+	, !, once (.mode = LAZY, .do1 = .do2
+		; .mode = EAGER, fc-reduce-tail-call .do1 .do2
+	)
 	, !, .pred0 = (
 		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
 			:- fc-dict-union-replace .ue .ues .ue1
