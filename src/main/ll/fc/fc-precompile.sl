@@ -21,10 +21,6 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Inferencing types", nl
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() NUMBER
 	, !, fc-resolve-type-rules .tr
-	, !, write "Reducing tail recursions", nl
-	, !, once (.mode = LAZY, .do1 = .do2
-		; .mode = EAGER, fc-reduce-tail-call .do1 .do2
-	)
 	, !, .pred0 = (
 		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
 			:- fc-dict-union-replace .ue .ues .ue1
@@ -33,14 +29,16 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 			, fc-infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write 'Verifying intermediate output', nl
-	, once (not is.cyclic .do2; fc-error "Cyclic data detected")
+	, once (not is.cyclic .do1; fc-error "Cyclic data detected")
 	, !, write "Lazyifying", nl
-	, !, fc-lazyify .do2 .dol3
+	, !, fc-lazyify .do1 .dol2
+	, !, write "Reducing tail recursions", nl
+	, !, fc-reduce-tail-call .do1 .do2
 	, !, write "Optimizing", nl
 	, !, fc-optimize-flow .do2 .do3
-	, !, fc-optimize-flow .dol3 .dol4
+	, !, fc-optimize-flow .dol2 .dol3
 	, !, fc-precompile-compile EAGER .lib .fcs .do3 .pred1
-	, !, fc-precompile-compile LAZY .lib .fcs .dol4 .pred2
+	, !, fc-precompile-compile LAZY .lib .fcs .dol3 .pred2
 	, .preds = (.pred0 # .pred1 # .pred2 #)
 	, !, write 'Verifying final output', nl
 	, once (not is.cyclic .preds; fc-error "Cyclic data detected")
