@@ -17,13 +17,16 @@ getLatestTimestamp() {
 (
 	SOURCETIME=$(getLatestTimestamp "${BASE}/pom.xml" "${BASE}/src/main/" "${BASE}/src/main/resources/")
 	TARGETTIME=$(getLatestTimestamp "${JAR}")
-	[ ${SOURCETIME} -le ${TARGETTIME} ] || { cd ${BASE} && mvn -Dmaven.test.skip=true -T4 install assembly:single; }
+	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
+	[ "${SKIPBUILD}" ] ||
+	{ cd ${BASE} && mvn -Dmaven.test.skip=true -T4 install assembly:single; }
 ) &&
 
 (
 	SOURCETIME=$(getLatestTimestamp "${JAR}")
 	TARGETTIME=$(getLatestTimestamp "${BASE}/precompiled/STANDARD.node.gz")
 	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
+	[ "${SKIPPRECOMPILE}" ] ||
 	{ echo | ${CMD} precompile-all ||
 		{ rm -f ${BASE}/precompiled/STANDARD.node.gz && false; }
 	}
