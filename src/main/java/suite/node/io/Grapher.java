@@ -32,7 +32,7 @@ public class Grapher {
 		private int t0;
 		private int t1;
 
-		public static IntPair of(int t0, int t1) {
+		private static IntPair of(int t0, int t1) {
 			IntPair pair = new IntPair();
 			pair.t0 = t0;
 			pair.t1 = t1;
