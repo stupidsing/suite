@@ -14,7 +14,6 @@ import suite.util.To;
 
 public class FunRbTreeTest {
 
-	// Type check take 11 seconds
 	@Test
 	public void test() throws IOException {
 		String s = To.string(new FileInputStream("src/main/fl/RB-TREE.slf"));
