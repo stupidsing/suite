@@ -1,9 +1,13 @@
 package suite.lp.predicate;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import suite.Suite;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
@@ -13,8 +17,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Persister.Loader;
-import suite.node.io.Persister.Saver;
+import suite.node.io.Grapher;
 import suite.node.io.ReversePolish;
 import suite.node.io.TermOp;
 import suite.node.pp.NewPrettyPrinter;
@@ -60,8 +63,12 @@ public class FormatPredicates {
 
 	public BuiltinPredicate persistLoad = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		try (InputStream is = new FileInputStream(((Str) params[1].finalNode()).value)) {
-			return prover.bind(params[0], new Loader().load(is));
+		try (InputStream is = new FileInputStream(((Str) params[1].finalNode()).value);
+				GZIPInputStream gis = new GZIPInputStream(is);
+				DataInputStream dis = new DataInputStream(gis)) {
+			Grapher grapher = new Grapher();
+			grapher.load(dis);
+			return prover.bind(params[0], grapher.ungraph());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -69,8 +76,12 @@ public class FormatPredicates {
 
 	public BuiltinPredicate persistSave = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		try (OutputStream os = FileUtil.out(((Str) params[1].finalNode()).value)) {
-			new Saver().save(os, params[0]);
+		try (OutputStream os = FileUtil.out(((Str) params[1].finalNode()).value);
+				GZIPOutputStream gos = new GZIPOutputStream(os);
+				DataOutputStream dos = new DataOutputStream(gos)) {
+			Grapher grapher = new Grapher();
+			grapher.graph(params[0]);
+			grapher.save(dos);
 			return true;
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

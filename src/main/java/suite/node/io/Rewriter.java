@@ -15,7 +15,6 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
 public class Rewriter {
@@ -25,7 +24,17 @@ public class Rewriter {
 	private static Comparer comparer = new Comparer();
 
 	public enum ReadType {
-		DICT, LIST, TERM, TREE, TUPLE
+		DICT(0), TERM(1), TREE(2), TUPLE(3), ;
+
+		public byte value;
+
+		public static ReadType of(byte value) {
+			return Read.from(ReadType.values()).filter(rt -> rt.value == value).uniqueResult();
+		}
+
+		private ReadType(int value) {
+			this.value = (byte) value;
+		}
 	};
 
 	public static class NodeHead {
@@ -60,12 +69,6 @@ public class Rewriter {
 						.sort((p0, p1) -> comparer.compare(p0.t0, p1.t0)) //
 						.map(p -> Pair.<Node, Node> of(p.t0, p.t1)) //
 						.toList();
-			} else if (Tree.isList(node, op0 = TermOp.AND___) || Tree.isList(node, op0 = TermOp.OR____)) {
-				Streamlet<Node> st = Read.from(Tree.iter(node, op0));
-				type = ReadType.LIST;
-				terminal = null;
-				op = op0;
-				children = st.map(n -> Pair.<Node, Node> of(Atom.NIL, n)).toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Pair<Node, Node> p0 = Pair.of(LEFT_, tree.getLeft());
 				Pair<Node, Node> p1 = Pair.of(RIGHT, tree.getRight());
@@ -102,12 +105,6 @@ public class Rewriter {
 			switch (type) {
 			case DICT:
 				node = new Dict(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
-				break;
-			case LIST:
-				Node n = Atom.NIL;
-				for (int i = children.size() - 1; i >= 0; i--)
-					n = Tree.of(op, children.get(i).t1, n);
-				node = n;
 				break;
 			case TERM:
 				node = terminal;

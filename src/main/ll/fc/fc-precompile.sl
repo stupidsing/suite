@@ -39,9 +39,7 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, fc-optimize-flow .dol2 .dol3
 	, !, fc-precompile-compile EAGER .lib .fcs .do3 .pred1
 	, !, fc-precompile-compile LAZY .lib .fcs .dol3 .pred2
-	, .preds = (.pred0 # .pred1 # .pred2 #)
-	, !, write 'Verifying final output', nl
-	, once (not is.cyclic .preds; fc-error "Cyclic data detected")
+	, !, .preds = (.pred0 # .pred1 # .pred2 #)
 #
 
 fc-precompile-compile .mode .lib .fcs .parsed .pred

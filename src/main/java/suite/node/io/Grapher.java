@@ -1,5 +1,8 @@
 package suite.node.io;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,8 +14,10 @@ import suite.adt.Pair;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Dict;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Rewriter.NodeHead;
@@ -86,11 +91,6 @@ public class Grapher {
 			switch (ng.type) {
 			case DICT:
 				return new Dict();
-			case LIST:
-				Node n = Atom.NIL;
-				for (int i = 0; i < ng.children.size(); i++)
-					n = Tree.of(ng.op, null, n);
-				return n;
 			case TERM:
 				return ng.terminal;
 			case TREE:
@@ -110,13 +110,6 @@ public class Grapher {
 			switch (ng.type) {
 			case DICT:
 				((Dict) node).map.putAll(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
-				break;
-			case LIST:
-				for (Pair<Node, Node> child : children) {
-					Tree tree = (Tree) node;
-					Tree.forceSetLeft(tree, child.t1);
-					node = tree.getRight();
-				}
 				break;
 			case TERM:
 				break;
@@ -169,6 +162,106 @@ public class Grapher {
 				.toList();
 	}
 
+	public void load(DataInputStream dis) throws IOException {
+		int size = dis.readInt();
+		id = dis.readInt();
+
+		for (int index = 0; index < size; index++) {
+			ReadType type = ReadType.of(dis.readByte());
+			Node terminal;
+			Operator op;
+			List<IntPair> children = new ArrayList<>();
+
+			if (type == ReadType.TERM) {
+				char ch = (char) dis.readByte();
+
+				switch (ch) {
+				case 'a':
+					terminal = Atom.of(dis.readUTF());
+					break;
+				case 'i':
+					terminal = Int.of(dis.readInt());
+					break;
+				case 'r':
+					terminal = new Reference();
+					break;
+				case 's':
+					terminal = new Str(dis.readUTF());
+					break;
+				default:
+					throw new RuntimeException("Unknown type " + ch);
+				}
+			} else
+				terminal = null;
+
+			if (type == ReadType.TREE) {
+				op = TermOp.find(dis.readUTF());
+				children.add(IntPair.of(0, dis.readInt() + index));
+				children.add(IntPair.of(0, dis.readInt() + index));
+			} else
+				op = null;
+
+			if (type == ReadType.DICT || type == ReadType.TUPLE) {
+				int size1 = dis.readInt();
+				for (int i = 0; i < size1; i++) {
+					int i0 = type != ReadType.DICT ? 0 : dis.readInt() + index;
+					int i1 = dis.readInt() + index;
+					children.add(IntPair.of(i0, i1));
+				}
+			}
+
+			ngs.add(new NodeGraph(type, terminal, op, children));
+		}
+	}
+
+	public void save(DataOutputStream dos) throws IOException {
+		int size = ngs.size();
+		dos.writeInt(size);
+		dos.writeInt(id);
+
+		for (int index = 0; index < size; index++) {
+			NodeGraph ng = ngs.get(index);
+			ReadType type = ng.type;
+			List<IntPair> children = ng.children;
+
+			dos.writeByte(type.value);
+
+			if (type == ReadType.TERM) {
+				Node terminal = ng.terminal.finalNode();
+
+				if (terminal instanceof Atom) {
+					dos.writeByte((byte) 'a');
+					dos.writeUTF(((Atom) terminal).name);
+				} else if (terminal instanceof Int) {
+					dos.writeByte((byte) 'i');
+					dos.writeInt(((Int) terminal).number);
+				} else if (terminal instanceof Reference)
+					dos.writeByte((byte) 'r');
+				else if (terminal instanceof Str) {
+					dos.writeByte((byte) 's');
+					dos.writeUTF(((Str) terminal).value);
+				} else
+					throw new RuntimeException("Cannot persist " + terminal);
+			}
+
+			if (type == ReadType.TREE) {
+				dos.writeUTF(ng.op.getName());
+				dos.writeInt(children.get(0).t1 - index);
+				dos.writeInt(children.get(1).t1 - index);
+			}
+
+			if (type == ReadType.DICT || type == ReadType.TUPLE) {
+				dos.writeInt(children.size());
+
+				for (IntPair child : children) {
+					if (type == ReadType.DICT)
+						dos.writeInt(child.t0 - index);
+					dos.writeInt(child.t1 - index);
+				}
+			}
+		}
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
@@ -179,11 +272,6 @@ public class Grapher {
 				s = Read.from(ng.children) //
 						.map(p -> p.t0 + ":" + p.t1 + ", ") //
 						.collect(As.joined("dict(", ", ", ")"));
-				break;
-			case LIST:
-				s = Read.from(ng.children) //
-						.map(p -> p.t1 + ", ") //
-						.collect(As.joined("list(", ng.op.getName().trim() + " ", ")"));
 				break;
 			case TERM:
 				s = Formatter.dump(ng.terminal);
