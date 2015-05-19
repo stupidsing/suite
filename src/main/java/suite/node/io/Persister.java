@@ -67,7 +67,7 @@ public class Persister {
 		private Map<IdentityKey<Node>, Integer> nodes = new HashMap<>();
 
 		public void save(OutputStream os, Node node) throws IOException {
-			try (GZIPOutputStream gzos = new GZIPOutputStream(os); DataOutputStream dos = new DataOutputStream(gzos)) {
+			try (GZIPOutputStream gos = new GZIPOutputStream(os); DataOutputStream dos = new DataOutputStream(gos)) {
 				int key = save0(dos, node);
 				dos.writeChar('f');
 				dos.writeInt(key);
