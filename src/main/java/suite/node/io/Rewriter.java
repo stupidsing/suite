@@ -57,7 +57,6 @@ public class Rewriter {
 			Node terminal;
 			Operator op;
 			List<Pair<Node, Node>> children;
-			Operator op0;
 			Tree tree;
 
 			if (node instanceof Dict) {
