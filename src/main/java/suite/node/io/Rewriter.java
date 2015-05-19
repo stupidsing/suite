@@ -20,24 +20,28 @@ import suite.util.FunUtil.Fun;
 
 public class Rewriter {
 
+	private static Node LEFT_ = Atom.of("l");
+	private static Node RIGHT = Atom.of("r");
+	private static Comparer comparer = new Comparer();
+
 	public enum ReadType {
 		DICT, LIST, TERM, TREE, TUPLE
 	};
 
 	public static class NodeRead {
-		private Node LEFT_ = Atom.of("l");
-		private Node RIGHT = Atom.of("r");
-
-		private Comparer comparer = new Comparer();
-
 		public final ReadType type;
 		public final Node terminal;
 		public final Operator op;
 		public final List<Pair<Node, Node>> children;
 
-		public NodeRead(Node node) {
+		public static NodeRead of(Node node) {
+			ReadType type;
+			Node terminal;
+			Operator op;
+			List<Pair<Node, Node>> children;
 			Operator op0;
 			Tree tree;
+
 			if (node instanceof Dict) {
 				Map<Node, Reference> map = ((Dict) node).map;
 				type = ReadType.DICT;
@@ -72,6 +76,15 @@ public class Rewriter {
 				op = null;
 				children = Collections.emptyList();
 			}
+
+			return new NodeRead(type, terminal, op, children);
+		}
+
+		private NodeRead(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
+			this.type = type;
+			this.terminal = terminal;
+			this.op = op;
+			this.children = children;
 		}
 	}
 
@@ -105,7 +118,7 @@ public class Rewriter {
 	}
 
 	public static Node transform(Node node, Fun<Node, Node> fun) {
-		NodeRead nr = new NodeRead(node);
+		NodeRead nr = NodeRead.of(node);
 		List<Pair<Node, Node>> children1 = new ArrayList<>();
 		boolean isSame = true;
 

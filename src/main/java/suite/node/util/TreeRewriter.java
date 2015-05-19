@@ -19,7 +19,7 @@ public class TreeRewriter {
 				Node node = node0.finalNode();
 				boolean result;
 				if (!node.equals(from)) {
-					NodeRead nr = new NodeRead(node);
+					NodeRead nr = NodeRead.of(node);
 					result = Read.from(nr.children).fold(false, (r, p) -> r || apply(p.t1));
 				} else
 					result = true;

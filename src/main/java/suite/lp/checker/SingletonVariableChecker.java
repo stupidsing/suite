@@ -65,7 +65,7 @@ public class SingletonVariableChecker {
 				node = tree.getRight();
 				continue;
 			} else
-				new NodeRead(node).children.forEach(p -> {
+				NodeRead.of(node).children.forEach(p -> {
 					scan(p.t0);
 					scan(p.t1);
 				});

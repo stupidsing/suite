@@ -40,7 +40,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 				result = 31 * result + hash(tree.getRight());
 				return result;
 			} else {
-				NodeRead nr = new NodeRead(node);
+				NodeRead nr = NodeRead.of(node);
 				int result = Objects.hash(nr.type, nr.terminal, nr.op);
 				for (Pair<Node, Node> p : nr.children)
 					result = 31 * result + hash(p.t0) ^ hash(p.t1);

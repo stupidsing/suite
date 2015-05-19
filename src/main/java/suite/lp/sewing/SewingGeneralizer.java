@@ -63,7 +63,7 @@ public class SewingGeneralizer extends VariableMapping {
 					Fun<Env, Node> rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
-			} else if ((nr = new NodeRead(node)).children.size() > 0) {
+			} else if ((nr = NodeRead.of(node)).children.size() > 0) {
 				List<Pair<Node, Fun<Env, Node>>> ps = Read.from(nr.children) //
 						.map(p -> Pair.of(p.t0, compile(p.t1))) //
 						.toList();

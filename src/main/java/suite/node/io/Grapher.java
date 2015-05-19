@@ -70,7 +70,7 @@ public class Grapher {
 			ids.put(key, id = ngs.size());
 			ngs.add(null);
 
-			NodeRead nr = new NodeRead(node);
+			NodeRead nr = NodeRead.of(node);
 
 			List<IntPair> childrenx = Read.from(nr.children) //
 					.map(p -> IntPair.of(graph0(ids, p.t0), graph0(ids, p.t1))) //

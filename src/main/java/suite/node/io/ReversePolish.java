@@ -99,7 +99,7 @@ public class ReversePolish {
 				deque.push(tree.getRight());
 				deque.push(tree.getLeft());
 			} else {
-				NodeRead nr = new NodeRead(n);
+				NodeRead nr = NodeRead.of(n);
 				for (Pair<Node, Node> pair : nr.children) {
 					deque.push(pair.t1);
 					deque.push(pair.t0);

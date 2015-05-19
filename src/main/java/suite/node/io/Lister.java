@@ -32,7 +32,7 @@ public class Lister {
 	}
 
 	private Streamlet<IList<Node>> leaves(Node node, IList<Node> prefix) {
-		NodeRead nr = new NodeRead(node);
+		NodeRead nr = NodeRead.of(node);
 		Streamlet<IList<Node>> st;
 
 		if (nr.type == ReadType.LIST || nr.type == ReadType.TUPLE)
