@@ -28,10 +28,19 @@ public class Rewriter {
 		DICT, LIST, TERM, TREE, TUPLE
 	};
 
-	public static class NodeRead {
+	public static class NodeHead {
 		public final ReadType type;
 		public final Node terminal;
 		public final Operator op;
+
+		public NodeHead(ReadType type, Node terminal, Operator op) {
+			this.type = type;
+			this.terminal = terminal;
+			this.op = op;
+		}
+	}
+
+	public static class NodeRead extends NodeHead {
 		public final List<Pair<Node, Node>> children;
 
 		public static NodeRead of(Node node) {
@@ -81,9 +90,7 @@ public class Rewriter {
 		}
 
 		private NodeRead(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
-			this.type = type;
-			this.terminal = terminal;
-			this.op = op;
+			super(type, terminal, op);
 			this.children = children;
 		}
 	}

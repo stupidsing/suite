@@ -15,6 +15,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.node.io.Rewriter.NodeHead;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.ReadType;
 import suite.streamlet.As;
@@ -40,10 +41,7 @@ public class Grapher {
 		}
 	}
 
-	private class NodeGraph {
-		private ReadType type;
-		private Node terminal;
-		private Operator op;
+	private class NodeGraph extends NodeHead {
 		private List<IntPair> children;
 
 		private NodeGraph(Node terminal) {
@@ -51,9 +49,7 @@ public class Grapher {
 		}
 
 		private NodeGraph(ReadType type, Node terminal, Operator op, List<IntPair> children) {
-			this.type = type;
-			this.terminal = terminal;
-			this.op = op;
+			super(type, terminal, op);
 			this.children = children;
 		}
 	}
