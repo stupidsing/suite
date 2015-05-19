@@ -79,8 +79,8 @@ public class Formatter {
 
 	public static String graphize(Node node) {
 		Grapher grapher = new Grapher();
-		int fn = grapher.graph(node);
-		return grapher.toString() + "return(" + fn + ")\n";
+		grapher.graph(node);
+		return grapher.toString();
 	}
 
 	public static String treeize(Node node) {

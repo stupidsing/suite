@@ -28,6 +28,7 @@ import suite.streamlet.Read;
 public class Grapher {
 
 	private List<NodeGraph> ngs = new ArrayList<>();
+	private int id;
 
 	private static class IntPair {
 		private int t0;
@@ -54,8 +55,8 @@ public class Grapher {
 		}
 	}
 
-	public int graph(Node node) {
-		return graph0(new HashMap<>(), node);
+	public void graph(Node node) {
+		id = graph0(new HashMap<>(), node);
 	}
 
 	private int graph0(Map<IdentityKey<Node>, Integer> ids, Node node) {
@@ -78,7 +79,7 @@ public class Grapher {
 		return id;
 	}
 
-	public Node ungraph(int id) {
+	public Node ungraph() {
 		int size = ngs.size();
 
 		List<Node> nodes = Read.from(ngs).map(ng -> {
@@ -201,6 +202,7 @@ public class Grapher {
 			sb.append(s + "\n");
 		}
 
+		sb.append("return(" + id + ")\n");
 		return sb.toString();
 	}
 

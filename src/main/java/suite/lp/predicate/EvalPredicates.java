@@ -105,16 +105,16 @@ public class EvalPredicates {
 
 	public BuiltinPredicate graphGeneralize = PredicateUtil.fun(n -> {
 		Grapher grapher = new Grapher();
-		int id = grapher.graph(n);
+		grapher.graph(n);
 		grapher.generalize();
-		return grapher.ungraph(id);
+		return grapher.ungraph();
 	});
 
 	public BuiltinPredicate graphSpecialize = PredicateUtil.fun(n -> {
 		Grapher grapher = new Grapher();
-		int id = grapher.graph(n);
+		grapher.graph(n);
 		grapher.specialize();
-		return grapher.ungraph(id);
+		return grapher.ungraph();
 	});
 
 	public BuiltinPredicate hash = PredicateUtil.fun(n -> Int.of(n.hashCode()));
