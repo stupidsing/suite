@@ -10,7 +10,7 @@
 	, import.path "fc/fc-lazyify.sl"
 	, import.path "fc/fc-optimize.sl"
 	, import.path "fc/fc-parse.sl"
-	, import.path "fc/fc-reduce-tail-call.sl"
+	, import.path "fc/fc-reduce-tail-recursion.sl"
 	, import.path "fc/fc-rewrite.sl"
 	, import.path "rbt.sl"
 #
@@ -24,7 +24,7 @@ compile-function .mode .do0 (FRAME l:.c,)
 		; .mode = EAGER, .do1 = .do2
 	)
 	, !, once (.mode = LAZY, .do2 = .do3
-		; .mode = EAGER, fc-reduce-tail-call .do2 .do3
+		; .mode = EAGER, fc-reduce-tail-recursion .do2 .do3
 	)
 	, !, fc-optimize .do3 .do4
 	, .c0 = (ENTER, .c1)

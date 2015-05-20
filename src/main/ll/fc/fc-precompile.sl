@@ -33,7 +33,7 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Lazyifying", nl
 	, !, fc-lazyify .do1 .dol2
 	, !, write "Reducing tail recursions", nl
-	, !, fc-reduce-tail-call .do1 .do2
+	, !, fc-reduce-tail-recursion .do1 .do2
 	, !, write "Optimizing", nl
 	, !, fc-optimize-flow .do2 .do3
 	, !, fc-optimize-flow .dol2 .dol3

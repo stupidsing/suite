@@ -81,7 +81,7 @@ cg-opt-stack-usage .insns .insns #
 
 -- Return instruction would actually perform leave (i.e. frame restoration).
 -- We can skip the LEAVE instruction if it obstruct optimizations.
--= done by fc-reduce-tail-call instead
+-= done by fc-reduce-tail-recursion instead
 cg-opt-tail-calls .li0 .ri0
 	:- .li0 = (.call .op, .li1)
 	, member (CALL/JUMP, CALL-THUNK/JUMP-CLOSURE,) .call/.jump
