@@ -47,13 +47,9 @@ fc-infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	, fc-infer-type-rule .then .env .tr1/.tr2 .type
 	, fc-infer-type-rule .else .env .tr2/.trx .type
 #
-fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
-	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
-	, fc-infer-type-rule .param .ue/.ve/.te .tr1/.tr2 .actualParamType
-	, .tr2 = (SUB-SUPER-TYPES .te (FUN-OF .signParamType .type) .funType
-		, SUB-SUPER-TYPES .te .actualParamType .signParamType
-		, .trx
-	)
+fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .returnType
+	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 (FUN-OF .paramType .returnType)
+	, fc-infer-type-rule .param .ue/.ve/.te .tr1/.trx .paramType
 #
 fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
