@@ -74,10 +74,10 @@ fc-infer-type-rule (
 	, .te1 = (.definedType/.class/.typeVars, .te)
 	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
 #
-fc-infer-type-rule (PRAGMA (TYPE-CAST .type) .do) .ue/.ve/.te .tr0/.trx .type
+fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !
-	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .type0
-	, .subType = .type0, .superType = .type
+	, .type = .superType
+	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
@@ -153,12 +153,8 @@ fc-find-simple-type (.tag .var) .ue/_/_ .type
 #
 
 fc-infer-compatible-types .a .b .ue/.ve/.te .tr0/.trx .type
-	:- fc-infer-type-rule .a .ue/.ve/.te .tr0/.tr1 .type0
-	, fc-infer-type-rule .b .ue/.ve/.te .tr1/.tr2 .type1
-	, .tr2 = (SUB-SUPER-TYPES .te .type0 .type
-		, SUB-SUPER-TYPES .te .type1 .type
-		, .trx
-	)
+	:- fc-infer-type-rule .a .ue/.ve/.te .tr0/.tr1 .type
+	, fc-infer-type-rule .b .ue/.ve/.te .tr1/.trx .type
 #
 
 fc-resolve-type-rules .tr
