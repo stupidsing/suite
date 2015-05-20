@@ -215,7 +215,8 @@ fc-resolve-type-rules1 (TYPE-IN-TYPES .t .ts, .tr1)
 #
 fc-resolve-type-rules1 _ :- !, fc-error "Not enough type information" #
 
-fc-resolve-sub-super-types _ .t .t #
+fc-resolve-sub-super-types _ .t .t
+#
 fc-resolve-sub-super-types .te .t0 .tx
 	:- bound .t0
 	, fc-sub-super-type-pair .te .t0 .t1
