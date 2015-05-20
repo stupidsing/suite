@@ -95,12 +95,6 @@ fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
 	, fc-infer-type-rule .do .env .tr1/.trx .type
 #
-fc-infer-type-rule (TCO .iter .in) .env .tr0/.trx (FUN-OF .paramType .type)
-	:- !
-	, .tupleType = (PAIR-OF BOOLEAN (PAIR-OF .paramType .type))
-	, fc-infer-type-rule .in .env .tr0/.tr1 .paramType
-	, fc-infer-type-rule .iter .env .tr1/.trx (FUN-OF .paramType .tupleType)
-#
 fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- member (' + ',) .oper, !
 	, fc-infer-compatible-types .left .right .env .tr0/.tr1 .type
