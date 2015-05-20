@@ -77,6 +77,7 @@ public class SewingProver {
 		private IList<Trampoline> rems = IList.end(); // Continuations
 		private IList<Trampoline> alts = IList.end(); // Alternatives
 		private Prover prover;
+		private String indent = "";
 
 		private Runtime(ProverConfig pc, Env env, Trampoline tr) {
 			this.env = env;
@@ -156,8 +157,11 @@ public class SewingProver {
 
 	private void compileAll() {
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
+			Prototype prototype = entry.t0;
+			boolean isTrace = isTrace(prototype);
+
 			List<Rule> rules = new ArrayList<>(entry.t1);
-			Trampoline tr0 = compileRules(rules);
+			Trampoline tr0 = compileRules(rules, isTrace);
 			Trampoline tr;
 
 			// Second-level indexing optimization
@@ -168,7 +172,7 @@ public class SewingProver {
 
 				if (!rulesByProto1.containsKey(null)) {
 					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
-							.map(kv -> Pair.of(kv.t0, compileRules(kv.t1))) //
+							.map(kv -> Pair.of(kv.t0, compileRules(kv.t1, isTrace))) //
 							.collect(As.map());
 
 					tr = rt -> {
@@ -184,14 +188,15 @@ public class SewingProver {
 			} else
 				tr = tr0;
 
-			getTrampolineByPrototype(entry.t0)[0] = tr;
+			getTrampolineByPrototype(prototype)[0] = tr;
 		}
 	}
 
-	private Trampoline compileRules(List<Rule> rules) {
+	private Trampoline compileRules(List<Rule> rules, boolean isTrace) {
 		boolean hasCut = Read.from(rules) //
-				.map(rule -> new TreeRewriter().contains(SewingGeneralizer.cut,	rule.tail)) //
+				.map(rule -> new TreeRewriter().contains(SewingGeneralizer.cut, rule.tail)) //
 				.fold(false, (b0, b1) -> b0 || b1);
+
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			SewingBinder sb = new SewingBinder();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
@@ -202,7 +207,7 @@ public class SewingProver {
 		Trampoline tr0 = or(trs);
 		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
 		Trampoline tr2 = saveEnv(tr1);
-		return Suite.isProverTrace ? log(tr2) : tr2;
+		return isTrace ? log(tr2) : tr2;
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -358,14 +363,19 @@ public class SewingProver {
 
 	private Trampoline log(Trampoline tr) {
 		return rt -> {
+			String indent0 = rt.indent;
+			rt.indent = indent0 + "| ";
 			String m = Formatter.dump(rt.query);
-			LogUtil.info("QUERY " + m);
+
+			LogUtil.info(indent0 + "QUERY " + m);
 			rt.pushRem(rt_ -> {
-				LogUtil.info("OK___ " + m);
+				rt.indent = indent0;
+				LogUtil.info(indent0 + "OK___ " + m);
 				return okay;
 			});
 			rt.pushAlt(rt_ -> {
-				LogUtil.info("FAIL_ " + m);
+				rt.indent = indent0;
+				LogUtil.info(indent0 + "FAIL_ " + m);
 				return fail;
 			});
 			return tr;
@@ -469,6 +479,19 @@ public class SewingProver {
 
 	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {
 		return trampolinesByPrototype.computeIfAbsent(prototype, k -> new Trampoline[1]);
+	}
+
+	private boolean isTrace(Prototype prototype) {
+		boolean isTrace;
+		if (Suite.isProverTrace) {
+			Node head = prototype.head;
+			String name = head instanceof Atom ? ((Atom) head).name : null;
+
+			isTrace = name != null //
+					&& !name.startsWith("rbt-");
+		} else
+			isTrace = false;
+		return isTrace;
 	}
 
 }

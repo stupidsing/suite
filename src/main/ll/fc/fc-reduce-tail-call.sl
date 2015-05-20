@@ -27,6 +27,10 @@ fc-reduce-tail-call0 .fun .vars/.vars .do (PAIR (BOOLEAN false) PAIR .expr (PRAG
 	, fc-values-invoke .values (VAR .fun) .do
 	, !
 #
+fc-reduce-tail-call0 .fun .vars0/.varsx (DEF-VARS .vars .do0) (DEF-VARS .vars .dox) .flag
+	:- !
+	, fc-reduce-tail-call0 .fun .vars0/.varsx .do0 .dox .flag
+#
 fc-reduce-tail-call0 .fun .vars0/.varsx (FUN .var .do) .pair .flag
 	:- !
 	, .vars1 = (.var, .vars0)
