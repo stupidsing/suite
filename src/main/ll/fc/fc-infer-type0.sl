@@ -96,7 +96,10 @@ fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	, fc-infer-type-rule .do .env .tr1/.trx .type
 #
 fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
-	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
+	:- member (' + ',) .oper, !
+	, fc-infer-compatible-types .left .right .env .tr0/.tr1 .type
+	, .tr1 = (TYPE-IN-TYPES .type (NUMBER,), .trx)
+	; member (' - ', ' * ', ' / ', ' %% ',) .oper, !
 	, fc-infer-compatible-types .left .right .env .tr0/.trx .type
 	, .type = NUMBER
 	; member (' = ', ' != ', ' > ', ' < ', ' >= ', ' <= ',) .oper, !
@@ -183,6 +186,7 @@ fc-sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
 #
 
 fc-resolve-easy-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
+fc-resolve-easy-type-rule (TYPE-IN-TYPES _) #
 
 -- When resolving types:
 -- - Try bind equivalent sub-type to super-type relation;
@@ -199,6 +203,9 @@ fc-resolve-type-rules1 (DUMP .d, .tr1)
 #
 fc-resolve-type-rules1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
 	:- !, fc-resolve-sub-super-types .te .t0 .t1, fc-resolve-type-rules1 .tr1
+#
+fc-resolve-type-rules1 (TYPE-IN-TYPES .t .ts, .tr1)
+	:- !, member .ts .t, fc-resolve-type-rules1 .tr1
 #
 fc-resolve-type-rules1 _ :- !, fc-error "Not enough type information" #
 
@@ -217,6 +224,24 @@ fc-sub-super-type-pair .te .type1 .class1 -- reduce to type classes
 	:- once (bound .type1; bound .class1)
 	, member .te .type/.class/.typeVars
 	, fc-instantiate-type .typeVars .type/.class .type1/.class1
+#
+fc-sub-super-type-pair .te .t0 .t1 :- bound .t0, fc-sub-super-type-pair0 .te .t0 .t1 #
+
+-- Morph children types to their supers
+fc-sub-super-type-pair0 .te (FUN-OF .it0 .ot) (FUN-OF .it1 .ot)
+	:- fc-sub-super-type-pair .te .it1 .it0
+#
+fc-sub-super-type-pair0 .te (FUN-OF .it .ot0) (FUN-OF .it .ot1)
+	:- fc-sub-super-type-pair .te .ot0 .ot1
+#
+fc-sub-super-type-pair0 .te (LIST-OF .t0) (LIST-OF .t1)
+	:- fc-sub-super-type-pair .te .t0 .t1
+#
+fc-sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .st0 .t1)
+	:- fc-sub-super-type-pair .te .t0 .st0
+#
+fc-sub-super-type-pair0 .te (PAIR-OF .t0 .t1) (PAIR-OF .t0 .st1)
+	:- fc-sub-super-type-pair .te .t1 .st1
 #
 
 fc-instantiate-type () .tc .tc #
