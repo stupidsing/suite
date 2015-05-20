@@ -2,7 +2,7 @@ package suite.fp;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class TailRecursionTest {
 		List<String> libraries0 = Suite.libraries;
 
 		try {
-			Suite.libraries = new ArrayList<>();
+			Suite.libraries = Collections.emptyList();
 
 			assertEquals(Int.of(0), Suite.evaluateFun("" //
 					+ "define dec := n => if (n > 1) then (dec {n - 1}) else 0 \n" //
