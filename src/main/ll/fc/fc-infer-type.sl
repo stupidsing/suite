@@ -160,12 +160,14 @@ fc-resolve-type-rules .tr
 	, once (fc-resolve-type-rules0 .tr; fc-error "Unmatched types")
 #
 
-fc-resolve-type-rules0 () :- !
+fc-resolve-type-rules0 ()
+	:- !
 #
 fc-resolve-type-rules0 (SUB-SUPER-TYPES .te .t0 .tx, .tr1)
 	:- !, fc-resolve-sub-super-types .te .t0 .tx, fc-resolve-type-rules0 .tr1
 #
-fc-resolve-type-rules0 _ :- !, fc-error "Not enough type information"
+fc-resolve-type-rules0 _
+	:- !, fc-error "Not enough type information"
 #
 
 fc-resolve-sub-super-types _ .t .t
