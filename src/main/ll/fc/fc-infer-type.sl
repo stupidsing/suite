@@ -187,11 +187,8 @@ fc-sub-super-type-pair .te .subType .superType
 	, generalize .tc .subType/.superType
 #
 
-fc-instantiate-type () .tc .tc #
-fc-instantiate-type (.typeVar, .typeVars) .tc0 .tcx
-	:- replace .typeVar _ .tc0 .tc1
-	, fc-instantiate-type .typeVars .tc1 .tcx
-#
+fc-instantiate-type () .t .t #
+fc-instantiate-type (.v, .vs) .t0 .tx :- replace .v _ .t0 .t1 , fc-instantiate-type .vs .t1 .tx #
 
 fc-default-fun-type () (LIST-OF _) #
 fc-default-fun-type +callintrn-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ _)) #
