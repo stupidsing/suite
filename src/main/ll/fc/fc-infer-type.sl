@@ -97,13 +97,13 @@ fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 fc-infer-type-rule (TREE .oper .left .right) .env .tr0/.trx .type
 	:- once (
 		member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper, !
-		, .type0 = NUMBER
+		, .inputType = NUMBER
 		, .type = NUMBER
 		; member (' = ', ' != ', ' > ', ' < ', ' >= ', ' <= ',) .oper, !
 		, .type = BOOLEAN
 	)
-	, fc-infer-type-rule .left .env .tr0/.tr1 .type0
-	, fc-infer-type-rule .right .env .tr1/.trx .type0
+	, fc-infer-type-rule .left .env .tr0/.tr1 .inputType
+	, fc-infer-type-rule .right .env .tr1/.trx .inputType
 #
 fc-infer-type-rule (USING _ _ .lib .do) .env .tr/.tr .type
 	:- fc-load-precompiled-library .lib (.pred # _ # _ #)

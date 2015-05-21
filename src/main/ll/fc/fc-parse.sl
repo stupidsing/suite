@@ -176,7 +176,9 @@ fc-parse-sugar (do >> .do) (
 	}
 ) :- ! #
 fc-parse-sugar (expand .var := .value >> .do) .do1
-	:- !, replace .var .value .do .do1
+	:- !
+	, generalize .var/.value .var1/.value1
+	, rewrite .var1 .value1 .do .do1
 #
 fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p := .q) .thenElse) :- ! #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.q := .p) .thenElse) :- ! #
