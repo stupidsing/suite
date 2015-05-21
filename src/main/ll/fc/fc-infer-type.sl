@@ -68,8 +68,9 @@ fc-infer-type-rule (
 	PRAGMA (DEF-TYPE .definedType .class .typeVars) .do
 ) .ue/.ve/.te .tr .type
 	:- !
-	, .te1 = (.definedType/.class/.typeVars, .te)
-	, fc-infer-type-rule .do .ue/.ve/.te1 .tr .type
+	, fc-instantiate-type .typeVars .definedType/.class .pair
+	, specialize .pair .pair1
+	, fc-infer-type-rule .do .ue/.ve/(.pair1, .te) .tr .type
 #
 fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !
@@ -159,43 +160,13 @@ fc-resolve-type-rules .tr
 	, once (fc-resolve-type-rules0 .tr; fc-error "Unmatched types")
 #
 
-fc-resolve-type-rules0 .tr
-	:- once (fc-sort-resolve-type-rules .tr .ps .nps)
-	, (.ps = (), !, fc-resolve-type-rules1 .tr
-		; fc-resolve-type-rules1 .ps, fc-resolve-type-rules0 .nps
-	)
+fc-resolve-type-rules0 () :- !
 #
-
--- Sort the resolve type rules by easiness
-fc-sort-resolve-type-rules () () () :- !
+fc-resolve-type-rules0 (SUB-SUPER-TYPES .te .t0 .tx, .tr1)
+	:- !, fc-resolve-sub-super-types .te .t0 .tx, fc-resolve-type-rules0 .tr1
 #
-fc-sort-resolve-type-rules (.tr, .trs) (.tr, .ps) .nps
-	:- fc-resolve-easy-type-rule .tr
-	, !, fc-sort-resolve-type-rules .trs .ps .nps
+fc-resolve-type-rules0 _ :- !, fc-error "Not enough type information"
 #
-fc-sort-resolve-type-rules (.tr, .trs) .ps (.tr, .nps)
-	:- fc-sort-resolve-type-rules .trs .ps .nps
-#
-
-fc-resolve-easy-type-rule (SUB-SUPER-TYPES _ .t _) :- bound .t #
-
--- When resolving types:
--- - Try bind equivalent sub-type to super-type relation;
---   - Do not resolve relation when both types are not clear;
---   - Try reduce to type classes to resolve;
---   - Try morph children types to resolve;
---   - Generalize generic types to resolve;
---   - Try delay resolve if both types are unbound;
--- - Try bind generic-type and specialized-type relation;
--- - Try bind type choice relation.
-fc-resolve-type-rules1 () :- ! #
-fc-resolve-type-rules1 (DUMP .d, .tr1)
-	:- !, dump .d, nl, fc-resolve-type-rules1 .tr1
-#
-fc-resolve-type-rules1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
-	:- !, fc-resolve-sub-super-types .te .t0 .t1, fc-resolve-type-rules1 .tr1
-#
-fc-resolve-type-rules1 _ :- !, fc-error "Not enough type information" #
 
 fc-resolve-sub-super-types _ .t .t
 #
@@ -208,10 +179,10 @@ fc-resolve-sub-super-types .te .t0 .tx
 	, fc-resolve-sub-super-types .te .t0 .t1
 #
 
-fc-sub-super-type-pair .te .type1 .class1 -- reduce to type classes
-	:- once (bound .type1; bound .class1)
-	, member .te .type/.class/.typeVars
-	, fc-instantiate-type .typeVars .type/.class .type1/.class1
+fc-sub-super-type-pair .te .subType .superType
+	:- once (bound .subType; bound .superType)
+	, member .te .tc
+	, generalize .tc .subType/.superType
 #
 
 fc-instantiate-type () .tc .tc #

@@ -21,7 +21,8 @@
 --   list, and generalized back when being used.
 --
 
-fc-infer-type-rules () _ .tr/.tr () :- ! #
+fc-infer-type-rules () _ .tr/.tr () :- !
+#
 fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 	:- fc-infer-type-rule .e .env .tr0/.tr1 .t
 	, fc-infer-type-rules .es .env .tr1/.trx .ts
@@ -84,7 +85,6 @@ fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
 	, .classType = CLASS _
 	, fc-infer-type-rule (PRAGMA (TYPE-CAST .classType) .pair) .env .tr .classType
 #
-#
 fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 	:- !
 	, fc-infer-type-rule .do .env .tr1/() .type
@@ -131,7 +131,8 @@ fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/
 	, fc-dict-add .var/.varType1 .ue0/.ue1
 	, fc-define-var-types .sp .vvs .vvts .ue1/.uex
 #
-fc-define-var-types _ () () .ue/.ue #
+fc-define-var-types _ () () .ue/.ue
+#
 
 fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
 	:- once (fc-infer-type-rule .value .env .tr0/.tr1 .varType
@@ -139,7 +140,8 @@ fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
 	)
 	, fc-infer-var-types .vvts .env .tr1/.trx
 #
-fc-infer-var-types () _ .tr/.tr #
+fc-infer-var-types () _ .tr/.tr
+#
 
 fc-find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
@@ -176,7 +178,8 @@ fc-resolve-type-rules0 .tr
 #
 
 -- Sort the resolve type rules by easiness
-fc-sort-resolve-type-rules () () () :- ! #
+fc-sort-resolve-type-rules () () () :- !
+#
 fc-sort-resolve-type-rules (.tr, .trs) (.tr, .ps) .nps
 	:- fc-resolve-easy-type-rule .tr
 	, !, fc-sort-resolve-type-rules .trs .ps .nps
@@ -197,7 +200,8 @@ fc-resolve-easy-type-rule (TYPE-IN-TYPES _) #
 --   - Try delay resolve if both types are unbound;
 -- - Try bind generic-type and specialized-type relation;
 -- - Try bind type choice relation.
-fc-resolve-type-rules1 () :- ! #
+fc-resolve-type-rules1 () :- !
+#
 fc-resolve-type-rules1 (DUMP .d, .tr1)
 	:- !, dump .d, nl, fc-resolve-type-rules1 .tr1
 #
@@ -207,7 +211,8 @@ fc-resolve-type-rules1 (SUB-SUPER-TYPES .te .t0 .t1, .tr1)
 fc-resolve-type-rules1 (TYPE-IN-TYPES .t .ts, .tr1)
 	:- !, member .ts .t, fc-resolve-type-rules1 .tr1
 #
-fc-resolve-type-rules1 _ :- !, fc-error "Not enough type information" #
+fc-resolve-type-rules1 _ :- !, fc-error "Not enough type information"
+#
 
 fc-resolve-sub-super-types _ .t .t
 #
