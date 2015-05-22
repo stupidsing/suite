@@ -47,9 +47,9 @@ fc-infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	, fc-infer-type-rule .then .env .tr1/.tr2 .type
 	, fc-infer-type-rule .else .env .tr2/.trx .type
 #
-fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .returnType
-	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 (FUN-OF .paramType .returnType)
-	, fc-infer-type-rule .param .ue/.ve/.te .tr1/.trx .paramType
+fc-infer-type-rule (INVOKE .param .callee) .env .tr0/.trx .returnType
+	:- fc-infer-type-rule .callee .env .tr0/.tr1 (FUN-OF .paramType .returnType)
+	, fc-infer-type-rule .param .env .tr1/.trx .paramType
 #
 fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
@@ -72,10 +72,10 @@ fc-infer-type-rule (
 	, specialize .pair .pair1
 	, fc-infer-type-rule .do .ue/.ve/(.pair1, .te) .tr .type
 #
-fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
+fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .env .tr0/.trx .type
 	:- !
 	, .type = .superType
-	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
+	, fc-infer-type-rule .do .env .tr0/.tr1 .subType
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
