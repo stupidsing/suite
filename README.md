@@ -26,6 +26,8 @@ and imports the project into any workspace.
 Eclipse -> Window -> Preferences -> Java -> Installed JREs -> (Your JRE)
 -> Edit -> Default VM Arguments -> Enter "-Xss2m"
 
+or use a 64-bit JVM
+
 
 ### How to evaluate logical programs?
 
