@@ -4,8 +4,8 @@ data color as Black >>
 data (rb-tree {:t}) over :t as Tree (color, rb-tree {:t}, :t, rb-tree {:t}) >>
 data (rb-tree {:t}) over :t as Empty >>
 
-define cr := color of Red >>
-define cb := color of Black >>
+define cr := Red >>
+define cb := Black >>
 define rbt-insert := (:t => :t -> rb-tree {:t} -> rb-tree {:t}) of (
 v =>
 	define add0 := (:t => rb-tree {:t} -> rb-tree {:t}) of
