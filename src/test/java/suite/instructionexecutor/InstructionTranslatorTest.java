@@ -1,6 +1,7 @@
 package suite.instructionexecutor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -47,6 +48,17 @@ public class InstructionTranslatorTest {
 				+ "define atom-string := +getintrn {atom:INTRN!BasicIntrinsics.atomString} >> " //
 				+ "+callintrn-v1 {atom-string} {atom:ATOM}"), isLazy), isLazy);
 		assertEquals("ATOM", node);
+	}
+
+	@Test
+	public void testError() throws IOException {
+		String program = "error";
+		try {
+			assertFunctional(program, false, Int.of(9));
+			assertTrue(false);
+		} catch (RuntimeException ex) {
+			assertEquals("Error termination", ex.getMessage());
+		}
 	}
 
 	@Test

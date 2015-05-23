@@ -147,6 +147,7 @@ public class InstructionAnalyzer {
 			case BACKUPDSP_____:
 			case BINDMARK______:
 			case COMPARE_______:
+			case ERROR_________:
 			case EVALADD_______:
 			case EVALDIV_______:
 			case EVALMOD_______:

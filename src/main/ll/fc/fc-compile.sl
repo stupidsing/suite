@@ -18,8 +18,8 @@ fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
 	, fc-compile-vars .vrs .frame/.ve1 .c0/.c1
 	, fc-compile .do .frame/.ve1 .c1/.cx/.reg
 #
-fc-compile ERROR _ .c0/.cx/_
-	:- .c0 = (ERROR, .cx)
+fc-compile ERROR _ .c0/.cx/.reg
+	:- .c0 = (ERROR .reg, .cx)
 #
 fc-compile (FUN .var .do) .frame/.ve .c0/.cx/.thunkReg
 	:- .c0 = (ASSIGN-THUNK .thunkReg l:(FRAME l:.f,), .cx)

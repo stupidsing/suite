@@ -267,6 +267,9 @@ public class InstructionTranslator implements Closeable {
 				String previousFrame = isRequireParent ? "(#{prev-fr-class}) frame" : "null";
 				app("#{fr} = new #{fr-class}(" + previousFrame + ")");
 				break;
+			case ERROR_________:
+				app("throw new RuntimeException(\"Error termination\")");
+				break;
 			case EVALADD_______:
 				app("#{reg} = #{reg-num} + #{reg-num}", op0, op1, op2);
 				break;
