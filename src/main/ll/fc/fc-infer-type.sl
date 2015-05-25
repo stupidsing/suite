@@ -72,10 +72,10 @@ fc-infer-type-rule (
 	, specialize .pair .pair1
 	, fc-infer-type-rule .do .ue/.ve/(.pair1, .te) .tr .type
 #
-fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .env .tr0/.trx .type
+fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !
 	, .type = .superType
-	, fc-infer-type-rule .do .env .tr0/.tr1 .subType
+	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
 	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType

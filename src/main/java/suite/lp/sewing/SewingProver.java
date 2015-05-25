@@ -488,6 +488,7 @@ public class SewingProver {
 			String name = head instanceof Atom ? ((Atom) head).name : null;
 
 			isTrace = name != null //
+					&& !name.startsWith("member") //
 					&& !name.startsWith("rbt-");
 		} else
 			isTrace = false;
