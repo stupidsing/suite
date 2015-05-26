@@ -114,10 +114,10 @@ public class Reactive<T> {
 		sink.sink(sink_);
 	}
 
-	public Streamlet<T> streamlet() {
+	public Outlet<T> outlet() {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
 		sink.sink(queue::offerQuietly);
-		return Read.from(() -> {
+		return new Outlet<>(() -> {
 			try {
 				return queue.take();
 			} catch (InterruptedException ex) {
