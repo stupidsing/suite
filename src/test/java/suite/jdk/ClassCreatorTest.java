@@ -17,7 +17,6 @@ public class ClassCreatorTest {
 
 			cw.visit(49, ACC_PUBLIC + ACC_SUPER, "Hello", null, "java/lang/Object",
 					new String[] { "java/util/concurrent/Callable" });
-			cw.visitSource("Hello.java", null);
 
 			{
 				MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
