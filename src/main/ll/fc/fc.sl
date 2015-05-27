@@ -100,6 +100,9 @@ fc-define-default-fun 1 +pright TAIL #
 
 fc-error .m :- !, write.error .m, nl, fail #
 
+fc-instantiate () .t .t #
+fc-instantiate (.v, .vs) .t0 .tx :- replace .v _ .t0 .t1 , fc-instantiate .vs .t1 .tx #
+
 fc-dict-get .v .t :- rbt-get .v .t, ! #
 
 -- use replace, necessary to redefine already-defined variables

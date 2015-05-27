@@ -65,12 +65,11 @@ fc-infer-type-rule (
 	, fc-infer-type-rule .do .ue/.ve1/.te .tr1/.trx .type
 #
 fc-infer-type-rule (
-	PRAGMA (DEF-TYPE .definedType .class .typeVars) .do
+	PRAGMA (DEF-TYPE .definedType .class) .do
 ) .ue/.ve/.te .tr .type
 	:- !
-	, fc-instantiate-type .typeVars .definedType/.class .pair
-	, specialize .pair .pair1
-	, fc-infer-type-rule .do .ue/.ve/(.pair1, .te) .tr .type
+	, specialize .definedType/.class .pair
+	, fc-infer-type-rule .do .ue/.ve/(.pair, .te) .tr .type
 #
 fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !
@@ -186,9 +185,6 @@ fc-sub-super-type-pair .te .subType .superType
 	, member .te .tc
 	, generalize .tc .subType/.superType
 #
-
-fc-instantiate-type () .t .t #
-fc-instantiate-type (.v, .vs) .t0 .tx :- replace .v _ .t0 .t1 , fc-instantiate-type .vs .t1 .tx #
 
 fc-default-fun-type () (LIST-OF _) #
 fc-default-fun-type +callintrn-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ _)) #

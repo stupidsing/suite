@@ -53,10 +53,9 @@ fc-rewrite (WRAP .do0) (WRAP .do1) .ts0/.tsx
 
 fc-rewrite-pragma DEF-OUTSIDE DEF-OUTSIDE .ts/.ts
 #
-fc-rewrite-pragma (DEF-TYPE .type0 .class0 .typeVars0) (DEF-TYPE .type1 .class1 .typeVars1) .ts/.ts
+fc-rewrite-pragma (DEF-TYPE .type0 .class0) (DEF-TYPE .type1 .class1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 	, fc-rewrite-type .class0 .class1
-	, fc-rewrite-type-list .typeVars0 .typeVars1
 #
 fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
@@ -97,13 +96,4 @@ fc-rewrite-type NUMBER NUMBER
 fc-rewrite-type (PAIR-OF .leftType0 .rightType0) (PAIR-OF .leftType1 .rightType1)
 	:- fc-rewrite-type .leftType0 .leftType1
 	, fc-rewrite-type .rightType0 .rightType1
-#
-fc-rewrite-type (TYPE-VAR .typeVar) (TYPE-VAR .typeVar)
-#
-
-fc-rewrite-type-list () ()
-#
-fc-rewrite-type-list (.type0, .types0) (.type1, .types1)
-	:- fc-rewrite-type .type0 .type1
-	, fc-rewrite-type-list .types0 .types1
 #

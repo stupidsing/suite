@@ -18,10 +18,10 @@ fc-parse (.type of .value) (PRAGMA (TYPE-CAST .type1) .value1)
 	, !, fc-parse .value .value1
 #
 fc-parse (data .class over some .typeVars as .type >> .do) (
-	PRAGMA (DEF-TYPE .type1 .class1 .typeVars1) .do1
-) :- fc-parse-type .type .type1
-	, fc-parse-type-list .typeVars .typeVars1
-	, fc-parse-type .class .class1
+	PRAGMA (DEF-TYPE .type2 .class2) .do1
+) :- fc-instantiate .typeVars .type/.class .type1/.class1
+	, fc-parse-type .type1 .type2
+	, fc-parse-type .class1 .class2
 	, !, fc-parse .do .do1
 #
 fc-parse (data .class over .typeVar as .type >> .do) .do1
@@ -237,9 +237,8 @@ fc-parse-type .do (PAIR-OF .type0 .type1)
 fc-parse-type (.typeVar => .type) .type2
 	:- bound .typeVar
 	, !
-	, fc-parse-type .type .type1
-	, fc-parse-type .typeVar .typeVar1
-	, replace .typeVar1 _ .type1 .type2
+	, fc-instantiate (.typeVar,) .type .type1
+	, fc-parse-type .type1 .type2
 #
 -- Keeps contained in class definition for tuple matching.
 fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))
@@ -247,7 +246,6 @@ fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))
 	, fc-parse-type .type (CLASS .class)
 	, fc-parse-type .paramType .paramType1
 #
-fc-parse-type :.typeVar (TYPE-VAR .typeVar) :- ! #
 fc-parse-type atom:.a (ATOM-OF .a) :- ! #
 fc-parse-type boolean BOOLEAN :- ! #
 fc-parse-type number NUMBER :- ! #
