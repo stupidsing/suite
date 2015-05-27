@@ -9,7 +9,7 @@ import org.bridj.relocated.org.objectweb.asm.MethodVisitor;
 import org.bridj.relocated.org.objectweb.asm.Opcodes;
 import org.junit.Test;
 
-public class ClassCreator {
+public class ClassCreatorTest {
 
 	private class Creator implements Opcodes {
 		private Object create() throws Exception {
