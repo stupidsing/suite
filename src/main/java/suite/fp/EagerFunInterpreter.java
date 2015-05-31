@@ -12,11 +12,13 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.adt.Pair;
 import suite.immutable.IMap;
-import suite.lp.doer.Prover;
+import suite.lp.kb.RuleSet;
+import suite.lp.search.FindUtil;
+import suite.lp.search.ProverBuilder.Finder;
+import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
@@ -105,12 +107,12 @@ public class EagerFunInterpreter {
 	}
 
 	public Node eager(Node node) {
-		Prover prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
-		String query = "fc-process-function .0 .1 .2";
-		Reference parsed = new Reference();
+		Node mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
+		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
-		if (!prover.prove(Suite.substitute(query, isLazyify ? Atom.of("LAZY") : Atom.of("EAGER"), node, parsed)))
-			throw new RuntimeException("Cannot parse " + node);
+		RuleSet rs = Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl"));
+		Finder finder = new SewingProverBuilder().build(rs).apply(query);
+		Node parsed = FindUtil.collectSingle(finder, node);
 
 		Map<String, Node> df = new HashMap<>();
 		df.put(Atom.TRUE.name, Atom.TRUE);
