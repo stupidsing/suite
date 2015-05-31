@@ -123,7 +123,8 @@ fc-dict-union-replace .t0 .t1 .t2 :- rbt-union-replace .t0 .t1 .t2, ! #
 fc-dict-member .v .t :- rbt-member .v .t #
 
 -- There are few functions that might have side effects: call%i*
--- Logs are considered 'invisible', so they are not counted.
+-- Logs are theoretically 'invisible' to the execution environment, so they are
+-- still considered pure.
 
 fc-add-functions STANDARD .p (
 	data (optional {:t}) over :t as None >>
