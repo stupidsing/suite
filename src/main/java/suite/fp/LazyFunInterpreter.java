@@ -19,7 +19,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
 public class LazyFunInterpreter {
@@ -75,10 +75,6 @@ public class LazyFunInterpreter {
 			return new Mapping(parent, size + 1, indices.put(v, index));
 		}
 
-		private BiConsumer<Frame, Thunk_> setter(Node v) {
-			return (frame, t) -> frame.values.add(t);
-		}
-
 		private Fun<Frame, Thunk_> getter(Node v) {
 			Integer index = indices.get(v);
 			if (index != null) {
@@ -89,6 +85,10 @@ public class LazyFunInterpreter {
 				return frame -> fun0.apply(frame.parent);
 			} else
 				throw new RuntimeException(v + " not found");
+		}
+
+		private BiConsumer<Frame, Thunk_> setter(Node v) {
+			return (frame, t) -> frame.values.add(t);
 		}
 
 		private Frame frame(Frame parent) {
@@ -146,13 +146,13 @@ public class LazyFunInterpreter {
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
-			List<Node[]> arrays = Read.from(Tree.iter(m[0])).map(Suite.matcher(".0 .1")::apply).toList();
-			List<Node> vars = Read.from(arrays).map(m1 -> m1[0]).toList();
+			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(Suite.matcher(".0 .1")::apply);
+			Streamlet<Node> vars = arrays.map(m1 -> m1[0]);
 			int size = vars.size();
 
-			Mapping mapping1 = Read.from(vars).fold(mapping, Mapping::extend);
-			List<BiConsumer<Frame, Thunk_>> setters = Read.from(vars).map(mapping1::setter).toList();
-			List<Fun<Frame, Thunk_>> values_ = Read.from(arrays).map(m1 -> lazy0(mapping1, m1[1])).toList();
+			Mapping mapping1 = vars.fold(mapping, Mapping::extend);
+			List<BiConsumer<Frame, Thunk_>> setters = vars.map(mapping1::setter).toList();
+			List<Fun<Frame, Thunk_>> values_ = arrays.map(m1 -> lazy0(mapping1, m1[1])).toList();
 			Fun<Frame, Thunk_> expr = lazy0(mapping1, m[1]);
 
 			result = frame -> {

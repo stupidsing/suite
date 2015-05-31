@@ -19,6 +19,17 @@ public class As {
 		return Pair.of(st -> st.sink(t -> list.add(t)), () -> Read.from(list));
 	}
 
+	public static Pair<Sink<Integer>, Source<int[]>> intArray() {
+		List<Integer> list = new ArrayList<>();
+		return Pair.of(list::add, () -> {
+			int size = list.size();
+			int results[] = new int[size];
+			for (int i = 0; i < size; i++)
+				results[i] = list.get(i);
+			return results;
+		});
+	}
+
 	public static Pair<Sink<String>, Source<String>> joined(String delimiter) {
 		return joined("", delimiter, "");
 	}

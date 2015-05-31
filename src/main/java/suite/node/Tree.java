@@ -1,11 +1,13 @@
 package suite.node;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.streamlet.Outlet;
+import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Source;
 import suite.util.Util;
 
 public class Tree extends Node {
@@ -48,24 +50,23 @@ public class Tree extends Node {
 		return node == Atom.NIL || (tree = Tree.decompose(node, operator)) != null && isList(tree.getRight(), operator);
 	}
 
-	public static Iterable<Node> iter(Node node) {
+	public static Streamlet<Node> iter(Node node) {
 		return iter(node, TermOp.AND___);
 	}
 
-	public static Iterable<Node> iter(Node node0, Operator operator) {
-		return () -> new Iterator<Node>() {
-			private Tree tree = decompose(node0, operator);
+	public static Streamlet<Node> iter(Node node0, Operator operator) {
+		return new Streamlet<>(() -> Outlet.from(new Source<Node>() {
+			private Node node = node0;
 
-			public boolean hasNext() {
-				return tree != null;
+			public Node source() {
+				Tree tree = Tree.decompose(node, operator);
+				if (tree != null) {
+					node = tree.getRight();
+					return tree.getLeft();
+				} else
+					return null;
 			}
-
-			public Node next() {
-				Node next = tree.getLeft();
-				tree = Tree.decompose(tree.getRight(), operator);
-				return next;
-			}
-		};
+		}));
 	}
 
 	public static Node of(Operator operator, List<Node> nodes) {

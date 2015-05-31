@@ -60,7 +60,7 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().cons(t));
 	}
 
-	public int count() {
+	public int size() {
 		return spawn().count();
 	}
 
