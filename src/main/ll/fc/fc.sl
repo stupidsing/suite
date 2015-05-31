@@ -87,14 +87,14 @@ fc-frame-difference (.frame0 + 1) (.frame1 + 1) .frameDiff
 	:- !, fc-frame-difference .frame0 .frame1 .frameDiff
 #
 
-fc-define-default-fun 2 +callintrn-t1 CALL-INTRINSIC #
-fc-define-default-fun 3 +callintrn-t2 CALL-INTRINSIC #
-fc-define-default-fun 4 +callintrn-t3 CALL-INTRINSIC #
-fc-define-default-fun 2 +callintrn-v1 CALL-INTRINSIC #
-fc-define-default-fun 3 +callintrn-v2 CALL-INTRINSIC #
-fc-define-default-fun 4 +callintrn-v3 CALL-INTRINSIC #
+fc-define-default-fun 2 +call%i-t1 CALL-INTRINSIC #
+fc-define-default-fun 3 +call%i-t2 CALL-INTRINSIC #
+fc-define-default-fun 4 +call%i-t3 CALL-INTRINSIC #
+fc-define-default-fun 2 +call%i-v1 CALL-INTRINSIC #
+fc-define-default-fun 3 +call%i-v2 CALL-INTRINSIC #
+fc-define-default-fun 4 +call%i-v3 CALL-INTRINSIC #
 fc-define-default-fun 2 +compare COMPARE #
-fc-define-default-fun 1 +getintrn GET-INTRINSIC #
+fc-define-default-fun 1 +get%i GET-INTRINSIC #
 fc-define-default-fun 1 +is-list IS-CONS #
 fc-define-default-fun 1 +is-pair IS-CONS #
 fc-define-default-fun 2 +lcons CONS-LIST #
@@ -122,7 +122,7 @@ fc-dict-union-replace .t0 .t1 .t2 :- rbt-union-replace .t0 .t1 .t2, ! #
 
 fc-dict-member .v .t :- rbt-member .v .t #
 
--- There are few functions that are not pure: callintrn*
+-- There are few functions that are not pure: call%i*
 -- Logs are considered 'invisible', so they are not counted.
 
 fc-add-functions STANDARD .p (
@@ -131,16 +131,16 @@ fc-add-functions STANDARD .p (
 	data (either {:a} {:b}) over some (:a, :b,) as (Left :a) >>
 	data (either {:a} {:b}) over some (:a, :b,) as (Right :b) >>
 	---------------------------------------------------------------------------
-	define callintrn-t1 := (data^Intrinsic -> any -> any) of skip-type-check (i => p0 => +callintrn-t1 {i} {p0}) >>
-	define callintrn-t2 := (data^Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +callintrn-t2 {i} {p0} {p1}) >>
-	define callintrn-t3 := (data^Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +callintrn-t3 {i} {p0} {p1} {p2}) >>
-	define callintrn-v1 := (data^Intrinsic -> any -> any) of skip-type-check (i => p0 => +callintrn-v1 {i} {p0}) >>
-	define callintrn-v2 := (data^Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +callintrn-v2 {i} {p0} {p1}) >>
-	define callintrn-v3 := (data^Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +callintrn-v3 {i} {p0} {p1} {p2}) >>
+	define call%i-t1 := (data^Intrinsic -> any -> any) of skip-type-check (i => p0 => +call%i-t1 {i} {p0}) >>
+	define call%i-t2 := (data^Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-t2 {i} {p0} {p1}) >>
+	define call%i-t3 := (data^Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-t3 {i} {p0} {p1} {p2}) >>
+	define call%i-v1 := (data^Intrinsic -> any -> any) of skip-type-check (i => p0 => +call%i-v1 {i} {p0}) >>
+	define call%i-v2 := (data^Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-v2 {i} {p0} {p1}) >>
+	define call%i-v3 := (data^Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-v3 {i} {p0} {p1} {p2}) >>
 	define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) >>
 	define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => +lcons {head} {tail}) >>
 	define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) >>
-	define getintrn := (any -> data^Intrinsic) of skip-type-check (name => +getintrn {name}) >>
+	define get%i := (any -> data^Intrinsic) of skip-type-check (name => +get%i {name}) >>
 	define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
 	define is-list := (:t => [:t] -> boolean) of skip-type-check (n => +is-list {n}) >>
 	define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is-pair {n}) >>
@@ -148,16 +148,16 @@ fc-add-functions STANDARD .p (
 	define tail := (:t => [:t] -> [:t]) of skip-type-check (list => +ltail {list}) >>
 	---------------------------------------------------------------------------
 	define +popen := ([string] -> string -> (number, [data^Chars], [data^Chars])) of
-		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn-v2
+		atom:INTRN!MonadIntrinsics.popen | get%i | call%i-v2
 	>>
 	define deep-seq := (:t => :t -> :t) of
-		atom:INTRN!SeqIntrinsics.deepSeq | getintrn | callintrn-v1
+		atom:INTRN!SeqIntrinsics.deepSeq | get%i | call%i-v1
 	>>
 	define log := (:t => :t -> :t) of
-		atom:INTRN!BasicIntrinsics.log1 | getintrn | callintrn-v1
+		atom:INTRN!BasicIntrinsics.log1 | get%i | call%i-v1
 	>>
 	define log2 := (:t => string -> :t -> :t) of
-		atom:INTRN!BasicIntrinsics.log2 | getintrn | callintrn-v2
+		atom:INTRN!BasicIntrinsics.log2 | get%i | call%i-v2
 	>>
 	---------------------------------------------------------------------------
 	define and := x => y =>

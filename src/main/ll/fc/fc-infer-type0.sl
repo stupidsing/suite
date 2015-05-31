@@ -256,14 +256,14 @@ fc-instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 #
 
 fc-default-fun-type () (LIST-OF _) #
-fc-default-fun-type +callintrn-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ _)) #
-fc-default-fun-type +callintrn-t2 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +callintrn-t3 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
-fc-default-fun-type +callintrn-v1 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ _)) #
-fc-default-fun-type +callintrn-v2 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +callintrn-v3 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +call%i-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ _)) #
+fc-default-fun-type +call%i-t2 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ (FUN-OF _ _))) #
+fc-default-fun-type +call%i-t3 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +call%i-v1 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ _)) #
+fc-default-fun-type +call%i-v2 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _ (FUN-OF _ _))) #
+fc-default-fun-type +call%i-v3 (FUN-OF (FUNCTOR-OF data (ATOM-OF Intrinsic)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type +compare (FUN-OF .t (FUN-OF .t NUMBER)) #
-fc-default-fun-type +getintrn (FUN-OF (ATOM-OF _) (FUNCTOR-OF data (ATOM-OF Intrinsic))) #
+fc-default-fun-type +get%i (FUN-OF (ATOM-OF _) (FUNCTOR-OF data (ATOM-OF Intrinsic))) #
 fc-default-fun-type +is-list (FUN-OF (LIST-OF _) BOOLEAN) #
 fc-default-fun-type +is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
 fc-default-fun-type +lcons (FUN-OF .t (FUN-OF (LIST-OF .t) (LIST-OF .t))) #

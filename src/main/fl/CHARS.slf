@@ -1,19 +1,19 @@
 using external STANDARD >>
 define cs-append := (data^Chars -> data^Chars -> data^Chars) of
-	atom:INTRN!CharsIntrinsics.append | getintrn | callintrn-v2
+	atom:INTRN!CharsIntrinsics.append | get%i | call%i-v2
 >>
 define cs-drain := (data^CharsStream -> [data^Chars]) of
-	atom:INTRN!CharsIntrinsics.drain | getintrn | callintrn-v1
+	atom:INTRN!CharsIntrinsics.drain | get%i | call%i-v1
 >>
 define cs-from-string := (string -> data^Chars) of
-	atom:INTRN!CharsIntrinsics.stringChars | getintrn | callintrn-v1
+	atom:INTRN!CharsIntrinsics.stringChars | get%i | call%i-v1
 >>
 define cs-concat-split := (data^Chars -> [data^Chars] -> [data^Chars]) of
-	atom:INTRN!CharsIntrinsics.concatSplit | getintrn | callintrn-v2
+	atom:INTRN!CharsIntrinsics.concatSplit | get%i | call%i-v2
 >>
 define cs-subchars := (number -> number -> data^Chars -> data^Chars) of
-	atom:INTRN!CharsIntrinsics.subchars | getintrn | callintrn-v3
+	atom:INTRN!CharsIntrinsics.subchars | get%i | call%i-v3
 >>
 define cs-to-string := (data^Chars -> string) of
-	atom:INTRN!CharsIntrinsics.charsString | getintrn | callintrn-v1
+	atom:INTRN!CharsIntrinsics.charsString | get%i | call%i-v1
 >>

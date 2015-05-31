@@ -33,17 +33,17 @@ define str-to-int := s =>
 >>
 -------------------------------------------------------------------------------
 define dump := (:t => :t -> string) of skip-type-check (
-	define type-of := getintrn {atom:INTRN!BasicIntrinsics.typeOf} >>
-	define atom-string := getintrn {atom:INTRN!BasicIntrinsics.atomString} >>
+	define type-of := get%i {atom:INTRN!BasicIntrinsics.typeOf} >>
+	define atom-string := get%i {atom:INTRN!BasicIntrinsics.atomString} >>
 	let dump0 := prec => n =>
-		let type := +callintrn-v1 {type-of} {n} >>
+		let type := +call%i-v1 {type-of} {n} >>
 		if (n = ()) then
 			"()"
 		else-if (type = TREE) then
 			concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
 			| if prec then (s => concat {"("; s; ")";}) else id
 		else-if (type = ATOM) then
-			callintrn-v1 {atom-string} {n}
+			call%i-v1 {atom-string} {n}
 		else
 			int-to-str {n}
 	>>

@@ -1,10 +1,10 @@
 using external STANDARD >>
 define nothing := atom:Nothing >>
 define +getm := (:t => any -> mutable^:t -> Do^:t) of (scope => var =>
-	do >> callintrn-v2 {atom:INTRN!MonadIntrinsics.get | getintrn} {scope} {var}
+	do >> call%i-v2 {atom:INTRN!MonadIntrinsics.get | get%i} {scope} {var}
 ) >>
 define +setm := (:t => any -> mutable^:t -> :t -> Do^any) of (scope => var => value =>
-	do >> callintrn-v3 {atom:INTRN!MonadIntrinsics.put | getintrn} {scope} {var} {value}
+	do >> call%i-v3 {atom:INTRN!MonadIntrinsics.put | get%i} {scope} {var} {value}
 ) >>
 define liftm :=
 	fun => m0 => (do >> fun {m0 #})
@@ -20,7 +20,7 @@ define concatm :=
 >>
 define seqm :=
 	liftm2 {(:t => any -> :t -> :t) of
-		atom:INTRN!SeqIntrinsics.seq | getintrn | callintrn-t2
+		atom:INTRN!SeqIntrinsics.seq | get%i | call%i-t2
 	}
 >>
 define seqsm :=
