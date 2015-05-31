@@ -131,21 +131,21 @@ fc-add-functions STANDARD .p (
 	data (either {:a} {:b}) over some (:a, :b,) as (Left :a) >>
 	data (either {:a} {:b}) over some (:a, :b,) as (Right :b) >>
 	---------------------------------------------------------------------------
-	define callintrn-t1 := i => p0 => +callintrn-t1 {i} {p0} >>
-	define callintrn-t2 := i => p0 => p1 => +callintrn-t2 {i} {p0} {p1} >>
-	define callintrn-t3 := i => p0 => p1 => p2 => +callintrn-t3 {i} {p0} {p1} {p2} >>
-	define callintrn-v1 := i => p0 => +callintrn-v1 {i} {p0} >>
-	define callintrn-v2 := i => p0 => p1 => +callintrn-v2 {i} {p0} {p1} >>
-	define callintrn-v3 := i => p0 => p1 => p2 => +callintrn-v3 {i} {p0} {p1} {p2} >>
-	define compare := a => b => +compare {a} {b} >>
-	define cons := head => tail => +lcons {head} {tail} >>
-	define first := tuple => +pleft {tuple} >>
-	define head := list => +lhead {list} >>
-	define getintrn := name => +getintrn {name} >>
-	define is-list := n => +is-list {n} >>
-	define is-pair := n => +is-pair {n} >>
-	define second := tuple => +pright {tuple} >>
-	define tail := list => +ltail {list} >>
+	define callintrn-t1 := (data^Intrinsic -> any -> any) of skip-type-check (i => p0 => +callintrn-t1 {i} {p0}) >>
+	define callintrn-t2 := (data^Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +callintrn-t2 {i} {p0} {p1}) >>
+	define callintrn-t3 := (data^Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +callintrn-t3 {i} {p0} {p1} {p2}) >>
+	define callintrn-v1 := (data^Intrinsic -> any -> any) of skip-type-check (i => p0 => +callintrn-v1 {i} {p0}) >>
+	define callintrn-v2 := (data^Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +callintrn-v2 {i} {p0} {p1}) >>
+	define callintrn-v3 := (data^Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +callintrn-v3 {i} {p0} {p1} {p2}) >>
+	define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) >>
+	define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => +lcons {head} {tail}) >>
+	define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) >>
+	define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
+	define getintrn := (any -> data^Intrinsic) of skip-type-check (name => +getintrn {name}) >>
+	define is-list := (:t => [:t] -> boolean) of skip-type-check (n => +is-list {n}) >>
+	define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is-pair {n}) >>
+	define second := (:a => :b => (:a, :b) -> :b) of skip-type-check (tuple => +pright {tuple}) >>
+	define tail := (:t => [:t] -> [:t]) of skip-type-check (list => +ltail {list}) >>
 	---------------------------------------------------------------------------
 	define +popen := ([string] -> string -> (number, [data^Chars], [data^Chars])) of
 		atom:INTRN!MonadIntrinsics.popen | getintrn | callintrn-v2
