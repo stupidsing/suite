@@ -188,11 +188,32 @@ public class LazyFunInterpreter1 {
 				Thunk_ param = param_.apply(frame);
 				return () -> ((Fun_) fun.get()).fun.apply(param).get();
 			};
-		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
+		} else if ((m = Suite.matcher("NEW-VAR .0").apply(node)) != null)
+			result = mapping.getter(m[0]);
+		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
-		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
+		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null) {
+			Fun<Frame, Thunk_> left_ = lazy0(mapping, m[0]);
+			Fun<Frame, Thunk_> right_ = lazy0(mapping, m[1]);
+			result = frame -> () -> new Pair_(left_.apply(frame), right_.apply(frame));
+		} else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
 			result = lazy0(mapping, m[1]);
-		else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
+		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
+			Fun<Frame, Thunk_> iter_ = lazy0(mapping, m[0]);
+			Fun<Frame, Thunk_> in_ = lazy0(mapping, m[1]);
+			result = frame -> {
+				Fun_ iter = (Fun_) iter_.apply(frame).get();
+				Thunk_ in = in_.apply(frame);
+				Pair_ p0, p1;
+				do {
+					Node out = iter.fun.apply(in).get();
+					p0 = (Pair_) out;
+					p1 = (Pair_) p0.second;
+					in = p1.first_;
+				} while (p0.first_.get() != Atom.TRUE);
+				return p1.second;
+			};
+		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
 			result = lazy0(mapping, Suite.substitute("INVOKE .2 INVOKE .1 (VAR .0)", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
 			result = mapping.getter(m[0]);
@@ -203,9 +224,7 @@ public class LazyFunInterpreter1 {
 	}
 
 	private Fun<Frame, Thunk_> immediate(Node n) {
-		Fun<Frame, Thunk_> result;
-		result = frame -> () -> n;
-		return result;
+		return frame -> () -> n;
 	}
 
 	private int compare(Node n0, Node n1) {
