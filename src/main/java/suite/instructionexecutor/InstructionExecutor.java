@@ -259,7 +259,7 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected Comparer comparer() {
-		return new Comparer();
+		return Comparer.comparer;
 	}
 
 	protected static Int number(int n) {

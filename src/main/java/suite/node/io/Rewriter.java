@@ -21,7 +21,6 @@ public class Rewriter {
 
 	private static Node LEFT_ = Atom.of("l");
 	private static Node RIGHT = Atom.of("r");
-	private static Comparer comparer = new Comparer();
 
 	public enum ReadType {
 		DICT(0), TERM(1), TREE(2), TUPLE(3), ;
@@ -65,7 +64,7 @@ public class Rewriter {
 				terminal = null;
 				op = null;
 				children = Read.from(map) //
-						.sort((p0, p1) -> comparer.compare(p0.t0, p1.t0)) //
+						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
 						.map(p -> Pair.<Node, Node> of(p.t0, p.t1)) //
 						.toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
