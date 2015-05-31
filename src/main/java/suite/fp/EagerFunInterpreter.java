@@ -38,16 +38,6 @@ public class EagerFunInterpreter {
 		}
 	}
 
-	private static class Pair_ extends Node {
-		private Node first_;
-		private Node second;
-
-		private Pair_(Node first_, Node second) {
-			this.first_ = first_;
-			this.second = second;
-		}
-	}
-
 	private static class Wrap_ extends Node {
 		private Source<Node> source;
 
@@ -118,7 +108,7 @@ public class EagerFunInterpreter {
 		df.put(Atom.TRUE.name, Atom.TRUE);
 		df.put(Atom.FALSE.name, Atom.FALSE);
 
-		df.put(TermOp.AND___.getName(), binary((a, b) -> new Pair_(a, b)));
+		df.put(TermOp.AND___.getName(), binary((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put(TermOp.EQUAL_.getName(), binary((a, b) -> b(compare(a, b) == 0)));
 		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a, b) != 0)));
 		df.put(TermOp.LE____.getName(), binary((a, b) -> b(compare(a, b) <= 0)));
@@ -130,9 +120,9 @@ public class EagerFunInterpreter {
 		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
 		df.put(TermOp.DIVIDE.getName(), binary((a, b) -> Int.of(i(a) / i(b))));
 
-		df.put("fst", new Fun_(in -> ((Pair_) in).first_));
+		df.put("fst", new Fun_(in -> Tree.decompose(in).getLeft()));
 		df.put("if", new Fun_(a -> new Fun_(b -> new Fun_(c -> a == Atom.TRUE ? b : c))));
-		df.put("snd", new Fun_(in -> ((Pair_) in).second));
+		df.put("snd", new Fun_(in -> Tree.decompose(in).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
@@ -207,7 +197,7 @@ public class EagerFunInterpreter {
 		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null) {
 			Fun<Frame, Node> left_ = eager0(mapping, m[0]);
 			Fun<Frame, Node> right_ = eager0(mapping, m[1]);
-			result = frame -> new Pair_(left_.apply(frame), right_.apply(frame));
+			result = frame -> pair(left_.apply(frame), right_.apply(frame));
 		} else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
 			result = eager0(mapping, m[1]);
 		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
@@ -216,14 +206,14 @@ public class EagerFunInterpreter {
 			result = frame -> {
 				Fun_ iter = (Fun_) iter_.apply(frame);
 				Node in = in_.apply(frame);
-				Pair_ p0, p1;
+				Tree p0, p1;
 				do {
 					Node out = iter.fun.apply(in);
-					p0 = (Pair_) out;
-					p1 = (Pair_) p0.second;
-					in = p1.first_;
-				} while (p0.first_ != Atom.TRUE);
-				return p1.second;
+					p0 = Tree.decompose(out, TermOp.AND___);
+					p1 = Tree.decompose(p0.getRight(), TermOp.AND___);
+					in = p1.getLeft();
+				} while (p0.getLeft() != Atom.TRUE);
+				return p1.getRight();
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
 			result = eager0(mapping, Suite.substitute("INVOKE .2 INVOKE .1 (VAR .0)", m[0], m[1], m[2]));
@@ -246,8 +236,8 @@ public class EagerFunInterpreter {
 	}
 
 	private int compare(Node n0, Node n1) {
-		int t0 = n0 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
-		int t1 = n1 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
+		int t0 = n0 instanceof Fun_ ? 1 : 0;
+		int t1 = n1 instanceof Fun_ ? 1 : 0;
 		int c = t0 - t1;
 		if (c == 0)
 			switch (t0) {
@@ -255,12 +245,6 @@ public class EagerFunInterpreter {
 				c = Comparer.comparer.compare(n0, n1);
 				break;
 			case 1:
-				Pair_ p0 = (Pair_) n0;
-				Pair_ p1 = (Pair_) n1;
-				c = c == 0 ? compare(p0.first_, p1.first_) : c;
-				c = c == 0 ? compare(p0.second, p1.second) : c;
-				break;
-			case 2:
 				c = System.identityHashCode(t0) - System.identityHashCode(t1);
 			}
 		return c;
@@ -268,6 +252,10 @@ public class EagerFunInterpreter {
 
 	private Node binary(BiFunction<Node, Node, Node> fun) {
 		return new Fun_(a -> new Fun_(b -> fun.apply(a, b)));
+	}
+
+	private static Node pair(Node left, Node right) {
+		return Tree.of(TermOp.AND___, left, right);
 	}
 
 	private Atom b(boolean b) {
