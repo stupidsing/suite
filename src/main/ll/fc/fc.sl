@@ -140,8 +140,8 @@ fc-add-functions STANDARD .p (
 	define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) >>
 	define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => +lcons {head} {tail}) >>
 	define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) >>
-	define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
 	define getintrn := (any -> data^Intrinsic) of skip-type-check (name => +getintrn {name}) >>
+	define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
 	define is-list := (:t => [:t] -> boolean) of skip-type-check (n => +is-list {n}) >>
 	define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is-pair {n}) >>
 	define second := (:a => :b => (:a, :b) -> :b) of skip-type-check (tuple => +pright {tuple}) >>
