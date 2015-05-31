@@ -21,12 +21,6 @@
 --   list, and generalized back when being used.
 --
 
-fc-infer-type-rules () _ .tr/.tr () :- ! #
-fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
-	:- fc-infer-type-rule .e .env .tr0/.tr1 .t
-	, fc-infer-type-rules .es .env .tr1/.trx .ts
-#
-
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
