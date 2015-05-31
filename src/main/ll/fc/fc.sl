@@ -18,6 +18,18 @@
 cg-is-opt-tail-calls :- fail # -- done by fc-reduce-tail-recursion instead
 
 compile-function .mode .do0 (FRAME l:.c,)
+	:- !, fc-process-function .mode .do0 .dox
+	, !, .c0 = (ENTER, .c1)
+	, fc-compile .dox 0/() .c1/.c2/.reg
+	, .c2 = (SET-RESULT .reg
+		, LEAVE
+		, RETURN
+		,)
+	, !, cg-optimize .c0 .c
+	, !, find.all.memoized.clear
+#
+
+fc-process-function .mode .do0 .dox
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
 	, !, fc-resolve-type-rules .tr
@@ -28,15 +40,7 @@ compile-function .mode .do0 (FRAME l:.c,)
 	, !, once (.mode = LAZY, .do2 = .do3
 		; .mode = EAGER, fc-reduce-tail-recursion .do2 .do3
 	)
-	, !, fc-optimize .do3 .do4
-	, .c0 = (ENTER, .c1)
-	, !, fc-compile .do4 0/() .c1/.c2/.reg
-	, .c2 = (SET-RESULT .reg
-		, LEAVE
-		, RETURN
-		,)
-	, !, cg-optimize .c0 .c
-	, !, find.all.memoized.clear
+	, !, fc-optimize .do3 .dox
 #
 
 fc-load-library .lib .do0 .dox

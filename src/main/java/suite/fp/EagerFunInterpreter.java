@@ -106,10 +106,10 @@ public class EagerFunInterpreter {
 
 	public Node eager(Node node) {
 		Prover prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
-		String query = "fc-parse .0" + (isLazyify ? " .d, fc-lazyify-fun .d" : "") + " .1";
+		String query = "fc-process-function .0 .1 .2";
 		Reference parsed = new Reference();
 
-		if (!prover.prove(Suite.substitute(query, node, parsed)))
+		if (!prover.prove(Suite.substitute(query, isLazyify ? Atom.of("LAZY") : Atom.of("EAGER"), node, parsed)))
 			throw new RuntimeException("Cannot parse " + node);
 
 		Map<String, Node> df = new HashMap<>();
