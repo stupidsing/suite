@@ -124,7 +124,6 @@ public class LazyFunInterpreter {
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
-
 		Mapping mapping = new Mapping(null);
 		Frame frame = mapping.frame(null);
 
