@@ -120,9 +120,11 @@ public class EagerFunInterpreter {
 		df.put(TermOp.MULT__.getName(), binary((a, b) -> Int.of(i(a) * i(b))));
 		df.put(TermOp.DIVIDE.getName(), binary((a, b) -> Int.of(i(a) / i(b))));
 
-		df.put("fst", new Fun_(in -> Tree.decompose(in).getLeft()));
+		df.put("+compare", binary((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
+		df.put("+is-list", new Fun_(in -> b(Tree.decompose(in) != null)));
+		df.put("+lhead", new Fun_(in -> Tree.decompose(in).getLeft()));
+		df.put("+ltail", new Fun_(in -> Tree.decompose(in).getRight()));
 		df.put("if", new Fun_(a -> new Fun_(b -> new Fun_(c -> a == Atom.TRUE ? b : c))));
-		df.put("snd", new Fun_(in -> Tree.decompose(in).getRight()));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
