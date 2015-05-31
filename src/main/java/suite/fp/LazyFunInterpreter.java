@@ -104,9 +104,6 @@ public class LazyFunInterpreter {
 			throw new RuntimeException("Cannot parse " + node);
 
 		Map<String, Thunk_> df = new HashMap<>();
-		df.put(Atom.TRUE.name, () -> Atom.TRUE);
-		df.put(Atom.FALSE.name, () -> Atom.FALSE);
-
 		df.put(TermOp.AND___.getName(), binary((a, b) -> new Pair_(a, b)));
 		df.put(TermOp.EQUAL_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) == 0)));
 		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a.get(), b.get()) != 0)));

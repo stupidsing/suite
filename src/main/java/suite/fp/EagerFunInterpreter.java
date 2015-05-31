@@ -105,9 +105,6 @@ public class EagerFunInterpreter {
 		Node parsed = FindUtil.collectSingle(finder, node);
 
 		Map<String, Node> df = new HashMap<>();
-		df.put(Atom.TRUE.name, Atom.TRUE);
-		df.put(Atom.FALSE.name, Atom.FALSE);
-
 		df.put(TermOp.AND___.getName(), binary((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put(TermOp.EQUAL_.getName(), binary((a, b) -> b(compare(a, b) == 0)));
 		df.put(TermOp.NOTEQ_.getName(), binary((a, b) -> b(compare(a, b) != 0)));
@@ -124,7 +121,6 @@ public class EagerFunInterpreter {
 		df.put("+is-list", new Fun_(in -> b(Tree.decompose(in) != null)));
 		df.put("+lhead", new Fun_(in -> Tree.decompose(in).getLeft()));
 		df.put("+ltail", new Fun_(in -> Tree.decompose(in).getRight()));
-		df.put("if", new Fun_(a -> new Fun_(b -> new Fun_(c -> a == Atom.TRUE ? b : c))));
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
