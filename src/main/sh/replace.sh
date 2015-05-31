@@ -1,3 +1,13 @@
+replace-word() {
+  FROM="${1}"
+  shift
+  TO="${1}"
+  shift
+  FILES=$(find $* -print0 | xargs -0 grep -l "${FROM}")
+  echo ${FILES}
+  echo ${FILES} | xargs sed "s/${FROM}/${TO}/g" -i
+}
+
 replace_() {
   REPLACER="${1}"
   F0="${2}"
