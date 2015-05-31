@@ -206,9 +206,9 @@ public class LazyFunInterpreter1 {
 				Thunk_ in = in_.apply(frame);
 				Pair_ p0, p1;
 				do {
-					Node out = iter.fun.apply(in).get();
-					p0 = (Pair_) out;
-					p1 = (Pair_) p0.second;
+					Thunk_ out = iter.fun.apply(in);
+					p0 = (Pair_) out.get();
+					p1 = (Pair_) p0.second.get();
 					in = p1.first_;
 				} while (p0.first_.get() != Atom.TRUE);
 				return p1.second;
