@@ -51,6 +51,12 @@ public class LazyFunTest {
 	}
 
 	@Test
+	public void testFix() {
+		assertEquals(Suite.parse("0; 0; 0;"), eval("" //
+				+ "fix {cons {0}} | take {3}"));
+	}
+
+	@Test
 	public void testFold() {
 		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
 				+ "define inf-series := n => n; inf-series {n + 1} >> " //

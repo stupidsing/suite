@@ -15,6 +15,8 @@
 	, import.path "rbt.sl"
 #
 
+cg-is-opt-tail-calls :- fail # -- done by fc-reduce-tail-recursion instead
+
 compile-function .mode .do0 (FRAME l:.c,)
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
@@ -161,6 +163,9 @@ fc-add-functions STANDARD .p (
 		if (n > 0 && is-list {list})
 		then (list | tail | drop {n - 1})
 		else list
+	>>
+	define fix := f =>
+		let x := f {x} >> x
 	>>
 	define flip := f => x => y =>
 		f {y} {x}

@@ -94,6 +94,12 @@ public class FunTypeTest {
 	}
 
 	@Test
+	public void testFix() {
+		getType("data (fix^:f) over :f as (fix^:f^fix^:f) >> \n" //
+				+ "(fix^optional) of (fix, Value, fix, None)");
+	}
+
+	@Test
 	public void testFun() {
 		assertType("number -> number", "a => a + 1");
 		assertType("number", "define f := a => a + 1 >> f {3}");

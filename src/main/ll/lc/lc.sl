@@ -5,6 +5,8 @@
 	, import.path "rbt.sl"
 #
 
+cg-is-opt-tail-calls #
+
 compile-logic .call (FRAME l:.code,)
 	:- .c0 = (ENTER
 		, ASSIGN-CONSTANT .returnReg c:true

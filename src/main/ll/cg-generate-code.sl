@@ -28,7 +28,7 @@ cg-opt0 (.insn0, .insns0) .cx
 	, .c0 = (.insn1, .insns1)
 	, cg-opt-assign-returns .c0 .c1
 	, cg-opt-stack-usage .c1 .c2
-	, cg-opt-tail-calls .c2 .cx
+	, if (cg-is-opt-tail-calls) (cg-opt-tail-calls .c2 .cx) (.c2 = .cx)
 #
 cg-opt0 () () #
 
@@ -81,7 +81,6 @@ cg-opt-stack-usage .insns .insns #
 
 -- Return instruction would actually perform leave (i.e. frame restoration).
 -- We can skip the LEAVE instruction if it obstruct optimizations.
--= done by fc-reduce-tail-recursion instead
 cg-opt-tail-calls .li0 .ri0
 	:- .li0 = (.call .op, .li1)
 	, member (CALL/JUMP, CALL-THUNK/JUMP-CLOSURE,) .call/.jump
@@ -92,7 +91,6 @@ cg-opt-tail-calls .li0 .ri0
 	, cg-opt .mi0 .ri0
 	, !
 #
-=-
 cg-opt-tail-calls .insns .insns #
 
 append2 .li0/.lix .ri0/.rix .insns
