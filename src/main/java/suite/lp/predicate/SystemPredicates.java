@@ -108,6 +108,7 @@ public class SystemPredicates {
 		addPredicate("sink", ioPredicates.sink);
 		addPredicate("source", ioPredicates.source);
 		addPredicate("throw", ioPredicates.throwPredicate);
+		addPredicate("try", ioPredicates.tryPredicate);
 		addPredicate("write", ioPredicates.write(System.out));
 		addPredicate("write.error", ioPredicates.write(System.err));
 

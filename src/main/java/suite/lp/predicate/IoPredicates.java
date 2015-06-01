@@ -102,6 +102,19 @@ public class IoPredicates {
 		throw new SuiteException(n.finalNode());
 	});
 
+	public BuiltinPredicate tryPredicate = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 3);
+		try {
+			prover.prove0(params[0]);
+			return true;
+		} catch (SuiteException ex) {
+			if (prover.bind(params[1], ex.getNode()))
+				return prover.prove0(params[2]);
+			else
+				throw ex;
+		}
+	};
+
 	public BuiltinPredicate write(PrintStream printStream) {
 		return PredicateUtil.run(n -> printStream.print(Formatter.display(n)));
 	}
