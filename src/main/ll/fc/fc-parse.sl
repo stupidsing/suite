@@ -3,7 +3,8 @@ fc-parse `.t` .parsed
 	, !, fc-parse .t1 .parsed
 #
 fc-parse .t .parsed
-	:- bound .t, fc-parse-sugar .t .t1
+	:- bound .t
+	, fc-parse-sugar .t .t1
 	, !, fc-parse .t1 .parsed
 #
 fc-parse (.var => .do) (FUN .var .do1)
