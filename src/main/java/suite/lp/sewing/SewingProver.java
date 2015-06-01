@@ -269,11 +269,11 @@ public class SewingProver {
 				IList<Trampoline> rems0 = rt.rems;
 				int pit = rt.journal.getPointInTime();
 				rt.pushRem(rt_ -> {
-					rt_.journal.undoBinds(pit);
 					rt_.alts = alts0;
 					return fail;
 				});
 				rt.pushAlt(rt_ -> {
+					rt_.journal.undoBinds(pit);
 					rt_.rems = rems0;
 					return okay;
 				});
