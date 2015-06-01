@@ -467,7 +467,7 @@ public class SewingProver {
 	}
 
 	private List<Node> breakdown(Operator operator, Node node) {
-		ArrayList<Node> list = new ArrayList<>();
+		List<Node> list = new ArrayList<>();
 		Tree tree;
 		while ((tree = Tree.decompose(node, operator)) != null) {
 			list.add(tree.getLeft());
