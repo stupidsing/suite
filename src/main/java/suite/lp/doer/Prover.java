@@ -31,7 +31,7 @@ public class Prover {
 
 	private Node rem, alt; // remaining, alternative
 
-	private Journal journal = new Journal();
+	private Journal journal;
 	private int initialPointInTime;
 
 	public Prover(Prover prover) {
