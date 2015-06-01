@@ -22,7 +22,7 @@
 --
 
 fc-infer-type-rule .p .env .tr/.tr .type
-	:- fc-find-simple-type .p .env .type, !
+	:- fc-find-simple-type .p .env .type
 #
 fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
 	:- fc-define-var-types () .vvs .vvts .ue/.ue1
@@ -75,7 +75,6 @@ fc-infer-type-rule (PRAGMA TYPE-CAST-TO-CLASS .pair) .env .tr .classType
 	:- !
 	, .classType = CLASS _
 	, fc-infer-type-rule (PRAGMA (TYPE-CAST .classType) .pair) .env .tr .classType
-#
 #
 fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 	:- !
