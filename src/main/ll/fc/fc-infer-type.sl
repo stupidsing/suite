@@ -81,6 +81,9 @@ fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 	, fc-infer-type-rule .do .env .tr1/() .type
 	, fc-resolve-type-rules .tr1
 #
+fc-infer-type-rule (PRAGMA TYPE-SKIP-CHECK _) _ .tr/.tr _
+	:- !
+#
 fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	:- !
 	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
@@ -132,7 +135,6 @@ fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
 fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
 fc-find-simple-type (NUMBER _) _ NUMBER #
-fc-find-simple-type (PRAGMA TYPE-SKIP-CHECK _) _ _ #
 fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 	:- once (
 		fc-dict-get .ue .var/.type
