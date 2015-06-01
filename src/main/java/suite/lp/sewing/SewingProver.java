@@ -30,12 +30,14 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.SuiteException;
 import suite.node.util.TreeRewriter;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -78,6 +80,9 @@ public class SewingProver {
 		private IList<Trampoline> alts = IList.end(); // Alternatives
 		private Prover prover;
 		private String indent = "";
+		private Sink<Node> handler = node -> {
+			throw new SuiteException(node);
+		};
 
 		private Runtime(ProverConfig pc, Env env, Trampoline tr) {
 			this.env = env;
@@ -286,6 +291,39 @@ public class SewingProver {
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return okay;
+				});
+				return tr0;
+			};
+		} else if ((m = Suite.matcher("throw .0").apply(node)) != null) {
+			Fun<Env, Node> f = sb.compile(m[0]);
+			tr = rt -> {
+				rt.handler.sink(f.apply(rt.env));
+				return okay;
+			};
+		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
+			Trampoline tr0 = compile0(sb, m[0]);
+			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
+			Trampoline catch0 = compile0(sb, m[2]);
+			tr = rt -> {
+				Sink<Node> handler0 = rt.handler;
+				IList<Trampoline> alts0 = rt.alts;
+				IList<Trampoline> rems0 = rt.rems;
+				rt.handler = node_ -> {
+					rt.handler = handler0;
+					if (p.test(rt.bindEnv(), node_)) {
+						rt.alts = alts0;
+						rt.rems = rems0;
+						rt.pushRem(catch0);
+					} else
+						handler0.sink(node_);
+				};
+				rt.pushRem(rt_ -> {
+					rt.handler = handler0;
+					return okay;
+				});
+				rt.pushAlt(rt_ -> {
+					rt.handler = handler0;
+					return fail;
 				});
 				return tr0;
 			};
