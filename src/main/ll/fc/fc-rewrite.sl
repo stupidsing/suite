@@ -22,8 +22,6 @@ fc-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) .ts0/.tsx
 fc-rewrite (INVOKE .param0 .callee0) (INVOKE .param1 .callee1) .ts0/.tsx
 	:- .ts0 = (.param0 .param1, .callee0 .callee1, .tsx)
 #
-fc-rewrite (NEW-VAR .var) (NEW-VAR .var) .ts/.ts
-#
 fc-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
 #
 fc-rewrite (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
@@ -56,6 +54,8 @@ fc-rewrite-pragma DEF-OUTSIDE DEF-OUTSIDE .ts/.ts
 fc-rewrite-pragma (DEF-TYPE .type0 .class0) (DEF-TYPE .type1 .class1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 	, fc-rewrite-type .class0 .class1
+#
+fc-rewrite-pragma NEW NEW .ts/.ts
 #
 fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1

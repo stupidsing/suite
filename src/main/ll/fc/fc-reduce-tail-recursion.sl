@@ -55,7 +55,7 @@ fc-vars-expression () (ATOM ()) #
 fc-vars-expression (.var, .vars) (PAIR (VAR .var) .vars1) :- fc-vars-expression .vars .vars1 #
 
 fc-bind-expression () (ATOM ()) #
-fc-bind-expression (.var, .vars) (PAIR (NEW-VAR .var) .vars1) :- fc-bind-expression .vars .vars1 #
+fc-bind-expression (.var, .vars) (PAIR (PRAGMA NEW (VAR .var)) .vars1) :- fc-bind-expression .vars .vars1 #
 
 fc-vars-fun () .do .do #
 fc-vars-fun (.var, .vars) .do .do1 :- fc-vars-fun .vars (FUN .var .do) .do1 #

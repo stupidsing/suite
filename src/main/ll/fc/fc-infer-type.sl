@@ -110,13 +110,6 @@ fc-infer-type-rule .do .env .tr .type
 	:- (.do = PRAGMA _ .do1; .do = UNWRAP .do1; .do = WRAP .do1)
 	, fc-infer-type-rule .do1 .env .tr .type
 #
-fc-infer-type-rule (.tag .var) _/.ve/_ .tr/.tr .type
-	:- once (.tag = NEW-VAR; .tag = VAR), (
-		fc-dict-get .ve .var/.varType
-		, !, graph.generalize .varType .type
-		; fc-error "Undefined variable" .var
-	)
-#
 
 fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
 	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
@@ -141,10 +134,12 @@ fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
 fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
 fc-find-simple-type (NUMBER _) _ NUMBER #
 fc-find-simple-type (PRAGMA TYPE-SKIP-CHECK _) _ _ #
-fc-find-simple-type (.tag .var) .ue/_/_ .type
-	:- once (.tag = NEW-VAR; .tag = VAR)
-	, (fc-dict-get .ue .var/.type
+fc-find-simple-type (VAR .var) .ue/.ve/_ .type
+	:- once (
+		fc-dict-get .ue .var/.type
+		; fc-dict-get .ve .var/.varType, !, graph.generalize .varType .type
 		; fc-define-default-fun _ .var _
+		; fc-error "Undefined variable" .var
 	)
 #
 

@@ -12,7 +12,7 @@ fc-bind0 .v0 .v1 .then .else .parsed
 fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
 	:- !, fc-bind-pair .p0 .q0 .p1 .q1 .then .else .parsed
 #
-fc-bind0 .v0 (NEW-VAR .nv) .then _ (DEF-VARS (.nv .v0,) .then)
+fc-bind0 .v0 (PRAGMA NEW (VAR .nv)) .then _ (DEF-VARS (.nv .v0,) .then)
 	:- !
 #
 fc-bind0 .v0 .v1 .then .else (

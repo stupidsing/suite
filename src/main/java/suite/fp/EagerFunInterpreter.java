@@ -188,9 +188,7 @@ public class EagerFunInterpreter {
 				Node param = param_.apply(frame);
 				return ((Fun_) fun).fun.apply(param);
 			};
-		} else if ((m = Suite.matcher("NEW-VAR .0").apply(node)) != null)
-			result = mapping.getter(m[0]);
-		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
+		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null) {
 			Fun<Frame, Node> left_ = eager0(mapping, m[0]);
