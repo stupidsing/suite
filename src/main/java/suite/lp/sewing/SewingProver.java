@@ -301,7 +301,7 @@ public class SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compile0(sb, m[0]);
+			Trampoline tr0 = compile0(sb, Suite.substitute("once .0", m[0]));
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
@@ -320,15 +320,7 @@ public class SewingProver {
 					} else
 						handler0.sink(node_);
 				};
-				rt.pushRem(rt_ -> {
-					rt_.handler = handler0;
-					rt_.alts = alts0; // No backtracking
-					return okay;
-				});
-				rt.pushAlt(rt_ -> {
-					rt_.handler = handler0;
-					return fail;
-				});
+				rt.post(() -> rt.handler = handler0);
 				return tr0;
 			};
 		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
