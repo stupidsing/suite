@@ -19,14 +19,14 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Parsing program", nl
 	, !, fc-parse .do0 .do1
 	, !, write "Inferencing types", nl
-	, !, fc-infer-type-rule0 .do1 ()/()/() .tr/() NUMBER
+	, !, fc-infer-type-rule .do1 ()/()/() .tr/() NUMBER
 	, !, fc-resolve-type-rules .tr
 	, !, .pred0 = (
 		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
 			:- fc-dict-union-replace .ue .ues .ue1
 			, fc-dict-union-replace .ve .ves .ve1
 			, append .te .tes .te1
-			, fc-infer-type-rule0 .do .ue1/.ve1/.te1 .tr1 .type
+			, fc-infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write 'Verifying intermediate output', nl
 	, once (not is.cyclic .do1; fc-error "Cyclic data detected")

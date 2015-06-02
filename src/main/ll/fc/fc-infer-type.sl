@@ -21,6 +21,10 @@
 --   list, and generalized back when being used.
 --
 
+fc-infer-type-rule .p .env .tr .type
+	:- fc-infer-type-rule0 .p .env .tr .type
+#
+
 fc-infer-type-rule0 .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type
 #
