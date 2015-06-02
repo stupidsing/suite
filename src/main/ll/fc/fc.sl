@@ -148,7 +148,7 @@ fc-add-functions STANDARD .p (
 	define second := (:a => :b => (:a, :b) -> :b) of skip-type-check (tuple => +pright {tuple}) >>
 	define tail := (:t => [:t] -> [:t]) of skip-type-check (list => +ltail {list}) >>
 	---------------------------------------------------------------------------
-	define +popen := ([string] -> string -> (number, [data^Chars], [data^Chars])) of
+	define popen* := ([string] -> string -> (number, [data^Chars], [data^Chars])) of
 		atom:INTRN!MonadIntrinsics.popen | get%i | call%i-v2
 	>>
 	define deep-seq := (:t => :t -> :t) of
@@ -309,7 +309,7 @@ fc-add-functions STANDARD .p (
 		} {(), ()}
 	>>
 	define popen := command => in =>
-		do >> in | +popen {command}
+		do >> in | popen* {command}
 	>>
 	define replicate := flip {e =>
 		unfold-left {i => optional {i != 0} {i - 1, e}}
