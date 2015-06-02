@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class Suite {
 
@@ -89,6 +91,20 @@ public class Suite {
 
 	public static Node applyWriter(Node func) {
 		return Suite.substitute(".0 | lines | map {cs-from-string}", func);
+	}
+
+	public static <T> T applyNoLibraries(Source<T> source) {
+		return applyLibraries(Collections.emptyList(), source);
+	}
+
+	public static <T> T applyLibraries(List<String> libraries, Source<T> source) {
+		List<String> libraries0 = Suite.libraries;
+		Suite.libraries = libraries;
+		try {
+			return source.source();
+		} finally {
+			Suite.libraries = libraries0;
+		}
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {

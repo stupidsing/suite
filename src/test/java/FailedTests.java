@@ -3,8 +3,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -17,26 +15,14 @@ public class FailedTests {
 	// Duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
-		List<String> libraries0 = Suite.libraries;
-		Suite.libraries = Collections.emptyList();
-		try {
-			Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true);
-		} finally {
-			Suite.libraries = libraries0;
-		}
+		Suite.applyNoLibraries(() -> Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true));
 	}
 
 	// NPE. Method not found in concatm due to not importing standard library.
 	// Module dependency checks are necessary
 	@Test
 	public void testEager() {
-		List<String> libraries0 = Suite.libraries;
-		Suite.libraries = Collections.emptyList();
-		try {
-			Suite.evaluateFun("using MONAD >> 0", false);
-		} finally {
-			Suite.libraries = libraries0;
-		}
+		Suite.applyNoLibraries(() -> Suite.evaluateFun("using MONAD >> 0", false));
 	}
 
 	// (Expected) infinite loop.
@@ -81,7 +67,7 @@ public class FailedTests {
 	// Where is the error message?
 	@Test
 	public void testFix() {
-		Suite.evaluateFunType("fix {cons {0}} | head {3}");
+		Suite.applyNoLibraries(() -> Suite.evaluateFunType("fix {cons {0}} | head {3}"));
 	}
 
 }
