@@ -31,8 +31,7 @@ compile-function .mode .do0 (FRAME l:.c,)
 
 fc-process-function .mode .do0 .dox
 	:- !, fc-parse .do0 .do1
-	, !, fc-infer-type-rule .do1 ()/()/() .tr/() _
-	, !, fc-resolve-type-rules .tr
+	, !, fc-infer-type .do1 _
 	, once (not is.cyclic .do1; fc-error "Cyclic data detected")
 	, !, once (.mode = LAZY, fc-lazyify-fun .do1 .do2
 		; .mode = EAGER, .do1 = .do2

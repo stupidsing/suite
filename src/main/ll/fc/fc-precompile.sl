@@ -19,8 +19,7 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 	, !, write "Parsing program", nl
 	, !, fc-parse .do0 .do1
 	, !, write "Inferencing types", nl
-	, !, fc-infer-type-rule .do1 ()/()/() .tr/() NUMBER
-	, !, fc-resolve-type-rules .tr
+	, !, fc-infer-type .do1 NUMBER
 	, !, .pred0 = (
 		fc-infer-type-rule-using-lib .lib .do .ue/.ve/.te .tr1 .type
 			:- fc-dict-union-replace .ue .ues .ue1
