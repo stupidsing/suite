@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 import suite.lp.Journal;
+import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
 import suite.node.Node;
@@ -101,7 +102,7 @@ public class IoPredicates {
 	};
 
 	public BuiltinPredicate throwPredicate = PredicateUtil.run(n -> {
-		throw new SuiteException(n.finalNode());
+		throw new SuiteException(new Cloner().clone(n));
 	});
 
 	public BuiltinPredicate tryPredicate = (prover, ps) -> {

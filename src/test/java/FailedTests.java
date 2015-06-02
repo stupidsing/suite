@@ -67,7 +67,8 @@ public class FailedTests {
 	// Where is the error message?
 	@Test
 	public void testFix() {
-		Suite.applyNoLibraries(() -> Suite.evaluateFunType("fix {cons {0}} | head {3}"));
+		Suite.evaluateFunType("define f := 1 = true >> 0");
+		Suite.evaluateFunType("fix {cons {0}} | head {3}");
 	}
 
 }

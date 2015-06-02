@@ -306,12 +306,14 @@ public class SewingProver {
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt.bindEnv();
+				int pit = rt.journal.getPointInTime();
 				Sink<Node> handler0 = rt.handler;
 				Env env0 = rt.env;
 				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
 				rt.handler = node_ -> {
 					rt.handler = handler0;
+					rt.journal.undoBinds(pit);
 					if (p.test(be, node_)) {
 						rt.env = env0;
 						rt.alts = alts0;
