@@ -30,7 +30,8 @@ cg-opt0 (.insn0, .insns0) .cx
 	, cg-opt-stack-usage .c1 .c2
 	, cg-opt-tail-calls .c2 .cx
 #
-cg-opt0 () () #
+cg-opt0 () ()
+#
 
 cg-opt-branches (.insn l:.b0) (.insn l:.bx)
 	:- bound .b0, not (.insn = FRAME), !, cg-opt .b0 .bx
@@ -41,7 +42,8 @@ cg-opt-branches (.insn .op0 l:.b0) (.insn .op0 l:.bx)
 cg-opt-branches (.insn .op0 .op1 l:.b0) (.insn .op0 .op1 l:.bx)
 	:- bound .b0, !, cg-opt .b0 .bx
 #
-cg-opt-branches .insn .insn #
+cg-opt-branches .insn .insn
+#
 
 cg-opt-assign-returns .li0 .ri0
 	:- .li0 = (
@@ -56,7 +58,8 @@ cg-opt-assign-returns .li0 .ri0
 	, !
 	, cg-opt .mi0 .ri0
 #
-cg-opt-assign-returns .insns .insns #
+cg-opt-assign-returns .insns .insns
+#
 
 cg-opt-stack-usage .li0 .ri0
 	:- .li0 = (PUSH .r0
@@ -77,7 +80,8 @@ cg-opt-stack-usage .li0 .ri0
 	, cg-opt .mi0 .ri0
 	, !
 #
-cg-opt-stack-usage .insns .insns #
+cg-opt-stack-usage .insns .insns
+#
 
 -- Return instruction would actually perform leave (i.e. frame restoration).
 -- We can skip the LEAVE instruction if it obstruct optimizations.
@@ -92,7 +96,8 @@ cg-opt-tail-calls .li0 .ri0
 	, cg-opt .mi0 .ri0
 	, !
 #
-cg-opt-tail-calls .insns .insns #
+cg-opt-tail-calls .insns .insns
+#
 
 append2 .li0/.lix .ri0/.rix .insns
 	:- append .insns .lix .li0
