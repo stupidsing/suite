@@ -305,12 +305,15 @@ public class SewingProver {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
+				BindEnv be = rt.bindEnv();
 				Sink<Node> handler0 = rt.handler;
+				Env env0 = rt.env;
 				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
 				rt.handler = node_ -> {
 					rt.handler = handler0;
-					if (p.test(rt.bindEnv(), node_)) {
+					if (p.test(be, node_)) {
+						rt.env = env0;
 						rt.alts = alts0;
 						rt.rems = rems0;
 						rt.pushRem(catch0);
@@ -318,11 +321,12 @@ public class SewingProver {
 						handler0.sink(node_);
 				};
 				rt.pushRem(rt_ -> {
-					rt.handler = handler0;
+					rt_.handler = handler0;
+					rt_.alts = alts0; // No backtracking
 					return okay;
 				});
 				rt.pushAlt(rt_ -> {
-					rt.handler = handler0;
+					rt_.handler = handler0;
 					return fail;
 				});
 				return tr0;
