@@ -21,8 +21,14 @@
 --   list, and generalized back when being used.
 --
 
+fc-infer-type .do .type
+	:- fc-infer-type-rule .do ()/()/() .tr/() .type
+	, fc-resolve-type-rules .tr
+#
+
 fc-infer-type-rule .p .env .tr .type
-	:- fc-infer-type-rule0 .p .env .tr .type
+	:- try (fc-infer-type-rule0 .p .env .tr .type)
+	.ex (fc-error .ex)
 #
 
 fc-infer-type-rule0 .p .env .tr/.tr .type
@@ -119,6 +125,9 @@ fc-infer-type-rule0 .do .env .tr .type
 	:- (.do = UNWRAP .do1; .do = WRAP .do1)
 	, fc-infer-type-rule0 .do1 .env .tr .type
 #
+fc-infer-type-rule0 .do _ _ _
+	:- throw "Unmatched types"
+#
 
 fc-define-var-types .sp (.var .value, .vvs) (.var .value .varType0, .vvts) .ue0/.uex
 	:- once (.sp = SP, graph.specialize .varType0 .varType1; .varType0 = .varType1)
@@ -129,9 +138,8 @@ fc-define-var-types _ () () .ue/.ue
 #
 
 fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
-	:- once (fc-infer-type-rule0 .value .env .tr0/.tr1 .varType
-		; fc-error "at variable" .var
-	)
+	:- try (fc-infer-type-rule0 .value .env .tr0/.tr1 .varType)
+	.ex (throw .ex "%0Aat variable" .var)
 	, fc-infer-var-types .vvts .env .tr1/.trx
 #
 fc-infer-var-types () _ .tr/.tr
@@ -147,13 +155,13 @@ fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 		fc-dict-get .ue .var/.type
 		; fc-dict-get .ve .var/.varType, !, graph.generalize .varType .type
 		; fc-default-fun-type .var .type -- ; fc-define-default-fun _ .var _
-		; fc-error "Undefined variable" .var
+		; throw "Undefined variable" .var
 	)
 #
 
 fc-resolve-type-rules .tr
-	:- once (not is.cyclic .tr; fc-error "Cyclic types")
-	, once (fc-resolve-type-rules0 .tr; fc-error "Unmatched types")
+	:- once (not is.cyclic .tr; throw "Cyclic types")
+	, once (fc-resolve-type-rules0 .tr; throw "Unmatched types")
 #
 
 fc-resolve-type-rules0 ()
@@ -163,7 +171,7 @@ fc-resolve-type-rules0 (SUB-SUPER-TYPES .te .t0 .tx, .tr1)
 	:- !, fc-resolve-sub-super-types .te .t0 .tx, fc-resolve-type-rules0 .tr1
 #
 fc-resolve-type-rules0 _
-	:- !, fc-error "Not enough type information"
+	:- !, throw "Not enough type information"
 #
 
 fc-resolve-sub-super-types _ .t .t
