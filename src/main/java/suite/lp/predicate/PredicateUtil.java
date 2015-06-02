@@ -33,4 +33,12 @@ public class PredicateUtil {
 		};
 	}
 
+	public static boolean tryProve(Prover prover, Predicate<Prover> pred) {
+		Prover prover1 = new Prover(prover);
+		boolean result = pred.test(prover1);
+		if (!result) // Roll back bindings if overall goal is failed
+			prover1.undoAllBinds();
+		return result;
+	}
+
 }

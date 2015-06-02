@@ -209,14 +209,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate notEquals = (prover, ps) -> {
 		Tree tree = (Tree) ps;
-		Prover prover1 = new Prover(prover);
-		boolean result = prover1.bind(tree.getLeft(), tree.getRight());
-
-		if (result) {
-			prover1.undoAllBinds();
-			return false;
-		} else
-			return true;
+		return PredicateUtil.tryProve(prover, prover1 -> !prover1.bind(tree.getLeft(), tree.getRight()));
 	};
 
 	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));

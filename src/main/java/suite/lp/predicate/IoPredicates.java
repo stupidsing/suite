@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 import suite.lp.Journal;
-import suite.lp.doer.Prover;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
 import suite.node.Node;
@@ -110,11 +109,7 @@ public class IoPredicates {
 		Journal journal = prover.getJournal();
 		int pit = journal.getPointInTime();
 		try {
-			Prover prover1 = new Prover(prover);
-			boolean result = prover1.prove0(params[0]);
-			if (!result)
-				prover1.undoAllBinds();
-			return result;
+			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
 		} catch (SuiteException ex) {
 			journal.undoBinds(pit);
 			if (prover.bind(params[1], ex.getNode())) {
