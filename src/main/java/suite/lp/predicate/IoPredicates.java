@@ -8,12 +8,14 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 import suite.lp.Journal;
+import suite.lp.doer.Prover;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.TermOp;
 import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
@@ -108,12 +110,17 @@ public class IoPredicates {
 		Journal journal = prover.getJournal();
 		int pit = journal.getPointInTime();
 		try {
-			return prover.prove0(params[0]);
+			Prover prover1 = new Prover(prover);
+			boolean result = prover1.prove0(params[0]);
+			if (!result)
+				prover1.undoAllBinds();
+			return result;
 		} catch (SuiteException ex) {
 			journal.undoBinds(pit);
-			if (prover.bind(params[1], ex.getNode()))
-				return prover.prove0(params[2]);
-			else
+			if (prover.bind(params[1], ex.getNode())) {
+				prover.setRemaining(Tree.of(TermOp.AND___, params[2], prover.getRemaining()));
+				return true;
+			} else
 				throw ex;
 		}
 	};
