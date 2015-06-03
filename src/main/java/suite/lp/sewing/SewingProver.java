@@ -13,6 +13,7 @@ import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Journal;
+import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -297,7 +298,7 @@ public class SewingProver {
 		} else if ((m = Suite.matcher("throw .0").apply(node)) != null) {
 			Fun<Env, Node> f = sb.compile(m[0]);
 			tr = rt -> {
-				rt.handler.sink(f.apply(rt.env));
+				rt.handler.sink(new Cloner().clone(f.apply(rt.env)));
 				return okay;
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {

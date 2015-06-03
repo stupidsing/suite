@@ -36,7 +36,7 @@ define dump := (:t => :t -> string) of skip-type-check (
 	define type-of := get%i {atom:INTRN!BasicIntrinsics.typeOf} >>
 	define atom-string := get%i {atom:INTRN!BasicIntrinsics.atomString} >>
 	let dump0 := prec => n =>
-		let type := +call%i-v1 {type-of} {n} >>
+		let type := call%i-v1 {type-of} {n} >>
 		if (n = ()) then
 			"()"
 		else-if (type = TREE) then
