@@ -3,11 +3,8 @@ fc-bind .v0 .v1 .then .else .parsed
 	, fc-bind0 (PRAGMA TYPE-SKIP-CHECK .v0) (PRAGMA TYPE-SKIP-CHECK .v1) .then1 .else .parsed
 #
 
-fc-bind0 .v0 .v1 .then .else .parsed
-	:- fc-bind-cons .v0 .h0 .t0
-	, fc-bind-cons .v1 .h1 .t1
-	, !
-	, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
+fc-bind0 (CONS .h0 .t0) (CONS .h1 .t1) .then .else .parsed
+	:- !, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
 fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
 	:- !, fc-bind-pair .p0 .q0 .p1 .q1 .then .else .parsed
@@ -15,7 +12,7 @@ fc-bind0 (PAIR .p0 .q0) (PAIR .p1 .q1) .then .else .parsed
 fc-bind0 .v0 (PRAGMA NEW (VAR .nv)) .then _ (DEF-VARS (.nv .v0,) .then)
 	:- !
 #
-fc-bind0 .v0 .v1 .then .else (
+fc-bind0 .v0 (CONS .h1 .t1) .then .else (
 	DEF-VARS (.elseVar (WRAP .else), .v0var .v0,) (
 		IF (INVOKE (VAR .v0var) (VAR +is-list)) (
 			DEF-VARS (
@@ -25,8 +22,7 @@ fc-bind0 .v0 .v1 .then .else (
 			.then1
 		) .else1
 	)
-) :- fc-bind-cons .v1 .h1 .t1
-	, !
+) :- !
 	, temp .elseVar, temp .v0var, temp .headVar, temp .tailVar
 	, .else1 = UNWRAP (VAR .elseVar)
 	, fc-bind-pair (VAR .headVar) (VAR .tailVar) .h1 .t1 .then .else1 .then1
@@ -52,8 +48,6 @@ fc-bind0 .v0 (PRAGMA _ .v1) .then .else .parsed
 fc-bind0 .v0 .v1 .then .else (
 	IF (TREE ' = ' .v0 .v1) .then .else
 ) #
-
-fc-bind-cons (INVOKE .t INVOKE .h VAR +lcons) .h .t #
 
 fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VARS (.elseVar (WRAP .else),) .parsed)
 	:- temp .elseVar

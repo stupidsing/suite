@@ -147,6 +147,8 @@ public class EagerFunInterpreter {
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
+		else if ((m = Suite.matcher("CONS .0 .1").apply(node)) != null)
+			result = pair(mapping, m);
 		else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(Suite.matcher(".0 .1")::apply);
 			Mapping mapping1 = arrays //
@@ -190,11 +192,9 @@ public class EagerFunInterpreter {
 			};
 		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
-		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> left_ = eager0(mapping, m[0]);
-			Fun<Frame, Node> right_ = eager0(mapping, m[1]);
-			result = frame -> pair(left_.apply(frame), right_.apply(frame));
-		} else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
+		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null)
+			result = pair(mapping, m);
+		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
 			result = eager0(mapping, m[1]);
 		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
 			Fun<Frame, Node> iter_ = eager0(mapping, m[0]);
@@ -225,6 +225,12 @@ public class EagerFunInterpreter {
 			throw new RuntimeException("Unrecognized construct " + node);
 
 		return result;
+	}
+
+	private Fun<Frame, Node> pair(Mapping mapping, Node[] m) {
+		Fun<Frame, Node> p0_ = eager0(mapping, m[0]);
+		Fun<Frame, Node> p1_ = eager0(mapping, m[1]);
+		return frame -> pair(p0_.apply(frame), p1_.apply(frame));
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {

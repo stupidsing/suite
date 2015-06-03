@@ -11,6 +11,11 @@ fc-lazyify .const (WRAP .const)
 	:- .const = .tag _
 	, member (ATOM, BOOLEAN, CHARS, NUMBER,) .tag, !
 #
+fc-lazyify (CONS .head0 .tail0) (WRAP (CONS .headx .tailx))
+	:- !
+	, fc-lazyify .head0 .headx
+	, fc-lazyify .tail0 .tailx
+#
 fc-lazyify (FUN .var .do0) (WRAP (FUN .var .do1))
 	:- !
 	, fc-lazyify .do0 .do1

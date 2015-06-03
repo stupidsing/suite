@@ -141,6 +141,8 @@ public class LazyFunInterpreter {
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
+		else if ((m = Suite.matcher("CONS .0 .1").apply(node)) != null)
+			result = pair(mapping, m);
 		else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(Suite.matcher(".0 .1")::apply);
 			Streamlet<Node> vars = arrays.map(m1 -> m1[0]);
@@ -186,11 +188,9 @@ public class LazyFunInterpreter {
 			};
 		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
-		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null) {
-			Fun<Frame, Thunk_> left_ = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> right_ = lazy0(mapping, m[1]);
-			result = frame -> () -> new Pair_(left_.apply(frame), right_.apply(frame));
-		} else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
+		else if ((m = Suite.matcher("PAIR .0 .1").apply(node)) != null)
+			result = pair(mapping, m);
+		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
 			result = lazy0(mapping, m[1]);
 		else if ((m = Suite.matcher("TCO .0 .1").apply(node)) != null) {
 			Fun<Frame, Thunk_> iter_ = lazy0(mapping, m[0]);
@@ -215,6 +215,12 @@ public class LazyFunInterpreter {
 			throw new RuntimeException("Unrecognized construct " + node);
 
 		return result;
+	}
+
+	private Fun<Frame, Thunk_> pair(Mapping mapping, Node[] m) {
+		Fun<Frame, Thunk_> p0_ = lazy0(mapping, m[0]);
+		Fun<Frame, Thunk_> p1_ = lazy0(mapping, m[1]);
+		return frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
 	}
 
 	private Fun<Frame, Thunk_> immediate(Node n) {

@@ -103,6 +103,11 @@ fc-parse (.p0 .p1) (PRAGMA TYPE-CAST-TO-CLASS (PAIR .parsed0 .parsed1))
 	, fc-parse .p0 (PRAGMA TYPE-CAST-TO-CLASS .parsed0)
 	, fc-parse .p1 .parsed1
 #
+fc-parse (.p0; .p1) (CONS .parsed0 .parsed1)
+	:- !
+	, fc-parse .p0 .parsed0
+	, fc-parse .p1 .parsed1
+#
 fc-parse (.p0, .p1) (PAIR .parsed0 .parsed1)
 	:- !
 	, fc-parse .p0 .parsed0
@@ -190,7 +195,6 @@ fc-parse-sugar (var .var := .value >> .do) (vars (.var := .value #) >> .do) :- !
 fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- ! #
 fc-parse-sugar (.l || .r) (or {.l} {.r}) :- ! #
 fc-parse-sugar ({.t}) (.var => .var {.t}) :- !, temp .var #
-fc-parse-sugar (.l; .r) (+lcons {.l} {.r}) :- ! #
 fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var #
 fc-parse-sugar (.l | .r) (.r {.l}) :- ! #
 fc-parse-sugar (.mv := .value # .monad) (setm* {scope} {.mv} {.value} # .monad) :- ! #

@@ -31,6 +31,10 @@ fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
+fc-infer-type-rule (CONS .v0 .v1) .env .tr0/.trx (LIST-OF .t)
+	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t
+	, fc-infer-type-rule .v1 .env .tr1/.trx (LIST-OF .t)
+#
 fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
 	:- fc-define-var-types () .vvs .vvts .ue/.ue1
 	, .env1 = .ue1/.ve/.te

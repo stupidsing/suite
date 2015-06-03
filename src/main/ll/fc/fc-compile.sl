@@ -13,6 +13,9 @@ fc-compile (BOOLEAN .b) _ .c0/.cx/.reg
 fc-compile (CHARS .s) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .stringReg c:.s, DATA-CHARS .reg .stringReg, .cx)
 #
+fc-compile (CONS .head .tail) .env .cr
+	:- fc-compile (INVOKE .tail (INVOKE .head (VAR +lcons))) .env .cr
+#
 fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
 	:- fc-define-vars .vvs .vrs .frame .ve/.ve1
 	, fc-compile-vars .vrs .frame/.ve1 .c0/.c1

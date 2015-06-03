@@ -4,6 +4,9 @@ fc-rewrite (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
 #
 fc-rewrite (CHARS .cs) (CHARS .cs) .ts/.ts
 #
+fc-rewrite (CONS .head0 .tail0) (CONS .head1 .tail1) .ts0/.tsx
+	:- .ts0 = (.head0 .head1, .tail0 .tail1, .tsx)
+#
 fc-rewrite (DEF-VARS (.var .value0, .list0) .do0) (DEF-VARS (.var .value1, .list1) .do1) .ts0/.tsx
 	:- .ts0 = (.value0 .value1, .ts1)
 	, fc-rewrite (DEF-VARS .list0 .do0) (DEF-VARS .list1 .do1) .ts1/.tsx
