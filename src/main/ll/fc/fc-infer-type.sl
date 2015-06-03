@@ -186,7 +186,6 @@ fc-sub-super-type-pair .te .subType .superType
 	, generalize .tc .subType/.superType
 #
 
-fc-default-fun-type () (LIST-OF _) #
 fc-default-fun-type +call%i-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ _)) #
 fc-default-fun-type +call%i-t2 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ _))) #
 fc-default-fun-type +call%i-t3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
