@@ -71,7 +71,7 @@ fc-precompile-compile-node .parsed .frame/.ve .c0/.cx/.reg
 fc-parse ($$PRECOMPILE .pc) ($$PRECOMPILE .pc) :- ! #
 
 -- Type inferencer
-fc-infer-type-rule0 ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
+fc-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 
 -- Lazyifier and optimizer
 fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #

@@ -340,7 +340,14 @@ public class SewingProver {
 				tr = fail;
 			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
 				Fun<Env, Node> f = sb.compile(node);
-				tr = rt -> rt.prover.prove(f.apply(rt.env)) ? okay : fail;
+				tr = rt -> {
+					try {
+						return rt.prover.prove(f.apply(rt.env)) ? okay : fail;
+					} catch (SuiteException ex) {
+						rt.handler.sink(ex.getNode());
+						return okay;
+					}
+				};
 			} else
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Data<?>) {
