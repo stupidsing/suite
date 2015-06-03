@@ -54,7 +54,6 @@ fc-bind0 .v0 .v1 .then .else (
 ) #
 
 fc-bind-cons (INVOKE .t INVOKE .h VAR +lcons) .h .t #
-fc-bind-cons (INVOKE .t INVOKE .h VAR +pcons) .h .t #
 
 fc-bind-pair .h0 .t0 .h1 .t1 .then .else (DEF-VARS (.elseVar (WRAP .else),) .parsed)
 	:- temp .elseVar
