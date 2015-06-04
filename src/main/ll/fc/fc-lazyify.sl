@@ -58,10 +58,8 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 		+call%i-v3/4/VALUE:VALUE:VALUE:VALUE:/VALUE,
 		+is-list/1/VALUE:/VALUE,
 		+is-pair/1/VALUE:/VALUE,
-		+lcons/2/THUNK:THUNK:/VALUE,
 		+lhead/1/VALUE:/THUNK,
 		+ltail/1/VALUE:/THUNK,
-		+pcons/2/THUNK:THUNK:/VALUE,
 		+pleft/1/VALUE:/THUNK,
 		+pright/1/VALUE:/THUNK,
 	) .var/.n/.paramWraps/.returnWrap

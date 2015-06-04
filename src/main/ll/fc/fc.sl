@@ -138,7 +138,7 @@ fc-add-functions STANDARD .p (
 	define call%i-v2 := (data^%i -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-v2 {i} {p0} {p1}) >>
 	define call%i-v3 := (data^%i -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-v3 {i} {p0} {p1} {p2}) >>
 	define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) >>
-	define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => +lcons {head} {tail}) >>
+	define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => head; tail) >>
 	define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) >>
 	define get%i := (any -> data^%i) of skip-type-check (name => +get%i {name}) >>
 	define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
