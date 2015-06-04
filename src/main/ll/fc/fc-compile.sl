@@ -13,8 +13,9 @@ fc-compile (BOOLEAN .b) _ .c0/.cx/.reg
 fc-compile (CHARS .s) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .stringReg c:.s, DATA-CHARS .reg .stringReg, .cx)
 #
-fc-compile (CONS .head .tail) .env .cr
-	:- fc-compile (INVOKE .tail (INVOKE .head (VAR +lcons))) .env .cr
+fc-compile (CONS .type .head .tail) .env .cr
+	:- member (L/+lcons, P/+pcons,) .type/.fun
+	, fc-compile (INVOKE .tail (INVOKE .head (VAR .fun))) .env .cr
 #
 fc-compile (DEF-VARS .vvs .do) .frame/.ve .c0/.cx/.reg
 	:- fc-define-vars .vvs .vrs .frame .ve/.ve1
@@ -54,9 +55,6 @@ fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.reg
 #
 fc-compile (NUMBER .i) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-INT .reg .i, .cx)
-#
-fc-compile (PAIR .left .right) .env .cr
-	:- fc-compile (INVOKE .right (INVOKE .left (VAR +pcons))) .env .cr
 #
 fc-compile (PRAGMA _ .do) .env .cr
 	:- fc-compile .do .env .cr

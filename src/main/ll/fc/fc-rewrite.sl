@@ -4,7 +4,7 @@ fc-rewrite (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
 #
 fc-rewrite (CHARS .cs) (CHARS .cs) .ts/.ts
 #
-fc-rewrite (CONS .head0 .tail0) (CONS .head1 .tail1) .ts0/.tsx
+fc-rewrite (CONS .type .head0 .tail0) (CONS .type .head1 .tail1) .ts0/.tsx
 	:- .ts0 = (.head0 .head1, .tail0 .tail1, .tsx)
 #
 fc-rewrite (DEF-VARS (.var .value0, .list0) .do0) (DEF-VARS (.var .value1, .list1) .do1) .ts0/.tsx
@@ -26,9 +26,6 @@ fc-rewrite (INVOKE .param0 .callee0) (INVOKE .param1 .callee1) .ts0/.tsx
 	:- .ts0 = (.param0 .param1, .callee0 .callee1, .tsx)
 #
 fc-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
-#
-fc-rewrite (PAIR .left0 .right0) (PAIR .left1 .right1) .ts0/.tsx
-	:- .ts0 = (.left0 .left1, .right0 .right1, .tsx)
 #
 fc-rewrite (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx
 	:- fc-rewrite-pragma .pragma0 .pragma1 .ts0/.ts1

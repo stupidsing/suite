@@ -98,17 +98,17 @@ fc-parse (vars (.var := .value # .list) >> .do) (
 fc-parse (vars () >> .do) (DEF-VARS () .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (.p0 .p1) (PRAGMA TYPE-CAST-TO-CLASS (PAIR .parsed0 .parsed1))
-	:- !
-	, fc-parse .p0 (PRAGMA TYPE-CAST-TO-CLASS .parsed0)
-	, fc-parse .p1 .parsed1
-#
-fc-parse (.p0; .p1) (CONS .parsed0 .parsed1)
+fc-parse (.p0; .p1) (CONS L .parsed0 .parsed1)
 	:- !
 	, fc-parse .p0 .parsed0
 	, fc-parse .p1 .parsed1
 #
-fc-parse (.p0, .p1) (PAIR .parsed0 .parsed1)
+fc-parse (.p0 .p1) (PRAGMA TYPE-CAST-TO-CLASS (CONS P .parsed0 .parsed1))
+	:- !
+	, fc-parse .p0 (PRAGMA TYPE-CAST-TO-CLASS .parsed0)
+	, fc-parse .p1 .parsed1
+#
+fc-parse (.p0, .p1) (CONS P .parsed0 .parsed1)
 	:- !
 	, fc-parse .p0 .parsed0
 	, fc-parse .p1 .parsed1

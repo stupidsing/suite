@@ -20,7 +20,7 @@ fc-reduce-tail-recursion .do0 .dox :- fc-rewrite .do0 .dox .ts/(), fc-reduce-tai
 fc-reduce-tail-recursion-list () #
 fc-reduce-tail-recursion-list (.t0 .tx, .ts) :- fc-reduce-tail-recursion .t0 .tx, fc-reduce-tail-recursion-list .ts #
 
-fc-reduce-tail-recursion0 .fun .vars/.vars .do (PAIR (BOOLEAN false) PAIR .expr (PRAGMA TYPE-SKIP-CHECK NUMBER 0)) Y
+fc-reduce-tail-recursion0 .fun .vars/.vars .do (CONS P (BOOLEAN false) CONS P .expr (PRAGMA TYPE-SKIP-CHECK NUMBER 0)) Y
 	:- length .vars .length
 	, length .values .length
 	, fc-expression .values .expr
@@ -45,17 +45,17 @@ fc-reduce-tail-recursion0 .fun .vars (IF .if .then .else) (IF .if .then1 .else1)
 	, fc-reduce-tail-recursion0 .fun .vars .then .then1 .flag
 	, fc-reduce-tail-recursion0 .fun .vars .else .else1 .flag
 #
-fc-reduce-tail-recursion0 _ .vars/.vars .do (PAIR (BOOLEAN true) PAIR (PRAGMA TYPE-SKIP-CHECK NUMBER 0) .do) _
+fc-reduce-tail-recursion0 _ .vars/.vars .do (CONS P (BOOLEAN true) CONS P (PRAGMA TYPE-SKIP-CHECK NUMBER 0) .do) _
 #
 
 fc-expression () (ATOM ()) #
-fc-expression (.var, .vars) (PAIR .var .vars1) :- fc-expression .vars .vars1 #
+fc-expression (.var, .vars) (CONS P .var .vars1) :- fc-expression .vars .vars1 #
 
 fc-vars-expression () (ATOM ()) #
-fc-vars-expression (.var, .vars) (PAIR (VAR .var) .vars1) :- fc-vars-expression .vars .vars1 #
+fc-vars-expression (.var, .vars) (CONS P (VAR .var) .vars1) :- fc-vars-expression .vars .vars1 #
 
 fc-bind-expression () (ATOM ()) #
-fc-bind-expression (.var, .vars) (PAIR (PRAGMA NEW (VAR .var)) .vars1) :- fc-bind-expression .vars .vars1 #
+fc-bind-expression (.var, .vars) (CONS P (PRAGMA NEW (VAR .var)) .vars1) :- fc-bind-expression .vars .vars1 #
 
 fc-vars-fun () .do .do #
 fc-vars-fun (.var, .vars) .do .do1 :- fc-vars-fun .vars (FUN .var .do) .do1 #

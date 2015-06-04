@@ -31,9 +31,13 @@ fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
-fc-infer-type-rule (CONS .v0 .v1) .env .tr0/.trx (LIST-OF .t)
+fc-infer-type-rule (CONS L .v0 .v1) .env .tr0/.trx (LIST-OF .t)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t
 	, fc-infer-type-rule .v1 .env .tr1/.trx (LIST-OF .t)
+#
+fc-infer-type-rule (CONS P .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
+	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
+	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
 fc-infer-type-rule (DEF-VARS .vvs .do) .ue/.ve/.te .tr0/.trx .type
 	:- fc-define-var-types () .vvs .vvts .ue/.ue1
@@ -58,10 +62,6 @@ fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
 		, SUB-SUPER-TYPES .te .actualParamType .signParamType
 		, .trx
 	)
-#
-fc-infer-type-rule (PAIR .v0 .v1) .env .tr0/.trx (PAIR-OF .t0 .t1)
-	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t0
-	, fc-infer-type-rule .v1 .env .tr1/.trx .t1
 #
 fc-infer-type-rule (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)

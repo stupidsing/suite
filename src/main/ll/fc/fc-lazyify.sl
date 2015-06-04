@@ -11,7 +11,7 @@ fc-lazyify .const (WRAP .const)
 	:- .const = .tag _
 	, member (ATOM, BOOLEAN, CHARS, NUMBER,) .tag, !
 #
-fc-lazyify (CONS .head0 .tail0) (WRAP (CONS .headx .tailx))
+fc-lazyify (CONS .type .head0 .tail0) (WRAP (CONS .type .headx .tailx))
 	:- !
 	, fc-lazyify .head0 .headx
 	, fc-lazyify .tail0 .tailx
@@ -30,11 +30,6 @@ fc-lazyify (INVOKE .value0 .callee0) (WRAP UNWRAP (INVOKE .value1 (UNWRAP .calle
 	:- !
 	, fc-lazyify .value0 .value1
 	, fc-lazyify .callee0 .callee1
-#
-fc-lazyify (PAIR .left0 .right0) (WRAP (PAIR .leftx .rightx))
-	:- !
-	, fc-lazyify .left0 .leftx
-	, fc-lazyify .right0 .rightx
 #
 fc-lazyify (TREE .oper .left0 .right0) .dox
 	:- !

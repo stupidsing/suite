@@ -69,33 +69,3 @@ is-variable .variable
 
 map (.k/.v1, _) .k/.v2 :- !, .v1 = .v2 #
 map (_, .tail) .e :- map .tail .e #
-
--------------------------------------------------------------------------------
--- metaprogramming types
-
-using STANDARD >>
-data operator as OPERATOR-ADD >>
-data operator as OPERATOR-AND >>
-data operator as OPERATOR-DIV >>
-data operator as OPERATOR-EQ >>
-data operator as OPERATOR-GE >>
-data operator as OPERATOR-GT >>
-data operator as OPERATOR-LE >>
-data operator as OPERATOR-LT >>
-data operator as OPERATOR-MUL >>
-data operator as OPERATOR-NE >>
-data operator as OPERATOR-OR >>
-data operator as OPERATOR-SUB >>
-data fc as ATOM [number] >>
-data fc as BOOLEAN boolean >>
-data fc as DEF-VAR (fc, fc) >>
-data fc as FUN [number] fc >>
-data fc as IF (fc, fc, fc) >>
-data fc as INVOKE (fc, fc) >>
-data fc as NUMBER number >>
-data fc as PAIR (fc, fc) >>
-data fc as TREE operator (fc, fc) >>
-data fc as VAR [number] >>
-IF (BOOLEAN true)
-(ATOM "abc")
-(INVOKE (NUMBER 3) (FUN "v" (VAR "v")))
