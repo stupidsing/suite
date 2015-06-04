@@ -120,6 +120,7 @@ public class InstructionTranslator implements Closeable {
 				+ "int csp = 0, dsp = 0, cpsp = 0; \n" //
 				+ "int n; \n" //
 				+ "Node node, n0, n1, var; \n" //
+				+ "Tree tree; \n" //
 				+ "\n" //
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
 				+ "Journal journal = prover.getJournal(); \n" //
@@ -327,8 +328,20 @@ public class InstructionTranslator implements Closeable {
 			case IFFALSE_______:
 				app("if (!#{reg-bool}) #{jump}", op0, op1);
 				break;
+			case IFNOTCONS_____:
+				app("if ((tree = Tree.decompose(#{reg-node}, TermOp.OR____)) != null) {", op0);
+				app("ds[dsp++] = tree.getLeft()");
+				app("ds[dsp++] = tree.getRight()");
+				app("} else #{jump}", op1);
+				break;
 			case IFNOTEQUALS___:
 				app("if (#{reg} != #{reg}) #{jump}", op1, op2, op0);
+				break;
+			case IFNOTPAIR_____:
+				app("if ((tree = Tree.decompose(#{reg-node}, TermOp.AND___)) != null) {", op0);
+				app("ds[dsp++] = tree.getLeft()");
+				app("ds[dsp++] = tree.getRight()");
+				app("} else #{jump}", op1);
 				break;
 			case ISCONS________:
 				app("#{reg} = Tree.decompose((Node) ds[--dsp]) != null", op0);

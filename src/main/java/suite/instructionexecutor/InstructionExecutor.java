@@ -73,6 +73,7 @@ public class InstructionExecutor implements AutoCloseable {
 		exec.stack = stack;
 
 		Comparer comparer = comparer();
+		Tree tree;
 
 		while (true)
 			try {
@@ -181,6 +182,20 @@ public class InstructionExecutor implements AutoCloseable {
 					break;
 				case IFFALSE_______:
 					if (regs[insn.op0] != Atom.TRUE)
+						current.ip = insn.op1;
+					break;
+				case IFNOTCONS_____:
+					if ((tree = Tree.decompose(regs[insn.op0], TermOp.OR____)) != null) {
+						stack[sp++] = tree.getLeft();
+						stack[sp++] = tree.getRight();
+					} else
+						current.ip = insn.op1;
+					break;
+				case IFNOTPAIR_____:
+					if ((tree = Tree.decompose(regs[insn.op0], TermOp.AND___)) != null) {
+						stack[sp++] = tree.getLeft();
+						stack[sp++] = tree.getRight();
+					} else
 						current.ip = insn.op1;
 					break;
 				case IFNOTEQUALS___:

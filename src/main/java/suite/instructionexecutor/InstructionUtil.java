@@ -80,6 +80,8 @@ public class InstructionUtil {
 		IFGT__________("IF-GT"), //
 		IFLE__________("IF-LE"), //
 		IFLT__________("IF-LT"), //
+		IFNOTCONS_____("IF-NOT-CONS"), //
+		IFNOTPAIR_____("IF-NOT-PAIR"), //
 		IFNOTEQUALS___("IF-NOT-EQ"), //
 		ISCONS________("IS-CONS"), //
 		JUMP__________("JUMP"), //

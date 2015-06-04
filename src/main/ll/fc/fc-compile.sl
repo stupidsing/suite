@@ -7,6 +7,18 @@ fc-compile .do .env .cr
 fc-compile (ATOM .a) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.a, .cx)
 #
+fc-compile (BIND .type .cons .headVar .tailVar .then .else) .frame/.ve0 .c0/.cx/.reg
+	:- member (L/IF-NOT-CONS, P/IF-NOT-PAIR,) .type/.insn
+	, fc-compile .cons .frame/.ve0 .c0/.c1/.consReg
+	, .c1 = (.insn .consReg l:.c3
+		, POP .tailReg
+		, POP .headReg
+		, .c2)
+	, fc-dict-add .headVar/(%REG/.headReg/.frame) .ve0/.ve1
+	, fc-dict-add .tailVar/(%REG/.tailReg/.frame) .ve1/.ve2
+	, fc-compile .then .frame/.ve2 .c2/.cx/.reg
+	, fc-compile .else .frame/.ve0 .c3/.cx/.reg
+#
 fc-compile (BOOLEAN .b) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.b, .cx)
 #

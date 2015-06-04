@@ -11,6 +11,14 @@ fc-lazyify .const (WRAP .const)
 	:- .const = .tag _
 	, member (ATOM, BOOLEAN, CHARS, NUMBER,) .tag, !
 #
+fc-lazyify
+(BIND .type .cons0 .headVar .tailVar .then0 .else0)
+(BIND .type (UNWRAP .consx) .headVar .tailVar .thenx .elsex)
+	:- !
+	, fc-lazyify .cons0 .consx
+	, fc-lazyify .then0 .thenx
+	, fc-lazyify .else0 .elsex
+#
 fc-lazyify (CONS .type .head0 .tail0) (WRAP (CONS .type .headx .tailx))
 	:- !
 	, fc-lazyify .head0 .headx

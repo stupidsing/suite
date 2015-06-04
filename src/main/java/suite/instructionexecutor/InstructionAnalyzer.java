@@ -164,6 +164,8 @@ public class InstructionAnalyzer {
 			case DATACHARS_____:
 			case GETINTRINSIC__:
 			case HEAD__________:
+			case IFNOTCONS_____:
+			case IFNOTPAIR_____:
 			case LOGREG________:
 			case NEWNODE_______:
 			case POP___________:

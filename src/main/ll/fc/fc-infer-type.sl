@@ -29,6 +29,12 @@ fc-infer-type .do .type
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type
 #
+fc-infer-type-rule (BIND _ _ .headVar .tailVar .then .else) .ue0/.ve/.te .tr0/.trx .type
+	:- fc-dict-add .headVar/_ .ue0/.ue1
+	, fc-dict-add .tailVar/_ .ue1/.ue2
+	, fc-infer-type-rule .then .ue2/.ve/.te .tr0/.tr1 .type
+	, fc-infer-type-rule .else .ue0/.ve/.te .tr1/.trx .type
+#
 fc-infer-type-rule (CONS L .v0 .v1) .env .tr0/.trx (LIST-OF .t)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t
 	, fc-infer-type-rule .v1 .env .tr1/.trx (LIST-OF .t)
