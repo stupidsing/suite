@@ -153,7 +153,7 @@ fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 	:- once (
 		fc-dict-get .ue .var/.type
 		; fc-dict-get .ve .var/.varType, !, graph.generalize .varType .type
-		; fc-default-fun-type .var .type -- ; fc-define-default-fun _ .var _
+		; fc-define-default-fun _ .var _
 		; throw "Undefined variable" .var
 	)
 #
@@ -189,18 +189,3 @@ fc-sub-super-type-pair .te .subType .superType
 	, member .te .tc
 	, generalize .tc .subType/.superType
 #
-
-fc-default-fun-type +call%i-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ _)) #
-fc-default-fun-type +call%i-t2 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +call%i-t3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
-fc-default-fun-type +call%i-v1 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ _)) #
-fc-default-fun-type +call%i-v2 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +call%i-v3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
-fc-default-fun-type +compare (FUN-OF .t (FUN-OF .t NUMBER)) #
-fc-default-fun-type +get%i (FUN-OF (ATOM-OF _) (FUNCTOR-OF data (ATOM-OF %i))) #
-fc-default-fun-type +is-list (FUN-OF (LIST-OF _) BOOLEAN) #
-fc-default-fun-type +is-pair (FUN-OF (PAIR-OF _ _) BOOLEAN) #
-fc-default-fun-type +lhead (FUN-OF (LIST-OF .t) .t) #
-fc-default-fun-type +ltail (FUN-OF (LIST-OF .t) (LIST-OF .t)) #
-fc-default-fun-type +pleft (FUN-OF (PAIR-OF .t _) .t) #
-fc-default-fun-type +pright (FUN-OF (PAIR-OF _ .t) .t) #
