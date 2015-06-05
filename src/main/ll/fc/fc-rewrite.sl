@@ -1,17 +1,17 @@
 fc-rewrite (ATOM .a) (ATOM .a) .ts/.ts
 #
-fc-rewrite
-(BIND .type .cons0 .headVar .tailVar .then0 .else0)
-(BIND .type .cons1 .headVar .tailVar .then1 .else1)
-.ts0/.tsx
-	:- .ts0 = (.cons0 .cons1, .then0 .then1, .else0 .else1, .tsx)
-#
 fc-rewrite (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
 #
 fc-rewrite (CHARS .cs) (CHARS .cs) .ts/.ts
 #
 fc-rewrite (CONS .type .head0 .tail0) (CONS .type .head1 .tail1) .ts0/.tsx
 	:- .ts0 = (.head0 .head1, .tail0 .tail1, .tsx)
+#
+fc-rewrite
+(DECONS .type .cons0 .headVar .tailVar .then0 .else0)
+(DECONS .type .cons1 .headVar .tailVar .then1 .else1)
+.ts0/.tsx
+	:- .ts0 = (.cons0 .cons1, .then0 .then1, .else0 .else1, .tsx)
 #
 fc-rewrite (DEF-VARS (.var .value0, .list0) .do0) (DEF-VARS (.var .value1, .list1) .do1) .ts0/.tsx
 	:- .ts0 = (.value0 .value1, .ts1)

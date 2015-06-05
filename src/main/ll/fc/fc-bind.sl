@@ -18,7 +18,7 @@ fc-bind0 (CONS .type .h0 .t0) (CONS .type .h1 .t1) .then .else .parsed
 	:- !, fc-bind-pair .h0 .t0 .h1 .t1 .then .else .parsed
 #
 fc-bind0 .v0 (CONS .type .h1 .t1) .then .else (
-	DEF-VARS (.elseVar (WRAP .else),) (BIND .type .v0 .headVar .tailVar .then1 .else1)
+	DEF-VARS (.elseVar (WRAP .else),) (DECONS .type .v0 .headVar .tailVar .then1 .else1)
 ) :- !
 	, temp .elseVar, temp .headVar, temp .tailVar
 	, .else1 = UNWRAP (VAR .elseVar)
