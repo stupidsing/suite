@@ -1,4 +1,3 @@
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -55,13 +54,6 @@ public class FailedTests {
 		new FunRbTreeTest().test();
 		long end = System.currentTimeMillis();
 		assertTrue(end - start < 1000l);
-	}
-
-	// Undefined variable not showing appropriate error message
-	@Test
-	public void testVariableNotFound() {
-		Suite.evaluateFun("define i := skip-type-check abc >> i", false);
-		assertFalse(true);
 	}
 
 }
