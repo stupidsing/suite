@@ -212,7 +212,7 @@ fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
 fc-parse-sugar (.f/) (flip {.f}) :- ! #
 fc-parse-sugar "" () :- ! #
-fc-parse-sugar .s (string of ( skip-type-check (
+fc-parse-sugar .s (string of (skip-type-check (
 	chars:.s | (atom:INTRN!CharsIntrinsics.charsString | get%i | call%i-v1)
 )))
 	:- is.string .s, string.length .s .l, .l > 2, !
