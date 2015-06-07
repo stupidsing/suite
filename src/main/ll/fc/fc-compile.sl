@@ -2,7 +2,7 @@
 -- eager evaluated functional program compiler
 
 fc-compile .do .env .cr
-	:- fc-default-fun .do .env .cr, !
+	:- fc-call-default-fun .do .env .cr 0, !
 #
 fc-compile (ATOM .a) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.a, .cx)
@@ -137,15 +137,13 @@ fc-compile-vars (.value .varReg, .vrs) .env .c0/.cx
 #
 fc-compile-vars () _ .c/.c #
 
-fc-default-fun .call .frame .result :- fc-default-fun0 .call .frame .result 0 #
-
-fc-default-fun0 (INVOKE .p .pred) .frame .c0/.cx/.reg .n
+fc-call-default-fun (INVOKE .p .pred) .env .c0/.cx/.reg .n
 	:- !, let .n1 (.n + 1)
-	, fc-compile .p .frame .c0/.c1/.r1
+	, fc-compile .p .env .c0/.c1/.r1
 	, .c1 = (PUSH .r1, .c2)
-	, fc-default-fun0 .pred .frame .c2/.cx/.reg .n1
+	, fc-call-default-fun .pred .env .c2/.cx/.reg .n1
 #
-fc-default-fun0 (VAR .pred) _ .c0/.cx/.reg .n
+fc-call-default-fun (VAR .pred) _ .c0/.cx/.reg .n
 	:- fc-define-default-fun .n .pred .call, !
 	, .c0 = (.call .reg .n, .cx)
 #
