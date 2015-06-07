@@ -51,5 +51,6 @@ define dump := (:t => :t -> string) of skip-type-check (
 ) >>
 define sh := command => in =>
 	do >>
-	in | popen {"sh"; "-c"; command;} | perform | second | first | map {cs-to-string} | concat
+	let `0, $out, $err` := in | popen {"sh"; "-c"; command;} | perform >>
+	out | map {cs-to-string} | concat
 >>
