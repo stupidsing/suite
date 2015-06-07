@@ -79,8 +79,6 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case DATACHARS_____:
 			result = new Data<>(To.chars(((Str) regs[insn.op1]).value));
 			break;
-		case ERROR_________:
-			throw new RuntimeException("Error termination");
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];
 			String intrinsicName = atom.name.split("!")[1];

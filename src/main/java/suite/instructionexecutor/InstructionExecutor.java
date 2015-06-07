@@ -129,6 +129,8 @@ public class InstructionExecutor implements AutoCloseable {
 					Instruction frameBegin = instructions[af.getFrameBeginIp()];
 					current.frame = new Frame(parent, frameBegin.op0);
 					break;
+				case ERROR_________:
+					throw new RuntimeException("Error termination");
 				case EVALADD_______:
 					regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
 					break;
