@@ -42,7 +42,8 @@ rbt-union0 .mode (_ .n0 .pivot .n1) .tree0 .treex
 	, rbt-union0 .mode .n1 .tree2 .treex
 #
 
-rbt-insert-list () .tree/.tree #
+rbt-insert-list () .tree/.tree
+#
 rbt-insert-list (.v, .vs) .tree0/.treex
 	:- rbt-insert .v .tree0/.tree1
 	, rbt-insert-list .vs .tree1/.treex
