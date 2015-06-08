@@ -19,7 +19,7 @@ fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
 #
 fc-optimize-flow .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()
-	, fold .t (fc-optimize-flow .t) .ts
+	, list.query .t (fc-optimize-flow .t) .ts
 #
 
 -- Remove unreferenced variables
@@ -65,5 +65,5 @@ fc-replace-var-by-value .v0 .v1 (DEF-VARS (.v0 .value0,) .do) (DEF-VARS (.v0 .va
 #
 fc-replace-var-by-value .v0 .v1 .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()
-	, fold (.t0 .t1) (fc-replace-var-by-value .v0 .v1 .t0 .t1) .ts
+	, list.query (.t0 .t1) (fc-replace-var-by-value .v0 .v1 .t0 .t1) .ts
 #
