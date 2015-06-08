@@ -131,8 +131,7 @@ fc-parse .a (PRAGMA TYPE-CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
-fc-parse-list () () :- ! #
-fc-parse-list (.e, .es) (.p, .ps) :- !, fc-parse .e .p, fc-parse-list .es .ps #
+fc-parse-list .l .l1 :- list.query2 .p .p1 (fc-parse .p .p1) .l .l1 #
 
 fc-parse-op-sugar .t .do
 	:- tree .t .left .op .right
@@ -257,10 +256,7 @@ fc-parse-type number NUMBER :- ! #
 fc-parse-type string (LIST-OF NUMBER) :- ! #
 fc-parse-type .t (CLASS .t) :- is.atom .t #
 
-fc-parse-type-list () () :- ! #
-fc-parse-type-list (.type, .types) (.type1, .types1)
-	:- fc-parse-type .type .type1, fc-parse-type-list .types .types1
-#
+fc-parse-type-list .types .types1 :- list.query2 .t .t1 (fc-parse-type .t .t1) .types .types1 #
 
 fc-parse-bind-variable .v .vd
 	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "$"

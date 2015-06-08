@@ -34,14 +34,12 @@ fc-remove-unref-vars .do0 .dox .rb0/.rbx
 	)
 	, !
 #
-fc-remove-unref-vars (VAR .var) (VAR .var) .rb :- !, rbt-bind .var .rb #
-fc-remove-unref-vars .p0 .p1 .rb :- fc-rewrite .p0 .p1 .ts/(), fc-remove-unref-vars-list .ts .rb #
-
-fc-remove-unref-vars-list () .rb/.rb
+fc-remove-unref-vars (VAR .var) (VAR .var) .rb
+	:- !, rbt-bind .var .rb
 #
-fc-remove-unref-vars-list (.p0 .p1, .ts) .rb0/.rbx
-	:- fc-remove-unref-vars .p0 .p1 .rb0/.rb1
-	, fc-remove-unref-vars-list .ts .rb1/.rbx
+fc-remove-unref-vars .p0 .p1 .rb0/.rbx
+	:- fc-rewrite .p0 .p1 .ts/()
+	, list.fold (.p0_ .p1_)/.rb0_/.rbx_ (fc-remove-unref-vars .p0_ .p1_ .rb0_/.rbx_) .ts/.rb0/.rbx
 #
 
 fc-define-var

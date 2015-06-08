@@ -42,11 +42,8 @@ rbt-union0 .mode (_ .n0 .pivot .n1) .tree0 .treex
 	, rbt-union0 .mode .n1 .tree2 .treex
 #
 
-rbt-insert-list () .tree/.tree
-#
-rbt-insert-list (.v, .vs) .tree0/.treex
-	:- rbt-insert .v .tree0/.tree1
-	, rbt-insert-list .vs .tree1/.treex
+rbt-insert-list .list .tree0/.treex
+	:- list.fold .e/.tree0_/.treex_ (rbt-insert .e .tree0_/.treex_) .list/.tree0/.treex
 #
 
 rbt-insert .v .t :- rbt-add1 INSERT .v .t #
@@ -80,7 +77,8 @@ rbt-balance (BLACK .npn)/(RED (BLACK .n0 .p0 .n1) .p1 (BLACK .n2 .p2 .n3))
 	)
 	, !
 #
-rbt-balance .tree/.tree #
+rbt-balance .tree/.tree
+#
 
 rbt-compare .k0/_ .k1/_ :- !, .k0 < .k1 #
 rbt-compare .v0 .v1 :- .v0 < .v1 #

@@ -34,11 +34,8 @@ chr-match0 .given .if .then .when .facts0/.factsx
 	, chr-assert-list .then .facts1/.factsx
 #
 
-chr-retract-list () .facts/.facts
-#
-chr-retract-list (.c, .cs) .facts0/.factsx
-	:- chr-retract .c .facts0/.facts1
-	, chr-retract-list .cs .facts1/.factsx
+chr-retract-list .list .facts0/.factsx :- list.fold
+	:- list.fold .c/.facts0_/.factsx_ (chr-retract .c .facts0_/.factsx_) .list/.facts0/.factsx
 #
 
 chr-retract .c (.c, .facts)/.facts #
