@@ -65,11 +65,5 @@ fc-replace-var-by-value .v0 .v1 (DEF-VARS (.v0 .value0,) .do) (DEF-VARS (.v0 .va
 #
 fc-replace-var-by-value .v0 .v1 .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()
-	, fc-replace-var-by-value-list .v0 .v1 .ts
-#
-
-fc-replace-var-by-value-list _ _ () #
-fc-replace-var-by-value-list .v0 .v1 (.t, .ts)
-	:- fc-replace-var-by-value .v0 .v1 .t
-	, fc-replace-var-by-value-list .v0 .v1 .ts
+	, fold (.t0 .t1) (fc-replace-var-by-value .v0 .v1 .t0 .t1) .ts
 #
