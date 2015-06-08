@@ -3,6 +3,14 @@ append (.head, .tail) .list (.head, .tail1) :- append .tail .list .tail1 #
 
 clear :- retract.all (_ :- _), ! #
 
+fold _ _ ()
+#
+fold .var .goal (.e, .es)
+	:- clone (.var .goal) (.e .goal1)
+	, .goal1
+	, fold .var .goal .es
+#
+
 member (.e, _) .e #
 member (_, .tail) .e :- member .tail .e #
 

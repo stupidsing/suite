@@ -14,11 +14,10 @@ fc-reduce-tail-recursion (DEF-VARS (.fun .do0,) .value0) (DEF-VARS (.fun .dox,) 
 	, fc-vars-fun .vars (TCO (FUN .in .do2) .expr0) .dox
 	, fc-reduce-tail-recursion .value0 .valuex
 #
-fc-reduce-tail-recursion .do0 .dox :- fc-rewrite .do0 .dox .ts/(), fc-reduce-tail-recursion-list .ts
+fc-reduce-tail-recursion .do0 .dox
+	:- fc-rewrite .do0 .dox .ts/()
+	, fold .t (fc-reduce-tail-recursion .t) .ts
 #
-
-fc-reduce-tail-recursion-list () #
-fc-reduce-tail-recursion-list (.t0 .tx, .ts) :- fc-reduce-tail-recursion .t0 .tx, fc-reduce-tail-recursion-list .ts #
 
 fc-reduce-tail-recursion0 .fun .vars/.vars .do (CONS P (BOOLEAN false) CONS P .expr (PRAGMA TYPE-SKIP-CHECK NUMBER 0)) Y
 	:- length .vars .length

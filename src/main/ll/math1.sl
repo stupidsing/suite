@@ -25,10 +25,7 @@ sm-reduce (ASIN .x) ((INV SIN) .x1) :- sm-reduce .x .x1 #
 sm-reduce (ACOS .x) ((INV COS) .x1) :- sm-reduce .x .x1 #
 sm-reduce (TAN .x) (SIN .x1 / COS .x1) :- sm-reduce .x .x1 #
 sm-reduce (DV .y .x) (D .y1 * (D .x1) ^ -1) :- sm-reduce .x .x1, sm-reduce .y .y1 #
-sm-reduce .e .e1 :- sm-rewrite .e .e1 .es/(), sm-reduce-list .es #
-
-sm-reduce-list () #
-sm-reduce-list (.e .e1, .es) :- sm-reduce .e .e1, sm-reduce-list .es #
+sm-reduce .e .e1 :- sm-rewrite .e .e1 .es/(), fold .t (sm-reduce .t) .es #
 
 sm-equate (.f = .g)
 	:- sm-equate0 (.f0 = .g0)

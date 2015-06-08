@@ -17,11 +17,10 @@ fc-optimize-flow (UNWRAP WRAP .do0) .dox
 fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
 	:- !, fc-optimize-flow (DEF-VARS (.var .value,) .do0) .dox
 #
-fc-optimize-flow .p0 .p1 :- fc-rewrite .p0 .p1 .ts/(), fc-optimize-flow-list .ts
+fc-optimize-flow .p0 .p1
+	:- fc-rewrite .p0 .p1 .ts/()
+	, fold .t (fc-optimize-flow .t) .ts
 #
-
-fc-optimize-flow-list () #
-fc-optimize-flow-list (.t, .ts) :- fc-optimize-flow .t, fc-optimize-flow-list .ts #
 
 -- Remove unreferenced variables
 fc-remove-unref-vars .do0 .dox .rb0/.rbx
@@ -38,9 +37,11 @@ fc-remove-unref-vars .do0 .dox .rb0/.rbx
 fc-remove-unref-vars (VAR .var) (VAR .var) .rb :- !, rbt-bind .var .rb #
 fc-remove-unref-vars .p0 .p1 .rb :- fc-rewrite .p0 .p1 .ts/(), fc-remove-unref-vars-list .ts .rb #
 
-fc-remove-unref-vars-list () .rb/.rb #
+fc-remove-unref-vars-list () .rb/.rb
+#
 fc-remove-unref-vars-list (.p0 .p1, .ts) .rb0/.rbx
-	:- fc-remove-unref-vars .p0 .p1 .rb0/.rb1, fc-remove-unref-vars-list .ts .rb1/.rbx
+	:- fc-remove-unref-vars .p0 .p1 .rb0/.rb1
+	, fc-remove-unref-vars-list .ts .rb1/.rbx
 #
 
 fc-define-var
