@@ -48,7 +48,7 @@ chr-assert-list () .facts/.facts
 #
 chr-assert-list (.a = .b, .newFacts) .facts0/(.a = .b, .factsx) -- Built-in syntactic equality
 	:- !
-	, replace .a .b .facts0/.facts1
+	, replace .a .b .facts0 .facts1
 	, chr-assert-list .newFacts .facts1/.factsx
 #
 chr-assert-list (.newFact, .newFacts) .facts0/(.newFact, .factsx)
