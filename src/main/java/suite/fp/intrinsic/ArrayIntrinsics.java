@@ -7,6 +7,7 @@ import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tuple;
+import suite.streamlet.Outlet;
 import suite.util.Util;
 
 public class ArrayIntrinsics {
@@ -20,6 +21,11 @@ public class ArrayIntrinsics {
 	public Intrinsic arrayList = (callback, inputs) -> {
 		List<Node> array = ((Tuple) inputs.get(0)).nodes;
 		return Intrinsics.drain(callback, array::get, array.size());
+	};
+
+	public Intrinsic concat = (callback, inputs) -> {
+		Outlet<Node> list = ThunkUtil.yawnList(callback::yawn, inputs.get(0), true);
+		return new Tuple(list.concatMap(n -> Outlet.from(((Tuple) n).nodes)).toList());
 	};
 
 	public Intrinsic listArray = (callback, inputs) -> {
