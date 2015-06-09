@@ -8,8 +8,8 @@ define cr := Red >>
 define cb := Black >>
 define rbt-insert := (:t => :t -> rb-tree {:t} -> rb-tree {:t}) of (
 v =>
-	define add0 := (:t => rb-tree {:t} -> rb-tree {:t}) of
-		define balance := (:t => rb-tree {:t} -> rb-tree {:t}) of
+	define add0 :=
+		define balance :=
 			case
 			|| `Tree (cb, Tree (cr, Tree (cr, $n0, $p0, $n1), $p1, $n2), $p2, $n3)` =>
 				Tree (cr, Tree (cb, n0, p0, n1), p1, Tree (cb, n2, p2, n3))
