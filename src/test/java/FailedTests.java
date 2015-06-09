@@ -44,7 +44,7 @@ public class FailedTests {
 	// Takes forever to type check
 	// @Test
 	public void testRecursiveType() {
-		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (rb-tree {:t}) of 1");
+		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (:t => rb-tree {:t}) of 1");
 	}
 
 	// Takes 11 seconds to type check
