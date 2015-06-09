@@ -38,4 +38,15 @@ public class ArrayIntrinsics {
 		return new Tuple(Util.right(array, position));
 	};
 
+	public Intrinsic slice = (callback, inputs) -> {
+		int s = ((Int) inputs.get(0)).number;
+		int e = ((Int) inputs.get(1)).number;
+		List<Node> array = ((Tuple) inputs.get(2)).nodes;
+		if (s < 0)
+			s += array.size();
+		if (e < s)
+			e += array.size();
+		return new Tuple(array.subList(s, e));
+	};
+
 }
