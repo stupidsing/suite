@@ -22,20 +22,8 @@ public class ArrayIntrinsics {
 		return Intrinsics.drain(callback, array::get, array.size());
 	};
 
-	public Intrinsic left = (callback, inputs) -> {
-		int position = ((Int) inputs.get(0)).number;
-		List<Node> array = ((Tuple) inputs.get(1)).nodes;
-		return new Tuple(Util.left(array, position));
-	};
-
 	public Intrinsic listArray = (callback, inputs) -> {
 		return new Tuple(ThunkUtil.yawnList(callback::yawn, inputs.get(0), true).toList());
-	};
-
-	public Intrinsic right = (callback, inputs) -> {
-		int position = ((Int) inputs.get(0)).number;
-		List<Node> array = ((Tuple) inputs.get(1)).nodes;
-		return new Tuple(Util.right(array, position));
 	};
 
 	public Intrinsic slice = (callback, inputs) -> {

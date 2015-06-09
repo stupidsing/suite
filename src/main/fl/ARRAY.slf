@@ -5,12 +5,6 @@ define ar-append := (:t => [:t] -> [:t] -> [:t]) of
 define ar-from-list := (:t => [:t] -> [:t]) of
 	atom:INTRN!ArrayIntrinsics.listArray | get%i | call%i-v1
 >>
-define ar-left := (:t => number -> [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.left | get%i | call%i-v2
->>
-define ar-right := (:t => number -> [:t] -> [:t]) of
-	atom:INTRN!ArrayIntrinsics.right | get%i | call%i-v2
->>
 define ar-slice := (:t => number -> number -> [:t] -> [:t]) of
 	atom:INTRN!ArrayIntrinsics.slice | get%i | call%i-v3
 >>
