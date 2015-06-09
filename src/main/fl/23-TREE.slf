@@ -8,17 +8,15 @@ define min-branches := max-branches / 2 >>
 define snoc := es => e =>
 	es ++ (e;)
 >>
-define create-slot := (:t => [:t, 23-tree {:t}] -> :t, 23-tree {:t}) of (
-slots =>
+define create-slot := slots =>
 	let `$pivot, $child` := slots | reverse | head >> pivot, Tree slots
-) >>
-define create-root := (:t => [:t, 23-tree {:t}] -> 23-tree {:t}) of (
-slots =>
+>>
+define create-root := slots =>
 	if (length {slots} = 1) then
 		let `$pivot, $child` := slots | head >> child
 	else
 		Tree slots
-) >>
+>>
 define find-slot := (:t =>
 	:t -> [:t, 23-tree {:t}] -> [:t, 23-tree {:t}], (:t, 23-tree {:t}), [:t, 23-tree {:t}]
 ) of
@@ -34,13 +32,12 @@ define find-slot := (:t =>
 	) >>
 	find-slot0 {}
 >>
-define find := (:t => :t -> 23-tree {:t} -> :t) of (
-key => `Tree $slots` =>
+define find := key => `Tree $slots` =>
 	let `$left, $slot, $right` := find-slot {key} {slots} >>
 	let `$pivot, $child` := slot >>
 	let found := if (child != Empty) then (find {key} {child}) else pivot >>
 	if (key = found) then found else error
-) >>
+>>
 define insert := (:t => :t -> 23-tree {:t} -> 23-tree {:t}) of (
 key =>
 	define add0 := (:t => [:t, 23-tree {:t}] -> [:t, 23-tree {:t}]) of (
