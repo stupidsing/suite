@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.IdentityKey;
+import suite.adt.ListMultimap;
+import suite.adt.Pair;
 
 /**
  * http://en.wikipedia.org/wiki/Tarjan%27
@@ -19,53 +21,57 @@ import suite.adt.IdentityKey;
  */
 public class StronglyConnectedComponents<V> {
 
-	private DirectedGraph<V> dg;
+	private ListMultimap<Scc, Scc> forwards = new ListMultimap<>();
 	private int index = 0;
-	private Deque<V> stack = new ArrayDeque<>();
-	private Map<V, Scc> sccs = new HashMap<>();
+	private Deque<Scc> stack = new ArrayDeque<>();
 	public final List<IdentityKey<Set<V>>> components = new ArrayList<>();
 
-	private static class Scc {
+	private class Scc {
+		private V v;
 		private boolean isVisited;
 		private boolean isStacked;
 		private int index;
 		private int lowestLink;
+
+		private Scc(V v) {
+			this.v = v;
+		}
 	}
 
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
-		this.dg = dg;
+		Map<V, Scc> sccs = new HashMap<>();
 
 		for (V v : dg.vertices)
-			sccs.put(v, new Scc());
+			sccs.put(v, new Scc(v));
 
-		for (V v : dg.vertices) {
-			Scc vscc = sccs.get(v);
+		for (Pair<V, V> forward : dg.forwards.entries())
+			forwards.put(sccs.get(forward.t0), sccs.get(forward.t1));
+
+		for (Scc vscc : sccs.values()) {
 			if (!vscc.isVisited)
-				strongConnect(v, vscc);
+				strongConnect(vscc);
 		}
 	}
 
-	private void strongConnect(V v, Scc vscc) {
+	private void strongConnect(Scc vscc) {
 		vscc.isVisited = vscc.isStacked = true;
 		vscc.index = vscc.lowestLink = index++;
-		stack.addLast(v);
+		stack.push(vscc);
 
-		for (V w : dg.forwards.get(v)) {
-			Scc wscc = sccs.get(w);
+		for (Scc wscc : forwards.get(vscc))
 			if (!wscc.isVisited) {
-				strongConnect(w, wscc);
+				strongConnect(wscc);
 				vscc.lowestLink = Math.min(vscc.lowestLink, wscc.lowestLink);
 			} else if (wscc.isStacked)
 				vscc.lowestLink = Math.min(vscc.lowestLink, wscc.index);
-		}
 
 		if (vscc.index == vscc.lowestLink) {
 			Set<V> set = new HashSet<>();
-			V w;
-			while ((w = stack.pollLast()) != null) {
-				sccs.get(w).isStacked = false;
-				set.add(w);
-			}
+			Scc wscc;
+			do {
+				(wscc = stack.pop()).isStacked = false;
+				set.add(wscc.v);
+			} while (wscc != vscc);
 			components.add(IdentityKey.of(set));
 		}
 	}
