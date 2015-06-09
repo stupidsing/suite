@@ -19,11 +19,19 @@ public class FailedTests {
 	@Test
 	public void test23Tree() {
 		int n = 11;
+
+		Node fp0 = Suite.substitute("using 23-TREE >> " //
+				+ "0 until " + n + " | map {insert} | apply | {Tree (9999, Empty;)}");
+		Node tree = Suite.evaluateFun(Suite.fcc(fp0, false));
+		System.out.println(tree);
+
 		Node fp1 = Suite.substitute("using 23-TREE >> " //
-				+ "0 until " + (n / 2) + " " //
-				+ "| map {remove} " //
+				+ "0 until " + n + " " //
+				+ "| map {insert} " //
 				+ "| apply " //
-				+ "| {0 until " + n + " | map {insert} | apply | {Tree (9999, Empty;)}}");
+				+ "| {Tree (9999, Empty;)} " //
+				+ "| remove {0} " //
+				+ "| remove {1} ");
 		Node result1 = Suite.evaluateFun(Suite.fcc(fp1, false));
 		String s = Formatter.dump(result1);
 		System.out.println("OUT:\n" + s);
