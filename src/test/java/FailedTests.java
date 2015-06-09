@@ -37,7 +37,12 @@ public class FailedTests {
 	// Why returning null pointer?
 	@Test
 	public void testRecursiveCall() {
-		assertNotNull(Suite.evaluateFun("define f := f >> f", true));
+		Suite.isInstructionDump = true;
+		Suite.isInstructionTrace = true;
+		Suite.applyNoLibraries(() -> {
+			assertNotNull(Suite.evaluateFun("define f := f >> f", true));
+			return true;
+		});
 	}
 
 	// Takes forever to type check
