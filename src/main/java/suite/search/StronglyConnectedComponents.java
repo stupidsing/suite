@@ -4,12 +4,12 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import suite.adt.IdentityKey;
-import suite.streamlet.Read;
 
 /**
  * http://en.wikipedia.org/wiki/Tarjan%27
@@ -34,13 +34,10 @@ public class StronglyConnectedComponents<V> {
 
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
 		this.dg = dg;
+
 		for (V v : dg.vertices)
 			sccs.put(v, new Scc());
 
-		tarjan();
-	}
-
-	public void tarjan() {
 		for (V v : dg.vertices) {
 			Scc vscc = sccs.get(v);
 			if (!vscc.isVisited)
@@ -51,7 +48,7 @@ public class StronglyConnectedComponents<V> {
 	private void strongConnect(V v, Scc vscc) {
 		vscc.isVisited = vscc.isStacked = true;
 		vscc.index = vscc.lowestLink = index++;
-		stack.push(v);
+		stack.addLast(v);
 
 		for (V w : dg.forwards.get(v)) {
 			Scc wscc = sccs.get(w);
@@ -63,9 +60,13 @@ public class StronglyConnectedComponents<V> {
 		}
 
 		if (vscc.index == vscc.lowestLink) {
-			Set<V> component = Read.from(stack).toSet();
-			component.forEach(v_ -> sccs.get(v_).isStacked = false);
-			components.add(IdentityKey.of(component));
+			Set<V> set = new HashSet<>();
+			V w;
+			while ((w = stack.pollLast()) != null) {
+				sccs.get(w).isStacked = false;
+				set.add(w);
+			}
+			components.add(IdentityKey.of(set));
 		}
 	}
 
