@@ -8,8 +8,28 @@ import org.junit.Test;
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.lp.kb.RuleSet;
+import suite.node.Node;
+import suite.node.io.Formatter;
+import suite.streamlet.Read;
+import suite.util.Util;
 
 public class FailedTests {
+
+	// Why a flat tree?
+	@Test
+	public void test23Tree() {
+		int n = 11;
+		Node fp1 = Suite.substitute("using 23-TREE >> " //
+				+ "0 until " + (n / 2) + " " //
+				+ "| map {remove} " //
+				+ "| apply " //
+				+ "| {0 until " + n + " | map {insert} | apply | {Tree (9999, Empty;)}}");
+		Node result1 = Suite.evaluateFun(Suite.fcc(fp1, false));
+		String s = Formatter.dump(result1);
+		System.out.println("OUT:\n" + s);
+		int nPars = Read.from(Util.chars(s)).filter(c -> c == '(').size();
+		assertTrue(nPars >= 3);
+	}
 
 	// Duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
