@@ -12,5 +12,5 @@ fc-rename (VAR .var0) (VAR .varx) .ps
 #
 fc-rename .do0 .dox
 	:- fc-rewrite .do0 .dox .ts/()
-	, list.query .t (fc-rename .t) .ts
+	, list.query .ts .t (fc-rename .t)
 #

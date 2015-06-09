@@ -12,7 +12,7 @@ pt-prove .n0 .nx
 pt-prove0 (IMP .p .q) (AND (NOT .p1) .q1)
 	:- !, pt-prove0 .p .p1, pt-prove0 .q .q1
 #
-pt-prove0 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .t (pt-prove0 .t) .ts
+pt-prove0 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove0 .t)
 #
 
 -- 1. Move negation inwards
@@ -22,12 +22,12 @@ pt-prove1 (NOT (AND .p .q)) (NOT (OR (NOT .p1) (NOT .q1)))
 pt-prove1 (NOT (OR .p .q)) (NOT (AND (NOT .p1) (NOT .q1)))
 	:- !, pt-prove1 .p .p1, pt-prove1 .q .q1
 #
-pt-prove1 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .t (pt-prove1 .t) .ts
+pt-prove1 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove1 .t)
 #
 
 -- 2. Remove double negatives
 pt-prove2 (NOT NOT .p) .p1 :- !, pt-prove2 .p .p1 #
-pt-prove2 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .t (pt-prove2 .t) .ts #
+pt-prove2 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove2 .t) #
 
 -- 3. Moving "for-all" outwards
 pt-prove3 (AND (FOR-ALL .e .p) .q) (FOR-ALL .e .pq1)
@@ -48,7 +48,7 @@ pt-prove3 (OR (FOR-ALL .e .p) .q) (FOR-ALL .e .pq1)
 pt-prove3 (OR .p (FOR-ALL .e .q)) (FOR-ALL .e .pq1)
 	:- !, pt-prove3 (OR .p .q) .pq1
 #
-pt-prove3 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .t (pt-prove3 .t) .ts
+pt-prove3 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove3 .t)
 #
 
 -- 4. Skolemising
@@ -64,7 +64,7 @@ pt-prove4-skolemise .vars (THERE-EXISTS .var .p) .p1
 #
 pt-prove4-skolemise .vars .p .p1
 	:- pt-rewrite .p .p1 .ts
-	, list.query (.t .t1) (pt-prove4-skolemise .vars .t .t1) .ts
+	, list.query .ts (.t .t1) (pt-prove4-skolemise .vars .t .t1)
 #
 
 form-function () .p .p #

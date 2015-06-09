@@ -51,7 +51,7 @@ fc-lazyify (USING _ .linkOption .lib .do0) (USING LAZY .linkOption .lib .do1)
 #
 fc-lazyify .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()
-	, list.query .t (fc-lazyify .t) .ts
+	, list.query .ts .t (fc-lazyify .t)
 #
 
 fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)

@@ -43,7 +43,7 @@ rbt-union0 .mode (_ .n0 .pivot .n1) .tree0 .treex
 #
 
 rbt-insert-list .list .tree0/.treex
-	:- list.fold .e/.tree0_/.treex_ (rbt-insert .e .tree0_/.treex_) .list/.tree0/.treex
+	:- list.fold .list/.tree0/.treex .e/.tree0_/.treex_ (rbt-insert .e .tree0_/.treex_)
 #
 
 rbt-insert .v .t :- rbt-add1 INSERT .v .t #
