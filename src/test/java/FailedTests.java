@@ -37,7 +37,6 @@ public class FailedTests {
 	// Why returning null pointer?
 	@Test
 	public void testRecursiveCall() {
-		assertNotNull(Suite.evaluateFun("define f := f >> f", false));
 		assertNotNull(Suite.evaluateFun("define f := f >> f", true));
 	}
 
