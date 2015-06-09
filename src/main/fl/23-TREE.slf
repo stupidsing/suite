@@ -81,11 +81,11 @@ define remove := key =>
 			let slots1 := remove0 {childSlots} >>
 			if (length {slots1} < min-branches) then
 				if (left != ()) then
-					let `$left1, ($pivot, Tree $borrowSlots)` := rth {left} >>
-					concat {left1; merge {borrowSlots} {slots1}; right;}
+					let `$left1, $borrowSlot` := rth {left} >>
+					concat {left1; merge {borrowSlot;} {slots1}; right;}
 				else-if (right != ()) then
-					let `($pivot, Tree $borrowSlots), $right1` := lht {right} >>
-					concat {left; merge {slots1} {borrowSlots}; right1;}
+					let `$borrowSlot, $right1` := lht {right} >>
+					concat {left; merge {slots1} {borrowSlot;}; right1;}
 				else
 					create-slot {slots1};
 			else
