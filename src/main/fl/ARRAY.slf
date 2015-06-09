@@ -2,9 +2,6 @@ using external STANDARD >>
 define ar-append := (:t => Array^:t -> Array^:t -> Array^:t) of
 	atom:INTRN!ArrayIntrinsics.append | get%i | call%i-v2
 >>
-define ar-concat := (:t => [Array^:t] -> Array^:t) of
-	atom:INTRN!ArrayIntrinsics.concat | get%i | call%i-v1
->>
 define ar-from-list := (:t => [:t] -> Array^:t) of
 	atom:INTRN!ArrayIntrinsics.listArray | get%i | call%i-v1
 >>
