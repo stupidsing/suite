@@ -181,9 +181,12 @@ public class I23Tree<T> implements ITree<T> {
 			if (node0.size() > minBranchFactor) {
 				leftSlots = Util.left(node0, -1);
 				rightSlots = Util.add(Arrays.asList(Util.last(node0)), node1);
-			} else {
+			} else if (node1.size() > minBranchFactor) {
 				leftSlots = Util.add(node0, Arrays.asList(Util.first(node1)));
 				rightSlots = Util.right(node1, 1);
+			} else {
+				leftSlots = node0;
+				rightSlots = node1;
 			}
 
 			merged = Arrays.asList(slot(leftSlots), slot(rightSlots));

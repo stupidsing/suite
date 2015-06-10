@@ -343,9 +343,12 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 				if (slots0.size() > minBranchFactor) {
 					leftSlots = Util.left(slots0, -1);
 					rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
-				} else {
+				} else if (slots1.size() > minBranchFactor) {
 					leftSlots = Util.add(slots0, Arrays.asList(Util.first(slots1)));
 					rightSlots = Util.right(slots1, 1);
+				} else {
+					leftSlots = slots0;
+					rightSlots = slots1;
 				}
 
 				merged = Arrays.asList(slot(leftSlots), slot(rightSlots));

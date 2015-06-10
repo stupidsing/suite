@@ -39,7 +39,7 @@ define insert := key =>
 		let `$pivot, $child` := slot >>
 		let replaceSlots :=
 			if (child != Empty) then
-				let `Tree $childSlots` := child >> pivot, Tree (add0 {childSlots});
+				let `Tree $childSlots` := child >> add0 {childSlots}
 			else-if (key != pivot) then
 				key, Empty; slot;
 			else
@@ -50,7 +50,7 @@ define insert := key =>
 			let `$ls, $rs` := take-drop {min-branches} {slots1} >>
 			create-slot {ls}; create-slot {rs};
 		else
-			slots1
+			create-slot {slots1};
 	>>
 	`Tree $slots` =>
 	slots | add0 | create-root
@@ -68,9 +68,11 @@ define remove := key =>
 			if (length {left} > min-branches) then
 				let `$left1, $slot` := rth {left} >>
 				create-slot {left1}; create-slot {cons {slot} {right}};
-			else
+			else-if (length {right} > min-branches) then
 				let `$slot, $right1` := lht {right} >>
 				create-slot {snoc {left} {slot}}; create-slot {right1};
+			else
+				create-slot {left}; create-slot {right};
 		else
 			create-slot {left ++ right};
 	>>
