@@ -80,6 +80,11 @@ fc-infer-type-rule (
 	, specialize .definedType/.class .pair
 	, fc-infer-type-rule .do .ue/.ve/(.pair, .te) .tr .type
 #
+fc-infer-type-rule (PRAGMA (TYPE .type1) .do) .env .tr .type
+	:- !
+	, .type = .type1
+	, fc-infer-type-rule .do .env .tr .type
+#
 fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
 	:- !
 	, .type = .superType

@@ -63,6 +63,9 @@ fc-rewrite-pragma (DEF-TYPE .type0 .class0) (DEF-TYPE .type1 .class1) .ts/.ts
 #
 fc-rewrite-pragma NEW NEW .ts/.ts
 #
+fc-rewrite-pragma (TYPE .type0) (TYPE .type1) .ts/.ts
+	:- fc-rewrite-type .type0 .type1
+#
 fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 #
