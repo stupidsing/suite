@@ -66,8 +66,6 @@ fc-rewrite-pragma NEW NEW .ts/.ts
 fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 #
-fc-rewrite-pragma TYPE-CAST-TO-CLASS TYPE-CAST-TO-CLASS .ts/.ts
-#
 fc-rewrite-pragma TYPE-RESOLVE TYPE-RESOLVE .ts/.ts
 #
 fc-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts

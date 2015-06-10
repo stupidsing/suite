@@ -103,9 +103,9 @@ fc-parse (.p0; .p1) (CONS L .parsed0 .parsed1)
 	, fc-parse .p0 .parsed0
 	, fc-parse .p1 .parsed1
 #
-fc-parse (.p0 .p1) (PRAGMA TYPE-CAST-TO-CLASS (CONS P .parsed0 .parsed1))
+fc-parse (.p0 .p1) (PRAGMA (TYPE-CAST (CLASS .c)) (CONS P .parsed0 .parsed1))
 	:- !
-	, fc-parse .p0 (PRAGMA TYPE-CAST-TO-CLASS .parsed0)
+	, fc-parse .p0 (PRAGMA (TYPE-CAST (CLASS .c)) .parsed0)
 	, fc-parse .p1 .parsed1
 #
 fc-parse (.p0, .p1) (CONS P .parsed0 .parsed1)
@@ -127,7 +127,7 @@ fc-parse chars:.s (CHARS .s) :- ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (PRAGMA NEW (VAR .nv)) :- to.string .v "_", temp .nv, ! #
 fc-parse .v (PRAGMA NEW (VAR .nv)) :- fc-parse-bind-variable .v .nv, ! #
-fc-parse .a (PRAGMA TYPE-CAST-TO-CLASS (ATOM .a)) :- fc-is-atom .a, ! #
+fc-parse .a (PRAGMA (TYPE-CAST (CLASS _)) (ATOM .a)) :- fc-is-atom .a, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
