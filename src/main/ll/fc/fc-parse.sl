@@ -103,9 +103,9 @@ fc-parse (.p0; .p1) (CONS L .parsed0 .parsed1)
 	, fc-parse .p0 .parsed0
 	, fc-parse .p1 .parsed1
 #
-fc-parse (.p0 .p1) (PRAGMA (TYPE-CAST (CLASS .c)) (CONS P .parsed0 .parsed1))
-	:- !
-	, fc-parse .p0 (PRAGMA (TYPE-CAST (CLASS .c)) .parsed0)
+fc-parse (.a .p1) (PRAGMA (TYPE-CAST (CLASS _)) (CONS P (ATOM .a) .parsed1))
+	:- fc-is-atom .a
+	, !
 	, fc-parse .p1 .parsed1
 #
 fc-parse (.p0, .p1) (CONS P .parsed0 .parsed1)
