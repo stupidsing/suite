@@ -47,13 +47,13 @@ fc-reduce-tail-recursion0 .fun .vars (IF .if .then .else) (IF .if .then1 .else1)
 fc-reduce-tail-recursion0 _ .vars/.vars .do (CONS P (BOOLEAN true) CONS P (PRAGMA TYPE-SKIP-CHECK NUMBER 0) .do) _
 #
 
-fc-expression () (ATOM ()) #
+fc-expression () NIL #
 fc-expression (.var, .vars) (CONS P .var .vars1) :- fc-expression .vars .vars1 #
 
-fc-vars-expression () (ATOM ()) #
+fc-vars-expression () NIL #
 fc-vars-expression (.var, .vars) (CONS P (VAR .var) .vars1) :- fc-vars-expression .vars .vars1 #
 
-fc-bind-expression () (ATOM ()) #
+fc-bind-expression () NIL #
 fc-bind-expression (.var, .vars) (CONS P (PRAGMA NEW (VAR .var)) .vars1) :- fc-bind-expression .vars .vars1 #
 
 fc-vars-fun () .do .do #

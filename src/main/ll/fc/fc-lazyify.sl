@@ -39,6 +39,9 @@ fc-lazyify (INVOKE .value0 .callee0) (WRAP UNWRAP (INVOKE .value1 (UNWRAP .calle
 	, fc-lazyify .value0 .value1
 	, fc-lazyify .callee0 .callee1
 #
+fc-lazyify NIL (WRAP NIL)
+	:- !
+#
 fc-lazyify (TREE .oper .left0 .right0) .dox
 	:- !
 	, fc-lazyify .left0 .left1

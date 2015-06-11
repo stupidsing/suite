@@ -31,6 +31,8 @@ fc-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) .ts0/.tsx
 fc-rewrite (INVOKE .param0 .callee0) (INVOKE .param1 .callee1) .ts0/.tsx
 	:- .ts0 = (.param0 .param1, .callee0 .callee1, .tsx)
 #
+fc-rewrite NIL NIL .ts/.ts
+#
 fc-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
 #
 fc-rewrite (PRAGMA .pragma0 .do0) (PRAGMA .pragma1 .do1) .ts0/.tsx

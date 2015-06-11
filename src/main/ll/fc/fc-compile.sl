@@ -65,6 +65,9 @@ fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.reg
 		, ASSIGN-RESULT .reg
 		, .cx)
 #
+fc-compile NIL _ .c0/.cx/.reg
+	:- .c0 = (ASSIGN-CONSTANT .reg c:(), .cx)
+#
 fc-compile (NUMBER .i) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-INT .reg .i, .cx)
 #

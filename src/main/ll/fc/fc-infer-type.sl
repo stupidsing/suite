@@ -150,10 +150,10 @@ fc-infer-var-types (.var .value .varType, .vvts) .env .tr0/.trx
 fc-infer-var-types () _ .tr/.tr
 #
 
-fc-find-simple-type (ATOM ()) _ (LIST-OF _) :- ! #
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
 fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
+fc-find-simple-type NIL _ (LIST-OF _) :- ! #
 fc-find-simple-type (NUMBER _) _ NUMBER #
 fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 	:- once (

@@ -120,14 +120,13 @@ fc-parse .tree (TREE .oper .left1 .right1)
 	, fc-parse .left .left1
 	, fc-parse .right .right1
 #
-fc-parse () (ATOM ()) :- ! #
 fc-parse atom:.a (ATOM .a) :- ! #
 fc-parse .b (BOOLEAN .b) :- fc-is-boolean .b, ! #
 fc-parse chars:.s (CHARS .s) :- ! #
+fc-parse () NIL :- ! #
 fc-parse .i (NUMBER .i) :- is.int .i, ! #
 fc-parse .v (PRAGMA NEW (VAR .nv)) :- to.string .v "_", temp .nv, ! #
 fc-parse .v (PRAGMA NEW (VAR .nv)) :- fc-parse-bind-variable .v .nv, ! #
-fc-parse .a (PRAGMA (TYPE-CAST (CLASS _)) (ATOM .a)) :- fc-is-atom .a, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
@@ -207,6 +206,7 @@ fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 
 fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else error))
 	:- !, temp .var
 #
+fc-parse-sugar .a (.a ()) :- fc-is-atom .a, ! #
 fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
 fc-parse-sugar (.f/) (flip {.f}) :- ! #
@@ -231,10 +231,11 @@ fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	, fc-parse-type .returnType .returnType1
 #
 fc-parse-type ([.type]) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
-fc-parse-type .a (ATOM-OF .a) :- fc-is-atom .a, ! #
 fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1) :- !, fc-parse-type .type0 .type1 #
-fc-parse-type .do (PAIR-OF .type0 .type1)
-	:- (.do = (.t0, .t1); .do = (.t0 .t1)), !
+fc-parse-type .a .type :- fc-is-atom .a, !, fc-parse-type (.a [_]) .type #
+fc-parse-type (.a .t) (PAIR-OF (ATOM-OF .a) .type) :- fc-is-atom .a, !, fc-parse-type .t .type #
+fc-parse-type (.t0, .t1) (PAIR-OF .type0 .type1)
+	:- !
 	, fc-parse-type .t0 .type0
 	, fc-parse-type .t1 .type1
 #
