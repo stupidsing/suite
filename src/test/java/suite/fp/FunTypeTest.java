@@ -95,6 +95,10 @@ public class FunTypeTest {
 
 	@Test
 	public void testFix() {
+		// fix Value fix None
+		// => fix Value fix optional .t
+		// => fix optional fix optional .t
+		// => fix optional .t (where .t is this type itself)
 		getType("data (fix^:f) over :f as (fix^:f^fix^:f) >> \n" //
 				+ "(fix^optional) of (fix, Value, fix, None)");
 	}
