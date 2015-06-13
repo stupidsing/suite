@@ -222,18 +222,35 @@ fc-parse-sugar .s (.ascii; .cs)
 	, to.int .c .ascii
 #
 
-fc-parse-type .t .t :- not bound .t, ! #
-fc-parse-type any .t :- not bound .t, ! #
-fc-parse-type _ .t :- is.cyclic .t, !, fc-error "Cyclic type" .t #
+fc-parse-type .t .t
+	:- not bound .t, !
+#
+fc-parse-type any .t
+	:- not bound .t, !
+#
+fc-parse-type _ .t
+	:- is.cyclic .t
+	, !, fc-error "Cyclic type" .t
+#
 fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
 	, fc-parse-type .paramType .paramType1
 	, fc-parse-type .returnType .returnType1
 #
-fc-parse-type ([.type]) (LIST-OF .type1) :- !, fc-parse-type .type .type1 #
-fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1) :- !, fc-parse-type .type0 .type1 #
-fc-parse-type .a .type :- fc-is-atom .a, !, fc-parse-type (.a [_]) .type #
-fc-parse-type (.a .t) (PAIR-OF (ATOM-OF .a) .type) :- fc-is-atom .a, !, fc-parse-type .t .type #
+fc-parse-type ([.type]) (LIST-OF .type1)
+	:- !, fc-parse-type .type .type1
+#
+fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1)
+	:- !, fc-parse-type .type0 .type1
+#
+fc-parse-type .a .type
+	:- fc-is-atom .a
+	, !, fc-parse-type (.a [_]) .type
+#
+fc-parse-type (.a .t) (PAIR-OF (ATOM-OF .a) .type)
+	:- fc-is-atom .a
+	, !, fc-parse-type .t .type
+#
 fc-parse-type (.t0, .t1) (PAIR-OF .type0 .type1)
 	:- !
 	, fc-parse-type .t0 .type0
@@ -251,11 +268,16 @@ fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))
 	, fc-parse-type .type (CLASS .class)
 	, fc-parse-type .paramType .paramType1
 #
-fc-parse-type atom:.a (ATOM-OF .a) :- ! #
-fc-parse-type boolean BOOLEAN :- ! #
-fc-parse-type number NUMBER :- ! #
-fc-parse-type string (LIST-OF NUMBER) :- ! #
-fc-parse-type .t (CLASS .t) :- is.atom .t #
+fc-parse-type atom:.a (ATOM-OF .a) :- !
+#
+fc-parse-type boolean BOOLEAN :- !
+#
+fc-parse-type number NUMBER :- !
+#
+fc-parse-type string (LIST-OF NUMBER) :- !
+#
+fc-parse-type .t (CLASS .t) :- is.atom .t
+#
 
 fc-parse-type-list .types .types1 :- list.query2 .types .types1 .t .t1 (fc-parse-type .t .t1) #
 
