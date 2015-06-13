@@ -207,7 +207,7 @@ public class FunTypeTest {
 		assertEquals(Suite.parse(type), getType(fp));
 	}
 
-	private static void getTypeMustFail(String fps) {
+	private void getTypeMustFail(String fps) {
 		try {
 			getType(fps);
 		} catch (RuntimeException ex) {
@@ -216,7 +216,7 @@ public class FunTypeTest {
 		throw new RuntimeException("Cannot catch type error of: " + fps);
 	}
 
-	private static Node getType(String fps) {
+	private Node getType(String fps) {
 		return Suite.evaluateFunType(fps);
 	}
 
