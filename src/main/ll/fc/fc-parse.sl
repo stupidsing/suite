@@ -14,7 +14,7 @@ fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #
-fc-parse (.type of .value) (PRAGMA (TYPE .type1) .value1)
+fc-parse (.type of .value) (PRAGMA (TYPE-OF .type1) .value1)
 	:- fc-parse-type .type .type1
 	, !, fc-parse .value .value1
 #
@@ -108,7 +108,7 @@ fc-parse (.p0, .p1) (CONS P .parsed0 .parsed1)
 	, fc-parse .p0 .parsed0
 	, fc-parse .p1 .parsed1
 #
-fc-parse (.a .p1) (PRAGMA (TYPE-CAST (CLASS _)) (CONS P (ATOM .a) .parsed1))
+fc-parse (.a .p1) (PRAGMA (TYPE-SUPER _) (CONS P (ATOM .a) .parsed1))
 	:- fc-is-atom .a
 	, !
 	, fc-parse .p1 .parsed1

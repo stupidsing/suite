@@ -99,8 +99,8 @@ public class FunTypeTest {
 		// => Fix Value Fix optional .t
 		// => Fix optional Fix optional .t
 		// => Fix optional .t (where .t is this type itself)
-		getType("data (fix^:f) over :f as (fix^:f^fix^:f) >> \n" //
-				+ "(fix^optional) of (fix, Value, fix, None)");
+		getType("data (Fix :f) over :f as (Fix :f Fix :f) >> \n" //
+				+ "(:t => Fix optional :t) of (Fix Value Fix None)");
 	}
 
 	@Test

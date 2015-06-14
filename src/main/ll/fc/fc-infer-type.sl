@@ -80,16 +80,10 @@ fc-infer-type-rule (
 	, specialize .definedType/.class .pair
 	, fc-infer-type-rule .do .ue/.ve/(.pair, .te) .tr .type
 #
-fc-infer-type-rule (PRAGMA (TYPE .type1) .do) .env .tr .type
+fc-infer-type-rule (PRAGMA (TYPE-OF .type1) .do) .env .tr .type
 	:- !
 	, .type = .type1
 	, fc-infer-type-rule .do .env .tr .type
-#
-fc-infer-type-rule (PRAGMA (TYPE-CAST .superType) .do) .ue/.ve/.te .tr0/.trx .type
-	:- !
-	, .type = .superType
-	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
-	, .tr1 = (SUB-SUPER-TYPES .te .subType .superType, .trx)
 #
 fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 	:- !
@@ -98,6 +92,12 @@ fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 #
 fc-infer-type-rule (PRAGMA TYPE-SKIP-CHECK _) _ .tr/.tr _
 	:- !
+#
+fc-infer-type-rule (PRAGMA (TYPE-SUPER .superType) .do) .ue/.ve/.te .tr0/.trx .type
+	:- !
+	, .type = .superType
+	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
+	, .tr1 = (SUB-SUPER-TYPE-PAIR .te .subType .superType, .trx)
 #
 fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	:- !
@@ -172,22 +172,11 @@ fc-resolve-type-rules .tr
 fc-resolve-type-rules0 ()
 	:- !
 #
-fc-resolve-type-rules0 (SUB-SUPER-TYPES .te .t0 .tx, .tr1)
-	:- !, fc-resolve-sub-super-types .te .t0 .tx, fc-resolve-type-rules0 .tr1
+fc-resolve-type-rules0 (SUB-SUPER-TYPE-PAIR .te .t0 .tx, .tr1)
+	:- !, fc-sub-super-type-pair .te .t0 .tx, fc-resolve-type-rules0 .tr1
 #
 fc-resolve-type-rules0 _
 	:- !, throw "Not enough type information"
-#
-
-fc-resolve-sub-super-types _ .t .t
-#
-fc-resolve-sub-super-types .te .t0 .tx
-	:- bound .t0
-	, fc-sub-super-type-pair .te .t0 .t1
-	, fc-resolve-sub-super-types .te .t1 .tx
-	; bound .tx
-	, fc-sub-super-type-pair .te .t1 .tx
-	, fc-resolve-sub-super-types .te .t0 .t1
 #
 
 fc-sub-super-type-pair .te .subType .superType

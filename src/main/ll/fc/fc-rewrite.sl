@@ -65,15 +65,15 @@ fc-rewrite-pragma (DEF-TYPE .type0 .class0) (DEF-TYPE .type1 .class1) .ts/.ts
 #
 fc-rewrite-pragma NEW NEW .ts/.ts
 #
-fc-rewrite-pragma (TYPE .type0) (TYPE .type1) .ts/.ts
-	:- fc-rewrite-type .type0 .type1
-#
-fc-rewrite-pragma (TYPE-CAST .type0) (TYPE-CAST .type1) .ts/.ts
+fc-rewrite-pragma (TYPE-OF .type0) (TYPE-OF .type1) .ts/.ts
 	:- fc-rewrite-type .type0 .type1
 #
 fc-rewrite-pragma TYPE-RESOLVE TYPE-RESOLVE .ts/.ts
 #
 fc-rewrite-pragma TYPE-SKIP-CHECK TYPE-SKIP-CHECK .ts/.ts
+#
+fc-rewrite-pragma (TYPE-SUPER .type0) (TYPE-SUPER .type1) .ts/.ts
+	:- fc-rewrite-type .type0 .type1
 #
 fc-rewrite-pragma (TYPE-VERIFY .v0 .type0) (TYPE-VERIFY .v1 .type1) .ts0/.tsx
 	:- fc-rewrite .v0 .v1 .ts0/.tsx
