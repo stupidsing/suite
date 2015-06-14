@@ -92,9 +92,8 @@ fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
 fc-infer-type-rule (PRAGMA TYPE-SKIP-CHECK _) _ .tr/.tr _
 	:- !
 #
-fc-infer-type-rule (PRAGMA (TYPE-SUPER .superType) .do) .ue/.ve/.te .tr0/.trx .type
+fc-infer-type-rule (PRAGMA TYPE-SUPER .do) .ue/.ve/.te .tr0/.trx .superType
 	:- !
-	, .type = .superType
 	, fc-infer-type-rule .do .ue/.ve/.te .tr0/.tr1 .subType
 	, .tr1 = (SUB-SUPER-TYPE-PAIR .te .subType .superType, .trx)
 #
