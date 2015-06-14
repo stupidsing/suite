@@ -9,8 +9,8 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.Pair;
-import suite.fp.LazyFunInterpreter0;
 import suite.fp.LazyFunInterpreter;
+import suite.fp.LazyFunInterpreter0;
 import suite.fp.PrecompileMain;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Prover;
@@ -46,7 +46,7 @@ import suite.util.Util;
 public class CommandDispatcher {
 
 	private CommandOptions opt;
-	private RuleSet ruleSet = Suite.createRuleSet();
+	private RuleSet ruleSet;
 	private Builder builderLevel2 = null;
 
 	private enum InputType {
@@ -83,6 +83,7 @@ public class CommandDispatcher {
 
 	public CommandDispatcher(CommandOptions opt) {
 		this.opt = opt;
+		ruleSet = Suite.createRuleSet(opt.getImports());
 	}
 
 	public boolean importFiles(List<String> importFilenames) throws IOException {

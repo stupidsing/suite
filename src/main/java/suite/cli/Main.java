@@ -42,7 +42,6 @@ public class Main extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		opt = new CommandOptions();
-		dispatcher = new CommandDispatcher(opt);
 
 		boolean result = true;
 		List<String> inputs = new ArrayList<>();
@@ -60,6 +59,8 @@ public class Main extends ExecutableProgram {
 				verb = arg;
 			else
 				inputs.add(arg);
+
+		dispatcher = new CommandDispatcher(opt);
 
 		if (result)
 			if (Util.stringEquals(verb, "evaluate"))

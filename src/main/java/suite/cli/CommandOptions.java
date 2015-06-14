@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import suite.Suite;
@@ -30,6 +31,7 @@ public class CommandOptions {
 
 	// Program evaluation options
 	private boolean isLazy = true;
+	private List<String> imports = Collections.emptyList();
 	private List<String> libraries = new ArrayList<>(Suite.libraries);
 	private boolean isTrace = false;
 
@@ -49,6 +51,8 @@ public class CommandOptions {
 			isLazy = !on;
 		else if (Util.stringEquals(arg, "--editor"))
 			new Editor().open();
+		else if (Util.stringEquals(arg, "--imports") && (arg1 = source.source()) != null)
+			imports = Arrays.asList(arg1.split(","));
 		else if (Util.stringEquals(arg, "--lazy"))
 			isLazy = on;
 		else if (Util.stringEquals(arg, "--libraries") && (arg1 = source.source()) != null)
@@ -104,6 +108,10 @@ public class CommandOptions {
 
 	public boolean isQuiet() {
 		return isQuiet;
+	}
+
+	public List<String> getImports() {
+		return imports;
 	}
 
 }
