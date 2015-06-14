@@ -79,8 +79,10 @@ public class EvaluateUtil {
 		Node node = Suite.parse("" //
 				+ "source .in" //
 				+ ", fc-parse .in .p" //
-				+ ", fc-infer-type .p .t" //
-				+ ", fc-parse-type .out .t" //
+				+ ", fc-infer-type .p .t0" //
+				+ ", graph.specialize .t0 .t1" //
+				+ ", fc-parse-type .t2 .t1" //
+				+ ", graph.generalize .t2 .out" //
 				+ ", sink .out");
 
 		Node type = doFcc(node, fcc);

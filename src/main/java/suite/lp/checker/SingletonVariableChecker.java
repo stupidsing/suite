@@ -18,8 +18,6 @@ import suite.os.LogUtil;
 
 public class SingletonVariableChecker {
 
-	private Map<Atom, Boolean> isSingleton = new HashMap<>();
-
 	public void check(List<Rule> rules) {
 		ListMultimap<Prototype, Rule> rulesByPrototype = new ListMultimap<>();
 
@@ -30,47 +28,55 @@ public class SingletonVariableChecker {
 			Prototype prototype = pair.t0;
 			Rule rule = pair.t1;
 
-			scan(rule.head);
-			scan(rule.tail);
-
-			for (Entry<Atom, Boolean> entry1 : isSingleton.entrySet())
-				if (entry1.getValue() == Boolean.TRUE)
-					LogUtil.warn("Variable only used once: " + prototype + "/" + entry1.getKey());
+			Scanner scanner = new Scanner();
+			scanner.scan(rule.head);
+			scanner.scan(rule.tail);
+			scanner.warn(prototype);
 		}
 	}
 
-	private void scan(Node node) {
-		while (true) {
-			node = node.finalNode();
+	private class Scanner {
+		private Map<Atom, Boolean> isSingleton = new HashMap<>();
 
-			if (node instanceof Atom) {
-				Atom atom = (Atom) node;
-				String name = atom.name;
+		private void scan(Node node) {
+			while (true) {
+				node = node.finalNode();
 
-				// Check all variables starting with alphabets; ignore
-				// computer-generated code
-				if (name.startsWith(SewingGeneralizer.variablePrefix) //
-						&& name.length() > 1 //
-						&& Character.isAlphabetic(name.charAt(1))) {
-					Boolean value = isSingleton.get(atom);
-					if (value == null)
-						value = Boolean.TRUE;
-					else if (value == Boolean.TRUE)
-						value = Boolean.FALSE;
-					isSingleton.put(atom, value);
-				}
-			} else if (node instanceof Tree) {
-				Tree tree = (Tree) node;
-				scan(tree.getLeft());
-				node = tree.getRight();
-				continue;
-			} else
-				NodeRead.of(node).children.forEach(p -> {
-					scan(p.t0);
-					scan(p.t1);
-				});
+				if (node instanceof Atom) {
+					Atom atom = (Atom) node;
+					String name = atom.name;
 
-			break;
+					// Check all variables starting with alphabets; ignore
+					// computer-generated code
+					if (name.startsWith(SewingGeneralizer.variablePrefix) //
+							&& name.length() > 1 //
+							&& Character.isAlphabetic(name.charAt(1))) {
+						Boolean value = isSingleton.get(atom);
+						if (value == null)
+							value = Boolean.TRUE;
+						else if (value == Boolean.TRUE)
+							value = Boolean.FALSE;
+						isSingleton.put(atom, value);
+					}
+				} else if (node instanceof Tree) {
+					Tree tree = (Tree) node;
+					scan(tree.getLeft());
+					node = tree.getRight();
+					continue;
+				} else
+					NodeRead.of(node).children.forEach(p -> {
+						scan(p.t0);
+						scan(p.t1);
+					});
+
+				break;
+			}
+		}
+
+		private void warn(Prototype prototype) {
+			for (Entry<Atom, Boolean> entry1 : isSingleton.entrySet())
+				if (entry1.getValue() == Boolean.TRUE)
+					LogUtil.warn("Variable only used once: " + prototype + "/" + entry1.getKey());
 		}
 	}
 

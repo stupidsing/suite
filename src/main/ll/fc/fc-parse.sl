@@ -222,7 +222,7 @@ fc-parse-sugar .s (.ascii; .cs)
 	, to.int .c .ascii
 #
 
-fc-parse-type .t .t
+fc-parse-type .t .t -- For generic type variables
 	:- not bound .t, !
 #
 fc-parse-type _ .t
@@ -271,6 +271,9 @@ fc-parse-type boolean BOOLEAN :- !
 fc-parse-type number NUMBER :- !
 #
 fc-parse-type string (LIST-OF NUMBER) :- !
+#
+fc-parse-type .type .type
+	:- is.atom .type, to.string .type .s, substring .s 0 1 "."
 #
 
 fc-parse-type-list .types .types1 :- list.query2 .types .types1 .t .t1 (fc-parse-type .t .t1) #

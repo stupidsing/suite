@@ -129,7 +129,7 @@ fc-infer-type-rule .do .env .tr .type
 	:- (.do = UNWRAP .do1; .do = WRAP .do1)
 	, fc-infer-type-rule .do1 .env .tr .type
 #
-fc-infer-type-rule .do _ _ _
+fc-infer-type-rule _ _ _ _
 	:- throw "Unmatched types"
 #
 
