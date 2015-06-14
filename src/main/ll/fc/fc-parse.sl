@@ -225,8 +225,10 @@ fc-parse-sugar .s (.ascii; .cs)
 fc-parse-type .t .t
 	:- not bound .t, !
 #
-fc-parse-type any .t
-	:- not bound .t, !
+fc-parse-type .type _
+	:- bound .type
+	, .type = any
+	, !
 #
 fc-parse-type _ .t
 	:- is.cyclic .t
