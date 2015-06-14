@@ -120,7 +120,7 @@ public class CommandDispatcher {
 			pw.println(Formatter.dump(evaluateFunctional(node)));
 			break;
 		case EVALUATEDOCHARS:
-			node = Suite.applyPerform(node, Suite.parse("[data^Chars]"));
+			node = Suite.applyPerform(node, Suite.parse("[n^Chars]"));
 			printEvaluated(writer, node);
 			break;
 		case EVALUATEDOSTR:
@@ -213,7 +213,7 @@ public class CommandDispatcher {
 		Node node = parseNode(inputs);
 		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyStringReader(node, reader);
 		if (opt.isDo())
-			node = Suite.applyPerform(node, isChars ? Suite.parse("[data^Chars]") : Atom.of("string"));
+			node = Suite.applyPerform(node, isChars ? Suite.parse("[n^Chars]") : Atom.of("string"));
 		printEvaluated(writer, isChars ? node : Suite.applyWriter(node));
 		return true;
 	}

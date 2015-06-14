@@ -1,9 +1,9 @@
 using external STANDARD >>
 define nothing := atom:Nothing >>
-define getm* := (:t => any -> mutable^:t -> Do^:t) of (scope => var =>
+define getm* := (:t => any -> n^Mutable :t -> Do^:t) of (scope => var =>
 	do >> call%i-v2 {atom:INTRN!MonadIntrinsics.get | get%i} {scope} {var}
 ) >>
-define setm* := (:t => any -> mutable^:t -> :t -> Do^any) of (scope => var => value =>
+define setm* := (:t => any -> n^Mutable :t -> :t -> Do^any) of (scope => var => value =>
 	do >> call%i-v3 {atom:INTRN!MonadIntrinsics.put | get%i} {scope} {var} {value}
 ) >>
 define liftm :=
