@@ -88,8 +88,6 @@ fc-rewrite-type (ATOM-OF .atom) (ATOM-OF .atom)
 #
 fc-rewrite-type BOOLEAN BOOLEAN
 #
-fc-rewrite-type (CLASS .t) (CLASS .t)
-#
 fc-rewrite-type (FUN-OF .paramType0 .returnType0) (FUN-OF .paramType1 .returnType1)
 	:- fc-rewrite-type .paramType0 .paramType1
 	, fc-rewrite-type .returnType0 .returnType1

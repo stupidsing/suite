@@ -263,12 +263,6 @@ fc-parse-type (.typeVar => .type) .type2
 	, fc-instantiate (.typeVar,) .type .type1
 	, fc-parse-type .type1 .type2
 #
--- Keeps contained in class definition for tuple matching.
-fc-parse-type (.type {.paramType}) (CLASS (PARAMETERIZED .paramType1 .class))
-	:- !
-	, fc-parse-type .type (CLASS .class)
-	, fc-parse-type .paramType .paramType1
-#
 fc-parse-type atom:.a (ATOM-OF .a) :- !
 #
 fc-parse-type boolean BOOLEAN :- !
@@ -276,8 +270,6 @@ fc-parse-type boolean BOOLEAN :- !
 fc-parse-type number NUMBER :- !
 #
 fc-parse-type string (LIST-OF NUMBER) :- !
-#
-fc-parse-type .t (CLASS .t) :- is.atom .t
 #
 
 fc-parse-type-list .types .types1 :- list.query2 .types .types1 .t .t1 (fc-parse-type .t .t1) #
