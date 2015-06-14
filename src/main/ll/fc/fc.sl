@@ -129,16 +129,16 @@ fc-add-functions STANDARD .p (
 	data (Optional :t) over :t as None >>
 	data (Optional :t) over :t as (Value :t) >>
 	---------------------------------------------------------------------------
-	define call%i-t1 := (data^%i -> any -> any) of skip-type-check (i => p0 => +call%i-t1 {i} {p0}) >>
-	define call%i-t2 := (data^%i -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-t2 {i} {p0} {p1}) >>
-	define call%i-t3 := (data^%i -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-t3 {i} {p0} {p1} {p2}) >>
-	define call%i-v1 := (data^%i -> any -> any) of skip-type-check (i => p0 => +call%i-v1 {i} {p0}) >>
-	define call%i-v2 := (data^%i -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-v2 {i} {p0} {p1}) >>
-	define call%i-v3 := (data^%i -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-v3 {i} {p0} {p1} {p2}) >>
+	define call%i-t1 := (Intrinsic -> any -> any) of skip-type-check (i => p0 => +call%i-t1 {i} {p0}) >>
+	define call%i-t2 := (Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-t2 {i} {p0} {p1}) >>
+	define call%i-t3 := (Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-t3 {i} {p0} {p1} {p2}) >>
+	define call%i-v1 := (Intrinsic -> any -> any) of skip-type-check (i => p0 => +call%i-v1 {i} {p0}) >>
+	define call%i-v2 := (Intrinsic -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-v2 {i} {p0} {p1}) >>
+	define call%i-v3 := (Intrinsic -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-v3 {i} {p0} {p1} {p2}) >>
 	define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) >>
 	define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => head; tail) >>
 	define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) >>
-	define get%i := (any -> data^%i) of skip-type-check (name => +get%i {name}) >>
+	define get%i := (any -> Intrinsic) of skip-type-check (name => +get%i {name}) >>
 	define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
 	define is-list := (:t => [:t] -> boolean) of skip-type-check (n => +is-list {n}) >>
 	define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is-pair {n}) >>
