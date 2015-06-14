@@ -126,10 +126,8 @@ fc-dict-member .v .t :- rbt-member .v .t #
 -- still considered pure.
 
 fc-add-functions STANDARD .p (
-	data (optional {:t}) over :t as None >>
-	data (optional {:t}) over :t as (Value :t) >>
-	data (either {:a} {:b}) over some (:a, :b,) as (Left :a) >>
-	data (either {:a} {:b}) over some (:a, :b,) as (Right :b) >>
+	data (Optional :t) over :t as None >>
+	data (Optional :t) over :t as (Value :t) >>
 	---------------------------------------------------------------------------
 	define call%i-t1 := (data^%i -> any -> any) of skip-type-check (i => p0 => +call%i-t1 {i} {p0}) >>
 	define call%i-t2 := (data^%i -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-t2 {i} {p0} {p1}) >>

@@ -13,8 +13,7 @@
 --
 -- Notes about generic types:
 -- - Generic type class, usually used in abstract data structures.
---   Written like B-TREE {:t}.
---   Represented internally as (CLASS (PARAMETERIZED (VAR t) B-TREE)).
+--   Written like B-TREE :t.
 --   Resolved by binding the type structures.
 -- - Generic type caused by not enough variable information during type inference.
 --   They are specialized to bounded type node and put into the outside variable
