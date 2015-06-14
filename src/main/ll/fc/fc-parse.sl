@@ -247,8 +247,7 @@ fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1)
 #
 fc-parse-type .a .type
 	:- fc-is-atom .a
-	, !
-	, fc-parse-type (.a atom:()) .type
+	, !, fc-parse-type (.a atom:()) .type
 #
 fc-parse-type (.a .t) (PAIR-OF (ATOM-OF .a) .type)
 	:- fc-is-atom .a
