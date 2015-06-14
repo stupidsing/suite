@@ -276,8 +276,6 @@ fc-parse-type .type .type
 	:- is.atom .type, to.string .type .s, substring .s 0 1 "."
 #
 
-fc-parse-type-list .types .types1 :- list.query2 .types .types1 .t .t1 (fc-parse-type .t .t1) #
-
 fc-parse-bind-variable .v .vd
 	:- is.atom .v, to.string .v .s0, substring .s0 0 1 "$"
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
