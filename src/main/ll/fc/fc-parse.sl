@@ -206,7 +206,7 @@ fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 
 fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else error))
 	:- !, temp .var
 #
-fc-parse-sugar .a (.a ()) :- fc-is-atom .a, ! #
+fc-parse-sugar .a (.a atom:()) :- fc-is-atom .a, ! #
 fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- ! #
 fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- ! #
 fc-parse-sugar (.f/) (flip {.f}) :- ! #
@@ -245,7 +245,8 @@ fc-parse-type (.functor^.type0) (FUNCTOR-OF .functor .type1)
 #
 fc-parse-type .a .type
 	:- fc-is-atom .a
-	, !, fc-parse-type (.a [_]) .type
+	, !
+	, fc-parse-type (.a atom:()) .type
 #
 fc-parse-type (.a .t) (PAIR-OF (ATOM-OF .a) .type)
 	:- fc-is-atom .a
