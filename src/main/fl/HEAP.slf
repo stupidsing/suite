@@ -2,27 +2,27 @@
 -- http://en.wikipedia.org/wiki/Pairing_heap
 
 using external STANDARD >>
-data (heap {:t}) over :t as Empty >>
-data (heap {:t}) over :t as Heap (:t, [heap {:t}]) >>
+data (Heap :t) over :t as Empty >>
+data (Heap :t) over :t as Tree (:t, [Heap :t]) >>
 
 define find-min :=
-	`Heap ($elem, $list)` => elem
+	`Tree ($elem, $list)` => elem
 >>
-define meld := (:t => heap {:t} -> heap {:t} -> heap {:t}) of (
+define meld := (:t => Heap :t -> Heap :t -> Heap :t) of (
 heap0 => heap1 =>
 	case
-	|| (heap0 = `Heap ($elem0, $heaps0)`)
+	|| (heap0 = `Tree ($elem0, $heaps0)`)
 		case
-		|| (heap1 = `Heap ($elem1, $heaps1)`)
+		|| (heap1 = `Tree ($elem1, $heaps1)`)
 			if (elem0 < elem1) then
-				Heap (elem0, (heap1; heaps0))
+				Tree (elem0, (heap1; heaps0))
 			else
-				Heap (elem1, (heap0; heaps1))
+				Tree (elem1, (heap0; heaps1))
 		|| heap0
 	|| heap1
 ) >>
 define add := heap => elem =>
-	meld {Heap (elem,)} {heap}
+	meld {Tree (elem,)} {heap}
 >>
 define delete-min :=
 	define merge-pairs :=
@@ -31,5 +31,5 @@ define delete-min :=
 		|| `$h;` => h
 		|| anything => error
 	>>
-	`Heap ($elem, $heap)` => merge-pairs {heap}
+	`Tree ($elem, $heap)` => merge-pairs {heap}
 >>

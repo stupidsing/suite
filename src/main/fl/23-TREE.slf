@@ -1,6 +1,6 @@
 using external STANDARD >>
-data (23-tree {:t}) over :t as Empty >>
-data (23-tree {:t}) over :t as (Tree [:t, 23-tree {:t}]) >>
+data (B-tree :t) over :t as Empty >>
+data (B-tree :t) over :t as (Tree [:t, B-tree :t]) >>
 
 define max-branches := 4 >>
 define min-branches := max-branches / 2 >>
