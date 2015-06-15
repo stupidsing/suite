@@ -281,6 +281,10 @@ fc-parse-bind-variable .v .vd
 	, !, substring .s0 1 0 .s1, to.atom .s1 .vd
 #
 
+fc-instantiate .list .type0 .typex
+	:- list.fold .list/.type0/.typex .v/.t0/.tx (replace .v _ .t0 .tx)
+#
+
 fc-operator .oper
 	:- member (' + ', ' - ', ' * ', ' / ', ' %% ',
 		' = ', ' != ',
