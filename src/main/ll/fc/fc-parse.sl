@@ -294,7 +294,10 @@ fc-operator .oper
 	) .oper
 #
 
-fc-is-atom .a :- is.atom .a, to.string .a .s, substring .s 0 1 .ch
+fc-is-atom .a
+	:- is.atom .a
+	, to.string .a .s
+	, substring .s 0 1 .ch
 	, "A" <= .ch, .ch <= "Z"
 #
 
