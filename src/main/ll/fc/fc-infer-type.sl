@@ -180,5 +180,5 @@ fc-resolve-type-rules0 _
 fc-sub-super-type-pair .te .subType .superType
 	:- once (bound .subType; bound .superType)
 	, member .te .tc
-	, generalize .tc .subType/.superType
+	, graph.generalize .tc .subType/.superType
 #
