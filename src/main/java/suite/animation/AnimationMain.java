@@ -22,7 +22,7 @@ public class AnimationMain extends ExecutableProgram {
 	}
 
 	public static void main(String args[]) {
-		Util.run(AnimationTest.class, args);
+		Util.run(AnimationMain.class, args);
 	}
 
 	protected boolean run(String args[]) throws InterruptedException {
