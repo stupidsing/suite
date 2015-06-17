@@ -76,12 +76,11 @@ fc-infer-type-rule (
 	PRAGMA (DEF-TYPE .definedType .class) .do
 ) .ue/.ve/.te .tr .type
 	:- !
-	, graph.specialize .definedType/.class .pair
-	, fc-infer-type-rule .do .ue/.ve/(.pair, .te) .tr .type
+	, fc-infer-type-rule .do .ue/.ve/(.definedType/.class, .te) .tr .type
 #
 fc-infer-type-rule (PRAGMA (TYPE-OF .type1) .do) .env .tr .type
 	:- !
-	, .type = .type1
+	, graph.generalize .type1 .type
 	, fc-infer-type-rule .do .env .tr .type
 #
 fc-infer-type-rule (PRAGMA TYPE-RESOLVE .do) .env .tr/.tr .type
@@ -99,7 +98,8 @@ fc-infer-type-rule (PRAGMA TYPE-SUPER .do) .ue/.ve/.te .tr0/.trx .superType
 #
 fc-infer-type-rule (PRAGMA (TYPE-VERIFY .var .varType) .do) .env .tr0/.trx .type
 	:- !
-	, fc-infer-type-rule .var .env .tr0/.tr1 .varType
+	, graph.generalize .varType .varType1
+	, fc-infer-type-rule .var .env .tr0/.tr1 .varType1
 	, fc-infer-type-rule .do .env .tr1/.trx .type
 #
 fc-infer-type-rule (PRAGMA _ .do) .env .tr .type

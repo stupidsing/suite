@@ -80,8 +80,8 @@ fc-rewrite-pragma (TYPE-VERIFY .v0 .type0) (TYPE-VERIFY .v1 .type1) .ts0/.tsx
 	, !
 #
 
-fc-rewrite-type .unbound .unbound
-	:- not bound .unbound, !
+fc-rewrite-type .tv .tv
+	:- fc-is-type-variable .tv
 #
 fc-rewrite-type (ATOM-OF .atom) (ATOM-OF .atom)
 #

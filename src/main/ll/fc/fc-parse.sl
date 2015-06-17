@@ -166,7 +166,7 @@ fc-parse-sugar (case || .if .then || .otherwise) .p1
 fc-parse-sugar (case || .p) .p :- !
 #
 fc-parse-sugar (definem .type .mv # .monad) (
-	define .mv := (mutable^.type) of (erase-type {atom:.atom}) >> .monad
+	define .mv := (n^Mutable .type) of (erase-type {atom:.atom}) >> .monad
 )
 	:- !, temp .atom
 #
@@ -242,17 +242,14 @@ fc-parse-sugar .s (.ascii; .cs)
 	, to.int .c .ascii
 #
 
-fc-parse-type .t .t -- For generic type variables
-	:- not bound .t, !
-#
 fc-parse-type _ .t
 	:- is.cyclic .t
 	, !, fc-error "Cyclic type" .t
 #
-fc-parse-type .type _
+fc-parse-type .type .t
 	:- bound .type
 	, .type = any
-	, !
+	, !, graph.specialize _ .t
 #
 fc-parse-type (.paramType -> .returnType) (FUN-OF .paramType1 .returnType1)
 	:- !
@@ -293,7 +290,7 @@ fc-parse-type number NUMBER :- !
 fc-parse-type string (LIST-OF NUMBER) :- !
 #
 fc-parse-type .type .type
-	:- is.atom .type, to.string .type .s, substring .s 0 1 "."
+	:- fc-is-type-variable .type
 #
 
 fc-parse-bind-variable .v .vd
@@ -302,7 +299,11 @@ fc-parse-bind-variable .v .vd
 #
 
 fc-instantiate .list .type0 .typex
-	:- list.fold .list/.type0/.typex .v/.t0/.tx (replace .v _ .t0 .tx)
+	:- list.fold .list/.type0/.typex .v/.t0/.tx (
+		clone _ .f0
+		, graph.specialize .f0 .f1
+		, replace .v .f1 .t0 .tx
+	)
 #
 
 fc-operator .oper
@@ -312,6 +313,12 @@ fc-operator .oper
 		',', ';',
 		' . ',
 	) .oper
+#
+
+fc-is-type-variable .t
+	:- is.atom .t
+	, to.string .t .s
+	, substring .s 0 1 "."
 #
 
 fc-is-atom .a
