@@ -204,6 +204,9 @@ public class Formatter {
 			if (!s0.isEmpty()) {
 				boolean quote = false;
 
+				quote |= s0.startsWith(SewingGeneralizer.variablePrefix) //
+						|| s0.startsWith(SewingGeneralizer.wildcardPrefix);
+
 				for (char c : Util.chars(s0))
 					quote |= !('0' <= c && c <= '9') //
 							&& !('a' <= c && c <= 'z') //
