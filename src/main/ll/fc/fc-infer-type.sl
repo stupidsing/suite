@@ -76,7 +76,7 @@ fc-infer-type-rule (
 	PRAGMA (DEF-TYPE .definedType .class) .do
 ) .ue/.ve/.te .tr .type
 	:- !
-	, specialize .definedType/.class .pair
+	, graph.specialize .definedType/.class .pair
 	, fc-infer-type-rule .do .ue/.ve/(.pair, .te) .tr .type
 #
 fc-infer-type-rule (PRAGMA (TYPE-OF .type1) .do) .env .tr .type
