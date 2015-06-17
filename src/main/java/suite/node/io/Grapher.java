@@ -145,14 +145,13 @@ public class Grapher {
 	}
 
 	public void specialize() {
-		int counter[] = new int[] { 0 };
 		ngs = Read.from(ngs) //
 				.map(ng -> {
 					NodeGraph ng1;
 					if (ng.type == ReadType.TERM) {
 						Node node = ng.terminal.finalNode();
 						if (node instanceof Reference)
-							ng1 = new NodeGraph(Atom.of(SewingGeneralizer.variablePrefix + counter[0]++));
+							ng1 = new NodeGraph(Atom.of(SewingGeneralizer.variablePrefix + ((Reference) node).getId()));
 						else
 							ng1 = ng;
 					} else
