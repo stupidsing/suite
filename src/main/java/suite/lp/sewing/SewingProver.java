@@ -85,8 +85,7 @@ public class SewingProver {
 			throw new SuiteException(node);
 		};
 
-		private Runtime(ProverConfig pc, Env env, Trampoline tr) {
-			this.env = env;
+		private Runtime(ProverConfig pc, Trampoline tr) {
 			pushAlt(tr);
 			prover = new Prover(pc, null, journal);
 		}
@@ -131,10 +130,9 @@ public class SewingProver {
 		Trampoline tr = cutBegin(newEnv(sb, compile0(sb, node)));
 
 		return pc -> {
-			Env env = sb.env();
 			boolean result[] = new boolean[] { false };
 
-			trampoline(new Runtime(pc, env, rt -> {
+			trampoline(new Runtime(pc, rt -> {
 				rt.pushRem(rt_ -> {
 					result[0] = true;
 					return fail;
