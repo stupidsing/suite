@@ -13,7 +13,9 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.util.FunUtil.Fun;
 
-public class SewingBinder extends SewingGeneralizer {
+public class SewingBinder extends SewingCloner {
+
+	private boolean isBindTrees;
 
 	public static class BindEnv {
 		private Journal journal;
@@ -25,21 +27,21 @@ public class SewingBinder extends SewingGeneralizer {
 		}
 	}
 
+	public SewingBinder() {
+		this(true);
+	}
+
+	public SewingBinder(boolean isBindTrees) {
+		this.isBindTrees = isBindTrees;
+	}
+
 	public BiPredicate<BindEnv, Node> compileBind(Node node0) {
 		Node node = node0.finalNode();
 		Tree tree;
 
-		if (node instanceof Atom) {
-			Atom atom = (Atom) node;
-			String name = atom.name;
-			if (isWildcard(name))
-				return (be, n) -> true;
-			else if (isVariable(name)) {
-				int index = findVariableIndex(node);
-				return (be, n) -> Binder.bind(n, be.env.get(index), be.journal);
-			} else
-				return compileBindAtom(atom);
-		} else if (node instanceof Int)
+		if (node instanceof Atom)
+			return compileBindAtom((Atom) node);
+		else if (node instanceof Int)
 			return compileBindInt((Int) node);
 		else if (node instanceof Str)
 			return compileBindStr((Str) node);
@@ -55,11 +57,15 @@ public class SewingBinder extends SewingGeneralizer {
 					return (t = Tree.decompose(n_, operator)) != null //
 							&& c0.test(be, t.getLeft()) //
 							&& c1.test(be, t.getRight());
-				else {
+				else if (isBindTrees) {
 					be.journal.addBind((Reference) n_, f.apply(be.env));
 					return true;
-				}
+				} else
+					return false;
 			};
+		} else if (node0 instanceof Reference) {
+			int index = findVariableIndex(node);
+			return (be, n) -> Binder.bind(n, be.env.get(index), be.journal);
 		} else {
 			Fun<Env, Node> f = compile(node);
 			return (be, n) -> Binder.bind(n, f.apply(be.env), be.journal);

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import suite.adt.Pair;
+import suite.adt.IdentityKey;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
@@ -14,7 +14,7 @@ import suite.util.Util;
 
 public class VariableMapping {
 
-	private Map<Node, Integer> variableIndices = new HashMap<>();
+	private Map<IdentityKey<Node>, Integer> variableIndices = new HashMap<>();
 	private int nVariables;
 
 	public class Generalization {
@@ -38,11 +38,11 @@ public class VariableMapping {
 		}
 
 		public Map<Node, Node> getVariables() {
-			return Read.from(variableIndices).toMap(Pair::first_, pair -> env.refs[pair.t1]);
+			return Read.from(variableIndices).toMap(pair -> pair.t0.key, pair -> env.refs[pair.t1]);
 		}
 
 		public Node getVariable(Node variable) {
-			return env.refs[variableIndices.get(variable)];
+			return env.refs[variableIndices.get(IdentityKey.of(variable))];
 		}
 	}
 
@@ -66,11 +66,11 @@ public class VariableMapping {
 	}
 
 	public int findVariableIndex(Node variable) {
-		return variableIndices.computeIfAbsent(variable, any -> nVariables++);
+		return variableIndices.computeIfAbsent(IdentityKey.of(variable), any -> nVariables++);
 	}
 
 	public Integer getVariableIndex(Node variable) {
-		return variableIndices.get(variable);
+		return variableIndices.get(IdentityKey.of(variable));
 	}
 
 }
