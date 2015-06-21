@@ -60,15 +60,6 @@ public class FunTypeTest {
 	}
 
 	@Test
-	public void testClassOfClass() {
-		assertType("C2 {boolean}", "" //
-				+ "data (C0 {:t}) over :t as A :t >> \n" //
-				+ "data (C1 {:t}) over :t as (C0 {:t}) >> \n" //
-				+ "data (C2 {:t}) over :t as (C1 {:t}) >> \n" //
-				+ "(C2 {boolean}) of (A true)");
-	}
-
-	@Test
 	public void testDefineType() {
 		getType("data Weight as Kg number >> \n" //
 				+ "let v := Weight of (Kg 1) >> \n" //

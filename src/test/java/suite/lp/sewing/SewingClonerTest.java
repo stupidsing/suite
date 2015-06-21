@@ -12,7 +12,7 @@ import suite.lp.doer.Generalizer;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.node.Node;
 
-public class SewingBinderTest {
+public class SewingClonerTest {
 
 	@Test
 	public void test0() {
@@ -25,7 +25,7 @@ public class SewingBinderTest {
 	}
 
 	private void test(String pattern, String match) {
-		Node node = new Generalizer().generalize(Suite.parse(match));
+		Node node = new Generalizer().generalize(Suite.parse(pattern));
 
 		SewingBinder sb = new SewingBinder();
 		BiPredicate<BindEnv, Node> p = sb.compileBind(node);

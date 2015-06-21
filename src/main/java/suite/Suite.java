@@ -24,6 +24,7 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.ImportUtil;
 import suite.lp.Journal;
+import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -143,12 +144,15 @@ public class Suite {
 
 	public static Fun<Node, Node[]> matcher(String s) {
 		return matchers.computeIfAbsent(s, s_ -> {
-			SewingBinder sb = new SewingBinder();
-			BiPredicate<BindEnv, Node> pred = sb.compileBind(parse(s_));
+			Generalizer generalizer = new Generalizer();
+			Node toMatch = generalizer.generalize(parse(s_));
+
+			SewingBinder sb = new SewingBinder(false);
+			BiPredicate<BindEnv, Node> pred = sb.compileBind(toMatch);
 			List<Integer> indexList = new ArrayList<>();
 			Integer index;
 			int n = 0;
-			while ((index = sb.getVariableIndex(Atom.of("." + n++))) != null)
+			while ((index = sb.getVariableIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
 				indexList.add(index);
 
 			int size = indexList.size();
