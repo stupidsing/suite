@@ -7,14 +7,14 @@ import suite.node.Node;
 
 public class SewingExpression {
 
-	private SewingGeneralizer sg;
+	private SewingCloner sc;
 
 	public interface Evaluate {
 		public int evaluate(Env env);
 	}
 
-	public SewingExpression(SewingGeneralizer sg) {
-		this.sg = sg;
+	public SewingExpression(SewingCloner sc) {
+		this.sc = sc;
 	}
 
 	public Evaluate compile(Node node) {
@@ -57,7 +57,7 @@ public class SewingExpression {
 			int i = ((Int) node).number;
 			return env -> i;
 		} else {
-			int index = sg.findVariableIndex(node);
+			int index = sc.findVariableIndex(node);
 			return env -> ((Int) env.get(index).finalNode()).number;
 		}
 	}

@@ -14,6 +14,7 @@ import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Journal;
 import suite.lp.doer.Cloner;
+import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -27,6 +28,7 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
@@ -126,8 +128,7 @@ public class SewingProver {
 	}
 
 	public Fun<ProverConfig, Boolean> compile(Node node) {
-		SewingBinder sb = new SewingBinder();
-		Trampoline tr = cutBegin(newEnv(sb, compile0(sb, node)));
+		Trampoline tr = compileQuery(new Generalizer().generalize(node));
 
 		return pc -> {
 			boolean result[] = new boolean[] { false };
@@ -157,6 +158,11 @@ public class SewingProver {
 		}
 
 		rt.journal.undoAllBinds();
+	}
+
+	private Trampoline compileQuery(Node node) {
+		SewingBinder sb = new SewingBinder();
+		return cutBegin(newEnv(sb, compile0(sb, node)));
 	}
 
 	private void compileAll() {
@@ -202,9 +208,13 @@ public class SewingProver {
 				.fold(false, (b0, b1) -> b0 || b1);
 
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
+			Generalizer generalizer = new Generalizer();
+			Node head = generalizer.generalize(rule.head);
+			Node tail = generalizer.generalize(rule.tail);
+
 			SewingBinder sb = new SewingBinder();
-			BiPredicate<BindEnv, Node> p = sb.compileBind(rule.head);
-			Trampoline tr1 = compile0(sb, rule.tail);
+			BiPredicate<BindEnv, Node> p = sb.compileBind(head);
+			Trampoline tr1 = compile0(sb, tail);
 			return newEnv(sb, rt -> p.test(rt.bindEnv(), rt.query) ? tr1 : fail);
 		});
 
@@ -336,18 +346,18 @@ public class SewingProver {
 				tr = okay;
 			else if (Util.stringEquals(name, "fail"))
 				tr = fail;
-			else if (name.startsWith(SewingGeneralizer.variablePrefix)) {
-				Fun<Env, Node> f = sb.compile(node);
-				tr = rt -> {
-					try {
-						return rt.prover.prove(f.apply(rt.env)) ? okay : fail;
-					} catch (SuiteException ex) {
-						rt.handler.sink(ex.getNode());
-						return okay;
-					}
-				};
-			} else
+			else
 				tr = callSystemPredicate(sb, name, Atom.NIL);
+		} else if (node instanceof Reference) {
+			Fun<Env, Node> f = sb.compile(node);
+			tr = rt -> {
+				try {
+					return rt.prover.prove(f.apply(rt.env)) ? okay : fail;
+				} catch (SuiteException ex) {
+					rt.handler.sink(ex.getNode());
+					return okay;
+				}
+			};
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
