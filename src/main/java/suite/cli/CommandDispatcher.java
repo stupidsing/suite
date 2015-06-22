@@ -22,7 +22,7 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.SewingProver;
-import suite.lp.sewing.VariableMapping.Generalization;
+import suite.lp.sewing.VariableMapper.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;

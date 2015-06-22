@@ -1,7 +1,7 @@
 package suite.lp.sewing;
 
 import suite.Suite;
-import suite.lp.sewing.VariableMapping.Env;
+import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Int;
 import suite.node.Node;
 

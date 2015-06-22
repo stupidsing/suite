@@ -12,7 +12,7 @@ import suite.node.io.Formatter;
 import suite.streamlet.Read;
 import suite.util.Util;
 
-public class VariableMapping {
+public class VariableMapper {
 
 	private Map<IdentityKey<Node>, Integer> variableIndices = new HashMap<>();
 	private int nVariables;

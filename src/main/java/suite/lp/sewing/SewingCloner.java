@@ -16,7 +16,7 @@ import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
-public class SewingCloner extends VariableMapping {
+public class SewingCloner extends VariableMapper {
 
 	public static Node generalize(Node node) {
 		return process(node).node;
