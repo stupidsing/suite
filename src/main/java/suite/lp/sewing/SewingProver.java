@@ -23,7 +23,7 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.SewingExpression.Evaluate;
-import suite.lp.sewing.VariableMapping.Env;
+import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
