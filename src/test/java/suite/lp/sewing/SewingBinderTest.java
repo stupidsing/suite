@@ -10,6 +10,7 @@ import suite.Suite;
 import suite.lp.Journal;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.SewingBinder.BindEnv;
+import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.node.Node;
 
 public class SewingBinderTest {

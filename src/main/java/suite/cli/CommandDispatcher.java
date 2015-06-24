@@ -21,8 +21,8 @@ import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder;
 import suite.lp.sewing.SewingGeneralizer;
-import suite.lp.sewing.SewingProver;
-import suite.lp.sewing.VariableMapperImpl.Generalization;
+import suite.lp.sewing.impl.SewingProverImpl;
+import suite.lp.sewing.impl.VariableMapperImpl.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -170,7 +170,7 @@ public class CommandDispatcher {
 			code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYSEWINGELAB:
-			elaborate(node, n -> new SewingProver(ruleSet).compile(n).apply(new ProverConfig(ruleSet)));
+			elaborate(node, n -> new SewingProverImpl(ruleSet).compile(n).apply(new ProverConfig(ruleSet)));
 			break;
 		case RESET:
 			ruleSet = Suite.createRuleSet();
