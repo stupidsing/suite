@@ -13,6 +13,7 @@ import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Journal;
+import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -131,7 +132,8 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	public Fun<ProverConfig, Boolean> compile(Node node) {
-		Trampoline tr = compileQuery(new Generalizer().generalize(node));
+		SewingBinder sb = new SewingBinderImpl();
+		Trampoline tr = cutBegin(newEnv(sb, compile0(sb, new Generalizer().generalize(node))));
 
 		return pc -> {
 			boolean result[] = new boolean[] { false };
@@ -161,11 +163,6 @@ public class SewingProverImpl implements SewingProver {
 		}
 
 		rt.journal.undoAllBinds();
-	}
-
-	private Trampoline compileQuery(Node node) {
-		SewingBinder sb = new SewingBinderImpl();
-		return cutBegin(newEnv(sb, compile0(sb, node)));
 	}
 
 	private void compileAll() {
@@ -353,14 +350,19 @@ public class SewingProverImpl implements SewingProver {
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Reference) {
 			Fun<Env, Node> f = sb.compile(node);
-			tr = rt -> {
-				try {
-					return rt.prover.prove(f.apply(rt.env)) ? okay : fail;
-				} catch (SuiteException ex) {
-					rt.handler.sink(ex.getNode());
-					return okay;
+			return rt -> compile0(new SewingBinder() {
+				public BiPredicate<BindEnv, Node> compileBind(Node node) {
+					return (be, n) -> Binder.bind(node, n, be.journal);
 				}
-			};
+
+				public Fun<Env, Node> compile(Node node) {
+					return env -> node;
+				}
+
+				public Env env() {
+					return new Env(new Reference[0]);
+				}
+			}, f.apply(rt.env));
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
