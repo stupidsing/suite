@@ -13,7 +13,7 @@ import suite.lp.doer.Cloner;
 import suite.lp.doer.Prover;
 import suite.lp.doer.Specializer;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Int;
@@ -101,7 +101,7 @@ public class EvalPredicates {
 		return prover.bind(new Str(str), params[1]);
 	};
 
-	public BuiltinPredicate generalize = PredicateUtil.fun(SewingGeneralizer::generalize);
+	public BuiltinPredicate generalize = PredicateUtil.fun(SewingGeneralizerImpl::generalize);
 
 	public BuiltinPredicate graphGeneralize = PredicateUtil.fun(n -> {
 		Grapher grapher = new Grapher();

@@ -31,9 +31,9 @@ import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.sewing.SewingBinder.BindEnv;
-import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.lp.sewing.impl.SewingBinderImpl;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.lp.sewing.impl.VariableMapperImpl.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
@@ -174,7 +174,7 @@ public class Suite {
 	}
 
 	public static Node substitute(String s, Node... nodes) {
-		Generalization generalization = SewingGeneralizer.process(parse(s));
+		Generalization generalization = SewingGeneralizerImpl.process(parse(s));
 		int i = 0;
 
 		for (Node node : nodes) {

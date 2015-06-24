@@ -20,7 +20,7 @@ import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder;
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.lp.sewing.impl.SewingProverImpl;
 import suite.lp.sewing.impl.VariableMapperImpl.Generalization;
 import suite.node.Atom;
@@ -184,7 +184,7 @@ public class CommandDispatcher {
 
 	private void elaborate(Node node, Sink<Node> sink) {
 		int count[] = { 0 };
-		Generalization generalization = SewingGeneralizer.process(node);
+		Generalization generalization = SewingGeneralizerImpl.process(node);
 		node = generalization.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {

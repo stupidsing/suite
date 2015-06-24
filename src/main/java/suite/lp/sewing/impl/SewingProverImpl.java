@@ -16,6 +16,7 @@ import suite.lp.Journal;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
+import suite.lp.doer.ProverConstant;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
@@ -23,11 +24,9 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.SewingBinder;
 import suite.lp.sewing.SewingBinder.BindEnv;
-import suite.lp.sewing.SewingExpression;
-import suite.lp.sewing.SewingExpression.Evaluate;
-import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.SewingProver;
 import suite.lp.sewing.VariableMapper.Env;
+import suite.lp.sewing.impl.SewingExpressionImpl.Evaluate;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -208,7 +207,7 @@ public class SewingProverImpl implements SewingProver {
 
 	private Trampoline compileRules(List<Rule> rules, boolean isTrace) {
 		boolean hasCut = Read.from(rules) //
-				.map(rule -> new TreeRewriter().contains(SewingGeneralizer.cut, rule.tail)) //
+				.map(rule -> new TreeRewriter().contains(ProverConstant.cut, rule.tail)) //
 				.fold(false, (b0, b1) -> b0 || b1);
 
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
@@ -278,7 +277,7 @@ public class SewingProverImpl implements SewingProver {
 			};
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
-			Evaluate eval = new SewingExpression(sb).compile(m[1]);
+			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
@@ -344,7 +343,7 @@ public class SewingProverImpl implements SewingProver {
 			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);
 		else if (node instanceof Atom) {
 			String name = ((Atom) node).name;
-			if (node == SewingGeneralizer.cut)
+			if (node == ProverConstant.cut)
 				tr = cutEnd();
 			else if (Util.stringEquals(name, ""))
 				tr = okay;
@@ -519,7 +518,7 @@ public class SewingProverImpl implements SewingProver {
 		if (tree != null)
 			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
-			return node instanceof Atom && SewingGeneralizer.isVariable(((Atom) node).name) ? 0 : 1;
+			return node instanceof Atom && SewingGeneralizerImpl.isVariable(((Atom) node).name) ? 0 : 1;
 	}
 
 	private List<Node> breakdown(Operator operator, Node node) {

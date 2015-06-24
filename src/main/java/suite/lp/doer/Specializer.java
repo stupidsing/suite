@@ -1,6 +1,5 @@
 package suite.lp.doer;
 
-import suite.lp.sewing.SewingGeneralizer;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -14,7 +13,7 @@ public class Specializer {
 
 		if (node instanceof Reference) {
 			Reference ref = (Reference) node;
-			node = Atom.of(SewingGeneralizer.variablePrefix + ref.getId());
+			node = Atom.of(ProverConstant.variablePrefix + ref.getId());
 		} else if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Node left = tree.getLeft(), right = tree.getRight();
