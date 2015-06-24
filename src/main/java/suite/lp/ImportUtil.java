@@ -12,7 +12,7 @@ import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -70,7 +70,7 @@ public class ImportUtil {
 			if (rule.head != Atom.NIL)
 				ruleSet.addRule(rule);
 			else {
-				Node goal = SewingGeneralizer.generalize(rule.tail);
+				Node goal = SewingGeneralizerImpl.generalize(rule.tail);
 				result &= prover.prove(goal);
 			}
 

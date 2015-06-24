@@ -5,7 +5,7 @@ import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
 
@@ -24,7 +24,7 @@ public class InterpretedProverBuilder implements Builder {
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
 		return goal -> {
-			Node goal1 = SewingGeneralizer.generalize(goal);
+			Node goal1 = SewingGeneralizerImpl.generalize(goal);
 
 			return (source, sink) -> {
 				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);

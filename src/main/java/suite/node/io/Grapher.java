@@ -11,7 +11,7 @@ import java.util.Map;
 
 import suite.adt.IdentityKey;
 import suite.adt.Pair;
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Int;
@@ -133,7 +133,7 @@ public class Grapher {
 					NodeGraph ng1;
 					if (ng.type == ReadType.TERM) {
 						Node node = ng.terminal.finalNode();
-						if (node instanceof Atom && ((Atom) node).name.startsWith(SewingGeneralizer.variablePrefix))
+						if (node instanceof Atom && ((Atom) node).name.startsWith(ProverConstant.variablePrefix))
 							ng1 = new NodeGraph(new Reference());
 						else
 							ng1 = ng;
@@ -151,7 +151,7 @@ public class Grapher {
 					if (ng.type == ReadType.TERM) {
 						Node node = ng.terminal.finalNode();
 						if (node instanceof Reference)
-							ng1 = new NodeGraph(Atom.of(SewingGeneralizer.variablePrefix + ((Reference) node).getId()));
+							ng1 = new NodeGraph(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
 						else
 							ng1 = ng;
 					} else

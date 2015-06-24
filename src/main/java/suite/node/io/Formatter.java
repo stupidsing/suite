@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Dict;
@@ -135,7 +135,7 @@ public class Formatter {
 		} else if (node instanceof Int)
 			sb.append(((Int) node).number);
 		else if (node instanceof Reference)
-			sb.append(SewingGeneralizer.variablePrefix + ((Reference) node).getId());
+			sb.append(ProverConstant.variablePrefix + ((Reference) node).getId());
 		else if (node instanceof Str)
 			sb.append(quoteStringIfRequired(((Str) node).value));
 		else if (node instanceof Tree)
@@ -204,8 +204,8 @@ public class Formatter {
 			if (!s0.isEmpty()) {
 				boolean quote = false;
 
-				quote |= s0.startsWith(SewingGeneralizer.variablePrefix) //
-						|| s0.startsWith(SewingGeneralizer.wildcardPrefix);
+				quote |= s0.startsWith(ProverConstant.variablePrefix) //
+						|| s0.startsWith(ProverConstant.wildcardPrefix);
 
 				for (char c : Util.chars(s0))
 					quote |= !('0' <= c && c <= '9') //

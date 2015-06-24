@@ -5,6 +5,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.SewingProver;
+import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
 
@@ -22,7 +23,7 @@ public class SewingProverBuilder implements Builder {
 
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
-		SewingProver sewingProver = new SewingProver(ruleSet);
+		SewingProver sewingProver = new SewingProverImpl(ruleSet);
 
 		return goal -> {
 			Fun<ProverConfig, Boolean> fun = sewingProver.compile(goal);

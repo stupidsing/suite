@@ -1,7 +1,8 @@
 package suite.lp.kb;
 
-import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper.Env;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -12,7 +13,7 @@ import suite.util.Util;
 public class Rule {
 
 	public final Node head, tail;
-	private SewingGeneralizer sewingGeneralizer;
+	private SewingGeneralizerImpl sewingGeneralizer;
 	private int cutIndex;
 	private Fun<Env, Node> headFun, tailFun;
 
@@ -39,10 +40,10 @@ public class Rule {
 
 	public synchronized Node createClause(Node query, Node cut) {
 		if (sewingGeneralizer == null) {
-			sewingGeneralizer = new SewingGeneralizer();
+			sewingGeneralizer = new SewingGeneralizerImpl();
 			headFun = sewingGeneralizer.compile(head);
 			tailFun = sewingGeneralizer.compile(tail);
-			cutIndex = sewingGeneralizer.findVariableIndex(SewingGeneralizer.cut);
+			cutIndex = sewingGeneralizer.findVariableIndex(ProverConstant.cut);
 		}
 
 		Env env = sewingGeneralizer.env();
