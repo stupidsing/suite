@@ -161,7 +161,7 @@ public class SewingProver {
 	}
 
 	private Trampoline compileQuery(Node node) {
-		SewingBinder sb = new SewingBinder();
+		SewingBinder sb = new SewingBinderImpl();
 		return cutBegin(newEnv(sb, compile0(sb, node)));
 	}
 
@@ -212,7 +212,7 @@ public class SewingProver {
 			Node head = generalizer.generalize(rule.head);
 			Node tail = generalizer.generalize(rule.tail);
 
-			SewingBinder sb = new SewingBinder();
+			SewingBinder sb = new SewingBinderImpl();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(head);
 			Trampoline tr1 = compile0(sb, tail);
 			return newEnv(sb, rt -> p.test(rt.bindEnv(), rt.query) ? tr1 : fail);

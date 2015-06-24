@@ -30,11 +30,11 @@ import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
-import suite.lp.sewing.SewingBinder;
 import suite.lp.sewing.SewingBinder.BindEnv;
+import suite.lp.sewing.SewingBinderImpl;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper.Env;
-import suite.lp.sewing.VariableMapper.Generalization;
+import suite.lp.sewing.VariableMapperImpl.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -147,7 +147,7 @@ public class Suite {
 			Generalizer generalizer = new Generalizer();
 			Node toMatch = generalizer.generalize(parse(s_));
 
-			SewingBinder sb = new SewingBinder(false);
+			SewingBinderImpl sb = new SewingBinderImpl(false);
 			BiPredicate<BindEnv, Node> pred = sb.compileBind(toMatch);
 			List<Integer> indexList = new ArrayList<>();
 			Integer index;

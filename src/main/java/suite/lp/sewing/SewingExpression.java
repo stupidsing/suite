@@ -4,6 +4,7 @@ import suite.Suite;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Int;
 import suite.node.Node;
+import suite.util.FunUtil.Fun;
 
 public class SewingExpression {
 
@@ -57,8 +58,8 @@ public class SewingExpression {
 			int i = ((Int) node).number;
 			return env -> i;
 		} else {
-			int index = sc.findVariableIndex(node);
-			return env -> ((Int) env.get(index).finalNode()).number;
+			Fun<Env, Node> f = sc.compile(node);
+			return env -> ((Int) f.apply(env).finalNode()).number;
 		}
 	}
 

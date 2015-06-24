@@ -16,7 +16,7 @@ import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
-public class SewingGeneralizer extends VariableMapper {
+public class SewingGeneralizer extends VariableMapperImpl {
 
 	public static String wildcardPrefix = "_";
 	public static String variablePrefix = ".";

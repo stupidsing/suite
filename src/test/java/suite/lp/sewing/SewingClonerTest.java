@@ -27,7 +27,7 @@ public class SewingClonerTest {
 	private void test(String pattern, String match) {
 		Node node = new Generalizer().generalize(Suite.parse(pattern));
 
-		SewingBinder sb = new SewingBinder();
+		SewingBinder sb = new SewingBinderImpl();
 		BiPredicate<BindEnv, Node> p = sb.compileBind(node);
 
 		BindEnv be = new BindEnv(new Journal(), sb.env());
