@@ -158,10 +158,10 @@ ic-compile-better-option .fs (let `.addr` = .value) .e0/.ex
 	, ic-compile0 .fs .addr .e1/.e2
 	, .e2 = (_ R-: MOV (`$0`, $1), .ex)
 #
-ic-compile-better-option .fs `$$EBP + .imm` .e0/.ex
+ic-compile-better-option _ `$$EBP + .imm` .e0/.ex
 	:- is.int .imm, .e0 = (_ R+: MOV ($0, `EBP + .imm`), .ex)
 #
-ic-compile-better-option .fs `$$EBP` .e0/.ex
+ic-compile-better-option _ `$$EBP` .e0/.ex
 	:- .e0 = (_ R+: MOV ($0, `EBP`), .ex)
 #
 ic-compile-better-option .fs `.addr + .imm` .e0/.ex
