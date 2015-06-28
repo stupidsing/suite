@@ -7,6 +7,10 @@ declare ffa-current;
 
 allocate head/12;
 
+declare ffa-size0 = [e,] (
+	e + 8;
+);
+
 declare ffa-allocate0 = [size,] (
 	declare next-block = [block,] (
 		declare n = dl:dl-next [block,];
@@ -15,20 +19,20 @@ declare ffa-allocate0 = [size,] (
 
 	declare start = ffa-current;
 	declare next;
-	while (((let next = this:next-block [ffa-current,]) != start) and (`ffa-current + 8` < size)) do (
+	while (((let next = this:next-block [ffa-current,]) != start) and (`ffa:ffa-size0 [ffa-current,]` < size)) do (
 		let ffa-current = next;
 	);
 
-	declare diff = `ffa-current + 8` - size;
+	declare diff = `ffa:ffa-size0 [ffa-current,]` - size;
 
 	if (diff >= 0) then (
 		if (diff >= 16) then (
 			dl:dl-insert-next [ffa-current, ffa-current + size + 12,];
 			let next = dl:dl-next [ffa-current,];
-			let `next + 8` = diff - 12;
+			let `ffa:ffa-size0 [next,]` = diff - 12;
 		) else ();
 
-		let `ffa-current + 8` = 0;
+		let `ffa:ffa-size0 [ffa-current,]` = 0;
 		ffa-current + 12;
 	) else 0;
 );
@@ -37,16 +41,16 @@ declare ffa-deallocate0 = [block,] (
 	declare prev = dl:dl-prev [block,];
 	declare next = dl:dl-next [block,];
 
-	if ((prev != 0) and (`prev + 8` != 0)) then (
+	if ((prev != 0) and (`ffa:ffa-size0 [prev,]` != 0)) then (
 		dl:dl-remove [block,];
 		let block = prev;
 	) else ();
 
-	if ((next != 0) and (`next + 8` != 0)) then (
+	if ((next != 0) and (`ffa:ffa-size0 [next,]` != 0)) then (
 		dl:dl-remove [next,];
 	) else ();
 
-	let `block + 8` = dl:dl-next [block,] - block - 12;
+	let `ffa:ffa-size0 [block,]` = dl:dl-next [block,] - block - 12;
 );
 
 declare ffa-allocate = [size,] (
@@ -64,8 +68,8 @@ declare ffa-deallocate = [p, size,] (
 declare ffa-setup = [] (
 	declare last = ffa-regionx - 12; -- Stopper record
 
-	let `ffa-region0 + 8` = ffa-regionx - ffa-region0 - 24;
-	let `last + 8` = 0;
+	let `ffa:ffa-size0 [ffa-region0,]` = ffa-regionx - ffa-region0 - 24;
+	let `ffa:ffa-size0 [last,]` = 0;
 
 	dl:dl-new [head,];
 	dl:dl-insert-next [head, ffa-region0,];

@@ -1,19 +1,27 @@
 declare dl = this;
 
+declare dl-prev0 = [e,] (
+	e;
+);
+
+declare dl-next0 = [e,] (
+	e + 4;
+);
+
 declare dl-prev = [e,] (
-	`e`;
+	`dl:dl-prev0 [e,]`;
 );
 
 declare dl-next = [e,] (
-	`e + 4`;
+	`dl:dl-next0 [e,]`;
 );
 
 declare dl-set-prev = [e, p,] (
-	let `e` = p;
+	let `dl:dl-prev0 [e,]` = p;
 );
 
 declare dl-set-next = [e, p,] (
-	let `e + 4` = p;
+	let `dl:dl-next0 [e,]` = p;
 );
 
 declare dl-new = [e,] (
