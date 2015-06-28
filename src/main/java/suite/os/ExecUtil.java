@@ -35,6 +35,9 @@ public class ExecUtil {
 				thread.start();
 
 			code = process.waitFor();
+
+			for (Thread thread : threads)
+				thread.join();
 		} catch (InterruptedException ex) {
 			throw new RuntimeException(ex);
 		} finally {

@@ -57,17 +57,6 @@ public class Copy {
 		return cloned;
 	}
 
-	public static void stream(InputStream in, OutputStream out) throws IOException {
-		try (InputStream in_ = in) {
-			int len;
-			byte buffer[] = new byte[bufferSize];
-			while ((len = in_.read(buffer)) >= 0) {
-				out.write(buffer, 0, len);
-				out.flush();
-			}
-		}
-	}
-
 	public static Thread streamByThread(InputStream is, OutputStream os) {
 		return new Thread(() -> {
 			try (InputStream is_ = is; OutputStream os_ = os) {
@@ -77,6 +66,17 @@ public class Copy {
 				LogUtil.error(ex);
 			}
 		});
+	}
+
+	public static void stream(InputStream in, OutputStream out) throws IOException {
+		try (InputStream in_ = in) {
+			int len;
+			byte buffer[] = new byte[bufferSize];
+			while ((len = in_.read(buffer)) >= 0) {
+				out.write(buffer, 0, len);
+				out.flush();
+			}
+		}
 	}
 
 }
