@@ -97,7 +97,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 		};
 	}
 
-	protected void serve() throws IOException {
+	private void serve() throws IOException {
 		try (Closeable started = threadService.started()) {
 			while (threadService.isRunning()) {
 

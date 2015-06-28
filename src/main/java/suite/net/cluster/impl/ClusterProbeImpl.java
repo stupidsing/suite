@@ -130,7 +130,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		lastActiveTime.clear();
 	}
 
-	protected void serve() throws IOException {
+	private void serve() throws IOException {
 		InetSocketAddress address = peers.get(me).get();
 
 		selector = Selector.open();
