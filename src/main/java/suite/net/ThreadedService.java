@@ -2,7 +2,6 @@ package suite.net;
 
 import java.io.Closeable;
 
-import suite.os.LogUtil;
 import suite.util.Util;
 
 public abstract class ThreadedService {
@@ -15,15 +14,7 @@ public abstract class ThreadedService {
 
 	public synchronized void start() {
 		running = true;
-		thread = new Thread(() -> {
-			try {
-				serve();
-			} catch (Exception ex) {
-				LogUtil.error(ex);
-			}
-		});
-
-		thread.start();
+		thread = Util.startThread(this::serve);
 
 		while (!started)
 			Util.wait(this);

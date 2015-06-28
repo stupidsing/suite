@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import suite.concurrent.Mutex.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
-import suite.os.LogUtil;
 import suite.streamlet.Read;
 import suite.util.Util;
 
@@ -68,17 +67,14 @@ public class MutexTest {
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
 		boolean result[] = new boolean[] { false };
 		List<Thread> threads = Read.from(mtrs) //
-				.map(mtr -> new Thread(() -> {
+				.map(mtr -> Util.startThread(() -> {
 					try {
 						mtr.run();
 					} catch (DeadlockException ex1) {
 						result[0] = true;
-					} catch (Exception ex2) {
-						LogUtil.error(ex2);
 					}
 				})) //
 				.toList();
-		threads.forEach(Thread::start);
 		for (Thread thread : threads)
 			thread.join();
 		return result[0];
