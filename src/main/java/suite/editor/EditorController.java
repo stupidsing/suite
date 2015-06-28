@@ -27,6 +27,7 @@ import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
+import suite.util.Util;
 
 public class EditorController {
 
@@ -274,8 +275,8 @@ public class EditorController {
 		String selectedText = editor.getSelectedText();
 		String text = selectedText != null ? selectedText : editor.getText();
 
-		if (runThread == null || !runThread.isAlive()) {
-			runThread = new Thread(() -> {
+		if (runThread == null || !runThread.isAlive())
+			(runThread = Util.startThread(() -> {
 				JTextArea bottomTextArea = view.getMessageTextArea();
 				bottomTextArea.setEnabled(false);
 				bottomTextArea.setText("RUNNING...");
@@ -288,10 +289,8 @@ public class EditorController {
 
 				view.refresh();
 				view.getEditor().requestFocusInWindow();
-			});
-
-			runThread.start();
-		} else
+			})).start();
+		else
 			JOptionPane.showMessageDialog(view.getFrame(), "Previous evaluation in progress");
 	}
 
