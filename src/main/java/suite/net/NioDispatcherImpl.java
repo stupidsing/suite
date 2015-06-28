@@ -19,15 +19,26 @@ import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
 
-public class NioDispatcherImpl<C extends Channel> extends ThreadedService implements NioDispatcher<C> {
+public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 	private static int bufferSize = 4096;
 
 	private Source<C> channelSource;
 	private Selector selector = Selector.open();
+	private ThreadService threadService = new ThreadService();
 
 	public NioDispatcherImpl(Source<C> channelSource) throws IOException {
 		this.channelSource = channelSource;
+	}
+
+	@Override
+	public void start() {
+		threadService.start(this::serve);
+	}
+
+	@Override
+	public void stop() {
+		threadService.stop();
 	}
 
 	/**
@@ -86,10 +97,9 @@ public class NioDispatcherImpl<C extends Channel> extends ThreadedService implem
 		};
 	}
 
-	@Override
 	protected void serve() throws IOException {
-		try (Closeable started = started()) {
-			while (running) {
+		try (Closeable started = threadService.started()) {
+			while (threadService.isRunning()) {
 
 				// Unfortunately Selector.wakeup() does not work on my Linux
 				// machines. Thus we specify a time out to allow the selector

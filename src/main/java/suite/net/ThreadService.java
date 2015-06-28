@@ -3,18 +3,17 @@ package suite.net;
 import java.io.Closeable;
 
 import suite.util.Util;
+import suite.util.Util.RunnableEx;
 
-public abstract class ThreadedService {
+public class ThreadService {
 
 	private boolean started;
 	private Thread thread;
-	protected volatile boolean running = false;
+	private volatile boolean running = false;
 
-	protected abstract void serve() throws Exception;
-
-	public synchronized void start() {
+	public synchronized void start(RunnableEx serve) {
 		running = true;
-		thread = Util.startThread(this::serve);
+		thread = Util.startThread(serve);
 
 		while (!started)
 			Util.wait(this);
@@ -38,7 +37,7 @@ public abstract class ThreadedService {
 		return running;
 	}
 
-	protected Closeable started() {
+	public Closeable started() {
 		setStarted(true);
 		return () -> setStarted(false);
 	}

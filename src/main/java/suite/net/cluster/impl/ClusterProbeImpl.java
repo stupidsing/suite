@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import suite.net.ThreadedService;
+import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
@@ -32,7 +32,7 @@ import suite.util.Util;
  * Probes existence of other nodes in a cluster, using the un-reliable UDP
  * protocol (due to its small messaging overhead).
  */
-public class ClusterProbeImpl extends ThreadedService implements ClusterProbe {
+public class ClusterProbeImpl implements ClusterProbe {
 
 	private static int bufferSize = 65536; // UDP packet size
 	private static int checkAliveDuration = 1500;
@@ -40,6 +40,7 @@ public class ClusterProbeImpl extends ThreadedService implements ClusterProbe {
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
+	private ThreadService threadService = new ThreadService();
 
 	private String me;
 
@@ -119,12 +120,12 @@ public class ClusterProbeImpl extends ThreadedService implements ClusterProbe {
 	public synchronized void start() {
 		lastActiveTime.put(me, System.currentTimeMillis()); // Puts myself in
 		broadcast(Command.HELO);
-		super.start();
+		threadService.start(this::serve);
 	}
 
 	@Override
 	public synchronized void stop() {
-		super.stop();
+		threadService.stop();
 		broadcast(Command.BYEE);
 		lastActiveTime.clear();
 	}
@@ -139,8 +140,8 @@ public class ClusterProbeImpl extends ThreadedService implements ClusterProbe {
 		dc.socket().bind(address);
 		dc.register(selector, SelectionKey.OP_READ);
 
-		try (Closeable started = started()) {
-			while (running) {
+		try (Closeable started = threadService.started()) {
+			while (threadService.isRunning()) {
 				selector.select(500); // Handle network events
 
 				synchronized (this) {
