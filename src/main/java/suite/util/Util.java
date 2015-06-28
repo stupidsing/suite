@@ -33,6 +33,10 @@ public class Util {
 		RUN____, PROFILE, TIME___,
 	};
 
+	public interface RunnableEx {
+		public void run() throws Exception;
+	}
+
 	public static abstract class ExecutableProgram implements AutoCloseable {
 		protected abstract boolean run(String args[]) throws Exception;
 
@@ -333,6 +337,20 @@ public class Util {
 			s = s1;
 		}
 		return subsets;
+	}
+
+	public static Thread startThread(RunnableEx runnable) {
+		Thread thread = new Thread() {
+			public void run() {
+				try {
+					runnable.run();
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
+			}
+		};
+		thread.start();
+		return thread;
 	}
 
 	public static boolean stringEquals(String s0, String s1) {
