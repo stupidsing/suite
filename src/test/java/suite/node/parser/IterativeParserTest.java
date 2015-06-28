@@ -71,7 +71,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParsePredicate() {
-		test("length (_, .r) .l1 :- length .r .l0, sum .l1 .l0 1");
+		test("length ('_', '.r') '.l1' :- length '.r' '.l0', sum '.l1' '.l0' 1");
 	}
 
 	@Test
