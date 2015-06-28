@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
+import suite.net.SocketServer;
 import suite.node.Node;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
@@ -75,6 +76,8 @@ public class Main extends ExecutableProgram {
 				result &= dispatcher.dispatchProve(inputs);
 			else if (Util.stringEquals(verb, "query"))
 				result &= runInteractive(inputs);
+			else if (Util.stringEquals(verb, "serve"))
+				new SocketServer().run();
 			else if (Util.stringEquals(verb, "type"))
 				result &= dispatcher.dispatchType(inputs);
 			else if (verb == null)
