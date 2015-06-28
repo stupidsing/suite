@@ -24,9 +24,9 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.os.LogUtil;
 import suite.primitive.Chars;
 import suite.util.FunUtil.Fun;
+import suite.util.Util;
 
 public class MonadIntrinsics {
 
@@ -58,17 +58,13 @@ public class MonadIntrinsics {
 			// and write occur at the same time and would not block up.
 			// The input stream is also closed by this thread.
 			// Have to make sure the executors are thread-safe!
-			new Thread(() -> {
-				try {
-					try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
-						ThunkUtil.yawnWriter(yawn, in, writer);
-					}
-
-					process.waitFor();
-				} catch (Exception ex) {
-					LogUtil.error(ex);
+			Util.startThread(() -> {
+				try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
+					ThunkUtil.yawnWriter(yawn, in, writer);
 				}
-			}).start();
+
+				process.waitFor();
+			});
 
 			return Tree.of(TermOp.AND___, n0 //
 					, Intrinsics.enclose(callback, Tree.of(TermOp.AND___, n1, n2)));
