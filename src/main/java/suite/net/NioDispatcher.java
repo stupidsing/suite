@@ -6,11 +6,7 @@ import java.net.InetSocketAddress;
 
 import suite.net.channels.Channel;
 
-public interface NioDispatcher<C extends Channel> {
-
-	public void start();
-
-	public void stop();
+public interface NioDispatcher<C extends Channel> extends Service {
 
 	/**
 	 * Establishes connection to other host actively.

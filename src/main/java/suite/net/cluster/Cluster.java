@@ -1,12 +1,12 @@
 package suite.net.cluster;
 
-import java.io.IOException;
 import java.util.Set;
 
+import suite.net.Service;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 
-public interface Cluster {
+public interface Cluster extends Service {
 
 	public static class ClusterException extends RuntimeException {
 		private static final long serialVersionUID = 1;
@@ -15,10 +15,6 @@ public interface Cluster {
 			super(cause);
 		}
 	}
-
-	public void start() throws IOException;
-
-	public void stop();
 
 	public Object requestForResponse(String peer, Object request);
 

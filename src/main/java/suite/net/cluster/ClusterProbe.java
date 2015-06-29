@@ -2,13 +2,10 @@ package suite.net.cluster;
 
 import java.util.Set;
 
+import suite.net.Service;
 import suite.util.FunUtil.Sink;
 
-public interface ClusterProbe {
-
-	public void start();
-
-	public void stop();
+public interface ClusterProbe extends Service {
 
 	public boolean isActive(String node);
 

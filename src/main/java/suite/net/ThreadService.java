@@ -5,13 +5,18 @@ import java.io.Closeable;
 import suite.util.Util;
 import suite.util.Util.RunnableEx;
 
-public class ThreadService {
+public class ThreadService implements Service {
 
 	private boolean started;
+	private RunnableEx serve;
 	private Thread thread;
 	private volatile boolean running = false;
 
-	public synchronized void start(RunnableEx serve) {
+	public ThreadService(RunnableEx serve) {
+		this.serve = serve;
+	}
+
+	public synchronized void start() {
 		running = true;
 		thread = Util.startThread(serve);
 

@@ -40,7 +40,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
-	private ThreadService threadService = new ThreadService();
+	private ThreadService threadService = new ThreadService(this::serve);
 
 	private String me;
 
@@ -120,7 +120,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	public synchronized void start() {
 		lastActiveTime.put(me, System.currentTimeMillis()); // Puts myself in
 		broadcast(Command.HELO);
-		threadService.start(this::serve);
+		threadService.start();
 	}
 
 	@Override

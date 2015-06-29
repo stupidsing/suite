@@ -25,7 +25,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 	private Source<C> channelSource;
 	private Selector selector = Selector.open();
-	private ThreadService threadService = new ThreadService();
+	private ThreadService threadService = new ThreadService(this::serve);
 
 	public NioDispatcherImpl(Source<C> channelSource) throws IOException {
 		this.channelSource = channelSource;
@@ -33,7 +33,7 @@ public class NioDispatcherImpl<C extends Channel> implements NioDispatcher<C> {
 
 	@Override
 	public void start() {
-		threadService.start(this::serve);
+		threadService.start();
 	}
 
 	@Override

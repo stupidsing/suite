@@ -6,13 +6,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import suite.net.NioDispatcher;
 import suite.net.RequestResponseMatcher;
+import suite.net.Service;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Fun;
 
 /**
  * Channel that will reconnect if failed for any reasons.
  */
-public abstract class PersistentChannel<CL extends Channel> extends RequestResponseChannel {
+public abstract class PersistentChannel<CL extends Channel> extends RequestResponseChannel implements Service {
 
 	private NioDispatcher<CL> dispatcher;
 	private InetSocketAddress address;
