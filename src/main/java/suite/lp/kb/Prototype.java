@@ -43,6 +43,7 @@ public class Prototype implements Comparable<Prototype> {
 			node = t0.getLeft();
 		}
 
+		node = node.finalNode();
 		boolean indexable = !SewingGeneralizerImpl.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
 	}
