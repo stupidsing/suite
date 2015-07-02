@@ -42,10 +42,10 @@ public class Reference extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (node == this)
-			return object instanceof Node && super.equals(((Node) object).finalNode());
-		else
+		if (node != this)
 			return node.equals(object);
+		else
+			throw new RuntimeException("No equals for free references");
 	}
 
 	public int getId() {
