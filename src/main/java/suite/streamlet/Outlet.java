@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -127,6 +128,19 @@ public class Outlet<T> implements Iterable<T> {
 		while (n > 0 && (isAvailable &= next() != null))
 			n--;
 		return isAvailable ? this : Outlet.empty();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Outlet) {
+			Source<?> source1 = ((Outlet<?>) object).source;
+			Object o0, o1;
+			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
+				if (o0 == null && o1 == null)
+					return true;
+			return false;
+		} else
+			return false;
 	}
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {

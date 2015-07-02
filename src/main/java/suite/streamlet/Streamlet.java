@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -74,6 +75,11 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public Streamlet<T> drop(int n) {
 		return streamlet(() -> spawn().drop(n));
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return object instanceof Streamlet ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
