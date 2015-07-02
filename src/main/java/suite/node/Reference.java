@@ -16,8 +16,7 @@ public class Reference extends Node {
 	}
 
 	public boolean isFree() {
-		Node node = finalNode();
-		return node instanceof Reference && ((Reference) node).node == node;
+		return finalNode() instanceof Reference;
 	}
 
 	public void bound(Node node) {
