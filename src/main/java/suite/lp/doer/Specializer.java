@@ -9,8 +9,6 @@ import suite.node.io.Rewriter;
 public class Specializer {
 
 	public Node specialize(Node node) {
-		node = node.finalNode();
-
 		if (node instanceof Reference) {
 			Reference ref = (Reference) node;
 			node = Atom.of(ProverConstant.variablePrefix + ref.getId());

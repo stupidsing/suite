@@ -21,7 +21,6 @@ public class SewingExpressionImpl implements SewingExpression {
 	}
 
 	public Evaluate compile(Node node) {
-		node = node.finalNode();
 		Node m[];
 
 		if ((m = Suite.matcher(".0 + .1").apply(node)) != null) {
@@ -61,7 +60,7 @@ public class SewingExpressionImpl implements SewingExpression {
 			return env -> i;
 		} else {
 			Fun<Env, Node> f = sc.compile(node);
-			return env -> ((Int) f.apply(env).finalNode()).number;
+			return env -> ((Int) f.apply(env)).number;
 		}
 	}
 

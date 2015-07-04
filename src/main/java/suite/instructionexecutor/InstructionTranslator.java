@@ -448,7 +448,6 @@ public class InstructionTranslator implements Closeable {
 	}
 
 	private String defineConstant(Node node) {
-		node = node.finalNode();
 		String result = "const" + counter.getAndIncrement();
 		String decl = "private static Node #{str} = Suite.parse(\"#{str}\")";
 		app(clazzsec, decl, result, Formatter.dump(node));

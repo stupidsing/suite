@@ -84,7 +84,7 @@ public class ReversePolish {
 		List<String> list = new ArrayList<>();
 
 		while (!deque.isEmpty()) {
-			Node n = deque.pop().finalNode();
+			Node n = deque.pop();
 			String s;
 
 			if (n instanceof Atom)

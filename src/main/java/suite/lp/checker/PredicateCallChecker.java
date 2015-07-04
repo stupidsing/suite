@@ -36,7 +36,6 @@ public class PredicateCallChecker {
 	}
 
 	private Streamlet<Node> scan(Node node) {
-		node = node.finalNode();
 		Node m[] = null;
 
 		for (Fun<Node, Node[]> matcher : matchers)

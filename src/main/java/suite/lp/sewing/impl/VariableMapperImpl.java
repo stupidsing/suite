@@ -33,7 +33,7 @@ public class VariableMapperImpl implements VariableMapper {
 			for (Entry<Node, Node> entry : entries) {
 				if (sb.length() > 0)
 					sb.append(", ");
-				sb.append(Formatter.dump(entry.getKey()) + " = " + Formatter.dump(entry.getValue()));
+				sb.append(Formatter.dump(entry.getKey()) + " = " + Formatter.dump(entry.getValue().finalNode()));
 			}
 			return sb.toString();
 		}

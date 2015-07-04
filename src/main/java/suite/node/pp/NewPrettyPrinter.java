@@ -31,7 +31,6 @@ public class NewPrettyPrinter {
 	}
 
 	private void format(Node node, int parentPrec, String indent) {
-		node = node.finalNode();
 		Integer objectId = System.identityHashCode(node);
 
 		// Avoids infinite recursion if object is recursive

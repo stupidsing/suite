@@ -64,13 +64,12 @@ public class SymbolicMathUtil {
 
 		if (prover.prove(goal)) {
 			Set<TermKey> results = new HashSet<>();
-			r = r.finalNode();
+			Tree tree;
 
-			while (r instanceof Tree) {
-				Tree tree = (Tree) r;
+			while ((tree = Tree.decompose(r)) != null) {
 				Node left = tree.getLeft();
 				results.add(new TermKey(left));
-				r = tree.getRight().finalNode();
+				r = tree.getRight();
 			}
 
 			return results;

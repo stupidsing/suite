@@ -31,15 +31,4 @@ public class Atom extends Node {
 		return Atom.of("temp$$" + counter.getAndIncrement());
 	}
 
-	@Override
-	public int hashCode() {
-		return System.identityHashCode(this);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return this == object //
-				|| object instanceof Node && this == ((Node) object).finalNode();
-	}
-
 }

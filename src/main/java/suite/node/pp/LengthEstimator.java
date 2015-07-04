@@ -18,7 +18,6 @@ public class LengthEstimator {
 	}
 
 	public int estimateLengths(Node node) {
-		node = node.finalNode();
 		int key = getKey(node);
 		Integer length = lengthByIds.get(key);
 
@@ -50,7 +49,7 @@ public class LengthEstimator {
 	}
 
 	private int getKey(Node node) {
-		return System.identityHashCode(node.finalNode());
+		return System.identityHashCode(node);
 	}
 
 }

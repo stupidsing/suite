@@ -109,7 +109,7 @@ public class InstructionExecutor implements AutoCloseable {
 					break;
 				case ASSIGNTHUNKRES:
 					regs[insn.op0] = returnValue;
-					thunk = (Thunk) regs[insn.op1].finalNode();
+					thunk = (Thunk) regs[insn.op1];
 					thunk.frame = null; // Facilitates garbage collection
 					thunk.result = returnValue;
 					break;
@@ -117,7 +117,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current = new Activation(frame, insn.op0, current);
 					break;
 				case CALLTHUNK_____:
-					thunk = (Thunk) regs[insn.op0].finalNode();
+					thunk = (Thunk) regs[insn.op0];
 					if (thunk.result == null)
 						current = new Activation(thunk, current);
 					else
@@ -208,7 +208,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current.ip = insn.op0;
 					break;
 				case JUMPCLOSURE___:
-					thunk = (Thunk) regs[insn.op0].finalNode();
+					thunk = (Thunk) regs[insn.op0];
 					current = current.previous;
 					if (thunk.result == null)
 						current = new Activation(thunk, current);

@@ -51,7 +51,6 @@ public class PrettyPrinter {
 			, Operator op0 // for avoiding unnecessary indenting
 			, int prec0 // for parenthesizing
 	) {
-		node = node.finalNode();
 		int x = getX(), y = getY();
 		int length = lengthEstimator.getEstimatedLength(node);
 
@@ -137,7 +136,6 @@ public class PrettyPrinter {
 
 	private void prettyPrintList(Operator op, Node node) {
 		int prec = op.getPrecedence(), prec1 = prec - 1;
-		node = node.finalNode();
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
@@ -180,7 +178,6 @@ public class PrettyPrinter {
 	}
 
 	private boolean isLookingLikeList(Operator op, Node node) {
-		node = node.finalNode();
 		Tree tree = Tree.decompose(node);
 
 		if (tree != null && tree.getOperator() == op) {

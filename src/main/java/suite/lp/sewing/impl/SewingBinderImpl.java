@@ -25,8 +25,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		this.isBindTrees = isBindTrees;
 	}
 
-	public BiPredicate<BindEnv, Node> compileBind(Node node0) {
-		Node node = node0.finalNode();
+	public BiPredicate<BindEnv, Node> compileBind(Node node) {
 		Tree tree;
 
 		if (node instanceof Atom)
@@ -53,7 +52,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				} else
 					return false;
 			};
-		} else if (node0 instanceof Reference) {
+		} else if (node instanceof Reference) {
 			int index = findVariableIndex(node);
 			return (be, n) -> Binder.bind(n, be.env.get(index), be.journal);
 		} else {

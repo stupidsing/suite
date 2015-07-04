@@ -30,8 +30,8 @@ public class FormatPredicates {
 
 	public BuiltinPredicate charAscii = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		Node p0 = params[0].finalNode();
-		Node p1 = params[1].finalNode();
+		Node p0 = params[0];
+		Node p1 = params[1];
 		return p0 instanceof Str && prover.bind(Int.of(((Str) p0).value.charAt(0)), p1) //
 				|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).number), p0);
 	};
@@ -63,7 +63,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate persistLoad = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		try (InputStream is = new FileInputStream(((Str) params[1].finalNode()).value);
+		try (InputStream is = new FileInputStream(((Str) params[1]).value);
 				GZIPInputStream gis = new GZIPInputStream(is);
 				DataInputStream dis = new DataInputStream(gis)) {
 			Grapher grapher = new Grapher();
@@ -76,7 +76,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate persistSave = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		try (OutputStream os = FileUtil.out(((Str) params[1].finalNode()).value);
+		try (OutputStream os = FileUtil.out(((Str) params[1]).value);
 				GZIPOutputStream gos = new GZIPOutputStream(os);
 				DataOutputStream dos = new DataOutputStream(gos)) {
 			Grapher grapher = new Grapher();
@@ -94,7 +94,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate rpnPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+		Node p0 = params[0], p1 = params[1];
 		if (p1 instanceof Str)
 			return prover.bind(p0, rpn.fromRpn(((Str) p1).value));
 		else
@@ -103,7 +103,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate startsWith = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		Node p0 = params[0].finalNode(), p1 = params[1].finalNode();
+		Node p0 = params[0], p1 = params[1];
 
 		return p0 instanceof Atom && p1 instanceof Atom //
 				&& ((Atom) p0).name.startsWith(((Atom) p1).name);
@@ -113,9 +113,9 @@ public class FormatPredicates {
 
 	public BuiltinPredicate substring = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
-		String name = ((Str) params[0].finalNode()).value;
+		String name = ((Str) params[0]).value;
 		int length = name.length();
-		Node p1 = params[1].finalNode(), p2 = params[2].finalNode();
+		Node p1 = params[1], p2 = params[2];
 
 		if (p1 instanceof Int && p2 instanceof Int) {
 			int m = ((Int) p1).number, n = ((Int) p2).number;

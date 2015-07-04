@@ -226,7 +226,6 @@ public class SewingProverImpl implements SewingProver {
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
 		Trampoline tr = null;
-		node = node.finalNode();
 		List<Node> list;
 		Tree tree;
 		Node m[];
@@ -515,7 +514,6 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private int complexity(Node node) {
-		node = node.finalNode();
 		Tree tree = Tree.decompose(node);
 		if (tree != null)
 			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));

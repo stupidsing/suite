@@ -65,7 +65,7 @@ public class Grapher {
 	}
 
 	private int graph0(Map<IdentityKey<Node>, Integer> ids, Node node) {
-		IdentityKey<Node> key = IdentityKey.of(node.finalNode());
+		IdentityKey<Node> key = IdentityKey.of(node);
 		Integer id = ids.get(key);
 
 		if (id == null) {
@@ -132,7 +132,7 @@ public class Grapher {
 				.map(ng -> {
 					NodeGraph ng1;
 					if (ng.type == ReadType.TERM) {
-						Node node = ng.terminal.finalNode();
+						Node node = ng.terminal;
 						if (node instanceof Atom && ((Atom) node).name.startsWith(ProverConstant.variablePrefix))
 							ng1 = new NodeGraph(new Reference());
 						else
@@ -149,7 +149,7 @@ public class Grapher {
 				.map(ng -> {
 					NodeGraph ng1;
 					if (ng.type == ReadType.TERM) {
-						Node node = ng.terminal.finalNode();
+						Node node = ng.terminal;
 						if (node instanceof Reference)
 							ng1 = new NodeGraph(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
 						else
@@ -226,7 +226,7 @@ public class Grapher {
 			dos.writeByte(type.value);
 
 			if (type == ReadType.TERM) {
-				Node terminal = ng.terminal.finalNode();
+				Node terminal = ng.terminal;
 
 				if (terminal instanceof Atom) {
 					dos.writeByte((byte) 'a');

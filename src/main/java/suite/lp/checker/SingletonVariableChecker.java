@@ -40,8 +40,6 @@ public class SingletonVariableChecker {
 
 		private void scan(Node node) {
 			while (true) {
-				node = node.finalNode();
-
 				if (node instanceof Atom) {
 					Atom atom = (Atom) node;
 					String name = atom.name;

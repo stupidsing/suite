@@ -47,7 +47,7 @@ public class Rule {
 		}
 
 		Env env = sewingGeneralizer.env();
-		env.get(cutIndex).bound(cut);
+		env.getReference(cutIndex).bound(cut);
 
 		return Tree.of(TermOp.AND___ //
 				, Tree.of(TermOp.EQUAL_ //

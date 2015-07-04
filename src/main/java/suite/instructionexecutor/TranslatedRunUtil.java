@@ -48,7 +48,6 @@ public class TranslatedRunUtil {
 		if (config.isLazy)
 			return new IntrinsicCallback() {
 				public Node yawn(Node node) {
-					node = node.finalNode();
 					if (node instanceof Thunk) {
 						Thunk thunk = (Thunk) node;
 						if (thunk.result == null)

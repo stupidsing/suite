@@ -17,13 +17,9 @@ public class Str extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Node) {
-			Node node = ((Node) object).finalNode();
-			if (Util.clazz(node) == Str.class) {
-				Str str = (Str) node;
-				return Util.stringEquals(value, str.value);
-			} else
-				return false;
+		if (Util.clazz(object) == Str.class) {
+			Str str = (Str) object;
+			return Util.stringEquals(value, str.value);
 		} else
 			return false;
 	}

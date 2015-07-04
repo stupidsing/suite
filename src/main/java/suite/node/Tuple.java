@@ -23,11 +23,7 @@ public class Tuple extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Node) {
-			Node node = ((Node) object).finalNode();
-			return Util.clazz(node) == Tuple.class && Objects.equals(nodes, ((Tuple) node).nodes);
-		} else
-			return false;
+		return Util.clazz(object) == Tuple.class && Objects.equals(nodes, ((Tuple) object).nodes);
 	}
 
 }

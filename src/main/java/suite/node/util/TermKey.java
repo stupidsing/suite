@@ -27,8 +27,6 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		private Map<Integer, Integer> aliases = new HashMap<>();
 
 		public int hash(Node node) {
-			node = node.finalNode();
-
 			if (node instanceof Reference) {
 				int id = ((Reference) node).getId();
 				return aliases.computeIfAbsent(id, any -> nAliases++);

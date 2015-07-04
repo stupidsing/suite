@@ -15,10 +15,9 @@ public class TreeRewriter {
 
 	public boolean contains(Node from, Node node) {
 		return new Fun<Node, Boolean>() {
-			public Boolean apply(Node node0) {
-				Node node = node0.finalNode();
+			public Boolean apply(Node node) {
 				boolean result;
-				if (!node.equals(from)) {
+				if (!eq(node, from)) {
 					NodeRead nr = NodeRead.of(node);
 					result = Read.from(nr.children).fold(false, (r, p) -> r || apply(p.t1));
 				} else
@@ -30,9 +29,8 @@ public class TreeRewriter {
 
 	public Node replace(Node from, Node to, Node node0) {
 		return new Fun<Node, Node>() {
-			public Node apply(Node node0) {
-				node0 = node0.finalNode();
-				return !node0.equals(from) ? Rewriter.transform(node0, this::apply) : to;
+			public Node apply(Node node) {
+				return !eq(node, from) ? Rewriter.transform(node, this::apply) : to;
 			}
 		}.apply(node0);
 	}
@@ -53,7 +51,6 @@ public class TreeRewriter {
 			}
 
 			private Node rewrite0(Node node0) {
-				node0 = node0.finalNode();
 				Node node1;
 				if (node0 instanceof Reference || (node1 = bind(node0)) == null)
 					node1 = Rewriter.transform(node0, this::rewrite0);
@@ -72,6 +69,10 @@ public class TreeRewriter {
 				}
 			}
 		}.source();
+	}
+
+	private boolean eq(Node n0, Node n1) {
+		return Comparer.comparer.compare(n0, n1) == 0;
 	}
 
 }

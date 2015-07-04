@@ -24,7 +24,7 @@ public class InternPredicates {
 	});
 
 	public BuiltinPredicate internMapContains = (prover, ps) -> {
-		IdentityKey<Node> key = IdentityKey.of(ps.finalNode());
+		IdentityKey<Node> key = IdentityKey.of(ps);
 		return internMap.get().containsKey(key);
 	};
 
@@ -35,7 +35,7 @@ public class InternPredicates {
 		Node params[] = Tree.getParameters(ps, 4);
 		Node p = params[0];
 		Node p1 = params[1];
-		Node p2 = params[2].finalNode();
+		Node p2 = params[2];
 		Node p3 = params[3];
 
 		Operator operator = TermOp.find(((Atom) p2).name);

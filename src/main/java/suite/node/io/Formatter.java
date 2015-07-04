@@ -103,7 +103,6 @@ public class Formatter {
 	 *            Minimum operator precedence without adding parentheses.
 	 */
 	private void format(Node node, int parentPrec) {
-		node = node.finalNode();
 		Integer objectId = System.identityHashCode(node);
 
 		// Avoids infinite recursion if object is recursive
@@ -152,7 +151,7 @@ public class Formatter {
 	}
 
 	private void formatTree(int parentPrec, Tree tree) {
-		if (tree.getOperator() == TermOp.TUPLE_ && tree.getLeft().finalNode() == Atom.of("[")) {
+		if (tree.getOperator() == TermOp.TUPLE_ && tree.getLeft() == Atom.of("[")) {
 			sb.append("[");
 			format(tree.getRight(), 0);
 			sb.append("]");

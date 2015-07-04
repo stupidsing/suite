@@ -14,7 +14,7 @@ public class FindUtil {
 	public static Node collectSingle(Finder finder, Node in) {
 		List<Node> list = To.list(collect(finder, in));
 		if (list.size() == 1)
-			return list.get(0).finalNode();
+			return list.get(0);
 		else if (!list.isEmpty())
 			throw new RuntimeException("Too many results");
 		else

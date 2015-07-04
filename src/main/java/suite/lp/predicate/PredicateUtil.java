@@ -16,20 +16,20 @@ public class PredicateUtil {
 
 	public static BuiltinPredicate run(Sink<Node> fun) {
 		return (prover, ps) -> {
-			fun.sink(ps.finalNode());
+			fun.sink(ps);
 			return true;
 		};
 	}
 
 	public static BuiltinPredicate bool(Predicate<Node> fun) {
-		return (prover, ps) -> fun.test(ps.finalNode());
+		return (prover, ps) -> fun.test(ps);
 	}
 
 	public static BuiltinPredicate fun(Fun<Node, Node> fun) {
 		return (prover, ps) -> {
 			Node params[] = Tree.getParameters(ps, 2);
 			Node p0 = params[0], p1 = params[1];
-			return prover.bind(p1, fun.apply(p0.finalNode()));
+			return prover.bind(p1, fun.apply(p0));
 		};
 	}
 

@@ -33,13 +33,9 @@ public class Int extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Node) {
-			Node node = ((Node) object).finalNode();
-			if (Util.clazz(node) == Int.class) {
-				Int i = (Int) node;
-				return number == i.number;
-			} else
-				return false;
+		if (Util.clazz(object) == Int.class) {
+			Int i = (Int) object;
+			return number == i.number;
 		} else
 			return false;
 	}

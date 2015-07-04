@@ -13,7 +13,6 @@ public class Cyclic {
 	private Set<IdentityKey<Node>> checkingNodes = new HashSet<>();
 
 	public boolean isCyclic(Node node) {
-		node = node.finalNode();
 		IdentityKey<Node> idHashNode = IdentityKey.of(node);
 		boolean isCyclic;
 

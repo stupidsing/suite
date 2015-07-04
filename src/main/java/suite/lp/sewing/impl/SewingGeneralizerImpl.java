@@ -54,7 +54,7 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 				if (operator != TermOp.OR____) {
 					Fun<Env, Node> f = compile(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
-					node = tree.getRight().finalNode();
+					node = tree.getRight();
 					continue;
 				} else { // Delay generalizing for performance
 					Fun<Env, Node> lf = compile(tree.getLeft());
@@ -97,7 +97,6 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 	 * Would a certain end-node be generalized?
 	 */
 	public static boolean isVariant(Node node) {
-		node = node.finalNode();
 		if (node instanceof Atom) {
 			String name = ((Atom) node).name;
 			return isWildcard(name) || isVariable(name) || isCut(node);

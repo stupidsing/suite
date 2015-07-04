@@ -56,7 +56,7 @@ public class EvalPredicates {
 	};
 
 	public BuiltinPredicate compare = (prover, ps) -> {
-		Tree tree = (Tree) ps.finalNode();
+		Tree tree = (Tree) ps;
 		switch ((TermOp) tree.getOperator()) {
 		case LE____:
 			return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
@@ -73,7 +73,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate dictKeyValue = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
-		Node node = params[0].finalNode();
+		Node node = params[0];
 		Node key = params[1];
 		Node value = params[2];
 
@@ -134,10 +134,10 @@ public class EvalPredicates {
 			list = tree.getRight();
 		}
 
-		if (list.finalNode() == Atom.NIL)
+		if (list == Atom.NIL)
 			return prover.bind(params[1], Int.of(size));
 
-		int size1 = ((Int) params[1].finalNode()).number;
+		int size1 = ((Int) params[1]).number;
 		Node list1 = Atom.NIL;
 		while (size1-- > 0)
 			list1 = Tree.of(TermOp.AND___, new Reference(), list1);
@@ -153,7 +153,6 @@ public class EvalPredicates {
 
 		public int evaluate(Node node) {
 			int result;
-			node = node.finalNode();
 			Tree tree = Tree.decompose(node);
 
 			if (tree != null) {
@@ -226,7 +225,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate same = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 2);
-		return params[0].finalNode() == params[1].finalNode();
+		return params[0] == params[1];
 	};
 
 	public BuiltinPredicate specialize = PredicateUtil.fun(new Specializer()::specialize);
@@ -235,9 +234,9 @@ public class EvalPredicates {
 
 	public BuiltinPredicate tree = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 4);
-		Node p = params[0].finalNode();
+		Node p = params[0];
 		Node p1 = params[1];
-		Node p2 = params[2].finalNode();
+		Node p2 = params[2];
 		Node p3 = params[3];
 		Tree tree;
 

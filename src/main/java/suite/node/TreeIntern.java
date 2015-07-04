@@ -43,9 +43,7 @@ public class TreeIntern {
 		}
 	}
 
-	public Tree of(Operator operator, Node node0, Node node1) {
-		Node left = node0.finalNode();
-		Node right = node1.finalNode();
+	public Tree of(Operator operator, Node left, Node right) {
 		return interns.computeIfAbsent(new Key(operator, left, right), any -> Tree.of(operator, left, right));
 	}
 

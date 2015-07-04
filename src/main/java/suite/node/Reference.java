@@ -11,7 +11,7 @@ public class Reference extends Node {
 
 	public static Reference of(Node node) {
 		Reference reference = new Reference();
-		reference.bound(node.finalNode());
+		reference.bound(node);
 		return reference;
 	}
 

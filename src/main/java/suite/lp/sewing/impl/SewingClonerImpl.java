@@ -46,7 +46,7 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 				if (operator != TermOp.OR____) {
 					Fun<Env, Node> f = compile(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
-					node = tree.getRight().finalNode();
+					node = tree.getRight();
 					continue;
 				} else { // Delay generalizing for performance
 					Fun<Env, Node> lf = compile(tree.getLeft());

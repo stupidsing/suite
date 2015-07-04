@@ -86,11 +86,11 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private Instruction extract(List<Node> rs) {
-		String insnName = ((Atom) rs.get(0).finalNode()).name;
+		String insnName = ((Atom) rs.get(0)).name;
 		Insn insn;
 
 		if (Objects.equals(insnName, "EVALUATE")) {
-			Atom atom = (Atom) rs.remove(3).finalNode();
+			Atom atom = (Atom) rs.remove(3);
 			TermOp operator = TermOp.find(atom.name);
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else
@@ -128,7 +128,7 @@ public class InstructionExtractor implements AutoCloseable {
 				Binder.bind(node, Int.of(registerNumber), journal);
 				return registerNumber;
 			} else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null) {
-				Node key = tree.getLeft(), value = tree.getRight().finalNode();
+				Node key = tree.getLeft(), value = tree.getRight();
 
 				if (key == KEYC)
 					return allocateInPool(value);

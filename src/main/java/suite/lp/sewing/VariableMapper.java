@@ -1,5 +1,6 @@
 package suite.lp.sewing;
 
+import suite.node.Node;
 import suite.node.Reference;
 
 public interface VariableMapper {
@@ -11,7 +12,11 @@ public interface VariableMapper {
 			this.refs = refs;
 		}
 
-		public Reference get(int index) {
+		public Node get(int index) {
+			return getReference(index).finalNode();
+		}
+
+		public Reference getReference(int index) {
 			return refs[index];
 		}
 	}

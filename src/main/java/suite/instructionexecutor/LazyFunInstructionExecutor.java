@@ -20,7 +20,6 @@ public class LazyFunInstructionExecutor extends FunInstructionExecutor {
 
 		setIntrinsicCallback(new IntrinsicCallback() {
 			public Node yawn(Node node) {
-				node = node.finalNode();
 				return node instanceof Thunk ? yawnThunk((Thunk) node) : node;
 			}
 

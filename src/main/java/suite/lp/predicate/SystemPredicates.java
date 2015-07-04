@@ -164,7 +164,7 @@ public class SystemPredicates {
 	private BuiltinPredicate cutBegin = (prover, ps) -> prover.bind(ps, prover.getAlternative());
 
 	private BuiltinPredicate cutEnd = (prover, ps) -> {
-		prover.setAlternative(ps.finalNode());
+		prover.setAlternative(ps);
 		return true;
 	};
 
@@ -181,7 +181,6 @@ public class SystemPredicates {
 	private BuiltinPredicate once = (prover, ps) -> new Prover(prover).prove0(ps);
 
 	private BuiltinPredicate systemPredicate = (prover, ps) -> {
-		ps = ps.finalNode();
 		Atom atom = ps instanceof Atom ? (Atom) ps : null;
 		String name = atom != null ? atom.name : null;
 		return name != null && predicates.containsKey(name);

@@ -28,11 +28,7 @@ public class Dict extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Node) {
-			Node node = ((Node) object).finalNode();
-			return Util.clazz(node) == Dict.class ? map.equals(((Dict) node).map) : false;
-		} else
-			return false;
+		return Util.clazz(object) == Dict.class ? map.equals(((Dict) object).map) : false;
 	}
 
 }

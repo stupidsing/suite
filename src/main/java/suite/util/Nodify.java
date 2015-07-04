@@ -263,8 +263,8 @@ public class Nodify {
 		return object != null ? nodifier.nodify.apply(object) : NULL;
 	}
 
-	private Object apply0(Nodifier nodifier, Node node) {
-		Node node1 = node.finalNode();
+	private Object apply0(Nodifier nodifier, Node node0) {
+		Node node1 = node0.finalNode();
 		return node1 != NULL ? nodifier.unnodify.apply(node1) : null;
 	}
 

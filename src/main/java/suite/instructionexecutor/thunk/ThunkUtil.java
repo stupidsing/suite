@@ -70,7 +70,7 @@ public class ThunkUtil {
 					if (isFacilitateGc)
 						Tree.forceSetRight(tree, null);
 					return result;
-				} else if (node_.finalNode() == Atom.NIL)
+				} else if (node_ == Atom.NIL)
 					return null;
 				else
 					throw new RuntimeException("Not a list, unable to expand");

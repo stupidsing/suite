@@ -16,12 +16,10 @@ public class Tree extends Node {
 	private Node left, right;
 
 	public static Tree decompose(Node node) {
-		node = node.finalNode();
 		return node instanceof Tree ? (Tree) node : null;
 	}
 
 	public static Tree decompose(Node node, Operator operator) {
-		node = node.finalNode();
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			if (tree.operator == operator)
@@ -98,13 +96,9 @@ public class Tree extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Node) {
-			Node node = ((Node) object).finalNode();
-			if (Util.clazz(node) == Tree.class) {
-				Tree t = (Tree) node;
-				return operator == t.operator && Objects.equals(left, t.left) && Objects.equals(right, t.right);
-			} else
-				return false;
+		if (Util.clazz(object) == Tree.class) {
+			Tree t = (Tree) object;
+			return operator == t.operator && Objects.equals(left, t.left) && Objects.equals(right, t.right);
 		} else
 			return false;
 	}
@@ -124,11 +118,11 @@ public class Tree extends Node {
 	}
 
 	public Node getLeft() {
-		return left;
+		return left.finalNode();
 	}
 
 	public Node getRight() {
-		return right;
+		return right.finalNode();
 	}
 
 }

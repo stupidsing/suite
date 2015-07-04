@@ -30,15 +30,25 @@ public class Intrinsics {
 	}
 
 	public interface IntrinsicCallback {
+
+		/**
+		 * Realizes a possibly-lazy node into its bottom value. Returns the
+		 * input for the eager implementation.
+		 */
 		public Node yawn(Node node);
 
+		/**
+		 * Encloses an intrinsic function call with given parameter into a lazy
+		 * result node. Becomes immediate evaluation in the eager
+		 * implementation.
+		 */
 		public Node enclose(Intrinsic intrinsic, Node node);
 	}
 
 	public static Map<String, Intrinsic> intrinsics = new HashMap<>();
 
 	// Forces suspended node evaluation
-	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0).finalNode();
+	public static Intrinsic id_ = (callback, inputs) -> inputs.get(0);
 
 	public static <T> Node drain(IntrinsicCallback callback, IntFunction<Node> read, int size) {
 		return drain(callback, IndexedReader.of(read, size));

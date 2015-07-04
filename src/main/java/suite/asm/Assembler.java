@@ -143,7 +143,7 @@ public class Assembler {
 		BytesBuilder bb = new BytesBuilder();
 		Tree tree;
 		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-			bb.append((byte) ((Int) tree.getLeft().finalNode()).number);
+			bb.append((byte) ((Int) tree.getLeft()).number);
 			node = tree.getRight();
 		}
 		return bb.toBytes();
