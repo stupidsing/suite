@@ -61,6 +61,7 @@ public class SymbolicMathUtil {
 
 		Node equate = Suite.substitute("equate1 (.0 = .1)", node, v);
 		Node goal = Suite.substitute("find.all .0 .1 .2", v, equate, r);
+
 		if (prover.prove(goal)) {
 			Set<TermKey> results = new HashSet<>();
 			Node list = r.finalNode();
