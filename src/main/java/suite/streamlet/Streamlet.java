@@ -79,7 +79,7 @@ public class Streamlet<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		return object instanceof Streamlet ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
+		return object.getClass() == Streamlet.class ? Objects.equals(spawn(), ((Streamlet<?>) object).spawn()) : false;
 	}
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {

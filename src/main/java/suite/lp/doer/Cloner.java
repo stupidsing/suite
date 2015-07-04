@@ -51,18 +51,10 @@ public class Cloner {
 	public Node cloneOld(Node node) {
 		return clonedNodes.computeIfAbsent(IdentityKey.of(node), key -> {
 			Node node_ = key.key;
-
 			if (node_ instanceof Reference)
 				node_ = new Reference();
-			else if (node_ instanceof Tree) {
-				Tree tree = (Tree) node_;
-				Node left = tree.getLeft(), right = tree.getRight();
-				Node left1 = cloneOld(left), right1 = cloneOld(right);
-				if (left != left1 || right != right1)
-					node_ = Tree.of(tree.getOperator(), left1, right1);
-			} else
+			else
 				node_ = Rewriter.transform(node, this::cloneOld);
-
 			return node_;
 		});
 	}

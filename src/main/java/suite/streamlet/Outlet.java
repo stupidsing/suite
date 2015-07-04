@@ -132,7 +132,7 @@ public class Outlet<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (object instanceof Outlet) {
+		if (object.getClass() == Outlet.class) {
 			Source<?> source1 = ((Outlet<?>) object).source;
 			Object o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
