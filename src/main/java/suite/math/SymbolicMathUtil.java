@@ -62,10 +62,10 @@ public class SymbolicMathUtil {
 		Node equate = Suite.substitute("equate1 (.0 = .1)", node, v);
 		Node goal = Suite.substitute("find.all .0 .1 .2", v, equate, r);
 		if (prover.prove(goal)) {
-			Node list = r.finalNode();
-
 			Set<TermKey> results = new HashSet<>();
+			Node list = r.finalNode();
 			Tree tree;
+
 			while ((tree = Tree.decompose(list)) != null) {
 				Node left = tree.getLeft();
 				results.add(new TermKey(left));
