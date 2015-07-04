@@ -176,7 +176,7 @@ public class Nodify {
 						Object object1 = clazz.newInstance();
 						for (Pair<Atom, FieldInfo> pair : pairs) {
 							FieldInfo fieldInfo = pair.t1;
-							Node value = map.get(pair.t0);
+							Node value = map.get(pair.t0).finalNode();
 							fieldInfo.field.set(object1, apply0(fieldInfo.nodifier, value));
 						}
 						return object1;
@@ -219,7 +219,7 @@ public class Nodify {
 					Map<Node, Reference> map = ((Dict) node).map;
 					Map<Object, Object> object1 = (Map<Object, Object>) create(clazz);
 					for (Entry<Node, Reference> e : map.entrySet())
-						object1.put(apply0(kn, e.getKey()), apply0(vn, e.getValue()));
+						object1.put(apply0(kn, e.getKey()), apply0(vn, e.getValue().finalNode()));
 					return object1;
 				});
 			} else
@@ -263,9 +263,8 @@ public class Nodify {
 		return object != null ? nodifier.nodify.apply(object) : NULL;
 	}
 
-	private Object apply0(Nodifier nodifier, Node node0) {
-		Node node1 = node0.finalNode();
-		return node1 != NULL ? nodifier.unnodify.apply(node1) : null;
+	private Object apply0(Nodifier nodifier, Node node) {
+		return node != NULL ? nodifier.unnodify.apply(node) : null;
 	}
 
 }
