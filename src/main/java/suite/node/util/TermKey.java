@@ -84,25 +84,31 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 		public boolean equals(Object object) {
 			boolean result = object.getClass() == TermLister.class;
+
 			if (result) {
-				TermLister tl = (TermLister) object;
+				List<Pair<Integer, NodeHead>> list1 = ((TermLister) object).list;
 				int size0 = list.size();
-				int size1 = tl.list.size();
+				int size1 = list1.size();
 				result &= size0 == size1;
+
 				if (result)
 					for (int i = 0; result && i < size0; i++) {
 						Pair<Integer, NodeHead> p0 = list.get(i);
-						Pair<Integer, NodeHead> p1 = tl.list.get(i);
+						Pair<Integer, NodeHead> p1 = list1.get(i);
 						result &= Objects.equals(p0.t0, p1.t0);
-						boolean b0 = p0.t1 != null;
-						boolean b1 = p1.t1 != null;
+
+						NodeHead nh0 = p0.t1;
+						NodeHead nh1 = p1.t1;
+						boolean b0 = nh0 != null;
+						boolean b1 = nh1 != null;
 						result &= b0 == b1;
 						if (b0 && b1)
-							result &= Objects.equals(p0.t1.type, p1.t1.type) //
-									&& Objects.equals(p0.t1.terminal, p1.t1.terminal) //
-									&& Objects.equals(p0.t1.op, p1.t1.op);
+							result &= Objects.equals(nh0.type, nh1.type) //
+									&& Objects.equals(nh0.terminal, nh1.terminal) //
+									&& Objects.equals(nh0.op, nh1.op);
 					}
 			}
+
 			return result;
 		}
 	}
