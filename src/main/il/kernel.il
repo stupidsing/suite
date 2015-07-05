@@ -100,6 +100,10 @@ declare wrmsr = [msr, value,] (
 #include(console.il);
 #include(buddy-allocator.il);
 #include(first-fit-allocator.il);
+
+declare mm-allocate = ba-allocate;
+declare mm-deallocate = ba-deallocate;
+
 #include(irq.il);
 #include(scheduler.il);
 #include(idt.il);

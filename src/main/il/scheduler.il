@@ -25,19 +25,19 @@ declare sch-interrupt-switch = [] (
 );
 
 declare sch-enqueue-process = [] (
-	declare process = ba:ba-allocate [12,];
+	declare process = kernel:mm-allocate [12,];
 	dl:dl-insert-next [& processes, process,];
 	process;
 );
 
 declare sch-dequeue-process = [process,] (
 	dl:dl-remove [process,];
-	ba:ba-deallocate [process, 4,];
+	kernel:mm-deallocate [process, 4,];
 );
 
 declare sch-fork = [] (
 	synchronized (& sch-sync) (
-		declare process1 = ba:ba-allocate [12,];
+		declare process1 = kernel:mm-allocate [12,];
 		dl:dl-insert-next [& processes, process1,];
 
 		-- TODO allocate stack
@@ -64,5 +64,5 @@ declare sch-setup = [] (
 declare sch-teardown = [] (
 	declare process = dl:dl-next [& processes,];
 	dl:dl-remove [process,];
-	ba:ba-deallocate [process, 4,];
+	kernel:mm-deallocate [process, 4,];
 );
