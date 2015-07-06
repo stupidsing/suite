@@ -1,7 +1,7 @@
 ic-compile .fs .do .e0/.ex :- once (ic-compile0 .fs .do .e0/.ex) #
 
 ic-compile0 _ (asm .i) (.i, _ R+: (), .e)/.e
-	:- ! -- Assembler has unbound variables, skip processing
+	:- ! -- Assembler might have variables, skip processing
 #
 ic-compile0 .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
