@@ -169,10 +169,6 @@ ic-compile-better-option .fs `.addr + .imm` .e0/.ex
 	, ic-compile0 .fs .addr .e0/.e1
 	, .e1 = (_ TOP: MOV ($0, `$0 + .imm`), .ex)
 #
-ic-compile-better-option .fs `.addr` .e0/.ex
-	:- ic-compile0 .fs .addr .e0/.e1
-	, .e1 = (_ TOP: MOV ($0, `$0`), .ex)
-#
 ic-compile-better-option .fs (`.addr` =+ .imm) .e0/.ex
 	:- is.int .imm
 	, ic-compile0 .fs .addr .e0/.e1
