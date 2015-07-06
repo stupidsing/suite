@@ -1,4 +1,4 @@
-ic-compile .fs .do .e0/.ex :- once (ic-compile0 .fs .do .e0/.ex) #
+ic-compile .do .e0/.ex :- once (ic-compile0 0 .do .e0/.ex) #
 
 ic-compile0 _ (asm .i) (.i, _ R+: (), .e)/.e
 	:- ! -- Assembler might have variables, skip processing
