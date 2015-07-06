@@ -11,11 +11,11 @@ fc-optimize-flow .do0 .dox
 	, !, fc-replace-var-by-value .var .value .do1 .do2
 	, fc-optimize-flow .do2 .dox
 #
+fc-optimize-flow (APPLY .value (FUN .var .do0)) .dox
+	:- !, fc-optimize-flow (DEF-VARS (.var .value,) .do0) .dox
+#
 fc-optimize-flow (UNWRAP WRAP .do0) .dox
 	:- !, fc-optimize-flow .do0 .dox
-#
-fc-optimize-flow (INVOKE .value (FUN .var .do0)) .dox
-	:- !, fc-optimize-flow (DEF-VARS (.var .value,) .do0) .dox
 #
 fc-optimize-flow .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()

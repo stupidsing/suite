@@ -10,7 +10,7 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (.callee {.parameter}) (INVOKE .parameter1 .callee1)
+fc-parse (.callee {.parameter}) (APPLY .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #

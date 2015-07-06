@@ -28,6 +28,10 @@ fc-infer-type .do .type
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type
 #
+fc-infer-type-rule (APPLY .param .callee) .env .tr0/.trx .returnType
+	:- fc-infer-type-rule .callee .env .tr0/.tr1 (FUN-OF .paramType .returnType)
+	, fc-infer-type-rule .param .env .tr1/.trx .paramType
+#
 fc-infer-type-rule (CONS L .v0 .v1) .env .tr0/.trx (LIST-OF .t)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t
 	, fc-infer-type-rule .v1 .env .tr1/.trx (LIST-OF .t)
@@ -58,10 +62,6 @@ fc-infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- fc-infer-type-rule .if .env .tr0/.tr1 BOOLEAN
 	, fc-infer-type-rule .then .env .tr1/.tr2 .type
 	, fc-infer-type-rule .else .env .tr2/.trx .type
-#
-fc-infer-type-rule (INVOKE .param .callee) .env .tr0/.trx .returnType
-	:- fc-infer-type-rule .callee .env .tr0/.tr1 (FUN-OF .paramType .returnType)
-	, fc-infer-type-rule .param .env .tr1/.trx .paramType
 #
 fc-infer-type-rule (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)

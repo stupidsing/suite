@@ -143,7 +143,15 @@ public class EagerFunInterpreter {
 		Fun<Frame, Node> result;
 		Node m[];
 
-		if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
+		if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
+			Fun<Frame, Node> param_ = eager0(mapping, m[0]);
+			Fun<Frame, Node> fun_ = eager0(mapping, m[1]);
+			result = frame -> {
+				Node fun = fun_.apply(frame);
+				Node param = param_.apply(frame);
+				return ((Fun_) fun).fun.apply(param);
+			};
+		} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
@@ -184,14 +192,6 @@ public class EagerFunInterpreter {
 			Fun<Frame, Node> then_ = eager0(mapping, m[1]);
 			Fun<Frame, Node> else_ = eager0(mapping, m[2]);
 			result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
-		} else if ((m = Suite.matcher("INVOKE .0 .1").apply(node)) != null) {
-			Fun<Frame, Node> param_ = eager0(mapping, m[0]);
-			Fun<Frame, Node> fun_ = eager0(mapping, m[1]);
-			result = frame -> {
-				Node fun = fun_.apply(frame);
-				Node param = param_.apply(frame);
-				return ((Fun_) fun).fun.apply(param);
-			};
 		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
@@ -212,7 +212,7 @@ public class EagerFunInterpreter {
 				return p1.getRight();
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = eager0(mapping, Suite.substitute("INVOKE .2 INVOKE .1 (VAR .0)", m[0], m[1], m[2]));
+			result = eager0(mapping, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null) {
 			Fun<Frame, Node> value_ = eager0(mapping, m[0]);
 			result = frame -> ((Wrap_) value_.apply(frame)).source.source();

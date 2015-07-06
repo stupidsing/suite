@@ -31,6 +31,14 @@ fc-infer-type-rules (.e, .es) .env .tr0/.trx (.t, .ts)
 fc-infer-type-rule .p .env .tr/.tr .type
 	:- fc-find-simple-type .p .env .type, !
 #
+fc-infer-type-rule (APPLY .param .callee) .ue/.ve/.te .tr0/.trx .type
+	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
+	, fc-infer-type-rule .param .ue/.ve/.te .tr1/.tr2 .actualParamType
+	, .tr2 = (SUB-SUPER-TYPES .te (FUN-OF .signParamType .type) .funType
+		, SUB-SUPER-TYPES .te .actualParamType .signParamType
+		, .trx
+	)
+#
 fc-infer-type-rule (CONS L .v0 .v1) .env .tr0/.trx (LIST-OF .t)
 	:- fc-infer-type-rule .v0 .env .tr0/.tr1 .t
 	, fc-infer-type-rule .v1 .env .tr1/.trx (LIST-OF .t)
@@ -54,14 +62,6 @@ fc-infer-type-rule (FUN .var .do) .ue/.ve/.te .tr (FUN-OF .varType .type)
 fc-infer-type-rule (IF .if .then .else) .env .tr0/.trx .type
 	:- fc-infer-type-rule .if .env .tr0/.tr1 BOOLEAN
 	, fc-infer-compatible-types .then .else .env .tr1/.trx .type
-#
-fc-infer-type-rule (INVOKE .param .callee) .ue/.ve/.te .tr0/.trx .type
-	:- fc-infer-type-rule .callee .ue/.ve/.te .tr0/.tr1 .funType
-	, fc-infer-type-rule .param .ue/.ve/.te .tr1/.tr2 .actualParamType
-	, .tr2 = (SUB-SUPER-TYPES .te (FUN-OF .signParamType .type) .funType
-		, SUB-SUPER-TYPES .te .actualParamType .signParamType
-		, .trx
-	)
 #
 fc-infer-type-rule (
 	PRAGMA DEF-OUTSIDE (DEF-VARS .vvs .do)

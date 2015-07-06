@@ -137,7 +137,15 @@ public class LazyFunInterpreter {
 		Fun<Frame, Thunk_> result;
 		Node m[];
 
-		if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
+		if ((m = Suite.matcher("APPLY .0 .1").apply(node)) != null) {
+			Fun<Frame, Thunk_> param_ = lazy0(mapping, m[0]);
+			Fun<Frame, Thunk_> fun_ = lazy0(mapping, m[1]);
+			result = frame -> {
+				Thunk_ fun = fun_.apply(frame);
+				Thunk_ param = param_.apply(frame);
+				return () -> ((Fun_) fun.get()).fun.apply(param).get();
+			};
+		} else if ((m = Suite.matcher("ATOM .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("BOOLEAN .0").apply(node)) != null)
 			result = immediate(m[0]);
@@ -179,16 +187,8 @@ public class LazyFunInterpreter {
 				return value_.apply(frame1);
 			});
 		} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null)
-			result = lazy0(mapping, Suite.substitute("INVOKE .2 INVOKE .1 INVOKE .0 VAR if", m[0], m[1], m[2]));
-		else if ((m = Suite.matcher("INVOKE .0 .1").apply(node)) != null) {
-			Fun<Frame, Thunk_> param_ = lazy0(mapping, m[0]);
-			Fun<Frame, Thunk_> fun_ = lazy0(mapping, m[1]);
-			result = frame -> {
-				Thunk_ fun = fun_.apply(frame);
-				Thunk_ param = param_.apply(frame);
-				return () -> ((Fun_) fun.get()).fun.apply(param).get();
-			};
-		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
+			result = lazy0(mapping, Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", m[0], m[1], m[2]));
+		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
 			result = lazy0(mapping, m[1]);
@@ -208,7 +208,7 @@ public class LazyFunInterpreter {
 				return p1.second;
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
-			result = lazy0(mapping, Suite.substitute("INVOKE .2 INVOKE .1 (VAR .0)", m[0], m[1], m[2]));
+			result = lazy0(mapping, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
 		else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
 			result = mapping.getter(m[0]);
 		else

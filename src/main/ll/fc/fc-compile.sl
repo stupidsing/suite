@@ -4,6 +4,14 @@
 fc-compile .do .env .cr
 	:- fc-call-default-fun .do .env .cr 0, !
 #
+fc-compile (APPLY .parameter .callee) .env .c0/.cx/.reg
+	:- fc-compile .callee .env .c0/.c1/.r0
+	, fc-compile .parameter .env .c1/.c2/.r1
+	, .c2 = (PUSH .r1
+		, CALL-THUNK .r0
+		, ASSIGN-RESULT .reg
+		, .cx)
+#
 fc-compile (ATOM .a) _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:.a, .cx)
 #
@@ -15,7 +23,7 @@ fc-compile (CHARS .s) _ .c0/.cx/.reg
 #
 fc-compile (CONS .type .head .tail) .env .cr
 	:- member (L/+lcons, P/+pcons,) .type/.fun
-	, fc-compile (INVOKE .tail (INVOKE .head (VAR .fun))) .env .cr
+	, fc-compile (APPLY .tail (APPLY .head (VAR .fun))) .env .cr
 #
 fc-compile (DECONS .type .cons .headVar .tailVar .then .else) .frame/.ve0 .c0/.cx/.reg
 	:- member (L/IF-NOT-CONS, P/IF-NOT-PAIR,) .type/.insn
@@ -56,14 +64,6 @@ fc-compile (IF .if .then .else) .env .c0/.cx/.reg
 	, .c3 = (ASSIGN-FRAME-REG .reg 0 .thenReg, .cx)
 	, fc-compile .else .env .c4/.c5/.elseReg
 	, .c5 = (ASSIGN-FRAME-REG .reg 0 .elseReg, .cx)
-#
-fc-compile (INVOKE .parameter .callee) .env .c0/.cx/.reg
-	:- fc-compile .callee .env .c0/.c1/.r0
-	, fc-compile .parameter .env .c1/.c2/.r1
-	, .c2 = (PUSH .r1
-		, CALL-THUNK .r0
-		, ASSIGN-RESULT .reg
-		, .cx)
 #
 fc-compile NIL _ .c0/.cx/.reg
 	:- .c0 = (ASSIGN-CONSTANT .reg c:(), .cx)
@@ -140,7 +140,7 @@ fc-compile-vars (.value .varReg, .vrs) .env .c0/.cx
 #
 fc-compile-vars () _ .c/.c #
 
-fc-call-default-fun (INVOKE .p .pred) .env .c0/.cx/.reg .n
+fc-call-default-fun (APPLY .p .pred) .env .c0/.cx/.reg .n
 	:- !, let .n1 (.n + 1)
 	, fc-compile .p .env .c0/.c1/.r1
 	, .c1 = (PUSH .r1, .c2)

@@ -1,3 +1,6 @@
+fc-rewrite (APPLY .param0 .callee0) (APPLY .param1 .callee1) .ts0/.tsx
+	:- .ts0 = (.param0 .param1, .callee0 .callee1, .tsx)
+#
 fc-rewrite (ATOM .a) (ATOM .a) .ts/.ts
 #
 fc-rewrite (BOOLEAN .b) (BOOLEAN .b) .ts/.ts
@@ -27,9 +30,6 @@ fc-rewrite (FUN .var .do0) (FUN .var .do1) .ts0/.tsx
 #
 fc-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) .ts0/.tsx
 	:- .ts0 = (.if0 .if1, .then0 .then1, .else0 .else1, .tsx)
-#
-fc-rewrite (INVOKE .param0 .callee0) (INVOKE .param1 .callee1) .ts0/.tsx
-	:- .ts0 = (.param0 .param1, .callee0 .callee1, .tsx)
 #
 fc-rewrite NIL NIL .ts/.ts
 #

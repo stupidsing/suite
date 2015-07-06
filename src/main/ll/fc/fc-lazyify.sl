@@ -11,6 +11,11 @@ fc-lazyify .const (WRAP .const)
 	:- .const = .tag _
 	, member (ATOM, BOOLEAN, CHARS, NUMBER,) .tag, !
 #
+fc-lazyify (APPLY .value0 .callee0) (WRAP UNWRAP (APPLY .value1 (UNWRAP .callee1)))
+	:- !
+	, fc-lazyify .value0 .value1
+	, fc-lazyify .callee0 .callee1
+#
 fc-lazyify (CONS .type .head0 .tail0) (WRAP (CONS .type .headx .tailx))
 	:- !
 	, fc-lazyify .head0 .headx
@@ -33,11 +38,6 @@ fc-lazyify (IF .if0 .then0 .else0) (WRAP UNWRAP (IF (UNWRAP .if1) .then1 .else1)
 	, fc-lazyify .if0 .if1
 	, fc-lazyify .then0 .then1
 	, fc-lazyify .else0 .else1
-#
-fc-lazyify (INVOKE .value0 .callee0) (WRAP UNWRAP (INVOKE .value1 (UNWRAP .callee1)))
-	:- !
-	, fc-lazyify .value0 .value1
-	, fc-lazyify .callee0 .callee1
 #
 fc-lazyify NIL (WRAP NIL)
 	:- !
@@ -77,7 +77,7 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 	, fc-define-default-fun .n .var _
 	, !
 #
-fc-lazyify-default-fun .n .paramWraps .returnWrap (INVOKE .p0 .chain0) (INVOKE .px .chain1)
+fc-lazyify-default-fun .n .paramWraps .returnWrap (APPLY .p0 .chain0) (APPLY .px .chain1)
 	:- let .n1 (.n + 1)
 	, fc-lazyify .p0 .p1
 	, fc-lazyify-default-fun .n1 .paramWrap:.paramWraps .returnWrap .chain0 .chain1

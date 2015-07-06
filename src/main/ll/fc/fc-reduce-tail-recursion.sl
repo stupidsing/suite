@@ -60,4 +60,4 @@ fc-vars-fun () .do .do #
 fc-vars-fun (.var, .vars) .do .do1 :- fc-vars-fun .vars (FUN .var .do) .do1 #
 
 fc-values-invoke () .do .do #
-fc-values-invoke (.value, .values) .do (INVOKE .value .do1) :- fc-values-invoke .values .do .do1 #
+fc-values-invoke (.value, .values) .do (APPLY .value .do1) :- fc-values-invoke .values .do .do1 #
