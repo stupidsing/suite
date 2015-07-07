@@ -78,6 +78,16 @@ public class SewingProverImpl implements SewingProver {
 		public Trampoline prove(Runtime rt);
 	}
 
+	private class Debug {
+		private String indent = "";
+		private IList<Node> stack = IList.end();
+
+		private Debug(String indent, IList<Node> stack) {
+			this.indent = indent;
+			this.stack = stack;
+		}
+	}
+
 	private class Runtime {
 		private Env env;
 		private IList<Trampoline> cutPoint;
@@ -86,9 +96,14 @@ public class SewingProverImpl implements SewingProver {
 		private IList<Trampoline> rems = IList.end(); // Continuations
 		private IList<Trampoline> alts = IList.end(); // Alternatives
 		private Prover prover;
-		private String indent = "";
+		private Debug debug = new Debug("", IList.end());
+
 		private Sink<Node> handler = node -> {
-			throw new SuiteException(node);
+			String stackTrace = Read.from(debug.stack) //
+					.take(9) //
+					.map(Object::toString) //
+					.collect(As.joined("\n"));
+			throw new SuiteException(node, stackTrace);
 		};
 
 		private Runtime(ProverConfig pc, Trampoline tr) {
@@ -221,7 +236,7 @@ public class SewingProverImpl implements SewingProver {
 		Trampoline tr0 = or(trs);
 		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
 		Trampoline tr2 = saveEnv(tr1);
-		return isTrace ? log(tr2) : tr2;
+		return log(tr2, isTrace);
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -417,25 +432,34 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline log(Trampoline tr) {
-		return rt -> {
-			String indent0 = rt.indent;
-			rt.indent = indent0 + "| ";
-			String m = Formatter.dump(rt.query);
+	private Trampoline log(Trampoline tr0, boolean isTrace) {
+		if (isTrace) {
+			Trampoline tr1 = rt -> {
+				Debug debug0 = rt.debug;
+				rt.debug = new Debug(debug0.indent + "| ", IList.cons(rt.query, rt.debug.stack));
+				rt.post(() -> rt.debug = debug0);
+				return tr0;
+			};
 
-			LogUtil.info(indent0 + "QUERY " + m);
-			rt.pushRem(rt_ -> {
-				rt.indent = indent0;
-				LogUtil.info(indent0 + "OK___ " + m);
-				return okay;
-			});
-			rt.pushAlt(rt_ -> {
-				rt.indent = indent0;
-				LogUtil.info(indent0 + "FAIL_ " + m);
-				return fail;
-			});
-			return tr;
-		};
+			Trampoline tr2 = rt -> {
+				String m = Formatter.dump(rt.query);
+				String indent = rt.debug.indent;
+
+				LogUtil.info(indent + "QUERY " + m);
+				rt.pushRem(rt_ -> {
+					LogUtil.info(indent + "OK___ " + m);
+					return okay;
+				});
+				rt.pushAlt(rt_ -> {
+					LogUtil.info(indent + "FAIL_ " + m);
+					return fail;
+				});
+				return tr1;
+			};
+
+			return tr2;
+		} else
+			return tr0;
 	}
 
 	private Trampoline saveEnv(Trampoline tr) {

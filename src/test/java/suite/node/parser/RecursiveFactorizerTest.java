@@ -58,8 +58,8 @@ public class RecursiveFactorizerTest {
 	}
 
 	private FNode transform(FNode fn0) {
-		FTerminal from = new FTerminal(To.chars("ic-compile0"));
-		FTerminal to = new FTerminal(To.chars("ic-compile1"));
+		FTerminal from = new FTerminal(To.chars("ic-compile"));
+		FTerminal to = new FTerminal(To.chars("ic-new-compile"));
 		Fun<FNode, FNode> fun = fn_ -> fn_.equals(from) ? to : null;
 		return transform(fn0, fun);
 	}
@@ -96,7 +96,7 @@ public class RecursiveFactorizerTest {
 				return operatorNode(g, TermOp.TUPLE_, head, n2);
 			};
 
-			return new Node[] { fun.apply("ic-compile0").apply(false), fun.apply("ic-compile1").apply(true) };
+			return new Node[] { fun.apply("ic-compile").apply(false), fun.apply("ic-new-compile").apply(true) };
 		};
 
 		TreeRewriter tr = new TreeRewriter();
@@ -111,7 +111,7 @@ public class RecursiveFactorizerTest {
 		FR frx = new FR(fr0.pre, fnx, fr0.post);
 		String sx = recursiveFactorizer.unparse(frx);
 		System.out.println(sx);
-		assertFalse(sx.contains("ic-compile0"));
+		assertFalse(sx.contains("ic-compile"));
 	}
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {

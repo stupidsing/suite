@@ -21,7 +21,7 @@ public class ImperativeCompiler {
 	private RuleSet ruleSet = Suite.imperativeCompilerRuleSet();
 	private Finder finder = new SewingProverBuilder().build(ruleSet).apply(Suite.parse("" //
 			+ "source .ip" //
-			+ ", ic-compile .ip .code/()" //
+			+ ", compile-imperative .ip .code/()" //
 			+ ", sink .code"));
 
 	public Bytes compile(int org, Path path) throws IOException {
