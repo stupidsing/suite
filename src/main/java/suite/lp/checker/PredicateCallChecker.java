@@ -30,8 +30,9 @@ public class PredicateCallChecker {
 	private Map<Prototype, Integer> nParametersByPrototype = new HashMap<>();
 
 	public void check(List<Rule> rules) {
-		for (Rule rule : rules)
-			scan(rule.tail);
+		Read.from(rules) //
+				.concatMap(rule -> scan(rule.tail)) //
+				.forEach(this::put);
 		// put(rule.head);
 	}
 
@@ -39,16 +40,13 @@ public class PredicateCallChecker {
 		Node m[] = null;
 
 		for (Fun<Node, Node[]> matcher : matchers)
-			if (m == null)
-				m = matcher.apply(node);
+			if ((m = matcher.apply(node)) != null)
+				return Read.from(m).concatMap(this::scan);
 
-		if (m != null)
-			return Read.from(m).concatMap(this::scan);
-		else {
-			if (Tree.decompose(node, TermOp.TUPLE_) != null || node instanceof Atom)
-				put(node);
+		if (Tree.decompose(node, TermOp.TUPLE_) != null || node instanceof Atom)
+			return Read.from(node);
+		else
 			return Read.empty();
-		}
 	}
 
 	private void put(Node node) {
