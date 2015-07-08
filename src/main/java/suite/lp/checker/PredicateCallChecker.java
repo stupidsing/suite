@@ -43,7 +43,7 @@ public class PredicateCallChecker {
 				m = matcher.apply(node);
 
 		if (m != null)
-			return Read.from(m).concatMap(c -> scan(c));
+			return Read.from(m).concatMap(this::scan);
 		else {
 			if (Tree.decompose(node, TermOp.TUPLE_) != null || node instanceof Atom)
 				put(node);
