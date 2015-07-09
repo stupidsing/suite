@@ -7,6 +7,7 @@ import java.util.List;
 
 import suite.Suite;
 import suite.classpath.Handler;
+import suite.immutable.IList;
 import suite.lp.checker.Checker;
 import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
@@ -27,6 +28,7 @@ public class ImportUtil {
 	}
 
 	private String root = "file:" + FileUtil.homeDir() + "/src/main/ll/";
+	private ThreadLocal<IList<Node>> importing = ThreadLocal.withInitial(() -> IList.end());
 
 	public Prover createProver(List<String> toImports) {
 		return new Prover(createRuleSet(toImports));
@@ -61,18 +63,25 @@ public class ImportUtil {
 		for (Node elem : Tree.iter(node, TermOp.NEXT__))
 			rules.add(Rule.formRule(elem));
 
-		new Checker().check(rules);
-
 		Prover prover = new Prover(ruleSet);
 		boolean result = true;
 
-		for (Rule rule : rules)
-			if (rule.head != Atom.NIL)
-				ruleSet.addRule(rule);
-			else {
-				Node goal = SewingGeneralizerImpl.generalize(rule.tail);
-				result &= prover.prove(goal);
-			}
+		IList<Node> importing0 = importing.get();
+		try {
+			importing.set(IList.cons(node, importing0));
+			for (Rule rule : rules)
+				if (rule.head != Atom.NIL)
+					ruleSet.addRule(rule);
+				else {
+					Node goal = SewingGeneralizerImpl.generalize(rule.tail);
+					result &= prover.prove(goal);
+				}
+		} finally {
+			importing.set(importing0);
+		}
+
+		if (importing0.isEmpty()) // Only check if all files are imported
+			new Checker().check(ruleSet.getRules());
 
 		return result;
 	}
