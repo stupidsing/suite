@@ -31,10 +31,8 @@ public class PredicateCallChecker {
 	private Map<Prototype, Integer> nParametersByPrototype = new HashMap<>();
 
 	public void check(List<Rule> rules) {
-		Read.from(rules) //
-				.concatMap(rule -> scan(rule.tail)) //
-				.forEach(this::put);
-		// put(rule.head);
+		Read.from(rules).concatMap(rule -> scan(rule.head)).forEach(this::putHead);
+		Read.from(rules).concatMap(rule -> scan(rule.tail)).forEach(this::putTail);
 	}
 
 	private Streamlet<Node> scan(Node node) {
@@ -50,14 +48,18 @@ public class PredicateCallChecker {
 			return Read.empty();
 	}
 
-	private void put(Node node) {
+	private void putHead(Node node) {
 		Prototype prototype = Prototype.of(node);
-		Integer np0;
+		int np = getParameters(node);
+		nParametersByPrototype.compute(prototype, (p, np0) -> np0 != null ? Math.min(np0, np) : np);
+	}
+
+	private void putTail(Node node) {
+		Prototype prototype = Prototype.of(node);
+		Integer np0 = nParametersByPrototype.get(prototype);
 		int np1 = getParameters(node);
-		if ((np0 = nParametersByPrototype.get(prototype)) == null)
-			nParametersByPrototype.put(prototype, np1);
-		else if (np0 != np1)
-			LogUtil.warn("Wrong number of parameters: " + prototype);
+		if (np0 != null && np0 > np1)
+			LogUtil.warn("Not enough number of parameters: " + prototype);
 	}
 
 	private int getParameters(Node node) {
