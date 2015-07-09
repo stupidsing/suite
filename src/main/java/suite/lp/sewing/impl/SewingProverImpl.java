@@ -63,7 +63,6 @@ import suite.util.Util;
 public class SewingProverImpl implements SewingProver {
 
 	private SystemPredicates systemPredicates;
-
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
 	private Map<Prototype, Trampoline[]> trampolinesByPrototype = new HashMap<>();
 
