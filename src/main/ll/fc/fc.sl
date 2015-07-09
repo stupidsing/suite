@@ -43,7 +43,7 @@ fc-process-function .mode .do0 .dox
 #
 
 fc-load-library .lib .do0 .dox
-	:- find.all.memoized .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
+	:- find.all.memoized .node0 (fc-load-library0 .lib .node0) (.do0 / .dox,)
 #
 
 fc-load-library0 .lib .slfx
@@ -53,7 +53,7 @@ fc-load-library0 .lib .slfx
 		, file.exists .slfFilename
 		, file.read .slfFilename .slf
 		, to.atom ".p" .var
-		, concat .var " (" .slf .var ")" .slf1
+		, concat .var " / (" .slf .var ")" .slf1
 		, parse .slf1 .slf2
 		, generalize .slf2 .slfx
 	; fc-error "Library" .lib "not found"
@@ -122,7 +122,7 @@ fc-dict-member .v .t :- rbt-member .v .t #
 -- Logs are theoretically 'invisible' to the execution environment, so they are
 -- still considered pure.
 
-fc-add-functions STANDARD .p (
+fc-add-functions STANDARD (.p /
 	data (Optional :t) over :t as None >>
 	data (Optional :t) over :t as (Value :t) >>
 	---------------------------------------------------------------------------

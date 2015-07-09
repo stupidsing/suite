@@ -29,11 +29,11 @@ rbt-depth (_ .n0 _ .n1) .depth
 	, !
 #
 
-rbt-union-bind .t :- rbt-union0 BIND .t #
+rbt-union-bind .t0 .t1 .t :- rbt-union0 BIND .t0 .t1 .t #
 
-rbt-union-insert .t :- rbt-union0 INSERT .t #
+rbt-union-insert .t0 .t1 .t :- rbt-union0 INSERT .t0 .t1 .t #
 
-rbt-union-replace .t :- rbt-union0 REPLACE .t #
+rbt-union-replace .t0 .t1 .t :- rbt-union0 REPLACE .t0 .t1 .t #
 
 rbt-union0 _ () .tree .tree #
 rbt-union0 .mode (_ .n0 .pivot .n1) .tree0 .treex

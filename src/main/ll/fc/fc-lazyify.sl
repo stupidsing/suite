@@ -1,4 +1,4 @@
-fc-lazyify-fun .p0 (UNWRAP .p1) :- fc-lazyify .p0 .p1 #
+fc-lazyify-fun .p0 .px :- fc-lazyify .p0 .p1, .px = UNWRAP .p1 #
 
 fc-lazyify .do0 .dox
 	:- fc-lazyify-default-fun 0 _ .returnWrap .do0 .do1
@@ -57,8 +57,9 @@ fc-lazyify .p0 .p1
 	, list.query .ts .t (fc-lazyify .t)
 #
 
-fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
-	:- member (
+fc-lazyify-default-fun .n .paramWraps .returnWrap .var
+	:- .var = VAR .v
+	, member (
 		+compare/2/VALUE:VALUE:/VALUE,
 		+get%i/1/VALUE:/VALUE,
 		+call%i-t1/2/VALUE:THUNK:/THUNK,
@@ -73,7 +74,7 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap (VAR .var) (VAR .var)
 		+ltail/1/VALUE:/THUNK,
 		+pleft/1/VALUE:/THUNK,
 		+pright/1/VALUE:/THUNK,
-	) .var/.n/.paramWraps/.returnWrap
+	) .v/.n/.paramWraps/.returnWrap
 	, fc-define-default-fun .n .var _
 	, !
 #
