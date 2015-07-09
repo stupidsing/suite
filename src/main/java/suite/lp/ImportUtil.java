@@ -80,7 +80,7 @@ public class ImportUtil {
 			importing.set(importing0);
 		}
 
-		if (importing0.isEmpty()) // Only check if all files are imported
+		if (importing0.isEmpty()) // Check after all files are imported
 			new Checker().check(ruleSet.getRules());
 
 		return result;
