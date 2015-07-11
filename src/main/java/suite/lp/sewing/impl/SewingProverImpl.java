@@ -196,7 +196,7 @@ public class SewingProverImpl implements SewingProver {
 
 				if (!rulesByProto1.containsKey(null)) {
 					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
-							.map(kv -> Pair.of(kv.t0, compileRules(kv.t1, isTrace))) //
+							.map(Pair.map1(rules_ -> compileRules(rules_, isTrace))) //
 							.collect(As.map());
 
 					tr = rt -> {
