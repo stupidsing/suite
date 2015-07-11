@@ -75,7 +75,7 @@ fc-lazyify-default-fun .n .paramWraps .returnWrap .var .var
 		+pleft/1/VALUE:/THUNK,
 		+pright/1/VALUE:/THUNK,
 	) .v/.n/.paramWraps/.returnWrap
-	, fc-define-default-fun .n .var _
+	, fc-define-default-fun .n .v _
 	, !
 #
 fc-lazyify-default-fun .n .paramWraps .returnWrap (APPLY .p0 .chain0) (APPLY .px .chain1)
