@@ -44,7 +44,7 @@ public class PrecompileMain extends ExecutableProgram {
 
 				try {
 					for (String libraryName : allLibraries)
-						futures.add(executor.submit(() -> Suite.precompile(libraryName, pc)));
+						futures.add(executor.submit(() -> Boolean.valueOf(Suite.precompile(libraryName, pc))));
 				} finally {
 					executor.shutdown();
 				}

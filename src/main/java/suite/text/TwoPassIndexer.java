@@ -11,6 +11,7 @@ import java.util.TreeSet;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Source;
 
 public class TwoPassIndexer {
 
@@ -70,10 +71,12 @@ public class TwoPassIndexer {
 
 		Iterator<String> iter = keys.tailSet(searchKey).iterator();
 
-		return Read.from(() -> {
+		Source<String> source = () -> {
 			String key = iter.hasNext() ? iter.next() : null;
 			return key != null && key.startsWith(searchKey) ? key : null;
-		}).concatMap(key -> Read.from(getReferencesByWord(key)));
+		};
+
+		return Read.from(source).concatMap(key -> Read.from(getReferencesByWord(key)));
 	}
 
 	public List<Reference> getReferencesByWord(String word) {
