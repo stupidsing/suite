@@ -65,7 +65,7 @@ public class Rewriter {
 				op = null;
 				children = Read.from(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
-						.map(p -> Pair.<Node, Node> of(p.t0, p.t1.finalNode())) //
+						.map(p -> Pair.of(p.t0, p.t1.finalNode())) //
 						.toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Pair<Node, Node> p0 = Pair.of(LEFT_, tree.getLeft());
