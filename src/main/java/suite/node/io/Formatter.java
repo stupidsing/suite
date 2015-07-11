@@ -125,9 +125,9 @@ public class Formatter {
 		} else if (node instanceof Dict) {
 			sb.append("dict<");
 			for (Entry<Node, Reference> entry : ((Dict) node).map.entrySet()) {
-				format(entry.getKey(), 0);
+				format(entry.getKey(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(":");
-				format(entry.getValue(), 0);
+				format(entry.getValue(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(",");
 			}
 			sb.append(">");
@@ -142,7 +142,7 @@ public class Formatter {
 		else if (node instanceof Tuple) {
 			sb.append("tuple<");
 			for (Node n : ((Tuple) node).nodes) {
-				format(n, 0);
+				format(n, TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(", ");
 			}
 			sb.append(">");
