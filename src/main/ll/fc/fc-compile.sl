@@ -132,13 +132,15 @@ fc-define-vars (.var .value, .vvs) (.value .varReg, .vrs) .frame .ve0/.vex
 	:- fc-dict-add .var/(%REG/.varReg/.frame) .ve0/.ve1
 	, fc-define-vars .vvs .vrs .frame .ve1/.vex
 #
-fc-define-vars () () _ .ve/.ve #
+fc-define-vars () () _ .ve/.ve
+#
 
 fc-compile-vars (.value .varReg, .vrs) .env .c0/.cx
 	:- fc-compile .value .env .c0/.c1/.varReg
 	, fc-compile-vars .vrs .env .c1/.cx
 #
-fc-compile-vars () _ .c/.c #
+fc-compile-vars () _ .c/.c
+#
 
 fc-call-default-fun (APPLY .p .pred) .env .c0/.cx/.reg .n
 	:- !, let .n1 (.n + 1)
