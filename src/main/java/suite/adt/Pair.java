@@ -3,12 +3,17 @@ package suite.adt;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 public class Pair<T0, T1> {
 
 	public T0 t0;
 	public T1 t1;
+
+	public static <K, V0, V1> Fun<Pair<K, V0>, Pair<K, V1>> map1(Fun<V0, V1> fun) {
+		return pair -> Pair.of(pair.t0, fun.apply(pair.t1));
+	}
 
 	public static <T0, T1> Pair<T0, T1> of(T0 t0, T1 t1) {
 		return new Pair<>(t0, t1);

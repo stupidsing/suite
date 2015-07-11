@@ -217,7 +217,7 @@ public class Ebnf {
 			entry.setValue(headRecursion.reduceHeadRecursion(entry.getValue()));
 
 		parsersByEntity = Read.from(grammarsByEntity) //
-				.map(lr -> Pair.of(lr.t0, build(lr.t1))) //
+				.map(Pair.map1(this::build)) //
 				.collect(As.map());
 	}
 

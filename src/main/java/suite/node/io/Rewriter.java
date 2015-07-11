@@ -14,6 +14,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
@@ -65,7 +66,7 @@ public class Rewriter {
 				op = null;
 				children = Read.from(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
-						.map(p -> Pair.of(p.t0, p.t1.finalNode())) //
+						.map(Pair.map1(Node::finalNode)) //
 						.toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
 				Pair<Node, Node> p0 = Pair.of(LEFT_, tree.getLeft());
@@ -102,7 +103,7 @@ public class Rewriter {
 		public NodeWrite(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
 			switch (type) {
 			case DICT:
-				node = new Dict(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
+				node = new Dict(Read.from(children).map(Pair.map1(Reference::of)).collect(As.map()));
 				break;
 			case TERM:
 				node = terminal;

@@ -109,7 +109,7 @@ public class Grapher {
 
 			switch (ng.type) {
 			case DICT:
-				((Dict) node).map.putAll(Read.from(children).toMap(p -> p.t0, p -> Reference.of(p.t1)));
+				((Dict) node).map.putAll(Read.from(children).map(Pair.map1(Reference::of)).collect(As.map()));
 				break;
 			case TERM:
 				break;

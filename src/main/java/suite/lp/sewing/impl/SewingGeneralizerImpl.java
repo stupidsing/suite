@@ -63,12 +63,12 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 				}
 			} else if ((nr = NodeRead.of(node)).children.size() > 0) {
 				List<Pair<Node, Fun<Env, Node>>> ps = Read.from(nr.children) //
-						.map(p -> Pair.of(p.t0, compile(p.t1))) //
+						.map(Pair.map1(this::compile)) //
 						.toList();
 				fun = env -> {
-					List<Pair<Node, Node>> children1 = new ArrayList<>();
-					for (Pair<Node, Fun<Env, Node>> child : ps)
-						children1.add(Pair.of(child.t0, child.t1.apply(env)));
+					List<Pair<Node, Node>> children1 = Read.from(ps) //
+							.map(Pair.map1(f -> f.apply(env))) //
+							.toList();
 					return new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
 				};
 			} else
