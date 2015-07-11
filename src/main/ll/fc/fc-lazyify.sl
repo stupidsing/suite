@@ -57,7 +57,7 @@ fc-lazyify .p0 .p1
 	, list.query .ts .t (fc-lazyify .t)
 #
 
-fc-lazyify-default-fun .n .paramWraps .returnWrap .var
+fc-lazyify-default-fun .n .paramWraps .returnWrap .var .var
 	:- .var = VAR .v
 	, member (
 		+compare/2/VALUE:VALUE:/VALUE,
