@@ -98,11 +98,10 @@ public class SewingProverImpl implements SewingProver {
 		private Debug debug = new Debug("", IList.end());
 
 		private Sink<Node> handler = node -> {
-			String stackTrace = Read.from(debug.stack) //
-					.take(9) //
-					.map(Object::toString) //
-					.collect(As.joined("\n"));
-			throw new SuiteException(node, stackTrace);
+			throw new SuiteException(node,
+					Read.from(debug.stack) //
+							.map(Object::toString) //
+							.collect(As.joined("\n")));
 		};
 
 		private Runtime(ProverConfig pc, Trampoline tr) {
