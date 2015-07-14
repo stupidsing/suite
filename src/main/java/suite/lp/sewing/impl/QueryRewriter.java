@@ -20,17 +20,17 @@ import suite.streamlet.Read;
  *
  * @author ywsing
  */
-public class RewriteQueryUtil {
+public class QueryRewriter {
 
 	private Map<Prototype, Integer> nParametersByPrototype;
 
-	public RewriteQueryUtil(ListMultimap<Prototype, Rule> rules) {
+	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
 		nParametersByPrototype = Read.from(rules.listEntries()) //
 				.map(Pair.map1(rules_ -> Read.from(rules_).map(rule -> getNumberOfParameters(rule.head)).min(Integer::compare))) //
 				.collect(As.map());
 	}
 
-	public Node rewriteQuery(Node node) {
+	public Node rewrite(Node node) {
 		Prototype prototype = Prototype.of(node);
 		int nParameters = nParametersByPrototype.get(prototype);
 
@@ -47,7 +47,7 @@ public class RewriteQueryUtil {
 			return node;
 	}
 
-	public Prototype getQueryPrototype(Node node, int n) {
+	public Prototype getPrototype(Node node, int n) {
 		return Prototype.of(((Tuple) node).nodes.get(1));
 	}
 
