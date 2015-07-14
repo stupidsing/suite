@@ -20,17 +20,18 @@ import suite.streamlet.Read;
  *
  * @author ywsing
  */
-public class QueryTupleUtil {
+public class RewriteQueryUtil {
 
 	private Map<Prototype, Integer> nParametersByPrototype;
 
-	public QueryTupleUtil(ListMultimap<Prototype, Rule> rules) {
+	public RewriteQueryUtil(ListMultimap<Prototype, Rule> rules) {
 		nParametersByPrototype = Read.from(rules.listEntries()) //
 				.map(Pair.map1(rules_ -> Read.from(rules_).map(rule -> getNumberOfParameters(rule.head)).min(Integer::compare))) //
 				.collect(As.map());
 	}
 
-	public Node getTuple(Prototype prototype, Node node) {
+	public Node rewriteQuery(Node node) {
+		Prototype prototype = Prototype.of(node);
 		int nParameters = nParametersByPrototype.get(prototype);
 
 		if (nParameters > 0) {
@@ -46,7 +47,7 @@ public class QueryTupleUtil {
 			return node;
 	}
 
-	public Prototype getTuplePrototype(Node node, int n) {
+	public Prototype getQueryPrototype(Node node, int n) {
 		return Prototype.of(((Tuple) node).nodes.get(1));
 	}
 

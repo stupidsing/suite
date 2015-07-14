@@ -62,7 +62,7 @@ import suite.util.Util;
  */
 public class SewingProverImpl implements SewingProver {
 
-	private QueryTupleUtil queryTupleUtil;
+	private RewriteQueryUtil queryTupleUtil;
 	private SystemPredicates systemPredicates;
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
 	private Map<Prototype, Trampoline[]> trampolinesByPrototype = new HashMap<>();
@@ -135,7 +135,7 @@ public class SewingProverImpl implements SewingProver {
 	public SewingProverImpl(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
 		rules = Read.from(rs.getRules()).groupBy(Prototype::of).collect(As.multimap());
-		queryTupleUtil = new QueryTupleUtil(rules);
+		queryTupleUtil = new RewriteQueryUtil(rules);
 
 		if (!rules.containsKey(null))
 			compileAll();
@@ -198,7 +198,7 @@ public class SewingProverImpl implements SewingProver {
 							.collect(As.map());
 
 					tr = rt -> {
-						Prototype proto = queryTupleUtil.getTuplePrototype(rt.query, 1);
+						Prototype proto = queryTupleUtil.getQueryPrototype(rt.query, 1);
 						if (proto != null) {
 							Trampoline tr_ = trByProto1.get(proto);
 							return tr_ != null ? tr_ : fail;
@@ -221,7 +221,7 @@ public class SewingProverImpl implements SewingProver {
 
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			Generalizer generalizer = new Generalizer();
-			Node head = generalizer.generalize(queryTupleUtil.getTuple(prototype, rule.head));
+			Node head = generalizer.generalize(queryTupleUtil.rewriteQuery(rule.head));
 			Node tail = generalizer.generalize(rule.tail);
 
 			SewingBinder sb = new SewingBinderImpl();
@@ -383,7 +383,7 @@ public class SewingProverImpl implements SewingProver {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Env, Node> f = sb.compile(queryTupleUtil.getTuple(prototype, node));
+				Fun<Env, Node> f = sb.compile(queryTupleUtil.rewriteQuery(node));
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;
