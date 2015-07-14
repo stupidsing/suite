@@ -46,6 +46,10 @@ public class QueryTupleUtil {
 			return node;
 	}
 
+	public Prototype getTuplePrototype(Node node, int n) {
+		return Prototype.of(((Tuple) node).nodes.get(1));
+	}
+
 	private int getNumberOfParameters(Node node) {
 		int n = 0;
 		Tree tree;

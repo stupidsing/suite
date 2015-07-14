@@ -10,6 +10,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
@@ -66,6 +67,15 @@ public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner
 			} else if (node0 instanceof Reference) {
 				int index = findVariableIndex(node0);
 				fun = env -> env.get(index);
+			} else if (node0 instanceof Tuple) {
+				List<Fun<Env, Node>> ps = Read.from(((Tuple) node0).nodes).map(this::compile).toList();
+				int size = ps.size();
+				fun = env -> {
+					List<Node> nodes = new ArrayList<>(size);
+					for (Fun<Env, Node> p : ps)
+						nodes.add(p.apply(env));
+					return new Tuple(nodes);
+				};
 			} else
 				fun = env -> node0;
 

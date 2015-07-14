@@ -1,5 +1,6 @@
 package suite.lp.sewing.impl;
 
+import java.util.List;
 import java.util.function.BiPredicate;
 
 import suite.lp.doer.Binder;
@@ -10,7 +11,9 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.Operator;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
 public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
@@ -32,7 +35,10 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			return compileBindAtom((Atom) node);
 		else if (node instanceof Int)
 			return compileBindInt((Int) node);
-		else if (node instanceof Str)
+		else if (node instanceof Reference) {
+			int index = findVariableIndex(node);
+			return (be, n) -> Binder.bind(n, be.env.get(index), be.journal);
+		} else if (node instanceof Str)
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
@@ -42,19 +48,41 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				Tree t;
-				if (!(n_ instanceof Reference))
+				if (n_ instanceof Reference)
+					if (isBindTrees) {
+						be.journal.addBind((Reference) n_, f.apply(be.env));
+						return true;
+					} else
+						return false;
+				else
 					return (t = Tree.decompose(n_, operator)) != null //
 							&& c0.test(be, t.getLeft()) //
 							&& c1.test(be, t.getRight());
-				else if (isBindTrees) {
-					be.journal.addBind((Reference) n_, f.apply(be.env));
-					return true;
-				} else
+			};
+		} else if (node instanceof Tuple) {
+			Fun<Env, Node> f = compile(node);
+			List<BiPredicate<BindEnv, Node>> cs = Read.from(((Tuple) node).nodes).map(this::compileBind).toList();
+			int size = cs.size();
+			return (be, n) -> {
+				Node n_ = n.finalNode();
+				if (n_ instanceof Tuple) {
+					List<Node> nodes = ((Tuple) n_).nodes;
+					if (nodes.size() == size) {
+						for (int i = 0; i < size; i++)
+							if (!cs.get(i).test(be, nodes.get(i)))
+								return false;
+						return true;
+					} else
+						return false;
+				} else if (n_ instanceof Reference)
+					if (isBindTrees) {
+						be.journal.addBind((Reference) n_, f.apply(be.env));
+						return true;
+					} else
+						return false;
+				else
 					return false;
 			};
-		} else if (node instanceof Reference) {
-			int index = findVariableIndex(node);
-			return (be, n) -> Binder.bind(n, be.env.get(index), be.journal);
 		} else {
 			Fun<Env, Node> f = compile(node);
 			return (be, n) -> Binder.bind(n, f.apply(be.env), be.journal);
