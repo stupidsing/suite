@@ -1,6 +1,7 @@
 package suite.lp.sewing.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -8,12 +9,14 @@ import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
+import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 /**
  * Converts query to tuple syntax for better performance.
@@ -22,33 +25,42 @@ import suite.streamlet.Read;
  */
 public class QueryRewriter {
 
-	private Map<Prototype, Integer> nParametersByPrototype;
+	private Map<Prototype, PrototypeInfo> infosByPrototype;
+
+	private class PrototypeInfo {
+		private boolean isSkipFirst;
+		private int length;
+
+		private PrototypeInfo(Collection<Rule> rules) {
+			Streamlet<Node> heads = Read.from(rules).map(rule -> rule.head);
+			int n = heads.map(QueryRewriter.this::getNumberOfParameters).min(Integer::compare);
+			isSkipFirst = n > 0 && heads.isAll(head -> get(head, 1).get(0) instanceof Atom);
+			length = n - (isSkipFirst ? 1 : 0);
+		}
+	}
 
 	public QueryRewriter(ListMultimap<Prototype, Rule> rules) {
-		nParametersByPrototype = Read.from(rules.listEntries()) //
-				.map(Pair.map1(rules_ -> Read.from(rules_).map(rule -> getNumberOfParameters(rule.head)).min(Integer::compare))) //
+		infosByPrototype = Read.from(rules.listEntries()) //
+				.map(Pair.map1(PrototypeInfo::new)) //
 				.collect(As.map());
 	}
 
 	public Node rewrite(Node node) {
-		Prototype prototype = Prototype.of(node);
-		int nParameters = nParametersByPrototype.get(prototype);
+		PrototypeInfo pi = infosByPrototype.get(Prototype.of(node));
+		int length = pi.length;
 
-		if (nParameters > 0) {
-			List<Node> list = new ArrayList<>(nParameters);
-			for (int i = 0; i < nParameters; i++) {
-				Tree tree = Tree.decompose(node, TermOp.TUPLE_);
-				list.add(tree.getLeft());
-				node = tree.getRight();
-			}
-			list.add(node);
-			return new Tuple(list);
-		} else
+		if (length <= 0)
 			return node;
+		else if (pi.isSkipFirst)
+			return new Tuple(get(skip(node, 1), length));
+		else
+			return new Tuple(get(node, length));
 	}
 
-	public Prototype getPrototype(Node node, int n) {
-		return Prototype.of(((Tuple) node).nodes.get(1));
+	public Prototype getPrototype(Prototype prototype0, Node node, int n) {
+		PrototypeInfo pi = infosByPrototype.get(prototype0);
+		int n1 = n - (pi.isSkipFirst ? 1 : 0);
+		return Prototype.of(((Tuple) node).nodes.get(n1));
 	}
 
 	private int getNumberOfParameters(Node node) {
@@ -59,6 +71,24 @@ public class QueryRewriter {
 			n++;
 		}
 		return n;
+	}
+
+	private Node skip(Node node, int start) {
+		for (int i = 0; i < start; i++)
+			node = Tree.decompose(node, TermOp.TUPLE_).getRight();
+		return node;
+	}
+
+	private List<Node> get(Node node, int n) {
+		List<Node> list = new ArrayList<>(n + 1);
+		int i = 0;
+		for (; i < n; i++) {
+			Tree tree = Tree.decompose(node, TermOp.TUPLE_);
+			list.add(tree.getLeft());
+			node = tree.getRight();
+		}
+		list.add(node);
+		return list;
 	}
 
 }

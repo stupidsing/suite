@@ -198,7 +198,7 @@ public class SewingProverImpl implements SewingProver {
 							.collect(As.map());
 
 					tr = rt -> {
-						Prototype proto = queryRewriter.getPrototype(rt.query, 1);
+						Prototype proto = queryRewriter.getPrototype(prototype, rt.query, 1);
 						if (proto != null) {
 							Trampoline tr_ = trByProto1.get(proto);
 							return tr_ != null ? tr_ : fail;
