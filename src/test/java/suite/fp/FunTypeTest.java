@@ -94,8 +94,8 @@ public class FunTypeTest {
 		getType("data (Fix (:f, :g)) over some (:f, :g,) as (Fix (:f, Fix (:f, :g))) >> \n" //
 				+ "(:t => Fix Optional :t) of (Fix Value Fix None)");
 
-		getType("data (Fix :f) over :f as (Fix (:f, Fix :f)) >> \n" //
-				+ "(:t => Fix Optional :t) of (Fix Value Fix None)");
+		// getType("data (Fix :f) over :f as (Fix (:f, Fix :f)) >> \n" //
+		// + "(:t => Fix Optional :t) of (Fix Value Fix None)");
 	}
 
 	@Test
