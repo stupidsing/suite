@@ -222,7 +222,7 @@ public class SewingProverImpl implements SewingProver {
 
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
 			Generalizer generalizer = new Generalizer();
-			Node head = generalizer.generalize(queryRewriter.rewrite(rule.head));
+			Node head = generalizer.generalize(queryRewriter.rewrite(prototype, rule.head));
 			Node tail = generalizer.generalize(rule.tail);
 
 			SewingBinder sb = new SewingBinderImpl();
@@ -384,7 +384,7 @@ public class SewingProverImpl implements SewingProver {
 		if (tr == null) {
 			Prototype prototype = Prototype.of(node);
 			if (rules.containsKey(prototype)) {
-				Fun<Env, Node> f = sb.compile(queryRewriter.rewrite(node));
+				Fun<Env, Node> f = sb.compile(queryRewriter.rewrite(prototype, node));
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					Node query0 = rt.query;

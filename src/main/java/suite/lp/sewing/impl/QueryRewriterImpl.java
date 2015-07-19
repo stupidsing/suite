@@ -47,8 +47,8 @@ public class QueryRewriterImpl implements QueryRewriter {
 	}
 
 	@Override
-	public Node rewrite(Node node) {
-		PrototypeInfo pi = infosByPrototype.get(Prototype.of(node));
+	public Node rewrite(Prototype prototype, Node node) {
+		PrototypeInfo pi = infosByPrototype.get(prototype);
 		int length = pi.length;
 
 		if (length <= 0)

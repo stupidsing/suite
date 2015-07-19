@@ -7,7 +7,7 @@ import suite.node.Node;
 public class QueryNoRewriterImpl implements QueryRewriter {
 
 	@Override
-	public Node rewrite(Node node) {
+	public Node rewrite(Prototype prototype, Node node) {
 		return node;
 	}
 
