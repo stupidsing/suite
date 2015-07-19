@@ -23,6 +23,7 @@ import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
+import suite.lp.sewing.QueryRewriter;
 import suite.lp.sewing.SewingBinder;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.SewingProver;
@@ -135,7 +136,7 @@ public class SewingProverImpl implements SewingProver {
 	public SewingProverImpl(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
 		rules = Read.from(rs.getRules()).groupBy(Prototype::of).collect(As.multimap());
-		queryRewriter = new QueryRewriter(rules);
+		queryRewriter = new QueryRewriterImpl(rules);
 
 		if (!rules.containsKey(null))
 			compileAll();
