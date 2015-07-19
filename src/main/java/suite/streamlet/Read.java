@@ -16,7 +16,6 @@ import java.util.Map;
 import suite.adt.Pair;
 import suite.os.FileUtil;
 import suite.util.FunUtil.Source;
-import suite.util.To;
 
 public class Read {
 
@@ -34,7 +33,7 @@ public class Read {
 	}
 
 	public static <T> Streamlet<T> from(Iterable<T> col) {
-		return from(To.source(col));
+		return new Streamlet<>(() -> Outlet.from(col));
 	}
 
 	public static <T> Streamlet<T> from(Source<T> source) {
