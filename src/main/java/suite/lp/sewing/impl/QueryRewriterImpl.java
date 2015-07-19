@@ -18,6 +18,7 @@ import suite.node.io.TermOp;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Util;
 
 /**
  * Converts query to tuple syntax for better performance.
@@ -54,7 +55,7 @@ public class QueryRewriterImpl implements QueryRewriter {
 		if (length <= 0)
 			return node;
 		else if (pi.isSkipFirst)
-			return new Tuple(get(skip(node, 1), length));
+			return new Tuple(Util.right(get(node, length), 1));
 		else
 			return new Tuple(get(node, length));
 	}
@@ -74,12 +75,6 @@ public class QueryRewriterImpl implements QueryRewriter {
 			n++;
 		}
 		return n;
-	}
-
-	private Node skip(Node node, int start) {
-		for (int i = 0; i < start; i++)
-			node = Tree.decompose(node, TermOp.TUPLE_).getRight();
-		return node;
 	}
 
 	private List<Node> get(Node node, int n) {
