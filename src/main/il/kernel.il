@@ -24,7 +24,7 @@
 -- 00050000 -> 000A0000 kernel buddy allocation pool
 -- 000A0000 -> 00100000 BIOS / video memory
 -- 00800000 -> FFC00000 allocatable logical pages
--- FFC00000 -> FFFFEFFF second level page tables, for the current address space
+-- FFC00000 -> FFFFF000 second level page tables, for the current address space
 -- FFFFF000 -> end      first level page table, for the current address space
 
 constant idt-address = +x20000;
