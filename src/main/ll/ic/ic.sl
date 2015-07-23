@@ -10,7 +10,7 @@ compile-imperative .do0 .e0/.ex
 ic-compile .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
-ic-compile _ $$EBP (_ R+: MOV ($0, EBP), .e)/.e
+ic-compile _ $$EBP (_ R+, _ MOV ($0, EBP), .e)/.e
 #
 ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 	:- .e0 = (_ SUB (ESP, .size), .e1)
@@ -20,36 +20,40 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
 #
-ic-compile _ (ASM .i) (.i, _ R+: (), .e)/.e
+ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
 ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
-	:- .e0 = (_ RSAVE: (), .e1)
+	:- .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
 	, ic-push-pop-parameters .fs1/.fs2 .params .e2/.e3 .e6/.e7
 	, ic-compile .fs2 .sub .e3/.e4
 	, ic-compile .fs2 .this .e4/.e5
-	, .e5 = (_ R-: MOV (EBP, $0)
-		, _ R-: CALL ($0)
+	, .e5 = (_ MOV (EBP, $0)
+		, _ R-
+		, _ CALL ($0)
+		, _ R-
 		, _ MOV (ECX, EAX)
 		, .e6)
 	, .e7 = (_ POP (EBP)
-		, _ RRESTORE: ()
-		, _ R+: MOV ($0, ECX)
+		, _ RRESTORE
+		, _ R+
+		, _ MOV ($0, ECX)
 		, .ex)
 #
 ic-compile .fs (DEREF .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ TOP: MOV ($0, `$0`), .ex)
+	, .e1 = (_ MOV ($0, `$0`), .ex)
 #
 ic-compile .fs (IF .if .then .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
-	, .e1 = (_ R-: OR ($0, $0)
+	, .e1 = (_ OR ($0, $0)
+		, _ R-
 		, _ JZ (DWORD .elseLabel)
 		, .e2)
 	, ic-compile .fs .then .e2/.e3
 	, .e3 = (_ JMP (DWORD .endLabel)
-		, .elseLabel R-: ()
+		, .elseLabel R-
 		, .e4)
 	, ic-compile .fs .else .e4/.e5
 	, .e5 = (.endLabel (), .ex)
@@ -57,11 +61,13 @@ ic-compile .fs (IF .if .then .else) .e0/.ex
 ic-compile .fs (LET .var .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, ic-compile .fs (REF .var) .e1/.e2
-	, .e2 = (_ R-: MOV (`$0`, $1), .ex)
+	, .e2 = (_ MOV (`$0`, $1)
+		, _ R-
+		, .ex)
 #
 ic-compile _ (METHOD .params .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
-		, .funLabel RBEGIN: ()
+		, .funLabel RBEGIN
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
@@ -70,28 +76,32 @@ ic-compile _ (METHOD .params .do) .e0/.ex
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
 		, _ POP (EBP)
-		, _ R-: RET ()
-		, _ REND: ()
-		, .label R+: MOV ($0, .funLabel)
+		, _ RET ()
+		, _ R-
+		, _ REND
+		, .label R+
+		, _ MOV ($0, .funLabel)
 		, .ex)
 #
-ic-compile _ (NUMBER .i) (_ R+: MOV ($0, .i), .e)/.e
+ic-compile _ (NUMBER .i) (_ R+, _ MOV ($0, .i), .e)/.e
 	:- is.int .i
 #
 ic-compile _ NOP .e0/.ex
-	:- .e0 = (_ R+: (), .ex)
+	:- .e0 = (_ R+, .ex)
 #
 ic-compile .fs (POST-ADD-NUMBER .pointer .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
-	, .e1 = (_ TOP: ADD (`$0`, .i)
-		, _ TOP: MOV ($0, `$0`)
+	, .e1 = (_ ADD (`$0`, .i)
+		, _ MOV ($0, `$0`)
 		, .ex)
 #
 ic-compile .fs (PRE-ADD-NUMBER .pointer .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
-	, .e1 = (_ R+: MOV ($0, $1)
-		, _ TOP: MOV ($1, `$1`)
-		, _ R-: ADD (`$0`, .i)
+	, .e1 = (_ R+
+		, _ MOV ($0, $1)
+		, _ MOV ($1, `$1`)
+		, _ ADD (`$0`, .i)
+		, _ R-
 		, .ex)
 #
 ic-compile .fs (REF DEREF .pointer) .e0/.ex
@@ -99,7 +109,7 @@ ic-compile .fs (REF DEREF .pointer) .e0/.ex
 #
 ic-compile .fs (SEQ .do0 .do1) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
-	, .e1 = (_ R-: (), .e2)
+	, .e1 = (_ R-, .e2)
 	, ic-compile .fs .do1 .e2/.ex
 #
 ic-compile _ (SNIPPET .snippet) .e0/.ex
@@ -107,15 +117,17 @@ ic-compile _ (SNIPPET .snippet) .e0/.ex
 		, .snippetLabel ()
 		, .e1)
 	, ic-compile 0 .snippet .e1/.e2
-	, .e2 = (_ R-: ()
-		, .label R+: MOV ($0, .snippetLabel)
+	, .e2 = (_ R-
+		, .label R+
+		, _ MOV ($0, .snippetLabel)
 		, .ex)
 #
 ic-compile _ (STRING .s) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .strLabel DS (.s)
 		, _ D8 (0)
-		, .label R+: MOV ($0, .strLabel)
+		, .label R+
+		, _ MOV ($0, .strLabel)
 		, .ex)
 #
 ic-compile .fs (TREE .op .value0 .value1) .e0/.ex
@@ -132,7 +144,8 @@ ic-compile .fs (TREE .op .value0 .value1) .e0/.ex
 ic-compile .fs (WHILE .while .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
 	, ic-compile .fs .while .e1/.e2
-	, .e2 = (_ R-: OR ($0, $0)
+	, .e2 = (_ OR ($0, $0)
+		, _ R-
 		, _ JZ (DWORD .endLabel)
 		, .e3)
 	, ic-compile .fs .do .e3/.e4
@@ -144,37 +157,37 @@ ic-compile .fs (WHILE .while .do) .e0/.ex
 -- Generates faster code
 ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
-	, .e1 = (_ TOP: ADD ($0, .i), .ex)
+	, .e1 = (_ ADD ($0, .i), .ex)
 #
 ic-compile-better-option .fs (LET (DEREF (TREE ' + ' $$EBP (NUMBER .i))) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ TOP: MOV (`EBP + .i`, $0), .ex)
+	, .e1 = (_ MOV (`EBP + .i`, $0), .ex)
 #
 ic-compile-better-option .fs (LET (DEREF $$EBP) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ TOP: MOV (`EBP`, $0), .ex)
+	, .e1 = (_ MOV (`EBP`, $0), .ex)
 #
 ic-compile-better-option .fs (LET (DEREF (TREE ' + ' .pointer (NUMBER .i))) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, ic-compile .fs .pointer .e1/.e2
-	, .e2 = (_ R-: MOV (`$0 + .i`, $1), .ex)
+	, .e2 = (_ MOV (`$0 + .i`, $1), _ R-, .ex)
 #
 ic-compile-better-option .fs (LET (DEREF .pointer) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, ic-compile .fs .pointer .e1/.e2
-	, .e2 = (_ R-: MOV (`$0`, $1), .ex)
+	, .e2 = (_ MOV (`$0`, $1), _ R-, .ex)
 #
 ic-compile-better-option _ (DEREF (TREE ' + ' $$EBP (NUMBER .i))) .e0/.ex
-	:- .e0 = (_ R+: MOV ($0, `EBP + .i`), .ex)
+	:- .e0 = (_ R+, _ MOV ($0, `EBP + .i`), .ex)
 #
 ic-compile-better-option _ (DEREF $$EBP) .e0/.ex
-	:- .e0 = (_ R+: MOV ($0, `EBP`), .ex)
+	:- .e0 = (_ R+, _ MOV ($0, `EBP`), .ex)
 #
 ic-compile-better-option .fs (DEREF (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
-	, .e1 = (_ TOP: MOV ($0, `$0 + .i`), .ex)
+	, .e1 = (_ MOV ($0, `$0 + .i`), .ex)
 #
-ic-compile-better-option _ 0 (_ R+: XOR ($0, $0), .e)/.e
+ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
 ic-replace-parameters () _ .do .do #
@@ -192,7 +205,7 @@ ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 	, .f0 = (_ POP (EDX), .f1)
 #
 
-ic-push-top .fs0/.fsx (_ R-: PUSH ($0), .e)/.e
+ic-push-top .fs0/.fsx (_ PUSH ($0), _ R-, .e)/.e
 	:- let .fsx (.fs0 + 4)
 #
 
@@ -206,40 +219,46 @@ ic-right-associative and #
 ic-right-associative or #
 ic-right-associative xor #
 
-ic-operator .op (
-	_ R-: .insn ($1, $0),
-	.e
+ic-operator .op
+	(_ .insn ($1, $0)
+	, _ R-
+	, .e
 )/.e
 	:- ic-operator-insn .op .insn
 #
-ic-operator .op (
-	_ R-: CMP ($1, $0),
-	_ .setcc (DL),
-	_ TOP: MOVSX ($0, DL),
-	.e
+ic-operator .op
+	(_ CMP ($1, $0)
+	, _ R-
+	, _ .setcc (DL)
+	, _ MOVSX ($0, DL)
+	, .e
 )/.e
 	:- ic-operator-setcc .op .setcc
 #
 ic-operator ' / ' .e :- ic-divide EAX .e #
 ic-operator ' %% ' .e :- ic-divide EDX .e #
-ic-operator .shift (
-	_ R-: MOV (ECX, $0),
-	_ TOP: .insn ($0, CL),
-	.e
+ic-operator .shift
+	(_ MOV (ECX, $0)
+	, _ R-
+	, _ .insn ($0, CL)
+	, .e
 )/.e
 	:- ic-operator-shift .shift .insn
 #
 
-ic-divide .reg (
-	_ R-: MOV (ECX, $0),
-	_ XOR (EDX, EDX),
-	_ PUSH (EAX),
-	_ R-: MOV (EAX, $0),
-	_ IDIV (ECX),
-	_ MOV (ECX, .reg),
-	_ POP (EAX),
-	_ R+: MOV ($0, ECX),
-	.e
+ic-divide .reg
+	(_ MOV (ECX, $0)
+	, _ R-
+	, _ XOR (EDX, EDX)
+	, _ PUSH (EAX)
+	, _ MOV (EAX, $0)
+	, _ R-
+	, _ IDIV (ECX)
+	, _ MOV (ECX, .reg)
+	, _ POP (EAX)
+	, _ R+
+	, _ MOV ($0, ECX)
+	, .e
 )/.e #
 
 ic-operator-insn ' + ' ADD #

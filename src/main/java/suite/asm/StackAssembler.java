@@ -11,7 +11,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.TreeRewriter;
-import suite.util.FunUtil.Fun;
 
 public class StackAssembler extends Assembler {
 
@@ -19,14 +18,12 @@ public class StackAssembler extends Assembler {
 	private Node stackOperand1 = Atom.of("$1");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
-	private Fun<Node, Node[]> matchPush = Suite.matcher("R+: .0");
-	private Fun<Node, Node[]> matchPop = Suite.matcher("R-: .0");
-	private Fun<Node, Node[]> matchTop = Suite.matcher("TOP: .0");
-
-	private Fun<Node, Node[]> matchBegin = Suite.matcher("RBEGIN: ()");
-	private Fun<Node, Node[]> matchEnd = Suite.matcher("REND: ()");
-	private Fun<Node, Node[]> matchRest = Suite.matcher("RRESTORE: ()");
-	private Fun<Node, Node[]> matchSave = Suite.matcher("RSAVE: ()");
+	private Node push = Atom.of("R+");
+	private Node pop = Atom.of("R-");
+	private Node begin = Atom.of("RBEGIN");
+	private Node end = Atom.of("REND");
+	private Node rest = Atom.of("RRESTORE");
+	private Node save = Atom.of("RSAVE");
 
 	public StackAssembler(int bits) {
 		super(bits);
@@ -40,35 +37,34 @@ public class StackAssembler extends Assembler {
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
-			Node m[];
 
-			if ((m = matchRest.apply(node0)) != null)
+			if (node0 == rest)
 				for (int r = sp - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
-			else if ((m = matchSave.apply(node0)) != null)
+			else if (node0 == save)
 				for (int r = 0; r < sp; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 			else {
 				Node node1;
 
-				if ((m = matchBegin.apply(node0)) != null) {
+				if (node0 == begin) {
 					deque.push(sp);
 					sp = 0;
 					node1 = Atom.NIL;
-				} else if ((m = matchEnd.apply(node0)) != null) {
+				} else if (node0 == end) {
 					if (sp == 0)
 						sp = deque.pop();
 					else
 						throw new RuntimeException("Unbalanced register stack in subroutine definition");
 					node1 = Atom.NIL;
-				} else if ((m = matchPop.apply(node0)) != null)
-					node1 = rewrite(sp--, m[0]);
-				else if ((m = matchPush.apply(node0)) != null)
-					node1 = rewrite(++sp, m[0]);
-				else if ((m = matchTop.apply(node0)) != null)
-					node1 = rewrite(sp, m[0]);
-				else
-					node1 = node0;
+				} else if (node0 == push) {
+					sp++;
+					node1 = Atom.NIL;
+				} else if (node0 == pop) {
+					sp--;
+					node1 = Atom.NIL;
+				} else
+					node1 = rewrite(sp, node0);
 
 				lnis1.add(Pair.of(lni0.t0, node1));
 			}
