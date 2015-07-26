@@ -7,6 +7,15 @@ compile-imperative .do0 .e0/.ex
 	, !
 #
 
+-- Register usage
+-- EAX - expression stack
+-- EBX - expression stack
+-- ECX - scratch; shift counter; divisor
+-- EDX - scratch; dividend
+-- ESI - expression stack
+-- EDI - unused
+-- EBP - stack frame
+-- ESP - stack pointer
 ic-compile .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
