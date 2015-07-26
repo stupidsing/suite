@@ -75,7 +75,6 @@ declare pg-unmap = [logical,] (
 	declare pt1 = pe1 and +xFFFFFFFFFFFFF000;
 	declare pt2 = pe2 and +xFFFFFFFFFFFFF000;
 	declare pt3 = pe3 and +xFFFFFFFFFFFFF000;
-	declare isEmpty;
 
 	let `pe3` = 0;
 	pg:pg-unset-pt-entry [pe2, pt3,]
