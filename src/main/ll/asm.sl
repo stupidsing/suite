@@ -254,7 +254,7 @@ as-mod-num-rm:.size .rm .num (.modregrm, .e1)/.ex
 	, once (as-mod-rm:.size .rm (.modb .rmb) .sib .e1/.e2)
 	, let .modregrm (.modb * 64 + .num * 8 + .rmb)
 	, once (.sib = (), .e2 = .ex
-		; 	, .sib = .s .ir .br, let .b (.s * 64 + .ir * 8 + .br), .e2 = (.b, .ex)
+		; .sib = .s .ir .br, let .b (.s * 64 + .ir * 8 + .br), .e2 = (.b, .ex)
 	)
 #
 
