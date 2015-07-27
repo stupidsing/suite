@@ -293,7 +293,7 @@ as-disp-mod .disp .mod .e0/.ex
 #
 
 as-sib (`.indexReg * .scale + .baseReg`) .sib
-	, as-reg:32 .indexReg .ir
+	:- as-reg:32 .indexReg .ir
 	, as-sib-scale .scale .s
 	, as-reg:32 .baseReg .br
 	, let .sib (.s * 64 + .ir * 8 + .br)
