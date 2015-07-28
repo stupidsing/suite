@@ -252,10 +252,12 @@ as-rm-regwd:.size .rm .reg .e
 as-mod-num-rm:.size .rm .num .e0/.ex
 	:- is.int .num
 	, once (as-mod-rm:.size .rm (.modb (0 .rmb)) .sib (.ds .disp)
-		, .b0 = (.modb * 64 + .num * 8 + .rmb)
+		, let .b0 (.modb * 64 + .num * 8 + .rmb)
 		, .e0 = (.b0, .e1)
 		, (.sib = (), .e1 = .e2
-			; .sib = .s (0 .ir) (0 .br), let .b1 (.s * 64 + .ir * 8 + .br), .e1 = (.b1, .e2)
+			; .sib = .s (0 .ir) (0 .br)
+			, let .b1 (.s * 64 + .ir * 8 + .br)
+			, .e1 = (.b1, .e2)
 		)
 		, (.ds = 0, .e2 = .ex
 			; as-emit:.ds .disp .e2/.ex
