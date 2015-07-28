@@ -310,76 +310,76 @@ as-imm:8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 as-imm:16 .imm :- is.int .imm, -32768 <= .imm, .imm < 32768 #
 as-imm:32 .imm :- is.int .imm #
 
-as-reg:.s .reg .i :- as-reg0:.s .reg 0 .i #
+as-reg:.s .reg .i :- as-rex-reg:.s .reg 0 .i #
 
-as-reg0:8 AL 0 0 #
-as-reg0:8 CL 0 1 #
-as-reg0:8 DL 0 2 #
-as-reg0:8 BL 0 3 #
-as-reg0:8 AH 0 4 :- not as-mode-amd64 #
-as-reg0:8 CH 0 5 :- not as-mode-amd64 #
-as-reg0:8 DH 0 6 :- not as-mode-amd64 #
-as-reg0:8 BH 0 7 :- not as-mode-amd64 #
-as-reg0:8 R4B 0 4 :- as-mode-amd64 #
-as-reg0:8 R5B 0 5 :- as-mode-amd64 #
-as-reg0:8 R6B 0 6 :- as-mode-amd64 #
-as-reg0:8 R7B 0 7 :- as-mode-amd64 #
-as-reg0:8 R8B 1 0 :- as-mode-amd64 #
-as-reg0:8 R9B 1 1 :- as-mode-amd64 #
-as-reg0:8 R10B 1 2 :- as-mode-amd64 #
-as-reg0:8 R11B 1 3 :- as-mode-amd64 #
-as-reg0:8 R12B 1 4 :- as-mode-amd64 #
-as-reg0:8 R13B 1 5 :- as-mode-amd64 #
-as-reg0:8 R14B 1 6 :- as-mode-amd64 #
-as-reg0:8 R15B 1 7 :- as-mode-amd64 #
-as-reg0:16 AX 0 0 #
-as-reg0:16 CX 0 1 #
-as-reg0:16 DX 0 2 #
-as-reg0:16 BX 0 3 #
-as-reg0:16 SP 0 4 #
-as-reg0:16 BP 0 5 #
-as-reg0:16 SI 0 6 #
-as-reg0:16 DI 0 7 #
-as-reg0:16 R8W 1 0 :- as-mode-amd64 #
-as-reg0:16 R9W 1 1 :- as-mode-amd64 #
-as-reg0:16 R10W 1 2 :- as-mode-amd64 #
-as-reg0:16 R11W 1 3 :- as-mode-amd64 #
-as-reg0:16 R12W 1 4 :- as-mode-amd64 #
-as-reg0:16 R13W 1 5 :- as-mode-amd64 #
-as-reg0:16 R14W 1 6 :- as-mode-amd64 #
-as-reg0:16 R15W 1 7 :- as-mode-amd64 #
-as-reg0:32 EAX 0 0 #
-as-reg0:32 ECX 0 1 #
-as-reg0:32 EDX 0 2 #
-as-reg0:32 EBX 0 3 #
-as-reg0:32 ESP 0 4 #
-as-reg0:32 EBP 0 5 #
-as-reg0:32 ESI 0 6 #
-as-reg0:32 EDI 0 7 #
-as-reg0:32 R8D 1 0 :- as-mode-amd64 #
-as-reg0:32 R9D 1 1 :- as-mode-amd64 #
-as-reg0:32 R10D 1 2 :- as-mode-amd64 #
-as-reg0:32 R11D 1 3 :- as-mode-amd64 #
-as-reg0:32 R12D 1 4 :- as-mode-amd64 #
-as-reg0:32 R13D 1 5 :- as-mode-amd64 #
-as-reg0:32 R14D 1 6 :- as-mode-amd64 #
-as-reg0:32 R15D 1 7 :- as-mode-amd64 #
-as-reg0:64 RAX 0 0 #
-as-reg0:64 RCX 0 1 #
-as-reg0:64 RDX 0 2 #
-as-reg0:64 RBX 0 3 #
-as-reg0:64 RSP 0 4 #
-as-reg0:64 RBP 0 5 #
-as-reg0:64 RSI 0 6 #
-as-reg0:64 RDI 0 7 #
-as-reg0:64 R8 1 0 :- as-mode-amd64 #
-as-reg0:64 R9 1 1 :- as-mode-amd64 #
-as-reg0:64 R10 1 2 :- as-mode-amd64 #
-as-reg0:64 R11 1 3 :- as-mode-amd64 #
-as-reg0:64 R12 1 4 :- as-mode-amd64 #
-as-reg0:64 R13 1 5 :- as-mode-amd64 #
-as-reg0:64 R14 1 6 :- as-mode-amd64 #
-as-reg0:64 R15 1 7 :- as-mode-amd64 #
+as-rex-reg:8 AL 0 0 #
+as-rex-reg:8 CL 0 1 #
+as-rex-reg:8 DL 0 2 #
+as-rex-reg:8 BL 0 3 #
+as-rex-reg:8 AH 0 4 :- not as-mode-amd64 #
+as-rex-reg:8 CH 0 5 :- not as-mode-amd64 #
+as-rex-reg:8 DH 0 6 :- not as-mode-amd64 #
+as-rex-reg:8 BH 0 7 :- not as-mode-amd64 #
+as-rex-reg:8 R4B 0 4 :- as-mode-amd64 #
+as-rex-reg:8 R5B 0 5 :- as-mode-amd64 #
+as-rex-reg:8 R6B 0 6 :- as-mode-amd64 #
+as-rex-reg:8 R7B 0 7 :- as-mode-amd64 #
+as-rex-reg:8 R8B 1 0 :- as-mode-amd64 #
+as-rex-reg:8 R9B 1 1 :- as-mode-amd64 #
+as-rex-reg:8 R10B 1 2 :- as-mode-amd64 #
+as-rex-reg:8 R11B 1 3 :- as-mode-amd64 #
+as-rex-reg:8 R12B 1 4 :- as-mode-amd64 #
+as-rex-reg:8 R13B 1 5 :- as-mode-amd64 #
+as-rex-reg:8 R14B 1 6 :- as-mode-amd64 #
+as-rex-reg:8 R15B 1 7 :- as-mode-amd64 #
+as-rex-reg:16 AX 0 0 #
+as-rex-reg:16 CX 0 1 #
+as-rex-reg:16 DX 0 2 #
+as-rex-reg:16 BX 0 3 #
+as-rex-reg:16 SP 0 4 #
+as-rex-reg:16 BP 0 5 #
+as-rex-reg:16 SI 0 6 #
+as-rex-reg:16 DI 0 7 #
+as-rex-reg:16 R8W 1 0 :- as-mode-amd64 #
+as-rex-reg:16 R9W 1 1 :- as-mode-amd64 #
+as-rex-reg:16 R10W 1 2 :- as-mode-amd64 #
+as-rex-reg:16 R11W 1 3 :- as-mode-amd64 #
+as-rex-reg:16 R12W 1 4 :- as-mode-amd64 #
+as-rex-reg:16 R13W 1 5 :- as-mode-amd64 #
+as-rex-reg:16 R14W 1 6 :- as-mode-amd64 #
+as-rex-reg:16 R15W 1 7 :- as-mode-amd64 #
+as-rex-reg:32 EAX 0 0 #
+as-rex-reg:32 ECX 0 1 #
+as-rex-reg:32 EDX 0 2 #
+as-rex-reg:32 EBX 0 3 #
+as-rex-reg:32 ESP 0 4 #
+as-rex-reg:32 EBP 0 5 #
+as-rex-reg:32 ESI 0 6 #
+as-rex-reg:32 EDI 0 7 #
+as-rex-reg:32 R8D 1 0 :- as-mode-amd64 #
+as-rex-reg:32 R9D 1 1 :- as-mode-amd64 #
+as-rex-reg:32 R10D 1 2 :- as-mode-amd64 #
+as-rex-reg:32 R11D 1 3 :- as-mode-amd64 #
+as-rex-reg:32 R12D 1 4 :- as-mode-amd64 #
+as-rex-reg:32 R13D 1 5 :- as-mode-amd64 #
+as-rex-reg:32 R14D 1 6 :- as-mode-amd64 #
+as-rex-reg:32 R15D 1 7 :- as-mode-amd64 #
+as-rex-reg:64 RAX 0 0 #
+as-rex-reg:64 RCX 0 1 #
+as-rex-reg:64 RDX 0 2 #
+as-rex-reg:64 RBX 0 3 #
+as-rex-reg:64 RSP 0 4 #
+as-rex-reg:64 RBP 0 5 #
+as-rex-reg:64 RSI 0 6 #
+as-rex-reg:64 RDI 0 7 #
+as-rex-reg:64 R8 1 0 :- as-mode-amd64 #
+as-rex-reg:64 R9 1 1 :- as-mode-amd64 #
+as-rex-reg:64 R10 1 2 :- as-mode-amd64 #
+as-rex-reg:64 R11 1 3 :- as-mode-amd64 #
+as-rex-reg:64 R12 1 4 :- as-mode-amd64 #
+as-rex-reg:64 R13 1 5 :- as-mode-amd64 #
+as-rex-reg:64 R14 1 6 :- as-mode-amd64 #
+as-rex-reg:64 R15 1 7 :- as-mode-amd64 #
 
 as-segment-reg ES 0 #
 as-segment-reg CS 1 #

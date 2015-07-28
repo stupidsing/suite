@@ -545,13 +545,17 @@ public class SewingProverImpl implements SewingProver {
 
 	private List<Node> breakdown(Operator operator, Node node) {
 		List<Node> list = new ArrayList<>();
+		breakdown0(operator, node, list);
+		return list;
+	}
+
+	private void breakdown0(Operator operator, Node node, List<Node> list) {
 		Tree tree;
 		while ((tree = Tree.decompose(node, operator)) != null) {
-			list.add(tree.getLeft());
+			breakdown0(operator, tree.getLeft(), list);
 			node = tree.getRight();
 		}
 		list.add(node);
-		return list;
 	}
 
 	private Trampoline[] getTrampolineByPrototype(Prototype prototype) {
