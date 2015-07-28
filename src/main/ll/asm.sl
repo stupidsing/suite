@@ -249,58 +249,59 @@ as-rm-regwd:.size .rm .reg .e
 	, as-mod-num-rm:.size .rm .r .e
 #
 
-as-mod-num-rm:.size .rm .num (.modregrm, .e1)/.ex
+as-mod-num-rm:.size .rm .num .e0/.ex
 	:- is.int .num
-	, once (as-mod-rm:.size .rm (.modb .rmb) .sib .e1/.e2)
-	, let .modregrm (.modb * 64 + .num * 8 + .rmb)
-	, once (.sib = (), .e2 = .ex
-		; .sib = .s .ir .br, let .b (.s * 64 + .ir * 8 + .br), .e2 = (.b, .ex)
+	, once (as-mod-rm:.size .rm (.modb (0 .rmb)) .sib (.ds .disp)
+		, .b0 = (.modb * 64 + .num * 8 + .rmb)
+		, .e0 = (.b0, .e1)
+		, (.sib = (), .e1 = .e2
+			; .sib = .s (0 .ir) (0 .br), let .b1 (.s * 64 + .ir * 8 + .br), .e1 = (.b1, .e2)
+		)
+		, (.ds = 0, .e2 = .ex
+			; as-emit:.ds .disp .e2/.ex
+		)
 	)
 #
 
-as-mod-rm:.size .reg (3 .r) () .e/.e
-	:- as-reg:.size .reg .r
+as-mod-rm:.size .reg (3 (.rexr .r)) () (0 0)
+	:- as-rex-reg:.size .reg .rexr .r
 #
-as-mod-rm:_ (`.disp`) (0 5) () .e0/.ex
-	:- as-emit:32 .disp .e0/.ex
+as-mod-rm:_ (`.disp`) (0 (0 5)) () (32 .disp)
+	:- not bound .disp; is.int .disp
 #
-as-mod-rm:_ .op (1 5) () .e0/.ex
-	:- (.op = `EBP`; .op = `EBP + 0`)
-	, as-emit:8 0 .e0/.ex, !
+as-mod-rm:_ .op (1 (.rexr 5)) () (8 0)
+	:- (.op = `.reg`; .op = `.reg + 0`)
+	, as-rex-reg:_ .reg .rexr 5
+	, !
 #
-as-mod-rm:_ (`.reg + .disp`) (.mod .r) () .e0/.ex
-	:- as-reg:32 .reg .r
-	, as-disp-mod .disp .mod .e0/.ex
+as-mod-rm:_ (`.reg + .disp`) (.mod (.rexr .r)) () (.ds .disp)
+	:- as-rex-reg:32 .reg .rexr .r
+	, as-disp-mod:.ds .disp .mod
 	, not (.r = 4; .mod = 0, .r = 5; .r = 12; .mod = 0, .r = 13)
 #
-as-mod-rm:_ (`.indexReg * .scale + .baseReg + .disp`) (.mod 4) (.s .ir .br) .e
+as-mod-rm:_ (`.indexReg * .scale + .baseReg + .disp`) (.mod 4) (.s (.rexir .ir) (.rexbr .br)) (.ds .disp)
 	:- as-sib-scale .scale .s
-	, as-reg:32 .indexReg .ir
-	, as-reg:32 .baseReg .br
-	, as-disp-mod .disp .mod .e
+	, as-rex-reg:32 .indexReg .rexir .ir
+	, as-rex-reg:32 .baseReg .rexbr .br
+	, as-disp-mod:.ds .disp .mod
 #
-as-mod-rm:8 (BYTE `.ptr`) (.mod .rm) .sib .e :- as-mod-rm:_ `.ptr` (.mod .rm) .sib .e #
-as-mod-rm:16 (WORD `.ptr`) (.mod .rm) .sib .e :- as-mod-rm:_ `.ptr` (.mod .rm) .sib .e #
-as-mod-rm:32 (DWORD `.ptr`) (.mod .rm) .sib .e :- as-mod-rm:_ `.ptr` (.mod .rm) .sib .e #
-as-mod-rm:64 (QWORD `.ptr`) (.mod .rm) .sib .e :- as-mod-rm:_ `.ptr` (.mod .rm) .sib .e #
-as-mod-rm:_ (`.reg`) (.mod .rm) .sib .e
-	:- as-reg:32 .reg _
-	, as-mod-rm:_ (`.reg + 0`) (.mod .rm) .sib .e
+as-mod-rm:.size (.prefix `.ptr`) (.mod .rm) .sib .dsd
+	:- as-ptr-size .prefix .size
+	, as-mod-rm:_ `.ptr` (.mod .rm) .sib .dsd
 #
-as-mod-rm:_ (`.indexReg * .scale + .baseReg`) (.mod .rm) .sib .e
-	:- as-mod-rm:_ (`.indexReg * .scale + .baseReg + 0`) (.mod .rm) .sib .e
+as-mod-rm:_ (`.reg`) (.mod .rm) .sib .dsd
+	:- as-rex-reg:32 .reg _ _
+	, as-mod-rm:_ (`.reg + 0`) (.mod .rm) .sib .dsd
 #
-
-as-disp-mod .disp .mod .e0/.ex
-	:- .disp = 0, .mod = 0, .e0 = .ex
-	; as-imm:8 .disp, .mod = 1, as-emit:8 .disp .e0/.ex
-	; .mod = 2, as-emit:32 .disp .e0/.ex
+as-mod-rm:_ (`.indexReg * .scale + .baseReg`) (.mod .rm) .sib .dsd
+	:- as-mod-rm:_ (`.indexReg * .scale + .baseReg + 0`) (.mod .rm) .sib .dsd
 #
 
-as-sib-scale 1 0 #
-as-sib-scale 2 1 #
-as-sib-scale 4 2 #
-as-sib-scale 8 3 #
+as-disp-mod:.ds .disp .mod
+	:- .disp = 0, .mod = 0, .ds = 0
+	; as-imm:8 .disp, .mod = 1, .ds = 8
+	; .mod = 2, .ds = 32
+#
 
 as-emit:32 .d .e0/.ex :- builtin:suite.asm.AssemblePredicates:emit32 .d .e0 .ex #
 as-emit:16 .d .e0/.ex :- builtin:suite.asm.AssemblePredicates:emit16 .d .e0 .ex #
@@ -309,6 +310,16 @@ as-emit:8 .d .e0/.ex :- builtin:suite.asm.AssemblePredicates:emit8 .d .e0 .ex #
 as-imm:8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 as-imm:16 .imm :- is.int .imm, -32768 <= .imm, .imm < 32768 #
 as-imm:32 .imm :- is.int .imm #
+
+as-sib-scale 1 0 #
+as-sib-scale 2 1 #
+as-sib-scale 4 2 #
+as-sib-scale 8 3 #
+
+as-ptr-size BYTE 8 #
+as-ptr-size WORD 16 #
+as-ptr-size DWORD 32 #
+as-ptr-size QWORD 64 #
 
 as-reg:.s .reg .i :- as-rex-reg:.s .reg 0 .i #
 
