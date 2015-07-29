@@ -44,8 +44,9 @@ lc-compile-call .call .pls (FRAME l:.code, .c)/.c
 	, cg-optimize .c0 .code
 #
 
-lc-define-new-variables .parsed .nv (DEFINE-NEW-VARS .nvs .parsed)
+lc-define-new-variables .parsed .nv .parsed1
 	:- rbt-get-list .nv .nvs/()
+	, .parsed1 = DEFINE-NEW-VARS .nvs .parsed
 #
 
 lc-parse .clause .clause2 .nv
@@ -91,7 +92,7 @@ lc-parse .call .callx .nv
 #
 lc-parse .d _ :- write.error "Unknown expression" .d, nl, fail #
 
-lc-parse-sugar (.a != .b) (not (.a = .b)) #
+lc-parse-sugar (.a != .b) .parsed :- .parsed = not (.a = .b) #
 
 lc-parse-rules () () :- ! #
 lc-parse-rules (.rule # .rules) (.rule1, .rules1)
@@ -316,7 +317,10 @@ lc-create-node (TREE .operator .left .right) .vs .c0/.cx/.reg
 		, .cx)
 #
 
-lc-system-call-prototype (ATOM .systemPredicate) :- system.predicate .systemPredicate #
+lc-system-call-prototype .proto
+	:- .proto = ATOM .systemPredicate
+	, system.predicate .systemPredicate
+#
 
 lc-is-variable .variable
 	:- is.atom .variable, to.atom "." .dot, starts.with .variable .dot
