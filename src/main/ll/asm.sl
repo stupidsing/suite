@@ -260,7 +260,7 @@ as-mod-num-rm:.size:.a .rm (.rexr .num) .e0/.e1/.e2/.ex
 		, .e2 = (E8 (.modb * 64 + .num * 8 + .rmb), .e3)
 		, (
 			.sib = (), .rexx = 0, .e3 = .e4
-			; .sib = .s (.rexx .ir) .br, .e3  = (E8 (.s * 64 + .ir * 8 + .br), .e4)
+			; .sib = .s (.rexx .ir) .br, .e3 = (E8 (.s * 64 + .ir * 8 + .br), .e4)
 		)
 		, (.ds = 0, .e4 = .ex
 			; as-emit:.ds .disp .e4/.ex
