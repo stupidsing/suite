@@ -182,10 +182,10 @@ public class CommandDispatcher {
 		return code;
 	}
 
-	private void elaborate(Node node, Sink<Node> sink) {
+	private void elaborate(Node node0, Sink<Node> sink) {
 		int count[] = { 0 };
-		Generalization generalization = SewingGeneralizerImpl.process(node);
-		node = generalization.node;
+		Generalization generalization = SewingGeneralizerImpl.process(node0);
+		Node node1 = generalization.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {
 			String dump = generalization.dumpVariables();
@@ -196,7 +196,7 @@ public class CommandDispatcher {
 			return Boolean.FALSE;
 		});
 
-		sink.sink(Tree.of(TermOp.AND___, node, elab));
+		sink.sink(Tree.of(TermOp.AND___, node1, elab));
 
 		if (count[0] == 1)
 			opt.prompt().println(count[0] + " solution\n");

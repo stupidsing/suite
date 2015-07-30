@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
 import suite.lp.sewing.impl.SewingProverImpl;
 
@@ -26,13 +27,13 @@ public class SewingProverTest {
 
 		assertFalse(sp.compile(Suite.parse("!, fail; yes")).apply(pc));
 
-		assertTrue(sp.compile(Suite.parse("(.v = 1; .v = 2), .v = 2")).apply(pc));
-		assertFalse(sp.compile(Suite.parse("once (.v = 1; .v = 2), .v = 2")).apply(pc));
+		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("(.v = 1; .v = 2), .v = 2"))).apply(pc));
+		assertFalse(sp.compile(new Generalizer().generalize(Suite.parse("once (.v = 1; .v = 2), .v = 2"))).apply(pc));
 
 		assertFalse(sp.compile(Suite.parse("not yes")).apply(pc));
 		assertTrue(sp.compile(Suite.parse("not fail")).apply(pc));
 
-		assertTrue(sp.compile(Suite.parse(".p = yes, .p")).apply(pc));
+		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse(".p = yes, .p"))).apply(pc));
 	}
 
 	@Test

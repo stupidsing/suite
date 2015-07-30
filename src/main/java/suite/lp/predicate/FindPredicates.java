@@ -10,9 +10,12 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TermKey;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
 public class FindPredicates {
@@ -35,7 +38,26 @@ public class FindPredicates {
 
 	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
 
+	public BuiltinPredicate suspend = (prover, ps) -> {
+		Node params[] = Tree.getParameters(ps, 3);
+		Node n0 = params[0];
+		Suspend n1 = new Suspend(() -> Read.from(elaborate(prover, params[1], params[2])).uniqueResult());
+		if (n0 instanceof Reference) {
+			prover.getJournal().addBind((Reference) n0, n1);
+			return true;
+		} else
+			return false;
+	};
+
 	private Node findAll(Prover prover, Node var, Node goal) {
+		Stack<Node> stack = elaborate(prover, var, goal);
+		Node result = Atom.NIL;
+		while (!stack.isEmpty())
+			result = Tree.of(TermOp.AND___, stack.pop(), result);
+		return result;
+	}
+
+	private Stack<Node> elaborate(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();
 
 		Tree subGoal = Tree.of(TermOp.AND___, goal, new Data<Source<Boolean>>(() -> {
@@ -44,11 +66,7 @@ public class FindPredicates {
 		}));
 
 		new Prover(prover).elaborate(subGoal);
-
-		Node result = Atom.NIL;
-		while (!stack.isEmpty())
-			result = Tree.of(TermOp.AND___, stack.pop(), result);
-		return result;
+		return stack;
 	}
 
 }

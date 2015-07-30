@@ -106,6 +106,7 @@ public class Assembler {
 		BytesBuilder out = new BytesBuilder();
 
 		for (boolean isPass2 : new boolean[] { false, true }) {
+			AssemblePredicates.isPass2 = isPass2;
 			out.clear();
 
 			for (Pair<Reference, Node> lni : lnis) {
@@ -114,7 +115,7 @@ public class Assembler {
 				try {
 					out.append(assemble(address, lni.t1));
 				} catch (Exception ex) {
-					throw new RuntimeException("In " + lni.t1, ex);
+					throw new RuntimeException("In " + lni.t1 + " during pass " + (!isPass2 ? "1" : "2"), ex);
 				}
 
 				if (lni.t0 != null)

@@ -34,6 +34,7 @@ import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
@@ -73,6 +74,20 @@ public class SewingProverImpl implements SewingProver {
 	};
 	private Trampoline fail = rt -> {
 		throw new RuntimeException("Impossibly fail");
+	};
+
+	private SewingBinder passThru = new SewingBinder() {
+		public BiPredicate<BindEnv, Node> compileBind(Node node) {
+			return (be, n) -> Binder.bind(node, n, be.journal);
+		}
+
+		public Fun<Env, Node> compile(Node node) {
+			return env -> node.finalNode();
+		}
+
+		public Env env() {
+			return new Env(new Reference[0]);
+		}
 	};
 
 	public interface Trampoline {
@@ -136,7 +151,7 @@ public class SewingProverImpl implements SewingProver {
 	public SewingProverImpl(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
 		rules = Read.from(rs.getRules()).groupBy(Prototype::of).collect(As.multimap());
-		queryRewriter = new QueryRewriterImpl(rules);
+		queryRewriter = !Suite.isProverTrace ? new QueryRewriterImpl(rules) : new QueryNoRewriterImpl();
 
 		if (!rules.containsKey(null))
 			compileAll();
@@ -145,8 +160,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	public Fun<ProverConfig, Boolean> compile(Node node) {
-		SewingBinder sb = new SewingBinderImpl();
-		Trampoline tr = cutBegin(newEnv(sb, compile0(sb, new Generalizer().generalize(node))));
+		Trampoline tr = cutBegin(compile0(passThru, node));
 
 		return pc -> {
 			boolean result[] = new boolean[] { false };
@@ -315,6 +329,35 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr0;
 			};
+		} else if ((m = Suite.matcher("suspend .0 .1 .2").apply(node)) != null) {
+			Fun<Env, Node> f0 = sb.compile(m[0]);
+			Fun<Env, Node> f1 = sb.compile(m[1]);
+			Trampoline tr0 = compile0(sb, m[2]);
+
+			tr = rt -> {
+				List<Node> results = new ArrayList<>();
+				Env env = rt.env;
+
+				Trampoline tr_ = and(Read.from(tr0, rt_ -> {
+					results.add(new Cloner().clone(f1.apply(env)));
+					return fail;
+				}));
+
+				Node n0 = f0.apply(env);
+
+				Suspend n1 = new Suspend(() -> {
+					Runtime rt_ = new Runtime(rt.prover.config(), tr_);
+					rt_.env = env;
+					trampoline(rt_);
+					return Read.from(results).uniqueResult();
+				});
+
+				if (n0 instanceof Reference) {
+					rt.journal.addBind((Reference) n0, n1);
+					return okay;
+				} else
+					return fail;
+			};
 		} else if ((m = Suite.matcher("throw .0").apply(node)) != null) {
 			Fun<Env, Node> f = sb.compile(m[0]);
 			tr = rt -> {
@@ -362,19 +405,7 @@ public class SewingProverImpl implements SewingProver {
 				tr = callSystemPredicate(sb, name, Atom.NIL);
 		} else if (node instanceof Reference) {
 			Fun<Env, Node> f = sb.compile(node);
-			return rt -> compile0(new SewingBinder() {
-				public BiPredicate<BindEnv, Node> compileBind(Node node) {
-					return (be, n) -> Binder.bind(node, n, be.journal);
-				}
-
-				public Fun<Env, Node> compile(Node node) {
-					return env -> node;
-				}
-
-				public Env env() {
-					return new Env(new Reference[0]);
-				}
-			}, f.apply(rt.env));
+			return rt -> compile0(passThru, f.apply(rt.env));
 		} else if (node instanceof Data<?>) {
 			Object data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)

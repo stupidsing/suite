@@ -65,6 +65,7 @@ public class SystemPredicates {
 		addPredicate("find.all", findPredicates.findAll);
 		addPredicate("find.all.memoized", findPredicates.findAllMemoized);
 		addPredicate("find.all.memoized.clear", findPredicates.findAllMemoizedClear);
+		addPredicate("suspend", findPredicates.suspend);
 
 		addPredicate("char.ascii", formatPredicates.charAscii);
 		addPredicate("concat", formatPredicates.concat);

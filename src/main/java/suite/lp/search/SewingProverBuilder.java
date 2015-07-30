@@ -5,6 +5,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.SewingProver;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
@@ -26,7 +27,8 @@ public class SewingProverBuilder implements Builder {
 		SewingProver sewingProver = new SewingProverImpl(ruleSet);
 
 		return goal -> {
-			Fun<ProverConfig, Boolean> fun = sewingProver.compile(goal);
+			Node goal1 = SewingGeneralizerImpl.generalize(goal);
+			Fun<ProverConfig, Boolean> fun = sewingProver.compile(goal1);
 
 			return (source, sink) -> {
 				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);

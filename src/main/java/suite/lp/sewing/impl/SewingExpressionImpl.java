@@ -1,6 +1,7 @@
 package suite.lp.sewing.impl;
 
 import suite.Suite;
+import suite.lp.predicate.EvalPredicates;
 import suite.lp.sewing.SewingCloner;
 import suite.lp.sewing.SewingExpression;
 import suite.lp.sewing.VariableMapper.Env;
@@ -60,7 +61,7 @@ public class SewingExpressionImpl implements SewingExpression {
 			return env -> i;
 		} else {
 			Fun<Env, Node> f = sc.compile(node);
-			return env -> ((Int) f.apply(env)).number;
+			return env -> new EvalPredicates().evaluate(f.apply(env));
 		}
 	}
 

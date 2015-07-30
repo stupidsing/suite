@@ -48,6 +48,10 @@ public class Reference extends Node {
 			throw new RuntimeException("No equals for free references");
 	}
 
+	public Node getNode() {
+		return node;
+	}
+
 	public int getId() {
 		return id;
 	}
