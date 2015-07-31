@@ -336,24 +336,24 @@ public class SewingProverImpl implements SewingProver {
 
 			tr = rt -> {
 				List<Node> results = new ArrayList<>();
-				Env env = rt.env;
+				Env env1 = rt.env.clone();
 
 				Trampoline tr_ = and(Read.from(tr0, rt_ -> {
-					results.add(new Cloner().clone(f1.apply(env)));
+					results.add(f1.apply(env1));
 					return fail;
 				}));
 
-				Node n0 = f0.apply(env);
+				Node n0 = f0.apply(rt.env);
 
-				Suspend n1 = new Suspend(() -> {
+				Suspend suspend = new Suspend(() -> {
 					Runtime rt_ = new Runtime(rt.prover.config(), tr_);
-					rt_.env = env;
+					rt_.env = env1;
 					trampoline(rt_);
 					return Read.from(results).uniqueResult();
 				});
 
 				if (n0 instanceof Reference) {
-					rt.journal.addBind((Reference) n0, n1);
+					rt.journal.addBind((Reference) n0, suspend);
 					return okay;
 				} else
 					return fail;
