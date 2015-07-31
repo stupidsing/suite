@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
-import suite.lp.Journal;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
@@ -107,12 +106,9 @@ public class IoPredicates {
 
 	public BuiltinPredicate tryPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
-		Journal journal = prover.getJournal();
-		int pit = journal.getPointInTime();
 		try {
 			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
 		} catch (SuiteException ex) {
-			journal.undoBinds(pit);
 			if (prover.bind(params[1], ex.getNode())) {
 				prover.setRemaining(Tree.of(TermOp.AND___, params[2], prover.getRemaining()));
 				return true;
