@@ -107,7 +107,7 @@ public class IoPredicates {
 	public BuiltinPredicate tryPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
 		try {
-			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
+			return PredicateUtil.tryProve(prover, () -> prover.prove0(params[0]));
 		} catch (SuiteException ex) {
 			if (prover.bind(params[1], ex.getNode())) {
 				prover.setRemaining(Tree.of(TermOp.AND___, params[2], prover.getRemaining()));

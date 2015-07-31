@@ -7,6 +7,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
+import suite.util.FunUtil.Source;
 
 public class PredicateUtil {
 
@@ -33,14 +34,13 @@ public class PredicateUtil {
 		};
 	}
 
-	public static boolean tryProve(Prover prover, Predicate<Prover> pred) {
-		Prover prover1 = new Prover(prover);
+	public static boolean tryProve(Prover prover, Source<Boolean> source) {
 		boolean result = false;
 		try {
-			result = pred.test(prover1);
+			result = source.source();
 		} finally {
 			if (!result) // Roll back bindings if overall goal is failed
-				prover1.undoAllBinds();
+				prover.undoAllBinds();
 		}
 		return result;
 	}
