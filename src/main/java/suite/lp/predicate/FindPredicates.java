@@ -41,12 +41,10 @@ public class FindPredicates {
 	public BuiltinPredicate suspend = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
 		Node p0 = params[0];
-
-		Cloner cloner = new Cloner();
-		Node p1 = cloner.clone(params[1]);
-		Node p2 = cloner.clone(params[2]);
-
+		Node p1 = params[1];
+		Node p2 = params[2];
 		Suspend suspend = new Suspend(() -> Read.from(elaborate(prover, p1, p2)).uniqueResult());
+
 		if (p0 instanceof Reference) {
 			prover.getJournal().addBind((Reference) p0, suspend);
 			return true;
