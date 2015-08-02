@@ -83,7 +83,8 @@ public class HttpSessionController {
 
 					sessionManager.put(sessionId, session);
 
-					HttpRequest request1 = new HttpRequest(request.method //
+					HttpRequest request1 = new HttpRequest( //
+							request.method //
 							, request.server //
 							, path //
 							, request.query //
@@ -111,9 +112,7 @@ public class HttpSessionController {
 			protectedHandler.handle(request, response);
 		}
 
-		private void showLoginPage(OutputStream os //
-				, String redirectPath //
-				, boolean isLoginFailed) throws IOException {
+		private void showLoginPage(OutputStream os, String redirectPath, boolean isLoginFailed) throws IOException {
 			OutputStreamWriter writer = new OutputStreamWriter(os, FileUtil.charset);
 
 			writer.write("<html>" //
@@ -122,7 +121,7 @@ public class HttpSessionController {
 					+ "<font face=\"Monospac821 BT,Monaco,Consolas\">" //
 					+ (isLoginFailed ? "<b>LOGIN FAILED</b><p/>" : "") //
 					+ "<form name=\"login\" action=\"/login\" method=\"post\">" //
-					+ "Username <input type=\"text\" name=\"username\" /><br/>" //
+					+ "Username <input type=\"text\" name=\"username\" autofocus /><br/>" //
 					+ "Password <input type=\"password\" name=\"password\" /><br/>" //
 					+ "<input type=\"hidden\" name=\"path\" value=\"" + htmlUtil.encode(redirectPath) + "\" />" //
 					+ "<input type=\"submit\" value=\"Login\">" //

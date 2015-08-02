@@ -8,6 +8,7 @@ import suite.http.HttpServer.Handler;
 import suite.http.HttpSessionController.Authenticator;
 import suite.util.Util;
 
+// java -cp target/suite-1.0-jar-with-dependencies.jar suite.http.HttpServerMain
 public class HttpServerMain {
 
 	private Authenticator authenticator = (username, password) -> Util.stringEquals(username, "user")
