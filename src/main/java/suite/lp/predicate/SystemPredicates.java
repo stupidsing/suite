@@ -129,7 +129,7 @@ public class SystemPredicates {
 		BuiltinPredicate predicate;
 		Tree tree;
 		String name = null;
-		Node pass;
+		Node pass = null;
 
 		if (query instanceof Atom) {
 			name = ((Atom) query).name;
