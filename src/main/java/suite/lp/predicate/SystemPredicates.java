@@ -128,6 +128,8 @@ public class SystemPredicates {
 	public Boolean call(Node query) {
 		BuiltinPredicate predicate;
 		Tree tree;
+		Operator op;
+		Node left;
 		String name = null;
 		Node pass = null;
 
@@ -135,16 +137,12 @@ public class SystemPredicates {
 			name = ((Atom) query).name;
 			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
-			if (tree.getOperator() != TermOp.TUPLE_) {
-				name = tree.getOperator().getName();
+			if ((op = tree.getOperator()) != TermOp.TUPLE_) {
+				name = op.getName();
 				pass = query;
-			} else {
-				Node left = tree.getLeft();
-
-				if (left instanceof Atom) {
-					name = ((Atom) left).name;
-					pass = tree.getRight();
-				}
+			} else if ((left = tree.getLeft()) instanceof Atom) {
+				name = ((Atom) left).name;
+				pass = tree.getRight();
 			}
 
 		predicate = name != null ? get(name) : null;
