@@ -129,15 +129,16 @@ public class SystemPredicates {
 		BuiltinPredicate predicate;
 		Tree tree;
 		String name = null;
-		Node pass = query;
+		Node pass;
 
 		if (query instanceof Atom) {
 			name = ((Atom) query).name;
 			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
-			if (tree.getOperator() != TermOp.TUPLE_)
+			if (tree.getOperator() != TermOp.TUPLE_) {
 				name = tree.getOperator().getName();
-			else {
+				pass = query;
+			} else {
 				Node left = tree.getLeft();
 
 				if (left instanceof Atom) {
