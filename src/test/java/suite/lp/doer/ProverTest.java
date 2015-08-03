@@ -82,6 +82,8 @@ public class ProverTest {
 		Suite.addRule(rs, "a b .v :- fail");
 		Suite.addRule(rs, "a b c");
 		Suite.addRule(rs, ".var is a man");
+		Suite.addRule(rs, "q :- once (not yes; yes)");
+		Suite.addRule(rs, "yes");
 
 		assertTrue(Suite.proveLogic(rs, ""));
 		assertTrue(Suite.proveLogic(rs, "a"));
@@ -92,6 +94,7 @@ public class ProverTest {
 		assertTrue(Suite.proveLogic(rs, "abc is a man"));
 		assertTrue(Suite.proveLogic(rs, ".v = a, .v = b; .v = c"));
 		assertTrue(Suite.proveLogic(rs, "[1, 2, 3] = [1, 2, 3]"));
+		assertTrue(Suite.proveLogic(rs, "q"));
 
 		assertFalse(Suite.proveLogic(rs, "fail"));
 		assertFalse(Suite.proveLogic(rs, "d"));
