@@ -170,13 +170,13 @@ public class SystemPredicates {
 
 	private BuiltinPredicate ifPredicate = (prover, ps) -> {
 		Node params[] = Tree.getParameters(ps, 3);
-		boolean result = PredicateUtil.tryProve(prover, () -> prover.prove0(params[0]));
+		boolean result = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
 		Node n = result ? params[1] : params[2];
 		prover.setRemaining(Tree.of(TermOp.AND___, n, prover.getRemaining()));
 		return true;
 	};
 
-	private BuiltinPredicate not = (prover, ps) -> PredicateUtil.tryProve(prover, () -> !prover.prove0(ps));
+	private BuiltinPredicate not = (prover, ps) -> PredicateUtil.tryProve(prover, prover1 -> !prover1.prove0(ps));
 
 	private BuiltinPredicate once = (prover, ps) -> new Prover(prover).prove0(ps);
 

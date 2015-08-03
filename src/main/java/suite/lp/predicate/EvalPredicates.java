@@ -154,7 +154,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate notEquals = (prover, ps) -> {
 		Tree tree = (Tree) ps;
-		return PredicateUtil.tryProve(prover, () -> !prover.bind(tree.getLeft(), tree.getRight()));
+		return PredicateUtil.tryProve(prover, prover1 -> !prover1.bind(tree.getLeft(), tree.getRight()));
 	};
 
 	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
