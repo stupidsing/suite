@@ -555,8 +555,8 @@ public class SewingProverImpl implements SewingProver {
 					rt_.query = query0;
 					rt_.cutPoint = cutPoint0;
 					rt_.rems = rems0;
-					rt_.handler = handler0;
 					rt_.journal.undoBinds(pit0);
+					rt_.handler = handler0;
 					return tr1;
 				});
 				return tr0;
@@ -577,8 +577,8 @@ public class SewingProverImpl implements SewingProver {
 						rt_.query = query0;
 						rt_.cutPoint = cutPoint0;
 						rt_.rems = rems0;
-						rt_.handler = handler0;
 						rt_.journal.undoBinds(pit0);
+						rt_.handler = handler0;
 						return tr_;
 					});
 				return trh;
