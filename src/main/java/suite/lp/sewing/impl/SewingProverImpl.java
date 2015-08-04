@@ -231,23 +231,12 @@ public class SewingProverImpl implements SewingProver {
 			SewingBinder sb = new SewingBinderImpl();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(head);
 			Trampoline tr1 = compile0(sb, tail);
-			return rt -> {
-				rt.env = sb.env();
-				return p.test(rt.bindEnv(), rt.query) ? tr1 : fail;
-			};
+			return newEnv(sb, rt -> p.test(rt.bindEnv(), rt.query) ? tr1 : fail);
 		});
 
 		Trampoline tr0 = or(trs);
 		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
-		Trampoline tr2 = rt -> {
-			Env env0 = rt.env;
-			rt.pushRem(rt_ -> {
-				rt_.env = env0;
-				return okay;
-			});
-			return tr1;
-		};
-
+		Trampoline tr2 = saveEnv(tr1);
 		return log(tr2, isTrace);
 	}
 
@@ -283,39 +272,14 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr0 = compile0(sb, m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);
 			Trampoline tr2 = compile0(sb, m[2]);
-			tr = rt -> {
-				Sink<Runtime> restore = save(rt);
-				IList<Trampoline> alts0 = rt.alts;
-				rt.pushRem(rt_ -> {
-					rt_.alts = alts0;
-					return tr1;
-				});
-				rt.pushAlt(rt_ -> {
-					restore.sink(rt_);
-					return tr2;
-				});
-				return tr0;
-			};
+			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.matcher("let .0 .1").apply(node)) != null) {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
-		} else if ((m = Suite.matcher("not .0").apply(node)) != null) {
-			Trampoline tr0 = compile0(sb, m[0]);
-			tr = rt -> {
-				Sink<Runtime> restore = save(rt);
-				IList<Trampoline> alts0 = rt.alts;
-				rt.pushRem(rt_ -> {
-					rt_.alts = alts0;
-					return fail;
-				});
-				rt.pushAlt(rt_ -> {
-					restore.sink(rt_);
-					return okay;
-				});
-				return tr0;
-			};
-		} else if ((m = Suite.matcher("once .0").apply(node)) != null) {
+		} else if ((m = Suite.matcher("not .0").apply(node)) != null)
+			tr = if_(compile0(sb, m[0]), fail, okay);
+		else if ((m = Suite.matcher("once .0").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
 				IList<Trampoline> alts0 = rt.alts;
@@ -366,22 +330,13 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt.bindEnv();
-				Env env0 = rt.env;
-				Node query0 = rt.query;
-				IList<Trampoline> cutPoint0 = rt.cutPoint;
-				IList<Trampoline> rems0 = rt.rems;
+				Sink<Runtime> restore = save(rt);
 				IList<Trampoline> alts0 = rt.alts;
-				int pit0 = rt.journal.getPointInTime();
 				Sink<Node> handler0 = rt.handler;
 				rt.handler = node_ -> {
 					if (p.test(be, node_)) {
-						rt.env = env0;
-						rt.query = query0;
-						rt.cutPoint = cutPoint0;
-						rt.rems = rems0;
+						restore.sink(rt);
 						rt.alts = alts0;
-						rt.journal.undoBinds(pit0);
-						rt.handler = handler0;
 						rt.pushRem(catch0);
 					} else
 						handler0.sink(node_);
@@ -433,6 +388,22 @@ public class SewingProverImpl implements SewingProver {
 			throw new RuntimeException("Cannot understand " + node);
 	}
 
+	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
+		return rt -> {
+			Sink<Runtime> restore = save(rt);
+			IList<Trampoline> alts0 = rt.alts;
+			rt.pushRem(rt_ -> {
+				rt_.alts = alts0;
+				return tr1;
+			});
+			rt.pushAlt(rt_ -> {
+				restore.sink(rt_);
+				return tr2;
+			});
+			return tr0;
+		};
+	}
+
 	private Trampoline callSystemPredicate(SewingBinder sb, String name, Node pass) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
 		return predicate != null ? callPredicate(sb, predicate, pass) : null;
@@ -441,6 +412,24 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline callPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
 		Fun<Env, Node> f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
+	}
+
+	private Trampoline saveEnv(Trampoline tr) {
+		return rt -> {
+			Env env0 = rt.env;
+			rt.pushRem(rt_ -> {
+				rt_.env = env0;
+				return okay;
+			});
+			return tr;
+		};
+	}
+
+	private Trampoline newEnv(SewingBinder sb, Trampoline tr) {
+		return rt -> {
+			rt.env = sb.env();
+			return tr;
+		};
 	}
 
 	private Trampoline cutBegin(Trampoline tr) {
