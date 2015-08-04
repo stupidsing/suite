@@ -37,6 +37,19 @@ public class SewingProverTest {
 	}
 
 	@Test
+	public void testBacktrack() {
+		RuleSet rs = Suite.createRuleSet();
+		Suite.addRule(rs, "mem (.e, _) .e");
+		Suite.addRule(rs, "mem (_, .tail) .e :- mem .tail .e");
+		Suite.addRule(rs, "q .c .v :- once mem (0,) .v, .a/.b/.c = 0/0/0; mem (1,) .v, .a/.b/.c = 1/1/1");
+		Suite.addRule(rs, "r .c :- q .c .v, .v = 1");
+
+		SewingProver sp = new SewingProverImpl(rs);
+		ProverConfig pc = new ProverConfig(rs);
+		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("r .c"))).apply(pc));
+	}
+
+	@Test
 	public void testCut() {
 		RuleSet rs = Suite.createRuleSet();
 		Suite.addRule(rs, "a :- b");
