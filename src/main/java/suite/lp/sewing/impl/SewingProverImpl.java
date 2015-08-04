@@ -231,12 +231,23 @@ public class SewingProverImpl implements SewingProver {
 			SewingBinder sb = new SewingBinderImpl();
 			BiPredicate<BindEnv, Node> p = sb.compileBind(head);
 			Trampoline tr1 = compile0(sb, tail);
-			return newEnv(sb, rt -> p.test(rt.bindEnv(), rt.query) ? tr1 : fail);
+			return rt -> {
+				rt.env = sb.env();
+				return p.test(rt.bindEnv(), rt.query) ? tr1 : fail;
+			};
 		});
 
 		Trampoline tr0 = or(trs);
 		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
-		Trampoline tr2 = saveEnv(tr1);
+		Trampoline tr2 = rt -> {
+			Env env0 = rt.env;
+			rt.pushRem(rt_ -> {
+				rt_.env = env0;
+				return okay;
+			});
+			return tr1;
+		};
+
 		return log(tr2, isTrace);
 	}
 
@@ -273,16 +284,14 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr1 = compile0(sb, m[1]);
 			Trampoline tr2 = compile0(sb, m[2]);
 			tr = rt -> {
-				IList<Trampoline> rems0 = rt.rems;
+				Sink<Runtime> restore = save(rt);
 				IList<Trampoline> alts0 = rt.alts;
-				int pit0 = rt.journal.getPointInTime();
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return tr1;
 				});
 				rt.pushAlt(rt_ -> {
-					rt_.rems = rems0;
-					rt_.journal.undoBinds(pit0);
+					restore.sink(rt_);
 					return tr2;
 				});
 				return tr0;
@@ -294,16 +303,14 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
-				IList<Trampoline> rems0 = rt.rems;
+				Sink<Runtime> restore = save(rt);
 				IList<Trampoline> alts0 = rt.alts;
-				int pit0 = rt.journal.getPointInTime();
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return fail;
 				});
 				rt.pushAlt(rt_ -> {
-					rt_.rems = rems0;
-					rt_.journal.undoBinds(pit0);
+					restore.sink(rt_);
 					return okay;
 				});
 				return tr0;
@@ -492,24 +499,6 @@ public class SewingProverImpl implements SewingProver {
 			return tr0;
 	}
 
-	private Trampoline saveEnv(Trampoline tr) {
-		return rt -> {
-			Env env0 = rt.env;
-			rt.pushRem(rt_ -> {
-				rt_.env = env0;
-				return okay;
-			});
-			return tr;
-		};
-	}
-
-	private Trampoline newEnv(SewingBinder sb, Trampoline tr) {
-		return rt -> {
-			rt.env = sb.env();
-			return tr;
-		};
-	}
-
 	private Trampoline and(Streamlet<Trampoline> trs) {
 		List<Trampoline> trs_ = trs.toList();
 		if (trs_.size() == 0)
@@ -544,19 +533,9 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr0 = trs_.get(0);
 			Trampoline tr1 = trs_.get(1);
 			return rt -> {
-				Env env0 = rt.env;
-				Node query0 = rt.query;
-				IList<Trampoline> cutPoint0 = rt.cutPoint;
-				IList<Trampoline> rems0 = rt.rems;
-				int pit0 = rt.journal.getPointInTime();
-				Sink<Node> handler0 = rt.handler;
+				Sink<Runtime> restore = save(rt);
 				rt.pushAlt(rt_ -> {
-					rt_.env = env0;
-					rt_.query = query0;
-					rt_.cutPoint = cutPoint0;
-					rt_.rems = rems0;
-					rt_.journal.undoBinds(pit0);
-					rt_.handler = handler0;
+					restore.sink(rt_);
 					return tr1;
 				});
 				return tr0;
@@ -565,25 +544,33 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline trh = trs_.get(0);
 			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
 			return rt -> {
-				Env env0 = rt.env;
-				Node query0 = rt.query;
-				IList<Trampoline> cutPoint0 = rt.cutPoint;
-				IList<Trampoline> rems0 = rt.rems;
-				int pit0 = rt.journal.getPointInTime();
-				Sink<Node> handler0 = rt.handler;
+				Sink<Runtime> restore = save(rt);
 				for (Trampoline tr_ : trt)
 					rt.pushAlt(rt_ -> {
-						rt_.env = env0;
-						rt_.query = query0;
-						rt_.cutPoint = cutPoint0;
-						rt_.rems = rems0;
-						rt_.journal.undoBinds(pit0);
-						rt_.handler = handler0;
+						restore.sink(rt_);
 						return tr_;
 					});
 				return trh;
 			};
 		}
+	}
+
+	private Sink<Runtime> save(Runtime rt) {
+		Env env0 = rt.env;
+		Node query0 = rt.query;
+		IList<Trampoline> cutPoint0 = rt.cutPoint;
+		IList<Trampoline> rems0 = rt.rems;
+		int pit0 = rt.journal.getPointInTime();
+		Sink<Node> handler0 = rt.handler;
+		Sink<Runtime> restore = rt_ -> {
+			rt_.env = env0;
+			rt_.query = query0;
+			rt_.cutPoint = cutPoint0;
+			rt_.rems = rems0;
+			rt_.journal.undoBinds(pit0);
+			rt_.handler = handler0;
+		};
+		return restore;
 	}
 
 	private int complexity(Node node) {
