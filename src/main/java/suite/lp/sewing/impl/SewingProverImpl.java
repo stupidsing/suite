@@ -106,11 +106,11 @@ public class SewingProverImpl implements SewingProver {
 
 	private class Runtime {
 		private Env env;
-		private IList<Trampoline> cutPoint;
 		private Node query;
-		private Journal journal = new Journal();
+		private IList<Trampoline> cutPoint;
 		private IList<Trampoline> rems = IList.end(); // Continuations
 		private IList<Trampoline> alts = IList.end(); // Alternatives
+		private Journal journal = new Journal();
 		private Prover prover;
 		private Debug debug = new Debug("", IList.end());
 
@@ -125,17 +125,6 @@ public class SewingProverImpl implements SewingProver {
 
 		private BindEnv bindEnv() {
 			return new BindEnv(journal, env);
-		}
-
-		private void post(Runnable r) {
-			pushRem(rt -> {
-				r.run();
-				return okay;
-			});
-			pushAlt(rt -> {
-				r.run();
-				return fail;
-			});
 		}
 
 		private void pushRem(Trampoline tr) {
@@ -284,16 +273,16 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr1 = compile0(sb, m[1]);
 			Trampoline tr2 = compile0(sb, m[2]);
 			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
+				IList<Trampoline> alts0 = rt.alts;
+				int pit0 = rt.journal.getPointInTime();
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return tr1;
 				});
 				rt.pushAlt(rt_ -> {
-					rt_.journal.undoBinds(pit);
 					rt_.rems = rems0;
+					rt_.journal.undoBinds(pit0);
 					return tr2;
 				});
 				return tr0;
@@ -305,16 +294,16 @@ public class SewingProverImpl implements SewingProver {
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
+				IList<Trampoline> alts0 = rt.alts;
+				int pit0 = rt.journal.getPointInTime();
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return fail;
 				});
 				rt.pushAlt(rt_ -> {
-					rt_.journal.undoBinds(pit);
 					rt_.rems = rems0;
+					rt_.journal.undoBinds(pit0);
 					return okay;
 				});
 				return tr0;
@@ -365,28 +354,31 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("try .0 .1 .2").apply(node)) != null) {
-			Trampoline tr0 = compile0(sb, Suite.substitute("once .0", m[0]));
+			Trampoline tr0 = compile0(sb, m[0]);
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt.bindEnv();
-				int pit = rt.journal.getPointInTime();
 				Sink<Node> handler0 = rt.handler;
 				Env env0 = rt.env;
-				IList<Trampoline> alts0 = rt.alts;
 				IList<Trampoline> rems0 = rt.rems;
+				IList<Trampoline> alts0 = rt.alts;
+				int pit0 = rt.journal.getPointInTime();
 				rt.handler = node_ -> {
 					rt.handler = handler0;
-					rt.journal.undoBinds(pit);
+					rt.journal.undoBinds(pit0);
 					if (p.test(be, node_)) {
 						rt.env = env0;
-						rt.alts = alts0;
 						rt.rems = rems0;
+						rt.alts = alts0;
 						rt.pushRem(catch0);
 					} else
 						handler0.sink(node_);
 				};
-				rt.post(() -> rt.handler = handler0);
+				rt.pushRem(rt_ -> {
+					rt_.handler = handler0;
+					return okay;
+				});
 				return tr0;
 			};
 		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
@@ -418,12 +410,7 @@ public class SewingProverImpl implements SewingProver {
 				Fun<Env, Node> f = sb.compile(queryRewriter.rewrite(prototype, node));
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
-					Node query0 = rt.query;
 					rt.query = f.apply(rt.env);
-					rt.pushAlt(rt_ -> {
-						rt_.query = query0;
-						return fail;
-					});
 					return trs[0]::prove;
 				};
 			}
@@ -448,7 +435,10 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline cutBegin(Trampoline tr) {
 		return rt -> {
 			IList<Trampoline> cutPoint0 = rt.cutPoint;
-			rt.post(() -> rt.cutPoint = cutPoint0);
+			rt.pushRem(rt_ -> {
+				rt_.cutPoint = cutPoint0;
+				return okay;
+			});
 			rt.cutPoint = rt.alts;
 			return tr;
 		};
@@ -466,7 +456,14 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr1 = rt -> {
 				Debug debug0 = rt.debug;
 				rt.debug = new Debug(debug0.indent + "| ", IList.cons(rt.query, rt.debug.stack));
-				rt.post(() -> rt.debug = debug0);
+				rt.pushRem(rt2 -> {
+					rt.debug = debug0;
+					return okay;
+				});
+				rt.pushAlt(rt1 -> {
+					rt.debug = debug0;
+					return fail;
+				});
 				return tr0;
 			};
 
@@ -494,7 +491,10 @@ public class SewingProverImpl implements SewingProver {
 	private Trampoline saveEnv(Trampoline tr) {
 		return rt -> {
 			Env env0 = rt.env;
-			rt.post(() -> rt.env = env0);
+			rt.pushRem(rt_ -> {
+				rt_.env = env0;
+				return okay;
+			});
 			return tr;
 		};
 	}
@@ -540,11 +540,19 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr0 = trs_.get(0);
 			Trampoline tr1 = trs_.get(1);
 			return rt -> {
+				Env env0 = rt.env;
+				Node query0 = rt.query;
+				IList<Trampoline> cutPoint0 = rt.cutPoint;
 				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
+				int pit0 = rt.journal.getPointInTime();
+				Sink<Node> handler0 = rt.handler;
 				rt.pushAlt(rt_ -> {
-					rt_.journal.undoBinds(pit);
+					rt_.env = env0;
+					rt_.query = query0;
+					rt_.cutPoint = cutPoint0;
 					rt_.rems = rems0;
+					rt_.handler = handler0;
+					rt_.journal.undoBinds(pit0);
 					return tr1;
 				});
 				return tr0;
@@ -553,12 +561,20 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline trh = trs_.get(0);
 			List<Trampoline> trt = Util.reverse(Util.right(trs_, 1));
 			return rt -> {
+				Env env0 = rt.env;
+				Node query0 = rt.query;
+				IList<Trampoline> cutPoint0 = rt.cutPoint;
 				IList<Trampoline> rems0 = rt.rems;
-				int pit = rt.journal.getPointInTime();
+				int pit0 = rt.journal.getPointInTime();
+				Sink<Node> handler0 = rt.handler;
 				for (Trampoline tr_ : trt)
 					rt.pushAlt(rt_ -> {
-						rt_.journal.undoBinds(pit);
+						rt_.env = env0;
+						rt_.query = query0;
+						rt_.cutPoint = cutPoint0;
 						rt_.rems = rems0;
+						rt_.handler = handler0;
+						rt_.journal.undoBinds(pit0);
 						return tr_;
 					});
 				return trh;
