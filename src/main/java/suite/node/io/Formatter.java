@@ -147,7 +147,7 @@ public class Formatter {
 			}
 			sb.append(">");
 		} else
-			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(node.hashCode()));
+			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(System.identityHashCode(node)));
 	}
 
 	private void formatTree(int parentPrec, Tree tree) {
