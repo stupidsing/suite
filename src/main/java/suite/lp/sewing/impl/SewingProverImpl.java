@@ -359,18 +359,22 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline catch0 = compile0(sb, m[2]);
 			tr = rt -> {
 				BindEnv be = rt.bindEnv();
-				Sink<Node> handler0 = rt.handler;
 				Env env0 = rt.env;
+				Node query0 = rt.query;
+				IList<Trampoline> cutPoint0 = rt.cutPoint;
 				IList<Trampoline> rems0 = rt.rems;
 				IList<Trampoline> alts0 = rt.alts;
 				int pit0 = rt.journal.getPointInTime();
+				Sink<Node> handler0 = rt.handler;
 				rt.handler = node_ -> {
-					rt.handler = handler0;
-					rt.journal.undoBinds(pit0);
 					if (p.test(be, node_)) {
 						rt.env = env0;
+						rt.query = query0;
+						rt.cutPoint = cutPoint0;
 						rt.rems = rems0;
 						rt.alts = alts0;
+						rt.journal.undoBinds(pit0);
+						rt.handler = handler0;
 						rt.pushRem(catch0);
 					} else
 						handler0.sink(node_);
