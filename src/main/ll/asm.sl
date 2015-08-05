@@ -14,14 +14,12 @@ as-let (E32 .i) .os0 .osx :- builtin:suite.asm.AssemblePredicates:emit32 .i .os0
 as-let .v (.v, .os) .os #
 
 asi0:.s0:.a .i .e0/.ex
-	:- once (
-		asis:.s1:.a .i .e1/.ex
-		, (
-			.s0 = .s1, .e0 = .e1
-			; .s1 = 8, .e0 = .e1
-			; .s0/.s1 = 16/32, .e0 = (+x66, .e1)
-			; .s0/.s1 = 32/16, .e0 = (+x66, .e1)
-		)
+	:- asis:.s1:.a .i .e1/.ex
+	, (
+		.s0 = .s1, .e0 = .e1
+		; .s1 = 8, .e0 = .e1
+		; .s0/.s1 = 16/32, .e0 = (+x66, .e1)
+		; .s0/.s1 = 32/16, .e0 = (+x66, .e1)
 	)
 #
 
