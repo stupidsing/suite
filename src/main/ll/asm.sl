@@ -57,6 +57,10 @@ asis:_s:_a (INT .imm) (+xCD, .e0)/.ex :- as-verify-emit:8 .imm .e0/.ex #
 asis:_s:_a (INTO ()) (+xCE, .e)/.e #
 asis:_s:.a (INVLPG .m) .e0/.ex :- as-mod-num-rm:_:.a .m (0 7) .e0/(+x0F, +x01, .e1)/.e1/.ex #
 asis:_s:_a (IRET ()) (+xCF, .e)/.e #
+asis:_s:.a (JA .target) .e :- asi-jump .a .target +x77 +x0F +x87 .e #
+asis:_s:.a (JAE .target) .e :- asi-jump .a .target +x73 +x0F +x83 .e #
+asis:_s:.a (JB .target) .e :- asi-jump .a .target +x72 +x0F +x82 .e #
+asis:_s:.a (JBE .target) .e :- asi-jump .a .target +x76 +x0F +x86 .e #
 asis:_s:.a (JE .target) .e :- asi-jump .a .target +x74 +x0F +x84 .e #
 asis:_s:.a (JG .target) .e :- asi-jump .a .target +x7F +x0F +x8F .e #
 asis:_s:.a (JGE .target) .e :- asi-jump .a .target +x7D +x0F +x8D .e #
@@ -65,7 +69,13 @@ asis:_s:.a (JLE .target) .e :- asi-jump .a .target +x7E +x0F +x8E .e #
 asis:_s:.a (JMP .target) .e :- asi-jump .a .target +xEB () +xE9 .e #
 asis:_s:.a (JMP .rm) .e0/.ex :- as-mod-num-rm:32:.a .rm (0 4) .e0/(+xFF, .e1)/.e1/.ex #
 asis:_s:.a (JNE .target) .e :- asi-jump .a .target +x75 +x0F +x85 .e #
+asis:_s:.a (JNO .target) .e :- asi-jump .a .target +x71 +x0F +x81 .e #
+asis:_s:.a (JNP .target) .e :- asi-jump .a .target +x7B +x0F +x8B .e #
+asis:_s:.a (JNS .target) .e :- asi-jump .a .target +x79 +x0F +x89 .e #
 asis:_s:.a (JNZ .target) .e :- asi-jump .a .target +x75 +x0F +x85 .e #
+asis:_s:.a (JO .target) .e :- asi-jump .a .target +x70 +x0F +x80 .e #
+asis:_s:.a (JP .target) .e :- asi-jump .a .target +x7A +x0F +x8A .e #
+asis:_s:.a (JS .target) .e :- asi-jump .a .target +x78 +x0F +x88 .e #
 asis:_s:.a (JZ .target) .e :- asi-jump .a .target +x74 +x0F +x84 .e #
 asis:_s:.a (LEA (.reg, .rm)) .e0/.ex :- as-rm-regwd:_:.a .rm .reg .e0/(+x8D, .e1)/.e1/.ex #
 asis:.s:_a (LOCK .a) (+xF0, .e1)/.ex :- asis:.s:_a .a .e1/.ex #
