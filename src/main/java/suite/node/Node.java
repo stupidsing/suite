@@ -16,7 +16,7 @@ public class Node implements Comparable<Node> {
 
 	@Override
 	public String toString() {
-		return Formatter.dump(this);
+		return Formatter.dump(finalNode());
 	}
 
 }

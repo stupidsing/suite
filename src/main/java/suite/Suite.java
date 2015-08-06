@@ -207,7 +207,7 @@ public class Suite {
 	// --------------------------------
 	// Evaluation utilities
 
-	public static List<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
+	public static Source<Node> evaluateLogic(Builder builder, RuleSet rs, String lps) {
 		return evaluateUtil.evaluateLogic(builder, rs, parse(lps));
 	}
 

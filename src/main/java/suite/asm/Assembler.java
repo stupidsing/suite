@@ -12,7 +12,6 @@ import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
-import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder;
 import suite.node.Atom;
@@ -28,6 +27,7 @@ import suite.streamlet.Read;
 import suite.text.Preprocess;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 import suite.util.Util;
 
 public class Assembler {
@@ -112,17 +112,13 @@ public class Assembler {
 			for (Pair<Reference, Node> lni : lnis) {
 				int address = org + out.size();
 
-				try {
-					out.append(assemble(address, lni.t1));
-				} catch (Exception ex) {
-					throw new RuntimeException("In " + lni.t1 + " during pass " + (!isPass2 ? "1" : "2"), ex);
-				}
-
 				if (lni.t0 != null)
 					if (!isPass2)
 						lni.t0.bound(Int.of(address));
 					else if (((Int) lni.t0.finalNode()).number != address)
 						throw new RuntimeException("Address varied between passes at " + Integer.toHexString(address));
+
+				out.append(assemble(isPass2, address, lni.t1));
 			}
 
 			for (Pair<Reference, Node> lni : lnis)
@@ -133,12 +129,15 @@ public class Assembler {
 		return out.toBytes();
 	}
 
-	private Bytes assemble(int address, Node instruction) {
-		List<Node> ins = Arrays.asList(Int.of(bits), Int.of(address), instruction);
-		List<Node> nodes = FindUtil.collectList(finder, Tree.of(TermOp.AND___, ins));
-		return Read.from(nodes) //
-				.map(this::convertByteStream) //
-				.min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
+	private Bytes assemble(boolean isPass2, int address, Node instruction) {
+		try {
+			List<Node> ins = Arrays.asList(Int.of(bits), Int.of(address), instruction);
+			List<Bytes> bytesList = new ArrayList<>();
+			finder.find(To.source(Tree.of(TermOp.AND___, ins)), node -> bytesList.add(convertByteStream(node)));
+			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
+		} catch (Exception ex) {
+			throw new RuntimeException("In " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
+		}
 	}
 
 	private Bytes convertByteStream(Node node) {

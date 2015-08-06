@@ -1,5 +1,6 @@
 package suite.lp.search;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import suite.lp.doer.Cloner;
@@ -12,7 +13,7 @@ import suite.util.To;
 public class FindUtil {
 
 	public static Node collectSingle(Finder finder, Node in) {
-		List<Node> list = To.list(collect(finder, in));
+		List<Node> list = collectList(finder, in);
 		if (list.size() == 1)
 			return list.get(0);
 		else if (!list.isEmpty())
@@ -22,10 +23,12 @@ public class FindUtil {
 	}
 
 	public static List<Node> collectList(Finder finder, Node in) {
-		return To.list(collect(finder, in));
+		List<Node> nodes = new ArrayList<>();
+		finder.find(To.source(in), node -> nodes.add(new Cloner().clone(node)));
+		return nodes;
 	}
 
-	private static Source<Node> collect(Finder finder, Node in) {
+	public static Source<Node> collect(Finder finder, Node in) {
 		return collect(finder, To.source(in));
 	}
 

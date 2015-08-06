@@ -23,6 +23,7 @@ import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.Util;
 
@@ -41,8 +42,8 @@ public class EvaluateUtil {
 		Builder builder = new SewingProverBuilder(pair.t0);
 		// Builder builder = new InterpretedProverBuilder(pair.t0);
 		// Builder builder = new CompiledProverBuilder.level1(pair.t0);
-			return builder.build(Suite.funCompilerRuleSet()).apply(pair.t1);
-		});
+		return builder.build(Suite.funCompilerRuleSet()).apply(pair.t1);
+	});
 
 	public boolean proveLogic(Node lp) {
 		Builder builder = CompiledProverBuilder.level1(new ProverConfig());
@@ -55,11 +56,11 @@ public class EvaluateUtil {
 
 	public boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
 		Node goal = Suite.substitute(".0, sink ()", lp);
-		return !evaluateLogic(builder, rs, goal).isEmpty();
+		return evaluateLogic(builder, rs, goal).source() != null;
 	}
 
-	public List<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
-		return FindUtil.collectList(builder.build(rs).apply(lp), Atom.NIL);
+	public Source<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
+		return FindUtil.collect(builder.build(rs).apply(lp), Atom.NIL);
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
