@@ -551,7 +551,7 @@ public class SewingProverImpl implements SewingProver {
 		IList<Trampoline> rems0 = rt.rems;
 		int pit0 = rt.journal.getPointInTime();
 		Sink<Node> handler0 = rt.handler;
-		Sink<Runtime> restore = rt_ -> {
+		return rt_ -> {
 			rt_.env = env0;
 			rt_.query = query0;
 			rt_.cutPoint = cutPoint0;
@@ -559,7 +559,6 @@ public class SewingProverImpl implements SewingProver {
 			rt_.journal.undoBinds(pit0);
 			rt_.handler = handler0;
 		};
-		return restore;
 	}
 
 	private int complexity(Node node) {
