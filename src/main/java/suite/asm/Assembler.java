@@ -32,18 +32,27 @@ import suite.util.Util;
 
 public class Assembler {
 
+	private RuleSet ruleSet;
+	private Finder finder;
 	private int bits;
 
-	private RuleSet ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
-
-	private Finder finder = new SewingProverBuilder().build(ruleSet)
-			.apply(Suite.parse("" //
-					+ "source (.bits, .address, .instruction,)" //
-					+ ", asi:.bits:.address .instruction .code" //
-					+ ", sink .code" //
-	));
-
 	public Assembler(int bits) {
+		this(bits, false);
+	}
+
+	public Assembler(int bits, boolean isLongMode) {
+		ruleSet = Suite.createRuleSet(Arrays.asList("asm.sl", "auto.sl"));
+
+		if (isLongMode)
+			Suite.addRule(ruleSet, "as-long-mode");
+
+		finder = new SewingProverBuilder().build(ruleSet)
+				.apply(Suite.parse("" //
+						+ "source (.bits, .address, .instruction,)" //
+						+ ", asi:.bits:.address .instruction .code" //
+						+ ", sink .code" //
+		));
+
 		this.bits = bits;
 	}
 

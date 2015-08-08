@@ -2,6 +2,8 @@ package suite.asm;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import suite.Suite;
@@ -19,6 +21,13 @@ public class AssemblerTest {
 		} finally {
 			Suite.isProverTrace = isProverTrace0;
 		}
+	}
+
+	@Test
+	public void testAssembleLongMode() throws IOException {
+		Assembler assembler = new Assembler(32, true);
+		Bytes bytes = assembler.assemble(Suite.parse(".org = 0, .l MOV (R9D, 16),"));
+		assertEquals(bytes.size(), 7);
 	}
 
 	@Test

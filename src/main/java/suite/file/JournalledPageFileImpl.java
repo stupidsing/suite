@@ -12,7 +12,7 @@ import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
 /**
- * Protect data against power loss or similar failures by recording journals.
+ * Protect data against power loss failures by recording journals.
  *
  * @author ywsing
  */
