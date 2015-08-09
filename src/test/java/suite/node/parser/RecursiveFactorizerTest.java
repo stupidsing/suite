@@ -121,8 +121,9 @@ public class RecursiveFactorizerTest {
 		return sx;
 	}
 
-	private Node operatorNode(Operator operator, List<Node> nodes) {
-		return treeNode(FNodeType.OPERATOR, new Str(operator.toString()), nodes);
+	private Node operatorNode(Operator op, List<Node> nodes) {
+		Str name = new Str(op.toString());
+		return treeNode(FNodeType.OPERATOR, name, nodes);
 	}
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
