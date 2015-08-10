@@ -102,7 +102,8 @@ public class Formatter {
 	 * @param parentPrec
 	 *            Minimum operator precedence without adding parentheses.
 	 */
-	private void format(Node node, int parentPrec) {
+	private void format(Node node0, int parentPrec) {
+		Node node = node0.finalNode();
 		Integer objectId = System.identityHashCode(node);
 
 		// Avoids infinite recursion if object is recursive
