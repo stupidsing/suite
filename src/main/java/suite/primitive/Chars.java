@@ -17,10 +17,10 @@ import suite.util.Util;
 
 public class Chars implements Iterable<Character> {
 
-	private static char emptyCharArray[] = new char[0];
+	private static char emptyArray[] = new char[0];
 	private static int reallocSize = 65536;
 
-	public static Chars emptyChars = Chars.of(emptyCharArray);
+	public static Chars empty = Chars.of(emptyArray);
 
 	public final char cs[]; // Immutable
 	public final int start, end;
@@ -240,7 +240,7 @@ public class Chars implements Iterable<Character> {
 
 		// Avoid small pack of chars object keeping a large buffer
 		if (Boolean.FALSE && cs.length >= reallocSize && end - start < reallocSize / 4)
-			result = emptyChars.append(result); // Do not share reference
+			result = empty.append(result); // Do not share reference
 
 		return result;
 	}
@@ -256,7 +256,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public static class CharsBuilder {
-		private char cs[] = emptyCharArray;
+		private char cs[] = emptyArray;
 		private int size;
 
 		public CharsBuilder append(Chars chars) {

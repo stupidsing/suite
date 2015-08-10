@@ -34,6 +34,7 @@ import suite.util.To;
 
 public class RecursiveFactorizerTest {
 
+	private Nodify nodify = new Nodify(new Inspect());
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 	@Test
@@ -109,7 +110,6 @@ public class RecursiveFactorizerTest {
 		};
 
 		TreeRewriter tr = new TreeRewriter();
-		Nodify nodify = new Nodify(new Inspect());
 
 		FR fr0 = recursiveFactorizer.parse(s0);
 		FNode fn0 = fr0.node;

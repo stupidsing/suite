@@ -18,10 +18,10 @@ import suite.util.Util;
 
 public class Bytes implements Iterable<Byte> {
 
-	private static byte emptyByteArray[] = new byte[0];
+	private static byte emptyArray[] = new byte[0];
 	private static int reallocSize = 65536;
 
-	public static Bytes emptyBytes = Bytes.of(emptyByteArray);
+	public static Bytes empty = Bytes.of(emptyArray);
 
 	public final byte bs[]; // Immutable
 	public final int start, end;
@@ -241,7 +241,7 @@ public class Bytes implements Iterable<Byte> {
 
 		// Avoid small pack of bytes object keeping a large buffer
 		if (Boolean.FALSE && bs.length >= reallocSize && end - start < reallocSize / 4)
-			result = emptyBytes.append(result); // Do not share reference
+			result = empty.append(result); // Do not share reference
 
 		return result;
 	}
@@ -257,7 +257,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public static class BytesBuilder {
-		private byte bs[] = emptyByteArray;
+		private byte bs[] = emptyArray;
 		private int size;
 
 		public BytesBuilder append(Bytes bytes) {

@@ -34,7 +34,7 @@ public class RollingHashUtilTest {
 		for (int pos = 0; pos < size; pos++)
 			rollingHash = rollingHashUtil.unroll(rollingHash, bytes.get(pos), size - pos);
 
-		assertEquals(rollingHashUtil.hash(Bytes.emptyBytes), rollingHash);
+		assertEquals(rollingHashUtil.hash(Bytes.empty), rollingHash);
 	}
 
 	@Test

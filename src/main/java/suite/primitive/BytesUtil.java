@@ -14,7 +14,7 @@ public class BytesUtil {
 	public static Outlet<Bytes> buffer(Outlet<Bytes> o) {
 		return new Outlet<>(new Source<Bytes>() {
 			private Outlet<Bytes> o_ = o;
-			protected Bytes buffer = Bytes.emptyBytes;
+			protected Bytes buffer = Bytes.empty;
 			protected boolean isEof = false;
 
 			public Bytes source() {
@@ -44,7 +44,7 @@ public class BytesUtil {
 		int ds = delim.size();
 
 		return new Outlet<>(new Source<Bytes>() {
-			private Bytes buffer = Bytes.emptyBytes;
+			private Bytes buffer = Bytes.empty;
 			private boolean isArriving;
 			private int p;
 

@@ -9,7 +9,7 @@ import suite.primitive.Bytes.BytesBuilder;
  */
 public abstract class PacketChannel extends BufferedChannel {
 
-	private Bytes received = Bytes.emptyBytes;
+	private Bytes received = Bytes.empty;
 
 	public abstract void onReceivePacket(Bytes packet);
 

@@ -76,7 +76,7 @@ public class FileSystemKeySet {
 	}
 
 	private NameKey boundingKey(Bytes hash, int minMax) {
-		return keyUtil.toNameKey(hash, minMax, Bytes.emptyBytes, 0);
+		return keyUtil.toNameKey(hash, minMax, Bytes.empty, 0);
 	}
 
 	private Bytes increment(Bytes bytes) {

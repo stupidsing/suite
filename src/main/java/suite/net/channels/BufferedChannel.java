@@ -11,7 +11,7 @@ import suite.primitive.Bytes;
 public abstract class BufferedChannel implements Channel {
 
 	private Sender sender;
-	private Bytes toSend = Bytes.emptyBytes;
+	private Bytes toSend = Bytes.empty;
 
 	public void send(Bytes message) {
 		toSend = toSend.append(message);

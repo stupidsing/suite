@@ -14,7 +14,7 @@ public class CharsUtil {
 	public static Outlet<Chars> buffer(Outlet<Chars> o) {
 		return new Outlet<>(new Source<Chars>() {
 			private Outlet<Chars> o_ = o;
-			protected Chars buffer = Chars.emptyChars;
+			protected Chars buffer = Chars.empty;
 			protected boolean isEof = false;
 
 			public Chars source() {
@@ -44,7 +44,7 @@ public class CharsUtil {
 		int ds = delim.size();
 
 		return new Outlet<>(new Source<Chars>() {
-			private Chars buffer = Chars.emptyChars;
+			private Chars buffer = Chars.empty;
 			private boolean isArriving;
 			private int p;
 

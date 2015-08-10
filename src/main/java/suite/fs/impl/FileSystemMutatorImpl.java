@@ -98,7 +98,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		for (int page = nPages1; page < nPages0; page++)
 			mutator.remove(key(hash, DATAID, page));
 		for (int page = nPages0; page < nPages1; page++)
-			mutator.putPayload(key(hash, DATAID, page), Bytes.emptyBytes);
+			mutator.putPayload(key(hash, DATAID, page), Bytes.empty);
 
 		mutator.put(sizeKey, size1);
 		mutator.commit();
