@@ -28,32 +28,30 @@ public class TreeRewriter {
 	}
 
 	public Node replace(Node from, Node to, Node node0) {
-		return new Fun<Node, Node>() {
-			public Node apply(Node node) {
-				return !eq(node, from) ? Rewriter.transform(node, this::apply) : to;
-			}
-		}.apply(node0);
+		return rewrite(n -> !eq(n, from) ? n : to, node0);
 	}
 
 	public Node rewrite(Node from, Node to, Node node0) {
 		return rewrite(() -> {
 			Cloner cloner = new Cloner();
 			return new Node[] { cloner.clone(from), cloner.clone(to) };
-		}, node0);
+		} , node0);
 	}
 
-	public Node rewrite(Source<Node[]> source, Node node0) {
+	public Node rewrite(Source<Node[]> source, Node node) {
 		Journal journal = new Journal();
 
-		return new Source<Node>() {
-			public Node source() {
-				return rewrite0(node0);
+		return rewrite(new Fun<Node, Node>() {
+			public Node apply(Node n) {
+				return rewrite0(n);
 			}
 
 			private Node rewrite0(Node node0) {
 				Node node1;
-				if (node0 instanceof Reference || (node1 = bind(node0)) == null)
-					node1 = Rewriter.transform(node0, this::rewrite0);
+				if (!(node0 instanceof Reference))
+					node1 = bind(node0);
+				else
+					node1 = node0;
 				return node1;
 			}
 
@@ -65,10 +63,14 @@ public class TreeRewriter {
 					return ft[1];
 				else {
 					journal.undoBinds(pit);
-					return null;
+					return node0;
 				}
 			}
-		}.source();
+		}, node);
+	}
+
+	public Node rewrite(Fun<Node, Node> fun, Node node0) {
+		return fun.apply(Rewriter.transform(node0, n -> rewrite(fun, n)));
 	}
 
 	private boolean eq(Node n0, Node n1) {
