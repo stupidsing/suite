@@ -9,7 +9,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.Suite;
 import suite.inspect.Inspect;
+import suite.lp.doer.Generalizer;
+import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -80,16 +83,16 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testRefactorRewrite() throws IOException {
+	public void testRefactorRewrite0() throws IOException {
 		String pred0 = "ic-compile-better-option";
 		String predx = "ic-new-compile-better-option";
-		String sx = rewriteNewArgument(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		String sx = rewriteNewArgument0(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));
 	}
 
-	private String rewriteNewArgument(String pred0, String predx, String newArgument, String s0) {
+	private String rewriteNewArgument0(String pred0, String predx, String newArgument, String s0) {
 		Source<Node[]> source = () -> {
 			Reference r[] = new Reference[64];
 
@@ -115,6 +118,45 @@ public class RecursiveFactorizerTest {
 		FNode fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);
 		Node nodex = tr.rewrite(source, node0);
+		FNode fnx = nodify.unnodify(FNode.class, nodex);
+		FR frx = new FR(fr0.pre, fnx, fr0.post);
+		String sx = recursiveFactorizer.unparse(frx);
+		return sx;
+	}
+
+	@Test
+	public void testRefactorRewrite() throws IOException {
+		String pred0 = "ic-compile-better-option .0 .1 .2";
+		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
+		String sx = rewriteNewArgument(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
+
+		System.out.println(sx);
+		assertFalse(sx.contains(pred0));
+	}
+
+	private String rewriteNewArgument(String from, String to, String s0) {
+		Generalizer generalizer = new Generalizer();
+		TreeRewriter tr = new TreeRewriter();
+
+		Fun<Node, Node> rewrite = n0 -> {
+			Node m[] = Suite.matcher("suite.node.parser.RecursiveFactorizer$FTerminal:.0").apply(n0);
+			Node n1 = m != null ? m[0] : null;
+			Node n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
+			Node n3 = n2 != null ? n2.finalNode() : null;
+			String s = n3 instanceof Str ? ((Str) n3).value : null;
+			boolean b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");
+			return b ? generalizer.generalize(Atom.of(s)) : n0;
+		};
+
+		Fun<String, Node> parse = s -> tr.rewrite(rewrite, nodify.nodify(FNode.class, recursiveFactorizer.parse(s).node));
+
+		Node nodeFrom = parse.apply(from);
+		Node nodeTo = parse.apply(to);
+
+		FR fr0 = recursiveFactorizer.parse(s0);
+		FNode fn0 = fr0.node;
+		Node node0 = nodify.nodify(FNode.class, fn0);
+		Node nodex = tr.rewrite(nodeFrom, nodeTo, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		FR frx = new FR(fr0.pre, fnx, fr0.post);
 		String sx = recursiveFactorizer.unparse(frx);
