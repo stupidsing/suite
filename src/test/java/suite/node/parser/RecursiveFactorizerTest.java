@@ -125,16 +125,16 @@ public class RecursiveFactorizerTest {
 	}
 
 	@Test
-	public void testRefactorRewrite() throws IOException {
+	public void testRefactorRewrite1() throws IOException {
 		String pred0 = "ic-compile-better-option .0 .1 .2";
 		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
-		String sx = rewriteNewArgument(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		String sx = rewriteNewArgument1(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));
 	}
 
-	private String rewriteNewArgument(String from, String to, String s0) {
+	private String rewriteNewArgument1(String from, String to, String s0) {
 		Generalizer generalizer = new Generalizer();
 		TreeRewriter tr = new TreeRewriter();
 
