@@ -21,15 +21,7 @@ import suite.util.FunUtil.Source;
 public class TransactionManager<Key, Value> {
 
 	private Source<KeyValueStoreMutator<Key, Value>> source;
-	private Map<Key, Ownership> ownershipsByKey = new ConcurrentHashMap<>();
-
-	private class Ownership {
-		private Transaction transaction;
-
-		private Ownership(TransactionManager<Key, Value>.Transaction transaction) {
-			this.transaction = transaction;
-		}
-	}
+	private Map<Key, Transaction> transactionByKey = new ConcurrentHashMap<>();
 
 	public class Transaction implements KeyValueStoreMutator<Key, Value> {
 		private KeyValueStoreMutator<Key, Value> mutator;
@@ -43,7 +35,7 @@ public class TransactionManager<Key, Value> {
 			mutator.commit();
 
 			// Clean up keys table
-			keys.forEach(ownershipsByKey::remove);
+			keys.forEach(transactionByKey::remove);
 		}
 
 		public Streamlet<Key> keys() {
@@ -86,12 +78,10 @@ public class TransactionManager<Key, Value> {
 			acquireOwnership(key);
 		}
 
-		private Ownership acquireOwnership(Key key) {
-			Ownership ownership;
-			while (ownershipsByKey.putIfAbsent(key, ownership = new Ownership(this)).transaction != this)
+		private void acquireOwnership(Key key) {
+			while (transactionByKey.putIfAbsent(key, this) != this)
 				backoff();
 			keys.add(key);
-			return ownership;
 		}
 
 		private void backoff() {
