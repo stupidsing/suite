@@ -6,7 +6,7 @@ Library with all sorts of useful code pieces for myself. In particular it has a 
 
 - Linux, unix, or cygwin
 - JDK 1.8
-- Apache Maven
+- Apache Maven 3
 - rlwrap if you want to use the convenient interactive prompt
 
 ### How to build and run the project?
