@@ -120,7 +120,9 @@ public class Formatter {
 		else if (node instanceof Data) {
 			Object data = Data.get(node);
 			if (data instanceof Chars)
-				sb.append("Chars<" + quoteStringIfRequired(((Chars) data).toString()) + ">");
+				sb.append("Chars<" + quoteStringIfRequired(data.toString()) + ">");
+			else if (data instanceof Node)
+				sb.append("Data<" + data.toString() + ">");
 			else
 				sb.append("Data<" + data.getClass().getSimpleName() + ">");
 		} else if (node instanceof Dict) {

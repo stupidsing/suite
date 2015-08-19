@@ -97,7 +97,8 @@ public class Intrinsics {
 				, BasicIntrinsics.class //
 				, CharsIntrinsics.class //
 				, MonadIntrinsics.class //
-				, SeqIntrinsics.class)) {
+				, SeqIntrinsics.class //
+				, SuiteIntrinsics.class)) {
 			Object instance;
 
 			try {
