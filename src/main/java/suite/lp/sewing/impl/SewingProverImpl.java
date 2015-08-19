@@ -334,8 +334,8 @@ public class SewingProverImpl implements SewingProver {
 				IList<Trampoline> alts0 = rt.alts;
 				Sink<Node> handler0 = rt.handler;
 				rt.handler = node_ -> {
+					restore.sink(rt);
 					if (p.test(be, node_)) {
-						restore.sink(rt);
 						rt.alts = alts0;
 						rt.pushRem(catch0);
 					} else
