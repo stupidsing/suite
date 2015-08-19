@@ -32,6 +32,11 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
+ic-compile .fs (COPY .size .target .source) .e0/.ex
+	:- ic-compile .fs .source .e0/.e1
+	, ic-compile .fs .target .e1/.e2
+	, ic-copy 0 .size .e2/.ex
+#
 ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 	:- .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
@@ -269,6 +274,37 @@ ic-divide .reg
 	, _ MOV ($0, ECX)
 	, .e
 )/.e #
+
+ic-copy _ 0 .e/.e
+#
+ic-copy .o 1 (MOV (CL, `$1 + .o`), MOV (`$0 + .o`, CL), .e)/.e
+#
+ic-copy .o 2 (MOV (CX, `$1 + .o`), MOV (`$0 + .o`, CX), .e)/.e
+#
+ic-copy .o 4 (MOV (ECX, `$1 + .o`), MOV (`$0 + .o`, ECX), .e)/.e
+#
+ic-copy 0 .size .e0/.ex
+	:- .size > 16
+	, let .div4 (.size / 4)
+	, let .mod4 (.size % 4)
+	, .e0 = (_ CLD ()
+		, _ MOV (EDX, ESI)
+		, _ MOV (EDI, $0)
+		, _ MOV (ESI, $1)
+		, _ MOV (ECX, .div4)
+		, _ REP MOVSD ()
+		, _ MOV (ECX, .mod4)
+		, _ REP MOVSB ()
+		, _ MOV (ESI, EDX)
+		, .ex)
+#
+ic-copy .o .size .e0/.ex
+  :- .size > 4
+  , ic-copy .o 4 .e0/.e1
+  , let .size1 (.size - 4)
+  , let .o1 (.o + 4)
+  , ic-copy .o1 .size1 .e1/.ex
+#
 
 ic-operator-insn ' + ' ADD #
 ic-operator-insn ' - ' SUB #
