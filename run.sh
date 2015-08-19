@@ -7,7 +7,7 @@ OPTS="-Xss2m -Xmx256m ${DEBUGOPTS} -Dhome.dir=${BASE}"
 CMD="java ${OPTS} -jar ${JAR}"
 FULLCMD="${CMD} $@"
 
-{ stat --version 2> /dev/null | grep GNU; } && STAT="stat -c %Y" || STAT="stat -f %m"
+{ stat --version 2> /dev/null | grep GNU > /dev/null; } && STAT="stat -c %Y" || STAT="stat -f %m"
 
 getLatestTimestamp() {
 	TS=$(find "$@" -type f 2> /dev/null | xargs ${STAT} 2> /dev/null | sort -g | tail -1)
