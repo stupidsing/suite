@@ -11,6 +11,10 @@ ic-parse (allocate .var/.size; .do) (ALLOC .size .var .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 #
+ic-parse (copy/.size .target .source; .do) (COPY .size .target1 .source1)
+	:- ic-parse .source .source1
+	, ic-parse .target .target1
+#
 ic-parse `.pointer` (DEREF .pointer1)
 	:- ic-parse .pointer .pointer1
 #
