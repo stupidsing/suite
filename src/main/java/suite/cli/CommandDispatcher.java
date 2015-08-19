@@ -128,10 +128,10 @@ public class CommandDispatcher {
 			printEvaluated(writer, Suite.applyWriter(node));
 			break;
 		case EVALUATEINTERPRET:
-			System.out.println(new LazyFunInterpreter0().lazy(node).get());
+			pw.println(new LazyFunInterpreter0().lazy(node).get());
 			break;
 		case EVALUATEINTERPRET1:
-			System.out.println(new LazyFunInterpreter().lazy(node).get());
+			pw.println(new LazyFunInterpreter().lazy(node).get());
 			break;
 		case EVALUATESTR:
 			node = Suite.substitute("string of .0", node);
