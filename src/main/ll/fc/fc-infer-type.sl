@@ -21,7 +21,7 @@
 --
 
 fc-infer-type .do .type
-	:- try (fc-infer-type-rule .do ()/()/() .tr/() .type) .ex (fc-error .ex)
+	:- try (once (fc-infer-type-rule .do ()/()/() .tr/() .type)) .ex (fc-error .ex)
 	, fc-resolve-type-rules .tr
 #
 
