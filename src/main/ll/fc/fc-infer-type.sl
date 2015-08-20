@@ -150,6 +150,7 @@ fc-infer-var-types () _ .tr/.tr
 
 fc-find-simple-type (ATOM .a) _ (ATOM-OF .a) #
 fc-find-simple-type (BOOLEAN _) _ BOOLEAN #
+fc-find-simple-type (CHARS _) _ (FUNCTOR-OF n PAIR-OF (ATOM-OF Chars) ATOM-OF ()) #
 fc-find-simple-type (DO _) _ (FUNCTOR-OF Do _) #
 fc-find-simple-type NIL _ (LIST-OF _) :- ! #
 fc-find-simple-type (NUMBER _) _ NUMBER #
