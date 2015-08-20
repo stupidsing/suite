@@ -205,14 +205,16 @@ ic-compile-better-option .fs (DEREF (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
 ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
-ic-replace-parameters () _ .do .do #
+ic-replace-parameters () _ .do .do
+#
 ic-replace-parameters (.var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + 4)
 	, replace .var (DEREF (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
-ic-push-pop-parameters .fs/.fs () .e/.e .f/.f #
+ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
+#
 ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
 	, ic-compile .fs1 .p .e1/.e2
@@ -250,8 +252,10 @@ ic-operator .op
 )/.e
 	:- ic-operator-setcc .op .setcc
 #
-ic-operator ' / ' .e :- ic-divide EAX .e #
-ic-operator ' %% ' .e :- ic-divide EDX .e #
+ic-operator ' / ' .e :- ic-divide EAX .e
+#
+ic-operator ' %% ' .e :- ic-divide EDX .e
+#
 ic-operator .shift
 	(_ MOV (ECX, $0)
 	, _ R-
