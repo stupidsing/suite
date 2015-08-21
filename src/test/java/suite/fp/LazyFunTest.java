@@ -48,6 +48,15 @@ public class LazyFunTest {
 				+ "define fib := \n" //
 				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
 				+ ">> fib | get {10}"));
+
+		assertEquals(Int.of(144), eval("" //
+				+ "define fib := x => \n" //
+				+ "    if (x = `$a; $y`) then \n" //
+				+ "        if (y = `$b; $z`) then \n" //
+				+ "            (fib {y} + fib {z}) \n" //
+				+ "        else 1 \n" //
+				+ "    else 0 \n" //
+				+ ">> fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }"));
 	}
 
 	@Test
