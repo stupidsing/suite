@@ -24,52 +24,57 @@ public class LazyFunTest {
 
 	@Test
 	public void testCorecursion() {
-		assertEquals(Atom.TRUE, eval("" //
+		String fp0 = "" //
 				+ "define seq := n => n; seq {n} >> \n" //
-				+ "head {seq {0}} = 0"));
+				+ "head {seq {0}} = 0";
+		assertEquals(Atom.TRUE, eval(fp0));
 
-		assertEquals(Int.of(89), eval("" // Real co-recursion!
+		String fp1 = "" // Real co-recursion!
 				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} >> \n" //
-				+ "fib {0} {1} | get {10}"));
+				+ "fib {0} {1} | get {10}";
+		assertEquals(Int.of(89), eval(fp1));
 	}
 
 	@Test
 	public void testDefines() {
-		assertEquals(Int.of(62), eval("" //
+		String fp0 = "" //
 				+ "lets ( \n" //
 				+ "    a := n => if (n > 0) then (b {n - 1} * 2) else 0 # \n" //
 				+ "    b := n => if (n > 0) then (a {n - 1} + 1) else 0 # \n" //
-				+ ") >> a {10}"));
+				+ ") >> a {10}";
+		assertEquals(Int.of(62), eval(fp0));
 	}
 
 	@Test
 	public void testFibonacci() {
-		assertEquals(Int.of(89), eval("" //
+		String fp0 = "" //
 				+ "define fib := \n" //
 				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
-				+ ">> fib | get {10}"));
+				+ ">> fib | get {10}";
+		assertEquals(Int.of(89), eval(fp0));
 
-		assertEquals(Int.of(144), eval("" //
+		String fp1 = "" //
 				+ "define fib := x => \n" //
 				+ "    if (x = `$a; $y`) then \n" //
 				+ "        if (y = `$b; $z`) then \n" //
 				+ "            (fib {y} + fib {z}) \n" //
 				+ "        else 1 \n" //
 				+ "    else 0 \n" //
-				+ ">> fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }"));
+				+ ">> fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }";
+		assertEquals(Int.of(144), eval(fp1));
 	}
 
 	@Test
 	public void testFix() {
-		assertEquals(Suite.parse("0; 0; 0;"), eval("" //
-				+ "fix {cons {0}} | take {3}"));
+		assertEquals(Suite.parse("0; 0; 0;"), eval("fix {cons {0}} | take {3}"));
 	}
 
 	@Test
 	public void testFold() {
-		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
+		String fp0 = "" //
 				+ "define inf-series := n => n; inf-series {n + 1} >> " //
-				+ "0 | inf-series | fold-right {`;`} {} | take {5}"));
+				+ "0 | inf-series | fold-right {`;`} {} | take {5}";
+		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval(fp0));
 
 		// On the other hand, same call using fold-left would result in infinite
 		// loop, like this:
