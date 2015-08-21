@@ -1,9 +1,11 @@
 package suite.fp.intrinsic;
 
 import java.util.Arrays;
+import java.util.List;
 
 import suite.Suite;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
+import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
@@ -25,6 +27,12 @@ public class SuiteIntrinsics {
 	public Intrinsic parse = (callback, inputs) -> {
 		String s = Data.get(inputs.get(0)).toString();
 		return new Data<>(Suite.parse(s));
+	};
+
+	public Intrinsic substitute = (callback, inputs) -> {
+		String s = Data.get(inputs.get(0)).toString();
+		List<Node> list = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true).map(Data::<Node> get).toList();
+		return new Data<>(Suite.substitute(s, list.toArray(new Node[list.size()])));
 	};
 
 	public Intrinsic toChars = (callback, inputs) -> {
