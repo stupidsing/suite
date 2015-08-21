@@ -26,17 +26,19 @@ public class FunTypeTest {
 				+ "data Clazz as Link Clazz >> \n" //
 				+ "data Clazz as Leaf number >> \n";
 
-		assertType("number", data //
+		String fp0 = data //
 				+ "var f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 >> \n" //
-				+ "f {Leaf 1} \n");
+				+ "f {Leaf 1} \n";
+		assertType("number", fp0);
 
-		assertType("number", data //
+		String fp1 = data //
 				+ "var f := v => \n" //
 				+ "    if (v = `Leaf $i`) then i \n" //
 				+ "    else if (v = `Link Leaf $i`) then i \n" //
 				+ "    else 0 \n" //
 				+ ">> \n" //
-				+ "f {Link Leaf 3} \n");
+				+ "f {Link Leaf 3} \n";
+		assertType("number", fp1);
 	}
 
 	@Test
@@ -47,17 +49,19 @@ public class FunTypeTest {
 
 	@Test
 	public void testClass() {
-		assertType("Clazz atom:()", "" //
+		String fp0 = "" //
 				+ "data Clazz as Empty >> \n" //
 				+ "define add := (Clazz -> Clazz) of (a => a) >> \n" //
-				+ "add | {Empty}");
+				+ "add | {Empty}";
+		assertType("Clazz atom:()", fp0);
 
-		assertType("boolean", "" //
+		String fp1 = "" //
 				+ "data T as Nil >> \n" //
 				+ "data T as BTree (T, T) >> \n" //
 				+ "let u := T of Nil >> \n" //
 				+ "let v := T of Nil >> \n" //
-				+ "v = BTree (BTree (Nil, Nil), Nil)");
+				+ "v = BTree (BTree (Nil, Nil), Nil)";
+		assertType("boolean", fp1);
 	}
 
 	@Test
@@ -108,14 +112,16 @@ public class FunTypeTest {
 
 	@Test
 	public void testGeneric() {
-		assertType("[Rb-tree number]", "" //
+		String fp0 = "" //
 				+ "data (Rb-tree :t) over :t as Empty >> \n" //
 				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error >> \n" //
 				+ "define add := (:t => :t -> Rb-tree :t) of (v => Empty) >> \n" //
-				+ "1; | map {add} \n");
+				+ "1; | map {add} \n";
+		assertType("[Rb-tree number]", fp0);
 
-		assertType("number", "" //
-				+ "define id := (:t => :t -> :t) of (a => a) >> (id {3} + (id {4;} | head))");
+		String fp1 = "" //
+				+ "define id := (:t => :t -> :t) of (a => a) >> (id {3} + (id {4;} | head))";
+		assertType("number", fp1);
 	}
 
 	@Test
@@ -124,7 +130,7 @@ public class FunTypeTest {
 				+ "data (List :t) over :t as Nil >> \n" //
 				+ "data (List :t) over :t as Node (:t, List :t) >> \n" //
 				+ "data (List :t) over :t as Node2 (:t, :t, List :t) >> \n" //
-		;
+				;
 
 		getType(define + "Nil");
 		getType(define + "Node (false, Nil)");

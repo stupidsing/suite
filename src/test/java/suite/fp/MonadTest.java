@@ -29,22 +29,23 @@ public class MonadTest {
 
 	@Test
 	public void testMutable() throws IOException {
-		assertEquals("abc", evalMonad("" //
+		String fp0 = "" //
 				+ "do >> \n" //
 				+ "    definem string v # \n" //
 				+ "    v := \"abc\" # \n" //
-				+ "    getm {v} # \n" //
-				+ ""));
+				+ "    getm {v} # \n";
+		assertEquals("abc", evalMonad(fp0));
 	}
 
 	@Test
 	public void testMutableFail() throws IOException {
 		try {
-			assertEquals("abc", evalMonad("" //
+			String fp0 = "" //
 					+ "do >> \n" //
 					+ "    definem int v # \n" //
 					+ "    v := \"abc\" # \n" //
-					+ "", "any"));
+					+ "";
+			assertEquals("abc", evalMonad(fp0, "any"));
 		} catch (RuntimeException ex) {
 			// Unmatched types
 		}
