@@ -38,7 +38,7 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	, ic-parse .value .value1
 #
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
-	:- list.query2 .params .params1 .param .param1 ic-parse .param .param1
+	:- list.query2 .params .params1 .param .param1 (ic-parse .param .param1)
 	, ic-parse .do .do1
 #
 ic-parse (.var =+ .i) (PRE-ADD-NUMBER .var1 .i)
