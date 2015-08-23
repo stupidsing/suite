@@ -38,6 +38,10 @@ ic-compile .fs (COPY .size .target .source) .e0/.ex
 	, ic-copy 0 .size .e2/.e3
 	, .e3 = (_ R-, .ex)
 #
+ic-compile .fs (DEREF .value) .e0/.ex
+	:- ic-compile .fs .value .e0/.e1
+	, .e1 = (_ MOV ($0, `$0`), .ex)
+#
 ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 	:- .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
@@ -55,10 +59,6 @@ ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 		, _ R+
 		, _ MOV ($0, ECX)
 		, .ex)
-#
-ic-compile .fs (DEREF .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ MOV ($0, `$0`), .ex)
 #
 ic-compile .fs (IF .if .then .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
