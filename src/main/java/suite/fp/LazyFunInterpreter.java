@@ -153,6 +153,24 @@ public class LazyFunInterpreter {
 			Fun<Frame, Thunk_> p0_ = lazy0(mapping, m[0]);
 			Fun<Frame, Thunk_> p1_ = lazy0(mapping, m[1]);
 			result = frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
+		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
+			Fun<Frame, Thunk_> value_ = lazy0(mapping, m[1]);
+			Mapping mapping1 = mapping.extend(m[2]).extend(m[3]);
+			Sink2<Frame, Thunk_> left_ = mapping1.setter(m[2]);
+			Sink2<Frame, Thunk_> right_ = mapping1.setter(m[3]);
+			Fun<Frame, Thunk_> then_ = lazy0(mapping1, m[4]);
+			Fun<Frame, Thunk_> else_ = lazy0(mapping, m[5]);
+
+			result = frame -> {
+				Node value = value_.apply(frame).get();
+				if (value instanceof Pair_) {
+					Pair_ pair = (Pair_) value;
+					left_.sink(frame, pair.first_);
+					right_.sink(frame, pair.second);
+					return then_.apply(frame);
+				} else
+					return else_.apply(frame);
+			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(Suite.matcher(".0 .1")::apply);
 			Streamlet<Node> vars = arrays.map(m1 -> m1[0]);
@@ -174,7 +192,7 @@ public class LazyFunInterpreter {
 				return expr.apply(frame);
 			};
 		} else if ((m = Suite.matcher("ERROR").apply(node)) != null)
-			result = frame -> {
+			result = frame -> () -> {
 				throw new RuntimeException("Error termination");
 			};
 		else if ((m = Suite.matcher("FUN .0 .1").apply(node)) != null) {
@@ -188,6 +206,8 @@ public class LazyFunInterpreter {
 			});
 		} else if ((m = Suite.matcher("IF .0 .1 .2").apply(node)) != null)
 			result = lazy0(mapping, Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", m[0], m[1], m[2]));
+		else if ((m = Suite.matcher("NIL").apply(node)) != null)
+			result = immediate(Atom.NIL);
 		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
@@ -209,8 +229,12 @@ public class LazyFunInterpreter {
 			};
 		} else if ((m = Suite.matcher("TREE .0 .1 .2").apply(node)) != null)
 			result = lazy0(mapping, Suite.substitute("APPLY .2 APPLY .1 (VAR .0)", m[0], m[1], m[2]));
+		else if ((m = Suite.matcher("UNWRAP .0").apply(node)) != null)
+			return lazy0(mapping, m[0]);
 		else if ((m = Suite.matcher("VAR .0").apply(node)) != null)
 			result = mapping.getter(m[0]);
+		else if ((m = Suite.matcher("WRAP .0").apply(node)) != null)
+			return lazy0(mapping, m[0]);
 		else
 			throw new RuntimeException("Unrecognized construct " + node);
 

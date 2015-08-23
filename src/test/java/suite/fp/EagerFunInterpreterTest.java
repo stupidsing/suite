@@ -10,6 +10,12 @@ import suite.node.Int;
 public class EagerFunInterpreterTest {
 
 	@Test
+	public void testDecons() {
+		String expr = "let l := (1; 3;) >> if (l = `$a; $b;`) then b else error";
+		assertEquals(Int.of(3), new EagerFunInterpreter().eager(Suite.parse(expr)));
+	}
+
+	@Test
 	public void testFibonacci() {
 		String expr = "define fib := (n => if (n > 1) then (fib {n - 1} + fib {n - 2}) else n) >> fib {12}";
 		assertEquals(Int.of(144), new EagerFunInterpreter().eager(Suite.parse(expr)));

@@ -19,6 +19,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.streamlet.Streamlet;
@@ -159,6 +160,31 @@ public class EagerFunInterpreter {
 			Fun<Frame, Node> p0_ = eager0(mapping, m[0]);
 			Fun<Frame, Node> p1_ = eager0(mapping, m[1]);
 			result = frame -> pair(p0_.apply(frame), p1_.apply(frame));
+		} else if ((m = Suite.matcher("DECONS .0 .1 .2 .3 .4 .5").apply(node)) != null) {
+			Fun<Frame, Node> value_ = eager0(mapping, m[1]);
+			Mapping mapping1 = mapping.extend(m[2]).extend(m[3]);
+			Sink2<Frame, Node> left_ = mapping1.setter(m[2]);
+			Sink2<Frame, Node> right_ = mapping1.setter(m[3]);
+			Fun<Frame, Node> then_ = eager0(mapping1, m[4]);
+			Fun<Frame, Node> else_ = eager0(mapping, m[5]);
+			Operator operator;
+
+			if (m[0] == Atom.of("L"))
+				operator = TermOp.AND___;
+			else if (m[0] == Atom.of("P"))
+				operator = TermOp.OR____;
+			else
+				throw new RuntimeException("Unknown DECONS type");
+
+			result = frame -> {
+				Tree tree = Tree.decompose(value_.apply(frame), operator);
+				if (tree != null) {
+					left_.sink(frame, tree.getLeft());
+					right_.sink(frame, tree.getRight());
+					return then_.apply(frame);
+				} else
+					return else_.apply(frame);
+			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
 			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(Suite.matcher(".0 .1")::apply);
 			Mapping mapping1 = arrays //
@@ -192,7 +218,9 @@ public class EagerFunInterpreter {
 			Fun<Frame, Node> then_ = eager0(mapping, m[1]);
 			Fun<Frame, Node> else_ = eager0(mapping, m[2]);
 			result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
-		} else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
+		} else if ((m = Suite.matcher("NIL").apply(node)) != null)
+			result = immediate(Atom.NIL);
+		else if ((m = Suite.matcher("NUMBER .0").apply(node)) != null)
 			result = immediate(m[0]);
 		else if ((m = Suite.matcher("PRAGMA .0 .1").apply(node)) != null)
 			result = eager0(mapping, m[1]);
