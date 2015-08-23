@@ -26,7 +26,7 @@ ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 ic-parse (.this:.sub [.params]) (INVOKE .this1 .sub1 .params1) -- Traditional subroutine invocation
 	:- ic-parse .this .this1
 	, ic-parse .sub .sub1
-	, list.query2 .params .params1 .param .param1 ic-parse .param .param1
+	, list.query2 .params .params1 .param .param1 (ic-parse .param .param1)
 #
 ic-parse () NOP
 #
@@ -105,4 +105,16 @@ ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .ste
 ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
 ic-parse-sugar true 1
+#
+
+ic-parse-type int I32
+#
+ic-parse-type [.t] (ARRAY-OF .type)
+	:- ic-parse-type .t .type
+#
+ic-parse-type (p^.t) (PTR-OF .type)
+	:- ic-parse-type .t .type
+#
+ic-parse-type (.name {.ts}) (TUPLE-OF .name .types)
+	:- list.query2 .ts .types .t .type (fc-parse .t .type)
 #
