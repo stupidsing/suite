@@ -119,7 +119,7 @@ ic-compile .fs (PRE-ADD-NUMBER .pointer .i) .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-compile .fs (REF MEMORY 4 .pointer) .e0/.ex
+ic-compile .fs (REF MEMORY _ .pointer) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
 #
 ic-compile .fs (SEQ .do0 .do1) .e0/.ex
