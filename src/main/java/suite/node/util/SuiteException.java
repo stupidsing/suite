@@ -14,7 +14,7 @@ public class SuiteException extends RuntimeException {
 	}
 
 	public SuiteException(Node node, String details) {
-		super(Formatter.display(node) + details != null ? "\n" + details : "");
+		super(Formatter.display(node) + (details != null ? "\n" + details : ""));
 		this.node = node;
 	}
 

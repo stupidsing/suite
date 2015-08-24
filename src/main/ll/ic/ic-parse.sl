@@ -51,7 +51,7 @@ ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
-	:- not (.do0 = allocate _; .do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _)
+	:- not (.do0 = allocate _; .do0 = allocate-pointer _; .do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _)
 	, ic-parse .do0 .parsed0
 	, ic-parse .do1 .parsed1
 #
@@ -87,6 +87,9 @@ ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` 
 #
 ic-parse-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
+#
+ic-parse-sugar (allocate-pointer .var/.size; .do) (allocate .mem/.size; declare .var = & .mem; .do)
+	:- is.atom .var, temp .mem
 #
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)

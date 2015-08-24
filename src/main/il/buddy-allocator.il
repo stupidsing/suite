@@ -1,6 +1,6 @@
 declare ba = this;
 declare ba-sync = 0;
-allocate lists/256;
+allocate-pointer lists/256;
 
 declare ba-region0 = +x50000;
 declare ba-regionx = +xA0000;
@@ -34,7 +34,7 @@ declare ba-buddy-of = [block, l2,] (
 );
 
 declare ba-list-entry = [l2,] (
-	& lists + l2 shl 3;
+	lists + l2 shl 3;
 );
 
 declare ba-allocate0 = [l2,] (
@@ -80,7 +80,7 @@ declare ba-deallocate = [block, size,] (
 );
 
 declare ba-setup = [] (
-	kernel:zero [& lists, 256,];
+	kernel:zero [lists, 256,];
 	declare largest-l2 = max-l2 - 1;
 	let `ba:ba$size [ba-region0,]` = largest-l2; -- Granularity
 	dl:dl-insert-next [ba:ba-list-entry [largest-l2,], ba-region0,];

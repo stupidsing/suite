@@ -25,7 +25,7 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 	:- .e0 = (_ SUB (ESP, .size), .e1)
 	, let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
-	, replace (VAR .var) (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .offset))) .do .do1
+	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .offset))) .do .do1
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
 #
@@ -207,8 +207,14 @@ ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 
 ic-replace-parameters () _ .do .do
 #
+ic-replace-parameters (.var/.size, .vars) .s0 .do0 .dox
+	:- let .s (.s0 + .size)
+	, replace .var (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
+	, ic-replace-parameters .vars .s .do1 .dox
+#
 ic-replace-parameters (.var, .vars) .s0 .do0 .dox
-	:- let .s (.s0 + 4)
+	:- not (.var = _/_)
+	, let .s (.s0 + 4)
 	, replace .var (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
@@ -216,10 +222,23 @@ ic-replace-parameters (.var, .vars) .s0 .do0 .dox
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
 #
 ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
-	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
-	, ic-compile .fs1 .p .e1/.e2
-	, ic-push-top .fs1/.fsx .e2/.ex
-	, .f0 = (_ POP (EDX), .f1)
+	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx, once (
+		ic-compile .fs1 .p .e1/.e2
+		, ic-push-top .fs1/.fsx .e2/.ex
+		, .f0 = (_ POP (EDX), .f1)
+		; .p = MEMORY .size .pointer
+		, ic-compile .fs1 .pointer .e1/.e2
+		, .e2 = (_ SUB (ESP, .size)
+			, _ R+
+			, _ MOV ($0, ESP)
+			, .e3)
+		, ic-copy 0 .size .e3/.e4
+		, .e4 = (_ R-
+			, _ R-
+			, .ex)
+		, .f0 = (_ ADD (ESP, .size), .f1)
+		, let .fsx (.fs1 + .size)
+	)
 #
 
 ic-push-top .fs0/.fsx (_ PUSH ($0), _ R-, .e)/.e
@@ -282,11 +301,11 @@ ic-divide .reg
 
 ic-copy _ 0 .e/.e
 #
-ic-copy .o 1 (MOV (CL, `$1 + .o`), MOV (`$0 + .o`, CL), .e)/.e
+ic-copy .o 1 (_ MOV (CL, `$1 + .o`), _ MOV (`$0 + .o`, CL), .e)/.e
 #
-ic-copy .o 2 (MOV (CX, `$1 + .o`), MOV (`$0 + .o`, CX), .e)/.e
+ic-copy .o 2 (_ MOV (CX, `$1 + .o`), _ MOV (`$0 + .o`, CX), .e)/.e
 #
-ic-copy .o 4 (MOV (ECX, `$1 + .o`), MOV (`$0 + .o`, ECX), .e)/.e
+ic-copy .o 4 (_ MOV (ECX, `$1 + .o`), _ MOV (`$0 + .o`, ECX), .e)/.e
 #
 ic-copy 0 .size .e0/.ex
 	:- .size > 16
@@ -299,11 +318,10 @@ ic-copy 0 .size .e0/.ex
 		, _ MOV (ECX, .div4)
 		, _ REP MOVSD ()
 		, .e1)
-	, once (.mod4 >= 1, .e1 = (_ MOVSB, .e2); .e1 = .e2)
-	, once (.mod4 >= 2, .e2 = (_ MOVSB, .e3); .e2 = .e3)
-	, once (.mod4 >= 3, .e3 = (_ MOVSB, .e4); .e3 = .e4)
-	, .e4 = (_ MOV (ESI, EDX)
-		, .ex)
+	, once (.mod4 >= 1, .e1 = (_ MOVSB (), .e2); .e1 = .e2)
+	, once (.mod4 >= 2, .e2 = (_ MOVSB (), .e3); .e2 = .e3)
+	, once (.mod4 >= 3, .e3 = (_ MOVSB (), .e4); .e3 = .e4)
+	, .e4 = (_ MOV (ESI, EDX), .ex)
 #
 ic-copy .o .size .e0/.ex
   :- .size > 4

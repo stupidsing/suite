@@ -1,5 +1,5 @@
 declare irq = this;
-allocate irq-sinks/64;
+allocate-pointer irq-sinks/64;
 
 declare dump-sink = [irq-number,] (
 	cs:cs-puts ["IRQ = ",];
@@ -14,11 +14,11 @@ declare irq-get-isr = [] (
 );
 
 declare irq-get-sink = [irq-number,] (
-	`& irq-sinks + irq-number shl 2`;
+	`irq-sinks + irq-number shl 2`;
 );
 
 declare irq-set-sink = [irq-number, irq-sink,] (
-	let `& irq-sinks + irq-number shl 2` = irq-sink;
+	let `irq-sinks + irq-number shl 2` = irq-sink;
 );
 
 declare irq-setup = [] (

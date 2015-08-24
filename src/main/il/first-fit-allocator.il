@@ -5,7 +5,7 @@ declare ffa-region0 = +x50000;
 declare ffa-regionx = +xA0000;
 declare ffa-current;
 
-allocate head/12;
+allocate-pointer head/12;
 
 declare ffa$size = [e,] (
 	e + 8;

@@ -199,10 +199,10 @@ declare idt-setup = [] (
 	idt:idt-set-entry [+x20, handle-timer-interrupt, 1,];
 
 	(
-		allocate idtr/8;
-		let `& idtr` = +x7FF;
-		let `& idtr + 2` = idt-address;
-		& idtr;
+		allocate-pointer idtr/8;
+		let `idtr` = +x7FF;
+		let `idtr + 2` = idt-address;
+		idtr;
 
 		asm _ LIDT (`EAX`);
 	);
