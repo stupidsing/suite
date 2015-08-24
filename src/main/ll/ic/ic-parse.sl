@@ -15,9 +15,6 @@ ic-parse (copy/.size .target .source) (COPY .size .target1 .source1)
 	:- ic-parse .source .source1
 	, ic-parse .target .target1
 #
-ic-parse `.pointer` (DEREF .pointer1)
-	:- ic-parse .pointer .pointer1
-#
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	:- ic-parse .if .if1
 	, ic-parse .then .then1
@@ -36,6 +33,9 @@ ic-parse .i (NUMBER .i)
 ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
+#
+ic-parse `.pointer` (MEMORY 4 .pointer1)
+	:- ic-parse .pointer .pointer1
 #
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
 	:- list.query2 .params .params1 .param .param1 (ic-parse .param .param1)
