@@ -222,7 +222,8 @@ ic-replace-parameters (.var, .vars) .s0 .do0 .dox
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
 #
 ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
-	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx, once (
+	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
+	, once (
 		ic-compile .fs1 .p .e1/.e2
 		, ic-push-top .fs1/.fsx .e2/.ex
 		, .f0 = (_ POP (EDX), .f1)
