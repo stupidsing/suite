@@ -11,7 +11,11 @@ import java.util.Map.Entry;
 
 import suite.adt.Pair;
 import suite.ebnf.EbnfExpect.Expect;
+import suite.node.parser.FactorizeResult;
+import suite.node.parser.FactorizeResult.FNodeType;
+import suite.node.parser.FactorizeResult.FTerminal;
 import suite.os.LogUtil;
+import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -221,6 +225,33 @@ public class Ebnf {
 				.collect(As.map());
 	}
 
+	public FactorizeResult parseFNode(String s, String entity) {
+		char[] cs = s.toCharArray();
+		return toFactorizeResult(cs, 0, cs.length, parse(s, entity));
+	}
+
+	private FactorizeResult toFactorizeResult(char cs[], int p0, int px, Node node) {
+		List<Node> nodes = node.nodes;
+		int size = nodes.size();
+
+		if (size > 0) {
+			List<FactorizeResult> frs = new ArrayList<>();
+			int pos = p0;
+			for (int i = 0; i < size; i++) {
+				Node child = nodes.get(i);
+				int pos0 = pos;
+				pos = i != size - 1 ? child.end : px;
+				frs.add(toFactorizeResult(cs, pos0, pos, child));
+			}
+			return FactorizeResult.merge(FNodeType.OPERATOR, node.entity, frs);
+		} else {
+			Chars pre = Chars.of(cs, p0, node.start);
+			Chars mid = Chars.of(cs, node.start, node.end);
+			Chars post = Chars.of(cs, node.end, px);
+			return new FactorizeResult(pre, new FTerminal(mid), post);
+		}
+	}
+
 	public Node parse(String s) {
 		return parse(s, rootEntity);
 	}
@@ -317,20 +348,20 @@ public class Ebnf {
 			return st0.deepen(frame, 1) //
 					.p(parse, gb) //
 					.concatMap(st1 -> Outlet.from(new Source<State>() {
-						private State state_ = st1;
-						private Deque<Outlet<State>> outlets = new ArrayDeque<>();
+				private State state_ = st1;
+				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
-						public State source() {
-							if (state_ != null) {
-								State state0 = state_.deepen(frame, -1);
-								outlets.push(state0.pr(parse, gc));
-								while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
-									outlets.pop();
-								return state0;
-							} else
-								return null;
-						}
-					}));
+				public State source() {
+					if (state_ != null) {
+						State state0 = state_.deepen(frame, -1);
+						outlets.push(state0.pr(parse, gc));
+						while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
+							outlets.pop();
+						return state0;
+					} else
+						return null;
+				}
+			}));
 		};
 	}
 

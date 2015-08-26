@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
+import suite.node.parser.FactorizeResult;
 import suite.os.FileUtil;
 
 public class EbnfTest {
@@ -71,6 +72,17 @@ public class EbnfTest {
 	}
 
 	@Test
+	public void testRefactor() throws IOException {
+		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
+		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
+		FactorizeResult fr = rewrite(ebnf, "intersect-select" //
+				, "SELECT .0 FROM DUAL" //
+				, "SELECT .0 FROM DUAL WHERE COL2 = 1" //
+				, ebnf.parseFNode(sql, "sql"));
+		System.out.println(fr.unparse());
+	}
+
+	@Test
 	public void testSql() throws IOException {
 		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
@@ -99,6 +111,12 @@ public class EbnfTest {
 		System.out.println(s);
 		Ebnf ebnf = new Ebnf(new StringReader(s));
 		System.out.println(ebnf.parse("1 * 2 + 3"));
+	}
+
+	private FactorizeResult rewrite(Ebnf ebnf, String entity, String from, String to, FactorizeResult fr0) {
+		FactorizeResult frfrom = ebnf.parseFNode(from, entity);
+		FactorizeResult frto = ebnf.parseFNode(to, entity);
+		return FactorizeResult.rewrite(frfrom, frto, fr0);
 	}
 
 	private String v(int i) {

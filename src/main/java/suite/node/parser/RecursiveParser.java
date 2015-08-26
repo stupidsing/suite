@@ -7,10 +7,10 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.parser.RecursiveFactorizer.FNode;
-import suite.node.parser.RecursiveFactorizer.FPair;
-import suite.node.parser.RecursiveFactorizer.FTerminal;
-import suite.node.parser.RecursiveFactorizer.FTree;
+import suite.node.parser.FactorizeResult.FNode;
+import suite.node.parser.FactorizeResult.FPair;
+import suite.node.parser.FactorizeResult.FTerminal;
+import suite.node.parser.FactorizeResult.FTree;
 import suite.node.util.Singleton;
 
 /**
