@@ -38,7 +38,7 @@ ic-parse `.pointer` (MEMORY 4 .pointer1)
 	:- ic-parse .pointer .pointer1
 #
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
-	:- list.query2 .params .params1 .param .param1 (ic-parse .param .param1)
+	:- list.query2 .params .params1 .param .param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
 #
 ic-parse (.var =+ .i) (PRE-ADD-NUMBER .var1 .i)
@@ -108,6 +108,12 @@ ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .ste
 ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
 ic-parse-sugar true 1
+#
+
+ic-parse-parameter .param/.size (PARAM .size .param)
+#
+ic-parse-parameter .p .param
+	:- not (.p = _/_), .param = PARAM 4 .p
 #
 
 ic-parse-type int I32

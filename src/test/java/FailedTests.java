@@ -8,18 +8,21 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
+import suite.lp.sewing.impl.SewingProverImpl;
 
 public class FailedTests {
 
 	// Shall we support this?
 	@Test
 	public void testClassOfClass() {
-		assertEquals(Suite.parse("C2 {boolean}"), Suite.evaluateFunType("" //
-				+ "data (C0 {:t}) over :t as A :t >> \n" //
-				+ "data (C1 {:t}) over :t as (C0 {:t}) >> \n" //
-				+ "data (C2 {:t}) over :t as (C1 {:t}) >> \n" //
-				+ "(C2 {boolean}) of (A true)"));
+		assertEquals(Suite.parse("C2 {boolean}"),
+				Suite.evaluateFunType("" //
+						+ "data (C0 {:t}) over :t as A :t >> \n" //
+						+ "data (C1 {:t}) over :t as (C0 {:t}) >> \n" //
+						+ "data (C2 {:t}) over :t as (C1 {:t}) >> \n" //
+						+ "(C2 {boolean}) of (A true)"));
 	}
 
 	// Duplicate symbols. Cannot bind again when using is used in a closure
@@ -60,6 +63,14 @@ public class FailedTests {
 	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (:t => rb-tree {:t}) of 1");
+	}
+
+	// NullPointerException
+	@Test
+	public void testQueryRewrite() {
+		RuleSet rs = Suite.createRuleSet();
+		Suite.addRule(rs, "ic-parse .params (METHOD .params do1)");
+		new SewingProverImpl(rs).compile(Suite.parse("ic-parse ([a,] a) .v")).apply(new ProverConfig());
 	}
 
 	// Takes 11 seconds to type check

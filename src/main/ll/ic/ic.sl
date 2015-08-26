@@ -207,15 +207,9 @@ ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 
 ic-replace-parameters () _ .do .do
 #
-ic-replace-parameters (.var/.size, .vars) .s0 .do0 .dox
+ic-replace-parameters (PARAM .size .var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
-	, replace .var (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
-	, ic-replace-parameters .vars .s .do1 .dox
-#
-ic-replace-parameters (.var, .vars) .s0 .do0 .dox
-	:- not (.var = _/_)
-	, let .s (.s0 + 4)
-	, replace .var (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
+	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
