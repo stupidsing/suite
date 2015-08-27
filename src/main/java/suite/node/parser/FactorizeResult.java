@@ -27,10 +27,6 @@ public class FactorizeResult {
 	public final FNode node;
 	public final Chars post;
 
-	public enum FNodeType {
-		ENCLOSE_, OPERATOR, TERMINAL,
-	}
-
 	public interface FNode {
 	}
 
@@ -57,16 +53,14 @@ public class FactorizeResult {
 	}
 
 	public static class FTree extends FNodeImpl {
-		public final FNodeType type;
 		public final String name;
 		public final List<FPair> pairs;
 
 		public FTree() {
-			this(null, null, null);
+			this(null, null);
 		}
 
-		public FTree(FNodeType type, String name, List<FPair> pairs) {
-			this.type = type;
+		public FTree(String name, List<FPair> pairs) {
 			this.name = name;
 			this.pairs = pairs;
 		}
@@ -86,7 +80,7 @@ public class FactorizeResult {
 		}
 	}
 
-	public static FactorizeResult merge(FNodeType type, String name, List<FactorizeResult> list) {
+	public static FactorizeResult merge(String name, List<FactorizeResult> list) {
 		Chars pre = Util.first(list).pre;
 		Chars post = Util.last(list).post;
 		List<FPair> pairs = new ArrayList<>();
@@ -100,7 +94,7 @@ public class FactorizeResult {
 			pairs.add(new FPair(list.get(i).node, space));
 		}
 
-		FNode fn = new FTree(type, name, pairs);
+		FNode fn = new FTree(name, pairs);
 		return new FactorizeResult(pre, fn, post);
 	}
 

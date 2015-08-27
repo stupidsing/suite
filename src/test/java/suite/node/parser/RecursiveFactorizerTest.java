@@ -19,7 +19,6 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FNode;
-import suite.node.parser.FactorizeResult.FNodeType;
 import suite.node.parser.FactorizeResult.FPair;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
@@ -72,7 +71,7 @@ public class RecursiveFactorizerTest {
 				List<FPair> pairs = Read.from(ft.pairs) //
 						.map(pair -> new FPair(transform(pair.node, fun), pair.chars)) //
 						.toList();
-				fnx = new FTree(ft.type, ft.name, pairs);
+				fnx = new FTree(ft.name, pairs);
 			} else
 				fnx = fn0;
 		return fnx;
@@ -137,25 +136,20 @@ public class RecursiveFactorizerTest {
 	}
 
 	private Node operatorNode(Operator op, List<Node> nodes) {
+		Str s = new Str("");
 		Str name = new Str(op.toString());
-		return treeNode(FNodeType.OPERATOR, name, nodes);
+		return treeNode(() -> s, name, nodes);
 	}
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
 		Str name = new Str(op.toString());
 		List<Node> nodes = Arrays.asList(n0, terminalNode(op.getName().trim()), n1);
-		return treeNode(g, FNodeType.OPERATOR, name, nodes);
+		return treeNode(g, name, nodes);
 	}
 
-	private Node treeNode(FNodeType type, Node name, List<Node> nodes) {
-		Str s = new Str("");
-		return treeNode(() -> s, type, name, nodes);
-	}
-
-	private Node treeNode(Source<Node> g, FNodeType type, Node name, List<Node> nodes) {
+	private Node treeNode(Source<Node> g, Node name, List<Node> nodes) {
 		List<Node> pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
 		Dict dict = new Dict();
-		dict.map.put(Atom.of("type"), Reference.of(Atom.of(type.toString())));
 		dict.map.put(Atom.of("name"), Reference.of(name));
 		dict.map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
 		return Tree.of(TermOp.COLON_, Atom.of(FTree.class.getName()), dict);

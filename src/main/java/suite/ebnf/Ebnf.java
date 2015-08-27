@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import suite.adt.Pair;
 import suite.ebnf.EbnfExpect.Expect;
 import suite.node.parser.FactorizeResult;
-import suite.node.parser.FactorizeResult.FNodeType;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.os.LogUtil;
 import suite.primitive.Chars;
@@ -243,7 +242,7 @@ public class Ebnf {
 				pos = i != size - 1 ? child.end : px;
 				frs.add(toFactorizeResult(cs, pos0, pos, child));
 			}
-			return FactorizeResult.merge(FNodeType.OPERATOR, node.entity, frs);
+			return FactorizeResult.merge( node.entity, frs);
 		} else {
 			Chars pre = Chars.of(cs, p0, node.start);
 			Chars mid = Chars.of(cs, node.start, node.end);

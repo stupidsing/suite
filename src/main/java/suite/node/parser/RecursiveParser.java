@@ -40,23 +40,14 @@ public class RecursiveParser {
 			FNode fn1 = pairs.get(1).node;
 			FNode fn2 = pairs.get(2).node;
 
-			switch (ft.type) {
-			case ENCLOSE_:
-				if (name.equals("("))
-					return node(fn1);
-				else if (name.equals("["))
-					return Tree.of(TermOp.TUPLE_, Atom.of("[]"), node(fn1));
-				else if (name.equals("`"))
-					return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
-				else
-					throw new RuntimeException();
-			case OPERATOR:
-				return Tree.of(TermOp.valueOf(name), node(fn0), node(fn2));
-			case TERMINAL:
+			if (name.equals("("))
 				return node(fn1);
-			default:
-				throw new RuntimeException();
-			}
+			else if (name.equals("["))
+				return Tree.of(TermOp.TUPLE_, Atom.of("[]"), node(fn1));
+			else if (name.equals("`"))
+				return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
+			else
+				return Tree.of(TermOp.valueOf(name), node(fn0), node(fn2));
 		} else
 			return terminalParser.parseTerminal(((FTerminal) fn).chars.toString());
 	}

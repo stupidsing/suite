@@ -8,7 +8,6 @@ import suite.adt.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
-import suite.node.parser.FactorizeResult.FNodeType;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.primitive.Chars;
 import suite.primitive.CharsUtil;
@@ -82,7 +81,7 @@ public class RecursiveFactorizer {
 				if (post != null)
 					list.add(term(post));
 
-				return FactorizeResult.merge(FNodeType.OPERATOR, operator.toString(), list);
+				return FactorizeResult.merge(operator.toString(), list);
 			}
 
 			if (first == '(' && last == ')' //
@@ -91,8 +90,7 @@ public class RecursiveFactorizer {
 				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
 				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
 				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
-				return FactorizeResult.merge(FNodeType.ENCLOSE_, "" + first,
-						Arrays.asList(term(left), parse0(middle, 0), term(right)));
+				return FactorizeResult.merge("" + first, Arrays.asList(term(left), parse0(middle, 0), term(right)));
 			}
 		}
 
