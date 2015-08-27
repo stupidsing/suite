@@ -45,3 +45,16 @@ ic-rewrite-list (.p0, .ps0) (.p1, .ps1) .ts0/.tsx
 	:- .ts0 = (.p0 .p1, .ts1)
 	, ic-rewrite .ps0 .ps1 .ts1/.tsx
 #
+
+ic-rewrite-type I32 I32 .ts/.ts
+#
+ic-rewrite-type (ARRAY-OF .size .t0) (ARRAY-OF .size .t1) (.t0 .t1, .ts)/.ts
+#
+ic-rewrite-type (PTR-OF .t0) (PTR-OF .t1) (.t0 .t1, .ts)/.ts
+#
+ic-rewrite-type (TUPLE-OF .name ()) (TUPLE-OF .name ()) .ts/.ts
+#
+ic-rewrite-type (TUPLE-OF .name (.t0, .ts0)) (TUPLE-OF .name (.t1, .ts1)) .ts0/.tsx
+	:- ic-rewrite-type .t0 .t1 .ts0/.ts1
+	, ic-rewrite-type (TUPLE-OF .name .ts0) (TUPLE-OF .name .ts1) .ts1/.tsx
+#

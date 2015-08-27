@@ -6,7 +6,7 @@ constant io-base = +x300;
 constant mem-base = 16384;
 constant mem-size = 16384;
 
-allocate-pointer ne2k-mac-address/8;
+allocate-pointer ne2k-mac-address/(int * 2);
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 
@@ -83,10 +83,10 @@ declare ne2k-setup = [] (
 		kernel:outb [io-base + +x00, +x21,];
 		kernel:outb [io-base + +x0E, +x49,];
 
-		allocate romdata/16;
-		ne2k:ne2k-read [0, & romdata, 16,];
+		allocate-pointer romdata/(int * 4);
+		ne2k:ne2k-read [0, romdata, 16,];
 		for (declare p = 0; p < 6; p =+ 1) (
-			kernel:copy [ne2k-mac-address + p, & romdata + p shl 1, 1,];
+			kernel:copy [ne2k-mac-address + p, romdata + p shl 1, 1,];
 		);
 
 		ne2k-rx-page-start = mem-base shr 8;

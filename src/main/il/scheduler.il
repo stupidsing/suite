@@ -1,7 +1,7 @@
 declare sch = this;
 declare sch-sync = 0;
 declare current-process = 0;
-allocate-pointer processes/12;
+allocate-pointer processes/(int * 3);
 
 declare sch-switch = [] (-- Round robin in action
 	sync:sync-try-enter [& sch-sync,] && (

@@ -1,6 +1,6 @@
 declare ba = this;
 declare ba-sync = 0;
-allocate-pointer lists/256;
+allocate-pointer lists/(int * 64);
 
 declare ba-region0 = +x50000;
 declare ba-regionx = +xA0000;

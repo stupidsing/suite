@@ -1,5 +1,5 @@
 declare irq = this;
-allocate-pointer irq-sinks/64;
+allocate-pointer irq-sinks/(int * 16);
 
 declare dump-sink = [irq-number,] (
 	cs:cs-puts ["IRQ = ",];

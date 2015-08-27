@@ -7,9 +7,10 @@ ic-parse .do0 .parsed
 #
 ic-parse this $$EBP
 #
-ic-parse (allocate .var/.size; .do) (ALLOC .size .var .do1)
+ic-parse (allocate .var/.t; .do) (ALLOC .type .var .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
+	, ic-parse-type .t .type
 #
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	:- ic-parse .if .if1
@@ -30,7 +31,7 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse `.pointer` (MEMORY 4 .pointer1)
+ic-parse `.pointer` (MEMORY I32 .pointer1)
 	:- ic-parse .pointer .pointer1
 #
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
@@ -84,14 +85,14 @@ ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` 
 ic-parse-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
 #
-ic-parse-sugar (allocate-pointer .var/.size; .do) (allocate .mem/.size; declare .var = & .mem; .do)
+ic-parse-sugar (allocate-pointer .var/.type; .do) (allocate .mem/.type; declare .var = & .mem; .do)
 	:- is.atom .var, temp .mem
 #
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
 #
-ic-parse-sugar (declare .var; .do) (allocate .var/4; .do)
+ic-parse-sugar (declare .var; .do) (allocate .var/int; .do)
 	:- is.atom .var
 #
 ic-parse-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
@@ -106,7 +107,8 @@ ic-parse-sugar (not .b) (if .b then 0 else 1)
 ic-parse-sugar true 1
 #
 
-ic-parse-parameter .param/.type (PARAM .type .param)
+ic-parse-parameter .param/.t (PARAM .type .param)
+	:- ic-parse-type .t .type
 #
 ic-parse-parameter .p .param
 	:- not (.p = _/_), .param = PARAM I32 .p
@@ -121,5 +123,5 @@ ic-parse-type (p^.t) (PTR-OF .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-type (.name {.ts}) (TUPLE-OF .name .types)
-	:- list.query2 .ts .types .t .type (fc-parse .t .type)
+	:- list.query2 .ts .types .t .type (ic-parse .t .type)
 #
