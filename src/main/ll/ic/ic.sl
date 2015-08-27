@@ -201,8 +201,9 @@ ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 
 ic-replace-parameters () _ .do .do
 #
-ic-replace-parameters (PARAM .size .var, .vars) .s0 .do0 .dox
-	:- let .s (.s0 + .size)
+ic-replace-parameters (PARAM .type .var, .vars) .s0 .do0 .dox
+	:- ic-type-size .type .size
+	, let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
@@ -236,6 +237,20 @@ ic-push-top .fs0/.fsx (_ PUSH ($0), _ R-, .e)/.e
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
 	:- let .fsx (.fs0 + 4)
+#
+
+ic-type-size I32 4
+#
+ic-type-size (ARRAY-OF .arraySize .type) .size
+	:- ic-type-size .type .elementSize
+	, let .size (.arraySize * .elementSize)
+#
+ic-type-size (PTR-OF _) 4
+#
+ic-type-size (TUPLE-OF .name (.type, .types)) .size
+	:- ic-type-size .type .size0
+	, ic-type-size (TUPLE-OF .name .types) .size1
+	, let .size (.size0 + .size1)
 #
 
 ic-right-associative ' + ' #

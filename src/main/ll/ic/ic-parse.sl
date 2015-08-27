@@ -106,15 +106,15 @@ ic-parse-sugar (not .b) (if .b then 0 else 1)
 ic-parse-sugar true 1
 #
 
-ic-parse-parameter .param/.size (PARAM .size .param)
+ic-parse-parameter .param/.type (PARAM .type .param)
 #
 ic-parse-parameter .p .param
-	:- not (.p = _/_), .param = PARAM 4 .p
+	:- not (.p = _/_), .param = PARAM I32 .p
 #
 
 ic-parse-type int I32
 #
-ic-parse-type [.t] (ARRAY-OF .type)
+ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-type (p^.t) (PTR-OF .type)
