@@ -32,12 +32,6 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-compile .fs (COPY .size .target .source) .e0/.ex
-	:- ic-compile .fs .source .e0/.e1
-	, ic-compile .fs .target .e1/.e2
-	, ic-copy 0 .size .e2/.e3
-	, .e3 = (_ R-, .ex)
-#
 ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 	:- .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
