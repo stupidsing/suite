@@ -139,7 +139,7 @@ public class SewingProverImpl implements SewingProver {
 
 	public SewingProverImpl(RuleSet rs) {
 		systemPredicates = new SystemPredicates(null);
-		rules = Read.from(rs.getRules()).groupBy(Prototype::of).collect(As.multimap());
+		rules = Read.from(rs.getRules()).toMultimap(Prototype::of);
 		queryRewriter = !Suite.isProverTrace ? new QueryRewriterImpl(rules) : new QueryNoRewriterImpl();
 
 		if (!rules.containsKey(null))
@@ -193,8 +193,7 @@ public class SewingProverImpl implements SewingProver {
 			// Second-level indexing optimization
 			if (rules.size() >= 6) {
 				Map<Prototype, List<Rule>> rulesByProto1 = Read.from(rules) //
-						.groupBy(rule -> Prototype.of(rule, 1)) //
-						.collect(As.map());
+						.toListMap(rule -> Prototype.of(rule, 1), rule -> rule);
 
 				if (!rulesByProto1.containsKey(null)) {
 					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
