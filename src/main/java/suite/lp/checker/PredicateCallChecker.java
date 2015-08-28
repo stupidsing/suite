@@ -13,7 +13,6 @@ import suite.streamlet.Read;
 public class PredicateCallChecker {
 
 	private CheckerUtil checkerUtil = new CheckerUtil();
-
 	private Map<Prototype, Integer> nParametersByPrototype = new HashMap<>();
 
 	public void check(List<Rule> rules) {
