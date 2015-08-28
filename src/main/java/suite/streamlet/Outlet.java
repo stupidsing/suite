@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
@@ -273,6 +274,14 @@ public class Outlet<T> implements Iterable<T> {
 				throw new RuntimeException("Duplicate value for key " + key);
 		}
 		return map;
+	}
+
+	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		ListMultimap<K, V> multimap = new ListMultimap<>();
+		T t;
+		while ((t = next()) != null)
+			multimap.put(keyFun.apply(t), valueFun.apply(t));
+		return multimap;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -35,6 +36,12 @@ public class Streamlet<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return spawn().iterator();
+	}
+
+	public <K, V> Map<K, V> aggregate(Fun<T, K> keyFun, Fun<Streamlet<T>, V> valueFun) {
+		return groupBy(keyFun) //
+				.map(Pair.map1(list -> valueFun.apply(Read.from(list)))) //
+				.collect(As.map());
 	}
 
 	public <R extends Collection<? super T>> R collect(Source<R> source) {
@@ -160,6 +167,14 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		return spawn().toMap(keyFun, valueFun);
+	}
+
+	public <K> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
+		return toMultimap(keyFun, value -> value);
+	}
+
+	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return spawn().toMultimap(keyFun, valueFun);
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
