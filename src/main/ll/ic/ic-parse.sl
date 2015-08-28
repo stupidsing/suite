@@ -22,11 +22,6 @@ ic-parse (.this:.sub [.params]) (INVOKE .this1 .sub1 .params1) -- Traditional su
 	, ic-parse .sub .sub1
 	, list.query2 .params .params1 .param .param1 (ic-parse .param .param1)
 #
-ic-parse () NOP
-#
-ic-parse .i (NUMBER .i)
-	:- is.int .i
-#
 ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
@@ -37,6 +32,11 @@ ic-parse `.pointer` (MEMORY I32 .pointer1)
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
 	:- list.query2 .params .params1 .param .param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
+#
+ic-parse () NOP
+#
+ic-parse .i (NUMBER .i)
+	:- is.int .i
 #
 ic-parse (.var =+ .i) (PRE-ADD-NUMBER .var1 .i)
 	:- is.int .i, ic-parse .var .var1
