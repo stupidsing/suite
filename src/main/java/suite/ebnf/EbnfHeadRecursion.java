@@ -59,7 +59,7 @@ public class EbnfHeadRecursion {
 			return en0;
 	}
 
-	public HeadRecursionForm getHeadRecursionForm(EbnfGrammar en0, String entity) {
+	private HeadRecursionForm getHeadRecursionForm(EbnfGrammar en0, String entity) {
 		List<EbnfGrammar> empty = Collections.emptyList();
 		EbnfGrammar en = expand(en0);
 		HeadRecursionForm hrf;
