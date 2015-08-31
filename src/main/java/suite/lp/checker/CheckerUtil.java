@@ -2,8 +2,11 @@ package suite.lp.checker;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import suite.Suite;
+import suite.lp.kb.Prototype;
+import suite.lp.kb.Rule;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -34,6 +37,14 @@ public class CheckerUtil {
 			return Read.from(node);
 		else
 			return Read.empty();
+	}
+
+	public Map<Prototype, Integer> getNumberOfParameters(List<Rule> rules) {
+		return Read.from(rules).aggregate(rule -> Prototype.of(rule.head), this::getNumberOfParameters);
+	}
+
+	private Integer getNumberOfParameters(Streamlet<Rule> rules) {
+		return rules.map(rule -> getNumberOfParameters(rule.head)).min(Integer::compare);
 	}
 
 	public int getNumberOfParameters(Node node) {

@@ -1,6 +1,5 @@
 package suite.lp.checker;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,20 +12,14 @@ import suite.streamlet.Read;
 public class PredicateCallChecker {
 
 	private CheckerUtil checkerUtil = new CheckerUtil();
-	private Map<Prototype, Integer> nParametersByPrototype = new HashMap<>();
+	private Map<Prototype, Integer> nParametersByPrototype;
 
 	public void check(List<Rule> rules) {
-		Read.from(rules).map(rule -> rule.head).forEach(this::putHead);
-		Read.from(rules).concatMap(rule -> checkerUtil.scan(rule.tail)).forEach(this::putTail);
+		nParametersByPrototype = checkerUtil.getNumberOfParameters(rules);
+		Read.from(rules).concatMap(rule -> checkerUtil.scan(rule.tail)).forEach(this::check);
 	}
 
-	private void putHead(Node node) {
-		Prototype prototype = Prototype.of(node);
-		int np = checkerUtil.getNumberOfParameters(node);
-		nParametersByPrototype.compute(prototype, (p, np0) -> np0 != null ? Math.min(np0, np) : np);
-	}
-
-	private void putTail(Node node) {
+	private void check(Node node) {
 		Prototype prototype = Prototype.of(node);
 		Integer np0 = nParametersByPrototype.get(prototype);
 		int np1 = checkerUtil.getNumberOfParameters(node);
