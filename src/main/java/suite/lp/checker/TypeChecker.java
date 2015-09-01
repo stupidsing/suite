@@ -6,6 +6,7 @@ import java.util.Map;
 
 import suite.Suite;
 import suite.adt.IdentityKey;
+import suite.adt.Pair;
 import suite.lp.Journal;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -26,32 +27,9 @@ public class TypeChecker {
 	private Journal journal = new Journal();
 	private Map<IdentityKey<Node>, Reference> variableTypes = new HashMap<>();
 
-	private class PredicateParameter {
-		private Prototype prototype;
-		private int index;
-
-		private PredicateParameter(Prototype prototype, int index) {
-			this.prototype = prototype;
-			this.index = index;
-		}
-
-		public int hashCode() {
-			return prototype.hashCode() + index;
-		}
-
-		public boolean equals(Object object) {
-			if (object.getClass() == PredicateParameter.class) {
-				PredicateParameter other = (PredicateParameter) object;
-				return prototype.equals(other.prototype) && index == other.index;
-			} else
-				return false;
-		}
-	}
-
 	public void check(List<Rule> rules) {
 		Map<Prototype, Integer> nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
-
-		Map<PredicateParameter, Reference> types = new HashMap<>();
+		Map<Pair<Prototype, Integer>, Reference> types = new HashMap<>();
 
 		Read.from(rules).concatMap(rule -> {
 			Generalizer generalizer = new Generalizer();
@@ -66,7 +44,7 @@ public class TypeChecker {
 			try {
 				if (nElements != null)
 					for (int i = 1; i < nElements; i++) {
-						PredicateParameter key = new PredicateParameter(prototype, i);
+						Pair<Prototype, Integer> key = Pair.of(prototype, i);
 						Node p = ps[i];
 						Node type0 = types.computeIfAbsent(key, k -> new Reference());
 						Node type1 = getType(p);
