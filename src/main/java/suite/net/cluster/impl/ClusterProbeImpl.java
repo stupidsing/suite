@@ -41,6 +41,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private Selector selector;
 	private DatagramChannel channel = DatagramChannel.open();
 	private ThreadService threadService = new ThreadService(this::serve);
+	private Object lock = new Object(); // Lock data structures
 
 	private String me;
 
@@ -118,16 +119,20 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	@Override
 	public synchronized void start() {
-		lastActiveTime.put(me, System.currentTimeMillis()); // Puts myself in
-		broadcast(Command.HELO);
+		synchronized (lock) {
+			lastActiveTime.put(me, System.currentTimeMillis());
+			broadcast(Command.HELO);
+		}
 		threadService.start();
 	}
 
 	@Override
 	public synchronized void stop() {
 		threadService.stop();
-		broadcast(Command.BYEE);
-		lastActiveTime.clear();
+		synchronized (lock) {
+			broadcast(Command.BYEE);
+			lastActiveTime.clear();
+		}
 	}
 
 	private void serve() throws IOException {
@@ -144,7 +149,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			while (threadService.isRunning()) {
 				selector.select(500); // Handle network events
 
-				synchronized (this) {
+				synchronized (lock) {
 					long current = System.currentTimeMillis();
 					nodeJoined(me, current);
 					processSelectedKeys();
