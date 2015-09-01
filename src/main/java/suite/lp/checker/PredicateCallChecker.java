@@ -13,19 +13,19 @@ import suite.streamlet.Read;
 public class PredicateCallChecker {
 
 	private CheckerUtil checkerUtil = new CheckerUtil();
-	private Map<Prototype, Integer> nParametersByPrototype;
+	private Map<Prototype, Integer> nElementsByPrototype;
 
 	public void check(List<Rule> rules) {
-		nParametersByPrototype = checkerUtil.getNumberOfParameters(rules);
+		nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
 		Read.from(rules).concatMap(rule -> checkerUtil.scan(rule.tail)).forEach(this::check);
 	}
 
 	private void check(Node node) {
 		Prototype prototype = Prototype.of(node);
-		Integer np0 = nParametersByPrototype.get(prototype);
-		int np1 = TreeUtil.getNumberOfParameters(node);
+		Integer np0 = nElementsByPrototype.get(prototype);
+		int np1 = TreeUtil.getNumberOfElements(node);
 		if (np0 != null && np0 > np1)
-			LogUtil.warn("Not enough number of parameters: " + prototype);
+			LogUtil.warn("Not enough number of elements: " + prototype);
 	}
 
 }

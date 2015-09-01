@@ -40,12 +40,12 @@ public class CheckerUtil {
 			return Read.empty();
 	}
 
-	public Map<Prototype, Integer> getNumberOfParameters(List<Rule> rules) {
-		return Read.from(rules).aggregate(rule -> Prototype.of(rule.head), this::getNumberOfParameters);
+	public Map<Prototype, Integer> getNumberOfElements(List<Rule> rules) {
+		return Read.from(rules).aggregate(rule -> Prototype.of(rule.head), this::getNumberOfElements);
 	}
 
-	private Integer getNumberOfParameters(Streamlet<Rule> rules) {
-		return rules.map(rule -> TreeUtil.getNumberOfParameters(rule.head)).min(Integer::compare);
+	private Integer getNumberOfElements(Streamlet<Rule> rules) {
+		return rules.map(rule -> TreeUtil.getNumberOfElements(rule.head)).min(Integer::compare);
 	}
 
 }

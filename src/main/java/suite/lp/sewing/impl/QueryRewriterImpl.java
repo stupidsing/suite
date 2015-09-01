@@ -16,7 +16,6 @@ import suite.node.Tuple;
 import suite.node.util.TreeUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.Util;
 
 /**
@@ -33,9 +32,11 @@ public class QueryRewriterImpl implements QueryRewriter {
 		private int length;
 
 		private PrototypeInfo(Collection<Rule> rules) {
-			Streamlet<Node> heads = Read.from(rules).map(rule -> rule.head);
-			int n = heads.map(TreeUtil::getNumberOfParameters).min(Integer::compare);
-			isSkipFirst = n > 0 && heads.isAll(head -> TreeUtil.getParameters(head, 1)[0] instanceof Atom);
+			int n = Read.from(rules) //
+					.map(rule -> TreeUtil.getNumberOfElements(rule.head)) //
+					.min(Integer::compare);
+			isSkipFirst = n > 0
+					&& Read.from(rules).map(rule -> rule.head).isAll(head -> TreeUtil.getElements(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
 		}
 	}
@@ -54,7 +55,7 @@ public class QueryRewriterImpl implements QueryRewriter {
 		if (length <= 0)
 			return node;
 		else {
-			List<Node> ps = Arrays.asList(TreeUtil.getParameters(node, length));
+			List<Node> ps = Arrays.asList(TreeUtil.getElements(node, length));
 			if (pi.isSkipFirst)
 				ps = Util.right(ps, 1);
 			return new Tuple(ps);

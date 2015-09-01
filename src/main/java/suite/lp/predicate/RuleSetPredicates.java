@@ -23,13 +23,13 @@ import suite.node.util.TreeUtil;
 public class RuleSetPredicates {
 
 	public BuiltinPredicate asserta = (prover, ps) -> {
-		Node params[] = TreeUtil.getParameters(ps, 1);
+		Node params[] = TreeUtil.getElements(ps, 1);
 		prover.ruleSet().addRuleToFront(Rule.formRule(params[0]));
 		return true;
 	};
 
 	public BuiltinPredicate assertz = (prover, ps) -> {
-		Node params[] = TreeUtil.getParameters(ps, 1);
+		Node params[] = TreeUtil.getElements(ps, 1);
 		prover.ruleSet().addRule(Rule.formRule(params[0]));
 		return true;
 	};
@@ -68,13 +68,13 @@ public class RuleSetPredicates {
 	};
 
 	public BuiltinPredicate retract = (prover, ps) -> {
-		Node params[] = TreeUtil.getParameters(ps, 1);
+		Node params[] = TreeUtil.getElements(ps, 1);
 		prover.ruleSet().removeRule(Rule.formRule(params[0]));
 		return true;
 	};
 
 	public BuiltinPredicate retractAll = (prover, ps) -> {
-		Node params[] = TreeUtil.getParameters(ps, 1);
+		Node params[] = TreeUtil.getElements(ps, 1);
 		Rule rule0 = Rule.formRule(params[0]);
 
 		RuleSet ruleSet = prover.ruleSet();
@@ -97,7 +97,7 @@ public class RuleSetPredicates {
 	};
 
 	public BuiltinPredicate with = (prover, ps) -> {
-		Node params[] = TreeUtil.getParameters(ps, 2);
+		Node params[] = TreeUtil.getElements(ps, 2);
 		RuleSet ruleSet = prover.ruleSet();
 		RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
 		CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);

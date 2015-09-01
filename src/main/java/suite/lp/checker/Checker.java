@@ -12,6 +12,7 @@ public class Checker {
 	public void check(List<Rule> rules) {
 		new PredicateCallChecker().check(rules);
 		new SingletonVariableChecker().check(rules);
+		// new TypeChecker().check(rules);
 	}
 
 }

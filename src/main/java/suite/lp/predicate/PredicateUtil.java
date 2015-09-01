@@ -27,7 +27,7 @@ public class PredicateUtil {
 
 	public static BuiltinPredicate fun(Fun<Node, Node> fun) {
 		return (prover, ps) -> {
-			Node params[] = TreeUtil.getParameters(ps, 2);
+			Node params[] = TreeUtil.getElements(ps, 2);
 			Node p0 = params[0], p1 = params[1];
 			return prover.bind(p1, fun.apply(p0));
 		};

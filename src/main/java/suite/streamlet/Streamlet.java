@@ -145,6 +145,10 @@ public class Streamlet<T> implements Iterable<T> {
 		return streamlet(() -> spawn().reverse());
 	}
 
+	public Streamlet<T> skip(int n) {
+		return streamlet(() -> spawn().skip(n));
+	}
+
 	public Source<T> source() {
 		return spawn().source();
 	}

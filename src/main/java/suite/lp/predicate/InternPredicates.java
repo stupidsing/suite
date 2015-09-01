@@ -32,7 +32,7 @@ public class InternPredicates {
 	internMap.get().computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
 
 	public BuiltinPredicate internTree = (prover, ps) -> {
-		Node params[] = TreeUtil.getParameters(ps, 4);
+		Node params[] = TreeUtil.getElements(ps, 4);
 		Node p = params[0];
 		Node p1 = params[1];
 		Node p2 = params[2];

@@ -231,6 +231,13 @@ public class Outlet<T> implements Iterable<T> {
 		return from(Util.reverse(toList()));
 	}
 
+	public Outlet<T> skip(int n) {
+		boolean end = false;
+		for (int i = 0; !end && i < n; i++)
+			end = next() == null;
+		return !end ? from(source) : empty();
+	}
+
 	public Source<T> source() {
 		return source;
 	}
