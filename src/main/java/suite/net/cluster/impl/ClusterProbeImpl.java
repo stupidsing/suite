@@ -47,7 +47,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	/**
 	 * Name/address pairs of all possible peers.
 	 */
-	private Map<String, Address> peers = new HashMap<>();
+	private Map<String, IpPort> peers = new HashMap<>();
 
 	/**
 	 * Active nodes with their ages.
@@ -66,11 +66,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 		HELO, FINE, BYEE
 	}
 
-	private static class Address {
+	private static class IpPort {
 		private byte ip[];
 		private int port;
 
-		private Address(InetSocketAddress isa) {
+		private IpPort(InetSocketAddress isa) {
 			ip = isa.getAddress().getAddress();
 			port = isa.getPort();
 		}
@@ -89,8 +89,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		@Override
 		public boolean equals(Object object) {
-			if (Util.clazz(object) == Address.class) {
-				Address other = (Address) object;
+			if (Util.clazz(object) == IpPort.class) {
+				IpPort other = (IpPort) object;
 				return ip[0] == other.ip[0] //
 						&& ip[1] == other.ip[1] //
 						&& ip[2] == other.ip[2] //
@@ -300,7 +300,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	private void setPeers(Map<String, InetSocketAddress> peers) {
 		for (Entry<String, InetSocketAddress> e : peers.entrySet())
-			this.peers.put(e.getKey(), new Address(e.getValue()));
+			this.peers.put(e.getKey(), new IpPort(e.getValue()));
 	}
 
 	@Override
