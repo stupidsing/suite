@@ -15,6 +15,7 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TermKey;
+import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
@@ -23,14 +24,14 @@ public class FindPredicates {
 	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
 	public BuiltinPredicate findAll = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		Node var = params[0], goal = params[1], results = params[2];
 		return prover.bind(results, findAll(prover, var, goal));
 	};
 
 	// memoize is not re-entrant due to using computeIfAbsent()
 	public BuiltinPredicate findAllMemoized = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		Node var = params[0], goal = params[1], results = params[2];
 		TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
@@ -39,7 +40,7 @@ public class FindPredicates {
 	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
 
 	public BuiltinPredicate suspend = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		Node p0 = params[0];
 		Node p1 = params[1];
 		Node p2 = params[2];

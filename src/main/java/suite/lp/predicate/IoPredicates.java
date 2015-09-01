@@ -16,6 +16,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.SuiteException;
+import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
@@ -56,7 +57,7 @@ public class IoPredicates {
 	});
 
 	public BuiltinPredicate fileWrite = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		String filename = Formatter.display(params[0]);
 		String content = Formatter.display(params[1]);
 
@@ -105,7 +106,7 @@ public class IoPredicates {
 	});
 
 	public BuiltinPredicate tryPredicate = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		try {
 			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
 		} catch (SuiteException ex) {

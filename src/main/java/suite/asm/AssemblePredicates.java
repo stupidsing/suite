@@ -7,6 +7,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 
 public class AssemblePredicates {
 
@@ -17,7 +18,7 @@ public class AssemblePredicates {
 	public BuiltinPredicate emit32 = (prover, ps) -> emitBytes(prover, ps, 4);
 
 	private boolean emitBytes(Prover prover, Node ps, int n) {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		byte bytes[] = new byte[n];
 		Node n0 = params[0];
 		Node node = params[2];

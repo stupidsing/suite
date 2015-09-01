@@ -28,26 +28,6 @@ public class Tree extends Node {
 		return null;
 	}
 
-	public static Node[] getParameters(Node node, int n) {
-		Node params[] = new Node[n];
-		Tree tree;
-
-		for (int i = 0; i < n - 1; i++)
-			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-				params[i] = tree.getLeft();
-				node = tree.getRight();
-			} else
-				throw new RuntimeException("Not enough parameters");
-
-		params[n - 1] = node;
-		return params;
-	}
-
-	public static boolean isList(Node node, Operator operator) {
-		Tree tree;
-		return node == Atom.NIL || (tree = Tree.decompose(node, operator)) != null && isList(tree.getRight(), operator);
-	}
-
 	public static Streamlet<Node> iter(Node node) {
 		return iter(node, TermOp.AND___);
 	}

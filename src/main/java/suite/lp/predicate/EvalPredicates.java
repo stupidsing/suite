@@ -29,6 +29,7 @@ import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.TreeRewriter;
+import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
@@ -51,7 +52,7 @@ public class EvalPredicates {
 	public BuiltinPredicate complexity = PredicateUtil.fun(n -> Int.of(new Complexity().complexity(n)));
 
 	public BuiltinPredicate contains = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		return new TreeRewriter().contains(params[0], params[1]);
 	};
 
@@ -72,7 +73,7 @@ public class EvalPredicates {
 	};
 
 	public BuiltinPredicate dictKeyValue = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		Node node = params[0];
 		Node key = params[1];
 		Node value = params[2];
@@ -86,7 +87,7 @@ public class EvalPredicates {
 	public BuiltinPredicate evalFun = PredicateUtil.fun(n -> Suite.evaluateFun(Suite.fcc(n, true)));
 
 	public BuiltinPredicate evalJs = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		String js = Formatter.display(params[0]);
 		Object result;
 
@@ -124,7 +125,7 @@ public class EvalPredicates {
 	public BuiltinPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
 
 	public BuiltinPredicate length = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		Node list = params[0];
 		int size = 0;
 		Tree tree;
@@ -146,7 +147,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate let = new BuiltinPredicate() {
 		public boolean prove(Prover prover, Node ps) {
-			Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = TreeUtil.getParameters(ps, 2);
 			int result = evaluate(params[1]);
 			return prover.bind(Int.of(result), params[0]);
 		}
@@ -160,17 +161,17 @@ public class EvalPredicates {
 	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
 
 	public BuiltinPredicate replace = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 4);
+		Node params[] = TreeUtil.getParameters(ps, 4);
 		return prover.bind(new TreeRewriter().replace(params[0], params[1], params[2]), params[3]);
 	};
 
 	public BuiltinPredicate rewrite = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 4);
+		Node params[] = TreeUtil.getParameters(ps, 4);
 		return prover.bind(new TreeRewriter().rewrite(params[0], params[1], params[2]), params[3]);
 	};
 
 	public BuiltinPredicate same = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		return params[0] == params[1];
 	};
 
@@ -179,7 +180,7 @@ public class EvalPredicates {
 	public BuiltinPredicate temp = (prover, ps) -> prover.bind(ps, Atom.temp());
 
 	public BuiltinPredicate tree = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 4);
+		Node params[] = TreeUtil.getParameters(ps, 4);
 		Node p = params[0];
 		Node p1 = params[1];
 		Node p2 = params[2];

@@ -4,7 +4,7 @@ import java.util.function.Predicate;
 
 import suite.lp.doer.Prover;
 import suite.node.Node;
-import suite.node.Tree;
+import suite.node.util.TreeUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 
@@ -27,7 +27,7 @@ public class PredicateUtil {
 
 	public static BuiltinPredicate fun(Fun<Node, Node> fun) {
 		return (prover, ps) -> {
-			Node params[] = Tree.getParameters(ps, 2);
+			Node params[] = TreeUtil.getParameters(ps, 2);
 			Node p0 = params[0], p1 = params[1];
 			return prover.bind(p1, fun.apply(p0));
 		};

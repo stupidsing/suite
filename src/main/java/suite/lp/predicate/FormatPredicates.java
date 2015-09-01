@@ -22,6 +22,7 @@ import suite.node.io.ReversePolish;
 import suite.node.io.TermOp;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
+import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
 
 public class FormatPredicates {
@@ -29,7 +30,7 @@ public class FormatPredicates {
 	private ReversePolish rpn = new ReversePolish();
 
 	public BuiltinPredicate charAscii = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		Node p0 = params[0];
 		Node p1 = params[1];
 		return p0 instanceof Str && prover.bind(Int.of(((Str) p0).value.charAt(0)), p1) //
@@ -62,7 +63,7 @@ public class FormatPredicates {
 	public BuiltinPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
 	public BuiltinPredicate persistLoad = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		try (InputStream is = new FileInputStream(((Str) params[1]).value);
 				GZIPInputStream gis = new GZIPInputStream(is);
 				DataInputStream dis = new DataInputStream(gis)) {
@@ -75,7 +76,7 @@ public class FormatPredicates {
 	};
 
 	public BuiltinPredicate persistSave = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		try (OutputStream os = FileUtil.out(((Str) params[1]).value);
 				GZIPOutputStream gos = new GZIPOutputStream(os);
 				DataOutputStream dos = new DataOutputStream(gos)) {
@@ -93,7 +94,7 @@ public class FormatPredicates {
 	public BuiltinPredicate prettyPrintNew = PredicateUtil.run(n -> System.out.println(new NewPrettyPrinter().prettyPrint(n)));
 
 	public BuiltinPredicate rpnPredicate = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		Node p0 = params[0], p1 = params[1];
 		if (p1 instanceof Str)
 			return prover.bind(p0, rpn.fromRpn(((Str) p1).value));
@@ -102,7 +103,7 @@ public class FormatPredicates {
 	};
 
 	public BuiltinPredicate startsWith = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 2);
+		Node params[] = TreeUtil.getParameters(ps, 2);
 		Node p0 = params[0], p1 = params[1];
 
 		return p0 instanceof Atom && p1 instanceof Atom //
@@ -112,7 +113,7 @@ public class FormatPredicates {
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).value.length()));
 
 	public BuiltinPredicate substring = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 4);
+		Node params[] = TreeUtil.getParameters(ps, 4);
 		String name = ((Str) params[0]).value;
 		int length = name.length();
 		Node p1 = params[1], p2 = params[2];

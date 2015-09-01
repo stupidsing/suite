@@ -10,6 +10,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 
 public class SystemPredicates {
 
@@ -169,7 +170,7 @@ public class SystemPredicates {
 	};
 
 	private BuiltinPredicate ifPredicate = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 3);
+		Node params[] = TreeUtil.getParameters(ps, 3);
 		boolean result = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
 		Node n = result ? params[1] : params[2];
 		prover.setRemaining(Tree.of(TermOp.AND___, n, prover.getRemaining()));

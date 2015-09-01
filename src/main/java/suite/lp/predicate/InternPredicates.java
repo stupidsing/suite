@@ -8,10 +8,10 @@ import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.Tree;
 import suite.node.TreeIntern;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 
 public class InternPredicates {
 
@@ -29,10 +29,10 @@ public class InternPredicates {
 	};
 
 	public BuiltinPredicate internMapPut = PredicateUtil.fun(n -> //
-			internMap.get().computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
+	internMap.get().computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
 
 	public BuiltinPredicate internTree = (prover, ps) -> {
-		Node params[] = Tree.getParameters(ps, 4);
+		Node params[] = TreeUtil.getParameters(ps, 4);
 		Node p = params[0];
 		Node p1 = params[1];
 		Node p2 = params[2];

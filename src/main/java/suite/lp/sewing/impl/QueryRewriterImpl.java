@@ -1,20 +1,20 @@
 package suite.lp.sewing.impl;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.lp.checker.CheckerUtil;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.sewing.QueryRewriter;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -27,6 +27,7 @@ import suite.util.Util;
  */
 public class QueryRewriterImpl implements QueryRewriter {
 
+	private CheckerUtil checkerUtil = new CheckerUtil();
 	private Map<Prototype, PrototypeInfo> infosByPrototype;
 
 	private class PrototypeInfo {
@@ -35,8 +36,8 @@ public class QueryRewriterImpl implements QueryRewriter {
 
 		private PrototypeInfo(Collection<Rule> rules) {
 			Streamlet<Node> heads = Read.from(rules).map(rule -> rule.head);
-			int n = heads.map(QueryRewriterImpl.this::getNumberOfParameters).min(Integer::compare);
-			isSkipFirst = n > 0 && heads.isAll(head -> get(head, 1).get(0) instanceof Atom);
+			int n = heads.map(checkerUtil::getNumberOfParameters).min(Integer::compare);
+			isSkipFirst = n > 0 && heads.isAll(head -> TreeUtil.getParameters(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
 		}
 	}
@@ -54,10 +55,12 @@ public class QueryRewriterImpl implements QueryRewriter {
 
 		if (length <= 0)
 			return node;
-		else if (pi.isSkipFirst)
-			return new Tuple(Util.right(get(node, length), 1));
-		else
-			return new Tuple(get(node, length));
+		else {
+			List<Node> ps = Arrays.asList(TreeUtil.getParameters(node, length));
+			if (pi.isSkipFirst)
+				ps = Util.right(ps, 1);
+			return new Tuple(ps);
+		}
 	}
 
 	@Override
@@ -65,28 +68,6 @@ public class QueryRewriterImpl implements QueryRewriter {
 		PrototypeInfo pi = infosByPrototype.get(prototype0);
 		int n1 = n - (pi.isSkipFirst ? 1 : 0);
 		return Prototype.of(((Tuple) node).nodes.get(n1));
-	}
-
-	private int getNumberOfParameters(Node node) {
-		int n = 0;
-		Tree tree;
-		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			node = tree.getRight();
-			n++;
-		}
-		return n;
-	}
-
-	private List<Node> get(Node node, int n) {
-		List<Node> list = new ArrayList<>(n + 1);
-		int i = 0;
-		for (; i < n; i++) {
-			Tree tree = Tree.decompose(node, TermOp.TUPLE_);
-			list.add(tree.getLeft());
-			node = tree.getRight();
-		}
-		list.add(node);
-		return list;
 	}
 
 }
