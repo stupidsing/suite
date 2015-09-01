@@ -108,7 +108,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	public ClusterProbeImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this();
-		setMe(me);
+		this.me = me;
 		setPeers(peers);
 	}
 
@@ -282,20 +282,15 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	@Override
-	public String dumpActivePeers() {
-		return Read.from(lastActiveTime) //
-				.map(p -> p.t0 + " (last-active = " + To.string(p.t1) + ")") //
-				.collect(As.joined("\n"));
-	}
-
-	@Override
 	public Set<String> getActivePeers() {
 		return Collections.unmodifiableSet(lastActiveTime.keySet());
 	}
 
 	@Override
-	public void setMe(String me) {
-		this.me = me;
+	public String toString() {
+		return Read.from(lastActiveTime) //
+				.map(p -> p.t0 + " (last-active = " + To.string(p.t1) + ")") //
+				.collect(As.joined("\n"));
 	}
 
 	private void setPeers(Map<String, InetSocketAddress> peers) {

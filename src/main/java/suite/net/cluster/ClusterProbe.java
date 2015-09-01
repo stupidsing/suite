@@ -9,11 +9,7 @@ public interface ClusterProbe extends Service {
 
 	public boolean isActive(String node);
 
-	public String dumpActivePeers();
-
 	public Set<String> getActivePeers();
-
-	public void setMe(String me);
 
 	public void setOnJoined(Sink<String> onJoined);
 

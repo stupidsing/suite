@@ -52,7 +52,7 @@ public class ClusterProbeTest {
 	private void dumpActivePeers(Map<String, ClusterProbe> probes) {
 		for (Entry<String, ClusterProbe> e : probes.entrySet()) {
 			System.out.println("HOST " + e.getKey() + " -");
-			System.out.println(e.getValue().dumpActivePeers());
+			System.out.println(e.getValue());
 		}
 	}
 
