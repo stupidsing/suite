@@ -90,21 +90,19 @@ public class TypeChecker {
 			if (tree.getOperator() == TermOp.AND___) {
 				type = Suite.substitute(".0;", getType(tree.getLeft()));
 				bind(type, getType(tree.getRight()));
+			} else if (tree.getOperator() == TermOp.TUPLE_) {
+				Node name = tree.getLeft();
+				if (name instanceof Atom) {
+					Node node = tree.getRight();
+					Node ps[] = TreeUtil.getElements(node, TreeUtil.getNumberOfElements(node));
+					type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
+				} else
+					return new Reference(); // Free type
 			} else {
-				if (tree.getOperator() == TermOp.TUPLE_) {
-					Node name = tree.getLeft();
-					if (name instanceof Atom) {
-						Node node = tree.getRight();
-						Node ps[] = TreeUtil.getElements(node, TreeUtil.getNumberOfElements(node));
-						type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
-					} else
-						return new Reference(); // Free type
-				} else {
-					Atom name = Atom.of(tree.getOperator().getName());
-					Node lt = getType(tree.getLeft());
-					Node rt = getType(tree.getRight());
-					type = getEnumType(name, Tree.of(TermOp.TUPLE_, lt, rt));
-				}
+				Atom name = Atom.of(tree.getOperator().getName());
+				Node lt = getType(tree.getLeft());
+				Node rt = getType(tree.getRight());
+				type = getEnumType(name, Tree.of(TermOp.TUPLE_, lt, rt));
 			}
 		else if (data == Atom.NIL)
 			type = Suite.substitute("_;");
