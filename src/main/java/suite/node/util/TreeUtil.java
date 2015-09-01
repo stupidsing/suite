@@ -8,6 +8,16 @@ import suite.node.io.TermOp;
 
 public class TreeUtil {
 
+	public static int getNumberOfParameters(Node node) {
+		int n = 0;
+		Tree tree;
+		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
+			node = tree.getRight();
+			n++;
+		}
+		return n;
+	}
+
 	public static Node[] getParameters(Node node, int n) {
 		Node params[] = new Node[n];
 		Tree tree;

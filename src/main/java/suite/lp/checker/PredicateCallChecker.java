@@ -6,6 +6,7 @@ import java.util.Map;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Node;
+import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 
@@ -22,7 +23,7 @@ public class PredicateCallChecker {
 	private void check(Node node) {
 		Prototype prototype = Prototype.of(node);
 		Integer np0 = nParametersByPrototype.get(prototype);
-		int np1 = checkerUtil.getNumberOfParameters(node);
+		int np1 = TreeUtil.getNumberOfParameters(node);
 		if (np0 != null && np0 > np1)
 			LogUtil.warn("Not enough number of parameters: " + prototype);
 	}

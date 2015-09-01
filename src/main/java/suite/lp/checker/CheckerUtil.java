@@ -11,6 +11,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -44,17 +45,7 @@ public class CheckerUtil {
 	}
 
 	private Integer getNumberOfParameters(Streamlet<Rule> rules) {
-		return rules.map(rule -> getNumberOfParameters(rule.head)).min(Integer::compare);
-	}
-
-	public int getNumberOfParameters(Node node) {
-		int n = 0;
-		Tree tree;
-		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			node = tree.getRight();
-			n++;
-		}
-		return n;
+		return rules.map(rule -> TreeUtil.getNumberOfParameters(rule.head)).min(Integer::compare);
 	}
 
 }

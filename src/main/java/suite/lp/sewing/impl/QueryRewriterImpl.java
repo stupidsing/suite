@@ -7,7 +7,6 @@ import java.util.Map;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
-import suite.lp.checker.CheckerUtil;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.sewing.QueryRewriter;
@@ -27,7 +26,6 @@ import suite.util.Util;
  */
 public class QueryRewriterImpl implements QueryRewriter {
 
-	private CheckerUtil checkerUtil = new CheckerUtil();
 	private Map<Prototype, PrototypeInfo> infosByPrototype;
 
 	private class PrototypeInfo {
@@ -36,7 +34,7 @@ public class QueryRewriterImpl implements QueryRewriter {
 
 		private PrototypeInfo(Collection<Rule> rules) {
 			Streamlet<Node> heads = Read.from(rules).map(rule -> rule.head);
-			int n = heads.map(checkerUtil::getNumberOfParameters).min(Integer::compare);
+			int n = heads.map(TreeUtil::getNumberOfParameters).min(Integer::compare);
 			isSkipFirst = n > 0 && heads.isAll(head -> TreeUtil.getParameters(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
 		}
