@@ -11,10 +11,12 @@ public class TreeUtil {
 	public static int getNumberOfParameters(Node node) {
 		int n = 0;
 		Tree tree;
+
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 			node = tree.getRight();
 			n++;
 		}
+
 		return n;
 	}
 
