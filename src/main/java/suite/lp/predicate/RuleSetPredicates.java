@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.CompositeRuleSet;
@@ -78,16 +78,16 @@ public class RuleSetPredicates {
 		Rule rule0 = Rule.formRule(params[0]);
 
 		RuleSet ruleSet = prover.ruleSet();
-		Journal journal = prover.getJournal();
-		int pit = journal.getPointInTime();
+		Trail trail = prover.getTrail();
+		int pit = trail.getPointInTime();
 		List<Rule> targets = new ArrayList<>();
 
 		for (Rule rule : ruleSet.getRules()) {
-			if (Binder.bind(rule0.head, rule.head, journal) //
-					&& Binder.bind(rule0.tail, rule.tail, journal))
+			if (Binder.bind(rule0.head, rule.head, trail) //
+					&& Binder.bind(rule0.tail, rule.tail, trail))
 				targets.add(rule);
 
-			journal.undoBinds(pit);
+			trail.undoBinds(pit);
 		}
 
 		for (Rule rule : targets)

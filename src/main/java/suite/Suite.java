@@ -23,7 +23,7 @@ import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.ImportUtil;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
@@ -162,7 +162,7 @@ public class Suite {
 
 			return node -> {
 				Env env = sb.env();
-				if (pred.test(new BindEnv(new Journal(), env), node)) {
+				if (pred.test(new BindEnv(new Trail(), env), node)) {
 					List<Node> results = new ArrayList<>(size);
 					for (int i = 0; i < size; i++)
 						results.add(env.get(indices[i]));

@@ -47,7 +47,7 @@ public class FindPredicates {
 		Suspend suspend = new Suspend(() -> Read.from(elaborate(prover, p1, p2)).uniqueResult());
 
 		if (p0 instanceof Reference) {
-			prover.getJournal().addBind((Reference) p0, suspend);
+			prover.getTrail().addBind((Reference) p0, suspend);
 			return true;
 		} else
 			return false;

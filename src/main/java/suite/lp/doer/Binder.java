@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
@@ -17,7 +17,7 @@ import suite.util.Util;
 
 public class Binder {
 
-	public static boolean bind(Node n0, Node n1, Journal journal) {
+	public static boolean bind(Node n0, Node n1, Trail trail) {
 		n0 = n0.finalNode();
 		n1 = n1.finalNode();
 
@@ -25,10 +25,10 @@ public class Binder {
 			return true;
 
 		if (n0 instanceof Reference) {
-			journal.addBind((Reference) n0, n1);
+			trail.addBind((Reference) n0, n1);
 			return true;
 		} else if (n1 instanceof Reference) {
-			journal.addBind((Reference) n1, n0);
+			trail.addBind((Reference) n1, n0);
 			return true;
 		}
 
@@ -44,7 +44,7 @@ public class Binder {
 			for (Node key : Util.add(map0.keySet(), map1.keySet())) {
 				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
 				Node v1 = map1.computeIfAbsent(key, k -> new Reference());
-				result &= bind(v0, v1, journal);
+				result &= bind(v0, v1, trail);
 			}
 			return result;
 		} else if (clazz0 == Int.class)
@@ -55,8 +55,8 @@ public class Binder {
 			Tree t0 = (Tree) n0;
 			Tree t1 = (Tree) n1;
 			return t0.getOperator() == t1.getOperator() //
-					&& bind(t0.getLeft(), t1.getLeft(), journal) //
-					&& bind(t0.getRight(), t1.getRight(), journal);
+					&& bind(t0.getLeft(), t1.getLeft(), trail) //
+					&& bind(t0.getRight(), t1.getRight(), trail);
 		} else if (clazz0 == Tuple.class) {
 			List<Node> nodes0 = ((Tuple) n0).nodes;
 			List<Node> nodes1 = ((Tuple) n1).nodes;
@@ -65,7 +65,7 @@ public class Binder {
 				Iterator<Node> iter0 = nodes0.iterator();
 				Iterator<Node> iter1 = nodes1.iterator();
 				while (result && iter0.hasNext())
-					result &= bind(iter0.next(), iter1.next(), journal);
+					result &= bind(iter0.next(), iter1.next(), trail);
 			}
 			return result;
 		} else

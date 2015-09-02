@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
@@ -31,11 +31,11 @@ public class Prover {
 
 	private Node rem, alt; // remaining, alternative
 
-	private Journal journal;
+	private Trail trail;
 	private int initialPointInTime;
 
 	public Prover(Prover prover) {
-		this(prover.config, prover.tracer, prover.journal);
+		this(prover.config, prover.tracer, prover.trail);
 	}
 
 	public Prover(RuleSet ruleSet) {
@@ -43,14 +43,14 @@ public class Prover {
 	}
 
 	public Prover(ProverConfig proverConfig) {
-		this(proverConfig, null, new Journal());
+		this(proverConfig, null, new Trail());
 	}
 
-	public Prover(ProverConfig proverConfig, ProveTracer tracer, Journal journal) {
+	public Prover(ProverConfig proverConfig, ProveTracer tracer, Trail trail) {
 		this.config = proverConfig;
 		this.tracer = tracer;
-		this.journal = journal;
-		initialPointInTime = journal.getPointInTime();
+		this.trail = trail;
+		initialPointInTime = trail.getPointInTime();
 	}
 
 	public void elaborate(Node query) {
@@ -102,9 +102,9 @@ public class Prover {
 
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
-					int pit = journal.getPointInTime();
+					int pit = trail.getPointInTime();
 					Node bt = new Data<Source<Boolean>>(() -> {
-						journal.undoBinds(pit);
+						trail.undoBinds(pit);
 						return Boolean.TRUE;
 					});
 
@@ -200,14 +200,14 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean bind(Node left, Node right) {
-		return Binder.bind(left, right, journal);
+		return Binder.bind(left, right, trail);
 	}
 
 	/**
 	 * Resets all bind done by this prover.
 	 */
 	public void undoAllBinds() {
-		journal.undoBinds(initialPointInTime);
+		trail.undoBinds(initialPointInTime);
 	}
 
 	private Node andTree(Node n0, Node n1) {
@@ -270,8 +270,8 @@ public class Prover {
 	/**
 	 * The roll-back log of variable binds.
 	 */
-	public Journal getJournal() {
-		return journal;
+	public Trail getTrail() {
+		return trail;
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 import suite.Suite;
 import suite.adt.IdentityKey;
 import suite.adt.Pair;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.Prototype;
@@ -24,7 +24,7 @@ import suite.streamlet.Read;
 public class TypeChecker {
 
 	private CheckerUtil checkerUtil = new CheckerUtil();
-	private Journal journal = new Journal();
+	private Trail trail = new Trail();
 	private Map<IdentityKey<Node>, Reference> variableTypes = new HashMap<>();
 
 	public void check(List<Rule> rules) {
@@ -55,7 +55,7 @@ public class TypeChecker {
 			}
 		});
 
-		journal.undoAllBinds();
+		trail.undoAllBinds();
 	}
 
 	private Node getType(Node data) {
@@ -99,7 +99,7 @@ public class TypeChecker {
 	}
 
 	private void bind(Node type0, Node type1) {
-		if (!Binder.bind(type0, type1, journal))
+		if (!Binder.bind(type0, type1, trail))
 			throw new RuntimeException("Type mismatch between " + type0 + " and " + type1);
 	}
 

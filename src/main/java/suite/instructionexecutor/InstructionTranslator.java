@@ -123,7 +123,7 @@ public class InstructionTranslator implements Closeable {
 				+ "Tree tree; \n" //
 				+ "\n" //
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
-				+ "Journal journal = prover.getJournal(); \n" //
+				+ "Trail trail = prover.getTrails(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "IntrinsicCallback callback = TranslatedRunUtil.getIntrinsicCallback(config, this); \n" //
 				+ "Comparer comparer = new FunComparer(callback::yawn); \n" //
@@ -199,13 +199,13 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = dsp", op0);
 				break;
 			case BIND__________:
-				app("if (!Binder.bind(#{reg-node}, #{reg-node}, journal)) #{jump}", op0, op1, op2);
+				app("if (!Binder.bind(#{reg-node}, #{reg-node}, trail)) #{jump}", op0, op1, op2);
 				break;
 			case BINDMARK______:
-				app("#{reg} = journal.getPointInTime()", op0);
+				app("#{reg} = trail.getPointInTime()", op0);
 				break;
 			case BINDUNDO______:
-				app("journal.undoBinds(#{reg-num})", op0);
+				app("trail.undoBinds(#{reg-num})", op0);
 				break;
 			case CALL__________:
 				backupFrame();
@@ -260,7 +260,7 @@ public class InstructionTranslator implements Closeable {
 				app("} else #{jump}", op1);
 				app("} else if (node instanceof Reference) {");
 				app("Tree tree = Tree.of(op, #{reg} = new Reference(), #{reg} = new Reference())", insn.op1, insn.op2);
-				app("journal.addBind((Reference) node, tree)");
+				app("trail.addBind((Reference) node, tree)");
 				app("} else #{jump}", op1);
 				break;
 			case ENTER_________:

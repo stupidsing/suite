@@ -37,7 +37,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			return compileBindInt((Int) node);
 		else if (node instanceof Reference) {
 			int index = findVariableIndex(node);
-			return (be, n) -> Binder.bind(n, be.env.get(index), be.journal);
+			return (be, n) -> Binder.bind(n, be.env.get(index), be.trail);
 		} else if (node instanceof Str)
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
@@ -50,7 +50,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 				Tree t;
 				if (n_ instanceof Reference)
 					if (isBindTrees) {
-						be.journal.addBind((Reference) n_, f.apply(be.env));
+						be.trail.addBind((Reference) n_, f.apply(be.env));
 						return true;
 					} else
 						return false;
@@ -76,7 +76,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 						return false;
 				} else if (n_ instanceof Reference)
 					if (isBindTrees) {
-						be.journal.addBind((Reference) n_, f.apply(be.env));
+						be.trail.addBind((Reference) n_, f.apply(be.env));
 						return true;
 					} else
 						return false;
@@ -85,7 +85,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 			};
 		} else {
 			Fun<Env, Node> f = compile(node);
-			return (be, n) -> Binder.bind(n, f.apply(be.env), be.journal);
+			return (be, n) -> Binder.bind(n, f.apply(be.env), be.trail);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {
-				be.journal.addBind((Reference) n_, a);
+				be.trail.addBind((Reference) n_, a);
 				return true;
 			} else
 				return n_ == a;
@@ -105,7 +105,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {
-				be.journal.addBind((Reference) n_, i_);
+				be.trail.addBind((Reference) n_, i_);
 				return true;
 			} else
 				return n_ instanceof Int && ((Int) n_).number == i;
@@ -117,7 +117,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {
-				be.journal.addBind((Reference) n_, str);
+				be.trail.addBind((Reference) n_, str);
 				return true;
 			} else
 				return n_ instanceof Str && s.equals(((Str) n_).value);

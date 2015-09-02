@@ -1,6 +1,6 @@
 package suite.node.util;
 
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
@@ -39,7 +39,7 @@ public class TreeRewriter {
 	}
 
 	public Node rewrite(Source<Node[]> source, Node node) {
-		Journal journal = new Journal();
+		Trail trail = new Trail();
 
 		return rewrite(new Fun<Node, Node>() {
 			public Node apply(Node n) {
@@ -57,12 +57,12 @@ public class TreeRewriter {
 
 			private Node bind(Node node0) {
 				Node ft[] = source.source();
-				int pit = journal.getPointInTime();
+				int pit = trail.getPointInTime();
 
-				if (Binder.bind(node0, ft[0], journal))
+				if (Binder.bind(node0, ft[0], trail))
 					return ft[1];
 				else {
-					journal.undoBinds(pit);
+					trail.undoBinds(pit);
 					return node0;
 				}
 			}

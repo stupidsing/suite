@@ -13,7 +13,7 @@ import suite.adt.BiMap;
 import suite.adt.IdentityKey;
 import suite.instructionexecutor.InstructionUtil.Insn;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;
 import suite.node.Int;
@@ -29,7 +29,7 @@ public class InstructionExtractor implements AutoCloseable {
 	private Map<IdentityKey<Node>, Integer> ipsByLabelId = new HashMap<>();
 	private Deque<Instruction> frameBegins = new ArrayDeque<>();
 	private BiMap<Integer, Node> constantPool;
-	private Journal journal = new Journal();
+	private Trail trail = new Trail();
 
 	private static final Atom KEYC = Atom.of("c");
 	private static final Atom KEYL = Atom.of("l");
@@ -42,7 +42,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 	@Override
 	public void close() {
-		journal.undoAllBinds();
+		trail.undoAllBinds();
 	}
 
 	public List<Instruction> extractInstructions(Node node) {
@@ -125,7 +125,7 @@ public class InstructionExtractor implements AutoCloseable {
 				Instruction frameBegin = frameBegins.getFirst();
 				int registerNumber = frameBegin.op0++;
 
-				Binder.bind(node, Int.of(registerNumber), journal);
+				Binder.bind(node, Int.of(registerNumber), trail);
 				return registerNumber;
 			} else if ((tree = Tree.decompose(node, TermOp.COLON_)) != null) {
 				Node key = tree.getLeft(), value = tree.getRight();

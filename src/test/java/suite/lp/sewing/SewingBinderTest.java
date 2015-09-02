@@ -7,7 +7,7 @@ import java.util.function.BiPredicate;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.impl.SewingBinderImpl;
@@ -31,7 +31,7 @@ public class SewingBinderTest {
 		SewingBinder sb = new SewingBinderImpl();
 		BiPredicate<BindEnv, Node> p = sb.compileBind(node);
 
-		BindEnv be = new BindEnv(new Journal(), sb.env());
+		BindEnv be = new BindEnv(new Trail(), sb.env());
 		assertTrue(p.test(be, Suite.parse(match)));
 	}
 

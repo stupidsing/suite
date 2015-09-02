@@ -4,7 +4,7 @@ import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates;
@@ -30,7 +30,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 		Activation current = exec.current;
 		Frame frame = current.frame;
 		Node regs[] = frame != null ? frame.registers : null;
-		Journal journal = prover.getJournal();
+		Trail trail = prover.getTrail();
 		Instruction insn1;
 
 		switch (insn.insn) {
@@ -41,14 +41,14 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			regs[insn.op0] = number(exec.sp);
 			break;
 		case BIND__________:
-			if (!Binder.bind(regs[insn.op0], regs[insn.op1], journal))
+			if (!Binder.bind(regs[insn.op0], regs[insn.op1], trail))
 				current.ip = insn.op2; // Fail
 			break;
 		case BINDMARK______:
-			regs[insn.op0] = number(journal.getPointInTime());
+			regs[insn.op0] = number(trail.getPointInTime());
 			break;
 		case BINDUNDO______:
-			journal.undoBinds(i(regs[insn.op0]));
+			trail.undoBinds(i(regs[insn.op0]));
 			break;
 		case DECOMPOSETREE0:
 			Node node = regs[insn.op0].finalNode();
@@ -68,7 +68,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 					current.ip = insn.op1;
 			} else if (node instanceof Reference) {
 				Tree tree = Tree.of(op, regs[rl] = new Reference(), regs[rr] = new Reference());
-				journal.addBind((Reference) node, tree);
+				trail.addBind((Reference) node, tree);
 			} else
 				current.ip = insn.op1;
 			break;

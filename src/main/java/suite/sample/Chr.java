@@ -8,7 +8,7 @@ import suite.Suite;
 import suite.adt.Pair;
 import suite.immutable.IMap;
 import suite.immutable.ISet;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -105,14 +105,14 @@ public class Chr {
 
 	private Streamlet<State> chr(State state, Rule rule) {
 		Generalizer generalizer = new Generalizer();
-		Journal journal = new Journal();
+		Trail trail = new Trail();
 		Streamlet<State> states = Read.from(state);
 
 		for (Node if_ : rule.ifs)
-			states = chrIf(states, journal, generalizer.generalize(if_));
+			states = chrIf(states, trail, generalizer.generalize(if_));
 
 		for (Node given : rule.givens)
-			states = chrGiven(states, journal, generalizer.generalize(given));
+			states = chrGiven(states, trail, generalizer.generalize(given));
 
 		states = chrWhen(states, generalizer.generalize(rule.when));
 
@@ -122,24 +122,24 @@ public class Chr {
 		return states;
 	}
 
-	private Streamlet<State> chrIf(Streamlet<State> states, Journal journal, Node if_) {
+	private Streamlet<State> chrIf(Streamlet<State> states, Trail trail, Node if_) {
 		Prototype prototype = Prototype.of(if_);
 
 		Fun<State, Streamlet<State>> fun = state -> {
 			ISet<Node> facts = getFacts(state, prototype);
-			Fun<Node, Boolean> bindFun = bindFun(journal, if_);
+			Fun<Node, Boolean> bindFun = bindFun(trail, if_);
 			return facts.stream().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
 		};
 
 		return states.concatMap(fun);
 	}
 
-	private Streamlet<State> chrGiven(Streamlet<State> states, Journal journal, Node given) {
+	private Streamlet<State> chrGiven(Streamlet<State> states, Trail trail, Node given) {
 		Prototype prototype = Prototype.of(given);
 
 		return states.concatMap(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
-			Fun<Node, Boolean> bindFun = bindFun(journal, given);
+			Fun<Node, Boolean> bindFun = bindFun(trail, given);
 			return facts.stream().map(bindFun).isAny(b -> b) ? Read.from(state) : Read.empty();
 		});
 	}
@@ -148,7 +148,7 @@ public class Chr {
 		Generalizer generalizer = new Generalizer();
 		Node a = atom(".a"), b = atom(".b");
 
-		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Journal())) {
+		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Trail())) {
 
 			// Built-in syntactic equality
 			Reference from = generalizer.getVariable(a);
@@ -182,12 +182,12 @@ public class Chr {
 		return states.filter(state -> prover.prove(when));
 	}
 
-	private Fun<Node, Boolean> bindFun(Journal journal, Node node0) {
-		int pit = journal.getPointInTime();
+	private Fun<Node, Boolean> bindFun(Trail trail, Node node0) {
+		int pit = trail.getPointInTime();
 
 		return node1 -> {
-			journal.undoBinds(pit);
-			return Binder.bind(node0, node1, journal);
+			trail.undoBinds(pit);
+			return Binder.bind(node0, node1, trail);
 		};
 	}
 

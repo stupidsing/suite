@@ -12,7 +12,7 @@ import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
@@ -78,7 +78,7 @@ public class SewingProverImpl implements SewingProver {
 
 	private SewingBinder passThru = new SewingBinder() {
 		public BiPredicate<BindEnv, Node> compileBind(Node node) {
-			return (be, n) -> Binder.bind(node, n, be.journal);
+			return (be, n) -> Binder.bind(node, n, be.trail);
 		}
 
 		public Fun<Env, Node> compile(Node node) {
@@ -110,7 +110,7 @@ public class SewingProverImpl implements SewingProver {
 		private IList<Trampoline> cutPoint;
 		private IList<Trampoline> rems = IList.end(); // Continuations
 		private IList<Trampoline> alts = IList.end(); // Alternatives
-		private Journal journal = new Journal();
+		private Trail trail = new Trail();
 		private Prover prover;
 		private Debug debug = new Debug("", IList.end());
 
@@ -120,11 +120,11 @@ public class SewingProverImpl implements SewingProver {
 
 		private Runtime(ProverConfig pc, Trampoline tr) {
 			pushAlt(tr);
-			prover = new Prover(pc, null, journal);
+			prover = new Prover(pc, null, trail);
 		}
 
 		private BindEnv bindEnv() {
-			return new BindEnv(journal, env);
+			return new BindEnv(trail, env);
 		}
 
 		private void pushRem(Trampoline tr) {
@@ -178,7 +178,7 @@ public class SewingProverImpl implements SewingProver {
 			}
 		}
 
-		rt.journal.undoAllBinds();
+		rt.trail.undoAllBinds();
 	}
 
 	private void compileAll() {
@@ -312,7 +312,7 @@ public class SewingProverImpl implements SewingProver {
 				});
 
 				if (n0 instanceof Reference) {
-					rt.journal.addBind((Reference) n0, suspend);
+					rt.trail.addBind((Reference) n0, suspend);
 					return okay;
 				} else
 					return fail;
@@ -548,14 +548,14 @@ public class SewingProverImpl implements SewingProver {
 		Node query0 = rt.query;
 		IList<Trampoline> cutPoint0 = rt.cutPoint;
 		IList<Trampoline> rems0 = rt.rems;
-		int pit0 = rt.journal.getPointInTime();
+		int pit0 = rt.trail.getPointInTime();
 		Sink<Node> handler0 = rt.handler;
 		return rt_ -> {
 			rt_.env = env0;
 			rt_.query = query0;
 			rt_.cutPoint = cutPoint0;
 			rt_.rems = rems0;
-			rt_.journal.undoBinds(pit0);
+			rt_.trail.undoBinds(pit0);
 			rt_.handler = handler0;
 		};
 	}

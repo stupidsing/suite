@@ -8,7 +8,7 @@ import java.util.Set;
 
 import suite.Suite;
 import suite.adt.Pair;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.RuleSet;
@@ -88,7 +88,7 @@ public class Assembler {
 
 	public Bytes assemble(Node input) {
 		Generalizer generalizer = new Generalizer();
-		Journal journal = new Journal();
+		Trail trail = new Trail();
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (Node node0 : Tree.iter(input)) {
@@ -96,7 +96,7 @@ public class Assembler {
 			Tree tree;
 
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
-				Binder.bind(tree.getLeft(), tree.getRight(), journal);
+				Binder.bind(tree.getLeft(), tree.getRight(), trail);
 			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null)
 				lnis.add(Pair.of((Reference) tree.getLeft(), tree.getRight()));
 			else

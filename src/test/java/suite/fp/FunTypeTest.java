@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Journal;
+import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
@@ -197,10 +197,10 @@ public class FunTypeTest {
 	}
 
 	private void checkType(String fps, String bindTo, String ts) {
-		Journal journal = new Journal();
+		Trail trail = new Trail();
 		Node type = getType(fps);
 
-		assertTrue(Binder.bind(type, SewingGeneralizerImpl.generalize(Suite.parse(bindTo)), journal));
+		assertTrue(Binder.bind(type, SewingGeneralizerImpl.generalize(Suite.parse(bindTo)), trail));
 		assertTrue(Comparer.comparer.compare(Suite.parse(ts), type) == 0);
 	}
 

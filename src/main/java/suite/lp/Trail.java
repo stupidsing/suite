@@ -6,7 +6,7 @@ import java.util.List;
 import suite.node.Node;
 import suite.node.Reference;
 
-public class Journal {
+public class Trail {
 
 	private List<Reference> boundReferences = new ArrayList<>();
 
