@@ -203,22 +203,6 @@ fc-add-functions STANDARD .p (
 			else ((h;); l1)
 		|| anything => ()
 	>>
-	define map-accum-left := fun => p0 =>
-		case
-		|| `$i; $is` =>
-			let `$p1, $o` := fun {p0} {i} >>
-			let `$px, $os` := map-accum-left {fun} {p1} {is} >>
-			px, (o; os)
-		|| anything => p0, ()
-	>>
-	define map-accum-right := fun => p0 =>
-		case
-		|| `$i; $is` =>
-			let `$p1, $os` := map-accum-right {fun} {p0} {is} >>
-			let `$px, $o` := fun {p1} {i} >>
-			px, (o; os)
-		|| anything => p0, ()
-	>>
 	define not := x =>
 		if x then false else true
 	>>
