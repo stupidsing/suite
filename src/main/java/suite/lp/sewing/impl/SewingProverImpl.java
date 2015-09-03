@@ -178,7 +178,7 @@ public class SewingProverImpl implements SewingProver {
 			}
 		}
 
-		rt.trail.undoAllBinds();
+		rt.trail.unwindAll();
 	}
 
 	private void compileAll() {
@@ -555,7 +555,7 @@ public class SewingProverImpl implements SewingProver {
 			rt_.query = query0;
 			rt_.cutPoint = cutPoint0;
 			rt_.rems = rems0;
-			rt_.trail.undoBinds(pit0);
+			rt_.trail.unwind(pit0);
 			rt_.handler = handler0;
 		};
 	}

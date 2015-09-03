@@ -205,7 +205,7 @@ public class InstructionTranslator implements Closeable {
 				app("#{reg} = trail.getPointInTime()", op0);
 				break;
 			case BINDUNDO______:
-				app("trail.undoBinds(#{reg-num})", op0);
+				app("trail.unwind(#{reg-num})", op0);
 				break;
 			case CALL__________:
 				backupFrame();

@@ -57,7 +57,7 @@ public class Prover {
 		try {
 			prove(query);
 		} finally {
-			undoAllBinds();
+			unwindAll();
 		}
 	}
 
@@ -104,7 +104,7 @@ public class Prover {
 				case OR____:
 					int pit = trail.getPointInTime();
 					Node bt = new Data<Source<Boolean>>(() -> {
-						trail.undoBinds(pit);
+						trail.unwind(pit);
 						return Boolean.TRUE;
 					});
 
@@ -206,8 +206,8 @@ public class Prover {
 	/**
 	 * Resets all bind done by this prover.
 	 */
-	public void undoAllBinds() {
-		trail.undoBinds(initialPointInTime);
+	public void unwindAll() {
+		trail.unwind(initialPointInTime);
 	}
 
 	private Node andTree(Node n0, Node n1) {

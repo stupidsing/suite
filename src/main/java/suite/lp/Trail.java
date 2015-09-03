@@ -30,11 +30,11 @@ public class Trail {
 		return boundReferences.size();
 	}
 
-	public void undoAllBinds() {
-		undoBinds(0);
+	public void unwindAll() {
+		unwind(0);
 	}
 
-	public void undoBinds(int pointInTime) {
+	public void unwind(int pointInTime) {
 		int i = boundReferences.size();
 		while (i > pointInTime)
 			boundReferences.remove(--i).unbound();

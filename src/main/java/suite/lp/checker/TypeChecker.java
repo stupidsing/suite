@@ -55,7 +55,7 @@ public class TypeChecker {
 			}
 		});
 
-		trail.undoAllBinds();
+		trail.unwindAll();
 	}
 
 	private Node getType(Node data) {

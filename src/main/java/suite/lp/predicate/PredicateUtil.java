@@ -40,7 +40,7 @@ public class PredicateUtil {
 			result = source.apply(prover1);
 		} finally {
 			if (!result) // Roll back bindings if overall goal is failed
-				prover1.undoAllBinds();
+				prover1.unwindAll();
 		}
 		return result;
 	}

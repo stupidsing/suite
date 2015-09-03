@@ -42,7 +42,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 	@Override
 	public void close() {
-		trail.undoAllBinds();
+		trail.unwindAll();
 	}
 
 	public List<Instruction> extractInstructions(Node node) {

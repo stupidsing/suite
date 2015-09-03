@@ -48,7 +48,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			regs[insn.op0] = number(trail.getPointInTime());
 			break;
 		case BINDUNDO______:
-			trail.undoBinds(i(regs[insn.op0]));
+			trail.unwind(i(regs[insn.op0]));
 			break;
 		case DECOMPOSETREE0:
 			Node node = regs[insn.op0].finalNode();

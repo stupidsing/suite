@@ -62,7 +62,7 @@ public class TreeRewriter {
 				if (Binder.bind(node0, ft[0], trail))
 					return ft[1];
 				else {
-					trail.undoBinds(pit);
+					trail.unwind(pit);
 					return node0;
 				}
 			}

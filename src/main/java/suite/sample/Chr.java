@@ -186,7 +186,7 @@ public class Chr {
 		int pit = trail.getPointInTime();
 
 		return node1 -> {
-			trail.undoBinds(pit);
+			trail.unwind(pit);
 			return Binder.bind(node0, node1, trail);
 		};
 	}

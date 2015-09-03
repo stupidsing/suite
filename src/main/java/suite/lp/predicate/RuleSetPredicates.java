@@ -87,7 +87,7 @@ public class RuleSetPredicates {
 					&& Binder.bind(rule0.tail, rule.tail, trail))
 				targets.add(rule);
 
-			trail.undoBinds(pit);
+			trail.unwind(pit);
 		}
 
 		for (Rule rule : targets)
