@@ -93,9 +93,9 @@ public class TypeChecker {
 	}
 
 	private Node getEnumType(Node name, Node type1) {
-		HashMap<Node, Reference> map = new HashMap<>();
-		map.put(name, Reference.of(type1));
-		return new Dict(map);
+		Dict dict = new Dict();
+		dict.map.put(name, Reference.of(type1));
+		return dict;
 	}
 
 	private void bind(Node type0, Node type1) {
