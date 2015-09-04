@@ -156,16 +156,10 @@ public class RecursiveFactorizerTest {
 	public void testRefactorRewrite1() throws IOException {
 		String pred0 = "ic-compile-better-option .0 .1 .2";
 		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
-		String sx = rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		String sx = recursiveFactorizer.rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));
-	}
-
-	private String rewrite(String from, String to, String s0) {
-		FactorizeResult frfrom = recursiveFactorizer.parse(from);
-		FactorizeResult frto = recursiveFactorizer.parse(to);
-		return FactorizeResult.rewrite(frfrom, frto, recursiveFactorizer.parse(s0)).unparse();
 	}
 
 }

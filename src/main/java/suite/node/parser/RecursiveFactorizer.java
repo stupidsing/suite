@@ -27,6 +27,12 @@ public class RecursiveFactorizer {
 		this.operators = operators;
 	}
 
+	public String rewrite(String from, String to, String s0) {
+		FactorizeResult frfrom = parse(from);
+		FactorizeResult frto = parse(to);
+		return FactorizeResult.rewrite(frfrom, frto, parse(s0)).unparse();
+	}
+
 	public FactorizeResult parse(String s) {
 		in = To.chars(s);
 		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
