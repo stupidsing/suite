@@ -1,4 +1,5 @@
-() :- import.path "ic/ic-parse.sl"
+() :- import.path "ic/ic-infer-type.sl"
+	, import.path "ic/ic-parse.sl"
 #
 
 compile-imperative .do0 .e0/.ex

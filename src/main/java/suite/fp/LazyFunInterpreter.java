@@ -75,6 +75,10 @@ public class LazyFunInterpreter {
 			return new Mapping(parent, size + 1, indices.put(v, index));
 		}
 
+		private Sink2<Frame, Thunk_> setter(Node v) {
+			return (frame, t) -> frame.values.add(t);
+		}
+
 		private Fun<Frame, Thunk_> getter(Node v) {
 			Integer index = indices.get(v);
 			if (index != null) {
@@ -85,10 +89,6 @@ public class LazyFunInterpreter {
 				return frame -> fun0.apply(frame.parent);
 			} else
 				throw new RuntimeException(v + " not found");
-		}
-
-		private Sink2<Frame, Thunk_> setter(Node v) {
-			return (frame, t) -> frame.values.add(t);
 		}
 
 		private Frame frame(Frame parent) {

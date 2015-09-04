@@ -76,6 +76,10 @@ public class EagerFunInterpreter {
 			return new Mapping(parent, size + 1, indices.put(v, index));
 		}
 
+		private Sink2<Frame, Node> setter(Node var) {
+			return (frame, value) -> frame.values.add(value);
+		}
+
 		private Fun<Frame, Node> getter(Node var) {
 			Integer index = indices.get(var);
 			if (index != null) {
@@ -86,10 +90,6 @@ public class EagerFunInterpreter {
 				return frame -> fun0.apply(frame.parent);
 			} else
 				throw new RuntimeException(var + " not found");
-		}
-
-		private Sink2<Frame, Node> setter(Node var) {
-			return (frame, value) -> frame.values.add(value);
 		}
 
 		private Frame frame(Frame parent) {
