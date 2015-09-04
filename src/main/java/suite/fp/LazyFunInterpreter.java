@@ -90,10 +90,6 @@ public class LazyFunInterpreter {
 			} else
 				throw new RuntimeException(v + " not found");
 		}
-
-		private Frame frame(Frame parent) {
-			return new Frame(parent);
-		}
 	}
 
 	public Thunk_ lazy(Node node) {
@@ -122,7 +118,7 @@ public class LazyFunInterpreter {
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
-		Frame frame = mapping.frame(null);
+		Frame frame = new Frame(null);
 
 		for (String key : keys) {
 			Atom var = Atom.of(key);
@@ -200,7 +196,7 @@ public class LazyFunInterpreter {
 			Sink2<Frame, Thunk_> setter = mapping1.setter(m[0]);
 			Fun<Frame, Thunk_> value_ = lazy0(mapping1, m[1]);
 			result = frame -> () -> new Fun_(in -> {
-				Frame frame1 = mapping1.frame(frame);
+				Frame frame1 = new Frame(frame);
 				setter.sink(frame1, in);
 				return value_.apply(frame1);
 			});

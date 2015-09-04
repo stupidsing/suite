@@ -91,10 +91,6 @@ public class EagerFunInterpreter {
 			} else
 				throw new RuntimeException(var + " not found");
 		}
-
-		private Frame frame(Frame parent) {
-			return new Frame(parent);
-		}
 	}
 
 	public Node eager(Node node) {
@@ -125,7 +121,7 @@ public class EagerFunInterpreter {
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Mapping mapping = new Mapping(null);
-		Frame frame = mapping.frame(null);
+		Frame frame = new Frame(null);
 
 		for (String key : keys) {
 			Atom var = Atom.of(key);
@@ -209,7 +205,7 @@ public class EagerFunInterpreter {
 			Sink2<Frame, Node> setter = mapping1.setter(m[0]);
 			Fun<Frame, Node> value_ = eager0(mapping1, m[1]);
 			result = frame -> new Fun_(in -> {
-				Frame frame1 = mapping1.frame(frame);
+				Frame frame1 = new Frame(frame);
 				setter.sink(frame1, in);
 				return value_.apply(frame1);
 			});
