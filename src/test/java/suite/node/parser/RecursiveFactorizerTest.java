@@ -119,22 +119,6 @@ public class RecursiveFactorizerTest {
 		return sx;
 	}
 
-	@Test
-	public void testRefactorRewrite1() throws IOException {
-		String pred0 = "ic-compile-better-option .0 .1 .2";
-		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
-		String sx = rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
-
-		System.out.println(sx);
-		assertFalse(sx.contains(pred0));
-	}
-
-	private String rewrite(String from, String to, String s0) {
-		FactorizeResult frfrom = recursiveFactorizer.parse(from);
-		FactorizeResult frto = recursiveFactorizer.parse(to);
-		return FactorizeResult.rewrite(frfrom, frto, recursiveFactorizer.parse(s0)).unparse();
-	}
-
 	private Node operatorNode(Operator op, List<Node> nodes) {
 		Str s = new Str("");
 		Str name = new Str(op.toString());
@@ -166,6 +150,22 @@ public class RecursiveFactorizerTest {
 		Dict dict = new Dict();
 		dict.map.put(Atom.of("chars"), Reference.of(new Str(s)));
 		return Tree.of(TermOp.COLON_, Atom.of(FTerminal.class.getName()), dict);
+	}
+
+	@Test
+	public void testRefactorRewrite1() throws IOException {
+		String pred0 = "ic-compile-better-option .0 .1 .2";
+		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
+		String sx = rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
+
+		System.out.println(sx);
+		assertFalse(sx.contains(pred0));
+	}
+
+	private String rewrite(String from, String to, String s0) {
+		FactorizeResult frfrom = recursiveFactorizer.parse(from);
+		FactorizeResult frto = recursiveFactorizer.parse(to);
+		return FactorizeResult.rewrite(frfrom, frto, recursiveFactorizer.parse(s0)).unparse();
 	}
 
 }
