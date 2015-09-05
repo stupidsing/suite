@@ -70,7 +70,7 @@ public class IterativeParser {
 					if (section.kind == '(' && ch == ')' //
 							|| section.kind == '[' && ch == ']' //
 							|| section.kind == '{' && ch == '}') {
-						Node node = section.list.getFirst().getRight();
+						Node node = section.unwind(null).getRight();
 						if (ch == ']')
 							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
 						add(node);
@@ -78,7 +78,7 @@ public class IterativeParser {
 						throw new RuntimeException("Cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
-						Node node = stack.pop().list.getFirst().getRight();
+						Node node = stack.pop().unwind(null).getRight();
 						node = Tree.of(TermOp.TUPLE_, Atom.of("`"), node);
 						add(node);
 					} else
@@ -88,7 +88,7 @@ public class IterativeParser {
 			}
 
 			if (stack.size() == 1)
-				return stack.pop().list.getFirst().getRight();
+				return stack.pop().unwind(null).getRight();
 			else
 				throw new RuntimeException("Cannot parse " + in);
 		}
@@ -120,7 +120,7 @@ public class IterativeParser {
 		}
 
 		private Tree unwind(Operator operator) {
-			int prec0 = operator.getPrecedence();
+			int prec0 = operator != null ? operator.getPrecedence() : -1;
 			Operator op;
 			Tree tree;
 
