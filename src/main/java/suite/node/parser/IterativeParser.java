@@ -1,10 +1,8 @@
 package suite.node.parser;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.List;
 
 import suite.node.Atom;
 import suite.node.Node;
@@ -42,33 +40,6 @@ public class IterativeParser {
 		return new Parse(in1).parse();
 	}
 
-	private class Section {
-		private char kind;
-		private List<Tree> list = new ArrayList<>(Arrays.asList(Tree.of(null, null, Atom.NIL)));
-		private boolean isDanglingRight = true;
-
-		public Section(char kind) {
-			this.kind = kind;
-		}
-
-		private Tree first() {
-			return list.get(0);
-		}
-
-		private Tree last() {
-			return Util.last(list);
-		}
-
-		private void push(Tree tree) {
-			list.add(tree);
-			isDanglingRight = true;
-		}
-
-		private Tree pop() {
-			return list.remove(list.size() - 1);
-		}
-	}
-
 	private class Parse {
 		private String in;
 		private Deque<Section> stack = new ArrayDeque<>();
@@ -99,7 +70,7 @@ public class IterativeParser {
 					if (section.kind == '(' && ch == ')' //
 							|| section.kind == '[' && ch == ']' //
 							|| section.kind == '{' && ch == '}') {
-						Node node = section.first().getRight();
+						Node node = section.list.getFirst().getRight();
 						if (ch == ']')
 							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
 						add(node);
@@ -107,7 +78,7 @@ public class IterativeParser {
 						throw new RuntimeException("Cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
-						Node node = stack.pop().first().getRight();
+						Node node = stack.pop().list.getFirst().getRight();
 						node = Tree.of(TermOp.TUPLE_, Atom.of("`"), node);
 						add(node);
 					} else
@@ -117,7 +88,7 @@ public class IterativeParser {
 			}
 
 			if (stack.size() == 1)
-				return stack.pop().first().getRight();
+				return stack.pop().list.getFirst().getRight();
 			else
 				throw new RuntimeException("Cannot parse " + in);
 		}
@@ -126,27 +97,50 @@ public class IterativeParser {
 			Section section = stack.peek();
 			if (!section.isDanglingRight)
 				addOperator(TermOp.TUPLE_);
-			Tree.forceSetRight(section.last(), node);
+			Tree.forceSetRight(section.list.getLast(), node);
 			section.isDanglingRight = false;
 		}
 
 		private void addOperator(Operator operator) {
 			Section section = stack.peek();
+			Tree tree = section.unwind(operator);
+			Tree tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
+			Tree.forceSetRight(tree, tree1);
+			section.push(tree1);
+		}
+	}
+
+	private class Section {
+		private char kind;
+		private Deque<Tree> list = new ArrayDeque<>(Arrays.asList(Tree.of(null, null, Atom.NIL)));
+		private boolean isDanglingRight = true;
+
+		public Section(char kind) {
+			this.kind = kind;
+		}
+
+		private Tree unwind(Operator operator) {
 			int prec0 = operator.getPrecedence();
 			Operator op;
 			Tree tree;
 
-			while ((op = (tree = section.last()).getOperator()) != null) {
+			while ((op = (tree = list.getLast()).getOperator()) != null) {
 				int prec1 = op.getPrecedence();
 				if (prec0 < prec1 || operator.getAssoc() == Assoc.LEFT && prec0 == prec1)
-					section.pop();
+					pop();
 				else
 					break;
 			}
+			return tree;
+		}
 
-			Tree tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
-			Tree.forceSetRight(tree, tree1);
-			section.push(tree1);
+		private void push(Tree tree) {
+			list.addLast(tree);
+			isDanglingRight = true;
+		}
+
+		private Tree pop() {
+			return list.removeLast();
 		}
 	}
 
