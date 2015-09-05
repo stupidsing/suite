@@ -63,6 +63,10 @@ public class IterativeParser {
 			list.add(tree);
 			isDanglingRight = true;
 		}
+
+		private Tree pop() {
+			return list.remove(list.size() - 1);
+		}
 	}
 
 	private class Parse {
@@ -128,23 +132,20 @@ public class IterativeParser {
 
 		private void addOperator(Operator operator) {
 			Section section = stack.peek();
-			List<Tree> list = section.list;
-			int listPos = list.size() - 1;
 			int prec0 = operator.getPrecedence();
 			Operator op;
 			Tree tree;
 
-			while ((op = (tree = list.get(listPos)).getOperator()) != null) {
+			while ((op = (tree = section.last()).getOperator()) != null) {
 				int prec1 = op.getPrecedence();
 				if (prec0 < prec1 || operator.getAssoc() == Assoc.LEFT && prec0 == prec1)
-					listPos--;
+					section.pop();
 				else
 					break;
 			}
 
 			Tree tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
 			Tree.forceSetRight(tree, tree1);
-			list.subList(listPos + 1, list.size()).clear();
 			section.push(tree1);
 		}
 	}
