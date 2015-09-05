@@ -249,6 +249,8 @@ ic-type-size (ARRAY-OF .arraySize .type) .size
 	:- ic-type-size .type .elementSize
 	, let .size (.arraySize * .elementSize)
 #
+ic-type-size (METHOD-OF _) 8
+#
 ic-type-size (PTR-OF _) 4
 #
 ic-type-size (TUPLE-OF _ ()) 0
