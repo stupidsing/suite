@@ -41,6 +41,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeRewriter;
+import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -346,7 +347,7 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr0;
 			};
-		} else if ((m = Suite.matcher(".0 .1").apply(node)) != null && m[0] instanceof Atom)
+		} else if ((m = TreeUtil.tuple(node)) != null && m[0] instanceof Atom)
 			tr = callSystemPredicate(sb, ((Atom) m[0]).name, m[1]);
 		else if ((tree = Tree.decompose(node)) != null)
 			tr = callSystemPredicate(sb, tree.getOperator().getName(), node);

@@ -18,6 +18,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.node.util.TreeUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink2;
@@ -168,7 +169,7 @@ public class LazyFunInterpreter {
 					return else_.apply(frame);
 			};
 		} else if ((m = Suite.matcher("DEF-VARS .0 .1").apply(node)) != null) {
-			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(Suite.matcher(".0 .1")::apply);
+			Streamlet<Node[]> arrays = Tree.iter(m[0]).map(TreeUtil::tuple);
 			Streamlet<Node> vars = arrays.map(m1 -> m1[0]);
 			int size = vars.size();
 
