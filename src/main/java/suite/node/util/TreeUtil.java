@@ -9,7 +9,7 @@ import suite.node.io.TermOp;
 public class TreeUtil {
 
 	public static int getNumberOfElements(Node node) {
-		int n = 0;
+		int n = 1;
 		Tree tree;
 
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
@@ -24,13 +24,14 @@ public class TreeUtil {
 		Node params[] = new Node[n];
 		Tree tree;
 
-		for (int i = 0; i < n; i++)
+		for (int i = 0; i < n - 1; i++)
 			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 				params[i] = tree.getLeft();
 				node = tree.getRight();
 			} else
 				throw new RuntimeException("Not enough parameters");
 
+		params[n - 1] = node;
 		return params;
 	}
 
