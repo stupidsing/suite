@@ -74,8 +74,8 @@ public class LogicCompilerTest {
 	public void testNot() {
 		assertTrue(prove("not (1 = 2)"));
 		assertFalse(prove("not (1 = 1)"));
-		assertTrue(prove("not not (.v = 1), .v = 2"));
-		assertFalse(prove("not not (.v = 1), 1 = 2"));
+		assertTrue(prove("not (not (.v = 1)), .v = 2"));
+		assertFalse(prove("not (not (.v = 1)), 1 = 2"));
 	}
 
 	@Test

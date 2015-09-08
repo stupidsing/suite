@@ -70,7 +70,7 @@ public class ProverTest {
 
 	@Test
 	public void testNotNot() throws IOException {
-		assertTrue(test(Suite.createRuleSet(), "not not (.a = 3), not bound .a"));
+		assertTrue(test(Suite.createRuleSet(), "not (not (.a = 3)), not (bound .a)"));
 	}
 
 	@Test
