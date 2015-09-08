@@ -28,7 +28,7 @@ fc-precompile .lib .do0/($$PRECOMPILE .pc) .preds
 			, fc-infer-type-rule .do .ue1/.ve1/.te1 .tr1 .type
 	)
 	, !, write 'Verifying intermediate output', nl
-	, once (not is.cyclic .do1; fc-error "Cyclic data detected")
+	, once (not (is.cyclic .do1); fc-error "Cyclic data detected")
 	, !, write "Lazyifying", nl
 	, !, fc-lazyify .do1 .dol2
 	, !, write "Reducing tail recursions", nl
