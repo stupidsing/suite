@@ -7,7 +7,7 @@ cg-optimize .c0 .cx
 #
 
 cg-opt .c0 _
-	:- not bound .c0, !
+	:- not (bound .c0), !
 #
 cg-opt .c0 .cx
 	:- intern.tree .key0 CG-OPTIMIZE ':' .c0

@@ -32,7 +32,7 @@ compile-function .mode .do0 (FRAME l:.c,)
 fc-process-function .mode .do0 .dox
 	:- !, fc-parse .do0 .do1
 	, !, fc-infer-type .do1 _
-	, once (not is.cyclic .do1; fc-error "Cyclic data detected")
+	, once (not (is.cyclic .do1); fc-error "Cyclic data detected")
 	, !, once (.mode = LAZY, fc-lazyify-fun .do1 .do2
 		; .mode = EAGER, .do1 = .do2
 	)
@@ -78,7 +78,7 @@ fc-frame-difference .frame0 .frame1 0
 	:- same .frame0 .frame1, !
 #
 fc-frame-difference .frame0 (.frame1 + 1) .frameDiff
-	:- not is.tree .frame0, !
+	:- not (is.tree .frame0), !
 	, fc-frame-difference .frame0 .frame1 .frameDiff0
 	, let .frameDiff (.frameDiff0 - 1)
 #

@@ -333,7 +333,7 @@ as-emit:8 .d (E8 .d, .e)/.e #
 as-emit:16 .d (E16 .d, .e)/.e #
 as-emit:32 .d (E32 .d, .e)/.e #
 
-as-verify-imm:.size .imm :- once (not bound .imm; as-imm:.size .imm) #
+as-verify-imm:.size .imm :- once (not (bound .imm); as-imm:.size .imm) #
 
 as-imm:8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 as-imm:16 .imm :- is.int .imm, -32768 <= .imm, .imm < 32768 #

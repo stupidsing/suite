@@ -7,7 +7,7 @@ fc-optimize-flow .do0 .dox
 	:- fc-define-var .do0 .var .value .do1 _ _ _ _
 	, .value = .type _
 	, member (ATOM, BOOLEAN, CHARS, NUMBER, VAR,) .type
-	, not contains (VAR .var) .value
+	, not (contains (VAR .var) .value)
 	, !, fc-replace-var-by-value .var .value .do1 .do2
 	, fc-optimize-flow .do2 .dox
 #

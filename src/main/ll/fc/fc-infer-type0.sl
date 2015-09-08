@@ -165,7 +165,7 @@ fc-infer-compatible-types .a .b .ue/.ve/.te .tr0/.trx .type
 #
 
 fc-resolve-type-rules .tr
-	:- once (not is.cyclic .tr; fc-error "Cyclic types")
+	:- once (not (is.cyclic .tr); fc-error "Cyclic types")
 	, once (fc-resolve-type-rules0 .tr; fc-error "Unmatched types")
 #
 

@@ -164,7 +164,7 @@ fc-find-simple-type (VAR .var) .ue/.ve/_ .type
 #
 
 fc-resolve-type-rules .tr
-	:- once (not is.cyclic .tr; throw "Cyclic types")
+	:- once (not (is.cyclic .tr); throw "Cyclic types")
 	, once (fc-resolve-type-rules0 .tr; throw "Unmatched types")
 #
 
