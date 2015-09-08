@@ -59,7 +59,7 @@ params-length .ps .n
 	) else-if (.n > 1, .ps = _ .ps1) then (
 		sum .n 1 .n1, params-length .ps1 .n1
 	) else (
-		(not bound .ps; .ps != _ _), .n = 1
+		(not (bound .ps); .ps != _ _), .n = 1
 	)
 #
 
