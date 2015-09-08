@@ -14,12 +14,12 @@ fc-optimize-flow .do0 .dox
 fc-optimize-flow (APPLY .value (FUN .var .do0)) .dox
 	:- !, fc-optimize-flow (DEF-VARS (.var .value,) .do0) .dox
 #
-fc-optimize-flow (UNWRAP WRAP .do0) .dox
+fc-optimize-flow (UNWRAP (WRAP .do0)) .dox
 	:- !, fc-optimize-flow .do0 .dox
 #
 fc-optimize-flow .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()
-	, list.query .ts .t (fc-optimize-flow .t)
+	, list.query .ts (.t0 .t1) (fc-optimize-flow (.t0 .t1))
 #
 
 -- Remove unreferenced variables
