@@ -32,10 +32,10 @@ public class PredicateUtil {
 	}
 
 	public static BuiltinPredicate run(Sink<Node> fun) {
-		return (prover, ps) -> {
-			fun.sink(ps);
+		return p1((prover, p0) -> {
+			fun.sink(p0);
 			return true;
-		};
+		});
 	}
 
 	public static BuiltinPredicate bool(Predicate<Node> fun) {
