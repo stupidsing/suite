@@ -10,7 +10,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.util.TreeUtil;
 
 public class SystemPredicates {
 
@@ -169,22 +168,20 @@ public class SystemPredicates {
 		return true;
 	};
 
-	private BuiltinPredicate ifPredicate = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 3);
-		boolean result = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
-		Node n = result ? params[1] : params[2];
-		prover.setRemaining(Tree.of(TermOp.AND___, n, prover.getRemaining()));
+	private BuiltinPredicate ifPredicate = PredicateUtil.p3((prover, p0, p1, p2) -> {
+		boolean result = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(p0));
+		prover.setRemaining(Tree.of(TermOp.AND___, result ? p1 : p2, prover.getRemaining()));
 		return true;
-	};
+	});
 
-	private BuiltinPredicate not = (prover, ps) -> PredicateUtil.tryProve(prover, prover1 -> !prover1.prove0(ps));
+	private BuiltinPredicate not = PredicateUtil.p1((prover, p0) -> PredicateUtil.tryProve(prover, prover1 -> !prover1.prove0(p0)));
 
-	private BuiltinPredicate once = (prover, ps) -> new Prover(prover).prove0(ps);
+	private BuiltinPredicate once = PredicateUtil.p1((prover, p0) -> new Prover(prover).prove0(p0));
 
-	private BuiltinPredicate systemPredicate = (prover, ps) -> {
-		Atom atom = ps instanceof Atom ? (Atom) ps : null;
+	private BuiltinPredicate systemPredicate = PredicateUtil.p1((prover, p0) -> {
+		Atom atom = p0 instanceof Atom ? (Atom) p0 : null;
 		String name = atom != null ? atom.name : null;
 		return name != null && predicates.containsKey(name);
-	};
+	});
 
 }

@@ -11,7 +11,6 @@ import suite.node.Reference;
 import suite.node.TreeIntern;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.util.TreeUtil;
 
 public class InternPredicates {
 
@@ -23,23 +22,17 @@ public class InternPredicates {
 		treeIntern_.get().clear();
 	});
 
-	public BuiltinPredicate internMapContains = (prover, ps) -> {
-		IdentityKey<Node> key = IdentityKey.of(ps);
+	public BuiltinPredicate internMapContains = PredicateUtil.p1((prover, p0) -> {
+		IdentityKey<Node> key = IdentityKey.of(p0);
 		return internMap.get().containsKey(key);
-	};
+	});
 
 	public BuiltinPredicate internMapPut = PredicateUtil.fun(n -> //
 	internMap.get().computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
 
-	public BuiltinPredicate internTree = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 4);
-		Node p = params[0];
-		Node p1 = params[1];
-		Node p2 = params[2];
-		Node p3 = params[3];
-
-		Operator operator = TermOp.find(((Atom) p2).name);
-		return prover.bind(p, treeIntern_.get().of(operator, p1, p3));
-	};
+	public BuiltinPredicate internTree = PredicateUtil.p4((prover, t, l, op, r) -> {
+		Operator operator = TermOp.find(((Atom) op).name);
+		return prover.bind(t, treeIntern_.get().of(operator, l, r));
+	});
 
 }

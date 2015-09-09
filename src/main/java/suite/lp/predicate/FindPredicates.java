@@ -15,7 +15,6 @@ import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TermKey;
-import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
@@ -23,35 +22,26 @@ public class FindPredicates {
 
 	private static Map<TermKey, Node> memoizedPredicates = new ConcurrentHashMap<>();
 
-	public BuiltinPredicate findAll = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 3);
-		Node var = params[0], goal = params[1], results = params[2];
-		return prover.bind(results, findAll(prover, var, goal));
-	};
+	public BuiltinPredicate findAll = PredicateUtil
+			.p3((prover, var, goal, results) -> prover.bind(results, findAll(prover, var, goal)));
 
 	// memoize is not re-entrant due to using computeIfAbsent()
-	public BuiltinPredicate findAllMemoized = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 3);
-		Node var = params[0], goal = params[1], results = params[2];
+	public BuiltinPredicate findAllMemoized = PredicateUtil.p3((prover, var, goal, results) -> {
 		TermKey key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
-	};
+	});
 
 	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
 
-	public BuiltinPredicate suspend = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 3);
-		Node p0 = params[0];
-		Node p1 = params[1];
-		Node p2 = params[2];
-		Suspend suspend = new Suspend(() -> Read.from(elaborate(prover, p1, p2)).uniqueResult());
+	public BuiltinPredicate suspend = PredicateUtil.p3((prover, susp, var, goal) -> {
+		Suspend suspend = new Suspend(() -> Read.from(elaborate(prover, var, goal)).uniqueResult());
 
-		if (p0 instanceof Reference) {
-			prover.getTrail().addBind((Reference) p0, suspend);
+		if (susp instanceof Reference) {
+			prover.getTrail().addBind((Reference) susp, suspend);
 			return true;
 		} else
 			return false;
-	};
+	});
 
 	private Node findAll(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = elaborate(prover, var, goal);

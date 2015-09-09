@@ -28,13 +28,12 @@ public class RuleSetPredicates {
 		return true;
 	};
 
-	public BuiltinPredicate assertz = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 1);
-		prover.ruleSet().addRule(Rule.formRule(params[0]));
+	public BuiltinPredicate assertz = PredicateUtil.p1((prover, p0) -> {
+		prover.ruleSet().addRule(Rule.formRule(p0));
 		return true;
-	};
+	});
 
-	public BuiltinPredicate getAllRules = (prover, ps) -> {
+	public BuiltinPredicate getAllRules = PredicateUtil.p1((prover, p0) -> {
 		RuleSet ruleSet = prover.ruleSet();
 		List<Rule> rules = ruleSet.getRules();
 		List<Node> nodes = new ArrayList<>();
@@ -42,8 +41,8 @@ public class RuleSetPredicates {
 		for (Rule rule : rules)
 			nodes.add(Tree.of(TermOp.IS____, rule.head, rule.tail));
 
-		return prover.bind(Tree.of(TermOp.NEXT__, nodes), ps);
-	};
+		return prover.bind(Tree.of(TermOp.NEXT__, nodes), p0);
+	});
 
 	public BuiltinPredicate importPredicate = (prover, ps) -> Suite.importFrom(prover.ruleSet(), ps);
 

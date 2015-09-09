@@ -22,20 +22,16 @@ import suite.node.io.ReversePolish;
 import suite.node.io.TermOp;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
-import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
 
 public class FormatPredicates {
 
 	private ReversePolish rpn = new ReversePolish();
 
-	public BuiltinPredicate charAscii = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
-		Node p0 = params[0];
-		Node p1 = params[1];
+	public BuiltinPredicate charAscii = PredicateUtil.p2((prover, p0, p1) -> {
 		return p0 instanceof Str && prover.bind(Int.of(((Str) p0).value.charAt(0)), p1) //
 				|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).number), p0);
-	};
+	});
 
 	public BuiltinPredicate concat = (prover, ps) -> {
 		Node node = ps;
@@ -62,64 +58,53 @@ public class FormatPredicates {
 
 	public BuiltinPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
-	public BuiltinPredicate persistLoad = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
-		try (InputStream is = new FileInputStream(((Str) params[1]).value);
+	public BuiltinPredicate persistLoad = PredicateUtil.p2((prover, node, filename) -> {
+		try (InputStream is = new FileInputStream(((Str) filename).value);
 				GZIPInputStream gis = new GZIPInputStream(is);
 				DataInputStream dis = new DataInputStream(gis)) {
 			Grapher grapher = new Grapher();
 			grapher.load(dis);
-			return prover.bind(params[0], grapher.ungraph());
+			return prover.bind(node, grapher.ungraph());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	};
+	});
 
-	public BuiltinPredicate persistSave = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
-		try (OutputStream os = FileUtil.out(((Str) params[1]).value);
+	public BuiltinPredicate persistSave = PredicateUtil.p2((prover, node, filename) -> {
+		try (OutputStream os = FileUtil.out(((Str) filename).value);
 				GZIPOutputStream gos = new GZIPOutputStream(os);
 				DataOutputStream dos = new DataOutputStream(gos)) {
 			Grapher grapher = new Grapher();
-			grapher.graph(params[0]);
+			grapher.graph(node);
 			grapher.save(dos);
 			return true;
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	};
+	});
 
 	public BuiltinPredicate prettyPrint = PredicateUtil.run(n -> System.out.println(new PrettyPrinter().prettyPrint(n)));
 
 	public BuiltinPredicate prettyPrintNew = PredicateUtil.run(n -> System.out.println(new NewPrettyPrinter().prettyPrint(n)));
 
-	public BuiltinPredicate rpnPredicate = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
-		Node p0 = params[0], p1 = params[1];
-		if (p1 instanceof Str)
-			return prover.bind(p0, rpn.fromRpn(((Str) p1).value));
+	public BuiltinPredicate rpnPredicate = PredicateUtil.p2((prover, node, r) -> {
+		if (r instanceof Str)
+			return prover.bind(node, rpn.fromRpn(((Str) r).value));
 		else
-			return prover.bind(new Str(rpn.toRpn(p0)), p1);
-	};
+			return prover.bind(new Str(rpn.toRpn(node)), r);
+	});
 
-	public BuiltinPredicate startsWith = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
-		Node p0 = params[0], p1 = params[1];
-
-		return p0 instanceof Atom && p1 instanceof Atom //
-				&& ((Atom) p0).name.startsWith(((Atom) p1).name);
-	};
+	public BuiltinPredicate startsWith = PredicateUtil.p2(
+			(prover, s, start) -> s instanceof Atom && start instanceof Atom && ((Atom) s).name.startsWith(((Atom) start).name));
 
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).value.length()));
 
-	public BuiltinPredicate substring = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 4);
-		String name = ((Str) params[0]).value;
+	public BuiltinPredicate substring = PredicateUtil.p4((prover, s0, p0, px, sx) -> {
+		String name = ((Str) s0).value;
 		int length = name.length();
-		Node p1 = params[1], p2 = params[2];
 
-		if (p1 instanceof Int && p2 instanceof Int) {
-			int m = ((Int) p1).number, n = ((Int) p2).number;
+		if (p0 instanceof Int && px instanceof Int) {
+			int m = ((Int) p0).number, n = ((Int) px).number;
 
 			while (m < 0)
 				m += length;
@@ -128,10 +113,10 @@ public class FormatPredicates {
 
 			n = Math.min(n, length);
 
-			return prover.bind(params[3], new Str(name.substring(m, n)));
+			return prover.bind(sx, new Str(name.substring(m, n)));
 		} else
 			throw new RuntimeException("Invalid call pattern");
-	};
+	});
 
 	public BuiltinPredicate toAtom = PredicateUtil.fun(n -> Atom.of(Formatter.display(n)));
 

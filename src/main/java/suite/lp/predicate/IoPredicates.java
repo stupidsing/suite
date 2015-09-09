@@ -16,7 +16,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.SuiteException;
-import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
@@ -32,16 +31,16 @@ public class IoPredicates {
 		return true;
 	};
 
-	public BuiltinPredicate exec = (prover, ps) -> {
-		if (ps instanceof Str)
+	public BuiltinPredicate exec = PredicateUtil.p1((prover, p0) -> {
+		if (p0 instanceof Str)
 			try {
-				String cmd = ((Str) ps).value;
+				String cmd = ((Str) p0).value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 			} catch (Exception ex) { // IOException or InterruptedException
 				LogUtil.error(ex);
 			}
 		return false;
-	};
+	});
 
 	public BuiltinPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
 
@@ -56,10 +55,9 @@ public class IoPredicates {
 		}
 	});
 
-	public BuiltinPredicate fileWrite = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
-		String filename = Formatter.display(params[0]);
-		String content = Formatter.display(params[1]);
+	public BuiltinPredicate fileWrite = PredicateUtil.p2((prover, fn, contents) -> {
+		String filename = Formatter.display(fn);
+		String content = Formatter.display(contents);
 
 		try (OutputStream fos = FileUtil.out(filename)) {
 			fos.write(content.getBytes(FileUtil.charset));
@@ -68,26 +66,24 @@ public class IoPredicates {
 		}
 
 		return true;
-	};
+	});
 
-	public BuiltinPredicate homeDir = (prover, ps) -> {
-		return prover.bind(new Str(FileUtil.homeDir()), ps);
-	};
+	public BuiltinPredicate homeDir = PredicateUtil.p1((prover, p0) -> prover.bind(new Str(FileUtil.homeDir()), p0));
 
 	public BuiltinPredicate nl = PredicateUtil.run(n -> System.out.println());
 
-	public BuiltinPredicate readLine = (prover, ps) -> {
+	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> {
 		try {
 			BytesBuilder bb = new BytesBuilder();
 			byte b;
 			while ((b = (byte) System.in.read()) >= 0 && b != 10)
 				bb.append(b);
 			String s = new String(bb.toBytes().toBytes(), FileUtil.charset);
-			return prover.bind(new Str(s), ps);
+			return prover.bind(new Str(s), p0);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	};
+	});
 
 	public BuiltinPredicate log = PredicateUtil.run(n -> LogUtil.info(Formatter.dump(n)));
 
@@ -96,27 +92,26 @@ public class IoPredicates {
 		return false;
 	};
 
-	public BuiltinPredicate source = (prover, ps) -> {
+	public BuiltinPredicate source = PredicateUtil.p1((prover, p0) -> {
 		Node source = prover.config().getSource().source();
-		return prover.bind(ps, source);
-	};
+		return prover.bind(p0, source);
+	});
 
 	public BuiltinPredicate throwPredicate = PredicateUtil.run(n -> {
 		throw new SuiteException(new Cloner().clone(n));
 	});
 
-	public BuiltinPredicate tryPredicate = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 3);
+	public BuiltinPredicate tryPredicate = PredicateUtil.p3((prover, try_, catch_, throw_) -> {
 		try {
-			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(params[0]));
+			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(try_));
 		} catch (SuiteException ex) {
-			if (prover.bind(params[1], ex.getNode())) {
-				prover.setRemaining(Tree.of(TermOp.AND___, params[2], prover.getRemaining()));
+			if (prover.bind(catch_, ex.getNode())) {
+				prover.setRemaining(Tree.of(TermOp.AND___, throw_, prover.getRemaining()));
 				return true;
 			} else
 				throw ex;
 		}
-	};
+	});
 
 	public BuiltinPredicate write(PrintStream printStream) {
 		return PredicateUtil.run(n -> printStream.print(Formatter.display(n)));

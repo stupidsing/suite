@@ -4,7 +4,8 @@ import java.util.function.Predicate;
 
 import suite.lp.doer.Prover;
 import suite.node.Node;
-import suite.node.util.TreeUtil;
+import suite.node.Tree;
+import suite.node.io.TermOp;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 
@@ -12,6 +13,22 @@ public class PredicateUtil {
 
 	public interface BuiltinPredicate {
 		public boolean prove(Prover prover, Node ps);
+	}
+
+	public interface PredicateP1 {
+		public boolean prove(Prover prover, Node p0);
+	}
+
+	public interface PredicateP2 {
+		public boolean prove(Prover prover, Node p0, Node p1);
+	}
+
+	public interface PredicateP3 {
+		public boolean prove(Prover prover, Node p0, Node p1, Node p2);
+	}
+
+	public interface PredicateP4 {
+		public boolean prove(Prover prover, Node p0, Node p1, Node p2, Node p3);
 	}
 
 	public static BuiltinPredicate run(Sink<Node> fun) {
@@ -22,14 +39,40 @@ public class PredicateUtil {
 	}
 
 	public static BuiltinPredicate bool(Predicate<Node> fun) {
-		return (prover, ps) -> fun.test(ps);
+		return p1((prover, p0) -> fun.test(p0));
 	}
 
 	public static BuiltinPredicate fun(Fun<Node, Node> fun) {
-		return (prover, ps) -> {
-			Node params[] = TreeUtil.getElements(ps, 2);
-			Node p0 = params[0], p1 = params[1];
-			return prover.bind(p1, fun.apply(p0));
+		return p2((prover, p0, p1) -> prover.bind(p1, fun.apply(p0)));
+	}
+
+	public static BuiltinPredicate p1(PredicateP1 pred) {
+		return (prover, t) -> {
+			return pred.prove(prover, t);
+		};
+	}
+
+	public static BuiltinPredicate p2(PredicateP2 pred) {
+		return (prover, t) -> {
+			Tree t0 = Tree.decompose(t, TermOp.TUPLE_);
+			return pred.prove(prover, t0.getLeft(), t0.getRight());
+		};
+	}
+
+	public static BuiltinPredicate p3(PredicateP3 pred) {
+		return (prover, t) -> {
+			Tree t0 = Tree.decompose(t, TermOp.TUPLE_);
+			Tree t1 = Tree.decompose(t0.getRight(), TermOp.TUPLE_);
+			return pred.prove(prover, t0.getLeft(), t1.getLeft(), t1.getRight());
+		};
+	}
+
+	public static BuiltinPredicate p4(PredicateP4 pred) {
+		return (prover, t) -> {
+			Tree t0 = Tree.decompose(t, TermOp.TUPLE_);
+			Tree t1 = Tree.decompose(t0.getRight(), TermOp.TUPLE_);
+			Tree t2 = Tree.decompose(t1.getRight(), TermOp.TUPLE_);
+			return pred.prove(prover, t0.getLeft(), t1.getLeft(), t2.getLeft(), t2.getRight());
 		};
 	}
 
