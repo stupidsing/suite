@@ -6,6 +6,7 @@ import suite.lp.doer.Prover;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 
@@ -29,6 +30,10 @@ public class PredicateUtil {
 
 	public interface PredicateP4 {
 		public boolean prove(Prover prover, Node p0, Node p1, Node p2, Node p3);
+	}
+
+	public interface PredicatePs {
+		public boolean prove(Prover prover, Node ps[]);
 	}
 
 	public static BuiltinPredicate run(Sink<Node> fun) {
@@ -74,6 +79,10 @@ public class PredicateUtil {
 			Tree t2 = Tree.decompose(t1.getRight(), TermOp.TUPLE_);
 			return pred.prove(prover, t0.getLeft(), t1.getLeft(), t2.getLeft(), t2.getRight());
 		};
+	}
+
+	public static BuiltinPredicate ps(PredicatePs pred) {
+		return (prover, t) -> pred.prove(prover, TreeUtil.getElements(t, TreeUtil.getNumberOfElements(t)));
 	}
 
 	public static boolean tryProve(Prover prover, Fun<Prover, Boolean> source) {

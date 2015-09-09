@@ -22,7 +22,11 @@ import suite.primitive.Bytes.BytesBuilder;
 
 public class IoPredicates {
 
-	public BuiltinPredicate dump = PredicateUtil.run(n -> System.out.print(Formatter.dump(n)));
+	public BuiltinPredicate dump = PredicateUtil.ps((prover, ps) -> {
+		for (Node p : ps)
+			System.out.print(Formatter.dump(p) + " ");
+		return true;
+	});
 
 	public BuiltinPredicate dumpStack = (prover, ps) -> {
 		String date = LocalDateTime.now().toString();
@@ -36,7 +40,9 @@ public class IoPredicates {
 			try {
 				String cmd = ((Str) p0).value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
-			} catch (Exception ex) { // IOException or InterruptedException
+			} catch (Exception ex)
+
+			{ // IOException or InterruptedException
 				LogUtil.error(ex);
 			}
 		return false;
@@ -50,7 +56,9 @@ public class IoPredicates {
 		String filename = Formatter.display(n);
 		try {
 			return new Str(FileUtil.read(filename));
-		} catch (IOException ex) {
+		} catch (IOException ex)
+
+		{
 			throw new RuntimeException(ex);
 		}
 	});
@@ -61,7 +69,9 @@ public class IoPredicates {
 
 		try (OutputStream fos = FileUtil.out(filename)) {
 			fos.write(content.getBytes(FileUtil.charset));
-		} catch (IOException ex) {
+		} catch (IOException ex)
+
+		{
 			throw new RuntimeException(ex);
 		}
 
@@ -80,7 +90,9 @@ public class IoPredicates {
 				bb.append(b);
 			String s = new String(bb.toBytes().toBytes(), FileUtil.charset);
 			return prover.bind(new Str(s), p0);
-		} catch (IOException ex) {
+		} catch (IOException ex)
+
+		{
 			throw new RuntimeException(ex);
 		}
 	});
@@ -104,17 +116,24 @@ public class IoPredicates {
 	public BuiltinPredicate tryPredicate = PredicateUtil.p3((prover, try_, catch_, throw_) -> {
 		try {
 			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(try_));
-		} catch (SuiteException ex) {
+		} catch (SuiteException ex)
+
+		{
 			if (prover.bind(catch_, ex.getNode())) {
 				prover.setRemaining(Tree.of(TermOp.AND___, throw_, prover.getRemaining()));
 				return true;
 			} else
 				throw ex;
 		}
+
 	});
 
 	public BuiltinPredicate write(PrintStream printStream) {
-		return PredicateUtil.run(n -> printStream.print(Formatter.display(n)));
+		return PredicateUtil.ps((prover, ps) -> {
+			for (Node p : ps)
+				printStream.print(Formatter.display(p) + " ");
+			return true;
+		});
 	}
 
 }
