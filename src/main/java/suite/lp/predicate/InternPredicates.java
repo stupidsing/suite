@@ -17,7 +17,7 @@ public class InternPredicates {
 	private static ThreadLocal<Map<IdentityKey<Node>, Node>> internMap = ThreadLocal.withInitial(() -> new HashMap<>());
 	private static ThreadLocal<TreeIntern> treeIntern_ = ThreadLocal.withInitial(() -> new TreeIntern());
 
-	public BuiltinPredicate internMapClear = PredicateUtil.run(n -> {
+	public BuiltinPredicate internMapClear = PredicateUtil.run(() -> {
 		internMap.get().clear();
 		treeIntern_.get().clear();
 	});

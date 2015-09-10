@@ -48,7 +48,7 @@ public class IoPredicates {
 		return false;
 	});
 
-	public BuiltinPredicate exit = PredicateUtil.run(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
+	public BuiltinPredicate exit = PredicateUtil.sink(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
 
 	public BuiltinPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 
@@ -80,7 +80,7 @@ public class IoPredicates {
 
 	public BuiltinPredicate homeDir = PredicateUtil.p1((prover, p0) -> prover.bind(new Str(FileUtil.homeDir()), p0));
 
-	public BuiltinPredicate nl = PredicateUtil.run(n -> System.out.println());
+	public BuiltinPredicate nl = PredicateUtil.run(() -> System.out.println());
 
 	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> {
 		try {
@@ -97,7 +97,7 @@ public class IoPredicates {
 		}
 	});
 
-	public BuiltinPredicate log = PredicateUtil.run(n -> LogUtil.info(Formatter.dump(n)));
+	public BuiltinPredicate log = PredicateUtil.sink(n -> LogUtil.info(Formatter.dump(n)));
 
 	public BuiltinPredicate sink = (prover, ps) -> {
 		prover.config().getSink().sink(ps);
@@ -109,7 +109,7 @@ public class IoPredicates {
 		return prover.bind(p0, source);
 	});
 
-	public BuiltinPredicate throwPredicate = PredicateUtil.run(n -> {
+	public BuiltinPredicate throwPredicate = PredicateUtil.sink(n -> {
 		throw new SuiteException(new Cloner().clone(n));
 	});
 

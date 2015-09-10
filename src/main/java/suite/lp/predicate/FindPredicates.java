@@ -31,7 +31,7 @@ public class FindPredicates {
 		return prover.bind(results, memoizedPredicates.computeIfAbsent(key, k -> findAll(prover, var, goal)));
 	});
 
-	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(n -> memoizedPredicates.clear());
+	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(() -> memoizedPredicates.clear());
 
 	public BuiltinPredicate suspend = PredicateUtil.p3((prover, susp, var, goal) -> {
 		Suspend suspend = new Suspend(() -> Read.from(elaborate(prover, var, goal)).uniqueResult());

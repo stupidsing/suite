@@ -83,9 +83,9 @@ public class FormatPredicates {
 		}
 	});
 
-	public BuiltinPredicate prettyPrint = PredicateUtil.run(n -> System.out.println(new PrettyPrinter().prettyPrint(n)));
+	public BuiltinPredicate prettyPrint = PredicateUtil.sink(n -> System.out.println(new PrettyPrinter().prettyPrint(n)));
 
-	public BuiltinPredicate prettyPrintNew = PredicateUtil.run(n -> System.out.println(new NewPrettyPrinter().prettyPrint(n)));
+	public BuiltinPredicate prettyPrintNew = PredicateUtil.sink(n -> System.out.println(new NewPrettyPrinter().prettyPrint(n)));
 
 	public BuiltinPredicate rpnPredicate = PredicateUtil.p2((prover, node, r) -> {
 		if (r instanceof Str)

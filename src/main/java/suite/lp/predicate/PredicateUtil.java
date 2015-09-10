@@ -36,7 +36,14 @@ public class PredicateUtil {
 		public boolean prove(Prover prover, Node ps[]);
 	}
 
-	public static BuiltinPredicate run(Sink<Node> fun) {
+	public static BuiltinPredicate run(Runnable runnable) {
+		return (prover, ps) -> {
+			runnable.run();
+			return true;
+		};
+	}
+
+	public static BuiltinPredicate sink(Sink<Node> fun) {
 		return p1((prover, p0) -> {
 			fun.sink(p0);
 			return true;
