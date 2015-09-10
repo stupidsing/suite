@@ -19,7 +19,7 @@ fc-optimize-flow (UNWRAP (WRAP .do0)) .dox
 #
 fc-optimize-flow .p0 .p1
 	:- fc-rewrite .p0 .p1 .ts/()
-	, list.query .ts (.t0 .t1) (fc-optimize-flow (.t0 .t1))
+	, list.query .ts (.t0 .t1) (fc-optimize-flow .t0 .t1)
 #
 
 -- Remove unreferenced variables
