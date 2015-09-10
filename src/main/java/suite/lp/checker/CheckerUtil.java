@@ -29,6 +29,7 @@ public class CheckerUtil {
 			Suite.matcher("list.query2 _ _ _ _ .0"), //
 			Suite.matcher("not .0"), //
 			Suite.matcher("once .0"), //
+			Suite.matcher("suspend _ _ .0"), //
 			Suite.matcher("try .0 _ .1"));
 
 	public Streamlet<Node> scan(Node node) {
