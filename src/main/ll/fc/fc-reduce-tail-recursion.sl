@@ -16,7 +16,7 @@ fc-reduce-tail-recursion (DEF-VARS (.fun .do0,) .value0) (DEF-VARS (.fun .dox,) 
 #
 fc-reduce-tail-recursion .do0 .dox
 	:- fc-rewrite .do0 .dox .ts/()
-	, list.query .ts .t (fc-reduce-tail-recursion .t)
+	, list.query .ts (.t0 .t1) (fc-reduce-tail-recursion .t0 .t1)
 #
 
 fc-reduce-tail-recursion0 .fun .vars/.vars .do (CONS P (BOOLEAN false) CONS P .expr (PRAGMA TYPE-SKIP-CHECK NUMBER 0)) Y
