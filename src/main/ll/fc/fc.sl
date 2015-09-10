@@ -46,8 +46,9 @@ fc-load-library .lib .do0 .dox
 	:- find.all.memoized .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
 #
 
-fc-load-library0 .lib (.do0 .dox)
-	:- fc-add-functions .lib .do0 .dox, !
+fc-load-library0 .lib .do
+	:- .do = .do0 .dox
+	, fc-add-functions .lib .do0 .dox, !
 	; once (home.dir .homeDir
 		, concat .homeDir "/src/main/fl/" .lib ".slf" .slfFilename
 		, file.exists .slfFilename
@@ -55,7 +56,7 @@ fc-load-library0 .lib (.do0 .dox)
 		, to.atom ".p" .var
 		, concat .var " (" .slf .var ")" .slf1
 		, parse .slf1 .slf2
-		, generalize .slf2 (.do0 .dox)
+		, generalize .slf2 .do
 	; fc-error "Library" .lib "not found"
 	)
 #

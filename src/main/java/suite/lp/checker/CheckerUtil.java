@@ -22,6 +22,7 @@ public class CheckerUtil {
 			Suite.matcher(".0, .1"), //
 			Suite.matcher(".0; .1"), //
 			Suite.matcher("find.all _ .0 _"), //
+			Suite.matcher("find.all.memoized _ .0 _"), //
 			Suite.matcher("if .0 then .1 else .2"), //
 			Suite.matcher("list.fold _ _ .0"), //
 			Suite.matcher("list.query _ _ .0"), //
