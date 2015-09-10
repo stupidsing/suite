@@ -8,10 +8,6 @@ import suite.node.io.TermOp;
 
 public class TreeUtil {
 
-	public static Node car(Node node) {
-		return Tree.decompose(node, TermOp.TUPLE_).getLeft();
-	}
-
 	public static int getNumberOfElements(Node node) {
 		int n = 1;
 		Tree tree;
