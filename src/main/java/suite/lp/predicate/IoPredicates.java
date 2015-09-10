@@ -40,9 +40,7 @@ public class IoPredicates {
 			try {
 				String cmd = ((Str) p0).value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
-			} catch (Exception ex)
-
-			{ // IOException or InterruptedException
+			} catch (Exception ex) { // IOException or InterruptedException
 				LogUtil.error(ex);
 			}
 		return false;
@@ -99,10 +97,10 @@ public class IoPredicates {
 
 	public BuiltinPredicate log = PredicateUtil.sink(n -> LogUtil.info(Formatter.dump(n)));
 
-	public BuiltinPredicate sink = (prover, ps) -> {
-		prover.config().getSink().sink(ps);
+	public BuiltinPredicate sink = PredicateUtil.p1((prover, p0) -> {
+		prover.config().getSink().sink(p0);
 		return false;
-	};
+	});
 
 	public BuiltinPredicate source = PredicateUtil.p1((prover, p0) -> {
 		Node source = prover.config().getSource().source();

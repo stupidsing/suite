@@ -12,21 +12,18 @@ import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
-import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
-import suite.node.util.TreeUtil;
 
 public class RuleSetPredicates {
 
-	public BuiltinPredicate asserta = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 1);
-		prover.ruleSet().addRuleToFront(Rule.formRule(params[0]));
+	public BuiltinPredicate asserta = PredicateUtil.p1((prover, p0) -> {
+		prover.ruleSet().addRuleToFront(Rule.formRule(p0));
 		return true;
-	};
+	});
 
 	public BuiltinPredicate assertz = PredicateUtil.p1((prover, p0) -> {
 		prover.ruleSet().addRule(Rule.formRule(p0));
@@ -44,37 +41,35 @@ public class RuleSetPredicates {
 		return prover.bind(Tree.of(TermOp.NEXT__, nodes), p0);
 	});
 
-	public BuiltinPredicate importPredicate = (prover, ps) -> Suite.importFrom(prover.ruleSet(), ps);
+	public BuiltinPredicate importPredicate = PredicateUtil.p1((prover, p0) -> Suite.importFrom(prover.ruleSet(), p0));
 
-	public BuiltinPredicate importPath = (prover, ps) -> {
-		String filename = Formatter.display(ps);
+	public BuiltinPredicate importPath = PredicateUtil.p1((prover, p0) -> {
+		String filename = Formatter.display(p0);
 		try {
 			return Suite.importPath(prover.ruleSet(), filename);
 		} catch (Exception ex) {
 			throw new RuntimeException("Exception when importing " + filename, ex);
 		}
-	};
+	});
 
-	public BuiltinPredicate list = (prover, ps) -> {
+	public BuiltinPredicate list = PredicateUtil.ps((prover, ps) -> {
 		Prototype proto = null;
-		if (ps != Atom.NIL)
-			proto = Prototype.of(ps);
+		if (ps.length > 0)
+			proto = Prototype.of(ps[0]);
 
 		Node node = Suite.getRuleList(prover.ruleSet(), proto);
 		PrettyPrinter printer = new PrettyPrinter();
 		System.out.println(printer.prettyPrint(node));
 		return true;
-	};
+	});
 
-	public BuiltinPredicate retract = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 1);
-		prover.ruleSet().removeRule(Rule.formRule(params[0]));
+	public BuiltinPredicate retract = PredicateUtil.p1((prover, p0) -> {
+		prover.ruleSet().removeRule(Rule.formRule(p0));
 		return true;
-	};
+	});
 
-	public BuiltinPredicate retractAll = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 1);
-		Rule rule0 = Rule.formRule(params[0]);
+	public BuiltinPredicate retractAll = PredicateUtil.p1((prover, p0) -> {
+		Rule rule0 = Rule.formRule(p0);
 
 		RuleSet ruleSet = prover.ruleSet();
 		Trail trail = prover.getTrail();
@@ -93,14 +88,13 @@ public class RuleSetPredicates {
 			ruleSet.removeRule(rule);
 
 		return true;
-	};
+	});
 
-	public BuiltinPredicate with = (prover, ps) -> {
-		Node params[] = TreeUtil.getElements(ps, 2);
+	public BuiltinPredicate with = PredicateUtil.p2((prover, p0, p1) -> {
 		RuleSet ruleSet = prover.ruleSet();
-		RuleSet ruleSet1 = Suite.nodeToRuleSet(params[0]);
+		RuleSet ruleSet1 = Suite.nodeToRuleSet(p0);
 		CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
-		return new Prover(ruleSet2).prove(params[1]);
-	};
+		return new Prover(ruleSet2).prove(p1);
+	});
 
 }

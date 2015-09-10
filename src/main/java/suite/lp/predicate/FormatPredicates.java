@@ -13,13 +13,11 @@ import suite.Suite;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Atom;
 import suite.node.Int;
-import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Grapher;
 import suite.node.io.ReversePolish;
-import suite.node.io.TermOp;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
@@ -33,18 +31,13 @@ public class FormatPredicates {
 				|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).number), p0);
 	});
 
-	public BuiltinPredicate concat = (prover, ps) -> {
-		Node node = ps;
+	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
 		StringBuilder sb = new StringBuilder();
-		Tree tree;
-
-		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
-			sb.append(Formatter.display(tree.getLeft()));
-			node = tree.getRight();
-		}
-
-		return prover.bind(new Str(sb.toString()), node);
-	};
+		int n = nodes.length;
+		for (int i = 0; i < n - 1; i++)
+			sb.append(Formatter.display(nodes[i]));
+		return prover.bind(new Str(sb.toString()), nodes[n - 1]);
+	});
 
 	public BuiltinPredicate graphize = PredicateUtil.fun(n -> new Str(Formatter.graphize(n)));
 
