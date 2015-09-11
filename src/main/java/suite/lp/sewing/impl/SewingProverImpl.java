@@ -277,6 +277,23 @@ public class SewingProverImpl implements SewingProver {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
+		} else if ((m = Suite.matcher("list.query .0 .1 .2").apply(node)) != null) {
+			Fun<Env, Node> f = sb.compile(m[0]);
+			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
+			Trampoline tr1 = compile0(sb, m[2]);
+			return rt -> {
+				Env env0 = rt.env;
+				rt.pushRem(rt_ -> {
+					rt_.env = env0;
+					return okay;
+				});
+				for (Node n : Tree.iter(f.apply(rt.env)))
+					rt.pushRem(rt_ -> {
+						rt_.env = env0.clone();
+						return p.test(rt_.bindEnv(), n) ? tr1 : fail;
+					});
+				return okay;
+			};
 		} else if ((m = Suite.matcher("not .0").apply(node)) != null)
 			tr = if_(compile0(sb, m[0]), fail, okay);
 		else if ((m = Suite.matcher("once .0").apply(node)) != null) {
