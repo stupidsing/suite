@@ -20,7 +20,8 @@ ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 ic-parse (.this:.sub [.params]) (INVOKE .this1 .sub1 .params1) -- Traditional subroutine invocation
 	:- ic-parse .this .this1
 	, ic-parse .sub .sub1
-	, list.query2 .params .params1 .param .param1 (ic-parse .param .param1)
+	, zip .params .params1 .list
+	, list.query .list .param:.param1 (ic-parse .param .param1)
 #
 ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
@@ -30,7 +31,8 @@ ic-parse `.pointer` (MEMORY I32 .pointer1)
 	:- ic-parse .pointer .pointer1
 #
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
-	:- list.query2 .params .params1 .param .param1 (ic-parse-parameter .param .param1)
+	:- zip .params .params1 .list
+	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
 #
 ic-parse () NOP
@@ -123,5 +125,6 @@ ic-parse-type (p^.t) (PTR-OF .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-type (.name {.ts}) (TUPLE-OF .name .types)
-	:- list.query2 .ts .types .t .type (ic-parse .t .type)
+	:- zip .ts .types .list
+	, list.query .list .t:.type (ic-parse .t .type)
 #

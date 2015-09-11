@@ -129,7 +129,7 @@ fc-parse .v (PRAGMA NEW (VAR .nv)) :- fc-parse-bind-variable .v .nv, ! #
 fc-parse .v (VAR .v) :- is.atom .v, ! #
 fc-parse .d _ :- fc-error "Unknown expression" .d #
 
-fc-parse-list .l .l1 :- list.query2 .l .l1 .p .p1 (fc-parse .p .p1) #
+fc-parse-list .l .l1 :- zip .l .l1 .list, list.query .list .p:.p1 (fc-parse .p .p1) #
 
 fc-parse-op-sugar .t .do
 	:- tree .t .left .op .right

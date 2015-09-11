@@ -13,18 +13,10 @@ list.fold (.e, .es)/.u0/.ux .v/.v0/.vx .goal
 
 list.query () _ _
 #
-list.query (.e, .es) .var .goal
-	:- clone (.var .goal) (.e .goal1)
+list.query (.v, .vs) .var .goal
+	:- clone (.var .goal) (.v .goal1)
 	, .goal1
-	, list.query .es .var .goal
-#
-
-list.query2 () () _ _ _
-#
-list.query2 (.e, .es) (.f, .fs) .e_ .f_ .goal
-	:- clone (.e_ .f_ .goal) (.e .f .goal1)
-	, .goal1
-	, list.query2 .es .fs .e_ .f_ .goal
+	, list.query .vs .var .goal
 #
 
 member (.e, _) .e #
@@ -40,3 +32,6 @@ sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #
 trace .pred :- asserta (.pred .ps :- dump .pred .ps, nl, fail) #
 
 yes #
+
+zip () () _ _ _ #
+zip (.u, .us) (.v, .vs) (.u:.v, .uvs) :- zip .us .vs .uvs #

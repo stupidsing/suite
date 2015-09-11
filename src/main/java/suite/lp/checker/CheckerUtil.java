@@ -26,7 +26,6 @@ public class CheckerUtil {
 			Suite.matcher("if .0 then .1 else .2"), //
 			Suite.matcher("list.fold _ _ .0"), //
 			Suite.matcher("list.query _ _ .0"), //
-			Suite.matcher("list.query2 _ _ _ _ .0"), //
 			Suite.matcher("not .0"), //
 			Suite.matcher("once .0"), //
 			Suite.matcher("suspend _ _ .0"), //
