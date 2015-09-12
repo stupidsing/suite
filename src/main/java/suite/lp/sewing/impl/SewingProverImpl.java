@@ -268,6 +268,23 @@ public class SewingProverImpl implements SewingProver {
 				throw new RuntimeException(ex);
 			}
 			tr = callPredicate(sb, predicate, m[2]);
+		} else if ((m = Suite.matcher("find.all .0 .1 .2").apply(node)) != null) {
+			Fun<Env, Node> f = sb.compile(m[0]);
+			Trampoline tr1 = compile0(sb, m[1]);
+			BiPredicate<BindEnv, Node> p = sb.compileBind(m[2]);
+			List<Node> vs = new ArrayList<>();
+			return rt -> {
+				Sink<Runtime> restore = save(rt);
+				rt.pushRem(rt_ -> {
+					vs.add(new Cloner().clone(f.apply(rt_.env)));
+					return fail;
+				});
+				rt.pushAlt(rt_ -> {
+					restore.sink(rt_);
+					return p.test(rt.bindEnv(), Tree.of(TermOp.AND___, vs)) ? okay : fail;
+				});
+				return tr1;
+			};
 		} else if ((m = Suite.matcher("if .0 .1 .2").apply(node)) != null) {
 			Trampoline tr0 = compile0(sb, m[0]);
 			Trampoline tr1 = compile0(sb, m[1]);
