@@ -123,7 +123,7 @@ public class InstructionTranslator implements Closeable {
 				+ "Tree tree; \n" //
 				+ "\n" //
 				+ "Prover prover = new Prover(config.ruleSet); \n" //
-				+ "Trail trail = prover.getTrails(); \n" //
+				+ "Trail trail = prover.getTrail(); \n" //
 				+ "SystemPredicates systemPredicates = new SystemPredicates(prover); \n" //
 				+ "IntrinsicCallback callback = TranslatedRunUtil.getIntrinsicCallback(config, this); \n" //
 				+ "Comparer comparer = new FunComparer(callback::yawn); \n" //
