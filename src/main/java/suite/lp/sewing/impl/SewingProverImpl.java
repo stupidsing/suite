@@ -70,6 +70,8 @@ public class SewingProverImpl implements SewingProver {
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
 	private Map<Prototype, Trampoline[]> trampolinesByPrototype = new HashMap<>();
 
+	private Env emptyEnvironment = new Env(new Reference[0]);
+
 	private Trampoline okay = rt -> {
 		throw new RuntimeException("Impossibly okay");
 	};
@@ -87,7 +89,7 @@ public class SewingProverImpl implements SewingProver {
 		}
 
 		public Env env() {
-			return new Env(new Reference[0]);
+			return emptyEnvironment;
 		}
 	};
 
@@ -106,7 +108,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private class Runtime {
-		private Env env;
+		private Env env = emptyEnvironment;
 		private Node query;
 		private IList<Trampoline> cutPoint;
 		private IList<Trampoline> rems = IList.end(); // Continuations
