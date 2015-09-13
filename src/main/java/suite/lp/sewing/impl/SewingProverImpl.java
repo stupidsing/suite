@@ -294,6 +294,34 @@ public class SewingProverImpl implements SewingProver {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt.bindEnv(), Int.of(eval.evaluate(rt.env))) ? okay : fail;
+		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
+			Fun<Env, Node> list0_ = sb.compile(m[0]);
+			Fun<Env, Node> value0_ = sb.compile(m[1]);
+			BiPredicate<BindEnv, Node> valuex_ = sb.compileBind(m[2]);
+			BiPredicate<BindEnv, Node> elem_ = sb.compileBind(m[3]);
+			BiPredicate<BindEnv, Node> v0_ = sb.compileBind(m[4]);
+			Fun<Env, Node> vx_ = sb.compile(m[5]);
+			Trampoline tr1 = compile0(sb, m[6]);
+			return rt -> {
+				Node current[] = new Node[] { value0_.apply(rt.env) };
+				Env env0 = rt.env;
+				rt.pushRem(rt_ -> {
+					rt_.env = env0;
+					return valuex_.test(rt_.bindEnv(), current[0]) ? okay : fail;
+				});
+				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
+					rt.pushRem(rt_ -> {
+						current[0] = vx_.apply(rt_.env);
+						return okay;
+					});
+					rt.pushRem(rt_ -> {
+						rt_.env = env0.clone();
+						BindEnv bindEnv = rt_.bindEnv();
+						return elem_.test(bindEnv, elem) && v0_.test(bindEnv, current[0]) ? tr1 : fail;
+					});
+				}
+				return okay;
+			};
 		} else if ((m = Suite.matcher("list.query .0 .1 .2").apply(node)) != null) {
 			Fun<Env, Node> f = sb.compile(m[0]);
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
