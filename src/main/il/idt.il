@@ -199,7 +199,7 @@ declare idt-setup = [] (
 	idt:idt-set-entry [+x20, handle-timer-interrupt, 1,];
 
 	(
-		allocate-pointer idtr/(int * 2);
+		declare-as-pointer idtr/(int * 2);
 		let `idtr` = +x7FF;
 		let `idtr + 2` = idt-address;
 		idtr;

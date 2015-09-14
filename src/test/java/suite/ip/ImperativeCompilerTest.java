@@ -26,7 +26,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testLet() {
-		Bytes bytes = imperativeCompiler.compile(0, "let `0` = 1;");
+		Bytes bytes = imperativeCompiler.compile(0, "let `0` = 1 shl 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

@@ -2,7 +2,9 @@ ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
 ic-rewrite $$EBP $$EBP .ts/.ts
 #
-ic-rewrite (ALLOC .type0 .var .do0) (ALLOC .type1 .var .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (ALLOC .size .var .do0) (ALLOC .size .var .do1) (.do0 .do1, .ts)/.ts
+#
+ic-rewrite (DECLARE .type0 .var .do0) (DECLARE .type1 .var .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
@@ -10,10 +12,9 @@ ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .t
 ic-rewrite (INVOKE .this0 .sub0 .params0) (INVOKE .this1 .sub1 .params1) (.this0 .this1, .sub0 .sub1, .ts0)/.tsx
 	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
 #
-ic-rewrite (LET .var .value0) (LET .var .value1) (.value0 .value1, .ts)/.ts
+ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1, .ts)/.ts
 #
-ic-rewrite (MEMORY .type0 .pointer0) (MEMORY .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts
-	:- ic-rewrite-type .type0 .type1
+ic-rewrite (MEMORY .size .pointer0) (MEMORY .size .pointer1) (.pointer0 .pointer1, .ts)/.ts
 #
 ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts)/.ts
 	:- zip .params0 .params1 .list, list.query .list .param0:.param1 (ic-rewrite-parameter .param0 .param1)
@@ -21,6 +22,9 @@ ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts)/.ts
 ic-rewrite NOP NOP .ts/.ts
 #
 ic-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
+#
+ic-rewrite (OBJECT .type0 .pointer0) (OBJECT .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
@@ -30,7 +34,7 @@ ic-rewrite (REF .var0) (REF .var1) (.var0 .var1, .ts)/.ts
 #
 ic-rewrite (SEQ .a0 .b0) (SEQ .a1 .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
 #
-ic-rewrite (SNIPPET .s) (SNIPPET .s) .ts/.ts
+ic-rewrite (SNIPPET .s0) (SNIPPET .s1) (.s0 .s1, .ts)/.ts
 #
 ic-rewrite (STRING .s) (STRING .s) .ts/.ts
 #

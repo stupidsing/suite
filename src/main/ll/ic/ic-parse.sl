@@ -7,7 +7,7 @@ ic-parse .do0 .parsed
 #
 ic-parse this $$EBP
 #
-ic-parse (allocate .var/.t; .do) (ALLOC .type .var .do1)
+ic-parse (declare-as .var/.t; .do) (DECLARE .type .var .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
@@ -27,7 +27,7 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse `.pointer` (MEMORY I32 .pointer1)
+ic-parse `.pointer` (OBJECT I32 .pointer1)
 	:- ic-parse .pointer .pointer1
 #
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
@@ -50,7 +50,7 @@ ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
-	:- not (.do0 = allocate _; .do0 = allocate-pointer _; .do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _)
+	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = declare-as _; .do0 = declare-as-pointer _)
 	, ic-parse .do0 .parsed0
 	, ic-parse .do1 .parsed1
 #
@@ -87,18 +87,18 @@ ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` 
 ic-parse-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
 #
-ic-parse-sugar (allocate-pointer .var/.type; .do) (allocate .mem/.type; declare .var = & .mem; .do)
-	:- is.atom .var, temp .mem
-#
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
 #
-ic-parse-sugar (declare .var; .do) (allocate .var/int; .do)
+ic-parse-sugar (declare .var; .do) (declare-as .var/int; .do)
 	:- is.atom .var
 #
 ic-parse-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
 	:- is.atom .var
+#
+ic-parse-sugar (declare-as-pointer .var/.type; .do) (declare-as .mem/.type; declare .var = & .mem; .do)
+	:- is.atom .var, temp .mem
 #
 ic-parse-sugar false 0
 #

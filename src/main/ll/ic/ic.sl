@@ -26,11 +26,10 @@ ic-compile .fs .do .e0/.ex
 #
 ic-compile _ $$EBP (_ R+, _ MOV ($0, EBP), .e)/.e
 #
-ic-compile .fs (ALLOC .type .var .do) .e0/.ex
-	:- ic-type-size .type .size
-	, let .fs1 (.fs + .size)
+ic-compile .fs (ALLOC .size .var .do) .e0/.ex
+	:- let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
-	, replace (VAR .var) (MEMORY .type (TREE ' + ' $$EBP (NUMBER .offset))) .do .do1
+	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .offset))) .do .do1
 	, .e0 = (_ SUB (ESP, .size), .e1)
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
@@ -76,7 +75,7 @@ ic-compile .fs (LET .var .value) .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-compile .fs (MEMORY I32 .value) .e0/.ex
+ic-compile .fs (MEMORY 4 .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV ($0, `$0`), .ex)
 #
@@ -86,7 +85,7 @@ ic-compile _ (METHOD .params .do) .e0/.ex
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace $$EBP (MEMORY I32 $$EBP) .do .do1
+	, replace $$EBP (MEMORY 4 $$EBP) .do .do1
 	, ic-replace-parameters .params 4 .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
@@ -174,31 +173,31 @@ ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY I32 (TREE ' + ' $$EBP (NUMBER .i))) .value) .e0/.ex
+ic-compile-better-option .fs (LET (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .i))) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV (`EBP + .i`, $0), .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY I32 $$EBP) .value) .e0/.ex
+ic-compile-better-option .fs (LET (MEMORY 4 $$EBP) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV (`EBP`, $0), .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY I32 (TREE ' + ' .pointer (NUMBER .i))) .value) .e0/.ex
+ic-compile-better-option .fs (LET (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, ic-compile .fs .pointer .e1/.e2
 	, .e2 = (_ MOV (`$0 + .i`, $1), _ R-, .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY I32 .pointer) .value) .e0/.ex
+ic-compile-better-option .fs (LET (MEMORY 4 .pointer) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, ic-compile .fs .pointer .e1/.e2
 	, .e2 = (_ MOV (`$0`, $1), _ R-, .ex)
 #
-ic-compile-better-option _ (MEMORY I32 (TREE ' + ' $$EBP (NUMBER .i))) .e0/.ex
+ic-compile-better-option _ (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .i))) .e0/.ex
 	:- .e0 = (_ R+, _ MOV ($0, `EBP + .i`), .ex)
 #
-ic-compile-better-option _ (MEMORY I32 $$EBP) .e0/.ex
+ic-compile-better-option _ (MEMORY 4 $$EBP) .e0/.ex
 	:- .e0 = (_ R+, _ MOV ($0, `EBP`), .ex)
 #
-ic-compile-better-option .fs (MEMORY I32 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
+ic-compile-better-option .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, .e1 = (_ MOV ($0, `$0 + .i`), .ex)
 #
@@ -210,7 +209,7 @@ ic-replace-parameters () _ .do .do
 ic-replace-parameters (PARAM .type .var, .vars) .s0 .do0 .dox
 	:- ic-type-size .type .size
 	, let .s (.s0 + .size)
-	, replace (VAR .var) (MEMORY .type (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
+	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
@@ -222,8 +221,7 @@ ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 		ic-compile .fs1 .p .e1/.e2
 		, ic-push-top .fs1/.fsx .e2/.ex
 		, .f0 = (_ POP (EDX), .f1)
-		; .p = MEMORY .type .pointer
-		, ic-type-size .type .size
+		; .p = MEMORY .size .pointer
 		, ic-compile .fs1 .pointer .e1/.e2
 		, .e2 = (_ SUB (ESP, .size)
 			, _ R+
@@ -244,24 +242,6 @@ ic-push-top .fs0/.fsx (_ PUSH ($0), _ R-, .e)/.e
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
 	:- let .fsx (.fs0 + 4)
-#
-
-ic-type-size I32 4
-#
-ic-type-size (ARRAY-OF .arraySize .type) .size
-	:- ic-type-size .type .elementSize
-	, let .size (.arraySize * .elementSize)
-#
-ic-type-size (METHOD-OF _) 8
-#
-ic-type-size (PTR-OF _) 4
-#
-ic-type-size (TUPLE-OF _ ()) 0
-#
-ic-type-size (TUPLE-OF .name (.type, .types)) .size
-	:- ic-type-size .type .size0
-	, ic-type-size (TUPLE-OF .name .types) .size1
-	, let .size (.size0 + .size1)
 #
 
 ic-right-associative ' + ' #
