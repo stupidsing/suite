@@ -16,7 +16,7 @@ ic-rewrite (MEMORY .type0 .pointer0) (MEMORY .type1 .pointer1) (.pointer0 .point
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts)/.ts
-	:- zip .params0 .params1 .list, list.query .list (.param0:.param1) (ic-rewrite-parameter .param0 .param1)
+	:- zip .params0 .params1 .list, list.query .list .param0:.param1 (ic-rewrite-parameter .param0 .param1)
 #
 ic-rewrite NOP NOP .ts/.ts
 #
