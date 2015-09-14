@@ -12,7 +12,7 @@ declare pm-setup = [] (
 	while (
 		declare t = `pagex` xor +xFFFFFFFF;
 		let `pagex` = t;
-		`pagex =+ 4096` = t
+		`pagex =+ 4096` = t;
 	) do ();
 
 	-- Sets up page allocator
@@ -31,6 +31,6 @@ declare pm-allocate = [] (
 
 declare pm-deallocate = [page,] (
 	synchronized (& pm-sync) (
-		`stack0 += 4` = page;
+		let `stack0 += 4` = page;
 	);
 );
