@@ -50,9 +50,9 @@ public class LogUtil {
 	}
 
 	public static <T> T duration(String m, Source<T> source) {
-		TimedResult<T> timedResult = new TimeUtil().time(source);
-		LogUtil.info(m + " in " + timedResult.duration + "ms");
-		return timedResult.result;
+		TimedResult<T> tr = new TimeUtil().time(source);
+		LogUtil.info(m + " in " + tr.duration + "ms, GC occurred " + tr.nGcs + " times in " + tr.gcDuration + " ms");
+		return tr.result;
 	}
 
 	public static void info(String message) {

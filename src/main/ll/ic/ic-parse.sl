@@ -116,6 +116,8 @@ ic-parse-parameter .p .param
 	:- not (.p = _/_), .param = PARAM I32 .p
 #
 
+ic-parse-type byte I8
+#
 ic-parse-type int I32
 #
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
