@@ -1,6 +1,8 @@
 ic-parse (asm .i) (ASM .i)
 	:- ! -- Assembler might have variables, skip processing
 #
+ic-parse .do0 .parsed :- ic-parse-better-option .do0 .parsed
+#
 ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
@@ -40,12 +42,6 @@ ic-parse () NOP
 ic-parse .i (NUMBER .i)
 	:- is.int .i
 #
-ic-parse (.var =+ .i) (PRE-ADD-NUMBER .var1 .i)
-	:- is.int .i, ic-parse .var .var1
-#
-ic-parse (.var += .i) (POST-ADD-NUMBER .var1 .i)
-	:- is.int .i, ic-parse .var .var1
-#
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
@@ -75,6 +71,13 @@ ic-parse (while .while do .do) (WHILE .while1 .do1)
 #
 ic-parse .do _
 	:- ic-error "Unknown expression" .do
+#
+
+ic-parse-better-option (.var =+ .i) .do
+	:- is.int .i, ic-parse .var .var1, .do = PRE-ADD-NUMBER .var1 .i
+#
+ic-parse-better-option (.var += .i) .do
+	:- is.int .i, ic-parse .var .var1, .do = POST-ADD-NUMBER .var1 .i
 #
 
 ic-parse-sugar (.a && .b) (if .a then .b else 0)
