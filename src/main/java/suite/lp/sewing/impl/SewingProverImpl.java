@@ -464,6 +464,7 @@ public class SewingProverImpl implements SewingProver {
 				Trampoline trs[] = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
+					// LogUtil.info(Formatter.dump(rt.query));
 					return trs[0]::prove;
 				};
 			}

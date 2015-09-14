@@ -9,66 +9,66 @@ pt-prove .n0 .nx
 #
 
 -- 0. Convert implication operators: (P => Q) becomes (~P ^ Q)
-pt-prove0 (IMP .p .q) (AND (NOT .p1) .q1)
-	:- !, pt-prove0 .p .p1, pt-prove0 .q .q1
+pt-prove0 (IMP .p0 .q0) (AND (NOT .px) .qx)
+	:- !, pt-prove0 .p0 .px, pt-prove0 .q0 .qx
 #
-pt-prove0 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove0 .t)
+pt-prove0 .p0 .px :- pt-rewrite .p0 .px .ts, list.query .ts (.t0 .tx) (pt-prove0 .t0 .tx)
 #
 
 -- 1. Move negation inwards
-pt-prove1 (NOT (AND .p .q)) (NOT (OR (NOT .p1) (NOT .q1)))
-	:- !, pt-prove1 .p .p1, pt-prove1 .q .q1
+pt-prove1 (NOT (AND .p0 .q0)) (NOT (OR (NOT .px) (NOT .qx)))
+	:- !, pt-prove1 .p0 .px, pt-prove1 .q0 .qx
 #
-pt-prove1 (NOT (OR .p .q)) (NOT (AND (NOT .p1) (NOT .q1)))
-	:- !, pt-prove1 .p .p1, pt-prove1 .q .q1
+pt-prove1 (NOT (OR .p0 .q0)) (NOT (AND (NOT .px) (NOT .qx)))
+	:- !, pt-prove1 .p0 .px, pt-prove1 .q0 .qx
 #
-pt-prove1 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove1 .t)
+pt-prove1 .p0 .px :- pt-rewrite .p0 .px .ts, list.query .ts (.t0 .tx) (pt-prove1 .t0 .tx)
 #
 
 -- 2. Remove double negatives
-pt-prove2 (NOT NOT .p) .p1 :- !, pt-prove2 .p .p1 #
-pt-prove2 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove2 .t) #
+pt-prove2 (NOT NOT .p0) .px :- !, pt-prove2 .p0 .px #
+pt-prove2 .p0 .px :- pt-rewrite .p0 .px .ts, list.query .ts (.t0 .tx) (pt-prove2 .t0 .tx) #
 
 -- 3. Moving "for-all" outwards
-pt-prove3 (AND (FOR-ALL .e .p) .q) (FOR-ALL .e .pq1)
-	:- !, pt-prove3 (AND .p .q) .pq1
+pt-prove3 (AND (FOR-ALL .e .p) .q) (FOR-ALL .e .pq)
+	:- !, pt-prove3 (AND .p .q) .pq
 #
-pt-prove3 (AND .p (FOR-ALL .e .q)) (FOR-ALL .e .pq1)
-	:- !, pt-prove3 (AND .p .q) .pq1
+pt-prove3 (AND .p (FOR-ALL .e .q)) (FOR-ALL .e .pq)
+	:- !, pt-prove3 (AND .p .q) .pq
 #
-pt-prove3 (NOT (FOR-ALL .e .p)) (THERE-EXISTS .e (NOT .p1))
-	:- !, pt-prove3 .p .p1
+pt-prove3 (NOT (FOR-ALL .e .p0)) (THERE-EXISTS .e (NOT .px))
+	:- !, pt-prove3 .p0 .px
 #
-pt-prove3 (NOT (THERE-EXISTS .e .p)) (FOR-ALL .e (NOT .p1))
-	:- !, pt-prove3 .p .p1
+pt-prove3 (NOT (THERE-EXISTS .e .p0)) (FOR-ALL .e (NOT .px))
+	:- !, pt-prove3 .p0 .px
 #
-pt-prove3 (OR (FOR-ALL .e .p) .q) (FOR-ALL .e .pq1)
-	:- !, pt-prove3 (OR .p .q) .pq1
+pt-prove3 (OR (FOR-ALL .e .p) .q) (FOR-ALL .e .pq)
+	:- !, pt-prove3 (OR .p .q) .pq
 #
-pt-prove3 (OR .p (FOR-ALL .e .q)) (FOR-ALL .e .pq1)
-	:- !, pt-prove3 (OR .p .q) .pq1
+pt-prove3 (OR .p (FOR-ALL .e .q)) (FOR-ALL .e .pq)
+	:- !, pt-prove3 (OR .p .q) .pq
 #
-pt-prove3 .p .p1 :- pt-rewrite .p .p1 .ts, list.query .ts .t (pt-prove3 .t)
+pt-prove3 .p0 .px :- pt-rewrite .p0 .px .ts, list.query .ts (.t0 .tx) (pt-prove3 .t0 .tx)
 #
 
 -- 4. Skolemising
-pt-prove4 .p .p1 :- pt-prove4-skolemise () .p .p1 #
-
-pt-prove4-skolemise .vars (FOR-ALL .var .p) (FOR-ALL .var .p1)
-	:- !, pt-prove4-skolemise (.var, .vars) .p .p1
+pt-prove4 .p0 .px :- pt-prove4-skolemise () .p0 .px
 #
-pt-prove4-skolemise .vars (THERE-EXISTS .var .p) .p1
+pt-prove4-skolemise .vars (FOR-ALL .var .p0) (FOR-ALL .var .px)
+	:- !, pt-prove4-skolemise (.var, .vars) .p0 .px
+#
+pt-prove4-skolemise .vars (THERE-EXISTS .var .p0) .px
 	:- !, temp .functionName
 	, form-function .vars .functionName .var1
-	, replace .var .var1 .p .p1
+	, replace .var .var1 .p0 .px
 #
-pt-prove4-skolemise .vars .p .p1
-	:- pt-rewrite .p .p1 .ts
-	, list.query .ts (.t .t1) (pt-prove4-skolemise .vars .t .t1)
+pt-prove4-skolemise .vars .p0 .px
+	:- pt-rewrite .p0 .px .ts
+	, list.query .ts (.t0 .tx) (pt-prove4-skolemise .vars .t0 .tx)
 #
 
 form-function () .p .p #
-form-function (.var, .vars) .p (FN .var .p1) :- form-function .vars .p .p1 #
+form-function (.var, .vars) .p0 (FN .var .px) :- form-function .vars .p0 .px #
 
 -- 5. Distributing AND over OR
 pt-prove5 (AND .p .q) .ands0/.andsx
@@ -115,10 +115,10 @@ pt-prove6-extract-ors .pre (.term, .post) .term .corrs
 #
 
 -- Basic transform function
-pt-rewrite (IMP .p .q) (IMP .p1 .q1) (.p .p1, .q .q1,) :- ! #
-pt-rewrite (AND .p .q) (AND .p1 .q1) (.p .p1, .q .q1,) :- ! #
-pt-rewrite (FOR-ALL .e .p) (FOR-ALL .e .p1) (.p .p1,) :- ! #
-pt-rewrite (NOT .p) (NOT .p1) (.p .p1,) :- ! #
-pt-rewrite (OR .p .q) (OR .p1 .q1) (.p .p1, .q .q1,) :- ! #
-pt-rewrite (THERE-EXISTS .e .p) (THERE-EXISTS .e .p1) (.p .p1,) :- ! #
+pt-rewrite (IMP .p0 .q0) (IMP .px .qx) (.p0 .px, .q0 .qx,) :- ! #
+pt-rewrite (AND .p0 .q0) (AND .px .qx) (.p0 .px, .q0 .qx,) :- ! #
+pt-rewrite (FOR-ALL .e .p0) (FOR-ALL .e .px) (.p0 .px,) :- ! #
+pt-rewrite (NOT .p0) (NOT .px) (.p0 .px,) :- ! #
+pt-rewrite (OR .p0 .q0) (OR .px .qx) (.p0 .px, .q0 .qx,) :- ! #
+pt-rewrite (THERE-EXISTS .e .p0) (THERE-EXISTS .e .px) (.p0 .px,) :- ! #
 pt-rewrite (VAR .var) (VAR .var) () #

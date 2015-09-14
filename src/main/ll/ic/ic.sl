@@ -1,11 +1,14 @@
-() :- import.path "ic/ic-infer-type.sl"
+() :- import.path "ic/ic-erase-type.sl"
+	, import.path "ic/ic-infer-type.sl"
 	, import.path "ic/ic-parse.sl"
+	, import.path "ic/ic-rewrite.sl"
 #
 
 compile-imperative .do0 .e0/.ex
 	:- ic-parse .do0 .do1
 	, !, ic-infer-type .do1 I32
-	, !, ic-compile 0 .do1 .e0/.ex
+	, !, ic-erase-type .do1 .do2
+	, !, ic-compile 0 .do2 .e0/.ex
 	, !
 #
 

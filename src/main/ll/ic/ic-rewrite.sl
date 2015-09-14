@@ -3,6 +3,7 @@ ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 ic-rewrite $$EBP $$EBP .ts/.ts
 #
 ic-rewrite (ALLOC .type0 .var .do0) (ALLOC .type1 .var .do1) (.do0 .do1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
 #
@@ -14,8 +15,8 @@ ic-rewrite (LET .var .value0) (LET .var .value1) (.value0 .value1, .ts)/.ts
 ic-rewrite (MEMORY .type0 .pointer0) (MEMORY .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
-ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts0)/.tsx
-	:- ic-rewrite-parameters .params0 .params1 .ts0/.tsx
+ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts)/.ts
+	:- zip .params0 .params1 .list, list.query .list (.param0:.param1) (ic-rewrite-parameter .param0 .param1)
 #
 ic-rewrite NOP NOP .ts/.ts
 #
@@ -40,19 +41,17 @@ ic-rewrite (VAR .var) (VAR .var) .ts/.ts
 ic-rewrite (WHILE .while0 .do0) (WHILE .while1 .do1) (.while0 .while1, .do0 .do1, .ts)/.ts
 #
 
-ic-rewrite-list () () .ts/.ts
-#
-ic-rewrite-list (.p0, .ps0) (.p1, .ps1) .ts0/.tsx
-	:- .ts0 = (.p0 .p1, .ts1)
-	, ic-rewrite .ps0 .ps1 .ts1/.tsx
+ic-rewrite-list () () .ts/.ts #
+ic-rewrite-list (.p0, .ps0) (.px, .psx) (.p0 .px, .ts0)/.tsx :- ic-rewrite-list .ps0 .psx .ts0/.tsx #
+
+ic-rewrite-parameter .param0 .param1
+	:- .param0 = PARAM .type0 .var
+	, .param1 = PARAM .type1 .var
+	, ic-rewrite-type .type0 .type1
 #
 
-ic-rewrite-parameters () () .ts/.ts
+ic-rewrite-type I8 I8
 #
-ic-rewrite-parameters (PARAM .type0 .var, .params0) (PARAM .type1 .var, .params1)
-	:- ic-rewrite-type .type0 .type1
-#
-
 ic-rewrite-type I32 I32
 #
 ic-rewrite-type (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
