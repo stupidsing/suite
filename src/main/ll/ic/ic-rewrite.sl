@@ -1,6 +1,6 @@
-ic-rewrite (ASM .i) (ASM .i) .ts/.ts
-#
 ic-rewrite $$EBP $$EBP .ts/.ts
+#
+ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
 ic-rewrite (ALLOC .size .var .do0) (ALLOC .size .var .do1) (.do0 .do1, .ts)/.ts
 #
