@@ -79,15 +79,13 @@ ic-compile .fs (MEMORY 4 .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV ($0, `$0`), .ex)
 #
-ic-compile _ (METHOD .params .do) .e0/.ex
+ic-compile _ (METHOD () .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel RBEGIN
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace $$EBP (MEMORY 4 $$EBP) .do .do1
-	, ic-replace-parameters .params 4 .do1 .do2
-	, ic-compile 0 .do2 .e1/.e2
+	, ic-compile 0 .do .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
 		, _ POP (EBP)
 		, _ RET ()
@@ -202,15 +200,6 @@ ic-compile-better-option .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.e
 	, .e1 = (_ MOV ($0, `$0 + .i`), .ex)
 #
 ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
-#
-
-ic-replace-parameters () _ .do .do
-#
-ic-replace-parameters (PARAM .type .var, .vars) .s0 .do0 .dox
-	:- ic-type-size .type .size
-	, let .s (.s0 + .size)
-	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
-	, ic-replace-parameters .vars .s .do1 .dox
 #
 
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
