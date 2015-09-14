@@ -347,7 +347,7 @@ public class SewingProverImpl implements SewingProver {
 				return okay;
 			};
 		} else if ((m = Suite.matcher("member .0 .1").apply(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
-			List<BiPredicate<BindEnv, Node>> elems_ = Read.from(Tree.iter(m[0])).map(n -> sb.compileBind(n)).toList();
+			List<BiPredicate<BindEnv, Node>> elems_ = Read.from(Tree.iter(m[0])).map(sb::compileBind).toList();
 			Fun<Env, Node> f = sb.compile(m[1]);
 			return rt -> {
 				Iterator<BiPredicate<BindEnv, Node>> iter = elems_.iterator();
