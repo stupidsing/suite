@@ -162,7 +162,17 @@ public class Suite {
 
 			return node -> {
 				Env env = sb.env();
-				if (pred.test(new BindEnv(new Trail(), env), node)) {
+				Trail trail = new Trail();
+				BindEnv be = new BindEnv() {
+					public Env getEnv() {
+						return env;
+					}
+
+					public Trail getTrail() {
+						return trail;
+					}
+				};
+				if (pred.test(be, node)) {
 					List<Node> results = new ArrayList<>(size);
 					for (int i = 0; i < size; i++)
 						results.add(env.get(indices[i]));

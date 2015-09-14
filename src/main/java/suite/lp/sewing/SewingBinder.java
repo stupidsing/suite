@@ -7,14 +7,10 @@ import suite.node.Node;
 
 public interface SewingBinder extends SewingCloner {
 
-	public static class BindEnv {
-		public final Trail trail;
-		public final Env env;
+	public interface BindEnv {
+		public Env getEnv();
 
-		public BindEnv(Trail trail, Env env) {
-			this.trail = trail;
-			this.env = env;
-		}
+		public Trail getTrail();
 	}
 
 	public BiPredicate<BindEnv, Node> compileBind(Node node);
