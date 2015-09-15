@@ -22,7 +22,9 @@ ic-infer-type (IF .if .then .else) .type
 #
 ic-infer-type (LET .var .value) .type
 	:- ic-infer-type .var .type
-	, ic-infer-type .value .type
+	, once (ic-infer-type .value .type
+		; ic-error "in" .var
+	)
 #
 ic-infer-type (METHOD .params .do) (METHOD-OF .paramTypes)
 	:- ic-infer-type .do I32
@@ -65,4 +67,7 @@ ic-infer-type (TREE _ .value0 .value1) I32
 ic-infer-type (WHILE .while .do) I32
 	:- ic-infer-type .while I32
 	, ic-infer-type .do I32
+#
+ic-infer-type .do _
+	:- ic-error "Cannot resolve types" .do
 #
