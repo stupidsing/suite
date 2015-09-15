@@ -12,12 +12,17 @@ ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .t
 ic-rewrite (INVOKE .this0 .sub0 .params0) (INVOKE .this1 .sub1 .params1) (.this0 .this1, .sub0 .sub1, .ts0)/.tsx
 	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
 #
+ic-rewrite (INVOKE2 .sub0 .params0) (INVOKE2 .sub1 .params1) (.sub0 .sub1, .ts0)/.tsx
+	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
+#
 ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1, .ts)/.ts
 #
 ic-rewrite (MEMORY .size .pointer0) (MEMORY .size .pointer1) (.pointer0 .pointer1, .ts)/.ts
 #
 ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts)/.ts
 	:- zip .params0 .params1 .list, list.query .list .param0:.param1 (ic-rewrite-parameter .param0 .param1)
+#
+ic-rewrite (METHOD2 .this0 .method0) (METHOD2 .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
 #
 ic-rewrite NOP NOP .ts/.ts
 #
@@ -31,6 +36,8 @@ ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts
 ic-rewrite (POST-ADD-NUMBER .var0 .i) (POST-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
 ic-rewrite (REF .var0) (REF .var1) (.var0 .var1, .ts)/.ts
+#
+ic-rewrite (REG .reg) (REG .reg) .ts/.ts
 #
 ic-rewrite (SEQ .a0 .b0) (SEQ .a1 .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
 #
@@ -60,6 +67,10 @@ ic-rewrite-type I32 I32
 #
 ic-rewrite-type (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
 	:- ic-rewrite-type .type0 .type1
+#
+ic-rewrite-type (METHOD-OF .types0) (METHOD-OF .types1)
+	:- zip .types0 .types1 .list
+	, list.query .list .type0:.type1 (ic-rewrite-type .type0 .type1)
 #
 ic-rewrite-type (PTR-OF .type0) (PTR-OF .type1)
 	:- ic-rewrite-type .type0 .type1

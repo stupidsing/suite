@@ -4,10 +4,16 @@ ic-infer-type (ASM _) I32
 #
 ic-infer-type (DECLARE .type _ _) .type
 #
-ic-infer-type (INVOKE .this .sub .actualParams) I32
+ic-infer-type (INVOKE .this .sub .params) I32
 	:- ic-infer-type .this I32
-	, ic-infer-type .sub (METHOD-OF .declaredParams)
-	, ic-infer-parameter-type .actualParams (METHOD-OF .declaredParams)
+	, ic-infer-type .sub (METHOD-OF .types)
+	, zip .params .types .list
+	, list.query .list .param:.type (ic-infer-type .param .type)
+#
+ic-infer-type (INVOKE2 .method2 .params) I32
+	:- ic-infer-type .method2 (METHOD2-OF .types)
+	, zip .params .types .list
+	, list.query .list .param:.type (ic-infer-type .param .type)
 #
 ic-infer-type (IF .if .then .else) .type
 	:- ic-infer-type .if .type
@@ -18,8 +24,14 @@ ic-infer-type (LET .var .value) .type
 	:- ic-infer-type .var .type
 	, ic-infer-type .value .type
 #
-ic-infer-type (METHOD .params .do) (METHOD-OF .params)
+ic-infer-type (METHOD .params .do) (METHOD-OF .paramTypes)
 	:- ic-infer-type .do I32
+	, zip .params .paramTypes .list
+	, list.query .list (PARAM .type _):.type ()
+#
+ic-infer-type (METHOD2 .this .method) (METHOD2-OF .paramTypes)
+	:- ic-infer-type .this I32
+	, ic-infer-type .method (METHOD-OF .paramTypes)
 #
 ic-infer-type (NUMBER _) I32
 #
@@ -53,11 +65,4 @@ ic-infer-type (TREE _ .value0 .value1) I32
 ic-infer-type (WHILE .while .do) I32
 	:- ic-infer-type .while I32
 	, ic-infer-type .do I32
-#
-
-ic-infer-parameter-type () ()
-#
-ic-infer-parameter-type (.p, .ps) (PARAM .type _, .params)
-	:- ic-infer-type .p .type
-	, ic-infer-parameter-type .ps .params
 #

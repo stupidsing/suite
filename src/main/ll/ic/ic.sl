@@ -55,6 +55,13 @@ ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 		, _ MOV ($0, ECX)
 		, .ex)
 #
+ic-compile .fs (INVOKE2 .mr .params) .e0/.ex
+	:- once (
+		.mr = METHOD2 .this .sub
+		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
+	)
+	, ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
+#
 ic-compile .fs (IF .if .then .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
 	, .e1 = (_ OR ($0, $0)
@@ -69,11 +76,7 @@ ic-compile .fs (IF .if .then .else) .e0/.ex
 	, .e5 = (.endLabel (), .ex)
 #
 ic-compile .fs (LET .var .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, ic-compile .fs (REF .var) .e1/.e2
-	, .e2 = (_ MOV (`$0`, $1)
-		, _ R-
-		, .ex)
+	:- ic-let .fs .value .var .e0/.ex
 #
 ic-compile .fs (MEMORY 4 .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
@@ -118,6 +121,8 @@ ic-compile .fs (PRE-ADD-NUMBER .pointer .i) .e0/.ex
 #
 ic-compile .fs (REF MEMORY _ .pointer) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
+#
+ic-compile _ (REG .reg) (_ R+, _ MOV ($0, .reg), .e)/.e
 #
 ic-compile .fs (SEQ .do0 .do1) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
@@ -202,6 +207,31 @@ ic-compile-better-option .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.e
 ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
+ic-let .fs .source (MEMORY 4 .pointer) .e0/.ex
+	:- ic-compile .fs .source .e0/.e1
+	, ic-compile .fs .pointer .e1/.e2
+	, .e2 = (_ MOV (`$0`, $1)
+		, _ R-
+		, .ex)
+#
+ic-let .fs (METHOD2 .this .sub) (MEMORY 8 .pointer) .e0/.ex
+	:- ic-compile .fs .pointer .e0/.e1
+	, ic-compile .fs .this .e1/.e2
+	, .e2 = (_ MOV (`$1`, $0)
+		, _ R-
+		, .e3)
+	, ic-compile .fs .sub .e3/.e4
+	, .e4 = (_ MOV (`$1 + 4`, $0)
+		, _ R-
+		, .ex)
+#
+ic-let .fs .source (MEMORY .size .pointer) .e0/.ex
+	:- ic-compile .fs .source .e0/.e1
+	, ic-compile .fs .pointer .e1/.e2
+	, ic-copy-memory 0 .size .e2/.e3
+	, .e3 = (_ R-, .ex)
+#
+
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
 #
 ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
@@ -210,18 +240,11 @@ ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 		ic-compile .fs1 .p .e1/.e2
 		, ic-push-top .fs1/.fsx .e2/.ex
 		, .f0 = (_ POP (EDX), .f1)
-		; .p = MEMORY .size .pointer
-		, ic-compile .fs1 .pointer .e1/.e2
-		, .e2 = (_ SUB (ESP, .size)
-			, _ R+
-			, _ MOV ($0, ESP)
-			, .e3)
-		, ic-copy 0 .size .e3/.e4
-		, .e4 = (_ R-
-			, _ R-
-			, .ex)
+		; .e1 = (_ SUB (ESP, .size), .e2)
 		, .f0 = (_ ADD (ESP, .size), .f1)
 		, let .fsx (.fs1 + .size)
+		, ic-let .fsx .p (MEMORY .size (REG ESP)) .e2/.e3
+		, .e3 = (_ R-, .ex)
 	)
 #
 
@@ -283,15 +306,15 @@ ic-divide .reg
 	, .e
 )/.e #
 
-ic-copy _ 0 .e/.e
+ic-copy-memory _ 0 .e/.e
 #
-ic-copy .o 1 (_ MOV (CL, `$1 + .o`), _ MOV (`$0 + .o`, CL), .e)/.e
+ic-copy-memory .o 1 (_ MOV (CL, `$1 + .o`), _ MOV (`$0 + .o`, CL), .e)/.e
 #
-ic-copy .o 2 (_ MOV (CX, `$1 + .o`), _ MOV (`$0 + .o`, CX), .e)/.e
+ic-copy-memory .o 2 (_ MOV (CX, `$1 + .o`), _ MOV (`$0 + .o`, CX), .e)/.e
 #
-ic-copy .o 4 (_ MOV (ECX, `$1 + .o`), _ MOV (`$0 + .o`, ECX), .e)/.e
+ic-copy-memory .o 4 (_ MOV (ECX, `$1 + .o`), _ MOV (`$0 + .o`, ECX), .e)/.e
 #
-ic-copy 0 .size .e0/.ex
+ic-copy-memory 0 .size .e0/.ex
 	:- .size > 16
 	, let .div4 (.size / 4)
 	, let .mod4 (.size % 4)
@@ -307,12 +330,12 @@ ic-copy 0 .size .e0/.ex
 	, once (.mod4 >= 3, .e3 = (_ MOVSB (), .e4); .e3 = .e4)
 	, .e4 = (_ MOV (ESI, EDX), .ex)
 #
-ic-copy .o .size .e0/.ex
+ic-copy-memory .o .size .e0/.ex
   :- .size > 4
-  , ic-copy .o 4 .e0/.e1
+  , ic-copy-memory .o 4 .e0/.e1
   , let .size1 (.size - 4)
   , let .o1 (.o + 4)
-  , ic-copy .o1 .size1 .e1/.ex
+  , ic-copy-memory .o1 .size1 .e1/.ex
 #
 
 ic-operator-insn ' + ' ADD #

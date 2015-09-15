@@ -1,7 +1,7 @@
 ic-parse (asm .i) (ASM .i)
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-parse .do0 .parsed :- ic-parse-better-option .do0 .parsed
+ic-parse .do0 .parsed :- ic-parse-better-option .do0 .parsed, !
 #
 ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
@@ -25,6 +25,11 @@ ic-parse (.this:.sub [.params]) (INVOKE .this1 .sub1 .params1) -- Traditional su
 	, zip .params .params1 .list
 	, list.query .list .param:.param1 (ic-parse .param .param1)
 #
+ic-parse (invoke .sub [.params]) (INVOKE2 .sub1 .params1) -- Traditional subroutine invocation
+	:- ic-parse .sub .sub1
+	, zip .params .params1 .list
+	, list.query .list .param:.param1 (ic-parse .param .param1)
+#
 ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
@@ -36,6 +41,9 @@ ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine defini
 	:- zip .params .params1 .list
 	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
+#
+ic-parse (function [.params] .do) (METHOD2 $$EBP .method) -- Traditional subroutine definition
+	:- ic-parse ([.params] .do) .method
 #
 ic-parse () NOP
 #

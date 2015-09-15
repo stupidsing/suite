@@ -20,11 +20,11 @@ ic-erase-type .do0 .dox
 
 ic-replace-parameters () _ .do .do
 #
-ic-replace-parameters (PARAM .type .var, .vars) .s0 .do0 .dox
+ic-replace-parameters (PARAM .type .var, .params) .s0 .do0 .dox
 	:- ic-type-size .type .size
 	, let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
-	, ic-replace-parameters .vars .s .do1 .dox
+	, ic-replace-parameters .params .s .do1 .dox
 #
 
 ic-type-size I32 4
@@ -33,7 +33,9 @@ ic-type-size (ARRAY-OF .arraySize .type) .size
 	:- ic-type-size .type .elementSize
 	, let .size (.arraySize * .elementSize)
 #
-ic-type-size (METHOD-OF _) 8
+ic-type-size (METHOD-OF _) 4
+#
+ic-type-size (METHOD2-OF _) 8
 #
 ic-type-size (PTR-OF _) 4
 #
