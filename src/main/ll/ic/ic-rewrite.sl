@@ -60,6 +60,10 @@ ic-rewrite-parameter .param0 .param1
 	, .param1 = PARAM .type1 .var
 	, ic-rewrite-type .type0 .type1
 #
+ic-rewrite-parameter .param0 .param1
+	:- .param0 = PS .size .var
+	, .param1 = PS .size .var
+#
 
 ic-rewrite-type I8 I8
 #
