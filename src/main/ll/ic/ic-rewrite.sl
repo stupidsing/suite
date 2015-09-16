@@ -7,6 +7,9 @@ ic-rewrite (ALLOC .size .var .do0) (ALLOC .size .var .do1) (.do0 .do1, .ts)/.ts
 ic-rewrite (DECLARE .type0 .var .do0) (DECLARE .type1 .var .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
+ic-rewrite (FIELD .type0 .field .do0) (FIELD .type1 .field .do1) (.do0 .do1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
+#
 ic-rewrite (INDEX .type0 .array0 .index0) (INDEX .type1 .array1 .index1) (.array0 .array1, .index0 .index1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
@@ -81,9 +84,9 @@ ic-rewrite-type (METHOD-OF .types0) (METHOD-OF .types1)
 ic-rewrite-type (PTR-OF .type0) (PTR-OF .type1)
 	:- ic-rewrite-type .type0 .type1
 #
-ic-rewrite-type (TUPLE-OF .name ()) (TUPLE-OF .name ())
+ic-rewrite-type (STRUCT-OF ()) (STRUCT-OF ())
 #
-ic-rewrite-type (TUPLE-OF .name (.type0, .types0)) (TUPLE-OF .name (.type1, .types1))
+ic-rewrite-type (STRUCT-OF (.name .type0, .nameTypes0)) (STRUCT-OF (.name .type1, .nameTypes1))
 	:- ic-rewrite-type .type0 .type1
-	, ic-rewrite-type (TUPLE-OF .name .types0) (TUPLE-OF .name .types1)
+	, ic-rewrite-type (STRUCT-OF .nameTypes0) (STRUCT-OF .nameTypes1)
 #

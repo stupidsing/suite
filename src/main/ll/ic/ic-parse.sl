@@ -18,6 +18,9 @@ ic-parse (declare .var; .do) (DECLARE _ .var .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 #
+ic-parse (.do^.field) (FIELD _ .field .do1)
+	:- ic-parse .do .do1
+#
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	:- ic-parse .if .if1
 	, ic-parse .then .then1
@@ -150,7 +153,7 @@ ic-parse-type (function .m) (METHOD2-OF .types)
 ic-parse-type (p^.t) (PTR-OF .type)
 	:- ic-parse-type .t .type
 #
-ic-parse-type (.name {.ts}) (TUPLE-OF .name .types)
-	:- zip .ts .types .list
-	, list.query .list .t:.type (ic-parse-type .t .type)
+ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
+	:- zip .nts .nameTypes .list
+	, list.query .list (.name as .t):(.name .type) (ic-parse-type .t .type)
 #

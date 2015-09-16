@@ -6,6 +6,10 @@ ic-infer-type (DECLARE .varType .var .do0) .type
 	:- replace (VAR .var) (OBJECT .varType NOP) .do0 .do1
 	, ic-infer-type .do1 .type
 #
+ic-infer-type (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
+	:- ic-infer-type .do (STRUCT-OF .nameTypes)
+	, member .nameTypes (.field .fieldType)
+#
 ic-infer-type (IF .if .then .else) .type
 	:- ic-infer-type .if .type
 	, ic-infer-type .then .type

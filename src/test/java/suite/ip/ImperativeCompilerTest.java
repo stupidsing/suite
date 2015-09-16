@@ -32,6 +32,13 @@ public class ImperativeCompilerTest {
 	}
 
 	@Test
+	public void testField() {
+		Bytes bytes = imperativeCompiler.compile(0, "declare x as struct (i as int, j as int,); x^j = 3;");
+		assertNotNull(bytes);
+		System.out.println(bytes);
+	}
+
+	@Test
 	public void testLet() {
 		Bytes bytes = imperativeCompiler.compile(0, "let `0` = 1 shl 3;");
 		assertNotNull(bytes);

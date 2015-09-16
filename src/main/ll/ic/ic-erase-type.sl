@@ -3,6 +3,12 @@ ic-erase-type (DECLARE .type .var .do0) (ALLOC .size .var .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
+ic-erase-type (FIELD (STRUCT-OF .nameTypes) .field .do0) (MEMORY .size (TREE ' + ' (REF .dox) (NUMBER .offset)))
+	:- !
+	, ic-struct-offset .nameTypes .field .type .offset
+	, ic-type-size .type .size
+	, ic-erase-type .do0 .dox
+#
 ic-erase-type (INDEX .type .array0 .i0) (MEMORY .size (TREE ' + ' (REF .arrayx) TREE ' * ' .ix (NUMBER .size)))
 	:- !
 	, ic-type-size .type .size
@@ -28,6 +34,14 @@ ic-erase-type .do0 .dox
 	, list.query .ts (.do0_ .dox_) (ic-erase-type .do0_ .dox_)
 #
 
+ic-struct-offset (.name .type, _) .name .type 0
+#
+ic-struct-offset (_ .dummyType, .nameTypes) .name .type .offset
+	:- ic-struct-offset .nameTypes .name .type .offset0
+	, ic-type-size .dummyType .offset1
+	, let .offset (.offset0 + .offset1)
+#
+
 ic-type-size I32 4
 #
 ic-type-size (ARRAY-OF .arraySize .type) .size
@@ -40,10 +54,10 @@ ic-type-size (METHOD2-OF _) 8
 #
 ic-type-size (PTR-OF _) 4
 #
-ic-type-size (TUPLE-OF _ ()) 0
+ic-type-size (STRUCT-OF ()) 0
 #
-ic-type-size (TUPLE-OF .name (.type, .types)) .size
+ic-type-size (STRUCT-OF (_ .type, .nameTypes)) .size
 	:- ic-type-size .type .size0
-	, ic-type-size (TUPLE-OF .name .types) .size1
+	, ic-type-size (STRUCT-OF .nameTypes) .size1
 	, let .size (.size0 + .size1)
 #
