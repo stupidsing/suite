@@ -140,7 +140,7 @@ invoke ba-setup [];
 invoke irq-setup [];
 invoke sch-setup [];
 invoke idt-setup [];
-pm:pm-setup [];
+invoke pm-setup [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
 kb:kb-setup [];

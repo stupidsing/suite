@@ -1,4 +1,3 @@
-declare pm = this;
 declare pm-sync = 0;
 
 declare page0 = memory-region-start;
@@ -6,7 +5,7 @@ declare pagex = page0;
 declare stack0 = memory-region-start;
 declare stackx = stack0;
 
-declare pm-setup = [] (
+declare pm-setup = function [] (
 
 	-- Detects memory size
 	while (
@@ -23,13 +22,13 @@ declare pm-setup = [] (
 	);
 );
 
-declare pm-allocate = [] (
+declare pm-allocate = function [] (
 	synchronized (& pm-sync) (
 		if (stack0 != stackx) then `stack0 =+ 4` else 0;
 	);
 );
 
-declare pm-deallocate = [page,] (
+declare pm-deallocate = function [page,] (
 	synchronized (& pm-sync) (
 		let `stack0 += 4` = page;
 	);

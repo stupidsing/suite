@@ -30,7 +30,7 @@ declare pg-get-physical = [logical,] (
 
 declare pg-set-pt-entry = [pe0, pt1,] (
 	(`pe0` = 0 && (
-		let `pe0` = pm:pm-allocate [] + 7;
+		let `pe0` = invoke pm-allocate [] + 7;
 		pg:pg-invalidate-page [pt1,];
 		invoke zero [pt1, 4096,];
 	));
@@ -44,7 +44,7 @@ declare pg-unset-pt-entry = [pe0, pt1,] (
 	);
 
 	(isEmpty && (
-		pm:pm-deallocate [`pe0` and +xFFFFF000,];
+		invoke pm-deallocate [`pe0` and +xFFFFF000,];
 		let `pe0` = 0;
 		1;
 	));
@@ -104,7 +104,7 @@ declare pg-allocate = [nPages,] (
 
 		(r0 && (
 			for (declare i = 0; i < nPages; i =+ 1) (
-				pg:pg-map [r0 + i shl 12, pm:pm-allocate [],];
+				pg:pg-map [r0 + i shl 12, invoke pm-allocate [],];
 			);
 		));
 
@@ -116,17 +116,17 @@ declare pg-deallocate = [p, nPages,] (
 	synchronized (& pg-sync) (
 		for (declare i = 0; i < nPages; i =+ 1) (
 			declare logical = p + i shl 12;
-			pm:pm-deallocate [pg:pg-get-physical [logical,],];
+			invoke pm-deallocate [pg:pg-get-physical [logical,],];
 			pg:pg-unmap [logical,];
 		);
 	);
 );
 
 declare pg-setup = [] (
-	declare pt0 = pm:pm-allocate [];
-	declare pt1 = pm:pm-allocate [];
-	declare pt2 = pm:pm-allocate [];
-	declare pt3 = pm:pm-allocate [];
+	declare pt0 = invoke pm-allocate [];
+	declare pt1 = invoke pm-allocate [];
+	declare pt2 = invoke pm-allocate [];
+	declare pt3 = invoke pm-allocate [];
 
 	invoke zero [pt0, 4096,];
 	invoke zero [pt1, 4096,];
