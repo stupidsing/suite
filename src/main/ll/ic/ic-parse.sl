@@ -36,13 +36,13 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
+ic-parse (baseless [.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
 	:- zip .params .params1 .list
 	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
 #
 ic-parse (function [.params] .do) (METHOD2 $$EBP .method) -- Traditional subroutine definition
-	:- ic-parse ([.params] .do) .method
+	:- ic-parse (baseless [.params] .do) .method
 #
 ic-parse () NOP
 #

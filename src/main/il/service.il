@@ -15,7 +15,7 @@ declare svc-handle-service = function [p0, p1, p2,] (
 	) else ();
 );
 
-declare sysenter-sink = [p0, p1, p2,] (
+declare sysenter-sink = baseless [p0, p1, p2,] (
 	asm _ PUSH (EDI); -- Return IP
 	asm _ PUSH (EDX); -- Return ESP
 	asm _ PUSH (EAX); -- p0

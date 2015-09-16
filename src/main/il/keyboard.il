@@ -1,4 +1,4 @@
-declare keyboard-sink = [irq-number,] (
+declare keyboard-sink = baseless [irq-number,] (
 	declare status = inb [+x64,];
 	declare scan-code = inb [+x60,];
 	cs-puts ["SCAN CODE = ",];

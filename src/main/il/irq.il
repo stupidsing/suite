@@ -1,7 +1,7 @@
 declare irq = this;
 declare-as irq-sinks/([int,] * 16);
 
-declare dump-sink = [irq-number,] (
+declare dump-sink = baseless [irq-number,] (
 	cs-puts ["IRQ = ",];
 	cs-put-hex1 [irq-number,];
 	cs-nl [];

@@ -8,7 +8,7 @@ declare-as-pointer ne2k-mac-address/(int * 2);
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 
-declare ne2k-irq-sink = [irq-number,] (
+declare ne2k-irq-sink = baseless [irq-number,] (
 	declare isr;
 	outb [io-base + +x00, +x22,];
 	while (let isr = inb [io-base + +x07,]) do (
