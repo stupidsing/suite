@@ -11,14 +11,14 @@ declare ffa$size = function [e,] (
 );
 
 declare ffa-allocate0 = function [size,] (
-	declare next-block = [block,] (
+	declare next-block = function [block,] (
 		declare n = invoke dl-next [block,];
 		if (n != 0) then n else head;
 	);
 
 	declare start = ffa-current;
 	declare next;
-	while (((let next = this:next-block [ffa-current,]) != start) and (`invoke ffa$size [ffa-current,]` < size)) do (
+	while (((let next = invoke next-block [ffa-current,]) != start) and (`invoke ffa$size [ffa-current,]` < size)) do (
 		let ffa-current = next;
 	);
 

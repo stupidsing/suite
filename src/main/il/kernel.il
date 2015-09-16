@@ -182,7 +182,7 @@ asm _ D8 (+x68);
 asm _ D32 (.user); -- Would be IP
 asm _ IRET ();
 
-declare user-mode = [] (
+declare user-mode = function [] (
 	asm .user PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
 
