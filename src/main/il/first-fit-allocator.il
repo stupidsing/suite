@@ -1,4 +1,3 @@
-declare ffa = this;
 declare ffa-sync = 0;
 
 declare ffa-region0 = +x50000;
