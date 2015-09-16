@@ -141,7 +141,7 @@ invoke irq-setup [];
 invoke sch-setup [];
 invoke idt-setup [];
 invoke pm-setup [];
-pg:pg-setup []; -- Sets up paging
+invoke pg-setup []; -- Sets up paging
 svc:svc-setup [];
 kb:kb-setup [];
 

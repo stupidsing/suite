@@ -5,12 +5,12 @@ declare pg-region0 = +x00800000;
 declare pg-regionx = +xFFC00000;
 declare pg-current = pg-region0;
 
-declare pg-invalidate-all = [] (
+declare pg-invalidate-all = function [] (
 	asm _ MOV (EAX, CR3);
 	asm _ MOV (CR3, EAX);
 );
 
-declare pg-invalidate-page = [logical,] (
+declare pg-invalidate-page = function [logical,] (
 	logical;
 	asm _ INVLPG `EAX`;
 );
@@ -31,7 +31,7 @@ declare pg-get-physical = [logical,] (
 declare pg-set-pt-entry = [pe0, pt1,] (
 	(`pe0` = 0 && (
 		let `pe0` = invoke pm-allocate [] + 7;
-		pg:pg-invalidate-page [pt1,];
+		invoke pg-invalidate-page [pt1,];
 		invoke zero [pt1, 4096,];
 	));
 );
@@ -64,7 +64,7 @@ declare pg-map = [logical, physical,] (
 	pg:pg-set-pt-entry [pe2, pt3,];
 	let `pe3` = physical + 7;
 
-	pg:pg-invalidate-page [logical,];
+	invoke pg-invalidate-page [logical,];
 );
 
 declare pg-unmap = [logical,] (
@@ -81,7 +81,7 @@ declare pg-unmap = [logical,] (
 	&& pg:pg-unset-pt-entry [pe1, pt2,]
 	&& pg:pg-unset-pt-entry [pe0, pt1,];
 
-	pg:pg-invalidate-page [logical,];
+	invoke pg-invalidate-page [logical,];
 );
 
 declare pg-allocate = [nPages,] (
@@ -122,7 +122,7 @@ declare pg-deallocate = [p, nPages,] (
 	);
 );
 
-declare pg-setup = [] (
+declare pg-setup = function [] (
 	declare pt0 = invoke pm-allocate [];
 	declare pt1 = invoke pm-allocate [];
 	declare pt2 = invoke pm-allocate [];
