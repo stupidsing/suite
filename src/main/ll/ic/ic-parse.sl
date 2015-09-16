@@ -55,10 +55,12 @@ ic-parse (function [.params] .do) (METHOD $$EBP .method) -- Traditional subrouti
 #
 ic-parse () NOP
 #
+ic-parse null NULL
+#
 ic-parse .i (NUMBER .i)
 	:- is.int .i
 #
-ic-parse `.pointer` (OBJECT I32 .pointer1)
+ic-parse `.pointer` (OBJECT _ .pointer1)
 	:- ic-parse .pointer .pointer1
 #
 ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)

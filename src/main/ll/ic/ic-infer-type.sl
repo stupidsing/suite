@@ -3,7 +3,7 @@ ic-infer-type $$EBP I32
 ic-infer-type (ASM _) I32
 #
 ic-infer-type (DECLARE .varType .var .do0) .type
-	:- replace (VAR .var) (OBJECT .varType NOP) .do0 .do1
+	:- replace (VAR .var) (OBJECT .varType NULL) .do0 .do1
 	, ic-infer-type .do1 .type
 #
 ic-infer-type (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
@@ -32,14 +32,16 @@ ic-infer-type (METHOD0 () .do) (METHOD0-OF ())
 	:- ic-infer-type .do I32
 #
 ic-infer-type (METHOD0 (PARAM .paramType .var, .params) .do0) (METHOD0-OF (.paramType, .paramTypes))
-	:- replace (VAR .var) (OBJECT .paramType NOP) .do0 .do1
+	:- replace (VAR .var) (OBJECT .paramType NULL) .do0 .do1
 	, ic-infer-type (METHOD0 .params .do1) (METHOD0-OF .paramTypes)
 #
 ic-infer-type (METHOD .this .method) (METHOD-OF .paramTypes)
 	:- ic-infer-type .this I32
 	, ic-infer-type .method (METHOD0-OF .paramTypes)
 #
-ic-infer-type NOP I32
+ic-infer-type NOP _
+#
+ic-infer-type NULL _
 #
 ic-infer-type (NUMBER _) I32
 #

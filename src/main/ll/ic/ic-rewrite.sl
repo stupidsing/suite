@@ -29,6 +29,8 @@ ic-rewrite (METHOD .this0 .method0) (METHOD .this1 .method1) (.this0 .this1, .me
 #
 ic-rewrite NOP NOP .ts/.ts
 #
+ic-rewrite NULL NULL .ts/.ts
+#
 ic-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
 #
 ic-rewrite (OBJECT .type0 .pointer0) (OBJECT .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts

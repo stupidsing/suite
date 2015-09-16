@@ -26,7 +26,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testExpr() {
-		Bytes bytes = imperativeCompiler.compile(0, "`0` + 1 = 2;");
+		Bytes bytes = imperativeCompiler.compile(0, "`null` + 1 = 2;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -40,7 +40,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testLet() {
-		Bytes bytes = imperativeCompiler.compile(0, "let `0` = 1 shl 3;");
+		Bytes bytes = imperativeCompiler.compile(0, "let `null` = 1 shl 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
