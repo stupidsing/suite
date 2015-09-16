@@ -1,5 +1,3 @@
-declare idt = this;
-
 -- Sets up and loads interrupt descriptor table
 declare idt-set-entry = function [vector, handler, is-interrupt-gate,] (
 	declare p = idt-address + vector shl 3;
