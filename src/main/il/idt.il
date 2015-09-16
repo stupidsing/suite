@@ -1,13 +1,13 @@
 declare idt = this;
 
 -- Sets up and loads interrupt descriptor table
-declare idt-set-entry = [vector, handler, is-interrupt-gate,] (
+declare idt-set-entry = function [vector, handler, is-interrupt-gate,] (
 	declare p = idt-address + vector shl 3;
 	let `p + 0` = handler and +x0000FFFF + +x00080000;
 	let `p + 4` = (if is-interrupt-gate then +x00008E00 else +x00008F00) + handler and +xFFFF0000;
 );
 
-declare idt-setup = [] (
+declare idt-setup = function [] (
 	constant isr-prolog = (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
@@ -127,12 +127,12 @@ declare idt-setup = [] (
 	);
 
 	for (declare i = 0; i < 256; i =+ 1) (
-		idt:idt-set-entry [i, handle-general-interrupt, 1,];
+		invoke idt-set-entry [i, handle-general-interrupt, 1,];
 	);
 
 	(
 		constant set-fault-handler .i .h0 = (
-			idt:idt-set-entry [.i, snippet (
+			invoke idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
 			), 0,]
@@ -173,7 +173,7 @@ declare idt-setup = [] (
 
 	(
 		constant set-irq-handler .i .h0 = (
-			idt:idt-set-entry [.i, snippet (
+			invoke idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
 			), 1,]
@@ -196,7 +196,7 @@ declare idt-setup = [] (
 		set-irq-handler +x2F .irq-handler;
 	);
 
-	idt:idt-set-entry [+x20, handle-timer-interrupt, 1,];
+	invoke idt-set-entry [+x20, handle-timer-interrupt, 1,];
 
 	(
 		declare-as-pointer idtr/(int * 2);

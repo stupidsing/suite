@@ -139,7 +139,7 @@ invoke outb [+x21, +xFC,];
 invoke ba-setup [];
 invoke irq-setup [];
 invoke sch-setup [];
-idt:idt-setup [];
+invoke idt-setup [];
 pm:pm-setup [];
 pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
