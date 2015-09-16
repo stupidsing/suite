@@ -3,9 +3,11 @@ ic-erase-type (DECLARE .type .var .do0) (ALLOC .size .var .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
-ic-erase-type (INDEX .type .array .index) (MEMORY .size (TREE ' + ' (REF .array) TREE ' * ' .index (NUMBER .size)))
+ic-erase-type (INDEX .type .array0 .i0) (MEMORY .size (TREE ' + ' (REF .arrayx) TREE ' * ' .ix (NUMBER .size)))
 	:- !
 	, ic-type-size .type .size
+	, ic-erase-type .array0 .arrayx
+	, ic-erase-type .i0 .ix
 #
 ic-erase-type (METHOD .params .do0) (METHOD .pss .dox)
 	:- zip .params .pss .list
