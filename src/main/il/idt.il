@@ -61,10 +61,10 @@ declare idt-setup = [] (
 			asm _ PUSH (EAX);
 
 			declare irq-number = vector - +x20;
-			declare isr = irq:irq-get-isr [];
+			declare isr = invoke irq-get-isr [];
 
 			if (isr and 1 shl irq-number) then (
-				declare irq-sink = irq:irq-get-sink [irq-number,];
+				declare irq-sink = invoke irq-get-sink [irq-number,];
 				(irq-sink && irq:irq-sink [irq-number,]);
 
 				-- Sends end of interrupt signal

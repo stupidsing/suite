@@ -137,7 +137,7 @@ invoke outb [+x40, 11932 / 256,];
 invoke outb [+x21, +xFC,];
 
 invoke ba-setup [];
-irq:irq-setup [];
+invoke irq-setup [];
 sch:sch-setup [];
 idt:idt-setup [];
 pm:pm-setup [];
