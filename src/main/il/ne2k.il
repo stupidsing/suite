@@ -1,7 +1,5 @@
 -- Reference http://www.jbox.dk/sanos/source/sys/dev/ne2000.c.html
 
-declare ne2k = this;
-
 constant io-base = +x300;
 constant mem-base = 16384;
 constant mem-size = 16384;
@@ -25,7 +23,7 @@ declare ne2k-irq-sink = [irq-number,] (
 	kernel:outb [io-base + +x00, +x22,];
 );
 
-declare ne2k-read = [src, dst, len,] (
+declare ne2k-read = function [src, dst, len,] (
 	let len = (len + 1) and +xFFFFFFFE;
 	kernel:outb [io-base + +x00, +x22,];
 	kernel:outb [io-base + +x0A, len,];
@@ -40,7 +38,7 @@ declare ne2k-read = [src, dst, len,] (
 	);
 );
 
-declare ne2k-send = [buffer, len,] (
+declare ne2k-send = function [buffer, len,] (
 	let len = (len + 1) and +xFFFFFFFE;
 	kernel:outb [io-base + +x00, +x22,];
 	kernel:outb [io-base + +x04, +x40,];
@@ -66,7 +64,7 @@ declare ne2k-send = [buffer, len,] (
 	-- TODO wait IRQ for packet transmitted
 );
 
-declare ne2k-probe = [] (
+declare ne2k-probe = function [] (
 	kernel:outb [io-base + +x1F, kernel:inb [io-base + +x1F,],];
 	kernel:outb [io-base + +x00, +x21,];
 
@@ -78,13 +76,13 @@ declare ne2k-probe = [] (
 	);
 );
 
-declare ne2k-setup = [] (
-	(ne2k:ne2k-probe [] && (
+declare ne2k-setup = function [] (
+	(invoke ne2k-probe [] && (
 		kernel:outb [io-base + +x00, +x21,];
 		kernel:outb [io-base + +x0E, +x49,];
 
 		declare-as-pointer romdata/(int * 4);
-		ne2k:ne2k-read [0, romdata, 16,];
+		invoke ne2k-read [0, romdata, 16,];
 		for (declare p = 0; p < 6; p =+ 1) (
 			kernel:copy [ne2k-mac-address + p, romdata + p shl 1, 1,];
 		);
@@ -92,14 +90,14 @@ declare ne2k-setup = [] (
 		ne2k-rx-page-start = mem-base shr 8;
 		ne2k-rx-page-stop = ne2k-rx-page-start + mem-size shr 8 - 12;
 
-		cs:cs-puts ["MAC ADDRESS = ",];
+		invoke cs-puts ["MAC ADDRESS = ",];
 
 		for (declare p = 0; p < 6; p =+ 1) (
 			declare b;
 			kernel:copy [& b, ne2k-mac-address + p, 1,];
-			cs:cs-put-hex1 [b,];
+			invoke cs-put-hex1 [b,];
 		);
 
-		cs:cs-nl [];
+		invoke cs-nl [];
 	));
 );

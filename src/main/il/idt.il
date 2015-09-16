@@ -71,9 +71,9 @@ declare idt-setup = [] (
 				(irq-number >= 8 && kernel:outb [+xA0, +x20,]);
 				kernel:outb [+x20, +x20,];
 			) else (
-				cs:cs-puts ["SPURIOUS INTERRUPT = ",];
-				cs:cs-put-hex1 [irq-number,];
-				cs:cs-nl [];
+				invoke cs-puts ["SPURIOUS INTERRUPT = ",];
+				invoke cs-put-hex1 [irq-number,];
+				invoke cs-nl [];
 			);
 		);
 
@@ -109,17 +109,17 @@ declare idt-setup = [] (
 			asm _ MOV (EAX, CR2);
 			asm _ PUSH (EAX);
 
-			cs:cs-puts ["FAULT INTERRUPT = ",];
-			cs:cs-put-hex1 [vector,];
-			cs:cs-puts [", ERROR CODE = ",];
-			cs:cs-put-hex4 [code,];
-			cs:cs-puts [", CS = ",];
-			cs:cs-put-hex2 [cs0,];
-			cs:cs-puts [", EIP = ",];
-			cs:cs-put-hex4 [eip0,];
-			cs:cs-puts [", CR2 = ",];
-			cs:cs-put-hex4 [cr2,];
-			cs:cs-nl [];
+			invoke cs-puts ["FAULT INTERRUPT = ",];
+			invoke cs-put-hex1 [vector,];
+			invoke cs-puts [", ERROR CODE = ",];
+			invoke cs-put-hex4 [code,];
+			invoke cs-puts [", CS = ",];
+			invoke cs-put-hex2 [cs0,];
+			invoke cs-puts [", EIP = ",];
+			invoke cs-put-hex4 [eip0,];
+			invoke cs-puts [", CR2 = ",];
+			invoke cs-put-hex4 [cr2,];
+			invoke cs-nl [];
 		);
 
 		asm _ CLI ();

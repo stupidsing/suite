@@ -2,9 +2,9 @@ declare irq = this;
 declare-as irq-sinks/([int,] * 16);
 
 declare dump-sink = [irq-number,] (
-	cs:cs-puts ["IRQ = ",];
-	cs:cs-put-hex1 [irq-number,];
-	cs:cs-nl [];
+	invoke cs-puts ["IRQ = ",];
+	invoke cs-put-hex1 [irq-number,];
+	invoke cs-nl [];
 );
 
 declare irq-get-isr = [] (

@@ -145,10 +145,10 @@ pg:pg-setup []; -- Sets up paging
 svc:svc-setup [];
 kb:kb-setup [];
 
-cs:cs-puts [if (ne2k:ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
-cs:cs-nl [];
+invoke cs-puts [if (invoke ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
+invoke cs-nl [];
 
-ne2k:ne2k-setup [];
+invoke ne2k-setup [];
 
 asm _ STI ();
 

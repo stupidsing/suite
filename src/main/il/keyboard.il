@@ -3,11 +3,11 @@ declare kb = this;
 declare keyboard-sink = [irq-number,] (
 	declare status = kernel:inb [+x64,];
 	declare scan-code = kernel:inb [+x60,];
-	cs:cs-puts ["SCAN CODE = ",];
-	cs:cs-put-hex1 [scan-code,];
-	cs:cs-puts [", STATUS = ",];
-	cs:cs-put-hex1 [status,];
-	cs:cs-nl [];
+	invoke cs-puts ["SCAN CODE = ",];
+	invoke cs-put-hex1 [scan-code,];
+	invoke cs-puts [", STATUS = ",];
+	invoke cs-put-hex1 [status,];
+	invoke cs-nl [];
 );
 
 declare kb-setup = [] (
