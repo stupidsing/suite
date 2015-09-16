@@ -142,7 +142,7 @@ invoke sch-setup [];
 invoke idt-setup [];
 invoke pm-setup [];
 invoke pg-setup []; -- Sets up paging
-svc:svc-setup [];
+invoke svc-setup [];
 kb:kb-setup [];
 
 invoke cs-puts [if (invoke ne2k-probe []) then "ne2000 detected" else "ne2k not found",];

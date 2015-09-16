@@ -1,5 +1,3 @@
-declare svc = this;
-
 constant svc-halt_ = 0;
 constant svc-nl___ = 1;
 constant svc-putc_ = 2;
@@ -61,7 +59,7 @@ declare svc-service = function [p0, p1, p2,] (
 	);
 );
 
-declare svc-setup = [] (
+declare svc-setup = function [] (
 	invoke wrmsr [+x174, +x8,];
 	invoke wrmsr [+x175, syscall-stack-address,];
 	invoke wrmsr [+x176, handle-sysenter as int,];
