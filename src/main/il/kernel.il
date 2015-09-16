@@ -138,7 +138,7 @@ invoke outb [+x21, +xFC,];
 
 invoke ba-setup [];
 invoke irq-setup [];
-sch:sch-setup [];
+invoke sch-setup [];
 idt:idt-setup [];
 pm:pm-setup [];
 pg:pg-setup []; -- Sets up paging
@@ -197,4 +197,4 @@ declare user-mode = [] (
 );
 
 kb:kb-teardown [];
-sch:sch-teardown [];
+invoke sch-teardown [];

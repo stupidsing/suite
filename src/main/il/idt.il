@@ -40,7 +40,7 @@ declare idt-setup = [] (
 		`+xB8000` =+ 1;
 
 		-- Switch processes
-		sch:sch-interrupt-switch [];
+		invoke sch-interrupt-switch [];
 
 		-- Sends end of interrupt signal
 		invoke outb [+x20, +x20,];
