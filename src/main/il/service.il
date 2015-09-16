@@ -5,7 +5,7 @@ constant svc-nl___ = 1;
 constant svc-putc_ = 2;
 constant svc-ticks = 3;
 
-declare handle-service = [p0, p1, p2,] (
+declare svc-handle-service = function [p0, p1, p2,] (
 	if (p0 = svc-halt_) then (
 		invoke sync-yield [];
 	) else if (p0 = svc-nl___) then (
@@ -29,7 +29,7 @@ declare handle-sysenter = [p0, p1, p2,] (
 	asm _ PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
 
-	svc:handle-service [p0, p1, p2,];
+	invoke svc-handle-service [p0, p1, p2,];
 
 	asm _ MOV (ESP, EBP);
 	asm _ ADD (ESP, 20);
@@ -41,7 +41,7 @@ declare handle-sysenter = [p0, p1, p2,] (
 	asm _ SYSEXIT ();
 );
 
-declare svc-service = [p0, p1, p2,] (
+declare svc-service = function [p0, p1, p2,] (
 	declare cs0;
 	asm _ ADD (ESP, 4);
 	asm _ PUSH (CS);
@@ -57,7 +57,7 @@ declare svc-service = [p0, p1, p2,] (
 		asm _ SYSENTER ();
 		asm .sysexitPoint ();
 	) else (
-		svc:handle-service [p0, p1, p2,];
+		invoke svc-handle-service [p0, p1, p2,];
 	);
 );
 

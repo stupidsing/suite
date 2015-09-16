@@ -187,9 +187,9 @@ declare user-mode = [] (
 	asm _ MOV (EBP, ESP);
 
 	-- Shows OK
-	svc:svc-service [svc-putc_, +x4F, 0,];
-	svc:svc-service [svc-putc_, +x4B, 0,];
-	svc:svc-service [svc-putc_, +x0A, 0,];
+	invoke svc-service [svc-putc_, +x4F, 0,];
+	invoke svc-service [svc-putc_, +x4B, 0,];
+	invoke svc-service [svc-putc_, +x0A, 0,];
 
 	asm .loop ();
 	time:time-yield [];
