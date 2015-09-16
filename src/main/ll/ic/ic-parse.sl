@@ -150,7 +150,7 @@ ic-parse-type (baseless [.ts]) (METHOD-OF .types)
 ic-parse-type (function .m) (METHOD2-OF .types)
 	:- ic-parse-type (baseless .m) (METHOD-OF .types)
 #
-ic-parse-type (p^.t) (PTR-OF .type)
+ic-parse-type (p^.t) (POINTER-OF .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)

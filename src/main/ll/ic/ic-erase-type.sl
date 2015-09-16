@@ -52,7 +52,7 @@ ic-type-size (METHOD-OF _) 4
 #
 ic-type-size (METHOD2-OF _) 8
 #
-ic-type-size (PTR-OF _) 4
+ic-type-size (POINTER-OF _) 4
 #
 ic-type-size (STRUCT-OF ()) 0
 #

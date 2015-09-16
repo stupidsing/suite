@@ -81,7 +81,7 @@ ic-rewrite-type (METHOD-OF .types0) (METHOD-OF .types1)
 	:- zip .types0 .types1 .list
 	, list.query .list .type0:.type1 (ic-rewrite-type .type0 .type1)
 #
-ic-rewrite-type (PTR-OF .type0) (PTR-OF .type1)
+ic-rewrite-type (POINTER-OF .type0) (POINTER-OF .type1)
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite-type (STRUCT-OF ()) (STRUCT-OF ())
