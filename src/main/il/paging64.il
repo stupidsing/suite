@@ -1,4 +1,3 @@
-declare pg = this;
 declare pg-sync = 0;
 
 declare pg-region0 = +x00800000;
