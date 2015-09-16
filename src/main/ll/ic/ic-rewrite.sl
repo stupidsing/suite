@@ -7,6 +7,9 @@ ic-rewrite (ALLOC .size .var .do0) (ALLOC .size .var .do1) (.do0 .do1, .ts)/.ts
 ic-rewrite (DECLARE .type0 .var .do0) (DECLARE .type1 .var .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
+ic-rewrite (INDEX .type0 .array0 .index0) (INDEX .type1 .array1 .index1) (.array0 .array1, .index0 .index1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
+#
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
 #
 ic-rewrite (INVOKE .this0 .sub0 .params0) (INVOKE .this1 .sub1 .params1) (.this0 .this1, .sub0 .sub1, .ts0)/.tsx
@@ -31,9 +34,11 @@ ic-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
 ic-rewrite (OBJECT .type0 .pointer0) (OBJECT .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
-ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
-#
 ic-rewrite (POST-ADD-NUMBER .var0 .i) (POST-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
+#
+ic-rewrite (PRAGMA _ .do0) (PRAGMA _ .do1) (.do0 .do1, .ts)/.ts
+#
+ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
 ic-rewrite (REF .var0) (REF .var1) (.var0 .var1, .ts)/.ts
 #

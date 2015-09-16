@@ -3,6 +3,10 @@ ic-erase-type (DECLARE .type .var .do0) (ALLOC .size .var .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
+ic-erase-type (INDEX .type .array .index) (MEMORY .size (TREE ' + ' (REF .array) TREE ' * ' .index (NUMBER .size)))
+	:- !
+	, ic-type-size .type .size
+#
 ic-erase-type (METHOD .params .do0) (METHOD .pss .dox)
 	:- zip .params .pss .list
 	, list.query .list (PARAM .type .var):(PS .size .var) (ic-type-size .type .size)

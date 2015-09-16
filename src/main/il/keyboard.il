@@ -15,5 +15,5 @@ declare kb-setup = [] (
 );
 
 declare kb-teardown = [] (
-	irq:irq-set-sink [1, 0,];
+	irq:irq-set-sink [1, 0 as [int,],];
 );

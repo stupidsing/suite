@@ -112,6 +112,9 @@ ic-compile .fs (POST-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 		, _ MOV ($0, `$0`)
 		, .ex)
 #
+ic-compile .fs (PRAGMA _ .do) .e
+	:- ic-compile .fs .do .e
+#
 ic-compile .fs (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, .e1 = (_ R+

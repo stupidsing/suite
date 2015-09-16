@@ -14,10 +14,18 @@ ic-parse (declare-as .var/.t; .do) (DECLARE .type .var .do1)
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
 #
+ic-parse (declare .var; .do) (DECLARE _ .var .do1)
+	:- is.atom .var
+	, ic-parse .do .do1
+#
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
 	:- ic-parse .if .if1
 	, ic-parse .then .then1
 	, ic-parse .else .else1
+#
+ic-parse .array:.index (INDEX _ .array1 .index1)
+	:- ic-parse .array .array1
+	, ic-parse .index .index1
 #
 ic-parse (.this:.sub [.params]) (INVOKE .this1 .sub1 .params1) -- Traditional subroutine invocation
 	:- ic-parse .this .this1
@@ -34,9 +42,6 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse `.pointer` (OBJECT I32 .pointer1)
-	:- ic-parse .pointer .pointer1
-#
 ic-parse ([.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
 	:- zip .params .params1 .list
 	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
@@ -49,6 +54,13 @@ ic-parse () NOP
 #
 ic-parse .i (NUMBER .i)
 	:- is.int .i
+#
+ic-parse `.pointer` (OBJECT I32 .pointer1)
+	:- ic-parse .pointer .pointer1
+#
+ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)
+	:- ic-parse-type .t .type
+	, ic-parse .do .do1
 #
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
@@ -92,18 +104,15 @@ ic-parse-sugar (.a && .b) (if .a then .b else 0)
 #
 ic-parse-sugar (.a || .b) (if .a then 1 else .b)
 #
-ic-parse-sugar (.var =+ .inc) (declare .p = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
+ic-parse-sugar (.var =+ .inc) (declare-as .p/int = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
 #
-ic-parse-sugar (.var += .inc) (declare .p = & .var; let `.p` = `.p` + .inc)
+ic-parse-sugar (.var += .inc) (declare-as .p/int = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
 #
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
-#
-ic-parse-sugar (declare .var; .do) (declare-as .var/int; .do)
-	:- is.atom .var
 #
 ic-parse-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
 	:- is.atom .var
@@ -116,6 +125,9 @@ ic-parse-sugar false 0
 ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .step))
 #
 ic-parse-sugar (not .b) (if .b then 0 else 1)
+#
+ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
+	:- is.atom .var
 #
 ic-parse-sugar true 1
 #
@@ -134,10 +146,14 @@ ic-parse-type int I32
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #
+ic-parse-type ([.ts]) (METHOD-OF .types)
+	:- zip .ts .types .list
+	, list.query .list .t:.type (ic-parse-type .t .type)
+#
 ic-parse-type (p^.t) (PTR-OF .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-type (.name {.ts}) (TUPLE-OF .name .types)
 	:- zip .ts .types .list
-	, list.query .list .t:.type (ic-parse .t .type)
+	, list.query .list .t:.type (ic-parse-type .t .type)
 #
