@@ -1,5 +1,3 @@
-declare sync = this;
-
 declare cmpxchg = function [loc, v0, v1,] (
 	asm _ MOV (EDI, `EBP + 8`);
 	asm _ MOV (EAX, `EBP + 12`);

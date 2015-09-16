@@ -37,7 +37,6 @@ asm _ MOV (ESP, +x26000);
 asm _ MOV (EBP, ESP);
 asm _ MOV (`+x40000`, EBP);
 
-declare kernel = this;
 declare ticks = 0;
 
 declare copy = function [dst, src, len,] (
