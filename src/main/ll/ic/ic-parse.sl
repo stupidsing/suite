@@ -126,7 +126,7 @@ ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 ic-parse-sugar true 1
 #
 
-ic-parse-parameter .param/.t (PARAM .type .param)
+ic-parse-parameter (.param as .t) (PARAM .type .param)
 	:- ic-parse-type .t .type
 #
 ic-parse-parameter .p .param
