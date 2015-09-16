@@ -47,7 +47,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testSubroutine1() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare s = function [i,] ( i; ); invoke s [1,];");
+		Bytes bytes = imperativeCompiler.compile(0, "declare s = function [i,] ( i; ); declare s1 = s; invoke s1 [1,];");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

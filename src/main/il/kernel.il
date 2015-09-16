@@ -136,7 +136,7 @@ kernel:outb [+x40, 11932 % 256,];
 kernel:outb [+x40, 11932 / 256,];
 kernel:outb [+x21, +xFC,];
 
-ba:ba-setup [];
+invoke ba-setup [];
 irq:irq-setup [];
 sch:sch-setup [];
 idt:idt-setup [];

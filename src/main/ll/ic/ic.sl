@@ -230,9 +230,9 @@ ic-let .fs (METHOD2 .this .sub) (MEMORY 8 .pointer) .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-let .fs .source (MEMORY .size .pointer) .e0/.ex
-	:- ic-compile .fs .source .e0/.e1
-	, ic-compile .fs .pointer .e1/.e2
+ic-let .fs (MEMORY .size .pointer0) (MEMORY .size .pointer1) .e0/.ex
+	:- ic-compile .fs .pointer0 .e0/.e1
+	, ic-compile .fs .pointer1 .e1/.e2
 	, ic-copy-memory 0 .size .e2/.e3
 	, .e3 = (_ R-, .ex)
 #
