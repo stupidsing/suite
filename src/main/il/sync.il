@@ -17,12 +17,12 @@ declare sync-yield = function [] (
 );
 
 declare sync-try-enter = function [p,] (
-	invoke cmpxchg [p, 0, 1,];
+	cmpxchg [p, 0, 1,];
 );
 
 declare sync-enter = function [p,] (
-	while (invoke sync-try-enter [p,] = 0) do (
-		invoke sync-yield [];
+	while (sync-try-enter [p,] = 0) do (
+		sync-yield [];
 	);
 );
 
@@ -33,9 +33,9 @@ declare sync-leave = function [p,] (
 declare sync-wait = function [p, w,] (
 	let `w` = 0;
 	while (`w` = 0) do (
-		invoke sync-leave [p,];
-		invoke sync-yield [];
-		invoke sync-enter [p,];
+		sync-leave [p,];
+		sync-yield [];
+		sync-enter [p,];
 	);
 );
 
@@ -44,8 +44,8 @@ declare sync-notify = function [p, w,] (
 );
 
 constant synchronized .p .block = (
-	invoke sync-enter [.p,];
+	sync-enter [.p,];
 	declare result = .block;
-	invoke sync-leave [.p,];
+	sync-leave [.p,];
 	result;
 );

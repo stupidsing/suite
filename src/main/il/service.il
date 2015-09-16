@@ -5,11 +5,11 @@ constant svc-ticks = 3;
 
 declare svc-handle-service = function [p0, p1, p2,] (
 	if (p0 = svc-halt_) then (
-		invoke sync-yield [];
+		sync-yield [];
 	) else if (p0 = svc-nl___) then (
-		invoke cs-nl [];
+		cs-nl [];
 	) else if (p0 = svc-putc_) then (
-		if (p1 != 10) then (invoke cs-put [p1,]) else (invoke cs-nl []);
+		if (p1 != 10) then (cs-put [p1,]) else (cs-nl []);
 	) else if (p0 = svc-ticks) then (
 		ticks;
 	) else ();
@@ -27,7 +27,7 @@ declare sysenter-sink = [p0, p1, p2,] (
 	asm _ PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
 
-	invoke svc-handle-service [p0, p1, p2,];
+	svc-handle-service [p0, p1, p2,];
 
 	asm _ MOV (ESP, EBP);
 	asm _ ADD (ESP, 20);
@@ -55,12 +55,12 @@ declare svc-service = function [p0, p1, p2,] (
 		asm _ SYSENTER ();
 		asm .sysexitPoint ();
 	) else (
-		invoke svc-handle-service [p0, p1, p2,];
+		svc-handle-service [p0, p1, p2,];
 	);
 );
 
 declare svc-setup = function [] (
-	invoke wrmsr [+x174, +x8,];
-	invoke wrmsr [+x175, syscall-stack-address,];
-	invoke wrmsr [+x176, sysenter-sink as int,];
+	wrmsr [+x174, +x8,];
+	wrmsr [+x175, syscall-stack-address,];
+	wrmsr [+x176, sysenter-sink as int,];
 );

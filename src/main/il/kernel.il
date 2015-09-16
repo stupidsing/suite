@@ -116,45 +116,45 @@ declare mm-deallocate = ba-deallocate;
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
-	declare d0 = invoke inb [+x21,];
-	declare d1 = invoke inb [+xA1,];
-	invoke outb [+x20, +x11,]; -- Initializes and disables ICW4
-	invoke outb [+xA0, +x11,];
-	invoke outb [+x21, +x20,]; -- Remaps IRQ0-7
-	invoke outb [+xA1, +x28,]; -- Remaps IRQ8-F
-	invoke outb [+x21, +x04,];
-	invoke outb [+xA1, +x02,];
-	invoke outb [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
-	invoke outb [+xA1, +x01,];
-	invoke outb [+x21, d0,];
-	invoke outb [+xA1, d1,];
+	declare d0 = inb [+x21,];
+	declare d1 = inb [+xA1,];
+	outb [+x20, +x11,]; -- Initializes and disables ICW4
+	outb [+xA0, +x11,];
+	outb [+x21, +x20,]; -- Remaps IRQ0-7
+	outb [+xA1, +x28,]; -- Remaps IRQ8-F
+	outb [+x21, +x04,];
+	outb [+xA1, +x02,];
+	outb [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
+	outb [+xA1, +x01,];
+	outb [+x21, d0,];
+	outb [+xA1, d1,];
 );
 
 -- Sets the 8253 to 100 timer ticks per second, and enables keyboard
-invoke outb [+x43, +x36,];
-invoke outb [+x40, 11932 % 256,];
-invoke outb [+x40, 11932 / 256,];
-invoke outb [+x21, +xFC,];
+outb [+x43, +x36,];
+outb [+x40, 11932 % 256,];
+outb [+x40, 11932 / 256,];
+outb [+x21, +xFC,];
 
-invoke ba-setup [];
-invoke irq-setup [];
-invoke sch-setup [];
-invoke idt-setup [];
-invoke pm-setup [];
-invoke pg-setup []; -- Sets up paging
-invoke svc-setup [];
-invoke kb-setup [];
+ba-setup [];
+irq-setup [];
+sch-setup [];
+idt-setup [];
+pm-setup [];
+pg-setup []; -- Sets up paging
+svc-setup [];
+kb-setup [];
 
-invoke cs-puts [if (invoke ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
-invoke cs-nl [];
+cs-puts [if (ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
+cs-nl [];
 
-invoke ne2k-setup [];
+ne2k-setup [];
 
 asm _ STI ();
 
 -- Enters user mode
 (
-	declare user-stack-address = invoke pg-allocate [1,];
+	declare user-stack-address = pg-allocate [1,];
 
 	for (declare i = 0; i < 104; i =+ 4) (
 		let `tss-address + i` = 0;
@@ -187,14 +187,14 @@ declare user-mode = function [] (
 	asm _ MOV (EBP, ESP);
 
 	-- Shows OK
-	invoke svc-service [svc-putc_, +x4F, 0,];
-	invoke svc-service [svc-putc_, +x4B, 0,];
-	invoke svc-service [svc-putc_, +x0A, 0,];
+	svc-service [svc-putc_, +x4F, 0,];
+	svc-service [svc-putc_, +x4B, 0,];
+	svc-service [svc-putc_, +x0A, 0,];
 
 	asm .loop ();
-	invoke time-yield [];
+	time-yield [];
 	asm _ JMP (DWORD .loop);
 );
 
-invoke kb-teardown [];
-invoke sch-teardown [];
+kb-teardown [];
+sch-teardown [];

@@ -38,10 +38,10 @@ declare idt-setup = function [] (
 		`+xB8000` =+ 1;
 
 		-- Switch processes
-		invoke sch-interrupt-switch [];
+		sch-interrupt-switch [];
 
 		-- Sends end of interrupt signal
-		invoke outb [+x20, +x20,];
+		outb [+x20, +x20,];
 
 		isr-epilog;
 		asm _ IRET ();
@@ -59,22 +59,22 @@ declare idt-setup = function [] (
 			asm _ PUSH (EAX);
 
 			declare irq-number = vector - +x20;
-			declare isr = invoke irq-get-isr [];
+			declare isr = irq-get-isr [];
 
 			if (isr and 1 shl irq-number) then (
-				declare irq-sink = invoke irq-get-sink [irq-number,];
+				declare irq-sink = irq-get-sink [irq-number,];
 				declare-as irqf/(int * 2);
 				let irqf:0 = irq;
 				let irqf:1 = irq-sink;
-				(irq-sink && invoke (irqf as (function [int,])) [irq-number,]);
+				(irq-sink && (irqf as (function [int,])) [irq-number,]);
 
 				-- Sends end of interrupt signal
-				(irq-number >= 8 && invoke outb [+xA0, +x20,]);
-				invoke outb [+x20, +x20,];
+				(irq-number >= 8 && outb [+xA0, +x20,]);
+				outb [+x20, +x20,];
 			) else (
-				invoke cs-puts ["SPURIOUS INTERRUPT = ",];
-				invoke cs-put-hex1 [irq-number,];
-				invoke cs-nl [];
+				cs-puts ["SPURIOUS INTERRUPT = ",];
+				cs-put-hex1 [irq-number,];
+				cs-nl [];
 			);
 		);
 
@@ -110,17 +110,17 @@ declare idt-setup = function [] (
 			asm _ MOV (EAX, CR2);
 			asm _ PUSH (EAX);
 
-			invoke cs-puts ["FAULT INTERRUPT = ",];
-			invoke cs-put-hex1 [vector,];
-			invoke cs-puts [", ERROR CODE = ",];
-			invoke cs-put-hex4 [code,];
-			invoke cs-puts [", CS = ",];
-			invoke cs-put-hex2 [cs0,];
-			invoke cs-puts [", EIP = ",];
-			invoke cs-put-hex4 [eip0,];
-			invoke cs-puts [", CR2 = ",];
-			invoke cs-put-hex4 [cr2,];
-			invoke cs-nl [];
+			cs-puts ["FAULT INTERRUPT = ",];
+			cs-put-hex1 [vector,];
+			cs-puts [", ERROR CODE = ",];
+			cs-put-hex4 [code,];
+			cs-puts [", CS = ",];
+			cs-put-hex2 [cs0,];
+			cs-puts [", EIP = ",];
+			cs-put-hex4 [eip0,];
+			cs-puts [", CR2 = ",];
+			cs-put-hex4 [cr2,];
+			cs-nl [];
 		);
 
 		asm _ CLI ();
@@ -128,12 +128,12 @@ declare idt-setup = function [] (
 	);
 
 	for (declare i = 0; i < 256; i =+ 1) (
-		invoke idt-set-entry [i, handle-general-interrupt, 1,];
+		idt-set-entry [i, handle-general-interrupt, 1,];
 	);
 
 	(
 		constant set-fault-handler .i .h0 = (
-			invoke idt-set-entry [.i, snippet (
+			idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
 			), 0,]
@@ -174,7 +174,7 @@ declare idt-setup = function [] (
 
 	(
 		constant set-irq-handler .i .h0 = (
-			invoke idt-set-entry [.i, snippet (
+			idt-set-entry [.i, snippet (
 				asm _ PUSH (.i);
 				asm _ JMP (DWORD .h0);
 			), 1,]
@@ -197,7 +197,7 @@ declare idt-setup = function [] (
 		set-irq-handler +x2F .irq-handler;
 	);
 
-	invoke idt-set-entry [+x20, handle-timer-interrupt, 1,];
+	idt-set-entry [+x20, handle-timer-interrupt, 1,];
 
 	(
 		declare-as-pointer idtr/(int * 2);

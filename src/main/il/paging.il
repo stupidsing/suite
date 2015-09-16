@@ -31,14 +31,14 @@ declare pg-map = function [logical, physical,] (
 	declare pt1 = pe1 and +xFFFFF000;
 
 	(`pe0` = 0 && (
-		let `pe0` = invoke pm-allocate [] + 7;
-		invoke pg-invalidate-page [pt1,];
-		invoke zero [pt1, 4096,];
+		let `pe0` = pm-allocate [] + 7;
+		pg-invalidate-page [pt1,];
+		zero [pt1, 4096,];
 	));
 
 	let `pe1` = physical + 7;
 
-	invoke pg-invalidate-page [logical,];
+	pg-invalidate-page [logical,];
 );
 
 declare pg-unmap = function [logical,] (
@@ -54,11 +54,11 @@ declare pg-unmap = function [logical,] (
 	);
 
 	(isEmpty && (
-		invoke pm-deallocate [`pe0` and +xFFFFF000,];
+		pm-deallocate [`pe0` and +xFFFFF000,];
 		let `pe0` = 0;
 	));
 
-	invoke pg-invalidate-page [logical,];
+	pg-invalidate-page [logical,];
 );
 
 declare pg-allocate = function [nPages,] (
@@ -71,17 +71,17 @@ declare pg-allocate = function [nPages,] (
 		declare initial = pg-current;
 		declare r0 = 0;
 
-		while (r0 = 0 && ((let pg-current = invoke next-page [pg-current,]) != initial)) do (
+		while (r0 = 0 && ((let pg-current = next-page [pg-current,]) != initial)) do (
 			declare r1 = 1;
 			for (declare i = 0; (r1 && i < nPages); i =+ 1) (
-				let r1 = (r1 && not invoke pg-is-mapped [pg-current + i shl 12,]);
+				let r1 = (r1 && not pg-is-mapped [pg-current + i shl 12,]);
 			);
 			(r1 && let r0 = pg-current);
 		);
 
 		(r0 && (
 			for (declare i = 0; i < nPages; i =+ 1) (
-				invoke pg-map [r0 + i shl 12, invoke pm-allocate [],];
+				pg-map [r0 + i shl 12, pm-allocate [],];
 			);
 		));
 
@@ -93,21 +93,21 @@ declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
 		for (declare i = 0; i < nPages; i =+ 1) (
 			declare logical = p + i shl 12;
-			invoke pm-deallocate [invoke pg-get-physical [logical,],];
-			invoke pg-unmap [logical,];
+			pm-deallocate [pg-get-physical [logical,],];
+			pg-unmap [logical,];
 		);
 	);
 );
 
 declare pg-setup = function [] (
-	declare pt0 = invoke pm-allocate [];
-	declare pt1 = invoke pm-allocate [];
+	declare pt0 = pm-allocate [];
+	declare pt1 = pm-allocate [];
 
-	invoke zero [pt0, 4096,];
+	zero [pt0, 4096,];
 	let `pt0` = pt1 + 5; -- Maps kernel memory
 	let `pt0 + 4092` = pt0 + 1; -- Maps itself
 
-	invoke zero [pt1, 4096,];
+	zero [pt1, 4096,];
 	declare offset = 0;
 
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (

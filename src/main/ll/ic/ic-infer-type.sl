@@ -15,7 +15,7 @@ ic-infer-type (INDEX .type .array .index) .type
 	:- ic-infer-type .array (ARRAY-OF _ .type)
 	, ic-infer-type .index I32
 #
-ic-infer-type (INVOKE2 .method2 .params) I32
+ic-infer-type (INVOKE .method2 .params) I32
 	:- ic-infer-type .method2 (METHOD2-OF .paramTypes)
 	, zip .params .paramTypes .list
 	, list.query .list .param:.paramType (ic-infer-type .param .paramType)

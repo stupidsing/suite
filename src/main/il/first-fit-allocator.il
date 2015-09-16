@@ -12,66 +12,66 @@ declare ffa$size = function [e,] (
 
 declare ffa-allocate0 = function [size,] (
 	declare next-block = function [block,] (
-		declare n = invoke dl-next [block,];
+		declare n = dl-next [block,];
 		if (n != 0) then n else head;
 	);
 
 	declare start = ffa-current;
 	declare next;
-	while (((let next = invoke next-block [ffa-current,]) != start) and (`invoke ffa$size [ffa-current,]` < size)) do (
+	while (((let next = next-block [ffa-current,]) != start) and (`ffa$size [ffa-current,]` < size)) do (
 		let ffa-current = next;
 	);
 
-	declare diff = `invoke ffa$size [ffa-current,]` - size;
+	declare diff = `ffa$size [ffa-current,]` - size;
 
 	if (diff >= 0) then (
 		if (diff >= 16) then (
-			invoke dl-insert-next [ffa-current, ffa-current + size + 12,];
-			let next = invoke dl-next [ffa-current,];
-			let `invoke ffa$size [next,]` = diff - 12;
+			dl-insert-next [ffa-current, ffa-current + size + 12,];
+			let next = dl-next [ffa-current,];
+			let `ffa$size [next,]` = diff - 12;
 		) else ();
 
-		let `invoke ffa$size [ffa-current,]` = 0;
+		let `ffa$size [ffa-current,]` = 0;
 		ffa-current + 12;
 	) else 0;
 );
 
 declare ffa-deallocate0 = function [block,] (
-	declare prev = invoke dl-prev [block,];
-	declare next = invoke dl-next [block,];
+	declare prev = dl-prev [block,];
+	declare next = dl-next [block,];
 
-	if ((prev != 0) and (`invoke ffa$size [prev,]` != 0)) then (
-		invoke dl-remove [block,];
+	if ((prev != 0) and (`ffa$size [prev,]` != 0)) then (
+		dl-remove [block,];
 		let block = prev;
 	) else ();
 
-	if ((next != 0) and (`invoke ffa$size [next,]` != 0)) then (
-		invoke dl-remove [next,];
+	if ((next != 0) and (`ffa$size [next,]` != 0)) then (
+		dl-remove [next,];
 	) else ();
 
-	let `invoke ffa$size [block,]` = invoke dl-next [block,] - block - 12;
+	let `ffa$size [block,]` = dl-next [block,] - block - 12;
 );
 
 declare ffa-allocate = function [size,] (
 	synchronized (& ffa-sync) (
-		invoke ffa-allocate0 [size,] + 12;
+		ffa-allocate0 [size,] + 12;
 	);
 );
 
 declare ffa-deallocate = function [p, size,] (
 	synchronized (& ffa-sync) (
-		invoke ffa-deallocate0 [p - 12,];
+		ffa-deallocate0 [p - 12,];
 	);
 );
 
 declare ffa-setup = function [] (
 	declare last = ffa-regionx - 12; -- Stopper record
 
-	let `invoke ffa$size [ffa-region0,]` = ffa-regionx - ffa-region0 - 24;
-	let `invoke ffa$size [last,]` = 0;
+	let `ffa$size [ffa-region0,]` = ffa-regionx - ffa-region0 - 24;
+	let `ffa$size [last,]` = 0;
 
-	invoke dl-new [head,];
-	invoke dl-insert-next [head, ffa-region0,];
-	invoke dl-insert-next [ffa-region0, last,];
+	dl-new [head,];
+	dl-insert-next [head, ffa-region0,];
+	dl-insert-next [ffa-region0, last,];
 	let ffa-current = `head`;
 );

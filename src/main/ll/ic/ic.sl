@@ -37,7 +37,7 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-compile .fs (INVOKE2 .mr .params) .e0/.ex
+ic-compile .fs (INVOKE .mr .params) .e0/.ex
 	:- once (
 		.mr = METHOD2 .this .sub
 		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
