@@ -1,5 +1,3 @@
-declare kb = this;
-
 declare keyboard-sink = [irq-number,] (
 	declare status = invoke inb [+x64,];
 	declare scan-code = invoke inb [+x60,];
@@ -10,10 +8,10 @@ declare keyboard-sink = [irq-number,] (
 	invoke cs-nl [];
 );
 
-declare kb-setup = [] (
+declare kb-setup = function [] (
 	invoke irq-set-sink [1, keyboard-sink,];
 );
 
-declare kb-teardown = [] (
+declare kb-teardown = function [] (
 	invoke irq-set-sink [1, 0 as [int,],];
 );

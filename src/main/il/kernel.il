@@ -143,7 +143,7 @@ invoke idt-setup [];
 invoke pm-setup [];
 invoke pg-setup []; -- Sets up paging
 invoke svc-setup [];
-kb:kb-setup [];
+invoke kb-setup [];
 
 invoke cs-puts [if (invoke ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
 invoke cs-nl [];
@@ -192,9 +192,9 @@ declare user-mode = [] (
 	invoke svc-service [svc-putc_, +x0A, 0,];
 
 	asm .loop ();
-	time:time-yield [];
+	invoke time-yield [];
 	asm _ JMP (DWORD .loop);
 );
 
-kb:kb-teardown [];
+invoke kb-teardown [];
 invoke sch-teardown [];

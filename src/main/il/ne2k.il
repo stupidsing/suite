@@ -68,7 +68,7 @@ declare ne2k-probe = function [] (
 	invoke outb [io-base + +x1F, invoke inb [io-base + +x1F,],];
 	invoke outb [io-base + +x00, +x21,];
 
-	time:time-sleep [100,];
+	invoke time-sleep [100,];
 
 	-- Tests for a generic DP8390 NIC
 	(+x27 and invoke inb [io-base + +x00,] = +x21
