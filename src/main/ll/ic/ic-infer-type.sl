@@ -6,6 +6,11 @@ ic-infer-type (DECLARE .varType .var .do0) .type
 	:- replace (VAR .var) (OBJECT .varType NOP) .do0 .do1
 	, ic-infer-type .do1 .type
 #
+ic-infer-type (IF .if .then .else) .type
+	:- ic-infer-type .if .type
+	, ic-infer-type .then .type
+	, ic-infer-type .else .type
+#
 ic-infer-type (INDEX .type .array .index) .type
 	:- ic-infer-type .array (ARRAY-OF _ .type)
 	, ic-infer-type .index I32
@@ -20,11 +25,6 @@ ic-infer-type (INVOKE2 .method2 .params) I32
 	:- ic-infer-type .method2 (METHOD2-OF .paramTypes)
 	, zip .params .paramTypes .list
 	, list.query .list .param:.paramType (ic-infer-type .param .paramType)
-#
-ic-infer-type (IF .if .then .else) .type
-	:- ic-infer-type .if .type
-	, ic-infer-type .then .type
-	, ic-infer-type .else .type
 #
 ic-infer-type (LET .var .value) .type
 	:- ic-infer-type .var .type
