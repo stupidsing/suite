@@ -12,7 +12,7 @@ import suite.util.FunUtil.Source;
 public class Configuration {
 
 	public enum TraceLevel {
-		NONE, LOG, SIMPLE, DETAIL
+		NONE, SIMPLE, DETAIL
 	}
 
 	public static class ProverConfig {
