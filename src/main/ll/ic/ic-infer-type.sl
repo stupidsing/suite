@@ -20,7 +20,7 @@ ic-infer-type (INDEX .type .array .index) .type
 	, ic-infer-type .index I32
 #
 ic-infer-type (INVOKE .method2 .params) I32
-	:- ic-infer-type .method2 (METHOD2-OF .paramTypes)
+	:- ic-infer-type .method2 (METHOD-OF .paramTypes)
 	, zip .params .paramTypes .list
 	, list.query .list .param:.paramType (ic-infer-type .param .paramType)
 #
@@ -28,16 +28,16 @@ ic-infer-type (LET .var .value) .type
 	:- ic-infer-type .var .type
 	, ic-infer-type .value .type
 #
-ic-infer-type (METHOD () .do) (METHOD-OF ())
+ic-infer-type (METHOD0 () .do) (METHOD0-OF ())
 	:- ic-infer-type .do I32
 #
-ic-infer-type (METHOD (PARAM .paramType .var, .params) .do0) (METHOD-OF (.paramType, .paramTypes))
+ic-infer-type (METHOD0 (PARAM .paramType .var, .params) .do0) (METHOD0-OF (.paramType, .paramTypes))
 	:- replace (VAR .var) (OBJECT .paramType NOP) .do0 .do1
-	, ic-infer-type (METHOD .params .do1) (METHOD-OF .paramTypes)
+	, ic-infer-type (METHOD0 .params .do1) (METHOD0-OF .paramTypes)
 #
-ic-infer-type (METHOD2 .this .method) (METHOD2-OF .paramTypes)
+ic-infer-type (METHOD .this .method) (METHOD-OF .paramTypes)
 	:- ic-infer-type .this I32
-	, ic-infer-type .method (METHOD-OF .paramTypes)
+	, ic-infer-type .method (METHOD0-OF .paramTypes)
 #
 ic-infer-type (NUMBER _) I32
 #

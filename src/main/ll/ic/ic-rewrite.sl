@@ -22,10 +22,10 @@ ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1
 #
 ic-rewrite (MEMORY .size .pointer0) (MEMORY .size .pointer1) (.pointer0 .pointer1, .ts)/.ts
 #
-ic-rewrite (METHOD .params0 .do0) (METHOD .params1 .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (METHOD0 .params0 .do0) (METHOD0 .params1 .do1) (.do0 .do1, .ts)/.ts
 	:- zip .params0 .params1 .list, list.query .list .param0:.param1 (ic-rewrite-parameter .param0 .param1)
 #
-ic-rewrite (METHOD2 .this0 .method0) (METHOD2 .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
+ic-rewrite (METHOD .this0 .method0) (METHOD .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
 #
 ic-rewrite NOP NOP .ts/.ts
 #
@@ -77,7 +77,7 @@ ic-rewrite-type I32 I32
 ic-rewrite-type (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
 	:- ic-rewrite-type .type0 .type1
 #
-ic-rewrite-type (METHOD-OF .types0) (METHOD-OF .types1)
+ic-rewrite-type (METHOD0-OF .types0) (METHOD0-OF .types1)
 	:- zip .types0 .types1 .list
 	, list.query .list .type0:.type1 (ic-rewrite-type .type0 .type1)
 #

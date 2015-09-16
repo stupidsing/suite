@@ -15,7 +15,7 @@ ic-erase-type (INDEX .type .array0 .i0) (MEMORY .size (TREE ' + ' (REF .arrayx) 
 	, ic-erase-type .array0 .arrayx
 	, ic-erase-type .i0 .ix
 #
-ic-erase-type (METHOD .params .do0) (METHOD .pss .dox)
+ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 	:- zip .params .pss .list
 	, list.query .list (PARAM .type .var):(PS .size .var) (ic-type-size .type .size)
 	, ic-erase-type .do0 .dox
@@ -48,9 +48,9 @@ ic-type-size (ARRAY-OF .arraySize .type) .size
 	:- ic-type-size .type .elementSize
 	, let .size (.arraySize * .elementSize)
 #
-ic-type-size (METHOD-OF _) 4
+ic-type-size (METHOD0-OF _) 4
 #
-ic-type-size (METHOD2-OF _) 8
+ic-type-size (METHOD-OF _) 8
 #
 ic-type-size (POINTER-OF _) 4
 #

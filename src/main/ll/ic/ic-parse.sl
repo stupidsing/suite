@@ -39,12 +39,12 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse (baseless [.params] .do) (METHOD .params1 .do1) -- Traditional subroutine definition
+ic-parse (baseless [.params] .do) (METHOD0 .params1 .do1) -- Traditional subroutine definition
 	:- zip .params .params1 .list
 	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
 #
-ic-parse (function [.params] .do) (METHOD2 $$EBP .method) -- Traditional subroutine definition
+ic-parse (function [.params] .do) (METHOD $$EBP .method) -- Traditional subroutine definition
 	:- ic-parse (baseless [.params] .do) .method
 #
 ic-parse () NOP
@@ -123,6 +123,10 @@ ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .ste
 #
 ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
+ic-parse-sugar (replace .var = .value; .do) .do1
+	:- replace .var .value1 .value .value1
+	, replace .var .value1 .do .do1
+#
 ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 	:- is.atom .var
 #
@@ -143,12 +147,12 @@ ic-parse-type int I32
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #
-ic-parse-type (baseless [.ts]) (METHOD-OF .types)
+ic-parse-type (baseless [.ts]) (METHOD0-OF .types)
 	:- zip .ts .types .list
 	, list.query .list .t:.type (ic-parse-type .t .type)
 #
-ic-parse-type (function .m) (METHOD2-OF .types)
-	:- ic-parse-type (baseless .m) (METHOD-OF .types)
+ic-parse-type (function .m) (METHOD-OF .types)
+	:- ic-parse-type (baseless .m) (METHOD0-OF .types)
 #
 ic-parse-type (p^.t) (POINTER-OF .type)
 	:- ic-parse-type .t .type

@@ -39,7 +39,7 @@ ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
 #
 ic-compile .fs (INVOKE .mr .params) .e0/.ex
 	:- once (
-		.mr = METHOD2 .this .sub
+		.mr = METHOD .this .sub
 		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
 	)
 	, .e0 = (_ RSAVE, .e1)
@@ -79,7 +79,7 @@ ic-compile .fs (MEMORY 4 .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV ($0, `$0`), .ex)
 #
-ic-compile _ (METHOD .pss .do) .e0/.ex
+ic-compile _ (METHOD0 .pss .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel RBEGIN
 		, _ PUSH (EBP)
@@ -213,7 +213,7 @@ ic-let .fs .source (MEMORY 4 .pointer) .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-let .fs (METHOD2 .this .sub) (MEMORY 8 .pointer) .e0/.ex
+ic-let .fs (METHOD .this .sub) (MEMORY 8 .pointer) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, ic-compile .fs .this .e1/.e2
 	, .e2 = (_ MOV (`$1`, $0)
