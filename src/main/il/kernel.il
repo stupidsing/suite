@@ -154,7 +154,7 @@ asm _ STI ();
 
 -- Enters user mode
 (
-	declare user-stack-address = pg:pg-allocate [1,];
+	declare user-stack-address = invoke pg-allocate [1,];
 
 	for (declare i = 0; i < 104; i =+ 4) (
 		let `tss-address + i` = 0;

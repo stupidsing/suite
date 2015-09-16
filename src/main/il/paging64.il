@@ -50,7 +50,7 @@ declare pg-unset-pt-entry = [pe0, pt1,] (
 	));
 );
 
-declare pg-map = [logical, physical,] (
+declare pg-map = function [logical, physical,] (
 	declare pe0 = +xFFFFFFFFFFFFF000 + (logical ushr 39) shl 3;
 	declare pe1 = +xFFFFFFFFFFE00000 + (logical ushr 30) shl 3;
 	declare pe2 = +xFFFFFFFFC0000000 + (logical ushr 21) shl 3;
@@ -67,7 +67,7 @@ declare pg-map = [logical, physical,] (
 	invoke pg-invalidate-page [logical,];
 );
 
-declare pg-unmap = [logical,] (
+declare pg-unmap = function [logical,] (
 	declare pe0 = +xFFFFFFFFFFFFF000 + (logical ushr 39) shl 3;
 	declare pe1 = +xFFFFFFFFFFE00000 + (logical ushr 30) shl 3;
 	declare pe2 = +xFFFFFFFFC0000000 + (logical ushr 21) shl 3;
@@ -84,7 +84,7 @@ declare pg-unmap = [logical,] (
 	invoke pg-invalidate-page [logical,];
 );
 
-declare pg-allocate = [nPages,] (
+declare pg-allocate = function [nPages,] (
 	declare next-page = [page,] (
 		declare n = page + 4096;
 		if (n != pg-regionx) then n else pg-region0;
@@ -104,7 +104,7 @@ declare pg-allocate = [nPages,] (
 
 		(r0 && (
 			for (declare i = 0; i < nPages; i =+ 1) (
-				pg:pg-map [r0 + i shl 12, invoke pm-allocate [],];
+				invoke pg-map [r0 + i shl 12, invoke pm-allocate [],];
 			);
 		));
 
@@ -112,12 +112,12 @@ declare pg-allocate = [nPages,] (
 	);
 );
 
-declare pg-deallocate = [p, nPages,] (
+declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
 		for (declare i = 0; i < nPages; i =+ 1) (
 			declare logical = p + i shl 12;
 			invoke pm-deallocate [pg:pg-get-physical [logical,],];
-			pg:pg-unmap [logical,];
+			invoke pg-unmap [logical,];
 		);
 	);
 );
