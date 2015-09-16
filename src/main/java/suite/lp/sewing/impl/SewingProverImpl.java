@@ -66,6 +66,10 @@ import suite.util.Util;
  */
 public class SewingProverImpl implements SewingProver {
 
+	private enum TraceLevel {
+		NONE, STACK, TRACE,
+	}
+
 	private QueryRewriter queryRewriter;
 	private SystemPredicates systemPredicates;
 	private ListMultimap<Prototype, Rule> rules = new ListMultimap<>();
@@ -192,10 +196,10 @@ public class SewingProverImpl implements SewingProver {
 	private void compileAll() {
 		for (Pair<Prototype, Collection<Rule>> entry : rules.listEntries()) {
 			Prototype prototype = entry.t0;
-			boolean isTrace = isTrace(prototype);
+			TraceLevel traceLevel = traceLevel(prototype);
 
 			List<Rule> rules = new ArrayList<>(entry.t1);
-			Trampoline tr0 = compileRules(prototype, rules, isTrace);
+			Trampoline tr0 = compileRules(prototype, rules, traceLevel);
 			Trampoline tr;
 
 			// Second-level indexing optimization
@@ -205,7 +209,7 @@ public class SewingProverImpl implements SewingProver {
 
 				if (!rulesByProto1.containsKey(null)) {
 					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
-							.map(Pair.map1(rules_ -> compileRules(prototype, rules_, isTrace))) //
+							.map(Pair.map1(rules_ -> compileRules(prototype, rules_, traceLevel))) //
 							.collect(As.map());
 
 					tr = rt -> {
@@ -225,7 +229,7 @@ public class SewingProverImpl implements SewingProver {
 		}
 	}
 
-	private Trampoline compileRules(Prototype prototype, List<Rule> rules, boolean isTrace) {
+	private Trampoline compileRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
 		boolean hasCut = Read.from(rules) //
 				.map(rule -> new TreeRewriter().contains(ProverConstant.cut, rule.tail)) //
 				.fold(false, (b0, b1) -> b0 || b1);
@@ -244,7 +248,7 @@ public class SewingProverImpl implements SewingProver {
 		Trampoline tr0 = or(trs);
 		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
 		Trampoline tr2 = saveEnv(tr1);
-		return log(tr2, isTrace);
+		return log(tr2, traceLevel);
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -539,9 +543,11 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline log(Trampoline tr0, boolean isTrace) {
-		if (isTrace) {
-			Trampoline tr1 = rt -> {
+	private Trampoline log(Trampoline tr0, TraceLevel traceLevel) {
+		Trampoline tr1, tr2;
+
+		if (traceLevel == TraceLevel.STACK || traceLevel == TraceLevel.TRACE)
+			tr1 = rt -> {
 				Debug debug0 = rt.debug;
 				rt.debug = new Debug(debug0.indent + "| ", IList.cons(rt.query, rt.debug.stack));
 				rt.pushRem(rt2 -> {
@@ -554,8 +560,11 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr0;
 			};
+		else
+			tr1 = tr0;
 
-			Trampoline tr2 = rt -> {
+		if (traceLevel == TraceLevel.TRACE)
+			tr2 = rt -> {
 				String m = Formatter.dump(rt.query);
 				String indent = rt.debug.indent;
 
@@ -570,10 +579,11 @@ public class SewingProverImpl implements SewingProver {
 				});
 				return tr1;
 			};
+		else
+			tr2 = tr1;
 
-			return tr2;
-		} else
-			return tr0;
+		return tr2;
+
 	}
 
 	private Trampoline and(Streamlet<Trampoline> trs) {
@@ -676,18 +686,18 @@ public class SewingProverImpl implements SewingProver {
 		return trampolinesByPrototype.computeIfAbsent(prototype, k -> new Trampoline[1]);
 	}
 
-	private boolean isTrace(Prototype prototype) {
-		boolean isTrace;
+	private TraceLevel traceLevel(Prototype prototype) {
+		TraceLevel traceLevel;
 		if (Suite.isProverTrace) {
 			Node head = prototype.head;
 			String name = head instanceof Atom ? ((Atom) head).name : null;
 
-			isTrace = name != null //
+			traceLevel = name != null //
 					&& !name.startsWith("member") //
-					&& !name.startsWith("rbt-");
+					&& !name.startsWith("rbt-") ? TraceLevel.STACK : TraceLevel.NONE;
 		} else
-			isTrace = false;
-		return isTrace;
+			traceLevel = TraceLevel.NONE;
+		return traceLevel;
 	}
 
 }
