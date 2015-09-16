@@ -84,7 +84,7 @@ declare pg-unmap = function [logical,] (
 );
 
 declare pg-allocate = function [nPages,] (
-	declare next-page = [page,] (
+	declare next-page = function [page,] (
 		declare n = page + 4096;
 		if (n != pg-regionx) then n else pg-region0;
 	);
@@ -93,7 +93,7 @@ declare pg-allocate = function [nPages,] (
 		declare initial = pg-current;
 		declare r0 = 0;
 
-		while (r0 = 0 && ((let pg-current = this:next-page [pg-current,]) != initial)) do (
+		while (r0 = 0 && ((let pg-current = invoke next-page [pg-current,]) != initial)) do (
 			declare r1 = 1;
 			for (declare i = 0; (r1 && i < nPages); i =+ 1) (
 				let r1 = (r1 && not invoke pg-is-mapped [pg-current + i shl 12,]);
