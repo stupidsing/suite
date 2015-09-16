@@ -12,7 +12,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testArray() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare-as array/(int * 16); let array:3 = array:4;");
+		Bytes bytes = imperativeCompiler.compile(0, "declare array as (int * 16); let array:3 = array:4;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

@@ -9,7 +9,7 @@ ic-parse .do0 .parsed
 #
 ic-parse this $$EBP
 #
-ic-parse (declare-as .var/.t; .do) (DECLARE .type .var .do1)
+ic-parse (declare .var as .t; .do) (DECLARE .type .var .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
@@ -60,7 +60,7 @@ ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
-	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = declare-as _; .do0 = declare-as-pointer _)
+	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = declare-as-pointer _)
 	, ic-parse .do0 .parsed0
 	, ic-parse .do1 .parsed1
 #
@@ -98,10 +98,10 @@ ic-parse-sugar (.a && .b) (if .a then .b else 0)
 #
 ic-parse-sugar (.a || .b) (if .a then 1 else .b)
 #
-ic-parse-sugar (.var =+ .inc) (declare-as .p/int = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
+ic-parse-sugar (.var =+ .inc) (declare .p as int = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
 #
-ic-parse-sugar (.var += .inc) (declare-as .p/int = & .var; let `.p` = `.p` + .inc)
+ic-parse-sugar (.var += .inc) (declare .p as int = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
 #
 ic-parse-sugar (constant .var = .value; .do) .do1
@@ -111,7 +111,7 @@ ic-parse-sugar (constant .var = .value; .do) .do1
 ic-parse-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
 	:- is.atom .var
 #
-ic-parse-sugar (declare-as-pointer .var/.type; .do) (declare-as .mem/.type; declare .var = & .mem; .do)
+ic-parse-sugar (declare-as-pointer .var/.type; .do) (declare .mem as .type; declare .var = & .mem; .do)
 	:- is.atom .var, temp .mem
 #
 ic-parse-sugar false 0

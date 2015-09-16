@@ -63,7 +63,7 @@ declare idt-setup = function [] (
 
 			if (isr and 1 shl irq-number) then (
 				declare irq-sink = irq-get-sink [irq-number,];
-				declare-as irqf/(int * 2);
+				declare irqf as (int * 2);
 				let irqf:0 = irq;
 				let irqf:1 = irq-sink;
 				(irq-sink && (irqf as (function [int,])) [irq-number,]);
