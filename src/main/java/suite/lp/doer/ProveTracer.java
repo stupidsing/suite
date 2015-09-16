@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import suite.lp.Configuration.ProverConfig;
+import suite.Suite;
 import suite.lp.Configuration.TraceLevel;
 import suite.node.Data;
 import suite.node.Node;
@@ -18,7 +18,6 @@ import suite.util.FunUtil.Source;
 
 public class ProveTracer {
 
-	private ProverConfig proverConfig;
 	private List<Record> records = new ArrayList<>();
 	private Record currentRecord = null;
 	private int currentDepth;
@@ -37,7 +36,7 @@ public class ProveTracer {
 		}
 
 		private void appendTo(StringBuilder sb) {
-			TraceLevel traceLevel = proverConfig.getTraceLevel();
+			TraceLevel traceLevel = Suite.traceLevel;
 
 			if (traceLevel == TraceLevel.SIMPLE)
 				sb.append(String.format("[%4s:%-2d]  ", nOkays > 0 ? "OK__" : "FAIL", depth));
@@ -53,10 +52,6 @@ public class ProveTracer {
 			sb.append(Formatter.dump(query));
 			sb.append("\n");
 		}
-	}
-
-	public ProveTracer(ProverConfig proverConfig) {
-		this.proverConfig = proverConfig;
 	}
 
 	public Node expandWithTrace(Node query, Prover prover, Fun<Node, Node> expand) {

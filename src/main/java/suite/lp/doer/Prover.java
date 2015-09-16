@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Trail;
 import suite.lp.kb.Prototype;
@@ -78,7 +79,7 @@ public class Prover {
 		if (config.isTrace())
 			try {
 				Runtime.getRuntime().addShutdownHook(hook);
-				tracer = new ProveTracer(config);
+				tracer = new ProveTracer();
 				return prove0(query);
 			} finally {
 				hook.run();
@@ -147,8 +148,8 @@ public class Prover {
 				boolean isTrace = config.isTrace();
 
 				if (isTrace) {
-					Set<String> whites = config.getTracePredicates();
-					Set<String> blacks = config.getNoTracePredicates();
+					Set<String> whites = Suite.tracePredicates;
+					Set<String> blacks = Suite.noTracePredicates;
 
 					Prototype prototype = Prototype.of(query);
 					Node head = prototype != null ? prototype.head : null;
