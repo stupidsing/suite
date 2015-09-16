@@ -1,6 +1,12 @@
 ic-parse (asm .i) (ASM .i)
 	:- ! -- Assembler might have variables, skip processing
 #
+ic-parse (declare .var = .value; .do) (DECLARE _ .var (SEQ (LET (VAR .var) (PRAGMA (IN .var) .value1)) .do1))
+	:- !
+	, is.atom .var
+	, ic-parse .value .value1
+	, ic-parse .do .do1
+#
 ic-parse .do0 .parsed :- ic-parse-better-option .do0 .parsed, !
 #
 ic-parse .do0 .parsed
@@ -110,9 +116,6 @@ ic-parse-sugar (.var += .inc) (declare .p as int = & .var; let `.p` = `.p` + .in
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1
-#
-ic-parse-sugar (declare .var = .value; .do) (declare .var; let .var = .value; .do)
-	:- is.atom .var
 #
 ic-parse-sugar (declare-as-pointer .var/.type; .do) (declare .mem as .type; declare .var = & .mem; .do)
 	:- is.atom .var, temp .mem

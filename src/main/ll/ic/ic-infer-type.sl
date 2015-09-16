@@ -49,6 +49,9 @@ ic-infer-type (OBJECT .type .pointer) .type
 ic-infer-type (POST-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .pointer I32
 #
+ic-infer-type (PRAGMA (IN .var) .do) .type
+	:- try (ic-infer-type .do .type) .ex (throw .ex "%0Aat variable" .var)
+#
 ic-infer-type (PRAGMA (TYPE-CAST .type) .do) .type
 	:- ic-infer-type .do _
 #
