@@ -39,9 +39,9 @@ ic-infer-type (METHOD .this .method) (METHOD-OF .paramTypes)
 	:- ic-infer-type .this I32
 	, ic-infer-type .method (METHOD0-OF .paramTypes)
 #
-ic-infer-type (NUMBER _) I32
-#
 ic-infer-type NOP I32
+#
+ic-infer-type (NUMBER _) I32
 #
 ic-infer-type (OBJECT .type .pointer) .type
 	:- ic-infer-type .pointer I32
