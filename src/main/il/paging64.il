@@ -15,7 +15,7 @@ declare pg-invalidate-page = function [logical,] (
 	asm _ INVLPG `EAX`;
 );
 
-declare pg-is-mapped = [logical,] (
+declare pg-is-mapped = function [logical,] (
 	declare pe0 = +xFFFFFFFFFFFFF000 + (logical ushr 39) shl 3;
 	declare pe1 = +xFFFFFFFFFFE00000 + (logical ushr 30) shl 3;
 	declare pe2 = +xFFFFFFFFC0000000 + (logical ushr 21) shl 3;
@@ -97,7 +97,7 @@ declare pg-allocate = function [nPages,] (
 		while (r0 = 0 && ((let pg-current = this:next-page [pg-current,]) != initial)) do (
 			declare r1 = 1;
 			for (declare i = 0; (r1 && i < nPages); i =+ 1) (
-				let r1 = (r1 && not pg:pg-is-mapped [pg-current + i shl 12,]);
+				let r1 = (r1 && not invoke pg-is-mapped [pg-current + i shl 12,]);
 			);
 			(r1 && let r0 = pg-current);
 		);
