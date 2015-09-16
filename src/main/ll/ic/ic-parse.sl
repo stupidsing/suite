@@ -140,12 +140,12 @@ ic-parse-type int I32
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #
-ic-parse-type ([.ts]) (METHOD-OF .types)
+ic-parse-type (baseless [.ts]) (METHOD-OF .types)
 	:- zip .ts .types .list
 	, list.query .list .t:.type (ic-parse-type .t .type)
 #
 ic-parse-type (function .m) (METHOD2-OF .types)
-	:- ic-parse-type .m (METHOD-OF .types)
+	:- ic-parse-type (baseless .m) (METHOD-OF .types)
 #
 ic-parse-type (p^.t) (PTR-OF .type)
 	:- ic-parse-type .t .type

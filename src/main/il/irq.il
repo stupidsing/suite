@@ -1,5 +1,5 @@
 declare irq = this;
-declare-as irq-sinks/([int,] * 16);
+declare-as irq-sinks/(baseless [int,] * 16);
 
 declare dump-sink = baseless [irq-number,] (
 	cs-puts ["IRQ = ",];
@@ -17,7 +17,7 @@ declare irq-get-sink = function [irq-number,] (
 	irq-sinks:irq-number;
 );
 
-declare irq-set-sink = function [irq-number, irq-sink/[int,],] (
+declare irq-set-sink = function [irq-number, irq-sink/(baseless [int,]),] (
 	let irq-sinks:irq-number = irq-sink;
 );
 
