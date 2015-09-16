@@ -1,8 +1,8 @@
 declare kb = this;
 
 declare keyboard-sink = [irq-number,] (
-	declare status = kernel:inb [+x64,];
-	declare scan-code = kernel:inb [+x60,];
+	declare status = invoke inb [+x64,];
+	declare scan-code = invoke inb [+x60,];
 	invoke cs-puts ["SCAN CODE = ",];
 	invoke cs-put-hex1 [scan-code,];
 	invoke cs-puts [", STATUS = ",];

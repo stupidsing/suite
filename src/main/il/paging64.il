@@ -32,7 +32,7 @@ declare pg-set-pt-entry = [pe0, pt1,] (
 	(`pe0` = 0 && (
 		let `pe0` = pm:pm-allocate [] + 7;
 		pg:pg-invalidate-page [pt1,];
-		kernel:zero [pt1, 4096,];
+		invoke zero [pt1, 4096,];
 	));
 );
 
@@ -128,10 +128,10 @@ declare pg-setup = [] (
 	declare pt2 = pm:pm-allocate [];
 	declare pt3 = pm:pm-allocate [];
 
-	kernel:zero [pt0, 4096,];
-	kernel:zero [pt1, 4096,];
-	kernel:zero [pt2, 4096,];
-	kernel:zero [pt3, 4096,];
+	invoke zero [pt0, 4096,];
+	invoke zero [pt1, 4096,];
+	invoke zero [pt2, 4096,];
+	invoke zero [pt3, 4096,];
 
 	let `pt0 + 4092` = pt0 + 1; -- Maps itself
 	let `pt0` = pt1 + 5; -- Maps kernel memory

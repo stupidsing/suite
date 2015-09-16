@@ -3,10 +3,10 @@ declare cs-column-offset = 0;
 
 declare cs-set-cursor = function [row, col,] (
 	declare pos = row * 80 + col;
-	kernel:outb [+x3D4, +x0F,];
-	kernel:outb [+x3D5, pos and +xFF,];
-	kernel:outb [+x3D4, +x0E,];
-	kernel:outb [+x3D5, pos shr 8,];
+	invoke outb [+x3D4, +x0F,];
+	invoke outb [+x3D5, pos and +xFF,];
+	invoke outb [+x3D4, +x0E,];
+	invoke outb [+x3D5, pos shr 8,];
 );
 
 declare cs-nl = function [] (
@@ -31,14 +31,14 @@ declare cs-nl = function [] (
 declare cs-put = function [ch,] (
 	synchronized (& cs-sync) (
 		declare w = +x0700 + ch;
-		kernel:copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
+		invoke copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
 		(cs-column-offset += 2 = 160 && invoke cs-nl []);
 	);
 );
 
 declare cs-puts = function [s,] (
 	declare ch = 0;
-	for (declare s1 = s; (kernel:copy [& ch, s1, 1,]; ch); s1 += 1) (
+	for (declare s1 = s; (invoke copy [& ch, s1, 1,]; ch); s1 += 1) (
 		invoke cs-put [ch,];
 	);
 );

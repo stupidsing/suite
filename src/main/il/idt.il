@@ -43,7 +43,7 @@ declare idt-setup = [] (
 		sch:sch-interrupt-switch [];
 
 		-- Sends end of interrupt signal
-		kernel:outb [+x20, +x20,];
+		invoke outb [+x20, +x20,];
 
 		isr-epilog;
 		asm _ IRET ();
@@ -68,8 +68,8 @@ declare idt-setup = [] (
 				(irq-sink && irq:irq-sink [irq-number,]);
 
 				-- Sends end of interrupt signal
-				(irq-number >= 8 && kernel:outb [+xA0, +x20,]);
-				kernel:outb [+x20, +x20,];
+				(irq-number >= 8 && invoke outb [+xA0, +x20,]);
+				invoke outb [+x20, +x20,];
 			) else (
 				invoke cs-puts ["SPURIOUS INTERRUPT = ",];
 				invoke cs-put-hex1 [irq-number,];

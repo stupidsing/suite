@@ -79,7 +79,7 @@ declare ba-deallocate = function [block, size,] (
 );
 
 declare ba-setup = function [] (
-	kernel:zero [lists, 256,];
+	invoke zero [lists, 256,];
 	declare largest-l2 = max-l2 - 1;
 	let `invoke ba$size [ba-region0,]` = largest-l2; -- Granularity
 	invoke dl-insert-next [invoke ba-list-entry [largest-l2,], ba-region0,];

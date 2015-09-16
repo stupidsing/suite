@@ -40,7 +40,7 @@ asm _ MOV (`+x40000`, EBP);
 declare kernel = this;
 declare ticks = 0;
 
-declare copy = [dst, src, len,] (
+declare copy = function [dst, src, len,] (
 	asm _ CLD ();
 	asm _ MOV (EDI, `EBP + 8`);
 	asm _ MOV (ESI, `EBP + 12`);
@@ -52,7 +52,7 @@ declare copy = [dst, src, len,] (
 	asm _ REP MOVSB ();
 );
 
-declare zero = [dst, len,] (
+declare zero = function [dst, len,] (
 	asm _ XOR (EAX, EAX);
 	asm _ CLD ();
 	asm _ MOV (EDI, `EBP + 8`);
@@ -64,31 +64,31 @@ declare zero = [dst, len,] (
 	asm _ REP STOSB ();
 );
 
-declare inb = [port,] (
+declare inb = function [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ XOR (EAX, EAX);
 	asm _ IN (AL, DX);
 );
 
-declare inw = [port,] (
+declare inw = function [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ XOR (EAX, EAX);
 	asm _ IN (AX, DX);
 );
 
-declare outb = [port, value,] (
+declare outb = function [port, value,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ MOV (EAX, `EBP + 12`);
 	asm _ OUT (DX, AL);
 );
 
-declare outw = [port, value,] (
+declare outw = function [port, value,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ MOV (EAX, `EBP + 12`);
 	asm _ OUT (DX, AX);
 );
 
-declare wrmsr = [msr, value,] (
+declare wrmsr = function [msr, value,] (
 	asm _ MOV (ECX, `EBP + 8`);
 	asm _ MOV (EAX, `EBP + 12`);
 	asm _ XOR (EDX, EDX);
@@ -116,25 +116,25 @@ declare mm-deallocate = ba-deallocate;
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
 (
-	declare d0 = kernel:inb [+x21,];
-	declare d1 = kernel:inb [+xA1,];
-	kernel:outb [+x20, +x11,]; -- Initializes and disables ICW4
-	kernel:outb [+xA0, +x11,];
-	kernel:outb [+x21, +x20,]; -- Remaps IRQ0-7
-	kernel:outb [+xA1, +x28,]; -- Remaps IRQ8-F
-	kernel:outb [+x21, +x04,];
-	kernel:outb [+xA1, +x02,];
-	kernel:outb [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
-	kernel:outb [+xA1, +x01,];
-	kernel:outb [+x21, d0,];
-	kernel:outb [+xA1, d1,];
+	declare d0 = invoke inb [+x21,];
+	declare d1 = invoke inb [+xA1,];
+	invoke outb [+x20, +x11,]; -- Initializes and disables ICW4
+	invoke outb [+xA0, +x11,];
+	invoke outb [+x21, +x20,]; -- Remaps IRQ0-7
+	invoke outb [+xA1, +x28,]; -- Remaps IRQ8-F
+	invoke outb [+x21, +x04,];
+	invoke outb [+xA1, +x02,];
+	invoke outb [+x21, +x01,]; -- 8086/88 (MCS-80/85) mode
+	invoke outb [+xA1, +x01,];
+	invoke outb [+x21, d0,];
+	invoke outb [+xA1, d1,];
 );
 
 -- Sets the 8253 to 100 timer ticks per second, and enables keyboard
-kernel:outb [+x43, +x36,];
-kernel:outb [+x40, 11932 % 256,];
-kernel:outb [+x40, 11932 / 256,];
-kernel:outb [+x21, +xFC,];
+invoke outb [+x43, +x36,];
+invoke outb [+x40, 11932 % 256,];
+invoke outb [+x40, 11932 / 256,];
+invoke outb [+x21, +xFC,];
 
 invoke ba-setup [];
 irq:irq-setup [];

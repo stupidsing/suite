@@ -8,9 +8,9 @@ declare dump-sink = [irq-number,] (
 );
 
 declare irq-get-isr = [] (
-	kernel:outb [+x20, +x0B,];
-	kernel:outb [+xA0, +x0B,];
-	(kernel:inb [+xA0,]) shl 8 + kernel:inb [+x20,];
+	invoke outb [+x20, +x0B,];
+	invoke outb [+xA0, +x0B,];
+	(invoke inb [+xA0,]) shl 8 + invoke inb [+x20,];
 );
 
 declare irq-get-sink = [irq-number,] (

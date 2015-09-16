@@ -34,7 +34,7 @@ declare pg-map = [logical, physical,] (
 	(`pe0` = 0 && (
 		let `pe0` = pm:pm-allocate [] + 7;
 		pg:pg-invalidate-page [pt1,];
-		kernel:zero [pt1, 4096,];
+		invoke zero [pt1, 4096,];
 	));
 
 	let `pe1` = physical + 7;
@@ -104,11 +104,11 @@ declare pg-setup = [] (
 	declare pt0 = pm:pm-allocate [];
 	declare pt1 = pm:pm-allocate [];
 
-	kernel:zero [pt0, 4096,];
+	invoke zero [pt0, 4096,];
 	let `pt0` = pt1 + 5; -- Maps kernel memory
 	let `pt0 + 4092` = pt0 + 1; -- Maps itself
 
-	kernel:zero [pt1, 4096,];
+	invoke zero [pt1, 4096,];
 	declare offset = 0;
 
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (
