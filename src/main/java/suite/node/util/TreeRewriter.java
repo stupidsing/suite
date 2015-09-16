@@ -41,32 +41,22 @@ public class TreeRewriter {
 	public Node rewrite(Source<Node[]> source, Node node) {
 		Trail trail = new Trail();
 
-		return rewrite(new Fun<Node, Node>() {
-			public Node apply(Node n) {
-				return rewrite0(n);
-			}
-
-			private Node rewrite0(Node node0) {
-				Node node1;
-				if (!(node0 instanceof Reference))
-					node1 = bind(node0);
-				else
-					node1 = node0;
-				return node1;
-			}
-
-			private Node bind(Node node0) {
-				Node ft[] = source.source();
+		return rewrite(node0 -> {
+			Node node1;
+			if (!(node0 instanceof Reference)) {
 				int pit = trail.getPointInTime();
+				Node ft[] = source.source();
 
 				if (Binder.bind(node0, ft[0], trail))
-					return ft[1];
+					node1 = ft[1];
 				else {
 					trail.unwind(pit);
-					return node0;
+					node1 = node0;
 				}
-			}
-		}, node);
+			} else
+				node1 = node0;
+			return node1;
+		} , node);
 	}
 
 	public Node rewrite(Fun<Node, Node> fun, Node node0) {
