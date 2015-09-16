@@ -53,13 +53,13 @@ declare ffa-deallocate0 = function [block,] (
 	let `invoke ffa$size [block,]` = invoke dl-next [block,] - block - 12;
 );
 
-declare ffa-allocate = [size,] (
+declare ffa-allocate = function [size,] (
 	synchronized (& ffa-sync) (
 		invoke ffa-allocate0 [size,] + 12;
 	);
 );
 
-declare ffa-deallocate = [p, size,] (
+declare ffa-deallocate = function [p, size,] (
 	synchronized (& ffa-sync) (
 		invoke ffa-deallocate0 [p - 12,];
 	);
