@@ -4,9 +4,9 @@ declare current-process = 0;
 declare-as-pointer processes/(int * 3);
 
 declare sch-switch = [] (-- Round robin in action
-	sync:sync-try-enter [& sch-sync,] && (
-		let current-process = dl:dl-next [current-process,];
-		(current-process = 0 && let current-process = dl:dl-next [processes,]);
+	invoke sync-try-enter [& sch-sync,] && (
+		let current-process = invoke dl-next [current-process,];
+		(current-process = 0 && let current-process = invoke dl-next [processes,]);
 	);
 );
 
@@ -26,19 +26,19 @@ declare sch-interrupt-switch = [] (
 
 declare sch-enqueue-process = [] (
 	declare process = kernel:mm-allocate [12,];
-	dl:dl-insert-next [processes, process,];
+	invoke dl-insert-next [processes, process,];
 	process;
 );
 
 declare sch-dequeue-process = [process,] (
-	dl:dl-remove [process,];
+	invoke dl-remove [process,];
 	kernel:mm-deallocate [process, 4,];
 );
 
 declare sch-fork = [] (
 	synchronized (& sch-sync) (
 		declare process1 = kernel:mm-allocate [12,];
-		dl:dl-insert-next [processes, process1,];
+		invoke dl-insert-next [processes, process1,];
 
 		-- TODO allocate stack
 		-- TODO how to put in ESP? mark fork flag?
@@ -48,7 +48,7 @@ declare sch-fork = [] (
 declare sch-exit = [] (
 	synchronized (& sch-sync) (
 		declare process = current-process;
-		declare process1 = dl:dl-next [process,];
+		declare process1 = invoke dl-next [process,];
 		sch:sch-dequeue-process [process,];
 		current-process = process1;
 
@@ -57,12 +57,12 @@ declare sch-exit = [] (
 );
 
 declare sch-setup = [] (
-	dl:dl-new [processes,];
+	invoke dl-new [processes,];
 	let current-process = sch:sch-enqueue-process [];
 );
 
 declare sch-teardown = [] (
-	declare process = dl:dl-next [processes,];
-	dl:dl-remove [process,];
+	declare process = invoke dl-next [processes,];
+	invoke dl-remove [process,];
 	kernel:mm-deallocate [process, 4,];
 );

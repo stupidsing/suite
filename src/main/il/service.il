@@ -7,7 +7,7 @@ constant svc-ticks = 3;
 
 declare handle-service = [p0, p1, p2,] (
 	if (p0 = svc-halt_) then (
-		sync:sync-yield [];
+		invoke sync-yield [];
 	) else if (p0 = svc-nl___) then (
 		invoke cs-nl [];
 	) else if (p0 = svc-putc_) then (

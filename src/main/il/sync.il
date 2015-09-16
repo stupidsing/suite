@@ -1,6 +1,6 @@
 declare sync = this;
 
-declare cmpxchg = [loc, v0, v1,] (
+declare cmpxchg = function [loc, v0, v1,] (
 	asm _ MOV (EDI, `EBP + 8`);
 	asm _ MOV (EAX, `EBP + 12`);
 	asm _ MOV (EBX, `EBP + 16`);
@@ -9,43 +9,43 @@ declare cmpxchg = [loc, v0, v1,] (
 	asm _ MOVZX (EAX, AL);
 );
 
-declare sync-yield = [] (
+declare sync-yield = function [] (
 	asm _ PUSHF ();
 	asm _ STI ();
 	asm _ HLT ();
 	asm _ POPF ();
 );
 
-declare sync-try-enter = [p,] (
-	sync:cmpxchg [p, 0, 1,];
+declare sync-try-enter = function [p,] (
+	invoke cmpxchg [p, 0, 1,];
 );
 
-declare sync-enter = [p,] (
-	while (sync:sync-try-enter [p,] = 0) do (
-		sync:sync-yield [];
+declare sync-enter = function [p,] (
+	while (invoke sync-try-enter [p,] = 0) do (
+		invoke sync-yield [];
 	);
 );
 
-declare sync-leave = [p,] (
+declare sync-leave = function [p,] (
 	let `p` = 0;
 );
 
-declare sync-wait = [p, w,] (
+declare sync-wait = function [p, w,] (
 	let `w` = 0;
 	while (`w` = 0) do (
-		sync:sync-leave [p,];
-		sync:sync-yield [];
-		sync:sync-enter [p,];
+		invoke sync-leave [p,];
+		invoke sync-yield [];
+		invoke sync-enter [p,];
 	);
 );
 
-declare sync-notify = [p, w,] (
+declare sync-notify = function [p, w,] (
 	let `w` = 1;
 );
 
 constant synchronized .p .block = (
-	sync:sync-enter [.p,];
+	invoke sync-enter [.p,];
 	declare result = .block;
-	sync:sync-leave [.p,];
+	invoke sync-leave [.p,];
 	result;
 );

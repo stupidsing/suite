@@ -13,7 +13,7 @@ declare ffa$size = [e,] (
 
 declare ffa-allocate0 = [size,] (
 	declare next-block = [block,] (
-		declare n = dl:dl-next [block,];
+		declare n = invoke dl-next [block,];
 		if (n != 0) then n else head;
 	);
 
@@ -27,8 +27,8 @@ declare ffa-allocate0 = [size,] (
 
 	if (diff >= 0) then (
 		if (diff >= 16) then (
-			dl:dl-insert-next [ffa-current, ffa-current + size + 12,];
-			let next = dl:dl-next [ffa-current,];
+			invoke dl-insert-next [ffa-current, ffa-current + size + 12,];
+			let next = invoke dl-next [ffa-current,];
 			let `ffa:ffa$size [next,]` = diff - 12;
 		) else ();
 
@@ -38,19 +38,19 @@ declare ffa-allocate0 = [size,] (
 );
 
 declare ffa-deallocate0 = [block,] (
-	declare prev = dl:dl-prev [block,];
-	declare next = dl:dl-next [block,];
+	declare prev = invoke dl-prev [block,];
+	declare next = invoke dl-next [block,];
 
 	if ((prev != 0) and (`ffa:ffa$size [prev,]` != 0)) then (
-		dl:dl-remove [block,];
+		invoke dl-remove [block,];
 		let block = prev;
 	) else ();
 
 	if ((next != 0) and (`ffa:ffa$size [next,]` != 0)) then (
-		dl:dl-remove [next,];
+		invoke dl-remove [next,];
 	) else ();
 
-	let `ffa:ffa$size [block,]` = dl:dl-next [block,] - block - 12;
+	let `ffa:ffa$size [block,]` = invoke dl-next [block,] - block - 12;
 );
 
 declare ffa-allocate = [size,] (
@@ -71,8 +71,8 @@ declare ffa-setup = [] (
 	let `ffa:ffa$size [ffa-region0,]` = ffa-regionx - ffa-region0 - 24;
 	let `ffa:ffa$size [last,]` = 0;
 
-	dl:dl-new [head,];
-	dl:dl-insert-next [head, ffa-region0,];
-	dl:dl-insert-next [ffa-region0, last,];
+	invoke dl-new [head,];
+	invoke dl-insert-next [head, ffa-region0,];
+	invoke dl-insert-next [ffa-region0, last,];
 	let ffa-current = `head`;
 );
