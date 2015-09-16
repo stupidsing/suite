@@ -63,7 +63,10 @@ declare idt-setup = function [] (
 
 			if (isr and 1 shl irq-number) then (
 				declare irq-sink = invoke irq-get-sink [irq-number,];
-				(irq-sink && irq:irq-sink [irq-number,]);
+				declare-as irqf/(int * 2);
+				let irqf:0 = irq;
+				let irqf:1 = irq-sink;
+				(irq-sink && invoke (irqf as (function [int,])) [irq-number,]);
 
 				-- Sends end of interrupt signal
 				(irq-number >= 8 && invoke outb [+xA0, +x20,]);

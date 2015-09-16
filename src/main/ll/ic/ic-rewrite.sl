@@ -12,9 +12,6 @@ ic-rewrite (INDEX .type0 .array0 .index0) (INDEX .type1 .array1 .index1) (.array
 #
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
 #
-ic-rewrite (INVOKE .this0 .sub0 .params0) (INVOKE .this1 .sub1 .params1) (.this0 .this1, .sub0 .sub1, .ts0)/.tsx
-	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
-#
 ic-rewrite (INVOKE2 .sub0 .params0) (INVOKE2 .sub1 .params1) (.sub0 .sub1, .ts0)/.tsx
 	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
 #

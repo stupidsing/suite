@@ -27,12 +27,6 @@ ic-parse .array:.index (INDEX _ .array1 .index1)
 	:- ic-parse .array .array1
 	, ic-parse .index .index1
 #
-ic-parse (.this:.sub [.params]) (INVOKE .this1 .sub1 .params1) -- Traditional subroutine invocation
-	:- ic-parse .this .this1
-	, ic-parse .sub .sub1
-	, zip .params .params1 .list
-	, list.query .list .param:.param1 (ic-parse .param .param1)
-#
 ic-parse (invoke .sub [.params]) (INVOKE2 .sub1 .params1) -- Traditional subroutine invocation
 	:- ic-parse .sub .sub1
 	, zip .params .params1 .list
@@ -149,6 +143,9 @@ ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 ic-parse-type ([.ts]) (METHOD-OF .types)
 	:- zip .ts .types .list
 	, list.query .list .t:.type (ic-parse-type .t .type)
+#
+ic-parse-type (function .m) (METHOD2-OF .types)
+	:- ic-parse-type .m (METHOD-OF .types)
 #
 ic-parse-type (p^.t) (PTR-OF .type)
 	:- ic-parse-type .t .type

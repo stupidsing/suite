@@ -39,14 +39,7 @@ public class ImperativeCompilerTest {
 	}
 
 	@Test
-	public void testSubroutine0() {
-		Bytes bytes0 = imperativeCompiler.compile(0, "declare t = this; declare s = [i,] ( i; ); t:s [1,];");
-		assertNotNull(bytes0);
-		System.out.println(bytes0);
-	}
-
-	@Test
-	public void testSubroutine1() {
+	public void testSubroutine() {
 		Bytes bytes = imperativeCompiler.compile(0, "declare s = function [i,] ( i; ); declare s1 = s; invoke s1 [1,];");
 		assertNotNull(bytes);
 		System.out.println(bytes);

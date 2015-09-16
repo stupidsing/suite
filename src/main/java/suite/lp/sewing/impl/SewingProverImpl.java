@@ -694,7 +694,7 @@ public class SewingProverImpl implements SewingProver {
 
 			traceLevel = name != null //
 					&& !name.startsWith("member") //
-					&& !name.startsWith("rbt-") ? TraceLevel.STACK : TraceLevel.NONE;
+					&& !name.startsWith("rbt-") ? TraceLevel.TRACE : TraceLevel.NONE;
 		} else
 			traceLevel = TraceLevel.NONE;
 		return traceLevel;

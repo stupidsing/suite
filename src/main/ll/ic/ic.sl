@@ -37,8 +37,12 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
-	:- .e0 = (_ RSAVE, .e1)
+ic-compile .fs (INVOKE2 .mr .params) .e0/.ex
+	:- once (
+		.mr = METHOD2 .this .sub
+		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
+	)
+	, .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
 	, ic-push-pop-parameters .fs1/.fs2 .params .e2/.e3 .e6/.e7
 	, ic-compile .fs2 .sub .e3/.e4
@@ -54,13 +58,6 @@ ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 		, _ R+
 		, _ MOV ($0, ECX)
 		, .ex)
-#
-ic-compile .fs (INVOKE2 .mr .params) .e0/.ex
-	:- once (
-		.mr = METHOD2 .this .sub
-		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
-	)
-	, ic-compile .fs (INVOKE .this .sub .params) .e0/.ex
 #
 ic-compile .fs (IF .if .then .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
@@ -111,9 +108,6 @@ ic-compile .fs (POST-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 	, .e1 = (_ ADD (DWORD `$0`, .i)
 		, _ MOV ($0, `$0`)
 		, .ex)
-#
-ic-compile .fs (PRAGMA _ .do) .e
-	:- ic-compile .fs .do .e
 #
 ic-compile .fs (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
