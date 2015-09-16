@@ -21,7 +21,7 @@ declare pg-is-mapped = [logical,] (
 	(`pe0` && `pe1`);
 );
 
-declare pg-get-physical = [logical,] (
+declare pg-get-physical = function [logical,] (
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	`pe1` and +xFFFFF000;
 );
@@ -94,7 +94,7 @@ declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
 		for (declare i = 0; i < nPages; i =+ 1) (
 			declare logical = p + i shl 12;
-			invoke pm-deallocate [pg:pg-get-physical [logical,],];
+			invoke pm-deallocate [invoke pg-get-physical [logical,],];
 			invoke pg-unmap [logical,];
 		);
 	);

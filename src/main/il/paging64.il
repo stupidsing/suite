@@ -23,12 +23,12 @@ declare pg-is-mapped = [logical,] (
 	(`pe0` && `pe1` && `pe2` && `pe3`);
 );
 
-declare pg-get-physical = [logical,] (
+declare pg-get-physical = function [logical,] (
 	declare pe3 = +xFFFFFF8000000000 + (logical ushr 12) shl 3;
 	`pe3` and +xFFFFFFFFFFFFF000;
 );
 
-declare pg-set-pt-entry = [pe0, pt1,] (
+declare pg-set-pt-entry = function [pe0, pt1,] (
 	(`pe0` = 0 && (
 		let `pe0` = invoke pm-allocate [] + 7;
 		invoke pg-invalidate-page [pt1,];
@@ -36,7 +36,7 @@ declare pg-set-pt-entry = [pe0, pt1,] (
 	));
 );
 
-declare pg-unset-pt-entry = [pe0, pt1,] (
+declare pg-unset-pt-entry = function [pe0, pt1,] (
 	declare isEmpty = 1;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
@@ -59,9 +59,9 @@ declare pg-map = function [logical, physical,] (
 	declare pt2 = pe2 and +xFFFFFFFFFFFFF000;
 	declare pt3 = pe3 and +xFFFFFFFFFFFFF000;
 
-	pg:pg-set-pt-entry [pe0, pt1,];
-	pg:pg-set-pt-entry [pe1, pt2,];
-	pg:pg-set-pt-entry [pe2, pt3,];
+	invoke pg-set-pt-entry [pe0, pt1,];
+	invoke pg-set-pt-entry [pe1, pt2,];
+	invoke pg-set-pt-entry [pe2, pt3,];
 	let `pe3` = physical + 7;
 
 	invoke pg-invalidate-page [logical,];
@@ -77,9 +77,9 @@ declare pg-unmap = function [logical,] (
 	declare pt3 = pe3 and +xFFFFFFFFFFFFF000;
 
 	let `pe3` = 0;
-	pg:pg-unset-pt-entry [pe2, pt3,]
-	&& pg:pg-unset-pt-entry [pe1, pt2,]
-	&& pg:pg-unset-pt-entry [pe0, pt1,];
+	invoke pg-unset-pt-entry [pe2, pt3,]
+	&& invoke pg-unset-pt-entry [pe1, pt2,]
+	&& invoke pg-unset-pt-entry [pe0, pt1,];
 
 	invoke pg-invalidate-page [logical,];
 );
@@ -116,7 +116,7 @@ declare pg-deallocate = function [p, nPages,] (
 	synchronized (& pg-sync) (
 		for (declare i = 0; i < nPages; i =+ 1) (
 			declare logical = p + i shl 12;
-			invoke pm-deallocate [pg:pg-get-physical [logical,],];
+			invoke pm-deallocate [invoke pg-get-physical [logical,],];
 			invoke pg-unmap [logical,];
 		);
 	);
