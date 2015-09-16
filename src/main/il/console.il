@@ -15,13 +15,8 @@ declare cs-nl = function [] (
 		declare p1 = p0 + 3840;
 		declare px = p0 + 4000;
 
-		for (declare p = p0; p < p1; p =+ 4) ( -- Scrolls up
-			let `p` = `p + 160`;
-		);
-
-		for (declare p = p1; p < px; p =+ 4) (
-			let `p` = 0;
-		);
+		copy [p0, p0 + 160, 3840,]; -- Scrolls up
+		zero [p1, 160,];
 
 		let cs-column-offset = 0;
 		cs-set-cursor [24, cs-column-offset shr 1,];
