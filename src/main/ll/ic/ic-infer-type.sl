@@ -1,5 +1,3 @@
-ic-infer-type $$EBP I32
-#
 ic-infer-type (ASM _) I32
 #
 ic-infer-type (DECLARE .varType .var .do0) .type
@@ -70,6 +68,8 @@ ic-infer-type (SEQ .do0 .do1) I32
 ic-infer-type (SNIPPET _) I32
 #
 ic-infer-type (STRING _) I32
+#
+ic-infer-type THIS I32
 #
 ic-infer-type (TREE _ .value0 .value1) I32
 	:- ic-infer-type .value0 I32

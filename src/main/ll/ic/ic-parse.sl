@@ -13,8 +13,6 @@ ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
 #
-ic-parse this $$EBP
-#
 ic-parse (declare .var as .t; .do) (DECLARE .type .var .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
@@ -50,7 +48,7 @@ ic-parse (baseless [.params] .do) (METHOD0 .params1 .do1) -- Traditional subrout
 	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
 	, ic-parse .do .do1
 #
-ic-parse (function [.params] .do) (METHOD $$EBP .method) -- Traditional subroutine definition
+ic-parse (function [.params] .do) (METHOD THIS .method) -- Traditional subroutine definition
 	:- ic-parse (baseless [.params] .do) .method
 #
 ic-parse () NOP
@@ -80,6 +78,8 @@ ic-parse (snippet .snippet) (SNIPPET .snippet1)
 #
 ic-parse .s (STRING .s)
 	:- is.string .s
+#
+ic-parse this THIS
 #
 ic-parse .expr (TREE .op .expr0 .expr1)
 	:- (tree .expr .value0 .op .value1; .expr = .value0 .op .value1)

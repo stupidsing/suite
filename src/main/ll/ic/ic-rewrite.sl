@@ -1,5 +1,3 @@
-ic-rewrite $$EBP $$EBP .ts/.ts
-#
 ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
 ic-rewrite (ALLOC .size .var .do0) (ALLOC .size .var .do1) (.do0 .do1, .ts)/.ts
@@ -51,6 +49,8 @@ ic-rewrite (SEQ .a0 .b0) (SEQ .a1 .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
 ic-rewrite (SNIPPET .s0) (SNIPPET .s1) (.s0 .s1, .ts)/.ts
 #
 ic-rewrite (STRING .s) (STRING .s) .ts/.ts
+#
+ic-rewrite THIS THIS .ts/.ts
 #
 ic-rewrite (TREE .op .a0 .b0) (TREE .op .a1 .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
 #

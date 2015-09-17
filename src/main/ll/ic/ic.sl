@@ -24,12 +24,10 @@ compile-imperative .do0 .e0/.ex
 ic-compile .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
-ic-compile _ $$EBP (_ R+, _ MOV ($0, EBP), .e)/.e
-#
 ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 	:- let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
-	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .offset))) .do .do1
+	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
 	, .e0 = (_ SUB (ESP, .size), .e1)
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
@@ -85,7 +83,7 @@ ic-compile _ (METHOD0 .pss .do) .e0/.ex
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace $$EBP (MEMORY 4 $$EBP) .do .do1
+	, replace THIS (MEMORY 4 THIS) .do .do1
 	, ic-replace-parameters .pss 4 .do1 .do2
 	, ic-compile 0 .do2 .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
@@ -149,6 +147,8 @@ ic-compile _ (STRING .s) .e0/.ex
 		, _ MOV ($0, .strLabel)
 		, .ex)
 #
+ic-compile _ THIS (_ R+, _ MOV ($0, EBP), .e)/.e
+#
 ic-compile .fs (TREE .op .value0 .value1) .e0/.ex
 	:- ic-operator .op .e2/.ex
 	, once (
@@ -178,11 +178,11 @@ ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .i))) .value) .e0/.ex
+ic-compile-better-option .fs (LET (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV (`EBP + .i`, $0), .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY 4 $$EBP) .value) .e0/.ex
+ic-compile-better-option .fs (LET (MEMORY 4 THIS) .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
 	, .e1 = (_ MOV (`EBP`, $0), .ex)
 #
@@ -196,10 +196,10 @@ ic-compile-better-option .fs (LET (MEMORY 4 .pointer) .value) .e0/.ex
 	, ic-compile .fs .pointer .e1/.e2
 	, .e2 = (_ MOV (`$0`, $1), _ R-, .ex)
 #
-ic-compile-better-option _ (MEMORY 4 (TREE ' + ' $$EBP (NUMBER .i))) .e0/.ex
+ic-compile-better-option _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex
 	:- .e0 = (_ R+, _ MOV ($0, `EBP + .i`), .ex)
 #
-ic-compile-better-option _ (MEMORY 4 $$EBP) .e0/.ex
+ic-compile-better-option _ (MEMORY 4 THIS) .e0/.ex
 	:- .e0 = (_ R+, _ MOV ($0, `EBP`), .ex)
 #
 ic-compile-better-option .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
@@ -254,7 +254,7 @@ ic-replace-parameters () _ .do .do
 #
 ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
-	, replace (VAR .var) (MEMORY .size (TREE ' + ' $$EBP (NUMBER .s))) .do0 .do1
+	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
