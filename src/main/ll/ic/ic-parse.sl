@@ -145,6 +145,11 @@ ic-parse-parameter .p .param
 	:- not (.p = _/_), .param = PARAM I32 .p
 #
 
+ic-parse-type (.tv0 => .type0) .typex
+	:- ic-parse-type .tv0 .tv1
+	, ic-parse-type .type0 .type1
+	, replace .tv1 _ .type1 .typex
+#
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #
