@@ -150,6 +150,11 @@ ic-parse-type (.tv0 => .type0) .typex
 	, ic-parse-type .type0 .type1
 	, replace .tv1 _ .type1 .typex
 #
+ic-parse-type (fix .tv0 .type0) .typex
+	:- ic-parse-type .tv0 .tv1
+	, ic-parse-type .type0 .type1
+	, replace .tv1 .typex .type1 .typex
+#
 ic-parse-type (.t * .size) (ARRAY-OF .size .type)
 	:- ic-parse-type .t .type
 #
@@ -170,4 +175,6 @@ ic-parse-type pointer:.t (POINTER-OF .type)
 ic-parse-type (struct .nts) (STRUCT-OF .nameTypes)
 	:- zip .nts .nameTypes .list
 	, list.query .list (.name as .t):(.name .type) (ic-parse-type .t .type)
+#
+ic-parse-type :.typeVar (VAR .typeVar)
 #
