@@ -145,12 +145,12 @@ ic-parse-parameter .p .param
 	:- not (.p = _/_), .param = PARAM I32 .p
 #
 
-ic-parse-type byte I8
+ic-parse-type (.t * .size) (ARRAY-OF .size .type)
+	:- ic-parse-type .t .type
 #
 ic-parse-type int I32
 #
-ic-parse-type (.t * .size) (ARRAY-OF .size .type)
-	:- ic-parse-type .t .type
+ic-parse-type byte I8
 #
 ic-parse-type (baseless [.ts]) (METHOD0-OF .types)
 	:- zip .ts .types .list
