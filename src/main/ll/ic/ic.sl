@@ -53,7 +53,8 @@ ic-compile0 _ (ASM .i) (.i, _ R+, .e)/.e
 ic-compile0 .fs (INVOKE .mr .params) .e0/.ex
 	:- once (
 		.mr = METHOD .this .sub
-		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
+		; .mr = MEMORY 8 .pointer
+		, .this = MEMORY 4 .pointer, .sub = MEMORY 4 (TREE ' + ' .pointer (NUMBER 4))
 	)
 	, .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
