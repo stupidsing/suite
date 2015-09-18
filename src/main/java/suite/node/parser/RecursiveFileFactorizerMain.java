@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
 import suite.wildcard.WildcardUtil;
@@ -37,10 +36,6 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 					}
 				});
 
-		RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
-		String s0 = To.string(System.in);
-		String sx = recursiveFactorizer.rewrite(args[0], args[1], s0);
-		System.out.println(sx);
 		return true;
 	}
 
