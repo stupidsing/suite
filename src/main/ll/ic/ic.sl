@@ -8,7 +8,7 @@ compile-imperative .do0 .e0/.ex
 	:- ic-parse .do0 .do1
 	, !, ic-infer-type .do1 I32
 	, !, ic-erase-type .do1 .do2
-	, !, ic-compile 0 .do2 .e0/.ex
+	, !, ic-compile0 0 .do2 .e0/.ex
 	, !
 #
 
@@ -21,17 +21,25 @@ compile-imperative .do0 .e0/.ex
 -- EDI - unused
 -- EBP - stack frame
 -- ESP - stack pointer
+ic-compile .fs .do .e0/.ex
+	:- ic-compile-operand0 .fs .do .e0/.e1 .op
+	, !, .e1 = (_ MOV ($0, .op), .ex)
+#
+ic-compile .fs .do .e0/.ex
+	:- ic-compile0 .fs .do .e0/.ex
+#
+
 ic-compile-operand .fs .do .e .op
 	:- ic-compile-operand0 .fs .do .e .op
 #
 ic-compile-operand .fs .do .e $0
-	:- ic-compile .fs .do .e
+	:- ic-compile0 .fs .do .e
 #
 
-ic-compile .fs .do .e0/.ex
+ic-compile0 .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
-ic-compile .fs (ALLOC .size .var .do) .e0/.ex
+ic-compile0 .fs (ALLOC .size .var .do) .e0/.ex
 	:- let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
@@ -39,10 +47,10 @@ ic-compile .fs (ALLOC .size .var .do) .e0/.ex
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ ADD (ESP, .size), .ex)
 #
-ic-compile _ (ASM .i) (.i, _ R+, .e)/.e
+ic-compile0 _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
-ic-compile .fs (INVOKE .mr .params) .e0/.ex
+ic-compile0 .fs (INVOKE .mr .params) .e0/.ex
 	:- once (
 		.mr = METHOD .this .sub
 		; .this = MEMORY 4 (REF .mr), .sub = MEMORY 4 (TREE ' + ' (REF .mr) (NUMBER 4))
@@ -64,7 +72,7 @@ ic-compile .fs (INVOKE .mr .params) .e0/.ex
 		, _ MOV ($0, ECX)
 		, .ex)
 #
-ic-compile .fs (IF .if .then .else) .e0/.ex
+ic-compile0 .fs (IF .if .then .else) .e0/.ex
 	:- ic-compile .fs .if .e0/.e1
 	, .e1 = (_ OR ($0, $0)
 		, _ R-
@@ -77,10 +85,10 @@ ic-compile .fs (IF .if .then .else) .e0/.ex
 	, ic-compile .fs .else .e4/.e5
 	, .e5 = (.endLabel (), .ex)
 #
-ic-compile .fs (LET .var .value) .e0/.ex
+ic-compile0 .fs (LET .var .value) .e0/.ex
 	:- ic-let .fs .value .var .e0/.ex
 #
-ic-compile _ (METHOD0 .pss .do) .e0/.ex
+ic-compile0 _ (METHOD0 .pss .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel RBEGIN
 		, _ PUSH (EBP)
@@ -98,16 +106,16 @@ ic-compile _ (METHOD0 .pss .do) .e0/.ex
 		, _ MOV ($0, .funLabel)
 		, .ex)
 #
-ic-compile _ NOP .e0/.ex
+ic-compile0 _ NOP .e0/.ex
 	:- .e0 = (_ R+, .ex)
 #
-ic-compile .fs (POST-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
+ic-compile0 .fs (POST-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, .e1 = (_ ADD (DWORD `$0`, .i)
 		, _ MOV ($0, `$0`)
 		, .ex)
 #
-ic-compile .fs (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
+ic-compile0 .fs (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, .e1 = (_ R+
 		, _ MOV ($0, $1)
@@ -116,15 +124,15 @@ ic-compile .fs (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-compile .fs (REF MEMORY _ .pointer) .e0/.ex
+ic-compile0 .fs (REF MEMORY _ .pointer) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
 #
-ic-compile .fs (SEQ .do0 .do1) .e0/.ex
+ic-compile0 .fs (SEQ .do0 .do1) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ R-, .e2)
 	, ic-compile .fs .do1 .e2/.ex
 #
-ic-compile _ (SNIPPET .snippet) .e0/.ex
+ic-compile0 _ (SNIPPET .snippet) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .snippetLabel ()
 		, .e1)
@@ -134,7 +142,7 @@ ic-compile _ (SNIPPET .snippet) .e0/.ex
 		, _ MOV ($0, .snippetLabel)
 		, .ex)
 #
-ic-compile .fs (TREE .op .value0 .value1) .e0/.ex
+ic-compile0 .fs (TREE .op .value0 .value1) .e0/.ex
 	:- ic-operator .op .e2/.ex
 	, once (
 		ic-right-associative .op
@@ -145,7 +153,7 @@ ic-compile .fs (TREE .op .value0 .value1) .e0/.ex
 		, ic-compile .fs .value1 .e1/.e2
 	)
 #
-ic-compile .fs (WHILE .while .do) .e0/.ex
+ic-compile0 .fs (WHILE .while .do) .e0/.ex
 	:- .e0 = (.nextLabel (), .e1)
 	, ic-compile .fs .while .e1/.e2
 	, .e2 = (_ OR ($0, $0)
@@ -158,14 +166,36 @@ ic-compile .fs (WHILE .while .do) .e0/.ex
 		, .ex)
 #
 
--- Generates faster code
-ic-compile-better-option .fs .memory .e0/.ex
-	:- ic-compile-operand0 .fs .memory .e0/.e1 .op
-	, .e1 = (_ MOV ($0, .op), .ex)
+ic-compile-operand0 _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
 #
+ic-compile-operand0 _ (MEMORY 4 THIS) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP`
+#
+ic-compile-operand0 .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
+	:- ic-compile .fs .pointer .e0/.ex, .op = `$0 + .i`
+#
+ic-compile-operand0 .fs (MEMORY 4 .pointer) .e0/.ex .op
+	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
+#
+ic-compile-operand0 _ (NUMBER .i) (_ R+, .e)/.e (DWORD .i)
+#
+ic-compile-operand0 _ (REG .reg) (_ R+, .e)/.e .reg
+#
+ic-compile-operand0 _ (STRING .s) .e0/.ex .strLabel
+	:- .e0 = (_ JMP (DWORD .label)
+		, .strLabel DS (.s)
+		, _ D8 (0)
+		, .label R+
+		, .ex)
+#
+ic-compile-operand0 _ THIS (_ R+, .e)/.e EBP
+#
+
+-- Generates faster code
 ic-compile-better-option .fs (LET .memory .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, ic-compile-operand0 .fs .memory .e1/.e2 .op
+	:- ic-compile-operand0 .fs .memory .e1/.e2 .op
+	, ic-compile .fs .value .e0/.e1
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
 ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
@@ -198,12 +228,8 @@ ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
 ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
 	, once (
-		ic-compile-operand0 .fs1 .p .e1/.e2 .op
+		ic-compile-operand .fs1 .p .e1/.e2 .op
 		, ic-push .op .fs1/.fsx .e2/.e3
-		, .e3 = (_ R-, .ex)
-		, .f0 = (_ POP (EDX), .f1)
-		; ic-compile .fs1 .p .e1/.e2
-		, ic-push $0 .fs1/.fsx .e2/.e3
 		, .e3 = (_ R-, .ex)
 		, .f0 = (_ POP (EDX), .f1)
 		; .e1 = (_ SUB (ESP, .size), .e2)
@@ -220,32 +246,6 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
-#
-
-ic-compile-operand0 _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
-	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
-#
-ic-compile-operand0 _ (MEMORY 4 THIS) .e0/.ex .op
-	:- .e0 = (_ R+, .ex), .op = `EBP`
-#
-ic-compile-operand0 .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
-	:- ic-compile .fs .pointer .e0/.ex, .op = `$0 + .i`
-#
-ic-compile-operand0 .fs (MEMORY 4 .pointer) .e0/.ex .op
-	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
-#
-ic-compile-operand0 _ (NUMBER .i) (_ R+, .e)/.e (DWORD .i)
-#
-ic-compile-operand0 _ (REG .reg) (_ R+, .e)/.e .reg
-#
-ic-compile-operand0 _ (STRING .s) .e0/.ex .strLabel
-	:- .e0 = (_ JMP (DWORD .label)
-		, .strLabel DS (.s)
-		, _ D8 (0)
-		, .label R+
-		, .ex)
-#
-ic-compile-operand0 _ THIS (_ R+, .e)/.e EBP
 #
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
