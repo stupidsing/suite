@@ -127,16 +127,6 @@ ic-compile _ (SNIPPET .snippet) .e0/.ex
 		, _ MOV ($0, .snippetLabel)
 		, .ex)
 #
-ic-compile _ (STRING .s) .e0/.ex
-	:- .e0 = (_ JMP (DWORD .label)
-		, .strLabel DS (.s)
-		, _ D8 (0)
-		, .label R+
-		, _ MOV ($0, .strLabel)
-		, .ex)
-#
-ic-compile _ THIS (_ R+, _ MOV ($0, EBP), .e)/.e
-#
 ic-compile .fs (TREE .op .value0 .value1) .e0/.ex
 	:- ic-operator .op .e2/.ex
 	, once (
@@ -237,11 +227,18 @@ ic-compile-operand .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
 ic-compile-operand .fs (MEMORY 4 .pointer) .e0/.ex .op
 	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
 #
-ic-compile-operand _ (NUMBER .i) .e0/.ex (DWORD .i)
-	:- .e0 = (_ R+, .ex)
+ic-compile-operand _ (NUMBER .i) (_ R+, .e)/.e (DWORD .i)
 #
-ic-compile-operand _ (REG .reg) .e0/.ex .reg
-	:- .e0 = (_ R+, .ex)
+ic-compile-operand _ (REG .reg) (_ R+, .e)/.e .reg
+#
+ic-compile-operand _ (STRING .s) .e0/.ex .strLabel
+	:- .e0 = (_ JMP (DWORD .label)
+		, .strLabel DS (.s)
+		, _ D8 (0)
+		, .label R+
+		, .ex)
+#
+ic-compile-operand _ THIS (_ R+, .e)/.e EBP
 #
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
