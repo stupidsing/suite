@@ -199,6 +199,9 @@ ic-compile-better-option .fs (LET .memory .value) .e0/.ex
 	, ic-compile .fs .value .e0/.e1
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
+ic-compile-better-option .fs (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
+	:- .e0 = (_ R+, _ LEA ($0, `EBP + .i`), .ex)
+#
 ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
