@@ -310,7 +310,7 @@ as-mod-rm:_:_a (`.indexReg * .scale + .baseReg + .disp`) (.mod (.rexbr 4)) (.s (
 	, as-disp-mod:.ds .disp .mod
 #
 as-mod-rm:.size:.a (.prefix `.ptr`) .modrm .sib .dsd
-	:- as-ptr-size .prefix .size
+	:- as-prefix-size .prefix .size
 	, as-mod-rm:_:.a `.ptr` .modrm .sib .dsd
 #
 as-mod-rm:_:_a (`.reg`) .modrm .sib .dsd
@@ -344,10 +344,10 @@ as-sib-scale 2 1 #
 as-sib-scale 4 2 #
 as-sib-scale 8 3 #
 
-as-ptr-size BYTE 8 #
-as-ptr-size WORD 16 #
-as-ptr-size DWORD 32 #
-as-ptr-size QWORD 64 #
+as-prefix-size BYTE 8 #
+as-prefix-size WORD 16 #
+as-prefix-size DWORD 32 #
+as-prefix-size QWORD 64 #
 
 as-reg:.s .reg .i :- as-rex-reg:.s .reg 0 .i #
 
