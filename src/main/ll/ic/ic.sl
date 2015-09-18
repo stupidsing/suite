@@ -233,6 +233,9 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
+ic-compile-operand _ (NUMBER .i) .e0/.ex (DWORD .i)
+	:- .e0 = (_ R+, .ex)
+#
 ic-compile-operand _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
 	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
 #
