@@ -10,7 +10,7 @@ import suite.text.Segment;
 
 public class ParseUtil {
 
-	public static int checkDepth(int depth, char c) {
+	private static int checkDepth(int depth, char c) {
 		if (c == '(' || c == '[' || c == '{')
 			depth++;
 		if (c == ')' || c == ']' || c == '}')
