@@ -223,7 +223,8 @@ ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
 	, once (
 		ic-compile .fs1 .p .e1/.e2
-		, ic-push-top .fs1/.fsx .e2/.ex
+		, ic-push $0 .fs1/.fsx .e2/.e3
+		, .e3 = (_ R-, .ex)
 		, .f0 = (_ POP (EDX), .f1)
 		; .e1 = (_ SUB (ESP, .size), .e2)
 		, .f0 = (_ ADD (ESP, .size), .f1)
@@ -239,10 +240,6 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
-#
-
-ic-push-top .fs0/.fsx (_ PUSH ($0), _ R-, .e)/.e
-	:- let .fsx (.fs0 + 4)
 #
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
