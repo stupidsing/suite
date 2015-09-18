@@ -186,13 +186,6 @@ ic-compile-better-option .fs .memory .e0/.ex
 ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
-ic-let .fs .source (MEMORY 4 .pointer) .e0/.ex
-	:- ic-compile .fs .source .e0/.e1
-	, ic-compile .fs .pointer .e1/.e2
-	, .e2 = (_ MOV (`$0`, $1)
-		, _ R-
-		, .ex)
-#
 ic-let .fs (METHOD .this .sub) (MEMORY 8 .pointer) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, ic-compile .fs .this .e1/.e2
