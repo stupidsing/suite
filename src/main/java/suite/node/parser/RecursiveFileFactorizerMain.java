@@ -9,8 +9,9 @@ import suite.os.FileUtil;
 import suite.util.To;
 import suite.util.Util;
 import suite.util.Util.ExecutableProgram;
+import suite.wildcard.WildcardUtil;
 
-// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.node.parser.RecursiveFactorizerMain
+// mvn assembly:single && java -cp target/suite-1.0-jar-with-dependencies.jar suite.node.parser.RecursiveFileFactorizerMain
 public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	public static void main(String args[]) {
@@ -21,10 +22,10 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 		// String from = "ic-parse .0 .1";
 		// String to = "ic-parse .f .0 .1";
 		String from = "ic-compile .0 .1 .2";
-		String to = "ic-compile .f/.ve .0 .1 .2";
+		String to = "ic-compile .f/.0/.ve .0 .1 .2";
 
 		FileUtil.findPaths(Paths.get("src/")) //
-				.filter(path -> path.getFileName().startsWith("ic") && path.getFileName().endsWith(".sl")) //
+				.filter(path -> WildcardUtil.isMatch("ic*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
 					try {
 						RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
