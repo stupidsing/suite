@@ -91,9 +91,6 @@ ic-compile _ (METHOD0 .pss .do) .e0/.ex
 		, _ MOV ($0, .funLabel)
 		, .ex)
 #
-ic-compile _ (NUMBER .i) (_ R+, _ MOV ($0, .i), .e)/.e
-	:- is.int .i
-#
 ic-compile _ NOP .e0/.ex
 	:- .e0 = (_ R+, .ex)
 #
