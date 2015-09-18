@@ -233,9 +233,6 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
-ic-compile-operand _ (NUMBER .i) .e0/.ex (DWORD .i)
-	:- .e0 = (_ R+, .ex)
-#
 ic-compile-operand _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
 	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
 #
@@ -247,6 +244,9 @@ ic-compile-operand .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
 #
 ic-compile-operand .fs (MEMORY 4 .pointer) .e0/.ex .op
 	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
+#
+ic-compile-operand _ (NUMBER .i) .e0/.ex (DWORD .i)
+	:- .e0 = (_ R+, .ex)
 #
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
