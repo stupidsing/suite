@@ -174,37 +174,14 @@ ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .value) .e0/.ex
+ic-compile-better-option .fs (LET .memory .value) .e0/.ex
 	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ MOV (`EBP + .i`, $0), .ex)
+	, ic-compile-operand .fs .memory .e1/.e2 .op
+	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
-ic-compile-better-option .fs (LET (MEMORY 4 THIS) .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ MOV (`EBP`, $0), .ex)
-#
-ic-compile-better-option .fs (LET (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, ic-compile .fs .pointer .e1/.e2
-	, .e2 = (_ MOV (`$0 + .i`, $1), _ R-, .ex)
-#
-ic-compile-better-option .fs (LET (MEMORY 4 .pointer) .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, ic-compile .fs .pointer .e1/.e2
-	, .e2 = (_ MOV (`$0`, $1), _ R-, .ex)
-#
-ic-compile-better-option _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex
-	:- .e0 = (_ R+, _ MOV ($0, `EBP + .i`), .ex)
-#
-ic-compile-better-option _ (MEMORY 4 THIS) .e0/.ex
-	:- .e0 = (_ R+, _ MOV ($0, `EBP`), .ex)
-#
-ic-compile-better-option .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
-	:- ic-compile .fs .pointer .e0/.e1
-	, .e1 = (_ MOV ($0, `$0 + .i`), .ex)
-#
-ic-compile-better-option .fs (MEMORY 4 .pointer) .e0/.ex
-	:- ic-compile .fs .pointer .e0/.e1
-	, .e1 = (_ MOV ($0, `$0`), .ex)
+ic-compile-better-option .fs .memory .e0/.ex
+	:- ic-compile-operand .fs .memory .e0/.e1 .op
+	, .e1 = (_ MOV ($0, .op), .ex)
 #
 ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 #
@@ -232,6 +209,19 @@ ic-let .fs (MEMORY .size .pointer0) (MEMORY .size .pointer1) .e0/.ex
 	, ic-compile .fs .pointer1 .e1/.e2
 	, ic-copy-memory 0 .size .e2/.e3
 	, .e3 = (_ R-, .ex)
+#
+
+ic-compile-operand _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
+#
+ic-compile-operand _ (MEMORY 4 THIS) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP`
+#
+ic-compile-operand .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
+	:- ic-compile .fs .pointer .e0/.ex, .op = `$0 + .i`
+#
+ic-compile-operand .fs (MEMORY 4 .pointer) .e0/.ex .op
+	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
 #
 
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
