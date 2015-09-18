@@ -20,6 +20,8 @@ ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 	, list.query .list (PARAM .type .var):(PS .size .var) (ic-type-size .type .size)
 	, ic-erase-type .do0 .dox
 #
+ic-erase-type NULL (NUMBER 0)
+#
 ic-erase-type (OBJECT .type .var0) (MEMORY .size .varx)
 	:- !
 	, ic-type-size .type .size

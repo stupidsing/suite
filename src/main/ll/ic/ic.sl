@@ -94,9 +94,6 @@ ic-compile _ (METHOD0 .pss .do) .e0/.ex
 ic-compile _ NOP .e0/.ex
 	:- .e0 = (_ R+, .ex)
 #
-ic-compile _ NULL .e0/.ex
-	:- .e0 = (_ R+, _ XOR ($0, $0), .ex)
-#
 ic-compile .fs (POST-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, .e1 = (_ ADD (DWORD `$0`, .i)
