@@ -73,10 +73,6 @@ ic-compile .fs (IF .if .then .else) .e0/.ex
 ic-compile .fs (LET .var .value) .e0/.ex
 	:- ic-let .fs .value .var .e0/.ex
 #
-ic-compile .fs (MEMORY 4 .value) .e0/.ex
-	:- ic-compile .fs .value .e0/.e1
-	, .e1 = (_ MOV ($0, `$0`), .ex)
-#
 ic-compile _ (METHOD0 .pss .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel RBEGIN
@@ -205,6 +201,10 @@ ic-compile-better-option _ (MEMORY 4 THIS) .e0/.ex
 ic-compile-better-option .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.e1
 	, .e1 = (_ MOV ($0, `$0 + .i`), .ex)
+#
+ic-compile-better-option .fs (MEMORY 4 .pointer) .e0/.ex
+	:- ic-compile .fs .pointer .e0/.e1
+	, .e1 = (_ MOV ($0, `$0`), .ex)
 #
 ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
 #
