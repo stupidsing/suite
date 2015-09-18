@@ -112,8 +112,6 @@ ic-compile .fs (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
 ic-compile .fs (REF MEMORY _ .pointer) .e0/.ex
 	:- ic-compile .fs .pointer .e0/.ex
 #
-ic-compile _ (REG .reg) (_ R+, _ MOV ($0, .reg), .e)/.e
-#
 ic-compile .fs (SEQ .do0 .do1) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ R-, .e2)
@@ -240,6 +238,9 @@ ic-compile-operand .fs (MEMORY 4 .pointer) .e0/.ex .op
 	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
 #
 ic-compile-operand _ (NUMBER .i) .e0/.ex (DWORD .i)
+	:- .e0 = (_ R+, .ex)
+#
+ic-compile-operand _ (REG .reg) .e0/.ex .reg
 	:- .e0 = (_ R+, .ex)
 #
 
