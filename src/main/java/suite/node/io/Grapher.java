@@ -130,14 +130,13 @@ public class Grapher {
 	public void generalize() {
 		gns = Read.from(gns) //
 				.map(gn -> {
+					Node node;
 					GN gn1;
-					if (gn.type == ReadType.TERM) {
-						Node node = gn.terminal;
-						if (node instanceof Atom && ((Atom) node).name.startsWith(ProverConstant.variablePrefix))
-							gn1 = new GN(new Reference());
-						else
-							gn1 = gn;
-					} else
+					if (gn.type == ReadType.TERM //
+							&& (node = gn.terminal) instanceof Atom //
+							&& ((Atom) node).name.startsWith(ProverConstant.variablePrefix))
+						gn1 = new GN(new Reference());
+					else
 						gn1 = gn;
 					return gn1;
 				}) //
@@ -147,14 +146,11 @@ public class Grapher {
 	public void specialize() {
 		gns = Read.from(gns) //
 				.map(gn -> {
+					Node node;
 					GN gn1;
-					if (gn.type == ReadType.TERM) {
-						Node node = gn.terminal;
-						if (node instanceof Reference)
-							gn1 = new GN(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
-						else
-							gn1 = gn;
-					} else
+					if (gn.type == ReadType.TERM && (node = gn.terminal) instanceof Reference)
+						gn1 = new GN(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
+					else
 						gn1 = gn;
 					return gn1;
 				}) //
