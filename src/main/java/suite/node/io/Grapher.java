@@ -32,7 +32,7 @@ import suite.streamlet.Read;
  */
 public class Grapher {
 
-	private List<NodeGraph> ngs = new ArrayList<>();
+	private List<GN> gns = new ArrayList<>();
 	private int id;
 
 	private static class IntPair {
@@ -47,14 +47,14 @@ public class Grapher {
 		}
 	}
 
-	private class NodeGraph extends NodeHead {
+	private class GN extends NodeHead {
 		private List<IntPair> children;
 
-		private NodeGraph(Node terminal) {
+		private GN(Node terminal) {
 			this(ReadType.TERM, terminal, null, Collections.emptyList());
 		}
 
-		private NodeGraph(ReadType type, Node terminal, Operator op, List<IntPair> children) {
+		private GN(ReadType type, Node terminal, Operator op, List<IntPair> children) {
 			super(type, terminal, op);
 			this.children = children;
 		}
@@ -69,8 +69,8 @@ public class Grapher {
 		Integer id = ids.get(key);
 
 		if (id == null) {
-			ids.put(key, id = ngs.size());
-			ngs.add(null);
+			ids.put(key, id = gns.size());
+			gns.add(null);
 
 			NodeRead nr = NodeRead.of(node);
 
@@ -78,36 +78,36 @@ public class Grapher {
 					.map(p -> IntPair.of(graph0(ids, p.t0), graph0(ids, p.t1))) //
 					.toList();
 
-			ngs.set(id, new NodeGraph(nr.type, nr.terminal, nr.op, childrenx));
+			gns.set(id, new GN(nr.type, nr.terminal, nr.op, childrenx));
 		}
 
 		return id;
 	}
 
 	public Node ungraph() {
-		int size = ngs.size();
+		int size = gns.size();
 
-		List<Node> nodes = Read.from(ngs).map(ng -> {
-			switch (ng.type) {
+		List<Node> nodes = Read.from(gns).map(gn -> {
+			switch (gn.type) {
 			case DICT:
 				return new Dict();
 			case TERM:
-				return ng.terminal;
+				return gn.terminal;
 			case TREE:
-				return Tree.of(ng.op, null, null);
+				return Tree.of(gn.op, null, null);
 			case TUPLE:
-				return new Tuple(new ArrayList<>(ng.children.size()));
+				return new Tuple(new ArrayList<>(gn.children.size()));
 			default:
 				throw new RuntimeException();
 			}
 		}).toList();
 
 		for (int i = 0; i < size; i++) {
-			NodeGraph ng = ngs.get(i);
+			GN gn = gns.get(i);
 			Node node = nodes.get(i);
-			List<Pair<Node, Node>> children = Read.from(ng.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
+			List<Pair<Node, Node>> children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
 
-			switch (ng.type) {
+			switch (gn.type) {
 			case DICT:
 				((Dict) node).map.putAll(Read.from(children).map(Pair.map1(Reference::of)).collect(As.map()));
 				break;
@@ -128,35 +128,35 @@ public class Grapher {
 	}
 
 	public void generalize() {
-		ngs = Read.from(ngs) //
-				.map(ng -> {
-					NodeGraph ng1;
-					if (ng.type == ReadType.TERM) {
-						Node node = ng.terminal;
+		gns = Read.from(gns) //
+				.map(gn -> {
+					GN gn1;
+					if (gn.type == ReadType.TERM) {
+						Node node = gn.terminal;
 						if (node instanceof Atom && ((Atom) node).name.startsWith(ProverConstant.variablePrefix))
-							ng1 = new NodeGraph(new Reference());
+							gn1 = new GN(new Reference());
 						else
-							ng1 = ng;
+							gn1 = gn;
 					} else
-						ng1 = ng;
-					return ng1;
+						gn1 = gn;
+					return gn1;
 				}) //
 				.toList();
 	}
 
 	public void specialize() {
-		ngs = Read.from(ngs) //
-				.map(ng -> {
-					NodeGraph ng1;
-					if (ng.type == ReadType.TERM) {
-						Node node = ng.terminal;
+		gns = Read.from(gns) //
+				.map(gn -> {
+					GN gn1;
+					if (gn.type == ReadType.TERM) {
+						Node node = gn.terminal;
 						if (node instanceof Reference)
-							ng1 = new NodeGraph(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
+							gn1 = new GN(Atom.of(ProverConstant.variablePrefix + ((Reference) node).getId()));
 						else
-							ng1 = ng;
+							gn1 = gn;
 					} else
-						ng1 = ng;
-					return ng1;
+						gn1 = gn;
+					return gn1;
 				}) //
 				.toList();
 	}
@@ -209,24 +209,24 @@ public class Grapher {
 				}
 			}
 
-			ngs.add(new NodeGraph(type, terminal, op, children));
+			gns.add(new GN(type, terminal, op, children));
 		}
 	}
 
 	public void save(DataOutputStream dos) throws IOException {
-		int size = ngs.size();
+		int size = gns.size();
 		dos.writeInt(size);
 		dos.writeInt(id);
 
 		for (int index = 0; index < size; index++) {
-			NodeGraph ng = ngs.get(index);
-			ReadType type = ng.type;
-			List<IntPair> children = ng.children;
+			GN gn = gns.get(index);
+			ReadType type = gn.type;
+			List<IntPair> children = gn.children;
 
 			dos.writeByte(type.value);
 
 			if (type == ReadType.TERM) {
-				Node terminal = ng.terminal;
+				Node terminal = gn.terminal;
 
 				if (terminal instanceof Atom) {
 					dos.writeByte((byte) 'a');
@@ -244,7 +244,7 @@ public class Grapher {
 			}
 
 			if (type == ReadType.TREE) {
-				dos.writeUTF(ng.op.getName());
+				dos.writeUTF(gn.op.getName());
 				dos.writeInt(children.get(0).t1 - index);
 				dos.writeInt(children.get(1).t1 - index);
 			}
@@ -264,22 +264,22 @@ public class Grapher {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (NodeGraph ng : ngs) {
+		for (GN gn : gns) {
 			String s;
-			switch (ng.type) {
+			switch (gn.type) {
 			case DICT:
-				s = Read.from(ng.children) //
+				s = Read.from(gn.children) //
 						.map(p -> p.t0 + ":" + p.t1 + ", ") //
 						.collect(As.joined("dict(", ", ", ")"));
 				break;
 			case TERM:
-				s = Formatter.dump(ng.terminal);
+				s = Formatter.dump(gn.terminal);
 				break;
 			case TREE:
-				s = "tree(" + ng.children.get(0).t1 + ng.op.getName() + ng.children.get(1).t1 + ")";
+				s = "tree(" + gn.children.get(0).t1 + gn.op.getName() + gn.children.get(1).t1 + ")";
 				break;
 			case TUPLE:
-				s = Read.from(ng.children) //
+				s = Read.from(gn.children) //
 						.map(p -> p.t1 + ", ") //
 						.collect(As.joined("tuple(", ", ", ")"));
 				break;
