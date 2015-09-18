@@ -54,7 +54,8 @@ ic-compile0 .fs (INVOKE .mr .params) .e0/.ex
 	:- once (
 		.mr = METHOD .this .sub
 		; .mr = MEMORY 8 .pointer
-		, .this = MEMORY 4 .pointer, .sub = MEMORY 4 (TREE ' + ' .pointer (NUMBER 4))
+		, .this = MEMORY 4 .pointer
+		, .sub = MEMORY 4 (TREE ' + ' .pointer (NUMBER 4))
 	)
 	, .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
