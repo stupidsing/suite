@@ -48,8 +48,8 @@ asis:_s:_a (HLT ()) (+xF4, .e)/.e #
 asis:.s:.a (IDIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 7 .e #
 asis:.s:.a (IMUL .rm) .e :- asi-rm:.s:.a +xF6 .rm 5 .e #
 asis:.s:.a (IMUL (.reg, .rm)) .e0/.ex :- as-rm-regwd:.s:.a .rm .reg .e0/(+x0F, +xAF, .e1)/.e1/.ex #
-asis:.s:.a (IMUL (.reg, .rm, .imm)) .e0/.ex :- as-imm:8 .imm, as-rm-regwd:.s:.a .rm .reg .e0/(+x6B, .e1)/.e1/.e2, as-verify-emit:8 .imm .e2/.ex #
-asis:.s:.a (IMUL (.reg, .rm, .imm)) .e0/.ex :- as-imm:.s .imm, as-rm-regwd:.s:.a .rm .reg .e0/(+x69, .e1)/.e1/.e2, as-verify-emit:.s .imm .e2/.ex #
+asis:.s:.a (IMUL (.reg, .rm, .imm)) .e0/.ex :- as-rm-regwd:.s:.a .rm .reg .e0/(+x6B, .e1)/.e1/.e2, as-verify-emit:8 .imm .e2/.ex #
+asis:.s:.a (IMUL (.reg, .rm, .imm)) .e0/.ex :- as-rm-regwd:.s:.a .rm .reg .e0/(+x69, .e1)/.e1/.e2, as-verify-emit:.s .imm .e2/.ex #
 asis:.s:_a (IN (.val, .port)) .e :- asi-in-out:.s .val .port +xE4 .e #
 asis:.s:.a (INC .op) .e :- asi-1op:.s:.a .op +x40 +xFE 0 .e #
 asis:_s:_a (INT 3) (+xCC, .e)/.e #
@@ -112,7 +112,7 @@ asis:_s:_a (POP GS) (+x0F, +xA9, .e)/.e #
 asis:_s:_a (POP SS) (+x17, .e)/.e #
 asis:_s:_a (POPA ()) (+x61, .e)/.e #
 asis:_s:_a (POPF ()) (+x9D, .e)/.e #
-asis:.s:_a (PUSH .imm) (.b, .e1)/.ex :- as-imm:.s .imm, as-verify-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +x6A) (.b = +x68) #
+asis:.s:_a (PUSH .imm) (.b, .e1)/.ex :- as-verify-emit:.s .imm .e1/.ex, if (.s = 8) (.b = +x6A) (.b = +x68) #
 asis:.s:.a (PUSH .op) .e :- asi-1op:.s:.a .op +x50 +xFE 6 .e, member (16, 32, 64,) .s #
 asis:_s:_a (PUSH CS) (+x0E, .e)/.e #
 asis:_s:_a (PUSH DS) (+x1E, .e)/.e #
@@ -218,8 +218,7 @@ asi-reg-rm-extended:.size:.a .reg .rm .b0 .e0/.ex
 #
 
 asi-rm-imm8:.size:.a .rm .imm8 .n .e0/.e1/.e2/.ex
-	:- as-imm:8 .imm8
-	, as-mod-num-rm:.size:.a .rm (0 .n) .e0/.e1/.e2/.e3
+	:- as-mod-num-rm:.size:.a .rm (0 .n) .e0/.e1/.e2/.e3
 	, as-verify-emit:8 .imm8 .e3/.ex
 #
 
@@ -290,8 +289,8 @@ as-mod-rm:.size:_a .reg (3 (.rexr .r)) () (0 0)
 	:- as-rex-reg:.size .reg .rexr .r
 #
 as-mod-rm:_:.a (`.abs`) (0 (0 5)) () (32 .disp)
-	:- as-verify-imm:32 .abs
-	, once (as-long-mode, .disp = .abs - .a; .disp = .abs)
+	:- as-verify-imm:32 .abs .imm
+	, once (as-long-mode, .disp = .imm - .a; .disp = .imm)
 #
 as-mod-rm:_:_a .op (1 (.rexr 5)) () (8 0)
 	:- (.op = `.reg`; .op = `.reg + 0`)
@@ -327,13 +326,24 @@ as-disp-mod:.ds .disp .mod
 	; .mod = 2, .ds = 32
 #
 
-as-verify-emit:.size .d .e :- as-verify-imm:.size .d, as-emit:.size .d .e #
+as-verify-emit:.size .imm .e
+	:- as-verify-imm:.size .imm .i
+	, as-emit:.size .i .e
+#
 
 as-emit:8 .d (E8 .d, .e)/.e #
 as-emit:16 .d (E16 .d, .e)/.e #
 as-emit:32 .d (E32 .d, .e)/.e #
 
-as-verify-imm:.size .imm :- once (not (bound .imm); as-imm:.size .imm) #
+as-verify-imm:.size .imm .i
+	:- once (not (bound .imm)
+		; .imm = .prefix .i
+		, as-prefix-size .prefix .size
+		, as-imm:.size .i
+		; as-imm:.size .imm
+		, .imm = .i
+	)
+#
 
 as-imm:8 .imm :- is.int .imm, -128 <= .imm, .imm < 128 #
 as-imm:16 .imm :- is.int .imm, -32768 <= .imm, .imm < 32768 #
