@@ -204,25 +204,16 @@ ic-let .fs (MEMORY .size .pointer0) (MEMORY .size .pointer1) .e0/.ex
 	, .e3 = (_ R-, .ex)
 #
 
-ic-compile-operand _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
-	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
-#
-ic-compile-operand _ (MEMORY 4 THIS) .e0/.ex .op
-	:- .e0 = (_ R+, .ex), .op = `EBP`
-#
-ic-compile-operand .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
-	:- ic-compile .fs .pointer .e0/.ex, .op = `$0 + .i`
-#
-ic-compile-operand .fs (MEMORY 4 .pointer) .e0/.ex .op
-	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
-#
-
 ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
 #
 ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
 	, once (
-		ic-compile .fs1 .p .e1/.e2
+		ic-compile-operand .fs1 .p .e1/.e2 .op
+		, ic-push .op .fs1/.fsx .e2/.e3
+		, .e3 = (_ R-, .ex)
+		, .f0 = (_ POP (EDX), .f1)
+		; ic-compile .fs1 .p .e1/.e2
 		, ic-push $0 .fs1/.fsx .e2/.e3
 		, .e3 = (_ R-, .ex)
 		, .f0 = (_ POP (EDX), .f1)
@@ -240,6 +231,19 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
+#
+
+ic-compile-operand _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
+#
+ic-compile-operand _ (MEMORY 4 THIS) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP`
+#
+ic-compile-operand .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
+	:- ic-compile .fs .pointer .e0/.ex, .op = `$0 + .i`
+#
+ic-compile-operand .fs (MEMORY 4 .pointer) .e0/.ex .op
+	:- ic-compile .fs .pointer .e0/.ex, .op = `$0`
 #
 
 ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
