@@ -66,7 +66,7 @@ declare idt-setup = function [] (
 				declare irqf as (int * 2);
 				let irqf:0 = irq;
 				let irqf:1 = irq-sink;
-				(irq-sink && (irqf as (function [int,])) [irq-number,]);
+				(irq-sink && (irqf as (function [int,] int)) [irq-number,]);
 
 				-- Sends end of interrupt signal
 				(irq-number >= 8 && outb [+xA0, +x20,]);

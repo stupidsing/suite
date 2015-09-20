@@ -165,12 +165,13 @@ ic-parse-type int I32
 #
 ic-parse-type byte I8
 #
-ic-parse-type (baseless [.ts]) (METHOD0-OF .types)
+ic-parse-type (baseless [.ts] .rt) (METHOD0-OF .types .returnType)
 	:- zip .ts .types .list
 	, list.query .list .t:.type (ic-parse-type .t .type)
+	, ic-parse-type .rt .returnType
 #
-ic-parse-type (function .m) (METHOD-OF .types)
-	:- ic-parse-type (baseless .m) (METHOD0-OF .types)
+ic-parse-type (function .m .rt) (METHOD-OF .types .returnType)
+	:- ic-parse-type (baseless .m .rt) (METHOD0-OF .types .returnType)
 #
 ic-parse-type pointer:.t (POINTER-OF .type)
 	:- ic-parse-type .t .type

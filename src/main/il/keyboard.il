@@ -13,5 +13,5 @@ declare kb-setup = function [] (
 );
 
 declare kb-teardown = function [] (
-	irq-set-sink [1, 0 as baseless [int,],];
+	irq-set-sink [1, 0 as (baseless [int,] int),];
 );

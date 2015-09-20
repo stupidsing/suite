@@ -79,9 +79,15 @@ ic-rewrite-type I32 I32
 ic-rewrite-type (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
 	:- ic-rewrite-type .type0 .type1
 #
-ic-rewrite-type (METHOD0-OF .types0) (METHOD0-OF .types1)
+ic-rewrite-type (METHOD0-OF .types0 .returnType0) (METHOD0-OF .types1 .returnType1)
 	:- zip .types0 .types1 .list
 	, list.query .list .type0:.type1 (ic-rewrite-type .type0 .type1)
+	, ic-rewrite-type .returnType0 .returnType1
+#
+ic-rewrite-type (METHOD-OF .types0 .returnType0) (METHOD-OF .types1 .returnType1)
+	:- zip .types0 .types1 .list
+	, list.query .list .type0:.type1 (ic-rewrite-type .type0 .type1)
+	, ic-rewrite-type .returnType0 .returnType1
 #
 ic-rewrite-type (POINTER-OF .type0) (POINTER-OF .type1)
 	:- ic-rewrite-type .type0 .type1

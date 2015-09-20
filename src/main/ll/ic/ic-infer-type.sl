@@ -17,8 +17,8 @@ ic-infer-type (INDEX .type .array .index) .type
 	:- ic-infer-type .array (ARRAY-OF _ .type)
 	, ic-infer-type .index I32
 #
-ic-infer-type (INVOKE .method2 .params) I32
-	:- ic-infer-type .method2 (METHOD-OF .paramTypes)
+ic-infer-type (INVOKE .method2 .params) .returnType
+	:- ic-infer-type .method2 (METHOD-OF .paramTypes .returnType)
 	, zip .params .paramTypes .list
 	, list.query .list .param:.paramType (ic-infer-type .param .paramType)
 #
@@ -26,16 +26,16 @@ ic-infer-type (LET .var .value) .type
 	:- ic-infer-type .var .type
 	, ic-infer-type .value .type
 #
-ic-infer-type (METHOD0 () .do) (METHOD0-OF ())
-	:- ic-infer-type .do I32
+ic-infer-type (METHOD0 () .do) (METHOD0-OF () .returnType)
+	:- ic-infer-type .do .returnType
 #
-ic-infer-type (METHOD0 (PARAM .paramType .var, .params) .do0) (METHOD0-OF (.paramType, .paramTypes))
+ic-infer-type (METHOD0 (PARAM .paramType .var, .params) .do0) (METHOD0-OF (.paramType, .paramTypes) .returnType)
 	:- replace (VAR .var) (OBJECT .paramType NULL) .do0 .do1
-	, ic-infer-type (METHOD0 .params .do1) (METHOD0-OF .paramTypes)
+	, ic-infer-type (METHOD0 .params .do1) (METHOD0-OF .paramTypes .returnType)
 #
-ic-infer-type (METHOD .this .method) (METHOD-OF .paramTypes)
+ic-infer-type (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
 	:- ic-infer-type .this I32
-	, ic-infer-type .method (METHOD0-OF .paramTypes)
+	, ic-infer-type .method (METHOD0-OF .paramTypes .returnType)
 #
 ic-infer-type NOP _
 #
@@ -79,6 +79,6 @@ ic-infer-type (WHILE .while .do) I32
 	:- ic-infer-type .while I32
 	, ic-infer-type .do I32
 #
-ic-infer-type .do _
-	:- ic-error "Cannot resolve type of" .do
+ic-infer-type .do .type
+	:- ic-error "Cannot resolve type of" .do "to" .type
 #

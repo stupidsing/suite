@@ -52,9 +52,9 @@ ic-type-size (ARRAY-OF .arraySize .type) .size
 	:- ic-type-size .type .elementSize
 	, let .size (.arraySize * .elementSize)
 #
-ic-type-size (METHOD0-OF _) 4
+ic-type-size (METHOD0-OF _ _) 4
 #
-ic-type-size (METHOD-OF _) 8
+ic-type-size (METHOD-OF _ _) 8
 #
 ic-type-size (POINTER-OF _) 4
 #
