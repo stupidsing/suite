@@ -6,6 +6,7 @@ ic-infer-type (DECLARE .varType .var .do0) .type
 #
 ic-infer-type (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
 	:- ic-infer-type .do (STRUCT-OF .nameTypes)
+	, bound .nameTypes
 	, member .nameTypes (.field .fieldType)
 #
 ic-infer-type (IF .if .then .else) .type
