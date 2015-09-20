@@ -61,6 +61,9 @@ ic-parse .i (NUMBER .i)
 ic-parse `.pointer` (OBJECT _ .pointer1)
 	:- ic-parse .pointer .pointer1
 #
+ic-parse (no-type .do) (PRAGMA (TYPE-CAST _) .do1)
+	:- ic-parse .do .do1
+#
 ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)
 	:- ic-parse-type .t .type
 	, ic-parse .do .do1
