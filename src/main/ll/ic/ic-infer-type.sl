@@ -23,7 +23,7 @@ ic-infer-type (INVOKE .method2 .params) .returnType
 	, zip .params .paramTypes .list
 	, list.query .list .param:.paramType (ic-infer-type .param .paramType)
 #
-ic-infer-type (LET .var .value) .type
+ic-infer-type (LET .var .value) I32
 	:- ic-infer-type .var .type
 	, ic-infer-type .value .type
 #
