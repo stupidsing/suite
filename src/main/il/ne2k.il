@@ -4,7 +4,7 @@ constant io-base = +x300;
 constant mem-base = 16384;
 constant mem-size = 16384;
 
-declare-as-pointer ne2k-mac-address/(int * 2);
+declare-as-pointer ne2k-mac-address/(byte * 8);
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 
@@ -81,7 +81,7 @@ declare ne2k-setup = function [] (
 		outb [io-base + +x00, +x21,];
 		outb [io-base + +x0E, +x49,];
 
-		declare-as-pointer romdata/(int * 4);
+		declare-as-pointer romdata/(byte * 16);
 		ne2k-read [0, romdata, 16,];
 		for (declare p = 0; p < 6; p =+ 1) (
 			copy [ne2k-mac-address + p, romdata + p shl 1, 1,];
