@@ -62,9 +62,9 @@ ic-infer-type (PRE-ADD-NUMBER .pointer _) I32
 ic-infer-type (REF OBJECT _ .pointer) I32
 	:- ic-infer-type .pointer I32
 #
-ic-infer-type (SEQ .do0 .do1) I32
+ic-infer-type (SEQ .do0 .do1) .type
 	:- ic-infer-type .do0 _
-	, ic-infer-type .do1 I32
+	, ic-infer-type .do1 .type
 #
 ic-infer-type (SNIPPET _) I32
 #
