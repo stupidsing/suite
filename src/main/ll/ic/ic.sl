@@ -31,6 +31,7 @@ ic-compile .fs .do .e0/.ex
 
 ic-compile-operand .fs .do .e .op
 	:- ic-compile-operand0 .fs .do .e .op
+	, !
 #
 ic-compile-operand .fs .do .e $0
 	:- ic-compile0 .fs .do .e
