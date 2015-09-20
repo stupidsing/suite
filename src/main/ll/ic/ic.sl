@@ -25,8 +25,8 @@ ic-compile .fs .do .e0/.ex
 	:- ic-compile-operand0 .fs .do .e0/.e1 .op
 	, !, .e1 = (_ MOV ($0, .op), .ex)
 #
-ic-compile .fs .do .e0/.ex
-	:- ic-compile0 .fs .do .e0/.ex
+ic-compile .fs .do .e
+	:- ic-compile0 .fs .do .e
 #
 
 ic-compile-operand .fs .do .e .op
