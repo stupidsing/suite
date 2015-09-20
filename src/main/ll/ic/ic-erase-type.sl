@@ -46,6 +46,8 @@ ic-struct-offset (_ .dummyType, .nameTypes) .name .type .offset
 
 ic-type-size I32 4
 #
+ic-type-size I8 1
+#
 ic-type-size (ARRAY-OF .arraySize .type) .size
 	:- ic-type-size .type .elementSize
 	, let .size (.arraySize * .elementSize)
