@@ -157,7 +157,8 @@ ic-compile0 .fs (TREE .op .value0 .value1) .e0/.ex
 	)
 #
 ic-compile0 .fs (WHILE .while .do) .e0/.ex
-	:- .e0 = (.nextLabel (), .e1)
+	:- .e0 = (.nextLabel ()
+		, .e1)
 	, ic-compile .fs .while .e1/.e2
 	, .e2 = (_ OR ($0, $0)
 		, _ R-
