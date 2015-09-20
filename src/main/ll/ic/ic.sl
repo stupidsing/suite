@@ -60,11 +60,11 @@ ic-compile0 .fs (INVOKE .mr .params) .e0/.ex
 	, .e0 = (_ RSAVE, .e1)
 	, ic-push EBP .fs/.fs1 .e1/.e2
 	, ic-push-pop-parameters .fs1/.fs2 .params .e2/.e3 .e6/.e7
-	, ic-compile-operand .fs2 .sub .e3/.e4 .subOp
+	, ic-compile .fs2 .sub .e3/.e4
 	, ic-compile-operand .fs2 .this .e4/.e5 .thisOp
 	, .e5 = (_ MOV (EBP, .thisOp)
 		, _ R-
-		, _ CALL (.subOp)
+		, _ CALL ($0)
 		, _ R-
 		, _ MOV (ECX, EAX)
 		, .e6)
