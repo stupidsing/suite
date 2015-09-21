@@ -77,7 +77,7 @@ ic-infer-type .vs (TREE _ .value0 .value1) I32
 	, ic-infer-type .vs .value1 I32
 #
 ic-infer-type .vs (VAR .var) .type
-	:- member .vs (.var .type)
+	:- once (member .vs (.var .type))
 #
 ic-infer-type .vs (WHILE .while .do) I32
 	:- ic-infer-type .vs .while I32
