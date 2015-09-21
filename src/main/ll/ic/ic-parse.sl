@@ -71,6 +71,9 @@ ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
+ic-parse (.do0;) .parsed
+	:- ic-parse .do0 .parsed
+#
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
 	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = declare-as-pointer _)
 	, ic-parse .do0 .parsed0
