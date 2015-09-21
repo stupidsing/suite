@@ -6,7 +6,7 @@
 
 compile-imperative .do0 .e0/.ex
 	:- ic-parse .do0 .do1
-	, !, ic-infer-type .do1 I32
+	, !, ic-infer-type () .do1 I32
 	, !, ic-erase-type .do1 .do2
 	, !, ic-compile0 0 .do2 .e0/.ex
 	, !

@@ -20,8 +20,8 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 	protected boolean run(String args[]) throws IOException {
 		// String from = "ic-parse .0 .1";
 		// String to = "ic-parse .f .0 .1";
-		String from = "ic-compile .0 .1 .2";
-		String to = "ic-compile .f/.0/.ve .0 .1 .2";
+		String from = "ic-infer-type .0 .1";
+		String to = "ic-infer-type .ts .0 .1";
 
 		FileUtil.findPaths(Paths.get("src/")) //
 				.filter(path -> WildcardUtil.isMatch("ic*.sl", path.getFileName().toString())) //
