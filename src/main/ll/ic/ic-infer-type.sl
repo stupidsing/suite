@@ -10,7 +10,8 @@ ic-infer-type (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
 	, member .nameTypes (.field .fieldType)
 #
 ic-infer-type (IF .if .then .else) .type
-	:- ic-infer-type .if .type
+	:- ic-infer-type .if .ifType
+	, once (.ifType = I32; .ifType = POINTER-OF _)
 	, ic-infer-type .then .type
 	, ic-infer-type .else .type
 #
