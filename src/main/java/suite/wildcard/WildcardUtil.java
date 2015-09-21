@@ -15,7 +15,7 @@ public class WildcardUtil {
 			if (ph != '*')
 				return !s.isEmpty() && s.charAt(0) == ph && isMatch(pt, s.substring(1));
 			else
-				return isMatch(pt, s) || !s.isEmpty() && isMatch(pt, s.substring(1));
+				return isMatch(pt, s) || !s.isEmpty() && isMatch(pattern, s.substring(1));
 		} else
 			return s.isEmpty();
 	}
