@@ -92,6 +92,9 @@ ic-compile0 .fs (IF .if .then .else) .e0/.ex
 ic-compile0 .fs (LET .var .value) .e0/.ex
 	:- ic-let .fs .value .var .e0/.ex
 #
+ic-compile0 _ (MEMORY .size .pointer) _
+	:- .size != 4, ic-error "Cannot load non-dword memory " .pointer
+#
 ic-compile0 _ (METHOD0 .pss .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel RBEGIN
