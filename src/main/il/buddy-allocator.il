@@ -1,5 +1,5 @@
 declare ba-sync = 0;
-declare-as-pointer lists/(int * 64);
+declare-pointer lists to (int * 64);
 
 declare ba-region0 = +x50000;
 declare ba-regionx = +xA0000;

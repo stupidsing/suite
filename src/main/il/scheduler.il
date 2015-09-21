@@ -1,6 +1,6 @@
 declare sch-sync = 0;
 declare current-process = 0;
-declare-as-pointer processes/(int * 3);
+declare-pointer processes to (int * 3);
 
 declare sch-switch = function [] (-- Round robin in action
 	sync-try-enter [& sch-sync,] && (
