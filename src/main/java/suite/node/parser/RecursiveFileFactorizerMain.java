@@ -24,8 +24,11 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 		Pair<String, String> ft1 = Pair.of("ic-compile0 .0 .1 .2", "ic-compile0 .f/.0/.vs .1 .2");
 		Pair<String, String> ft2 = Pair.of("ic-compile-operand .0 .1 .2 .3", "ic-compile-operand .f/.0/.vs .1 .2 .3");
 		Pair<String, String> ft3 = Pair.of("ic-compile-operand0 .0 .1 .2 .3", "ic-compile-operand0 .f/.0/.vs .1 .2 .3");
+		Pair<String, String> ft4 = Pair.of("ic-compile-better-option .0 .1 .2", "ic-compile-better-option .f/.0/.vs .1 .2");
+		Pair<String, String> ft5 = Pair.of("ic-let .0 .1 .2 .3", "ic-let .f/.0/.vs .1 .2 .3");
+		Pair<String, String> ft6 = Pair.of("ic-push-pop-parameters .0 .1 .2 .3", "ic-push-pop-parameters .f/.0/.vs .1 .2 .3");
 
-		for (Pair<String, String> ft : Arrays.asList(ft0, ft1, ft2, ft3))
+		for (Pair<String, String> ft : Arrays.asList(ft0, ft1, ft2, ft3, ft4, ft5, ft6))
 			FileUtil.findPaths(Paths.get("src/")) //
 					.filter(path -> WildcardUtil.isMatch("ic*.sl", path.getFileName().toString())) //
 					.forEach(path -> {
