@@ -97,7 +97,7 @@ ic-compile0 _ (MEMORY .size .pointer) _
 #
 ic-compile0 _ (METHOD0 .pss .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
-		, .funLabel RBEGIN
+		, .funLabel FR-BEGIN
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
@@ -108,7 +108,7 @@ ic-compile0 _ (METHOD0 .pss .do) .e0/.ex
 		, _ POP (EBP)
 		, _ RET ()
 		, _ R-
-		, _ REND
+		, _ FR-END
 		, .label R+
 		, _ MOV ($0, .funLabel)
 		, .ex)
