@@ -20,13 +20,13 @@ public class StackAssembler extends Assembler {
 	private Node rsOp1 = Atom.of("$1");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
+	private Node FRBGN_ = Atom.of("FR-BEGIN");
+	private Node FREND_ = Atom.of("FR-END");
 	private Fun<Node, Node[]> FRGET_ = Suite.matcher("FR-GET .0");
 	private Fun<Node, Node[]> FRNPOP = Suite.matcher("FR- .0");
 	private Fun<Node, Node[]> FRNPSH = Suite.matcher("FR+ .0");
 	private Fun<Node, Node[]> FRPOP_ = Suite.matcher("FR-POP .0");
 	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
-	private Node RBEGIN = Atom.of("RBEGIN");
-	private Node REND__ = Atom.of("REND");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
 	private Node RREST_ = Atom.of("RRESTORE");
@@ -45,17 +45,39 @@ public class StackAssembler extends Assembler {
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
 
-			if (node0 == RREST_)
+			if (node0 == RREST_) {
 				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
-			else if (node0 == RSAVE_)
+				int arr[] = deque.pop();
+				fs = arr[0];
+				rs = arr[1];
+			} else if (node0 == RSAVE_) {
+				deque.push(new int[] { fs, rs });
+				fs -= 4 * rs;
+				rs = 0;
 				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
-			else {
+			} else {
 				Node node1;
 				Node m[];
 
-				if ((m = FRGET_.apply(node0)) != null) {
+				if (node0 == FRBGN_) {
+					deque.push(new int[] { fs, rs });
+					fs = 0;
+					rs = 0;
+					node1 = Atom.NIL;
+				} else if (node0 == FREND_) {
+					if (fs != 0)
+						throw new RuntimeException("Unbalanced frame stack in subroutine definition");
+					else if (rs != 0)
+						throw new RuntimeException("Unbalanced register stack in subroutine definition");
+					else {
+						int arr[] = deque.pop();
+						fs = arr[0];
+						rs = arr[1];
+					}
+					node1 = Atom.NIL;
+				} else if ((m = FRGET_.apply(node0)) != null) {
 					((Reference) m[0].finalNode()).bound(Int.of(-fs));
 					node1 = Atom.NIL;
 				} else if ((m = FRNPOP.apply(node0)) != null) {
@@ -68,26 +90,10 @@ public class StackAssembler extends Assembler {
 					node1 = Suite.substitute("SUB (ESP, .0)", int_);
 				} else if ((m = FRPOP_.apply(node0)) != null) {
 					fs -= 4;
-					node1 = Suite.substitute("POP .0", m[0]);
+					node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
 				} else if ((m = FRPSH_.apply(node0)) != null) {
 					fs += 4;
-					node1 = Suite.substitute("PUSH .0", m[0]);
-				} else if (node0 == RBEGIN) {
-					deque.push(new int[] { fs, rs });
-					fs = 0;
-					rs = 0;
-					node1 = Atom.NIL;
-				} else if (node0 == REND__) {
-					if (fs != 0)
-						throw new RuntimeException("Unbalanced frame stack in subroutine definition");
-					else if (rs != 0)
-						throw new RuntimeException("Unbalanced register stack in subroutine definition");
-					else if (fs == 0 && rs == 0) {
-						int arr[] = deque.pop();
-						fs = arr[0];
-						rs = arr[1];
-					}
-					node1 = Atom.NIL;
+					node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
 				} else if (node0 == RPOP__) {
 					rs--;
 					node1 = Atom.NIL;
