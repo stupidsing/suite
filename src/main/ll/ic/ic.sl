@@ -217,7 +217,7 @@ ic-compile-better-option .fs (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .fs .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
-ic-compile-better-option _ 0 (_ R+, _ XOR ($0, $0), .e)/.e
+ic-compile-better-option _ (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
 ic-let .fs (METHOD .this .sub) (MEMORY 8 .pointer) .e0/.ex
