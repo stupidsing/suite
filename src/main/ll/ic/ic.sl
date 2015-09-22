@@ -18,7 +18,7 @@ compile-imperative .do0 .e0/.ex
 -- ECX - scratch; shift counter; divisor
 -- EDX - scratch; dividend
 -- ESI - expression stack
--- EDI - unused
+-- EDI - scratch
 -- EBP - stack frame
 -- ESP - stack pointer
 ic-compile .fs .do .e0/.ex
