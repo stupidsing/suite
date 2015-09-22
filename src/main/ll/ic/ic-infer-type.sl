@@ -1,7 +1,7 @@
 ic-infer-type _ (ASM _) I32
 #
 ic-infer-type .vs (DECLARE .varType .var .do) .type
-	:- ic-infer-type (.var .varType, .ts) .do .type
+	:- ic-infer-type (.var .varType, .vs) .do .type
 #
 ic-infer-type .vs (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
 	:- ic-infer-type .vs .do (STRUCT-OF .nameTypes)
