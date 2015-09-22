@@ -9,6 +9,7 @@ import suite.Suite;
 import suite.adt.Pair;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
+import suite.lp.predicate.EvalPredicates;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -29,6 +30,7 @@ public class StackAssembler extends Assembler {
 	private Fun<Node, Node[]> FRNPSH = Suite.matcher("FR+ .0");
 	private Fun<Node, Node[]> FRPOP_ = Suite.matcher("FR-POP .0");
 	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
+	private Fun<Node, Node[]> LET___ = Suite.matcher("LET (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
 	private Node RREST_ = Atom.of("RRESTORE");
@@ -47,69 +49,73 @@ public class StackAssembler extends Assembler {
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
+			Node node1;
+			Node m[];
 
-			if (node0 == RREST_) {
+			if (node0 == FRBGN_) {
+				deque.push(new int[] { fs, rs });
+				fs = 0;
+				rs = 0;
+				node1 = Atom.NIL;
+			} else if (node0 == FREND_) {
+				if (fs != 0)
+					throw new RuntimeException("Unbalanced frame stack in subroutine definition");
+				else if (rs != 0)
+					throw new RuntimeException("Unbalanced register stack in subroutine definition");
+				else {
+					int arr[] = deque.pop();
+					fs = arr[0];
+					rs = arr[1];
+				}
+				node1 = Atom.NIL;
+			} else if ((m = FRGET_.apply(node0)) != null)
+				if (Binder.bind(m[0], Int.of(-fs), trail))
+					node1 = Atom.NIL;
+				else
+					throw new RuntimeException("Cannot bind local variable offset");
+			else if ((m = FRNPOP.apply(node0)) != null) {
+				Int int_ = (Int) m[0].finalNode();
+				fs -= int_.number;
+				node1 = Suite.substitute("ADD (ESP, .0)", int_);
+			} else if ((m = FRNPSH.apply(node0)) != null) {
+				Int int_ = (Int) m[0].finalNode();
+				fs += int_.number;
+				node1 = Suite.substitute("SUB (ESP, .0)", int_);
+			} else if ((m = FRPOP_.apply(node0)) != null) {
+				fs -= 4;
+				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
+			} else if ((m = FRPSH_.apply(node0)) != null) {
+				fs += 4;
+				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
+			} else if ((m = LET___.apply(node0)) != null)
+				if (Binder.bind(m[0], Int.of(new EvalPredicates().evaluate(m[1])), trail))
+					node1 = Atom.NIL;
+				else
+					throw new RuntimeException("Cannot calculate expression");
+			else if (node0 == RPOP__) {
+				rs--;
+				node1 = Atom.NIL;
+			} else if (node0 == RPSH__) {
+				rs++;
+				node1 = Atom.NIL;
+			} else if (node0 == RREST_) {
 				int arr[] = deque.pop();
 				fs = arr[0];
 				rs = arr[1];
 				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
+				node1 = Atom.NIL;
 			} else if (node0 == RSAVE_) {
 				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 				deque.push(new int[] { fs, rs });
 				fs += 4 * rs;
 				rs = 0;
-			} else {
-				Node node1;
-				Node m[];
+				node1 = Atom.NIL;
+			} else
+				node1 = rewrite(rs, node0);
 
-				if (node0 == FRBGN_) {
-					deque.push(new int[] { fs, rs });
-					fs = 0;
-					rs = 0;
-					node1 = Atom.NIL;
-				} else if (node0 == FREND_) {
-					if (fs != 0)
-						throw new RuntimeException("Unbalanced frame stack in subroutine definition");
-					else if (rs != 0)
-						throw new RuntimeException("Unbalanced register stack in subroutine definition");
-					else {
-						int arr[] = deque.pop();
-						fs = arr[0];
-						rs = arr[1];
-					}
-					node1 = Atom.NIL;
-				} else if ((m = FRGET_.apply(node0)) != null)
-					if (Binder.bind(m[0], Int.of(-fs), trail))
-						node1 = Atom.NIL;
-					else
-						throw new RuntimeException("Cannot bind local variable offset");
-				else if ((m = FRNPOP.apply(node0)) != null) {
-					Int int_ = (Int) m[0].finalNode();
-					fs -= int_.number;
-					node1 = Suite.substitute("ADD (ESP, .0)", int_);
-				} else if ((m = FRNPSH.apply(node0)) != null) {
-					Int int_ = (Int) m[0].finalNode();
-					fs += int_.number;
-					node1 = Suite.substitute("SUB (ESP, .0)", int_);
-				} else if ((m = FRPOP_.apply(node0)) != null) {
-					fs -= 4;
-					node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
-				} else if ((m = FRPSH_.apply(node0)) != null) {
-					fs += 4;
-					node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
-				} else if (node0 == RPOP__) {
-					rs--;
-					node1 = Atom.NIL;
-				} else if (node0 == RPSH__) {
-					rs++;
-					node1 = Atom.NIL;
-				} else
-					node1 = rewrite(rs, node0);
-
-				lnis1.add(Pair.of(lni0.t0, node1));
-			}
+			lnis1.add(Pair.of(lni0.t0, node1));
 		}
 
 		return lnis1;
