@@ -8,22 +8,29 @@ import java.util.List;
 import suite.Suite;
 import suite.adt.Pair;
 import suite.node.Atom;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.TreeRewriter;
+import suite.util.FunUtil.Fun;
 
 public class StackAssembler extends Assembler {
 
-	private Node stackOperand0 = Atom.of("$0");
-	private Node stackOperand1 = Atom.of("$1");
+	private Node rsOp0 = Atom.of("$0");
+	private Node rsOp1 = Atom.of("$1");
 	private Node registers[] = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
-	private Node push = Atom.of("R+");
-	private Node pop = Atom.of("R-");
-	private Node begin = Atom.of("RBEGIN");
-	private Node end = Atom.of("REND");
-	private Node rest = Atom.of("RRESTORE");
-	private Node save = Atom.of("RSAVE");
+	private Fun<Node, Node[]> FRGET_ = Suite.matcher("FR-GET .0");
+	private Fun<Node, Node[]> FRNPOP = Suite.matcher("FR- .0");
+	private Fun<Node, Node[]> FRNPSH = Suite.matcher("FR+ .0");
+	private Fun<Node, Node[]> FRPOP_ = Suite.matcher("FR-POP .0");
+	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
+	private Node RBEGIN = Atom.of("RBEGIN");
+	private Node REND__ = Atom.of("REND");
+	private Node RPOP__ = Atom.of("R-");
+	private Node RPSH__ = Atom.of("R+");
+	private Node RREST_ = Atom.of("RRESTORE");
+	private Node RSAVE_ = Atom.of("RSAVE");
 
 	public StackAssembler(int bits) {
 		super(bits);
@@ -32,39 +39,63 @@ public class StackAssembler extends Assembler {
 	@Override
 	public List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
-		Deque<Integer> deque = new ArrayDeque<>();
-		int sp = 0;
+		Deque<int[]> deque = new ArrayDeque<>();
+		int fs = 0, rs = 0;
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
 			Node node0 = lni0.t1;
 
-			if (node0 == rest)
-				for (int r = sp - 1; r >= 0; r--)
+			if (node0 == RREST_)
+				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
-			else if (node0 == save)
-				for (int r = 0; r < sp; r++)
+			else if (node0 == RSAVE_)
+				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 			else {
 				Node node1;
+				Node m[];
 
-				if (node0 == begin) {
-					deque.push(sp);
-					sp = 0;
+				if ((m = FRGET_.apply(node0)) != null) {
+					((Reference) m[0].finalNode()).bound(Int.of(-fs));
 					node1 = Atom.NIL;
-				} else if (node0 == end) {
-					if (sp == 0)
-						sp = deque.pop();
-					else
+				} else if ((m = FRNPOP.apply(node0)) != null) {
+					Int int_ = (Int) m[0].finalNode();
+					fs -= int_.number;
+					node1 = Suite.substitute("ADD (ESP, .0)", int_);
+				} else if ((m = FRNPSH.apply(node0)) != null) {
+					Int int_ = (Int) m[0].finalNode();
+					fs += int_.number;
+					node1 = Suite.substitute("SUB (ESP, .0)", int_);
+				} else if ((m = FRPOP_.apply(node0)) != null) {
+					fs -= 4;
+					node1 = Suite.substitute("POP .0", m[0]);
+				} else if ((m = FRPSH_.apply(node0)) != null) {
+					fs += 4;
+					node1 = Suite.substitute("PUSH .0", m[0]);
+				} else if (node0 == RBEGIN) {
+					deque.push(new int[] { fs, rs });
+					fs = 0;
+					rs = 0;
+					node1 = Atom.NIL;
+				} else if (node0 == REND__) {
+					if (fs != 0)
+						throw new RuntimeException("Unbalanced frame stack in subroutine definition");
+					else if (rs != 0)
 						throw new RuntimeException("Unbalanced register stack in subroutine definition");
+					else if (fs == 0 && rs == 0) {
+						int arr[] = deque.pop();
+						fs = arr[0];
+						rs = arr[1];
+					}
 					node1 = Atom.NIL;
-				} else if (node0 == push) {
-					sp++;
+				} else if (node0 == RPOP__) {
+					rs--;
 					node1 = Atom.NIL;
-				} else if (node0 == pop) {
-					sp--;
+				} else if (node0 == RPSH__) {
+					rs++;
 					node1 = Atom.NIL;
 				} else
-					node1 = rewrite(sp, node0);
+					node1 = rewrite(rs, node0);
 
 				lnis1.add(Pair.of(lni0.t0, node1));
 			}
@@ -75,9 +106,9 @@ public class StackAssembler extends Assembler {
 
 	private Node rewrite(int sp, Node n) {
 		if (sp - 1 >= 0)
-			n = new TreeRewriter().replace(stackOperand0, getRegister(sp - 1), n);
+			n = new TreeRewriter().replace(rsOp0, getRegister(sp - 1), n);
 		if (sp - 2 >= 0)
-			n = new TreeRewriter().replace(stackOperand1, getRegister(sp - 2), n);
+			n = new TreeRewriter().replace(rsOp1, getRegister(sp - 2), n);
 		return n;
 	}
 
