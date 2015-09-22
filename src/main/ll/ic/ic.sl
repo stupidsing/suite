@@ -41,12 +41,11 @@ ic-compile0 .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
 ic-compile0 .fs (ALLOC .size .var .do) .e0/.ex
-	:- let .fs1 (.fs + .size)
-	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
+	:- replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
 	, .e0 = (_ FR+ (.size)
 		, _ FR-GET (.offset)
 		, .e1)
-	, ic-compile .fs1 .do1 .e1/.e2
+	, ic-compile .fs .do1 .e1/.e2
 	, .e2 = (_ FR- (.size)
 		, .ex)
 #
@@ -60,18 +59,19 @@ ic-compile0 .fs (INVOKE .mr .params) .e0/.ex
 		, .this = MEMORY 4 .pointer
 		, .sub = MEMORY 4 (TREE ' + ' .pointer (NUMBER 4))
 	)
-	, .e0 = (_ RSAVE, .e1)
-	, ic-push EBP .fs/.fs1 .e1/.e2
-	, ic-push-pop-parameters .fs1/.fs2 .params .e2/.e3 .e6/.e7
-	, ic-compile .fs2 .sub .e3/.e4
-	, ic-compile-operand .fs2 .this .e4/.e5 .thisOp
-	, .e5 = (_ MOV (EBP, .thisOp)
+	, .e0 = (_ RSAVE
+		, _ FR-PUSH (EBP)
+		, .e1)
+	, ic-push-pop-parameters .fs .params .e1/.e2 .e5/.e6
+	, ic-compile .fs .sub .e2/.e3
+	, ic-compile-operand .fs .this .e3/.e4 .thisOp
+	, .e4 = (_ MOV (EBP, .thisOp)
 		, _ R-
 		, _ CALL ($0)
 		, _ R-
 		, _ MOV (ECX, EAX)
-		, .e6)
-	, .e7 = (_ FR-POP (EBP)
+		, .e5)
+	, .e6 = (_ FR-POP (EBP)
 		, _ RRESTORE
 		, _ R+
 		, _ MOV ($0, ECX)
@@ -242,19 +242,17 @@ ic-let .fs (MEMORY .size .pointer0) (MEMORY .size .pointer1) .e0/.ex
 	, .e3 = (_ R-, .ex)
 #
 
-ic-push-pop-parameters .fs/.fs () .e/.e .f/.f
+ic-push-pop-parameters _ () .e/.e .f/.f
 #
-ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
-	:- ic-push-pop-parameters .fs0/.fs1 .ps .e0/.e1 .f1/.fx
+ic-push-pop-parameters .fs (.p, .ps) .e0/.ex .f0/.fx
+	:- ic-push-pop-parameters .fs .ps .e0/.e1 .f1/.fx
 	, once (
-		ic-compile-operand .fs1 .p .e1/.e2 .op
-		, ic-push .op .fs1/.fsx .e2/.e3
-		, .e3 = (_ R-, .ex)
+		ic-compile-operand .fs .p .e1/.e2 .op
+		, .e2 = (_ FR-PUSH (.op), _ R-, .ex)
 		, .f0 = (_ FR-POP (EDX), .f1)
 		; .e1 = (_ FR+ (.size), .e2)
 		, .f0 = (_ FR- (.size), .f1)
-		, let .fsx (.fs1 + .size)
-		, ic-let .fsx .p (MEMORY .size (REG ESP)) .e2/.e3
+		, ic-let .fs .p (MEMORY .size (REG ESP)) .e2/.e3
 		, .e3 = (_ R-, .ex)
 	)
 #
@@ -265,10 +263,6 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
-#
-
-ic-push .op .fs0/.fsx (_ FR-PUSH .op, .e)/.e
-	:- let .fsx (.fs0 + 4)
 #
 
 ic-right-associative ' + ' #
