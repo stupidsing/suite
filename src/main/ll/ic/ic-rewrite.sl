@@ -1,8 +1,8 @@
 ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
-ic-rewrite (ALLOC .size .var .do0) (ALLOC .size .var .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (ALLOC .var .size .do0) (ALLOC .var .size .do1) (.do0 .do1, .ts)/.ts
 #
-ic-rewrite (DECLARE .type0 .var .do0) (DECLARE .type1 .var .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (DECLARE .var .type0 .do0) (DECLARE .var .type1 .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (FIELD .type0 .field .do0) (FIELD .type1 .field .do1) (.do0 .do1, .ts)/.ts

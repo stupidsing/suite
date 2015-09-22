@@ -40,7 +40,7 @@ ic-compile-operand .fs .do .e $0
 ic-compile0 .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
-ic-compile0 .fs (ALLOC .size .var .do) .e0/.ex
+ic-compile0 .fs (ALLOC .var .size .do) .e0/.ex
 	:- replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
 	, .e0 = (_ FR+ (.size)
 		, _ FR-GET (.offset)
