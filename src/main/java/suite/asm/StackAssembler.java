@@ -7,6 +7,8 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.Pair;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -40,6 +42,7 @@ public class StackAssembler extends Assembler {
 	public List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
 		Deque<int[]> deque = new ArrayDeque<>();
+		Trail trail = new Trail();
 		int fs = 0, rs = 0;
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
@@ -77,10 +80,12 @@ public class StackAssembler extends Assembler {
 						rs = arr[1];
 					}
 					node1 = Atom.NIL;
-				} else if ((m = FRGET_.apply(node0)) != null) {
-					((Reference) m[0].finalNode()).bound(Int.of(-fs));
-					node1 = Atom.NIL;
-				} else if ((m = FRNPOP.apply(node0)) != null) {
+				} else if ((m = FRGET_.apply(node0)) != null)
+					if (Binder.bind(m[0], Int.of(-fs), trail))
+						node1 = Atom.NIL;
+					else
+						throw new RuntimeException("Cannot bind local variable offset");
+				else if ((m = FRNPOP.apply(node0)) != null) {
 					Int int_ = (Int) m[0].finalNode();
 					fs -= int_.number;
 					node1 = Suite.substitute("ADD (ESP, .0)", int_);
