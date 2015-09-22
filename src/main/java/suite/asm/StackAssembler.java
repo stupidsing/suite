@@ -49,17 +49,17 @@ public class StackAssembler extends Assembler {
 			Node node0 = lni0.t1;
 
 			if (node0 == RREST_) {
-				for (int r = rs - 1; r >= 0; r--)
-					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 				int arr[] = deque.pop();
 				fs = arr[0];
 				rs = arr[1];
+				for (int r = rs - 1; r >= 0; r--)
+					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 			} else if (node0 == RSAVE_) {
+				for (int r = 0; r < rs; r++)
+					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 				deque.push(new int[] { fs, rs });
 				fs += 4 * rs;
 				rs = 0;
-				for (int r = 0; r < rs; r++)
-					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 			} else {
 				Node node1;
 				Node m[];
