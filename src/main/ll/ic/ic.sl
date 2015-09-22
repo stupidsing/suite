@@ -44,9 +44,11 @@ ic-compile0 .fs (ALLOC .size .var .do) .e0/.ex
 	:- let .fs1 (.fs + .size)
 	, let .offset (0 - .fs1)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
-	, .e0 = (_ SUB (ESP, .size), .e1)
+	, .e0 = (_ FR+ (.size)
+		, .e1)
 	, ic-compile .fs1 .do1 .e1/.e2
-	, .e2 = (_ ADD (ESP, .size), .ex)
+	, .e2 = (_ FR- (.size)
+		, .ex)
 #
 ic-compile0 _ (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
@@ -69,7 +71,7 @@ ic-compile0 .fs (INVOKE .mr .params) .e0/.ex
 		, _ R-
 		, _ MOV (ECX, EAX)
 		, .e6)
-	, .e7 = (_ POP (EBP)
+	, .e7 = (_ FR-POP (EBP)
 		, _ RRESTORE
 		, _ R+
 		, _ MOV ($0, ECX)
@@ -246,9 +248,9 @@ ic-push-pop-parameters .fs0/.fsx (.p, .ps) .e0/.ex .f0/.fx
 		ic-compile-operand .fs1 .p .e1/.e2 .op
 		, ic-push .op .fs1/.fsx .e2/.e3
 		, .e3 = (_ R-, .ex)
-		, .f0 = (_ POP (EDX), .f1)
-		; .e1 = (_ SUB (ESP, .size), .e2)
-		, .f0 = (_ ADD (ESP, .size), .f1)
+		, .f0 = (_ FR-POP (EDX), .f1)
+		; .e1 = (_ FR+ (.size), .e2)
+		, .f0 = (_ FR- (.size), .f1)
 		, let .fsx (.fs1 + .size)
 		, ic-let .fsx .p (MEMORY .size (REG ESP)) .e2/.e3
 		, .e3 = (_ R-, .ex)
@@ -263,7 +265,7 @@ ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
 	, ic-replace-parameters .vars .s .do1 .dox
 #
 
-ic-push .op .fs0/.fsx (_ PUSH .op, .e)/.e
+ic-push .op .fs0/.fsx (_ FR-PUSH .op, .e)/.e
 	:- let .fsx (.fs0 + 4)
 #
 
@@ -306,12 +308,12 @@ ic-divide .reg
 	(_ MOV (ECX, $0)
 	, _ R-
 	, _ XOR (EDX, EDX)
-	, _ PUSH (EAX)
+	, _ FR-PUSH (EAX)
 	, _ MOV (EAX, $0)
 	, _ R-
 	, _ IDIV (ECX)
 	, _ MOV (ECX, .reg)
-	, _ POP (EAX)
+	, _ FR-POP (EAX)
 	, _ R+
 	, _ MOV ($0, ECX)
 	, .e

@@ -100,8 +100,8 @@ public class StackAssembler extends Assembler {
 				node1 = Atom.NIL;
 			} else if (node0 == RREST_) {
 				int arr[] = deque.pop();
-				fs = arr[0];
 				rs = arr[1];
+				fs -= 4 * rs;
 				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 				node1 = Atom.NIL;
