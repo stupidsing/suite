@@ -53,7 +53,7 @@ public class StackAssembler extends Assembler {
 				rs = arr[1];
 			} else if (node0 == RSAVE_) {
 				deque.push(new int[] { fs, rs });
-				fs -= 4 * rs;
+				fs += 4 * rs;
 				rs = 0;
 				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
