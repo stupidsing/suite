@@ -96,7 +96,10 @@ public class Assembler {
 			Tree tree;
 
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
-				Binder.bind(tree.getLeft(), tree.getRight(), trail);
+				if (!Binder.bind(tree.getLeft(), tree.getRight(), trail))
+					throw new RuntimeException("Bind failed");
+				else
+					;
 			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null)
 				lnis.add(Pair.of((Reference) tree.getLeft(), tree.getRight()));
 			else
