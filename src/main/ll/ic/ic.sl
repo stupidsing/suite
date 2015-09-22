@@ -174,9 +174,9 @@ ic-compile0 .fs (WHILE .while .do) .e0/.ex
 		, .ex)
 #
 
-ic-compile-operand0 .fs (MEMORY 4 (TREE ' + ' (TREE ' + ' .pointer (NUMBER .i0)) (NUMBER .i1))) .e .op
-	:- let .i (.i0 + .i1)
-	, ic-compile-operand0 .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e .op
+ic-compile-operand0 .fs (MEMORY 4 (TREE ' + ' (TREE ' + ' .pointer (NUMBER .i0)) (NUMBER .i1))) .e0/.ex .op
+	:- .e0 = (_ LET .i (.i0 + .i1), .e1)
+	, ic-compile-operand0 .fs (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e1/.ex .op
 #
 ic-compile-operand0 _ (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
 	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
