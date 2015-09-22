@@ -42,9 +42,9 @@ ic-compile0 .fs .do .e0/.ex
 #
 ic-compile0 .fs (ALLOC .size .var .do) .e0/.ex
 	:- let .fs1 (.fs + .size)
-	, let .offset (0 - .fs1)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
 	, .e0 = (_ FR+ (.size)
+		, _ FR-GET (.offset)
 		, .e1)
 	, ic-compile .fs1 .do1 .e1/.e2
 	, .e2 = (_ FR- (.size)
@@ -144,9 +144,11 @@ ic-compile0 .fs (SEQ .do0 .do1) .e0/.ex
 ic-compile0 _ (SNIPPET .snippet) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .snippetLabel ()
+		, _ FR-BEGIN
 		, .e1)
 	, ic-compile 0 .snippet .e1/.e2
 	, .e2 = (_ R-
+		, _ FR-END
 		, .label R+
 		, _ MOV ($0, .snippetLabel)
 		, .ex)
