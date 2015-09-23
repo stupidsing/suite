@@ -33,5 +33,5 @@ trace .pred :- asserta (.pred .ps :- dump .pred .ps, nl, fail) #
 
 yes #
 
-zip () () _ _ _ #
+zip () () () #
 zip (.u, .us) (.v, .vs) (.u:.v, .uvs) :- zip .us .vs .uvs #
