@@ -30,7 +30,7 @@ ic-infer-type .vs (LET .var .value) I32
 ic-infer-type .vs (METHOD0 () .do) (METHOD0-OF () .returnType)
 	:- ic-infer-type .vs .do .returnType
 #
-ic-infer-type .vs (METHOD0 (PARAM .paramType .var, .params) .do0) (METHOD0-OF (.paramType, .paramTypes) .returnType)
+ic-infer-type .vs (METHOD0 (PARAM .var .paramType, .params) .do0) (METHOD0-OF (.paramType, .paramTypes) .returnType)
 	:- replace (VAR .var) (OBJECT .paramType NULL) .do0 .do1
 	, ic-infer-type .vs (METHOD0 .params .do1) (METHOD0-OF .paramTypes .returnType)
 #

@@ -144,11 +144,11 @@ ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 ic-parse-sugar true 1
 #
 
-ic-parse-parameter (.param as .t) (PARAM .type .param)
+ic-parse-parameter (.param as .t) (PARAM .param .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-parameter .p .param
-	:- not (.p = _/_), .param = PARAM I32 .p
+	:- not (.p = _/_), .param = PARAM .p I32
 #
 
 ic-parse-type (.tv0 => .type0) .typex

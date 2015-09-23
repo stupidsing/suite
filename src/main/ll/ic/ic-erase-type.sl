@@ -17,7 +17,7 @@ ic-erase-type (INDEX .type .array0 .i0) (MEMORY .size (TREE ' + ' (REF .arrayx) 
 #
 ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 	:- zip .params .pss .list
-	, list.query .list (PARAM .type .var):(PS .size .var) (ic-type-size .type .size)
+	, list.query .list (PARAM .var .type):(PS .var .size) (ic-type-size .type .size)
 	, ic-erase-type .do0 .dox
 #
 ic-erase-type NULL (NUMBER 0)

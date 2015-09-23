@@ -63,13 +63,13 @@ ic-rewrite-list () () .ts/.ts #
 ic-rewrite-list (.p0, .ps0) (.px, .psx) (.p0 .px, .ts0)/.tsx :- ic-rewrite-list .ps0 .psx .ts0/.tsx #
 
 ic-rewrite-parameter .param0 .param1
-	:- .param0 = PARAM .type0 .var
-	, .param1 = PARAM .type1 .var
+	:- .param0 = PARAM .var .type0
+	, .param1 = PARAM .var .type1
 	, ic-rewrite-type .type0 .type1
 #
 ic-rewrite-parameter .param0 .param1
-	:- .param0 = PS .size .var
-	, .param1 = PS .size .var
+	:- .param0 = PS .var .size
+	, .param1 = PS .var .size
 #
 
 ic-rewrite-type I8 I8

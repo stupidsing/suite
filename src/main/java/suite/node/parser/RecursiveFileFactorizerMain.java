@@ -21,7 +21,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	protected boolean run(String args[]) throws IOException {
 		Pair<String, String> ft0 = Pair.of("PS .0 .1", "PS .1 .0");
-		Pair<String, String> ft1 = Pair.of("DECLARE .0 .1 .2", "DECLARE .0 .1 .2");
+		Pair<String, String> ft1 = Pair.of("PARAM .0 .1", "PARAM .1 .0");
 
 		for (Pair<String, String> ft : Arrays.asList(ft0, ft1))
 			FileUtil.findPaths(Paths.get("src/")) //

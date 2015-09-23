@@ -259,7 +259,7 @@ ic-push-pop-parameters .fs (.p, .ps) .e0/.ex .f0/.fx
 
 ic-replace-parameters () _ .do .do
 #
-ic-replace-parameters (PS .size .var, .vars) .s0 .do0 .dox
+ic-replace-parameters (PS .var .size, .vars) .s0 .do0 .dox
 	:- let .s (.s0 + .size)
 	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
 	, ic-replace-parameters .vars .s .do1 .dox
