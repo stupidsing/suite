@@ -94,6 +94,8 @@ public class EvalPredicates {
 
 	public BuiltinPredicate generalize = PredicateUtil.fun(SewingGeneralizerImpl::generalize);
 
+	public BuiltinPredicate graphBind = PredicateUtil.p2((prover, left, right) -> Grapher.bind(left, right, prover.getTrail()));
+
 	public BuiltinPredicate graphGeneralize = PredicateUtil.fun(n -> {
 		Grapher grapher = new Grapher();
 		grapher.graph(n);
