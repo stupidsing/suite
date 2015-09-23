@@ -111,6 +111,8 @@ ic-parse-better-option (.var += .i) .do
 	:- is.int .i, ic-parse .var .var1, .do = POST-ADD-NUMBER .var1 .i
 #
 
+ic-parse-sugar (.a | .b) (.a [.b,])
+#
 ic-parse-sugar (.a && .b) (if .a then .b else 0)
 #
 ic-parse-sugar (.a || .b) (if .a then 1 else .b)
