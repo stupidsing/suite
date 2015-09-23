@@ -127,14 +127,6 @@ public class Grapher {
 		return nodes.get(id);
 	}
 
-	public void cloneGraph() {
-		for (int i = 0; i < gns.size(); i++) {
-			GN gn = gns.get(i);
-			if (gn.type == ReadType.TERM && gn.terminal instanceof Reference)
-				gns.set(i, new GN(new Reference()));
-		}
-	}
-
 	public void generalize() {
 		gns = Read.from(gns) //
 				.map(gn -> {
