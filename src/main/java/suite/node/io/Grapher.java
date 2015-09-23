@@ -74,11 +74,11 @@ public class Grapher {
 
 			NodeRead nr = NodeRead.of(node);
 
-			List<IntPair> childrenx = Read.from(nr.children) //
+			List<IntPair> children = Read.from(nr.children) //
 					.map(p -> IntPair.of(graph0(ids, p.t0), graph0(ids, p.t1))) //
 					.toList();
 
-			gns.set(id, new GN(nr.type, nr.terminal, nr.op, childrenx));
+			gns.set(id, new GN(nr.type, nr.terminal, nr.op, children));
 		}
 
 		return id;
