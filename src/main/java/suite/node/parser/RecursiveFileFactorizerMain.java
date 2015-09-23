@@ -23,19 +23,19 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 		Pair<String, String> ft0 = Pair.of("PS .0 .1", "PS .1 .0");
 		Pair<String, String> ft1 = Pair.of("PARAM .0 .1", "PARAM .1 .0");
 
-		for (Pair<String, String> ft : Arrays.asList(ft0, ft1))
-			FileUtil.findPaths(Paths.get("src/")) //
-					.filter(path -> WildcardUtil.isMatch("ic*.sl", path.getFileName().toString())) //
-					.forEach(path -> {
-						try {
-							RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
-							String s0 = FileUtil.read(path);
-							String sx = recursiveFactorizer.rewrite(ft.t0, ft.t1, s0);
-							Files.write(path, sx.getBytes(FileUtil.charset));
-						} catch (IOException ex) {
-							throw new RuntimeException(ex);
-						}
-					});
+		FileUtil.findPaths(Paths.get("src/")) //
+				.filter(path -> WildcardUtil.isMatch("ic*.sl", path.getFileName().toString())) //
+				.forEach(path -> {
+					try {
+						RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+						String s = FileUtil.read(path);
+						for (Pair<String, String> ft : Arrays.asList(ft0, ft1))
+							s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);
+						Files.write(path, s.getBytes(FileUtil.charset));
+					} catch (IOException ex) {
+						throw new RuntimeException(ex);
+					}
+				});
 
 		return true;
 	}
