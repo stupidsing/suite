@@ -14,8 +14,8 @@ list.fold (.e, .es)/.u0/.ux .v/.v0/.vx .goal
 list.query () _ _
 #
 list.query (.v, .vs) .var .goal
-	:- clone (.var .goal) (.v .goal1)
-	, .goal1
+	:- clone (.var .goal) (.v .g)
+	, .g
 	, list.query .vs .var .goal
 #
 
