@@ -3,14 +3,19 @@ package suite.node.io;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.adt.IdentityKey;
 import suite.adt.Pair;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
 import suite.lp.doer.ProverConstant;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -125,6 +130,58 @@ public class Grapher {
 		}
 
 		return nodes.get(id);
+	}
+
+	public static boolean bind(Node n0, Node n1, Trail trail) {
+		Map<IdentityKey<Node>, Integer> mapn0 = new HashMap<>();
+		Map<IdentityKey<Node>, Integer> mapn1 = new HashMap<>();
+		Grapher g0 = new Grapher();
+		Grapher g1 = new Grapher();
+		g0.id = g0.graph0(mapn0, n0);
+		g1.id = g1.graph0(mapn1, n1);
+
+		Map<Integer, IdentityKey<Node>> mapi0 = new HashMap<>();
+		Map<Integer, IdentityKey<Node>> mapi1 = new HashMap<>();
+		for (Entry<IdentityKey<Node>, Integer> e : mapn0.entrySet())
+			mapi0.put(e.getValue(), e.getKey());
+		for (Entry<IdentityKey<Node>, Integer> e : mapn1.entrySet())
+			mapi1.put(e.getValue(), e.getKey());
+
+		Deque<IntPair> deque = new ArrayDeque<>();
+		deque.add(IntPair.of(g0.id, g1.id));
+		IntPair pair;
+
+		while ((pair = deque.pollLast()) != null) {
+			GN gn0 = g0.gns.get(pair.t0);
+			GN gn1 = g1.gns.get(pair.t1);
+
+			if (gn0.type == ReadType.TERM //
+					&& gn0.terminal instanceof Reference //
+					&& !Binder.bind(gn0.terminal, mapi1.get(pair.t1).key, trail))
+				return false;
+			else if (gn1.type == ReadType.TERM //
+					&& gn1.terminal instanceof Reference //
+					&& !Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
+				return false;
+			else if (gn0.type == gn1.type && gn0.terminal == gn1.terminal && gn0.op == gn1.op) {
+				List<IntPair> children0 = gn0.children;
+				List<IntPair> children1 = gn1.children;
+				int size0 = children0.size();
+				int size1 = children1.size();
+				if (size0 == size1)
+					for (int i = 0; i < size0; i++) {
+						IntPair p0 = children0.get(i);
+						IntPair p1 = children1.get(i);
+						deque.addLast(IntPair.of(p0.t0, p1.t0));
+						deque.addLast(IntPair.of(p0.t1, p1.t1));
+					}
+				else
+					return false;
+			} else
+				return false;
+		}
+
+		return true;
 	}
 
 	public void generalize() {
