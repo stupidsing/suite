@@ -23,8 +23,8 @@ declare dl-set-next = function [e, p,] (
 );
 
 declare dl-new = function [e,] (
-	dl-set-prev [e, 0,];
-	dl-set-next [e, 0,];
+	dl-set-prev [e, null,];
+	dl-set-next [e, null,];
 );
 
 declare dl-insert-prev = function [e, ne,] (
