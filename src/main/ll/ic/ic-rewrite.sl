@@ -1,6 +1,6 @@
 ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
-ic-rewrite (ALLOC .var .size .do0) (ALLOC .var .size .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (ALLOC .var .offset .size .do0) (ALLOC .var .offset .size .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (DECLARE .var .type0 .do0) (DECLARE .var .type1 .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1

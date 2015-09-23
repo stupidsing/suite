@@ -1,4 +1,5 @@
 () :- import.path "ic/ic-erase-type.sl"
+	, import.path "ic/ic-erase-variable.sl"
 	, import.path "ic/ic-infer-type.sl"
 	, import.path "ic/ic-parse.sl"
 	, import.path "ic/ic-rewrite.sl"
@@ -8,7 +9,8 @@ compile-imperative .do0 .e0/.ex
 	:- ic-parse .do0 .do1
 	, !, ic-infer-type () .do1 I32
 	, !, ic-erase-type .do1 .do2
-	, !, ic-compile 0 .do2 .e0/.ex
+	, !, ic-erase-variable ()/() .do2 .do3
+	, !, ic-compile 0 .do3 .e0/.ex
 	, !
 #
 
@@ -40,12 +42,11 @@ ic-compile-operand .fs .do .e $0
 ic-compile0 .fs .do .e0/.ex
 	:- ic-compile-better-option .fs .do .e0/.ex, !
 #
-ic-compile0 .fs (ALLOC .var .size .do) .e0/.ex
-	:- replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .offset))) .do .do1
-	, .e0 = (_ FR+ (.size)
+ic-compile0 .fs (ALLOC _ .offset .size .do) .e0/.ex
+	:- .e0 = (_ FR+ (.size)
 		, _ FR-GET (.offset)
 		, .e1)
-	, ic-compile .fs .do1 .e1/.e2
+	, ic-compile .fs .do .e1/.e2
 	, .e2 = (_ FR- (.size)
 		, .ex)
 #
@@ -97,15 +98,13 @@ ic-compile0 .fs (LET .var .value) .e0/.ex
 ic-compile0 _ (MEMORY .size .pointer) _
 	:- .size != 4, ic-error "Cannot load non-dword memory " .pointer
 #
-ic-compile0 _ (METHOD0 .pss .do) .e0/.ex
+ic-compile0 _ (METHOD0 _ .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel FR-BEGIN
 		, _ PUSH (EBP)
 		, _ MOV (EBP, ESP)
 		, .e1)
-	, replace THIS (MEMORY 4 THIS) .do .do1
-	, ic-replace-parameters .pss 4 .do1 .do2
-	, ic-compile 0 .do2 .e1/.e2
+	, ic-compile 0 .do .e1/.e2
 	, .e2 = (_ MOV (ESP, EBP)
 		, _ POP (EBP)
 		, _ RET ()
@@ -255,14 +254,6 @@ ic-push-pop-parameters .fs (.p, .ps) .e0/.ex .f0/.fx
 		, ic-let .fs .p (MEMORY .size (REG ESP)) .e2/.e3
 		, .e3 = (_ R-, .ex)
 	)
-#
-
-ic-replace-parameters () _ .do .do
-#
-ic-replace-parameters (PS .var .size, .vars) .s0 .do0 .dox
-	:- let .s (.s0 + .size)
-	, replace (VAR .var) (MEMORY .size (TREE ' + ' THIS (NUMBER .s))) .do0 .do1
-	, ic-replace-parameters .vars .s .do1 .dox
 #
 
 ic-right-associative ' + ' #

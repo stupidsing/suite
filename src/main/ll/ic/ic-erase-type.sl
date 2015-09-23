@@ -1,4 +1,4 @@
-ic-erase-type (DECLARE .var .type .do0) (ALLOC .var .size .dox)
+ic-erase-type (DECLARE .var .type .do0) (ALLOC .var _ .size .dox)
 	:- !
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
