@@ -134,10 +134,6 @@ ic-parse-sugar (for (.init; .cond; .step) .do) (.init; while .cond do (.do; .ste
 #
 ic-parse-sugar (not .b) (if .b then 0 else 1)
 #
-ic-parse-sugar (replace .var = .value; .do) .do1
-	:- replace .var .value1 .value .value1
-	, replace .var .value1 .do .do1
-#
 ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 	:- is.atom .var
 #
