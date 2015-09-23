@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import suite.adt.IdentityKey;
 import suite.adt.Pair;
@@ -49,6 +51,20 @@ public class Grapher {
 			pair.t0 = t0;
 			pair.t1 = t1;
 			return pair;
+		}
+
+		@Override
+		public int hashCode() {
+			return t0 ^ t1;
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (object.getClass() == IntPair.class) {
+				IntPair other = (IntPair) object;
+				return t0 == other.t0 && t1 == other.t1;
+			} else
+				return false;
 		}
 	}
 
@@ -147,39 +163,41 @@ public class Grapher {
 		for (Entry<IdentityKey<Node>, Integer> e : mapn1.entrySet())
 			mapi1.put(e.getValue(), e.getKey());
 
+		Set<IntPair> set = new HashSet<>();
 		Deque<IntPair> deque = new ArrayDeque<>();
 		deque.add(IntPair.of(g0.id, g1.id));
 		IntPair pair;
 
-		while ((pair = deque.pollLast()) != null) {
-			GN gn0 = g0.gns.get(pair.t0);
-			GN gn1 = g1.gns.get(pair.t1);
+		while ((pair = deque.pollLast()) != null)
+			if (set.add(pair)) {
+				GN gn0 = g0.gns.get(pair.t0);
+				GN gn1 = g1.gns.get(pair.t1);
 
-			if (gn0.type == ReadType.TERM //
-					&& gn0.terminal instanceof Reference //
-					&& !Binder.bind(gn0.terminal, mapi1.get(pair.t1).key, trail))
-				return false;
-			else if (gn1.type == ReadType.TERM //
-					&& gn1.terminal instanceof Reference //
-					&& !Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
-				return false;
-			else if (gn0.type == gn1.type && gn0.terminal == gn1.terminal && gn0.op == gn1.op) {
-				List<IntPair> children0 = gn0.children;
-				List<IntPair> children1 = gn1.children;
-				int size0 = children0.size();
-				int size1 = children1.size();
-				if (size0 == size1)
-					for (int i = 0; i < size0; i++) {
-						IntPair p0 = children0.get(i);
-						IntPair p1 = children1.get(i);
-						deque.addLast(IntPair.of(p0.t0, p1.t0));
-						deque.addLast(IntPair.of(p0.t1, p1.t1));
-					}
-				else
+				if (gn0.type == ReadType.TERM //
+						&& gn0.terminal instanceof Reference //
+						&& Binder.bind(gn0.terminal, mapi1.get(pair.t1).key, trail))
+					;
+				else if (gn1.type == ReadType.TERM //
+						&& gn1.terminal instanceof Reference //
+						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
+					;
+				else if (gn0.type == gn1.type && gn0.terminal == gn1.terminal && gn0.op == gn1.op) {
+					List<IntPair> children0 = gn0.children;
+					List<IntPair> children1 = gn1.children;
+					int size0 = children0.size();
+					int size1 = children1.size();
+					if (size0 == size1)
+						for (int i = 0; i < size0; i++) {
+							IntPair p0 = children0.get(i);
+							IntPair p1 = children1.get(i);
+							deque.addLast(IntPair.of(p0.t0, p1.t0));
+							deque.addLast(IntPair.of(p0.t1, p1.t1));
+						}
+					else
+						return false;
+				} else
 					return false;
-			} else
-				return false;
-		}
+			}
 
 		return true;
 	}
