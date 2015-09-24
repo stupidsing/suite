@@ -45,8 +45,15 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) throws FileNotFoundException {
-		InputStream is = new FileInputStream(file);
-		return new Streamlet<>(() -> lines(is).closeAtEnd(is));
+		return new Streamlet<>(() -> {
+			InputStream is;
+			try {
+				is = new FileInputStream(file);
+			} catch (FileNotFoundException ex) {
+				throw new RuntimeException(ex);
+			}
+			return lines(is).closeAtEnd(is);
+		});
 	}
 
 	public static Outlet<String> lines(InputStream is) {
@@ -63,6 +70,13 @@ public class Read {
 				throw new RuntimeException(ex);
 			}
 		}).closeAtEnd(br);
+	}
+
+	public static Streamlet<Integer> range(int n) {
+		return new Streamlet<>(() -> {
+			int i[] = new int[] { 0 };
+			return Outlet.from(() -> i[0] < n ? i[0]++ : null);
+		});
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet<Pair<K, V>> multimap(Map<K, C> map) {
