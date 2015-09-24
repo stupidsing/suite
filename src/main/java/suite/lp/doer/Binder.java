@@ -24,16 +24,16 @@ public class Binder {
 		if (n0 == n1)
 			return true;
 
-		if (n0 instanceof Reference) {
+		Class<? extends Node> clazz0 = n0.getClass();
+		Class<? extends Node> clazz1 = n1.getClass();
+
+		if (clazz0 == Reference.class) {
 			trail.addBind((Reference) n0, n1);
 			return true;
-		} else if (n1 instanceof Reference) {
+		} else if (clazz1 == Reference.class) {
 			trail.addBind((Reference) n1, n0);
 			return true;
 		}
-
-		Class<? extends Node> clazz0 = n0.getClass();
-		Class<? extends Node> clazz1 = n1.getClass();
 
 		if (clazz0 != clazz1)
 			return false;
