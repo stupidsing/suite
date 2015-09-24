@@ -72,10 +72,10 @@ public class Read {
 		}).closeAtEnd(br);
 	}
 
-	public static Streamlet<Integer> range(int n) {
+	public static Streamlet<Integer> range(int s, int e) {
 		return new Streamlet<>(() -> {
-			int i[] = new int[] { 0 };
-			return Outlet.from(() -> i[0] < n ? i[0]++ : null);
+			int i[] = new int[] { s };
+			return Outlet.from(() -> i[0] < e ? i[0]++ : null);
 		});
 	}
 
