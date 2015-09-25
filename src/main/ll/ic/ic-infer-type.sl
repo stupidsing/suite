@@ -1,5 +1,5 @@
-ic-infer-type .vs .do .type0
-	:- ic-infer-type0 .vs .do .typex
+ic-infer-type .vs .do .typex
+	:- ic-infer-type0 .vs .do .type0
 	, graph.bind .type0 .typex
 #
 
