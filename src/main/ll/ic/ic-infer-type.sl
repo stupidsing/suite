@@ -15,7 +15,7 @@ ic-infer-type0 .vs (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
 #
 ic-infer-type0 .vs (IF .if .then .else) .type
 	:- ic-infer-type .vs .if .ifType
-	, once (.ifType = I32; .ifType = POINTER-OF _)
+	, ic-return-type .ifType
 	, ic-infer-type .vs .then .type
 	, ic-infer-type .vs .else .type
 #
@@ -34,6 +34,7 @@ ic-infer-type0 .vs (LET .var .value) I32
 #
 ic-infer-type0 .vs (METHOD0 () .do) (METHOD0-OF () .returnType)
 	:- ic-infer-type .vs .do .returnType
+	, ic-return-type .returnType
 #
 ic-infer-type0 .vs (METHOD0 (PARAM .var .paramType, .params) .do) (METHOD0-OF (.paramType, .paramTypes) .returnType)
 	:- ic-infer-type (.var .paramType, .vs) (METHOD0 .params .do) (METHOD0-OF .paramTypes .returnType)
@@ -89,4 +90,8 @@ ic-infer-type0 .vs (WHILE .while .do) I32
 #
 ic-infer-type0 _ .do .type
 	:- ic-error "Cannot resolve type of" .do "to" .type
+#
+
+ic-return-type .type
+	:- once (.type = I32; .type = METHOD0-OF _ _; .type = POINTER-OF _)
 #
