@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
+import suite.adt.ListMultimap;
 import suite.adt.Pair;
 import suite.os.FileUtil;
 import suite.util.FunUtil.Source;
@@ -25,6 +26,10 @@ public class Read {
 
 	public static <K, V> Streamlet<Pair<K, V>> from(Map<K, V> map) {
 		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
+	}
+
+	public static <K, V> Streamlet<Pair<K, Collection<V>>> from(ListMultimap<K, V> multimap) {
+		return from(multimap.listEntries()).map(p -> Pair.of(p.t0, p.t1));
 	}
 
 	@SafeVarargs
