@@ -9,7 +9,7 @@ ic-infer-type _ .do .type
 ic-infer-type0 _ (ASM _) I32
 #
 ic-infer-type0 .vs (DECLARE .var .varType .do) .type
-	:- ic-infer-type (.var .varType, .vs) .do .type
+	:- ic-infer-type (MONO .var .varType, .vs) .do .type
 #
 ic-infer-type0 .vs (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
 	:- ic-infer-type .vs .do (STRUCT-OF .nameTypes)
@@ -43,7 +43,7 @@ ic-infer-type0 .vs (METHOD0 () .do) (METHOD0-OF () .returnType)
 	, ic-return-type .returnType
 #
 ic-infer-type0 .vs (METHOD0 (PARAM .var .paramType, .params) .do) (METHOD0-OF (.paramType, .paramTypes) .returnType)
-	:- ic-infer-type (.var .paramType, .vs) (METHOD0 .params .do) (METHOD0-OF .paramTypes .returnType)
+	:- ic-infer-type (MONO .var .paramType, .vs) (METHOD0 .params .do) (METHOD0-OF .paramTypes .returnType)
 #
 ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
 	:- ic-infer-type .vs .this I32
@@ -86,7 +86,9 @@ ic-infer-type0 .vs (TYPE-CAST .type .do) .type
 	:- ic-infer-type .vs .do _
 #
 ic-infer-type0 .vs (VAR .var) .type
-	:- once (member .vs (.var .type))
+	:- once (member .vs (MONO .var .type)
+		; member .vs (POLY .var .type0), clone .type0 .type
+	)
 #
 ic-infer-type0 .vs (WHILE .while .do) I32
 	:- ic-infer-type .vs .while I32
