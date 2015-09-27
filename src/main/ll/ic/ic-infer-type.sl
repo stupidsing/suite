@@ -2,6 +2,9 @@ ic-infer-type .vs .do .typex
 	:- ic-infer-type0 .vs .do .type0
 	, graph.bind .type0 .typex
 #
+ic-infer-type _ .do .type
+	:- ic-error "Cannot resolve type of" .do "to" .type
+#
 
 ic-infer-type0 _ (ASM _) I32
 #
@@ -87,9 +90,6 @@ ic-infer-type0 .vs (VAR .var) .type
 ic-infer-type0 .vs (WHILE .while .do) I32
 	:- ic-infer-type .vs .while I32
 	, ic-infer-type .vs .do I32
-#
-ic-infer-type0 _ .do .type
-	:- ic-error "Cannot resolve type of" .do "to" .type
 #
 
 ic-return-type .type
