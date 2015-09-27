@@ -80,9 +80,10 @@ ic-infer-type0 _ (STRING _) I32
 #
 ic-infer-type0 _ THIS I32
 #
-ic-infer-type0 .vs (TREE _ .value0 .value1) I32
-	:- ic-infer-type .vs .value0 I32
-	, ic-infer-type .vs .value1 I32
+ic-infer-type0 .vs (TREE .op .value0 .value1) .type
+	:- ic-infer-type .vs .value0 .type
+	, ic-infer-type .vs .value1 .type
+	, once (.op = ' = '; .type = I32)
 #
 ic-infer-type0 .vs (VAR .var) .type
 	:- once (member .vs (.var .type))
