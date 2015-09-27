@@ -83,7 +83,7 @@ declare ne2k-setup = function [] (
 
 		declare-pointer romdata to (byte * 16);
 		ne2k-read [0, romdata, 16,];
-		for (declare p = 0; p < 6; p =+ 1) (
+		for p in (0, 6) (
 			copy [ne2k-mac-address + p, romdata + p shl 1, 1,];
 		);
 
@@ -92,7 +92,7 @@ declare ne2k-setup = function [] (
 
 		cs-puts ["MAC ADDRESS = ",];
 
-		for (declare p = 0; p < 6; p =+ 1) (
+		for p in (0, 6) (
 			declare b;
 			copy [& b, ne2k-mac-address + p, 1,];
 			cs-put-hex1 [b,];

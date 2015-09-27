@@ -22,7 +22,7 @@ declare irq-set-sink = function [irq-number, irq-sink as (baseless [int,] int),]
 );
 
 declare irq-setup = function [] (
-	for (declare irq-number = 0; irq-number < 16; irq-number =+ 1) (
+	for irq-number in (0, 16) (
 		irq-set-sink [irq-number, dump-sink,];
 	);
 

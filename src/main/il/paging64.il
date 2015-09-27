@@ -102,7 +102,7 @@ declare pg-allocate = function [nPages,] (
 		);
 
 		(r0 && (
-			for (declare i = 0; i < nPages; i =+ 1) (
+			for i in (0, nPages) (
 				pg-map [r0 + i shl 12, pm-allocate [],];
 			);
 		));

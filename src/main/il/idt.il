@@ -127,7 +127,7 @@ declare idt-setup = function [] (
 		asm _ HLT ();
 	);
 
-	for (declare i = 0; i < 256; i =+ 1) (
+	for i in (0, 256) (
 		idt-set-entry [i, handle-general-interrupt, 1,];
 	);
 
