@@ -26,6 +26,9 @@ ic-infer-type0 .vs (INDEX .type .array .index) .type
 	:- ic-infer-type .vs .array (ARRAY-OF _ .type)
 	, ic-infer-type .vs .index I32
 #
+ic-infer-type0 .vs (IN .var .do) .type
+	:- try (ic-infer-type .vs .do .type) .ex (throw .ex "%0Aat variable" .var)
+#
 ic-infer-type0 .vs (INVOKE .method .params) .returnType
 	:- ic-infer-type .vs .method (METHOD-OF .paramTypes .returnType)
 	, zip .params .paramTypes .list
@@ -58,12 +61,6 @@ ic-infer-type0 .vs (OBJECT .type .pointer) .type
 ic-infer-type0 .vs (POST-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .vs .pointer I32
 #
-ic-infer-type0 .vs (PRAGMA (IN .var) .do) .type
-	:- try (ic-infer-type .vs .do .type) .ex (throw .ex "%0Aat variable" .var)
-#
-ic-infer-type0 .vs (PRAGMA (TYPE-CAST .type) .do) .type
-	:- ic-infer-type .vs .do _
-#
 ic-infer-type0 .vs (PRE-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .vs .pointer I32
 #
@@ -84,6 +81,9 @@ ic-infer-type0 .vs (TREE .op .value0 .value1) .type
 	:- once (member (' = ', ' != ',) .op; .type = I32)
 	, ic-infer-type .vs .value0 .type
 	, ic-infer-type .vs .value1 .type
+#
+ic-infer-type0 .vs (TYPE-CAST .type .do) .type
+	:- ic-infer-type .vs .do _
 #
 ic-infer-type0 .vs (VAR .var) .type
 	:- once (member .vs (.var .type))

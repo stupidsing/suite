@@ -7,7 +7,7 @@ ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
 #
-ic-parse (declare .var = .value; .do) (DECLARE .var _ (SEQ (LET (VAR .var) (PRAGMA (IN .var) .value1)) .do1))
+ic-parse (declare .var = .value; .do) (DECLARE .var _ (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
 	:- !
 	, is.atom .var
 	, ic-parse .value .value1
@@ -61,13 +61,6 @@ ic-parse .i (NUMBER .i)
 ic-parse `.pointer` (OBJECT _ .pointer1)
 	:- ic-parse .pointer .pointer1
 #
-ic-parse (no-type .do) (PRAGMA (TYPE-CAST _) .do1)
-	:- ic-parse .do .do1
-#
-ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)
-	:- ic-parse-type .t .type
-	, ic-parse .do .do1
-#
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
@@ -92,6 +85,13 @@ ic-parse .expr (TREE .op .expr0 .expr1)
 	, ic-operator .op _
 	, ic-parse .value0 .expr0
 	, ic-parse .value1 .expr1
+#
+ic-parse (no-type .do) (TYPE-CAST _ .do1)
+	:- ic-parse .do .do1
+#
+ic-parse (.do as .t) (TYPE-CAST .type .do1)
+	:- ic-parse-type .t .type
+	, ic-parse .do .do1
 #
 ic-parse .var (VAR .var)
 	:- is.atom .var
