@@ -71,9 +71,6 @@ ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
-ic-parse (.do0;) .parsed
-	:- ic-parse .do0 .parsed
-#
 ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
 	:- not (.do0 = constant _ = _; .do0 = declare _; .do0 = declare _ = _; .do0 = declare-pointer _)
 	, ic-parse .do0 .parsed0
@@ -111,6 +108,8 @@ ic-parse-better-option (.var += .i) .do
 	:- is.int .i, ic-parse .var .var1, .do = POST-ADD-NUMBER .var1 .i
 #
 
+ic-parse-sugar (.do;) .do
+#
 ic-parse-sugar (.a | .b) (.a [.b,])
 #
 ic-parse-sugar (.a && .b) (if .a then .b else 0)
