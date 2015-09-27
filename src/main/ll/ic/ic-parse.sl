@@ -123,6 +123,8 @@ ic-parse-sugar (.var =+ .inc) (declare .p as int = & .var; declare .o = `.p`; le
 ic-parse-sugar (.var += .inc) (declare .p as int = & .var; let `.p` = `.p` + .inc)
 	:- temp .p
 #
+ic-parse-sugar (address .value) ((& .value) as int)
+#
 ic-parse-sugar (constant .var = .value; .do) .do1
 	:- generalize (.var .value) (.var1 .value1)
 	, rewrite .var1 .value1 .do .do1

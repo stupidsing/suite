@@ -23,14 +23,14 @@ declare cs-nl = function [] (
 declare cs-put = function [ch,] (
 	synchronized (& cs-sync) (
 		declare w = +x0700 + ch;
-		copy [+xB8000 + 3840 + cs-column-offset, & w, 2,];
+		copy [+xB8000 + 3840 + cs-column-offset, address w, 2,];
 		(cs-column-offset += 2 = 160 && cs-nl []);
 	);
 );
 
 declare cs-puts = function [s,] (
 	declare ch = 0;
-	for (declare s1 = s; (copy [& ch, s1, 1,]; ch); s1 += 1) (
+	for (declare s1 = s; (copy [address ch, s1, 1,]; ch); s1 += 1) (
 		cs-put [ch,];
 	);
 );
