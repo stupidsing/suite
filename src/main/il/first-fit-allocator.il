@@ -18,7 +18,7 @@ declare ffa-allocate0 = function [size,] (
 
 	declare start = ffa-current;
 	declare next;
-	while (((let next = next-block [ffa-current,]) != start) and (`ffa$size [ffa-current,]` < size)) do (
+	while ((let next = next-block [ffa-current,]) != start && `ffa$size [ffa-current,]` < size) do (
 		let ffa-current = next;
 	);
 
@@ -40,12 +40,12 @@ declare ffa-deallocate0 = function [block,] (
 	declare prev = dl-prev [block,];
 	declare next = dl-next [block,];
 
-	if ((prev != 0) and (`ffa$size [prev,]` != 0)) then (
+	if (prev != 0 && `ffa$size [prev,]` != 0) then (
 		dl-remove [block,];
 		let block = prev;
 	) else ();
 
-	if ((next != 0) and (`ffa$size [next,]` != 0)) then (
+	if (next != 0 && `ffa$size [next,]` != 0) then (
 		dl-remove [next,];
 	) else ();
 

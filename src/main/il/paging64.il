@@ -39,7 +39,7 @@ declare pg-unset-pt-entry = function [pe0, pt1,] (
 	declare isEmpty = 1;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let isEmpty = isEmpty and (`pt1 + offset` = 0);
+		let isEmpty = (isEmpty && (`pt1 + offset` = 0));
 	);
 
 	(isEmpty && (

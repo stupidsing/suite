@@ -50,7 +50,7 @@ declare pg-unmap = function [logical,] (
 	let `pe1` = 0;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let isEmpty = isEmpty and (`pt1 + offset` = 0);
+		let isEmpty = (isEmpty && (`pt1 + offset` = 0));
 	);
 
 	(isEmpty && (
