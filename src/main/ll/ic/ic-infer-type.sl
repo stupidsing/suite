@@ -34,7 +34,7 @@ ic-infer-type0 .vs (INVOKE .method .params) .returnType
 	, zip .params .paramTypes .list
 	, list.query .list .param:.paramType (ic-infer-type .vs .param .paramType)
 #
-ic-infer-type0 .vs (LET .var .value) I32
+ic-infer-type0 .vs (LET .var .value) .type
 	:- ic-infer-type .vs .var .type
 	, ic-infer-type .vs .value .type
 #
