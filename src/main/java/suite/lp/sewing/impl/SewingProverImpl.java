@@ -325,8 +325,13 @@ public class SewingProverImpl implements SewingProver {
 						return okay;
 					});
 					rt.pushRem(rt_ -> {
+<<<<<<< HEAD
 						rt_.query = Tree.of(TermOp.ITEM__, Tree.of(TermOp.ITEM__, elem, current[0]), result);
 						return tr1;
+=======
+						rt_.env = env0.clone();
+						return elem_.test(rt_, elem) && v0_.test(rt_, current[0]) ? tr1 : fail;
+>>>>>>> f5d7c1f0e9347ab89c84fdb7b68b9b714ab15985
 					});
 				}
 				return okay;
