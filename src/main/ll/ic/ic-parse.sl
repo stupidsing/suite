@@ -117,9 +117,11 @@ ic-parse-better-option (.var += .i) .do
 
 ic-parse-sugar (.a | .b) (.a [.b,])
 #
-ic-parse-sugar (.a && .b) (if .a then .b else 0)
+ic-parse-sugar (.a && .b) (if .a then .b else (no-type 0))
 #
-ic-parse-sugar (.a || .b) (if .a then 1 else .b)
+ic-parse-sugar (.a || .b) (if .a then (no-type 1) else .b)
+#
+ic-parse-sugar (.p +f .f) (& (`.p`^.f))
 #
 ic-parse-sugar (.var =+ .inc) (declare .p as int = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
@@ -157,7 +159,7 @@ ic-parse-parameter (.param as .t) (PARAM .param .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-parameter .p .param
-	:- not (.p = _/_), .param = PARAM .p I32
+	:- not (.p = _/_), .param = PARAM .p _
 #
 
 ic-parse-type (.tv0 => .type0) .typex

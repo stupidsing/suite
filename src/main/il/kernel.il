@@ -63,6 +63,14 @@ declare zero = function [dst, len,] (
 	asm _ REP STOSB ();
 );
 
+declare dw-get = function [p as int,] (
+	`p as pointer:int`;
+);
+
+declare dw-set = function [p as int, i,] (
+	let `p as pointer:int` = i;
+);
+
 declare inb = function [port,] (
 	asm _ MOV (EDX, `EBP + 8`);
 	asm _ XOR (EAX, EAX);
@@ -156,10 +164,10 @@ asm _ STI ();
 	declare user-stack-address = pg-allocate [1,];
 
 	for (declare i = 0; i < 104; i =+ 4) (
-		let `tss-address + i` = 0;
+		dw-set [tss-address + i, 0,];
 	);
-	let `tss-address + 4` = interrupt-stack-address;
-	let `tss-address + 8` = +x10;
+	dw-set [tss-address + 4, interrupt-stack-address,];
+	dw-set [tss-address + 8, +x10,];
 
 	asm _ MOV (AX, +x2B);
 	asm _ LTR (AX);

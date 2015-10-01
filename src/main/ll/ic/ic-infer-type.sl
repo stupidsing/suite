@@ -35,6 +35,7 @@ ic-infer-type0 .vs (INDEX .type .array .index) .type
 #
 ic-infer-type0 .vs (IN .var .do) .type
 	:- try (ic-infer-type .vs .do .type) .ex (throw .ex "%0Aat variable" .var)
+	, dump (typeof {.var} = .type), nl
 #
 ic-infer-type0 .vs (INVOKE .method .params) .returnType
 	:- ic-infer-type .vs .method (METHOD-OF .paramTypes .returnType)
@@ -57,12 +58,16 @@ ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
 #
 ic-infer-type0 _ NOP _
 #
-ic-infer-type0 _ NULL _
+ic-infer-type0 _ NULL (POINTER-OF _)
 #
 ic-infer-type0 _ (NUMBER _) I32
 #
 ic-infer-type0 .vs (OBJECT .type .pointer) .type
-	:- ic-infer-type .vs .pointer I32
+	:- ic-infer-type .vs .pointer (POINTER-OF .type)
+#
+ic-infer-type0 .vs (OFFSET .offset .pointer) (POINTER-OF .type)
+	:- ic-infer-type .vs .offset I32
+	, ic-infer-type .vs .pointer (POINTER-OF .type)
 #
 ic-infer-type0 .vs (OFFSET .offset .pointer) (POINTER-OF .type)
 	:- ic-infer-type .vs .offset I32
@@ -74,8 +79,8 @@ ic-infer-type0 .vs (POST-ADD-NUMBER .pointer _) I32
 ic-infer-type0 .vs (PRE-ADD-NUMBER .pointer _) I32
 	:- ic-infer-type .vs .pointer I32
 #
-ic-infer-type0 .vs (REF .object) I32
-	:- ic-infer-type .vs .object _
+ic-infer-type0 .vs (REF .object) (POINTER-OF .type)
+	:- ic-infer-type .vs .object .type
 #
 ic-infer-type0 .vs (SEQ .do0 .do1) .type
 	:- ic-infer-type .vs .do0 _
@@ -102,7 +107,7 @@ ic-infer-type0 .vs (VAR .var) .type
 #
 ic-infer-type0 .vs (WHILE .while .do) I32
 	:- ic-infer-type .vs .while I32
-	, ic-infer-type .vs .do I32
+	, ic-infer-type .vs .do _
 #
 
 ic-return-type .type

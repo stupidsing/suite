@@ -19,7 +19,12 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testDataStructure() {
-		Bytes bytes = imperativeCompiler.compile(0, "constant p = fix :p pointer:(struct (next as :p,)); declare ptr = null as p;");
+		String s = "" //
+				+ "constant p = fix :p pointer:(struct (next as :p,));" //
+				+ "declare pnext = function [e as p,] ( `e`^next; );" //
+				+ "declare ptr = null as p;" //
+				+ "let (`ptr`^next) = pnext [ptr,];";
+		Bytes bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
