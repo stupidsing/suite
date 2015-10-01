@@ -327,8 +327,7 @@ public class SewingProverImpl implements SewingProver {
 					});
 					rt.pushRem(rt_ -> {
 						rt_.env = env0.clone();
-						BindEnv bindEnv = rt_;
-						return elem_.test(bindEnv, elem) && v0_.test(bindEnv, current[0]) ? tr1 : fail;
+						return elem_.test(rt_, elem) && v0_.test(rt_, current[0]) ? tr1 : fail;
 					});
 				}
 				return okay;
