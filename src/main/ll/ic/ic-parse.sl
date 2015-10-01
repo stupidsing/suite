@@ -10,7 +10,7 @@ ic-parse .do0 .parsed
 ic-parse (declare .var = .value; .do) (DECLARE .var _ (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
 	:- !
 	, is.atom .var
-	, ic-parse .value .value1
+	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #
 ic-parse (declare .var as .t; .do) (DECLARE .var .type .do1)
