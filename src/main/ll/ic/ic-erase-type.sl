@@ -31,6 +31,11 @@ ic-erase-type (OBJECT .type .var0) (MEMORY .size .varx)
 	, ic-type-size .type .size
 	, ic-erase-type .var0 .varx
 #
+ic-erase-type (OFFSET .offset0 .pointer0) (TREE ' + ' .pointerx .offsetx)
+	:- !
+	, ic-erase-type .offset0 .offsetx
+	, ic-erase-type .pointer0 .pointerx
+#
 ic-erase-type (TYPE-CAST _ .do0) .dox
 	:- !
 	, ic-erase-type .do0 .dox

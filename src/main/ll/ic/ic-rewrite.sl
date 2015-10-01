@@ -36,6 +36,8 @@ ic-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
 ic-rewrite (OBJECT .type0 .pointer0) (OBJECT .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
+ic-rewrite (OFFSET .offset0 .pointer0) (OFFSET .offset1 .pointer1) (.offset0 .offset1, .pointer0 .pointer1, .ts)/.ts
+#
 ic-rewrite (POST-ADD-NUMBER .var0 .i) (POST-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
 ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts

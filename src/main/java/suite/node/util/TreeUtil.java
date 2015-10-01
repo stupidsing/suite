@@ -20,8 +20,9 @@ public class TreeUtil {
 		return n;
 	}
 
-	public static Node[] getElements(Node node, int n) {
+	public static Node[] getElements(Node node0, int n) {
 		Node params[] = new Node[n];
+		Node node = node0;
 		Tree tree;
 
 		for (int i = 0; i < n - 1; i++)
@@ -29,7 +30,7 @@ public class TreeUtil {
 				params[i] = tree.getLeft();
 				node = tree.getRight();
 			} else
-				throw new RuntimeException("Not enough parameters in " + node);
+				throw new RuntimeException("Not enough parameters in " + node0);
 
 		params[n - 1] = node;
 		return params;

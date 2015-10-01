@@ -61,6 +61,10 @@ ic-parse .i (NUMBER .i)
 ic-parse `.pointer` (OBJECT _ .pointer1)
 	:- ic-parse .pointer .pointer1
 #
+ic-parse (.pointer +offset .offset) (OFFSET .offset1 .pointer1)
+	:- ic-parse .pointer .pointer1
+	, ic-parse .offset .offset1
+#
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
 #
