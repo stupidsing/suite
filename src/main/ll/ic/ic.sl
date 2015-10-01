@@ -255,6 +255,9 @@ ic-let .memory0 .memory1 .e0/.ex
 	, ic-copy-memory 0 .size .e4/.e5
 	, .e5 = (_ R-, .ex)
 #
+ic-let .memory0 .memory1 _
+	:- ic-error "Cannot assign from" .memory0 "to" .memory1
+#
 
 ic-push-pop-parameters () .e/.e .f/.f
 #

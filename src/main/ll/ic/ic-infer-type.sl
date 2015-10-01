@@ -6,6 +6,13 @@ ic-infer-type _ .do .type
 	:- ic-error "Cannot resolve type of" .do "to" .type
 #
 
+ic-infer-type-list _ () ()
+#
+ic-infer-type-list .vs (.do, .dos) (.type, .types)
+	:- ic-infer-type .vs .do .type
+	, ic-infer-type-list .vs .dos .types
+#
+
 ic-infer-type0 _ (ASM _) I32
 #
 ic-infer-type0 .vs (DECLARE .var .varType .do) .type
@@ -31,8 +38,7 @@ ic-infer-type0 .vs (IN .var .do) .type
 #
 ic-infer-type0 .vs (INVOKE .method .params) .returnType
 	:- ic-infer-type .vs .method (METHOD-OF .paramTypes .returnType)
-	, zip .params .paramTypes .list
-	, list.query .list .param:.paramType (ic-infer-type .vs .param .paramType)
+	, ic-infer-type-list .vs .params .paramTypes
 #
 ic-infer-type0 .vs (LET .var .value) .type
 	:- ic-infer-type .vs .var .type
