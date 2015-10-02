@@ -315,9 +315,7 @@ public class SewingProverImpl implements SewingProver {
 			Trampoline tr1 = saveEnv(compileRule(m[3], m[4]));
 			return rt -> {
 				Node current[] = new Node[] { value0_.apply(rt.env) };
-				rt.pushRem(rt_ -> {
-					return valuex_.test(rt_, current[0]) ? okay : fail;
-				});
+				rt.pushRem(rt_ -> valuex_.test(rt_, current[0]) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
 					Reference result = new Reference();
 					rt.pushRem(rt_ -> {
