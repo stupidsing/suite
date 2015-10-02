@@ -35,7 +35,7 @@ declare idt-setup = function [] (
 	declare handle-timer-interrupt = snippet (
 		isr-prolog;
 		ticks =+ 1;
-		`+xB8000` =+ 1;
+		`+xB8000 as pointer:int` =+ 1;
 
 		-- Switch processes
 		sch-interrupt-switch [];
@@ -65,7 +65,7 @@ declare idt-setup = function [] (
 				declare irq-sink = irq-get-sink [irq-number,];
 				declare irqf as (int * 2);
 				let irqf:0 = irq;
-				let irqf:1 = irq-sink;
+				let irqf:1 = irq-sink as int;
 				(irq-sink && (irqf as (function [int,] int)) [irq-number,]);
 
 				-- Sends end of interrupt signal

@@ -79,7 +79,7 @@ declare ffa-allocate = function [size,] (
 	);
 );
 
-declare ffa-deallocate = function [p, size,] (
+declare ffa-deallocate = function [p, size as int,] (
 	synchronized (& ffa-sync) (
 		ffa-deallocate0 [(p - 12) as pointer:ffa-node,];
 	);

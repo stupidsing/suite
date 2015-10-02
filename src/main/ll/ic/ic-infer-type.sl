@@ -15,8 +15,8 @@ ic-infer-type-list .vs (.do, .dos) (.type, .types)
 
 ic-infer-type0 _ (ASM _) I32
 #
-ic-infer-type0 .vs (DECLARE .var .varType .do) .type
-	:- ic-infer-type (MONO .var .varType, .vs) .do .type
+ic-infer-type0 .vs (DECLARE .mp .var .varType .do) .type
+	:- ic-infer-type (.mp .var .varType, .vs) .do .type
 #
 ic-infer-type0 .vs (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
 	:- ic-infer-type .vs .do (STRUCT-OF .nameTypes)
@@ -35,7 +35,6 @@ ic-infer-type0 .vs (INDEX .type .array .index) .type
 #
 ic-infer-type0 .vs (IN .var .do) .type
 	:- try (ic-infer-type .vs .do .type) .ex (throw .ex "%0Aat variable" .var)
-	, dump (typeof {.var} = .type), nl
 #
 ic-infer-type0 .vs (INVOKE .method .params) .returnType
 	:- ic-infer-type .vs .method (METHOD-OF .paramTypes .returnType)
@@ -86,7 +85,8 @@ ic-infer-type0 .vs (SEQ .do0 .do1) .type
 	:- ic-infer-type .vs .do0 _
 	, ic-infer-type .vs .do1 .type
 #
-ic-infer-type0 _ (SNIPPET _) I32
+ic-infer-type0 .vs (SNIPPET .snippet) I32
+	:- ic-infer-type .vs .snippet _
 #
 ic-infer-type0 _ (STRING _) I32
 #

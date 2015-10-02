@@ -7,18 +7,25 @@ ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
 #
-ic-parse (declare .var = .value; .do) (DECLARE .var _ (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
+ic-parse (declare .var as .t = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
+	:- !
+	, is.atom .var
+	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
+	, ic-parse .do .do1
+	, ic-parse-type .t .type
+#
+ic-parse (declare .var = .value; .do) (DECLARE MONO .var _ (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
 	:- !
 	, is.atom .var
 	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #
-ic-parse (declare .var as .t; .do) (DECLARE .var .type .do1)
+ic-parse (declare .var as .t; .do) (DECLARE POLY .var .type .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
 #
-ic-parse (declare .var; .do) (DECLARE .var _ .do1)
+ic-parse (declare .var; .do) (DECLARE MONO .var _ .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 #
