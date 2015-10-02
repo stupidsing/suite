@@ -8,7 +8,7 @@ declare ne2k-mac-address as (byte * 8);
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 
-declare ne2k-irq-sink = baseless [irq-number,] (
+declare ne2k-irq-sink = baseless [irq-number as int,] (
 	declare isr;
 	outb [io-base + +x00, +x22,];
 	while (let isr = inb [io-base + +x07,]) do (
@@ -49,7 +49,7 @@ declare ne2k-send = function [buffer, len,] (
 	outb [io-base + +x00, +x12,];
 
 	for (declare p = 0; p < len; p =+ 2) (
-		declare b;
+		declare b as int;
 		copy [address b, buffer + p, 2,];
 		outw [io-base + +x10, b,];
 	);
