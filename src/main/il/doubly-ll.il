@@ -1,3 +1,10 @@
+data dl-node = fix :dl-node struct (
+	prev as pointer:(:dl-node),
+	next as pointer:(:dl-node),
+);
+
+data dl-pnode = pointer:dl-node;
+
 declare dl$prev = function [e,] (
 	e;
 );
@@ -6,20 +13,20 @@ declare dl$next = function [e,] (
 	e + 4;
 );
 
-declare dl-prev = function [e,] (
-	`dl$prev [e,]`;
+declare dl-prev = function [e as dl-pnode,] (
+	`e`^prev;
 );
 
-declare dl-next = function [e,] (
-	`dl$next [e,]`;
+declare dl-next = function [e as dl-pnode,] (
+	`e`^next;
 );
 
-declare dl-set-prev = function [e, p,] (
-	let `dl$prev [e,]` = p;
+declare dl-set-prev = function [e as dl-pnode, p,] (
+	let (`e`^prev) = p;
 );
 
-declare dl-set-next = function [e, p,] (
-	let `dl$next [e,]` = p;
+declare dl-set-next = function [e as dl-pnode, p,] (
+	let (`e`^next) = p;
 );
 
 declare dl-new = function [e,] (

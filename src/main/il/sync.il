@@ -37,7 +37,7 @@ declare sync-wait = function [p, w,] (
 	);
 );
 
-declare sync-notify = function [p, w,] (
+declare sync-notify = function [p as pointer:int, w,] (
 	let `w` = 1;
 );
 

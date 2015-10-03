@@ -238,17 +238,20 @@ public class SewingProverImpl implements SewingProver {
 			Generalizer generalizer = new Generalizer();
 			Node head = generalizer.generalize(queryRewriter.rewrite(prototype, rule.head));
 			Node tail = generalizer.generalize(rule.tail);
-
-			SewingBinder sb = new SewingBinderImpl();
-			BiPredicate<BindEnv, Node> p = sb.compileBind(head);
-			Trampoline tr1 = compile0(sb, tail);
-			return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
+			return compileRule(head, tail);
 		});
 
 		Trampoline tr0 = or(trs);
 		Trampoline tr1 = hasCut ? cutBegin(tr0) : tr0;
 		Trampoline tr2 = saveEnv(tr1);
 		return log(tr2, traceLevel);
+	}
+
+	private Trampoline compileRule(Node head, Node tail) {
+		SewingBinder sb = new SewingBinderImpl();
+		BiPredicate<BindEnv, Node> p = sb.compileBind(head);
+		Trampoline tr1 = compile0(sb, tail);
+		return newEnv(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
 	private Trampoline compile0(SewingBinder sb, Node node) {
@@ -305,48 +308,35 @@ public class SewingProverImpl implements SewingProver {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
-		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
+		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3 .4").apply(node)) != null) {
 			Fun<Env, Node> list0_ = sb.compile(m[0]);
 			Fun<Env, Node> value0_ = sb.compile(m[1]);
 			BiPredicate<BindEnv, Node> valuex_ = sb.compileBind(m[2]);
-			BiPredicate<BindEnv, Node> elem_ = sb.compileBind(m[3]);
-			BiPredicate<BindEnv, Node> v0_ = sb.compileBind(m[4]);
-			Fun<Env, Node> vx_ = sb.compile(m[5]);
-			Trampoline tr1 = compile0(sb, m[6]);
+			Trampoline tr1 = saveEnv(compileRule(m[3], m[4]));
 			return rt -> {
 				Node current[] = new Node[] { value0_.apply(rt.env) };
-				Env env0 = rt.env;
-				rt.pushRem(rt_ -> {
-					rt_.env = env0;
-					return valuex_.test(rt_, current[0]) ? okay : fail;
-				});
+				rt.pushRem(rt_ -> valuex_.test(rt_, current[0]) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
+					Reference result = new Reference();
 					rt.pushRem(rt_ -> {
-						current[0] = vx_.apply(rt_.env);
+						current[0] = result.finalNode();
 						return okay;
 					});
 					rt.pushRem(rt_ -> {
-						rt_.env = env0.clone();
-						BindEnv bindEnv = rt_;
-						return elem_.test(bindEnv, elem) && v0_.test(bindEnv, current[0]) ? tr1 : fail;
+						rt_.query = Tree.of(TermOp.ITEM__, Tree.of(TermOp.ITEM__, elem, current[0]), result);
+						return tr1;
 					});
 				}
 				return okay;
 			};
 		} else if ((m = Suite.matcher("list.query .0 .1 .2").apply(node)) != null) {
-			Fun<Env, Node> f = sb.compile(m[0]);
-			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
-			Trampoline tr1 = compile0(sb, m[2]);
+			Fun<Env, Node> l_ = sb.compile(m[0]);
+			Trampoline tr1 = saveEnv(compileRule(m[1], m[2]));
 			return rt -> {
-				Env env0 = rt.env;
-				rt.pushRem(rt_ -> {
-					rt_.env = env0;
-					return okay;
-				});
-				for (Node n : Tree.iter(f.apply(rt.env)))
+				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
-						rt_.env = env0.clone();
-						return p.test(rt_, n) ? tr1 : fail;
+						rt_.query = n;
+						return tr1;
 					});
 				return okay;
 			};

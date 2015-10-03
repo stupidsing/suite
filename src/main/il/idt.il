@@ -1,8 +1,8 @@
 -- Sets up and loads interrupt descriptor table
 declare idt-set-entry = function [vector, handler, is-interrupt-gate,] (
 	declare p = idt-address + vector shl 3;
-	let `p + 0` = handler and +x0000FFFF + +x00080000;
-	let `p + 4` = (if is-interrupt-gate then +x00008E00 else +x00008F00) + handler and +xFFFF0000;
+	dw-set [p + 0, handler and +x0000FFFF + +x00080000,];
+	dw-set [p + 4, (if is-interrupt-gate then +x00008E00 else +x00008F00) + handler and +xFFFF0000,];
 );
 
 declare idt-setup = function [] (
@@ -35,7 +35,7 @@ declare idt-setup = function [] (
 	declare handle-timer-interrupt = snippet (
 		isr-prolog;
 		ticks =+ 1;
-		`+xB8000` =+ 1;
+		`+xB8000 as pointer:int` =+ 1;
 
 		-- Switch processes
 		sch-interrupt-switch [];
@@ -65,7 +65,7 @@ declare idt-setup = function [] (
 				declare irq-sink = irq-get-sink [irq-number,];
 				declare irqf as (int * 2);
 				let irqf:0 = irq;
-				let irqf:1 = irq-sink;
+				let irqf:1 = irq-sink as int;
 				(irq-sink && (irqf as (function [int,] int)) [irq-number,]);
 
 				-- Sends end of interrupt signal
@@ -201,8 +201,8 @@ declare idt-setup = function [] (
 
 	(
 		declare-pointer idtr to (int * 2);
-		let `idtr` = +x7FF;
-		let `idtr + 2` = idt-address;
+		dw-set [idtr as int + 0, +x7FF,];
+		dw-set [idtr as int + 2, idt-address,];
 		idtr;
 
 		asm _ LIDT (`EAX`);

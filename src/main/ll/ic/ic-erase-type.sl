@@ -1,5 +1,6 @@
-ic-erase-type (DECLARE .var .type .do0) (ALLOC .var _ .size .dox)
+ic-erase-type (DECLARE .mp .var .type .do0) (ALLOC .var _ .size .dox)
 	:- !
+	, dump (type-of {.var} = .mp .type), nl
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
@@ -8,6 +9,10 @@ ic-erase-type (FIELD (STRUCT-OF .nameTypes) .field .do0) (MEMORY .size (TREE ' +
 	, ic-struct-offset .nameTypes .field .type .offset
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
+#
+ic-erase-type (IN .var .do0) .dox
+	:- !
+	, try (ic-erase-type .do0 .dox) .ex (throw .ex "%0Aat variable" .var)
 #
 ic-erase-type (INDEX .type .array0 .i0) (MEMORY .size (TREE ' + ' (REF .arrayx) TREE ' * ' .ix (NUMBER .size)))
 	:- !
@@ -27,7 +32,12 @@ ic-erase-type (OBJECT .type .var0) (MEMORY .size .varx)
 	, ic-type-size .type .size
 	, ic-erase-type .var0 .varx
 #
-ic-erase-type (PRAGMA _ .do0) .dox
+ic-erase-type (OFFSET .offset0 .pointer0) (TREE ' + ' .pointerx .offsetx)
+	:- !
+	, ic-erase-type .offset0 .offsetx
+	, ic-erase-type .pointer0 .pointerx
+#
+ic-erase-type (TYPE-CAST _ .do0) .dox
 	:- !
 	, ic-erase-type .do0 .dox
 #
@@ -44,6 +54,10 @@ ic-struct-offset (_ .dummyType, .nameTypes) .name .type .offset
 	, let .offset (.offset0 + .offset1)
 #
 
+ic-type-size .type _
+	:- not (bound .type)
+	, ic-error "Cannot get size of" .type
+#
 ic-type-size I32 4
 #
 ic-type-size I8 1

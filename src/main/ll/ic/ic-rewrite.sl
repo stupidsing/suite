@@ -2,8 +2,9 @@ ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
 ic-rewrite (ALLOC .var .offset .size .do0) (ALLOC .var .offset .size .do1) (.do0 .do1, .ts)/.ts
 #
-ic-rewrite (DECLARE .var .type0 .do0) (DECLARE .var .type1 .do1) (.do0 .do1, .ts)/.ts
-	:- ic-rewrite-type .type0 .type1
+ic-rewrite (DECLARE .mp .var .type0 .do0) (DECLARE .mp .var .type1 .do1) (.do0 .do1, .ts)/.ts
+	:- member (MONO, POLY,) .mp
+	, ic-rewrite-type .type0 .type1
 #
 ic-rewrite (FIELD .type0 .field .do0) (FIELD .type1 .field .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
@@ -12,6 +13,8 @@ ic-rewrite (INDEX .type0 .array0 .index0) (INDEX .type1 .array1 .index1) (.array
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .then1, .else0 .else1, .ts)/.ts
+#
+ic-rewrite (IN .var .do0) (IN .var .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (INVOKE .sub0 .params0) (INVOKE .sub1 .params1) (.sub0 .sub1, .ts0)/.tsx
 	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
@@ -34,9 +37,9 @@ ic-rewrite (NUMBER .i) (NUMBER .i) .ts/.ts
 ic-rewrite (OBJECT .type0 .pointer0) (OBJECT .type1 .pointer1) (.pointer0 .pointer1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1
 #
-ic-rewrite (POST-ADD-NUMBER .var0 .i) (POST-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
+ic-rewrite (OFFSET .offset0 .pointer0) (OFFSET .offset1 .pointer1) (.offset0 .offset1, .pointer0 .pointer1, .ts)/.ts
 #
-ic-rewrite (PRAGMA _ .do0) (PRAGMA _ .do1) (.do0 .do1, .ts)/.ts
+ic-rewrite (POST-ADD-NUMBER .var0 .i) (POST-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
 ic-rewrite (PRE-ADD-NUMBER .var0 .i) (PRE-ADD-NUMBER .var1 .i) (.var0 .var1, .ts)/.ts
 #
@@ -53,6 +56,9 @@ ic-rewrite (STRING .s) (STRING .s) .ts/.ts
 ic-rewrite THIS THIS .ts/.ts
 #
 ic-rewrite (TREE .op .a0 .b0) (TREE .op .a1 .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
+#
+ic-rewrite (TYPE-CAST .type0 .do0) (TYPE-CAST .type1 .do1) (.do0 .do1, .ts)/.ts
+	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (VAR .var) (VAR .var) .ts/.ts
 #

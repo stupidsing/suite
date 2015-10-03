@@ -19,17 +19,17 @@ declare pg-is-mapped = function [logical,] (
 	declare pe1 = +xFFFFFFFFFFE00000 + (logical ushr 30) shl 3;
 	declare pe2 = +xFFFFFFFFC0000000 + (logical ushr 21) shl 3;
 	declare pe3 = +xFFFFFF8000000000 + (logical ushr 12) shl 3;
-	(`pe0` && `pe1` && `pe2` && `pe3`);
+	(dw-get [pe0,] && dw-get [pe1,] && dw-get [pe2,] && dw-get [pe3,]);
 );
 
 declare pg-get-physical = function [logical,] (
 	declare pe3 = +xFFFFFF8000000000 + (logical ushr 12) shl 3;
-	`pe3` and +xFFFFFFFFFFFFF000;
+	(dw-get [pe3,]) and +xFFFFFFFFFFFFF000;
 );
 
 declare pg-set-pt-entry = function [pe0, pt1,] (
-	(`pe0` = 0 && (
-		let `pe0` = pm-allocate [] + 7;
+	(dw-get [pe0,] = 0 && (
+		dw-set [pe0, pm-allocate [] + 7,];
 		pg-invalidate-page [pt1,];
 		zero [pt1, 4096,];
 	));
@@ -39,12 +39,12 @@ declare pg-unset-pt-entry = function [pe0, pt1,] (
 	declare isEmpty = 1;
 
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let isEmpty = isEmpty and (`pt1 + offset` = 0);
+		let isEmpty = (isEmpty && (dw-get [pt1 + offset,} = 0));
 	);
 
 	(isEmpty && (
-		pm-deallocate [`pe0` and +xFFFFF000,];
-		let `pe0` = 0;
+		pm-deallocate [(dw-get [pe0,]) and +xFFFFF000,];
+		dw-set [pe0, 0,];
 		1;
 	));
 );
@@ -61,7 +61,7 @@ declare pg-map = function [logical, physical,] (
 	pg-set-pt-entry [pe0, pt1,];
 	pg-set-pt-entry [pe1, pt2,];
 	pg-set-pt-entry [pe2, pt3,];
-	let `pe3` = physical + 7;
+	dw-set [pe3, physical + 7,];
 
 	pg-invalidate-page [logical,];
 );
@@ -75,7 +75,7 @@ declare pg-unmap = function [logical,] (
 	declare pt2 = pe2 and +xFFFFFFFFFFFFF000;
 	declare pt3 = pe3 and +xFFFFFFFFFFFFF000;
 
-	let `pe3` = 0;
+	dw-set [pe3, 0,];
 	pg-unset-pt-entry [pe2, pt3,]
 	&& pg-unset-pt-entry [pe1, pt2,]
 	&& pg-unset-pt-entry [pe0, pt1,];
@@ -132,19 +132,19 @@ declare pg-setup = function [] (
 	zero [pt2, 4096,];
 	zero [pt3, 4096,];
 
-	let `pt0 + 4092` = pt0 + 1; -- Maps itself
-	let `pt0` = pt1 + 5; -- Maps kernel memory
-	let `pt1` = pt2 + 5;
-	let `pt2` = pt3 + 5;
+	dw-set [pt0 + 4092, pt0 + 1,]; -- Maps itself
+	dw-set [pt0, pt1 + 5,]; -- Maps kernel memory
+	dw-set [pt1, pt2 + 5,];
+	dw-set [pt2, pt3 + 5,];
 
 	declare offset = 0;
 
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (
-		let `pt3 + offset =+ 4` = 0;
-		let `pt3 + offset =+ 4` = physical + 261; -- User, read/write
+		dw-set [pt3 + offset =+ 4, 0,];
+		dw-set [pt3 + offset =+ 4, physical + 261,]; -- User, read/write
 	);
 
-	let `pt3` = 0; -- Trap zero pointers
+	dw-set [pt3, 0,]; -- Trap zero pointers
 
 	pt0;
 

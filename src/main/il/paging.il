@@ -17,12 +17,12 @@ declare pg-invalidate-page = function [logical,] (
 declare pg-is-mapped = function [logical,] (
 	declare pe0 = +xFFFFF000 + (logical ushr 22) shl 2;
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
-	(`pe0` && `pe1`);
+	(dw-get [pe0,] && dw-get [pe1,]);
 );
 
 declare pg-get-physical = function [logical,] (
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
-	`pe1` and +xFFFFF000;
+	(dw-get [pe1,]) and +xFFFFF000;
 );
 
 declare pg-map = function [logical, physical,] (
@@ -30,13 +30,13 @@ declare pg-map = function [logical, physical,] (
 	declare pe1 = +xFFC00000 + (logical ushr 12) shl 2;
 	declare pt1 = pe1 and +xFFFFF000;
 
-	(`pe0` = 0 && (
-		let `pe0` = pm-allocate [] + 7;
+	(dw-get [pe0,] = 0 && (
+		dw-set [pe0, pm-allocate [] + 7,];
 		pg-invalidate-page [pt1,];
 		zero [pt1, 4096,];
 	));
 
-	let `pe1` = physical + 7;
+	dw-set [pe1, physical + 7,];
 
 	pg-invalidate-page [logical,];
 );
@@ -47,15 +47,15 @@ declare pg-unmap = function [logical,] (
 	declare pt1 = pe1 and +xFFFFF000;
 	declare isEmpty = 1;
 
-	let `pe1` = 0;
+	dw-set [pe1, 0,];
 
 	for (declare offset = 0; offset < 4096; offset =+ 4) (
-		let isEmpty = isEmpty and (`pt1 + offset` = 0);
+		let isEmpty = (isEmpty && (dw-get [pt1 + offset,] = 0));
 	);
 
 	(isEmpty && (
-		pm-deallocate [`pe0` and +xFFFFF000,];
-		let `pe0` = 0;
+		pm-deallocate [(dw-get [pe0,]) and +xFFFFF000,];
+		dw-set [pe0, 0,];
 	));
 
 	pg-invalidate-page [logical,];
@@ -104,17 +104,17 @@ declare pg-setup = function [] (
 	declare pt1 = pm-allocate [];
 
 	zero [pt0, 4096,];
-	let `pt0` = pt1 + 5; -- Maps kernel memory
-	let `pt0 + 4092` = pt0 + 1; -- Maps itself
+	dw-set [pt0, pt1 + 5,]; -- Maps kernel memory
+	dw-set [pt0 + 4092,  pt0 + 1,]; -- Maps itself
 
 	zero [pt1, 4096,];
 	declare offset = 0;
 
 	for (declare physical = 0; physical < stackx; physical =+ 4096) (
-		let `pt1 + offset =+ 4` = physical + 261; -- User, read/write
+		dw-set [pt1 + offset =+ 4, physical + 261,]; -- User, read/write
 	);
 
-	let `pt1` = 0; -- Trap zero pointers
+	dw-set [pt1, 0,]; -- Trap zero pointers
 
 	pt0;
 

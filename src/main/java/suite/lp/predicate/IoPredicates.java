@@ -22,11 +22,10 @@ import suite.primitive.Bytes.BytesBuilder;
 
 public class IoPredicates {
 
-	public BuiltinPredicate dump = PredicateUtil.ps((prover, ps) -> {
-		for (Node p : ps)
-			System.out.print(Formatter.dump(p) + " ");
+	public BuiltinPredicate dump = (prover, ps) -> {
+		System.out.print(Formatter.dump(ps));
 		return true;
-	});
+	};
 
 	public BuiltinPredicate dumpStack = (prover, ps) -> {
 		String date = LocalDateTime.now().toString();
@@ -118,11 +117,10 @@ public class IoPredicates {
 	});
 
 	public BuiltinPredicate write(PrintStream printStream) {
-		return PredicateUtil.ps((prover, ps) -> {
-			for (Node p : ps)
-				printStream.print(Formatter.display(p) + " ");
+		return (prover, ps) -> {
+			printStream.print(Formatter.display(ps));
 			return true;
-		});
+		};
 	}
 
 }

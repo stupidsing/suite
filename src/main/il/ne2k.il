@@ -4,11 +4,11 @@ constant io-base = +x300;
 constant mem-base = 16384;
 constant mem-size = 16384;
 
-declare-pointer ne2k-mac-address to (byte * 8);
+declare ne2k-mac-address as (byte * 8);
 declare ne2k-rx-page-start;
 declare ne2k-rx-page-stop;
 
-declare ne2k-irq-sink = baseless [irq-number,] (
+declare ne2k-irq-sink = baseless [irq-number as int,] (
 	declare isr;
 	outb [io-base + +x00, +x22,];
 	while (let isr = inb [io-base + +x07,]) do (
@@ -34,7 +34,7 @@ declare ne2k-read = function [src, dst, len,] (
 
 	for (declare p = 0; p < len; p =+ 2) (
 		declare w = inw [io-base + +x10,];
-		copy [dst + p, & w, 2,];
+		copy [dst + p, address w, 2,];
 	);
 );
 
@@ -49,8 +49,8 @@ declare ne2k-send = function [buffer, len,] (
 	outb [io-base + +x00, +x12,];
 
 	for (declare p = 0; p < len; p =+ 2) (
-		declare b;
-		copy [& b, buffer + p, 2,];
+		declare b as int;
+		copy [address b, buffer + p, 2,];
 		outw [io-base + +x10, b,];
 	);
 
@@ -81,10 +81,10 @@ declare ne2k-setup = function [] (
 		outb [io-base + +x00, +x21,];
 		outb [io-base + +x0E, +x49,];
 
-		declare-pointer romdata to (byte * 16);
-		ne2k-read [0, romdata, 16,];
+		declare romdata as (byte * 16);
+		ne2k-read [0, address romdata, 16,];
 		for p in (0, 6) (
-			copy [ne2k-mac-address + p, romdata + p shl 1, 1,];
+			copy [address ne2k-mac-address + p, address romdata + p shl 1, 1,];
 		);
 
 		ne2k-rx-page-start = mem-base shr 8;
@@ -94,7 +94,7 @@ declare ne2k-setup = function [] (
 
 		for p in (0, 6) (
 			declare b;
-			copy [& b, ne2k-mac-address + p, 1,];
+			copy [address b, address ne2k-mac-address + p, 1,];
 			cs-put-hex1 [b,];
 		);
 

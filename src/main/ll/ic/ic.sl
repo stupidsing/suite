@@ -32,6 +32,13 @@ ic-compile .do .e
 	:- ic-compile0 .do .e
 #
 
+ic-compile-memory (LET .var .value) .e0/.ex .size .pointer
+	:- ic-let .value .var .e0/.e1
+	, ic-compile-memory .value .e1/.ex .size .pointer
+#
+ic-compile-memory (MEMORY .size .pointer) .e/.e .size .pointer
+#
+
 ic-compile-operand .do .e .op
 	:- ic-compile-operand0 .do .e .op
 	, !
@@ -57,23 +64,24 @@ ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
 ic-compile0 (INVOKE .mr .params) .e0/.ex
 	:- once (
 		.mr = METHOD .this .sub
-		; .mr = MEMORY 8 .pointer
+		, .e0 = .e1
+		; ic-compile-memory .mr .e0/.e1 8 .pointer
 		, .this = MEMORY 4 .pointer
 		, .sub = MEMORY 4 (TREE ' + ' .pointer (NUMBER 4))
 	)
-	, .e0 = (_ RSAVE
+	, .e1 = (_ RSAVE
 		, _ FR-PUSH (EBP)
-		, .e1)
-	, ic-push-pop-parameters .params .e1/.e2 .e5/.e6
-	, ic-compile .sub .e2/.e3
-	, ic-compile-operand .this .e3/.e4 .thisOp
-	, .e4 = (_ MOV (EBP, .thisOp)
+		, .e2)
+	, ic-push-pop-parameters .params .e2/.e3 .e6/.e7
+	, ic-compile .sub .e3/.e4
+	, ic-compile-operand .this .e4/.e5 .thisOp
+	, .e5 = (_ MOV (EBP, .thisOp)
 		, _ R-
 		, _ CALL ($0)
 		, _ R-
 		, _ MOV (ECX, EAX)
-		, .e5)
-	, .e6 = (_ FR-POP (EBP)
+		, .e6)
+	, .e7 = (_ FR-POP (EBP)
 		, _ RRESTORE
 		, _ R+
 		, _ MOV ($0, ECX)
@@ -118,23 +126,26 @@ ic-compile0 (METHOD0 _ .do) .e0/.ex
 ic-compile0 NOP .e0/.ex
 	:- .e0 = (_ R+, .ex)
 #
-ic-compile0 (POST-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
-	:- ic-compile .pointer .e0/.e1
-	, .e1 = (_ ADD (DWORD `$0`, .i)
+ic-compile0 (POST-ADD-NUMBER .memory .i) .e0/.ex
+	:- ic-compile-memory .memory .e0/.e1 4 .pointer
+	, ic-compile .pointer .e1/.e2
+	, .e2 = (_ ADD (DWORD `$0`, .i)
 		, _ MOV ($0, `$0`)
 		, .ex)
 #
-ic-compile0 (PRE-ADD-NUMBER (MEMORY 4 .pointer) .i) .e0/.ex
-	:- ic-compile .pointer .e0/.e1
-	, .e1 = (_ R+
+ic-compile0 (PRE-ADD-NUMBER .memory .i) .e0/.ex
+	:- ic-compile-memory .memory .e0/.e1 4 .pointer
+	, ic-compile .pointer .e1/.e2
+	, .e2 = (_ R+
 		, _ MOV ($0, $1)
 		, _ MOV ($1, `$0`)
 		, _ ADD (DWORD `$0`, .i)
 		, _ R-
 		, .ex)
 #
-ic-compile0 (REF MEMORY _ .pointer) .e0/.ex
-	:- ic-compile .pointer .e0/.ex
+ic-compile0 (REF .memory) .e0/.ex
+	:- ic-compile-memory .memory .e0/.e1 _ .pointer
+	, ic-compile .pointer .e1/.ex
 #
 ic-compile0 (SEQ .do0 .do1) .e0/.ex
 	:- ic-compile .do0 .e0/.e1
@@ -224,22 +235,28 @@ ic-compile-better-option (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 ic-compile-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
-ic-let (METHOD .this .sub) (MEMORY 8 .pointer) .e0/.ex
-	:- ic-compile .pointer .e0/.e1
-	, ic-compile .this .e1/.e2
-	, .e2 = (_ MOV (`$1`, $0)
+ic-let (METHOD .this .sub) .memory .e0/.ex
+	:- ic-compile-memory .memory .e0/.e1 8 .pointer
+	, ic-compile .pointer .e1/.e2
+	, ic-compile .this .e2/.e3
+	, .e3 = (_ MOV (`$1`, $0)
 		, _ R-
-		, .e3)
-	, ic-compile .sub .e3/.e4
-	, .e4 = (_ MOV (`$1 + 4`, $0)
+		, .e4)
+	, ic-compile .sub .e4/.e5
+	, .e5 = (_ MOV (`$1 + 4`, $0)
 		, _ R-
 		, .ex)
 #
-ic-let (MEMORY .size .pointer0) (MEMORY .size .pointer1) .e0/.ex
-	:- ic-compile .pointer0 .e0/.e1
-	, ic-compile .pointer1 .e1/.e2
-	, ic-copy-memory 0 .size .e2/.e3
-	, .e3 = (_ R-, .ex)
+ic-let .memory0 .memory1 .e0/.ex
+	:- ic-compile-memory .memory0 .e0/.e1 .size .pointer0
+	, ic-compile-memory .memory1 .e1/.e2 .size .pointer1
+	, ic-compile .pointer0 .e2/.e3
+	, ic-compile .pointer1 .e3/.e4
+	, ic-copy-memory 0 .size .e4/.e5
+	, .e5 = (_ R-, .ex)
+#
+ic-let .memory0 .memory1 _
+	:- ic-error "Cannot assign from" .memory0 "to" .memory1
 #
 
 ic-push-pop-parameters () .e/.e .f/.f

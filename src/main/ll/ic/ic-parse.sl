@@ -7,18 +7,25 @@ ic-parse .do0 .parsed
 	:- ic-parse-sugar .do0 .do1
 	, ic-parse .do1 .parsed
 #
-ic-parse (declare .var = .value; .do) (DECLARE .var _ (SEQ (LET (VAR .var) (PRAGMA (IN .var) .value1)) .do1))
+ic-parse (declare .var as .t = .value; .do) (DECLARE POLY .var .type (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
 	:- !
 	, is.atom .var
-	, ic-parse .value .value1
+	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
+	, ic-parse .do .do1
+	, ic-parse-type .t .type
+#
+ic-parse (declare .var = .value; .do) (DECLARE MONO .var _ (SEQ (LET (VAR .var) (IN .var .value1)) .do1))
+	:- !
+	, is.atom .var
+	, try (ic-parse .value .value1) .ex (throw .ex "%0Aat variable" .var)
 	, ic-parse .do .do1
 #
-ic-parse (declare .var as .t; .do) (DECLARE .var .type .do1)
+ic-parse (declare .var as .t; .do) (DECLARE POLY .var .type .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 	, ic-parse-type .t .type
 #
-ic-parse (declare .var; .do) (DECLARE .var _ .do1)
+ic-parse (declare .var; .do) (DECLARE MONO .var _ .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 #
@@ -61,12 +68,9 @@ ic-parse .i (NUMBER .i)
 ic-parse `.pointer` (OBJECT _ .pointer1)
 	:- ic-parse .pointer .pointer1
 #
-ic-parse (no-type .do) (PRAGMA (TYPE-CAST _) .do1)
-	:- ic-parse .do .do1
-#
-ic-parse (.do as .t) (PRAGMA (TYPE-CAST .type) .do1)
-	:- ic-parse-type .t .type
-	, ic-parse .do .do1
+ic-parse (.pointer +offset .offset) (OFFSET .offset1 .pointer1)
+	:- ic-parse .pointer .pointer1
+	, ic-parse .offset .offset1
 #
 ic-parse (& .var) (REF .var1)
 	:- ic-parse .var .var1
@@ -93,6 +97,13 @@ ic-parse .expr (TREE .op .expr0 .expr1)
 	, ic-parse .value0 .expr0
 	, ic-parse .value1 .expr1
 #
+ic-parse (no-type .do) (TYPE-CAST _ .do1)
+	:- ic-parse .do .do1
+#
+ic-parse (.do as .t) (TYPE-CAST .type .do1)
+	:- ic-parse-type .t .type
+	, ic-parse .do .do1
+#
 ic-parse .var (VAR .var)
 	:- is.atom .var
 #
@@ -113,9 +124,11 @@ ic-parse-better-option (.var += .i) .do
 
 ic-parse-sugar (.a | .b) (.a [.b,])
 #
-ic-parse-sugar (.a && .b) (if .a then .b else 0)
+ic-parse-sugar (.a && .b) (if .a then .b else (no-type 0))
 #
-ic-parse-sugar (.a || .b) (if .a then 1 else .b)
+ic-parse-sugar (.a || .b) (if .a then (no-type 1) else .b)
+#
+ic-parse-sugar (.p +f .f) (& (`.p`^.f))
 #
 ic-parse-sugar (.var =+ .inc) (declare .p as int = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o
@@ -153,7 +166,7 @@ ic-parse-parameter (.param as .t) (PARAM .param .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-parameter .p .param
-	:- not (.p = _/_), .param = PARAM .p I32
+	:- not (.p = _/_), .param = PARAM .p _
 #
 
 ic-parse-type (.tv0 => .type0) .typex
