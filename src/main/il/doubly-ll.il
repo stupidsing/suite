@@ -3,21 +3,19 @@ data dl-node = fix :dl-node struct (
 	next as pointer:(:dl-node),
 );
 
-data dl-pnode = pointer:dl-node;
-
-declare dl-prev = function [e as dl-pnode,] (
+declare dl-prev = function [e as pointer:dl-node,] (
 	`e`^prev;
 );
 
-declare dl-next = function [e as dl-pnode,] (
+declare dl-next = function [e as pointer:dl-node,] (
 	`e`^next;
 );
 
-declare dl-set-prev = function [e as dl-pnode, p,] (
+declare dl-set-prev = function [e as pointer:dl-node, p,] (
 	let (`e`^prev) = p;
 );
 
-declare dl-set-next = function [e as dl-pnode, p,] (
+declare dl-set-next = function [e as pointer:dl-node, p,] (
 	let (`e`^next) = p;
 );
 
