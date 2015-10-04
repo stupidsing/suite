@@ -63,7 +63,7 @@ declare sch-enqueue-process = function [] (
 	process;
 );
 
-declare sch-dequeue-process = function [process as pointer:sch-node,] (
+declare sch-dequeue-process = function [process,] (
 	sch-remove [process,];
 	sch-deallocate [process,];
 );
