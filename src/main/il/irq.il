@@ -17,7 +17,7 @@ declare irq-get-sink = function [irq-number,] (
 	irq-sinks:irq-number;
 );
 
-declare irq-set-sink = function [irq-number, irq-sink as (baseless [int,] int),] (
+declare irq-set-sink = function [irq-number, irq-sink,] (
 	let irq-sinks:irq-number = irq-sink;
 );
 
