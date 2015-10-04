@@ -5,14 +5,6 @@ data dl-node = fix :dl-node struct (
 
 data dl-pnode = pointer:dl-node;
 
-declare dl$prev = function [e,] (
-	e;
-);
-
-declare dl$next = function [e,] (
-	e + 4;
-);
-
 declare dl-prev = function [e as dl-pnode,] (
 	`e`^prev;
 );
