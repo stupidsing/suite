@@ -32,7 +32,7 @@ declare sch-allocate = function [] (
 	(mm-allocate [12,]) as pointer:sch-node;
 );
 
-declare sch-deallocate = function [e as pointer:sch-node,] (
+declare sch-deallocate = function [e,] (
 	mm-deallocate [e as int, 12,];
 );
 
