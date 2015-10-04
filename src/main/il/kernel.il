@@ -63,11 +63,11 @@ declare zero = function [dst, len,] (
 	asm _ REP STOSB ();
 );
 
-declare dw-get = function [p as int,] (
+declare dw-get = function [p,] (
 	`p as pointer:int`;
 );
 
-declare dw-set = function [p as int, i,] (
+declare dw-set = function [p, i,] (
 	let `p as pointer:int` = i;
 );
 
