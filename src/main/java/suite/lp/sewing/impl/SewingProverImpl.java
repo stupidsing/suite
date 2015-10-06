@@ -331,6 +331,33 @@ public class SewingProverImpl implements SewingProver {
 				}
 				return okay;
 			};
+		} else if ((m = Suite.matcher("list.fold.clone .0/.1/.2 .3/.4/.5 .6").apply(node)) != null) {
+			Fun<Env, Node> list0_ = sb.compile(m[0]);
+			Fun<Env, Node> value0_ = sb.compile(m[1]);
+			BiPredicate<BindEnv, Node> valuex_ = sb.compileBind(m[2]);
+			BiPredicate<BindEnv, Node> elem_ = sb.compileBind(m[3]);
+			BiPredicate<BindEnv, Node> v0_ = sb.compileBind(m[4]);
+			Fun<Env, Node> vx_ = sb.compile(m[5]);
+			Trampoline tr1 = compile0(sb, m[6]);
+			return rt -> {
+				Node current[] = new Node[] { value0_.apply(rt.env) };
+				Env env0 = rt.env;
+				rt.pushRem(rt_ -> {
+					rt_.env = env0;
+					return valuex_.test(rt_, current[0]) ? okay : fail;
+				});
+				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
+					rt.pushRem(rt_ -> {
+						current[0] = vx_.apply(rt_.env);
+						return okay;
+					});
+					rt.pushRem(rt_ -> {
+						rt_.env = env0.clone();
+						return elem_.test(rt_, elem) && v0_.test(rt_, current[0]) ? tr1 : fail;
+					});
+				}
+				return okay;
+			};
 		} else if ((m = Suite.matcher("list.query .0 .1").apply(node)) != null) {
 			Fun<Env, Node> l_ = sb.compile(m[0]);
 			Fun<Env, Node> ht_ = sb.compile(m[1]);
@@ -341,6 +368,23 @@ public class SewingProverImpl implements SewingProver {
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
 						return tr1;
+					});
+				return okay;
+			};
+		} else if ((m = Suite.matcher("list.query.clone .0 .1 .2").apply(node)) != null) {
+			Fun<Env, Node> f = sb.compile(m[0]);
+			BiPredicate<BindEnv, Node> p = sb.compileBind(m[1]);
+			Trampoline tr1 = compile0(sb, m[2]);
+			return rt -> {
+				Env env0 = rt.env;
+				rt.pushRem(rt_ -> {
+					rt_.env = env0;
+					return okay;
+				});
+				for (Node n : Tree.iter(f.apply(rt.env)))
+					rt.pushRem(rt_ -> {
+						rt_.env = env0.clone();
+						return p.test(rt_, n) ? tr1 : fail;
 					});
 				return okay;
 			};
