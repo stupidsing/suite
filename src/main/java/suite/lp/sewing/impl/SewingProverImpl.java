@@ -308,12 +308,14 @@ public class SewingProverImpl implements SewingProver {
 			BiPredicate<BindEnv, Node> p = sb.compileBind(m[0]);
 			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
-		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3 .4").apply(node)) != null) {
+		} else if ((m = Suite.matcher("list.fold .0/.1/.2 .3").apply(node)) != null) {
 			Fun<Env, Node> list0_ = sb.compile(m[0]);
 			Fun<Env, Node> value0_ = sb.compile(m[1]);
 			BiPredicate<BindEnv, Node> valuex_ = sb.compileBind(m[2]);
-			Trampoline tr1 = saveEnv(compileRule(m[3], m[4]));
+			Fun<Env, Node> ht_ = sb.compile(m[3]);
 			return rt -> {
+				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				Node current[] = new Node[] { value0_.apply(rt.env) };
 				rt.pushRem(rt_ -> valuex_.test(rt_, current[0]) ? okay : fail);
 				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
@@ -329,10 +331,12 @@ public class SewingProverImpl implements SewingProver {
 				}
 				return okay;
 			};
-		} else if ((m = Suite.matcher("list.query .0 .1 .2").apply(node)) != null) {
+		} else if ((m = Suite.matcher("list.query .0 .1").apply(node)) != null) {
 			Fun<Env, Node> l_ = sb.compile(m[0]);
-			Trampoline tr1 = saveEnv(compileRule(m[1], m[2]));
+			Fun<Env, Node> ht_ = sb.compile(m[1]);
 			return rt -> {
+				Node ht[] = Suite.matcher(".0 .1").apply(ht_.apply(rt.env));
+				Trampoline tr1 = saveEnv(compileRule(ht[0], ht[1]));
 				for (Node n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
