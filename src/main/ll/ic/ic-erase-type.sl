@@ -1,4 +1,4 @@
-ic-erase-type (DECLARE .mp .var .type .do0) (ALLOC .var _ .size .dox)
+ic-erase-type (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
 	:- !
 	, dump (type-of {.var} = .mp .type), nl
 	, ic-type-size .type .size

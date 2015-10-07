@@ -1,10 +1,10 @@
 ic-rewrite (ASM .i) (ASM .i) .ts/.ts
 #
-ic-rewrite (ALLOC .var .offset .size .do0) (ALLOC .var .offset .size .do1) (.do0 .do1, .ts)/.ts
-#
 ic-rewrite (DECLARE .mp .var .type0 .do0) (DECLARE .mp .var .type1 .do1) (.do0 .do1, .ts)/.ts
 	:- member (MONO, POLY,) .mp
 	, ic-rewrite-type .type0 .type1
+#
+ic-rewrite (DECLARES .var .offset .size .do0) (DECLARES .var .offset .size .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (FIELD .type0 .field .do0) (FIELD .type1 .field .do1) (.do0 .do1, .ts)/.ts
 	:- ic-rewrite-type .type0 .type1

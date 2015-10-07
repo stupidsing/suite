@@ -50,16 +50,16 @@ ic-compile-operand .do .e $0
 ic-compile0 .do .e0/.ex
 	:- ic-compile-better-option .do .e0/.ex, !
 #
-ic-compile0 (ALLOC _ .offset .size .do) .e0/.ex
+ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
+	:- ! -- Assembler might have variables, skip processing
+#
+ic-compile0 (DECLARES _ .offset .size .do) .e0/.ex
 	:- .e0 = (_ FR+ (.size)
 		, _ FR-GET (.offset)
 		, .e1)
 	, ic-compile .do .e1/.e2
 	, .e2 = (_ FR- (.size)
 		, .ex)
-#
-ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
-	:- ! -- Assembler might have variables, skip processing
 #
 ic-compile0 (INVOKE .mr .params) .e0/.ex
 	:- once (

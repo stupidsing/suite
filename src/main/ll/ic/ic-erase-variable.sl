@@ -1,4 +1,4 @@
-ic-erase-variable .frame/.vs (ALLOC .var .offset .size .do0) (ALLOC .var .offset .size .dox)
+ic-erase-variable .frame/.vs (DECLARES .var .offset .size .do0) (DECLARES .var .offset .size .dox)
 	:- !
 	, ic-erase-variable .frame/(FRAME-VAR .var .frame .offset .size, .vs) .do0 .dox
 #
