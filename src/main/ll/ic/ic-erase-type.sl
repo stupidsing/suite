@@ -25,6 +25,13 @@ ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 	, list.query .list (PARAM .var .type):(PS .var .size) (ic-type-size .type .size)
 	, ic-erase-type .do0 .dox
 #
+ic-erase-type (NEW _ ()) (MEMORY 0 NOP)
+#
+ic-erase-type (NEW (STRUCT-OF (.k .type, .nts)) (.k .value0, .kvs)) (NEWS .size .value1 .news)
+	:- ic-erase-type (NEW (STRUCT-OF .nts) .kvs) .news
+	, ic-erase-type .value0 .value1
+	, ic-type-size .type .size
+#
 ic-erase-type NULL (NUMBER 0)
 #
 ic-erase-type (OBJECT .type .var0) (MEMORY .size .varx)

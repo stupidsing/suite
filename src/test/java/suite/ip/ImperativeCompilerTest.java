@@ -22,8 +22,8 @@ public class ImperativeCompilerTest {
 		String s = "" //
 				+ "constant p = fix :p pointer:(struct (next as :p,));" //
 				+ "declare pnext = function [e as p,] ( `e`^next; );" //
-				+ "declare ptr = null as p;" //
-				+ "let (`ptr`^next) = pnext [ptr,];";
+				+ "declare object = new (next = null,);" //
+				+ "let (object^next) = pnext [& object,];";
 		Bytes bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
 		System.out.println(bytes);

@@ -28,6 +28,15 @@ ic-rewrite (METHOD0 .params0 .do0) (METHOD0 .params1 .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (METHOD .this0 .method0) (METHOD .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
 #
+ic-rewrite (NEW .type0 ()) (NEW .type1 ()) .ts/.ts
+	:- ic-rewrite-type .type0 .type1
+#
+ic-rewrite (NEW .type0 (.k .v0, .kvs0)) (NEW .type1 (.k .v1, .kvs1)) (.v0 .v1, .ts0)/.tsx
+	:- ic-rewrite-type .type0 .type1
+	, ic-rewrite (NEW .type0 .kvs0) (NEW .type0 .kvs1) .ts0/.tsx
+#
+ic-rewrite (NEWS .size .value0 .do0) (NEWS .size .value1 .do1) (.value0 .value1, .do0 .do1, .ts)/.ts
+#
 ic-rewrite NOP NOP .ts/.ts
 #
 ic-rewrite NULL NULL .ts/.ts

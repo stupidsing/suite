@@ -55,6 +55,14 @@ ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
 	:- ic-infer-type .vs .this I32
 	, ic-infer-type .vs .method (METHOD0-OF .paramTypes .returnType)
 #
+ic-infer-type0 _ (NEW .type ()) .type
+	:- .type = STRUCT-OF ()
+#
+ic-infer-type0 .vs (NEW .type (.k .v, .kvs)) .type
+	:- ic-infer-type .vs .v .t
+	, .type = STRUCT-OF (.k .t, .types)
+	, ic-infer-type .vs (NEW (STRUCT-OF .types) .kvs) (STRUCT-OF .types)
+#
 ic-infer-type0 _ NOP _
 #
 ic-infer-type0 _ NULL (POINTER-OF _)
