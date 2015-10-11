@@ -384,4 +384,4 @@ ic-operator-shift shr SAR #
 ic-operator-shift ushl SHL #
 ic-operator-shift ushr SHR #
 
-ic-error .m :- !, throw .m #
+ic-error .m :- throw .m #
