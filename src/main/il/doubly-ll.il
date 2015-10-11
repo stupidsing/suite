@@ -19,9 +19,9 @@ declare dl-set-next = function [e as pointer:dl-node, p,] (
 	let (`e`^next) = p;
 );
 
-declare dl-new = function [e,] (
-	dl-set-prev [e, null,];
-	dl-set-next [e, null,];
+declare dl-new = function [e as pointer:dl-node,] (
+	let `e` = new (prev = null, next = null,);
+	e;
 );
 
 declare dl-insert-prev = function [e, ne,] (

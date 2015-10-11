@@ -104,9 +104,6 @@ ic-compile0 (IF .if .then .else) .e0/.ex
 ic-compile0 (LET .var .value) .e0/.ex
 	:- ic-let .value .var .e0/.ex
 #
-ic-compile0 (MEMORY .size .pointer) _
-	:- .size != 4, ic-error "Cannot load non-dword memory " .pointer
-#
 ic-compile0 (METHOD0 _ .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
 		, .funLabel FR-BEGIN
@@ -251,7 +248,8 @@ ic-let (NEWS .size0 .value .news1) .memory .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 .size .pointer
 	, let .size1 (.size - .size0)
 	, ic-let .value (MEMORY .size0 .pointer) .e1/.e2
-	, ic-let .news1 (MEMORY .size1 (TREE ' + ' .pointer (NUMBER .size0))) .e2/.ex
+	, .e2 = (_ R-, .e3)
+	, ic-let .news1 (MEMORY .size1 (TREE ' + ' .pointer (NUMBER .size0))) .e3/.ex
 #
 ic-let .memory0 .memory1 .e0/.ex
 	:- ic-compile-memory .memory0 .e0/.e1 .size .pointer0
