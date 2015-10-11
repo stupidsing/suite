@@ -25,8 +25,11 @@ compile-imperative .do0 .e0/.ex
 -- EBP - stack frame
 -- ESP - stack pointer
 ic-compile .do .e0/.ex
-	:- ic-compile-operand0 .do .e0/.e1 .op
+	:- ic-compile-operand-better-option .do .e0/.e1 .op
 	, !, .e1 = (_ MOV ($0, .op), .ex)
+#
+ic-compile .do .e0/.ex
+	:- ic-compile-better-option .do .e0/.ex, !
 #
 ic-compile .do .e
 	:- ic-compile0 .do .e
@@ -40,16 +43,13 @@ ic-compile-memory (MEMORY .size .pointer) .e/.e .size .pointer
 #
 
 ic-compile-operand .do .e .op
-	:- ic-compile-operand0 .do .e .op
+	:- ic-compile-operand-better-option .do .e .op
 	, !
 #
 ic-compile-operand .do .e $0
-	:- ic-compile0 .do .e
+	:- ic-compile .do .e
 #
 
-ic-compile0 .do .e0/.ex
-	:- ic-compile-better-option .do .e0/.ex, !
-#
 ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
@@ -186,40 +186,10 @@ ic-compile0 (WHILE .while .do) .e0/.ex
 		, .ex)
 #
 
-ic-compile-operand0 (MEMORY 4 (TREE ' + ' (TREE ' + ' .pointer (NUMBER .i0)) (NUMBER .i1))) .e0/.ex .op
-	:- .e0 = (_ LET (.i, .i0 + .i1), .e1)
-	, ic-compile-operand0 (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e1/.ex .op
-#
-ic-compile-operand0 (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
-	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
-#
-ic-compile-operand0 (MEMORY 4 THIS) .e0/.ex .op
-	:- .e0 = (_ R+, .ex), .op = `EBP`
-#
-ic-compile-operand0 (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
-	:- ic-compile .pointer .e0/.ex, .op = `$0 + .i`
-#
-ic-compile-operand0 (MEMORY 4 .pointer) .e0/.ex .op
-	:- ic-compile .pointer .e0/.ex, .op = `$0`
-#
-ic-compile-operand0 (NUMBER .i) (_ R+, .e)/.e (DWORD .i)
-#
-ic-compile-operand0 (REG .reg) (_ R+, .e)/.e .reg
-#
-ic-compile-operand0 (STRING .s) .e0/.ex .strLabel
-	:- .e0 = (_ JMP (DWORD .label)
-		, .strLabel DS (.s)
-		, _ D8 (0)
-		, .label R+
-		, .ex)
-#
-ic-compile-operand0 THIS (_ R+, .e)/.e EBP
-#
-
 -- Generates faster code
 ic-compile-better-option (LET .memory .value) .e0/.ex
 	:- ic-compile .value .e0/.e1
-	, ic-compile-operand0 .memory .e1/.e2 .op
+	, ic-compile-operand-better-option .memory .e1/.e2 .op
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
 ic-compile-better-option (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
@@ -230,6 +200,36 @@ ic-compile-better-option (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	, .e1 = (_ ADD ($0, .i), .ex)
 #
 ic-compile-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
+#
+
+ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' (TREE ' + ' .pointer (NUMBER .i0)) (NUMBER .i1))) .e0/.ex .op
+	:- .e0 = (_ LET (.i, .i0 + .i1), .e1)
+	, ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e1/.ex .op
+#
+ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' THIS (NUMBER .i))) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP + .i`
+#
+ic-compile-operand-better-option (MEMORY 4 THIS) .e0/.ex .op
+	:- .e0 = (_ R+, .ex), .op = `EBP`
+#
+ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' .pointer (NUMBER .i))) .e0/.ex .op
+	:- ic-compile .pointer .e0/.ex, .op = `$0 + .i`
+#
+ic-compile-operand-better-option (MEMORY 4 .pointer) .e0/.ex .op
+	:- ic-compile .pointer .e0/.ex, .op = `$0`
+#
+ic-compile-operand-better-option (NUMBER .i) (_ R+, .e)/.e (DWORD .i)
+#
+ic-compile-operand-better-option (REG .reg) (_ R+, .e)/.e .reg
+#
+ic-compile-operand-better-option (STRING .s) .e0/.ex .strLabel
+	:- .e0 = (_ JMP (DWORD .label)
+		, .strLabel DS (.s)
+		, _ D8 (0)
+		, .label R+
+		, .ex)
+#
+ic-compile-operand-better-option THIS (_ R+, .e)/.e EBP
 #
 
 ic-let (METHOD .this .sub) .memory .e0/.ex
