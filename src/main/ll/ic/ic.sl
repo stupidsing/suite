@@ -36,7 +36,7 @@ ic-compile .do .e
 #
 
 ic-compile-memory (LET .var .value) .e0/.ex .size .pointer
-	:- ic-let .value .var .e0/.e1
+	:- ic-compile-let .value .var .e0/.e1
 	, ic-compile-memory .value .e1/.ex .size .pointer
 #
 ic-compile-memory (MEMORY .size .pointer) .e/.e .size .pointer
@@ -102,7 +102,7 @@ ic-compile0 (IF .if .then .else) .e0/.ex
 		, .ex)
 #
 ic-compile0 (LET .var .value) .e0/.ex
-	:- ic-let .value .var .e0/.ex
+	:- ic-compile-let .value .var .e0/.ex
 #
 ic-compile0 (METHOD0 _ .do) .e0/.ex
 	:- .e0 = (_ JMP (DWORD .label)
@@ -232,7 +232,7 @@ ic-compile-operand-better-option (STRING .s) .e0/.ex .strLabel
 ic-compile-operand-better-option THIS (_ R+, .e)/.e EBP
 #
 
-ic-let (METHOD .this .sub) .memory .e0/.ex
+ic-compile-let (METHOD .this .sub) .memory .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 8 .pointer
 	, ic-compile .pointer .e1/.e2
 	, ic-compile .this .e2/.e3
@@ -244,14 +244,14 @@ ic-let (METHOD .this .sub) .memory .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-let (NEWS .size0 .value .news1) .memory .e0/.ex
+ic-compile-let (NEWS .size0 .value .news1) .memory .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 .size .pointer
 	, let .size1 (.size - .size0)
-	, ic-let .value (MEMORY .size0 .pointer) .e1/.e2
+	, ic-compile-let .value (MEMORY .size0 .pointer) .e1/.e2
 	, .e2 = (_ R-, .e3)
-	, ic-let .news1 (MEMORY .size1 (TREE ' + ' .pointer (NUMBER .size0))) .e3/.ex
+	, ic-compile-let .news1 (MEMORY .size1 (TREE ' + ' .pointer (NUMBER .size0))) .e3/.ex
 #
-ic-let .memory0 .memory1 .e0/.ex
+ic-compile-let .memory0 .memory1 .e0/.ex
 	:- ic-compile-memory .memory0 .e0/.e1 .size .pointer0
 	, ic-compile-memory .memory1 .e1/.e2 .size .pointer1
 	, ic-compile .pointer0 .e2/.e3
@@ -259,12 +259,12 @@ ic-let .memory0 .memory1 .e0/.ex
 	, ic-copy-memory 0 .size .e4/.e5
 	, .e5 = (_ R-, .ex)
 #
-ic-let .value .memory .e0/.ex
+ic-compile-let .value .memory .e0/.ex
 	:- ic-compile .value .e0/.e1
 	, ic-compile-operand .memory .e1/.e2 .op
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
 #
-ic-let .memory0 .memory1 _
+ic-compile-let .memory0 .memory1 _
 	:- ic-error "Cannot assign from" .memory0 "to" .memory1
 #
 
@@ -278,7 +278,7 @@ ic-push-pop-parameters (.p, .ps) .e0/.ex .f0/.fx
 		, .f0 = (_ FR-POP (EDX), .f1)
 		; .e1 = (_ FR+ (.size), .e2)
 		, .f0 = (_ FR- (.size), .f1)
-		, ic-let .p (MEMORY .size (REG ESP)) .e2/.e3
+		, ic-compile-let .p (MEMORY .size (REG ESP)) .e2/.e3
 		, .e3 = (_ R-, .ex)
 	)
 #
