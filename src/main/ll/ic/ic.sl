@@ -93,13 +93,7 @@ ic-compile0 (IF .if .then .else) .e0/.ex
 		, _ R-
 		, _ JZ (DWORD .elseLabel)
 		, .e2)
-	, ic-compile .then .e2/.e3
-	, .e3 = (_ JMP (DWORD .endLabel)
-		, .elseLabel R-
-		, .e4)
-	, ic-compile .else .e4/.e5
-	, .e5 = (.endLabel ()
-		, .ex)
+	, ic-compile-then-else .then .else .elseLabel .e2/.ex
 #
 ic-compile0 (LET .var .value) .e0/.ex
 	:- ic-compile-let .value .var .e0/.ex
@@ -186,11 +180,25 @@ ic-compile0 (WHILE .while .do) .e0/.ex
 		, .ex)
 #
 
--- Generates faster code
+-- Generates smaller code
+ic-compile-better-option (IF (TREE .op .left .right) .then .else) .e0/.ex
+	:- once (ic-operator-negate .op .negOp; ic-operator-negate .negOp .op)
+	, ic-compile .left .e0/.e1
+	, ic-compile .right .e1/.e2
+	, ic-operator-jmpcc .negOp .jmp
+	, .e2 = (_ CMP ($1, $0)
+		, _ R-
+		, _ R-
+		, _ .jmp (DWORD .elseLabel)
+		, .e3)
+	, ic-compile-then-else .then .else .elseLabel .e3/.ex
+#
 ic-compile-better-option (LET .memory .value) .e0/.ex
 	:- ic-compile .value .e0/.e1
 	, ic-compile-operand-better-option .memory .e1/.e2 .op
 	, .e2 = (_ MOV (.op, $1), _ R-, .ex)
+#
+ic-compile-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
 #
 ic-compile-better-option (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
 	:- .e0 = (_ R+, _ LEA ($0, `EBP + .i`), .ex)
@@ -198,8 +206,6 @@ ic-compile-better-option (TREE ' + ' THIS (NUMBER .i)) .e0/.ex
 ic-compile-better-option (TREE ' + ' .do0 (NUMBER .i)) .e0/.ex
 	:- ic-compile .do0 .e0/.e1
 	, .e1 = (_ ADD ($0, .i), .ex)
-#
-ic-compile-better-option (NUMBER 0) (_ R+, _ XOR ($0, $0), .e)/.e
 #
 
 ic-compile-operand-better-option (MEMORY 4 (TREE ' + ' (TREE ' + ' .pointer (NUMBER .i0)) (NUMBER .i1))) .e0/.ex .op
@@ -230,6 +236,16 @@ ic-compile-operand-better-option (STRING .s) .e0/.ex .strLabel
 		, .ex)
 #
 ic-compile-operand-better-option THIS (_ R+, .e)/.e EBP
+#
+
+ic-compile-then-else .then .else .elseLabel .e0/.ex
+	:- ic-compile .then .e0/.e1
+	, .e1 = (_ JMP (DWORD .endLabel)
+		, .elseLabel R-
+		, .e2)
+	, ic-compile .else .e2/.e3
+	, .e3 = (.endLabel ()
+		, .ex)
 #
 
 ic-compile-let (METHOD .this .sub) .memory .e0/.ex
@@ -365,12 +381,23 @@ ic-copy-memory .o .size .e0/.ex
   , ic-copy-memory .o1 .size1 .e1/.ex
 #
 
+ic-operator-negate ' = ' ' != ' #
+ic-operator-negate ' > ' ' <= ' #
+ic-operator-negate ' < ' ' >= ' #
+
 ic-operator-insn ' + ' ADD #
 ic-operator-insn ' - ' SUB #
 ic-operator-insn ' * ' IMUL #
 ic-operator-insn and AND #
 ic-operator-insn or OR #
 ic-operator-insn xor XOR #
+
+ic-operator-jmpcc ' = ' JE #
+ic-operator-jmpcc ' != ' JNE #
+ic-operator-jmpcc ' <= ' JLE #
+ic-operator-jmpcc ' < ' JL #
+ic-operator-jmpcc ' >= ' JGE #
+ic-operator-jmpcc ' > ' JG #
 
 ic-operator-setcc ' = ' SETE #
 ic-operator-setcc ' != ' SETNE #
