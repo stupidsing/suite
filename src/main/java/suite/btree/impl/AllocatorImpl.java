@@ -69,26 +69,38 @@ public class AllocatorImpl implements Allocator {
 		updateAllocMap(pageNo, count, (byte) 0);
 	}
 
-	private int findFreeExtentPages(int size) {
+	private int findFreeExtentPages(int count) {
 		int start = lastAllocatedPageNo + 1;
 		int pageNo = start;
-		for (int i = 0; i < size; i++)
-			if (!isEmptyExtent(pageNo, size)) {
-				pageNo++;
-				if (pageNo == size)
-					pageNo = 0;
-			} else
-				return pageNo;
+		while ((pageNo = checkNextEmptyExtent(pageNo)) < size) {
+			int pageNo0 = pageNo;
+			pageNo = checkEmptyExtent(pageNo, count);
+			if (pageNo - pageNo0 >= count)
+				return pageNo0;
+		}
+		pageNo = 0;
+		while ((pageNo = checkNextEmptyExtent(pageNo)) < start) {
+			int pageNo0 = pageNo;
+			pageNo = checkEmptyExtent(pageNo, count);
+			if (pageNo - pageNo0 >= count)
+				return pageNo0;
+		}
 		return -1;
 	}
 
-	private boolean isEmptyExtent(int pageNo, int count) {
-		boolean result = pageNo + count <= size;
-		for (int i = 0; result && i < count; i++) {
-			result &= allocMap[pageNo] == 0;
-			pageNo++;
-		}
-		return result;
+	private int checkEmptyExtent(int startPageNo, int max) {
+		int endPageNo = Math.min(size, startPageNo + max);
+		for (int p = startPageNo; p < endPageNo; p++)
+			if (allocMap[p] != 0)
+				return p;
+		return endPageNo;
+	}
+
+	private int checkNextEmptyExtent(int startPageNo) {
+		for (int p = startPageNo; p < size; p++)
+			if (allocMap[p] != 1)
+				return p;
+		return size;
 	}
 
 	private void updateAllocMap(int pageNo, int count, byte b) {
