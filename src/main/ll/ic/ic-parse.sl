@@ -97,7 +97,7 @@ ic-parse this THIS
 #
 ic-parse .expr (TREE .op .expr0 .expr1)
 	:- (tree .expr .value0 .op .value1; .expr = .value0 .op .value1)
-	, ic-operator .op _
+	, ic-operator .op _ _
 	, ic-parse .value0 .expr0
 	, ic-parse .value1 .expr1
 #

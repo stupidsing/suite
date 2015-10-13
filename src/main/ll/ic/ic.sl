@@ -152,14 +152,14 @@ ic-compile0 (SNIPPET .snippet) .e0/.ex
 		, .ex)
 #
 ic-compile0 (TREE .operator .value0 .value1) .e0/.ex
-	:- ic-operator .operator .e2/.ex
+	:- ic-operator .operator .op .e2/.ex
 	, once (
 		ic-right-associative .operator
 		, ic-compile .value1 .e0/.e1
-		, ic-compile .value0 .e1/.e2
+		, ic-compile-operand .value0 .e1/.e2 .op
 	;
 		, ic-compile .value0 .e0/.e1
-		, ic-compile .value1 .e1/.e2
+		, ic-compile-operand .value1 .e1/.e2 .op
 	)
 #
 ic-compile0 (WHILE .while .do) .e0/.ex
@@ -330,15 +330,15 @@ ic-right-associative and #
 ic-right-associative or #
 ic-right-associative xor #
 
-ic-operator .operator
-	(_ .insn ($1, $0)
+ic-operator .operator .op
+	(_ .insn ($1, .op)
 	, _ R-
 	, .e
 )/.e
 	:- ic-operator-insn .operator .insn
 #
-ic-operator .operator
-	(_ CMP ($1, $0)
+ic-operator .operator .op
+	(_ CMP ($1, .op)
 	, _ R-
 	, _ .setcc (DL)
 	, _ MOVSX ($0, DL)
@@ -346,12 +346,19 @@ ic-operator .operator
 )/.e
 	:- ic-operator-setcc .operator .setcc
 #
-ic-operator ' / ' .e :- ic-divide EAX .e
+ic-operator ' * ' .op -- IMUL cannot accept immediate operands
+	(_ MOV ($0, .op)
+	, _ IMUL ($1, $0)
+	, _ R-
+	, .e
+)/.e
 #
-ic-operator ' %% ' .e :- ic-divide EDX .e
+ic-operator ' / ' .op .e :- ic-divide .op EAX .e
 #
-ic-operator .shift
-	(_ MOV (ECX, $0)
+ic-operator ' %% ' .op .e :- ic-divide .op EDX .e
+#
+ic-operator .shift .op
+	(_ MOV (ECX, .op)
 	, _ R-
 	, _ .insn ($0, CL)
 	, .e
@@ -359,8 +366,8 @@ ic-operator .shift
 	:- ic-operator-shift .shift .insn
 #
 
-ic-divide .reg
-	(_ MOV (ECX, $0)
+ic-divide .op .reg
+	(_ MOV (ECX, .op)
 	, _ R-
 	, _ XOR (EDX, EDX)
 	, _ FR-PUSH (EAX)
@@ -412,7 +419,6 @@ ic-operator-negate ' < ' ' >= ' #
 
 ic-operator-insn ' + ' ADD #
 ic-operator-insn ' - ' SUB #
-ic-operator-insn ' * ' IMUL #
 ic-operator-insn and AND #
 ic-operator-insn or OR #
 ic-operator-insn xor XOR #
