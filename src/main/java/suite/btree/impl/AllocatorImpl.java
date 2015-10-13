@@ -42,12 +42,7 @@ public class AllocatorImpl implements Allocator {
 	@Override
 	public void create() {
 		Arrays.fill(allocMap, (byte) 0);
-		int p0 = 0 / pageSize;
-		int px = (0 + size - 1) / pageSize + 1;
-		for (int p = p0; p < px; p++) {
-			int start = p * pageSize, end = Math.min(size, start + pageSize);
-			allocMapFile.save(p, Bytes.of(allocMap, start, end));
-		}
+		saveAllocMap(0, size);
 	}
 
 	@Override
@@ -99,10 +94,12 @@ public class AllocatorImpl implements Allocator {
 	private void updateAllocMap(int pageNo, int count, byte b) {
 		for (int p = pageNo; p < pageNo + count; p++)
 			allocMap[p] = b;
+		saveAllocMap(pageNo, count);
+	}
 
+	private void saveAllocMap(int pageNo, int count) {
 		int p0 = pageNo / pageSize;
 		int px = (pageNo + count - 1) / pageSize + 1;
-
 		for (int p = p0; p < px; p++) {
 			int start = p * pageSize, end = Math.min(size, start + pageSize);
 			allocMapFile.save(p, Bytes.of(allocMap, start, end));
