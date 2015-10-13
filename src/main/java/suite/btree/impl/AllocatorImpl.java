@@ -102,6 +102,7 @@ public class AllocatorImpl implements Allocator {
 
 		int p0 = pageNo / pageSize;
 		int px = (pageNo + count - 1) / pageSize + 1;
+
 		for (int p = p0; p < px; p++) {
 			int start = p * pageSize, end = Math.min(size, start + pageSize);
 			allocMapFile.save(p, Bytes.of(allocMap, start, end));
