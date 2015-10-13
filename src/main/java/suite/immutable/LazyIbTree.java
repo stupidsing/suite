@@ -7,69 +7,74 @@ import java.util.List;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Source;
 import suite.util.Util;
 
-public class I23Tree<T> implements ITree<T> {
+public class LazyIbTree<T> implements ITree<T> {
 
-	private int maxBranchFactor = 4;
+	private int maxBranchFactor = 32;
 	private int minBranchFactor = maxBranchFactor / 2;
-
-	private List<Slot> root;
 	private Comparator<T> comparator;
 
+	public final Source<List<Slot<T>>> source;
+
 	/**
-	 * List<Slot> would be null in leaves. Pivot stores the leaf value.
+	 * List<Slot<T>> would be null in leaves. Pivot stores the leaf value.
 	 *
 	 * Pivot would be null at the minimum side of a tree as the guarding key.
 	 */
-	private class Slot {
-		private List<Slot> slots;
-		private T pivot;
+	public static class Slot<T> {
+		public final Source<List<Slot<T>>> source;
+		public final T pivot;
 
-		private Slot(List<Slot> slots, T pivot) {
-			this.slots = slots;
+		public Slot(Source<List<Slot<T>>> source, T pivot) {
+			this.source = source;
 			this.pivot = pivot;
+		}
+
+		public List<Slot<T>> readSlots() {
+			return source.source();
 		}
 	}
 
 	private class FindSlot {
-		private Slot slot;
+		private Slot<T> slot;
 		private int i, c;
 
-		private FindSlot(List<Slot> slots, T t) {
+		private FindSlot(List<Slot<T>> slots, T t) {
 			this(slots, t, false);
 		}
 
-		private FindSlot(List<Slot> slots, T t, boolean isExclusive) {
+		private FindSlot(List<Slot<T>> slots, T t, boolean isExclusive) {
 			i = slots.size() - 1;
 			while ((c = compare((slot = slots.get(i)).pivot, t)) > 0 || isExclusive && c == 0)
 				i--;
 		}
 	}
 
-	public I23Tree(Comparator<T> comparator) {
-		this.root = Arrays.asList(new Slot(null, null));
+	public LazyIbTree(Comparator<T> comparator) {
+		this.source = () -> Arrays.asList(new Slot<T>(null, null));
 		this.comparator = comparator;
 	}
 
-	private I23Tree(Comparator<T> comparator, List<Slot> root) {
-		this.root = root;
+	public LazyIbTree(Comparator<T> comparator, Source<List<Slot<T>>> source) {
+		this.source = source;
 		this.comparator = comparator;
 	}
 
 	@Override
 	public Streamlet<T> stream() {
-		return stream(root, null, null);
+		return stream(root(), null, null);
 	}
 
-	private Streamlet<T> stream(List<Slot> node, T start, T end) {
+	private Streamlet<T> stream(List<Slot<T>> node, T start, T end) {
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
-				if (slot.slots != null)
-					return stream(slot.slots, start, end);
+				if (slot.source != null)
+					return stream(slot.readSlots(), start, end);
 				else
 					return slot.pivot != null ? Read.from(slot.pivot) : Read.empty();
 			});
@@ -78,16 +83,16 @@ public class I23Tree<T> implements ITree<T> {
 	}
 
 	public T find(T t) {
-		List<Slot> node = root;
+		List<Slot<T>> node = root();
 		FindSlot fs = null;
 		while (node != null) {
 			fs = new FindSlot(node, t);
-			node = fs.slot.slots;
+			node = fs.slot.readSlots();
 		}
 		return fs != null && fs.c == 0 ? fs.slot.pivot : null;
 	}
 
-	public I23Tree<T> add(T t) {
+	public LazyIbTree<T> add(T t) {
 		return add(t, false);
 	}
 
@@ -97,51 +102,55 @@ public class I23Tree<T> implements ITree<T> {
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public I23Tree<T> replace(T t) {
+	public LazyIbTree<T> replace(T t) {
 		return add(t, true);
 	}
 
-	public I23Tree<T> remove(T t) {
-		return new I23Tree<>(comparator, createRoot(remove(root, t)));
+	public LazyIbTree<T> remove(T t) {
+		return new LazyIbTree<>(comparator, createRoot(remove(root(), t)));
 	}
 
-	private I23Tree<T> add(T t, boolean isReplace) {
-		return new I23Tree<>(comparator, createRoot(add(root, t, isReplace)));
+	public List<Slot<T>> root() {
+		return source.source();
 	}
 
-	private List<Slot> add(List<Slot> node0, T t, boolean isReplace) {
+	private LazyIbTree<T> add(T t, boolean isReplace) {
+		return new LazyIbTree<>(comparator, createRoot(add(root(), t, isReplace)));
+	}
+
+	private List<Slot<T>> add(List<Slot<T>> node0, T t, boolean isReplace) {
 
 		// Finds appropriate slot
 		FindSlot fs = new FindSlot(node0, t);
 
 		// Adds the node into it
-		List<Slot> replaceSlots;
+		List<Slot<T>> replaceSlots;
 
-		if (fs.slot.slots != null)
-			replaceSlots = add(fs.slot.slots, t, isReplace);
+		if (fs.slot.source != null)
+			replaceSlots = add(fs.slot.readSlots(), t, isReplace);
 		else if (fs.c != 0)
-			replaceSlots = Arrays.asList(fs.slot, new Slot(null, t));
+			replaceSlots = Arrays.asList(fs.slot, new Slot<T>(null, t));
 		else if (isReplace)
-			replaceSlots = Arrays.asList(new Slot(null, t));
+			replaceSlots = Arrays.asList(new Slot<T>(null, t));
 		else
 			throw new RuntimeException("Duplicate node " + t);
 
-		List<Slot> slots1 = Util.add(Util.left(node0, fs.i), replaceSlots, Util.right(node0, fs.i + 1));
-		List<Slot> node1;
+		List<Slot<T>> slots1 = Util.add(Util.left(node0, fs.i), replaceSlots, Util.right(node0, fs.i + 1));
+		List<Slot<T>> node1;
 
 		// Checks if need to split
 		if (slots1.size() < maxBranchFactor)
 			node1 = Arrays.asList(slot(slots1));
 		else { // Splits into two if reached maximum number of nodes
-			List<Slot> leftSlots = Util.left(slots1, minBranchFactor);
-			List<Slot> rightSlots = Util.right(slots1, minBranchFactor);
+			List<Slot<T>> leftSlots = Util.left(slots1, minBranchFactor);
+			List<Slot<T>> rightSlots = Util.right(slots1, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
 		return node1;
 	}
 
-	private List<Slot> remove(List<Slot> node0, T t) {
+	private List<Slot<T>> remove(List<Slot<T>> node0, T t) {
 
 		// Finds appropriate slot
 		int size = node0.size();
@@ -149,17 +158,17 @@ public class I23Tree<T> implements ITree<T> {
 
 		// Removes the node from it
 		int s0 = fs.i, s1 = fs.i + 1;
-		List<Slot> replaceSlots;
+		List<Slot<T>> replaceSlots;
 
-		if (fs.slot.slots != null) {
-			List<Slot> slots1 = remove(fs.slot.slots, t);
+		if (fs.slot.source != null) {
+			List<Slot<T>> slots1 = remove(fs.slot.readSlots(), t);
 
 			// Merges with a neighbor if reached minimum number of nodes
 			if (slots1.size() < minBranchFactor)
 				if (s0 > 0)
-					replaceSlots = merge(node0.get(--s0).slots, slots1);
+					replaceSlots = merge(node0.get(--s0).readSlots(), slots1);
 				else if (s1 < size)
-					replaceSlots = merge(slots1, node0.get(s1++).slots);
+					replaceSlots = merge(slots1, node0.get(s1++).readSlots());
 				else
 					replaceSlots = Arrays.asList(slot(slots1));
 			else
@@ -167,16 +176,16 @@ public class I23Tree<T> implements ITree<T> {
 		} else if (fs.c == 0)
 			replaceSlots = Collections.emptyList();
 		else
-			throw new RuntimeException("List<Slot> not found " + t);
+			throw new RuntimeException("List<Slot<T>> not found " + t);
 
 		return Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 	}
 
-	private List<Slot> merge(List<Slot> node0, List<Slot> node1) {
-		List<Slot> merged;
+	private List<Slot<T>> merge(List<Slot<T>> node0, List<Slot<T>> node1) {
+		List<Slot<T>> merged;
 
 		if (node0.size() + node1.size() >= maxBranchFactor) {
-			List<Slot> leftSlots, rightSlots;
+			List<Slot<T>> leftSlots, rightSlots;
 
 			if (node0.size() > minBranchFactor) {
 				leftSlots = Util.left(node0, -1);
@@ -196,13 +205,13 @@ public class I23Tree<T> implements ITree<T> {
 		return merged;
 	}
 
-	private List<Slot> createRoot(List<Slot> node) {
-		List<Slot> node1;
-		return node.size() == 1 && (node1 = node.get(0).slots) != null ? node1 : node;
+	private Source<List<Slot<T>>> createRoot(List<Slot<T>> node) {
+		List<Slot<T>> node1;
+		return node.size() == 1 && (node1 = node.get(0).readSlots()) != null ? () -> node1 : () -> node;
 	}
 
-	private Slot slot(List<Slot> slots) {
-		return new Slot(slots, Util.first(slots).pivot);
+	private Slot<T> slot(List<Slot<T>> slots) {
+		return new Slot<T>(() -> slots, Util.first(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {
@@ -218,15 +227,15 @@ public class I23Tree<T> implements ITree<T> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		dump(sb, root, "");
+		dump(sb, root(), "");
 		return sb.toString();
 	}
 
-	private void dump(StringBuilder sb, List<Slot> node, String indent) {
+	private void dump(StringBuilder sb, List<Slot<T>> node, String indent) {
 		if (node != null)
-			for (Slot slot : node) {
+			for (Slot<T> slot : node) {
 				sb.append(indent + (slot.pivot != null ? slot.pivot : "<-inf>") + "\n");
-				dump(sb, slot.slots, indent + "  ");
+				dump(sb, slot.readSlots(), indent + "  ");
 			}
 	}
 
