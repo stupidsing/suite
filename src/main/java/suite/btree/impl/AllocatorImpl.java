@@ -42,7 +42,12 @@ public class AllocatorImpl implements Allocator {
 	@Override
 	public void create() {
 		Arrays.fill(allocMap, (byte) 0);
-		savePageNos(0, size);
+		int p0 = 0 / pageSize;
+		int px = (0 + size - 1) / pageSize + 1;
+		for (int p = p0; p < px; p++) {
+			int start = p * pageSize, end = Math.min(size, start + pageSize);
+			allocMapFile.save(p, Bytes.of(allocMap, start, end));
+		}
 	}
 
 	@Override
@@ -61,25 +66,21 @@ public class AllocatorImpl implements Allocator {
 
 		// TODO extends allocation map if all pages are used
 
-		for (int p = pageNo; p < pageNo + count; p++)
-			allocMap[p] = 1;
-		savePageNos(pageNo, count);
+		updateAllocMap(pageNo, count, (byte) 1);
 		return lastAllocatedPageNo = pageNo + count;
 	}
 
 	private void deallocate(int pageNo, int count) {
-		for (int p = pageNo; p < pageNo + count; p++)
-			allocMap[p] = 0;
-		savePageNos(pageNo, count);
+		updateAllocMap(pageNo, count, (byte) 0);
 	}
 
 	private int findFreeExtentPages(int size) {
 		int start = lastAllocatedPageNo + 1;
 		int pageNo = start;
-		for (int i = 0; i < allocMap.length; i++)
+		for (int i = 0; i < size; i++)
 			if (!isEmptyExtent(pageNo, size)) {
 				pageNo++;
-				if (pageNo == allocMap.length)
+				if (pageNo == size)
 					pageNo = 0;
 			} else
 				return pageNo;
@@ -87,7 +88,7 @@ public class AllocatorImpl implements Allocator {
 	}
 
 	private boolean isEmptyExtent(int pageNo, int count) {
-		boolean result = pageNo + count <= allocMap.length;
+		boolean result = pageNo + count <= size;
 		for (int i = 0; result && i < count; i++) {
 			result &= allocMap[pageNo] == 0;
 			pageNo++;
@@ -95,9 +96,12 @@ public class AllocatorImpl implements Allocator {
 		return result;
 	}
 
-	private void savePageNos(int startPageNo, int count) {
-		int p0 = startPageNo / pageSize;
-		int px = (startPageNo + count - 1) / pageSize + 1;
+	private void updateAllocMap(int pageNo, int count, byte b) {
+		for (int p = pageNo; p < pageNo + count; p++)
+			allocMap[p] = b;
+
+		int p0 = pageNo / pageSize;
+		int px = (pageNo + count - 1) / pageSize + 1;
 		for (int p = p0; p < px; p++) {
 			int start = p * pageSize, end = Math.min(size, start + pageSize);
 			allocMapFile.save(p, Bytes.of(allocMap, start, end));
