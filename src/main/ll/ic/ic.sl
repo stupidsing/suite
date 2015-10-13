@@ -88,12 +88,8 @@ ic-compile0 (INVOKE .mr .params) .e0/.ex
 		, .ex)
 #
 ic-compile0 (IF .if .then .else) .e0/.ex
-	:- ic-compile .if .e0/.e1
-	, .e1 = (_ OR ($0, $0)
-		, _ R-
-		, _ JZ (DWORD .elseLabel)
-		, .e2)
-	, ic-compile-then-else .then .else .elseLabel .e2/.ex
+	:- ic-compile-jump-if-false .if .e0/.e1 .elseLabel
+	, ic-compile-then-else .then .else .elseLabel .e1/.ex
 #
 ic-compile0 (LET .var .value) .e0/.ex
 	:- ic-compile-let .value .var .e0/.ex
@@ -169,30 +165,14 @@ ic-compile0 (TREE .op .value0 .value1) .e0/.ex
 ic-compile0 (WHILE .while .do) .e0/.ex
 	:- .e0 = (.nextLabel ()
 		, .e1)
-	, ic-compile .while .e1/.e2
-	, .e2 = (_ OR ($0, $0)
-		, _ R-
-		, _ JZ (DWORD .endLabel)
-		, .e3)
-	, ic-compile .do .e3/.e4
-	, .e4 = (_ JMP (DWORD .nextLabel)
+	, ic-compile-jump-if-false .while .e1/.e2 .endLabel
+	, ic-compile .do .e2/.e3
+	, .e3 = (_ JMP (DWORD .nextLabel)
 		, .endLabel ()
 		, .ex)
 #
 
 -- Generates smaller code
-ic-compile-better-option (IF (TREE .op .left .right) .then .else) .e0/.ex
-	:- once (ic-operator-negate .op .negOp; ic-operator-negate .negOp .op)
-	, ic-compile .left .e0/.e1
-	, ic-compile .right .e1/.e2
-	, ic-operator-jmpcc .negOp .jmp
-	, .e2 = (_ CMP ($1, $0)
-		, _ R-
-		, _ R-
-		, _ .jmp (DWORD .elseLabel)
-		, .e3)
-	, ic-compile-then-else .then .else .elseLabel .e3/.ex
-#
 ic-compile-better-option (LET .memory .value) .e0/.ex
 	:- ic-compile .value .e0/.e1
 	, ic-compile-operand-better-option .memory .e1/.e2 .op
@@ -236,6 +216,51 @@ ic-compile-operand-better-option (STRING .s) .e0/.ex .strLabel
 		, .ex)
 #
 ic-compile-operand-better-option THIS (_ R+, .e)/.e EBP
+#
+
+ic-compile-jump-if-false (IF .if0 .if1 (NUMBER 0)) .e0/.ex .elseLabel
+	:- !
+	, ic-compile-jump-if-false .if0 .e0/.e1 .elseLabel
+	, ic-compile-jump-if-false .if1 .e1/.ex .elseLabel
+#
+ic-compile-jump-if-false (IF .if0 (NUMBER 1) .if1) .e0/.ex .elseLabel
+	:- !
+	, ic-compile-jump-if .if0 .e0/.e1 .thenLabel
+	, ic-compile-jump-if .if1 .e1/.e2 .thenLabel
+	, .e2 = (_ JMP (DWORD .elseLabel)
+		, .thenLabel ()
+		, .ex)
+#
+ic-compile-jump-if-false (TREE .op .left .right) .e0/.ex .elseLabel
+	:- once (ic-operator-negate .op .negOp; ic-operator-negate .negOp .op)
+	, !
+	, ic-compile-jump-if (TREE .negOp .left .right) .e0/.ex .elseLabel
+#
+ic-compile-jump-if-false .if .e0/.ex .elseLabel
+	:- ic-compile .if .e0/.e1
+	, .e1 = (_ OR ($0, $0)
+		, _ R-
+		, _ JZ (DWORD .elseLabel)
+		, .ex)
+#
+
+ic-compile-jump-if (TREE .op .left .right) .e0/.ex .elseLabel
+	:- ic-operator-jmpcc .op .jmp
+	, !
+	, ic-compile .left .e0/.e1
+	, ic-compile .right .e1/.e2
+	, .e2 = (_ CMP ($1, $0)
+		, _ R-
+		, _ R-
+		, _ .jmp (DWORD .elseLabel)
+		, .ex)
+#
+ic-compile-jump-if .if .e0/.ex .elseLabel
+	:- ic-compile .if .e0/.e1
+	, .e1 = (_ OR ($0, $0)
+		, _ R-
+		, _ JNZ (DWORD .elseLabel)
+		, .ex)
 #
 
 ic-compile-then-else .then .else .elseLabel .e0/.ex
