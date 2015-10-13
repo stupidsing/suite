@@ -151,10 +151,10 @@ ic-compile0 (SNIPPET .snippet) .e0/.ex
 		, _ MOV ($0, .snippetLabel)
 		, .ex)
 #
-ic-compile0 (TREE .op .value0 .value1) .e0/.ex
-	:- ic-operator .op .e2/.ex
+ic-compile0 (TREE .operator .value0 .value1) .e0/.ex
+	:- ic-operator .operator .e2/.ex
 	, once (
-		ic-right-associative .op
+		ic-right-associative .operator
 		, ic-compile .value1 .e0/.e1
 		, ic-compile .value0 .e1/.e2
 	;
@@ -231,8 +231,8 @@ ic-compile-jump-if-false (IF .if0 (NUMBER 1) .if1) .e0/.ex .elseLabel
 		, .thenLabel ()
 		, .ex)
 #
-ic-compile-jump-if-false (TREE .op .left .right) .e0/.ex .elseLabel
-	:- once (ic-operator-negate .op .negOp; ic-operator-negate .negOp .op)
+ic-compile-jump-if-false (TREE .operator .left .right) .e0/.ex .elseLabel
+	:- once (ic-operator-negate .operator .negOp; ic-operator-negate .negOp .operator)
 	, !
 	, ic-compile-jump-if (TREE .negOp .left .right) .e0/.ex .elseLabel
 #
@@ -244,8 +244,8 @@ ic-compile-jump-if-false .if .e0/.ex .elseLabel
 		, .ex)
 #
 
-ic-compile-jump-if (TREE .op .left .right) .e0/.ex .elseLabel
-	:- ic-operator-jmpcc .op .jmp
+ic-compile-jump-if (TREE .operator .left .right) .e0/.ex .elseLabel
+	:- ic-operator-jmpcc .operator .jmp
 	, !
 	, ic-compile .left .e0/.e1
 	, ic-compile-operand .right .e1/.e2 .rightOp
@@ -330,21 +330,21 @@ ic-right-associative and #
 ic-right-associative or #
 ic-right-associative xor #
 
-ic-operator .op
+ic-operator .operator
 	(_ .insn ($1, $0)
 	, _ R-
 	, .e
 )/.e
-	:- ic-operator-insn .op .insn
+	:- ic-operator-insn .operator .insn
 #
-ic-operator .op
+ic-operator .operator
 	(_ CMP ($1, $0)
 	, _ R-
 	, _ .setcc (DL)
 	, _ MOVSX ($0, DL)
 	, .e
 )/.e
-	:- ic-operator-setcc .op .setcc
+	:- ic-operator-setcc .operator .setcc
 #
 ic-operator ' / ' .e :- ic-divide EAX .e
 #
