@@ -248,8 +248,8 @@ ic-compile-jump-if (TREE .op .left .right) .e0/.ex .elseLabel
 	:- ic-operator-jmpcc .op .jmp
 	, !
 	, ic-compile .left .e0/.e1
-	, ic-compile .right .e1/.e2
-	, .e2 = (_ CMP ($1, $0)
+	, ic-compile-operand .right .e1/.e2 .rightOp
+	, .e2 = (_ CMP ($1, .rightOp)
 		, _ R-
 		, _ R-
 		, _ .jmp (DWORD .elseLabel)
