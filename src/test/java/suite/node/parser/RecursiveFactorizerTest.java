@@ -100,8 +100,7 @@ public class RecursiveFactorizerTest {
 				Node n0 = !b ? g.source()
 						: operatorNode(TermOp.TUPLE_, Arrays.asList(g.source(), terminalNode(" "), terminalNode(newArgument)));
 				Node n1 = operatorNode(g, TermOp.TUPLE_, g.source(), n0);
-				Node n2 = operatorNode(g, TermOp.TUPLE_, g.source(), n1);
-				return operatorNode(g, TermOp.TUPLE_, head, n2);
+				return operatorNode(g, TermOp.TUPLE_, head, n1);
 			};
 
 			return new Node[] { fun.apply(pred0).apply(false), fun.apply(predx).apply(true) };
