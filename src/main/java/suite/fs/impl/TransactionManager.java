@@ -51,9 +51,9 @@ public class TransactionManager<Key, Value> {
 			return mutator.get(key);
 		}
 
-		public void put(Key key, Value data) {
+		public void put(Key key, Value value) {
 			acquireWrite(key);
-			mutator.put(key, data);
+			mutator.put(key, value);
 		}
 
 		public void remove(Key key) {
