@@ -1,19 +1,25 @@
 package suite.immutable;
 
+import java.io.Closeable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
+import suite.file.PageFile;
 import suite.file.SerializedPageFile;
+import suite.file.SerializedPageFilePersister;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
+import suite.util.SerializeUtil;
+import suite.util.SerializeUtil.Serializer;
 
-public class LazyIbTreePersister<T> {
+public class LazyIbTreePersister<T> implements Closeable {
 
-	private AtomicInteger nPages = new AtomicInteger(1);
-	private SerializedPageFile<PersistSlot<T>> pageFile;
+	private SerializedPageFilePersister<PersistSlot<T>> persister;
 
 	private Comparator<T> comparator;
 	private BiMap<Slot<T>, Integer> slotByPageNo = new HashBiMap<>();
@@ -28,25 +34,48 @@ public class LazyIbTreePersister<T> {
 		}
 	}
 
-	public LazyIbTreePersister(Comparator<T> comparator) {
+	public LazyIbTreePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		this.comparator = comparator;
+
+		Serializer<List<Integer>> pageNosSerializer = SerializeUtil.list(SerializeUtil.intSerializer);
+
+		Serializer<PersistSlot<T>> serializer = new Serializer<PersistSlot<T>>() {
+			public PersistSlot<T> read(DataInput dataInput) throws IOException {
+				List<Integer> pageNos = pageNosSerializer.read(dataInput);
+				T pivot = ts.read(dataInput);
+				return new PersistSlot<T>(pageNos, pivot);
+			}
+
+			public void write(DataOutput dataOutput, PersistSlot<T> value) throws IOException {
+				pageNosSerializer.write(dataOutput, value.pageNos);
+				ts.write(dataOutput, value.pivot);
+			}
+		};
+
+		SerializedPageFile<PersistSlot<T>> pageFile = new SerializedPageFile<>(pf, serializer);
+		persister = new SerializedPageFilePersister<>(pageFile);
 	}
 
-	public LazyIbTree<T> load(PersistSlot<T> ps) {
-		return new LazyIbTree<T>(comparator, () -> load(ps.pageNos));
+	@Override
+	public void close() {
+		persister.close();
 	}
 
-	public PersistSlot<T> save(LazyIbTree<T> tree) {
-		return new PersistSlot<T>(save(tree.root()), null);
+	public LazyIbTree<T> load(List<Integer> pageNos) {
+		return new LazyIbTree<T>(comparator, () -> load_(pageNos));
 	}
 
-	private List<Slot<T>> load(List<Integer> pageNos) {
+	public List<Integer> save(LazyIbTree<T> tree) {
+		return save_(tree.root());
+	}
+
+	private List<Slot<T>> load_(List<Integer> pageNos) {
 		return Read.from(pageNos).map(pageNo -> {
 			if (pageNo != 0) {
 				Slot<T> slot = slotByPageNo.inverse().get(pageNo);
 				if (slot == null) {
-					PersistSlot<T> ps = pageFile.load(pageNo);
-					slotByPageNo.put(slot = new Slot<T>(() -> load(ps.pageNos), ps.pivot), pageNo);
+					PersistSlot<T> ps = persister.load(pageNo);
+					slotByPageNo.put(slot = new Slot<T>(() -> load_(ps.pageNos), ps.pivot), pageNo);
 				}
 				return slot;
 			} else
@@ -54,14 +83,13 @@ public class LazyIbTreePersister<T> {
 		}).toList();
 	}
 
-	private List<Integer> save(List<Slot<T>> slots) {
+	private List<Integer> save_(List<Slot<T>> slots) {
 		return Read.from(slots).map(slot -> {
 			if (slot != null) {
 				Integer pageNo = slotByPageNo.get(slot);
 				if (pageNo == null) {
-					List<Integer> pageNos = save(slot.readSlots());
-					slotByPageNo.put(slot, pageNo = nPages.incrementAndGet());
-					pageFile.save(pageNo, new PersistSlot<T>(pageNos, slot.pivot));
+					List<Integer> pageNos = save_(slot.readSlots());
+					slotByPageNo.put(slot, pageNo = persister.save(new PersistSlot<T>(pageNos, slot.pivot)));
 				}
 				return pageNo;
 			} else

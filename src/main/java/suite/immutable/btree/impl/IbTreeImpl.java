@@ -67,7 +67,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private enum SlotType {
-		BRANCH, DATA, TERMINAL
+		BRANCH, DATA, TERMINAL,
 	}
 
 	/**
