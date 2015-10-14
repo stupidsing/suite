@@ -1,12 +1,13 @@
 package suite.btree.impl;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import suite.btree.Allocator;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
+import suite.util.FunUtil.Fun;
 
 /**
  * Manage B-tree pages on disk.
@@ -17,41 +18,29 @@ public class AllocatorImpl implements Allocator {
 	private int pageSize = PageFile.defaultPageSize;
 
 	private SerializedPageFile<Bytes> allocMapFile;
-	private byte allocMap[];
-
 	private int lastAllocatedPageNo;
 
 	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
 		allocMapFile = pageFile;
-		allocMap = new byte[size];
-
-		int pageNo = 0, p = 0;
-
-		while (pageNo < size) {
-			int pageNo1 = Math.min(size, pageNo + pageSize);
-			System.arraycopy(allocMapFile.load(p++).toBytes(), 0, allocMap, pageNo, pageNo1 - pageNo);
-			pageNo = pageNo1;
-		}
 	}
 
 	@Override
-	public void close() throws IOException {
+	public synchronized void close() throws IOException {
 		allocMapFile.close();
 	}
 
 	@Override
-	public void create() {
-		Arrays.fill(allocMap, (byte) 0);
-		saveAllocMap(0, size);
+	public synchronized void create() {
+		updateAllocMap(0, size, (byte) 0);
 	}
 
 	@Override
-	public int allocate() {
+	public synchronized int allocate() {
 		return allocate(1);
 	}
 
 	@Override
-	public void deallocate(int pageNo) {
+	public synchronized void deallocate(int pageNo) {
 		int count = 1;
 		deallocate(pageNo, count);
 	}
@@ -61,61 +50,82 @@ public class AllocatorImpl implements Allocator {
 
 		// TODO extends allocation map if all pages are used
 
-		updateAllocMap(pageNo, count, (byte) 1);
+		updateAllocMap(pageNo, pageNo + count, (byte) 1);
 		return lastAllocatedPageNo = pageNo + count;
 	}
 
 	private void deallocate(int pageNo, int count) {
-		updateAllocMap(pageNo, count, (byte) 0);
+		updateAllocMap(pageNo, pageNo + count, (byte) 0);
 	}
 
 	private int findFreeExtentPages(int count) {
+		Fun<Integer, Byte> read = new Fun<Integer, Byte>() {
+			private int start, end;
+			private Bytes bytes;
+
+			public Byte apply(Integer pageNo) {
+				if (bytes == null || pageNo < start || end <= pageNo) {
+					int p = pageNo / pageSize;
+					start = p * pageSize;
+					end = start + pageSize;
+					bytes = allocMapFile.load(p);
+				}
+				return bytes.get(pageNo - start);
+			}
+		};
+
 		int start = lastAllocatedPageNo + 1;
-		int pageNo = start;
-		while ((pageNo = checkNextEmptyExtent(pageNo)) < size) {
-			int pageNo0 = pageNo;
-			pageNo = checkEmptyExtent(pageNo, count);
-			if (pageNo - pageNo0 >= count)
-				return pageNo0;
+		int pos = start;
+		while ((pos = checkNextEmptyExtent(read, pos)) < size) {
+			int pos0 = pos;
+			pos = checkEmptyExtent(read, pos, count);
+			if (pos - pos0 >= count)
+				return pos0;
 		}
-		pageNo = 0;
-		while ((pageNo = checkNextEmptyExtent(pageNo)) < start) {
-			int pageNo0 = pageNo;
-			pageNo = checkEmptyExtent(pageNo, count);
-			if (pageNo - pageNo0 >= count)
-				return pageNo0;
+		pos = 0;
+		while ((pos = checkNextEmptyExtent(read, pos)) < start) {
+			int pos0 = pos;
+			pos = checkEmptyExtent(read, pos, count);
+			if (pos - pos0 >= count)
+				return pos0;
 		}
 		return -1;
 	}
 
-	private int checkEmptyExtent(int startPageNo, int max) {
-		int endPageNo = Math.min(size, startPageNo + max);
-		for (int p = startPageNo; p < endPageNo; p++)
-			if (allocMap[p] != 0)
-				return p;
-		return endPageNo;
-	}
+	private void updateAllocMap(int start, int end, byte b) {
+		while (start < end) {
+			int p = start / pageSize;
+			int s = p * pageSize;
+			int e = s + pageSize;
+			int end_ = Math.min(e, end);
+			int p0 = 0;
+			int p1 = start - s;
+			int p2 = end_ - s;
+			int p3 = pageSize;
+			Bytes bytes = allocMapFile.load(p);
 
-	private int checkNextEmptyExtent(int startPageNo) {
-		for (int p = startPageNo; p < size; p++)
-			if (allocMap[p] != 1)
-				return p;
-		return size;
-	}
+			BytesBuilder bb = new BytesBuilder();
+			bb.append(bytes.subbytes(p0, p1));
+			for (int i = p1; i < p2; i++)
+				bb.append(b);
+			bb.append(bytes.subbytes(p2, p3));
 
-	private void updateAllocMap(int pageNo, int count, byte b) {
-		for (int p = pageNo; p < pageNo + count; p++)
-			allocMap[p] = b;
-		saveAllocMap(pageNo, count);
-	}
-
-	private void saveAllocMap(int pageNo, int count) {
-		int p0 = pageNo / pageSize;
-		int px = (pageNo + count - 1) / pageSize + 1;
-		for (int p = p0; p < px; p++) {
-			int start = p * pageSize, end = Math.min(size, start + pageSize);
-			allocMapFile.save(p, Bytes.of(allocMap, start, end));
+			allocMapFile.save(p, bb.toBytes());
+			start = end_;
 		}
+	}
+
+	private int checkEmptyExtent(Fun<Integer, Byte> read, int pos, int max) {
+		int end = Math.min(size, pos + max);
+		while (pos < end && read.apply(pos) == 0)
+			pos++;
+		return pos;
+	}
+
+	private int checkNextEmptyExtent(Fun<Integer, Byte> read, int pos) {
+		while (pos < size && read.apply(pos) == 1)
+			pos++;
+		return pos;
 	}
 
 }
