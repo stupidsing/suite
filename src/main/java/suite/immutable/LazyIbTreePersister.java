@@ -5,22 +5,27 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.file.SerializedPageFilePersister;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Sink;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
 public class LazyIbTreePersister<T> implements Closeable {
 
-	private SerializedPageFilePersister<PersistSlot<T>> persister;
+	private AtomicInteger nPages = new AtomicInteger(1);
+	private Object writeLock = new Object();
 
+	private SerializedPageFile<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
 	private BiMap<Slot<T>, Integer> slotByPageNo = new HashBiMap<>();
 
@@ -52,13 +57,12 @@ public class LazyIbTreePersister<T> implements Closeable {
 			}
 		};
 
-		SerializedPageFile<PersistSlot<T>> pageFile = new SerializedPageFile<>(pf, serializer);
-		persister = new SerializedPageFilePersister<>(pageFile);
+		pageFile = new SerializedPageFile<>(pf, serializer);
 	}
 
 	@Override
 	public void close() {
-		persister.close();
+		pageFile.close();
 	}
 
 	public LazyIbTree<T> load(List<Integer> pageNos) {
@@ -66,7 +70,41 @@ public class LazyIbTreePersister<T> implements Closeable {
 	}
 
 	public List<Integer> save(LazyIbTree<T> tree) {
-		return save_(tree.root());
+		synchronized (writeLock) {
+			return save_(tree.root());
+		}
+	}
+
+	public List<Integer> gc(List<Integer> pageNos, int back) {
+		synchronized (writeLock) {
+			int end = nPages.get();
+			int start = Math.min(0, end - back);
+			boolean isInUse[] = new boolean[end - start];
+
+			Sink<List<Integer>> use = pageNos_ -> {
+				for (int pageNo : pageNos_)
+					if (pageNo >= start)
+						isInUse[pageNo - start] = true;
+			};
+
+			use.sink(pageNos);
+
+			for (int pageNo = end - 1; pageNo >= start; pageNo--)
+				if (isInUse[pageNo - start])
+					use.sink(pageFile.load(pageNo).pageNos);
+
+			Map<Integer, Integer> map = new HashMap<>();
+			int p1 = start;
+
+			for (int p0 = start; p0 < end; p0++)
+				if (isInUse[p0]) {
+					pageFile.save(p1, pageFile.load(p0));
+					map.put(p0, p1++);
+				} else
+					slotByPageNo.remove(p0);
+
+			return Read.from(pageNos).map(map::get).toList();
+		}
 	}
 
 	private List<Slot<T>> load_(List<Integer> pageNos) {
@@ -74,7 +112,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 			if (pageNo != 0) {
 				Slot<T> slot = slotByPageNo.inverse().get(pageNo);
 				if (slot == null) {
-					PersistSlot<T> ps = persister.load(pageNo);
+					PersistSlot<T> ps = pageFile.load(pageNo);
 					slotByPageNo.put(slot = new Slot<T>(() -> load_(ps.pageNos), ps.pivot), pageNo);
 				}
 				return slot;
@@ -89,7 +127,8 @@ public class LazyIbTreePersister<T> implements Closeable {
 				Integer pageNo = slotByPageNo.get(slot);
 				if (pageNo == null) {
 					List<Integer> pageNos = save_(slot.readSlots());
-					slotByPageNo.put(slot, pageNo = persister.save(new PersistSlot<T>(pageNos, slot.pivot)));
+					slotByPageNo.put(slot, pageNo = nPages.incrementAndGet());
+					pageFile.save(pageNo, new PersistSlot<T>(pageNos, slot.pivot));
 				}
 				return pageNo;
 			} else
