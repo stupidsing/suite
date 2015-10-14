@@ -22,12 +22,8 @@ public class SerializedPageFilePersister<V> implements Closeable {
 	}
 
 	public int save(V v) {
-		int token;
-		if (v != null) {
-			token = nPages.incrementAndGet();
-			pageFile.save(token, v);
-		} else
-			token = 0;
+		int token = nPages.incrementAndGet();
+		pageFile.save(token, v);
 		return token;
 	}
 
