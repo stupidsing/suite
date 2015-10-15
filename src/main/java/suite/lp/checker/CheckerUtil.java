@@ -12,6 +12,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -45,7 +46,7 @@ public class CheckerUtil {
 	}
 
 	public Map<Prototype, Integer> getNumberOfElements(List<Rule> rules) {
-		return Read.from(rules).aggregate(rule -> Prototype.of(rule.head), this::getNumberOfElements);
+		return Read.from(rules).aggregate(rule -> Prototype.of(rule.head), this::getNumberOfElements).collect(As.map());
 	}
 
 	private Integer getNumberOfElements(Streamlet<Rule> rules) {

@@ -38,10 +38,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return spawn().iterator();
 	}
 
-	public <K, V> Map<K, V> aggregate(Fun<T, K> keyFun, Fun<Streamlet<T>, V> valueFun) {
-		return groupBy(keyFun) //
-				.map(Pair.map1(list -> valueFun.apply(Read.from(list)))) //
-				.collect(As.map());
+	public <K, V> Streamlet<Pair<K, V>> aggregate(Fun<T, K> keyFun, Fun<Streamlet<T>, V> valueFun) {
+		return groupBy(keyFun).map(Pair.map1(list -> valueFun.apply(Read.from(list))));
 	}
 
 	public <R extends Collection<? super T>> R collect(Source<R> source) {
