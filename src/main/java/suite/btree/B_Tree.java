@@ -18,8 +18,8 @@ public interface B_Tree<Key, Value> extends Closeable, KeyValueStore<Key, Value>
 
 	public Streamlet<Pair<Key, Value>> range(Key start, Key end);
 
-	public void putTerminal(Key key);
-
 	public void putPayload(Key key, Bytes payload);
+
+	public void putTerminal(Key key);
 
 }
