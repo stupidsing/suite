@@ -36,11 +36,6 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public void putTerminal(Key key) {
-		b_tree.putTerminal(key);
-	}
-
-	@Override
 	public void put(Key key, Integer data) {
 		b_tree.put(key, data);
 	}
@@ -48,7 +43,11 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	@Override
 	public void putPayload(Key key, Bytes payload) {
 		b_tree.putPayload(key, payload);
+	}
 
+	@Override
+	public void putTerminal(Key key) {
+		b_tree.putTerminal(key);
 	}
 
 	@Override
