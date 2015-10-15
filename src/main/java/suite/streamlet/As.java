@@ -30,6 +30,10 @@ public class As {
 		});
 	}
 
+	public static Pair<Sink<String>, Source<String>> joined() {
+		return joined("");
+	}
+
 	public static Pair<Sink<String>, Source<String>> joined(String delimiter) {
 		return joined("", delimiter, "");
 	}
