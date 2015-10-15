@@ -21,11 +21,6 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public Streamlet<Key> keys() {
-		throw new UnsupportedOperationException("No full traversal");
-	}
-
-	@Override
 	public Streamlet<Key> keys(Key start, Key end) {
 		return b_tree.keys(start, end);
 	}

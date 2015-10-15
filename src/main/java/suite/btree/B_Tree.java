@@ -17,9 +17,9 @@ public interface B_Tree<Key, Value> extends Closeable {
 
 	public Bytes getPayload(Key key);
 
-	public Streamlet<Key> keys(Key key0, Key key1);
+	public Streamlet<Key> keys(Key start, Key end);
 
-	public Streamlet<Pair<Key, Value>> range(Key key0, Key key1);
+	public Streamlet<Pair<Key, Value>> range(Key start, Key end);
 
 	public void put(Key key);
 

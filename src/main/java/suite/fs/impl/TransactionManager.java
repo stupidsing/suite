@@ -31,6 +31,7 @@ public class TransactionManager<Key, Value> {
 			this.mutator = mutator;
 		}
 
+		@Override
 		public void commit() {
 			mutator.commit();
 
@@ -38,24 +39,24 @@ public class TransactionManager<Key, Value> {
 			keys.forEach(transactionByKey::remove);
 		}
 
-		public Streamlet<Key> keys() {
-			return acquireReads(mutator.keys());
-		}
-
+		@Override
 		public Streamlet<Key> keys(Key start, Key end) {
 			return acquireReads(mutator.keys(start, end));
 		}
 
+		@Override
 		public Value get(Key key) {
 			acquireRead(key);
 			return mutator.get(key);
 		}
 
+		@Override
 		public void put(Key key, Value value) {
 			acquireWrite(key);
 			mutator.put(key, value);
 		}
 
+		@Override
 		public void remove(Key key) {
 			acquireWrite(key);
 			mutator.remove(key);

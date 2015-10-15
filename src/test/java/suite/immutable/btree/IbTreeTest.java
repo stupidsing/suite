@@ -95,7 +95,7 @@ public class IbTreeTest {
 	}
 
 	private int dumpAndCount(KeyDataStoreMutator<?> mutator) {
-		Source<?> source = mutator.keys().source();
+		Source<?> source = mutator.keys(null, null).source();
 		Object object;
 		int count = 0;
 

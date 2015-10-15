@@ -224,11 +224,6 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public Streamlet<Key> keys() {
-			return keys(null, null);
-		}
-
-		@Override
 		public Streamlet<Key> keys(Key start, Key end) {
 			return IbTreeImpl.this.keys(root, start, end);
 		}
