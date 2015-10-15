@@ -240,11 +240,6 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public void putTerminal(Key key) {
-			update(key, new Slot(SlotType.TERMINAL, key, null));
-		}
-
-		@Override
 		public void put(Key key, Integer data) {
 			update(key, new Slot(SlotType.TERMINAL, key, data));
 		}
@@ -254,6 +249,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			Integer pointer = allocator.allocate();
 			payloadFile.save(pointer, payload);
 			update(key, new Slot(SlotType.DATA, key, pointer));
+		}
+
+		@Override
+		public void putTerminal(Key key) {
+			update(key, new Slot(SlotType.TERMINAL, key, null));
 		}
 
 		@Override
