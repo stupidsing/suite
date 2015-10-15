@@ -37,7 +37,7 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 
 	@Override
 	public void putTerminal(Key key) {
-		b_tree.put(key);
+		b_tree.putTerminal(key);
 	}
 
 	@Override

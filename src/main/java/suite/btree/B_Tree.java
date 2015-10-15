@@ -4,29 +4,22 @@ import java.io.Closeable;
 import java.io.PrintStream;
 
 import suite.adt.Pair;
+import suite.fs.KeyValueStore;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
 
-public interface B_Tree<Key, Value> extends Closeable {
+public interface B_Tree<Key, Value> extends Closeable, KeyValueStore<Key, Value> {
 
 	public void create();
 
 	public void dump(PrintStream w);
 
-	public Value get(Key key);
-
 	public Bytes getPayload(Key key);
-
-	public Streamlet<Key> keys(Key start, Key end);
 
 	public Streamlet<Pair<Key, Value>> range(Key start, Key end);
 
-	public void put(Key key);
-
-	public void put(Key key, Value value);
+	public void putTerminal(Key key);
 
 	public void putPayload(Key key, Bytes payload);
-
-	public void remove(Key key);
 
 }

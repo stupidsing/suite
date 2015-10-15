@@ -214,7 +214,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	@Override
-	public void put(Key key) {
+	public void putTerminal(Key key) {
 		put(key, new Terminal());
 	}
 
