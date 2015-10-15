@@ -240,6 +240,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
+		public boolean getTerminal(Key key) {
+			return stream(root, key, null).first() != null;
+		}
+
+		@Override
 		public void put(Key key, Integer data) {
 			update(key, new Slot(SlotType.TERMINAL, key, data));
 		}

@@ -16,6 +16,8 @@ public interface B_Tree<Key, Value> extends Closeable, KeyValueStore<Key, Value>
 
 	public Bytes getPayload(Key key);
 
+	public boolean getTerminal(Key key);
+
 	public Streamlet<Pair<Key, Value>> range(Key start, Key end);
 
 	public void putPayload(Key key, Bytes payload);

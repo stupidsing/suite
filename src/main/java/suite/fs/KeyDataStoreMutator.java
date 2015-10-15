@@ -6,6 +6,8 @@ public interface KeyDataStoreMutator<Key> extends KeyValueStoreMutator<Key, Inte
 
 	public Bytes getPayload(Key key);
 
+	public boolean getTerminal(Key key);
+
 	/**
 	 * Replaces a value with another, attached with a payload of page data. For
 	 * dictionary cases to replace stored value of the same key.

@@ -182,6 +182,11 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		return kp != null ? payloadFile.load(kp.getPayloadPageNo()) : null;
 	}
 
+	@Override
+	public boolean getTerminal(Key key) {
+		return loadKeyPointer(key) != null;
+	}
+
 	private KeyPointer loadKeyPointer(Key key) {
 		KeyPointer kp = new Traverse(key).kp;
 		return kp != null && Objects.equals(kp.key, key) ? kp : null;
