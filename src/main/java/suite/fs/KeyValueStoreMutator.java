@@ -13,7 +13,7 @@ public interface KeyValueStoreMutator<Key, Value> {
 	public Value get(Key key);
 
 	/**
-	 * Replaces a value with another without payload. For dictionary cases to
+	 * Replaces a value by another without payload. For dictionary cases to
 	 * replace stored value of the same key.
 	 */
 	public void put(Key key, Value data);
