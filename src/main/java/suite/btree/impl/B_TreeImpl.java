@@ -214,11 +214,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	@Override
-	public void putTerminal(Key key) {
-		put(key, new Terminal());
-	}
-
-	@Override
 	public void put(Key key, Value value) {
 		put(key, new Leaf(value));
 	}
@@ -228,6 +223,11 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		int pageNo = allocator.allocate();
 		payloadFile.save(pageNo, bytes);
 		put(key, new Payload(pageNo));
+	}
+
+	@Override
+	public void putTerminal(Key key) {
+		put(key, new Terminal());
 	}
 
 	private void put(Key key, Pointer pointer) {
