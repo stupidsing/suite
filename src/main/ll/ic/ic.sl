@@ -54,11 +54,11 @@ ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
 	:- ! -- Assembler might have variables, skip processing
 #
 ic-compile0 (DECLARES _ .offset .size .do) .e0/.ex
-	:- .e0 = (_ FR+ (.size)
+	:- .e0 = (_ FR-PUSHN (.size)
 		, _ FR-GET (.offset)
 		, .e1)
 	, ic-compile .do .e1/.e2
-	, .e2 = (_ FR- (.size)
+	, .e2 = (_ FR-POPN (.size)
 		, .ex)
 #
 ic-compile0 (INVOKE .mr .params) .e0/.ex
@@ -317,8 +317,8 @@ ic-push-pop-parameters (.p, .ps) .e0/.ex .f0/.fx
 		ic-compile-operand .p .e1/.e2 .op
 		, .e2 = (_ FR-PUSH (.op), _ R-, .ex)
 		, .f0 = (_ FR-POP (EDX), .f1)
-		; .e1 = (_ FR+ (.size), .e2)
-		, .f0 = (_ FR- (.size), .f1)
+		; .e1 = (_ FR-PUSHN (.size), .e2)
+		, .f0 = (_ FR-POPN (.size), .f1)
 		, ic-compile-let .p (MEMORY .size (REG ESP)) .e2/.e3
 		, .e3 = (_ R-, .ex)
 	)

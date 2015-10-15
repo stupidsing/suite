@@ -26,10 +26,10 @@ public class StackAssembler extends Assembler {
 	private Node FRBGN_ = Atom.of("FR-BEGIN");
 	private Node FREND_ = Atom.of("FR-END");
 	private Fun<Node, Node[]> FRGET_ = Suite.matcher("FR-GET .0");
-	private Fun<Node, Node[]> FRNPOP = Suite.matcher("FR- .0");
-	private Fun<Node, Node[]> FRNPSH = Suite.matcher("FR+ .0");
 	private Fun<Node, Node[]> FRPOP_ = Suite.matcher("FR-POP .0");
+	private Fun<Node, Node[]> FRPOPN = Suite.matcher("FR-POPN .0");
 	private Fun<Node, Node[]> FRPSH_ = Suite.matcher("FR-PUSH .0");
+	private Fun<Node, Node[]> FRPSHN = Suite.matcher("FR-PUSHN .0");
 	private Fun<Node, Node[]> LET___ = Suite.matcher("LET (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
@@ -73,20 +73,20 @@ public class StackAssembler extends Assembler {
 					node1 = Atom.NIL;
 				else
 					throw new RuntimeException("Cannot bind local variable offset");
-			else if ((m = FRNPOP.apply(node0)) != null) {
+			else if ((m = FRPOP_.apply(node0)) != null) {
+				fs -= 4;
+				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
+			} else if ((m = FRPOPN.apply(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs -= int_.number;
 				node1 = Suite.substitute("ADD (ESP, .0)", int_);
-			} else if ((m = FRNPSH.apply(node0)) != null) {
-				Int int_ = (Int) m[0].finalNode();
-				fs += int_.number;
-				node1 = Suite.substitute("SUB (ESP, .0)", int_);
-			} else if ((m = FRPOP_.apply(node0)) != null) {
-				fs -= 4;
-				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
 			} else if ((m = FRPSH_.apply(node0)) != null) {
 				fs += 4;
 				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
+			} else if ((m = FRPSHN.apply(node0)) != null) {
+				Int int_ = (Int) m[0].finalNode();
+				fs += int_.number;
+				node1 = Suite.substitute("SUB (ESP, .0)", int_);
 			} else if ((m = LET___.apply(node0)) != null)
 				if (Binder.bind(m[0], Int.of(new EvalPredicates().evaluate(m[1])), trail))
 					node1 = Atom.NIL;
