@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
@@ -90,6 +91,10 @@ public class As {
 
 	public static <K, V> ListMultimap<K, V> multimap(Outlet<Pair<K, List<V>>> outlet) {
 		return new ListMultimap<>(map(outlet));
+	}
+
+	public static <K, V, T> Fun<Outlet<Pair<K, V>>, Streamlet<T>> pairMap(BiFunction<K, V, T> fun) {
+		return outlet -> new Streamlet<>(() -> outlet.map(pair -> fun.apply(pair.t0, pair.t1)));
 	}
 
 	public static <K, V> Map<K, Set<V>> setMap(Outlet<Pair<K, V>> outlet) {

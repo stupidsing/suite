@@ -7,6 +7,8 @@ import suite.util.Util;
 
 public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 
+	private static final D_ D = new D_();
+
 	public T0 t0;
 	public T1 t1;
 	public T2 t2;
@@ -18,59 +20,62 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 	public T8 t8;
 	public T9 t9;
 
-	public static Fixie<Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean> //
+	public static Fixie<D_, D_, D_, D_, D_, D_, D_, D_, D_, D_> //
 	of() {
-		return of(Boolean.TRUE);
+		return of(D);
 	}
 
-	public static <T0> Fixie<T0, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean> //
+	public static <T0> Fixie<T0, D_, D_, D_, D_, D_, D_, D_, D_, D_> //
 	of(T0 t0) {
-		return of(t0, Boolean.TRUE);
+		return of(t0, D);
 	}
 
-	public static <T0, T1> Fixie<T0, T1, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean> //
+	public static <T0, T1> Fixie<T0, T1, D_, D_, D_, D_, D_, D_, D_, D_> //
 	of(T0 t0, T1 t1) {
-		return of(t0, t1, Boolean.TRUE);
+		return of(t0, t1, D);
 	}
 
-	public static <T0, T1, T2> Fixie<T0, T1, T2, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean> //
+	public static <T0, T1, T2> Fixie<T0, T1, T2, D_, D_, D_, D_, D_, D_, D_> //
 	of(T0 t0, T1 t1, T2 t2) {
-		return of(t0, t1, t2, Boolean.TRUE);
+		return of(t0, t1, t2, D);
 	}
 
-	public static <T0, T1, T2, T3> Fixie<T0, T1, T2, T3, Boolean, Boolean, Boolean, Boolean, Boolean, Boolean> //
+	public static <T0, T1, T2, T3> Fixie<T0, T1, T2, T3, D_, D_, D_, D_, D_, D_> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3) {
-		return of(t0, t1, t2, t3, Boolean.TRUE);
+		return of(t0, t1, t2, t3, D);
 	}
 
-	public static <T0, T1, T2, T3, T4> Fixie<T0, T1, T2, T3, T4, Boolean, Boolean, Boolean, Boolean, Boolean> //
+	public static <T0, T1, T2, T3, T4> Fixie<T0, T1, T2, T3, T4, D_, D_, D_, D_, D_> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4) {
-		return of(t0, t1, t2, t3, t4, Boolean.TRUE);
+		return of(t0, t1, t2, t3, t4, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5> Fixie<T0, T1, T2, T3, T4, T5, Boolean, Boolean, Boolean, Boolean> //
+	public static <T0, T1, T2, T3, T4, T5> Fixie<T0, T1, T2, T3, T4, T5, D_, D_, D_, D_> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
-		return of(t0, t1, t2, t3, t4, t5, Boolean.TRUE);
+		return of(t0, t1, t2, t3, t4, t5, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5, T6> Fixie<T0, T1, T2, T3, T4, T5, T6, Boolean, Boolean, Boolean> //
+	public static <T0, T1, T2, T3, T4, T5, T6> Fixie<T0, T1, T2, T3, T4, T5, T6, D_, D_, D_> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
-		return of(t0, t1, t2, t3, t4, t5, t6, Boolean.TRUE);
+		return of(t0, t1, t2, t3, t4, t5, t6, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5, T6, T7> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, Boolean, Boolean> //
+	public static <T0, T1, T2, T3, T4, T5, T6, T7> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, D_, D_> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
-		return of(t0, t1, t2, t3, t4, t5, t6, t7, Boolean.TRUE);
+		return of(t0, t1, t2, t3, t4, t5, t6, t7, D);
 	}
 
-	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, Boolean> //
+	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, D_> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
-		return of(t0, t1, t2, t3, t4, t5, t6, t7, t8, Boolean.TRUE);
+		return of(t0, t1, t2, t3, t4, t5, t6, t7, t8, D);
 	}
 
 	public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> //
 	of(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
 		return new Fixie<>(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
+	}
+
+	public static class D_ {
 	}
 
 	private Fixie(T0 t0, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
