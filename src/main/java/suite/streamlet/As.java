@@ -19,6 +19,12 @@ public class As {
 		return Pair.of(st -> st.sink(t -> list.add(t)), () -> Read.from(list));
 	}
 
+	public static <K, V> Pair<Sink<Pair<K, V>>, Source<Streamlet<Pair<K, Streamlet<V>>>>> groups() {
+		Map<K, List<V>> map = new HashMap<>();
+		return Pair.of(p -> map.computeIfAbsent(p.t0, k_ -> new ArrayList<>()).add(p.t1),
+				() -> Read.from(map).map(Pair.map1(Read::from)));
+	}
+
 	public static Pair<Sink<Integer>, Source<int[]>> intArray() {
 		List<Integer> list = new ArrayList<>();
 		return Pair.of(list::add, () -> {

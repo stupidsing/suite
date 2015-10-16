@@ -211,10 +211,6 @@ public class Outlet<T> implements Iterable<T> {
 		return from(FunUtil.filter(fun, source));
 	}
 
-	public <K, V> Outlet<Pair<K, List<T>>> groupBy(Fun<T, K> keyFun) {
-		return groupBy(keyFun, value -> value);
-	}
-
 	public <K, V> Outlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		Map<K, List<V>> map = new HashMap<>();
 		T t;
