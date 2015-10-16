@@ -32,9 +32,8 @@ public class As {
 
 	public static <T, K, V> Fun<Outlet<T>, Streamlet<Pair<K, Streamlet<V>>>> groups(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		return outlet -> {
-			Map<K, List<V>> map = new HashMap<>();
-			outlet.sink(p -> map.computeIfAbsent(keyFun.apply(p), k_ -> new ArrayList<>()).add(valueFun.apply(p)));
-			return Read.from(map).map(Pair.map1(Read::from));
+			Fun<List<V>, Streamlet<V>> readFrom = Read::from;
+			return new Streamlet<>(() -> outlet.groupBy(keyFun, valueFun).map(Pair.map1(readFrom)));
 		};
 	}
 
