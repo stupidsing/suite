@@ -24,7 +24,7 @@ public class Rewriter {
 	private static Node RIGHT = Atom.of("r");
 
 	public enum ReadType {
-		DICT(0), TERM(1), TREE(2), TUPLE(3), ;
+		DICT(0), TERM(1), TREE(2), TUPLE(3),;
 
 		public byte value;
 

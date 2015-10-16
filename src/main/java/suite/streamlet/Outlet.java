@@ -60,14 +60,6 @@ public class Outlet<T> implements Iterable<T> {
 		return FunUtil.iterator(source);
 	}
 
-	public <R extends Collection<? super T>> R collect(Source<R> source) {
-		R r = source.source();
-		T t;
-		while ((t = next()) != null)
-			r.add(t);
-		return r;
-	}
-
 	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
 		T t;
 		while ((t = next()) != null)
@@ -149,6 +141,14 @@ public class Outlet<T> implements Iterable<T> {
 		while ((t = next()) != null)
 			init = fun.apply(init, t);
 		return init;
+	}
+
+	public <R extends Collection<? super T>> R form(Source<R> source) {
+		R r = source.source();
+		T t;
+		while ((t = next()) != null)
+			r.add(t);
+		return r;
 	}
 
 	public void sink(Sink<T> sink) {
@@ -257,7 +257,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public List<T> toList() {
-		return collect(() -> new ArrayList<>());
+		return form(() -> new ArrayList<>());
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
@@ -277,7 +277,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public Set<T> toSet() {
-		return collect(() -> new HashSet<>());
+		return form(() -> new HashSet<>());
 	}
 
 	public T uniqueResult() {

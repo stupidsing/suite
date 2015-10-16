@@ -42,10 +42,6 @@ public class Streamlet<T> implements Iterable<T> {
 		return groupBy(keyFun).map(Pair.map1(list -> valueFun.apply(Read.from(list))));
 	}
 
-	public <R extends Collection<? super T>> R collect(Source<R> source) {
-		return spawn().collect(source);
-	}
-
 	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
 		return spawn().collect(pair);
 	}
@@ -89,6 +85,10 @@ public class Streamlet<T> implements Iterable<T> {
 
 	public <R> R fold(R init, BiFunction<R, T, R> fun) {
 		return spawn().fold(init, fun);
+	}
+
+	public <R extends Collection<? super T>> R form(Source<R> source) {
+		return spawn().form(source);
 	}
 
 	public void sink(Sink<T> sink) {

@@ -242,7 +242,7 @@ public class Ebnf {
 				pos = i != size - 1 ? child.end : px;
 				frs.add(toFactorizeResult(cs, pos0, pos, child));
 			}
-			return FactorizeResult.merge( node.entity, frs);
+			return FactorizeResult.merge(node.entity, frs);
 		} else {
 			Chars pre = Chars.of(cs, p0, node.start);
 			Chars mid = Chars.of(cs, node.start, node.end);
