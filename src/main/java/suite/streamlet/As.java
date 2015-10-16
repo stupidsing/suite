@@ -21,9 +21,21 @@ public class As {
 	}
 
 	public static <K, V> Streamlet<Pair<K, Streamlet<V>>> groups(Outlet<Pair<K, V>> outlet) {
-		Map<K, List<V>> map = new HashMap<>();
-		outlet.sink(p -> map.computeIfAbsent(p.t0, k_ -> new ArrayList<>()).add(p.t1));
-		return Read.from(map).map(Pair.map1(Read::from));
+		Fun<Pair<K, V>, K> fst = p -> p.t0;
+		Fun<Pair<K, V>, V> snd = p -> p.t1;
+		return groups(fst, snd).apply(outlet);
+	}
+
+	public static <T, K> Fun<Outlet<T>, Streamlet<Pair<K, Streamlet<T>>>> groups(Fun<T, K> keyFun) {
+		return groups(keyFun, value -> value);
+	}
+
+	public static <T, K, V> Fun<Outlet<T>, Streamlet<Pair<K, Streamlet<V>>>> groups(Fun<T, K> keyFun, Fun<T, V> valueFun) {
+		return outlet -> {
+			Map<K, List<V>> map = new HashMap<>();
+			outlet.sink(p -> map.computeIfAbsent(keyFun.apply(p), k_ -> new ArrayList<>()).add(valueFun.apply(p)));
+			return Read.from(map).map(Pair.map1(Read::from));
+		};
 	}
 
 	public static int[] intArray(Outlet<Integer> st) {
