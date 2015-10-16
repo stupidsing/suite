@@ -261,38 +261,19 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
-		return map;
+		return groupBy(keyFun, valueFun).collect(As.map());
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, V> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null) {
-			K key = keyFun.apply(t);
-			if (map.put(key, valueFun.apply(t)) != null)
-				throw new RuntimeException("Duplicate value for key " + key);
-		}
-		return map;
+		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).uniqueResult())).collect(As.map());
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		ListMultimap<K, V> multimap = new ListMultimap<>();
-		T t;
-		while ((t = next()) != null)
-			multimap.put(keyFun.apply(t), valueFun.apply(t));
-		return multimap;
+		return groupBy(keyFun, valueFun).collect(As.multimap());
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, Set<V>> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new HashSet<>()).add(valueFun.apply(t));
-		return map;
+		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).toSet())).collect(As.map());
 	}
 
 	public Set<T> toSet() {
