@@ -130,7 +130,7 @@ public class Grapher {
 
 			switch (gn.type) {
 			case DICT:
-				((Dict) node).map.putAll(Read.from(children).map(Pair.map1(Reference::of)).collect(As.map()));
+				((Dict) node).map.putAll(Read.from(children).map(Pair.map1(Reference::of)).collect(As::map));
 				break;
 			case TERM:
 				break;

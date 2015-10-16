@@ -23,7 +23,7 @@ public class UnicodeData {
 			classByChars = Read.lines(is) //
 					.map(line -> line.split(";")) //
 					.map(a -> Pair.of(a[2], (char) Integer.parseInt(a[0], 16))) //
-					.collect(As.setMap());
+					.collect(As::setMap);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

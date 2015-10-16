@@ -60,11 +60,8 @@ public class Outlet<T> implements Iterable<T> {
 		return FunUtil.iterator(source);
 	}
 
-	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
-		T t;
-		while ((t = next()) != null)
-			pair.t0.sink(t);
-		return pair.t1.source();
+	public <R> R collect(Fun<Outlet<T>, R> fun) {
+		return fun.apply(this);
 	}
 
 	public <O> Outlet<O> concatMap(Fun<T, Outlet<O>> fun) {
@@ -261,19 +258,19 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).collect(As.map());
+		return groupBy(keyFun, valueFun).collect(As::map);
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).uniqueResult())).collect(As.map());
+		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).uniqueResult())).collect(As::map);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).collect(As.multimap());
+		return groupBy(keyFun, valueFun).collect(As::multimap);
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).toSet())).collect(As.map());
+		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).toSet())).collect(As::map);
 	}
 
 	public Set<T> toSet() {

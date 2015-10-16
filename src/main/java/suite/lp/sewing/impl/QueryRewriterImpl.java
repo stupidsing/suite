@@ -44,7 +44,7 @@ public class QueryRewriterImpl implements QueryRewriter {
 	public QueryRewriterImpl(ListMultimap<Prototype, Rule> rules) {
 		infosByPrototype = Read.from(rules.listEntries()) //
 				.map(Pair.map1(PrototypeInfo::new)) //
-				.collect(As.map());
+				.collect(As::map);
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class FunctionalTemplateRendererTest {
 				Pair.of("list", Tree.of(TermOp.OR____, fruits)) //
 				, Pair.of("title", new Str("My favourite things")) //
 				)) //
-				.collect(As.map());
+				.collect(As::map);
 
 		System.out.println(new FunctionalTemplateRenderer().render("" //
 				+ "<html> \n" //

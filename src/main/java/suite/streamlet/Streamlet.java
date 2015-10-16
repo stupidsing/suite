@@ -42,8 +42,8 @@ public class Streamlet<T> implements Iterable<T> {
 		return groupBy(keyFun).map(Pair.map1(list -> valueFun.apply(Read.from(list))));
 	}
 
-	public <R> R collect(Pair<Sink<T>, Source<R>> pair) {
-		return spawn().collect(pair);
+	public <R> R collect(Fun<Outlet<T>, R> fun) {
+		return fun.apply(in.source());
 	}
 
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {

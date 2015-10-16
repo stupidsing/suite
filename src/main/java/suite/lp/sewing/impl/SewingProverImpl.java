@@ -210,7 +210,7 @@ public class SewingProverImpl implements SewingProver {
 				if (!rulesByProto1.containsKey(null)) {
 					Map<Prototype, Trampoline> trByProto1 = Read.from(rulesByProto1) //
 							.map(Pair.map1(rules_ -> compileRules(prototype, rules_, traceLevel))) //
-							.collect(As.map());
+							.collect(As::map);
 
 					tr = rt -> {
 						Prototype proto = queryRewriter.getPrototype(prototype, rt.query, 1);

@@ -212,7 +212,7 @@ public class Ebnf {
 
 		Map<String, EbnfGrammar> grammarsByEntity = Read.from(pairs) //
 				.map(lr -> Pair.of(lr.t0, breakdown.breakdown(lr.t0, lr.t1))) //
-				.collect(As.map());
+				.collect(As::map);
 
 		EbnfHeadRecursion headRecursion = new EbnfHeadRecursion(grammarsByEntity);
 
@@ -221,7 +221,7 @@ public class Ebnf {
 
 		parsersByEntity = Read.from(grammarsByEntity) //
 				.map(Pair.map1(this::build)) //
-				.collect(As.map());
+				.collect(As::map);
 	}
 
 	public FactorizeResult parseFNode(String s, String entity) {
