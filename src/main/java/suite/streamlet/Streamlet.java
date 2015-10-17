@@ -172,7 +172,7 @@ public class Streamlet<T> implements Iterable<T> {
 	}
 
 	public <K> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
-		return toMultimap(keyFun, value -> value);
+		return spawn().toMultimap(keyFun);
 	}
 
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {

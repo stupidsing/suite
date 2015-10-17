@@ -265,6 +265,10 @@ public class Outlet<T> implements Iterable<T> {
 		return groupBy(keyFun, valueFun).map(Pair.map1(values -> Read.from(values).uniqueResult())).collect(As::map);
 	}
 
+	public <K, V> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
+		return groupBy(keyFun, value -> value).collect(As::multimap);
+	}
+
 	public <K, V> ListMultimap<K, V> toMultimap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		return groupBy(keyFun, valueFun).collect(As::multimap);
 	}
