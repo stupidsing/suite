@@ -1,213 +1,118 @@
 package suite.concurrent;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicStampedReference;
 
-import suite.concurrent.ObstructionFreeStm.ObstructionFreeTransaction;
-import suite.concurrent.Stm.AbortException;
-import suite.concurrent.Stm.DeadlockException;
-import suite.concurrent.Stm.Memory;
 import suite.concurrent.Stm.Transaction;
-import suite.concurrent.Stm.TransactionException;
-import suite.concurrent.Stm.TransactionManager;
 import suite.concurrent.Stm.TransactionStatus;
+import suite.util.FunUtil.Fun;
 
 /**
  * Implements software transactional memory by locking.
  *
  * @author ywsing
  */
-public class ObstructionFreeStm implements TransactionManager<ObstructionFreeTransaction> {
+public class ObstructionFreeStm {
 
-	private static int nullTimestamp = -1;
+	private class Memory<V> {
 
-	private AtomicInteger clock = new AtomicInteger();
+		// Reference is the most recent snapshot; stamp is the last read time
+		private AtomicStampedReference<Snapshot<V>> asr = new AtomicStampedReference<>(new Snapshot<>(ambient, null, null), 0);
 
-	@Override
-	public ObstructionFreeTransaction createTransaction(ObstructionFreeTransaction parent) {
-		ObstructionFreeTransaction transaction = new ObstructionFreeTransaction();
-		transaction.parent = parent;
-		return transaction;
-	}
+		private void trim() {
+			int lastReadTime[] = new int[1];
+			Snapshot<V> snapshot = asr.get(lastReadTime);
+			while (snapshot.owner.status == TransactionStatus.ROLLBACK)
+				snapshot = snapshot.previous;
 
-	@Override
-	public <T> Memory<T> createMemory(Class<T> clazz, T value) {
-		ObstructionFreeMemory<T> memory = new ObstructionFreeMemory<>();
-		memory.value0 = value;
-		return memory;
-	}
-
-	protected class ObstructionFreeTransaction implements Transaction {
-		private volatile TransactionStatus status = TransactionStatus.ACTIVE;
-		private volatile ObstructionFreeTransaction waitingFor;
-		private volatile int readTimestamp = clock.getAndIncrement();
-		private volatile int commitTimestamp = nullTimestamp;
-		private Set<ObstructionFreeMemory<?>> readMemories = new HashSet<>();
-		private ObstructionFreeTransaction parent;
-
-		/**
-		 * Tries to finish a transaction. Make sure all children committed
-		 * before committing the parent.
-		 *
-		 * @throws AbortException
-		 */
-		public void commit() throws AbortException {
-			boolean isCommit = true;
-			commitTimestamp = clock.getAndIncrement();
-
-			// If some touched values are discovered to be modified between our
-			// read/write time, we must abort
-			for (ObstructionFreeMemory<?> memory : readMemories)
-				isCommit &= isDescendantOf(memory.owner.get(), this) //
-						|| memory.timestamp0 <= readTimestamp //
-						|| memory.timestamp0 >= commitTimestamp;
-
-			if (isCommit)
-				setStatus(TransactionStatus.COMMITTED);
-			else
-				throw new AbortException();
-		}
-
-		/**
-		 * Abort a transaction. Must abort all children first.
-		 */
-		public void rollback() {
-			setStatus(TransactionStatus.ABORTED);
-		}
-
-		private synchronized void setStatus(TransactionStatus status1) {
-			status = status1;
-			notifyAll();
-		}
-
-		private void waitForCompletion() throws InterruptedException {
-			if (status == TransactionStatus.ACTIVE)
-				synchronized (this) {
-					while (status == TransactionStatus.ACTIVE)
-						wait();
-				}
+			int i = 0;
+			while (snapshot != null && ++i < nSnapshots)
+				snapshot = snapshot.previous;
+			snapshot.previous = null;
 		}
 	}
 
-	private class ObstructionFreeMemory<T> implements Memory<T> {
-		private AtomicReference<ObstructionFreeTransaction> owner = new AtomicReference<>();
-		private volatile int timestamp0;
-		private volatile T value0;
-		private volatile T value1;
+	private class Snapshot<V> {
+		private Transaction owner;
+		private V value;
+		private Snapshot<V> previous;
 
-		/**
-		 * Read would obtain the value between two checks of the owner.
-		 *
-		 * If the owner or its status is found to be changed, read needs to be
-		 * performed again.
-		 *
-		 * Perform timestamp checking to avoid reading too up-to-date data.
-		 */
-		public T read(Transaction transaction) throws AbortException {
-			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
-
-			while (true) {
-				ObstructionFreeTransaction theirTransaction0 = owner.get();
-				TransactionStatus theirStatus0 = theirTransaction0 != null ? theirTransaction0.status : null;
-				long timestamp;
-				T value;
-
-				if (theirStatus0 != TransactionStatus.COMMITTED //
-						&& !isDescendantOf(ourTransaction, theirTransaction0)) {
-					timestamp = timestamp0;
-					value = value0;
-				} else {
-					timestamp = theirTransaction0.commitTimestamp;
-					value = value1;
-				}
-
-				ObstructionFreeTransaction theirTransaction1 = owner.get();
-				TransactionStatus theirStatus1 = theirTransaction1 != null ? theirTransaction1.status : null;
-
-				// Retries if owner or owner status changed
-				if (theirTransaction0 == theirTransaction1 && theirStatus0 == theirStatus1)
-					if (isDescendantOf(ourTransaction, theirTransaction0) || timestamp <= ourTransaction.readTimestamp) {
-						ourTransaction.readMemories.add(this);
-						return value;
-					} else
-						throw new AbortException();
-			}
-		}
-
-		/**
-		 * Write would obtain the owner right.
-		 *
-		 * If someone else is the owner, the write would block until that owner
-		 * completes. Simple waiting hierarchy is implemented in transaction
-		 * class to detect deadlocks.
-		 *
-		 * Timestamp checking is done to avoid changing post-modified data.
-		 */
-		public void write(Transaction transaction, T value) throws InterruptedException, TransactionException {
-			ObstructionFreeTransaction ourTransaction = (ObstructionFreeTransaction) transaction;
-			ObstructionFreeTransaction theirTransaction;
-
-			// Makes ourself the owner
-			while (!isDescendantOf(ourTransaction, theirTransaction = owner.get()))
-				if (theirTransaction != null) {
-
-					// Waits until previous owner complete
-					ObstructionFreeStm.this.wait(ourTransaction, theirTransaction);
-
-					if (owner.compareAndSet(theirTransaction, ourTransaction)) {
-						if (theirTransaction.status == TransactionStatus.COMMITTED) {
-							timestamp0 = theirTransaction.commitTimestamp;
-							value0 = value1;
-						}
-
-						break;
-					}
-				} else if (owner.compareAndSet(theirTransaction, ourTransaction))
-					break;
-
-			if (timestamp0 <= ourTransaction.readTimestamp)
-				value1 = value;
-			else
-				throw new AbortException();
+		private Snapshot(Transaction owner, V value, Snapshot<V> previous) {
+			this.owner = owner;
+			this.value = value;
+			this.previous = previous;
 		}
 	}
 
-	private void wait(ObstructionFreeTransaction waiter, ObstructionFreeTransaction waitee) throws InterruptedException,
-			DeadlockException {
-		synchronized (ObstructionFreeStm.class) {
+	private int nSnapshots = 3;
+	private Transaction ambient;
 
-			// Detect waiting cycles and abort if deadlock is happening
-			if (!isWaitingFor(waitee, waiter))
-				waiter.waitingFor = waitee;
-			else {
-				waiter.setStatus(TransactionStatus.ABORTED);
-				throw new DeadlockException();
-			}
-		}
+	public ObstructionFreeStm() {
+		ambient = new Transaction();
+		ambient.status = TransactionStatus.DONE____;
+	}
+
+	public <T> T transaction(Fun<Transaction, T> fun) {
+		Transaction transaction = new Transaction();
+		boolean ok = false;
 
 		try {
-			waitee.waitForCompletion();
+			T result = fun.apply(transaction);
+			ok = true;
+			return result;
 		} finally {
-			waiter.waitingFor = null;
+			transaction.stop(ok ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
 		}
 	}
 
-	private boolean isDescendantOf(ObstructionFreeTransaction descendant, Transaction ascendant) {
-		if (descendant != null && ascendant != null)
-			return ascendant == descendant || isDescendantOf(descendant.parent, ascendant);
-		else
-			return false;
+	public <V> Memory<V> create() {
+		return new Memory<>();
 	}
 
-	private boolean isWaitingFor(ObstructionFreeTransaction waiter, ObstructionFreeTransaction waitee) {
-		if (waiter != null && waitee != null)
-			return waiter == waitee //
-					|| isWaitingFor(waiter.waitingFor, waitee) //
-					|| isWaitingFor(waiter, waitee.parent);
-		else
-			return false;
+	public <V> V get(Transaction transaction, Memory<V> memory) {
+		while (true) {
+			int lastReadTime[] = new int[1];
+			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
+
+			// Read committed, repeatable read
+			while (snapshot != null
+					&& !(snapshot.owner.status == TransactionStatus.DONE____ && snapshot.owner.time < transaction.time))
+				snapshot = snapshot.previous;
+
+			if (snapshot == null)
+				throw new RuntimeException("Snapshot lost");
+
+			if (!memory.asr.compareAndSet(snapshot, snapshot, lastReadTime[0], Math.max(lastReadTime[0], transaction.time)))
+				continue;
+
+			return snapshot.value;
+		}
+	}
+
+	public <V> void put(Transaction transaction, Memory<V> memory, V value) {
+		while (true) {
+			int lastReadTime[] = new int[1];
+			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
+
+			// Serializable
+			if (transaction.time <= lastReadTime[0])
+				throw new RuntimeException("Abort");
+
+			while (snapshot.owner.status == TransactionStatus.ROLLBACK)
+				snapshot = snapshot.previous;
+
+			if (snapshot.owner.status == TransactionStatus.ACTIVE__) {
+				snapshot.owner.mutex.lock();
+				snapshot.owner.mutex.unlock();
+				continue;
+			}
+
+			Snapshot<V> snapshot1 = new Snapshot<>(transaction, value, snapshot);
+			if (!memory.asr.compareAndSet(snapshot, snapshot1, lastReadTime[0], transaction.time))
+				continue;
+
+			memory.trim();
+			return;
+		}
 	}
 
 }
