@@ -101,8 +101,7 @@ public class StmTest {
 				.mapToObj(i -> new Worker(stm)).collect(Collectors.toList());
 
 		List<Integer> workingOrders = new ArrayList<>();
-		IntStream.range(0, nMemories * 2 + 1).forEach(mi -> //
-		IntStream.range(0, nTransactions).forEach(workingOrders::add));
+		IntStream.range(0, nMemories * 2 + 1).forEach(mi -> IntStream.range(0, nTransactions).forEach(workingOrders::add));
 		Collections.shuffle(workingOrders, random);
 
 		for (int workingOrder : workingOrders)
