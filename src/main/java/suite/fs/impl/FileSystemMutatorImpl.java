@@ -78,13 +78,13 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 				fsNameKeySet.add(name);
 		}
 
-		mutator.commit();
+		mutator.end(true);
 	}
 
 	public void replace(Bytes name, int seq, Bytes bytes) {
 		KeyDataStoreMutator<Bytes> mutator = mutate.source();
 		mutator.putPayload(key(keyUtil.hash(name), DATAID, seq), bytes);
-		mutator.commit();
+		mutator.end(true);
 	}
 
 	public void resize(Bytes name, int size1) {
@@ -101,7 +101,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 			mutator.putPayload(key(hash, DATAID, page), Bytes.empty);
 
 		mutator.put(sizeKey, size1);
-		mutator.commit();
+		mutator.end(true);
 	}
 
 	private Bytes key(Bytes hash, int id, int seq) {

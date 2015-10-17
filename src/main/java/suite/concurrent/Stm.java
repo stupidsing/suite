@@ -19,7 +19,7 @@ public class Stm {
 			mutex.lock();
 		}
 
-		public void stop(TransactionStatus s) {
+		public void end(TransactionStatus s) {
 			status = s;
 			mutex.unlock();
 		}

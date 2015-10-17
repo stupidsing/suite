@@ -28,21 +28,21 @@ public class TransactionManager<Key, Value> {
 
 	public class Transaction implements KeyValueStoreMutator<Key, Value> {
 		private KeyValueStoreMutator<Key, Value> mutator;
-		private Stm.Transaction st = stm.beginTransaction();
+		private Stm.Transaction st = stm.begin();
 
 		public Transaction(KeyValueStoreMutator<Key, Value> mutator) {
 			this.mutator = mutator;
 		}
 
 		@Override
-		public void commit() {
-			st.stop(TransactionStatus.DONE____);
-			mutator.commit();
+		public void end(boolean isComplete) {
+			st.end(isComplete ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
+			mutator.end(isComplete);
 			flush();
 		}
 
 		public void rollback() {
-			st.stop(TransactionStatus.ROLLBACK);
+			st.end(TransactionStatus.ROLLBACK);
 		}
 
 		@Override
@@ -92,7 +92,7 @@ public class TransactionManager<Key, Value> {
 			LogUtil.error(ex);
 		} finally {
 			if (ok)
-				transaction.commit();
+				transaction.end(true);
 		}
 	}
 

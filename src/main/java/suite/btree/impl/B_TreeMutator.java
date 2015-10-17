@@ -16,8 +16,9 @@ public class B_TreeMutator<Key> implements KeyDataStoreMutator<Key> {
 	}
 
 	@Override
-	public void commit() {
-		committer.run();
+	public void end(boolean isComplete) {
+		if (isComplete)
+			committer.run();
 	}
 
 	@Override

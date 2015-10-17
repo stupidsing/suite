@@ -12,9 +12,9 @@ import java.util.stream.IntStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.concurrent.Stm.Memory;
+import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm.Transaction;
-import suite.concurrent.Stm.TransactionException;
+import suite.concurrent.Stm.TransactionStatus;
 
 public class StmTest {
 
@@ -24,6 +24,7 @@ public class StmTest {
 	private int nTransactions = 1;
 
 	private class Worker {
+		private ObstructionFreeStm stm;
 		private Transaction transaction;
 		private List<Integer> orders = new ArrayList<>();
 		private List<Integer> adjustments = new ArrayList<>();
@@ -31,8 +32,9 @@ public class StmTest {
 		private int step;
 		private List<Integer> readValues = new ArrayList<>(Collections.nCopies(nMemories, 0));
 
-		private Worker(Transaction transaction) {
-			this.transaction = transaction;
+		private Worker(ObstructionFreeStm stm) {
+			this.stm = stm;
+			this.transaction = stm.begin();
 
 			IntStream.range(0, nMemories * 2).forEach(i -> orders.add(i % nMemories));
 			Collections.shuffle(orders, random);
@@ -57,28 +59,21 @@ public class StmTest {
 			adjustments.add(-sum);
 		}
 
-		private void work(List<Memory<Integer>> memories) throws InterruptedException, TransactionException {
+		private void work(List<Memory<Integer>> memories) throws InterruptedException {
 			int order = orders.get(step++);
 
 			if (order >= nMemories * 2) { // Commit or rollback
 				System.out.println(this + " COMMIT");
-				boolean isCommitted = false;
-				try {
-					transaction.commit();
-					isCommitted = true;
-				} finally {
-					if (!isCommitted)
-						transaction.rollback();
-				}
+				transaction.end(TransactionStatus.DONE____);
 			} else if (order >= nMemories) { // Write a memory
 				int mi = order - nMemories;
 				System.out.println(this + " WRITE " + mi);
 
 				Memory<Integer> memory = memories.get(mi);
-				int read = memory.read(transaction);
+				int read = stm.get(transaction, memory);
 
 				if (read == readValues.get(mi))
-					memory.write(transaction, read + adjustments.get(mi));
+					stm.put(transaction, memory, read + adjustments.get(mi));
 				else
 					throw new RuntimeException("Value changed between reads");
 			} else { // Read a memory
@@ -86,7 +81,7 @@ public class StmTest {
 				System.out.println(this + " READ " + mi);
 
 				Memory<Integer> memory = memories.get(mi);
-				Integer read = memory.read(transaction);
+				Integer read = stm.get(transaction, memory);
 				readValues.set(mi, read);
 			}
 		}
@@ -98,32 +93,34 @@ public class StmTest {
 	}
 
 	@Test
-	public void test() throws InterruptedException, TransactionException {
+	public void test() throws InterruptedException {
 		ObstructionFreeStm stm = new ObstructionFreeStm();
 		List<Memory<Integer>> memories = IntStream.range(0, nMemories) //
-				.mapToObj(i -> stm.createMemory(Integer.class, 0)).collect(Collectors.toList());
+				.mapToObj(i -> stm.create(0)).collect(Collectors.toList());
 		List<Worker> workers = IntStream.range(0, nTransactions) //
-				.mapToObj(i -> new Worker(stm.createTransaction(null))).collect(Collectors.toList());
+				.mapToObj(i -> new Worker(stm)).collect(Collectors.toList());
 
 		List<Integer> workingOrders = new ArrayList<>();
 		IntStream.range(0, nMemories * 2 + 1).forEach(mi -> //
-				IntStream.range(0, nTransactions).forEach(workingOrders::add));
+		IntStream.range(0, nTransactions).forEach(workingOrders::add));
 		Collections.shuffle(workingOrders, random);
 
 		for (int workingOrder : workingOrders)
 			workers.get(workingOrder).work(memories);
 
-		Stm.doTransaction(stm, transaction -> {
+		stm.transaction(transaction -> {
 			int sum = 0;
 
 			for (Memory<Integer> memory : memories) {
-				int read = memory.read(transaction);
+				int read = stm.get(transaction, memory);
 				System.out.println("FINAL MEMORY VALUE = " + read);
 				sum += read;
 			}
 
 			if (sum != 0)
 				throw new RuntimeException("Final sum is not zero, but is " + sum);
+
+			return true;
 		});
 	}
 

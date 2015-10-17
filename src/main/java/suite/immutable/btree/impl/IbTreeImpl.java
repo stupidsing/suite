@@ -219,8 +219,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public void commit() {
-			mutate.commit(this);
+		public void end(boolean isComplete) {
+			if (isComplete)
+				mutate.commit(this);
 		}
 
 		@Override

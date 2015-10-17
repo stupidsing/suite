@@ -31,7 +31,8 @@ public class ObstructionFreeStm {
 			int i = 0;
 			while (snapshot != null && ++i < nSnapshots)
 				snapshot = snapshot.previous;
-			snapshot.previous = null;
+			if (snapshot != null)
+				snapshot.previous = null;
 		}
 	}
 
@@ -56,7 +57,7 @@ public class ObstructionFreeStm {
 	}
 
 	public <T> T transaction(Fun<Transaction, T> fun) {
-		Transaction transaction = beginTransaction();
+		Transaction transaction = begin();
 		boolean ok = false;
 
 		try {
@@ -64,11 +65,11 @@ public class ObstructionFreeStm {
 			ok = true;
 			return result;
 		} finally {
-			transaction.stop(ok ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
+			transaction.end(ok ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
 		}
 	}
 
-	public Transaction beginTransaction() {
+	public Transaction begin() {
 		return new Transaction();
 	}
 
@@ -102,7 +103,7 @@ public class ObstructionFreeStm {
 			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
 
 			// Serializable
-			if (transaction.time <= lastReadTime[0])
+			if (transaction.time < lastReadTime[0])
 				throw new RuntimeException("Abort");
 
 			while (snapshot.owner.status == TransactionStatus.ROLLBACK)

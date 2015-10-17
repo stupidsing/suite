@@ -32,7 +32,7 @@ public class IbTreeTest {
 
 		try (IbTreeStack<Integer> ibTreeStack = new IbTreeStack<>(config)) {
 			IbTree<Integer> ibTree = ibTreeStack.getIbTree();
-			ibTree.create().commit();
+			ibTree.create().end(true);
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
 
 			for (int i = 0; i < 32; i++)
@@ -51,7 +51,7 @@ public class IbTreeTest {
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree-single", config, null)) {
-			ibTree.create().commit();
+			ibTree.create().end(true);
 
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
 			int size = ibTree.guaranteedCapacity();
@@ -119,7 +119,7 @@ public class IbTreeTest {
 	}
 
 	private void test(IbTree<String> ibTree) {
-		ibTree.create().commit();
+		ibTree.create().end(true);
 
 		int size = ibTree.guaranteedCapacity();
 
@@ -138,7 +138,7 @@ public class IbTreeTest {
 			KeyDataStoreMutator<String> mutator0 = ibTree.begin();
 			for (String s : subset)
 				mutator0.putTerminal(s);
-			mutator0.commit();
+			mutator0.end(true);
 		}
 
 		assertEquals(size, dumpAndCount(ibTree.begin()));
@@ -149,7 +149,7 @@ public class IbTreeTest {
 			KeyDataStoreMutator<String> mutator1 = ibTree.begin();
 			for (String s : subset)
 				mutator1.remove(s);
-			mutator1.commit();
+			mutator1.end(true);
 		}
 
 		assertEquals(0, dumpAndCount(ibTree.begin()));

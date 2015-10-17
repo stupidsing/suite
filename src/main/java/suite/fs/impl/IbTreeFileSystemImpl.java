@@ -29,7 +29,7 @@ public class IbTreeFileSystemImpl implements FileSystem {
 
 	@Override
 	public void create() {
-		ibTreeStack.getIbTree().create().commit();
+		ibTreeStack.getIbTree().create().end(true);
 	}
 
 	@Override
