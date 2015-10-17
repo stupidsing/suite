@@ -13,10 +13,14 @@ import suite.util.FunUtil.Fun;
  */
 public class ObstructionFreeStm {
 
-	private class Memory<V> {
+	public class Memory<V> {
 
 		// Reference is the most recent snapshot; stamp is the last read time
-		private AtomicStampedReference<Snapshot<V>> asr = new AtomicStampedReference<>(new Snapshot<>(ambient, null, null), 0);
+		private AtomicStampedReference<Snapshot<V>> asr;
+
+		public Memory(V value) {
+			asr = new AtomicStampedReference<>(new Snapshot<>(ambient, value, null), 0);
+		}
 
 		private void trim() {
 			int lastReadTime[] = new int[1];
@@ -52,7 +56,7 @@ public class ObstructionFreeStm {
 	}
 
 	public <T> T transaction(Fun<Transaction, T> fun) {
-		Transaction transaction = new Transaction();
+		Transaction transaction = beginTransaction();
 		boolean ok = false;
 
 		try {
@@ -64,8 +68,12 @@ public class ObstructionFreeStm {
 		}
 	}
 
-	public <V> Memory<V> create() {
-		return new Memory<>();
+	public Transaction beginTransaction() {
+		return new Transaction();
+	}
+
+	public <V> Memory<V> create(V value) {
+		return new Memory<>(value);
 	}
 
 	public <V> V get(Transaction transaction, Memory<V> memory) {

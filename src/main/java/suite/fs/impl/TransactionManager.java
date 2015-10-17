@@ -1,31 +1,34 @@
 package suite.fs.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
+import suite.concurrent.ObstructionFreeStm;
+import suite.concurrent.ObstructionFreeStm.Memory;
+import suite.concurrent.Stm;
+import suite.concurrent.Stm.TransactionStatus;
 import suite.fs.KeyValueStoreMutator;
-import suite.streamlet.Read;
+import suite.os.LogUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 
 /**
  * Implements software transaction memory in a key-value storage.
  *
- * Now this is implemented using exclusive locking for both read and write.
+ * TODO clean up memories
  *
  * @author ywsing
  */
 public class TransactionManager<Key, Value> {
 
 	private Source<KeyValueStoreMutator<Key, Value>> source;
-	private Map<Key, Transaction> transactionByKey = new ConcurrentHashMap<>();
+	private ObstructionFreeStm stm = new ObstructionFreeStm();
+	private Map<Key, Memory<Value>> memoryByKey = new ConcurrentHashMap<>();
 
 	public class Transaction implements KeyValueStoreMutator<Key, Value> {
 		private KeyValueStoreMutator<Key, Value> mutator;
-		private List<Key> keys = new ArrayList<>();
+		private Stm.Transaction st = stm.beginTransaction();
 
 		public Transaction(KeyValueStoreMutator<Key, Value> mutator) {
 			this.mutator = mutator;
@@ -33,69 +36,64 @@ public class TransactionManager<Key, Value> {
 
 		@Override
 		public void commit() {
+			st.stop(TransactionStatus.DONE____);
 			mutator.commit();
+			flush();
+		}
 
-			// Clean up keys table
-			keys.forEach(transactionByKey::remove);
+		public void rollback() {
+			st.stop(TransactionStatus.ROLLBACK);
 		}
 
 		@Override
 		public Streamlet<Key> keys(Key start, Key end) {
-			return acquireReads(mutator.keys(start, end));
+			return mutator.keys(start, end);
 		}
 
 		@Override
 		public Value get(Key key) {
-			acquireRead(key);
-			return mutator.get(key);
+			return stm.get(st, getMemory(key));
 		}
 
 		@Override
 		public void put(Key key, Value value) {
-			acquireWrite(key);
-			mutator.put(key, value);
+			stm.put(st, getMemory(key), value);
 		}
 
 		@Override
 		public void remove(Key key) {
-			acquireWrite(key);
+			stm.put(st, getMemory(key), null);
 			mutator.remove(key);
 		}
 
-		private Streamlet<Key> acquireReads(Streamlet<Key> st) {
-			return Read.from(() -> {
-				Key key = st.first();
-				if (key != null)
-					acquireRead(key);
-				return key;
-			});
-		}
-
-		private void acquireRead(Key key) {
-			acquireOwnership(key);
-		}
-
-		private void acquireWrite(Key key) {
-			acquireOwnership(key);
-		}
-
-		private void acquireOwnership(Key key) {
-			while (transactionByKey.putIfAbsent(key, this) != this)
-				backoff();
-			keys.add(key);
-		}
-
-		private void backoff() {
-			try {
-				Thread.sleep(300 + ThreadLocalRandom.current().nextInt(500));
-			} catch (InterruptedException ex) {
-				throw new RuntimeException(ex);
-			}
+		private Memory<Value> getMemory(Key key) {
+			return memoryByKey.computeIfAbsent(key, key_ -> stm.create(mutator.get(key_)));
 		}
 	}
 
 	public TransactionManager(Source<KeyValueStoreMutator<Key, Value>> source) {
 		this.source = source;
+	}
+
+	// TODO synchronization
+	public void flush() {
+		KeyValueStoreMutator<Key, Value> transaction = begin();
+		boolean ok = false;
+		try {
+			KeyValueStoreMutator<Key, Value> mutator = source.source();
+			Iterator<Key> iterator = memoryByKey.keySet().iterator();
+			while (iterator.hasNext()) {
+				Key key = iterator.next();
+				mutator.put(key, transaction.get(key));
+				iterator.remove();
+			}
+			ok = true;
+		} catch (Exception ex) {
+			LogUtil.error(ex);
+		} finally {
+			if (ok)
+				transaction.commit();
+		}
 	}
 
 	public KeyValueStoreMutator<Key, Value> begin() {
