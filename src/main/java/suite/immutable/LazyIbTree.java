@@ -1,12 +1,13 @@
 package suite.immutable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Util;
 
@@ -93,7 +94,12 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree<T> add(T t) {
-		return add(t, false);
+		return update(t, t0 -> {
+			if (t0 == null)
+				return t;
+			else
+				throw new RuntimeException("Duplicate key");
+		});
 	}
 
 	/**
@@ -103,39 +109,56 @@ public class LazyIbTree<T> implements ITree<T> {
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
 	public LazyIbTree<T> replace(T t) {
-		return add(t, true);
+		return update(t, t_ -> t);
 	}
 
 	public LazyIbTree<T> remove(T t) {
-		return new LazyIbTree<>(comparator, createRoot(remove(root(), t)));
+		return update(t, t_ -> null);
 	}
 
 	public List<Slot<T>> root() {
 		return source.source();
 	}
 
-	private LazyIbTree<T> add(T t, boolean isReplace) {
-		return new LazyIbTree<>(comparator, createRoot(add(root(), t, isReplace)));
+	private LazyIbTree<T> update(T t, Fun<T, T> fun) {
+		return new LazyIbTree<>(comparator, createRoot(update(root(), t, fun)));
 	}
 
-	private List<Slot<T>> add(List<Slot<T>> node0, T t, boolean isReplace) {
+	private List<Slot<T>> update(List<Slot<T>> node0, T t, Fun<T, T> fun) {
 
 		// Finds appropriate slot
 		FindSlot fs = new FindSlot(node0, t);
-
-		// Adds the node into it
+		int size = node0.size();
+		int s0 = fs.i, s1 = fs.i + 1;
 		List<Slot<T>> replaceSlots;
 
-		if (fs.slot.source != null)
-			replaceSlots = add(fs.slot.readSlots(), t, isReplace);
-		else if (fs.c != 0)
-			replaceSlots = Arrays.asList(fs.slot, new Slot<>(null, t));
-		else if (isReplace)
-			replaceSlots = Arrays.asList(new Slot<>(null, t));
-		else
-			throw new RuntimeException("Duplicate node " + t);
+		// Adds the node into it
+		if (fs.slot.source != null) {
+			List<Slot<T>> slots1 = update(fs.slot.readSlots(), t, fun);
+			List<Slot<T>> inner;
 
-		List<Slot<T>> slots1 = Util.add(Util.left(node0, fs.i), replaceSlots, Util.right(node0, fs.i + 1));
+			// Merges with a neighbor if reached minimum number of nodes
+			if (slots1.size() == 1 && (inner = slots1.get(0).readSlots()).size() < minBranchFactor)
+				if (s0 > 0)
+					replaceSlots = merge(node0.get(--s0).readSlots(), inner);
+				else if (s1 < size)
+					replaceSlots = merge(inner, node0.get(s1++).readSlots());
+				else
+					replaceSlots = slots1;
+			else
+				replaceSlots = slots1;
+		} else {
+			T t0 = fs.c == 0 ? fs.slot.pivot : null;
+			T t1 = fun.apply(t0);
+
+			replaceSlots = new ArrayList<>();
+			if (fs.c != 0)
+				replaceSlots.add(fs.slot);
+			if (t1 != null)
+				replaceSlots.add(new Slot<>(null, t1));
+		}
+
+		List<Slot<T>> slots1 = Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 		List<Slot<T>> node1;
 
 		// Checks if need to split
@@ -148,37 +171,6 @@ public class LazyIbTree<T> implements ITree<T> {
 		}
 
 		return node1;
-	}
-
-	private List<Slot<T>> remove(List<Slot<T>> node0, T t) {
-
-		// Finds appropriate slot
-		int size = node0.size();
-		FindSlot fs = new FindSlot(node0, t);
-
-		// Removes the node from it
-		int s0 = fs.i, s1 = fs.i + 1;
-		List<Slot<T>> replaceSlots;
-
-		if (fs.slot.source != null) {
-			List<Slot<T>> slots1 = remove(fs.slot.readSlots(), t);
-
-			// Merges with a neighbor if reached minimum number of nodes
-			if (slots1.size() < minBranchFactor)
-				if (s0 > 0)
-					replaceSlots = merge(node0.get(--s0).readSlots(), slots1);
-				else if (s1 < size)
-					replaceSlots = merge(slots1, node0.get(s1++).readSlots());
-				else
-					replaceSlots = Arrays.asList(slot(slots1));
-			else
-				replaceSlots = Arrays.asList(slot(slots1));
-		} else if (fs.c == 0)
-			replaceSlots = Collections.emptyList();
-		else
-			throw new RuntimeException("Slot not found " + t);
-
-		return Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 	}
 
 	private List<Slot<T>> merge(List<Slot<T>> node0, List<Slot<T>> node1) {
