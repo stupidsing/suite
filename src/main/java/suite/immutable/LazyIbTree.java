@@ -176,7 +176,7 @@ public class LazyIbTree<T> implements ITree<T> {
 		} else if (fs.c == 0)
 			replaceSlots = Collections.emptyList();
 		else
-			throw new RuntimeException("List<Slot<T>> not found " + t);
+			throw new RuntimeException("Slot not found " + t);
 
 		return Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
 	}
