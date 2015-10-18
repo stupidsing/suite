@@ -272,23 +272,23 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			update(key, slot -> slot1);
 		}
 
-		private void update(Key key, Fun<Slot, Slot> replacer) {
+		private void update(Key key, Fun<Slot, Slot> fun) {
 			allocator.discard(root);
-			root = createRootPage(update(read(root).slots, key, replacer));
+			root = createRootPage(update(read(root).slots, key, fun));
 		}
 
-		private List<Slot> update(List<Slot> slots0, Key key, Fun<Slot, Slot> replacer) {
+		private List<Slot> update(List<Slot> slots0, Key key, Fun<Slot, Slot> fun) {
 			FindSlot fs = new FindSlot(slots0, key);
 
 			// Adds the node into it
 			List<Slot> replaceSlots;
 
 			if (fs.slot.type == SlotType.BRANCH)
-				replaceSlots = update(discard(fs.slot).slots(), key, replacer);
+				replaceSlots = update(discard(fs.slot).slots(), key, fun);
 			else if (fs.c != 0)
-				replaceSlots = Arrays.asList(fs.slot, replacer.apply(null));
+				replaceSlots = Arrays.asList(fs.slot, fun.apply(null));
 			else
-				replaceSlots = Arrays.asList(replacer.apply(discard(fs.slot)));
+				replaceSlots = Arrays.asList(fun.apply(discard(fs.slot)));
 
 			List<Slot> slots1 = Util.add(Util.left(slots0, fs.i), replaceSlots, Util.right(slots0, fs.i + 1));
 
