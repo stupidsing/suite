@@ -9,7 +9,7 @@ import suite.concurrent.Stm.TransactionStatus;
 import suite.util.FunUtil.Fun;
 
 /**
- * Implements software transactional memory by locking.
+ * Implements software transactional memory by compare-and-swap operations.
  *
  * @author ywsing
  */
