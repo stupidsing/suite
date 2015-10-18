@@ -16,7 +16,7 @@ import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm.Transaction;
 import suite.concurrent.Stm.TransactionStatus;
 
-public class StmTest {
+public class ObstructionFreeStmTest {
 
 	private Random random = new Random();
 
