@@ -12,7 +12,7 @@ import suite.util.FunUtil.Fun;
 /**
  * Manage B-tree pages on disk.
  */
-public class AllocatorImpl implements PageAllocator, ExtentAllocator {
+public class ExtentAllocatorImpl implements PageAllocator, ExtentAllocator {
 
 	private int size = 4096;
 	private int pageSize = PageFile.defaultPageSize;
@@ -20,7 +20,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	private SerializedPageFile<Bytes> allocMapFile;
 	private int lastAllocatedPageNo;
 
-	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
+	public ExtentAllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
 		allocMapFile = pageFile;
 	}
 

@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 
 import suite.file.PageFile;
-import suite.file.impl.AllocatorImpl;
+import suite.file.impl.ExtentAllocatorImpl;
 import suite.file.impl.JournalledPageFileImpl;
 import suite.file.impl.PageFileImpl;
 import suite.file.impl.SerializedPageFile;
@@ -156,7 +156,7 @@ public class B_TreeBuilder<Key, Value> {
 		SerializedPageFile<Bytes> pyf = new SerializedPageFile<>(pf0, pys);
 		SerializedPageFile<B_TreeImpl<Key, Value>.Page> pf = new SerializedPageFile<>(pf0, ps);
 
-		b_tree.setAllocator(new AllocatorImpl(alf));
+		b_tree.setAllocator(new ExtentAllocatorImpl(alf));
 		b_tree.setSuperblockPageFile(sbf);
 		b_tree.setPayloadFile(pyf);
 		b_tree.setPageFile(pf);
