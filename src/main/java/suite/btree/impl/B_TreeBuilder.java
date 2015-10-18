@@ -142,8 +142,8 @@ public class B_TreeBuilder<Key, Value> {
 				, new PageFileImpl(f, pageSize));
 	}
 
-	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator //
-			, PageFile alf0, PageFile sbf0, PageFile pf0) throws IOException {
+	private B_TreeImpl<Key, Value> build(boolean isNew, Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0)
+			throws IOException {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Util.nullsFirst(comparator));
 
 		Serializer<Bytes> als = SerializeUtil.bytes(pageSize);
