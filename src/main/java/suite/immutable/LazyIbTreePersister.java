@@ -48,7 +48,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 			public PersistSlot<T> read(DataInput dataInput) throws IOException {
 				List<Integer> pageNos = pageNosSerializer.read(dataInput);
 				T pivot = ts.read(dataInput);
-				return new PersistSlot<T>(pageNos, pivot);
+				return new PersistSlot<>(pageNos, pivot);
 			}
 
 			public void write(DataOutput dataOutput, PersistSlot<T> value) throws IOException {
@@ -66,7 +66,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 	}
 
 	public LazyIbTree<T> load(List<Integer> pageNos) {
-		return new LazyIbTree<T>(comparator, () -> load_(pageNos));
+		return new LazyIbTree<>(comparator, () -> load_(pageNos));
 	}
 
 	public List<Integer> save(LazyIbTree<T> tree) {
@@ -113,7 +113,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 				Slot<T> slot = slotByPageNo.inverse().get(pageNo);
 				if (slot == null) {
 					PersistSlot<T> ps = pageFile.load(pageNo);
-					slotByPageNo.put(slot = new Slot<T>(() -> load_(ps.pageNos), ps.pivot), pageNo);
+					slotByPageNo.put(slot = new Slot<>(() -> load_(ps.pageNos), ps.pivot), pageNo);
 				}
 				return slot;
 			} else
@@ -128,7 +128,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 				if (pageNo == null) {
 					List<Integer> pageNos = save_(slot.readSlots());
 					slotByPageNo.put(slot, pageNo = nPages.incrementAndGet());
-					pageFile.save(pageNo, new PersistSlot<T>(pageNos, slot.pivot));
+					pageFile.save(pageNo, new PersistSlot<>(pageNos, slot.pivot));
 				}
 				return pageNo;
 			} else
