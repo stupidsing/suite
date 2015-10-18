@@ -209,10 +209,7 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Outlet<Pair<K, List<V>>> groupBy(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = new HashMap<>();
-		T t;
-		while ((t = next()) != null)
-			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
+		Map<K, List<V>> map = toListMap(keyFun, valueFun);
 		return from(map.entrySet()).map(e -> Pair.of(e.getKey(), e.getValue()));
 	}
 
@@ -258,7 +255,11 @@ public class Outlet<T> implements Iterable<T> {
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return groupBy(keyFun, valueFun).collect(As::map);
+		Map<K, List<V>> map = new HashMap<>();
+		T t;
+		while ((t = next()) != null)
+			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
