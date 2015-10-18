@@ -53,7 +53,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this.source = () -> Arrays.asList(new Slot<T>(null, null));
+		this.source = () -> Arrays.asList(new Slot<>(null, null));
 		this.comparator = comparator;
 	}
 
@@ -129,9 +129,9 @@ public class LazyIbTree<T> implements ITree<T> {
 		if (fs.slot.source != null)
 			replaceSlots = add(fs.slot.readSlots(), t, isReplace);
 		else if (fs.c != 0)
-			replaceSlots = Arrays.asList(fs.slot, new Slot<T>(null, t));
+			replaceSlots = Arrays.asList(fs.slot, new Slot<>(null, t));
 		else if (isReplace)
-			replaceSlots = Arrays.asList(new Slot<T>(null, t));
+			replaceSlots = Arrays.asList(new Slot<>(null, t));
 		else
 			throw new RuntimeException("Duplicate node " + t);
 
@@ -211,7 +211,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	private Slot<T> slot(List<Slot<T>> slots) {
-		return new Slot<T>(() -> slots, Util.first(slots).pivot);
+		return new Slot<>(() -> slots, Util.first(slots).pivot);
 	}
 
 	private int compare(T t0, T t1) {
