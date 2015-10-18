@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.concurrent.Mutex.DeadlockException;
+import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
 import suite.streamlet.Read;
 import suite.util.Util;

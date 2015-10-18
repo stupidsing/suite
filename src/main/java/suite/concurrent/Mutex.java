@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import suite.concurrent.Concurrent.DeadlockException;
 import suite.util.Util;
 
 /**
@@ -19,14 +20,6 @@ public class Mutex {
 
 	private AtomicReference<Thread> owner = new AtomicReference<>();
 	private int depth;
-
-	public static class DeadlockException extends RuntimeException {
-		private static final long serialVersionUID = 1l;
-
-		public DeadlockException(String message) {
-			super(message);
-		}
-	}
 
 	public static class MutexLock implements Closeable {
 		private Mutex mutex;
@@ -54,7 +47,7 @@ public class Mutex {
 						Thread ownerThread = mutex.owner.get();
 						mutex = ownerThread != null ? waitees.get(ownerThread) : null;
 						if (mutex == this)
-							throw new DeadlockException("Lock resulted in deadlock");
+							throw new DeadlockException();
 					}
 
 					Util.wait(bigLock);

@@ -2,6 +2,8 @@ package suite.concurrent;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
+import suite.concurrent.Concurrent.AbortException;
+import suite.concurrent.Concurrent.LostSnapshotException;
 import suite.concurrent.Stm.Transaction;
 import suite.concurrent.Stm.TransactionStatus;
 import suite.util.FunUtil.Fun;
@@ -88,7 +90,7 @@ public class ObstructionFreeStm {
 				snapshot = snapshot.previous;
 
 			if (snapshot == null)
-				throw new RuntimeException("Snapshot lost");
+				throw new LostSnapshotException();
 
 			if (!memory.asr.compareAndSet(snapshot, snapshot, lastReadTime[0], Math.max(lastReadTime[0], transaction.time)))
 				continue;
@@ -104,7 +106,7 @@ public class ObstructionFreeStm {
 
 			// Serializable
 			if (transaction.time < lastReadTime[0])
-				throw new RuntimeException("Abort");
+				throw new AbortException();
 
 			while (snapshot.owner.status == TransactionStatus.ROLLBACK)
 				snapshot = snapshot.previous;
