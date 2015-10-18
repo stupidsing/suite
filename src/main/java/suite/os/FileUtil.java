@@ -80,6 +80,18 @@ public class FileUtil {
 		return names;
 	}
 
+	/**
+	 * Files.createDirectory() might fail with FileAlreadyExistsException in
+	 * MacOSX, contrary to its documentation. This re-implementation would not.
+	 */
+	public static void mkdir(Path path) {
+		if (path != null) {
+			mkdir(path.getParent());
+			if (!Files.exists(path))
+				mkdir(path);
+		}
+	}
+
 	public static void moveFile(File from, File to) throws IOException {
 
 		// Serious problem that renameTo do not work across partitions in Linux!

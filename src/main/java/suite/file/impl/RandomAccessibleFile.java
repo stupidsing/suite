@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
 
 public class RandomAccessibleFile implements Closeable {
@@ -16,7 +16,7 @@ public class RandomAccessibleFile implements Closeable {
 	private FileChannel channel;
 
 	public RandomAccessibleFile(String filename) throws IOException {
-		Files.createDirectories(Paths.get(filename).getParent());
+		FileUtil.mkdir(Paths.get(filename).getParent());
 		file = new RandomAccessFile(filename, "rw");
 		channel = file.getChannel();
 	}
