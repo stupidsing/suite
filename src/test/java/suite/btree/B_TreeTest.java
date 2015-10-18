@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
-import suite.file.JournalledPageFileImpl;
+import suite.file.impl.JournalledPageFileImpl;
 import suite.os.FileUtil;
 import suite.util.SerializeUtil;
 import suite.util.To;

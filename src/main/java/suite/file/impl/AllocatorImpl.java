@@ -1,10 +1,10 @@
-package suite.btree.impl;
+package suite.file.impl;
 
 import java.io.IOException;
 
-import suite.btree.Allocator;
+import suite.file.ExtentAllocator;
+import suite.file.PageAllocator;
 import suite.file.PageFile;
-import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Fun;
@@ -12,7 +12,7 @@ import suite.util.FunUtil.Fun;
 /**
  * Manage B-tree pages on disk.
  */
-public class AllocatorImpl implements Allocator {
+public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 	private int size = 4096;
 	private int pageSize = PageFile.defaultPageSize;
@@ -36,16 +36,26 @@ public class AllocatorImpl implements Allocator {
 
 	@Override
 	public synchronized int allocate() {
-		return allocate(1);
+		return allocate_(1);
 	}
 
 	@Override
 	public synchronized void deallocate(int pageNo) {
 		int count = 1;
-		deallocate(pageNo, count);
+		deallocate_(pageNo, count);
 	}
 
-	private int allocate(int count) {
+	@Override
+	public ExtentPointer allocate(int count) {
+		return new ExtentPointer(allocate_(count), count);
+	}
+
+	@Override
+	public void deallocate(ExtentPointer pointer) {
+		deallocate_(pointer.pageNo, pointer.count);
+	}
+
+	private int allocate_(int count) {
 		int pageNo = findFreeExtentPages(count);
 
 		// TODO extends allocation map if all pages are used
@@ -54,7 +64,7 @@ public class AllocatorImpl implements Allocator {
 		return lastAllocatedPageNo = pageNo + count;
 	}
 
-	private void deallocate(int pageNo, int count) {
+	private void deallocate_(int pageNo, int count) {
 		updateAllocMap(pageNo, pageNo + count, (byte) 0);
 	}
 

@@ -5,7 +5,7 @@ import java.io.IOException;
 import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.btree.impl.B_TreeMutator;
-import suite.file.JournalledPageFileImpl;
+import suite.file.impl.JournalledPageFileImpl;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.primitive.Bytes;

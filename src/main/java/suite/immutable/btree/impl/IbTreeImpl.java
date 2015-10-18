@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 
 import suite.file.PageFile;
-import suite.file.PageFileImpl;
-import suite.file.SerializedPageFile;
+import suite.file.impl.PageFileImpl;
+import suite.file.impl.SerializedPageFile;
 import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.IbTree;
 import suite.primitive.Bytes;

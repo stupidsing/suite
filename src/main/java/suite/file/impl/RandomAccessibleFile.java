@@ -1,4 +1,4 @@
-package suite.file;
+package suite.file.impl;
 
 import java.io.Closeable;
 import java.io.IOException;

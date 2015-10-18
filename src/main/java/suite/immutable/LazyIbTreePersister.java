@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
 import suite.file.PageFile;
-import suite.file.SerializedPageFile;
+import suite.file.impl.SerializedPageFile;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;

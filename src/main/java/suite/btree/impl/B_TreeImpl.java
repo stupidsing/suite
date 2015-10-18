@@ -10,9 +10,9 @@ import java.util.Objects;
 import java.util.Stack;
 
 import suite.adt.Pair;
-import suite.btree.Allocator;
 import suite.btree.B_Tree;
-import suite.file.SerializedPageFile;
+import suite.file.PageAllocator;
+import suite.file.impl.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -25,7 +25,7 @@ import suite.streamlet.Streamlet;
 public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private int branchFactor;
-	private Allocator allocator;
+	private PageAllocator allocator;
 	private SerializedPageFile<Superblock> superblockFile;
 	private SerializedPageFile<Bytes> payloadFile;
 	private SerializedPageFile<Page> pageFile;
@@ -443,7 +443,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		this.branchFactor = branchFactor;
 	}
 
-	public void setAllocator(Allocator allocator) {
+	public void setAllocator(PageAllocator allocator) {
 		this.allocator = allocator;
 	}
 

@@ -1,4 +1,4 @@
-package suite.file;
+package suite.file.impl;
 
 import java.io.Closeable;
 import java.io.DataInput;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.file.PageFile;
 import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;

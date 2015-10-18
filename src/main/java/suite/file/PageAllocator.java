@@ -1,8 +1,8 @@
-package suite.btree;
+package suite.file;
 
 import java.io.Closeable;
 
-public interface Allocator extends Closeable {
+public interface PageAllocator extends Closeable {
 
 	public void create();
 

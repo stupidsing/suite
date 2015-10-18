@@ -1,8 +1,9 @@
-package suite.file;
+package suite.file.impl;
 
 import java.io.Closeable;
 import java.io.IOException;
 
+import suite.file.PageFile;
 import suite.primitive.Bytes;
 
 public class PageFileImpl implements Closeable, PageFile {

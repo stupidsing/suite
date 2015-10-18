@@ -7,11 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Comparator;
 
-import suite.file.JournalledPageFileImpl;
 import suite.file.PageFile;
-import suite.file.PageFileImpl;
-import suite.file.SerializedPageFile;
-import suite.file.SubPageFileImpl;
+import suite.file.impl.AllocatorImpl;
+import suite.file.impl.JournalledPageFileImpl;
+import suite.file.impl.PageFileImpl;
+import suite.file.impl.SerializedPageFile;
+import suite.file.impl.SubPageFileImpl;
 import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
