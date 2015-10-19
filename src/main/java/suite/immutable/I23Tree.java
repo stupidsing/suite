@@ -128,7 +128,7 @@ public class I23Tree<T> implements ITree<T> {
 			List<Slot> slots1 = update(fs.slot.slots, t, fun);
 			List<Slot> inner;
 
-			// Merges with a neighbor if reached minimum number of nodes
+			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).slots).size() < minBranchFactor)
 				if (s0 > 0)
 					replaceSlots = merge(node0.get(--s0).slots, inner);
@@ -190,7 +190,7 @@ public class I23Tree<T> implements ITree<T> {
 
 	private List<Slot> createRoot(List<Slot> node) {
 		List<Slot> node1;
-		return node.size() == 1 && (node1 = node.get(0).slots) != null ? node1 : node;
+		return node.size() == 1 && (node1 = node.get(0).slots) != null ? createRoot(node1) : node;
 	}
 
 	private Slot slot(List<Slot> slots) {
