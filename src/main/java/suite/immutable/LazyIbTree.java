@@ -137,7 +137,7 @@ public class LazyIbTree<T> implements ITree<T> {
 			List<Slot<T>> slots1 = update(fs.slot.readSlots(), t, fun);
 			List<Slot<T>> inner;
 
-			// Merges with a neighbor if reached minimum number of nodes
+			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).readSlots()).size() < minBranchFactor)
 				if (s0 > 0)
 					replaceSlots = merge(node0.get(--s0).readSlots(), inner);
