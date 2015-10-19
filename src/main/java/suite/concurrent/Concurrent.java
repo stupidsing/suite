@@ -6,11 +6,11 @@ public class Concurrent {
 		private static final long serialVersionUID = 1l;
 	}
 
-	public static class LostSnapshotException extends TransactionException {
+	public static class DeadlockException extends TransactionException {
 		private static final long serialVersionUID = 1l;
 	}
 
-	public static class DeadlockException extends TransactionException {
+	public static class LostSnapshotException extends TransactionException {
 		private static final long serialVersionUID = 1l;
 	}
 
