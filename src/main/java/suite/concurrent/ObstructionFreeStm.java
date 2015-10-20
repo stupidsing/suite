@@ -111,7 +111,7 @@ public class ObstructionFreeStm {
 			while (snapshot.owner.status == TransactionStatus.ROLLBACK)
 				snapshot = snapshot.previous;
 
-			if (snapshot.owner.status == TransactionStatus.ACTIVE__) {
+			if (snapshot.owner != transaction && snapshot.owner.status == TransactionStatus.ACTIVE__) {
 				snapshot.owner.mutex.lock();
 				snapshot.owner.mutex.unlock();
 				continue;
