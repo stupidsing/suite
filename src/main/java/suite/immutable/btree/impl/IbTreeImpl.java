@@ -279,10 +279,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private List<Slot> update(List<Slot> slots0, Key key, Fun<Slot, Slot> fun) {
 			FindSlot fs = new FindSlot(slots0, key);
-
-			// Adds the node into it
+			int s0 = fs.i;
+			int s1 = fs.i + 1;
 			List<Slot> replaceSlots;
 
+			// Adds the node into it
 			if (fs.slot.type == SlotType.BRANCH)
 				replaceSlots = update(discard(fs.slot).slots(), key, fun);
 			else if (fs.c != 0)
@@ -290,8 +291,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				replaceSlots = Arrays.asList(fun.apply(discard(fs.slot)));
 
-			List<Slot> slots1 = Util.add(Util.left(slots0, fs.i), replaceSlots, Util.right(slots0, fs.i + 1));
-
+			List<Slot> slots1 = Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 			List<Slot> slots2;
 
 			// Checks if need to split
@@ -309,11 +309,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		private List<Slot> delete(List<Slot> slots0, Key key) {
 			FindSlot fs = new FindSlot(slots0, key);
 			int size = slots0.size();
-
-			// Removes the node from it
 			int s0 = fs.i, s1 = fs.i + 1;
 			List<Slot> replaceSlots;
 
+			// Removes the node from it
 			if (fs.slot.type == SlotType.BRANCH) {
 				List<Slot> slots1 = delete(discard(fs.slot).slots(), key);
 
