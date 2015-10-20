@@ -94,7 +94,8 @@ public class ObstructionFreeStm {
 			if (snapshot == null)
 				throw new LostSnapshotException();
 
-			if (!memory.asr.compareAndSet(snapshot, snapshot, lastReadTime[0], Math.max(lastReadTime[0], transaction.time)))
+			if (lastReadTime[0] < transaction.time
+					&& !memory.asr.compareAndSet(snapshot, snapshot, lastReadTime[0], transaction.time))
 				continue;
 
 			return snapshot.value;
@@ -120,6 +121,7 @@ public class ObstructionFreeStm {
 			}
 
 			Snapshot<V> snapshot1 = new Snapshot<>(transaction, value, snapshot);
+
 			if (!memory.asr.compareAndSet(snapshot, snapshot1, lastReadTime[0], transaction.time))
 				continue;
 
