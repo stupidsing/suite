@@ -1,5 +1,6 @@
 package suite.ebnf;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -73,13 +74,14 @@ public class EbnfTest {
 
 	@Test
 	public void testRefactor() throws IOException {
-		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
+		String sql0 = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		FactorizeResult fr = rewrite(ebnf, "intersect-select" //
 				, "SELECT .0 FROM DUAL" //
 				, "SELECT .0 FROM DUAL WHERE COL2 = 1" //
-				, ebnf.parseFNode(sql, "sql"));
-		System.out.println(fr.unparse());
+				, ebnf.parseFNode(sql0, "sql"));
+		String sql1 = fr.unparse();
+		assertEquals(sql1, "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL WHERE COL2 = 1) ORDER BY COL DESC");
 	}
 
 	@Test
