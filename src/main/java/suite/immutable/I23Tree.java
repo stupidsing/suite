@@ -58,6 +58,31 @@ public class I23Tree<T> implements ITree<T> {
 		this.comparator = comparator;
 	}
 
+	public void validate() {
+		Read.from(root).sink(this::validate);
+	}
+
+	private void validate(Slot slot) {
+		List<Slot> slots = slot.slots;
+
+		if (slots != null) {
+			int size = slots.size();
+			T p = null;
+
+			if (size < minBranchFactor)
+				throw new RuntimeException("Too few branches");
+			else if (size >= maxBranchFactor)
+				throw new RuntimeException("Too many branches");
+
+			for (Slot slot_ : slots) {
+				validate(slot_);
+				if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
+					throw new RuntimeException("Wrong key order");
+				p = slot_.pivot;
+			}
+		}
+	}
+
 	@Override
 	public Streamlet<T> stream() {
 		return stream(root, null, null);

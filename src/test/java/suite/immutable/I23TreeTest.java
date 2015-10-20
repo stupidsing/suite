@@ -24,12 +24,14 @@ public class I23TreeTest {
 		for (int i = 0; i < max; i++)
 			tree23 = tree23.add(i);
 
+		tree23.validate();
 		System.out.println(tree23.toString());
 		assertEquals(max, tree23.stream().size());
 
 		for (int i = 0; i < max; i++)
 			tree23 = tree23.remove(i);
 
+		tree23.validate();
 		System.out.println(tree23.toString());
 		assertEquals(0, tree23.stream().size());
 	}
@@ -42,12 +44,14 @@ public class I23TreeTest {
 			tree23 = tree23.add(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.add(i);
+		tree23.validate();
 		assertEquals(max, tree23.stream().size());
 
 		for (int i = 0; i < max; i += 2)
 			tree23 = tree23.remove(i);
 		for (int i = 1; i < max; i += 2)
 			tree23 = tree23.remove(i);
+		tree23.validate();
 		assertEquals(0, tree23.stream().size());
 	}
 
@@ -63,6 +67,7 @@ public class I23TreeTest {
 		for (int i : list)
 			tree23 = tree23.add(i);
 
+		tree23.validate();
 		System.out.println(tree23.toString());
 		assertEquals(max, tree23.stream().size());
 
@@ -70,6 +75,7 @@ public class I23TreeTest {
 		for (int i : list)
 			tree23 = tree23.remove(i);
 
+		tree23.validate();
 		System.out.println(tree23.toString());
 		assertEquals(0, tree23.stream().size());
 	}
