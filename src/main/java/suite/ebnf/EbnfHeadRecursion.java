@@ -52,7 +52,7 @@ public class EbnfHeadRecursion {
 				EbnfGrammar enc = new EbnfGrammar(EbnfGrammarType.OR____, hrf.listc);
 				en3 = new EbnfGrammar(EbnfGrammarType.REPT0H, entity, Arrays.asList(enb, enc));
 			} else
-				en3 = new EbnfGrammar(EbnfGrammarType.NAMED_, entity, Arrays.asList(en2));
+				en3 = en1;
 
 			return en3;
 		} else
