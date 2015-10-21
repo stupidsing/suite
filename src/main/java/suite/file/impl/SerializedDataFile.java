@@ -48,17 +48,17 @@ public class SerializedDataFile<T, V> implements Closeable {
 		dataFile.sync();
 	}
 
-	public V load(T token) {
+	public V load(T pointer) {
 		try {
-			return serializer.read(new DataInputStream(dataFile.load(token).asInputStream()));
+			return serializer.read(new DataInputStream(dataFile.load(pointer).asInputStream()));
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}
 	}
 
-	public void save(T token, V page) {
+	public void save(T pointer, V page) {
 		try {
-			dataFile.save(token, Bytes.of(dataOutput -> serializer.write(dataOutput, page)));
+			dataFile.save(pointer, Bytes.of(dataOutput -> serializer.write(dataOutput, page)));
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}
