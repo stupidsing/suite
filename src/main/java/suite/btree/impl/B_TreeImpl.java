@@ -37,16 +37,16 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	public class Page extends ArrayList<KeyPointer> {
 		private static final long serialVersionUID = 1l;
-		public int pageNo;
+		public int pointer;
 
-		public Page(int pageNo) {
+		public Page(int pointer) {
 			super();
-			this.pageNo = pageNo;
+			this.pointer = pointer;
 		}
 
-		public Page(int pageNo, List<KeyPointer> keyPointers) {
+		public Page(int pointer, List<KeyPointer> keyPointers) {
 			super(keyPointers);
-			this.pageNo = pageNo;
+			this.pointer = pointer;
 		}
 	}
 
@@ -59,10 +59,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			this.pointer = pointer;
 		}
 
-		public int getBranchPageNo() {
+		public int getBranchPointer() {
 			@SuppressWarnings("unchecked")
 			Branch branch = (Branch) pointer;
-			return branch.pageNo;
+			return branch.pointer;
 		}
 
 		public Value getLeafValue() {
@@ -71,18 +71,18 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			return leaf.value;
 		}
 
-		public int getPayloadPageNo() {
+		public int getPayloadPointer() {
 			@SuppressWarnings("unchecked")
 			Payload payload = (Payload) pointer;
-			return payload.pageNo;
+			return payload.pointer;
 		}
 	}
 
 	public class Branch implements Pointer {
-		private int pageNo;
+		private int pointer;
 
-		public Branch(int pageNo) {
-			this.pageNo = pageNo;
+		public Branch(int pointer) {
+			this.pointer = pointer;
 		}
 	}
 
@@ -95,10 +95,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	public class Payload implements Pointer {
-		private int pageNo;
+		private int pointer;
 
-		public Payload(int pageNo) {
-			this.pageNo = pageNo;
+		public Payload(int pointer) {
+			this.pointer = pointer;
 		}
 	}
 
@@ -133,18 +133,18 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		private KeyPointer kp;
 
 		private Traverse(Key key) {
-			Integer pageNo = getRoot();
+			Integer pointer = getRoot();
 
-			while (pageNo != null) {
-				page = pageFile.load(pageNo);
+			while (pointer != null) {
+				page = pageFile.load(pointer);
 				index = findPosition(page, key, true);
 				kp = getKeyPointer(page, index);
 				traverse.push(new Slot(page, index));
 
 				if (kp != null && kp.pointer instanceof B_TreeImpl.Branch)
-					pageNo = kp.getBranchPageNo();
+					pointer = kp.getBranchPointer();
 				else
-					pageNo = null;
+					pointer = null;
 			}
 		}
 	}
@@ -179,7 +179,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	@Override
 	public Bytes getPayload(Key key) {
 		KeyPointer kp = loadKeyPointer(key);
-		return kp != null ? payloadFile.load(kp.getPayloadPageNo()) : null;
+		return kp != null ? payloadFile.load(kp.getPayloadPointer()) : null;
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		if (i0 < i1)
 			return Read.from(page.subList(Math.max(0, i0), i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
-					return stream(kp.getBranchPageNo(), start, end);
+					return stream(kp.getBranchPointer(), start, end);
 				else
 					return kp.key != null ? Read.from(kp) : Read.empty();
 			});
@@ -225,9 +225,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public void putPayload(Key key, Bytes bytes) {
-		int pageNo = allocator.allocate();
-		payloadFile.save(pageNo, bytes);
-		put(key, new Payload(pageNo));
+		int pointer = allocator.allocate();
+		payloadFile.save(pointer, bytes);
+		put(key, new Payload(pointer));
 	}
 
 	@Override
@@ -261,9 +261,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 			if (!done) { // Splits list into two pages
 				int half = branchFactor / 2;
-				int pageNo0 = page.pageNo, pageNo1 = allocator.allocate();
-				Page p0 = new Page(pageNo0, page.subList(0, half));
-				Page p1 = new Page(pageNo1, page.subList(half, size));
+				int pointer0 = page.pointer, pointer1 = allocator.allocate();
+				Page p0 = new Page(pointer0, page.subList(0, half));
+				Page p1 = new Page(pointer1, page.subList(half, size));
 				savePage(p0);
 				savePage(p1);
 
@@ -301,7 +301,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			return;
 
 		// Rotates the tree to maintain balance
-		while (page.pageNo != root) {
+		while (page.pointer != root) {
 			int half = branchFactor / 2;
 			if (page.size() >= half)
 				break;
@@ -341,7 +341,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				page.clear();
 				page.addAll(mp);
 				savePage(page);
-				allocator.deallocate(mp.pageNo);
+				allocator.deallocate(mp.pointer);
 			} else
 				throw new RuntimeException("Unbalanced B-tree");
 		}
@@ -358,12 +358,12 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	private void merge(Page parent, Page p0, Page p1, int index) {
 		p0.addAll(p1);
 		savePage(p0);
-		allocator.deallocate(p1.pageNo);
+		allocator.deallocate(p1.pointer);
 		parent.remove(index + 1);
 	}
 
-	private void dump(PrintStream w, String pfx, int pageNo) {
-		Page page = loadPage(pageNo);
+	private void dump(PrintStream w, String pfx, int pointer) {
+		Page page = loadPage(pointer);
 
 		for (KeyPointer kp : page) {
 			Pointer ptr = kp.pointer;
@@ -373,7 +373,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				w.println();
 				@SuppressWarnings("unchecked")
 				Branch branch = (Branch) ptr;
-				dump(w, pfx + "\t", branch.pageNo);
+				dump(w, pfx + "\t", branch.pointer);
 			} else if (ptr instanceof B_TreeImpl.Leaf)
 				w.println(" = " + kp.getLeafValue());
 			else if (ptr instanceof B_TreeImpl.Payload)
@@ -385,25 +385,25 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private void discard(KeyPointer kp) {
 		if (kp.pointer instanceof B_TreeImpl<?, ?>.Payload)
-			allocator.deallocate(kp.getPayloadPageNo());
+			allocator.deallocate(kp.getPayloadPointer());
 	}
 
 	private Page loadBranch(Page page, int index) {
 		KeyPointer kp = getKeyPointer(page, index);
-		return kp != null && kp.pointer instanceof B_TreeImpl.Branch ? loadPage(kp.getBranchPageNo()) : null;
+		return kp != null && kp.pointer instanceof B_TreeImpl.Branch ? loadPage(kp.getBranchPointer()) : null;
 	}
 
-	private Page loadPage(int pageNo) {
-		return pageFile.load(pageNo);
+	private Page loadPage(int pointer) {
+		return pageFile.load(pointer);
 	}
 
 	private void savePage(Page page) {
-		pageFile.save(page.pageNo, page);
+		pageFile.save(page.pointer, page);
 	}
 
 	private KeyPointer pointerTo(Page page) {
 		Key smallest = page.get(0).key;
-		return new KeyPointer(smallest, new Branch(page.pageNo));
+		return new KeyPointer(smallest, new Branch(page.pointer));
 	}
 
 	private int findPosition(Page page, Key key, boolean isInclusive) {

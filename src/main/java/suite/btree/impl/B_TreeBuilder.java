@@ -56,10 +56,10 @@ public class B_TreeBuilder<Key, Value> {
 		}
 
 		public B_TreeImpl<Key, Value>.Page read(DataInput dataInput) throws IOException {
-			int pageNo = dataInput.readInt();
+			int pointer = dataInput.readInt();
 			int size = dataInput.readInt();
 
-			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pageNo);
+			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pointer);
 
 			for (int i = 0; i < size; i++) {
 				Key key = keySerializer.read(dataInput);
@@ -72,8 +72,8 @@ public class B_TreeBuilder<Key, Value> {
 					Value value = valueSerializer.read(dataInput);
 					page.add(b_tree.new KeyPointer(key, b_tree.new Leaf(value)));
 				} else if (nodeType == PAYLOAD) {
-					int pageNo1 = dataInput.readInt();
-					page.add(b_tree.new KeyPointer(key, b_tree.new Payload(pageNo1)));
+					int pointer1 = dataInput.readInt();
+					page.add(b_tree.new KeyPointer(key, b_tree.new Payload(pointer1)));
 				} else if (nodeType == TERMINAL)
 					page.add(b_tree.new KeyPointer(key, b_tree.new Terminal()));
 			}
@@ -82,7 +82,7 @@ public class B_TreeBuilder<Key, Value> {
 		}
 
 		public void write(DataOutput dataOutput, B_TreeImpl<Key, Value>.Page page) throws IOException {
-			dataOutput.writeInt(page.pageNo);
+			dataOutput.writeInt(page.pointer);
 			dataOutput.writeInt(page.size());
 
 			for (B_TreeImpl<Key, Value>.KeyPointer kp : page) {
@@ -90,13 +90,13 @@ public class B_TreeBuilder<Key, Value> {
 
 				if (kp.pointer instanceof B_TreeImpl.Branch) {
 					dataOutput.writeChar(BRANCH);
-					dataOutput.writeInt(kp.getBranchPageNo());
+					dataOutput.writeInt(kp.getBranchPointer());
 				} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
 					dataOutput.writeChar(LEAF);
 					valueSerializer.write(dataOutput, kp.getLeafValue());
 				} else if (kp.pointer instanceof B_TreeImpl.Payload) {
 					dataOutput.writeChar(PAYLOAD);
-					dataOutput.writeInt(kp.getPayloadPageNo());
+					dataOutput.writeInt(kp.getPayloadPointer());
 				} else if (kp.pointer instanceof B_TreeImpl.Terminal)
 					dataOutput.writeChar(TERMINAL);
 			}
