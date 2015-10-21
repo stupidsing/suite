@@ -30,22 +30,22 @@ public class JournalledPageFileImpl implements Closeable, PageFile {
 
 	private Serializer<JournalEntry> jes = new Serializer<JournalEntry>() {
 		public JournalEntry read(DataInput dataInput) throws IOException {
-			int pageNo = dataInput.readInt();
-			return new JournalEntry(pageNo, bytesSerializer.read(dataInput));
+			int pointer = dataInput.readInt();
+			return new JournalEntry(pointer, bytesSerializer.read(dataInput));
 		}
 
 		public void write(DataOutput dataOutput, JournalEntry journalEntry) throws IOException {
-			dataOutput.writeInt(journalEntry.pageNo);
+			dataOutput.writeInt(journalEntry.pointer);
 			bytesSerializer.write(dataOutput, journalEntry.bytes);
 		}
 	};
 
 	private class JournalEntry {
-		private int pageNo;
+		private int pointer;
 		private Bytes bytes;
 
-		private JournalEntry(int pageNo, Bytes bytes) {
-			this.pageNo = pageNo;
+		private JournalEntry(int pointer, Bytes bytes) {
+			this.pointer = pointer;
 			this.bytes = bytes;
 		}
 	}
@@ -82,7 +82,7 @@ public class JournalledPageFileImpl implements Closeable, PageFile {
 	public synchronized void commit() throws IOException {
 		while (nCommittedJournalEntries < journalEntries.size()) {
 			JournalEntry journalEntry = journalEntries.get(nCommittedJournalEntries++);
-			pageFile.save(journalEntry.pageNo, journalEntry.bytes);
+			pageFile.save(journalEntry.pointer, journalEntry.bytes);
 		}
 
 		if (nCommittedJournalEntries > 8)
@@ -129,21 +129,21 @@ public class JournalledPageFileImpl implements Closeable, PageFile {
 	}
 
 	@Override
-	public synchronized Bytes load(Integer pageNo) throws IOException {
-		int jp = findPageInJournal(pageNo);
+	public synchronized Bytes load(Integer pointer) throws IOException {
+		int jp = findPageInJournal(pointer);
 		if (jp < 0)
-			return pageFile.load(pageNo);
+			return pageFile.load(pointer);
 		else
 			return journalEntries.get(jp).bytes;
 	}
 
 	@Override
-	public synchronized void save(Integer pageNo, Bytes bytes) throws IOException {
-		int jp = findDirtyPageInJournal(pageNo);
+	public synchronized void save(Integer pointer, Bytes bytes) throws IOException {
+		int jp = findDirtyPageInJournal(pointer);
 
 		if (jp < 0) {
 			jp = journalEntries.size();
-			journalEntries.add(new JournalEntry(pageNo, null));
+			journalEntries.add(new JournalEntry(pointer, null));
 		}
 
 		JournalEntry journalEntry = journalEntries.get(jp);
@@ -151,18 +151,18 @@ public class JournalledPageFileImpl implements Closeable, PageFile {
 		journalPageFile.save(jp, journalEntry);
 	}
 
-	private int findPageInJournal(int pageNo) {
-		return findPageInJournal(pageNo, 0);
+	private int findPageInJournal(int pointer) {
+		return findPageInJournal(pointer, 0);
 	}
 
-	private int findDirtyPageInJournal(int pageNo) {
-		return findPageInJournal(pageNo, nCommittedJournalEntries);
+	private int findDirtyPageInJournal(int pointer) {
+		return findPageInJournal(pointer, nCommittedJournalEntries);
 	}
 
-	private int findPageInJournal(int pageNo, int start) {
+	private int findPageInJournal(int pointer, int start) {
 		int jp1 = -1;
 		for (int jp = start; jp < journalEntries.size(); jp++)
-			if (journalEntries.get(jp).pageNo == pageNo)
+			if (journalEntries.get(jp).pointer == pointer)
 				jp1 = jp;
 		return jp1;
 	}
