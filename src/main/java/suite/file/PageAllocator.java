@@ -8,6 +8,6 @@ public interface PageAllocator extends Closeable {
 
 	public int allocate();
 
-	public void deallocate(int pageNo);
+	public void deallocate(int pointer);
 
 }

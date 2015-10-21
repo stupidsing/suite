@@ -27,14 +27,14 @@ public class PageFileImpl implements Closeable, PageFile {
 	}
 
 	@Override
-	public Bytes load(Integer pageNo) throws IOException {
-		int start = pageNo * pageSize, end = start + pageSize;
+	public Bytes load(Integer pointer) throws IOException {
+		int start = pointer * pageSize, end = start + pageSize;
 		return file.load(start, end);
 	}
 
 	@Override
-	public void save(Integer pageNo, Bytes bytes) throws IOException {
-		file.save(pageNo * pageSize, bytes);
+	public void save(Integer pointer, Bytes bytes) throws IOException {
+		file.save(pointer * pageSize, bytes);
 	}
 
 }

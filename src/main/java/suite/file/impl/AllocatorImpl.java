@@ -18,7 +18,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	private int pageSize = PageFile.defaultPageSize;
 
 	private SerializedPageFile<Bytes> allocMapFile;
-	private int lastAllocatedPageNo;
+	private int lastAllocatedPointer;
 
 	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
 		allocMapFile = pageFile;
@@ -40,32 +40,32 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	}
 
 	@Override
-	public synchronized void deallocate(int pageNo) {
+	public synchronized void deallocate(int pointer) {
 		int count = 1;
-		deallocate_(pageNo, count);
+		deallocate_(pointer, count);
 	}
 
 	@Override
-	public ExtentPointer allocate(int count) {
-		return new ExtentPointer(allocate_(count), count);
+	public Extent allocate(int count) {
+		return new Extent(allocate_(count), count);
 	}
 
 	@Override
-	public void deallocate(ExtentPointer pointer) {
-		deallocate_(pointer.pageNo, pointer.count);
+	public void deallocate(Extent pointer) {
+		deallocate_(pointer.pointer, pointer.count);
 	}
 
 	private int allocate_(int count) {
-		int pageNo = findFreeExtentPages(count);
+		int pointer = findFreeExtentPages(count);
 
 		// TODO extends allocation map if all pages are used
 
-		updateAllocMap(pageNo, pageNo + count, (byte) 1);
-		return lastAllocatedPageNo = pageNo + count;
+		updateAllocMap(pointer, pointer + count, (byte) 1);
+		return lastAllocatedPointer = pointer + count;
 	}
 
-	private void deallocate_(int pageNo, int count) {
-		updateAllocMap(pageNo, pageNo + count, (byte) 0);
+	private void deallocate_(int pointer, int count) {
+		updateAllocMap(pointer, pointer + count, (byte) 0);
 	}
 
 	private int findFreeExtentPages(int count) {
@@ -73,18 +73,18 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 			private int start, end;
 			private Bytes bytes;
 
-			public Byte apply(Integer pageNo) {
-				if (bytes == null || pageNo < start || end <= pageNo) {
-					int p = pageNo / pageSize;
+			public Byte apply(Integer pointer) {
+				if (bytes == null || pointer < start || end <= pointer) {
+					int p = pointer / pageSize;
 					start = p * pageSize;
 					end = start + pageSize;
 					bytes = allocMapFile.load(p);
 				}
-				return bytes.get(pageNo - start);
+				return bytes.get(pointer - start);
 			}
 		};
 
-		int start = lastAllocatedPageNo + 1;
+		int start = lastAllocatedPointer + 1;
 		int pos = start;
 		while ((pos = checkNextEmptyExtent(read, pos)) < size) {
 			int pos0 = pos;

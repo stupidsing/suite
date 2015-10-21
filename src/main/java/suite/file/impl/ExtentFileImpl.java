@@ -4,10 +4,10 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import suite.file.DataFile;
-import suite.file.ExtentAllocator.ExtentPointer;
+import suite.file.ExtentAllocator.Extent;
 import suite.primitive.Bytes;
 
-public class ExtentFileImpl implements Closeable, DataFile<ExtentPointer> {
+public class ExtentFileImpl implements Closeable, DataFile<Extent> {
 
 	private RandomAccessibleFile file;
 	private int pageSize;
@@ -28,14 +28,14 @@ public class ExtentFileImpl implements Closeable, DataFile<ExtentPointer> {
 	}
 
 	@Override
-	public Bytes load(ExtentPointer extent) throws IOException {
-		int start = extent.pageNo * pageSize, end = start + extent.count * pageSize;
+	public Bytes load(Extent extent) throws IOException {
+		int start = extent.pointer * pageSize, end = start + extent.count * pageSize;
 		return file.load(start, end);
 	}
 
 	@Override
-	public void save(ExtentPointer extent, Bytes bytes) throws IOException {
-		file.save(extent.pageNo * pageSize, bytes);
+	public void save(Extent extent, Bytes bytes) throws IOException {
+		file.save(extent.pointer * pageSize, bytes);
 	}
 
 	public int getPageSize() {
