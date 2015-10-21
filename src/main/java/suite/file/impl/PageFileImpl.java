@@ -37,8 +37,4 @@ public class PageFileImpl implements Closeable, PageFile {
 		file.save(pageNo * pageSize, bytes);
 	}
 
-	public int getPageSize() {
-		return pageSize;
-	}
-
 }
