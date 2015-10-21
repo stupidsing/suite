@@ -32,8 +32,7 @@ ic-rewrite (NEW .type0 ()) (NEW .type1 ()) .ts/.ts
 	:- ic-rewrite-type .type0 .type1
 #
 ic-rewrite (NEW .type0 (.k .v0, .kvs0)) (NEW .type1 (.k .v1, .kvs1)) (.v0 .v1, .ts0)/.tsx
-	:- ic-rewrite-type .type0 .type1
-	, ic-rewrite (NEW .type0 .kvs0) (NEW .type0 .kvs1) .ts0/.tsx
+	:- ic-rewrite (NEW .type0 .kvs0) (NEW .type1 .kvs1) .ts0/.tsx
 #
 ic-rewrite (NEWS .size .value0 .do0) (NEWS .size .value1 .do1) (.value0 .value1, .do0 .do1, .ts)/.ts
 #
