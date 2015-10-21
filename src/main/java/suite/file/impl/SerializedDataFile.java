@@ -17,9 +17,9 @@ import suite.util.SerializeUtil.Serializer;
  *
  * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */
-public class SerializedDataFile<T, V> implements Closeable {
+public class SerializedDataFile<Pointer, V> implements Closeable {
 
-	private DataFile<T> dataFile;
+	private DataFile<Pointer> dataFile;
 	private Serializer<V> serializer;
 
 	private static class SerializedPagingException extends RuntimeException {
@@ -30,7 +30,7 @@ public class SerializedDataFile<T, V> implements Closeable {
 		}
 	}
 
-	public SerializedDataFile(DataFile<T> dataFile, Serializer<V> serializer) {
+	public SerializedDataFile(DataFile<Pointer> dataFile, Serializer<V> serializer) {
 		this.dataFile = dataFile;
 		this.serializer = serializer;
 	}
@@ -48,7 +48,7 @@ public class SerializedDataFile<T, V> implements Closeable {
 		dataFile.sync();
 	}
 
-	public V load(T pointer) {
+	public V load(Pointer pointer) {
 		try {
 			return serializer.read(new DataInputStream(dataFile.load(pointer).asInputStream()));
 		} catch (IOException ex) {
@@ -56,7 +56,7 @@ public class SerializedDataFile<T, V> implements Closeable {
 		}
 	}
 
-	public void save(T pointer, V page) {
+	public void save(Pointer pointer, V page) {
 		try {
 			dataFile.save(pointer, Bytes.of(dataOutput -> serializer.write(dataOutput, page)));
 		} catch (IOException ex) {
