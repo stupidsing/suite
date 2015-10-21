@@ -129,7 +129,7 @@ public class JournalledPageFileImpl implements Closeable, PageFile {
 	}
 
 	@Override
-	public synchronized Bytes load(int pageNo) throws IOException {
+	public synchronized Bytes load(Integer pageNo) throws IOException {
 		int jp = findPageInJournal(pageNo);
 		if (jp < 0)
 			return pageFile.load(pageNo);
@@ -138,7 +138,7 @@ public class JournalledPageFileImpl implements Closeable, PageFile {
 	}
 
 	@Override
-	public synchronized void save(int pageNo, Bytes bytes) throws IOException {
+	public synchronized void save(Integer pageNo, Bytes bytes) throws IOException {
 		int jp = findDirtyPageInJournal(pageNo);
 
 		if (jp < 0) {
