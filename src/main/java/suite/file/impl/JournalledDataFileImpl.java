@@ -6,6 +6,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import suite.file.DataFile;
 import suite.file.PageFile;
@@ -168,7 +169,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, DataFile<Poin
 	private int findPageInJournal(Pointer pointer, int start) {
 		int jp1 = -1;
 		for (int jp = start; jp < journalEntries.size(); jp++)
-			if (journalEntries.get(jp).pointer == pointer)
+			if (Objects.equals(journalEntries.get(jp).pointer, pointer))
 				jp1 = jp;
 		return jp1;
 	}
