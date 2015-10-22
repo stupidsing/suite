@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.file.DataFile;
+import suite.file.PageFile;
 import suite.primitive.Bytes;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
@@ -52,14 +53,17 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, DataFile<Poin
 		}
 	}
 
-	public JournalledDataFileImpl(DataFile<Pointer> df, String filename, int pageSize, Serializer<Pointer> ps) throws IOException {
-		int journalPageSize = pageSize + 4;
+	public JournalledDataFileImpl( //
+			DataFile<Pointer> df //
+			, PageFile jpf //
+			, PageFile ppf //
+			, int pageSize //
+			, Serializer<Pointer> ps) throws IOException {
 		dataFile = df;
-		journalPageFile = new SerializedPageFile<>(new PageFileImpl(filename + ".journal", journalPageSize), jes);
-		pointerPageFile = new SerializedPageFile<>(new PageFileImpl(filename + ".pointer", 4), SerializeUtil.intSerializer);
+		journalPageFile = new SerializedPageFile<>(jpf, jes);
+		pointerPageFile = new SerializedPageFile<>(ppf, SerializeUtil.intSerializer);
 		pointerSerializer = ps;
 		bytesSerializer = SerializeUtil.bytes(pageSize);
-
 		nCommittedJournalEntries = pointerPageFile.load(0);
 
 		for (int jp = 0; jp < nCommittedJournalEntries; jp++)
