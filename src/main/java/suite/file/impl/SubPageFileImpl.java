@@ -9,12 +9,12 @@ import suite.primitive.Bytes;
 public class SubPageFileImpl implements Closeable, PageFile {
 
 	private PageFile parent;
-	private int startPage, endPage;
+	private int startPointer, endPointer;
 
-	public SubPageFileImpl(PageFile parent, int startPage, int endPage) {
+	public SubPageFileImpl(PageFile parent, int startPointer, int endPointer) {
 		this.parent = parent;
-		this.startPage = startPage;
-		this.endPage = endPage;
+		this.startPointer = startPointer;
+		this.endPointer = endPointer;
 	}
 
 	@Override
@@ -24,21 +24,23 @@ public class SubPageFileImpl implements Closeable, PageFile {
 
 	@Override
 	public Bytes load(Integer pointer) throws IOException {
-		return parent.load(validate(pointer + startPage));
+		return parent.load(convert(pointer));
 	}
 
 	@Override
 	public void save(Integer pointer, Bytes bytes) throws IOException {
-		parent.save(validate(pointer + startPage), bytes);
+		parent.save(convert(pointer), bytes);
 	}
 
 	@Override
 	public void close() throws IOException {
 	}
 
-	private int validate(int index) throws IOException {
-		if (startPage <= index && index < endPage)
-			return index;
+	private Integer convert(Integer pointer0) throws IOException {
+		int pointer1 = pointer0 + startPointer;
+
+		if (startPointer <= pointer1 && pointer1 < endPointer)
+			return pointer1;
 		else
 			throw new IOException("Page index out of range");
 	}
