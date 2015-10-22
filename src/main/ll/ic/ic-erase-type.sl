@@ -27,11 +27,11 @@ ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 #
 ic-erase-type (NEW _ ()) (NEWS ())
 #
-ic-erase-type (NEW (STRUCT-OF .nts) (.name .value0, .nvs)) (NEWS (.offset .size .value1, .osvs))
+ic-erase-type (NEW (STRUCT-OF .nts) (.name .value0, .nvs)) (NEWS (.size .offset .value1, .sovs))
 	:- ic-erase-type .value0 .value1
 	, ic-struct-offset .nts .name .type .offset
 	, ic-type-size .type .size
-	, ic-erase-type (NEW (STRUCT-OF .nts) .nvs) (NEWS .osvs)
+	, ic-erase-type (NEW (STRUCT-OF .nts) .nvs) (NEWS .sovs)
 #
 ic-erase-type NULL (NUMBER 0)
 #

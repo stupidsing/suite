@@ -36,8 +36,8 @@ ic-rewrite (NEW .type0 (.k .v0, .nvs0)) (NEW .type1 (.k .v1, .nvs1)) (.v0 .v1, .
 #
 ic-rewrite (NEWS ()) (NEWS ()) .ts/.ts
 #
-ic-rewrite (NEWS (.o .s .v0, .osvs0)) (NEWS (.o .s .v1, .osvs1)) (.v0 .v1, .ts0)/.tsx
-	:- ic-rewrite (NEWS .osvs0) (NEWS .osvs1) .ts0/.tsx
+ic-rewrite (NEWS (.s .o .v0, .sovs0)) (NEWS (.s .o .v1, .sovs1)) (.v0 .v1, .ts0)/.tsx
+	:- ic-rewrite (NEWS .sovs0) (NEWS .sovs1) .ts0/.tsx
 #
 ic-rewrite NOP NOP .ts/.ts
 #
