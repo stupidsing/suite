@@ -29,13 +29,13 @@ public class ExtentFileImpl implements Closeable, DataFile<Extent> {
 
 	@Override
 	public Bytes load(Extent extent) throws IOException {
-		int start = extent.pointer * pageSize, end = start + extent.count * pageSize;
+		int start = extent.start * pageSize, end = start + extent.count * pageSize;
 		return file.load(start, end);
 	}
 
 	@Override
 	public void save(Extent extent, Bytes bytes) throws IOException {
-		file.save(extent.pointer * pageSize, bytes);
+		file.save(extent.start * pageSize, bytes);
 	}
 
 	public int getPageSize() {

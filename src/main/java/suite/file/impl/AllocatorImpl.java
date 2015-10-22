@@ -52,7 +52,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 	@Override
 	public void deallocate(Extent pointer) {
-		deallocate_(pointer.pointer, pointer.count);
+		deallocate_(pointer.start, pointer.count);
 	}
 
 	private int allocate_(int count) {
