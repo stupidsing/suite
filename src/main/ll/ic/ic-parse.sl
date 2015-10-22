@@ -29,7 +29,7 @@ ic-parse (declare .var; .do) (DECLARE MONO .var _ .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 #
-ic-parse (.do^.field) (FIELD _ .field .do1)
+ic-parse (.do^.name) (FIELD _ .name .do1)
 	:- ic-parse .do .do1
 #
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)

@@ -4,9 +4,9 @@ ic-erase-type (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
-ic-erase-type (FIELD (STRUCT-OF .nameTypes) .field .do0) (MEMORY .size (TREE ' + ' (REF .dox) (NUMBER .offset)))
+ic-erase-type (FIELD (STRUCT-OF .nameTypes) .name .do0) (MEMORY .size (TREE ' + ' (REF .dox) (NUMBER .offset)))
 	:- !
-	, ic-struct-offset .nameTypes .field .type .offset
+	, ic-struct-offset .nameTypes .name .type .offset
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #

@@ -18,10 +18,10 @@ ic-infer-type0 _ (ASM _) I32
 ic-infer-type0 .vs (DECLARE .mp .var .varType .do) .type
 	:- ic-infer-type (.mp .var .varType, .vs) .do .type
 #
-ic-infer-type0 .vs (FIELD (STRUCT-OF .nameTypes) .field .do) .fieldType
+ic-infer-type0 .vs (FIELD (STRUCT-OF .nameTypes) .name .do) .type
 	:- ic-infer-type .vs .do (STRUCT-OF .nameTypes)
 	, once (bound .nameTypes; ic-error "Cannot access field of unknown type")
-	, member .nameTypes (.field .fieldType)
+	, member .nameTypes (.name .type)
 #
 ic-infer-type0 .vs (IF .if .then .else) .type
 	:- ic-infer-type .vs .if .ifType
