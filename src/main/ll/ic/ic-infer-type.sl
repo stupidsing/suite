@@ -58,10 +58,10 @@ ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
 ic-infer-type0 _ (NEW .type ()) .type
 	:- .type = STRUCT-OF ()
 #
-ic-infer-type0 .vs (NEW .type (.k .v, .kvs)) .type
+ic-infer-type0 .vs (NEW .type (.n .v, .nvs)) .type
 	:- ic-infer-type .vs .v .t
-	, .type = STRUCT-OF (.k .t, .types)
-	, ic-infer-type .vs (NEW (STRUCT-OF .types) .kvs) (STRUCT-OF .types)
+	, .type = STRUCT-OF (.n .t, .nts)
+	, ic-infer-type .vs (NEW (STRUCT-OF .nts) .nvs) (STRUCT-OF .nts)
 #
 ic-infer-type0 _ NOP _
 #

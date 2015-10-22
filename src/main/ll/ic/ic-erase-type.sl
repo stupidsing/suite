@@ -27,8 +27,8 @@ ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 #
 ic-erase-type (NEW _ ()) (MEMORY 0 NOP)
 #
-ic-erase-type (NEW (STRUCT-OF (.k .type, .nts)) (.k .value0, .kvs)) (NEWS .size .value1 .news)
-	:- ic-erase-type (NEW (STRUCT-OF .nts) .kvs) .news
+ic-erase-type (NEW (STRUCT-OF (.n .type, .nts)) (.n .value0, .nvs)) (NEWS .size .value1 .news)
+	:- ic-erase-type (NEW (STRUCT-OF .nts) .nvs) .news
 	, ic-erase-type .value0 .value1
 	, ic-type-size .type .size
 #
