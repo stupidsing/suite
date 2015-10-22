@@ -285,12 +285,13 @@ ic-compile-let (METHOD .this .sub) .memory .e0/.ex
 		, _ R-
 		, .ex)
 #
-ic-compile-let (NEWS .size0 .value .news1) .memory .e0/.ex
-	:- ic-compile-memory .memory .e0/.e1 .size .pointer
-	, let .size1 (.size - .size0)
-	, ic-compile-let .value (MEMORY .size0 .pointer) .e1/.e2
+ic-compile-let (NEWS ()) _ (_ R+, .e)/.e
+#
+ic-compile-let (NEWS (.offset .size .value, .osvs)) .memory .e0/.ex
+	:- ic-compile-memory .memory .e0/.e1 _ .pointer
+	, ic-compile-let .value (MEMORY .size (TREE ' + ' .pointer (NUMBER .offset))) .e1/.e2
 	, .e2 = (_ R-, .e3)
-	, ic-compile-let .news1 (MEMORY .size1 (TREE ' + ' .pointer (NUMBER .size0))) .e3/.ex
+	, ic-compile-let (NEWS .osvs) .memory .e3/.ex
 #
 ic-compile-let .memory0 .memory1 .e0/.ex
 	:- ic-compile-memory .memory0 .e0/.e1 .size .pointer0

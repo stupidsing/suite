@@ -18,10 +18,9 @@ ic-infer-type0 _ (ASM _) I32
 ic-infer-type0 .vs (DECLARE .mp .var .varType .do) .type
 	:- ic-infer-type (.mp .var .varType, .vs) .do .type
 #
-ic-infer-type0 .vs (FIELD (STRUCT-OF .nameTypes) .name .do) .type
-	:- ic-infer-type .vs .do (STRUCT-OF .nameTypes)
-	, once (bound .nameTypes; ic-error "Cannot access field of unknown type")
-	, member .nameTypes (.name .type)
+ic-infer-type0 .vs (FIELD (STRUCT-OF .nts) .name .do) .type
+	:- ic-infer-type .vs .do (STRUCT-OF .nts)
+	, ic-field-type .nts .name .type
 #
 ic-infer-type0 .vs (IF .if .then .else) .type
 	:- ic-infer-type .vs .if .ifType
@@ -56,12 +55,12 @@ ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
 	, ic-infer-type .vs .method (METHOD0-OF .paramTypes .returnType)
 #
 ic-infer-type0 _ (NEW .type ()) .type
-	:- .type = STRUCT-OF ()
 #
-ic-infer-type0 .vs (NEW .type (.n .v, .nvs)) .type
-	:- ic-infer-type .vs .v .t
-	, .type = STRUCT-OF (.n .t, .nts)
-	, ic-infer-type .vs (NEW (STRUCT-OF .nts) .nvs) (STRUCT-OF .nts)
+ic-infer-type0 .vs (NEW .type (.name .value, .nvs)) .type
+	:- .type = STRUCT-OF .nts
+	, ic-field-type .nts .name .t
+	, ic-infer-type .vs .value .t
+	, ic-infer-type .vs (NEW .type .nvs) .type
 #
 ic-infer-type0 _ NOP _
 #
@@ -116,6 +115,11 @@ ic-infer-type0 .vs (VAR .var) .type
 ic-infer-type0 .vs (WHILE .while .do) I32
 	:- ic-infer-type .vs .while I32
 	, ic-infer-type .vs .do _
+#
+
+ic-field-type .nts .name .type
+	:- once (bound .nts; ic-error "Cannot access field of unknown type")
+	, member .nts (.name .type)
 #
 
 ic-return-type .type

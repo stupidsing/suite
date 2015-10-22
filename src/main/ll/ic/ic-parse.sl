@@ -58,8 +58,9 @@ ic-parse (baseless [.params] .do) (METHOD0 .params1 .do1) -- Traditional subrout
 ic-parse (function [.params] .do) (METHOD THIS .method) -- Traditional subroutine definition
 	:- ic-parse (baseless [.params] .do) .method
 #
-ic-parse (new .nvs0) (NEW _ .nvs1)
-	:- zip .nvs0 .nvs1 .list
+ic-parse (new .type .nvs0) (NEW .type1 .nvs1)
+	:- ic-parse-type .type .type1
+	, zip .nvs0 .nvs1 .list
 	, list.query .list (.n = .v0):(.n .v1) (ic-parse .v0 .v1)
 #
 ic-parse () NOP

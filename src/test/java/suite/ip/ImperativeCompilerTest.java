@@ -20,9 +20,9 @@ public class ImperativeCompilerTest {
 	@Test
 	public void testDataStructure() {
 		String s = "" //
-				+ "constant p = fix :p pointer:(struct (next as :p,));" //
-				+ "declare pnext = function [e as p,] ( `e`^next; );" //
-				+ "declare object = new (next = null,);" //
+				+ "constant p = fix :p struct (next as pointer:(:p),);" //
+				+ "declare pnext = function [e as pointer:p,] ( `e`^next; );" //
+				+ "declare object = new p (next = null,);" //
 				+ "let (object^next) = pnext [& object,];" //
 				+ "0";
 		Bytes bytes = imperativeCompiler.compile(0, s);

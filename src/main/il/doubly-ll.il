@@ -19,8 +19,8 @@ declare dl-set-next = function [e as pointer:dl-node, p,] (
 	let (`e`^next) = p;
 );
 
-declare dl-new = function [e as pointer:dl-node,] (
-	let `e` = new (prev = null, next = null,);
+declare dl-new = function [e,] (
+	let `e` = new dl-node (prev = null, next = null,);
 	e;
 );
 

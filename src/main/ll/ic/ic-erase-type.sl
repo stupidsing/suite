@@ -4,9 +4,9 @@ ic-erase-type (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
-ic-erase-type (FIELD (STRUCT-OF .nameTypes) .name .do0) (MEMORY .size (TREE ' + ' (REF .dox) (NUMBER .offset)))
+ic-erase-type (FIELD (STRUCT-OF .nts) .name .do0) (MEMORY .size (TREE ' + ' (REF .dox) (NUMBER .offset)))
 	:- !
-	, ic-struct-offset .nameTypes .name .type .offset
+	, ic-struct-offset .nts .name .type .offset
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #
@@ -25,12 +25,13 @@ ic-erase-type (METHOD0 .params .do0) (METHOD0 .pss .dox)
 	, list.query .list (PARAM .var .type):(PS .var .size) (ic-type-size .type .size)
 	, ic-erase-type .do0 .dox
 #
-ic-erase-type (NEW _ ()) (MEMORY 0 NOP)
+ic-erase-type (NEW _ ()) (NEWS ())
 #
-ic-erase-type (NEW (STRUCT-OF (.n .type, .nts)) (.n .value0, .nvs)) (NEWS .size .value1 .news)
-	:- ic-erase-type (NEW (STRUCT-OF .nts) .nvs) .news
-	, ic-erase-type .value0 .value1
+ic-erase-type (NEW (STRUCT-OF .nts) (.name .value0, .nvs)) (NEWS (.offset .size .value1, .osvs))
+	:- ic-erase-type .value0 .value1
+	, ic-struct-offset .nts .name .type .offset
 	, ic-type-size .type .size
+	, ic-erase-type (NEW (STRUCT-OF .nts) .nvs) (NEWS .osvs)
 #
 ic-erase-type NULL (NUMBER 0)
 #
