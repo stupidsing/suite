@@ -75,12 +75,11 @@ public class TransactionManager<Key, Value> {
 		this.source = source;
 	}
 
-	// TODO synchronization
-	public void flush() {
+	public synchronized void flush() {
 		KeyValueStoreMutator<Key, Value> transaction = begin();
+		KeyValueStoreMutator<Key, Value> mutator = source.source();
 		boolean ok = false;
 		try {
-			KeyValueStoreMutator<Key, Value> mutator = source.source();
 			Iterator<Key> iterator = memoryByKey.keySet().iterator();
 			while (iterator.hasNext()) {
 				Key key = iterator.next();
@@ -92,7 +91,8 @@ public class TransactionManager<Key, Value> {
 			LogUtil.error(ex);
 		} finally {
 			if (ok)
-				transaction.end(true);
+				mutator.end(ok);
+			transaction.end(ok);
 		}
 	}
 
