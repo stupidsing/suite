@@ -1,6 +1,8 @@
 package suite.fs.impl;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,7 +11,6 @@ import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm;
 import suite.concurrent.Stm.TransactionStatus;
 import suite.fs.KeyValueStoreMutator;
-import suite.os.LogUtil;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 
@@ -76,23 +77,28 @@ public class TransactionManager<Key, Value> {
 	}
 
 	public synchronized void flush() {
-		KeyValueStoreMutator<Key, Value> transaction = begin();
-		KeyValueStoreMutator<Key, Value> mutator = source.source();
-		boolean ok = false;
-		try {
-			Iterator<Key> iterator = memoryByKey.keySet().iterator();
-			while (iterator.hasNext()) {
-				Key key = iterator.next();
-				mutator.put(key, transaction.get(key));
-				iterator.remove();
-			}
-			ok = true;
-		} catch (Exception ex) {
-			LogUtil.error(ex);
-		} finally {
-			if (ok)
-				mutator.end(ok);
-			transaction.end(ok);
+		Map<Key, Value> map = new HashMap<>();
+
+		boolean ok = stm.transaction(transaction -> {
+			List<Key> keys = new ArrayList<>(memoryByKey.keySet());
+			for (Key key : keys)
+				memoryByKey.compute(key, (key_, memory) -> {
+					if (memory != null)
+						map.put(key_, stm.get(transaction, memory));
+					return null;
+				});
+			return true;
+		});
+
+		if (ok) {
+			KeyValueStoreMutator<Key, Value> mutator = source.source();
+			map.forEach((k, v) -> {
+				if (v != null)
+					mutator.put(k, v);
+				else
+					mutator.remove(k);
+			});
+			mutator.end(ok);
 		}
 	}
 
