@@ -17,7 +17,7 @@ public class ObstructionFreeStm {
 
 	public class Memory<V> {
 
-		// Reference is the most recent snapshot; stamp is the last read time
+		// Reference points to the latest snapshot; stamp is the last read time
 		private AtomicStampedReference<Snapshot<V>> asr;
 
 		public Memory(V value) {
@@ -86,9 +86,8 @@ public class ObstructionFreeStm {
 
 			// Read committed, repeatable read
 			while (snapshot != null //
-					&& (snapshot.owner != transaction //
-							|| snapshot.owner.status != TransactionStatus.DONE____ //
-							|| snapshot.owner.time >= transaction.time))
+					&& snapshot.owner != transaction //
+					&& (snapshot.owner.status != TransactionStatus.DONE____ || snapshot.owner.time >= transaction.time))
 				snapshot = snapshot.previous;
 
 			if (snapshot == null)
