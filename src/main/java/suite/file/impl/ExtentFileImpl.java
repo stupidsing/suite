@@ -3,11 +3,11 @@ package suite.file.impl;
 import java.io.Closeable;
 import java.io.IOException;
 
-import suite.file.DataFile;
 import suite.file.ExtentAllocator.Extent;
+import suite.file.ExtentFile;
 import suite.primitive.Bytes;
 
-public class ExtentFileImpl implements Closeable, DataFile<Extent> {
+public class ExtentFileImpl implements Closeable, ExtentFile {
 
 	private RandomAccessibleFile file;
 	private int pageSize;

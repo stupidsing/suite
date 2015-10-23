@@ -5,9 +5,10 @@ import java.io.IOException;
 
 import suite.file.DataFile;
 import suite.file.ExtentAllocator.Extent;
+import suite.file.ExtentFile;
 import suite.primitive.Bytes;
 
-public class SubExtentFileImpl implements Closeable, DataFile<Extent> {
+public class SubExtentFileImpl implements Closeable, ExtentFile {
 
 	private DataFile<Extent> parent;
 	private int startPointer, endPointer;
