@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.file.PageFile;
+import suite.file.SerializedPageFile;
 import suite.file.impl.PageFileImpl;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.fs.KeyDataStoreMutator;
@@ -49,8 +50,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private Mutate mutate;
 
 	private PageFile pageFile0;
-	private SerializedPageFileImpl<Page> pageFile;
-	private SerializedPageFileImpl<Bytes> payloadFile;
+	private SerializedPageFile<Page> pageFile;
+	private SerializedPageFile<Bytes> payloadFile;
 	private IbTreeImpl<Integer> allocationIbTree;
 
 	private int maxBranchFactor; // Exclusive
@@ -390,7 +391,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private class Mutate implements Closeable {
-		private SerializedPageFileImpl<List<Integer>> stampFile;
+		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Mutate() throws IOException {
 			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
@@ -407,7 +408,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			stampFile.save(0, stamp);
 		}
 
-		public void close() {
+		public void close() throws IOException {
 			stampFile.close();
 		}
 	}
@@ -434,7 +435,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		mutate.close();
 		pageFile.close();
 	}

@@ -5,6 +5,7 @@ import java.io.IOException;
 import suite.file.ExtentAllocator;
 import suite.file.PageAllocator;
 import suite.file.PageFile;
+import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Fun;
@@ -17,10 +18,10 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	private int size = 4096;
 	private int pageSize = PageFile.defaultPageSize;
 
-	private SerializedPageFileImpl<Bytes> allocMapFile;
+	private SerializedPageFile<Bytes> allocMapFile;
 	private int lastAllocatedPointer;
 
-	public AllocatorImpl(SerializedPageFileImpl<Bytes> pageFile) throws IOException {
+	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
 		allocMapFile = pageFile;
 	}
 

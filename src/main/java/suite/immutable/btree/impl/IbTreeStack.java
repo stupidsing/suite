@@ -33,7 +33,7 @@ public class IbTreeStack<Key> implements Closeable {
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		ibTree.close();
 		ListIterator<IbTreeImpl<Integer>> li = allocationIbTrees.listIterator();
 		while (li.hasPrevious())

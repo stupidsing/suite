@@ -23,7 +23,7 @@ public class IbTreeFileSystemImpl implements FileSystem {
 	}
 
 	@Override
-	public void close() {
+	public void close() throws IOException {
 		ibTreeStack.close();
 	}
 
