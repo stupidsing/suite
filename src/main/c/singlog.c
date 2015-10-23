@@ -1,4 +1,4 @@
-// gcc -std=c99 -g singlog.c -o singlog && ./singlog
+// gcc -std=c99 -g src/main/c/singlog.c -o target/singlog && target/singlog
 
 #define _GNU_SOURCE
 

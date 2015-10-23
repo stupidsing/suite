@@ -1,4 +1,4 @@
-// gcc -mwindows src/main/c/helloworld.c
+// gcc -mwindows src/main/c/helloworld.c -o target/helloworld
 #include <windows.h>
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
