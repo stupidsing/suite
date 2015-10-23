@@ -64,9 +64,7 @@ public class EbnfHeadRecursion {
 		EbnfGrammar en = expand(en0);
 		HeadRecursionForm hrf;
 
-		if (Util.stringEquals(name(en), entity))
-			hrf = new HeadRecursionForm(empty, Arrays.asList(new EbnfGrammar(EbnfGrammarType.NIL___)));
-		else if (en.type == EbnfGrammarType.AND___) {
+		if (en.type == EbnfGrammarType.AND___) {
 			HeadRecursionForm hrf0 = getHeadRecursionForm(en.children.get(0), entity);
 			List<EbnfGrammar> tail = Util.right(en.children, 1);
 
@@ -78,7 +76,9 @@ public class EbnfHeadRecursion {
 			}).toList();
 
 			hrf = new HeadRecursionForm(fun.apply(hrf0.listb), fun.apply(hrf0.listc));
-		} else if (en.type == EbnfGrammarType.OR____) {
+		} else if (en.type == EbnfGrammarType.NAMED_ && Util.stringEquals(en.content, entity))
+			hrf = new HeadRecursionForm(empty, Arrays.asList(new EbnfGrammar(EbnfGrammarType.NIL___)));
+		else if (en.type == EbnfGrammarType.OR____) {
 			List<EbnfGrammar> listb = new ArrayList<>();
 			List<EbnfGrammar> listc = new ArrayList<>();
 
@@ -92,11 +92,6 @@ public class EbnfHeadRecursion {
 			hrf = new HeadRecursionForm(Arrays.asList(en), empty);
 
 		return hrf;
-	}
-
-	private String name(EbnfGrammar en0) {
-		EbnfGrammar en = expand(en0);
-		return en.type == EbnfGrammarType.NAMED_ ? en.content : null;
 	}
 
 	private EbnfGrammar expand(EbnfGrammar en) {
