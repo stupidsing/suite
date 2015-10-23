@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
 import suite.file.PageFile;
-import suite.file.impl.SerializedPageFile;
+import suite.file.impl.SerializedPageFileImpl;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
@@ -25,7 +25,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 	private AtomicInteger nPages = new AtomicInteger(1);
 	private Object writeLock = new Object();
 
-	private SerializedPageFile<PersistSlot<T>> pageFile;
+	private SerializedPageFileImpl<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
 	private BiMap<Slot<T>, Integer> slotByPointer = new HashBiMap<>();
 
@@ -57,7 +57,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 			}
 		};
 
-		pageFile = new SerializedPageFile<>(pf, serializer);
+		pageFile = new SerializedPageFileImpl<>(pf, serializer);
 	}
 
 	@Override

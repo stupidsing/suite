@@ -22,8 +22,8 @@ import suite.util.SerializeUtil.Serializer;
 public class JournalledDataFileImpl<Pointer> implements Closeable, DataFile<Pointer> {
 
 	private DataFile<Pointer> dataFile;
-	private SerializedPageFile<JournalEntry> journalPageFile;
-	private SerializedPageFile<Integer> pointerPageFile;
+	private SerializedPageFileImpl<JournalEntry> journalPageFile;
+	private SerializedPageFileImpl<Integer> pointerPageFile;
 
 	private int nCommittedJournalEntries;
 	private List<JournalEntry> journalEntries = new ArrayList<>();
@@ -60,8 +60,8 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, DataFile<Poin
 			, int pageSize //
 			, Serializer<Pointer> ps) throws IOException {
 		dataFile = df;
-		journalPageFile = new SerializedPageFile<>(jpf, journalEntrySerializer);
-		pointerPageFile = new SerializedPageFile<>(ppf, SerializeUtil.intSerializer);
+		journalPageFile = new SerializedPageFileImpl<>(jpf, journalEntrySerializer);
+		pointerPageFile = new SerializedPageFileImpl<>(ppf, SerializeUtil.intSerializer);
 		pointerSerializer = ps;
 		bytesSerializer = SerializeUtil.bytes(pageSize);
 		nCommittedJournalEntries = pointerPageFile.load(0);

@@ -15,7 +15,7 @@ import java.util.Set;
 
 import suite.file.PageFile;
 import suite.file.impl.PageFileImpl;
-import suite.file.impl.SerializedPageFile;
+import suite.file.impl.SerializedPageFileImpl;
 import suite.fs.KeyDataStoreMutator;
 import suite.immutable.btree.IbTree;
 import suite.primitive.Bytes;
@@ -49,8 +49,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private Mutate mutate;
 
 	private PageFile pageFile0;
-	private SerializedPageFile<Page> pageFile;
-	private SerializedPageFile<Bytes> payloadFile;
+	private SerializedPageFileImpl<Page> pageFile;
+	private SerializedPageFileImpl<Bytes> payloadFile;
 	private IbTreeImpl<Integer> allocationIbTree;
 
 	private int maxBranchFactor; // Exclusive
@@ -390,11 +390,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private class Mutate implements Closeable {
-		private SerializedPageFile<List<Integer>> stampFile;
+		private SerializedPageFileImpl<List<Integer>> stampFile;
 
 		private Mutate() throws IOException {
 			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
-			stampFile = new SerializedPageFile<>(stampPageFile, SerializeUtil.list(SerializeUtil.intSerializer));
+			stampFile = new SerializedPageFileImpl<>(stampPageFile, SerializeUtil.list(SerializeUtil.intSerializer));
 		}
 
 		private Mutator begin() {
@@ -429,8 +429,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
 		pageFile0 = new PageFileImpl(filename, pageSize);
-		pageFile = new SerializedPageFile<>(pageFile0, createPageSerializer());
-		payloadFile = new SerializedPageFile<>(pageFile0, SerializeUtil.bytes(pageSize));
+		pageFile = new SerializedPageFileImpl<>(pageFile0, createPageSerializer());
+		payloadFile = new SerializedPageFileImpl<>(pageFile0, SerializeUtil.bytes(pageSize));
 	}
 
 	@Override

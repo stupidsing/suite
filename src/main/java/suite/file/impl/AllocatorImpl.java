@@ -17,10 +17,10 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	private int size = 4096;
 	private int pageSize = PageFile.defaultPageSize;
 
-	private SerializedPageFile<Bytes> allocMapFile;
+	private SerializedPageFileImpl<Bytes> allocMapFile;
 	private int lastAllocatedPointer;
 
-	public AllocatorImpl(SerializedPageFile<Bytes> pageFile) throws IOException {
+	public AllocatorImpl(SerializedPageFileImpl<Bytes> pageFile) throws IOException {
 		allocMapFile = pageFile;
 	}
 

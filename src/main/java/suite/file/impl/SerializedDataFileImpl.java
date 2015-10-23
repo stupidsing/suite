@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import suite.file.DataFile;
+import suite.file.SerializedFile;
 import suite.primitive.Bytes;
 import suite.util.SerializeUtil.Serializer;
 
@@ -17,7 +18,7 @@ import suite.util.SerializeUtil.Serializer;
  *
  * where branchPointerSize = max(sizeof(int), sizeof(Value))
  */
-public class SerializedDataFile<Pointer, V> implements Closeable {
+public class SerializedDataFileImpl<Pointer, V> implements Closeable, SerializedFile<Pointer, V> {
 
 	private DataFile<Pointer> dataFile;
 	private Serializer<V> serializer;
@@ -30,7 +31,7 @@ public class SerializedDataFile<Pointer, V> implements Closeable {
 		}
 	}
 
-	public SerializedDataFile(DataFile<Pointer> dataFile, Serializer<V> serializer) {
+	public SerializedDataFileImpl(DataFile<Pointer> dataFile, Serializer<V> serializer) {
 		this.dataFile = dataFile;
 		this.serializer = serializer;
 	}

@@ -12,7 +12,7 @@ import java.util.Stack;
 import suite.adt.Pair;
 import suite.btree.B_Tree;
 import suite.file.PageAllocator;
-import suite.file.impl.SerializedPageFile;
+import suite.file.impl.SerializedPageFileImpl;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -26,9 +26,9 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private int branchFactor;
 	private PageAllocator allocator;
-	private SerializedPageFile<Superblock> superblockFile;
-	private SerializedPageFile<Bytes> payloadFile;
-	private SerializedPageFile<Page> pageFile;
+	private SerializedPageFileImpl<Superblock> superblockFile;
+	private SerializedPageFileImpl<Bytes> payloadFile;
+	private SerializedPageFileImpl<Page> pageFile;
 	private Comparator<Key> comparator;
 
 	public class Superblock {
@@ -447,15 +447,15 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		this.allocator = allocator;
 	}
 
-	public void setSuperblockPageFile(SerializedPageFile<Superblock> superblockFile) {
+	public void setSuperblockPageFile(SerializedPageFileImpl<Superblock> superblockFile) {
 		this.superblockFile = superblockFile;
 	}
 
-	public void setPayloadFile(SerializedPageFile<Bytes> payloadFile) {
+	public void setPayloadFile(SerializedPageFileImpl<Bytes> payloadFile) {
 		this.payloadFile = payloadFile;
 	}
 
-	public void setPageFile(SerializedPageFile<Page> pageFile) {
+	public void setPageFile(SerializedPageFileImpl<Page> pageFile) {
 		this.pageFile = pageFile;
 	}
 

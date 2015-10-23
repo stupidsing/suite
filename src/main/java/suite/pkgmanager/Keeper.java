@@ -7,11 +7,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import suite.inspect.Inspect;
 import suite.inspect.Mapify;
 import suite.os.FileUtil;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Keeps track of the package installed in local machine.
