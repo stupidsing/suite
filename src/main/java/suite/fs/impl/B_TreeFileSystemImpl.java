@@ -16,7 +16,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 	private JournalledPageFileImpl jpf;
 	private B_Tree<Bytes, Integer> b_tree;
-	private FileSystemMutatorImpl mutator;
+	private FileSystemMutator mutator;
 
 	public B_TreeFileSystemImpl(String filename, int pageSize) throws IOException {
 		jpf = new JournalledPageFileImpl(filename, pageSize);
