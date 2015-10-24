@@ -35,7 +35,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testBlank() throws IOException {
-		RayTracer rayTracer = new RayTracer(Collections.<LightSource> emptySet(), new Scene(Collections.<RtObject> emptySet()));
+		RayTracer rayTracer = new RayTracer(Collections.emptySet(), new Scene(Collections.emptySet()));
 		rasterize(rayTracer);
 	}
 
