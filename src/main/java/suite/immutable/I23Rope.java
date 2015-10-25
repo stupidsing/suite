@@ -32,11 +32,7 @@ public class I23Rope {
 	}
 
 	public static I23Rope merge(I23Rope rope0, I23Rope rope1) {
-		List<I23Rope> nodes = merge0(rope0, rope1);
-		if (nodes.size() == 1)
-			return nodes.get(0);
-		else
-			return new I23Rope(nodes);
+		return normalize(merge0(rope0, rope1));
 	}
 
 	private I23Rope left0(int weight) {
@@ -44,10 +40,8 @@ public class I23Rope {
 		int accumulatedWeight = 0;
 		while (accumulatedWeight < weight)
 			accumulatedWeight += nodes.get(--index).weight;
-		if (index > 0)
-			return merge(normalize(Util.left(nodes, index - 1)), nodes.get(index).left0(weight - accumulatedWeight));
-		else
-			return empty;
+		I23Rope edge = nodes.get(index).left0(weight - accumulatedWeight);
+		return merge(index > 0 ? normalize(Util.left(nodes, index - 1)) : empty, edge);
 	}
 
 	private I23Rope right0(int weight) {
@@ -55,14 +49,12 @@ public class I23Rope {
 		int accumulatedWeight = 0;
 		while (accumulatedWeight < weight)
 			accumulatedWeight += nodes.get(index++).weight;
-		if (index < nodes.size())
-			return merge(nodes.get(index).right0(weight - accumulatedWeight), normalize(Util.right(nodes, index + 1)));
-		else
-			return empty;
+		I23Rope edge = nodes.get(index).right0(weight - accumulatedWeight);
+		return merge(edge, index + 1 < nodes.size() ? normalize(Util.right(nodes, index + 1)) : empty);
 	}
 
-	private I23Rope normalize(List<I23Rope> nodes) {
-		return nodes.size() == 1 ? new I23Rope(nodes) : nodes.get(0);
+	private static I23Rope normalize(List<I23Rope> nodes) {
+		return nodes.size() != 1 ? new I23Rope(nodes) : nodes.get(0);
 	}
 
 	private static List<I23Rope> merge0(I23Rope rope0, I23Rope rope1) {
