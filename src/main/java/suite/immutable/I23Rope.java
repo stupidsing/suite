@@ -78,7 +78,7 @@ public class I23Rope {
 		List<I23Rope> list;
 		int size1 = nodes.size();
 
-		if (size1 > 3) {
+		if (size1 >= 4) {
 			int halfSize = size1 / 2;
 			List<I23Rope> left = Util.left(nodes, halfSize);
 			List<I23Rope> right = Util.right(nodes, halfSize);
