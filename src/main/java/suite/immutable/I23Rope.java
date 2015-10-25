@@ -35,7 +35,7 @@ public class I23Rope {
 	private I23Rope left0(int weight) {
 		int index = nodes.size(), index1;
 		int aw = 0, aw1;
-		while (0 <= (index1 = index - 1) && (aw1 = aw + nodes.get(index - 1).weight) <= weight) {
+		while (0 <= (index1 = index - 1) && (aw1 = aw + nodes.get(index).weight) <= weight) {
 			index = index1;
 			aw = aw1;
 		}
