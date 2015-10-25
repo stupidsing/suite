@@ -49,7 +49,7 @@ public class I23Rope {
 			index = index1;
 			aw = aw1;
 		}
-		return merge(nodes.get(index).right0(weight - aw), normalize(Util.right(nodes, index)));
+		return merge(nodes.get(index1).right0(weight - aw), normalize(Util.right(nodes, index1)));
 	}
 
 	private static I23Rope normalize(List<I23Rope> nodes) {

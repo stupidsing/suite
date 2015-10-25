@@ -202,7 +202,7 @@ public class Util {
 		int size = list.size();
 		if (pos < 0)
 			pos += size;
-		return list.subList(0, Math.min(size, pos));
+		return list.subList(0, Math.min(pos, size));
 	}
 
 	public static <T> T[] newArray(Class<T> clazz, int dim) {
@@ -257,7 +257,7 @@ public class Util {
 		int size = list.size();
 		if (pos < 0)
 			pos += size;
-		return list.subList(Math.min(size, pos), size);
+		return list.subList(Math.min(pos, size), size);
 	}
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String args[]) {
