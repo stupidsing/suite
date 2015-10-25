@@ -1,14 +1,11 @@
 package suite.immutable;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import suite.util.Util;
 
 public class I23Rope {
-
-	private static I23Rope empty = new I23Rope(Collections.emptyList());
 
 	private int depth;
 	private int weight;
@@ -36,19 +33,23 @@ public class I23Rope {
 	}
 
 	private I23Rope left0(int weight) {
-		int index = nodes.size();
-		int accumulatedWeight = 0;
-		while (accumulatedWeight < weight)
-			accumulatedWeight += nodes.get(--index).weight;
-		return merge(normalize(Util.left(nodes, index)), nodes.get(index).left0(weight - accumulatedWeight));
+		int index = nodes.size(), index1;
+		int aw = 0, aw1;
+		while ((index1 = index - 1) >= 0 && weight >= (aw1 = aw + nodes.get(index - 1).weight)) {
+			index = index1;
+			aw = aw1;
+		}
+		return merge(normalize(Util.left(nodes, index)), nodes.get(index).left0(weight - aw));
 	}
 
 	private I23Rope right0(int weight) {
-		int index = 0;
-		int accumulatedWeight = 0;
-		while (accumulatedWeight < weight)
-			accumulatedWeight += nodes.get(index++).weight;
-		return merge(nodes.get(index).right0(weight - accumulatedWeight), normalize(Util.right(nodes, index)));
+		int index = 0, index1;
+		int aw = 0, aw1;
+		while ((index1 = index + 1) < nodes.size() && weight >= (aw1 = aw + nodes.get(index).weight)) {
+			index = index1;
+			aw = aw1;
+		}
+		return merge(nodes.get(index).right0(weight - aw), normalize(Util.right(nodes, index)));
 	}
 
 	private static I23Rope normalize(List<I23Rope> nodes) {
