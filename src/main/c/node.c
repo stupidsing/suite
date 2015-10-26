@@ -119,6 +119,7 @@ struct Node *newTree(char *operator, struct Node *left, struct Node *right) {
 
 	struct Node *node = newNode(TREE);
 	node->u.tree = tree;
+	return node;
 }
 
 struct Node *newInternal(int type, struct Node *target, void *internal) {

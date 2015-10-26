@@ -571,7 +571,7 @@ int handlefound(struct Node *query, struct Node ***ptrail, struct Node **prem, s
 }
 
 int handleimport(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
-	importfile(final(query->u.tree->right)->u.name);
+	return importfile(final(query->u.tree->right)->u.name);
 }
 
 int handleisatom(struct Node *query, struct Node ***ptrail, struct Node **prem, struct Node **palt) {
@@ -917,6 +917,7 @@ int testmain() {
 	test(!prove(generalize(n = ref(parse("cutfail"))))); unref(n);
 
 	deinit();
+	return 0;
 }
 
 int main(int argc, char **argv) {
