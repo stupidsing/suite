@@ -42,13 +42,21 @@ fc-process-function .mode .do0 .dox
 	, !, fc-optimize .do3 .dox
 #
 
+fc-load-precompiled-library .lib .node
+	:- find.all.memoized .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
+#
+
+fc-load-precompiled-library0 .lib .precompiled
+	:- fc-precompiled-library-filename .lib .filename
+	, persist.load .precompiled .filename
+#
+
 fc-load-library .lib .do0 .dox
 	:- find.all.memoized .node0 (fc-load-library0 .lib .node0) (.do0 .dox,)
 #
 
 fc-load-library0 .lib .do
-	:- once (home.dir .homeDir
-		, concat .homeDir "/src/main/fl/" .lib ".slf" .slfFilename
+	:- once (fc-library-filename .lib .slfFilename
 		, file.exists .slfFilename
 		, file.read .slfFilename .slf
 		, to.atom ".p" .var
@@ -59,18 +67,14 @@ fc-load-library0 .lib .do
 	)
 #
 
-fc-load-precompiled-library .lib .node
-	:- find.all.memoized .node0 (fc-load-precompiled-library0 .lib .node0) (.node,)
-#
-
-fc-load-precompiled-library0 .lib .precompiled
-	:- fc-precompiled-library-filename .lib .filename
-	, persist.load .precompiled .filename
-#
-
 fc-precompiled-library-filename .lib .filename
 	:- home.dir .homeDir
 	, concat .homeDir "/precompiled/" .lib ".node.gz" .filename
+#
+
+fc-library-filename .lib .filename
+	:- home.dir .homeDir
+	, concat .homeDir "/src/main/fl/" .lib ".slf" .filename
 #
 
 fc-frame-difference .frame0 .frame1 0
