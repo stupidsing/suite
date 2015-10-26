@@ -5,7 +5,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
@@ -53,6 +55,15 @@ public class IoPredicates {
 		String filename = Formatter.display(n);
 		try {
 			return new Str(FileUtil.read(filename));
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	});
+
+	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {
+		try {
+			FileTime lastModifiedTime = Files.getLastModifiedTime(Paths.get(Formatter.display(n)));
+			return Int.of((int) lastModifiedTime.to(TimeUnit.SECONDS));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

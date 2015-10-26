@@ -102,6 +102,7 @@ public class SystemPredicates {
 		addPredicate("exit", ioPredicates.exit);
 		addPredicate("file.exists", ioPredicates.fileExists);
 		addPredicate("file.read", ioPredicates.fileRead);
+		addPredicate("file.time", ioPredicates.fileTime);
 		addPredicate("file.write", ioPredicates.fileWrite);
 		addPredicate("home.dir", ioPredicates.homeDir);
 		addPredicate("log", ioPredicates.log);
