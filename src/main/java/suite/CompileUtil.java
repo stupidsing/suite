@@ -29,7 +29,7 @@ public class CompileUtil {
 	public boolean precompile(String libraryName, ProverConfig pc) {
 		System.out.println("Pre-compiling [" + libraryName + "]...");
 
-		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc-precompile.sl"));
+		RuleSet rs = createRuleSetFun.apply(Arrays.asList("auto.sl", "fc/fc.sl"));
 		Builder builder = new SewingProverBuilder(pc);
 		boolean result = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 

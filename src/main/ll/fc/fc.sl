@@ -3,6 +3,8 @@
 --
 -- .mode can be EAGER or LAZY
 
+() :- import.path "fc/fc-precompile.sl"
+#
 () :- import.path "cg-generate-code.sl"
 	, import.path "fc/fc-bind.sl"
 	, import.path "fc/fc-compile.sl"
