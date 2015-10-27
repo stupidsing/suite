@@ -49,7 +49,8 @@ fc-load-precompiled-library .lib .node
 #
 
 fc-load-precompiled-library0 .lib .precompiled
-	:- fc-precompiled-library-filename .lib .filename
+	:- fc-precompile-lib-if-required .lib
+	, fc-precompiled-library-filename .lib .filename
 	, persist.load .precompiled .filename
 #
 
