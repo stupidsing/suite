@@ -7,6 +7,9 @@ import suite.util.Util;
 
 public class I23Rope {
 
+	private static int maxBranchFactor = 4;
+	private static int minBranchFactor = maxBranchFactor / 2;
+
 	private int depth;
 	private int weight;
 	private List<I23Rope> nodes;
@@ -69,10 +72,9 @@ public class I23Rope {
 		List<I23Rope> list;
 		int size1 = nodes.size();
 
-		if (size1 >= 4) {
-			int halfSize = size1 / 2;
-			List<I23Rope> left = Util.left(nodes, halfSize);
-			List<I23Rope> right = Util.right(nodes, halfSize);
+		if (size1 >= maxBranchFactor) {
+			List<I23Rope> left = Util.left(nodes, minBranchFactor);
+			List<I23Rope> right = Util.right(nodes, minBranchFactor);
 			list = Arrays.asList(new I23Rope(left), new I23Rope(right));
 		} else
 			list = Arrays.asList(new I23Rope(nodes));

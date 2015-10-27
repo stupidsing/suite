@@ -201,23 +201,8 @@ ic-compile-operand-better-option (STRING .s) .e0/.ex .strLabel
 ic-compile-operand-better-option THIS (_ R+, .e)/.e EBP
 #
 
-ic-compile-jump-if-false (IF .if0 .if1 (NUMBER 0)) .e0/.ex .elseLabel
-	:- !
-	, ic-compile-jump-if-false .if0 .e0/.e1 .elseLabel
-	, ic-compile-jump-if-false .if1 .e1/.ex .elseLabel
-#
-ic-compile-jump-if-false (IF .if0 (NUMBER 1) .if1) .e0/.ex .elseLabel
-	:- !
-	, ic-compile-jump-if .if0 .e0/.e1 .thenLabel
-	, ic-compile-jump-if .if1 .e1/.e2 .thenLabel
-	, .e2 = (_ JMP (DWORD .elseLabel)
-		, .thenLabel ()
-		, .ex)
-#
-ic-compile-jump-if-false (TREE .operator .left .right) .e0/.ex .elseLabel
-	:- once (ic-operator-negate .operator .negOp; ic-operator-negate .negOp .operator)
-	, !
-	, ic-compile-jump-if (TREE .negOp .left .right) .e0/.ex .elseLabel
+ic-compile-jump-if-false .if .e0/.ex .elseLabel
+	:- ic-compile-jump-if-false-better-option .if .e0/.ex .elseLabel, !
 #
 ic-compile-jump-if-false .if .e0/.ex .elseLabel
 	:- ic-compile .if .e0/.e1
@@ -225,6 +210,22 @@ ic-compile-jump-if-false .if .e0/.ex .elseLabel
 		, _ R-
 		, _ JZ (DWORD .elseLabel)
 		, .ex)
+#
+
+ic-compile-jump-if-false-better-option (IF .if0 .if1 (NUMBER 0)) .e0/.ex .elseLabel
+	:- ic-compile-jump-if-false .if0 .e0/.e1 .elseLabel
+	, ic-compile-jump-if-false .if1 .e1/.ex .elseLabel
+#
+ic-compile-jump-if-false-better-option (IF .if0 (NUMBER 1) .if1) .e0/.ex .elseLabel
+	:- ic-compile-jump-if .if0 .e0/.e1 .thenLabel
+	, ic-compile-jump-if .if1 .e1/.e2 .thenLabel
+	, .e2 = (_ JMP (DWORD .elseLabel)
+		, .thenLabel ()
+		, .ex)
+#
+ic-compile-jump-if-false-better-option (TREE .operator .left .right) .e0/.ex .elseLabel
+	:- once (ic-operator-negate .operator .negOp; ic-operator-negate .negOp .operator)
+	, ic-compile-jump-if (TREE .negOp .left .right) .e0/.ex .elseLabel
 #
 
 ic-compile-jump-if (TREE .operator .left .right) .e0/.ex .elseLabel
