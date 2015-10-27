@@ -5,7 +5,7 @@ fc-precompile-lib-if-required .lib
 	:- fc-library-filename .lib .filename0
 	, fc-precompiled-library-filename .lib .filename1
 	, once (file.exists .filename0, file.time .filename0 .time0; .time0 = 0)
-	, once (file.exists .filename1, file.time .filename1 .time1; .time1 = 1)
+	, once (file.exists .filename1, file.time .filename1 .time1; .time1 = 0)
 	, once (.time0 <= .time1; fc-precompile-lib .lib)
 #
 
