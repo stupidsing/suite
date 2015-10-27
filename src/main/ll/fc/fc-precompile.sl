@@ -76,7 +76,7 @@ fc-infer-type-rule ($$PRECOMPILE .uvt .trs _) .uvt .trs NUMBER :- ! #
 -- Lazyifier and optimizer
 fc-rewrite ($$PRECOMPILE .p) ($$PRECOMPILE .p) .ts/.ts :- ! #
 
--- Code generation
+-- Code generator
 fc-compile ($$PRECOMPILE _ _ .fve .cr) .fve .cr :- ! #
 
 () :- import.path "fc/fc.sl" #
