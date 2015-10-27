@@ -27,7 +27,7 @@ getLatestTimestamp() {
 	TARGETTIME=$(getLatestTimestamp "${BASE}/precompiled/STANDARD.node.gz")
 	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
 	[ "${SKIPPRECOMPILE}" ] ||
-	{ echo | ${CMD} precompile-all ||
+	{ echo | ${CMD} precompile STANDARD ||
 		{ rm -f ${BASE}/precompiled/STANDARD.node.gz && false; }
 	}
 ) &&

@@ -70,8 +70,6 @@ public class Main extends ExecutableProgram {
 				result &= dispatcher.dispatchFilter(inputs, reader, writer);
 			else if (Util.stringEquals(verb, "precompile"))
 				result &= dispatcher.dispatchPrecompile(inputs);
-			else if (Util.stringEquals(verb, "precompile-all"))
-				result &= dispatcher.dispatchPrecompileAll(inputs);
 			else if (Util.stringEquals(verb, "prove"))
 				result &= dispatcher.dispatchProve(inputs);
 			else if (Util.stringEquals(verb, "query"))

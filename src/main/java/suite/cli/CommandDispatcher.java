@@ -11,7 +11,6 @@ import suite.Suite;
 import suite.adt.Pair;
 import suite.fp.LazyFunInterpreter;
 import suite.fp.LazyFunInterpreter0;
-import suite.fp.PrecompileMain;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Rule;
@@ -223,15 +222,6 @@ public class CommandDispatcher {
 		for (String filename : filenames)
 			result &= Suite.precompile(filename, opt.pc(null));
 		return result;
-	}
-
-	public boolean dispatchPrecompileAll(List<String> filenames) {
-		if (filenames.size() == 0)
-			try (PrecompileMain precompileMain = new PrecompileMain()) {
-				return precompileMain.precompile();
-			}
-		else
-			throw new RuntimeException("No parameter is allowed");
 	}
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
