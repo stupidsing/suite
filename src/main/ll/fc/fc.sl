@@ -72,7 +72,7 @@ fc-load-library0 .lib .do
 
 fc-precompiled-library-filename .lib .filename
 	:- home.dir .homeDir
-	, concat .homeDir "/precompiled/" .lib ".node.gz" .filename
+	, concat .homeDir "/target/precompiled/" .lib ".node.gz" .filename
 #
 
 fc-library-filename .lib .filename
