@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import suite.adt.IdentityKey;
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
 
@@ -25,7 +24,7 @@ public class StronglyConnectedComponents<V> {
 	private int index = 0;
 	private Deque<Scc> stack = new ArrayDeque<>();
 
-	public final List<IdentityKey<Set<V>>> components = new ArrayList<>();
+	public final List<Set<V>> components = new ArrayList<>();
 
 	private class Scc {
 		private V v;
@@ -73,7 +72,7 @@ public class StronglyConnectedComponents<V> {
 				(wscc = stack.pop()).isStacked = false;
 				set.add(wscc.v);
 			} while (wscc != vscc);
-			components.add(IdentityKey.of(set));
+			components.add(set);
 		}
 	}
 
