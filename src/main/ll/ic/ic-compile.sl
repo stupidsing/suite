@@ -297,7 +297,7 @@ ic-compile-let .memory0 .memory1 _
 
 ic-push-pop-invoke-parameters () .e/.e .f/.f
 #
-ic-push-pop-invoke-parameters (IP .p, .ips) .e0/.ex .f0/.fx
+ic-push-pop-invoke-parameters (IP IN .p, .ips) .e0/.ex .f0/.fx
 	:- ic-push-pop-invoke-parameters .ips .e0/.e1 .f1/.fx
 	, once (
 		ic-compile-operand .p .e1/.e2 .op

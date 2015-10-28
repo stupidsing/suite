@@ -40,7 +40,7 @@ ic-infer-type0 .vs (METHOD0 () .do) (METHOD0-OF () .returnType)
 	:- ic-infer-type .vs .do .returnType
 	, ic-return-type .returnType
 #
-ic-infer-type0 .vs (METHOD0 (MP .var .paramType, .params) .do) (METHOD0-OF (.paramType, .paramTypes) .returnType)
+ic-infer-type0 .vs (METHOD0 (MP IN .var .paramType, .params) .do) (METHOD0-OF (.paramType, .paramTypes) .returnType)
 	:- ic-infer-type (MONO .var .paramType, .vs) (METHOD0 .params .do) (METHOD0-OF .paramTypes .returnType)
 #
 ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .paramTypes .returnType)
@@ -112,7 +112,7 @@ ic-infer-type0 .vs (WHILE .while .do) I32
 
 ic-infer-invoke-parameter-types _ () ()
 #
-ic-infer-invoke-parameter-types .vs (IP .do, .ips) (.type, .types)
+ic-infer-invoke-parameter-types .vs (IP IN .do, .ips) (.type, .types)
 	:- ic-infer-type .vs .do .type
 	, ic-infer-invoke-parameter-types .vs .ips .types
 #

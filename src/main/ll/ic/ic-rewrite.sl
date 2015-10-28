@@ -18,7 +18,7 @@ ic-rewrite (IN .var .do0) (IN .var .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (INVOKE .sub0 ()) (INVOKE .sub1 ()) (.sub0 .sub1, .ts)/.ts
 #
-ic-rewrite (INVOKE .sub0 (IP .param0, .ips0)) (INVOKE .sub1 (IP .param1, .ips1)) (.param0 .param1, .ts0)/.tsx
+ic-rewrite (INVOKE .sub0 (IP IN .param0, .ips0)) (INVOKE .sub1 (IP IN .param1, .ips1)) (.param0 .param1, .ts0)/.tsx
 	:- ic-rewrite (INVOKE .sub0 .ips0) (INVOKE .sub1 .ips1) .ts0/.tsx
 #
 ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1, .ts)/.ts
@@ -79,8 +79,8 @@ ic-rewrite (WHILE .while0 .do0) (WHILE .while1 .do1) (.while0 .while1, .do0 .do1
 #
 
 ic-rewrite-method-parameter .mp0 .mp1
-	:- .mp0 = MP .var .type0
-	, .mp1 = MP .var .type1
+	:- .mp0 = MP IN .var .type0
+	, .mp1 = MP IN .var .type1
 	, ic-rewrite-type .type0 .type1
 #
 ic-rewrite-method-parameter .mps0 .mps1
