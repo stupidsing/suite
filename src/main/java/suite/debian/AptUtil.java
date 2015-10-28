@@ -45,9 +45,14 @@ public class AptUtil {
 				.map(pm -> {
 					String p = pm.get("Filename");
 					if (p != null)
-						return repo.urlAddress + "/" + p;
+						return repo.urlAddress //
+								+ "/" + p;
 					else
-						return repo.urlAddress + "/pool/" + repo.tag + "/" + prefix + "/" + packageName //
+						return repo.urlAddress //
+								+ "/pool" //
+								+ "/" + repo.tag //
+								+ "/" + prefix //
+								+ "/" + packageName //
 								+ "/" + packageName + "_" + pm.get("Version") + "_" + pm.get("Architecture") + ".deb";
 				}) //
 				.uniqueResult();
