@@ -24,6 +24,7 @@ public class StronglyConnectedComponents<V> {
 	private ListMultimap<Scc, Scc> forwards = new ListMultimap<>();
 	private int index = 0;
 	private Deque<Scc> stack = new ArrayDeque<>();
+
 	public final List<IdentityKey<Set<V>>> components = new ArrayList<>();
 
 	private class Scc {
