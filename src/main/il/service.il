@@ -45,9 +45,9 @@ declare svc-service = function [p0, p1, p2,] (
 	asm _ PUSH (CS);
 
 	if (cs0 and 3 != 0) then (
-		asm _ MOV (EAX, `EBP + 16`);
-		asm _ MOV (EBX, `EBP + 12`);
-		asm _ MOV (ECX, `EBP + 8`);
+		asm _ MOV (EAX, `EBP + 20`);
+		asm _ MOV (EBX, `EBP + 16`);
+		asm _ MOV (ECX, `EBP + 12`);
 		asm _ MOV (EDX, ESP);
 		asm _ D8 (+x68);
 		asm _ D32 (.sysexitPoint);

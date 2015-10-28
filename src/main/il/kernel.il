@@ -41,12 +41,12 @@ declare ticks = 0;
 
 declare copy = function [dst, src, len,] (
 	asm _ CLD ();
-	asm _ MOV (EDI, `EBP + 8`);
-	asm _ MOV (ESI, `EBP + 12`);
-	asm _ MOV (ECX, `EBP + 16`);
+	asm _ MOV (EDI, `EBP + 12`);
+	asm _ MOV (ESI, `EBP + 16`);
+	asm _ MOV (ECX, `EBP + 20`);
 	asm _ SHR (ECX, 2);
 	asm _ REP MOVSD ();
-	asm _ MOV (ECX, `EBP + 16`);
+	asm _ MOV (ECX, `EBP + 20`);
 	asm _ AND (ECX, 3);
 	asm _ REP MOVSB ();
 );
@@ -54,11 +54,11 @@ declare copy = function [dst, src, len,] (
 declare zero = function [dst, len,] (
 	asm _ XOR (EAX, EAX);
 	asm _ CLD ();
-	asm _ MOV (EDI, `EBP + 8`);
-	asm _ MOV (ECX, `EBP + 12`);
+	asm _ MOV (EDI, `EBP + 12`);
+	asm _ MOV (ECX, `EBP + 16`);
 	asm _ SHR (ECX, 2);
 	asm _ REP STOSD ();
-	asm _ MOV (ECX, `EBP + 12`);
+	asm _ MOV (ECX, `EBP + 16`);
 	asm _ AND (ECX, 3);
 	asm _ REP STOSB ();
 );
@@ -72,32 +72,32 @@ declare dw-set = function [p, i,] (
 );
 
 declare inb = function [port,] (
-	asm _ MOV (EDX, `EBP + 8`);
+	asm _ MOV (EDX, `EBP + 12`);
 	asm _ XOR (EAX, EAX);
 	asm _ IN (AL, DX);
 );
 
 declare inw = function [port,] (
-	asm _ MOV (EDX, `EBP + 8`);
+	asm _ MOV (EDX, `EBP + 12`);
 	asm _ XOR (EAX, EAX);
 	asm _ IN (AX, DX);
 );
 
 declare outb = function [port, value,] (
-	asm _ MOV (EDX, `EBP + 8`);
-	asm _ MOV (EAX, `EBP + 12`);
+	asm _ MOV (EDX, `EBP + 12`);
+	asm _ MOV (EAX, `EBP + 16`);
 	asm _ OUT (DX, AL);
 );
 
 declare outw = function [port, value,] (
-	asm _ MOV (EDX, `EBP + 8`);
-	asm _ MOV (EAX, `EBP + 12`);
+	asm _ MOV (EDX, `EBP + 12`);
+	asm _ MOV (EAX, `EBP + 16`);
 	asm _ OUT (DX, AX);
 );
 
 declare wrmsr = function [msr, value,] (
-	asm _ MOV (ECX, `EBP + 8`);
-	asm _ MOV (EAX, `EBP + 12`);
+	asm _ MOV (ECX, `EBP + 12`);
+	asm _ MOV (EAX, `EBP + 16`);
 	asm _ XOR (EDX, EDX);
 	asm _ WRMSR ();
 );

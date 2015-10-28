@@ -53,19 +53,20 @@ ic-compile0 (INVOKE .mr .params) .e0/.ex
 		, .sub = MEMORY 4 (TREE ' + ' .pointer (NUMBER 4))
 	)
 	, .e1 = (_ RSAVE
-		, _ FR-PUSH (EBP)
 		, .e2)
-	, ic-push-pop-parameters .params .e2/.e3 .e6/.e7
+	, ic-push-pop-parameters .params .e2/.e3 .e7/.e8
 	, ic-compile .sub .e3/.e4
-	, ic-compile-operand .this .e4/.e5 .thisOp
-	, .e5 = (_ MOV (EBP, .thisOp)
+	, .e4 = (_ FR-PUSH (EBP)
+		, .e5)
+	, ic-compile-operand .this .e5/.e6 .thisOp
+	, .e6 = (_ MOV (EBP, .thisOp)
 		, _ R-
 		, _ CALL ($0)
 		, _ R-
+		, _ FR-POP (EBP)
 		, _ MOV (ECX, EAX)
-		, .e6)
-	, .e7 = (_ FR-POP (EBP)
-		, _ RRESTORE
+		, .e7)
+	, .e8 = (_ RRESTORE
 		, _ R+
 		, _ MOV ($0, ECX)
 		, .ex)

@@ -1,7 +1,7 @@
 declare cmpxchg = function [loc, v0, v1,] (
-	asm _ MOV (EDI, `EBP + 8`);
-	asm _ MOV (EAX, `EBP + 12`);
-	asm _ MOV (EBX, `EBP + 16`);
+	asm _ MOV (EDI, `EBP + 12`);
+	asm _ MOV (EAX, `EBP + 16`);
+	asm _ MOV (EBX, `EBP + 20`);
 	asm _ CMPXCHG (`EDI`, EBX);
 	asm _ SETE (AL);
 	asm _ MOVZX (EAX, AL);
