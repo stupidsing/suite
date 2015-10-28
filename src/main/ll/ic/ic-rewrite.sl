@@ -24,7 +24,7 @@ ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1
 ic-rewrite (MEMORY .size .pointer0) (MEMORY .size .pointer1) (.pointer0 .pointer1, .ts)/.ts
 #
 ic-rewrite (METHOD0 .params0 .do0) (METHOD0 .params1 .do1) (.do0 .do1, .ts)/.ts
-	:- zip .params0 .params1 .list, list.query .list .param0:.param1 (ic-rewrite-parameter .param0 .param1)
+	:- zip .params0 .params1 .list, list.query .list .param0:.param1 (ic-rewrite-method-parameter .param0 .param1)
 #
 ic-rewrite (METHOD .this0 .method0) (METHOD .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
 #
@@ -79,14 +79,14 @@ ic-rewrite (WHILE .while0 .do0) (WHILE .while1 .do1) (.while0 .while1, .do0 .do1
 ic-rewrite-list () () .ts/.ts #
 ic-rewrite-list (.p0, .ps0) (.px, .psx) (.p0 .px, .ts0)/.tsx :- ic-rewrite-list .ps0 .psx .ts0/.tsx #
 
-ic-rewrite-parameter .param0 .param1
-	:- .param0 = PARAM .var .type0
-	, .param1 = PARAM .var .type1
+ic-rewrite-method-parameter .mp0 .mp1
+	:- .mp0 = MP .var .type0
+	, .mp1 = MP .var .type1
 	, ic-rewrite-type .type0 .type1
 #
-ic-rewrite-parameter .param0 .param1
-	:- .param0 = PS .var .size
-	, .param1 = PS .var .size
+ic-rewrite-method-parameter .mps0 .mps1
+	:- .mps0 = MPS .var .size
+	, .mps1 = MPS .var .size
 #
 
 ic-rewrite-type I8 I8

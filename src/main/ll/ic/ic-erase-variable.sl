@@ -29,7 +29,7 @@ ic-erase-variables .fv (.do0 .dox, .ts)
 
 ic-parameters-variables _ _ () .vs/.vs
 #
-ic-parameters-variables .frame .offset (PS .var .size, .vars) (FRAME-VAR .var .frame .offset1 .size, .vs0)/.vsx
+ic-parameters-variables .frame .offset (MPS .var .size, .vars) (FRAME-VAR .var .frame .offset1 .size, .vs0)/.vsx
 	:- let .offset1 (.offset + .size)
 	, ic-parameters-variables .frame .offset1 .vars .vs0/.vsx
 #

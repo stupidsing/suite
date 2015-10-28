@@ -50,9 +50,9 @@ ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1
 	, ic-parse .value .value1
 #
-ic-parse (baseless [.params] .do) (METHOD0 .params1 .do1) -- Traditional subroutine definition
-	:- zip .params .params1 .list
-	, list.query .list .param:.param1 (ic-parse-parameter .param .param1)
+ic-parse (baseless [.params] .do) (METHOD0 .mps .do1) -- Traditional subroutine definition
+	:- zip .params .mps .list
+	, list.query .list .param:.mp (ic-parse-parameter .param .mp)
 	, ic-parse .do .do1
 #
 ic-parse (function [.params] .do) (METHOD THIS .method) -- Traditional subroutine definition
@@ -167,11 +167,11 @@ ic-parse-sugar (var .var = .value; .do) (var .var; let .var = .value; .do)
 ic-parse-sugar true 1
 #
 
-ic-parse-parameter (.param as .t) (PARAM .param .type)
+ic-parse-parameter (.param as .t) (MP .param .type)
 	:- ic-parse-type .t .type
 #
 ic-parse-parameter .p .param
-	:- not (.p = _/_), .param = PARAM .p _
+	:- not (.p = _/_), .param = MP .p _
 #
 
 ic-parse-type (.tv0 => .type0) .typex
