@@ -18,16 +18,16 @@ ic-rewrite (IN .var .do0) (IN .var .do1) (.do0 .do1, .ts)/.ts
 #
 ic-rewrite (INVOKE .sub0 ()) (INVOKE .sub1 ()) (.sub0 .sub1, .ts)/.ts
 #
-ic-rewrite (INVOKE .sub0 (IP IN .param0, .ips0)) (INVOKE .sub1 (IP IN .param1, .ips1)) (.param0 .param1, .ts0)/.tsx
+ic-rewrite (INVOKE .sub0 (IP .io .param0, .ips0)) (INVOKE .sub1 (IP .io .param1, .ips1)) (.param0 .param1, .ts0)/.tsx
 	:- ic-rewrite (INVOKE .sub0 .ips0) (INVOKE .sub1 .ips1) .ts0/.tsx
 #
 ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1, .ts)/.ts
 #
 ic-rewrite (MEMORY .size .pointer0) (MEMORY .size .pointer1) (.pointer0 .pointer1, .ts)/.ts
 #
-ic-rewrite (METHOD0 .params0 .do0) (METHOD0 .params1 .do1) (.do0 .do1, .ts)/.ts
-	:- zip .params0 .params1 .list
-	, list.query .list .param0:.param1 (ic-rewrite-method-parameter .param0 .param1)
+ic-rewrite (METHOD0 .mps0 .do0) (METHOD0 .mps1 .do1) (.do0 .do1, .ts)/.ts
+	:- zip .mps0 .mps1 .list
+	, list.query .list .mp0:.mp1 (ic-rewrite-method-parameter .mp0 .mp1)
 #
 ic-rewrite (METHOD .this0 .method0) (METHOD .this1 .method1) (.this0 .this1, .method0 .method1, .ts)/.ts
 #
@@ -98,7 +98,9 @@ ic-rewrite-type (ARRAY-OF .size .type0) (ARRAY-OF .size .type1)
 #
 ic-rewrite-type (METHOD0-OF .pos0 .returnType0) (METHOD0-OF .pos1 .returnType1)
 	:- zip .pos0 .pos1 .list
-	, list.query .list (PARAM-OF .io .type0):(PARAM-OF .io .type1) (ic-rewrite-type .type0 .type1)
+	, list.query .list (PARAM-OF .io .type0):(PARAM-OF .io .type1) (
+		ic-rewrite-type .type0 .type1
+	)
 	, ic-rewrite-type .returnType0 .returnType1
 #
 ic-rewrite-type (METHOD-OF .pos0 .returnType0) (METHOD-OF .pos1 .returnType1)

@@ -170,8 +170,8 @@ ic-parse-sugar true 1
 ic-parse-parameter (.param as .t) (MP IN .param .type)
 	:- ic-parse-type .t .type
 #
-ic-parse-parameter .p .param
-	:- not (.p = _/_), .param = MP IN .p _
+ic-parse-parameter .p .mp
+	:- not (.p = _/_), .mp = MP IN .p _
 #
 
 ic-parse-type (.tv0 => .type0) .typex

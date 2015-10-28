@@ -297,16 +297,24 @@ ic-compile-let .memory0 .memory1 _
 
 ic-push-pop-invoke-parameters () .e/.e .f/.f
 #
-ic-push-pop-invoke-parameters (IP IN .p, .ips) .e0/.ex .f0/.fx
-	:- ic-push-pop-invoke-parameters .ips .e0/.e1 .f1/.fx
+ic-push-pop-invoke-parameters (IP .io .param, .ips) .e0/.ex .f0/.fx
+	:- ic-push-pop-invoke-parameters .ips .e0/.e1 .f3/.fx
 	, once (
-		ic-compile-operand .p .e1/.e2 .op
-		, .e2 = (_ FR-PUSH (.op), _ R-, .ex)
-		, .f0 = (_ FR-POP (EDX), .f1)
-		; .e1 = (_ FR-PUSHN (.size), .e2)
-		, .f0 = (_ FR-POPN (.size), .f1)
-		, ic-compile-let .p (MEMORY .size (REG ESP)) .e2/.e3
-		, .e3 = (_ R-, .ex)
+		.io = IN, (
+			ic-compile-operand .param .e1/.e2 .op
+			, .e2 = (_ FR-PUSH (.op), _ R-, .ex)
+			, .f0 = (_ FR-POP (EDX), .f3)
+			; .e1 = (_ FR-PUSHN (.size), .e2)
+			, ic-compile-let .p (MEMORY .size (REG ESP)) .e2/.e3
+			, .e3 = (_ R-, .ex)
+			, .f0 = (_ FR-POPN (.size), .f3)
+		)
+		; .io = OUT, (
+			.e1 = (_ FR-PUSHN (.size), .ex)
+			, ic-compile-let (MEMORY .size (REG ESP)) .p .f0/.f1
+			, .f1 = (_ R-, .f2)
+			, .f2 = (_ FR-POPN (.size), .f3)
+		)
 	)
 #
 

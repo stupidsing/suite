@@ -40,8 +40,8 @@ ic-infer-type0 .vs (METHOD0 () .do) (METHOD0-OF () .returnType)
 	:- ic-infer-type .vs .do .returnType
 	, ic-return-type .returnType
 #
-ic-infer-type0 .vs (METHOD0 (MP .io .var .paramType, .params) .do) (METHOD0-OF (PARAM-OF .io .paramType, .pos) .returnType)
-	:- ic-infer-type (MONO .var .paramType, .vs) (METHOD0 .params .do) (METHOD0-OF .pos .returnType)
+ic-infer-type0 .vs (METHOD0 (MP .io .var .paramType, .mps) .do) (METHOD0-OF (PARAM-OF .io .paramType, .pos) .returnType)
+	:- ic-infer-type (MONO .var .paramType, .vs) (METHOD0 .mps .do) (METHOD0-OF .pos .returnType)
 #
 ic-infer-type0 .vs (METHOD .this .method) (METHOD-OF .pos .returnType)
 	:- ic-infer-type .vs .this I32
