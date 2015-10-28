@@ -41,10 +41,10 @@ ic-parse .array:.index (INDEX _ .array1 .index1)
 	:- ic-parse .array .array1
 	, ic-parse .index .index1
 #
-ic-parse (.sub [.params]) (INVOKE .sub1 .params1) -- Traditional subroutine invocation
+ic-parse (.sub [.params]) (INVOKE .sub1 .ips) -- Traditional subroutine invocation
 	:- ic-parse .sub .sub1
-	, zip .params .params1 .list
-	, list.query .list .param:.param1 (ic-parse .param .param1)
+	, zip .params .ips .list
+	, list.query .list .param:(IP .param1) (ic-parse .param .param1)
 #
 ic-parse (let .var = .value) (LET .var1 .value1)
 	:- ic-parse .var .var1

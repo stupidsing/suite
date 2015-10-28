@@ -44,7 +44,7 @@ ic-compile0 (DECLARES _ .offset .size .do) .e0/.ex
 	, .e2 = (_ FR-POPN (.size)
 		, .ex)
 #
-ic-compile0 (INVOKE .mr .params) .e0/.ex
+ic-compile0 (INVOKE .mr .ips) .e0/.ex
 	:- once (
 		.mr = METHOD .this .sub
 		, .e0 = .e1
@@ -54,7 +54,7 @@ ic-compile0 (INVOKE .mr .params) .e0/.ex
 	)
 	, .e1 = (_ RSAVE
 		, .e2)
-	, ic-push-pop-parameters .params .e2/.e3 .e7/.e8
+	, ic-push-pop-invoke-parameters .ips .e2/.e3 .e7/.e8
 	, ic-compile .sub .e3/.e4
 	, .e4 = (_ FR-PUSH (EBP)
 		, .e5)
@@ -295,10 +295,10 @@ ic-compile-let .memory0 .memory1 _
 	:- ic-error "Cannot assign from" .memory0 "to" .memory1
 #
 
-ic-push-pop-parameters () .e/.e .f/.f
+ic-push-pop-invoke-parameters () .e/.e .f/.f
 #
-ic-push-pop-parameters (.p, .ps) .e0/.ex .f0/.fx
-	:- ic-push-pop-parameters .ps .e0/.e1 .f1/.fx
+ic-push-pop-invoke-parameters (IP .p, .ips) .e0/.ex .f0/.fx
+	:- ic-push-pop-invoke-parameters .ips .e0/.e1 .f1/.fx
 	, once (
 		ic-compile-operand .p .e1/.e2 .op
 		, .e2 = (_ FR-PUSH (.op), _ R-, .ex)

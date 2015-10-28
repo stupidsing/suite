@@ -6,13 +6,6 @@ ic-infer-type _ .do .type
 	:- ic-error "Cannot resolve type of" .do "to" .type
 #
 
-ic-infer-type-list _ () ()
-#
-ic-infer-type-list .vs (.do, .dos) (.type, .types)
-	:- ic-infer-type .vs .do .type
-	, ic-infer-type-list .vs .dos .types
-#
-
 ic-infer-type0 _ (ASM _) I32
 #
 ic-infer-type0 .vs (DECLARE .mp .var .varType .do) .type
@@ -35,9 +28,9 @@ ic-infer-type0 .vs (INDEX .type .array .index) .type
 ic-infer-type0 .vs (IN .var .do) .type
 	:- try (ic-infer-type .vs .do .type) .ex (throw .ex "%0Aat variable" .var)
 #
-ic-infer-type0 .vs (INVOKE .method .params) .returnType
+ic-infer-type0 .vs (INVOKE .method .ips) .returnType
 	:- ic-infer-type .vs .method (METHOD-OF .paramTypes .returnType)
-	, ic-infer-type-list .vs .params .paramTypes
+	, ic-infer-invoke-parameter-types .vs .ips .paramTypes
 #
 ic-infer-type0 .vs (LET .var .value) .type
 	:- ic-infer-type .vs .var .type
@@ -115,6 +108,13 @@ ic-infer-type0 .vs (VAR .var) .type
 ic-infer-type0 .vs (WHILE .while .do) I32
 	:- ic-infer-type .vs .while I32
 	, ic-infer-type .vs .do _
+#
+
+ic-infer-invoke-parameter-types _ () ()
+#
+ic-infer-invoke-parameter-types .vs (IP .do, .ips) (.type, .types)
+	:- ic-infer-type .vs .do .type
+	, ic-infer-invoke-parameter-types .vs .ips .types
 #
 
 ic-field-type .nts .name .type

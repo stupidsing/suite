@@ -16,8 +16,10 @@ ic-rewrite (IF .if0 .then0 .else0) (IF .if1 .then1 .else1) (.if0 .if1, .then0 .t
 #
 ic-rewrite (IN .var .do0) (IN .var .do1) (.do0 .do1, .ts)/.ts
 #
-ic-rewrite (INVOKE .sub0 .params0) (INVOKE .sub1 .params1) (.sub0 .sub1, .ts0)/.tsx
-	:- ic-rewrite-list .params0 .params1 .ts0/.tsx
+ic-rewrite (INVOKE .sub0 ()) (INVOKE .sub1 ()) (.sub0 .sub1, .ts)/.ts
+#
+ic-rewrite (INVOKE .sub0 (IP .param0, .ips0)) (INVOKE .sub1 (IP .param1, .ips1)) (.param0 .param1, .ts0)/.tsx
+	:- ic-rewrite (INVOKE .sub0 .ips0) (INVOKE .sub1 .ips1) .ts0/.tsx
 #
 ic-rewrite (LET .var0 .value0) (LET .var1 .value1) (.var0 .var1, .value0 .value1, .ts)/.ts
 #
@@ -75,9 +77,6 @@ ic-rewrite (VAR .var) (VAR .var) .ts/.ts
 #
 ic-rewrite (WHILE .while0 .do0) (WHILE .while1 .do1) (.while0 .while1, .do0 .do1, .ts)/.ts
 #
-
-ic-rewrite-list () () .ts/.ts #
-ic-rewrite-list (.p0, .ps0) (.px, .psx) (.p0 .px, .ts0)/.tsx :- ic-rewrite-list .ps0 .psx .ts0/.tsx #
 
 ic-rewrite-method-parameter .mp0 .mp1
 	:- .mp0 = MP .var .type0
