@@ -24,11 +24,11 @@ getLatestTimestamp() {
 
 (
 	SOURCETIME=$(getLatestTimestamp "${JAR}")
-	TARGETTIME=$(getLatestTimestamp "${BASE}/precompiled/STANDARD.node.gz")
+	TARGETTIME=$(getLatestTimestamp "${BASE}/target/precompiled/STANDARD.node.gz")
 	[ ${SOURCETIME} -le ${TARGETTIME} ] ||
 	[ "${SKIPPRECOMPILE}" ] ||
 	{ echo | ${CMD} precompile STANDARD ||
-		{ rm -f ${BASE}/precompiled/STANDARD.node.gz && false; }
+		{ rm -f ${BASE}/target/precompiled/STANDARD.node.gz && false; }
 	}
 ) &&
 
