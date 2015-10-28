@@ -15,7 +15,7 @@ public class LogicCompilerLevel2Test {
 	// Require tail recursion to work
 	@Test
 	public void test0() {
-		RuleSet rs = Suite.nodeToRuleSet(Suite.parse("" //
+		RuleSet rs = Suite.getRuleSet(Suite.parse("" //
 				+ "member (.e, _) .e #" //
 				+ "member (_, .tail) .e :- member .tail .e #" //
 				+ "sum .a .b .c :- bound .a, bound .b, let .c (.a - .b) #" //

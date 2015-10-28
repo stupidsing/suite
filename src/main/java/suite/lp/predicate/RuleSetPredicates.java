@@ -57,7 +57,7 @@ public class RuleSetPredicates {
 		if (ps.length > 0)
 			proto = Prototype.of(ps[0]);
 
-		Node node = Suite.getRuleList(prover.ruleSet(), proto);
+		Node node = Suite.listRules(prover.ruleSet(), proto);
 		PrettyPrinter printer = new PrettyPrinter();
 		System.out.println(printer.prettyPrint(node));
 		return true;
@@ -92,7 +92,7 @@ public class RuleSetPredicates {
 
 	public BuiltinPredicate with = PredicateUtil.p2((prover, p0, p1) -> {
 		RuleSet ruleSet = prover.ruleSet();
-		RuleSet ruleSet1 = Suite.nodeToRuleSet(p0);
+		RuleSet ruleSet1 = Suite.getRuleSet(p0);
 		CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
 		return new Prover(ruleSet2).prove(p1);
 	});

@@ -28,14 +28,14 @@ public class FailedTests {
 	// Duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
-		Suite.applyNoLibraries(() -> Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true));
+		Suite.useLibraries(() -> Suite.evaluateFun("using MATH >> (a => (using MATH >> 1)) {0}", true));
 	}
 
 	// NPE. Method not found in concatm due to not importing standard library.
 	// Module dependency checks are necessary
 	@Test
 	public void testEager() {
-		Suite.applyNoLibraries(() -> Suite.evaluateFun("using MONAD >> 0", false));
+		Suite.useLibraries(() -> Suite.evaluateFun("using MONAD >> 0", false));
 	}
 
 	// (Expected) infinite loop.
@@ -53,7 +53,7 @@ public class FailedTests {
 	public void testRecursiveCall() {
 		Suite.isInstructionDump = true;
 		Suite.isInstructionTrace = true;
-		Suite.applyNoLibraries(() -> {
+		Suite.useLibraries(() -> {
 			assertNotNull(Suite.evaluateFun("define f := f >> f", true));
 			return true;
 		});

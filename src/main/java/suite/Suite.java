@@ -6,15 +6,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiPredicate;
 
 import suite.fp.FunCompilerConfig;
 import suite.fp.intrinsic.Intrinsics;
@@ -23,22 +19,14 @@ import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.ImportUtil;
-import suite.lp.Trail;
-import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
-import suite.lp.sewing.SewingBinder.BindEnv;
-import suite.lp.sewing.VariableMapper.Env;
-import suite.lp.sewing.impl.SewingBinderImpl;
-import suite.lp.sewing.impl.SewingGeneralizerImpl;
-import suite.lp.sewing.impl.VariableMapperImpl.Generalization;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
@@ -66,12 +54,11 @@ public class Suite {
 			"rbt-get", //
 			"replace"));
 
+	private static BindUtil bindUtil = new BindUtil();
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
 	private static ImportUtil importUtil = new ImportUtil();
 	private static IterativeParser parser = new IterativeParser(TermOp.values());
-
-	private static Map<String, Fun<Node, Node[]>> matchers = new ConcurrentHashMap<>();
 
 	public static void addRule(RuleSet rs, String rule) {
 		rs.addRule(Rule.formRule(parse(rule)));
@@ -94,20 +81,6 @@ public class Suite {
 		return Suite.substitute(".0 | lines | map {cs-from-string}", func);
 	}
 
-	public static <T> T applyNoLibraries(Source<T> source) {
-		return applyLibraries(Collections.emptyList(), source);
-	}
-
-	public static <T> T applyLibraries(List<String> libraries, Source<T> source) {
-		List<String> libraries0 = Suite.libraries;
-		Suite.libraries = libraries;
-		try {
-			return source.source();
-		} finally {
-			Suite.libraries = libraries0;
-		}
-	}
-
 	public static FunCompilerConfig fcc(Node fp) {
 		return fcc(fp, false);
 	}
@@ -119,11 +92,11 @@ public class Suite {
 		return fcc;
 	}
 
-	public static Node ruleSetToNode(RuleSet rs) {
-		return getRuleList(rs, null);
+	public static Node getRules(RuleSet rs) {
+		return listRules(rs, null);
 	}
 
-	public static RuleSet nodeToRuleSet(Node node) {
+	public static RuleSet getRuleSet(Node node) {
 		RuleSet rs = createRuleSet();
 		importUtil.importFrom(rs, node);
 		return rs;
@@ -134,7 +107,7 @@ public class Suite {
 	 *
 	 * May specify a prototype to limit the rules listed.
 	 */
-	public static Node getRuleList(RuleSet rs, Prototype proto) {
+	public static Node listRules(RuleSet rs, Prototype proto) {
 		List<Node> nodes = Read.from(rs.getRules()) //
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::formClause) //
@@ -142,57 +115,29 @@ public class Suite {
 		return Tree.of(TermOp.NEXT__, nodes);
 	}
 
+	public static <T> T useLibraries(Source<T> source) {
+		return useLibraries(Collections.emptyList(), source);
+	}
+
+	public static <T> T useLibraries(List<String> libraries, Source<T> source) {
+		List<String> libraries0 = Suite.libraries;
+		Suite.libraries = libraries;
+		try {
+			return source.source();
+		} finally {
+			Suite.libraries = libraries0;
+		}
+	}
+
+	// --------------------------------
+	// Bind utilities
+
 	public static Fun<Node, Node[]> matcher(String s) {
-		return matchers.computeIfAbsent(s, s_ -> {
-			Generalizer generalizer = new Generalizer();
-			Node toMatch = generalizer.generalize(parse(s_));
-
-			SewingBinderImpl sb = new SewingBinderImpl(false);
-			BiPredicate<BindEnv, Node> pred = sb.compileBind(toMatch);
-			List<Integer> indexList = new ArrayList<>();
-			Integer index;
-			int n = 0;
-			while ((index = sb.getVariableIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
-				indexList.add(index);
-
-			int size = indexList.size();
-			int indices[] = new int[size];
-			for (int i = 0; i < size; i++)
-				indices[i] = indexList.get(i);
-
-			return node -> {
-				Env env = sb.env();
-				Trail trail = new Trail();
-				BindEnv be = new BindEnv() {
-					public Env getEnv() {
-						return env;
-					}
-
-					public Trail getTrail() {
-						return trail;
-					}
-				};
-				if (pred.test(be, node)) {
-					List<Node> results = new ArrayList<>(size);
-					for (int i = 0; i < size; i++)
-						results.add(env.get(indices[i]));
-					return results.toArray(new Node[size]);
-				} else
-					return null;
-			};
-		});
+		return bindUtil.matcher(s);
 	}
 
 	public static Node substitute(String s, Node... nodes) {
-		Generalization generalization = SewingGeneralizerImpl.process(parse(s));
-		int i = 0;
-
-		for (Node node : nodes) {
-			Node variable = generalization.getVariable(Atom.of("." + i++));
-			((Reference) variable).bound(node);
-		}
-
-		return generalization.node;
+		return bindUtil.substitute(s, nodes);
 	}
 
 	// --------------------------------
