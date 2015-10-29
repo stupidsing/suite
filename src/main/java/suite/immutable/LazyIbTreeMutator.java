@@ -47,12 +47,12 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	}
 
 	@Override
-	public synchronized void put(K key, V value) {
+	public void put(K key, V value) {
 		update(key, pair0 -> Pair.of(key, value));
 	}
 
 	@Override
-	public synchronized void remove(K key) {
+	public void remove(K key) {
 		update(key, pair0 -> null);
 	}
 
