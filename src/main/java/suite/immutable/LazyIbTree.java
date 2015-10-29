@@ -16,7 +16,6 @@ public class LazyIbTree<T> implements ITree<T> {
 	private int maxBranchFactor = 32;
 	private int minBranchFactor = maxBranchFactor / 2;
 	private Comparator<T> comparator;
-
 	public final Source<List<Slot<T>>> source;
 
 	/**
@@ -54,13 +53,12 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this.source = () -> Arrays.asList(new Slot<>(null, null));
-		this.comparator = comparator;
+		this(comparator, () -> Arrays.asList(new Slot<>(null, null)));
 	}
 
 	public LazyIbTree(Comparator<T> comparator, Source<List<Slot<T>>> source) {
-		this.source = source;
 		this.comparator = comparator;
+		this.source = source;
 	}
 
 	public void validate() {
