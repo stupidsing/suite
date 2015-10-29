@@ -40,7 +40,7 @@ var mouse = function(document) {
 		log("onmousemove = " + x + ", " + y);
 	};
 	document.onmousedown = function(e) { down = true; };
-	document.onmouseup = function(e) { up = true; };
+	document.onmouseup = function(e) { down = false; };
 };
 
 var controller = function(canvas, keyboard, mouse, objects) {
@@ -79,4 +79,3 @@ var controller = function(canvas, keyboard, mouse, objects) {
 		}
 	};
 };
-
