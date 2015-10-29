@@ -11,6 +11,7 @@ import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
@@ -38,7 +39,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	@Override
 	public V get(K key) {
 		List<V> values = new ArrayList<>();
-		persister.load(pointers).update(node(key), pair -> {
+		update(key, pair -> {
 			values.add(pair.t1);
 			return pair;
 		});
@@ -47,19 +48,22 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 	@Override
 	public void put(K key, V value) {
-		Pair<K, V> pair1 = Pair.of(key, value);
-		pointers = persister.save(persister.load(pointers).update(node(key), pair0 -> pair1));
+		pointers = update(key, pair0 -> Pair.of(key, value));
 	}
 
 	@Override
 	public void remove(K key) {
-		pointers = persister.save(persister.load(pointers).update(node(key), pair -> null));
+		pointers = update(key, pair0 -> null);
 	}
 
 	@Override
 	public void end(boolean isComplete) {
 		superblockFile.save(0, pointers);
 		persister.gc(pointers, 9);
+	}
+
+	private List<Integer> update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+		return persister.save(persister.load(pointers).update(node(key), fun));
 	}
 
 	private Pair<K, V> node(K key) {
