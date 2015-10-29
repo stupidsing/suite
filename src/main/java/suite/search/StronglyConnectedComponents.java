@@ -3,7 +3,6 @@ package suite.search;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,8 @@ import java.util.Set;
 
 import suite.adt.ListMultimap;
 import suite.adt.Pair;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 
 /**
  * http://en.wikipedia.org/wiki/Tarjan%27
@@ -39,18 +40,12 @@ public class StronglyConnectedComponents<V> {
 	}
 
 	public StronglyConnectedComponents(DirectedGraph<V> dg) {
-		Map<V, Scc> sccs = new HashMap<>();
+		Map<V, Scc> sccs = Read.from(dg.vertices).map(v -> Pair.of(v, new Scc(v))).collect(As::map);
+		forwards = Read.from(dg.forwards).toMultimap(sccs::get, sccs::get);
 
-		for (V v : dg.vertices)
-			sccs.put(v, new Scc(v));
-
-		for (Pair<V, V> forward : dg.forwards.entries())
-			forwards.put(sccs.get(forward.t0), sccs.get(forward.t1));
-
-		for (Scc vscc : sccs.values()) {
+		for (Scc vscc : sccs.values())
 			if (!vscc.isVisited)
 				strongConnect(vscc);
-		}
 	}
 
 	private void strongConnect(Scc vscc) {
