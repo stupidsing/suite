@@ -10,17 +10,19 @@ var log = function(m) {
 var keyboard = function(document) {
 	var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };
 
-	var pressed = {};
-	document.onkeydown = function(e) { pressed[tokeycode(e)] = true; };
-	document.onkeyup = function(e) { pressed[tokeycode(e)] = false; };
+	var ispressed = {};
+	document.onkeydown = function(e) { ispressed[tokeycode(e)] = true; };
+	document.onkeyup = function(e) { ispressed[tokeycode(e)] = false; };
 
 	// log("onkeydown = " + tokeycode(e) + "/" + String.fromCharCode(tokeycode(e)));
 
 	return {
-		dirx: function() { return pressed[37] ? -1 : (pressed[39] ? 1 : 0); }
-		, diry: function() { return pressed[38] ? -1 : (pressed[40] ? 1 : 0); }
-		, paused: function() { return pressed[80]; }
-		, pressed: pressed
+		dirx: function() { return ispressed[37] ? -1 : (ispressed[39] ? 1 : 0); }
+		, diry: function() { return ispressed[38] ? -1 : (ispressed[40] ? 1 : 0); }
+		, paused: function() { return ispressed[80]; }
+		, pressed: function(keycode) {
+			return ispressed[keycode];
+		}
 	};
 };
 
