@@ -53,12 +53,12 @@
 
 		var control = controller(canvas, keyboard(document), mouse(document), [ball]);
 
-		var tick = function() {
+		var tick = function(timestamp) {
 			control.tick();
-			setTimeout(tick, 25);
+			requestAnimationFrame(tick);
 		};
 
-		tick();
+		requestAnimationFrame(tick);
 	</script>
 
 </html>
