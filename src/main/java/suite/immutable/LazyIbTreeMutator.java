@@ -25,11 +25,12 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 			, Comparator<K> keyComparator //
 			, Serializer<K> keySerializer //
 			, Serializer<V> valueSerializer) {
-		superblockFile = new SerializedPageFileImpl<>(new SubPageFileImpl(pageFile, 0, 1),
-				SerializeUtil.list(SerializeUtil.intSerializer));
+		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
+		PageFile pf1 = new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE);
 
-		persister = new LazyIbTreePersister<>( //
-				new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE) //
+		superblockFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.list(SerializeUtil.intSerializer));
+
+		persister = new LazyIbTreePersister<>(pf1 //
 				, (p0, p1) -> keyComparator.compare(p0.t0, p1.t0) //
 				, SerializeUtil.pair(keySerializer, valueSerializer));
 
