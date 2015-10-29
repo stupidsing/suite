@@ -21,14 +21,6 @@ mvn eclipse:clean eclipse:eclipse
 and imports the project into any workspace.
 
 
-### I get stack overflow error when running org.instructionexecutor test cases. What can I do?
-
-Eclipse -> Window -> Preferences -> Java -> Installed JREs -> (Your JRE)
--> Edit -> Default VM Arguments -> Enter "-Xss2m"
-
-or use a 64-bit JVM
-
-
 ### How to evaluate logical programs?
 
 printf '? dump something, nl' | ./run.sh --quiet
