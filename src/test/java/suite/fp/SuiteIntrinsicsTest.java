@@ -16,7 +16,7 @@ public class SuiteIntrinsicsTest {
 				+ "using SUITE >> chars:\"1 + 2\" \n" //
 				+ "| suite-parse \n" //
 				+ "| suite-match {chars:\".0 + .1\"} \n" //
-				+ "| get {0} \n" //
+				+ "| (`$n0; _;` => n0) \n" //
 				+ "| suite-to-chars \n" //
 				+ "| cs-to-string";
 		assertEquals("49;", Suite.evaluateFun(fp0, true).toString());
