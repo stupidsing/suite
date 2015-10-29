@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import suite.adt.Pair;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 
@@ -65,6 +66,21 @@ public class SerializeUtil {
 				booleanSerializer.write(dataOutput, isNotNull);
 				if (isNotNull)
 					serializer.write(dataOutput, value);
+			}
+		};
+	}
+
+	public static <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> keySerializer, Serializer<T1> valueSerializer) {
+		return new Serializer<Pair<T0, T1>>() {
+			public Pair<T0, T1> read(DataInput dataInput) throws IOException {
+				T0 t0 = keySerializer.read(dataInput);
+				T1 t1 = valueSerializer.read(dataInput);
+				return Pair.of(t0, t1);
+			}
+
+			public void write(DataOutput dataOutput, Pair<T0, T1> pair) throws IOException {
+				keySerializer.write(dataOutput, pair.t0);
+				valueSerializer.write(dataOutput, pair.t1);
 			}
 		};
 	}
