@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.file.PageFile;
 import suite.file.impl.JournalledPageFileImpl;
-import suite.fs.KeyValueStoreMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeMutator;
 import suite.os.FileUtil;
@@ -18,15 +17,25 @@ public class DatabaseTest {
 	@Test
 	public void test() throws IOException {
 		PageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "database", PageFile.defaultPageSize);
-		LazyIbTreeMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
-				pageFile //
-				, Util.comparator() //
-				, SerializeUtil.intSerializer //
-				, SerializeUtil.string(64));
-		TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
-		KeyValueStoreMutator<Integer, String> tx = txm.begin();
-		tx.put(0, "sample");
-		tx.end(true);
+
+		try {
+			LazyIbTreeMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
+					pageFile //
+					, Util.comparator() //
+					, SerializeUtil.intSerializer //
+					, SerializeUtil.string(64));
+
+			TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
+
+			String value = txm.begin(tx -> {
+				tx.put(0, "sample");
+				return tx.get(0);
+			});
+
+			System.out.println(value);
+		} finally {
+			pageFile.sync();
+		}
 	}
 
 }

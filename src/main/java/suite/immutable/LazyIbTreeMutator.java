@@ -39,21 +39,21 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	@Override
 	public V get(K key) {
 		List<V> values = new ArrayList<>();
-		update(key, pair -> {
+		update0(key, pair -> {
 			values.add(pair.t1);
 			return pair;
 		});
-		return values.get(0);
+		return values.size() == 1 ? values.get(0) : null;
 	}
 
 	@Override
-	public void put(K key, V value) {
-		pointers = update(key, pair0 -> Pair.of(key, value));
+	public synchronized void put(K key, V value) {
+		update(key, pair0 -> Pair.of(key, value));
 	}
 
 	@Override
-	public void remove(K key) {
-		pointers = update(key, pair0 -> null);
+	public synchronized void remove(K key) {
+		update(key, pair0 -> null);
 	}
 
 	@Override
@@ -62,7 +62,11 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 		persister.gc(pointers, 9);
 	}
 
-	private List<Integer> update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+		pointers = update0(key, fun);
+	}
+
+	private List<Integer> update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
 		return persister.save(persister.load(pointers).update(node(key), fun));
 	}
 

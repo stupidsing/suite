@@ -12,6 +12,7 @@ import suite.concurrent.Stm;
 import suite.concurrent.Stm.TransactionStatus;
 import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 /**
@@ -76,7 +77,7 @@ public class TransactionManager<Key, Value> {
 		this.source = source;
 	}
 
-	public synchronized void flush() {
+	private synchronized void flush() {
 		Map<Key, Value> map = new HashMap<>();
 
 		boolean ok = stm.transaction(transaction -> {
@@ -98,6 +99,16 @@ public class TransactionManager<Key, Value> {
 				else
 					mutator.remove(k);
 			});
+			mutator.end(ok);
+		}
+	}
+
+	public <T> T begin(Fun<KeyValueStoreMutator<Key, Value>, T> fun) {
+		KeyValueStoreMutator<Key, Value> mutator = begin();
+		boolean ok = false;
+		try {
+			return fun.apply(mutator);
+		} finally {
 			mutator.end(ok);
 		}
 	}
