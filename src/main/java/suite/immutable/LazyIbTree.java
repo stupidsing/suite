@@ -64,10 +64,12 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public void validate() {
-		Read.from(source.source()).sink(slot -> validate(slot.source));
+		Read.from(source.source()).sink(this::validate);
 	}
 
-	private void validate(Source<List<Slot<T>>> source) {
+	private void validate(Slot<T> slot) {
+		Source<List<Slot<T>>> source = slot.source;
+
 		if (source != null) {
 			List<Slot<T>> slots = source.source();
 			int size = slots.size();
@@ -79,7 +81,7 @@ public class LazyIbTree<T> implements ITree<T> {
 				throw new RuntimeException("Too many branches");
 
 			for (Slot<T> slot_ : slots) {
-				validate(slot_.source);
+				validate(slot_);
 				if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
 					throw new RuntimeException("Wrong key order");
 				p = slot_.pivot;

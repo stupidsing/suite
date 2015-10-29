@@ -79,7 +79,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 	public List<Integer> gc(List<Integer> pointers, int back) {
 		synchronized (writeLock) {
 			int end = nPages.get();
-			int start = Math.min(0, end - back);
+			int start = Math.max(0, end - back);
 			boolean isInUse[] = new boolean[end - start];
 
 			Sink<List<Integer>> use = pointers_ -> {
