@@ -92,6 +92,10 @@ public class LazyIbTree<T> implements ITree<T> {
 		return stream(root(), null, null);
 	}
 
+	public Streamlet<T> stream(T start, T end) {
+		return stream(root(), start, end);
+	}
+
 	private Streamlet<T> stream(List<Slot<T>> node, T start, T end) {
 		int i0 = start != null ? new FindSlot(node, start).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
@@ -144,7 +148,7 @@ public class LazyIbTree<T> implements ITree<T> {
 		return source.source();
 	}
 
-	private LazyIbTree<T> update(T t, Fun<T, T> fun) {
+	public LazyIbTree<T> update(T t, Fun<T, T> fun) {
 		return new LazyIbTree<>(comparator, createRoot(update(root(), t, fun)));
 	}
 

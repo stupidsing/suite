@@ -117,7 +117,7 @@ public class SerializeUtil {
 	 *
 	 * Size = 1
 	 */
-	public static Serializer<Boolean> boolean_() {
+	private static Serializer<Boolean> boolean_() {
 		return new Serializer<Boolean>() {
 			public Boolean read(DataInput dataInput) throws IOException {
 				return dataInput.readByte() == -1;
@@ -134,7 +134,7 @@ public class SerializeUtil {
 	 *
 	 * Size = 4
 	 */
-	public static Serializer<Integer> int_() {
+	private static Serializer<Integer> int_() {
 		return new Serializer<Integer>() {
 			public Integer read(DataInput dataInput) throws IOException {
 				return dataInput.readInt();
