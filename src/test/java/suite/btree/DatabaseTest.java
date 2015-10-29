@@ -18,7 +18,7 @@ public class DatabaseTest {
 
 	@Test
 	public void test() throws IOException {
-		JournalledPageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "database", PageFile.defaultPageSize);
+		JournalledPageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "/database", PageFile.defaultPageSize);
 
 		try {
 			KeyValueStoreMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
