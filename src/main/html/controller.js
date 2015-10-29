@@ -46,12 +46,7 @@ var mouse = function(document) {
 var controller = function(canvas, keyboard, mouse, objects) {
 	var width = canvas.width, height = canvas.height;
 
-	var canvas0 = document.createElement("canvas"); // off-screen buffer
-	canvas0.width = width;
-	canvas0.height = height;
-
 	var context = canvas.getContext("2d");
-	var context0 = canvas0.getContext("2d");
 
 	var repaint = function(context, objects) {
 		context.fillStyle = "#777777";
@@ -73,8 +68,7 @@ var controller = function(canvas, keyboard, mouse, objects) {
 					return object.spawn();
 				}, objects));
 
-				repaint(context0, objects);
-				context.drawImage(canvas0, 0, 0);
+				repaint(context, objects);
 			}
 		}
 	};
