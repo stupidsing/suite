@@ -1,4 +1,4 @@
-### What is suite?
+### What is this?
 
 Library with all sorts of useful code pieces for myself. In particular it has a logic interpreter and a functional code compiler.
 
@@ -7,14 +7,14 @@ Library with all sorts of useful code pieces for myself. In particular it has a 
 - Linux, unix, or cygwin
 - JDK 1.8
 - Apache Maven 3
-- rlwrap if you want to use the convenient interactive prompt
+- rlwrap if you want more command-line convenience
 
 ### How to build and run the project?
 
-Execute run.sh. It executes maven to build the java code, and performs pre-compilation as well.
+Execute run.sh. It builds Java code, and performs pre-compilation.
 
 
-### How to in set up in eclipse?
+### How to set up in eclipse?
 
 Execute command
 mvn eclipse:clean eclipse:eclipse
