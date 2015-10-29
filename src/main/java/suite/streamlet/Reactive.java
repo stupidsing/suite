@@ -50,7 +50,7 @@ public class Reactive<T> {
 	}
 
 	private static <T> Reactive<T> from(Bag<Sink<T>> sinks) {
-		return from(sink -> sinks.add(sink));
+		return from(sinks::add);
 	}
 
 	public static <T> Reactive<T> from(Sink<Sink<T>> sink) {
