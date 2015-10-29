@@ -22,7 +22,7 @@ public class DatabaseTest {
 				pageFile //
 				, Util.comparator() //
 				, SerializeUtil.intSerializer //
-				, SerializeUtil.string(256));
+				, SerializeUtil.string(64));
 		TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
 		KeyValueStoreMutator<Integer, String> tx = txm.begin();
 		tx.put(0, "sample");
