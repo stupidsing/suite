@@ -2,10 +2,10 @@ package suite.file.impl;
 
 import java.io.IOException;
 
-import suite.file.PageFile;
+import suite.file.JournalledPageFile;
 import suite.util.SerializeUtil;
 
-public class JournalledPageFileImpl extends JournalledDataFileImpl<Integer>implements PageFile {
+public class JournalledPageFileImpl extends JournalledDataFileImpl<Integer>implements JournalledPageFile {
 
 	public JournalledPageFileImpl(String filename, int pageSize) throws IOException {
 		super( //

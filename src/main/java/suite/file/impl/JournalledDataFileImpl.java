@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import suite.file.DataFile;
+import suite.file.JournalledDataFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
@@ -20,7 +21,7 @@ import suite.util.SerializeUtil.Serializer;
  *
  * @author ywsing
  */
-public class JournalledDataFileImpl<Pointer> implements Closeable, DataFile<Pointer> {
+public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDataFile<Pointer> {
 
 	private DataFile<Pointer> dataFile;
 	private SerializedPageFile<JournalEntry> journalPageFile;

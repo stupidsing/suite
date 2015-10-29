@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.impl.JournalledPageFileImpl;
 import suite.fs.impl.TransactionManager;
@@ -16,7 +17,7 @@ public class DatabaseTest {
 
 	@Test
 	public void test() throws IOException {
-		PageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "database", PageFile.defaultPageSize);
+		JournalledPageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "database", PageFile.defaultPageSize);
 
 		try {
 			LazyIbTreeMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
@@ -34,7 +35,7 @@ public class DatabaseTest {
 
 			System.out.println(value);
 		} finally {
-			pageFile.sync();
+			pageFile.commit();
 		}
 	}
 

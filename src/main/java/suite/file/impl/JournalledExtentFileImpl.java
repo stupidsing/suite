@@ -5,10 +5,10 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import suite.file.ExtentAllocator.Extent;
-import suite.file.ExtentFile;
+import suite.file.JournalledExtentFile;
 import suite.util.SerializeUtil.Serializer;
 
-public class JournalledExtentFileImpl extends JournalledDataFileImpl<Extent>implements ExtentFile {
+public class JournalledExtentFileImpl extends JournalledDataFileImpl<Extent>implements JournalledExtentFile {
 
 	private static Serializer<Extent> extentSerializer = new Serializer<Extent>() {
 		public Extent read(DataInput dataInput) throws IOException {
