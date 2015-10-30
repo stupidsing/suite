@@ -28,7 +28,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 	private SerializedPageFile<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
-	private BiMap<Slot<T>, Integer> slotByPointer = new HashBiMap<>();
+	private BiMap<Integer, Slot<T>> slotByPointer = new HashBiMap<>();
 
 	public static class PersistSlot<T> {
 		public final List<Integer> pointers;
@@ -110,10 +110,10 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 	private List<Slot<T>> load_(List<Integer> pointers) {
 		return Read.from(pointers).map(pointer -> {
-			Slot<T> slot = slotByPointer.inverse().get(pointer);
+			Slot<T> slot = slotByPointer.get(pointer);
 			if (slot == null) {
 				PersistSlot<T> ps = pageFile.load(pointer);
-				slotByPointer.put(slot = new Slot<>(() -> load_(ps.pointers), ps.pivot), pointer);
+				slotByPointer.put(pointer, slot = new Slot<>(() -> load_(ps.pointers), ps.pivot));
 			}
 			return slot;
 		}).toList();
@@ -121,10 +121,10 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 	private List<Integer> save_(List<Slot<T>> slots) {
 		return Read.from(slots).map(slot -> {
-			Integer pointer = slotByPointer.get(slot);
+			Integer pointer = slotByPointer.inverse().get(slot);
 			if (pointer == null) {
 				List<Integer> pointers = save_(slot.readSlots());
-				slotByPointer.put(slot, pointer = nPages.getAndIncrement());
+				slotByPointer.put(pointer = nPages.getAndIncrement(), slot);
 				pageFile.save(pointer, new PersistSlot<>(pointers, slot.pivot));
 			}
 			return pointer;
