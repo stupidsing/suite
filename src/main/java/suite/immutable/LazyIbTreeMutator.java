@@ -30,7 +30,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 		persister = new LazyIbTreePersister<>(pf1, comparator, SerializeUtil.pair(ks, vs));
 		pointers = superblockFile.load(0);
 
-		if (pointers.isEmpty())
+		if (pointers.isEmpty()) // File not exist
 			pointers = persister.save(new LazyIbTree<>(comparator));
 	}
 
