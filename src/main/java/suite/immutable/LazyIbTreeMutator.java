@@ -21,14 +21,17 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	private LazyIbTreePersister<Pair<K, V>> persister;
 	private List<Integer> pointers;
 
-	public LazyIbTreeMutator(PageFile pageFile, Comparator<K> comparator, Serializer<K> ks, Serializer<V> vs) {
+	public LazyIbTreeMutator(PageFile pageFile, Comparator<K> kc, Serializer<K> ks, Serializer<V> vs) {
 		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
 		PageFile pf1 = new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE);
+		Comparator<Pair<K, V>> comparator = (p0, p1) -> kc.compare(p0.t0, p1.t0);
 
 		superblockFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.list(SerializeUtil.intSerializer));
-		persister = new LazyIbTreePersister<>(pf1, (p0, p1) -> comparator.compare(p0.t0, p1.t0), SerializeUtil.pair(ks, vs));
-
+		persister = new LazyIbTreePersister<>(pf1, comparator, SerializeUtil.pair(ks, vs));
 		pointers = superblockFile.load(0);
+
+		if (pointers.isEmpty())
+			pointers = persister.save(new LazyIbTree<>(comparator));
 	}
 
 	@Override
@@ -40,10 +43,10 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	public V get(K key) {
 		List<V> values = new ArrayList<>();
 		update0(key, pair -> {
-			values.add(pair.t1);
+			values.add(pair != null ? pair.t1 : null);
 			return pair;
 		});
-		return values.size() == 1 ? values.get(0) : null;
+		return values.get(0);
 	}
 
 	@Override
@@ -67,7 +70,9 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 	}
 
 	private List<Integer> update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
-		return persister.save(persister.load(pointers).update(node(key), fun));
+		LazyIbTree<Pair<K, V>> tree0 = persister.load(pointers);
+		LazyIbTree<Pair<K, V>> treex = tree0.update(node(key), fun);
+		return persister.save(treex);
 	}
 
 	private Pair<K, V> node(K key) {

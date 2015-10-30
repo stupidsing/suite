@@ -44,17 +44,17 @@ public class LazyIbTreePersister<T> implements Closeable {
 		this.comparator = comparator;
 
 		Serializer<List<Integer>> pointersSerializer = SerializeUtil.list(SerializeUtil.intSerializer);
-
+		Serializer<T> ts1 = SerializeUtil.nullable(ts);
 		Serializer<PersistSlot<T>> serializer = new Serializer<PersistSlot<T>>() {
 			public PersistSlot<T> read(DataInput dataInput) throws IOException {
 				List<Integer> pointers = pointersSerializer.read(dataInput);
-				T pivot = ts.read(dataInput);
-				return new PersistSlot<T>(pointers, pivot);
+				T pivot = ts1.read(dataInput);
+				return new PersistSlot<>(pointers, pivot);
 			}
 
 			public void write(DataOutput dataOutput, PersistSlot<T> value) throws IOException {
 				pointersSerializer.write(dataOutput, value.pointers);
-				ts.write(dataOutput, value.pivot);
+				ts1.write(dataOutput, value.pivot);
 			}
 		};
 
@@ -67,7 +67,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 	}
 
 	public LazyIbTree<T> load(List<Integer> pointers) {
-		return new LazyIbTree<T>(comparator, () -> load_(pointers));
+		return new LazyIbTree<>(comparator, () -> load_(pointers));
 	}
 
 	public List<Integer> save(LazyIbTree<T> tree) {
@@ -110,30 +110,24 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 	private List<Slot<T>> load_(List<Integer> pointers) {
 		return Read.from(pointers).map(pointer -> {
-			if (pointer != 0) {
-				Slot<T> slot = slotByPointer.inverse().get(pointer);
-				if (slot == null) {
-					PersistSlot<T> ps = pageFile.load(pointer);
-					slotByPointer.put(slot = new Slot<T>(() -> load_(ps.pointers), ps.pivot), pointer);
-				}
-				return slot;
-			} else
-				return null;
+			Slot<T> slot = slotByPointer.inverse().get(pointer);
+			if (slot == null) {
+				PersistSlot<T> ps = pageFile.load(pointer);
+				slotByPointer.put(slot = new Slot<>(() -> load_(ps.pointers), ps.pivot), pointer);
+			}
+			return slot;
 		}).toList();
 	}
 
 	private List<Integer> save_(List<Slot<T>> slots) {
 		return Read.from(slots).map(slot -> {
-			if (slot != null) {
-				Integer pointer = slotByPointer.get(slot);
-				if (pointer == null) {
-					List<Integer> pointers = save_(slot.readSlots());
-					slotByPointer.put(slot, pointer = nPages.incrementAndGet());
-					pageFile.save(pointer, new PersistSlot<T>(pointers, slot.pivot));
-				}
-				return pointer;
-			} else
-				return 0;
+			Integer pointer = slotByPointer.get(slot);
+			if (pointer == null) {
+				List<Integer> pointers = save_(slot.readSlots());
+				slotByPointer.put(slot, pointer = nPages.getAndIncrement());
+				pageFile.save(pointer, new PersistSlot<>(pointers, slot.pivot));
+			}
+			return pointer;
 		}).toList();
 	}
 

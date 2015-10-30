@@ -83,21 +83,22 @@ public class ObstructionFreeStm {
 		while (true) {
 			int lastReadTime[] = new int[1];
 			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
+			Snapshot<V> snapshot1 = snapshot;
 
 			// Read committed, repeatable read
-			while (snapshot != null //
-					&& snapshot.owner != transaction //
-					&& (snapshot.owner.status != TransactionStatus.DONE____ || snapshot.owner.time >= transaction.time))
-				snapshot = snapshot.previous;
+			while (snapshot1 != null //
+					&& snapshot1.owner != transaction //
+					&& (snapshot1.owner.status != TransactionStatus.DONE____ || snapshot1.owner.time >= transaction.time))
+				snapshot1 = snapshot1.previous;
 
-			if (snapshot == null)
+			if (snapshot1 == null)
 				throw new LostSnapshotException();
 
 			if (lastReadTime[0] < transaction.time
 					&& !memory.asr.compareAndSet(snapshot, snapshot, lastReadTime[0], transaction.time))
 				continue;
 
-			return snapshot.value;
+			return snapshot1.value;
 		}
 	}
 

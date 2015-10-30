@@ -2,6 +2,7 @@ package suite.immutable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this(comparator, () -> Arrays.asList(new Slot<>(null, null)));
+		this(comparator, () -> Arrays.asList(new Slot<>(() -> Collections.emptyList(), null)));
 	}
 
 	public LazyIbTree(Comparator<T> comparator, Source<List<Slot<T>>> source) {
@@ -66,24 +67,21 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	private void validate(Slot<T> slot) {
-		Source<List<Slot<T>>> source = slot.source;
+		List<Slot<T>> slots = slot.source.source();
+		int size = slots.size();
+		T p = null;
 
-		if (source != null) {
-			List<Slot<T>> slots = source.source();
-			int size = slots.size();
-			T p = null;
-
+		if (size > 0)
 			if (size < minBranchFactor)
 				throw new RuntimeException("Too few branches");
 			else if (size >= maxBranchFactor)
 				throw new RuntimeException("Too many branches");
 
-			for (Slot<T> slot_ : slots) {
-				validate(slot_);
-				if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
-					throw new RuntimeException("Wrong key order");
-				p = slot_.pivot;
-			}
+		for (Slot<T> slot_ : slots) {
+			validate(slot_);
+			if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
+				throw new RuntimeException("Wrong key order");
+			p = slot_.pivot;
 		}
 	}
 
@@ -102,8 +100,9 @@ public class LazyIbTree<T> implements ITree<T> {
 
 		if (i0 < i1)
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
-				if (slot.source != null)
-					return stream(slot.readSlots(), start, end);
+				List<Slot<T>> slots = slot.readSlots();
+				if (!slots.isEmpty())
+					return stream(slots, start, end);
 				else
 					return slot.pivot != null ? Read.from(slot.pivot) : Read.empty();
 			});
@@ -114,7 +113,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	public T find(T t) {
 		List<Slot<T>> node = root();
 		FindSlot fs = null;
-		while (node != null) {
+		while (!node.isEmpty()) {
 			fs = new FindSlot(node, t);
 			node = fs.slot.readSlots();
 		}
@@ -158,43 +157,44 @@ public class LazyIbTree<T> implements ITree<T> {
 		FindSlot fs = new FindSlot(node0, t);
 		int size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
-		List<Slot<T>> replaceSlots;
+		List<Slot<T>> slots0 = fs.slot.readSlots();
+		List<Slot<T>> slots2;
 
 		// Adds the node into it
-		if (fs.slot.source != null) {
-			List<Slot<T>> slots1 = update(fs.slot.readSlots(), t, fun);
+		if (!slots0.isEmpty()) {
+			List<Slot<T>> slots1 = update(slots0, t, fun);
 			List<Slot<T>> inner;
 
 			// Merges with a neighbor if less than minimum number of nodes
 			if (slots1.size() == 1 && (inner = slots1.get(0).readSlots()).size() < minBranchFactor)
 				if (s0 > 0)
-					replaceSlots = merge(node0.get(--s0).readSlots(), inner);
+					slots2 = merge(node0.get(--s0).readSlots(), inner);
 				else if (s1 < size)
-					replaceSlots = merge(inner, node0.get(s1++).readSlots());
+					slots2 = merge(inner, node0.get(s1++).readSlots());
 				else
-					replaceSlots = slots1;
+					slots2 = slots1;
 			else
-				replaceSlots = slots1;
+				slots2 = slots1;
 		} else {
 			T t0 = fs.c == 0 ? fs.slot.pivot : null;
 			T t1 = fun.apply(t0);
 
-			replaceSlots = new ArrayList<>();
+			slots2 = new ArrayList<>();
 			if (fs.c != 0)
-				replaceSlots.add(fs.slot);
+				slots2.add(fs.slot);
 			if (t1 != null)
-				replaceSlots.add(new Slot<>(null, t1));
+				slots2.add(new Slot<>(() -> Collections.emptyList(), t1));
 		}
 
-		List<Slot<T>> slots1 = Util.add(Util.left(node0, s0), replaceSlots, Util.right(node0, s1));
+		List<Slot<T>> slots3 = Util.add(Util.left(node0, s0), slots2, Util.right(node0, s1));
 		List<Slot<T>> node1;
 
 		// Checks if need to split
-		if (slots1.size() < maxBranchFactor)
-			node1 = Arrays.asList(slot(slots1));
+		if (slots3.size() < maxBranchFactor)
+			node1 = Arrays.asList(slot(slots3));
 		else { // Splits into two if reached maximum number of nodes
-			List<Slot<T>> leftSlots = Util.left(slots1, minBranchFactor);
-			List<Slot<T>> rightSlots = Util.right(slots1, minBranchFactor);
+			List<Slot<T>> leftSlots = Util.left(slots3, minBranchFactor);
+			List<Slot<T>> rightSlots = Util.right(slots3, minBranchFactor);
 			node1 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 		}
 
