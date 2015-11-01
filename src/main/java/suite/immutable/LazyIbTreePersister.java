@@ -74,7 +74,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 		}
 	}
 
-	public List<Integer> gc(List<Integer> pointers, int back) {
+	public Map<Integer, Integer> gc(List<Integer> pointers, int back) {
 		synchronized (writeLock) {
 			int end = nPages.get();
 			int start = Math.max(0, end - back);
@@ -102,7 +102,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 				} else
 					slotsByPointer.remove(p0);
 
-			return Read.from(pointers).map(map::get).toList();
+			return map;
 		}
 	}
 

@@ -61,9 +61,10 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 	@Override
 	public void end(boolean isComplete) {
-		int pointer = persister.save(tree);
-		superblockFile.save(0, pointer);
-		persister.gc(Arrays.asList(pointer), 9).get(0);
+		int pointer0 = superblockFile.load(0);
+		int pointer1 = persister.save(tree);
+		int pointerx = persister.gc(Arrays.asList(pointer0, pointer1), 9).get(pointer1);
+		superblockFile.save(0, pointerx);
 	}
 
 	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
