@@ -115,10 +115,10 @@ public class LazyIbTreePersister<T> implements Closeable {
 					pageFile.save(p1, psx);
 					map.put(p0, p1++);
 				}
-
-				slotsByPointer.remove(p0);
 			}
 
+			nPages.set(p1);
+			slotsByPointer.clear();
 			return map;
 		}
 	}
