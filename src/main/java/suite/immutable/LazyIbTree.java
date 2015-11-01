@@ -17,7 +17,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	private int maxBranchFactor = 32;
 	private int minBranchFactor = maxBranchFactor / 2;
 	private Comparator<T> comparator;
-	public final Source<List<Slot<T>>> source;
+	public final List<Slot<T>> root;
 
 	/**
 	 * List<Slot<T>> would be null in leaves. Pivot stores the leaf value.
@@ -54,20 +54,20 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this(comparator, () -> Arrays.asList(new Slot<>(() -> Collections.emptyList(), null)));
+		this(comparator, Arrays.asList(new Slot<>(() -> Collections.emptyList(), null)));
 	}
 
-	public LazyIbTree(Comparator<T> comparator, Source<List<Slot<T>>> source) {
+	public LazyIbTree(Comparator<T> comparator, List<Slot<T>> source) {
 		this.comparator = comparator;
-		this.source = source;
+		this.root = source;
 	}
 
 	public void validate() {
-		Read.from(source.source()).sink(this::validate);
+		Read.from(root).sink(this::validate);
 	}
 
 	private void validate(Slot<T> slot) {
-		List<Slot<T>> slots = slot.source.source();
+		List<Slot<T>> slots = slot.readSlots();
 		int size = slots.size();
 		T p = null;
 
@@ -87,11 +87,11 @@ public class LazyIbTree<T> implements ITree<T> {
 
 	@Override
 	public Streamlet<T> stream() {
-		return stream(root(), null, null);
+		return stream(root, null, null);
 	}
 
 	public Streamlet<T> stream(T start, T end) {
-		return stream(root(), start, end);
+		return stream(root, start, end);
 	}
 
 	private Streamlet<T> stream(List<Slot<T>> node, T start, T end) {
@@ -111,7 +111,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public T find(T t) {
-		List<Slot<T>> node = root();
+		List<Slot<T>> node = root;
 		FindSlot fs = null;
 		while (!node.isEmpty()) {
 			fs = new FindSlot(node, t);
@@ -143,12 +143,8 @@ public class LazyIbTree<T> implements ITree<T> {
 		return update(t, t_ -> null);
 	}
 
-	public List<Slot<T>> root() {
-		return source.source();
-	}
-
 	public LazyIbTree<T> update(T t, Fun<T, T> fun) {
-		return new LazyIbTree<>(comparator, createRoot(update(root(), t, fun)));
+		return new LazyIbTree<>(comparator, createRoot(update(root, t, fun)));
 	}
 
 	private List<Slot<T>> update(List<Slot<T>> node0, T t, Fun<T, T> fun) {
@@ -225,9 +221,9 @@ public class LazyIbTree<T> implements ITree<T> {
 		return merged;
 	}
 
-	private Source<List<Slot<T>>> createRoot(List<Slot<T>> node) {
+	private List<Slot<T>> createRoot(List<Slot<T>> node) {
 		List<Slot<T>> node1;
-		return node.size() == 1 && (node1 = node.get(0).readSlots()) != null ? createRoot(node1) : () -> node;
+		return node.size() == 1 && (node1 = node.get(0).readSlots()) != null ? createRoot(node1) : node;
 	}
 
 	private Slot<T> slot(List<Slot<T>> slots) {
@@ -247,7 +243,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		dump(sb, root(), "");
+		dump(sb, root, "");
 		return sb.toString();
 	}
 

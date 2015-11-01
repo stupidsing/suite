@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.adt.BiMap;
 import suite.adt.HashBiMap;
+import suite.adt.IdentityKey;
+import suite.adt.Pair;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.SerializedPageFileImpl;
@@ -28,37 +30,33 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 	private SerializedPageFile<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
-	private BiMap<Integer, Slot<T>> slotByPointer = new HashBiMap<>();
+	private BiMap<Integer, IdentityKey<List<Slot<T>>>> slotsByPointer = new HashBiMap<>();
 
 	public static class PersistSlot<T> {
-		public final List<Integer> pointers;
-		public final T pivot;
+		public final List<Pair<T, Integer>> pairs;
 
-		public PersistSlot(List<Integer> pointers, T pivot) {
-			this.pointers = pointers;
-			this.pivot = pivot;
+		public PersistSlot(List<Pair<T, Integer>> pairs) {
+			this.pairs = pairs;
 		}
 	}
 
 	public LazyIbTreePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		this.comparator = comparator;
 
-		Serializer<List<Integer>> pointersSerializer = SerializeUtil.list(SerializeUtil.intSerializer);
 		Serializer<T> ts1 = SerializeUtil.nullable(ts);
-		Serializer<PersistSlot<T>> serializer = new Serializer<PersistSlot<T>>() {
+		Serializer<Pair<T, Integer>> ps = SerializeUtil.pair(ts1, SerializeUtil.intSerializer);
+		Serializer<List<Pair<T, Integer>>> lps = SerializeUtil.list(ps);
+		Serializer<PersistSlot<T>> pss = new Serializer<PersistSlot<T>>() {
 			public PersistSlot<T> read(DataInput dataInput) throws IOException {
-				List<Integer> pointers = pointersSerializer.read(dataInput);
-				T pivot = ts1.read(dataInput);
-				return new PersistSlot<>(pointers, pivot);
+				return new PersistSlot<>(lps.read(dataInput));
 			}
 
 			public void write(DataOutput dataOutput, PersistSlot<T> value) throws IOException {
-				pointersSerializer.write(dataOutput, value.pointers);
-				ts1.write(dataOutput, value.pivot);
+				lps.write(dataOutput, value.pairs);
 			}
 		};
 
-		pageFile = new SerializedPageFileImpl<>(pf, serializer);
+		pageFile = new SerializedPageFileImpl<>(pf, pss);
 	}
 
 	@Override
@@ -66,13 +64,13 @@ public class LazyIbTreePersister<T> implements Closeable {
 		pageFile.close();
 	}
 
-	public LazyIbTree<T> load(List<Integer> pointers) {
-		return new LazyIbTree<>(comparator, () -> load_(pointers));
+	public LazyIbTree<T> load(Integer pointer) {
+		return new LazyIbTree<>(comparator, load_(pointer));
 	}
 
-	public List<Integer> save(LazyIbTree<T> tree) {
+	public Integer save(LazyIbTree<T> tree) {
 		synchronized (writeLock) {
-			return save_(tree.root());
+			return save_(tree.root);
 		}
 	}
 
@@ -92,7 +90,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 			for (int pointer = end - 1; pointer >= start; pointer--)
 				if (isInUse[pointer - start])
-					use.sink(pageFile.load(pointer).pointers);
+					use.sink(Read.from(pageFile.load(pointer).pairs).map(pair -> pair.t1).toList());
 
 			Map<Integer, Integer> map = new HashMap<>();
 			int p1 = start;
@@ -102,33 +100,35 @@ public class LazyIbTreePersister<T> implements Closeable {
 					pageFile.save(p1, pageFile.load(p0));
 					map.put(p0, p1++);
 				} else
-					slotByPointer.remove(p0);
+					slotsByPointer.remove(p0);
 
 			return Read.from(pointers).map(map::get).toList();
 		}
 	}
 
-	private List<Slot<T>> load_(List<Integer> pointers) {
-		return Read.from(pointers).map(pointer -> {
-			Slot<T> slot = slotByPointer.get(pointer);
-			if (slot == null) {
-				PersistSlot<T> ps = pageFile.load(pointer);
-				slotByPointer.put(pointer, slot = new Slot<>(() -> load_(ps.pointers), ps.pivot));
-			}
-			return slot;
-		}).toList();
+	private List<Slot<T>> load_(Integer pointer) {
+		IdentityKey<List<Slot<T>>> key = slotsByPointer.get(pointer);
+		if (key == null) {
+			PersistSlot<T> ps = pageFile.load(pointer);
+			List<Slot<T>> slots = Read.from(ps.pairs) //
+					.map(pair -> new Slot<>(() -> load_(pair.t1), pair.t0)) //
+					.toList();
+			slotsByPointer.put(pointer, key = IdentityKey.of(slots));
+		}
+		return key.key;
 	}
 
-	private List<Integer> save_(List<Slot<T>> slots) {
-		return Read.from(slots).map(slot -> {
-			Integer pointer = slotByPointer.inverse().get(slot);
-			if (pointer == null) {
-				List<Integer> pointers = save_(slot.readSlots());
-				slotByPointer.put(pointer = nPages.getAndIncrement(), slot);
-				pageFile.save(pointer, new PersistSlot<>(pointers, slot.pivot));
-			}
-			return pointer;
-		}).toList();
+	private Integer save_(List<Slot<T>> slots) {
+		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
+		Integer pointer = slotsByPointer.inverse().get(key);
+		if (pointer == null) {
+			List<Pair<T, Integer>> pairs = Read.from(slots) //
+					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
+					.toList();
+			slotsByPointer.put(pointer = nPages.getAndIncrement(), key);
+			pageFile.save(pointer, new PersistSlot<>(pairs));
+		}
+		return pointer;
 	}
 
 }

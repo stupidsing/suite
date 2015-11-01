@@ -1,6 +1,7 @@
 package suite.immutable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -12,31 +13,30 @@ import suite.file.impl.SubPageFileImpl;
 import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.SerializeUtil;
 import suite.util.SerializeUtil.Serializer;
 
 public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
-	private SerializedPageFile<List<Integer>> superblockFile;
+	private SerializedPageFile<Integer> superblockFile;
 	private LazyIbTreePersister<Pair<K, V>> persister;
-	private List<Integer> pointers;
+	private Integer pointer;
 
 	public LazyIbTreeMutator(PageFile pageFile, Comparator<K> kc, Serializer<K> ks, Serializer<V> vs) {
 		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
 		PageFile pf1 = new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE);
 		Comparator<Pair<K, V>> comparator = (p0, p1) -> kc.compare(p0.t0, p1.t0);
+		Source<Integer> source = () -> persister.save(new LazyIbTree<>(comparator));
 
-		superblockFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.list(SerializeUtil.intSerializer));
+		superblockFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.intSerializer, source);
 		persister = new LazyIbTreePersister<>(pf1, comparator, SerializeUtil.pair(ks, vs));
-		pointers = superblockFile.load(0);
-
-		if (pointers.isEmpty()) // File not exist
-			pointers = persister.save(new LazyIbTree<>(comparator));
+		pointer = superblockFile.load(0);
 	}
 
 	@Override
 	public Streamlet<K> keys(K start, K end) {
-		return persister.load(pointers).stream(node(start), node(end)).map(node -> node.t0);
+		return persister.load(pointer).stream(node(start), node(end)).map(Pair::first_);
 	}
 
 	@Override
@@ -61,16 +61,16 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 	@Override
 	public void end(boolean isComplete) {
-		superblockFile.save(0, pointers);
-		persister.gc(pointers, 9);
+		superblockFile.save(0, pointer);
+		persister.gc(Arrays.asList(pointer), 9);
 	}
 
 	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
-		pointers = update0(key, fun);
+		pointer = update0(key, fun);
 	}
 
-	private List<Integer> update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
-		LazyIbTree<Pair<K, V>> tree0 = persister.load(pointers);
+	private Integer update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+		LazyIbTree<Pair<K, V>> tree0 = persister.load(pointer);
 		LazyIbTree<Pair<K, V>> treex = tree0.update(node(key), fun);
 		return persister.save(treex);
 	}

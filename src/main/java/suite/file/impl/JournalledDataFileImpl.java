@@ -63,7 +63,7 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 			, Serializer<Pointer> ps) throws IOException {
 		dataFile = df;
 		journalPageFile = new SerializedPageFileImpl<>(jpf, journalEntrySerializer);
-		pointerPageFile = new SerializedPageFileImpl<>(ppf, SerializeUtil.intSerializer);
+		pointerPageFile = new SerializedPageFileImpl<>(ppf, SerializeUtil.intSerializer, () -> 0);
 		pointerSerializer = ps;
 		bytesSerializer = SerializeUtil.bytes(pageSize);
 		nCommittedJournalEntries = pointerPageFile.load(0);
