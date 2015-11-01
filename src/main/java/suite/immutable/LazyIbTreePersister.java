@@ -104,12 +104,20 @@ public class LazyIbTreePersister<T> implements Closeable {
 			Map<Integer, Integer> map = new HashMap<>();
 			int p1 = start;
 
-			for (int p0 = start; p0 < end; p0++)
+			for (int p0 = start; p0 < end; p0++) {
 				if (isInUse[p0]) {
-					pageFile.save(p1, pageFile.load(p0));
+					PersistSlot<T> ps0 = pageFile.load(p0);
+					List<Pair<T, Integer>> pairs0 = ps0.pairs;
+					List<Pair<T, Integer>> pairsx = Read.from(pairs0) //
+							.map(Pair.map1(p -> map.getOrDefault(p, p))) //
+							.toList();
+					PersistSlot<T> psx = new PersistSlot<>(pairsx);
+					pageFile.save(p1, psx);
 					map.put(p0, p1++);
-				} else
-					slotsByPointer.remove(p0);
+				}
+
+				slotsByPointer.remove(p0);
+			}
 
 			return map;
 		}
