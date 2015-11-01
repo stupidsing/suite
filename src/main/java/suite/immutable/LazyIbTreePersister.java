@@ -82,7 +82,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 			Sink<List<Integer>> use = pointers_ -> {
 				for (int pointer : pointers_)
-					if (pointer >= start)
+					if (start <= pointer)
 						isInUse[pointer - start] = true;
 			};
 
