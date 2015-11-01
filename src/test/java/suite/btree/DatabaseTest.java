@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.file.impl.JournalledPageFileImpl;
-import suite.fs.KeyValueStoreMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeMutator;
 import suite.os.FileUtil;
@@ -21,12 +20,11 @@ public class DatabaseTest {
 		JournalledPageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "/database", PageFile.defaultPageSize);
 
 		try {
-			KeyValueStoreMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
+			LazyIbTreeMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
 					pageFile //
 					, Util.comparator() //
 					, SerializeUtil.intSerializer //
 					, SerializeUtil.string(64));
-
 			TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
 
 			String value = txm.begin(tx -> {
@@ -34,6 +32,7 @@ public class DatabaseTest {
 				return tx.get(0);
 			});
 
+			mutator.end(true);
 			System.out.println(value);
 		} finally {
 			pageFile.commit();

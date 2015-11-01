@@ -1,5 +1,6 @@
 package suite.immutable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -65,6 +66,13 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 		int pointer1 = persister.save(tree);
 		int pointerx = persister.gc(Arrays.asList(pointer0, pointer1), 9).get(pointer1);
 		superblockFile.save(0, pointerx);
+
+		try {
+			persister.close();
+			superblockFile.close();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
