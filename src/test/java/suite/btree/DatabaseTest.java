@@ -32,7 +32,6 @@ public class DatabaseTest {
 				return tx.get(0);
 			});
 
-			mutator.end(true);
 			System.out.println(value);
 		} finally {
 			pageFile.commit();

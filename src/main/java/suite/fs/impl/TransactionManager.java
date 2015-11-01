@@ -40,11 +40,8 @@ public class TransactionManager<Key, Value> {
 		public void end(boolean isComplete) {
 			st.end(isComplete ? TransactionStatus.DONE____ : TransactionStatus.ROLLBACK);
 			mutator.end(isComplete);
-			flush();
-		}
-
-		public void rollback() {
-			st.end(TransactionStatus.ROLLBACK);
+			if (isComplete)
+				flush();
 		}
 
 		@Override
@@ -107,7 +104,9 @@ public class TransactionManager<Key, Value> {
 		KeyValueStoreMutator<Key, Value> mutator = begin();
 		boolean ok = false;
 		try {
-			return fun.apply(mutator);
+			T t = fun.apply(mutator);
+			ok = true;
+			return t;
 		} finally {
 			mutator.end(ok);
 		}
