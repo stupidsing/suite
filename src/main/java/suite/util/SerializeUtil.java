@@ -70,17 +70,17 @@ public class SerializeUtil {
 		};
 	}
 
-	public static <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> keySerializer, Serializer<T1> valueSerializer) {
+	public static <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> serializer0, Serializer<T1> serializer1) {
 		return new Serializer<Pair<T0, T1>>() {
 			public Pair<T0, T1> read(DataInput dataInput) throws IOException {
-				T0 t0 = keySerializer.read(dataInput);
-				T1 t1 = valueSerializer.read(dataInput);
+				T0 t0 = serializer0.read(dataInput);
+				T1 t1 = serializer1.read(dataInput);
 				return Pair.of(t0, t1);
 			}
 
 			public void write(DataOutput dataOutput, Pair<T0, T1> pair) throws IOException {
-				keySerializer.write(dataOutput, pair.t0);
-				valueSerializer.write(dataOutput, pair.t1);
+				serializer0.write(dataOutput, pair.t0);
+				serializer1.write(dataOutput, pair.t1);
 			}
 		};
 	}
