@@ -21,7 +21,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 	private SerializedPageFile<Integer> superblockFile;
 	private LazyIbTreePersister<Pair<K, V>> persister;
-	private Integer pointer;
+	private LazyIbTree<Pair<K, V>> tree;
 
 	public LazyIbTreeMutator(PageFile pageFile, Comparator<K> kc, Serializer<K> ks, Serializer<V> vs) {
 		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
@@ -31,12 +31,12 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 		superblockFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.intSerializer, source);
 		persister = new LazyIbTreePersister<>(pf1, comparator, SerializeUtil.pair(ks, vs));
-		pointer = superblockFile.load(0);
+		tree = persister.load(superblockFile.load(0));
 	}
 
 	@Override
 	public Streamlet<K> keys(K start, K end) {
-		return persister.load(pointer).stream(node(start), node(end)).map(Pair::first_);
+		return tree.stream(node(start), node(end)).map(Pair::first_);
 	}
 
 	@Override
@@ -61,18 +61,17 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 	@Override
 	public void end(boolean isComplete) {
+		int pointer = persister.save(tree);
 		superblockFile.save(0, pointer);
-		persister.gc(Arrays.asList(pointer), 9);
+		persister.gc(Arrays.asList(pointer), 9).get(0);
 	}
 
 	private synchronized void update(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
-		pointer = update0(key, fun);
+		tree = update0(key, fun);
 	}
 
-	private Integer update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
-		LazyIbTree<Pair<K, V>> tree0 = persister.load(pointer);
-		LazyIbTree<Pair<K, V>> treex = tree0.update(node(key), fun);
-		return persister.save(treex);
+	private LazyIbTree<Pair<K, V>> update0(K key, Fun<Pair<K, V>, Pair<K, V>> fun) {
+		return tree.update(node(key), fun);
 	}
 
 	private Pair<K, V> node(K key) {
