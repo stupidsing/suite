@@ -25,8 +25,6 @@ import suite.util.FunUtil.Sink2;
 
 public class LazyFunInterpreter {
 
-	private Prover prover;
-
 	public interface Thunk_ {
 		public Node get();
 	}
@@ -95,10 +93,6 @@ public class LazyFunInterpreter {
 		}
 	}
 
-	public LazyFunInterpreter() {
-		prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
-	}
-
 	public Thunk_ lazy(Node node) {
 		Node parsed = parse(node);
 
@@ -133,6 +127,8 @@ public class LazyFunInterpreter {
 	}
 
 	private Reference parse(Node node) {
+		Prover prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
+
 		Reference parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
 			throw new RuntimeException("Cannot parse " + node);
