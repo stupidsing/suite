@@ -61,7 +61,6 @@ public class LazyIbTreePersister<T> implements Closeable {
 		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.intSerializer, () -> 0);
 		pageFile = new SerializedPageFileImpl<>(pf1, pss);
-
 		nPages = new AtomicInteger(nPagesFile.load(0));
 	}
 
