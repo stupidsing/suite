@@ -30,7 +30,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 	private SerializedPageFile<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
 	private Object writeLock = new Object();
-	private AtomicInteger nPages = new AtomicInteger(1);
+	private AtomicInteger nPages;
 	private BiMap<Integer, IdentityKey<List<Slot<T>>>> slotsByPointer = new HashBiMap<>();
 
 	public static class PersistSlot<T> {
@@ -42,8 +42,6 @@ public class LazyIbTreePersister<T> implements Closeable {
 	}
 
 	public LazyIbTreePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
-		this.comparator = comparator;
-
 		Serializer<T> ts1 = SerializeUtil.nullable(ts);
 		Serializer<Pair<T, Integer>> ps = SerializeUtil.pair(ts1, SerializeUtil.intSerializer);
 		Serializer<List<Pair<T, Integer>>> lps = SerializeUtil.list(ps);
@@ -59,6 +57,8 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 		PageFile pf0 = new SubPageFileImpl(pf, 0, 1);
 		PageFile pf1 = new SubPageFileImpl(pf, 1, Integer.MAX_VALUE);
+
+		this.comparator = comparator;
 		nPagesFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.intSerializer, () -> 0);
 		pageFile = new SerializedPageFileImpl<>(pf1, pss);
 
