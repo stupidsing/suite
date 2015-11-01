@@ -25,6 +25,8 @@ import suite.util.FunUtil.Sink2;
 
 public class LazyFunInterpreter {
 
+	private Prover prover;
+
 	public interface Thunk_ {
 		public Node get();
 	}
@@ -93,12 +95,12 @@ public class LazyFunInterpreter {
 		}
 	}
 
-	public Thunk_ lazy(Node node) {
-		Reference parsed = new Reference();
+	public LazyFunInterpreter() {
+		prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
+	}
 
-		Prover prover = new Prover(Suite.createRuleSet(Arrays.asList("auto.sl", "fc/fc.sl")));
-		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
-			throw new RuntimeException("Cannot parse " + node);
+	public Thunk_ lazy(Node node) {
+		Node parsed = parse(node);
 
 		Map<String, Thunk_> df = new HashMap<>();
 		df.put(TermOp.AND___.getName(), binary((a, b) -> new Pair_(a, b)));
@@ -128,6 +130,13 @@ public class LazyFunInterpreter {
 		}
 
 		return lazy0(mapping, parsed).apply(frame);
+	}
+
+	private Reference parse(Node node) {
+		Reference parsed = new Reference();
+		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
+			throw new RuntimeException("Cannot parse " + node);
+		return parsed;
 	}
 
 	private Fun<Frame, Thunk_> lazy0(Mapping mapping, Node node) {
