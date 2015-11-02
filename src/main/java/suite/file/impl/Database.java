@@ -8,18 +8,17 @@ import suite.file.PageFile;
 import suite.fs.KeyValueStoreMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeMutator;
-import suite.os.FileUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.Serialize;
 import suite.util.Util;
 
 public class Database implements Closeable {
 
-	JournalledPageFile pageFile;
-	TransactionManager<Integer, String> txm;
+	private JournalledPageFile pageFile;
+	private TransactionManager<Integer, String> txm;
 
-	public Database() throws IOException {
-		pageFile = new JournalledPageFileImpl(FileUtil.tmp + "/database", PageFile.defaultPageSize);
+	public Database(String filename) throws IOException {
+		pageFile = new JournalledPageFileImpl(filename, PageFile.defaultPageSize);
 
 		txm = new TransactionManager<>(() -> new LazyIbTreeMutator<>( //
 				pageFile //
