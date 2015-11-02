@@ -105,7 +105,7 @@ public class TransactionManager<Key, Value> {
 		boolean ok = false;
 		try {
 			T t = fun.apply(mutator);
-			//ok = true;
+			ok = true;
 			return t;
 		} finally {
 			mutator.end(ok);

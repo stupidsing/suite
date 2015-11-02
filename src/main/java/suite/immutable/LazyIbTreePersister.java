@@ -104,7 +104,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 			Map<Integer, Integer> map = new HashMap<>();
 			int p1 = start;
 
-			for (int p0 = start; p0 < end; p0++) {
+			for (int p0 = start; p0 < end; p0++)
 				if (isInUse[p0]) {
 					PersistSlot<T> ps0 = pageFile.load(p0);
 					List<Pair<T, Integer>> pairs0 = ps0.pairs;
@@ -115,7 +115,6 @@ public class LazyIbTreePersister<T> implements Closeable {
 					pageFile.save(p1, psx);
 					map.put(p0, p1++);
 				}
-			}
 
 			nPages.set(p1);
 			slotsByPointer.clear();
