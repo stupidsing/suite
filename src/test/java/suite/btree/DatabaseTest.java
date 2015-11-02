@@ -17,7 +17,7 @@ import suite.util.Util;
 public class DatabaseTest {
 
 	@Test
-	public void test() throws IOException {
+	public void testCommit() throws IOException {
 		JournalledPageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "/database", PageFile.defaultPageSize);
 
 		try {
@@ -34,6 +34,28 @@ public class DatabaseTest {
 			});
 
 			System.out.println(value);
+		} finally {
+			pageFile.commit();
+		}
+	}
+
+	@Test
+	public void testRollback() throws IOException {
+		JournalledPageFile pageFile = new JournalledPageFileImpl(FileUtil.tmp + "/database", PageFile.defaultPageSize);
+
+		try {
+			KeyValueStoreMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
+					pageFile //
+					, Util.comparator() //
+					, SerializeUtil.intSerializer //
+					, SerializeUtil.string(64));
+			TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
+
+			txm.begin(tx -> {
+				tx.put(0, "sample");
+				throw new RuntimeException();
+			});
+		} catch (RuntimeException ex) {
 		} finally {
 			pageFile.commit();
 		}
