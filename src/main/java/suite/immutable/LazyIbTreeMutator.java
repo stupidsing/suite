@@ -32,8 +32,8 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 
 		superblockFile = new SerializedPageFileImpl<>(pf0, Serialize.int_, source);
 		persister = new LazyIbTreePersister<>(pf1, comparator, Serialize.pair(ks, vs));
-		tree = persister.load(superblockFile.load(0));
 
+		tree = persister.load(superblockFile.load(0));
 		superblockFile.save(0, persister.save(tree));
 	}
 
