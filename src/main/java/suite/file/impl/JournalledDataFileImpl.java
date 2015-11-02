@@ -72,12 +72,6 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 			journalEntries.add(journalPageFile.load(jp));
 	}
 
-	public synchronized void create() {
-		nCommittedJournalEntries = 0;
-		journalEntries.clear();
-		pointerPageFile.save(0, nCommittedJournalEntries);
-	}
-
 	@Override
 	public void close() throws IOException {
 		dataFile.close();
