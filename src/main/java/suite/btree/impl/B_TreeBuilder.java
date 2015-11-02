@@ -15,8 +15,8 @@ import suite.file.impl.PageFileImpl;
 import suite.file.impl.SerializedPageFileImpl;
 import suite.file.impl.SubPageFileImpl;
 import suite.primitive.Bytes;
-import suite.util.SerializeUtil;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 import suite.util.Util;
 
 public class B_TreeBuilder<Key, Value> {
@@ -35,12 +35,12 @@ public class B_TreeBuilder<Key, Value> {
 
 		public B_TreeImpl<Key, Value>.Superblock read(DataInput dataInput) throws IOException {
 			B_TreeImpl<Key, Value>.Superblock superblock = b_tree.new Superblock();
-			superblock.root = SerializeUtil.intSerializer.read(dataInput);
+			superblock.root = Serialize.int_.read(dataInput);
 			return superblock;
 		}
 
 		public void write(DataOutput dataOutput, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
-			SerializeUtil.intSerializer.write(dataOutput, value.root);
+			Serialize.int_.write(dataOutput, value.root);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	public B_TreeBuilder(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
-		this.keySerializer = SerializeUtil.nullable(keySerializer);
+		this.keySerializer = Serialize.nullable(keySerializer);
 		this.valueSerializer = valueSerializer;
 	}
 
@@ -147,9 +147,9 @@ public class B_TreeBuilder<Key, Value> {
 			throws IOException {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Util.nullsFirst(comparator));
 
-		Serializer<Bytes> als = SerializeUtil.bytes(pageSize);
+		Serializer<Bytes> als = Serialize.bytes(pageSize);
 		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
-		Serializer<Bytes> pys = SerializeUtil.bytes(pageSize);
+		Serializer<Bytes> pys = Serialize.bytes(pageSize);
 		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree);
 
 		SerializedPageFile<Bytes> alf = new SerializedPageFileImpl<>(alf0, als);

@@ -15,10 +15,10 @@ import suite.primitive.Bytes;
  * Defines interface for reading/writing byte buffer. The operation within the
  * same serializer should always put in the same number of bytes.
  */
-public class SerializeUtil {
+public class Serialize {
 
-	public static Serializer<Boolean> booleanSerializer = boolean_();
-	public static Serializer<Integer> intSerializer = int_();
+	public static Serializer<Boolean> boolean_ = boolean_();
+	public static Serializer<Integer> int_ = int_();
 
 	public interface Serializer<V> {
 		public V read(DataInput dataInput) throws IOException;
@@ -34,7 +34,7 @@ public class SerializeUtil {
 	public static <T> Serializer<List<T>> list(Serializer<T> serializer) {
 		return new Serializer<List<T>>() {
 			public List<T> read(DataInput dataInput) throws IOException {
-				int size = SerializeUtil.intSerializer.read(dataInput);
+				int size = Serialize.int_.read(dataInput);
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
@@ -42,7 +42,7 @@ public class SerializeUtil {
 			}
 
 			public void write(DataOutput dataOutput, List<T> list) throws IOException {
-				SerializeUtil.intSerializer.write(dataOutput, list.size());
+				Serialize.int_.write(dataOutput, list.size());
 				for (T t : list)
 					serializer.write(dataOutput, t);
 			}
@@ -57,13 +57,13 @@ public class SerializeUtil {
 	public static <T> Serializer<T> nullable(Serializer<T> serializer) {
 		return new Serializer<T>() {
 			public T read(DataInput dataInput) throws IOException {
-				return booleanSerializer.read(dataInput) ? serializer.read(dataInput) : null;
+				return boolean_.read(dataInput) ? serializer.read(dataInput) : null;
 			}
 
 			@Override
 			public void write(DataOutput dataOutput, T value) throws IOException {
 				boolean isNotNull = value != null;
-				booleanSerializer.write(dataOutput, isNotNull);
+				boolean_.write(dataOutput, isNotNull);
 				if (isNotNull)
 					serializer.write(dataOutput, value);
 			}

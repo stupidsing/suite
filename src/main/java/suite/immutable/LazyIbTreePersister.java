@@ -21,8 +21,8 @@ import suite.file.impl.SubPageFileImpl;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
-import suite.util.SerializeUtil;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 
 public class LazyIbTreePersister<T> implements Closeable {
 
@@ -42,9 +42,9 @@ public class LazyIbTreePersister<T> implements Closeable {
 	}
 
 	public LazyIbTreePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
-		Serializer<T> ts1 = SerializeUtil.nullable(ts);
-		Serializer<Pair<T, Integer>> ps = SerializeUtil.pair(ts1, SerializeUtil.intSerializer);
-		Serializer<List<Pair<T, Integer>>> lps = SerializeUtil.list(ps);
+		Serializer<T> ts1 = Serialize.nullable(ts);
+		Serializer<Pair<T, Integer>> ps = Serialize.pair(ts1, Serialize.int_);
+		Serializer<List<Pair<T, Integer>>> lps = Serialize.list(ps);
 		Serializer<PersistSlot<T>> pss = new Serializer<PersistSlot<T>>() {
 			public PersistSlot<T> read(DataInput dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
@@ -59,7 +59,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 		PageFile pf1 = new SubPageFileImpl(pf, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = new SerializedPageFileImpl<>(pf0, SerializeUtil.intSerializer, () -> 0);
+		nPagesFile = new SerializedPageFileImpl<>(pf0, Serialize.int_, () -> 0);
 		pageFile = new SerializedPageFileImpl<>(pf1, pss);
 		nPages = new AtomicInteger(nPagesFile.load(0));
 	}

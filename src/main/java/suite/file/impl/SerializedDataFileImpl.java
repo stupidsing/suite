@@ -8,7 +8,7 @@ import suite.file.DataFile;
 import suite.file.SerializedFile;
 import suite.primitive.Bytes;
 import suite.util.FunUtil.Source;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize.Serializer;
 
 /**
  * Persists B-tree pages to file on disk.

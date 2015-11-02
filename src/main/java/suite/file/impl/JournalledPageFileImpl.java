@@ -3,7 +3,7 @@ package suite.file.impl;
 import java.io.IOException;
 
 import suite.file.JournalledPageFile;
-import suite.util.SerializeUtil;
+import suite.util.Serialize;
 
 public class JournalledPageFileImpl extends JournalledDataFileImpl<Integer>implements JournalledPageFile {
 
@@ -13,7 +13,7 @@ public class JournalledPageFileImpl extends JournalledDataFileImpl<Integer>imple
 				, new PageFileImpl(filename + ".journal", pageSize + 4) //
 				, new PageFileImpl(filename + ".pointer", 4) //
 				, pageSize //
-				, SerializeUtil.intSerializer);
+				, Serialize.int_);
 	}
 
 }

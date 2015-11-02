@@ -16,8 +16,8 @@ import suite.immutable.btree.impl.IbTreeImpl;
 import suite.immutable.btree.impl.IbTreeStack;
 import suite.os.FileUtil;
 import suite.util.FunUtil.Source;
-import suite.util.SerializeUtil;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 import suite.util.To;
 import suite.util.Util;
 
@@ -27,7 +27,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testSimple() throws IOException {
-		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-stack", SerializeUtil.intSerializer);
+		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-stack", Serialize.int_);
 		config.setCapacity(65536);
 
 		try (IbTreeStack<Integer> ibTreeStack = new IbTreeStack<>(config)) {
@@ -46,7 +46,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testSingleLevel() throws IOException {
-		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-single", SerializeUtil.intSerializer);
+		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-single", Serialize.int_);
 
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
@@ -68,7 +68,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-multi", SerializeUtil.string(16));
+		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-multi", Serialize.string(16));
 
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
@@ -86,7 +86,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testStack() throws IOException {
-		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-stack", SerializeUtil.string(16));
+		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-stack", Serialize.string(16));
 		config.setCapacity(65536);
 
 		try (IbTreeStack<String> ibTreeStack = new IbTreeStack<>(config)) {

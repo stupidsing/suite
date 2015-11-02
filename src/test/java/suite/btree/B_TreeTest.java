@@ -16,7 +16,7 @@ import suite.adt.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledPageFileImpl;
 import suite.os.FileUtil;
-import suite.util.SerializeUtil;
+import suite.util.Serialize;
 import suite.util.To;
 import suite.util.Util;
 
@@ -41,7 +41,7 @@ public class B_TreeTest {
 		String filename = FileUtil.tmp + "/b_tree-dump";
 
 		Files.deleteIfExists(Paths.get(filename));
-		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
+		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
 		try (JournalledPageFileImpl jpf = new JournalledPageFileImpl(filename, pageSize);
 				B_Tree<Integer, String> b_tree = builder.build(jpf, true, comparator, pageSize)) {
@@ -60,7 +60,7 @@ public class B_TreeTest {
 		String filename = FileUtil.tmp + "/b_tree-file";
 
 		Files.deleteIfExists(Paths.get(filename));
-		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(SerializeUtil.intSerializer, SerializeUtil.string(16));
+		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(Serialize.int_, Serialize.string(16));
 
 		shuffleNumbers();
 

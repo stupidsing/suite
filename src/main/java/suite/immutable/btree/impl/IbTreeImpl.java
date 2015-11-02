@@ -23,8 +23,8 @@ import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.SerializeUtil;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 import suite.util.Util;
 
 /**
@@ -57,7 +57,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private int maxBranchFactor; // Exclusive
 	private int minBranchFactor; // Inclusive
 
-	public static Serializer<Integer> pointerSerializer = SerializeUtil.nullable(SerializeUtil.intSerializer);
+	public static Serializer<Integer> pointerSerializer = Serialize.nullable(Serialize.int_);
 
 	private class Page {
 		private List<Slot> slots;
@@ -395,7 +395,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private Mutate() throws IOException {
 			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
-			stampFile = new SerializedPageFileImpl<>(stampPageFile, SerializeUtil.list(SerializeUtil.intSerializer));
+			stampFile = new SerializedPageFileImpl<>(stampPageFile, Serialize.list(Serialize.int_));
 		}
 
 		private Mutator begin() {
@@ -421,7 +421,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		this.filename = filename;
 		pageSize = config.getPageSize();
 		comparator = Util.nullsFirst(config.getComparator());
-		serializer = SerializeUtil.nullable(config.getSerializer());
+		serializer = Serialize.nullable(config.getSerializer());
 		maxBranchFactor = config.getMaxBranchFactor();
 		this.allocationIbTree = allocationIbTree;
 
@@ -431,7 +431,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		minBranchFactor = maxBranchFactor / 2;
 		pageFile0 = new PageFileImpl(filename, pageSize);
 		pageFile = new SerializedPageFileImpl<>(pageFile0, createPageSerializer());
-		payloadFile = new SerializedPageFileImpl<>(pageFile0, SerializeUtil.bytes(pageSize));
+		payloadFile = new SerializedPageFileImpl<>(pageFile0, Serialize.bytes(pageSize));
 	}
 
 	@Override
@@ -530,7 +530,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Serializer<Page> createPageSerializer() {
-		Serializer<List<Slot>> slotsSerializer = SerializeUtil.list(new Serializer<Slot>() {
+		Serializer<List<Slot>> slotsSerializer = Serialize.list(new Serializer<Slot>() {
 			public Slot read(DataInput dataInput) throws IOException {
 				SlotType type = SlotType.values()[dataInput.readByte()];
 				Key pivot = serializer.read(dataInput);

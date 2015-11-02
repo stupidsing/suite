@@ -11,7 +11,7 @@ import suite.fs.KeyValueStoreMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeMutator;
 import suite.os.FileUtil;
-import suite.util.SerializeUtil;
+import suite.util.Serialize;
 import suite.util.Util;
 
 public class DatabaseTest {
@@ -24,8 +24,8 @@ public class DatabaseTest {
 			KeyValueStoreMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
 					pageFile //
 					, Util.comparator() //
-					, SerializeUtil.intSerializer //
-					, SerializeUtil.string(64));
+					, Serialize.int_ //
+					, Serialize.string(64));
 			TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
 
 			String value = txm.begin(tx -> {
@@ -47,8 +47,8 @@ public class DatabaseTest {
 			KeyValueStoreMutator<Integer, String> mutator = new LazyIbTreeMutator<>( //
 					pageFile //
 					, Util.comparator() //
-					, SerializeUtil.intSerializer //
-					, SerializeUtil.string(64));
+					, Serialize.int_ //
+					, Serialize.string(64));
 			TransactionManager<Integer, String> txm = new TransactionManager<>(() -> mutator);
 
 			txm.begin(tx -> {

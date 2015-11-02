@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import suite.file.ExtentAllocator.Extent;
 import suite.file.JournalledExtentFile;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize.Serializer;
 
 public class JournalledExtentFileImpl extends JournalledDataFileImpl<Extent>implements JournalledExtentFile {
 

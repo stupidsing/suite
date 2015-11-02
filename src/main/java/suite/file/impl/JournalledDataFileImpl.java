@@ -13,8 +13,8 @@ import suite.file.JournalledDataFile;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
-import suite.util.SerializeUtil;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 
 /**
  * Protect data against power loss failures by recording journals.
@@ -63,9 +63,9 @@ public class JournalledDataFileImpl<Pointer> implements Closeable, JournalledDat
 			, Serializer<Pointer> ps) throws IOException {
 		dataFile = df;
 		journalPageFile = new SerializedPageFileImpl<>(jpf, journalEntrySerializer);
-		pointerPageFile = new SerializedPageFileImpl<>(ppf, SerializeUtil.intSerializer, () -> 0);
+		pointerPageFile = new SerializedPageFileImpl<>(ppf, Serialize.int_, () -> 0);
 		pointerSerializer = ps;
-		bytesSerializer = SerializeUtil.bytes(pageSize);
+		bytesSerializer = Serialize.bytes(pageSize);
 		nCommittedJournalEntries = pointerPageFile.load(0);
 
 		for (int jp = 0; jp < nCommittedJournalEntries; jp++)

@@ -4,7 +4,7 @@ import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.SerializedExtentFile;
 import suite.util.FunUtil.Source;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize.Serializer;
 
 public class SerializedExtentFileImpl<V> extends SerializedDataFileImpl<Extent, V>implements SerializedExtentFile<V> {
 

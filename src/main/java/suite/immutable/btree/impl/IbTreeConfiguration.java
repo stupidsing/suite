@@ -2,7 +2,7 @@ package suite.immutable.btree.impl;
 
 import java.util.Comparator;
 
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize.Serializer;
 
 public class IbTreeConfiguration<Key> {
 

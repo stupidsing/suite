@@ -9,7 +9,7 @@ import suite.file.impl.JournalledPageFileImpl;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.primitive.Bytes;
-import suite.util.SerializeUtil;
+import suite.util.Serialize;
 
 public class B_TreeFileSystemImpl implements FileSystem {
 
@@ -21,7 +21,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	public B_TreeFileSystemImpl(String filename, int pageSize) throws IOException {
 		jpf = new JournalledPageFileImpl(filename, pageSize);
 
-		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), SerializeUtil.intSerializer) //
+		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_) //
 				.build(jpf, false, Bytes.comparator, pageSize);
 
 		B_TreeMutator<Bytes> b_treeMutator = new B_TreeMutator<Bytes>(b_tree, () -> {

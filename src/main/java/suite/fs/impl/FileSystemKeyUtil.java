@@ -8,8 +8,8 @@ import java.util.List;
 
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.SerializeUtil;
-import suite.util.SerializeUtil.Serializer;
+import suite.util.Serialize;
+import suite.util.Serialize.Serializer;
 
 public class FileSystemKeyUtil {
 
@@ -121,7 +121,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Serializer<Bytes> serializer() {
-		return SerializeUtil.bytes(keyLength);
+		return Serialize.bytes(keyLength);
 	}
 
 }
