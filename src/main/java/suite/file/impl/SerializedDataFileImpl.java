@@ -7,7 +7,6 @@ import java.io.IOException;
 import suite.file.DataFile;
 import suite.file.SerializedFile;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Source;
 import suite.util.Serialize.Serializer;
 
 /**
@@ -23,7 +22,6 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 
 	private DataFile<Pointer> dataFile;
 	private Serializer<V> serializer;
-	private Source<V> source;
 
 	private static class SerializedPagingException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
@@ -34,13 +32,8 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 	}
 
 	public SerializedDataFileImpl(DataFile<Pointer> dataFile, Serializer<V> serializer) {
-		this(dataFile, serializer, null);
-	}
-
-	public SerializedDataFileImpl(DataFile<Pointer> dataFile, Serializer<V> serializer, Source<V> source) {
 		this.dataFile = dataFile;
 		this.serializer = serializer;
-		this.source = source;
 	}
 
 	@Override
@@ -60,8 +53,7 @@ public class SerializedDataFileImpl<Pointer, V> implements Closeable, Serialized
 	@Override
 	public V load(Pointer pointer) {
 		try {
-			Bytes bytes = dataFile.load(pointer);
-			return bytes.size() > 0 ? serializer.read(new DataInputStream(bytes.asInputStream())) : source.source();
+			return serializer.read(new DataInputStream(dataFile.load(pointer).asInputStream()));
 		} catch (IOException ex) {
 			throw new SerializedPagingException(ex);
 		}

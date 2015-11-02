@@ -14,7 +14,6 @@ import suite.file.impl.SubPageFileImpl;
 import suite.fs.KeyValueStoreMutator;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
@@ -28,13 +27,14 @@ public class LazyIbTreeMutator<K, V> implements KeyValueStoreMutator<K, V> {
 		PageFile pf0 = new SubPageFileImpl(pageFile, 0, 1);
 		PageFile pf1 = new SubPageFileImpl(pageFile, 1, Integer.MAX_VALUE);
 		Comparator<Pair<K, V>> comparator = (p0, p1) -> kc.compare(p0.t0, p1.t0);
-		Source<Integer> source = () -> persister.save(new LazyIbTree<>(comparator));
 
-		superblockFile = new SerializedPageFileImpl<>(pf0, Serialize.int_, source);
+		superblockFile = new SerializedPageFileImpl<>(pf0, Serialize.nullable(Serialize.int_));
 		persister = new LazyIbTreePersister<>(pf1, comparator, Serialize.pair(ks, vs));
 
-		tree = persister.load(superblockFile.load(0));
-		superblockFile.save(0, persister.save(tree));
+		Integer pointer = superblockFile.load(0);
+		if (pointer == null)
+			superblockFile.save(0, pointer = persister.save(new LazyIbTree<>(comparator)));
+		tree = persister.load(pointer);
 	}
 
 	@Override

@@ -35,9 +35,8 @@ public class RandomAccessibleFile implements Closeable {
 		int size = end - start;
 
 		ByteBuffer bb = ByteBuffer.allocate(size);
-		int nBytesRead = channel.read(bb, start);
 		bb.limit(size);
-		return Bytes.of(bb.array(), 0, nBytesRead);
+		return Bytes.of(bb);
 	}
 
 	public void save(int start, Bytes bytes) throws IOException {
