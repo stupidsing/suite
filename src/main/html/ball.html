@@ -18,12 +18,12 @@
 	<script type="text/javascript">
 		"use strict";
 
-	var log = function(m) {
-		var text = document.getElementById("log").value + m + "\n";
-		if (text.length > 256) text = text.substring(text.length - 256, text.length);
-		document.getElementById("log").value = text;
-		// alert(m);
-	};
+		var log = function(m) {
+			var text = document.getElementById("log").value + m + "\n";
+			if (text.length > 256) text = text.substring(text.length - 256, text.length);
+			document.getElementById("log").value = text;
+			// alert(m);
+		};
 
 		var canvas = document.getElementById("canvas");
 		var width = canvas.width;
