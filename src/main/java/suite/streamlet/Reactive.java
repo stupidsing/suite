@@ -27,10 +27,6 @@ public class Reactive<T> {
 
 	private Sink<Sink<T>> sink;
 
-	private Reactive(Sink<Sink<T>> sink) {
-		this.sink = sink;
-	}
-
 	public static <T> Reactive<T> append(Reactive<T> r0, Reactive<T> r1) {
 		Bag<Sink<T>> sinks = new Bag<>();
 		Sink<T> sink = t -> sinkAll(sinks, t);
@@ -64,6 +60,10 @@ public class Reactive<T> {
 		r0.sink.sink(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
 		r1.sink.sink(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
 		return from(sinks);
+	}
+
+	private Reactive(Sink<Sink<T>> sink) {
+		this.sink = sink;
 	}
 
 	public <U> Reactive<U> concatMap(Fun<T, Reactive<U>> fun) {
