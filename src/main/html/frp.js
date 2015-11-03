@@ -5,11 +5,11 @@ var frp = function() {
 	var register_ = function(f) { fs.push(f); };
 	var fire_ = function(data) { for (var i = 0; i < fs.length; i++) fs[i](data); };
 	return {
-		concat: function(frp1) {
-			var frp_ = frp();
-			register_(function(data) { frp_.fire(data); });
-			frp1.register(function(data) { frp_.fire(data); });
-			return frp_;
+		concat: function(frp_) {
+			var frp1 = frp();
+			register_(function(data) { frp1.fire(data); });
+			frp_.register(function(data) { frp1.fire(data); });
+			return frp1;
 		},
 		filter: function(f) {
 			var frp1 = frp();
@@ -26,7 +26,7 @@ var frp = function() {
 		},
 		last: function() {
 			var data_;
-			register(function(data) { data_ = data; });
+			register_(function(data) { data_ = data; });
 			return function() { return data_; };
 		},
 		map: function(f) {
@@ -35,16 +35,18 @@ var frp = function() {
 			return frp1;
 		},
 		register: register_,
-		resample: function(frp1) {
+		resample: function(frp_) {
 			var data_;
 			register_(function(data) { data_ = data; });
-			frp1.register(function(data) { fire_(data_); });
+			var frp1 = frp();
+			frp_.register(function(data) { frp1.fire(data_); });
+			return frp1;
 		},
 		fire: fire_
 	};
 };
 
-var frp_animframe = function() {
+var frpanimframe = function() {
 	var frp_ = frp();
 	var tick = function() {
 		frp_.fire(true);
@@ -54,7 +56,7 @@ var frp_animframe = function() {
 	return frp_;
 };
 
-var frp_tick = function(timeout) {
+var frptick = function(timeout) {
 	var frp_ = frp();
 	var tick = function() {
 		frp_.fire(true);
@@ -94,10 +96,10 @@ document.onmousemove = function(e) {
 document.onmouseup = function(e) { mousebuttonfrp.fire(false); };
 
 var frpkbpressed = function(keycode) { return keyboardfrps[keycode] = frp(); };
-var frpkbleft = frpkbpressed(37).filter(function(d) { return d; }).map(function(d) { return -1; });
-var frpkbright = frpkbpressed(39).filter(function(d) { return d; }).map(function(d) { return 1; });
-var frpkbup = frpkbpressed(38).filter(function(d) { return d; }).map(function(d) { return -1; });
-var frpkbdown = frpkbpressed(40).filter(function(d) { return d; }).map(function(d) { return 1; });
+var frpkbleft = frpkbpressed(37).map(function(d) { return d ? -1 : 0; });
+var frpkbright = frpkbpressed(39).map(function(d) { return d ? 1 : 0; });
+var frpkbup = frpkbpressed(38).map(function(d) { return d ? -1 : 0; });
+var frpkbdown = frpkbpressed(40).map(function(d) { return d ? 1 : 0; });
 var frpkbarrowx = frpkbleft.concat(frpkbright); // .fold(function(a, b) { return a + b; }, 0).last();
 var frpkbarrowy = frpkbup.concat(frpkbdown); // .fold(function(a, b) { return a + b; }, 0).last();
 var frpmousebutton = mousebuttonfrp;

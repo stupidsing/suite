@@ -7,7 +7,7 @@
 			Your browser does not support HTML5 canvas.
 		</canvas>
 
-		<textarea id="log" rows="5" cols="80">
+		<textarea id="log" rows="10" cols="80">
 			== START ==
 		</textarea>
 	</body>
@@ -21,49 +21,63 @@
 
 		var canvas = document.getElementById("canvas");
 
-		//var fa = frp_animframe();
-		frpkbarrowx.register(function(d) { log("x" + d); });
-		frpkbarrowy.register(function(d) { log("y" + d); });
+		var frame = frpanimframe();
+		var fx = frpkbarrowx.resample(frame).last();
+		var fy = frpkbarrowy.resample(frame).last();
 
-		var ball = function(width, height) {
-			var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());
-			var dx = 2, dy = 2;
+		var width = canvas.width;
+		var height = canvas.height;
+		var objects = [];
 
-			return {
-				input: function(keyboard, mouse) {
-					ballx += 2 * keyboard.dirx();
-					bally += 2 * keyboard.diry();
-				}
-				, move: function() {
-					ballx += dx;
-					bally += dy;
+		var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());
+		var dx = 2, dy = 2;
 
-					if (ballx < 0) { ballx = 0; dx = 2; }
-					if (bally < 0) { bally = 0; dy = 2; }
-					if (ballx > width) { ballx = width; dx = -2; }
-					if (bally > height) { bally = height; dy = -2; }
-				}
-				, spawn: function() {
-					return [this];
-				}
-				, draw: function(context) {
-					var radius = 24;
+		var ball = {
+			move: function() {
+				var ix = fx();
+				var iy = fy();
+				if (typeof ix != 'undefined') ballx += 2 * fx();
+				if (typeof iy != 'undefined') bally += 2 * fy();
+				ballx += dx;
+				bally += dy;
 
-					context.beginPath();
-					context.arc(ballx, bally, radius, 0, 2 * Math.PI);
-					context.stroke();
-				}
-			};
-		}(canvas.width, canvas.height);
-
-		var control = controller(canvas, keyboard(document), mouse(document), [ball]);
-
-		var tick = function(timestamp) {
-			control.tick();
-			requestAnimationFrame(tick);
+				if (ballx < 0) { ballx = 0; dx = 2; }
+				if (bally < 0) { bally = 0; dy = 2; }
+				if (ballx > width) { ballx = width; dx = -2; }
+				if (bally > height) { bally = height; dy = -2; }
+				return [this];
+			}
+			, draw: function(context) {
+				var radius = 24;
+				context.beginPath();
+				context.arc(ballx, bally, radius, 0, 2 * Math.PI);
+				context.stroke();
+			}
 		};
 
-		requestAnimationFrame(tick);
+		var objects = [ball];
+
+		frpmousemove.register(function(d) { log("mouse " + d.x + "," + d.y); });
+
+		frame.register(function(data) {
+
+			// move
+			objects = read(objects)
+				.map(function(object) { return object.move(); })
+				.concat()
+				.list();
+
+			// repaint
+			var context = canvas.getContext("2d");
+			context.fillStyle = "#777777";
+			context.fillRect(0, 0, width, height);
+
+			context.fillStyle = "#000000";
+			context.font = "10px Helvetica";
+			context.fillText("Demo", 16, height - 16);
+
+			read(objects).foreach(function(object) { object.draw(context); });
+		});
 	</script>
 
 </html>
