@@ -5,16 +5,18 @@ import java.io.IOException;
 import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.btree.impl.B_TreeMutator;
+import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledPageFileImpl;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
+import suite.fs.KeyDataStoreMutator;
 import suite.primitive.Bytes;
 import suite.util.Serialize;
 
 public class B_TreeFileSystemImpl implements FileSystem {
 
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
-	private JournalledPageFileImpl jpf;
+	private JournalledPageFile jpf;
 	private B_Tree<Bytes, Integer> b_tree;
 	private FileSystemMutator mutator;
 
@@ -24,7 +26,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 		b_tree = new B_TreeBuilder<>(keyUtil.serializer(), Serialize.int_) //
 				.build(jpf, false, Bytes.comparator, pageSize);
 
-		B_TreeMutator<Bytes> b_treeMutator = new B_TreeMutator<Bytes>(b_tree, () -> {
+		KeyDataStoreMutator<Bytes> b_treeMutator = new B_TreeMutator<>(b_tree, () -> {
 			try {
 				jpf.commit();
 			} catch (IOException ex) {
