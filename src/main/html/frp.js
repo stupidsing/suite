@@ -5,10 +5,23 @@ var frp = function() {
 	var register_ = function(f) { fs.push(f); };
 	var fire_ = function(data) { for (var i = 0; i < fs.length; i++) fs[i](data); };
 	return {
-		concat: function(frp_) {
+		append: function(frp_) {
 			var frp1 = frp();
-			register_(function(data) { frp1.fire(data); });
-			frp_.register(function(data) { frp1.fire(data); });
+			register_(frp1.fire);
+			frp_.register(frp1.fire);
+			return frp1;
+		}
+		, close: function() { // for garbage collection
+			fs = [];
+		}
+		, concatmap: function(f) {
+			var frp1 = frp();
+			register_(function(data) { f(data).register(frp1.fire); });
+			return frp1;
+		}
+		, delay: function(time) {
+			var frp1 = frp();
+			register_(function(data) { setTimeout(function() { frp1.fire(data); }, time); });
 			return frp1;
 		}
 		, filter: function(f) {
@@ -100,7 +113,7 @@ var frpkbleft = frpkbpressed(37).map(function(d) { return d ? -1 : 0; });
 var frpkbright = frpkbpressed(39).map(function(d) { return d ? 1 : 0; });
 var frpkbup = frpkbpressed(38).map(function(d) { return d ? -1 : 0; });
 var frpkbdown = frpkbpressed(40).map(function(d) { return d ? 1 : 0; });
-var frpkbarrowx = frpkbleft.concat(frpkbright); // .fold(function(a, b) { return a + b; }, 0).last();
-var frpkbarrowy = frpkbup.concat(frpkbdown); // .fold(function(a, b) { return a + b; }, 0).last();
+var frpkbarrowx = frpkbleft.append(frpkbright); // .fold(function(a, b) { return a + b; }, 0).last();
+var frpkbarrowy = frpkbup.append(frpkbdown); // .fold(function(a, b) { return a + b; }, 0).last();
 var frpmousebutton = mousebuttonfrp;
 var frpmousemove = mousemovefrp;

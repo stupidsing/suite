@@ -36,12 +36,26 @@
 		var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());
 		var dx = 2, dy = 2;
 
+		var background = {
+			move: function() {
+				return [this];
+			}
+			, draw: function(context) {
+				context.fillStyle = "#777777";
+				context.fillRect(0, 0, width, height);
+
+				context.fillStyle = "#000000";
+				context.font = "10px Helvetica";
+				context.fillText("Demo", 16, height - 16);
+			}
+		};
+
 		var ball = {
 			move: function() {
 				var ix = fx();
 				var iy = fy();
-				if (typeof ix != 'undefined') ballx += 2 * fx();
-				if (typeof iy != 'undefined') bally += 2 * fy();
+				if (ix) ballx += 2 * ix;
+				if (iy) bally += 2 * iy;
 				ballx += dx;
 				bally += dy;
 
@@ -59,7 +73,7 @@
 			}
 		};
 
-		var objects = [ball];
+		var objects = [background, ball];
 
 		frame.register(function(data) {
 
@@ -71,13 +85,6 @@
 
 			// repaint
 			var context = canvas.getContext("2d");
-			context.fillStyle = "#777777";
-			context.fillRect(0, 0, width, height);
-
-			context.fillStyle = "#000000";
-			context.font = "10px Helvetica";
-			context.fillText("Demo", 16, height - 16);
-
 			read(objects).foreach(function(object) { object.draw(context); });
 		});
 

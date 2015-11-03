@@ -6,50 +6,51 @@
 			<!-- style="position:fixed; left:10px; top:10px;" -->
 			Your browser does not support HTML5 canvas.
 		</canvas>
-		
+
 		<textarea id="log" rows="5" cols="80">
 			== START ==
 		</textarea>
 	</body>
-	
+
+	<script src="frp.js"></script>
 	<script src="fun.js"></script>
-	<script src="controller.js"></script>
-	
+
 	<script type="text/javascript">
 		"use strict";
-		
+
 		var canvas = document.getElementById("canvas");
 		var width = canvas.width, height = canvas.height;
 		var centrex = width / 2, centrey = height / 2;
 		var radius = 250;
-		
+
+		var frame = frpanimframe();
+		var fire = frpkbpressed(32).resample(frame).last();
+
 		var background = {
-			input: function(keyboard, mouse) {}
-			, move: function() {}
-			, spawn: function() { return [this]; }
+			move: function() {
+				return [this];
+			}
 			, draw: function(context) {
 				context.beginPath();
 				context.arc(centrex, centrey, radius, 0, 2 * Math.PI);
 				context.stroke();
 			}
 		};
-		
+
 		var gun = function() {
 			var angle = 0;
 			var state = 0, fire0, fire1;
-			
+
 			return {
-				input: function(keyboard, mouse) {
-					if (keyboard.pressed[32]) { state = 1; fire0 = fire1 = 0; }
-				}
-				, move: function() {
+				move: function() {
+					if (fire()) {
+						state = 1;
+						fire0 = fire1 = 0;
+					}
+
 					if (state == 0) angle += .1;
-					else if (state == 1)
-						state = (fire1 += .05) < 1 ? state : 2;
-					else if (state == 2)
-						state = (fire0 += .05) < 1 ? state : 0;
-				}
-				, spawn: function() {
+					else if (state == 1) state = (fire1 += .05) < 1 ? state : 2;
+					else if (state == 2) state = (fire0 += .05) < 1 ? state : 0;
 					return [this];
 				}
 				, draw: function(context) {
@@ -57,7 +58,7 @@
 					context.moveTo(centrex, centrey);
 					context.lineTo(centrex + 16 * Math.cos(angle), centrey + 16 * Math.sin(angle));
 					context.stroke();
-					
+
 					if (state != 0) {
 						context.strokeStyle = "#CCCC00";
 						context.beginPath();
@@ -78,25 +79,21 @@
 				}
 			};
 		}();
-		
+
 		var enemy0 = function() {
 			var angle = 2 * Math.PI * Math.random();
 			var x = centrex + radius * Math.sin(angle);
 			var y = centrey + radius * Math.cos(angle);
-			
+
 			return {
-				input: function(keyboard, mouse) {
-				}
-				, move: function() {
+				move: function() {
 					if (Math.random() > .5) {
 						x += Math.floor(Math.random() * 9) - 4;
 						y += Math.floor(Math.random() * 9) - 4;
 					} else {
 						x += x < centrex ? 1 : -1;
 						y += y < centrey ? 1 : -1;
-					}
-				}
-				, spawn: function() {
+					};
 					return [this];
 				}
 				, draw: function(context) {
@@ -109,18 +106,29 @@
 				}
 			};
 		};
-		
+
 		var objects = [background, gun];
 		for (var i = 0; i < 10; i++) objects.push(enemy0());
-		
-		var control = controller(canvas, keyboard(document), mouse(document), objects);
-		
-		var tick = function() {
-			control.tick();
-			setTimeout(tick, 25);
-		};
-		
-		tick();
+
+		frame.register(function(data) {
+
+			// move
+			objects = read(objects)
+				.map(function(object) { return object.move(); })
+				.concat()
+				.list();
+
+			// repaint
+			var context = canvas.getContext("2d");
+			context.fillStyle = "#777777";
+			context.fillRect(0, 0, width, height);
+
+			context.fillStyle = "#000000";
+			context.font = "10px Helvetica";
+			context.fillText("Demo", 16, height - 16);
+
+			read(objects).foreach(function(object) { object.draw(context); });
+		});
 	</script>
-	
+
 </html>
