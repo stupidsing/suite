@@ -10,39 +10,39 @@ var frp = function() {
 			register_(function(data) { frp1.fire(data); });
 			frp_.register(function(data) { frp1.fire(data); });
 			return frp1;
-		},
-		filter: function(f) {
+		}
+		, filter: function(f) {
 			var frp1 = frp();
 			register_(function(data) { if (f(data)) frp1.fire(data); });
 			return frp1;
-		},
-		fold: function(f, value) {
+		}
+		, fold: function(f, value) {
 			var frp1 = frp();
 			register_(function(data) {
 				value = f(value, data);
 				frp1.fire(value);
 			});
 			return frp1;
-		},
-		last: function() {
+		}
+		, last: function() {
 			var data_;
 			register_(function(data) { data_ = data; });
 			return function() { return data_; };
-		},
-		map: function(f) {
+		}
+		, map: function(f) {
 			var frp1 = frp();
 			register_(function(data) { frp1.fire(f(data)); });
 			return frp1;
-		},
-		register: register_,
-		resample: function(frp_) {
+		}
+		, register: register_
+		, resample: function(frp_) {
 			var data_;
 			register_(function(data) { data_ = data; });
 			var frp1 = frp();
 			frp_.register(function(data) { frp1.fire(data_); });
 			return frp1;
-		},
-		fire: fire_
+		}
+		, fire: fire_
 	};
 };
 
