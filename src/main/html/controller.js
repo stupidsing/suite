@@ -20,9 +20,7 @@ var keyboard = function(document) {
 		dirx: function() { return ispressed[37] ? -1 : (ispressed[39] ? 1 : 0); }
 		, diry: function() { return ispressed[38] ? -1 : (ispressed[40] ? 1 : 0); }
 		, paused: function() { return ispressed[80]; }
-		, pressed: function(keycode) {
-			return ispressed[keycode];
-		}
+		, pressed: function(keycode) { return ispressed[keycode]; }
 	};
 };
 
