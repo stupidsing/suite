@@ -1,32 +1,39 @@
 "use strict";
 
-var map = function(fun, ins) {
-	var outs = [];
-	for (var i = 0; i < ins.length; i++) outs.push(fun(ins[i]));
-	return outs;
+var read = function(list) {
+	return {
+		concat: function() {
+			var list1 = [];
+			for (var i = 0; i < list.length; i++) {
+				var e = list[i];
+				for (var j = 0; j < e.length; j++) list1.push(e[j]);
+			}
+			return read(list1);
+		},
+		filter: function(f) {
+			var list1 = [];
+			for (var i = 0; i < list.length; i++) {
+				var e = list[i];
+				if (f(e)) list1.append(e);
+			}
+			return read(list1);
+		},
+		fold: function(f, value) {
+			for (var i = 0; i < list.length; i++) value = fun(value, list[i]);
+			return value;
+		},
+		foreach: function(f) {
+			for (var i = 0; i < list.length; i++) f(list[i]);
+		},
+		list: function() {
+			return list;
+		},
+		map: function(f) {
+			var list1 = [];
+			for (var i = 0; i < list.length; i++) list1.push(f(list[i]));
+			return read(list1);
+		}
+	};
 };
 
-var filter = function(fun, ins) {
-	var outs = [];
-	for (var i = 0; i < ins.length; i++) {
-		var object = ins[i];
-		if (fun(object)) outs.push(object);
-	}
-	return outs;
-};
-
-var concat = function(ins) {
-	var outs = [];
-	for (var i = 0; i < ins.length; i++) {
-		var child = ins[i];
-		for (var j = 0; j < child.length; j++)
-			outs.push(child[j]);
-	}
-	return outs;
-};
-
-var fold = function(fun, value, ins) {
-	for (var i = 0; i < ins.length; i++)
-		value = fun(value, ins[i]);
-	return value;
-};
+var single = function(value) { return list([value]); };

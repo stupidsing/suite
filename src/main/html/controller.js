@@ -56,17 +56,20 @@ var controller = function(canvas, keyboard, mouse, objects) {
 		context.font = "10px Helvetica";
 		context.fillText("Demo", 16, height - 16);
 
-		map(function(object) { object.draw(context); }, objects);
+		read(objects).foreach(function(object) { object.draw(context); });
 	};
 
 	return {
 		tick: function() {
 			if (!keyboard.paused()) {
-				objects = concat(map(function(object) {
-					object.input(keyboard, mouse);
-					object.move();
-					return object.spawn();
-				}, objects));
+				objects = read(objects)
+					.map(function(object) {
+						object.input(keyboard, mouse);
+						object.move();
+						return object.spawn();
+					})
+					.concat()
+					.list();
 
 				repaint(context, objects);
 			}
