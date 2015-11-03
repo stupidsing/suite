@@ -20,14 +20,12 @@
 		"use strict";
 
 		var canvas = document.getElementById("canvas");
+		var width = canvas.width;
+		var height = canvas.height;
 
 		var frame = frpanimframe();
 		var fx = frpkbarrowx.resample(frame).last();
 		var fy = frpkbarrowy.resample(frame).last();
-
-		var width = canvas.width;
-		var height = canvas.height;
-		var objects = [];
 
 		var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());
 		var dx = 2, dy = 2;
@@ -57,8 +55,6 @@
 
 		var objects = [ball];
 
-		frpmousemove.register(function(d) { log("mouse " + d.x + "," + d.y); });
-
 		frame.register(function(data) {
 
 			// move
@@ -78,6 +74,8 @@
 
 			read(objects).foreach(function(object) { object.draw(context); });
 		});
+
+		frpmousemove.register(function(d) { log("mouse " + d.x + "," + d.y); });
 	</script>
 
 </html>
