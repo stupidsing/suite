@@ -19,7 +19,7 @@ var read = function(list) {
 			return read(list1);
 		},
 		fold: function(f, value) {
-			for (var i = 0; i < list.length; i++) value = fun(value, list[i]);
+			for (var i = 0; i < list.length; i++) value = f(value, list[i]);
 			return value;
 		},
 		foreach: function(f) {

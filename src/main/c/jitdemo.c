@@ -31,16 +31,16 @@ int main() {
 	sigemptyset(&act.sa_mask);
 	act.sa_sigaction = ouch;
 	act.sa_flags = SA_SIGINFO;
-	
+
 	sigaction(SIGSEGV, &act, 0) && fatal("sigaction()");
-	
+
 	ptr = aligned_alloc(pageSize, pageSize);
 	mprotect(ptr, pageSize, PROT_READ) && fatal("mprotect()");
-	
+
 	printf("Hello World!\n");
 	sleep(1);
 	*((char*) ptr) = 0;
 	printf("Another Hello World\n");
-	
+
 	free(ptr);
 }

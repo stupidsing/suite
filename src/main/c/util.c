@@ -93,7 +93,7 @@ int htgetpos(struct Hashtab *hashtab, void *key) {
 	void **keys = hashtab->keys, *k;
 	int size = hashtab->size, i = hashptr(key);
 	while((k = keys[i %= size]) && k != key) i++;
-	return i;	
+	return i;
 }
 
 void *htget(struct Hashtab *hashtab, void *key) {

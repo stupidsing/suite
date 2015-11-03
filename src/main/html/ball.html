@@ -12,6 +12,7 @@
 		</textarea>
 	</body>
 
+	<script src="frp.js"></script>
 	<script src="fun.js"></script>
 	<script src="controller.js"></script>
 
@@ -19,6 +20,10 @@
 		"use strict";
 
 		var canvas = document.getElementById("canvas");
+
+		//var fa = frp_animframe();
+		frpkbarrowx.register(function(d) { log("x" + d); });
+		frpkbarrowy.register(function(d) { log("y" + d); });
 
 		var ball = function(width, height) {
 			var ballx = Math.floor(width * Math.random()), bally = Math.floor(height * Math.random());

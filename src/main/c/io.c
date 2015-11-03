@@ -197,7 +197,7 @@ struct Node *parse0(char *start, char *end) {
 		}
 	}
 
-	
+
 	if(!node)
 		if(*start == '(' && *last == ')'
 				|| *start == '[' && *last == ']'
