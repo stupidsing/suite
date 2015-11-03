@@ -70,17 +70,18 @@ var mousebuttonfrp = frp();
 
 var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };
 
-var pressed_ = function(e) {
-	var down = true;
+var pressed_ = function(e, down) {
 	var frp = keyboardfrps[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
-	if (frp) frp.trigger(down);
+	if (frp) frp.fire(down);
 };
 
-document.onkeydown = function(e) { pressed_(true); };
-document.onkeyup = function(e) { pressed_(false); };
-document.onmousedown = function(e) { mousebuttonfrp(true); };
+document.onkeydown = function(e) { pressed_(e, true); };
+document.onkeyup = function(e) { pressed_(e, false); };
+document.onmousedown = function(e) { mousebuttonfrp.fire(true); };
 document.onmousemove = function(e) {
 	var e1 = (!e) ? window.event : e;
+	var x;
+	var y;
 	if (e1.pageX || e1.pageY) {
 		x = e1.pageX;
 		y = e1.pageY;
@@ -88,9 +89,9 @@ document.onmousemove = function(e) {
 		x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
 		y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 	}
-	mousemovefrp.trigger({ x: x, y: y });
+	mousemovefrp.fire({ x: x, y: y });
 };
-document.onmouseup = function(e) { mousebuttonfrp(false); };
+document.onmouseup = function(e) { mousebuttonfrp.fire(false); };
 
 var frpkbpressed = function(keycode) { return keyboardfrps[keycode] = frp(); };
 var frpkbleft = frpkbpressed(37).filter(function(d) { return d; }).map(function(d) { return -1; });
@@ -99,3 +100,5 @@ var frpkbup = frpkbpressed(38).filter(function(d) { return d; }).map(function(d)
 var frpkbdown = frpkbpressed(40).filter(function(d) { return d; }).map(function(d) { return 1; });
 var frpkbarrowx = frpkbleft.concat(frpkbright); // .fold(function(a, b) { return a + b; }, 0).last();
 var frpkbarrowy = frpkbup.concat(frpkbdown); // .fold(function(a, b) { return a + b; }, 0).last();
+var frpmousebutton = mousebuttonfrp;
+var frpmousemove = mousemovefrp;
