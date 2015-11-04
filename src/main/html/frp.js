@@ -87,40 +87,20 @@ var frp = function() {
 	};
 };
 
-var frpanimframe = function() {
-	var frp_ = frp();
-	var tick = function() {
-		frp_.fire(true);
-		requestAnimationFrame(tick);
-	}
-	requestAnimationFrame(tick);
-	return frp_;
-};
-
-var frptick = function(timeout) {
-	var frp_ = frp();
-	var tick = function() {
-		frp_.fire(true);
-		setTimeout(tick, timeout);
-	}
-	setTimeout(tick, timeout);
-	return frp_;
-};
-
-var keyboardfrps = {};
-var mousemovefrp = frp();
-var mousebuttonfrp = frp();
+var frpkbkeys = {};
+var frpmb = frp();
+var frpmm = frp();
 
 var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };
 
 var pressed_ = function(e, down) {
-	var frp = keyboardfrps[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
+	var frp = frpkbkeys[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
 	if (frp) frp.fire(down);
 };
 
 document.onkeydown = function(e) { pressed_(e, true); };
 document.onkeyup = function(e) { pressed_(e, false); };
-document.onmousedown = function(e) { mousebuttonfrp.fire(true); };
+document.onmousedown = function(e) { frpmb.fire(true); };
 document.onmousemove = function(e) {
 	var e1 = (!e) ? window.event : e;
 	var x;
@@ -132,16 +112,42 @@ document.onmousemove = function(e) {
 		x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
 		y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 	}
-	mousemovefrp.fire({ x: x, y: y });
+	frpmm.fire({ x: x, y: y });
 };
-document.onmouseup = function(e) { mousebuttonfrp.fire(false); };
+document.onmouseup = function(e) { frpmb.fire(false); };
 
-var frpkbpressed = function(keycode) { return keyboardfrps[keycode] = frp(); };
+var frpanimframe = function() {
+	var frp_ = frp();
+	var tick = function() {
+		frp_.fire(true);
+		requestAnimationFrame(tick);
+	}
+	requestAnimationFrame(tick);
+	return frp_;
+};
+
+var frpkbpressed = function(keycode) {
+	var frp_;
+	if (!(frp_ = frpkbkeys[keycode])) frp_ = frpkbkeys[keycode] = frp();
+	return frp_;
+};
+
+var frpkbdown = frpkbpressed(40).map(function(d) { return d ? 1 : 0; });
 var frpkbleft = frpkbpressed(37).map(function(d) { return d ? -1 : 0; });
 var frpkbright = frpkbpressed(39).map(function(d) { return d ? 1 : 0; });
 var frpkbup = frpkbpressed(38).map(function(d) { return d ? -1 : 0; });
-var frpkbdown = frpkbpressed(40).map(function(d) { return d ? 1 : 0; });
+
 var frpkbarrowx = frpkbleft.append(frpkbright); // .fold(function(a, b) { return a + b; }, 0).last();
 var frpkbarrowy = frpkbup.append(frpkbdown); // .fold(function(a, b) { return a + b; }, 0).last();
-var frpmousebutton = mousebuttonfrp;
-var frpmousemove = mousemovefrp;
+var frpmousebutton = frpmb;
+var frpmousemove = frpmm;
+
+var frptick = function(timeout) {
+	var frp_ = frp();
+	var tick = function() {
+		frp_.fire(true);
+		setTimeout(tick, timeout);
+	}
+	setTimeout(tick, timeout);
+	return frp_;
+};
