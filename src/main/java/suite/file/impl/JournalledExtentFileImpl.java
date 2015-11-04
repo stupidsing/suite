@@ -1,35 +1,53 @@
 package suite.file.impl;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 
 import suite.file.ExtentAllocator.Extent;
 import suite.file.JournalledExtentFile;
-import suite.util.Serialize.Serializer;
+import suite.file.JournalledPageFile;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
 
-public class JournalledExtentFileImpl extends JournalledDataFileImpl<Extent>implements JournalledExtentFile {
+public class JournalledExtentFileImpl implements JournalledExtentFile {
 
-	private static Serializer<Extent> extentSerializer = new Serializer<Extent>() {
-		public Extent read(DataInput dataInput) throws IOException {
-			int start = dataInput.readInt();
-			int count = dataInput.readInt();
-			return new Extent(start, count);
+	private JournalledPageFile journalledPageFile;
+	private int pageSize;
+
+	public JournalledExtentFileImpl(String filename, int pageSize) throws IOException {
+		this.journalledPageFile = new JournalledPageFileImpl(filename, pageSize);
+		this.pageSize = pageSize;
+	}
+
+	@Override
+	public void close() throws IOException {
+		journalledPageFile.close();
+	}
+
+	@Override
+	public void sync() throws IOException {
+		journalledPageFile.sync();
+	}
+
+	@Override
+	public Bytes load(Extent extent) throws IOException {
+		BytesBuilder bb = new BytesBuilder();
+		for (int pointer = extent.start; pointer < extent.count; pointer++)
+			bb.append(journalledPageFile.load(pointer));
+		return bb.toBytes();
+	}
+
+	@Override
+	public void save(Extent extent, Bytes bytes) throws IOException {
+		int offset = 0;
+		for (int pointer = extent.start; pointer < extent.count; pointer++) {
+			int offset0 = offset;
+			journalledPageFile.save(pointer, bytes.subbytes(offset0, offset += pageSize));
 		}
+	}
 
-		public void write(DataOutput dataOutput, Extent extent) throws IOException {
-			dataOutput.writeInt(extent.start);
-			dataOutput.writeInt(extent.count);
-		}
-	};
-
-	public JournalledExtentFileImpl(String filename, int maxExtentSize) throws IOException {
-		super( //
-				new ExtentFileImpl(filename, maxExtentSize) //
-				, new PageFileImpl(filename + ".journal", maxExtentSize + 8) //
-				, new PageFileImpl(filename + ".pointer", 8) //
-				, maxExtentSize //
-				, extentSerializer);
+	@Override
+	public void commit() throws IOException {
+		journalledPageFile.commit();
 	}
 
 }
