@@ -99,7 +99,7 @@ public class LazyIbTreePersister<T> implements Closeable {
 
 			for (int pointer = end - 1; pointer >= start; pointer--)
 				if (isInUse[pointer - start])
-					use.sink(Read.from(pageFile.load(pointer).pairs).map(pair -> pair.t1).toList());
+					use.sink(Read.from(pageFile.load(pointer).pairs).map(Pair::second).toList());
 
 			Map<Integer, Integer> map = new HashMap<>();
 			int p1 = start;
