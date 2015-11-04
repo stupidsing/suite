@@ -25,98 +25,78 @@ public class Reactive<T> {
 
 	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
-	private Sink<Sink<T>> sink;
+	private Bag<Sink<T>> receivers;
 
 	public static <T> Reactive<T> append(Reactive<T> r0, Reactive<T> r1) {
-		Bag<Sink<T>> sinks = new Bag<>();
-		Sink<T> sink = t -> sinkAll(sinks, t);
-		r0.sink(sink);
-		r1.sink(sink);
-		return from(sinks);
+		Reactive<T> reactive1 = new Reactive<>();
+		Sink<T> sink = reactive1::fire;
+		r0.register(sink);
+		r1.register(sink);
+		return reactive1;
 	}
 
 	public static <T> Reactive<T> from(Source<T> source) {
-		Bag<Sink<T>> sinks = new Bag<>();
+		Reactive<T> reactive1 = new Reactive<>();
 		executor.submit(() -> {
 			T t;
 			while ((t = source.source()) != null)
-				sinkAll(sinks, t);
+				reactive1.fire(t);
 		});
-		return from(sinks);
-	}
-
-	private static <T> Reactive<T> from(Bag<Sink<T>> sinks) {
-		return from(sinks::add);
-	}
-
-	public static <T> Reactive<T> from(Sink<Sink<T>> sink) {
-		return new Reactive<>(sink);
+		return reactive1;
 	}
 
 	public static <T, U, V> Reactive<V> merge(Reactive<T> r0, Reactive<U> r1, BiFunction<T, U, V> fun) {
-		Bag<Sink<V>> sinks = new Bag<>();
+		Reactive<V> reactive1 = new Reactive<>();
 		CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
-		Sink<Pair<T, U>> recalc = pair -> sinkAll(sinks, fun.apply(pair.t0, pair.t1));
-		r0.sink.sink(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
-		r1.sink.sink(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
-		return from(sinks);
+		Sink<Pair<T, U>> recalc = pair -> reactive1.fire(fun.apply(pair.t0, pair.t1));
+		r0.register(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
+		r1.register(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
+		return reactive1;
 	}
 
-	private Reactive(Sink<Sink<T>> sink) {
-		this.sink = sink;
+	public Reactive() {
+		this(new Bag<>());
+	}
+
+	private Reactive(Bag<Sink<T>> receivers) {
+		this.receivers = receivers;
 	}
 
 	public <U> Reactive<U> concatMap(Fun<T, Reactive<U>> fun) {
-		Bag<Sink<U>> sinks = new Bag<>();
-		sink.sink(t -> fun.apply(t).sink(u -> sinkAll(sinks, u)));
-		return from(sinks);
+		Reactive<U> reactive1 = new Reactive<>();
+		register(t -> fun.apply(t).register(reactive1::fire));
+		return reactive1;
 	}
 
 	public Reactive<T> delay(int milliseconds) {
-		Bag<Sink<T>> sinks = new Bag<>();
-		sink.sink(t -> executor.schedule(() -> sinkAll(sinks, t), milliseconds, TimeUnit.MILLISECONDS));
-		return from(sinks);
+		Reactive<T> reactive1 = new Reactive<>();
+		register(t -> executor.schedule(() -> reactive1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
+		return reactive1;
 	}
 
 	public Reactive<T> filter(Predicate<T> pred) {
-		Bag<Sink<T>> sinks = new Bag<>();
-		sink.sink(t -> {
+		Reactive<T> reactive1 = new Reactive<>();
+		register(t -> {
 			if (pred.test(t))
-				sinkAll(sinks, t);
+				reactive1.fire(t);
 		});
-		return from(sinks);
+		return reactive1;
+	}
+
+	public void fire(T t) {
+		receivers.forEach(sink -> sink.sink(t));
 	}
 
 	public <U> Reactive<U> fold(U init, BiFunction<U, T, U> fun) {
-		Bag<Sink<U>> sinks = new Bag<>();
+		Reactive<U> reactive1 = new Reactive<>();
 		CasReference<U> cr = new CasReference<>(init);
-		sink.sink(t1 -> sinkAll(sinks, cr.apply(t0 -> fun.apply(t0, t1))));
-		return from(sinks);
-	}
-
-	public <U> Reactive<U> map(Fun<T, U> fun) {
-		Bag<Sink<U>> sinks = new Bag<>();
-		sink.sink(t -> sinkAll(sinks, fun.apply(t)));
-		return from(sinks);
-	}
-
-	public Reactive<T> resample(Reactive<?> event) {
-		List<T> ts = new ArrayList<>();
-		ts.add(null);
-		sink.sink(t -> ts.set(0, t));
-
-		Bag<Sink<T>> sinks = new Bag<>();
-		event.sink(e -> sinkAll(sinks, ts.get(0)));
-		return from(sinks);
-	}
-
-	public void sink(Sink<T> sink_) {
-		sink.sink(sink_);
+		register(t1 -> reactive1.fire(cr.apply(t0 -> fun.apply(t0, t1))));
+		return reactive1;
 	}
 
 	public Outlet<T> outlet() {
 		NullableSynchronousQueue<T> queue = new NullableSynchronousQueue<>();
-		sink.sink(queue::offerQuietly);
+		register(queue::offerQuietly);
 		return new Outlet<>(() -> {
 			try {
 				return queue.take();
@@ -126,21 +106,37 @@ public class Reactive<T> {
 		});
 	}
 
+	public <U> Reactive<U> map(Fun<T, U> fun) {
+		Reactive<U> reactive1 = new Reactive<>();
+		register(t -> reactive1.fire(fun.apply(t)));
+		return reactive1;
+	}
+
+	public Reactive<T> resample(Reactive<?> event) {
+		List<T> ts = new ArrayList<>();
+		ts.add(null);
+		register(t -> ts.set(0, t));
+
+		Reactive<T> reactive1 = new Reactive<>();
+		event.register(e -> reactive1.fire(ts.get(0)));
+		return reactive1;
+	}
+
+	public void register(Sink<T> receiver) {
+		register(receiver);
+	}
+
 	public Reactive<T> unique() {
-		Bag<Sink<T>> sinks = new Bag<>();
-		sink.sink(new Sink<T>() {
+		Reactive<T> reactive1 = new Reactive<>();
+		register(new Sink<T>() {
 			private T previous = null;
 
 			public void sink(T t) {
 				if (previous == null || !previous.equals(t))
-					sinkAll(sinks, t);
+					reactive1.fire(t);
 			}
 		});
-		return from(sinks);
-	}
-
-	private static <T> void sinkAll(Bag<Sink<T>> bag, T t) {
-		bag.forEach(sink -> sink.sink(t));
+		return reactive1;
 	}
 
 }

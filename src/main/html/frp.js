@@ -1,9 +1,9 @@
 "use strict";
 
 var frp = function() {
-	var fs = [];
-	var register_ = function(f) { fs.push(f); };
-	var fire_ = function(data) { for (var i = 0; i < fs.length; i++) fs[i](data); };
+	var receivers = [];
+	var register_ = function(receiver) { receivers.push(receiver); };
+	var fire_ = function(data) { for (var i = 0; i < receivers.length; i++) receivers[i](data); };
 	return {
 		append: function(frp_) {
 			var frp1 = frp();
@@ -12,7 +12,7 @@ var frp = function() {
 			return frp1;
 		}
 		, close: function() { // for garbage collection
-			fs = [];
+			receivers = [];
 		}
 		, concatmap: function(f) {
 			var frp1 = frp();
@@ -55,7 +55,7 @@ var frp = function() {
 			frp_.register(function(data) { frp1.fire(data_); });
 			return frp1;
 		}
-		, fire: fire_
+		, fire: fire_,
 	};
 };
 
