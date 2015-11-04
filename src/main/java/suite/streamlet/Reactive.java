@@ -1,7 +1,9 @@
 package suite.streamlet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +64,10 @@ public class Reactive<T> {
 		this.receivers = receivers;
 	}
 
+	public void close() {
+		receivers = new Bag<>();
+	}
+
 	public <U> Reactive<U> concatMap(Fun<T, Reactive<U>> fun) {
 		Reactive<U> reactive1 = new Reactive<>();
 		register(t -> fun.apply(t).register(reactive1::fire));
@@ -71,6 +77,19 @@ public class Reactive<T> {
 	public Reactive<T> delay(int milliseconds) {
 		Reactive<T> reactive1 = new Reactive<>();
 		register(t -> executor.schedule(() -> reactive1.fire(t), milliseconds, TimeUnit.MILLISECONDS));
+		return reactive1;
+	}
+
+	public Reactive<T> edge() {
+		Reactive<T> reactive1 = new Reactive<>();
+		register(new Sink<T>() {
+			private T previous = null;
+
+			public void sink(T t) {
+				if (previous == null || !previous.equals(t))
+					reactive1.fire(t);
+			}
+		});
 		return reactive1;
 	}
 
@@ -127,14 +146,11 @@ public class Reactive<T> {
 	}
 
 	public Reactive<T> unique() {
+		Set<T> set = new HashSet<>();
 		Reactive<T> reactive1 = new Reactive<>();
-		register(new Sink<T>() {
-			private T previous = null;
-
-			public void sink(T t) {
-				if (previous == null || !previous.equals(t))
-					reactive1.fire(t);
-			}
+		register(t -> {
+			if (set.add(t))
+				reactive1.fire(t);
 		});
 		return reactive1;
 	}
