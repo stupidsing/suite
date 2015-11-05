@@ -39,10 +39,7 @@ var frp = () => {
 		fire: fire_,
 		fold: (f, value) => {
 			var frp1 = frp();
-			register_(data => {
-				value = f(value, data);
-				frp1.fire(value);
-			});
+			register_(data => frp1.fire(value = f(value, data)));
 			return frp1;
 		},
 		last: () => {
@@ -88,6 +85,8 @@ var frp = () => {
 var frpkbkeys = {};
 var frpmb = frp();
 var frpmm = frp();
+var frpmotion = frp();
+var frpori = frp();
 
 var tokeycode = e => (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
 
@@ -113,6 +112,29 @@ document.onmousemove = e => {
 	frpmm.fire({ x: x, y: y });
 };
 document.onmouseup = e => frpmb.fire(false);
+
+if (window.DeviceMotionEvent) {
+	window.addEventListener("devicemotion", e => {
+		frpori.fire({
+			a: e.acceleration,
+			aig: e.accelerationIncludingGravity,
+			rr:e.rotationRate,
+			interval: e.interval,
+		});
+	}, false);
+}
+else log("device motion not supported");
+
+if (window.DeviceOrientationEvent) {
+	window.addEventListener("deviceorientation", e => {
+		frpori.fire({
+			lr: e.gamma, // the left-to-right tilt in degrees, where right is positive
+			fb: e.beta, // the front-to-back tilt in degrees, where front is positive
+			dir: e.alpha, // the compass direction the device is facing in degrees
+		});
+	}, false);
+}
+else log("device orientation not supported");
 
 var frpanimframe = () => {
 	var frp_ = frp();
