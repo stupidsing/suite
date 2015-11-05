@@ -25,8 +25,12 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 		return tree.stream();
 	}
 
-	public V get(V k) {
-		return tree.find(k);
+	public boolean contains(V v) {
+		return tree.find(v) != null;
+	}
+
+	public V get(V v) {
+		return tree.find(v);
 	}
 
 	public ISet<V> add(V v) {
