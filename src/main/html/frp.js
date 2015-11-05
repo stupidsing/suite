@@ -88,8 +88,6 @@ var frpmm = frp();
 var frpmotion = frp();
 var frpori = frp();
 
-var tokeycode = e => (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
-
 var pressed_ = (e, down) => {
 	var frp = frpkbkeys[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
 	if (frp) frp.fire(down);
