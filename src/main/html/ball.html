@@ -18,7 +18,7 @@
 	<script type="text/javascript">
 		"use strict";
 
-		var log = function(m) {
+		var log = m => {
 			var text = document.getElementById("log").value + m + "\n";
 			if (text.length > 256) text = text.substring(text.length - 256, text.length);
 			document.getElementById("log").value = text;
@@ -37,21 +37,19 @@
 		var dx = 2, dy = 2;
 
 		var background = {
-			move: function() {
-				return [this];
-			}
-			, draw: function(context) {
+			move: () => [background],
+			draw: context => {
 				context.fillStyle = "#777777";
 				context.fillRect(0, 0, width, height);
 
 				context.fillStyle = "#000000";
 				context.font = "10px Helvetica";
 				context.fillText("Demo", 16, height - 16);
-			}
+			},
 		};
 
 		var ball = {
-			move: function() {
+			move: () => {
 				var ix = fx();
 				var iy = fy();
 				if (ix) ballx += 2 * ix;
@@ -63,32 +61,32 @@
 				if (bally < 0) { bally = 0; dy = 2; }
 				if (ballx > width) { ballx = width; dx = -2; }
 				if (bally > height) { bally = height; dy = -2; }
-				return [this];
-			}
-			, draw: function(context) {
+				return [ball];
+			},
+			draw: context => {
 				var radius = 24;
 				context.beginPath();
 				context.arc(ballx, bally, radius, 0, 2 * Math.PI);
 				context.stroke();
-			}
+			},
 		};
 
 		var objects = [background, ball];
 
-		frame.register(function(data) {
+		frame.register(data => {
 
 			// move
 			objects = read(objects)
-				.map(function(object) { return object.move(); })
+				.map(object => object.move())
 				.concat()
 				.list();
 
 			// repaint
 			var context = canvas.getContext("2d");
-			read(objects).foreach(function(object) { object.draw(context); });
+			read(objects).foreach(object => object.draw(context));
 		});
 
-		frpmousemove.register(function(d) { log("mouse " + d.x + "," + d.y); });
+		frpmousemove.register(d => log("mouse " + d.x + "," + d.y));
 	</script>
 
 </html>

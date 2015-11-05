@@ -29,15 +29,15 @@
 		var background = {
 			move: function() {
 				return [this];
-			}
-			, draw: function(context) {
+			},
+			draw: context => {
 				context.beginPath();
 				context.arc(centrex, centrey, radius, 0, 2 * Math.PI);
 				context.stroke();
-			}
+			},
 		};
 
-		var gun = function() {
+		var gun = (() => {
 			var angle = 0;
 			var state = 0, fire0, fire1;
 
@@ -52,8 +52,8 @@
 					else if (state == 1) state = (fire1 += .05) < 1 ? state : 2;
 					else if (state == 2) state = (fire0 += .05) < 1 ? state : 0;
 					return [this];
-				}
-				, draw: function(context) {
+				},
+				draw: context => {
 					context.beginPath();
 					context.moveTo(centrex, centrey);
 					context.lineTo(centrex + 16 * Math.cos(angle), centrey + 16 * Math.sin(angle));
@@ -76,11 +76,11 @@
 						context.fill();
 						*/
 					}
-				}
+				},
 			};
-		}();
+		})();
 
-		var enemy0 = function() {
+		var enemy0 = () => {
 			var angle = 2 * Math.PI * Math.random();
 			var x = centrex + radius * Math.sin(angle);
 			var y = centrey + radius * Math.cos(angle);
@@ -95,26 +95,26 @@
 						y += y < centrey ? 1 : -1;
 					};
 					return [this];
-				}
-				, draw: function(context) {
+				},
+				draw: context => {
 					context.fillStyle = "#000000";
 					context.moveTo(x - 8, y - 8);
 					context.lineTo(x + 8, y + 8);
 					context.moveTo(x - 8, y + 8);
 					context.lineTo(x + 8, y - 8);
 					context.stroke();
-				}
+				},
 			};
 		};
 
 		var objects = [background, gun];
 		for (var i = 0; i < 10; i++) objects.push(enemy0());
 
-		frame.register(function(data) {
+		frame.register(data => {
 
 			// move
 			objects = read(objects)
-				.map(function(object) { return object.move(); })
+				.map(object => object.move())
 				.concat()
 				.list();
 
@@ -127,7 +127,7 @@
 			context.font = "10px Helvetica";
 			context.fillText("Demo", 16, height - 16);
 
-			read(objects).foreach(function(object) { object.draw(context); });
+			read(objects).foreach(object => object.draw(context));
 		});
 	</script>
 

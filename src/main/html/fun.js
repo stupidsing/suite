@@ -1,8 +1,8 @@
 "use strict";
 
-var read = function(list) {
+var read = list => {
 	return {
-		concat: function() {
+		concat: () => {
 			var list1 = [];
 			for (var i = 0; i < list.length; i++) {
 				var e = list[i];
@@ -10,7 +10,7 @@ var read = function(list) {
 			}
 			return read(list1);
 		},
-		filter: function(f) {
+		filter: f => {
 			var list1 = [];
 			for (var i = 0; i < list.length; i++) {
 				var e = list[i];
@@ -18,17 +18,15 @@ var read = function(list) {
 			}
 			return read(list1);
 		},
-		fold: function(f, value) {
+		fold: (f, value) => {
 			for (var i = 0; i < list.length; i++) value = f(value, list[i]);
 			return value;
 		},
-		foreach: function(f) {
+		foreach: f => {
 			for (var i = 0; i < list.length; i++) f(list[i]);
 		},
-		list: function() {
-			return list;
-		},
-		map: function(f) {
+		list: () => list,
+		map: f => {
 			var list1 = [];
 			for (var i = 0; i < list.length; i++) list1.push(f(list[i]));
 			return read(list1);

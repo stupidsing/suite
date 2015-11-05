@@ -1,83 +1,81 @@
 "use strict";
 
-var frp = function() {
+var frp = () => {
 	var receivers = [];
-	var register_ = function(receiver) { receivers.push(receiver); };
-	var fire_ = function(data) { for (var i = 0; i < receivers.length; i++) receivers[i](data); };
+	var register_ = receiver => receivers.push(receiver);
+	var fire_ = data => { for (var i = 0; i < receivers.length; i++) receivers[i](data); };
 	return {
-		append: function(frp_) {
+		append: frp_ => {
 			var frp1 = frp();
 			register_(frp1.fire);
 			frp_.register(frp1.fire);
 			return frp1;
 		},
-		close: function() { // for garbage collection
-			receivers = [];
-		},
-		concatmap: function(f) {
+		close: () => receivers = [], // for garbage collection
+		concatmap: f => {
 			var frp1 = frp();
-			register_(function(data) { f(data).register(frp1.fire); });
+			register_(data => f(data).register(frp1.fire));
 			return frp1;
 		},
-		delay: function(time) {
+		delay: time => {
 			var frp1 = frp();
-			register_(function(data) { setTimeout(function() { frp1.fire(data); }, time); });
+			register_(data => setTimeout(() => frp1.fire(data), time));
 			return frp1;
 		},
-		edge: function() {
+		edge: () => {
 			var frp1 = frp();
 			var data_;
-			register_(function(data) {
+			register_(data => {
 				if(data != data_) frp1.fire(data);
 				data_ = data;
 			});
 			return frp1;
 		},
-		filter: function(f) {
+		filter: f => {
 			var frp1 = frp();
-			register_(function(data) { if (f(data)) frp1.fire(data); });
+			register_(data => { if (f(data)) frp1.fire(data); });
 			return frp1;
 		},
 		fire: fire_,
-		fold: function(f, value) {
+		fold: (f, value) => {
 			var frp1 = frp();
-			register_(function(data) {
+			register_(data => {
 				value = f(value, data);
 				frp1.fire(value);
 			});
 			return frp1;
 		},
-		last: function() {
+		last: () => {
 			var data_;
-			register_(function(data) { data_ = data; });
-			return function() { return data_; };
+			register_(data => data_ = data);
+			return () => data_;
 		},
-		map: function(f) {
+		map: f => {
 			var frp1 = frp();
-			register_(function(data) { frp1.fire(f(data)); });
+			register_(data => frp1.fire(f(data)));
 			return frp1;
 		},
-		merge: function(frp_, f) {
+		merge: (frp_, f) => {
 			var v0, v1;
 			var frp1 = frp();
-			var fire1 = function() {frp1.fire(f(v0, v1)); };
-			register_(function(data) { v0 = data; fire1(); });
-			f.register(function(data) { v1 = data; fire1(); });
+			var fire1 = () => frp1.fire(f(v0, v1));
+			register_(data => { v0 = data; fire1(); });
+			f.register(data => { v1 = data; fire1(); });
 			return frp1;
 		},
 		register: register_,
-		resample: function(frp_) {
+		resample: frp_ => {
 			var data_;
-			register_(function(data) { data_ = data; });
+			register_(data => data_ = data);
 			var frp1 = frp();
-			frp_.register(function(data) { frp1.fire(data_); });
+			frp_.register(data => frp1.fire(data_));
 			return frp1;
 		},
-		unique: function() {
+		unique: () => {
 			var frp1 = frp();
 			var list = [];
-			register_(function(data) {
-				if (!read(list).fold(function(b_, d) { return b_ || e == data; }, false)) {
+			register_(data => {
+				if (!read(list).fold((b_, d) => b_ || e == data, false)) {
 					frp1.fire(data);
 					list.push(data);
 				}
@@ -91,17 +89,17 @@ var frpkbkeys = {};
 var frpmb = frp();
 var frpmm = frp();
 
-var tokeycode = function(e) { return (!(e.which)) ? e.keyCode : (e.which ? e.which : 0); };
+var tokeycode = e => (!(e.which)) ? e.keyCode : (e.which ? e.which : 0);
 
-var pressed_ = function(e, down) {
+var pressed_ = (e, down) => {
 	var frp = frpkbkeys[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
 	if (frp) frp.fire(down);
 };
 
-document.onkeydown = function(e) { pressed_(e, true); };
-document.onkeyup = function(e) { pressed_(e, false); };
-document.onmousedown = function(e) { frpmb.fire(true); };
-document.onmousemove = function(e) {
+document.onkeydown = e => pressed_(e, true);
+document.onkeyup = e => pressed_(e, false);
+document.onmousedown = e => frpmb.fire(true);
+document.onmousemove = e => {
 	var e1 = (!e) ? window.event : e;
 	var x;
 	var y;
@@ -114,11 +112,11 @@ document.onmousemove = function(e) {
 	}
 	frpmm.fire({ x: x, y: y });
 };
-document.onmouseup = function(e) { frpmb.fire(false); };
+document.onmouseup = e => frpmb.fire(false);
 
-var frpanimframe = function() {
+var frpanimframe = () => {
 	var frp_ = frp();
-	var tick = function() {
+	var tick = () => {
 		frp_.fire(true);
 		requestAnimationFrame(tick);
 	}
@@ -126,25 +124,25 @@ var frpanimframe = function() {
 	return frp_;
 };
 
-var frpkbpressed = function(keycode) {
+var frpkbpressed = keycode => {
 	var frp_;
 	if (!(frp_ = frpkbkeys[keycode])) frp_ = frpkbkeys[keycode] = frp();
 	return frp_;
 };
 
-var frpkbdown = frpkbpressed(40).map(function(d) { return d ? 1 : 0; });
-var frpkbleft = frpkbpressed(37).map(function(d) { return d ? -1 : 0; });
-var frpkbright = frpkbpressed(39).map(function(d) { return d ? 1 : 0; });
-var frpkbup = frpkbpressed(38).map(function(d) { return d ? -1 : 0; });
+var frpkbdown = frpkbpressed(40).map(d => d ? 1 : 0);
+var frpkbleft = frpkbpressed(37).map(d => d ? -1 : 0);
+var frpkbright = frpkbpressed(39).map(d => d ? 1 : 0);
+var frpkbup = frpkbpressed(38).map(d => d ? -1 : 0);
 
-var frpkbarrowx = frpkbleft.append(frpkbright); // .fold(function(a, b) { return a + b; }, 0).last();
-var frpkbarrowy = frpkbup.append(frpkbdown); // .fold(function(a, b) { return a + b; }, 0).last();
+var frpkbarrowx = frpkbleft.append(frpkbright); // .fold((a, b) => a + b, 0).last();
+var frpkbarrowy = frpkbup.append(frpkbdown); // .fold((a, b) => a + b, 0).last();
 var frpmousebutton = frpmb;
 var frpmousemove = frpmm;
 
-var frptick = function(timeout) {
+var frptick = timeout => {
 	var frp_ = frp();
-	var tick = function() {
+	var tick = () => {
 		frp_.fire(true);
 		setTimeout(tick, timeout);
 	}
