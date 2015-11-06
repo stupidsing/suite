@@ -65,9 +65,19 @@
 			},
 			draw: context => {
 				var radius = 24;
+
+				/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
+
+				context.fillStyle = "#0000FF";
 				context.beginPath();
-				context.arc(ballx, bally, radius, 0, 2 * Math.PI);
-				context.stroke();
+				context.moveTo(ballx, bally - radius);
+				context.lineTo(ballx + radius * 0.866, bally - radius * 0.5);
+				context.lineTo(ballx + radius * 0.866, bally + radius * 0.5);
+				context.lineTo(ballx, bally + radius);
+				context.lineTo(ballx - radius * 0.866, bally + radius * 0.5);
+				context.lineTo(ballx - radius * 0.866, bally - radius * 0.5);
+				context.closePath();
+				context.fill();
 			},
 		};
 
