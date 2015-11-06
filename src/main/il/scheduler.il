@@ -1,6 +1,6 @@
 data sch-node = struct (
 	dl as dl-node,
-	size as int,
+	esp as int,
 );
 
 declare sch-sync = 0;
@@ -70,8 +70,7 @@ declare sch-dequeue-process = function [process,] (
 
 declare sch-fork = function [] (
 	synchronized (& sch-sync) (
-		declare process1 = sch-allocate [];
-		sch-insert-next [processes, process1,];
+		declare process1 = sch-enqueue-process [];
 
 		-- TODO allocate stack
 		-- TODO how to put in ESP? mark fork flag?
