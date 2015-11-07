@@ -16,7 +16,9 @@
 -- 00007C00 -> 00007E00 boot sector
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)
 -- 00020800 -> 00020868 task state segment (TSS)
--- 00020868 -> 00022000 kernel interrupt stack
+-- 00020868 -> 0002086C user mode EIP
+-- 0002086C -> 00020870 user mode ESP
+-- 00020870 -> 00022000 kernel interrupt stack
 -- 00022000 -> 00024000 kernel system call stack
 -- 00024000 -> 00026000 kernel initialization stack
 -- 00040000 -> 00040004 kernel this frame pointer
@@ -29,6 +31,8 @@
 
 constant idt-address = +x20000;
 constant tss-address = +x20800;
+constant user-mode-eip = +x20868;
+constant user-mode-esp = +x2086C;
 constant interrupt-stack-address = +x22000;
 constant syscall-stack-address = +x24000;
 constant memory-region-start = 1048576;

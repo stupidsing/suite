@@ -1,5 +1,6 @@
 data sch-node = struct (
 	dl as dl-node,
+	eip as int,
 	esp as int,
 );
 
@@ -44,15 +45,15 @@ declare sch-switch = function [] (-- Round robin in action
 );
 
 declare sch-interrupt-switch = function [] (
-	current-process;
 	asm _ MOV (EBX, CR3);
 	asm _ PUSH (EBX);
-	asm _ MOV (`EAX + 8`, ESP);
+	let (`current-process`^eip) = dw-get [user-mode-eip,];
+	let (`current-process`^esp) = dw-get [user-mode-esp,];
 
 	sch-switch [];
 
-	current-process;
-	asm _ MOV (ESP, `EAX + 8`);
+	dw-set [user-mode-esp, `current-process`^esp,];
+	dw-set [user-mode-eip, `current-process`^eip,];
 	asm _ POP (EBX);
 	asm _ MOV (CR3, EBX);
 );
