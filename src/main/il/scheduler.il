@@ -1,5 +1,6 @@
 data sch-node = struct (
 	dl as dl-node,
+	eax as int,
 	eip as int,
 	esp as int,
 );
@@ -30,11 +31,11 @@ declare sch-remove = function [e as pointer:sch-node,] (
 );
 
 declare sch-allocate = function [] (
-	(mm-allocate [12,]) as pointer:sch-node;
+	mm-allocate sch-node;
 );
 
 declare sch-deallocate = function [e,] (
-	mm-deallocate [e as int, 12,];
+	mm-deallocate sch-node e;
 );
 
 declare sch-switch = function [] (-- Round robin in action
@@ -47,6 +48,7 @@ declare sch-switch = function [] (-- Round robin in action
 declare sch-interrupt-switch = function [] (
 	asm _ MOV (EBX, CR3);
 	asm _ PUSH (EBX);
+	let (`current-process`^eax) = dw-get [user-mode-eax,];
 	let (`current-process`^eip) = dw-get [user-mode-eip,];
 	let (`current-process`^esp) = dw-get [user-mode-esp,];
 
@@ -54,6 +56,7 @@ declare sch-interrupt-switch = function [] (
 
 	dw-set [user-mode-esp, `current-process`^esp,];
 	dw-set [user-mode-eip, `current-process`^eip,];
+	dw-set [user-mode-eax, `current-process`^eax,];
 	asm _ POP (EBX);
 	asm _ MOV (CR3, EBX);
 );
@@ -69,12 +72,18 @@ declare sch-dequeue-process = function [process,] (
 	sch-deallocate [process,];
 );
 
+declare sch-forker = function [] (
+	declare a as int;
+	asm _ MOV (`EBP + -4`, EAX);
+);
+
 declare sch-fork = function [] (
 	synchronized (& sch-sync) (
 		declare process1 = sch-enqueue-process [];
 
 		-- TODO allocate stack
 		-- TODO how to put in ESP? mark fork flag?
+		mm-allocate sch-node;
 	);
 );
 

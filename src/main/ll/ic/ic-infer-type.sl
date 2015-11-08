@@ -85,6 +85,8 @@ ic-infer-type0 .vs (SEQ .do0 .do1) .type
 	:- ic-infer-type .vs .do0 _
 	, ic-infer-type .vs .do1 .type
 #
+ic-infer-type0 _ (SIZE-OF _) I32
+#
 ic-infer-type0 .vs (SNIPPET .snippet) I32
 	:- ic-infer-type .vs .snippet _
 #

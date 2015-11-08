@@ -88,6 +88,9 @@ ic-parse (.do0; .do1) (SEQ .parsed0 .parsed1)
 	, ic-parse .do0 .parsed0
 	, ic-parse .do1 .parsed1
 #
+ic-parse (size-of .type) (SIZE-OF .type1)
+	:- ic-parse-type .type .type1
+#
 ic-parse (snippet .snippet) (SNIPPET .snippet1)
 	:- ic-parse .snippet .snippet1
 #

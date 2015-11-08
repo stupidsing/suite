@@ -63,6 +63,9 @@ ic-rewrite (REG .reg) (REG .reg) .ts/.ts
 #
 ic-rewrite (SEQ .a0 .b0) (SEQ .a1 .b1) (.a0 .a1, .b0 .b1, .ts)/.ts
 #
+ic-rewrite (SIZE-OF .type0) (SIZE-OF .type1) .ts/.ts
+	:- ic-rewrite-type .type0 .type1
+#
 ic-rewrite (SNIPPET .s0) (SNIPPET .s1) (.s0 .s1, .ts)/.ts
 #
 ic-rewrite (STRING .s) (STRING .s) .ts/.ts

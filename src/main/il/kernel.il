@@ -31,8 +31,9 @@
 
 constant idt-address = +x20000;
 constant tss-address = +x20800;
-constant user-mode-eip = +x20868;
-constant user-mode-esp = +x2086C;
+constant user-mode-eax = +x20868;
+constant user-mode-eip = +x2086C;
+constant user-mode-esp = +x20870;
 constant interrupt-stack-address = +x22000;
 constant syscall-stack-address = +x24000;
 constant memory-region-start = 1048576;
@@ -112,8 +113,12 @@ declare wrmsr = function [msr, value,] (
 #include(buddy-allocator.il);
 #include(first-fit-allocator.il);
 
-declare mm-allocate = ba-allocate;
-declare mm-deallocate = ba-deallocate;
+constant mm-allocate .type = (
+	(ba-allocate [size-of .type,]) as pointer:.type
+);
+constant mm-deallocate .type .pointer = (
+	ba-deallocate [.pointer as int, size-of .type,]
+);
 
 #include(irq.il);
 #include(scheduler.il);
