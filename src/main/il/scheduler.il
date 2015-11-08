@@ -72,9 +72,8 @@ declare sch-forker = baseless [] (
 
 	(a as (function [] int)) [];
 
-	-- TODO
 	sch-remove [current-process,];
-	--sch-deallocate [current-process,]; -- Concurrency issue?
+	sch-deallocate [current-process,];
 	asm _ HLT ();
 );
 
