@@ -1,7 +1,7 @@
 data sch-node = struct (
 	dl as dl-node,
 	esp as int,
-	interrupt-stack-address as (int * 256),
+	interrupt-stack as (int * 256),
 );
 
 declare sch-sync = 0;
@@ -78,20 +78,29 @@ declare sch-forker = baseless [] (
 	asm _ HLT ();
 );
 
--=
-declare sch-fork = function [f as function [],] (
+declare sch-fork = function [f as function [] int,] (
+	declare eflags = function [] (
+		asm _ PUSHF ();
+		asm _ POP (EAX);
+	);
+
 	synchronized (& sch-sync) (
-		declare stack1 = mm-allocate (int * 256);
-		declare esp1 = stack1 as int + 4 * 256 - 8;
-		copy [esp1, (& f) as int, 8,];
+		declare user-stack = mm-allocate (int * 256);
+		declare user-esp = user-stack as int + 4 * 256 - 8;
+		copy [user-esp, (& f) as int, 8,];
 
 		declare process1 = sch-allocate [];
-		`process1`^esp = esp1;
+		let (`process1`^interrupt-stack):255 = +x23; -- User-mode SS
+		let (`process1`^interrupt-stack):254 = user-esp;
+		let (`process1`^interrupt-stack):253 = eflags [];
+		let (`process1`^interrupt-stack):252 = +x1B; -- User-mode CS
+		let (`process1`^interrupt-stack):251 = sch-forker as int; -- User-mode EIP
+		let (`process1`^esp) = (& process1) as int + size-of sch-node - (8 + 5) * 4;
+
 		sch-insert-next [processes, process1,];
 		0;
 	);
 );
-=-
 
 declare sch-exit = function [] (
 	synchronized (& sch-sync) (
