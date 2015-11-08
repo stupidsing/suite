@@ -15,21 +15,9 @@ declare idt-setup = function [] (
 		asm _ MOV (ES, AX);
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (EBP, ESP);
-		asm _ MOV (EAX, `EBP + 36`);
-		asm _ MOV (`user-mode-eax`, EAX);
-		asm _ MOV (EAX, `EBP + 40`);
-		asm _ MOV (`user-mode-eip`, EAX);
-		asm _ MOV (EAX, `EBP + 52`);
-		asm _ MOV (`user-mode-esp`, EAX);
 	);
 
 	constant isr-epilog = (
-		asm _ MOV (EAX, `user-mode-esp`);
-		asm _ MOV (`EBP + 52`, EAX);
-		asm _ MOV (EAX, `user-mode-eip`);
-		asm _ MOV (`EBP + 40`, EAX);
-		asm _ MOV (EAX, `user-mode-eax`);
-		asm _ MOV (`EBP + 36`, EAX);
 		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
 		asm _ POP (ES);

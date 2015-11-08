@@ -1,8 +1,7 @@
 data sch-node = struct (
 	dl as dl-node,
-	eax as int,
-	eip as int,
 	esp as int,
+	interrupt-stack-address as (int * 256),
 );
 
 declare sch-sync = 0;
@@ -23,11 +22,15 @@ declare sch-new = function [e as pointer:sch-node,] (
 );
 
 declare sch-insert-next = function [e as pointer:sch-node, ne as pointer:sch-node,] (
+	asm _ CLI ();
 	dl-insert-next [e +f dl, ne +f dl,];
+	asm _ STI ();
 );
 
 declare sch-remove = function [e as pointer:sch-node,] (
+	asm _ CLI ();
 	dl-remove [e +f dl,];
+	asm _ STI ();
 );
 
 declare sch-allocate = function [] (
@@ -46,52 +49,56 @@ declare sch-switch = function [] (-- Round robin in action
 );
 
 declare sch-interrupt-switch = function [] (
+	declare esp = current-process +f esp;
 	asm _ MOV (EBX, CR3);
 	asm _ PUSH (EBX);
-	let (`current-process`^eax) = dw-get [user-mode-eax,];
-	let (`current-process`^eip) = dw-get [user-mode-eip,];
-	let (`current-process`^esp) = dw-get [user-mode-esp,];
+	asm _ MOV (EAX, `EBP + -4`);
+	asm _ MOV (`EAX`, ESP);
 
 	sch-switch [];
 
-	dw-set [user-mode-esp, `current-process`^esp,];
-	dw-set [user-mode-eip, `current-process`^eip,];
-	dw-set [user-mode-eax, `current-process`^eax,];
+	asm _ MOV (EAX, `EBP + -4`);
+	asm _ MOV (ESP, `EAX`);
 	asm _ POP (EBX);
 	asm _ MOV (CR3, EBX);
 );
 
-declare sch-enqueue-process = function [] (
-	declare process = sch-allocate [];
-	sch-insert-next [processes, process,];
-	process;
-);
-
-declare sch-dequeue-process = function [process,] (
-	sch-remove [process,];
-	sch-deallocate [process,];
-);
-
-declare sch-forker = function [] (
-	declare a as int;
+declare sch-forker = baseless [] (
+	declare a as (int * 2);
+	asm _ MOV (EAX, `EBP + 4`);
+	asm _ MOV (`EBP + -8`, EAX);
+	asm _ MOV (EAX, `EBP + 8`);
 	asm _ MOV (`EBP + -4`, EAX);
+
+	(a as (function [] int)) [];
+
+	-- TODO
+	sch-remove [current-process,];
+	--sch-deallocate [current-process,]; -- Concurrency issue?
+	asm _ HLT ();
 );
 
-declare sch-fork = function [] (
+-=
+declare sch-fork = function [f as function [],] (
 	synchronized (& sch-sync) (
-		declare process1 = sch-enqueue-process [];
+		declare stack1 = mm-allocate (int * 256);
+		declare esp1 = stack1 as int + 4 * 256 - 8;
+		copy [esp1, (& f) as int, 8,];
 
-		-- TODO allocate stack
-		-- TODO how to put in ESP? mark fork flag?
-		mm-allocate sch-node;
+		declare process1 = sch-allocate [];
+		`process1`^esp = esp1;
+		sch-insert-next [processes, process1,];
+		0;
 	);
 );
+=-
 
 declare sch-exit = function [] (
 	synchronized (& sch-sync) (
 		declare process = current-process;
 		declare process1 = sch-next [process,];
-		sch-dequeue-process [process,];
+		sch-remove [process,];
+		sch-deallocate [process,];
 		current-process = process1;
 
 		-- TODO how to give up...
@@ -100,7 +107,8 @@ declare sch-exit = function [] (
 
 declare sch-setup = function [] (
 	sch-new [processes,];
-	let current-process = sch-enqueue-process [];
+	let current-process = sch-allocate [];
+	sch-insert-next [processes, current-process,];
 );
 
 declare sch-teardown = function [] (

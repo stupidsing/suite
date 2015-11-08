@@ -16,11 +16,8 @@
 -- 00007C00 -> 00007E00 boot sector
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)
 -- 00020800 -> 00020868 task state segment (TSS)
--- 00020868 -> 0002086C user mode EIP
--- 0002086C -> 00020870 user mode ESP
--- 00020870 -> 00022000 kernel interrupt stack
--- 00022000 -> 00024000 kernel system call stack
--- 00024000 -> 00026000 kernel initialization stack
+-- 00020870 -> 00022000 kernel system call stack
+-- 00022000 -> 00024000 kernel initialization stack
 -- 00040000 -> 00040004 kernel this frame pointer
 -- 00040000 -> 00050000 kernel code
 -- 00050000 -> 000A0000 kernel buddy allocation pool
@@ -31,14 +28,10 @@
 
 constant idt-address = +x20000;
 constant tss-address = +x20800;
-constant user-mode-eax = +x20868;
-constant user-mode-eip = +x2086C;
-constant user-mode-esp = +x20870;
-constant interrupt-stack-address = +x22000;
-constant syscall-stack-address = +x24000;
+constant syscall-stack-address = +x22000;
 constant memory-region-start = 1048576;
 
-asm _ MOV (ESP, +x26000);
+asm _ MOV (ESP, +x24000);
 asm _ MOV (EBP, ESP);
 asm _ MOV (`+x40000`, EBP);
 
@@ -175,7 +168,7 @@ asm _ STI ();
 	for (declare i = 0; i < 104; i =+ 4) (
 		dw-set [tss-address + i, 0,];
 	);
-	dw-set [tss-address + 4, interrupt-stack-address,];
+	dw-set [tss-address + 4, (current-process as int) + size-of sch-node,];
 	dw-set [tss-address + 8, +x10,];
 
 	asm _ MOV (AX, +x2B);
