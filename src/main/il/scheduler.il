@@ -1,6 +1,7 @@
 data sch-node = struct (
 	dl as dl-node,
 	esp as int,
+	is-fork as int,
 	interrupt-stack as (int * 256),
 );
 
@@ -34,7 +35,9 @@ declare sch-remove = function [e as pointer:sch-node,] (
 );
 
 declare sch-allocate = function [] (
-	mm-allocate sch-node;
+	declare process = mm-allocate sch-node;
+	let (`process`^is-fork) = 0;
+	process;
 );
 
 declare sch-deallocate = function [e,] (
@@ -55,6 +58,15 @@ declare sch-interrupt-switch = function [] (
 	asm _ MOV (EAX, `EBP + -4`);
 	asm _ MOV (`EAX`, ESP);
 
+	if (`current-process`^is-fork) then (
+		declare process1 = sch-allocate [];
+		let (`process1`^interrupt-stack) = `current-process`^interrupt-stack;
+		declare diff = process1 as int - current-process as int;
+		let (`process1`^esp) = `current-process`^esp + diff;
+		sch-insert-next [processes, current-process,];
+		let (`current-process`^is-fork) = 0;
+	) else ();
+
 	sch-switch [];
 
 	asm _ MOV (EAX, `EBP + -4`);
@@ -63,42 +75,13 @@ declare sch-interrupt-switch = function [] (
 	asm _ MOV (CR3, EBX);
 );
 
-declare sch-forker = baseless [] (
-	declare a as (int * 2);
-	asm _ MOV (EAX, `EBP + 4`);
-	asm _ MOV (`EBP + -8`, EAX);
-	asm _ MOV (EAX, `EBP + 8`);
-	asm _ MOV (`EBP + -4`, EAX);
-
-	(a as (function [] int)) [];
-
-	sch-remove [current-process,];
-	sch-deallocate [current-process,];
-	asm _ HLT ();
-);
-
 declare sch-fork = function [f as function [] int,] (
-	declare eflags = function [] (
-		asm _ PUSHF ();
-		asm _ POP (EAX);
+	declare process0 = current-process;
+	let (`process0`^is-fork) = 1;
+	while (`process0`^is-fork) do (
+		asm _ HLT ();
 	);
-
-	synchronized (& sch-sync) (
-		declare user-stack = mm-allocate (int * 256);
-		declare user-esp = user-stack as int + 4 * 256 - 8;
-		copy [user-esp, (& f) as int, 8,];
-
-		declare process1 = sch-allocate [];
-		let (`process1`^interrupt-stack):255 = +x23; -- User-mode SS
-		let (`process1`^interrupt-stack):254 = user-esp;
-		let (`process1`^interrupt-stack):253 = eflags [];
-		let (`process1`^interrupt-stack):252 = +x1B; -- User-mode CS
-		let (`process1`^interrupt-stack):251 = sch-forker as int; -- User-mode EIP
-		let (`process1`^esp) = (& process1) as int + size-of sch-node - (8 + 5) * 4;
-
-		sch-insert-next [processes, process1,];
-		0;
-	);
+	current-process != process0;
 );
 
 declare sch-exit = function [] (
