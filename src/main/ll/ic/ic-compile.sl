@@ -85,8 +85,7 @@ ic-compile0 (METHOD0 _ .do) .e0/.ex
 		, _ MOV (EBP, ESP)
 		, .e1)
 	, ic-compile .do .e1/.e2
-	, .e2 = (_ MOV (ESP, EBP)
-		, _ POP (EBP)
+	, .e2 = (_ POP (EBP)
 		, _ RET ()
 		, _ R-
 		, _ FR-END
