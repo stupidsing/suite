@@ -29,7 +29,6 @@ declare sysenter-sink = baseless [p0, p1, p2,] (
 
 	svc-handle-service [p0, p1, p2,];
 
-	asm _ MOV (ESP, EBP);
 	asm _ ADD (ESP, 20);
 	asm _ MOV (DX, +x23);
 	asm _ MOV (DS, DX);

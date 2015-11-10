@@ -18,7 +18,6 @@ declare idt-setup = function [] (
 	);
 
 	constant isr-epilog = (
-		asm _ MOV (ESP, EBP);
 		asm _ POP (EAX);
 		asm _ POP (ES);
 		asm _ POP (DS);

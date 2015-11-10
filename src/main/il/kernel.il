@@ -186,13 +186,11 @@ asm _ MOV (ESP, kernel-second-esp);
 
 	asm _ STI ();
 
-	-=
 	if (sch-fork []) then (
 		cs-puts ["From another thread",];
 		cs-nl [];
 		sch-exit [];
 	) else ();
-	=-
 
 	-- Enters user mode
 	(
