@@ -106,14 +106,12 @@ declare sch-setup = function [] (
 	let current-process = sch-allocate [];
 
 	-- Uses the process stack
-	-=
 	declare stack-end = current-process as int + size-of sch-node;
-	copy [stack-end - stack-size * 4, kernel-first-esp - stack-size * 4, stack-size * 4,];
+	copy [stack-end - stack-size * 4, kernel-second-esp - stack-size * 4, stack-size * 4,];
 	stack-end;
-	asm _ SUB (EAX, kernel-first-esp);
+	asm _ SUB (EAX, kernel-second-esp);
 	asm _ ADD (EBP, EAX);
 	asm _ ADD (ESP, EAX);
-	=-
 
 	sch-insert-next [processes, current-process,];
 );
