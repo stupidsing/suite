@@ -50,12 +50,10 @@ declare idt-setup = function [] (
 		asm .irq-handler ();
 		isr-prolog;
 
-		asm _ MOV (EAX, `EBP + 44`);
-
 		(
 			declare vector;
 			asm _ ADD (ESP, 4);
-			asm _ PUSH (EAX);
+			asm _ PUSH (`EBP + 44`);
 
 			declare irq-number = vector - +x20;
 			declare isr = irq-get-isr [];
