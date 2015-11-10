@@ -15,8 +15,8 @@ declare pm-setup = function [] (
 	) do ();
 
 	-- Sets up page allocator
-	declare stack-size = 4 * (pagex - page0) shr 12;
-	declare first-page = page0 + (stack-size + 4096) and +xFFFFF000;
+	declare size = 4 * (pagex - page0) shr 12;
+	declare first-page = page0 + (size + 4096) and +xFFFFF000;
 	for (declare page = first-page; page < pagex; page =+ 4096) (
 		dw-set [stackx =+ 4, page,];
 	);

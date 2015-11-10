@@ -161,6 +161,12 @@ ne2k-setup [];
 
 asm _ STI ();
 
+-=
+if (sch-fork []) then (
+	sch-exit [];
+) else ();
+=-
+
 -- Enters user mode
 (
 	declare user-stack-address = pg-allocate [1,];

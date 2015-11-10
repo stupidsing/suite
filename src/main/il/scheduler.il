@@ -1,13 +1,17 @@
+constant stack-size = 256;
+constant sch-action-none = 0;
+constant sch-action-exit = 1;
+constant sch-action-fork = 2;
+
 data sch-node = struct (
 	dl as dl-node,
 	esp as int,
-	is-fork as int,
-	interrupt-stack as (int * 256),
+	action as int,
+	interrupt-stack as (int * stack-size),
 );
 
 declare sch-sync = 0;
 declare current-process = null;
-
 declare-pointer processes to sch-node;
 
 declare sch-prev = function [e as pointer:sch-node,] (
@@ -23,20 +27,16 @@ declare sch-new = function [e as pointer:sch-node,] (
 );
 
 declare sch-insert-next = function [e as pointer:sch-node, ne as pointer:sch-node,] (
-	asm _ CLI ();
 	dl-insert-next [e +f dl, ne +f dl,];
-	asm _ STI ();
 );
 
 declare sch-remove = function [e as pointer:sch-node,] (
-	asm _ CLI ();
 	dl-remove [e +f dl,];
-	asm _ STI ();
 );
 
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
-	let (`process`^is-fork) = 0;
+	let (`process`^action) = sch-action-none;
 	process;
 );
 
@@ -58,14 +58,22 @@ declare sch-interrupt-switch = function [] (
 	asm _ MOV (EAX, `EBP + -4`);
 	asm _ MOV (`EAX`, ESP);
 
-	if (`current-process`^is-fork) then (
+	-=
+	(`current-process`^action = sch-action-exit && (
+		declare process0 = current-process;
+		let current-process = sch-prev [current-process,];
+		sch-remove [process0,];
+		sch-deallocate [process0,];
+	));
+
+	(`current-process`^action = sch-action-fork && (
 		declare process1 = sch-allocate [];
 		let (`process1`^interrupt-stack) = `current-process`^interrupt-stack;
-		declare diff = process1 as int - current-process as int;
-		let (`process1`^esp) = `current-process`^esp + diff;
+		let (`process1`^esp) = `esp` - current-process as int + process1 as int;
 		sch-insert-next [processes, current-process,];
-		let (`current-process`^is-fork) = 0;
-	) else ();
+		let (`current-process`^action) = sch-action-none;
+	));
+	=-
 
 	sch-switch [];
 
@@ -75,30 +83,40 @@ declare sch-interrupt-switch = function [] (
 	asm _ MOV (CR3, EBX);
 );
 
-declare sch-fork = function [f as function [] int,] (
+declare sch-yield = function [] (
+	asm _ HLT ();
+);
+
+declare sch-fork = function [] (
 	declare process0 = current-process;
-	let (`process0`^is-fork) = 1;
-	while (`process0`^is-fork) do (
-		asm _ HLT ();
+	let (`process0`^action) = sch-action-fork;
+	while (`process0`^action = sch-action-fork) do (
+		sch-yield [];
 	);
 	current-process != process0;
 );
 
 declare sch-exit = function [] (
-	synchronized (& sch-sync) (
-		declare process = current-process;
-		declare process1 = sch-next [process,];
-		sch-remove [process,];
-		sch-deallocate [process,];
-		current-process = process1;
-
-		-- TODO how to give up...
+	let (`current-process`^action) = sch-action-exit;
+	while 1 do (
+		sch-yield [];
 	);
 );
 
 declare sch-setup = function [] (
 	sch-new [processes,];
 	let current-process = sch-allocate [];
+
+	-- Uses the process stack
+	-=
+	declare stack-end = current-process as int + size-of sch-node;
+	copy [stack-end - stack-size * 4, +x24000 - stack-size * 4, stack-size * 4,];
+	stack-end;
+	asm _ SUB (EAX, +x24000);
+	asm _ ADD (EBP, EAX);
+	asm _ ADD (ESP, EAX);
+	=-
+
 	sch-insert-next [processes, current-process,];
 );
 
