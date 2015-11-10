@@ -58,7 +58,6 @@ declare sch-interrupt-switch = function [] (
 	asm _ MOV (EAX, `EBP + -4`);
 	asm _ MOV (`EAX`, ESP);
 
-	-=
 	(`current-process`^action = sch-action-exit && (
 		declare process0 = current-process;
 		let current-process = sch-prev [current-process,];
@@ -73,7 +72,6 @@ declare sch-interrupt-switch = function [] (
 		sch-insert-next [processes, current-process,];
 		let (`current-process`^action) = sch-action-none;
 	));
-	=-
 
 	sch-switch [];
 
