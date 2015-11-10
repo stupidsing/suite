@@ -52,10 +52,9 @@ declare sch-switch = function [] (-- Round robin in action
 );
 
 declare sch-interrupt-switch = function [] (
-	declare esp = current-process +f esp;
+	current-process +f esp;
 	asm _ MOV (EBX, CR3);
 	asm _ PUSH (EBX);
-	asm _ MOV (EAX, `EBP + -4`);
 	asm _ MOV (`EAX`, ESP);
 
 	(`current-process`^action = sch-action-exit && (
@@ -68,14 +67,14 @@ declare sch-interrupt-switch = function [] (
 	(`current-process`^action = sch-action-fork && (
 		declare process1 = sch-allocate [];
 		let (`process1`^interrupt-stack) = `current-process`^interrupt-stack;
-		let (`process1`^esp) = `esp` - current-process as int + process1 as int;
+		let (`process1`^esp) = `current-process`^esp - current-process as int + process1 as int;
 		sch-insert-next [processes, current-process,];
 		let (`current-process`^action) = sch-action-none;
 	));
 
 	sch-switch [];
 
-	asm _ MOV (EAX, `EBP + -4`);
+	current-process +f esp;
 	asm _ MOV (ESP, `EAX`);
 	asm _ POP (EBX);
 	asm _ MOV (CR3, EBX);

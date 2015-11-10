@@ -188,6 +188,8 @@ asm _ MOV (ESP, kernel-second-esp);
 
 	-=
 	if (sch-fork []) then (
+		cs-puts ["From another thread",];
+		cs-nl [];
 		sch-exit [];
 	) else ();
 	=-
