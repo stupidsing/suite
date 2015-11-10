@@ -163,7 +163,7 @@ declare user-mode = function [] (
 );
 
 -- Switch stack to keep stack smaller so as to fit in the process stack space.
--- Global scope variables, defined before this point, are kept in the first stack. 
+-- Global scope variables, defined before this point, are kept in the first stack.
 asm _ MOV (ESP, kernel-second-esp);
 
 (function [] (
