@@ -108,9 +108,9 @@ declare sch-setup = function [] (
 	-- Uses the process stack
 	-=
 	declare stack-end = current-process as int + size-of sch-node;
-	copy [stack-end - stack-size * 4, +x24000 - stack-size * 4, stack-size * 4,];
+	copy [stack-end - stack-size * 4, kernel-first-esp - stack-size * 4, stack-size * 4,];
 	stack-end;
-	asm _ SUB (EAX, +x24000);
+	asm _ SUB (EAX, kernel-first-esp);
 	asm _ ADD (EBP, EAX);
 	asm _ ADD (ESP, EAX);
 	=-

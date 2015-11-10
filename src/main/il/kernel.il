@@ -17,7 +17,8 @@
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)
 -- 00020800 -> 00020868 task state segment (TSS)
 -- 00020870 -> 00022000 kernel system call stack
--- 00022000 -> 00024000 kernel initialization stack
+-- 00022000 -> 00023000 kernel first stack
+-- 00023000 -> 00024000 kernel second stack
 -- 00040000 -> 00040004 kernel this frame pointer
 -- 00040000 -> 00050000 kernel code
 -- 00050000 -> 000A0000 kernel buddy allocation pool
@@ -29,9 +30,11 @@
 constant idt-address = +x20000;
 constant tss-address = +x20800;
 constant syscall-stack-address = +x22000;
+constant kernel-first-esp = +x23000;
+constant kernel-second-esp = +x24000;
 constant memory-region-start = 1048576;
 
-asm _ MOV (ESP, +x24000);
+asm _ MOV (ESP, kernel-first-esp);
 asm _ MOV (EBP, ESP);
 asm _ MOV (`+x40000`, EBP);
 
@@ -145,58 +148,6 @@ outb [+x40, 11932 % 256,];
 outb [+x40, 11932 / 256,];
 outb [+x21, +xFC,];
 
-ba-setup [];
-irq-setup [];
-sch-setup [];
-idt-setup [];
-pm-setup [];
-pg-setup []; -- Sets up paging
-svc-setup [];
-kb-setup [];
-
-cs-puts [if (ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
-cs-nl [];
-
-ne2k-setup [];
-
-asm _ STI ();
-
--=
-if (sch-fork []) then (
-	sch-exit [];
-) else ();
-=-
-
--- Enters user mode
-(
-	declare user-stack-address = pg-allocate [1,];
-
-	for (declare i = 0; i < 104; i =+ 4) (
-		dw-set [tss-address + i, 0,];
-	);
-	dw-set [tss-address + 4, (current-process as int) + size-of sch-node,];
-	dw-set [tss-address + 8, +x10,];
-
-	asm _ MOV (AX, +x2B);
-	asm _ LTR (AX);
-
-	user-stack-address + 4096;
-);
-
-asm _ MOV (EBX, EAX);
-asm _ MOV (EAX, +x23);
-asm _ MOV (DS, AX);
-asm _ MOV (ES, AX);
-asm _ MOV (FS, AX);
-asm _ MOV (GS, AX);
-asm _ PUSH (EAX); -- Would be SS
-asm _ PUSH (EBX); -- Would be ESP
-asm _ PUSHF ();
-asm _ PUSH (+x1B); -- Would be CS
-asm _ D8 (+x68);
-asm _ D32 (.user); -- Would be IP
-asm _ IRET ();
-
 declare user-mode = function [] (
 	asm .user PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
@@ -211,5 +162,66 @@ declare user-mode = function [] (
 	asm _ JMP (DWORD .loop);
 );
 
-kb-teardown [];
-sch-teardown [];
+-- Switch stack to keep stack smaller so as to fit in the process stack space.
+-- Global scope variables, defined before this point, are kept in the first stack. 
+asm _ MOV (ESP, kernel-second-esp);
+
+(function [] (
+	asm _ MOV (EAX, `+x40000`);
+	asm _ MOV (`EBP`, EAX);
+
+	ba-setup [];
+	irq-setup [];
+	sch-setup [];
+	idt-setup [];
+	pm-setup [];
+	pg-setup []; -- Sets up paging
+	svc-setup [];
+	kb-setup [];
+
+	cs-puts [if (ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
+	cs-nl [];
+
+	ne2k-setup [];
+
+	asm _ STI ();
+
+	-=
+	if (sch-fork []) then (
+		sch-exit [];
+	) else ();
+	=-
+
+	-- Enters user mode
+	(
+		declare user-stack-address = pg-allocate [1,];
+
+		for (declare i = 0; i < 104; i =+ 4) (
+			dw-set [tss-address + i, 0,];
+		);
+		dw-set [tss-address + 4, (current-process as int) + size-of sch-node,];
+		dw-set [tss-address + 8, +x10,];
+
+		asm _ MOV (AX, +x2B);
+		asm _ LTR (AX);
+
+		user-stack-address + 4096;
+	);
+
+	asm _ MOV (EBX, EAX);
+	asm _ MOV (EAX, +x23);
+	asm _ MOV (DS, AX);
+	asm _ MOV (ES, AX);
+	asm _ MOV (FS, AX);
+	asm _ MOV (GS, AX);
+	asm _ PUSH (EAX); -- Would be SS
+	asm _ PUSH (EBX); -- Would be ESP
+	asm _ PUSHF ();
+	asm _ PUSH (+x1B); -- Would be CS
+	asm _ D8 (+x68);
+	asm _ D32 (.user); -- Would be IP
+	asm _ IRET ();
+
+	kb-teardown [];
+	sch-teardown [];
+)) [];
