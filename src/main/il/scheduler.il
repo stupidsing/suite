@@ -12,7 +12,7 @@ data sch-node = struct (
 
 declare sch-sync = 0;
 declare current-process = null;
-declare-pointer processes to sch-node;
+declare processes as pointer:sch-node;
 
 declare sch-prev = function [e as pointer:sch-node,] (
 	(dl-prev [e +f dl,]) as pointer:sch-node;
@@ -20,10 +20,6 @@ declare sch-prev = function [e as pointer:sch-node,] (
 
 declare sch-next = function [e as pointer:sch-node,] (
 	(dl-next [e +f dl,]) as pointer:sch-node;
-);
-
-declare sch-new = function [e as pointer:sch-node,] (
-	(dl-new [e +f dl,]) as pointer:sch-node;
 );
 
 declare sch-insert-next = function [e as pointer:sch-node, ne as pointer:sch-node,] (
@@ -36,6 +32,7 @@ declare sch-remove = function [e as pointer:sch-node,] (
 
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
+	dl-new [process +f dl,];
 	let (`process`^action) = sch-action-none;
 	process;
 );
@@ -47,7 +44,7 @@ declare sch-deallocate = function [e,] (
 declare sch-switch = function [] (-- Round robin in action
 	sync-try-enter [& sch-sync,] && (
 		let current-process = sch-next [current-process,];
-		(current-process = null && let current-process = sch-next [processes,]);
+		(current-process = null && let current-process = processes);
 	);
 );
 
@@ -86,8 +83,9 @@ declare sch-yield = function [] (
 
 declare sch-fork = function [] (
 	declare process0 = current-process;
-	let (`process0`^action) = sch-action-fork;
-	while (`process0`^action = sch-action-fork) do (
+	declare action = process0 +f action;
+	let (`action`) = sch-action-fork;
+	while (`action` = sch-action-fork) do (
 		sch-yield [];
 	);
 	current-process != process0;
@@ -101,8 +99,8 @@ declare sch-exit = function [] (
 );
 
 declare sch-setup = function [] (
-	sch-new [processes,];
-	let current-process = sch-allocate [];
+	let processes = sch-allocate [];
+	let current-process = processes;
 
 	-- Uses the process stack
 	declare stack-end = current-process as int + size-of sch-node;
@@ -111,12 +109,8 @@ declare sch-setup = function [] (
 	asm _ SUB (EAX, kernel-second-esp);
 	asm _ ADD (EBP, EAX);
 	asm _ ADD (ESP, EAX);
-
-	sch-insert-next [processes, current-process,];
 );
 
 declare sch-teardown = function [] (
-	declare process = sch-next [processes,];
-	sch-remove [process,];
-	sch-deallocate [process,];
+	sch-deallocate [processes,];
 );

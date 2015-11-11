@@ -190,7 +190,10 @@ asm _ MOV (ESP, kernel-second-esp);
 		cs-puts ["From another thread",];
 		cs-nl [];
 		sch-exit [];
-	) else ();
+	) else (
+		cs-puts ["From first thread",];
+		cs-nl [];
+	);
 
 	-- Enters user mode
 	(
