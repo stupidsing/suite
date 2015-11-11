@@ -12,7 +12,7 @@ data sch-node = struct (
 
 declare sch-sync = 0;
 declare current-process = null;
-declare processes as pointer:sch-node;
+declare head-process as pointer:sch-node;
 
 declare sch-prev = function [e as pointer:sch-node,] (
 	(dl-prev [e +f dl,]) as pointer:sch-node;
@@ -44,7 +44,7 @@ declare sch-deallocate = function [e,] (
 declare sch-switch = function [] (-- Round robin in action
 	sync-try-enter [& sch-sync,] && (
 		let current-process = sch-next [current-process,];
-		(current-process = null && let current-process = processes);
+		(current-process = null && let current-process = head-process);
 	);
 );
 
@@ -60,7 +60,7 @@ declare sch-interrupt-switch = function [] (
 		declare process1 = sch-allocate [];
 		let (`process1`^interrupt-stack) = `current-process`^interrupt-stack;
 		let (`process1`^esp) = `current-process`^esp - current-process as int + process1 as int;
-		sch-insert-next [processes, current-process,];
+		sch-insert-next [head-process, process1,];
 		let (`current-process`^action) = sch-action-none;
 	));
 
@@ -99,8 +99,8 @@ declare sch-exit = function [] (
 );
 
 declare sch-setup = function [] (
-	let processes = sch-allocate [];
-	let current-process = processes;
+	let head-process = sch-allocate [];
+	let current-process = head-process;
 
 	-- Uses the process stack
 	declare stack-end = current-process as int + size-of sch-node;
@@ -112,5 +112,5 @@ declare sch-setup = function [] (
 );
 
 declare sch-teardown = function [] (
-	sch-deallocate [processes,];
+	sch-deallocate [head-process,];
 );
