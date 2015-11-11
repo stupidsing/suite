@@ -1,4 +1,4 @@
-constant stack-size = 256;
+constant stack-size = 250;
 constant sch-action-none = 0;
 constant sch-action-exit = 1;
 constant sch-action-fork = 2;
@@ -10,7 +10,6 @@ data sch-node = struct (
 	interrupt-stack as (int * stack-size),
 );
 
-declare sch-sync = 0;
 declare current-process = null;
 declare head-process as pointer:sch-node;
 
@@ -42,13 +41,16 @@ declare sch-deallocate = function [e,] (
 );
 
 declare sch-switch = function [] (-- Round robin in action
-	sync-try-enter [& sch-sync,] && (
-		let current-process = sch-next [current-process,];
-		(current-process = null && let current-process = head-process);
-	);
+	let current-process = sch-next [current-process,];
+	(current-process = null && let current-process = head-process);
 );
 
 declare sch-interrupt-switch = function [] (
+	current-process +f esp;
+	asm _ MOV (EBX, CR3);
+	asm _ FR-PUSH (EBX);
+	asm _ MOV (`EAX`, ESP);
+
 	(`current-process`^action = sch-action-exit && (
 		declare process0 = current-process;
 		let current-process = sch-prev [current-process,];
@@ -64,16 +66,11 @@ declare sch-interrupt-switch = function [] (
 		let (`current-process`^action) = sch-action-none;
 	));
 
-	current-process +f esp;
-	asm _ MOV (EBX, CR3);
-	asm _ PUSH (EBX);
-	asm _ MOV (`EAX`, ESP);
-
 	sch-switch [];
 
 	current-process +f esp;
 	asm _ MOV (ESP, `EAX`);
-	asm _ POP (EBX);
+	asm _ FR-POP (EBX);
 	asm _ MOV (CR3, EBX);
 );
 
