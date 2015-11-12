@@ -46,6 +46,10 @@ declare sch-switch = function [] (-- Round robin in action
 );
 
 declare sch-interrupt-switch = function [] (
+	asm _ FR-PUSHN 4;
+	asm _ PUSHF ();
+	asm _ CLI ();
+
 	current-process +f esp;
 	asm _ MOV (EBX, CR3);
 	asm _ FR-PUSH (EBX);
@@ -72,6 +76,9 @@ declare sch-interrupt-switch = function [] (
 	asm _ MOV (ESP, `EAX`);
 	asm _ FR-POP (EBX);
 	asm _ MOV (CR3, EBX);
+
+	asm _ POPF ();
+	asm _ FR-POPN 4;
 );
 
 declare sch-yield = function [] (

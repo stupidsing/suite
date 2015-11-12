@@ -38,10 +38,12 @@ ic-compile0 (ASM .i) (.i, _ R+, .e)/.e
 #
 ic-compile0 (DECLARES _ .offset .size .do) .e0/.ex
 	:- .e0 = (_ FR-PUSHN (.size)
+		, _ SUB (ESP, .size)
 		, _ FR-GET (.offset)
 		, .e1)
 	, ic-compile .do .e1/.e2
-	, .e2 = (_ FR-POPN (.size)
+	, .e2 = (_ ADD (ESP, .size)
+		, _ FR-POPN (.size)
 		, .ex)
 #
 ic-compile0 (INVOKE .mr .ips) .e0/.ex
@@ -303,16 +305,24 @@ ic-push-pop-invoke-parameters (IP .io .param, .ips) .e0/.ex .f0/.fx
 			ic-compile-operand .param .e1/.e2 .op
 			, .e2 = (_ FR-PUSH (.op), _ R-, .ex)
 			, .f0 = (_ FR-POP (EDX), .f3)
-			; .e1 = (_ FR-PUSHN (.size), .e2)
+			; .e1 = (_ FR-PUSHN (.size)
+				, _ SUB (ESP, .size)
+				, .e2)
 			, ic-compile-let .p (MEMORY .size (REG ESP)) .e2/.e3
 			, .e3 = (_ R-, .ex)
-			, .f0 = (_ FR-POPN (.size), .f3)
+			, .f0 = (_ ADD (ESP, .size)
+				, _ FR-POPN (.size)
+				, .f3)
 		)
 		; .io = OUT, (
-			.e1 = (_ FR-PUSHN (.size), .ex)
+			.e1 = (_ FR-PUSHN (.size)
+				, _ SUB (ESP, .size)
+				, .ex)
 			, ic-compile-let (MEMORY .size (REG ESP)) .p .f0/.f1
 			, .f1 = (_ R-, .f2)
-			, .f2 = (_ FR-POPN (.size), .f3)
+			, .f2 = (_ ADD (ESP, .size)
+				, _ FR-POPN (.size)
+				, .f3)
 		)
 	)
 #

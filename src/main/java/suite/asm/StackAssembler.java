@@ -79,14 +79,14 @@ public class StackAssembler extends Assembler {
 			} else if ((m = FRPOPN.apply(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs -= int_.number;
-				node1 = Suite.substitute("ADD (ESP, .0)", int_);
+				node1 = Atom.NIL;
 			} else if ((m = FRPSH_.apply(node0)) != null) {
 				fs += 4;
 				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
 			} else if ((m = FRPSHN.apply(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs += int_.number;
-				node1 = Suite.substitute("SUB (ESP, .0)", int_);
+				node1 = Atom.NIL;
 			} else if ((m = LET___.apply(node0)) != null)
 				if (Binder.bind(m[0], Int.of(new EvalPredicates().evaluate(m[1])), trail))
 					node1 = Atom.NIL;
