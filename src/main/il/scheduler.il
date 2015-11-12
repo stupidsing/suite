@@ -71,6 +71,7 @@ declare sch-interrupt-switch = function [] (
 	));
 
 	sch-switch [];
+	wrmsr [+x175, current-process as int + size-of sch-node,]; -- SYSENTER ESP
 
 	current-process +f esp;
 	asm _ MOV (ESP, `EAX`);
@@ -104,6 +105,9 @@ declare sch-setup = function [] (
 	asm _ SUB (EAX, kernel-second-esp);
 	asm _ ADD (EBP, EAX);
 	asm _ ADD (ESP, EAX);
+
+	-- Sets up machine status register for SYSENTER
+	sch-interrupt-switch [];
 );
 
 declare sch-teardown = function [] (
