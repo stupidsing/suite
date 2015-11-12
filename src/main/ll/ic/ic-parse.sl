@@ -29,7 +29,7 @@ ic-parse (declare .var; .do) (DECLARE MONO .var _ .do1)
 	:- is.atom .var
 	, ic-parse .do .do1
 #
-ic-parse (.do^.name) (FIELD _ .name .do1)
+ic-parse .do/.name (FIELD _ .name .do1)
 	:- ic-parse .do .do1
 #
 ic-parse (if .if then .then else .else) (IF .if1 .then1 .else1)
@@ -136,7 +136,7 @@ ic-parse-sugar (.a && .b) (if .a then .b else (no-type 0))
 #
 ic-parse-sugar (.a || .b) (if .a then (no-type 1) else .b)
 #
-ic-parse-sugar (.p +f .f) (& (`.p`^.f))
+ic-parse-sugar (.p +f .f) (& `.p`/.f)
 #
 ic-parse-sugar (.var =+ .inc) (declare .p as int = & .var; declare .o = `.p`; let `.p` = .o + .inc; .o)
 	:- temp .p, temp .o

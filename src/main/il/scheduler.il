@@ -32,7 +32,7 @@ declare sch-remove = function [e as pointer:sch-node,] (
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
 	dl-new [process +f dl,];
-	let (`process`^action) = sch-action-none;
+	let `process`/action = sch-action-none;
 	process;
 );
 
@@ -51,19 +51,19 @@ declare sch-interrupt-switch = function [] (
 	asm _ FR-PUSH (EBX);
 	asm _ MOV (`EAX`, ESP);
 
-	(`current-process`^action = sch-action-exit && (
+	(`current-process`/action = sch-action-exit && (
 		declare process0 = current-process;
 		let current-process = sch-prev [current-process,];
 		sch-remove [process0,];
 		sch-deallocate [process0,];
 	));
 
-	(`current-process`^action = sch-action-fork && (
+	(`current-process`/action = sch-action-fork && (
 		declare process1 = sch-allocate [];
-		let (`process1`^interrupt-stack) = `current-process`^interrupt-stack;
-		let (`process1`^esp) = `current-process`^esp - current-process as int + process1 as int;
+		let `process1`/interrupt-stack = `current-process`/interrupt-stack;
+		let `process1`/esp = `current-process`/esp - current-process as int + process1 as int;
 		sch-insert-next [head-process, process1,];
-		let (`current-process`^action) = sch-action-none;
+		let `current-process`/action = sch-action-none;
 	));
 
 	sch-switch [];
@@ -81,7 +81,7 @@ declare sch-yield = function [] (
 declare sch-fork = function [] (
 	declare process0 = current-process;
 	declare action = process0 +f action;
-	let (`action`) = sch-action-fork;
+	let `action` = sch-action-fork;
 	while (`action` = sch-action-fork) do (
 		sch-yield [];
 	);
@@ -89,7 +89,7 @@ declare sch-fork = function [] (
 );
 
 declare sch-exit = function [] (
-	let (`current-process`^action) = sch-action-exit;
+	let `current-process`/action = sch-action-exit;
 	while 1 do (
 		sch-yield [];
 	);

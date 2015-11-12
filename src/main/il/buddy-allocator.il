@@ -56,8 +56,8 @@ declare ba-allocate0 = function [l2,] (
 			declare block0 = (ba-allocate0 [l2 + 1,]) as pointer:ba-node;
 			if (block0 != null) then (
 				declare block1 = block0 +offset (exp2rel [l2,]);
-				let (`block0`^size) = -1; -- Allocated
-				let (`block1`^size) = l2;
+				let `block0`/size = -1; -- Allocated
+				let `block1`/size = l2;
 				ba-insert-next [& lists:l2, block1,];
 				block0;
 			) else null;
@@ -70,11 +70,11 @@ declare ba-allocate0 = function [l2,] (
 
 declare ba-deallocate0 = function [block, l2,] (
 	declare buddy-block = ba-buddy-of [block, l2,];
-	if (`buddy-block`^size = l2) then (
+	if (`buddy-block`/size = l2) then (
 		ba-remove [buddy-block,];
 		ba-deallocate0 [ba-parent-of [block, l2,], l2 + 1,];
 	) else (
-		let (`block`^size) = l2;
+		let `block`/size = l2;
 		ba-insert-next [& lists:l2, block,];
 	);
 );
@@ -94,11 +94,11 @@ declare ba-deallocate = function [block, size,] (
 declare ba-setup = function [] (
 	for i in (0, 32) (
 		ba-new [& lists:i,];
-		lists:i^size = 0;
+		lists:i/size = 0;
 	);
 
 	declare largest-l2 = max-l2 - 1;
 	declare first = ba-region0 as pointer:ba-node;
-	let (`first`^size) = largest-l2; -- Granularity
+	let `first`/size = largest-l2; -- Granularity
 	ba-insert-next [& lists:largest-l2, first,];
 );

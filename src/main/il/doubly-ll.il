@@ -4,19 +4,19 @@ data dl-node = fix :dl-node struct (
 );
 
 declare dl-prev = function [e as pointer:dl-node,] (
-	`e`^prev;
+	`e`/prev;
 );
 
 declare dl-next = function [e as pointer:dl-node,] (
-	`e`^next;
+	`e`/next;
 );
 
 declare dl-set-prev = function [e as pointer:dl-node, p,] (
-	let (`e`^prev) = p;
+	let `e`/prev = p;
 );
 
 declare dl-set-next = function [e as pointer:dl-node, p,] (
-	let (`e`^next) = p;
+	let `e`/next = p;
 );
 
 declare dl-new = function [e,] (
