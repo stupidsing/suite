@@ -16,8 +16,7 @@
 -- 00007C00 -> 00007E00 boot sector
 -- 00020000 -> 00020800 interrupt descriptor table (IDT)
 -- 00020800 -> 00020868 task state segment (TSS)
--- 00020870 -> 00022000 kernel system call stack
--- 00022000 -> 00023000 kernel first stack
+-- 00020870 -> 00023000 kernel first stack
 -- 00023000 -> 00024000 kernel second stack
 -- 00040000 -> 00040004 kernel this frame pointer
 -- 00040000 -> 00050000 kernel code
@@ -29,7 +28,6 @@
 
 constant idt-address = +x20000;
 constant tss-address = +x20800;
-constant syscall-stack-address = +x22000;
 constant kernel-first-esp = +x23000;
 constant kernel-second-esp = +x24000;
 constant memory-region-start = 1048576;
