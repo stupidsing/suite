@@ -1,5 +1,5 @@
 declare time-yield = function [] (
-	svc-service [svc-halt_, 0, 0,];
+	svc-service [svc-yield, 0, 0,];
 );
 
 declare time-sleep = function [ms,] (
