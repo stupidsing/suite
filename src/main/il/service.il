@@ -1,18 +1,24 @@
-constant svc-halt_ = 0;
-constant svc-nl___ = 1;
-constant svc-putc_ = 2;
-constant svc-ticks = 3;
+constant svc-exit_ = 0;
+constant svc-fork_ = 1;
+constant svc-nl___ = 2;
+constant svc-putc_ = 3;
+constant svc-ticks = 4;
+constant svc-yield = 5;
 
 declare svc-handle-service = function [p0, p1, p2,] (
-	if (p0 = svc-halt_) then (
-		sync-yield [];
+	if (p0 = svc-exit_) then (
+		sch-exit [];
+	) else if (p0 = svc-fork_) then (
+		sch-fork [];
 	) else if (p0 = svc-nl___) then (
 		cs-nl [];
 	) else if (p0 = svc-putc_) then (
 		if (p1 != 10) then (cs-put [p1,]) else (cs-nl []);
 	) else if (p0 = svc-ticks) then (
 		ticks;
-	) else ();
+	) else if (p0 = svc-yield) then (
+		sch-interrupt-switch [];
+	) else 1;
 );
 
 declare sysenter-sink = baseless [p0, p1, p2,] (

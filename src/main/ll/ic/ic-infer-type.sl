@@ -1,9 +1,9 @@
 ic-infer-type .vs .do .typex
-	:- ic-infer-type0 .vs .do .type0
-	, graph.bind .type0 .typex
-#
-ic-infer-type _ .do .type
-	:- ic-error "Cannot resolve type of" .do "to" .type
+	:- once (
+		ic-infer-type0 .vs .do .type0
+		, graph.bind .type0 .typex
+		; ic-error "Cannot resolve type of" .do "to" .typex
+	)
 #
 
 ic-infer-type0 _ (ASM _) I32
@@ -95,9 +95,11 @@ ic-infer-type0 _ (STRING _) I32
 ic-infer-type0 _ THIS I32
 #
 ic-infer-type0 .vs (TREE .op .value0 .value1) .type
-	:- once (member (' = ', ' != ',) .op; .type = I32)
-	, ic-infer-type .vs .value0 .type
-	, ic-infer-type .vs .value1 .type
+	:- once (member (' = ', ' != ',) .op, .type = I32
+		; .type = .valueType
+	)
+	, ic-infer-type .vs .value0 .valueType
+	, ic-infer-type .vs .value1 .valueType
 #
 ic-infer-type0 .vs (TYPE-CAST .type .do) .type
 	:- ic-infer-type .vs .do _
