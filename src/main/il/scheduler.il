@@ -81,25 +81,16 @@ declare sch-interrupt-switch = function [] (
 	asm _ FR-POPN 4;
 );
 
-declare sch-yield = function [] (
-	asm _ HLT ();
-);
-
 declare sch-fork = function [] (
 	declare process0 = current-process;
-	declare action = process0 +f action;
-	let `action` = sch-action-fork;
-	while (`action` = sch-action-fork) do (
-		sch-yield [];
-	);
+	let `process0`/action = sch-action-fork;
+	sch-interrupt-switch [];
 	current-process != process0;
 );
 
 declare sch-exit = function [] (
 	let `current-process`/action = sch-action-exit;
-	while 1 do (
-		sch-yield [];
-	);
+	sch-interrupt-switch [];
 );
 
 declare sch-setup = function [] (
