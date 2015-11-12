@@ -7,7 +7,7 @@ data sch-node = struct (
 	dl as dl-node,
 	esp as int,
 	action as int,
-	interrupt-stack as (int * stack-size),
+	kernel-stack as (int * stack-size),
 );
 
 declare current-process = null;
@@ -64,7 +64,7 @@ declare sch-interrupt-switch = function [] (
 
 	(`current-process`/action = sch-action-fork && (
 		declare process1 = sch-allocate [];
-		let `process1`/interrupt-stack = `current-process`/interrupt-stack;
+		let `process1`/kernel-stack = `current-process`/kernel-stack;
 		let `process1`/esp = `current-process`/esp - current-process as int + process1 as int;
 		sch-insert-next [head-process, process1,];
 		let `current-process`/action = sch-action-none;
