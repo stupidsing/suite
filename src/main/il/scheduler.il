@@ -45,7 +45,7 @@ declare sch-switch = function [] (-- Round robin in action
 	(current-process = null && let current-process = head-process);
 );
 
-declare sch-interrupt-switch = function [] (
+declare sch-yield = function [] (
 	asm _ FR-PUSHN 4;
 	asm _ PUSHF ();
 	asm _ CLI ();
@@ -85,13 +85,13 @@ declare sch-interrupt-switch = function [] (
 declare sch-fork = function [] (
 	declare process0 = current-process;
 	let `process0`/action = sch-action-fork;
-	sch-interrupt-switch [];
+	sch-yield [];
 	current-process != process0;
 );
 
 declare sch-exit = function [] (
 	let `current-process`/action = sch-action-exit;
-	sch-interrupt-switch [];
+	sch-yield [];
 );
 
 declare sch-setup = function [] (
@@ -107,7 +107,7 @@ declare sch-setup = function [] (
 	asm _ ADD (ESP, EAX);
 
 	-- Sets up machine status register for SYSENTER
-	sch-interrupt-switch [];
+	sch-yield [];
 );
 
 declare sch-teardown = function [] (

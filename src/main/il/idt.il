@@ -37,7 +37,7 @@ declare idt-setup = function [] (
 		`+xB8000 as pointer:int` =+ 1;
 
 		-- Switch processes
-		sch-interrupt-switch [];
+		sch-yield [];
 
 		-- Sends end of interrupt signal
 		outb [+x20, +x20,];

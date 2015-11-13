@@ -18,7 +18,7 @@ declare svc-handle-service = function [p0, p1, p2,] (
 		ticks;
 	) else if (p0 = svc-yield) then (
 		sync-yield [];
-		--sch-interrupt-switch [];
+		--sch-yield [];
 	) else 1;
 );
 
