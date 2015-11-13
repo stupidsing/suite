@@ -120,8 +120,7 @@ declare idt-setup = function [] (
 			cs-nl [];
 		);
 
-		asm _ CLI ();
-		asm _ HLT ();
+		sch-exit [];
 	);
 
 	for i in (0, 256) (
