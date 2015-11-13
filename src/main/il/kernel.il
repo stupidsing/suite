@@ -176,13 +176,12 @@ asm _ MOV (ESP, kernel-second-esp);
 	pg-setup []; -- Sets up paging
 	svc-setup [];
 	kb-setup [];
+	asm _ STI ();
 
 	cs-puts [if (ne2k-probe []) then "ne2000 detected" else "ne2k not found",];
 	cs-nl [];
 
 	ne2k-setup [];
-
-	asm _ STI ();
 
 	if (sch-fork []) then (
 		cs-puts ["From another thread",];
