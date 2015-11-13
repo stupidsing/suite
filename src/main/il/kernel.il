@@ -122,6 +122,7 @@ constant mm-deallocate .type .pointer = (
 #include(service.il);
 #include(time.il);
 #include(keyboard.il);
+#include(harddisk.il);
 #include(ne2k.il);
 
 -- Reprograms the PIC to relocate IRQs to interrupt 20h-2Fh
