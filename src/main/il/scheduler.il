@@ -11,7 +11,7 @@ data sch-node = struct (
 );
 
 declare current-process = null;
-declare head-process as pointer:sch-node;
+declare head-process as pointer:sch-node; -- Cyclic doubly-linked list
 
 declare sch-prev = function [e as pointer:sch-node,] (
 	(dl-prev [e +f dl,]) as pointer:sch-node;
@@ -31,7 +31,9 @@ declare sch-remove = function [e as pointer:sch-node,] (
 
 declare sch-allocate = function [] (
 	declare process = mm-allocate sch-node;
-	dl-new [process +f dl,];
+	declare dl = process +f dl;
+	let `dl`/prev = dl;
+	let `dl`/next = dl;
 	let `process`/action = sch-action-none;
 	process;
 );
@@ -42,7 +44,6 @@ declare sch-deallocate = function [e,] (
 
 declare sch-switch = function [] (-- Round robin in action
 	let current-process = sch-next [current-process,];
-	(current-process = null && let current-process = head-process);
 );
 
 declare sch-yield = function [] (
