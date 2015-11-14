@@ -72,6 +72,7 @@ declare sch-yield = function [] (
 	));
 
 	sch-switch [];
+	dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- TSS ESP0
 	wrmsr [+x175, current-process as int + size-of sch-node,]; -- SYSENTER ESP
 
 	current-process +f esp;

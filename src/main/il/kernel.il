@@ -147,6 +147,16 @@ outb [+x40, 11932 % 256,];
 outb [+x40, 11932 / 256,];
 outb [+x21, +xFC,];
 
+-- Initializes task state segment (TSS)
+for (declare i = 0; i < 104; i =+ 4) (
+	dw-set [tss-address + i, 0,];
+);
+--dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- Set by scheduler instead
+dw-set [tss-address + 8, +x10,];
+
+asm _ MOV (AX, +x2B);
+asm _ LTR (AX);
+
 declare user-mode = function [] (
 	asm .user PUSH (`+x40000`);
 	asm _ MOV (EBP, ESP);
@@ -196,16 +206,6 @@ asm _ MOV (ESP, kernel-second-esp);
 	-- Enters user mode
 	(
 		declare user-stack-address = pg-allocate [1,];
-
-		for (declare i = 0; i < 104; i =+ 4) (
-			dw-set [tss-address + i, 0,];
-		);
-		dw-set [tss-address + 4, (current-process as int) + size-of sch-node,];
-		dw-set [tss-address + 8, +x10,];
-
-		asm _ MOV (AX, +x2B);
-		asm _ LTR (AX);
-
 		user-stack-address + 4096;
 	);
 
