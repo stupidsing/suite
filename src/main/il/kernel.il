@@ -166,9 +166,7 @@ declare user-mode = function [] (
 	svc-service [svc-putc_, +x4B, 0,];
 	svc-service [svc-putc_, +x0A, 0,];
 
-	asm .loop ();
-	time-yield [];
-	asm _ JMP (DWORD .loop);
+	while 1 do (time-yield []);
 );
 
 -- Switch stack to keep stack smaller so as to fit in the process stack space.
