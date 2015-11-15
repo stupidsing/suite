@@ -97,7 +97,7 @@ declare sch-exit = function [] (
 	let `current-process`/action = sch-action-exit;
 	if (current-process != head-process) then (
 		sch-yield [];
-	) else ( -- Initial process do not exit normally. Halt if this happened.
+	) else ( -- Initial process should not exit. Halt if this happened.
 		asm _ CLI ();
 		asm _ HLT ();
 	);
