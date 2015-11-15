@@ -202,11 +202,8 @@ asm _ MOV (ESP, kernel-second-esp);
 	);
 
 	-- Enters user mode
-	(
-		declare user-stack-address = pg-allocate [1,];
-		user-stack-address + 4096;
-	);
-
+	declare user-stack-address = pg-allocate [1,];
+	user-stack-address + 4096;
 	asm _ MOV (EBX, EAX);
 	asm _ MOV (EAX, +x23);
 	asm _ MOV (DS, AX);
