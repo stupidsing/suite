@@ -18,8 +18,7 @@ declare svc-handle-service = function [p0, p1, p2,] (
 		ticks;
 	) else if (p0 = svc-yield) then (
 		let `current-process`/busy = 0;
-		sync-yield [];
-		--sch-yield [];
+		sch-yield [];
 	) else 1;
 );
 

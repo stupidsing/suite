@@ -195,10 +195,19 @@ asm _ MOV (ESP, kernel-second-esp);
 	if (sch-fork []) then (
 		cs-puts ["From another thread",];
 		cs-nl [];
-		sch-exit [];
 	) else (
 		cs-puts ["From first thread",];
 		cs-nl [];
+		while 1 do ( -- Halt CPU if none of the process is busy
+			asm _ CLI ();
+			declare process = head-process;
+			declare busy = 0;
+			while ((let process = sch-next [process,]) != head-process) do (
+				let busy = (busy || `process`/busy);
+			);
+			asm _ STI ();
+			(busy ||  asm _ HLT ());
+		);
 	);
 
 	-- Enters user mode
