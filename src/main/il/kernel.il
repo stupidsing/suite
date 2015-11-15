@@ -227,6 +227,7 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ D32 (.user); -- Would be IP
 	asm _ IRET ();
 
+	pg-deallocate [user-stack-address, 1,];
 	kb-teardown [];
 	sch-teardown [];
 )) [];
