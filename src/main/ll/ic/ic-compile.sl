@@ -56,18 +56,17 @@ ic-compile0 (INVOKE .mr .ips) .e0/.ex
 	)
 	, .e1 = (_ RSAVE
 		, .e2)
-	, ic-push-pop-invoke-parameters .ips .e2/.e3 .e7/.e8
+	, ic-push-pop-invoke-parameters .ips .e2/.e3 .e6/.e7
 	, ic-compile .sub .e3/.e4
-	, .e4 = (_ FR-PUSH (EBP)
-		, .e5)
-	, ic-compile-operand .this .e5/.e6 .thisOp
-	, .e6 = (_ MOV (EBP, .thisOp)
+	, ic-compile-operand .this .e4/.e5 .thisOp
+	, .e5 = (_ FR-PUSH (EBP)
+		, _ MOV (EBP, .thisOp)
 		, _ R-
 		, _ CALL ($0)
-		, _ FR-POP (EBP)
 		, _ MOV ($0, EAX)
-		, .e7)
-	, .e8 = (_ R-
+		, _ FR-POP (EBP)
+		, .e6)
+	, .e7 = (_ R-
 		, _ RRESTORE
 		, _ R+
 		, .ex)
