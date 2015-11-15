@@ -99,8 +99,6 @@ public class StackAssembler extends Assembler {
 				rs++;
 				node1 = Atom.NIL;
 			} else if (node0 == RREST_) {
-				int arr[] = deque.pop();
-				rs = arr[1];
 				fs -= 4 * rs;
 				for (int r = rs - 1; r >= 0; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
@@ -108,9 +106,7 @@ public class StackAssembler extends Assembler {
 			} else if (node0 == RSAVE_) {
 				for (int r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
-				deque.push(new int[] { fs, rs });
 				fs += 4 * rs;
-				rs = 0;
 				node1 = Atom.NIL;
 			} else
 				node1 = rewrite(rs, node0);
