@@ -7,6 +7,7 @@ data sch-node = struct (
 	dl as dl-node,
 	esp as int,
 	action as int,
+	busy as int,
 	kernel-stack as (int * stack-size),
 );
 
@@ -35,6 +36,7 @@ declare sch-allocate = function [] (
 	let `dl`/prev = dl;
 	let `dl`/next = dl;
 	let `process`/action = sch-action-none;
+	let `process`/busy = 1;
 	process;
 );
 
