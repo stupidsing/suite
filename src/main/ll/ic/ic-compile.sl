@@ -64,10 +64,10 @@ ic-compile0 (INVOKE .mr .ips) .e0/.ex
 	, .e6 = (_ MOV (EBP, .thisOp)
 		, _ R-
 		, _ CALL ($0)
-		, _ R-
 		, _ FR-POP (EBP)
 		, .e7)
-	, .e8 = (_ RRESTORE
+	, .e8 = (_ R-
+		, _ RRESTORE
 		, _ R+
 		, _ MOV ($0, EAX)
 		, .ex)
